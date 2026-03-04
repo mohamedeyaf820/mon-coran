@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Content Security Policy -->
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https://api.alquran.cloud https://cdn.islamic.network https://everyayah.com https://raw.githubusercontent.com; media-src 'self' https://cdn.islamic.network https://everyayah.com blob:;" />
+    content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://r2cdn.perplexity.ai; img-src 'self' data: blob:; connect-src 'self' https://api.alquran.cloud https://cdn.islamic.network https://everyayah.com https://raw.githubusercontent.com ws://localhost:* http://localhost:*; media-src 'self' https://cdn.islamic.network https://everyayah.com blob:;" />
   <title>MushafPlus - Le Saint Coran</title>
   <!-- Preconnect to all external origins for faster loading -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,6 +17,9 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <!-- DNS prefetch for AlQuran API -->
   <link rel="dns-prefetch" href="https://api.alquran.cloud" />
+  <!-- Preload KFGQPC Uthmanic Script HAFS (primary Quran font) -->
+  <link rel="preload" as="font" type="font/otf" crossorigin
+    href="https://cdn.jsdelivr.net/npm/kfgqpc-uthmanic-script-hafs-regular@1.0.0/arabic.otf" />
   <!-- Fonts (non-blocking with media=print swap trick) -->
   <link rel="preload" as="style"
     href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Cairo:wght@300;400;500;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Scheherazade+New:wght@400;700&family=Lateef:wght@400;700&display=swap" />
@@ -35,11 +38,13 @@
   </noscript>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="manifest" href="/manifest.json" />
-  <meta name="theme-color" content="#1B5E3A" />
+  <meta name="theme-color" content="#0D5C4A" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="MushafPlus" />
   <link rel="apple-touch-icon" href="/favicon.svg" />
+  <!-- Premium Design System v3.0 -->
+  <link rel="stylesheet" href="/src/styles/premium-design.css" />
 </head>
 
 <body>

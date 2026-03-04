@@ -91,6 +91,9 @@ export function getSettings() {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return { ...DEFAULT_SETTINGS };
     const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return { ...DEFAULT_SETTINGS };
+    }
     return {
       ...DEFAULT_SETTINGS,
       ...parsed,
@@ -106,40 +109,50 @@ export function getSettings() {
 
 // Sanitize et valide les settings avant sauvegarde
 function sanitizeSettings(settings) {
+  const safeInput = settings && typeof settings === 'object' ? settings : {};
+  const safeSyncOffsets =
+    safeInput.syncOffsetsMs && typeof safeInput.syncOffsetsMs === 'object' && !Array.isArray(safeInput.syncOffsetsMs)
+      ? safeInput.syncOffsetsMs
+      : {};
+
   return {
-    lang: VALID_LANGS.includes(settings.lang) ? settings.lang : 'fr',
-    theme: VALID_THEMES.includes(settings.theme) ? settings.theme : 'light',
-    riwaya: VALID_RIWAYAS.includes(settings.riwaya) ? settings.riwaya : 'hafs',
-    reciter: typeof settings.reciter === 'string' ? settings.reciter.slice(0, 50) : 'ar.alafasy',
-    fontSize: Math.max(16, Math.min(48, Number(settings.fontSize) || 28)),
-    fontFamily: VALID_FONTS.includes(settings.fontFamily) ? settings.fontFamily : 'scheherazade',
-    translationLang: VALID_LANGS.includes(settings.translationLang) ? settings.translationLang : 'fr',
-    showTranslation: Boolean(settings.showTranslation),
-    showTajwid: Boolean(settings.showTajwid),
-    displayMode: VALID_DISPLAY_MODES.includes(settings.displayMode) ? settings.displayMode : 'surah',
-    audioSpeed: [0.5, 0.75, 1, 1.25, 1.5, 2].includes(settings.audioSpeed) ? settings.audioSpeed : 1,
-    continuousPlay: Boolean(settings.continuousPlay),
-    warshStrictMode: Boolean(settings.warshStrictMode),
-    syncOffsetsMs: typeof settings.syncOffsetsMs === 'object' ? settings.syncOffsetsMs : {},
-    autoNightMode: Boolean(settings.autoNightMode),
-    nightStart: /^\d{2}:\d{2}$/.test(settings.nightStart) ? settings.nightStart : '20:00',
-    nightEnd: /^\d{2}:\d{2}$/.test(settings.nightEnd) ? settings.nightEnd : '06:00',
-    nightTheme: VALID_THEMES.includes(settings.nightTheme) ? settings.nightTheme : 'dark',
-    dayTheme: VALID_THEMES.includes(settings.dayTheme) ? settings.dayTheme : 'light',
-    wirdGoalType: ['pages', 'hizb', 'juz'].includes(settings.wirdGoalType) ? settings.wirdGoalType : 'pages',
-    wirdGoalAmount: Math.max(1, Math.min(30, Number(settings.wirdGoalAmount) || 5)),
+    lang: VALID_LANGS.includes(safeInput.lang) ? safeInput.lang : 'fr',
+    theme: VALID_THEMES.includes(safeInput.theme) ? safeInput.theme : 'light',
+    riwaya: VALID_RIWAYAS.includes(safeInput.riwaya) ? safeInput.riwaya : 'hafs',
+    reciter: typeof safeInput.reciter === 'string' ? safeInput.reciter.slice(0, 50) : 'ar.alafasy',
+    fontSize: Math.max(16, Math.min(48, Number(safeInput.fontSize) || 28)),
+    fontFamily: VALID_FONTS.includes(safeInput.fontFamily) ? safeInput.fontFamily : 'scheherazade',
+    translationLang: VALID_LANGS.includes(safeInput.translationLang) ? safeInput.translationLang : 'fr',
+    showTranslation: Boolean(safeInput.showTranslation),
+    showTajwid: Boolean(safeInput.showTajwid),
+    displayMode: VALID_DISPLAY_MODES.includes(safeInput.displayMode) ? safeInput.displayMode : 'surah',
+    audioSpeed: [0.5, 0.75, 1, 1.25, 1.5, 2].includes(safeInput.audioSpeed) ? safeInput.audioSpeed : 1,
+    continuousPlay: Boolean(safeInput.continuousPlay),
+    warshStrictMode: Boolean(safeInput.warshStrictMode),
+    syncOffsetsMs: safeSyncOffsets,
+    autoNightMode: Boolean(safeInput.autoNightMode),
+    nightStart: /^\d{2}:\d{2}$/.test(safeInput.nightStart) ? safeInput.nightStart : '20:00',
+    nightEnd: /^\d{2}:\d{2}$/.test(safeInput.nightEnd) ? safeInput.nightEnd : '06:00',
+    nightTheme: VALID_THEMES.includes(safeInput.nightTheme) ? safeInput.nightTheme : 'dark',
+    dayTheme: VALID_THEMES.includes(safeInput.dayTheme) ? safeInput.dayTheme : 'light',
+    wirdGoalType: ['pages', 'hizb', 'juz'].includes(safeInput.wirdGoalType) ? safeInput.wirdGoalType : 'pages',
+    wirdGoalAmount: Math.max(1, Math.min(30, Number(safeInput.wirdGoalAmount) || 5)),
     lastPosition: {
-      surah: Math.max(1, Math.min(114, Number(settings.lastPosition?.surah) || 1)),
-      ayah: Math.max(1, Math.min(286, Number(settings.lastPosition?.ayah) || 1)),
-      page: Math.max(1, Math.min(604, Number(settings.lastPosition?.page) || 1)),
-      juz: Math.max(1, Math.min(30, Number(settings.lastPosition?.juz) || 1)),
+      surah: Math.max(1, Math.min(114, Number(safeInput.lastPosition?.surah) || 1)),
+      ayah: Math.max(1, Math.min(286, Number(safeInput.lastPosition?.ayah) || 1)),
+      page: Math.max(1, Math.min(604, Number(safeInput.lastPosition?.page) || 1)),
+      juz: Math.max(1, Math.min(30, Number(safeInput.lastPosition?.juz) || 1)),
     },
   };
 }
 
 export function saveSettings(settings) {
   const safe = sanitizeSettings(settings);
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(safe));
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(safe));
+  } catch {
+    // Storage might be unavailable (private mode/quota exceeded)
+  }
 }
 
 export function updateSetting(key, value) {

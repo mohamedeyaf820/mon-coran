@@ -24,6 +24,60 @@ let warshData = null;       // The full warsh.json parsed
 let dataPromise = null;     // Deduplication: only one fetch at a time
 const loadedFonts = new Set();  // Which font pages (1-50) are loaded
 const fontPromises = new Map(); // In-flight font loads
+const failedFonts = new Set();  // Font pages that failed to load
+let _fontLoadListeners = [];    // Listeners for font load completions
+let _pendingFontCount = 0;      // Number of fonts currently loading
+
+function isValidWarshWord(word) {
+  return (
+    word &&
+    typeof word === 'object' &&
+    Number.isFinite(Number(word.p)) &&
+    Number.isFinite(Number(word.c))
+  );
+}
+
+function isValidWarshData(data) {
+  if (!Array.isArray(data) || data.length !== 114) return false;
+  return data.every(
+    (surah) =>
+      Array.isArray(surah) &&
+      surah.every((verse) => Array.isArray(verse) && verse.every(isValidWarshWord))
+  );
+}
+
+/**
+ * Check if a specific font page is loaded.
+ */
+export function isFontPageLoaded(pageNum) {
+  return loadedFonts.has(pageNum);
+}
+
+/**
+ * Check if there are fonts currently loading.
+ */
+export function areFontsLoading() {
+  return _pendingFontCount > 0;
+}
+
+/**
+ * Subscribe to font load state changes.
+ * Callback receives { loaded: Set, pending: number, failed: Set }
+ * @returns {Function} unsubscribe
+ */
+export function onFontLoadChange(callback) {
+  _fontLoadListeners.push(callback);
+  return () => {
+    _fontLoadListeners = _fontLoadListeners.filter(fn => fn !== callback);
+  };
+}
+
+function _notifyFontListeners() {
+  const state = { loaded: loadedFonts, pending: _pendingFontCount, failed: failedFonts };
+  for (const fn of _fontLoadListeners) {
+    try { fn(state); } catch { /* ignore */ }
+  }
+}
 
 // ── Data Loading ─────────────────────────────────────
 
@@ -39,7 +93,7 @@ export async function loadWarshData() {
     // 1. Try IndexedDB cache first (instant, no network)
     try {
       const cached = await dbGet(IDB_STORE, IDB_KEY);
-      if (cached && Array.isArray(cached.data) && cached.data.length === 114) {
+      if (cached && isValidWarshData(cached.data)) {
         warshData = cached.data;
         return warshData;
       }
@@ -51,6 +105,9 @@ export async function loadWarshData() {
     const res = await fetch('/data/warsh.json');
     if (!res.ok) throw new Error(`Failed to load warsh.json: ${res.status}`);
     const data = await res.json();
+    if (!isValidWarshData(data)) {
+      throw new Error('Invalid warsh.json format');
+    }
     warshData = data;
 
     // 3. Store in IndexedDB for next time (fire-and-forget)
@@ -80,7 +137,7 @@ export function isWarshDataLoaded() {
  * @param {number} pageNum - Font page (1-50)
  * @returns {Promise<void>}
  */
-export async function loadWarshFont(pageNum) {
+export async function loadWarshFont(pageNum, retries = 2) {
   if (loadedFonts.has(pageNum)) return;
   if (fontPromises.has(pageNum)) return fontPromises.get(pageNum);
 
@@ -88,21 +145,43 @@ export async function loadWarshFont(pageNum) {
   const fontFamily = `QCF4_Warsh_${padded}`;
   const url = `${FONT_CDN_BASE}/QCF4_Warsh_${padded}_W.ttf`;
 
+  _pendingFontCount++;
+  failedFonts.delete(pageNum);
+  _notifyFontListeners();
+
   const promise = (async () => {
-    try {
-      const font = new FontFace(fontFamily, `url(${url})`, {
-        style: 'normal',
-        weight: 'normal',
-        display: 'swap',
-      });
-      await font.load();
-      document.fonts.add(font);
-      loadedFonts.add(pageNum);
-    } catch (err) {
-      console.error(`Failed to load Warsh font page ${pageNum}:`, err);
-      fontPromises.delete(pageNum);
-      throw err;
+    let lastErr;
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        if (attempt > 0) {
+          // Exponential backoff: 500ms, 1500ms
+          await new Promise(r => setTimeout(r, 500 * attempt));
+        }
+        const font = new FontFace(fontFamily, `url(${url})`, {
+          style: 'normal',
+          weight: 'normal',
+          display: 'swap',
+        });
+        await font.load();
+        document.fonts.add(font);
+        loadedFonts.add(pageNum);
+        failedFonts.delete(pageNum);
+        _pendingFontCount = Math.max(0, _pendingFontCount - 1);
+        _notifyFontListeners();
+        return;
+      } catch (err) {
+        lastErr = err;
+        if (attempt < retries) {
+          console.warn(`Warsh font page ${pageNum} load failed, retrying (${attempt + 1}/${retries})...`);
+        }
+      }
     }
+    // All retries exhausted
+    console.error(`Failed to load Warsh font page ${pageNum} after ${retries + 1} attempts:`, lastErr);
+    failedFonts.add(pageNum);
+    fontPromises.delete(pageNum);
+    _pendingFontCount = Math.max(0, _pendingFontCount - 1);
+    _notifyFontListeners();
   })();
 
   fontPromises.set(pageNum, promise);
@@ -116,20 +195,31 @@ export async function loadWarshFont(pageNum) {
  * @returns {Promise<void>}
  */
 export async function loadFontsForVerses(verses) {
+  if (!Array.isArray(verses) || verses.length === 0) return;
+
   const neededPages = new Set();
   for (const verse of verses) {
+    if (!Array.isArray(verse)) continue;
     for (const word of verse) {
-      if (!loadedFonts.has(word.p)) {
-        neededPages.add(word.p);
+      if (!isValidWarshWord(word)) continue;
+      const page = Number(word.p);
+      if (!loadedFonts.has(page)) {
+        neededPages.add(page);
       }
     }
   }
 
   if (neededPages.size === 0) return;
 
-  // Load all needed fonts in parallel
+  // Load all needed fonts in parallel with retry
   const promises = [...neededPages].map(p => loadWarshFont(p));
   await Promise.allSettled(promises);
+
+  // Check for failures and report
+  const failed = [...neededPages].filter(p => failedFonts.has(p));
+  if (failed.length > 0) {
+    console.warn(`Warsh fonts failed to load for pages: ${failed.join(', ')}`);
+  }
 }
 
 /**
@@ -188,8 +278,9 @@ export async function getWarshVerse(surahNum, verseNum) {
 export async function getWarshSurahFormatted(surahNum) {
   const verses = await getWarshSurahVerses(surahNum);
 
-  // Load all needed fonts
-  await loadFontsForVerses(verses);
+  // Start loading fonts in background (don't block data return!)
+  // WarshWordText handles loading state per-word with shimmer placeholders.
+  loadFontsForVerses(verses).catch(() => {});
 
   // Calculate global ayah number offset
   const data = await loadWarshData();
@@ -201,8 +292,11 @@ export async function getWarshSurahFormatted(surahNum) {
   const ayahs = verses.map((words, idx) => ({
     number: globalOffset + idx + 1,         // Global ayah number
     numberInSurah: idx + 1,                 // Verse number within surah
-    text: words.map(w => String.fromCodePoint(w.c)).join(' '),
-    warshWords: words,                       // QCF4 word data for rendering
+    text: (Array.isArray(words) ? words : [])
+      .filter(isValidWarshWord)
+      .map(w => String.fromCodePoint(Number(w.c)))
+      .join(' '),
+    warshWords: (Array.isArray(words) ? words : []).filter(isValidWarshWord),
     surah: { number: surahNum },
     juz: null,                               // Could compute if needed
   }));
@@ -260,12 +354,13 @@ export async function getWarshJuzVerses(juzNum) {
       }
 
       const words = data[s][v];
+      const validWords = (Array.isArray(words) ? words : []).filter(isValidWarshWord);
       globalNumber++;
       ayahs.push({
         number: globalNumber,
         numberInSurah: v + 1,
-        text: words.map(w => String.fromCodePoint(w.c)).join(' '),
-        warshWords: words,
+        text: validWords.map(w => String.fromCodePoint(Number(w.c))).join(' '),
+        warshWords: validWords,
         surah: { number: s + 1 },
         juz: juzNum,
       });
@@ -278,9 +373,9 @@ export async function getWarshJuzVerses(juzNum) {
     }
   }
 
-  // Load fonts for these verses
+  // Start loading fonts in background (don't block data return!)
   const allWords = ayahs.map(a => a.warshWords);
-  await loadFontsForVerses(allWords);
+  loadFontsForVerses(allWords).catch(() => {});
 
   return {
     ayahs,
@@ -306,6 +401,9 @@ export default {
   loadWarshFont,
   loadFontsForVerses,
   isFontLoaded,
+  isFontPageLoaded,
+  areFontsLoading,
+  onFontLoadChange,
   getFontFamily,
   getWarshSurahVerses,
   getWarshVerse,

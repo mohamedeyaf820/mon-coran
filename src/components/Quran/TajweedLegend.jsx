@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getRulesForRiwaya } from '../../data/tajwidRules';
+import * as tajwidRules from '../../data/tajwidRules';
 
 /**
  * TajweedLegend component – interactive guide to tajwid colors.
@@ -10,7 +10,11 @@ const TajweedLegend = React.memo(function TajweedLegend({ lang, visible, riwaya 
     if (!visible) return null;
 
     const labelKey = lang === 'ar' ? 'nameAr' : lang === 'fr' ? 'nameFr' : 'nameEn';
-    const rules = getRulesForRiwaya(riwaya);
+    const rules = typeof tajwidRules.getRulesForRiwaya === 'function'
+        ? tajwidRules.getRulesForRiwaya(riwaya)
+        : (riwaya === 'warsh' && Array.isArray(tajwidRules.WARSH_TAJWID_RULES)
+            ? tajwidRules.WARSH_TAJWID_RULES
+            : (Array.isArray(tajwidRules.default) ? tajwidRules.default : []));
     const isWarsh = riwaya === 'warsh';
 
     return (

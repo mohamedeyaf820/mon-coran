@@ -599,6 +599,7 @@
 .qcf4-container {
   direction: rtl;
   text-align: center;
+  min-height: 60px;
 }
 
 .warsh-qcf4-text {
@@ -607,7 +608,7 @@
   unicode-bidi: bidi-override;
   line-height: 2.8;
   letter-spacing: 0;
-  word-spacing: 0;
+  word-spacing: 0.15em;
 }
 
 .warsh-qcf4-word {
@@ -619,6 +620,31 @@
   font-feature-settings: normal;
   letter-spacing: 0;
   transition: color 0.3s ease, opacity 0.3s ease;
+  min-width: 0.5em;
+}
+
+/* Font loading shimmer for QCF4 words */
+.warsh-qcf4-word.qcf4-loading {
+  display: inline-block;
+  min-width: 1.2em;
+  height: 1.2em;
+  background: linear-gradient(90deg, var(--border) 25%, var(--surface) 50%, var(--border) 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s ease infinite;
+  border-radius: 4px;
+  vertical-align: middle;
+  margin: 0 0.05em;
+}
+
+/* Font loading spinner hint */
+.qcf4-font-loading-hint {
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 0.5em;
+  color: var(--gold);
+  font-size: 0.6em;
+  opacity: 0.7;
+  vertical-align: middle;
 }
 
 .warsh-qcf4-word.tajwid-ghunna {
@@ -688,45 +714,25 @@
 
 /* Nice spacing between QCF4 words */
 .warsh-qcf4-word+.warsh-qcf4-word {
-  margin-inline-start: 0.06em;
+  margin-inline-start: 0.1em;
 }
 
-/* ═══ QCF4 Karaoke Tracking ═══ */
+/* ═══ QCF4 Karaoke Tracking (simple) ═══ */
 .wbw-qcf4-read {
   color: var(--gold) !important;
   opacity: 0.5;
-  transition: color 0.35s ease, opacity 0.5s ease;
 }
 
 .wbw-qcf4-current {
   color: var(--primary) !important;
-  transform: scale(1.08);
-  display: inline-block;
-  filter: drop-shadow(0 0 8px rgba(197, 150, 58, 0.5));
-  animation: qcf4WordPulse 0.8s ease-in-out infinite;
-  position: relative;
-  z-index: 2;
 }
 
 .wbw-qcf4-upcoming {
   opacity: 0.35;
-  transition: opacity 0.3s ease;
-}
-
-@keyframes qcf4WordPulse {
-
-  0%,
-  100% {
-    filter: drop-shadow(0 0 6px rgba(197, 150, 58, 0.35));
-  }
-
-  50% {
-    filter: drop-shadow(0 0 14px rgba(197, 150, 58, 0.7));
-  }
 }
 
 /* ═══════════════════════════════════════
-   Word-by-Word Karaoke Tracking (v2)
+   Word-by-Word Karaoke Tracking (simple)
    ═══════════════════════════════════════ */
 .wbw-container {
   display: inline;
@@ -735,140 +741,32 @@
 
 .wbw-word {
   display: inline;
-  position: relative;
-  transition: color 0.2s ease, opacity 0.3s ease;
   padding: 3px 0;
 }
 
-/* ── Already-read words (golden trail) ── */
 .wbw-read {
   color: var(--gold);
   opacity: 0.55;
-  text-shadow: 0 0 6px rgba(197, 150, 58, 0.15);
-  transition: color 0.35s ease, opacity 0.5s ease;
 }
 
-/* ── Active word being recited ── */
 .wbw-current {
   color: var(--primary);
-  background: linear-gradient(135deg,
-      rgba(197, 150, 58, 0.22) 0%,
-      rgba(197, 150, 58, 0.08) 100%);
-  border-radius: 6px;
-  padding: 3px 5px;
-  margin: 0 1px;
   font-weight: 700;
-  text-shadow: 0 0 14px rgba(197, 150, 58, 0.5);
-  animation: wbwGlow 1s ease-in-out infinite;
-  position: relative;
-  z-index: 1;
-  transform: scale(1.05);
 }
 
-/* Animated underline that fills as the word progresses */
-.wbw-current::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  right: 0;
-  height: 2.5px;
-  width: calc(var(--word-progress, 0) * 100%);
-  background: linear-gradient(90deg, var(--gold), var(--primary));
-  border-radius: 2px;
-  transition: width 0.06s linear;
-}
-
-/* Subtle glow on active */
-.wbw-current::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: 8px;
-  background: radial-gradient(ellipse at center,
-      rgba(197, 150, 58, 0.12) 0%,
-      transparent 70%);
-  pointer-events: none;
-  z-index: -1;
-}
-
-/* ── Upcoming words ── */
 .wbw-upcoming {
   color: var(--text-quran);
   opacity: 0.35;
-  transition: opacity 0.3s ease;
-}
-
-/* ── Sound-wave indicator beside active word ── */
-.wbw-indicator {
-  display: inline-flex;
-  align-items: flex-end;
-  gap: 1.5px;
-  height: 0.9em;
-  margin-inline-start: 5px;
-  vertical-align: middle;
-  position: relative;
-  top: -0.06em;
-}
-
-.wbw-wave-bar {
-  display: inline-block;
-  width: 2.5px;
-  background: var(--gold);
-  border-radius: 2px;
-  animation: wbwWave 0.55s ease-in-out infinite alternate;
-  transform-origin: bottom;
-}
-
-.wbw-wave-bar:nth-child(1) {
-  height: 30%;
-}
-
-.wbw-wave-bar:nth-child(2) {
-  height: 60%;
-}
-
-.wbw-wave-bar:nth-child(3) {
-  height: 42%;
-}
-
-/* ── Keyframes ── */
-@keyframes wbwGlow {
-
-  0%,
-  100% {
-    box-shadow: 0 0 4px rgba(197, 150, 58, 0.08);
-    text-shadow: 0 0 10px rgba(197, 150, 58, 0.35);
-  }
-
-  50% {
-    box-shadow: 0 0 20px rgba(197, 150, 58, 0.2);
-    text-shadow: 0 0 22px rgba(197, 150, 58, 0.65);
-  }
-}
-
-@keyframes wbwWave {
-  0% {
-    transform: scaleY(0.3);
-  }
-
-  100% {
-    transform: scaleY(1);
-  }
 }
 
 /* ── Dark-theme overrides ── */
 [data-theme="dark"] .wbw-current {
-  background: linear-gradient(135deg,
-      rgba(197, 150, 58, 0.28) 0%,
-      rgba(197, 150, 58, 0.10) 100%);
   color: var(--gold);
-  text-shadow: 0 0 18px rgba(197, 150, 58, 0.55);
 }
 
 [data-theme="dark"] .wbw-read {
   color: var(--primary);
   opacity: 0.48;
-  text-shadow: 0 0 8px rgba(27, 94, 58, 0.2);
 }
 
 [data-theme="dark"] .wbw-upcoming {
@@ -876,20 +774,8 @@
   opacity: 0.25;
 }
 
-[data-theme="dark"] .wbw-wave-bar {
-  background: var(--gold);
-  opacity: 0.85;
-}
-
-[data-theme="dark"] .wbw-current::before {
-  background: radial-gradient(ellipse at center,
-      rgba(197, 150, 58, 0.18) 0%,
-      transparent 70%);
-}
-
 [data-theme="dark"] .wbw-qcf4-current {
   color: var(--gold) !important;
-  filter: drop-shadow(0 0 10px rgba(197, 150, 58, 0.6));
 }
 
 [data-theme="dark"] .wbw-qcf4-read {
@@ -1461,6 +1347,15 @@
     font-size: 1em;
   }
 
+  .warsh-qcf4-word.qcf4-loading {
+    min-width: 1em;
+    height: 1em;
+  }
+
+  .qcf4-font-loading-hint {
+    font-size: 0.5em;
+  }
+
   .ayahs-container .corner-ornament {
     display: none;
   }
@@ -1691,4 +1586,55 @@
   opacity: 0.6;
   margin: 0;
   direction: rtl;
+}
+
+.quran-display {
+  max-width: 980px;
+  padding-top: 0.85rem;
+}
+
+.display-mode-bar {
+  border-radius: 0 0 14px 14px;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.mode-btn {
+  border-color: rgba(255, 255, 255, 0.14);
+  font-size: 0.74rem;
+}
+
+.mode-btn.active {
+  background: rgba(var(--primary-rgb), 0.2);
+  border-color: rgba(var(--primary-rgb), 0.42);
+}
+
+.surah-header {
+  margin-top: 0.6rem;
+}
+
+.surah-header-inner {
+  padding: 1rem 2rem;
+}
+
+.ayahs-container {
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.08);
+  padding: 1.65rem 1.65rem;
+}
+
+@media (max-width: 640px) {
+  .quran-display {
+    padding: 0.75rem 0.65rem 1rem;
+  }
+
+  .display-mode-bar {
+    margin-left: -0.65rem;
+    margin-right: -0.65rem;
+  }
+
+  .ayahs-container {
+    padding: 1.1rem 0.95rem;
+    border-radius: 14px;
+  }
 }

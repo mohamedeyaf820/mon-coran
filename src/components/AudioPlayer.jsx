@@ -261,15 +261,25 @@ export default function AudioPlayer() {
           {/* Reciter selection */}
           <div className="player-section">
             <label className="player-label">{t('audio.reciter', lang)}</label>
-            <div className="reciter-chips">
+            <div className="reciter-grid">
               {currentReciters.map(r => (
                 <button
                   key={r.id}
-                  className={`reciter-chip ${reciter === r.id ? 'active' : ''}`}
+                  className={`reciter-card ${reciter === r.id ? 'active' : ''}`}
                   onClick={() => changeReciter(r.id)}
                   aria-pressed={reciter === r.id}
                 >
-                  {lang === 'ar' ? r.name : lang === 'fr' ? r.nameFr : r.nameEn}
+                  <div className="reciter-name">
+                    {lang === 'ar' ? r.name : lang === 'fr' ? r.nameFr : r.nameEn}
+                  </div>
+                  <div className="reciter-style">
+                    {r.style === 'murattal' ? 'مرتل' : r.style === 'tartil' ? 'مجود' : r.style}
+                  </div>
+                  {reciter === r.id && (
+                    <div className="reciter-active-indicator">
+                      <i className="fas fa-check"></i>
+                    </div>
+                  )}
                 </button>
               ))}
             </div>

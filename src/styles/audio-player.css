@@ -8,12 +8,13 @@
     left: 0;
     right: 0;
     z-index: 300;
-    background: var(--player-bg);
-    border-top: none;
-    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
+    background: var(--player-glass);
+    border-top: 1px solid var(--border);
+    box-shadow: var(--shadow-xl);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    color: var(--primary-on);
+    color: var(--text-inverse);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 /* ── Progress Bar ── */
@@ -23,11 +24,11 @@
 }
 
 .player-progress {
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
+    height: 6px;
+    background: var(--glass-border);
     cursor: pointer;
     position: relative;
-    transition: height 0.15s;
+    transition: height var(--transition-fast);
 }
 
 .player-progress:hover {
@@ -36,10 +37,11 @@
 
 .player-progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--gold), #E8CC6A);
-    border-radius: 2px;
-    transition: width 0.1s linear;
+    background: linear-gradient(90deg, var(--color-gold), var(--color-amber));
+    border-radius: var(--radius-full);
+    transition: width var(--transition-fast);
     position: relative;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
 }
 
 .player-progress-fill::after {
@@ -65,8 +67,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.45rem 1rem;
-    gap: 0.5rem;
+    padding: var(--space-4) var(--space-6);
+    gap: var(--space-4);
 }
 
 /* ── Info ── */
@@ -77,18 +79,20 @@
 
 .player-ayah-info {
     display: block;
-    font-family: 'Amiri', serif;
-    font-size: 0.85rem;
-    color: var(--primary-on);
+    font-family: var(--font-quran);
+    font-size: var(--text-base);
+    color: var(--text-inverse);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: var(--font-weight-medium);
 }
 
 .player-time {
-    font-size: 0.7rem;
-    color: var(--primary-on-muted);
-    font-family: monospace;
+    font-size: var(--text-sm);
+    color: rgba(255, 255, 255, 0.8);
+    font-family: var(--font-mono);
+    margin-top: var(--space-1);
 }
 
 /* ── Status Badges ── */
@@ -384,4 +388,78 @@
     .player-volume-slider {
         width: 50px;
     }
+}
+
+.audio-player {
+    background: linear-gradient(120deg, #0f2d21 0%, #163b2c 50%, #0d261d 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.player-controls {
+    padding: 0.5rem 0.95rem;
+}
+
+.player-btn {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.play-btn {
+    background: linear-gradient(135deg, #fff, #f7f7f7);
+}
+
+.player-btn-sm {
+    min-height: 30px;
+    font-weight: 700;
+}
+
+.player-expanded {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.reciter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.45rem;
+}
+
+.reciter-card {
+    position: relative;
+    text-align: start;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.05);
+    color: #f3efdf;
+    border-radius: 11px;
+    padding: 0.5rem 0.65rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.reciter-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(212, 175, 55, 0.45);
+}
+
+.reciter-card.active {
+    background: rgba(212, 175, 55, 0.18);
+    border-color: rgba(212, 175, 55, 0.62);
+}
+
+.reciter-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.reciter-style {
+    margin-top: 0.12rem;
+    font-size: 0.66rem;
+    opacity: 0.8;
+}
+
+.reciter-active-indicator {
+    position: absolute;
+    top: 0.35rem;
+    inset-inline-end: 0.45rem;
+    color: #f5d785;
+    font-size: 0.72rem;
 }

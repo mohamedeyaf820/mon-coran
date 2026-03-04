@@ -48,12 +48,6 @@ const WordByWordText = React.memo(function WordByWordText({ text, progress, lagW
     }
     currentWordIdx = Math.max(0, currentWordIdx - lagWords);
 
-    const prevThreshold = currentWordIdx > 0 ? wordWeights[currentWordIdx - 1] : 0;
-    const curThreshold = wordWeights[currentWordIdx] || 1;
-    const wordSubProgress = Math.min(1, Math.max(0,
-        (progress - prevThreshold) / (curThreshold - prevThreshold)
-    ));
-
     return (
         <span className="wbw-container">
             {words.map((word, i) => {
@@ -67,17 +61,8 @@ const WordByWordText = React.memo(function WordByWordText({ text, progress, lagW
                 else if (isUpcoming) cls += ' wbw-upcoming';
 
                 return (
-                    <span key={i} className={cls}
-                        style={isCurrent ? { '--word-progress': wordSubProgress } : undefined}
-                    >
+                    <span key={i} className={cls}>
                         {word}
-                        {isCurrent && (
-                            <span className="wbw-indicator">
-                                <span className="wbw-wave-bar" style={{ animationDelay: '0s' }}></span>
-                                <span className="wbw-wave-bar" style={{ animationDelay: '0.15s' }}></span>
-                                <span className="wbw-wave-bar" style={{ animationDelay: '0.3s' }}></span>
-                            </span>
-                        )}
                         {i < words.length - 1 ? ' ' : ''}
                     </span>
                 );

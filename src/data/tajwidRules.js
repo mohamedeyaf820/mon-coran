@@ -387,6 +387,28 @@ export function getRulesForRiwaya(riwaya) {
   return riwaya === 'warsh' ? WARSH_TAJWID_RULES : TAJWID_RULES;
 }
 
+// ── Tajweed parsing cache ────────────────────
+const _parseTajwidCache = new Map();
+const _PARSE_CACHE_MAX = 2000;
+const _perWordCache = new Map();
+const _PER_WORD_CACHE_MAX = 2000;
+
+function _cacheGet(cache, key) {
+  return cache.get(key);
+}
+function _cacheSet(cache, maxSize, key, value) {
+  if (cache.size >= maxSize) {
+    // Evict oldest 25%
+    const toDelete = Math.floor(maxSize / 4);
+    const iter = cache.keys();
+    for (let i = 0; i < toDelete; i++) {
+      const k = iter.next().value;
+      if (k !== undefined) cache.delete(k);
+    }
+  }
+  cache.set(key, value);
+}
+
 /**
  * Apply all tajwid rules to a text string.
  * Returns an array of segments: { text, ruleId | null }
@@ -395,6 +417,10 @@ export function getRulesForRiwaya(riwaya) {
  */
 export function parseTajwid(text, riwaya = 'hafs') {
   if (!text) return [{ text: '', ruleId: null }];
+
+  const cacheKey = `${riwaya}:${text}`;
+  const cached = _cacheGet(_parseTajwidCache, cacheKey);
+  if (cached) return cached;
 
   const rules = getRulesForRiwaya(riwaya);
 
@@ -416,7 +442,11 @@ export function parseTajwid(text, riwaya = 'hafs') {
     }
   }
 
-  if (matches.length === 0) return [{ text, ruleId: null }];
+  if (matches.length === 0) {
+    const result = [{ text, ruleId: null }];
+    _cacheSet(_parseTajwidCache, _PARSE_CACHE_MAX, cacheKey, result);
+    return result;
+  }
 
   // Sort by position, longest match first for same position
   matches.sort((a, b) => a.start - b.start || b.end - a.end);
@@ -445,6 +475,7 @@ export function parseTajwid(text, riwaya = 'hafs') {
     segments.push({ text: text.slice(pos), ruleId: null });
   }
 
+  _cacheSet(_parseTajwidCache, _PARSE_CACHE_MAX, cacheKey, segments);
   return segments;
 }
 
@@ -458,6 +489,11 @@ export function parseTajwid(text, riwaya = 'hafs') {
  */
 export function getPerWordTajweedColors(text, riwaya = 'hafs') {
   if (!text) return [];
+
+  const cacheKey = `pw:${riwaya}:${text}`;
+  const cached = _cacheGet(_perWordCache, cacheKey);
+  if (cached) return cached;
+
   const rules = getRulesForRiwaya(riwaya);
   let segments;
   try { segments = parseTajwid(text, riwaya); } catch { return []; }
@@ -518,5 +554,6 @@ export function getPerWordTajweedColors(text, riwaya = 'hafs') {
 
     result.push(dominant);
   }
+  _cacheSet(_perWordCache, _PER_WORD_CACHE_MAX, cacheKey, result);
   return result;
 }

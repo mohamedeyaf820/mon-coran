@@ -1,6 +1,6 @@
 /* ============================================
-   MushafPlus — Global Styles & CSS Variables
-   Authentic Quran Mushaf Design
+   MushafPlus — Premium Design System
+   Inspired by UI/UX Pro Max + moncoranamirou.netlify.app
    ============================================ */
 
 /* ---------- Google Fonts ---------- */
@@ -8,51 +8,122 @@
    The @import below is kept as a fallback only. */
 /* @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&family=Amiri+Quran&family=Scheherazade+New:wght@400;700&family=Cairo:wght@300;400;500;600;700&display=swap'); */
 
-/* ---------- Variables ---------- */
+/* ---------- KFGQPC Uthmanic Script HAFS ---------- */
+@font-face {
+  font-family: 'KFGQPC Uthmanic Script HAFS';
+  src: url('https://cdn.jsdelivr.net/npm/kfgqpc-uthmanic-script-hafs-regular@1.0.0/arabic.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Premium Design System Variables ---------- */
 :root {
-  /* Palette – Light (Clean, modern Islamic) */
-  --bg-primary: #F8F6F1;
-  --bg-secondary: #EFEBE3;
+  /* ═══ Premium Color Palette ═══ */
+  --bg-primary: #FAFAF9;
+  --bg-secondary: #F5F5F4;
+  --bg-tertiary: #E7E5E4;
   --bg-card: #FFFFFF;
-  --bg-overlay: rgba(0, 0, 0, .45);
-  --text-primary: #1A1A2E;
-  --text-secondary: #4A4A5A;
-  --text-muted: #8E8E9A;
-  --text-quran: #0F0F1A;
-  --accent: #C8A951;
-  --accent-light: rgba(200, 169, 81, .10);
-  --accent-dark: #A08930;
-  --border: rgba(0, 0, 0, .07);
-  --border-strong: rgba(0, 0, 0, .14);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, .04);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, .06);
-  --shadow-lg: 0 8px 30px rgba(0, 0, 0, .10);
-  --header-bg: linear-gradient(135deg, #1B5E3C 0%, #14462C 100%);
-  --sidebar-bg: #FFFFFF;
-  --player-bg: linear-gradient(135deg, #1B5E3C 0%, #14462C 100%);
-  --surah-header-bg: linear-gradient(135deg, #1B5E3C 0%, #14462C 100%);
-  --bismillah-color: var(--primary);
-  --ayah-hover: rgba(27, 94, 60, .03);
-  --highlight-bg: rgba(200, 169, 81, .12);
-  --scrollbar-thumb: rgba(0, 0, 0, .18);
+  --bg-overlay: rgba(0, 0, 0, 0.6);
+  --bg-glass: rgba(255, 255, 255, 0.92);
+  --bg-glass-dark: rgba(0, 0, 0, 0.8);
+
+  /* Text Colors */
+  --text-primary: #1A1A1A;
+  --text-secondary: #4A4A4A;
+  --text-tertiary: #6B6B6B;
+  --text-muted: #8E8E8E;
+  --text-inverse: #FFFFFF;
+  --text-quran: #0F0F0F;
+
+  /* Islamic Color Palette */
+  --color-emerald: #10B981;
+  --color-emerald-light: #D1FAE5;
+  --color-emerald-dark: #047857;
+  --color-gold: #F59E0B;
+  --color-gold-light: #FEF3C7;
+  --color-gold-dark: #D97706;
+  --color-amber: #F59E0B;
+  --color-amber-light: #FEF3C7;
+  --color-amber-dark: #D97706;
+
+  /* Semantic Colors */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+
+  /* Accent Colors */
+  --accent: var(--color-emerald);
+  --accent-light: var(--color-emerald-light);
+  --accent-dark: var(--color-emerald-dark);
+  --gold: var(--color-gold);
+  --gold-light: var(--color-gold-light);
+  --gold-dark: var(--color-gold-dark);
+
+  /* Border & Dividers */
+  --border: rgba(0, 0, 0, 0.08);
+  --border-light: rgba(0, 0, 0, 0.04);
+  --border-strong: rgba(0, 0, 0, 0.12);
+  --border-focus: var(--color-emerald);
+  --divider: rgba(0, 0, 0, 0.06);
+
+  /* Shadows - Modern Layer System */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  /* Glassmorphism Effects */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  /* Header & Navigation */
+  --header-bg: linear-gradient(135deg, #065F46 0%, #064E3B 50%, #052E22 100%);
+  --header-glass: rgba(6, 95, 70, 0.95);
+  --sidebar-bg: var(--bg-card);
+  --player-bg: linear-gradient(135deg, #065F46 0%, #064E3B 50%, #052E22 100%);
+  --player-glass: rgba(6, 95, 70, 0.95);
+
+  /* Interactive States */
+  --hover-bg: rgba(16, 185, 129, 0.05);
+  --active-bg: rgba(16, 185, 129, 0.1);
+  --focus-ring: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  --pressed-scale: scale(0.98);
+
+  /* Quran Specific */
+  --surah-header-bg: linear-gradient(135deg, #065F46 0%, #064E3B 100%);
+  --bismillah-color: var(--color-emerald);
+  --ayah-hover: rgba(16, 185, 129, 0.03);
+  --highlight-bg: rgba(245, 158, 11, 0.08);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.2);
   --scrollbar-track: transparent;
 
-  /* UI Tokens */
-  --primary-on: #FFFFFF;
-  --primary-on-muted: rgba(255, 255, 255, 0.65);
-  --primary-on-alpha: rgba(255, 255, 255, 0.10);
-  --gold-alpha: rgba(200, 169, 81, 0.15);
-  --gold-strong: rgba(200, 169, 81, 0.35);
-  --gold-border: rgba(200, 169, 81, 0.15);
-  --gold-light: rgba(200, 169, 81, 0.08);
+  /* UI Tokens - Legacy Support */
+  --primary: var(--color-emerald);
+  --primary-rgb: 16, 185, 129;
+  --primary-on: var(--text-inverse);
+  --primary-on-muted: rgba(255, 255, 255, 0.7);
+  --primary-on-alpha: rgba(16, 185, 129, 0.1);
+  --primary-light: var(--color-emerald-light);
+  --primary-dark: var(--color-emerald-dark);
+  --gold-alpha: rgba(245, 158, 11, 0.1);
+  --gold-strong: rgba(245, 158, 11, 0.2);
+  --gold-border: rgba(245, 158, 11, 0.2);
+  --gold-light: rgba(245, 158, 11, 0.05);
+  --surface: var(--bg-card);
+  --bg: var(--bg-primary);
 
-  /* Mushaf colors */
-  --mushaf-bg: #FFFFFF;
-  --mushaf-border: rgba(0, 0, 0, .08);
-  --mushaf-frame-outer: transparent;
-  --mushaf-frame-inner: transparent;
-  --mushaf-pattern: transparent;
-  --mushaf-page-shadow: rgba(0, 0, 0, .06);
+  /* Mushaf colors - Enhanced */
+  --mushaf-bg: linear-gradient(135deg, #FEFCF8 0%, #F7F4F0 100%);
+  --mushaf-border: var(--border);
+  --mushaf-frame-outer: var(--border-light);
+  --mushaf-frame-inner: var(--border);
+  --mushaf-pattern: linear-gradient(45deg, transparent 25%, var(--border-light) 25%, var(--border-light) 50%, transparent 50%, transparent 75%, var(--border-light) 75%);
+  --mushaf-page-shadow: var(--shadow-lg);
 
   /* Tajwid colours — quran.com inspired */
   --tajwid-ghunna: #1aaf5d;
@@ -77,18 +148,51 @@
   --tajwid-tarqiq-ra: #00bcd4;
   --tajwid-idgham-warsh: #6a1b9a;
 
-  /* Fonts */
-  --font-quran: 'Scheherazade New', 'Amiri Quran', 'Amiri', serif;
-  --font-quran-tajweed: 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', 'Amiri Quran', 'Noto Naskh Arabic', 'Scheherazade New', 'Amiri', serif;
-  --font-ui: 'Cairo', sans-serif;
+  /* Fonts - Enhanced Typography */
+  --font-quran: 'KFGQPC Uthmanic Script HAFS', 'Amiri Quran', 'Scheherazade New', 'Amiri', serif;
+  --font-quran-tajweed: 'KFGQPC Uthmanic Script HAFS', 'Amiri Quran', 'Noto Naskh Arabic', 'Scheherazade New', 'Amiri', serif;
+  --font-ui: 'Cairo', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
   --font-size-quran: 28px;
-  --line-height-quran: 2.5;
+  --line-height-quran: 2.4;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 
-  /* Layout */
-  --header-h: 54px;
-  --player-h: 72px;
-  --sidebar-w: 340px;
-  --num-size: 34px;
+  /* Layout - Modern Spacing System */
+  --header-h: 56px;
+  --player-h: 76px;
+  --sidebar-w: 360px;
+  --num-size: 36px;
+
+  /* Spacing Scale */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+
+  /* Border Radius Scale */
+  --radius-none: 0;
+  --radius-sm: 0.375rem;   /* 6px */
+  --radius-md: 0.5rem;     /* 8px */
+  --radius-lg: 0.75rem;    /* 12px */
+  --radius-xl: 1rem;       /* 16px */
+  --radius-2xl: 1.5rem;    /* 24px */
+  --radius-3xl: 2rem;      /* 32px */
+  --radius-full: 9999px;
+
+  /* Animations */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   --num-size-sm: 30px;
 
   /* Misc */
@@ -116,82 +220,79 @@
   --shadow: var(--shadow-sm);
 }
 
-/* ---------- Dark (AMOLED-friendly with warm accents) ---------- */
+/* ---------- Dark Theme - Modern Islamic ---------- */
 [data-theme="dark"] {
-  --bg-primary: #0D0D14;
-  --bg-secondary: #16162A;
-  --bg-card: #1C1C34;
-  --bg-overlay: rgba(0, 0, 0, .65);
-  --text-primary: #E8E6F0;
-  --text-secondary: #A0A0BC;
-  --text-muted: #5C5C7A;
-  --text-quran: #F4F2FC;
-  --accent: #D4AF50;
-  --accent-light: rgba(212, 175, 80, .10);
-  --accent-dark: #B89A30;
-  --border: rgba(255, 255, 255, .07);
-  --border-strong: rgba(255, 255, 255, .14);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, .30);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, .35);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, .45);
-  --header-bg: linear-gradient(135deg, #0F2018 0%, #0A1510 100%);
-  --sidebar-bg: #101020;
-  --player-bg: linear-gradient(135deg, #0F2018 0%, #0A1510 100%);
-  --surah-header-bg: linear-gradient(135deg, #142A1E 0%, #0C1E12 100%);
-  --bismillah-color: #D4AF50;
-  --ayah-hover: rgba(212, 175, 80, .04);
-  --highlight-bg: rgba(212, 175, 80, .12);
-  --scrollbar-thumb: rgba(255, 255, 255, .15);
-  --scrollbar-track: transparent;
+  --bg-primary: #0A0A0A;
+  --bg-secondary: #111111;
+  --bg-tertiary: #1A1A1A;
+  --bg-card: #141414;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+  --bg-glass: rgba(20, 20, 20, 0.8);
+  --bg-glass-dark: rgba(0, 0, 0, 0.9);
 
-  /* UI Tokens (dark) */
-  --primary-on: #FFFFFF;
-  --primary-on-muted: rgba(255, 255, 255, 0.55);
-  --primary-on-alpha: rgba(255, 255, 255, 0.08);
-  --gold-alpha: rgba(212, 175, 80, 0.20);
-  --gold-strong: rgba(212, 175, 80, 0.40);
-  --gold-border: rgba(212, 175, 80, 0.15);
+  --text-primary: #FFFFFF;
+  --text-secondary: #A3A3A3;
+  --text-tertiary: #737373;
+  --text-muted: #525252;
+  --text-inverse: #000000;
+  --text-quran: #F5F5F5;
 
-  /* Mushaf dark */
-  --mushaf-bg: #1C1C34;
-  --mushaf-border: rgba(255, 255, 255, .08);
-  --mushaf-frame-outer: transparent;
-  --mushaf-frame-inner: transparent;
-  --mushaf-pattern: transparent;
-  --mushaf-page-shadow: rgba(0, 0, 0, .30);
+  --color-emerald: #34D399;
+  --color-emerald-light: rgba(52, 211, 153, 0.1);
+  --color-emerald-dark: #10B981;
+  --color-gold: #FBBF24;
+  --color-gold-light: rgba(251, 191, 36, 0.1);
+  --color-gold-dark: #F59E0B;
 
-  /* ─── Aliases (dark) ─── */
-  --primary: #3CB371;
-  --primary-dark: #2A8C56;
-  --primary-light: rgba(60, 179, 113, .08);
-  --primary-rgb: 60, 179, 113;
-  --gold: #D4AF50;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.04);
+  --border-strong: rgba(255, 255, 255, 0.12);
+  --border-focus: var(--color-emerald);
+  --divider: rgba(255, 255, 255, 0.06);
+
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+
+  --glass-bg: rgba(20, 20, 20, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+  --header-bg: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+  --header-glass: rgba(15, 23, 42, 0.95);
+  --sidebar-bg: var(--bg-card);
+  --player-bg: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+  --player-glass: rgba(15, 23, 42, 0.95);
+
+  --hover-bg: rgba(52, 211, 153, 0.08);
+  --active-bg: rgba(52, 211, 153, 0.15);
+  --focus-ring: 0 0 0 2px rgba(52, 211, 153, 0.3);
+
+  --surah-header-bg: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  --bismillah-color: var(--color-gold);
+  --ayah-hover: rgba(52, 211, 153, 0.05);
+  --highlight-bg: rgba(251, 191, 36, 0.1);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --scrollbar-track: rgba(0, 0, 0, 0.2);
+
+  --primary: var(--color-emerald);
+  --primary-rgb: 52, 211, 153;
+  --primary-on: var(--text-inverse);
+  --primary-on-muted: rgba(255, 255, 255, 0.7);
+  --primary-on-alpha: rgba(52, 211, 153, 0.1);
+  --primary-light: var(--color-emerald-light);
+  --primary-dark: var(--color-emerald-dark);
+  --gold: var(--color-gold);
+  --gold-alpha: rgba(251, 191, 36, 0.1);
+  --gold-strong: rgba(251, 191, 36, 0.2);
+  --gold-border: rgba(251, 191, 36, 0.2);
+  --gold-light: rgba(251, 191, 36, 0.05);
   --surface: var(--bg-card);
   --bg: var(--bg-primary);
   --text: var(--text-primary);
-
-  /* Tajweed — brighter on dark bg */
-  --tajwid-ghunna: #22d472;
-  --tajwid-ikhfa: #22d472;
-  --tajwid-qalqala: #5dade2;
-  --tajwid-idgham: #bb8fce;
-  --tajwid-iqlab: #58d68d;
-  --tajwid-madd: #ff6b81;
-  --tajwid-madd-normal: #e85d9f;
-  --tajwid-madd-separated: #ffab4f;
-  --tajwid-madd-connected: #f55ab5;
-  --tajwid-madd-necessary: #ff6b81;
-  --tajwid-lam-shamsiyya: #CCCCCC;
-  --tajwid-tafkhim: #6fa3de;
-  --tajwid-silent: #CCCCCC;
-  /* Warsh-specific — brighter on dark bg */
-  --tajwid-naql: #ff8c5a;
-  --tajwid-tashil: #a78bfa;
-  --tajwid-ibdal: #ff7043;
-  --tajwid-madd-badal: #ff6b9d;
-  --tajwid-sila-kubra: #42a5f5;
-  --tajwid-tarqiq-ra: #4dd0e1;
-  --tajwid-idgham-warsh: #ce93d8;
 }
 
 [data-theme="light"] {

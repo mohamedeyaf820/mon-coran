@@ -5,18 +5,25 @@
 const BASMALA_CACHE = new Map();
 const CACHE_MAX = 800;
 
+// Diacritics character class: covers all Arabic combining marks + tatweel
+const D = '[\\u0640\\u064B-\\u065F\\u0670\\u06D6-\\u06ED]*';
+
 const BASMALA_PATTERNS = [
-    // Exact match for quran-uthmani API (wasla ٱ, no tatweel before ٰ)
-    /^بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ\s*/,
-    // With tatweel before superscript alef
-    /^بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ\s*/,
-    // Regular alef (no wasla) variants
-    /^بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\s*/,
-    /^بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ\s*/,
-    // Simple (no diacritics)
+    // ROBUST: letter-skeleton with any diacritics in any order between base letters
+    // Matches: بسم + (ا|ٱ)لله + (ا|ٱ)لرحمٰن + (ا|ٱ)لرحيم
+    new RegExp(
+        `^[\\u200F\\u200E\\s]*` +
+        `\\u0628${D}\\u0633${D}\\u0645${D}` +      // بسم
+        `\\s+` +
+        `[\\u0627\\u0671]${D}\\u0644${D}\\u0644${D}\\u0647${D}` + // (ا|ٱ)لله
+        `\\s+` +
+        `[\\u0627\\u0671]${D}\\u0644${D}\\u0631${D}\\u062D${D}\\u0645${D}[\\u0640\\u0670]*\\u0646${D}` + // (ا|ٱ)لرحمٰن
+        `\\s+` +
+        `[\\u0627\\u0671]${D}\\u0644${D}\\u0631${D}\\u062D${D}\\u064A\\u0645${D}` + // (ا|ٱ)لرحيم
+        `\\s*`
+    ),
+    // Simple (no diacritics at all)
     /^بسم الله الرحمن الرحيم\s*/,
-    // Generic letter-by-letter with optional diacritics
-    /^[\u200F\u200E\s۝﴿﴾]*ب[\u0640\u064B-\u065F\u0670\u06D6-\u06ED]*\s*س[\u0640\u064B-\u065F\u0670\u06D6-\u06ED]*\s*م[\u0640\u064B-\u065F\u0670\u06D6-\u06ED]*\s*[\u0627\u0671]?[\u0640\u064B-\u065F\u0670\u06D6-\u06ED]*\s*ل[\u0640\u064B-\u065F\u0670\u06D6-\u06ED]*\s*ل[\u0640\u064B-\u065F\u0670\u06D6-\u06ED]*\s*ه[\u0640\u064B-\u065F\u0670\u06D6-\u06ED]*[\s۝﴿﴾]*/,
 ];
 
 /**

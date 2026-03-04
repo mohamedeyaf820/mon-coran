@@ -9,6 +9,7 @@ import {
 import { savePosition } from '../services/storageService';
 import { logSession } from '../services/historyService';
 import { logWirdProgress } from '../services/wirdService';
+import { stripBasmala } from '../utils/quranUtils';
 import { toAr } from '../data/surahs';
 import { getJuzForAyah } from '../data/juz';
 import audioService from '../services/audioService';
@@ -29,11 +30,11 @@ import '../styles/quran-display.css';
 
 /* ── Font family mapping ── */
 const FONT_MAP = {
-  'scheherazade': "'KFGQPC Uthmanic Script HAFS','UthmanicHafs','Amiri Quran','Scheherazade New','Amiri',serif",
-  'amiri-quran': "'Amiri Quran','Amiri','Scheherazade New',serif",
-  'amiri': "'Amiri','Amiri Quran',serif",
-  'noto-naskh': "'KFGQPC Uthmanic Script HAFS','UthmanicHafs','Noto Naskh Arabic','Amiri Quran','Scheherazade New',serif",
-  'lateef': "'Lateef','Scheherazade New',serif",
+  'scheherazade': "'KFGQPC Uthmanic Script HAFS','Amiri Quran','Scheherazade New','Amiri',serif",
+  'amiri-quran': "'KFGQPC Uthmanic Script HAFS','Amiri Quran','Amiri','Scheherazade New',serif",
+  'amiri': "'KFGQPC Uthmanic Script HAFS','Amiri','Amiri Quran',serif",
+  'noto-naskh': "'KFGQPC Uthmanic Script HAFS','Noto Naskh Arabic','Amiri Quran','Scheherazade New',serif",
+  'lateef': "'KFGQPC Uthmanic Script HAFS','Lateef','Scheherazade New',serif",
 };
 
 /* ═══════════════════════════════════════════════════ */
@@ -148,6 +149,26 @@ export default function QuranDisplay() {
   }, []);
 
   // Removed old visibleAyahCount reset
+
+  /* ── Continuous play: auto-advance to next surah/juz when playlist ends ── */
+  useEffect(() => {
+    if (!continuousPlay) return;
+    const unsubEnd = audioService.addEndListener(() => {
+      // Playlist ended, auto-navigate to next
+      if (displayMode === 'surah' && currentSurah < 114) {
+        dispatch({ type: 'NAVIGATE_SURAH', payload: { surah: currentSurah + 1, ayah: 1 } });
+        // Auto-play after a short delay (wait for data to load)
+        setTimeout(() => audioService.play(), 1200);
+      } else if (displayMode === 'juz' && currentJuz < 30) {
+        dispatch({ type: 'NAVIGATE_JUZ', payload: { juz: currentJuz + 1 } });
+        setTimeout(() => audioService.play(), 1200);
+      } else if (displayMode === 'page' && currentPage < 604) {
+        set({ currentPage: currentPage + 1 });
+        setTimeout(() => audioService.play(), 1200);
+      }
+    });
+    return unsubEnd;
+  }, [continuousPlay, displayMode, currentSurah, currentJuz, currentPage, dispatch, set]);
 
 
   /* ── Load audio playlist when ayahs or reciter/riwaya change ── */
@@ -273,8 +294,15 @@ export default function QuranDisplay() {
       }
 
       // Mark ayahs with requested riwaya (prevents any visual fallback confusion)
+      // Also strip Bismillah from verse 1 text at data level for Hafs (belt-and-suspenders)
       for (const ayah of fetchedAyahs) {
         ayah.requestedRiwaya = riwaya;
+        if (!ayah.warshWords && ayah.text && ayah.numberInSurah === 1) {
+          const sn = ayah.surah?.number;
+          if (sn && sn !== 1 && sn !== 9) {
+            ayah.text = stripBasmala(ayah.text, sn, 1);
+          }
+        }
       }
 
       // Replace all state atomically — new data is ready
@@ -285,37 +313,37 @@ export default function QuranDisplay() {
       setIsQCF4(arabicData?.isQCF4 || false);
       dispatch({ type: 'SET_LOADING', payload: false });
 
-      // Secondary fetches in background (don't block initial render)
+      // Secondary fetches in background — parallel for speed
       if (riwaya === 'warsh' && displayMode !== 'page') {
         const transPromise = displayMode === 'juz'
           ? getJuzTranslation(currentJuz, translationLang, signal)
           : getSurahTranslation(currentSurah, translationLang, signal);
-        transPromise
-          .then(trans => {
-            if (signal.aborted) return;
-            setTranslations(trans?.ayahs || []);
-          })
-          .catch(() => { });
 
         const hafsPromise = displayMode === 'juz'
           ? getJuz(currentJuz, 'hafs', signal)
           : getSurahText(currentSurah, 'hafs', signal);
-        hafsPromise
-          .then(hafsData => {
-            if (signal.aborted) return;
-            const hafsAyahs = hafsData?.ayahs || [];
-            if (!Array.isArray(hafsAyahs) || hafsAyahs.length === 0) return;
-            const hafsMap = new Map();
-            for (const h of hafsAyahs) {
-              hafsMap.set(`${h.surah?.number}:${h.numberInSurah}`, h.text);
+
+        // Fire both in parallel
+        Promise.allSettled([transPromise, hafsPromise]).then(([transResult, hafsResult]) => {
+          if (signal.aborted) return;
+          if (transResult.status === 'fulfilled' && transResult.value?.ayahs) {
+            setTranslations(transResult.value.ayahs);
+          }
+          if (hafsResult.status === 'fulfilled') {
+            const hafsAyahs = hafsResult.value?.ayahs || [];
+            if (Array.isArray(hafsAyahs) && hafsAyahs.length > 0) {
+              const hafsMap = new Map();
+              for (const h of hafsAyahs) {
+                hafsMap.set(`${h.surah?.number}:${h.numberInSurah}`, h.text);
+              }
+              setAyahs(prev => prev.map(a => {
+                const key = `${a.surah?.number}:${a.numberInSurah}`;
+                const ht = hafsMap.get(key);
+                return ht ? { ...a, hafsText: ht } : a;
+              }));
             }
-            setAyahs(prev => prev.map(a => {
-              const key = `${a.surah?.number}:${a.numberInSurah}`;
-              const ht = hafsMap.get(key);
-              return ht ? { ...a, hafsText: ht } : a;
-            }));
-          })
-          .catch(() => { });
+          }
+        });
       } else {
         // Hafs mode OR Warsh page mode (using Hafs text)
         const transPromise = displayMode === 'page'
@@ -384,21 +412,26 @@ export default function QuranDisplay() {
       if (displayMode === 'surah') {
         if (riwaya === 'warsh') {
           if (currentSurah < 114) preloadWarshSurah(currentSurah + 1);
+          if (currentSurah > 1) preloadWarshSurah(currentSurah - 1);
           if (currentSurah < 114) getSurahTranslation(currentSurah + 1, translationLang).catch(() => { });
         } else {
           if (currentSurah < 114) getSurahFull(currentSurah + 1, riwaya, translationLang).catch(() => { });
+          if (currentSurah > 1) getSurahFull(currentSurah - 1, riwaya, translationLang).catch(() => { });
         }
       } else if (displayMode === 'page') {
         if (currentPage < 604) getPageFull(currentPage + 1, riwaya, translationLang).catch(() => { });
+        if (currentPage > 1) getPageFull(currentPage - 1, riwaya, translationLang).catch(() => { });
       } else if (displayMode === 'juz') {
         if (riwaya === 'warsh') {
-          if (currentJuz < 30) getWarshJuzVerses(currentJuz + 1).catch(() => { });
-          if (currentJuz < 30) getJuzTranslation(currentJuz + 1, translationLang).catch(() => { });
+          if (currentJuz < 30) {
+            getWarshJuzVerses(currentJuz + 1).catch(() => { });
+            getJuzTranslation(currentJuz + 1, translationLang).catch(() => { });
+          }
         } else {
           if (currentJuz < 30) getJuz(currentJuz + 1, riwaya).catch(() => { });
         }
       }
-    }, 600); // Delay 600ms to not compete with current data render
+    }, 150); // Fast prefetch — data will be cached for instant next navigation
     return () => clearTimeout(timer);
   }, [loading, displayMode, currentSurah, currentPage, currentJuz, riwaya, translationLang]);
 
@@ -431,18 +464,7 @@ export default function QuranDisplay() {
     if (currentJuz > 1) dispatch({ type: 'NAVIGATE_JUZ', payload: { juz: currentJuz - 1 } });
   };
 
-  /* ── Continuous play: auto-next surah (uses addEndListener to avoid overriding onEnd) ── */
-  useEffect(() => {
-    if (!continuousPlay || displayMode !== 'surah') return;
-
-    const unsub = audioService.addEndListener(() => {
-      if (currentSurah < 114) {
-        dispatch({ type: 'NAVIGATE_SURAH', payload: { surah: currentSurah + 1 } });
-        setTimeout(() => audioService.play(), 1500);
-      }
-    });
-    return unsub;
-  }, [continuousPlay, displayMode, currentSurah, dispatch]);
+  /* ── (continuous play is handled in the earlier useEffect) ── */
 
   /* ── Group ayahs by surah (memoized for page/juz mode) ── */
   const surahGroups = useMemo(() => {
@@ -472,12 +494,8 @@ export default function QuranDisplay() {
   }, [translations]);
 
   /* ── Loading / Error states ────────────────── */
-  // Show skeleton when loading AND (no data yet OR data belongs to a different riwaya/mode)
-  const dataStale = ayahs.length > 0 && (
-    (riwaya === 'warsh' && !ayahs[0]?.warshWords && displayMode !== 'page') ||
-    (riwaya === 'hafs' && ayahs[0]?.warshWords)
-  );
-  if (loading && (ayahs.length === 0 || dataStale)) {
+  // Show skeleton ONLY when we have no data at all — otherwise show stale data while loading
+  if (loading && ayahs.length === 0) {
     return (
       <div className="quran-loading">
         <div className="loading-skeleton">

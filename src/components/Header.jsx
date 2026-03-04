@@ -139,6 +139,29 @@ export default function Header() {
           <i className="fas fa-book-quran header-logo" aria-hidden="true"></i>
           <span>MushafPlus</span>
         </h1>
+        
+        {/* Riwayat selector - desktop */}
+        <div className="riwayat-selector hide-mobile">
+          <button
+            className={`riwayat-btn ${riwaya === 'hafs' ? 'active' : ''}`}
+            onClick={() => applyRiwaya('hafs')}
+            title={t('settings.hafs', lang)}
+            aria-pressed={riwaya === 'hafs'}
+          >
+            <span className="riwayat-text">{t('settings.hafs', lang)}</span>
+            <span className="riwayat-indicator"></span>
+          </button>
+          <div className="riwayat-divider"></div>
+          <button
+            className={`riwayat-btn ${riwaya === 'warsh' ? 'active' : ''}`}
+            onClick={() => applyRiwaya('warsh')}
+            title={t('settings.warsh', lang)}
+            aria-pressed={riwaya === 'warsh'}
+          >
+            <span className="riwayat-text">{t('settings.warsh', lang)}</span>
+            <span className="riwayat-indicator"></span>
+          </button>
+        </div>
       </div>
 
       {/* Center: info + go-to */}
@@ -226,18 +249,20 @@ export default function Header() {
                 <i className="fas fa-book-quran"></i>
                 <span>{t('settings.riwaya', lang)}</span>
               </div>
-              <div className="more-toggle-row">
+              <div className="riwayat-toggle-row">
                 <button
-                  className={`more-chip ${riwaya === 'hafs' ? 'active' : ''}`}
+                  className={`riwayat-toggle-btn ${riwaya === 'hafs' ? 'active' : ''}`}
                   onClick={() => { applyRiwaya('hafs'); setMoreOpen(false); }}
                 >
-                  {t('settings.hafs', lang)}
+                  <span className="riwayat-toggle-text">{t('settings.hafs', lang)}</span>
+                  <span className="riwayat-toggle-desc">عاصم</span>
                 </button>
                 <button
-                  className={`more-chip ${riwaya === 'warsh' ? 'active' : ''}`}
+                  className={`riwayat-toggle-btn ${riwaya === 'warsh' ? 'active' : ''}`}
                   onClick={() => { applyRiwaya('warsh'); setMoreOpen(false); }}
                 >
-                  {t('settings.warsh', lang)}
+                  <span className="riwayat-toggle-text">{t('settings.warsh', lang)}</span>
+                  <span className="riwayat-toggle-desc">ورش</span>
                 </button>
               </div>
 

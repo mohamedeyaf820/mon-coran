@@ -27,7 +27,7 @@ const TRANSLATION_EDITIONS = {
 
 // In-memory cache with size limit
 const cache = new Map();
-const CACHE_MAX_SIZE = 200;
+const CACHE_MAX_SIZE = 500;
 
 // Request deduplication: pending fetches by URL
 const inflight = new Map();
@@ -77,7 +77,7 @@ function pruneCache() {
 }
 
 async function fetchJSON(url, signal) {
-  // 1. Check in-memory cache
+  // 1. Check in-memory cache (instant, ~0ms)
   const cached = cache.get(url);
   if (cached) return cached;
 
@@ -87,10 +87,18 @@ async function fetchJSON(url, signal) {
     const persisted = await dbGet(IDB_STORE, idbKey);
     if (persisted && persisted.data) {
       const expiry = persisted.expiryAt || (persisted.ts ? persisted.ts + getCacheTtlByUrl(url) : 0);
+      // If not expired, use it directly
       if (expiry > Date.now()) {
-        // Warm in-memory cache from IndexedDB
         cache.set(url, persisted.data);
         pruneCache();
+        return persisted.data;
+      }
+      // If expired but we have data, use stale data AND refresh in background
+      if (persisted.data) {
+        cache.set(url, persisted.data);
+        pruneCache();
+        // Refresh in background (fire-and-forget)
+        _refreshInBackground(url, idbKey, signal);
         return persisted.data;
       }
     }
@@ -101,48 +109,66 @@ async function fetchJSON(url, signal) {
     return inflight.get(url);
   }
 
-  const promise = (async () => {
-    // Create a timeout that aborts the fetch
-    const timeoutId = setTimeout(() => {
-      if (currentAbort) currentAbort.abort();
-    }, FETCH_TIMEOUT);
-
-    try {
-      const res = await fetch(url, { signal });
-      clearTimeout(timeoutId);
-
-      if (!res.ok) throw new Error(`API error ${res.status}: ${url}`);
-      const json = await res.json();
-
-      if (json.code !== 200 || json.status !== 'OK') {
-        const msg = typeof json.data === 'string' ? json.data : JSON.stringify(json.data) || 'Unknown API error';
-        throw new Error(msg);
-      }
-
-      cache.set(url, json.data);
-      pruneCache();
-
-      // Persist to IndexedDB in the background (non-blocking)
-      const now = Date.now();
-      dbSet(IDB_STORE, {
-        key: idbKey,
-        data: json.data,
-        ts: now,
-        kind: getCacheKindByUrl(url),
-        expiryAt: now + getCacheTtlByUrl(url),
-      }).catch(() => { });
-
-      return json.data;
-    } catch (err) {
-      clearTimeout(timeoutId);
-      throw err;
-    } finally {
-      inflight.delete(url);
-    }
-  })();
-
+  const promise = _fetchFromNetwork(url, idbKey, signal);
   inflight.set(url, promise);
   return promise;
+}
+
+async function _fetchFromNetwork(url, idbKey, signal) {
+  const timeoutCtrl = new AbortController();
+  const timeoutId = setTimeout(() => timeoutCtrl.abort(), FETCH_TIMEOUT);
+
+  try {
+    // Combine the navigation signal with the timeout signal
+    const combinedSignal = signal
+      ? AbortSignal.any ? AbortSignal.any([signal, timeoutCtrl.signal]) : signal
+      : timeoutCtrl.signal;
+
+    const res = await fetch(url, { signal: combinedSignal });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) throw new Error(`API error ${res.status}: ${url}`);
+    let json;
+    try {
+      json = await res.json();
+    } catch {
+      throw new Error('Invalid API JSON response');
+    }
+
+    if (!json || typeof json !== 'object') {
+      throw new Error('Malformed API response');
+    }
+
+    if (json.code !== 200 || json.status !== 'OK') {
+      const msg = typeof json.data === 'string' ? json.data : JSON.stringify(json.data) || 'Unknown API error';
+      throw new Error(msg);
+    }
+
+    cache.set(url, json.data);
+    pruneCache();
+
+    // Persist to IndexedDB in the background (non-blocking)
+    const now = Date.now();
+    dbSet(IDB_STORE, {
+      key: idbKey || (IDB_API_PREFIX + url),
+      data: json.data,
+      ts: now,
+      kind: getCacheKindByUrl(url),
+      expiryAt: now + getCacheTtlByUrl(url),
+    }).catch(() => { });
+
+    return json.data;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    throw err;
+  } finally {
+    inflight.delete(url);
+  }
+}
+
+function _refreshInBackground(url, idbKey) {
+  // Don't deduplicate background refreshes — they're best-effort
+  _fetchFromNetwork(url, idbKey, null).catch(() => { });
 }
 
 function sanitizeText(text) {
@@ -334,19 +360,26 @@ export function getAudioUrlFromAyah(ayahData) {
  */
 export function prefetchInitialData(surahNum, riwaya, translationLang = 'fr') {
   try {
+    const transEdition = TRANSLATION_EDITIONS[translationLang] || TRANSLATION_EDITIONS.fr;
+    const transUrl = `${BASE}/surah/${surahNum}/${transEdition}`;
+
     if (riwaya === 'warsh') {
-      // For Warsh, prefetch warsh.json (handled by warshService)
-      // We only warm the network connection here
+      // Prefetch warsh.json (local, fast) + Hafs text (for karaoke) + translation
       fetch('/data/warsh.json', { priority: 'high' }).catch(() => { });
+      // Also warm the Hafs text cache for karaoke word weighting
+      const editions = EDITIONS.hafs;
+      fetchJSON(`${BASE}/surah/${surahNum}/${editions[0]}`).catch(() => { });
+      fetchJSON(transUrl).catch(() => { });
     } else {
       // Prefetch Hafs text + translation into the in-memory cache
       const editions = EDITIONS[riwaya] || EDITIONS.hafs;
-      const textUrl = `${BASE}/surah/${surahNum}/${editions[0]}`;
-      const transEdition = TRANSLATION_EDITIONS[translationLang] || TRANSLATION_EDITIONS.fr;
-      const transUrl = `${BASE}/surah/${surahNum}/${transEdition}`;
-      // Use fetchJSON which caches results
-      fetchJSON(textUrl).catch(() => { });
+      fetchJSON(`${BASE}/surah/${surahNum}/${editions[0]}`).catch(() => { });
       fetchJSON(transUrl).catch(() => { });
+      // Also prefetch next surah for instant navigation
+      if (surahNum < 114) {
+        fetchJSON(`${BASE}/surah/${surahNum + 1}/${editions[0]}`).catch(() => { });
+        fetchJSON(`${BASE}/surah/${surahNum + 1}/${transEdition}`).catch(() => { });
+      }
     }
   } catch {
     // Prefetch is best-effort

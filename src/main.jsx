@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { AppProvider } from './context/AppContext';
 import './styles/index.css';
+import './styles/premium-design.css';
 
 // ErrorBoundary global pour capturer les erreurs React
 class ErrorBoundary extends React.Component {

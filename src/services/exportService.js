@@ -47,7 +47,16 @@ export async function downloadExport() {
  * Merges with existing data (new entries overwrite old on same key).
  */
 export async function importData(jsonString) {
-  const data = JSON.parse(jsonString);
+  let data;
+  try {
+    data = JSON.parse(jsonString);
+  } catch {
+    throw new Error('Invalid JSON backup file');
+  }
+
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    throw new Error('Invalid backup format');
+  }
 
   if (data.app !== 'MushafPlus') {
     throw new Error('Invalid MushafPlus backup file');
@@ -56,33 +65,39 @@ export async function importData(jsonString) {
   const db = await getDB();
 
   // Import bookmarks
-  if (data.bookmarks?.length) {
+  const bookmarks = Array.isArray(data.bookmarks) ? data.bookmarks : [];
+  if (bookmarks.length) {
     const tx = db.transaction('bookmarks', 'readwrite');
-    for (const bm of data.bookmarks) {
-      await tx.store.put(bm);
+    for (const bm of bookmarks) {
+      if (bm && typeof bm === 'object' && typeof bm.id === 'string') {
+        await tx.store.put(bm);
+      }
     }
     await tx.done;
   }
 
   // Import notes
-  if (data.notes?.length) {
+  const notes = Array.isArray(data.notes) ? data.notes : [];
+  if (notes.length) {
     const tx = db.transaction('notes', 'readwrite');
-    for (const note of data.notes) {
-      await tx.store.put(note);
+    for (const note of notes) {
+      if (note && typeof note === 'object' && typeof note.id === 'string') {
+        await tx.store.put(note);
+      }
     }
     await tx.done;
   }
 
   // Import settings (merge)
-  if (data.settings) {
+  if (data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings)) {
     const current = getSettings();
     saveSettings({ ...current, ...data.settings });
   }
 
   return {
-    bookmarks: data.bookmarks?.length || 0,
-    notes: data.notes?.length || 0,
-    settingsRestored: !!data.settings,
+    bookmarks: bookmarks.length,
+    notes: notes.length,
+    settingsRestored: !!(data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings)),
   };
 }
 

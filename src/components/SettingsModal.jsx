@@ -21,11 +21,11 @@ export default function SettingsModal() {
   const close = () => dispatch({ type: 'TOGGLE_SETTINGS' });
 
   const FONT_OPTIONS = [
-    { id: 'scheherazade', label: 'Quran.com (Hafs-like)', css: "'KFGQPC Uthmanic Script HAFS','UthmanicHafs','Amiri Quran','Noto Naskh Arabic','Scheherazade New','Amiri',serif" },
-    { id: 'amiri-quran', label: 'Amiri Quran', css: "'Amiri Quran','Amiri','Scheherazade New',serif" },
-    { id: 'amiri', label: 'Amiri', css: "'Amiri','Amiri Quran',serif" },
-    { id: 'noto-naskh', label: 'Noto Naskh Arabic', css: "'KFGQPC Uthmanic Script HAFS','UthmanicHafs','Noto Naskh Arabic','Amiri Quran','Scheherazade New',serif" },
-    { id: 'lateef', label: 'Lateef', css: "'Lateef','Scheherazade New',serif" },
+    { id: 'scheherazade', label: 'KFGQPC Uthmanic (Hafs)', css: "'KFGQPC Uthmanic Script HAFS','Amiri Quran','Scheherazade New','Amiri',serif" },
+    { id: 'amiri-quran', label: 'Amiri Quran', css: "'KFGQPC Uthmanic Script HAFS','Amiri Quran','Amiri','Scheherazade New',serif" },
+    { id: 'amiri', label: 'Amiri', css: "'KFGQPC Uthmanic Script HAFS','Amiri','Amiri Quran',serif" },
+    { id: 'noto-naskh', label: 'Noto Naskh Arabic', css: "'KFGQPC Uthmanic Script HAFS','Noto Naskh Arabic','Amiri Quran','Scheherazade New',serif" },
+    { id: 'lateef', label: 'Lateef', css: "'KFGQPC Uthmanic Script HAFS','Lateef','Scheherazade New',serif" },
   ];
 
   const handleImport = async () => {

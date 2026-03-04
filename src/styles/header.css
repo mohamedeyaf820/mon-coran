@@ -10,39 +10,40 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1rem;
-  background: var(--header-bg);
-  border-bottom: none;
+  padding: 0 var(--space-4);
+  background: var(--header-glass);
+  border-bottom: 1px solid var(--border);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  gap: 0.6rem;
+  gap: var(--space-4);
   min-height: var(--header-h);
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-sm);
   contain: layout style;
+  transition: var(--transition-normal);
 }
 
 .header-left,
 .header-right {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--space-3);
 }
 
 .header-title {
-  font-family: 'Cairo', sans-serif;
-  font-size: 1.15rem;
-  color: #FFFFFF;
+  font-family: var(--font-ui);
+  font-size: var(--text-lg);
+  color: var(--text-inverse);
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  letter-spacing: 0.3px;
-  font-weight: 700;
+  gap: var(--space-3);
+  letter-spacing: 0.025em;
+  font-weight: var(--font-weight-bold);
 }
 
 .header-logo {
-  color: var(--gold);
-  font-size: 1.1rem;
+  color: var(--color-gold);
+  font-size: var(--text-xl);
 }
 
 .header-center {
@@ -54,37 +55,43 @@
 }
 
 .header-info {
-  font-size: 0.82rem;
-  color: #FFFFFF;
-  font-family: 'Cairo', sans-serif;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.12);
-  padding: 0.3rem 1rem;
-  border-radius: 999px;
-  border: none;
-  letter-spacing: 0.2px;
-  transition: background 0.2s ease;
+  font-size: var(--text-sm);
+  color: var(--text-inverse);
+  font-family: var(--font-ui);
+  font-weight: var(--font-weight-semibold);
+  background: var(--glass-bg);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--glass-border);
+  letter-spacing: 0.025em;
+  transition: var(--transition-fast);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .app-header .icon-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.85);
-  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  background: var(--glass-bg);
+  color: var(--text-inverse);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  font-size: 0.88rem;
-  transition: all 0.2s ease;
+  font-size: var(--text-base);
+  transition: var(--transition-fast);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .app-header .icon-btn:hover {
-  background: rgba(255, 255, 255, 0.18);
-  color: #FFFFFF;
-  transform: translateY(-1px);
+  background: var(--glass-border);
+  color: var(--text-inverse);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-gold);
 }
 
 /* Desktop: hide the mobile "More" dropdown */
@@ -356,4 +363,103 @@
 
 .goto-btn:hover {
   background: var(--primary-dark);
+}
+
+.riwayat-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.riwayat-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.78);
+  padding: 0.33rem 0.72rem;
+  border-radius: var(--radius-full);
+  font-family: var(--font-ui);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.riwayat-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.riwayat-btn.active {
+  color: #fff;
+  background: rgba(var(--primary-rgb), 0.35);
+  box-shadow: 0 0 0 1px rgba(var(--primary-rgb), 0.35) inset;
+}
+
+.riwayat-divider {
+  width: 1px;
+  height: 1rem;
+  background: var(--glass-border);
+}
+
+.riwayat-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.4;
+}
+
+.riwayat-btn.active .riwayat-indicator {
+  opacity: 1;
+}
+
+.riwayat-toggle-row {
+  display: flex;
+  gap: 0.45rem;
+  padding: 0.25rem 0.9rem 0.45rem;
+}
+
+.riwayat-toggle-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.05rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.riwayat-toggle-btn.active {
+  border-color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.08);
+}
+
+.riwayat-toggle-text {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.riwayat-toggle-desc {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 920px) {
+  .riwayat-selector {
+    display: none;
+  }
 }

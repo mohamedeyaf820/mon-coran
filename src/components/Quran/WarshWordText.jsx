@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { getFontFamily } from '../../services/warshService';
+import React, { useMemo, useState, useEffect } from 'react';
+import { getFontFamily, isFontPageLoaded, onFontLoadChange, areFontsLoading } from '../../services/warshService';
 
 const TAJWID_FALLBACK_COLORS = {
     ghunna: '#1aaf5d', idgham: '#9b59b6', ikhfa: '#1abc9c', iqlab: '#2ecc71',
@@ -38,17 +38,32 @@ function mapTajweedToQCF4(tajweedColors, qcf4Count) {
 
 /**
  * WarshWordText – renders QCF4 PUA codepoints.
+ * Shows shimmer placeholder while fonts are loading.
  */
 const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, tajweedColors }) {
+    // Track font loading state to force re-render when fonts finish loading
+    const [, setFontTick] = useState(0);
+    useEffect(() => {
+        const unsub = onFontLoadChange(() => setFontTick(t => t + 1));
+        return unsub;
+    }, []);
+
     const qcf4Colors = useMemo(() => {
         if (!tajweedColors || tajweedColors.length === 0) return null;
         return mapTajweedToQCF4(tajweedColors, words.length);
     }, [tajweedColors, words.length]);
 
+    // Check if any needed fonts are still loading
+    const allFontsReady = useMemo(() => {
+        return words.every(w => isFontPageLoaded(w.p));
+    }, [words, /* dependency on font tick via state */]);
+
     return (
         <span className="warsh-qcf4-text" dir="rtl">
             {words.map((word, i) => {
+                const fontReady = isFontPageLoaded(word.p);
                 let cls = 'warsh-qcf4-word';
+                if (!fontReady) cls += ' qcf4-loading';
                 if (highlightIdx !== undefined && highlightIdx !== null) {
                     if (i < highlightIdx) cls += ' wbw-qcf4-read';
                     else if (i === highlightIdx) cls += ' wbw-qcf4-current';
@@ -59,10 +74,15 @@ const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, t
                 if (ruleId) wordStyle.color = `var(--tajwid-${ruleId}, ${TAJWID_FALLBACK_COLORS[ruleId] || 'inherit'})`;
                 return (
                     <span key={i} className={cls} style={wordStyle}>
-                        {String.fromCodePoint(word.c)}
+                        {fontReady ? String.fromCodePoint(word.c) : '\u00A0\u00A0'}
                     </span>
                 );
             })}
+            {!allFontsReady && (
+                <span className="qcf4-font-loading-hint">
+                    <i className="fas fa-spinner fa-spin"></i>
+                </span>
+            )}
         </span>
     );
 });
