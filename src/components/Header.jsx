@@ -260,16 +260,17 @@ export default function Header() {
       {/* ═══════════════════════════════════════
           LEFT: Menu + Brand + Riwaya
          ═══════════════════════════════════════ */}
-      <div className="flex items-center gap-2 sm:gap-3 ps-3 sm:ps-5 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 ps-2 sm:ps-4 shrink-0">
         {/* Sidebar toggle */}
         <button
           className={cn(
             "flex items-center justify-center",
-            "w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl",
-            "text-white/70 hover:text-white hover:bg-white/10",
-            "active:scale-95",
+            "w-9 h-9 rounded-xl",
+            "text-white/60 hover:text-white hover:bg-white/[0.12]",
+            "active:scale-95 active:bg-white/[0.08]",
             "transition-all duration-150 cursor-pointer outline-none",
-            "focus-visible:ring-2 focus-visible:ring-[var(--gold)]/40 focus-visible:ring-offset-1 focus-visible:ring-offset-transparent",
+            "focus-visible:ring-2 focus-visible:ring-[var(--gold)]/40",
+            state.sidebarOpen && "bg-white/[0.1] text-white",
           )}
           onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
           title={t("nav.surahList", lang)}
@@ -277,44 +278,54 @@ export default function Header() {
           aria-expanded={state.sidebarOpen}
         >
           <i
-            className="fas fa-bars text-[0.85rem] sm:text-[0.95rem]"
+            className={cn(
+              "text-[0.9rem] transition-transform duration-200",
+              state.sidebarOpen ? "fas fa-times" : "fas fa-bars",
+            )}
             aria-hidden="true"
           />
         </button>
 
-        {/* Brand */}
-        <div className="flex items-center gap-2.5">
+        {/* Brand — icon hidden on mobile to save space */}
+        <div className="hidden sm:flex items-center gap-2">
           <div
-            className="flex items-center justify-center w-8 h-8 rounded-lg"
+            className="flex items-center justify-center w-8 h-8 rounded-xl shrink-0"
             style={{
               background:
-                "linear-gradient(135deg, rgba(212,168,32,0.2) 0%, rgba(184,134,11,0.1) 100%)",
+                "linear-gradient(135deg, rgba(212,168,32,0.28) 0%, rgba(184,134,11,0.14) 100%)",
+              boxShadow:
+                "inset 0 1px 0 rgba(255,255,255,0.1), 0 1px 4px rgba(0,0,0,0.2)",
             }}
           >
             <i
-              className="fas fa-book-quran text-[0.9rem]"
+              className="fas fa-book-quran text-[0.85rem]"
               style={{ color: "var(--gold)" }}
               aria-hidden="true"
             />
           </div>
-          <span className="hidden sm:inline text-white font-semibold text-[0.9rem] tracking-wide font-[var(--font-ui)] leading-none">
-            MushafPlus
-          </span>
+          <div className="hidden sm:flex flex-col leading-none">
+            <span className="text-white font-bold text-[0.88rem] tracking-wide font-[var(--font-ui)]">
+              MushafPlus
+            </span>
+          </div>
         </div>
 
+        {/* Separator */}
+        <div className="hidden lg:block w-px h-5 bg-white/10 mx-0.5" />
+
         {/* Riwayat selector — desktop */}
-        <div className="hidden lg:flex items-center ms-1">
-          <div className="flex items-center rounded-lg bg-white/[0.07] p-1">
+        <div className="hidden lg:flex items-center">
+          <div className="flex items-center rounded-xl bg-white/[0.07] border border-white/[0.06] p-0.5 gap-0.5">
             {["hafs", "warsh"].map((r) => (
               <button
                 key={r}
                 className={cn(
-                  "relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-md",
-                  "text-[0.75rem] font-semibold font-[var(--font-ui)]",
-                  "cursor-pointer outline-none transition-all duration-150",
+                  "relative flex items-center gap-1.5 px-3 py-1.5 rounded-[10px]",
+                  "text-[0.73rem] font-semibold font-[var(--font-ui)]",
+                  "cursor-pointer outline-none transition-all duration-200",
                   riwaya === r
-                    ? "bg-white/15 text-white shadow-sm"
-                    : "text-white/50 hover:text-white/75 hover:bg-white/[0.05]",
+                    ? "bg-white/[0.18] text-white shadow-sm"
+                    : "text-white/45 hover:text-white/80 hover:bg-white/[0.07]",
                 )}
                 onClick={() => applyRiwaya(r)}
                 title={
@@ -324,17 +335,17 @@ export default function Header() {
                 }
                 aria-pressed={riwaya === r}
               >
+                {riwaya === r && (
+                  <span
+                    className="w-1.5 h-1.5 rounded-full inline-block shrink-0"
+                    style={{ background: "var(--gold)" }}
+                  />
+                )}
                 <span>
                   {r === "hafs"
                     ? t("settings.hafs", lang)
                     : t("settings.warsh", lang)}
                 </span>
-                {riwaya === r && (
-                  <span
-                    className="w-1.5 h-1.5 rounded-full inline-block"
-                    style={{ background: "var(--gold)" }}
-                  />
-                )}
               </button>
             ))}
           </div>
@@ -344,9 +355,9 @@ export default function Header() {
       {/* ═══════════════════════════════════════
           CENTER: Tabs + Nav arrows + Surah name
          ═══════════════════════════════════════ */}
-      <div className="flex-1 flex items-center justify-center gap-2 sm:gap-3 px-2 sm:px-3 min-w-0">
+      <div className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-1.5 sm:px-2 min-w-0">
         {/* ── Display mode tabs ── */}
-        <div className="hidden sm:flex items-center rounded-lg bg-white/[0.07] p-1 shrink-0">
+        <div className="hidden sm:flex items-center rounded-xl bg-white/[0.07] border border-white/[0.05] p-0.5 gap-0.5 shrink-0">
           {allDisplayModes.map((mode) => {
             const isActive = displayMode === mode.id;
             const isDisabled = mode.id === "page" && riwaya === "warsh";
@@ -354,14 +365,14 @@ export default function Header() {
               <button
                 key={mode.id}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-md",
-                  "text-[0.72rem] font-semibold font-[var(--font-ui)]",
+                  "flex items-center gap-1.5 px-2.5 py-1.5 rounded-[10px]",
+                  "text-[0.71rem] font-semibold font-[var(--font-ui)]",
                   "cursor-pointer outline-none whitespace-nowrap",
-                  "transition-all duration-150",
+                  "transition-all duration-200",
                   isActive
-                    ? "bg-white/15 text-white shadow-sm"
-                    : "text-white/50 hover:text-white/75 hover:bg-white/[0.05]",
-                  isDisabled && "opacity-30 pointer-events-none",
+                    ? "bg-white/[0.18] text-white shadow-sm"
+                    : "text-white/45 hover:text-white/80 hover:bg-white/[0.08]",
+                  isDisabled && "opacity-25 pointer-events-none",
                 )}
                 onClick={() => set({ displayMode: mode.id })}
                 disabled={isDisabled}
@@ -370,8 +381,8 @@ export default function Header() {
               >
                 <i
                   className={cn(
-                    `fas ${mode.icon} text-[0.6rem]`,
-                    isActive ? "opacity-100" : "opacity-50",
+                    `fas ${mode.icon} text-[0.58rem]`,
+                    isActive ? "opacity-100" : "opacity-60",
                   )}
                   aria-hidden="true"
                 />
@@ -384,18 +395,18 @@ export default function Header() {
         </div>
 
         {/* Divider */}
-        <div className="hidden sm:block w-px h-5 bg-white/10 shrink-0" />
+        <div className="hidden sm:block w-px h-4 bg-white/[0.12] shrink-0" />
 
-        {/* Prev arrow */}
+        {/* Prev arrow — hidden on mobile */}
         <button
           onClick={isRtl ? handleNext : handlePrev}
           disabled={isRtl ? !canGoNext : !canGoPrev}
           className={cn(
-            "flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg shrink-0",
-            "bg-white/[0.07] text-white/60",
+            "hidden sm:flex items-center justify-center w-8 h-8 rounded-xl shrink-0",
+            "bg-white/[0.07] border border-white/[0.05] text-white/55",
             "transition-all duration-150 cursor-pointer outline-none",
-            "hover:bg-white/[0.13] hover:text-white",
-            "active:scale-95",
+            "hover:bg-white/[0.14] hover:text-white hover:border-white/[0.1]",
+            "active:scale-90",
             "disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-white/[0.07] disabled:active:scale-100",
             "focus-visible:ring-2 focus-visible:ring-[var(--gold)]/40",
           )}
@@ -403,7 +414,10 @@ export default function Header() {
             isRtl ? t("quran.nextSurah", lang) : t("quran.prevSurah", lang)
           }
         >
-          <i className="fas fa-chevron-left text-[0.6rem]" aria-hidden="true" />
+          <i
+            className="fas fa-chevron-left text-[0.55rem]"
+            aria-hidden="true"
+          />
         </button>
 
         {/* Surah name (center) — clicking opens go-to popover */}
@@ -411,11 +425,12 @@ export default function Header() {
           <PopoverTrigger asChild>
             <button
               className={cn(
-                "flex flex-col items-center justify-center min-w-0 px-3 sm:px-4 py-1.5 rounded-xl",
-                "bg-white/[0.06] hover:bg-white/[0.11]",
+                "flex flex-col items-center justify-center min-w-0 px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl",
+                "bg-white/[0.07] border border-white/[0.05]",
+                "hover:bg-white/[0.12] hover:border-white/[0.1]",
                 "cursor-pointer outline-none transition-all duration-150",
                 "focus-visible:ring-2 focus-visible:ring-[var(--gold)]/40",
-                goToOpen && "bg-white/[0.13]",
+                goToOpen && "bg-white/[0.14] border-white/[0.12]",
               )}
               title={
                 lang === "fr"
@@ -425,53 +440,65 @@ export default function Header() {
                     : "Go to…"
               }
             >
+              {/* Surah / location name */}
               <span
-                className="text-[0.88rem] sm:text-[0.95rem] font-bold text-white leading-tight truncate max-w-[140px] sm:max-w-[220px]"
+                className="text-[0.82rem] sm:text-[0.92rem] font-bold text-white leading-tight truncate max-w-[120px] sm:max-w-[200px]"
                 style={{ fontFamily: "var(--font-ui)" }}
               >
                 {lang === "ar" ? arabicName : translatedName}
               </span>
+
+              {/* Subtitle — simplified on mobile */}
               <span
-                className="text-[0.6rem] sm:text-[0.65rem] text-white/45 font-medium leading-tight mt-0.5 flex items-center gap-1.5"
+                className="text-[0.58rem] sm:text-[0.62rem] text-white/40 font-medium leading-tight mt-[3px] flex items-center gap-1"
                 style={{ fontFamily: "var(--font-ui)" }}
               >
                 {displayMode === "surah" ? (
                   <>
-                    <span>
-                      {lang === "ar" ? toAr(currentSurah) : currentSurah}
+                    <span className="opacity-70">
+                      {lang === "ar" ? toAr(currentSurah) : `#${currentSurah}`}
                     </span>
-                    <span className="opacity-50">·</span>
+                    {/* Arabic name only on sm+ to avoid overflow on mobile */}
                     {arabicName !== translatedName && (
                       <>
-                        <span>{arabicName}</span>
-                        <span className="opacity-50">·</span>
+                        <span className="hidden sm:inline opacity-30">·</span>
+                        <span className="hidden sm:inline">{arabicName}</span>
                       </>
                     )}
+                    <span className="opacity-30">·</span>
                     <span>{ayahCount}</span>
                   </>
                 ) : displayMode === "page" ? (
                   <>
-                    <span>
+                    <span className="opacity-70">
+                      {lang === "fr" ? "Page" : lang === "ar" ? "صفحة" : "Pg"}
+                    </span>
+                    <span className="font-semibold text-white/55">
                       {lang === "ar" ? toAr(currentPage) : currentPage}
                     </span>
-                    <span className="opacity-50">/</span>
+                    <span className="opacity-30">/</span>
                     <span>{lang === "ar" ? toAr(604) : 604}</span>
                     {ayahCount && (
                       <>
-                        <span className="opacity-50">·</span>
-                        <span>{ayahCount}</span>
+                        <span className="hidden sm:inline opacity-30">·</span>
+                        <span className="hidden sm:inline">{ayahCount}</span>
                       </>
                     )}
                   </>
                 ) : (
                   <>
-                    <span>{lang === "ar" ? toAr(currentJuz) : currentJuz}</span>
-                    <span className="opacity-50">/</span>
+                    <span className="opacity-70">
+                      {lang === "fr" ? "Juz" : lang === "ar" ? "جزء" : "Juz"}
+                    </span>
+                    <span className="font-semibold text-white/55">
+                      {lang === "ar" ? toAr(currentJuz) : currentJuz}
+                    </span>
+                    <span className="opacity-30">/</span>
                     <span>{lang === "ar" ? toAr(30) : 30}</span>
                     {ayahCount && (
                       <>
-                        <span className="opacity-50">·</span>
-                        <span>{ayahCount}</span>
+                        <span className="hidden sm:inline opacity-30">·</span>
+                        <span className="hidden sm:inline">{ayahCount}</span>
                       </>
                     )}
                   </>
@@ -480,15 +507,15 @@ export default function Header() {
             </button>
           </PopoverTrigger>
           <PopoverContent
-            className="w-[260px] p-0 border-[var(--border-strong)] shadow-xl"
+            className="w-[240px] p-0 border-[var(--border-strong)] shadow-2xl rounded-2xl overflow-hidden"
             align="center"
-            sideOffset={10}
+            sideOffset={8}
           >
-            <form onSubmit={handleGoTo} className="flex flex-col gap-3 p-4">
-              <label className="text-[0.68rem] font-bold uppercase tracking-[0.08em] font-[var(--font-ui)] text-[var(--text-muted)]">
+            <form onSubmit={handleGoTo} className="flex flex-col gap-3 p-3.5">
+              <label className="text-[0.65rem] font-bold uppercase tracking-[0.1em] font-[var(--font-ui)] text-[var(--text-muted)]">
                 {goToLabel}
               </label>
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 <Input
                   ref={inputRef}
                   type="number"
@@ -497,26 +524,30 @@ export default function Header() {
                   value={goToValue}
                   onChange={(e) => setGoToValue(e.target.value)}
                   placeholder="#"
-                  className="flex-1 min-w-0 text-center h-10"
+                  className="flex-1 min-w-0 text-center h-9 text-sm"
                 />
-                <Button type="submit" size="default" className="px-5 h-10">
-                  <i className="fas fa-arrow-right" />
+                <Button
+                  type="submit"
+                  size="default"
+                  className="px-4 h-9 shrink-0"
+                >
+                  <i className="fas fa-arrow-right text-[0.75rem]" />
                 </Button>
               </div>
             </form>
           </PopoverContent>
         </Popover>
 
-        {/* Next arrow */}
+        {/* Next arrow — hidden on mobile */}
         <button
           onClick={isRtl ? handlePrev : handleNext}
           disabled={isRtl ? !canGoPrev : !canGoNext}
           className={cn(
-            "flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg shrink-0",
-            "bg-white/[0.07] text-white/60",
+            "hidden sm:flex items-center justify-center w-8 h-8 rounded-xl shrink-0",
+            "bg-white/[0.07] border border-white/[0.05] text-white/55",
             "transition-all duration-150 cursor-pointer outline-none",
-            "hover:bg-white/[0.13] hover:text-white",
-            "active:scale-95",
+            "hover:bg-white/[0.14] hover:text-white hover:border-white/[0.1]",
+            "active:scale-90",
             "disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-white/[0.07] disabled:active:scale-100",
             "focus-visible:ring-2 focus-visible:ring-[var(--gold)]/40",
           )}
@@ -525,7 +556,7 @@ export default function Header() {
           }
         >
           <i
-            className="fas fa-chevron-right text-[0.6rem]"
+            className="fas fa-chevron-right text-[0.55rem]"
             aria-hidden="true"
           />
         </button>
@@ -534,25 +565,29 @@ export default function Header() {
       {/* ═══════════════════════════════════════
           RIGHT: Actions
          ═══════════════════════════════════════ */}
-      <div className="flex items-center gap-0.5 sm:gap-1 pe-3 sm:pe-5 shrink-0">
-        {/* Always visible: Search, Bookmarks, Settings */}
+      <div className="flex items-center gap-0.5 pe-2 sm:pe-4 shrink-0">
+        {/* Search — always visible */}
         <HeaderIconButton
           icon="fa-search"
           onClick={() => dispatch({ type: "TOGGLE_SEARCH" })}
           title={`${t("nav.search", lang)} (Ctrl+K)`}
           aria-label={t("nav.search", lang)}
         />
+        {/* Bookmarks — hidden on mobile (accessible via ⋮ menu) */}
         <HeaderIconButton
           icon="fa-bookmark"
           onClick={() => dispatch({ type: "TOGGLE_BOOKMARKS" })}
           title={t("nav.bookmarks", lang)}
           aria-label={t("nav.bookmarks", lang)}
+          className="hidden sm:flex"
         />
+        {/* Settings — hidden on mobile (accessible via ⋮ menu) */}
         <HeaderIconButton
           icon="fa-sliders"
           onClick={() => dispatch({ type: "TOGGLE_SETTINGS" })}
           title={t("nav.settings", lang)}
           aria-label={t("nav.settings", lang)}
+          className="hidden sm:flex"
         />
 
         {/* ── Mobile "More" dropdown ── */}
@@ -562,8 +597,8 @@ export default function Header() {
               <button
                 className={cn(
                   "flex items-center justify-center",
-                  "w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl",
-                  "text-white/70 hover:text-white hover:bg-white/10",
+                  "w-9 h-9 rounded-xl",
+                  "text-white/70 hover:text-white hover:bg-white/[0.12]",
                   "active:scale-95",
                   "transition-all duration-150 cursor-pointer outline-none",
                   "focus-visible:ring-2 focus-visible:ring-[var(--gold)]/40",
@@ -576,14 +611,30 @@ export default function Header() {
                       : "More"
                 }
               >
-                <i className="fas fa-ellipsis-vertical text-[0.8rem] sm:text-[0.9rem]" />
+                <i className="fas fa-ellipsis-vertical text-[0.82rem]" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align={lang === "ar" ? "start" : "end"}
-              className="min-w-[260px]"
+              className="min-w-[270px]"
               sideOffset={8}
             >
+              {/* Settings & Bookmarks shortcuts on mobile */}
+              <DropdownMenuItem
+                onClick={() => dispatch({ type: "TOGGLE_SETTINGS" })}
+              >
+                <i className="fas fa-sliders" aria-hidden="true" />
+                <span>{t("nav.settings", lang)}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => dispatch({ type: "TOGGLE_BOOKMARKS" })}
+              >
+                <i className="fas fa-bookmark" aria-hidden="true" />
+                <span>{t("nav.bookmarks", lang)}</span>
+              </DropdownMenuItem>
+
+              <DropdownMenuSeparator />
+
               {/* Display mode (mobile) */}
               <DropdownMenuLabel>
                 <i
@@ -652,6 +703,56 @@ export default function Header() {
 
               <DropdownMenuSeparator />
 
+              {/* Navigation — prev/next on mobile */}
+              <div className="flex items-center gap-1.5 px-3 pb-2.5 pt-1">
+                <button
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[0.75rem] font-semibold",
+                    "font-[var(--font-ui)] cursor-pointer border transition-all duration-150",
+                    !(isRtl ? canGoNext : canGoPrev)
+                      ? "opacity-30 pointer-events-none bg-[var(--bg-secondary)] text-[var(--text-muted)] border-[var(--border)]"
+                      : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-tertiary)]",
+                  )}
+                  onClick={() => {
+                    isRtl ? handleNext() : handlePrev();
+                  }}
+                  disabled={isRtl ? !canGoNext : !canGoPrev}
+                >
+                  <i
+                    className={`fas fa-arrow-${lang === "ar" ? "right" : "left"} text-[0.65rem]`}
+                  />
+                  {lang === "fr"
+                    ? "Précédent"
+                    : lang === "ar"
+                      ? "السابق"
+                      : "Previous"}
+                </button>
+                <button
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[0.75rem] font-semibold",
+                    "font-[var(--font-ui)] cursor-pointer border transition-all duration-150",
+                    !(isRtl ? canGoPrev : canGoNext)
+                      ? "opacity-30 pointer-events-none bg-[var(--bg-secondary)] text-[var(--text-muted)] border-[var(--border)]"
+                      : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-tertiary)]",
+                  )}
+                  onClick={() => {
+                    isRtl ? handlePrev() : handleNext();
+                  }}
+                  disabled={isRtl ? !canGoPrev : !canGoNext}
+                >
+                  {lang === "fr"
+                    ? "Suivant"
+                    : lang === "ar"
+                      ? "التالي"
+                      : "Next"}
+                  <i
+                    className={`fas fa-arrow-${lang === "ar" ? "left" : "right"} text-[0.65rem]`}
+                  />
+                </button>
+              </div>
+
+              <DropdownMenuSeparator />
+
               {/* Action items */}
               <DropdownMenuItem
                 onClick={() => dispatch({ type: "TOGGLE_WIRD" })}
@@ -708,7 +809,10 @@ export default function Header() {
         </div>
 
         {/* ── Desktop-only action buttons ── */}
-        <div className="hidden lg:flex items-center gap-1 ms-1">
+        <div className="hidden lg:flex items-center gap-0.5 ms-0.5">
+          {/* Divider */}
+          <div className="w-px h-4 bg-white/[0.12] mx-1" />
+
           <HeaderIconButton
             icon="fa-bullseye"
             onClick={() => dispatch({ type: "TOGGLE_WIRD" })}
@@ -726,7 +830,7 @@ export default function Header() {
           />
 
           {/* Divider */}
-          <div className="w-px h-5 bg-white/10 mx-1.5" />
+          <div className="w-px h-4 bg-white/[0.12] mx-1" />
 
           <HeaderIconButton
             icon={
@@ -759,24 +863,23 @@ export default function Header() {
 }
 
 /* ── Reusable icon button for the header ── */
-function HeaderIconButton({ icon, className, ...props }) {
+function HeaderIconButton({ icon, className, active = false, ...props }) {
   return (
     <button
       className={cn(
         "flex items-center justify-center",
-        "w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl",
-        "text-white/70 hover:text-white hover:bg-white/10",
-        "active:scale-95",
+        "w-9 h-9 rounded-xl",
         "transition-all duration-150 cursor-pointer outline-none",
-        "focus-visible:ring-2 focus-visible:ring-[var(--gold)]/40 focus-visible:ring-offset-1 focus-visible:ring-offset-transparent",
+        "active:scale-90",
+        "focus-visible:ring-2 focus-visible:ring-[var(--gold)]/40",
+        active
+          ? "text-white bg-white/[0.14] shadow-inner"
+          : "text-white/60 hover:text-white hover:bg-white/[0.12]",
         className,
       )}
       {...props}
     >
-      <i
-        className={`fas ${icon} text-[0.8rem] sm:text-[0.9rem]`}
-        aria-hidden="true"
-      />
+      <i className={`fas ${icon} text-[0.82rem]`} aria-hidden="true" />
     </button>
   );
 }

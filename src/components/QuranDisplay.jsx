@@ -248,39 +248,36 @@ export default function QuranDisplay() {
 
   /* ── Load audio playlist when ayahs or reciter/riwaya change ── */
   useEffect(() => {
-    if (ayahs.length > 0 && state.reciter) {
-      const safeReciterId = ensureReciterForRiwaya(state.reciter, riwaya);
-      // Auto-fix reciter in state if it doesn't belong to this riwaya
-      if (safeReciterId !== state.reciter) {
-        set({ reciter: safeReciterId });
-        return; // Will re-trigger with correct reciter
+    if (ayahs.length === 0 || !state.reciter) return;
+    // Use safeReciterId directly — AudioPlayer's own effect already writes
+    // the corrected value back to state, so we must NOT do it here too or
+    // we create a set() → state.reciter change → effect re-fires loop.
+    const safeReciterId = ensureReciterForRiwaya(state.reciter, riwaya);
+    const rec = getReciter(safeReciterId, riwaya);
+    if (rec) {
+      if (
+        riwaya === "warsh" &&
+        warshStrictMode &&
+        !String(rec.cdn || "")
+          .toLowerCase()
+          .includes("warsh")
+      ) {
+        setError(t("errors.warshStrict", lang));
+        return;
       }
-      const rec = getReciter(safeReciterId, riwaya);
-      if (rec) {
-        if (
-          riwaya === "warsh" &&
-          warshStrictMode &&
-          !String(rec.cdn || "")
-            .toLowerCase()
-            .includes("warsh")
-        ) {
-          setError(t("errors.warshStrict", lang));
-          return;
-        }
-        const playlistAyahs = ayahs.map((a) => ({
-          surah: a.surah?.number || currentSurah,
-          numberInSurah: a.numberInSurah,
-          number: a.number,
-          text: a.text,
-        }));
-        audioService.loadPlaylist(
-          playlistAyahs,
-          rec.cdn,
-          rec.cdnType || "islamic",
-        );
-      }
+      const playlistAyahs = ayahs.map((a) => ({
+        surah: a.surah?.number || currentSurah,
+        numberInSurah: a.numberInSurah,
+        number: a.number,
+        text: a.text,
+      }));
+      audioService.loadPlaylist(
+        playlistAyahs,
+        rec.cdn,
+        rec.cdnType || "islamic",
+      );
     }
-  }, [ayahs, state.reciter, riwaya, currentSurah, set, warshStrictMode, lang]);
+  }, [ayahs, state.reciter, riwaya, currentSurah, warshStrictMode, lang]);
 
   /* ── Auto-scroll to playing ayah ───────────── */
   useEffect(() => {
@@ -422,7 +419,10 @@ export default function QuranDisplay() {
 
       // Replace all state atomically — new data is ready
       setAyahs(fetchedAyahs);
-      set({ loadedAyahCount: fetchedAyahs.length });
+      dispatch({
+        type: "SET",
+        payload: { loadedAyahCount: fetchedAyahs.length },
+      });
       setTranslations([]);
       setSourceEdition(
         arabicData?.usedEdition || arabicData?.edition?.identifier || "",
@@ -559,6 +559,8 @@ export default function QuranDisplay() {
     lang,
     dispatch,
     warshStrictMode,
+    // `set` is intentionally omitted — we use dispatch directly inside fetchData
+    // to avoid re-triggering this callback whenever set's identity changes.
   ]);
 
   useEffect(() => {

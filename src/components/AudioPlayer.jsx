@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useReducer,
-} from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import audioService from "../services/audioService";
@@ -12,8 +6,10 @@ import { ensureReciterForRiwaya, getRecitersByRiwaya } from "../data/reciters";
 import { getSurah, surahName } from "../data/surahs";
 import { cn } from "../lib/utils";
 
-/* ── Drag position helpers ── */
-const CARD_STORAGE_KEY = "mushaf_playsurah_card_pos";
+/* ─────────────────────────────────────────────
+   Drag / position helpers  (desktop card only)
+───────────────────────────────────────────── */
+const CARD_STORAGE_KEY = "mushaf_player_card_pos_v4";
 
 function loadCardPos() {
   try {
@@ -22,16 +18,11 @@ function loadCardPos() {
   } catch {}
   return null;
 }
-
 function saveCardPos(pos) {
   try {
     localStorage.setItem(CARD_STORAGE_KEY, JSON.stringify(pos));
   } catch {}
 }
-
-/**
- * Clamp a card (w×h) inside the viewport with a given margin.
- */
 function clamp(x, y, w, h, margin = 12) {
   return {
     x: Math.max(margin, Math.min(window.innerWidth - w - margin, x)),
@@ -39,6 +30,143 @@ function clamp(x, y, w, h, margin = 12) {
   };
 }
 
+/* ─────────────────────────────────────────────
+   Waveform (desktop card)
+───────────────────────────────────────────── */
+function Waveform({ isPlaying, progress }) {
+  const COUNT = 32;
+  return (
+    <div className="flex items-end justify-center gap-[2px] h-8 w-full">
+      {Array.from({ length: COUNT }).map((_, i) => {
+        const pct = i / COUNT;
+        const filled = pct <= progress;
+        const seed = ((i * 7 + 3) % 13) / 13;
+        const baseH = 22 + seed * 60;
+        return (
+          <div
+            key={i}
+            className="rounded-full flex-1"
+            style={{
+              height: `${baseH}%`,
+              minWidth: 2,
+              background: filled
+                ? "linear-gradient(180deg, var(--gold-bright), var(--gold))"
+                : "rgba(255,255,255,0.12)",
+              transformOrigin: "bottom",
+              animation: isPlaying
+                ? `waveBar ${0.5 + seed * 0.65}s ease-in-out ${(i * 28) % 280}ms infinite alternate`
+                : "none",
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Cover Art (desktop card)
+───────────────────────────────────────────── */
+function CoverArt({ isPlaying }) {
+  return (
+    <div
+      className="relative rounded-xl overflow-hidden shrink-0"
+      style={{
+        width: 52,
+        height: 52,
+        background:
+          "linear-gradient(135deg, var(--emerald) 0%, #0e3d26 60%, #0a2d1c 100%)",
+        boxShadow: isPlaying
+          ? "0 2px 12px rgba(184,134,11,0.35)"
+          : "0 2px 8px rgba(0,0,0,0.3)",
+      }}
+    >
+      <div
+        className="absolute inset-0 opacity-40"
+        style={{
+          background:
+            "radial-gradient(circle at 35% 40%, rgba(212,168,32,0.5) 0%, transparent 60%)",
+        }}
+      />
+      <svg
+        className="absolute inset-0 w-full h-full opacity-25"
+        viewBox="0 0 52 52"
+        fill="none"
+      >
+        <circle cx="26" cy="26" r="20" stroke="#d4a820" strokeWidth="0.6" />
+        <circle cx="26" cy="26" r="12" stroke="#d4a820" strokeWidth="0.5" />
+        {Array.from({ length: 8 }).map((_, i) => {
+          const a = (i * Math.PI * 2) / 8;
+          return (
+            <line
+              key={i}
+              x1={26 + Math.cos(a) * 12}
+              y1={26 + Math.sin(a) * 12}
+              x2={26 + Math.cos(a) * 20}
+              y2={26 + Math.sin(a) * 20}
+              stroke="#d4a820"
+              strokeWidth="0.5"
+            />
+          );
+        })}
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <i
+          className="fas fa-quran text-xl"
+          style={{
+            color: "rgba(253,243,213,0.9)",
+            filter: "drop-shadow(0 1px 4px rgba(184,134,11,0.5))",
+          }}
+        />
+      </div>
+      {isPlaying && (
+        <div
+          className="absolute top-1 right-1 w-2 h-2 rounded-full"
+          style={{
+            background: "var(--gold-bright)",
+            boxShadow: "0 0 6px var(--gold)",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Icon button (desktop card)
+───────────────────────────────────────────── */
+function IconBtn({ onClick, title, active, children, size = "md" }) {
+  const base =
+    size === "sm"
+      ? "w-7 h-7 text-[0.72rem]"
+      : size === "lg"
+        ? "w-12 h-12 text-base"
+        : "w-9 h-9 text-[0.82rem]";
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      aria-label={title}
+      className={cn(
+        base,
+        "flex items-center justify-center rounded-full cursor-pointer outline-none transition-all duration-150",
+        active
+          ? "bg-[rgba(212,168,32,0.25)] text-[#f5d785] border border-[rgba(212,168,32,0.45)]"
+          : "bg-white/[0.07] text-[rgba(240,234,214,0.75)] border border-white/10",
+        "hover:bg-[rgba(212,168,32,0.18)] hover:text-[#f5d785] hover:border-[rgba(212,168,32,0.35)] hover:scale-105",
+        "active:scale-95",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(212,168,32,0.5)]",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   Main component
+═══════════════════════════════════════════════ */
 export default function AudioPlayer() {
   const { state, set } = useApp();
   const {
@@ -60,10 +188,18 @@ export default function AudioPlayer() {
   const [duration, setDuration] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const [volume, setVolume] = useState(savedVolume ?? 1);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
 
   const progressRef = useRef(null);
 
-  /* ── Wire callbacks ── */
+  /* ── Detect mobile ── */
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  /* ── Wire audio callbacks ── */
   useEffect(() => {
     audioService.onPlay = (item) => {
       set({
@@ -95,7 +231,6 @@ export default function AudioPlayer() {
       setProgress(dur ? ct / dur : 0);
     };
     audioService.onError = () => set({ isPlaying: false });
-
     return () => {
       audioService.onPlay = null;
       audioService.onPause = null;
@@ -106,23 +241,19 @@ export default function AudioPlayer() {
     };
   }, [set]);
 
-  /* ── Speed ── */
   useEffect(() => {
     audioService.setSpeed(audioSpeed);
   }, [audioSpeed]);
 
   useEffect(() => {
-    const safeReciter = ensureReciterForRiwaya(reciter, riwaya);
-    if (safeReciter !== reciter) set({ reciter: safeReciter });
+    const safe = ensureReciterForRiwaya(reciter, riwaya);
+    if (safe !== reciter) set({ reciter: safe });
   }, [reciter, riwaya, set]);
 
-  /* ── Memorization ── */
   useEffect(() => {
-    if (memMode) {
+    if (memMode)
       audioService.enableMemorization(memRepeatCount, memPause * 1000);
-    } else {
-      audioService.disableMemorization();
-    }
+    else audioService.disableMemorization();
   }, [memMode, memRepeatCount, memPause]);
 
   /* ── Controls ── */
@@ -140,9 +271,9 @@ export default function AudioPlayer() {
 
   const formatTime = (s) => {
     if (!s || isNaN(s)) return "0:00";
-    const m = Math.floor(s / 60);
-    const sec = Math.floor(s % 60);
-    return `${m}:${sec.toString().padStart(2, "0")}`;
+    return `${Math.floor(s / 60)}:${Math.floor(s % 60)
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const handleVolumeChange = (v) => {
@@ -151,8 +282,33 @@ export default function AudioPlayer() {
     set({ volume: v });
   };
 
+  const cycleSpeed = () => {
+    const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+    const idx = speeds.indexOf(audioSpeed);
+    set({ audioSpeed: speeds[(idx + 1) % speeds.length] });
+  };
+
   const currentReciters = getRecitersByRiwaya(riwaya);
   const isWarshMode = riwaya === "warsh";
+
+  const { currentSurah } = state;
+  const surahMeta = getSurah(currentSurah);
+  const currentSurahName = surahMeta ? surahName(currentSurah, lang) : "";
+  const currentArabicName = surahMeta?.ar || "";
+
+  const reciterObj = currentReciters.find((r) => r.id === reciter);
+  const reciterLabel =
+    lang === "ar"
+      ? reciterObj?.name
+      : lang === "fr"
+        ? reciterObj?.nameFr
+        : reciterObj?.nameEn;
+
+  const titleLabel = currentPlayingAyah
+    ? `${t("quran.surah", lang)} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
+    : lang === "ar"
+      ? currentArabicName
+      : currentSurahName;
 
   const warshStrictLabel =
     lang === "ar"
@@ -160,89 +316,51 @@ export default function AudioPlayer() {
       : lang === "fr"
         ? "Warsh strict"
         : "Warsh strict";
-  const warshVerifiedLabel =
-    lang === "ar"
-      ? "صوت ورش مُتحقق"
-      : lang === "fr"
-        ? "Audio Warsh vérifié"
-        : "Warsh audio verified";
   const warshNonStrictLabel =
     lang === "ar"
       ? "وضع ورش عادي"
       : lang === "fr"
         ? "Warsh standard"
         : "Warsh standard";
-
-  const changeReciter = (id) => set({ reciter: id });
-
-  const cycleSpeed = () => {
-    const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
-    const idx = speeds.indexOf(audioSpeed);
-    set({ audioSpeed: speeds[(idx + 1) % speeds.length] });
-  };
-
-  const expandLabel = expanded
-    ? lang === "ar"
-      ? "إغلاق التفاصيل"
+  const warshVerifiedLabel =
+    lang === "ar"
+      ? "صوت ورش مُتحقق"
       : lang === "fr"
-        ? "Réduire le lecteur"
-        : "Collapse player"
-    : lang === "ar"
-      ? "فتح التفاصيل"
-      : lang === "fr"
-        ? "Développer le lecteur"
-        : "Expand player";
+        ? "Audio Warsh vérifié"
+        : "Warsh verified";
 
-  /* ── Shared class strings ── */
-  const playerBtnCls = cn(
+  /* ─── Shared button classes (mobile bar) ─── */
+  const mBarBtn = cn(
     "w-9 h-9 flex items-center justify-center rounded-xl cursor-pointer outline-none",
     "border border-white/10 bg-white/[0.06] text-[rgba(240,234,214,0.8)] text-[0.85rem]",
-    "transition-[background,color,border-color,transform,box-shadow] duration-150",
-    "hover:bg-[rgba(212,175,55,0.18)] hover:text-[#f5d785] hover:border-[rgba(212,175,55,0.35)] hover:-translate-y-px hover:shadow-[0_3px_10px_rgba(0,0,0,0.2)]",
-    "active:translate-y-0 active:scale-[0.96] active:shadow-none",
-    "focus-visible:shadow-[0_0_0_2px_rgba(212,175,55,0.45)] focus-visible:outline-none",
+    "transition-all duration-150",
+    "hover:bg-[rgba(212,168,32,0.18)] hover:text-[#f5d785] hover:border-[rgba(212,168,32,0.35)]",
+    "active:scale-95 focus-visible:outline-none",
   );
-
-  const playerBtnSmCls = (active = false) =>
+  const mBarBtnSm = (active = false) =>
     cn(
       "px-[0.55rem] py-[0.24rem] min-h-[28px] flex items-center justify-center",
       "rounded-md border text-[0.71rem] font-semibold font-[var(--font-ui)] cursor-pointer outline-none whitespace-nowrap",
-      "transition-[background,color,border-color,transform] duration-150",
+      "transition-all duration-150",
       active
-        ? "bg-[rgba(212,175,55,0.28)] text-[#f5d785] border-[rgba(212,175,55,0.5)] shadow-[0_1px_6px_rgba(212,175,55,0.18)]"
-        : "bg-white/[0.05] text-[rgba(240,234,214,0.7)] border-white/10 hover:bg-[rgba(212,175,55,0.15)] hover:text-[#f5d785] hover:border-[rgba(212,175,55,0.28)] hover:-translate-y-px",
-      "focus-visible:shadow-[0_0_0_2px_rgba(212,175,55,0.45)] focus-visible:outline-none",
+        ? "bg-[rgba(212,168,32,0.28)] text-[#f5d785] border-[rgba(212,168,32,0.5)]"
+        : "bg-white/[0.05] text-[rgba(240,234,214,0.7)] border-white/10 hover:bg-[rgba(212,168,32,0.15)] hover:text-[#f5d785] hover:border-[rgba(212,168,32,0.28)]",
+      "focus-visible:outline-none",
     );
 
-  const { displayMode, currentSurah } = state;
-  const surahMeta = getSurah(currentSurah);
-  const currentSurahName = surahMeta ? surahName(currentSurah, lang) : "";
-  const currentArabicName = surahMeta?.ar || "";
-
-  const triggerPlaySurah = () => {
-    window.dispatchEvent(new CustomEvent("mushaf:play-surah"));
-  };
-
-  /* ── Drag state ── */
+  /* ── Drag state (desktop card only) ── */
   const cardRef = useRef(null);
-  const dragState = useRef(null); // { startX, startY, originX, originY }
+  const dragState = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [cardPos, setCardPos] = useState(() => {
     const saved = loadCardPos();
     if (saved) return saved;
-    // Default: bottom-right corner, just above player
-    const playerH = parseInt(
-      getComputedStyle(document.documentElement).getPropertyValue(
-        "--player-h",
-      ) || "80",
-    );
     return {
-      x: window.innerWidth - 220 - 16,
-      y: window.innerHeight - playerH - 16 - 56,
+      x: window.innerWidth - 280 - 16,
+      y: window.innerHeight - 430,
     };
   });
 
-  /* Re-clamp on resize */
   useEffect(() => {
     const onResize = () => {
       if (!cardRef.current) return;
@@ -259,8 +377,7 @@ export default function AudioPlayer() {
 
   const onPointerDown = useCallback(
     (e) => {
-      // Only drag on the handle area (not the play button)
-      if (e.target.closest("button")) return;
+      if (e.target.closest("button") || e.target.closest("input")) return;
       e.preventDefault();
       e.currentTarget.setPointerCapture(e.pointerId);
       dragState.current = {
@@ -279,148 +396,46 @@ export default function AudioPlayer() {
     const dx = e.clientX - dragState.current.startX;
     const dy = e.clientY - dragState.current.startY;
     const card = cardRef.current;
-    const w = card ? card.offsetWidth : 220;
-    const h = card ? card.offsetHeight : 56;
-    const next = clamp(
-      dragState.current.originX + dx,
-      dragState.current.originY + dy,
-      w,
-      h,
+    const w = card ? card.offsetWidth : 264;
+    const h = card ? card.offsetHeight : 400;
+    setCardPos(
+      clamp(
+        dragState.current.originX + dx,
+        dragState.current.originY + dy,
+        w,
+        h,
+      ),
     );
-    setCardPos(next);
   }, []);
 
   const onPointerUp = useCallback(
     (e) => {
       if (!dragState.current) return;
       const card = cardRef.current;
-      const w = card ? card.offsetWidth : 220;
-      const h = card ? card.offsetHeight : 56;
-
-      /* Snap to nearest horizontal edge */
-      const midX = window.innerWidth / 2;
-      const snapX = cardPos.x + w / 2 < midX ? 16 : window.innerWidth - w - 16;
-
-      const snapped = clamp(snapX, cardPos.y, w, h);
-      setCardPos(snapped);
-      saveCardPos(snapped);
+      const w = card ? card.offsetWidth : 264;
+      const h = card ? card.offsetHeight : 400;
+      const next = clamp(cardPos.x, cardPos.y, w, h);
+      setCardPos(next);
+      saveCardPos(next);
       dragState.current = null;
       setIsDragging(false);
     },
     [cardPos],
   );
 
-  return (
-    <>
-      {/* ── Play Surah Card — draggable ── */}
-      {displayMode === "surah" && (
-        <div
-          ref={cardRef}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-          className={cn(
-            "fixed z-[290] flex items-stretch",
-            "rounded-2xl overflow-hidden",
-            "border border-white/[0.13]",
-            "shadow-[0_8px_32px_rgba(0,0,0,0.35),0_2px_8px_rgba(0,0,0,0.2)]",
-            isDragging
-              ? "cursor-grabbing scale-[1.03] shadow-[0_16px_48px_rgba(0,0,0,0.45)]"
-              : "cursor-grab",
-            "select-none touch-none",
-            isDragging
-              ? "transition-shadow transition-transform duration-150"
-              : "transition-[box-shadow,transform] duration-200",
-          )}
-          style={{
-            left: cardPos.x,
-            top: cardPos.y,
-            background:
-              "linear-gradient(135deg, rgba(14,61,38,0.97) 0%, rgba(8,28,16,0.98) 100%)",
-            backdropFilter: "blur(12px)",
-          }}
-          aria-label={t("audio.playSurah", lang)}
-          role="region"
-        >
-          {/* Decorative left accent bar */}
-          <div
-            className="w-1 shrink-0 rounded-s-2xl"
-            style={{
-              background:
-                "linear-gradient(180deg, var(--gold) 0%, rgba(212,168,32,0.4) 100%)",
-            }}
-          />
-
-          <div className="flex items-center gap-3 px-3.5 py-2.5">
-            {/* Drag handle hint */}
-            <div
-              className={cn(
-                "w-9 h-9 shrink-0 rounded-xl flex items-center justify-center",
-                "bg-white/[0.07] border border-white/[0.1]",
-                "transition-colors duration-150",
-                isDragging && "bg-white/[0.14]",
-              )}
-            >
-              <i
-                className={cn(
-                  "text-[0.8rem] transition-all duration-150",
-                  isDragging ? "fas fa-up-down-left-right" : "fas fa-quran",
-                )}
-                style={{ color: "var(--gold)" }}
-                aria-hidden="true"
-              />
-            </div>
-
-            {/* Text info */}
-            <div className="flex flex-col min-w-0">
-              <span className="text-[0.7rem] font-medium text-white/50 font-[var(--font-ui)] leading-tight">
-                {lang === "fr"
-                  ? "Lire la sourate"
-                  : lang === "ar"
-                    ? "تشغيل السورة"
-                    : "Play surah"}
-              </span>
-              <span className="text-[0.84rem] font-bold text-white/90 font-[var(--font-ui)] leading-tight truncate max-w-[130px]">
-                {lang === "ar" ? currentArabicName : currentSurahName}
-              </span>
-            </div>
-
-            {/* Play button */}
-            <button
-              onClick={triggerPlaySurah}
-              className={cn(
-                "w-9 h-9 shrink-0 flex items-center justify-center rounded-xl",
-                "text-[0.82rem] cursor-pointer outline-none",
-                "border border-[rgba(212,168,32,0.4)] bg-[rgba(212,168,32,0.15)]",
-                "text-[#f5d785]",
-                "transition-all duration-150",
-                "hover:bg-[rgba(212,168,32,0.28)] hover:border-[rgba(212,168,32,0.6)] hover:-translate-y-px",
-                "hover:shadow-[0_4px_16px_rgba(212,168,32,0.25)]",
-                "active:scale-95 active:shadow-none",
-                "focus-visible:shadow-[0_0_0_2px_rgba(212,168,32,0.5)]",
-              )}
-              title={t("audio.playSurah", lang)}
-              aria-label={t("audio.playSurah", lang)}
-            >
-              <i className="fas fa-play text-[0.7rem]" aria-hidden="true" />
-            </button>
-          </div>
-        </div>
-      )}
-
+  /* ══════════════════════════════════════════
+     MOBILE — classic bottom bar
+  ══════════════════════════════════════════ */
+  if (isMobile) {
+    return (
       <div
-        className={cn(
-          "fixed bottom-0 left-0 right-0 z-[300]",
-          "text-[#f0ead6] rounded-t-2xl",
-          "transition-shadow duration-[220ms]",
-          expanded
-            ? "shadow-[0_-8px_48px_rgba(0,0,0,0.38),0_-1px_0_rgba(255,255,255,0.07)]"
-            : "shadow-[0_-4px_32px_rgba(0,0,0,0.28),0_-1px_0_rgba(255,255,255,0.06)]",
-        )}
+        className="fixed bottom-0 left-0 right-0 z-[300] text-[#f0ead6] rounded-t-2xl"
         style={{
           background: "var(--player-glass)",
           borderTop: "1px solid rgba(255,255,255,0.1)",
+          boxShadow: expanded
+            ? "0 -8px 48px rgba(0,0,0,0.38), 0 -1px 0 rgba(255,255,255,0.07)"
+            : "0 -4px 32px rgba(0,0,0,0.28), 0 -1px 0 rgba(255,255,255,0.06)",
         }}
         role="region"
         aria-label={
@@ -431,370 +446,721 @@ export default function AudioPlayer() {
               : "Audio Player"
         }
       >
-        {/* ── Mini bar ── */}
-        <div className="flex flex-col">
-          {/* Progress bar */}
+        {/* Progress bar */}
+        <div
+          className="relative cursor-pointer overflow-visible rounded-t-2xl bg-white/10 h-[3px] hover:h-[5px] transition-[height] duration-150"
+          ref={progressRef}
+          onClick={handleSeek}
+          role="progressbar"
+          aria-valuenow={Math.round(progress * 100)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
           <div
-            className={cn(
-              "relative cursor-pointer overflow-visible rounded-t-2xl",
-              "bg-white/10 transition-[height] duration-150",
-              "h-[3px] hover:h-[5px]",
-            )}
-            ref={progressRef}
-            onClick={handleSeek}
-            role="progressbar"
-            aria-valuenow={Math.round(progress * 100)}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={
-              lang === "ar"
-                ? "تقدم الصوت"
-                : lang === "fr"
-                  ? "Progression audio"
-                  : "Audio progress"
-            }
+            className="h-full rounded-[inherit] relative transition-[width] duration-100 ease-linear"
+            style={{
+              width: `${progress * 100}%`,
+              background:
+                "linear-gradient(90deg, var(--gold), var(--gold-bright))",
+              boxShadow: "0 0 8px rgba(184,134,11,0.45)",
+            }}
           >
-            <div
-              className={cn(
-                "h-full rounded-[inherit] relative",
-                "bg-gradient-to-r from-[var(--gold)] to-[var(--gold-bright)]",
-                "shadow-[0_0_8px_rgba(184,134,11,0.45)]",
-                "transition-[width] duration-100 ease-linear",
-                /* thumb dot */
-                "after:content-[''] after:absolute after:right-[-5px] after:top-1/2",
-                "after:-translate-y-1/2 after:scale-0",
-                "after:w-3 after:h-3 after:rounded-full after:bg-white",
-                "after:shadow-[0_1px_6px_rgba(0,0,0,0.3)]",
-                "after:transition-transform after:duration-150 after:pointer-events-none",
-                "group-hover:after:scale-100",
-              )}
-              style={{ width: `${progress * 100}%` }}
-            ></div>
-          </div>
-
-          {/* Controls row */}
-          <div className="flex items-center justify-between px-5 sm:px-8 gap-3 min-h-[64px] max-sm:gap-1.5 max-sm:min-h-[56px]">
-            {/* Left: info */}
-            <div
-              className="flex-1 min-w-0 flex flex-col gap-[0.1rem] max-sm:max-w-[72px]"
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              {currentPlayingAyah ? (
-                <span className="block font-[var(--font-ui)] text-[0.84rem] text-white/[0.92] whitespace-nowrap overflow-hidden text-ellipsis font-semibold tracking-[0.02em] max-sm:text-[0.72rem]">
-                  {t("quran.surah", lang)} {currentPlayingAyah.surah}:
-                  {currentPlayingAyah.ayah}
-                </span>
-              ) : (
-                <span className="block font-[var(--font-ui)] text-[0.84rem] text-white/[0.92] whitespace-nowrap overflow-hidden text-ellipsis font-semibold tracking-[0.02em] max-sm:text-[0.72rem]">
-                  {t("audio.play", lang)}
-                </span>
-              )}
-
-              {isWarshMode && (
-                <div className="flex items-center gap-[0.3rem] mt-[0.1rem] flex-wrap max-sm:hidden">
-                  <span
-                    className={cn(
-                      "inline-flex items-center px-[0.45rem] py-[0.1rem]",
-                      "rounded-full text-[0.6rem] font-[var(--font-ui)] font-bold tracking-[0.02em] leading-[1.3]",
-                      "border whitespace-nowrap",
-                      warshStrictMode
-                        ? "bg-[rgba(212,168,32,0.14)] text-[#f5d785] border-[rgba(212,168,32,0.3)]"
-                        : "bg-white/[0.07] text-white/55 border-white/[0.12]",
-                    )}
-                  >
-                    {warshStrictMode ? warshStrictLabel : warshNonStrictLabel}
-                  </span>
-                  {warshStrictMode && (
-                    <span className="inline-flex items-center px-[0.45rem] py-[0.1rem] rounded-full text-[0.6rem] font-[var(--font-ui)] font-bold tracking-[0.02em] leading-[1.3] border whitespace-nowrap bg-[rgba(212,168,32,0.14)] text-[#f5d785] border-[rgba(212,168,32,0.3)]">
-                      {warshVerifiedLabel}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              <span className="text-[0.7rem] text-white/50 font-mono tracking-[0.05em] max-sm:text-[0.62rem]">
-                {formatTime(currentTime)} / {formatTime(duration)}
-              </span>
-            </div>
-
-            {/* Center: main buttons */}
-            <div className="flex items-center gap-1 shrink-0 max-sm:gap-[0.15rem]">
-              <button
-                className={cn(
-                  playerBtnCls,
-                  "max-sm:w-[30px] max-sm:h-[30px] max-sm:text-[0.75rem] max-sm:rounded-md",
-                )}
-                onClick={prev}
-                title={t("audio.prev", lang)}
-                aria-label={t("audio.prev", lang)}
-              >
-                <i className="fas fa-backward-step" aria-hidden="true"></i>
-              </button>
-
-              {/* Play / Pause — prominent circle */}
-              <button
-                className={cn(
-                  "w-11 h-11 flex items-center justify-center rounded-full",
-                  "bg-white text-[#0e3d26] text-base border-none cursor-pointer",
-                  "shadow-[0_2px_12px_rgba(0,0,0,0.2),0_1px_3px_rgba(0,0,0,0.15)]",
-                  "transition-[transform,box-shadow,background] duration-150",
-                  "hover:scale-[1.07] hover:-translate-y-px hover:shadow-[0_6px_20px_rgba(0,0,0,0.28),0_2px_6px_rgba(0,0,0,0.18)] hover:bg-[#f8f8f8]",
-                  "active:scale-[0.97] active:shadow-[0_1px_6px_rgba(0,0,0,0.18)]",
-                  "focus-visible:outline-none focus-visible:shadow-[0_0_0_3px_rgba(212,175,55,0.5)]",
-                  "max-sm:w-9 max-sm:h-9 max-sm:text-[0.85rem]",
-                )}
-                onClick={toggle}
-                title={
-                  isPlaying ? t("audio.pause", lang) : t("audio.play", lang)
-                }
-                aria-label={
-                  isPlaying ? t("audio.pause", lang) : t("audio.play", lang)
-                }
-                aria-pressed={isPlaying}
-              >
-                <i
-                  className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`}
-                  aria-hidden="true"
-                ></i>
-              </button>
-
-              <button
-                className={cn(
-                  playerBtnCls,
-                  "max-sm:w-[30px] max-sm:h-[30px] max-sm:text-[0.75rem] max-sm:rounded-md",
-                )}
-                onClick={next}
-                title={t("audio.next", lang)}
-                aria-label={t("audio.next", lang)}
-              >
-                <i className="fas fa-forward-step" aria-hidden="true"></i>
-              </button>
-
-              <button
-                className={cn(
-                  playerBtnCls,
-                  "max-sm:w-[30px] max-sm:h-[30px] max-sm:text-[0.75rem] max-sm:rounded-md",
-                )}
-                onClick={stop}
-                title={t("audio.stop", lang)}
-                aria-label={t("audio.stop", lang)}
-              >
-                <i className="fas fa-stop" aria-hidden="true"></i>
-              </button>
-            </div>
-
-            {/* Right: extra controls */}
-            <div className="flex items-center gap-1 shrink-0 max-sm:gap-[0.15rem]">
-              {/* Volume group */}
-              <div className="flex items-center gap-1 max-sm:hidden">
-                <button
-                  className={playerBtnSmCls()}
-                  onClick={() => {
-                    const v = volume > 0 ? 0 : 1;
-                    handleVolumeChange(v);
-                  }}
-                  title={t("audio.volume", lang)}
-                  aria-label={t("audio.volume", lang)}
-                >
-                  <i
-                    className={`fas ${
-                      volume === 0
-                        ? "fa-volume-xmark"
-                        : volume < 0.5
-                          ? "fa-volume-low"
-                          : "fa-volume-high"
-                    }`}
-                    aria-hidden="true"
-                  ></i>
-                </button>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.05"
-                  value={volume}
-                  onChange={(e) =>
-                    handleVolumeChange(parseFloat(e.target.value))
-                  }
-                  className="w-16 h-[3px] rounded-full cursor-pointer opacity-75 hover:opacity-100 transition-opacity duration-150"
-                  style={{ accentColor: "var(--gold-bright, #d4a820)" }}
-                  aria-label={`${
-                    lang === "ar"
-                      ? "الحجم"
-                      : lang === "fr"
-                        ? "Volume"
-                        : "Volume"
-                  }: ${Math.round(volume * 100)}%`}
-                  title={`${Math.round(volume * 100)}%`}
-                />
-              </div>
-
-              <button
-                className={cn(
-                  playerBtnSmCls(),
-                  "max-sm:px-[0.38rem] max-sm:py-[0.18rem] max-sm:text-[0.63rem] max-sm:min-h-[24px]",
-                )}
-                onClick={cycleSpeed}
-                title={
-                  lang === "ar"
-                    ? "سرعة التشغيل"
-                    : lang === "fr"
-                      ? "Vitesse de lecture"
-                      : "Playback speed"
-                }
-                aria-label={`${
-                  lang === "ar" ? "السرعة" : lang === "fr" ? "Vitesse" : "Speed"
-                }: ${audioSpeed}x`}
-              >
-                {audioSpeed}x
-              </button>
-
-              <button
-                className={cn(
-                  playerBtnSmCls(memMode),
-                  "max-sm:px-[0.38rem] max-sm:py-[0.18rem] max-sm:text-[0.63rem] max-sm:min-h-[24px]",
-                )}
-                onClick={() => set({ memMode: !memMode })}
-                title={t("audio.memorization", lang)}
-                aria-label={t("audio.memorization", lang)}
-                aria-pressed={memMode}
-              >
-                <i className="fas fa-repeat" aria-hidden="true"></i>
-              </button>
-
-              <button
-                className={cn(
-                  playerBtnSmCls(),
-                  "max-sm:px-[0.38rem] max-sm:py-[0.18rem] max-sm:text-[0.63rem] max-sm:min-h-[24px]",
-                )}
-                onClick={() => setExpanded(!expanded)}
-                title={expandLabel}
-                aria-label={expandLabel}
-                aria-expanded={expanded}
-              >
-                <i
-                  className={`fas fa-chevron-${expanded ? "down" : "up"}`}
-                  aria-hidden="true"
-                ></i>
-              </button>
-            </div>
+            <div className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white scale-0 hover:scale-100 transition-transform duration-150 shadow-md" />
           </div>
         </div>
 
-        {/* ── Expanded panel ── */}
+        {/* Controls row */}
+        <div className="flex items-center px-3 gap-2 min-h-[62px]">
+          {/* Left: info block */}
+          <div
+            className="flex flex-col justify-center gap-[0.15rem] min-w-0 w-[88px] shrink-0"
+            aria-live="polite"
+          >
+            <span className="block font-[var(--font-ui)] text-[0.7rem] text-white/[0.88] whitespace-nowrap overflow-hidden text-ellipsis font-semibold leading-tight">
+              {currentPlayingAyah
+                ? `${t("quran.surah", lang)} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
+                : lang === "fr"
+                  ? "En attente"
+                  : lang === "ar"
+                    ? "جاهز"
+                    : "Ready"}
+            </span>
+            <span className="text-[0.6rem] text-white/40 font-mono tabular-nums leading-none">
+              {formatTime(currentTime)}
+              <span className="opacity-50 mx-[2px]">/</span>
+              {formatTime(duration)}
+            </span>
+          </div>
+
+          {/* Center: main playback controls */}
+          <div className="flex-1 flex items-center justify-center gap-1">
+            <button
+              className={cn(
+                mBarBtn,
+                "w-8 h-8 text-[0.72rem] rounded-lg shrink-0",
+              )}
+              onClick={prev}
+              title={t("audio.prev", lang)}
+            >
+              <i className="fas fa-backward-step" />
+            </button>
+
+            <button
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-[#0e3d26] text-[0.9rem] border-none cursor-pointer shadow-lg transition-all duration-150 hover:scale-[1.06] active:scale-[0.94] shrink-0"
+              onClick={toggle}
+              title={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
+              aria-pressed={isPlaying}
+              style={{
+                boxShadow: isPlaying
+                  ? "0 0 0 3px rgba(212,168,32,0.25), 0 4px 12px rgba(0,0,0,0.35)"
+                  : "0 4px 12px rgba(0,0,0,0.3)",
+              }}
+            >
+              <i
+                className={`fas ${isPlaying ? "fa-pause" : "fa-play"} ${isPlaying ? "" : "translate-x-[1px]"}`}
+              />
+            </button>
+
+            <button
+              className={cn(
+                mBarBtn,
+                "w-8 h-8 text-[0.72rem] rounded-lg shrink-0",
+              )}
+              onClick={next}
+              title={t("audio.next", lang)}
+            >
+              <i className="fas fa-forward-step" />
+            </button>
+
+            <button
+              className={cn(
+                mBarBtn,
+                "w-8 h-8 text-[0.72rem] rounded-lg shrink-0",
+              )}
+              onClick={stop}
+              title={t("audio.stop", lang)}
+            >
+              <i className="fas fa-stop" />
+            </button>
+          </div>
+
+          {/* Right: secondary controls */}
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              className={cn(
+                mBarBtnSm(),
+                "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-[26px] min-w-[30px] justify-center",
+              )}
+              onClick={cycleSpeed}
+              title={
+                lang === "fr" ? "Vitesse" : lang === "ar" ? "السرعة" : "Speed"
+              }
+            >
+              {audioSpeed}x
+            </button>
+            <button
+              className={cn(
+                mBarBtnSm(memMode),
+                "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-[26px] min-w-[26px] justify-center",
+              )}
+              onClick={() => set({ memMode: !memMode })}
+              title={t("audio.memorization", lang)}
+              aria-pressed={memMode}
+            >
+              <i className="fas fa-repeat" />
+            </button>
+            <button
+              className={cn(
+                mBarBtnSm(expanded),
+                "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-[26px] min-w-[26px] justify-center",
+              )}
+              onClick={() => setExpanded((v) => !v)}
+              aria-expanded={expanded}
+              title={
+                expanded
+                  ? lang === "fr"
+                    ? "Réduire"
+                    : lang === "ar"
+                      ? "إغلاق"
+                      : "Collapse"
+                  : lang === "fr"
+                    ? "Plus"
+                    : lang === "ar"
+                      ? "المزيد"
+                      : "More"
+              }
+            >
+              <i className={`fas fa-chevron-${expanded ? "down" : "up"}`} />
+            </button>
+          </div>
+        </div>
+
+        {/* Expanded panel */}
         {expanded && (
           <div
-            className="px-5 sm:px-8 pt-[0.85rem] pb-4 border-t border-white/[0.07] bg-black/[0.18] max-sm:pt-[0.6rem] max-sm:pb-3"
-            style={{ animation: "fadeInUp 0.2s var(--ease)" }}
+            className="px-3.5 pt-3 pb-4 border-t border-white/[0.07]"
+            style={{
+              background: "rgba(0,0,0,0.15)",
+              animation: "fadeInUp 0.18s var(--ease, ease)",
+            }}
           >
-            {/* Reciter selection */}
-            <div className="mb-[0.85rem] last:mb-0">
-              <label className="block font-[var(--font-ui)] text-[0.68rem] text-[rgba(240,234,214,0.5)] mb-[0.45rem] font-bold tracking-[0.06em] uppercase">
+            {/* Warsh badge */}
+            {isWarshMode && (
+              <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+                <span
+                  className={cn(
+                    "inline-flex items-center px-2 py-[3px] rounded-full text-[0.6rem] font-[var(--font-ui)] font-bold border whitespace-nowrap",
+                    warshStrictMode
+                      ? "bg-[rgba(212,168,32,0.14)] text-[#f5d785] border-[rgba(212,168,32,0.3)]"
+                      : "bg-white/[0.07] text-white/50 border-white/[0.1]",
+                  )}
+                >
+                  {warshStrictMode ? warshStrictLabel : warshNonStrictLabel}
+                </span>
+                {warshStrictMode && (
+                  <span className="inline-flex items-center gap-1 px-2 py-[3px] rounded-full text-[0.6rem] font-[var(--font-ui)] font-bold border bg-[rgba(212,168,32,0.14)] text-[#f5d785] border-[rgba(212,168,32,0.3)]">
+                    <i className="fas fa-check text-[0.48rem]" />
+                    {warshVerifiedLabel}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Reciter label */}
+            <div className="mb-2.5">
+              <span className="text-[0.6rem] font-bold uppercase tracking-[0.1em] text-[rgba(240,234,214,0.35)] font-[var(--font-ui)]">
                 {t("audio.reciter", lang)}
-              </label>
-              <div
-                className="grid gap-1.5 max-sm:gap-1"
+              </span>
+              <div className="grid grid-cols-3 gap-1 mt-1.5">
+                {currentReciters.map((r) => {
+                  const active = reciter === r.id;
+                  return (
+                    <button
+                      key={r.id}
+                      onClick={() => set({ reciter: r.id })}
+                      className="flex items-center gap-1 px-1.5 py-1.5 rounded-lg text-left transition-all duration-150"
+                      style={{
+                        background: active
+                          ? "rgba(212,168,32,0.16)"
+                          : "rgba(255,255,255,0.04)",
+                        border: active
+                          ? "1px solid rgba(212,168,32,0.45)"
+                          : "1px solid rgba(255,255,255,0.08)",
+                        color: active ? "#f5d785" : "rgba(240,234,214,0.7)",
+                      }}
+                      aria-pressed={active}
+                    >
+                      {active && (
+                        <i
+                          className="fas fa-check text-[0.48rem] shrink-0"
+                          style={{ color: "var(--gold-bright)" }}
+                        />
+                      )}
+                      <span className="text-[0.6rem] font-semibold leading-tight truncate font-[var(--font-ui)]">
+                        {lang === "ar"
+                          ? r.name
+                          : lang === "fr"
+                            ? r.nameFr
+                            : r.nameEn}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Volume */}
+            <div className="flex items-center gap-2 mt-2.5 px-0.5">
+              <button
+                onClick={() => handleVolumeChange(volume > 0 ? 0 : 1)}
+                className="w-6 h-6 flex items-center justify-center text-[0.72rem] shrink-0 rounded-md transition-colors duration-150"
+                style={{ color: "rgba(212,168,32,0.6)" }}
+                title={
+                  volume > 0
+                    ? lang === "fr"
+                      ? "Muet"
+                      : lang === "ar"
+                        ? "كتم"
+                        : "Mute"
+                    : lang === "fr"
+                      ? "Activer"
+                      : lang === "ar"
+                        ? "تشغيل"
+                        : "Unmute"
+                }
+              >
+                <i
+                  className={`fas ${volume === 0 ? "fa-volume-xmark" : volume < 0.5 ? "fa-volume-low" : "fa-volume-high"}`}
+                />
+              </button>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={volume}
+                onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                className="flex-1 h-[3px] rounded-full cursor-pointer"
+                style={{ accentColor: "var(--gold-bright, #d4a820)" }}
+              />
+              <span
+                className="text-[0.58rem] tabular-nums shrink-0 w-6 text-right font-semibold"
                 style={{
-                  gridTemplateColumns: "repeat(auto-fill, minmax(168px, 1fr))",
+                  color: "rgba(212,168,32,0.45)",
+                  fontFamily: "var(--font-ui)",
                 }}
               >
-                {currentReciters.map((r) => (
-                  <button
-                    key={r.id}
-                    className={cn(
-                      "relative text-start rounded-xl px-3 py-2.5 cursor-pointer outline-none",
-                      "border transition-[background,border-color,box-shadow,transform] duration-150",
-                      reciter === r.id
-                        ? "bg-[rgba(212,175,55,0.16)] border-[rgba(212,175,55,0.55)] shadow-[0_2px_10px_rgba(212,175,55,0.15)]"
-                        : "bg-white/[0.04] border-white/10 text-[rgba(240,234,214,0.88)] hover:bg-white/[0.09] hover:border-[rgba(212,175,55,0.4)] hover:-translate-y-px hover:shadow-[0_4px_14px_rgba(0,0,0,0.2)]",
-                      "focus-visible:shadow-[0_0_0_2px_rgba(212,175,55,0.45)]",
-                      "max-sm:px-2.5 max-sm:py-2",
-                    )}
-                    onClick={() => changeReciter(r.id)}
-                    aria-pressed={reciter === r.id}
-                  >
-                    <div
-                      className={cn(
-                        "text-[0.78rem] font-bold leading-[1.25] max-sm:text-[0.72rem]",
-                        reciter === r.id ? "text-[#f5d785]" : "text-white/90",
-                      )}
-                    >
-                      {lang === "ar"
-                        ? r.name
-                        : lang === "fr"
-                          ? r.nameFr
-                          : r.nameEn}
-                    </div>
-                    <div className="mt-[0.12rem] text-[0.65rem] opacity-65 font-[var(--font-quran,serif)]">
-                      {r.style === "murattal"
-                        ? "مرتل"
-                        : r.style === "tartil"
-                          ? "مجود"
-                          : r.style}
-                    </div>
-                    {reciter === r.id && (
-                      <div className="absolute top-[0.38rem] end-[0.45rem] text-[#f5d785] text-[0.68rem]">
-                        <i className="fas fa-check"></i>
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
+                {Math.round(volume * 100)}%
+              </span>
             </div>
 
             {/* Memorization settings */}
             {memMode && (
-              <div className="mb-0">
-                <label className="block font-[var(--font-ui)] text-[0.68rem] text-[rgba(240,234,214,0.5)] mb-[0.45rem] font-bold tracking-[0.06em] uppercase">
+              <div className="mt-2.5">
+                <span className="text-[0.6rem] font-bold uppercase tracking-[0.1em] text-[rgba(240,234,214,0.35)] font-[var(--font-ui)]">
                   {t("audio.memorization", lang)}
-                </label>
-                <div className="flex gap-5 flex-wrap max-sm:flex-col max-sm:gap-2">
-                  <div className="flex items-center gap-2 text-[0.76rem] text-[rgba(240,234,214,0.8)] font-[var(--font-ui)]">
-                    <span>{t("audio.repeat", lang)}</span>
-                    <input
-                      type="number"
-                      min={1}
-                      max={100}
-                      value={memRepeatCount}
-                      onChange={(e) =>
-                        set({ memRepeatCount: parseInt(e.target.value) || 3 })
-                      }
-                      className={cn(
-                        "w-[58px] px-[0.4rem] py-[0.28rem] text-center text-[0.82rem]",
-                        "rounded-md border border-white/15 bg-white/[0.08]",
-                        "text-[rgba(240,234,214,0.95)] font-[var(--font-ui)] outline-none",
-                        "focus:border-[rgba(212,175,55,0.5)] focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]",
-                        "transition-[border-color,box-shadow] duration-150",
-                      )}
-                      aria-label={t("audio.repeat", lang)}
-                    />
-                  </div>
-                  <div className="flex items-center gap-2 text-[0.76rem] text-[rgba(240,234,214,0.8)] font-[var(--font-ui)]">
-                    <span>{t("audio.pause", lang)} (s)</span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={60}
-                      value={memPause}
-                      onChange={(e) =>
-                        set({ memPause: parseInt(e.target.value) || 2 })
-                      }
-                      className={cn(
-                        "w-[58px] px-[0.4rem] py-[0.28rem] text-center text-[0.82rem]",
-                        "rounded-md border border-white/15 bg-white/[0.08]",
-                        "text-[rgba(240,234,214,0.95)] font-[var(--font-ui)] outline-none",
-                        "focus:border-[rgba(212,175,55,0.5)] focus:shadow-[0_0_0_2px_rgba(212,175,55,0.18)]",
-                        "transition-[border-color,box-shadow] duration-150",
-                      )}
-                      aria-label={`${t("audio.pause", lang)} en secondes`}
-                    />
-                  </div>
+                </span>
+                <div className="flex gap-3 flex-wrap mt-1.5">
+                  {[
+                    {
+                      label: t("audio.repeat", lang),
+                      val: memRepeatCount,
+                      key: "memRepeatCount",
+                      min: 1,
+                      max: 100,
+                    },
+                    {
+                      label: `${t("audio.pause", lang)} (s)`,
+                      val: memPause,
+                      key: "memPause",
+                      min: 0,
+                      max: 60,
+                    },
+                  ].map(({ label, val, key, min, max }) => (
+                    <div
+                      key={key}
+                      className="flex items-center gap-1.5 text-[0.7rem] text-[rgba(240,234,214,0.75)] font-[var(--font-ui)]"
+                    >
+                      <span>{label}</span>
+                      <input
+                        type="number"
+                        min={min}
+                        max={max}
+                        value={val}
+                        onChange={(e) =>
+                          set({ [key]: parseInt(e.target.value) || min })
+                        }
+                        className="w-12 px-1.5 py-1 text-center text-[0.72rem] rounded-lg outline-none"
+                        style={{
+                          background: "rgba(255,255,255,0.07)",
+                          border: "1px solid rgba(212,168,32,0.2)",
+                          color: "rgba(240,234,214,0.95)",
+                        }}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
           </div>
         )}
+      </div>
+    );
+  }
+
+  /* ══════════════════════════════════════════
+     DESKTOP — floating music card
+  ══════════════════════════════════════════ */
+  return (
+    <>
+      {/* CSS keyframes */}
+      <style>{`
+        @keyframes waveBar {
+          from { transform: scaleY(0.3); }
+          to   { transform: scaleY(1); }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50%       { opacity: 0.5; transform: scale(0.75); }
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
+      <div
+        ref={cardRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        className={cn(
+          "fixed z-[300] flex flex-col rounded-2xl overflow-hidden select-none touch-none",
+          isDragging ? "cursor-grabbing" : "cursor-grab",
+        )}
+        style={{
+          left: cardPos.x,
+          top: cardPos.y,
+          width: 264,
+          background: "var(--player-glass)",
+          border: "1px solid rgba(212,168,32,0.18)",
+          boxShadow: isPlaying
+            ? "0 8px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(212,168,32,0.2), 0 2px 8px rgba(184,134,11,0.15)"
+            : "0 6px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.07)",
+          transition: isDragging ? "none" : "box-shadow 0.3s ease",
+        }}
+        role="region"
+        aria-label={
+          lang === "ar"
+            ? "مشغل الصوت"
+            : lang === "fr"
+              ? "Lecteur Audio"
+              : "Audio Player"
+        }
+      >
+        {/* Drag handle */}
+        <div className="flex justify-center pt-2.5 pb-1 shrink-0">
+          <div className="w-7 h-[3px] rounded-full bg-white/20" />
+        </div>
+
+        <div className="px-4 pb-4 pt-1 flex flex-col gap-3">
+          {/* Top row: cover + info */}
+          <div className="flex items-center gap-3">
+            <CoverArt isPlaying={isPlaying} />
+            <div className="flex-1 min-w-0">
+              <div
+                className="text-[0.82rem] font-bold leading-tight truncate"
+                style={{
+                  color: "rgba(253,243,213,0.95)",
+                  fontFamily: "var(--font-ui)",
+                }}
+              >
+                {titleLabel ||
+                  (lang === "fr"
+                    ? "Prêt à lire"
+                    : lang === "ar"
+                      ? "جاهز"
+                      : "Ready")}
+              </div>
+              <div
+                className="text-[0.67rem] mt-0.5 truncate"
+                style={{
+                  color: "rgba(212,168,32,0.75)",
+                  fontFamily: "var(--font-ui)",
+                }}
+              >
+                {reciterLabel || "—"}
+              </div>
+              {isWarshMode && warshStrictMode && (
+                <span
+                  className="inline-block mt-0.5 px-1.5 py-[1px] rounded-full text-[0.55rem] font-bold tracking-wide border"
+                  style={{
+                    background: "rgba(212,168,32,0.12)",
+                    color: "#f5d785",
+                    borderColor: "rgba(212,168,32,0.3)",
+                  }}
+                >
+                  Warsh ✓
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Waveform */}
+          <Waveform isPlaying={isPlaying} progress={progress} />
+
+          {/* Seek bar + times */}
+          <div className="flex flex-col gap-1">
+            <div
+              ref={progressRef}
+              onClick={handleSeek}
+              className="relative h-[3px] rounded-full cursor-pointer group"
+              style={{ background: "rgba(255,255,255,0.12)" }}
+              role="progressbar"
+              aria-valuenow={Math.round(progress * 100)}
+              aria-valuemin={0}
+              aria-valuemax={100}
+            >
+              <div
+                className="absolute inset-y-0 left-0 rounded-full"
+                style={{
+                  width: `${progress * 100}%`,
+                  background:
+                    "linear-gradient(90deg, var(--gold), var(--gold-bright))",
+                  boxShadow: "0 0 6px rgba(184,134,11,0.4)",
+                  transition: "width 0.1s linear",
+                }}
+              >
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-2.5 h-2.5 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-150 shadow-md" />
+              </div>
+            </div>
+            <div
+              className="flex justify-between text-[0.6rem] font-mono"
+              style={{ color: "rgba(212,168,32,0.55)" }}
+            >
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
+            </div>
+          </div>
+
+          {/* Main controls */}
+          <div className="flex items-center justify-between">
+            {/* Speed */}
+            <button
+              onClick={cycleSpeed}
+              className="px-2 py-[3px] rounded-md text-[0.62rem] font-bold transition-all duration-150"
+              style={{
+                background: "rgba(212,168,32,0.1)",
+                border: "1px solid rgba(212,168,32,0.2)",
+                color: "rgba(212,168,32,0.75)",
+                fontFamily: "var(--font-ui)",
+              }}
+              title="Vitesse"
+            >
+              {audioSpeed}x
+            </button>
+
+            <IconBtn onClick={prev} title={t("audio.prev", lang)}>
+              <i className="fas fa-backward-step" />
+            </IconBtn>
+
+            {/* Play / Pause */}
+            <button
+              onClick={toggle}
+              title={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
+              aria-pressed={isPlaying}
+              className="w-12 h-12 flex items-center justify-center rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(212,168,32,0.5)]"
+              style={{
+                background: isPlaying
+                  ? "linear-gradient(135deg, var(--emerald-lit,#2d8a5a) 0%, var(--emerald,#1b5e3b) 100%)"
+                  : "linear-gradient(135deg, #1b5e3b 0%, #0e3d26 100%)",
+                border: "1.5px solid rgba(212,168,32,0.35)",
+                color: "#fbf3d5",
+                fontSize: "1.05rem",
+                boxShadow: isPlaying
+                  ? "0 4px 18px rgba(27,94,59,0.5), 0 1px 4px rgba(0,0,0,0.3)"
+                  : "0 2px 12px rgba(0,0,0,0.35)",
+                transform: isPlaying ? "scale(1.04)" : "scale(1)",
+              }}
+            >
+              <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`} />
+            </button>
+
+            <IconBtn onClick={next} title={t("audio.next", lang)}>
+              <i className="fas fa-forward-step" />
+            </IconBtn>
+
+            <IconBtn
+              onClick={() => set({ memMode: !memMode })}
+              title={t("audio.memorization", lang)}
+              active={memMode}
+            >
+              <i className="fas fa-repeat" />
+            </IconBtn>
+          </div>
+
+          {/* Volume */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleVolumeChange(volume > 0 ? 0 : 1)}
+              className="shrink-0 text-[0.72rem] transition-colors duration-150"
+              style={{ color: "rgba(212,168,32,0.6)" }}
+              title={t("audio.volume", lang)}
+            >
+              <i
+                className={`fas ${volume === 0 ? "fa-volume-xmark" : volume < 0.5 ? "fa-volume-low" : "fa-volume-high"}`}
+              />
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={volume}
+              onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+              className="flex-1 h-[3px] rounded-full cursor-pointer"
+              style={{ accentColor: "var(--gold-bright, #d4a820)" }}
+              aria-label="Volume"
+            />
+            <span
+              className="shrink-0 text-[0.58rem] w-6 text-right tabular-nums"
+              style={{
+                color: "rgba(212,168,32,0.5)",
+                fontFamily: "var(--font-ui)",
+              }}
+            >
+              {Math.round(volume * 100)}%
+            </span>
+          </div>
+
+          {/* Expand toggle */}
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            className="flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[0.63rem] transition-all duration-150 w-full"
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              color: "rgba(240,234,214,0.45)",
+              fontFamily: "var(--font-ui)",
+            }}
+          >
+            <i
+              className={`fas fa-chevron-${expanded ? "up" : "down"} text-[0.55rem]`}
+            />
+            {expanded
+              ? lang === "fr"
+                ? "Réduire"
+                : lang === "ar"
+                  ? "إغلاق"
+                  : "Collapse"
+              : lang === "fr"
+                ? "Plus d'options"
+                : lang === "ar"
+                  ? "المزيد"
+                  : "More"}
+          </button>
+
+          {/* Expanded panel */}
+          {expanded && (
+            <div
+              className="flex flex-col gap-3 border-t pt-3"
+              style={{
+                borderColor: "rgba(212,168,32,0.12)",
+                animation: "fadeInUp 0.18s var(--ease, ease)",
+              }}
+            >
+              {/* Reciter grid */}
+              <div>
+                <div
+                  className="text-[0.58rem] font-bold uppercase tracking-widest mb-1.5"
+                  style={{
+                    color: "rgba(212,168,32,0.5)",
+                    fontFamily: "var(--font-ui)",
+                  }}
+                >
+                  {t("audio.reciter", lang)}
+                </div>
+                <div className="grid grid-cols-3 gap-1">
+                  {currentReciters.map((r) => {
+                    const active = reciter === r.id;
+                    return (
+                      <button
+                        key={r.id}
+                        onClick={() => set({ reciter: r.id })}
+                        className="flex items-center gap-1 px-1.5 py-1.5 rounded-lg text-left transition-all duration-150"
+                        style={{
+                          background: active
+                            ? "rgba(27,94,59,0.35)"
+                            : "rgba(255,255,255,0.04)",
+                          border: active
+                            ? "1px solid rgba(212,168,32,0.35)"
+                            : "1px solid rgba(255,255,255,0.07)",
+                          color: active ? "#fbf3d5" : "rgba(240,234,214,0.65)",
+                        }}
+                        aria-pressed={active}
+                      >
+                        {active && (
+                          <i
+                            className="fas fa-check shrink-0 text-[0.48rem]"
+                            style={{ color: "var(--gold-bright)" }}
+                          />
+                        )}
+                        <span
+                          className="text-[0.6rem] font-semibold leading-tight truncate"
+                          style={{ fontFamily: "var(--font-ui)" }}
+                        >
+                          {lang === "ar"
+                            ? r.name
+                            : lang === "fr"
+                              ? r.nameFr
+                              : r.nameEn}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Memorization settings */}
+              {memMode && (
+                <div>
+                  <div
+                    className="text-[0.58rem] font-bold uppercase tracking-widest mb-1.5"
+                    style={{
+                      color: "rgba(212,168,32,0.5)",
+                      fontFamily: "var(--font-ui)",
+                    }}
+                  >
+                    {t("audio.memorization", lang)}
+                  </div>
+                  <div className="flex gap-3 flex-wrap">
+                    {[
+                      {
+                        label: t("audio.repeat", lang),
+                        val: memRepeatCount,
+                        key: "memRepeatCount",
+                        min: 1,
+                        max: 100,
+                      },
+                      {
+                        label: `${t("audio.pause", lang)} (s)`,
+                        val: memPause,
+                        key: "memPause",
+                        min: 0,
+                        max: 60,
+                      },
+                    ].map(({ label, val, key, min, max }) => (
+                      <div key={key} className="flex items-center gap-1.5">
+                        <span
+                          className="text-[0.68rem]"
+                          style={{
+                            color: "rgba(240,234,214,0.7)",
+                            fontFamily: "var(--font-ui)",
+                          }}
+                        >
+                          {label}
+                        </span>
+                        <input
+                          type="number"
+                          min={min}
+                          max={max}
+                          value={val}
+                          onChange={(e) =>
+                            set({ [key]: parseInt(e.target.value) || min })
+                          }
+                          className="w-12 px-1.5 py-1 text-center text-[0.72rem] rounded-lg outline-none"
+                          style={{
+                            background: "rgba(255,255,255,0.07)",
+                            border: "1px solid rgba(212,168,32,0.2)",
+                            color: "rgba(253,243,213,0.9)",
+                            fontFamily: "var(--font-ui)",
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Stop */}
+              <button
+                onClick={stop}
+                className="flex items-center justify-center gap-2 py-1.5 rounded-xl text-[0.7rem] font-semibold transition-all duration-150"
+                style={{
+                  background: "rgba(255,255,255,0.05)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  color: "rgba(240,234,214,0.6)",
+                  fontFamily: "var(--font-ui)",
+                }}
+                title={t("audio.stop", lang)}
+              >
+                <i className="fas fa-stop text-[0.6rem]" />
+                {t("audio.stop", lang)}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

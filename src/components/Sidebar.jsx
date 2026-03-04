@@ -84,7 +84,7 @@ export default function Sidebar() {
         "fixed top-0 bottom-0 z-[200] flex flex-col overflow-hidden",
         "transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]",
         "border-[var(--border-strong)]",
-        isRtl ? "rounded-s-xl border-s" : "rounded-e-xl border-e",
+        isRtl ? "rounded-s-2xl border-s" : "rounded-e-2xl border-e",
       )}
       style={{
         top: "var(--header-h)",
@@ -92,7 +92,9 @@ export default function Sidebar() {
         maxWidth: "100vw",
         background:
           "linear-gradient(180deg, var(--bg-card) 0%, var(--bg-secondary) 100%)",
-        boxShadow: sidebarOpen ? "var(--shadow-xl)" : "none",
+        boxShadow: sidebarOpen
+          ? "4px 0 40px rgba(28,25,23,0.13), 2px 0 12px rgba(28,25,23,0.07)"
+          : "none",
         transform: sidebarOpen
           ? "translateX(0)"
           : isRtl
@@ -104,10 +106,10 @@ export default function Sidebar() {
       aria-label={t("nav.surahList", lang)}
     >
       {/* ── Tabs ── */}
-      <div className="shrink-0 px-3 pt-3 pb-2 border-b border-[var(--border)] backdrop-blur-xl">
+      <div className="shrink-0 px-3 pt-3.5 pb-2.5 border-b border-[var(--border)] backdrop-blur-xl">
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList
-            className="w-full grid grid-cols-auto gap-1 bg-[var(--bg-secondary)] border border-[var(--border-light)] p-1 rounded-lg"
+            className="w-full grid grid-cols-auto gap-1 bg-[var(--bg-secondary)] border border-[var(--border-light)] p-1 rounded-xl"
             style={{
               gridTemplateColumns: `repeat(${availableTabs.length}, 1fr)`,
             }}
@@ -116,7 +118,7 @@ export default function Sidebar() {
               <TabsTrigger
                 key={t2}
                 value={t2}
-                className="text-[0.75rem] py-1.5 rounded-md"
+                className="text-[0.73rem] py-1.5 rounded-[10px] font-semibold"
               >
                 {t2 === "surah" && (
                   <span className="flex items-center gap-1.5">
@@ -144,7 +146,7 @@ export default function Sidebar() {
 
       {/* ── Search (surah tab only) ── */}
       {tab === "surah" && (
-        <div className="shrink-0 px-3 pt-2.5 pb-2 border-b border-[var(--border-light)]">
+        <div className="shrink-0 px-3 pt-2.5 pb-2.5 border-b border-[var(--border-light)]">
           <div className="relative">
             <i
               className={cn(
@@ -159,7 +161,7 @@ export default function Sidebar() {
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
               className={cn(
-                "h-9 text-[0.8rem] rounded-lg",
+                "h-9 text-[0.8rem] rounded-xl",
                 isRtl ? "pr-9 pl-3" : "pl-9 pr-3",
               )}
               aria-label={t("search.placeholder", lang)}
@@ -188,10 +190,10 @@ export default function Sidebar() {
                   className={cn(
                     "group flex items-center w-full gap-3 cursor-pointer text-start outline-none",
                     "transition-all duration-150 border-none",
-                    "px-3 py-2.5",
+                    "px-3 py-[0.6rem]",
                     isActive
-                      ? "bg-[rgba(var(--primary-rgb),0.08)]"
-                      : "bg-transparent hover:bg-[rgba(var(--primary-rgb),0.04)]",
+                      ? "bg-[rgba(var(--primary-rgb),0.07)]"
+                      : "bg-transparent hover:bg-[rgba(var(--primary-rgb),0.035)]",
                   )}
                   style={{
                     borderInlineStart: `3px solid ${isActive ? "var(--primary)" : "transparent"}`,
@@ -204,8 +206,8 @@ export default function Sidebar() {
                   {/* Number badge */}
                   <span
                     className={cn(
-                      "w-8 h-8 shrink-0 flex items-center justify-center rounded-lg",
-                      "font-bold text-[0.72rem] transition-colors duration-150",
+                      "w-8 h-8 shrink-0 flex items-center justify-center rounded-xl",
+                      "font-bold text-[0.71rem] transition-all duration-150",
                       "font-[var(--font-ui)]",
                     )}
                     style={
@@ -214,7 +216,7 @@ export default function Sidebar() {
                             background: "var(--primary)",
                             color: "#fff",
                             boxShadow:
-                              "0 2px 8px rgba(var(--primary-rgb),0.22)",
+                              "0 2px 10px rgba(var(--primary-rgb),0.28)",
                           }
                         : {
                             background: "var(--primary-light)",
@@ -228,12 +230,12 @@ export default function Sidebar() {
                   {/* Surah info */}
                   <div className="flex-1 min-w-0">
                     <span
-                      className="block text-[0.92rem] leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap"
+                      className="block text-[0.93rem] leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap"
                       style={{ fontFamily: "'Amiri', serif" }}
                     >
                       {s.ar}
                     </span>
-                    <span className="block text-[0.66rem] mt-0.5 overflow-hidden text-ellipsis whitespace-nowrap text-[var(--text-muted)] font-[var(--font-ui)]">
+                    <span className="block text-[0.65rem] mt-[2px] overflow-hidden text-ellipsis whitespace-nowrap text-[var(--text-muted)] font-[var(--font-ui)]">
                       {lang === "fr" ? s.fr : lang === "en" ? s.en : ""} ·{" "}
                       {s.ayahs} {t("quran.ayah", lang)}
                     </span>
@@ -243,7 +245,7 @@ export default function Sidebar() {
                   <Badge
                     variant={s.type === "Meccan" ? "gold" : "success"}
                     size="sm"
-                    className="shrink-0 text-[0.58rem] font-bold tracking-wide"
+                    className="shrink-0 text-[0.57rem] font-bold tracking-wide px-1.5"
                   >
                     {s.type === "Meccan"
                       ? lang === "ar"
@@ -289,10 +291,10 @@ export default function Sidebar() {
                   className={cn(
                     "group flex items-center w-full gap-3 cursor-pointer text-start outline-none",
                     "transition-all duration-150 border-none",
-                    "px-3 py-2.5",
+                    "px-3 py-[0.6rem]",
                     isActive
-                      ? "bg-[rgba(var(--primary-rgb),0.08)]"
-                      : "bg-transparent hover:bg-[rgba(var(--primary-rgb),0.04)]",
+                      ? "bg-[rgba(var(--primary-rgb),0.07)]"
+                      : "bg-transparent hover:bg-[rgba(var(--primary-rgb),0.035)]",
                   )}
                   style={{
                     borderInlineStart: `3px solid ${isActive ? "var(--primary)" : "transparent"}`,
@@ -305,8 +307,8 @@ export default function Sidebar() {
                   {/* Number badge */}
                   <span
                     className={cn(
-                      "w-8 h-8 shrink-0 flex items-center justify-center rounded-lg",
-                      "font-bold text-[0.72rem] transition-colors duration-150",
+                      "w-8 h-8 shrink-0 flex items-center justify-center rounded-xl",
+                      "font-bold text-[0.71rem] transition-all duration-150",
                       "font-[var(--font-ui)]",
                     )}
                     style={
@@ -315,7 +317,7 @@ export default function Sidebar() {
                             background: "var(--primary)",
                             color: "#fff",
                             boxShadow:
-                              "0 2px 8px rgba(var(--primary-rgb),0.22)",
+                              "0 2px 10px rgba(var(--primary-rgb),0.28)",
                           }
                         : {
                             background: "var(--primary-light)",
@@ -329,12 +331,12 @@ export default function Sidebar() {
                   {/* Juz info */}
                   <div className="flex-1 min-w-0">
                     <span
-                      className="block text-[0.92rem] leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap"
+                      className="block text-[0.93rem] leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap"
                       style={{ fontFamily: "'Amiri', serif" }}
                     >
                       {j.name}
                     </span>
-                    <span className="block text-[0.66rem] mt-0.5 text-[var(--text-muted)] font-[var(--font-ui)]">
+                    <span className="block text-[0.65rem] mt-[2px] text-[var(--text-muted)] font-[var(--font-ui)]">
                       {t("sidebar.juz", lang)}{" "}
                       {lang === "ar" ? toAr(j.juz) : j.juz}
                       {startSurah && (
@@ -384,7 +386,7 @@ export default function Sidebar() {
                     }
                   }
                 }}
-                className="flex-1 h-9 text-center text-[0.82rem]"
+                className="flex-1 h-9 text-center text-[0.82rem] rounded-xl"
                 aria-label={
                   lang === "ar"
                     ? "رقم الصفحة"
@@ -407,13 +409,16 @@ export default function Sidebar() {
                   lang === "ar" ? "اذهب" : lang === "fr" ? "Aller" : "Go"
                 }
               >
-                <i className="fas fa-arrow-right" aria-hidden="true" />
+                <i
+                  className="fas fa-arrow-right text-[0.75rem]"
+                  aria-hidden="true"
+                />
               </Button>
             </div>
 
             {/* Juz selector for pages */}
-            <div className="px-3 py-2.5 border-b border-[var(--border-light)]">
-              <p className="text-[0.62rem] font-bold uppercase tracking-wider text-[var(--text-muted)] font-[var(--font-ui)] mb-2">
+            <div className="px-3 py-3 border-b border-[var(--border-light)]">
+              <p className="text-[0.6rem] font-bold uppercase tracking-[0.08em] text-[var(--text-muted)] font-[var(--font-ui)] mb-2">
                 {lang === "ar"
                   ? "اختر الجزء"
                   : lang === "fr"
@@ -427,7 +432,7 @@ export default function Sidebar() {
                     <button
                       key={range.juz}
                       className={cn(
-                        "w-[30px] h-[30px] rounded-lg font-bold text-[0.65rem] cursor-pointer outline-none",
+                        "w-[30px] h-[30px] rounded-xl font-bold text-[0.65rem] cursor-pointer outline-none",
                         "transition-all duration-150 border-[1.5px] font-[var(--font-ui)]",
                         isActive
                           ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-[0_2px_6px_rgba(var(--primary-rgb),0.22)] scale-105"
@@ -444,7 +449,7 @@ export default function Sidebar() {
             </div>
 
             {/* Pages grid */}
-            <div className="grid grid-cols-5 gap-1.5 px-3 py-3">
+            <div className="grid grid-cols-5 gap-1.5 px-3 py-3.5">
               {(() => {
                 const range =
                   JUZ_PAGE_RANGES.find((r) => r.juz === selectedJuzForPages) ||
@@ -458,7 +463,7 @@ export default function Sidebar() {
                     <button
                       key={p}
                       className={cn(
-                        "py-[6px] rounded-lg cursor-pointer text-[0.7rem] text-center font-semibold outline-none",
+                        "py-[6px] rounded-xl cursor-pointer text-[0.7rem] text-center font-semibold outline-none",
                         "transition-all duration-150 border-[1.5px] font-[var(--font-ui)]",
                         isActive
                           ? "bg-[var(--primary)] text-white border-[var(--primary)] shadow-[0_2px_6px_rgba(var(--primary-rgb),0.2)] scale-[1.04]"
@@ -478,7 +483,10 @@ export default function Sidebar() {
       </div>
 
       {/* ── Footer info ── */}
-      <div className="shrink-0 px-3 py-2 border-t border-[var(--border)] bg-[var(--bg-secondary)]/50">
+      <div
+        className="shrink-0 px-3.5 py-2.5 border-t border-[var(--border)]"
+        style={{ background: "var(--bg-secondary)" }}
+      >
         <div className="flex items-center justify-between text-[0.6rem] text-[var(--text-muted)] font-[var(--font-ui)]">
           <span>
             {tab === "surah"
@@ -487,7 +495,8 @@ export default function Sidebar() {
                 ? `30 ${lang === "fr" ? "juz" : lang === "ar" ? "جزء" : "juz"}`
                 : `604 ${lang === "fr" ? "pages" : lang === "ar" ? "صفحة" : "pages"}`}
           </span>
-          <span className="opacity-60">
+          <span className="flex items-center gap-1 opacity-60">
+            <i className="fas fa-book-quran text-[0.6rem]" />
             {riwaya === "warsh" ? "ورش" : "حفص"}
           </span>
         </div>
