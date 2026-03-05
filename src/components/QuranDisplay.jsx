@@ -92,33 +92,36 @@ function buildSurahChunks(surahNum, totalAyahs, lang = "fr") {
 
 /* ── Font family mapping ── */
 const FONT_MAP = {
-  /* ── quranwbw.com Uthmanic fonts ── */
+  /* ── Scheherazade New (recommended — no black-dot rendering artifacts) ── */
+  "scheherazade-new":
+    "'Scheherazade New','Amiri Quran','Noto Naskh Arabic',serif",
+  /* ── Amiri Quran (clean alternative) ── */
+  "amiri-quran":
+    "'Amiri Quran','Scheherazade New','Noto Naskh Arabic',serif",
+  /* ── KFGQPC / ME Quran (may show rendering artifacts in some browsers) ── */
   "mushaf-1441h":
-    "'KFGQPC Uthmanic Script HAFS','ME Quran','Amiri Quran','Scheherazade New',serif",
+    "'KFGQPC Uthmanic Script HAFS','ME Quran','Scheherazade New','Amiri Quran',serif",
   "mushaf-tajweed":
-    "'KFGQPC Uthmanic Script HAFS','ME Quran','Amiri Quran','Scheherazade New',serif",
+    "'KFGQPC Uthmanic Script HAFS','ME Quran','Scheherazade New','Amiri Quran',serif",
   "uthmanic-digital":
-    "'ME Quran','KFGQPC Uthmanic Script HAFS','Amiri Quran','Scheherazade New',serif",
+    "'ME Quran','Scheherazade New','Amiri Quran',serif",
   "uthmanic-bold":
-    "'ME Quran Bold','ME Quran','KFGQPC Uthmanic Script HAFS','Amiri Quran',serif",
-  /* ── quranwbw.com Indopak fonts ── */
+    "'ME Quran Bold','ME Quran','Scheherazade New',serif",
+  /* ── Indopak ── */
   "qalam-madinah":
     "'Qalam Madinah','Scheherazade New','Noto Naskh Arabic',serif",
   "qalam-hanafi":
     "'Qalam Hanafi','Scheherazade New','Noto Naskh Arabic',serif",
   "uthman-taha":
-    "'Uthman Taha Hafs','KFGQPC Uthmanic Script HAFS','ME Quran',serif",
-  /* ── legacy aliases (migration) ── */
+    "'Uthman Taha Hafs','KFGQPC Uthmanic Script HAFS','Scheherazade New',serif",
+  /* ── legacy aliases ── */
   "me-quran":
-    "'ME Quran','KFGQPC Uthmanic Script HAFS','Amiri Quran','Scheherazade New',serif",
+    "'ME Quran','Scheherazade New','Amiri Quran',serif",
   scheherazade:
-    "'KFGQPC Uthmanic Script HAFS','ME Quran','Amiri Quran','Scheherazade New',serif",
-  "amiri-quran":
-    "'Amiri Quran','ME Quran','KFGQPC Uthmanic Script HAFS',serif",
-  amiri: "'Amiri','Amiri Quran','ME Quran',serif",
-  "noto-naskh":
-    "'Noto Naskh Arabic','Amiri Quran','ME Quran',serif",
-  lateef: "'Scheherazade New','ME Quran','Noto Naskh Arabic',serif",
+    "'Scheherazade New','Amiri Quran','Noto Naskh Arabic',serif",
+  "amiri": "'Amiri','Amiri Quran','Scheherazade New',serif",
+  "noto-naskh": "'Noto Naskh Arabic','Scheherazade New','Amiri Quran',serif",
+  lateef: "'Scheherazade New','Noto Naskh Arabic',serif",
 };
 
 /* ═══════════════════════════════════════════════════ */
@@ -150,7 +153,7 @@ export default function QuranDisplay() {
     syncOffsetsMs,
   } = state;
 
-  const quranFontCss = FONT_MAP[fontFamily] || FONT_MAP["mushaf-1441h"];
+  const quranFontCss = FONT_MAP[fontFamily] || FONT_MAP["scheherazade-new"];
   const effectiveReciterId = ensureReciterForRiwaya(state.reciter, riwaya);
   const syncKey = `${riwaya}:${effectiveReciterId}`;
   const userSyncOffsetMs = Math.max(
@@ -1201,7 +1204,7 @@ export default function QuranDisplay() {
             );
           })}
 
-          {/* Vue liste classique */}
+          {/* Vue liste — utilise AyahBlock (cohérent avec sourate/juz) */}
           {mushafLayout !== "mushaf" && surahGroups.map((group, gi) => (
             <div key={gi}>
               {!isQCF4 && group.ayahs[0]?.numberInSurah === 1 && (
@@ -1212,30 +1215,34 @@ export default function QuranDisplay() {
                 group.surah !== 1 &&
                 group.surah !== 9 && <Bismillah />}
               <div
-                className={`ayahs-container mushaf-page ${isQCF4 ? "qcf4-container" : ""}`}
+                className={`surah-ayahs-list${isQCF4 ? " qcf4-container" : ""}`}
                 style={ayahsContainerStyle}
               >
                 {group.ayahs.map((ayah) => {
                   const isPlaying =
                     currentPlayingAyah?.ayah === ayah.numberInSurah &&
                     currentPlayingAyah?.surah === ayah.surah?.number;
+                  const trans = translationMap?.get(ayah.number);
                   return (
-                    <span
+                    <AyahBlock
                       key={ayah.number}
-                      className={`ayah-inline ${isPlaying ? "playing" : ""}`}
-                    >
-                      <SmartAyahRenderer
-                        ayah={ayah}
-                        showTajwid={showTajwid}
-                        isPlaying={isPlaying}
-                        surahNum={group.surah}
-                        calibration={karaokeCalibration}
-                        riwaya={riwaya}
-                      />{" "}
-                      <span className="ayah-number">
-                        ﴿{lang === "ar" ? toAr(ayah.numberInSurah) : ayah.numberInSurah}﴾
-                      </span>{" "}
-                    </span>
+                      ayah={ayah}
+                      ayahId={`ayah-pg-${ayah.number}`}
+                      isPlaying={isPlaying}
+                      isActive={activeAyah === ayah.number}
+                      trans={trans}
+                      showTajwid={showTajwid}
+                      showTranslation={showTranslation}
+                      showWordByWord={showWordByWord}
+                      showTransliteration={showTransliteration}
+                      showWordTranslation={showWordTranslation}
+                      surahNum={ayah.surah?.number || group.surah}
+                      calibration={karaokeCalibration}
+                      riwaya={riwaya}
+                      lang={lang}
+                      fontSize={fontSize}
+                      onToggleActive={() => toggleAyah(ayah.number)}
+                    />
                   );
                 })}
               </div>

@@ -31,7 +31,15 @@ export function KaraokeWarshText({
       const hafsWords = hafsText.split(/\s+/).filter((w) => w.length > 0);
       const raw = [];
       for (let i = 0; i < total; i++) {
-        const hw = hafsWords[Math.min(i, hafsWords.length - 1)] || "";
+        // Proportional index: map warsh word i → hafs word proportionally
+        // Fixes sync when warshWords.length ≠ hafsWords.length
+        const hIdx =
+          hafsWords.length <= 1
+            ? 0
+            : Math.round(
+                (i * (hafsWords.length - 1)) / Math.max(1, total - 1),
+              );
+        const hw = hafsWords[hIdx] || "";
         const base = hw.replace(
           /[\u064B-\u065F\u0670\u06D6-\u06ED\u06E1]/g,
           "",

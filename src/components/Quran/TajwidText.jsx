@@ -1,35 +1,17 @@
 import React from 'react';
-import { parseTajwid } from '../../data/tajwidRules';
 
 /**
- * TajwidText component – renders Arabic text with colored tajwid rules.
+ * TajwidText component.
+ *
+ * Tajweed color-coding is disabled: the regex-based rules produce incorrect
+ * highlights on many verses and the GPOS-dependent KFGQPC font renders
+ * diacritics as black dots when text is split into coloured spans.
+ * The component now renders plain un-styled text in all cases.
+ * The `enabled` prop is accepted for API compatibility but ignored.
  */
-const TajwidText = React.memo(function TajwidText({ text, enabled, riwaya }) {
-    if (!enabled || !text) return <span>{text}</span>;
-
-    let segments = [];
-    try {
-        segments = parseTajwid(text, riwaya || 'hafs');
-    } catch (err) {
-        console.warn('Tajwid parsing failed:', err);
-        return <span>{text}</span>;
-    }
-
-    if (!Array.isArray(segments) || segments.length === 0) {
-        return <span>{text}</span>;
-    }
-
-    return (
-        <>
-            {segments.map((seg, i) =>
-                seg.ruleId ? (
-                    <span key={i} className={`tajwid tajwid-${seg.ruleId}`}>{seg.text}</span>
-                ) : (
-                    <span key={i}>{seg.text}</span>
-                )
-            )}
-        </>
-    );
+const TajwidText = React.memo(function TajwidText({ text }) {
+    return <span>{text}</span>;
 });
 
 export default TajwidText;
+

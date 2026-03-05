@@ -177,9 +177,9 @@ export default function App() {
 
   return (
     <div
-      className="flex flex-col h-screen h-[100dvh] w-full overflow-hidden"
+      className="app-root flex flex-col h-screen h-[100dvh] w-full overflow-hidden"
       dir={lang === "ar" ? "rtl" : "ltr"}
-      style={{ background: "var(--bg-primary)" }}
+      style={{ backgroundColor: "var(--bg-primary)" }}
     >
       {/* ── Header ── */}
       <Header />

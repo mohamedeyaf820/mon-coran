@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { toAr, getSurah, surahName } from "../data/surahs";
+import { JUZ_DATA } from "../data/juz";
 import { getDefaultReciterId } from "../data/reciters";
 import audioService from "../services/audioService";
 import { clearCache } from "../services/quranAPI";
@@ -226,6 +227,22 @@ export default function Header() {
   const surahMeta = getSurah(currentSurah);
   const arabicName = surahMeta?.ar || "";
   const translatedName = surahName(currentSurah, lang);
+
+  /* ── Juz info — overrides surah display when in juz mode ── */
+  const juzMeta = JUZ_DATA?.[currentJuz - 1];
+  // Title shown in center pill
+  const centerTitle =
+    displayMode === "juz"
+      ? lang === "ar"
+        ? `جزء ${toAr(currentJuz)}`
+        : `Juz ${currentJuz}`
+      : lang === "ar"
+        ? arabicName
+        : translatedName;
+  // Arabic sub‑name below the title
+  const centerArabicSub =
+    displayMode === "juz" ? (juzMeta?.name || "") : arabicName;
+
   const ayahWord = lang === "fr" ? "versets" : lang === "ar" ? "آية" : "ayahs";
   /* Loaded ayah count — same reference across all three modes */
   const ayahCount = loadedAyahCount
@@ -459,7 +476,7 @@ export default function Header() {
                 className="text-[0.82rem] sm:text-[0.92rem] font-bold text-white leading-tight truncate max-w-[120px] sm:max-w-[200px]"
                 style={{ fontFamily: "var(--font-ui)" }}
               >
-                {lang === "ar" ? arabicName : translatedName}
+                {centerTitle}
               </span>
 
               {/* Subtitle — simplified on mobile */}
@@ -473,10 +490,10 @@ export default function Header() {
                       {lang === "ar" ? toAr(currentSurah) : `#${currentSurah}`}
                     </span>
                     {/* Arabic name only on sm+ to avoid overflow on mobile */}
-                    {arabicName !== translatedName && (
+                    {centerArabicSub !== centerTitle && (
                       <>
                         <span className="hidden sm:inline opacity-30">·</span>
-                        <span className="hidden sm:inline">{arabicName}</span>
+                        <span className="hidden sm:inline">{centerArabicSub}</span>
                       </>
                     )}
                     <span className="opacity-30">·</span>
@@ -501,10 +518,13 @@ export default function Header() {
                   </>
                 ) : (
                   <>
+                    {centerArabicSub && (
+                      <>
+                        <span className="font-semibold text-white/55" style={{ fontFamily: "var(--font-quran)", fontSize: "0.72rem" }}>{centerArabicSub}</span>
+                        <span className="opacity-30">·</span>
+                      </>
+                    )}
                     <span className="opacity-70">
-                      {lang === "fr" ? "Juz" : lang === "ar" ? "جزء" : "Juz"}
-                    </span>
-                    <span className="font-semibold text-white/55">
                       {lang === "ar" ? toAr(currentJuz) : currentJuz}
                     </span>
                     <span className="opacity-30">/</span>

@@ -1027,8 +1027,9 @@
 }
 
 .tajwid {
-    font-weight: 650;
-    text-shadow: 0 0 0.5px currentColor;
+    /* Removed text-shadow — was causing black dot artifacts on KFGQPC Hafs font
+       (tashkeel characters rendered with 0.5px blur producing visible specks) */
+    font-synthesis: none;
 }
 
 /* ═══════════════════════════════════════

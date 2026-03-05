@@ -24,6 +24,23 @@ export default function SettingsModal() {
   // Font options — same categories as quranwbw.com
   const FONT_CATEGORIES = [
     {
+      label: lang === 'fr' ? 'Recommandée (sans artefacts visuels)' : 'Recommended (no rendering artifacts)',
+      fonts: [
+        {
+          id: 'scheherazade-new',
+          label: 'Scheherazade New',
+          hint: lang === 'fr' ? 'Rendu optimal — aucun artefact visuel' : 'Best rendering — no visual artifacts',
+          css: "'Scheherazade New','Amiri Quran','Noto Naskh Arabic',serif",
+        },
+        {
+          id: 'amiri-quran',
+          label: 'Amiri Quran',
+          hint: lang === 'fr' ? 'Police Naskh classique' : 'Classic Naskh typeface',
+          css: "'Amiri Quran','Scheherazade New','Noto Naskh Arabic',serif",
+        },
+      ],
+    },
+    {
       label: lang === 'fr' ? 'Écriture Ottomane (Uthmanique)' : 'Uthmanic Script',
       fonts: [
         {
@@ -425,16 +442,49 @@ export default function SettingsModal() {
 
           {/* Font size */}
           <div className="setting-group">
-            <label className="setting-label">{t('settings.fontSize', lang)}: {fontSize}px</label>
-            <input
-              type="range"
-              min={18}
-              max={48}
-              value={fontSize}
-              onChange={e => dispatch({ type: 'SET_FONT_SIZE', payload: parseInt(e.target.value) })}
-              className="setting-slider"
-              aria-label={`${t('settings.fontSize', lang)}: ${fontSize}px`}
-            />
+            <label className="setting-label">
+              {t('settings.fontSize', lang)}
+              <span className="setting-value-badge" style={{ marginInlineStart: '0.5rem', fontVariantNumeric: 'tabular-nums' }}>{fontSize}px</span>
+            </label>
+            <div className="font-size-stepper">
+              <button
+                className="fss-btn"
+                onClick={() => dispatch({ type: 'SET_FONT_SIZE', payload: Math.max(18, fontSize - 2) })}
+                disabled={fontSize <= 18}
+                aria-label={lang === 'fr' ? 'Réduire la taille' : lang === 'ar' ? 'تصغير الخط' : 'Decrease size'}
+                title={lang === 'fr' ? 'Réduire' : 'Decrease'}
+              >
+                <span style={{ fontSize: '0.72rem', fontWeight: 800, fontFamily: 'var(--font-ui)', lineHeight: 1 }}>A</span>
+              </button>
+              <div className="fss-track" role="presentation">
+                <div className="fss-bar" style={{ width: `${((fontSize - 18) / (48 - 18)) * 100}%` }} />
+              </div>
+              <button
+                className="fss-btn"
+                onClick={() => dispatch({ type: 'SET_FONT_SIZE', payload: Math.min(48, fontSize + 2) })}
+                disabled={fontSize >= 48}
+                aria-label={lang === 'fr' ? 'Augmenter la taille' : lang === 'ar' ? 'تكبير الخط' : 'Increase size'}
+                title={lang === 'fr' ? 'Agrandir' : 'Increase'}
+              >
+                <span style={{ fontSize: '1.15rem', fontWeight: 800, fontFamily: 'var(--font-ui)', lineHeight: 1 }}>A</span>
+              </button>
+            </div>
+            <div
+              className="font-size-preview-ar"
+              style={{
+                fontFamily: 'var(--font-quran)',
+                fontSize: `${Math.round(fontSize * 0.55)}px`,
+                direction: 'rtl',
+                textAlign: 'center',
+                marginTop: '0.5rem',
+                color: 'var(--text-quran)',
+                lineHeight: 2.2,
+                minHeight: '2.5rem',
+                opacity: 0.9,
+              }}
+            >
+              بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
+            </div>
           </div>
 
           {/* Font family — grouped by category like quranwbw.com */}

@@ -667,3 +667,80 @@
     max-width: 130px;
     white-space: normal;
 }
+
+/* ═══════════════════════════════════════
+   Font Size Stepper (A- / track / A+)
+   ═══════════════════════════════════════ */
+.setting-value-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1rem 0.55rem;
+    border-radius: var(--r-pill);
+    background: rgba(var(--primary-rgb), 0.09);
+    color: var(--primary);
+    font-size: 0.68rem;
+    font-weight: 700;
+    font-family: var(--font-ui);
+    letter-spacing: 0.3px;
+    border: 1px solid rgba(var(--primary-rgb), 0.18);
+    vertical-align: middle;
+}
+
+.font-size-stepper {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+}
+
+.fss-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: var(--r-md);
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background var(--t-fast), border-color var(--t-fast), opacity var(--t-fast);
+    outline: none;
+    padding: 0;
+    line-height: 1;
+}
+
+.fss-btn:hover:not(:disabled) {
+    background: rgba(var(--primary-rgb), 0.08);
+    border-color: rgba(var(--primary-rgb), 0.35);
+    color: var(--primary);
+}
+
+.fss-btn:active:not(:disabled) {
+    background: rgba(var(--primary-rgb), 0.14);
+    transform: scale(0.93);
+}
+
+.fss-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.fss-track {
+    flex: 1;
+    height: 5px;
+    background: var(--border);
+    border-radius: 9999px;
+    overflow: hidden;
+    position: relative;
+}
+
+.fss-bar {
+    height: 100%;
+    background: linear-gradient(90deg, rgba(var(--primary-rgb), 0.55), var(--primary));
+    border-radius: 9999px;
+    transition: width 0.15s ease;
+    min-width: 0;
+}
+

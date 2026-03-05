@@ -337,11 +337,11 @@
 
     /* ── Fonts ── */
     --font-quran:
-        "KFGQPC Uthmanic Script HAFS", "ME Quran", "Amiri Quran", "Scheherazade New",
-        "Noto Naskh Arabic", serif;
+        "Scheherazade New", "Amiri Quran", "Noto Naskh Arabic",
+        "KFGQPC Uthmanic Script HAFS", "ME Quran", serif;
     --font-quran-tajweed:
-        "KFGQPC Uthmanic Script HAFS", "ME Quran", "Amiri Quran", "Noto Naskh Arabic",
-        "Scheherazade New", serif;
+        "Scheherazade New", "Amiri Quran", "Noto Naskh Arabic",
+        "KFGQPC Uthmanic Script HAFS", "ME Quran", serif;
     --font-ui:
         "Cairo", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
         sans-serif;
@@ -1135,6 +1135,52 @@
 html {
     scroll-behavior: smooth;
     height: 100%;
+}
+
+/* ══════════════════════════════════════════════════
+   Platform Background — atmospheric depth + pattern
+   ══════════════════════════════════════════════════ */
+.app-root {
+    background-image:
+        radial-gradient(ellipse 70% 40% at 15% 0%,  rgba(27, 94, 59, 0.055) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 35% at 88% 98%, rgba(184,134,11, 0.045) 0%, transparent 55%),
+        radial-gradient(circle, rgba(27, 94, 59, 0.026) 1.2px, transparent 1.2px);
+    background-size: auto, auto, 28px 28px;
+}
+[data-theme="dark"] .app-root {
+    background-image:
+        radial-gradient(ellipse 70% 40% at 15% 0%,  rgba(27, 94, 59, 0.14) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 35% at 88% 98%, rgba(184,134,11, 0.10) 0%, transparent 50%),
+        radial-gradient(circle, rgba(255,255,255, 0.02) 1.2px, transparent 1.2px);
+    background-size: auto, auto, 28px 28px;
+}
+[data-theme="sepia"] .app-root {
+    background-image:
+        radial-gradient(ellipse 70% 40% at 15% 0%,  rgba(120, 80, 30, 0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 35% at 88% 98%, rgba(184,134,11, 0.06)  0%, transparent 50%),
+        radial-gradient(circle, rgba(120, 80, 30, 0.028) 1.2px, transparent 1.2px);
+    background-size: auto, auto, 28px 28px;
+}
+[data-theme="ocean"] .app-root {
+    background-image:
+        radial-gradient(ellipse 70% 40% at 15% 0%,  rgba(2, 136, 209, 0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 35% at 88% 98%, rgba(0, 188, 212, 0.05) 0%, transparent 50%),
+        radial-gradient(circle, rgba(2, 136, 209, 0.028) 1.2px, transparent 1.2px);
+    background-size: auto, auto, 28px 28px;
+}
+[data-theme="forest"] .app-root {
+    background-image:
+        radial-gradient(ellipse 70% 40% at 15% 0%,  rgba(67, 160, 71, 0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 35% at 88% 98%, rgba(27, 94, 59, 0.05)  0%, transparent 50%),
+        radial-gradient(circle, rgba(67, 160, 71, 0.028) 1.2px, transparent 1.2px);
+    background-size: auto, auto, 28px 28px;
+}
+[data-theme="night-blue"] .app-root {
+    background-image:
+        radial-gradient(ellipse 70% 40% at 15% 0%,  rgba(100, 255, 218, 0.08) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 35% at 88% 98%, rgba(184, 134, 11, 0.09) 0%, transparent 50%),
+        radial-gradient(circle, rgba(100, 255, 218, 0.022) 1.2px, transparent 1.2px);
+    background-size: auto, auto, 28px 28px;
 }
 
 body {
