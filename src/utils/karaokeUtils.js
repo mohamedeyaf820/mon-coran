@@ -1,35 +1,55 @@
 import { getReciter } from '../data/reciters';
 
+/**
+ * Unified karaoke calibration format:
+ *   offsetSec     – time to add to currentTime before computing progress
+ *                   negative = text appears slightly AFTER audio (lag)
+ *                   positive = text appears slightly BEFORE audio (lead)
+ *   smoothing     – 0‑1 exponential smoothing (lower = snappier, higher = smoother)
+ *   lagWordsBase  – word-index lag for short ayahs (< 24 words)
+ *   lagWordsLong  – word-index lag for long ayahs  (≥ 24 words)
+ *
+ * Typical values:
+ *   – Murattal (normal speed): offsetSec -0.30 to -0.40
+ *   – Tartil   (slower)      : offsetSec -0.40 to -0.55
+ *   – Mujawwad (very slow)   : offsetSec -0.55 to -0.70
+ */
+/**
+ * lagWordsBase / lagWordsLong = 0 means we rely purely on offsetSec for timing.
+ * Set to 1 only if you observe the highlight still running 1 word ahead of speech.
+ */
+// Calibration revue — smoothing élevé pour réactivité maximale
+// offsetSec légèrement négatif = infime avance audio / légère sécurité
 const KARAOKE_DEFAULTS = {
-    hafs: { lagTuning: 0.9, extraLagSec: 0.14, lagWordsBase: 1, lagWordsLong: 2, smoothing: 0.24 },
-    warsh: { lagTuning: 0.86, extraLagSec: 0.3, lagWordsBase: 2, lagWordsLong: 3, smoothing: 0.22 },
+    hafs:  { offsetSec: -0.10, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.58 },
+    warsh: { offsetSec: -0.12, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.55 },
 };
 
 const KARAOKE_STYLE_PRESETS = {
     hafs: {
-        murattal: { lagTuning: 0.89, extraLagSec: 0.16, lagWordsBase: 2, lagWordsLong: 3, smoothing: 0.23 },
-        tartil: { lagTuning: 0.87, extraLagSec: 0.22, lagWordsBase: 2, lagWordsLong: 3, smoothing: 0.21 },
-        mujawwad: { lagTuning: 0.85, extraLagSec: 0.28, lagWordsBase: 2, lagWordsLong: 4, smoothing: 0.2 },
+        murattal: { offsetSec: -0.10, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.58 },
+        tartil:   { offsetSec: -0.18, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.52 },
+        mujawwad: { offsetSec: -0.28, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.46 },
     },
     warsh: {
-        murattal: { lagTuning: 0.85, extraLagSec: 0.32, lagWordsBase: 2, lagWordsLong: 4, smoothing: 0.21 },
-        tartil: { lagTuning: 0.84, extraLagSec: 0.36, lagWordsBase: 3, lagWordsLong: 4, smoothing: 0.2 },
-        mujawwad: { lagTuning: 0.83, extraLagSec: 0.4, lagWordsBase: 3, lagWordsLong: 5, smoothing: 0.19 },
+        murattal: { offsetSec: -0.12, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.55 },
+        tartil:   { offsetSec: -0.20, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.50 },
+        mujawwad: { offsetSec: -0.30, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.45 },
     },
 };
 
 const KARAOKE_RECITER_OVERRIDES = {
     hafs: {
-        'ar.alafasy': { lagTuning: 0.88, extraLagSec: 0.18, lagWordsBase: 2, lagWordsLong: 3, smoothing: 0.22 },
-        'ar.husary': { lagTuning: 0.92, extraLagSec: 0.1, lagWordsBase: 1, lagWordsLong: 2, smoothing: 0.26 },
-        'ar.minshawi': { lagTuning: 0.89, extraLagSec: 0.16, lagWordsBase: 2, lagWordsLong: 3, smoothing: 0.22 },
-        'ar.abdulbasitmurattal': { lagTuning: 0.87, extraLagSec: 0.2, lagWordsBase: 2, lagWordsLong: 3, smoothing: 0.2 },
-        'ar.abdulbasitmujawwad': { lagTuning: 0.84, extraLagSec: 0.32, lagWordsBase: 3, lagWordsLong: 5, smoothing: 0.19 },
+        'ar.alafasy':             { offsetSec: -0.08, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.62 },
+        'ar.husary':              { offsetSec: -0.05, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.60 },
+        'ar.minshawi':            { offsetSec: -0.12, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.58 },
+        'ar.abdulbasitmurattal':  { offsetSec: -0.14, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.55 },
+        'ar.abdulbasitmujawwad':  { offsetSec: -0.28, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.46 },
     },
     warsh: {
-        'warsh_abdulbasit': { lagTuning: 0.84, extraLagSec: 0.34, lagWordsBase: 2, lagWordsLong: 4, smoothing: 0.2 },
-        'warsh_ibrahim_aldosari': { lagTuning: 0.86, extraLagSec: 0.3, lagWordsBase: 2, lagWordsLong: 3, smoothing: 0.22 },
-        'warsh_yassin': { lagTuning: 0.88, extraLagSec: 0.24, lagWordsBase: 2, lagWordsLong: 3, smoothing: 0.24 },
+        'warsh_abdulbasit':        { offsetSec: -0.15, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.52 },
+        'warsh_ibrahim_aldosari':  { offsetSec: -0.12, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.55 },
+        'warsh_yassin':            { offsetSec: -0.10, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.57 },
     },
 };
 
@@ -37,20 +57,17 @@ export function getKaraokeCalibration(reciterId, riwaya = 'hafs') {
     const family = riwaya === 'warsh' ? 'warsh' : 'hafs';
     const defaults = KARAOKE_DEFAULTS[family] || KARAOKE_DEFAULTS.hafs;
     const reciter = reciterId ? getReciter(reciterId, family) : null;
-    const stylePreset = reciter?.style ? (KARAOKE_STYLE_PRESETS[family]?.[reciter.style] || {}) : {};
-    const cdnPreset = reciter?.cdnType === 'everyayah'
-        ? { lagTuning: -0.02, extraLagSec: 0.08, lagWordsBase: 1, lagWordsLong: 1, smoothing: -0.02 }
+    const stylePreset = reciter?.style
+        ? (KARAOKE_STYLE_PRESETS[family]?.[reciter.style] || {})
         : {};
-    const override = reciterId ? (KARAOKE_RECITER_OVERRIDES[family]?.[reciterId] || {}) : {};
+    const override = reciterId
+        ? (KARAOKE_RECITER_OVERRIDES[family]?.[reciterId] || {})
+        : {};
 
     return {
-        ...defaults,
-        ...stylePreset,
-        ...override,
-        lagTuning: (override.lagTuning ?? stylePreset.lagTuning ?? defaults.lagTuning) + (cdnPreset.lagTuning || 0),
-        extraLagSec: (override.extraLagSec ?? stylePreset.extraLagSec ?? defaults.extraLagSec) + (cdnPreset.extraLagSec || 0),
-        lagWordsBase: (override.lagWordsBase ?? stylePreset.lagWordsBase ?? defaults.lagWordsBase) + (cdnPreset.lagWordsBase || 0),
-        lagWordsLong: (override.lagWordsLong ?? stylePreset.lagWordsLong ?? defaults.lagWordsLong) + (cdnPreset.lagWordsLong || 0),
-        smoothing: (override.smoothing ?? stylePreset.smoothing ?? defaults.smoothing) + (cdnPreset.smoothing || 0),
+        offsetSec:    override.offsetSec    ?? stylePreset.offsetSec    ?? defaults.offsetSec,
+        smoothing:    override.smoothing    ?? stylePreset.smoothing    ?? defaults.smoothing,
+        lagWordsBase: override.lagWordsBase ?? stylePreset.lagWordsBase ?? defaults.lagWordsBase,
+        lagWordsLong: override.lagWordsLong ?? stylePreset.lagWordsLong ?? defaults.lagWordsLong,
     };
 }

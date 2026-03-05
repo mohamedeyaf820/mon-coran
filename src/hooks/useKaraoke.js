@@ -29,69 +29,58 @@ import audioService from "../services/audioService";
  */
 
 export function useKaraoke({ isFirstAyah, wordCount, calibration }) {
-  const [progress, setProgress] = useState(0);
-  const rafRef = useRef(null);
+  const [progress,  setProgress]  = useState(0);
+  const [seekCount, setSeekCount] = useState(0);
+  const rafRef      = useRef(null);
   const smoothedRef = useRef(0);
-  const lastTimeRef = useRef(0);
+  const lastTimeRef = useRef(-1); // -1 = not yet initialised
 
-  // Extract simple parameters with strong defaults to make highlight very early
-  const offsetSec = calibration?.offsetSec ?? -0.9; // large negative shift: texte très en avance
-  const smoothing = calibration?.smoothing ?? 0.12; // peu de lissage -> réaction très rapide
-
-  // Optional guard rails to avoid text getting too far behind (heavily reduced)
-  const minLagSec = calibration?.minLagSec ?? 0.0;
-  const maxLagSec = calibration?.maxLagSec ?? 0.05; // presque pas de lag autorisé
+  // offsetSec négatif = highlight légèrement en retard sur l'audio (sécurité)
+  // offsetSec positif = highlight en avance (trop tôt)
+  const offsetSec = calibration?.offsetSec ?? -0.10;
+  // smoothing élevé (0.6+) = très réactif / snappy ; bas = lent, fluide
+  const smoothing  = calibration?.smoothing  ?? 0.55;
 
   useEffect(() => {
+    // Reset on every calibration / ayah change
+    smoothedRef.current = 0;
+    lastTimeRef.current = -1;
     let running = true;
 
     const tick = () => {
       if (!running) return;
 
-      const dur = audioService.duration || 0;
-      const t = audioService.currentTime || 0;
+      const dur = audioService.duration  || 0;
+      const t   = audioService.currentTime || 0;
 
       if (dur > 0) {
-        // Base linear progress with global offset
-        let rawProgress = (t + offsetSec) / dur;
+        const prevT = lastTimeRef.current;
 
-        // Clamp to [0, 1]
-        if (rawProgress < 0) rawProgress = 0;
-        else if (rawProgress > 1) rawProgress = 1;
+        // Détection de saut (seek ou retour arrière)
+        if (prevT >= 0) {
+          const delta = t - prevT;
+          const bigJump      = Math.abs(delta) > 1.5;
+          const backwardSeek = delta < -0.25;
 
-        // Very light adjustment to keep text slightly behind if desired
-        // Convert lag window to progress fraction
-        const minLagP = minLagSec > 0 ? minLagSec / dur : 0;
-        const maxLagP = maxLagSec > 0 ? maxLagSec / dur : 0;
-
-        let target = rawProgress;
-
-        // If we want some minimal lag, ensure target is not ahead too much
-        if (maxLagP > 0 && lastTimeRef.current > 0) {
-          const audioDelta = (t - lastTimeRef.current) / dur;
-          // If audio jumped forward a lot, allow small catch-up but keep within window
-          if (audioDelta > 0.02) {
-            // keep within [rawProgress - maxLagP, rawProgress - minLagP]
-            const upper = Math.max(0, rawProgress - minLagP);
-            const lower = Math.max(0, rawProgress - maxLagP);
-            const prev = smoothedRef.current || 0;
-            if (prev > upper) target = upper;
-            else if (prev < lower) target = lower;
+          if (bigJump || backwardSeek) {
+            // Snap immédiat sans smoothing
+            const snapped = Math.max(0, Math.min(1, (t + offsetSec) / dur));
+            smoothedRef.current = snapped;
+            if (backwardSeek || bigJump) {
+              setSeekCount(c => c + 1);
+            }
           }
         }
 
-        // Smoothing: simple exponential interpolation
-        const prev = smoothedRef.current || 0;
-        let next;
-        if (smoothing <= 0) {
-          next = target;
-        } else {
-          const alpha = Math.min(0.95, Math.max(0.05, smoothing));
-          next = prev + (target - prev) * alpha;
-        }
+        // Progression lissée — alpha élevé = très réactif
+        const rawProgress = Math.max(0, Math.min(1, (t + offsetSec) / dur));
+        const prev  = smoothedRef.current;
+        // Alpha clamped : 0.45–0.95 pour rester toujours réactif
+        const alpha = Math.min(0.95, Math.max(0.45, smoothing));
+        let   next  = prev + (rawProgress - prev) * alpha;
 
-        // Do not go backwards: monotonically non-decreasing
-        if (next < prev) next = prev;
+        // Monotone : on n'autorise le retour arrière que si un seek a été détecté
+        if (next < prev - 0.005) next = prev;
 
         smoothedRef.current = next;
         setProgress(next);
@@ -107,55 +96,24 @@ export function useKaraoke({ isFirstAyah, wordCount, calibration }) {
       running = false;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-    // NOTE: we deliberately do NOT depend on audioService here,
-    // only on configuration inputs.
-  }, [offsetSec, smoothing, minLagSec, maxLagSec, isFirstAyah, wordCount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [offsetSec, smoothing, isFirstAyah, wordCount]);
 
-  return progress;
+  return { progress, seekCount };
 }
 
 /**
  * Helper to build a simple calibration profile.
  * You can adjust these per-reciter / per-riwaya in one place.
  */
-export function buildKaraokeCalibration({
-  reciterId,
-  riwaya,
-  isFirstAyah,
-  wordCount,
-}) {
-  // Base defaults
-  // Very strong negative offset: highlight is aggressively early in the ayah
-  let offsetSec = -1.0;
-  // Very light smoothing to keep movement responsive
-  let smoothing = 0.12;
-  let minLagSec = 0.0;
-  // Minimal lag window: we almost never allow the text to trail behind
-  let maxLagSec = 0.05;
-
-  // Example: tweak by riwaya or reciter if needed
-  if (riwaya === "warsh") {
-    // For Warsh, push slightly further ahead as requested
-    offsetSec = -1.1;
-    smoothing = 0.14;
-  }
-
-  // First ayah (with basmala) often has a longer intro → slightly different offset
+export function buildKaraokeCalibration({ reciterId, riwaya, isFirstAyah, wordCount }) {
+  let offsetSec    = riwaya === "warsh" ? -0.32 : -0.28;
+  let smoothing    = 0.12;
+  let lagWordsBase = 0;
+  let lagWordsLong = 0;
+  // First ayah sometimes has a longer intro (basmala) -> tiny extra lag
   if (isFirstAyah) {
-    offsetSec -= 0.1;
+    offsetSec -= 0.06;
   }
-
-  // Long verses: allow a tiny bit more lag so text doesn’t rush ahead
-  if (wordCount >= 24) {
-    maxLagSec += 0.05;
-  } else if (wordCount >= 16) {
-    maxLagSec += 0.02;
-  }
-
-  return {
-    offsetSec,
-    smoothing,
-    minLagSec,
-    maxLagSec,
-  };
+  return { offsetSec, smoothing, lagWordsBase, lagWordsLong };
 }

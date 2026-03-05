@@ -59,7 +59,12 @@ const VALID_LANGS = ['fr', 'en'];
 const VALID_THEMES = ['light', 'dark', 'sepia', 'ocean', 'forest', 'night-blue'];
 const VALID_RIWAYAS = ['hafs', 'warsh'];
 const VALID_DISPLAY_MODES = ['surah', 'page', 'juz'];
-const VALID_FONTS = ['scheherazade', 'amiri', 'amiri-quran', 'noto-naskh', 'lateef'];
+const VALID_FONTS = [
+  'mushaf-1441h', 'mushaf-tajweed', 'uthmanic-digital', 'uthmanic-bold',
+  'qalam-madinah', 'qalam-hanafi', 'uthman-taha',
+  // legacy fallbacks kept for migration
+  'scheherazade', 'me-quran', 'amiri', 'amiri-quran', 'noto-naskh', 'lateef',
+];
 
 const DEFAULT_SETTINGS = {
   lang: 'fr',
@@ -67,12 +72,14 @@ const DEFAULT_SETTINGS = {
   riwaya: 'hafs',
   reciter: 'ar.alafasy',
   fontSize: 28,
-  fontFamily: 'scheherazade',
+  fontFamily: 'mushaf-1441h',
   translationLang: 'fr',
   showTranslation: true,
   showTajwid: true,
   displayMode: 'surah',      // 'surah' | 'page' | 'juz'
+  mushafLayout: 'list',       // 'list' | 'mushaf'
   audioSpeed: 1,
+  volume: 1,
   continuousPlay: true,
   warshStrictMode: true,
   syncOffsetsMs: {},
@@ -121,11 +128,12 @@ function sanitizeSettings(settings) {
     riwaya: VALID_RIWAYAS.includes(safeInput.riwaya) ? safeInput.riwaya : 'hafs',
     reciter: typeof safeInput.reciter === 'string' ? safeInput.reciter.slice(0, 50) : 'ar.alafasy',
     fontSize: Math.max(16, Math.min(48, Number(safeInput.fontSize) || 28)),
-    fontFamily: VALID_FONTS.includes(safeInput.fontFamily) ? safeInput.fontFamily : 'scheherazade',
+    fontFamily: VALID_FONTS.includes(safeInput.fontFamily) ? safeInput.fontFamily : 'mushaf-1441h',
     translationLang: VALID_LANGS.includes(safeInput.translationLang) ? safeInput.translationLang : 'fr',
     showTranslation: Boolean(safeInput.showTranslation),
     showTajwid: Boolean(safeInput.showTajwid),
     displayMode: VALID_DISPLAY_MODES.includes(safeInput.displayMode) ? safeInput.displayMode : 'surah',
+    mushafLayout: ['list', 'mushaf'].includes(safeInput.mushafLayout) ? safeInput.mushafLayout : 'list',
     audioSpeed: [0.5, 0.75, 1, 1.25, 1.5, 2].includes(safeInput.audioSpeed) ? safeInput.audioSpeed : 1,
     continuousPlay: Boolean(safeInput.continuousPlay),
     warshStrictMode: Boolean(safeInput.warshStrictMode),
@@ -135,6 +143,11 @@ function sanitizeSettings(settings) {
     nightEnd: /^\d{2}:\d{2}$/.test(safeInput.nightEnd) ? safeInput.nightEnd : '06:00',
     nightTheme: VALID_THEMES.includes(safeInput.nightTheme) ? safeInput.nightTheme : 'dark',
     dayTheme: VALID_THEMES.includes(safeInput.dayTheme) ? safeInput.dayTheme : 'light',
+    volume: typeof safeInput.volume === 'number' ? Math.max(0, Math.min(1, safeInput.volume)) : 1,
+    showWordByWord: safeInput.showWordByWord !== undefined ? Boolean(safeInput.showWordByWord) : false,
+    showTransliteration: safeInput.showTransliteration !== undefined ? Boolean(safeInput.showTransliteration) : true,
+    showWordTranslation: safeInput.showWordTranslation !== undefined ? Boolean(safeInput.showWordTranslation) : true,
+    showHome: safeInput.showHome !== undefined ? Boolean(safeInput.showHome) : true,
     wirdGoalType: ['pages', 'hizb', 'juz'].includes(safeInput.wirdGoalType) ? safeInput.wirdGoalType : 'pages',
     wirdGoalAmount: Math.max(1, Math.min(30, Number(safeInput.wirdGoalAmount) || 5)),
     lastPosition: {

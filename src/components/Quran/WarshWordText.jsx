@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { getFontFamily, isFontPageLoaded, onFontLoadChange, areFontsLoading } from '../../services/warshService';
+import { getFontFamily, isFontPageLoaded, onFontLoadChange } from '../../services/warshService';
 
 const TAJWID_FALLBACK_COLORS = {
     ghunna: '#1aaf5d', idgham: '#9b59b6', ikhfa: '#1abc9c', iqlab: '#2ecc71',
@@ -38,25 +38,63 @@ function mapTajweedToQCF4(tajweedColors, qcf4Count) {
 
 /**
  * WarshWordText – renders QCF4 PUA codepoints.
- * Shows shimmer placeholder while fonts are loading.
+ * • Shows shimmer placeholders while fonts are loading.
+ * • Falls back to hafsText (plain Arabic) if QCF4 fonts are unavailable after 7 s.
+ *
+ * Props:
+ *  words         – Array of {p, c} word objects
+ *  highlightIdx  – Current word index for karaoke highlighting
+ *  tajweedColors – Optional rule-ID array per word
+ *  fallbackText  – Plain Arabic string shown when fonts can't load
  */
-const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, tajweedColors }) {
-    // Track font loading state to force re-render when fonts finish loading
-    const [, setFontTick] = useState(0);
+const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, tajweedColors, fallbackText }) {
+    // Re-render whenever a font finishes (or fails) loading
+    const [fontTick, setFontTick] = useState(0);
     useEffect(() => {
-        const unsub = onFontLoadChange(() => setFontTick(t => t + 1));
+        const unsub = onFontLoadChange(() => setFontTick(n => n + 1));
         return unsub;
     }, []);
+
+    // 7-second grace period before activating the fallback
+    const [graceExpired, setGraceExpired] = useState(false);
+    useEffect(() => {
+        setGraceExpired(false);
+        const timer = setTimeout(() => setGraceExpired(true), 7000);
+        return () => clearTimeout(timer);
+    }, [words]);
 
     const qcf4Colors = useMemo(() => {
         if (!tajweedColors || tajweedColors.length === 0) return null;
         return mapTajweedToQCF4(tajweedColors, words.length);
     }, [tajweedColors, words.length]);
 
-    // Check if any needed fonts are still loading
-    const allFontsReady = useMemo(() => {
-        return words.every(w => isFontPageLoaded(w.p));
-    }, [words, /* dependency on font tick via state */]);
+    // Count loaded fonts on every render (fontTick drives the re-renders)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const loadedCount = useMemo(
+        () => words.filter(w => isFontPageLoaded(w.p)).length,
+        // fontTick included via state re-render — no direct dep needed
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [words, fontTick],
+    );
+    const allFontsReady = loadedCount === words.length;
+
+    // Show plain-Arabic fallback when fonts never loaded after grace period
+    if (graceExpired && loadedCount === 0 && fallbackText) {
+        return (
+            <span
+                className="warsh-font-fallback"
+                dir="rtl"
+                title="Warsh — polices QCF4 indisponibles, affichage orthographe Ḥafṣ"
+            >
+                {fallbackText}
+                {' '}
+                <i
+                    className="fas fa-exclamation-circle"
+                    style={{ fontSize: '0.55em', opacity: 0.55, color: 'var(--gold)' }}
+                />
+            </span>
+        );
+    }
 
     return (
         <span className="warsh-qcf4-text" dir="rtl">
@@ -80,7 +118,7 @@ const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, t
             })}
             {!allFontsReady && (
                 <span className="qcf4-font-loading-hint">
-                    <i className="fas fa-spinner fa-spin"></i>
+                    <i className="fas fa-spinner fa-spin" />
                 </span>
             )}
         </span>

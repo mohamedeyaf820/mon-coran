@@ -36,10 +36,10 @@
 /* ── Setting Group Row ── */
 .setting-group {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.78rem 0.6rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.3rem;
+    padding: 0.72rem 0.6rem;
     border-bottom: 1px solid var(--border-light);
     border-radius: 0;
     background: transparent;
@@ -59,6 +59,34 @@
 .setting-group-info {
     flex: 1;
     min-width: 0;
+}
+
+/* ── Toggle row (label + switch inline) ── */
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+.toggle-row > span,
+.toggle-row > div {
+    flex: 1;
+    font-family: var(--font-ui);
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+.sub-toggle {
+    opacity: 0.85;
+}
+
+.sub-toggle > span {
+    font-size: 0.81rem;
 }
 
 .setting-label {
@@ -83,7 +111,77 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem;
-    margin-top: 0.55rem;
+    margin-top: 0.4rem;
+}
+
+/* ── Display mode chips — with icon + description ── */
+.display-mode-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+}
+
+.display-mode-chip {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.22rem;
+    padding: 0.65rem 0.4rem !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--r-md) !important;
+    background: var(--bg-secondary) !important;
+    white-space: normal !important;
+    text-align: center;
+    transition: all var(--t-fast) !important;
+    font-family: var(--font-ui) !important;
+}
+
+.display-mode-chip i {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    transition: color var(--t-fast);
+}
+
+.display-mode-chip span {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    line-height: 1.2;
+}
+
+.display-mode-chip .mode-hint {
+    font-size: 0.62rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    line-height: 1.2;
+    margin-top: 0.05rem;
+}
+
+.display-mode-chip:hover:not(:disabled) {
+    border-color: var(--primary) !important;
+    background: var(--primary-light) !important;
+}
+
+.display-mode-chip:hover:not(:disabled) i,
+.display-mode-chip:hover:not(:disabled) span {
+    color: var(--primary);
+}
+
+.display-mode-chip.active {
+    border-color: var(--gold) !important;
+    background: var(--gold-tint, rgba(212,168,32,0.08)) !important;
+    box-shadow: 0 0 0 2px var(--gold) !important;
+}
+
+.display-mode-chip.active i,
+.display-mode-chip.active span {
+    color: var(--gold);
+}
+
+.display-mode-chip:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 /* ── Slider ── */
@@ -502,4 +600,70 @@
         font-size: 0.76rem;
         padding: 0.4rem 0.85rem;
     }
+}
+
+/* ── Font Category (quranwbw.com style grouping) ── */
+.font-category {
+    margin-top: 0.5rem;
+}
+
+.font-category-label {
+    font-family: var(--font-ui);
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+    padding: 0.2rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+/* Font chip — card style with Arabic preview + label */
+.font-chip {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0.6rem 0.85rem !important;
+    min-width: 120px;
+    min-height: 72px;
+    border: 1.5px solid var(--border) !important;
+    border-radius: var(--r-md) !important;
+    background: var(--bg-secondary) !important;
+    white-space: normal !important;
+    text-align: center;
+    transition: all var(--t-fast) !important;
+}
+
+.font-chip:hover {
+    border-color: var(--primary) !important;
+    background: var(--primary-light) !important;
+    color: var(--primary) !important;
+}
+
+.font-chip.active {
+    border-color: var(--gold) !important;
+    background: var(--gold-tint, rgba(212,168,32,0.08)) !important;
+    box-shadow: 0 0 0 2px var(--gold) !important;
+    color: var(--text-primary) !important;
+}
+
+.font-chip-name {
+    font-size: 1.15rem;
+    direction: rtl;
+    color: var(--text-quran);
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+}
+
+.font-chip-label {
+    font-family: var(--font-ui) !important;
+    font-size: 0.68rem !important;
+    font-weight: 600;
+    color: var(--text-secondary);
+    line-height: 1.3;
+    max-width: 130px;
+    white-space: normal;
 }

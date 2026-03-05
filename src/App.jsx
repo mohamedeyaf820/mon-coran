@@ -3,6 +3,7 @@ import { useApp } from "./context/AppContext";
 import SplashScreen from "./components/SplashScreen";
 import Header from "./components/Header";
 import QuranDisplay from "./components/QuranDisplay";
+import HomePage from "./components/HomePage";
 import { prefetchInitialData } from "./services/quranAPI";
 import audioService from "./services/audioService";
 
@@ -46,6 +47,7 @@ export default function App() {
     currentSurah,
     currentPage,
     currentJuz,
+    showHome,
   } = state;
   const lowPerfMode = useMemo(() => detectLowPerformanceDevice(), []);
 
@@ -63,6 +65,7 @@ export default function App() {
       switch (e.key) {
         case "ArrowLeft":
           e.preventDefault();
+          set({ showHome: false });
           if (displayMode === "page") {
             if (lang === "ar" ? currentPage > 1 : currentPage < 604)
               set({
@@ -88,6 +91,7 @@ export default function App() {
           break;
         case "ArrowRight":
           e.preventDefault();
+          set({ showHome: false });
           if (displayMode === "page") {
             if (lang === "ar" ? currentPage < 604 : currentPage > 1)
               set({
@@ -205,7 +209,7 @@ export default function App() {
           className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden"
           style={{ paddingBottom: "var(--player-h)" }}
         >
-          <QuranDisplay />
+          {showHome ? <HomePage /> : <QuranDisplay />}
         </main>
 
         {/* Notes panel (right side) */}

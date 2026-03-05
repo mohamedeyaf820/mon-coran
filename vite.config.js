@@ -17,23 +17,28 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
+    // Pas de sourcemap en production — empêche la reconstruction du code source
     sourcemap: false,
     target: "es2020",
-    // Enable minification and tree-shaking
+    // Minification agressive + suppression console/debugger
     minify: "esbuild",
-    // CSS code splitting for parallel loading
     cssCodeSplit: true,
+    cssMinify: true,
     rollupOptions: {
       output: {
+        // Noms de chunks hachés, pas de noms lisibles
+        chunkFileNames: "assets/[hash].js",
+        entryFileNames: "assets/[hash].js",
+        assetFileNames: "assets/[hash].[ext]",
         manualChunks: {
-          "react-vendor": ["react", "react-dom"],
-          services: [
+          _r: ["react", "react-dom"],
+          _s: [
             "./src/services/quranAPI.js",
             "./src/services/warshService.js",
             "./src/services/audioService.js",
             "./src/services/storageService.js",
           ],
-          data: [
+          _d: [
             "./src/data/surahs.js",
             "./src/data/juz.js",
             "./src/data/reciters.js",
@@ -41,6 +46,14 @@ export default defineConfig({
           ],
         },
       },
+    },
+    // Supprimer console.*, debugger et commentaires
+    esbuildOptions: {
+      drop: ["console", "debugger"],
+      legalComments: "none",
+      minifyIdentifiers: true,
+      minifySyntax: true,
+      minifyWhitespace: true,
     },
   },
 });

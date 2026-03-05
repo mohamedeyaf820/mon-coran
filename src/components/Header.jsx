@@ -33,6 +33,8 @@ export default function Header() {
     currentJuz,
     riwaya,
     loadedAyahCount,
+    showHome,
+    showWordByWord,
   } = state;
 
   const [goToValue, setGoToValue] = useState("");
@@ -96,9 +98,6 @@ export default function Header() {
       currentPlayingAyah: null,
       currentAyah: 1,
     };
-    if (nextRiwaya === "warsh" && displayMode === "page") {
-      patch.displayMode = "surah";
-    }
     set(patch);
   };
 
@@ -108,18 +107,20 @@ export default function Header() {
     if (isNaN(num)) return;
     if (displayMode === "page") {
       if (num >= 1 && num <= 604) {
-        set({ currentPage: num });
+        set({ currentPage: num, showHome: false });
         setGoToOpen(false);
         setGoToValue("");
       }
     } else if (displayMode === "juz") {
       if (num >= 1 && num <= 30) {
+        set({ showHome: false });
         dispatch({ type: "NAVIGATE_JUZ", payload: { juz: num } });
         setGoToOpen(false);
         setGoToValue("");
       }
     } else {
       if (num >= 1 && num <= 114) {
+        set({ showHome: false });
         dispatch({ type: "NAVIGATE_SURAH", payload: { surah: num } });
         setGoToOpen(false);
         setGoToValue("");
@@ -149,26 +150,12 @@ export default function Header() {
   const goToMax =
     displayMode === "page" ? 604 : displayMode === "juz" ? 30 : 114;
 
-  /* ── Display modes ── */
-  const allDisplayModes =
-    riwaya === "warsh"
-      ? [
-          {
-            id: "surah",
-            icon: "fa-align-justify",
-            labelKey: "settings.surahMode",
-          },
-          { id: "juz", icon: "fa-book-open", labelKey: "settings.juzMode" },
-        ]
-      : [
-          {
-            id: "surah",
-            icon: "fa-align-justify",
-            labelKey: "settings.surahMode",
-          },
-          { id: "page", icon: "fa-file-lines", labelKey: "settings.pageMode" },
-          { id: "juz", icon: "fa-book-open", labelKey: "settings.juzMode" },
-        ];
+  /* ── Display modes — all modes available for both Hafs and Warsh ── */
+  const allDisplayModes = [
+    { id: "surah", icon: "fa-align-justify", labelKey: "settings.surahMode" },
+    { id: "page",  icon: "fa-file-lines",   labelKey: "settings.pageMode"  },
+    { id: "juz",   icon: "fa-book-open",    labelKey: "settings.juzMode"   },
+  ];
 
   const currentLocationLabel =
     displayMode === "page"
@@ -205,8 +192,9 @@ export default function Header() {
         : currentSurah < 114;
 
   const handlePrev = () => {
+    set({ showHome: false });
     if (displayMode === "page") {
-      if (currentPage > 1) set({ currentPage: currentPage - 1 });
+      if (currentPage > 1) set({ currentPage: currentPage - 1, showHome: false });
     } else if (displayMode === "juz") {
       if (currentJuz > 1)
         dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz - 1 } });
@@ -219,8 +207,9 @@ export default function Header() {
     }
   };
   const handleNext = () => {
+    set({ showHome: false });
     if (displayMode === "page") {
-      if (currentPage < 604) set({ currentPage: currentPage + 1 });
+      if (currentPage < 604) set({ currentPage: currentPage + 1, showHome: false });
     } else if (displayMode === "juz") {
       if (currentJuz < 30)
         dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz + 1 } });
@@ -286,19 +275,41 @@ export default function Header() {
           />
         </button>
 
-        {/* Brand — icon hidden on mobile to save space */}
-        <div className="hidden sm:flex items-center gap-2">
+        {/* Brand MushafPlus — cliquable pour aller à l'accueil */}
+        <button
+          className={cn(
+            "hidden sm:flex items-center gap-2 cursor-pointer",
+            "rounded-xl transition-all duration-200 px-1 py-0.5",
+            "outline-none focus-visible:ring-2 focus-visible:ring-[var(--gold)]/40",
+            showHome
+              ? "bg-[var(--gold)]/[0.14]"
+              : "hover:bg-white/[0.08]",
+          )}
+          onClick={() => set({ showHome: !showHome })}
+          title={
+            showHome
+              ? (lang === "fr" ? "Fermer l'accueil" : lang === "ar" ? "إغلاق الرئيسية" : "Close home")
+              : (lang === "fr" ? "Accueil" : lang === "ar" ? "الصفحة الرئيسية" : "Home")
+          }
+          aria-label={lang === "fr" ? "Accueil MushafPlus" : "MushafPlus Home"}
+          aria-pressed={showHome}
+        >
           <div
             className="flex items-center justify-center w-8 h-8 rounded-xl shrink-0"
             style={{
               background:
-                "linear-gradient(135deg, rgba(212,168,32,0.28) 0%, rgba(184,134,11,0.14) 100%)",
+                showHome
+                  ? "linear-gradient(135deg, rgba(212,168,32,0.38) 0%, rgba(184,134,11,0.24) 100%)"
+                  : "linear-gradient(135deg, rgba(212,168,32,0.28) 0%, rgba(184,134,11,0.14) 100%)",
               boxShadow:
                 "inset 0 1px 0 rgba(255,255,255,0.1), 0 1px 4px rgba(0,0,0,0.2)",
             }}
           >
             <i
-              className="fas fa-book-quran text-[0.85rem]"
+              className={cn(
+                "text-[0.85rem] transition-transform duration-200",
+                showHome ? "fas fa-house" : "fas fa-book-quran",
+              )}
               style={{ color: "var(--gold)" }}
               aria-hidden="true"
             />
@@ -307,8 +318,13 @@ export default function Header() {
             <span className="text-white font-bold text-[0.88rem] tracking-wide font-[var(--font-ui)]">
               MushafPlus
             </span>
+            <span className="text-white/35 text-[0.6rem] leading-none">
+              {showHome
+                ? (lang === "fr" ? "accueil" : lang === "ar" ? "الرئيسية" : "home")
+                : (lang === "fr" ? "accueil" : lang === "ar" ? "الرئيسية" : "home")}
+            </span>
           </div>
-        </div>
+        </button>
 
         {/* Separator */}
         <div className="hidden lg:block w-px h-5 bg-white/10 mx-0.5" />
@@ -360,7 +376,6 @@ export default function Header() {
         <div className="hidden sm:flex items-center rounded-xl bg-white/[0.07] border border-white/[0.05] p-0.5 gap-0.5 shrink-0">
           {allDisplayModes.map((mode) => {
             const isActive = displayMode === mode.id;
-            const isDisabled = mode.id === "page" && riwaya === "warsh";
             return (
               <button
                 key={mode.id}
@@ -372,10 +387,9 @@ export default function Header() {
                   isActive
                     ? "bg-white/[0.18] text-white shadow-sm"
                     : "text-white/45 hover:text-white/80 hover:bg-white/[0.08]",
-                  isDisabled && "opacity-25 pointer-events-none",
                 )}
                 onClick={() => set({ displayMode: mode.id })}
-                disabled={isDisabled}
+                disabled={false}
                 title={t(mode.labelKey, lang)}
                 aria-pressed={isActive}
               >
@@ -566,6 +580,14 @@ export default function Header() {
           RIGHT: Actions
          ═══════════════════════════════════════ */}
       <div className="flex items-center gap-0.5 pe-2 sm:pe-4 shrink-0">
+        {/* Word-by-word toggle — quick access */}
+        <HeaderIconButton
+          icon="fa-w"
+          onClick={() => set({ showWordByWord: !showWordByWord })}
+          title={lang === "fr" ? "Mot-à-mot" : lang === "ar" ? "كلمة بكلمة" : "Word by word"}
+          aria-label={lang === "fr" ? "Mot-à-mot" : "Word by word"}
+          active={showWordByWord}
+        />
         {/* Search — always visible */}
         <HeaderIconButton
           icon="fa-search"
@@ -661,7 +683,7 @@ export default function Header() {
                         : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-tertiary)]",
                     )}
                     onClick={() => set({ displayMode: mode.id })}
-                    disabled={mode.id === "page" && riwaya === "warsh"}
+                  disabled={false}
                   >
                     {t(mode.labelKey, lang)}
                   </button>

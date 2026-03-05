@@ -42,14 +42,19 @@ const initialState = {
   // Quran
   riwaya: initialRiwaya,
   displayMode: stored.displayMode || "surah", // 'surah' | 'page' | 'juz'
+  mushafLayout: stored.mushafLayout || "list", // 'list' | 'mushaf'
   currentSurah: stored.lastPosition?.surah || 1,
   currentAyah: stored.lastPosition?.ayah || 1,
   currentPage: stored.lastPosition?.page || 1,
   currentJuz: stored.lastPosition?.juz || 1,
   fontSize: stored.fontSize || 28,
-  fontFamily: stored.fontFamily || "scheherazade",
+  fontFamily: stored.fontFamily || "mushaf-1441h",
+  showHome: stored.showHome ?? true,
   showTranslation: stored.showTranslation ?? true,
   showTajwid: stored.showTajwid ?? true,
+  showWordByWord: stored.showWordByWord ?? false,
+  showTransliteration: stored.showTransliteration ?? true,
+  showWordTranslation: stored.showWordTranslation ?? true,
   translationLang: stored.translationLang || "fr",
   continuousPlay: stored.continuousPlay ?? true, // auto-play next surah
 
@@ -92,10 +97,6 @@ function appReducer(state, action) {
   switch (action.type) {
     case "SET": {
       const next = { ...state, ...action.payload };
-      // Warsh doesn't support page mode → force surah mode
-      if (next.riwaya === "warsh" && next.displayMode === "page") {
-        next.displayMode = "surah";
-      }
       return next;
     }
 
@@ -145,10 +146,6 @@ function appReducer(state, action) {
       return { ...state, lang: action.payload };
 
     case "SET_RIWAYA":
-      // Warsh n'a pas de mode page → rediriger vers surah si nécessaire
-      if (action.payload === "warsh" && state.displayMode === "page") {
-        return { ...state, riwaya: action.payload, displayMode: "surah" };
-      }
       return { ...state, riwaya: action.payload };
 
     case "SET_RECITER":
@@ -209,7 +206,12 @@ export function AppProvider({ children }) {
         translationLang: state.translationLang,
         showTranslation: state.showTranslation,
         showTajwid: state.showTajwid,
+        showWordByWord: state.showWordByWord,
+        showTransliteration: state.showTransliteration,
+        showWordTranslation: state.showWordTranslation,
+        showHome: state.showHome,
         displayMode: state.displayMode,
+        mushafLayout: state.mushafLayout,
         audioSpeed: state.audioSpeed,
         volume: state.volume,
         continuousPlay: state.continuousPlay,
@@ -243,7 +245,12 @@ export function AppProvider({ children }) {
     state.translationLang,
     state.showTranslation,
     state.showTajwid,
+    state.showWordByWord,
+    state.showTransliteration,
+    state.showWordTranslation,
+    state.showHome,
     state.displayMode,
+    state.mushafLayout,
     state.audioSpeed,
     state.currentSurah,
     state.currentAyah,

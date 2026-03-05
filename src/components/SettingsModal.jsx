@@ -11,6 +11,7 @@ export default function SettingsModal() {
   const { state, dispatch, set } = useApp();
   const {
     lang, theme, riwaya, reciter, fontSize, showTranslation, showTajwid,
+    showWordByWord, showTransliteration, showWordTranslation,
     translationLang, displayMode, fontFamily, warshStrictMode,
     syncOffsetsMs, autoNightMode, nightStart, nightEnd, nightTheme, dayTheme
   } = state;
@@ -20,13 +21,63 @@ export default function SettingsModal() {
 
   const close = () => dispatch({ type: 'TOGGLE_SETTINGS' });
 
-  const FONT_OPTIONS = [
-    { id: 'scheherazade', label: 'KFGQPC Uthmanic (Hafs)', css: "'KFGQPC Uthmanic Script HAFS','Amiri Quran','Scheherazade New','Amiri',serif" },
-    { id: 'amiri-quran', label: 'Amiri Quran', css: "'KFGQPC Uthmanic Script HAFS','Amiri Quran','Amiri','Scheherazade New',serif" },
-    { id: 'amiri', label: 'Amiri', css: "'KFGQPC Uthmanic Script HAFS','Amiri','Amiri Quran',serif" },
-    { id: 'noto-naskh', label: 'Noto Naskh Arabic', css: "'KFGQPC Uthmanic Script HAFS','Noto Naskh Arabic','Amiri Quran','Scheherazade New',serif" },
-    { id: 'lateef', label: 'Lateef', css: "'KFGQPC Uthmanic Script HAFS','Lateef','Scheherazade New',serif" },
+  // Font options — same categories as quranwbw.com
+  const FONT_CATEGORIES = [
+    {
+      label: lang === 'fr' ? 'Écriture Ottomane (Uthmanique)' : 'Uthmanic Script',
+      fonts: [
+        {
+          id: 'mushaf-1441h',
+          label: 'Mushaf 1441H',
+          hint: lang === 'fr' ? 'Police officielle du Complexe du Roi Fahd' : 'Official King Fahd Complex font',
+          css: "'KFGQPC Uthmanic Script HAFS','ME Quran','Amiri Quran','Scheherazade New',serif",
+        },
+        {
+          id: 'mushaf-tajweed',
+          label: 'Mushaf Tajweed 1441H',
+          hint: lang === 'fr' ? 'Avec coloration Tajwid' : 'With Tajweed coloring',
+          css: "'KFGQPC Uthmanic Script HAFS','ME Quran','Amiri Quran','Scheherazade New',serif",
+        },
+        {
+          id: 'uthmanic-digital',
+          label: lang === 'fr' ? 'Police Numérique (Digital Font)' : 'Digital Font',
+          hint: 'ME Quran V2 · quranwbw.com',
+          css: "'ME Quran','KFGQPC Uthmanic Script HAFS','Amiri Quran','Scheherazade New',serif",
+        },
+        {
+          id: 'uthmanic-bold',
+          label: lang === 'fr' ? 'Police Numérique Gras (Digital Bold)' : 'Digital Bold Font',
+          hint: 'ME Quran Bold V2 · quranwbw.com',
+          css: "'ME Quran Bold','ME Quran','KFGQPC Uthmanic Script HAFS','Amiri Quran',serif",
+          bold: true,
+        },
+      ],
+    },
+    {
+      label: lang === 'fr' ? 'Style Indopak / Nastaleeq' : 'Indopak / Nastaleeq',
+      fonts: [
+        {
+          id: 'qalam-madinah',
+          label: lang === 'fr' ? 'Qalam – Édition Madinah' : 'Qalam Digital (Madinah Edition)',
+          hint: 'Qalam Digital Font · Madinah Edition',
+          css: "'Qalam Madinah','Scheherazade New','Noto Naskh Arabic',serif",
+        },
+        {
+          id: 'qalam-hanafi',
+          label: lang === 'fr' ? 'Qalam – Édition Hanafi' : 'Qalam Digital (Hanafi Edition)',
+          hint: 'Qalam Digital Font · Hanafi Edition',
+          css: "'Qalam Hanafi','Scheherazade New','Noto Naskh Arabic',serif",
+        },
+        {
+          id: 'uthman-taha',
+          label: lang === 'fr' ? 'Uthman Taha (Numérique)' : 'Uthman Taha Digital Font',
+          hint: 'KFGQPC Uthman Taha',
+          css: "'Uthman Taha Hafs','KFGQPC Uthmanic Script HAFS','ME Quran',serif",
+        },
+      ],
+    },
   ];
+  const FONT_OPTIONS = FONT_CATEGORIES.flatMap(c => c.fonts);
 
   const handleImport = async () => {
     const input = document.createElement('input');
@@ -83,6 +134,13 @@ export default function SettingsModal() {
         </div>
 
         <div className="settings-body">
+
+          {/* ── Section : Apparence ── */}
+          <div className="settings-section-title">
+            <i className="fas fa-palette" aria-hidden="true"></i>
+            {lang === 'ar' ? 'المظهر' : lang === 'fr' ? 'Apparence' : 'Appearance'}
+          </div>
+
           {/* Language */}
           <div className="setting-group">
             <label className="setting-label">{t('settings.language', lang)}</label>
@@ -218,6 +276,12 @@ export default function SettingsModal() {
             )}
           </div>
 
+          {/* ── Section : Riwaya & Lecture ── */}
+          <div className="settings-section-title">
+            <i className="fas fa-book-quran" aria-hidden="true"></i>
+            {lang === 'ar' ? 'القراءة والرواية' : lang === 'fr' ? 'Riwaya & Lecture' : 'Riwaya & Reading'}
+          </div>
+
           {/* Riwaya */}
           <div className="setting-group">
             <label className="setting-label">{t('settings.riwaya', lang)}</label>
@@ -300,29 +364,40 @@ export default function SettingsModal() {
           {/* Display mode */}
           <div className="setting-group">
             <label className="setting-label">{t('settings.displayMode', lang)}</label>
-            <div className="setting-options">
+            <p className="setting-hint">
+              {riwaya === 'warsh'
+                ? (lang === 'fr' ? 'Mode page indisponible pour Warsh (QCF4 par sourate)' : lang === 'ar' ? 'وضع الصفحة غير متاح لورش' : 'Page mode unavailable for Warsh (QCF4 by surah)')
+                : (lang === 'fr' ? 'Choisissez comment le Coran est affiché' : lang === 'ar' ? 'اختر طريقة عرض القرآن' : 'Choose how the Quran is displayed')}
+            </p>
+            <div className="display-mode-options">
               <button
-                className={`chip ${displayMode === 'surah' ? 'active' : ''}`}
+                className={`chip display-mode-chip ${displayMode === 'surah' ? 'active' : ''}`}
                 onClick={() => set({ displayMode: 'surah' })}
                 aria-pressed={displayMode === 'surah'}
               >
-                <i className="fas fa-list" aria-hidden="true"></i> {t('settings.surahMode', lang)}
+                <i className="fas fa-list-ul" aria-hidden="true"></i>
+                <span>{t('settings.surahMode', lang)}</span>
+                <span className="mode-hint">{lang === 'fr' ? 'Par sourate' : lang === 'ar' ? 'سورة' : 'By surah'}</span>
               </button>
               <button
-                className={`chip ${displayMode === 'page' ? 'active' : ''}`}
+                className={`chip display-mode-chip ${displayMode === 'page' ? 'active' : ''}`}
                 onClick={() => set({ displayMode: 'page' })}
                 disabled={riwaya === 'warsh'}
                 aria-pressed={displayMode === 'page'}
                 title={riwaya === 'warsh' ? (lang === 'fr' ? 'Non disponible en Warsh' : lang === 'ar' ? 'غير متاح في ورش' : 'Not available for Warsh') : ''}
               >
-                <i className="fas fa-file" aria-hidden="true"></i> {t('settings.pageMode', lang)}
+                <i className="fas fa-file-alt" aria-hidden="true"></i>
+                <span>{t('settings.pageMode', lang)}</span>
+                <span className="mode-hint">{riwaya === 'warsh' ? '⚠' : (lang === 'fr' ? 'Mushaf' : 'Page')}</span>
               </button>
               <button
-                className={`chip ${displayMode === 'juz' ? 'active' : ''}`}
+                className={`chip display-mode-chip ${displayMode === 'juz' ? 'active' : ''}`}
                 onClick={() => set({ displayMode: 'juz' })}
                 aria-pressed={displayMode === 'juz'}
               >
-                <i className="fas fa-book-open" aria-hidden="true"></i> {t('settings.juzMode', lang)}
+                <i className="fas fa-book-open" aria-hidden="true"></i>
+                <span>{t('settings.juzMode', lang)}</span>
+                <span className="mode-hint">{lang === 'fr' ? 'Par juz' : lang === 'ar' ? 'جزء' : 'By juz'}</span>
               </button>
             </div>
           </div>
@@ -342,6 +417,12 @@ export default function SettingsModal() {
             <p className="setting-hint">{t('settings.continuousPlayHint', lang)}</p>
           </div>
 
+          {/* ── Section : Texte & Affichage ── */}
+          <div className="settings-section-title">
+            <i className="fas fa-font" aria-hidden="true"></i>
+            {lang === 'ar' ? 'النص والعرض' : lang === 'fr' ? 'Texte & Affichage' : 'Text & Display'}
+          </div>
+
           {/* Font size */}
           <div className="setting-group">
             <label className="setting-label">{t('settings.fontSize', lang)}: {fontSize}px</label>
@@ -356,26 +437,34 @@ export default function SettingsModal() {
             />
           </div>
 
-          {/* Font family */}
+          {/* Font family — grouped by category like quranwbw.com */}
           <div className="setting-group">
             <label className="setting-label">{t('settings.fontFamily', lang)}</label>
-            <div className="setting-options font-options">
-              {FONT_OPTIONS.map(f => (
-                <button
-                  key={f.id}
-                  className={`chip font-chip ${fontFamily === f.id ? 'active' : ''}`}
-                  onClick={() => dispatch({ type: 'SET_FONT_FAMILY', payload: f.id })}
-                  style={{ fontFamily: f.css }}
-                  aria-pressed={fontFamily === f.id}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
+            {FONT_CATEGORIES.map(cat => (
+              <div key={cat.label} className="font-category">
+                <div className="font-category-label">{cat.label}</div>
+                <div className="setting-options font-options">
+                  {cat.fonts.map(f => (
+                    <button
+                      key={f.id}
+                      className={`chip font-chip ${fontFamily === f.id ? 'active' : ''}`}
+                      onClick={() => dispatch({ type: 'SET_FONT_FAMILY', payload: f.id })}
+                      style={{ fontFamily: f.css, fontWeight: f.bold ? 700 : 400 }}
+                      title={f.hint}
+                      aria-pressed={fontFamily === f.id}
+                    >
+                      <span className="font-chip-name">بِسْمِ ٱللَّهِ</span>
+                      <span className="font-chip-label">{f.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
             <div
               className="font-preview"
               style={{
                 fontFamily: FONT_OPTIONS.find(f => f.id === fontFamily)?.css || FONT_OPTIONS[0].css,
+                fontWeight: FONT_OPTIONS.find(f => f.id === fontFamily)?.bold ? 700 : 400,
                 fontSize: '1.4rem',
                 direction: 'rtl',
                 textAlign: 'center',
@@ -434,6 +523,61 @@ export default function SettingsModal() {
                 <span className="toggle-knob"></span>
               </button>
             </label>
+          </div>
+
+          {/* Word-by-Word Mode */}
+          <div className="setting-group">
+            <label className="toggle-row">
+              <span>
+                <i className="fas fa-layer-group" style={{ marginInlineEnd: '0.3rem' }} aria-hidden="true"></i>
+                {lang === 'fr' ? 'Mode mot à mot' : lang === 'ar' ? 'وضع كلمة بكلمة' : 'Word-by-word mode'}
+              </span>
+              <button
+                className={`toggle-switch ${showWordByWord ? 'on' : ''}`}
+                onClick={() => set({ showWordByWord: !showWordByWord })}
+                aria-pressed={showWordByWord}
+              >
+                <span className="toggle-knob"></span>
+              </button>
+            </label>
+            <p className="setting-hint">
+              {lang === 'fr'
+                ? 'Affiche chaque mot avec sa traduction et translittération'
+                : lang === 'ar'
+                  ? 'يعرض كل كلمة مع ترجمتها ونطقها'
+                  : 'Shows each word with its translation and transliteration'}
+            </p>
+            
+            {showWordByWord && (
+              <div className="wbw-sub-options" style={{ marginTop: '0.75rem', paddingInlineStart: '1rem' }}>
+                <label className="toggle-row sub-toggle">
+                  <span>{lang === 'fr' ? 'Translittération' : lang === 'ar' ? 'النطق اللاتيني' : 'Transliteration'}</span>
+                  <button
+                    className={`toggle-switch ${showTransliteration ? 'on' : ''}`}
+                    onClick={() => set({ showTransliteration: !showTransliteration })}
+                    aria-pressed={showTransliteration}
+                  >
+                    <span className="toggle-knob"></span>
+                  </button>
+                </label>
+                <label className="toggle-row sub-toggle" style={{ marginTop: '0.5rem' }}>
+                  <span>{lang === 'fr' ? 'Traduction par mot' : lang === 'ar' ? 'ترجمة كل كلمة' : 'Word translation'}</span>
+                  <button
+                    className={`toggle-switch ${showWordTranslation ? 'on' : ''}`}
+                    onClick={() => set({ showWordTranslation: !showWordTranslation })}
+                    aria-pressed={showWordTranslation}
+                  >
+                    <span className="toggle-knob"></span>
+                  </button>
+                </label>
+              </div>
+            )}
+          </div>
+
+          {/* ── Section : Données ── */}
+          <div className="settings-section-title">
+            <i className="fas fa-database" aria-hidden="true"></i>
+            {lang === 'ar' ? 'البيانات' : lang === 'fr' ? 'Données' : 'Data'}
           </div>
 
           {/* Export / Import */}

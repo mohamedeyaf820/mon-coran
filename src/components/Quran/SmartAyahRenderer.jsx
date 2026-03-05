@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef, useEffect } from "react";
 import { useKaraoke, buildKaraokeCalibration } from "../../hooks/useKaraoke";
 import { getPerWordTajweedColors } from "../../data/tajwidRules";
 import { stripBasmala } from "../../utils/quranUtils";
@@ -14,7 +14,15 @@ export function KaraokeWarshText({
   isFirstAyah,
   calibration,
   tajweedColors,
+  fallbackText,
 }) {
+  const lastIdxRef = useRef(0);
+  
+  // Reset index when words change (new ayah)
+  useEffect(() => {
+    lastIdxRef.current = 0;
+  }, [words]);
+  
   const wordWeights = useMemo(() => {
     if (!words || words.length === 0) return [];
     const total = words.length;
@@ -59,11 +67,16 @@ export function KaraokeWarshText({
       wordCount: words.length,
     });
 
-  const progress = useKaraoke({
+  const { progress, seekCount } = useKaraoke({
     isFirstAyah,
     wordCount: words.length,
     calibration: effectiveCalibration,
   });
+
+  // Reset highlighted word index when user seeks in audio
+  useEffect(() => {
+    lastIdxRef.current = 0;
+  }, [seekCount]);
 
   const currentIdx = useMemo(() => {
     let idx = 0;
@@ -74,32 +87,19 @@ export function KaraokeWarshText({
       }
       idx = i;
     }
-
-    const baseLag =
-      words.length >= 24
-        ? (calibration?.lagWordsLong ?? 2)
-        : (calibration?.lagWordsBase ?? 1);
-
-    // Ramp in lag: no lag at the very beginning, then partial, then full
-    let effectiveLag = baseLag;
-    if (progress < 0.15) {
-      effectiveLag = 0;
-    } else if (progress < 0.3) {
-      effectiveLag = Math.max(0, baseLag - 1);
-    }
-
-    const targetIdx = Math.max(0, idx - effectiveLag);
-    // Prevent highlight from going backwards to avoid jumpy behavior
-    const last =
-      typeof currentIdx === "number" && currentIdx >= 0 ? currentIdx : 0;
-    return Math.max(last, targetIdx);
-  }, [progress, wordWeights, words.length, calibration]);
+    // Pas de lag par mot — uniquement l'offsetSec gère la précision
+    const last = lastIdxRef.current;
+    const finalIdx = Math.max(last, idx);
+    lastIdxRef.current = finalIdx;
+    return finalIdx;
+  }, [progress, wordWeights]);
 
   return (
     <WarshWordText
       words={words}
       highlightIdx={currentIdx >= 0 ? currentIdx : undefined}
       tajweedColors={tajweedColors}
+      fallbackText={fallbackText}
     />
   );
 }
@@ -120,11 +120,13 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
   const effectiveRiwaya = ayah.warshWords ? "warsh" : riwaya || "hafs";
 
   const tajweedColors = useMemo(() => {
+    // Tajweed colors only for Hafs — Warsh has its own rendering pipeline
     if (!showTajwid) return null;
+    if (effectiveRiwaya === 'warsh') return null;
     const sourceText = ayah.hafsText || (ayah.warshWords ? null : ayah.text);
     if (!sourceText) return null;
     const cleanText = stripBasmala(sourceText, surahNum, ayah.numberInSurah);
-    return getPerWordTajweedColors(cleanText, effectiveRiwaya);
+    return getPerWordTajweedColors(cleanText, 'hafs');
   }, [
     showTajwid,
     ayah.hafsText,
@@ -149,11 +151,16 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
           isFirstAyah={isFirstAyah}
           calibration={calibration}
           tajweedColors={tajweedColors}
+          fallbackText={cleanHafsText}
         />
       );
     }
     return (
-      <WarshWordText words={ayah.warshWords} tajweedColors={tajweedColors} />
+      <WarshWordText
+        words={ayah.warshWords}
+        tajweedColors={tajweedColors}
+        fallbackText={cleanHafsText || ayah.hafsText || null}
+      />
     );
   }
 
@@ -183,6 +190,7 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
       isFirstAyah={isFirstAyah}
       calibration={hafsCalibration}
       riwaya={effectiveRiwaya}
+      tajweedColors={tajweedColors}
     />
   );
 });

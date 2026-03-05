@@ -63,16 +63,17 @@ export default function Sidebar() {
   }, [filter]);
 
   const goSurah = (n) => {
-    set({ displayMode: "surah" });
+    set({ displayMode: "surah", showHome: false });
     dispatch({ type: "NAVIGATE_SURAH", payload: { surah: n, ayah: 1 } });
   };
 
   const goPage = (p) => {
-    set({ displayMode: "page" });
+    set({ displayMode: "page", showHome: false });
     dispatch({ type: "NAVIGATE_PAGE", payload: { page: p } });
   };
 
   const goJuz = (juz) => {
+    set({ showHome: false });
     dispatch({ type: "NAVIGATE_JUZ", payload: { juz } });
   };
 

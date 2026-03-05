@@ -160,7 +160,7 @@ export default function NotesPanel() {
   }, [open]);
 
   const goTo = (surah, ayah) => {
-    set({ displayMode: "surah" });
+    set({ displayMode: "surah", showHome: false });
     dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah } });
     setOpen(false);
   };

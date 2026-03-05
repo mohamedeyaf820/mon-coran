@@ -189,6 +189,7 @@ export default function AudioPlayer() {
   const [expanded, setExpanded] = useState(false);
   const [volume, setVolume] = useState(savedVolume ?? 1);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  const [audioError, setAudioError] = useState(null);
 
   const progressRef = useRef(null);
 
@@ -202,6 +203,7 @@ export default function AudioPlayer() {
   /* ── Wire audio callbacks ── */
   useEffect(() => {
     audioService.onPlay = (item) => {
+      setAudioError(null);
       set({
         isPlaying: true,
         currentPlayingAyah: item
@@ -230,7 +232,18 @@ export default function AudioPlayer() {
       setDuration(dur);
       setProgress(dur ? ct / dur : 0);
     };
-    audioService.onError = () => set({ isPlaying: false });
+    audioService.onError = () => {
+      set({ isPlaying: false });
+      const msg = riwaya === 'warsh'
+        ? (lang === 'fr'
+            ? 'Audio Warsh indisponible. Vérifiez votre connexion ou changez de récitateur.'
+            : lang === 'ar'
+              ? 'الصوت غير متاح. تحقق من الاتصال أو غيّر القارئ.'
+              : 'Warsh audio unavailable. Check your connection or switch reciter.')
+        : (lang === 'fr' ? 'Erreur de chargement audio.' : lang === 'ar' ? 'خطأ في تحميل الصوت.' : 'Audio load error.');
+      setAudioError(msg);
+      setTimeout(() => setAudioError(null), 5000);
+    };
     return () => {
       audioService.onPlay = null;
       audioService.onPause = null;
@@ -244,6 +257,10 @@ export default function AudioPlayer() {
   useEffect(() => {
     audioService.setSpeed(audioSpeed);
   }, [audioSpeed]);
+
+  useEffect(() => {
+    audioService.setVolume(savedVolume ?? 1);
+  }, [savedVolume]);
 
   useEffect(() => {
     const safe = ensureReciterForRiwaya(reciter, riwaya);
@@ -787,7 +804,41 @@ export default function AudioPlayer() {
           from { opacity: 0; transform: translateY(6px); }
           to   { opacity: 1; transform: translateY(0); }
         }
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
       `}</style>
+
+      {/* Audio error banner */}
+      {audioError && (
+        <div
+          style={{
+            position: "fixed",
+            top: 72,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 400,
+            background: "rgba(180,30,30,0.93)",
+            color: "#fff",
+            borderRadius: 12,
+            padding: "10px 18px",
+            fontSize: 13,
+            fontFamily: "inherit",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+            animation: "slideDown 0.25s ease",
+            maxWidth: 340,
+            textAlign: "center",
+            pointerEvents: "none",
+          }}
+        >
+          <i className="fas fa-exclamation-circle" style={{ flexShrink: 0 }} />
+          <span>{audioError}</span>
+        </div>
+      )}
 
       <div
         ref={cardRef}
