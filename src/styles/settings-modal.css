@@ -607,6 +607,38 @@
     margin-top: 0.5rem;
 }
 
+.font-search-wrap {
+    margin-bottom: 0.55rem;
+}
+
+.font-search-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    padding: 0.5rem 0.7rem;
+    transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+
+.font-search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.14);
+}
+
+.font-empty-state {
+    margin-top: 0.5rem;
+    padding: 0.65rem 0.8rem;
+    border-radius: var(--r-md);
+    border: 1px dashed var(--border);
+    color: var(--text-muted);
+    font-size: 0.74rem;
+    font-family: var(--font-ui);
+}
+
 .font-category-label {
     font-family: var(--font-ui);
     font-size: 0.65rem;

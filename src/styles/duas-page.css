@@ -1,0 +1,216 @@
+.duas-page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1rem 1rem 2.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.duas-hero {
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  background: var(--bg-secondary);
+  padding: 1rem;
+}
+
+.duas-hero-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.duas-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: var(--r-pill);
+  border: 1px solid rgba(var(--gold-rgb, 212, 168, 32), 0.35);
+  color: var(--gold);
+  background: rgba(var(--gold-rgb, 212, 168, 32), 0.1);
+  padding: 0.2rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.duas-title {
+  margin: 0.45rem 0 0;
+  color: var(--text-primary);
+  font-size: clamp(1.15rem, 2.4vw, 1.65rem);
+}
+
+.duas-subtitle {
+  margin: 0.3rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+}
+
+.duas-back-btn {
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-radius: var(--r-md);
+  padding: 0.48rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.duas-back-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.duas-tools {
+  margin-top: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.duas-categories {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.duas-cat-btn {
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  border-radius: var(--r-pill);
+  padding: 0.35rem 0.7rem;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.duas-cat-btn.active {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.11);
+}
+
+.duas-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg-primary);
+  padding: 0.5rem 0.65rem;
+  color: var(--text-muted);
+}
+
+.duas-search {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+}
+
+.duas-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+}
+
+.dua-card {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--bg-secondary);
+  padding: 0.85rem 0.95rem;
+}
+
+.dua-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.dua-ref-pill {
+  font-size: 0.73rem;
+  color: var(--gold);
+  border: 1px solid rgba(var(--gold-rgb, 212, 168, 32), 0.24);
+  background: rgba(var(--gold-rgb, 212, 168, 32), 0.08);
+  border-radius: var(--r-pill);
+  padding: 0.16rem 0.58rem;
+}
+
+.dua-open-btn {
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-radius: var(--r-md);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.34rem 0.58rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+}
+
+.dua-open-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.dua-arabic {
+  margin: 0.8rem 0 0;
+  direction: rtl;
+  text-align: right;
+  font-family: var(--font-quran);
+  color: var(--text-quran);
+  font-size: clamp(1.1rem, 2.6vw, 1.55rem);
+  line-height: 2;
+}
+
+.dua-translit {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.dua-translation {
+  margin: 0.25rem 0 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.duas-empty {
+  border: 1px dashed var(--border);
+  border-radius: var(--r-lg);
+  color: var(--text-muted);
+  text-align: center;
+  font-size: 0.85rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+}
+
+@media (max-width: 768px) {
+  .duas-page {
+    padding: 0.75rem 0.55rem 1.6rem;
+  }
+
+  .duas-hero {
+    padding: 0.8rem;
+  }
+
+  .dua-card {
+    padding: 0.75rem 0.75rem;
+  }
+
+  .dua-arabic {
+    font-size: 1.2rem;
+  }
+}

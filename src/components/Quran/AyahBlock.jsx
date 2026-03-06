@@ -1,6 +1,7 @@
 import React from 'react';
 import { toAr } from '../../data/surahs';
 import { t } from '../../i18n';
+import { arabicToLatin } from '../../data/transliteration';
 import AyahActions from '../AyahActions';
 import SmartAyahRenderer from './SmartAyahRenderer';
 import WordByWordDisplay from './WordByWordDisplay';
@@ -14,6 +15,10 @@ const AyahBlock = React.memo(function AyahBlock({
     surahNum, calibration, riwaya, lang, onToggleActive, ayahId,
     progress, fontSize,
 }) {
+    const ayahTransliteration = showTranslation && showTransliteration && !showWordByWord
+        ? arabicToLatin(ayah.text)
+        : '';
+
     return (
         <div
             id={ayahId}
@@ -62,8 +67,8 @@ const AyahBlock = React.memo(function AyahBlock({
             {showTranslation && trans && !showWordByWord && (
                 <div className="ayah-translation">{trans.text}</div>
             )}
-            {ayah.juz && (
-                <span className="ayah-juz-badge">{t('sidebar.juz', lang)} {ayah.juz}</span>
+            {ayahTransliteration && (
+                <div className="ayah-transliteration">{ayahTransliteration}</div>
             )}
             {isActive && (
                 <AyahActions surah={surahNum} ayah={ayah.numberInSurah} ayahData={ayah} />

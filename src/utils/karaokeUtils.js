@@ -60,6 +60,48 @@ const KARAOKE_RECITER_OVERRIDES = {
     },
 };
 
+function getAutoReciterCalibration(reciter, family, baseline) {
+    if (!reciter) return {};
+
+    const reciterId = String(reciter.id || '').toLowerCase();
+    const cdnType = String(reciter.cdnType || '').toLowerCase();
+    const style = String(reciter.style || '').toLowerCase();
+
+    // CDN bias: everyayah links tend to feel slightly late on first consonants
+    const cdnBias = cdnType === 'everyayah' ? 0.02 : 0;
+
+    let offsetSec = baseline.offsetSec ?? 0;
+    let smoothing = baseline.smoothing ?? 0.62;
+
+    if (style === 'mujawwad') {
+        offsetSec += family === 'warsh' ? -0.04 : -0.08;
+        smoothing = Math.min(0.72, smoothing + 0.02);
+    } else if (style === 'tartil') {
+        offsetSec += family === 'warsh' ? -0.02 : -0.05;
+        smoothing = Math.min(0.72, smoothing + 0.01);
+    }
+
+    if (/(mujawwad|tablawi|minshawi)/.test(reciterId)) {
+        offsetSec += family === 'warsh' ? -0.03 : -0.05;
+    }
+
+    if (/(husary|alafasy|sudais|shuraym|ghamdi|ajamy|rifai)/.test(reciterId)) {
+        smoothing = Math.max(0.56, smoothing - 0.02);
+    }
+
+    if (family === 'warsh') {
+        // Warsh tends to need slight anticipation in this app's highlighting model
+        offsetSec += 0.03;
+    }
+
+    return {
+        offsetSec: Number((offsetSec + cdnBias).toFixed(3)),
+        smoothing: Number(Math.max(0.48, Math.min(0.78, smoothing)).toFixed(2)),
+        lagWordsBase: 0,
+        lagWordsLong: 0,
+    };
+}
+
 export function getKaraokeCalibration(reciterId, riwaya = 'hafs') {
     const family = riwaya === 'warsh' ? 'warsh' : 'hafs';
     const defaults = KARAOKE_DEFAULTS[family] || KARAOKE_DEFAULTS.hafs;
@@ -67,14 +109,21 @@ export function getKaraokeCalibration(reciterId, riwaya = 'hafs') {
     const stylePreset = reciter?.style
         ? (KARAOKE_STYLE_PRESETS[family]?.[reciter.style] || {})
         : {};
+    const baseline = {
+        offsetSec: stylePreset.offsetSec ?? defaults.offsetSec,
+        smoothing: stylePreset.smoothing ?? defaults.smoothing,
+        lagWordsBase: stylePreset.lagWordsBase ?? defaults.lagWordsBase,
+        lagWordsLong: stylePreset.lagWordsLong ?? defaults.lagWordsLong,
+    };
+    const autoCalibration = getAutoReciterCalibration(reciter, family, baseline);
     const override = reciterId
         ? (KARAOKE_RECITER_OVERRIDES[family]?.[reciterId] || {})
         : {};
 
     return {
-        offsetSec:    override.offsetSec    ?? stylePreset.offsetSec    ?? defaults.offsetSec,
-        smoothing:    override.smoothing    ?? stylePreset.smoothing    ?? defaults.smoothing,
-        lagWordsBase: override.lagWordsBase ?? stylePreset.lagWordsBase ?? defaults.lagWordsBase,
-        lagWordsLong: override.lagWordsLong ?? stylePreset.lagWordsLong ?? defaults.lagWordsLong,
+        offsetSec:    override.offsetSec    ?? autoCalibration.offsetSec    ?? baseline.offsetSec,
+        smoothing:    override.smoothing    ?? autoCalibration.smoothing    ?? baseline.smoothing,
+        lagWordsBase: override.lagWordsBase ?? autoCalibration.lagWordsBase ?? baseline.lagWordsBase,
+        lagWordsLong: override.lagWordsLong ?? autoCalibration.lagWordsLong ?? baseline.lagWordsLong,
     };
 }

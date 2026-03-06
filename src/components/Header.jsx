@@ -35,6 +35,7 @@ export default function Header() {
     riwaya,
     loadedAyahCount,
     showHome,
+    showDuas,
     showWordByWord,
   } = state;
 
@@ -108,20 +109,20 @@ export default function Header() {
     if (isNaN(num)) return;
     if (displayMode === "page") {
       if (num >= 1 && num <= 604) {
-        set({ currentPage: num, showHome: false });
+        set({ currentPage: num, showHome: false, showDuas: false });
         setGoToOpen(false);
         setGoToValue("");
       }
     } else if (displayMode === "juz") {
       if (num >= 1 && num <= 30) {
-        set({ showHome: false });
+        set({ showHome: false, showDuas: false });
         dispatch({ type: "NAVIGATE_JUZ", payload: { juz: num } });
         setGoToOpen(false);
         setGoToValue("");
       }
     } else {
       if (num >= 1 && num <= 114) {
-        set({ showHome: false });
+        set({ showHome: false, showDuas: false });
         dispatch({ type: "NAVIGATE_SURAH", payload: { surah: num } });
         setGoToOpen(false);
         setGoToValue("");
@@ -193,9 +194,9 @@ export default function Header() {
         : currentSurah < 114;
 
   const handlePrev = () => {
-    set({ showHome: false });
+    set({ showHome: false, showDuas: false });
     if (displayMode === "page") {
-      if (currentPage > 1) set({ currentPage: currentPage - 1, showHome: false });
+      if (currentPage > 1) set({ currentPage: currentPage - 1, showHome: false, showDuas: false });
     } else if (displayMode === "juz") {
       if (currentJuz > 1)
         dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz - 1 } });
@@ -208,9 +209,9 @@ export default function Header() {
     }
   };
   const handleNext = () => {
-    set({ showHome: false });
+    set({ showHome: false, showDuas: false });
     if (displayMode === "page") {
-      if (currentPage < 604) set({ currentPage: currentPage + 1, showHome: false });
+      if (currentPage < 604) set({ currentPage: currentPage + 1, showHome: false, showDuas: false });
     } else if (displayMode === "juz") {
       if (currentJuz < 30)
         dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz + 1 } });
@@ -302,14 +303,14 @@ export default function Header() {
               ? "bg-[var(--gold)]/[0.14]"
               : "hover:bg-white/[0.08]",
           )}
-          onClick={() => set({ showHome: !showHome })}
+          onClick={() => set({ showHome: !showHome, showDuas: false })}
           title={
             showHome
               ? (lang === "fr" ? "Fermer l'accueil" : lang === "ar" ? "إغلاق الرئيسية" : "Close home")
               : (lang === "fr" ? "Accueil" : lang === "ar" ? "الصفحة الرئيسية" : "Home")
           }
           aria-label={lang === "fr" ? "Accueil MushafPlus" : "MushafPlus Home"}
-          aria-pressed={showHome}
+          aria-pressed={showHome && !showDuas}
         >
           <div
             className="flex items-center justify-center w-8 h-8 rounded-xl shrink-0"
@@ -345,6 +346,24 @@ export default function Header() {
 
         {/* Separator */}
         <div className="hidden lg:block w-px h-5 bg-white/10 mx-0.5" />
+
+        <button
+          className={cn(
+            "hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl",
+            "text-[0.72rem] font-semibold",
+            "transition-all duration-200 cursor-pointer outline-none",
+            showDuas
+              ? "bg-[var(--gold)]/[0.18] text-white"
+              : "bg-white/[0.07] border border-white/[0.06] text-white/70 hover:text-white hover:bg-white/[0.12]",
+          )}
+          onClick={() => set({ showDuas: true, showHome: false })}
+          title={lang === "ar" ? "صفحة الأدعية" : lang === "fr" ? "Page Douas" : "Duas page"}
+          aria-label={lang === "ar" ? "صفحة الأدعية" : lang === "fr" ? "Ouvrir la page Douas" : "Open Duas page"}
+          aria-pressed={showDuas}
+        >
+          <i className="fas fa-hands-praying text-[0.68rem]" aria-hidden="true" />
+          <span>{lang === "ar" ? "أدعية" : lang === "fr" ? "Douas" : "Duas"}</span>
+        </button>
 
         {/* Riwayat selector — desktop */}
         <div className="hidden lg:flex items-center">
@@ -607,6 +626,7 @@ export default function Header() {
           title={lang === "fr" ? "Mot-à-mot" : lang === "ar" ? "كلمة بكلمة" : "Word by word"}
           aria-label={lang === "fr" ? "Mot-à-mot" : "Word by word"}
           active={showWordByWord}
+          className="hidden sm:flex"
         />
         {/* Search — always visible */}
         <HeaderIconButton
@@ -615,25 +635,16 @@ export default function Header() {
           title={`${t("nav.search", lang)} (Ctrl+K)`}
           aria-label={t("nav.search", lang)}
         />
-        {/* Bookmarks — hidden on mobile (accessible via ⋮ menu) */}
-        <HeaderIconButton
-          icon="fa-bookmark"
-          onClick={() => dispatch({ type: "TOGGLE_BOOKMARKS" })}
-          title={t("nav.bookmarks", lang)}
-          aria-label={t("nav.bookmarks", lang)}
-          className="hidden sm:flex"
-        />
-        {/* Settings — hidden on mobile (accessible via ⋮ menu) */}
+        {/* Settings */}
         <HeaderIconButton
           icon="fa-sliders"
           onClick={() => dispatch({ type: "TOGGLE_SETTINGS" })}
           title={t("nav.settings", lang)}
           aria-label={t("nav.settings", lang)}
-          className="hidden sm:flex"
         />
 
-        {/* ── Mobile "More" dropdown ── */}
-        <div className="lg:hidden">
+        {/* ── Menu "Plus" — visible sur tous les écrans ── */}
+        <div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -850,55 +861,6 @@ export default function Header() {
           </DropdownMenu>
         </div>
 
-        {/* ── Desktop-only action buttons ── */}
-        <div className="hidden lg:flex items-center gap-0.5 ms-0.5">
-          {/* Divider */}
-          <div className="w-px h-4 bg-white/[0.12] mx-1" />
-
-          <HeaderIconButton
-            icon="fa-bullseye"
-            onClick={() => dispatch({ type: "TOGGLE_WIRD" })}
-            title={t("wird.title", lang)}
-          />
-          <HeaderIconButton
-            icon="fa-clock-rotate-left"
-            onClick={() => dispatch({ type: "TOGGLE_HISTORY" })}
-            title={t("readingHistory.title", lang)}
-          />
-          <HeaderIconButton
-            icon="fa-list"
-            onClick={() => dispatch({ type: "TOGGLE_PLAYLIST" })}
-            title={t("playlist.title", lang)}
-          />
-
-          {/* Divider */}
-          <div className="w-px h-4 bg-white/[0.12] mx-1" />
-
-          <HeaderIconButton
-            icon={
-              theme === "dark" || theme === "night-blue" ? "fa-sun" : "fa-moon"
-            }
-            onClick={cycleTheme}
-            title={`${t("settings.darkMode", lang)}: ${themeLabel}`}
-          />
-          <HeaderIconButton
-            icon={isFullscreen ? "fa-compress" : "fa-expand"}
-            onClick={toggleFullscreen}
-            title={
-              isFullscreen
-                ? lang === "fr"
-                  ? "Quitter plein écran"
-                  : lang === "ar"
-                    ? "إنهاء ملء الشاشة"
-                    : "Exit fullscreen"
-                : lang === "fr"
-                  ? "Plein écran"
-                  : lang === "ar"
-                    ? "ملء الشاشة"
-                    : "Fullscreen"
-            }
-          />
-        </div>
       </div>
     </header>
   );

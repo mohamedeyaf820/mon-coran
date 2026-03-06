@@ -63,17 +63,17 @@ export default function Sidebar() {
   }, [filter]);
 
   const goSurah = (n) => {
-    set({ displayMode: "surah", showHome: false });
+    set({ displayMode: "surah", showHome: false, showDuas: false });
     dispatch({ type: "NAVIGATE_SURAH", payload: { surah: n, ayah: 1 } });
   };
 
   const goPage = (p) => {
-    set({ displayMode: "page", showHome: false });
+    set({ displayMode: "page", showHome: false, showDuas: false });
     dispatch({ type: "NAVIGATE_PAGE", payload: { page: p } });
   };
 
   const goJuz = (juz) => {
-    set({ showHome: false });
+    set({ showHome: false, showDuas: false });
     dispatch({ type: "NAVIGATE_JUZ", payload: { juz } });
   };
 
@@ -191,7 +191,7 @@ export default function Sidebar() {
                   className={cn(
                     "group flex items-center w-full gap-3 cursor-pointer text-start outline-none",
                     "transition-all duration-150 border-none",
-                    "px-3 py-[0.6rem]",
+                    "px-3 py-[0.75rem]",
                     isActive
                       ? "bg-[rgba(var(--primary-rgb),0.07)]"
                       : "bg-transparent hover:bg-[rgba(var(--primary-rgb),0.035)]",
@@ -229,15 +229,36 @@ export default function Sidebar() {
                   </span>
 
                   {/* Surah info */}
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 flex flex-col gap-[2px]">
+                    {/* Nom arabe */}
                     <span
-                      className="block text-[0.93rem] leading-[1.35] overflow-hidden text-ellipsis whitespace-nowrap"
-                      style={{ fontFamily: "'Amiri', serif" }}
+                      className="block leading-[1.4] text-[var(--text)]"
+                      style={{
+                        fontFamily: "'Scheherazade New','Amiri Quran','Amiri',serif",
+                        fontSize: "1.05rem",
+                        direction: "rtl",
+                        textAlign: "right",
+                      }}
                     >
                       {s.ar}
                     </span>
-                    <span className="block text-[0.65rem] mt-[2px] overflow-hidden text-ellipsis whitespace-nowrap text-[var(--text-muted)] font-[var(--font-ui)]">
-                      {lang === "fr" ? s.fr : lang === "en" ? s.en : ""} ·{" "}
+                    {/* Translittération (en) + traduction (fr) */}
+                    {lang !== "ar" && (
+                      <span
+                        className="block overflow-hidden text-ellipsis whitespace-nowrap text-[var(--text)] font-semibold"
+                        style={{ fontFamily: "var(--font-ui)", fontSize: "0.78rem" }}
+                      >
+                        {s.en}
+                        <span
+                          className="font-normal text-[var(--text-muted)]"
+                          style={{ fontSize: "0.72rem" }}
+                        >
+                          {" "}({s.fr})
+                        </span>
+                      </span>
+                    )}
+                    {/* Nombre de versets */}
+                    <span className="block text-[0.6rem] text-[var(--text-muted)] font-[var(--font-ui)]">
                       {s.ayahs} {t("quran.ayah", lang)}
                     </span>
                   </div>

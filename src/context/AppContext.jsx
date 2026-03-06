@@ -50,6 +50,7 @@ const initialState = {
   fontSize: stored.fontSize || 28,
   fontFamily: stored.fontFamily || "scheherazade-new",
   showHome: stored.showHome ?? true,
+  showDuas: stored.showDuas ?? false,
   showTranslation: stored.showTranslation ?? true,
   showTajwid: stored.showTajwid ?? false,
   showWordByWord: stored.showWordByWord ?? false,
@@ -57,6 +58,7 @@ const initialState = {
   showWordTranslation: stored.showWordTranslation ?? true,
   translationLang: stored.translationLang || "fr",
   continuousPlay: stored.continuousPlay ?? true, // auto-play next surah
+  focusReading: stored.focusReading ?? false,
 
   // Audio
   reciter: initialReciter,
@@ -120,6 +122,7 @@ function appReducer(state, action) {
         ...state,
         currentSurah: action.payload.surah,
         currentAyah: action.payload.ayah || 1,
+        showDuas: false,
         sidebarOpen: false,
       };
 
@@ -128,6 +131,7 @@ function appReducer(state, action) {
         ...state,
         currentPage: action.payload.page,
         displayMode: "page",
+        showDuas: false,
         sidebarOpen: false,
       };
 
@@ -136,6 +140,7 @@ function appReducer(state, action) {
         ...state,
         currentJuz: action.payload.juz,
         displayMode: "juz",
+        showDuas: false,
         sidebarOpen: false,
       };
 
@@ -210,11 +215,13 @@ export function AppProvider({ children }) {
         showTransliteration: state.showTransliteration,
         showWordTranslation: state.showWordTranslation,
         showHome: state.showHome,
+        showDuas: state.showDuas,
         displayMode: state.displayMode,
         mushafLayout: state.mushafLayout,
         audioSpeed: state.audioSpeed,
         volume: state.volume,
         continuousPlay: state.continuousPlay,
+        focusReading: state.focusReading,
         syncOffsetsMs: state.syncOffsetsMs,
         warshStrictMode: state.warshStrictMode,
         autoNightMode: state.autoNightMode,
@@ -249,6 +256,7 @@ export function AppProvider({ children }) {
     state.showTransliteration,
     state.showWordTranslation,
     state.showHome,
+    state.showDuas,
     state.displayMode,
     state.mushafLayout,
     state.audioSpeed,
@@ -257,6 +265,7 @@ export function AppProvider({ children }) {
     state.currentPage,
     state.currentJuz,
     state.continuousPlay,
+    state.focusReading,
     state.syncOffsetsMs,
     state.warshStrictMode,
     state.autoNightMode,

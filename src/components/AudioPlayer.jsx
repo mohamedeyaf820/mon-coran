@@ -36,7 +36,7 @@ function clamp(x, y, w, h, margin = 12) {
 function Waveform({ isPlaying, progress }) {
   const COUNT = 32;
   return (
-    <div className="flex items-end justify-center gap-[2px] h-8 w-full">
+    <div className="flex items-end justify-center gap-0.5 h-8 w-full">
       {Array.from({ length: COUNT }).map((_, i) => {
         const pct = i / COUNT;
         const filled = pct <= progress;
@@ -190,8 +190,10 @@ export default function AudioPlayer() {
   const [volume, setVolume] = useState(savedVolume ?? 1);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   const [audioError, setAudioError] = useState(null);
+  const [networkState, setNetworkState] = useState("idle");
 
   const progressRef = useRef(null);
+  const audioErrorTimerRef = useRef(null);
 
   /* ── Detect mobile ── */
   useEffect(() => {
@@ -234,6 +236,10 @@ export default function AudioPlayer() {
     };
     audioService.onError = () => {
       set({ isPlaying: false });
+      setNetworkState("error");
+      if (audioErrorTimerRef.current) {
+        clearTimeout(audioErrorTimerRef.current);
+      }
       const msg = riwaya === 'warsh'
         ? (lang === 'fr'
             ? 'Audio Warsh indisponible. Vérifiez votre connexion ou changez de récitateur.'
@@ -242,17 +248,54 @@ export default function AudioPlayer() {
               : 'Warsh audio unavailable. Check your connection or switch reciter.')
         : (lang === 'fr' ? 'Erreur de chargement audio.' : lang === 'ar' ? 'خطأ في تحميل الصوت.' : 'Audio load error.');
       setAudioError(msg);
-      setTimeout(() => setAudioError(null), 5000);
+      audioErrorTimerRef.current = setTimeout(() => {
+        setAudioError(null);
+        audioErrorTimerRef.current = null;
+      }, 5000);
+    };
+    audioService.onNetworkState = (st) => {
+      setNetworkState(st || "idle");
     };
     return () => {
+      if (audioErrorTimerRef.current) {
+        clearTimeout(audioErrorTimerRef.current);
+        audioErrorTimerRef.current = null;
+      }
       audioService.onPlay = null;
       audioService.onPause = null;
       audioService.onEnd = null;
       audioService.onAyahChange = null;
       audioService.onTimeUpdate = null;
       audioService.onError = null;
+      audioService.onNetworkState = null;
     };
-  }, [set]);
+  }, [set, lang, riwaya]);
+
+  const networkBadge = (() => {
+    if (networkState === "loading" || networkState === "buffering") {
+      return {
+        icon: "fa-spinner fa-spin",
+        text:
+          lang === "fr"
+            ? "Chargement audio..."
+            : lang === "ar"
+              ? "جاري تحميل الصوت..."
+              : "Loading audio...",
+      };
+    }
+    if (networkState === "stalled") {
+      return {
+        icon: "fa-wifi",
+        text:
+          lang === "fr"
+            ? "Connexion instable"
+            : lang === "ar"
+              ? "اتصال غير مستقر"
+              : "Unstable connection",
+      };
+    }
+    return null;
+  })();
 
   useEffect(() => {
     audioService.setSpeed(audioSpeed);
@@ -357,7 +400,7 @@ export default function AudioPlayer() {
   const mBarBtnSm = (active = false) =>
     cn(
       "px-[0.55rem] py-[0.24rem] min-h-[28px] flex items-center justify-center",
-      "rounded-md border text-[0.71rem] font-semibold font-[var(--font-ui)] cursor-pointer outline-none whitespace-nowrap",
+      "rounded-md border text-[0.71rem] font-semibold cursor-pointer outline-none whitespace-nowrap",
       "transition-all duration-150",
       active
         ? "bg-[rgba(212,168,32,0.28)] text-[#f5d785] border-[rgba(212,168,32,0.5)]"
@@ -446,7 +489,7 @@ export default function AudioPlayer() {
   if (isMobile) {
     return (
       <div
-        className="fixed bottom-0 left-0 right-0 z-[300] text-[#f0ead6] rounded-t-2xl"
+        className="fixed bottom-0 left-0 right-0 z-300 text-[#f0ead6] rounded-t-2xl"
         style={{
           background: "var(--player-glass)",
           borderTop: "1px solid rgba(255,255,255,0.1)",
@@ -463,9 +506,25 @@ export default function AudioPlayer() {
               : "Audio Player"
         }
       >
+        {networkBadge && (
+          <div className="px-3 pt-1.5">
+            <div
+              className="inline-flex items-center gap-1.5 px-2 py-0.75 rounded-full text-[0.62rem] font-semibold"
+              style={{
+                background: "rgba(212,168,32,0.14)",
+                border: "1px solid rgba(212,168,32,0.28)",
+                color: "#f5d785",
+                fontFamily: "var(--font-ui)",
+              }}
+            >
+              <i className={`fas ${networkBadge.icon}`} />
+              <span>{networkBadge.text}</span>
+            </div>
+          </div>
+        )}
         {/* Progress bar */}
         <div
-          className="relative cursor-pointer overflow-visible rounded-t-2xl bg-white/10 h-[3px] hover:h-[5px] transition-[height] duration-150"
+          className="relative cursor-pointer overflow-visible rounded-t-2xl bg-white/10 h-0.75 hover:h-1.25 transition-[height] duration-150"
           ref={progressRef}
           onClick={handleSeek}
           role="progressbar"
@@ -482,18 +541,18 @@ export default function AudioPlayer() {
               boxShadow: "0 0 8px rgba(184,134,11,0.45)",
             }}
           >
-            <div className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white scale-0 hover:scale-100 transition-transform duration-150 shadow-md" />
+            <div className="absolute -right-1.25 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white scale-0 hover:scale-100 transition-transform duration-150 shadow-md" />
           </div>
         </div>
 
         {/* Controls row */}
-        <div className="flex items-center px-3 gap-2 min-h-[62px]">
+        <div className="flex items-center px-3 gap-2 min-h-15.5">
           {/* Left: info block */}
           <div
-            className="flex flex-col justify-center gap-[0.15rem] min-w-0 w-[88px] shrink-0"
+            className="flex flex-col justify-center gap-[0.15rem] min-w-0 w-22 shrink-0"
             aria-live="polite"
           >
-            <span className="block font-[var(--font-ui)] text-[0.7rem] text-white/[0.88] whitespace-nowrap overflow-hidden text-ellipsis font-semibold leading-tight">
+            <span className="block text-[0.7rem] text-white/88 whitespace-nowrap overflow-hidden text-ellipsis font-semibold leading-tight">
               {currentPlayingAyah
                 ? `${t("quran.surah", lang)} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
                 : lang === "fr"
@@ -504,7 +563,7 @@ export default function AudioPlayer() {
             </span>
             <span className="text-[0.6rem] text-white/40 font-mono tabular-nums leading-none">
               {formatTime(currentTime)}
-              <span className="opacity-50 mx-[2px]">/</span>
+              <span className="opacity-50 mx-0.5">/</span>
               {formatTime(duration)}
             </span>
           </div>
@@ -534,7 +593,7 @@ export default function AudioPlayer() {
               }}
             >
               <i
-                className={`fas ${isPlaying ? "fa-pause" : "fa-play"} ${isPlaying ? "" : "translate-x-[1px]"}`}
+                className={`fas ${isPlaying ? "fa-pause" : "fa-play"} ${isPlaying ? "" : "translate-x-px"}`}
               />
             </button>
 
@@ -566,7 +625,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtnSm(),
-                "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-[26px] min-w-[30px] justify-center",
+                "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-6.5 min-w-7.5 justify-center",
               )}
               onClick={cycleSpeed}
               title={
@@ -578,7 +637,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtnSm(memMode),
-                "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-[26px] min-w-[26px] justify-center",
+                "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-6.5 min-w-6.5 justify-center",
               )}
               onClick={() => set({ memMode: !memMode })}
               title={t("audio.memorization", lang)}
@@ -589,7 +648,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtnSm(expanded),
-                "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-[26px] min-w-[26px] justify-center",
+                "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-6.5 min-w-6.5 justify-center",
               )}
               onClick={() => setExpanded((v) => !v)}
               aria-expanded={expanded}
@@ -626,16 +685,16 @@ export default function AudioPlayer() {
               <div className="flex items-center gap-1.5 mb-3 flex-wrap">
                 <span
                   className={cn(
-                    "inline-flex items-center px-2 py-[3px] rounded-full text-[0.6rem] font-[var(--font-ui)] font-bold border whitespace-nowrap",
+                    "inline-flex items-center px-2 py-0.75 rounded-full text-[0.6rem] font-bold border whitespace-nowrap",
                     warshStrictMode
                       ? "bg-[rgba(212,168,32,0.14)] text-[#f5d785] border-[rgba(212,168,32,0.3)]"
-                      : "bg-white/[0.07] text-white/50 border-white/[0.1]",
+                      : "bg-white/[0.07] text-white/50 border-white/10",
                   )}
                 >
                   {warshStrictMode ? warshStrictLabel : warshNonStrictLabel}
                 </span>
                 {warshStrictMode && (
-                  <span className="inline-flex items-center gap-1 px-2 py-[3px] rounded-full text-[0.6rem] font-[var(--font-ui)] font-bold border bg-[rgba(212,168,32,0.14)] text-[#f5d785] border-[rgba(212,168,32,0.3)]">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.75 rounded-full text-[0.6rem] font-bold border bg-[rgba(212,168,32,0.14)] text-[#f5d785] border-[rgba(212,168,32,0.3)]">
                     <i className="fas fa-check text-[0.48rem]" />
                     {warshVerifiedLabel}
                   </span>
@@ -645,7 +704,7 @@ export default function AudioPlayer() {
 
             {/* Reciter label */}
             <div className="mb-2.5">
-              <span className="text-[0.6rem] font-bold uppercase tracking-[0.1em] text-[rgba(240,234,214,0.35)] font-[var(--font-ui)]">
+              <span className="text-[0.6rem] font-bold uppercase tracking-widest text-[rgba(240,234,214,0.35)]">
                 {t("audio.reciter", lang)}
               </span>
               <div className="grid grid-cols-3 gap-1 mt-1.5">
@@ -673,7 +732,7 @@ export default function AudioPlayer() {
                           style={{ color: "var(--gold-bright)" }}
                         />
                       )}
-                      <span className="text-[0.6rem] font-semibold leading-tight truncate font-[var(--font-ui)]">
+                      <span className="text-[0.6rem] font-semibold leading-tight truncate">
                         {lang === "ar"
                           ? r.name
                           : lang === "fr"
@@ -717,7 +776,7 @@ export default function AudioPlayer() {
                 step="0.05"
                 value={volume}
                 onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-                className="flex-1 h-[3px] rounded-full cursor-pointer"
+                className="flex-1 h-0.75 rounded-full cursor-pointer"
                 style={{ accentColor: "var(--gold-bright, #d4a820)" }}
               />
               <span
@@ -734,7 +793,7 @@ export default function AudioPlayer() {
             {/* Memorization settings */}
             {memMode && (
               <div className="mt-2.5">
-                <span className="text-[0.6rem] font-bold uppercase tracking-[0.1em] text-[rgba(240,234,214,0.35)] font-[var(--font-ui)]">
+                <span className="text-[0.6rem] font-bold uppercase tracking-widest text-[rgba(240,234,214,0.35)]">
                   {t("audio.memorization", lang)}
                 </span>
                 <div className="flex gap-3 flex-wrap mt-1.5">
@@ -756,7 +815,7 @@ export default function AudioPlayer() {
                   ].map(({ label, val, key, min, max }) => (
                     <div
                       key={key}
-                      className="flex items-center gap-1.5 text-[0.7rem] text-[rgba(240,234,214,0.75)] font-[var(--font-ui)]"
+                      className="flex items-center gap-1.5 text-[0.7rem] text-[rgba(240,234,214,0.75)]"
                     >
                       <span>{label}</span>
                       <input
@@ -847,7 +906,7 @@ export default function AudioPlayer() {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         className={cn(
-          "fixed z-[300] flex flex-col rounded-2xl overflow-hidden select-none touch-none",
+          "fixed z-300 flex flex-col rounded-2xl overflow-hidden select-none touch-none",
           isDragging ? "cursor-grabbing" : "cursor-grab",
         )}
         style={{
@@ -870,9 +929,25 @@ export default function AudioPlayer() {
               : "Audio Player"
         }
       >
+        {networkBadge && (
+          <div className="px-4 pt-1">
+            <div
+              className="inline-flex items-center gap-1.5 px-2 py-0.75 rounded-full text-[0.6rem] font-bold"
+              style={{
+                background: "rgba(212,168,32,0.14)",
+                border: "1px solid rgba(212,168,32,0.28)",
+                color: "#f5d785",
+                fontFamily: "var(--font-ui)",
+              }}
+            >
+              <i className={`fas ${networkBadge.icon}`} />
+              <span>{networkBadge.text}</span>
+            </div>
+          </div>
+        )}
         {/* Drag handle */}
         <div className="flex justify-center pt-2.5 pb-1 shrink-0">
-          <div className="w-7 h-[3px] rounded-full bg-white/20" />
+          <div className="w-7 h-0.75 rounded-full bg-white/20" />
         </div>
 
         <div className="px-4 pb-4 pt-1 flex flex-col gap-3">
@@ -905,7 +980,7 @@ export default function AudioPlayer() {
               </div>
               {isWarshMode && warshStrictMode && (
                 <span
-                  className="inline-block mt-0.5 px-1.5 py-[1px] rounded-full text-[0.55rem] font-bold tracking-wide border"
+                  className="inline-block mt-0.5 px-1.5 py-px rounded-full text-[0.55rem] font-bold tracking-wide border"
                   style={{
                     background: "rgba(212,168,32,0.12)",
                     color: "#f5d785",
@@ -926,7 +1001,7 @@ export default function AudioPlayer() {
             <div
               ref={progressRef}
               onClick={handleSeek}
-              className="relative h-[3px] rounded-full cursor-pointer group"
+              className="relative h-0.75 rounded-full cursor-pointer group"
               style={{ background: "rgba(255,255,255,0.12)" }}
               role="progressbar"
               aria-valuenow={Math.round(progress * 100)}
@@ -960,7 +1035,7 @@ export default function AudioPlayer() {
             {/* Speed */}
             <button
               onClick={cycleSpeed}
-              className="px-2 py-[3px] rounded-md text-[0.62rem] font-bold transition-all duration-150"
+              className="px-2 py-0.75 rounded-md text-[0.62rem] font-bold transition-all duration-150"
               style={{
                 background: "rgba(212,168,32,0.1)",
                 border: "1px solid rgba(212,168,32,0.2)",
@@ -1030,7 +1105,7 @@ export default function AudioPlayer() {
               step="0.05"
               value={volume}
               onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-              className="flex-1 h-[3px] rounded-full cursor-pointer"
+              className="flex-1 h-0.75 rounded-full cursor-pointer"
               style={{ accentColor: "var(--gold-bright, #d4a820)" }}
               aria-label="Volume"
             />

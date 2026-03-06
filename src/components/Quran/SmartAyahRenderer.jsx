@@ -1,6 +1,5 @@
 import React, { useMemo, useRef, useEffect } from "react";
 import { useKaraoke, buildKaraokeCalibration } from "../../hooks/useKaraoke";
-import { getPerWordTajweedColors } from "../../data/tajwidRules";
 import { stripBasmala } from "../../utils/quranUtils";
 import WarshWordText from "./WarshWordText";
 import { AyahTextRenderer } from "./AyahTextRenderer";
@@ -127,23 +126,7 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
     ayah.numberInSurah === 1 && surahNum !== 1 && surahNum !== 9;
   const effectiveRiwaya = ayah.warshWords ? "warsh" : riwaya || "hafs";
 
-  const tajweedColors = useMemo(() => {
-    // Tajweed colors only for Hafs — Warsh has its own rendering pipeline
-    if (!showTajwid) return null;
-    if (effectiveRiwaya === 'warsh') return null;
-    const sourceText = ayah.hafsText || (ayah.warshWords ? null : ayah.text);
-    if (!sourceText) return null;
-    const cleanText = stripBasmala(sourceText, surahNum, ayah.numberInSurah);
-    return getPerWordTajweedColors(cleanText, 'hafs');
-  }, [
-    showTajwid,
-    ayah.hafsText,
-    ayah.text,
-    ayah.warshWords,
-    surahNum,
-    ayah.numberInSurah,
-    effectiveRiwaya,
-  ]);
+  const tajweedColors = null;
 
   const cleanHafsText = useMemo(() => {
     if (!ayah.hafsText) return null;

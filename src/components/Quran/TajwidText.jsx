@@ -2,14 +2,10 @@ import React from 'react';
 
 /**
  * TajwidText component.
- *
- * Tajweed color-coding is disabled: the regex-based rules produce incorrect
- * highlights on many verses and the GPOS-dependent KFGQPC font renders
- * diacritics as black dots when text is split into coloured spans.
- * The component now renders plain un-styled text in all cases.
- * The `enabled` prop is accepted for API compatibility but ignored.
+ * Tajweed coloring intentionally disabled to avoid incorrect rule rendering.
  */
 const TajwidText = React.memo(function TajwidText({ text }) {
+    if (!text) return null;
     return <span>{text}</span>;
 });
 

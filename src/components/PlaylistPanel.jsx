@@ -69,8 +69,8 @@ export default function PlaylistPanel() {
     const cdnType = reciterObj?.cdnType || 'islamic';
 
     // Build a playlist for audioService
-    // We need global ayah numbers — approximate: surah*1000+ayah (placeholder)
-    // Actually we need real global numbers. Let's compute from surah data.
+    // Global ayah numbers are required by some CDN modes.
+    // We compute them from canonical cumulative surah offsets.
     const ayahsForAudio = playlist.ayahs.map(a => ({
       surah: a.surah,
       ayah: a.ayah,

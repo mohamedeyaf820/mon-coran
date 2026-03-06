@@ -15,7 +15,6 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
   text,
   isFirstAyah,
   calibration,
-  tajweedColors,
 }) {
   const lastIdxRef = useRef(0);
 
@@ -88,14 +87,11 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
       {words.map((word, i) => {
         const isRead = i < currentIdx;
         const isCurrent = i === currentIdx;
-        const tajweedCls =
-          tajweedColors?.[i] ? `tajwid tajwid-${tajweedColors[i]}` : "";
 
         let cls = "wbw-word";
         if (isRead) cls += " wbw-read";
         else if (isCurrent) cls += " wbw-current";
         else cls += " wbw-upcoming";
-        if (tajweedCls) cls += ` ${tajweedCls}`;
 
         return (
           <React.Fragment key={i}>
@@ -133,7 +129,6 @@ export function AyahTextRenderer({
         text={text}
         isFirstAyah={isFirstAyah}
         calibration={calibration}
-        tajweedColors={tajweedColors}
       />
     );
   }
@@ -143,6 +138,7 @@ export function AyahTextRenderer({
       text={text}
       enabled={showTajwid}
       riwaya={riwaya}
+      tajweedColors={tajweedColors}
     />
   );
 }

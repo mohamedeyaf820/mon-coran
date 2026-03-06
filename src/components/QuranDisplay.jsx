@@ -122,6 +122,21 @@ const FONT_MAP = {
   "amiri": "'Amiri','Amiri Quran','Scheherazade New',serif",
   "noto-naskh": "'Noto Naskh Arabic','Scheherazade New','Amiri Quran',serif",
   lateef: "'Scheherazade New','Noto Naskh Arabic',serif",
+  "noto-naskh-arabic": "'Noto Naskh Arabic','Scheherazade New','Amiri Quran',serif",
+  "markazi-text": "'Markazi Text','Amiri Quran','Scheherazade New',serif",
+  "el-messiri": "'El Messiri','Noto Naskh Arabic','Scheherazade New',serif",
+  "kfgqpc-uthman-taha-naskh": "'KFGQPC Uthman Taha Naskh','Uthman Taha Hafs','ME Quran',serif",
+  "reem-kufi": "'Reem Kufi','Cairo','Noto Naskh Arabic',sans-serif",
+  "aref-ruqaa": "'Aref Ruqaa','Scheherazade New','Amiri Quran',serif",
+  cairo: "'Cairo','Noto Naskh Arabic',sans-serif",
+  harmattan: "'Harmattan','Cairo',sans-serif",
+  mada: "'Mada','Cairo',sans-serif",
+  tajawal: "'Tajawal','Cairo',sans-serif",
+  lemonada: "'Lemonada','Cairo',sans-serif",
+  jomhuria: "'Jomhuria','Cairo',sans-serif",
+  rakkas: "'Rakkas','Cairo',sans-serif",
+  marhey: "'Marhey','Cairo',sans-serif",
+  mirza: "'Mirza','Lateef',serif",
 };
 
 /* ═══════════════════════════════════════════════════ */
@@ -176,6 +191,7 @@ export default function QuranDisplay() {
   const [isQCF4, setIsQCF4] = useState(false);
   const contentRef = useRef(null);
   const readingStartRef = useRef(Date.now());
+  const continuousAutoPlayRef = useRef(false);
   const [activeAyah, setActiveAyah] = useState(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   // Surah chunk navigation for long surahs
@@ -201,6 +217,18 @@ export default function QuranDisplay() {
     }),
     [fontSize, isQCF4, quranFontCss],
   );
+
+  // Stable signature for audio playlist to avoid unnecessary reloads when only
+  // non-audio fields (e.g. hafsText enrichment) change.
+  const audioPlaylistKey = useMemo(() => {
+    if (!Array.isArray(ayahs) || ayahs.length === 0) return "";
+    return ayahs
+      .map(
+        (a) =>
+          `${a.surah?.number || currentSurah}:${a.numberInSurah}:${a.number}`,
+      )
+      .join("|");
+  }, [ayahs, currentSurah]);
 
   // Sync selected font to CSS variables so .ayah-text-ar picks it up
   useEffect(() => {
@@ -257,18 +285,17 @@ export default function QuranDisplay() {
     const unsubEnd = audioService.addEndListener(() => {
       // Playlist ended, auto-navigate to next
       if (displayMode === "surah" && currentSurah < 114) {
+        continuousAutoPlayRef.current = true;
         dispatch({
           type: "NAVIGATE_SURAH",
           payload: { surah: currentSurah + 1, ayah: 1 },
         });
-        // Auto-play after a short delay (wait for data to load)
-        setTimeout(() => audioService.play(), 1200);
       } else if (displayMode === "juz" && currentJuz < 30) {
+        continuousAutoPlayRef.current = true;
         dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz + 1 } });
-        setTimeout(() => audioService.play(), 1200);
       } else if (displayMode === "page" && currentPage < 604) {
+        continuousAutoPlayRef.current = true;
         set({ currentPage: currentPage + 1 });
-        setTimeout(() => audioService.play(), 1200);
       }
     });
     return unsubEnd;
@@ -281,6 +308,12 @@ export default function QuranDisplay() {
     dispatch,
     set,
   ]);
+
+  useEffect(() => {
+    if (!continuousPlay) {
+      continuousAutoPlayRef.current = false;
+    }
+  }, [continuousPlay]);
 
   /* ── Load audio playlist when ayahs or reciter/riwaya change ── */
   useEffect(() => {
@@ -312,18 +345,33 @@ export default function QuranDisplay() {
         rec.cdn,
         rec.cdnType || "islamic",
       );
+      if (continuousAutoPlayRef.current && continuousPlay) {
+        continuousAutoPlayRef.current = false;
+        audioService.play();
+      }
     }
-  }, [ayahs, state.reciter, riwaya, currentSurah, warshStrictMode, lang]);
+  }, [
+    audioPlaylistKey,
+    state.reciter,
+    riwaya,
+    currentSurah,
+    warshStrictMode,
+    continuousPlay,
+  ]);
 
   /* ── Auto-scroll to playing ayah ───────────── */
   useEffect(() => {
     if (!currentPlayingAyah?.ayah) return;
-    // In juz mode, elements use global ayah number; in surah/page mode, numberInSurah
-    const elId =
+    const ids =
       displayMode === "juz"
-        ? `ayah-${currentPlayingAyah.globalNumber || currentPlayingAyah.ayah}`
-        : `ayah-${currentPlayingAyah.ayah}`;
-    const el = document.getElementById(elId);
+        ? [`ayah-${currentPlayingAyah.globalNumber || currentPlayingAyah.ayah}`]
+        : displayMode === "page"
+          ? [
+              `ayah-pg-${currentPlayingAyah.globalNumber || currentPlayingAyah.ayah}`,
+              `ayah-${currentPlayingAyah.ayah}`,
+            ]
+          : [`ayah-${currentPlayingAyah.ayah}`];
+    const el = ids.map((id) => document.getElementById(id)).find(Boolean);
     if (el) {
       const container = contentRef.current;
       if (!container) return;
@@ -829,8 +877,13 @@ export default function QuranDisplay() {
     return (
       <div className="quran-loading">
         <div className="loading-skeleton">
+          <div className="loading-skeleton-topbar">
+            <div className="loading-pill"></div>
+            <div className="loading-pill"></div>
+          </div>
           <div className="skeleton-header"></div>
           <div className="skeleton-bismillah"></div>
+          <div className="skeleton-line thin"></div>
           <div className="skeleton-line long"></div>
           <div className="skeleton-line medium"></div>
           <div className="skeleton-line long"></div>
@@ -919,7 +972,11 @@ export default function QuranDisplay() {
 
       {/* Surah mode */}
       {displayMode === "surah" && (
-        <div role="region" aria-label={t("settings.surahMode", lang)}>
+        <div
+          role="region"
+          aria-label={t("settings.surahMode", lang)}
+          className="quran-mode-pane quran-mode-pane--surah"
+        >
           {/* Surah header — always shown except when QCF4 mushaf view handles it */}
           {!(isQCF4 && mushafLayout === "mushaf") && !isQCF4 && (
             <SurahHeader surahNum={currentSurah} lang={lang} />
@@ -1130,7 +1187,11 @@ export default function QuranDisplay() {
 
       {/* Page mode */}
       {displayMode === "page" && (
-        <>
+        <div
+          className="quran-mode-pane quran-mode-pane--page"
+          role="region"
+          aria-label={t("settings.pageMode", lang)}
+        >
           <div className="page-header-bar">
             <span>
               {t("quran.page", lang)}{" "}
@@ -1271,12 +1332,16 @@ export default function QuranDisplay() {
               <i className={`fas fa-arrow-${lang === "ar" ? "left" : "right"}`}></i>
             </button>
           </div>
-        </>
+        </div>
       )}
 
       {/* Juz mode */}
       {displayMode === "juz" && (
-        <div role="region" aria-label={t("settings.juzMode", lang)}>
+        <div
+          role="region"
+          aria-label={t("settings.juzMode", lang)}
+          className="quran-mode-pane quran-mode-pane--juz"
+        >
           {/* En-tête Juz */}
           <div className="page-header-bar">
             <span>
@@ -1454,3 +1519,4 @@ export default function QuranDisplay() {
     </div>
   );
 }
+

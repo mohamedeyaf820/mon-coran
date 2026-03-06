@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { t, LANGUAGES } from '../i18n';
 import { downloadExport, importFromFile } from '../services/exportService';
@@ -18,10 +18,11 @@ export default function SettingsModal() {
   const syncKey = `${riwaya}:${reciter}`;
   const syncOffsetMs = Number(syncOffsetsMs?.[syncKey] ?? 0);
   const reciterObj = getReciter(reciter, riwaya);
+  const [fontFilter, setFontFilter] = useState('');
 
   const close = () => dispatch({ type: 'TOGGLE_SETTINGS' });
 
-  // Font options — same categories as quranwbw.com
+  // Font options — extended library inspired by arabic-calligraphy-generator.com
   const FONT_CATEGORIES = [
     {
       label: lang === 'fr' ? 'Recommandée (sans artefacts visuels)' : 'Recommended (no rendering artifacts)',
@@ -37,6 +38,24 @@ export default function SettingsModal() {
           label: 'Amiri Quran',
           hint: lang === 'fr' ? 'Police Naskh classique' : 'Classic Naskh typeface',
           css: "'Amiri Quran','Scheherazade New','Noto Naskh Arabic',serif",
+        },
+        {
+          id: 'noto-naskh-arabic',
+          label: 'Noto Naskh Arabic',
+          hint: lang === 'fr' ? 'Très lisible pour interface et texte' : 'Highly readable for text & UI',
+          css: "'Noto Naskh Arabic','Scheherazade New','Amiri Quran',serif",
+        },
+        {
+          id: 'markazi-text',
+          label: 'Markazi Text',
+          hint: lang === 'fr' ? 'Naskh classique, lecture continue' : 'Classic Naskh for long reading',
+          css: "'Markazi Text','Amiri Quran','Scheherazade New',serif",
+        },
+        {
+          id: 'el-messiri',
+          label: 'El Messiri',
+          hint: lang === 'fr' ? 'Style Naskh moderne pour titres/sous-titres' : 'Modern Naskh-inspired style',
+          css: "'El Messiri','Noto Naskh Arabic','Scheherazade New',serif",
         },
       ],
     },
@@ -91,10 +110,69 @@ export default function SettingsModal() {
           hint: 'KFGQPC Uthman Taha',
           css: "'Uthman Taha Hafs','KFGQPC Uthmanic Script HAFS','ME Quran',serif",
         },
+        {
+          id: 'kfgqpc-uthman-taha-naskh',
+          label: 'KFGQPC Uthman Taha Naskh',
+          hint: lang === 'fr' ? 'Variante Uthman Taha Naskh demandée' : 'Requested Uthman Taha Naskh variant',
+          css: "'KFGQPC Uthman Taha Naskh','Uthman Taha Hafs','ME Quran',serif",
+        },
+      ],
+    },
+    {
+      label: lang === 'fr' ? 'Kufi & Diwani' : 'Kufi & Diwani',
+      fonts: [
+        {
+          id: 'reem-kufi',
+          label: 'Reem Kufi',
+          hint: lang === 'fr' ? 'Kufi géométrique moderne' : 'Geometric modern Kufi',
+          css: "'Reem Kufi','Cairo','Noto Naskh Arabic',sans-serif",
+        },
+        {
+          id: 'aref-ruqaa',
+          label: 'Aref Ruqaa',
+          hint: lang === 'fr' ? 'Style calligraphique décoratif' : 'Decorative calligraphic style',
+          css: "'Aref Ruqaa','Scheherazade New','Amiri Quran',serif",
+        },
+      ],
+    },
+    {
+      label: lang === 'fr' ? 'Modernes UI / Sans-serif' : 'Modern UI / Sans-serif',
+      fonts: [
+        { id: 'cairo', label: 'Cairo', hint: 'Modern UI', css: "'Cairo','Noto Naskh Arabic',sans-serif" },
+        { id: 'harmattan', label: 'Harmattan', hint: 'Clean digital', css: "'Harmattan','Cairo',sans-serif" },
+        { id: 'mada', label: 'Mada', hint: 'Geometric minimal', css: "'Mada','Cairo',sans-serif" },
+        { id: 'tajawal', label: 'Tajawal', hint: 'Versatile UI font', css: "'Tajawal','Cairo',sans-serif" },
+        { id: 'lemonada', label: 'Lemonada', hint: 'Rounded friendly', css: "'Lemonada','Cairo',sans-serif" },
+      ],
+    },
+    {
+      label: lang === 'fr' ? 'Display / Titres' : 'Display / Headlines',
+      fonts: [
+        { id: 'jomhuria', label: 'Jomhuria', hint: 'Bold display', css: "'Jomhuria','Cairo',sans-serif" },
+        { id: 'rakkas', label: 'Rakkas', hint: 'Decorative display', css: "'Rakkas','Cairo',sans-serif" },
+        { id: 'marhey', label: 'Marhey', hint: 'Playful display', css: "'Marhey','Cairo',sans-serif" },
+      ],
+    },
+    {
+      label: lang === 'fr' ? 'Nastaliq / Littéraire' : 'Nastaliq / Literary',
+      fonts: [
+        { id: 'lateef', label: 'Lateef', hint: 'Flowing literary', css: "'Lateef','Scheherazade New','Amiri',serif" },
+        { id: 'mirza', label: 'Mirza', hint: 'Persian-influenced', css: "'Mirza','Lateef',serif" },
       ],
     },
   ];
   const FONT_OPTIONS = FONT_CATEGORIES.flatMap(c => c.fonts);
+  const normalizedFontFilter = fontFilter.trim().toLowerCase();
+  const FILTERED_FONT_CATEGORIES = !normalizedFontFilter
+    ? FONT_CATEGORIES
+    : FONT_CATEGORIES
+      .map(cat => ({
+        ...cat,
+        fonts: cat.fonts.filter(font =>
+          `${font.label} ${font.hint || ''} ${font.id}`.toLowerCase().includes(normalizedFontFilter)
+        ),
+      }))
+      .filter(cat => cat.fonts.length > 0);
 
   const handleImport = async () => {
     const input = document.createElement('input');
@@ -434,6 +512,33 @@ export default function SettingsModal() {
             <p className="setting-hint">{t('settings.continuousPlayHint', lang)}</p>
           </div>
 
+          {/* Focus reading mode */}
+          <div className="setting-group">
+            <label className="toggle-row">
+              <span>
+                {lang === 'fr'
+                  ? 'Mode Focus récitation'
+                  : lang === 'ar'
+                    ? 'وضع التركيز للتلاوة'
+                    : 'Recitation focus mode'}
+              </span>
+              <button
+                className={`toggle-switch ${state.focusReading ? 'on' : ''}`}
+                onClick={() => set({ focusReading: !state.focusReading })}
+                aria-pressed={state.focusReading}
+              >
+                <span className="toggle-knob"></span>
+              </button>
+            </label>
+            <p className="setting-hint">
+              {lang === 'fr'
+                ? 'Masque la barre latérale et les panneaux pour une lecture plus immersive.'
+                : lang === 'ar'
+                  ? 'إخفاء الشريط الجانبي واللوحات لقراءة أكثر تركيزاً.'
+                  : 'Hides side panels for a more immersive reading experience.'}
+            </p>
+          </div>
+
           {/* ── Section : Texte & Affichage ── */}
           <div className="settings-section-title">
             <i className="fas fa-font" aria-hidden="true"></i>
@@ -490,7 +595,17 @@ export default function SettingsModal() {
           {/* Font family — grouped by category like quranwbw.com */}
           <div className="setting-group">
             <label className="setting-label">{t('settings.fontFamily', lang)}</label>
-            {FONT_CATEGORIES.map(cat => (
+            <div className="font-search-wrap">
+              <input
+                type="text"
+                className="font-search-input"
+                value={fontFilter}
+                onChange={(e) => setFontFilter(e.target.value)}
+                placeholder={lang === 'fr' ? 'Rechercher une police…' : lang === 'ar' ? 'ابحث عن خط…' : 'Search a font…'}
+                aria-label={lang === 'fr' ? 'Rechercher une police' : lang === 'ar' ? 'البحث عن خط' : 'Search font'}
+              />
+            </div>
+            {FILTERED_FONT_CATEGORIES.map(cat => (
               <div key={cat.label} className="font-category">
                 <div className="font-category-label">{cat.label}</div>
                 <div className="setting-options font-options">
@@ -510,6 +625,11 @@ export default function SettingsModal() {
                 </div>
               </div>
             ))}
+            {FILTERED_FONT_CATEGORIES.length === 0 && (
+              <div className="font-empty-state">
+                {lang === 'fr' ? 'Aucune police trouvée pour cette recherche.' : lang === 'ar' ? 'لا توجد خطوط مطابقة للبحث.' : 'No matching fonts found.'}
+              </div>
+            )}
             <div
               className="font-preview"
               style={{

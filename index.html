@@ -6,7 +6,7 @@
         <!-- Content Security Policy -->
         <meta
             http-equiv="Content-Security-Policy"
-            content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://r2cdn.perplexity.ai; img-src 'self' data: blob:; connect-src 'self' https://api.alquran.cloud https://cdn.islamic.network https://everyayah.com https://raw.githubusercontent.com ws://localhost:* http://localhost:*; media-src 'self' https://cdn.islamic.network https://everyayah.com blob:;"
+            content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://r2cdn.perplexity.ai; img-src 'self' data: blob:; connect-src 'self' https://api.alquran.cloud https://api.quran.com https://cdn.islamic.network https://everyayah.com https://raw.githubusercontent.com ws://localhost:* http://localhost:*; media-src 'self' https://cdn.islamic.network https://everyayah.com https://audio.qurancdn.com https://verses.quran.com blob:;"
         />
         <title>MushafPlus - Le Saint Coran</title>
         <!-- Preconnect to all external origins for faster loading -->
@@ -14,6 +14,8 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link rel="preconnect" href="https://cdn.islamic.network" crossorigin />
         <link rel="preconnect" href="https://everyayah.com" crossorigin />
+        <link rel="preconnect" href="https://api.quran.com" crossorigin />
+        <link rel="preconnect" href="https://audio.qurancdn.com" crossorigin />
         <link
             rel="preconnect"
             href="https://cdnjs.cloudflare.com"
@@ -34,10 +36,10 @@
         <link
             rel="preload"
             as="style"
-            href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Cairo:wght@300;400;500;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Scheherazade+New:wght@400;700&family=Lateef:wght@400;700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@300;400;500;600;700;800;900&family=El+Messiri:wght@400;500;600;700&family=Harmattan:wght@400;500;600;700&family=Jomhuria&family=Lemonada:wght@300;400;500;600;700&family=Lateef:wght@400;700&family=Mada:wght@200;300;400;500;600;700;800;900&family=Markazi+Text:wght@400;500;600;700&family=Marhey:wght@300;400;500;600;700&family=Mirza:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Rakkas&family=Reem+Kufi:wght@400;500;600;700&family=Scheherazade+New:wght@400;500;600;700&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap"
         />
         <link
-            href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Cairo:wght@300;400;500;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Scheherazade+New:wght@400;700&family=Lateef:wght@400;700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@300;400;500;600;700;800;900&family=El+Messiri:wght@400;500;600;700&family=Harmattan:wght@400;500;600;700&family=Jomhuria&family=Lemonada:wght@300;400;500;600;700&family=Lateef:wght@400;700&family=Mada:wght@200;300;400;500;600;700;800;900&family=Markazi+Text:wght@400;500;600;700&family=Marhey:wght@300;400;500;600;700&family=Mirza:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Rakkas&family=Reem+Kufi:wght@400;500;600;700&family=Scheherazade+New:wght@400;500;600;700&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap"
             rel="stylesheet"
             media="print"
             onload="this.media = 'all'"
@@ -56,7 +58,7 @@
         />
         <noscript>
             <link
-                href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Cairo:wght@300;400;500;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Scheherazade+New:wght@400;700&family=Lateef:wght@400;700&display=swap"
+                href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@300;400;500;600;700;800;900&family=El+Messiri:wght@400;500;600;700&family=Harmattan:wght@400;500;600;700&family=Jomhuria&family=Lemonada:wght@300;400;500;600;700&family=Lateef:wght@400;700&family=Mada:wght@200;300;400;500;600;700;800;900&family=Markazi+Text:wght@400;500;600;700&family=Marhey:wght@300;400;500;600;700&family=Mirza:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Rakkas&family=Reem+Kufi:wght@400;500;600;700&family=Scheherazade+New:wght@400;500;600;700&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap"
                 rel="stylesheet"
             />
             <link

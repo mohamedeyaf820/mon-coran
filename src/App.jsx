@@ -19,6 +19,7 @@ const ReadingHistoryPanel = lazy(
   () => import("./components/ReadingHistoryPanel"),
 );
 const PlaylistPanel = lazy(() => import("./components/PlaylistPanel"));
+const DuasPage = lazy(() => import("./components/DuasPage"));
 
 function detectLowPerformanceDevice() {
   if (typeof window === "undefined" || typeof navigator === "undefined")
@@ -48,6 +49,8 @@ export default function App() {
     currentPage,
     currentJuz,
     showHome,
+    showDuas,
+    focusReading,
   } = state;
   const lowPerfMode = useMemo(() => detectLowPerformanceDevice(), []);
 
@@ -64,8 +67,9 @@ export default function App() {
 
       switch (e.key) {
         case "ArrowLeft":
+          if (state.showDuas) return;
           e.preventDefault();
-          set({ showHome: false });
+          set({ showHome: false, showDuas: false });
           if (displayMode === "page") {
             if (lang === "ar" ? currentPage > 1 : currentPage < 604)
               set({
@@ -90,8 +94,9 @@ export default function App() {
           }
           break;
         case "ArrowRight":
+          if (state.showDuas) return;
           e.preventDefault();
-          set({ showHome: false });
+          set({ showHome: false, showDuas: false });
           if (displayMode === "page") {
             if (lang === "ar" ? currentPage < 604 : currentPage > 1)
               set({
@@ -148,6 +153,7 @@ export default function App() {
       state.searchOpen,
       state.settingsOpen,
       state.bookmarksOpen,
+      state.showDuas,
       dispatch,
       set,
     ],
@@ -177,7 +183,7 @@ export default function App() {
 
   return (
     <div
-      className="app-root flex flex-col h-screen h-[100dvh] w-full overflow-hidden"
+      className={`app-root flex flex-col h-dvh w-full overflow-hidden ${focusReading ? "focus-reading" : ""}`}
       dir={lang === "ar" ? "rtl" : "ltr"}
       style={{ backgroundColor: "var(--bg-primary)" }}
     >
@@ -187,14 +193,16 @@ export default function App() {
       {/* ── Main layout: sidebar + content ── */}
       <div className="relative flex flex-1 min-h-0">
         {/* Sidebar */}
-        <Suspense fallback={null}>
-          <Sidebar />
-        </Suspense>
+        {!focusReading && (
+          <Suspense fallback={null}>
+            <Sidebar />
+          </Suspense>
+        )}
 
         {/* Overlay for mobile sidebar */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 z-[190] backdrop-blur-sm transition-opacity duration-200"
+            className="fixed inset-0 z-190 backdrop-blur-sm transition-opacity duration-200"
             style={{
               top: "var(--header-h)",
               background: "var(--bg-overlay)",
@@ -209,13 +217,27 @@ export default function App() {
           className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden"
           style={{ paddingBottom: "var(--player-h)" }}
         >
-          {showHome ? <HomePage /> : <QuranDisplay />}
+          <div
+            className={`app-view-shell ${showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas ? `app-mode-${displayMode}` : ""}`}
+          >
+            {showHome ? (
+              <HomePage />
+            ) : showDuas ? (
+              <Suspense fallback={null}>
+                <DuasPage />
+              </Suspense>
+            ) : (
+              <QuranDisplay />
+            )}
+          </div>
         </main>
 
         {/* Notes panel (right side) */}
-        <Suspense fallback={null}>
-          <NotesPanel />
-        </Suspense>
+        {!focusReading && (
+          <Suspense fallback={null}>
+            <NotesPanel />
+          </Suspense>
+        )}
       </div>
 
       {/* ── Fixed bottom audio player ── */}

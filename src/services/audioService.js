@@ -10,7 +10,7 @@ const RETRY_DELAY = 800; // ms
 class AudioService {
   constructor() {
     this.audio = new Audio();
-    this.audio.preload = 'none'; // Don't buffer until explicitly needed
+    this.audio.preload = 'metadata'; // Keep startup light while enabling faster first play
     // NOTE: Do NOT set crossOrigin — EveryAyah.com and some CDNs
     // don't support CORS, which causes audio to fail silently.
     this.currentAyah = null;
@@ -19,6 +19,9 @@ class AudioService {
     this.isPlaying = false;
     this._loadTimeout = null;
     this._preloadAudio = null; // For preloading next track
+    this._preloadPool = []; // [{ url, audio }]
+    this._maxPreloadPool = 2;
+    this._loadRequestId = 0; // Used to ignore stale retry attempts
 
     // Memorization mode
     this.memMode = false;
@@ -34,6 +37,7 @@ class AudioService {
     this.onEnd = null;
     this.onTimeUpdate = null;
     this.onError = null;
+    this.onNetworkState = null;
 
     // Extra listeners (for word-by-word tracking etc.)
     this._timeUpdateListeners = [];
@@ -58,6 +62,14 @@ class AudioService {
     this.audio.addEventListener('ended', this._boundEnded);
     this.audio.addEventListener('timeupdate', this._boundTimeUpdate);
     this.audio.addEventListener('error', this._boundError);
+    this._boundWaiting = () => this.onNetworkState?.('buffering');
+    this._boundStalled = () => this.onNetworkState?.('stalled');
+    this._boundCanPlay = () => this.onNetworkState?.('ready');
+    this._boundPlaying = () => this.onNetworkState?.('playing');
+    this.audio.addEventListener('waiting', this._boundWaiting);
+    this.audio.addEventListener('stalled', this._boundStalled);
+    this.audio.addEventListener('canplay', this._boundCanPlay);
+    this.audio.addEventListener('playing', this._boundPlaying);
   }
 
   /* ── Build Audio URL ───────────────────────── */
@@ -81,6 +93,8 @@ class AudioService {
   /* ── Playlist Management ───────────────────── */
 
   loadPlaylist(ayahs, reciterCdn, cdnType = 'islamic') {
+    const previousCurrent = this.currentAyah;
+
     this.playlist = ayahs.map(a => ({
       surah: a.surah || a.surahNumber,
       ayah: a.ayah || a.numberInSurah,
@@ -92,10 +106,25 @@ class AudioService {
       }, cdnType),
       text: a.text,
     }));
-    this.playlistIndex = -1;
-    // Preload first track immediately
+
+    // Preserve current position if the same ayah still exists in the new playlist
+    const preservedIndex = previousCurrent
+      ? this.playlist.findIndex(
+          (p) =>
+            p.surah === previousCurrent.surah &&
+            p.ayah === previousCurrent.ayah,
+        )
+      : -1;
+
+    this.playlistIndex = preservedIndex >= 0 ? preservedIndex : -1;
+    if (preservedIndex >= 0) {
+      this.currentAyah = this.playlist[preservedIndex];
+    }
+
+    // Preload first relevant track immediately
     if (this.playlist.length > 0) {
-      this._preloadTrack(this.playlist[0].url);
+      const preloadIndex = preservedIndex >= 0 ? preservedIndex : 0;
+      this._preloadAhead(preloadIndex, 2);
     }
   }
 
@@ -136,6 +165,7 @@ class AudioService {
   }
 
   stop() {
+    this._loadRequestId++;
     this._clearLoadTimeout();
     if (this.memTimer) {
       clearTimeout(this.memTimer);
@@ -145,6 +175,11 @@ class AudioService {
     this.audio.currentTime = 0;
     this.audio.removeAttribute('src');
     this.audio.load(); // Reset without triggering error
+    for (const pre of this._preloadPool) {
+      pre.audio?.removeAttribute('src');
+      pre.audio?.load();
+    }
+    this._preloadPool = [];
     this.isPlaying = false;
     this.playlistIndex = -1;
     this.memCurrentRepeat = 0;
@@ -182,10 +217,13 @@ class AudioService {
    */
   async playSingle(url, meta = {}) {
     try {
+      this.onNetworkState?.('loading');
       await this._loadUrlWithRetry(url);
       this.isPlaying = true;
+      this.onNetworkState?.('playing');
       this.onPlay?.({ url, ...meta });
     } catch (err) {
+      this.onNetworkState?.('error');
       this.onError?.(err);
     }
   }
@@ -249,32 +287,58 @@ class AudioService {
    */
   _loadUrlWithRetry(url, retries = MAX_RETRIES) {
     return new Promise((resolve, reject) => {
+      const requestId = ++this._loadRequestId;
       this._clearLoadTimeout();
 
+      if (this.audio.src === url && this.audio.readyState >= 2) {
+        this.audio
+          .play()
+          .then(() => resolve())
+          .catch((e) => {
+            if (e?.name === 'NotAllowedError') resolve();
+            else reject(e);
+          });
+        return;
+      }
+
+      let settled = false;
+      let cleanup = () => {};
+
+      const finishResolve = () => {
+        if (settled || requestId !== this._loadRequestId) return;
+        settled = true;
+        cleanup();
+        this._clearLoadTimeout();
+        resolve();
+      };
+
+      const finishReject = (err) => {
+        if (settled || requestId !== this._loadRequestId) return;
+        settled = true;
+        cleanup();
+        this._clearLoadTimeout();
+        reject(err);
+      };
+
       const attempt = (retriesLeft) => {
-        // Set timeout for loading
-        this._loadTimeout = setTimeout(() => {
-          if (retriesLeft > 0) {
-            console.warn(`Audio load timeout, retrying... (${retriesLeft} left)`);
-            attempt(retriesLeft - 1);
-          } else {
-            reject(new Error('Audio load timeout'));
-          }
-        }, AUDIO_LOAD_TIMEOUT);
+        if (settled || requestId !== this._loadRequestId) return;
+
+        cleanup();
 
         const onCanPlay = () => {
           cleanup();
           this._clearLoadTimeout();
-          this.audio.play()
-            .then(() => resolve())
+          this.audio
+            .play()
+            .then(() => finishResolve())
             .catch((e) => {
               // Browser may block autoplay — user gesture needed
               if (e.name === 'NotAllowedError') {
-                resolve(); // Not a real error
+                finishResolve(); // Not a real load error
               } else if (retriesLeft > 0) {
                 setTimeout(() => attempt(retriesLeft - 1), RETRY_DELAY);
               } else {
-                reject(e);
+                finishReject(e);
               }
             });
         };
@@ -286,17 +350,30 @@ class AudioService {
             console.warn(`Audio load error, retrying... (${retriesLeft} left)`);
             setTimeout(() => attempt(retriesLeft - 1), RETRY_DELAY);
           } else {
-            reject(new Error('Audio load failed after retries'));
+            finishReject(new Error('Audio load failed after retries'));
           }
         };
 
-        const cleanup = () => {
+        cleanup = () => {
           this.audio.removeEventListener('canplay', onCanPlay);
           this.audio.removeEventListener('error', onError);
+          cleanup = () => {};
         };
+
+        // Set timeout for loading
+        this._loadTimeout = setTimeout(() => {
+          cleanup();
+          if (retriesLeft > 0) {
+            console.warn(`Audio load timeout, retrying... (${retriesLeft} left)`);
+            attempt(retriesLeft - 1);
+          } else {
+            finishReject(new Error('Audio load timeout'));
+          }
+        }, AUDIO_LOAD_TIMEOUT);
 
         this.audio.addEventListener('canplay', onCanPlay, { once: true });
         this.audio.addEventListener('error', onError, { once: true });
+        this.audio.preload = 'auto';
         this.audio.src = url;
         this.audio.load();
       };
@@ -309,18 +386,37 @@ class AudioService {
    * Preload the next track in background using a separate Audio element.
    */
   _preloadTrack(url) {
+    if (!url) return;
+    if (this._preloadPool.some((p) => p.url === url)) return;
+
     try {
-      // Abort previous preload
-      if (this._preloadAudio) {
-        this._preloadAudio.removeAttribute('src');
-        this._preloadAudio.load();
+      const preloadAudio = new Audio();
+      preloadAudio.preload = 'auto';
+      preloadAudio.src = url;
+      preloadAudio.load();
+
+      this._preloadAudio = preloadAudio;
+      this._preloadPool.push({ url, audio: preloadAudio });
+
+      while (this._preloadPool.length > this._maxPreloadPool) {
+        const oldest = this._preloadPool.shift();
+        if (oldest?.audio) {
+          oldest.audio.removeAttribute('src');
+          oldest.audio.load();
+        }
       }
-      this._preloadAudio = new Audio();
-      this._preloadAudio.preload = 'auto';
-      this._preloadAudio.src = url;
-      // Just let browser buffer it — we don't play it
     } catch {
       // Preload is best-effort
+    }
+  }
+
+  _preloadAhead(startIndex, count = 2) {
+    if (!Array.isArray(this.playlist) || this.playlist.length === 0) return;
+    for (let i = 0; i < count; i++) {
+      const idx = startIndex + i;
+      if (idx >= 0 && idx < this.playlist.length) {
+        this._preloadTrack(this.playlist[idx].url);
+      }
     }
   }
 
@@ -333,18 +429,19 @@ class AudioService {
     this.memCurrentRepeat = 0;
 
     try {
+      this.onNetworkState?.('loading');
       await this._loadUrlWithRetry(item.url);
       this.isPlaying = true;
+      this.onNetworkState?.('playing');
       this.onPlay?.(item);
       this.onAyahChange?.(item);
       for (const fn of this._ayahChangeListeners) fn(item);
 
-      // Preload next track
-      if (index + 1 < this.playlist.length) {
-        this._preloadTrack(this.playlist[index + 1].url);
-      }
+      // Preload next tracks
+      this._preloadAhead(index + 1, 2);
     } catch (err) {
       console.error('Audio play error:', err);
+      this.onNetworkState?.('error');
       this.onError?.(err);
       // Keep current ayah on error (don't skip ahead and desync highlighting)
       this.isPlaying = false;
@@ -418,10 +515,15 @@ class AudioService {
       this._preloadAudio.removeAttribute('src');
       this._preloadAudio = null;
     }
+    this._preloadPool = [];
     if (this.audio) {
       this.audio.removeEventListener('ended', this._boundEnded);
       this.audio.removeEventListener('timeupdate', this._boundTimeUpdate);
       this.audio.removeEventListener('error', this._boundError);
+      this.audio.removeEventListener('waiting', this._boundWaiting);
+      this.audio.removeEventListener('stalled', this._boundStalled);
+      this.audio.removeEventListener('canplay', this._boundCanPlay);
+      this.audio.removeEventListener('playing', this._boundPlaying);
       this.audio.removeAttribute('src');
       this.audio = null;
     }
