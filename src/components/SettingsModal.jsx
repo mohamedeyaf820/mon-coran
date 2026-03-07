@@ -5,6 +5,7 @@ import { downloadExport, importFromFile } from '../services/exportService';
 import { clearCache } from '../services/quranAPI';
 import audioService from '../services/audioService';
 import { getDefaultReciterId, getReciter } from '../data/reciters';
+import PlatformLogo from './PlatformLogo';
 import '../styles/settings-modal.css';
 
 const TABS = [
@@ -928,7 +929,7 @@ export default function SettingsModal() {
                 {/* About */}
                 <div className="settings-card about-card">
                   <div className="about-brand">
-                    <i className="fas fa-book-quran about-logo" aria-hidden="true"></i>
+                    <PlatformLogo className="about-logo" imgClassName="about-logo-img" decorative />
                     <div>
                       <strong>MushafPlus</strong>
                       <span className="about-version">v1.1.0</span>

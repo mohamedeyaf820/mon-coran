@@ -9576,21 +9576,12 @@ input:focus-visible {
 
 /* ── Logo MushafPlus dans le héro ── */
 .qc-logo-container {
-    width: 64px;
-    height: 64px;
+    width: clamp(104px, 18vw, 156px);
+    height: clamp(104px, 18vw, 156px);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    background: linear-gradient(135deg,
-            rgba(212, 175, 55, 0.22) 0%,
-            rgba(255, 255, 255, 0.10) 100%);
-    border: 1.5px solid rgba(212, 175, 55, 0.38);
-    box-shadow:
-        0 0 0 8px rgba(212, 175, 55, 0.07),
-        0 4px 20px rgba(0, 0, 0, 0.28);
-    margin-bottom: 0.9rem;
-    backdrop-filter: blur(6px);
+    margin-bottom: 1rem;
     animation: logoFloat 5s ease-in-out infinite;
 }
 
@@ -9606,13 +9597,11 @@ input:focus-visible {
     }
 }
 
-.qc-logo-icon {
-    font-size: 1.85rem;
-    background: linear-gradient(135deg, #f5d97a 0%, #d4a017 60%, #fff6c0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+.qc-logo-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 24px rgba(9, 15, 11, 0.28));
 }
 
 /* ── Slogan ── */
@@ -9871,20 +9860,27 @@ input:focus-visible {
 }
 
 .qc-logo-container {
-    background: linear-gradient(135deg,
-            rgba(var(--primary-rgb), 0.12) 0%,
-            rgba(255, 255, 255, 0.08) 100%);
-    border-color: rgba(var(--primary-rgb), 0.3);
-    box-shadow:
-        0 0 0 8px rgba(var(--primary-rgb), 0.06),
-        0 10px 24px rgba(0, 0, 0, 0.14);
+    filter: saturate(1.02);
 }
 
-.qc-logo-icon {
-    background: linear-gradient(135deg, var(--gold) 0%, #f4e3a7 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.qc-logo-image {
+    filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.18));
+}
+
+.header-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+}
+
+.header-brand-mark__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 12px rgba(15, 18, 16, 0.14));
 }
 
 .qc-slogan {
@@ -10830,6 +10826,12 @@ input:focus-visible {
         font-size: 2.15rem;
     }
 
+    .qc-logo-container {
+        width: 96px;
+        height: 96px;
+        margin-bottom: 0.8rem;
+    }
+
     .qc-vdj {
         padding: 0.82rem 0.9rem;
     }
@@ -11001,6 +11003,11 @@ input:focus-visible {
 
     .hp-info-row {
         padding: 0.68rem 0.7rem;
+    }
+
+    .header-brand-mark {
+        width: 36px;
+        height: 36px;
     }
 
     .wird-progress-card {

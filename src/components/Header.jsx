@@ -11,6 +11,7 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
 import { Separator } from "./ui/separator";
+import PlatformLogo from "./PlatformLogo";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -314,6 +315,7 @@ export default function Header() {
             className="flex items-center gap-2 group outline-none cursor-pointer"
             onClick={() => set({ showHome: true, showDuas: false })}
           >
+            <PlatformLogo className="header-brand-mark" imgClassName="header-brand-mark__img" decorative />
             <span className="font-bold text-[#111827] dark:text-white tracking-tight text-[1.4rem] sm:text-[1.6rem] transition-colors" style={{ fontFamily: "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif" }}>
               Mushaf.plus
             </span>

@@ -11,6 +11,7 @@ import { getAllBookmarks, getAllNotes } from "../services/storageService";
 import { cn } from "../lib/utils";
 import audioService from "../services/audioService";
 import { getReciter, ensureReciterForRiwaya } from "../data/reciters";
+import PlatformLogo from "./PlatformLogo";
 
 /* ─── Sourates d'accès rapide ─── */
 const QUICK_ACCESS = [
@@ -345,9 +346,7 @@ export default function HomePage() {
         <div className="qc-hero-inner">
 
           {/* Logo MushafPlus */}
-          <div className="qc-logo-container" aria-hidden="true">
-            <i className="fas fa-book-quran qc-logo-icon" />
-          </div>
+          <PlatformLogo className="qc-logo-container" imgClassName="qc-logo-image" decorative />
 
           <h1 className="qc-site-name">MushafPlus</h1>
 

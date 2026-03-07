@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PlatformLogo from './PlatformLogo';
 
 export default function SplashScreen({ onDone, onPrefetch, lowPerfMode = false }) {
   const [fadeOut, setFadeOut] = useState(false);
@@ -18,9 +19,7 @@ export default function SplashScreen({ onDone, onPrefetch, lowPerfMode = false }
   return (
     <div className={`splash-screen ${fadeOut ? 'fade-out' : ''} ${lowPerfMode ? 'perf-low' : ''}`}>
       <div className="splash-content">
-        <div className="splash-icon">
-          <i className="fas fa-book-quran"></i>
-        </div>
+        <PlatformLogo className="splash-logo-wrap" imgClassName="splash-logo" decorative />
         <h1 className="splash-title">MushafPlus</h1>
         <p className="splash-subtitle">القرآن الكريم</p>
         <p className="splash-verse">﴿ إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ ﴾</p>
@@ -68,14 +67,20 @@ export default function SplashScreen({ onDone, onPrefetch, lowPerfMode = false }
           z-index: 1;
         }
         .splash-screen.perf-low .splash-content { animation: none; }
-        .splash-icon {
-          font-size: 4.5rem;
-          color: var(--gold);
+        .splash-logo-wrap {
+          display: flex;
+          align-items: center;
+          justify-content: center;
           margin-bottom: 1.2rem;
           animation: sparkle 2s ease-in-out infinite;
-          filter: drop-shadow(0 4px 12px rgba(212,175,55,0.3));
+          filter: drop-shadow(0 8px 24px rgba(212,175,55,0.24));
         }
-        .splash-screen.perf-low .splash-icon {
+        .splash-logo {
+          width: min(220px, 56vw);
+          height: auto;
+          object-fit: contain;
+        }
+        .splash-screen.perf-low .splash-logo-wrap {
           animation: none;
           filter: none;
         }
@@ -125,7 +130,7 @@ export default function SplashScreen({ onDone, onPrefetch, lowPerfMode = false }
         }
         @keyframes sparkle {
           0%, 100% { opacity: 0.5; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.2); }
+          50% { opacity: 1; transform: scale(1.04); }
         }
         @keyframes pulse {
           0%, 100% { transform: translate(-50%, -50%) scale(1); }
