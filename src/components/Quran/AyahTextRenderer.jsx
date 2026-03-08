@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useEffect } from "react";
 import { useKaraoke } from "../../hooks/useKaraoke";
-import TajwidText from "./TajwidText";
+import TajweedText from "./TajweedText";
 
 /**
  * HafsKaraokeText – word-by-word karaoke for Hafs text.
@@ -110,7 +110,7 @@ export { HafsKaraokeText as KaraokeAyahText };
 /**
  * AyahTextRenderer – routes Hafs ayah rendering.
  * • isPlaying  → HafsKaraokeText (word-by-word highlight with timing calibration)
- * • !isPlaying → TajwidText      (coloured tajweed segments or plain text)
+ * • !isPlaying → TajweedText     (coloured tajweed segments or plain text)
  */
 export function AyahTextRenderer({
   text,
@@ -134,7 +134,7 @@ export function AyahTextRenderer({
   }
 
   return (
-    <TajwidText
+    <TajweedText
       text={text}
       enabled={showTajwid}
       riwaya={riwaya}

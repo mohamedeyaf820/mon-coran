@@ -235,7 +235,7 @@ export default function App() {
         {/* Invisible overlay for sidebar (to capture outside clicks without dimming) */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 z-190"
+            className="fixed inset-0 z-[190]"
             style={{ top: "var(--header-h)" }}
             onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
             aria-hidden="true"

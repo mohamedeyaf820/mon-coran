@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { parseTajwid, getRulesForRiwaya } from '../../data/tajwidRules';
+import { parseTajwid } from '../../data/tajwidRules';
 
 /**
- * TajwidText — renders Arabic text with Tajweed colour-coding.
+ * TajweedText — renders Arabic text with Tajweed colour-coding.
  *
  * Each segment produced by parseTajwid() that carries a ruleId is wrapped
  * in a <span> whose colour maps to the CSS variable --tajwid-{ruleId}.
@@ -11,7 +11,7 @@ import { parseTajwid, getRulesForRiwaya } from '../../data/tajwidRules';
  * Performance: memoised on (text, riwaya, enabled) so repeated re-renders
  * from parent state changes are cheap.
  */
-const TajwidText = React.memo(function TajwidText({
+const TajweedText = React.memo(function TajweedText({
     text,
     enabled = true,
     riwaya = 'hafs',
@@ -62,4 +62,4 @@ const TajwidText = React.memo(function TajwidText({
     );
 });
 
-export default TajwidText;
+export default TajweedText;

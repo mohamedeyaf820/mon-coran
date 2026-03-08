@@ -107,9 +107,34 @@ export default function Sidebar() {
     <>
       <aside className={cn("sidebar", sidebarOpen && "open")} role="navigation">
         <div className="sidebar-tabs-container">
-          {/* Top row: Tabs pill & Close button */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex bg-[var(--bg-secondary)] rounded-full p-1 border border-[var(--border)] overflow-hidden">
+          <div className="sidebar-shell-header">
+            <div>
+              <div className="sidebar-shell-kicker">
+                {lang === "fr" ? "Navigation" : lang === "ar" ? "التنقل" : "Navigation"}
+              </div>
+              <div className="sidebar-shell-title">
+                {lang === "fr" ? "Explorer le Mushaf" : lang === "ar" ? "استكشاف المصحف" : "Explore the Mushaf"}
+              </div>
+            </div>
+
+            <div className="sidebar-shell-chip">
+              {riwaya === "warsh"
+                ? (lang === "fr" ? "Warsh" : lang === "ar" ? "ورش" : "Warsh")
+                : (lang === "fr" ? "Hafs" : lang === "ar" ? "حفص" : "Hafs")}
+            </div>
+          </div>
+
+          {activeSummary && (
+            <div className="sidebar-active-summary">
+              <span className="sidebar-active-summary__label">
+                {lang === "fr" ? "Position actuelle" : lang === "ar" ? "الموضع الحالي" : "Current location"}
+              </span>
+              <span className="sidebar-active-summary__value">{activeSummary}</span>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between mb-4 gap-3">
+            <div className="sidebar-tabs-list">
               {availableTabs.map((t2) => (
                 <button
                   key={t2}
@@ -133,6 +158,32 @@ export default function Sidebar() {
             {lang === "fr" ? "Astuce: naviguez avec" : lang === "ar" ? "نصيحة: جرب التنقل باستخدام" : "Tip: try navigating with"}
             <kbd className="font-sans text-[0.65rem] border border-[var(--border)] shadow-sm rounded px-1.5 py-0.5 bg-[var(--bg-primary)] text-[var(--text)] not-italic mx-1.5 font-bold tracking-wider">ctrl K</kbd>
           </div>
+
+          {recentSurahs.length > 0 && tab === "surah" && !filter && (
+            <div className="sidebar-recent-section">
+              <div className="sidebar-recent-title">
+                <i className="fas fa-clock-rotate-left" aria-hidden="true" />
+                <span>{lang === "fr" ? "Récemment ouvertes" : lang === "ar" ? "السور الأخيرة" : "Recently opened"}</span>
+              </div>
+              {recentSurahs.map((surahNum) => {
+                const s = SURAHS[surahNum - 1];
+                if (!s) return null;
+                const isActive = s.n === currentSurah && displayMode === "surah";
+                return (
+                  <div
+                    key={`recent-${s.n}`}
+                    className={cn("sidebar-item-row sidebar-item-row--recent", isActive && "active")}
+                    onClick={() => goSurah(s.n)}
+                  >
+                    <div className="qc-sidebar-num">{s.n}</div>
+                    <div className="qc-sidebar-en">{lang === "fr" ? s.fr : s.en}</div>
+                    <div className="qc-sidebar-ar">{s.ar}</div>
+                    {isActive && <div className="sidebar-item-indicator" />}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* ── Search (Surah Tab) ── */}

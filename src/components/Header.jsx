@@ -299,47 +299,43 @@ export default function Header() {
       : "";
 
   return (
-    <header className="flex flex-col z-[100] relative select-none w-full border-b border-[var(--border)] bg-[#FDFCFB] dark:bg-[var(--bg-primary)] transition-colors duration-300">
-      {/* Top Banner */}
-      <div className="bg-[#0E8A5E] text-white text-[0.65rem] sm:text-[0.75rem] py-[5px] sm:py-1.5 flex flex-wrap items-center justify-center gap-1 sm:gap-2 font-medium w-full px-4 text-center">
+    <header className="app-header-shell flex flex-col z-[100] relative select-none w-full transition-colors duration-300">
+      <div className="app-header-banner text-white text-[0.65rem] sm:text-[0.75rem] py-[5px] sm:py-1.5 flex flex-wrap items-center justify-center gap-1 sm:gap-2 font-medium w-full px-4 text-center">
         <span>{lang === 'fr' ? "C'est le mois du Coran. Aidez-nous à diffuser sa lumière." : lang === 'ar' ? "إنه شهر القرآن. ساهم في نشر نوره." : "It's the month of the Quran. Help us spread its light."}</span>
-        <button className="bg-white/20 hover:bg-white/30 text-white rounded-full px-2 sm:px-2.5 py-0.5 transition-colors font-bold flex items-center gap-1 ml-1 cursor-pointer">
+        <button className="app-header-banner__cta bg-white/20 hover:bg-white/30 text-white rounded-full px-2 sm:px-2.5 py-0.5 transition-colors font-bold flex items-center gap-1 ml-1 cursor-pointer">
           <i className="fas fa-sparkles text-[0.6rem]" /> {lang === 'fr' ? "Faire un don" : lang === 'ar' ? "تبرع" : "Donate"}
         </button>
       </div>
 
-      <div className="flex items-center justify-between w-full h-[var(--header-h)] lg:h-[70px] px-3 sm:px-6">
-        {/* LEFT: Logo */}
-        <div className="flex items-center shrink-0">
+      <div className="app-header-main flex items-center justify-between w-full h-[var(--header-h)] lg:h-[70px] px-3 sm:px-6 gap-3">
+        <div className="flex items-center shrink-0 min-w-0">
           <button
-            className="flex items-center gap-2 group outline-none cursor-pointer"
+            className="app-header-brand flex items-center gap-3 group outline-none cursor-pointer min-w-0"
             onClick={() => set({ showHome: true, showDuas: false })}
           >
             <PlatformLogo className="header-brand-mark" imgClassName="header-brand-mark__img" decorative />
-            <span className="font-bold text-[#111827] dark:text-white tracking-tight text-[1.4rem] sm:text-[1.6rem] transition-colors" style={{ fontFamily: "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif" }}>
+            <span className="app-header-brand__name font-bold tracking-tight text-[1.4rem] sm:text-[1.6rem] transition-colors truncate" style={{ fontFamily: "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif" }}>
               Mushaf.plus
             </span>
           </button>
         </div>
 
-        {/* CENTER: Navigation Pill (Desktop & Tablet) */}
         {!showHome && (
-          <div className="hidden md:flex flex-1 items-center justify-center mx-4 min-w-0 pointer-events-auto">
-            <div className="flex items-center bg-white/50 dark:bg-[var(--bg-secondary)]/30 border border-[#e2e8f0] dark:border-[var(--border)]/50 p-1.5 rounded-full shadow-sm hover:shadow-md transition-all">
-              {/* Prev Button */}
+          <div className="hidden md:flex flex-1 items-center justify-center mx-2 min-w-0 pointer-events-auto">
+            <div className="app-header-center flex items-center p-1.5 rounded-full transition-all min-w-0 max-w-[680px] w-full justify-between gap-1">
               <button
                 onClick={isRtl ? handleNext : handlePrev}
                 disabled={isRtl ? !canGoNext : !canGoPrev}
-                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[#0E8A5E] disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer transition-colors"
+                className="app-header-nav-btn flex items-center justify-center w-9 h-9 rounded-full disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer transition-colors"
               >
                 <i className="fas fa-chevron-left text-[0.65rem]" />
               </button>
 
               <Popover open={goToOpen} onOpenChange={setGoToOpen}>
                 <PopoverTrigger asChild>
-                  <button className="flex flex-col items-center justify-center px-4 py-1 rounded-full hover:bg-[var(--bg-secondary)] transition-all min-w-[130px] group border border-transparent hover:border-[#0E8A5E]/20 cursor-pointer">
-                    <span className="text-[0.9rem] font-bold text-[var(--text)] group-hover:text-[#0E8A5E] truncate transition-colors" style={{ fontFamily: "var(--font-ui)" }}>{centerTitle}</span>
-                    <span className="text-[0.6rem] text-[var(--text-muted)] opacity-70 group-hover:opacity-100 flex gap-1 transition-opacity">
+                  <button className="app-header-location flex flex-col items-center justify-center px-4 py-1.5 rounded-full transition-all min-w-[160px] group border border-transparent cursor-pointer flex-1 mx-1">
+                    <span className="app-header-location__title text-[0.92rem] font-bold truncate transition-colors" style={{ fontFamily: "var(--font-ui)" }}>{centerTitle}</span>
+                    <span className="app-header-location__meta text-[0.6rem] flex gap-1 transition-opacity">
                       {displayMode === "surah" ? (
                         <><span>{lang === "ar" ? toAr(currentSurah) : `#${currentSurah}`}</span><span className="opacity-30">·</span><span>{ayahCount}</span></>
                       ) : displayMode === "page" ? (
@@ -361,11 +357,10 @@ export default function Header() {
                 </PopoverContent>
               </Popover>
 
-              {/* Next Button */}
               <button
                 onClick={isRtl ? handlePrev : handleNext}
-                disabled={isRtl ? !canGoNext : !canGoNext}
-                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[#0E8A5E] disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer transition-colors"
+                disabled={isRtl ? !canGoPrev : !canGoNext}
+                className="app-header-nav-btn flex items-center justify-center w-9 h-9 rounded-full disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer transition-colors"
               >
                 <i className="fas fa-chevron-right text-[0.65rem]" />
               </button>
@@ -373,32 +368,46 @@ export default function Header() {
           </div>
         )}
 
-        {/* RIGHT: Actions */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
-          {/* Sign-in style button for Duas */}
+        <div className="app-header-actions flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
+          <div className="app-header-riwaya hidden md:flex items-center">
+            <button
+              className={cn("app-header-riwaya__btn", riwaya === "hafs" && "is-active")}
+              onClick={() => applyRiwaya("hafs")}
+              aria-pressed={riwaya === "hafs"}
+              title={lang === "fr" ? "Riwaya Hafs" : lang === "ar" ? "رواية حفص" : "Hafs riwaya"}
+            >
+              {lang === "ar" ? "حفص" : "Hafs"}
+            </button>
+            <button
+              className={cn("app-header-riwaya__btn", riwaya === "warsh" && "is-active")}
+              onClick={() => applyRiwaya("warsh")}
+              aria-pressed={riwaya === "warsh"}
+              title={lang === "fr" ? "Riwaya Warsh" : lang === "ar" ? "رواية ورش" : "Warsh riwaya"}
+            >
+              {lang === "ar" ? "ورش" : "Warsh"}
+            </button>
+          </div>
+
           <button
-            className="hidden sm:flex items-center justify-center px-4 py-1.5 rounded-full border border-[var(--border)] dark:border-gray-700 text-[0.85rem] font-semibold font-[var(--font-ui)] hover:bg-[var(--bg-secondary)] text-[#111827] dark:text-gray-200 transition-colors cursor-pointer"
+            className="app-header-chip hidden sm:flex items-center justify-center px-4 py-1.5 rounded-full text-[0.85rem] font-semibold font-[var(--font-ui)] transition-colors cursor-pointer"
             onClick={() => set({ showDuas: true, showHome: false })}
           >
             <span>{lang === "ar" ? "أدعية" : lang === "fr" ? "Douas" : "Duas"}</span>
           </button>
 
-          <div className="flex items-center gap-1 sm:gap-2">
-            {/* Contextual Settings */}
+          <div className="app-header-actions__group flex items-center gap-1 sm:gap-2">
             <HeaderIconButton
               icon="fa-sliders"
               onClick={() => dispatch({ type: "TOGGLE_SETTINGS" })}
               title={t("nav.settings", lang)}
             />
-            {/* Search */}
             <HeaderIconButton
               icon="fa-search"
               onClick={() => dispatch({ type: "TOGGLE_SEARCH" })}
               title={t("nav.search", lang)}
             />
-            {/* Hamburger Menu (Sidebar) */}
             <button
-              className="flex items-center justify-center w-[36px] h-[36px] text-[#111827] dark:text-gray-200 hover:bg-[#111827]/5 dark:hover:bg-white/10 rounded-full transition-colors cursor-pointer outline-none"
+              className="app-header-menu-btn flex items-center justify-center w-[36px] h-[36px] rounded-full transition-colors cursor-pointer outline-none"
               onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
               title={t("nav.surahList", lang)}
             >
@@ -416,6 +425,7 @@ function HeaderIconButton({ icon, className, active = false, ...props }) {
   return (
     <button
       className={cn(
+        "header-icon-button",
         "flex items-center justify-center relative flex-shrink-0",
         "w-[36px] h-[36px] rounded-full",
         "transition-colors duration-200 cursor-pointer outline-none",

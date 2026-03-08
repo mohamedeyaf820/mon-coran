@@ -40,6 +40,9 @@ export default function MushafInlineView({
   ayahs,
   translations,
   surahNum,
+  displayMode,
+  currentPage,
+  currentJuz,
   isQCF4,
   showTajwid,
   showTranslation,
@@ -49,6 +52,10 @@ export default function MushafInlineView({
   lang,
   fontSize,
   onAyahClick,
+  onIncreaseFont,
+  onDecreaseFont,
+  canIncreaseFont,
+  canDecreaseFont,
 }) {
   const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
 
@@ -74,6 +81,8 @@ export default function MushafInlineView({
   const surahNameDisplay =
     lang === "ar" ? surahNameAr : lang === "fr" ? surahMeta?.fr || surahNameAr : surahMeta?.en || surahNameAr;
 
+  const surahNameLatin = surahMeta?.en || surahMeta?.fr || surahNameAr;
+
   const revelBadge =
     surahMeta?.type === "Meccan"
       ? lang === "fr" ? "Mecquoise" : lang === "ar" ? "مكية" : "Meccan"
@@ -81,90 +90,128 @@ export default function MushafInlineView({
 
   const juzLabel = lang === "ar" ? "جزء" : "Juz";
   const ayahCountLabel = surahMeta?.ayahs ?? "?";
+  const pageStart = (displayMode === "page" ? currentPage : null) ?? ayahs[0]?.page ?? null;
+  const pageEnd = ayahs[ayahs.length - 1]?.page ?? pageStart;
+  const hizbNumber = ayahs[0]?.hizbQuarter ? Math.ceil(ayahs[0].hizbQuarter / 4) : null;
+  const activeJuz = displayMode === "juz" ? currentJuz ?? juzNum : juzNum;
+  const heroSubtitle =
+    lang === "ar"
+      ? `${revelBadge} · ${toAr(ayahCountLabel)} آية`
+      : `${revelBadge} · ${ayahCountLabel} ${lang === "fr" ? "versets" : "ayahs"}`;
+  const basmalaTranslation =
+    lang === "fr"
+      ? "Au nom d'Allah, le Tout Misericordieux, le Tres Misericordieux"
+      : lang === "ar"
+        ? null
+        : "In the Name of Allah, the Most Compassionate, the Most Merciful";
+  const mushafFontSize = Math.max((fontSize ?? 28) + 8, 38);
+  const hasTranslationPanel = showTranslation && translations?.length > 0;
 
   return (
-    <div className={`mp-frame${isQCF4 ? " mp-qcf4" : ""}`}>
-      {/* ══════════════ CADRE EXTÉRIEUR ══════════════ */}
-      <div className="mp-outer-border">
-        <div className="mp-inner-border">
+    <div className={`mp-frame${isQCF4 ? " mp-qcf4" : ""}${hasTranslationPanel ? " mp-frame--with-translations" : ""}`}>
+      <div className="mp-shell">
+        <div className="mp-topbar">
+          <div className="mp-topbar-start">
+            <span className="mp-topbar-kicker">
+              {displayMode === "page"
+                ? t("settings.pageMode", lang)
+                : displayMode === "juz"
+                  ? t("settings.juzMode", lang)
+                  : t("settings.surahMode", lang)}
+            </span>
+            <span className="mp-topbar-title">
+              {lang === "ar" ? surahNameAr : `${surahNum}. ${surahNameDisplay}`}
+            </span>
+          </div>
 
-          {/* ── En-tête sourate ── */}
-          <div className="mp-header" dir="rtl">
-            {/* Coin gauche: numéro juz */}
-            <div className="mp-header-side">
-              <span className="mp-header-label">{juzLabel}</span>
-              <span className="mp-header-value">
-                {lang === "ar" ? toAr(juzNum) : juzNum}
-                {juzNumEnd !== juzNum && (
-                  <span className="mp-header-value-end">
-                    {" - "}
-                    {lang === "ar" ? toAr(juzNumEnd) : juzNumEnd}
-                  </span>
-                )}
+          <div className="mp-topbar-meta">
+            <div className="mp-font-controls" aria-label={lang === "fr" ? "Taille du texte" : lang === "ar" ? "حجم النص" : "Text size"}>
+              <button
+                type="button"
+                className="mp-font-btn"
+                onClick={onDecreaseFont}
+                disabled={!canDecreaseFont}
+                aria-label={lang === "fr" ? "Reduire le texte" : lang === "ar" ? "تصغير النص" : "Decrease text size"}
+              >
+                A-
+              </button>
+              <span className="mp-font-value">{mushafFontSize}px</span>
+              <button
+                type="button"
+                className="mp-font-btn"
+                onClick={onIncreaseFont}
+                disabled={!canIncreaseFont}
+                aria-label={lang === "fr" ? "Agrandir le texte" : lang === "ar" ? "تكبير النص" : "Increase text size"}
+              >
+                A+
+              </button>
+            </div>
+            {pageStart && (
+              <span className="mp-topbar-pill">
+                {t("quran.page", lang)} {lang === "ar" ? toAr(pageStart) : pageStart}
+                {pageEnd && pageEnd !== pageStart && `-${lang === "ar" ? toAr(pageEnd) : pageEnd}`}
               </span>
-            </div>
+            )}
+            <span className="mp-topbar-pill">
+              {juzLabel} {lang === "ar" ? toAr(activeJuz) : activeJuz}
+              {juzNumEnd !== activeJuz && displayMode !== "juz" && (
+                <>-{lang === "ar" ? toAr(juzNumEnd) : juzNumEnd}</>
+              )}
+            </span>
+            {hizbNumber && (
+              <span className="mp-topbar-pill">
+                {lang === "ar" ? `حزب ${toAr(hizbNumber)}` : `Hizb ${hizbNumber}`}
+              </span>
+            )}
+          </div>
+        </div>
 
-            {/* Centre: nom de la sourate */}
-            <div className="mp-header-center">
-              <span className="mp-ornament" aria-hidden="true">﴾</span>
-              <div className="mp-surah-title">
-                <span className="mp-surah-name-ar" dir="rtl">{surahNameAr}</span>
-                {lang !== "ar" && surahNameDisplay !== surahNameAr && (
-                  <span className="mp-surah-name-tr">{surahNameDisplay}</span>
-                )}
-              </div>
-              <span className="mp-ornament" aria-hidden="true">﴿</span>
-            </div>
-
-            {/* Coin droit: type + nb versets */}
-            <div className="mp-header-side mp-header-side--end">
-              <span className="mp-header-label">{revelBadge}</span>
-              <span className="mp-header-value">
-                {lang === "ar" ? toAr(ayahCountLabel) : ayahCountLabel}
-                {" "}
-                <span className="mp-header-label">
-                  {lang === "ar" ? "آية" : lang === "fr" ? "v." : "v."}
+        <div className="mp-canvas">
+          <div className="mp-hero">
+            <div className="mp-hero-ar" dir="rtl">{surahNameAr}</div>
+            <div className="mp-hero-copy">
+              <div className="mp-hero-title-row">
+                <span className="mp-hero-title">
+                  {lang === "ar" ? `${toAr(surahNum)}. ${surahNameAr}` : `${surahNum}. ${surahNameLatin}`}
                 </span>
-              </span>
+                <span className="mp-hero-badge">info</span>
+              </div>
+              <span className="mp-hero-subtitle">{heroSubtitle}</span>
             </div>
           </div>
 
-          {/* ── Séparateur ornemental ── */}
-          <div className="mp-separator" aria-hidden="true">
-            <span className="mp-sep-line"></span>
-            <span className="mp-sep-diamond">◆</span>
-            <span className="mp-sep-line"></span>
-          </div>
-
-          {/* ── Corps du texte ── */}
-          <div
-            className={`mp-body${isQCF4 ? " mp-body-qcf4" : ""}`}
-            style={{ "--mp-fs": `${fontSize ?? 28}px` }}
-            dir="rtl"
-            lang="ar"
-          >
-            {/* Basmala */}
-            {showBasmala && (
+          {showBasmala && (
+            <div className="mp-basmala-wrap">
               <div className="mp-basmala" dir="rtl" aria-label="Basmala">
                 {isQCF4 ? "﷽" : "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"}
               </div>
-            )}
+              {basmalaTranslation && (
+                <div className="mp-basmala-translation">{basmalaTranslation}</div>
+              )}
+            </div>
+          )}
 
-            {/* Ayahs en flux inline */}
+          <div
+            className={`mp-body${isQCF4 ? " mp-body-qcf4" : ""}`}
+            style={{ "--mp-fs": `${mushafFontSize}px` }}
+            dir="rtl"
+            lang="ar"
+          >
             {ayahs.map((ayah) => {
               const isPlaying =
                 currentPlayingAyah?.ayah === ayah.numberInSurah &&
                 (currentPlayingAyah?.surah === surahNum || currentPlayingAyah?.surah == null);
+              const ayahKey = ayah.number ?? ayah.numberInSurah;
 
               return (
-                <React.Fragment key={ayah.number ?? ayah.numberInSurah}>
+                <React.Fragment key={ayahKey}>
                   <span
                     id={`ayah-${ayah.numberInSurah}`}
                     className={`mp-ayah${isPlaying ? " mp-ayah--playing" : ""}`}
-                    onClick={() => onAyahClick?.(ayah.numberInSurah)}
+                    onClick={() => onAyahClick?.(ayahKey)}
                     role="button"
                     tabIndex={0}
-                    onKeyDown={(e) => e.key === "Enter" && onAyahClick?.(ayah.numberInSurah)}
+                    onKeyDown={(e) => e.key === "Enter" && onAyahClick?.(ayahKey)}
                     aria-label={`Verset ${ayah.numberInSurah}`}
                   >
                     <SmartAyahRenderer
@@ -182,19 +229,14 @@ export default function MushafInlineView({
               );
             })}
           </div>
-
-          {/* ── Séparateur bas ── */}
-          <div className="mp-separator mp-separator--bottom" aria-hidden="true">
-            <span className="mp-sep-line"></span>
-            <span className="mp-sep-diamond">◆</span>
-            <span className="mp-sep-line"></span>
-          </div>
         </div>
       </div>
 
-      {/* ── Traductions (hors cadre) ── */}
       {showTranslation && translations?.length > 0 && (
         <div className="mp-translations">
+          <div className="mp-translations-head">
+            {lang === "ar" ? "الترجمة" : lang === "fr" ? "Traduction" : "Translation"}
+          </div>
           {translations.map((tr, idx) =>
             tr ? (
               <div key={tr.number ?? idx} className="mp-trans-row">

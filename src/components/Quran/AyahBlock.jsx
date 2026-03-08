@@ -5,7 +5,7 @@ import { arabicToLatin } from '../../data/transliteration';
 import AyahActions from '../AyahActions';
 import SmartAyahRenderer from './SmartAyahRenderer';
 import WordByWordDisplay from './WordByWordDisplay';
-import TajwidLegend from './TajwidLegend';
+import TajweedQuickLegend from './TajweedQuickLegend';
 import MemorizationText from './MemorizationText';
 
 /**
@@ -86,7 +86,7 @@ const AyahBlock = React.memo(function AyahBlock({
                         <div className="qc-ayah-actions-panel">
                             <AyahActions surah={surahNum} ayah={ayah.numberInSurah} ayahData={ayah} />
                             {showTajwid && riwaya === 'hafs' && (
-                                <TajwidLegend riwaya={riwaya} />
+                                <TajweedQuickLegend riwaya={riwaya} />
                             )}
                         </div>
                     )}

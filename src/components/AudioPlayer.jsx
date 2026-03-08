@@ -67,13 +67,13 @@ function Waveform({ isPlaying, progress }) {
 /* ─────────────────────────────────────────────
    Cover Art (desktop card)
 ───────────────────────────────────────────── */
-function CoverArt({ isPlaying }) {
+function CoverArt({ isPlaying, size = 52 }) {
   return (
     <div
       className="relative rounded-xl overflow-hidden shrink-0"
       style={{
-        width: 52,
-        height: 52,
+        width: size,
+        height: size,
         background:
           "linear-gradient(135deg, var(--emerald) 0%, #0e3d26 60%, #0a2d1c 100%)",
         boxShadow: isPlaying
@@ -188,6 +188,7 @@ export default function AudioPlayer() {
   const [currentTime, setCurTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [expanded, setExpanded] = useState(false);
+  const [minimized, setMinimized] = useState(false);
   const [volume, setVolume] = useState(savedVolume ?? 1);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   const [audioError, setAudioError] = useState(null);
@@ -355,6 +356,11 @@ export default function AudioPlayer() {
     set({ audioSpeed: speeds[(idx + 1) % speeds.length] });
   };
 
+  const toggleMinimized = useCallback(() => {
+    setExpanded(false);
+    setMinimized((prev) => !prev);
+  }, []);
+
   const currentReciters = getRecitersByRiwaya(riwaya);
   const isWarshMode = riwaya === "warsh";
 
@@ -431,7 +437,7 @@ export default function AudioPlayer() {
     if (saved) return saved;
     return {
       x: window.innerWidth - 280 - 16,
-      y: window.innerHeight - 430,
+      y: Math.max(88, window.innerHeight - 360 - 24),
     };
   });
 
@@ -448,6 +454,17 @@ export default function AudioPlayer() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  useEffect(() => {
+    if (isMobile || !cardRef.current) return;
+    const { offsetWidth: w, offsetHeight: h } = cardRef.current;
+    setCardPos((prev) => {
+      const next = clamp(prev.x, prev.y, w, h);
+      if (next.x === prev.x && next.y === prev.y) return prev;
+      saveCardPos(next);
+      return next;
+    });
+  }, [expanded, minimized, isMobile]);
 
   const onPointerDown = useCallback(
     (e) => {
@@ -501,9 +518,66 @@ export default function AudioPlayer() {
      MOBILE — classic bottom bar
   ══════════════════════════════════════════ */
   if (isMobile) {
+    if (minimized) {
+      return (
+        <div
+          className="fixed bottom-3 left-3 right-3 z-[300] overflow-hidden rounded-2xl text-[#f0ead6]"
+          style={{
+            background: "var(--player-glass)",
+            border: "1px solid var(--player-border)",
+            boxShadow: "0 14px 34px rgba(12,18,14,0.2)",
+          }}
+          role="region"
+          aria-label={
+            lang === "ar"
+              ? "مشغل الصوت المصغر"
+              : lang === "fr"
+                ? "Lecteur audio reduit"
+                : "Minimized audio player"
+          }
+        >
+          <div className="h-0.75 bg-white/8">
+            <div
+              className="h-full"
+              style={{
+                width: `${progress * 100}%`,
+                background: "linear-gradient(90deg, var(--gold), var(--gold-bright))",
+              }}
+            />
+          </div>
+          <div className="flex items-center gap-3 px-3 py-2.5">
+            <CoverArt isPlaying={isPlaying} size={40} />
+            <div className="flex-1 min-w-0">
+              <div className="text-[0.74rem] font-semibold leading-tight truncate text-white/90">
+                {titleLabel || (lang === "fr" ? "Pret a lire" : lang === "ar" ? "جاهز" : "Ready")}
+              </div>
+              <div className="text-[0.6rem] truncate text-white/45">
+                {reciterLabel || "-"}
+              </div>
+            </div>
+            <button
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-[#0e3d26] text-[0.88rem] border-none cursor-pointer shadow-lg transition-all duration-150"
+              onClick={toggle}
+              title={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
+              aria-pressed={isPlaying}
+            >
+              <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`} />
+            </button>
+            <button
+              className={cn(mBarBtn, "w-8 h-8 text-[0.72rem] rounded-lg shrink-0")}
+              onClick={toggleMinimized}
+              title={lang === "fr" ? "Agrandir" : lang === "ar" ? "تكبير" : "Expand"}
+            >
+              <i className="fas fa-up-right-and-down-left-from-center" />
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div
-        className="fixed bottom-0 left-0 right-0 z-300 text-[#f0ead6] rounded-t-2xl"
+        className="fixed bottom-0 left-0 right-0 z-[300] text-[#f0ead6] rounded-t-2xl"
         style={{
           background: "var(--player-glass)",
           borderTop: "1px solid var(--player-border)",
@@ -681,6 +755,16 @@ export default function AudioPlayer() {
               }
             >
               <i className={`fas fa-chevron-${expanded ? "down" : "up"}`} />
+            </button>
+            <button
+              className={cn(
+                mBarBtnSm(),
+                "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-6.5 min-w-6.5 justify-center",
+              )}
+              onClick={toggleMinimized}
+              title={lang === "fr" ? "Reduire" : lang === "ar" ? "تصغير" : "Minimize"}
+            >
+              <i className="fas fa-window-minimize" />
             </button>
           </div>
         </div>
@@ -920,19 +1004,20 @@ export default function AudioPlayer() {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         className={cn(
-          "fixed z-300 flex flex-col rounded-2xl overflow-hidden select-none touch-none",
+          "fixed z-[300] flex flex-col overflow-hidden select-none touch-none",
           isDragging ? "cursor-grabbing" : "cursor-grab",
         )}
         style={{
           left: cardPos.x,
           top: cardPos.y,
-          width: 264,
+          width: minimized ? 228 : expanded ? 286 : 272,
           background: "var(--player-glass)",
           border: "1px solid var(--player-border)",
+          borderRadius: minimized ? 20 : 24,
           boxShadow: isPlaying
             ? "0 18px 50px rgba(11,20,15,0.22), 0 0 0 1px rgba(192,154,74,0.18), 0 2px 8px rgba(109,85,26,0.08)"
             : "0 14px 42px rgba(11,20,15,0.16), 0 0 0 1px rgba(255,255,255,0.05)",
-          transition: isDragging ? "none" : "box-shadow 0.3s ease",
+          transition: isDragging ? "none" : "box-shadow 0.3s ease, width 0.2s ease",
         }}
         role="region"
         aria-label={
@@ -943,6 +1028,78 @@ export default function AudioPlayer() {
               : "Audio Player"
         }
       >
+        {minimized ? (
+          <>
+            <div className="flex items-center gap-3 px-3.5 pt-3 pb-2.5">
+              <CoverArt isPlaying={isPlaying} size={42} />
+              <div className="flex-1 min-w-0">
+                {networkBadge && (
+                  <div
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[0.54rem] font-bold mb-1"
+                    style={{
+                      background: "var(--player-chip-bg)",
+                      border: "1px solid var(--player-chip-border)",
+                      color: "var(--player-chip-text)",
+                      fontFamily: "var(--font-ui)",
+                    }}
+                  >
+                    <i className={`fas ${networkBadge.icon}`} />
+                    <span>{networkBadge.text}</span>
+                  </div>
+                )}
+                <div
+                  className="text-[0.76rem] font-bold leading-tight truncate"
+                  style={{ color: "var(--player-text-strong)", fontFamily: "var(--font-ui)" }}
+                >
+                  {titleLabel ||
+                    (lang === "fr"
+                      ? "Pret a lire"
+                      : lang === "ar"
+                        ? "جاهز"
+                        : "Ready")}
+                </div>
+                <div
+                  className="text-[0.62rem] mt-0.5 truncate"
+                  style={{ color: "var(--player-text-soft)", fontFamily: "var(--font-ui)" }}
+                >
+                  {reciterLabel || idleSubtitle || "-"}
+                </div>
+              </div>
+              <button
+                onClick={toggle}
+                title={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
+                aria-pressed={isPlaying}
+                className="w-10 h-10 flex items-center justify-center rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(212,168,32,0.5)]"
+                style={{
+                  background: "linear-gradient(135deg, var(--player-accent) 0%, var(--player-accent-deep) 100%)",
+                  border: "1px solid rgba(192,154,74,0.28)",
+                  color: "#fbf7ea",
+                }}
+              >
+                <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`} />
+              </button>
+              <IconBtn
+                onClick={toggleMinimized}
+                title={lang === "fr" ? "Agrandir" : lang === "ar" ? "تكبير" : "Expand"}
+                size="sm"
+              >
+                <i className="fas fa-up-right-and-down-left-from-center" />
+              </IconBtn>
+            </div>
+            <div className="px-3.5 pb-3">
+              <div className="relative h-0.75 rounded-full" style={{ background: "rgba(255,255,255,0.1)" }}>
+                <div
+                  className="absolute inset-y-0 left-0 rounded-full"
+                  style={{
+                    width: `${progress * 100}%`,
+                    background: "linear-gradient(90deg, var(--gold), var(--gold-bright))",
+                  }}
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
         {networkBadge && (
           <div className="px-4 pt-1">
             <div
@@ -1004,6 +1161,15 @@ export default function AudioPlayer() {
                   Warsh ✓
                 </span>
               )}
+            </div>
+            <div className="flex items-center gap-1 shrink-0">
+              <IconBtn
+                onClick={toggleMinimized}
+                title={lang === "fr" ? "Reduire" : lang === "ar" ? "تصغير" : "Minimize"}
+                size="sm"
+              >
+                <i className="fas fa-window-minimize" />
+              </IconBtn>
             </div>
           </div>
 
@@ -1301,6 +1467,8 @@ export default function AudioPlayer() {
             </div>
           )}
         </div>
+          </>
+        )}
       </div>
     </>
   );

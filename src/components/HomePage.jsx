@@ -344,65 +344,116 @@ export default function HomePage() {
       {/* ══════════════ HERO (Quran.com Style) ══════════════ */}
       <section className="qc-hero">
         <div className="qc-hero-inner">
+          <div className="qc-hero-grid">
+            <div className="qc-hero-copy">
+              <PlatformLogo className="qc-logo-container" imgClassName="qc-logo-image" decorative />
 
-          {/* Logo MushafPlus */}
-          <PlatformLogo className="qc-logo-container" imgClassName="qc-logo-image" decorative />
+              <h1 className="qc-site-name">MushafPlus</h1>
 
-          <h1 className="qc-site-name">MushafPlus</h1>
+              <p className="qc-slogan">
+                {lang === "ar"
+                  ? "اقرأ وتدبَّر واحفظ في مساحة أكثر سكينة"
+                  : lang === "fr"
+                    ? "Lisez, méditez et mémorisez dans un espace plus apaisé"
+                    : "Read, reflect and memorize in a calmer space"}
+              </p>
 
-          <p className="qc-slogan">
-            {lang === "ar"
-              ? "اقرأ وتدبَّر وتحفَّظ"
-              : lang === "fr"
-                ? "Lisez · Méditez · Mémorisez"
-                : "Read · Reflect · Memorize"}
-          </p>
-
-          <div className="qc-hero-meta">
-            <span className="qc-hero-pill qc-hero-pill--riwaya">
-              <i className="fas fa-feather-pointed" aria-hidden="true" />
-              <span>{riwayaLabel}</span>
-            </span>
-            {surahLabel && (
-              <span className="qc-hero-pill">
-                <i className="fas fa-location-dot" aria-hidden="true" />
-                <span>
-                  {lang === "ar"
-                    ? `${surahLabel.ar} · ${currentModeLabel}`
-                    : `${lang === "fr" ? surahLabel.fr : surahLabel.en} · ${currentModeLabel}`}
+              <div className="qc-hero-meta">
+                <span className="qc-hero-pill qc-hero-pill--riwaya">
+                  <i className="fas fa-feather-pointed" aria-hidden="true" />
+                  <span>{riwayaLabel}</span>
                 </span>
-              </span>
-            )}
+                {surahLabel && (
+                  <span className="qc-hero-pill">
+                    <i className="fas fa-location-dot" aria-hidden="true" />
+                    <span>
+                      {lang === "ar"
+                        ? `${surahLabel.ar} · ${currentModeLabel}`
+                        : `${lang === "fr" ? surahLabel.fr : surahLabel.en} · ${currentModeLabel}`}
+                    </span>
+                  </span>
+                )}
+              </div>
+
+              <div className="qc-hero-actions">
+                {currentSurah > 0 && (
+                  <button className="qc-continue-btn" onClick={continueReading}>
+                    <i className="fas fa-circle-play" />
+                    <span className="qc-continue-label">
+                      {lang === "ar" ? "متابعة القراءة" : lang === "fr" ? "Continuer la lecture" : "Continue Reading"}
+                    </span>
+                    <span className="qc-continue-chip">{SURAHS[currentSurah - 1]?.ar}</span>
+                  </button>
+                )}
+
+                <button className="qc-secondary-btn" onClick={() => goSurah(1)}>
+                  <i className="fas fa-book-open-reader" aria-hidden="true" />
+                  <span>{lang === "ar" ? "ابدأ بالفاتحة" : lang === "fr" ? "Commencer par Al-Fatiha" : "Start with Al-Fatihah"}</span>
+                </button>
+
+                <button className="qc-secondary-btn qc-secondary-btn--soft" onClick={openDuas}>
+                  <i className="fas fa-hands-praying" aria-hidden="true" />
+                  <span>{lang === "ar" ? "الأدعية" : lang === "fr" ? "Ouvrir les douas" : "Open duas"}</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="qc-vdj">
+              <div className="qc-vdj-header">
+                <span className="qc-vdj-badge">
+                  <i className="fas fa-star-and-crescent" aria-hidden="true" />
+                  {lang === "ar" ? "آية اليوم" : lang === "fr" ? "Verset du jour" : "Verse of the Day"}
+                </span>
+                <span className="qc-vdj-date">
+                  {new Date().toLocaleDateString(
+                    lang === "ar" ? "ar-SA" : lang === "fr" ? "fr-FR" : "en-GB",
+                    { weekday: "short", day: "numeric", month: "short" }
+                  )}
+                </span>
+              </div>
+              <span className="qc-vdj-text">{dailyVerse.text}</span>
+              {dailyVerse.trans_fr && lang === "fr" && (
+                <span className="qc-vdj-trans">{dailyVerse.trans_fr}</span>
+              )}
+              <span className="qc-vdj-ref">{dailyVerse.ref}</span>
+            </div>
           </div>
 
-          {currentSurah > 0 && (
-            <button className="qc-continue-btn" onClick={continueReading}>
-              <i className="fas fa-circle-play" />
-              <span className="qc-continue-label">
-                {lang === "ar" ? "متابعة القراءة" : lang === "fr" ? "Continuer la lecture" : "Continue Reading"}
+          <div className="qc-hero-suggestions">
+            <div className="qc-hero-suggestions__head">
+              <span className="qc-hero-suggestions__label">
+                <i className={`fas ${suggestionSet.icon}`} aria-hidden="true" />
+                {lang === "ar" ? suggestionSet.period.ar : lang === "fr" ? suggestionSet.period.fr : suggestionSet.period.en}
               </span>
-              <span className="qc-continue-chip">{SURAHS[currentSurah - 1]?.ar}</span>
-            </button>
-          )}
-
-          <div className="qc-vdj">
-            <div className="qc-vdj-header">
-              <span className="qc-vdj-badge">
-                <i className="fas fa-star-and-crescent" aria-hidden="true" />
-                {lang === "ar" ? "آية اليوم" : lang === "fr" ? "Verset du jour" : "Verse of the Day"}
-              </span>
-              <span className="qc-vdj-date">
-                {new Date().toLocaleDateString(
-                  lang === "ar" ? "ar-SA" : lang === "fr" ? "fr-FR" : "en-GB",
-                  { weekday: "short", day: "numeric", month: "short" }
-                )}
+              <span className="qc-hero-suggestions__hint">
+                {lang === "ar"
+                  ? "اقتراحات سريعة بحسب الوقت"
+                  : lang === "fr"
+                    ? "Suggestions rapides selon le moment"
+                    : "Quick picks for the current moment"}
               </span>
             </div>
-            <span className="qc-vdj-text">{dailyVerse.text}</span>
-            {dailyVerse.trans_fr && lang === "fr" && (
-              <span className="qc-vdj-trans">{dailyVerse.trans_fr}</span>
-            )}
-            <span className="qc-vdj-ref">{dailyVerse.ref}</span>
+
+            <div className="qc-hero-suggestion-grid">
+              {suggestionSet.surahs.slice(0, 4).map(({ n, fr, en, ar: arLabel }) => {
+                const s = SURAHS[n - 1];
+                return (
+                  <button
+                    key={n}
+                    className="qc-hero-suggestion"
+                    onClick={() => goSurah(n)}
+                  >
+                    <span className="qc-hero-suggestion__num">{n}</span>
+                    <span className="qc-hero-suggestion__body">
+                      <span className="qc-hero-suggestion__ar">{s?.ar}</span>
+                      <span className="qc-hero-suggestion__label">
+                        {lang === "ar" ? arLabel : lang === "fr" ? fr : en}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
