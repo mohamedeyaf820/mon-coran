@@ -2225,6 +2225,25 @@
         color 0.15s ease;
 }
 
+/* Arabic phonetic (imlaei) mode — RTL, Arabic font, no italic */
+.wbw-transliteration--ar {
+    font-family: "Scheherazade New", "Amiri", "Noto Naskh Arabic", serif;
+    font-size: 0.78rem;
+    font-style: normal;
+    direction: rtl;
+    letter-spacing: 0;
+    text-align: center;
+    color: var(--primary);
+    opacity: 0.82;
+}
+
+.wbw-word-block.wbw-current .wbw-transliteration--ar {
+    color: color-mix(in srgb, var(--gold, #c9a33d) 80%, white 20%);
+    background: rgba(212, 168, 32, 0.1);
+    border-color: rgba(212, 168, 32, 0.25);
+    opacity: 1;
+}
+
 /* ── Meaning (translation) ── */
 .wbw-translation {
     font-family: var(--font-ui);
@@ -3643,193 +3662,171 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   Clean Page View - Quran.com Style
+   Clean Page View — Quran.com Style (Mushaf inline flow)
    ═══════════════════════════════════════════════════════════════ */
 
-.clean-page-container {
+.cpv-container {
     width: 100%;
-    max-width: 900px;
+    max-width: 860px;
     margin: 0 auto;
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1.25rem 2.5rem;
 }
 
-.clean-page-text {
+/* ── Basmala ── */
+.cpv-basmala {
     font-family: var(--font-quran);
-    font-size: 32px;
-    line-height: 3;
+    font-size: 1.9rem;
     text-align: center;
     direction: rtl;
     color: var(--text-quran);
-    word-spacing: 0.2em;
-    letter-spacing: 0.02em;
+    margin-bottom: 1.8rem;
+    padding-bottom: 1.4rem;
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
+    line-height: 2.4;
     -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
 }
 
-.clean-basmala {
-    display: block;
-    font-size: 1.2em;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
+/* ── Flowing text block — all verses inline like a Mushaf page ── */
+.cpv-flow {
+    font-family: var(--font-quran);
+    font-size: 1.85rem;
+    line-height: 3;
+    text-align: justify;
+    text-align-last: center;
+    direction: rtl;
     color: var(--text-quran);
+    word-spacing: 0.1em;
+    letter-spacing: 0.01em;
+    font-feature-settings:
+        "liga" 1,
+        "calt" 1,
+        "kern" 1,
+        "mark" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
 }
 
-.clean-word {
+/* ── Single verse span (inline) ── */
+.cpv-verse {
     display: inline;
-    font-family: inherit;
-    transition: color 0.2s ease;
 }
 
-.clean-word.playing {
-    color: var(--gold, #d4a820);
-    text-shadow: 0 0 8px rgba(212, 168, 32, 0.3);
+.cpv-verse--playing {
+    color: color-mix(in srgb, var(--text-quran) 88%, var(--gold, #c9a33d) 12%);
+    text-shadow: 0 0 22px rgba(212, 168, 32, 0.12);
 }
 
-.clean-verse-space {
-    display: inline;
-    white-space: pre;
-}
-
-/* Verse marker badge */
-.clean-verse-marker {
+/* ── Ornamental medallion badge (inline, after each verse) ── */
+.cpv-medallion {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    margin: 0 0.25em;
+    /* size relative to the Quran font-size */
+    width: 1.15em;
+    height: 1.15em;
     vertical-align: middle;
-    font-size: 0.5em;
     color: var(--primary);
-    transform: translateY(-0.05em);
+    margin: 0 0.18em;
+    transform: translateY(-0.04em);
     user-select: none;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
 }
 
-.clean-verse-marker-svg {
+.cpv-verse--playing .cpv-medallion {
+    color: var(--gold, #c9a33d);
+}
+
+.cpv-medallion-svg {
     display: block;
-    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
 }
 
-.clean-verse-num {
+.cpv-medallion-num {
     position: absolute;
     inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.9em;
-    font-weight: 500;
-    font-family: var(--font-ui);
-    direction: ltr;
+    /* smaller than the Quran font — UI font for readability */
+    font-family: "Scheherazade New", "Amiri", var(--font-ui);
+    font-size: 0.38em;
+    font-weight: 700;
+    line-height: 1;
+    color: inherit;
+    direction: rtl;
 }
 
-/* Dark theme adjustments */
-[data-theme="dark"] .clean-verse-marker,
-[data-theme="night-blue"] .clean-verse-marker {
-    color: rgba(80, 200, 140, 0.8);
-}
-
-[data-theme="dark"] .clean-word.playing,
-[data-theme="night-blue"] .clean-word.playing {
-    color: rgba(212, 168, 32, 0.9);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .clean-page-container {
-        padding: 1.5rem 1rem;
-    }
-
-    .clean-page-text {
-        font-size: 28px;
-        line-height: 2.8;
-    }
-}
-
-@media (max-width: 480px) {
-    .clean-page-container {
-        padding: 1rem 0.75rem;
-    }
-
-    .clean-page-text {
-        font-size: 24px;
-        line-height: 2.6;
-    }
-
-    .clean-basmala {
-        font-size: 1.1em;
-        margin-bottom: 1rem;
-    }
-}
-
-/* Page separator with page number */
-.clean-page-separator {
+/* ── Page separator (block-level break in the inline flow) ── */
+.cpv-page-sep {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin: 2rem 0;
-    padding: 1rem 0;
+    gap: 0.85rem;
+    margin: 1.2rem 0 1rem;
+    padding: 0;
+    /* force block break so it sits on its own line */
+    width: 100%;
 }
 
-.clean-page-separator-line {
+.cpv-page-sep-line {
     flex: 1;
     height: 1px;
     background: linear-gradient(
         to right,
         transparent,
-        var(--primary, #d4a822),
+        rgba(var(--primary-rgb), 0.28),
         transparent
     );
-    opacity: 0.4;
 }
 
-.clean-page-separator-text {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--primary, #d4a822);
-    opacity: 0.7;
+.cpv-page-sep-label {
+    font-family: "Scheherazade New", "Amiri", serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--primary);
+    opacity: 0.55;
     white-space: nowrap;
     letter-spacing: 0.05em;
+    direction: rtl;
 }
 
-[data-theme="dark"] .clean-page-separator-text,
-[data-theme="night-blue"] .clean-page-separator-text {
-    opacity: 0.6;
+/* ── Dark / night-blue themes ── */
+[data-theme="dark"] .cpv-page-sep-label,
+[data-theme="night-blue"] .cpv-page-sep-label {
+    opacity: 0.42;
 }
 
-@media (max-width: 640px) {
-    .clean-page-separator {
-        margin: 1.5rem 0;
-        padding: 0.75rem 0;
-        gap: 0.75rem;
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .cpv-container {
+        padding: 1rem 0.75rem 2rem;
     }
 
-    .clean-page-separator-text {
-        font-size: 0.75rem;
+    .cpv-flow {
+        font-size: 1.55rem;
+        line-height: 2.85;
+    }
+
+    .cpv-basmala {
+        font-size: 1.5rem;
+        margin-bottom: 1.2rem;
     }
 }
 
-/* Ayah wrapper in clean page view */
-.clean-ayah {
-    display: inline;
-}
+@media (max-width: 480px) {
+    .cpv-flow {
+        font-size: 1.35rem;
+        line-height: 2.7;
+        text-align: right;
+        text-align-last: right;
+    }
 
-.clean-ayah.clean-ayah-playing {
-    color: var(--gold, #d4a820);
-    text-shadow: 0 0 8px rgba(212, 168, 32, 0.3);
-}
-
-/* Ensure clean-verse-marker displays inline */
-.clean-verse-marker {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    margin: 0 0.25em;
-    vertical-align: middle;
-    font-size: 0.5em;
-    color: var(--primary);
-    transform: translateY(-0.05em);
-    user-select: none;
+    .cpv-basmala {
+        font-size: 1.25rem;
+    }
 }
 
 /* Page separator with page number */

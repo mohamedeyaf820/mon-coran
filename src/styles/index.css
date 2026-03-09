@@ -406,47 +406,36 @@
      * Orange  #dd6b20  → Qalqala
      * Violet  #BD97CF  → Madd (toutes catégories)
      */
-    /* ── Couleurs Tajweed exactes Quran.com ── */
-    --tajwid-ghunna: #58b135;
-    /* Ghunna — vert moyen */
-    --tajwid-idgham: #169200;
-    /* Idgham — vert foncé */
-    --tajwid-ikhfa: #1ec897;
-    /* Ikhfa — vert-teal */
-    --tajwid-iqlab: #26bffd;
-    /* Iqlab — bleu ciel */
-    --tajwid-qalqala: #dd6b20;
-    /* Qalqala — orange */
-    --tajwid-madd: #537fff;
-    /* Madd lazim — bleu */
-    --tajwid-madd-normal: #537fff;
-    /* Madd tabii — bleu */
-    --tajwid-madd-separated: #4050ff;
-    /* Madd munfasil — bleu foncé */
-    --tajwid-madd-connected: #337fff;
-    /* Madd muttasil — bleu moyen */
-    --tajwid-madd-necessary: #000ebc;
-    /* Madd lazim — bleu marine */
-    --tajwid-lam-shamsiyya: #aaaaaa;
-    /* Lam shamsiyya — gris */
-    --tajwid-tafkhim: #c9a33d;
-    /* Tafkhim — ambre */
-    --tajwid-silent: #aaaaaa;
-    /* Muet / Hamzat wasl — gris */
-    --tajwid-naql: #dd6b20;
-    /* Naql Warsh — orange */
-    --tajwid-tashil: #1ec897;
-    /* Tashil Warsh — teal */
-    --tajwid-ibdal: #dd6b20;
-    /* Ibdal Warsh — orange */
-    --tajwid-madd-badal: #537fff;
-    /* Madd badal — bleu */
-    --tajwid-sila-kubra: #26bffd;
-    /* Sila kubra — bleu ciel */
-    --tajwid-tarqiq-ra: #1ec897;
-    /* Tarqiq ra — teal */
-    --tajwid-idgham-warsh: #58b135;
-    /* Idgham Warsh — vert moyen */
+    /* ── Tajweed colors — exact quran.com palette ──────────────────
+     * Silent letter          #aaaaaa  grey
+     * Normal madd (2)        #c8a0d0  soft pink-purple
+     * Separated madd (2/4/6) #e07030  orange
+     * Connected madd (4/5)   #d04040  red
+     * Necessary madd (6)     #a00000  dark red
+     * Ghunna / Ikhfa         #2e9c3e  medium green
+     * Qalqala (echo)         #26bffd  sky blue
+     * Tafkhim (heavy)        #a07840  warm brown
+     * ────────────────────────────────────────────────────────────── */
+    --tajwid-silent: #aaaaaa; /* Silent / hamzat wasl        */
+    --tajwid-lam-shamsiyya: #aaaaaa; /* Lam shamsiyya               */
+    --tajwid-madd-normal: #c8a0d0; /* Normal madd (2 counts)      */
+    --tajwid-madd: #c8a0d0; /* Default madd → same pink    */
+    --tajwid-madd-separated: #e07030; /* Separated madd (2/4/6)      */
+    --tajwid-madd-connected: #d04040; /* Connected madd (4/5)        */
+    --tajwid-madd-necessary: #a00000; /* Necessary madd (6)          */
+    --tajwid-madd-badal: #c8a0d0; /* Madd badal (Warsh) → pink   */
+    --tajwid-ghunna: #2e9c3e; /* Ghunna                      */
+    --tajwid-idgham: #2e9c3e; /* Idgham bighunna → same green*/
+    --tajwid-ikhfa: #2e9c3e; /* Ikhfa                       */
+    --tajwid-iqlab: #2e9c3e; /* Iqlab → green family        */
+    --tajwid-qalqala: #26bffd; /* Qalqala (echo)              */
+    --tajwid-tafkhim: #a07840; /* Tafkhim (heavy)             */
+    --tajwid-naql: #e07030; /* Naql Warsh → orange         */
+    --tajwid-tashil: #2e9c3e; /* Tashil Warsh → green        */
+    --tajwid-ibdal: #e07030; /* Ibdal Warsh → orange        */
+    --tajwid-sila-kubra: #c8a0d0; /* Sila kubra → pink           */
+    --tajwid-tarqiq-ra: #2e9c3e; /* Tarqiq ra → green           */
+    --tajwid-idgham-warsh: #2e9c3e; /* Idgham Warsh → green        */
 
     /* ── Scrollbar ── */
     --scrollbar-thumb: rgba(27, 94, 59, 0.25);
@@ -767,58 +756,27 @@
     --mushaf-frame-outer: rgba(200, 152, 14, 0.12);
     --mushaf-frame-inner: rgba(200, 152, 14, 0.06);
 
-    --tajwid-ghunna: #28d46a;
-    --tajwid-idgham: #b070e8;
-    --tajwid-ikhfa: #18d4be;
-    --tajwid-iqlab: #28c460;
-    --tajwid-qalqala: #4a90f0;
-    --tajwid-madd: #f06060;
-    --tajwid-madd-normal: #e84898;
-    --tajwid-madd-separated: #f08840;
-    --tajwid-madd-connected: #e048b4;
-    --tajwid-madd-necessary: #e83030;
-    --tajwid-lam-shamsiyya: #aaaaaa;
-    --tajwid-tafkhim: #4a8ce0;
-    --tajwid-silent: #aaaaaa;
-    --tajwid-naql: #f08850;
-    --tajwid-tashil: #9a78f8;
-    --tajwid-ibdal: #f06840;
-    --tajwid-madd-badal: #f05888;
-    --tajwid-sila-kubra: #48aaf0;
-    --tajwid-tarqiq-ra: #28ccd8;
-    --tajwid-idgham-warsh: #c068f8;
-
-    /* Tajweed dark mode — versons claires de la palette Quran.com */
-    --tajwid-ghunna: #7dd858;
-    /* vert vif */
-    --tajwid-idgham: #2ee800;
-    /* vert électrique */
-    --tajwid-ikhfa: #1ee8c0;
-    /* teal vif */
-    --tajwid-iqlab: #45d4ff;
-    /* bleu ciel vif */
-    --tajwid-qalqala: #ff9038;
-    /* orange vif */
-    --tajwid-madd: #7ca0ff;
-    /* bleu clair */
-    --tajwid-madd-normal: #7ca0ff;
-    /* bleu clair */
-    --tajwid-madd-separated: #8090ff;
-    /* bleu lavande */
-    --tajwid-madd-connected: #6880ff;
-    /* bleu indigo */
-    --tajwid-madd-necessary: #5060ff;
-    /* bleu profond */
-    --tajwid-lam-shamsiyya: #c0c0c0;
-    --tajwid-tafkhim: #e8c050;
-    --tajwid-silent: #c0c0c0;
-    --tajwid-naql: #ff9038;
-    --tajwid-tashil: #1ee8c0;
-    --tajwid-ibdal: #ff9038;
-    --tajwid-madd-badal: #7ca0ff;
-    --tajwid-sila-kubra: #45d4ff;
-    --tajwid-tarqiq-ra: #1ee8c0;
-    --tajwid-idgham-warsh: #7dd858;
+    /* Tajweed dark mode — brightened quran.com palette */
+    --tajwid-silent: #c0c0c0; /* Silent / hamzat wasl — light grey   */
+    --tajwid-lam-shamsiyya: #c0c0c0; /* Lam shamsiyya — light grey          */
+    --tajwid-madd-normal: #ddb8ee; /* Normal madd (2) — bright pink-purple*/
+    --tajwid-madd: #ddb8ee; /* Default madd → same                 */
+    --tajwid-madd-separated: #f08840; /* Separated madd (2/4/6) — bright orange */
+    --tajwid-madd-connected: #f05858; /* Connected madd (4/5) — bright red   */
+    --tajwid-madd-necessary: #ff3030; /* Necessary madd (6) — vivid red      */
+    --tajwid-madd-badal: #ddb8ee; /* Madd badal → pink                   */
+    --tajwid-ghunna: #58d86a; /* Ghunna — bright green               */
+    --tajwid-idgham: #58d86a; /* Idgham bighunna — bright green      */
+    --tajwid-ikhfa: #58d86a; /* Ikhfa — bright green                */
+    --tajwid-iqlab: #58d86a; /* Iqlab — green family                */
+    --tajwid-qalqala: #45d4ff; /* Qalqala (echo) — bright sky blue    */
+    --tajwid-tafkhim: #d4a85a; /* Tafkhim (heavy) — bright amber-brown*/
+    --tajwid-naql: #f08840; /* Naql Warsh → bright orange          */
+    --tajwid-tashil: #58d86a; /* Tashil Warsh → green                */
+    --tajwid-ibdal: #f08840; /* Ibdal Warsh → bright orange         */
+    --tajwid-sila-kubra: #ddb8ee; /* Sila kubra → pink                   */
+    --tajwid-tarqiq-ra: #58d86a; /* Tarqiq ra → green                   */
+    --tajwid-idgham-warsh: #58d86a; /* Idgham Warsh → green                */
 }
 
 /* ============================================

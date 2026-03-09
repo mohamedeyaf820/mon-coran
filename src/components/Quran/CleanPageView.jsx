@@ -1,64 +1,92 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useRef } from "react";
 import { toAr } from "../../data/surahs";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 
 /**
- * Circular verse marker badge (like quran.com)
+ * Ornamental verse-end medallion — quran.com style.
+ * Rendered inline after each verse's text, sized relative to the font.
  */
-function VerseMarker({ num, lang }) {
-  const display = lang === "ar" ? toAr(num) : num;
+function VerseMedallion({ num }) {
+  const display = toAr(num);
   return (
-    <span className="clean-verse-marker" aria-label={`Verse ${num}`}>
-      <svg
-        className="clean-verse-marker-svg"
-        viewBox="0 0 36 36"
-        width="1em"
-        height="1em"
-        aria-hidden="true"
-      >
+    <span className="cpv-medallion" aria-label={`Verse ${num}`}>
+      <svg className="cpv-medallion-svg" viewBox="0 0 40 40" aria-hidden="true">
+        {/* Outer decorative ring */}
         <circle
-          cx="18"
-          cy="18"
-          r="16"
+          cx="20"
+          cy="20"
+          r="18.5"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.5"
+          strokeWidth="1.2"
+          opacity="0.55"
+        />
+        {/* Inner ring */}
+        <circle
+          cx="20"
+          cy="20"
+          r="14.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="0.8"
+          opacity="0.35"
+        />
+        {/* Subtle fill */}
+        <circle cx="20" cy="20" r="13.5" fill="currentColor" opacity="0.07" />
+        {/* Diamond petals at 4 cardinal points */}
+        <polygon
+          points="20,1.5 21.6,5.5 20,4 18.4,5.5"
+          fill="currentColor"
           opacity="0.5"
         />
-        <circle
-          cx="18"
-          cy="18"
-          r="12"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1"
-          opacity="0.3"
+        <polygon
+          points="20,38.5 21.6,34.5 20,36 18.4,34.5"
+          fill="currentColor"
+          opacity="0.5"
         />
+        <polygon
+          points="1.5,20 5.5,21.6 4,20 5.5,18.4"
+          fill="currentColor"
+          opacity="0.5"
+        />
+        <polygon
+          points="38.5,20 34.5,21.6 36,20 34.5,18.4"
+          fill="currentColor"
+          opacity="0.5"
+        />
+        {/* Corner accent dots */}
+        <circle cx="7" cy="7" r="1.1" fill="currentColor" opacity="0.3" />
+        <circle cx="33" cy="7" r="1.1" fill="currentColor" opacity="0.3" />
+        <circle cx="7" cy="33" r="1.1" fill="currentColor" opacity="0.3" />
+        <circle cx="33" cy="33" r="1.1" fill="currentColor" opacity="0.3" />
       </svg>
-      <span className="clean-verse-num">{display}</span>
+      <span className="cpv-medallion-num">{display}</span>
     </span>
   );
 }
 
 /**
- * Page separator with page number
+ * Page separator — a subtle horizontal rule with the page number centred.
  */
-function PageSeparator({ pageNum, lang }) {
-  const display = lang === "ar" ? toAr(pageNum) : pageNum;
+function PageSeparator({ pageNum }) {
   return (
-    <div className="clean-page-separator">
-      <div className="clean-page-separator-line" />
-      <span className="clean-page-separator-text">
-        {lang === "ar" ? `صفحة ${display}` : `Page ${display}`}
-      </span>
-      <div className="clean-page-separator-line" />
+    <div className="cpv-page-sep" aria-hidden="true">
+      <span className="cpv-page-sep-line" />
+      <span className="cpv-page-sep-label">{toAr(pageNum)}</span>
+      <span className="cpv-page-sep-line" />
     </div>
   );
 }
 
 /**
- * CleanPageView - Quran.com-style centered flowing text layout
- * Displays all ayahs with tajweed coloring and page separators with page numbers
+ * CleanPageView — Mushaf-style flowing inline layout.
+ *
+ * All verses flow as continuous inline text (like a real Mushaf page).
+ * Each verse ends with an ornamental medallion badge (quran.com style)
+ * containing the verse number in Arabic numerals.
+ *
+ * Every verse span carries id="ayah-{numberInSurah}" so the parent
+ * QuranDisplay auto-scroll effect can find and scroll to it during recitation.
  */
 export default function CleanPageView({
   ayahs,
@@ -71,71 +99,76 @@ export default function CleanPageView({
   calibration,
   riwaya,
 }) {
-  // Check if we should show basmala
-  const showBasmala = useMemo(() => {
-    return (
+  const containerRef = useRef(null);
+
+  /* ── Basmala ── */
+  const showBasmala = useMemo(
+    () =>
       surahNum !== 1 &&
       surahNum !== 9 &&
       ayahs.length > 0 &&
-      ayahs[0].numberInSurah === 1
-    );
-  }, [surahNum, ayahs]);
+      ayahs[0].numberInSurah === 1,
+    [surahNum, ayahs],
+  );
 
-  const basmalaText = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
-
-  // Build list of ayahs with page change indicators
-  const ayahsWithPageMarkers = useMemo(() => {
+  /* ── Build flat list: ayahs + page-separator markers ── */
+  const items = useMemo(() => {
     if (!ayahs || ayahs.length === 0) return [];
-
     const result = [];
     let lastPage = null;
-
-    for (let i = 0; i < ayahs.length; i++) {
-      const ayah = ayahs[i];
-      const currentPage = ayah.page || 1;
-
-      // Add page marker if page changed
-      if (lastPage !== null && currentPage !== lastPage) {
-        result.push({
-          type: "page-separator",
-          pageNum: currentPage,
-        });
+    for (const ayah of ayahs) {
+      const page = ayah.page || 1;
+      if (lastPage !== null && page !== lastPage) {
+        result.push({ type: "sep", pageNum: page });
       }
-
-      // Add ayah
-      result.push({
-        type: "ayah",
-        data: ayah,
-      });
-
-      lastPage = currentPage;
+      result.push({ type: "ayah", data: ayah });
+      lastPage = page;
     }
-
     return result;
   }, [ayahs]);
 
+  /* ── Auto-scroll to currently playing verse ── */
+  useEffect(() => {
+    if (!currentPlayingAyah?.ayah) return;
+    const el = document.getElementById(`ayah-${currentPlayingAyah.ayah}`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [currentPlayingAyah]);
+
+  const textStyle = fontSize ? { fontSize: `${fontSize}px` } : undefined;
+
   return (
-    <div className="clean-page-container">
-      {/* Basmala at the start if needed */}
+    <div
+      ref={containerRef}
+      className={`cpv-container${isQCF4 ? " cpv-qcf4" : ""}`}
+    >
+      {/* Basmala */}
       {showBasmala && (
-        <div className="clean-basmala" style={{ fontSize: `${fontSize}px` }}>
-          {basmalaText}
+        <div
+          className="cpv-basmala"
+          style={textStyle}
+          dir="rtl"
+          lang="ar"
+          aria-label="Basmala"
+        >
+          بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
         </div>
       )}
 
-      {/* Main text content with all ayahs and page separators */}
+      {/* Flowing text block — all verses inline */}
       <div
-        className={`clean-page-text${isQCF4 ? " qcf4-container" : ""}`}
-        style={{ fontSize: `${fontSize}px` }}
+        className={`cpv-flow${isQCF4 ? " qcf4-container" : ""}`}
+        style={textStyle}
         dir="rtl"
+        lang="ar"
       >
-        {ayahsWithPageMarkers.map((item, idx) => {
-          if (item.type === "page-separator") {
+        {items.map((item) => {
+          /* Page separator — block-level break in the flow */
+          if (item.type === "sep") {
             return (
               <PageSeparator
                 key={`sep-${item.pageNum}`}
                 pageNum={item.pageNum}
-                lang={lang}
               />
             );
           }
@@ -147,10 +180,13 @@ export default function CleanPageView({
 
           return (
             <span
-              key={`ayah-${ayah.number}`}
-              className={`clean-ayah${isPlaying ? " clean-ayah-playing" : ""}`}
+              key={ayah.number}
+              id={`ayah-${ayah.numberInSurah}`}
+              className={`cpv-verse${isPlaying ? " cpv-verse--playing" : ""}`}
+              aria-label={`Verse ${ayah.numberInSurah}`}
+              aria-current={isPlaying ? "true" : undefined}
             >
-              {/* Render the ayah text with tajweed coloring */}
+              {/* Arabic text */}
               <SmartAyahRenderer
                 ayah={ayah}
                 showTajwid={showTajwid}
@@ -159,14 +195,10 @@ export default function CleanPageView({
                 calibration={calibration}
                 riwaya={riwaya}
               />
-
-              {/* Verse marker after the text */}
-              <VerseMarker num={ayah.numberInSurah} lang={lang} />
-
-              {/* Space after verse (except last one) */}
-              {idx < ayahsWithPageMarkers.length - 1 && (
-                <span className="clean-verse-space"> </span>
-              )}
+              {/* Ornamental verse-end medallion */}
+              <VerseMedallion num={ayah.numberInSurah} />
+              {/* Hair space between verses for breathing room */}
+              {"\u200A"}
             </span>
           );
         })}
