@@ -10,7 +10,8 @@ import MemorizationText from "./MemorizationText";
 
 /**
  * AyahBlock component – renders a single verse with metadata and actions.
- * New layout: Side-by-side Arabic/Translation view
+ * Default: stacked layout (Arabic above translation).
+ * When mushafLayout === "mushaf": side-by-side grid (Arabic | Translation).
  */
 const AyahBlock = React.memo(function AyahBlock({
   ayah,
@@ -31,6 +32,7 @@ const AyahBlock = React.memo(function AyahBlock({
   progress,
   fontSize,
   memMode,
+  mushafLayout,
 }) {
   // Transliteration logic:
   // 1. If riwaya is Warsh, we must use ayah.hafsText (standard Arabic) instead of ayah.text (PUA codepoints).
@@ -58,10 +60,59 @@ const AyahBlock = React.memo(function AyahBlock({
           <span className="qc-ayah-num">{ayah.numberInSurah}</span>
         </div>
 
-        {/* Main Content - Side by Side Layout */}
-        <div className="qc-ayah-content-grid">
-          {/* Left: Arabic Text */}
-          <div className="qc-ayah-arabic-side">
+        {/* Main Content */}
+        {mushafLayout === "mushaf" ? (
+          /* ── Mushaf mode: side-by-side grid (Arabic | Translation) ── */
+          <div className="qc-ayah-content-grid">
+            {/* Left: Arabic Text */}
+            <div className="qc-ayah-arabic-side">
+              <div className="qc-ayah-text-ar">
+                {memMode ? (
+                  <MemorizationText
+                    text={ayah.hafsText || ayah.text}
+                    lang={lang}
+                  />
+                ) : showWordByWord && !(ayah.warshWords?.length > 0) ? (
+                  <WordByWordDisplay
+                    surah={surahNum}
+                    ayah={ayah.numberInSurah}
+                    text={ayah.text}
+                    isPlaying={isPlaying}
+                    progress={progress}
+                    showTransliteration={showTransliteration}
+                    showWordTranslation={showWordTranslation}
+                    fontSize={fontSize}
+                  />
+                ) : (
+                  <SmartAyahRenderer
+                    ayah={ayah}
+                    showTajwid={showTajwid}
+                    isPlaying={isPlaying}
+                    surahNum={surahNum}
+                    calibration={calibration}
+                    riwaya={riwaya}
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Right: Translation & Transliteration */}
+            {(showTranslation || showTransliteration) && !showWordByWord && (
+              <div className="qc-ayah-translation-side">
+                {ayahTransliteration && (
+                  <div className="qc-ayah-transliteration">
+                    {ayahTransliteration}
+                  </div>
+                )}
+                {showTranslation && trans && (
+                  <div className="qc-ayah-translation">{trans.text}</div>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          /* ── Default (list) mode: stacked layout ── */
+          <div className="qc-ayah-content">
             <div className="qc-ayah-text-ar">
               {memMode ? (
                 <MemorizationText
@@ -90,22 +141,16 @@ const AyahBlock = React.memo(function AyahBlock({
                 />
               )}
             </div>
+            {ayahTransliteration && (
+              <div className="qc-ayah-transliteration">
+                {ayahTransliteration}
+              </div>
+            )}
+            {showTranslation && trans && !showWordByWord && (
+              <div className="qc-ayah-translation">{trans.text}</div>
+            )}
           </div>
-
-          {/* Right: Translation & Transliteration */}
-          {(showTranslation || showTransliteration) && !showWordByWord && (
-            <div className="qc-ayah-translation-side">
-              {ayahTransliteration && (
-                <div className="qc-ayah-transliteration">
-                  {ayahTransliteration}
-                </div>
-              )}
-              {showTranslation && trans && (
-                <div className="qc-ayah-translation">{trans.text}</div>
-              )}
-            </div>
-          )}
-        </div>
+        )}
 
         {isActive && (
           <div className="qc-ayah-actions-panel">

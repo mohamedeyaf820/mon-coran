@@ -1111,7 +1111,7 @@ export default function QuranDisplay() {
             mushafLayout !== "mushaf" && <Bismillah />}
           <TajweedLegend lang={lang} visible={showTajwid} riwaya={riwaya} />
 
-          {/* Layout toggle: list ↔ mushaf */}
+          {/* Layout toggle: list ↔ mushaf ↔ word-by-word ↔ memorization */}
           <div className="mushaf-layout-toggle-bar">
             <button
               className={`mushaf-layout-btn${mushafLayout === "list" ? " active" : ""}`}
@@ -1128,6 +1128,39 @@ export default function QuranDisplay() {
             >
               <i className="fas fa-book-open"></i>
               {lang === "fr" ? "Mushaf" : "Mushaf"}
+            </button>
+            <span className="mushaf-layout-sep" />
+            <button
+              className={`mushaf-layout-btn${showWordByWord ? " active" : ""}`}
+              onClick={() => set({ showWordByWord: !showWordByWord })}
+              title={
+                showWordByWord
+                  ? lang === "fr"
+                    ? "Afficher en liste"
+                    : lang === "ar"
+                      ? "عرض كقائمة"
+                      : "Show as list"
+                  : lang === "fr"
+                    ? "Mot à mot"
+                    : lang === "ar"
+                      ? "كلمة بكلمة"
+                      : "Word by word"
+              }
+            >
+              <i
+                className={`fas ${showWordByWord ? "fa-list-ul" : "fa-w"}`}
+              ></i>
+              {showWordByWord
+                ? lang === "fr"
+                  ? "Liste"
+                  : lang === "ar"
+                    ? "قائمة"
+                    : "List"
+                : lang === "fr"
+                  ? "Mot à mot"
+                  : lang === "ar"
+                    ? "كلمة بكلمة"
+                    : "W×W"}
             </button>
             <span className="mushaf-layout-sep" />
             <button
@@ -1252,6 +1285,7 @@ export default function QuranDisplay() {
                       lang={lang}
                       fontSize={fontSize}
                       memMode={memMode}
+                      mushafLayout={mushafLayout}
                       onToggleActive={() => toggleAyah(ayah.numberInSurah)}
                     />
                   );
@@ -1455,6 +1489,7 @@ export default function QuranDisplay() {
                         riwaya={riwaya}
                         lang={lang}
                         fontSize={fontSize}
+                        mushafLayout={mushafLayout}
                         onToggleActive={() => toggleAyah(ayah.number)}
                       />
                     );
@@ -1621,6 +1656,7 @@ export default function QuranDisplay() {
                           riwaya={riwaya}
                           lang={lang}
                           fontSize={fontSize}
+                          mushafLayout={mushafLayout}
                           onToggleActive={() => toggleAyah(ayah.number)}
                         />
                       );

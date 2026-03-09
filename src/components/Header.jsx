@@ -21,7 +21,6 @@ import {
 } from "./ui/dropdown-menu";
 import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import PlatformLogo from "./PlatformLogo";
-import NetworkStatus from "./NetworkStatus";
 
 export default function Header() {
   const { state, dispatch, set } = useApp();
@@ -39,7 +38,6 @@ export default function Header() {
     showHome,
     showDuas,
     showTranslation,
-    showWordByWord,
     showWordTranslation,
     mushafLayout,
   } = state;
@@ -230,11 +228,6 @@ export default function Header() {
       ? `${surahMeta.ayahs} ${ayahWord}`
       : "";
 
-  // Toggle list/word-by-word
-  const toggleListWordByWord = () => {
-    set({ showWordByWord: !showWordByWord });
-  };
-
   return (
     <header className="flex flex-col z-[100] relative select-none w-full border-b border-[var(--border)] bg-[#FDFCFB] dark:bg-[var(--bg-primary)] transition-colors duration-300">
       {/* Top Banner */}
@@ -379,40 +372,6 @@ export default function Header() {
 
         {/* RIGHT: Actions */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
-          {/* List/Word-by-Word Toggle Button */}
-          {!showHome && (
-            <button
-              className="hidden sm:flex items-center justify-center px-4 py-2 rounded-xl border border-[var(--border)] dark:border-gray-700 text-[0.8rem] font-semibold font-[var(--font-ui)] hover:bg-[var(--bg-secondary)] text-[#111827] dark:text-gray-200 transition-all cursor-pointer active:scale-95"
-              onClick={toggleListWordByWord}
-              title={
-                showWordByWord
-                  ? lang === "fr"
-                    ? "Afficher en liste"
-                    : "Show as list"
-                  : lang === "fr"
-                    ? "Afficher mot à mot"
-                    : "Show word by word"
-              }
-            >
-              <i
-                className={`fas ${showWordByWord ? "fa-list-ul" : "fa-w"} mr-2`}
-              />
-              <span>
-                {showWordByWord
-                  ? lang === "fr"
-                    ? "Liste"
-                    : lang === "ar"
-                      ? "قائمة"
-                      : "List"
-                  : lang === "fr"
-                    ? "Mot à mot"
-                    : lang === "ar"
-                      ? "كلمة بكلمة"
-                      : "Word by word"}
-              </span>
-            </button>
-          )}
-
           {/* Duas Button */}
           <button
             className="hidden sm:flex items-center justify-center px-4 py-1.5 rounded-full border border-[var(--border)] dark:border-gray-700 text-[0.85rem] font-semibold font-[var(--font-ui)] hover:bg-[var(--bg-secondary)] text-[#111827] dark:text-gray-200 transition-colors cursor-pointer"
@@ -424,8 +383,6 @@ export default function Header() {
           </button>
 
           <div className="flex items-center gap-1 sm:gap-2">
-            {/* Network Status */}
-            <NetworkStatus />
             {/* Settings */}
             <HeaderIconButton
               icon="fa-sliders"
