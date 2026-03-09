@@ -16,135 +16,127 @@
  */
 
 // Sukun in Uthmani can be U+0652 or U+06E1
-const SK = '\\u0652\\u06E1';
+const SK = "\\u0652\\u06E1";
 
 // ══════════════════════════════════════════════════════════════
 // HAFS TAJWEED RULES (default)
 // ══════════════════════════════════════════════════════════════
 const TAJWID_RULES = [
   {
-    id: 'ghunna',
-    nameAr: 'غنّة/إخفاء',
-    nameEn: 'Ghunna/Ikhfa\'',
-    nameFr: 'Ghounna/Ikhfa',
-    color: '#1aaf5d',
-    description: 'Nasalisation (ghunna) et dissimulation (ikhfa)',
+    id: "ghunna",
+    nameAr: "غنّة/إخفاء",
+    nameEn: "Ghunna/Ikhfa'",
+    nameFr: "Ghounna/Ikhfa",
+    color: "#22bb44",
+    description: "Nasalisation (ghunna) et dissimulation (ikhfa)",
     patterns: [
       // Shadda on noon or meem (ghunna)
       /([نم])\u0651/g,
       // Tanwin followed by ikhfa letters
       /[\u064B\u064C\u064D][\s\u200C]*[تثجدذزسشصضطظفقك]/g,
       // Noon sakin (sukun) + ikhfa letters
-      new RegExp(`ن[${SK}][\\s\\u200C]*[تثجدذزسشصضطظفقك]`, 'g'),
+      new RegExp(`ن[${SK}][\\s\\u200C]*[تثجدذزسشصضطظفقك]`, "g"),
     ],
   },
   {
-    id: 'qalqala',
-    nameAr: 'قلقلة',
-    nameEn: 'Qalqala (echo)',
-    nameFr: 'Qalqala (écho)',
-    color: '#DD6B20',
-    description: 'Rebondissement sur les lettres ق ط ب ج د en sukun',
-    patterns: [
-      new RegExp(`[قطبجد][${SK}]`, 'g'),
-    ],
+    id: "qalqala",
+    nameAr: "قلقلة",
+    nameEn: "Qalqala (echo)",
+    nameFr: "Qalqala (écho)",
+    color: "#00c8d4",
+    description: "Rebondissement sur les lettres ق ط ب ج د en sukun",
+    patterns: [new RegExp(`[قطبجد][${SK}]`, "g")],
   },
   {
-    id: 'idgham',
-    nameAr: 'إدغام',
-    nameEn: 'Idgham',
-    nameFr: 'Idgham',
-    color: '#169200',
-    description: 'Assimilation du noun sakin ou tanwin dans ي ر م ل و ن',
+    id: "idgham",
+    nameAr: "إدغام",
+    nameEn: "Idgham",
+    nameFr: "Idgham",
+    color: "#22bb44",
+    description: "Assimilation du noun sakin ou tanwin dans ي ر م ل و ن",
     patterns: [
       // Tanwin + yarmaloon letters
       /[\u064B\u064C\u064D][\s\u200C]*[يرملون]/g,
       // Noon sakin + yarmaloon letters
-      new RegExp(`ن[${SK}][\\s\\u200C]*[يرملون]`, 'g'),
+      new RegExp(`ن[${SK}][\\s\\u200C]*[يرملون]`, "g"),
     ],
   },
   {
-    id: 'iqlab',
-    nameAr: 'إقلاب',
-    nameEn: 'Iqlab',
-    nameFr: 'Iqlab',
-    color: '#2ecc71',
-    description: 'Conversion du noon sakin ou tanwin en meem devant ب',
+    id: "iqlab",
+    nameAr: "إقلاب",
+    nameEn: "Iqlab",
+    nameFr: "Iqlab",
+    color: "#22bb44",
+    description: "Conversion du noon sakin ou tanwin en meem devant ب",
     patterns: [
       /[\u064B\u064C\u064D][\s\u200C]*ب/g,
-      new RegExp(`ن[${SK}][\\s\\u200C]*ب`, 'g'),
+      new RegExp(`ن[${SK}][\\s\\u200C]*ب`, "g"),
     ],
   },
   {
-    id: 'madd-normal',
-    nameAr: 'مدّ طبيعي',
-    nameEn: 'Normal madd (2)',
-    nameFr: 'Madd normal (2)',
-    color: '#d63384',
-    description: 'Madd tabii — prolongation de 2 temps',
+    id: "madd-normal",
+    nameAr: "مدّ طبيعي",
+    nameEn: "Normal madd (2)",
+    nameFr: "Madd normal (2)",
+    color: "#d580c8",
+    description: "Madd tabii — prolongation de 2 temps",
     patterns: [
       // Fatha + alef (includes Uthmani superscript alef U+0670)
       /[\u064E][\u0627\u0670]/g,
       // Damma + waw not followed by sukun
-      new RegExp(`[\\u064F]و(?![${SK}])`, 'g'),
+      new RegExp(`[\\u064F]و(?![${SK}])`, "g"),
       // Kasra + yaa not followed by sukun
-      new RegExp(`[\\u0650]ي(?![${SK}])`, 'g'),
+      new RegExp(`[\\u0650]ي(?![${SK}])`, "g"),
     ],
   },
   {
-    id: 'madd-separated',
-    nameAr: 'مدّ منفصل',
-    nameEn: 'Separated madd (2/4/6)',
-    nameFr: 'Madd séparé (2/4/6)',
-    color: '#4050FF',
-    description: 'Madd munfasil — hamza suivi de lettre de madd entre 2 mots',
-    patterns: [
-      /[\u0627وي][\s][ءأإ]/g,
-    ],
+    id: "madd-separated",
+    nameAr: "مدّ منفصل",
+    nameEn: "Separated madd (2/4/6)",
+    nameFr: "Madd séparé (2/4/6)",
+    color: "#f0952a",
+    description: "Madd munfasil — hamza suivi de lettre de madd entre 2 mots",
+    patterns: [/[\u0627وي][\s][ءأإ]/g],
   },
   {
-    id: 'madd-connected',
-    nameAr: 'مدّ متصل',
-    nameEn: 'Connected madd (4/5)',
-    nameFr: 'Madd connecté (4/5)',
-    color: '#337FFF',
-    description: 'Madd muttasil — hamza après lettre de madd dans le même mot',
-    patterns: [
-      /[ءأإؤئ][\u064E\u064F\u0650]?[\u0627وي]/g,
-    ],
+    id: "madd-connected",
+    nameAr: "مدّ متصل",
+    nameEn: "Connected madd (4/5)",
+    nameFr: "Madd connecté (4/5)",
+    color: "#e8409a",
+    description: "Madd muttasil — hamza après lettre de madd dans le même mot",
+    patterns: [/[ءأإؤئ][\u064E\u064F\u0650]?[\u0627وي]/g],
   },
   {
-    id: 'madd',
-    nameAr: 'مدّ لازم',
-    nameEn: 'Necessary madd (6)',
-    nameFr: 'Madd nécessaire (6)',
-    color: '#dc3545',
-    description: 'Madd lazim — prolongation obligatoire de 6 temps',
-    patterns: [
-      /[\u0627وي]\u0651/g,
-    ],
+    id: "madd",
+    nameAr: "مدّ لازم",
+    nameEn: "Necessary madd (6)",
+    nameFr: "Madd nécessaire (6)",
+    color: "#d42020",
+    description: "Madd lazim — prolongation obligatoire de 6 temps",
+    patterns: [/[\u0627وي]\u0651/g],
   },
   {
-    id: 'lam-shamsiyya',
-    nameAr: 'حرف ساكن',
-    nameEn: 'Silent letter',
-    nameFr: 'Lettre muette',
-    color: '#AAAAAA',
-    description: 'Lam de l\'article assimilée (lam shamsiyya) / lettre muette',
+    id: "lam-shamsiyya",
+    nameAr: "حرف ساكن",
+    nameEn: "Silent letter",
+    nameFr: "Lettre muette",
+    color: "#aaaaaa",
+    description: "Lam de l'article assimilée (lam shamsiyya) / lettre muette",
     patterns: [
       // Matches both ٱل (alef wasla) and ال (regular alef)
       /[ٱا]ل[تثدذرزسشصضطظنل]/g,
     ],
   },
   {
-    id: 'tafkhim',
-    nameAr: 'تفخيم',
-    nameEn: 'Tafkhim (heavy)',
-    nameFr: 'Tafkhim (lourd)',
-    color: '#C9A33D',
-    description: 'Prononciation emphatique/lourde (lettres مستعلية)',
+    id: "tafkhim",
+    nameAr: "تفخيم",
+    nameEn: "Tafkhim (heavy)",
+    nameFr: "Tafkhim (lourd)",
+    color: "#4060d8",
+    description: "Prononciation emphatique/lourde (lettres مستعلية)",
     patterns: [
-      new RegExp(`[صضطظخغق][\\u064E\\u064F\\u0650${SK}\\u0651]?`, 'g'),
+      new RegExp(`[صضطظخغق][\\u064E\\u064F\\u0650${SK}\\u0651]?`, "g"),
     ],
   },
 ];
@@ -155,29 +147,30 @@ const TAJWID_RULES = [
 const WARSH_TAJWID_RULES = [
   // ─────────────── Warsh-specific rules ───────────────
   {
-    id: 'naql',
-    nameAr: 'نقل',
-    nameEn: 'Naql (Transfer)',
-    nameFr: 'Naql (Transfert)',
-    color: '#DD6B20',
-    description: 'Transfert de la voyelle du hamza à la lettre précédente sakin',
+    id: "naql",
+    nameAr: "نقل",
+    nameEn: "Naql (Transfer)",
+    nameFr: "Naql (Transfert)",
+    color: "#f0952a",
+    description:
+      "Transfert de la voyelle du hamza à la lettre précédente sakin",
     patterns: [
       // Pattern: letter + sukun + hamza (with or without vowels)
       // Common naql cases: ٱل + hamza-initial word
       /[ٱا]ل[اأإءؤئ]/g,
       // Lam-alif followed by hamza patterns
-      new RegExp(`ل[${SK}][\\s]*[أإءؤئ]`, 'g'),
+      new RegExp(`ل[${SK}][\\s]*[أإءؤئ]`, "g"),
       // Any consonant with sukun before hamza
-      new RegExp(`[بتثجحخدذرزسشصضطظعغفقكلمنهوي][${SK}][\\s]*[ءأإؤئ]`, 'g'),
+      new RegExp(`[بتثجحخدذرزسشصضطظعغفقكلمنهوي][${SK}][\\s]*[ءأإؤئ]`, "g"),
     ],
   },
   {
-    id: 'tashil',
-    nameAr: 'تسهيل',
-    nameEn: 'Tashil (Softening)',
-    nameFr: 'Tashil (Adoucissement)',
-    color: '#1EC897',
-    description: 'Adoucissement du hamza entre deux voyelles',
+    id: "tashil",
+    nameAr: "تسهيل",
+    nameEn: "Tashil (Softening)",
+    nameFr: "Tashil (Adoucissement)",
+    color: "#22bb44",
+    description: "Adoucissement du hamza entre deux voyelles",
     patterns: [
       // Hamza between two alifs (common tashil position)
       /[اآ][ءأإؤئ][اآ]/g,
@@ -188,12 +181,12 @@ const WARSH_TAJWID_RULES = [
     ],
   },
   {
-    id: 'ibdal',
-    nameAr: 'إبدال',
-    nameEn: 'Ibdal (Substitution)',
-    nameFr: 'Ibdal (Substitution)',
-    color: '#DD6B20',
-    description: 'Remplacement du hamza par alif/waw/ya',
+    id: "ibdal",
+    nameAr: "إبدال",
+    nameEn: "Ibdal (Substitution)",
+    nameFr: "Ibdal (Substitution)",
+    color: "#f0952a",
+    description: "Remplacement du hamza par alif/waw/ya",
     patterns: [
       // Hamza after fatha becoming alif
       /[\u064E][ءأ]/g,
@@ -206,12 +199,12 @@ const WARSH_TAJWID_RULES = [
     ],
   },
   {
-    id: 'madd-badal',
-    nameAr: 'مد البدل',
-    nameEn: 'Madd Badal (Warsh 4-6)',
-    nameFr: 'Madd Badal (4-6 temps)',
-    color: '#537FFF',
-    description: 'Prolongation après hamza substitué (4 à 6 temps en Warsh)',
+    id: "madd-badal",
+    nameAr: "مد البدل",
+    nameEn: "Madd Badal (Warsh 4-6)",
+    nameFr: "Madd Badal (4-6 temps)",
+    color: "#d580c8",
+    description: "Prolongation après hamza substitué (4 à 6 temps en Warsh)",
     patterns: [
       // Hamza followed by madd letter (typical badal)
       /[ءأإ][\u064E\u064F\u0650]?[اوي]/g,
@@ -224,12 +217,12 @@ const WARSH_TAJWID_RULES = [
     ],
   },
   {
-    id: 'sila-kubra',
-    nameAr: 'صلة كبرى',
-    nameEn: 'Sila Kubra',
-    nameFr: 'Sila Kubra',
-    color: '#26BFFD',
-    description: 'Prolongation du haa du pronom suivi de hamza',
+    id: "sila-kubra",
+    nameAr: "صلة كبرى",
+    nameEn: "Sila Kubra",
+    nameFr: "Sila Kubra",
+    color: "#d580c8",
+    description: "Prolongation du haa du pronom suivi de hamza",
     patterns: [
       // Pronoun haa (ـه) followed by hamza - elongated in Warsh
       /ه[\u064F\u0650][\\s]*[ءأإؤئ]/g,
@@ -238,139 +231,131 @@ const WARSH_TAJWID_RULES = [
     ],
   },
   {
-    id: 'tarqiq-ra',
-    nameAr: 'ترقيق الراء',
-    nameEn: 'Tarqiq Ra (Warsh)',
-    nameFr: 'Tarqiq Ra (léger)',
-    color: '#1EC897',
-    description: 'Prononciation légère du ra en Warsh (cas spécifiques)',
+    id: "tarqiq-ra",
+    nameAr: "ترقيق الراء",
+    nameEn: "Tarqiq Ra (Warsh)",
+    nameFr: "Tarqiq Ra (léger)",
+    color: "#22bb44",
+    description: "Prononciation légère du ra en Warsh (cas spécifiques)",
     patterns: [
       // Ra with kasra
       /ر[\u0650]/g,
       // Ra sakin preceded by kasra
-      new RegExp(`[\u0650]ر[${SK}]`, 'g'),
+      new RegExp(`[\u0650]ر[${SK}]`, "g"),
       // Ra sakin preceded by ya sakin
-      new RegExp(`ي[${SK}]ر[${SK}]`, 'g'),
+      new RegExp(`ي[${SK}]ر[${SK}]`, "g"),
     ],
   },
   {
-    id: 'idgham-warsh',
-    nameAr: 'إدغام ورش',
-    nameEn: 'Idgham (Warsh)',
-    nameFr: 'Idgham (Warsh)',
-    color: '#58B135',
-    description: 'Assimilation spécifique à Warsh',
+    id: "idgham-warsh",
+    nameAr: "إدغام ورش",
+    nameEn: "Idgham (Warsh)",
+    nameFr: "Idgham (Warsh)",
+    color: "#22bb44",
+    description: "Assimilation spécifique à Warsh",
     patterns: [
       // Lam + Ra (some cases in Warsh)
       /ل\u0651?ر/g,
       // Additional idgham cases for Warsh
-      new RegExp(`ن[${SK}][\\s\\u200C]*[يرملون]`, 'g'),
+      new RegExp(`ن[${SK}][\\s\\u200C]*[يرملون]`, "g"),
       /[\u064B\u064C\u064D][\s\u200C]*[يرملون]/g,
     ],
   },
   // ─────────────── Common rules (also in Hafs but with Warsh variations) ───────────────
   {
-    id: 'ghunna',
-    nameAr: 'غنّة/إخفاء',
-    nameEn: 'Ghunna/Ikhfa\'',
-    nameFr: 'Ghounna/Ikhfa',
-    color: '#58B135',
-    description: 'Nasalisation (ghunna) et dissimulation (ikhfa)',
+    id: "ghunna",
+    nameAr: "غنّة/إخفاء",
+    nameEn: "Ghunna/Ikhfa'",
+    nameFr: "Ghounna/Ikhfa",
+    color: "#22bb44",
+    description: "Nasalisation (ghunna) et dissimulation (ikhfa)",
     patterns: [
       /([نم])\u0651/g,
       /[\u064B\u064C\u064D][\s\u200C]*[تثجدذزسشصضطظفقك]/g,
-      new RegExp(`ن[${SK}][\\s\\u200C]*[تثجدذزسشصضطظفقك]`, 'g'),
+      new RegExp(`ن[${SK}][\\s\\u200C]*[تثجدذزسشصضطظفقك]`, "g"),
     ],
   },
   {
-    id: 'qalqala',
-    nameAr: 'قلقلة',
-    nameEn: 'Qalqala (echo)',
-    nameFr: 'Qalqala (écho)',
-    color: '#DD6B20',
-    description: 'Rebondissement sur les lettres ق ط ب ج د en sukun',
-    patterns: [
-      new RegExp(`[قطبجد][${SK}]`, 'g'),
-    ],
+    id: "qalqala",
+    nameAr: "قلقلة",
+    nameEn: "Qalqala (echo)",
+    nameFr: "Qalqala (écho)",
+    color: "#00c8d4",
+    description: "Rebondissement sur les lettres ق ط ب ج د en sukun",
+    patterns: [new RegExp(`[قطبجد][${SK}]`, "g")],
   },
   {
-    id: 'iqlab',
-    nameAr: 'إقلاب',
-    nameEn: 'Iqlab',
-    nameFr: 'Iqlab',
-    color: '#26BFFD',
-    description: 'Conversion du noon sakin ou tanwin en meem devant ب',
+    id: "iqlab",
+    nameAr: "إقلاب",
+    nameEn: "Iqlab",
+    nameFr: "Iqlab",
+    color: "#22bb44",
+    description: "Conversion du noon sakin ou tanwin en meem devant ب",
     patterns: [
       /[\u064B\u064C\u064D][\s\u200C]*ب/g,
-      new RegExp(`ن[${SK}][\\s\\u200C]*ب`, 'g'),
+      new RegExp(`ن[${SK}][\\s\\u200C]*ب`, "g"),
     ],
   },
   {
-    id: 'madd-normal',
-    nameAr: 'مدّ طبيعي',
-    nameEn: 'Normal madd (2)',
-    nameFr: 'Madd normal (2)',
-    color: '#d63384',
-    description: 'Madd tabii — prolongation de 2 temps',
+    id: "madd-normal",
+    nameAr: "مدّ طبيعي",
+    nameEn: "Normal madd (2)",
+    nameFr: "Madd normal (2)",
+    color: "#d580c8",
+    description: "Madd tabii — prolongation de 2 temps",
     patterns: [
       /[\u064E][\u0627\u0670]/g,
-      new RegExp(`[\\u064F]و(?![${SK}])`, 'g'),
-      new RegExp(`[\\u0650]ي(?![${SK}])`, 'g'),
+      new RegExp(`[\\u064F]و(?![${SK}])`, "g"),
+      new RegExp(`[\\u0650]ي(?![${SK}])`, "g"),
     ],
   },
   {
-    id: 'madd-separated',
-    nameAr: 'مدّ منفصل',
-    nameEn: 'Separated madd (4-5 Warsh)',
-    nameFr: 'Madd séparé (4-5 temps)',
-    color: '#fd7e14',
-    description: 'Madd munfasil — prolongation 4-5 temps en Warsh (madd entre deux mots)',
-    patterns: [
-      /[اوي][\s\u200C]+[ءأإؤئ]/g,
-    ],
+    id: "madd-separated",
+    nameAr: "مدّ منفصل",
+    nameEn: "Separated madd (4-5 Warsh)",
+    nameFr: "Madd séparé (4-5 temps)",
+    color: "#f0952a",
+    description:
+      "Madd munfasil — prolongation 4-5 temps en Warsh (madd entre deux mots)",
+    patterns: [/[اوي][\s\u200C]+[ءأإؤئ]/g],
   },
   {
-    id: 'madd-connected',
-    nameAr: 'مدّ متصل',
-    nameEn: 'Connected madd (4-6)',
-    nameFr: 'Madd connecté (4-6)',
-    color: '#e91e90',
-    description: 'Madd muttasil — hamza après madd dans le même mot (4-6 temps en Warsh)',
-    patterns: [
-      /[ءأإؤئ][\u064E\u064F\u0650]?[\u0627وي]/g,
-    ],
+    id: "madd-connected",
+    nameAr: "مدّ متصل",
+    nameEn: "Connected madd (4-6)",
+    nameFr: "Madd connecté (4-6)",
+    color: "#e8409a",
+    description:
+      "Madd muttasil — hamza après madd dans le même mot (4-6 temps en Warsh)",
+    patterns: [/[ءأإؤئ][\u064E\u064F\u0650]?[\u0627وي]/g],
   },
   {
-    id: 'madd',
-    nameAr: 'مدّ لازم',
-    nameEn: 'Necessary madd (6)',
-    nameFr: 'Madd nécessaire (6)',
-    color: '#dc3545',
-    description: 'Madd lazim — prolongation obligatoire de 6 temps',
-    patterns: [
-      /[\u0627وي]\u0651/g,
-    ],
+    id: "madd",
+    nameAr: "مدّ لازم",
+    nameEn: "Necessary madd (6)",
+    nameFr: "Madd nécessaire (6)",
+    color: "#d42020",
+    description: "Madd lazim — prolongation obligatoire de 6 temps",
+    patterns: [/[\u0627وي]\u0651/g],
   },
   {
-    id: 'lam-shamsiyya',
-    nameAr: 'حرف ساكن',
-    nameEn: 'Silent letter',
-    nameFr: 'Lettre muette',
-    color: '#AAAAAA',
-    description: 'Lam de l\'article assimilée (lam shamsiyya) / lettre muette',
-    patterns: [
-      /[ٱا]ل[تثدذرزسشصضطظنل]/g,
-    ],
+    id: "lam-shamsiyya",
+    nameAr: "حرف ساكن",
+    nameEn: "Silent letter",
+    nameFr: "Lettre muette",
+    color: "#aaaaaa",
+    description: "Lam de l'article assimilée (lam shamsiyya) / lettre muette",
+    patterns: [/[ٱا]ل[تثدذرزسشصضطظنل]/g],
   },
   {
-    id: 'tafkhim',
-    nameAr: 'تفخيم',
-    nameEn: 'Tafkhim (heavy)',
-    nameFr: 'Tafkhim (lourd)',
-    color: '#C9A33D',
-    description: 'Prononciation emphatique/lourde (lettres مستعلية)',
+    id: "tafkhim",
+    nameAr: "تفخيم",
+    nameEn: "Tafkhim (heavy)",
+    nameFr: "Tafkhim (lourd)",
+    color: "#4060d8",
+    description: "Prononciation emphatique/lourde (lettres مستعلية)",
     patterns: [
-      new RegExp(`[صضطظخغق][\\u064E\\u064F\\u0650${SK}\\u0651]?`, 'g'),
+      new RegExp(`[صضطظخغق][\\u064E\\u064F\\u0650${SK}\\u0651]?`, "g"),
     ],
   },
 ];
@@ -384,7 +369,7 @@ export { WARSH_TAJWID_RULES };
  * @returns {Array} The tajweed rules to use
  */
 export function getRulesForRiwaya(riwaya) {
-  return riwaya === 'warsh' ? WARSH_TAJWID_RULES : TAJWID_RULES;
+  return riwaya === "warsh" ? WARSH_TAJWID_RULES : TAJWID_RULES;
 }
 
 // ── Tajweed parsing cache ────────────────────
@@ -415,8 +400,8 @@ function _cacheSet(cache, maxSize, key, value) {
  * @param {string} text - Arabic text to parse
  * @param {string} riwaya - 'hafs' or 'warsh' (default: 'hafs')
  */
-export function parseTajwid(text, riwaya = 'hafs') {
-  if (!text) return [{ text: '', ruleId: null }];
+export function parseTajwid(text, riwaya = "hafs") {
+  if (!text) return [{ text: "", ruleId: null }];
 
   const cacheKey = `${riwaya}:${text}`;
   const cached = _cacheGet(_parseTajwidCache, cacheKey);
@@ -487,7 +472,7 @@ export function parseTajwid(text, riwaya = 'hafs') {
  * @param {string} riwaya - 'hafs' or 'warsh' (default: 'hafs')
  * @returns {Array<string|null>} One ruleId per word
  */
-export function getPerWordTajweedColors(text, riwaya = 'hafs') {
+export function getPerWordTajweedColors(text, riwaya = "hafs") {
   if (!text) return [];
 
   const cacheKey = `pw:${riwaya}:${text}`;
@@ -496,14 +481,18 @@ export function getPerWordTajweedColors(text, riwaya = 'hafs') {
 
   const rules = getRulesForRiwaya(riwaya);
   let segments;
-  try { segments = parseTajwid(text, riwaya); } catch { return []; }
+  try {
+    segments = parseTajwid(text, riwaya);
+  } catch {
+    return [];
+  }
   if (!segments || segments.length === 0) return [];
 
-  const words = text.split(/\s+/).filter(w => w.length > 0);
+  const words = text.split(/\s+/).filter((w) => w.length > 0);
   if (words.length === 0) return [];
 
   // Rebuild full text from segments for position alignment
-  const fullText = segments.map(s => s.text).join('');
+  const fullText = segments.map((s) => s.text).join("");
 
   // Build character → ruleId map
   const charRules = new Array(fullText.length).fill(null);
@@ -524,7 +513,7 @@ export function getPerWordTajweedColors(text, riwaya = 'hafs') {
     // Skip whitespace
     while (charIdx < fullText.length && /\s/.test(fullText[charIdx])) charIdx++;
     const ruleCounts = {};
-    for (let i = 0; i < word.length && (charIdx + i) < fullText.length; i++) {
+    for (let i = 0; i < word.length && charIdx + i < fullText.length; i++) {
       const rule = charRules[charIdx + i];
       if (rule) ruleCounts[rule] = (ruleCounts[rule] || 0) + 1;
     }
@@ -533,7 +522,10 @@ export function getPerWordTajweedColors(text, riwaya = 'hafs') {
     let dominant = null;
     let maxCount = 0;
     for (const [rule, count] of Object.entries(ruleCounts)) {
-      if (count > maxCount) { maxCount = count; dominant = rule; }
+      if (count > maxCount) {
+        maxCount = count;
+        dominant = rule;
+      }
     }
 
     // Fallback: direct per-word pattern detection when char-map found nothing
@@ -541,7 +533,7 @@ export function getPerWordTajweedColors(text, riwaya = 'hafs') {
       for (const rule of rules) {
         let found = false;
         for (const pattern of rule.patterns) {
-          const re = new RegExp(pattern.source, pattern.flags.replace('g', ''));
+          const re = new RegExp(pattern.source, pattern.flags.replace("g", ""));
           if (re.test(word)) {
             dominant = rule.id;
             found = true;
