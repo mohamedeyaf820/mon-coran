@@ -73,6 +73,7 @@ const initialState = {
   warshStrictMode: stored.warshStrictMode ?? true,
   isPlaying: false,
   currentPlayingAyah: null,
+  playerMinimized: stored.playerMinimized ?? false,
 
   // Memorization
   memMode: false,
@@ -232,6 +233,7 @@ export function AppProvider({ children }) {
         focusReading: state.focusReading,
         syncOffsetsMs: state.syncOffsetsMs,
         warshStrictMode: state.warshStrictMode,
+        playerMinimized: state.playerMinimized,
         autoNightMode: state.autoNightMode,
         nightStart: state.nightStart,
         nightEnd: state.nightEnd,
@@ -277,6 +279,7 @@ export function AppProvider({ children }) {
     state.focusReading,
     state.syncOffsetsMs,
     state.warshStrictMode,
+    state.playerMinimized,
     state.autoNightMode,
     state.nightStart,
     state.nightEnd,

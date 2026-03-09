@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { toAr, getSurah, surahName } from "../data/surahs";
@@ -8,10 +8,7 @@ import audioService from "../services/audioService";
 import { clearCache } from "../services/quranAPI";
 import { cn } from "../lib/utils";
 import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
 import { Input } from "./ui/input";
-import { Separator } from "./ui/separator";
-import PlatformLogo from "./PlatformLogo";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -23,6 +20,7 @@ import {
   DropdownMenuRadioItem,
 } from "./ui/dropdown-menu";
 import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
+import PlatformLogo from "./PlatformLogo";
 
 export default function Header() {
   const { state, dispatch, set } = useApp();
@@ -40,21 +38,13 @@ export default function Header() {
     showHome,
     showDuas,
     showTranslation,
-    showWordByWord,
     showWordTranslation,
+    mushafLayout,
   } = state;
 
   const [goToValue, setGoToValue] = useState("");
   const [goToOpen, setGoToOpen] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const inputRef = useRef(null);
-
-  // Track fullscreen state
-  useEffect(() => {
-    const handler = () => setIsFullscreen(!!document.fullscreenElement);
-    document.addEventListener("fullscreenchange", handler);
-    return () => document.removeEventListener("fullscreenchange", handler);
-  }, []);
 
   // Auto-focus go-to input
   useEffect(() => {
@@ -62,14 +52,6 @@ export default function Header() {
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [goToOpen]);
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => { });
-    } else {
-      document.exitFullscreen().catch(() => { });
-    }
-  };
 
   const themeLabel =
     theme === "dark"
@@ -157,22 +139,11 @@ export default function Header() {
   const goToMax =
     displayMode === "page" ? 604 : displayMode === "juz" ? 30 : 114;
 
-  /* ── Display modes — all modes available for both Hafs and Warsh ── */
   const allDisplayModes = [
     { id: "surah", icon: "fa-align-justify", labelKey: "settings.surahMode" },
     { id: "page", icon: "fa-file-lines", labelKey: "settings.pageMode" },
     { id: "juz", icon: "fa-book-open", labelKey: "settings.juzMode" },
   ];
-
-  const currentLocationLabel =
-    displayMode === "page"
-      ? `${t("quran.page", lang)} ${lang === "ar" ? toAr(currentPage) : currentPage}`
-      : displayMode === "juz"
-        ? `${t("sidebar.juz", lang)} ${lang === "ar" ? toAr(currentJuz) : currentJuz}`
-        : `${t("quran.surah", lang)} ${lang === "ar" ? toAr(currentSurah) : currentSurah}`;
-
-  const currentLocationTotal =
-    displayMode === "page" ? "604" : displayMode === "juz" ? "30" : "114";
 
   const displayModeMeta =
     displayMode === "page"
@@ -181,41 +152,6 @@ export default function Header() {
         ? { icon: "fa-book-open", label: t("settings.juzMode", lang) }
         : { icon: "fa-align-justify", label: t("settings.surahMode", lang) };
 
-  const languageMeta = {
-    fr: { label: lang === "ar" ? "الفرنسية" : lang === "fr" ? "Français" : "French", short: "FR" },
-    en: { label: lang === "ar" ? "الإنجليزية" : lang === "fr" ? "Anglais" : "English", short: "EN" },
-    es: { label: lang === "ar" ? "الإسبانية" : lang === "fr" ? "Espagnol" : "Spanish", short: "ES" },
-    de: { label: lang === "ar" ? "الألمانية" : lang === "fr" ? "Allemand" : "German", short: "DE" },
-    tr: { label: lang === "ar" ? "التركية" : lang === "fr" ? "Turc" : "Turkish", short: "TR" },
-    ur: { label: lang === "ar" ? "الأردية" : lang === "fr" ? "Ourdou" : "Urdu", short: "UR" },
-  };
-  const verseTranslationMeta = languageMeta[translationLang] || languageMeta.fr;
-  const wordTranslationMeta = languageMeta[wordTranslationLang] || languageMeta.fr;
-  const hasHeaderTranslation = showTranslation || (showWordByWord && showWordTranslation);
-  const headerTranslationTitle = showTranslation
-    ? showWordByWord && showWordTranslation && wordTranslationLang !== translationLang
-      ? (lang === "fr"
-        ? `Versets ${verseTranslationMeta.label} · Mot-à-mot ${wordTranslationMeta.label}`
-        : lang === "ar"
-          ? `الآيات ${verseTranslationMeta.label} · كلمة بكلمة ${wordTranslationMeta.label}`
-          : `Verses ${verseTranslationMeta.label} · Word by word ${wordTranslationMeta.label}`)
-      : (lang === "fr"
-        ? `Traduction ${verseTranslationMeta.label}`
-        : lang === "ar"
-          ? `الترجمة ${verseTranslationMeta.label}`
-          : `Translation ${verseTranslationMeta.label}`)
-    : (lang === "fr"
-      ? `Mot-à-mot ${wordTranslationMeta.label}`
-      : lang === "ar"
-        ? `كلمة بكلمة ${wordTranslationMeta.label}`
-        : `Word by word ${wordTranslationMeta.label}`);
-  const headerTranslationCompact = showTranslation
-    ? showWordByWord && showWordTranslation && wordTranslationLang !== translationLang
-      ? `${verseTranslationMeta.short} · W ${wordTranslationMeta.short}`
-      : verseTranslationMeta.short
-    : `W ${wordTranslationMeta.short}`;
-
-  /* ── Nav helpers ── */
   const isRtl = lang === "ar";
   const currentValue =
     displayMode === "page"
@@ -223,8 +159,6 @@ export default function Header() {
       : displayMode === "juz"
         ? currentJuz
         : currentSurah;
-  const currentTotal =
-    displayMode === "page" ? 604 : displayMode === "juz" ? 30 : 114;
 
   const canGoPrev =
     displayMode === "page"
@@ -242,7 +176,8 @@ export default function Header() {
   const handlePrev = () => {
     set({ showHome: false, showDuas: false });
     if (displayMode === "page") {
-      if (currentPage > 1) set({ currentPage: currentPage - 1, showHome: false, showDuas: false });
+      if (currentPage > 1)
+        set({ currentPage: currentPage - 1, showHome: false, showDuas: false });
     } else if (displayMode === "juz") {
       if (currentJuz > 1)
         dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz - 1 } });
@@ -254,10 +189,12 @@ export default function Header() {
         });
     }
   };
+
   const handleNext = () => {
     set({ showHome: false, showDuas: false });
     if (displayMode === "page") {
-      if (currentPage < 604) set({ currentPage: currentPage + 1, showHome: false, showDuas: false });
+      if (currentPage < 604)
+        set({ currentPage: currentPage + 1, showHome: false, showDuas: false });
     } else if (displayMode === "juz") {
       if (currentJuz < 30)
         dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz + 1 } });
@@ -270,14 +207,11 @@ export default function Header() {
     }
   };
 
-  /* ── Surah info for center display ── */
   const surahMeta = getSurah(currentSurah);
   const arabicName = surahMeta?.ar || "";
   const translatedName = surahName(currentSurah, lang);
 
-  /* ── Juz info — overrides surah display when in juz mode ── */
   const juzMeta = JUZ_DATA?.[currentJuz - 1];
-  // Title shown in center pill
   const centerTitle =
     displayMode === "juz"
       ? lang === "ar"
@@ -286,12 +220,8 @@ export default function Header() {
       : lang === "ar"
         ? arabicName
         : translatedName;
-  // Arabic sub‑name below the title
-  const centerArabicSub =
-    displayMode === "juz" ? (juzMeta?.name || "") : arabicName;
 
   const ayahWord = lang === "fr" ? "versets" : lang === "ar" ? "آية" : "ayahs";
-  /* Loaded ayah count — same reference across all three modes */
   const ayahCount = loadedAyahCount
     ? `${lang === "ar" ? toAr(loadedAyahCount) : loadedAyahCount} ${ayahWord}`
     : surahMeta
@@ -299,11 +229,19 @@ export default function Header() {
       : "";
 
   return (
-    <header className="app-header-shell flex flex-col z-[100] relative select-none w-full transition-colors duration-300">
-      <div className="app-header-banner text-white text-[0.65rem] sm:text-[0.75rem] py-[5px] sm:py-1.5 flex flex-wrap items-center justify-center gap-1 sm:gap-2 font-medium w-full px-4 text-center">
-        <span>{lang === 'fr' ? "C'est le mois du Coran. Aidez-nous à diffuser sa lumière." : lang === 'ar' ? "إنه شهر القرآن. ساهم في نشر نوره." : "It's the month of the Quran. Help us spread its light."}</span>
-        <button className="app-header-banner__cta bg-white/20 hover:bg-white/30 text-white rounded-full px-2 sm:px-2.5 py-0.5 transition-colors font-bold flex items-center gap-1 ml-1 cursor-pointer">
-          <i className="fas fa-sparkles text-[0.6rem]" /> {lang === 'fr' ? "Faire un don" : lang === 'ar' ? "تبرع" : "Donate"}
+    <header className="flex flex-col z-[100] relative select-none w-full border-b border-[var(--border)] bg-[#FDFCFB] dark:bg-[var(--bg-primary)] transition-colors duration-300">
+      {/* Top Banner */}
+      <div className="bg-[#0E8A5E] text-white text-[0.65rem] sm:text-[0.75rem] py-[5px] sm:py-1.5 flex flex-wrap items-center justify-center gap-1 sm:gap-2 font-medium w-full px-4 text-center">
+        <span>
+          {lang === "fr"
+            ? "C'est le mois du Coran. Aidez-nous à diffuser sa lumière."
+            : lang === "ar"
+              ? "إنه شهر القرآن. ساهم في نشر نوره."
+              : "It's the month of the Quran. Help us spread its light."}
+        </span>
+        <button className="bg-white/20 hover:bg-white/30 text-white rounded-full px-2 sm:px-2.5 py-0.5 transition-colors font-bold flex items-center gap-1 ml-1 cursor-pointer">
+          <i className="fas fa-sparkles text-[0.6rem]" />{" "}
+          {lang === "fr" ? "Faire un don" : lang === "ar" ? "تبرع" : "Donate"}
         </button>
       </div>
 
@@ -313,89 +251,138 @@ export default function Header() {
             className="app-header-brand flex items-center gap-3 group outline-none cursor-pointer min-w-0"
             onClick={() => set({ showHome: true, showDuas: false })}
           >
-            <PlatformLogo className="header-brand-mark" imgClassName="header-brand-mark__img" decorative />
-            <span className="app-header-brand__name font-bold tracking-tight text-[1.4rem] sm:text-[1.6rem] transition-colors truncate" style={{ fontFamily: "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif" }}>
+            <PlatformLogo
+              className="header-brand-mark"
+              imgClassName="header-brand-mark__img"
+              decorative
+            />
+            <span
+              className="font-bold text-[#111827] dark:text-white tracking-tight text-[1.4rem] sm:text-[1.6rem] transition-colors"
+              style={{
+                fontFamily:
+                  "ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif",
+              }}
+            >
               Mushaf.plus
             </span>
           </button>
         </div>
 
+        {/* CENTER: Simple Navigation (No Border) */}
         {!showHome && (
-          <div className="hidden md:flex flex-1 items-center justify-center mx-2 min-w-0 pointer-events-auto">
-            <div className="app-header-center flex items-center p-1.5 rounded-full transition-all min-w-0 max-w-[680px] w-full justify-between gap-1">
-              <button
-                onClick={isRtl ? handleNext : handlePrev}
-                disabled={isRtl ? !canGoNext : !canGoPrev}
-                className="app-header-nav-btn flex items-center justify-center w-9 h-9 rounded-full disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer transition-colors"
-              >
-                <i className="fas fa-chevron-left text-[0.65rem]" />
-              </button>
+          <div className="hidden md:flex flex-1 items-center justify-center mx-4 min-w-0 gap-3">
+            {/* Prev Button */}
+            <button
+              onClick={isRtl ? handleNext : handlePrev}
+              disabled={isRtl ? !canGoNext : !canGoPrev}
+              className="flex items-center justify-center w-9 h-9 rounded-xl hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[#0E8A5E] disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer transition-all active:scale-95"
+              aria-label={
+                isRtl ? t("quran.nextSurah", lang) : t("quran.prevSurah", lang)
+              }
+            >
+              <i className="fas fa-chevron-left text-[0.7rem]" />
+            </button>
 
-              <Popover open={goToOpen} onOpenChange={setGoToOpen}>
-                <PopoverTrigger asChild>
-                  <button className="app-header-location flex flex-col items-center justify-center px-4 py-1.5 rounded-full transition-all min-w-[160px] group border border-transparent cursor-pointer flex-1 mx-1">
-                    <span className="app-header-location__title text-[0.92rem] font-bold truncate transition-colors" style={{ fontFamily: "var(--font-ui)" }}>{centerTitle}</span>
-                    <span className="app-header-location__meta text-[0.6rem] flex gap-1 transition-opacity">
-                      {displayMode === "surah" ? (
-                        <><span>{lang === "ar" ? toAr(currentSurah) : `#${currentSurah}`}</span><span className="opacity-30">·</span><span>{ayahCount}</span></>
-                      ) : displayMode === "page" ? (
-                        <><span>{lang === "ar" ? toAr(currentPage) : currentPage}</span><span className="opacity-30">/</span><span>{lang === "ar" ? toAr(604) : 604}</span></>
-                      ) : (
-                        <><span>{lang === "ar" ? toAr(currentJuz) : currentJuz}</span><span className="opacity-30">/</span><span>{lang === "ar" ? toAr(30) : 30}</span></>
-                      )}
-                    </span>
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent align="center" sideOffset={12} className="w-[260px] p-0 border border-[var(--border)]/60 shadow-xl rounded-3xl bg-[var(--bg-primary)] z-[110]">
-                  <form onSubmit={handleGoTo} className="flex flex-col gap-4 p-4">
-                    <label className="text-[0.65rem] font-bold uppercase tracking-wider text-[var(--text-muted)] ml-1">{goToLabel}</label>
-                    <div className="flex gap-2">
-                      <Input ref={inputRef} type="number" min={1} max={goToMax} value={goToValue} onChange={(e) => setGoToValue(e.target.value)} placeholder="#" className="flex-1 text-center h-10 rounded-xl border-[var(--border)] focus:ring-[#0E8A5E]/30" />
-                      <Button type="submit" className="px-5 h-10 rounded-xl bg-[#0E8A5E] hover:bg-[#0c7c54] text-white transition-colors cursor-pointer"><i className="fas fa-arrow-right" /></Button>
-                    </div>
-                  </form>
-                </PopoverContent>
-              </Popover>
-
-              <button
-                onClick={isRtl ? handlePrev : handleNext}
-                disabled={isRtl ? !canGoPrev : !canGoNext}
-                className="app-header-nav-btn flex items-center justify-center w-9 h-9 rounded-full disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer transition-colors"
+            {/* Center Text (Clickable for Go-To) */}
+            <Popover open={goToOpen} onOpenChange={setGoToOpen}>
+              <PopoverTrigger asChild>
+                <button className="flex flex-col items-center justify-center min-w-[140px] group cursor-pointer">
+                  <span
+                    className="text-[1.05rem] font-bold text-[var(--text)] group-hover:text-[#0E8A5E] truncate transition-colors"
+                    style={{ fontFamily: "var(--font-ui)" }}
+                  >
+                    {centerTitle}
+                  </span>
+                  <span className="text-[0.65rem] text-[var(--text-muted)] opacity-70 group-hover:opacity-100 flex gap-1 transition-opacity">
+                    {displayMode === "surah" ? (
+                      <>
+                        <span>
+                          {lang === "ar"
+                            ? toAr(currentSurah)
+                            : `#${currentSurah}`}
+                        </span>
+                        <span className="opacity-30">·</span>
+                        <span>{ayahCount}</span>
+                      </>
+                    ) : displayMode === "page" ? (
+                      <>
+                        <span>
+                          {lang === "ar" ? toAr(currentPage) : currentPage}
+                        </span>
+                        <span className="opacity-30">/</span>
+                        <span>{lang === "ar" ? toAr(604) : 604}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>
+                          {lang === "ar" ? toAr(currentJuz) : currentJuz}
+                        </span>
+                        <span className="opacity-30">/</span>
+                        <span>{lang === "ar" ? toAr(30) : 30}</span>
+                      </>
+                    )}
+                  </span>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="center"
+                sideOffset={12}
+                className="w-[260px] p-0 border border-[var(--border)]/60 shadow-xl rounded-3xl bg-[var(--bg-primary)] z-[110]"
               >
-                <i className="fas fa-chevron-right text-[0.65rem]" />
-              </button>
-            </div>
+                <form onSubmit={handleGoTo} className="flex flex-col gap-4 p-4">
+                  <label className="text-[0.65rem] font-bold uppercase tracking-wider text-[var(--text-muted)] ml-1">
+                    {goToLabel}
+                  </label>
+                  <div className="flex gap-2">
+                    <Input
+                      ref={inputRef}
+                      type="number"
+                      min={1}
+                      max={goToMax}
+                      value={goToValue}
+                      onChange={(e) => setGoToValue(e.target.value)}
+                      placeholder="#"
+                      className="flex-1 text-center h-10 rounded-xl border-[var(--border)] focus:ring-[#0E8A5E]/30"
+                    />
+                    <Button
+                      type="submit"
+                      className="px-5 h-10 rounded-xl bg-[#0E8A5E] hover:bg-[#0c7c54] text-white transition-colors cursor-pointer"
+                    >
+                      <i className="fas fa-arrow-right" />
+                    </Button>
+                  </div>
+                </form>
+              </PopoverContent>
+            </Popover>
+
+            {/* Next Button */}
+            <button
+              onClick={isRtl ? handlePrev : handleNext}
+              disabled={isRtl ? !canGoPrev : !canGoNext}
+              className="flex items-center justify-center w-9 h-9 rounded-xl hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[#0E8A5E] disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer transition-all active:scale-95"
+              aria-label={
+                isRtl ? t("quran.prevSurah", lang) : t("quran.nextSurah", lang)
+              }
+            >
+              <i className="fas fa-chevron-right text-[0.7rem]" />
+            </button>
           </div>
         )}
 
-        <div className="app-header-actions flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
-          <div className="app-header-riwaya hidden md:flex items-center">
-            <button
-              className={cn("app-header-riwaya__btn", riwaya === "hafs" && "is-active")}
-              onClick={() => applyRiwaya("hafs")}
-              aria-pressed={riwaya === "hafs"}
-              title={lang === "fr" ? "Riwaya Hafs" : lang === "ar" ? "رواية حفص" : "Hafs riwaya"}
-            >
-              {lang === "ar" ? "حفص" : "Hafs"}
-            </button>
-            <button
-              className={cn("app-header-riwaya__btn", riwaya === "warsh" && "is-active")}
-              onClick={() => applyRiwaya("warsh")}
-              aria-pressed={riwaya === "warsh"}
-              title={lang === "fr" ? "Riwaya Warsh" : lang === "ar" ? "رواية ورش" : "Warsh riwaya"}
-            >
-              {lang === "ar" ? "ورش" : "Warsh"}
-            </button>
-          </div>
-
+        {/* RIGHT: Actions */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
+          {/* Duas Button */}
           <button
             className="app-header-chip hidden sm:flex items-center justify-center px-4 py-1.5 rounded-full text-[0.85rem] font-semibold font-[var(--font-ui)] transition-colors cursor-pointer"
             onClick={() => set({ showDuas: true, showHome: false })}
           >
-            <span>{lang === "ar" ? "أدعية" : lang === "fr" ? "Douas" : "Duas"}</span>
+            <span>
+              {lang === "ar" ? "أدعية" : lang === "fr" ? "Douas" : "Duas"}
+            </span>
           </button>
 
-          <div className="app-header-actions__group flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
+            {/* Settings */}
             <HeaderIconButton
               icon="fa-sliders"
               onClick={() => dispatch({ type: "TOGGLE_SETTINGS" })}
@@ -406,12 +393,12 @@ export default function Header() {
               onClick={() => dispatch({ type: "TOGGLE_SEARCH" })}
               title={t("nav.search", lang)}
             />
+            {/* Hamburger Menu */}
             <button
-              className="app-header-menu-btn flex items-center justify-center w-[36px] h-[36px] rounded-full transition-colors cursor-pointer outline-none"
+              className="flex items-center justify-center w-10 h-10 rounded-xl text-[#111827] dark:text-white hover:bg-[var(--bg-secondary)] transition-colors cursor-pointer"
               onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
-              title={t("nav.surahList", lang)}
             >
-              <i className={cn("text-[1.2rem] transition-transform", state.sidebarOpen ? "fas fa-times" : "fas fa-bars")} />
+              <i className="fas fa-bars text-[1.1rem]" />
             </button>
           </div>
         </div>
@@ -420,23 +407,21 @@ export default function Header() {
   );
 }
 
-/* ── Reusable icon button for the header ── */
-function HeaderIconButton({ icon, className, active = false, ...props }) {
+/* Icon Button Component */
+function HeaderIconButton({ icon, onClick, title, active = false }) {
   return (
     <button
       className={cn(
-        "header-icon-button",
-        "flex items-center justify-center relative flex-shrink-0",
-        "w-[36px] h-[36px] rounded-full",
-        "transition-colors duration-200 cursor-pointer outline-none",
+        "flex items-center justify-center w-10 h-10 rounded-xl transition-all cursor-pointer",
         active
-          ? "bg-[#111827]/10 dark:bg-white/15 text-[#111827] dark:text-white"
-          : "text-[#111827] dark:text-gray-200 hover:bg-[#111827]/5 dark:hover:bg-white/10 bg-transparent",
-        className,
+          ? "text-[#0E8A5E] bg-[#0E8A5E]/10"
+          : "text-[#111827] dark:text-white hover:bg-[var(--bg-secondary)]",
       )}
-      {...props}
+      onClick={onClick}
+      title={title}
+      aria-label={title}
     >
-      <i className={cn(`fas ${icon} text-[1rem]`)} aria-hidden="true" />
+      <i className={`fas ${icon} text-[0.95rem]`} />
     </button>
   );
 }

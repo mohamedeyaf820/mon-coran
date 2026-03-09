@@ -8,22 +8,34 @@
 @keyframes animate-in {
     from {
         opacity: var(--tw-enter-opacity, 1);
-        transform: translate3d(var(--tw-enter-translate-x, 0),
+        transform: translate3d(
+                var(--tw-enter-translate-x, 0),
                 var(--tw-enter-translate-y, 0),
-                0) scale3d(var(--tw-enter-scale, 1),
+                0
+            )
+            scale3d(
                 var(--tw-enter-scale, 1),
-                var(--tw-enter-scale, 1)) rotate(var(--tw-enter-rotate, 0));
+                var(--tw-enter-scale, 1),
+                var(--tw-enter-scale, 1)
+            )
+            rotate(var(--tw-enter-rotate, 0));
     }
 }
 
 @keyframes animate-out {
     to {
         opacity: var(--tw-exit-opacity, 1);
-        transform: translate3d(var(--tw-exit-translate-x, 0),
+        transform: translate3d(
+                var(--tw-exit-translate-x, 0),
                 var(--tw-exit-translate-y, 0),
-                0) scale3d(var(--tw-exit-scale, 1),
+                0
+            )
+            scale3d(
                 var(--tw-exit-scale, 1),
-                var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0));
+                var(--tw-exit-scale, 1),
+                var(--tw-exit-scale, 1)
+            )
+            rotate(var(--tw-exit-rotate, 0));
     }
 }
 
@@ -113,9 +125,13 @@
 /* Official font of the King Fahd Complex (Madinah Mushaf typeset) */
 @font-face {
     font-family: "KFGQPC Uthmanic Script HAFS";
-    src: url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_hafs-webfont.woff2") format("woff2"),
-        url("https://cdn.jsdelivr.net/gh/AymanSiddiqui/ME_Quran_Hafs_V4@main/KFGQPC_HAFS.woff2") format("woff2"),
-        url("https://cdn.jsdelivr.net/npm/kfgqpc-uthmanic-script-hafs-regular@1.0.0/arabic.otf") format("opentype");
+    src:
+        url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_hafs-webfont.woff2")
+            format("woff2"),
+        url("https://cdn.jsdelivr.net/gh/AymanSiddiqui/ME_Quran_Hafs_V4@main/KFGQPC_HAFS.woff2")
+            format("woff2"),
+        url("https://cdn.jsdelivr.net/npm/kfgqpc-uthmanic-script-hafs-regular@1.0.0/arabic.otf")
+            format("opentype");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -124,8 +140,11 @@
 /* ---------- ME Quran V2 — Digital Font (quranwbw.com) ---------- */
 @font-face {
     font-family: "ME Quran";
-    src: url("https://fonts.quranwbw.com/v2/me_quran_volt_newmet-webfont.woff2") format("woff2"),
-        url("https://cdn.jsdelivr.net/gh/AymanSiddiqui/ME_Quran_Hafs_V4@main/ME_Quran_volt_newmet.woff2") format("woff2");
+    src:
+        url("https://fonts.quranwbw.com/v2/me_quran_volt_newmet-webfont.woff2")
+            format("woff2"),
+        url("https://cdn.jsdelivr.net/gh/AymanSiddiqui/ME_Quran_Hafs_V4@main/ME_Quran_volt_newmet.woff2")
+            format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -134,8 +153,11 @@
 /* ---------- ME Quran Bold — Digital Bold Font (quranwbw.com) ---------- */
 @font-face {
     font-family: "ME Quran Bold";
-    src: url("https://fonts.quranwbw.com/v2/me_quran_volt_bold-webfont.woff2") format("woff2"),
-        url("https://fonts.quranwbw.com/v2/me_quran_volt_newmet-webfont.woff2") format("woff2");
+    src:
+        url("https://fonts.quranwbw.com/v2/me_quran_volt_bold-webfont.woff2")
+            format("woff2"),
+        url("https://fonts.quranwbw.com/v2/me_quran_volt_newmet-webfont.woff2")
+            format("woff2");
     font-weight: 700;
     font-style: normal;
     font-display: swap;
@@ -144,7 +166,8 @@
 /* Bold alias as weight-700 of ME Quran family */
 @font-face {
     font-family: "ME Quran";
-    src: url("https://fonts.quranwbw.com/v2/me_quran_volt_bold-webfont.woff2") format("woff2");
+    src: url("https://fonts.quranwbw.com/v2/me_quran_volt_bold-webfont.woff2")
+        format("woff2");
     font-weight: 700;
     font-style: normal;
     font-display: swap;
@@ -153,8 +176,11 @@
 /* ---------- Uthman Taha Digital Font (quranwbw.com) ---------- */
 @font-face {
     font-family: "Uthman Taha Hafs";
-    src: url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_hafs-webfont.woff2") format("woff2"),
-        url("https://cdn.jsdelivr.net/npm/kfgqpc-uthmanic-script-hafs-regular@1.0.0/arabic.otf") format("opentype");
+    src:
+        url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_hafs-webfont.woff2")
+            format("woff2"),
+        url("https://cdn.jsdelivr.net/npm/kfgqpc-uthmanic-script-hafs-regular@1.0.0/arabic.otf")
+            format("opentype");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -163,8 +189,11 @@
 /* ---------- KFGQPC Uthman Taha Naskh (alias) ---------- */
 @font-face {
     font-family: "KFGQPC Uthman Taha Naskh";
-    src: url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_hafs-webfont.woff2") format("woff2"),
-        url("https://cdn.jsdelivr.net/npm/kfgqpc-uthmanic-script-hafs-regular@1.0.0/arabic.otf") format("opentype");
+    src:
+        url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_hafs-webfont.woff2")
+            format("woff2"),
+        url("https://cdn.jsdelivr.net/npm/kfgqpc-uthmanic-script-hafs-regular@1.0.0/arabic.otf")
+            format("opentype");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -173,8 +202,11 @@
 /* ---------- Qalam Digital Font (Madinah & Hanafi Editions) ---------- */
 @font-face {
     font-family: "Qalam Madinah";
-    src: url("https://fonts.quranwbw.com/v2/qalam_digital_madinah-webfont.woff2") format("woff2"),
-        url("https://fonts.gstatic.com/s/scheherazadenew/v21/4UaZrFhTvxVnHDvUkUiHg8jprP4DCn19N15yez-QFA.woff2") format("woff2");
+    src:
+        url("https://fonts.quranwbw.com/v2/qalam_digital_madinah-webfont.woff2")
+            format("woff2"),
+        url("https://fonts.gstatic.com/s/scheherazadenew/v21/4UaZrFhTvxVnHDvUkUiHg8jprP4DCn19N15yez-QFA.woff2")
+            format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -182,8 +214,11 @@
 
 @font-face {
     font-family: "Qalam Hanafi";
-    src: url("https://fonts.quranwbw.com/v2/qalam_digital_hanafi-webfont.woff2") format("woff2"),
-        url("https://fonts.gstatic.com/s/scheherazadenew/v21/4UaZrFhTvxVnHDvUkUiHg8jprP4DCn19N15yez-QFD.woff2") format("woff2");
+    src:
+        url("https://fonts.quranwbw.com/v2/qalam_digital_hanafi-webfont.woff2")
+            format("woff2"),
+        url("https://fonts.gstatic.com/s/scheherazadenew/v21/4UaZrFhTvxVnHDvUkUiHg8jprP4DCn19N15yez-QFD.woff2")
+            format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -192,7 +227,8 @@
 /* ---------- QCF V4 Hafs Fonts (Word-level glyphs — Warsh/Hafs) ---------- */
 @font-face {
     font-family: "QCF4 Hafs P1";
-    src: url("https://cdn.jsdelivr.net/gh/AymanSiddiqui/ME_Quran_Hafs_V4@main/QCF4_Hafs_01.woff2") format("woff2");
+    src: url("https://cdn.jsdelivr.net/gh/AymanSiddiqui/ME_Quran_Hafs_V4@main/QCF4_Hafs_01.woff2")
+        format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -200,7 +236,8 @@
 
 @font-face {
     font-family: "QCF4 Hafs P2";
-    src: url("https://cdn.jsdelivr.net/gh/AymanSiddiqui/ME_Quran_Hafs_V4@main/QCF4_Hafs_02.woff2") format("woff2");
+    src: url("https://cdn.jsdelivr.net/gh/AymanSiddiqui/ME_Quran_Hafs_V4@main/QCF4_Hafs_02.woff2")
+        format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -209,7 +246,8 @@
 /* ---------- Amiri Quran (fallback) ---------- */
 @font-face {
     font-family: "Amiri Quran";
-    src: url("https://cdn.jsdelivr.net/npm/@fontsource/amiri@latest/files/amiri-arabic-400-normal.woff2") format("woff2");
+    src: url("https://cdn.jsdelivr.net/npm/@fontsource/amiri@latest/files/amiri-arabic-400-normal.woff2")
+        format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -218,7 +256,8 @@
 /* ---------- Scheherazade New (fallback) ---------- */
 @font-face {
     font-family: "Scheherazade New";
-    src: url("https://cdn.jsdelivr.net/npm/@fontsource/scheherazade-new@latest/files/scheherazade-new-arabic-400-normal.woff2") format("woff2");
+    src: url("https://cdn.jsdelivr.net/npm/@fontsource/scheherazade-new@latest/files/scheherazade-new-arabic-400-normal.woff2")
+        format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -227,7 +266,8 @@
 /* ---------- Noto Naskh Arabic ---------- */
 @font-face {
     font-family: "Noto Naskh Arabic";
-    src: url("https://fonts.gstatic.com/s/notonaskharabic/v33/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBePeKNaxcsss0Y7nGeJIVnJ9gFLg.woff2") format("woff2");
+    src: url("https://fonts.gstatic.com/s/notonaskharabic/v33/RrQ5bpV-9Dd1b1OAGA6M9PkyDuVBePeKNaxcsss0Y7nGeJIVnJ9gFLg.woff2")
+        format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -236,7 +276,8 @@
 /* ---------- Cairo (UI font) ---------- */
 @font-face {
     font-family: "Cairo";
-    src: url("https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hL5-V2NIA.woff2") format("woff2");
+    src: url("https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hL5-V2NIA.woff2")
+        format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -245,7 +286,8 @@
 /* ---------- Manrope (homepage UI display) ---------- */
 @font-face {
     font-family: "Manrope";
-    src: url("https://cdn.jsdelivr.net/npm/@fontsource/manrope@latest/files/manrope-latin-400-normal.woff2") format("woff2");
+    src: url("https://cdn.jsdelivr.net/npm/@fontsource/manrope@latest/files/manrope-latin-400-normal.woff2")
+        format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -253,7 +295,8 @@
 
 @font-face {
     font-family: "Manrope";
-    src: url("https://cdn.jsdelivr.net/npm/@fontsource/manrope@latest/files/manrope-latin-700-normal.woff2") format("woff2");
+    src: url("https://cdn.jsdelivr.net/npm/@fontsource/manrope@latest/files/manrope-latin-700-normal.woff2")
+        format("woff2");
     font-weight: 700;
     font-style: normal;
     font-display: swap;
@@ -305,14 +348,26 @@
     --color-info: #1d4ed8;
 
     /* ── Shadows — Modern soft design ── */
-    --shadow-xs: 0 1px 2px rgba(28, 25, 23, 0.04), 0 0 0 1px rgba(28, 25, 23, 0.04);
-    --shadow-sm: 0 2px 4px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04), 0 0 0 1px rgba(28, 25, 23, 0.04);
-    --shadow-md: 0 4px 12px rgba(28, 25, 23, 0.08), 0 2px 4px rgba(28, 25, 23, 0.04), 0 0 0 1px rgba(28, 25, 23, 0.05);
-    --shadow-lg: 0 8px 24px rgba(28, 25, 23, 0.1), 0 4px 8px rgba(28, 25, 23, 0.06), 0 0 0 1px rgba(28, 25, 23, 0.06);
-    --shadow-xl: 0 16px 48px rgba(28, 25, 23, 0.12), 0 8px 16px rgba(28, 25, 23, 0.08), 0 0 0 1px rgba(28, 25, 23, 0.07);
-    --shadow-gold: 0 4px 12px rgba(184, 134, 11, 0.15), 0 0 0 1px rgba(184, 134, 11, 0.2);
-    --shadow-emerald: 0 4px 12px rgba(27, 94, 59, 0.15), 0 0 0 1px rgba(27, 94, 59, 0.2);
-    --shadow-glow: 0 0 24px rgba(27, 94, 59, 0.2), 0 0 0 1px rgba(27, 94, 59, 0.1);
+    --shadow-xs:
+        0 1px 2px rgba(28, 25, 23, 0.04), 0 0 0 1px rgba(28, 25, 23, 0.04);
+    --shadow-sm:
+        0 2px 4px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04),
+        0 0 0 1px rgba(28, 25, 23, 0.04);
+    --shadow-md:
+        0 4px 12px rgba(28, 25, 23, 0.08), 0 2px 4px rgba(28, 25, 23, 0.04),
+        0 0 0 1px rgba(28, 25, 23, 0.05);
+    --shadow-lg:
+        0 8px 24px rgba(28, 25, 23, 0.1), 0 4px 8px rgba(28, 25, 23, 0.06),
+        0 0 0 1px rgba(28, 25, 23, 0.06);
+    --shadow-xl:
+        0 16px 48px rgba(28, 25, 23, 0.12), 0 8px 16px rgba(28, 25, 23, 0.08),
+        0 0 0 1px rgba(28, 25, 23, 0.07);
+    --shadow-gold:
+        0 4px 12px rgba(184, 134, 11, 0.15), 0 0 0 1px rgba(184, 134, 11, 0.2);
+    --shadow-emerald:
+        0 4px 12px rgba(27, 94, 59, 0.15), 0 0 0 1px rgba(27, 94, 59, 0.2);
+    --shadow-glow:
+        0 0 24px rgba(27, 94, 59, 0.2), 0 0 0 1px rgba(27, 94, 59, 0.1);
 
     /* ── Header & Navigation ── */
     --header-bg: #ffffff;
@@ -321,10 +376,12 @@
 
     --sidebar-bg: var(--parchment-1);
     --player-bg: linear-gradient(160deg, #0e3d26 0%, #1b5e3b 100%);
-    --player-glass: linear-gradient(120deg,
-            #0f2d21 0%,
-            #163b2c 50%,
-            #0d261d 100%);
+    --player-glass: linear-gradient(
+        120deg,
+        #0f2d21 0%,
+        #163b2c 50%,
+        #0d261d 100%
+    );
 
     /* ── Quran text ── */
     --text-quran: #1c1917;
@@ -335,10 +392,12 @@
     --bismillah-color: var(--emerald);
 
     /* ── Surah header ── */
-    --surah-header-bg: linear-gradient(135deg,
-            #0e3d26 0%,
-            #1b5e3b 60%,
-            #1a6040 100%);
+    --surah-header-bg: linear-gradient(
+        135deg,
+        #0e3d26 0%,
+        #1b5e3b 60%,
+        #1a6040 100%
+    );
 
     /* ── Couleurs Tajweed — Palette exacte quranwbw.com ──
      * Vert    #169200  → Ghunna / Idgham bighunna
@@ -347,47 +406,36 @@
      * Orange  #dd6b20  → Qalqala
      * Violet  #BD97CF  → Madd (toutes catégories)
      */
-    /* ── Couleurs Tajweed exactes Quran.com ── */
-    --tajwid-ghunna: #58B135;
-    /* Ghunna — vert moyen */
-    --tajwid-idgham: #169200;
-    /* Idgham — vert foncé */
-    --tajwid-ikhfa: #1EC897;
-    /* Ikhfa — vert-teal */
-    --tajwid-iqlab: #26BFFD;
-    /* Iqlab — bleu ciel */
-    --tajwid-qalqala: #DD6B20;
-    /* Qalqala — orange */
-    --tajwid-madd: #537FFF;
-    /* Madd lazim — bleu */
-    --tajwid-madd-normal: #537FFF;
-    /* Madd tabii — bleu */
-    --tajwid-madd-separated: #4050FF;
-    /* Madd munfasil — bleu foncé */
-    --tajwid-madd-connected: #337FFF;
-    /* Madd muttasil — bleu moyen */
-    --tajwid-madd-necessary: #000EBC;
-    /* Madd lazim — bleu marine */
-    --tajwid-lam-shamsiyya: #AAAAAA;
-    /* Lam shamsiyya — gris */
-    --tajwid-tafkhim: #C9A33D;
-    /* Tafkhim — ambre */
-    --tajwid-silent: #AAAAAA;
-    /* Muet / Hamzat wasl — gris */
-    --tajwid-naql: #DD6B20;
-    /* Naql Warsh — orange */
-    --tajwid-tashil: #1EC897;
-    /* Tashil Warsh — teal */
-    --tajwid-ibdal: #DD6B20;
-    /* Ibdal Warsh — orange */
-    --tajwid-madd-badal: #537FFF;
-    /* Madd badal — bleu */
-    --tajwid-sila-kubra: #26BFFD;
-    /* Sila kubra — bleu ciel */
-    --tajwid-tarqiq-ra: #1EC897;
-    /* Tarqiq ra — teal */
-    --tajwid-idgham-warsh: #58B135;
-    /* Idgham Warsh — vert moyen */
+    /* ── Tajweed colors — exact quran.com palette (from legend screenshot) ─
+     * Silent letter          #aaaaaa  grey
+     * Normal madd (2)        #d580c8  pink-purple / orchid
+     * Separated madd (2/4/6) #f0952a  orange
+     * Connected madd (4/5)   #e8409a  hot pink
+     * Necessary madd (6)     #d42020  red
+     * Ghunna / Ikhfa         #22bb44  green
+     * Qalqala (echo)         #00c8d4  cyan-teal
+     * Tafkhim (heavy)        #4060d8  blue / indigo
+     * ────────────────────────────────────────────────────────────── */
+    --tajwid-silent: #aaaaaa; /* Silent / hamzat wasl        */
+    --tajwid-lam-shamsiyya: #aaaaaa; /* Lam shamsiyya               */
+    --tajwid-madd-normal: #d580c8; /* Normal madd (2)             */
+    --tajwid-madd: #d580c8; /* Default madd → same pink    */
+    --tajwid-madd-separated: #f0952a; /* Separated madd (2/4/6)      */
+    --tajwid-madd-connected: #e8409a; /* Connected madd (4/5)        */
+    --tajwid-madd-necessary: #d42020; /* Necessary madd (6)          */
+    --tajwid-madd-badal: #d580c8; /* Madd badal (Warsh) → pink   */
+    --tajwid-ghunna: #22bb44; /* Ghunna                      */
+    --tajwid-idgham: #22bb44; /* Idgham bighunna → green     */
+    --tajwid-ikhfa: #22bb44; /* Ikhfa → green               */
+    --tajwid-iqlab: #22bb44; /* Iqlab → green family        */
+    --tajwid-qalqala: #00c8d4; /* Qalqala (echo) — cyan-teal  */
+    --tajwid-tafkhim: #4060d8; /* Tafkhim (heavy) — blue      */
+    --tajwid-naql: #f0952a; /* Naql Warsh → orange         */
+    --tajwid-tashil: #22bb44; /* Tashil Warsh → green        */
+    --tajwid-ibdal: #f0952a; /* Ibdal Warsh → orange        */
+    --tajwid-sila-kubra: #d580c8; /* Sila kubra → pink           */
+    --tajwid-tarqiq-ra: #22bb44; /* Tarqiq ra → green           */
+    --tajwid-idgham-warsh: #22bb44; /* Idgham Warsh → green        */
 
     /* ── Scrollbar ── */
     --scrollbar-thumb: rgba(27, 94, 59, 0.25);
@@ -398,13 +446,11 @@
        suivi de ME Quran (police digitale quranwbw), puis Scheherazade New (Google Fonts).
        Ce stack garantit le rendu correct des voyelles et diacritiques arabes. */
     --font-quran:
-        "KFGQPC Uthmanic Script HAFS", "ME Quran",
-        "Scheherazade New", "Noto Naskh Arabic",
-        "Amiri Quran", "Amiri", serif;
+        "KFGQPC Uthmanic Script HAFS", "ME Quran", "Scheherazade New",
+        "Noto Naskh Arabic", "Amiri Quran", "Amiri", serif;
     --font-quran-tajweed:
-        "KFGQPC Uthmanic Script HAFS", "ME Quran",
-        "Scheherazade New", "Noto Naskh Arabic",
-        "Amiri Quran", serif;
+        "KFGQPC Uthmanic Script HAFS", "ME Quran", "Scheherazade New",
+        "Noto Naskh Arabic", "Amiri Quran", serif;
     --font-ui:
         "Cairo", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
         sans-serif;
@@ -412,8 +458,7 @@
         "Manrope", "Cairo", "Inter", -apple-system, BlinkMacSystemFont,
         "Segoe UI", sans-serif;
     --font-home-ar:
-        "Scheherazade New", "Amiri Quran", "Amiri", "Noto Naskh Arabic",
-        serif;
+        "Scheherazade New", "Amiri Quran", "Amiri", "Noto Naskh Arabic", serif;
     --font-serif: "Amiri", "Georgia", serif;
     --font-mono: "JetBrains Mono", "Fira Mono", "Menlo", monospace;
     --type-ui-title: clamp(1rem, 1.15vw, 1.18rem);
@@ -622,17 +667,21 @@
     --shadow-emerald: 0 4px 16px rgba(42, 158, 94, 0.2);
 
     --header-bg: linear-gradient(160deg, #090e09 0%, #0e1f12 55%, #0a1a0e 100%);
-    --header-glass: linear-gradient(135deg,
-            rgba(9, 14, 9, 0.96) 0%,
-            rgba(14, 31, 18, 0.94) 50%,
-            rgba(10, 26, 14, 0.96) 100%);
+    --header-glass: linear-gradient(
+        135deg,
+        rgba(9, 14, 9, 0.96) 0%,
+        rgba(14, 31, 18, 0.94) 50%,
+        rgba(10, 26, 14, 0.96) 100%
+    );
     --header-border: rgba(200, 152, 14, 0.3);
     --sidebar-bg: var(--parchment-2);
     --player-bg: linear-gradient(160deg, #090e09 0%, #0e1f12 100%);
-    --player-glass: linear-gradient(120deg,
-            #090e09 0%,
-            #0e1f12 50%,
-            #060d09 100%);
+    --player-glass: linear-gradient(
+        120deg,
+        #090e09 0%,
+        #0e1f12 50%,
+        #060d09 100%
+    );
 
     --text-quran: #ede8db;
     --mushaf-bg: #1a1710;
@@ -640,10 +689,12 @@
     --ayah-hover: rgba(42, 158, 94, 0.07);
     --ayah-playing-bg: rgba(200, 152, 14, 0.09);
     --bismillah-color: var(--gold);
-    --surah-header-bg: linear-gradient(135deg,
-            #090e09 0%,
-            #0e2016 60%,
-            #0a1a0e 100%);
+    --surah-header-bg: linear-gradient(
+        135deg,
+        #090e09 0%,
+        #0e2016 60%,
+        #0a1a0e 100%
+    );
 
     --scrollbar-thumb: rgba(42, 158, 94, 0.3);
 
@@ -705,58 +756,27 @@
     --mushaf-frame-outer: rgba(200, 152, 14, 0.12);
     --mushaf-frame-inner: rgba(200, 152, 14, 0.06);
 
-    --tajwid-ghunna: #28d46a;
-    --tajwid-idgham: #b070e8;
-    --tajwid-ikhfa: #18d4be;
-    --tajwid-iqlab: #28c460;
-    --tajwid-qalqala: #4a90f0;
-    --tajwid-madd: #f06060;
-    --tajwid-madd-normal: #e84898;
-    --tajwid-madd-separated: #f08840;
-    --tajwid-madd-connected: #e048b4;
-    --tajwid-madd-necessary: #e83030;
-    --tajwid-lam-shamsiyya: #aaaaaa;
-    --tajwid-tafkhim: #4a8ce0;
-    --tajwid-silent: #aaaaaa;
-    --tajwid-naql: #f08850;
-    --tajwid-tashil: #9a78f8;
-    --tajwid-ibdal: #f06840;
-    --tajwid-madd-badal: #f05888;
-    --tajwid-sila-kubra: #48aaf0;
-    --tajwid-tarqiq-ra: #28ccd8;
-    --tajwid-idgham-warsh: #c068f8;
-
-    /* Tajweed dark mode — versons claires de la palette Quran.com */
-    --tajwid-ghunna: #7DD858;
-    /* vert vif */
-    --tajwid-idgham: #2EE800;
-    /* vert électrique */
-    --tajwid-ikhfa: #1EE8C0;
-    /* teal vif */
-    --tajwid-iqlab: #45D4FF;
-    /* bleu ciel vif */
-    --tajwid-qalqala: #FF9038;
-    /* orange vif */
-    --tajwid-madd: #7CA0FF;
-    /* bleu clair */
-    --tajwid-madd-normal: #7CA0FF;
-    /* bleu clair */
-    --tajwid-madd-separated: #8090FF;
-    /* bleu lavande */
-    --tajwid-madd-connected: #6880FF;
-    /* bleu indigo */
-    --tajwid-madd-necessary: #5060FF;
-    /* bleu profond */
-    --tajwid-lam-shamsiyya: #C0C0C0;
-    --tajwid-tafkhim: #E8C050;
-    --tajwid-silent: #C0C0C0;
-    --tajwid-naql: #FF9038;
-    --tajwid-tashil: #1EE8C0;
-    --tajwid-ibdal: #FF9038;
-    --tajwid-madd-badal: #7CA0FF;
-    --tajwid-sila-kubra: #45D4FF;
-    --tajwid-tarqiq-ra: #1EE8C0;
-    --tajwid-idgham-warsh: #7DD858;
+    /* Tajweed dark mode — same hues, brightened for dark backgrounds */
+    --tajwid-silent: #c0c0c0; /* Silent — light grey                 */
+    --tajwid-lam-shamsiyya: #c0c0c0; /* Lam shamsiyya — light grey          */
+    --tajwid-madd-normal: #e8a0de; /* Normal madd (2) — bright orchid     */
+    --tajwid-madd: #e8a0de; /* Default madd → same                 */
+    --tajwid-madd-separated: #ffb050; /* Separated madd (2/4/6) — bright orange */
+    --tajwid-madd-connected: #ff60b8; /* Connected madd (4/5) — bright pink  */
+    --tajwid-madd-necessary: #ff4444; /* Necessary madd (6) — vivid red      */
+    --tajwid-madd-badal: #e8a0de; /* Madd badal → bright orchid          */
+    --tajwid-ghunna: #44dd66; /* Ghunna — bright green               */
+    --tajwid-idgham: #44dd66; /* Idgham — bright green               */
+    --tajwid-ikhfa: #44dd66; /* Ikhfa — bright green                */
+    --tajwid-iqlab: #44dd66; /* Iqlab — bright green                */
+    --tajwid-qalqala: #22e8f8; /* Qalqala — bright cyan               */
+    --tajwid-tafkhim: #7090ff; /* Tafkhim — bright blue               */
+    --tajwid-naql: #ffb050; /* Naql Warsh → bright orange          */
+    --tajwid-tashil: #44dd66; /* Tashil Warsh → green                */
+    --tajwid-ibdal: #ffb050; /* Ibdal Warsh → bright orange         */
+    --tajwid-sila-kubra: #e8a0de; /* Sila kubra → bright orchid          */
+    --tajwid-tarqiq-ra: #44dd66; /* Tarqiq ra → green                   */
+    --tajwid-idgham-warsh: #44dd66; /* Idgham Warsh → green                */
 }
 
 /* ============================================
@@ -807,14 +827,18 @@
     --header-border: #e5e7eb;
     --sidebar-bg: var(--parchment-1);
     --player-bg: linear-gradient(160deg, #3a1c06 0%, #6b3a14 100%);
-    --player-glass: linear-gradient(120deg,
-            #3a1c06 0%,
-            #5e3210 50%,
-            #361806 100%);
-    --surah-header-bg: linear-gradient(135deg,
-            #3a1c06 0%,
-            #6b3a14 60%,
-            #4e2a0c 100%);
+    --player-glass: linear-gradient(
+        120deg,
+        #3a1c06 0%,
+        #5e3210 50%,
+        #361806 100%
+    );
+    --surah-header-bg: linear-gradient(
+        135deg,
+        #3a1c06 0%,
+        #6b3a14 60%,
+        #4e2a0c 100%
+    );
     --bismillah-color: var(--emerald);
     --text-quran: #160c00;
     --mushaf-bg: #f5e9cc;
@@ -930,21 +954,27 @@
     --shadow-emerald: 0 4px 16px rgba(0, 95, 146, 0.2);
 
     --header-bg: linear-gradient(160deg, #002e50 0%, #004e7a 60%, #003868 100%);
-    --header-glass: linear-gradient(160deg,
-            #002e50 0%,
-            #004e7a 60%,
-            #003868 100%);
+    --header-glass: linear-gradient(
+        160deg,
+        #002e50 0%,
+        #004e7a 60%,
+        #003868 100%
+    );
     --header-border: rgba(176, 120, 0, 0.28);
     --sidebar-bg: var(--parchment-1);
     --player-bg: linear-gradient(160deg, #002e50 0%, #004e7a 100%);
-    --player-glass: linear-gradient(120deg,
-            #002840 0%,
-            #004468 50%,
-            #002038 100%);
-    --surah-header-bg: linear-gradient(135deg,
-            #002e50 0%,
-            #005480 60%,
-            #003868 100%);
+    --player-glass: linear-gradient(
+        120deg,
+        #002840 0%,
+        #004468 50%,
+        #002038 100%
+    );
+    --surah-header-bg: linear-gradient(
+        135deg,
+        #002e50 0%,
+        #005480 60%,
+        #003868 100%
+    );
     --bismillah-color: var(--emerald);
     --text-quran: #021828;
     --mushaf-bg: #e8f4fc;
@@ -1036,21 +1066,27 @@
     --shadow-emerald: 0 4px 16px rgba(26, 96, 40, 0.2);
 
     --header-bg: linear-gradient(160deg, #091808 0%, #1a4a20 60%, #0e2c12 100%);
-    --header-glass: linear-gradient(160deg,
-            #091808 0%,
-            #1a4a20 60%,
-            #0e2c12 100%);
+    --header-glass: linear-gradient(
+        160deg,
+        #091808 0%,
+        #1a4a20 60%,
+        #0e2c12 100%
+    );
     --header-border: rgba(160, 114, 0, 0.28);
     --sidebar-bg: var(--parchment-1);
     --player-bg: linear-gradient(160deg, #091808 0%, #1a4a20 100%);
-    --player-glass: linear-gradient(120deg,
-            #091808 0%,
-            #163c1c 50%,
-            #071408 100%);
-    --surah-header-bg: linear-gradient(135deg,
-            #091808 0%,
-            #1c5222 60%,
-            #0e2c12 100%);
+    --player-glass: linear-gradient(
+        120deg,
+        #091808 0%,
+        #163c1c 50%,
+        #071408 100%
+    );
+    --surah-header-bg: linear-gradient(
+        135deg,
+        #091808 0%,
+        #1c5222 60%,
+        #0e2c12 100%
+    );
     --bismillah-color: var(--emerald);
     --text-quran: #040e06;
     --mushaf-bg: #eaf4eb;
@@ -1138,21 +1174,27 @@
     --shadow-emerald: 0 4px 16px rgba(58, 108, 200, 0.25);
 
     --header-bg: linear-gradient(160deg, #04061a 0%, #0a1030 60%, #080e28 100%);
-    --header-glass: linear-gradient(160deg,
-            #04061a 0%,
-            #0a1030 60%,
-            #080e28 100%);
+    --header-glass: linear-gradient(
+        160deg,
+        #04061a 0%,
+        #0a1030 60%,
+        #080e28 100%
+    );
     --header-border: rgba(200, 150, 10, 0.22);
     --sidebar-bg: var(--parchment-2);
     --player-bg: linear-gradient(160deg, #04061a 0%, #0a1030 100%);
-    --player-glass: linear-gradient(120deg,
-            #04061a 0%,
-            #0a1030 50%,
-            #030510 100%);
-    --surah-header-bg: linear-gradient(135deg,
-            #04061a 0%,
-            #0c1438 60%,
-            #080e28 100%);
+    --player-glass: linear-gradient(
+        120deg,
+        #04061a 0%,
+        #0a1030 50%,
+        #030510 100%
+    );
+    --surah-header-bg: linear-gradient(
+        135deg,
+        #04061a 0%,
+        #0c1438 60%,
+        #080e28 100%
+    );
     --bismillah-color: var(--gold);
     --text-quran: #dce8ff;
     --mushaf-bg: #0c1028;
@@ -1203,26 +1245,26 @@
     --mushaf-frame-outer: rgba(200, 150, 10, 0.12);
     --mushaf-frame-inner: rgba(200, 150, 10, 0.06);
 
-    --tajwid-ghunna: #40ee80;
-    --tajwid-idgham: #c080f8;
-    --tajwid-ikhfa: #20e0cc;
-    --tajwid-iqlab: #40dd70;
-    --tajwid-qalqala: #5ea8f8;
-    --tajwid-madd: #f07070;
-    --tajwid-madd-normal: #f050a8;
-    --tajwid-madd-separated: #f0a040;
-    --tajwid-madd-connected: #f040b8;
-    --tajwid-madd-necessary: #e82828;
-    --tajwid-lam-shamsiyya: #b0b8c8;
-    --tajwid-tafkhim: #5090f8;
-    --tajwid-silent: #b0b8c8;
-    --tajwid-naql: #f09050;
-    --tajwid-tashil: #a080f8;
-    --tajwid-ibdal: #f07040;
-    --tajwid-madd-badal: #f060a0;
-    --tajwid-sila-kubra: #50b8f8;
-    --tajwid-tarqiq-ra: #28d8e8;
-    --tajwid-idgham-warsh: #d070f8;
+    --tajwid-silent: #c0c0c0;
+    --tajwid-lam-shamsiyya: #c0c0c0;
+    --tajwid-madd-normal: #e8a0de;
+    --tajwid-madd: #e8a0de;
+    --tajwid-madd-separated: #ffb050;
+    --tajwid-madd-connected: #ff60b8;
+    --tajwid-madd-necessary: #ff4444;
+    --tajwid-madd-badal: #e8a0de;
+    --tajwid-ghunna: #44dd66;
+    --tajwid-idgham: #44dd66;
+    --tajwid-ikhfa: #44dd66;
+    --tajwid-iqlab: #44dd66;
+    --tajwid-qalqala: #22e8f8;
+    --tajwid-tafkhim: #7090ff;
+    --tajwid-naql: #ffb050;
+    --tajwid-tashil: #44dd66;
+    --tajwid-ibdal: #ffb050;
+    --tajwid-sila-kubra: #e8a0de;
+    --tajwid-tarqiq-ra: #44dd66;
+    --tajwid-idgham-warsh: #44dd66;
 }
 
 /* ============================================
@@ -1310,63 +1352,139 @@ html {
 .app-root {
     background-color: var(--bg-primary);
     background-image:
-        radial-gradient(circle at 15% 0%, rgba(var(--primary-rgb), 0.06) 0%, transparent 40%),
-        radial-gradient(circle at 85% 100%, rgba(184, 134, 11, 0.04) 0%, transparent 40%),
+        radial-gradient(
+            circle at 15% 0%,
+            rgba(var(--primary-rgb), 0.06) 0%,
+            transparent 40%
+        ),
+        radial-gradient(
+            circle at 85% 100%,
+            rgba(184, 134, 11, 0.04) 0%,
+            transparent 40%
+        ),
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cpolygon points='50,5 61,39 95,39 67,61 79,95 50,73 21,95 33,61 5,39 39,39' fill='none' stroke='rgba(180%2C138%2C40%2C0.06)' stroke-width='0.9'/%3E%3Cpolygon points='50,18 59,40 82,40 64,55 72,78 50,64 28,78 36,55 18,40 41,40' fill='none' stroke='rgba(180%2C138%2C40%2C0.04)' stroke-width='0.7'/%3E%3C/svg%3E");
     background-attachment: fixed;
-    background-size: auto, auto, 100px 100px;
+    background-size:
+        auto,
+        auto,
+        100px 100px;
 }
 
 [data-theme="dark"] .app-root {
     background-color: #060e14;
     background-image:
-        radial-gradient(ellipse at 0% 0%, rgba(13, 56, 42, 0.50) 0%, transparent 50%),
-        radial-gradient(ellipse at 100% 100%, rgba(20, 48, 70, 0.40) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(var(--primary-rgb), 0.07) 0%, transparent 60%),
+        radial-gradient(
+            ellipse at 0% 0%,
+            rgba(13, 56, 42, 0.5) 0%,
+            transparent 50%
+        ),
+        radial-gradient(
+            ellipse at 100% 100%,
+            rgba(20, 48, 70, 0.4) 0%,
+            transparent 50%
+        ),
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(var(--primary-rgb), 0.07) 0%,
+            transparent 60%
+        ),
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cpolygon points='50,5 61,39 95,39 67,61 79,95 50,73 21,95 33,61 5,39 39,39' fill='none' stroke='rgba(200%2C158%2C50%2C0.10)' stroke-width='0.9'/%3E%3Cpolygon points='50,18 59,40 82,40 64,55 72,78 50,64 28,78 36,55 18,40 41,40' fill='none' stroke='rgba(200%2C158%2C50%2C0.05)' stroke-width='0.7'/%3E%3C/svg%3E");
     background-attachment: fixed;
-    background-size: auto, auto, auto, 100px 100px;
+    background-size:
+        auto,
+        auto,
+        auto,
+        100px 100px;
 }
 
 [data-theme="sepia"] .app-root {
     background-color: #f4ecdf;
     background-image:
-        radial-gradient(ellipse at 0% 0%, rgba(170, 130, 80, 0.18) 0%, transparent 55%),
-        radial-gradient(ellipse at 100% 100%, rgba(140, 90, 40, 0.14) 0%, transparent 50%),
+        radial-gradient(
+            ellipse at 0% 0%,
+            rgba(170, 130, 80, 0.18) 0%,
+            transparent 55%
+        ),
+        radial-gradient(
+            ellipse at 100% 100%,
+            rgba(140, 90, 40, 0.14) 0%,
+            transparent 50%
+        ),
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cpolygon points='50,5 61,39 95,39 67,61 79,95 50,73 21,95 33,61 5,39 39,39' fill='none' stroke='rgba(150%2C100%2C30%2C0.09)' stroke-width='0.9'/%3E%3Cpolygon points='50,18 59,40 82,40 64,55 72,78 50,64 28,78 36,55 18,40 41,40' fill='none' stroke='rgba(150%2C100%2C30%2C0.05)' stroke-width='0.7'/%3E%3C/svg%3E");
     background-attachment: fixed;
-    background-size: auto, auto, 100px 100px;
+    background-size:
+        auto,
+        auto,
+        100px 100px;
 }
 
 [data-theme="ocean"] .app-root {
     background-color: #f0f7f9;
     background-image:
-        radial-gradient(ellipse at 0% 0%, rgba(2, 136, 209, 0.12) 0%, transparent 55%),
-        radial-gradient(ellipse at 100% 100%, rgba(0, 150, 180, 0.08) 0%, transparent 50%),
-        url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Cpath d=%22M40 2L78 40L40 78L2 40Z%22 fill=%22none%22 stroke=%22rgba(0%2C136%2C209%2C0.08)%22 stroke-width=%220.8%22/%3E%3Cpath d=%22M40 20L60 40L40 60L20 40Z%22 fill=%22none%22 stroke=%22rgba(0%2C136%2C209%2C0.04)%22 stroke-width=%220.6%22/%3E%3C/svg%3E');
+        radial-gradient(
+            ellipse at 0% 0%,
+            rgba(2, 136, 209, 0.12) 0%,
+            transparent 55%
+        ),
+        radial-gradient(
+            ellipse at 100% 100%,
+            rgba(0, 150, 180, 0.08) 0%,
+            transparent 50%
+        ),
+        url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Cpath d=%22M40 2L78 40L40 78L2 40Z%22 fill=%22none%22 stroke=%22rgba(0%2C136%2C209%2C0.08)%22 stroke-width=%220.8%22/%3E%3Cpath d=%22M40 20L60 40L40 60L20 40Z%22 fill=%22none%22 stroke=%22rgba(0%2C136%2C209%2C0.04)%22 stroke-width=%220.6%22/%3E%3C/svg%3E");
     background-attachment: fixed;
-    background-size: auto, auto, 80px 80px;
+    background-size:
+        auto,
+        auto,
+        80px 80px;
 }
 
 [data-theme="forest"] .app-root {
     background-color: #f1f8f3;
     background-image:
-        radial-gradient(ellipse at 0% 0%, rgba(67, 160, 71, 0.12) 0%, transparent 55%),
-        radial-gradient(ellipse at 100% 100%, rgba(27, 94, 59, 0.08) 0%, transparent 50%),
-        url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Cpath d=%22M40 2L78 40L40 78L2 40Z%22 fill=%22none%22 stroke=%22rgba(67%2C160%2C71%2C0.08)%22 stroke-width=%220.8%22/%3E%3Cpath d=%22M40 20L60 40L40 60L20 40Z%22 fill=%22none%22 stroke=%22rgba(67%2C160%2C71%2C0.04)%22 stroke-width=%220.6%22/%3E%3C/svg%3E');
+        radial-gradient(
+            ellipse at 0% 0%,
+            rgba(67, 160, 71, 0.12) 0%,
+            transparent 55%
+        ),
+        radial-gradient(
+            ellipse at 100% 100%,
+            rgba(27, 94, 59, 0.08) 0%,
+            transparent 50%
+        ),
+        url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Cpath d=%22M40 2L78 40L40 78L2 40Z%22 fill=%22none%22 stroke=%22rgba(67%2C160%2C71%2C0.08)%22 stroke-width=%220.8%22/%3E%3Cpath d=%22M40 20L60 40L40 60L20 40Z%22 fill=%22none%22 stroke=%22rgba(67%2C160%2C71%2C0.04)%22 stroke-width=%220.6%22/%3E%3C/svg%3E");
     background-attachment: fixed;
-    background-size: auto, auto, 80px 80px;
+    background-size:
+        auto,
+        auto,
+        80px 80px;
 }
 
 [data-theme="night-blue"] .app-root {
     background-color: #060b19;
     background-image:
-        radial-gradient(ellipse at 0% 0%, rgba(30, 80, 140, 0.45) 0%, transparent 50%),
-        radial-gradient(ellipse at 100% 100%, rgba(8, 20, 36, 0.8) 0%, transparent 60%),
-        radial-gradient(circle at 50% 20%, rgba(100, 255, 218, 0.08) 0%, transparent 50%),
-        url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Cpath d=%22M40 2L78 40L40 78L2 40Z%22 fill=%22none%22 stroke=%22rgba(100%2C255%2C218%2C0.06)%22 stroke-width=%220.8%22/%3E%3Cpath d=%22M40 20L60 40L40 60L20 40Z%22 fill=%22none%22 stroke=%22rgba(100%2C255%2C218%2C0.03)%22 stroke-width=%220.6%22/%3E%3C/svg%3E');
+        radial-gradient(
+            ellipse at 0% 0%,
+            rgba(30, 80, 140, 0.45) 0%,
+            transparent 50%
+        ),
+        radial-gradient(
+            ellipse at 100% 100%,
+            rgba(8, 20, 36, 0.8) 0%,
+            transparent 60%
+        ),
+        radial-gradient(
+            circle at 50% 20%,
+            rgba(100, 255, 218, 0.08) 0%,
+            transparent 50%
+        ),
+        url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Cpath d=%22M40 2L78 40L40 78L2 40Z%22 fill=%22none%22 stroke=%22rgba(100%2C255%2C218%2C0.06)%22 stroke-width=%220.8%22/%3E%3Cpath d=%22M40 20L60 40L40 60L20 40Z%22 fill=%22none%22 stroke=%22rgba(100%2C255%2C218%2C0.03)%22 stroke-width=%220.6%22/%3E%3C/svg%3E");
     background-attachment: fixed;
-    background-size: auto, auto, auto, 80px 80px;
+    background-size:
+        auto,
+        auto,
+        auto,
+        80px 80px;
 }
 
 body {
@@ -1537,7 +1655,6 @@ select,
 }
 
 @keyframes pulse {
-
     0%,
     100% {
         transform: scale(1);
@@ -1575,7 +1692,6 @@ select,
 }
 
 @keyframes ayahPulse {
-
     0%,
     100% {
         box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0);
@@ -1602,7 +1718,6 @@ select,
    REDUCED MOTION
    ============================================ */
 @media (prefers-reduced-motion: reduce) {
-
     *,
     *::before,
     *::after {
@@ -1977,7 +2092,11 @@ select,
     inset: 0;
     z-index: 500;
     background:
-        radial-gradient(circle at top, rgba(var(--primary-rgb), 0.08), transparent 28%),
+        radial-gradient(
+            circle at top,
+            rgba(var(--primary-rgb), 0.08),
+            transparent 28%
+        ),
         var(--surface-overlay, var(--bg-overlay));
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -1989,7 +2108,11 @@ select,
 }
 
 .modal-box {
-    background: linear-gradient(180deg, var(--surface-elevated, var(--bg-card)) 0%, var(--surface-base, var(--bg-card)) 100%);
+    background: linear-gradient(
+        180deg,
+        var(--surface-elevated, var(--bg-card)) 0%,
+        var(--surface-base, var(--bg-card)) 100%
+    );
     border-radius: var(--r-xl);
     box-shadow: 0 24px 64px rgba(15, 18, 16, 0.18);
     border: 1px solid var(--surface-border, var(--border-strong));
@@ -2004,7 +2127,11 @@ select,
 
 /* Legacy alias used by older modals */
 .modal {
-    background: linear-gradient(180deg, var(--surface-elevated, var(--bg-card)) 0%, var(--surface-base, var(--bg-card)) 100%);
+    background: linear-gradient(
+        180deg,
+        var(--surface-elevated, var(--bg-card)) 0%,
+        var(--surface-base, var(--bg-card)) 100%
+    );
     border-radius: var(--r-xl);
     box-shadow: 0 24px 64px rgba(15, 18, 16, 0.18);
     border: 1px solid var(--surface-border, var(--border-strong));
@@ -2023,7 +2150,11 @@ select,
     justify-content: space-between;
     padding: 1.1rem 1.4rem 0.9rem;
     border-bottom: 1px solid rgba(var(--primary-rgb), 0.08);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08));
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.24),
+        rgba(255, 255, 255, 0.08)
+    );
     flex-shrink: 0;
 }
 
@@ -2111,7 +2242,10 @@ select,
     font-family: var(--font-home-ui, var(--font-ui));
     font-size: var(--type-ui-body);
     outline: none;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
 }
 
 .modal-search-input:focus {
@@ -2131,7 +2265,10 @@ select,
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+    transition:
+        transform 0.16s ease,
+        background 0.16s ease,
+        border-color 0.16s ease;
 }
 
 .modal-action-btn:hover {
@@ -2221,7 +2358,11 @@ select,
     margin-bottom: 0.8rem;
     padding: 1rem 1.05rem;
     border-radius: 1.2rem;
-    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.08), rgba(184, 134, 11, 0.08));
+    background: linear-gradient(
+        135deg,
+        rgba(var(--primary-rgb), 0.08),
+        rgba(184, 134, 11, 0.08)
+    );
     border: 1px solid rgba(var(--primary-rgb), 0.09);
 }
 
@@ -2318,13 +2459,25 @@ select,
     margin-bottom: 0.65rem;
     border: 1px solid rgba(var(--primary-rgb), 0.08);
     border-radius: 1.15rem;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.56));
-    transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.74),
+        rgba(255, 255, 255, 0.56)
+    );
+    transition:
+        transform 0.16s ease,
+        border-color 0.16s ease,
+        background 0.16s ease,
+        box-shadow 0.16s ease;
 }
 
 .modal-item-card:hover {
     border-color: rgba(var(--primary-rgb), 0.14);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.62));
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.84),
+        rgba(255, 255, 255, 0.62)
+    );
     box-shadow: 0 12px 28px rgba(15, 18, 16, 0.06);
     transform: translateY(-1px);
 }
@@ -2409,7 +2562,10 @@ select,
     font-family: var(--font-home-ui, var(--font-ui));
     font-size: var(--type-ui-body);
     outline: none;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
 }
 
 .modal-inline-input:focus {
@@ -2483,7 +2639,11 @@ select,
     margin-bottom: 0.9rem;
     border-radius: 1rem;
     border: 1px solid rgba(var(--primary-rgb), 0.18);
-    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.96), rgba(192, 154, 74, 0.94));
+    background: linear-gradient(
+        135deg,
+        rgba(var(--primary-rgb), 0.96),
+        rgba(192, 154, 74, 0.94)
+    );
     color: white;
     display: inline-flex;
     align-items: center;
@@ -2494,7 +2654,10 @@ select,
     font-weight: 700;
     cursor: pointer;
     box-shadow: 0 14px 28px rgba(var(--primary-rgb), 0.18);
-    transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+    transition:
+        transform 0.16s ease,
+        box-shadow 0.16s ease,
+        filter 0.16s ease;
 }
 
 .panel-hero-btn:hover {
@@ -2521,7 +2684,11 @@ select,
     padding: 0.9rem 0.8rem 0.8rem;
     border: 1px solid rgba(var(--primary-rgb), 0.08);
     border-radius: 1rem;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.5));
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.7),
+        rgba(255, 255, 255, 0.5)
+    );
     text-align: center;
 }
 
@@ -2574,7 +2741,11 @@ select,
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+    transition:
+        transform 0.16s ease,
+        background 0.16s ease,
+        border-color 0.16s ease,
+        color 0.16s ease;
 }
 
 .panel-icon-btn:hover:not(:disabled) {
@@ -2622,7 +2793,11 @@ select,
 }
 
 .panel-calendar-day.has-reading {
-    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.94), rgba(192, 154, 74, 0.9));
+    background: linear-gradient(
+        135deg,
+        rgba(var(--primary-rgb), 0.94),
+        rgba(192, 154, 74, 0.9)
+    );
     border-color: transparent;
     color: white;
     font-weight: 800;
@@ -2635,7 +2810,9 @@ select,
 }
 
 .panel-calendar-day.today.has-reading {
-    box-shadow: 0 10px 20px rgba(var(--primary-rgb), 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+    box-shadow:
+        0 10px 20px rgba(var(--primary-rgb), 0.14),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.42);
 }
 
 .panel-stack-list {
@@ -2723,7 +2900,11 @@ select,
     align-items: center;
     padding: 1rem;
     border-radius: 1.2rem;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(255, 255, 255, 0.56));
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.76),
+        rgba(255, 255, 255, 0.56)
+    );
     border: 1px solid rgba(var(--primary-rgb), 0.08);
 }
 
@@ -2845,7 +3026,10 @@ select,
     font-size: 0.78rem;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+    transition:
+        transform 0.16s ease,
+        border-color 0.16s ease,
+        background 0.16s ease;
 }
 
 .wird-reset-btn:hover {
@@ -2940,12 +3124,18 @@ select,
 
 .notes-panel-sheet,
 .notes-panel-desk {
-    background: linear-gradient(180deg, var(--surface-elevated, var(--bg-card)) 0%, var(--surface-base, var(--bg-card)) 100%);
+    background: linear-gradient(
+        180deg,
+        var(--surface-elevated, var(--bg-card)) 0%,
+        var(--surface-base, var(--bg-card)) 100%
+    );
     border-color: var(--surface-border, var(--border));
 }
 
 .notes-panel-sheet {
-    box-shadow: 0 -8px 36px rgba(15, 18, 16, 0.18), 0 1px 0 rgba(255, 255, 255, 0.3) inset;
+    box-shadow:
+        0 -8px 36px rgba(15, 18, 16, 0.18),
+        0 1px 0 rgba(255, 255, 255, 0.3) inset;
 }
 
 .notes-panel-desk {
@@ -3124,7 +3314,7 @@ select,
     transition: background var(--t-fast);
 }
 
-.toggle-switch input:checked+.toggle-track {
+.toggle-switch input:checked + .toggle-track {
     background: var(--primary);
 }
 
@@ -3141,7 +3331,7 @@ select,
     pointer-events: none;
 }
 
-.toggle-switch input:checked~.toggle-thumb {
+.toggle-switch input:checked ~ .toggle-thumb {
     transform: translateX(20px);
 }
 
@@ -3319,9 +3509,11 @@ select,
 .home-hero {
     padding: 2.5rem 1.5rem 1.5rem;
     text-align: center;
-    background: linear-gradient(180deg,
-            var(--bg-secondary) 0%,
-            var(--bg-primary) 100%);
+    background: linear-gradient(
+        180deg,
+        var(--bg-secondary) 0%,
+        var(--bg-primary) 100%
+    );
     border-bottom: 1px solid var(--border-light);
 }
 
@@ -3331,7 +3523,12 @@ select,
 }
 
 .home-hero-title-ar {
-    font-family: var(--font-quran, "ME Quran", "KFGQPC Uthmanic Script HAFS", serif);
+    font-family: var(
+        --font-quran,
+        "ME Quran",
+        "KFGQPC Uthmanic Script HAFS",
+        serif
+    );
     font-size: 2.4rem;
     direction: rtl;
     color: var(--gold);
@@ -3776,7 +3973,12 @@ select,
 }
 
 .home-surah-ar {
-    font-family: var(--font-quran, "KFGQPC Uthmanic Script HAFS", "ME Quran", serif);
+    font-family: var(
+        --font-quran,
+        "KFGQPC Uthmanic Script HAFS",
+        "ME Quran",
+        serif
+    );
     font-size: 1.1rem;
     direction: rtl;
     color: var(--text-quran);
@@ -3838,8 +4040,6 @@ select,
     font-size: 0.95rem;
 }
 
-
-
 /* ═══════════════════════════════════════════════════════════════
    HOME PAGE  (hm-*)  —  Premium v4 · QWB-inspired
    ═══════════════════════════════════════════════════════════════ */
@@ -3857,9 +4057,11 @@ select,
 .hm-hero {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(150deg,
-            var(--primary) 0%,
-            color-mix(in srgb, var(--primary) 60%, #000 40%) 100%);
+    background: linear-gradient(
+        150deg,
+        var(--primary) 0%,
+        color-mix(in srgb, var(--primary) 60%, #000 40%) 100%
+    );
     padding: 3rem 2rem 3.5rem;
 }
 
@@ -4037,7 +4239,9 @@ select,
 
 .hm-continue:hover {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.07), var(--shadow-md);
+    box-shadow:
+        0 0 0 4px rgba(var(--primary-rgb), 0.07),
+        var(--shadow-md);
     transform: translateY(-1px);
 }
 
@@ -4169,7 +4373,9 @@ select,
     color: var(--primary);
     font-size: 1.05rem;
     border: 1.5px solid rgba(var(--primary-rgb), 0.12);
-    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s;
+    transition:
+        transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.15s;
 }
 
 .hm-quick-pill:hover .hm-quick-icon {
@@ -4219,7 +4425,9 @@ select,
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-muted);
-    transition: color 0.15s, border-color 0.15s;
+    transition:
+        color 0.15s,
+        border-color 0.15s;
     outline: none;
     white-space: nowrap;
 }
@@ -4540,7 +4748,10 @@ select,
     font-weight: 800;
     flex-shrink: 0;
     border: 1.5px solid var(--border);
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    transition:
+        background 0.15s,
+        color 0.15s,
+        border-color 0.15s;
 }
 
 .hm-surah-row:hover .hm-row-num-badge {
@@ -4671,7 +4882,6 @@ select,
    RESPONSIVE
    ════════════════════════════════════ */
 @media (max-width: 860px) {
-
     .hm-section,
     .hm-section--list {
         padding-inline: 1.25rem;
@@ -4748,10 +4958,12 @@ select,
     position: relative;
     overflow: hidden;
     /* Dégradé vert émeraude fixe — visible sur tous les thèmes */
-    background: linear-gradient(160deg,
-            #0e3d26 0%,
-            #1b5e3b 55%,
-            var(--primary, #1b5e3b) 100%);
+    background: linear-gradient(
+        160deg,
+        #0e3d26 0%,
+        #1b5e3b 55%,
+        var(--primary, #1b5e3b) 100%
+    );
     padding: 4.5rem 2rem 3rem;
     display: flex;
     flex-direction: column;
@@ -4761,27 +4973,28 @@ select,
 
 /* Motif géométrique islamique en filigrane */
 .qc-hero::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background-image:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpolygon points='40,5 50,25 72,18 62,38 75,55 53,50 48,72 35,56 13,63 20,42 5,28 27,26' fill='none' stroke='rgba(255%2C255%2C255%2C0.05)' stroke-width='1'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpolygon points='40,5 50,25 72,18 62,38 75,55 53,50 48,72 35,56 13,63 20,42 5,28 27,26' fill='none' stroke='rgba(255%2C255%2C255%2C0.05)' stroke-width='1'/%3E%3C/svg%3E");
     background-size: 80px 80px;
     pointer-events: none;
 }
 
 /* Lueur douce en bas */
 .qc-hero::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -40px;
     left: 50%;
     transform: translateX(-50%);
     width: 500px;
     height: 160px;
-    background: radial-gradient(ellipse at center,
-            rgba(184, 134, 11, 0.12) 0%,
-            transparent 70%);
+    background: radial-gradient(
+        ellipse at center,
+        rgba(184, 134, 11, 0.12) 0%,
+        transparent 70%
+    );
     pointer-events: none;
 }
 
@@ -4807,7 +5020,7 @@ select,
 /* Sous-titre discret sous le nom */
 .qc-hero-inner::before {
     display: block;
-    content: '﷽';
+    content: "﷽";
     font-family: var(--font-quran), serif;
     font-size: 1.9rem;
     color: rgba(255, 255, 255, 0.55);
@@ -4843,7 +5056,9 @@ select,
     box-shadow:
         0 8px 32px rgba(0, 0, 0, 0.18),
         0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s, border-color 0.2s;
+    transition:
+        box-shadow 0.2s,
+        border-color 0.2s;
     font-family: var(--font-ui);
 }
 
@@ -4902,7 +5117,9 @@ select,
     padding: 1rem 1.25rem;
     border-bottom: 1px solid var(--border-subtle);
     background: transparent;
-    transition: background 0.14s, color 0.14s;
+    transition:
+        background 0.14s,
+        color 0.14s;
     text-align: left;
     width: 100%;
     cursor: pointer;
@@ -4943,16 +5160,24 @@ select,
     justify-content: center;
     flex-shrink: 0;
     /* Octogone CSS */
-    clip-path: polygon(30% 0%, 70% 0%,
-            100% 30%, 100% 70%,
-            70% 100%, 30% 100%,
-            0% 70%, 0% 30%);
+    clip-path: polygon(
+        30% 0%,
+        70% 0%,
+        100% 30%,
+        100% 70%,
+        70% 100%,
+        30% 100%,
+        0% 70%,
+        0% 30%
+    );
     background: var(--primary-light);
     color: var(--primary);
     font-weight: 700;
     font-size: 0.8rem;
     font-family: var(--font-ui);
-    transition: background 0.14s, color 0.14s;
+    transition:
+        background 0.14s,
+        color 0.14s;
 }
 
 .qc-names {
@@ -4992,17 +5217,17 @@ select,
 
 .qc-surah-header {
     text-align: center;
-    padding: 3rem 1rem;
+    padding: 1.25rem 1rem 1rem;
     background: var(--bg-secondary);
     border-bottom: 1px solid var(--border);
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
 }
 
 .qc-header-top {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     font-weight: 500;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .qc-header-num {
@@ -5013,9 +5238,9 @@ select,
 
 .qc-header-name-ar {
     font-family: var(--font-quran);
-    font-size: 3.5rem;
+    font-size: 2.2rem;
     color: var(--text);
-    margin: 1.5rem 0;
+    margin: 0.5rem 0;
 }
 
 .qc-header-meta {
@@ -5026,13 +5251,13 @@ select,
 }
 
 .qc-header-name-en {
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--text);
 }
 
 .qc-header-details {
-    font-size: 0.85rem;
+    font-size: 0.72rem;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -5091,13 +5316,6 @@ select,
     color: var(--text);
 }
 
-.qc-ayah-translation {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: var(--text);
-    max-width: 800px;
-}
-
 .qc-ayah-transliteration {
     font-size: 0.95rem;
     font-style: italic;
@@ -5125,7 +5343,7 @@ select,
     }
 
     .qc-header-name-ar {
-        font-size: 2.5rem;
+        font-size: 1.8rem;
     }
 }
 
@@ -5330,7 +5548,7 @@ select,
         color: var(--primary);
         border-radius: 8px;
         font-size: 0.75rem;
-        font-family: 'Scheherazade New', 'Amiri Quran', serif;
+        font-family: "Scheherazade New", "Amiri Quran", serif;
         flex-shrink: 0;
         direction: rtl;
     }
@@ -5344,7 +5562,7 @@ select,
     }
 
     .hp-info-ar {
-        font-family: 'Scheherazade New', 'Amiri Quran', serif;
+        font-family: "Scheherazade New", "Amiri Quran", serif;
         font-size: 0.95rem;
         color: var(--text);
         direction: rtl;
@@ -5529,7 +5747,7 @@ select,
     }
 
     .hp-surah-row::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -5545,7 +5763,9 @@ select,
         background: var(--bg-card);
         border-color: rgba(var(--primary-rgb), 0.3);
         transform: translateY(-4px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 2px 10px rgba(var(--primary-rgb), 0.08);
+        box-shadow:
+            0 10px 25px rgba(0, 0, 0, 0.05),
+            0 2px 10px rgba(var(--primary-rgb), 0.08);
     }
 
     .hp-surah-row:hover::before {
@@ -5553,7 +5773,11 @@ select,
     }
 
     .hp-surah-row--active {
-        background: linear-gradient(180deg, rgba(var(--primary-rgb), 0.08) 0%, var(--bg-card) 100%);
+        background: linear-gradient(
+            180deg,
+            rgba(var(--primary-rgb), 0.08) 0%,
+            var(--bg-card) 100%
+        );
         border-color: var(--primary);
         box-shadow: 0 4px 16px rgba(var(--primary-rgb), 0.15);
     }
@@ -5601,7 +5825,7 @@ select,
 
     /* Nom arabe (grande) */
     .hp-card-ar {
-        font-family: 'Scheherazade New', 'Amiri Quran', 'Amiri', serif;
+        font-family: "Scheherazade New", "Amiri Quran", "Amiri", serif;
         font-size: 1.5rem;
         font-weight: 600;
         color: var(--text);
@@ -5689,7 +5913,7 @@ select,
 
     /* Nom arabe ligne juz */
     .hp-row-ar {
-        font-family: 'Scheherazade New', 'Amiri Quran', 'Amiri', serif;
+        font-family: "Scheherazade New", "Amiri Quran", "Amiri", serif;
         font-size: 1.1rem;
         color: var(--text);
         direction: rtl;
@@ -5908,7 +6132,6 @@ select,
     }
 
     @keyframes hp-float {
-
         0%,
         100% {
             transform: translateY(0px);
@@ -5920,7 +6143,6 @@ select,
     }
 
     @keyframes hp-pulse-gold {
-
         0%,
         100% {
             opacity: 0.55;
@@ -5935,13 +6157,15 @@ select,
 
     /* ── Hero : shimmer périodique ── */
     .hp-hero::after {
-        content: '';
+        content: "";
         position: absolute;
         inset: 0;
-        background: linear-gradient(105deg,
-                transparent 30%,
-                rgba(255, 255, 255, 0.04) 50%,
-                transparent 65%);
+        background: linear-gradient(
+            105deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.04) 50%,
+            transparent 65%
+        );
         animation: hp-shimmer 8s ease-in-out infinite;
         pointer-events: none;
         z-index: 0;
@@ -6014,8 +6238,12 @@ select,
         backdrop-filter: blur(16px);
         border: 1px solid rgba(255, 255, 255, 0.4);
         border-radius: var(--r-xl);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
-        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s var(--ease);
+        box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.08),
+            0 2px 8px rgba(0, 0, 0, 0.04);
+        transition:
+            transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+            box-shadow 0.3s var(--ease);
         animation: hp-fade-up 0.5s var(--ease-out) both;
         min-width: 0;
         cursor: default;
@@ -6031,13 +6259,17 @@ select,
     }
 
     .hp-stat-chip::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 100%);
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.4) 0%,
+            transparent 100%
+        );
         opacity: 0;
         transition: opacity 0.3s;
         pointer-events: none;
@@ -6045,7 +6277,9 @@ select,
 
     .hp-stat-chip:hover {
         transform: translateY(-4px);
-        box-shadow: 0 12px 48px rgba(var(--primary-rgb), 0.12), 0 4px 16px rgba(0, 0, 0, 0.06);
+        box-shadow:
+            0 12px 48px rgba(var(--primary-rgb), 0.12),
+            0 4px 16px rgba(0, 0, 0, 0.06);
     }
 
     .hp-stat-chip:hover::before {
@@ -6061,7 +6295,9 @@ select,
         border-radius: 14px;
         font-size: 1.2rem;
         flex-shrink: 0;
-        box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.5), 0 4px 12px rgba(0, 0, 0, 0.05);
+        box-shadow:
+            inset 0 2px 4px rgba(255, 255, 255, 0.5),
+            0 4px 12px rgba(0, 0, 0, 0.05);
     }
 
     .hp-stat-icon--primary {
@@ -6070,7 +6306,11 @@ select,
     }
 
     .hp-stat-icon--gold {
-        background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+        background: linear-gradient(
+            135deg,
+            rgba(212, 175, 55, 0.15),
+            rgba(212, 175, 55, 0.05)
+        );
         color: var(--gold);
         border: 1px solid rgba(212, 175, 55, 0.2);
     }
@@ -6146,142 +6386,89 @@ select,
 
    �" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" ��" � */
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    SMOOTH ANIMATIONS & TRANSITIONS
 
    � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �  */
 
-
-
 @keyframes slideUpAudio {
-
     from {
-
         transform: translateY(100%);
 
         opacity: 0;
-
     }
 
     to {
-
         transform: translateY(0);
 
         opacity: 1;
-
     }
-
 }
 
-
-
 @keyframes slideDownFade {
-
     from {
-
         transform: translateY(-10px);
 
         opacity: 0;
-
     }
 
     to {
-
         transform: translateY(0);
 
         opacity: 1;
-
     }
-
 }
-
-
 
 @keyframes pulseGlow {
-
     0%,
     100% {
-
         box-shadow: 0 0 12px rgba(27, 94, 59, 0.2);
-
     }
 
     50% {
-
         box-shadow: 0 0 20px rgba(27, 94, 59, 0.35);
-
     }
-
 }
-
-
 
 @keyframes shimmer {
-
     0% {
-
         background-position: -200% center;
-
     }
 
     100% {
-
         background-position: 200% center;
-
     }
-
 }
 
-
-
 @keyframes float {
-
     0%,
     100% {
-
         transform: translateY(0px);
-
     }
 
     50% {
-
         transform: translateY(-4px);
-
     }
-
 }
 
-
-
 @keyframes spin-smooth {
-
     from {
-
         transform: rotate(0deg);
-
     }
 
     to {
-
         transform: rotate(360deg);
-
     }
-
 }
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    HEADER MODERNIZATION
 
    � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �  */
 
-.app>header {
-
+.app > header {
     backdrop-filter: var(--glass-backdrop);
 
     -webkit-backdrop-filter: var(--glass-backdrop);
@@ -6293,26 +6480,18 @@ select,
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 
     animation: slideDownFade 0.4s var(--ease-out-cubic);
-
 }
 
-
-
 .header-nav-button {
-
     transition: all var(--t-fast);
 
     position: relative;
 
     overflow: hidden;
-
 }
 
-
-
 .header-nav-button::before {
-
-    content: '';
+    content: "";
 
     position: absolute;
 
@@ -6330,30 +6509,24 @@ select,
 
     transform: translate(-50%, -50%);
 
-    transition: width var(--t-mid), height var(--t-mid);
-
+    transition:
+        width var(--t-mid),
+        height var(--t-mid);
 }
 
-
-
 .header-nav-button:hover::before {
-
     width: 40px;
 
     height: 40px;
-
 }
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    SIDEBAR ENHANCEMENT
 
    � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �  */
 
 .sidebar {
-
     backdrop-filter: var(--glass-backdrop);
 
     -webkit-backdrop-filter: var(--glass-backdrop);
@@ -6363,26 +6536,18 @@ select,
     border-right: 1px solid rgba(255, 255, 255, 0.5);
 
     transition: all var(--t-slow);
-
 }
 
-
-
 .sidebar-link {
-
     position: relative;
 
     transition: all var(--t-fast);
 
     overflow: hidden;
-
 }
 
-
-
 .sidebar-link::after {
-
-    content: '';
+    content: "";
 
     position: absolute;
 
@@ -6394,77 +6559,56 @@ select,
 
     height: 2px;
 
-    background: linear-gradient(90deg, var(--emerald-lit) 0%, var(--gold-bright) 100%);
+    background: linear-gradient(
+        90deg,
+        var(--emerald-lit) 0%,
+        var(--gold-bright) 100%
+    );
 
     transition: width var(--t-mid);
-
 }
-
-
 
 .sidebar-link:hover::after,
-
 .sidebar-link.active::after {
-
     width: 100%;
-
 }
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    AUDIO PLAYER MODERNIZED
 
    � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �  */
 
 .audio-player {
-
     animation: slideUpAudio 0.3s var(--ease-out-cubic);
 
     backdrop-filter: var(--glass-dark-backdrop);
 
     -webkit-backdrop-filter: var(--glass-dark-backdrop);
-
 }
-
-
 
 /* Progress bar with modern styling */
 
 .player-progress {
-
     background: rgba(255, 255, 255, 0.08);
 
     transition: all var(--t-fast);
-
 }
-
-
 
 .player-progress:hover {
-
     background: rgba(255, 255, 255, 0.12);
-
 }
 
-
-
 .player-progress-fill {
-
     background: linear-gradient(90deg, var(--gold) 0%, var(--gold-bright) 100%);
 
     box-shadow: 0 0 12px rgba(212, 168, 32, 0.4);
 
     position: relative;
-
 }
 
-
-
 .player-progress-fill::before {
-
-    content: '';
+    content: "";
 
     position: absolute;
 
@@ -6476,47 +6620,35 @@ select,
 
     height: 3px;
 
-    background: linear-gradient(90deg, rgba(212, 168, 32, 0.6) 0%, rgba(212, 168, 32, 0) 100%);
+    background: linear-gradient(
+        90deg,
+        rgba(212, 168, 32, 0.6) 0%,
+        rgba(212, 168, 32, 0) 100%
+    );
 
     border-radius: inherit;
 
     filter: blur(2px);
-
 }
-
-
 
 /* Play button glow */
 
 .player-play-btn {
-
     transition: all var(--t-fast);
 
     position: relative;
-
 }
-
-
 
 .player-play-btn:hover {
-
     transform: scale(1.08);
-
 }
-
-
 
 .player-play-btn:active {
-
     transform: scale(0.96);
-
 }
 
-
-
 .player-play-btn.playing::after {
-
-    content: '';
+    content: "";
 
     position: absolute;
 
@@ -6524,17 +6656,18 @@ select,
 
     border-radius: inherit;
 
-    background: radial-gradient(circle, rgba(27, 94, 59, 0.2) 0%, transparent 70%);
+    background: radial-gradient(
+        circle,
+        rgba(27, 94, 59, 0.2) 0%,
+        transparent 70%
+    );
 
     animation: pulseGlow 2s ease-in-out infinite;
 
     pointer-events: none;
-
 }
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    BUTTON ENHANCEMENTS
 
@@ -6542,23 +6675,18 @@ select,
 
 button,
 [role="button"] {
-
     transition: all var(--t-fast);
 
     position: relative;
 
     overflow: hidden;
-
 }
-
-
 
 /* Ripple effect on clicks */
 
 button::after,
 [role="button"]::after {
-
-    content: '';
+    content: "";
 
     position: absolute;
 
@@ -6577,47 +6705,35 @@ button::after,
     transform: translate(-50%, -50%);
 
     pointer-events: none;
-
 }
-
-
 
 /* Primary button */
 
 .btn-primary {
-
-    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-mid) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--emerald) 0%,
+        var(--emerald-mid) 100%
+    );
 
     box-shadow: var(--shadow-emerald);
 
     transition: all var(--t-fast);
-
 }
 
-
-
 .btn-primary:hover {
-
     transform: translateY(-2px);
 
     box-shadow: 0 8px 20px rgba(27, 94, 59, 0.25);
-
 }
-
-
 
 .btn-primary:active {
-
     transform: translateY(0);
-
 }
-
-
 
 /* Secondary button with glass effect */
 
 .btn-secondary {
-
     background: rgba(255, 255, 255, 0.1);
 
     backdrop-filter: blur(8px);
@@ -6625,24 +6741,17 @@ button::after,
     border: 1px solid rgba(255, 255, 255, 0.2);
 
     transition: all var(--t-fast);
-
 }
 
-
-
 .btn-secondary:hover {
-
     background: rgba(255, 255, 255, 0.15);
 
     border-color: rgba(255, 255, 255, 0.3);
 
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
 }
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    CARD & PANEL STYLING
 
@@ -6651,7 +6760,6 @@ button::after,
 .modal-content,
 .panel,
 .card {
-
     backdrop-filter: var(--glass-backdrop);
 
     -webkit-backdrop-filter: var(--glass-backdrop);
@@ -6663,19 +6771,15 @@ button::after,
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
 
     animation: fadeInScale 0.3s var(--ease-out-cubic);
-
 }
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    AYAH BLOCK INTERACTIONS
 
    � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �  */
 
 .ayah-block {
-
     transition: all var(--t-mid);
 
     position: relative;
@@ -6683,14 +6787,10 @@ button::after,
     border-radius: var(--r-md);
 
     overflow: hidden;
-
 }
 
-
-
 .ayah-block::before {
-
-    content: '';
+    content: "";
 
     position: absolute;
 
@@ -6702,86 +6802,71 @@ button::after,
 
     width: 3px;
 
-    background: linear-gradient(180deg, var(--emerald) 0%, var(--emerald-lit) 100%);
+    background: linear-gradient(
+        180deg,
+        var(--emerald) 0%,
+        var(--emerald-lit) 100%
+    );
 
     transform: scaleX(0);
 
     transform-origin: left;
 
     transition: transform var(--t-mid);
-
 }
 
-
-
 .ayah-block:hover {
-
     background: var(--ayah-hover);
 
     padding-left: 12px;
-
 }
-
-
 
 .ayah-block:hover::before {
-
     transform: scaleX(1);
-
 }
 
-
-
 .ayah-block.playing {
-
     background: var(--ayah-playing-bg);
 
     box-shadow: inset 0 0 16px rgba(184, 134, 11, 0.1);
-
 }
-
-
 
 .ayah-block.playing::before {
-
-    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-bright) 100%);
+    background: linear-gradient(
+        180deg,
+        var(--gold) 0%,
+        var(--gold-bright) 100%
+    );
 
     transform: scaleX(1);
-
 }
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    LOADING & SKELETON STATES
 
    � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �  */
 
 .skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.5) 0%,
 
-    background: linear-gradient(90deg,
+        rgba(255, 255, 255, 0.3) 50%,
 
-            rgba(255, 255, 255, 0.5) 0%,
-
-            rgba(255, 255, 255, 0.3) 50%,
-
-            rgba(255, 255, 255, 0.5) 100%);
+        rgba(255, 255, 255, 0.5) 100%
+    );
 
     background-size: 200% 100%;
 
     animation: shimmer 2s ease-in-out infinite;
 
     border-radius: var(--r-md);
-
 }
-
-
 
 /* Loading spinner */
 
 .spinner {
-
     width: 24px;
 
     height: 24px;
@@ -6793,12 +6878,9 @@ button::after,
     border-radius: 50%;
 
     animation: spin-smooth 0.8s linear infinite;
-
 }
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    INPUT & FORM STYLING
 
@@ -6807,48 +6889,32 @@ button::after,
 input,
 textarea,
 select {
-
     transition: all var(--t-fast);
 
     border: 1px solid var(--border-light);
 
     border-radius: var(--r-md);
-
 }
-
-
 
 input:focus,
 textarea:focus,
 select:focus {
-
     border-color: var(--emerald);
 
     box-shadow: 0 0 0 3px rgba(27, 94, 59, 0.1);
 
     outline: none;
-
 }
-
-
 
 input::placeholder {
-
     transition: color var(--t-fast);
-
 }
-
-
 
 input:focus::placeholder {
-
     color: var(--text-muted);
-
 }
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    DROPDOWN & MENU STYLING
 
@@ -6856,7 +6922,6 @@ input:focus::placeholder {
 
 .dropdown-menu,
 [role="menu"] {
-
     backdrop-filter: var(--glass-backdrop);
 
     -webkit-backdrop-filter: var(--glass-backdrop);
@@ -6868,92 +6933,71 @@ input:focus::placeholder {
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
 
     animation: fadeInScale 0.2s var(--ease-out-cubic);
-
 }
-
-
 
 .dropdown-item,
 [role="menuitem"] {
-
     transition: all var(--t-fast);
 
     position: relative;
 
     padding-left: 12px;
-
 }
 
-
-
 .dropdown-item:hover {
-
     background: rgba(27, 94, 59, 0.08);
 
     padding-left: 16px;
-
 }
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    BADGE & LABEL STYLING
 
    � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �  */
 
 .badge {
-
     transition: all var(--t-fast);
 
     animation: fadeInScale 0.2s var(--ease-out-cubic);
-
 }
-
-
 
 .badge-primary {
-
-    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-mid) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--emerald) 0%,
+        var(--emerald-mid) 100%
+    );
 
     box-shadow: 0 2px 8px rgba(27, 94, 59, 0.2);
-
 }
-
-
 
 .badge-accent {
-
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-bright) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--gold) 0%,
+        var(--gold-bright) 100%
+    );
 
     box-shadow: 0 2px 8px rgba(184, 134, 11, 0.2);
-
 }
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    RESPONSIVE ENHANCEMENTS
 
    � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �  */
 
 @media (max-width: 768px) {
-
     .sidebar {
-
         backdrop-filter: var(--glass-dark-backdrop);
 
         -webkit-backdrop-filter: var(--glass-dark-backdrop);
 
         background: rgba(15, 45, 33, 0.95);
-
     }
 
-
-
     .modal-overlay {
-
         backdrop-filter: blur(8px);
 
         -webkit-backdrop-filter: blur(8px);
@@ -6961,91 +7005,63 @@ input:focus::placeholder {
         background: rgba(0, 0, 0, 0.4);
 
         animation: fadeInScale 0.2s var(--ease-out-cubic);
-
     }
 
-
-
     button {
-
         min-height: 44px;
 
         min-width: 44px;
-
     }
-
 }
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    ACCESSIBILITY
 
    � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �  */
 
 @media (prefers-reduced-motion: reduce) {
-
     *,
-
     *::before,
-
     *::after {
-
         animation-duration: 0.01ms !important;
 
         animation-iteration-count: 1 !important;
 
         transition-duration: 0.01ms !important;
-
     }
-
 }
 
-
-
 @media (prefers-color-scheme: dark) {
-
     .header-glass,
     .sidebar-glass,
     .card-glass {
-
         background: rgba(20, 20, 25, 0.9);
 
         border-color: rgba(255, 255, 255, 0.1);
-
     }
-
 }
 
-
-
-/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � 
+/* � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �
 
    DARK MODE SPECIFIC
 
    � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � � �  */
 
 [data-theme="dark"] .audio-player {
-
-    background: linear-gradient(135deg, rgba(10, 30, 20, 0.95) 0%, rgba(15, 45, 33, 0.95) 100%);
-
+    background: linear-gradient(
+        135deg,
+        rgba(10, 30, 20, 0.95) 0%,
+        rgba(15, 45, 33, 0.95) 100%
+    );
 }
-
-
 
 [data-theme="dark"] button {
-
     color: rgba(255, 255, 255, 0.9);
-
 }
 
-
-
 [data-theme="dark"] .dropdown-item:hover {
-
     background: rgba(27, 94, 59, 0.2);
-
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -7082,7 +7098,6 @@ input:focus::placeholder {
 }
 
 @keyframes pulseGlow {
-
     0%,
     100% {
         box-shadow: 0 0 12px rgba(27, 94, 59, 0.2);
@@ -7104,7 +7119,6 @@ input:focus::placeholder {
 }
 
 @keyframes float {
-
     0%,
     100% {
         transform: translateY(0px);
@@ -7128,7 +7142,7 @@ input:focus::placeholder {
 /* ─────────────────────────────────────────────────────────
    HEADER MODERNIZATION
    ───────────────────────────────────────────────────────── */
-.app>header {
+.app > header {
     backdrop-filter: var(--glass-backdrop);
     -webkit-backdrop-filter: var(--glass-backdrop);
     background: var(--header-glass);
@@ -7144,7 +7158,7 @@ input:focus::placeholder {
 }
 
 .header-nav-button::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
@@ -7153,7 +7167,9 @@ input:focus::placeholder {
     border-radius: 50%;
     background: rgba(27, 94, 59, 0.1);
     transform: translate(-50%, -50%);
-    transition: width var(--t-mid), height var(--t-mid);
+    transition:
+        width var(--t-mid),
+        height var(--t-mid);
 }
 
 .header-nav-button:hover::before {
@@ -7179,13 +7195,17 @@ input:focus::placeholder {
 }
 
 .sidebar-link::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 0;
     left: 0;
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, var(--emerald-lit) 0%, var(--gold-bright) 100%);
+    background: linear-gradient(
+        90deg,
+        var(--emerald-lit) 0%,
+        var(--gold-bright) 100%
+    );
     transition: width var(--t-mid);
 }
 
@@ -7220,13 +7240,17 @@ input:focus::placeholder {
 }
 
 .player-progress-fill::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -4px;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, rgba(212, 168, 32, 0.6) 0%, rgba(212, 168, 32, 0) 100%);
+    background: linear-gradient(
+        90deg,
+        rgba(212, 168, 32, 0.6) 0%,
+        rgba(212, 168, 32, 0) 100%
+    );
     border-radius: inherit;
     filter: blur(2px);
 }
@@ -7246,11 +7270,15 @@ input:focus::placeholder {
 }
 
 .player-play-btn.playing::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: -4px;
     border-radius: inherit;
-    background: radial-gradient(circle, rgba(27, 94, 59, 0.2) 0%, transparent 70%);
+    background: radial-gradient(
+        circle,
+        rgba(27, 94, 59, 0.2) 0%,
+        transparent 70%
+    );
     animation: pulseGlow 2s ease-in-out infinite;
     pointer-events: none;
 }
@@ -7268,7 +7296,7 @@ button,
 /* Ripple effect on clicks */
 button::after,
 [role="button"]::after {
-    content: '';
+    content: "";
     position: absolute;
     top: var(--ripple-y, 0);
     left: var(--ripple-x, 0);
@@ -7282,7 +7310,11 @@ button::after,
 
 /* Primary button */
 .btn-primary {
-    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-mid) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--emerald) 0%,
+        var(--emerald-mid) 100%
+    );
     box-shadow: var(--shadow-emerald);
     transition: all var(--t-fast);
 }
@@ -7335,13 +7367,17 @@ button::after,
 }
 
 .ayah-block::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(180deg, var(--emerald) 0%, var(--emerald-lit) 100%);
+    background: linear-gradient(
+        180deg,
+        var(--emerald) 0%,
+        var(--emerald-lit) 100%
+    );
     transform: scaleX(0);
     transform-origin: left;
     transition: transform var(--t-mid);
@@ -7362,7 +7398,11 @@ button::after,
 }
 
 .ayah-block.playing::before {
-    background: linear-gradient(180deg, var(--gold) 0%, var(--gold-bright) 100%);
+    background: linear-gradient(
+        180deg,
+        var(--gold) 0%,
+        var(--gold-bright) 100%
+    );
     transform: scaleX(1);
 }
 
@@ -7370,10 +7410,12 @@ button::after,
    LOADING & SKELETON STATES
    ───────────────────────────────────────────────────────── */
 .skeleton {
-    background: linear-gradient(90deg,
-            rgba(255, 255, 255, 0.5) 0%,
-            rgba(255, 255, 255, 0.3) 50%,
-            rgba(255, 255, 255, 0.5) 100%);
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0.5) 100%
+    );
     background-size: 200% 100%;
     animation: shimmer 2s ease-in-out infinite;
     border-radius: var(--r-md);
@@ -7450,12 +7492,20 @@ input:focus::placeholder {
 }
 
 .badge-primary {
-    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-mid) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--emerald) 0%,
+        var(--emerald-mid) 100%
+    );
     box-shadow: 0 2px 8px rgba(27, 94, 59, 0.2);
 }
 
 .badge-accent {
-    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-bright) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--gold) 0%,
+        var(--gold-bright) 100%
+    );
     box-shadow: 0 2px 8px rgba(184, 134, 11, 0.2);
 }
 
@@ -7486,7 +7536,6 @@ input:focus::placeholder {
    ACCESSIBILITY
    ───────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-
     *,
     *::before,
     *::after {
@@ -7497,7 +7546,6 @@ input:focus::placeholder {
 }
 
 @media (prefers-color-scheme: dark) {
-
     .header-glass,
     .sidebar-glass,
     .card-glass {
@@ -7510,7 +7558,11 @@ input:focus::placeholder {
    DARK MODE SPECIFIC
    ───────────────────────────────────────────────────────── */
 [data-theme="dark"] .audio-player {
-    background: linear-gradient(135deg, rgba(10, 30, 20, 0.95) 0%, rgba(15, 45, 33, 0.95) 100%);
+    background: linear-gradient(
+        135deg,
+        rgba(10, 30, 20, 0.95) 0%,
+        rgba(15, 45, 33, 0.95) 100%
+    );
 }
 
 [data-theme="dark"] button {
@@ -7574,7 +7626,7 @@ input:focus::placeholder {
 
 /* Ripple effect */
 .header-nav-btn::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
@@ -7583,7 +7635,9 @@ input:focus::placeholder {
     border-radius: 50%;
     background: rgba(27, 94, 59, 0.1);
     transform: translate(-50%, -50%);
-    transition: width var(--t-mid), height var(--t-mid);
+    transition:
+        width var(--t-mid),
+        height var(--t-mid);
     pointer-events: none;
 }
 
@@ -7632,7 +7686,7 @@ input:focus::placeholder {
 }
 
 .header-theme-btn::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -6px;
     left: 50%;
@@ -7653,7 +7707,11 @@ input:focus::placeholder {
     height: 20px;
     padding: 0 var(--space-1);
     border-radius: var(--r-pill);
-    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-mid) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--emerald) 0%,
+        var(--emerald-mid) 100%
+    );
     color: white;
     font-size: 11px;
     font-weight: 600;
@@ -7712,7 +7770,6 @@ input:focus::placeholder {
 
 /* Animations */
 @keyframes pulse {
-
     0%,
     100% {
         opacity: 1;
@@ -7817,23 +7874,31 @@ input:focus::placeholder {
 }
 
 .sidebar-link::before {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 0;
     left: var(--space-4);
     width: calc(100% - var(--space-8));
     height: 2px;
-    background: linear-gradient(90deg, var(--emerald-lit) 0%, var(--gold-bright) 100%);
+    background: linear-gradient(
+        90deg,
+        var(--emerald-lit) 0%,
+        var(--gold-bright) 100%
+    );
     transform: scaleX(0);
     transform-origin: left;
     transition: transform var(--t-mid);
 }
 
 .sidebar-link::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgba(27, 94, 59, 0) 0%, rgba(27, 94, 59, 0.05) 100%);
+    background: linear-gradient(
+        90deg,
+        rgba(27, 94, 59, 0) 0%,
+        rgba(27, 94, 59, 0.05) 100%
+    );
     transform: translateX(-100%);
     transition: transform var(--t-mid);
     pointer-events: none;
@@ -7885,7 +7950,11 @@ input:focus::placeholder {
 /* Badge on sidebar links */
 .sidebar-link-badge {
     margin-left: auto;
-    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-mid) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--emerald) 0%,
+        var(--emerald-mid) 100%
+    );
     color: white;
     padding: var(--space-1) var(--space-2);
     border-radius: var(--r-pill);
@@ -7997,7 +8066,9 @@ select:focus {
     outline: none;
     border-color: var(--emerald);
     background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 0 0 3px rgba(27, 94, 59, 0.1), 0 2px 12px rgba(0, 0, 0, 0.08);
+    box-shadow:
+        0 0 0 3px rgba(27, 94, 59, 0.1),
+        0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 input:focus::placeholder,
@@ -8031,20 +8102,28 @@ button,
 /* Primary button */
 .btn-primary,
 button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(.btn-icon) {
-    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-mid) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--emerald) 0%,
+        var(--emerald-mid) 100%
+    );
     color: white;
     box-shadow: var(--shadow-emerald);
     font-weight: 600;
 }
 
 .btn-primary:hover,
-button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(.btn-icon):hover {
+button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(
+        .btn-icon
+    ):hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(27, 94, 59, 0.3);
 }
 
 .btn-primary:active,
-button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(.btn-icon):active {
+button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(
+        .btn-icon
+    ):active {
     transform: translateY(0);
 }
 
@@ -8098,7 +8177,7 @@ button:disabled,
 }
 
 .btn.loading::after {
-    content: '';
+    content: "";
     display: inline-block;
     width: 14px;
     height: 14px;
@@ -8153,20 +8232,24 @@ input[type="radio"]:hover {
 
 input[type="checkbox"]:checked,
 input[type="radio"]:checked {
-    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-mid) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--emerald) 0%,
+        var(--emerald-mid) 100%
+    );
     border-color: var(--emerald);
     box-shadow: var(--shadow-emerald);
 }
 
 input[type="checkbox"]:checked::after {
-    content: '✓';
+    content: "✓";
     color: white;
     font-size: 12px;
     font-weight: bold;
 }
 
 input[type="radio"]:checked::after {
-    content: '';
+    content: "";
     width: 8px;
     height: 8px;
     background: white;
@@ -8294,7 +8377,6 @@ input:focus-visible {
    ───────────────────────────────────────────── */
 
 @media (max-width: 640px) {
-
     button,
     [role="button"],
     .btn {
@@ -8381,7 +8463,11 @@ input:focus-visible {
     cursor: pointer;
     outline: none;
     box-shadow: var(--shadow-xs);
-    transition: border-color 0.15s, background 0.15s, transform 0.14s, box-shadow 0.14s;
+    transition:
+        border-color 0.15s,
+        background 0.15s,
+        transform 0.14s,
+        box-shadow 0.14s;
     color: inherit;
     text-align: center;
 }
@@ -8417,7 +8503,9 @@ input:focus-visible {
     color: var(--primary);
     font-size: 0.95rem;
     border: 1.5px solid rgba(var(--primary-rgb), 0.12);
-    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.14s;
+    transition:
+        transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.14s;
     flex-shrink: 0;
 }
 
@@ -8501,7 +8589,9 @@ input:focus-visible {
     font-size: 0.77rem;
     font-weight: 600;
     color: var(--text-muted);
-    transition: color 0.15s, border-color 0.15s;
+    transition:
+        color 0.15s,
+        border-color 0.15s;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8775,7 +8865,9 @@ input:focus-visible {
     font-family: var(--font-ui);
     color: var(--text);
     outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
     -webkit-appearance: none;
     appearance: none;
 }
@@ -8831,7 +8923,9 @@ input:focus-visible {
     border: none;
     border-bottom: 1px solid var(--border-subtle);
     background: transparent;
-    transition: background 0.12s, color 0.12s;
+    transition:
+        background 0.12s,
+        color 0.12s;
     text-align: start;
     width: 100%;
     cursor: pointer;
@@ -8860,14 +8954,25 @@ input:focus-visible {
     display: flex;
     align-items: center;
     justify-content: center;
-    clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+    clip-path: polygon(
+        30% 0%,
+        70% 0%,
+        100% 30%,
+        100% 70%,
+        70% 100%,
+        30% 100%,
+        0% 70%,
+        0% 30%
+    );
     background: var(--primary-light);
     color: var(--primary);
     font-weight: 700;
     font-size: 0.75rem;
     flex-shrink: 0;
     font-family: var(--font-ui);
-    transition: background 0.12s, color 0.12s;
+    transition:
+        background 0.12s,
+        color 0.12s;
 }
 
 .quran-com-card:hover .qc-num {
@@ -8944,7 +9049,10 @@ input:focus-visible {
     cursor: pointer;
     opacity: 0;
     transform: scale(0.8);
-    transition: opacity 0.15s ease, transform 0.15s ease, background 0.15s ease;
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease,
+        background 0.15s ease;
     flex-shrink: 0;
 }
 
@@ -8968,7 +9076,6 @@ input:focus-visible {
 }
 
 @keyframes playBtnPulse {
-
     0%,
     100% {
         box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4);
@@ -8987,7 +9094,7 @@ input:focus-visible {
 }
 
 .mem-words {
-    font-family: var(--font-quran, 'Scheherazade New', serif);
+    font-family: var(--font-quran, "Scheherazade New", serif);
     line-height: 2.5;
     word-spacing: 0.2em;
     display: block;
@@ -9054,7 +9161,7 @@ input:focus-visible {
 }
 
 .mem-counter {
-    font-family: 'Cairo', sans-serif;
+    font-family: "Cairo", sans-serif;
     font-size: 0.72rem;
     font-weight: 800;
     color: var(--primary);
@@ -9070,7 +9177,7 @@ input:focus-visible {
     align-items: center;
     gap: 0.3rem;
     padding: 0.3rem 0.65rem;
-    font-family: 'Cairo', sans-serif;
+    font-family: "Cairo", sans-serif;
     font-size: 0.72rem;
     background: var(--bg-secondary);
     border: 1px solid var(--border);
@@ -9123,7 +9230,7 @@ input:focus-visible {
 }
 
 .sidebar-progress-label {
-    font-family: 'Cairo', sans-serif;
+    font-family: "Cairo", sans-serif;
     font-size: 0.63rem;
     font-weight: 700;
     color: var(--text-muted);
@@ -9132,7 +9239,7 @@ input:focus-visible {
 }
 
 .sidebar-progress-pct {
-    font-family: 'Cairo', sans-serif;
+    font-family: "Cairo", sans-serif;
     font-size: 0.75rem;
     font-weight: 800;
     color: var(--primary);
@@ -9154,7 +9261,7 @@ input:focus-visible {
 
 .sidebar-progress-detail {
     margin-top: 0.25rem;
-    font-family: 'Cairo', sans-serif;
+    font-family: "Cairo", sans-serif;
     font-size: 0.58rem;
     color: var(--text-muted);
     opacity: 0.75;
@@ -9171,7 +9278,7 @@ input:focus-visible {
 
 .sidebar-recent-title {
     padding: 0.25rem 0.85rem 0.2rem;
-    font-family: 'Cairo', sans-serif;
+    font-family: "Cairo", sans-serif;
     font-size: 0.61rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -9216,7 +9323,8 @@ input:focus-visible {
     max-height: 88vh;
     background: var(--bg-primary, #fdf6e3);
     border-radius: 10px;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65),
+    box-shadow:
+        0 24px 80px rgba(0, 0, 0, 0.65),
         0 0 0 1px rgba(184, 134, 11, 0.3);
     display: flex;
     flex-direction: column;
@@ -9234,6 +9342,97 @@ input:focus-visible {
         transform: scale(1);
         opacity: 1;
     }
+}
+
+.mfp-page-header {
+    padding: 0.9rem 1.5rem 0.6rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(184, 134, 11, 0.25);
+    background: rgba(184, 134, 11, 0.05);
+    flex-shrink: 0;
+}
+
+.mfp-bismillah {
+    font-family: var(--font-quran, "Scheherazade New", serif);
+    font-size: 1.6rem;
+    color: var(--gold, #b8860b);
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.mfp-surah-label {
+    font-family: "Cairo", sans-serif;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.mfp-content-area {
+    padding: 1.6rem 2rem;
+    overflow-y: auto;
+    flex: 1;
+    direction: rtl;
+    text-align: justify;
+    line-height: 2.9;
+    word-spacing: 0.12em;
+    color: var(--text);
+    scrollbar-width: thin;
+}
+
+.mfp-ayah-num {
+    display: inline-block;
+    font-size: 0.48em;
+    vertical-align: super;
+    color: var(--primary);
+    margin: 0 0.15em;
+    font-family: "Cairo", sans-serif;
+    opacity: 0.8;
+}
+
+.mfp-playing {
+    background: rgba(var(--primary-rgb, 27, 94, 59), 0.15);
+    border-radius: 4px;
+    padding: 0 0.1em;
+}
+
+.mfp-close-btn {
+    position: absolute;
+    top: 0.6rem;
+    inset-inline-start: 0.7rem;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    z-index: 2;
+    transition: all 0.2s;
+}
+
+.mfp-close-btn:hover {
+    background: #ef4444;
+    color: white;
+    border-color: transparent;
+}
+
+.mfp-footer-bar {
+    padding: 0.55rem 1.2rem;
+    border-top: 1px solid rgba(184, 134, 11, 0.2);
+    background: rgba(184, 134, 11, 0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.mfp-footer-text {
+    font-family: "Cairo", sans-serif;
+    font-size: 0.7rem;
+    color: var(--text-muted);
 }
 
 /* ══ RESPONSIVE ══ */
@@ -9316,7 +9515,6 @@ input:focus-visible {
 
 /* ── Keyframes ── */
 @keyframes titleGlowPulse {
-
     0%,
     100% {
         text-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
@@ -9342,7 +9540,6 @@ input:focus-visible {
 }
 
 @keyframes orbFloat {
-
     0%,
     100% {
         transform: translate(0, 0) scale(1);
@@ -9369,7 +9566,7 @@ input:focus-visible {
 
 /* Override old bottom glow → top-right animated orb */
 .qc-hero::after {
-    content: '';
+    content: "";
     position: absolute;
     width: 340px;
     height: 340px;
@@ -9381,7 +9578,11 @@ input:focus-visible {
     /* New position: top right */
     top: -80px;
     right: -70px;
-    background: radial-gradient(circle, rgba(212, 168, 32, 0.09) 0%, transparent 68%);
+    background: radial-gradient(
+        circle,
+        rgba(212, 168, 32, 0.09) 0%,
+        transparent 68%
+    );
     pointer-events: none;
     animation: orbFloat 9s ease-in-out infinite;
     z-index: 0;
@@ -9394,7 +9595,11 @@ input:focus-visible {
     gap: 0.55rem;
     margin-bottom: 1rem;
     padding: 0.55rem 1.2rem 0.55rem 0.85rem;
-    background: linear-gradient(135deg, rgba(212, 168, 32, 0.95), rgba(184, 134, 11, 0.9));
+    background: linear-gradient(
+        135deg,
+        rgba(212, 168, 32, 0.95),
+        rgba(184, 134, 11, 0.9)
+    );
     color: #0a1f0d;
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: var(--r-pill);
@@ -9495,7 +9700,6 @@ input:focus-visible {
 }
 
 @keyframes logoFloat {
-
     0%,
     100% {
         transform: translateY(0px);
@@ -9576,9 +9780,11 @@ input:focus-visible {
     gap: 0.5rem;
     padding: 0.55rem 1rem;
     margin: 0 0 0.25rem;
-    background: linear-gradient(90deg,
-            rgba(var(--primary-rgb), 0.08) 0%,
-            transparent 100%);
+    background: linear-gradient(
+        90deg,
+        rgba(var(--primary-rgb), 0.08) 0%,
+        transparent 100%
+    );
     border-left: 3px solid var(--primary);
     border-radius: 0 var(--r-sm) var(--r-sm) 0;
     font-family: var(--font-ui);
@@ -9598,9 +9804,11 @@ input:focus-visible {
     border-left: none;
     border-right: 3px solid var(--primary);
     border-radius: var(--r-sm) 0 0 var(--r-sm);
-    background: linear-gradient(270deg,
-            rgba(var(--primary-rgb), 0.08) 0%,
-            transparent 100%);
+    background: linear-gradient(
+        270deg,
+        rgba(var(--primary-rgb), 0.08) 0%,
+        transparent 100%
+    );
 }
 
 /* ── Type dot badges dans les cartes sourates ── */
@@ -9648,7 +9856,7 @@ input:focus-visible {
 }
 
 .quran-com-card:nth-child(5) {
-    animation-delay: 0.10s;
+    animation-delay: 0.1s;
 }
 
 .quran-com-card:nth-child(6) {
@@ -9667,8 +9875,8 @@ input:focus-visible {
     animation-delay: 0.18s;
 }
 
-.quran-com-card:nth-child(n+10) {
-    animation-delay: 0.20s;
+.quran-com-card:nth-child(n + 10) {
+    animation-delay: 0.2s;
 }
 
 /* Hover : glissement subtil + surlignage numéro ── */
@@ -9705,7 +9913,7 @@ input:focus-visible {
 }
 
 .hp-quick-card:nth-child(2) {
-    animation-delay: 0.10s;
+    animation-delay: 0.1s;
 }
 
 .hp-quick-card:nth-child(3) {
@@ -9725,7 +9933,7 @@ input:focus-visible {
 }
 
 .hp-quick-card:nth-child(7) {
-    animation-delay: 0.30s;
+    animation-delay: 0.3s;
 }
 
 .hp-quick-card:nth-child(8) {
@@ -9757,14 +9965,17 @@ input:focus-visible {
     animation-delay: 0.24s;
 }
 
-
 /* ── Home refresh: palette plus sobre + grille sourates ── */
 .qc-hero::after {
     width: 280px;
     height: 280px;
     top: -50px;
     right: -40px;
-    background: radial-gradient(circle, rgba(var(--primary-rgb), 0.16) 0%, transparent 70%);
+    background: radial-gradient(
+        circle,
+        rgba(var(--primary-rgb), 0.16) 0%,
+        transparent 70%
+    );
     opacity: 0.72;
 }
 
@@ -9798,7 +10009,11 @@ input:focus-visible {
 }
 
 .qc-continue-btn {
-    background: linear-gradient(135deg, var(--gold) 0%, color-mix(in srgb, var(--gold) 82%, #fff 18%) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--gold) 0%,
+        color-mix(in srgb, var(--gold) 82%, #fff 18%) 100%
+    );
     box-shadow:
         0 8px 24px rgba(0, 0, 0, 0.16),
         inset 0 1px 0 rgba(255, 255, 255, 0.18);
@@ -9822,7 +10037,11 @@ input:focus-visible {
 
 .hp-panel,
 .hp-right-col {
-    background: linear-gradient(180deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+    background: linear-gradient(
+        180deg,
+        var(--bg-card) 0%,
+        var(--bg-secondary) 100%
+    );
     border-color: rgba(var(--primary-rgb), 0.09);
     box-shadow: 0 14px 40px rgba(0, 0, 0, 0.06);
 }
@@ -9875,7 +10094,11 @@ input:focus-visible {
 
 .hp-panel-body {
     padding: 0.55rem;
-    background: linear-gradient(180deg, rgba(var(--primary-rgb), 0.015) 0%, transparent 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(var(--primary-rgb), 0.015) 0%,
+        transparent 100%
+    );
 }
 
 .hp-info-row {
@@ -9985,19 +10208,31 @@ input:focus-visible {
     justify-content: space-between;
     border: 1px solid rgba(var(--primary-rgb), 0.08);
     border-radius: calc(var(--r-xl) + 2px);
-    background: linear-gradient(180deg, rgba(var(--primary-rgb), 0.035) 0%, var(--bg-primary) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(var(--primary-rgb), 0.035) 0%,
+        var(--bg-primary) 100%
+    );
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
 }
 
 .quran-com-card--grid:hover {
     transform: translateY(-2px);
-    background: linear-gradient(180deg, rgba(var(--primary-rgb), 0.06) 0%, var(--bg-primary) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(var(--primary-rgb), 0.06) 0%,
+        var(--bg-primary) 100%
+    );
     border-color: rgba(var(--primary-rgb), 0.16);
     box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
 }
 
 .quran-com-card--grid.quran-com-card--active {
-    background: linear-gradient(180deg, rgba(var(--primary-rgb), 0.1) 0%, var(--bg-primary) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(var(--primary-rgb), 0.1) 0%,
+        var(--bg-primary) 100%
+    );
     border-color: rgba(var(--primary-rgb), 0.22);
 }
 
@@ -10109,7 +10344,6 @@ input:focus-visible {
 
 /* ── Réduction mouvements ── */
 @media (prefers-reduced-motion: reduce) {
-
     .qc-site-name,
     .qc-hero::after,
     .qc-vdj,
@@ -10122,59 +10356,56 @@ input:focus-visible {
 
 /* ── Dégradés hero adaptatifs selon le thème ── */
 [data-theme="dark"] .qc-hero {
-    background: linear-gradient(160deg,
-            #021208 0%,
-            #0d2e18 55%,
-            #0a2212 100%);
+    background: linear-gradient(160deg, #021208 0%, #0d2e18 55%, #0a2212 100%);
 }
 
 [data-theme="sepia"] .qc-hero {
-    background: linear-gradient(160deg,
-            #2a1200 0%,
-            #4a2800 55%,
-            #3a1c00 100%);
+    background: linear-gradient(160deg, #2a1200 0%, #4a2800 55%, #3a1c00 100%);
 }
 
 [data-theme="ocean"] .qc-hero {
-    background: linear-gradient(160deg,
-            #001a34 0%,
-            #003660 55%,
-            #002848 100%);
+    background: linear-gradient(160deg, #001a34 0%, #003660 55%, #002848 100%);
 }
 
 [data-theme="forest"] .qc-hero {
-    background: linear-gradient(160deg,
-            #061008 0%,
-            #112618 55%,
-            #0c1e10 100%);
+    background: linear-gradient(160deg, #061008 0%, #112618 55%, #0c1e10 100%);
 }
 
 [data-theme="night-blue"] .qc-hero {
-    background: linear-gradient(160deg,
-            #020410 0%,
-            #060c24 55%,
-            #040818 100%);
+    background: linear-gradient(160deg, #020410 0%, #060c24 55%, #040818 100%);
 }
 
 /* Lueur thématique en bas du héro */
 [data-theme="ocean"] .qc-hero::after {
-    background: radial-gradient(ellipse at center,
-            rgba(0, 130, 200, 0.15) 0%, transparent 70%);
+    background: radial-gradient(
+        ellipse at center,
+        rgba(0, 130, 200, 0.15) 0%,
+        transparent 70%
+    );
 }
 
 [data-theme="sepia"] .qc-hero::after {
-    background: radial-gradient(ellipse at center,
-            rgba(184, 110, 30, 0.14) 0%, transparent 70%);
+    background: radial-gradient(
+        ellipse at center,
+        rgba(184, 110, 30, 0.14) 0%,
+        transparent 70%
+    );
 }
 
 [data-theme="forest"] .qc-hero::after {
-    background: radial-gradient(ellipse at center,
-            rgba(40, 140, 60, 0.14) 0%, transparent 70%);
+    background: radial-gradient(
+        ellipse at center,
+        rgba(40, 140, 60, 0.14) 0%,
+        transparent 70%
+    );
 }
 
 [data-theme="night-blue"] .qc-hero::after {
-    background: radial-gradient(ellipse at center,
-            rgba(58, 108, 200, 0.18) 0%, transparent 70%);
+    background: radial-gradient(
+        ellipse at center,
+        rgba(58, 108, 200, 0.18) 0%,
+        transparent 70%
+    );
 }
 
 /* ── Mobile hero ── */
@@ -10204,8 +10435,17 @@ input:focus-visible {
     min-height: 100%;
     padding-bottom: 4.75rem;
     background:
-        linear-gradient(180deg, rgba(var(--primary-rgb), 0.035) 0%, transparent 18%),
-        linear-gradient(180deg, var(--bg-primary) 0%, color-mix(in srgb, var(--bg-primary) 88%, var(--bg-secondary) 12%) 100%);
+        linear-gradient(
+            180deg,
+            rgba(var(--primary-rgb), 0.035) 0%,
+            transparent 18%
+        ),
+        linear-gradient(
+            180deg,
+            var(--bg-primary) 0%,
+            color-mix(in srgb, var(--bg-primary) 88%, var(--bg-secondary) 12%)
+                100%
+        );
 }
 
 .hp-page::before {
@@ -10214,16 +10454,36 @@ input:focus-visible {
     inset: 0;
     pointer-events: none;
     background:
-        radial-gradient(circle at 8% 10%, rgba(var(--primary-rgb), 0.11) 0%, transparent 20%),
-        radial-gradient(circle at 92% 8%, rgba(184, 134, 11, 0.08) 0%, transparent 17%),
-        radial-gradient(circle at 70% 36%, rgba(var(--primary-rgb), 0.05) 0%, transparent 24%),
-        repeating-linear-gradient(135deg, rgba(var(--primary-rgb), 0.028) 0 1px, transparent 1px 30px),
-        repeating-linear-gradient(45deg, rgba(184, 134, 11, 0.018) 0 1px, transparent 1px 38px);
+        radial-gradient(
+            circle at 8% 10%,
+            rgba(var(--primary-rgb), 0.11) 0%,
+            transparent 20%
+        ),
+        radial-gradient(
+            circle at 92% 8%,
+            rgba(184, 134, 11, 0.08) 0%,
+            transparent 17%
+        ),
+        radial-gradient(
+            circle at 70% 36%,
+            rgba(var(--primary-rgb), 0.05) 0%,
+            transparent 24%
+        ),
+        repeating-linear-gradient(
+            135deg,
+            rgba(var(--primary-rgb), 0.028) 0 1px,
+            transparent 1px 30px
+        ),
+        repeating-linear-gradient(
+            45deg,
+            rgba(184, 134, 11, 0.018) 0 1px,
+            transparent 1px 38px
+        );
     opacity: 0.9;
     z-index: 0;
 }
 
-.hp-page>* {
+.hp-page > * {
     position: relative;
     z-index: 1;
 }
@@ -10234,8 +10494,12 @@ input:focus-visible {
     padding: 2.55rem clamp(1rem, 3vw, 2rem) 1.8rem;
     border-radius: 2rem;
     border: 1px solid rgba(var(--primary-rgb), 0.16);
-    background:
-        linear-gradient(140deg, var(--primary-dark) 0%, rgba(var(--primary-rgb), 0.92) 55%, rgba(184, 134, 11, 0.28) 100%);
+    background: linear-gradient(
+        140deg,
+        var(--primary-dark) 0%,
+        rgba(var(--primary-rgb), 0.92) 55%,
+        rgba(184, 134, 11, 0.28) 100%
+    );
     box-shadow:
         0 22px 60px rgba(19, 23, 20, 0.14),
         inset 0 1px 0 rgba(255, 255, 255, 0.08);
@@ -10247,8 +10511,16 @@ input:focus-visible {
     inset: 0;
     background:
         linear-gradient(120deg, rgba(255, 255, 255, 0.06), transparent 34%),
-        radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.08) 0%, transparent 20%),
-        repeating-linear-gradient(150deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 42px);
+        radial-gradient(
+            circle at 18% 18%,
+            rgba(255, 255, 255, 0.08) 0%,
+            transparent 20%
+        ),
+        repeating-linear-gradient(
+            150deg,
+            rgba(255, 255, 255, 0.045) 0 1px,
+            transparent 1px 42px
+        );
     opacity: 0.9;
     pointer-events: none;
 }
@@ -10259,7 +10531,12 @@ input:focus-visible {
     top: -84px;
     right: -56px;
     opacity: 0.82;
-    background: radial-gradient(circle, rgba(255, 244, 206, 0.16) 0%, rgba(212, 168, 32, 0.12) 24%, transparent 72%);
+    background: radial-gradient(
+        circle,
+        rgba(255, 244, 206, 0.16) 0%,
+        rgba(212, 168, 32, 0.12) 24%,
+        transparent 72%
+    );
 }
 
 .qc-hero-inner {
@@ -10404,8 +10681,11 @@ input:focus-visible {
     padding: 0.95rem 1rem;
     border-radius: 1.5rem;
     border: 1px solid rgba(var(--primary-rgb), 0.08);
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.74) 0%, rgba(255, 255, 255, 0.6) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.74) 0%,
+        rgba(255, 255, 255, 0.6) 100%
+    );
     box-shadow: 0 14px 34px rgba(15, 20, 17, 0.06);
 }
 
@@ -10442,7 +10722,11 @@ input:focus-visible {
     gap: 0.3rem;
     padding: 0.72rem 0.42rem 0.64rem;
     border-radius: 1.45rem;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(249, 246, 238, 0.94) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.92) 0%,
+        rgba(249, 246, 238, 0.94) 100%
+    );
     border-color: rgba(184, 134, 11, 0.1);
     box-shadow: 0 12px 28px rgba(15, 20, 17, 0.045);
     overflow: hidden;
@@ -10457,12 +10741,20 @@ input:focus-visible {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(184, 134, 11, 0.12) 0%, transparent 68%);
+    background: radial-gradient(
+        circle,
+        rgba(184, 134, 11, 0.12) 0%,
+        transparent 68%
+    );
     pointer-events: none;
 }
 
 .hp-quick-card--duas::before {
-    background: radial-gradient(circle, rgba(var(--primary-rgb), 0.1) 0%, transparent 68%);
+    background: radial-gradient(
+        circle,
+        rgba(var(--primary-rgb), 0.1) 0%,
+        transparent 68%
+    );
 }
 
 .hp-quick-icon {
@@ -10471,7 +10763,11 @@ input:focus-visible {
     border-radius: 999px;
     font-size: 0.92rem;
     margin-inline: auto;
-    background: linear-gradient(135deg, rgba(184, 134, 11, 0.12), rgba(184, 134, 11, 0.04));
+    background: linear-gradient(
+        135deg,
+        rgba(184, 134, 11, 0.12),
+        rgba(184, 134, 11, 0.04)
+    );
     color: color-mix(in srgb, var(--primary) 72%, #7a5a16 28%);
     border-color: rgba(184, 134, 11, 0.16);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42);
@@ -10501,7 +10797,11 @@ input:focus-visible {
 
 .hp-panel,
 .hp-right-col {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.62) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.78) 0%,
+        rgba(255, 255, 255, 0.62) 100%
+    );
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
@@ -10560,7 +10860,11 @@ input:focus-visible {
     font-size: 0.76rem;
     font-weight: 700;
     cursor: pointer;
-    transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease, color 0.16s ease;
+    transition:
+        transform 0.16s ease,
+        border-color 0.16s ease,
+        background 0.16s ease,
+        color 0.16s ease;
 }
 
 .hp-sort-btn:hover {
@@ -10575,8 +10879,11 @@ input:focus-visible {
     min-height: 104px;
     padding: 0.85rem 0.95rem;
     border-radius: 1.5rem;
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 244, 232, 0.98) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.96) 0%,
+        rgba(248, 244, 232, 0.98) 100%
+    );
     border-color: rgba(184, 134, 11, 0.08);
     box-shadow: 0 10px 22px rgba(15, 20, 17, 0.04);
 }
@@ -10589,7 +10896,11 @@ input:focus-visible {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(184, 134, 11, 0.08) 0%, transparent 68%);
+    background: radial-gradient(
+        circle,
+        rgba(184, 134, 11, 0.08) 0%,
+        transparent 68%
+    );
     pointer-events: none;
 }
 
@@ -10643,7 +10954,11 @@ input:focus-visible {
 [data-theme="ocean"] .hp-page {
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.015) 0%, transparent 20%),
-        linear-gradient(180deg, var(--bg-primary) 0%, color-mix(in srgb, var(--bg-primary) 82%, #04110a 18%) 100%);
+        linear-gradient(
+            180deg,
+            var(--bg-primary) 0%,
+            color-mix(in srgb, var(--bg-primary) 82%, #04110a 18%) 100%
+        );
 }
 
 [data-theme="dark"] .hp-stat-chip,
@@ -10666,7 +10981,11 @@ input:focus-visible {
 [data-theme="night-blue"] .quran-com-card--grid,
 [data-theme="forest"] .quran-com-card--grid,
 [data-theme="ocean"] .quran-com-card--grid {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(var(--primary-rgb), 0.05) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(var(--primary-rgb), 0.05) 100%
+    );
     border-color: rgba(255, 255, 255, 0.08);
     box-shadow: 0 16px 32px rgba(0, 0, 0, 0.16);
 }
@@ -10675,7 +10994,11 @@ input:focus-visible {
 [data-theme="night-blue"] .hp-quick-icon,
 [data-theme="forest"] .hp-quick-icon,
 [data-theme="ocean"] .hp-quick-icon {
-    background: linear-gradient(135deg, rgba(184, 134, 11, 0.16), rgba(255, 255, 255, 0.02));
+    background: linear-gradient(
+        135deg,
+        rgba(184, 134, 11, 0.16),
+        rgba(255, 255, 255, 0.02)
+    );
     border-color: rgba(184, 134, 11, 0.18);
     color: #f0cf79;
 }
@@ -10684,7 +11007,11 @@ input:focus-visible {
 [data-theme="night-blue"] .quran-com-card--grid,
 [data-theme="forest"] .quran-com-card--grid,
 [data-theme="ocean"] .quran-com-card--grid {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(184, 134, 11, 0.03) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.045) 0%,
+        rgba(184, 134, 11, 0.03) 100%
+    );
     border-color: rgba(184, 134, 11, 0.1);
 }
 
@@ -10706,7 +11033,11 @@ input:focus-visible {
 [data-theme="sepia"] .hp-panel,
 [data-theme="sepia"] .hp-right-col,
 [data-theme="sepia"] .quran-com-card--grid {
-    background: linear-gradient(180deg, rgba(255, 249, 238, 0.82) 0%, rgba(241, 228, 200, 0.64) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 249, 238, 0.82) 0%,
+        rgba(241, 228, 200, 0.64) 100%
+    );
 }
 
 @media (max-width: 1100px) {
@@ -11169,7 +11500,6 @@ input:focus-visible {
 
 /* ── Touch target minimum size (WCAG 2.5.5) ── */
 @media (hover: none) and (pointer: coarse) {
-
     .icon-btn,
     .sidebar-tab-trigger,
     .modal-close,
@@ -11231,10 +11561,11 @@ input:focus-visible {
 
 /* ── Sidebar + content padding on mobile ── */
 @media (max-width: 768px) {
-
     .quran-display-wrapper,
     .quran-display-outer {
-        padding-bottom: calc(var(--player-h) + env(safe-area-inset-bottom, 0px));
+        padding-bottom: calc(
+            var(--player-h) + env(safe-area-inset-bottom, 0px)
+        );
     }
 
     .sidebar {
@@ -11278,7 +11609,6 @@ input:focus-visible {
 
 /* ── Link and button tap highlight removal ── */
 @media (hover: none) {
-
     a,
     button,
     [role="button"] {
@@ -11303,1161 +11633,66 @@ input:focus-visible {
     user-select: none;
 }
 
+/* ══════════════════════════════════════════
+   NetworkStatus Component
+   ══════════════════════════════════════════ */
+
+.network-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    font-family: var(--font-ui, sans-serif);
+    border: 1px solid transparent;
+    transition:
+        opacity 0.2s ease,
+        color 0.2s ease;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.network-status.offline {
+    background: rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.25);
+    color: #dc2626;
+}
+
+[data-theme="dark"] .network-status.offline,
+[data-theme="night-blue"] .network-status.offline {
+    background: rgba(248, 113, 113, 0.12);
+    border-color: rgba(248, 113, 113, 0.28);
+    color: #f87171;
+}
+
+.network-status.online {
+    background: transparent;
+    border-color: transparent;
+}
+
+/* Only show online badge when we have real connection info (non-null icon) */
+.network-status.online:empty {
+    display: none;
+}
+
+.network-status .status-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.network-status .status-label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
 /* ── Progress bar: larger tap area on mobile ── */
 @media (hover: none) and (pointer: coarse) {
-
     .progress-bar-container,
     [role="progressbar"] {
         padding: 8px 0;
-    }
-}
-
-/* ============================================
-   Home Refresh + Theme Polish
-   ============================================ */
-
-:root {
-    --home-hero-start: #123524;
-    --home-hero-mid: #1b5e3b;
-    --home-hero-end: #7b5a18;
-    --home-hero-glow: rgba(244, 221, 159, 0.18);
-    --home-surface: rgba(255, 252, 246, 0.74);
-    --home-surface-strong: rgba(255, 255, 255, 0.88);
-    --home-surface-border: rgba(133, 104, 31, 0.14);
-    --home-shadow: 0 22px 60px rgba(26, 24, 18, 0.08);
-}
-
-[data-theme="dark"] {
-    --home-hero-start: #08120c;
-    --home-hero-mid: #133320;
-    --home-hero-end: #5f4510;
-    --home-hero-glow: rgba(227, 190, 96, 0.18);
-    --home-surface: rgba(15, 18, 16, 0.72);
-    --home-surface-strong: rgba(19, 24, 21, 0.9);
-    --home-surface-border: rgba(201, 152, 14, 0.14);
-    --home-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
-}
-
-[data-theme="sepia"] {
-    --home-hero-start: #4b2c11;
-    --home-hero-mid: #734219;
-    --home-hero-end: #b48123;
-    --home-hero-glow: rgba(255, 228, 165, 0.18);
-    --home-surface: rgba(253, 244, 226, 0.78);
-    --home-surface-strong: rgba(255, 249, 239, 0.92);
-    --home-surface-border: rgba(130, 79, 26, 0.16);
-    --home-shadow: 0 24px 64px rgba(60, 30, 8, 0.12);
-}
-
-[data-theme="ocean"] {
-    --home-hero-start: #08263a;
-    --home-hero-mid: #0a4f74;
-    --home-hero-end: #a26f12;
-    --home-hero-glow: rgba(154, 213, 255, 0.18);
-    --home-surface: rgba(242, 250, 255, 0.74);
-    --home-surface-strong: rgba(247, 252, 255, 0.9);
-    --home-surface-border: rgba(17, 97, 148, 0.16);
-    --home-shadow: 0 22px 60px rgba(7, 38, 61, 0.12);
-}
-
-[data-theme="forest"] {
-    --home-hero-start: #0d2411;
-    --home-hero-mid: #1d5b27;
-    --home-hero-end: #8d6815;
-    --home-hero-glow: rgba(190, 226, 151, 0.16);
-    --home-surface: rgba(243, 251, 244, 0.75);
-    --home-surface-strong: rgba(249, 255, 249, 0.9);
-    --home-surface-border: rgba(30, 100, 44, 0.16);
-    --home-shadow: 0 22px 60px rgba(11, 38, 16, 0.12);
-}
-
-[data-theme="night-blue"] {
-    --home-hero-start: #050a1f;
-    --home-hero-mid: #162b66;
-    --home-hero-end: #8d6a18;
-    --home-hero-glow: rgba(124, 165, 255, 0.18);
-    --home-surface: rgba(10, 14, 34, 0.76);
-    --home-surface-strong: rgba(12, 18, 42, 0.9);
-    --home-surface-border: rgba(90, 119, 214, 0.18);
-    --home-shadow: 0 28px 70px rgba(0, 0, 0, 0.3);
-}
-
-.hp-page {
-    background:
-        radial-gradient(circle at top left, rgba(var(--primary-rgb), 0.08) 0%, transparent 22%),
-        radial-gradient(circle at 88% 6%, rgba(184, 134, 11, 0.08) 0%, transparent 18%),
-        linear-gradient(180deg, color-mix(in srgb, var(--bg-primary) 94%, var(--bg-secondary) 6%) 0%, var(--bg-primary) 100%);
-}
-
-.hp-page::before {
-    background:
-        radial-gradient(circle at 8% 10%, rgba(var(--primary-rgb), 0.1) 0%, transparent 20%),
-        radial-gradient(circle at 92% 8%, rgba(184, 134, 11, 0.08) 0%, transparent 18%),
-        repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.015) 0 1px, transparent 1px 34px);
-}
-
-.qc-hero {
-    background:
-        radial-gradient(circle at 100% 0%, var(--home-hero-glow) 0%, transparent 26%),
-        linear-gradient(135deg, var(--home-hero-start) 0%, var(--home-hero-mid) 55%, var(--home-hero-end) 100%);
-    box-shadow: var(--home-shadow);
-}
-
-.qc-hero::before {
-    background:
-        linear-gradient(115deg, rgba(255, 255, 255, 0.08), transparent 35%),
-        radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.08) 0%, transparent 18%),
-        repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 38px);
-}
-
-.qc-hero-inner {
-    max-width: none;
-}
-
-.qc-hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
-    gap: 1.1rem;
-    align-items: stretch;
-}
-
-.qc-hero-copy,
-.qc-vdj,
-.qc-hero-suggestions {
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.qc-hero-copy {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 100%;
-    padding: clamp(1.1rem, 2.2vw, 1.6rem);
-    border-radius: 1.6rem;
-}
-
-.qc-logo-container {
-    width: 108px;
-    height: 108px;
-    margin-bottom: 1rem;
-    border-radius: 1.8rem;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 18px 32px rgba(0, 0, 0, 0.12);
-}
-
-.qc-site-name {
-    margin-bottom: 0.5rem;
-    font-size: clamp(2.4rem, 5vw, 4.25rem);
-    letter-spacing: -0.06em;
-}
-
-.qc-slogan {
-    max-width: 48ch;
-    margin: 0 0 1.15rem;
-    color: rgba(255, 249, 240, 0.78);
-    font-size: clamp(0.92rem, 1.5vw, 1.03rem);
-    font-weight: 600;
-    letter-spacing: 0;
-    line-height: 1.7;
-    text-transform: none;
-}
-
-.qc-hero-meta {
-    margin: 0 0 1.15rem;
-}
-
-.qc-hero-pill {
-    min-height: 2.15rem;
-    padding: 0.45rem 0.8rem;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    color: rgba(255, 255, 255, 0.92);
-}
-
-.qc-hero-pill--riwaya {
-    background: rgba(255, 242, 201, 0.14);
-    color: rgba(255, 247, 231, 0.98);
-}
-
-.qc-hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-}
-
-.qc-continue-btn,
-.qc-secondary-btn {
-    min-height: 3.15rem;
-    border-radius: 1.05rem;
-    padding: 0.85rem 1rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.68rem;
-    border: 1px solid transparent;
-    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-}
-
-.qc-continue-btn {
-    background: linear-gradient(135deg, rgba(255, 245, 215, 0.98), rgba(238, 201, 103, 0.95));
-    color: #102114;
-    box-shadow: 0 18px 34px rgba(28, 20, 3, 0.14);
-}
-
-.qc-secondary-btn {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff8ec;
-    border-color: rgba(255, 255, 255, 0.14);
-}
-
-.qc-secondary-btn--soft {
-    background: rgba(var(--primary-rgb), 0.18);
-}
-
-.qc-continue-btn:hover,
-.qc-secondary-btn:hover,
-.qc-hero-suggestion:hover,
-.hp-quick-card:hover,
-.quran-com-card--grid:hover,
-.hp-info-row:hover,
-.hp-stat-chip:hover {
-    transform: translateY(-2px);
-}
-
-.qc-vdj {
-    max-width: none;
-    padding: clamp(1rem, 2vw, 1.35rem);
-    border-radius: 1.6rem;
-    background: linear-gradient(180deg, rgba(7, 14, 11, 0.22), rgba(255, 255, 255, 0.06));
-}
-
-.qc-vdj-text {
-    font-size: clamp(1.38rem, 2vw, 1.7rem);
-    line-height: 1.9;
-}
-
-.qc-vdj-trans,
-.qc-vdj-date,
-.qc-vdj-ref {
-    color: rgba(255, 249, 240, 0.74);
-}
-
-.qc-hero-suggestions {
-    margin-top: 1rem;
-    padding: 1rem;
-    border-radius: 1.45rem;
-}
-
-.qc-hero-suggestions__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 0.85rem;
-}
-
-.qc-hero-suggestions__label,
-.qc-hero-suggestions__hint,
-.qc-hero-suggestion__label,
-.qc-secondary-btn,
-.qc-continue-btn {
-    font-family: var(--font-home-ui);
-}
-
-.qc-hero-suggestions__label {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8rem;
-    font-weight: 800;
-    color: #fff7e8;
-}
-
-.qc-hero-suggestions__hint {
-    font-size: 0.72rem;
-    color: rgba(255, 248, 240, 0.66);
-}
-
-.qc-hero-suggestion-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.7rem;
-}
-
-.qc-hero-suggestion {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    padding: 0.85rem 0.9rem;
-    border-radius: 1.1rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.08);
-    text-align: start;
-    color: #fff8ec;
-    transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-}
-
-.qc-hero-suggestion__num {
-    width: 2rem;
-    height: 2rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    background: rgba(255, 243, 211, 0.16);
-    color: #ffe6a4;
-    font-size: 0.78rem;
-    font-weight: 800;
-    flex-shrink: 0;
-}
-
-.qc-hero-suggestion__body {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.12rem;
-}
-
-.qc-hero-suggestion__ar {
-    font-family: var(--font-home-ar);
-    font-size: 1rem;
-    direction: rtl;
-    text-align: start;
-}
-
-.qc-hero-suggestion__label {
-    font-size: 0.68rem;
-    color: rgba(255, 248, 240, 0.7);
-    line-height: 1.35;
-}
-
-.hp-stats-bar,
-.hp-quick-section,
-.hp-main-grid {
-    max-width: 1400px;
-}
-
-.hp-stat-chip,
-.hp-panel,
-.hp-right-col,
-.hp-quick-card,
-.quran-com-card--grid {
-    background: linear-gradient(180deg, var(--home-surface-strong) 0%, var(--home-surface) 100%);
-    border: 1px solid var(--home-surface-border);
-    box-shadow: 0 16px 34px rgba(18, 20, 18, 0.06);
-}
-
-.hp-stat-chip {
-    min-height: 108px;
-    border-radius: 1.6rem;
-}
-
-.hp-section-title {
-    margin-bottom: 1rem;
-    font-size: 0.74rem;
-    color: color-mix(in srgb, var(--text-muted) 88%, var(--primary) 12%);
-}
-
-.hp-quick-card {
-    min-height: 118px;
-}
-
-.hp-main-grid {
-    grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.65fr);
-    gap: 1.1rem;
-}
-
-.hp-left-col {
-    gap: 1rem;
-}
-
-.hp-panel,
-.hp-right-col {
-    border-radius: 1.6rem;
-    overflow: hidden;
-}
-
-.hp-panel-tabs,
-.hp-list-header {
-    background: rgba(255, 255, 255, 0.46);
-}
-
-.hp-list-meta {
-    padding: 0.95rem 1rem 0;
-}
-
-.hp-sort-btn,
-.hp-search,
-.hp-seg-ctrl {
-    background: rgba(255, 255, 255, 0.56);
-    border-color: rgba(var(--primary-rgb), 0.12);
-}
-
-.quran-com-card--grid {
-    min-height: 118px;
-    border-radius: 1.4rem;
-}
-
-.quran-com-card--grid .qc-en {
-    font-size: 0.82rem;
-}
-
-.quran-com-card--grid .qc-ar {
-    font-size: 1.12rem;
-}
-
-[data-theme="dark"] .hp-stat-chip,
-[data-theme="dark"] .hp-panel,
-[data-theme="dark"] .hp-right-col,
-[data-theme="dark"] .hp-quick-card,
-[data-theme="dark"] .quran-com-card--grid,
-[data-theme="night-blue"] .hp-stat-chip,
-[data-theme="night-blue"] .hp-panel,
-[data-theme="night-blue"] .hp-right-col,
-[data-theme="night-blue"] .hp-quick-card,
-[data-theme="night-blue"] .quran-com-card--grid,
-[data-theme="forest"] .hp-stat-chip,
-[data-theme="forest"] .hp-panel,
-[data-theme="forest"] .hp-right-col,
-[data-theme="forest"] .hp-quick-card,
-[data-theme="forest"] .quran-com-card--grid,
-[data-theme="ocean"] .hp-stat-chip,
-[data-theme="ocean"] .hp-panel,
-[data-theme="ocean"] .hp-right-col,
-[data-theme="ocean"] .hp-quick-card,
-[data-theme="ocean"] .quran-com-card--grid {
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
-}
-
-@media (max-width: 1100px) {
-    .qc-hero-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .qc-hero-suggestion-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-@media (max-width: 640px) {
-    .qc-hero {
-        border-radius: 1.45rem;
-        padding: 0.9rem;
-    }
-
-    .qc-hero-copy,
-    .qc-vdj,
-    .qc-hero-suggestions {
-        border-radius: 1.2rem;
-    }
-
-    .qc-hero-actions {
-        flex-direction: column;
-    }
-
-    .qc-continue-btn,
-    .qc-secondary-btn,
-    .qc-hero-suggestion {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .qc-hero-suggestions__head {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .qc-hero-suggestion-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .hp-stats-bar {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .hp-main-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ============================================
-   Header Refresh
-   ============================================ */
-
-.app-header-shell {
-    border-bottom: 1px solid var(--header-border);
-    background:
-        linear-gradient(180deg, color-mix(in srgb, var(--bg-primary) 92%, white 8%) 0%, color-mix(in srgb, var(--bg-primary) 98%, var(--bg-secondary) 2%) 100%);
-    box-shadow: 0 10px 32px rgba(16, 18, 17, 0.05);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-}
-
-.app-header-banner {
-    background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary) 55%, color-mix(in srgb, var(--gold) 70%, var(--primary) 30%) 100%);
-}
-
-.app-header-banner__cta {
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
-}
-
-.app-header-main {
-    position: relative;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.56) 0%, rgba(255, 255, 255, 0.2) 100%);
-}
-
-.app-header-brand {
-    min-height: 48px;
-    padding: 0.35rem 0.65rem 0.35rem 0.2rem;
-    border-radius: 999px;
-    transition: background 0.18s ease, transform 0.18s ease;
-}
-
-.app-header-brand:hover {
-    background: rgba(var(--primary-rgb), 0.06);
-    transform: translateY(-1px);
-}
-
-.app-header-brand__name {
-    color: var(--text-primary);
-}
-
-.app-header-center {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.78) 0%, rgba(255, 255, 255, 0.54) 100%);
-    border: 1px solid rgba(var(--primary-rgb), 0.1);
-    box-shadow: 0 12px 24px rgba(16, 18, 17, 0.05);
-}
-
-.app-header-nav-btn {
-    color: var(--text-muted);
-}
-
-.app-header-nav-btn:hover {
-    background: rgba(var(--primary-rgb), 0.08);
-    color: var(--primary);
-}
-
-.app-header-location {
-    background: rgba(255, 255, 255, 0.38);
-}
-
-.app-header-location:hover {
-    background: rgba(255, 255, 255, 0.6);
-    border-color: rgba(var(--primary-rgb), 0.14);
-}
-
-.app-header-location__title {
-    color: var(--text-primary);
-}
-
-.app-header-location:hover .app-header-location__title {
-    color: var(--primary);
-}
-
-.app-header-location__meta {
-    color: var(--text-muted);
-    opacity: 0.85;
-}
-
-.app-header-chip,
-.app-header-actions__group,
-.app-header-menu-btn,
-.header-icon-button {
-    border: 1px solid rgba(var(--primary-rgb), 0.08);
-    background: rgba(255, 255, 255, 0.55);
-    box-shadow: 0 8px 18px rgba(16, 18, 17, 0.04);
-}
-
-.app-header-chip {
-    color: var(--text-primary);
-}
-
-.app-header-chip:hover,
-.app-header-menu-btn:hover {
-    background: rgba(255, 255, 255, 0.78);
-    border-color: rgba(var(--primary-rgb), 0.14);
-}
-
-.app-header-actions__group {
-    gap: 0.35rem;
-    padding: 0.18rem;
-    border-radius: 999px;
-}
-
-.app-header-menu-btn {
-    color: var(--text-primary);
-}
-
-.app-header-riwaya {
-    gap: 0.22rem;
-    padding: 0.18rem;
-    border-radius: 999px;
-    border: 1px solid rgba(var(--primary-rgb), 0.08);
-    background: rgba(255, 255, 255, 0.55);
-    box-shadow: 0 8px 18px rgba(16, 18, 17, 0.04);
-}
-
-.app-header-riwaya__btn {
-    min-height: 2.1rem;
-    padding: 0.35rem 0.8rem;
-    border-radius: 999px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--text-secondary);
-    font-family: var(--font-home-ui, var(--font-ui));
-    font-size: 0.74rem;
-    font-weight: 800;
-    cursor: pointer;
-    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
-}
-
-.app-header-riwaya__btn:hover {
-    color: var(--primary);
-    background: rgba(var(--primary-rgb), 0.06);
-}
-
-.app-header-riwaya__btn.is-active {
-    color: var(--primary);
-    background: rgba(var(--primary-rgb), 0.1);
-    border-color: rgba(var(--primary-rgb), 0.12);
-    box-shadow: 0 8px 16px rgba(16, 18, 17, 0.04);
-}
-
-[data-theme="dark"] .app-header-shell,
-[data-theme="night-blue"] .app-header-shell,
-[data-theme="forest"] .app-header-shell,
-[data-theme="ocean"] .app-header-shell {
-    background: linear-gradient(180deg, rgba(10, 14, 14, 0.88) 0%, rgba(10, 14, 14, 0.72) 100%);
-    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.2);
-}
-
-[data-theme="dark"] .app-header-main,
-[data-theme="night-blue"] .app-header-main,
-[data-theme="forest"] .app-header-main,
-[data-theme="ocean"] .app-header-main {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.015) 100%);
-}
-
-[data-theme="dark"] .app-header-center,
-[data-theme="dark"] .app-header-chip,
-[data-theme="dark"] .app-header-riwaya,
-[data-theme="dark"] .app-header-actions__group,
-[data-theme="dark"] .app-header-menu-btn,
-[data-theme="dark"] .header-icon-button,
-[data-theme="night-blue"] .app-header-center,
-[data-theme="night-blue"] .app-header-chip,
-[data-theme="night-blue"] .app-header-riwaya,
-[data-theme="night-blue"] .app-header-actions__group,
-[data-theme="night-blue"] .app-header-menu-btn,
-[data-theme="night-blue"] .header-icon-button,
-[data-theme="forest"] .app-header-center,
-[data-theme="forest"] .app-header-chip,
-[data-theme="forest"] .app-header-riwaya,
-[data-theme="forest"] .app-header-actions__group,
-[data-theme="forest"] .app-header-menu-btn,
-[data-theme="forest"] .header-icon-button,
-[data-theme="ocean"] .app-header-center,
-[data-theme="ocean"] .app-header-chip,
-[data-theme="ocean"] .app-header-riwaya,
-[data-theme="ocean"] .app-header-actions__group,
-[data-theme="ocean"] .app-header-menu-btn,
-[data-theme="ocean"] .header-icon-button {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
-}
-
-[data-theme="dark"] .app-header-brand__name,
-[data-theme="night-blue"] .app-header-brand__name,
-[data-theme="forest"] .app-header-brand__name,
-[data-theme="ocean"] .app-header-brand__name,
-[data-theme="dark"] .app-header-riwaya__btn,
-[data-theme="night-blue"] .app-header-riwaya__btn,
-[data-theme="forest"] .app-header-riwaya__btn,
-[data-theme="ocean"] .app-header-riwaya__btn,
-[data-theme="dark"] .app-header-menu-btn,
-[data-theme="night-blue"] .app-header-menu-btn,
-[data-theme="forest"] .app-header-menu-btn,
-[data-theme="ocean"] .app-header-menu-btn {
-    color: #f5f3ec;
-}
-
-[data-theme="dark"] .app-header-riwaya__btn.is-active,
-[data-theme="night-blue"] .app-header-riwaya__btn.is-active,
-[data-theme="forest"] .app-header-riwaya__btn.is-active,
-[data-theme="ocean"] .app-header-riwaya__btn.is-active {
-    color: #ffffff;
-    background: rgba(45, 197, 214, 0.16);
-    border-color: rgba(45, 197, 214, 0.18);
-}
-
-@media (max-width: 768px) {
-    .app-header-main {
-        padding-inline: 0.8rem;
-    }
-
-    .app-header-brand {
-        padding-inline-end: 0.35rem;
-    }
-
-    .app-header-chip {
-        display: none;
-    }
-}
-
-/* ============================================
-   Home Visual Balancing
-   ============================================ */
-
-.hp-page .hp-stat-chip,
-.hp-page .hp-quick-card,
-.hp-page .hp-panel,
-.hp-page .hp-right-col,
-.hp-page .quran-com-card--grid {
-    background:
-        linear-gradient(180deg, color-mix(in srgb, var(--home-surface-strong) 92%, #fff 8%) 0%, color-mix(in srgb, var(--home-surface) 96%, #fff 4%) 100%);
-}
-
-.hp-page .hp-quick-card,
-.hp-page .quran-com-card--grid {
-    position: relative;
-    overflow: hidden;
-}
-
-.hp-page .hp-quick-card::after,
-.hp-page .quran-com-card--grid::before {
-    content: "";
-    position: absolute;
-    inset-inline: 0;
-    top: 0;
-    height: 3px;
-    background: linear-gradient(90deg, rgba(var(--primary-rgb), 0.18), rgba(184, 134, 11, 0.34), rgba(var(--primary-rgb), 0.12));
-    opacity: 0.9;
-}
-
-.hp-page .hp-quick-card:hover,
-.hp-page .quran-com-card--grid:hover,
-.hp-page .hp-stat-chip:hover {
-    box-shadow: 0 18px 38px rgba(17, 19, 18, 0.09);
-}
-
-.hp-page .hp-quick-icon,
-.hp-page .quran-com-card--grid .qc-num,
-.hp-page .quran-com-card--grid .qc-play-btn {
-    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1), rgba(184, 134, 11, 0.08));
-    border-color: rgba(var(--primary-rgb), 0.14);
-}
-
-.hp-page .hp-panel-tabs,
-.hp-page .hp-list-header,
-.hp-page .hp-sort-btn,
-.hp-page .hp-search,
-.hp-page .hp-seg-ctrl {
-    background: color-mix(in srgb, var(--home-surface-strong) 80%, #fff 20%);
-}
-
-.hp-page .hp-panel-tab--on {
-    background: rgba(var(--primary-rgb), 0.08);
-}
-
-.hp-page .quran-com-card--grid .qc-details,
-.hp-page .hp-card-fr,
-.hp-page .hp-list-caption {
-    color: color-mix(in srgb, var(--text-muted) 86%, var(--primary) 14%);
-}
-
-/* ============================================
-   Home Editorial Pass
-   ============================================ */
-
-.hp-page {
-    position: relative;
-    padding-bottom: 3rem;
-}
-
-.qc-hero {
-    position: relative;
-    max-width: 1460px;
-    margin: 1.15rem auto 1rem;
-    padding: clamp(1rem, 2.6vw, 1.8rem);
-    border-radius: 2.3rem;
-    overflow: hidden;
-}
-
-.qc-hero::after {
-    content: "";
-    position: absolute;
-    inset: auto -8% -18% auto;
-    width: 360px;
-    height: 360px;
-    border-radius: 999px;
-    background: radial-gradient(circle, rgba(255, 236, 176, 0.16) 0%, rgba(255, 236, 176, 0.03) 48%, transparent 72%);
-    pointer-events: none;
-}
-
-.qc-hero-copy {
-    position: relative;
-    gap: 0.9rem;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.06) 100%);
-}
-
-.qc-hero-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    align-self: flex-start;
-    min-height: 2rem;
-    padding: 0.35rem 0.75rem;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    color: rgba(255, 248, 236, 0.9);
-    font-family: var(--font-home-ui);
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.qc-site-name {
-    margin-bottom: 0;
-    font-size: clamp(2.9rem, 6vw, 5rem);
-}
-
-.qc-slogan {
-    margin: 0;
-    max-width: 36rem;
-    font-size: clamp(1rem, 1.7vw, 1.18rem);
-    line-height: 1.75;
-}
-
-.qc-hero-note {
-    max-width: 42rem;
-    margin: 0;
-    color: rgba(255, 247, 235, 0.7);
-    font-family: var(--font-home-ui);
-    font-size: 0.9rem;
-    line-height: 1.75;
-}
-
-.qc-hero-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-    margin: 0;
-}
-
-.qc-hero-pill {
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-.qc-hero-actions {
-    gap: 0.8rem;
-}
-
-.qc-hero-stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.7rem;
-    margin-top: 0.1rem;
-}
-
-.qc-hero-stat {
-    display: flex;
-    align-items: center;
-    gap: 0.72rem;
-    min-height: 5rem;
-    padding: 0.9rem 0.95rem;
-    border-radius: 1.25rem;
-    background: rgba(255, 255, 255, 0.09);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.qc-hero-stat__icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    background: rgba(255, 245, 215, 0.16);
-    color: #ffe5a0;
-    flex-shrink: 0;
-}
-
-.qc-hero-stat__body {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-.qc-hero-stat__label {
-    color: rgba(255, 245, 234, 0.62);
-    font-family: var(--font-home-ui);
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-}
-
-.qc-hero-stat__value {
-    color: #fffaf0;
-    font-family: var(--font-home-ui);
-    font-size: 0.96rem;
-    font-weight: 800;
-    line-height: 1.35;
-}
-
-.qc-vdj {
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-}
-
-.qc-vdj::after {
-    content: "";
-    position: absolute;
-    inset: auto auto -24% -12%;
-    width: 230px;
-    height: 230px;
-    border-radius: 999px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 64%);
-    pointer-events: none;
-}
-
-.qc-vdj-orb {
-    position: relative;
-    width: 4.1rem;
-    height: 4.1rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%);
-}
-
-.qc-vdj-orb__core,
-.qc-vdj-orb__ring {
-    position: absolute;
-    border-radius: 999px;
-}
-
-.qc-vdj-orb__core {
-    inset: 0.8rem;
-    background: radial-gradient(circle, rgba(255, 241, 206, 0.95) 0%, rgba(236, 204, 114, 0.18) 68%, transparent 100%);
-}
-
-.qc-vdj-orb__ring {
-    inset: 0.4rem;
-    border: 1px dashed rgba(255, 245, 223, 0.28);
-}
-
-.qc-vdj-text {
-    max-width: 16ch;
-    font-size: clamp(1.6rem, 2.5vw, 2rem);
-    line-height: 1.95;
-}
-
-.qc-vdj-trans {
-    max-width: 34ch;
-    font-size: 0.94rem;
-    line-height: 1.8;
-}
-
-.qc-hero-suggestions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-}
-
-.qc-hero-suggestion-grid {
-    gap: 0.8rem;
-}
-
-.qc-hero-suggestion {
-    min-height: 5.1rem;
-    padding: 1rem 1rem;
-    border-radius: 1.2rem;
-}
-
-.qc-hero-suggestion__num {
-    width: 2.3rem;
-    height: 2.3rem;
-}
-
-.qc-hero-suggestion__ar {
-    font-size: 1.08rem;
-}
-
-.hp-stats-bar {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1rem;
-    max-width: 1460px;
-    margin: 0 auto 1rem;
-}
-
-.hp-stat-chip {
-    min-height: 112px;
-    padding: 1.1rem 1.15rem;
-}
-
-.hp-quick-section,
-.hp-main-grid {
-    max-width: 1460px;
-    margin-inline: auto;
-}
-
-.hp-quick-section {
-    margin-bottom: 1rem;
-}
-
-.hp-quick-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 0.9rem;
-}
-
-.hp-quick-card {
-    min-height: 132px;
-    padding: 1rem;
-    border-radius: 1.5rem;
-}
-
-.hp-quick-icon {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 1rem;
-}
-
-.hp-main-grid {
-    align-items: start;
-    gap: 1.2rem;
-}
-
-.hp-left-col {
-    position: sticky;
-    top: calc(var(--header-h) + 1rem);
-    align-self: start;
-}
-
-.hp-panel,
-.hp-right-col {
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-}
-
-.hp-panel-body,
-.hp-list {
-    padding: 0.3rem 0.35rem 0.55rem;
-}
-
-.hp-info-row {
-    border-radius: 1rem;
-    margin-bottom: 0.45rem;
-    padding: 0.85rem 0.9rem;
-    border: 1px solid transparent;
-}
-
-.hp-info-row:hover {
-    border-color: rgba(var(--primary-rgb), 0.1);
-    background: rgba(var(--primary-rgb), 0.05);
-}
-
-.hp-right-col {
-    padding-bottom: 0.8rem;
-}
-
-.hp-list-header {
-    padding: 0.95rem 1rem;
-    border-bottom: 1px solid rgba(var(--primary-rgb), 0.06);
-}
-
-.hp-list-meta {
-    padding: 1rem 1.1rem 0.2rem;
-}
-
-.hp-list--grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 0.9rem;
-}
-
-.quran-com-card--grid {
-    min-height: 136px;
-    padding: 1rem 1rem 1rem 1.05rem;
-    border-radius: 1.5rem;
-}
-
-.quran-com-card--grid .qc-en {
-    font-size: 0.92rem;
-    font-weight: 800;
-}
-
-.quran-com-card--grid .qc-ar {
-    font-size: 1.34rem;
-}
-
-.quran-com-card--grid .qc-details {
-    font-size: 0.74rem;
-}
-
-.quran-com-card--grid .qc-play-btn {
-    width: 2.6rem;
-    height: 2.6rem;
-    border-radius: 999px;
-}
-
-@media (max-width: 1180px) {
-    .qc-hero-stats {
-        grid-template-columns: 1fr;
-    }
-
-    .hp-left-col {
-        position: static;
-    }
-}
-
-@media (max-width: 768px) {
-    .hp-stats-bar {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .qc-vdj-text {
-        max-width: none;
-    }
-}
-
-@media (max-width: 640px) {
-    .qc-hero {
-        border-radius: 1.55rem;
-    }
-
-    .qc-hero-copy,
-    .qc-vdj,
-    .qc-hero-suggestions,
-    .hp-panel,
-    .hp-right-col,
-    .hp-stat-chip,
-    .hp-quick-card,
-    .quran-com-card--grid {
-        border-radius: 1.2rem;
-    }
-
-    .qc-hero-stats,
-    .hp-stats-bar,
-    .hp-list--grid {
-        grid-template-columns: 1fr;
-    }
-
-    .hp-quick-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }

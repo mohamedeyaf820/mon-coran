@@ -182,6 +182,7 @@ export default function AudioPlayer() {
     warshStrictMode,
     volume: savedVolume,
     showHome,
+    playerMinimized,
   } = state;
 
   const [progress, setProgress] = useState(0);
@@ -246,13 +247,18 @@ export default function AudioPlayer() {
       if (audioErrorTimerRef.current) {
         clearTimeout(audioErrorTimerRef.current);
       }
-      const msg = riwaya === 'warsh'
-        ? (lang === 'fr'
-            ? 'Audio Warsh indisponible. Vérifiez votre connexion ou changez de récitateur.'
-            : lang === 'ar'
-              ? 'الصوت غير متاح. تحقق من الاتصال أو غيّر القارئ.'
-              : 'Warsh audio unavailable. Check your connection or switch reciter.')
-        : (lang === 'fr' ? 'Erreur de chargement audio.' : lang === 'ar' ? 'خطأ في تحميل الصوت.' : 'Audio load error.');
+      const msg =
+        riwaya === "warsh"
+          ? lang === "fr"
+            ? "Audio Warsh indisponible. Vérifiez votre connexion ou changez de récitateur."
+            : lang === "ar"
+              ? "الصوت غير متاح. تحقق من الاتصال أو غيّر القارئ."
+              : "Warsh audio unavailable. Check your connection or switch reciter."
+          : lang === "fr"
+            ? "Erreur de chargement audio."
+            : lang === "ar"
+              ? "خطأ في تحميل الصوت."
+              : "Audio load error.";
       setAudioError(msg);
       audioErrorTimerRef.current = setTimeout(() => {
         setAudioError(null);
@@ -384,11 +390,16 @@ export default function AudioPlayer() {
       : currentSurahName;
 
   // Subtitle shown in the desktop card when nothing is playing
-  const idleSubtitle = !isPlaying && !currentPlayingAyah
-    ? (showHome
-      ? (lang === "ar" ? "اضغط ▶ للاستماع" : lang === "fr" ? "Appuyez ▶ pour écouter" : "Press ▶ to listen")
-      : null)
-    : null;
+  const idleSubtitle =
+    !isPlaying && !currentPlayingAyah
+      ? showHome
+        ? lang === "ar"
+          ? "اضغط ▶ للاستماع"
+          : lang === "fr"
+            ? "Appuyez ▶ pour écouter"
+            : "Press ▶ to listen"
+        : null
+      : null;
 
   const warshStrictLabel =
     lang === "ar"
@@ -756,16 +767,6 @@ export default function AudioPlayer() {
             >
               <i className={`fas fa-chevron-${expanded ? "down" : "up"}`} />
             </button>
-            <button
-              className={cn(
-                mBarBtnSm(),
-                "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-6.5 min-w-6.5 justify-center",
-              )}
-              onClick={toggleMinimized}
-              title={lang === "fr" ? "Reduire" : lang === "ar" ? "تصغير" : "Minimize"}
-            >
-              <i className="fas fa-window-minimize" />
-            </button>
           </div>
         </div>
 
@@ -1116,9 +1117,18 @@ export default function AudioPlayer() {
             </div>
           </div>
         )}
-        {/* Drag handle */}
-        <div className="flex justify-center pt-2.5 pb-1 shrink-0">
+        {/* Drag handle + minimize button */}
+        <div className="flex justify-between items-center pt-2.5 pb-1 px-4 shrink-0">
+          <button
+            onClick={() => set({ playerMinimized: true })}
+            className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white/10 transition-colors"
+            style={{ color: "rgba(240,234,214,0.5)" }}
+            title={lang === "fr" ? "Minimiser" : "Minimize"}
+          >
+            <i className="fas fa-chevron-down text-xs" />
+          </button>
           <div className="w-7 h-0.75 rounded-full bg-white/20" />
+          <div className="w-6" />
         </div>
 
         <div className="px-4 pb-4 pt-1 flex flex-col gap-3">
@@ -1129,7 +1139,7 @@ export default function AudioPlayer() {
               <div
                 className="text-[0.82rem] font-bold leading-tight truncate"
                 style={{
-                    color: "var(--player-text-strong)",
+                  color: "var(--player-text-strong)",
                   fontFamily: "var(--font-ui)",
                 }}
               >
@@ -1143,7 +1153,7 @@ export default function AudioPlayer() {
               <div
                 className="text-[0.67rem] mt-0.5 truncate"
                 style={{
-                    color: "var(--player-text-soft)",
+                  color: "var(--player-text-soft)",
                   fontFamily: "var(--font-ui)",
                 }}
               >

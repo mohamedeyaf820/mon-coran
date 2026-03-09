@@ -50,6 +50,7 @@ import TajweedLegend from "./Quran/TajweedLegend";
 import SmartAyahRenderer from "./Quran/SmartAyahRenderer";
 import AyahBlock from "./Quran/AyahBlock";
 import MushafInlineView from "./Quran/MushafInlineView";
+import CleanPageView from "./Quran/CleanPageView";
 
 import "../styles/quran-display.css";
 
@@ -102,36 +103,32 @@ const FONT_MAP = {
   "scheherazade-new":
     "'Scheherazade New','Amiri Quran','Noto Naskh Arabic',serif",
   /* ── Amiri Quran (clean alternative) ── */
-  "amiri-quran":
-    "'Amiri Quran','Scheherazade New','Noto Naskh Arabic',serif",
+  "amiri-quran": "'Amiri Quran','Scheherazade New','Noto Naskh Arabic',serif",
   /* ── KFGQPC / ME Quran (may show rendering artifacts in some browsers) ── */
   "mushaf-1441h":
     "'KFGQPC Uthmanic Script HAFS','ME Quran','Scheherazade New','Amiri Quran',serif",
   "mushaf-tajweed":
     "'KFGQPC Uthmanic Script HAFS','ME Quran','Scheherazade New','Amiri Quran',serif",
-  "uthmanic-digital":
-    "'ME Quran','Scheherazade New','Amiri Quran',serif",
-  "uthmanic-bold":
-    "'ME Quran Bold','ME Quran','Scheherazade New',serif",
+  "uthmanic-digital": "'ME Quran','Scheherazade New','Amiri Quran',serif",
+  "uthmanic-bold": "'ME Quran Bold','ME Quran','Scheherazade New',serif",
   /* ── Indopak ── */
   "qalam-madinah":
     "'Qalam Madinah','Scheherazade New','Noto Naskh Arabic',serif",
-  "qalam-hanafi":
-    "'Qalam Hanafi','Scheherazade New','Noto Naskh Arabic',serif",
+  "qalam-hanafi": "'Qalam Hanafi','Scheherazade New','Noto Naskh Arabic',serif",
   "uthman-taha":
     "'Uthman Taha Hafs','KFGQPC Uthmanic Script HAFS','Scheherazade New',serif",
   /* ── legacy aliases ── */
-  "me-quran":
-    "'ME Quran','Scheherazade New','Amiri Quran',serif",
-  scheherazade:
-    "'Scheherazade New','Amiri Quran','Noto Naskh Arabic',serif",
-  "amiri": "'Amiri','Amiri Quran','Scheherazade New',serif",
+  "me-quran": "'ME Quran','Scheherazade New','Amiri Quran',serif",
+  scheherazade: "'Scheherazade New','Amiri Quran','Noto Naskh Arabic',serif",
+  amiri: "'Amiri','Amiri Quran','Scheherazade New',serif",
   "noto-naskh": "'Noto Naskh Arabic','Scheherazade New','Amiri Quran',serif",
   lateef: "'Scheherazade New','Noto Naskh Arabic',serif",
-  "noto-naskh-arabic": "'Noto Naskh Arabic','Scheherazade New','Amiri Quran',serif",
+  "noto-naskh-arabic":
+    "'Noto Naskh Arabic','Scheherazade New','Amiri Quran',serif",
   "markazi-text": "'Markazi Text','Amiri Quran','Scheherazade New',serif",
   "el-messiri": "'El Messiri','Noto Naskh Arabic','Scheherazade New',serif",
-  "kfgqpc-uthman-taha-naskh": "'KFGQPC Uthman Taha Naskh','Uthman Taha Hafs','ME Quran',serif",
+  "kfgqpc-uthman-taha-naskh":
+    "'KFGQPC Uthman Taha Naskh','Uthman Taha Hafs','ME Quran',serif",
   "reem-kufi": "'Reem Kufi','Cairo','Noto Naskh Arabic',sans-serif",
   "aref-ruqaa": "'Aref Ruqaa','Scheherazade New','Amiri Quran',serif",
   cairo: "'Cairo','Noto Naskh Arabic',sans-serif",
@@ -146,12 +143,12 @@ const FONT_MAP = {
 };
 
 const TRANSLATION_LANGUAGE_META = {
-  fr: { fr: 'Français', ar: 'الفرنسية', en: 'French', icon: 'fa-language' },
-  en: { fr: 'Anglais', ar: 'الإنجليزية', en: 'English', icon: 'fa-language' },
-  es: { fr: 'Espagnol', ar: 'الإسبانية', en: 'Spanish', icon: 'fa-language' },
-  de: { fr: 'Allemand', ar: 'الألمانية', en: 'German', icon: 'fa-language' },
-  tr: { fr: 'Turc', ar: 'التركية', en: 'Turkish', icon: 'fa-language' },
-  ur: { fr: 'Ourdou', ar: 'الأردية', en: 'Urdu', icon: 'fa-language' },
+  fr: { fr: "Français", ar: "الفرنسية", en: "French", icon: "fa-language" },
+  en: { fr: "Anglais", ar: "الإنجليزية", en: "English", icon: "fa-language" },
+  es: { fr: "Espagnol", ar: "الإسبانية", en: "Spanish", icon: "fa-language" },
+  de: { fr: "Allemand", ar: "الألمانية", en: "German", icon: "fa-language" },
+  tr: { fr: "Turc", ar: "التركية", en: "Turkish", icon: "fa-language" },
+  ur: { fr: "Ourdou", ar: "الأردية", en: "Urdu", icon: "fa-language" },
 };
 
 /* ═══════════════════════════════════════════════════ */
@@ -219,7 +216,9 @@ export default function QuranDisplay() {
   // Close fullPage overlay on Escape key
   useEffect(() => {
     if (!fullPage) return;
-    const handler = (e) => { if (e.key === "Escape") setFullPage(false); };
+    const handler = (e) => {
+      if (e.key === "Escape") setFullPage(false);
+    };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
   }, [fullPage]);
@@ -235,7 +234,12 @@ export default function QuranDisplay() {
 
   // Track reading progress
   useEffect(() => {
-    if (!state.showHome && currentSurah && currentAyah && displayMode === 'surah') {
+    if (
+      !state.showHome &&
+      currentSurah &&
+      currentAyah &&
+      displayMode === "surah"
+    ) {
       markRead(currentSurah, currentAyah);
     }
   }, [currentSurah, currentAyah, state.showHome, displayMode]);
@@ -259,10 +263,10 @@ export default function QuranDisplay() {
   // Memoized style object for ayahs container (avoid new object per render)
   const ayahsContainerStyle = useMemo(
     () => ({
-      fontSize: `${readingFontSize}px`,
+      fontSize: `${displayMode === "page" ? fontSize * 1.15 : fontSize}px`,
       fontFamily: isQCF4 ? undefined : quranFontCss,
     }),
-    [readingFontSize, isQCF4, quranFontCss],
+    [fontSize, displayMode, isQCF4, quranFontCss],
   );
 
   // Stable signature for audio playlist to avoid unnecessary reloads when only
@@ -281,7 +285,10 @@ export default function QuranDisplay() {
   useEffect(() => {
     if (isQCF4) return; // QCF4 uses per-word font faces, not the variable
     document.documentElement.style.setProperty("--font-quran", quranFontCss);
-    document.documentElement.style.setProperty("--font-quran-tajweed", quranFontCss);
+    document.documentElement.style.setProperty(
+      "--font-quran-tajweed",
+      quranFontCss,
+    );
   }, [quranFontCss, isQCF4]);
 
   /* ── Track scroll for back-to-top button (throttled) ── */
@@ -414,9 +421,9 @@ export default function QuranDisplay() {
         ? [`ayah-${currentPlayingAyah.globalNumber || currentPlayingAyah.ayah}`]
         : displayMode === "page"
           ? [
-            `ayah-pg-${currentPlayingAyah.globalNumber || currentPlayingAyah.ayah}`,
-            `ayah-${currentPlayingAyah.ayah}`,
-          ]
+              `ayah-pg-${currentPlayingAyah.globalNumber || currentPlayingAyah.ayah}`,
+              `ayah-${currentPlayingAyah.ayah}`,
+            ]
           : [`ayah-${currentPlayingAyah.ayah}`];
     const el = ids.map((id) => document.getElementById(id)).find(Boolean);
     if (el) {
@@ -523,7 +530,9 @@ export default function QuranDisplay() {
               requestedRiwaya: "warsh",
             };
             // Load fonts in background
-            loadFontsForVerses(enriched.map((a) => a.warshWords || [])).catch(() => { });
+            loadFontsForVerses(enriched.map((a) => a.warshWords || [])).catch(
+              () => {},
+            );
           } catch {
             // Warsh data unavailable — keep Hafs text as fallback
             arabicData = {
@@ -651,7 +660,7 @@ export default function QuranDisplay() {
             if (signal.aborted) return;
             setTranslations(trans?.ayahs || []);
           })
-          .catch(() => { });
+          .catch(() => {});
       }
 
       // Save reading position
@@ -693,13 +702,13 @@ export default function QuranDisplay() {
             ayahTo: sTo,
             page: currentPage,
             durationMs: elapsed,
-          }).catch(() => { });
+          }).catch(() => {});
           logWirdProgress({
             surah: sSurah,
             fromAyah: sFrom,
             toAyah: sTo,
             pagesCount,
-          }).catch(() => { });
+          }).catch(() => {});
         }
       } catch {
         /* best-effort */
@@ -744,31 +753,31 @@ export default function QuranDisplay() {
           if (currentSurah > 1) preloadWarshSurah(currentSurah - 1);
           if (currentSurah < 114)
             getSurahTranslation(currentSurah + 1, translationLang).catch(
-              () => { },
+              () => {},
             );
         } else {
           if (currentSurah < 114)
             getSurahFull(currentSurah + 1, riwaya, translationLang).catch(
-              () => { },
+              () => {},
             );
           if (currentSurah > 1)
             getSurahFull(currentSurah - 1, riwaya, translationLang).catch(
-              () => { },
+              () => {},
             );
         }
       } else if (displayMode === "page") {
         if (currentPage < 604)
-          getPageFull(currentPage + 1, riwaya, translationLang).catch(() => { });
+          getPageFull(currentPage + 1, riwaya, translationLang).catch(() => {});
         if (currentPage > 1)
-          getPageFull(currentPage - 1, riwaya, translationLang).catch(() => { });
+          getPageFull(currentPage - 1, riwaya, translationLang).catch(() => {});
       } else if (displayMode === "juz") {
         if (riwaya === "warsh") {
           if (currentJuz < 30) {
-            getWarshJuzVerses(currentJuz + 1).catch(() => { });
-            getJuzTranslation(currentJuz + 1, translationLang).catch(() => { });
+            getWarshJuzVerses(currentJuz + 1).catch(() => {});
+            getJuzTranslation(currentJuz + 1, translationLang).catch(() => {});
           }
         } else {
-          if (currentJuz < 30) getJuz(currentJuz + 1, riwaya).catch(() => { });
+          if (currentJuz < 30) getJuz(currentJuz + 1, riwaya).catch(() => {});
         }
       }
     }, 150); // Fast prefetch — data will be cached for instant next navigation
@@ -870,95 +879,10 @@ export default function QuranDisplay() {
     currentSurah,
   ]);
 
-  // The slice of ayahs visible in the current chunk
+  // Display all ayahs (no chunking)
   const visibleAyahs = useMemo(() => {
-    if (!isLongSurah || surahChunks.length === 0) return ayahs;
-    const chunk = surahChunks[chunkIndex];
-    if (!chunk) return ayahs;
-    // ayahs array is 0-indexed; chunk.start/end are 1-indexed ayah numbers within the surah
-    return ayahs.filter(
-      (a) => a.numberInSurah >= chunk.start && a.numberInSurah <= chunk.end,
-    );
-  }, [ayahs, isLongSurah, surahChunks, chunkIndex]);
-
-  const mushafPageGroups = useMemo(() => {
-    if (displayMode !== "surah" || ayahs.length === 0) return [];
-
-    const groupedByPage = new Map();
-    for (const ayah of ayahs) {
-      const pageNum = Number(ayah.page);
-      if (!Number.isFinite(pageNum) || pageNum <= 0) continue;
-      if (!groupedByPage.has(pageNum)) groupedByPage.set(pageNum, []);
-      groupedByPage.get(pageNum).push(ayah);
-    }
-
-    if (groupedByPage.size > 0) {
-      return Array.from(groupedByPage.entries())
-        .sort((a, b) => a[0] - b[0])
-        .map(([page, items]) => ({
-          page,
-          startAyah: items[0]?.numberInSurah || 1,
-          endAyah: items[items.length - 1]?.numberInSurah || 1,
-          ayahs: items,
-        }));
-    }
-
-    const segmentSize = ayahs.length > 140 ? 10 : ayahs.length > 80 ? 12 : 15;
-    const fallback = [];
-    for (let i = 0; i < ayahs.length; i += segmentSize) {
-      const items = ayahs.slice(i, i + segmentSize);
-      fallback.push({
-        page: i / segmentSize + 1,
-        startAyah: items[0]?.numberInSurah || 1,
-        endAyah: items[items.length - 1]?.numberInSurah || 1,
-        ayahs: items,
-      });
-    }
-    return fallback;
-  }, [displayMode, ayahs]);
-
-  const activeMushafGroup = useMemo(() => {
-    if (mushafPageGroups.length === 0) {
-      return {
-        page: currentPage,
-        startAyah: ayahs[0]?.numberInSurah || 1,
-        endAyah: ayahs[ayahs.length - 1]?.numberInSurah || 1,
-        ayahs,
-      };
-    }
-    return mushafPageGroups[mushafPageIndex] || mushafPageGroups[0];
-  }, [mushafPageGroups, mushafPageIndex, ayahs, currentPage]);
-
-  useEffect(() => {
-    if (displayMode !== "surah" || mushafLayout !== "mushaf") return;
-    if (!currentPlayingAyah?.ayah || mushafPageGroups.length <= 1) return;
-    const targetIndex = mushafPageGroups.findIndex(
-      (group) =>
-        currentPlayingAyah.ayah >= group.startAyah &&
-        currentPlayingAyah.ayah <= group.endAyah,
-    );
-    if (targetIndex >= 0 && targetIndex !== mushafPageIndex) {
-      setMushafPageIndex(targetIndex);
-      contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }, [
-    displayMode,
-    mushafLayout,
-    currentPlayingAyah,
-    mushafPageGroups,
-    mushafPageIndex,
-  ]);
-
-  const visibleMushafAyahs = useMemo(() => {
-    if (
-      displayMode === "surah" &&
-      mushafLayout === "mushaf" &&
-      activeMushafGroup?.ayahs?.length
-    ) {
-      return activeMushafGroup.ayahs;
-    }
-    return visibleAyahs;
-  }, [displayMode, mushafLayout, activeMushafGroup, visibleAyahs]);
+    return ayahs;
+  }, [ayahs]);
 
   /* ── Group ayahs by surah (memoized for page/juz mode) ── */
   const surahGroups = useMemo(() => {
@@ -1041,17 +965,18 @@ export default function QuranDisplay() {
   const verseTranslationMeta =
     TRANSLATION_LANGUAGE_META[translationLang] || TRANSLATION_LANGUAGE_META.fr;
   const wordTranslationMeta =
-    TRANSLATION_LANGUAGE_META[wordTranslationLang] || TRANSLATION_LANGUAGE_META.fr;
+    TRANSLATION_LANGUAGE_META[wordTranslationLang] ||
+    TRANSLATION_LANGUAGE_META.fr;
   const verseTranslationLabel =
-    lang === 'ar'
+    lang === "ar"
       ? verseTranslationMeta.ar
-      : lang === 'fr'
+      : lang === "fr"
         ? verseTranslationMeta.fr
         : verseTranslationMeta.en;
   const wordTranslationLabel =
-    lang === 'ar'
+    lang === "ar"
       ? wordTranslationMeta.ar
-      : lang === 'fr'
+      : lang === "fr"
         ? wordTranslationMeta.fr
         : wordTranslationMeta.en;
 
@@ -1154,84 +1079,6 @@ export default function QuranDisplay() {
         </div>
       )}
 
-      {(showTranslation || (showWordByWord && showWordTranslation)) && (
-        <div className="translation-active-strip" aria-label={lang === 'fr' ? 'Langues de traduction actives' : lang === 'ar' ? 'لغات الترجمة النشطة' : 'Active translation languages'}>
-          {showTranslation && (
-            <div className="translation-active-chip">
-              <i className={`fas ${verseTranslationMeta.icon}`} aria-hidden="true"></i>
-              <span className="translation-active-chip__label">
-                {lang === 'fr' ? 'Versets' : lang === 'ar' ? 'الآيات' : 'Verses'}
-              </span>
-              <strong>{verseTranslationLabel}</strong>
-            </div>
-          )}
-          {showWordByWord && showWordTranslation && (
-            <div className="translation-active-chip translation-active-chip--secondary">
-              <i className="fas fa-w" aria-hidden="true"></i>
-              <span className="translation-active-chip__label">
-                {lang === 'fr' ? 'Mot-à-mot' : lang === 'ar' ? 'كلمة بكلمة' : 'Word by word'}
-              </span>
-              <strong>{wordTranslationLabel}</strong>
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="quran-reading-bar" aria-label={lang === 'fr' ? 'Contexte de lecture' : lang === 'ar' ? 'سياق القراءة' : 'Reading context'}>
-        <div className="quran-reading-bar__cluster">
-          <span className="quran-meta-pill">
-            <i className={`fas ${displayMode === "surah" ? "fa-align-justify" : displayMode === "page" ? "fa-file-lines" : "fa-book-open"}`} aria-hidden="true"></i>
-            <span>
-              {displayMode === "surah"
-                ? t("settings.surahMode", lang)
-                : displayMode === "page"
-                  ? t("settings.pageMode", lang)
-                  : t("settings.juzMode", lang)}
-            </span>
-          </span>
-          <span className="quran-meta-pill quran-meta-pill--riwaya">
-            {riwaya === "warsh" && isQCF4 && <i className="fas fa-star" aria-hidden="true"></i>}
-            <span>{riwaya === "warsh" ? "ورش · Warsh" : "حفص · Hafs"}</span>
-          </span>
-          {memMode && (
-            <span className="quran-meta-pill quran-meta-pill--focus">
-              <i className="fas fa-graduation-cap" aria-hidden="true"></i>
-              <span>{lang === "fr" ? "Mémorisation" : lang === "ar" ? "مراجعة" : "Memorization"}</span>
-            </span>
-          )}
-        </div>
-        <div className="quran-reading-bar__cluster quran-reading-bar__cluster--end">
-          <div className="quran-reading-bar__font" aria-label={lang === 'fr' ? 'Taille du texte arabe' : lang === 'ar' ? 'حجم الخط العربي' : 'Arabic text size'}>
-            <button
-              type="button"
-              className="quran-reading-bar__font-btn"
-              onClick={decreaseFontSize}
-              disabled={!canDecreaseFontSize}
-              aria-label={lang === 'fr' ? 'Reduire la taille arabe' : lang === 'ar' ? 'تصغير الخط العربي' : 'Decrease Arabic text size'}
-            >
-              A-
-            </button>
-            <span className="quran-reading-bar__font-value">{readingFontSize}px</span>
-            <button
-              type="button"
-              className="quran-reading-bar__font-btn"
-              onClick={increaseFontSize}
-              disabled={!canIncreaseFontSize}
-              aria-label={lang === 'fr' ? 'Agrandir la taille arabe' : lang === 'ar' ? 'تكبير الخط العربي' : 'Increase Arabic text size'}
-            >
-              A+
-            </button>
-          </div>
-          <span className="quran-reading-bar__hint">
-            {displayMode === "surah"
-              ? `${t("quran.surah", lang)} ${lang === "ar" ? toAr(currentSurah) : currentSurah}`
-              : displayMode === "page"
-                ? `${t("quran.page", lang)} ${lang === "ar" ? toAr(currentPage) : currentPage}`
-                : `${t("sidebar.juz", lang)} ${lang === "ar" ? toAr(currentJuz) : currentJuz}`}
-          </span>
-        </div>
-      </div>
-
       {/* Surah mode */}
       {displayMode === "surah" && (
         <div
@@ -1246,247 +1093,202 @@ export default function QuranDisplay() {
           {isQCF4 && mushafLayout !== "mushaf" && (
             <SurahHeader surahNum={currentSurah} lang={lang} />
           )}
-          {currentSurah !== 1 && currentSurah !== 9 && mushafLayout !== "mushaf" && (
-            <Bismillah />
-          )}
+          {currentSurah !== 1 &&
+            currentSurah !== 9 &&
+            mushafLayout !== "mushaf" && <Bismillah />}
           <TajweedLegend lang={lang} visible={showTajwid} riwaya={riwaya} />
 
-          {/* Layout toggle: list ↔ mushaf */}
+          {/* Layout mode toggle */}
           <div className="mushaf-layout-toggle-bar">
+            {/* Toggle between List and Word-by-word */}
             <button
-              className={`mushaf-layout-btn${mushafLayout === "list" ? " active" : ""}`}
-              onClick={() => set({ mushafLayout: "list" })}
-              title={lang === "fr" ? "Vue liste" : "List view"}
+              className={`mushaf-layout-btn${!showWordByWord && mushafLayout !== "mushaf" && !memMode ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: "list",
+                  showWordByWord: !showWordByWord,
+                  memMode: false,
+                })
+              }
+              title={
+                showWordByWord
+                  ? lang === "fr"
+                    ? "Afficher en liste"
+                    : lang === "ar"
+                      ? "عرض كقائمة"
+                      : "Show as list"
+                  : lang === "fr"
+                    ? "Afficher mot à mot"
+                    : lang === "ar"
+                      ? "عرض كلمة بكلمة"
+                      : "Show word by word"
+              }
             >
-              <i className="fas fa-list-ul"></i>
-              {lang === "fr" ? "Liste" : "List"}
+              <i
+                className={`fas ${showWordByWord ? "fa-w" : "fa-list-ul"}`}
+              ></i>
+              <span>
+                {showWordByWord
+                  ? lang === "fr"
+                    ? "Mot à mot"
+                    : lang === "ar"
+                      ? "كلمة بكلمة"
+                      : "Word by Word"
+                  : lang === "fr"
+                    ? "Liste"
+                    : lang === "ar"
+                      ? "قائمة"
+                      : "List"}
+              </span>
             </button>
+            <span className="mushaf-layout-sep" />
+            {/* Mushaf mode */}
             <button
               className={`mushaf-layout-btn${mushafLayout === "mushaf" ? " active" : ""}`}
-              onClick={() => set({ mushafLayout: "mushaf" })}
+              onClick={() =>
+                set({
+                  mushafLayout: mushafLayout === "mushaf" ? "list" : "mushaf",
+                  showWordByWord: false,
+                  memMode: false,
+                })
+              }
               title={lang === "fr" ? "Vue Mushaf" : "Mushaf view"}
             >
               <i className="fas fa-book-open"></i>
               {lang === "fr" ? "Mushaf" : "Mushaf"}
             </button>
             <span className="mushaf-layout-sep" />
+            {/* Memorization mode */}
             <button
               className={`mushaf-layout-btn${memMode ? " active" : ""}`}
-              onClick={() => set({ memMode: !memMode })}
+              onClick={() =>
+                set({
+                  mushafLayout: "list",
+                  memMode: !memMode,
+                  showWordByWord: false,
+                })
+              }
               title={lang === "fr" ? "Mode mémorisation" : "Memorization mode"}
             >
               <i className="fas fa-graduation-cap"></i>
               {lang === "fr" ? "Mémorisation" : "Memorize"}
             </button>
-            <button
-              className="mushaf-layout-btn"
-              onClick={() => setFullPage(true)}
-              title={lang === "fr" ? "Vue pleine page" : "Full page view"}
-            >
-              <i className="fas fa-expand"></i>
-              {lang === "fr" ? "Pleine page" : "Full page"}
-            </button>
           </div>
 
-          {/* ── Mushaf page layout ── */}
+          {/* ── Mushaf page layout - Clean Page Style (Quran.com like) ── */}
           {mushafLayout === "mushaf" && (
-            <>
-              {mushafPageGroups.length > 1 && (
-                <div className="mushaf-page-switcher">
-                  <button
-                    className="btn btn-outline mushaf-page-btn"
-                    onClick={() => {
-                      setMushafPageIndex((i) => Math.max(0, i - 1));
-                      contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    disabled={mushafPageIndex === 0}
-                  >
-                    <i className={`fas fa-arrow-${lang === "ar" ? "right" : "left"}`} />
-                    {lang === "fr" ? "Page precedente" : lang === "ar" ? "الصفحة السابقة" : "Previous page"}
-                  </button>
-
-                  <div className="mushaf-page-meta">
-                    <strong>
-                      {t("quran.page", lang)} {lang === "ar" ? toAr(activeMushafGroup.page) : activeMushafGroup.page}
-                    </strong>
-                    <span>
-                      {lang === "fr"
-                        ? `Versets ${activeMushafGroup.startAyah}-${activeMushafGroup.endAyah}`
-                        : lang === "ar"
-                          ? `الآيات ${toAr(activeMushafGroup.startAyah)}-${toAr(activeMushafGroup.endAyah)}`
-                          : `Ayahs ${activeMushafGroup.startAyah}-${activeMushafGroup.endAyah}`}
-                    </span>
-                  </div>
-
-                  <button
-                    className="btn btn-outline mushaf-page-btn"
-                    onClick={() => {
-                      setMushafPageIndex((i) => Math.min(mushafPageGroups.length - 1, i + 1));
-                      contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    disabled={mushafPageIndex === mushafPageGroups.length - 1}
-                  >
-                    {lang === "fr" ? "Page suivante" : lang === "ar" ? "الصفحة التالية" : "Next page"}
-                    <i className={`fas fa-arrow-${lang === "ar" ? "left" : "right"}`} />
-                  </button>
-                </div>
-              )}
-
-              <MushafInlineView
-                ayahs={visibleMushafAyahs}
-                translations={visibleMushafTranslations}
-                surahNum={currentSurah}
-                displayMode={displayMode}
-                currentPage={activeMushafGroup.page || currentPage}
-                currentJuz={currentJuz}
-                isQCF4={isQCF4}
-                showTajwid={showTajwid}
-                showTranslation={showTranslation}
-                currentPlayingAyah={currentPlayingAyah}
-                calibration={karaokeCalibration}
-                riwaya={riwaya}
-                lang={lang}
-                fontSize={readingFontSize}
-                onAyahClick={toggleAyah}
-                onIncreaseFont={increaseFontSize}
-                onDecreaseFont={decreaseFontSize}
-                canIncreaseFont={canIncreaseFontSize}
-                canDecreaseFont={canDecreaseFontSize}
-              />
-            </>
+            <CleanPageView
+              ayahs={visibleAyahs}
+              lang={lang}
+              fontSize={fontSize}
+              isQCF4={isQCF4}
+              showTajwid={showTajwid}
+              currentPlayingAyah={currentPlayingAyah}
+              surahNum={currentSurah}
+              calibration={karaokeCalibration}
+              riwaya={riwaya}
+            />
           )}
 
           {/* ── List layout (default) — chunks + ayah blocks ── */}
-          {mushafLayout !== "mushaf" && (<>
-            {/* Chunk label for long surahs */}
-            {isLongSurah && surahChunks[chunkIndex] && (
-              <div className="chunk-nav-bar">
-                <button
-                  className="btn btn-outline chunk-btn"
-                  onClick={() => {
-                    setChunkIndex((i) => i - 1);
-                    contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  disabled={chunkIndex === 0}
-                >
-                  <i
-                    className={`fas fa-arrow-${lang === "ar" ? "right" : "left"}`}
-                  ></i>
-                  {lang === "fr" ? "Précédent" : "Previous"}
-                </button>
-                <span className="chunk-label">
-                  {lang === "fr"
-                    ? `Partie ${chunkIndex + 1} / ${surahChunks.length}`
-                    : `Part ${chunkIndex + 1} / ${surahChunks.length}`}
-                  {surahChunks[chunkIndex].label && (
-                    <span className="chunk-hizb-label">
-                      {" "}
-                      · {surahChunks[chunkIndex].label}
-                    </span>
-                  )}
-                  <span className="chunk-ayah-range">
-                    {" "}
-                    (
-                    {lang === "ar"
-                      ? toAr(surahChunks[chunkIndex].start)
-                      : surahChunks[chunkIndex].start}
-                    {" – "}
-                    {lang === "ar"
-                      ? toAr(surahChunks[chunkIndex].end)
-                      : surahChunks[chunkIndex].end}
-                    )
+          {mushafLayout !== "mushaf" && (
+            <>
+              {/* Ayah list — plain render, no virtual scroll */}
+              <div
+                role="list"
+                className={`surah-ayahs-list${isQCF4 ? " qcf4-container" : ""}`}
+                style={ayahsContainerStyle}
+              >
+                {visibleAyahs.map((ayah, idx) => {
+                  const isPlayingAyah =
+                    currentPlayingAyah?.ayah === ayah.numberInSurah &&
+                    currentPlayingAyah?.surah === currentSurah;
+
+                  // Add page separator if this ayah is on a new page
+                  const showPageSeparator =
+                    idx > 0 && visibleAyahs[idx - 1].page !== ayah.page;
+                  const trans = visibleTranslations[idx] || null;
+                  return (
+                    <React.Fragment key={ayah.number}>
+                      {showPageSeparator && (
+                        <div className="page-separator">
+                          <span className="page-separator-line"></span>
+                          <span className="page-separator-text">
+                            {lang === "ar" ? "صفحة" : "Page"}{" "}
+                            {lang === "ar" ? toAr(ayah.page) : ayah.page}
+                          </span>
+                          <span className="page-separator-line"></span>
+                        </div>
+                      )}
+                      <AyahBlock
+                        ayah={ayah}
+                        ayahId={`ayah-${ayah.numberInSurah}`}
+                        isPlaying={isPlayingAyah}
+                        isActive={activeAyah === ayah.numberInSurah}
+                        trans={trans}
+                        showTajwid={showTajwid}
+                        showTranslation={showTranslation}
+                        showWordByWord={showWordByWord}
+                        showTransliteration={showTransliteration}
+                        showWordTranslation={showWordTranslation}
+                        surahNum={currentSurah}
+                        calibration={karaokeCalibration}
+                        riwaya={riwaya}
+                        lang={lang}
+                        fontSize={fontSize}
+                        memMode={memMode}
+                        mushafLayout={mushafLayout}
+                        onToggleActive={() => toggleAyah(ayah.numberInSurah)}
+                      />
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+
+              {/* Bottom chunk nav for long surahs */}
+              {isLongSurah && (
+                <div className="chunk-nav-bar chunk-nav-bar--bottom">
+                  <button
+                    className="btn btn-outline chunk-btn"
+                    onClick={() => {
+                      setChunkIndex((i) => i - 1);
+                      contentRef.current?.scrollTo({
+                        top: 0,
+                        behavior: "smooth",
+                      });
+                    }}
+                    disabled={chunkIndex === 0}
+                  >
+                    <i
+                      className={`fas fa-arrow-${lang === "ar" ? "right" : "left"}`}
+                    ></i>
+                    {lang === "fr" ? "Précédent" : "Previous"}
+                  </button>
+                  <span className="chunk-label">
+                    {lang === "fr"
+                      ? `Partie ${chunkIndex + 1} / ${surahChunks.length}`
+                      : `Part ${chunkIndex + 1} / ${surahChunks.length}`}
                   </span>
-                </span>
-                <button
-                  className="btn btn-outline chunk-btn"
-                  onClick={() => {
-                    setChunkIndex((i) => i + 1);
-                    contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  disabled={chunkIndex === surahChunks.length - 1}
-                >
-                  {lang === "fr" ? "Suivant" : "Next"}
-                  <i
-                    className={`fas fa-arrow-${lang === "ar" ? "left" : "right"}`}
-                  ></i>
-                </button>
-              </div>
-            )}
-
-            {/* Ayah list — plain render, no virtual scroll */}
-            <div
-              role="list"
-              className={`surah-ayahs-list${isQCF4 ? " qcf4-container" : ""}`}
-              style={ayahsContainerStyle}
-            >
-              {visibleAyahs.map((ayah, idx) => {
-                const isPlayingAyah =
-                  currentPlayingAyah?.ayah === ayah.numberInSurah &&
-                  currentPlayingAyah?.surah === currentSurah;
-                const trans = visibleTranslations[idx] || null;
-                return (
-                  <AyahBlock
-                    key={ayah.number}
-                    ayah={ayah}
-                    ayahId={`ayah-${ayah.numberInSurah}`}
-                    isPlaying={isPlayingAyah}
-                    isActive={activeAyah === ayah.numberInSurah}
-                    trans={trans}
-                    showTajwid={showTajwid}
-                    showTranslation={showTranslation}
-                    showWordByWord={showWordByWord}
-                    showTransliteration={showTransliteration}
-                    showWordTranslation={showWordTranslation}
-                    surahNum={currentSurah}
-                      calibration={karaokeCalibration}
-                      riwaya={riwaya}
-                      lang={lang}
-                      fontSize={readingFontSize}
-                      memMode={memMode}
-                      onToggleActive={() => toggleAyah(ayah.numberInSurah)}
-                    />
-                );
-              })}
-            </div>
-
-            {/* Bottom chunk nav for long surahs */}
-            {isLongSurah && (
-              <div className="chunk-nav-bar chunk-nav-bar--bottom">
-                <button
-                  className="btn btn-outline chunk-btn"
-                  onClick={() => {
-                    setChunkIndex((i) => i - 1);
-                    contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  disabled={chunkIndex === 0}
-                >
-                  <i
-                    className={`fas fa-arrow-${lang === "ar" ? "right" : "left"}`}
-                  ></i>
-                  {lang === "fr" ? "Précédent" : "Previous"}
-                </button>
-                <span className="chunk-label">
-                  {lang === "fr"
-                    ? `Partie ${chunkIndex + 1} / ${surahChunks.length}`
-                    : `Part ${chunkIndex + 1} / ${surahChunks.length}`}
-                </span>
-                <button
-                  className="btn btn-outline chunk-btn"
-                  onClick={() => {
-                    setChunkIndex((i) => i + 1);
-                    contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  disabled={chunkIndex === surahChunks.length - 1}
-                >
-                  {lang === "fr" ? "Suivant" : "Next"}
-                  <i
-                    className={`fas fa-arrow-${lang === "ar" ? "left" : "right"}`}
-                  ></i>
-                </button>
-              </div>
-            )}
-
-          </>)}
+                  <button
+                    className="btn btn-outline chunk-btn"
+                    onClick={() => {
+                      setChunkIndex((i) => i + 1);
+                      contentRef.current?.scrollTo({
+                        top: 0,
+                        behavior: "smooth",
+                      });
+                    }}
+                    disabled={chunkIndex === surahChunks.length - 1}
+                  >
+                    {lang === "fr" ? "Suivant" : "Next"}
+                    <i
+                      className={`fas fa-arrow-${lang === "ar" ? "left" : "right"}`}
+                    ></i>
+                  </button>
+                </div>
+              )}
+            </>
+          )}
 
           {/* Surah navigation — always shown */}
           <div className="quran-nav">
@@ -1532,107 +1334,170 @@ export default function QuranDisplay() {
                 {getJuzForAyah(ayahs[0].surah?.number, ayahs[0].numberInSurah)}
               </span>
             )}
-            <span className="quran-meta-pill quran-meta-pill--riwaya">
-              {riwaya === "warsh" && isQCF4 && <i className="fas fa-star" aria-hidden="true"></i>}
+            <span
+              style={{
+                fontSize: "0.7rem",
+                fontWeight: 700,
+                padding: "0.15rem 0.6rem",
+                borderRadius: "9999px",
+                background:
+                  riwaya === "warsh"
+                    ? "rgba(212,168,32,0.15)"
+                    : "rgba(var(--primary-rgb),0.12)",
+                color: riwaya === "warsh" ? "var(--gold)" : "var(--primary)",
+                border: `1px solid ${riwaya === "warsh" ? "rgba(212,168,32,0.35)" : "rgba(var(--primary-rgb),0.25)"}`,
+                letterSpacing: "0.04em",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.3rem",
+              }}
+            >
+              {riwaya === "warsh" && isQCF4 && (
+                <i className="fas fa-star" style={{ fontSize: "0.6rem" }}></i>
+              )}
               {riwaya === "warsh" ? "ورش · Warsh" : "حفص · Hafs"}
             </span>
           </div>
 
-          {/* Toggle vue Liste / Mushaf */}
+          {/* Layout mode toggle */}
           <div className="mushaf-layout-toggle-bar">
+            {/* Toggle between List and Word-by-word */}
             <button
-              className={`mushaf-layout-btn${mushafLayout === "list" ? " active" : ""}`}
-              onClick={() => set({ mushafLayout: "list" })}
-              title={lang === "fr" ? "Vue liste" : "List view"}
+              className={`mushaf-layout-btn${!showWordByWord && mushafLayout !== "mushaf" && !memMode ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: "list",
+                  showWordByWord: !showWordByWord,
+                  memMode: false,
+                })
+              }
+              title={
+                showWordByWord
+                  ? lang === "fr"
+                    ? "Afficher en liste"
+                    : lang === "ar"
+                      ? "عرض كقائمة"
+                      : "Show as list"
+                  : lang === "fr"
+                    ? "Afficher mot à mot"
+                    : lang === "ar"
+                      ? "عرض كلمة بكلمة"
+                      : "Show word by word"
+              }
             >
-              <i className="fas fa-list-ul"></i>
-              {lang === "fr" ? "Liste" : "List"}
+              <i
+                className={`fas ${showWordByWord ? "fa-w" : "fa-list-ul"}`}
+              ></i>
+              <span>
+                {showWordByWord
+                  ? lang === "fr"
+                    ? "Mot à mot"
+                    : lang === "ar"
+                      ? "كلمة بكلمة"
+                      : "Word by Word"
+                  : lang === "fr"
+                    ? "Liste"
+                    : lang === "ar"
+                      ? "قائمة"
+                      : "List"}
+              </span>
             </button>
+            <span className="mushaf-layout-sep" />
+            {/* Mushaf mode */}
             <button
               className={`mushaf-layout-btn${mushafLayout === "mushaf" ? " active" : ""}`}
-              onClick={() => set({ mushafLayout: "mushaf" })}
+              onClick={() =>
+                set({
+                  mushafLayout: mushafLayout === "mushaf" ? "list" : "mushaf",
+                  showWordByWord: false,
+                  memMode: false,
+                })
+              }
               title={lang === "fr" ? "Vue Mushaf" : "Mushaf view"}
             >
               <i className="fas fa-book-open"></i>
               {lang === "fr" ? "Mushaf" : "Mushaf"}
             </button>
+            <span className="mushaf-layout-sep" />
+            {/* Memorization mode */}
+            <button
+              className={`mushaf-layout-btn${memMode ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: "list",
+                  memMode: !memMode,
+                  showWordByWord: false,
+                })
+              }
+              title={lang === "fr" ? "Mode mémorisation" : "Memorization mode"}
+            >
+              <i className="fas fa-graduation-cap"></i>
+              {lang === "fr" ? "Mémorisation" : "Memorize"}
+            </button>
           </div>
 
-          {/* Vue Mushaf */}
-          {mushafLayout === "mushaf" && surahGroups.map((group, gi) => {
-            const groupTrans = translationMap
-              ? group.ayahs.map((a) => getTranslationForAyah(a))
-              : [];
-            return (
-              <MushafInlineView
-                key={gi}
-                ayahs={group.ayahs}
-                translations={groupTrans}
-                surahNum={group.surah}
-                displayMode={displayMode}
-                currentPage={currentPage}
-                currentJuz={currentJuz}
-                isQCF4={isQCF4}
-                showTajwid={showTajwid}
-                showTranslation={showTranslation}
-                currentPlayingAyah={currentPlayingAyah}
-                calibration={karaokeCalibration}
-                riwaya={riwaya}
-                lang={lang}
-                fontSize={readingFontSize}
-                onAyahClick={toggleAyah}
-                onIncreaseFont={increaseFontSize}
-                onDecreaseFont={decreaseFontSize}
-                canIncreaseFont={canIncreaseFontSize}
-                canDecreaseFont={canDecreaseFontSize}
-              />
-            );
-          })}
+          {/* Vue Mushaf - Clean Page Style (Quran.com like) */}
+          {mushafLayout === "mushaf" && (
+            <CleanPageView
+              ayahs={surahGroups.flatMap((g) => g.ayahs)}
+              lang={lang}
+              fontSize={fontSize}
+              isQCF4={isQCF4}
+              showTajwid={showTajwid}
+              currentPlayingAyah={currentPlayingAyah}
+              surahNum={surahGroups[0]?.surah}
+              calibration={karaokeCalibration}
+              riwaya={riwaya}
+            />
+          )}
 
           {/* Vue liste — utilise AyahBlock (cohérent avec sourate/juz) */}
-          {mushafLayout !== "mushaf" && surahGroups.map((group, gi) => (
-            <div key={gi}>
-              {!isQCF4 && group.ayahs[0]?.numberInSurah === 1 && (
-                <SurahHeader surahNum={group.surah} lang={lang} />
-              )}
-              {!isQCF4 &&
-                group.ayahs[0]?.numberInSurah === 1 &&
-                group.surah !== 1 &&
-                group.surah !== 9 && <Bismillah />}
-              <div
-                className={`surah-ayahs-list${isQCF4 ? " qcf4-container" : ""}`}
-                style={ayahsContainerStyle}
-              >
-                {group.ayahs.map((ayah) => {
-                  const isPlaying =
-                    currentPlayingAyah?.ayah === ayah.numberInSurah &&
-                    currentPlayingAyah?.surah === ayah.surah?.number;
-                  const trans = getTranslationForAyah(ayah);
-                  return (
-                    <AyahBlock
-                      key={ayah.number}
-                      ayah={ayah}
-                      ayahId={`ayah-pg-${ayah.number}`}
-                      isPlaying={isPlaying}
-                      isActive={activeAyah === ayah.number}
-                      trans={trans}
-                      showTajwid={showTajwid}
-                      showTranslation={showTranslation}
-                      showWordByWord={showWordByWord}
-                      showTransliteration={showTransliteration}
-                      showWordTranslation={showWordTranslation}
-                      surahNum={ayah.surah?.number || group.surah}
-                      calibration={karaokeCalibration}
-                      riwaya={riwaya}
-                      lang={lang}
-                      fontSize={readingFontSize}
-                      onToggleActive={() => toggleAyah(ayah.number)}
-                    />
-                  );
-                })}
+          {mushafLayout !== "mushaf" &&
+            surahGroups.map((group, gi) => (
+              <div key={gi}>
+                {!isQCF4 && group.ayahs[0]?.numberInSurah === 1 && (
+                  <SurahHeader surahNum={group.surah} lang={lang} />
+                )}
+                {!isQCF4 &&
+                  group.ayahs[0]?.numberInSurah === 1 &&
+                  group.surah !== 1 &&
+                  group.surah !== 9 && <Bismillah />}
+                <div
+                  className={`surah-ayahs-list${isQCF4 ? " qcf4-container" : ""}`}
+                  style={ayahsContainerStyle}
+                >
+                  {group.ayahs.map((ayah) => {
+                    const isPlaying =
+                      currentPlayingAyah?.ayah === ayah.numberInSurah &&
+                      currentPlayingAyah?.surah === ayah.surah?.number;
+                    const trans = getTranslationForAyah(ayah);
+                    return (
+                      <AyahBlock
+                        key={ayah.number}
+                        ayah={ayah}
+                        ayahId={`ayah-pg-${ayah.number}`}
+                        isPlaying={isPlaying}
+                        isActive={activeAyah === ayah.number}
+                        trans={trans}
+                        showTajwid={showTajwid}
+                        showTranslation={showTranslation}
+                        showWordByWord={showWordByWord}
+                        showTransliteration={showTransliteration}
+                        showWordTranslation={showWordTranslation}
+                        surahNum={ayah.surah?.number || group.surah}
+                        calibration={karaokeCalibration}
+                        riwaya={riwaya}
+                        lang={lang}
+                        fontSize={fontSize}
+                        memMode={memMode}
+                        mushafLayout={mushafLayout}
+                        onToggleActive={() => toggleAyah(ayah.number)}
+                      />
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
 
           {/* Navigation */}
           <div className="quran-nav">
@@ -1641,7 +1506,9 @@ export default function QuranDisplay() {
               onClick={goPrevPage}
               disabled={currentPage <= 1}
             >
-              <i className={`fas fa-arrow-${lang === "ar" ? "right" : "left"}`}></i>
+              <i
+                className={`fas fa-arrow-${lang === "ar" ? "right" : "left"}`}
+              ></i>
               {t("quran.prevPage", lang)}
             </button>
             <span className="page-indicator">
@@ -1653,7 +1520,9 @@ export default function QuranDisplay() {
               disabled={currentPage >= 604}
             >
               {t("quran.nextPage", lang)}
-              <i className={`fas fa-arrow-${lang === "ar" ? "left" : "right"}`}></i>
+              <i
+                className={`fas fa-arrow-${lang === "ar" ? "left" : "right"}`}
+              ></i>
             </button>
           </div>
         </div>
@@ -1669,64 +1538,128 @@ export default function QuranDisplay() {
           {/* En-tête Juz */}
           <div className="page-header-bar">
             <span>
-              <i className="fas fa-book-open" style={{ marginInlineEnd: "0.4rem" }}></i>
+              <i
+                className="fas fa-book-open"
+                style={{ marginInlineEnd: "0.4rem" }}
+              ></i>
               {t("sidebar.juz", lang)}{" "}
               {lang === "ar" ? toAr(currentJuz) : currentJuz}
             </span>
-            <span className="quran-meta-pill quran-meta-pill--riwaya">
-              {riwaya === "warsh" && isQCF4 && <i className="fas fa-star" aria-hidden="true"></i>}
+            <span
+              style={{
+                fontSize: "0.7rem",
+                fontWeight: 700,
+                padding: "0.15rem 0.6rem",
+                borderRadius: "9999px",
+                background:
+                  riwaya === "warsh"
+                    ? "rgba(212,168,32,0.15)"
+                    : "rgba(var(--primary-rgb),0.12)",
+                color: riwaya === "warsh" ? "var(--gold)" : "var(--primary)",
+                border: `1px solid ${riwaya === "warsh" ? "rgba(212,168,32,0.3)" : "rgba(var(--primary-rgb),0.25)"}`,
+                letterSpacing: "0.04em",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.3rem",
+              }}
+            >
+              {riwaya === "warsh" && isQCF4 && (
+                <i className="fas fa-star" style={{ fontSize: "0.6rem" }}></i>
+              )}
               {riwaya === "warsh" ? "ورش · Warsh" : "حفص · Hafs"}
             </span>
           </div>
 
-          {/* Toggle vue */}
+          {/* Layout mode toggle */}
           <div className="mushaf-layout-toggle-bar">
+            {/* Toggle between List and Word-by-word */}
             <button
-              className={`mushaf-layout-btn${mushafLayout === "list" ? " active" : ""}`}
-              onClick={() => set({ mushafLayout: "list" })}
+              className={`mushaf-layout-btn${!showWordByWord && mushafLayout !== "mushaf" && !memMode ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: "list",
+                  showWordByWord: !showWordByWord,
+                  memMode: false,
+                })
+              }
+              title={
+                showWordByWord
+                  ? lang === "fr"
+                    ? "Afficher en liste"
+                    : lang === "ar"
+                      ? "عرض كقائمة"
+                      : "Show as list"
+                  : lang === "fr"
+                    ? "Afficher mot à mot"
+                    : lang === "ar"
+                      ? "عرض كلمة بكلمة"
+                      : "Show word by word"
+              }
             >
-              <i className="fas fa-list-ul"></i>
-              {lang === "fr" ? "Liste" : "List"}
+              <i
+                className={`fas ${showWordByWord ? "fa-w" : "fa-list-ul"}`}
+              ></i>
+              <span>
+                {showWordByWord
+                  ? lang === "fr"
+                    ? "Mot à mot"
+                    : lang === "ar"
+                      ? "كلمة بكلمة"
+                      : "Word by Word"
+                  : lang === "fr"
+                    ? "Liste"
+                    : lang === "ar"
+                      ? "قائمة"
+                      : "List"}
+              </span>
             </button>
+            <span className="mushaf-layout-sep" />
+            {/* Mushaf mode */}
             <button
               className={`mushaf-layout-btn${mushafLayout === "mushaf" ? " active" : ""}`}
-              onClick={() => set({ mushafLayout: "mushaf" })}
+              onClick={() =>
+                set({
+                  mushafLayout: mushafLayout === "mushaf" ? "list" : "mushaf",
+                  showWordByWord: false,
+                  memMode: false,
+                })
+              }
             >
               <i className="fas fa-book-open"></i>
               {lang === "fr" ? "Mushaf" : "Mushaf"}
             </button>
+            <span className="mushaf-layout-sep" />
+            {/* Memorization mode */}
+            <button
+              className={`mushaf-layout-btn${memMode ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: "list",
+                  memMode: !memMode,
+                  showWordByWord: false,
+                })
+              }
+              title={lang === "fr" ? "Mode mémorisation" : "Memorization mode"}
+            >
+              <i className="fas fa-graduation-cap"></i>
+              {lang === "fr" ? "Mémorisation" : "Memorize"}
+            </button>
           </div>
 
-          {/* Vue Mushaf */}
-          {mushafLayout === "mushaf" && surahGroups.map((group, gi) => {
-            const groupTrans = translationMap
-              ? group.ayahs.map((a) => getTranslationForAyah(a))
-              : [];
-            return (
-              <MushafInlineView
-                key={gi}
-                ayahs={group.ayahs}
-                translations={groupTrans}
-                surahNum={group.surah}
-                displayMode={displayMode}
-                currentPage={currentPage}
-                currentJuz={currentJuz}
-                isQCF4={isQCF4}
-                showTajwid={showTajwid}
-                showTranslation={showTranslation}
-                currentPlayingAyah={currentPlayingAyah}
-                calibration={karaokeCalibration}
-                riwaya={riwaya}
-                lang={lang}
-                fontSize={readingFontSize}
-                onAyahClick={(n) => toggleAyah(group.ayahs.find((a) => a.numberInSurah === n)?.number ?? n)}
-                onIncreaseFont={increaseFontSize}
-                onDecreaseFont={decreaseFontSize}
-                canIncreaseFont={canIncreaseFontSize}
-                canDecreaseFont={canDecreaseFontSize}
-              />
-            );
-          })}
+          {/* Vue Mushaf - Clean Page Style (Quran.com like) */}
+          {mushafLayout === "mushaf" && (
+            <CleanPageView
+              ayahs={surahGroups.flatMap((g) => g.ayahs)}
+              lang={lang}
+              fontSize={fontSize}
+              isQCF4={isQCF4}
+              showTajwid={showTajwid}
+              currentPlayingAyah={currentPlayingAyah}
+              surahNum={surahGroups[0]?.surah}
+              calibration={karaokeCalibration}
+              riwaya={riwaya}
+            />
+          )}
 
           {/* Vue liste */}
           {mushafLayout !== "mushaf" && (
@@ -1766,7 +1699,9 @@ export default function QuranDisplay() {
                           calibration={karaokeCalibration}
                           riwaya={riwaya}
                           lang={lang}
-                          fontSize={readingFontSize}
+                          fontSize={fontSize}
+                          memMode={memMode}
+                          mushafLayout={mushafLayout}
                           onToggleActive={() => toggleAyah(ayah.number)}
                         />
                       );
@@ -1779,17 +1714,29 @@ export default function QuranDisplay() {
 
           {/* Navigation Juz */}
           <div className="quran-nav">
-            <button className="btn btn-outline" onClick={goPrevJuz} disabled={currentJuz <= 1}>
-              <i className={`fas fa-arrow-${lang === "ar" ? "right" : "left"}`}></i>
+            <button
+              className="btn btn-outline"
+              onClick={goPrevJuz}
+              disabled={currentJuz <= 1}
+            >
+              <i
+                className={`fas fa-arrow-${lang === "ar" ? "right" : "left"}`}
+              ></i>
               {t("quran.prevJuz", lang)}
             </button>
             <span className="page-indicator">
               {t("sidebar.juz", lang)}{" "}
               {lang === "ar" ? toAr(currentJuz) : currentJuz} / 30
             </span>
-            <button className="btn btn-outline" onClick={goNextJuz} disabled={currentJuz >= 30}>
+            <button
+              className="btn btn-outline"
+              onClick={goNextJuz}
+              disabled={currentJuz >= 30}
+            >
               {t("quran.nextJuz", lang)}
-              <i className={`fas fa-arrow-${lang === "ar" ? "left" : "right"}`}></i>
+              <i
+                className={`fas fa-arrow-${lang === "ar" ? "left" : "right"}`}
+              ></i>
             </button>
           </div>
         </div>
@@ -1848,14 +1795,18 @@ export default function QuranDisplay() {
           onClick={() => setFullPage(false)}
           role="dialog"
           aria-modal="true"
-          aria-label={lang === 'fr' ? 'Vue pleine page' : 'Full page view'}
+          aria-label={lang === "fr" ? "Vue pleine page" : "Full page view"}
         >
           <div
             className="mfp-page-container"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
             style={{ fontFamily: isQCF4 ? undefined : quranFontCss }}
           >
-            <button className="mfp-close-btn" onClick={() => setFullPage(false)} aria-label="Fermer">
+            <button
+              className="mfp-close-btn"
+              onClick={() => setFullPage(false)}
+              aria-label="Fermer"
+            >
               <i className="fas fa-times" />
             </button>
             <div className="mfp-page-header">
@@ -1877,26 +1828,35 @@ export default function QuranDisplay() {
               style={{ fontSize: `${fullscreenFontSize}px` }}
               dir="rtl"
             >
-              {fullscreenAyahs.map((a) => (
+              {ayahs.map((a) => (
                 <React.Fragment key={a.number || a.numberInSurah}>
                   <span
-                    className={currentPlayingAyah?.ayah === a.numberInSurah && currentPlayingAyah?.surah === currentSurah ? 'mfp-playing' : ''}
+                    className={
+                      currentPlayingAyah?.ayah === a.numberInSurah &&
+                      currentPlayingAyah?.surah === currentSurah
+                        ? "mfp-playing"
+                        : ""
+                    }
                   >
-                    {a.text || ''}
-                  </span>
-                  {' '}
-                  <span className="mfp-ayah-num">﴿{a.numberInSurah}﴾</span>
-                  {' '}
+                    {a.text || ""}
+                  </span>{" "}
+                  <span className="mfp-ayah-num">﴿{a.numberInSurah}﴾</span>{" "}
                 </React.Fragment>
               ))}
             </div>
             <div className="mfp-footer-bar">
               <span className="mfp-footer-text">
-                {getSurah(currentSurah) ? (lang === 'fr' ? getSurah(currentSurah).fr : getSurah(currentSurah).en) : ''}
-                {' · '}
-                {fullscreenAyahs.length} {lang === 'fr' ? 'versets' : 'ayahs'}
+                {getSurah(currentSurah)
+                  ? lang === "fr"
+                    ? getSurah(currentSurah).fr
+                    : getSurah(currentSurah).en
+                  : ""}
+                {" · "}
+                {ayahs.length} {lang === "fr" ? "versets" : "ayahs"}
               </span>
-              <span className="mfp-footer-folio">{lang === 'ar' ? toAr(currentPage) : currentPage}</span>
+              <span className="mfp-footer-text" style={{ opacity: 0.5 }}>
+                MushafPlus
+              </span>
             </div>
           </div>
         </div>
@@ -1904,4 +1864,3 @@ export default function QuranDisplay() {
     </div>
   );
 }
-
