@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo, lazy, Suspense } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo, lazy, Suspense } from "react";
 import { useApp } from "./context/AppContext";
 import SplashScreen from "./components/SplashScreen";
 import Header from "./components/Header";
@@ -21,8 +21,12 @@ const ReadingHistoryPanel = lazy(
   () => import("./components/ReadingHistoryPanel"),
 );
 const PlaylistPanel = lazy(() => import("./components/PlaylistPanel"));
-const DuasPage = lazy(() => import("./components/DuasPage"));
-
+const DuasPage = lazy(() => import("./components/DuasPage"));const FlashcardsPanel = lazy(() => import('./components/FlashcardsPanel'));
+const TajweedQuizPanel = lazy(() => import('./components/TajweedQuizPanel'));
+const KhatmaPanel = lazy(() => import('./components/KhatmaPanel'));
+const ReciterComparatorPanel = lazy(() => import('./components/ReciterComparatorPanel'));
+const AyahSharePanel = lazy(() => import('./components/AyahSharePanel'));
+const WeeklyStatsPanel = lazy(() => import('./components/WeeklyStatsPanel'));
 function detectLowPerformanceDevice() {
   if (typeof window === "undefined" || typeof navigator === "undefined")
     return false;
@@ -54,7 +58,40 @@ export default function App() {
     showDuas,
     focusReading,
   } = state;
+  /* ── Reset reading progress bar on navigation ── */
+  useEffect(() => {
+    document.documentElement.style.setProperty("--reading-progress", "0");
+  }, [currentSurah, currentJuz, currentPage, displayMode]);
+
   const lowPerfMode = useMemo(() => detectLowPerformanceDevice(), []);
+
+  /* ── Immersive reading mode: auto-hide header after 3s inactivity ── */
+  const [immersiveHidden, setImmersiveHidden] = useState(false);
+  const immersiveTimer = useRef(null);
+  const immersiveActive = focusReading && !showHome && !showDuas;
+
+  useEffect(() => {
+    if (!immersiveActive) {
+      setImmersiveHidden(false);
+      clearTimeout(immersiveTimer.current);
+      return;
+    }
+    const show = () => {
+      setImmersiveHidden(false);
+      clearTimeout(immersiveTimer.current);
+      immersiveTimer.current = setTimeout(() => setImmersiveHidden(true), 3000);
+    };
+    show();
+    window.addEventListener("mousemove", show, { passive: true });
+    window.addEventListener("touchstart", show, { passive: true });
+    window.addEventListener("scroll", show, { passive: true });
+    return () => {
+      clearTimeout(immersiveTimer.current);
+      window.removeEventListener("mousemove", show);
+      window.removeEventListener("touchstart", show);
+      window.removeEventListener("scroll", show);
+    };
+  }, [immersiveActive]);
 
   useEffect(() => {
     document.documentElement.dataset.perf = lowPerfMode ? "low" : "normal";
@@ -161,10 +198,19 @@ export default function App() {
           }
           break;
         case "Escape":
-          // Close any open modal
+          // Close any open modal/panel
           if (state.searchOpen) dispatch({ type: "TOGGLE_SEARCH" });
           else if (state.settingsOpen) dispatch({ type: "TOGGLE_SETTINGS" });
           else if (state.bookmarksOpen) dispatch({ type: "TOGGLE_BOOKMARKS" });
+          else if (state.wirdOpen) set({ wirdOpen: false });
+          else if (state.historyOpen) set({ historyOpen: false });
+          else if (state.playlistOpen) set({ playlistOpen: false });
+          else if (state.flashcardsOpen) set({ flashcardsOpen: false });
+          else if (state.tajweedQuizOpen) set({ tajweedQuizOpen: false });
+          else if (state.khatmaOpen) set({ khatmaOpen: false });
+          else if (state.comparatorOpen) set({ comparatorOpen: false });
+          else if (state.shareImageOpen) set({ shareImageOpen: false });
+          else if (state.weeklyStatsOpen) set({ weeklyStatsOpen: false });
           else if (sidebarOpen) dispatch({ type: "TOGGLE_SIDEBAR" });
           break;
         case " ":
@@ -186,6 +232,15 @@ export default function App() {
       state.searchOpen,
       state.settingsOpen,
       state.bookmarksOpen,
+      state.wirdOpen,
+      state.historyOpen,
+      state.playlistOpen,
+      state.flashcardsOpen,
+      state.tajweedQuizOpen,
+      state.khatmaOpen,
+      state.comparatorOpen,
+      state.shareImageOpen,
+      state.weeklyStatsOpen,
       state.showDuas,
       dispatch,
       set,
@@ -216,7 +271,7 @@ export default function App() {
 
   return (
     <div
-      className={`app-root flex flex-col h-dvh w-full overflow-hidden ${focusReading ? "focus-reading" : ""}`}
+      className={`app-root flex flex-col h-dvh w-full overflow-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""}`}
       dir={lang === "ar" ? "rtl" : "ltr"}
     >
       {/* Removed legacy Sakina starfield */}
@@ -244,7 +299,7 @@ export default function App() {
 
         {/* Main reading area */}
         <main
-          className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden"
+          className={`app-main flex-1 min-w-0 overflow-y-auto overflow-x-hidden ${showHome ? "app-main--home" : ""}`}
           style={{ paddingBottom: "var(--player-h)" }}
         >
           <div
@@ -257,7 +312,7 @@ export default function App() {
                 <DuasPage />
               </Suspense>
             ) : (
-              <QuranDisplay />
+              <QuranDisplay key={displayMode === "juz" ? `juz-${currentJuz}` : displayMode === "page" ? `page-${currentPage}` : `surah-${currentSurah}`} />
             )}
           </div>
         </main>
@@ -283,6 +338,12 @@ export default function App() {
         {state.wirdOpen && <WirdPanel />}
         {state.historyOpen && <ReadingHistoryPanel />}
         {state.playlistOpen && <PlaylistPanel />}
+        {state.flashcardsOpen && <FlashcardsPanel />}
+        {state.tajweedQuizOpen && <TajweedQuizPanel />}
+        {state.khatmaOpen && <KhatmaPanel />}
+        {state.comparatorOpen && <ReciterComparatorPanel />}
+        {state.shareImageOpen && <AyahSharePanel />}
+        {state.weeklyStatsOpen && <WeeklyStatsPanel />}
       </Suspense>
     </div>
   );

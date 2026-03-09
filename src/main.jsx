@@ -76,11 +76,8 @@ if ("serviceWorker" in navigator) {
     if (import.meta.env.PROD) {
       navigator.serviceWorker
         .register("/sw.js")
-        .then((registration) => {
-          console.log("SW enregistré avec succès:", registration.scope);
-        })
         .catch((err) => {
-          console.log("Échec de l'enregistrement du SW:", err);
+          if (import.meta.env.DEV) console.error("Échec de l'enregistrement du SW:", err);
         });
       return;
     }
@@ -97,9 +94,9 @@ if ("serviceWorker" in navigator) {
             .map((k) => caches.delete(k)),
         );
       }
-      console.log("SW désactivé/nettoyé en mode développement");
+      if (import.meta.env.DEV) console.log("SW désactivé/nettoyé en mode développement");
     } catch (err) {
-      console.log("Nettoyage SW (dev) échoué:", err);
+      if (import.meta.env.DEV) console.log("Nettoyage SW (dev) échoué:", err);
     }
   });
 }

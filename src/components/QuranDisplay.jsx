@@ -42,6 +42,7 @@ import {
 } from "../services/warshService";
 import { getKaraokeCalibration } from "../utils/karaokeUtils";
 import { markRead } from "../services/readingProgressService";
+import { addRecentVisit } from "../services/recentHistoryService";
 
 // New sub-components
 import Bismillah from "./Quran/Bismillah";
@@ -206,6 +207,7 @@ export default function QuranDisplay() {
   const contentRef = useRef(null);
   const readingStartRef = useRef(Date.now());
   const continuousAutoPlayRef = useRef(false);
+  const pinchRef = useRef({ startDist: null, startSize: null });
   const [activeAyah, setActiveAyah] = useState(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [fullPage, setFullPage] = useState(false);
@@ -241,6 +243,8 @@ export default function QuranDisplay() {
       displayMode === "surah"
     ) {
       markRead(currentSurah, currentAyah);
+      const meta = getSurah(currentSurah);
+      addRecentVisit(currentSurah, currentAyah, meta?.fr || meta?.en || '');
     }
   }, [currentSurah, currentAyah, state.showHome, displayMode]);
 
@@ -252,7 +256,7 @@ export default function QuranDisplay() {
   }, []);
 
   const readingFontSize = useMemo(
-    () => Math.min(Math.max(quranFontSize, 42), 64),
+    () => Math.min(Math.max(quranFontSize, 32), 64),
     [quranFontSize],
   );
   const fullscreenFontSize = useMemo(
@@ -291,7 +295,7 @@ export default function QuranDisplay() {
     );
   }, [quranFontCss, isQCF4]);
 
-  /* ── Track scroll for back-to-top button (throttled) ── */
+  /* ── Track scroll for back-to-top button + reading progress (throttled) ── */
   useEffect(() => {
     const el = contentRef.current;
     if (!el) return;
@@ -301,6 +305,14 @@ export default function QuranDisplay() {
         ticking = true;
         requestAnimationFrame(() => {
           setShowScrollTop(el.scrollTop > 500);
+          const total = el.scrollHeight - el.clientHeight;
+          if (total > 0) {
+            const progress = el.scrollTop / total;
+            document.documentElement.style.setProperty(
+              "--reading-progress",
+              progress.toString(),
+            );
+          }
           ticking = false;
         });
       }
@@ -797,6 +809,34 @@ export default function QuranDisplay() {
     contentRef.current?.scrollTo({ top: 0, behavior: "auto" });
   }, [currentSurah, currentPage, currentJuz]);
 
+  /* ── Scroll to specific ayah on initial navigation (e.g. from Duas page) ── */
+  // Capture the target ayah at mount time — only relevant when ayah > 1
+  const initialScrollAyahRef = useRef(currentAyah > 1 ? currentAyah : null);
+  useEffect(() => {
+    const target = initialScrollAyahRef.current;
+    if (!target || ayahs.length === 0 || displayMode !== "surah") return;
+    initialScrollAyahRef.current = null; // consume once
+
+    // For mushaf layout with long surahs, navigate to the correct chunk first
+    if (mushafLayout === "mushaf" && isLongSurah && surahChunks.length > 1) {
+      const targetChunkIdx = surahChunks.findIndex(
+        (c) => target >= c.start && target <= c.end,
+      );
+      if (targetChunkIdx >= 0 && targetChunkIdx !== chunkIndex) {
+        setChunkIndex(targetChunkIdx);
+      }
+    }
+
+    // Allow a frame for any chunk re-render, then scroll
+    setTimeout(() => {
+      const el = document.getElementById(`ayah-${target}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        setActiveAyah(target);
+      }
+    }, 120);
+  }, [ayahs.length, displayMode]); // eslint-disable-line react-hooks/exhaustive-deps
+
   /* ── Page navigation ───────────────────────── */
   const goNextPage = () => {
     if (currentPage < 604) set({ currentPage: currentPage + 1 });
@@ -926,12 +966,15 @@ export default function QuranDisplay() {
   const translationMap = useMemo(() => {
     if (translations.length === 0) return null;
     const map = new Map();
+    // Single-surah endpoint omits surah property on each ayah — infer it from currentSurah
+    const inferredSurah =
+      translations[0]?.surah?.number != null ? null : currentSurah;
     for (const tr of translations) {
       if (!tr) continue;
       if (typeof tr.number === "number") {
         map.set(`global:${tr.number}`, tr);
       }
-      const surahNumber = tr.surah?.number;
+      const surahNumber = tr.surah?.number ?? inferredSurah;
       const ayahNumber = tr.numberInSurah;
       const localKey = getTranslationKeyForAyah(surahNumber, ayahNumber);
       if (localKey) {
@@ -939,7 +982,7 @@ export default function QuranDisplay() {
       }
     }
     return map;
-  }, [translations]);
+  }, [translations, currentSurah]);
 
   const getTranslationForAyah = useCallback(
     (ayah) => {
@@ -975,12 +1018,12 @@ export default function QuranDisplay() {
     return visibleAyahs;
   }, [displayMode, mushafLayout, visibleMushafAyahs, visibleAyahs]);
 
-  const canDecreaseFontSize = quranFontSize > 42;
+  const canDecreaseFontSize = quranFontSize > 32;
   const canIncreaseFontSize = quranFontSize < 64;
   const decreaseFontSize = useCallback(() => {
     dispatch({
       type: "SET_QURAN_FONT_SIZE",
-      payload: Math.max(42, quranFontSize - 2),
+      payload: Math.max(32, quranFontSize - 2),
     });
   }, [dispatch, quranFontSize]);
   const increaseFontSize = useCallback(() => {
@@ -1071,7 +1114,33 @@ export default function QuranDisplay() {
   }
 
   return (
-    <div className={`quran-display quran-display--${riwaya}`} ref={contentRef}>
+    <>
+      <div className="reading-progress-bar" aria-hidden="true" />
+    <div
+      className={`quran-display quran-display--${riwaya}`}
+      ref={contentRef}
+      onTouchStart={e => {
+        if (e.touches.length === 2) {
+          const d = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY,
+          );
+          pinchRef.current = { startDist: d, startSize: quranFontSize };
+        }
+      }}
+      onTouchMove={e => {
+        if (e.touches.length === 2 && pinchRef.current.startDist) {
+          const d = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY,
+          );
+          const scale = d / pinchRef.current.startDist;
+          const next = Math.round(Math.max(32, Math.min(64, pinchRef.current.startSize * scale)));
+          if (next !== quranFontSize) dispatch({ type: 'SET_QURAN_FONT_SIZE', payload: next });
+        }
+      }}
+      onTouchEnd={() => { pinchRef.current = { startDist: null, startSize: null }; }}
+    >
       {/* Warsh QCF4 active indicator */}
       {riwaya === "warsh" && isQCF4 && (
         <div className="warsh-notice warsh-qcf4-active">
@@ -1215,6 +1284,8 @@ export default function QuranDisplay() {
               surahNum={currentSurah}
               calibration={karaokeCalibration}
               riwaya={riwaya}
+              showTranslation={showTranslation}
+              getTranslation={getTranslationForAyah}
             />
           )}
 
@@ -1224,7 +1295,7 @@ export default function QuranDisplay() {
               {/* Ayah list — plain render, no virtual scroll */}
               <div
                 role="list"
-                className={`surah-ayahs-list${isQCF4 ? " qcf4-container" : ""}`}
+                className="surah-ayahs-list"
                 style={ayahsContainerStyle}
               >
                 {visibleAyahs.map((ayah, idx) => {
@@ -1476,6 +1547,8 @@ export default function QuranDisplay() {
               surahNum={surahGroups[0]?.surah}
               calibration={karaokeCalibration}
               riwaya={riwaya}
+              showTranslation={showTranslation}
+              getTranslation={getTranslationForAyah}
             />
           )}
 
@@ -1491,7 +1564,7 @@ export default function QuranDisplay() {
                   group.surah !== 1 &&
                   group.surah !== 9 && <Bismillah />}
                 <div
-                  className={`surah-ayahs-list${isQCF4 ? " qcf4-container" : ""}`}
+                  className="surah-ayahs-list"
                   style={ayahsContainerStyle}
                 >
                   {group.ayahs.map((ayah) => {
@@ -1686,6 +1759,8 @@ export default function QuranDisplay() {
               surahNum={surahGroups[0]?.surah}
               calibration={karaokeCalibration}
               riwaya={riwaya}
+              showTranslation={showTranslation}
+              getTranslation={getTranslationForAyah}
             />
           )}
 
@@ -1702,7 +1777,7 @@ export default function QuranDisplay() {
                     group.surah !== 1 &&
                     group.surah !== 9 && <Bismillah />}
                   <div
-                    className={`surah-ayahs-list${isQCF4 ? " qcf4-container" : ""}`}
+                    className="surah-ayahs-list"
                     style={ayahsContainerStyle}
                   >
                     {group.ayahs.map((ayah) => {
@@ -1897,5 +1972,6 @@ export default function QuranDisplay() {
         </div>
       )}
     </div>
+    </>
   );
 }

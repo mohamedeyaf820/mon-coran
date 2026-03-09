@@ -58,7 +58,7 @@ const SETTINGS_KEY = 'mushaf-plus-settings';
 const VALID_LANGS = ['fr', 'en'];
 const VALID_TRANSLATION_LANGS = ['fr', 'en', 'es', 'de', 'tr', 'ur'];
 const VALID_WORD_TRANSLATION_LANGS = ['fr', 'en'];
-const VALID_THEMES = ['light', 'dark', 'sepia', 'ocean', 'forest', 'night-blue'];
+const VALID_THEMES = ['light', 'dark', 'sepia', 'ocean', 'forest', 'night-blue', 'oled'];
 const VALID_RIWAYAS = ['hafs', 'warsh'];
 const VALID_DISPLAY_MODES = ['surah', 'page', 'juz'];
 const VALID_FONTS = [
@@ -131,8 +131,8 @@ function sanitizeSettings(settings) {
     theme: VALID_THEMES.includes(safeInput.theme) ? safeInput.theme : 'light',
     riwaya: VALID_RIWAYAS.includes(safeInput.riwaya) ? safeInput.riwaya : 'hafs',
     reciter: typeof safeInput.reciter === 'string' ? safeInput.reciter.slice(0, 50) : 'ar.alafasy',
-    quranFontSize: Math.max(42, Math.min(64, Number(safeInput.quranFontSize ?? safeInput.fontSize) || 42)),
-    fontSize: Math.max(42, Math.min(64, Number(safeInput.quranFontSize ?? safeInput.fontSize) || 42)),
+    quranFontSize: Math.max(32, Math.min(64, Number(safeInput.quranFontSize ?? safeInput.fontSize) || 42)),
+    fontSize: Math.max(32, Math.min(64, Number(safeInput.quranFontSize ?? safeInput.fontSize) || 42)),
     fontFamily: VALID_FONTS.includes(safeInput.fontFamily) ? safeInput.fontFamily : 'mushaf-1441h',
     translationLang: VALID_TRANSLATION_LANGS.includes(safeInput.translationLang) ? safeInput.translationLang : 'fr',
     wordTranslationLang: VALID_WORD_TRANSLATION_LANGS.includes(safeInput.wordTranslationLang)
@@ -158,6 +158,7 @@ function sanitizeSettings(settings) {
     showHome: safeInput.showHome !== undefined ? Boolean(safeInput.showHome) : true,
     wirdGoalType: ['pages', 'hizb', 'juz'].includes(safeInput.wirdGoalType) ? safeInput.wirdGoalType : 'pages',
     wirdGoalAmount: Math.max(1, Math.min(30, Number(safeInput.wirdGoalAmount) || 5)),
+    karaokeFollow: safeInput.karaokeFollow !== undefined ? Boolean(safeInput.karaokeFollow) : true,
     lastPosition: {
       surah: Math.max(1, Math.min(114, Number(safeInput.lastPosition?.surah) || 1)),
       ayah: Math.max(1, Math.min(286, Number(safeInput.lastPosition?.ayah) || 1)),

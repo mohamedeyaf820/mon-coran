@@ -9,6 +9,7 @@ import React, {
 import { getSettings, saveSettings } from "../services/storageService";
 import { LANGUAGES } from "../i18n";
 import { ensureReciterForRiwaya } from "../data/reciters";
+import { fetchPrayerTimes } from "../services/prayerTimesService";
 
 /* ── Initial State ──────────────────────────── */
 
@@ -37,6 +38,12 @@ const initialState = {
   wirdOpen: false,
   historyOpen: false,
   playlistOpen: false,
+  flashcardsOpen: false,
+  tajweedQuizOpen: false,
+  khatmaOpen: false,
+  comparatorOpen: false,
+  shareImageOpen: false,
+  weeklyStatsOpen: false,
   splashDone: false,
 
   // Quran
@@ -47,10 +54,10 @@ const initialState = {
   currentAyah: stored.lastPosition?.ayah || 1,
   currentPage: stored.lastPosition?.page || 1,
   currentJuz: stored.lastPosition?.juz || 1,
-  quranFontSize:
-    stored.quranFontSize || stored.fontSize
-      ? Math.max(stored.quranFontSize || stored.fontSize, 42)
-      : 42,
+  quranFontSize: (() => {
+    const stored_fs = stored.quranFontSize ?? stored.fontSize;
+    return stored_fs != null ? Math.max(Number(stored_fs), 32) : 42;
+  })(),
   fontFamily: stored.fontFamily || "scheherazade-new",
   showHome: stored.showHome ?? true,
   showDuas: stored.showDuas ?? false,
@@ -80,12 +87,16 @@ const initialState = {
   memRepeatCount: 3,
   memPause: 2,
 
+  // Karaoke / suivi auto
+  karaokeFollow: stored.karaokeFollow ?? true,
+
   // Auto night mode
   autoNightMode: stored.autoNightMode ?? false,
   nightStart: stored.nightStart || "20:00",
   nightEnd: stored.nightEnd || "06:00",
   nightTheme: stored.nightTheme || "dark",
   dayTheme: stored.dayTheme || "light",
+  usePrayerTimes: stored.usePrayerTimes ?? false,
 
   // Wird goals
   wirdGoalType: stored.wirdGoalType || "pages",
@@ -128,6 +139,8 @@ function appReducer(state, action) {
         ...state,
         currentSurah: action.payload.surah,
         currentAyah: action.payload.ayah || 1,
+        displayMode: "surah",
+        showHome: false,
         showDuas: false,
         sidebarOpen: false,
       };
@@ -239,6 +252,8 @@ export function AppProvider({ children }) {
         nightEnd: state.nightEnd,
         nightTheme: state.nightTheme,
         dayTheme: state.dayTheme,
+        usePrayerTimes: state.usePrayerTimes,
+        karaokeFollow: state.karaokeFollow,
         wirdGoalType: state.wirdGoalType,
         wirdGoalAmount: state.wirdGoalAmount,
         lastPosition: {
@@ -285,6 +300,8 @@ export function AppProvider({ children }) {
     state.nightEnd,
     state.nightTheme,
     state.dayTheme,
+    state.usePrayerTimes,
+    state.karaokeFollow,
     state.wirdGoalType,
     state.wirdGoalAmount,
     state.volume,
@@ -330,6 +347,15 @@ export function AppProvider({ children }) {
     state.theme,
     dispatch,
   ]);
+
+  // Prayer-time based auto-night: compute Fajr/Isha from geolocation
+  useEffect(() => {
+    if (!state.autoNightMode || !state.usePrayerTimes) return;
+    fetchPrayerTimes((times) => {
+      if (!times) return;
+      dispatch({ type: 'SET', payload: { nightEnd: times.fajr, nightStart: times.isha } });
+    });
+  }, [state.autoNightMode, state.usePrayerTimes]);
 
   // Listen for system dark-mode changes (auto-apply if user hasn't manually overridden)
   useEffect(() => {

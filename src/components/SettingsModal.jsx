@@ -4,7 +4,7 @@ import { t, LANGUAGES } from '../i18n';
 import { downloadExport, importFromFile } from '../services/exportService';
 import { clearCache } from '../services/quranAPI';
 import audioService from '../services/audioService';
-import { getDefaultReciterId, getReciter } from '../data/reciters';
+import { getDefaultReciterId, getReciter, getRecitersByRiwaya } from '../data/reciters';
 import PlatformLogo from './PlatformLogo';
 import '../styles/settings-modal.css';
 
@@ -14,11 +14,13 @@ const TABS = [
   { id: 'texte',     icon: 'fa-font',        fr: 'Texte',     ar: 'النص',     en: 'Text' },
   { id: 'audio',     icon: 'fa-volume-high', fr: 'Audio',     ar: 'الصوت',    en: 'Audio' },
   { id: 'donnees',   icon: 'fa-database',    fr: 'Données',   ar: 'البيانات', en: 'Data' },
+  { id: 'outils',    icon: 'fa-screwdriver-wrench', fr: 'Outils', ar: 'الأدوات', en: 'Tools' },
 ];
 
 const THEMES = [
   { id: 'light',      fr: 'Clair',  ar: 'فاتح',  en: 'Light',  bg: '#FFFFFF', border: '#e2e8f0', text: '#1e293b' },
   { id: 'dark',       fr: 'Sombre', ar: 'داكن',  en: 'Dark',   bg: '#1e1e1e', border: '#444',    text: '#e2e8f0' },
+  { id: 'oled',       fr: 'OLED',   ar: 'أوليد', en: 'OLED',   bg: '#000000', border: '#1a1a1a', text: '#f0f0f0' },
   { id: 'sepia',      fr: 'Sépia',  ar: 'سيبيا', en: 'Sepia',  bg: '#f5efe4', border: '#c8a97a', text: '#5c4a2a' },
   { id: 'ocean',      fr: 'Océan',  ar: 'محيط',  en: 'Ocean',  bg: '#0a1628', border: '#1a3a5c', text: '#93c5fd' },
   { id: 'forest',     fr: 'Forêt',  ar: 'غابة',  en: 'Forest', bg: '#0d1f0f', border: '#1a3d1c', text: '#86efac' },
@@ -722,14 +724,14 @@ export default function SettingsModal() {
                   <div className="font-size-stepper">
                     <button
                       className="fss-btn"
-                      onClick={() => dispatch({ type: 'SET_QURAN_FONT_SIZE', payload: Math.max(42, quranFontSize - 2) })}
-                      disabled={quranFontSize <= 42}
+                      onClick={() => dispatch({ type: 'SET_QURAN_FONT_SIZE', payload: Math.max(32, quranFontSize - 2) })}
+                      disabled={quranFontSize <= 32}
                       aria-label={lang === 'fr' ? 'Réduire la taille' : lang === 'ar' ? 'تصغير الخط' : 'Decrease size'}
                     >
                       <span style={{ fontSize: '0.72rem', fontWeight: 800, fontFamily: 'var(--font-ui)', lineHeight: 1 }}>A</span>
                     </button>
                     <div className="fss-track" role="presentation">
-                       <div className="fss-bar" style={{ width: `${((quranFontSize - 42) / (64 - 42)) * 100}%` }} />
+                       <div className="fss-bar" style={{ width: `${((quranFontSize - 32) / (64 - 32)) * 100}%` }} />
                     </div>
                     <button
                       className="fss-btn"
@@ -843,9 +845,40 @@ export default function SettingsModal() {
                       </div>
                     </div>
                   </div>
-                  <p className="settings-hint" style={{ marginTop: '0.5rem' }}>
-                    {lang === 'fr' ? 'Pour changer de récitateur, utilisez le lecteur audio en bas de l\'écran.' : lang === 'ar' ? 'لتغيير القارئ، استخدم مشغّل الصوت في أسفل الشاشة.' : 'To change reciter, use the audio player at the bottom of the screen.'}
-                  </p>
+                </div>
+
+                {/* Reciter selector */}
+                <div className="settings-card">
+                  <div className="settings-card-label">
+                    <i className="fas fa-microphone-lines" aria-hidden="true"></i>
+                    {lang === 'fr' ? 'Choisir le récitateur' : lang === 'ar' ? 'اختر القارئ' : 'Choose Reciter'}
+                  </div>
+                  <div className="settings-reciters-list">
+                    {getRecitersByRiwaya(riwaya).map((r) => {
+                      const active = reciter === r.id;
+                      return (
+                        <button
+                          key={r.id}
+                          className={`settings-reciter-item${active ? ' active' : ''}`}
+                          onClick={() => set({ reciter: r.id })}
+                          aria-pressed={active}
+                        >
+                          <span className="settings-reciter-avatar">
+                            <i className="fas fa-microphone" aria-hidden="true" />
+                          </span>
+                          <span className="settings-reciter-info">
+                            <span className="settings-reciter-name">
+                              {lang === 'ar' ? r.name : lang === 'fr' ? r.nameFr : r.nameEn}
+                            </span>
+                            <span className="settings-reciter-style">{r.style || 'murattal'}</span>
+                          </span>
+                          {active && (
+                            <i className="fas fa-check settings-reciter-check" aria-hidden="true" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 {/* Sync offset */}
@@ -958,6 +991,112 @@ export default function SettingsModal() {
                       {lang === 'fr' ? 'Polices QCF4 (Complexe Roi Fahd)' : lang === 'ar' ? 'خطوط QCF4 (مجمع الملك فهد)' : 'QCF4 Fonts (King Fahd Complex)'}
                     </a>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* ════════════════════════════════
+                TAB: Outils
+            ════════════════════════════════ */}
+            {activeTab === 'outils' && (
+              <div className="settings-pane">
+                <div className="settings-pane-title">
+                  {lang === 'ar' ? 'الأدوات' : lang === 'fr' ? 'Outils' : 'Tools'}
+                </div>
+                <p className="settings-hint" style={{ marginBottom: '1rem' }}>
+                  {lang === 'fr'
+                    ? 'Accédez rapidement aux outils d\'apprentissage et de mémorisation.'
+                    : lang === 'ar'
+                      ? 'الوصول السريع لأدوات التعلم والحفظ.'
+                      : 'Quick access to learning and memorization tools.'}
+                </p>
+
+                <div className="settings-tools-grid">
+                  {[
+                    {
+                      icon: 'fa-layer-group',
+                      fr: 'Flashcards',
+                      ar: 'بطاقات التعلم',
+                      en: 'Flashcards',
+                      desc_fr: 'Mémorisez les versets',
+                      desc_ar: 'احفظ الآيات',
+                      desc_en: 'Memorize verses',
+                      action: 'flashcardsOpen',
+                      color: '#4ade80',
+                    },
+                    {
+                      icon: 'fa-spell-check',
+                      fr: 'Quiz Tajweed',
+                      ar: 'اختبار التجويد',
+                      en: 'Tajweed Quiz',
+                      desc_fr: 'Testez vos règles',
+                      desc_ar: 'اختبر معلوماتك',
+                      desc_en: 'Test your rules',
+                      action: 'tajweedQuizOpen',
+                      color: '#60a5fa',
+                    },
+                    {
+                      icon: 'fa-book-open-reader',
+                      fr: 'Khatma',
+                      ar: 'الختمة',
+                      en: 'Khatma',
+                      desc_fr: 'Objectif de lecture',
+                      desc_ar: 'هدف القراءة',
+                      desc_en: 'Reading goal',
+                      action: 'khatmaOpen',
+                      color: '#f59e0b',
+                    },
+                    {
+                      icon: 'fa-users',
+                      fr: 'Comparateur',
+                      ar: 'مقارنة الرواية',
+                      en: 'Comparator',
+                      desc_fr: 'Comparer Hafs & Warsh',
+                      desc_ar: 'قارن حفص وورش',
+                      desc_en: 'Compare Hafs & Warsh',
+                      action: 'comparatorOpen',
+                      color: '#a78bfa',
+                    },
+                    {
+                      icon: 'fa-image',
+                      fr: 'Partager image',
+                      ar: 'مشاركة صورة',
+                      en: 'Share Image',
+                      desc_fr: 'Créer une belle image',
+                      desc_ar: 'أنشئ صورة جميلة',
+                      desc_en: 'Create a beautiful image',
+                      action: 'shareImageOpen',
+                      color: '#f472b6',
+                    },
+                    {
+                      icon: 'fa-chart-bar',
+                      fr: 'Stats Hebdo',
+                      ar: 'الإحصاء الأسبوعي',
+                      en: 'Weekly Stats',
+                      desc_fr: 'Votre progression',
+                      desc_ar: 'تقدمك الأسبوعي',
+                      desc_en: 'Your progress',
+                      action: 'weeklyStatsOpen',
+                      color: '#34d399',
+                    },
+                  ].map(({ icon, fr, ar, en, desc_fr, desc_ar, desc_en, action, color }) => (
+                    <button
+                      key={action}
+                      className="settings-tool-card"
+                      onClick={() => { set({ [action]: true }); close(); }}
+                      aria-label={lang === 'ar' ? ar : lang === 'fr' ? fr : en}
+                    >
+                      <span className="settings-tool-icon" style={{ color }}>
+                        <i className={`fas ${icon}`} aria-hidden="true" />
+                      </span>
+                      <span className="settings-tool-name">
+                        {lang === 'ar' ? ar : lang === 'fr' ? fr : en}
+                      </span>
+                      <span className="settings-tool-desc">
+                        {lang === 'ar' ? desc_ar : lang === 'fr' ? desc_fr : desc_en}
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
             )}

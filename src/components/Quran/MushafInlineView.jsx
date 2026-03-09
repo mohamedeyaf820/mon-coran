@@ -7,38 +7,45 @@ import { t } from "../../i18n";
 /* ── Circular ayah-end marker (style Mushaf authentique) ── */
 function AyahMarker({ num, lang }) {
   const display = lang === "ar" ? toAr(num) : num;
+  // 8 diamond petals every 45°
+  const petals = [0, 45, 90, 135, 180, 225, 270, 315];
   return (
     <span className="mp-ayah-marker" aria-label={`Fin verset ${num}`}>
       <svg
         className="mp-ayah-marker-svg"
-        viewBox="0 0 36 36"
-        width="1.4em"
-        height="1.4em"
+        viewBox="0 0 44 44"
+        width="1.5em"
+        height="1.5em"
         aria-hidden="true"
       >
-        {/* Outer ring */}
-        <circle
-          cx="18"
-          cy="18"
-          r="17"
-          fill="none"
-          strokeWidth="1.4"
-          className="mp-ring-outer"
-        />
+        {/* Subtle center fill */}
+        <circle cx="22" cy="22" r="11" className="mp-center-fill" />
+        {/* 8 diamond petals */}
+        {petals.map(angle => (
+          <path
+            key={angle}
+            d="M22,3.5 L24,11 L22,18 L20,11 Z"
+            transform={`rotate(${angle}, 22, 22)`}
+            className="mp-petal"
+          />
+        ))}
         {/* Inner ring */}
-        <circle
-          cx="18"
-          cy="18"
-          r="13"
-          fill="none"
-          strokeWidth="0.9"
-          className="mp-ring-inner"
-        />
-        {/* Decorative petals */}
-        <path d="M18,1 L20,7 L18,5 L16,7 Z" className="mp-petal" />
-        <path d="M18,35 L20,29 L18,31 L16,29 Z" className="mp-petal" />
-        <path d="M1,18 L7,20 L5,18 L7,16 Z" className="mp-petal" />
-        <path d="M35,18 L29,20 L31,18 L29,16 Z" className="mp-petal" />
+        <circle cx="22" cy="22" r="12" fill="none" strokeWidth="0.9" className="mp-ring-inner" />
+        {/* Outer ring */}
+        <circle cx="22" cy="22" r="20" fill="none" strokeWidth="1.4" className="mp-ring-outer" />
+        {/* 8 tiny accent dots at inter-petal positions */}
+        {[22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5].map(a => {
+          const rad = (a * Math.PI) / 180;
+          return (
+            <circle
+              key={a}
+              cx={22 + 20 * Math.cos(rad)}
+              cy={22 + 20 * Math.sin(rad)}
+              r="1"
+              className="mp-dot"
+            />
+          );
+        })}
       </svg>
       <span className="mp-ayah-num">{display}</span>
     </span>
@@ -171,7 +178,7 @@ export default function MushafInlineView({
               </span>
               <div className="mp-surah-title">
                 <span className="mp-surah-name-ar" dir="rtl">
-                  {surahNameAr}
+                  سُورَةُ {surahNameAr}
                 </span>
                 {lang !== "ar" && surahNameDisplay !== surahNameAr && (
                   <span className="mp-surah-name-tr">{surahNameDisplay}</span>
@@ -241,7 +248,8 @@ export default function MushafInlineView({
                       riwaya={riwaya}
                     />
                   </span>
-                  <AyahMarker num={ayah.numberInSurah} lang={lang} />
+                  {/* QCF4 fonts embed ayah-end numbers inside glyphs — skip separate marker */}
+                  {!isQCF4 && <AyahMarker num={ayah.numberInSurah} lang={lang} />}
                   {"\u200C"}
                 </React.Fragment>
               );

@@ -12,7 +12,7 @@ import { getAllPlaylists, addAyahToPlaylist } from '../services/playlistService'
  * Play, bookmark, note, share, copy.
  */
 export default function AyahActions({ surah, ayah, ayahData }) {
-  const { state } = useApp();
+  const { state, dispatch } = useApp();
   const { lang, reciter, riwaya, warshStrictMode } = state;
 
   const [bookmarked, setBookmarked] = useState(false);
@@ -286,6 +286,10 @@ export default function AyahActions({ surah, ayah, ayahData }) {
             <button className="share-btn image-share" onClick={shareAsImage}>
               <i className="fas fa-image"></i>
               {lang === 'fr' ? 'Image verte' : lang === 'ar' ? 'صورة' : 'Image'}
+            </button>
+            <button className="share-btn image-share" onClick={() => { dispatch({ type: 'SET', payload: { shareImageOpen: true } }); setShowShare(false); }}>
+              <i className="fas fa-wand-magic-sparkles"></i>
+              {lang === 'fr' ? 'Image calligraphique' : lang === 'ar' ? 'صورة خطية' : 'Calligraphic image'}
             </button>
             {navigator.share && (
               <button className="share-btn native" onClick={shareNative}>

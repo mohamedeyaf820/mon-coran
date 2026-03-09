@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useRef } from "react";
-import { toAr } from "../../data/surahs";
+import { toAr, getSurah } from "../../data/surahs";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 
 /**
@@ -87,6 +87,9 @@ function PageSeparator({ pageNum }) {
  *
  * Every verse span carries id="ayah-{numberInSurah}" so the parent
  * QuranDisplay auto-scroll effect can find and scroll to it during recitation.
+ *
+ * When showTranslation + getTranslation are provided, a numbered translation
+ * panel is rendered below the flowing Arabic text.
  */
 export default function CleanPageView({
   ayahs,
@@ -98,8 +101,13 @@ export default function CleanPageView({
   surahNum,
   calibration,
   riwaya,
+  showTranslation,
+  getTranslation,
 }) {
   const containerRef = useRef(null);
+
+  /* ── Surah metadata ── */
+  const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
 
   /* ── Basmala ── */
   const showBasmala = useMemo(
@@ -110,6 +118,15 @@ export default function CleanPageView({
       ayahs[0].numberInSurah === 1,
     [surahNum, ayahs],
   );
+
+  /* ── Basmala translation for FR/EN ── */
+  const basmalaTranslation = useMemo(() => {
+    if (!showBasmala) return null;
+    if (lang === "ar") return null;
+    return lang === "fr"
+      ? "Au nom d’Allah, le Tout Miséricordieux, le Très Miséricordieux"
+      : "In the Name of Allah, the Most Compassionate, the Most Merciful";
+  }, [lang, showBasmala]);
 
   /* ── Build flat list: ayahs + page-separator markers ── */
   const items = useMemo(() => {
@@ -144,14 +161,19 @@ export default function CleanPageView({
     >
       {/* Basmala */}
       {showBasmala && (
-        <div
-          className="cpv-basmala"
-          style={textStyle}
-          dir="rtl"
-          lang="ar"
-          aria-label="Basmala"
-        >
-          بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
+        <div className="cpv-basmala-wrap">
+          <div
+            className="cpv-basmala"
+            style={textStyle}
+            dir="rtl"
+            lang="ar"
+            aria-label="Basmala"
+          >
+            بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
+          </div>
+          {basmalaTranslation && (
+            <p className="cpv-basmala-translation">{basmalaTranslation}</p>
+          )}
         </div>
       )}
 
@@ -183,7 +205,7 @@ export default function CleanPageView({
               key={ayah.number}
               id={`ayah-${ayah.numberInSurah}`}
               className={`cpv-verse${isPlaying ? " cpv-verse--playing" : ""}`}
-              aria-label={`Verse ${ayah.numberInSurah}`}
+              aria-label={`${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`}
               aria-current={isPlaying ? "true" : undefined}
             >
               {/* Arabic text */}
@@ -202,7 +224,44 @@ export default function CleanPageView({
             </span>
           );
         })}
+        {/* Ornamental end-of-surah closure */}
+        {ayahs.length > 0 && (
+          <div className="cpv-closure" aria-hidden="true">
+            <span className="cpv-closure-line" />
+            <span className="cpv-closure-ornament">
+              {surahMeta?.ar || "❖"}
+            </span>
+            <span className="cpv-closure-line" />
+          </div>
+        )}
       </div>
+
+      {/* ── Translations panel — numbered list below the Arabic flow ── */}
+      {showTranslation && getTranslation && ayahs.length > 0 && (
+        <div
+          className="cpv-trans-panel"
+          dir={lang === "ar" ? "rtl" : "ltr"}
+          aria-label={lang === "ar" ? "الترجمة" : lang === "fr" ? "Traductions" : "Translations"}
+        >
+          {ayahs.map((ayah) => {
+            const trans = getTranslation(ayah);
+            if (!trans?.text) return null;
+            const isPlaying =
+              currentPlayingAyah?.ayah === ayah.numberInSurah &&
+              (currentPlayingAyah?.surah === surahNum ||
+                currentPlayingAyah?.surah == null);
+            return (
+              <div
+                key={ayah.numberInSurah}
+                className={`cpv-trans-entry${isPlaying ? " cpv-trans-entry--playing" : ""}`}
+              >
+                <span className="cpv-trans-num">{toAr(ayah.numberInSurah)}</span>
+                <span className="cpv-trans-text">{trans.text}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

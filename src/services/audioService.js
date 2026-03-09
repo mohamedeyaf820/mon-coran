@@ -30,6 +30,21 @@ class AudioService {
     this.memPauseDuration = 2000; // ms between repeats
     this.memTimer = null;
 
+    // A-B Repeat
+    this.abRepeatStart = -1;
+    this.abRepeatEnd   = -1;
+
+    // Tartil progressive mode (auto-speed based on ayah complexity)
+    this.tartilMode = false;
+
+    // Equalizer (Web Audio API, lazy init on first user activation)
+    this._audioCtx    = null;
+    this._eqConnected = false;
+    this._bassFilter  = null;
+    this._midFilter   = null;
+    this._trebleFilter = null;
+    this.eqPreset     = 'flat';
+
     // Callbacks
     this.onPlay = null;
     this.onPause = null;
@@ -433,6 +448,12 @@ class AudioService {
     this.currentAyah = item;
     this.memCurrentRepeat = 0;
 
+    // Apply tartil progressive speed
+    if (this.tartilMode) {
+      const speed = this._tartilSpeed(item);
+      if (speed) this.audio.playbackRate = speed;
+    }
+
     try {
       this.onNetworkState?.('loading');
       await this._loadUrlWithRetry(item.url);
@@ -469,6 +490,14 @@ class AudioService {
       }
       // Done repeating, move to next
       this.memCurrentRepeat = 0;
+    }
+
+    // A-B Repeat: if we've reached end point B, loop back to A
+    if (this.abRepeatStart >= 0 && this.abRepeatEnd >= 0) {
+      if (this.playlistIndex >= this.abRepeatEnd) {
+        this._loadAndPlay(this.abRepeatStart);
+        return;
+      }
     }
 
     // Normal mode: advance playlist
@@ -511,6 +540,78 @@ class AudioService {
     return () => {
       this._ayahChangeListeners = this._ayahChangeListeners.filter(f => f !== fn);
     };
+  }
+
+  /* ── A-B Repeat ─────────────────────────────────────────────── */
+  setAbRepeat(startIdx, endIdx) {
+    this.abRepeatStart = startIdx >= 0 ? startIdx : -1;
+    this.abRepeatEnd   = endIdx   >= 0 ? endIdx   : -1;
+  }
+  clearAbRepeat() {
+    this.abRepeatStart = -1;
+    this.abRepeatEnd   = -1;
+  }
+
+  /* ── Tartil Progressive ──────────────────────────────────────── */
+  setTartilMode(enabled, userSpeed = 1) {
+    this.tartilMode = enabled;
+    if (!enabled && this.audio) this.audio.playbackRate = userSpeed;
+  }
+  _tartilSpeed(item) {
+    if (!item) return null;
+    const len = (item.text || '').length;
+    if (len < 30)  return 0.90;
+    if (len < 60)  return 0.78;
+    if (len < 100) return 0.70;
+    return 0.65;
+  }
+
+  /* ── Equalizer (Web Audio API, lazy init) ────────────────────── */
+  _ensureAudioCtx() {
+    if (this._eqConnected || !this.audio) return;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      this._audioCtx     = new AC();
+      const src          = this._audioCtx.createMediaElementSource(this.audio);
+      this._bassFilter   = this._audioCtx.createBiquadFilter();
+      this._bassFilter.type = 'lowshelf';
+      this._bassFilter.frequency.value = 200;
+      this._midFilter    = this._audioCtx.createBiquadFilter();
+      this._midFilter.type = 'peaking';
+      this._midFilter.frequency.value = 1000;
+      this._midFilter.Q.value = 1.5;
+      this._trebleFilter = this._audioCtx.createBiquadFilter();
+      this._trebleFilter.type = 'highshelf';
+      this._trebleFilter.frequency.value = 3500;
+      src.connect(this._bassFilter);
+      this._bassFilter.connect(this._midFilter);
+      this._midFilter.connect(this._trebleFilter);
+      this._trebleFilter.connect(this._audioCtx.destination);
+      this._eqConnected = true;
+      this._applyEqGains();
+    } catch (e) {
+      console.warn('EQ init failed:', e);
+    }
+  }
+  _applyEqGains() {
+    const P = {
+      flat:   { bass:  0, mid:  0, treble:  0 },
+      bass:   { bass:  8, mid:  0, treble: -2 },
+      treble: { bass: -2, mid:  0, treble:  6 },
+      near:   { bass:  2, mid:  5, treble:  2 },
+      hall:   { bass: -3, mid: -2, treble:  3 },
+      vocals: { bass: -4, mid:  7, treble:  3 },
+    };
+    const p = P[this.eqPreset] || P.flat;
+    if (this._bassFilter)   this._bassFilter.gain.value   = p.bass;
+    if (this._midFilter)    this._midFilter.gain.value    = p.mid;
+    if (this._trebleFilter) this._trebleFilter.gain.value = p.treble;
+  }
+  applyEqPreset(preset) {
+    this.eqPreset = preset;
+    this._ensureAudioCtx();
+    if (this._eqConnected) this._applyEqGains();
   }
 
   destroy() {

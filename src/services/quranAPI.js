@@ -356,6 +356,21 @@ export async function search(query, riwaya = 'hafs', surahNum = null, signal) {
   throw lastError || new Error('Search failed');
 }
 
+/**
+ * Search inside a translation edition (fr/en/…).
+ * Returns { matches: [{ surah, numberInSurah, text, translationText }] }
+ */
+export async function searchTranslation(query, lang = 'fr', surahNum = null, signal) {
+  const edition = TRANSLATION_EDITIONS[lang] || TRANSLATION_EDITIONS.fr;
+  const scope = surahNum ? `/${surahNum}` : '';
+  const data = await fetchJSON(
+    `${BASE}/search/${encodeURIComponent(query)}/all/${edition}${scope}`,
+    signal,
+  );
+  // data.matches items have { surah, numberInSurah, text } where text is the translation
+  return data;
+}
+
 /* ── Helpers ─────────────────────────────────── */
 
 export async function clearCache() {

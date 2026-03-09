@@ -409,6 +409,186 @@
             fr: 'Seigneur, ne nous charge pas de ce que nous ne pouvons supporter. Efface nos péchés, pardonne-nous, aie pitié de nous. Tu es notre Maître.',
               en: 'Our Lord, do not burden us with that which we have no ability to bear. And pardon us; and forgive us; and have mercy upon us. You are our Protector.',
   },
+
+  // ── Rizq / Provisions ────────────────────────────────────────────
+  {
+    id: 'saba-39',
+    category: 'rizq',
+    surah: 34, ayah: 39,
+    arabic: 'قُلْ إِنَّ رَبِّي يَبْسُطُ الرِّزْقَ لِمَن يَشَاءُ مِنْ عِبَادِهِ وَيَقْدِرُ لَهُ',
+    transliteration: "Qul inna rabbi yabsutu al-rizqa liman yasha'u min 'ibadihi wa yaqdiru lah",
+    fr: 'Dis : Mon Seigneur étend les ressources à qui Il veut parmi Ses serviteurs, et les mesure étroitement.',
+    en: 'Say: My Lord extends provision for whom He wills of His servants and restricts it for him.',
+  },
+  {
+    id: 'hud-6',
+    category: 'rizq',
+    surah: 11, ayah: 6,
+    arabic: 'وَمَا مِن دَابَّةٍ فِي الْأَرْضِ إِلَّا عَلَى اللَّهِ رِزْقُهَا',
+    transliteration: 'Wa ma min dabbatin fi al-ardi illa ala Allahi rizquha',
+    fr: "Il n'est point d'être qui se meut sur la terre dont la subsistance n'incombe à Allah.",
+    en: "There is no creature on earth but that upon Allah is its provision.",
+  },
+  {
+    id: 'talaq-3',
+    category: 'rizq',
+    surah: 65, ayah: 3,
+    arabic: 'وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ ۚ إِنَّ اللَّهَ بَالِغُ أَمْرِهِ',
+    transliteration: 'Wa man yatawakkal ala Allahi fahuwa hasbuhu inna Allaha balighu amrihi',
+    fr: "Celui qui se confie en Allah, Il lui suffit. Allah atteint ce qu\u2019Il veut.",
+    en: 'Whoever relies upon Allah — then He is sufficient for him. Indeed, Allah will accomplish His purpose.',
+  },
+
+  // ── Sabr / Patience ───────────────────────────────────────────────
+  {
+    id: 'baqara-155',
+    category: 'steadfastness',
+    surah: 2, ayah: 155,
+    arabic: 'وَبَشِّرِ الصَّابِرِينَ ۝ الَّذِينَ إِذَا أَصَابَتْهُم مُّصِيبَةٌ قَالُوا إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ',
+    transliteration: "Wa bashshiri al-sabirin alladhina idha asabathum musibatun qalu inna lillahi wa inna ilayhi raji'un",
+    fr: "Annonce la bonne nouvelle aux endurants, ceux qui, frappés d\u2019une calamité, disent : \u00abNous appartenons à Allah et c\u2019est à Lui que nous retournons.\u00bb",
+    en: 'Give good tidings to the patient — who, when disaster strikes them, say: "Indeed we belong to Allah, and indeed to Him we will return."',
+  },
+  {
+    id: 'zumar-10',
+    category: 'steadfastness',
+    surah: 39, ayah: 10,
+    arabic: 'إِنَّمَا يُوَفَّى الصَّابِرُونَ أَجْرَهُم بِغَيْرِ حِسَابٍ',
+    transliteration: 'Innama yuwaffa al-sabirun ajrahum bi-ghayri hisab',
+    fr: 'Les patients seront rémunérés sans compte.',
+    en: 'Indeed, the patient will be given their reward without account.',
+  },
+
+  // ── Shifa / Guérison ──────────────────────────────────────────────
+  {
+    id: 'shuara-80',
+    category: 'shifa',
+    surah: 26, ayah: 80,
+    arabic: 'وَإِذَا مَرِضْتُ فَهُوَ يَشْفِينِ',
+    transliteration: 'Wa idha maridtu fahuwa yashfin',
+    fr: "Et quand je suis malade, c\u2019est Lui qui me gu\u00e9rit.",
+    en: 'And when I am ill, it is He who cures me.',
+  },
+  {
+    id: 'isra-82',
+    category: 'shifa',
+    surah: 17, ayah: 82,
+    arabic: 'وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ لِّلْمُؤْمِنِينَ',
+    transliteration: "Wa nunazzilu min al-Qur'ani ma huwa shifa'un wa rahmatun lil-mu'minin",
+    fr: 'Nous faisons descendre du Coran ce qui est une guérison et une miséricorde pour les croyants.',
+    en: 'And We send down of the Quran that which is healing and mercy for the believers.',
+  },
+  {
+    id: 'yunus-57',
+    category: 'shifa',
+    surah: 10, ayah: 57,
+    arabic: 'يَا أَيُّهَا النَّاسُ قَدْ جَاءَتْكُم مَّوْعِظَةٌ مِّن رَّبِّكُمْ وَشِفَاءٌ لِّمَا فِي الصُّدُورِ',
+    transliteration: "Ya ayyuha al-nasu qad ja'atkum maw'izatun min rabbikum wa shifa'un lima fi al-sudur",
+    fr: 'Ô hommes ! Une exhortation vous est venue de votre Seigneur, et une guérison pour ce qui est dans les poitrines.',
+    en: 'O mankind, there has come to you instruction from your Lord and healing for what is in the breasts.',
+  },
+
+  // ── Safar / Voyage ────────────────────────────────────────────────
+  {
+    id: 'zukhruf-13',
+    category: 'safar',
+    surah: 43, ayah: 13,
+    arabic: 'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ ۝ وَإِنَّا إِلَىٰ رَبِّنَا لَمُنقَلِبُونَ',
+    transliteration: "Subhana alladhi sakhkhara lana hadha wa ma kunna lahu muqrinin wa inna ila rabbina lamunqalibun",
+    fr: "Gloire \u00e0 Celui qui nous a soumis cela alors que nous n\u2019\u00e9tions pas capables de le ma\u00eetriser. Et c\u2019est vers notre Seigneur que nous retournerons.",
+    en: 'Exalted is He who has subjected this to us, and we could not have [otherwise] subdued it. And indeed we, to our Lord, will surely return.',
+  },
+
+  // ── Tawbah / Repentance ───────────────────────────────────────────
+  {
+    id: 'hud-90',
+    category: 'forgiveness',
+    surah: 11, ayah: 90,
+    arabic: 'وَاسْتَغْفِرُوا رَبَّكُمْ ثُمَّ تُوبُوا إِلَيْهِ ۚ إِنَّ رَبِّي رَحِيمٌ وَدُودٌ',
+    transliteration: "Wa istaghfiru rabbakum thumma tubu ilayhi inna rabbi rahimun wadud",
+    fr: "Demandez pardon \u00e0 votre Seigneur et revenez \u00e0 Lui. Mon Seigneur est Tr\u00e8s Mis\u00e9ricordieux, Plein d\u2019amour.",
+    en: 'Seek forgiveness of your Lord and turn to Him in repentance. Indeed, my Lord is Merciful and Loving.',
+  },
+  {
+    id: 'nisa-110',
+    category: 'forgiveness',
+    surah: 4, ayah: 110,
+    arabic: 'وَمَن يَعْمَلْ سُوءًا أَوْ يَظْلِمْ نَفْسَهُ ثُمَّ يَسْتَغْفِرِ اللَّهَ يَجِدِ اللَّهَ غَفُورًا رَّحِيمًا',
+    transliteration: "Wa man ya'mal su'an aw yazlim nafsahu thumma yastaghfiri Allaha yajid Allaha ghafuran rahima",
+    fr: 'Quiconque commet un péché ou se lèse, puis demande pardon à Allah, trouvera Allah Pardonneur et Miséricordieux.',
+    en: 'Whoever does evil or wrongs himself but then seeks forgiveness of Allah will find Allah Forgiving and Merciful.',
+  },
+  {
+    id: 'zumar-53',
+    category: 'forgiveness',
+    surah: 39, ayah: 53,
+    arabic: 'قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ ۚ إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا',
+    transliteration: "Qul ya 'ibadi alladhina asrafu 'ala anfusihim la taqnatu min rahmati Allahi inna Allaha yaghfiru al-dhunuba jami'a",
+    fr: "Dis : \u00abO Mes serviteurs qui avez \u00e9t\u00e9 excessifs \u00e0 votre propre d\u00e9triment, ne d\u00e9sesp\u00e9rez pas de la mis\u00e9ricorde d\u2019Allah. Allah pardonne tous les p\u00e9ch\u00e9s.\u00bb",
+    en: 'Say: O My servants who have transgressed against themselves, do not despair of the mercy of Allah. Indeed, Allah forgives all sins.',
+  },
+
+  // ── Tasbih / Glorification ────────────────────────────────────────
+  {
+    id: 'anbiyaa-20',
+    category: 'tawhid',
+    surah: 21, ayah: 20,
+    arabic: 'يُسَبِّحُونَ اللَّيْلَ وَالنَّهَارَ لَا يَفْتُرُونَ',
+    transliteration: 'Yusabbihu al-layla wa al-nahara la yafturun',
+    fr: 'Ils glorifient nuit et jour sans jamais se lasser.',
+    en: 'They exalt Him night and day without pause.',
+  },
+  {
+    id: 'baqara-255-short',
+    category: 'tawhid',
+    surah: 2, ayah: 255,
+    arabic: 'اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ',
+    transliteration: "Allahu la ilaha illa huwa al-hayyu al-qayyum la ta'khudhuhu sinatun wa la nawm",
+    fr: 'Allah ! Point de divinité hormis Lui, le Vivant, Celui qui subsiste par Lui-même. Ni somnolence ni sommeil ne Le saisissent.',
+    en: 'Allah — there is no deity except Him, the Ever-Living, the Sustainer of existence. Neither drowsiness overtakes Him nor sleep.',
+  },
+
+  // ── Shukr / Reconnaissance ────────────────────────────────────────
+  {
+    id: 'ibrahim-7',
+    category: 'ibadah',
+    surah: 14, ayah: 7,
+    arabic: 'لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ ۖ وَلَئِن كَفَرْتُمْ إِنَّ عَذَابِي لَشَدِيدٌ',
+    transliteration: "La'in shakartum la'azidannakum wa la'in kafartum inna 'adhabi lashadid",
+    fr: "Si vous \u00eates reconnaissants, J\u2019augmenterai certes vos bienfaits. Mais si vous \u00eates ingrats, Mon ch\u00e2timent est s\u00e9v\u00e8re.",
+    en: 'If you are grateful, I will surely increase you in favor; but if you deny, indeed My punishment is severe.',
+  },
+  {
+    id: 'rahman-13',
+    category: 'tawhid',
+    surah: 55, ayah: 13,
+    arabic: 'فَبِأَيِّ آلَاءِ رَبِّكُمَا تُكَذِّبَانِ',
+    transliteration: "Fabi'ayyi ala'i rabbikuma tukadhdhiban",
+    fr: 'Alors, lequel des bienfaits de votre Seigneur nierez-vous ?',
+    en: 'So which of the favors of your Lord would you deny?',
+  },
+
+  // ── Nuit du destin / Protection ───────────────────────────────────
+  {
+    id: 'falaq-3',
+    category: 'steadfastness',
+    surah: 113, ayah: 3,
+    arabic: 'وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ',
+    transliteration: "Wa min sharri ghasiqin idha waqab wa min sharri al-naffathati fi al-'uqad wa min sharri hasidin idha hasad",
+    fr: "Contre le mal de l\u2019obscurit\u00e9 quand elle s\u2019\u00e9tend, contre le mal de celles qui soufflent sur les n\u0153uds, contre le mal de l\u2019envieux quand il envie.",
+    en: 'From the evil of darkness when it settles, from the evil of the blowers in knots, and from the evil of an envier when he envies.',
+  },
+
+  // ── Fajr / Invocation du matin ────────────────────────────────────
+  {
+    id: 'imran-190',
+    category: 'tawhid',
+    surah: 3, ayah: 190,
+    arabic: 'إِنَّ فِي خَلْقِ السَّمَاوَاتِ وَالْأَرْضِ وَاخْتِلَافِ اللَّيْلِ وَالنَّهَارِ لَآيَاتٍ لِّأُولِي الْأَلْبَابِ',
+    transliteration: "Inna fi khalqi al-samawati wa al-ardi wa ikhtilafi al-layli wa al-nahari la'ayatin li'uli al-albab",
+    fr: "Dans la cr\u00e9ation des cieux et de la terre, et dans l\u2019alternance de la nuit et du jour, il y a des signes pour les gens dou\u00e9s de raison.",
+    en: 'Indeed, in the creation of the heavens and the earth and the alternation of the night and the day are signs for those of understanding.',
+  },
 ];
 
 export default QURAN_DUAS;

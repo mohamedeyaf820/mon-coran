@@ -1,9 +1,11 @@
-const CACHE_NAME = 'mushaf-plus-v2';
+const CACHE_NAME = 'mushaf-plus-v3';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
     '/manifest.json',
-    '/favicon.svg'
+    '/favicon.svg',
+    '/fonts/scheherazade-new-400.woff2',
+    '/fonts/scheherazade-new-700.woff2',
 ];
 
 self.addEventListener('install', (event) => {

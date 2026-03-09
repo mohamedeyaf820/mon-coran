@@ -808,15 +808,20 @@
 .ayahs-container {
     font-family: var(--font-quran);
     line-height: var(--line-height-quran);
-    background: var(--reading-surface-elevated);
-    border: 1px solid rgba(var(--primary-rgb), 0.08);
+    background:
+        /* Micro-grain texture SVG */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E"),
+        var(--reading-surface-elevated);
+    background-size: 200px 200px, auto;
+    border: 1px solid rgba(var(--primary-rgb), 0.1);
     border-radius: var(--r-xl);
     padding: 2.1rem 2.25rem;
     position: relative;
     box-shadow:
-        0 18px 44px rgba(28, 25, 23, 0.08),
-        0 1px 4px rgba(28, 25, 23, 0.04),
-        inset 0 1px 0 rgba(255, 255, 255, 0.65);
+        0 24px 56px rgba(28, 25, 23, 0.1),
+        0 2px 8px rgba(28, 25, 23, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.75),
+        inset 0 -1px 0 rgba(184, 134, 11, 0.06);
     overflow-x: hidden;
     overflow-wrap: break-word;
     word-break: break-word;
@@ -922,9 +927,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 0.75rem;
-    padding: 1.25rem 0 0.85rem;
-    margin-top: 0.5rem;
+    gap: 0.85rem;
+    padding: 1.5rem 0 1rem;
+    margin-top: 0.75rem;
 }
 
 .page-indicator {
@@ -944,9 +949,9 @@
 .btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    padding: 0.5rem 1.25rem;
-    border-radius: var(--r-lg);
+    gap: 0.5rem;
+    padding: 0.58rem 1.35rem;
+    border-radius: var(--r-pill, 999px);
     font-family: var(--font-ui);
     font-size: 0.82rem;
     cursor: pointer;
@@ -975,17 +980,18 @@
 }
 
 .btn-outline {
-    background: transparent;
+    background: var(--bg-card, var(--surface, transparent));
     color: var(--primary);
-    border: 1.5px solid rgba(var(--primary-rgb), 0.3);
+    border: 1.5px solid rgba(var(--primary-rgb), 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .btn-outline:hover {
     background: var(--primary);
     color: white;
     border-color: var(--primary);
-    box-shadow: 0 3px 12px rgba(var(--primary-rgb), 0.22);
-    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(var(--primary-rgb), 0.25);
+    transform: translateY(-2px);
 }
 
 .btn:disabled {
@@ -2096,11 +2102,12 @@
 .wbw-display {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-end; /* RTL: start from right */
-    align-items: flex-end;
-    gap: 0.5rem 0.55rem;
-    padding: 0.5rem 0 0.25rem;
+    justify-content: flex-end; /* RTL: words start from right */
+    align-items: flex-start;   /* TOP-align: every card starts at same baseline */
+    gap: 0.75rem 0.6rem;
+    padding: 0.75rem 0 0.5rem;
     direction: rtl;
+    row-gap: 0.85rem;
 }
 
 /* ── Individual word card ── */
@@ -2108,14 +2115,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.28rem;
-    padding: 0.62rem 0.7rem 0.55rem;
-    border-radius: 0.85rem;
-    background: rgba(var(--primary-rgb), 0.03);
-    border: 1.5px solid rgba(var(--primary-rgb), 0.08);
+    justify-content: flex-start;
+    gap: 0;
+    padding: 0.7rem 0.8rem 0.65rem;
+    border-radius: 0.9rem;
+    background: rgba(var(--primary-rgb), 0.035);
+    border: 1.5px solid rgba(var(--primary-rgb), 0.09);
     cursor: pointer;
-    min-width: 64px;
-    max-width: fit-content;
+    /* Normalized sizing: uniform min-width, bounded max-width */
+    min-width: 76px;
+    max-width: 136px;
+    width: max-content;
+    flex-shrink: 0;
     position: relative;
     transition:
         background 0.15s ease,
@@ -2192,14 +2203,18 @@
 .wbw-arabic {
     font-family: var(--font-quran);
     color: var(--text-quran);
-    line-height: 1.45;
+    line-height: 1.5;
     text-align: center;
     font-weight: 400;
     transition:
         color 0.15s ease,
         text-shadow 0.15s ease;
-    /* Disable the parent container font-size override bleeding in */
-    display: block;
+    /* Normalized: guaranteed vertical space for short/long words */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.8em;
+    padding-bottom: 0.3rem;
     white-space: nowrap;
     word-break: keep-all;
 }
@@ -2221,6 +2236,11 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+    min-height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
     transition:
         background 0.15s ease,
         color 0.15s ease;
@@ -2251,14 +2271,23 @@
     font-size: 0.62rem;
     color: var(--text-muted);
     text-align: center;
-    max-width: 140px;
-    line-height: 1.38;
+    max-width: 120px;
+    width: 100%;
+    line-height: 1.35;
     direction: ltr;
     font-weight: 500;
     letter-spacing: 0.01em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-height: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.28rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid rgba(var(--primary-rgb), 0.07);
+    align-self: stretch;
 }
 
 /* ── Loading skeleton ── */
@@ -2607,14 +2636,14 @@
 /* ── Cadre extérieur (parchment) ── */
 .mp-outer-border {
     background: var(--mp-bg-outer);
-    border: 3px solid var(--mp-border);
-    border-radius: 4px;
+    border: 2.5px solid var(--mp-border);
+    border-radius: 6px;
     padding: 8px;
     box-shadow:
         0 0 0 1px var(--mp-border-dim),
-        0 8px 32px rgba(0, 0, 0, 0.18),
-        0 2px 6px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        0 12px 40px rgba(0, 0, 0, 0.14),
+        0 2px 6px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 /* ── Cadre intérieur ── */
@@ -2653,14 +2682,31 @@
     align-items: stretch;
     justify-content: space-between;
     gap: 0.5rem;
-    padding: 0.55rem 1.6rem 0.5rem;
-    background: linear-gradient(
-        135deg,
-        rgba(184, 134, 11, 0.2) 0%,
-        rgba(184, 134, 11, 0.08) 50%,
-        rgba(184, 134, 11, 0.2) 100%
-    );
-    border-bottom: 2px solid var(--mp-border);
+    padding: 0.65rem 1.8rem 0.6rem;
+    background:
+        linear-gradient(135deg, rgba(184, 134, 11, 0.15) 0%, rgba(184, 134, 11, 0.05) 30%, rgba(184, 134, 11, 0.05) 70%, rgba(184, 134, 11, 0.15) 100%);
+    border-bottom: 2.5px solid var(--mp-border);
+    border-top: 1px solid var(--mp-border-dim);
+    position: relative;
+}
+.mp-header::before,
+.mp-header::after {
+    content: "✦";
+    position: absolute;
+    font-size: 0.85rem;
+    color: var(--mp-gold);
+    opacity: 0.45;
+    line-height: 1;
+}
+.mp-header::before {
+    top: 50%;
+    left: 0.5rem;
+    transform: translateY(-50%);
+}
+.mp-header::after {
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
 }
 
 /* Page mode: simpler header */
@@ -2718,10 +2764,11 @@
 }
 
 .mp-ornament {
-    font-size: 1.35rem;
+    font-size: 1.6rem;
     color: var(--mp-gold);
     line-height: 1;
-    opacity: 0.8;
+    opacity: 0.7;
+    text-shadow: 0 1px 3px rgba(184, 134, 11, 0.2);
 }
 
 .mp-surah-title {
@@ -2732,23 +2779,24 @@
 }
 
 .mp-surah-name-ar {
-    font-family: var(--font-quran);
-    font-size: 1.45rem;
+    font-family: var(--font-surah, "Amiri", serif);
+    font-size: 1.8rem;
     font-weight: 700;
     color: var(--mp-text);
     direction: rtl;
-    line-height: 1.3;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.09);
 }
 
 .mp-surah-name-tr {
     font-family: var(--font-ui);
-    font-size: 0.6rem;
-    font-weight: 600;
+    font-size: 0.62rem;
+    font-weight: 700;
     color: var(--mp-gold);
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    opacity: 0.8;
+    letter-spacing: 0.14em;
+    opacity: 0.75;
 }
 
 /* ── Séparateur ornemental ── */
@@ -2860,7 +2908,7 @@
 .mp-ayah {
     display: inline;
     cursor: pointer;
-    font-size: 28px !important;
+    font-size: inherit;
     border-radius: 3px;
     transition: background 0.15s ease;
     padding: 0 0.04em;
@@ -2900,17 +2948,18 @@
     box-shadow: 0 0 0 1px rgba(184, 134, 11, 0.18);
 }
 
-/* ── Marqueur de fin d'ayah ── */
+/* ── Marqueur de fin d'ayah (style Mushaf orné) ── */
 .mp-ayah-marker {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     position: relative;
     vertical-align: middle;
-    margin: 0 0.15em;
+    margin: 0 0.18em;
     user-select: none;
     cursor: default;
     white-space: nowrap;
+    filter: drop-shadow(0 0 2px rgba(184, 134, 11, 0.25));
 }
 
 .mp-ayah-marker-svg {
@@ -2931,30 +2980,45 @@
 }
 
 .quran-mode-pane--page .mp-ayah-marker-svg {
-    width: 2.2em;
-    height: 2.2em;
+    width: 2.4em;
+    height: 2.4em;
     display: block;
-    opacity: 0.7;
+    opacity: 0.85;
 }
 
 .quran-mode-pane--page .mp-ayah-num {
-    font-size: 0.9em;
-    font-weight: 500;
+    font-size: 0.85em;
+    font-weight: 600;
 }
 
 /* Couleurs SVG des anneaux */
 .mp-ring-outer {
     stroke: var(--mp-gold);
+    stroke-opacity: 0.9;
 }
 
 .mp-ring-inner {
     stroke: var(--mp-gold);
-    opacity: 0.55;
+    opacity: 0.45;
+}
+
+.mp-center-fill {
+    fill: var(--mp-gold);
+    opacity: 0.07;
 }
 
 .mp-petal {
     fill: var(--mp-gold);
-    opacity: 0.65;
+    opacity: 0.7;
+}
+
+.mp-petal--diag {
+    opacity: 0.5;
+}
+
+.mp-dot {
+    fill: var(--mp-gold);
+    opacity: 0.55;
 }
 
 /* Numéro centré sur le SVG */
@@ -2964,23 +3028,25 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--font-ui);
-    font-size: 0.38em;
-    font-weight: 800;
+    font-family: var(--font-surah, "Amiri", serif);
+    font-size: 0.4em;
+    font-weight: 700;
     color: var(--mp-gold);
     line-height: 1;
     letter-spacing: 0;
     pointer-events: none;
+    text-shadow: 0 0 4px rgba(184, 134, 11, 0.25);
 }
 
 /* ── Traductions (hors cadre) ── */
 .mp-translations {
-    margin-top: 0.5rem;
-    padding: 0.75rem 1.2rem 1rem;
+    margin-top: 0.75rem;
+    padding: 1rem 1.4rem 1.1rem;
     background: var(--bg-card, var(--surface));
     border: 1px solid var(--border);
     border-radius: var(--r-lg);
     font-family: var(--font-ui);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 /* Page mode: hide translations for cleaner view */
@@ -2998,14 +3064,14 @@
 }
 
 .mp-trans-row {
-    font-size: 0.82rem;
+    font-size: 0.84rem;
     color: var(--text-secondary);
-    line-height: 1.9;
-    padding: 0.2rem 0;
+    line-height: 1.85;
+    padding: 0.35rem 0;
     border-bottom: 1px solid var(--border-light);
     overflow-wrap: break-word;
     display: flex;
-    gap: 0.4rem;
+    gap: 0.55rem;
     align-items: baseline;
 }
 
@@ -3016,8 +3082,14 @@
 .mp-trans-num {
     font-weight: 700;
     color: var(--mp-gold);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     flex-shrink: 0;
+    min-width: 1.6rem;
+    text-align: center;
+    background: rgba(184, 134, 11, 0.08);
+    padding: 0.15rem 0.35rem;
+    border-radius: 999px;
+    line-height: 1.3;
 }
 
 .mp-trans-text {
@@ -3121,8 +3193,8 @@
     margin-top: 0.3rem;
 }
 
-/* Bismillah */
-.bismillah-text {
+/* Bismillah — standalone block in clean mode */
+.bismillah-text-clean {
     font-family: var(--font-quran), serif;
     text-align: center;
     font-size: clamp(1.3rem, 3.5vw, 1.9rem);
@@ -3523,6 +3595,25 @@
     letter-spacing: 0.016em;
 }
 
+/* ── Warsh QCF4 list mode — translation always visible and well-aligned ── */
+.quran-display--warsh .qc-ayah-translation {
+    /* Ensure translation text is always LTR-aligned regardless of QCF4 parent direction */
+    text-align: start;
+    /* Reset any inherited direction from QCF4 containers */
+    unicode-bidi: isolate;
+}
+
+/* Warsh list mode: QCF4 words scale relative to container, not 1.2× on top */
+.qc-ayah-text-ar .warsh-qcf4-word {
+    font-size: 1em;
+}
+
+/* Restore 1.2em scaling only inside the mushaf (CleanPageView) context */
+.cpv-verse .warsh-qcf4-word,
+.mushaf-line .warsh-qcf4-word {
+    font-size: 1.2em;
+}
+
 /* ── Actions panel (shown when verse is active / expanded) ── */
 .qc-ayah-actions-panel {
     margin-top: 1rem;
@@ -3668,7 +3759,7 @@
 
 .cpv-container {
     width: 100%;
-    max-width: 860px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 1.5rem 1.25rem 2.5rem;
 }
@@ -3680,9 +3771,7 @@
     text-align: center;
     direction: rtl;
     color: var(--text-quran);
-    margin-bottom: 1.8rem;
-    padding-bottom: 1.4rem;
-    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
+    margin-bottom: 0.6rem;
     line-height: 2.4;
     -webkit-font-smoothing: antialiased;
 }
@@ -3710,11 +3799,12 @@
 /* ── Single verse span (inline) ── */
 .cpv-verse {
     display: inline;
+    transition: color 0.2s ease;
 }
 
 .cpv-verse--playing {
-    color: color-mix(in srgb, var(--text-quran) 88%, var(--gold, #c9a33d) 12%);
-    text-shadow: 0 0 22px rgba(212, 168, 32, 0.12);
+    color: color-mix(in srgb, var(--text-quran) 85%, var(--gold, #c9a33d) 15%);
+    text-shadow: 0 0 20px rgba(212, 168, 32, 0.13);
 }
 
 /* ── Ornamental medallion badge (inline, after each verse) ── */
@@ -3877,5 +3967,545 @@
 
     .page-separator-text {
         font-size: 0.75rem;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Translation panel — list / qc-ayah mode
+   ═══════════════════════════════════════════════════════════════ */
+.qc-ayah-translation {
+    margin-top: 0.85rem;
+    padding: 0.6rem 1.1rem 0.65rem 1.15rem;
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    line-height: 1.85;
+    color: var(--text-secondary);
+    border-inline-start: 2.5px solid rgba(var(--primary-rgb), 0.22);
+    background: rgba(var(--primary-rgb), 0.025);
+    border-radius: 0 0.7rem 0.7rem 0;
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.qc-ayah-block.is-playing .qc-ayah-translation {
+    border-inline-start-color: rgba(212, 168, 32, 0.5);
+    background: rgba(212, 168, 32, 0.032);
+    color: color-mix(in srgb, var(--text-secondary) 88%, var(--gold) 12%);
+}
+
+[data-theme="dark"] .qc-ayah-translation,
+[data-theme="night-blue"] .qc-ayah-translation {
+    background: rgba(var(--primary-rgb), 0.045);
+    border-inline-start-color: rgba(var(--primary-rgb), 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CPV — Mushaf enhancements
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Parchment-feel container */
+:root {
+    --cpv-bg: var(--bg-card, var(--bg-primary));
+    --cpv-border: rgba(184, 134, 11, 0.18);
+    --cpv-gold: #b8860b;
+    --cpv-shadow: 0 6px 28px rgba(0, 0, 0, 0.07), 0 1px 5px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"],
+[data-theme="night-blue"] {
+    --cpv-bg: var(--bg-secondary);
+    --cpv-border: rgba(201, 151, 15, 0.25);
+    --cpv-gold: #d4a820;
+    --cpv-shadow: 0 6px 28px rgba(0, 0, 0, 0.25), 0 1px 5px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="sepia"] {
+    --cpv-bg: #fdf6e3;
+    --cpv-border: rgba(154, 110, 26, 0.3);
+    --cpv-gold: #9a6e1a;
+    --cpv-shadow: 0 4px 18px rgba(100, 65, 0, 0.12);
+}
+
+[data-theme="forest"] {
+    --cpv-bg: var(--bg-secondary);
+    --cpv-border: rgba(var(--primary-rgb), 0.22);
+    --cpv-gold: var(--primary);
+    --cpv-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Override container to look like a real mushaf page */
+.cpv-container {
+    background: var(--cpv-bg);
+    border: 1.5px solid var(--cpv-border);
+    border-radius: 0.75rem;
+    box-shadow: var(--cpv-shadow);
+    overflow: hidden;
+    /* Gold top rule */
+    border-top: 3px solid var(--cpv-gold);
+    padding: 1.75rem 1.75rem 2.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Basmala wrapper */
+.cpv-basmala-wrap {
+    text-align: center;
+    margin-bottom: 1.6rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--cpv-border);
+}
+
+/* Basmala text */
+.cpv-container .cpv-basmala {
+    font-family: var(--font-quran);
+    font-size: 1.9rem;
+    text-align: center;
+    direction: rtl;
+    color: var(--text-quran);
+    margin-bottom: 0.5rem;
+    padding-bottom: 0;
+    border-bottom: none;
+    line-height: 2.4;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Translation below basmala */
+.cpv-basmala-translation {
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    font-style: italic;
+    color: var(--cpv-gold);
+    opacity: 0.75;
+    letter-spacing: 0.025em;
+    text-align: center;
+    direction: ltr;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Verse flow — improved quality */
+.cpv-container .cpv-flow {
+    font-feature-settings: "liga" 1, "calt" 1, "kern" 1, "mark" 1, "ccmp" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    word-spacing: 0.12em;
+}
+
+/* Playing verse highlight — more visible */
+.cpv-verse--playing {
+    background: rgba(212, 168, 32, 0.09);
+    border-radius: 4px;
+    padding: 0.05em 0.1em;
+    box-shadow: 0 0 0 2px rgba(212, 168, 32, 0.15);
+}
+
+/* Ornamental end-of-surah closure */
+.cpv-closure {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.8rem 0 0.5rem;
+    width: 100%;
+    direction: rtl;
+}
+
+.cpv-closure-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--cpv-border));
+}
+
+.cpv-closure-line:last-child {
+    background: linear-gradient(to left, transparent, var(--cpv-border));
+}
+
+.cpv-closure-ornament {
+    font-family: var(--font-quran);
+    font-size: 1.1rem;
+    color: var(--cpv-gold);
+    opacity: 0.65;
+    flex-shrink: 0;
+    white-space: nowrap;
+    line-height: 1.8;
+    letter-spacing: 0.06em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MushafInlineView CSS (mp-ayahs-flow, mp-basmala-wrap, etc.)
+   ═══════════════════════════════════════════════════════════════ */
+.mp-ayahs-flow {
+    padding: 1.8rem 2.5rem 1.2rem;
+    direction: rtl;
+    text-align: justify;
+    text-align-last: center;
+    font-family: var(--font-quran);
+    line-height: 2.95;
+    color: var(--mp-text);
+    word-spacing: 0.08em;
+    letter-spacing: 0;
+    font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.mp-basmala-wrap {
+    text-align: center;
+    padding-bottom: 0.2em;
+}
+
+.mp-basmala-translation {
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    font-style: italic;
+    color: var(--mp-gold);
+    opacity: 0.78;
+    text-align: center;
+    direction: ltr;
+    margin: 0;
+    padding: 0.2rem 1rem 0.7rem;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+}
+
+/* Fix mp-ayah font-size — should inherit from parent container */
+.mp-ayah {
+    font-size: inherit;
+}
+
+/* ── Responsive CPV ── */
+@media (max-width: 768px) {
+    .cpv-container {
+        padding: 1.25rem 1rem 2rem;
+        border-radius: 0.6rem;
+    }
+
+    .cpv-basmala-wrap {
+        margin-bottom: 1.2rem;
+        padding-bottom: 0.9rem;
+    }
+
+    .cpv-closure-ornament {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cpv-container {
+        padding: 1rem 0.75rem 1.75rem;
+        border-radius: 0.5rem;
+    }
+}
+
+/* 
+   Améliorations v3  Liste + Mushaf
+    */
+
+/*  Focus dim: non-playing verses fade when one is playing  */
+.surah-ayahs-list:has(.qc-ayah-block.is-playing) .qc-ayah-block:not(.is-playing) {
+    opacity: 0.48;
+    transition: opacity 0.4s ease;
+}
+.surah-ayahs-list:has(.qc-ayah-block.is-playing) .qc-ayah-block:not(.is-playing):hover {
+    opacity: 0.88;
+}
+
+/*  Playing speaker indicator on list ayahs  */
+.qc-ayah-block.is-playing .qc-ayah-content::after {
+    content: "\f028";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    display: block;
+    font-size: 0.55rem;
+    color: var(--gold, #c9a33d);
+    opacity: 0.7;
+    margin-top: 0.3rem;
+    text-align: right;
+    animation: pulse 2.5s ease infinite;
+}
+
+/*  Better qc-ayah-translation look  */
+.qc-ayah-translation {
+    border-radius: 0 0.6rem 0.6rem 0;
+    font-weight: 430;
+    max-width: 72ch;
+}
+[dir="rtl"] .qc-ayah-translation {
+    border-inline-start: none;
+    border-inline-end: 2.5px solid rgba(var(--primary-rgb), 0.22);
+    border-radius: 0.6rem 0 0 0.6rem;
+    background: linear-gradient(
+        to left,
+        rgba(var(--primary-rgb), 0.025),
+        transparent 65%
+    );
+}
+
+/*  Mushaf (cpv) playing verse pulse  */
+@keyframes cpv-glow {
+    0%, 100% { text-shadow: 0 0 14px rgba(212, 168, 32, 0.08); }
+    50%       { text-shadow: 0 0 28px rgba(212, 168, 32, 0.22); }
+}
+.cpv-verse--playing {
+    color: color-mix(in srgb, var(--text-quran) 85%, var(--gold, #c9a33d) 15%);
+    animation: cpv-glow 2.8s ease-in-out infinite;
+}
+
+/*  Mushaf translations panel  */
+.cpv-trans-panel {
+    margin-top: 1.8rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid rgba(var(--primary-rgb), 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    font-family: var(--font-ui);
+}
+
+.cpv-trans-entry {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.55rem 0.4rem;
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.05);
+    font-size: 0.88rem;
+    line-height: 1.9;
+    color: var(--text-secondary);
+    transition: background 0.15s ease, color 0.15s ease;
+    border-radius: 0.35rem;
+}
+.cpv-trans-entry:last-child {
+    border-bottom: none;
+}
+.cpv-trans-entry:hover {
+    color: var(--text-primary);
+    background: rgba(var(--primary-rgb), 0.025);
+}
+.cpv-trans-entry--playing {
+    color: color-mix(in srgb, var(--text-secondary) 80%, var(--gold, #c9a33d) 20%);
+    background: rgba(212, 168, 32, 0.03);
+}
+
+.cpv-trans-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.85rem;
+    height: 1.85rem;
+    background: rgba(var(--primary-rgb), 0.06);
+    border: 1px solid rgba(var(--primary-rgb), 0.12);
+    border-radius: 50%;
+    color: var(--primary);
+    font-family: "Scheherazade New", "Amiri", serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    direction: rtl;
+    line-height: 1;
+    transition: background 0.15s ease;
+}
+.cpv-trans-entry--playing .cpv-trans-num {
+    background: rgba(212, 168, 32, 0.12);
+    border-color: rgba(212, 168, 32, 0.3);
+    color: var(--gold, #c9a33d);
+}
+
+.cpv-trans-text {
+    flex: 1;
+    font-weight: 420;
+    letter-spacing: 0.008em;
+}
+
+/*  Better cpv-basmala separation  */
+.cpv-basmala-wrap {
+    text-align: center;
+    margin-bottom: 1.6rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
+    position: relative;
+}
+.cpv-basmala-wrap::after {
+    content: "✦";
+    position: absolute;
+    bottom: -0.55rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.5rem;
+    color: var(--primary);
+    opacity: 0.4;
+    background: var(--cpv-bg, var(--bg-card));
+    padding: 0 0.4rem;
+    line-height: 1;
+    pointer-events: none;
+}
+
+/*  cpv-container subtle corner accents  */
+.cpv-container::before {
+    content: "";
+    display: block;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--primary-rgb), 0.35) 25%,
+        rgba(184, 134, 11, 0.65) 50%,
+        rgba(var(--primary-rgb), 0.35) 75%,
+        transparent
+    );
+    margin-bottom: 0;
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
+}
+
+/*  List mode page separator improvement  */
+.page-separator-text {
+    font-size: 0.72rem;
+    color: var(--primary);
+    font-weight: 600;
+    opacity: 0.65;
+    font-family: var(--font-ui);
+    letter-spacing: 0.05em;
+}
+
+/*  qc-ayah-text-ar line-height tweak for readability  */
+.quran-display--hafs .qc-ayah-text-ar {
+    line-height: 2.85;
+}
+
+/*  Responsive trans panel  */
+@media (max-width: 640px) {
+    .cpv-trans-panel {
+        margin-top: 1.2rem;
+        padding-top: 1rem;
+    }
+    .cpv-trans-entry {
+        font-size: 0.82rem;
+        padding: 0.45rem 0.3rem;
+    }
+    .cpv-trans-num {
+        min-width: 1.6rem;
+        height: 1.6rem;
+        font-size: 0.66rem;
+    }
+}
+
+/* ═══════════════════════════════════════
+   Islamic geometric texture (optionnel)
+   Activé avec .quran-has-texture sur body / quran-display
+   ═══════════════════════════════════════ */
+.quran-display.quran-has-texture {
+    position: relative;
+}
+.quran-display.quran-has-texture::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cpath d='M30 5 L35 15 L30 10 L25 15 Z M30 55 L35 45 L30 50 L25 45 Z M5 30 L15 25 L10 30 L15 35 Z M55 30 L45 25 L50 30 L45 35 Z M30 30 m-12 0 a12 12 0 1 0 24 0 a12 12 0 1 0-24 0' fill='currentColor' stroke='currentColor' stroke-width='0.5'/%3E%3C/svg%3E");
+    background-size: 60px 60px;
+}
+.quran-display.quran-has-texture > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* ═══════════════════════════════════════
+   Ayah block fade-in animation
+   ═══════════════════════════════════════ */
+@keyframes ayahFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.qc-ayah-block {
+    animation: ayahFadeIn 0.35s both;
+    animation-delay: calc(var(--ayah-idx, 0) * 25ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .qc-ayah-block {
+        animation: none;
+    }
+}
+
+/* ═══════════════════════════════════════
+   Mémorisation — étoiles par verset
+   ═══════════════════════════════════════ */
+.qc-memo-stars {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0.15rem 0.25rem;
+    border-radius: 6px;
+    transition: opacity 0.2s;
+}
+
+.qc-memo-star {
+    background: none;
+    border: none;
+    padding: 0 1px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text-muted, #9ca3af);
+    transition: color 0.15s, transform 0.15s;
+    line-height: 1;
+}
+
+.qc-memo-star:hover,
+.qc-memo-star.filled {
+    color: var(--gold, #d4a820);
+}
+
+.qc-memo-star:hover {
+    transform: scale(1.2);
+}
+
+/* ═══════════════════════════════════════
+   Full responsive — Mobile / Tablet
+   ═══════════════════════════════════════ */
+@media (max-width: 768px) {
+    .quran-display {
+        padding: 1rem 0.75rem 4rem;
+    }
+    .qc-ayah-block {
+        padding: 0.6rem 0.5rem;
+    }
+    .qc-ayah-body {
+        flex-direction: column;
+    }
+    .qc-sidebar {
+        flex-direction: row;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .quran-display {
+        padding: 0.5rem 0.4rem 5rem;
+    }
+    /* Modal fill screen on phone */
+    .modal {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        min-height: 60vh;
+        border-radius: 1rem 1rem 0 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+    }
+    .modal-overlay {
+        align-items: flex-end;
     }
 }

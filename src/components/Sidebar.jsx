@@ -106,123 +106,136 @@ export default function Sidebar() {
   return (
     <>
       <aside className={cn("sidebar", sidebarOpen && "open")} role="navigation">
-        <div className="sidebar-tabs-container">
-          <div className="sidebar-shell-header">
-            <div>
-              <div className="sidebar-shell-kicker">
-                {lang === "fr" ? "Navigation" : lang === "ar" ? "التنقل" : "Navigation"}
-              </div>
-              <div className="sidebar-shell-title">
-                {lang === "fr" ? "Explorer le Mushaf" : lang === "ar" ? "استكشاف المصحف" : "Explore the Mushaf"}
-              </div>
-            </div>
 
-            <div className="sidebar-shell-chip">
-              {riwaya === "warsh"
-                ? (lang === "fr" ? "Warsh" : lang === "ar" ? "ورش" : "Warsh")
-                : (lang === "fr" ? "Hafs" : lang === "ar" ? "حفص" : "Hafs")}
+        {/* ── HEADER FIXE compact ── */}
+        <div className="sidebar-header">
+          <div className="sidebar-header__top">
+            <div className="sidebar-header__identity">
+              <span className="sidebar-header__kicker">
+                {lang === "fr" ? "Navigation" : lang === "ar" ? "التنقل" : "Navigation"}
+              </span>
+              <span className="sidebar-header__title">
+                {lang === "fr" ? "Explorer le Mushaf" : lang === "ar" ? "استكشاف المصحف" : "Explore the Mushaf"}
+              </span>
+            </div>
+            <div className="sidebar-header__actions">
+              <span className="sidebar-riwaya-chip">
+                {riwaya === "warsh"
+                  ? (lang === "fr" ? "Warsh" : lang === "ar" ? "ورش" : "Warsh")
+                  : (lang === "fr" ? "Hafs" : lang === "ar" ? "حفص" : "Hafs")}
+              </span>
+              <button
+                className="sidebar-close-btn"
+                onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
+                aria-label="Fermer"
+              >
+                <i className="fas fa-times" />
+              </button>
             </div>
           </div>
 
           {activeSummary && (
-            <div className="sidebar-active-summary">
-              <span className="sidebar-active-summary__label">
-                {lang === "fr" ? "Position actuelle" : lang === "ar" ? "الموضع الحالي" : "Current location"}
-              </span>
-              <span className="sidebar-active-summary__value">{activeSummary}</span>
+            <div className="sidebar-current-loc">
+              <i className="fas fa-location-dot sidebar-current-loc__icon" />
+              <span className="sidebar-current-loc__val">{activeSummary}</span>
             </div>
           )}
 
-          <div className="flex items-center justify-between mb-4 gap-3">
-            <div className="sidebar-tabs-list">
-              {availableTabs.map((t2) => (
-                <button
-                  key={t2}
-                  className={cn("sidebar-tab-trigger", tab === t2 && "active")}
-                  onClick={() => setTab(t2)}
-                >
-                  {t2 === "surah" ? t("sidebar.surahs", lang) : t2 === "juz" ? t("sidebar.juz", lang) : t("quran.page", lang)}
+          {/* Tab bar */}
+          <div className="sidebar-tabs-list">
+            {availableTabs.map((t2) => (
+              <button
+                key={t2}
+                className={cn("sidebar-tab-trigger", tab === t2 && "active")}
+                onClick={() => setTab(t2)}
+              >
+                {t2 === "surah" ? t("sidebar.surahs", lang) : t2 === "juz" ? t("sidebar.juz", lang) : t("quran.page", lang)}
+              </button>
+            ))}
+          </div>
+
+          {/* Search (Surah only) */}
+          {tab === "surah" && (
+            <div className="sidebar-search-wrap">
+              <input
+                type="text"
+                placeholder={t("search.placeholder", lang)}
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                className="sidebar-search-input"
+              />
+              {filter && (
+                <button className="sidebar-search-clear" onClick={() => setFilter("")}>
+                  <i className="fas fa-times" />
                 </button>
-              ))}
-            </div>
-
-            <button
-              className="w-8 h-8 flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--text)] transition-colors rounded-full hover:bg-[var(--bg-secondary)]"
-              onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
-            >
-              <i className="fas fa-times text-[1.1rem]" />
-            </button>
-          </div>
-
-          <div className="text-[0.8rem] text-[var(--text-muted)] italic mb-4 opacity-80">
-            {lang === "fr" ? "Astuce: naviguez avec" : lang === "ar" ? "نصيحة: جرب التنقل باستخدام" : "Tip: try navigating with"}
-            <kbd className="font-sans text-[0.65rem] border border-[var(--border)] shadow-sm rounded px-1.5 py-0.5 bg-[var(--bg-primary)] text-[var(--text)] not-italic mx-1.5 font-bold tracking-wider">ctrl K</kbd>
-          </div>
-
-          {recentSurahs.length > 0 && tab === "surah" && !filter && (
-            <div className="sidebar-recent-section">
-              <div className="sidebar-recent-title">
-                <i className="fas fa-clock-rotate-left" aria-hidden="true" />
-                <span>{lang === "fr" ? "Récemment ouvertes" : lang === "ar" ? "السور الأخيرة" : "Recently opened"}</span>
-              </div>
-              {recentSurahs.map((surahNum) => {
-                const s = SURAHS[surahNum - 1];
-                if (!s) return null;
-                const isActive = s.n === currentSurah && displayMode === "surah";
-                return (
-                  <div
-                    key={`recent-${s.n}`}
-                    className={cn("sidebar-item-row sidebar-item-row--recent", isActive && "active")}
-                    onClick={() => goSurah(s.n)}
-                  >
-                    <div className="qc-sidebar-num">{s.n}</div>
-                    <div className="qc-sidebar-en">{lang === "fr" ? s.fr : s.en}</div>
-                    <div className="qc-sidebar-ar">{s.ar}</div>
-                    {isActive && <div className="sidebar-item-indicator" />}
-                  </div>
-                );
-              })}
+              )}
             </div>
           )}
         </div>
 
-        {/* ── Search (Surah Tab) ── */}
-        {tab === "surah" && (
-          <div className="sidebar-search-container">
-            <input
-              type="text"
-              placeholder={t("search.placeholder", lang)}
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="sidebar-search-input"
-            />
-          </div>
-        )}
-
-        {/* ── List Area ── */}
+        {/* ── ZONE SCROLLABLE ── */}
         <div className="sidebar-content">
-          {tab === "surah" && filteredSurahs.length === 0 && (
+
+          {/* Récemment ouvertes — dans la zone scrollable */}
+          {recentSurahs.length > 0 && tab === "surah" && !filter && (
+            <div className="sb-recent">
+              <div className="sb-recent__title">
+                <i className="fas fa-clock-rotate-left" aria-hidden="true" />
+                <span>{lang === "fr" ? "Récemment ouvertes" : lang === "ar" ? "السور الأخيرة" : "Recently opened"}</span>
+              </div>
+              <div className="sb-recent__list">
+                {recentSurahs.map((surahNum) => {
+                  const s = SURAHS[surahNum - 1];
+                  if (!s) return null;
+                  const isActive = s.n === currentSurah && displayMode === "surah";
+                  return (
+                    <button
+                      key={`recent-${s.n}`}
+                      className={cn("sb-recent__item", isActive && "active")}
+                      onClick={() => goSurah(s.n)}
+                    >
+                      <span className="sb-recent__num">{s.n}</span>
+                      <span className="sb-recent__name">{lang === "fr" ? s.fr : s.en}</span>
+                      <span className="sb-recent__ar">{s.ar}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── Section sourates ── */}
+          {tab === "surah" && filter && filteredSurahs.length === 0 && (
             <div className="sidebar-empty-state">
+              <i className="fas fa-magnifying-glass sidebar-empty-state__icon" />
               <div className="sidebar-empty-state__title">
                 {lang === "fr" ? "Aucune sourate trouvée" : lang === "ar" ? "لم يتم العثور على سورة" : "No surah found"}
               </div>
             </div>
           )}
 
-          {tab === "surah" && filteredSurahs.map((s, idx) => {
+          {tab === "surah" && (
+            <div className="sb-section-title">
+              <span>{lang === "fr" ? "Toutes les sourates" : lang === "ar" ? "جميع السور" : "All Surahs"}</span>
+              <span className="sb-section-count">{filteredSurahs.length}</span>
+            </div>
+          )}
+
+          {tab === "surah" && filteredSurahs.map((s) => {
             const isActive = s.n === currentSurah && displayMode === "surah";
             return (
               <div
                 key={s.n}
                 ref={isActive ? activeItemRef : null}
                 className={cn("sidebar-item-row", isActive && "active")}
-                style={{ animationDelay: `${idx * 15}ms` }}
                 onClick={() => goSurah(s.n)}
               >
                 <div className="qc-sidebar-num">{s.n}</div>
-                <div className="qc-sidebar-en">{s.en}</div>
+                <div className="qc-sidebar-body">
+                  <span className="qc-sidebar-en">{lang === "fr" ? s.fr : s.en}</span>
+                  <span className="qc-sidebar-meta">{s.ayahs} {lang === "fr" ? "v." : "v."}</span>
+                </div>
                 <div className="qc-sidebar-ar">{s.ar}</div>
-                {isActive && <div className="sidebar-item-indicator" />}
               </div>
             );
           })}
@@ -237,19 +250,16 @@ export default function Sidebar() {
                 onClick={() => goJuz(j.juz)}
               >
                 <div className="qc-sidebar-num">{j.juz}</div>
-                <div className="qc-sidebar-label">
-                  <div className="qc-sidebar-main">
-                    <span className="qc-sidebar-en">Juz {j.juz}</span>
-                    <span className="qc-sidebar-ar">{j.name}</span>
-                  </div>
+                <div className="qc-sidebar-body">
+                  <span className="qc-sidebar-en">Juz {j.juz}</span>
                 </div>
+                <div className="qc-sidebar-ar">{j.name}</div>
               </div>
             );
           })}
 
           {tab === "page" && (
             <div className="page-nav-section">
-              {/* Direct input */}
               <div className="flex gap-2 mb-4">
                 <input
                   type="number"
@@ -267,8 +277,6 @@ export default function Sidebar() {
                   <i className="fas fa-arrow-right" />
                 </button>
               </div>
-
-              {/* Juz selector */}
               <div className="grid grid-cols-6 gap-1 mb-4">
                 {JUZ_PAGE_RANGES.map(range => (
                   <button
@@ -281,8 +289,6 @@ export default function Sidebar() {
                   </button>
                 ))}
               </div>
-
-              {/* Pages grid */}
               <div className="page-grid-v4">
                 {(() => {
                   const range = JUZ_PAGE_RANGES.find(r => r.juz === selectedJuzForPages) || JUZ_PAGE_RANGES[0];
@@ -303,37 +309,57 @@ export default function Sidebar() {
           )}
         </div>
 
-        {/* ── Reading progress ── */}
-        {readStats.totalRead > 0 && (
-          <div className="sidebar-progress">
-            <div className="sidebar-progress-header">
-              <span className="sidebar-progress-label">
-                {lang === 'fr' ? 'Progression' : lang === 'ar' ? 'التقدم' : 'Progress'}
-              </span>
-              <span className="sidebar-progress-pct">{readStats.percentage}%</span>
+        {/* ── FOOTER ── */}
+        <div className="sidebar-footer">
+          {readStats.totalRead > 0 && (
+            <div className="sidebar-progress">
+              <div className="sidebar-progress-header">
+                <span className="sidebar-progress-label">
+                  {lang === "fr" ? "Progression" : lang === "ar" ? "التقدم" : "Progress"}
+                </span>
+                <span className="sidebar-progress-pct">{readStats.percentage}%</span>
+              </div>
+              <div className="sidebar-progress-bar-bg">
+                <div className="sidebar-progress-bar-fill" style={{ width: `${readStats.percentage}%` }} />
+              </div>
+              <div className="sidebar-progress-detail">
+                {lang === "fr"
+                  ? `${readStats.totalRead.toLocaleString()} / ${readStats.total.toLocaleString()} versets • ${readStats.completedSurahs} sourates complètes`
+                  : `${readStats.totalRead.toLocaleString()} / ${readStats.total.toLocaleString()} ayahs • ${readStats.completedSurahs} surahs done`}
+              </div>
             </div>
-            <div className="sidebar-progress-bar-bg">
-              <div
-                className="sidebar-progress-bar-fill"
-                style={{ width: `${readStats.percentage}%` }}
-              />
-            </div>
-            <div className="sidebar-progress-detail">
-              {lang === 'fr'
-                ? `${readStats.totalRead.toLocaleString()} / ${readStats.total.toLocaleString()} versets • ${readStats.completedSurahs} sourates complètes`
-                : `${readStats.totalRead.toLocaleString()} / ${readStats.total.toLocaleString()} ayahs • ${readStats.completedSurahs} surahs done`
-              }
-            </div>
-          </div>
-        )}
-
-        {/* ── Footer ── */}
-        <div className="shrink-0 px-4 py-3 border-t border-[rgba(var(--primary-rgb),0.1)] bg-[rgba(var(--primary-rgb),0.02)]">
-          <div className="flex items-center justify-between text-[0.65rem] text-[var(--text-muted)] font-bold uppercase tracking-wider">
+          )}
+          <div className="sidebar-footer__meta">
             <span>{tab === "surah" ? `${filteredSurahs.length} Surahs` : tab === "juz" ? "30 Juz" : "604 Pages"}</span>
-            <span style={{ color: "var(--primary)", opacity: 0.8 }}>{riwaya === "warsh" ? "Riwaya Warsh" : "Riwaya Hafs"}</span>
+            <span className="sidebar-footer__riwaya">{riwaya === "warsh" ? "Riwaya Warsh" : "Riwaya Hafs"}</span>
+          </div>
+
+          {/* ── Learning tools ── */}
+          <div className="sidebar-learn-tools">
+            <div className="sidebar-learn-tools__label">
+              {lang === "fr" ? "Outils" : lang === "ar" ? "أدوات" : "Tools"}
+            </div>
+            <div className="sidebar-learn-tools__grid">
+              {[
+                { icon: "fa-layer-group",     labelFr: "Flashcards",  labelAr: "بطاقات",  labelEn: "Flashcards",  action: "flashcardsOpen"   },
+                { icon: "fa-spell-check",     labelFr: "Quiz Tajweed",labelAr: "تجويد",   labelEn: "Tajweed Quiz",action: "tajweedQuizOpen"  },
+                { icon: "fa-book-open-reader",labelFr: "Khatma",      labelAr: "الختمة",  labelEn: "Khatma",      action: "khatmaOpen"       },
+                { icon: "fa-users",           labelFr: "Comparateur", labelAr: "مقارنة",   labelEn: "Comparator",  action: "comparatorOpen"  },
+                { icon: "fa-image",           labelFr: "Partager",    labelAr: "مشاركة",   labelEn: "Share Image", action: "shareImageOpen"  },
+                { icon: "fa-chart-bar",       labelFr: "Stats Hebdo", labelAr: "إحصاء",     labelEn: "Weekly Stats",action: "weeklyStatsOpen" },
+              ].map(({ icon, labelFr, labelAr, labelEn, action }) => (
+                <button key={action}
+                  className="sidebar-learn-btn"
+                  onClick={() => { dispatch({ type: "SET", payload: { [action]: true } }); dispatch({ type: "TOGGLE_SIDEBAR" }); }}
+                >
+                  <i className={`fas ${icon}`} />
+                  <span>{lang === "ar" ? labelAr : lang === "fr" ? labelFr : labelEn}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
+
       </aside>
     </>
   );

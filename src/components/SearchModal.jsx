@@ -1,9 +1,15 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { t } from '../i18n';
-import { search } from '../services/quranAPI';
+import { search, searchTranslation } from '../services/quranAPI';
 import { getSurah, toAr } from '../data/surahs';
 import { latinToArabic } from '../data/transliteration';
+
+// Web Speech API detection
+const SpeechRecognition =
+  typeof window !== 'undefined'
+    ? window.SpeechRecognition || window.webkitSpeechRecognition
+    : null;
 
 export default function SearchModal() {
   const { state, dispatch, set } = useApp();
@@ -13,7 +19,40 @@ export default function SearchModal() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [phoneticMode, setPhoneticMode] = useState(false);
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef(null);
+  // searchMode: 'arabic' | 'phonetic' | 'fr' | 'en'
+  const [searchMode, setSearchMode] = useState('arabic');
+
+  const startVoiceSearch = useCallback(() => {
+    if (!SpeechRecognition) {
+      setError(lang === 'fr' ? 'Recherche vocale non supportée sur ce navigateur.' : 'Voice search not supported.');
+      return;
+    }
+    if (listening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    const rec = new SpeechRecognition();
+    recognitionRef.current = rec;
+    rec.lang = searchMode === 'ar' || searchMode === 'arabic' || searchMode === 'phonetic' ? 'ar-SA' : (lang === 'fr' ? 'fr-FR' : 'en-US');
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.onstart  = () => setListening(true);
+    rec.onend    = () => setListening(false);
+    rec.onerror  = () => setListening(false);
+    rec.onresult = (e) => {
+      const transcript = e.results[0]?.[0]?.transcript || '';
+      setQuery(transcript);
+      setListening(false);
+      // Auto-search after capture
+      setTimeout(() => {
+        const sanitized = transcript.trim().slice(0, 200);
+        if (sanitized.length >= 2) setQuery(sanitized);
+      }, 100);
+    };
+    rec.start();
+  }, [listening, searchMode, lang]);
 
   const handleSearch = useCallback(async () => {
     // Sanitisation: limite longueur, supprime caractères dangereux
@@ -22,23 +61,24 @@ export default function SearchModal() {
     setLoading(true);
     setError(null);
     try {
-      let searchQuery = sanitized;
-      // Mode phonétique: convertir Latin → Arabe
-      if (phoneticMode) {
-        searchQuery = latinToArabic(sanitized);
-        if (!searchQuery || searchQuery === sanitized) {
-          // Fallback: try direct search
-          searchQuery = sanitized;
+      let data;
+      if (searchMode === 'fr' || searchMode === 'en') {
+        data = await searchTranslation(sanitized, searchMode);
+      } else {
+        let searchQuery = sanitized;
+        if (searchMode === 'phonetic') {
+          searchQuery = latinToArabic(sanitized);
+          if (!searchQuery || searchQuery === sanitized) searchQuery = sanitized;
         }
+        data = await search(searchQuery, riwaya);
       }
-      const data = await search(searchQuery, riwaya);
       setResults(data.matches || []);
     } catch (err) {
       setError(err.message);
       setResults([]);
     }
     setLoading(false);
-  }, [query, riwaya, phoneticMode]);
+  }, [query, riwaya, searchMode]);
 
   const goToAyah = (surah, ayah) => {
     set({ displayMode: 'surah', showHome: false, showDuas: false });
@@ -47,9 +87,13 @@ export default function SearchModal() {
   };
 
   const close = () => dispatch({ type: 'TOGGLE_SEARCH' });
-  const searchModeLabel = phoneticMode
-    ? (lang === 'fr' ? 'Phonétique' : lang === 'ar' ? 'كتابة صوتية' : 'Phonetic')
-    : (lang === 'fr' ? 'Arabe' : lang === 'ar' ? 'عربي' : 'Arabic');
+  const searchModeLabels = {
+    arabic: lang === 'fr' ? 'Arabe' : lang === 'ar' ? 'عربي' : 'Arabic',
+    phonetic: lang === 'fr' ? 'Phonétique' : lang === 'ar' ? 'صوتي' : 'Phonetic',
+    fr: 'Traduction FR',
+    en: 'Translation EN',
+  };
+  const searchModeLabel = searchModeLabels[searchMode] || searchModeLabels.arabic;
 
   return (
     <div className="modal-overlay" onClick={close}>
@@ -77,29 +121,41 @@ export default function SearchModal() {
             value={query}
             onChange={e => setQuery(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSearch()}
-            placeholder={phoneticMode
+            placeholder={searchMode === 'phonetic'
               ? (lang === 'fr' ? 'Ex: bismillah, rahman, fatiha…' : 'Ex: bismillah, rahman, fatiha…')
               : t('search.placeholder', lang)}
             className="modal-search-input"
             autoFocus
           />
+          {SpeechRecognition && (
+            <button
+              className={`modal-action-btn modal-voice-btn${listening ? ' listening' : ''}`}
+              onClick={startVoiceSearch}
+              title={listening
+                ? (lang === 'fr' ? 'Arrêter l\'écoute' : 'Stop listening')
+                : (lang === 'fr' ? 'Recherche vocale' : 'Voice search')}
+              aria-label={listening ? 'Stop' : 'Voice'}
+            >
+              <i className={`fas ${listening ? 'fa-stop' : 'fa-microphone'}`}></i>
+            </button>
+          )}
           <button className="modal-action-btn" onClick={handleSearch} disabled={loading}>
             {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-search"></i>}
           </button>
         </div>
 
         <div className="modal-segmented" role="tablist" aria-label={lang === 'fr' ? 'Mode de recherche' : lang === 'ar' ? 'وضع البحث' : 'Search mode'}>
-          <button
-            className={`modal-segmented-btn ${!phoneticMode ? 'active' : ''}`}
-            onClick={() => setPhoneticMode(false)}
-          >
+          <button className={`modal-segmented-btn ${searchMode === 'arabic' ? 'active' : ''}`} onClick={() => setSearchMode('arabic')}>
             <i className="fas fa-font"></i> {lang === 'fr' ? 'Arabe' : lang === 'ar' ? 'عربي' : 'Arabic'}
           </button>
-          <button
-            className={`modal-segmented-btn ${phoneticMode ? 'active' : ''}`}
-            onClick={() => setPhoneticMode(true)}
-          >
+          <button className={`modal-segmented-btn ${searchMode === 'phonetic' ? 'active' : ''}`} onClick={() => setSearchMode('phonetic')}>
             <i className="fas fa-keyboard"></i> {lang === 'fr' ? 'Phonétique' : lang === 'ar' ? 'صوتي' : 'Phonetic'}
+          </button>
+          <button className={`modal-segmented-btn ${searchMode === 'fr' ? 'active' : ''}`} onClick={() => setSearchMode('fr')}>
+            <i className="fas fa-language"></i> FR
+          </button>
+          <button className={`modal-segmented-btn ${searchMode === 'en' ? 'active' : ''}`} onClick={() => setSearchMode('en')}>
+            <i className="fas fa-language"></i> EN
           </button>
         </div>
 
@@ -161,7 +217,11 @@ export default function SearchModal() {
                     </div>
                     <div className="search-result-surah">{surahName}</div>
                   </div>
-                  <div className="modal-item-ar" dir="rtl">{r.text}</div>
+                  {(searchMode === 'fr' || searchMode === 'en') ? (
+                    <div className="search-result-translation">{r.text}</div>
+                  ) : (
+                    <div className="modal-item-ar" dir="rtl">{r.text}</div>
+                  )}
                   <div className="search-result-action">
                     <i className="fas fa-arrow-up-right-from-square"></i>
                     <span>

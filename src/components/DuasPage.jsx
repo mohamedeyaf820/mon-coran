@@ -6,14 +6,17 @@ import "../styles/duas-page.css";
 
 const CATEGORIES = [
   { id: "all", fr: "Toutes", en: "All", ar: "الكل" },
+  { id: "ibadah", fr: "Adoration", en: "Worship", ar: "العبادة" },
+  { id: "tawhid", fr: "Tawhid", en: "Tawhid", ar: "التوحيد" },
+  { id: "hidayah", fr: "Guidée", en: "Guidance", ar: "الهداية" },
   { id: "forgiveness", fr: "Pardon", en: "Forgiveness", ar: "المغفرة" },
+  { id: "steadfastness", fr: "Fermeté", en: "Steadfastness", ar: "الثبات" },
   { id: "family", fr: "Famille", en: "Family", ar: "الأسرة" },
   { id: "dunya-akhirah", fr: "Dounya & Akhira", en: "Dunya & Akhirah", ar: "الدنيا والآخرة" },
-  { id: "steadfastness", fr: "Fermeté", en: "Steadfastness", ar: "الثبات" },
-  { id: "ibadah", fr: "Adoration", en: "Worship", ar: "العبادة" },
-  { id: "hidayah", fr: "Guidée", en: "Guidance", ar: "الهداية" },
   { id: "ummah", fr: "Oumma", en: "Ummah", ar: "الأمة" },
-  { id: "tawhid", fr: "Tawhid", en: "Tawhid", ar: "التوحيد" },
+  { id: "rizq", fr: "Rizq", en: "Provision", ar: "الرزق" },
+  { id: "shifa", fr: "Guérison", en: "Healing", ar: "الشفاء" },
+  { id: "safar", fr: "Voyage", en: "Travel", ar: "السفر" },
 ];
 
 const CATEGORY_MAP = Object.fromEntries(CATEGORIES.map((category) => [category.id, category]));

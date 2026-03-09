@@ -3,13 +3,198 @@ import { useApp } from '../context/AppContext';
 import { t } from '../i18n';
 import { getTodayWird, getWirdHistory, resetTodayWird } from '../services/wirdService';
 
+/* ── Sparkline: mini bar chart showing the last 7 days of reading ── */
+function Sparkline({ data, goalTarget, lang }) {
+  if (!data || data.length === 0) return null;
+  const W = 220, H = 56, barW = 22, gap = 6;
+  const maxVal = Math.max(goalTarget, ...data.map(d => d.val));
+  const items = data.slice(-7);
+  const totalBars = items.length;
+  const totalWidth = totalBars * (barW + gap) - gap;
+  const offsetX = (W - totalWidth) / 2;
+  const today = new Date().toISOString().slice(0, 10);
+
+  return (
+    <div className="wird-sparkline">
+      <svg width={W} height={H + 20} aria-hidden="true">
+        {/* Goal line */}
+        <line
+          x1={offsetX}
+          y1={H - (goalTarget / maxVal) * (H - 4) + 2}
+          x2={offsetX + totalWidth}
+          y2={H - (goalTarget / maxVal) * (H - 4) + 2}
+          stroke="rgba(200,152,14,0.4)"
+          strokeWidth="1"
+          strokeDasharray="3 3"
+        />
+        {items.map((item, i) => {
+          const x = offsetX + i * (barW + gap);
+          const pct = Math.min(1, item.val / maxVal);
+          const barH = Math.max(3, pct * (H - 4));
+          const y = H - barH + 2;
+          const isToday = item.date === today;
+          const isComplete = item.val >= goalTarget;
+          const fill = isComplete
+            ? 'rgba(34,197,94,0.75)'
+            : item.val > 0
+              ? 'rgba(212,168,32,0.6)'
+              : 'rgba(128,128,128,0.18)';
+          return (
+            <g key={item.date}>
+              <rect
+                x={x}
+                y={y}
+                width={barW}
+                height={barH}
+                rx={4}
+                fill={fill}
+                opacity={isToday ? 1 : 0.82}
+              />
+              {isToday && (
+                <rect x={x} y={y} width={barW} height={barH} rx={4}
+                  fill="none" stroke="rgba(212,168,32,0.7)" strokeWidth="1.5" />
+              )}
+              <text
+                x={x + barW / 2}
+                y={H + 14}
+                textAnchor="middle"
+                fontSize="8"
+                fill="currentColor"
+                opacity="0.5"
+                fontFamily="system-ui,sans-serif"
+              >
+                {new Date(item.date + 'T00:00').toLocaleDateString(
+                  lang === 'ar' ? 'ar-SA' : lang === 'fr' ? 'fr-FR' : 'en-GB',
+                  { weekday: 'narrow' }
+                )}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+      <div className="wird-sparkline__legend">
+        <span><span className="wird-spark-dot" style={{background:'rgba(34,197,94,0.75)'}} />
+          {lang === 'fr' ? 'Objectif atteint' : lang === 'ar' ? 'هدف مكتمل' : 'Goal reached'}
+        </span>
+        <span><span className="wird-spark-dot" style={{background:'rgba(212,168,32,0.6)'}} />
+          {lang === 'fr' ? 'Partiel' : lang === 'ar' ? 'جزئي' : 'Partial'}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ── StreakHeatmap: GitHub-style 13-week reading calendar ── */
+function StreakHeatmap({ history, goalTarget, wirdGoalType, lang }) {
+  // Build a lookup: date → progress value
+  const lookup = {};
+  for (const d of history) {
+    lookup[d.date] = wirdGoalType === 'pages' ? d.pagesRead : d.ayahsRead;
+  }
+
+  // Build 91 days (13 weeks) ending today
+  const today = new Date();
+  const days = [];
+  for (let i = 90; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    days.push(d.toISOString().slice(0, 10));
+  }
+
+  // Compute current streak (consecutive days with any reading)
+  let streak = 0;
+  for (let i = days.length - 1; i >= 0; i--) {
+    if ((lookup[days[i]] || 0) > 0) streak++;
+    else if (days[i] !== today.toISOString().slice(0, 10)) break;
+  }
+
+  // Color: 0=none, 1=light, 2=medium, 3=complete
+  const level = (date) => {
+    const v = lookup[date] || 0;
+    if (v === 0) return 0;
+    if (v >= goalTarget) return 3;
+    if (v >= goalTarget * 0.6) return 2;
+    return 1;
+  };
+
+  const COLORS = [
+    'rgba(255,255,255,0.06)',
+    'rgba(34,197,94,0.25)',
+    'rgba(34,197,94,0.55)',
+    'rgba(34,197,94,0.9)',
+  ];
+
+  // Group into 13 weeks
+  const weeks = [];
+  for (let w = 0; w < 13; w++) {
+    weeks.push(days.slice(w * 7, w * 7 + 7));
+  }
+
+  const monthLabels = [];
+  let lastMonth = null;
+  weeks.forEach((week, wi) => {
+    const m = new Date(week[0] + 'T00:00').toLocaleDateString(
+      lang === 'ar' ? 'ar-SA' : lang === 'fr' ? 'fr-FR' : 'en-GB',
+      { month: 'short' }
+    );
+    if (m !== lastMonth) { monthLabels.push({ wi, label: m }); lastMonth = m; }
+    else { monthLabels.push(null); }
+  });
+
+  return (
+    <div className="wird-streak">
+      {/* Streak badge */}
+      <div className="wird-streak__badge">
+        <i className="fas fa-fire" style={{ color: streak > 0 ? '#f97316' : 'rgba(255,255,255,0.3)' }} />
+        <span>{streak}</span>
+        <span className="wird-streak__badge-label">
+          {lang === 'fr' ? `jour${streak !== 1 ? 's' : ''} de suite` : lang === 'ar' ? 'يوم متتالي' : `day${streak !== 1 ? 's' : ''} streak`}
+        </span>
+      </div>
+
+      {/* Month labels */}
+      <div className="wird-heatmap-months">
+        {monthLabels.map((item, wi) => (
+          <div key={wi} className="wird-heatmap-month-cell">
+            {item ? item.label : ''}
+          </div>
+        ))}
+      </div>
+
+      {/* Heatmap grid */}
+      <div className="wird-heatmap-grid">
+        {weeks.map((week, wi) => (
+          <div key={wi} className="wird-heatmap-col">
+            {week.map((date) => (
+              <div
+                key={date}
+                className="wird-heatmap-cell"
+                style={{ background: COLORS[level(date)] }}
+                title={`${date}: ${lookup[date] || 0}/${goalTarget}`}
+                aria-label={`${date}: ${lookup[date] || 0}/${goalTarget}`}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* Legend */}
+      <div className="wird-heatmap-legend">
+        <span>{lang === 'fr' ? 'Moins' : lang === 'ar' ? 'أقل' : 'Less'}</span>
+        {COLORS.map((c, i) => <div key={i} className="wird-heatmap-cell" style={{ background: c }} />)}
+        <span>{lang === 'fr' ? 'Plus' : lang === 'ar' ? 'أكثر' : 'More'}</span>
+      </div>
+    </div>
+  );
+}
+
 export default function WirdPanel() {
   const { state, dispatch, set } = useApp();
   const { lang, wirdGoalType, wirdGoalAmount } = state;
 
   const [todayWird, setTodayWird] = useState(null);
   const [history, setHistory] = useState([]);
-  const [tab, setTab] = useState('today'); // 'today' | 'history' | 'settings'
+  const [tab, setTab] = useState('today'); // 'today' | 'history' | 'streak' | 'settings'
   const [loading, setLoading] = useState(true);
 
   const close = () => dispatch({ type: 'TOGGLE_WIRD' });
@@ -19,7 +204,7 @@ export default function WirdPanel() {
     try {
       const [today, hist] = await Promise.all([
         getTodayWird(),
-        getWirdHistory(30),
+        getWirdHistory(90), // 90 days for streak heatmap
       ]);
       setTodayWird(today);
       setHistory(hist);
@@ -85,6 +270,9 @@ export default function WirdPanel() {
           </button>
           <button className={`modal-segmented-btn ${tab === 'history' ? 'active' : ''}`} onClick={() => setTab('history')}>
             <i className="fas fa-chart-line"></i> {t('wird.history', lang)}
+          </button>
+          <button className={`modal-segmented-btn ${tab === 'streak' ? 'active' : ''}`} onClick={() => setTab('streak')}>
+            <i className="fas fa-fire"></i> {lang === 'fr' ? 'Série' : lang === 'ar' ? 'سلسلة' : 'Streak'}
           </button>
           <button className={`modal-segmented-btn ${tab === 'settings' ? 'active' : ''}`} onClick={() => setTab('settings')}>
             <i className="fas fa-sliders-h"></i> {t('wird.goal', lang)}
@@ -206,6 +394,15 @@ export default function WirdPanel() {
                   {lang === 'fr' ? 'Aucun historique de wird.' : lang === 'ar' ? 'لا يوجد سجل للورد.' : 'No wird history.'}
                 </div>
               ) : (
+                <>
+                  <Sparkline
+                    data={history.map(d => ({
+                      date: d.date,
+                      val: wirdGoalType === 'pages' ? d.pagesRead : d.ayahsRead,
+                    }))}
+                    goalTarget={goalTarget}
+                    lang={lang}
+                  />
                 <div className="wird-calendar">
                   {history.map(day => {
                     const dayProgress = wirdGoalType === 'pages' ? day.pagesRead : day.ayahsRead;
@@ -223,8 +420,12 @@ export default function WirdPanel() {
                     );
                   })}
                 </div>
+                </>
               )}
             </div>
+          ) : tab === 'streak' ? (
+            /* Streak tab — GitHub-style heatmap */
+            <StreakHeatmap history={history} goalTarget={goalTarget} wirdGoalType={wirdGoalType} lang={lang} />
           ) : (
             /* Settings tab */
             <div className="wird-settings">

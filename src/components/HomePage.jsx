@@ -1,13 +1,12 @@
 /* ══════════════════════════════════════════════════════════════
-   HomePage — Design moderne bicolonne
-   Gauche : Favoris / Notes / Suggestions
-   Droite : Liste Sourates / Juz avec recherche
+   HomePage — Design épuré, inspiré de Quran.com
    ══════════════════════════════════════════════════════════════ */
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useApp } from "../context/AppContext";
 import SURAHS, { toAr } from "../data/surahs";
 import { JUZ_DATA } from "../data/juz";
 import { getAllBookmarks, getAllNotes } from "../services/storageService";
+import { getRecentVisits } from "../services/recentHistoryService";
 import { cn } from "../lib/utils";
 import audioService from "../services/audioService";
 import { getReciter, ensureReciterForRiwaya } from "../data/reciters";
@@ -132,68 +131,99 @@ function getSuggestedSurahs(date = new Date()) {
   };
 }
 
-/* ─── Type badge info ─── */
+/*  Type info  */
 const TYPE_INFO = {
-  Meccan: { fr: "Mecquoise", en: "Meccan", ar: "مكية", cls: "hp-badge--meccan" },
-  Medinan: { fr: "Médinoise", en: "Medinan", ar: "مدنية", cls: "hp-badge--medinan" },
+  Meccan:  { fr: "Mecquoise", en: "Meccan",  ar: "مكية"  },
+  Medinan: { fr: "Médinoise", en: "Medinan", ar: "مدنية" },
 };
 
-const DISPLAY_MODE_LABELS = {
-  surah: { fr: "Sourate", en: "Surah", ar: "سورة" },
-  juz: { fr: "Juz", en: "Juz", ar: "جزء" },
-  page: { fr: "Page", en: "Page", ar: "صفحة" },
-};
-
-/* ─── Composant carte sourate (Style Quran.com) ─── */
-function SurahCard({ surah, onClick, onPlay, isActive, lang, isPlaying }) {
+/*  Carte sourate (grille)  */
+function SurahCard({ surah, onClick, onPlay, isActive, lang, isPlaying, viewMode }) {
   const typeInfo = TYPE_INFO[surah.type] || {};
   const typeLabel = typeInfo[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"] || surah.type;
-  const ayahLabel = lang === "ar" ? "آية" : lang === "fr" ? "versets" : "ayahs";
-  const displayName = lang === "fr" ? (surah.fr || surah.en) : surah.en;
-  return (
-    <button
-      className={cn("quran-com-card", "quran-com-card--grid", isActive && "quran-com-card--active")}
-      onClick={() => onClick(surah.n)}
-    >
-      <div className="qc-card-left">
-        <div className="qc-num">{surah.n}</div>
-        <div className="qc-names">
-          <span className="qc-en">{displayName}</span>
-          <span className="qc-details">
-            <span className={`qc-type-dot qc-type-dot--${surah.type?.toLowerCase()}`} />
-            {typeLabel} · {surah.ayahs} {ayahLabel}
+  const ayahLabel = lang === "ar" ? "آية" : lang === "fr" ? "v." : "v.";
+  const displayName = lang === "fr" ? (surah.fr || surah.en) : lang === "ar" ? surah.ar : surah.en;
+
+  if (viewMode === "list") {
+    return (
+      <button
+        className={cn("hpl-row", isActive && "hpl-row--active")}
+        data-stype={surah.type?.toLowerCase()}
+        onClick={() => onClick(surah.n)}
+      >
+        <span className={cn("hpl-row__num", isActive && "hpl-row__num--on")}>{surah.n}</span>
+        <div className="hpl-row__body">
+          <span className="hpl-row__name">{displayName}</span>
+          <span className="hpl-row__meta">
+            <span className={`hpl-dot hpl-dot--${surah.type?.toLowerCase()}`} />
+            {typeLabel}  {surah.ayahs} {ayahLabel}
           </span>
         </div>
-      </div>
-      <div className="qc-card-right">
-        <span className="qc-ar">{surah.ar}</span>
+        <span className="hpl-row__ar">{surah.ar}</span>
         <button
-          className={cn("qc-play-btn", isPlaying && "qc-play-btn--active")}
-          onClick={(e) => { e.stopPropagation(); onPlay(surah.n); }}
-          title={lang === "ar" ? "استمع" : lang === "fr" ? "Écouter" : "Listen"}
-          aria-label={lang === "ar" ? "استمع" : lang === "fr" ? "Écouter" : "Listen"}
+          className={cn("hpl-row__play", isPlaying && "hpl-row__play--on")}
+          onClick={e => { e.stopPropagation(); onPlay(surah.n); }}
+          aria-label="Écouter"
         >
-          <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`} />
+          <i className={`fas fa-${isPlaying ? "pause" : "play"}`} />
         </button>
+      </button>
+    );
+  }
+
+  return (
+    <button
+      className={cn("hpq-card", isActive && "hpq-card--active")}
+      data-stype={surah.type?.toLowerCase()}
+      onClick={() => onClick(surah.n)}
+    >
+      <span className={cn("hpq-card__num", isActive && "hpq-card__num--on")}>{surah.n}</span>
+      <div className="hpq-card__info">
+        <span className="hpq-card__name">
+          {surah.en}
+          <i className={cn("hpq-card__type-ico", `fas fa-${surah.type === "Meccan" ? "sun" : "mosque"}`)} />
+        </span>
+        {lang !== "en" && <span className="hpq-card__trans">{lang === "ar" ? surah.fr : (surah.fr || surah.en)}</span>}
+        <span className="hpq-card__meta">{surah.ayahs} {lang === "ar" ? "آية" : lang === "fr" ? "Versets" : "Ayat"}</span>
       </div>
+      <span className="hpq-card__ar">{surah.ar}</span>
+      <button
+        className={cn("hpq-card__play", isPlaying && "hpq-card__play--on")}
+        onClick={e => { e.stopPropagation(); onPlay(surah.n); }}
+        aria-label="Écouter"
+      >
+        <i className={`fas fa-${isPlaying ? "pause" : "play"}`} />
+      </button>
     </button>
   );
 }
 
-/* ─── Composant carte juz ─── */
-function JuzCard({ juzData, onClick, isActive, lang }) {
+/* ─── Carte juz ─── */
+function JuzCard({ juzData, onClick, isActive, lang, viewMode }) {
   const { juz, name } = juzData;
+  if (viewMode === "list") {
+    return (
+      <button
+        className={cn("hpl-row", isActive && "hpl-row--active")}
+        onClick={() => onClick(juz)}
+      >
+        <span className={cn("hpl-row__num", isActive && "hpl-row__num--on")}>{juz}</span>
+        <div className="hpl-row__body">
+          <span className="hpl-row__name">Juz {juz}</span>
+          <span className="hpl-row__meta">{name}</span>
+        </div>
+      </button>
+    );
+  }
   return (
     <button
-      className={cn("quran-com-card", "quran-com-card--juz", isActive && "quran-com-card--active")}
+      className={cn("hpq-card hpq-card--juz", isActive && "hpq-card--active")}
       onClick={() => onClick(juz)}
     >
-      <div className="qc-card-left">
-        <div className="qc-num">{juz}</div>
-        <div className="qc-names">
-          <span className="qc-en">Juz {juz}</span>
-          <span className="qc-details">{name}</span>
-        </div>
+      <span className={cn("hpq-card__num", isActive && "hpq-card__num--on")}>{juz}</span>
+      <div className="hpq-card__info">
+        <span className="hpq-card__name">Juz {juz}</span>
+        <span className="hpq-card__meta">{name}</span>
       </div>
     </button>
   );
@@ -202,92 +232,82 @@ function JuzCard({ juzData, onClick, isActive, lang }) {
 /* ─── État vide ─── */
 function EmptyState({ icon, text }) {
   return (
-    <div className="hp-empty">
-      <i className={`fas ${icon}`}></i>
+    <div className="hp2-empty">
+      <i className={`fas ${icon}`} />
       <p>{text}</p>
     </div>
   );
 }
 
 /* ══════════════════════════════════════
-   Composant principal HomePage
+   HomePage principale
    ══════════════════════════════════════ */
 export default function HomePage() {
   const { state, dispatch, set } = useApp();
   const { lang, currentSurah, currentAyah, currentJuz, displayMode, riwaya } = state;
 
-  const [activeTab, setActiveTab] = useState("surah");
+  const [activeTab, setActiveTab]   = useState("surah");
   const [activeInfo, setActiveInfo] = useState("bookmarks");
-  const [bookmarks, setBookmarks] = useState([]);
-  const [notes, setNotes] = useState([]);
-  const [filter, setFilter] = useState("");
-  const [sortDir, setSortDir] = useState("asc");
-  const [now, setNow] = useState(() => new Date());
+  const [bookmarks, setBookmarks]   = useState([]);
+  const [notes, setNotes]           = useState([]);
+  const [filter, setFilter]         = useState("");
+  const [sortDir, setSortDir]       = useState("asc");
+  const [viewMode, setViewMode]     = useState("grid"); // "grid" | "list"
+  const [now, setNow]               = useState(() => new Date());
+  const [recentVisits, setRecentVisits] = useState(() => getRecentVisits());
 
-  useEffect(() => {
-    setActiveTab(displayMode === "juz" ? "juz" : "surah");
-  }, [displayMode]);
+  // Historique réel = l'utilisateur a déjà navigué au-delà de Al-Fatiha v.1
+  const hasReadingHistory = currentSurah > 1 || (currentSurah === 1 && currentAyah > 1);
 
+  useEffect(() => { setActiveTab(displayMode === "juz" ? "juz" : "surah"); }, [displayMode]);
   useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      setNow(new Date());
-    }, 60000);
-    return () => window.clearInterval(intervalId);
+    const id = window.setInterval(() => setNow(new Date()), 60000);
+    return () => window.clearInterval(id);
+  }, []);
+  useEffect(() => {
+    getAllBookmarks().then(bks => setBookmarks((bks || []).sort((a, b) => b.createdAt - a.createdAt)));
+    getAllNotes().then(ns => setNotes((ns || []).sort((a, b) => b.updatedAt - a.updatedAt)));
   }, []);
 
-  useEffect(() => {
-    getAllBookmarks().then(bks =>
-      setBookmarks((bks || []).sort((a, b) => b.createdAt - a.createdAt))
-    );
-    getAllNotes().then(ns =>
-      setNotes((ns || []).sort((a, b) => b.updatedAt - a.updatedAt))
-    );
-  }, []);
-
-  /* ── Lecture directe depuis l'accueil ── */
   const playFromHome = useCallback((surahNum) => {
     const safeId = ensureReciterForRiwaya(state.reciter, state.riwaya);
     const rec = getReciter(safeId, state.riwaya);
     if (!rec) return;
-    if (
-      state.riwaya === "warsh" &&
-      state.warshStrictMode &&
-      !String(rec.cdn || "").toLowerCase().includes("warsh")
-    ) return;
+    if (state.riwaya === "warsh" && state.warshStrictMode && !String(rec.cdn || "").toLowerCase().includes("warsh")) return;
     const surahData = SURAHS[surahNum - 1];
     if (!surahData) return;
     let globalStart = 0;
     for (let i = 0; i < surahNum - 1; i++) globalStart += SURAHS[i].ayahs;
     const items = Array.from({ length: surahData.ayahs }, (_, i) => ({
-      surah: surahNum,
-      ayah: i + 1,
-      number: globalStart + i + 1,
+      surah: surahNum, ayah: i + 1, number: globalStart + i + 1,
     }));
-    // Update state so the player title reflects the right surah
     set({ currentSurah: surahNum });
     audioService.loadPlaylist(items, rec.cdn, rec.cdnType || "islamic");
     audioService.play();
   }, [state.reciter, state.riwaya, state.warshStrictMode, set]);
 
-  const goSurah = n => {
+  const goSurah = useCallback(n => {
     set({ displayMode: "surah", showHome: false, showDuas: false });
     dispatch({ type: "NAVIGATE_SURAH", payload: { surah: n, ayah: 1 } });
-  };
-  const goJuz = juz => {
+  }, [set, dispatch]);
+
+  const goSurahAyah = useCallback((surah, ayah) => {
+    set({ displayMode: "surah", showHome: false, showDuas: false });
+    dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah: ayah || 1 } });
+  }, [set, dispatch]);
+
+  const goJuz = useCallback(juz => {
     set({ showHome: false, showDuas: false });
     dispatch({ type: "NAVIGATE_JUZ", payload: { juz } });
-  };
-  const continueReading = () => {
+  }, [set, dispatch]);
+
+  const continueReading = useCallback(() => {
     set({ showHome: false, showDuas: false });
-    if (displayMode === "juz") {
-      dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz } });
-    } else {
-      dispatch({ type: "NAVIGATE_SURAH", payload: { surah: currentSurah, ayah: currentAyah } });
-    }
-  };
-  const openDuas = () => {
-    set({ showHome: false, showDuas: true });
-  };
+    if (displayMode === "juz") dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz } });
+    else dispatch({ type: "NAVIGATE_SURAH", payload: { surah: currentSurah, ayah: currentAyah } });
+  }, [set, dispatch, displayMode, currentJuz, currentSurah, currentAyah]);
+
+  const openDuas = useCallback(() => set({ showHome: false, showDuas: true }), [set]);
 
   const filteredSurahs = useMemo(() => {
     const source = !filter.trim()
@@ -298,386 +318,419 @@ export default function HomePage() {
           s.fr.toLowerCase().includes(filter.toLowerCase()) ||
           String(s.n) === filter.trim()
         );
-    source.sort((a, b) => (sortDir === "asc" ? a.n - b.n : b.n - a.n));
+    source.sort((a, b) => sortDir === "asc" ? a.n - b.n : b.n - a.n);
     return source;
   }, [filter, sortDir]);
 
-  const dailyVerse = useMemo(() => DAILY_VERSES[getDailyVerseIndex(now)], [now]);
+  const dailyVerse   = useMemo(() => DAILY_VERSES[getDailyVerseIndex(now)], [now]);
   const suggestionSet = useMemo(() => getSuggestedSurahs(now), [now]);
+  const surahLabel   = SURAHS[currentSurah - 1];
 
-  const surahLabel = SURAHS[currentSurah - 1];
-  const currentModeLabel = DISPLAY_MODE_LABELS[displayMode]?.[lang === "fr" ? "fr" : lang === "ar" ? "ar" : "en"]
-    || DISPLAY_MODE_LABELS.surah[lang === "fr" ? "fr" : lang === "ar" ? "ar" : "en"];
   const riwayaLabel = riwaya === "warsh"
-    ? (lang === "fr" ? "Rasm Warsh · Riwāya Warsh" : "رواية ورش عن نافع")
-    : (lang === "fr" ? "Rasm Ḥafs · Riwāya Ḥafs" : "رواية حفص عن عاصم");
+    ? (lang === "fr" ? "Riwāya Warsh" : lang === "ar" ? "رواية ورش" : "Warsh")
+    : (lang === "fr" ? "Riwāya Ḥafs"  : lang === "ar" ? "رواية حفص"  : "Hafs");
+
+  const readingModeLabel = displayMode === "juz"
+    ? (lang === "fr" ? "Mode Juz" : lang === "ar" ? "وضع الجزء" : "Juz mode")
+    : displayMode === "page"
+      ? (lang === "fr" ? "Mode Page" : lang === "ar" ? "وضع الصفحة" : "Page mode")
+      : (lang === "fr" ? "Mode Sourate" : lang === "ar" ? "وضع السورة" : "Surah mode");
+
+  const readingTarget = displayMode === "juz"
+    ? (lang === "ar" ? `الجزء ${toAr(currentJuz)}` : `Juz ${currentJuz}`)
+    : displayMode === "page"
+      ? (lang === "ar" ? `صفحة ${toAr(state.currentPage || 1)}` : `${lang === "fr" ? "Page" : "Page"} ${state.currentPage || 1}`)
+      : (lang === "ar"
+          ? `${surahLabel?.ar || "الفاتحة"} · ${toAr(currentAyah)}`
+          : `${lang === "fr" ? surahLabel?.fr : surahLabel?.en} · v.${currentAyah}`);
+
+  const quickResumeLabel = hasReadingHistory
+    ? (lang === "fr" ? "Reprendre la session" : lang === "ar" ? "متابعة الجلسة" : "Resume session")
+    : (lang === "fr" ? "Démarrer une lecture" : lang === "ar" ? "ابدأ القراءة" : "Start reading");
+
+  const currentYear = now.getFullYear();
+
+  const greeting = useMemo(() => {
+    const h = now.getHours();
+    if (h >= 4 && h < 12) return { fr: "Bonjour", en: "Good morning", ar: "صباح الخير" };
+    if (h >= 12 && h < 17) return { fr: "Bon après-midi", en: "Good afternoon", ar: "مساء النهار" };
+    if (h >= 17 && h < 22) return { fr: "Bonsoir", en: "Good evening", ar: "مساء الخير" };
+    return { fr: "Bonne nuit", en: "Good night", ar: "طاب ليلكم" };
+  }, [now]);
+
+  const currentPrayer = useMemo(() => {
+    const h = now.getHours();
+    if (h >= 4  && h < 7)  return { icon: "fa-star",      fr: "Fajr",    ar: "الفجر",  en: "Fajr"    };
+    if (h >= 7  && h < 12) return { icon: "fa-sun",        fr: "Duhā",    ar: "الضحى",  en: "Duhā"    };
+    if (h >= 12 && h < 15) return { icon: "fa-sun",        fr: "Dhuhr",   ar: "الظهر",  en: "Dhuhr"   };
+    if (h >= 15 && h < 18) return { icon: "fa-cloud-sun",  fr: "Asr",     ar: "العصر",  en: "Asr"     };
+    if (h >= 18 && h < 20) return { icon: "fa-cloud-moon", fr: "Maghrib", ar: "المغرب", en: "Maghrib" };
+    return                        { icon: "fa-moon",        fr: "Ishā",    ar: "العشاء",  en: "Ishā"    };
+  }, [now]);
+
+  const vodSurahNum = useMemo(() => {
+    const match = dailyVerse.ref.match(/(\d+):\d+/);
+    return match ? parseInt(match[1]) : null;
+  }, [dailyVerse]);
+
+  const T = {
+    continueReading: { fr: "Continuer", en: "Continue", ar: "متابعة القراءة" },
+    startFatiha:     { fr: "Al-Fatiha", en: "Al-Fatihah", ar: "البداية" },
+    duas:            { fr: "Douas", en: "Duas", ar: "الأدعية" },
+    surahs:          { fr: "Sourates", en: "Surahs", ar: "السور" },
+    juz:             { fr: "Juz", en: "Juz", ar: "الأجزاء" },
+    search:          { fr: "Rechercher une sourate…", en: "Search a surah…", ar: "ابحث عن سورة…" },
+    verseOfDay:      { fr: "Verset du jour", en: "Verse of the Day", ar: "آية اليوم" },
+    quickAccess:     { fr: "Accès rapide", en: "Quick Access", ar: "وصول سريع" },
+    noBookmarks:     { fr: "Aucun favori — appuyez ★", en: "No bookmarks yet", ar: "لا توجد إشارات" },
+    noNotes:         { fr: "Aucune note encore", en: "No notes yet", ar: "لا توجد ملاحظات" },
+    noResults:       { fr: "Aucune sourate trouvée", en: "No surah found", ar: "لم يتم العثور" },
+    bookmarks:       { fr: "Favoris", en: "Saved", ar: "المفضلة" },
+    notes:           { fr: "Notes", en: "Notes", ar: "ملاحظات" },
+    suggest:         { fr: "Suggestions", en: "Suggest", ar: "اقتراحات" },
+  };
+  const t = k => T[k]?.[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"] ?? k;
 
   const infoTabs = [
-    { id: "bookmarks", fr: "Favoris", en: "Saved", ar: "المفضلة", icon: "fa-bookmark", count: bookmarks.length },
-    { id: "notes", fr: "Notes", en: "Notes", ar: "ملاحظات", icon: "fa-pen-line", count: notes.length },
-    { id: "suggest", fr: "Suggestions", en: "Suggestions", ar: "اقتراحات", icon: "fa-lightbulb", count: suggestionSet.surahs.length },
-  ];
-
-  const listSummary = activeTab === "surah"
-    ? {
-        count: filteredSurahs.length,
-        label: lang === "ar" ? "سورة متاحة" : lang === "fr" ? "sourates disponibles" : "surahs available",
-        caption: lang === "ar"
-          ? "قائمة أوضح وأخف بصريًا"
-          : lang === "fr"
-            ? "Parcours plus net, avec des cartes moins lourdes"
-            : "Cleaner browsing with lighter cards",
-      }
-    : {
-        count: JUZ_DATA.length,
-        label: lang === "ar" ? "جزء" : lang === "fr" ? "juz" : "juz",
-        caption: lang === "ar"
-          ? "تنقل مباشر بين الأجزاء"
-          : lang === "fr"
-            ? "Navigation directe entre les sections"
-            : "Direct section navigation",
-      };
-
-  const heroStats = [
-    {
-      label: lang === "ar" ? "الموضع الحالي" : lang === "fr" ? "Position" : "Position",
-      value:
-        displayMode === "juz"
-          ? `${lang === "ar" ? "جزء" : "Juz"} ${lang === "ar" ? toAr(currentJuz) : currentJuz}`
-          : `${lang === "ar" ? "آية" : lang === "fr" ? "Ayah" : "Ayah"} ${lang === "ar" ? toAr(currentAyah || 1) : currentAyah || 1}`,
-      icon: "fa-location-crosshairs",
-    },
-    {
-      label: lang === "ar" ? "المفضلة" : lang === "fr" ? "Favoris" : "Saved",
-      value: lang === "ar" ? toAr(bookmarks.length) : bookmarks.length,
-      icon: "fa-bookmark",
-    },
-    {
-      label: lang === "ar" ? "الوضع" : lang === "fr" ? "Affichage" : "View",
-      value: currentModeLabel,
-      icon: "fa-layer-group",
-    },
+    { id: "bookmarks", icon: "fa-bookmark",  label: t("bookmarks"), count: bookmarks.length },
+    { id: "notes",     icon: "fa-pen-line",  label: t("notes"),     count: notes.length     },
+    { id: "suggest",   icon: "fa-lightbulb", label: t("suggest"),   count: suggestionSet.surahs.length },
   ];
 
   return (
-    <div className="hp-page">
+    <div className="hp2">
 
-      {/* ══════════════ HERO (Quran.com Style) ══════════════ */}
-      <section className="qc-hero">
-        <div className="qc-hero-inner">
-          <div className="qc-hero-grid">
-            <div className="qc-hero-copy">
-              <span className="qc-hero-kicker">
-                <i className="fas fa-stars" aria-hidden="true" />
-                <span>{lang === "ar" ? "مساحة قراءة متقنة" : lang === "fr" ? "Une lecture plus noble" : "A more refined reading space"}</span>
+      {/* ════ HERO ════ */}
+      <section className="hp2-hero">
+        <div className="hp2-hero__inner">
+
+          {/* Bismallah décorative — pleine largeur, centrée avant le split */}
+          <div className="hp2-hero__bismallah" aria-hidden="true">﷽</div>
+
+          {/* Gauche */}
+          <div className="hp2-hero__left">
+            {/* Salutation */}
+            <div className="hp2-hero__greeting">
+              <i className="fas fa-hand-peace" />
+              <span>{greeting[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"]}</span>
+            </div>
+
+            <div className="hp2-hero__brand">
+              <PlatformLogo
+                className="hp2-hero__logo"
+                imgClassName="hp2-hero__logo-img"
+                decorative
+              />
+              <div>
+                <h1 className="hp2-hero__title">MushafPlus</h1>
+                <span className="hp2-hero__badge">
+                  <i className="fas fa-feather-pointed" />
+                  {riwayaLabel}
+                </span>
+              </div>
+            </div>
+
+            <p className="hp2-hero__tagline">
+              {lang === "ar"
+                ? "اقرأ القرآن الكريم وتدبَّر معانيه في مساحة أكثر سكينة"
+                : lang === "fr"
+                  ? "Lisez, méditez et mémorisez le Saint Coran"
+                  : "Read, reflect and memorize the Holy Quran"}
+            </p>
+
+            <div className="hp2-hero__meta-rail">
+              <span className="hp2-now-pill hp2-now-pill--prayer">
+                <i className={`fas ${currentPrayer.icon}`} />
+                {currentPrayer[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"]}
               </span>
-
-              <PlatformLogo className="qc-logo-container" imgClassName="qc-logo-image" decorative />
-
-              <h1 className="qc-site-name">MushafPlus</h1>
-
-              <p className="qc-slogan">
-                {lang === "ar"
-                  ? "اقرأ وتدبَّر واحفظ في مساحة أكثر سكينة"
-                  : lang === "fr"
-                    ? "Lisez, méditez et mémorisez dans un espace plus apaisé"
-                    : "Read, reflect and memorize in a calmer space"}
-              </p>
-
-              <p className="qc-hero-note">
-                {lang === "ar"
-                  ? "واجهة قراءة أوضح، انتقال أسرع بين السور والأجزاء، وتجربة أقرب إلى المصحف مع الحفاظ على الراحة البصرية."
-                  : lang === "fr"
-                    ? "Une lecture plus nette, une navigation plus fluide entre sourates et juz, et une expérience plus proche du mushaf."
-                    : "A cleaner reading flow, faster navigation across surahs and juz, and a calmer mushaf-first experience."}
-              </p>
-
-              <div className="qc-hero-meta">
-                <span className="qc-hero-pill qc-hero-pill--riwaya">
-                  <i className="fas fa-feather-pointed" aria-hidden="true" />
-                  <span>{riwayaLabel}</span>
-                </span>
-                {surahLabel && (
-                  <span className="qc-hero-pill">
-                    <i className="fas fa-location-dot" aria-hidden="true" />
-                    <span>
-                      {lang === "ar"
-                        ? `${surahLabel.ar} · ${currentModeLabel}`
-                        : `${lang === "fr" ? surahLabel.fr : surahLabel.en} · ${currentModeLabel}`}
-                    </span>
-                  </span>
+              <span className="hp2-now-pill hp2-now-pill--accent">
+                <i className="fas fa-location-dot" />
+                {readingTarget}
+              </span>
+              <span className="hp2-now-pill">
+                {now.toLocaleDateString(
+                  lang === "ar" ? "ar-SA" : lang === "fr" ? "fr-FR" : "en-GB",
+                  { weekday: "short", day: "numeric", month: "short" }
                 )}
-              </div>
-
-              <div className="qc-hero-actions">
-                {currentSurah > 0 && (
-                  <button className="qc-continue-btn" onClick={continueReading}>
-                    <i className="fas fa-circle-play" />
-                    <span className="qc-continue-label">
-                      {lang === "ar" ? "متابعة القراءة" : lang === "fr" ? "Continuer la lecture" : "Continue Reading"}
-                    </span>
-                    <span className="qc-continue-chip">{SURAHS[currentSurah - 1]?.ar}</span>
-                  </button>
-                )}
-
-                <button className="qc-secondary-btn" onClick={() => goSurah(1)}>
-                  <i className="fas fa-book-open-reader" aria-hidden="true" />
-                  <span>{lang === "ar" ? "ابدأ بالفاتحة" : lang === "fr" ? "Commencer par Al-Fatiha" : "Start with Al-Fatihah"}</span>
-                </button>
-
-                <button className="qc-secondary-btn qc-secondary-btn--soft" onClick={openDuas}>
-                  <i className="fas fa-hands-praying" aria-hidden="true" />
-                  <span>{lang === "ar" ? "الأدعية" : lang === "fr" ? "Ouvrir les douas" : "Open duas"}</span>
-                </button>
-              </div>
-
-              <div className="qc-hero-stats">
-                {heroStats.map((item) => (
-                  <div key={item.label} className="qc-hero-stat">
-                    <span className="qc-hero-stat__icon">
-                      <i className={`fas ${item.icon}`} aria-hidden="true" />
-                    </span>
-                    <span className="qc-hero-stat__body">
-                      <span className="qc-hero-stat__label">{item.label}</span>
-                      <strong className="qc-hero-stat__value">{item.value}</strong>
-                    </span>
-                  </div>
-                ))}
-              </div>
+              </span>
             </div>
 
-            <div className="qc-vdj">
-              <div className="qc-vdj-header">
-                <span className="qc-vdj-badge">
-                  <i className="fas fa-star-and-crescent" aria-hidden="true" />
-                  {lang === "ar" ? "آية اليوم" : lang === "fr" ? "Verset du jour" : "Verse of the Day"}
-                </span>
-                <span className="qc-vdj-date">
-                  {new Date().toLocaleDateString(
-                    lang === "ar" ? "ar-SA" : lang === "fr" ? "fr-FR" : "en-GB",
-                    { weekday: "short", day: "numeric", month: "short" }
+            <div className="hp2-hero__ctas">
+              {hasReadingHistory ? (
+                <button className="hp2-btn hp2-btn--primary" onClick={continueReading}>
+                  <i className="fas fa-circle-play" />
+                  <span>{t("continueReading")}</span>
+                  {surahLabel && (
+                    <span className="hp2-btn__chip">{surahLabel.ar}</span>
                   )}
-                </span>
-              </div>
-              <div className="qc-vdj-orb" aria-hidden="true">
-                <span className="qc-vdj-orb__core"></span>
-                <span className="qc-vdj-orb__ring"></span>
-              </div>
-              <span className="qc-vdj-text">{dailyVerse.text}</span>
-              {dailyVerse.trans_fr && lang === "fr" && (
-                <span className="qc-vdj-trans">{dailyVerse.trans_fr}</span>
+                </button>
+              ) : (
+                <button className="hp2-btn hp2-btn--primary" onClick={() => goSurah(1)}>
+                  <i className="fas fa-book-open" />
+                  <span>{lang === "ar" ? "ابدأ القراءة" : lang === "fr" ? "Commencer" : "Start reading"}</span>
+                  <span className="hp2-btn__chip">الْفَاتِحَة</span>
+                </button>
               )}
-              <span className="qc-vdj-ref">{dailyVerse.ref}</span>
+              {hasReadingHistory && (
+                <button className="hp2-btn hp2-btn--outline" onClick={() => goSurah(1)}>
+                  <i className="fas fa-book-open-reader" />
+                  <span>{t("startFatiha")}</span>
+                </button>
+              )}
+              <button className="hp2-btn hp2-btn--soft" onClick={openDuas}>
+                <i className="fas fa-hands-praying" />
+                <span>{t("duas")}</span>
+              </button>
             </div>
+
+            {/* Recent history — reprendre */}
+            {recentVisits.length > 0 && (
+              <div className="hp2-recent-history">
+                <div className="hp2-recent-title">
+                  <i className="fas fa-history" />
+                  {lang === 'ar' ? 'استكمال' : lang === 'fr' ? 'Reprendre' : 'Continue'}
+                </div>
+                <div className="hp2-recent-items">
+                  {recentVisits.map(v => (
+                    <button key={v.surah} className="hp2-recent-item" onClick={() => goSurahAyah(v.surah, v.ayah)}>
+                      <span className="hp2-recent-num">{v.surah}</span>
+                      <span className="hp2-recent-name">{v.surahName}</span>
+                      {v.ayah > 1 && <span className="hp2-recent-ayah">v.{v.ayah}</span>}
+                      <i className="fas fa-play-circle hp2-recent-play" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+
           </div>
 
-          <div className="qc-hero-suggestions">
-            <div className="qc-hero-suggestions__head">
-              <span className="qc-hero-suggestions__label">
-                <i className={`fas ${suggestionSet.icon}`} aria-hidden="true" />
-                {lang === "ar" ? suggestionSet.period.ar : lang === "fr" ? suggestionSet.period.fr : suggestionSet.period.en}
-              </span>
-              <span className="qc-hero-suggestions__hint">
-                {lang === "ar"
-                  ? "اقتراحات سريعة بحسب الوقت"
-                  : lang === "fr"
-                    ? "Suggestions rapides selon le moment"
-                    : "Quick picks for the current moment"}
-              </span>
+          {/* Droite */}
+          <div className="hp2-hero__right">
+            <div className="hp2-focus-card">
+              <div className="hp2-focus-card__head">
+                <span className="hp2-focus-card__eyebrow">
+                  <i className="fas fa-sparkles" />
+                  {lang === "fr" ? "Session active" : lang === "ar" ? "الجلسة الحالية" : "Active session"}
+                </span>
+                <span className="hp2-focus-card__riwaya">{riwayaLabel}</span>
+              </div>
+
+              <div className="hp2-focus-card__body">
+                <h2 className="hp2-focus-card__title">{readingTarget}</h2>
+                {surahLabel && displayMode !== "juz" && (
+                  <div className="hp2-focus-card__surah-ar">{surahLabel.ar}</div>
+                )}
+                <p className="hp2-focus-card__copy">{quickResumeLabel}</p>
+              </div>
+
+              <div className="hp2-focus-card__stats">
+                <span className="hp2-focus-card__stat">
+                  <strong>{bookmarks.length}</strong>
+                  <span>{t("bookmarks")}</span>
+                </span>
+                <span className="hp2-focus-card__stat">
+                  <strong>{notes.length}</strong>
+                  <span>{t("notes")}</span>
+                </span>
+                <span className="hp2-focus-card__stat">
+                  <strong>{displayMode === "juz" ? currentJuz : currentSurah}</strong>
+                  <span>{displayMode === "juz" ? "Juz" : lang === "fr" ? "Sourate" : lang === "ar" ? "سورة" : "Surah"}</span>
+                </span>
+              </div>
+
+              {/* Progress bar */}
+              <div className="hp2-focus-card__progress">
+                <div className="hp2-focus-card__progress-label">
+                  <span>{lang === "fr" ? "Progression" : lang === "ar" ? "التقدم" : "Progress"}</span>
+                  <span>{Math.round(((currentSurah || 1) / 114) * 100)}%</span>
+                </div>
+                <div className="hp2-focus-card__progress-bar">
+                  <div className="hp2-focus-card__progress-fill" style={{ width: `${Math.round(((currentSurah || 1) / 114) * 100)}%` }} />
+                </div>
+              </div>
+
+
             </div>
 
-            <div className="qc-hero-suggestion-grid">
-              {suggestionSet.surahs.slice(0, 4).map(({ n, fr, en, ar: arLabel }) => {
-                const s = SURAHS[n - 1];
-                return (
-                  <button
-                    key={n}
-                    className="qc-hero-suggestion"
-                    onClick={() => goSurah(n)}
-                  >
-                    <span className="qc-hero-suggestion__num">{n}</span>
-                    <span className="qc-hero-suggestion__body">
-                      <span className="qc-hero-suggestion__ar">{s?.ar}</span>
-                      <span className="qc-hero-suggestion__label">
-                        {lang === "ar" ? arLabel : lang === "fr" ? fr : en}
-                      </span>
-                    </span>
-                  </button>
-                );
-              })}
+            {/* Prières indicatives */}
+            <div className="hp2-prayers">
+              <div className="hp2-prayers__head">
+                <i className="fas fa-moon" />
+                <span>{lang === "fr" ? "Période de prière" : lang === "ar" ? "وقت الصلاة" : "Prayer period"}</span>
+              </div>
+              <div className="hp2-prayers__list">
+                {[
+                  { key: "fajr",    icon: "fa-star",      fr: "Fajr",    ar: "الفجر",  en: "Fajr",    r: [4,  7]  },
+                  { key: "dhuhr",   icon: "fa-sun",        fr: "Dhuhr",   ar: "الظهر",  en: "Dhuhr",   r: [12, 15] },
+                  { key: "asr",     icon: "fa-cloud-sun",  fr: "Asr",     ar: "العصر",  en: "Asr",     r: [15, 18] },
+                  { key: "maghrib", icon: "fa-cloud-moon", fr: "Maghrib", ar: "المغرب", en: "Maghrib", r: [18, 20] },
+                  { key: "isha",    icon: "fa-moon",       fr: "Ish\u0101",    ar: "العشاء",  en: "Ish\u0101",    r: [20, 4]  },
+                ].map(p => {
+                  const h = now.getHours();
+                  const on = p.r[0] < p.r[1] ? h >= p.r[0] && h < p.r[1] : h >= p.r[0] || h < p.r[1];
+                  return (
+                    <div key={p.key} className={cn("hp2-prayer-row", on && "hp2-prayer-row--on")}>
+                      <i className={`fas ${p.icon}`} />
+                      <span className="hp2-prayer-row__name">{p[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"]}</span>
+                      {on && <span className="hp2-prayer-row__badge">{lang === "fr" ? "Maintenant" : lang === "ar" ? "الآن" : "Now"}</span>}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
+
+
           </div>
         </div>
       </section>
 
-      {/* ══════════════ STATS ══════════════ */}
-      <div className="hp-stats-bar">
-        {[
-          {
-            icon: "fa-book-open-reader", cls: "--primary",
-            label: lang === "fr" ? "Lecture en cours" : lang === "ar" ? "القراءة" : "Reading",
-            value: surahLabel?.[lang === "fr" ? "fr" : lang === "ar" ? "ar" : "en"] || "–",
-          },
-          {
-            icon: "fa-bookmark", cls: "--gold",
-            label: lang === "fr" ? "Favoris" : lang === "ar" ? "المفضلة" : "Saved",
-            value: bookmarks.length,
-          },
-          {
-            icon: "fa-pen-line", cls: "--gold",
-            label: lang === "fr" ? "Notes" : lang === "ar" ? "ملاحظات" : "Notes",
-            value: notes.length,
-          },
-          {
-            icon: "fa-feather-pointed", cls: "--primary",
-            label: lang === "fr" ? "Riwāya" : lang === "ar" ? "الرواية" : "Riwaya",
-            value: riwaya === "warsh"
-              ? (lang === "fr" ? "Warsh" : lang === "ar" ? "ورش" : "Warsh")
-              : (lang === "fr" ? "Hafs" : lang === "ar" ? "حفص" : "Hafs"),
-          },
-        ].map((s, i) => (
-          <div key={i} className="hp-stat-chip" style={{ animationDelay: `${i * 0.07}s` }}>
-            <span className={`hp-stat-icon hp-stat-icon${s.cls}`}>
-              <i className={`fas ${s.icon}`}></i>
-            </span>
-            <div className="hp-stat-body">
-              <span className="hp-stat-label">{s.label}</span>
-              <span className="hp-stat-value">{s.value}</span>
-            </div>
+      {/* Verset du jour — bannière pleine largeur */}
+      <div className="hp2-vod-banner">
+        <div className="hp2-vod-banner__inner">
+          <div className="hp2-vod-banner__head">
+            <div className="hp2-vod-banner__icon"><i className="fas fa-star-and-crescent" /></div>
+            <span className="hp2-vod-banner__label">{t("verseOfDay")}</span>
           </div>
-        ))}
-      </div>
-
-      {/* ══════════════ ACCÈS RAPIDE ══════════════ */}
-      <div className="hp-quick-section">
-        <h2 className="hp-section-title">
-          <i className="fas fa-bolt"></i>
-          {lang === "ar" ? "وصول سريع" : lang === "fr" ? "Sourates fréquentes" : "Frequent Surahs"}
-        </h2>
-        <div className="hp-quick-grid">
-          <button className="hp-quick-card hp-quick-card--duas" onClick={openDuas}>
-            <span className="hp-quick-icon"><i className="fas fa-hands-praying"></i></span>
-            <span className="hp-quick-ar">الدعاء</span>
-            <span className="hp-quick-fr">
-              {lang === "ar" ? "أدعية" : lang === "fr" ? "Page Douas" : "Duas Page"}
+          <div className="hp2-vod-banner__body">
+            <p className="hp2-vod-banner__text">{dailyVerse.text}</p>
+            {lang === "fr" && dailyVerse.trans_fr && (
+              <p className="hp2-vod-banner__trans">{dailyVerse.trans_fr}</p>
+            )}
+            <span className="hp2-vod-banner__ref">{dailyVerse.ref}</span>
+          </div>
+          <div className="hp2-vod-banner__cta">
+            <span className="hp2-vod-banner__date">
+              {now.toLocaleDateString(
+                lang === "ar" ? "ar-SA" : lang === "fr" ? "fr-FR" : "en-GB",
+                { weekday: "long", day: "numeric", month: "long" }
+              )}
             </span>
-          </button>
-          {QUICK_ACCESS.map(item => {
-            const s = SURAHS[item.n - 1];
-            return (
-              <button key={item.n} className="hp-quick-card" onClick={() => goSurah(item.n)}>
-                <span className="hp-quick-icon"><i className={`fas ${item.icon}`}></i></span>
-                <span className="hp-quick-ar">{s?.ar}</span>
-                <span className="hp-quick-fr">
-                  {lang === "ar" ? "" : lang === "fr" ? item.label_fr : item.label_en}
-                </span>
+            {vodSurahNum && (
+              <button className="hp2-vod-banner__go" onClick={() => goSurah(vodSurahNum)}>
+                <i className="fas fa-book-open" />
+                {lang === "fr" ? "Lire la sourate" : lang === "ar" ? "اقرأ السورة" : "Read surah"}
               </button>
-            );
-          })}
+            )}
+          </div>
         </div>
       </div>
 
-      {/* ══════════════ GRILLE PRINCIPALE — 2 colonnes ══════════════ */}
-      <div className="hp-main-grid">
+      {/* ════ BANDE STATS ════ */}
+      <div className="hp2-stats-strip">
+        <div className="hp2-stats-strip__item">
+          <span className="hp2-stats-strip__num">114</span>
+          <span className="hp2-stats-strip__label">{lang === "ar" ? "سور" : lang === "fr" ? "Sourates" : "Surahs"}</span>
+        </div>
+        <span className="hp2-stats-strip__sep" />
+        <div className="hp2-stats-strip__item">
+          <span className="hp2-stats-strip__num">30</span>
+          <span className="hp2-stats-strip__label">{lang === "ar" ? "جزء" : lang === "fr" ? "Juz'" : "Juz"}</span>
+        </div>
+        <span className="hp2-stats-strip__sep" />
+        <div className="hp2-stats-strip__item">
+          <span className="hp2-stats-strip__num">6 236</span>
+          <span className="hp2-stats-strip__label">{lang === "ar" ? "آية" : lang === "fr" ? "Versets" : "Ayahs"}</span>
+        </div>
+        <span className="hp2-stats-strip__sep" />
+        <div className="hp2-stats-strip__item">
+          <span className="hp2-stats-strip__num">77 430</span>
+          <span className="hp2-stats-strip__label">{lang === "ar" ? "كلمة" : lang === "fr" ? "Mots" : "Words"}</span>
+        </div>
+      </div>
 
-        {/* ── Colonne gauche : Favoris / Notes / Suggestions ── */}
-        <aside className="hp-left-col">
-          <div className="hp-panel">
-            <div className="hp-panel-tabs">
+      {/*  GRILLE PRINCIPALE  */}
+      <div className="hp2-layout">
+
+        {/* Panneau latéral */}
+        <aside className="hp2-aside">
+          <div className="hp2-panel">
+            <div className="hp2-panel__tabs">
               {infoTabs.map(tab => (
                 <button
                   key={tab.id}
-                  className={cn("hp-panel-tab", activeInfo === tab.id && "hp-panel-tab--on")}
+                  className={cn("hp2-panel__tab", activeInfo === tab.id && "hp2-panel__tab--on")}
                   onClick={() => setActiveInfo(tab.id)}
                 >
-                  <span className="hp-panel-tab__label">
-                    <i className={`fas ${tab.icon}`}></i>
-                    <span>{lang === "ar" ? tab.ar : lang === "fr" ? tab.fr : tab.en}</span>
-                  </span>
-                  <span className="hp-panel-tab__count">{tab.count}</span>
+                  <i className={`fas ${tab.icon}`} />
+                  <span>{tab.label}</span>
+                  {tab.count > 0 && (
+                    <span className="hp2-panel__count">{tab.count}</span>
+                  )}
                 </button>
               ))}
             </div>
 
-            <div className="hp-panel-body">
+            <div className="hp2-panel__body">
               {activeInfo === "bookmarks" && (
                 bookmarks.length === 0
-                  ? <EmptyState icon="fa-bookmark"
-                    text={lang === "ar"
-                      ? "لا توجد إشارات — اضغط ★ على آية"
-                      : lang === "fr"
-                        ? "Aucun favori — appuyez sur ★ sur un verset"
-                        : "No bookmarks yet — tap ★ on any ayah"} />
+                  ? <EmptyState icon="fa-bookmark" text={t("noBookmarks")} />
                   : bookmarks.slice(0, 10).map(bk => {
-                    const s = SURAHS[bk.surah - 1];
-                    return (
-                      <button key={bk.id} className="hp-info-row" onClick={() => goSurah(bk.surah)}>
-                        <span className="hp-info-icon"><i className="fas fa-bookmark"></i></span>
-                        <div className="hp-info-body">
-                          <span className="hp-info-ar">{s?.ar}</span>
-                          <span className="hp-info-sub">
-                            {lang === "fr" ? s?.fr : s?.en}
-                            &nbsp;·&nbsp;
-                            {lang === "fr" ? "v." : lang === "ar" ? "آية" : "ayah "}{bk.ayah}
-                            {bk.label && <em className="hp-info-label"> · {bk.label}</em>}
-                          </span>
-                        </div>
-                        <i className="fas fa-chevron-left hp-info-caret"></i>
-                      </button>
-                    );
-                  })
+                      const s = SURAHS[bk.surah - 1];
+                      return (
+                        <button key={bk.id} className="hp2-item" onClick={() => goSurah(bk.surah)}>
+                          <span className="hp2-item__icon"><i className="fas fa-bookmark" /></span>
+                          <div className="hp2-item__body">
+                            <span className="hp2-item__ar">{s?.ar}</span>
+                            <span className="hp2-item__sub">
+                              {lang === "fr" ? s?.fr : s?.en}  v.{bk.ayah}
+                              {bk.label && <em>  {bk.label}</em>}
+                            </span>
+                          </div>
+                          <i className="fas fa-chevron-left hp2-item__caret" />
+                        </button>
+                      );
+                    })
               )}
 
               {activeInfo === "notes" && (
                 notes.length === 0
-                  ? <EmptyState icon="fa-pen-line"
-                    text={lang === "ar"
-                      ? "لا توجد ملاحظات"
-                      : lang === "fr"
-                        ? "Aucune note — appuyez sur le crayon"
-                        : "No notes yet — tap the pen on any ayah"} />
+                  ? <EmptyState icon="fa-pen-line" text={t("noNotes")} />
                   : notes.slice(0, 10).map(note => {
-                    const s = SURAHS[note.surah - 1];
-                    return (
-                      <button key={note.id} className="hp-info-row" onClick={() => goSurah(note.surah)}>
-                        <span className="hp-info-icon"><i className="fas fa-pen-line"></i></span>
-                        <div className="hp-info-body">
-                          <span className="hp-info-ar">{s?.ar}</span>
-                          <span className="hp-info-sub">
-                            {lang === "fr" ? s?.fr : s?.en}
-                            &nbsp;·&nbsp;
-                            {lang === "fr" ? "v." : "ayah "}{note.ayah}
-                          </span>
-                          {note.text && (
-                            <span className="hp-info-excerpt">
-                              {note.text.slice(0, 80)}{note.text.length > 80 ? "…" : ""}
-                            </span>
-                          )}
-                        </div>
-                        <i className="fas fa-chevron-left hp-info-caret"></i>
-                      </button>
-                    );
-                  })
+                      const s = SURAHS[note.surah - 1];
+                      return (
+                        <button key={note.id} className="hp2-item" onClick={() => goSurah(note.surah)}>
+                          <span className="hp2-item__icon"><i className="fas fa-pen-line" /></span>
+                          <div className="hp2-item__body">
+                            <span className="hp2-item__ar">{s?.ar}</span>
+                            <span className="hp2-item__sub">{lang === "fr" ? s?.fr : s?.en}  v.{note.ayah}</span>
+                            {note.text && (
+                              <span className="hp2-item__excerpt">
+                                {note.text.slice(0, 70)}{note.text.length > 70 ? "" : ""}
+                              </span>
+                            )}
+                          </div>
+                          <i className="fas fa-chevron-left hp2-item__caret" />
+                        </button>
+                      );
+                    })
               )}
 
               {activeInfo === "suggest" && (
                 <>
-                  <div className="hp-suggest-period">
-                    <i className={`fas ${suggestionSet.icon}`} aria-hidden="true" />
-                    <span>{lang === "ar" ? suggestionSet.period.ar : lang === "fr" ? suggestionSet.period.fr : suggestionSet.period.en}</span>
+                  <div className="hp2-suggest-period">
+                    <i className={`fas ${suggestionSet.icon}`} />
+                    <span>
+                      {lang === "ar"
+                        ? suggestionSet.period.ar
+                        : lang === "fr"
+                          ? suggestionSet.period.fr
+                          : suggestionSet.period.en}
+                    </span>
                   </div>
                   {suggestionSet.surahs.map(({ n, fr, en, ar: arLabel }) => {
                     const s = SURAHS[n - 1];
                     return (
-                      <button key={n} className="hp-info-row" onClick={() => goSurah(n)}>
-                        <span className="hp-info-num">{toAr(n)}</span>
-                        <div className="hp-info-body">
-                          <span className="hp-info-ar">{s.ar}</span>
-                          <span className="hp-info-sub">
+                      <button key={n} className="hp2-item" onClick={() => goSurah(n)}>
+                        <span className="hp2-item__num">{n}</span>
+                        <div className="hp2-item__body">
+                          <span className="hp2-item__ar">{s.ar}</span>
+                          <span className="hp2-item__sub">
                             {lang === "ar" ? arLabel : lang === "fr" ? fr : en}
                           </span>
                         </div>
-                        <i className="fas fa-chevron-left hp-info-caret"></i>
+                        <i className="fas fa-chevron-left hp2-item__caret" />
                       </button>
                     );
                   })}
@@ -687,91 +740,208 @@ export default function HomePage() {
           </div>
         </aside>
 
-        {/* ── Colonne droite : liste sourates / juz ── */}
-        <section className="hp-right-col">
-          <div className="hp-list-header">
-            <div className="hp-seg-ctrl">
+        {/* Colonne sourates */}
+        <section className="hp2-content">
+          <div className="hp2-toolbar">
+            {/* Onglets Sourates / Juz */}
+            <div className="hp2-segs">
               <button
-                className={cn("hp-seg-btn", activeTab === "surah" && "hp-seg-btn--on")}
+                className={cn("hp2-seg", activeTab === "surah" && "hp2-seg--on")}
                 onClick={() => setActiveTab("surah")}
               >
-                <i className="fas fa-align-justify"></i>
-                {lang === "ar" ? "السور" : lang === "fr" ? "Sourates" : "Surahs"}
+                <i className="fas fa-align-justify" />
+                {t("surahs")}
               </button>
               <button
-                className={cn("hp-seg-btn", activeTab === "juz" && "hp-seg-btn--on")}
+                className={cn("hp2-seg", activeTab === "juz" && "hp2-seg--on")}
                 onClick={() => setActiveTab("juz")}
               >
-                <i className="fas fa-book-open"></i>
-                {lang === "ar" ? "الأجزاء" : "Juz"}
+                <i className="fas fa-book-open" />
+                {t("juz")}
               </button>
             </div>
-            <div className="hp-list-tools">
+
+            {/* Recherche */}
+            {activeTab === "surah" && (
+              <div className="hp2-search">
+                <i className="fas fa-magnifying-glass hp2-search__ico" />
+                <input
+                  className="hp2-search__input"
+                  placeholder={t("search")}
+                  value={filter}
+                  onChange={e => setFilter(e.target.value)}
+                />
+                {filter && (
+                  <button className="hp2-search__clear" onClick={() => setFilter("")}>
+                    <i className="fas fa-xmark" />
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Tri + vue */}
+            <div className="hp2-toolbar__end">
+              <span className="hp2-toolbar__count">
+                {activeTab === "surah" ? filteredSurahs.length : JUZ_DATA.length}
+                <span>
+                  {activeTab === "surah"
+                    ? t("surahs")
+                    : t("juz")}
+                </span>
+              </span>
               {activeTab === "surah" && (
-                <div className="hp-search">
-                  <i className="fas fa-magnifying-glass hp-search-ico"></i>
-                  <input
-                    className="hp-search-input"
-                    placeholder={
-                      lang === "ar" ? "ابحث عن سورة…"
-                        : lang === "fr" ? "Rechercher une sourate…"
-                          : "Search a surah…"
-                    }
-                    value={filter}
-                    onChange={e => setFilter(e.target.value)}
-                  />
-                  {filter && (
-                    <button className="hp-search-clear" onClick={() => setFilter("")} aria-label="Effacer">
-                      <i className="fas fa-xmark"></i>
-                    </button>
-                  )}
-                </div>
-              )}
-              {activeTab === "surah" && (
-                <button className="hp-sort-btn" onClick={() => setSortDir(prev => prev === "asc" ? "desc" : "asc") }>
-                  <i className={`fas ${sortDir === "asc" ? "fa-arrow-down-1-9" : "fa-arrow-down-9-1"}`}></i>
-                  <span>
-                    {sortDir === "asc"
-                      ? (lang === "fr" ? "Croissant" : lang === "ar" ? "تصاعدي" : "Ascending")
-                      : (lang === "fr" ? "Décroissant" : lang === "ar" ? "تنازلي" : "Descending")}
-                  </span>
+                <button
+                  className="hp2-icon-btn"
+                  onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")}
+                  title={sortDir === "asc" ? "Décroissant" : "Croissant"}
+                >
+                  <i className={`fas fa-sort-${sortDir === "asc" ? "down" : "up"}`} />
                 </button>
               )}
+              <button
+                className={cn("hp2-icon-btn", viewMode === "grid" && "hp2-icon-btn--on")}
+                onClick={() => setViewMode("grid")}
+                title="Grille"
+              >
+                <i className="fas fa-grip" />
+              </button>
+              <button
+                className={cn("hp2-icon-btn", viewMode === "list" && "hp2-icon-btn--on")}
+                onClick={() => setViewMode("list")}
+                title="Liste"
+              >
+                <i className="fas fa-list" />
+              </button>
             </div>
           </div>
 
-          <div className="hp-list-meta">
-            <div className="hp-list-count">{listSummary.count} {listSummary.label}</div>
-            <div className="hp-list-caption">{listSummary.caption}</div>
-          </div>
-
-          <div className={cn("hp-list", activeTab === "surah" ? "hp-list--grid" : "hp-list--stack")}>
-            {activeTab === "surah" ? (
-              filteredSurahs.length === 0
-                ? <EmptyState icon="fa-magnifying-glass"
-                  text={lang === "ar" ? "لم يتم العثور على سورة" : lang === "fr" ? "Aucune sourate trouvée" : "No surah found"} />
-                : filteredSurahs.map(s => (
-                  <SurahCard
-                    key={s.n} surah={s} lang={lang}
-                    onClick={goSurah}
-                    onPlay={playFromHome}
-                    isActive={s.n === currentSurah && displayMode === "surah"}
-                    isPlaying={state.isPlaying && state.currentPlayingAyah?.surah === s.n}
+          <div className={cn("hp2-items", viewMode === "grid" ? "hp2-items--grid" : "hp2-items--list")}>
+            {activeTab === "surah"
+              ? filteredSurahs.length === 0
+                  ? <EmptyState icon="fa-magnifying-glass" text={t("noResults")} />
+                  : filteredSurahs.map(s => (
+                      <SurahCard
+                        key={s.n}
+                        surah={s}
+                        lang={lang}
+                        viewMode={viewMode}
+                        onClick={goSurah}
+                        onPlay={playFromHome}
+                        isActive={s.n === currentSurah && displayMode === "surah"}
+                        isPlaying={state.isPlaying && state.currentPlayingAyah?.surah === s.n}
+                      />
+                    ))
+              : JUZ_DATA.map(j => (
+                  <JuzCard
+                    key={j.juz}
+                    juzData={j}
+                    lang={lang}
+                    viewMode={viewMode}
+                    onClick={goJuz}
+                    isActive={j.juz === currentJuz && displayMode === "juz"}
                   />
                 ))
-            ) : (
-              JUZ_DATA.map(j => (
-                <JuzCard
-                  key={j.juz} juzData={j} lang={lang}
-                  onClick={goJuz}
-                  isActive={j.juz === currentJuz && displayMode === "juz"}
-                />
-              ))
-            )}
+            }
           </div>
         </section>
       </div>
+
+      {/* ════ FOOTER ════ */}
+      <footer className="hp2-footer">
+        <div className="hp2-footer__inner">
+
+          {/* Colonne marque */}
+          <div className="hp2-footer__brand">
+            <div className="hp2-footer__logo-row">
+              <div className="hp2-footer__logo">
+                <PlatformLogo className="hp2-footer__logo" imgClassName="hp2-footer__logo-img" decorative />
+              </div>
+              <span className="hp2-footer__site-name">MushafPlus</span>
+            </div>
+            <p className="hp2-footer__desc">
+              {lang === "ar"
+                ? "تطبيق لقراءة القرآن الكريم بروايتَي حفص وورش مع التجويد والكلمة بالكلمة والأدعية"
+                : lang === "fr"
+                  ? "Application de lecture du Saint Coran avec tajwîd, mot à mot, douas et signets — riwâyas Hafs & Warsh."
+                  : "Holy Quran reader with tajweed, word-by-word, duas, bookmarks — Hafs & Warsh."}
+            </p>
+            <div className="hp2-footer__badges">
+              <span className="hp2-footer__badge"><i className="fas fa-moon" />{lang === "fr" ? "Mode nuit" : lang === "ar" ? "وضع ليلي" : "Dark mode"}</span>
+              <span className="hp2-footer__badge"><i className="fas fa-language" />AR · FR · EN</span>
+              <span className="hp2-footer__badge"><i className="fas fa-wifi-slash" />{lang === "fr" ? "Hors-ligne" : lang === "ar" ? "دون اتصال" : "Offline"}</span>
+              <span className="hp2-footer__badge"><i className="fas fa-headphones" />{lang === "fr" ? "Audio" : "Audio"}</span>
+            </div>
+          </div>
+
+          {/* Colonne navigation */}
+          <div className="hp2-footer__col">
+            <p className="hp2-footer__col-title">{lang === "ar" ? "تصفح" : lang === "fr" ? "Navigation" : "Navigate"}</p>
+            <ul className="hp2-footer__links">
+              {[
+                { n: 1,  ar: "الفاتحة",  fr: "Al-Fatiha",   en: "Al-Fatihah" },
+                { n: 18, ar: "الكهف",    fr: "Al-Kahf",     en: "Al-Kahf"   },
+                { n: 36, ar: "يس",        fr: "Yâ-Sîn",      en: "Ya-Sin"    },
+                { n: 55, ar: "الرحمن",   fr: "Ar-Rahmân",   en: "Ar-Rahman" },
+                { n: 67, ar: "الملك",    fr: "Al-Mulk",     en: "Al-Mulk"   },
+                { n: 112,ar: "الإخلاص",  fr: "Al-Ikhlâs",   en: "Al-Ikhlas" },
+              ].map(s => (
+                <li key={s.n}>
+                  <button className="hp2-footer__link" onClick={() => goSurah(s.n)}>
+                    <span className="hp2-footer__link-num">{s.n}</span>
+                    <span className="hp2-footer__link-label">
+                      <span className="hp2-footer__link-name">{lang === "ar" ? s.ar : lang === "fr" ? s.fr : s.en}</span>
+                      {lang !== "ar" && <span className="hp2-footer__link-ar">{s.ar}</span>}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Colonne accès rapide */}
+          <div className="hp2-footer__col">
+            <p className="hp2-footer__col-title">{lang === "ar" ? "وصول سريع" : lang === "fr" ? "Accès rapide" : "Popular"}</p>
+            <ul className="hp2-footer__links hp2-footer__links--grid">
+              {[
+                { n: 2,  ar: "البقرة",   fr: "Al-Baqara",  en: "Al-Baqarah" },
+                { n: 3,  ar: "آل عمران", fr: "Âl-Imrân",   en: "Ali Imran"  },
+                { n: 19, ar: "مريم",     fr: "Maryam",     en: "Maryam"     },
+                { n: 56, ar: "الواقعة", fr: "Al-Wâqi'a",  en: "Al-Waqi'ah" },
+                { n: 78, ar: "النبأ",    fr: "An-Naba'",   en: "An-Naba"    },
+                { n: 114,ar: "الناس",   fr: "An-Nâs",     en: "An-Nas"     },
+              ].map(s => (
+                <li key={s.n}>
+                  <button className="hp2-footer__link" onClick={() => goSurah(s.n)}>
+                    <span className="hp2-footer__link-num">{s.n}</span>
+                    <span className="hp2-footer__link-label">
+                      <span className="hp2-footer__link-name">{lang === "ar" ? s.ar : lang === "fr" ? s.fr : s.en}</span>
+                      {lang !== "ar" && <span className="hp2-footer__link-ar">{s.ar}</span>}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+        </div>
+
+        {/* Ornamental Ayah strip */}
+        <div className="hp2-footer__ayah-strip">
+          <p className="hp2-footer__ayah-ar">وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ</p>
+          <span className="hp2-footer__ayah-ref">
+            {lang === "ar" ? "سورة الذاريات · ٥١:٥٦" : lang === "fr" ? "Sūrat Ad-Dhāriyāt · 51:56" : "Sūrat Adh-Dhāriyāt · 51:56"}
+          </span>
+        </div>
+
+        {/* Bas de footer */}
+        <div className="hp2-footer__bottom">
+          <span className="hp2-footer__copy">
+            {lang === "fr" ? `© ${currentYear} MushafPlus — Lecture du Coran` : lang === "ar" ? `© ${currentYear} مصحف بلس` : `© ${currentYear} MushafPlus`}
+          </span>
+          <span className="hp2-footer__bismallah" aria-hidden="true">﷽</span>
+        </div>
+      </footer>
+
     </div>
   );
 }
-

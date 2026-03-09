@@ -168,7 +168,7 @@ function IconBtn({ onClick, title, active, children, size = "md" }) {
    Main component
 ═══════════════════════════════════════════════ */
 export default function AudioPlayer() {
-  const { state, set } = useApp();
+  const { state, dispatch, set } = useApp();
   const {
     lang,
     reciter,
@@ -183,6 +183,7 @@ export default function AudioPlayer() {
     volume: savedVolume,
     showHome,
     playerMinimized,
+    karaokeFollow,
   } = state;
 
   const [progress, setProgress] = useState(0);
@@ -194,6 +195,27 @@ export default function AudioPlayer() {
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   const [audioError, setAudioError] = useState(null);
   const [networkState, setNetworkState] = useState("idle");
+
+  /* ── Fermeture / refs stables pour callbacks ── */
+  const [closed, setClosed] = useState(false);
+  const currentSurahRef = useRef(null);
+  const karaokeFollowRef = useRef(true);
+
+  /* ── A-B Repeat state ── */
+  const [abA, setAbA] = useState(null); // { idx, surah, ayah }
+  const [abB, setAbB] = useState(null); // { idx, surah, ayah }
+
+  /* ── EQ preset ── */
+  const [eqPreset, setEqPreset] = useState('flat');
+
+  /* ── Tartil progressive ── */
+  const [tartilMode, setTartilMode] = useState(false);
+
+  /* ── Recitation mode (Web Speech API) ── */
+  const [reciteMode, setReciteMode] = useState(false);
+  const [reciteText, setReciteText] = useState('');
+  const [reciteResult, setReciteResult] = useState(null); // 'ok'|'partial'|'wrong'|null
+  const reciteRecogRef = useRef(null);
 
   const progressRef = useRef(null);
   const audioErrorTimerRef = useRef(null);
@@ -208,6 +230,7 @@ export default function AudioPlayer() {
   /* ── Wire audio callbacks ── */
   useEffect(() => {
     audioService.onPlay = (item) => {
+      setClosed(false); // réouvre si fermé
       setAudioError(null);
       set({
         isPlaying: true,
@@ -228,6 +251,10 @@ export default function AudioPlayer() {
       setProgress(0);
     };
     audioService.onAyahChange = (item) => {
+      // Navigation automatique karaoke : suivre la sourate
+      if (karaokeFollowRef.current && item.surah && item.surah !== currentSurahRef.current) {
+        dispatch({ type: "NAVIGATE_SURAH", payload: { surah: item.surah, ayah: item.ayah || 1 } });
+      }
       set({
         currentPlayingAyah: {
           surah: item.surah,
@@ -330,6 +357,72 @@ export default function AudioPlayer() {
     else audioService.disableMemorization();
   }, [memMode, memRepeatCount, memPause]);
 
+  /* ── A-B Repeat handlers ── */
+  const markAbA = useCallback(() => {
+    const idx  = audioService.playlistIndex;
+    const item = audioService.currentAyah;
+    if (idx < 0 || !item) return;
+    setAbA({ idx, surah: item.surah, ayah: item.ayah });
+    audioService.setAbRepeat(idx, abB?.idx ?? -1);
+  }, [abB]);
+
+  const markAbB = useCallback(() => {
+    const idx  = audioService.playlistIndex;
+    const item = audioService.currentAyah;
+    if (idx < 0 || !item) return;
+    setAbB({ idx, surah: item.surah, ayah: item.ayah });
+    audioService.setAbRepeat(abA?.idx ?? -1, idx);
+  }, [abA]);
+
+  const clearAb = useCallback(() => {
+    setAbA(null); setAbB(null);
+    audioService.clearAbRepeat();
+  }, []);
+
+  /* ── EQ preset handler ── */
+  const handleEq = useCallback((preset) => {
+    setEqPreset(preset);
+    audioService.applyEqPreset(preset);
+  }, []);
+
+  /* ── Tartil toggle ── */
+  const toggleTartil = useCallback(() => {
+    const next = !tartilMode;
+    setTartilMode(next);
+    audioService.setTartilMode(next, audioSpeed);
+  }, [tartilMode, audioSpeed]);
+
+  /* ── Recitation mode ── */
+  const startRecite = useCallback(() => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { alert(lang === 'fr' ? 'Reconnaissance vocale non disponible sur ce navigateur.' : 'Speech recognition not available.'); return; }
+    setReciteMode(true);
+    setReciteResult(null);
+    setReciteText('');
+    const r = new SR();
+    r.lang = 'ar-SA';
+    r.continuous = false;
+    r.interimResults = true;
+    r.onresult = (e) => {
+      const transcript = Array.from(e.results).map(x => x[0].transcript).join(' ');
+      setReciteText(transcript);
+      if (e.results[0].isFinal) {
+        const ayahText = audioService.currentAyah?.text || '';
+        const match = ayahText && transcript && ayahText.includes(transcript.slice(0, 8));
+        setReciteResult(match ? 'ok' : 'partial');
+      }
+    };
+    r.onerror = () => { setReciteResult('wrong'); };
+    r.onend = () => { setReciteMode(false); };
+    r.start();
+    reciteRecogRef.current = r;
+  }, [lang]);
+
+  const stopRecite = useCallback(() => {
+    reciteRecogRef.current?.stop();
+    setReciteMode(false);
+  }, []);
+
   /* ── Controls ── */
   const toggle = useCallback(() => audioService.toggle(), []);
   const stop = useCallback(() => audioService.stop(), []);
@@ -367,15 +460,23 @@ export default function AudioPlayer() {
     setMinimized((prev) => !prev);
   }, []);
 
+  const closePlayer = useCallback(() => {
+    audioService.stop();
+    setClosed(true);
+  }, []);
+
   const currentReciters = getRecitersByRiwaya(riwaya);
   const isWarshMode = riwaya === "warsh";
 
   const { currentSurah } = state;
+  currentSurahRef.current = currentSurah;
+  karaokeFollowRef.current = karaokeFollow ?? true;
   const surahMeta = getSurah(currentSurah);
   const currentSurahName = surahMeta ? surahName(currentSurah, lang) : "";
   const currentArabicName = surahMeta?.ar || "";
 
   const reciterObj = currentReciters.find((r) => r.id === reciter);
+  const isHomeDesktop = showHome && !isMobile;
   const reciterLabel =
     lang === "ar"
       ? reciterObj?.name
@@ -479,6 +580,7 @@ export default function AudioPlayer() {
 
   const onPointerDown = useCallback(
     (e) => {
+      if (isHomeDesktop) return;
       if (e.target.closest("button") || e.target.closest("input")) return;
       e.preventDefault();
       e.currentTarget.setPointerCapture(e.pointerId);
@@ -491,6 +593,7 @@ export default function AudioPlayer() {
       setIsDragging(true);
     },
     [cardPos],
+    [cardPos, isHomeDesktop],
   );
 
   const onPointerMove = useCallback((e) => {
@@ -524,6 +627,9 @@ export default function AudioPlayer() {
     },
     [cardPos],
   );
+
+  /* Ne rien afficher si le lecteur est fermé */
+  if (closed) return null;
 
   /* ══════════════════════════════════════════
      MOBILE — classic bottom bar
@@ -580,6 +686,13 @@ export default function AudioPlayer() {
               title={lang === "fr" ? "Agrandir" : lang === "ar" ? "تكبير" : "Expand"}
             >
               <i className="fas fa-up-right-and-down-left-from-center" />
+            </button>
+            <button
+              className={cn(mBarBtn, "w-8 h-8 text-[0.72rem] rounded-lg shrink-0")}
+              onClick={closePlayer}
+              title={lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
+            >
+              <i className="fas fa-xmark" />
             </button>
           </div>
         </div>
@@ -806,7 +919,7 @@ export default function AudioPlayer() {
               <span className="text-[0.6rem] font-bold uppercase tracking-widest text-[rgba(240,234,214,0.35)]">
                 {t("audio.reciter", lang)}
               </span>
-              <div className="grid grid-cols-2 gap-1 mt-1.5">
+              <div className="grid grid-cols-2 gap-1 mt-1.5" style={{ maxHeight: '13rem', overflowY: 'auto', paddingRight: '2px', scrollbarWidth: 'thin' }}>
                 {currentReciters.map((r) => {
                   const active = reciter === r.id;
                   return (
@@ -825,18 +938,26 @@ export default function AudioPlayer() {
                       }}
                       aria-pressed={active}
                     >
-                      {active && (
-                        <i
-                          className="fas fa-check text-[0.48rem] shrink-0"
-                          style={{ color: "var(--gold-bright)" }}
-                        />
-                      )}
-                      <span className="text-[0.6rem] font-semibold leading-tight truncate">
-                        {lang === "ar"
-                          ? r.name
-                          : lang === "fr"
-                            ? r.nameFr
-                            : r.nameEn}
+                      <span className="shrink-0 flex items-center justify-center rounded-full"
+                        style={{ width: '1.25rem', height: '1.25rem', background: active ? 'rgba(212,168,32,0.2)' : 'rgba(255,255,255,0.06)', fontSize: '0.45rem', color: active ? '#d4a820' : 'rgba(240,234,214,0.4)' }}>
+                        {active
+                          ? <i className="fas fa-check" />
+                          : <i className="fas fa-microphone" />}
+                      </span>
+                      <span className="flex flex-col min-w-0">
+                        <span className="text-[0.6rem] font-semibold leading-tight truncate">
+                          {lang === "ar"
+                            ? r.name
+                            : lang === "fr"
+                              ? r.nameFr
+                              : r.nameEn}
+                        </span>
+                        {r.style && (
+                          <span className="text-[0.48rem] leading-tight truncate uppercase tracking-wide"
+                            style={{ color: 'rgba(240,234,214,0.3)' }}>
+                            {r.style}
+                          </span>
+                        )}
                       </span>
                     </button>
                   );
@@ -937,6 +1058,96 @@ export default function AudioPlayer() {
                 </div>
               </div>
             )}
+
+            {/* Karaoke + Fermer */}
+            <div className="flex items-center gap-2 mt-2.5">
+              <button
+                className={cn(mBarBtnSm(karaokeFollow), "flex-1 gap-1.5 justify-center")}
+                onClick={() => set({ karaokeFollow: !karaokeFollow })}
+                aria-pressed={karaokeFollow}
+                title={lang === "fr" ? "Suivre le verset récité" : "Follow verse"}
+              >
+                <i className="fas fa-location-crosshairs text-[0.6rem]" />
+                {lang === "fr" ? "Suivre" : lang === "ar" ? "تتبع" : "Follow"}
+              </button>
+              <button
+                className={cn(mBarBtnSm(), "flex-1 gap-1.5 justify-center")}
+                onClick={closePlayer}
+                title={lang === "fr" ? "Fermer le lecteur" : "Close player"}
+              >
+                <i className="fas fa-xmark text-[0.6rem]" />
+                {lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
+              </button>
+            </div>
+
+            {/* ── A-B Repeat (mobile) ── */}
+            <div className="mt-2.5">
+              <div className="text-[0.56rem] font-bold uppercase tracking-widest mb-1" style={{ color: "rgba(212,168,32,0.5)" }}>
+                A-B Repeat
+              </div>
+              <div className="flex gap-1.5 flex-wrap">
+                {[
+                  { mark: markAbA, val: abA, lbl: "A" },
+                  { mark: markAbB, val: abB, lbl: "B" },
+                ].map(({ mark, val, lbl }) => (
+                  <button key={lbl} onClick={mark}
+                    className={cn(mBarBtnSm(!!val), "px-2 py-1")}
+                    disabled={!currentPlayingAyah}
+                  >
+                    {val ? `${lbl}: ${val.surah}:${val.ayah}` : lbl}
+                  </button>
+                ))}
+                {(abA || abB) && (
+                  <button onClick={clearAb} className={cn(mBarBtnSm(), "px-2 py-1")}>
+                    <i className="fas fa-xmark" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* ── EQ presets (mobile) ── */}
+            <div className="mt-2.5">
+              <div className="text-[0.56rem] font-bold uppercase tracking-widest mb-1" style={{ color: "rgba(212,168,32,0.5)" }}>
+                {lang === "fr" ? "Acoustique" : lang === "ar" ? "الصوتيات" : "Acoustics"}
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {[
+                  { id: "flat", fr: "Plat", ar: "عادي", en: "Flat" },
+                  { id: "bass", fr: "Graves", ar: "جهير", en: "Bass" },
+                  { id: "treble", fr: "Aigus", ar: "حاد", en: "Treble" },
+                  { id: "near", fr: "Proche", ar: "قريب", en: "Near" },
+                  { id: "hall", fr: "Salle", ar: "قاعة", en: "Hall" },
+                  { id: "vocals", fr: "Voix", ar: "صوتي", en: "Vocals" },
+                ].map((p) => (
+                  <button key={p.id} onClick={() => handleEq(p.id)}
+                    className={cn(mBarBtnSm(eqPreset === p.id), "px-1.5")}>
+                    {lang === "ar" ? p.ar : lang === "fr" ? p.fr : p.en}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Tartil + Récitation (mobile) ── */}
+            <div className="flex gap-1.5 mt-2">
+              <button onClick={toggleTartil}
+                className={cn(mBarBtnSm(tartilMode), "flex-1 gap-1 justify-center")}
+                aria-pressed={tartilMode}>
+                <i className="fas fa-wave-square text-[0.6rem]" />
+                {lang === "fr" ? "Tartil" : lang === "ar" ? "ترتيل" : "Tartil"}
+              </button>
+              <button onClick={reciteMode ? stopRecite : startRecite}
+                className={cn(mBarBtnSm(reciteMode), "flex-1 gap-1 justify-center")}
+                style={reciteMode ? { color: "#86efac", borderColor: "rgba(34,197,94,0.4)" } : {}}>
+                <i className={`fas ${reciteMode ? "fa-stop" : "fa-microphone"} text-[0.6rem]`} />
+                {lang === "fr" ? "Réciter" : lang === "ar" ? "تلاوة" : "Recite"}
+              </button>
+            </div>
+            {reciteMode && reciteText && (
+              <div className="mt-1.5 px-2 py-1.5 rounded-lg text-[0.65rem] text-right" dir="rtl"
+                style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", color: "#86efac" }}>
+                {reciteText}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -1006,12 +1217,14 @@ export default function AudioPlayer() {
         onPointerCancel={onPointerUp}
         className={cn(
           "fixed z-[300] flex flex-col overflow-hidden select-none touch-none",
-          isDragging ? "cursor-grabbing" : "cursor-grab",
+          isHomeDesktop ? "cursor-default" : isDragging ? "cursor-grabbing" : "cursor-grab",
         )}
         style={{
-          left: cardPos.x,
-          top: cardPos.y,
-          width: minimized ? 228 : expanded ? 286 : 272,
+          left: isHomeDesktop ? "auto" : cardPos.x,
+          top: isHomeDesktop ? "auto" : cardPos.y,
+          right: isHomeDesktop ? 24 : "auto",
+          bottom: isHomeDesktop ? 24 : "auto",
+          width: isHomeDesktop ? (expanded ? 320 : 300) : minimized ? 228 : expanded ? 286 : 272,
           background: "var(--player-glass)",
           border: "1px solid var(--player-border)",
           borderRadius: minimized ? 20 : 24,
@@ -1029,7 +1242,7 @@ export default function AudioPlayer() {
               : "Audio Player"
         }
       >
-        {minimized ? (
+        {minimized && !isHomeDesktop ? (
           <>
             <div className="flex items-center gap-3 px-3.5 pt-3 pb-2.5">
               <CoverArt isPlaying={isPlaying} size={42} />
@@ -1086,6 +1299,13 @@ export default function AudioPlayer() {
               >
                 <i className="fas fa-up-right-and-down-left-from-center" />
               </IconBtn>
+              <IconBtn
+                onClick={closePlayer}
+                title={lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
+                size="sm"
+              >
+                <i className="fas fa-xmark" />
+              </IconBtn>
             </div>
             <div className="px-3.5 pb-3">
               <div className="relative h-0.75 rounded-full" style={{ background: "rgba(255,255,255,0.1)" }}>
@@ -1124,11 +1344,19 @@ export default function AudioPlayer() {
             className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white/10 transition-colors"
             style={{ color: "rgba(240,234,214,0.5)" }}
             title={lang === "fr" ? "Minimiser" : "Minimize"}
+            disabled={isHomeDesktop}
           >
             <i className="fas fa-chevron-down text-xs" />
           </button>
           <div className="w-7 h-0.75 rounded-full bg-white/20" />
-          <div className="w-6" />
+          <button
+            onClick={closePlayer}
+            className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white/10 transition-colors"
+            style={{ color: "rgba(240,234,214,0.5)" }}
+            title={lang === "fr" ? "Fermer le lecteur" : lang === "ar" ? "إغلاق" : "Close player"}
+          >
+            <i className="fas fa-xmark text-xs" />
+          </button>
         </div>
 
         <div className="px-4 pb-4 pt-1 flex flex-col gap-3">
@@ -1174,8 +1402,20 @@ export default function AudioPlayer() {
             </div>
             <div className="flex items-center gap-1 shrink-0">
               <IconBtn
+                onClick={() => set({ karaokeFollow: !karaokeFollow })}
+                title={
+                  karaokeFollow
+                    ? (lang === "fr" ? "Suivi ON — clic pour désactiver" : "Follow ON")
+                    : (lang === "fr" ? "Suivi OFF — clic pour activer" : "Follow OFF")
+                }
+                active={karaokeFollow}
+                size="sm"
+              >
+                <i className="fas fa-location-crosshairs" />
+              </IconBtn>
+              <IconBtn
                 onClick={toggleMinimized}
-                title={lang === "fr" ? "Reduire" : lang === "ar" ? "تصغير" : "Minimize"}
+                title={lang === "fr" ? "Réduire" : lang === "ar" ? "تصغير" : "Minimize"}
                 size="sm"
               >
                 <i className="fas fa-window-minimize" />
@@ -1456,6 +1696,146 @@ export default function AudioPlayer() {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Suivre le verset récité */}
+              <button
+                onClick={() => set({ karaokeFollow: !karaokeFollow })}
+                className="flex items-center justify-between gap-2 py-1.5 px-3 rounded-xl text-[0.7rem] font-semibold transition-all duration-150"
+                style={{
+                  background: karaokeFollow ? "rgba(212,168,32,0.12)" : "rgba(255,255,255,0.05)",
+                  border: karaokeFollow ? "1px solid rgba(212,168,32,0.3)" : "1px solid rgba(255,255,255,0.1)",
+                  color: karaokeFollow ? "#f5d785" : "rgba(240,234,214,0.6)",
+                  fontFamily: "var(--font-ui)",
+                }}
+                aria-pressed={karaokeFollow}
+              >
+                <span className="flex items-center gap-2">
+                  <i className="fas fa-location-crosshairs text-[0.6rem]" />
+                  {lang === "fr" ? "Suivre le verset récité" : lang === "ar" ? "تتبع الآية المقروءة" : "Follow recited verse"}
+                </span>
+                <span className={cn(
+                  "text-[0.55rem] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wide",
+                  karaokeFollow
+                    ? "bg-[rgba(212,168,32,0.2)] text-[#f5d785]"
+                    : "bg-white/[0.08] text-white/40"
+                )}>
+                  {karaokeFollow ? "ON" : "OFF"}
+                </span>
+              </button>
+
+              {/* ── A-B Repeat ── */}
+              <div>
+                <div className="text-[0.58rem] font-bold uppercase tracking-widest mb-1.5" style={{ color: "rgba(212,168,32,0.5)", fontFamily: "var(--font-ui)" }}>
+                  {lang === "fr" ? "Répétition A-B" : lang === "ar" ? "تكرار أ-ب" : "A-B Repeat"}
+                </div>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {[
+                    { mark: markAbA, val: abA, label: "A", titleFr: "Marquer début A", titleEn: "Set A point" },
+                    { mark: markAbB, val: abB, label: "B", titleFr: "Marquer fin B",   titleEn: "Set B point" },
+                  ].map(({ mark, val, label, titleFr, titleEn }) => (
+                    <button key={label} onClick={mark}
+                      className="px-2 py-0.75 rounded-lg text-[0.65rem] font-bold border transition-all"
+                      style={{
+                        background: val ? "rgba(212,168,32,0.2)" : "rgba(255,255,255,0.06)",
+                        border: val ? "1px solid rgba(212,168,32,0.45)" : "1px solid rgba(255,255,255,0.1)",
+                        color: val ? "#f5d785" : "rgba(240,234,214,0.6)",
+                        fontFamily: "var(--font-ui)",
+                      }}
+                      title={lang === "fr" ? titleFr : titleEn}
+                      disabled={!currentPlayingAyah}
+                    >
+                      <i className={`fas fa-flag${label === "A" ? "-checkered" : ""} mr-0.5 text-[0.5rem]`} />
+                      {val ? `${label}: ${val.surah}:${val.ayah}` : label}
+                    </button>
+                  ))}
+                  {(abA || abB) && (
+                    <button onClick={clearAb}
+                      className="px-2 py-0.75 rounded-lg text-[0.65rem] border transition-all"
+                      style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(240,234,214,0.45)" }}
+                    >
+                      <i className="fas fa-xmark" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* ── Equalizer presets ── */}
+              <div>
+                <div className="text-[0.58rem] font-bold uppercase tracking-widest mb-1.5" style={{ color: "rgba(212,168,32,0.5)", fontFamily: "var(--font-ui)" }}>
+                  {lang === "fr" ? "Acoustique" : lang === "ar" ? "الصوتيات" : "Acoustics"}
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {[
+                    { id: "flat",   fr: "Plat",   ar: "عادي",  en: "Flat" },
+                    { id: "bass",   fr: "Graves",  ar: "جهير", en: "Bass" },
+                    { id: "treble", fr: "Aigus",   ar: "حاد",  en: "Treble" },
+                    { id: "near",   fr: "Proche",  ar: "قريب", en: "Near" },
+                    { id: "hall",   fr: "Salle",   ar: "قاعة", en: "Hall" },
+                    { id: "vocals", fr: "Voix",    ar: "صوتي", en: "Vocals" },
+                  ].map((p) => (
+                    <button key={p.id} onClick={() => handleEq(p.id)}
+                      className="px-1.5 py-0.75 rounded-md text-[0.6rem] font-semibold border transition-all"
+                      style={{
+                        background: eqPreset === p.id ? "rgba(212,168,32,0.2)" : "rgba(255,255,255,0.05)",
+                        border: eqPreset === p.id ? "1px solid rgba(212,168,32,0.45)" : "1px solid rgba(255,255,255,0.08)",
+                        color: eqPreset === p.id ? "#f5d785" : "rgba(240,234,214,0.6)",
+                        fontFamily: "var(--font-ui)",
+                      }}
+                      aria-pressed={eqPreset === p.id}
+                    >
+                      {lang === "ar" ? p.ar : lang === "fr" ? p.fr : p.en}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── Tartil progressif ── */}
+              <button onClick={toggleTartil}
+                className="flex items-center justify-between gap-2 py-1.5 px-3 rounded-xl text-[0.7rem] font-semibold transition-all duration-150"
+                style={{
+                  background: tartilMode ? "rgba(212,168,32,0.12)" : "rgba(255,255,255,0.05)",
+                  border: tartilMode ? "1px solid rgba(212,168,32,0.3)" : "1px solid rgba(255,255,255,0.1)",
+                  color: tartilMode ? "#f5d785" : "rgba(240,234,214,0.6)",
+                  fontFamily: "var(--font-ui)",
+                }}
+                aria-pressed={tartilMode}
+              >
+                <span className="flex items-center gap-2">
+                  <i className="fas fa-wave-square text-[0.6rem]" />
+                  {lang === "fr" ? "Tartil progressif" : lang === "ar" ? "الترتيل التدريجي" : "Progressive Tartil"}
+                </span>
+                <span className={cn("text-[0.55rem] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wide",
+                  tartilMode ? "bg-[rgba(212,168,32,0.2)] text-[#f5d785]" : "bg-white/[0.08] text-white/40")}>
+                  {tartilMode ? "ON" : "OFF"}
+                </span>
+              </button>
+
+              {/* ── Mode récitation (Web Speech API) ── */}
+              <button onClick={reciteMode ? stopRecite : startRecite}
+                className="flex items-center justify-between gap-2 py-1.5 px-3 rounded-xl text-[0.7rem] font-semibold transition-all duration-150"
+                style={{
+                  background: reciteMode ? "rgba(34,197,94,0.15)" : "rgba(255,255,255,0.05)",
+                  border: reciteMode ? "1px solid rgba(34,197,94,0.4)" : "1px solid rgba(255,255,255,0.1)",
+                  color: reciteMode ? "#86efac" : "rgba(240,234,214,0.6)",
+                  fontFamily: "var(--font-ui)",
+                }}
+              >
+                <span className="flex items-center gap-2">
+                  <i className={`fas ${reciteMode ? "fa-stop" : "fa-microphone"} text-[0.6rem]`} />
+                  {lang === "fr" ? (reciteMode ? "Arrêter la récitation" : "Mode récitation") : lang === "ar" ? (reciteMode ? "إيقاف التلاوة" : "وضع التلاوة") : (reciteMode ? "Stop reciting" : "Recitation mode")}
+                </span>
+                {reciteResult && (
+                  <span style={{ color: reciteResult === "ok" ? "#86efac" : "#fbbf24", fontSize: "0.9rem" }}>
+                    {reciteResult === "ok" ? "✓" : "~"}
+                  </span>
+                )}
+              </button>
+              {reciteMode && reciteText && (
+                <div className="px-3 py-2 rounded-xl text-[0.65rem] text-right" dir="rtl"
+                  style={{ background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)", color: "#86efac", fontFamily: "var(--font-arabic, serif)" }}>
+                  {reciteText}
                 </div>
               )}
 
