@@ -865,16 +865,10 @@ export default function QuranDisplay() {
     currentSurah,
   ]);
 
-  // The slice of ayahs visible in the current chunk
+  // Display all ayahs (no chunking)
   const visibleAyahs = useMemo(() => {
-    if (!isLongSurah || surahChunks.length === 0) return ayahs;
-    const chunk = surahChunks[chunkIndex];
-    if (!chunk) return ayahs;
-    // ayahs array is 0-indexed; chunk.start/end are 1-indexed ayah numbers within the surah
-    return ayahs.filter(
-      (a) => a.numberInSurah >= chunk.start && a.numberInSurah <= chunk.end,
-    );
-  }, [ayahs, isLongSurah, surahChunks, chunkIndex]);
+    return ayahs;
+  }, [ayahs]);
 
   /* ── Group ayahs by surah (memoized for page/juz mode) ── */
   const surahGroups = useMemo(() => {
@@ -1050,49 +1044,6 @@ export default function QuranDisplay() {
         </div>
       )}
 
-      {(showTranslation || (showWordByWord && showWordTranslation)) && (
-        <div
-          className="translation-active-strip"
-          aria-label={
-            lang === "fr"
-              ? "Langues de traduction actives"
-              : lang === "ar"
-                ? "لغات الترجمة النشطة"
-                : "Active translation languages"
-          }
-        >
-          {showTranslation && (
-            <div className="translation-active-chip">
-              <i
-                className={`fas ${verseTranslationMeta.icon}`}
-                aria-hidden="true"
-              ></i>
-              <span className="translation-active-chip__label">
-                {lang === "fr"
-                  ? "Versets"
-                  : lang === "ar"
-                    ? "الآيات"
-                    : "Verses"}
-              </span>
-              <strong>{verseTranslationLabel}</strong>
-            </div>
-          )}
-          {showWordByWord && showWordTranslation && (
-            <div className="translation-active-chip translation-active-chip--secondary">
-              <i className="fas fa-w" aria-hidden="true"></i>
-              <span className="translation-active-chip__label">
-                {lang === "fr"
-                  ? "Mot-à-mot"
-                  : lang === "ar"
-                    ? "كلمة بكلمة"
-                    : "Word by word"}
-              </span>
-              <strong>{wordTranslationLabel}</strong>
-            </div>
-          )}
-        </div>
-      )}
-
       {/* Surah mode */}
       {displayMode === "surah" && (
         <div
@@ -1207,67 +1158,6 @@ export default function QuranDisplay() {
           {/* ── List layout (default) — chunks + ayah blocks ── */}
           {mushafLayout !== "mushaf" && (
             <>
-              {/* Chunk label for long surahs */}
-              {isLongSurah && surahChunks[chunkIndex] && (
-                <div className="chunk-nav-bar">
-                  <button
-                    className="btn btn-outline chunk-btn"
-                    onClick={() => {
-                      setChunkIndex((i) => i - 1);
-                      contentRef.current?.scrollTo({
-                        top: 0,
-                        behavior: "smooth",
-                      });
-                    }}
-                    disabled={chunkIndex === 0}
-                  >
-                    <i
-                      className={`fas fa-arrow-${lang === "ar" ? "right" : "left"}`}
-                    ></i>
-                    {lang === "fr" ? "Précédent" : "Previous"}
-                  </button>
-                  <span className="chunk-label">
-                    {lang === "fr"
-                      ? `Partie ${chunkIndex + 1} / ${surahChunks.length}`
-                      : `Part ${chunkIndex + 1} / ${surahChunks.length}`}
-                    {surahChunks[chunkIndex].label && (
-                      <span className="chunk-hizb-label">
-                        {" "}
-                        · {surahChunks[chunkIndex].label}
-                      </span>
-                    )}
-                    <span className="chunk-ayah-range">
-                      {" "}
-                      (
-                      {lang === "ar"
-                        ? toAr(surahChunks[chunkIndex].start)
-                        : surahChunks[chunkIndex].start}
-                      {" – "}
-                      {lang === "ar"
-                        ? toAr(surahChunks[chunkIndex].end)
-                        : surahChunks[chunkIndex].end}
-                      )
-                    </span>
-                  </span>
-                  <button
-                    className="btn btn-outline chunk-btn"
-                    onClick={() => {
-                      setChunkIndex((i) => i + 1);
-                      contentRef.current?.scrollTo({
-                        top: 0,
-                        behavior: "smooth",
-                      });
-                    }}
-                    disabled={chunkIndex === surahChunks.length - 1}
-                  >
-                    {lang === "fr" ? "Suivant" : "Next"}
-                    <i
-                      className={`fas fa-arrow-${lang === "ar" ? "left" : "right"}`}
-                    ></i>
-                  </button>
-                </div>
-              )}
-
               {/* Ayah list — plain render, no virtual scroll */}
               <div
                 role="list"
@@ -1278,29 +1168,44 @@ export default function QuranDisplay() {
                   const isPlayingAyah =
                     currentPlayingAyah?.ayah === ayah.numberInSurah &&
                     currentPlayingAyah?.surah === currentSurah;
+
+                  // Add page separator if this ayah is on a new page
+                  const showPageSeparator =
+                    idx > 0 && visibleAyahs[idx - 1].page !== ayah.page;
                   const trans = visibleTranslations[idx] || null;
                   return (
-                    <AyahBlock
-                      key={ayah.number}
-                      ayah={ayah}
-                      ayahId={`ayah-${ayah.numberInSurah}`}
-                      isPlaying={isPlayingAyah}
-                      isActive={activeAyah === ayah.numberInSurah}
-                      trans={trans}
-                      showTajwid={showTajwid}
-                      showTranslation={showTranslation}
-                      showWordByWord={showWordByWord}
-                      showTransliteration={showTransliteration}
-                      showWordTranslation={showWordTranslation}
-                      surahNum={currentSurah}
-                      calibration={karaokeCalibration}
-                      riwaya={riwaya}
-                      lang={lang}
-                      fontSize={fontSize}
-                      memMode={memMode}
-                      mushafLayout={mushafLayout}
-                      onToggleActive={() => toggleAyah(ayah.numberInSurah)}
-                    />
+                    <React.Fragment key={ayah.number}>
+                      {showPageSeparator && (
+                        <div className="page-separator">
+                          <span className="page-separator-line"></span>
+                          <span className="page-separator-text">
+                            {lang === "ar" ? "صفحة" : "Page"}{" "}
+                            {lang === "ar" ? toAr(ayah.page) : ayah.page}
+                          </span>
+                          <span className="page-separator-line"></span>
+                        </div>
+                      )}
+                      <AyahBlock
+                        ayah={ayah}
+                        ayahId={`ayah-${ayah.numberInSurah}`}
+                        isPlaying={isPlayingAyah}
+                        isActive={activeAyah === ayah.numberInSurah}
+                        trans={trans}
+                        showTajwid={showTajwid}
+                        showTranslation={showTranslation}
+                        showWordByWord={showWordByWord}
+                        showTransliteration={showTransliteration}
+                        showWordTranslation={showWordTranslation}
+                        surahNum={currentSurah}
+                        calibration={karaokeCalibration}
+                        riwaya={riwaya}
+                        lang={lang}
+                        fontSize={fontSize}
+                        memMode={memMode}
+                        mushafLayout={mushafLayout}
+                        onToggleActive={() => toggleAyah(ayah.numberInSurah)}
+                      />
+                    </React.Fragment>
                   );
                 })}
               </div>
@@ -1880,7 +1785,7 @@ export default function QuranDisplay() {
               style={{ fontSize: `${Math.max(fontSize, 28)}px` }}
               dir="rtl"
             >
-              {visibleAyahs.map((a) => (
+              {ayahs.map((a) => (
                 <React.Fragment key={a.number || a.numberInSurah}>
                   <span
                     className={
@@ -1904,7 +1809,7 @@ export default function QuranDisplay() {
                     : getSurah(currentSurah).en
                   : ""}
                 {" · "}
-                {visibleAyahs.length} {lang === "fr" ? "versets" : "ayahs"}
+                {ayahs.length} {lang === "fr" ? "versets" : "ayahs"}
               </span>
               <span className="mfp-footer-text" style={{ opacity: 0.5 }}>
                 MushafPlus

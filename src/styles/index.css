@@ -5358,13 +5358,6 @@ select,
     color: var(--text);
 }
 
-.qc-ayah-translation {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    color: var(--text);
-    max-width: 800px;
-}
-
 .qc-ayah-transliteration {
     font-size: 0.95rem;
     font-style: italic;

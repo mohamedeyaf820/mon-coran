@@ -17,9 +17,23 @@ function AyahMarker({ num, lang }) {
         aria-hidden="true"
       >
         {/* Outer ring */}
-        <circle cx="18" cy="18" r="17" fill="none" strokeWidth="1.4" className="mp-ring-outer" />
+        <circle
+          cx="18"
+          cy="18"
+          r="17"
+          fill="none"
+          strokeWidth="1.4"
+          className="mp-ring-outer"
+        />
         {/* Inner ring */}
-        <circle cx="18" cy="18" r="13" fill="none" strokeWidth="0.9" className="mp-ring-inner" />
+        <circle
+          cx="18"
+          cy="18"
+          r="13"
+          fill="none"
+          strokeWidth="0.9"
+          className="mp-ring-inner"
+        />
         {/* Decorative petals */}
         <path d="M18,1 L20,7 L18,5 L16,7 Z" className="mp-petal" />
         <path d="M18,35 L20,29 L18,31 L16,29 Z" className="mp-petal" />
@@ -53,7 +67,8 @@ export default function MushafInlineView({
   const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
 
   const juzNum = useMemo(
-    () => (ayahs.length > 0 ? getJuzForAyah(surahNum, ayahs[0].numberInSurah) : 1),
+    () =>
+      ayahs.length > 0 ? getJuzForAyah(surahNum, ayahs[0].numberInSurah) : 1,
     [ayahs, surahNum],
   );
   const juzNumEnd = useMemo(
@@ -72,12 +87,24 @@ export default function MushafInlineView({
 
   const surahNameAr = surahMeta?.ar || "";
   const surahNameDisplay =
-    lang === "ar" ? surahNameAr : lang === "fr" ? surahMeta?.fr || surahNameAr : surahMeta?.en || surahNameAr;
+    lang === "ar"
+      ? surahNameAr
+      : lang === "fr"
+        ? surahMeta?.fr || surahNameAr
+        : surahMeta?.en || surahNameAr;
 
   const revelBadge =
     surahMeta?.type === "Meccan"
-      ? lang === "fr" ? "Mecquoise" : lang === "ar" ? "مكية" : "Meccan"
-      : lang === "fr" ? "Médinoise" : lang === "ar" ? "مدنية" : "Medinan";
+      ? lang === "fr"
+        ? "Mecquoise"
+        : lang === "ar"
+          ? "مكية"
+          : "Meccan"
+      : lang === "fr"
+        ? "Médinoise"
+        : lang === "ar"
+          ? "مدنية"
+          : "Medinan";
 
   const juzLabel = lang === "ar" ? "جزء" : "Juz";
   const ayahCountLabel = surahMeta?.ayahs ?? "?";
@@ -87,7 +114,6 @@ export default function MushafInlineView({
       {/* ══════════════ CADRE EXTÉRIEUR ══════════════ */}
       <div className="mp-outer-border">
         <div className="mp-inner-border">
-
           {/* ── En-tête sourate ── */}
           <div className="mp-header" dir="rtl">
             {/* Coin gauche: numéro juz */}
@@ -106,22 +132,27 @@ export default function MushafInlineView({
 
             {/* Centre: nom de la sourate */}
             <div className="mp-header-center">
-              <span className="mp-ornament" aria-hidden="true">﴾</span>
+              <span className="mp-ornament" aria-hidden="true">
+                ﴾
+              </span>
               <div className="mp-surah-title">
-                <span className="mp-surah-name-ar" dir="rtl">{surahNameAr}</span>
+                <span className="mp-surah-name-ar" dir="rtl">
+                  {surahNameAr}
+                </span>
                 {lang !== "ar" && surahNameDisplay !== surahNameAr && (
                   <span className="mp-surah-name-tr">{surahNameDisplay}</span>
                 )}
               </div>
-              <span className="mp-ornament" aria-hidden="true">﴿</span>
+              <span className="mp-ornament" aria-hidden="true">
+                ﴿
+              </span>
             </div>
 
             {/* Coin droit: type + nb versets */}
             <div className="mp-header-side mp-header-side--end">
               <span className="mp-header-label">{revelBadge}</span>
               <span className="mp-header-value">
-                {lang === "ar" ? toAr(ayahCountLabel) : ayahCountLabel}
-                {" "}
+                {lang === "ar" ? toAr(ayahCountLabel) : ayahCountLabel}{" "}
                 <span className="mp-header-label">
                   {lang === "ar" ? "آية" : lang === "fr" ? "v." : "v."}
                 </span>
@@ -154,7 +185,8 @@ export default function MushafInlineView({
             {ayahs.map((ayah) => {
               const isPlaying =
                 currentPlayingAyah?.ayah === ayah.numberInSurah &&
-                (currentPlayingAyah?.surah === surahNum || currentPlayingAyah?.surah == null);
+                (currentPlayingAyah?.surah === surahNum ||
+                  currentPlayingAyah?.surah == null);
 
               return (
                 <React.Fragment key={ayah.number ?? ayah.numberInSurah}>
@@ -164,7 +196,9 @@ export default function MushafInlineView({
                     onClick={() => onAyahClick?.(ayah.numberInSurah)}
                     role="button"
                     tabIndex={0}
-                    onKeyDown={(e) => e.key === "Enter" && onAyahClick?.(ayah.numberInSurah)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && onAyahClick?.(ayah.numberInSurah)
+                    }
                     aria-label={`Verset ${ayah.numberInSurah}`}
                   >
                     <SmartAyahRenderer
@@ -191,22 +225,6 @@ export default function MushafInlineView({
           </div>
         </div>
       </div>
-
-      {/* ── Traductions (hors cadre) ── */}
-      {showTranslation && translations?.length > 0 && (
-        <div className="mp-translations">
-          {translations.map((tr, idx) =>
-            tr ? (
-              <div key={tr.number ?? idx} className="mp-trans-row">
-                <span className="mp-trans-num">
-                  {lang === "ar" ? toAr(idx + 1) : idx + 1}.
-                </span>
-                <span className="mp-trans-text">{tr.text}</span>
-              </div>
-            ) : null,
-          )}
-        </div>
-      )}
     </div>
   );
 }

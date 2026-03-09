@@ -9,9 +9,8 @@ import TajwidLegend from "./TajwidLegend";
 import MemorizationText from "./MemorizationText";
 
 /**
- * AyahBlock component – renders a single verse with metadata and actions.
- * Default: stacked layout (Arabic above translation).
- * When mushafLayout === "mushaf": side-by-side grid (Arabic | Translation).
+ * AyahBlock component – renders a single Arabic verse with a polished design.
+ * Translation display has been removed; the Arabic text is the sole focus.
  */
 const AyahBlock = React.memo(function AyahBlock({
   ayah,
@@ -34,15 +33,36 @@ const AyahBlock = React.memo(function AyahBlock({
   memMode,
   mushafLayout,
 }) {
-  // Transliteration logic:
-  // 1. If riwaya is Warsh, we must use ayah.hafsText (standard Arabic) instead of ayah.text (PUA codepoints).
-  // 2. We decouple it from showTranslation so users can see just phonetic + Arabic.
   const transliterationSource =
     riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text;
   const ayahTransliteration =
     showTransliteration && !showWordByWord
       ? arabicToLatin(transliterationSource, riwaya)
       : "";
+
+  const arabicContent = memMode ? (
+    <MemorizationText text={ayah.hafsText || ayah.text} lang={lang} />
+  ) : showWordByWord && !(ayah.warshWords?.length > 0) ? (
+    <WordByWordDisplay
+      surah={surahNum}
+      ayah={ayah.numberInSurah}
+      text={ayah.text}
+      isPlaying={isPlaying}
+      progress={progress}
+      showTransliteration={showTransliteration}
+      showWordTranslation={showWordTranslation}
+      fontSize={fontSize}
+    />
+  ) : (
+    <SmartAyahRenderer
+      ayah={ayah}
+      showTajwid={showTajwid}
+      isPlaying={isPlaying}
+      surahNum={surahNum}
+      calibration={calibration}
+      riwaya={riwaya}
+    />
+  );
 
   return (
     <div
@@ -55,116 +75,42 @@ const AyahBlock = React.memo(function AyahBlock({
       tabIndex={0}
     >
       <div className="qc-ayah-container">
-        {/* Verse Number Badge */}
+        {/* ── Verse number badge ── */}
         <div className="qc-ayah-sidebar">
-          <span className="qc-ayah-num">{ayah.numberInSurah}</span>
+          <div className="qc-ayah-num-wrapper">
+            <span className="qc-ayah-num-ornament" aria-hidden="true">
+              &#xFD3E;
+            </span>
+            <span className="qc-ayah-num">{toAr(ayah.numberInSurah)}</span>
+            <span className="qc-ayah-num-ornament" aria-hidden="true">
+              &#xFD3F;
+            </span>
+          </div>
         </div>
 
-        {/* Main Content */}
-        {mushafLayout === "mushaf" ? (
-          /* ── Mushaf mode: side-by-side grid (Arabic | Translation) ── */
-          <div className="qc-ayah-content-grid">
-            {/* Left: Arabic Text */}
-            <div className="qc-ayah-arabic-side">
-              <div className="qc-ayah-text-ar">
-                {memMode ? (
-                  <MemorizationText
-                    text={ayah.hafsText || ayah.text}
-                    lang={lang}
-                  />
-                ) : showWordByWord && !(ayah.warshWords?.length > 0) ? (
-                  <WordByWordDisplay
-                    surah={surahNum}
-                    ayah={ayah.numberInSurah}
-                    text={ayah.text}
-                    isPlaying={isPlaying}
-                    progress={progress}
-                    showTransliteration={showTransliteration}
-                    showWordTranslation={showWordTranslation}
-                    fontSize={fontSize}
-                  />
-                ) : (
-                  <SmartAyahRenderer
-                    ayah={ayah}
-                    showTajwid={showTajwid}
-                    isPlaying={isPlaying}
-                    surahNum={surahNum}
-                    calibration={calibration}
-                    riwaya={riwaya}
-                  />
-                )}
-              </div>
-            </div>
+        {/* ── Main content ── */}
+        <div className="qc-ayah-content">
+          {/* Arabic text — full width, beautifully rendered */}
+          <div className="qc-ayah-text-ar">{arabicContent}</div>
 
-            {/* Right: Translation & Transliteration */}
-            {(showTranslation || showTransliteration) && !showWordByWord && (
-              <div className="qc-ayah-translation-side">
-                {ayahTransliteration && (
-                  <div className="qc-ayah-transliteration">
-                    {ayahTransliteration}
-                  </div>
-                )}
-                {showTranslation && trans && (
-                  <div className="qc-ayah-translation">{trans.text}</div>
-                )}
-              </div>
-            )}
-          </div>
-        ) : (
-          /* ── Default (list) mode: stacked layout ── */
-          <div className="qc-ayah-content">
-            <div className="qc-ayah-text-ar">
-              {memMode ? (
-                <MemorizationText
-                  text={ayah.hafsText || ayah.text}
-                  lang={lang}
-                />
-              ) : showWordByWord && !(ayah.warshWords?.length > 0) ? (
-                <WordByWordDisplay
-                  surah={surahNum}
-                  ayah={ayah.numberInSurah}
-                  text={ayah.text}
-                  isPlaying={isPlaying}
-                  progress={progress}
-                  showTransliteration={showTransliteration}
-                  showWordTranslation={showWordTranslation}
-                  fontSize={fontSize}
-                />
-              ) : (
-                <SmartAyahRenderer
-                  ayah={ayah}
-                  showTajwid={showTajwid}
-                  isPlaying={isPlaying}
-                  surahNum={surahNum}
-                  calibration={calibration}
-                  riwaya={riwaya}
-                />
-              )}
-            </div>
-            {ayahTransliteration && (
-              <div className="qc-ayah-transliteration">
-                {ayahTransliteration}
-              </div>
-            )}
-            {showTranslation && trans && !showWordByWord && (
-              <div className="qc-ayah-translation">{trans.text}</div>
-            )}
-          </div>
-        )}
-
-        {isActive && (
-          <div className="qc-ayah-actions-panel">
-            <AyahActions
-              surah={surahNum}
-              ayah={ayah.numberInSurah}
-              ayahData={ayah}
-            />
-            {showTajwid && riwaya === "hafs" && (
-              <TajwidLegend riwaya={riwaya} />
-            )}
-          </div>
-        )}
+          {/* Transliteration (optional, shown below Arabic) */}
+          {ayahTransliteration && (
+            <div className="qc-ayah-transliteration">{ayahTransliteration}</div>
+          )}
+        </div>
       </div>
+
+      {/* ── Expanded actions panel ── */}
+      {isActive && (
+        <div className="qc-ayah-actions-panel">
+          <AyahActions
+            surah={surahNum}
+            ayah={ayah.numberInSurah}
+            ayahData={ayah}
+          />
+          {showTajwid && riwaya === "hafs" && <TajwidLegend riwaya={riwaya} />}
+        </div>
+      )}
     </div>
   );
 });

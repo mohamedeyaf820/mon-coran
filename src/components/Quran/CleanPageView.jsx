@@ -41,15 +41,24 @@ function VerseMarker({ num, lang }) {
 }
 
 /**
- * Page separator for long surahs
+ * Page separator with page number
  */
-function PageSeparator() {
-  return <div className="clean-page-separator" />;
+function PageSeparator({ pageNum, lang }) {
+  const display = lang === "ar" ? toAr(pageNum) : pageNum;
+  return (
+    <div className="clean-page-separator">
+      <div className="clean-page-separator-line" />
+      <span className="clean-page-separator-text">
+        {lang === "ar" ? `صفحة ${display}` : `Page ${display}`}
+      </span>
+      <div className="clean-page-separator-line" />
+    </div>
+  );
 }
 
 /**
  * CleanPageView - Quran.com-style centered flowing text layout
- * Displays all ayahs with tajweed coloring and page separators
+ * Displays all ayahs with tajweed coloring and page separators with page numbers
  */
 export default function CleanPageView({
   ayahs,
@@ -74,38 +83,35 @@ export default function CleanPageView({
 
   const basmalaText = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
 
-  // Group ayahs by page (estimate based on typical page structure)
-  // Pages typically have 15-16 ayahs, but we'll use a dynamic approach
-  const ayahsByPage = useMemo(() => {
+  // Build list of ayahs with page change indicators
+  const ayahsWithPageMarkers = useMemo(() => {
     if (!ayahs || ayahs.length === 0) return [];
 
-    const pages = [];
-    let currentPage = [];
-    let lineCount = 0;
-    const targetLinesPerPage = 15; // Typical page has ~15 lines
+    const result = [];
+    let lastPage = null;
 
-    ayahs.forEach((ayah) => {
-      // Estimate lines based on text length (rough approximation)
-      const estimatedLines = Math.ceil(ayah.text.split(/\s+/).length / 8);
+    for (let i = 0; i < ayahs.length; i++) {
+      const ayah = ayahs[i];
+      const currentPage = ayah.page || 1;
 
-      if (
-        lineCount + estimatedLines > targetLinesPerPage &&
-        currentPage.length > 0
-      ) {
-        pages.push([...currentPage]);
-        currentPage = [];
-        lineCount = 0;
+      // Add page marker if page changed
+      if (lastPage !== null && currentPage !== lastPage) {
+        result.push({
+          type: "page-separator",
+          pageNum: currentPage,
+        });
       }
 
-      currentPage.push(ayah);
-      lineCount += estimatedLines;
-    });
+      // Add ayah
+      result.push({
+        type: "ayah",
+        data: ayah,
+      });
 
-    if (currentPage.length > 0) {
-      pages.push(currentPage);
+      lastPage = currentPage;
     }
 
-    return pages;
+    return result;
   }, [ayahs]);
 
   return (
@@ -117,50 +123,54 @@ export default function CleanPageView({
         </div>
       )}
 
-      {/* Render pages with separators */}
-      {ayahsByPage.map((pageAyahs, pageIdx) => (
-        <div key={`page-${pageIdx}`}>
-          <div
-            className={`clean-page-text${isQCF4 ? " qcf4-container" : ""}`}
-            style={{ fontSize: `${fontSize}px` }}
-            dir="rtl"
-          >
-            {pageAyahs.map((ayah, ayahIdx) => {
-              const isPlaying =
-                currentPlayingAyah?.ayah === ayah.numberInSurah &&
-                currentPlayingAyah?.surah === surahNum;
+      {/* Main text content with all ayahs and page separators */}
+      <div
+        className={`clean-page-text${isQCF4 ? " qcf4-container" : ""}`}
+        style={{ fontSize: `${fontSize}px` }}
+        dir="rtl"
+      >
+        {ayahsWithPageMarkers.map((item, idx) => {
+          if (item.type === "page-separator") {
+            return (
+              <PageSeparator
+                key={`sep-${item.pageNum}`}
+                pageNum={item.pageNum}
+                lang={lang}
+              />
+            );
+          }
 
-              return (
-                <span
-                  key={`ayah-${ayah.number}`}
-                  className={`clean-ayah${isPlaying ? " clean-ayah-playing" : ""}`}
-                >
-                  {/* Render the ayah text with tajweed coloring */}
-                  <SmartAyahRenderer
-                    ayah={ayah}
-                    showTajwid={showTajwid}
-                    isPlaying={isPlaying}
-                    surahNum={surahNum}
-                    calibration={calibration}
-                    riwaya={riwaya}
-                  />
+          const ayah = item.data;
+          const isPlaying =
+            currentPlayingAyah?.ayah === ayah.numberInSurah &&
+            currentPlayingAyah?.surah === surahNum;
 
-                  {/* Verse marker after the text */}
-                  <VerseMarker num={ayah.numberInSurah} lang={lang} />
+          return (
+            <span
+              key={`ayah-${ayah.number}`}
+              className={`clean-ayah${isPlaying ? " clean-ayah-playing" : ""}`}
+            >
+              {/* Render the ayah text with tajweed coloring */}
+              <SmartAyahRenderer
+                ayah={ayah}
+                showTajwid={showTajwid}
+                isPlaying={isPlaying}
+                surahNum={surahNum}
+                calibration={calibration}
+                riwaya={riwaya}
+              />
 
-                  {/* Space after verse (except last one) */}
-                  {ayahIdx < pageAyahs.length - 1 && (
-                    <span className="clean-verse-space"> </span>
-                  )}
-                </span>
-              );
-            })}
-          </div>
+              {/* Verse marker after the text */}
+              <VerseMarker num={ayah.numberInSurah} lang={lang} />
 
-          {/* Page separator (except after last page) */}
-          {pageIdx < ayahsByPage.length - 1 && <PageSeparator />}
-        </div>
-      ))}
+              {/* Space after verse (except last one) */}
+              {idx < ayahsWithPageMarkers.length - 1 && (
+                <span className="clean-verse-space"> </span>
+              )}
+            </span>
+          );
+        })}
+      </div>
     </div>
   );
 }
