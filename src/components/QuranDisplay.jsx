@@ -1111,82 +1111,80 @@ export default function QuranDisplay() {
             mushafLayout !== "mushaf" && <Bismillah />}
           <TajweedLegend lang={lang} visible={showTajwid} riwaya={riwaya} />
 
-          {/* Layout mode toggle - cycles through: List → Mushaf → Word-by-word → Memorization */}
+          {/* Layout mode toggle */}
           <div className="mushaf-layout-toggle-bar">
+            {/* Toggle between List and Word-by-word */}
             <button
-              className="mushaf-layout-btn active"
-              onClick={() => {
-                // Cycle through modes
-                if (mushafLayout === "mushaf") {
-                  set({
-                    mushafLayout: "list",
-                    showWordByWord: true,
-                    memMode: false,
-                  });
-                } else if (showWordByWord) {
-                  set({
-                    mushafLayout: "list",
-                    showWordByWord: false,
-                    memMode: true,
-                  });
-                } else if (memMode) {
-                  set({
-                    mushafLayout: "list",
-                    showWordByWord: false,
-                    memMode: false,
-                  });
-                } else {
-                  set({
-                    mushafLayout: "mushaf",
-                    showWordByWord: false,
-                    memMode: false,
-                  });
-                }
-              }}
+              className={`mushaf-layout-btn${!showWordByWord && mushafLayout !== "mushaf" && !memMode ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: "list",
+                  showWordByWord: !showWordByWord,
+                  memMode: false,
+                })
+              }
               title={
-                lang === "fr"
-                  ? "Changer le mode d'affichage"
-                  : lang === "ar"
-                    ? "تغيير وضع العرض"
-                    : "Change display mode"
+                showWordByWord
+                  ? lang === "fr"
+                    ? "Afficher en liste"
+                    : lang === "ar"
+                      ? "عرض كقائمة"
+                      : "Show as list"
+                  : lang === "fr"
+                    ? "Afficher mot à mot"
+                    : lang === "ar"
+                      ? "عرض كلمة بكلمة"
+                      : "Show word by word"
               }
             >
               <i
-                className={`fas ${
-                  mushafLayout === "mushaf"
-                    ? "fa-book-open"
-                    : showWordByWord
-                      ? "fa-w"
-                      : memMode
-                        ? "fa-graduation-cap"
-                        : "fa-list-ul"
-                }`}
+                className={`fas ${showWordByWord ? "fa-w" : "fa-list-ul"}`}
               ></i>
               <span>
-                {mushafLayout === "mushaf"
+                {showWordByWord
                   ? lang === "fr"
-                    ? "Mushaf"
+                    ? "Mot à mot"
                     : lang === "ar"
-                      ? "مصحف"
-                      : "Mushaf"
-                  : showWordByWord
-                    ? lang === "fr"
-                      ? "Mot à mot"
-                      : lang === "ar"
-                        ? "كلمة بكلمة"
-                        : "Word by Word"
-                    : memMode
-                      ? lang === "fr"
-                        ? "Mémorisation"
-                        : lang === "ar"
-                          ? "حفظ"
-                          : "Memorization"
-                      : lang === "fr"
-                        ? "Liste"
-                        : lang === "ar"
-                          ? "قائمة"
-                          : "List"}
+                      ? "كلمة بكلمة"
+                      : "Word by Word"
+                  : lang === "fr"
+                    ? "Liste"
+                    : lang === "ar"
+                      ? "قائمة"
+                      : "List"}
               </span>
+            </button>
+            <span className="mushaf-layout-sep" />
+            {/* Mushaf mode */}
+            <button
+              className={`mushaf-layout-btn${mushafLayout === "mushaf" ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: mushafLayout === "mushaf" ? "list" : "mushaf",
+                  showWordByWord: false,
+                  memMode: false,
+                })
+              }
+              title={lang === "fr" ? "Vue Mushaf" : "Mushaf view"}
+            >
+              <i className="fas fa-book-open"></i>
+              {lang === "fr" ? "Mushaf" : "Mushaf"}
+            </button>
+            <span className="mushaf-layout-sep" />
+            {/* Memorization mode */}
+            <button
+              className={`mushaf-layout-btn${memMode ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: "list",
+                  memMode: !memMode,
+                  showWordByWord: false,
+                })
+              }
+              title={lang === "fr" ? "Mode mémorisation" : "Memorization mode"}
+            >
+              <i className="fas fa-graduation-cap"></i>
+              {lang === "fr" ? "Mémorisation" : "Memorize"}
             </button>
           </div>
 
@@ -1423,82 +1421,80 @@ export default function QuranDisplay() {
             </span>
           </div>
 
-          {/* Layout mode toggle - cycles through: List → Mushaf → Word-by-word → Memorization */}
+          {/* Layout mode toggle */}
           <div className="mushaf-layout-toggle-bar">
+            {/* Toggle between List and Word-by-word */}
             <button
-              className="mushaf-layout-btn active"
-              onClick={() => {
-                // Cycle through modes
-                if (mushafLayout === "mushaf") {
-                  set({
-                    mushafLayout: "list",
-                    showWordByWord: true,
-                    memMode: false,
-                  });
-                } else if (showWordByWord) {
-                  set({
-                    mushafLayout: "list",
-                    showWordByWord: false,
-                    memMode: true,
-                  });
-                } else if (memMode) {
-                  set({
-                    mushafLayout: "list",
-                    showWordByWord: false,
-                    memMode: false,
-                  });
-                } else {
-                  set({
-                    mushafLayout: "mushaf",
-                    showWordByWord: false,
-                    memMode: false,
-                  });
-                }
-              }}
+              className={`mushaf-layout-btn${!showWordByWord && mushafLayout !== "mushaf" && !memMode ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: "list",
+                  showWordByWord: !showWordByWord,
+                  memMode: false,
+                })
+              }
               title={
-                lang === "fr"
-                  ? "Changer le mode d'affichage"
-                  : lang === "ar"
-                    ? "تغيير وضع العرض"
-                    : "Change display mode"
+                showWordByWord
+                  ? lang === "fr"
+                    ? "Afficher en liste"
+                    : lang === "ar"
+                      ? "عرض كقائمة"
+                      : "Show as list"
+                  : lang === "fr"
+                    ? "Afficher mot à mot"
+                    : lang === "ar"
+                      ? "عرض كلمة بكلمة"
+                      : "Show word by word"
               }
             >
               <i
-                className={`fas ${
-                  mushafLayout === "mushaf"
-                    ? "fa-book-open"
-                    : showWordByWord
-                      ? "fa-w"
-                      : memMode
-                        ? "fa-graduation-cap"
-                        : "fa-list-ul"
-                }`}
+                className={`fas ${showWordByWord ? "fa-w" : "fa-list-ul"}`}
               ></i>
               <span>
-                {mushafLayout === "mushaf"
+                {showWordByWord
                   ? lang === "fr"
-                    ? "Mushaf"
+                    ? "Mot à mot"
                     : lang === "ar"
-                      ? "مصحف"
-                      : "Mushaf"
-                  : showWordByWord
-                    ? lang === "fr"
-                      ? "Mot à mot"
-                      : lang === "ar"
-                        ? "كلمة بكلمة"
-                        : "Word by Word"
-                    : memMode
-                      ? lang === "fr"
-                        ? "Mémorisation"
-                        : lang === "ar"
-                          ? "حفظ"
-                          : "Memorization"
-                      : lang === "fr"
-                        ? "Liste"
-                        : lang === "ar"
-                          ? "قائمة"
-                          : "List"}
+                      ? "كلمة بكلمة"
+                      : "Word by Word"
+                  : lang === "fr"
+                    ? "Liste"
+                    : lang === "ar"
+                      ? "قائمة"
+                      : "List"}
               </span>
+            </button>
+            <span className="mushaf-layout-sep" />
+            {/* Mushaf mode */}
+            <button
+              className={`mushaf-layout-btn${mushafLayout === "mushaf" ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: mushafLayout === "mushaf" ? "list" : "mushaf",
+                  showWordByWord: false,
+                  memMode: false,
+                })
+              }
+              title={lang === "fr" ? "Vue Mushaf" : "Mushaf view"}
+            >
+              <i className="fas fa-book-open"></i>
+              {lang === "fr" ? "Mushaf" : "Mushaf"}
+            </button>
+            <span className="mushaf-layout-sep" />
+            {/* Memorization mode */}
+            <button
+              className={`mushaf-layout-btn${memMode ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: "list",
+                  memMode: !memMode,
+                  showWordByWord: false,
+                })
+              }
+              title={lang === "fr" ? "Mode mémorisation" : "Memorization mode"}
+            >
+              <i className="fas fa-graduation-cap"></i>
+              {lang === "fr" ? "Mémorisation" : "Memorize"}
             </button>
           </div>
 
@@ -1646,82 +1642,79 @@ export default function QuranDisplay() {
             </span>
           </div>
 
-          {/* Layout mode toggle - cycles through: List → Mushaf → Word-by-word → Memorization */}
+          {/* Layout mode toggle */}
           <div className="mushaf-layout-toggle-bar">
+            {/* Toggle between List and Word-by-word */}
             <button
-              className="mushaf-layout-btn active"
-              onClick={() => {
-                // Cycle through modes
-                if (mushafLayout === "mushaf") {
-                  set({
-                    mushafLayout: "list",
-                    showWordByWord: true,
-                    memMode: false,
-                  });
-                } else if (showWordByWord) {
-                  set({
-                    mushafLayout: "list",
-                    showWordByWord: false,
-                    memMode: true,
-                  });
-                } else if (memMode) {
-                  set({
-                    mushafLayout: "list",
-                    showWordByWord: false,
-                    memMode: false,
-                  });
-                } else {
-                  set({
-                    mushafLayout: "mushaf",
-                    showWordByWord: false,
-                    memMode: false,
-                  });
-                }
-              }}
+              className={`mushaf-layout-btn${!showWordByWord && mushafLayout !== "mushaf" && !memMode ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: "list",
+                  showWordByWord: !showWordByWord,
+                  memMode: false,
+                })
+              }
               title={
-                lang === "fr"
-                  ? "Changer le mode d'affichage"
-                  : lang === "ar"
-                    ? "تغيير وضع العرض"
-                    : "Change display mode"
+                showWordByWord
+                  ? lang === "fr"
+                    ? "Afficher en liste"
+                    : lang === "ar"
+                      ? "عرض كقائمة"
+                      : "Show as list"
+                  : lang === "fr"
+                    ? "Afficher mot à mot"
+                    : lang === "ar"
+                      ? "عرض كلمة بكلمة"
+                      : "Show word by word"
               }
             >
               <i
-                className={`fas ${
-                  mushafLayout === "mushaf"
-                    ? "fa-book-open"
-                    : showWordByWord
-                      ? "fa-w"
-                      : memMode
-                        ? "fa-graduation-cap"
-                        : "fa-list-ul"
-                }`}
+                className={`fas ${showWordByWord ? "fa-w" : "fa-list-ul"}`}
               ></i>
               <span>
-                {mushafLayout === "mushaf"
+                {showWordByWord
                   ? lang === "fr"
-                    ? "Mushaf"
+                    ? "Mot à mot"
                     : lang === "ar"
-                      ? "مصحف"
-                      : "Mushaf"
-                  : showWordByWord
-                    ? lang === "fr"
-                      ? "Mot à mot"
-                      : lang === "ar"
-                        ? "كلمة بكلمة"
-                        : "Word by Word"
-                    : memMode
-                      ? lang === "fr"
-                        ? "Mémorisation"
-                        : lang === "ar"
-                          ? "حفظ"
-                          : "Memorization"
-                      : lang === "fr"
-                        ? "Liste"
-                        : lang === "ar"
-                          ? "قائمة"
-                          : "List"}
+                      ? "كلمة بكلمة"
+                      : "Word by Word"
+                  : lang === "fr"
+                    ? "Liste"
+                    : lang === "ar"
+                      ? "قائمة"
+                      : "List"}
               </span>
+            </button>
+            <span className="mushaf-layout-sep" />
+            {/* Mushaf mode */}
+            <button
+              className={`mushaf-layout-btn${mushafLayout === "mushaf" ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: mushafLayout === "mushaf" ? "list" : "mushaf",
+                  showWordByWord: false,
+                  memMode: false,
+                })
+              }
+            >
+              <i className="fas fa-book-open"></i>
+              {lang === "fr" ? "Mushaf" : "Mushaf"}
+            </button>
+            <span className="mushaf-layout-sep" />
+            {/* Memorization mode */}
+            <button
+              className={`mushaf-layout-btn${memMode ? " active" : ""}`}
+              onClick={() =>
+                set({
+                  mushafLayout: "list",
+                  memMode: !memMode,
+                  showWordByWord: false,
+                })
+              }
+              title={lang === "fr" ? "Mode mémorisation" : "Memorization mode"}
+            >
+              <i className="fas fa-graduation-cap"></i>
+              {lang === "fr" ? "Mémorisation" : "Memorize"}
             </button>
           </div>
 
