@@ -767,7 +767,7 @@ export default function AudioPlayer() {
             >
               <i className={`fas fa-chevron-${expanded ? "down" : "up"}`} />
             </button>
-          </div>
+        </div>
         </div>
 
         {/* Expanded panel */}
