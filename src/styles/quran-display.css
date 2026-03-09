@@ -2755,7 +2755,7 @@
     );
 }
 
-/* Page mode: hide separators */
+/* Page mode: hide separators and simplify */
 .quran-mode-pane--page .mp-separator {
     display: none;
 }
@@ -2805,13 +2805,16 @@
     word-break: break-word;
 }
 
-/* Page mode: cleaner, more centered layout */
+/* Page mode: clean centered layout like quran.com */
 .quran-mode-pane--page .mp-body {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1.5rem 2rem;
     text-align: center;
-    line-height: 2.6;
-    word-spacing: 0.3em;
-    letter-spacing: 0.01em;
+    text-align-last: center;
+    line-height: 3;
+    word-spacing: 0.2em;
+    letter-spacing: 0.03em;
+    max-width: 100%;
+    margin: 0 auto;
 }
 
 /* QCF4: interligne plus large pour les glyphes PUA */
@@ -2852,7 +2855,17 @@
 }
 
 .mp-ayah:hover {
-    background: rgba(184, 134, 11, 0.1);
+    background: rgba(184, 134, 11, 0.08);
+}
+
+/* Page mode: no hover effect, just clean text flow */
+.quran-mode-pane--page .mp-ayah {
+    cursor: default;
+    padding: 0;
+}
+
+.quran-mode-pane--page .mp-ayah:hover {
+    background: transparent;
 }
 
 @keyframes mp-ayah-pulse {
@@ -2893,14 +2906,28 @@
     vertical-align: middle;
 }
 
-/* Page mode: simpler verse markers */
+/* Page mode: clean inline verse markers like quran.com */
 .quran-mode-pane--page .mp-ayah-marker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
     margin: 0 0.25em;
+    vertical-align: baseline;
+    font-size: 0.55em;
+    transform: translateY(-0.05em);
 }
 
 .quran-mode-pane--page .mp-ayah-marker-svg {
-    width: 1.1em;
-    height: 1.1em;
+    width: 2.2em;
+    height: 2.2em;
+    display: block;
+    opacity: 0.7;
+}
+
+.quran-mode-pane--page .mp-ayah-num {
+    font-size: 0.9em;
+    font-weight: 500;
 }
 
 /* Couleurs SVG des anneaux */
@@ -2947,6 +2974,15 @@
 /* Page mode: hide translations for cleaner view */
 .quran-mode-pane--page .mp-translations {
     display: none;
+}
+
+/* Page mode: remove playing highlight effect for clean look */
+.quran-mode-pane--page .mp-ayah--playing {
+    background: transparent;
+    padding: 0;
+    text-shadow: none;
+    animation: none;
+    box-shadow: none;
 }
 
 .mp-trans-row {
