@@ -263,10 +263,10 @@ export default function QuranDisplay() {
   // Memoized style object for ayahs container (avoid new object per render)
   const ayahsContainerStyle = useMemo(
     () => ({
-      fontSize: `${displayMode === "page" ? fontSize * 1.15 : fontSize}px`,
+      fontSize: `${displayMode === "page" ? readingFontSize * 1.15 : readingFontSize}px`,
       fontFamily: isQCF4 ? undefined : quranFontCss,
     }),
-    [fontSize, displayMode, isQCF4, quranFontCss],
+    [readingFontSize, displayMode, isQCF4, quranFontCss],
   );
 
   // Stable signature for audio playlist to avoid unnecessary reloads when only
@@ -884,6 +884,28 @@ export default function QuranDisplay() {
     return ayahs;
   }, [ayahs]);
 
+  const visibleMushafAyahs = useMemo(() => {
+    if (displayMode !== "surah" || mushafLayout !== "mushaf")
+      return visibleAyahs;
+    if (!isLongSurah || surahChunks.length === 0) return visibleAyahs;
+
+    const chunk = surahChunks[chunkIndex];
+    if (!chunk) return visibleAyahs;
+
+    return ayahs.filter(
+      (ayah) =>
+        ayah.numberInSurah >= chunk.start && ayah.numberInSurah <= chunk.end,
+    );
+  }, [
+    ayahs,
+    visibleAyahs,
+    displayMode,
+    mushafLayout,
+    isLongSurah,
+    surahChunks,
+    chunkIndex,
+  ]);
+
   /* ── Group ayahs by surah (memoized for page/juz mode) ── */
   const surahGroups = useMemo(() => {
     if (displayMode !== "page" && displayMode !== "juz") return [];
@@ -956,10 +978,16 @@ export default function QuranDisplay() {
   const canDecreaseFontSize = quranFontSize > 42;
   const canIncreaseFontSize = quranFontSize < 64;
   const decreaseFontSize = useCallback(() => {
-    dispatch({ type: "SET_QURAN_FONT_SIZE", payload: Math.max(42, quranFontSize - 2) });
+    dispatch({
+      type: "SET_QURAN_FONT_SIZE",
+      payload: Math.max(42, quranFontSize - 2),
+    });
   }, [dispatch, quranFontSize]);
   const increaseFontSize = useCallback(() => {
-    dispatch({ type: "SET_QURAN_FONT_SIZE", payload: Math.min(64, quranFontSize + 2) });
+    dispatch({
+      type: "SET_QURAN_FONT_SIZE",
+      payload: Math.min(64, quranFontSize + 2),
+    });
   }, [dispatch, quranFontSize]);
 
   const verseTranslationMeta =
@@ -1180,7 +1208,7 @@ export default function QuranDisplay() {
             <CleanPageView
               ayahs={visibleAyahs}
               lang={lang}
-              fontSize={fontSize}
+              fontSize={readingFontSize}
               isQCF4={isQCF4}
               showTajwid={showTajwid}
               currentPlayingAyah={currentPlayingAyah}
@@ -1235,7 +1263,7 @@ export default function QuranDisplay() {
                         calibration={karaokeCalibration}
                         riwaya={riwaya}
                         lang={lang}
-                        fontSize={fontSize}
+                        fontSize={readingFontSize}
                         memMode={memMode}
                         mushafLayout={mushafLayout}
                         onToggleActive={() => toggleAyah(ayah.numberInSurah)}
@@ -1441,7 +1469,7 @@ export default function QuranDisplay() {
             <CleanPageView
               ayahs={surahGroups.flatMap((g) => g.ayahs)}
               lang={lang}
-              fontSize={fontSize}
+              fontSize={readingFontSize}
               isQCF4={isQCF4}
               showTajwid={showTajwid}
               currentPlayingAyah={currentPlayingAyah}
@@ -1488,7 +1516,7 @@ export default function QuranDisplay() {
                         calibration={karaokeCalibration}
                         riwaya={riwaya}
                         lang={lang}
-                        fontSize={fontSize}
+                        fontSize={readingFontSize}
                         memMode={memMode}
                         mushafLayout={mushafLayout}
                         onToggleActive={() => toggleAyah(ayah.number)}
@@ -1651,7 +1679,7 @@ export default function QuranDisplay() {
             <CleanPageView
               ayahs={surahGroups.flatMap((g) => g.ayahs)}
               lang={lang}
-              fontSize={fontSize}
+              fontSize={readingFontSize}
               isQCF4={isQCF4}
               showTajwid={showTajwid}
               currentPlayingAyah={currentPlayingAyah}
@@ -1699,7 +1727,7 @@ export default function QuranDisplay() {
                           calibration={karaokeCalibration}
                           riwaya={riwaya}
                           lang={lang}
-                          fontSize={fontSize}
+                          fontSize={readingFontSize}
                           memMode={memMode}
                           mushafLayout={mushafLayout}
                           onToggleActive={() => toggleAyah(ayah.number)}
@@ -1812,10 +1840,17 @@ export default function QuranDisplay() {
             <div className="mfp-page-header">
               <div className="mfp-page-header__top">
                 <span className="mfp-page-chip">
-                  {riwaya === 'warsh' ? (lang === 'ar' ? 'ورش' : 'Warsh') : (lang === 'ar' ? 'حفص' : 'Hafs')}
+                  {riwaya === "warsh"
+                    ? lang === "ar"
+                      ? "ورش"
+                      : "Warsh"
+                    : lang === "ar"
+                      ? "حفص"
+                      : "Hafs"}
                 </span>
                 <span className="mfp-page-chip">
-                  {t('quran.page', lang)} {lang === 'ar' ? toAr(currentPage) : currentPage}
+                  {t("quran.page", lang)}{" "}
+                  {lang === "ar" ? toAr(currentPage) : currentPage}
                 </span>
               </div>
               <span className="mfp-bismillah">﷽</span>

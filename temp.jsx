@@ -115,25 +115,18 @@ export default function MushafInlineView({
 
   const juzLabel = lang === "ar" ? "جزء" : "Juz";
   const ayahCountLabel = surahMeta?.ayahs ?? "?";
-  const pageStart =
-    (displayMode === "page" ? currentPage : null) ?? ayahs[0]?.page ?? null;
+  const pageStart = (displayMode === "page" ? currentPage : null) ?? ayahs[0]?.page ?? null;
   const pageEnd = ayahs[ayahs.length - 1]?.page ?? pageStart;
-  const hizbNumber = ayahs[0]?.hizbQuarter
-    ? Math.ceil(ayahs[0].hizbQuarter / 4)
-    : null;
-  const activeJuz = displayMode === "juz" ? (currentJuz ?? juzNum) : juzNum;
+  const hizbNumber = ayahs[0]?.hizbQuarter ? Math.ceil(ayahs[0].hizbQuarter / 4) : null;
+  const activeJuz = displayMode === "juz" ? currentJuz ?? juzNum : juzNum;
   const heroSubtitle =
     lang === "ar"
       ? `${revelBadge} · ${toAr(ayahCountLabel)} آية`
       : `${revelBadge} · ${ayahCountLabel} ${lang === "fr" ? "versets" : "ayahs"}`;
   const heroBadge =
     riwaya === "warsh"
-      ? lang === "ar"
-        ? "ورش"
-        : "Warsh"
-      : lang === "ar"
-        ? "حفص"
-        : "Hafs";
+      ? (lang === "ar" ? "ورش" : "Warsh")
+      : (lang === "ar" ? "حفص" : "Hafs");
   const basmalaTranslation =
     lang === "fr"
       ? "Au nom d'Allah, le Tout Misericordieux, le Tres Misericordieux"
@@ -190,7 +183,9 @@ export default function MushafInlineView({
                 <span className="mp-header-label">
                   {lang === "ar" ? "آية" : lang === "fr" ? "v." : "v."}
                 </span>
-              </span>
+                <span className="mp-hero-badge">{heroBadge}</span>
+              </div>
+              <span className="mp-hero-subtitle">{heroSubtitle}</span>
             </div>
           </div>
 
@@ -200,18 +195,11 @@ export default function MushafInlineView({
                 {isQCF4 ? "﷽" : "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"}
               </div>
               {basmalaTranslation && (
-                <div className="mp-basmala-translation">
-                  {basmalaTranslation}
-                </div>
+                <div className="mp-basmala-translation">{basmalaTranslation}</div>
               )}
             </div>
           )}
 
-          <div
-            className="mp-ayahs-flow"
-            dir="rtl"
-            style={{ fontSize: `${mushafFontSize}px` }}
-          >
             {/* Ayahs en flux inline */}
             {ayahs.map((ayah) => {
               const isPlaying =

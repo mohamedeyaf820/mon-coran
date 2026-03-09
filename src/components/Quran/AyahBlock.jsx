@@ -5,7 +5,6 @@ import { arabicToLatin } from "../../data/transliteration";
 import AyahActions from "../AyahActions";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 import WordByWordDisplay from "./WordByWordDisplay";
-import TajwidLegend from "./TajwidLegend";
 import MemorizationText from "./MemorizationText";
 
 /**
@@ -108,7 +107,6 @@ const AyahBlock = React.memo(function AyahBlock({
             ayah={ayah.numberInSurah}
             ayahData={ayah}
           />
-          {showTajwid && riwaya === "hafs" && <TajwidLegend riwaya={riwaya} />}
         </div>
       )}
     </div>

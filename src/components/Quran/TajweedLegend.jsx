@@ -1,50 +1,99 @@
-import React, { useState } from 'react';
-import * as tajwidRules from '../../data/tajwidRules';
+import React, { useState, useRef, useEffect } from "react";
+import { getRulesForRiwaya } from "../../data/tajwidRules";
 
 /**
- * TajweedLegend component – interactive guide to tajwid colors.
+ * TajweedLegend — quran.com-style sticky legend.
+ *
+ * Renders a compact centred pill button "Tajweed colors ∨".
+ * Clicking it expands a horizontal strip of colour-coded rule chips
+ * directly below, matching the quran.com legend bar.
  */
-const TajweedLegend = React.memo(function TajweedLegend({ lang, visible, riwaya }) {
-    const [open, setOpen] = useState(false);
+const TajweedLegend = React.memo(function TajweedLegend({
+  lang,
+  visible,
+  riwaya,
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
 
-    if (!visible) return null;
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    function handleClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
 
-    const labelKey = lang === 'ar' ? 'nameAr' : lang === 'fr' ? 'nameFr' : 'nameEn';
-    const rules = typeof tajwidRules.getRulesForRiwaya === 'function'
-        ? tajwidRules.getRulesForRiwaya(riwaya)
-        : (riwaya === 'warsh' && Array.isArray(tajwidRules.WARSH_TAJWID_RULES)
-            ? tajwidRules.WARSH_TAJWID_RULES
-            : (Array.isArray(tajwidRules.default) ? tajwidRules.default : []));
-    const isWarsh = riwaya === 'warsh';
+  if (!visible) return null;
 
-    return (
-        <>
-            <div className="tajweed-legend-toggle">
-                <button onClick={() => setOpen(o => !o)}>
-                    <i className="fas fa-palette"></i>
-                    <span>
-                        {lang === 'ar'
-                            ? (isWarsh ? 'ألوان تجويد ورش' : 'ألوان التجويد')
-                            : lang === 'fr'
-                                ? (isWarsh ? 'Couleurs Tajweed Warsh' : 'Couleurs Tajweed')
-                                : (isWarsh ? 'Warsh Tajweed colours' : 'Tajweed colours')
-                        }
-                    </span>
-                    <i className={`fas fa-chevron-${open ? 'up' : 'down'}`} style={{ fontSize: '0.55rem', opacity: 0.6 }}></i>
-                </button>
-            </div>
-            {open && (
-                <div className="tajweed-legend">
-                    {rules.map(rule => (
-                        <span key={rule.id} className="tajweed-legend-item">
-                            <span className="tajweed-dot" style={{ background: rule.color }}></span>
-                            <span>{rule[labelKey]}</span>
-                        </span>
-                    ))}
-                </div>
-            )}
-        </>
-    );
+  const rules = getRulesForRiwaya(riwaya);
+  const isWarsh = riwaya === "warsh";
+
+  const label =
+    lang === "ar"
+      ? isWarsh
+        ? "ألوان ورش"
+        : "ألوان التجويد"
+      : lang === "fr"
+        ? isWarsh
+          ? "Couleurs Warsh"
+          : "Couleurs Tajweed"
+        : isWarsh
+          ? "Warsh colours"
+          : "Tajweed colors";
+
+  const labelKey =
+    lang === "ar" ? "nameAr" : lang === "fr" ? "nameFr" : "nameEn";
+
+  return (
+    <div ref={ref} className="tjl-root">
+      {/* ── Pill toggle button ── */}
+      <div className="tjl-toggle-row">
+        <button
+          className={`tjl-toggle-btn${open ? " tjl-toggle-btn--open" : ""}`}
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          aria-label={label}
+        >
+          <span className="tjl-toggle-label">{label}</span>
+          <svg
+            className={`tjl-chevron${open ? " tjl-chevron--up" : ""}`}
+            viewBox="0 0 16 16"
+            width="12"
+            height="12"
+            aria-hidden="true"
+          >
+            <path
+              d="M2 5l6 6 6-6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+
+      {/* ── Colour chips strip ── */}
+      {open && (
+        <div className="tjl-strip" role="list" aria-label={label}>
+          {rules.map((rule) => (
+            <span key={rule.id} className="tjl-chip" role="listitem">
+              <span
+                className="tjl-dot"
+                style={{ background: rule.color }}
+                aria-hidden="true"
+              />
+              <span className="tjl-chip-label">{rule[labelKey]}</span>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 });
 
 export default TajweedLegend;
