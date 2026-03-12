@@ -1,4 +1,4 @@
-import { getReciter } from '../data/reciters';
+import { getReciter } from "../data/reciters";
 
 /**
  * Unified karaoke calibration format:
@@ -28,113 +28,325 @@ import { getReciter } from '../data/reciters';
 // A positive offsetSec compensates for both that pipeline delay and the inherent
 // proportional-weight approximation in the timing model.
 const KARAOKE_DEFAULTS = {
-    hafs:  { offsetSec: 0.15, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.88 },
-    warsh: { offsetSec: 0.18, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.90 },
+  hafs: { offsetSec: 0.15, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.9 },
+  warsh: { offsetSec: 0.2, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.9 },
 };
 
 const KARAOKE_STYLE_PRESETS = {
-    hafs: {
-        // Murattal: brisk pace — moderate lead to anticipate word transitions.
-        murattal: { offsetSec: 0.15, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.88 },
-        // Tartil: slower — slightly more lead because words last longer.
-        tartil:   { offsetSec: 0.22, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.85 },
-        // Mujawwad: very slow, drawn-out — biggest lead needed.
-        mujawwad: { offsetSec: 0.30, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.82 },
+  hafs: {
+    // Murattal: brisk pace — moderate lead to anticipate word transitions.
+    murattal: {
+      offsetSec: 0.15,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
     },
-    warsh: {
-        murattal: { offsetSec: 0.18, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.90 },
-        tartil:   { offsetSec: 0.25, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.87 },
-        mujawwad: { offsetSec: 0.32, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.84 },
+    // Tartil: slower — slightly more lead because words last longer.
+    tartil: {
+      offsetSec: 0.22,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.87,
     },
+    // Mujawwad: very slow, drawn-out — biggest lead needed.
+    mujawwad: {
+      offsetSec: 0.31,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.83,
+    },
+  },
+  warsh: {
+    murattal: {
+      offsetSec: 0.2,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
+    },
+    tartil: {
+      offsetSec: 0.25,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.87,
+    },
+    mujawwad: {
+      offsetSec: 0.33,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.84,
+    },
+  },
 };
 
 // Per-reciter fine-tuning.  Overrides win over style presets + auto-calibration.
 // islamic.network CDN is generally faster to buffer → slightly lower offset.
 // everyayah.com CDN can have higher first-packet delay → +0.03 s extra.
+//
+// Smoothing is raised to 0.92 across the board (vs. old 0.88) for snappier
+// response; mujawwad styles keep a lower value to avoid jitter on long syllables.
 const KARAOKE_RECITER_OVERRIDES = {
-    hafs: {
-        // ── islamic.network CDN ────────────────────────────────────────────────
-        'ar.alafasy':            { offsetSec: 0.14, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.90 },
-        'ar.husary':             { offsetSec: 0.12, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.88 },
-        'ar.minshawi':           { offsetSec: 0.14, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.86 },
-        'ar.minshawimujawwad':   { offsetSec: 0.30, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.82 },
-        'ar.abdulbasitmurattal': { offsetSec: 0.14, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.86 },
-        'ar.abdulbasitmujawwad': { offsetSec: 0.32, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.80 },
-        'ar.abdurrahmaansudais': { offsetSec: 0.14, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.89 },
-        'ar.saoodshuraym':       { offsetSec: 0.14, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.88 },
-        // ── everyayah.com CDN (+0.03 s for CDN first-packet) ──────────────────
-        'abdullaah_matrood':     { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.88 },
-        'abdullaah_basfar':      { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.88 },
-        'abdulsamad':            { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.86 },
-        'ar.maaboralmeem':       { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.87 },
-        'ahmed_ajmy':            { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.88 },
-        'maher_almuaiqly':       { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.90 },
-        'abdulbari_thubayti':    { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.87 },
-        'ali_jabir':             { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.87 },
-        'hudhaify':              { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.87 },
-        'muhammad_ayyoub':       { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.88 },
-        // Tablawi is notably slower (almost tartil) → more anticipation
-        'muhammad_tablawi':      { offsetSec: 0.24, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.84 },
-        'hani_rifai':            { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.88 },
-        'fares_abbad':           { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.87 },
-        'yasser_dossari_hafs':   { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.90 },
-        'nasser_alqatami':       { offsetSec: 0.17, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.90 },
+  hafs: {
+    // ── islamic.network CDN ────────────────────────────────────────────────
+    // Alafasy: brisk murattal pace, responsive CDN → moderate lead
+    "ar.alafasy": {
+      offsetSec: 0.18,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.92,
     },
-    warsh: {
-        'warsh_abdulbasit':        { offsetSec: 0.20, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.88 },
-        'warsh_ibrahim_aldosari':  { offsetSec: 0.20, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.88 },
-        'warsh_yassin':            { offsetSec: 0.22, lagWordsBase: 0, lagWordsLong: 0, smoothing: 0.90 },
+    // Al-Husary: measured murattal, very consistent timing
+    "ar.husary": {
+      offsetSec: 0.14,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
     },
+    // Minshawi murattal: slightly deliberate pace
+    "ar.minshawi": {
+      offsetSec: 0.14,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
+    },
+    // Minshawi mujawwad: very slow, drawn-out — maximum lead, lower smoothing
+    "ar.minshawimujawwad": {
+      offsetSec: 0.31,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.83,
+    },
+    // Abdul Basit murattal: clear and measured
+    "ar.abdulbasitmurattal": {
+      offsetSec: 0.14,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
+    },
+    // Abdul Basit mujawwad: the slowest style — large lead, conservative smoothing
+    "ar.abdulbasitmujawwad": {
+      offsetSec: 0.33,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.83,
+    },
+    // Sudais: fast-to-moderate, energetic recitation
+    "ar.abdurrahmaansudais": {
+      offsetSec: 0.17,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.92,
+    },
+    // Shuraym: similar pace to Sudais
+    "ar.saoodshuraym": {
+      offsetSec: 0.18,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.92,
+    },
+    // ── everyayah.com CDN (+0.03 s for CDN first-packet latency) ──────────
+    abdullaah_matrood: {
+      offsetSec: 0.17,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.92,
+    },
+    abdullaah_basfar: {
+      offsetSec: 0.17,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.92,
+    },
+    abdulsamad: {
+      offsetSec: 0.15,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
+    },
+    // Saad Al-Ghamdi: energetic, faster murattal
+    "ar.maaboralmeem": {
+      offsetSec: 0.18,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.92,
+    },
+    ahmed_ajmy: {
+      offsetSec: 0.17,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
+    },
+    // Maher Al-Muaiqly: brisk pace, higher lead
+    maher_almuaiqly: {
+      offsetSec: 0.2,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.92,
+    },
+    abdulbari_thubayti: {
+      offsetSec: 0.16,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
+    },
+    ali_jabir: {
+      offsetSec: 0.15,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
+    },
+    hudhaify: {
+      offsetSec: 0.17,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
+    },
+    muhammad_ayyoub: {
+      offsetSec: 0.17,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
+    },
+    // Tablawi: notably slower, near-tartil pace — extra lead, gentler smoothing
+    muhammad_tablawi: {
+      offsetSec: 0.25,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.85,
+    },
+    hani_rifai: {
+      offsetSec: 0.16,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
+    },
+    fares_abbad: {
+      offsetSec: 0.17,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
+    },
+    // Yasser Ad-Dossari & Nasser Al-Qatami: clear, moderately brisk
+    yasser_dossari_hafs: {
+      offsetSec: 0.18,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.92,
+    },
+    nasser_alqatami: {
+      offsetSec: 0.18,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.92,
+    },
+  },
+  warsh: {
+    // Warsh reciters are all everyayah.com CDN; style is murattal unless noted.
+    warsh_abdulbasit: {
+      offsetSec: 0.22,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
+    },
+    warsh_ibrahim_aldosari: {
+      offsetSec: 0.2,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.9,
+    },
+    warsh_yassin: {
+      offsetSec: 0.22,
+      lagWordsBase: 0,
+      lagWordsLong: 0,
+      smoothing: 0.92,
+    },
+  },
 };
 
 function getAutoReciterCalibration(reciter, family, baseline) {
-    if (!reciter) return {};
+  if (!reciter) return {};
 
-    const reciterId = String(reciter.id || '').toLowerCase();
-    const cdnType = String(reciter.cdnType || '').toLowerCase();
+  const reciterId = String(reciter.id || "").toLowerCase();
+  const cdnType = String(reciter.cdnType || "").toLowerCase();
 
-    // everyayah.com CDN commonly has a slightly higher first-packet delay.
-    const cdnBias = cdnType === 'everyayah' ? 0.03 : 0.0;
+  // everyayah.com CDN commonly has a slightly higher first-packet delay.
+  const cdnBias = cdnType === "everyayah" ? 0.03 : 0.0;
 
-    let offsetSec = (baseline.offsetSec ?? 0.15) + cdnBias;
-    let smoothing = baseline.smoothing ?? 0.88;
+  let offsetSec = (baseline.offsetSec ?? 0.15) + cdnBias;
+  let smoothing = baseline.smoothing ?? 0.9;
 
-    // Tablawi recites in a very slow tartil style — needs extra lead
-    if (/tablawi/.test(reciterId)) {
-        offsetSec += 0.08;
-        smoothing = Math.max(0.80, smoothing - 0.04);
-    }
+  // Tablawi recites in a notably slow, near-tartil style — needs extra lead.
+  // (This auto-path is only reached when there is no explicit override entry.)
+  if (/tablawi/.test(reciterId)) {
+    offsetSec += 0.08;
+    smoothing = Math.max(0.82, smoothing - 0.05);
+  }
 
-    return {
-        offsetSec: Number(offsetSec.toFixed(3)),
-        smoothing: Number(Math.max(0.78, Math.min(0.96, smoothing)).toFixed(2)),
-        lagWordsBase: 0,
-        lagWordsLong: 0,
-    };
+  return {
+    offsetSec: Number(offsetSec.toFixed(3)),
+    smoothing: Number(Math.max(0.82, Math.min(0.94, smoothing)).toFixed(2)),
+    lagWordsBase: 0,
+    lagWordsLong: 0,
+  };
 }
 
-export function getKaraokeCalibration(reciterId, riwaya = 'hafs') {
-    const family = riwaya === 'warsh' ? 'warsh' : 'hafs';
-    const defaults = KARAOKE_DEFAULTS[family] || KARAOKE_DEFAULTS.hafs;
-    const reciter = reciterId ? getReciter(reciterId, family) : null;
-    const stylePreset = reciter?.style
-        ? (KARAOKE_STYLE_PRESETS[family]?.[reciter.style] || {})
-        : {};
-    const baseline = {
-        offsetSec: stylePreset.offsetSec ?? defaults.offsetSec,
-        smoothing: stylePreset.smoothing ?? defaults.smoothing,
-        lagWordsBase: stylePreset.lagWordsBase ?? defaults.lagWordsBase,
-        lagWordsLong: stylePreset.lagWordsLong ?? defaults.lagWordsLong,
-    };
-    const autoCalibration = getAutoReciterCalibration(reciter, family, baseline);
-    const override = reciterId
-        ? (KARAOKE_RECITER_OVERRIDES[family]?.[reciterId] || {})
-        : {};
+/**
+ * Returns a fully-resolved karaoke calibration object for a given reciter + riwaya.
+ *
+ * Resolution order (highest priority wins):
+ *   1. KARAOKE_RECITER_OVERRIDES  — explicit per-reciter table
+ *   2. getAutoReciterCalibration  — CDN-bias + style heuristics
+ *   3. KARAOKE_STYLE_PRESETS      — style-level defaults (murattal / tartil / mujawwad)
+ *   4. KARAOKE_DEFAULTS           — riwaya-level fallback
+ *
+ * @param {string}  reciterId  — reciter id string (e.g. 'ar.alafasy')
+ * @param {string}  riwaya     — 'hafs' | 'warsh'
+ * @param {number}  [wordCount] — number of words in the current ayah;
+ *                                when > 10 a small extra lead (+0.02 s) is applied
+ *                                to compensate for timing-model drift on dense verses.
+ */
+export function getKaraokeCalibration(
+  reciterId,
+  riwaya = "hafs",
+  wordCount = 0,
+) {
+  const family = riwaya === "warsh" ? "warsh" : "hafs";
+  const defaults = KARAOKE_DEFAULTS[family] || KARAOKE_DEFAULTS.hafs;
+  const reciter = reciterId ? getReciter(reciterId, family) : null;
+  const stylePreset = reciter?.style
+    ? KARAOKE_STYLE_PRESETS[family]?.[reciter.style] || {}
+    : {};
+  const baseline = {
+    offsetSec: stylePreset.offsetSec ?? defaults.offsetSec,
+    smoothing: stylePreset.smoothing ?? defaults.smoothing,
+    lagWordsBase: stylePreset.lagWordsBase ?? defaults.lagWordsBase,
+    lagWordsLong: stylePreset.lagWordsLong ?? defaults.lagWordsLong,
+  };
+  const autoCalibration = getAutoReciterCalibration(reciter, family, baseline);
+  const override = reciterId
+    ? KARAOKE_RECITER_OVERRIDES[family]?.[reciterId] || {}
+    : {};
 
-    return {
-        offsetSec: override.offsetSec ?? autoCalibration.offsetSec ?? baseline.offsetSec,
-        smoothing: override.smoothing ?? autoCalibration.smoothing ?? baseline.smoothing,
-        lagWordsBase: override.lagWordsBase ?? autoCalibration.lagWordsBase ?? baseline.lagWordsBase,
-        lagWordsLong: override.lagWordsLong ?? autoCalibration.lagWordsLong ?? baseline.lagWordsLong,
-    };
+  let offsetSec =
+    override.offsetSec ?? autoCalibration.offsetSec ?? baseline.offsetSec;
+
+  // Longer ayahs (>10 words) get a slight extra lead (+0.02 s).
+  // The proportional-weight timing model can drift slightly on dense verses;
+  // this small cushion keeps the highlight from lagging behind late in the ayah.
+  if (wordCount > 10) {
+    offsetSec = Number((offsetSec + 0.02).toFixed(3));
+  }
+
+  return {
+    offsetSec,
+    smoothing:
+      override.smoothing ?? autoCalibration.smoothing ?? baseline.smoothing,
+    lagWordsBase:
+      override.lagWordsBase ??
+      autoCalibration.lagWordsBase ??
+      baseline.lagWordsBase,
+    lagWordsLong:
+      override.lagWordsLong ??
+      autoCalibration.lagWordsLong ??
+      baseline.lagWordsLong,
+  };
 }

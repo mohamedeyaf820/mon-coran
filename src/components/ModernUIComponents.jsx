@@ -1,4 +1,4 @@
-import React from " react\;
+import React from "react";
 /**
  * MODERN UI ENHANCEMENTS
  * Composants réutilisables pour interface moderne
@@ -8,18 +8,21 @@ import React from " react\;
 // LoadingSkeleton — Placeholder animé pour le chargement
 // ─────────────────────────────────────────────
 
-export function LoadingSkeleton({ width = "full", height = "4", className = "" }) {
+export function LoadingSkeleton({
+  width = "100%",
+  height = "1rem",
+  className = "",
+}) {
   return (
     <div
-      className={`
-        skeleton
-        bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200
-        dark:from-gray-700 dark:via-gray-600 dark:to-gray-700
-        animate-pulse
-        rounded
-        ${className}
-        w-${width} h-${height}
-      `}
+      className={`skeleton animate-pulse rounded ${className}`}
+      style={{
+        width,
+        height,
+        background: "linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary, #e5e7eb) 50%, var(--bg-secondary) 75%)",
+        backgroundSize: "200% 100%",
+        animation: "pulse 2s cubic-bezier(0.4,0,0.6,1) infinite",
+      }}
     />
   );
 }
@@ -76,14 +79,30 @@ export function Toast({ type = "info", message, onClose, autoClose = 5000 }) {
     info: "border-l-4 border-l-blue-500",
   }[type];
 
+  const icon = {
+    success: { cls: "fa-circle-check", color: "text-emerald-500" },
+    error: { cls: "fa-circle-xmark", color: "text-red-500" },
+    warning: { cls: "fa-triangle-exclamation", color: "text-amber-500" },
+    info: { cls: "fa-circle-info", color: "text-blue-500" },
+  }[type];
+
   return (
     <div
       className={`toast-notification ${bgColor} ${borderColor} ${textColor} px-4 py-3 rounded-md flex items-center justify-between gap-2 animate-fadeInScale`}
     >
-      <span className="text-sm font-medium">{message}</span>
+      <div className="flex items-center gap-2 min-w-0">
+        {icon && (
+          <i
+            className={`fas ${icon.cls} ${icon.color} text-base shrink-0`}
+            aria-hidden="true"
+          />
+        )}
+        <span className="text-sm font-medium">{message}</span>
+      </div>
       <button
         onClick={onClose}
-        className="text-lg hover:opacity-70 transition-opacity"
+        className="text-lg hover:opacity-70 transition-opacity shrink-0"
+        aria-label="Fermer"
       >
         ×
       </button>
@@ -179,7 +198,8 @@ export function AnimatedValue({ value, duration = 500, format = (v) => v }) {
       const elapsed = now - startTime.current;
       const progress = Math.min(elapsed / duration, 1);
 
-      const newValue = startValue.current + (value - startValue.current) * progress;
+      const newValue =
+        startValue.current + (value - startValue.current) * progress;
       setDisplayValue(newValue);
 
       if (progress < 1) {

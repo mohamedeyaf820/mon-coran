@@ -193,6 +193,19 @@ export default function NotesPanel() {
     setEditingId(null);
     setEditText("");
     loadNotes();
+    window.dispatchEvent(
+      new CustomEvent("quran-toast", {
+        detail: {
+          type: "success",
+          message:
+            lang === "ar"
+              ? "تم حفظ الملاحظة!"
+              : lang === "fr"
+                ? "Note sauvegardée !"
+                : "Note saved!",
+        },
+      }),
+    );
   };
 
   const filteredNotes = notes.filter((note) => {
@@ -226,8 +239,8 @@ export default function NotesPanel() {
       <div
         className={cn(
           "flex items-center justify-between shrink-0",
-          "px-4 py-2.5 border-b border-[var(--border-light)]",
-          "bg-[var(--bg-secondary)]",
+          "px-4 py-2.5 border-b border-(--border-light)",
+          "bg-(--bg-secondary)",
           !isMobile && "cursor-grab active:cursor-grabbing rounded-t-2xl",
         )}
         onPointerDown={!isMobile ? onPointerDown : undefined}
@@ -238,11 +251,11 @@ export default function NotesPanel() {
         <div className="flex items-center gap-2.5">
           {/* drag hint on desktop */}
           {!isMobile && (
-            <div className="flex flex-col gap-[3px] opacity-30 shrink-0 pointer-events-none">
+            <div className="flex flex-col gap-0.75 opacity-30 shrink-0 pointer-events-none">
               {[0, 1, 2].map((i) => (
-                <div key={i} className="flex gap-[3px]">
-                  <div className="w-[3px] h-[3px] rounded-full bg-[var(--text-primary)]" />
-                  <div className="w-[3px] h-[3px] rounded-full bg-[var(--text-primary)]" />
+                <div key={i} className="flex gap-0.75">
+                  <div className="w-0.75 h-0.75 rounded-full bg-(--text-primary)" />
+                  <div className="w-0.75 h-0.75 rounded-full bg-(--text-primary)" />
                 </div>
               ))}
             </div>
@@ -257,11 +270,11 @@ export default function NotesPanel() {
             />
           </div>
           <div>
-            <h3 className="text-[0.84rem] font-bold text-[var(--text-primary)] font-[var(--font-ui)] leading-tight">
+            <h3 className="text-[0.84rem] font-bold text-(--text-primary) leading-tight">
               {t("notes.title", lang)}
             </h3>
             {notes.length > 0 && (
-              <p className="text-[0.6rem] text-[var(--text-muted)] font-[var(--font-ui)] leading-tight">
+              <p className="text-[0.6rem] text-(--text-muted) font-(--font-ui) leading-tight">
                 {lang === "fr"
                   ? `${notes.length} note${notes.length > 1 ? "s" : ""}`
                   : lang === "ar"
@@ -276,8 +289,8 @@ export default function NotesPanel() {
           onClick={() => setOpen(false)}
           className={cn(
             "w-7 h-7 flex items-center justify-center rounded-lg",
-            "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
-            "hover:bg-[var(--bg-tertiary)] transition-all duration-150",
+            "text-(--text-muted) hover:text-(--text-primary)",
+            "hover:bg-(--bg-tertiary) transition-all duration-150",
             "cursor-pointer outline-none",
           )}
           aria-label={
@@ -290,9 +303,9 @@ export default function NotesPanel() {
 
       {/* Search */}
       {notes.length > 0 && (
-        <div className="shrink-0 px-3 py-2 border-b border-[var(--border-light)]">
+        <div className="shrink-0 px-3 py-2 border-b border-(--border-light)">
           <div className="relative">
-            <i className="fas fa-search absolute start-3 top-1/2 -translate-y-1/2 text-[0.6rem] text-[var(--text-muted)] pointer-events-none" />
+            <i className="fas fa-search absolute inset-s-3 top-1/2 -translate-y-1/2 text-[0.6rem] text-(--text-muted) pointer-events-none" />
             <input
               ref={searchRef}
               type="text"
@@ -307,17 +320,17 @@ export default function NotesPanel() {
               }
               className={cn(
                 "w-full ps-7 pe-7 py-1.5 rounded-lg text-[0.75rem]",
-                "bg-[var(--bg-secondary)] border border-[var(--border-light)]",
-                "text-[var(--text-primary)] placeholder:text-[var(--text-muted)]",
-                "font-[var(--font-ui)] outline-none",
+                "bg-(--bg-secondary) border border-(--border-light)",
+                "text-(--text-primary) placeholder:text-(--text-muted)",
+                "font-(--font-ui) outline-none",
                 "transition-[border-color,box-shadow] duration-150",
-                "focus:border-[var(--primary)] focus:shadow-[0_0_0_2px_rgba(var(--primary-rgb),0.12)]",
+                "focus:border-(--primary) focus:shadow-[0_0_0_2px_rgba(var(--primary-rgb),0.12)]",
               )}
             />
             {search && (
               <button
                 onClick={() => setSearch("")}
-                className="absolute end-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                className="absolute inset-e-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded text-(--text-muted) hover:text-(--text-primary) transition-colors cursor-pointer"
               >
                 <i className="fas fa-times text-[0.55rem]" />
               </button>
@@ -337,17 +350,17 @@ export default function NotesPanel() {
                 border: "1px solid var(--border-light)",
               }}
             >
-              <i className="fas fa-sticky-note text-[1.4rem] text-[var(--text-muted)]" />
+              <i className="fas fa-sticky-note text-[1.4rem] text-(--text-muted)" />
             </div>
             <div>
-              <p className="text-[0.84rem] font-semibold text-[var(--text-primary)] font-[var(--font-ui)] mb-1">
+              <p className="text-[0.84rem] font-semibold text-(--text-primary) mb-1">
                 {lang === "fr"
                   ? "Aucune note"
                   : lang === "ar"
                     ? "لا توجد ملاحظات"
                     : "No notes yet"}
               </p>
-              <p className="text-[0.72rem] text-[var(--text-muted)] font-[var(--font-ui)] leading-relaxed">
+              <p className="text-[0.72rem] text-(--text-muted) font-(--font-ui) leading-relaxed">
                 {lang === "fr"
                   ? "Appuyez sur un verset puis sur 📝 pour ajouter."
                   : lang === "ar"
@@ -358,8 +371,8 @@ export default function NotesPanel() {
           </div>
         ) : filteredNotes.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-5 py-10 text-center gap-2">
-            <i className="fas fa-search text-[1.2rem] text-[var(--text-muted)]" />
-            <p className="text-[0.78rem] text-[var(--text-muted)] font-[var(--font-ui)]">
+            <i className="fas fa-search text-[1.2rem] text-(--text-muted)" />
+            <p className="text-[0.78rem] text-(--text-muted) font-(--font-ui)">
               {lang === "fr"
                 ? `Aucun résultat pour « ${search} »`
                 : lang === "ar"
@@ -368,7 +381,7 @@ export default function NotesPanel() {
             </p>
             <button
               onClick={() => setSearch("")}
-              className="text-[0.72rem] text-[var(--primary)] underline font-[var(--font-ui)] cursor-pointer"
+              className="text-[0.72rem] text-(--primary) underline font-(--font-ui) cursor-pointer"
             >
               {lang === "fr" ? "Effacer" : lang === "ar" ? "مسح" : "Clear"}
             </button>
@@ -385,10 +398,10 @@ export default function NotesPanel() {
                   className={cn(
                     "notes-card",
                     "rounded-xl border transition-all duration-200",
-                    "bg-[var(--bg-card)]",
+                    "bg-(--bg-card)",
                     isEditing
-                      ? "border-[var(--primary)] shadow-[0_0_0_2px_rgba(var(--primary-rgb),0.10)]"
-                      : "border-[var(--border-light)] hover:border-[var(--border)] hover:shadow-[var(--shadow-sm)]",
+                      ? "border-(--primary) shadow-[0_0_0_2px_rgba(var(--primary-rgb),0.10)]"
+                      : "border-(--border-light) hover:border-(--border) hover:shadow-sm",
                   )}
                 >
                   {/* Card header */}
@@ -397,8 +410,8 @@ export default function NotesPanel() {
                       "notes-card-header",
                       "flex items-center justify-between px-2.5 pt-2 pb-1.5 border-b",
                       isEditing
-                        ? "border-[var(--primary)]/20"
-                        : "border-[var(--border-light)]",
+                        ? "border-(--primary)/20"
+                        : "border-(--border-light)",
                     )}
                   >
                     <button
@@ -413,7 +426,7 @@ export default function NotesPanel() {
                       }
                     >
                       <span
-                        className="text-[0.65rem] font-bold px-1.5 py-0.5 rounded-md shrink-0 font-[var(--font-ui)]"
+                        className="text-[0.65rem] font-bold px-1.5 py-0.5 rounded-md shrink-0"
                         style={{
                           background: "rgba(var(--primary-rgb,27,94,59),0.1)",
                           color: "var(--primary)",
@@ -423,7 +436,7 @@ export default function NotesPanel() {
                           ? `${toAr(note.surah)}:${toAr(note.ayah)}`
                           : `${note.surah}:${note.ayah}`}
                       </span>
-                      <span className="text-[0.74rem] font-semibold text-[var(--text-primary)] font-[var(--font-ui)] truncate group-hover:text-[var(--primary)] transition-colors">
+                      <span className="text-[0.74rem] font-semibold text-(--text-primary) truncate group-hover:text-(--primary) transition-colors">
                         {s?.ar || ""}
                       </span>
                     </button>
@@ -435,7 +448,7 @@ export default function NotesPanel() {
                           className={cn(
                             "notes-card-icon-btn",
                             "w-6 h-6 flex items-center justify-center rounded-lg",
-                            "text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary)]/10",
+                            "text-(--text-muted) hover:text-(--primary) hover:bg-(--primary)/10",
                             "transition-all duration-150 cursor-pointer outline-none",
                           )}
                           title={
@@ -459,7 +472,7 @@ export default function NotesPanel() {
                           "transition-all duration-150 cursor-pointer outline-none",
                           isDeleting
                             ? "bg-red-500/15 text-red-500 ring-1 ring-red-500/30"
-                            : "text-[var(--text-muted)] hover:text-red-500 hover:bg-red-500/10",
+                            : "text-(--text-muted) hover:text-red-500 hover:bg-red-500/10",
                         )}
                         title={
                           isDeleting
@@ -498,10 +511,10 @@ export default function NotesPanel() {
                           rows={3}
                           className={cn(
                             "w-full px-2.5 py-1.5 rounded-lg text-[0.78rem] resize-none",
-                            "bg-[var(--bg-secondary)] border border-[var(--primary)]/40",
-                            "text-[var(--text-primary)] font-[var(--font-ui)] leading-relaxed",
+                            "bg-(--bg-secondary) border border-(--primary)/40",
+                            "text-(--text-primary) font-(--font-ui) leading-relaxed",
                             "outline-none transition-[border-color,box-shadow] duration-150",
-                            "focus:border-[var(--primary)] focus:shadow-[0_0_0_2px_rgba(var(--primary-rgb),0.12)]",
+                            "focus:border-(--primary) focus:shadow-[0_0_0_2px_rgba(var(--primary-rgb),0.12)]",
                           )}
                           placeholder={t("notes.placeholder", lang)}
                           onKeyDown={(e) => {
@@ -514,9 +527,9 @@ export default function NotesPanel() {
                           <button
                             onClick={cancelEdit}
                             className={cn(
-                              "px-2.5 py-1 rounded-lg text-[0.68rem] font-semibold font-[var(--font-ui)]",
-                              "bg-[var(--bg-secondary)] text-[var(--text-secondary)]",
-                              "border border-[var(--border)] cursor-pointer outline-none transition-all duration-150",
+                              "px-2.5 py-1 rounded-lg text-[0.68rem] font-semibold",
+                              "bg-(--bg-secondary) text-(--text-secondary)",
+                              "border border-(--border) cursor-pointer outline-none transition-all duration-150",
                             )}
                           >
                             {lang === "fr"
@@ -529,8 +542,8 @@ export default function NotesPanel() {
                             onClick={() => handleSave(note.surah, note.ayah)}
                             disabled={!editText.trim() || saving}
                             className={cn(
-                              "px-2.5 py-1 rounded-lg text-[0.68rem] font-semibold font-[var(--font-ui)]",
-                              "bg-[var(--primary)] text-white cursor-pointer outline-none transition-all duration-150",
+                              "px-2.5 py-1 rounded-lg text-[0.68rem] font-semibold",
+                              "bg-(--primary) text-white cursor-pointer outline-none transition-all duration-150",
                               "hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed",
                             )}
                           >
@@ -548,7 +561,7 @@ export default function NotesPanel() {
                       </div>
                     ) : (
                       <p
-                        className="notes-card-body text-[0.78rem] text-[var(--text-primary)] font-[var(--font-ui)] leading-relaxed whitespace-pre-wrap cursor-text"
+                        className="notes-card-body text-[0.78rem] text-(--text-primary) font-(--font-ui) leading-relaxed whitespace-pre-wrap cursor-text"
                         onDoubleClick={() => startEdit(note)}
                         title={
                           lang === "fr"
@@ -566,13 +579,13 @@ export default function NotesPanel() {
                   {/* Card footer */}
                   {!isEditing && (
                     <div className="notes-card-footer flex items-center justify-between px-2.5 pb-2">
-                      <span className="text-[0.58rem] text-[var(--text-muted)] font-[var(--font-ui)] flex items-center gap-1">
+                      <span className="text-[0.58rem] text-(--text-muted) font-(--font-ui) flex items-center gap-1">
                         <i className="fas fa-clock text-[0.5rem]" />
                         {formatDate(note.updatedAt)}
                       </span>
                       <button
                         onClick={() => goTo(note.surah, note.ayah)}
-                        className="flex items-center gap-1 text-[0.62rem] font-semibold font-[var(--font-ui)] text-[var(--primary)] hover:underline cursor-pointer outline-none"
+                        className="flex items-center gap-1 text-[0.62rem] font-semibold text-(--primary) hover:underline cursor-pointer outline-none"
                       >
                         {lang === "fr"
                           ? "Aller au verset"
@@ -588,7 +601,7 @@ export default function NotesPanel() {
                   {isDeleting && (
                     <div className="px-2.5 pb-2 flex items-center gap-1.5">
                       <i className="fas fa-triangle-exclamation text-red-500 text-[0.6rem]" />
-                      <span className="text-[0.65rem] text-red-500 font-[var(--font-ui)]">
+                      <span className="text-[0.65rem] text-red-500 font-(--font-ui)">
                         {lang === "fr"
                           ? "Cliquez à nouveau pour confirmer"
                           : lang === "ar"
@@ -606,8 +619,8 @@ export default function NotesPanel() {
 
       {/* Footer hint */}
       {notes.length > 0 && (
-        <div className="shrink-0 px-3 py-1.5 border-t border-[var(--border-light)] bg-[var(--bg-secondary)] rounded-b-2xl">
-          <p className="text-[0.58rem] text-[var(--text-muted)] text-center font-[var(--font-ui)]">
+        <div className="shrink-0 px-3 py-1.5 border-t border-(--border-light) bg-(--bg-secondary) rounded-b-2xl">
+          <p className="text-[0.58rem] text-(--text-muted) text-center font-(--font-ui)">
             {lang === "fr"
               ? "Double-cliquez pour modifier"
               : lang === "ar"
@@ -632,12 +645,12 @@ export default function NotesPanel() {
         aria-expanded={open}
         className={cn(
           "notes-fab",
-          "fixed z-[250] flex items-center justify-center",
+          "fixed z-250 flex items-center justify-center",
           "w-11 h-11 rounded-full cursor-pointer outline-none",
           "transition-all duration-200",
           "shadow-[0_4px_20px_rgba(212,168,32,0.35)]",
           open ? "scale-110" : "hover:scale-110 hover:-translate-y-0.5",
-          "focus-visible:ring-2 focus-visible:ring-[var(--gold)]/50 focus-visible:ring-offset-2",
+          "focus-visible:ring-2 focus-visible:ring-(--gold)/50 focus-visible:ring-offset-2",
         )}
         style={{
           bottom: isMobile
@@ -659,10 +672,10 @@ export default function NotesPanel() {
         {!open && notes.length > 0 && (
           <span
             className={cn(
-              "absolute -top-1 min-w-[18px] h-[18px] px-1",
+              "absolute -top-1 min-w-4.5 h-4.5 px-1",
               "flex items-center justify-center rounded-full",
-              "bg-[var(--primary)] text-white text-[0.55rem] font-bold",
-              "border-2 border-white font-[var(--font-ui)]",
+              "bg-(--primary) text-white text-[0.55rem] font-bold",
+              "border-2 border-white font-(--font-ui)",
               lang === "ar" ? "-left-1" : "-right-1",
             )}
           >
@@ -677,7 +690,7 @@ export default function NotesPanel() {
           {/* Mobile: backdrop */}
           {isMobile && (
             <div
-              className="fixed inset-0 z-[195] bg-black/40 backdrop-blur-[2px]"
+              className="fixed inset-0 z-195 bg-black/40 backdrop-blur-[2px]"
               onClick={() => setOpen(false)}
             />
           )}
@@ -687,7 +700,7 @@ export default function NotesPanel() {
             <aside
               className={cn(
                 "notes-panel-sheet",
-                "fixed z-[200] flex flex-col left-0 right-0 w-full rounded-t-2xl border-t border-[var(--border)] max-h-[78dvh]",
+                "fixed z-200 flex flex-col left-0 right-0 w-full rounded-t-2xl border-t border-(--border) max-h-[78dvh]",
               )}
               style={{
                 bottom: "var(--player-h)",
@@ -707,7 +720,7 @@ export default function NotesPanel() {
               ref={panelRef}
               className={cn(
                 "notes-panel-desk",
-                "fixed z-[200] flex flex-col rounded-2xl overflow-hidden",
+                "fixed z-200 flex flex-col rounded-2xl overflow-hidden",
                 "select-none",
                 isDragging
                   ? "cursor-grabbing shadow-2xl scale-[1.01]"
@@ -732,7 +745,7 @@ export default function NotesPanel() {
             >
               {/* Gold top accent line */}
               <div
-                className="h-[3px] w-full shrink-0"
+                className="h-0.75 w-full shrink-0"
                 style={{
                   background:
                     "linear-gradient(90deg, var(--gold), var(--gold-bright,#d4a820), var(--primary))",

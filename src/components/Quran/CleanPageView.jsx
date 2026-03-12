@@ -3,6 +3,27 @@ import { toAr, getSurah } from "../../data/surahs";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 
 /**
+ * Surah title header banner — mushaf-style decorated box.
+ */
+function SurahHeader({ surahMeta, lang }) {
+  const subtitle = lang === "fr" ? surahMeta?.fr : lang === "ar" ? null : surahMeta?.en;
+  return (
+    <div className="cpv-surah-header">
+      <span className="cpv-surah-header-line" />
+      <div className="cpv-surah-header-frame">
+        <span className="cpv-surah-header-name" dir="rtl" lang="ar">
+          سُورَةُ {surahMeta?.ar}
+        </span>
+        {subtitle && (
+          <span className="cpv-surah-header-sub">{subtitle}</span>
+        )}
+      </div>
+      <span className="cpv-surah-header-line" />
+    </div>
+  );
+}
+
+/**
  * Ornamental verse-end medallion — quran.com style.
  * Rendered inline after each verse's text, sized relative to the font.
  */
@@ -10,55 +31,33 @@ function VerseMedallion({ num }) {
   const display = toAr(num);
   return (
     <span className="cpv-medallion" aria-label={`Verse ${num}`}>
-      <svg className="cpv-medallion-svg" viewBox="0 0 40 40" aria-hidden="true">
-        {/* Outer decorative ring */}
-        <circle
-          cx="20"
-          cy="20"
-          r="18.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.2"
-          opacity="0.55"
-        />
+      <svg className="cpv-medallion-svg" viewBox="0 0 44 44" aria-hidden="true">
+        {/* Outer ring */}
+        <circle cx="22" cy="22" r="20" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.5" />
+        {/* Inner fill */}
+        <circle cx="22" cy="22" r="16.5" fill="currentColor" opacity="0.1" />
         {/* Inner ring */}
-        <circle
-          cx="20"
-          cy="20"
-          r="14.5"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="0.8"
-          opacity="0.35"
-        />
-        {/* Subtle fill */}
-        <circle cx="20" cy="20" r="13.5" fill="currentColor" opacity="0.07" />
-        {/* Diamond petals at 4 cardinal points */}
-        <polygon
-          points="20,1.5 21.6,5.5 20,4 18.4,5.5"
-          fill="currentColor"
-          opacity="0.5"
-        />
-        <polygon
-          points="20,38.5 21.6,34.5 20,36 18.4,34.5"
-          fill="currentColor"
-          opacity="0.5"
-        />
-        <polygon
-          points="1.5,20 5.5,21.6 4,20 5.5,18.4"
-          fill="currentColor"
-          opacity="0.5"
-        />
-        <polygon
-          points="38.5,20 34.5,21.6 36,20 34.5,18.4"
-          fill="currentColor"
-          opacity="0.5"
-        />
-        {/* Corner accent dots */}
-        <circle cx="7" cy="7" r="1.1" fill="currentColor" opacity="0.3" />
-        <circle cx="33" cy="7" r="1.1" fill="currentColor" opacity="0.3" />
-        <circle cx="7" cy="33" r="1.1" fill="currentColor" opacity="0.3" />
-        <circle cx="33" cy="33" r="1.1" fill="currentColor" opacity="0.3" />
+        <circle cx="22" cy="22" r="16.5" fill="none" stroke="currentColor" strokeWidth="0.75" opacity="0.35" />
+        {/* 8 diamond petal tips at cardinal and diagonal points */}
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => {
+          const rad = (angle * Math.PI) / 180;
+          const x1 = 22 + 20.8 * Math.sin(rad);
+          const y1 = 22 - 20.8 * Math.cos(rad);
+          const x2 = 22 + 18.5 * Math.sin(rad - 0.18);
+          const y2 = 22 - 18.5 * Math.cos(rad - 0.18);
+          const x3 = 22 + 16.8 * Math.sin(rad);
+          const y3 = 22 - 16.8 * Math.cos(rad);
+          const x4 = 22 + 18.5 * Math.sin(rad + 0.18);
+          const y4 = 22 - 18.5 * Math.cos(rad + 0.18);
+          return (
+            <polygon
+              key={angle}
+              points={`${x1},${y1} ${x2},${y2} ${x3},${y3} ${x4},${y4}`}
+              fill="currentColor"
+              opacity={angle % 90 === 0 ? 0.6 : 0.35}
+            />
+          );
+        })}
       </svg>
       <span className="cpv-medallion-num">{display}</span>
     </span>
@@ -119,6 +118,12 @@ export default function CleanPageView({
     [surahNum, ayahs],
   );
 
+  /* ── Surah header ── show at the start of every surah (ayah 1) ── */
+  const showSurahHeader = useMemo(
+    () => ayahs.length > 0 && ayahs[0].numberInSurah === 1 && surahMeta != null,
+    [ayahs, surahMeta],
+  );
+
   /* ── Basmala translation for FR/EN ── */
   const basmalaTranslation = useMemo(() => {
     if (!showBasmala) return null;
@@ -159,6 +164,11 @@ export default function CleanPageView({
       ref={containerRef}
       className={`cpv-container${isQCF4 ? " cpv-qcf4" : ""}`}
     >
+      {/* Surah title header */}
+      {showSurahHeader && (
+        <SurahHeader surahMeta={surahMeta} lang={lang} />
+      )}
+
       {/* Basmala */}
       {showBasmala && (
         <div className="cpv-basmala-wrap">

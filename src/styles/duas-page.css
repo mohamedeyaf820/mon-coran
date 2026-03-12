@@ -1,626 +1,725 @@
-﻿/* 
+﻿/*
    Duas Page  Design élégant & lisible
     */
 
 /*  Layout  */
 .duas-page {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem 7rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
 /*  HERO  */
 
 .duas-hero {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 2rem 2.25rem 1.75rem;
-  border-radius: 1.25rem;
-  background: var(--bg-card, var(--bg-primary));
-  border: 1px solid var(--border);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem 2.25rem 1.75rem;
+    border-radius: 1.25rem;
+    background: linear-gradient(
+        135deg,
+        var(--primary-dark, #0e3d26) 0%,
+        var(--primary, #1b5e3b) 100%
+    );
+    border: 1px solid transparent;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    color: var(--text-inverse, #fff);
 }
 
-/* Décoration lumineuse en arrière-plan */
+/* Override text colours inside the gradient hero */
+.duas-hero .duas-title {
+    color: #fff;
+}
+
+.duas-hero .duas-subtitle {
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.duas-hero .duas-hero-stat-label {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.duas-hero .duas-hero-stat strong {
+    color: #fff;
+}
+
+.duas-hero .duas-hero-stat {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.duas-hero .duas-hero-stat--hint {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.duas-hero .duas-back-btn {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.duas-hero .duas-back-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #fff;
+}
+
+.duas-hero .duas-cat-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.duas-hero .duas-cat-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #fff;
+}
+
+.duas-hero .duas-cat-btn.active {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--primary, #1b5e3b);
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.duas-hero .duas-search-wrap {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.duas-hero .duas-search-wrap:focus-within {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+}
+
+.duas-hero .duas-search-wrap i {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.duas-hero .duas-search {
+    color: #fff;
+}
+
+.duas-hero .duas-search::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    opacity: 1;
+}
+
+/* Basmala watermark in the hero background */
 .duas-hero::before {
-  content: "";
-  position: absolute;
-  top: -40px;
-  right: -40px;
-  width: 260px;
-  height: 260px;
-  background: radial-gradient(
-    circle,
-    rgba(var(--primary-rgb), 0.08) 0%,
-    transparent 70%
-  );
-  pointer-events: none;
+    content: "﷽";
+    position: absolute;
+    top: 50%;
+    right: -1rem;
+    transform: translateY(-50%);
+    font-size: 8rem;
+    opacity: 0.04;
+    font-family: var(--font-surah, var(--font-quran, serif));
+    pointer-events: none;
+    color: #fff;
+    line-height: 1;
 }
 
 .duas-hero::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--primary) 30%,
-    var(--gold) 70%,
-    transparent 100%
-  );
-  opacity: 0.5;
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.3) 30%,
+        var(--gold) 70%,
+        transparent 100%
+    );
+    opacity: 0.6;
 }
 
 /* En-tête héros */
 .duas-hero-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1.5rem;
-  position: relative;
-  z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 1;
 }
 
 .duas-hero-content {
-  flex: 1;
-  min-width: 0;
+    flex: 1;
+    min-width: 0;
 }
 
 .duas-title {
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--text);
-  margin-bottom: 0.3rem;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
 }
 
 /* Soulignement doré sous le titre */
 .duas-title::after {
-  content: "";
-  display: block;
-  width: 2.5rem;
-  height: 3px;
-  background: linear-gradient(90deg, var(--gold), transparent);
-  margin-top: 0.5rem;
-  border-radius: 9999px;
+    content: "";
+    display: block;
+    width: 2.5rem;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+    margin-top: 0.5rem;
+    border-radius: 9999px;
+    opacity: 0.85;
 }
 
 .duas-subtitle {
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  max-width: 580px;
-  line-height: 1.65;
-  margin-top: 0.4rem;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    max-width: 580px;
+    line-height: 1.65;
+    margin-top: 0.4rem;
 }
 
 /* Bouton retour */
 .duas-back-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.55rem 1.1rem;
-  border-radius: 0.625rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  color: var(--text-secondary, var(--text-muted));
-  font-weight: 600;
-  font-size: 0.875rem;
-  font-family: var(--font-ui);
-  transition: all 0.18s var(--ease, cubic-bezier(0.4, 0, 0.2, 1));
-  white-space: nowrap;
-  flex-shrink: 0;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: 0.625rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary, var(--text-muted));
+    font-weight: 600;
+    font-size: 0.875rem;
+    font-family: var(--font-ui);
+    transition: all 0.18s var(--ease, cubic-bezier(0.4, 0, 0.2, 1));
+    white-space: nowrap;
+    flex-shrink: 0;
+    cursor: pointer;
 }
 
 .duas-back-btn:hover {
-  background: var(--primary-light, var(--hover-bg));
-  border-color: var(--primary);
-  color: var(--primary);
-  transform: translateX(-2px);
+    background: var(--primary-light, var(--hover-bg));
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateX(-2px);
 }
 
 /*  Barre de filtres  */
 .duas-tools {
-  display: flex;
-  flex-direction: column;
-  gap: 0.875rem;
-  position: relative;
-  z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    position: relative;
+    z-index: 1;
 }
 
 .duas-hero-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
 }
 
 .duas-hero-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 0.28rem;
-  padding: 0.85rem 0.95rem;
-  border-radius: 0.95rem;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.18));
-  border: 1px solid rgba(var(--primary-rgb), 0.08);
-  box-shadow: 0 10px 24px rgba(15, 18, 16, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+    padding: 0.85rem 0.95rem;
+    border-radius: 0.95rem;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.42),
+        rgba(255, 255, 255, 0.18)
+    );
+    border: 1px solid rgba(var(--primary-rgb), 0.08);
+    box-shadow: 0 10px 24px rgba(15, 18, 16, 0.04);
 }
 
 .duas-hero-stat--hint {
-  background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.09), rgba(184, 134, 11, 0.1));
+    background: linear-gradient(
+        135deg,
+        rgba(var(--primary-rgb), 0.09),
+        rgba(184, 134, 11, 0.1)
+    );
 }
 
 .duas-hero-stat-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
 }
 
 .duas-hero-stat strong {
-  font-size: 0.92rem;
-  line-height: 1.45;
-  color: var(--text);
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--text);
 }
 
 /* Catégories scrollables */
 .duas-categories {
-  display: flex;
-  gap: 0.45rem;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+    display: flex;
+    gap: 0.45rem;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .duas-categories::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 
 .duas-cat-btn {
-  white-space: nowrap;
-  padding: 0.42rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  font-family: var(--font-ui);
-  background: var(--bg-secondary);
-  border: 1.5px solid var(--border);
-  color: var(--text-muted);
-  transition: all 0.15s var(--ease, cubic-bezier(0.4, 0, 0.2, 1));
-  cursor: pointer;
-  user-select: none;
-  flex-shrink: 0;
+    white-space: nowrap;
+    padding: 0.42rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: var(--font-ui);
+    background: var(--bg-secondary);
+    border: 1.5px solid var(--border);
+    color: var(--text-muted);
+    transition: all 0.15s var(--ease, cubic-bezier(0.4, 0, 0.2, 1));
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
 }
 
 .duas-cat-btn:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--hover-bg);
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--hover-bg);
 }
 
 .duas-cat-btn.active {
-  background: var(--primary);
-  color: #fff;
-  border-color: var(--primary);
-  box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.28);
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.28);
 }
 
 /* Barre de recherche */
 .duas-search-wrap {
-  position: relative;
-  max-width: 440px;
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.65rem 1rem;
-  background: var(--bg-primary);
-  border: 1.5px solid var(--border);
-  border-radius: 0.75rem;
-  transition: border-color 0.18s, box-shadow 0.18s;
+    position: relative;
+    max-width: 440px;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 1rem;
+    background: var(--bg-primary);
+    border: 1.5px solid var(--border);
+    border-radius: 0.75rem;
+    transition:
+        border-color 0.18s,
+        box-shadow 0.18s;
 }
 
 .duas-search-wrap:focus-within {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
 }
 
 .duas-search-wrap i {
-  color: var(--text-muted);
-  font-size: 0.875rem;
-  flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    flex-shrink: 0;
 }
 
 .duas-search {
-  background: transparent;
-  border: none;
-  color: var(--text);
-  width: 100%;
-  outline: none;
-  font-size: 0.9rem;
-  font-family: var(--font-ui);
+    background: transparent;
+    border: none;
+    color: var(--text);
+    width: 100%;
+    outline: none;
+    font-size: 0.9rem;
+    font-family: var(--font-ui);
 }
 
 .duas-search::placeholder {
-  color: var(--text-muted);
-  opacity: 0.7;
+    color: var(--text-muted);
+    opacity: 0.7;
 }
 
 /*  GRILLE  */
 
 .duas-results {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .duas-results-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
 }
 
 .duas-results-title {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--text);
-  letter-spacing: -0.02em;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
 }
 
 .duas-results-copy {
-  margin: 0.3rem 0 0;
-  max-width: 720px;
-  font-size: 0.92rem;
-  line-height: 1.65;
-  color: var(--text-muted);
+    margin: 0.3rem 0 0;
+    max-width: 720px;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--text-muted);
 }
 
 .duas-results-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.35rem;
-  padding: 0.5rem 0.9rem;
-  border-radius: 9999px;
-  background: rgba(var(--primary-rgb), 0.08);
-  border: 1px solid rgba(var(--primary-rgb), 0.1);
-  color: var(--primary);
-  font-size: 0.78rem;
-  font-weight: 800;
-  white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.35rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 9999px;
+    background: rgba(var(--primary-rgb), 0.08);
+    border: 1px solid rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+    font-size: 0.78rem;
+    font-weight: 800;
+    white-space: nowrap;
 }
 
 .gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
-  gap: 1.1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
+    gap: 1.1rem;
 }
 
 /*  État vide  */
 .duas-empty {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4.5rem 2rem;
-  text-align: center;
-  color: var(--text-muted);
-  gap: 0.75rem;
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4.5rem 2rem;
+    text-align: center;
+    color: var(--text-muted);
+    gap: 0.75rem;
 }
 
 .duas-empty i {
-  font-size: 2.5rem;
-  opacity: 0.28;
-  display: block;
-  margin-bottom: 0.5rem;
+    font-size: 2.5rem;
+    opacity: 0.28;
+    display: block;
+    margin-bottom: 0.5rem;
 }
 
 .duas-empty p {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-muted);
 }
 
 /*  CARTE DUA  */
 
 .dua-card-v5 {
-  position: relative;
-  background: var(--bg-card, var(--bg-primary));
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  overflow: hidden;
-  transition: transform 0.2s var(--ease, cubic-bezier(0.4, 0, 0.2, 1)),
-    box-shadow 0.2s var(--ease, cubic-bezier(0.4, 0, 0.2, 1)),
-    border-color 0.2s;
+    position: relative;
+    background: var(--bg-card, var(--bg-primary));
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    overflow: hidden;
+    transition:
+        transform 0.2s var(--ease, cubic-bezier(0.4, 0, 0.2, 1)),
+        box-shadow 0.2s var(--ease, cubic-bezier(0.4, 0, 0.2, 1)),
+        border-color 0.2s;
 }
 
 /* Accent coloré au survol */
 .dua-card-v5::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--primary), var(--gold));
-  opacity: 0;
-  transition: opacity 0.2s;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--gold));
+    opacity: 0;
+    transition: opacity 0.2s;
 }
 
 .dua-card-v5:hover {
-  border-color: rgba(var(--primary-rgb), 0.3);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-3px);
+    border-color: rgba(var(--primary-rgb), 0.3);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
 }
 
 .dua-card-v5:hover::before {
-  opacity: 1;
+    opacity: 1;
 }
 
 .dua-card-inner {
-  padding: 1.375rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+    padding: 1.375rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 /* En-tête de la carte */
 .dua-card-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
 }
 
 .dua-head-main {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    align-items: center;
 }
 
 /* Pastille référence sourate:verset */
 .dua-ref-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  font-family: var(--font-ui);
-  color: var(--text-muted);
-  padding: 0.28rem 0.7rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 9999px;
-  transition: border-color 0.18s, color 0.18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: var(--font-ui);
+    color: var(--text-muted);
+    padding: 0.28rem 0.7rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    transition:
+        border-color 0.18s,
+        color 0.18s;
 }
 
 .dua-ref-pill i {
-  color: var(--primary);
-  font-size: 0.68rem;
+    color: var(--primary);
+    font-size: 0.68rem;
 }
 
 .dua-ref-nums {
-  color: var(--primary);
-  font-weight: 800;
+    color: var(--primary);
+    font-weight: 800;
 }
 
 .dua-cat-pill {
-  display: inline-flex;
-  align-items: center;
-  min-height: 1.9rem;
-  padding: 0.26rem 0.65rem;
-  border-radius: 9999px;
-  background: rgba(184, 134, 11, 0.12);
-  border: 1px solid rgba(184, 134, 11, 0.18);
-  color: color-mix(in srgb, var(--gold) 72%, var(--text) 28%);
-  font-size: 0.72rem;
-  font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.9rem;
+    padding: 0.26rem 0.65rem;
+    border-radius: 9999px;
+    background: rgba(184, 134, 11, 0.12);
+    border: 1px solid rgba(184, 134, 11, 0.18);
+    color: color-mix(in srgb, var(--gold) 72%, var(--text) 28%);
+    font-size: 0.72rem;
+    font-weight: 800;
 }
 
 /* Bouton "Ouvrir dans le Coran" */
 .dua-open-btn-v5 {
-  width: 30px;
-  height: 30px;
-  border-radius: 0.5rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.72rem;
-  transition: all 0.15s var(--ease, cubic-bezier(0.4, 0, 0.2, 1));
-  flex-shrink: 0;
-  cursor: pointer;
+    width: 30px;
+    height: 30px;
+    border-radius: 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    transition: all 0.15s var(--ease, cubic-bezier(0.4, 0, 0.2, 1));
+    flex-shrink: 0;
+    cursor: pointer;
 }
 
 .dua-open-btn-v5:hover {
-  background: var(--primary);
-  color: #fff;
-  border-color: var(--primary);
-  transform: scale(1.1);
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+    transform: scale(1.1);
 }
 
 /* Zone de contenu */
 .dua-content-area {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
 }
 
 /* Texte arabe */
 .dua-arabic {
-  font-family: var(--font-quran);
-  font-size: 1.5rem;
-  line-height: 2.1;
-  color: var(--text-quran, var(--text));
-  text-align: right;
-  direction: rtl;
-  padding: 0.75rem 1rem;
-  background: rgba(var(--primary-rgb), 0.03);
-  border-right: 3px solid var(--primary);
-  border-radius: 0.5rem;
-  word-spacing: 0.1em;
+    font-family: var(--font-quran);
+    font-size: 1.5rem;
+    line-height: 2.1;
+    color: var(--text-quran, var(--text));
+    text-align: right;
+    direction: rtl;
+    padding: 0.75rem 1rem;
+    background: rgba(var(--primary-rgb), 0.03);
+    border-right: 3px solid var(--primary);
+    border-radius: 0.5rem;
+    word-spacing: 0.1em;
 }
 
 [data-theme="dark"] .dua-arabic,
 [data-theme="night-blue"] .dua-arabic {
-  background: rgba(255, 255, 255, 0.035);
+    background: rgba(255, 255, 255, 0.035);
 }
 
 /* Translittération */
 .dua-translit {
-  font-size: 0.875rem;
-  font-style: italic;
-  color: var(--text-muted);
-  line-height: 1.6;
-  padding-left: 0.75rem;
-  border-left: 2px solid var(--gold);
-  opacity: 0.88;
+    font-size: 0.875rem;
+    font-style: italic;
+    color: var(--text-muted);
+    line-height: 1.6;
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--gold);
+    opacity: 0.88;
 }
 
 /* Traduction */
 .dua-translation {
-  font-size: 0.95rem;
-  color: var(--text-secondary, var(--text));
-  line-height: 1.7;
-  font-family: var(--font-ui);
+    font-size: 0.95rem;
+    color: var(--text-secondary, var(--text));
+    line-height: 1.7;
+    font-family: var(--font-ui);
 }
 
 .dua-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.85rem;
-  padding-top: 0.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+    padding-top: 0.1rem;
 }
 
 .dua-card-footer-copy {
-  font-size: 0.76rem;
-  line-height: 1.5;
-  color: var(--text-muted);
+    font-size: 0.76rem;
+    line-height: 1.5;
+    color: var(--text-muted);
 }
 
 .dua-card-footer-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.42rem;
-  border: none;
-  background: transparent;
-  color: var(--primary);
-  font-size: 0.8rem;
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
+    border: none;
+    background: transparent;
+    color: var(--primary);
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
 .dua-card-footer-link:hover {
-  color: color-mix(in srgb, var(--primary) 82%, var(--gold) 18%);
+    color: color-mix(in srgb, var(--primary) 82%, var(--gold) 18%);
 }
 
 /*  UTILITAIRES  */
 
 .scrollbar-hide {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 
 /*  RESPONSIVE  */
 
 @media (max-width: 768px) {
-  .duas-hero-stats {
-    grid-template-columns: 1fr;
-  }
+    .duas-hero-stats {
+        grid-template-columns: 1fr;
+    }
 
-  .duas-results-head {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+    .duas-results-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-  .gallery-grid {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 0.9rem;
-  }
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 0.9rem;
+    }
 }
 
 @media (max-width: 640px) {
-  .duas-page {
-    padding: 1rem 0.875rem 5.5rem;
-    gap: 1.25rem;
-  }
+    .duas-page {
+        padding: 1rem 0.875rem 5.5rem;
+        gap: 1.25rem;
+    }
 
-  .duas-hero {
-    padding: 1.25rem 1.25rem 1.5rem;
-    border-radius: 1rem;
-  }
+    .duas-hero {
+        padding: 1.25rem 1.25rem 1.5rem;
+        border-radius: 1rem;
+    }
 
-  .duas-hero-head {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.875rem;
-  }
+    .duas-hero-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.875rem;
+    }
 
-  .duas-title {
-    font-size: 1.5rem;
-  }
+    .duas-title {
+        font-size: 1.5rem;
+    }
 
-  .duas-subtitle {
-    font-size: 0.875rem;
-  }
+    .duas-subtitle {
+        font-size: 0.875rem;
+    }
 
-  .duas-results-title {
-    font-size: 1.05rem;
-  }
+    .duas-results-title {
+        font-size: 1.05rem;
+    }
 
-  .duas-results-copy {
-    font-size: 0.84rem;
-  }
+    .duas-results-copy {
+        font-size: 0.84rem;
+    }
 
-  .gallery-grid {
-    grid-template-columns: 1fr;
-    gap: 0.875rem;
-  }
+    .gallery-grid {
+        grid-template-columns: 1fr;
+        gap: 0.875rem;
+    }
 
-  .dua-card-inner {
-    padding: 1.1rem;
-  }
+    .dua-card-inner {
+        padding: 1.1rem;
+    }
 
-  .dua-arabic {
-    font-size: 1.3rem;
-    line-height: 2;
-  }
+    .dua-arabic {
+        font-size: 1.3rem;
+        line-height: 2;
+    }
 
-  .dua-translation {
-    font-size: 0.9rem;
-  }
+    .dua-translation {
+        font-size: 0.9rem;
+    }
 
-  .dua-card-footer {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+    .dua-card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
 
 @media (max-width: 380px) {
-  .duas-cat-btn {
-    padding: 0.38rem 0.8rem;
-    font-size: 0.775rem;
-  }
+    .duas-cat-btn {
+        padding: 0.38rem 0.8rem;
+        font-size: 0.775rem;
+    }
 }

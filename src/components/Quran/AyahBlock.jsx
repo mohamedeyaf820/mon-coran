@@ -6,7 +6,10 @@ import AyahActions from "../AyahActions";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 import WordByWordDisplay from "./WordByWordDisplay";
 import MemorizationText from "./MemorizationText";
-import { getMemorizationLevel, setMemorizationLevel } from "../../services/memorizationService";
+import {
+  getMemorizationLevel,
+  setMemorizationLevel,
+} from "../../services/memorizationService";
 
 /**
  * AyahBlock component – renders a single Arabic verse with a polished design.
@@ -46,12 +49,15 @@ const AyahBlock = React.memo(function AyahBlock({
   useEffect(() => {
     setMemoLevel(getMemorizationLevel(surahNum, ayah.numberInSurah));
   }, [surahNum, ayah.numberInSurah]);
-  const handleStar = useCallback((e, level) => {
-    e.stopPropagation();
-    const next = memoLevel === level ? 0 : level;
-    setMemorizationLevel(surahNum, ayah.numberInSurah, next);
-    setMemoLevel(next);
-  }, [memoLevel, surahNum, ayah.numberInSurah]);
+  const handleStar = useCallback(
+    (e, level) => {
+      e.stopPropagation();
+      const next = memoLevel === level ? 0 : level;
+      setMemorizationLevel(surahNum, ayah.numberInSurah, next);
+      setMemoLevel(next);
+    },
+    [memoLevel, surahNum, ayah.numberInSurah],
+  );
 
   const arabicContent = memMode ? (
     <MemorizationText text={ayah.hafsText || ayah.text} lang={lang} />
@@ -61,7 +67,7 @@ const AyahBlock = React.memo(function AyahBlock({
       ayah={ayah.numberInSurah}
       text={ayah.text}
       isPlaying={isPlaying}
-      progress={progress}
+      showTajwid={showTajwid}
       showTransliteration={showTransliteration}
       showWordTranslation={showWordTranslation}
       fontSize={fontSize}
@@ -101,15 +107,20 @@ const AyahBlock = React.memo(function AyahBlock({
           </div>
           {/* ★ Memorization stars — shown on active or when level > 0 */}
           {(isActive || memoLevel > 0) && (
-            <div className="qc-memo-stars" aria-label={`Mémorisation: ${memoLevel}/5`}>
-              {[1,2,3,4,5].map(n => (
+            <div
+              className="qc-memo-stars"
+              aria-label={`Mémorisation: ${memoLevel}/5`}
+            >
+              {[1, 2, 3, 4, 5].map((n) => (
                 <button
                   key={n}
-                  className={`qc-memo-star${n <= memoLevel ? ' filled' : ''}`}
-                  onClick={e => handleStar(e, n)}
-                  aria-label={`${n} étoile${n > 1 ? 's' : ''}`}
+                  className={`qc-memo-star${n <= memoLevel ? " filled" : ""}`}
+                  onClick={(e) => handleStar(e, n)}
+                  aria-label={`${n} étoile${n > 1 ? "s" : ""}`}
                   title={`Niveau ${n}`}
-                >★</button>
+                >
+                  ★
+                </button>
               ))}
             </div>
           )}
@@ -120,6 +131,20 @@ const AyahBlock = React.memo(function AyahBlock({
           {/* Arabic text — full width, beautifully rendered */}
           <div className="qc-ayah-text-ar">{arabicContent}</div>
 
+          {/* Warsh QCF4 mode: WBW not available — inform user */}
+          {!memMode && showWordByWord && ayah.warshWords?.length > 0 && (
+            <div className="qc-wbw-warsh-note">
+              <i className="fas fa-info-circle" />
+              <span>
+                {lang === "fr"
+                  ? "Mot à mot non disponible en mode Warsh QCF4"
+                  : lang === "ar"
+                    ? "الكلمة بكلمة غير متاحة في رواية ورش QCF4"
+                    : "Word-by-word unavailable in Warsh QCF4 mode"}
+              </span>
+            </div>
+          )}
+
           {/* Transliteration (optional, shown below Arabic) */}
           {ayahTransliteration && (
             <div className="qc-ayah-transliteration">{ayahTransliteration}</div>
@@ -127,7 +152,9 @@ const AyahBlock = React.memo(function AyahBlock({
 
           {/* Translation (optional, shown when enabled) */}
           {showTranslation && trans?.text && (
-            <div className="qc-ayah-translation" dir="auto">{trans.text}</div>
+            <div className="qc-ayah-translation" dir="auto">
+              {trans.text}
+            </div>
           )}
         </div>
       </div>

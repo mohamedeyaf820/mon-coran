@@ -1,51 +1,77 @@
-import React, { useEffect, useState } from 'react';
-import PlatformLogo from './PlatformLogo';
+import React, { useEffect, useState } from "react";
+import PlatformLogo from "./PlatformLogo";
 
 /* 8 particules dorées flottantes générées statiquement */
 const PARTICLES = [
-  { size: 3, top: '15%', left: '12%', dur: 6,  del: 0   },
-  { size: 2, top: '22%', left: '82%', dur: 8,  del: 0.8 },
-  { size: 4, top: '70%', left: '8%',  dur: 7,  del: 1.4 },
-  { size: 2, top: '80%', left: '88%', dur: 9,  del: 0.3 },
-  { size: 3, top: '45%', left: '92%', dur: 6,  del: 2   },
-  { size: 2, top: '60%', left: '5%',  dur: 10, del: 1   },
-  { size: 3, top: '10%', left: '55%', dur: 7,  del: 1.7 },
-  { size: 2, top: '88%', left: '45%', dur: 8,  del: 0.5 },
+  { size: 3, top: "15%", left: "12%", dur: 6, del: 0 },
+  { size: 2, top: "22%", left: "82%", dur: 8, del: 0.8 },
+  { size: 4, top: "70%", left: "8%", dur: 7, del: 1.4 },
+  { size: 2, top: "80%", left: "88%", dur: 9, del: 0.3 },
+  { size: 3, top: "45%", left: "92%", dur: 6, del: 2 },
+  { size: 2, top: "60%", left: "5%", dur: 10, del: 1 },
+  { size: 3, top: "10%", left: "55%", dur: 7, del: 1.7 },
+  { size: 2, top: "88%", left: "45%", dur: 8, del: 0.5 },
 ];
 
 /* Versets qui défilent pendant le chargement */
 const VERSES = [
-  { ar: '﴿ إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ ﴾', ref: 'الحجر — 9' },
-  { ar: '﴿ وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ ﴾',                      ref: 'القمر — 17' },
-  { ar: '﴿ إِنَّ هَٰذَا الْقُرْآنَ يَهْدِي لِلَّتِي هِيَ أَقْوَمُ ﴾',          ref: 'الإسراء — 9' },
+  {
+    ar: "﴿ إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ ﴾",
+    ref: "الحجر — 9",
+  },
+  { ar: "﴿ وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ ﴾", ref: "القمر — 17" },
+  {
+    ar: "﴿ إِنَّ هَٰذَا الْقُرْآنَ يَهْدِي لِلَّتِي هِيَ أَقْوَمُ ﴾",
+    ref: "الإسراء — 9",
+  },
+  { ar: "﴿ فَاقْرَءُوا مَا تَيَسَّرَ مِنَ الْقُرْآنِ ﴾", ref: "المزمل — 20" },
+  { ar: "﴿ وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا ﴾", ref: "المزمل — 4" },
+  {
+    ar: "﴿ خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ ﴾",
+    ref: "البخاري",
+  },
 ];
 
-export default function SplashScreen({ onDone, onPrefetch, lowPerfMode = false }) {
-  const [fadeOut,    setFadeOut]    = useState(false);
+export default function SplashScreen({
+  onDone,
+  onPrefetch,
+  lowPerfMode = false,
+}) {
+  const [fadeOut, setFadeOut] = useState(false);
   const [verseIndex, setVerseIndex] = useState(0);
   const [verseVisible, setVerseVisible] = useState(true);
+  const [showSkip, setShowSkip] = useState(false);
+
+  useEffect(() => {
+    if (lowPerfMode) return;
+    const t = setTimeout(() => setShowSkip(true), 800);
+    return () => clearTimeout(t);
+  }, [lowPerfMode]);
 
   useEffect(() => {
     if (onPrefetch) onPrefetch();
 
     if (lowPerfMode) {
       const t1 = setTimeout(() => setFadeOut(true), 300);
-      const t2 = setTimeout(() => onDone(),         500);
-      return () => { clearTimeout(t1); clearTimeout(t2); };
+      const t2 = setTimeout(() => onDone(), 500);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
     }
 
     // Rotation des versets toutes les ~1.4 s
     const verseTick = setInterval(() => {
       setVerseVisible(false);
       setTimeout(() => {
-        setVerseIndex(i => (i + 1) % VERSES.length);
+        setVerseIndex((i) => (i + 1) % VERSES.length);
         setVerseVisible(true);
       }, 350);
     }, 1600);
 
-    // Fade-out à 4.4 s, fin à 5 s
-    const t1 = setTimeout(() => setFadeOut(true), 4400);
-    const t2 = setTimeout(() => onDone(),          5000);
+    // Fade-out à 3 s, fin à 3.6 s
+    const t1 = setTimeout(() => setFadeOut(true), 3000);
+    const t2 = setTimeout(() => onDone(), 3600);
 
     return () => {
       clearInterval(verseTick);
@@ -57,47 +83,74 @@ export default function SplashScreen({ onDone, onPrefetch, lowPerfMode = false }
   const v = VERSES[verseIndex];
 
   return (
-    <div className={`splash-screen ${fadeOut ? 'fade-out' : ''} ${lowPerfMode ? 'perf-low' : ''}`}>
-
+    <div
+      className={`splash-screen ${fadeOut ? "fade-out" : ""} ${lowPerfMode ? "perf-low" : ""}`}
+    >
+      {showSkip && !fadeOut && (
+        <button
+          className="splash-skip"
+          onClick={() => {
+            setShowSkip(false);
+            setFadeOut(true);
+            setTimeout(onDone, 600);
+          }}
+        >
+          Skip ›
+        </button>
+      )}
       {/* Halo doré central */}
       <div className="splash-halo" aria-hidden="true" />
 
       {/* Étoiles / particules flottantes */}
-      {!lowPerfMode && PARTICLES.map((p, i) => (
-        <span
-          key={i}
-          aria-hidden="true"
-          className="splash-particle"
-          style={{
-            width:  p.size,
-            height: p.size,
-            top:    p.top,
-            left:   p.left,
-            animationDuration:  `${p.dur}s`,
-            animationDelay:     `${p.del}s`,
-          }}
-        />
-      ))}
+      {!lowPerfMode &&
+        PARTICLES.map((p, i) => (
+          <span
+            key={i}
+            aria-hidden="true"
+            className="splash-particle"
+            style={{
+              width: p.size,
+              height: p.size,
+              top: p.top,
+              left: p.left,
+              animationDuration: `${p.dur}s`,
+              animationDelay: `${p.del}s`,
+            }}
+          />
+        ))}
 
       {/* Motif arabesque discret en fond */}
       <div className="splash-arabesque" aria-hidden="true">
-        {'✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦'}
+        {"✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦"}
       </div>
 
       <div className="splash-content">
-        <PlatformLogo className="splash-logo-wrap" imgClassName="splash-logo" decorative />
+        <PlatformLogo
+          className="splash-logo-wrap"
+          imgClassName="splash-logo"
+          decorative
+        />
         <h1 className="splash-title">MushafPlus</h1>
         <p className="splash-subtitle">القرآن الكريم</p>
 
         {/* Verset tournant */}
-        <div className={`splash-verse-wrap ${verseVisible ? 'verse-in' : 'verse-out'}`}>
+        <div
+          className={`splash-verse-wrap ${verseVisible ? "verse-in" : "verse-out"}`}
+        >
           <p className="splash-verse">{v.ar}</p>
           <p className="splash-verse-ref">{v.ref}</p>
         </div>
 
         {/* Barre de progression */}
-        <div className="splash-loader" role="progressbar" aria-label="Chargement">
+        <div
+          className="splash-loader"
+          role="progressbar"
+          aria-label="Chargement"
+        >
           <div className="splash-loader-bar" />
+        </div>
+        <div className="splash-ornament" aria-hidden="true">
+          ✦ ✦ ✦
         </div>
         <p className="splash-loading-text">بِسْمِ اللَّهِ</p>
       </div>
@@ -182,7 +235,7 @@ export default function SplashScreen({ onDone, onPrefetch, lowPerfMode = false }
         .splash-logo { width: min(200px, 54vw); height: auto; object-fit: contain; }
 
         .splash-title {
-          font-family: 'Amiri', serif;
+          font-family: 'Scheherazade New', 'Amiri', serif;
           font-size: clamp(2.4rem, 8vw, 3.4rem);
           color: #fff;
           margin: 0 0 0.25rem;
@@ -238,11 +291,17 @@ export default function SplashScreen({ onDone, onPrefetch, lowPerfMode = false }
           background: linear-gradient(90deg, #8B6914, #D4AF37, #F5D785, #D4AF37, #8B6914);
           background-size: 300% 100%;
           border-radius: 99px;
-          animation: loadBar 4.4s cubic-bezier(0.4,0,0.6,1) forwards,
+          animation: loadBar 3s cubic-bezier(0.4,0,0.6,1) forwards,
                      shimmerBar 1.8s linear infinite;
         }
         .splash-screen.perf-low .splash-loader-bar {
           animation: loadBar 0.35s linear forwards;
+        }
+        .splash-ornament {
+          color: rgba(212,175,55,0.25);
+          font-size: 0.65rem;
+          letter-spacing: 8px;
+          margin: 0 auto 0.4rem;
         }
         .splash-loading-text {
           font-family: 'Amiri Quran', serif;
@@ -267,7 +326,7 @@ export default function SplashScreen({ onDone, onPrefetch, lowPerfMode = false }
           50%     { transform: translate(-50%,-50%) scale(1.08); opacity: 0.7; }
         }
         @keyframes floatParticle {
-          0%,100% { transform: translateY(0)     opacity: 0.6; }
+          0%,100% { transform: translateY(0); opacity: 0.6; }
           50%     { transform: translateY(-18px); opacity: 1; }
         }
         @keyframes arFlow {
@@ -289,6 +348,33 @@ export default function SplashScreen({ onDone, onPrefetch, lowPerfMode = false }
         @keyframes blink {
           0%,100% { opacity: 0.35; }
           50%     { opacity: 0.7;  }
+        }
+
+        /* ── Skip button ── */
+        .splash-skip {
+          position: absolute;
+          bottom: 2rem;
+          right: 2rem;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          color: rgba(255, 255, 255, 0.5);
+          padding: 0.4rem 1rem;
+          border-radius: 99px;
+          font-size: 0.75rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          animation: fadeInUp 0.4s ease;
+          font-family: 'Cairo', sans-serif;
+          z-index: 10;
+        }
+        .splash-skip:hover {
+          background: rgba(255, 255, 255, 0.14);
+          color: rgba(255, 255, 255, 0.8);
+          border-color: rgba(255, 255, 255, 0.22);
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>

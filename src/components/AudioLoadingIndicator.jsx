@@ -5,21 +5,43 @@ import { cn } from "../lib/utils";
  * AudioLoadingIndicator — Affiche le statut de chargement du lecteur audio
  * Supporte: loading, buffering, playing, paused, error, ready
  */
-export default function AudioLoadingIndicator({ state = "ready", isPlaying = false, errorMessage = null }) {
+export default function AudioLoadingIndicator({
+  state = "ready",
+  isPlaying = false,
+  errorMessage = null,
+}) {
   if (state === "ready" && !isPlaying) return null;
 
   const getIcon = () => {
     switch (state) {
       case "loading":
         return (
-          <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            className="animate-spin"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <circle cx="12" cy="12" r="10" />
-            <path d="M12 2a10 10 0 0 1 10 10" fill="none" strokeLinecap="round" />
+            <path
+              d="M12 2a10 10 0 0 1 10 10"
+              fill="none"
+              strokeLinecap="round"
+            />
           </svg>
         );
       case "buffering":
         return (
-          <svg className="animate-pulse" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <svg
+            className="animate-pulse"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
             <circle cx="6" cy="12" r="2" />
             <circle cx="12" cy="12" r="2" opacity="0.6" />
             <circle cx="18" cy="12" r="2" opacity="0.3" />
@@ -27,7 +49,14 @@ export default function AudioLoadingIndicator({ state = "ready", isPlaying = fal
         );
       case "error":
         return (
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <circle cx="12" cy="12" r="10" />
             <line x1="12" y1="8" x2="12" y2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -76,7 +105,12 @@ export default function AudioLoadingIndicator({ state = "ready", isPlaying = fal
   };
 
   return (
-    <div className={cn("audio-loading-indicator flex items-center gap-2 text-xs font-medium", getColor())}>
+    <div
+      className={cn(
+        "audio-loading-indicator flex items-center gap-2 text-xs font-medium",
+        getColor(),
+      )}
+    >
       {getIcon()}
       <span>{getLabel()}</span>
       {errorMessage && state === "error" && (
@@ -91,27 +125,31 @@ export default function AudioLoadingIndicator({ state = "ready", isPlaying = fal
 /**
  * AudioProgressBar — Barre de progression moderne pour le chargement audio
  */
-export function AudioProgressBar({ progress = 0, buffered = 0, isLoading = false }) {
+export function AudioProgressBar({
+  progress = 0,
+  buffered = 0,
+  isLoading = false,
+}) {
   return (
     <div className="audio-progress-container relative w-full h-1 bg-white/10 rounded-full overflow-hidden">
       {/* Buffered progress */}
       <div
-        className="absolute h-full bg-white/20 transition-all duration-200"
+        className="absolute h-full bg-white/20 transition-all duration-200 rounded-full"
         style={{ width: `${buffered}%` }}
       />
 
       {/* Main progress */}
       <div
         className={cn(
-          "absolute h-full bg-gradient-to-r from-gold to-gold-bright transition-all duration-100",
-          isLoading && "animate-pulse"
+          "absolute h-full bg-linear-to-r from-gold to-gold-bright transition-all duration-100",
+          isLoading && "animate-pulse",
         )}
         style={{ width: `${progress}%` }}
       />
 
       {/* Loading animation  */}
       {isLoading && (
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
       )}
     </div>
   );
@@ -129,8 +167,8 @@ export function AudioVolumeIndicator({ volume = 1, isMuted = false }) {
         <div
           key={i}
           className={cn(
-            "h-1 w-[2px] rounded-full transition-all duration-200",
-            i < bars && !isMuted ? "bg-gold" : "bg-white/20"
+            "h-1 w-0.5 rounded-full transition-all duration-200",
+            i < bars && !isMuted ? "bg-gold" : "bg-white/20",
           )}
           style={{ height: `${(i + 1) * 4}px` }}
         />

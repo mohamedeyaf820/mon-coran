@@ -19,7 +19,10 @@ const initialReciter = ensureReciterForRiwaya(
   stored.reciter || "ar.alafasy",
   initialRiwaya,
 );
-// Migration: si la langue stockée est 'ar' (supprimée), utiliser 'fr'
+// "ar" is excluded from UI languages (Quran-only script, not a UI locale).
+// Migration guard: if a user had "ar" saved as their UI lang (from an older
+// build where it was briefly allowed), or if no lang is stored yet (first
+// launch), fall back to "fr" so the interface is always readable.
 const initialLang = stored.lang === "ar" || !stored.lang ? "fr" : stored.lang;
 
 const initialState = {
@@ -353,7 +356,10 @@ export function AppProvider({ children }) {
     if (!state.autoNightMode || !state.usePrayerTimes) return;
     fetchPrayerTimes((times) => {
       if (!times) return;
-      dispatch({ type: 'SET', payload: { nightEnd: times.fajr, nightStart: times.isha } });
+      dispatch({
+        type: "SET",
+        payload: { nightEnd: times.fajr, nightStart: times.isha },
+      });
     });
   }, [state.autoNightMode, state.usePrayerTimes]);
 

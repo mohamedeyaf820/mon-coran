@@ -3,6 +3,14 @@
    Fixed bottom bar with karaoke controls
    ═══════════════════════════════════════ */
 
+/* ── Player sizing tokens ──
+   Centralise bar heights so expand/collapse transitions
+   driven from a single source of truth.              */
+:root {
+    --player-bar-h: 68px; /* default controls row height */
+    --player-bar-h-mobile: 58px; /* controls row height ≤ 640px */
+}
+
 .audio-player {
     position: fixed;
     bottom: 0;
@@ -86,7 +94,7 @@
     justify-content: space-between;
     padding: 0.5rem 1rem;
     gap: 0.75rem;
-    min-height: 68px;
+    min-height: var(--player-bar-h);
 }
 
 /* ═══════════════════════════════════════
@@ -349,6 +357,104 @@
     gap: 0.4rem;
 }
 
+/* ── Reciter Scroll Container (new) ── */
+.player-reciter-scroll {
+    max-height: 11rem;
+    overflow-y: auto;
+    padding-right: 2px;
+    margin-right: -2px;
+    /* fade mask at bottom when scrollable */
+    mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent 100%);
+}
+
+.player-reciter-scroll::-webkit-scrollbar {
+    width: 3px;
+}
+
+.player-reciter-scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+}
+
+.player-reciter-scroll::-webkit-scrollbar-thumb {
+    background: rgba(212, 168, 32, 0.35);
+    border-radius: 8px;
+}
+
+.player-reciter-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(212, 168, 32, 0.6);
+}
+
+.player-reciter-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 168, 32, 0.35) rgba(255, 255, 255, 0.04);
+}
+
+/* ── Expanded Section Scroll ── */
+.player-expanded-section {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 168, 32, 0.25) transparent;
+}
+
+.player-expanded-section::-webkit-scrollbar {
+    width: 3px;
+}
+
+.player-expanded-section::-webkit-scrollbar-thumb {
+    background: rgba(212, 168, 32, 0.28);
+    border-radius: 8px;
+}
+
+.player-expanded-section::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* ── Reciter Button (new unified) ── */
+.player-reciter-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.55rem;
+    border-radius: 0.5rem;
+    text-align: start;
+    cursor: pointer;
+    transition:
+        background 0.12s ease,
+        border-color 0.12s ease,
+        transform 0.1s ease;
+    outline: none;
+    min-width: 0;
+}
+
+.player-reciter-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.12);
+}
+
+.player-reciter-btn:active {
+    transform: translateY(0) scale(0.97);
+}
+
+.player-reciter-btn:focus-visible {
+    box-shadow: 0 0 0 2px rgba(212, 168, 32, 0.45);
+}
+
+/* ── Reciter Avatar ── */
+.player-reciter-avatar {
+    flex-shrink: 0;
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.54rem;
+    font-weight: 700;
+    font-family: var(--font-ui);
+    letter-spacing: 0;
+}
+
 .reciter-card {
     position: relative;
     text-align: start;
@@ -446,6 +552,116 @@
     box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.18);
 }
 
+/* ── Progress Bar Thumb ── */
+.player-progress-thumb {
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+    cursor: grab;
+    transition:
+        transform 0.15s ease,
+        opacity 0.15s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.player-progress:hover .player-progress-thumb,
+.player-progress.dragging .player-progress-thumb {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.player-progress.dragging {
+    cursor: grabbing;
+}
+
+/* ── Loading reciter pulse ── */
+.player-reciter-btn.loading {
+    animation: reciterPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes reciterPulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* ── Inline error display ── */
+.player-error-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    background: rgba(220, 38, 38, 0.12);
+    border: 1px solid rgba(220, 38, 38, 0.25);
+    color: #fca5a5;
+    font-size: 0.7rem;
+    font-family: var(--font-ui);
+    margin-bottom: 0.65rem;
+}
+
+.player-error-retry-btn {
+    margin-left: auto;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.35rem;
+    background: rgba(220, 38, 38, 0.2);
+    border: 1px solid rgba(220, 38, 38, 0.35);
+    color: #fca5a5;
+    font-size: 0.65rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.player-error-retry-btn:hover {
+    background: rgba(220, 38, 38, 0.3);
+}
+
+/* ── CDN type badge ── */
+.reciter-cdn-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.05rem 0.3rem;
+    border-radius: 0.2rem;
+    font-size: 0.48rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    font-family: var(--font-ui);
+    margin-top: 0.1rem;
+}
+
+.reciter-cdn-badge.islamic {
+    background: rgba(34, 197, 94, 0.12);
+    color: rgba(134, 239, 172, 0.8);
+}
+
+.reciter-cdn-badge.everyayah {
+    background: rgba(59, 130, 246, 0.12);
+    color: rgba(147, 197, 253, 0.8);
+}
+
+/* ── Reciter grid item smooth transition ── */
+.player-reciter-btn {
+    transition:
+        background 0.12s ease,
+        border-color 0.12s ease,
+        transform 0.1s ease,
+        opacity 0.15s ease;
+}
+
 /* ═══════════════════════════════════════
    Responsive — Mobile (≤640px)
    ═══════════════════════════════════════ */
@@ -453,7 +669,7 @@
     .player-controls {
         padding: 0.35rem 0.5rem;
         gap: 0.35rem;
-        min-height: 58px;
+        min-height: var(--player-bar-h-mobile);
     }
 
     .player-info {

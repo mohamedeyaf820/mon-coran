@@ -1,4 +1,12 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo, lazy, Suspense } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+  lazy,
+  Suspense,
+} from "react";
 import { useApp } from "./context/AppContext";
 import SplashScreen from "./components/SplashScreen";
 import Header from "./components/Header";
@@ -8,6 +16,8 @@ import { prefetchInitialData } from "./services/quranAPI";
 import audioService from "./services/audioService";
 import SURAHS from "./data/surahs";
 import { getReciter, ensureReciterForRiwaya } from "./data/reciters";
+import NotesPanel from "./components/NotesPanel";
+import { Toast } from "./components/ModernUIComponents";
 
 // Lazy-load modals — they're only needed when opened
 const Sidebar = lazy(() => import("./components/Sidebar"));
@@ -15,18 +25,21 @@ const AudioPlayer = lazy(() => import("./components/AudioPlayer"));
 const SearchModal = lazy(() => import("./components/SearchModal"));
 const SettingsModal = lazy(() => import("./components/SettingsModal"));
 const BookmarksModal = lazy(() => import("./components/BookmarksModal"));
-const NotesPanel = lazy(() => import("./components/NotesPanel"));
 const WirdPanel = lazy(() => import("./components/WirdPanel"));
 const ReadingHistoryPanel = lazy(
   () => import("./components/ReadingHistoryPanel"),
 );
 const PlaylistPanel = lazy(() => import("./components/PlaylistPanel"));
-const DuasPage = lazy(() => import("./components/DuasPage"));const FlashcardsPanel = lazy(() => import('./components/FlashcardsPanel'));
-const TajweedQuizPanel = lazy(() => import('./components/TajweedQuizPanel'));
-const KhatmaPanel = lazy(() => import('./components/KhatmaPanel'));
-const ReciterComparatorPanel = lazy(() => import('./components/ReciterComparatorPanel'));
-const AyahSharePanel = lazy(() => import('./components/AyahSharePanel'));
-const WeeklyStatsPanel = lazy(() => import('./components/WeeklyStatsPanel'));
+const DuasPage = lazy(() => import("./components/DuasPage"));
+const FlashcardsPanel = lazy(() => import("./components/FlashcardsPanel"));
+const TajweedQuizPanel = lazy(() => import("./components/TajweedQuizPanel"));
+const KhatmaPanel = lazy(() => import("./components/KhatmaPanel"));
+const ReciterComparatorPanel = lazy(
+  () => import("./components/ReciterComparatorPanel"),
+);
+const AyahSharePanel = lazy(() => import("./components/AyahSharePanel"));
+const WeeklyStatsPanel = lazy(() => import("./components/WeeklyStatsPanel"));
+
 function detectLowPerformanceDevice() {
   if (typeof window === "undefined" || typeof navigator === "undefined")
     return false;
@@ -58,6 +71,12 @@ export default function App() {
     showDuas,
     focusReading,
   } = state;
+
+  /* ── Initialize reading progress bar on mount ── */
+  useEffect(() => {
+    document.documentElement.style.setProperty("--reading-progress", "0");
+  }, []);
+
   /* ── Reset reading progress bar on navigation ── */
   useEffect(() => {
     document.documentElement.style.setProperty("--reading-progress", "0");
@@ -67,6 +86,21 @@ export default function App() {
 
   /* ── Immersive reading mode: auto-hide header after 3s inactivity ── */
   const [immersiveHidden, setImmersiveHidden] = useState(false);
+
+  /* ── Global Toast notification system ── */
+  const [toast, setToast] = useState(null);
+
+  // Listen for custom 'quran-toast' events dispatched anywhere in the app
+  useEffect(() => {
+    const handleToast = (e) => {
+      setToast({
+        type: e.detail?.type || "info",
+        message: e.detail?.message || "",
+      });
+    };
+    window.addEventListener("quran-toast", handleToast);
+    return () => window.removeEventListener("quran-toast", handleToast);
+  }, []);
   const immersiveTimer = useRef(null);
   const immersiveActive = focusReading && !showHome && !showDuas;
 
@@ -104,7 +138,12 @@ export default function App() {
      AudioPlayer play button works directly from the home page. */
   useEffect(() => {
     if (!showHome) return;
-    const { riwaya, reciter: reciterId, currentSurah: surahNum, warshStrictMode } = state;
+    const {
+      riwaya,
+      reciter: reciterId,
+      currentSurah: surahNum,
+      warshStrictMode,
+    } = state;
     const safeId = ensureReciterForRiwaya(reciterId, riwaya);
     const rec = getReciter(safeId, riwaya);
     if (!rec) return;
@@ -112,8 +151,11 @@ export default function App() {
     if (
       riwaya === "warsh" &&
       warshStrictMode &&
-      !String(rec.cdn || "").toLowerCase().includes("warsh")
-    ) return;
+      !String(rec.cdn || "")
+        .toLowerCase()
+        .includes("warsh")
+    )
+      return;
     const surahData = SURAHS[surahNum - 1];
     if (!surahData) return;
     // Compute global ayah start (1-indexed)
@@ -126,7 +168,13 @@ export default function App() {
     }));
     audioService.loadPlaylist(items, rec.cdn, rec.cdnType || "islamic");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showHome, state.riwaya, state.reciter, state.currentSurah, state.warshStrictMode]);
+  }, [
+    showHome,
+    state.riwaya,
+    state.reciter,
+    state.currentSurah,
+    state.warshStrictMode,
+  ]);
 
   /* ── Keyboard shortcuts ── */
   const handleKeyboard = useCallback(
@@ -290,7 +338,7 @@ export default function App() {
         {/* Invisible overlay for sidebar (to capture outside clicks without dimming) */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 z-[190]"
+            className="fixed inset-0 z-190"
             style={{ top: "var(--header-h)" }}
             onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
             aria-hidden="true"
@@ -312,18 +360,34 @@ export default function App() {
                 <DuasPage />
               </Suspense>
             ) : (
-              <QuranDisplay key={displayMode === "juz" ? `juz-${currentJuz}` : displayMode === "page" ? `page-${currentPage}` : `surah-${currentSurah}`} />
+              <QuranDisplay
+                key={
+                  displayMode === "juz"
+                    ? `juz-${currentJuz}`
+                    : displayMode === "page"
+                      ? `page-${currentPage}`
+                      : `surah-${currentSurah}`
+                }
+              />
             )}
           </div>
         </main>
 
-        {/* Notes panel (right side) */}
-        {!focusReading && (
-          <Suspense fallback={null}>
-            <NotesPanel />
-          </Suspense>
-        )}
+        {/* Notes panel (right side) — loaded eagerly, always in the DOM when not in focus mode */}
+        {!focusReading && <NotesPanel />}
       </div>
+
+      {/* ── Global Toast notifications ── */}
+      {toast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] w-[min(90vw,400px)]" role="alert" aria-live="polite">
+          <Toast
+            type={toast.type}
+            message={toast.message}
+            onClose={() => setToast(null)}
+            autoClose={4500}
+          />
+        </div>
+      )}
 
       {/* ── Fixed bottom audio player ── */}
       <Suspense fallback={null}>

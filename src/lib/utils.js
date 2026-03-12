@@ -4,3 +4,21 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
+
+/**
+ * toast(message, type?) — dispatch a global toast notification.
+ * Listens for 'quran-toast' CustomEvent in App.jsx.
+ *
+ * @param {string} message - The text to display
+ * @param {"info"|"success"|"error"|"warning"} type - Toast style (default: "info")
+ *
+ * @example
+ * import { toast } from "../lib/utils";
+ * toast("Verset copié !", "success");
+ * toast("Erreur réseau", "error");
+ */
+export function toast(message, type = "info") {
+  window.dispatchEvent(
+    new CustomEvent("quran-toast", { detail: { message, type } }),
+  );
+}

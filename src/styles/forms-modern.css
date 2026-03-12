@@ -43,12 +43,31 @@ select:focus {
     outline: none;
     border-color: var(--emerald);
     background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 0 0 3px rgba(27, 94, 59, 0.1), 0 2px 12px rgba(0, 0, 0, 0.08);
+    box-shadow:
+        0 0 0 3px rgba(27, 94, 59, 0.1),
+        0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 input:focus::placeholder,
 textarea:focus::placeholder {
     color: var(--text-tertiary);
+}
+
+/* ─────────────────────────────────────────────
+   NUMBER INPUTS — hide browser spinners
+   ───────────────────────────────────────────── */
+
+/* Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* ─────────────────────────────────────────────
@@ -77,20 +96,28 @@ button,
 /* Primary button */
 .btn-primary,
 button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(.btn-icon) {
-    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-mid) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--emerald) 0%,
+        var(--emerald-mid) 100%
+    );
     color: white;
     box-shadow: var(--shadow-emerald);
     font-weight: 600;
 }
 
 .btn-primary:hover,
-button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(.btn-icon):hover {
+button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(
+        .btn-icon
+    ):hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(27, 94, 59, 0.3);
 }
 
 .btn-primary:active,
-button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(.btn-icon):active {
+button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(
+        .btn-icon
+    ):active {
     transform: translateY(0);
 }
 
@@ -144,7 +171,7 @@ button:disabled,
 }
 
 .btn.loading::after {
-    content: '';
+    content: "";
     display: inline-block;
     width: 14px;
     height: 14px;
@@ -199,20 +226,24 @@ input[type="radio"]:hover {
 
 input[type="checkbox"]:checked,
 input[type="radio"]:checked {
-    background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-mid) 100%);
+    background: linear-gradient(
+        135deg,
+        var(--emerald) 0%,
+        var(--emerald-mid) 100%
+    );
     border-color: var(--emerald);
     box-shadow: var(--shadow-emerald);
 }
 
 input[type="checkbox"]:checked::after {
-    content: '✓';
+    content: "✓";
     color: white;
     font-size: 12px;
     font-weight: bold;
 }
 
 input[type="radio"]:checked::after {
-    content: '';
+    content: "";
     width: 8px;
     height: 8px;
     background: white;

@@ -10,11 +10,11 @@ const RETRY_DELAY = 800; // ms
 class AudioService {
   constructor() {
     this.audio = new Audio();
-    this.audio.preload = 'metadata'; // Keep startup light while enabling faster first play
+    this.audio.preload = "metadata"; // Keep startup light while enabling faster first play
     // NOTE: Do NOT set crossOrigin — EveryAyah.com and some CDNs
     // don't support CORS, which causes audio to fail silently.
     this.currentAyah = null;
-    this.playlist = [];       // array of { surah, ayah, url }
+    this.playlist = []; // array of { surah, ayah, url }
     this.playlistIndex = -1;
     this.isPlaying = false;
     this._loadTimeout = null;
@@ -32,18 +32,18 @@ class AudioService {
 
     // A-B Repeat
     this.abRepeatStart = -1;
-    this.abRepeatEnd   = -1;
+    this.abRepeatEnd = -1;
 
     // Tartil progressive mode (auto-speed based on ayah complexity)
     this.tartilMode = false;
 
     // Equalizer (Web Audio API, lazy init on first user activation)
-    this._audioCtx    = null;
+    this._audioCtx = null;
     this._eqConnected = false;
-    this._bassFilter  = null;
-    this._midFilter   = null;
+    this._bassFilter = null;
+    this._midFilter = null;
     this._trebleFilter = null;
-    this.eqPreset     = 'flat';
+    this.eqPreset = "flat";
 
     // Callbacks
     this.onPlay = null;
@@ -71,20 +71,20 @@ class AudioService {
     this._boundError = (e) => {
       // Ignore errors from clearing src
       if (!this.audio.src || this.audio.src === window.location.href) return;
-      console.error('Audio error:', e);
+      console.error("Audio error:", e);
       this.onError?.(e);
     };
-    this.audio.addEventListener('ended', this._boundEnded);
-    this.audio.addEventListener('timeupdate', this._boundTimeUpdate);
-    this.audio.addEventListener('error', this._boundError);
-    this._boundWaiting = () => this.onNetworkState?.('buffering');
-    this._boundStalled = () => this.onNetworkState?.('stalled');
-    this._boundCanPlay = () => this.onNetworkState?.('ready');
-    this._boundPlaying = () => this.onNetworkState?.('playing');
-    this.audio.addEventListener('waiting', this._boundWaiting);
-    this.audio.addEventListener('stalled', this._boundStalled);
-    this.audio.addEventListener('canplay', this._boundCanPlay);
-    this.audio.addEventListener('playing', this._boundPlaying);
+    this.audio.addEventListener("ended", this._boundEnded);
+    this.audio.addEventListener("timeupdate", this._boundTimeUpdate);
+    this.audio.addEventListener("error", this._boundError);
+    this._boundWaiting = () => this.onNetworkState?.("buffering");
+    this._boundStalled = () => this.onNetworkState?.("stalled");
+    this._boundCanPlay = () => this.onNetworkState?.("ready");
+    this._boundPlaying = () => this.onNetworkState?.("playing");
+    this.audio.addEventListener("waiting", this._boundWaiting);
+    this.audio.addEventListener("stalled", this._boundStalled);
+    this.audio.addEventListener("canplay", this._boundCanPlay);
+    this.audio.addEventListener("playing", this._boundPlaying);
   }
 
   /* ── Build Audio URL ───────────────────────── */
@@ -92,33 +92,40 @@ class AudioService {
   /**
    * Build a playable audio URL.
    */
-  static buildUrl(reciterCdn, ayah, cdnType = 'islamic') {
-    if (cdnType === 'everyayah') {
-      const surah = typeof ayah === 'object' ? ayah.surah : 1;
-      const num   = typeof ayah === 'object' ? (ayah.numberInSurah || ayah.ayah || 1) : ayah;
-      const s = String(surah).padStart(3, '0');
-      const a = String(num).padStart(3, '0');
+  static buildUrl(reciterCdn, ayah, cdnType = "islamic") {
+    if (cdnType === "everyayah") {
+      const surah = typeof ayah === "object" ? ayah.surah : 1;
+      const num =
+        typeof ayah === "object" ? ayah.numberInSurah || ayah.ayah || 1 : ayah;
+      const s = String(surah).padStart(3, "0");
+      const a = String(num).padStart(3, "0");
       return `https://everyayah.com/data/${reciterCdn}/${s}${a}.mp3`;
     }
     // Islamic Network: global ayah number
-    const globalNum = typeof ayah === 'object' ? ayah.number : ayah;
+    const globalNum = typeof ayah === "object" ? ayah.number : ayah;
     return `https://cdn.islamic.network/quran/audio/128/${reciterCdn}/${globalNum}.mp3`;
   }
 
   /* ── Playlist Management ───────────────────── */
 
-  loadPlaylist(ayahs, reciterCdn, cdnType = 'islamic') {
+  loadPlaylist(ayahs, reciterCdn, cdnType = "islamic") {
     const previousCurrent = this.currentAyah;
+    const wasPlaying = this.isPlaying;
+    const previousSrc = this.audio.src;
 
-    this.playlist = ayahs.map(a => ({
+    this.playlist = ayahs.map((a) => ({
       surah: a.surah || a.surahNumber,
       ayah: a.ayah || a.numberInSurah,
       globalNumber: a.number,
-      url: AudioService.buildUrl(reciterCdn, {
-        surah: a.surah || a.surahNumber,
-        numberInSurah: a.ayah || a.numberInSurah,
-        number: a.number,
-      }, cdnType),
+      url: AudioService.buildUrl(
+        reciterCdn,
+        {
+          surah: a.surah || a.surahNumber,
+          numberInSurah: a.ayah || a.numberInSurah,
+          number: a.number,
+        },
+        cdnType,
+      ),
       text: a.text,
     }));
 
@@ -140,6 +147,37 @@ class AudioService {
     if (this.playlist.length > 0) {
       const preloadIndex = preservedIndex >= 0 ? preservedIndex : 0;
       this._preloadAhead(preloadIndex, 3);
+    }
+
+    // If we were playing and the reciter/URL changed for the current ayah,
+    // stop the stale audio and immediately restart with the new reciter's URL.
+    if (wasPlaying && preservedIndex >= 0) {
+      const newUrl = this.playlist[preservedIndex].url;
+      if (previousSrc && previousSrc !== newUrl) {
+        const savedTime = this.audio.currentTime;
+        this._loadAndPlay(preservedIndex)
+          .then(() => {
+            // Seek back to the same position if it's meaningful and valid
+            if (
+              savedTime > 0 &&
+              isFinite(this.audio.duration) &&
+              savedTime < this.audio.duration
+            ) {
+              this.audio.currentTime = savedTime;
+            }
+          })
+          .catch(() => {});
+      }
+    } else if (!wasPlaying && preservedIndex >= 0) {
+      // Not playing but a current ayah is loaded — update currentAyah reference
+      // so the next play() call uses the new reciter's URL immediately.
+      this.currentAyah = this.playlist[preservedIndex];
+      // Also clear the stale audio src so resume() doesn't replay the old URL.
+      if (previousSrc && previousSrc !== this.playlist[preservedIndex].url) {
+        this.audio.pause();
+        this.audio.removeAttribute("src");
+        this.audio.load();
+      }
     }
   }
 
@@ -164,7 +202,7 @@ class AudioService {
   resume() {
     if (this.audio.src && this.audio.src !== window.location.href) {
       this.audio.play().catch((err) => {
-        if (err?.name !== 'NotAllowedError') {
+        if (err?.name !== "NotAllowedError") {
           this.isPlaying = false;
           this.onError?.(err);
         }
@@ -177,7 +215,11 @@ class AudioService {
   toggle() {
     if (this.isPlaying) {
       this.pause();
-    } else if (this.audio.src && this.audio.src !== window.location.href && this.audio.paused) {
+    } else if (
+      this.audio.src &&
+      this.audio.src !== window.location.href &&
+      this.audio.paused
+    ) {
       this.resume();
     } else {
       this.play();
@@ -193,10 +235,10 @@ class AudioService {
     }
     this.audio.pause();
     this.audio.currentTime = 0;
-    this.audio.removeAttribute('src');
+    this.audio.removeAttribute("src");
     this.audio.load(); // Reset without triggering error
     for (const pre of this._preloadPool) {
-      pre.audio?.removeAttribute('src');
+      pre.audio?.removeAttribute("src");
       pre.audio?.load();
     }
     this._preloadPool = [];
@@ -225,7 +267,7 @@ class AudioService {
    */
   playAyah(surah, ayah) {
     const idx = this.playlist.findIndex(
-      p => p.surah === surah && p.ayah === ayah
+      (p) => p.surah === surah && p.ayah === ayah,
     );
     if (idx >= 0) {
       this._loadAndPlay(idx);
@@ -237,13 +279,13 @@ class AudioService {
    */
   async playSingle(url, meta = {}) {
     try {
-      this.onNetworkState?.('loading');
+      this.onNetworkState?.("loading");
       await this._loadUrlWithRetry(url);
       this.isPlaying = true;
-      this.onNetworkState?.('playing');
+      this.onNetworkState?.("playing");
       this.onPlay?.({ url, ...meta });
     } catch (err) {
-      this.onNetworkState?.('error');
+      this.onNetworkState?.("error");
       this.onError?.(err);
     }
   }
@@ -315,7 +357,7 @@ class AudioService {
           .play()
           .then(() => resolve())
           .catch((e) => {
-            if (e?.name === 'NotAllowedError') resolve();
+            if (e?.name === "NotAllowedError") resolve();
             else reject(e);
           });
         return;
@@ -353,7 +395,7 @@ class AudioService {
             .then(() => finishResolve())
             .catch((e) => {
               // Browser may block autoplay — user gesture needed
-              if (e.name === 'NotAllowedError') {
+              if (e.name === "NotAllowedError") {
                 finishResolve(); // Not a real load error
               } else if (retriesLeft > 0) {
                 setTimeout(() => attempt(retriesLeft - 1), RETRY_DELAY);
@@ -370,13 +412,13 @@ class AudioService {
             console.warn(`Audio load error, retrying... (${retriesLeft} left)`);
             setTimeout(() => attempt(retriesLeft - 1), RETRY_DELAY);
           } else {
-            finishReject(new Error('Audio load failed after retries'));
+            finishReject(new Error("Audio load failed after retries"));
           }
         };
 
         cleanup = () => {
-          this.audio.removeEventListener('canplay', onCanPlay);
-          this.audio.removeEventListener('error', onError);
+          this.audio.removeEventListener("canplay", onCanPlay);
+          this.audio.removeEventListener("error", onError);
           cleanup = () => {};
         };
 
@@ -384,16 +426,18 @@ class AudioService {
         this._loadTimeout = setTimeout(() => {
           cleanup();
           if (retriesLeft > 0) {
-            console.warn(`Audio load timeout, retrying... (${retriesLeft} left)`);
+            console.warn(
+              `Audio load timeout, retrying... (${retriesLeft} left)`,
+            );
             attempt(retriesLeft - 1);
           } else {
-            finishReject(new Error('Audio load timeout'));
+            finishReject(new Error("Audio load timeout"));
           }
         }, AUDIO_LOAD_TIMEOUT);
 
-        this.audio.addEventListener('canplay', onCanPlay, { once: true });
-        this.audio.addEventListener('error', onError, { once: true });
-        this.audio.preload = 'auto';
+        this.audio.addEventListener("canplay", onCanPlay, { once: true });
+        this.audio.addEventListener("error", onError, { once: true });
+        this.audio.preload = "auto";
         this.audio.src = url;
         this.audio.load();
       };
@@ -411,7 +455,7 @@ class AudioService {
 
     try {
       const preloadAudio = new Audio();
-      preloadAudio.preload = 'auto';
+      preloadAudio.preload = "auto";
       preloadAudio.src = url;
       preloadAudio.load();
 
@@ -421,7 +465,7 @@ class AudioService {
       while (this._preloadPool.length > this._maxPreloadPool) {
         const oldest = this._preloadPool.shift();
         if (oldest?.audio) {
-          oldest.audio.removeAttribute('src');
+          oldest.audio.removeAttribute("src");
           oldest.audio.load();
         }
       }
@@ -455,10 +499,10 @@ class AudioService {
     }
 
     try {
-      this.onNetworkState?.('loading');
+      this.onNetworkState?.("loading");
       await this._loadUrlWithRetry(item.url);
       this.isPlaying = true;
-      this.onNetworkState?.('playing');
+      this.onNetworkState?.("playing");
       this.onPlay?.(item);
       this.onAyahChange?.(item);
       for (const fn of this._ayahChangeListeners) fn(item);
@@ -466,8 +510,8 @@ class AudioService {
       // Preload next tracks (3 ahead for smoother continuous playback)
       this._preloadAhead(index + 1, 3);
     } catch (err) {
-      console.error('Audio play error:', err);
-      this.onNetworkState?.('error');
+      console.error("Audio play error:", err);
+      this.onNetworkState?.("error");
       this.onError?.(err);
       // Keep current ayah on error (don't skip ahead and desync highlighting)
       this.isPlaying = false;
@@ -481,7 +525,11 @@ class AudioService {
       if (this.memCurrentRepeat < this.memRepeatCount) {
         this.memTimer = setTimeout(() => {
           this.memTimer = null;
-          if (this.audio && this.audio.src && this.audio.src !== window.location.href) {
+          if (
+            this.audio &&
+            this.audio.src &&
+            this.audio.src !== window.location.href
+          ) {
             this.audio.currentTime = 0;
             this.audio.play().catch(() => {});
           }
@@ -512,17 +560,29 @@ class AudioService {
 
   /* ── Getters ───────────────────────────────── */
 
-  get currentTime() { return this.audio.currentTime; }
-  get duration() { return this.audio.duration || 0; }
-  get progress() { return this.duration ? this.currentTime / this.duration : 0; }
-  get currentIndex() { return this.playlistIndex; }
-  get totalInPlaylist() { return this.playlist.length; }
+  get currentTime() {
+    return this.audio.currentTime;
+  }
+  get duration() {
+    return this.audio.duration || 0;
+  }
+  get progress() {
+    return this.duration ? this.currentTime / this.duration : 0;
+  }
+  get currentIndex() {
+    return this.playlistIndex;
+  }
+  get totalInPlaylist() {
+    return this.playlist.length;
+  }
 
   /** Subscribe an extra time-update listener. Returns unsubscribe fn. */
   addTimeUpdateListener(fn) {
     this._timeUpdateListeners.push(fn);
     return () => {
-      this._timeUpdateListeners = this._timeUpdateListeners.filter(f => f !== fn);
+      this._timeUpdateListeners = this._timeUpdateListeners.filter(
+        (f) => f !== fn,
+      );
     };
   }
 
@@ -530,7 +590,7 @@ class AudioService {
   addEndListener(fn) {
     this._endListeners.push(fn);
     return () => {
-      this._endListeners = this._endListeners.filter(f => f !== fn);
+      this._endListeners = this._endListeners.filter((f) => f !== fn);
     };
   }
 
@@ -538,18 +598,20 @@ class AudioService {
   addAyahChangeListener(fn) {
     this._ayahChangeListeners.push(fn);
     return () => {
-      this._ayahChangeListeners = this._ayahChangeListeners.filter(f => f !== fn);
+      this._ayahChangeListeners = this._ayahChangeListeners.filter(
+        (f) => f !== fn,
+      );
     };
   }
 
   /* ── A-B Repeat ─────────────────────────────────────────────── */
   setAbRepeat(startIdx, endIdx) {
     this.abRepeatStart = startIdx >= 0 ? startIdx : -1;
-    this.abRepeatEnd   = endIdx   >= 0 ? endIdx   : -1;
+    this.abRepeatEnd = endIdx >= 0 ? endIdx : -1;
   }
   clearAbRepeat() {
     this.abRepeatStart = -1;
-    this.abRepeatEnd   = -1;
+    this.abRepeatEnd = -1;
   }
 
   /* ── Tartil Progressive ──────────────────────────────────────── */
@@ -559,10 +621,10 @@ class AudioService {
   }
   _tartilSpeed(item) {
     if (!item) return null;
-    const len = (item.text || '').length;
-    if (len < 30)  return 0.90;
-    if (len < 60)  return 0.78;
-    if (len < 100) return 0.70;
+    const len = (item.text || "").length;
+    if (len < 30) return 0.9;
+    if (len < 60) return 0.78;
+    if (len < 100) return 0.7;
     return 0.65;
   }
 
@@ -572,17 +634,17 @@ class AudioService {
     try {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
-      this._audioCtx     = new AC();
-      const src          = this._audioCtx.createMediaElementSource(this.audio);
-      this._bassFilter   = this._audioCtx.createBiquadFilter();
-      this._bassFilter.type = 'lowshelf';
+      this._audioCtx = new AC();
+      const src = this._audioCtx.createMediaElementSource(this.audio);
+      this._bassFilter = this._audioCtx.createBiquadFilter();
+      this._bassFilter.type = "lowshelf";
       this._bassFilter.frequency.value = 200;
-      this._midFilter    = this._audioCtx.createBiquadFilter();
-      this._midFilter.type = 'peaking';
+      this._midFilter = this._audioCtx.createBiquadFilter();
+      this._midFilter.type = "peaking";
       this._midFilter.frequency.value = 1000;
       this._midFilter.Q.value = 1.5;
       this._trebleFilter = this._audioCtx.createBiquadFilter();
-      this._trebleFilter.type = 'highshelf';
+      this._trebleFilter.type = "highshelf";
       this._trebleFilter.frequency.value = 3500;
       src.connect(this._bassFilter);
       this._bassFilter.connect(this._midFilter);
@@ -591,21 +653,21 @@ class AudioService {
       this._eqConnected = true;
       this._applyEqGains();
     } catch (e) {
-      console.warn('EQ init failed:', e);
+      console.warn("EQ init failed:", e);
     }
   }
   _applyEqGains() {
     const P = {
-      flat:   { bass:  0, mid:  0, treble:  0 },
-      bass:   { bass:  8, mid:  0, treble: -2 },
-      treble: { bass: -2, mid:  0, treble:  6 },
-      near:   { bass:  2, mid:  5, treble:  2 },
-      hall:   { bass: -3, mid: -2, treble:  3 },
-      vocals: { bass: -4, mid:  7, treble:  3 },
+      flat: { bass: 0, mid: 0, treble: 0 },
+      bass: { bass: 8, mid: 0, treble: -2 },
+      treble: { bass: -2, mid: 0, treble: 6 },
+      near: { bass: 2, mid: 5, treble: 2 },
+      hall: { bass: -3, mid: -2, treble: 3 },
+      vocals: { bass: -4, mid: 7, treble: 3 },
     };
     const p = P[this.eqPreset] || P.flat;
-    if (this._bassFilter)   this._bassFilter.gain.value   = p.bass;
-    if (this._midFilter)    this._midFilter.gain.value    = p.mid;
+    if (this._bassFilter) this._bassFilter.gain.value = p.bass;
+    if (this._midFilter) this._midFilter.gain.value = p.mid;
     if (this._trebleFilter) this._trebleFilter.gain.value = p.treble;
   }
   applyEqPreset(preset) {
@@ -618,19 +680,19 @@ class AudioService {
     this._clearLoadTimeout();
     this.stop();
     if (this._preloadAudio) {
-      this._preloadAudio.removeAttribute('src');
+      this._preloadAudio.removeAttribute("src");
       this._preloadAudio = null;
     }
     this._preloadPool = [];
     if (this.audio) {
-      this.audio.removeEventListener('ended', this._boundEnded);
-      this.audio.removeEventListener('timeupdate', this._boundTimeUpdate);
-      this.audio.removeEventListener('error', this._boundError);
-      this.audio.removeEventListener('waiting', this._boundWaiting);
-      this.audio.removeEventListener('stalled', this._boundStalled);
-      this.audio.removeEventListener('canplay', this._boundCanPlay);
-      this.audio.removeEventListener('playing', this._boundPlaying);
-      this.audio.removeAttribute('src');
+      this.audio.removeEventListener("ended", this._boundEnded);
+      this.audio.removeEventListener("timeupdate", this._boundTimeUpdate);
+      this.audio.removeEventListener("error", this._boundError);
+      this.audio.removeEventListener("waiting", this._boundWaiting);
+      this.audio.removeEventListener("stalled", this._boundStalled);
+      this.audio.removeEventListener("canplay", this._boundCanPlay);
+      this.audio.removeEventListener("playing", this._boundPlaying);
+      this.audio.removeAttribute("src");
       this.audio = null;
     }
   }

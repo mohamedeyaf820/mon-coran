@@ -195,7 +195,10 @@ export default function Sidebar() {
                       onClick={() => goSurah(s.n)}
                     >
                       <span className="sb-recent__num">{s.n}</span>
-                      <span className="sb-recent__name">{lang === "fr" ? s.fr : s.en}</span>
+                      <div className="sb-recent__body">
+                        <span className="sb-recent__name">{lang === "fr" ? s.fr : s.en}</span>
+                        <span className="sb-recent__meta">{s.ayahs} {lang === "ar" ? "آية" : "v."}</span>
+                      </div>
                       <span className="sb-recent__ar">{s.ar}</span>
                     </button>
                   );
@@ -233,7 +236,14 @@ export default function Sidebar() {
                 <div className="qc-sidebar-num">{s.n}</div>
                 <div className="qc-sidebar-body">
                   <span className="qc-sidebar-en">{lang === "fr" ? s.fr : s.en}</span>
-                  <span className="qc-sidebar-meta">{s.ayahs} {lang === "fr" ? "v." : "v."}</span>
+                  <span className="qc-sidebar-meta">
+                    {s.ayahs} {lang === "ar" ? "آية" : "v."}&nbsp;·&nbsp;
+                    <span className={`sb-type-pill sb-type-pill--${s.type.toLowerCase()}`}>
+                      {s.type === "Meccan"
+                        ? (lang === "ar" ? "مكية" : lang === "fr" ? "Mec." : "Mec.")
+                        : (lang === "ar" ? "مدنية" : lang === "fr" ? "Méd." : "Med.")}
+                    </span>
+                  </span>
                 </div>
                 <div className="qc-sidebar-ar">{s.ar}</div>
               </div>
@@ -242,6 +252,7 @@ export default function Sidebar() {
 
           {tab === "juz" && JUZ_DATA.map((j) => {
             const isActive = j.juz === currentJuz && displayMode === "juz";
+            const startSurah = SURAHS[j.start.s - 1];
             return (
               <div
                 key={j.juz}
@@ -249,9 +260,14 @@ export default function Sidebar() {
                 className={cn("sidebar-item-row", isActive && "active")}
                 onClick={() => goJuz(j.juz)}
               >
-                <div className="qc-sidebar-num">{j.juz}</div>
+                <div className="qc-sidebar-num">{lang === "ar" ? toAr(j.juz) : j.juz}</div>
                 <div className="qc-sidebar-body">
-                  <span className="qc-sidebar-en">Juz {j.juz}</span>
+                  <span className="qc-sidebar-en">{lang === "ar" ? `الجزء ${toAr(j.juz)}` : `Juz ${j.juz}`}</span>
+                  {startSurah && (
+                    <span className="qc-sidebar-meta">
+                      {lang === "fr" ? startSurah.fr : lang === "ar" ? startSurah.ar : startSurah.en}
+                    </span>
+                  )}
                 </div>
                 <div className="qc-sidebar-ar">{j.name}</div>
               </div>
@@ -334,30 +350,7 @@ export default function Sidebar() {
             <span className="sidebar-footer__riwaya">{riwaya === "warsh" ? "Riwaya Warsh" : "Riwaya Hafs"}</span>
           </div>
 
-          {/* ── Learning tools ── */}
-          <div className="sidebar-learn-tools">
-            <div className="sidebar-learn-tools__label">
-              {lang === "fr" ? "Outils" : lang === "ar" ? "أدوات" : "Tools"}
-            </div>
-            <div className="sidebar-learn-tools__grid">
-              {[
-                { icon: "fa-layer-group",     labelFr: "Flashcards",  labelAr: "بطاقات",  labelEn: "Flashcards",  action: "flashcardsOpen"   },
-                { icon: "fa-spell-check",     labelFr: "Quiz Tajweed",labelAr: "تجويد",   labelEn: "Tajweed Quiz",action: "tajweedQuizOpen"  },
-                { icon: "fa-book-open-reader",labelFr: "Khatma",      labelAr: "الختمة",  labelEn: "Khatma",      action: "khatmaOpen"       },
-                { icon: "fa-users",           labelFr: "Comparateur", labelAr: "مقارنة",   labelEn: "Comparator",  action: "comparatorOpen"  },
-                { icon: "fa-image",           labelFr: "Partager",    labelAr: "مشاركة",   labelEn: "Share Image", action: "shareImageOpen"  },
-                { icon: "fa-chart-bar",       labelFr: "Stats Hebdo", labelAr: "إحصاء",     labelEn: "Weekly Stats",action: "weeklyStatsOpen" },
-              ].map(({ icon, labelFr, labelAr, labelEn, action }) => (
-                <button key={action}
-                  className="sidebar-learn-btn"
-                  onClick={() => { dispatch({ type: "SET", payload: { [action]: true } }); dispatch({ type: "TOGGLE_SIDEBAR" }); }}
-                >
-                  <i className={`fas ${icon}`} />
-                  <span>{lang === "ar" ? labelAr : lang === "fr" ? labelFr : labelEn}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+
         </div>
 
       </aside>

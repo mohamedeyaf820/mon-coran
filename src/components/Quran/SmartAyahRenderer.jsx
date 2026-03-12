@@ -5,6 +5,20 @@ import WarshWordText from "./WarshWordText";
 import { AyahTextRenderer } from "./AyahTextRenderer";
 
 /**
+ * Applies the wordCount-based offset bump to a calibration object.
+ * Ayahs with more than 10 words get +0.02 s of extra lead to compensate for
+ * the small timing-model drift that accumulates on dense verses.
+ * Returns a new object (never mutates the input).
+ */
+function applyWordCountBump(calibration, wordCount) {
+  if (!calibration || !wordCount || wordCount <= 10) return calibration;
+  return {
+    ...calibration,
+    offsetSec: Number(((calibration.offsetSec ?? 0.15) + 0.02).toFixed(3)),
+  };
+}
+
+/**
  * KaraokeWarshText – tracks word-by-word progress for QCF4 words.
  */
 export function KaraokeWarshText({
@@ -16,12 +30,12 @@ export function KaraokeWarshText({
   fallbackText,
 }) {
   const lastIdxRef = useRef(0);
-  
+
   // Reset index when words change (new ayah)
   useEffect(() => {
     lastIdxRef.current = 0;
   }, [words]);
-  
+
   const wordWeights = useMemo(() => {
     if (!words || words.length === 0) return [];
     const total = words.length;
@@ -35,9 +49,7 @@ export function KaraokeWarshText({
         const hIdx =
           hafsWords.length <= 1
             ? 0
-            : Math.round(
-                (i * (hafsWords.length - 1)) / Math.max(1, total - 1),
-              );
+            : Math.round((i * (hafsWords.length - 1)) / Math.max(1, total - 1));
         const hw = hafsWords[hIdx] || "";
         const base = hw.replace(
           /[\u064B-\u065F\u0670\u06D6-\u06ED\u06E1]/g,
@@ -65,14 +77,16 @@ export function KaraokeWarshText({
     return Array.from({ length: total }, (_, i) => (i + 1) / total);
   }, [words, hafsText]);
 
-  const effectiveCalibration =
+  const effectiveCalibration = applyWordCountBump(
     calibration ||
-    buildKaraokeCalibration({
-      reciterId: undefined,
-      riwaya: "warsh",
-      isFirstAyah,
-      wordCount: words.length,
-    });
+      buildKaraokeCalibration({
+        reciterId: undefined,
+        riwaya: "warsh",
+        isFirstAyah,
+        wordCount: words.length,
+      }),
+    words.length,
+  );
 
   const { progress, seekCount } = useKaraoke({
     isFirstAyah,
@@ -164,14 +178,17 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
   }
 
   const text = stripBasmala(ayah.text, surahNum, ayah.numberInSurah);
-  const hafsCalibration =
+  const hafsWordCount = (text || "").split(/\s+/).filter(Boolean).length;
+  const hafsCalibration = applyWordCountBump(
     calibration ||
-    buildKaraokeCalibration({
-      reciterId: undefined,
-      riwaya: effectiveRiwaya,
-      isFirstAyah,
-      wordCount: (text || "").split(/\s+/).filter(Boolean).length,
-    });
+      buildKaraokeCalibration({
+        reciterId: undefined,
+        riwaya: effectiveRiwaya,
+        isFirstAyah,
+        wordCount: hafsWordCount,
+      }),
+    hafsWordCount,
+  );
 
   return (
     <AyahTextRenderer

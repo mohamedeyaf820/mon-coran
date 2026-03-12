@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { AppProvider } from "./context/AppContext";
 import "./styles/index.css";
+import "./styles/ui-enhancements.css";
 
 // ErrorBoundary global pour capturer les erreurs React
 class ErrorBoundary extends React.Component {
@@ -74,11 +75,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", async () => {
     if (import.meta.env.PROD) {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .catch((err) => {
-          if (import.meta.env.DEV) console.error("Échec de l'enregistrement du SW:", err);
-        });
+      navigator.serviceWorker.register("/sw.js").catch((err) => {
+        if (import.meta.env.DEV)
+          console.error("Échec de l'enregistrement du SW:", err);
+      });
       return;
     }
 
@@ -94,7 +94,8 @@ if ("serviceWorker" in navigator) {
             .map((k) => caches.delete(k)),
         );
       }
-      if (import.meta.env.DEV) console.log("SW désactivé/nettoyé en mode développement");
+      if (import.meta.env.DEV)
+        console.log("SW désactivé/nettoyé en mode développement");
     } catch (err) {
       if (import.meta.env.DEV) console.log("Nettoyage SW (dev) échoué:", err);
     }
