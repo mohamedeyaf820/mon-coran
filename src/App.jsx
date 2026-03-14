@@ -104,6 +104,12 @@ export default function App() {
   }, []);
   const immersiveTimer = useRef(null);
   const immersiveActive = focusReading && !showHome && !showDuas;
+  const sidebarShiftClass =
+    !focusReading && sidebarOpen
+      ? lang === "ar"
+        ? "lg:mr-[23rem]"
+        : "lg:ml-[23rem]"
+      : "";
 
   useEffect(() => {
     if (!immersiveActive) {
@@ -176,45 +182,6 @@ export default function App() {
     state.currentSurah,
     state.warshStrictMode,
   ]);
-
-  /* ── Instant reciter change: reload audio with new reciter when playing ── */
-  useEffect(() => {
-    if (!state.isPlaying || !state.currentPlayingAyah) return;
-    
-    const { isPlaying, currentPlayingAyah, riwaya, warshStrictMode } = state;
-    if (!isPlaying) return;
-
-    const reciterId = state.reciter;
-    const safeReciterId = ensureReciterForRiwaya(reciterId, riwaya);
-    const rec = getReciter(safeReciterId, riwaya);
-    
-    if (!rec) return;
-    
-    // Respect Warsh strict-mode
-    if (
-      riwaya === "warsh" &&
-      warshStrictMode &&
-      !String(rec.cdn || "").toLowerCase().includes("warsh")
-    )
-      return;
-
-    // Get current playlist and update with new reciter CDN
-    const currentPlaylist = audioService.playlist || [];
-    if (currentPlaylist.length === 0) return;
-
-    // Reload playlist with new reciter CDN but keep same ayahs
-    audioService.loadPlaylist(
-      currentPlaylist,
-      rec.cdn,
-      rec.cdnType || "islamic"
-    );
-    
-    // Resume playback with new reciter
-    if (isPlaying) {
-      audioService.play();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.reciter, state.riwaya, state.warshStrictMode]);
 
   /* ── Keyboard shortcuts ── */
   const handleKeyboard = useCallback(
@@ -388,7 +355,7 @@ export default function App() {
 
         {/* Main reading area */}
         <main
-          className={`app-main app-main-shell flex-1 min-w-0 overflow-y-auto overflow-x-hidden pb-[var(--player-h)] ${showHome ? "app-main--home" : ""}`}
+          className={`app-main app-main-shell flex-1 min-w-0 overflow-y-auto overflow-x-hidden pb-[var(--player-h)] transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
         >
           <div
             className={`app-view-shell ${showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas ? `app-mode-${displayMode}` : ""}`}

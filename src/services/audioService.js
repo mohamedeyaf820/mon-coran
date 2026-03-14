@@ -22,6 +22,12 @@ class AudioService {
     this._preloadPool = []; // [{ url, audio }]
     this._maxPreloadPool = 3;
     this._loadRequestId = 0; // Used to ignore stale retry attempts
+    this._currentReciterCdn = "";
+    this._currentCdnType = "islamic";
+    this._activeReciterKey = "islamic:";
+    this._playRequestedAt = 0;
+    this._hasCapturedLatency = false;
+    this._reciterLatencyByKey = Object.create(null);
 
     // Memorization mode
     this.memMode = false;
@@ -63,6 +69,7 @@ class AudioService {
     this._boundEnded = () => this._handleEnded();
     this._boundTimeUpdate = () => {
       this.onTimeUpdate?.(this.audio.currentTime, this.audio.duration);
+      this._captureLatencySample(this.audio.currentTime);
       // Notify extra listeners
       for (const fn of this._timeUpdateListeners) {
         fn(this.audio.currentTime, this.audio.duration);
@@ -112,6 +119,9 @@ class AudioService {
     const previousCurrent = this.currentAyah;
     const wasPlaying = this.isPlaying;
     const previousSrc = this.audio.src;
+    this._currentReciterCdn = reciterCdn || "";
+    this._currentCdnType = cdnType || "islamic";
+    this._activeReciterKey = `${this._currentCdnType}:${this._currentReciterCdn}`;
 
     this.playlist = ayahs.map((a) => ({
       surah: a.surah || a.surahNumber,
@@ -178,6 +188,60 @@ class AudioService {
         this.audio.removeAttribute("src");
         this.audio.load();
       }
+    }
+  }
+
+  /**
+   * Instantly switch the active reciter for the current playlist while preserving
+   * current ayah and playback position when possible.
+   */
+  async switchReciter(reciterCdn, cdnType = "islamic") {
+    if (!reciterCdn || !Array.isArray(this.playlist) || this.playlist.length === 0) {
+      return;
+    }
+
+    const snapshotAyah = this.currentAyah;
+    const snapshotTime = this.currentTime || 0;
+    const wasPlaying = this.isPlaying;
+
+    const sourceAyahs = this.playlist.map((item) => ({
+      surah: item.surah,
+      ayah: item.ayah,
+      number: item.globalNumber,
+      text: item.text,
+    }));
+
+    this.loadPlaylist(sourceAyahs, reciterCdn, cdnType);
+
+    if (!snapshotAyah) {
+      if (wasPlaying) {
+        await this.play();
+      }
+      return;
+    }
+
+    const targetIndex = this.playlist.findIndex(
+      (item) => item.surah === snapshotAyah.surah && item.ayah === snapshotAyah.ayah,
+    );
+    if (targetIndex < 0) {
+      if (wasPlaying) {
+        await this.play();
+      }
+      return;
+    }
+
+    this.playlistIndex = targetIndex;
+    this.currentAyah = this.playlist[targetIndex];
+
+    if (!wasPlaying) return;
+
+    await this._loadAndPlay(targetIndex);
+    if (
+      snapshotTime > 0 &&
+      Number.isFinite(this.audio.duration) &&
+      snapshotTime < this.audio.duration - 0.2
+    ) {
+      this.audio.currentTime = snapshotTime;
     }
   }
 
@@ -343,6 +407,38 @@ class AudioService {
     }
   }
 
+  _captureLatencySample(currentTime = 0) {
+    if (this._hasCapturedLatency) return;
+    if (!this._playRequestedAt) return;
+    if (!Number.isFinite(currentTime) || currentTime < 0.05) return;
+
+    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    const elapsedSec = (now - this._playRequestedAt) / 1000;
+    const latencySec = elapsedSec - currentTime;
+    if (!Number.isFinite(latencySec) || latencySec < -0.2 || latencySec > 1.0) {
+      return;
+    }
+
+    const key = this._activeReciterKey || "islamic:";
+    const prev = this._reciterLatencyByKey[key];
+    const next =
+      Number.isFinite(prev) ? prev * 0.75 + latencySec * 0.25 : latencySec;
+    this._reciterLatencyByKey[key] = Number(next.toFixed(4));
+    this._hasCapturedLatency = true;
+  }
+
+  /**
+   * Runtime timing hint for karaoke.
+   * Positive values add lead to compensate rendering/audio pipeline lag.
+   */
+  getReciterTimingBiasSec() {
+    const key = this._activeReciterKey || "islamic:";
+    const measured = this._reciterLatencyByKey[key];
+    const measuredBias = Number.isFinite(measured) ? measured * 0.55 : 0;
+    const cdnBias = this._currentCdnType === "everyayah" ? 0.025 : 0;
+    return Math.max(-0.04, Math.min(0.14, measuredBias + cdnBias));
+  }
+
   /**
    * Load a URL into the audio element and start playing.
    * Waits for 'canplay' before calling play(). Retries on failure.
@@ -498,6 +594,10 @@ class AudioService {
       if (speed) this.audio.playbackRate = speed;
     }
 
+    this._playRequestedAt =
+      typeof performance !== "undefined" ? performance.now() : Date.now();
+    this._hasCapturedLatency = false;
+
     try {
       this.onNetworkState?.("loading");
       await this._loadUrlWithRetry(item.url);
@@ -565,6 +665,9 @@ class AudioService {
   }
   get duration() {
     return this.audio.duration || 0;
+  }
+  get playbackRate() {
+    return this.audio.playbackRate || 1;
   }
   get progress() {
     return this.duration ? this.currentTime / this.duration : 0;

@@ -23,6 +23,8 @@ export function useKaraoke({ isFirstAyah, wordCount, calibration }) {
   // offsetSec négatif = highlight légèrement APRÈS l'audio (sécurité)
   // offsetSec positif = highlight légèrement EN AVANCE
   const offsetSec = calibration?.offsetSec ?? -0.1;
+  const driftPerProgress = calibration?.driftPerProgress ?? 0.03;
+  const speedSensitivity = calibration?.speedSensitivity ?? 0.06;
   // smoothing élevé (0.7+) = très réactif / snappy
   const smoothing = calibration?.smoothing ?? 0.65;
 
@@ -66,7 +68,25 @@ export function useKaraoke({ isFirstAyah, wordCount, calibration }) {
         // Smoothed progress — alpha clamped to [0.82, 0.94] for stable yet responsive tracking.
         // Narrower range vs. old [0.80, 0.96] reduces overshoot on fast reciters while keeping
         // enough smoothing for slow/tartil reciters to avoid jitter.
-        const rawProgress = Math.max(0, Math.min(1, (t + offsetSec) / dur));
+        const normalized = Math.max(0, Math.min(1, t / dur));
+        const rate = Math.max(0.5, Math.min(2, audioService.playbackRate || 1));
+        const runtimeReciterBias =
+          typeof audioService.getReciterTimingBiasSec === "function"
+            ? audioService.getReciterTimingBiasSec()
+            : 0;
+        const secondsPerWord =
+          wordCount > 0 && dur > 0 ? dur / Math.max(1, wordCount) : 0;
+        const tempoBias =
+          secondsPerWord > 0
+            ? Math.max(-0.04, Math.min(0.12, (secondsPerWord - 0.55) * 0.2))
+            : 0;
+        const adaptiveOffset =
+          offsetSec +
+          runtimeReciterBias +
+          tempoBias +
+          normalized * driftPerProgress +
+          (1 - rate) * speedSensitivity;
+        const rawProgress = Math.max(0, Math.min(1, (t + adaptiveOffset) / dur));
         const prev = smoothedRef.current;
         const alpha = Math.min(0.94, Math.max(0.82, smoothing));
         let next = prev + (rawProgress - prev) * alpha;
@@ -89,7 +109,14 @@ export function useKaraoke({ isFirstAyah, wordCount, calibration }) {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [offsetSec, smoothing, isFirstAyah, wordCount]);
+  }, [
+    offsetSec,
+    smoothing,
+    driftPerProgress,
+    speedSensitivity,
+    isFirstAyah,
+    wordCount,
+  ]);
 
   return { progress, seekCount };
 }
@@ -169,5 +196,19 @@ export function buildKaraokeCalibration({
     offsetSec = Number((offsetSec + 0.02).toFixed(3));
   }
 
-  return { offsetSec, smoothing, lagWordsBase: 0, lagWordsLong: 0 };
+  const dynamics =
+    offsetSec >= 0.28
+      ? { driftPerProgress: 0.07, speedSensitivity: 0.08 }
+      : offsetSec >= 0.2
+        ? { driftPerProgress: 0.05, speedSensitivity: 0.07 }
+        : { driftPerProgress: 0.03, speedSensitivity: 0.06 };
+
+  return {
+    offsetSec,
+    smoothing,
+    lagWordsBase: 0,
+    lagWordsLong: 0,
+    driftPerProgress: dynamics.driftPerProgress,
+    speedSensitivity: dynamics.speedSensitivity,
+  };
 }

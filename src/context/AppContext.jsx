@@ -120,7 +120,7 @@ const initialState = {
   memPause: 2,
 
   // Karaoke / suivi auto
-  karaokeFollow: stored.karaokeFollow ?? true,
+  karaokeFollow: true,
 
   // Auto night mode
   autoNightMode: stored.autoNightMode ?? false,
@@ -158,6 +158,8 @@ function appReducer(state, action) {
       if (Object.prototype.hasOwnProperty.call(payload, "nightTheme")) {
         next.nightTheme = normalizeNightTheme(payload.nightTheme);
       }
+      // Follow mode is forced ON for reliable ayah/audio tracking.
+      next.karaokeFollow = true;
       return next;
     }
 

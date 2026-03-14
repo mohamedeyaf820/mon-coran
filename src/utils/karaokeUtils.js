@@ -325,6 +325,12 @@ export function getKaraokeCalibration(
   const override = reciterId
     ? KARAOKE_RECITER_OVERRIDES[family]?.[reciterId] || {}
     : {};
+  const styleDynamics =
+    reciter?.style === "mujawwad"
+      ? { driftPerProgress: 0.07, speedSensitivity: 0.08 }
+      : reciter?.style === "tartil"
+        ? { driftPerProgress: 0.05, speedSensitivity: 0.07 }
+        : { driftPerProgress: 0.03, speedSensitivity: 0.06 };
 
   let offsetSec =
     override.offsetSec ?? autoCalibration.offsetSec ?? baseline.offsetSec;
@@ -348,5 +354,7 @@ export function getKaraokeCalibration(
       override.lagWordsLong ??
       autoCalibration.lagWordsLong ??
       baseline.lagWordsLong,
+    driftPerProgress: override.driftPerProgress ?? styleDynamics.driftPerProgress,
+    speedSensitivity: override.speedSensitivity ?? styleDynamics.speedSensitivity,
   };
 }

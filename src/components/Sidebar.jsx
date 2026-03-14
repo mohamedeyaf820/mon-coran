@@ -117,7 +117,13 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className={cn("sidebar sidebar--platform sidebar--themes4", sidebarOpen && "open")} role="navigation">
+      <aside
+        className={cn(
+          "sidebar sidebar--platform sidebar--themes4 w-[min(92vw,380px)] md:w-[23rem]",
+          sidebarOpen && "open",
+        )}
+        role="navigation"
+      >
 
         {/* ── HEADER FIXE compact ── */}
         <div className="sidebar-header">

@@ -234,9 +234,12 @@ export default function Header() {
         : ayahCount;
 
   return (
-    <header ref={headerRef} className="hdr hdr--themes4">
-      <div className="hdr__main">
-        <div className="hdr__left">
+    <header
+      ref={headerRef}
+      className="hdr hdr--themes4 sticky top-0 z-[220] w-full backdrop-blur-xl"
+    >
+      <div className="hdr__main flex flex-wrap items-center gap-2 px-2 py-2 md:gap-3 md:px-4">
+        <div className="hdr__left flex min-w-0 items-center gap-2">
           <button
             className={cn(
               "hdr__btn",
@@ -277,7 +280,7 @@ export default function Header() {
           </button>
         </div>
 
-        <div className="hdr__center">
+        <div className="hdr__center min-w-0 flex-1">
           {showHome ? (
             <div className="hdr__home-panel" aria-label={homeTitle}>
               <div className="hdr__home-copy">
@@ -379,8 +382,8 @@ export default function Header() {
         </div>
 
         {/* Actions */}
-        <div className="hdr__actions">
-          <div className="hdr__action-cluster hdr__action-cluster--status">
+        <div className="hdr__actions ml-auto flex items-center justify-end gap-2">
+          <div className="hdr__action-cluster hdr__action-cluster--status hidden lg:flex">
             <NetworkStatus />
             <button
               className="hdr__btn hdr__btn--theme"
@@ -406,7 +409,7 @@ export default function Header() {
               onClick={() => set({ showDuas: true, showHome: false })}
             >
               <i className="fas fa-hands-praying text-[0.7rem]" />
-              <span>
+              <span className="hidden sm:inline">
                 {lang === "ar" ? "أدعية" : lang === "fr" ? "Douas" : "Duas"}
               </span>
             </button>
@@ -454,7 +457,7 @@ export default function Header() {
               aria-label={i18nT("nav.search", lang)}
             >
               <i className="fas fa-magnifying-glass" />
-              <span className="hdr__kbd-hint">K</span>
+              <span className="hdr__kbd-hint hidden md:inline-flex">K</span>
             </button>
           </div>
         </div>
