@@ -739,20 +739,22 @@
     line-height: 1;
 }
 
-/* Hide label on very small screens, keep icon */
+/* Keep a compact but readable network label on small screens */
 @media (max-width: 640px) {
     .network-status .status-label {
-        display: none;
+        display: inline-flex;
+        font-size: 0.64rem;
     }
     .network-status {
-        padding: 0.22rem 0.35rem;
+        justify-content: center;
+        padding: 0.26rem 0.55rem;
     }
 }
 
-/* Hide entirely on tiny screens */
+/* Compress gently on tiny screens */
 @media (max-width: 380px) {
     .network-status {
-        display: none;
+        padding-inline: 0.48rem;
     }
 }
 
@@ -1149,6 +1151,21 @@
     gap: 0.32rem;
 }
 
+.hdr__btn-label {
+    display: none;
+    font-size: 0.69rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    font-family: var(--font-ui);
+}
+
+.hdr__btn-duas-label {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+}
+
 .hdr__btn:hover {
     background: rgba(var(--primary-rgb), 0.1);
     border-color: rgba(var(--primary-rgb), 0.22);
@@ -1255,8 +1272,7 @@
         font-size: 1.05rem;
     }
 
-    .hdr__home-subtitle,
-    .hdr .network-status .status-label {
+    .hdr__home-subtitle {
         display: none;
     }
 
@@ -1281,25 +1297,70 @@
 @media (max-width: 640px) {
     .hdr__actions {
         width: 100%;
-        justify-content: space-between;
+        justify-content: stretch;
+        align-items: stretch;
+        gap: 0.55rem;
     }
 
     .hdr__action-cluster--status {
-        order: 2;
-        margin-inline-start: auto;
+        order: 1;
+        flex: 1 1 100%;
     }
 
     .hdr__action-cluster--primary {
-        order: 1;
+        order: 2;
+        flex: 1 1 100%;
     }
 
     .hdr__action-cluster--tools {
         order: 3;
+        flex: 1 1 100%;
+    }
+
+    .hdr__action-cluster {
+        width: 100%;
+        min-width: 0;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+    }
+
+    .hdr__btn--labeled,
+    .hdr__btn-duas,
+    .hdr__riwaya-toggle {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+    .hdr__btn--labeled,
+    .hdr__btn--search,
+    .hdr__btn-duas {
+        width: auto;
+        height: 2.72rem;
+        padding-inline: 0.88rem;
+        justify-content: center;
+        gap: 0.44rem;
+        border-radius: 0.95rem;
+    }
+
+    .hdr__btn-label {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .hdr__riwaya-toggle {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .hdr__riwaya-btn {
+        flex: 1 1 0;
+        min-width: 0;
     }
 
     .hdr__btn--search {
-        min-width: 2.55rem;
-        padding-inline: 0.6rem;
+        min-width: 0;
+        padding-inline: 0.82rem;
     }
 
     .hdr__kbd-hint {
@@ -1317,26 +1378,28 @@
         padding: 0.58rem;
     }
 
-    .hdr__brand-name,
-    .hdr__theme-dot,
     .hdr__home-meta {
         display: none;
     }
 
-    .hdr__btn-duas span {
-        display: none;
+    .hdr__brand-name {
+        display: block;
+        max-width: 8.5rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.96rem;
     }
 
     .hdr__btn-duas {
         padding-inline: 0.75rem;
     }
 
-    .hdr__nav-title {
-        font-size: 0.9rem;
+    .hdr__btn-label {
+        font-size: 0.64rem;
     }
 
-    .hdr__riwaya-toggle {
-        display: none;
+    .hdr__nav-title {
+        font-size: 0.9rem;
     }
 }
 

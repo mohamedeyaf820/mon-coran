@@ -238,25 +238,6 @@
     font-display: swap;
 }
 
-/* ---------- QCF V4 Hafs Fonts (Word-level glyphs â€” Warsh/Hafs) ---------- */
-@font-face {
-    font-family: "QCF4 Hafs P1";
-    src: url("https://cdn.jsdelivr.net/gh/AymanSiddiqui/ME_Quran_Hafs_V4@main/QCF4_Hafs_01.woff2")
-        format("woff2");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "QCF4 Hafs P2";
-    src: url("https://cdn.jsdelivr.net/gh/AymanSiddiqui/ME_Quran_Hafs_V4@main/QCF4_Hafs_02.woff2")
-        format("woff2");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
 /* ---------- Amiri Quran (fallback) ---------- */
 @font-face {
     font-family: "Amiri Quran";

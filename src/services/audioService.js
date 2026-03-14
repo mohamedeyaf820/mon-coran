@@ -25,9 +25,11 @@ class AudioService {
     this._currentReciterCdn = "";
     this._currentCdnType = "islamic";
     this._activeReciterKey = "islamic:";
+    this._playlistSignature = "";
     this._playRequestedAt = 0;
     this._hasCapturedLatency = false;
     this._reciterLatencyByKey = Object.create(null);
+    this._latencyListeners = [];
 
     // Memorization mode
     this.memMode = false;
@@ -113,15 +115,58 @@ class AudioService {
     return `https://cdn.islamic.network/quran/audio/128/${reciterCdn}/${globalNum}.mp3`;
   }
 
+  static buildPlaylistSignature(ayahs, reciterCdn, cdnType = "islamic") {
+    const base = `${cdnType}:${reciterCdn || ""}`;
+    if (!Array.isArray(ayahs) || ayahs.length === 0) return base;
+    return `${base}|${ayahs
+      .map((ayah) => {
+        const surah = ayah.surah || ayah.surahNumber || 0;
+        const ayahNum = ayah.ayah || ayah.numberInSurah || 0;
+        const globalNum = ayah.number || ayah.globalNumber || 0;
+        return `${surah}:${ayahNum}:${globalNum}`;
+      })
+      .join("|")}`;
+  }
+
+  static buildLatencyKey(reciterCdn, cdnType = "islamic") {
+    return `${cdnType || "islamic"}:${reciterCdn || ""}`;
+  }
+
   /* ── Playlist Management ───────────────────── */
 
   loadPlaylist(ayahs, reciterCdn, cdnType = "islamic") {
+    const nextSignature = AudioService.buildPlaylistSignature(
+      ayahs,
+      reciterCdn,
+      cdnType,
+    );
+    if (nextSignature === this._playlistSignature && this.playlist.length > 0) {
+      let hasTextUpdates = false;
+      this.playlist = this.playlist.map((item, index) => {
+        const nextText = ayahs?.[index]?.text;
+        if (nextText && nextText !== item.text) {
+          hasTextUpdates = true;
+          return { ...item, text: nextText };
+        }
+        return item;
+      });
+
+      if (hasTextUpdates && this.playlistIndex >= 0) {
+        this.currentAyah = this.playlist[this.playlistIndex] || this.currentAyah;
+      }
+      return;
+    }
+
     const previousCurrent = this.currentAyah;
     const wasPlaying = this.isPlaying;
     const previousSrc = this.audio.src;
+    this._playlistSignature = nextSignature;
     this._currentReciterCdn = reciterCdn || "";
     this._currentCdnType = cdnType || "islamic";
-    this._activeReciterKey = `${this._currentCdnType}:${this._currentReciterCdn}`;
+    this._activeReciterKey = AudioService.buildLatencyKey(
+      this._currentReciterCdn,
+      this._currentCdnType,
+    );
 
     this.playlist = ayahs.map((a) => ({
       surah: a.surah || a.surahNumber,
@@ -308,6 +353,7 @@ class AudioService {
     this._preloadPool = [];
     this.isPlaying = false;
     this.playlistIndex = -1;
+    this._playlistSignature = "";
     this.memCurrentRepeat = 0;
     this.onEnd?.();
   }
@@ -424,7 +470,19 @@ class AudioService {
     const next =
       Number.isFinite(prev) ? prev * 0.75 + latencySec * 0.25 : latencySec;
     this._reciterLatencyByKey[key] = Number(next.toFixed(4));
+    this._notifyLatencyListeners();
     this._hasCapturedLatency = true;
+  }
+
+  _notifyLatencyListeners() {
+    const snapshot = this.getLatencySnapshot();
+    for (const fn of this._latencyListeners) {
+      try {
+        fn(snapshot);
+      } catch (error) {
+        console.warn("Latency listener error:", error);
+      }
+    }
   }
 
   /**
@@ -705,6 +763,38 @@ class AudioService {
         (f) => f !== fn,
       );
     };
+  }
+
+  subscribeLatency(fn) {
+    if (typeof fn !== "function") return () => {};
+    this._latencyListeners.push(fn);
+    return () => {
+      this._latencyListeners = this._latencyListeners.filter((f) => f !== fn);
+    };
+  }
+
+  setLatencySnapshot(snapshot = {}) {
+    const safeEntries = Object.entries(snapshot).filter(([key, value]) => {
+      return (
+        typeof key === "string" &&
+        key.length <= 120 &&
+        Number.isFinite(value) &&
+        value >= 0 &&
+        value <= 5
+      );
+    });
+    this._reciterLatencyByKey = Object.fromEntries(
+      safeEntries.map(([key, value]) => [key, Number(Number(value).toFixed(4))]),
+    );
+  }
+
+  getLatencySnapshot() {
+    return { ...this._reciterLatencyByKey };
+  }
+
+  getLatencyForKey(key) {
+    const value = this._reciterLatencyByKey?.[key];
+    return Number.isFinite(value) ? value : null;
   }
 
   /* ── A-B Repeat ─────────────────────────────────────────────── */

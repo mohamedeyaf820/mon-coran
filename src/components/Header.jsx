@@ -8,6 +8,7 @@ import { cn } from "../lib/utils";
 import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import PlatformLogo from "./PlatformLogo";
 import NetworkStatus from "./NetworkStatus";
+import { THEME_ORDER, getThemeMeta } from "../data/themes";
 import "../styles/header-modern.css";
 
 export default function Header() {
@@ -29,6 +30,10 @@ export default function Header() {
   const [goToOpen, setGoToOpen] = useState(false);
   const inputRef = useRef(null);
   const headerRef = useRef(null);
+  const currentThemeIndex = THEME_ORDER.indexOf(theme);
+  const nextThemeId =
+    THEME_ORDER[(currentThemeIndex + 1 + THEME_ORDER.length) % THEME_ORDER.length];
+  const nextThemeMeta = getThemeMeta(nextThemeId);
 
   useEffect(() => {
     if (goToOpen) setTimeout(() => inputRef.current?.focus(), 50);
@@ -60,9 +65,7 @@ export default function Header() {
   }, [showHome, showDuas, displayMode, lang, riwaya]);
 
   const cycleTheme = () => {
-    const themes = ["light", "sepia", "dark", "quran-night"];
-    const idx = themes.indexOf(theme);
-    dispatch({ type: "SET_THEME", payload: themes[(idx + 1) % themes.length] });
+    dispatch({ type: "SET_THEME", payload: nextThemeId });
   };
 
   const handleGoTo = (e) => {
@@ -115,6 +118,13 @@ export default function Header() {
     displayMode === "page" ? 604 : displayMode === "juz" ? 30 : 114;
   const isRtl = lang === "ar";
   const tr = (obj) => (lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en);
+  const headerLabels = {
+    menu: tr({ fr: "Menu", en: "Menu", ar: "القائمة" }),
+    duas: tr({ fr: "Douas", en: "Duas", ar: "أدعية" }),
+    theme: tr({ fr: "Theme", en: "Theme", ar: "السمة" }),
+    settings: i18nT("nav.settings", lang),
+    search: i18nT("nav.search", lang),
+  };
 
   const canGoPrev =
     displayMode === "page"
@@ -243,6 +253,7 @@ export default function Header() {
           <button
             className={cn(
               "hdr__btn",
+              "hdr__btn--labeled",
               "hdr__btn--menu-main",
               state.sidebarOpen && "hdr__btn--active",
             )}
@@ -253,6 +264,7 @@ export default function Header() {
             }
           >
             <i className="fas fa-bars" />
+            <span className="hdr__btn-label">{headerLabels.menu}</span>
           </button>
 
           <button
@@ -383,23 +395,24 @@ export default function Header() {
 
         {/* Actions */}
         <div className="hdr__actions ml-auto flex items-center justify-end gap-2">
-          <div className="hdr__action-cluster hdr__action-cluster--status hidden lg:flex">
+          <div className="hdr__action-cluster hdr__action-cluster--status">
             <NetworkStatus />
             <button
-              className="hdr__btn hdr__btn--theme"
+              className="hdr__btn hdr__btn--labeled hdr__btn--theme"
               onClick={cycleTheme}
               title={tr({
-                fr: "Changer de theme",
-                en: "Cycle theme",
-                ar: "تبديل السمة",
+                fr: `Passer a ${nextThemeMeta.fr}`,
+                en: `Switch to ${nextThemeMeta.en}`,
+                ar: `التبديل إلى ${nextThemeMeta.ar}`,
               })}
               aria-label={tr({
-                fr: "Changer de theme",
-                en: "Cycle theme",
-                ar: "تبديل السمة",
+                fr: `Passer a ${nextThemeMeta.fr}`,
+                en: `Switch to ${nextThemeMeta.en}`,
+                ar: `التبديل إلى ${nextThemeMeta.ar}`,
               })}
             >
               <i className="fas fa-swatchbook" />
+              <span className="hdr__btn-label">{headerLabels.theme}</span>
             </button>
           </div>
 
@@ -409,9 +422,7 @@ export default function Header() {
               onClick={() => set({ showDuas: true, showHome: false })}
             >
               <i className="fas fa-hands-praying text-[0.7rem]" />
-              <span className="hidden sm:inline">
-                {lang === "ar" ? "أدعية" : lang === "fr" ? "Douas" : "Duas"}
-              </span>
+              <span className="hdr__btn-duas-label">{headerLabels.duas}</span>
             </button>
 
             <div className="hdr__riwaya-toggle" role="group" aria-label="Riwāya">
@@ -442,21 +453,27 @@ export default function Header() {
 
           <div className="hdr__action-cluster hdr__action-cluster--tools">
             <button
-              className={cn("hdr__btn", state.settingsOpen && "hdr__btn--active")}
+              className={cn(
+                "hdr__btn",
+                "hdr__btn--labeled",
+                state.settingsOpen && "hdr__btn--active",
+              )}
               onClick={() => dispatch({ type: "TOGGLE_SETTINGS" })}
               title={i18nT("nav.settings", lang)}
               aria-label={i18nT("nav.settings", lang)}
             >
               <i className="fas fa-sliders" />
+              <span className="hdr__btn-label">{headerLabels.settings}</span>
             </button>
 
             <button
-              className="hdr__btn hdr__btn--search"
+              className="hdr__btn hdr__btn--labeled hdr__btn--search"
               onClick={() => dispatch({ type: "TOGGLE_SEARCH" })}
               title={`${i18nT("nav.search", lang)} — Ctrl+K`}
               aria-label={i18nT("nav.search", lang)}
             >
               <i className="fas fa-magnifying-glass" />
+              <span className="hdr__btn-label">{headerLabels.search}</span>
               <span className="hdr__kbd-hint hidden md:inline-flex">K</span>
             </button>
           </div>

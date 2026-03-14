@@ -752,10 +752,10 @@ export default function QuranDisplay() {
       setTranslations([]);
       return;
     }
-    if (ayahs.length === 0) return;
 
     const ctrl = new AbortController();
     const signal = ctrl.signal;
+    setTranslations([]);
 
     const loadTranslations = async () => {
       try {
@@ -779,7 +779,6 @@ export default function QuranDisplay() {
     return () => ctrl.abort();
   }, [
     showTranslation,
-    ayahs.length,
     displayMode,
     currentSurah,
     currentPage,
@@ -811,7 +810,13 @@ export default function QuranDisplay() {
   // Prefetch adjacent surah/page/juz data so next navigation is instant
   useEffect(() => {
     if (loading) return;
-    const timer = setTimeout(() => {
+    const connection = navigator.connection;
+    const isConstrainedConnection =
+      connection?.saveData === true ||
+      /2g/.test(connection?.effectiveType || "");
+    if (isConstrainedConnection) return;
+
+    const runPrefetch = () => {
       if (displayMode === "surah") {
         if (riwaya === "warsh") {
           if (currentSurah < 114) preloadWarshSurah(currentSurah + 1);
@@ -867,7 +872,14 @@ export default function QuranDisplay() {
           if (currentJuz > 1) prefetchJuz(currentJuz - 1);
         }
       }
-    }, 150); // Fast prefetch – data will be cached for instant next navigation
+    };
+
+    if (typeof window.requestIdleCallback === "function") {
+      const idleId = window.requestIdleCallback(runPrefetch, { timeout: 1200 });
+      return () => window.cancelIdleCallback?.(idleId);
+    }
+
+    const timer = setTimeout(runPrefetch, 350);
     return () => clearTimeout(timer);
   }, [
     loading,

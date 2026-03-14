@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/audit-performance.mjs",
     "preview": "vite preview",
     "audit:warsh:audio": "node scripts/audit-warsh-audio.mjs",
     "audit:warsh:tajweed": "node scripts/verify-warsh-tajweed.mjs"

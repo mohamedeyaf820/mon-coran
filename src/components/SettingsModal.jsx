@@ -1,16 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useApp } from "../context/AppContext";
 import { t, LANGUAGES } from "../i18n";
 import { downloadExport, importFromFile } from "../services/exportService";
 import { clearCache } from "../services/quranAPI";
 import audioService from "../services/audioService";
 import {
+  downloadRecentSurahsForReciter,
+  downloadSurahForReciter,
+  getCacheSize,
+  getOfflineAudioEntries,
+  removeSurahCacheForReciter,
+} from "../services/downloadService";
+import {
   getDefaultReciterId,
   getReciter,
   getRecitersByRiwaya,
 } from "../data/reciters";
+import SURAHS from "../data/surahs";
+import {
+  DAY_THEME_IDS as AUTO_DAY_THEME_IDS,
+  NIGHT_THEME_IDS as AUTO_NIGHT_THEME_IDS,
+  THEMES as UI_THEMES,
+} from "../data/themes";
+import { ensureFontLoaded } from "../services/fontLoader";
+import {
+  getLatencyForReciter,
+  sortRecitersByPreference,
+} from "../utils/reciterRanking";
 import PlatformLogo from "./PlatformLogo";
-import { cn } from "../lib/utils";
+import { cn, toast } from "../lib/utils";
 import "../styles/settings-modal.css";
 
 const TABS = [
@@ -191,9 +209,13 @@ export default function SettingsModal() {
     translationLang,
     wordTranslationLang,
     displayMode,
+    currentSurah,
     fontFamily,
     warshStrictMode,
     syncOffsetsMs,
+    favoriteReciters,
+    autoSelectFastestReciter,
+    reciterLatencyByKey,
     autoNightMode,
     nightStart,
     nightEnd,
@@ -205,6 +227,10 @@ export default function SettingsModal() {
   const reciterObj = getReciter(reciter, riwaya);
   const [fontFilter, setFontFilter] = useState("");
   const [activeTab, setActiveTab] = useState("apparence");
+  const [offlineBusy, setOfflineBusy] = useState(false);
+  const [offlineProgress, setOfflineProgress] = useState(null);
+  const [offlineCacheSizeMb, setOfflineCacheSizeMb] = useState(0);
+  const [offlineEntries, setOfflineEntries] = useState([]);
 
   const close = () => dispatch({ type: "TOGGLE_SETTINGS" });
   const tabLabel = (tab) =>
@@ -223,12 +249,167 @@ export default function SettingsModal() {
         : "This language only applies to word-by-word translation.";
   const getOptionLabel = (option) =>
     lang === "ar" ? option.ar : lang === "fr" ? option.fr : option.en;
-  const getThemeLabel = (themeOption) => getOptionLabel(themeOption);
-  const dayThemes = THEMES.filter((themeOption) =>
-    DAY_THEME_IDS.includes(themeOption.id),
+  const rankedReciters = sortRecitersByPreference(getRecitersByRiwaya(riwaya), {
+    currentReciterId: reciter,
+    favoriteReciters,
+    latencyByKey: reciterLatencyByKey,
+  });
+  const currentReciterLatency = getLatencyForReciter(
+    reciterObj,
+    reciterLatencyByKey,
   );
-  const nightThemes = THEMES.filter((themeOption) =>
-    NIGHT_THEME_IDS.includes(themeOption.id),
+  const currentSurahMeta =
+    SURAHS.find((surahItem) => surahItem.n === currentSurah) || SURAHS[0];
+  const favoriteReciterSet = new Set(favoriteReciters || []);
+  const currentOfflineEntry =
+    offlineEntries.find(
+      (entry) =>
+        entry?.surahNum === currentSurah &&
+        entry?.reciterId === reciter &&
+        entry?.riwaya === riwaya,
+    ) || null;
+  const offlineEntryCount = offlineEntries.filter(
+    (entry) => entry?.reciterId === reciter && entry?.riwaya === riwaya,
+  ).length;
+  const formatLatency = (latencySec) =>
+    Number.isFinite(latencySec) ? `${Math.round(latencySec * 1000)} ms` : null;
+  const refreshOfflineMetrics = async () => {
+    const [sizeMb, entries] = await Promise.all([
+      getCacheSize(),
+      Promise.resolve(getOfflineAudioEntries()),
+    ]);
+    setOfflineCacheSizeMb(sizeMb);
+    setOfflineEntries(entries);
+  };
+  const toggleFavoriteReciter = (reciterId) => {
+    const nextFavorites = favoriteReciterSet.has(reciterId)
+      ? (favoriteReciters || []).filter((id) => id !== reciterId)
+      : [...(favoriteReciters || []), reciterId];
+    set({ favoriteReciters: nextFavorites });
+  };
+  const handleDownloadCurrentSurah = async () => {
+    if (!currentSurahMeta || !reciterObj) return;
+    setOfflineBusy(true);
+    setOfflineProgress({
+      mode: "current",
+      label:
+        lang === "fr"
+          ? `Téléchargement de ${currentSurahMeta.fr || currentSurahMeta.en}`
+          : lang === "ar"
+            ? `تنزيل ${currentSurahMeta.ar}`
+            : `Downloading ${currentSurahMeta.en}`,
+      done: 0,
+      total: currentSurahMeta.ayahs || 0,
+    });
+    const status = await downloadSurahForReciter(
+      { surahMeta: currentSurahMeta, reciter: reciterObj, riwaya },
+      (done, total) =>
+        setOfflineProgress((prev) => ({
+          ...(prev || {}),
+          done,
+          total,
+        })),
+    );
+    setOfflineBusy(false);
+    await refreshOfflineMetrics();
+    toast(
+      status === "done"
+        ? lang === "fr"
+          ? "Sourate audio disponible hors ligne."
+          : lang === "ar"
+            ? "السورة متاحة الآن دون اتصال."
+            : "Surah available offline."
+        : lang === "fr"
+          ? "Le téléchargement audio a échoué."
+          : lang === "ar"
+            ? "فشل تنزيل الصوت."
+            : "Audio download failed.",
+      status === "done" ? "success" : "error",
+    );
+  };
+  const handleDownloadRecentPack = async () => {
+    if (!reciterObj) return;
+    setOfflineBusy(true);
+    setOfflineProgress({
+      mode: "recent",
+      label:
+        lang === "fr"
+          ? "Pack des dernières lectures"
+          : lang === "ar"
+            ? "حزمة آخر السور المقروءة"
+            : "Recent readings pack",
+      done: 0,
+      total: 1,
+      currentIndex: 0,
+      totalSurahs: 0,
+    });
+    const results = await downloadRecentSurahsForReciter(
+      {
+        reciter: reciterObj,
+        riwaya,
+        resolveSurahMeta: (surahNum) =>
+          SURAHS.find((surahItem) => surahItem.n === surahNum) || null,
+      },
+      (progress) =>
+        setOfflineProgress({
+          ...progress,
+          label:
+            lang === "fr"
+              ? "Pack des dernières lectures"
+              : lang === "ar"
+                ? "حزمة آخر السور المقروءة"
+                : "Recent readings pack",
+        }),
+    );
+    setOfflineBusy(false);
+    await refreshOfflineMetrics();
+    const successCount = results.filter((item) => item.status === "done").length;
+    toast(
+      lang === "fr"
+        ? `${successCount} sourate(s) récentes prêtes hors ligne.`
+        : lang === "ar"
+          ? `${successCount} سورة حديثة متاحة دون اتصال.`
+          : `${successCount} recent surah(s) available offline.`,
+      successCount > 0 ? "success" : "warning",
+    );
+  };
+  const handleRemoveCurrentOffline = async () => {
+    if (!currentSurahMeta || !reciterObj) return;
+    await removeSurahCacheForReciter({
+      surahMeta: currentSurahMeta,
+      reciter: reciterObj,
+      riwaya,
+    });
+    await refreshOfflineMetrics();
+    toast(
+      lang === "fr"
+        ? "Le cache audio de la sourate a été supprimé."
+        : lang === "ar"
+          ? "تم حذف الصوت المخزن لهذه السورة."
+          : "Surah audio cache removed.",
+      "info",
+    );
+  };
+  useEffect(() => {
+    if (activeTab !== "audio") return;
+    refreshOfflineMetrics().catch(() => {});
+  }, [activeTab, reciter, riwaya]);
+
+  useEffect(() => {
+    ensureFontLoaded(fontFamily).catch(() => {});
+  }, [fontFamily]);
+  const getThemeLabel = (themeOption) => getOptionLabel(themeOption);
+  const getThemeDescription = (themeOption) =>
+    lang === "ar"
+      ? themeOption.descriptionAr
+      : lang === "fr"
+        ? themeOption.descriptionFr
+        : themeOption.descriptionEn;
+  const dayThemes = UI_THEMES.filter((themeOption) =>
+    AUTO_DAY_THEME_IDS.includes(themeOption.id),
+  );
+  const nightThemes = UI_THEMES.filter((themeOption) =>
+    AUTO_NIGHT_THEME_IDS.includes(themeOption.id),
   );
 
   // Font options — extended library inspired by arabic-calligraphy-generator.com
@@ -482,6 +663,214 @@ export default function SettingsModal() {
     FONT_PROGRESS_WIDTH_CLASSES[fontStepIndex] || "w-1/2";
   const fontPreviewSizeClass =
     FONT_PREVIEW_SIZE_CLASSES[fontStepIndex] || "text-[39px]";
+  const activeTabConfig = TABS.find((tab) => tab.id === activeTab) || TABS[0];
+  const currentThemeOption = UI_THEMES.find((themeOption) => themeOption.id === theme);
+  const currentLanguageLabel =
+    LANGUAGES.find((languageOption) => languageOption.code === lang)?.label ||
+    lang.toUpperCase();
+  const currentFontOption =
+    FONT_OPTIONS.find((fontOption) => fontOption.id === fontFamily) || FONT_OPTIONS[0];
+  const currentTranslationOption = TRANSLATION_LANGUAGE_OPTIONS.find(
+    (option) => option.code === translationLang,
+  );
+  const currentWordTranslationOption = WORD_TRANSLATION_LANGUAGE_OPTIONS.find(
+    (option) => option.code === wordTranslationLang,
+  );
+  const displayModeLabel =
+    displayMode === "page"
+      ? lang === "fr"
+        ? "Page"
+        : lang === "ar"
+          ? "صفحة"
+          : "Page"
+      : displayMode === "juz"
+        ? lang === "fr"
+          ? "Juz"
+          : lang === "ar"
+            ? "جزء"
+            : "Juz"
+        : lang === "fr"
+          ? "Sourate"
+          : lang === "ar"
+            ? "سورة"
+            : "Surah";
+  const activeStateLabel =
+    lang === "fr" ? "Actif" : lang === "ar" ? "مفعّل" : "Active";
+  const disabledStateLabel =
+    lang === "fr" ? "Désactivé" : lang === "ar" ? "متوقف" : "Off";
+  const settingsHero = (() => {
+    const pill = (label, value) => ({ label, value });
+
+    switch (activeTab) {
+      case "apparence":
+        return {
+          title:
+            lang === "fr"
+              ? "Un espace de lecture plus calme et plus noble"
+              : lang === "ar"
+                ? "مساحة قراءة أكثر هدوءًا وأناقة"
+                : "A calmer, more refined reading space",
+          copy:
+            lang === "fr"
+              ? "Réglez la langue, le thème et le cycle jour/nuit pour garder une ambiance cohérente sur toute la plateforme."
+              : lang === "ar"
+                ? "اضبط اللغة والثيم ودورة الليل والنهار للحفاظ على تجربة متناسقة في كل المنصة."
+                : "Tune language, theme, and day-night behavior to keep the whole platform visually consistent.",
+          pills: [
+            pill(
+              lang === "fr" ? "Thème actif" : lang === "ar" ? "الثيم الحالي" : "Active theme",
+              currentThemeOption ? getThemeLabel(currentThemeOption) : theme,
+            ),
+            pill(
+              lang === "fr" ? "Langue" : lang === "ar" ? "اللغة" : "Language",
+              currentLanguageLabel,
+            ),
+            pill(
+              lang === "fr" ? "Mode auto" : lang === "ar" ? "الوضع التلقائي" : "Auto mode",
+              autoNightMode
+                ? `${nightStart} → ${nightEnd}`
+                : lang === "fr"
+                  ? "Manuel"
+                  : lang === "ar"
+                    ? "يدوي"
+                    : "Manual",
+            ),
+          ],
+        };
+      case "coran":
+        return {
+          title:
+            lang === "fr"
+              ? "Votre mushaf, votre cadence de lecture"
+              : lang === "ar"
+                ? "مصحفك بإيقاع القراءة الذي يناسبك"
+                : "Your mushaf, tuned to your reading rhythm",
+          copy:
+            lang === "fr"
+              ? "Choisissez la riwaya, le mode d’affichage et les aides de compréhension selon votre usage."
+              : lang === "ar"
+                ? "اختر الرواية ووضع العرض ووسائل الفهم بحسب أسلوب قراءتك."
+                : "Set the riwaya, reading layout, and comprehension aids around the way you read.",
+          pills: [
+            pill(lang === "fr" ? "Riwaya" : lang === "ar" ? "الرواية" : "Riwaya", riwaya.toUpperCase()),
+            pill(lang === "fr" ? "Affichage" : lang === "ar" ? "العرض" : "Layout", displayModeLabel),
+            pill(
+              lang === "fr" ? "Traduction" : lang === "ar" ? "الترجمة" : "Translation",
+              showTranslation
+                ? currentTranslationOption
+                  ? getOptionLabel(currentTranslationOption)
+                  : translationLang.toUpperCase()
+                : disabledStateLabel,
+            ),
+          ],
+        };
+      case "texte":
+        return {
+          title:
+            lang === "fr"
+              ? "Un confort typographique ajusté à votre regard"
+              : lang === "ar"
+                ? "راحة بصرية مضبوطة على أسلوب قراءتك"
+                : "Typography tailored to your reading comfort",
+          copy:
+            lang === "fr"
+              ? "Ajustez la police, la taille et les aides de lecture pour un affichage plus apaisé et plus lisible."
+              : lang === "ar"
+                ? "اضبط الخط والحجم ومساعدات القراءة لعرض أكثر وضوحًا وراحة."
+                : "Dial in font, size, and reading helpers for a calmer, clearer presentation.",
+          pills: [
+            pill(lang === "fr" ? "Police" : lang === "ar" ? "الخط" : "Font", currentFontOption?.label || fontFamily),
+            pill(lang === "fr" ? "Taille" : lang === "ar" ? "الحجم" : "Size", `${quranFontSize}px`),
+            pill(
+              lang === "fr" ? "Mot à mot" : lang === "ar" ? "كلمة بكلمة" : "Word by word",
+              showWordByWord
+                ? currentWordTranslationOption
+                  ? getOptionLabel(currentWordTranslationOption)
+                  : activeStateLabel
+                : disabledStateLabel,
+            ),
+          ],
+        };
+      case "audio":
+        return {
+          title:
+            lang === "fr"
+              ? "Une écoute plus stable, plus fluide, plus personnelle"
+              : lang === "ar"
+                ? "استماع أكثر سلاسة وثباتًا وخصوصية"
+                : "A steadier, smoother, more personal listening setup",
+          copy:
+            lang === "fr"
+              ? "Gardez vos récitateurs favoris et ajustez la synchro pour que chaque sourate démarre proprement."
+              : lang === "ar"
+                ? "احتفظ بقرائك المفضلين واضبط المزامنة حتى تبدأ كل سورة بسلاسة."
+                : "Keep your preferred reciters close and fine-tune sync so every surah starts cleanly.",
+          pills: [
+            pill(
+              lang === "fr" ? "Récitateur" : lang === "ar" ? "القارئ" : "Reciter",
+              reciterObj?.nameFr || reciterObj?.nameEn || reciterObj?.name || reciter,
+            ),
+            pill(lang === "fr" ? "Style" : lang === "ar" ? "النمط" : "Style", reciterObj?.style || "murattal"),
+            pill(lang === "fr" ? "Synchro" : lang === "ar" ? "المزامنة" : "Sync", `${syncOffsetMs} ms`),
+          ],
+        };
+      case "donnees":
+        return {
+          title:
+            lang === "fr"
+              ? "Vos données restent portables et sous contrôle"
+              : lang === "ar"
+                ? "بياناتك قابلة للنقل وتحت سيطرتك"
+                : "Your data stays portable and under your control",
+          copy:
+            lang === "fr"
+              ? "Exportez, importez et gardez une base saine pour vos favoris, notes et préférences."
+              : lang === "ar"
+                ? "قم بالتصدير والاستيراد وحافظ على قاعدة نظيفة للمفضلة والملاحظات والتفضيلات."
+                : "Export, import, and keep a clean base for bookmarks, notes, and preferences.",
+          pills: [
+            pill(lang === "fr" ? "Format" : lang === "ar" ? "الصيغة" : "Format", "JSON"),
+            pill(
+              lang === "fr" ? "Stockage" : lang === "ar" ? "التخزين" : "Storage",
+              lang === "fr" ? "Local" : lang === "ar" ? "محلي" : "Local",
+            ),
+            pill(
+              lang === "fr" ? "Sauvegarde" : lang === "ar" ? "النسخة" : "Backup",
+              lang === "fr" ? "À la demande" : lang === "ar" ? "عند الطلب" : "On demand",
+            ),
+          ],
+        };
+      default:
+        return {
+          title:
+            lang === "fr"
+              ? "Des outils pensés pour l’apprentissage au quotidien"
+              : lang === "ar"
+                ? "أدوات مصممة للتعلّم اليومي"
+                : "Tools designed for everyday learning",
+          copy:
+            lang === "fr"
+              ? "Accédez plus vite aux modules qui prolongent la lecture: mémorisation, quiz et comparaison."
+              : lang === "ar"
+                ? "الوصول السريع إلى الوحدات التي توسع القراءة: الحفظ والاختبارات والمقارنة."
+                : "Reach memorization, quiz, and comparison tools faster from one coherent place.",
+          pills: [
+            pill(
+              lang === "fr" ? "Tajwid" : lang === "ar" ? "التجويد" : "Tajweed",
+              showTajwid ? activeStateLabel : disabledStateLabel,
+            ),
+            pill(
+              lang === "fr" ? "Translit." : lang === "ar" ? "اللفظ" : "Translit.",
+              showTransliteration ? activeStateLabel : disabledStateLabel,
+            ),
+            pill(
+              lang === "fr" ? "Mot à mot" : lang === "ar" ? "كلمة بكلمة" : "Word by word",
+              showWordByWord ? activeStateLabel : disabledStateLabel,
+            ),
+          ],
+        };
+    }
+  })();
 
   const handleImport = async () => {
     const input = document.createElement("input");
@@ -492,12 +881,13 @@ export default function SettingsModal() {
       if (file) {
         try {
           const result = await importFromFile(file);
-          alert(
+          toast(
             `${t("export.importSuccess", lang)}: ${result.bookmarks} bookmarks, ${result.notes} notes`,
+            "success",
           );
-          window.location.reload();
-        } catch (err) {
-          alert(t("errors.generic", lang));
+          window.setTimeout(() => window.location.reload(), 700);
+        } catch {
+          toast(t("errors.generic", lang), "error");
         }
       }
     };
@@ -595,6 +985,29 @@ export default function SettingsModal() {
 
           {/* Right content panel */}
           <div className={contentClass}>
+            <div className="settings-hero-card">
+              <div className="settings-hero-copywrap">
+                <span className="settings-hero-eyebrow">
+                  <i className={`fas ${activeTabConfig.icon}`} aria-hidden="true"></i>
+                  {tabLabel(activeTabConfig)}
+                </span>
+                <h3 className="settings-hero-title">{settingsHero.title}</h3>
+                <p className="settings-hero-copy">{settingsHero.copy}</p>
+              </div>
+              <div className="settings-hero-pills">
+                {settingsHero.pills.map((pill) => (
+                  <div
+                    key={`${activeTab}-${pill.label}`}
+                    className="settings-hero-pill"
+                  >
+                    <span className="settings-hero-pill__label">{pill.label}</span>
+                    <strong className="settings-hero-pill__value">
+                      {pill.value}
+                    </strong>
+                  </div>
+                ))}
+              </div>
+            </div>
             {/* ════════════════════════════════
                 TAB: Apparence
             ════════════════════════════════ */}
@@ -640,9 +1053,7 @@ export default function SettingsModal() {
                     {t("settings.darkMode", lang)}
                   </div>
                   <div className="theme-swatch-grid">
-                    {THEMES.map((th) => {
-                      const swatchClasses =
-                        THEME_SWATCH_CLASSES[th.id] || THEME_SWATCH_CLASSES.light;
+                    {UI_THEMES.map((th) => {
                       const active = theme === th.id;
                       return (
                         <button
@@ -657,13 +1068,17 @@ export default function SettingsModal() {
                           <span
                             className={cn(
                               "swatch-circle !border-[3px]",
-                              swatchClasses.circle,
                               active &&
                                 "!border-[var(--primary)] shadow-[0_0_0_1px_rgba(255,255,255,0.18)]",
                             )}
+                            style={{
+                              background: th.palette.bg,
+                              borderColor: th.palette.ink,
+                              color: th.palette.accent,
+                            }}
                           >
                             <span
-                              className={cn("swatch-text-ar", swatchClasses.text)}
+                              className="swatch-text-ar"
                             >
                               أ
                             </span>
@@ -675,6 +1090,22 @@ export default function SettingsModal() {
                             )}
                           </span>
                           <span className="swatch-label">{getThemeLabel(th)}</span>
+                          <span className="swatch-description">
+                            {getThemeDescription(th)}
+                          </span>
+                          <span className="swatch-badge">
+                            {th.period === "day"
+                              ? lang === "fr"
+                                ? "Jour"
+                                : lang === "ar"
+                                  ? "نهاري"
+                                  : "Day"
+                              : lang === "fr"
+                                ? "Nuit"
+                                : lang === "ar"
+                                  ? "ليلي"
+                                  : "Night"}
+                          </span>
                         </button>
                       );
                     })}
@@ -1293,12 +1724,13 @@ export default function SettingsModal() {
                               fontFamily === f.id && "active",
                               f.bold && "font-semibold",
                             )}
-                            onClick={() =>
+                            onClick={async () => {
+                              await ensureFontLoaded(f.id);
                               dispatch({
                                 type: "SET_FONT_FAMILY",
                                 payload: f.id,
-                              })
-                            }
+                              });
+                            }}
                             title={f.hint}
                             aria-pressed={fontFamily === f.id}
                           >
@@ -1366,6 +1798,178 @@ export default function SettingsModal() {
                       </div>
                     </div>
                   </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => toggleFavoriteReciter(reciter)}
+                      className={cn(
+                        "rounded-xl border px-3 py-2 text-xs font-semibold transition-all duration-200",
+                        favoriteReciterSet.has(reciter)
+                          ? "border-amber-300/35 bg-amber-300/12 text-amber-200"
+                          : "border-white/10 bg-white/[0.05] text-[var(--text-secondary)] hover:bg-white/[0.08]",
+                      )}
+                    >
+                      <i
+                        className={`fas ${favoriteReciterSet.has(reciter) ? "fa-star" : "fa-star-half-stroke"} mr-2`}
+                        aria-hidden="true"
+                      />
+                      {favoriteReciterSet.has(reciter)
+                        ? lang === "fr"
+                          ? "Dans les favoris"
+                          : lang === "ar"
+                            ? "ضمن المفضلة"
+                            : "In favorites"
+                        : lang === "fr"
+                          ? "Ajouter aux favoris"
+                          : lang === "ar"
+                            ? "إضافة إلى المفضلة"
+                            : "Add to favorites"}
+                    </button>
+                    <span className="settings-value-pill">
+                      {autoSelectFastestReciter
+                        ? lang === "fr"
+                          ? "Mode source rapide"
+                          : lang === "ar"
+                            ? "وضع المصدر الأسرع"
+                            : "Fast source mode"
+                        : lang === "fr"
+                          ? "Sélection manuelle"
+                          : lang === "ar"
+                            ? "اختيار يدوي"
+                            : "Manual selection"}
+                    </span>
+                    {formatLatency(currentReciterLatency) && (
+                      <span className="settings-value-pill">
+                        {formatLatency(currentReciterLatency)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className={cn(cardClass, "space-y-3")}>
+                  <div className="settings-card-label">
+                    <i className="fas fa-gauge-high" aria-hidden="true"></i>
+                    {lang === "fr"
+                      ? "Stratégie audio"
+                      : lang === "ar"
+                        ? "استراتيجية الصوت"
+                        : "Audio strategy"}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      set({
+                        autoSelectFastestReciter: !autoSelectFastestReciter,
+                      })
+                    }
+                    className={cn(
+                      "w-full rounded-2xl border px-4 py-3 text-left transition-all duration-200",
+                      autoSelectFastestReciter
+                        ? "border-emerald-300/40 bg-emerald-400/10 text-emerald-50"
+                        : "border-white/10 bg-white/[0.04] text-[var(--text-secondary)]",
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="text-sm font-semibold text-[var(--text-primary)]">
+                          {lang === "fr"
+                            ? "Privilégier automatiquement le récitateur le plus rapide"
+                            : lang === "ar"
+                              ? "تفضيل المصدر الأسرع تلقائيًا"
+                              : "Automatically prefer the fastest reciter"}
+                        </div>
+                        <div className="mt-1 text-xs leading-relaxed text-[var(--text-secondary)]">
+                          {lang === "fr"
+                            ? "Les favoris restent prioritaires, puis la latence CDN mesurée."
+                            : lang === "ar"
+                              ? "تبقى المفضلة أولًا ثم يتم الاعتماد على أقل قيمة كمون مقاسة."
+                              : "Favorites stay first, then measured CDN latency takes over."}
+                        </div>
+                      </div>
+                      <span className="settings-value-pill">
+                        {autoSelectFastestReciter ? "ON" : "OFF"}
+                      </span>
+                    </div>
+                  </button>
+
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                    <div className="mb-2 flex items-center justify-between gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--text-secondary)]">
+                      <span>
+                        {lang === "fr"
+                          ? "Hors ligne"
+                          : lang === "ar"
+                            ? "دون اتصال"
+                            : "Offline"}
+                      </span>
+                      <span>{offlineCacheSizeMb} MB</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={handleDownloadCurrentSurah}
+                        disabled={offlineBusy}
+                        className="rounded-xl border border-emerald-300/25 bg-emerald-400/10 px-3 py-2 text-xs font-semibold text-emerald-50 transition hover:bg-emerald-400/18 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {lang === "fr"
+                          ? "Télécharger la sourate en cours"
+                          : lang === "ar"
+                            ? "تنزيل السورة الحالية"
+                            : "Download current surah"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDownloadRecentPack}
+                        disabled={offlineBusy}
+                        className="rounded-xl border border-sky-300/25 bg-sky-400/10 px-3 py-2 text-xs font-semibold text-sky-50 transition hover:bg-sky-400/18 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {lang === "fr"
+                          ? "Pack des dernières lectures"
+                          : lang === "ar"
+                            ? "حزمة آخر القراءات"
+                            : "Recent readings pack"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleRemoveCurrentOffline}
+                        disabled={offlineBusy || !currentOfflineEntry}
+                        className="rounded-xl border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] transition hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {lang === "fr"
+                          ? "Supprimer la sourate courante"
+                          : lang === "ar"
+                            ? "حذف السورة الحالية"
+                            : "Remove current surah"}
+                      </button>
+                    </div>
+                    {offlineProgress && (
+                      <div className="mt-3 rounded-2xl border border-white/10 bg-black/10 p-3">
+                        <div className="flex items-center justify-between gap-2 text-xs text-[var(--text-secondary)]">
+                          <span>{offlineProgress.label}</span>
+                          <span>
+                            {offlineProgress.currentIndex && offlineProgress.totalSurahs
+                              ? `${offlineProgress.currentIndex}/${offlineProgress.totalSurahs}`
+                              : `${offlineProgress.done || 0}/${offlineProgress.total || 0}`}
+                          </span>
+                        </div>
+                        <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/8">
+                          <div
+                            className="h-full rounded-full bg-[linear-gradient(90deg,rgba(68,211,183,0.92),rgba(79,172,254,0.88))]"
+                            style={{
+                              width: `${Math.max(
+                                6,
+                                Math.min(
+                                  100,
+                                  ((offlineProgress.done || 0) /
+                                    Math.max(offlineProgress.total || 1, 1)) *
+                                    100,
+                                ),
+                              )}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Reciter selector */}
@@ -1382,8 +1986,9 @@ export default function SettingsModal() {
                         : "Choose Reciter"}
                   </div>
                   <div className="settings-reciters-list">
-                    {getRecitersByRiwaya(riwaya).map((r) => {
+                    {rankedReciters.map((r, index) => {
                       const active = reciter === r.id;
+                      const latency = getLatencyForReciter(r, reciterLatencyByKey);
                       return (
                         <button
                           key={r.id}
@@ -1407,6 +2012,14 @@ export default function SettingsModal() {
                             </span>
                             <span className="settings-reciter-style">
                               {r.style || "murattal"}
+                              {index === 0
+                                ? lang === "fr"
+                                  ? " · rapide"
+                                  : lang === "ar"
+                                    ? " · سريع"
+                                    : " · fast"
+                                : ""}
+                              {latency ? ` · ${formatLatency(latency)}` : ""}
                             </span>
                           </span>
                           {active && (

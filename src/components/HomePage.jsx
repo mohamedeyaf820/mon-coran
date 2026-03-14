@@ -1,7 +1,16 @@
 /* ══════════════════════════════════════════════════════════════
    HomePage — Design épuré, inspiré de Quran.com
    ══════════════════════════════════════════════════════════════ */
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  memo,
+  startTransition,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useApp } from "../context/AppContext";
 import SURAHS, { toAr } from "../data/surahs";
 import { JUZ_DATA } from "../data/juz";
@@ -12,6 +21,38 @@ import audioService from "../services/audioService";
 import { getReciter, ensureReciterForRiwaya } from "../data/reciters";
 import PlatformLogo from "./PlatformLogo";
 import Footer from "./Footer";
+import { buildSurahAudioPlaylist } from "../utils/audioPlaylist";
+
+const HOME_INITIAL_SURAHS = 24;
+const HOME_SURAHS_BATCH = 18;
+const HOME_DEFERRED_SECTION_STYLE = {
+  contentVisibility: "auto",
+  containIntrinsicSize: "1px 360px",
+};
+const HOME_FOOTER_SECTION_STYLE = {
+  contentVisibility: "auto",
+  containIntrinsicSize: "1px 280px",
+};
+
+function runWhenIdle(callback, timeout = 160) {
+  if (typeof window === "undefined") return () => {};
+
+  if ("requestIdleCallback" in window) {
+    const idleId = window.requestIdleCallback(callback, { timeout });
+    return () => window.cancelIdleCallback(idleId);
+  }
+
+  const timeoutId = window.setTimeout(
+    () =>
+      callback({
+        didTimeout: false,
+        timeRemaining: () => 0,
+      }),
+    timeout,
+  );
+
+  return () => window.clearTimeout(timeoutId);
+}
 
 /* ─── Sourates d'accès rapide ─── */
 const QUICK_ACCESS = [
@@ -320,7 +361,7 @@ function PercentBar({ value }) {
 }
 
 /*  Carte sourate (grille)  */
-function SurahCard({
+const SurahCard = memo(function SurahCard({
   surah,
   onClick,
   onPlay,
@@ -351,6 +392,11 @@ function SurahCard({
 
   /* ── LIST ROW (unchanged) ── */
   if (viewMode === "list") {
+    const rowVisibilityStyle = {
+      contentVisibility: "auto",
+      containIntrinsicSize: "82px",
+    };
+
     return (
       <button
         className={cn(
@@ -359,6 +405,7 @@ function SurahCard({
         )}
         data-stype={surah.type?.toLowerCase()}
         onClick={() => onClick(surah.n)}
+        style={rowVisibilityStyle}
       >
         <span className={cn("hpl-row__num", isActive && "hpl-row__num--on")}>
           {surah.n}
@@ -393,6 +440,11 @@ function SurahCard({
   }
 
   /* ── GRID CARD — reference-style layout ── */
+  const cardVisibilityStyle = {
+    contentVisibility: "auto",
+    containIntrinsicSize: "164px",
+  };
+
   return (
     <button
       className={cn(
@@ -402,6 +454,7 @@ function SurahCard({
       )}
       data-stype={surah.type?.toLowerCase()}
       onClick={() => onClick(surah.n)}
+      style={cardVisibilityStyle}
     >
       {/* Left: number badge */}
       <span className={cn("scard__num", isActive && "scard__num--on")}>
@@ -444,10 +497,10 @@ function SurahCard({
       </button>
     </button>
   );
-}
+});
 
 /* ─── Carte juz ─── */
-function JuzCard({
+const JuzCard = memo(function JuzCard({
   juzData,
   onClick,
   isActive,
@@ -457,6 +510,11 @@ function JuzCard({
 }) {
   const { juz, name } = juzData;
   if (viewMode === "list") {
+    const rowVisibilityStyle = {
+      contentVisibility: "auto",
+      containIntrinsicSize: "80px",
+    };
+
     return (
       <button
         className={cn(
@@ -464,6 +522,7 @@ function JuzCard({
           isActive && "hpl-row--active",
         )}
         onClick={() => onClick(juz)}
+        style={rowVisibilityStyle}
       >
         <span className={cn("hpl-row__num", isActive && "hpl-row__num--on")}>
           {juz}
@@ -475,14 +534,20 @@ function JuzCard({
       </button>
     );
   }
+  const cardVisibilityStyle = {
+    contentVisibility: "auto",
+    containIntrinsicSize: "120px",
+  };
+
   return (
-      <button
-        className={cn(
+    <button
+      className={cn(
           "hpq-card hpq-card--juz !transition-all !duration-300 hover:!-translate-y-1 hover:!scale-[1.01] hover:!shadow-[0_16px_32px_rgba(8,20,52,0.34)]",
           isActive && "hpq-card--active",
-        )}
-        onClick={() => onClick(juz)}
-      >
+      )}
+      onClick={() => onClick(juz)}
+      style={cardVisibilityStyle}
+    >
       <span className={cn("hpq-card__num", isActive && "hpq-card__num--on")}>
         {juz}
       </span>
@@ -492,7 +557,7 @@ function JuzCard({
       </div>
     </button>
   );
-}
+});
 
 /* ─── État vide ─── */
 function EmptyState({ icon, text }) {
@@ -528,26 +593,51 @@ export default function HomePage() {
   const [sortDir, setSortDir] = useState("asc");
   const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
   const [now, setNow] = useState(() => new Date());
-  const [recentVisits, setRecentVisits] = useState(() => getRecentVisits());
+  const [recentVisits, setRecentVisits] = useState([]);
+  const [visibleSurahCount, setVisibleSurahCount] = useState(HOME_INITIAL_SURAHS);
+  const deferredFilter = useDeferredValue(filter);
+  const loadMoreRef = useRef(null);
 
   // Historique réel = l'utilisateur a déjà navigué au-delà de Al-Fatiha v.1
   const hasReadingHistory =
     currentSurah > 1 || (currentSurah === 1 && currentAyah > 1);
 
   useEffect(() => {
-    setActiveTab(displayMode === "juz" ? "juz" : "surah");
+    startTransition(() => {
+      setActiveTab(displayMode === "juz" ? "juz" : "surah");
+    });
   }, [displayMode]);
   useEffect(() => {
     const id = window.setInterval(() => setNow(new Date()), 60000);
     return () => window.clearInterval(id);
   }, []);
   useEffect(() => {
-    getAllBookmarks().then((bks) =>
-      setBookmarks((bks || []).sort((a, b) => b.createdAt - a.createdAt)),
-    );
-    getAllNotes().then((ns) =>
-      setNotes((ns || []).sort((a, b) => b.updatedAt - a.updatedAt)),
-    );
+    let cancelled = false;
+
+    const cancelIdleLoad = runWhenIdle(async () => {
+      const nextRecentVisits = getRecentVisits();
+
+      try {
+        const [bks, ns] = await Promise.all([getAllBookmarks(), getAllNotes()]);
+        if (cancelled) return;
+
+        startTransition(() => {
+          setRecentVisits(nextRecentVisits);
+          setBookmarks((bks || []).sort((a, b) => b.createdAt - a.createdAt));
+          setNotes((ns || []).sort((a, b) => b.updatedAt - a.updatedAt));
+        });
+      } catch {
+        if (cancelled) return;
+        startTransition(() => {
+          setRecentVisits(nextRecentVisits);
+        });
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      cancelIdleLoad();
+    };
   }, []);
 
   const playFromHome = useCallback(
@@ -563,16 +653,13 @@ export default function HomePage() {
           .includes("warsh")
       )
         return;
-      const surahData = SURAHS[surahNum - 1];
-      if (!surahData) return;
-      let globalStart = 0;
-      for (let i = 0; i < surahNum - 1; i++) globalStart += SURAHS[i].ayahs;
-      const items = Array.from({ length: surahData.ayahs }, (_, i) => ({
-        surah: surahNum,
-        ayah: i + 1,
-        number: globalStart + i + 1,
-      }));
-      set({ currentSurah: surahNum });
+      const items = buildSurahAudioPlaylist(surahNum);
+      if (items.length === 0) return;
+      set({
+        displayMode: "surah",
+        currentSurah: surahNum,
+        currentAyah: 1,
+      });
       audioService.loadPlaylist(items, rec.cdn, rec.cdnType || "islamic");
       audioService.play();
     },
@@ -623,19 +710,91 @@ export default function HomePage() {
     [set],
   );
 
+  const selectInfoTab = useCallback((tabId) => {
+    startTransition(() => {
+      setActiveInfo(tabId);
+    });
+  }, []);
+
+  const selectContentTab = useCallback((tabId) => {
+    startTransition(() => {
+      setActiveTab(tabId);
+    });
+  }, []);
+
+  const changeViewMode = useCallback((nextViewMode) => {
+    startTransition(() => {
+      setViewMode(nextViewMode);
+    });
+  }, []);
+
+  const toggleSortDirection = useCallback(() => {
+    startTransition(() => {
+      setSortDir((direction) => (direction === "asc" ? "desc" : "asc"));
+    });
+  }, []);
+
+  const trimmedDeferredFilter = deferredFilter.trim();
+  const normalizedDeferredFilter = trimmedDeferredFilter.toLowerCase();
+  const hasSurahFilter = normalizedDeferredFilter.length > 0;
+
   const filteredSurahs = useMemo(() => {
-    const source = !filter.trim()
+    const source = !trimmedDeferredFilter
       ? [...SURAHS]
       : SURAHS.filter(
           (s) =>
-            s.ar.includes(filter) ||
-            s.en.toLowerCase().includes(filter.toLowerCase()) ||
-            s.fr.toLowerCase().includes(filter.toLowerCase()) ||
-            String(s.n) === filter.trim(),
+            s.ar.includes(trimmedDeferredFilter) ||
+            s.en.toLowerCase().includes(normalizedDeferredFilter) ||
+            s.fr.toLowerCase().includes(normalizedDeferredFilter) ||
+            String(s.n) === trimmedDeferredFilter,
         );
     source.sort((a, b) => (sortDir === "asc" ? a.n - b.n : b.n - a.n));
     return source;
-  }, [filter, sortDir]);
+  }, [normalizedDeferredFilter, sortDir, trimmedDeferredFilter]);
+
+  const renderedSurahs = useMemo(
+    () =>
+      hasSurahFilter
+        ? filteredSurahs
+        : filteredSurahs.slice(0, visibleSurahCount),
+    [filteredSurahs, hasSurahFilter, visibleSurahCount],
+  );
+
+  const hasMoreSurahs =
+    activeTab === "surah" &&
+    !hasSurahFilter &&
+    visibleSurahCount < filteredSurahs.length;
+
+  const loadMoreSurahs = useCallback(() => {
+    startTransition(() => {
+      setVisibleSurahCount((count) =>
+        Math.min(count + HOME_SURAHS_BATCH, filteredSurahs.length),
+      );
+    });
+  }, [filteredSurahs.length]);
+
+  useEffect(() => {
+    setVisibleSurahCount(HOME_INITIAL_SURAHS);
+  }, [activeTab, normalizedDeferredFilter, sortDir]);
+
+  useEffect(() => {
+    if (!hasMoreSurahs) return;
+    if (typeof window === "undefined" || !("IntersectionObserver" in window)) return;
+
+    const node = loadMoreRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0]?.isIntersecting) return;
+        loadMoreSurahs();
+      },
+      { rootMargin: "320px 0px" },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [hasMoreSurahs, loadMoreSurahs]);
 
   const dailyVerse = useMemo(
     () => DAILY_VERSES[getDailyVerseIndex(now)],
@@ -1220,7 +1379,11 @@ export default function HomePage() {
       </section>
 
       {/* ════ ACCÈS RAPIDE ════ */}
-      <nav className="hp2-quickbar !relative !z-10 !rounded-2xl !border !border-white/12 !bg-[linear-gradient(140deg,rgba(11,23,52,0.88),rgba(8,17,38,0.9))] !px-4 !py-3 !shadow-[0_12px_26px_rgba(5,14,34,0.35)] !backdrop-blur-md" aria-label={t("quickAccess")}>
+      <nav
+        className="hp2-quickbar !relative !z-10 !rounded-2xl !border !border-white/12 !bg-[linear-gradient(140deg,rgba(11,23,52,0.88),rgba(8,17,38,0.9))] !px-4 !py-3 !shadow-[0_12px_26px_rgba(5,14,34,0.35)] !backdrop-blur-md"
+        aria-label={t("quickAccess")}
+        style={HOME_DEFERRED_SECTION_STYLE}
+      >
         <span className="hp2-quickbar__title !text-blue-100/85">
           <i className="fas fa-bolt" />
           {t("quickAccess")}
@@ -1245,7 +1408,10 @@ export default function HomePage() {
       </nav>
 
       {/* ════ BANDE STATS ════ */}
-      <div className="hp2-stats-strip !relative !z-10 !rounded-2xl !border !border-white/12 !bg-[linear-gradient(145deg,rgba(8,20,46,0.9),rgba(7,16,34,0.94))] !p-3 !shadow-[0_10px_24px_rgba(6,14,34,0.32)]">
+      <div
+        className="hp2-stats-strip !relative !z-10 !rounded-2xl !border !border-white/12 !bg-[linear-gradient(145deg,rgba(8,20,46,0.9),rgba(7,16,34,0.94))] !p-3 !shadow-[0_10px_24px_rgba(6,14,34,0.32)]"
+        style={HOME_DEFERRED_SECTION_STYLE}
+      >
         {[
           {
             num: "114",
@@ -1293,7 +1459,7 @@ export default function HomePage() {
       {/*  GRILLE PRINCIPALE  */}
       <div className="hp2-layout !relative !z-10">
         {/* Panneau latéral */}
-        <aside className="hp2-aside">
+        <aside className="hp2-aside" style={HOME_DEFERRED_SECTION_STYLE}>
           <div className="hp2-panel !rounded-2xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(9,20,48,0.9),rgba(7,16,35,0.92))] !backdrop-blur-md !shadow-[0_12px_26px_rgba(5,14,34,0.34)]">
             <div className="hp2-panel__tabs">
               {infoTabs.map((tab) => (
@@ -1303,7 +1469,7 @@ export default function HomePage() {
                     "hp2-panel__tab",
                     activeInfo === tab.id && "hp2-panel__tab--on",
                   )}
-                  onClick={() => setActiveInfo(tab.id)}
+                  onClick={() => selectInfoTab(tab.id)}
                 >
                   <i className={`fas ${tab.icon}`} />
                   <span>{tab.label}</span>
@@ -1429,7 +1595,7 @@ export default function HomePage() {
                   "hp2-seg !transition-all !duration-300 hover:!bg-white/10",
                   activeTab === "surah" && "hp2-seg--on",
                 )}
-                onClick={() => setActiveTab("surah")}
+                  onClick={() => selectContentTab("surah")}
               >
                 <i className="fas fa-align-justify" />
                 {t("surahs")}
@@ -1439,7 +1605,7 @@ export default function HomePage() {
                   "hp2-seg !transition-all !duration-300 hover:!bg-white/10",
                   activeTab === "juz" && "hp2-seg--on",
                 )}
-                onClick={() => setActiveTab("juz")}
+                  onClick={() => selectContentTab("juz")}
               >
                 <i className="fas fa-book-open" />
                 {t("juz")}
@@ -1477,36 +1643,43 @@ export default function HomePage() {
               </span>
               {activeTab === "surah" && (
                 <button
-                  className="hp2-icon-btn !transition-all !duration-300 hover:!scale-110"
-                  onClick={() =>
-                    setSortDir((d) => (d === "asc" ? "desc" : "asc"))
-                  }
+                  className="hp2-icon-btn hp2-icon-btn--with-label !transition-all !duration-300 hover:!scale-110"
+                  onClick={toggleSortDirection}
                   title={sortDir === "asc" ? "Décroissant" : "Croissant"}
                 >
                   <i
                     className={`fas fa-sort-${sortDir === "asc" ? "down" : "up"}`}
                   />
+                  <span className="hp2-icon-btn__label">
+                    {lang === "ar" ? "ترتيب" : lang === "fr" ? "Tri" : "Sort"}
+                  </span>
                 </button>
               )}
               <button
                 className={cn(
-                  "hp2-icon-btn !transition-all !duration-300 hover:!scale-110",
+                  "hp2-icon-btn hp2-icon-btn--with-label !transition-all !duration-300 hover:!scale-110",
                   viewMode === "grid" && "hp2-icon-btn--on",
                 )}
-                onClick={() => setViewMode("grid")}
+                onClick={() => changeViewMode("grid")}
                 title="Grille"
               >
                 <i className="fas fa-grip" />
+                <span className="hp2-icon-btn__label">
+                  {lang === "ar" ? "شبكة" : lang === "fr" ? "Grille" : "Grid"}
+                </span>
               </button>
               <button
                 className={cn(
-                  "hp2-icon-btn !transition-all !duration-300 hover:!scale-110",
+                  "hp2-icon-btn hp2-icon-btn--with-label !transition-all !duration-300 hover:!scale-110",
                   viewMode === "list" && "hp2-icon-btn--on",
                 )}
-                onClick={() => setViewMode("list")}
+                onClick={() => changeViewMode("list")}
                 title="Liste"
               >
                 <i className="fas fa-list" />
+                <span className="hp2-icon-btn__label">
+                  {lang === "ar" ? "قائمة" : lang === "fr" ? "Liste" : "List"}
+                </span>
               </button>
             </div>
           </div>
@@ -1521,7 +1694,7 @@ export default function HomePage() {
               filteredSurahs.length === 0 ? (
                 <EmptyState icon="fa-magnifying-glass" text={t("noResults")} />
               ) : (
-                filteredSurahs.map((s, idx) => (
+                renderedSurahs.map((s, idx) => (
                   <SurahCard
                     key={s.n}
                     surah={s}
@@ -1551,11 +1724,32 @@ export default function HomePage() {
               ))
             )}
           </div>
+          {hasMoreSurahs && (
+            <div className="!mt-4 !flex !justify-center">
+              <button
+                ref={loadMoreRef}
+                className="hp2-btn hp2-btn--soft !min-h-11 !rounded-2xl !border !border-blue-200/20 !bg-blue-500/10 !px-5 !text-blue-50/95 !transition-all !duration-300 hover:!-translate-y-0.5 hover:!bg-blue-500/18"
+                onClick={loadMoreSurahs}
+              >
+                <i className="fas fa-arrow-down" />
+                <span>
+                  {lang === "ar"
+                    ? "تحميل المزيد من السور"
+                    : lang === "fr"
+                      ? "Charger plus de sourates"
+                      : "Load more surahs"}
+                </span>
+                <span className="hp2-btn__chip">
+                  {renderedSurahs.length}/{filteredSurahs.length}
+                </span>
+              </button>
+            </div>
+          )}
         </section>
       </div>
 
       {/* ════ FOOTER ════ */}
-      <div className="relative z-10">
+      <div className="relative z-10" style={HOME_FOOTER_SECTION_STYLE}>
         <Footer goSurah={goSurah} />
       </div>
     </div>

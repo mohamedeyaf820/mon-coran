@@ -10,6 +10,13 @@ import { getSettings, saveSettings } from "../services/storageService";
 import { LANGUAGES } from "../i18n";
 import { ensureReciterForRiwaya } from "../data/reciters";
 import { fetchPrayerTimes } from "../services/prayerTimesService";
+import audioService from "../services/audioService";
+import {
+  normalizeDayTheme,
+  normalizeNightTheme,
+  normalizeThemeId,
+} from "../data/themes";
+import { getPreferredReciterId } from "../utils/reciterRanking";
 
 /* ── Initial State ──────────────────────────── */
 
@@ -24,33 +31,6 @@ const initialReciter = ensureReciterForRiwaya(
 // build where it was briefly allowed), or if no lang is stored yet (first
 // launch), fall back to "fr" so the interface is always readable.
 const initialLang = stored.lang === "ar" || !stored.lang ? "fr" : stored.lang;
-
-const ACTIVE_THEME_IDS = ["light", "sepia", "dark", "quran-night"];
-const DAY_THEME_IDS = ["light", "sepia"];
-const NIGHT_THEME_IDS = ["dark", "quran-night"];
-const LEGACY_THEME_MAP = {
-  "premium-beige": "sepia",
-  ocean: "quran-night",
-  "night-blue": "quran-night",
-  forest: "dark",
-  oled: "dark",
-};
-
-const normalizeThemeId = (value, fallback = "light") => {
-  if (typeof value !== "string") return fallback;
-  if (ACTIVE_THEME_IDS.includes(value)) return value;
-  return LEGACY_THEME_MAP[value] || fallback;
-};
-
-const normalizeDayTheme = (value) => {
-  const normalized = normalizeThemeId(value, "light");
-  return DAY_THEME_IDS.includes(normalized) ? normalized : "light";
-};
-
-const normalizeNightTheme = (value) => {
-  const normalized = normalizeThemeId(value, "dark");
-  return NIGHT_THEME_IDS.includes(normalized) ? normalized : "dark";
-};
 
 const initialState = {
   // UI
@@ -110,6 +90,9 @@ const initialState = {
   volume: stored.volume ?? 1,
   syncOffsetsMs: stored.syncOffsetsMs || {},
   warshStrictMode: stored.warshStrictMode ?? true,
+  favoriteReciters: stored.favoriteReciters || [],
+  autoSelectFastestReciter: stored.autoSelectFastestReciter ?? true,
+  reciterLatencyByKey: stored.reciterLatencyByKey || {},
   isPlaying: false,
   currentPlayingAyah: null,
   playerMinimized: stored.playerMinimized ?? false,
@@ -194,6 +177,7 @@ function appReducer(state, action) {
         ...state,
         currentPage: action.payload.page,
         displayMode: "page",
+        showHome: false,
         showDuas: false,
         sidebarOpen: false,
       };
@@ -203,6 +187,7 @@ function appReducer(state, action) {
         ...state,
         currentJuz: action.payload.juz,
         displayMode: "juz",
+        showHome: false,
         showDuas: false,
         sidebarOpen: false,
       };
@@ -290,6 +275,9 @@ export function AppProvider({ children }) {
         focusReading: state.focusReading,
         syncOffsetsMs: state.syncOffsetsMs,
         warshStrictMode: state.warshStrictMode,
+        favoriteReciters: state.favoriteReciters,
+        autoSelectFastestReciter: state.autoSelectFastestReciter,
+        reciterLatencyByKey: state.reciterLatencyByKey,
         playerMinimized: state.playerMinimized,
         autoNightMode: state.autoNightMode,
         nightStart: state.nightStart,
@@ -338,6 +326,9 @@ export function AppProvider({ children }) {
     state.focusReading,
     state.syncOffsetsMs,
     state.warshStrictMode,
+    state.favoriteReciters,
+    state.autoSelectFastestReciter,
+    state.reciterLatencyByKey,
     state.playerMinimized,
     state.autoNightMode,
     state.nightStart,
@@ -355,6 +346,45 @@ export function AppProvider({ children }) {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", state.theme);
   }, [state.theme]);
+
+  useEffect(() => {
+    audioService.setLatencySnapshot(state.reciterLatencyByKey || {});
+  }, [state.reciterLatencyByKey]);
+
+  useEffect(() => {
+    const unsubscribe = audioService.subscribeLatency((latencyMap) => {
+      dispatch({
+        type: "SET",
+        payload: { reciterLatencyByKey: latencyMap },
+      });
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (!state.autoSelectFastestReciter || state.isPlaying) return;
+    if (
+      (!Array.isArray(state.favoriteReciters) || state.favoriteReciters.length === 0) &&
+      Object.keys(state.reciterLatencyByKey || {}).length === 0
+    ) {
+      return;
+    }
+    const preferredReciter = getPreferredReciterId(state.riwaya, {
+      currentReciterId: state.reciter,
+      favoriteReciters: state.favoriteReciters,
+      latencyByKey: state.reciterLatencyByKey,
+    });
+    if (preferredReciter && preferredReciter !== state.reciter) {
+      dispatch({ type: "SET_RECITER", payload: preferredReciter });
+    }
+  }, [
+    state.autoSelectFastestReciter,
+    state.favoriteReciters,
+    state.isPlaying,
+    state.reciter,
+    state.reciterLatencyByKey,
+    state.riwaya,
+  ]);
 
   // Auto night mode — check every 60s
   useEffect(() => {

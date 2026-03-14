@@ -109,6 +109,29 @@ const VALID_FONTS = [
   "me-quran",
 ];
 
+function sanitizeFavoriteReciters(input) {
+  if (!Array.isArray(input)) return [];
+  return [...new Set(input)]
+    .filter((value) => typeof value === "string" && value.trim())
+    .map((value) => value.trim().slice(0, 80))
+    .slice(0, 24);
+}
+
+function sanitizeLatencyMap(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    return {};
+  }
+  return Object.entries(input).reduce((acc, [key, value]) => {
+    if (typeof key !== "string" || key.length > 120) return acc;
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric) || numeric < 0 || numeric > 5) {
+      return acc;
+    }
+    acc[key] = Number(numeric.toFixed(4));
+    return acc;
+  }, {});
+}
+
 const DEFAULT_SETTINGS = {
   lang: "fr",
   theme: "light",
@@ -128,6 +151,9 @@ const DEFAULT_SETTINGS = {
   continuousPlay: true,
   warshStrictMode: true,
   syncOffsetsMs: {},
+  favoriteReciters: [],
+  autoSelectFastestReciter: true,
+  reciterLatencyByKey: {},
   autoNightMode: false,
   nightStart: "20:00",
   nightEnd: "06:00",
@@ -175,6 +201,12 @@ export function getSettings() {
         ...DEFAULT_SETTINGS.syncOffsetsMs,
         ...(parsed?.syncOffsetsMs || {}),
       },
+      favoriteReciters: sanitizeFavoriteReciters(parsed?.favoriteReciters),
+      autoSelectFastestReciter:
+        parsed?.autoSelectFastestReciter !== undefined
+          ? Boolean(parsed.autoSelectFastestReciter)
+          : DEFAULT_SETTINGS.autoSelectFastestReciter,
+      reciterLatencyByKey: sanitizeLatencyMap(parsed?.reciterLatencyByKey),
     };
   } catch {
     return { ...DEFAULT_SETTINGS };
@@ -236,6 +268,12 @@ function sanitizeSettings(settings) {
     continuousPlay: Boolean(safeInput.continuousPlay),
     warshStrictMode: Boolean(safeInput.warshStrictMode),
     syncOffsetsMs: safeSyncOffsets,
+    favoriteReciters: sanitizeFavoriteReciters(safeInput.favoriteReciters),
+    autoSelectFastestReciter:
+      safeInput.autoSelectFastestReciter !== undefined
+        ? Boolean(safeInput.autoSelectFastestReciter)
+        : true,
+    reciterLatencyByKey: sanitizeLatencyMap(safeInput.reciterLatencyByKey),
     autoNightMode: Boolean(safeInput.autoNightMode),
     nightStart: /^\d{2}:\d{2}$/.test(safeInput.nightStart)
       ? safeInput.nightStart

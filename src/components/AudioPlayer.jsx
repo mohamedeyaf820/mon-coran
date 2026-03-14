@@ -7,7 +7,11 @@ import {
   getRecitersByRiwaya,
 } from "../data/reciters";
 import { getSurah, surahName } from "../data/surahs";
-import { cn } from "../lib/utils";
+import {
+  getLatencyForReciter,
+  sortRecitersByPreference,
+} from "../utils/reciterRanking";
+import { cn, toast } from "../lib/utils";
 import AudioLoadingIndicator from "./AudioLoadingIndicator";
 
 /* ─────────────────────────────────────────────
@@ -248,6 +252,9 @@ export default function AudioPlayer() {
     playerMinimized,
     karaokeFollow,
     syncOffsetsMs,
+    favoriteReciters,
+    autoSelectFastestReciter,
+    reciterLatencyByKey,
   } = state;
 
   const [progress, setProgress] = useState(0);
@@ -507,10 +514,13 @@ export default function AudioPlayer() {
   const startRecite = useCallback(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) {
-      alert(
+      toast(
         lang === "fr"
           ? "Reconnaissance vocale non disponible sur ce navigateur."
-          : "Speech recognition not available.",
+          : lang === "ar"
+            ? "التعرف الصوتي غير متاح في هذا المتصفح."
+            : "Speech recognition is not available in this browser.",
+        "warning",
       );
       return;
     }
@@ -620,7 +630,11 @@ export default function AudioPlayer() {
     setClosed(true);
   }, [set]);
 
-  const currentReciters = getRecitersByRiwaya(riwaya);
+  const currentReciters = sortRecitersByPreference(getRecitersByRiwaya(riwaya), {
+    currentReciterId: reciter,
+    favoriteReciters,
+    latencyByKey: reciterLatencyByKey,
+  });
   const isWarshMode = riwaya === "warsh";
 
   /* ── Reciter search ── */
@@ -666,12 +680,20 @@ export default function AudioPlayer() {
         await audioService.switchReciter(target.cdn, target.cdnType || "islamic");
       } catch (error) {
         console.error("Instant reciter switch failed:", error);
+        toast(
+          lang === "fr"
+            ? "Le changement instantane du recitateur a echoue."
+            : lang === "ar"
+              ? "تعذر تبديل القارئ فوريا."
+              : "Instant reciter switch failed.",
+          "warning",
+        );
       } finally {
         set({ reciter: nextReciterId });
         setReciterSwitchingId(null);
       }
     },
-    [currentReciters, reciter, reciterSwitchingId, set],
+    [currentReciters, lang, reciter, reciterSwitchingId, set],
   );
 
   const { currentSurah } = state;
@@ -940,6 +962,8 @@ export default function AudioPlayer() {
                       const isLoading =
                         reciterSwitchingId === r.id || (active && networkState === "loading");
                       const initial = (r.nameEn || r.name || "?")[0].toUpperCase();
+                      const isFavorite = (favoriteReciters || []).includes(r.id);
+                      const latency = getLatencyForReciter(r, reciterLatencyByKey);
                       return (
                         <button
                           key={`modal-${r.id}`}
@@ -961,8 +985,26 @@ export default function AudioPlayer() {
                             <span className="truncate text-[0.7rem] font-semibold leading-tight">
                               {lang === "ar" ? r.name : lang === "fr" ? r.nameFr : r.nameEn}
                             </span>
-                            <span className="mt-1 inline-flex w-fit items-center rounded-full border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-[rgba(225,214,194,0.72)]">
-                              {r.cdnType === "everyayah" ? "EveryAyah CDN" : "Islamic CDN"}
+                            <span className="mt-1 flex flex-wrap gap-1">
+                              <span className="inline-flex w-fit items-center rounded-full border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-[rgba(225,214,194,0.72)]">
+                                {r.cdnType === "everyayah" ? "EveryAyah CDN" : "Islamic CDN"}
+                              </span>
+                              {isFavorite && (
+                                <span className="inline-flex w-fit items-center rounded-full border border-amber-300/35 bg-amber-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-amber-200">
+                                  <i className="fas fa-star mr-1 text-[0.44rem]" />
+                                  {lang === "fr" ? "Favori" : lang === "ar" ? "مفضل" : "Favorite"}
+                                </span>
+                              )}
+                              {latency && (
+                                <span className="inline-flex w-fit items-center rounded-full border border-sky-300/30 bg-sky-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-sky-100">
+                                  {Math.round(latency * 1000)}ms
+                                </span>
+                              )}
+                              {autoSelectFastestReciter && filteredReciters[0]?.id === r.id && (
+                                <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/30 bg-emerald-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-emerald-100">
+                                  {lang === "fr" ? "Rapide" : lang === "ar" ? "سريع" : "Fast"}
+                                </span>
+                              )}
                             </span>
                           </span>
                         </button>

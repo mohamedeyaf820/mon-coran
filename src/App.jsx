@@ -14,10 +14,11 @@ import QuranDisplay from "./components/QuranDisplay";
 import HomePage from "./components/HomePage";
 import { prefetchInitialData } from "./services/quranAPI";
 import audioService from "./services/audioService";
-import SURAHS from "./data/surahs";
 import { getReciter, ensureReciterForRiwaya } from "./data/reciters";
 import NotesPanel from "./components/NotesPanel";
 import { Toast } from "./components/ModernUIComponents";
+import { buildSurahAudioPlaylist } from "./utils/audioPlaylist";
+import { ensureFontLoaded } from "./services/fontLoader";
 
 // Lazy-load modals — they're only needed when opened
 const Sidebar = lazy(() => import("./components/Sidebar"));
@@ -138,6 +139,10 @@ export default function App() {
     document.documentElement.dataset.perf = lowPerfMode ? "low" : "normal";
   }, [lowPerfMode]);
 
+  useEffect(() => {
+    ensureFontLoaded(state.fontFamily).catch(() => {});
+  }, [state.fontFamily]);
+
   /* ── Pre-load audio playlist when on the home page ──
      QuranDisplay handles playlist loading when in reading mode.
      When showHome is true it's not mounted, so we build a minimal
@@ -163,16 +168,8 @@ export default function App() {
         .includes("warsh")
     )
       return;
-    const surahData = SURAHS[surahNum - 1];
-    if (!surahData) return;
-    // Compute global ayah start (1-indexed)
-    let globalStart = 0;
-    for (let i = 0; i < surahNum - 1; i++) globalStart += SURAHS[i].ayahs;
-    const items = Array.from({ length: surahData.ayahs }, (_, i) => ({
-      surah: surahNum,
-      ayah: i + 1,
-      number: globalStart + i + 1,
-    }));
+    const items = buildSurahAudioPlaylist(surahNum);
+    if (items.length === 0) return;
     audioService.loadPlaylist(items, rec.cdn, rec.cdnType || "islamic");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [

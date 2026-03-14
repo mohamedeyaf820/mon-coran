@@ -2344,11 +2344,15 @@
 .wbw-display {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-end; /* RTL: words start from right */
+    justify-content: flex-start; /* RTL flex rows start at the right edge */
     align-items: flex-start; /* TOP-align: every card starts at same baseline */
     gap: 0.5rem 0.75rem;
     padding: 0.75rem 0 0.5rem;
     direction: rtl;
+    width: 100%;
+    text-align: right;
+    align-content: flex-start;
+    unicode-bidi: plaintext;
     row-gap: 1rem;
 }
 
@@ -2369,6 +2373,8 @@
     width: max-content;
     flex-shrink: 0;
     position: relative;
+    direction: rtl;
+    unicode-bidi: isolate;
     transition:
         background 0.15s ease,
         border-color 0.15s ease,
@@ -2446,9 +2452,12 @@
     align-items: center;
     justify-content: center;
     min-height: 2.8em;
+    width: 100%;
     padding-bottom: 0.25rem;
     white-space: nowrap;
     word-break: keep-all;
+    direction: rtl;
+    unicode-bidi: isolate;
 }
 
 /* ── Roman transliteration ── */
@@ -2518,6 +2527,7 @@
     line-height: 2.6;
     text-align: right;
     direction: rtl;
+    unicode-bidi: plaintext;
     width: 100%;
     display: block;
 }
