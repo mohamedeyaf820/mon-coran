@@ -45,6 +45,7 @@ export default function Sidebar() {
   const [pageInput, setPageInput] = useState("");
   const [selectedJuzForPages, setSelectedJuzForPages] = useState(1);
   const activeItemRef = useRef(null);
+  const progressFillRef = useRef(null);
   const [recentSurahs, setRecentSurahs] = useState(loadRecent);
   const [readStats, setReadStats] = useState(() => getReadStats());
   const currentSurahMeta = SURAHS[currentSurah - 1];
@@ -74,6 +75,11 @@ export default function Sidebar() {
     }
   }, [sidebarOpen]);
 
+  useEffect(() => {
+    if (!progressFillRef.current) return;
+    progressFillRef.current.style.width = `${readStats.percentage}%`;
+  }, [readStats.percentage]);
+
   const filteredSurahs = useMemo(() => {
     if (!filter) return SURAHS;
     const q = filter.toLowerCase();
@@ -96,6 +102,12 @@ export default function Sidebar() {
     dispatch({ type: "NAVIGATE_PAGE", payload: { page: p } });
   };
 
+  const submitPageJump = () => {
+    const page = Number.parseInt(pageInput, 10);
+    if (!Number.isFinite(page)) return;
+    goPage(Math.min(604, Math.max(1, page)));
+  };
+
   const goJuz = (juz) => {
     set({ showHome: false, showDuas: false, displayMode: "juz" });
     dispatch({ type: "NAVIGATE_JUZ", payload: { juz } });
@@ -105,7 +117,7 @@ export default function Sidebar() {
 
   return (
     <>
-      <aside className={cn("sidebar", sidebarOpen && "open")} role="navigation">
+      <aside className={cn("sidebar sidebar--platform sidebar--themes4", sidebarOpen && "open")} role="navigation">
 
         {/* ── HEADER FIXE compact ── */}
         <div className="sidebar-header">
@@ -276,7 +288,7 @@ export default function Sidebar() {
 
           {tab === "page" && (
             <div className="page-nav-section">
-              <div className="flex gap-2 mb-4">
+              <div className="sidebar-page-input-row">
                 <input
                   type="number"
                   min={1} max={604}
@@ -284,21 +296,23 @@ export default function Sidebar() {
                   placeholder={isRtl ? "الصفحة" : "Page"}
                   value={pageInput}
                   onChange={(e) => setPageInput(e.target.value)}
-                  onKeyDown={e => e.key === "Enter" && goPage(parseInt(pageInput))}
+                  onKeyDown={(e) => e.key === "Enter" && submitPageJump()}
                 />
                 <button
-                  className="sidebar-tab-trigger active w-12 h-10 shrink-0"
-                  onClick={() => goPage(parseInt(pageInput))}
+                  className="sidebar-tab-trigger sidebar-page-go-btn active"
+                  onClick={submitPageJump}
                 >
                   <i className="fas fa-arrow-right" />
                 </button>
               </div>
-              <div className="grid grid-cols-6 gap-1 mb-4">
+              <div className="sidebar-page-juz-grid">
                 {JUZ_PAGE_RANGES.map(range => (
                   <button
                     key={range.juz}
-                    className={cn("page-v4-cell", selectedJuzForPages === range.juz && "active")}
-                    style={{ aspectRatio: "auto", padding: "6px" }}
+                    className={cn(
+                      "page-v4-cell page-v4-cell--juz",
+                      selectedJuzForPages === range.juz && "active",
+                    )}
                     onClick={() => setSelectedJuzForPages(range.juz)}
                   >
                     {isRtl ? toAr(range.juz) : range.juz}
@@ -336,7 +350,11 @@ export default function Sidebar() {
                 <span className="sidebar-progress-pct">{readStats.percentage}%</span>
               </div>
               <div className="sidebar-progress-bar-bg">
-                <div className="sidebar-progress-bar-fill" style={{ width: `${readStats.percentage}%` }} />
+                <div
+                  ref={progressFillRef}
+                  className="sidebar-progress-bar-fill"
+                  aria-hidden="true"
+                />
               </div>
               <div className="sidebar-progress-detail">
                 {lang === "fr"

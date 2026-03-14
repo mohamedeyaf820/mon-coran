@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useLayoutEffect, useCallback, useRef } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { getAllNotes, deleteNote, saveNote } from "../services/storageService";
@@ -54,6 +54,7 @@ export default function NotesPanel() {
   const [saving, setSaving] = useState(false);
   const editRef = useRef(null);
   const searchRef = useRef(null);
+  const fabRef = useRef(null);
 
   /* ── Mobile detection ── */
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
@@ -159,6 +160,13 @@ export default function NotesPanel() {
     if (open) setTimeout(() => searchRef.current?.focus(), 80);
   }, [open]);
 
+  useLayoutEffect(() => {
+    if (!open || isMobile || !panelRef.current) return;
+    panelRef.current.style.setProperty("--notes-panel-x", `${pos.x}px`);
+    panelRef.current.style.setProperty("--notes-panel-y", `${pos.y}px`);
+    panelRef.current.style.setProperty("--notes-panel-w", `${PANEL_W}px`);
+  }, [open, isMobile, pos.x, pos.y]);
+
   const goTo = (surah, ayah) => {
     set({ displayMode: "surah", showHome: false, showDuas: false });
     dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah } });
@@ -260,14 +268,8 @@ export default function NotesPanel() {
               ))}
             </div>
           )}
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center"
-            style={{ background: "rgba(var(--primary-rgb,27,94,59),0.12)" }}
-          >
-            <i
-              className="fas fa-sticky-note text-[0.75rem]"
-              style={{ color: "var(--gold)" }}
-            />
+          <div className="notes-panel-brand w-7 h-7 rounded-lg flex items-center justify-center">
+            <i className="notes-panel-brand__icon fas fa-sticky-note text-[0.75rem]" />
           </div>
           <div>
             <h3 className="text-[0.84rem] font-bold text-(--text-primary) leading-tight">
@@ -343,13 +345,7 @@ export default function NotesPanel() {
       <div className="flex-1 overflow-y-auto overscroll-contain">
         {notes.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full px-5 text-center gap-3 py-10">
-            <div
-              className="w-14 h-14 rounded-2xl flex items-center justify-center"
-              style={{
-                background: "var(--bg-secondary)",
-                border: "1px solid var(--border-light)",
-              }}
-            >
+            <div className="notes-empty-icon-shell w-14 h-14 rounded-2xl flex items-center justify-center">
               <i className="fas fa-sticky-note text-[1.4rem] text-(--text-muted)" />
             </div>
             <div>
@@ -425,13 +421,7 @@ export default function NotesPanel() {
                             : "Go to verse"
                       }
                     >
-                      <span
-                        className="text-[0.65rem] font-bold px-1.5 py-0.5 rounded-md shrink-0"
-                        style={{
-                          background: "rgba(var(--primary-rgb,27,94,59),0.1)",
-                          color: "var(--primary)",
-                        }}
-                      >
+                      <span className="notes-card-ref-badge text-[0.65rem] font-bold px-1.5 py-0.5 rounded-md shrink-0">
                         {lang === "ar"
                           ? `${toAr(note.surah)}:${toAr(note.ayah)}`
                           : `${note.surah}:${note.ayah}`}
@@ -639,6 +629,7 @@ export default function NotesPanel() {
     <>
       {/* ── FAB ── */}
       <button
+        ref={fabRef}
         onClick={() => setOpen((v) => !v)}
         title={t("notes.title", lang)}
         aria-label={t("notes.title", lang)}
@@ -649,19 +640,12 @@ export default function NotesPanel() {
           "w-11 h-11 rounded-full cursor-pointer outline-none",
           "transition-all duration-200",
           "shadow-[0_4px_20px_rgba(212,168,32,0.35)]",
+          isMobile ? "notes-fab--mobile" : "notes-fab--desktop",
+          lang === "ar" ? "notes-fab--rtl" : "notes-fab--ltr",
+          open ? "notes-fab--open" : "notes-fab--closed",
           open ? "scale-110" : "hover:scale-110 hover:-translate-y-0.5",
           "focus-visible:ring-2 focus-visible:ring-(--gold)/50 focus-visible:ring-offset-2",
         )}
-        style={{
-          bottom: isMobile
-            ? "calc(var(--player-h) + 1rem)"
-            : "calc(var(--player-h) + 5rem)",
-          [lang === "ar" ? "left" : "right"]: "1rem",
-          background: open
-            ? "var(--primary)"
-            : "linear-gradient(135deg, var(--gold), var(--gold-bright,#d4a820))",
-          color: "white",
-        }}
       >
         <i
           className={cn(
@@ -701,14 +685,8 @@ export default function NotesPanel() {
               className={cn(
                 "notes-panel-sheet",
                 "fixed z-200 flex flex-col left-0 right-0 w-full rounded-t-2xl border-t border-(--border) max-h-[78dvh]",
+                "notes-panel-sheet--open",
               )}
-              style={{
-                bottom: "var(--player-h)",
-                background: "var(--bg-card)",
-                boxShadow:
-                  "0 -4px 32px rgba(0,0,0,0.18), var(--shadow-xl,0 16px 48px rgba(0,0,0,0.15))",
-                animation: "slideInUp 0.25s cubic-bezier(0.16,1,0.3,1)",
-              }}
               role="complementary"
               aria-label={t("notes.title", lang)}
             >
@@ -722,51 +700,21 @@ export default function NotesPanel() {
                 "notes-panel-desk",
                 "fixed z-200 flex flex-col rounded-2xl overflow-hidden",
                 "select-none",
+                "notes-panel-desk--open",
                 isDragging
-                  ? "cursor-grabbing shadow-2xl scale-[1.01]"
+                  ? "notes-panel-desk--dragging cursor-grabbing shadow-2xl scale-[1.01]"
                   : "cursor-default",
               )}
-              style={{
-                left: pos.x,
-                top: pos.y,
-                width: PANEL_W,
-                maxHeight: "min(520px, calc(100dvh - 80px))",
-                background: "var(--bg-card)",
-                border: "1px solid var(--border)",
-                boxShadow: isDragging
-                  ? "0 20px 60px rgba(0,0,0,0.25), 0 0 0 1px rgba(var(--primary-rgb,27,94,59),0.15)"
-                  : "0 8px 32px rgba(0,0,0,0.14), 0 0 0 1px rgba(var(--primary-rgb,27,94,59),0.08)",
-                transition: isDragging
-                  ? "box-shadow 0.15s, transform 0.15s"
-                  : "box-shadow 0.25s",
-              }}
               role="complementary"
               aria-label={t("notes.title", lang)}
             >
               {/* Gold top accent line */}
-              <div
-                className="h-0.75 w-full shrink-0"
-                style={{
-                  background:
-                    "linear-gradient(90deg, var(--gold), var(--gold-bright,#d4a820), var(--primary))",
-                }}
-              />
+              <div className="notes-panel-accent h-0.75 w-full shrink-0" />
               <PanelContent />
             </aside>
           )}
         </>
       )}
-
-      <style>{`
-        @keyframes slideInUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slideInRight {
-          from { opacity: 0; transform: translateX(16px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-      `}</style>
     </>
   );
 }

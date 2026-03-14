@@ -60,13 +60,17 @@ const VALID_TRANSLATION_LANGS = ["fr", "en", "es", "de", "tr", "ur"];
 const VALID_WORD_TRANSLATION_LANGS = ["fr", "en"];
 const VALID_THEMES = [
   "light",
-  "dark",
   "sepia",
-  "ocean",
-  "forest",
-  "night-blue",
-  "oled",
+  "dark",
+  "quran-night",
 ];
+const LEGACY_THEME_MAP = {
+  "premium-beige": "sepia",
+  ocean: "quran-night",
+  "night-blue": "quran-night",
+  forest: "dark",
+  oled: "dark",
+};
 const VALID_RIWAYAS = ["hafs", "warsh"];
 const VALID_DISPLAY_MODES = ["surah", "page", "juz"];
 const VALID_FONTS = [
@@ -138,6 +142,24 @@ const DEFAULT_SETTINGS = {
   lastPosition: { surah: 1, ayah: 1, page: 1, juz: 1 },
 };
 
+function normalizeTheme(theme, fallback = "light") {
+  if (VALID_THEMES.includes(theme)) return theme;
+  if (typeof theme === "string" && LEGACY_THEME_MAP[theme]) {
+    return LEGACY_THEME_MAP[theme];
+  }
+  return fallback;
+}
+
+function normalizeDayTheme(theme) {
+  const normalized = normalizeTheme(theme, "light");
+  return ["light", "sepia"].includes(normalized) ? normalized : "light";
+}
+
+function normalizeNightTheme(theme) {
+  const normalized = normalizeTheme(theme, "dark");
+  return ["dark", "quran-night"].includes(normalized) ? normalized : "dark";
+}
+
 export function getSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
@@ -171,7 +193,7 @@ function sanitizeSettings(settings) {
 
   return {
     lang: VALID_LANGS.includes(safeInput.lang) ? safeInput.lang : "fr",
-    theme: VALID_THEMES.includes(safeInput.theme) ? safeInput.theme : "light",
+    theme: normalizeTheme(safeInput.theme, "light"),
     riwaya: VALID_RIWAYAS.includes(safeInput.riwaya)
       ? safeInput.riwaya
       : "hafs",
@@ -221,12 +243,8 @@ function sanitizeSettings(settings) {
     nightEnd: /^\d{2}:\d{2}$/.test(safeInput.nightEnd)
       ? safeInput.nightEnd
       : "06:00",
-    nightTheme: VALID_THEMES.includes(safeInput.nightTheme)
-      ? safeInput.nightTheme
-      : "dark",
-    dayTheme: VALID_THEMES.includes(safeInput.dayTheme)
-      ? safeInput.dayTheme
-      : "light",
+    nightTheme: normalizeNightTheme(safeInput.nightTheme),
+    dayTheme: normalizeDayTheme(safeInput.dayTheme),
     volume:
       typeof safeInput.volume === "number"
         ? Math.max(0, Math.min(1, safeInput.volume))

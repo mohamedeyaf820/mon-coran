@@ -250,7 +250,7 @@ const RECITERS = {
       nameEn: "Abdul Basit (Warsh)",
       nameFr: "Abdul Basit (Warsh)",
       style: "murattal",
-      cdn: "warsh/AbdulBaset_Warsh_64kbps",
+      cdn: "warsh/warsh_Abdul_Basit_128kbps",
       cdnType: "everyayah",
     },
     {
@@ -259,7 +259,7 @@ const RECITERS = {
       nameEn: "Ibrahim Al-Dosari (Warsh)",
       nameFr: "Ibrahim Al-Dosari (Warsh)",
       style: "murattal",
-      cdn: "warsh/Ibrahim_Al-Dosari_Warsh_128kbps",
+      cdn: "warsh/warsh_ibrahim_aldosary_128kbps",
       cdnType: "everyayah",
     },
     {
@@ -268,7 +268,7 @@ const RECITERS = {
       nameEn: "Yassin Al-Jazaery (Warsh)",
       nameFr: "Yassin Al-Jazaery (Warsh)",
       style: "murattal",
-      cdn: "warsh/Warsh_Yasser_Salamah_128kbps",
+      cdn: "warsh/warsh_yassin_al_jazaery_64kbps",
       cdnType: "everyayah",
     },
   ],

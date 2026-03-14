@@ -723,3 +723,152 @@
         font-size: 0.775rem;
     }
 }
+
+/* ==========================================================
+   PLATFORM REDESIGN V7
+   Duas polish
+   ========================================================== */
+
+.duas-page--platform {
+    gap: 1.5rem;
+}
+
+.duas-page--platform .duas-results {
+    position: relative;
+    overflow: hidden;
+    padding: 1.3rem;
+}
+
+.duas-page--platform .duas-results-head {
+    align-items: flex-end;
+    gap: 1rem;
+}
+
+.duas-page--platform .gallery-grid {
+    align-items: stretch;
+}
+
+.duas-page--platform .dua-card-v5 {
+    min-height: 100%;
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg-card, #ffffff) 94%, rgba(255, 255, 255, 0.25) 6%),
+        color-mix(in srgb, var(--bg-card, #ffffff) 90%, rgba(var(--primary-rgb), 0.05) 10%)
+    );
+    border: 1px solid color-mix(
+        in srgb,
+        var(--border, rgba(184, 134, 11, 0.2)) 82%,
+        rgba(255, 255, 255, 0.16) 18%
+    );
+    box-shadow:
+        0 18px 36px rgba(15, 22, 19, 0.08),
+        0 1px 0 rgba(255, 255, 255, 0.18) inset;
+}
+
+.duas-page--platform .dua-card-inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.duas-page--platform .dua-card-head {
+    align-items: flex-start;
+    gap: 0.9rem;
+}
+
+.duas-page--platform .dua-head-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+}
+
+.duas-page--platform .dua-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+}
+
+.duas-page--platform .dua-open-btn-v5 {
+    width: 2.45rem;
+    height: 2.45rem;
+    border-radius: 0.9rem;
+    background: linear-gradient(
+        180deg,
+        rgba(var(--primary-rgb), 0.1),
+        rgba(212, 168, 32, 0.08)
+    );
+    border: 1px solid rgba(var(--primary-rgb), 0.16);
+    color: var(--primary);
+}
+
+.duas-page--platform .dua-open-btn-v5:hover {
+    transform: translateY(-1px);
+    border-color: rgba(212, 168, 32, 0.34);
+    color: var(--gold, #b8860b);
+}
+
+.duas-page--platform .dua-content-area {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.95rem;
+}
+
+.duas-page--platform .dua-arabic {
+    font-size: clamp(1.45rem, 1.1rem + 1vw, 1.95rem);
+    line-height: 2.18;
+}
+
+.duas-page--platform .dua-translit {
+    padding-inline-start: 0.9rem;
+    border-inline-start: 2px solid rgba(212, 168, 32, 0.2);
+}
+
+.duas-page--platform .dua-translation {
+    color: var(--text-secondary);
+    line-height: 1.82;
+}
+
+.duas-page--platform .dua-card-footer {
+    margin-top: auto;
+    padding-top: 0.95rem;
+    border-top: 1px solid rgba(var(--primary-rgb), 0.1);
+}
+
+[data-theme="dark"] .duas-page--platform .dua-card-v5,
+[data-theme="night-blue"] .duas-page--platform .dua-card-v5,
+[data-theme="forest"] .duas-page--platform .dua-card-v5,
+[data-theme="oled"] .duas-page--platform .dua-card-v5 {
+    background: linear-gradient(180deg, rgba(18, 24, 31, 0.95), rgba(12, 17, 24, 0.95));
+    border-color: rgba(212, 170, 64, 0.2);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.24),
+        0 1px 0 rgba(255, 255, 255, 0.03) inset;
+}
+
+[data-theme="premium-beige"] .duas-page--platform .dua-card-v5 {
+    background: linear-gradient(180deg, rgba(255, 250, 241, 0.98), rgba(244, 236, 220, 0.94));
+    border-color: rgba(166, 121, 18, 0.16);
+    box-shadow:
+        0 18px 38px rgba(92, 66, 23, 0.08),
+        0 1px 0 rgba(255, 255, 255, 0.44) inset;
+}
+
+@media (max-width: 640px) {
+    .duas-page--platform .duas-results {
+        padding: 1rem;
+    }
+
+    .duas-page--platform .dua-card-head {
+        flex-direction: column;
+    }
+
+    .duas-page--platform .dua-head-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

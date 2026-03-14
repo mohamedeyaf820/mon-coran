@@ -88,7 +88,7 @@ export default function DuasPage() {
         : `${filteredDuas.length} supplication${filteredDuas.length > 1 ? "s" : ""}`;
 
   return (
-    <div className="duas-page">
+    <div className="duas-page duas-page--platform">
       <section className="duas-hero">
         <div className="duas-hero-head">
           <div className="duas-hero-content">
@@ -255,9 +255,7 @@ export default function DuasPage() {
                               CATEGORY_MAP.all.en}
                       </span>
                     </div>
-                    <div
-                      style={{ display: "flex", gap: "0.4rem", flexShrink: 0 }}
-                    >
+                    <div className="dua-head-actions">
                       <button
                         className="dua-open-btn-v5"
                         onClick={() =>

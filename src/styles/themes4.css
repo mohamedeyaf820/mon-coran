@@ -1,0 +1,758 @@
+/*
+  Themes4 Unified Layer
+  Final visual system inspired by quran.com + quranwbw
+  Constraint: 4 themes only, 3 base colors each (bg, ink, accent)
+*/
+
+:root[data-theme="light"],
+[data-theme="light"] {
+    --brand-bg: #f7f4ea;
+    --brand-ink: #1f2c3a;
+    --brand-accent: #199b90;
+    --brand-accent-rgb: 25, 155, 144;
+}
+
+:root[data-theme="sepia"],
+[data-theme="sepia"] {
+    --brand-bg: #efe2c9;
+    --brand-ink: #4b3420;
+    --brand-accent: #b4883c;
+    --brand-accent-rgb: 180, 136, 60;
+}
+
+:root[data-theme="dark"],
+[data-theme="dark"] {
+    --brand-bg: #111827;
+    --brand-ink: #e6eaf0;
+    --brand-accent: #2bb6c7;
+    --brand-accent-rgb: 43, 182, 199;
+}
+
+:root[data-theme="quran-night"],
+[data-theme="quran-night"] {
+    --brand-bg: #0c1622;
+    --brand-ink: #e8edf7;
+    --brand-accent: #3ca675;
+    --brand-accent-rgb: 60, 166, 117;
+}
+
+:root[data-theme],
+[data-theme] {
+    --theme-bg: var(--brand-bg);
+    --theme-bg-alt: color-mix(in srgb, var(--brand-bg) 92%, var(--brand-ink) 8%);
+    --theme-surface: color-mix(in srgb, var(--brand-bg) 90%, var(--brand-ink) 10%);
+    --theme-surface-soft: color-mix(in srgb, var(--brand-bg) 86%, var(--brand-ink) 14%);
+    --theme-surface-glass: color-mix(in srgb, var(--theme-surface) 84%, transparent 16%);
+    --theme-text: var(--brand-ink);
+    --theme-text-soft: color-mix(in srgb, var(--brand-ink) 78%, var(--brand-bg) 22%);
+    --theme-text-muted: color-mix(in srgb, var(--brand-ink) 56%, var(--brand-bg) 44%);
+    --theme-text-inverse: color-mix(in srgb, #ffffff 88%, var(--brand-bg) 12%);
+    --theme-primary: var(--brand-accent);
+    --theme-primary-rgb: var(--brand-accent-rgb);
+    --theme-accent: var(--brand-accent);
+    --theme-accent-bright: color-mix(in srgb, var(--brand-accent) 80%, #ffffff 20%);
+    --theme-border: color-mix(in srgb, var(--brand-ink) 24%, transparent 76%);
+    --theme-border-strong: color-mix(in srgb, var(--brand-ink) 36%, var(--brand-accent) 64%);
+    --theme-arabic: color-mix(in srgb, var(--brand-accent) 68%, var(--brand-ink) 32%);
+    --theme-glow-a: color-mix(in srgb, var(--brand-accent) 24%, transparent 76%);
+    --theme-glow-b: color-mix(in srgb, var(--brand-ink) 10%, transparent 90%);
+    --theme-shadow-panel:
+        0 18px 42px rgba(2, 8, 23, 0.18),
+        0 1px 0 rgba(255, 255, 255, 0.09) inset;
+    --theme-shadow-soft:
+        0 10px 24px rgba(2, 8, 23, 0.12),
+        0 1px 0 rgba(255, 255, 255, 0.08) inset;
+    --theme-app-bg:
+        repeating-linear-gradient(
+            0deg,
+            color-mix(in srgb, var(--brand-ink) 5%, transparent 95%) 0 1px,
+            transparent 1px 84px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            color-mix(in srgb, var(--brand-accent) 7%, transparent 93%) 0 1px,
+            transparent 1px 84px
+        ),
+        radial-gradient(
+            circle at 10% -15%,
+            color-mix(in srgb, var(--brand-accent) 22%, transparent 78%),
+            transparent 36%
+        ),
+        radial-gradient(
+            circle at 90% -12%,
+            color-mix(in srgb, var(--brand-ink) 10%, transparent 90%),
+            transparent 34%
+        ),
+        linear-gradient(
+            180deg,
+            var(--brand-bg) 0%,
+            color-mix(in srgb, var(--brand-bg) 90%, var(--brand-ink) 10%) 52%,
+            var(--brand-bg) 100%
+        );
+
+    /* Compatibility aliases used across legacy layers */
+    --bg: var(--theme-bg);
+    --bg-primary: var(--theme-bg);
+    --bg-secondary: var(--theme-bg-alt);
+    --bg-tertiary: color-mix(in srgb, var(--theme-bg-alt) 76%, var(--theme-surface) 24%);
+    --bg-card: var(--theme-surface);
+    --surface: var(--theme-surface);
+    --glass-bg: var(--theme-surface-glass);
+    --header-bg: var(--theme-surface);
+    --sidebar-bg: var(--theme-bg-alt);
+    --text: var(--theme-text);
+    --text-primary: var(--theme-text);
+    --text-secondary: var(--theme-text-soft);
+    --text-tertiary: color-mix(in srgb, var(--theme-text-soft) 74%, var(--theme-text-muted) 26%);
+    --text-muted: var(--theme-text-muted);
+    --text-inverse: var(--theme-text-inverse);
+    --icon-muted: var(--theme-text-muted);
+    --primary: var(--theme-primary);
+    --primary-rgb: var(--theme-primary-rgb);
+    --primary-light: color-mix(in srgb, var(--theme-primary) 18%, transparent 82%);
+    --primary-dark: color-mix(in srgb, var(--theme-primary) 72%, var(--theme-text) 28%);
+    --accent: var(--theme-accent);
+    --gold: var(--theme-accent);
+    --gold-bright: var(--theme-accent-bright);
+    --border: var(--theme-border);
+    --border-light: color-mix(in srgb, var(--theme-border) 72%, transparent 28%);
+    --border-subtle: color-mix(in srgb, var(--theme-border) 54%, transparent 46%);
+    --border-strong: var(--theme-border-strong);
+    --divider: color-mix(in srgb, var(--theme-border) 78%, transparent 22%);
+    --theme-shell-glow-a: var(--theme-glow-a);
+    --theme-shell-glow-b: var(--theme-glow-b);
+    --theme-panel-bg: var(--theme-surface-glass);
+    --theme-panel-bg-strong: var(--theme-surface-soft);
+    --theme-panel-border: var(--theme-border);
+    --theme-chip-bg: color-mix(in srgb, rgba(var(--theme-primary-rgb), 0.16) 72%, var(--theme-surface) 28%);
+    --theme-chip-border: color-mix(in srgb, var(--theme-border-strong) 80%, rgba(var(--theme-primary-rgb), 0.24) 20%);
+    --theme-muted: var(--theme-text-muted);
+    --player-border: color-mix(in srgb, var(--theme-border-strong) 64%, transparent 36%);
+    --player-panel-bg: color-mix(in srgb, var(--theme-surface) 86%, transparent 14%);
+    --player-chip-bg: color-mix(in srgb, rgba(var(--theme-primary-rgb), 0.18) 76%, transparent 24%);
+    --player-chip-border: color-mix(in srgb, var(--theme-border-strong) 66%, transparent 34%);
+    --player-chip-text: var(--theme-text-soft);
+    --player-text-strong: var(--theme-text);
+    --player-text-soft: var(--theme-text-muted);
+    --player-accent: var(--theme-primary);
+    --player-accent-strong: color-mix(in srgb, var(--theme-primary) 78%, #ffffff 22%);
+    --player-accent-deep: color-mix(in srgb, var(--theme-primary) 72%, var(--theme-bg) 28%);
+    --player-glass: linear-gradient(
+        148deg,
+        color-mix(in srgb, var(--theme-surface-soft) 92%, transparent 8%) 0%,
+        color-mix(in srgb, var(--theme-surface) 92%, transparent 8%) 100%
+    );
+    --surah-header-bg: linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--theme-primary) 42%, var(--theme-bg) 58%) 0%,
+        color-mix(in srgb, var(--theme-bg-alt) 82%, var(--theme-primary) 18%) 100%
+    );
+    --mushaf-bg: color-mix(in srgb, var(--theme-bg) 88%, var(--theme-surface) 12%);
+    --mushaf-border: var(--theme-border);
+    --ayah-hover: color-mix(in srgb, rgba(var(--theme-primary-rgb), 0.14) 56%, transparent 44%);
+    --ayah-playing-bg: color-mix(in srgb, rgba(var(--theme-primary-rgb), 0.22) 66%, var(--theme-bg) 34%);
+}
+
+.app-root {
+    background: var(--theme-app-bg) !important;
+    color: var(--theme-text) !important;
+}
+
+.app-main,
+.quran-display-scroll {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--theme-bg) 90%, transparent 10%) 0%,
+        color-mix(in srgb, var(--theme-bg-alt) 90%, transparent 10%) 100%
+    ) !important;
+}
+
+.app-main-shell::before {
+    background:
+        radial-gradient(circle at 8% 0%, var(--theme-glow-a), transparent 38%),
+        radial-gradient(circle at 92% 0%, var(--theme-glow-b), transparent 34%) !important;
+    opacity: 0.72 !important;
+}
+
+.hdr.hdr--themes4 .hdr__main,
+[data-theme] .sidebar.sidebar--themes4,
+.hp2-hero,
+.hp2-panel,
+.hp2-content,
+.quran-display,
+.quran-display--platform .quran-nav,
+.quran-display--platform .page-header-bar,
+.quran-display--platform .chunk-nav-bar,
+.quran-display--platform .mushaf-layout-toggle-bar,
+.quran-display--platform .warsh-notice,
+.settings-dialog,
+.notes-panel-desk,
+.notes-panel-sheet,
+.modal,
+.modal-box,
+.duas-results,
+.audio-player,
+.mp-footer > div {
+    background: var(--theme-panel-bg) !important;
+    border-color: var(--theme-panel-border) !important;
+    box-shadow: var(--theme-shadow-panel) !important;
+}
+
+.hpl-row,
+.scard,
+.hp2-item,
+.hp2-recent-item,
+.hp2-prayer-row,
+.quran-display--platform .qc-ayah-block,
+.quran-display--platform .surah-ayahs-list,
+.settings-card,
+.display-mode-card,
+.modal-item-card,
+.search-result-card,
+.site-footer__surah-chip,
+.site-footer__utility-chip,
+.site-footer__experience-chip,
+.audio-player__meta-chip,
+.player-reciter-btn {
+    background: var(--theme-panel-bg-strong) !important;
+    border-color: var(--theme-panel-border) !important;
+    box-shadow: var(--theme-shadow-soft) !important;
+}
+
+.hdr.hdr--themes4 .hdr__brand,
+.hdr.hdr--themes4 .hdr__home-panel,
+.hdr.hdr--themes4 .hdr__nav-shell,
+.hdr.hdr--themes4 .hdr__home-chip,
+.hdr.hdr--themes4 .hdr__action-cluster,
+.hdr.hdr--themes4 .hdr__nav-center,
+.hdr.hdr--themes4 .hdr__nav-arrow,
+.hdr.hdr--themes4 .hdr__btn,
+.hdr.hdr--themes4 .hdr__riwaya-toggle,
+.hdr.hdr--themes4 .network-status {
+    background: var(--theme-panel-bg-strong) !important;
+    border-color: var(--theme-panel-border) !important;
+    box-shadow: none !important;
+}
+
+.hdr.hdr--themes4 .hdr__btn--menu-main,
+.hdr.hdr--themes4 .hdr__btn-duas,
+.hdr.hdr--themes4 .hdr__riwaya-btn--active,
+.hp2-btn--primary,
+.hp2-qchip--special,
+.hp2-panel__tab--on,
+.hp2-seg--on,
+.hp2-icon-btn--on,
+.ftr-action-btn--primary {
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--theme-primary) 88%, #ffffff 12%),
+        color-mix(in srgb, var(--theme-primary) 70%, var(--theme-text) 30%)
+    ) !important;
+    border-color: color-mix(in srgb, var(--theme-primary) 76%, var(--theme-text) 24%) !important;
+    color: var(--theme-text-inverse) !important;
+}
+
+.hdr.hdr--themes4 .hdr__btn--theme,
+.hp2-feature__icon,
+.hp2-stats-strip__icon {
+    color: var(--theme-primary) !important;
+}
+
+[data-theme] .sidebar.sidebar--themes4 .sidebar-search-input:focus,
+.modal-search-input:focus,
+.modal-inline-input:focus,
+.audio-player__search-input:focus,
+.audio-player__number-input:focus {
+    border-color: var(--theme-border-strong) !important;
+    box-shadow: 0 0 0 4px rgba(var(--theme-primary-rgb), 0.14) !important;
+}
+
+.quran-display--platform .qc-ayah-block:hover,
+.quran-display--platform .qc-ayah-block.is-active,
+.quran-display--platform .qc-ayah-block.is-playing,
+.ayah-block.playing {
+    border-color: color-mix(in srgb, var(--theme-border-strong) 80%, transparent 20%) !important;
+    background: color-mix(in srgb, var(--theme-panel-bg-strong) 78%, rgba(var(--theme-primary-rgb), 0.22) 22%) !important;
+}
+
+.scard__ar,
+.hpl-row__ar,
+.hp2-item__ar,
+.qc-sidebar-ar,
+.sb-recent__ar,
+.site-footer__ayah-ar,
+.site-footer__surah-chip-ar,
+.audio-player__arabic-title,
+.quran-display--platform .qc-ayah-text-ar {
+    color: var(--theme-arabic) !important;
+    text-shadow: none !important;
+}
+
+.hp2-hero__title,
+.hp2-focus-card__title,
+.hp2-recent-name,
+.hp2-toolbar__count,
+.hp2-stats-strip__num,
+.hp2-item__sub,
+.scard__name,
+.hpl-row__name {
+    color: var(--theme-text) !important;
+}
+
+.hp2-hero__tagline,
+.hp2-prayers__head,
+.hp2-focus-card__copy,
+.hp2-recent-ayah,
+.hp2-item__excerpt,
+.scard__meta,
+.scard__trans,
+.hpl-row__meta,
+.hpl-row__sub {
+    color: var(--theme-text-muted) !important;
+}
+
+.mp-footer .group:hover,
+.mp-footer button:hover,
+.site-footer .ftr-link:hover {
+    border-color: color-mix(in srgb, var(--theme-border-strong) 72%, transparent 28%) !important;
+    box-shadow:
+        0 12px 28px rgba(var(--theme-primary-rgb), 0.16),
+        0 1px 0 rgba(255, 255, 255, 0.14) inset !important;
+}
+
+.audio-player {
+    background: var(--player-glass) !important;
+    border-color: var(--player-border) !important;
+    color: var(--player-text-strong) !important;
+}
+
+.audio-player__play,
+.audio-player__play--desktop,
+.audio-player__play--mobile,
+.audio-player__play--mini {
+    background: linear-gradient(
+        135deg,
+        var(--player-accent) 0%,
+        var(--player-accent-deep) 100%
+    ) !important;
+    border-color: color-mix(in srgb, var(--player-accent) 70%, var(--theme-border-strong) 30%) !important;
+    color: var(--theme-text-inverse) !important;
+}
+
+.audio-player__meta-chip,
+.audio-player__advanced-toggle,
+.audio-player__search-input,
+.audio-player__number-input,
+.audio-player__slider,
+.audio-player__volume,
+.audio-player__network-badge,
+.audio-player__utility,
+.player-reciter-btn {
+    background: var(--player-panel-bg) !important;
+    border-color: var(--player-border) !important;
+    color: var(--player-text-soft) !important;
+}
+
+.audio-player__status-title,
+.audio-player__title,
+.audio-player__arabic-title {
+    color: var(--player-text-strong) !important;
+}
+
+.audio-player__status-subtitle,
+.audio-player__subtitle,
+.audio-player__status-ayah,
+.audio-player__ayah-preview {
+    color: var(--player-text-soft) !important;
+}
+
+.audio-player__utility:hover,
+.player-reciter-btn:hover {
+    background: color-mix(in srgb, var(--player-panel-bg) 78%, rgba(var(--theme-primary-rgb), 0.2) 22%) !important;
+    border-color: color-mix(in srgb, var(--player-border) 62%, rgba(var(--theme-primary-rgb), 0.38) 38%) !important;
+    color: var(--player-text-strong) !important;
+}
+
+.settings-header,
+.settings-nav,
+.settings-card,
+.display-mode-card {
+    background: var(--theme-panel-bg-strong) !important;
+    border-color: var(--theme-panel-border) !important;
+    color: var(--theme-text) !important;
+}
+
+.theme-swatch-btn.active,
+.display-mode-card.active,
+.settings-reciter-item.active,
+.settings-tool-card:hover {
+    border-color: var(--theme-border-strong) !important;
+    box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb), 0.12) !important;
+}
+
+@media (max-width: 768px) {
+    .app-root {
+        background-size: auto, auto, auto, auto, cover !important;
+    }
+}
+
+/* Stability + responsive cleanup layer */
+html,
+body,
+#root {
+    overflow-x: hidden;
+}
+
+.app-root,
+.app-layout-shell,
+.app-main-shell,
+.app-main,
+.app-view-shell,
+.hdr__main,
+.hdr__center,
+.hdr__actions,
+.hp2,
+.hp2-layout,
+.quran-display {
+    min-width: 0;
+}
+
+.app-main-shell::before {
+    content: none !important;
+    display: none !important;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+    opacity: 0.34 !important;
+}
+
+.hdr.hdr--themes4 {
+    position: sticky;
+    top: 0;
+    z-index: 380;
+    backdrop-filter: blur(10px) saturate(125%);
+    -webkit-backdrop-filter: blur(10px) saturate(125%);
+}
+
+.hdr.hdr--themes4 .hdr__main {
+    width: min(100%, 1700px);
+    margin-inline: auto;
+}
+
+[data-theme] .sidebar.sidebar--themes4 {
+    top: var(--header-h, 64px) !important;
+    height: calc(100dvh - var(--header-h, 64px)) !important;
+}
+
+.hp2--platform .hp2-hero,
+.hp2--platform .hp2-quickbar,
+.hp2--platform .hp2-stats-strip,
+.hp2--platform .hp2-panel,
+.hp2--platform .hp2-content,
+.hp2--platform .hp2-prayers,
+.hp2--platform .hp2-toolbar {
+    background: var(--theme-panel-bg) !important;
+    border-color: var(--theme-panel-border) !important;
+    box-shadow: var(--theme-shadow-panel) !important;
+}
+
+.hp2--platform .hp2-btn--primary,
+.hp2--platform .hp2-seg--on,
+.hp2--platform .hp2-panel__tab--on,
+.hp2--platform .hp2-icon-btn--on,
+.hp2--platform .hp2-qchip--special {
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--theme-primary) 88%, #ffffff 12%),
+        color-mix(in srgb, var(--theme-primary) 72%, var(--theme-text) 28%)
+    ) !important;
+    border-color: color-mix(in srgb, var(--theme-primary) 76%, var(--theme-text) 24%) !important;
+    color: var(--theme-text-inverse) !important;
+}
+
+.hp2--platform .hp2-hero__title,
+.hp2--platform .hp2-focus-card__title,
+.hp2--platform .hp2-toolbar__count,
+.hp2--platform .hp2-stats-strip__num,
+.hp2--platform .scard__name,
+.hp2--platform .hpl-row__name {
+    color: var(--theme-text) !important;
+}
+
+.hp2--platform .hp2-hero__tagline,
+.hp2--platform .hp2-item__sub,
+.hp2--platform .hp2-item__excerpt,
+.hp2--platform .hp2-prayer-row__name,
+.hp2--platform .hp2-prayers__head,
+.hp2--platform .scard__meta,
+.hp2--platform .hpl-row__meta {
+    color: var(--theme-text-muted) !important;
+}
+
+.audio-player__ayah-preview,
+.audio-player__status-ayah {
+    color: color-mix(in srgb, var(--player-text-strong) 84%, var(--player-text-soft) 16%) !important;
+}
+
+.audio-player__arabic-title {
+    text-wrap: balance;
+}
+
+.player-reciter-btn {
+    min-height: 2.7rem;
+}
+
+.reciter-cdn-badge {
+    background: var(--player-chip-bg) !important;
+    border-color: var(--player-chip-border) !important;
+    color: var(--player-chip-text) !important;
+}
+
+@media (max-width: 1280px) {
+    .hdr.hdr--themes4 .hdr__main {
+        flex-wrap: wrap;
+        gap: 0.52rem;
+        align-items: stretch;
+    }
+
+    .hdr.hdr--themes4 .hdr__center {
+        order: 3;
+        flex: 1 1 100%;
+    }
+
+    .hdr.hdr--themes4 .hdr__actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .hdr.hdr--themes4 .hdr__home-meta {
+        display: none;
+    }
+
+    .app-view-reading {
+        padding-inline: 0 !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    .app-main-shell {
+        padding-inline: 0.48rem !important;
+    }
+
+    .hdr.hdr--themes4 .hdr__actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    [data-theme] .sidebar.sidebar--themes4 {
+        width: min(90vw, 350px) !important;
+        max-width: 350px !important;
+    }
+
+    .notes-panel-desk {
+        display: none !important;
+    }
+}
+
+@media (max-width: 900px) {
+    .quran-display--platform .page-header-bar,
+    .quran-display--platform .quran-nav,
+    .quran-display--platform .chunk-nav-bar {
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        padding: 0.58rem 0.64rem !important;
+    }
+
+    .quran-display--platform .mushaf-layout-toggle-bar {
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        padding: 0.34rem;
+    }
+
+    .quran-display--platform .mushaf-layout-btn {
+        flex: 0 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .hdr.hdr--themes4 .hdr__main {
+        border-radius: 0.85rem !important;
+        padding: 0.42rem !important;
+    }
+
+    .hdr.hdr--themes4 .hdr__brand {
+        min-width: 0;
+    }
+
+    .hdr.hdr--themes4 .hdr__brand-name {
+        font-size: 1.02rem;
+    }
+
+    .hdr.hdr--themes4 .hdr__nav-sub,
+    .hdr.hdr--themes4 .hdr__home-subtitle {
+        display: none !important;
+    }
+
+    .hdr.hdr--themes4 .hdr__btn-duas span {
+        display: none !important;
+    }
+
+    .hdr.hdr--themes4 .hdr__riwaya-btn {
+        min-width: 2.1rem !important;
+        padding-inline: 0.5rem !important;
+        font-size: 0.72rem !important;
+    }
+
+    [data-theme] .sidebar.sidebar--themes4 {
+        width: min(92vw, 330px) !important;
+        border-radius: 0 1rem 1rem 0 !important;
+    }
+
+    [dir="rtl"][data-theme] .sidebar.sidebar--themes4 {
+        border-radius: 1rem 0 0 1rem !important;
+    }
+
+    .hp2--platform {
+        padding-inline: 0.22rem;
+    }
+
+    .hp2--platform .hp2-hero,
+    .hp2--platform .hp2-content,
+    .hp2--platform .hp2-panel,
+    .hp2--platform .hp2-quickbar,
+    .hp2--platform .hp2-stats-strip {
+        border-radius: 1.15rem !important;
+    }
+
+    .hp2--platform .hp2-layout {
+        grid-template-columns: 1fr !important;
+        gap: 0.72rem !important;
+    }
+
+    .hp2--platform .hp2-aside {
+        order: 2;
+    }
+
+    .hp2--platform .hp2-content {
+        order: 1;
+        padding: 0.7rem !important;
+    }
+
+    .hp2--platform .hp2-toolbar {
+        flex-wrap: wrap;
+        row-gap: 0.48rem;
+    }
+
+    .hp2--platform .hp2-toolbar__end {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .hp2--platform .hp2-items--grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .quran-display {
+        padding: 1rem 0.72rem 1.25rem;
+    }
+
+    .surah-ayahs-list {
+        border-radius: 1rem;
+    }
+
+    .ayah-block {
+        padding: 1rem 0.95rem;
+    }
+
+    .mp-footer {
+        margin-top: 1.35rem;
+        padding-inline: 0.32rem;
+    }
+
+    .mp-footer > div {
+        border-radius: 1.2rem !important;
+    }
+}
+
+@media (max-width: 560px) {
+    .hdr.hdr--themes4 .hdr__brand-name,
+    .hdr.hdr--themes4 .hdr__theme-dot {
+        display: none !important;
+    }
+
+    [data-theme] .sidebar.sidebar--themes4 {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        border-radius: 0 !important;
+    }
+
+    .quran-display {
+        padding: 0.86rem 0.58rem 1.2rem;
+    }
+
+    .quran-display--platform .qc-ayah-text-ar {
+        font-size: clamp(2.05rem, 8vw, 2.55rem);
+        line-height: 2.25;
+    }
+
+    .audio-player--mobile.audio-player--mini {
+        left: 0.52rem !important;
+        right: 0.52rem !important;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 0.52rem) !important;
+    }
+
+    .audio-player--mobile.audio-player--sheet {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+}
+
+@media (max-width: 420px) {
+    .hdr.hdr--themes4 .hdr__btn,
+    .hdr.hdr--themes4 .hdr__nav-arrow {
+        width: 2.12rem !important;
+        height: 2.12rem !important;
+    }
+
+    .hdr.hdr--themes4 .hdr__riwaya-btn {
+        min-width: 1.9rem !important;
+        padding-inline: 0.38rem !important;
+        font-size: 0.66rem !important;
+    }
+
+    .hp2--platform .hp2-hero__ctas {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+    }
+
+    .hp2--platform .hp2-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .audio-player__mobile-bar {
+        padding-inline: 0.58rem !important;
+        min-height: 3.3rem !important;
+    }
+
+    .audio-player__status {
+        width: 4.5rem !important;
+    }
+}
+
+@media (min-width: 1100px) {
+    .app-root .app-view-reading {
+        transition:
+            padding-inline-start 220ms var(--ease, ease),
+            padding-inline-end 220ms var(--ease, ease);
+    }
+
+    .app-root.is-sidebar-open .app-view-reading {
+        padding-inline-start: clamp(16rem, 24vw, 22rem) !important;
+        padding-inline-end: clamp(0.5rem, 1.2vw, 1rem) !important;
+    }
+
+    [dir="rtl"] .app-root.is-sidebar-open .app-view-reading {
+        padding-inline-start: clamp(0.5rem, 1.2vw, 1rem) !important;
+        padding-inline-end: clamp(16rem, 24vw, 22rem) !important;
+    }
+}

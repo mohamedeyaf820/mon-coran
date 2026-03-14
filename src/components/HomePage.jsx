@@ -302,6 +302,23 @@ const TYPE_INFO = {
   Medinan: { fr: "Médinoise", en: "Medinan", ar: "مدنية" },
 };
 
+function PercentBar({ value }) {
+  const pct = Math.max(0, Math.min(100, value));
+
+  return (
+    <svg viewBox="0 0 100 8" preserveAspectRatio="none" className="block h-full w-full">
+      <defs>
+        <linearGradient id="home-progress-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="var(--primary)" />
+          <stop offset="100%" stopColor="var(--gold)" />
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="100" height="8" rx="4" className="fill-black/5 dark:fill-white/10" />
+      <rect x="0" y="0" width={pct} height="8" rx="4" fill="url(#home-progress-gradient)" />
+    </svg>
+  );
+}
+
 /*  Carte sourate (grille)  */
 function SurahCard({
   surah,
@@ -316,32 +333,31 @@ function SurahCard({
   const typeInfo = TYPE_INFO[surah.type] || {};
   const typeLabel =
     typeInfo[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"] || surah.type;
-  const displayName =
-    lang === "fr" ? surah.fr || surah.en : lang === "ar" ? surah.ar : surah.en;
-  /* For the reference-style card we always show:
-     - transliteration (en name)
-     - translation in current UI lang (fr / en)
-     Arabic stays as a large calligraphy on the right */
-  const transName =
-    lang === "ar"
-      ? surah.en
-      : lang === "fr"
-        ? surah.en /* transliteration */
-        : surah.fr || ""; /* show French as secondary for EN users */
-  const subTrans =
+  const displayName = surah.en || surah.fr || surah.ar;
+  const subLabel =
     lang === "fr"
-      ? surah.fr /* French meaning */
+      ? surah.fr || typeLabel
       : lang === "ar"
-        ? surah.ar
-        : surah.en;
+        ? typeLabel
+        : surah.fr || typeLabel;
+  const ayahLabel = `${surah.ayahs} ${lang === "ar" ? "آية" : "Ayat"}`;
+  const pageLabel =
+    surah.page &&
+    (lang === "ar"
+      ? `صفحة ${surah.page}`
+      : lang === "fr"
+        ? `Page ${surah.page}`
+        : `Page ${surah.page}`);
 
   /* ── LIST ROW (unchanged) ── */
   if (viewMode === "list") {
     return (
       <button
-        className={cn("hpl-row", isActive && "hpl-row--active")}
+        className={cn(
+          "hpl-row !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.003]",
+          isActive && "hpl-row--active",
+        )}
         data-stype={surah.type?.toLowerCase()}
-        style={{ "--i": animIndex + 1 }}
         onClick={() => onClick(surah.n)}
       >
         <span className={cn("hpl-row__num", isActive && "hpl-row__num--on")}>
@@ -349,16 +365,21 @@ function SurahCard({
         </span>
         <div className="hpl-row__body">
           <span className="hpl-row__name">{displayName}</span>
+          <span className="hpl-row__sub">{subLabel}</span>
           <span className="hpl-row__meta">
             <span className={`hpl-dot hpl-dot--${surah.type?.toLowerCase()}`} />
-            {typeLabel} · {surah.ayahs} {lang === "ar" ? "آية" : "Ayat"}
+            {typeLabel} · {ayahLabel}
+            {pageLabel ? ` · ${pageLabel}` : ""}
           </span>
         </div>
-        <span className="hpl-row__ar" dir="rtl">
+        <span className="hpl-row__ar" dir="rtl" lang="ar">
           {surah.ar}
         </span>
         <button
-          className={cn("hpl-row__play", isPlaying && "hpl-row__play--on")}
+          className={cn(
+            "hpl-row__play !transition-all !duration-300 hover:!scale-110",
+            isPlaying && "hpl-row__play--on motion-safe:animate-pulse",
+          )}
           onClick={(e) => {
             e.stopPropagation();
             onPlay(surah.n);
@@ -375,12 +396,11 @@ function SurahCard({
   return (
     <button
       className={cn(
-        "scard",
+        "scard !relative !overflow-hidden !transition-all !duration-300 hover:!-translate-y-1 hover:!scale-[1.01] hover:!shadow-[0_18px_34px_rgba(8,20,52,0.35)]",
         isActive && "scard--active",
         isPlaying && "scard--playing",
       )}
       data-stype={surah.type?.toLowerCase()}
-      style={{ "--i": animIndex + 1 }}
       onClick={() => onClick(surah.n)}
     >
       {/* Left: number badge */}
@@ -391,9 +411,7 @@ function SurahCard({
       {/* Centre: transliteration + meaning + ayat */}
       <div className="scard__body">
         <span className="scard__name">{displayName}</span>
-        <span className="scard__trans">
-          {lang === "fr" ? surah.fr : surah.en}
-        </span>
+        <span className="scard__trans">{subLabel}</span>
         <span className="scard__meta">
           <span
             className={`scard__dot scard__dot--${surah.type?.toLowerCase()}`}
@@ -401,18 +419,21 @@ function SurahCard({
           >
             {surah.type === "Meccan" ? "▲" : "■"}
           </span>
-          {surah.ayahs} {lang === "ar" ? "آية" : "Ayat"}
+          {typeLabel} · {ayahLabel}
         </span>
       </div>
 
       {/* Right: Arabic calligraphy */}
-      <span className="scard__ar" dir="rtl">
+      <span className="scard__ar" dir="rtl" lang="ar">
         {surah.ar}
       </span>
 
       {/* Play button (absolute bottom-right) */}
       <button
-        className={cn("scard__play", isPlaying && "scard__play--on")}
+        className={cn(
+          "scard__play !transition-all !duration-300 hover:!scale-110",
+          isPlaying && "scard__play--on motion-safe:animate-pulse",
+        )}
         onClick={(e) => {
           e.stopPropagation();
           onPlay(surah.n);
@@ -438,8 +459,10 @@ function JuzCard({
   if (viewMode === "list") {
     return (
       <button
-        className={cn("hpl-row", isActive && "hpl-row--active")}
-        style={{ "--i": animIndex + 1 }}
+        className={cn(
+          "hpl-row !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.003]",
+          isActive && "hpl-row--active",
+        )}
         onClick={() => onClick(juz)}
       >
         <span className={cn("hpl-row__num", isActive && "hpl-row__num--on")}>
@@ -453,11 +476,13 @@ function JuzCard({
     );
   }
   return (
-    <button
-      className={cn("hpq-card hpq-card--juz", isActive && "hpq-card--active")}
-      style={{ "--i": animIndex + 1 }}
-      onClick={() => onClick(juz)}
-    >
+      <button
+        className={cn(
+          "hpq-card hpq-card--juz !transition-all !duration-300 hover:!-translate-y-1 hover:!scale-[1.01] hover:!shadow-[0_16px_32px_rgba(8,20,52,0.34)]",
+          isActive && "hpq-card--active",
+        )}
+        onClick={() => onClick(juz)}
+      >
       <span className={cn("hpq-card__num", isActive && "hpq-card__num--on")}>
         {juz}
       </span>
@@ -484,8 +509,15 @@ function EmptyState({ icon, text }) {
    ══════════════════════════════════════ */
 export default function HomePage() {
   const { state, dispatch, set } = useApp();
-  const { lang, currentSurah, currentAyah, currentJuz, displayMode, riwaya } =
-    state;
+  const {
+    lang,
+    currentSurah,
+    currentAyah,
+    currentJuz,
+    displayMode,
+    riwaya,
+    theme,
+  } = state;
   const isRtl = lang === "ar";
 
   const [activeTab, setActiveTab] = useState("surah");
@@ -563,6 +595,10 @@ export default function HomePage() {
     [set, dispatch],
   );
 
+  const enableQuranNight = useCallback(() => {
+    dispatch({ type: "SET_THEME", payload: "quran-night" });
+  }, [dispatch]);
+
   const goJuz = useCallback(
     (juz) => {
       set({ showHome: false, showDuas: false });
@@ -607,6 +643,7 @@ export default function HomePage() {
   );
   const suggestionSet = useMemo(() => getSuggestedSurahs(now), [now]);
   const surahLabel = SURAHS[currentSurah - 1];
+  const progressPct = Math.round(((Math.max(1, currentSurah) - 1) / 113) * 100);
 
   const riwayaLabel =
     riwaya === "warsh"
@@ -765,26 +802,35 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="hp2">
+    <div className="hp2 hp2--platform !relative !overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+        <div className="absolute -top-28 left-[6%] h-72 w-72 rounded-full bg-blue-500/24 blur-[110px] motion-safe:animate-pulse [animation-duration:8s]" />
+        <div className="absolute top-[18%] -right-28 h-80 w-80 rounded-full bg-cyan-400/16 blur-[120px] motion-safe:animate-pulse [animation-duration:11s]" />
+        <div className="absolute -bottom-32 left-[30%] h-96 w-96 rounded-full bg-emerald-400/14 blur-[130px] motion-safe:animate-pulse [animation-duration:9s]" />
+        <div className="absolute inset-0 opacity-[0.16] [background-image:linear-gradient(to_right,rgba(148,163,184,0.2)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.17)_1px,transparent_1px)] [background-size:64px_64px]" />
+      </div>
       {/* ════ HERO ════ */}
-      <section className="hp2-hero">
+      <section className="hp2-hero !relative !z-10 !overflow-hidden !rounded-[28px] !border !border-white/12 !bg-[radial-gradient(circle_at_18%_0%,rgba(56,122,255,0.24)_0%,transparent_44%),linear-gradient(140deg,rgba(8,18,42,0.96)_0%,rgba(9,25,58,0.94)_52%,rgba(10,33,70,0.92)_100%)] !shadow-[0_24px_64px_rgba(1,8,26,0.55)]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_84%_14%,rgba(16,185,129,0.14)_0%,transparent_28%),radial-gradient(circle_at_22%_88%,rgba(251,191,36,0.12)_0%,transparent_34%)]" />
+        <div className="pointer-events-none absolute -top-12 right-[14%] h-28 w-28 rounded-full border border-white/15 opacity-35 motion-safe:animate-spin [animation-duration:16s]" />
+        <div className="pointer-events-none absolute -bottom-14 left-[44%] h-36 w-36 rounded-full border border-blue-200/20 opacity-30 motion-safe:animate-spin [animation-direction:reverse] [animation-duration:22s]" />
         {/* Orbs décoratifs */}
-        <div className="hp2-hero__orb hp2-hero__orb--1" aria-hidden="true" />
-        <div className="hp2-hero__orb hp2-hero__orb--2" aria-hidden="true" />
-        <div className="hp2-hero__orb hp2-hero__orb--3" aria-hidden="true" />
+        <div className="hp2-hero__orb hp2-hero__orb--1 !opacity-65 motion-safe:animate-pulse [animation-duration:9s]" aria-hidden="true" />
+        <div className="hp2-hero__orb hp2-hero__orb--2 !opacity-60 motion-safe:animate-pulse [animation-duration:12s]" aria-hidden="true" />
+        <div className="hp2-hero__orb hp2-hero__orb--3 !opacity-55 motion-safe:animate-pulse [animation-duration:10s]" aria-hidden="true" />
 
-        <div className="hp2-hero__inner">
+        <div className="hp2-hero__inner !relative !z-10">
           {/* ── Gauche ── */}
           <div className="hp2-hero__left">
             {/* Salutation + date */}
-            <div className="hp2-hero__top-row">
-              <div className="hp2-hero__greeting">
+            <div className="hp2-hero__top-row !items-center !gap-3">
+              <div className="hp2-hero__greeting !inline-flex !items-center !gap-2 !rounded-full !border !border-blue-200/20 !bg-blue-500/10 !px-3 !py-1.5 !text-[0.71rem] !font-semibold !uppercase !tracking-[0.12em] !text-blue-100/95 !shadow-[0_8px_18px_rgba(25,82,180,0.2)]">
                 <i className={`fas ${currentPrayer.icon}`} />
                 <span>
                   {greeting[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"]}
                 </span>
               </div>
-              <span className="hp2-hero__date-pill">
+              <span className="hp2-hero__date-pill !rounded-full !border !border-white/12 !bg-white/5 !px-3 !py-1.5 !text-[0.72rem] !font-medium !text-blue-100/80 !backdrop-blur-sm">
                 {now.toLocaleDateString(
                   lang === "ar" ? "ar-SA" : lang === "fr" ? "fr-FR" : "en-GB",
                   { weekday: "short", day: "numeric", month: "short" },
@@ -797,20 +843,22 @@ export default function HomePage() {
               <div className="hp2-hero__bismallah" aria-hidden="true" dir="rtl">
                 ﷽
               </div>
-              <div className="hp2-hero__brand">
+              <div className="hp2-hero__brand !items-center !gap-4">
                 <PlatformLogo
-                  className="hp2-hero__logo"
-                  imgClassName="hp2-hero__logo-img"
+                  className="hp2-hero__logo !h-[84px] !w-[84px] !rounded-3xl !border !border-white/15 !bg-slate-900/55 !shadow-[0_10px_30px_rgba(10,24,58,0.45)]"
+                  imgClassName="hp2-hero__logo-img !h-[62px] !w-[62px]"
                   decorative
                 />
                 <div className="hp2-hero__brand-text">
-                  <h1 className="hp2-hero__title">MushafPlus</h1>
-                  <div className="hp2-hero__badges-row">
-                    <span className="hp2-hero__badge hp2-hero__badge--riwaya">
+                  <h1 className="hp2-hero__title !text-[clamp(1.95rem,3vw,2.5rem)] !font-black !tracking-tight !text-white !drop-shadow-[0_6px_22px_rgba(37,99,235,0.33)]">
+                    MushafPlus
+                  </h1>
+                  <div className="hp2-hero__badges-row !mt-2 !flex !flex-wrap !gap-2">
+                    <span className="hp2-hero__badge hp2-hero__badge--riwaya !rounded-full !border !border-blue-200/20 !bg-blue-500/15 !px-3 !py-1 !text-[0.74rem] !font-semibold !text-blue-100 !backdrop-blur-sm">
                       <i className="fas fa-feather-pointed" />
                       {riwayaLabel}
                     </span>
-                    <span className="hp2-hero__badge hp2-hero__badge--prayer">
+                    <span className="hp2-hero__badge hp2-hero__badge--prayer !rounded-full !border !border-amber-200/25 !bg-amber-400/12 !px-3 !py-1 !text-[0.74rem] !font-semibold !text-amber-100 !backdrop-blur-sm">
                       <i className={`fas ${currentPrayer.icon}`} />
                       {
                         currentPrayer[
@@ -823,7 +871,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <p className="hp2-hero__tagline">
+            <p className="hp2-hero__tagline !mt-3 !max-w-[62ch] !text-[0.98rem] !leading-relaxed !text-blue-100/80">
               {lang === "ar"
                 ? "اقرأ القرآن الكريم وتدبَّر معانيه في مساحة أكثر سكينة"
                 : lang === "fr"
@@ -832,10 +880,10 @@ export default function HomePage() {
             </p>
 
             {/* CTAs */}
-            <div className="hp2-hero__ctas">
+            <div className="hp2-hero__ctas !mt-5 !flex !flex-wrap !gap-3">
               {hasReadingHistory ? (
                 <button
-                  className="hp2-btn hp2-btn--primary"
+                  className="hp2-btn hp2-btn--primary !h-12 !rounded-2xl !border !border-blue-200/30 !bg-[linear-gradient(135deg,#3b82f6_0%,#2563eb_62%,#1d4ed8_100%)] !px-5 !text-white !shadow-[0_14px_30px_rgba(37,99,235,0.34)] !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.01] hover:!shadow-[0_18px_38px_rgba(37,99,235,0.44)]"
                   onClick={continueReading}
                 >
                   <i className="fas fa-circle-play" />
@@ -846,7 +894,7 @@ export default function HomePage() {
                 </button>
               ) : (
                 <button
-                  className="hp2-btn hp2-btn--primary"
+                  className="hp2-btn hp2-btn--primary !h-12 !rounded-2xl !border !border-blue-200/30 !bg-[linear-gradient(135deg,#3b82f6_0%,#2563eb_62%,#1d4ed8_100%)] !px-5 !text-white !shadow-[0_14px_30px_rgba(37,99,235,0.34)] !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.01] hover:!shadow-[0_18px_38px_rgba(37,99,235,0.44)]"
                   onClick={() => goSurah(1)}
                 >
                   <i className="fas fa-book-open" />
@@ -862,14 +910,32 @@ export default function HomePage() {
               )}
               {hasReadingHistory && (
                 <button
-                  className="hp2-btn hp2-btn--outline"
+                  className="hp2-btn hp2-btn--outline !h-12 !rounded-2xl !border !border-blue-200/30 !bg-blue-400/10 !px-5 !text-blue-50 !transition-all !duration-300 hover:!-translate-y-0.5 hover:!bg-blue-400/18"
                   onClick={() => goSurah(1)}
                 >
                   <i className="fas fa-book-open-reader" />
                   <span>{t("startFatiha")}</span>
                 </button>
               )}
-              <button className="hp2-btn hp2-btn--soft" onClick={openDuas}>
+              {theme !== "quran-night" && (
+                <button
+                  className="hp2-btn hp2-btn--soft !h-12 !rounded-2xl !border !border-blue-200/20 !bg-blue-500/12 !px-5 !text-blue-50/95 !transition-all !duration-300 hover:!-translate-y-0.5 hover:!bg-blue-500/20"
+                  onClick={enableQuranNight}
+                >
+                  <i className="fas fa-swatchbook" />
+                  <span>
+                    {lang === "ar"
+                      ? "سمة ليل القرآن"
+                      : lang === "fr"
+                        ? "Theme Quran Nuit"
+                        : "Quran night theme"}
+                  </span>
+                </button>
+              )}
+              <button
+                className="hp2-btn hp2-btn--soft !h-12 !rounded-2xl !border !border-blue-200/20 !bg-blue-500/12 !px-5 !text-blue-50/95 !transition-all !duration-300 hover:!-translate-y-0.5 hover:!bg-blue-500/20"
+                onClick={openDuas}
+              >
                 <i className="fas fa-hands-praying" />
                 <span>{t("duas")}</span>
               </button>
@@ -877,8 +943,8 @@ export default function HomePage() {
 
             {/* Lectures récentes */}
             {recentVisits.length > 0 && (
-              <div className="hp2-recent-history">
-                <div className="hp2-recent-title">
+              <div className="hp2-recent-history !mt-6 !rounded-2xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(9,20,48,0.9),rgba(8,16,38,0.92))] !p-4 !shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] !backdrop-blur-md">
+                <div className="hp2-recent-title !mb-3 !text-[0.69rem] !font-semibold !uppercase !tracking-[0.18em] !text-blue-200/65">
                   <i className="fas fa-clock-rotate-left" />
                   {lang === "ar"
                     ? "استكمال"
@@ -886,21 +952,29 @@ export default function HomePage() {
                       ? "Reprendre"
                       : "Continue"}
                 </div>
-                <div className="hp2-recent-items">
+                <div className="hp2-recent-items !grid !gap-2.5">
                   {recentVisits.map((v) => (
                     <button
                       key={v.surah}
-                      className="hp2-recent-item"
+                      className="hp2-recent-item group !grid !grid-cols-[auto_1fr_auto] !items-center !gap-3 !rounded-xl !border !border-white/10 !bg-[linear-gradient(135deg,rgba(62,132,245,0.8)_0%,rgba(42,95,194,0.76)_100%)] !px-4 !py-3 !text-left !shadow-[0_10px_22px_rgba(12,35,96,0.32)] !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.005] hover:!shadow-[0_16px_34px_rgba(12,35,96,0.42)]"
                       onClick={() => goSurahAyah(v.surah, v.ayah)}
                     >
-                      <span className="hp2-recent-num">{v.surah}</span>
-                      <div className="hp2-recent-info">
-                        <span className="hp2-recent-name">{v.surahName}</span>
+                      <span className="hp2-recent-num !flex !h-9 !w-9 !items-center !justify-center !rounded-full !border !border-white/30 !bg-white/10 !text-sm !font-bold !text-white">
+                        {v.surah}
+                      </span>
+                      <div className="hp2-recent-info !min-w-0">
+                        <span className="hp2-recent-name !block !truncate !text-[0.95rem] !font-semibold !text-white">
+                          {v.surahName}
+                        </span>
                         {v.ayah > 1 && (
-                          <span className="hp2-recent-ayah">v.{v.ayah}</span>
+                          <span className="hp2-recent-ayah !mt-0.5 !block !text-[0.72rem] !font-medium !text-blue-100/75">
+                            v.{v.ayah}
+                          </span>
                         )}
                       </div>
-                      <i className="fas fa-play hp2-recent-play" />
+                      <span className="hp2-recent-play !flex !h-8 !w-8 !items-center !justify-center !rounded-full !bg-white/12 !text-blue-50/90 !transition-transform !duration-300 group-hover:!scale-110">
+                        <i className="fas fa-play text-[0.78rem]" />
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -908,7 +982,7 @@ export default function HomePage() {
             )}
 
             {/* Features mini grid */}
-            <div className="hp2-features">
+            <div className="hp2-features !mt-5 !grid !grid-cols-1 !gap-2 sm:!grid-cols-2">
               {[
                 {
                   icon: "fa-palette",
@@ -930,16 +1004,19 @@ export default function HomePage() {
                 },
                 {
                   icon: "fa-moon",
-                  fr: "Mode nuit & sépia",
-                  en: "Night & sepia",
-                  ar: "وضع ليلي",
+                  fr: "4 themes harmonises",
+                  en: "4 harmonized themes",
+                  ar: "٤ سمات منسجمة",
                 },
               ].map((f) => (
-                <div key={f.icon} className="hp2-feature">
-                  <span className="hp2-feature__icon">
+                <div
+                  key={f.icon}
+                  className="hp2-feature !flex !items-center !gap-2.5 !rounded-xl !border !border-white/12 !bg-white/5 !px-3 !py-2.5 !backdrop-blur-md !transition-all !duration-300 hover:!bg-white/10 hover:!-translate-y-0.5"
+                >
+                  <span className="hp2-feature__icon !text-blue-200 !drop-shadow-[0_0_12px_rgba(59,130,246,0.45)]">
                     <i className={`fas ${f.icon}`} />
                   </span>
-                  <span className="hp2-feature__text">
+                  <span className="hp2-feature__text !text-blue-100/90">
                     {lang === "ar" ? f.ar : lang === "fr" ? f.fr : f.en}
                   </span>
                 </div>
@@ -948,31 +1025,32 @@ export default function HomePage() {
           </div>
 
           {/* ── Droite ── */}
-          <div className="hp2-hero__right">
+          <div className="hp2-hero__right !relative !z-10 !space-y-3">
             {/* Verset du jour — carte principale droite */}
-            <div className="hp2-vod">
-              <div className="hp2-vod__head">
-                <span className="hp2-vod__label">
+            <div className="hp2-vod !relative !overflow-hidden !rounded-2xl !border !border-emerald-200/25 !bg-[linear-gradient(155deg,rgba(13,95,57,0.9)_0%,rgba(7,71,45,0.9)_58%,rgba(4,50,33,0.92)_100%)] !p-4 !shadow-[0_16px_34px_rgba(6,54,36,0.35)] !transition-all !duration-300 hover:!scale-[1.01]">
+              <div className="pointer-events-none absolute -top-8 right-4 h-24 w-24 rounded-full bg-emerald-300/20 blur-2xl motion-safe:animate-pulse [animation-duration:8s]" />
+              <div className="hp2-vod__head !relative !z-10">
+                <span className="hp2-vod__label !rounded-full !border !border-emerald-200/30 !bg-emerald-300/10 !px-2.5 !py-1 !text-emerald-50">
                   <i className="fas fa-star-and-crescent" />
                   {t("verseOfDay")}
                 </span>
-                <span className="hp2-vod__date">
+                <span className="hp2-vod__date !text-emerald-100/80">
                   {now.toLocaleDateString(
                     lang === "ar" ? "ar-SA" : lang === "fr" ? "fr-FR" : "en-GB",
                     { day: "numeric", month: "short" },
                   )}
                 </span>
               </div>
-              <p className="hp2-vod__text" dir="rtl">
+              <p className="hp2-vod__text !relative !z-10 !text-[1.45rem] !leading-[1.95] !text-emerald-50" dir="rtl">
                 {dailyVerse.text}
               </p>
               {lang === "fr" && dailyVerse.trans_fr && (
-                <p className="hp2-vod__trans">{dailyVerse.trans_fr}</p>
+                <p className="hp2-vod__trans !relative !z-10 !text-emerald-100/82">{dailyVerse.trans_fr}</p>
               )}
-              <span className="hp2-vod__ref">{dailyVerse.ref}</span>
+              <span className="hp2-vod__ref !relative !z-10 !text-emerald-100/80">{dailyVerse.ref}</span>
               {vodSurahNum && (
                 <button
-                  className="hp2-vod__btn"
+                  className="hp2-vod__btn !relative !z-10 !rounded-xl !border !border-emerald-200/30 !bg-emerald-400/14 !px-3.5 !py-2 !transition-all !duration-300 hover:!bg-emerald-400/22 hover:!-translate-y-0.5"
                   onClick={() => goSurah(vodSurahNum)}
                 >
                   <i className="fas fa-book-open" />
@@ -987,7 +1065,7 @@ export default function HomePage() {
             </div>
 
             {/* Carte session active */}
-            <div className="hp2-focus-card">
+            <div className="hp2-focus-card !rounded-2xl !border !border-blue-200/20 !bg-[linear-gradient(150deg,rgba(18,38,84,0.9)_0%,rgba(12,27,62,0.92)_100%)] !shadow-[0_14px_30px_rgba(8,20,52,0.34)] !backdrop-blur-md !transition-all !duration-300 hover:!shadow-[0_20px_40px_rgba(8,20,52,0.44)]">
               <div className="hp2-focus-card__head">
                 <span className="hp2-focus-card__eyebrow">
                   <i className="fas fa-bolt" />
@@ -1017,9 +1095,7 @@ export default function HomePage() {
                   <span>{t("notes")}</span>
                 </span>
                 <span className="hp2-focus-card__stat">
-                  <strong>
-                    {Math.round(((Math.max(1, currentSurah) - 1) / 113) * 100)}%
-                  </strong>
+                  <strong>{progressPct}%</strong>
                   <span>
                     {lang === "fr"
                       ? "Avancement"
@@ -1031,15 +1107,12 @@ export default function HomePage() {
               </div>
               <div className="hp2-focus-card__progress">
                 <div className="hp2-focus-card__progress-bar">
-                  <div
-                    className="hp2-focus-card__progress-fill"
-                    style={{
-                      width: `${Math.round(((Math.max(1, currentSurah) - 1) / 113) * 100)}%`,
-                    }}
-                  />
+                  <div className="hp2-focus-card__progress-fill h-full w-full">
+                    <PercentBar value={progressPct} />
+                  </div>
                 </div>
               </div>
-              <button className="hp2-focus-card__cta" onClick={continueReading}>
+              <button className="hp2-focus-card__cta !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.01]" onClick={continueReading}>
                 <i className="fas fa-circle-play" />
                 {hasReadingHistory
                   ? lang === "fr"
@@ -1056,8 +1129,8 @@ export default function HomePage() {
             </div>
 
             {/* Prières */}
-            <div className="hp2-prayers">
-              <div className="hp2-prayers__head">
+            <div className="hp2-prayers !rounded-2xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(8,20,46,0.88),rgba(8,16,34,0.9))] !p-3.5 !shadow-[0_10px_24px_rgba(5,13,34,0.34)] !backdrop-blur-sm">
+              <div className="hp2-prayers__head !mb-2.5 !text-blue-100/88">
                 <i className="fas fa-mosque" />
                 <span>
                   {lang === "fr"
@@ -1120,6 +1193,7 @@ export default function HomePage() {
                       key={p.key}
                       className={cn(
                         "hp2-prayer-row",
+                        "!transition-all !duration-300 hover:!bg-white/10",
                         on && "hp2-prayer-row--on",
                       )}
                     >
@@ -1146,20 +1220,20 @@ export default function HomePage() {
       </section>
 
       {/* ════ ACCÈS RAPIDE ════ */}
-      <nav className="hp2-quickbar" aria-label={t("quickAccess")}>
-        <span className="hp2-quickbar__title">
+      <nav className="hp2-quickbar !relative !z-10 !rounded-2xl !border !border-white/12 !bg-[linear-gradient(140deg,rgba(11,23,52,0.88),rgba(8,17,38,0.9))] !px-4 !py-3 !shadow-[0_12px_26px_rgba(5,14,34,0.35)] !backdrop-blur-md" aria-label={t("quickAccess")}>
+        <span className="hp2-quickbar__title !text-blue-100/85">
           <i className="fas fa-bolt" />
           {t("quickAccess")}
         </span>
-        <div className="hp2-quickbar__track">
-          <button className="hp2-qchip hp2-qchip--special" onClick={openDuas}>
+        <div className="hp2-quickbar__track !mt-2">
+          <button className="hp2-qchip hp2-qchip--special !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.02]" onClick={openDuas}>
             <i className="fas fa-hands-praying" />
             {lang === "ar" ? "أدعية" : lang === "fr" ? "Douas" : "Duas"}
           </button>
           {QUICK_ACCESS.map(({ n, label_fr, label_en }) => {
             const s = SURAHS[n - 1];
             return (
-              <button key={n} className="hp2-qchip" onClick={() => goSurah(n)}>
+              <button key={n} className="hp2-qchip !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.02]" onClick={() => goSurah(n)}>
                 <span className="hp2-qchip__ar">{s?.ar}</span>
                 <span className="hp2-qchip__sub">
                   {lang === "fr" ? label_fr : lang === "ar" ? s?.ar : label_en}
@@ -1171,7 +1245,7 @@ export default function HomePage() {
       </nav>
 
       {/* ════ BANDE STATS ════ */}
-      <div className="hp2-stats-strip">
+      <div className="hp2-stats-strip !relative !z-10 !rounded-2xl !border !border-white/12 !bg-[linear-gradient(145deg,rgba(8,20,46,0.9),rgba(7,16,34,0.94))] !p-3 !shadow-[0_10px_24px_rgba(6,14,34,0.32)]">
         {[
           {
             num: "114",
@@ -1202,7 +1276,7 @@ export default function HomePage() {
             labelAr: "كلمة",
           },
         ].map((s, i) => (
-          <div key={i} className="hp2-stats-strip__item" style={{ "--si": i }}>
+          <div key={i} className="hp2-stats-strip__item !rounded-xl !border !border-white/10 !bg-white/[0.03] !transition-all !duration-300 hover:!bg-white/[0.08] hover:!-translate-y-0.5">
             <i className={`fas ${s.icon} hp2-stats-strip__icon`} />
             <span className="hp2-stats-strip__num">{s.num}</span>
             <span className="hp2-stats-strip__label">
@@ -1217,10 +1291,10 @@ export default function HomePage() {
       </div>
 
       {/*  GRILLE PRINCIPALE  */}
-      <div className="hp2-layout">
+      <div className="hp2-layout !relative !z-10">
         {/* Panneau latéral */}
         <aside className="hp2-aside">
-          <div className="hp2-panel">
+          <div className="hp2-panel !rounded-2xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(9,20,48,0.9),rgba(7,16,35,0.92))] !backdrop-blur-md !shadow-[0_12px_26px_rgba(5,14,34,0.34)]">
             <div className="hp2-panel__tabs">
               {infoTabs.map((tab) => (
                 <button
@@ -1346,13 +1420,13 @@ export default function HomePage() {
         </aside>
 
         {/* Colonne sourates */}
-        <section className="hp2-content">
-          <div className="hp2-toolbar">
+        <section className="hp2-content !rounded-2xl !border !border-white/10 !bg-[linear-gradient(160deg,rgba(8,18,40,0.84),rgba(7,14,31,0.88))] !p-3.5 !backdrop-blur-md !shadow-[0_12px_28px_rgba(4,12,28,0.34)]">
+          <div className="hp2-toolbar !rounded-xl !border !border-white/10 !bg-white/[0.03] !px-3 !py-2.5">
             {/* Onglets Sourates / Juz */}
-            <div className="hp2-segs">
+            <div className="hp2-segs !rounded-xl !border !border-white/10 !bg-white/[0.03] !p-1">
               <button
                 className={cn(
-                  "hp2-seg",
+                  "hp2-seg !transition-all !duration-300 hover:!bg-white/10",
                   activeTab === "surah" && "hp2-seg--on",
                 )}
                 onClick={() => setActiveTab("surah")}
@@ -1361,7 +1435,10 @@ export default function HomePage() {
                 {t("surahs")}
               </button>
               <button
-                className={cn("hp2-seg", activeTab === "juz" && "hp2-seg--on")}
+                className={cn(
+                  "hp2-seg !transition-all !duration-300 hover:!bg-white/10",
+                  activeTab === "juz" && "hp2-seg--on",
+                )}
                 onClick={() => setActiveTab("juz")}
               >
                 <i className="fas fa-book-open" />
@@ -1371,7 +1448,7 @@ export default function HomePage() {
 
             {/* Recherche */}
             {activeTab === "surah" && (
-              <div className="hp2-search">
+              <div className="hp2-search !rounded-xl !border !border-white/12 !bg-white/[0.04] !backdrop-blur-sm">
                 <i className="fas fa-magnifying-glass hp2-search__ico" />
                 <input
                   className="hp2-search__input"
@@ -1400,7 +1477,7 @@ export default function HomePage() {
               </span>
               {activeTab === "surah" && (
                 <button
-                  className="hp2-icon-btn"
+                  className="hp2-icon-btn !transition-all !duration-300 hover:!scale-110"
                   onClick={() =>
                     setSortDir((d) => (d === "asc" ? "desc" : "asc"))
                   }
@@ -1413,7 +1490,7 @@ export default function HomePage() {
               )}
               <button
                 className={cn(
-                  "hp2-icon-btn",
+                  "hp2-icon-btn !transition-all !duration-300 hover:!scale-110",
                   viewMode === "grid" && "hp2-icon-btn--on",
                 )}
                 onClick={() => setViewMode("grid")}
@@ -1423,7 +1500,7 @@ export default function HomePage() {
               </button>
               <button
                 className={cn(
-                  "hp2-icon-btn",
+                  "hp2-icon-btn !transition-all !duration-300 hover:!scale-110",
                   viewMode === "list" && "hp2-icon-btn--on",
                 )}
                 onClick={() => setViewMode("list")}
@@ -1436,7 +1513,7 @@ export default function HomePage() {
 
           <div
             className={cn(
-              "hp2-items",
+              "hp2-items !mt-3",
               viewMode === "grid" ? "hp2-items--grid" : "hp2-items--list",
             )}
           >
@@ -1478,7 +1555,9 @@ export default function HomePage() {
       </div>
 
       {/* ════ FOOTER ════ */}
-      <Footer goSurah={goSurah} />
+      <div className="relative z-10">
+        <Footer goSurah={goSurah} />
+      </div>
     </div>
   );
 }

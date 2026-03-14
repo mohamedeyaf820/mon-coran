@@ -1106,3 +1106,136 @@ kbd {
 @media (max-width: 640px) {
   .settings-tools-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ==========================================================
+   PLATFORM REDESIGN V7
+   Settings polish
+   ========================================================== */
+
+.settings-dialog {
+  max-width: 920px;
+}
+
+.settings-header {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-card, #ffffff) 90%, rgba(255, 255, 255, 0.24) 10%),
+    color-mix(in srgb, var(--bg-card, #ffffff) 95%, rgba(var(--primary-rgb), 0.05) 5%)
+  );
+}
+
+.settings-nav {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-secondary) 94%, rgba(255, 255, 255, 0.14) 6%),
+    color-mix(in srgb, var(--bg-secondary) 98%, rgba(var(--primary-rgb), 0.03) 2%)
+  );
+}
+
+.settings-nav-item {
+  border: 1px solid transparent;
+  border-radius: 1rem;
+}
+
+.settings-nav-item:hover {
+  border-color: rgba(var(--primary-rgb), 0.12);
+}
+
+.settings-nav-item.active {
+  border-color: rgba(var(--primary-rgb), 0.18);
+  box-shadow:
+    0 12px 24px rgba(var(--primary-rgb), 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.14) inset;
+}
+
+.settings-card {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-secondary) 92%, rgba(255, 255, 255, 0.16) 8%),
+    color-mix(in srgb, var(--bg-secondary) 97%, rgba(var(--primary-rgb), 0.03) 3%)
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--border, rgba(184, 134, 11, 0.2)) 82%,
+    rgba(255, 255, 255, 0.15) 18%
+  );
+  box-shadow:
+    0 16px 32px rgba(15, 22, 19, 0.06),
+    0 1px 0 rgba(255, 255, 255, 0.14) inset;
+}
+
+.settings-card:hover {
+  box-shadow:
+    0 18px 38px rgba(15, 22, 19, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.16) inset;
+}
+
+.settings-chip {
+  min-height: 2.1rem;
+  border-radius: 999px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+}
+
+.settings-chip.active {
+  box-shadow:
+    0 10px 22px rgba(var(--primary-rgb), 0.18),
+    0 1px 0 rgba(255, 255, 255, 0.14) inset;
+}
+
+.display-mode-card {
+  min-height: 5.3rem;
+  border-radius: 1.1rem;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-primary) 93%, rgba(255, 255, 255, 0.14) 7%),
+    color-mix(in srgb, var(--bg-primary) 98%, rgba(var(--primary-rgb), 0.03) 2%)
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--border, rgba(184, 134, 11, 0.2)) 82%,
+    rgba(255, 255, 255, 0.12) 18%
+  );
+  box-shadow:
+    0 14px 28px rgba(15, 22, 19, 0.05),
+    0 1px 0 rgba(255, 255, 255, 0.14) inset;
+}
+
+.display-mode-card.active {
+  box-shadow:
+    0 16px 32px rgba(var(--primary-rgb), 0.14),
+    0 1px 0 rgba(255, 255, 255, 0.18) inset;
+}
+
+[data-theme="dark"] .settings-header,
+[data-theme="dark"] .settings-nav,
+[data-theme="dark"] .settings-card,
+[data-theme="dark"] .display-mode-card,
+[data-theme="night-blue"] .settings-header,
+[data-theme="night-blue"] .settings-nav,
+[data-theme="night-blue"] .settings-card,
+[data-theme="night-blue"] .display-mode-card,
+[data-theme="forest"] .settings-header,
+[data-theme="forest"] .settings-nav,
+[data-theme="forest"] .settings-card,
+[data-theme="forest"] .display-mode-card,
+[data-theme="oled"] .settings-header,
+[data-theme="oled"] .settings-nav,
+[data-theme="oled"] .settings-card,
+[data-theme="oled"] .display-mode-card {
+  background: linear-gradient(180deg, rgba(18, 24, 31, 0.95), rgba(12, 17, 24, 0.95));
+  border-color: rgba(212, 170, 64, 0.2);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.26),
+    0 1px 0 rgba(255, 255, 255, 0.03) inset;
+}
+
+[data-theme="premium-beige"] .settings-header,
+[data-theme="premium-beige"] .settings-nav,
+[data-theme="premium-beige"] .settings-card,
+[data-theme="premium-beige"] .display-mode-card {
+  background: linear-gradient(180deg, rgba(255, 250, 241, 0.98), rgba(244, 236, 220, 0.94));
+  border-color: rgba(166, 121, 18, 0.16);
+  box-shadow:
+    0 16px 34px rgba(92, 66, 23, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.46) inset;
+}

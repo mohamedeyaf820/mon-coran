@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { search, searchTranslation } from "../services/quranAPI";
@@ -21,8 +21,71 @@ export default function SearchModal() {
   const [error, setError] = useState(null);
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef(null);
+  const searchRequestIdRef = useRef(0);
+  const searchAbortRef = useRef(null);
   // searchMode: 'arabic' | 'phonetic' | 'fr' | 'en'
   const [searchMode, setSearchMode] = useState("arabic");
+
+  const runSearch = useCallback(
+    async (rawQuery = query, mode = searchMode) => {
+      const sanitized = rawQuery
+        .trim()
+        .slice(0, 200)
+        .replace(/[<>"'&`\\]/g, "");
+      if (!sanitized || sanitized.length < 2) return;
+      const requestId = ++searchRequestIdRef.current;
+      searchAbortRef.current?.abort?.();
+      const ctrl = new AbortController();
+      searchAbortRef.current = ctrl;
+      setLoading(true);
+      setError(null);
+      try {
+        let data;
+        if (mode === "fr" || mode === "en") {
+          data = await searchTranslation(sanitized, mode, null, ctrl.signal);
+        } else {
+          let searchQuery = sanitized;
+          if (mode === "phonetic") {
+            searchQuery = latinToArabic(sanitized);
+            if (!searchQuery || searchQuery === sanitized) {
+              searchQuery = sanitized;
+            }
+          }
+          data = await search(searchQuery, riwaya, null, ctrl.signal);
+        }
+        if (requestId !== searchRequestIdRef.current) return;
+        setResults(data.matches || []);
+      } catch (err) {
+        if (err?.name === "AbortError" || requestId !== searchRequestIdRef.current)
+          return;
+        setError(err.message);
+        setResults([]);
+      } finally {
+        if (searchAbortRef.current === ctrl) {
+          searchAbortRef.current = null;
+        }
+        if (requestId === searchRequestIdRef.current) {
+          setLoading(false);
+        }
+      }
+    },
+    [query, riwaya, searchMode],
+  );
+
+  useEffect(() => {
+    if (query.trim()) return;
+    setResults([]);
+    setError(null);
+  }, [query]);
+
+  useEffect(() => {
+    return () => {
+      searchAbortRef.current?.abort?.();
+      searchAbortRef.current = null;
+      recognitionRef.current?.stop?.();
+      recognitionRef.current = null;
+    };
+  }, []);
 
   const startVoiceSearch = useCallback(() => {
     if (!SpeechRecognition) {
@@ -40,9 +103,7 @@ export default function SearchModal() {
     const rec = new SpeechRecognition();
     recognitionRef.current = rec;
     rec.lang =
-      searchMode === "ar" ||
-      searchMode === "arabic" ||
-      searchMode === "phonetic"
+      searchMode === "arabic" || searchMode === "phonetic"
         ? "ar-SA"
         : lang === "fr"
           ? "fr-FR"
@@ -59,41 +120,18 @@ export default function SearchModal() {
       // Auto-search after capture
       setTimeout(() => {
         const sanitized = transcript.trim().slice(0, 200);
-        if (sanitized.length >= 2) setQuery(sanitized);
+        if (sanitized.length >= 2) {
+          setQuery(sanitized);
+          void runSearch(sanitized, searchMode);
+        }
       }, 100);
     };
     rec.start();
-  }, [listening, searchMode, lang]);
+  }, [listening, searchMode, lang, runSearch]);
 
   const handleSearch = useCallback(async () => {
-    // Sanitisation: limite longueur, supprime caractères dangereux
-    const sanitized = query
-      .trim()
-      .slice(0, 200)
-      .replace(/[<>"'&`\\]/g, "");
-    if (!sanitized || sanitized.length < 2) return;
-    setLoading(true);
-    setError(null);
-    try {
-      let data;
-      if (searchMode === "fr" || searchMode === "en") {
-        data = await searchTranslation(sanitized, searchMode);
-      } else {
-        let searchQuery = sanitized;
-        if (searchMode === "phonetic") {
-          searchQuery = latinToArabic(sanitized);
-          if (!searchQuery || searchQuery === sanitized)
-            searchQuery = sanitized;
-        }
-        data = await search(searchQuery, riwaya);
-      }
-      setResults(data.matches || []);
-    } catch (err) {
-      setError(err.message);
-      setResults([]);
-    }
-    setLoading(false);
-  }, [query, riwaya, searchMode]);
+    await runSearch();
+  }, [runSearch]);
 
   const goToAyah = (surah, ayah) => {
     set({ displayMode: "surah", showHome: false, showDuas: false });
@@ -111,6 +149,32 @@ export default function SearchModal() {
   };
   const searchModeLabel =
     searchModeLabels[searchMode] || searchModeLabels.arabic;
+  const suggestionItems = [
+    {
+      mode: "arabic",
+      value: "الرحمن",
+      label:
+        lang === "fr" ? "Exemple arabe" : lang === "ar" ? "مثال عربي" : "Arabic example",
+    },
+    {
+      mode: "phonetic",
+      value: "bismillah",
+      label:
+        lang === "fr" ? "Essai phonétique" : lang === "ar" ? "مثال صوتي" : "Phonetic try",
+    },
+    {
+      mode: "fr",
+      value: "miséricorde",
+      label:
+        lang === "fr" ? "Traduction FR" : lang === "ar" ? "ترجمة فرنسية" : "French search",
+    },
+  ];
+  const applySuggestion = (suggestion) => {
+    setSearchMode(suggestion.mode);
+    setQuery(suggestion.value);
+    void runSearch(suggestion.value, suggestion.mode);
+  };
+  const isTranslationMode = searchMode === "fr" || searchMode === "en";
 
   return (
     <div className="modal-overlay" onClick={close}>
@@ -136,7 +200,17 @@ export default function SearchModal() {
                   : "Search by Arabic text or phonetic typing."}
             </div>
           </div>
-          <button className="modal-close" onClick={close}>
+          <button
+            className="modal-close"
+            onClick={close}
+            aria-label={
+              lang === "fr"
+                ? "Fermer la recherche"
+                : lang === "ar"
+                  ? "إغلاق البحث"
+                  : "Close search"
+            }
+          >
             <i className="fas fa-times"></i>
           </button>
         </div>
@@ -248,6 +322,10 @@ export default function SearchModal() {
                   ? "بحث سياقي"
                   : "Context search"}
           </span>
+          <span className="search-summary-pill search-summary-pill--riwaya">
+            <i className="fas fa-book-quran"></i>
+            {riwaya === "warsh" ? "Warsh" : "Hafs"}
+          </span>
         </div>
 
         {error && <p className="modal-error">{error}</p>}
@@ -273,6 +351,23 @@ export default function SearchModal() {
                       ? "اكتب كلمة عربية أو فعّل البحث الصوتي للوصول بسرعة إلى الآية."
                       : "Type an Arabic word or enable phonetic mode to reach a verse quickly."}
                 </p>
+                <div className="search-spotlight-chips">
+                  {suggestionItems.map((suggestion) => (
+                    <button
+                      key={`${suggestion.mode}-${suggestion.value}`}
+                      type="button"
+                      className="search-spotlight-chip"
+                      onClick={() => applySuggestion(suggestion)}
+                    >
+                      <span className="search-spotlight-chip__label">
+                        {suggestion.label}
+                      </span>
+                      <span className="search-spotlight-chip__value">
+                        {suggestion.value}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -284,18 +379,20 @@ export default function SearchModal() {
             </div>
           )}
           {results.map((r, i) => {
-            const s = getSurah(r.surah.number);
+            const surahNumber = r?.surah?.number || r?.surah || 1;
+            const ayahNumber = r?.numberInSurah || r?.number || 1;
+            const s = getSurah(surahNumber);
             const surahTranslatedName =
               lang === "ar" ? s?.ar : lang === "fr" ? s?.fr || s?.en : s?.en;
             return (
               <button
-                key={i}
-                className="modal-item-card search-result-card"
-                onClick={() => goToAyah(r.surah.number, r.numberInSurah)}
+                key={`${surahNumber}-${ayahNumber}-${i}`}
+                className={`modal-item-card search-result-card${isTranslationMode ? " search-result-card--translation" : ""}`}
+                onClick={() => goToAyah(surahNumber, ayahNumber)}
               >
                 <div className="src-badge">
                   <span className="src-badge__num">
-                    {lang === "ar" ? toAr(r.surah.number) : r.surah.number}
+                    {lang === "ar" ? toAr(surahNumber) : surahNumber}
                   </span>
                 </div>
                 <div className="modal-item-main">
@@ -309,12 +406,12 @@ export default function SearchModal() {
                       <span className="search-result-ref__ayah">
                         :
                         {lang === "ar"
-                          ? toAr(r.numberInSurah)
-                          : r.numberInSurah}
+                          ? toAr(ayahNumber)
+                          : ayahNumber}
                       </span>
                     </div>
                   </div>
-                  {searchMode === "fr" || searchMode === "en" ? (
+                  {isTranslationMode ? (
                     <div className="search-result-translation">{r.text}</div>
                   ) : (
                     <div className="modal-item-ar" dir="rtl">
@@ -340,3 +437,4 @@ export default function SearchModal() {
     </div>
   );
 }
+

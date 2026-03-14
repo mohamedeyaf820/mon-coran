@@ -52,6 +52,16 @@ function AyahMarker({ num, lang }) {
   );
 }
 
+function getMushafFontClass(size) {
+  const n = Number(size);
+  if (!Number.isFinite(n)) return "text-[58px]";
+  if (n <= 54) return "text-[54px]";
+  if (n <= 58) return "text-[58px]";
+  if (n <= 62) return "text-[62px]";
+  if (n <= 66) return "text-[66px]";
+  return "text-[70px]";
+}
+
 /**
  * MushafInlineView – affichage style page Mushaf authentique.
  * Fonctionne pour Hafs (police var(--font-quran)) et Warsh QCF4
@@ -148,13 +158,18 @@ export default function MushafInlineView({
         ? null
         : "In the Name of Allah, the Most Compassionate, the Most Merciful";
   const mushafFontSize = Math.min(Math.max((fontSize ?? 38) + 16, 54), 72);
+  const mushafFontClass = getMushafFontClass(mushafFontSize);
   const hasTranslationPanel = showTranslation && translations?.length > 0;
 
   return (
-    <div className={`mp-frame${isQCF4 ? " mp-qcf4" : ""}`}>
+    <div className={`mp-frame${isQCF4 ? " mp-qcf4" : ""} relative overflow-hidden rounded-[30px] border border-white/12 bg-[linear-gradient(165deg,rgba(252,248,238,0.95)_0%,rgba(246,239,222,0.98)_100%)] shadow-[0_20px_38px_rgba(12,18,14,0.14)]`}>
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.16] [background-image:linear-gradient(to_right,rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] [background-size:60px_60px]"
+        aria-hidden="true"
+      />
       {/* ══════════════ CADRE EXTÉRIEUR ══════════════ */}
-      <div className="mp-outer-border">
-        <div className="mp-inner-border">
+      <div className="mp-outer-border relative z-10">
+        <div className="mp-inner-border rounded-2xl border border-white/20 bg-white/42 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
           {/* ── En-tête sourate ── */}
           <div className="mp-header" dir="rtl">
             {/* Coin gauche: numéro juz */}
@@ -215,9 +230,8 @@ export default function MushafInlineView({
           )}
 
           <div
-            className="mp-ayahs-flow"
+            className={`mp-ayahs-flow ${mushafFontClass} rounded-2xl border border-white/12 bg-white/35 px-3 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]`}
             dir="rtl"
-            style={{ fontSize: `${mushafFontSize}px` }}
           >
             {/* Ayahs en flux inline */}
             {ayahs.map((ayah) => {

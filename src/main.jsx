@@ -4,6 +4,7 @@ import App from "./App";
 import { AppProvider } from "./context/AppContext";
 import "./styles/index.css";
 import "./styles/ui-enhancements.css";
+import "./styles/themes4.css";
 
 // ErrorBoundary global pour capturer les erreurs React
 class ErrorBoundary extends React.Component {
@@ -23,34 +24,16 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "100vh",
-            padding: "2rem",
-            textAlign: "center",
-          }}
-        >
-          <h1 style={{ color: "#dc3545", marginBottom: "1rem" }}>
+        <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-[var(--bg-primary)]">
+          <h1 className="mb-4 text-xl font-semibold text-red-500">
             Une erreur est survenue
           </h1>
-          <p style={{ color: "#666", marginBottom: "1rem" }}>
+          <p className="mb-4 text-sm text-[var(--text-muted)]">
             {this.state.error?.message || "Erreur inconnue"}
           </p>
           <button
             onClick={() => window.location.reload()}
-            style={{
-              padding: "0.75rem 1.5rem",
-              background: "#0d6efd",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer",
-              fontSize: "1rem",
-            }}
+            className="rounded-xl bg-[#0d6efd] px-6 py-3 text-base font-semibold text-white transition hover:brightness-110"
           >
             Recharger l'application
           </button>

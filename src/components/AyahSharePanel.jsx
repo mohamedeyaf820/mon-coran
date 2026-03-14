@@ -6,14 +6,12 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useApp } from '../context/AppContext';
 import { getSurah } from '../data/surahs';
 
-// Palette de fonds islamiques
+// Theme-aligned backgrounds (4 active themes)
 const BG_PRESETS = [
-  { id: 'forest',   label: 'Forêt',    bg: '#0d2318', text: '#f5d785', sub: 'rgba(245,215,133,0.55)' },
-  { id: 'ocean',    label: 'Océan',    bg: '#0b1e2e', text: '#7dd3fc', sub: 'rgba(125,211,252,0.5)'  },
-  { id: 'night',    label: 'Nuit',     bg: '#080f1a', text: '#c4b5fd', sub: 'rgba(196,181,253,0.5)'  },
-  { id: 'sepia',    label: 'Parchemin',bg: '#2a1a09', text: '#d4a820', sub: 'rgba(212,168,32,0.55)'  },
-  { id: 'dark',     label: 'Sombre',   bg: '#101010', text: '#e5e5e5', sub: 'rgba(229,229,229,0.5)'  },
-  { id: 'emerald',  label: 'Émeraude', bg: '#0a1f14', text: '#6ee7b7', sub: 'rgba(110,231,183,0.5)'  },
+  { id: 'light',       label: 'Ivoire',      bg: '#f7f4ea', text: '#199b90', sub: 'rgba(31,44,58,0.55)' },
+  { id: 'sepia',       label: 'Parchemin',   bg: '#efe2c9', text: '#b4883c', sub: 'rgba(75,52,32,0.58)' },
+  { id: 'dark',        label: 'Quran Dark',  bg: '#111827', text: '#2bb6c7', sub: 'rgba(230,234,240,0.62)' },
+  { id: 'quran-night', label: 'Quran Night', bg: '#0c1622', text: '#3ca675', sub: 'rgba(232,237,247,0.62)' },
 ];
 
 // Decorative geometric pattern (simple vine corners)
@@ -170,7 +168,7 @@ export default function AyahSharePanel() {
 
   const [arabicText, setArabicText] = useState('');
   const [translationText, setTranslationText] = useState('');
-  const [preset, setPreset] = useState('forest');
+  const [preset, setPreset] = useState('quran-night');
   const [includeTranslation, setIncludeTranslation] = useState(true);
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);

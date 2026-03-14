@@ -77,6 +77,18 @@ function PageSeparator({ pageNum }) {
   );
 }
 
+function getFlowFontClass(fontSize) {
+  const size = Number(fontSize);
+  if (!Number.isFinite(size)) return "text-[40px]";
+  if (size <= 34) return "text-[34px]";
+  if (size <= 38) return "text-[38px]";
+  if (size <= 42) return "text-[42px]";
+  if (size <= 46) return "text-[46px]";
+  if (size <= 50) return "text-[50px]";
+  if (size <= 56) return "text-[56px]";
+  return "text-[62px]";
+}
+
 /**
  * CleanPageView — Mushaf-style flowing inline layout.
  *
@@ -157,13 +169,17 @@ export default function CleanPageView({
     el.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [currentPlayingAyah]);
 
-  const textStyle = fontSize ? { fontSize: `${fontSize}px` } : undefined;
+  const flowFontClass = getFlowFontClass(fontSize);
 
   return (
     <div
       ref={containerRef}
-      className={`cpv-container${isQCF4 ? " cpv-qcf4" : ""}`}
+      className={`cpv-container${isQCF4 ? " cpv-qcf4" : ""} relative overflow-hidden rounded-[26px] border border-white/10 bg-[linear-gradient(160deg,rgba(250,247,238,0.96),rgba(245,239,224,0.98))] p-4 shadow-[0_16px_36px_rgba(11,20,15,0.12)]`}
     >
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.22] [background-image:linear-gradient(to_right,rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] [background-size:56px_56px]"
+        aria-hidden="true"
+      />
       {/* Surah title header */}
       {showSurahHeader && (
         <SurahHeader surahMeta={surahMeta} lang={lang} />
@@ -173,8 +189,7 @@ export default function CleanPageView({
       {showBasmala && (
         <div className="cpv-basmala-wrap">
           <div
-            className="cpv-basmala"
-            style={textStyle}
+            className={`cpv-basmala ${flowFontClass}`}
             dir="rtl"
             lang="ar"
             aria-label="Basmala"
@@ -189,8 +204,7 @@ export default function CleanPageView({
 
       {/* Flowing text block — all verses inline */}
       <div
-        className={`cpv-flow${isQCF4 ? " qcf4-container" : ""}`}
-        style={textStyle}
+        className={`cpv-flow${isQCF4 ? " qcf4-container" : ""} ${flowFontClass} relative z-10 rounded-2xl border border-white/10 bg-white/35 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]`}
         dir="rtl"
         lang="ar"
       >
@@ -249,7 +263,7 @@ export default function CleanPageView({
       {/* ── Translations panel — numbered list below the Arabic flow ── */}
       {showTranslation && getTranslation && ayahs.length > 0 && (
         <div
-          className="cpv-trans-panel"
+          className="cpv-trans-panel mt-4 rounded-2xl border border-white/12 bg-white/55 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]"
           dir={lang === "ar" ? "rtl" : "ltr"}
           aria-label={lang === "ar" ? "الترجمة" : lang === "fr" ? "Traductions" : "Translations"}
         >

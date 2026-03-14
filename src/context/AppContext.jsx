@@ -25,15 +25,43 @@ const initialReciter = ensureReciterForRiwaya(
 // launch), fall back to "fr" so the interface is always readable.
 const initialLang = stored.lang === "ar" || !stored.lang ? "fr" : stored.lang;
 
+const ACTIVE_THEME_IDS = ["light", "sepia", "dark", "quran-night"];
+const DAY_THEME_IDS = ["light", "sepia"];
+const NIGHT_THEME_IDS = ["dark", "quran-night"];
+const LEGACY_THEME_MAP = {
+  "premium-beige": "sepia",
+  ocean: "quran-night",
+  "night-blue": "quran-night",
+  forest: "dark",
+  oled: "dark",
+};
+
+const normalizeThemeId = (value, fallback = "light") => {
+  if (typeof value !== "string") return fallback;
+  if (ACTIVE_THEME_IDS.includes(value)) return value;
+  return LEGACY_THEME_MAP[value] || fallback;
+};
+
+const normalizeDayTheme = (value) => {
+  const normalized = normalizeThemeId(value, "light");
+  return DAY_THEME_IDS.includes(normalized) ? normalized : "light";
+};
+
+const normalizeNightTheme = (value) => {
+  const normalized = normalizeThemeId(value, "dark");
+  return NIGHT_THEME_IDS.includes(normalized) ? normalized : "dark";
+};
+
 const initialState = {
   // UI
   lang: initialLang,
-  theme:
-    stored.theme ||
-    (typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-color-scheme: dark)").matches
+  theme: normalizeThemeId(
+    stored.theme,
+    typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-color-scheme: dark)").matches
       ? "dark"
-      : "light"),
+      : "light",
+  ),
   sidebarOpen: false,
   searchOpen: false,
   settingsOpen: false,
@@ -47,6 +75,7 @@ const initialState = {
   comparatorOpen: false,
   shareImageOpen: false,
   weeklyStatsOpen: false,
+  audioMakerOpen: false,
   splashDone: false,
 
   // Quran
@@ -97,8 +126,8 @@ const initialState = {
   autoNightMode: stored.autoNightMode ?? false,
   nightStart: stored.nightStart || "20:00",
   nightEnd: stored.nightEnd || "06:00",
-  nightTheme: stored.nightTheme || "dark",
-  dayTheme: stored.dayTheme || "light",
+  nightTheme: normalizeNightTheme(stored.nightTheme || "dark"),
+  dayTheme: normalizeDayTheme(stored.dayTheme || "light"),
   usePrayerTimes: stored.usePrayerTimes ?? false,
 
   // Wird goals
@@ -118,7 +147,17 @@ const initialState = {
 function appReducer(state, action) {
   switch (action.type) {
     case "SET": {
-      const next = { ...state, ...action.payload };
+      const payload = action.payload || {};
+      const next = { ...state, ...payload };
+      if (Object.prototype.hasOwnProperty.call(payload, "theme")) {
+        next.theme = normalizeThemeId(payload.theme, state.theme);
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, "dayTheme")) {
+        next.dayTheme = normalizeDayTheme(payload.dayTheme);
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, "nightTheme")) {
+        next.nightTheme = normalizeNightTheme(payload.nightTheme);
+      }
       return next;
     }
 
@@ -167,7 +206,7 @@ function appReducer(state, action) {
       };
 
     case "SET_THEME":
-      return { ...state, theme: action.payload };
+      return { ...state, theme: normalizeThemeId(action.payload, state.theme) };
 
     case "SET_LANG":
       return { ...state, lang: action.payload };
@@ -332,8 +371,8 @@ export function AppProvider({ children }) {
         isNight = hhmm >= start || hhmm < end;
       }
       const target = isNight
-        ? state.nightTheme || "dark"
-        : state.dayTheme || "light";
+        ? normalizeNightTheme(state.nightTheme)
+        : normalizeDayTheme(state.dayTheme);
       if (state.theme !== target) {
         dispatch({ type: "SET_THEME", payload: target });
       }

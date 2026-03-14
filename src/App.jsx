@@ -39,6 +39,7 @@ const ReciterComparatorPanel = lazy(
 );
 const AyahSharePanel = lazy(() => import("./components/AyahSharePanel"));
 const WeeklyStatsPanel = lazy(() => import("./components/WeeklyStatsPanel"));
+const AudioMakerPanel = lazy(() => import("./components/AudioMakerPanel"));
 
 function detectLowPerformanceDevice() {
   if (typeof window === "undefined" || typeof navigator === "undefined")
@@ -176,6 +177,45 @@ export default function App() {
     state.warshStrictMode,
   ]);
 
+  /* ── Instant reciter change: reload audio with new reciter when playing ── */
+  useEffect(() => {
+    if (!state.isPlaying || !state.currentPlayingAyah) return;
+    
+    const { isPlaying, currentPlayingAyah, riwaya, warshStrictMode } = state;
+    if (!isPlaying) return;
+
+    const reciterId = state.reciter;
+    const safeReciterId = ensureReciterForRiwaya(reciterId, riwaya);
+    const rec = getReciter(safeReciterId, riwaya);
+    
+    if (!rec) return;
+    
+    // Respect Warsh strict-mode
+    if (
+      riwaya === "warsh" &&
+      warshStrictMode &&
+      !String(rec.cdn || "").toLowerCase().includes("warsh")
+    )
+      return;
+
+    // Get current playlist and update with new reciter CDN
+    const currentPlaylist = audioService.playlist || [];
+    if (currentPlaylist.length === 0) return;
+
+    // Reload playlist with new reciter CDN but keep same ayahs
+    audioService.loadPlaylist(
+      currentPlaylist,
+      rec.cdn,
+      rec.cdnType || "islamic"
+    );
+    
+    // Resume playback with new reciter
+    if (isPlaying) {
+      audioService.play();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.reciter, state.riwaya, state.warshStrictMode]);
+
   /* ── Keyboard shortcuts ── */
   const handleKeyboard = useCallback(
     (e) => {
@@ -253,6 +293,7 @@ export default function App() {
           else if (state.wirdOpen) set({ wirdOpen: false });
           else if (state.historyOpen) set({ historyOpen: false });
           else if (state.playlistOpen) set({ playlistOpen: false });
+          else if (state.audioMakerOpen) set({ audioMakerOpen: false });
           else if (state.flashcardsOpen) set({ flashcardsOpen: false });
           else if (state.tajweedQuizOpen) set({ tajweedQuizOpen: false });
           else if (state.khatmaOpen) set({ khatmaOpen: false });
@@ -283,6 +324,7 @@ export default function App() {
       state.wirdOpen,
       state.historyOpen,
       state.playlistOpen,
+      state.audioMakerOpen,
       state.flashcardsOpen,
       state.tajweedQuizOpen,
       state.khatmaOpen,
@@ -319,7 +361,7 @@ export default function App() {
 
   return (
     <div
-      className={`app-root flex flex-col h-dvh w-full overflow-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""}`}
+      className={`app-root flex flex-col h-dvh w-full overflow-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""}`}
       dir={lang === "ar" ? "rtl" : "ltr"}
     >
       {/* Removed legacy Sakina starfield */}
@@ -327,7 +369,7 @@ export default function App() {
       <Header />
 
       {/* ── Main layout: sidebar + content ── */}
-      <div className="relative flex flex-1 min-h-0">
+      <div className="app-layout-shell relative flex flex-1 min-h-0">
         {/* Sidebar */}
         {!focusReading && (
           <Suspense fallback={null}>
@@ -338,8 +380,7 @@ export default function App() {
         {/* Invisible overlay for sidebar (to capture outside clicks without dimming) */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 z-190"
-            style={{ top: "var(--header-h)" }}
+            className="fixed inset-0 top-[var(--header-h)] z-190"
             onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
             aria-hidden="true"
           />
@@ -347,8 +388,7 @@ export default function App() {
 
         {/* Main reading area */}
         <main
-          className={`app-main flex-1 min-w-0 overflow-y-auto overflow-x-hidden ${showHome ? "app-main--home" : ""}`}
-          style={{ paddingBottom: "var(--player-h)" }}
+          className={`app-main app-main-shell flex-1 min-w-0 overflow-y-auto overflow-x-hidden pb-[var(--player-h)] ${showHome ? "app-main--home" : ""}`}
         >
           <div
             className={`app-view-shell ${showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas ? `app-mode-${displayMode}` : ""}`}
@@ -402,6 +442,7 @@ export default function App() {
         {state.wirdOpen && <WirdPanel />}
         {state.historyOpen && <ReadingHistoryPanel />}
         {state.playlistOpen && <PlaylistPanel />}
+        {state.audioMakerOpen && <AudioMakerPanel />}
         {state.flashcardsOpen && <FlashcardsPanel />}
         {state.tajweedQuizOpen && <TajweedQuizPanel />}
         {state.khatmaOpen && <KhatmaPanel />}

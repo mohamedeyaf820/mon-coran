@@ -1,6 +1,6 @@
 ﻿import React, { useState, useRef, useEffect } from "react";
 import { useApp } from "../context/AppContext";
-import { t } from "../i18n";
+import { t as i18nT } from "../i18n";
 import { toAr, getSurah, surahName } from "../data/surahs";
 import { JUZ_DATA } from "../data/juz";
 import audioService from "../services/audioService";
@@ -28,21 +28,39 @@ export default function Header() {
   const [goToValue, setGoToValue] = useState("");
   const [goToOpen, setGoToOpen] = useState(false);
   const inputRef = useRef(null);
+  const headerRef = useRef(null);
 
   useEffect(() => {
     if (goToOpen) setTimeout(() => inputRef.current?.focus(), 50);
   }, [goToOpen]);
 
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      const el = headerRef.current;
+      if (!el) return;
+      const h = Math.ceil(el.getBoundingClientRect().height);
+      if (h > 0) {
+        document.documentElement.style.setProperty("--header-h", `${h}px`);
+      }
+    };
+
+    updateHeaderHeight();
+
+    let ro;
+    if (typeof ResizeObserver !== "undefined" && headerRef.current) {
+      ro = new ResizeObserver(updateHeaderHeight);
+      ro.observe(headerRef.current);
+    }
+
+    window.addEventListener("resize", updateHeaderHeight, { passive: true });
+    return () => {
+      window.removeEventListener("resize", updateHeaderHeight);
+      ro?.disconnect();
+    };
+  }, [showHome, showDuas, displayMode, lang, riwaya]);
+
   const cycleTheme = () => {
-    const themes = [
-      "light",
-      "dark",
-      "oled",
-      "sepia",
-      "ocean",
-      "forest",
-      "night-blue",
-    ];
+    const themes = ["light", "sepia", "dark", "quran-night"];
     const idx = themes.indexOf(theme);
     dispatch({ type: "SET_THEME", payload: themes[(idx + 1) % themes.length] });
   };
@@ -96,6 +114,7 @@ export default function Header() {
   const goToMax =
     displayMode === "page" ? 604 : displayMode === "juz" ? 30 : 114;
   const isRtl = lang === "ar";
+  const tr = (obj) => (lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en);
 
   const canGoPrev =
     displayMode === "page"
@@ -164,8 +183,58 @@ export default function Header() {
       ? `${surahMeta.ayahs} ${ayahWord}`
       : "";
 
+  const homeTitle = tr({
+    fr: "Reprends ta lecture avec clarte",
+    en: "Return to your reading with clarity",
+    ar: "عد إلى قراءتك بوضوح",
+  });
+  const homeSubtitle = tr({
+    fr: "Navigation rapide, ecoute guidee et memorisation apaisee.",
+    en: "Quick navigation, guided listening and calmer memorization.",
+    ar: "تنقل سريع واستماع موجّه ومراجعة أكثر هدوءا.",
+  });
+  const homeHighlights = [
+    {
+      icon: "fa-book-open",
+      value: "114",
+      label: tr({ fr: "sourates", en: "surahs", ar: "سورة" }),
+    },
+    {
+      icon: "fa-layer-group",
+      value: "30",
+      label: tr({ fr: "juz", en: "juz", ar: "جزء" }),
+    },
+    {
+      icon: "fa-wave-square",
+      value: riwaya === "warsh" ? "ورش" : "حفص",
+      label: tr({ fr: "riwaya", en: "riwaya", ar: "الرواية" }),
+    },
+  ];
+  const pagePanelTitle = showDuas
+    ? tr({ fr: "Espace Douas", en: "Duas Space", ar: "فضاء الأدعية" })
+    : centerTitle;
+  const pagePanelSubtitle = showDuas
+    ? tr({
+        fr: "Invocations organisees pour lire, apprendre et revenir plus vite.",
+        en: "Structured invocations to read, learn and return faster.",
+        ar: "أدعية مرتبة للقراءة والتعلم والعودة السريعة.",
+      })
+    : displayMode === "page"
+      ? tr({
+          fr: `Page ${currentPage} sur 604`,
+          en: `Page ${currentPage} of 604`,
+          ar: `الصفحة ${toAr(currentPage)} من ${toAr(604)}`,
+        })
+      : displayMode === "juz"
+        ? tr({
+            fr: `Juz ${currentJuz} sur 30`,
+            en: `Juz ${currentJuz} of 30`,
+            ar: `الجزء ${toAr(currentJuz)} من ${toAr(30)}`,
+          })
+        : ayahCount;
+
   return (
-    <header className="hdr">
+    <header ref={headerRef} className="hdr hdr--themes4">
       <div className="hdr__main">
         <div className="hdr__left">
           <button
@@ -186,7 +255,11 @@ export default function Header() {
           <button
             className="hdr__brand"
             onClick={() => set({ showHome: true, showDuas: false })}
-            aria-label="Accueil"
+            aria-label={tr({
+              fr: "Retour a l'accueil",
+              en: "Back to home",
+              ar: "العودة إلى الرئيسية",
+            })}
           >
             <span className="hdr__brand-mark">
               <PlatformLogo
@@ -204,157 +277,186 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Center Nav */}
-        {!showHome && (
-          <div className="hdr__nav">
-            <button
-              className="hdr__nav-arrow"
-              onClick={isRtl ? handleNext : handlePrev}
-              disabled={isRtl ? !canGoNext : !canGoPrev}
-              aria-label={t("quran.prevSurah", lang)}
-            >
-              <i className="fas fa-chevron-left" />
-            </button>
-
-            <Popover open={goToOpen} onOpenChange={setGoToOpen}>
-              <PopoverTrigger asChild>
-                <button className="hdr__nav-center">
-                  <span className="hdr__nav-title">{centerTitle}</span>
-                  <span className="hdr__nav-sub">
-                    {displayMode === "surah" ? (
-                      <>
-                        <span>
-                          {lang === "ar"
-                            ? toAr(currentSurah)
-                            : `#${currentSurah}`}
-                        </span>
-                        <span className="hdr__nav-dot">·</span>
-                        <span>{ayahCount}</span>
-                      </>
-                    ) : displayMode === "page" ? (
-                      <>
-                        <span>
-                          {lang === "ar" ? toAr(currentPage) : currentPage}
-                        </span>
-                        <span className="hdr__nav-dot">/</span>
-                        <span>{lang === "ar" ? toAr(604) : 604}</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>
-                          {lang === "ar" ? toAr(currentJuz) : currentJuz}
-                        </span>
-                        <span className="hdr__nav-dot">/</span>
-                        <span>{lang === "ar" ? toAr(30) : 30}</span>
-                      </>
-                    )}
+        <div className="hdr__center">
+          {showHome ? (
+            <div className="hdr__home-panel" aria-label={homeTitle}>
+              <div className="hdr__home-copy">
+                <span className="hdr__home-kicker">
+                  {tr({ fr: "MushafPlus", en: "MushafPlus", ar: "مصحف بلس" })}
+                </span>
+                <strong className="hdr__home-title">{homeTitle}</strong>
+                <span className="hdr__home-subtitle">{homeSubtitle}</span>
+              </div>
+              <div className="hdr__home-meta">
+                {homeHighlights.map((item) => (
+                  <span key={item.icon} className="hdr__home-chip">
+                    <i className={`fas ${item.icon}`} aria-hidden="true" />
+                    <strong>{item.value}</strong>
+                    <span>{item.label}</span>
                   </span>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="hdr__nav-shell">
+              <div className="hdr__nav hdr__nav--active">
+                <button
+                  className="hdr__nav-arrow"
+                  onClick={isRtl ? handleNext : handlePrev}
+                  disabled={isRtl ? !canGoNext : !canGoPrev}
+                  aria-label={i18nT("quran.prevSurah", lang)}
+                >
+                  <i className="fas fa-chevron-left" />
                 </button>
-              </PopoverTrigger>
-              <PopoverContent
-                align="center"
-                sideOffset={12}
-                className="w-60 p-0 border border-(--border) shadow-2xl rounded-2xl bg-(--bg-primary) z-110"
-              >
-                <form onSubmit={handleGoTo} className="hdr-goto-form">
-                  <label className="hdr-goto-label">{goToLabel}</label>
-                  <div className="hdr-goto-row">
-                    <input
-                      ref={inputRef}
-                      type="number"
-                      min={1}
-                      max={goToMax}
-                      value={goToValue}
-                      onChange={(e) => setGoToValue(e.target.value)}
-                      placeholder="#"
-                      className="hdr-goto-input"
-                    />
-                    <button type="submit" className="hdr-goto-submit">
-                      <i className="fas fa-arrow-right" />
-                    </button>
-                  </div>
-                </form>
-              </PopoverContent>
-            </Popover>
 
-            <button
-              className="hdr__nav-arrow"
-              onClick={isRtl ? handlePrev : handleNext}
-              disabled={isRtl ? !canGoPrev : !canGoNext}
-              aria-label={t("quran.nextSurah", lang)}
-            >
-              <i className="fas fa-chevron-right" />
-            </button>
-          </div>
-        )}
+                <Popover open={goToOpen} onOpenChange={setGoToOpen}>
+                  <PopoverTrigger asChild>
+                    <button className="hdr__nav-center">
+                      <span className="hdr__nav-kicker">
+                        {showDuas
+                          ? tr({ fr: "Douas", en: "Duas", ar: "الأدعية" })
+                          : displayMode === "page"
+                            ? tr({ fr: "Lecture page", en: "Page reading", ar: "قراءة الصفحة" })
+                            : displayMode === "juz"
+                              ? tr({ fr: "Lecture par juz", en: "Juz reading", ar: "قراءة الأجزاء" })
+                              : tr({ fr: "Lecture sourate", en: "Surah reading", ar: "قراءة السور" })}
+                      </span>
+                      <span className="hdr__nav-title">{pagePanelTitle}</span>
+                      <span className="hdr__nav-sub">
+                        {displayMode === "surah" && !showDuas ? (
+                          <>
+                            <span>
+                              {lang === "ar"
+                                ? toAr(currentSurah)
+                                : `#${currentSurah}`}
+                            </span>
+                            <span className="hdr__nav-dot">·</span>
+                            <span>{pagePanelSubtitle}</span>
+                          </>
+                        ) : (
+                          <span>{pagePanelSubtitle}</span>
+                        )}
+                      </span>
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="center"
+                    sideOffset={12}
+                    className="w-60 p-0 border border-(--border) shadow-2xl rounded-2xl bg-(--bg-primary) z-110"
+                  >
+                    <form onSubmit={handleGoTo} className="hdr-goto-form">
+                      <label className="hdr-goto-label">{goToLabel}</label>
+                      <div className="hdr-goto-row">
+                        <input
+                          ref={inputRef}
+                          type="number"
+                          min={1}
+                          max={goToMax}
+                          value={goToValue}
+                          onChange={(e) => setGoToValue(e.target.value)}
+                          placeholder="#"
+                          className="hdr-goto-input"
+                        />
+                        <button type="submit" className="hdr-goto-submit">
+                          <i className="fas fa-arrow-right" />
+                        </button>
+                      </div>
+                    </form>
+                  </PopoverContent>
+                </Popover>
+
+                <button
+                  className="hdr__nav-arrow"
+                  onClick={isRtl ? handlePrev : handleNext}
+                  disabled={isRtl ? !canGoPrev : !canGoNext}
+                  aria-label={i18nT("quran.nextSurah", lang)}
+                >
+                  <i className="fas fa-chevron-right" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Actions */}
         <div className="hdr__actions">
-          <NetworkStatus />
-
-          <div className="hdr__divider" />
-
-          <button
-            className="hdr__btn-duas"
-            onClick={() => set({ showDuas: true, showHome: false })}
-          >
-            <i
-              className="fas fa-hands-praying"
-              style={{ fontSize: "0.7rem" }}
-            />
-            <span>
-              {lang === "ar" ? "أدعية" : lang === "fr" ? "Douas" : "Duas"}
-            </span>
-          </button>
-
-          <div className="hdr__divider" />
-
-          {/* Sélecteur de riwaya */}
-          <div className="hdr__riwaya-toggle" role="group" aria-label="Riwāya">
+          <div className="hdr__action-cluster hdr__action-cluster--status">
+            <NetworkStatus />
             <button
-              className={cn(
-                "hdr__riwaya-btn",
-                riwaya === "hafs" && "hdr__riwaya-btn--active",
-              )}
-              onClick={() => set({ riwaya: "hafs" })}
-              title="Riwāya Ḥafs"
-              aria-pressed={riwaya === "hafs"}
+              className="hdr__btn hdr__btn--theme"
+              onClick={cycleTheme}
+              title={tr({
+                fr: "Changer de theme",
+                en: "Cycle theme",
+                ar: "تبديل السمة",
+              })}
+              aria-label={tr({
+                fr: "Changer de theme",
+                en: "Cycle theme",
+                ar: "تبديل السمة",
+              })}
             >
-              حفص
-            </button>
-            <button
-              className={cn(
-                "hdr__riwaya-btn",
-                riwaya === "warsh" && "hdr__riwaya-btn--active",
-              )}
-              onClick={() => set({ riwaya: "warsh" })}
-              title="Riwāya Warsh"
-              aria-pressed={riwaya === "warsh"}
-            >
-              ورش
+              <i className="fas fa-swatchbook" />
             </button>
           </div>
 
-          <div className="hdr__divider" />
+          <div className="hdr__action-cluster hdr__action-cluster--primary">
+            <button
+              className="hdr__btn-duas"
+              onClick={() => set({ showDuas: true, showHome: false })}
+            >
+              <i className="fas fa-hands-praying text-[0.7rem]" />
+              <span>
+                {lang === "ar" ? "أدعية" : lang === "fr" ? "Douas" : "Duas"}
+              </span>
+            </button>
 
-          <button
-            className={cn("hdr__btn", state.settingsOpen && "hdr__btn--active")}
-            onClick={() => dispatch({ type: "TOGGLE_SETTINGS" })}
-            title={t("nav.settings", lang)}
-            aria-label={t("nav.settings", lang)}
-          >
-            <i className="fas fa-sliders" />
-          </button>
+            <div className="hdr__riwaya-toggle" role="group" aria-label="Riwāya">
+              <button
+                className={cn(
+                  "hdr__riwaya-btn",
+                  riwaya === "hafs" && "hdr__riwaya-btn--active",
+                )}
+                onClick={() => set({ riwaya: "hafs" })}
+                title="Riwāya Ḥafs"
+                aria-pressed={riwaya === "hafs"}
+              >
+                حفص
+              </button>
+              <button
+                className={cn(
+                  "hdr__riwaya-btn",
+                  riwaya === "warsh" && "hdr__riwaya-btn--active",
+                )}
+                onClick={() => set({ riwaya: "warsh" })}
+                title="Riwāya Warsh"
+                aria-pressed={riwaya === "warsh"}
+              >
+                ورش
+              </button>
+            </div>
+          </div>
 
-          <button
-            className="hdr__btn"
-            onClick={() => dispatch({ type: "TOGGLE_SEARCH" })}
-            title={`${t("nav.search", lang)} — Ctrl+K`}
-            aria-label={t("nav.search", lang)}
-          >
-            <i className="fas fa-magnifying-glass" />
-            <span className="hdr__kbd-hint">K</span>
-          </button>
+          <div className="hdr__action-cluster hdr__action-cluster--tools">
+            <button
+              className={cn("hdr__btn", state.settingsOpen && "hdr__btn--active")}
+              onClick={() => dispatch({ type: "TOGGLE_SETTINGS" })}
+              title={i18nT("nav.settings", lang)}
+              aria-label={i18nT("nav.settings", lang)}
+            >
+              <i className="fas fa-sliders" />
+            </button>
+
+            <button
+              className="hdr__btn hdr__btn--search"
+              onClick={() => dispatch({ type: "TOGGLE_SEARCH" })}
+              title={`${i18nT("nav.search", lang)} — Ctrl+K`}
+              aria-label={i18nT("nav.search", lang)}
+            >
+              <i className="fas fa-magnifying-glass" />
+              <span className="hdr__kbd-hint">K</span>
+            </button>
+          </div>
         </div>
       </div>
     </header>

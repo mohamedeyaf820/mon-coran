@@ -10,6 +10,7 @@ import {
   getRecitersByRiwaya,
 } from "../data/reciters";
 import PlatformLogo from "./PlatformLogo";
+import { cn } from "../lib/utils";
 import "../styles/settings-modal.css";
 
 const TABS = [
@@ -54,68 +55,111 @@ const TABS = [
 const THEMES = [
   {
     id: "light",
-    fr: "Clair",
+    fr: "Ivoire",
     ar: "فاتح",
-    en: "Light",
-    bg: "#FFFFFF",
-    border: "#e2e8f0",
-    text: "#1e293b",
-  },
-  {
-    id: "dark",
-    fr: "Sombre",
-    ar: "داكن",
-    en: "Dark",
-    bg: "#1e1e1e",
-    border: "#444",
-    text: "#e2e8f0",
-  },
-  {
-    id: "oled",
-    fr: "OLED",
-    ar: "أوليد",
-    en: "OLED",
-    bg: "#000000",
-    border: "#1a1a1a",
-    text: "#f0f0f0",
+    en: "Ivory",
+    bg: "#f7f4ea",
+    border: "#1f2c3a",
+    text: "#199b90",
   },
   {
     id: "sepia",
-    fr: "Sépia",
+    fr: "Parchemin",
     ar: "سيبيا",
     en: "Sepia",
-    bg: "#f5efe4",
-    border: "#c8a97a",
-    text: "#5c4a2a",
+    bg: "#efe2c9",
+    border: "#4b3420",
+    text: "#b4883c",
   },
   {
-    id: "ocean",
-    fr: "Océan",
-    ar: "محيط",
-    en: "Ocean",
-    bg: "#0a1628",
-    border: "#1a3a5c",
-    text: "#93c5fd",
+    id: "dark",
+    fr: "Quran Dark",
+    ar: "داكن",
+    en: "Quran Dark",
+    bg: "#111827",
+    border: "#e6eaf0",
+    text: "#2bb6c7",
   },
   {
-    id: "forest",
-    fr: "Forêt",
-    ar: "غابة",
-    en: "Forest",
-    bg: "#0d1f0f",
-    border: "#1a3d1c",
-    text: "#86efac",
-  },
-  {
-    id: "night-blue",
-    fr: "Nuit",
-    ar: "ليلي",
-    en: "Night",
-    bg: "#0f172a",
-    border: "#1e2d4d",
-    text: "#c7d2fe",
+    id: "quran-night",
+    fr: "Quran Nuit",
+    ar: "ليل القرآن",
+    en: "Quran Night",
+    bg: "#0c1622",
+    border: "#e8edf7",
+    text: "#3ca675",
   },
 ];
+
+const DAY_THEME_IDS = ["light", "sepia"];
+const NIGHT_THEME_IDS = ["dark", "quran-night"];
+const THEME_SWATCH_CLASSES = {
+  light: {
+    circle: "bg-[#f7f4ea] border-[#1f2c3a]",
+    text: "text-[#199b90]",
+  },
+  sepia: {
+    circle: "bg-[#efe2c9] border-[#4b3420]",
+    text: "text-[#b4883c]",
+  },
+  dark: {
+    circle: "bg-[#111827] border-[#e6eaf0]",
+    text: "text-[#2bb6c7]",
+  },
+  "quran-night": {
+    circle: "bg-[#0c1622] border-[#e8edf7]",
+    text: "text-[#3ca675]",
+  },
+};
+const FONT_SIZE_MIN = 32;
+const FONT_SIZE_MAX = 64;
+const FONT_SIZE_STEP = 2;
+const FONT_PROGRESS_WIDTH_CLASSES = [
+  "w-0",
+  "w-[6.25%]",
+  "w-[12.5%]",
+  "w-[18.75%]",
+  "w-[25%]",
+  "w-[31.25%]",
+  "w-[37.5%]",
+  "w-[43.75%]",
+  "w-1/2",
+  "w-[56.25%]",
+  "w-[62.5%]",
+  "w-[68.75%]",
+  "w-3/4",
+  "w-[81.25%]",
+  "w-[87.5%]",
+  "w-[93.75%]",
+  "w-full",
+];
+const FONT_PREVIEW_SIZE_CLASSES = [
+  "text-[26px]",
+  "text-[28px]",
+  "text-[29px]",
+  "text-[31px]",
+  "text-[33px]",
+  "text-[34px]",
+  "text-[36px]",
+  "text-[38px]",
+  "text-[39px]",
+  "text-[41px]",
+  "text-[43px]",
+  "text-[44px]",
+  "text-[46px]",
+  "text-[48px]",
+  "text-[49px]",
+  "text-[51px]",
+  "text-[52px]",
+];
+const getFontSizeStepIndex = (size) =>
+  Math.max(
+    0,
+    Math.min(
+      FONT_PROGRESS_WIDTH_CLASSES.length - 1,
+      Math.round((size - FONT_SIZE_MIN) / FONT_SIZE_STEP),
+    ),
+  );
 
 const TRANSLATION_LANGUAGE_OPTIONS = [
   { code: "fr", fr: "Français", ar: "الفرنسية", en: "French" },
@@ -179,6 +223,13 @@ export default function SettingsModal() {
         : "This language only applies to word-by-word translation.";
   const getOptionLabel = (option) =>
     lang === "ar" ? option.ar : lang === "fr" ? option.fr : option.en;
+  const getThemeLabel = (themeOption) => getOptionLabel(themeOption);
+  const dayThemes = THEMES.filter((themeOption) =>
+    DAY_THEME_IDS.includes(themeOption.id),
+  );
+  const nightThemes = THEMES.filter((themeOption) =>
+    NIGHT_THEME_IDS.includes(themeOption.id),
+  );
 
   // Font options — extended library inspired by arabic-calligraphy-generator.com
   const FONT_CATEGORIES = [
@@ -426,6 +477,11 @@ export default function SettingsModal() {
             .includes(normalizedFontFilter),
         ),
       })).filter((cat) => cat.fonts.length > 0);
+  const fontStepIndex = getFontSizeStepIndex(quranFontSize);
+  const fontProgressWidthClass =
+    FONT_PROGRESS_WIDTH_CLASSES[fontStepIndex] || "w-1/2";
+  const fontPreviewSizeClass =
+    FONT_PREVIEW_SIZE_CLASSES[fontStepIndex] || "text-[39px]";
 
   const handleImport = async () => {
     const input = document.createElement("input");
@@ -467,17 +523,46 @@ export default function SettingsModal() {
     set(patch);
   };
 
+  const overlayClass =
+    "settings-overlay !bg-[radial-gradient(circle_at_12%_8%,rgba(59,130,246,0.2)_0%,transparent_34%),radial-gradient(circle_at_88%_18%,rgba(16,185,129,0.14)_0%,transparent_28%),rgba(2,6,23,0.74)] !backdrop-blur-[8px]";
+  const dialogClass =
+    "settings-dialog !overflow-hidden !rounded-[28px] !border !border-white/15 !bg-[linear-gradient(160deg,rgba(13,25,52,0.96),rgba(9,17,35,0.96))] !shadow-[0_26px_64px_rgba(1,8,24,0.58)]";
+  const headerClass =
+    "settings-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(34,93,214,0.25),rgba(17,44,102,0.2))] !backdrop-blur-md";
+  const bodyLayoutClass = "settings-body-layout !min-h-[560px]";
+  const navClass =
+    "settings-nav !border-r !border-white/10 !bg-[linear-gradient(180deg,rgba(10,22,47,0.8),rgba(8,17,36,0.85))]";
+  const contentClass =
+    "settings-content !bg-[linear-gradient(180deg,rgba(11,22,46,0.74),rgba(8,16,33,0.8))]";
+  const paneClass = "settings-pane !space-y-4 !animate-[fadeInUp_0.24s_ease]";
+  const paneTitleClass =
+    "settings-pane-title !rounded-xl !border !border-white/10 !bg-white/[0.04] !px-3 !py-2 !text-blue-100";
+  const cardClass =
+    "settings-card !rounded-2xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(14,28,57,0.82),rgba(9,18,38,0.86))] !shadow-[0_10px_24px_rgba(3,10,27,0.36)] !backdrop-blur-md";
+  const navItemClass = (active) =>
+    cn(
+      "settings-nav-item !transition-all !duration-200 hover:!bg-white/10 hover:!text-white",
+      active &&
+        "!bg-[linear-gradient(135deg,rgba(59,130,246,0.28),rgba(37,99,235,0.16))] !border !border-blue-200/28 !text-white !shadow-[0_8px_18px_rgba(30,64,175,0.3)]",
+    );
+  const chipClass = (active) =>
+    cn(
+      "settings-chip !transition-all !duration-200 hover:!bg-white/14 hover:!text-white",
+      active &&
+        "!border-blue-200/36 !bg-[linear-gradient(135deg,rgba(59,130,246,0.28),rgba(37,99,235,0.18))] !text-white !shadow-[0_8px_18px_rgba(30,64,175,0.28)]",
+    );
+
   return (
     <div
-      className="settings-overlay"
+      className={overlayClass}
       onClick={close}
       role="dialog"
       aria-modal="true"
       aria-label={t("settings.title", lang)}
     >
-      <div className="settings-dialog" onClick={(e) => e.stopPropagation()}>
+      <div className={dialogClass} onClick={(e) => e.stopPropagation()}>
         {/* ── Header ── */}
-        <div className="settings-header">
+        <div className={headerClass}>
           <div className="settings-header-left">
             <i className="fas fa-sliders" aria-hidden="true"></i>
             <h2 className="settings-title">{t("settings.title", lang)}</h2>
@@ -492,13 +577,13 @@ export default function SettingsModal() {
         </div>
 
         {/* ── Body: nav + content ── */}
-        <div className="settings-body-layout">
+        <div className={bodyLayoutClass}>
           {/* Left navigation */}
-          <nav className="settings-nav" aria-label="Navigation paramètres">
+          <nav className={navClass} aria-label="Navigation paramètres">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
-                className={`settings-nav-item ${activeTab === tab.id ? "active" : ""}`}
+                className={navItemClass(activeTab === tab.id)}
                 onClick={() => setActiveTab(tab.id)}
                 aria-pressed={activeTab === tab.id}
               >
@@ -509,13 +594,13 @@ export default function SettingsModal() {
           </nav>
 
           {/* Right content panel */}
-          <div className="settings-content">
+          <div className={contentClass}>
             {/* ════════════════════════════════
                 TAB: Apparence
             ════════════════════════════════ */}
             {activeTab === "apparence" && (
-              <div className="settings-pane">
-                <div className="settings-pane-title">
+              <div className={paneClass}>
+                <div className={paneTitleClass}>
                   {lang === "ar"
                     ? "المظهر"
                     : lang === "fr"
@@ -524,7 +609,7 @@ export default function SettingsModal() {
                 </div>
 
                 {/* Language */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-card-label">
                     <i className="fas fa-globe" aria-hidden="true"></i>
                     {t("settings.language", lang)}
@@ -533,7 +618,7 @@ export default function SettingsModal() {
                     {LANGUAGES.map((l) => (
                       <button
                         key={l.code}
-                        className={`settings-chip ${lang === l.code ? "active" : ""}`}
+                        className={chipClass(lang === l.code)}
                         onClick={() =>
                           dispatch({ type: "SET_LANG", payload: l.code })
                         }
@@ -546,7 +631,7 @@ export default function SettingsModal() {
                 </div>
 
                 {/* Theme swatches */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-card-label">
                     <i
                       className="fas fa-circle-half-stroke"
@@ -555,55 +640,49 @@ export default function SettingsModal() {
                     {t("settings.darkMode", lang)}
                   </div>
                   <div className="theme-swatch-grid">
-                    {THEMES.map((th) => (
-                      <button
-                        key={th.id}
-                        className={`theme-swatch-btn ${theme === th.id ? "active" : ""}`}
-                        onClick={() =>
-                          dispatch({ type: "SET_THEME", payload: th.id })
-                        }
-                        aria-pressed={theme === th.id}
-                        title={
-                          lang === "fr" ? th.fr : lang === "ar" ? th.ar : th.en
-                        }
-                      >
-                        <span
-                          className="swatch-circle"
-                          style={{
-                            background: th.bg,
-                            border: `3px solid ${theme === th.id ? "var(--primary)" : th.border}`,
-                            ...(th.id === "oled"
-                              ? { boxShadow: "inset 0 0 0 1px #444" }
-                              : {}),
-                          }}
+                    {THEMES.map((th) => {
+                      const swatchClasses =
+                        THEME_SWATCH_CLASSES[th.id] || THEME_SWATCH_CLASSES.light;
+                      const active = theme === th.id;
+                      return (
+                        <button
+                          key={th.id}
+                          className={`theme-swatch-btn ${active ? "active" : ""}`}
+                          onClick={() =>
+                            dispatch({ type: "SET_THEME", payload: th.id })
+                          }
+                          aria-pressed={active}
+                          title={getThemeLabel(th)}
                         >
                           <span
-                            className="swatch-text-ar"
-                            style={{ color: th.text }}
+                            className={cn(
+                              "swatch-circle !border-[3px]",
+                              swatchClasses.circle,
+                              active &&
+                                "!border-[var(--primary)] shadow-[0_0_0_1px_rgba(255,255,255,0.18)]",
+                            )}
                           >
-                            أ
+                            <span
+                              className={cn("swatch-text-ar", swatchClasses.text)}
+                            >
+                              أ
+                            </span>
+                            {active && (
+                              <i
+                                className="fas fa-check swatch-check"
+                                aria-hidden="true"
+                              ></i>
+                            )}
                           </span>
-                          {theme === th.id && (
-                            <i
-                              className="fas fa-check swatch-check"
-                              aria-hidden="true"
-                            ></i>
-                          )}
-                        </span>
-                        <span className="swatch-label">
-                          {lang === "fr"
-                            ? th.fr
-                            : lang === "ar"
-                              ? th.ar
-                              : th.en}
-                        </span>
-                      </button>
-                    ))}
+                          <span className="swatch-label">{getThemeLabel(th)}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
                 {/* Auto Night Mode */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-toggle-row">
                     <div className="settings-toggle-info">
                       <i className="fas fa-cloud-moon" aria-hidden="true"></i>
@@ -659,18 +738,11 @@ export default function SettingsModal() {
                           onChange={(e) => set({ dayTheme: e.target.value })}
                           className="auto-night-select"
                         >
-                          <option value="light">
-                            {t("settings.light", lang)}
-                          </option>
-                          <option value="sepia">
-                            {t("settings.sepia", lang)}
-                          </option>
-                          <option value="ocean">
-                            {t("settings.ocean", lang)}
-                          </option>
-                          <option value="forest">
-                            {t("settings.forest", lang)}
-                          </option>
+                          {dayThemes.map((themeOption) => (
+                            <option key={themeOption.id} value={themeOption.id}>
+                              {getThemeLabel(themeOption)}
+                            </option>
+                          ))}
                         </select>
                       </div>
                       <div className="auto-night-row">
@@ -682,12 +754,11 @@ export default function SettingsModal() {
                           onChange={(e) => set({ nightTheme: e.target.value })}
                           className="auto-night-select"
                         >
-                          <option value="dark">
-                            {t("settings.dark", lang)}
-                          </option>
-                          <option value="night-blue">
-                            {t("settings.nightBlue", lang)}
-                          </option>
+                          {nightThemes.map((themeOption) => (
+                            <option key={themeOption.id} value={themeOption.id}>
+                              {getThemeLabel(themeOption)}
+                            </option>
+                          ))}
                         </select>
                       </div>
                     </div>
@@ -700,27 +771,27 @@ export default function SettingsModal() {
                 TAB: Coran
             ════════════════════════════════ */}
             {activeTab === "coran" && (
-              <div className="settings-pane">
-                <div className="settings-pane-title">
+              <div className={paneClass}>
+                <div className={paneTitleClass}>
                   {lang === "ar" ? "القرآن" : lang === "fr" ? "Coran" : "Quran"}
                 </div>
 
                 {/* Riwaya */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-card-label">
                     <i className="fas fa-book-quran" aria-hidden="true"></i>
                     {t("settings.riwaya", lang)}
                   </div>
                   <div className="settings-chips">
                     <button
-                      className={`settings-chip ${riwaya === "hafs" ? "active" : ""}`}
+                      className={chipClass(riwaya === "hafs")}
                       onClick={() => applyRiwaya("hafs")}
                       aria-pressed={riwaya === "hafs"}
                     >
                       {t("settings.hafs", lang)}
                     </button>
                     <button
-                      className={`settings-chip ${riwaya === "warsh" ? "active" : ""}`}
+                      className={chipClass(riwaya === "warsh")}
                       onClick={() => applyRiwaya("warsh")}
                       aria-pressed={riwaya === "warsh"}
                     >
@@ -740,7 +811,7 @@ export default function SettingsModal() {
 
                 {/* Warsh strict mode */}
                 {riwaya === "warsh" && (
-                  <div className="settings-card">
+                  <div className={cardClass}>
                     <div className="settings-toggle-row">
                       <div className="settings-toggle-info">
                         <i
@@ -778,7 +849,7 @@ export default function SettingsModal() {
                 )}
 
                 {/* Display mode */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-card-label">
                     <i className="fas fa-layer-group" aria-hidden="true"></i>
                     {t("settings.displayMode", lang)}
@@ -848,7 +919,7 @@ export default function SettingsModal() {
                 </div>
 
                 {/* Continuous play */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-toggle-row">
                     <div className="settings-toggle-info">
                       <i className="fas fa-circle-play" aria-hidden="true"></i>
@@ -911,8 +982,8 @@ export default function SettingsModal() {
                 TAB: Texte
             ════════════════════════════════ */}
             {activeTab === "texte" && (
-              <div className="settings-pane">
-                <div className="settings-pane-title">
+              <div className={paneClass}>
+                <div className={paneTitleClass}>
                   {lang === "ar"
                     ? "النص والعرض"
                     : lang === "fr"
@@ -921,13 +992,12 @@ export default function SettingsModal() {
                 </div>
 
                 {/* Tajweed */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-toggle-row">
                     <div className="settings-toggle-info">
                       <i
-                        className="fas fa-paint-brush"
+                        className="fas fa-paint-brush text-[#e74c3c]"
                         aria-hidden="true"
-                        style={{ color: "#e74c3c" }}
                       ></i>
                       <div>
                         <div className="settings-toggle-title">
@@ -953,7 +1023,7 @@ export default function SettingsModal() {
                 </div>
 
                 {/* Word by word */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-toggle-row">
                     <div className="settings-toggle-info">
                       <i className="fas fa-layer-group" aria-hidden="true"></i>
@@ -1022,10 +1092,7 @@ export default function SettingsModal() {
                       </div>
                       {showWordTranslation && (
                         <>
-                          <div
-                            className="settings-card-label"
-                            style={{ marginTop: "0.6rem" }}
-                          >
+                          <div className="settings-card-label mt-[0.6rem]">
                             <i
                               className="fas fa-language"
                               aria-hidden="true"
@@ -1039,14 +1106,11 @@ export default function SettingsModal() {
                           <p className="settings-hint">
                             {wordTranslationLanguageHint}
                           </p>
-                          <div
-                            className="settings-chips"
-                            style={{ marginTop: "0.55rem" }}
-                          >
+                          <div className="settings-chips mt-[0.55rem]">
                             {WORD_TRANSLATION_LANGUAGE_OPTIONS.map((option) => (
                               <button
                                 key={option.code}
-                                className={`settings-chip ${wordTranslationLang === option.code ? "active" : ""}`}
+                                className={chipClass(wordTranslationLang === option.code)}
                                 onClick={() =>
                                   set({ wordTranslationLang: option.code })
                                 }
@@ -1065,7 +1129,7 @@ export default function SettingsModal() {
                 </div>
 
                 {/* Translation */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-toggle-row">
                     <div className="settings-toggle-info">
                       <i className="fas fa-language" aria-hidden="true"></i>
@@ -1092,22 +1156,16 @@ export default function SettingsModal() {
                   </div>
                   {showTranslation && (
                     <>
-                      <div
-                        className="settings-card-label"
-                        style={{ marginTop: "0.85rem" }}
-                      >
+                      <div className="settings-card-label mt-[0.85rem]">
                         <i className="fas fa-globe" aria-hidden="true"></i>
                         {t("settings.translationLang", lang)}
                       </div>
                       <p className="settings-hint">{translationLanguageHint}</p>
-                      <div
-                        className="settings-chips"
-                        style={{ marginTop: "0.75rem" }}
-                      >
+                      <div className="settings-chips mt-[0.75rem]">
                         {TRANSLATION_LANGUAGE_OPTIONS.map((option) => (
                           <button
                             key={option.code}
-                            className={`settings-chip ${translationLang === option.code ? "active" : ""}`}
+                            className={chipClass(translationLang === option.code)}
                             onClick={() =>
                               set({ translationLang: option.code })
                             }
@@ -1122,7 +1180,7 @@ export default function SettingsModal() {
                 </div>
 
                 {/* Font size */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-card-label">
                     <i className="fas fa-text-height" aria-hidden="true"></i>
                     {t("settings.fontSize", lang)}
@@ -1143,10 +1201,10 @@ export default function SettingsModal() {
                       onClick={() =>
                         dispatch({
                           type: "SET_QURAN_FONT_SIZE",
-                          payload: Math.max(32, quranFontSize - 2),
+                          payload: Math.max(FONT_SIZE_MIN, quranFontSize - 2),
                         })
                       }
-                      disabled={quranFontSize <= 32}
+                      disabled={quranFontSize <= FONT_SIZE_MIN}
                       aria-label={
                         lang === "fr"
                           ? "Réduire la taille"
@@ -1155,34 +1213,22 @@ export default function SettingsModal() {
                             : "Decrease size"
                       }
                     >
-                      <span
-                        style={{
-                          fontSize: "0.72rem",
-                          fontWeight: 800,
-                          fontFamily: "var(--font-ui)",
-                          lineHeight: 1,
-                        }}
-                      >
+                      <span className="text-[0.72rem] font-extrabold leading-none [font-family:var(--font-ui)]">
                         A
                       </span>
                     </button>
                     <div className="fss-track" role="presentation">
-                      <div
-                        className="fss-bar"
-                        style={{
-                          width: `${((quranFontSize - 32) / (64 - 32)) * 100}%`,
-                        }}
-                      />
+                      <div className={cn("fss-bar", fontProgressWidthClass)} />
                     </div>
                     <button
                       className="fss-btn"
                       onClick={() =>
                         dispatch({
                           type: "SET_QURAN_FONT_SIZE",
-                          payload: Math.min(64, quranFontSize + 2),
+                          payload: Math.min(FONT_SIZE_MAX, quranFontSize + 2),
                         })
                       }
-                      disabled={quranFontSize >= 64}
+                      disabled={quranFontSize >= FONT_SIZE_MAX}
                       aria-label={
                         lang === "fr"
                           ? "Augmenter la taille"
@@ -1191,38 +1237,24 @@ export default function SettingsModal() {
                             : "Increase size"
                       }
                     >
-                      <span
-                        style={{
-                          fontSize: "1.15rem",
-                          fontWeight: 800,
-                          fontFamily: "var(--font-ui)",
-                          lineHeight: 1,
-                        }}
-                      >
+                      <span className="text-[1.15rem] font-extrabold leading-none [font-family:var(--font-ui)]">
                         A
                       </span>
                     </button>
                   </div>
                   <div
-                    className="font-size-preview-ar"
-                    style={{
-                      fontFamily: "var(--font-quran)",
-                      fontSize: `${Math.round(quranFontSize * 0.82)}px`,
-                      direction: "rtl",
-                      textAlign: "center",
-                      marginTop: "0.5rem",
-                      color: "var(--text-quran)",
-                      lineHeight: 2.2,
-                      minHeight: "2.5rem",
-                      opacity: 0.9,
-                    }}
+                    className={cn(
+                      "font-size-preview-ar mt-2 min-h-10 text-center leading-[2.2] opacity-90 text-[var(--text-quran)] [font-family:var(--font-quran,serif)]",
+                      fontPreviewSizeClass,
+                    )}
+                    dir="rtl"
                   >
                     بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
                   </div>
                 </div>
 
                 {/* Font family */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-card-label">
                     <i className="fas fa-font" aria-hidden="true"></i>
                     {t("settings.fontFamily", lang)}
@@ -1256,17 +1288,17 @@ export default function SettingsModal() {
                         {cat.fonts.map((f) => (
                           <button
                             key={f.id}
-                            className={`chip font-chip ${fontFamily === f.id ? "active" : ""}`}
+                            className={cn(
+                              "chip font-chip",
+                              fontFamily === f.id && "active",
+                              f.bold && "font-semibold",
+                            )}
                             onClick={() =>
                               dispatch({
                                 type: "SET_FONT_FAMILY",
                                 payload: f.id,
                               })
                             }
-                            style={{
-                              fontFamily: f.css,
-                              fontWeight: f.bold ? 700 : 400,
-                            }}
                             title={f.hint}
                             aria-pressed={fontFamily === f.id}
                           >
@@ -1289,22 +1321,12 @@ export default function SettingsModal() {
                     </div>
                   )}
                   <div
-                    className="font-preview"
-                    style={{
-                      fontFamily:
-                        FONT_OPTIONS.find((f) => f.id === fontFamily)?.css ||
-                        FONT_OPTIONS[0].css,
-                      fontWeight: FONT_OPTIONS.find((f) => f.id === fontFamily)
-                        ?.bold
-                        ? 700
-                        : 400,
-                      fontSize: "1.4rem",
-                      direction: "rtl",
-                      textAlign: "center",
-                      marginTop: "0.5rem",
-                      color: "var(--text-quran)",
-                      lineHeight: 2,
-                    }}
+                    className={cn(
+                      "font-preview mt-2 text-center text-[1.4rem] leading-[2] text-[var(--text-quran)] [font-family:var(--font-quran,serif)]",
+                      FONT_OPTIONS.find((f) => f.id === fontFamily)?.bold &&
+                        "font-semibold",
+                    )}
+                    dir="rtl"
                     aria-label="Aperçu de la police"
                   >
                     بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
@@ -1317,13 +1339,13 @@ export default function SettingsModal() {
                 TAB: Audio
             ════════════════════════════════ */}
             {activeTab === "audio" && (
-              <div className="settings-pane">
-                <div className="settings-pane-title">
+              <div className={paneClass}>
+                <div className={paneTitleClass}>
                   {lang === "ar" ? "الصوت" : lang === "fr" ? "Audio" : "Audio"}
                 </div>
 
                 {/* Current reciter info */}
-                <div className="settings-card settings-reciter-card">
+                <div className={cn(cardClass, "settings-reciter-card")}>
                   <div className="reciter-info-row">
                     <span className="reciter-avatar">
                       <i
@@ -1347,7 +1369,7 @@ export default function SettingsModal() {
                 </div>
 
                 {/* Reciter selector */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-card-label">
                     <i
                       className="fas fa-microphone-lines"
@@ -1400,7 +1422,7 @@ export default function SettingsModal() {
                 </div>
 
                 {/* Sync offset */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-card-label">
                     <i className="fas fa-sliders" aria-hidden="true"></i>
                     {lang === "fr"
@@ -1448,8 +1470,8 @@ export default function SettingsModal() {
                 TAB: Données
             ════════════════════════════════ */}
             {activeTab === "donnees" && (
-              <div className="settings-pane">
-                <div className="settings-pane-title">
+              <div className={paneClass}>
+                <div className={paneTitleClass}>
                   {lang === "ar"
                     ? "البيانات"
                     : lang === "fr"
@@ -1458,7 +1480,7 @@ export default function SettingsModal() {
                 </div>
 
                 {/* Export / Import */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-card-label">
                     <i className="fas fa-hard-drive" aria-hidden="true"></i>
                     {t("export.title", lang)}
@@ -1479,7 +1501,7 @@ export default function SettingsModal() {
                 </div>
 
                 {/* Keyboard shortcuts */}
-                <div className="settings-card">
+                <div className={cardClass}>
                   <div className="settings-card-label">
                     <i className="fas fa-keyboard" aria-hidden="true"></i>
                     {lang === "ar"
@@ -1539,7 +1561,7 @@ export default function SettingsModal() {
                 </div>
 
                 {/* About */}
-                <div className="settings-card about-card">
+                <div className={cn(cardClass, "about-card")}>
                   <div className="about-brand">
                     <PlatformLogo
                       className="about-logo"
@@ -1590,15 +1612,15 @@ export default function SettingsModal() {
                 TAB: Outils
             ════════════════════════════════ */}
             {activeTab === "outils" && (
-              <div className="settings-pane">
-                <div className="settings-pane-title">
+              <div className={paneClass}>
+                <div className={paneTitleClass}>
                   {lang === "ar"
                     ? "الأدوات"
                     : lang === "fr"
                       ? "Outils"
                       : "Tools"}
                 </div>
-                <p className="settings-hint" style={{ marginBottom: "1rem" }}>
+                <p className="settings-hint mb-4">
                   {lang === "fr"
                     ? "Accédez rapidement aux outils d'apprentissage et de mémorisation."
                     : lang === "ar"
@@ -1617,7 +1639,7 @@ export default function SettingsModal() {
                       desc_ar: "احفظ الآيات",
                       desc_en: "Memorize verses",
                       action: "flashcardsOpen",
-                      color: "#4ade80",
+                      iconClass: "text-emerald-400",
                     },
                     {
                       icon: "fa-spell-check",
@@ -1628,7 +1650,7 @@ export default function SettingsModal() {
                       desc_ar: "اختبر معلوماتك",
                       desc_en: "Test your rules",
                       action: "tajweedQuizOpen",
-                      color: "#60a5fa",
+                      iconClass: "text-sky-400",
                     },
                     {
                       icon: "fa-book-open-reader",
@@ -1639,7 +1661,7 @@ export default function SettingsModal() {
                       desc_ar: "هدف القراءة",
                       desc_en: "Reading goal",
                       action: "khatmaOpen",
-                      color: "#f59e0b",
+                      iconClass: "text-amber-400",
                     },
                     {
                       icon: "fa-users",
@@ -1650,7 +1672,7 @@ export default function SettingsModal() {
                       desc_ar: "قارن حفص وورش",
                       desc_en: "Compare Hafs & Warsh",
                       action: "comparatorOpen",
-                      color: "#a78bfa",
+                      iconClass: "text-violet-400",
                     },
                     {
                       icon: "fa-image",
@@ -1661,7 +1683,7 @@ export default function SettingsModal() {
                       desc_ar: "أنشئ صورة جميلة",
                       desc_en: "Create a beautiful image",
                       action: "shareImageOpen",
-                      color: "#f472b6",
+                      iconClass: "text-pink-400",
                     },
                     {
                       icon: "fa-chart-bar",
@@ -1672,7 +1694,7 @@ export default function SettingsModal() {
                       desc_ar: "تقدمك الأسبوعي",
                       desc_en: "Your progress",
                       action: "weeklyStatsOpen",
-                      color: "#34d399",
+                      iconClass: "text-teal-400",
                     },
                   ].map(
                     ({
@@ -1684,7 +1706,7 @@ export default function SettingsModal() {
                       desc_ar,
                       desc_en,
                       action,
-                      color,
+                      iconClass,
                     }) => (
                       <button
                         key={action}
@@ -1697,7 +1719,7 @@ export default function SettingsModal() {
                           lang === "ar" ? ar : lang === "fr" ? fr : en
                         }
                       >
-                        <span className="settings-tool-icon" style={{ color }}>
+                        <span className={cn("settings-tool-icon", iconClass)}>
                           <i className={`fas ${icon}`} aria-hidden="true" />
                         </span>
                         <span className="settings-tool-name">
