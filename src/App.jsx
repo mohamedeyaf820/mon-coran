@@ -115,6 +115,8 @@ export default function App() {
   }, [currentSurah, currentJuz, currentPage, displayMode]);
 
   const lowPerfMode = useMemo(() => detectLowPerformanceDevice(), []);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const homePolishLoadedRef = useRef(false);
 
   /* ── Immersive reading mode: auto-hide header after 3s inactivity ── */
   const [immersiveHidden, setImmersiveHidden] = useState(false);
@@ -173,14 +175,96 @@ export default function App() {
   useEffect(() => {
     const cancelIdle = runWhenIdle(
       () => setDeferNonCriticalUI(true),
-      lowPerfMode ? 680 : 220,
+      lowPerfMode ? 2800 : 1200,
     );
     return cancelIdle;
   }, [lowPerfMode]);
 
+  // Defer non-critical styles in two stages to protect initial LCP on mobile.
   useEffect(() => {
-    ensureFontLoaded(state.fontFamily).catch(() => {});
-  }, [state.fontFamily]);
+    let cancelled = false;
+    let baseLoaded = false;
+    let premiumLoaded = false;
+
+    const loadBaseStyles = () => {
+      if (cancelled || baseLoaded) return;
+      baseLoaded = true;
+      Promise.allSettled([
+        import("./styles/ui-enhancements.css"),
+        import("./styles/themes4.css"),
+      ]).catch(() => {});
+    };
+
+    const loadPremiumStyles = () => {
+      if (cancelled || premiumLoaded) return;
+
+      // Keep premium visual layer off low-end/mobile devices to reduce CSS cost.
+      if (lowPerfMode) return;
+      if (typeof window !== "undefined" && window.innerWidth < 1024) return;
+
+      premiumLoaded = true;
+      import("./styles/premium-platform.css").catch(() => {});
+    };
+
+    const onFirstInteraction = () => {
+      setHasInteracted(true);
+      loadBaseStyles();
+      loadPremiumStyles();
+      window.removeEventListener("pointerdown", onFirstInteraction);
+      window.removeEventListener("keydown", onFirstInteraction);
+      window.removeEventListener("touchstart", onFirstInteraction);
+    };
+
+    window.addEventListener("pointerdown", onFirstInteraction, {
+      passive: true,
+      once: true,
+    });
+    window.addEventListener("keydown", onFirstInteraction, { once: true });
+    window.addEventListener("touchstart", onFirstInteraction, {
+      passive: true,
+      once: true,
+    });
+
+    const cancelIdleBase = runWhenIdle(
+      loadBaseStyles,
+      lowPerfMode ? 2600 : 1500,
+    );
+    const cancelIdlePremium = runWhenIdle(
+      loadPremiumStyles,
+      lowPerfMode ? 14000 : 7000,
+    );
+
+    return () => {
+      cancelled = true;
+      cancelIdleBase();
+      cancelIdlePremium();
+      window.removeEventListener("pointerdown", onFirstInteraction);
+      window.removeEventListener("keydown", onFirstInteraction);
+      window.removeEventListener("touchstart", onFirstInteraction);
+    };
+  }, [lowPerfMode]);
+
+  // Load Home-only polish styles only when Home is visible (desktop/high-perf only).
+  useEffect(() => {
+    if (homePolishLoadedRef.current) return;
+    if (!showHome) return;
+    if (lowPerfMode) return;
+    if (!deferNonCriticalUI && !hasInteracted) return;
+    if (typeof window !== "undefined" && window.innerWidth < 1024) return;
+
+    homePolishLoadedRef.current = true;
+    import("./styles/premium-home-polish.css").catch(() => {});
+  }, [showHome, lowPerfMode, deferNonCriticalUI, hasInteracted]);
+
+  useEffect(() => {
+    if (lowPerfMode) return;
+
+    const cancelIdle = runWhenIdle(() => {
+      ensureFontLoaded(state.fontFamily).catch(() => {});
+    }, 1800);
+
+    return cancelIdle;
+  }, [state.fontFamily, lowPerfMode]);
 
   /* ── Pre-load audio playlist when on the home page ──
      QuranDisplay handles playlist loading when in reading mode.
@@ -190,6 +274,8 @@ export default function App() {
   useEffect(() => {
     if (!showHome) return;
     if (lowPerfMode) return;
+    if (!deferNonCriticalUI) return;
+    if (!hasInteracted) return;
 
     let cancelled = false;
     const {
@@ -235,6 +321,8 @@ export default function App() {
     state.currentSurah,
     state.warshStrictMode,
     lowPerfMode,
+    deferNonCriticalUI,
+    hasInteracted,
   ]);
 
   /* ── Keyboard shortcuts ── */
@@ -465,7 +553,9 @@ export default function App() {
 
       {/* ── Fixed bottom audio player ── */}
       <Suspense fallback={null}>
-        {deferNonCriticalUI && <AudioPlayer />}
+        {deferNonCriticalUI && (state.isPlaying || state.currentPlayingAyah) && (
+          <AudioPlayer />
+        )}
       </Suspense>
 
       {/* ── Modals — lazy loaded ── */}

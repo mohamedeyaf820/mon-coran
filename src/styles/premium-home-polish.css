@@ -1,0 +1,909 @@
+/* Homepage polish pack - recitation cards and global refinements */
+.app-root.premium-plus .hp2--platform {
+  gap: 1.15rem;
+}
+
+.app-root.premium-plus .hp2-hero,
+.app-root.premium-plus .hp2-quickbar,
+.app-root.premium-plus .hp2-stats-strip,
+.app-root.premium-plus .hp2-panel,
+.app-root.premium-plus .hp2-content,
+.app-root.premium-plus .hp2-vod,
+.app-root.premium-plus .hp2-focus-card,
+.app-root.premium-plus .hp2-prayers,
+.app-root.premium-plus .hp2-recent-item {
+  border-radius: 1.1rem !important;
+}
+
+.app-root.premium-plus .hp2-hero {
+  box-shadow:
+    0 24px 58px rgba(2, 8, 22, 0.19),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09) !important;
+}
+
+.app-root.premium-plus .hp2-recent-item,
+.app-root.premium-plus .hp2-feature,
+.app-root.premium-plus .hp2-qchip,
+.app-root.premium-plus .hp2-stats-strip__item,
+.app-root.premium-plus .hp2-item,
+.app-root.premium-plus .hp2-panel__tab,
+.app-root.premium-plus .hpl-row,
+.app-root.premium-plus .hp2-items--grid .scard,
+.app-root.premium-plus .hpq-card {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background 220ms ease !important;
+}
+
+.app-root.premium-plus .hp2-recent-item::before,
+.app-root.premium-plus .hp2-feature::before,
+.app-root.premium-plus .hp2-qchip::before,
+.app-root.premium-plus .hp2-stats-strip__item::before,
+.app-root.premium-plus .hp2-item::before,
+.app-root.premium-plus .hpl-row::before,
+.app-root.premium-plus .hp2-items--grid .scard::before,
+.app-root.premium-plus .hpq-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(var(--theme-primary-rgb), 0.12) 0%,
+    rgba(var(--theme-primary-rgb), 0) 44%,
+    rgba(212, 168, 32, 0.14) 100%
+  );
+  transition: opacity 220ms ease;
+}
+
+.app-root.premium-plus .hp2-recent-item:hover,
+.app-root.premium-plus .hp2-feature:hover,
+.app-root.premium-plus .hp2-qchip:hover,
+.app-root.premium-plus .hp2-stats-strip__item:hover,
+.app-root.premium-plus .hp2-item:hover,
+.app-root.premium-plus .hpl-row:hover,
+.app-root.premium-plus .hp2-items--grid .scard:hover,
+.app-root.premium-plus .hpq-card:hover {
+  transform: translateY(-2px) !important;
+  border-color: color-mix(in srgb, var(--theme-primary) 34%, var(--theme-border-strong) 66%) !important;
+  box-shadow:
+    0 10px 22px rgba(7, 17, 35, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.app-root.premium-plus .hp2-recent-item:hover::before,
+.app-root.premium-plus .hp2-feature:hover::before,
+.app-root.premium-plus .hp2-qchip:hover::before,
+.app-root.premium-plus .hp2-stats-strip__item:hover::before,
+.app-root.premium-plus .hp2-item:hover::before,
+.app-root.premium-plus .hpl-row:hover::before,
+.app-root.premium-plus .hp2-items--grid .scard:hover::before,
+.app-root.premium-plus .hpq-card:hover::before {
+  opacity: 1;
+}
+
+.app-root.premium-plus .hp2-items--grid .scard,
+.app-root.premium-plus .hpq-card {
+  border-radius: 0.95rem !important;
+}
+
+.app-root.premium-plus .hp2-items--grid .scard {
+  border-width: 1.25px !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset !important;
+}
+
+.app-root.premium-plus .hp2-items--grid .scard[data-stype="meccan"] .scard__num {
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--theme-primary) 74%, #ffffff 26%),
+    color-mix(in srgb, var(--theme-primary) 58%, #0b1926 42%)
+  ) !important;
+  color: #f8f7f0 !important;
+}
+
+.app-root.premium-plus .hp2-items--grid .scard[data-stype="medinan"] .scard__num {
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, #c39a44 88%, #ffffff 12%),
+    color-mix(in srgb, #9d7729 76%, #2f2a1e 24%)
+  ) !important;
+  color: #fff8e6 !important;
+}
+
+.app-root.premium-plus .hp2-items--grid .scard__num,
+.app-root.premium-plus .hpq-card__num,
+.app-root.premium-plus .hpl-row__num {
+  box-shadow:
+    0 7px 14px rgba(var(--theme-primary-rgb), 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24) !important;
+}
+
+.app-root.premium-plus .hp2-items--grid .scard__name,
+.app-root.premium-plus .hpq-card__name,
+.app-root.premium-plus .hpl-row__name,
+.app-root.premium-plus .hp2-recent-name {
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, var(--theme-text) 96%, #ffffff 4%) !important;
+}
+
+.app-root.premium-plus .hp2-items--grid .scard__meta,
+.app-root.premium-plus .hp2-items--grid .scard__trans {
+  letter-spacing: 0.01em;
+}
+
+.app-root.premium-plus .hp2-items--grid .scard__ar,
+.app-root.premium-plus .hpl-row__ar,
+.app-root.premium-plus .hp2-qchip__ar {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.app-root.premium-plus .hp2-items--grid .scard__play,
+.app-root.premium-plus .hpl-row__play {
+  border: 1px solid color-mix(in srgb, var(--theme-border-strong) 36%, transparent 64%) !important;
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--theme-panel-bg-strong) 85%, transparent 15%),
+    color-mix(in srgb, var(--theme-panel-bg) 78%, rgba(var(--theme-primary-rgb), 0.2) 22%)
+  ) !important;
+  box-shadow:
+    0 5px 12px rgba(9, 15, 26, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+}
+
+.app-root.premium-plus .hp2-items--grid .scard__play:hover,
+.app-root.premium-plus .hpl-row__play:hover,
+.app-root.premium-plus .hp2-items--grid .scard__play--on,
+.app-root.premium-plus .hpl-row__play--on {
+  border-color: color-mix(in srgb, var(--theme-primary) 48%, #e5d6a8 52%) !important;
+  background: linear-gradient(
+    140deg,
+    color-mix(in srgb, var(--theme-primary) 82%, #ffffff 18%),
+    color-mix(in srgb, var(--theme-primary) 64%, #153325 36%)
+  ) !important;
+  color: #f7f2df !important;
+}
+
+.app-root.premium-plus .hp2-panel__tab {
+  border-radius: 0.74rem !important;
+}
+
+.app-root.premium-plus .hp2-panel__tab--on,
+.app-root.premium-plus .hp2-seg--on,
+.app-root.premium-plus .hp2-icon-btn--on {
+  box-shadow:
+    0 8px 18px rgba(var(--theme-primary-rgb), 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+
+.app-root.premium-plus .hp2-search {
+  border-radius: 0.9rem !important;
+}
+
+.app-root.premium-plus .hp2-search__input {
+  font-size: 0.84rem;
+  letter-spacing: 0.01em;
+}
+
+.app-root.premium-plus .hp2-vod {
+  background:
+    radial-gradient(circle at 85% 0%, rgba(255, 255, 255, 0.14), transparent 26%),
+    radial-gradient(circle at 10% 100%, rgba(0, 0, 0, 0.14), transparent 34%),
+    linear-gradient(
+      148deg,
+      color-mix(in srgb, var(--theme-primary) 94%, #ffffff 6%),
+      color-mix(in srgb, var(--theme-primary) 68%, #10271d 32%)
+    ) !important;
+}
+
+.app-root.premium-plus .hp2-focus-card__cta,
+.app-root.premium-plus .hp2-btn--primary {
+  box-shadow:
+    0 12px 26px rgba(var(--theme-primary-rgb), 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.app-root.premium-plus .mp-audio-player {
+  border-radius: 1rem 1rem 0 0 !important;
+  border-top-color: color-mix(in srgb, var(--theme-border-strong) 32%, transparent 68%) !important;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(var(--theme-primary-rgb), 0.14), transparent 32%),
+    linear-gradient(
+      170deg,
+      color-mix(in srgb, var(--theme-panel-bg-strong) 96%, #000000 4%),
+      color-mix(in srgb, var(--theme-panel-bg) 90%, #000000 10%)
+    ) !important;
+  box-shadow:
+    0 -16px 34px rgba(2, 8, 22, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+.app-root.premium-plus .mp-audio-player .player-progress {
+  height: 4px;
+  border-radius: 999px;
+}
+
+.app-root.premium-plus .mp-audio-player .player-progress:hover {
+  height: 6px;
+}
+
+.app-root.premium-plus .mp-audio-player .player-progress-fill {
+  background: linear-gradient(90deg, #c89a35 0%, #e7c86c 100%) !important;
+  box-shadow: 0 0 14px rgba(211, 168, 65, 0.42) !important;
+}
+
+.app-root.premium-plus .mp-audio-player .play-btn {
+  border-radius: 0.98rem;
+  background: linear-gradient(140deg, #ffffff 0%, #f3ebd5 100%) !important;
+  color: #173e2b !important;
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78) !important;
+}
+
+.app-root.premium-plus .mp-audio-player .play-btn:hover {
+  transform: translateY(-1px) scale(1.04);
+}
+
+.app-root.premium-plus .mp-audio-player .player-btn,
+.app-root.premium-plus .mp-audio-player .player-btn-sm {
+  border-color: color-mix(in srgb, var(--theme-border-strong) 36%, transparent 64%) !important;
+  background: color-mix(in srgb, var(--theme-panel-bg-strong) 84%, transparent 16%) !important;
+}
+
+.app-root.premium-plus .mp-audio-player .player-btn:hover,
+.app-root.premium-plus .mp-audio-player .player-btn-sm:hover,
+.app-root.premium-plus .mp-audio-player .player-btn-sm.active {
+  border-color: color-mix(in srgb, #d6b262 68%, var(--theme-primary) 32%) !important;
+  background: color-mix(in srgb, rgba(212, 168, 32, 0.26) 72%, var(--theme-panel-bg-strong) 28%) !important;
+  color: #f4ddb0 !important;
+}
+
+@media (max-width: 980px) {
+  .app-root.premium-plus .hp2--platform {
+    gap: 0.92rem;
+  }
+
+  .app-root.premium-plus .hp2-recent-item,
+  .app-root.premium-plus .hp2-feature,
+  .app-root.premium-plus .hp2-qchip,
+  .app-root.premium-plus .hp2-stats-strip__item,
+  .app-root.premium-plus .hp2-item,
+  .app-root.premium-plus .hpl-row,
+  .app-root.premium-plus .hp2-items--grid .scard,
+  .app-root.premium-plus .hpq-card {
+    border-radius: 0.88rem !important;
+  }
+
+  .app-root.premium-plus .mp-audio-player {
+    border-radius: 0.9rem 0.9rem 0 0 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-root.premium-plus .hp2-items--grid .scard {
+    border-width: 1px !important;
+  }
+
+  .app-root.premium-plus .hp2-items--grid .scard__meta,
+  .app-root.premium-plus .hp2-items--grid .scard__trans,
+  .app-root.premium-plus .hpl-row__meta,
+  .app-root.premium-plus .hpl-row__sub {
+    font-size: 0.66rem !important;
+  }
+
+  .app-root.premium-plus .mp-audio-player .player-controls {
+    padding-inline: 0.5rem;
+    gap: 0.32rem;
+  }
+
+  .app-root.premium-plus .mp-audio-player .player-btn {
+    width: 31px;
+    height: 31px;
+  }
+
+  .app-root.premium-plus .mp-audio-player .play-btn {
+    width: 39px;
+    height: 39px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-root.premium-plus .hp2-recent-item,
+  .app-root.premium-plus .hp2-feature,
+  .app-root.premium-plus .hp2-qchip,
+  .app-root.premium-plus .hp2-stats-strip__item,
+  .app-root.premium-plus .hp2-item,
+  .app-root.premium-plus .hpl-row,
+  .app-root.premium-plus .hp2-items--grid .scard,
+  .app-root.premium-plus .hpq-card,
+  .app-root.premium-plus .mp-audio-player .play-btn,
+  .app-root.premium-plus .mp-audio-player .player-btn,
+  .app-root.premium-plus .mp-audio-player .player-btn-sm {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+[data-theme="light"] .app-root.premium-plus .hp2-item__ar,
+[data-theme="light"] .app-root.premium-plus .hpl-row__ar,
+[data-theme="light"] .app-root.premium-plus .scard__ar,
+[data-theme="light"] .app-root.premium-plus .hp2-qchip__ar {
+  color: #a67f26 !important;
+}
+
+[data-theme="dark"] .app-root.premium-plus .hp2-recent-history {
+  border-color: rgba(117, 134, 160, 0.24) !important;
+  background: linear-gradient(
+    160deg,
+    rgba(24, 30, 40, 0.94),
+    rgba(20, 26, 35, 0.96)
+  ) !important;
+  box-shadow:
+    0 14px 34px rgba(5, 10, 17, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-theme="light"] .app-root.premium-plus .hp2-recent-history,
+[data-theme="sepia"] .app-root.premium-plus .hp2-recent-history {
+  border-color: rgba(171, 139, 66, 0.24) !important;
+  background: linear-gradient(
+    160deg,
+    rgba(250, 245, 233, 0.96),
+    rgba(245, 239, 225, 0.97)
+  ) !important;
+  box-shadow:
+    0 14px 34px rgba(104, 85, 50, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72) !important;
+}
+
+[data-theme="dark"] .app-root.premium-plus .hp2 > .pointer-events-none[aria-hidden="true"] > div:nth-child(1) {
+  background: rgba(70, 122, 167, 0.2) !important;
+}
+
+[data-theme="dark"] .app-root.premium-plus .hp2 > .pointer-events-none[aria-hidden="true"] > div:nth-child(2) {
+  background: rgba(44, 182, 200, 0.16) !important;
+}
+
+[data-theme="dark"] .app-root.premium-plus .hp2 > .pointer-events-none[aria-hidden="true"] > div:nth-child(3) {
+  background: rgba(90, 121, 160, 0.14) !important;
+}
+
+[data-theme="light"] .app-root.premium-plus .hp2 > .pointer-events-none[aria-hidden="true"] > div:nth-child(1),
+[data-theme="sepia"] .app-root.premium-plus .hp2 > .pointer-events-none[aria-hidden="true"] > div:nth-child(1) {
+  background: rgba(185, 141, 45, 0.16) !important;
+}
+
+[data-theme="light"] .app-root.premium-plus .hp2 > .pointer-events-none[aria-hidden="true"] > div:nth-child(2),
+[data-theme="sepia"] .app-root.premium-plus .hp2 > .pointer-events-none[aria-hidden="true"] > div:nth-child(2) {
+  background: rgba(159, 130, 66, 0.13) !important;
+}
+
+[data-theme="light"] .app-root.premium-plus .hp2 > .pointer-events-none[aria-hidden="true"] > div:nth-child(3),
+[data-theme="sepia"] .app-root.premium-plus .hp2 > .pointer-events-none[aria-hidden="true"] > div:nth-child(3) {
+  background: rgba(205, 175, 104, 0.12) !important;
+}
+
+@media (max-width: 640px) {
+  .app-root.premium-plus .hp2-hero__title {
+    font-size: clamp(1.42rem, 6.9vw, 1.92rem) !important;
+    line-height: 1.08 !important;
+    word-break: break-word;
+  }
+
+  .app-root.premium-plus .hp2-hero__tagline {
+    max-width: 100% !important;
+    font-size: 0.88rem !important;
+    line-height: 1.45 !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .app-root.premium-plus .hp2-vod__text {
+    font-size: clamp(1.05rem, 5.2vw, 1.22rem) !important;
+    line-height: 1.78 !important;
+  }
+
+  .app-root.premium-plus .hp2-vod__trans {
+    font-size: 0.79rem !important;
+    line-height: 1.42 !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .app-root.premium-plus .hp2-recent-name {
+    font-size: 0.88rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .app-root.premium-plus .hp2-feature__text {
+    font-size: 0.76rem !important;
+    line-height: 1.3 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-root.premium-plus .hp2-hero__date-pill,
+  .app-root.premium-plus .hp2-hero__greeting,
+  .app-root.premium-plus .hp2-hero__badge {
+    font-size: 0.66rem !important;
+    padding-inline: 0.58rem !important;
+  }
+
+  .app-root.premium-plus .hp2-vod__btn,
+  .app-root.premium-plus .hp2-btn {
+    font-size: 0.78rem !important;
+  }
+}
+
+/* Mobile reading: action cards as horizontal strips (en bande) */
+@media (max-width: 768px) {
+  .ayah-actions__grid,
+  .app-root.premium-plus .ayah-actions__grid {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+
+  .ayah-action-card,
+  .app-root.premium-plus .ayah-action-card {
+    width: 100%;
+    min-height: 2.16rem;
+    display: grid;
+    grid-template-columns: 1.52rem minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 0.44rem;
+    row-gap: 0.08rem;
+    padding: 0.34rem 0.44rem;
+  }
+
+  .ayah-action-card__icon,
+  .app-root.premium-plus .ayah-action-card__icon {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    width: 1.12rem;
+    height: 1.12rem;
+    font-size: 0.58rem;
+  }
+
+  .ayah-action-card__label,
+  .app-root.premium-plus .ayah-action-card__label {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 0.74rem;
+    line-height: 1.06;
+  }
+
+  .ayah-action-card__desc,
+  .app-root.premium-plus .ayah-action-card__desc {
+    grid-column: 2;
+    grid-row: 2;
+    display: block;
+    font-size: 0.62rem;
+    line-height: 1.12;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ayah-action-card__state,
+  .app-root.premium-plus .ayah-action-card__state {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: center;
+    justify-self: end;
+    font-size: 0.63rem;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 420px) {
+  .ayah-action-card,
+  .app-root.premium-plus .ayah-action-card {
+    grid-template-columns: 1.42rem minmax(0, 1fr) auto;
+    min-height: 2.02rem;
+    padding: 0.32rem 0.4rem;
+  }
+
+  .ayah-action-card__label,
+  .app-root.premium-plus .ayah-action-card__label {
+    font-size: 0.7rem;
+  }
+
+  .ayah-action-card__desc,
+  .app-root.premium-plus .ayah-action-card__desc {
+    font-size: 0.58rem;
+  }
+}
+
+/* Responsive visibility fix - keep icons and text fully visible */
+.app-root.premium-plus .hp2--platform .hp2-icon-btn__label {
+  display: inline-flex !important;
+  align-items: center;
+  font-size: 0.68rem;
+  line-height: 1.12;
+  white-space: normal;
+}
+
+.app-root.premium-plus .hp2--platform .hp2-icon-btn {
+  width: auto !important;
+  min-width: 2.45rem;
+  padding-inline: 0.62rem !important;
+  gap: 0.36rem;
+}
+
+.app-root.premium-plus .hp2--platform .hp2-toolbar {
+  align-items: stretch;
+}
+
+.app-root.premium-plus .hp2--platform .hp2-toolbar__end {
+  flex-wrap: wrap;
+  gap: 0.42rem;
+}
+
+.app-root.premium-plus .hp2--platform .hp2-seg,
+.app-root.premium-plus .hp2--platform .hp2-icon-btn,
+.app-root.premium-plus .hp2--platform .hp2-btn,
+.app-root.premium-plus .hp2--platform .hp2-qchip,
+.app-root.premium-plus .hp2--platform .hp2-item,
+.app-root.premium-plus .hp2--platform .hpl-row,
+.app-root.premium-plus .hp2--platform .hpq-card,
+.app-root.premium-plus .hp2--platform .scard {
+  min-width: 0;
+}
+
+.app-root.premium-plus .hp2--platform .hp2-item__sub,
+.app-root.premium-plus .hp2--platform .hp2-item__excerpt,
+.app-root.premium-plus .hp2--platform .hp2-recent-name,
+.app-root.premium-plus .hp2--platform .scard__name,
+.app-root.premium-plus .hp2--platform .scard__trans,
+.app-root.premium-plus .hp2--platform .scard__meta,
+.app-root.premium-plus .hp2--platform .hpl-row__name,
+.app-root.premium-plus .hp2--platform .hpl-row__sub,
+.app-root.premium-plus .hp2--platform .hpl-row__meta,
+.app-root.premium-plus .hp2--platform .hpq-card__name,
+.app-root.premium-plus .hp2--platform .hpq-card__meta,
+.app-root.premium-plus .hp2--platform .hp2-qchip__sub {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.app-root.premium-plus .hp2--platform .hp2-vod__trans,
+.app-root.premium-plus .hp2--platform .hp2-hero__tagline {
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+  -webkit-box-orient: initial !important;
+  overflow: visible !important;
+}
+
+.app-root.premium-plus .hp2--platform .ayah-action-card__desc,
+.app-root.premium-plus .hp2--platform .ayah-action-card__state {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+}
+
+@media (max-width: 980px) {
+  .app-root.premium-plus .hp2--platform .hp2-toolbar {
+    row-gap: 0.52rem;
+  }
+
+  .app-root.premium-plus .hp2--platform .hp2-segs {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .app-root.premium-plus .hp2--platform .hp2-seg {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+
+  .app-root.premium-plus .hp2--platform .hp2-search {
+    order: 3;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .app-root.premium-plus .hp2--platform .hp2-toolbar__end {
+    order: 4;
+    width: 100%;
+    margin-inline-start: 0;
+    justify-content: flex-start;
+  }
+
+  .app-root.premium-plus .hp2--platform .hp2-toolbar__count {
+    width: 100%;
+    justify-content: center;
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-root.premium-plus .hp2--platform .hp2-icon-btn {
+    min-height: 2.38rem;
+    border-radius: 0.82rem !important;
+    padding-inline: 0.56rem !important;
+    gap: 0.3rem;
+  }
+
+  .app-root.premium-plus .hp2--platform .hp2-icon-btn__label {
+    font-size: 0.64rem;
+  }
+
+  .app-root.premium-plus .hp2--platform .hp2-recent-item {
+    grid-template-columns: auto 1fr auto !important;
+  }
+
+  .app-root.premium-plus .hp2--platform .hp2-recent-play {
+    display: inline-flex !important;
+  }
+
+  .app-root.premium-plus .hp2--platform .hp2-qchip {
+    align-items: flex-start;
+    min-height: 2.5rem;
+  }
+
+  .app-root.premium-plus .hp2--platform .hp2-qchip__ar,
+  .app-root.premium-plus .hp2--platform .hpl-row__ar,
+  .app-root.premium-plus .hp2--platform .scard__ar {
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .app-root.premium-plus .hp2--platform .scard,
+  .app-root.premium-plus .hp2--platform .hpl-row,
+  .app-root.premium-plus .hp2--platform .hpq-card {
+    overflow: visible;
+  }
+}
+
+/* Full visibility mode - no clipped text or hidden icons */
+.app-root.premium-plus .hp2--platform .hp2-items--grid,
+.app-root.premium-plus .hp2--platform .hp2-items--list,
+.app-root.premium-plus .hp2--platform .hp2-panel__body,
+.app-root.premium-plus .hp2--platform .hp2-quickbar__track,
+.app-root.premium-plus .hp2--platform .hp2-toolbar__end {
+  overflow: visible !important;
+}
+
+.app-root.premium-plus .hp2--platform .scard,
+.app-root.premium-plus .hp2--platform .hpl-row,
+.app-root.premium-plus .hp2--platform .hpq-card,
+.app-root.premium-plus .hp2--platform .hp2-item,
+.app-root.premium-plus .hp2--platform .hp2-qchip,
+.app-root.premium-plus .hp2--platform .hp2-recent-item,
+.app-root.premium-plus .hp2--platform .hp2-feature,
+.app-root.premium-plus .hp2--platform .hp2-icon-btn,
+.app-root.premium-plus .hp2--platform .hp2-seg,
+.app-root.premium-plus .hp2--platform .hp2-btn,
+.app-root.premium-plus .hp2--platform .hp2-toolbar__count {
+  height: auto !important;
+  min-height: unset;
+}
+
+.app-root.premium-plus .hp2--platform .scard,
+.app-root.premium-plus .hp2--platform .hpq-card,
+.app-root.premium-plus .hp2--platform .hpl-row {
+  align-items: flex-start !important;
+}
+
+.app-root.premium-plus .hp2--platform .scard__body,
+.app-root.premium-plus .hp2--platform .hpq-card__info,
+.app-root.premium-plus .hp2--platform .hpl-row__body,
+.app-root.premium-plus .hp2--platform .hp2-item__body,
+.app-root.premium-plus .hp2--platform .hp2-recent-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.16rem;
+  min-width: 0;
+}
+
+.app-root.premium-plus .hp2--platform .scard__name,
+.app-root.premium-plus .hp2--platform .scard__trans,
+.app-root.premium-plus .hp2--platform .scard__meta,
+.app-root.premium-plus .hp2--platform .scard__ar,
+.app-root.premium-plus .hp2--platform .hpl-row__name,
+.app-root.premium-plus .hp2--platform .hpl-row__sub,
+.app-root.premium-plus .hp2--platform .hpl-row__meta,
+.app-root.premium-plus .hp2--platform .hpl-row__ar,
+.app-root.premium-plus .hp2--platform .hpq-card__name,
+.app-root.premium-plus .hp2--platform .hpq-card__meta,
+.app-root.premium-plus .hp2--platform .hp2-qchip__sub,
+.app-root.premium-plus .hp2--platform .hp2-qchip__ar,
+.app-root.premium-plus .hp2--platform .hp2-item__sub,
+.app-root.premium-plus .hp2--platform .hp2-item__excerpt,
+.app-root.premium-plus .hp2--platform .hp2-recent-name,
+.app-root.premium-plus .hp2--platform .hp2-recent-ayah,
+.app-root.premium-plus .hp2--platform .hp2-feature__text,
+.app-root.premium-plus .hp2--platform .hp2-toolbar__count,
+.app-root.premium-plus .hp2--platform .hp2-icon-btn__label,
+.app-root.premium-plus .hp2--platform .hp2-vod__trans,
+.app-root.premium-plus .hp2--platform .hp2-hero__tagline,
+.app-root.premium-plus .hp2--platform .ayah-action-card__label,
+.app-root.premium-plus .hp2--platform .ayah-action-card__desc,
+.app-root.premium-plus .hp2--platform .ayah-action-card__state,
+.app-root.premium-plus .hp2--platform .mp-audio-player .player-ayah-info,
+.app-root.premium-plus .hp2--platform .mp-audio-player .player-time {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+  line-clamp: unset !important;
+  -webkit-line-clamp: unset !important;
+  -webkit-box-orient: initial !important;
+}
+
+.app-root.premium-plus .hp2--platform .scard__play,
+.app-root.premium-plus .hp2--platform .hpl-row__play,
+.app-root.premium-plus .hp2--platform .hp2-recent-play {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.app-root.premium-plus .hp2--platform .hp2-vod__btn,
+.app-root.premium-plus .hp2--platform .hp2-btn,
+.app-root.premium-plus .hp2--platform .hp2-icon-btn,
+.app-root.premium-plus .hp2--platform .hp2-seg,
+.app-root.premium-plus .hp2--platform .hp2-qchip {
+  flex-wrap: wrap;
+  row-gap: 0.15rem;
+}
+
+@media (max-width: 640px) {
+  .app-root.premium-plus .hp2--platform .scard {
+    grid-template-columns: 1.92rem minmax(0, 1fr) auto;
+    padding-inline-end: 1.9rem !important;
+  }
+
+  .app-root.premium-plus .hp2--platform .scard__play,
+  .app-root.premium-plus .hp2--platform .hpl-row__play {
+    width: 1.95rem;
+    height: 1.95rem;
+  }
+
+  .app-root.premium-plus .hp2--platform .hp2-qchip,
+  .app-root.premium-plus .hp2--platform .hp2-icon-btn,
+  .app-root.premium-plus .hp2--platform .hp2-seg,
+  .app-root.premium-plus .hp2--platform .hp2-btn {
+    padding-top: 0.42rem !important;
+    padding-bottom: 0.42rem !important;
+  }
+}
+
+/* Readability boost - spacing and balanced card rhythm */
+.app-root.premium-plus .hp2--platform .scard,
+.app-root.premium-plus .hp2--platform .hpl-row,
+.app-root.premium-plus .hp2--platform .hpq-card,
+.app-root.premium-plus .hp2--platform .hp2-item,
+.app-root.premium-plus .hp2--platform .hp2-qchip,
+.app-root.premium-plus .hp2--platform .hp2-recent-item {
+  padding-top: 0.54rem !important;
+  padding-bottom: 0.54rem !important;
+}
+
+.app-root.premium-plus .hp2--platform .scard__body,
+.app-root.premium-plus .hp2--platform .hpl-row__body,
+.app-root.premium-plus .hp2--platform .hpq-card__info,
+.app-root.premium-plus .hp2--platform .hp2-item__body,
+.app-root.premium-plus .hp2--platform .hp2-recent-info {
+  gap: 0.2rem;
+}
+
+.app-root.premium-plus .hp2--platform .scard__name,
+.app-root.premium-plus .hp2--platform .hpl-row__name,
+.app-root.premium-plus .hp2--platform .hpq-card__name,
+.app-root.premium-plus .hp2--platform .hp2-recent-name,
+.app-root.premium-plus .hp2--platform .hp2-item__sub,
+.app-root.premium-plus .hp2--platform .hp2-item__excerpt,
+.app-root.premium-plus .hp2--platform .scard__trans,
+.app-root.premium-plus .hp2--platform .scard__meta,
+.app-root.premium-plus .hp2--platform .hpl-row__sub,
+.app-root.premium-plus .hp2--platform .hpl-row__meta,
+.app-root.premium-plus .hp2--platform .hpq-card__meta,
+.app-root.premium-plus .hp2--platform .hp2-qchip__sub,
+.app-root.premium-plus .hp2--platform .hp2-hero__tagline,
+.app-root.premium-plus .hp2--platform .hp2-vod__trans,
+.app-root.premium-plus .hp2--platform .mp-audio-player .player-ayah-info,
+.app-root.premium-plus .hp2--platform .mp-audio-player .player-time {
+  line-height: 1.34 !important;
+}
+
+.app-root.premium-plus .hp2--platform .hp2-items--grid {
+  align-items: stretch;
+}
+
+.app-root.premium-plus .hp2--platform .hp2-items--grid .scard,
+.app-root.premium-plus .hp2--platform .hp2-items--grid .hpq-card {
+  height: 100%;
+}
+
+.app-root.premium-plus .hp2--platform .hp2-recent-items {
+  gap: 0.46rem !important;
+}
+
+@media (max-width: 980px) {
+  .app-root.premium-plus .hp2--platform .scard,
+  .app-root.premium-plus .hp2--platform .hpl-row,
+  .app-root.premium-plus .hp2--platform .hpq-card,
+  .app-root.premium-plus .hp2--platform .hp2-item,
+  .app-root.premium-plus .hp2--platform .hp2-qchip,
+  .app-root.premium-plus .hp2--platform .hp2-recent-item {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  .app-root.premium-plus .hp2--platform .scard__body,
+  .app-root.premium-plus .hp2--platform .hpl-row__body,
+  .app-root.premium-plus .hp2--platform .hpq-card__info,
+  .app-root.premium-plus .hp2--platform .hp2-item__body,
+  .app-root.premium-plus .hp2--platform .hp2-recent-info {
+    gap: 0.18rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-root.premium-plus .hp2--platform .scard,
+  .app-root.premium-plus .hp2--platform .hpl-row,
+  .app-root.premium-plus .hp2--platform .hpq-card,
+  .app-root.premium-plus .hp2--platform .hp2-item,
+  .app-root.premium-plus .hp2--platform .hp2-qchip,
+  .app-root.premium-plus .hp2--platform .hp2-recent-item {
+    padding-top: 0.48rem !important;
+    padding-bottom: 0.48rem !important;
+  }
+
+  .app-root.premium-plus .hp2--platform .scard__name,
+  .app-root.premium-plus .hp2--platform .hpl-row__name,
+  .app-root.premium-plus .hp2--platform .hpq-card__name,
+  .app-root.premium-plus .hp2--platform .hp2-recent-name,
+  .app-root.premium-plus .hp2--platform .hp2-item__sub,
+  .app-root.premium-plus .hp2--platform .hp2-item__excerpt,
+  .app-root.premium-plus .hp2--platform .scard__trans,
+  .app-root.premium-plus .hp2--platform .scard__meta,
+  .app-root.premium-plus .hp2--platform .hpl-row__sub,
+  .app-root.premium-plus .hp2--platform .hpl-row__meta,
+  .app-root.premium-plus .hp2--platform .hpq-card__meta,
+  .app-root.premium-plus .hp2--platform .hp2-qchip__sub,
+  .app-root.premium-plus .hp2--platform .hp2-hero__tagline,
+  .app-root.premium-plus .hp2--platform .hp2-vod__trans,
+  .app-root.premium-plus .hp2--platform .mp-audio-player .player-ayah-info,
+  .app-root.premium-plus .hp2--platform .mp-audio-player .player-time {
+    line-height: 1.4 !important;
+  }
+
+  .app-root.premium-plus .hp2--platform .hp2-items--grid {
+    row-gap: 0.58rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-root.premium-plus .hp2--platform .scard,
+  .app-root.premium-plus .hp2--platform .hpl-row,
+  .app-root.premium-plus .hp2--platform .hpq-card,
+  .app-root.premium-plus .hp2--platform .hp2-item,
+  .app-root.premium-plus .hp2--platform .hp2-qchip,
+  .app-root.premium-plus .hp2--platform .hp2-recent-item {
+    padding-top: 0.44rem !important;
+    padding-bottom: 0.44rem !important;
+  }
+}

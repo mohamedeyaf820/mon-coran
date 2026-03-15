@@ -23,14 +23,7 @@
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
         <!-- DNS prefetch for AlQuran API -->
         <link rel="dns-prefetch" href="https://api.alquran.cloud" />
-        <!-- Preload KFGQPC Uthmanic Script HAFS (primary Quran font) -->
-        <link
-            rel="preload"
-            as="font"
-            type="font/otf"
-            crossorigin
-            href="https://cdn.jsdelivr.net/npm/kfgqpc-uthmanic-script-hafs-regular@1.0.0/arabic.otf"
-        />
+        <!-- Keep Quran fonts lazy via @font-face to avoid a heavy blocking OTF preload on mobile -->
         <!-- Font Awesome (non-blocking) -->
         <link
             rel="preload"
