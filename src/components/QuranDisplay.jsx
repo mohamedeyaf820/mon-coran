@@ -29,6 +29,7 @@ import {
   ensureReciterForRiwaya,
   getDefaultReciterId,
   getReciter,
+  isWarshVerifiedReciter,
 } from "../data/reciters";
 import {
   getFontFamily,
@@ -214,6 +215,8 @@ export default function QuranDisplay() {
   // Surah chunk navigation for long surahs
   const [chunkIndex, setChunkIndex] = useState(0);
   const [mushafPageIndex, setMushafPageIndex] = useState(0);
+  const followRetryTimerRef = useRef(null);
+  const lastFollowKeyRef = useRef("");
 
   // Close fullPage overlay on Escape key
   useEffect(() => {
@@ -345,6 +348,60 @@ export default function QuranDisplay() {
     contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const clearFollowRetryTimer = useCallback(() => {
+    if (!followRetryTimerRef.current) return;
+    window.clearTimeout(followRetryTimerRef.current);
+    followRetryTimerRef.current = null;
+  }, []);
+
+  const resolvePlayingAyahElement = useCallback(
+    (playingAyah) => {
+      if (!playingAyah) return null;
+
+      const root = contentRef.current || document;
+      const ayahNum = Number(playingAyah.ayah);
+      const globalNum = Number(playingAyah.globalNumber);
+      const hasAyahNum = Number.isFinite(ayahNum) && ayahNum > 0;
+      const hasGlobalNum = Number.isFinite(globalNum) && globalNum > 0;
+
+      const selectors = [];
+      if (hasGlobalNum) selectors.push(`[data-ayah-global="${globalNum}"]`);
+      if (playingAyah.surah && hasAyahNum) {
+        selectors.push(
+          `[data-surah-number="${playingAyah.surah}"][data-ayah-number="${ayahNum}"]`,
+        );
+      }
+      if (displayMode === "surah" && hasAyahNum) {
+        selectors.push(`[data-ayah-number="${ayahNum}"]`);
+      }
+
+      for (const selector of selectors) {
+        const el = root.querySelector(selector);
+        if (el) return el;
+      }
+
+      const ids = [];
+      if (displayMode === "page") {
+        if (hasGlobalNum) ids.push(`ayah-pg-${globalNum}`);
+        if (hasAyahNum) ids.push(`ayah-${ayahNum}`);
+      } else if (displayMode === "juz") {
+        if (hasGlobalNum) ids.push(`ayah-${globalNum}`);
+        if (hasAyahNum) ids.push(`ayah-${ayahNum}`);
+      } else {
+        if (hasAyahNum) ids.push(`ayah-${ayahNum}`);
+        if (hasGlobalNum) ids.push(`ayah-${globalNum}`);
+      }
+
+      for (const id of ids) {
+        const byId = root.querySelector(`#${CSS.escape(id)}`);
+        if (byId) return byId;
+      }
+
+      return null;
+    },
+    [displayMode],
+  );
+
   const repairPlatform = useCallback(async () => {
     try {
       await clearCache();
@@ -413,9 +470,7 @@ export default function QuranDisplay() {
       if (
         riwaya === "warsh" &&
         warshStrictMode &&
-        !String(rec.cdn || "")
-          .toLowerCase()
-          .includes("warsh")
+        !isWarshVerifiedReciter(rec)
       ) {
         setError(t("errors.warshStrict", lang));
         return;
@@ -446,31 +501,6 @@ export default function QuranDisplay() {
   ]);
 
   /* â”€â”€ Auto-scroll to playing ayah â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-  useEffect(() => {
-    if (!currentPlayingAyah?.ayah) return;
-    const ids =
-      displayMode === "juz"
-        ? [`ayah-${currentPlayingAyah.globalNumber || currentPlayingAyah.ayah}`]
-        : displayMode === "page"
-          ? [
-              `ayah-pg-${currentPlayingAyah.globalNumber || currentPlayingAyah.ayah}`,
-              `ayah-${currentPlayingAyah.ayah}`,
-            ]
-          : [`ayah-${currentPlayingAyah.ayah}`];
-    const el = ids.map((id) => document.getElementById(id)).find(Boolean);
-    if (el) {
-      const container = contentRef.current;
-      if (!container) return;
-      const cRect = container.getBoundingClientRect();
-      const eRect = el.getBoundingClientRect();
-      const outOfView =
-        eRect.top < cRect.top + 40 || eRect.bottom > cRect.bottom - 40;
-      if (outOfView) {
-        el.scrollIntoView({ behavior: "auto", block: "center" });
-      }
-    }
-  }, [currentPlayingAyah, displayMode]);
-
   /* â”€â”€ Play entire surah from start â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   const playSurah = useCallback(() => {
     if (ayahs.length === 0) return;
@@ -480,9 +510,7 @@ export default function QuranDisplay() {
       if (
         riwaya === "warsh" &&
         warshStrictMode &&
-        !String(rec.cdn || "")
-          .toLowerCase()
-          .includes("warsh")
+        !isWarshVerifiedReciter(rec)
       ) {
         setError(t("errors.warshStrict", lang));
         return;
@@ -970,6 +998,84 @@ export default function QuranDisplay() {
   }, [displayMode, currentSurah, ayahs.length, lang]);
 
   const isLongSurah = surahChunks.length > 1;
+
+  useEffect(() => {
+    return () => clearFollowRetryTimer();
+  }, [clearFollowRetryTimer]);
+
+  /* Keep the currently recited ayah visible, even when chunk/page DOM changes. */
+  useEffect(() => {
+    clearFollowRetryTimer();
+
+    const ayahNum = Number(currentPlayingAyah?.ayah);
+    const globalNum = Number(currentPlayingAyah?.globalNumber);
+    const hasAyahNum = Number.isFinite(ayahNum) && ayahNum > 0;
+    const hasGlobalNum = Number.isFinite(globalNum) && globalNum > 0;
+
+    if (!currentPlayingAyah || (!hasAyahNum && !hasGlobalNum)) return;
+
+    let attempts = 0;
+    let stopped = false;
+    const followKey = `${Number(currentPlayingAyah?.surah) || 0}:${Number(currentPlayingAyah?.ayah) || 0}:${Number(currentPlayingAyah?.globalNumber) || 0}`;
+    const isNewAyah = followKey !== lastFollowKeyRef.current;
+    if (isNewAyah) {
+      lastFollowKeyRef.current = followKey;
+    }
+    const maxAttempts =
+      displayMode === "surah" && mushafLayout === "mushaf" && isLongSurah
+        ? 18
+        : 10;
+    const retryDelayMs = 95;
+
+    const follow = () => {
+      if (stopped) return;
+      const target = resolvePlayingAyahElement(currentPlayingAyah);
+      if (target) {
+        const container = contentRef.current;
+        if (container) {
+          const cRect = container.getBoundingClientRect();
+          const eRect = target.getBoundingClientRect();
+          const margin = Math.max(40, Math.min(120, cRect.height * 0.14));
+          const outOfView =
+            eRect.top < cRect.top + margin ||
+            eRect.bottom > cRect.bottom - margin;
+          if (isNewAyah || outOfView) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+              inline: "nearest",
+            });
+          }
+        }
+        clearFollowRetryTimer();
+        return;
+      }
+
+      attempts += 1;
+      if (attempts >= maxAttempts) {
+        clearFollowRetryTimer();
+        return;
+      }
+      followRetryTimerRef.current = window.setTimeout(follow, retryDelayMs);
+    };
+
+    followRetryTimerRef.current = window.setTimeout(follow, 0);
+
+    return () => {
+      stopped = true;
+      clearFollowRetryTimer();
+    };
+  }, [
+    ayahs.length,
+    chunkIndex,
+    currentPlayingAyah,
+    currentSurah,
+    displayMode,
+    isLongSurah,
+    mushafLayout,
+    resolvePlayingAyahElement,
+    clearFollowRetryTimer,
+  ]);
 
   /* â”€â”€ Auto-advance chunk when playing ayah leaves visible window â”€â”€ */
   useEffect(() => {

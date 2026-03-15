@@ -1,4 +1,4 @@
-import RECITERS from '../data/reciters';
+import RECITERS, { isWarshVerifiedReciter } from '../data/reciters';
 import { AudioService } from './audioService';
 
 const WARSH_SAMPLE_AYAHS = [
@@ -72,7 +72,7 @@ export async function auditWarshAudio(reciterId = null, samples = WARSH_SAMPLE_A
 
       const status = await checkUrlStatus(url);
       const duration = status.ok ? await loadAudioDuration(url) : 0;
-      const suspicious = !String(rec.cdn || '').toLowerCase().includes('warsh');
+      const suspicious = !isWarshVerifiedReciter(rec);
       report.push({
         reciterId: rec.id,
         reciterName: rec.nameEn || rec.name,

@@ -1,30 +1,44 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import {
   addBookmark,
-  removeBookmark,
-  isBookmarked,
-  saveNote,
   getNote,
+  isBookmarked,
+  removeBookmark,
+  saveNote,
 } from "../services/storageService";
 import audioService, { AudioService } from "../services/audioService";
-import { ensureReciterForRiwaya, getReciter } from "../data/reciters";
+import {
+  ensureReciterForRiwaya,
+  getReciter,
+  isSurahOnlyReciter,
+  isWarshVerifiedReciter,
+} from "../data/reciters";
 import { getSurah } from "../data/surahs";
 import {
-  getAllPlaylists,
   addAyahToPlaylist,
+  getAllPlaylists,
 } from "../services/playlistService";
+import {
+  getMemorizationLevel,
+  setMemorizationLevel,
+} from "../services/memorizationService";
 
-/**
- * Actions bar shown when an ayah is tapped/clicked.
- * Play, bookmark, note, share, copy.
- */
+function emitToast(type, message) {
+  window.dispatchEvent(
+    new CustomEvent("quran-toast", {
+      detail: { type, message },
+    }),
+  );
+}
+
 export default function AyahActions({ surah, ayah, ayahData }) {
-  const { state, dispatch } = useApp();
+  const { state, dispatch, set } = useApp();
   const { lang, reciter, riwaya, warshStrictMode } = state;
 
   const [bookmarked, setBookmarked] = useState(false);
+  const [memoLevel, setMemoLevel] = useState(0);
   const [showNote, setShowNote] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
@@ -34,273 +48,356 @@ export default function AyahActions({ surah, ayah, ayahData }) {
   const [copied, setCopied] = useState(false);
   const [audioError, setAudioError] = useState(false);
 
+  const surahInfo = useMemo(() => getSurah(surah), [surah]);
+  const activeSheet = showShare
+    ? "share"
+    : showPlaylistMenu
+      ? "playlist"
+      : showNote
+        ? "note"
+        : null;
+
   useEffect(() => {
     isBookmarked(surah, ayah).then(setBookmarked);
-    getNote(surah, ayah).then((n) => setNoteText(n?.text || ""));
-  }, [surah, ayah]);
+    getNote(surah, ayah).then((note) => setNoteText(note?.text || ""));
+    setMemoLevel(getMemorizationLevel(surah, ayah));
+  }, [ayah, surah]);
+
+  useEffect(() => {
+    const handleMemoSync = (event) => {
+      if (event.detail?.surah === surah && event.detail?.ayah === ayah) {
+        setMemoLevel(Number(event.detail.level) || 0);
+      }
+    };
+
+    window.addEventListener("quran-memorization-updated", handleMemoSync);
+    return () =>
+      window.removeEventListener("quran-memorization-updated", handleMemoSync);
+  }, [ayah, surah]);
+
+  useEffect(() => {
+    if (!activeSheet || typeof window === "undefined") return undefined;
+    const isMobile = window.matchMedia?.("(max-width: 768px)")?.matches;
+    if (!isMobile) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [activeSheet]);
+
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setShowNote(false);
+        setShowShare(false);
+        setShowPlaylistMenu(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, []);
+
+  const closePanels = useCallback(() => {
+    setShowNote(false);
+    setShowShare(false);
+    setShowPlaylistMenu(false);
+  }, []);
+
+  const toastText = useCallback(
+    (fr, ar, en) =>
+      lang === "ar" ? ar : lang === "fr" ? fr : en,
+    [lang],
+  );
 
   const toggleBookmark = async () => {
     if (bookmarked) {
       await removeBookmark(surah, ayah);
       setBookmarked(false);
-      window.dispatchEvent(
-        new CustomEvent("quran-toast", {
-          detail: {
-            type: "info",
-            message:
-              lang === "ar"
-                ? "تمت إزالة الإشارة"
-                : lang === "fr"
-                  ? "Favori retiré"
-                  : "Bookmark removed",
-          },
-        }),
+      emitToast(
+        "info",
+        toastText("Favori retire", "تمت إزالة الحفظ", "Bookmark removed"),
       );
-    } else {
-      await addBookmark(surah, ayah);
-      setBookmarked(true);
-      window.dispatchEvent(
-        new CustomEvent("quran-toast", {
-          detail: {
-            type: "success",
-            message:
-              lang === "ar"
-                ? "تمت إضافة إشارة ★"
-                : lang === "fr"
-                  ? "Verset mis en favori ★"
-                  : "Verse bookmarked ★",
-          },
-        }),
-      );
+      return;
     }
+
+    await addBookmark(surah, ayah);
+    setBookmarked(true);
+    emitToast(
+      "success",
+      toastText("Verset ajoute aux favoris", "تمت إضافة الآية للمفضلة", "Verse bookmarked"),
+    );
+  };
+
+  const updateMemorization = (nextLevel) => {
+    setMemorizationLevel(surah, ayah, nextLevel);
+    setMemoLevel(nextLevel);
+    window.dispatchEvent(
+      new CustomEvent("quran-memorization-updated", {
+        detail: { surah, ayah, level: nextLevel },
+      }),
+    );
+  };
+
+  const handleMemorizationBoost = () => {
+    const nextLevel = memoLevel >= 5 ? 0 : memoLevel + 1;
+    updateMemorization(nextLevel);
+    emitToast(
+      nextLevel > 0 ? "success" : "info",
+      nextLevel > 0
+        ? toastText(
+            `Niveau de memorisation ${nextLevel}/5`,
+            `مستوى الحفظ ${nextLevel}/5`,
+            `Memorization level ${nextLevel}/5`,
+          )
+        : toastText(
+            "Progression de memorisation remise a zero",
+            "تمت إعادة مستوى الحفظ",
+            "Memorization progress reset",
+          ),
+    );
   };
 
   const handleSaveNote = async () => {
-    if (noteText.trim()) {
-      await saveNote(surah, ayah, noteText.trim());
-      window.dispatchEvent(
-        new CustomEvent("quran-toast", {
-          detail: {
-            type: "success",
-            message:
-              lang === "ar"
-                ? "تم حفظ الملاحظة!"
-                : lang === "fr"
-                  ? "Note sauvegardée !"
-                  : "Note saved!",
-          },
-        }),
-      );
+    const cleanText = noteText.trim();
+    if (!cleanText) {
+      closePanels();
+      return;
     }
-    setShowNote(false);
+
+    await saveNote(surah, ayah, cleanText);
+    closePanels();
+    emitToast(
+      "success",
+      toastText("Note enregistree", "تم حفظ الملاحظة", "Note saved"),
+    );
   };
 
   const playAyah = () => {
-    if (ayahData) {
-      setAudioError(false);
-      const safeReciterId = ensureReciterForRiwaya(reciter, riwaya);
-      const rec = getReciter(safeReciterId, riwaya);
-      if (rec) {
-        if (
-          riwaya === "warsh" &&
-          warshStrictMode &&
-          !String(rec.cdn || "")
-            .toLowerCase()
-            .includes("warsh")
-        ) {
-          setAudioError(true);
-          setTimeout(() => setAudioError(false), 3000);
-          return;
-        }
-        const ayahInfo = {
-          surah: surah,
-          numberInSurah: ayah,
-          number: ayahData.number,
-        };
-        const url = AudioService.buildUrl(
-          rec.cdn || rec.id,
-          ayahInfo,
-          rec.cdnType || "islamic",
-        );
-        audioService.playSingle(url, { surah, ayah }).catch(() => {
-          setAudioError(true);
-          setTimeout(() => setAudioError(false), 3000);
-        });
-      }
+    if (!ayahData) return;
+
+    setAudioError(false);
+    const safeReciterId = ensureReciterForRiwaya(reciter, riwaya);
+    const rec = getReciter(safeReciterId, riwaya);
+    if (!rec) return;
+
+    if (
+      riwaya === "warsh" &&
+      warshStrictMode &&
+      !isWarshVerifiedReciter(rec)
+    ) {
+      setAudioError(true);
+      window.setTimeout(() => setAudioError(false), 2500);
+      emitToast(
+        "error",
+        toastText(
+          "Recitateur incompatible avec le mode Warsh strict",
+          "القارئ غير متوافق مع وضع ورش الصارم",
+          "Reciter is incompatible with strict Warsh mode",
+        ),
+      );
+      return;
+    }
+
+    const ayahInfo = {
+      surah,
+      numberInSurah: ayah,
+      number: ayahData.number,
+    };
+    const url = AudioService.buildUrl(
+      rec.cdn || rec.id,
+      ayahInfo,
+      rec.cdnType || "islamic",
+    );
+
+    if (isSurahOnlyReciter(rec)) {
+      emitToast(
+        "info",
+        toastText(
+          "Ce recitateur Warsh diffuse la sourate complete.",
+          "هذا القارئ في ورش يقرأ السورة كاملة.",
+          "This Warsh reciter plays the full surah.",
+        ),
+      );
+    }
+
+    audioService.playSingle(url, { surah, ayah: isSurahOnlyReciter(rec) ? null : ayah }).catch(() => {
+      setAudioError(true);
+      window.setTimeout(() => setAudioError(false), 2500);
+      emitToast(
+        "error",
+        toastText(
+          "Lecture impossible pour cette ayah",
+          "تعذر تشغيل هذه الآية",
+          "Unable to play this ayah",
+        ),
+      );
+    });
+  };
+
+  const copyVerseText = async (value, successMessage) => {
+    if (!value) return;
+
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+      emitToast("success", successMessage);
+    } catch (error) {
+      console.warn("Copy failed:", error);
     }
   };
 
   const copyText = async () => {
-    if (ayahData?.text) {
-      try {
-        await navigator.clipboard.writeText(ayahData.text);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
-      } catch (err) {
-        console.warn("Copy failed:", err);
-      }
-    }
+    await copyVerseText(
+      ayahData?.text,
+      toastText("Texte copie", "تم نسخ النص", "Text copied"),
+    );
   };
 
   const getShareText = () => {
-    const surahInfo = getSurah(surah);
     const surahName = surahInfo
       ? lang === "fr"
         ? surahInfo.fr
         : surahInfo.en
       : `Surah ${surah}`;
-    return `${ayahData?.text || ""}\n\n\u2014 ${surahName} (${surah}:${ayah})\nMushafPlus`;
+    return `${ayahData?.text || ""}\n\n- ${surahName} (${surah}:${ayah})\nMushafPlus`;
+  };
+
+  const shareTo = (url) => {
+    window.open(url, "_blank", "noopener,noreferrer");
+    closePanels();
   };
 
   const shareWhatsApp = () => {
-    const text = encodeURIComponent(getShareText());
-    window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
-    setShowShare(false);
+    shareTo(`https://wa.me/?text=${encodeURIComponent(getShareText())}`);
   };
 
   const shareTelegram = () => {
-    const text = encodeURIComponent(getShareText());
-    window.open(
-      `https://t.me/share/url?text=${text}`,
-      "_blank",
-      "noopener,noreferrer",
+    shareTo(
+      `https://t.me/share/url?text=${encodeURIComponent(getShareText())}`,
     );
-    setShowShare(false);
   };
 
   const shareTwitter = () => {
-    const text = encodeURIComponent(getShareText().slice(0, 280));
-    window.open(
-      `https://x.com/intent/tweet?text=${text}`,
-      "_blank",
-      "noopener,noreferrer",
+    shareTo(
+      `https://x.com/intent/tweet?text=${encodeURIComponent(
+        getShareText().slice(0, 280),
+      )}`,
     );
-    setShowShare(false);
   };
 
   const shareEmail = () => {
-    const surahInfo = getSurah(surah);
     const surahName = surahInfo
       ? lang === "fr"
         ? surahInfo.fr
         : surahInfo.en
       : `Surah ${surah}`;
-    const subject = encodeURIComponent(
-      `${surahName} (${surah}:${ayah}) - MushafPlus`,
-    );
+    const subject = encodeURIComponent(`${surahName} (${surah}:${ayah})`);
     const body = encodeURIComponent(getShareText());
-    window.open(
-      `mailto:?subject=${subject}&body=${body}`,
-      "_blank",
-      "noopener,noreferrer",
-    );
-    setShowShare(false);
+    shareTo(`mailto:?subject=${subject}&body=${body}`);
   };
 
   const shareNative = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: "MushafPlus", text: getShareText() });
-      } catch {
-        /* user cancelled */
-      }
+    if (!navigator.share) return;
+    try {
+      await navigator.share({ title: "MushafPlus", text: getShareText() });
+    } catch {
+      // user cancelled
     }
-    setShowShare(false);
+    closePanels();
   };
 
   const shareCopyText = async () => {
-    try {
-      await navigator.clipboard.writeText(getShareText());
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {}
-    setShowShare(false);
+    await copyVerseText(
+      getShareText(),
+      toastText("Texte de partage copie", "تم نسخ نص المشاركة", "Share text copied"),
+    );
+    closePanels();
   };
 
   const shareAsImage = async () => {
     if (!ayahData?.text) return;
-    const W = 1080,
-      H = 1080;
+
+    const width = 1080;
+    const height = 1080;
     const canvas = document.createElement("canvas");
-    canvas.width = W;
-    canvas.height = H;
-    const ctx = canvas.getContext("2d");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    if (!context) return;
 
-    // Green gradient background
-    const grd = ctx.createLinearGradient(0, 0, 0, H);
-    grd.addColorStop(0, "#1a6b3c");
-    grd.addColorStop(1, "#0c3220");
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, W, H);
+    const gradient = context.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, "#184a38");
+    gradient.addColorStop(1, "#0b1d19");
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, width, height);
 
-    // Gold ornamental double border
-    ctx.strokeStyle = "#c9a227";
-    ctx.lineWidth = 8;
-    ctx.strokeRect(30, 30, W - 60, H - 60);
-    ctx.lineWidth = 2;
-    ctx.strokeRect(46, 46, W - 92, H - 92);
+    context.strokeStyle = "#d3b46a";
+    context.lineWidth = 8;
+    context.strokeRect(30, 30, width - 60, height - 60);
+    context.lineWidth = 2;
+    context.strokeRect(48, 48, width - 96, height - 96);
 
-    // Await fonts
     await document.fonts.ready;
 
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.direction = "rtl";
-    ctx.fillStyle = "#ffffff";
+    context.textAlign = "center";
+    context.textBaseline = "middle";
+    context.direction = "rtl";
+    context.fillStyle = "#ffffff";
 
-    // Wrap Arabic text
     const text = ayahData.text;
-    const fontSize = Math.max(
-      36,
-      Math.min(52, Math.floor(W / (text.length / 4))),
-    );
-    ctx.font = `${fontSize}px "Scheherazade New", "Amiri Quran", serif`;
-    const maxW = W - 180;
+    const fontSize = Math.max(38, Math.min(54, Math.floor(width / (text.length / 4))));
+    context.font = `${fontSize}px "Scheherazade New", "Amiri Quran", serif`;
+
+    const maxWidth = width - 180;
+    const words = text.split(" ");
     const lines = [];
-    const words2 = text.split(" ");
     let line = "";
-    for (const word of words2) {
-      const test = line ? line + " " + word : word;
-      if (ctx.measureText(test).width > maxW && line) {
+
+    for (const word of words) {
+      const candidate = line ? `${line} ${word}` : word;
+      if (context.measureText(candidate).width > maxWidth && line) {
         lines.push(line);
         line = word;
       } else {
-        line = test;
+        line = candidate;
       }
     }
     if (line) lines.push(line);
 
-    const lh = fontSize * 1.9;
-    const totalTextH = lines.length * lh;
-    const startY = H / 2 - totalTextH / 2 + lh / 2 - 60;
-    lines.forEach((ln, i) => ctx.fillText(ln, W / 2, startY + i * lh));
+    const lineHeight = fontSize * 1.88;
+    const totalTextHeight = lines.length * lineHeight;
+    const startY = height / 2 - totalTextHeight / 2 + lineHeight / 2 - 64;
+    lines.forEach((currentLine, index) =>
+      context.fillText(currentLine, width / 2, startY + index * lineHeight),
+    );
 
-    // Surah reference
-    const surahInfo = getSurah(surah);
-    const surahLabel = surahInfo
+    const surahName = surahInfo
       ? lang === "fr"
         ? surahInfo.fr
         : surahInfo.en
       : `Surah ${surah}`;
-    ctx.direction = "ltr";
-    ctx.font = '32px "Cairo", "Noto Naskh Arabic", sans-serif';
-    ctx.fillStyle = "#c9a227";
-    ctx.fillText(
-      `\u2014 ${surahLabel}  \uFD3F${surah}:${ayah}\uFD3E`,
-      W / 2,
-      H - 180,
+    context.direction = "ltr";
+    context.font = '30px "Cairo", "Noto Naskh Arabic", sans-serif';
+    context.fillStyle = "#d3b46a";
+    context.fillText(`- ${surahName} (${surah}:${ayah})`, width / 2, height - 180);
+
+    context.font = '22px "Cairo", sans-serif';
+    context.fillStyle = "rgba(255,255,255,0.3)";
+    context.fillText("MushafPlus", width / 2, height - 108);
+
+    const blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, "image/png"),
     );
-
-    // Watermark
-    ctx.font = '22px "Cairo", sans-serif';
-    ctx.fillStyle = "rgba(255,255,255,0.28)";
-    ctx.fillText("MushafPlus", W / 2, H - 100);
-
-    const blob = await new Promise((res) => canvas.toBlob(res, "image/png"));
     if (!blob) return;
+
     const file = new File([blob], `mushafplus_${surah}_${ayah}.png`, {
       type: "image/png",
     });
+
     if (navigator.share && navigator.canShare?.({ files: [file] })) {
       try {
         await navigator.share({
@@ -309,181 +406,449 @@ export default function AyahActions({ surah, ayah, ayahData }) {
           text: getShareText(),
         });
       } catch {
-        /* cancelled */
+        // user cancelled
       }
     } else {
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `mushafplus_${surah}_${ayah}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `mushafplus_${surah}_${ayah}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
-    setShowShare(false);
+
+    closePanels();
   };
 
+  const openPlaylistMenu = async () => {
+    if (!showPlaylistMenu) {
+      const nextPlaylists = await getAllPlaylists();
+      setPlaylists(nextPlaylists);
+    }
+    setShowShare(false);
+    setShowNote(false);
+    setShowPlaylistMenu((value) => !value);
+  };
+
+  const handleStudyMode = () => {
+    set({
+      memMode: false,
+      showTranslation: true,
+      showWordByWord: true,
+      showWordTranslation: true,
+      showTransliteration: false,
+      focusReading: true,
+    });
+    emitToast(
+      "info",
+      toastText("Mode etude active", "تم تفعيل وضع الدراسة", "Study mode enabled"),
+    );
+  };
+
+  const quickActions = [
+    {
+      key: "play",
+      className: "ayah-action-card ayah-action-card--play",
+      icon: audioError ? "fa-triangle-exclamation" : "fa-play",
+      label: lang === "fr" ? "Ecouter" : lang === "ar" ? "استماع" : "Listen",
+      description:
+        lang === "fr"
+          ? "Lancer cette ayah"
+          : lang === "ar"
+            ? "تشغيل هذه الآية"
+            : "Play this ayah",
+      state: audioError
+        ? lang === "fr"
+          ? "Erreur audio"
+          : lang === "ar"
+            ? "خطأ صوتي"
+            : "Audio error"
+        : null,
+      active: Boolean(audioError),
+      onClick: playAyah,
+    },
+    {
+      key: "memorize",
+      className: `ayah-action-card ayah-action-card--memorize${memoLevel > 0 ? " is-active" : ""}`,
+      icon: "fa-star",
+      label:
+        lang === "fr"
+          ? "Memoriser"
+          : lang === "ar"
+            ? "حفظ"
+            : "Memorize",
+      description:
+        lang === "fr"
+          ? "Augmenter la progression"
+          : lang === "ar"
+            ? "ارفع مستوى الحفظ"
+            : "Boost progress",
+      state: memoLevel > 0 ? `${memoLevel}/5` : lang === "fr" ? "Demarrer" : lang === "ar" ? "ابدأ" : "Start",
+      active: memoLevel > 0,
+      onClick: handleMemorizationBoost,
+    },
+    {
+      key: "note",
+      className: `ayah-action-card${showNote ? " is-active" : ""}`,
+      icon: "fa-pen-line",
+      label: lang === "fr" ? "Noter" : lang === "ar" ? "ملاحظة" : "Note",
+      description:
+        lang === "fr"
+          ? "Ecrire une reflexion"
+          : lang === "ar"
+            ? "اكتب ملاحظة"
+            : "Write a reflection",
+      state: noteText.trim()
+        ? lang === "fr"
+          ? "Note prete"
+          : lang === "ar"
+            ? "ملاحظة محفوظة"
+            : "Saved note"
+        : null,
+      active: showNote || Boolean(noteText.trim()),
+      onClick: () => {
+        setShowPlaylistMenu(false);
+        setShowShare(false);
+        setShowNote((value) => !value);
+      },
+    },
+    {
+      key: "share",
+      className: `ayah-action-card${showShare ? " is-active" : ""}`,
+      icon: "fa-share-nodes",
+      label: lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Share",
+      description:
+        lang === "fr"
+          ? "Texte, image ou lien"
+          : lang === "ar"
+            ? "نص أو صورة أو رابط"
+            : "Text, image, or link",
+      state: null,
+      active: showShare,
+      onClick: () => {
+        setShowPlaylistMenu(false);
+        setShowNote(false);
+        setShowShare((value) => !value);
+      },
+    },
+    {
+      key: "playlist",
+      className: `ayah-action-card${playlistAdded || showPlaylistMenu ? " is-complete" : ""}`,
+      icon: playlistAdded ? "fa-check" : "fa-list",
+      label:
+        lang === "fr"
+          ? "Playlist"
+          : lang === "ar"
+            ? "قائمة"
+            : "Playlist",
+      description:
+        lang === "fr"
+          ? "Ajouter a une serie"
+          : lang === "ar"
+            ? "أضف إلى قائمة"
+            : "Add to a list",
+      state: playlistAdded
+        ? lang === "fr"
+          ? "Ajoute"
+          : lang === "ar"
+            ? "تمت الإضافة"
+            : "Added"
+        : null,
+      active: playlistAdded || showPlaylistMenu,
+      onClick: openPlaylistMenu,
+    },
+    {
+      key: "study",
+      className: "ayah-action-card ayah-action-card--study",
+      icon: "fa-layer-group",
+      label: lang === "fr" ? "Etude" : lang === "ar" ? "دراسة" : "Study",
+      description:
+        lang === "fr"
+          ? "Traduction et mot a mot"
+          : lang === "ar"
+            ? "ترجمة وكلمة بكلمة"
+            : "Translation and word by word",
+      state: null,
+      active: false,
+      onClick: handleStudyMode,
+    },
+  ];
+
   return (
-    <div className="ayah-actions" onClick={(e) => e.stopPropagation()}>
-      <div className="ayah-actions-bar">
-        <button
-          className={`action-btn btn-play ${audioError ? "error" : ""}`}
-          onClick={playAyah}
-          title={t("audio.play", lang)}
-        >
-          <i
-            className={`fas ${audioError ? "fa-exclamation-triangle" : "fa-play"}`}
-          ></i>
-        </button>
+    <div className="ayah-actions" onClick={(event) => event.stopPropagation()}>
+      <div className="ayah-actions__surface">
+        <div className="ayah-actions__meta">
+          <div>
+            <span className="ayah-actions__kicker">
+              <i className="fas fa-bolt" />
+              {lang === "fr"
+                ? "Actions rapides"
+                : lang === "ar"
+                  ? "إجراءات سريعة"
+                  : "Quick actions"}
+            </span>
+            <div className="ayah-actions__verse">
+              <span>
+                {lang === "fr"
+                  ? surahInfo?.fr || surahInfo?.en
+                  : lang === "ar"
+                    ? surahInfo?.ar
+                    : surahInfo?.en}
+              </span>
+              <span className="ayah-actions__verse-ar" dir="rtl">
+                {surahInfo?.ar}
+              </span>
+              <span>({surah}:{ayah})</span>
+            </div>
+          </div>
 
-        <div className="action-divider" />
+          <div className="ayah-actions__badges">
+            <span className={`ayah-actions__badge${bookmarked ? " is-on" : ""}`}>
+              <i className="fas fa-bookmark" />
+              {bookmarked
+                ? lang === "fr"
+                  ? "favori"
+                  : lang === "ar"
+                    ? "مفضلة"
+                    : "saved"
+                : lang === "fr"
+                  ? "non epingle"
+                  : lang === "ar"
+                    ? "غير محفوظة"
+                    : "not saved"}
+            </span>
+            <span className={`ayah-actions__badge${memoLevel > 0 ? " is-on" : ""}`}>
+              <i className="fas fa-star" />
+              {memoLevel > 0 ? `${memoLevel}/5` : "0/5"}
+            </span>
+          </div>
+        </div>
 
-        <button
-          className={`action-btn btn-bookmark ${bookmarked ? "active" : ""}`}
-          onClick={toggleBookmark}
-          title={t("bookmarks.add", lang)}
-        >
-          <i className={`fas fa-bookmark`}></i>
-        </button>
+        <div className="ayah-actions__grid">
+          {quickActions.map((action) => (
+            <button
+              key={action.key}
+              type="button"
+              className={`${action.className}${action.active ? " is-active" : ""}`}
+              onClick={action.onClick}
+            >
+              <span className="ayah-action-card__icon">
+                <i className={`fas ${action.icon}`} />
+              </span>
+              <span className="ayah-action-card__label">{action.label}</span>
+              <span className="ayah-action-card__desc">{action.description}</span>
+              {action.state && (
+                <span className="ayah-action-card__state">{action.state}</span>
+              )}
+            </button>
+          ))}
+        </div>
 
-        <button
-          className="action-btn btn-note"
-          onClick={() => setShowNote(!showNote)}
-          title={t("notes.add", lang)}
-        >
-          <i className="fas fa-sticky-note"></i>
-        </button>
+        <div className="ayah-actions__utility">
+          <button
+            type="button"
+            className={`ayah-actions__utility-btn${bookmarked ? " is-active" : ""}`}
+            onClick={toggleBookmark}
+            title={t("bookmarks.add", lang)}
+          >
+            <i className="fas fa-bookmark" />
+            {bookmarked
+              ? lang === "fr"
+                ? "Retirer le favori"
+                : lang === "ar"
+                  ? "إزالة المفضلة"
+                  : "Remove bookmark"
+              : lang === "fr"
+                ? "Ajouter aux favoris"
+                : lang === "ar"
+                  ? "أضف إلى المفضلة"
+                  : "Add bookmark"}
+          </button>
 
-        <button
-          className="action-btn btn-copy"
-          onClick={copyText}
-          title={t("actions.copy", lang)}
-        >
-          <i className={`fas ${copied ? "fa-check" : "fa-copy"}`}></i>
-        </button>
-
-        <div className="action-divider" />
-
-        <button
-          className={`action-btn btn-share ${showShare ? "active" : ""}`}
-          onClick={() => setShowShare(!showShare)}
-          title={t("actions.share", lang)}
-        >
-          <i className="fas fa-share-alt"></i>
-        </button>
-
-        <button
-          className={`action-btn btn-playlist ${playlistAdded ? "active" : ""}`}
-          onClick={async () => {
-            if (!showPlaylistMenu) {
-              const pls = await getAllPlaylists();
-              setPlaylists(pls);
-            }
-            setShowPlaylistMenu(!showPlaylistMenu);
-          }}
-          title={lang === "fr" ? "Ajouter à une playlist" : "Add to playlist"}
-        >
-          <i className={`fas ${playlistAdded ? "fa-check" : "fa-list"}`}></i>
-        </button>
+          <button
+            type="button"
+            className={`ayah-actions__utility-btn${copied ? " is-active" : ""}`}
+            onClick={copyText}
+            title={t("actions.copy", lang)}
+          >
+            <i className={`fas ${copied ? "fa-check" : "fa-copy"}`} />
+            {copied
+              ? lang === "fr"
+                ? "Copie"
+                : lang === "ar"
+                  ? "تم النسخ"
+                  : "Copied"
+              : lang === "fr"
+                ? "Copier le texte"
+                : lang === "ar"
+                  ? "نسخ النص"
+                  : "Copy text"}
+          </button>
+        </div>
       </div>
 
-      {/* Share panel */}
+      {activeSheet && (
+        <button
+          type="button"
+          className="ayah-action-sheet-backdrop"
+          aria-label={lang === "fr" ? "Fermer le panneau" : "Close panel"}
+          onClick={closePanels}
+        />
+      )}
+
       {showShare && (
-        <div className="share-panel">
-          <div className="share-panel-title">
-            {t("actions.shareTitle", lang)}
+        <div className="ayah-action-sheet ayah-action-sheet--share">
+          <div className="ayah-action-sheet__header">
+            <div>
+              <div className="ayah-action-sheet__eyebrow">
+                {lang === "fr"
+                  ? "Partage premium"
+                  : lang === "ar"
+                    ? "مشاركة مميزة"
+                    : "Premium sharing"}
+              </div>
+              <div className="ayah-action-sheet__title">
+                {lang === "fr"
+                  ? "Exporter cette ayah"
+                  : lang === "ar"
+                    ? "شارك هذه الآية"
+                    : "Export this ayah"}
+              </div>
+            </div>
+            <button
+              type="button"
+              className="ayah-action-sheet__close"
+              onClick={closePanels}
+            >
+              <i className="fas fa-times" />
+            </button>
           </div>
-          <div className="share-options">
-            <button className="share-btn whatsapp" onClick={shareWhatsApp}>
-              <i className="fab fa-whatsapp"></i>{" "}
-              {t("actions.shareWhatsapp", lang)}
+
+          <p className="ayah-action-sheet__copy">
+            {lang === "fr"
+              ? "Choisissez une sortie rapide: texte, reseau social, image classique ou carte calligraphique."
+              : lang === "ar"
+                ? "اختر مخرجاً سريعاً: نص، شبكة اجتماعية، صورة كلاسيكية أو بطاقة خطية."
+                : "Choose a quick output: text, social app, classic image, or calligraphic card."}
+          </p>
+
+          <div className="ayah-actions__sheet-grid">
+            <button className="share-btn" onClick={shareWhatsApp}>
+              <i className="fab fa-whatsapp" />
+              WhatsApp
             </button>
-            <button className="share-btn telegram" onClick={shareTelegram}>
-              <i className="fab fa-telegram-plane"></i>{" "}
-              {t("actions.shareTelegram", lang)}
+            <button className="share-btn" onClick={shareTelegram}>
+              <i className="fab fa-telegram-plane" />
+              Telegram
             </button>
-            <button className="share-btn twitter" onClick={shareTwitter}>
-              <i className="fab fa-x-twitter"></i>{" "}
-              {t("actions.shareTwitter", lang)}
+            <button className="share-btn" onClick={shareTwitter}>
+              <i className="fab fa-x-twitter" />
+              X / Twitter
             </button>
-            <button className="share-btn email" onClick={shareEmail}>
-              <i className="fas fa-envelope"></i>{" "}
-              {t("actions.shareEmail", lang)}
+            <button className="share-btn" onClick={shareEmail}>
+              <i className="fas fa-envelope" />
+              Email
             </button>
-            <button className="share-btn copy-share" onClick={shareCopyText}>
-              <i className="fas fa-copy"></i> {t("actions.shareCopy", lang)}
+            <button className="share-btn" onClick={shareCopyText}>
+              <i className="fas fa-copy" />
+              {lang === "fr" ? "Texte de partage" : lang === "ar" ? "نسخ النص" : "Copy share text"}
             </button>
-            <button className="share-btn image-share" onClick={shareAsImage}>
-              <i className="fas fa-image"></i>
-              {lang === "fr" ? "Image verte" : lang === "ar" ? "صورة" : "Image"}
+            <button className="share-btn" onClick={shareAsImage}>
+              <i className="fas fa-image" />
+              {lang === "fr" ? "Image sobre" : lang === "ar" ? "صورة" : "Simple image"}
             </button>
             <button
-              className="share-btn image-share"
+              className="share-btn"
               onClick={() => {
                 dispatch({ type: "SET", payload: { shareImageOpen: true } });
-                setShowShare(false);
+                closePanels();
               }}
             >
-              <i className="fas fa-wand-magic-sparkles"></i>
+              <i className="fas fa-wand-magic-sparkles" />
               {lang === "fr"
-                ? "Image calligraphique"
+                ? "Carte calligraphique"
                 : lang === "ar"
-                  ? "صورة خطية"
-                  : "Calligraphic image"}
+                  ? "بطاقة خطية"
+                  : "Calligraphic card"}
             </button>
             {navigator.share && (
-              <button className="share-btn native" onClick={shareNative}>
-                <i className="fas fa-share-nodes"></i>{" "}
-                {t("actions.shareNative", lang)}
+              <button className="share-btn" onClick={shareNative}>
+                <i className="fas fa-share-nodes" />
+                {lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Native share"}
               </button>
             )}
           </div>
         </div>
       )}
 
-      {/* Playlist dropdown */}
       {showPlaylistMenu && (
-        <div className="share-panel">
-          <div className="share-panel-title">
-            {lang === "fr" ? "Ajouter à une playlist" : "Add to playlist"}
+        <div className="ayah-action-sheet ayah-action-sheet--playlist">
+          <div className="ayah-action-sheet__header">
+            <div>
+              <div className="ayah-action-sheet__eyebrow">
+                {lang === "fr"
+                  ? "Hub audio"
+                  : lang === "ar"
+                    ? "مركز الصوت"
+                    : "Audio hub"}
+              </div>
+              <div className="ayah-action-sheet__title">
+                {lang === "fr"
+                  ? "Ajouter a une playlist"
+                  : lang === "ar"
+                    ? "أضف إلى قائمة"
+                    : "Add to a playlist"}
+              </div>
+            </div>
+            <button
+              type="button"
+              className="ayah-action-sheet__close"
+              onClick={closePanels}
+            >
+              <i className="fas fa-times" />
+            </button>
           </div>
+
           {playlists.length === 0 ? (
-            <p
-              style={{
-                fontFamily: "'Cairo', sans-serif",
-                fontSize: "0.78rem",
-                color: "var(--text-muted)",
-                textAlign: "center",
-                padding: "0.5rem",
-              }}
-            >
+            <div className="ayah-action-sheet__empty">
               {lang === "fr"
-                ? "Aucune playlist. Créez-en une depuis le menu Playlists."
-                : "No playlists. Create one from the Playlists menu."}
-            </p>
+                ? "Aucune playlist encore. Creez-en une depuis le panneau Playlists."
+                : lang === "ar"
+                  ? "لا توجد قوائم بعد. أنشئ قائمة من لوحة القوائم."
+                  : "No playlist yet. Create one from the Playlists panel."}
+            </div>
           ) : (
-            <div
-              className="share-options"
-              style={{ gridTemplateColumns: "1fr" }}
-            >
-              {playlists.map((pl) => (
+            <div className="ayah-actions__sheet-grid">
+              {playlists.map((playlist) => (
                 <button
-                  key={pl.id}
-                  className="share-btn"
+                  key={playlist.id}
+                  className="ayah-actions__playlist-btn"
                   onClick={async () => {
                     await addAyahToPlaylist(
-                      pl.id,
+                      playlist.id,
                       surah,
                       ayah,
                       ayahData?.text || "",
                     );
                     setPlaylistAdded(true);
-                    setShowPlaylistMenu(false);
-                    setTimeout(() => setPlaylistAdded(false), 2000);
+                    closePanels();
+                    emitToast(
+                      "success",
+                      toastText(
+                        "Ayah ajoutee a la playlist",
+                        "تمت إضافة الآية إلى القائمة",
+                        "Ayah added to playlist",
+                      ),
+                    );
+                    window.setTimeout(() => setPlaylistAdded(false), 1800);
                   }}
                 >
-                  <i className="fas fa-music"></i> {pl.name} ({pl.ayahs.length})
+                  <i className="fas fa-music" />
+                  <span>
+                    {playlist.name} ({playlist.ayahs.length})
+                  </span>
                 </button>
               ))}
             </div>
@@ -491,188 +856,60 @@ export default function AyahActions({ surah, ayah, ayahData }) {
         </div>
       )}
 
-      {/* Inline note editor */}
       {showNote && (
-        <div className="inline-note">
+        <div className="ayah-action-sheet ayah-action-sheet--note">
+          <div className="ayah-action-sheet__header">
+            <div>
+              <div className="ayah-action-sheet__eyebrow">
+                {lang === "fr"
+                  ? "Note de meditation"
+                  : lang === "ar"
+                    ? "ملاحظة تدبر"
+                    : "Reflection note"}
+              </div>
+              <div className="ayah-action-sheet__title">
+                {lang === "fr"
+                  ? "Ecrire sur cette ayah"
+                  : lang === "ar"
+                    ? "اكتب حول هذه الآية"
+                    : "Write on this ayah"}
+              </div>
+            </div>
+            <button
+              type="button"
+              className="ayah-action-sheet__close"
+              onClick={closePanels}
+            >
+              <i className="fas fa-times" />
+            </button>
+          </div>
+
           <textarea
             value={noteText}
-            onChange={(e) => setNoteText(e.target.value)}
+            onChange={(event) => setNoteText(event.target.value)}
             placeholder={t("notes.placeholder", lang)}
-            className="note-textarea"
-            rows={3}
+            className="ayah-actions__textarea"
+            rows={4}
           />
-          <button className="btn btn-primary btn-sm" onClick={handleSaveNote}>
-            {t("notes.save", lang)}
-          </button>
+
+          <div className="ayah-action-sheet__actions">
+            <button
+              type="button"
+              className="ayah-action-sheet__btn"
+              onClick={closePanels}
+            >
+              {lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
+            </button>
+            <button
+              type="button"
+              className="ayah-action-sheet__btn ayah-action-sheet__btn--primary"
+              onClick={handleSaveNote}
+            >
+              {t("notes.save", lang)}
+            </button>
+          </div>
         </div>
       )}
-
-      <style>{`
-        @keyframes fadeSlideUp {
-          from { opacity: 0; transform: translateY(6px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes shake {
-          0%,100% { transform: translateX(0); }
-          25% { transform: translateX(-3px); }
-          75% { transform: translateX(3px); }
-        }
-
-        .ayah-actions {
-          margin-top: 0.55rem;
-          animation: fadeSlideUp 0.18s ease both;
-        }
-
-        /* ── Action bar ── */
-        .ayah-actions-bar {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.2rem;
-          padding: 0.24rem;
-          background: var(--bg-secondary);
-          border: 1px solid var(--border);
-          border-radius: 999px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-          flex-wrap: nowrap;
-        }
-
-        .action-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 32px;
-          height: 32px;
-          border: none;
-          background: transparent;
-          color: var(--text-muted);
-          border-radius: 999px;
-          cursor: pointer;
-          font-size: 0.78rem;
-          transition: background 0.15s, color 0.15s, transform 0.12s;
-          flex-shrink: 0;
-        }
-        .action-btn:hover {
-          background: rgba(var(--primary-rgb), 0.1);
-          color: var(--primary);
-          transform: scale(1.08);
-        }
-        .action-btn:active { transform: scale(0.94); }
-
-        /* Couleur contextuelle par bouton */
-        .action-btn.btn-play:hover { background: rgba(var(--primary-rgb), 0.12); color: var(--primary); }
-        .action-btn.btn-bookmark { color: var(--text-muted); }
-        .action-btn.btn-bookmark.active { color: var(--gold, #b8860b); background: rgba(184,134,11,0.1); }
-        .action-btn.btn-bookmark:hover { background: rgba(184,134,11,0.12); color: var(--gold, #b8860b); }
-        .action-btn.btn-copy:hover { background: rgba(99,102,241,0.1); color: #6366f1; }
-        .action-btn.btn-share:hover { background: rgba(var(--primary-rgb), 0.1); color: var(--primary); }
-        .action-btn.btn-share.active { background: rgba(var(--primary-rgb), 0.12); color: var(--primary); }
-        .action-btn.btn-playlist:hover { background: rgba(var(--primary-rgb), 0.1); color: var(--primary); }
-        .action-btn.btn-playlist.active { color: var(--primary); background: rgba(var(--primary-rgb), 0.12); }
-
-        .action-btn.error {
-          color: #ef4444 !important;
-          animation: shake 0.4s ease;
-        }
-
-        /* Séparateur visuel entre groupes */
-        .action-divider {
-          width: 1px;
-          height: 18px;
-          background: var(--border);
-          margin: 0 0.1rem;
-          flex-shrink: 0;
-          opacity: 0.7;
-        }
-
-        /* ── Inline note ── */
-        .inline-note {
-          margin-top: 0.55rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.35rem;
-          padding: 0.65rem 0.75rem;
-          background: var(--bg-secondary);
-          border: 1px solid var(--border);
-          border-radius: 0.85rem;
-          animation: fadeSlideUp 0.15s ease both;
-        }
-        .note-textarea {
-          width: 100%;
-          padding: 0.5rem 0.65rem;
-          border: 1px solid var(--border);
-          border-radius: 0.6rem;
-          background: var(--bg-primary);
-          color: var(--text);
-          font-family: var(--font-ui, 'Cairo', sans-serif);
-          font-size: 0.83rem;
-          resize: vertical;
-          outline: none;
-          transition: border-color 0.14s;
-        }
-        .note-textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(var(--primary-rgb),0.1); }
-        .btn-sm {
-          padding: 0.3rem 0.85rem;
-          font-size: 0.78rem;
-          align-self: flex-end;
-          border-radius: 999px;
-          background: var(--primary);
-          color: #fff;
-          border: none;
-          cursor: pointer;
-          font-family: var(--font-ui, 'Cairo', sans-serif);
-          font-weight: 600;
-          transition: opacity 0.14s;
-        }
-        .btn-sm:hover { opacity: 0.88; }
-
-        /* ── Share / Playlist panel ── */
-        .share-panel {
-          margin-top: 0.55rem;
-          padding: 0.7rem 0.75rem;
-          border: 1px solid var(--border);
-          border-radius: 1rem;
-          background: var(--bg-secondary);
-          animation: fadeSlideUp 0.16s ease both;
-        }
-        .share-panel-title {
-          font-family: var(--font-ui, 'Cairo', sans-serif);
-          font-size: 0.6rem;
-          font-weight: 700;
-          letter-spacing: 0.07em;
-          text-transform: uppercase;
-          color: var(--text-muted);
-          margin-bottom: 0.5rem;
-        }
-        .share-options {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 0.3rem;
-        }
-        .share-btn {
-          display: flex;
-          align-items: center;
-          gap: 0.42rem;
-          padding: 0.42rem 0.6rem;
-          border: 1px solid var(--border);
-          border-radius: 0.6rem;
-          background: var(--bg-primary);
-          color: var(--text-secondary);
-          cursor: pointer;
-          font-family: var(--font-ui, 'Cairo', sans-serif);
-          font-size: 0.72rem;
-          font-weight: 500;
-          transition: all 0.15s ease;
-        }
-        .share-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,0.08); }
-        .share-btn.whatsapp:hover  { background: #25D366; color: #fff; border-color: #25D366; }
-        .share-btn.telegram:hover  { background: #0088CC; color: #fff; border-color: #0088CC; }
-        .share-btn.twitter:hover   { background: #1DA1F2; color: #fff; border-color: #1DA1F2; }
-        .share-btn.email:hover     { background: #EA4335; color: #fff; border-color: #EA4335; }
-        .share-btn.copy-share:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
-        .share-btn.image-share:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
-        .share-btn.native:hover    { background: var(--gold); color: #fff; border-color: var(--gold); }
-        .share-btn i { font-size: 0.9rem; width: 16px; text-align: center; flex-shrink: 0; }
-      `}</style>
     </div>
   );
 }

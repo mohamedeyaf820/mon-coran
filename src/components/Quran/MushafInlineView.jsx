@@ -164,7 +164,7 @@ export default function MushafInlineView({
   return (
     <div className={`mp-frame${isQCF4 ? " mp-qcf4" : ""} relative overflow-hidden rounded-[30px] border border-white/12 bg-[linear-gradient(165deg,rgba(252,248,238,0.95)_0%,rgba(246,239,222,0.98)_100%)] shadow-[0_20px_38px_rgba(12,18,14,0.14)]`}>
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.16] [background-image:linear-gradient(to_right,rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] [background-size:60px_60px]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] bg-size-[60px_60px] opacity-[0.16]"
         aria-hidden="true"
       />
       {/* ══════════════ CADRE EXTÉRIEUR ══════════════ */}
@@ -244,6 +244,9 @@ export default function MushafInlineView({
                 <React.Fragment key={ayah.number ?? ayah.numberInSurah}>
                   <span
                     id={`ayah-${ayah.numberInSurah}`}
+                    data-surah-number={surahNum}
+                    data-ayah-number={ayah.numberInSurah}
+                    data-ayah-global={ayah.number}
                     className={`mp-ayah${isPlaying ? " mp-ayah--playing" : ""}`}
                     onClick={() => onAyahClick?.(ayah.numberInSurah)}
                     role="button"

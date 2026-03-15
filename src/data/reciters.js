@@ -252,6 +252,8 @@ const RECITERS = {
       style: "murattal",
       cdn: "warsh/warsh_Abdul_Basit_128kbps",
       cdnType: "everyayah",
+      audioMode: "ayah",
+      verifiedWarsh: true,
     },
     {
       id: "warsh_ibrahim_aldosari",
@@ -261,6 +263,8 @@ const RECITERS = {
       style: "murattal",
       cdn: "warsh/warsh_ibrahim_aldosary_128kbps",
       cdnType: "everyayah",
+      audioMode: "ayah",
+      verifiedWarsh: true,
     },
     {
       id: "warsh_yassin",
@@ -270,6 +274,74 @@ const RECITERS = {
       style: "murattal",
       cdn: "warsh/warsh_yassin_al_jazaery_64kbps",
       cdnType: "everyayah",
+      audioMode: "ayah",
+      verifiedWarsh: true,
+    },
+    {
+      id: "warsh_hussary",
+      name: "محمود خليل الحصري (ورش)",
+      nameEn: "Mahmoud Khalil Al-Husary (Warsh)",
+      nameFr: "Mahmoud Khalil Al-Husary (Warsh)",
+      style: "murattal",
+      cdn: "https://server13.mp3quran.net/husr/Rewayat-Warsh-A-n-Nafi/",
+      cdnType: "mp3quran-surah",
+      audioMode: "surah",
+      verifiedWarsh: true,
+    },
+    {
+      id: "warsh_omar_al_qazabri",
+      name: "عمر القزابري (ورش)",
+      nameEn: "Omar Al-Qazabri (Warsh)",
+      nameFr: "Omar Al-Qazabri (Warsh)",
+      style: "murattal",
+      cdn: "https://server9.mp3quran.net/omar_warsh/",
+      cdnType: "mp3quran-surah",
+      audioMode: "surah",
+      verifiedWarsh: true,
+    },
+    {
+      id: "warsh_mohammad_saayed",
+      name: "محمد السايد (ورش)",
+      nameEn: "Mohammad Saayed (Warsh)",
+      nameFr: "Mohammad Saayed (Warsh)",
+      style: "murattal",
+      cdn: "https://server16.mp3quran.net/m_sayed/Rewayat-Warsh-A-n-Nafi/",
+      cdnType: "mp3quran-surah",
+      audioMode: "surah",
+      verifiedWarsh: true,
+    },
+    {
+      id: "warsh_al_qaria_yassen",
+      name: "القارئ ياسين (ورش)",
+      nameEn: "Al-Qaria Yassen (Warsh)",
+      nameFr: "Al-Qaria Yassen (Warsh)",
+      style: "murattal",
+      cdn: "https://server11.mp3quran.net/qari/",
+      cdnType: "mp3quran-surah",
+      audioMode: "surah",
+      verifiedWarsh: true,
+    },
+    {
+      id: "warsh_aloyoon_al_koshi",
+      name: "العيون الكوشي (ورش)",
+      nameEn: "Aloyoon Al-Koshi (Warsh)",
+      nameFr: "Aloyoon Al-Koshi (Warsh)",
+      style: "murattal",
+      cdn: "https://server11.mp3quran.net/koshi/",
+      cdnType: "mp3quran-surah",
+      audioMode: "surah",
+      verifiedWarsh: true,
+    },
+    {
+      id: "warsh_rachid_belalya",
+      name: "رشيد بلعالية (ورش)",
+      nameEn: "Rachid Belalya (Warsh)",
+      nameFr: "Rachid Belalya (Warsh)",
+      style: "murattal",
+      cdn: "https://server6.mp3quran.net/bl3/Rewayat-Warsh-A-n-Nafi/",
+      cdnType: "mp3quran-surah",
+      audioMode: "surah",
+      verifiedWarsh: true,
     },
   ],
 };
@@ -304,4 +376,22 @@ export function reciterName(id, lang = "ar") {
   if (lang === "en") return r.nameEn;
   if (lang === "fr") return r.nameFr;
   return r.name;
+}
+
+export function isWarshVerifiedReciter(reciterOrId, riwaya = "warsh") {
+  const reciter =
+    typeof reciterOrId === "string"
+      ? getReciter(reciterOrId, riwaya) || getReciter(reciterOrId)
+      : reciterOrId;
+  if (!reciter) return false;
+  if (reciter.verifiedWarsh) return true;
+  return String(reciter.cdn || "").toLowerCase().includes("warsh");
+}
+
+export function isSurahOnlyReciter(reciterOrId, riwaya = null) {
+  const reciter =
+    typeof reciterOrId === "string"
+      ? getReciter(reciterOrId, riwaya) || getReciter(reciterOrId)
+      : reciterOrId;
+  return reciter?.audioMode === "surah";
 }

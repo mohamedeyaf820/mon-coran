@@ -240,7 +240,7 @@ export default function Footer({ goSurah }) {
 
   return (
     <footer
-      className="mp-footer relative mx-auto mt-10 w-full max-w-[1640px] px-3 pb-6 sm:px-5 lg:px-7"
+      className="mp-footer mp-footer--premium-plus relative mx-auto mt-10 w-full max-w-[1640px] px-3 pb-6 sm:px-5 lg:px-7"
       role="contentinfo"
     >
       <div className="relative overflow-hidden rounded-[2rem] border border-[var(--theme-panel-border,var(--border))] bg-[var(--theme-panel-bg,var(--bg-card))] text-[var(--text-primary)] shadow-[0_20px_60px_rgba(2,8,23,0.16)] backdrop-blur-xl">

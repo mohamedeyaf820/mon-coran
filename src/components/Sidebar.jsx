@@ -1,26 +1,10 @@
-import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import SURAHS, { toAr } from "../data/surahs";
 import { JUZ_DATA, JUZ_PAGE_RANGES } from "../data/juz";
 import { cn } from "../lib/utils";
-import { getReadStats } from "../services/readingProgressService";
 import "../styles/sidebar.css";
-
-/* ── Recent surahs helpers ── */
-const RECENT_KEY = 'mushafplus_recent_surahs';
-function saveRecent(n) {
-  try {
-    const list = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
-    const updated = [n, ...list.filter(x => x !== n)].slice(0, 5);
-    localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
-    return updated;
-  } catch { return []; }
-}
-function loadRecent() {
-  try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); }
-  catch { return []; }
-}
 
 export default function Sidebar() {
   const { state, dispatch, set } = useApp();
@@ -45,9 +29,6 @@ export default function Sidebar() {
   const [pageInput, setPageInput] = useState("");
   const [selectedJuzForPages, setSelectedJuzForPages] = useState(1);
   const activeItemRef = useRef(null);
-  const progressFillRef = useRef(null);
-  const [recentSurahs, setRecentSurahs] = useState(loadRecent);
-  const [readStats, setReadStats] = useState(() => getReadStats());
   const currentSurahMeta = SURAHS[currentSurah - 1];
   const activeSummary =
     displayMode === "surah"
@@ -58,14 +39,6 @@ export default function Sidebar() {
         ? `Juz ${currentJuz}`
         : `${lang === "fr" ? "Page" : lang === "ar" ? "الصفحة" : "Page"} ${currentPage}`;
 
-  // Refresh stats when sidebar opens
-  useEffect(() => {
-    if (sidebarOpen) {
-      setReadStats(getReadStats());
-      setRecentSurahs(loadRecent());
-    }
-  }, [sidebarOpen]);
-
   // Scroll active item into view when sidebar opens
   useEffect(() => {
     if (sidebarOpen && activeItemRef.current) {
@@ -74,11 +47,6 @@ export default function Sidebar() {
       }, 350);
     }
   }, [sidebarOpen]);
-
-  useEffect(() => {
-    if (!progressFillRef.current) return;
-    progressFillRef.current.style.width = `${readStats.percentage}%`;
-  }, [readStats.percentage]);
 
   const filteredSurahs = useMemo(() => {
     if (!filter) return SURAHS;
@@ -92,7 +60,6 @@ export default function Sidebar() {
   }, [filter]);
 
   const goSurah = (n) => {
-    setRecentSurahs(saveRecent(n));
     set({ displayMode: "surah", showHome: false, showDuas: false });
     dispatch({ type: "NAVIGATE_SURAH", payload: { surah: n, ayah: 1 } });
   };
@@ -193,37 +160,6 @@ export default function Sidebar() {
 
         {/* ── ZONE SCROLLABLE ── */}
         <div className="sidebar-content">
-
-          {/* Récemment ouvertes — dans la zone scrollable */}
-          {recentSurahs.length > 0 && tab === "surah" && !filter && (
-            <div className="sb-recent">
-              <div className="sb-recent__title">
-                <i className="fas fa-clock-rotate-left" aria-hidden="true" />
-                <span>{lang === "fr" ? "Récemment ouvertes" : lang === "ar" ? "السور الأخيرة" : "Recently opened"}</span>
-              </div>
-              <div className="sb-recent__list">
-                {recentSurahs.map((surahNum) => {
-                  const s = SURAHS[surahNum - 1];
-                  if (!s) return null;
-                  const isActive = s.n === currentSurah && displayMode === "surah";
-                  return (
-                    <button
-                      key={`recent-${s.n}`}
-                      className={cn("sb-recent__item", isActive && "active")}
-                      onClick={() => goSurah(s.n)}
-                    >
-                      <span className="sb-recent__num">{s.n}</span>
-                      <div className="sb-recent__body">
-                        <span className="sb-recent__name">{lang === "fr" ? s.fr : s.en}</span>
-                        <span className="sb-recent__meta">{s.ayahs} {lang === "ar" ? "آية" : "v."}</span>
-                      </div>
-                      <span className="sb-recent__ar">{s.ar}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
 
           {/* ── Section sourates ── */}
           {tab === "surah" && filter && filteredSurahs.length === 0 && (
@@ -347,28 +283,6 @@ export default function Sidebar() {
 
         {/* ── FOOTER ── */}
         <div className="sidebar-footer">
-          {readStats.totalRead > 0 && (
-            <div className="sidebar-progress">
-              <div className="sidebar-progress-header">
-                <span className="sidebar-progress-label">
-                  {lang === "fr" ? "Progression" : lang === "ar" ? "التقدم" : "Progress"}
-                </span>
-                <span className="sidebar-progress-pct">{readStats.percentage}%</span>
-              </div>
-              <div className="sidebar-progress-bar-bg">
-                <div
-                  ref={progressFillRef}
-                  className="sidebar-progress-bar-fill"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="sidebar-progress-detail">
-                {lang === "fr"
-                  ? `${readStats.totalRead.toLocaleString()} / ${readStats.total.toLocaleString()} versets • ${readStats.completedSurahs} sourates complètes`
-                  : `${readStats.totalRead.toLocaleString()} / ${readStats.total.toLocaleString()} ayahs • ${readStats.completedSurahs} surahs done`}
-              </div>
-            </div>
-          )}
           <div className="sidebar-footer__meta">
             <span>{tab === "surah" ? `${filteredSurahs.length} Surahs` : tab === "juz" ? "30 Juz" : "604 Pages"}</span>
             <span className="sidebar-footer__riwaya">{riwaya === "warsh" ? "Riwaya Warsh" : "Riwaya Hafs"}</span>

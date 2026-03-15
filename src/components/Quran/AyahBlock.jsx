@@ -49,12 +49,33 @@ const AyahBlock = React.memo(function AyahBlock({
   useEffect(() => {
     setMemoLevel(getMemorizationLevel(surahNum, ayah.numberInSurah));
   }, [surahNum, ayah.numberInSurah]);
+
+  useEffect(() => {
+    const handleMemoSync = (event) => {
+      if (
+        event.detail?.surah === surahNum &&
+        event.detail?.ayah === ayah.numberInSurah
+      ) {
+        setMemoLevel(Number(event.detail.level) || 0);
+      }
+    };
+
+    window.addEventListener("quran-memorization-updated", handleMemoSync);
+    return () =>
+      window.removeEventListener("quran-memorization-updated", handleMemoSync);
+  }, [surahNum, ayah.numberInSurah]);
+
   const handleStar = useCallback(
     (e, level) => {
       e.stopPropagation();
       const next = memoLevel === level ? 0 : level;
       setMemorizationLevel(surahNum, ayah.numberInSurah, next);
       setMemoLevel(next);
+      window.dispatchEvent(
+        new CustomEvent("quran-memorization-updated", {
+          detail: { surah: surahNum, ayah: ayah.numberInSurah, level: next },
+        }),
+      );
     },
     [memoLevel, surahNum, ayah.numberInSurah],
   );
@@ -83,9 +104,17 @@ const AyahBlock = React.memo(function AyahBlock({
     />
   );
 
+  const shouldShowVerseTranslation =
+    showTranslation &&
+    trans?.text &&
+    !(riwaya === "warsh" && showWordByWord);
+
   return (
     <div
       id={ayahId}
+      data-surah-number={surahNum}
+      data-ayah-number={ayah.numberInSurah}
+      data-ayah-global={ayah.number}
       role="listitem"
       aria-label={`${t("quran.ayah", lang)} ${ayah.numberInSurah}`}
       aria-current={isPlaying ? "true" : undefined}
@@ -151,7 +180,7 @@ const AyahBlock = React.memo(function AyahBlock({
           )}
 
           {/* Translation (optional, shown when enabled) */}
-          {showTranslation && trans?.text && (
+          {shouldShowVerseTranslation && (
             <div className="qc-ayah-translation" dir="auto">
               {trans.text}
             </div>

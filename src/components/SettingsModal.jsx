@@ -15,6 +15,7 @@ import {
   getDefaultReciterId,
   getReciter,
   getRecitersByRiwaya,
+  isSurahOnlyReciter,
 } from "../data/reciters";
 import SURAHS from "../data/surahs";
 import {
@@ -25,6 +26,7 @@ import {
 import { ensureFontLoaded } from "../services/fontLoader";
 import {
   getLatencyForReciter,
+  getReciterUnavailableRemainingMs,
   sortRecitersByPreference,
 } from "../utils/reciterRanking";
 import PlatformLogo from "./PlatformLogo";
@@ -98,19 +100,10 @@ const THEMES = [
     border: "#e6eaf0",
     text: "#2bb6c7",
   },
-  {
-    id: "quran-night",
-    fr: "Quran Nuit",
-    ar: "ليل القرآن",
-    en: "Quran Night",
-    bg: "#0c1622",
-    border: "#e8edf7",
-    text: "#3ca675",
-  },
 ];
 
 const DAY_THEME_IDS = ["light", "sepia"];
-const NIGHT_THEME_IDS = ["dark", "quran-night"];
+const NIGHT_THEME_IDS = ["dark"];
 const THEME_SWATCH_CLASSES = {
   light: {
     circle: "bg-[#f7f4ea] border-[#1f2c3a]",
@@ -123,10 +116,6 @@ const THEME_SWATCH_CLASSES = {
   dark: {
     circle: "bg-[#111827] border-[#e6eaf0]",
     text: "text-[#2bb6c7]",
-  },
-  "quran-night": {
-    circle: "bg-[#0c1622] border-[#e8edf7]",
-    text: "text-[#3ca675]",
   },
 };
 const FONT_SIZE_MIN = 32;
@@ -216,6 +205,7 @@ export default function SettingsModal() {
     favoriteReciters,
     autoSelectFastestReciter,
     reciterLatencyByKey,
+    reciterAvailabilityById,
     autoNightMode,
     nightStart,
     nightEnd,
@@ -225,6 +215,7 @@ export default function SettingsModal() {
   const syncKey = `${riwaya}:${reciter}`;
   const syncOffsetMs = Number(syncOffsetsMs?.[syncKey] ?? 0);
   const reciterObj = getReciter(reciter, riwaya);
+  const isSurahStreamReciter = isSurahOnlyReciter(reciterObj);
   const [fontFilter, setFontFilter] = useState("");
   const [activeTab, setActiveTab] = useState("apparence");
   const [offlineBusy, setOfflineBusy] = useState(false);
@@ -253,6 +244,7 @@ export default function SettingsModal() {
     currentReciterId: reciter,
     favoriteReciters,
     latencyByKey: reciterLatencyByKey,
+    availabilityById: reciterAvailabilityById,
   });
   const currentReciterLatency = getLatencyForReciter(
     reciterObj,
@@ -273,6 +265,14 @@ export default function SettingsModal() {
   ).length;
   const formatLatency = (latencySec) =>
     Number.isFinite(latencySec) ? `${Math.round(latencySec * 1000)} ms` : null;
+  const formatCooldownLabel = (remainingMs) => {
+    const totalMinutes = Math.ceil(Math.max(1, remainingMs / 60000));
+    if (totalMinutes < 60) {
+      return lang === "ar" ? `${totalMinutes} دقيقة` : `${totalMinutes} min`;
+    }
+    const hours = Math.ceil(totalMinutes / 60);
+    return lang === "ar" ? `${hours} ساعة` : `${hours} h`;
+  };
   const refreshOfflineMetrics = async () => {
     const [sizeMb, entries] = await Promise.all([
       getCacheSize(),
@@ -914,32 +914,32 @@ export default function SettingsModal() {
   };
 
   const overlayClass =
-    "settings-overlay !bg-[radial-gradient(circle_at_12%_8%,rgba(59,130,246,0.2)_0%,transparent_34%),radial-gradient(circle_at_88%_18%,rgba(16,185,129,0.14)_0%,transparent_28%),rgba(2,6,23,0.74)] !backdrop-blur-[8px]";
+    "settings-overlay settings-overlay--premium-plus !bg-[radial-gradient(circle_at_14%_10%,rgba(76,170,206,0.18)_0%,transparent_34%),radial-gradient(circle_at_84%_16%,rgba(212,173,89,0.14)_0%,transparent_30%),rgba(3,8,20,0.78)] !backdrop-blur-[14px]";
   const dialogClass =
-    "settings-dialog !overflow-hidden !rounded-[28px] !border !border-white/15 !bg-[linear-gradient(160deg,rgba(13,25,52,0.96),rgba(9,17,35,0.96))] !shadow-[0_26px_64px_rgba(1,8,24,0.58)]";
+    "settings-dialog settings-dialog--premium-plus !overflow-hidden !rounded-[32px] !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]";
   const headerClass =
-    "settings-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(34,93,214,0.25),rgba(17,44,102,0.2))] !backdrop-blur-md";
+    "settings-header settings-header--premium-plus !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))] !backdrop-blur-xl";
   const bodyLayoutClass = "settings-body-layout !min-h-[560px]";
   const navClass =
-    "settings-nav !border-r !border-white/10 !bg-[linear-gradient(180deg,rgba(10,22,47,0.8),rgba(8,17,36,0.85))]";
+    "settings-nav settings-nav--premium-plus !border-r !border-white/10 !bg-[linear-gradient(180deg,rgba(10,19,38,0.92),rgba(8,15,30,0.94))]";
   const contentClass =
-    "settings-content !bg-[linear-gradient(180deg,rgba(11,22,46,0.74),rgba(8,16,33,0.8))]";
+    "settings-content settings-content--premium-plus !bg-[linear-gradient(180deg,rgba(10,19,37,0.72),rgba(7,14,27,0.82))]";
   const paneClass = "settings-pane !space-y-4 !animate-[fadeInUp_0.24s_ease]";
   const paneTitleClass =
-    "settings-pane-title !rounded-xl !border !border-white/10 !bg-white/[0.04] !px-3 !py-2 !text-blue-100";
+    "settings-pane-title !rounded-2xl !border !border-white/10 !bg-white/[0.045] !px-3.5 !py-2.5 !text-[rgba(223,238,255,0.92)]";
   const cardClass =
-    "settings-card !rounded-2xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(14,28,57,0.82),rgba(9,18,38,0.86))] !shadow-[0_10px_24px_rgba(3,10,27,0.36)] !backdrop-blur-md";
+    "settings-card settings-card--premium-plus !rounded-[26px] !border !border-white/12 !bg-[linear-gradient(160deg,rgba(12,22,44,0.9),rgba(8,16,32,0.92))] !shadow-[0_18px_42px_rgba(3,10,24,0.34)] !backdrop-blur-xl";
   const navItemClass = (active) =>
     cn(
-      "settings-nav-item !transition-all !duration-200 hover:!bg-white/10 hover:!text-white",
+      "settings-nav-item !rounded-2xl !transition-all !duration-200 hover:!bg-white/10 hover:!text-white",
       active &&
-        "!bg-[linear-gradient(135deg,rgba(59,130,246,0.28),rgba(37,99,235,0.16))] !border !border-blue-200/28 !text-white !shadow-[0_8px_18px_rgba(30,64,175,0.3)]",
+        "!bg-[linear-gradient(135deg,rgba(76,170,206,0.24),rgba(26,86,140,0.22))] !border !border-sky-200/24 !text-white !shadow-[0_12px_28px_rgba(18,53,95,0.32)]",
     );
   const chipClass = (active) =>
     cn(
-      "settings-chip !transition-all !duration-200 hover:!bg-white/14 hover:!text-white",
+      "settings-chip !rounded-2xl !transition-all !duration-200 hover:!bg-white/14 hover:!text-white",
       active &&
-        "!border-blue-200/36 !bg-[linear-gradient(135deg,rgba(59,130,246,0.28),rgba(37,99,235,0.18))] !text-white !shadow-[0_8px_18px_rgba(30,64,175,0.28)]",
+        "!border-sky-200/28 !bg-[linear-gradient(135deg,rgba(76,170,206,0.22),rgba(24,88,126,0.18))] !text-white !shadow-[0_10px_22px_rgba(14,44,76,0.28)]",
     );
 
   return (
@@ -1795,6 +1795,13 @@ export default function SettingsModal() {
                       <div className="reciter-meta">
                         {riwaya.toUpperCase()} ·{" "}
                         {reciterObj?.style || "murattal"}
+                        {isSurahStreamReciter
+                          ? lang === "fr"
+                            ? " · sourate complete"
+                            : lang === "ar"
+                              ? " · سورة كاملة"
+                              : " · full surah"
+                          : ""}
                       </div>
                     </div>
                   </div>
@@ -1843,8 +1850,38 @@ export default function SettingsModal() {
                         {formatLatency(currentReciterLatency)}
                       </span>
                     )}
+                    {isSurahStreamReciter && (
+                      <span className="settings-value-pill">
+                        MP3Quran ·
+                        {lang === "fr"
+                          ? " sourate"
+                          : lang === "ar"
+                            ? " سورة"
+                            : " surah"}
+                      </span>
+                    )}
                   </div>
                 </div>
+
+                {isSurahStreamReciter && (
+                  <div className={cn(cardClass, "space-y-2")}>
+                    <div className="settings-card-label">
+                      <i className="fas fa-wave-square" aria-hidden="true"></i>
+                      {lang === "fr"
+                        ? "Mode Warsh etendu"
+                        : lang === "ar"
+                          ? "وضع ورش الممتد"
+                          : "Extended Warsh mode"}
+                    </div>
+                    <div className="rounded-2xl border border-sky-300/20 bg-sky-400/10 p-3 text-sm leading-relaxed text-[var(--text-secondary)]">
+                      {lang === "fr"
+                        ? "Ce recitateur Warsh est verifie via MP3Quran en lecture sourate complete. La lecture verset par verset reste assuree par les sources EveryAyah."
+                        : lang === "ar"
+                          ? "هذا القارئ في ورش موثق عبر MP3Quran بصيغة السورة كاملة. أما القراءة آية بآية فما زالت معتمدة على EveryAyah."
+                          : "This Warsh reciter is verified through MP3Quran as a full-surah stream. Verse-by-verse playback still relies on EveryAyah sources."}
+                    </div>
+                  </div>
+                )}
 
                 <div className={cn(cardClass, "space-y-3")}>
                   <div className="settings-card-label">
@@ -1907,7 +1944,7 @@ export default function SettingsModal() {
                       <button
                         type="button"
                         onClick={handleDownloadCurrentSurah}
-                        disabled={offlineBusy}
+                        disabled={offlineBusy || isSurahStreamReciter}
                         className="rounded-xl border border-emerald-300/25 bg-emerald-400/10 px-3 py-2 text-xs font-semibold text-emerald-50 transition hover:bg-emerald-400/18 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {lang === "fr"
@@ -1919,7 +1956,7 @@ export default function SettingsModal() {
                       <button
                         type="button"
                         onClick={handleDownloadRecentPack}
-                        disabled={offlineBusy}
+                        disabled={offlineBusy || isSurahStreamReciter}
                         className="rounded-xl border border-sky-300/25 bg-sky-400/10 px-3 py-2 text-xs font-semibold text-sky-50 transition hover:bg-sky-400/18 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {lang === "fr"
@@ -1931,7 +1968,7 @@ export default function SettingsModal() {
                       <button
                         type="button"
                         onClick={handleRemoveCurrentOffline}
-                        disabled={offlineBusy || !currentOfflineEntry}
+                        disabled={offlineBusy || !currentOfflineEntry || isSurahStreamReciter}
                         className="rounded-xl border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] transition hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {lang === "fr"
@@ -1941,6 +1978,15 @@ export default function SettingsModal() {
                             : "Remove current surah"}
                       </button>
                     </div>
+                    {isSurahStreamReciter && (
+                      <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs leading-relaxed text-[var(--text-secondary)]">
+                        {lang === "fr"
+                          ? "Le hors ligne ayah par ayah n'est pas encore disponible pour les recitateurs Warsh en sourate complete."
+                          : lang === "ar"
+                            ? "التحميل دون اتصال آية بآية غير متاح بعد لقراء ورش بصيغة السورة كاملة."
+                            : "Ayah-by-ayah offline download is not available yet for full-surah Warsh reciters."}
+                      </div>
+                    )}
                     {offlineProgress && (
                       <div className="mt-3 rounded-2xl border border-white/10 bg-black/10 p-3">
                         <div className="flex items-center justify-between gap-2 text-xs text-[var(--text-secondary)]">
@@ -1989,12 +2035,28 @@ export default function SettingsModal() {
                     {rankedReciters.map((r, index) => {
                       const active = reciter === r.id;
                       const latency = getLatencyForReciter(r, reciterLatencyByKey);
+                      const unavailableMs = getReciterUnavailableRemainingMs(
+                        r.id,
+                        reciterAvailabilityById,
+                      );
+                      const isUnavailable = unavailableMs > 0;
                       return (
                         <button
                           key={r.id}
-                          className={`settings-reciter-item${active ? " active" : ""}`}
-                          onClick={() => set({ reciter: r.id })}
+                          className={`settings-reciter-item${active ? " active" : ""}${isUnavailable && !active ? " is-unavailable" : ""}`}
+                          onClick={() => {
+                            if (isUnavailable && !active) return;
+                            set({ reciter: r.id });
+                          }}
                           aria-pressed={active}
+                          disabled={isUnavailable && !active}
+                          title={
+                            isUnavailable && !active
+                              ? lang === "fr"
+                                ? `Indisponible encore ${formatCooldownLabel(unavailableMs)}`
+                                : `Unavailable for ${formatCooldownLabel(unavailableMs)}`
+                              : undefined
+                          }
                         >
                           <span className="settings-reciter-avatar">
                             <i
@@ -2012,14 +2074,22 @@ export default function SettingsModal() {
                             </span>
                             <span className="settings-reciter-style">
                               {r.style || "murattal"}
+                              {r.audioMode === "surah"
+                                ? lang === "fr"
+                                  ? " · sourate complete"
+                                  : lang === "ar"
+                                    ? " · سورة كاملة"
+                                    : " · full surah"
+                                : ""}
                               {index === 0
                                 ? lang === "fr"
                                   ? " · rapide"
                                   : lang === "ar"
                                     ? " · سريع"
-                                    : " · fast"
+                                  : " · fast"
                                 : ""}
                               {latency ? ` · ${formatLatency(latency)}` : ""}
+                              {r.cdnType === "mp3quran-surah" ? " · MP3Quran" : ""}
                             </span>
                           </span>
                           {active && (
@@ -2053,6 +2123,7 @@ export default function SettingsModal() {
                     max={500}
                     step={10}
                     value={syncOffsetMs}
+                    disabled={isSurahStreamReciter}
                     onChange={(e) => {
                       const value = Math.max(
                         -500,
@@ -2181,6 +2252,15 @@ export default function SettingsModal() {
                       imgClassName="about-logo-img"
                       decorative
                     />
+                  {isSurahStreamReciter && (
+                    <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs leading-relaxed text-[var(--text-secondary)]">
+                      {lang === "fr"
+                        ? "La calibration mot a mot ne s'applique pas a la lecture sourate complete."
+                        : lang === "ar"
+                          ? "معايرة الكلمة بالكلمة لا تنطبق على وضع السورة كاملة."
+                          : "Word-by-word calibration does not apply to full-surah playback."}
+                    </div>
+                  )}
                     <div>
                       <strong>MushafPlus</strong>
                       <span className="about-version">v1.1.0</span>

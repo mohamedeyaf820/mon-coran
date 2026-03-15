@@ -5,6 +5,7 @@ import { AppProvider } from "./context/AppContext";
 import "./styles/index.css";
 import "./styles/ui-enhancements.css";
 import "./styles/themes4.css";
+import "./styles/premium-platform.css";
 
 // ErrorBoundary global pour capturer les erreurs React
 class ErrorBoundary extends React.Component {
@@ -24,11 +25,11 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-[var(--bg-primary)]">
+        <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-(--bg-primary)">
           <h1 className="mb-4 text-xl font-semibold text-red-500">
             Une erreur est survenue
           </h1>
-          <p className="mb-4 text-sm text-[var(--text-muted)]">
+          <p className="mb-4 text-sm text-(--text-muted)">
             {this.state.error?.message || "Erreur inconnue"}
           </p>
           <button

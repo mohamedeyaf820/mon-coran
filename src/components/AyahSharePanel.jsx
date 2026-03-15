@@ -11,7 +11,6 @@ const BG_PRESETS = [
   { id: 'light',       label: 'Ivoire',      bg: '#f7f4ea', text: '#199b90', sub: 'rgba(31,44,58,0.55)' },
   { id: 'sepia',       label: 'Parchemin',   bg: '#efe2c9', text: '#b4883c', sub: 'rgba(75,52,32,0.58)' },
   { id: 'dark',        label: 'Quran Dark',  bg: '#111827', text: '#2bb6c7', sub: 'rgba(230,234,240,0.62)' },
-  { id: 'quran-night', label: 'Quran Night', bg: '#0c1622', text: '#3ca675', sub: 'rgba(232,237,247,0.62)' },
 ];
 
 // Decorative geometric pattern (simple vine corners)
@@ -168,7 +167,7 @@ export default function AyahSharePanel() {
 
   const [arabicText, setArabicText] = useState('');
   const [translationText, setTranslationText] = useState('');
-  const [preset, setPreset] = useState('quran-night');
+  const [preset, setPreset] = useState('dark');
   const [includeTranslation, setIncludeTranslation] = useState(true);
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);

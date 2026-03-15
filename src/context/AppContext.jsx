@@ -93,6 +93,7 @@ const initialState = {
   favoriteReciters: stored.favoriteReciters || [],
   autoSelectFastestReciter: stored.autoSelectFastestReciter ?? true,
   reciterLatencyByKey: stored.reciterLatencyByKey || {},
+  reciterAvailabilityById: stored.reciterAvailabilityById || {},
   isPlaying: false,
   currentPlayingAyah: null,
   playerMinimized: stored.playerMinimized ?? false,
@@ -278,6 +279,7 @@ export function AppProvider({ children }) {
         favoriteReciters: state.favoriteReciters,
         autoSelectFastestReciter: state.autoSelectFastestReciter,
         reciterLatencyByKey: state.reciterLatencyByKey,
+        reciterAvailabilityById: state.reciterAvailabilityById,
         playerMinimized: state.playerMinimized,
         autoNightMode: state.autoNightMode,
         nightStart: state.nightStart,
@@ -329,6 +331,7 @@ export function AppProvider({ children }) {
     state.favoriteReciters,
     state.autoSelectFastestReciter,
     state.reciterLatencyByKey,
+    state.reciterAvailabilityById,
     state.playerMinimized,
     state.autoNightMode,
     state.nightStart,
@@ -363,9 +366,16 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     if (!state.autoSelectFastestReciter || state.isPlaying) return;
+    const hasFavoriteSignals =
+      Array.isArray(state.favoriteReciters) && state.favoriteReciters.length > 0;
+    const hasLatencySignals =
+      Object.keys(state.reciterLatencyByKey || {}).length > 0;
+    const hasAvailabilitySignals =
+      Object.keys(state.reciterAvailabilityById || {}).length > 0;
     if (
-      (!Array.isArray(state.favoriteReciters) || state.favoriteReciters.length === 0) &&
-      Object.keys(state.reciterLatencyByKey || {}).length === 0
+      !hasFavoriteSignals &&
+      !hasLatencySignals &&
+      !hasAvailabilitySignals
     ) {
       return;
     }
@@ -373,6 +383,7 @@ export function AppProvider({ children }) {
       currentReciterId: state.reciter,
       favoriteReciters: state.favoriteReciters,
       latencyByKey: state.reciterLatencyByKey,
+      availabilityById: state.reciterAvailabilityById,
     });
     if (preferredReciter && preferredReciter !== state.reciter) {
       dispatch({ type: "SET_RECITER", payload: preferredReciter });
@@ -383,6 +394,7 @@ export function AppProvider({ children }) {
     state.isPlaying,
     state.reciter,
     state.reciterLatencyByKey,
+    state.reciterAvailabilityById,
     state.riwaya,
   ]);
 

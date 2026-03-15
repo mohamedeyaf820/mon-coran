@@ -8,6 +8,29 @@ const MAX_RETRIES = 2;
 const RETRY_DELAY = 800; // ms
 
 class AudioService {
+  static isSurahStreamCdn(cdnType = "islamic") {
+    return cdnType === "mp3quran-surah";
+  }
+
+  static normalizePlaylistAyahs(ayahs, cdnType = "islamic") {
+    if (!Array.isArray(ayahs)) return [];
+    if (!AudioService.isSurahStreamCdn(cdnType)) return ayahs;
+
+    const seenSurahs = new Set();
+    return ayahs.reduce((acc, ayah) => {
+      const surah = ayah?.surah || ayah?.surahNumber;
+      if (!surah || seenSurahs.has(surah)) return acc;
+      seenSurahs.add(surah);
+      acc.push({
+        ...ayah,
+        surah,
+        ayah: null,
+        numberInSurah: null,
+      });
+      return acc;
+    }, []);
+  }
+
   constructor() {
     this.audio = new Audio();
     this.audio.preload = "metadata"; // Keep startup light while enabling faster first play
@@ -15,6 +38,7 @@ class AudioService {
     // don't support CORS, which causes audio to fail silently.
     this.currentAyah = null;
     this.playlist = []; // array of { surah, ayah, url }
+    this._playlistSourceAyahs = [];
     this.playlistIndex = -1;
     this.isPlaying = false;
     this._loadTimeout = null;
@@ -102,6 +126,11 @@ class AudioService {
    * Build a playable audio URL.
    */
   static buildUrl(reciterCdn, ayah, cdnType = "islamic") {
+    if (AudioService.isSurahStreamCdn(cdnType)) {
+      const surah = typeof ayah === "object" ? ayah.surah || ayah.surahNumber || 1 : 1;
+      const s = String(surah).padStart(3, "0");
+      return `${reciterCdn}${s}.mp3`;
+    }
     if (cdnType === "everyayah") {
       const surah = typeof ayah === "object" ? ayah.surah : 1;
       const num =
@@ -115,10 +144,20 @@ class AudioService {
     return `https://cdn.islamic.network/quran/audio/128/${reciterCdn}/${globalNum}.mp3`;
   }
 
+  static buildUrlCandidates(reciterCdn, ayah, cdnType = "islamic") {
+    const primary = AudioService.buildUrl(reciterCdn, ayah, cdnType);
+    if (!AudioService.isSurahStreamCdn(cdnType)) return [primary];
+
+    const surah = typeof ayah === "object" ? ayah.surah || ayah.surahNumber || 1 : 1;
+    const unpadded = `${reciterCdn}${Number(surah)}.mp3`;
+    return [...new Set([primary, unpadded])];
+  }
+
   static buildPlaylistSignature(ayahs, reciterCdn, cdnType = "islamic") {
     const base = `${cdnType}:${reciterCdn || ""}`;
-    if (!Array.isArray(ayahs) || ayahs.length === 0) return base;
-    return `${base}|${ayahs
+    const preparedAyahs = AudioService.normalizePlaylistAyahs(ayahs, cdnType);
+    if (!Array.isArray(preparedAyahs) || preparedAyahs.length === 0) return base;
+    return `${base}|${preparedAyahs
       .map((ayah) => {
         const surah = ayah.surah || ayah.surahNumber || 0;
         const ayahNum = ayah.ayah || ayah.numberInSurah || 0;
@@ -135,15 +174,19 @@ class AudioService {
   /* ── Playlist Management ───────────────────── */
 
   loadPlaylist(ayahs, reciterCdn, cdnType = "islamic") {
+    this._playlistSourceAyahs = Array.isArray(ayahs)
+      ? ayahs.map((ayah) => ({ ...ayah }))
+      : [];
+    const preparedAyahs = AudioService.normalizePlaylistAyahs(ayahs, cdnType);
     const nextSignature = AudioService.buildPlaylistSignature(
-      ayahs,
+      preparedAyahs,
       reciterCdn,
       cdnType,
     );
     if (nextSignature === this._playlistSignature && this.playlist.length > 0) {
       let hasTextUpdates = false;
       this.playlist = this.playlist.map((item, index) => {
-        const nextText = ayahs?.[index]?.text;
+        const nextText = preparedAyahs?.[index]?.text;
         if (nextText && nextText !== item.text) {
           hasTextUpdates = true;
           return { ...item, text: nextText };
@@ -168,11 +211,8 @@ class AudioService {
       this._currentCdnType,
     );
 
-    this.playlist = ayahs.map((a) => ({
-      surah: a.surah || a.surahNumber,
-      ayah: a.ayah || a.numberInSurah,
-      globalNumber: a.number,
-      url: AudioService.buildUrl(
+    this.playlist = preparedAyahs.map((a) => {
+      const urlCandidates = AudioService.buildUrlCandidates(
         reciterCdn,
         {
           surah: a.surah || a.surahNumber,
@@ -180,16 +220,27 @@ class AudioService {
           number: a.number,
         },
         cdnType,
-      ),
-      text: a.text,
-    }));
+      );
+      return {
+        surah: a.surah || a.surahNumber,
+        ayah: AudioService.isSurahStreamCdn(cdnType)
+          ? null
+          : a.ayah || a.numberInSurah,
+        globalNumber: a.number,
+        urls: urlCandidates,
+        url: urlCandidates[0],
+        text: a.text,
+      };
+    });
 
     // Preserve current position if the same ayah still exists in the new playlist
     const preservedIndex = previousCurrent
       ? this.playlist.findIndex(
           (p) =>
             p.surah === previousCurrent.surah &&
-            p.ayah === previousCurrent.ayah,
+            (AudioService.isSurahStreamCdn(cdnType)
+              ? true
+              : p.ayah === previousCurrent.ayah),
         )
       : -1;
 
@@ -248,13 +299,17 @@ class AudioService {
     const snapshotAyah = this.currentAyah;
     const snapshotTime = this.currentTime || 0;
     const wasPlaying = this.isPlaying;
+    const previousCdnType = this._currentCdnType;
 
-    const sourceAyahs = this.playlist.map((item) => ({
-      surah: item.surah,
-      ayah: item.ayah,
-      number: item.globalNumber,
-      text: item.text,
-    }));
+    const sourceAyahs =
+      Array.isArray(this._playlistSourceAyahs) && this._playlistSourceAyahs.length > 0
+        ? this._playlistSourceAyahs.map((ayah) => ({ ...ayah }))
+        : this.playlist.map((item) => ({
+            surah: item.surah,
+            ayah: item.ayah,
+            number: item.globalNumber,
+            text: item.text,
+          }));
 
     this.loadPlaylist(sourceAyahs, reciterCdn, cdnType);
 
@@ -268,20 +323,27 @@ class AudioService {
     const targetIndex = this.playlist.findIndex(
       (item) => item.surah === snapshotAyah.surah && item.ayah === snapshotAyah.ayah,
     );
-    if (targetIndex < 0) {
+    const fallbackSurahIndex =
+      targetIndex >= 0 || !AudioService.isSurahStreamCdn(cdnType)
+        ? targetIndex
+        : this.playlist.findIndex((item) => item.surah === snapshotAyah.surah);
+    const resolvedTargetIndex = fallbackSurahIndex;
+    if (resolvedTargetIndex < 0) {
       if (wasPlaying) {
         await this.play();
       }
       return;
     }
 
-    this.playlistIndex = targetIndex;
-    this.currentAyah = this.playlist[targetIndex];
+    this.playlistIndex = resolvedTargetIndex;
+    this.currentAyah = this.playlist[resolvedTargetIndex];
 
     if (!wasPlaying) return;
 
-    await this._loadAndPlay(targetIndex);
+    await this._loadAndPlay(resolvedTargetIndex, { throwOnError: true });
     if (
+      !AudioService.isSurahStreamCdn(previousCdnType) &&
+      !AudioService.isSurahStreamCdn(cdnType) &&
       snapshotTime > 0 &&
       Number.isFinite(this.audio.duration) &&
       snapshotTime < this.audio.duration - 0.2
@@ -354,6 +416,7 @@ class AudioService {
     this.isPlaying = false;
     this.playlistIndex = -1;
     this._playlistSignature = "";
+    this._playlistSourceAyahs = [];
     this.memCurrentRepeat = 0;
     this.onEnd?.();
   }
@@ -376,9 +439,12 @@ class AudioService {
    * Jump to a specific ayah in the playlist
    */
   playAyah(surah, ayah) {
-    const idx = this.playlist.findIndex(
+    let idx = this.playlist.findIndex(
       (p) => p.surah === surah && p.ayah === ayah,
     );
+    if (idx < 0 && AudioService.isSurahStreamCdn(this._currentCdnType)) {
+      idx = this.playlist.findIndex((p) => p.surah === surah);
+    }
     if (idx >= 0) {
       this._loadAndPlay(idx);
     }
@@ -638,7 +704,7 @@ class AudioService {
     }
   }
 
-  async _loadAndPlay(index) {
+  async _loadAndPlay(index, { throwOnError = false } = {}) {
     if (index < 0 || index >= this.playlist.length) return;
 
     this.playlistIndex = index;
@@ -658,7 +724,22 @@ class AudioService {
 
     try {
       this.onNetworkState?.("loading");
-      await this._loadUrlWithRetry(item.url);
+      const candidateUrls = Array.isArray(item.urls) && item.urls.length > 0 ? item.urls : [item.url];
+      let loadedUrl = null;
+      let lastErr = null;
+      for (const urlCandidate of candidateUrls) {
+        try {
+          await this._loadUrlWithRetry(urlCandidate);
+          loadedUrl = urlCandidate;
+          break;
+        } catch (err) {
+          lastErr = err;
+        }
+      }
+      if (!loadedUrl) {
+        throw lastErr || new Error("Audio load failed for all URL candidates");
+      }
+      item.url = loadedUrl;
       this.isPlaying = true;
       this.onNetworkState?.("playing");
       this.onPlay?.(item);
@@ -673,6 +754,9 @@ class AudioService {
       this.onError?.(err);
       // Keep current ayah on error (don't skip ahead and desync highlighting)
       this.isPlaying = false;
+      if (throwOnError) {
+        throw err;
+      }
     }
   }
 

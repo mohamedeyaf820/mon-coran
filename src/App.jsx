@@ -9,18 +9,16 @@ import React, {
 } from "react";
 import { useApp } from "./context/AppContext";
 import SplashScreen from "./components/SplashScreen";
-import Header from "./components/Header";
-import QuranDisplay from "./components/QuranDisplay";
-import HomePage from "./components/HomePage";
-import { prefetchInitialData } from "./services/quranAPI";
-import audioService from "./services/audioService";
 import { getReciter, ensureReciterForRiwaya } from "./data/reciters";
-import NotesPanel from "./components/NotesPanel";
 import { Toast } from "./components/ModernUIComponents";
 import { buildSurahAudioPlaylist } from "./utils/audioPlaylist";
 import { ensureFontLoaded } from "./services/fontLoader";
 
-// Lazy-load modals — they're only needed when opened
+// Lazy-load view shells and modals to reduce startup JS.
+const Header = lazy(() => import("./components/Header"));
+const HomePage = lazy(() => import("./components/HomePage"));
+const QuranDisplay = lazy(() => import("./components/QuranDisplay"));
+const NotesPanel = lazy(() => import("./components/NotesPanel"));
 const Sidebar = lazy(() => import("./components/Sidebar"));
 const AudioPlayer = lazy(() => import("./components/AudioPlayer"));
 const SearchModal = lazy(() => import("./components/SearchModal"));
@@ -41,6 +39,37 @@ const ReciterComparatorPanel = lazy(
 const AyahSharePanel = lazy(() => import("./components/AyahSharePanel"));
 const WeeklyStatsPanel = lazy(() => import("./components/WeeklyStatsPanel"));
 const AudioMakerPanel = lazy(() => import("./components/AudioMakerPanel"));
+
+let audioServiceLoader = null;
+
+async function getAudioServiceInstance() {
+  if (!audioServiceLoader) {
+    audioServiceLoader = import("./services/audioService").then(
+      (mod) => mod.default,
+    );
+  }
+  return audioServiceLoader;
+}
+
+function runWhenIdle(callback, timeout = 240) {
+  if (typeof window === "undefined") return () => {};
+
+  if ("requestIdleCallback" in window) {
+    const idleId = window.requestIdleCallback(callback, { timeout });
+    return () => window.cancelIdleCallback(idleId);
+  }
+
+  const timeoutId = window.setTimeout(
+    () =>
+      callback({
+        didTimeout: false,
+        timeRemaining: () => 0,
+      }),
+    timeout,
+  );
+
+  return () => window.clearTimeout(timeoutId);
+}
 
 function detectLowPerformanceDevice() {
   if (typeof window === "undefined" || typeof navigator === "undefined")
@@ -72,6 +101,7 @@ export default function App() {
     showHome,
     showDuas,
     focusReading,
+    memMode,
   } = state;
 
   /* ── Initialize reading progress bar on mount ── */
@@ -91,6 +121,7 @@ export default function App() {
 
   /* ── Global Toast notification system ── */
   const [toast, setToast] = useState(null);
+  const [deferNonCriticalUI, setDeferNonCriticalUI] = useState(false);
 
   // Listen for custom 'quran-toast' events dispatched anywhere in the app
   useEffect(() => {
@@ -140,6 +171,14 @@ export default function App() {
   }, [lowPerfMode]);
 
   useEffect(() => {
+    const cancelIdle = runWhenIdle(
+      () => setDeferNonCriticalUI(true),
+      lowPerfMode ? 680 : 220,
+    );
+    return cancelIdle;
+  }, [lowPerfMode]);
+
+  useEffect(() => {
     ensureFontLoaded(state.fontFamily).catch(() => {});
   }, [state.fontFamily]);
 
@@ -150,6 +189,9 @@ export default function App() {
      AudioPlayer play button works directly from the home page. */
   useEffect(() => {
     if (!showHome) return;
+    if (lowPerfMode) return;
+
+    let cancelled = false;
     const {
       riwaya,
       reciter: reciterId,
@@ -170,7 +212,21 @@ export default function App() {
       return;
     const items = buildSurahAudioPlaylist(surahNum);
     if (items.length === 0) return;
-    audioService.loadPlaylist(items, rec.cdn, rec.cdnType || "islamic");
+
+    const cancelIdle = runWhenIdle(async () => {
+      try {
+        const audioService = await getAudioServiceInstance();
+        if (cancelled) return;
+        audioService.loadPlaylist(items, rec.cdn, rec.cdnType || "islamic");
+      } catch {
+        // Silent fallback: home remains usable even if preload fails.
+      }
+    }, 420);
+
+    return () => {
+      cancelled = true;
+      cancelIdle();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     showHome,
@@ -178,6 +234,7 @@ export default function App() {
     state.reciter,
     state.currentSurah,
     state.warshStrictMode,
+    lowPerfMode,
   ]);
 
   /* ── Keyboard shortcuts ── */
@@ -269,7 +326,9 @@ export default function App() {
         case " ":
           // Space pour play/pause audio
           e.preventDefault();
-          audioService.toggle();
+          getAudioServiceInstance()
+            .then((audioService) => audioService.toggle())
+            .catch(() => {});
           break;
         default:
           break;
@@ -311,13 +370,14 @@ export default function App() {
     return (
       <SplashScreen
         onDone={() => dispatch({ type: "SPLASH_DONE" })}
-        onPrefetch={() =>
-          prefetchInitialData(
+        onPrefetch={async () => {
+          const { prefetchInitialData } = await import("./services/quranAPI");
+          return prefetchInitialData(
             state.currentSurah,
             state.riwaya,
             state.translationLang,
-          )
-        }
+          );
+        }}
         lowPerfMode={lowPerfMode}
       />
     );
@@ -325,26 +385,28 @@ export default function App() {
 
   return (
     <div
-      className={`app-root flex flex-col h-dvh w-full overflow-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""}`}
+      className={`app-root premium-plus flex flex-col min-h-screen h-dvh w-full overflow-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""}`}
       dir={lang === "ar" ? "rtl" : "ltr"}
+      data-view={showHome ? "home" : showDuas ? "duas" : "reading"}
+      data-display-mode={displayMode}
     >
       {/* Removed legacy Sakina starfield */}
       {/* ── Header ── */}
-      <Header />
+      <Suspense fallback={null}>
+        <Header />
+      </Suspense>
 
       {/* ── Main layout: sidebar + content ── */}
       <div className="app-layout-shell relative flex flex-1 min-h-0">
-        {/* Sidebar */}
-        {!focusReading && (
-          <Suspense fallback={null}>
-            <Sidebar />
-          </Suspense>
-        )}
+        {/* Sidebar: keep available in all reading states (including focus mode) */}
+        <Suspense fallback={null}>
+          {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
+        </Suspense>
 
         {/* Invisible overlay for sidebar (to capture outside clicks without dimming) */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 top-[var(--header-h)] z-190"
+            className="fixed inset-0 top-(--header-h) z-190"
             onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
             aria-hidden="true"
           />
@@ -352,38 +414,46 @@ export default function App() {
 
         {/* Main reading area */}
         <main
-          className={`app-main app-main-shell flex-1 min-w-0 overflow-y-auto overflow-x-hidden pb-[var(--player-h)] transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
+          className={`app-main app-main-shell flex-1 min-w-0 overflow-y-auto overflow-x-hidden pb-(--player-h) transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
         >
           <div
             className={`app-view-shell ${showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas ? `app-mode-${displayMode}` : ""}`}
           >
             {showHome ? (
-              <HomePage />
+              <Suspense fallback={null}>
+                <HomePage />
+              </Suspense>
             ) : showDuas ? (
               <Suspense fallback={null}>
                 <DuasPage />
               </Suspense>
             ) : (
-              <QuranDisplay
-                key={
-                  displayMode === "juz"
-                    ? `juz-${currentJuz}`
-                    : displayMode === "page"
-                      ? `page-${currentPage}`
-                      : `surah-${currentSurah}`
-                }
-              />
+              <Suspense fallback={null}>
+                <QuranDisplay
+                  key={
+                    displayMode === "juz"
+                      ? `juz-${currentJuz}`
+                      : displayMode === "page"
+                        ? `page-${currentPage}`
+                        : `surah-${currentSurah}`
+                  }
+                />
+              </Suspense>
             )}
           </div>
         </main>
 
         {/* Notes panel (right side) — loaded eagerly, always in the DOM when not in focus mode */}
-        {!focusReading && <NotesPanel />}
+        {!focusReading && deferNonCriticalUI && (
+          <Suspense fallback={null}>
+            <NotesPanel />
+          </Suspense>
+        )}
       </div>
 
       {/* ── Global Toast notifications ── */}
       {toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] w-[min(90vw,400px)]" role="alert" aria-live="polite">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-9999 w-[min(90vw,400px)]" role="alert" aria-live="polite">
           <Toast
             type={toast.type}
             message={toast.message}
@@ -395,7 +465,7 @@ export default function App() {
 
       {/* ── Fixed bottom audio player ── */}
       <Suspense fallback={null}>
-        <AudioPlayer />
+        {deferNonCriticalUI && <AudioPlayer />}
       </Suspense>
 
       {/* ── Modals — lazy loaded ── */}

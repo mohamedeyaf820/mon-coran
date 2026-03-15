@@ -6166,19 +6166,23 @@ select,
 
 /* ── Arabic calligraphic title inside parchment ── */
 .qc-header-name-ar {
-    font-family: var(--font-surah, "Scheherazade New", "Amiri", serif);
+    font-family: var(--font-surah-display, "Amiri Quran", "Amiri", serif)
+        !important;
     font-size: clamp(2rem, 5.5vw, 3.4rem);
-    font-weight: 700;
-    color: #1c0800;
+    font-weight: 500;
+    color: #8f5f10;
     margin: 0;
-    line-height: 2.2;
+    line-height: 1.9;
     position: relative;
     z-index: 1;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
     animation: none;
     direction: rtl;
     white-space: nowrap;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.015em;
+    font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+    font-variant-ligatures: contextual;
+    text-rendering: optimizeLegibility;
 }
 
 /* ── Ornament: hidden in parchment style ── */
@@ -21244,8 +21248,12 @@ button:focus:not(:focus-visible) {
 [class*="-surah-ar"],
 [class*="-name-ar"],
 [class*="surah-name"] {
-    font-family: "Amiri", "Amiri Quran", "Noto Naskh Arabic", serif !important;
-    font-weight: 700 !important;
+    font-family:
+        var(--font-surah-display, "Amiri Quran", "KFGQPC Uthman Taha Naskh"),
+        "Amiri",
+        "Noto Naskh Arabic",
+        serif !important;
+    font-weight: 500 !important;
 }
 
 /* --- 3. Couleurs par thème : noms arabes --- */

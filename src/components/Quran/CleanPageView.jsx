@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import { toAr, getSurah } from "../../data/surahs";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 
@@ -161,14 +161,6 @@ export default function CleanPageView({
     return result;
   }, [ayahs]);
 
-  /* ── Auto-scroll to currently playing verse ── */
-  useEffect(() => {
-    if (!currentPlayingAyah?.ayah) return;
-    const el = document.getElementById(`ayah-${currentPlayingAyah.ayah}`);
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [currentPlayingAyah]);
-
   const flowFontClass = getFlowFontClass(fontSize);
 
   return (
@@ -177,7 +169,7 @@ export default function CleanPageView({
       className={`cpv-container${isQCF4 ? " cpv-qcf4" : ""} relative overflow-hidden rounded-[26px] border border-white/10 bg-[linear-gradient(160deg,rgba(250,247,238,0.96),rgba(245,239,224,0.98))] p-4 shadow-[0_16px_36px_rgba(11,20,15,0.12)]`}
     >
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.22] [background-image:linear-gradient(to_right,rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] [background-size:56px_56px]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] bg-size-[56px_56px] opacity-[0.22]"
         aria-hidden="true"
       />
       {/* Surah title header */}
@@ -228,6 +220,9 @@ export default function CleanPageView({
             <span
               key={ayah.number}
               id={`ayah-${ayah.numberInSurah}`}
+              data-surah-number={surahNum}
+              data-ayah-number={ayah.numberInSurah}
+              data-ayah-global={ayah.number}
               className={`cpv-verse${isPlaying ? " cpv-verse--playing" : ""}`}
               aria-label={`${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`}
               aria-current={isPlaying ? "true" : undefined}

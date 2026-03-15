@@ -1,11 +1,12 @@
-export const THEME_ORDER = ["light", "sepia", "dark", "quran-night"];
+export const THEME_ORDER = ["light", "sepia", "dark"];
 export const DAY_THEME_IDS = ["light", "sepia"];
-export const NIGHT_THEME_IDS = ["dark", "quran-night"];
+export const NIGHT_THEME_IDS = ["dark"];
 
 export const LEGACY_THEME_MAP = {
   "premium-beige": "sepia",
-  ocean: "quran-night",
-  "night-blue": "quran-night",
+  ocean: "dark",
+  "night-blue": "dark",
+  "quran-night": "dark",
   forest: "dark",
   oled: "dark",
 };
@@ -16,14 +17,14 @@ export const THEMES = [
     fr: "Lueur du Fajr",
     ar: "نور الفجر",
     en: "Fajr Glow",
-    descriptionFr: "Ivoire lumineux, bleu mineral et calme du matin.",
-    descriptionAr: "عاج مضيء ولمسة زرقاء هادئة توحي بفجر جديد.",
-    descriptionEn: "Luminous ivory, mineral blue and a calm dawn mood.",
+    descriptionFr: "Blanc doux, contraste net et turquoise discret.",
+    descriptionAr: "إضاءة بيضاء هادئة مع تباين واضح ولمسة تركواز خفيفة.",
+    descriptionEn: "Soft white clarity with crisp contrast and subtle turquoise.",
     period: "day",
     palette: {
-      bg: "#f7f4ea",
-      ink: "#1f2c3a",
-      accent: "#199b90",
+      bg: "#fcfdfd",
+      ink: "#1f2832",
+      accent: "#2f9ea7",
     },
   },
   {
@@ -31,14 +32,14 @@ export const THEMES = [
     fr: "Parchemin du Mushaf",
     ar: "رق المصحف",
     en: "Mushaf Parchment",
-    descriptionFr: "Beige manuscrit, ombres chaudes et or discret.",
-    descriptionAr: "دفء المخطوط وظلال ذهبية هادئة.",
-    descriptionEn: "Manuscript beige, warm shadows and restrained gold.",
+    descriptionFr: "Parchemin plus chaud, texture manuscrit et brun confortable.",
+    descriptionAr: "رق أكثر دفئاً بإحساس مخطوط وتباين بني مريح للعين.",
+    descriptionEn: "Warmer parchment feel with manuscript depth and readable brown contrast.",
     period: "day",
     palette: {
-      bg: "#efe2c9",
-      ink: "#4b3420",
-      accent: "#b4883c",
+      bg: "#f4ead7",
+      ink: "#483723",
+      accent: "#8b6b3e",
     },
   },
   {
@@ -54,21 +55,6 @@ export const THEMES = [
       bg: "#111827",
       ink: "#e6eaf0",
       accent: "#2bb6c7",
-    },
-  },
-  {
-    id: "quran-night",
-    fr: "Jardin de la Recitation",
-    ar: "روضة التلاوة",
-    en: "Recitation Garden",
-    descriptionFr: "Vert emeraude, penombre douce et ambiance contemplative.",
-    descriptionAr: "أخضر زمردي وهدوء ليلي مناسب للتلاوة.",
-    descriptionEn: "Emerald tones, soft darkness and a contemplative mood.",
-    period: "night",
-    palette: {
-      bg: "#0c1622",
-      ink: "#e8edf7",
-      accent: "#3ca675",
     },
   },
 ];

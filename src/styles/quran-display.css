@@ -16,6 +16,14 @@
     width: 100%;
     scroll-behavior: auto;
     -webkit-overflow-scrolling: touch;
+    --font-surah-display:
+        "Amiri Quran",
+        "KFGQPC Uthman Taha Naskh",
+        "KFGQPC Uthmanic Script HAFS",
+        "Scheherazade New",
+        "Amiri",
+        "Noto Naskh Arabic",
+        serif;
 }
 
 /* Mode transitions: Surah / Page / Juz */
@@ -232,24 +240,23 @@
 }
 
 .surah-header-name {
-    font-family: var(
-        --font-quran,
-        "Scheherazade New",
-        "Amiri Quran",
-        "Amiri",
-        serif
-    );
+    font-family: var(--font-surah-display, "Amiri Quran", "Amiri", serif)
+        !important;
     font-size: clamp(2.2rem, 5vw, 2.8rem);
-    color: #fff;
+    font-weight: 400;
+    color: #f8e5b8;
     text-shadow:
         0 1px 10px rgba(0, 0, 0, 0.4),
         0 0 32px rgba(212, 168, 32, 0.22),
         0 0 64px rgba(212, 168, 32, 0.1);
-    letter-spacing: 2.5px;
+    letter-spacing: 0.015em;
     position: relative;
     z-index: 1;
-    line-height: 1.4;
+    line-height: 1.32;
     direction: rtl;
+    font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+    font-variant-ligatures: contextual;
+    text-rendering: optimizeLegibility;
     transition: text-shadow 0.3s ease;
 }
 
@@ -2122,7 +2129,7 @@
 
     .surah-header-name {
         font-size: 1.16rem;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.014em;
     }
 
     .surah-header-info {
@@ -2248,7 +2255,7 @@
 
     .surah-header-name {
         font-size: 1rem;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.012em;
     }
 
     .bismillah-text {
@@ -2297,7 +2304,7 @@
 
     .surah-header-name {
         font-size: 2.7rem;
-        letter-spacing: 4px;
+        letter-spacing: 0.04em;
     }
 
     .bismillah-text {
@@ -3009,14 +3016,18 @@
 }
 
 .mp-surah-name-ar {
-    font-family: var(--font-surah, "Amiri", serif);
+    font-family: var(--font-surah-display, "Amiri Quran", "Amiri", serif)
+        !important;
     font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--mp-text);
+    font-weight: 500;
+    color: #8b621f;
     direction: rtl;
-    line-height: 1.4;
-    letter-spacing: 0.02em;
+    line-height: 1.32;
+    letter-spacing: 0.012em;
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.09);
+    font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+    font-variant-ligatures: contextual;
+    text-rendering: optimizeLegibility;
 }
 
 .mp-surah-name-tr {
@@ -3406,12 +3417,17 @@
 
 /* Surah name typography */
 .surah-header-name {
-    font-family: var(--font-quran), serif;
+    font-family: var(--font-surah-display, "Amiri Quran", "Amiri", serif)
+        !important;
+    font-weight: 400;
     font-size: clamp(1.25rem, 3.5vw, 2rem);
-    color: rgba(255, 255, 255, 0.97);
+    color: #f8e5b8;
     line-height: 1.5;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.015em;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+    font-variant-ligatures: contextual;
+    text-rendering: optimizeLegibility;
 }
 
 .surah-header-sub {
@@ -4409,14 +4425,18 @@
 }
 
 .cpv-surah-header-name {
-    font-family: "Amiri", "Scheherazade New", var(--font-quran);
+    font-family: var(--font-surah-display, "Amiri Quran", "Amiri", serif)
+        !important;
     font-size: 1.4rem;
-    font-weight: 700;
+    font-weight: 500;
     color: var(--cpv-gold);
     text-align: center;
     direction: rtl;
-    line-height: 1.4;
-    letter-spacing: 0.02em;
+    line-height: 1.32;
+    letter-spacing: 0.012em;
+    font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+    font-variant-ligatures: contextual;
+    text-rendering: optimizeLegibility;
 }
 
 .cpv-surah-header-sub {

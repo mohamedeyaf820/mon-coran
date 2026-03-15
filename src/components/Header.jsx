@@ -246,7 +246,7 @@ export default function Header() {
   return (
     <header
       ref={headerRef}
-      className="hdr hdr--themes4 sticky top-0 z-[220] w-full backdrop-blur-xl"
+      className="hdr hdr--themes4 hdr--premium-plus sticky top-0 z-[220] w-full backdrop-blur-xl"
     >
       <div className="hdr__main flex flex-wrap items-center gap-2 px-2 py-2 md:gap-3 md:px-4">
         <div className="hdr__left flex min-w-0 items-center gap-2">

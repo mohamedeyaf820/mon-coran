@@ -2,13 +2,13 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { getFontFamily, isFontPageLoaded, onFontLoadChange } from '../../services/warshService';
 
 const TAJWID_FALLBACK_COLORS = {
-    ghunna: '#1aaf5d', idgham: '#9b59b6', ikhfa: '#1abc9c', iqlab: '#2ecc71',
-    qalqala: '#3498db', madd: '#e74c3c', 'madd-normal': '#d63384',
-    'madd-separated': '#fd7e14', 'madd-connected': '#e91e90',
-    'lam-shamsiyya': '#AAAAAA', tafkhim: '#4a86c8', silent: '#AAAAAA',
-    naql: '#ff6b35', tashil: '#7c4dff', ibdal: '#FF5722',
-    'madd-badal': '#e91e63', 'sila-kubra': '#0288d1', 'tarqiq-ra': '#00bcd4',
-    'idgham-warsh': '#6a1b9a',
+    ghunna: '#09b000', idgham: '#ababab', ikhfa: '#09b000', iqlab: '#00b4e0',
+    qalqala: '#00b4e0', madd: '#c09725', 'madd-normal': '#c09725',
+    'madd-separated': '#e67b00', 'madd-connected': '#ff0000',
+    'lam-shamsiyya': '#ababab', tafkhim: '#134fe1', silent: '#ababab',
+    naql: '#e67b00', tashil: '#09b000', ibdal: '#e67b00',
+    'madd-badal': '#e67b00', 'sila-kubra': '#e67b00', 'tarqiq-ra': '#09b000',
+    'idgham-warsh': '#ababab',
 };
 
 function mapTajweedToQCF4(tajweedColors, qcf4Count) {

@@ -9,6 +9,8 @@ import {
 import { getSurah, surahName } from "../data/surahs";
 import {
   getLatencyForReciter,
+  getReciterUnavailableRemainingMs,
+  isReciterTemporarilyUnavailable,
   sortRecitersByPreference,
 } from "../utils/reciterRanking";
 import { cn, toast } from "../lib/utils";
@@ -82,6 +84,32 @@ const WAVE_HEIGHT_CLASSES = [
 ];
 
 const MOBILE_BREAKPOINT = 1024;
+const RECITER_COOLDOWN_STEPS_MS = [
+  90 * 1000,
+  8 * 60 * 1000,
+  25 * 60 * 1000,
+  90 * 60 * 1000,
+  4 * 60 * 60 * 1000,
+];
+
+function getReciterCooldownMs(failCount) {
+  const safeFails = Math.max(1, Number(failCount) || 1);
+  const idx = Math.min(RECITER_COOLDOWN_STEPS_MS.length - 1, safeFails - 1);
+  return RECITER_COOLDOWN_STEPS_MS[idx];
+}
+
+function formatCooldownLabel(remainingMs, lang) {
+  const totalMinutes = Math.ceil(Math.max(1, remainingMs / 60000));
+  if (totalMinutes < 60) {
+    if (lang === "fr") return `${totalMinutes} min`;
+    if (lang === "ar") return `${totalMinutes} دقيقة`;
+    return `${totalMinutes} min`;
+  }
+  const hours = Math.ceil(totalMinutes / 60);
+  if (lang === "fr") return `${hours} h`;
+  if (lang === "ar") return `${hours} ساعة`;
+  return `${hours}h`;
+}
 
 function ProgressRail({ progress, className = "", showThumb = false }) {
   const pct = Math.max(0, Math.min(100, progress * 100));
@@ -255,6 +283,7 @@ export default function AudioPlayer() {
     favoriteReciters,
     autoSelectFastestReciter,
     reciterLatencyByKey,
+    reciterAvailabilityById,
   } = state;
 
   const [progress, setProgress] = useState(0);
@@ -294,6 +323,126 @@ export default function AudioPlayer() {
 
   const progressRef = useRef(null);
   const audioErrorTimerRef = useRef(null);
+  const autoFailoverBusyRef = useRef(false);
+  const failedRecitersRef = useRef(new Set());
+  const reciterAvailabilityRef = useRef(reciterAvailabilityById || {});
+
+  useEffect(() => {
+    reciterAvailabilityRef.current = reciterAvailabilityById || {};
+  }, [reciterAvailabilityById]);
+
+  const markReciterUnavailable = useCallback(
+    (reciterId, errorLike = null) => {
+      if (typeof reciterId !== "string" || !reciterId) return;
+      const now = Date.now();
+      const currentMap = reciterAvailabilityRef.current || {};
+      const previous = currentMap[reciterId] || {};
+      const nextFailCount = Math.max(1, Number(previous.failCount || 0) + 1);
+      const cooldownMs = getReciterCooldownMs(nextFailCount);
+      const nextEntry = {
+        failCount: nextFailCount,
+        lastFailAt: now,
+        lastSuccessAt: Number(previous.lastSuccessAt) || 0,
+        cooldownUntil: now + cooldownMs,
+        lastError: String(errorLike?.message || errorLike || "")
+          .trim()
+          .slice(0, 160),
+      };
+      const nextMap = { ...currentMap, [reciterId]: nextEntry };
+      reciterAvailabilityRef.current = nextMap;
+      set({ reciterAvailabilityById: nextMap });
+    },
+    [set],
+  );
+
+  const markReciterAvailable = useCallback(
+    (reciterId) => {
+      if (typeof reciterId !== "string" || !reciterId) return;
+      const currentMap = reciterAvailabilityRef.current || {};
+      if (!currentMap[reciterId]) return;
+      const nextMap = { ...currentMap };
+      delete nextMap[reciterId];
+      reciterAvailabilityRef.current = nextMap;
+      set({ reciterAvailabilityById: nextMap });
+    },
+    [set],
+  );
+
+  const tryAutoReciterFailover = useCallback(async () => {
+    if (!autoSelectFastestReciter) return false;
+    if (autoFailoverBusyRef.current || reciterSwitchingId) return false;
+
+    const rankedReciters = sortRecitersByPreference(getRecitersByRiwaya(riwaya), {
+      currentReciterId: reciter,
+      favoriteReciters,
+      latencyByKey: reciterLatencyByKey,
+      availabilityById: reciterAvailabilityRef.current,
+    });
+    if (!rankedReciters.length) return false;
+
+    const currentIdx = rankedReciters.findIndex((item) => item.id === reciter);
+    const rotated =
+      currentIdx >= 0
+        ? [...rankedReciters.slice(currentIdx + 1), ...rankedReciters.slice(0, currentIdx)]
+        : rankedReciters;
+    const candidates = rotated.filter(
+      (item) => item.id !== reciter && !failedRecitersRef.current.has(item.id),
+    );
+    if (!candidates.length) return false;
+    const availableCandidates = candidates.filter(
+      (item) =>
+        !isReciterTemporarilyUnavailable(
+          item.id,
+          reciterAvailabilityRef.current,
+        ),
+    );
+    const finalCandidates =
+      availableCandidates.length > 0 ? availableCandidates : candidates;
+
+    autoFailoverBusyRef.current = true;
+    try {
+      for (const candidate of finalCandidates) {
+        failedRecitersRef.current.add(candidate.id);
+        setReciterSwitchingId(candidate.id);
+        try {
+          await audioService.switchReciter(
+            candidate.cdn,
+            candidate.cdnType || "islamic",
+          );
+          markReciterAvailable(candidate.id);
+          set({ reciter: candidate.id });
+          toast(
+            lang === "fr"
+              ? `Récitateur indisponible, bascule vers ${candidate.nameFr || candidate.nameEn || candidate.name}.`
+              : lang === "ar"
+                ? `تعذر التحميل، تم التحويل إلى ${candidate.name || candidate.nameEn || candidate.id}.`
+                : `Reciter unavailable, switched to ${candidate.nameEn || candidate.nameFr || candidate.name}.`,
+            "warning",
+          );
+          return true;
+        } catch (error) {
+          markReciterUnavailable(candidate.id, error);
+          console.warn("Auto reciter failover failed:", error);
+        } finally {
+          setReciterSwitchingId(null);
+        }
+      }
+      return false;
+    } finally {
+      autoFailoverBusyRef.current = false;
+    }
+  }, [
+    autoSelectFastestReciter,
+    favoriteReciters,
+    lang,
+    markReciterAvailable,
+    markReciterUnavailable,
+    reciter,
+    reciterLatencyByKey,
+    reciterSwitchingId,
+    riwaya,
+    set,
+  ]);
 
   /* ── Detect mobile ── */
   useEffect(() => {
@@ -332,6 +481,8 @@ export default function AudioPlayer() {
     audioService.onPlay = (item) => {
       setClosed(false); // réouvre si fermé
       setAudioError(null);
+      markReciterAvailable(reciter);
+      failedRecitersRef.current.clear();
       set({
         isPlaying: true,
         currentPlayingAyah: item
@@ -375,11 +526,28 @@ export default function AudioPlayer() {
       setDuration(dur);
       setProgress(dur ? ct / dur : 0);
     };
-    audioService.onError = () => {
+    audioService.onError = async (error) => {
       set({ isPlaying: false });
       setNetworkState("error");
       if (audioErrorTimerRef.current) {
         clearTimeout(audioErrorTimerRef.current);
+      }
+      markReciterUnavailable(reciter, error);
+      failedRecitersRef.current.add(reciter);
+      const failoverWorked = await tryAutoReciterFailover();
+      if (failoverWorked) {
+        setAudioError(
+          lang === "fr"
+            ? "Bascule automatique vers un autre récitateur..."
+            : lang === "ar"
+              ? "تم التحويل تلقائياً إلى قارئ آخر..."
+              : "Auto-switching to another reciter...",
+        );
+        audioErrorTimerRef.current = setTimeout(() => {
+          setAudioError(null);
+          audioErrorTimerRef.current = null;
+        }, 3200);
+        return;
       }
       const msg =
         riwaya === "warsh"
@@ -415,7 +583,16 @@ export default function AudioPlayer() {
       audioService.onError = null;
       audioService.onNetworkState = null;
     };
-  }, [set, lang, riwaya]);
+  }, [
+    dispatch,
+    lang,
+    markReciterAvailable,
+    markReciterUnavailable,
+    reciter,
+    riwaya,
+    set,
+    tryAutoReciterFailover,
+  ]);
 
   const networkBadge = (() => {
     if (networkState === "loading" || networkState === "buffering") {
@@ -467,6 +644,10 @@ export default function AudioPlayer() {
     const safe = ensureReciterForRiwaya(reciter, riwaya);
     if (safe !== reciter) set({ reciter: safe });
   }, [reciter, riwaya, set]);
+
+  useEffect(() => {
+    failedRecitersRef.current.clear();
+  }, [reciter, riwaya]);
 
   useEffect(() => {
     if (memMode)
@@ -634,6 +815,7 @@ export default function AudioPlayer() {
     currentReciterId: reciter,
     favoriteReciters,
     latencyByKey: reciterLatencyByKey,
+    availabilityById: reciterAvailabilityById,
   });
   const isWarshMode = riwaya === "warsh";
 
@@ -675,10 +857,30 @@ export default function AudioPlayer() {
       const target = currentReciters.find((r) => r.id === nextReciterId);
       if (!target) return;
 
+      const remainingMs = getReciterUnavailableRemainingMs(
+        nextReciterId,
+        reciterAvailabilityRef.current,
+      );
+      if (remainingMs > 0) {
+        const retryLabel = formatCooldownLabel(remainingMs, lang);
+        toast(
+          lang === "fr"
+            ? `Ce recitateur est temporairement indisponible. Reessayez dans ${retryLabel}.`
+            : lang === "ar"
+              ? `هذا القارئ غير متاح مؤقتا. حاول بعد ${retryLabel}.`
+              : `This reciter is temporarily unavailable. Try again in ${retryLabel}.`,
+          "warning",
+        );
+        return;
+      }
+
       setReciterSwitchingId(nextReciterId);
       try {
         await audioService.switchReciter(target.cdn, target.cdnType || "islamic");
+        markReciterAvailable(nextReciterId);
+        set({ reciter: nextReciterId });
       } catch (error) {
+        markReciterUnavailable(nextReciterId, error);
         console.error("Instant reciter switch failed:", error);
         toast(
           lang === "fr"
@@ -689,11 +891,18 @@ export default function AudioPlayer() {
           "warning",
         );
       } finally {
-        set({ reciter: nextReciterId });
         setReciterSwitchingId(null);
       }
     },
-    [currentReciters, lang, reciter, reciterSwitchingId, set],
+    [
+      currentReciters,
+      lang,
+      markReciterAvailable,
+      markReciterUnavailable,
+      reciter,
+      reciterSwitchingId,
+      set,
+    ],
   );
 
   const { currentSurah } = state;
@@ -704,6 +913,8 @@ export default function AudioPlayer() {
   const currentArabicName = surahMeta?.ar || "";
 
   const reciterObj = currentReciters.find((r) => r.id === reciter);
+  const isSurahStreamReciter = reciterObj?.audioMode === "surah";
+  const hasAyahContext = Boolean(currentPlayingAyah?.ayah);
   const isHomeDesktop = showHome && !isMobile;
   const isContextualDesktop = !isMobile && !showHome;
   const isReadingDesktop = isContextualDesktop && !showDuas;
@@ -714,8 +925,12 @@ export default function AudioPlayer() {
         ? reciterObj?.nameFr
         : reciterObj?.nameEn;
 
-  const titleLabel = currentPlayingAyah
+  const titleLabel = hasAyahContext
     ? `${t("quran.surah", lang)} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
+    : currentPlayingAyah?.surah
+      ? lang === "ar"
+        ? currentArabicName || `${t("quran.surah", lang)} ${currentPlayingAyah.surah}`
+        : currentSurahName || `${t("quran.surah", lang)} ${currentPlayingAyah.surah}`
     : lang === "ar"
       ? currentArabicName
       : currentSurahName;
@@ -727,7 +942,7 @@ export default function AudioPlayer() {
     if (normalizedLiveText) {
       return normalizedLiveText;
     }
-    if (!currentPlayingAyah) return "";
+    if (!hasAyahContext || !currentPlayingAyah) return "";
     const fromPlaylist = audioService.playlist?.find(
       (p) =>
         p.surah === currentPlayingAyah.surah && p.ayah === currentPlayingAyah.ayah,
@@ -777,88 +992,103 @@ export default function AudioPlayer() {
     { key: "riwaya", label: isWarshMode ? "Warsh" : "Hafs", accent: true },
     currentPlayingAyah && {
       key: "ayah",
-      label: `${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`,
+      label: hasAyahContext
+        ? `${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
+        : `S.${currentPlayingAyah.surah}`,
     },
     audioSpeed !== 1 && { key: "speed", label: `${audioSpeed}x` },
     memMode && { key: "memorize", label: memorizeShortLabel },
     karaokeFollow && { key: "follow", label: followShortLabel },
+    isSurahStreamReciter && {
+      key: "mode",
+      label: lang === "fr" ? "Sourate" : lang === "ar" ? "سورة" : "Surah",
+    },
   ].filter(Boolean);
 
   /* ─── Shared button classes (mobile bar) ─── */
   const playerPanelSurfaceClass =
-    "rounded-2xl border border-white/10 bg-[linear-gradient(165deg,rgba(16,27,42,0.9),rgba(9,16,28,0.92))] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl";
+    "rounded-[26px] border border-[color-mix(in_srgb,var(--theme-border-strong)_34%,transparent_66%)] bg-[linear-gradient(165deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_95%,var(--theme-primary)_5%),color-mix(in_srgb,var(--theme-panel-bg)_93%,var(--theme-bg)_7%))] shadow-[inset_0_1px_0_rgba(255,255,255,0.1),inset_0_-1px_0_rgba(0,0,0,0.14),0_24px_56px_rgba(2,8,22,0.3)] backdrop-blur-2xl";
   const playerSoftSurfaceClass =
-    "rounded-xl border border-white/10 bg-white/[0.06] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]";
+    "rounded-[20px] border border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] bg-[linear-gradient(160deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_84%,transparent_16%),color-mix(in_srgb,var(--theme-panel-bg)_74%,transparent_26%))] shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]";
+  const playerPrimaryBtnClass =
+    "audio-player-primary-btn flex items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--theme-primary)_52%,#ffffff_48%)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--theme-primary)_86%,#ffffff_14%),color-mix(in_srgb,var(--theme-primary)_66%,var(--theme-bg)_34%))] text-white shadow-[0_10px_24px_rgba(var(--theme-primary-rgb),0.34)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--theme-primary-rgb),0.44)]";
   const mBarBtn = cn(
-    "h-9 w-9 shrink-0 rounded-xl border border-white/12 bg-white/[0.05] text-[0.84rem] text-[rgba(242,234,214,0.82)]",
+    "h-9 w-9 shrink-0 rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[0.84rem] text-[color-mix(in_srgb,var(--theme-text)_82%,var(--theme-bg)_18%)]",
     "flex items-center justify-center outline-none transition-all duration-150",
-    "hover:border-[rgba(110,204,233,0.48)] hover:bg-[rgba(110,204,233,0.14)] hover:text-white",
-    "active:scale-95 focus-visible:ring-2 focus-visible:ring-[rgba(110,204,233,0.45)]",
+    "hover:border-[color-mix(in_srgb,var(--theme-primary)_42%,transparent_58%)] hover:bg-[rgba(var(--theme-primary-rgb),0.16)] hover:text-white",
+    "active:scale-95 focus-visible:ring-2 focus-visible:ring-[rgba(var(--theme-primary-rgb),0.32)]",
   );
   const mBarBtnSm = (active = false) =>
     cn(
       "flex min-h-[1.875rem] items-center justify-center whitespace-nowrap rounded-lg border px-2 py-1 text-[0.68rem] font-semibold outline-none transition-all duration-150",
       active
-        ? "border-[rgba(110,204,233,0.52)] bg-[rgba(110,204,233,0.2)] text-white"
-        : "border-white/12 bg-white/[0.05] text-[rgba(237,228,208,0.72)] hover:border-[rgba(110,204,233,0.42)] hover:bg-[rgba(110,204,233,0.12)] hover:text-white",
-      "focus-visible:ring-2 focus-visible:ring-[rgba(110,204,233,0.38)]",
+        ? "border-[color-mix(in_srgb,var(--theme-primary)_42%,transparent_58%)] bg-[rgba(var(--theme-primary-rgb),0.18)] text-white"
+        : "border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[color-mix(in_srgb,var(--theme-text)_76%,var(--theme-bg)_24%)] hover:border-[color-mix(in_srgb,var(--theme-primary)_36%,transparent_64%)] hover:bg-[rgba(var(--theme-primary-rgb),0.12)] hover:text-white",
+      "focus-visible:ring-2 focus-visible:ring-[rgba(var(--theme-primary-rgb),0.28)]",
     );
   const playerBadgeClass =
-    "inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-[rgba(255,255,255,0.08)] px-2 py-0.5 text-[0.6rem] font-semibold text-[rgba(241,233,216,0.88)] [font-family:var(--font-ui)]";
+    "inline-flex items-center gap-1.5 rounded-full border border-[color-mix(in_srgb,var(--theme-border)_56%,transparent_44%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_78%,transparent_22%)] px-2 py-0.5 text-[0.6rem] font-semibold text-[color-mix(in_srgb,var(--theme-text)_84%,var(--theme-bg)_16%)] [font-family:var(--font-ui)]";
   const playerSectionLabelClass =
-    "mb-2 text-[0.56rem] font-bold uppercase tracking-[0.18em] text-[rgba(132,205,228,0.72)] [font-family:var(--font-ui)]";
+    "mb-2 text-[0.56rem] font-bold uppercase tracking-[0.18em] text-[color-mix(in_srgb,var(--theme-primary)_68%,var(--theme-text)_32%)] [font-family:var(--font-ui)]";
   const playerMutedTextClass =
     "text-[rgba(233,223,202,0.74)] [font-family:var(--font-ui)]";
   const playerSearchInputClass =
-    "w-full rounded-lg border border-white/14 bg-[rgba(7,16,29,0.7)] py-1.5 pl-7 pr-6 text-[0.64rem] text-[rgba(245,236,217,0.9)] outline-none [font-family:var(--font-ui)] focus:border-[rgba(110,204,233,0.48)] focus:ring-2 focus:ring-[rgba(110,204,233,0.22)]";
+    "w-full rounded-xl border border-white/12 bg-[rgba(6,13,24,0.78)] py-1.5 pl-7 pr-6 text-[0.64rem] text-[rgba(245,236,217,0.9)] outline-none [font-family:var(--font-ui)] focus:border-[rgba(122,188,210,0.4)] focus:ring-2 focus:ring-[rgba(122,188,210,0.18)]";
   const playerNumberInputClass =
-    "w-12 rounded-lg border border-white/15 bg-[rgba(7,16,29,0.7)] px-1.5 py-1 text-center text-[0.72rem] text-[rgba(250,240,220,0.95)] outline-none [font-family:var(--font-ui)] focus:border-[rgba(110,204,233,0.5)] focus:ring-2 focus:ring-[rgba(110,204,233,0.22)]";
+    "w-12 rounded-xl border border-white/12 bg-[rgba(6,13,24,0.78)] px-1.5 py-1 text-center text-[0.72rem] text-[rgba(250,240,220,0.95)] outline-none [font-family:var(--font-ui)] focus:border-[rgba(122,188,210,0.42)] focus:ring-2 focus:ring-[rgba(122,188,210,0.18)]";
   const playerCardToggleClass = (active = false) =>
     cn(
-      "flex items-center justify-between gap-2 rounded-xl border px-3 py-1.5 text-[0.7rem] font-semibold transition-all duration-150 [font-family:var(--font-ui)]",
+      "flex items-center justify-between gap-2 rounded-2xl border px-3 py-1.5 text-[0.7rem] font-semibold transition-all duration-150 [font-family:var(--font-ui)]",
       active
-        ? "border-[rgba(110,204,233,0.48)] bg-[rgba(110,204,233,0.16)] text-[rgba(245,250,255,0.98)]"
-        : "border-white/12 bg-white/[0.05] text-[rgba(236,227,208,0.72)] hover:border-[rgba(110,204,233,0.4)] hover:bg-[rgba(110,204,233,0.1)]",
+        ? "border-[rgba(122,188,210,0.42)] bg-[rgba(122,188,210,0.16)] text-[rgba(245,250,255,0.98)]"
+        : "border-white/12 bg-white/[0.045] text-[rgba(236,227,208,0.72)] hover:border-[rgba(122,188,210,0.34)] hover:bg-[rgba(122,188,210,0.1)]",
     );
   const playerOptionPillClass = (active = false) =>
     cn(
-      "rounded-lg border px-2 py-1 text-[0.6rem] font-semibold transition-all [font-family:var(--font-ui)]",
+      "rounded-xl border px-2 py-1 text-[0.6rem] font-semibold transition-all [font-family:var(--font-ui)]",
       active
-        ? "border-[rgba(110,204,233,0.5)] bg-[rgba(110,204,233,0.2)] text-white"
-        : "border-white/12 bg-white/[0.05] text-[rgba(236,227,208,0.72)] hover:border-[rgba(110,204,233,0.4)] hover:bg-[rgba(110,204,233,0.1)]",
+        ? "border-[rgba(122,188,210,0.42)] bg-[rgba(122,188,210,0.18)] text-white"
+        : "border-white/12 bg-white/[0.045] text-[rgba(236,227,208,0.72)] hover:border-[rgba(122,188,210,0.34)] hover:bg-[rgba(122,188,210,0.1)]",
     );
   const playerAbButtonClass = (active = false) =>
     cn(
-      "rounded-lg border px-2 py-1 text-[0.64rem] font-bold transition-all [font-family:var(--font-ui)]",
+      "rounded-xl border px-2 py-1 text-[0.64rem] font-bold transition-all [font-family:var(--font-ui)]",
       active
-        ? "border-[rgba(110,204,233,0.5)] bg-[rgba(110,204,233,0.2)] text-[rgba(245,250,255,0.98)]"
-        : "border-white/12 bg-white/[0.05] text-[rgba(236,227,208,0.72)] hover:border-[rgba(110,204,233,0.4)] hover:bg-[rgba(110,204,233,0.1)]",
+        ? "border-[rgba(122,188,210,0.42)] bg-[rgba(122,188,210,0.18)] text-[rgba(245,250,255,0.98)]"
+        : "border-white/12 bg-white/[0.045] text-[rgba(236,227,208,0.72)] hover:border-[rgba(122,188,210,0.34)] hover:bg-[rgba(122,188,210,0.1)]",
     );
   const playerUtilityClass =
-    "flex items-center justify-center rounded-lg border border-white/12 bg-white/[0.04] text-[rgba(235,225,204,0.66)] transition-all duration-150 hover:border-[rgba(110,204,233,0.42)] hover:bg-[rgba(110,204,233,0.12)] hover:text-white";
+    "flex items-center justify-center rounded-xl border border-white/12 bg-white/[0.04] text-[rgba(235,225,204,0.66)] transition-all duration-150 hover:border-[rgba(122,188,210,0.34)] hover:bg-[rgba(122,188,210,0.12)] hover:text-white";
   const playerStrongTextClass =
     "text-[rgba(246,238,222,0.98)] [font-family:var(--font-ui)]";
   const playerSubtitleTextClass =
     "text-[rgba(221,211,191,0.74)] [font-family:var(--font-ui)]";
   const playerGoldMetaClass =
-    "text-[rgba(143,206,226,0.78)] [font-family:var(--font-ui)]";
+    "text-[color-mix(in_srgb,var(--theme-primary)_72%,var(--theme-text)_28%)] [font-family:var(--font-ui)]";
   const playerFadedTextClass =
     "text-[rgba(195,186,167,0.56)] [font-family:var(--font-ui)]";
   const playerSurfaceButtonClass =
-    "rounded-xl border border-white/12 bg-white/[0.05] text-[rgba(234,224,205,0.74)] transition-all duration-150 [font-family:var(--font-ui)] hover:border-[rgba(110,204,233,0.42)] hover:bg-[rgba(110,204,233,0.1)] hover:text-white";
-  const playerReciterButtonClass = (active = false, isLoading = false) =>
+    "rounded-2xl border border-white/12 bg-white/[0.045] text-[rgba(234,224,205,0.74)] transition-all duration-150 [font-family:var(--font-ui)] hover:border-[rgba(122,188,210,0.34)] hover:bg-[rgba(122,188,210,0.1)] hover:text-white";
+  const playerReciterButtonClass = (
+    active = false,
+    isLoading = false,
+    isUnavailable = false,
+  ) =>
     cn(
-      "group flex w-full items-start gap-2.5 rounded-xl border px-2.5 py-2 text-left transition-all duration-150",
+      "group flex w-full items-start gap-2.5 rounded-2xl border px-2.5 py-2 text-left transition-all duration-150",
       active
-        ? "border-[rgba(110,204,233,0.5)] bg-[rgba(110,204,233,0.18)] text-[rgba(249,253,255,0.98)]"
-        : "border-white/10 bg-white/[0.04] text-[rgba(232,222,202,0.74)] hover:border-[rgba(110,204,233,0.38)] hover:bg-[rgba(110,204,233,0.1)]",
+        ? "border-[rgba(122,188,210,0.42)] bg-[rgba(122,188,210,0.16)] text-[rgba(249,253,255,0.98)]"
+        : "border-white/10 bg-white/[0.04] text-[rgba(232,222,202,0.74)] hover:border-[rgba(122,188,210,0.34)] hover:bg-[rgba(122,188,210,0.1)]",
+      isUnavailable &&
+        !active &&
+        "border-rose-300/30 bg-rose-300/10 text-rose-100 hover:border-rose-300/40 hover:bg-rose-300/16",
       isLoading && "animate-pulse",
     );
   const playerReciterAvatarClass = (active = false) =>
     cn(
-      "mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-lg text-[0.62rem] font-black",
+      "mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-xl text-[0.62rem] font-black",
       active
-        ? "bg-[rgba(110,204,233,0.3)] text-white"
+        ? "bg-[rgba(122,188,210,0.24)] text-white"
         : "bg-white/[0.08] text-[rgba(233,223,203,0.55)]",
     );
 
@@ -879,28 +1109,28 @@ export default function AudioPlayer() {
   const renderOptionsModal = () =>
     optionsModalOpen ? (
       <div
-        className="fixed inset-0 z-[420] flex items-center justify-center p-2 sm:p-4"
+        className="audio-player-modal fixed inset-0 z-[420] flex items-center justify-center p-2 sm:p-4"
         data-no-drag="true"
       >
         <button
           type="button"
-          className="absolute inset-0 bg-[rgba(2,7,14,0.72)] backdrop-blur-sm"
+          className="audio-player-modal__backdrop absolute inset-0 bg-[color-mix(in_srgb,var(--theme-bg)_68%,#040810_32%)] backdrop-blur-sm"
           onClick={() => setOptionsModalOpen(false)}
           aria-label={lang === "fr" ? "Fermer les options" : "Close options"}
         />
-        <div className="relative z-[421] flex h-[min(92vh,860px)] w-[min(96vw,1180px)] min-w-0 flex-col overflow-hidden rounded-3xl border border-white/14 bg-[linear-gradient(165deg,rgba(7,18,33,0.97),rgba(4,10,20,0.98))] shadow-[0_40px_90px_rgba(2,8,18,0.75)] backdrop-blur-2xl">
+        <div className="audio-player-modal__surface relative z-[421] flex h-[min(92vh,860px)] w-[min(96vw,1180px)] min-w-0 flex-col overflow-hidden rounded-3xl border border-[color-mix(in_srgb,var(--theme-border-strong)_30%,transparent_70%)] bg-[linear-gradient(165deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_95%,var(--theme-primary)_5%),color-mix(in_srgb,var(--theme-panel-bg)_94%,var(--theme-bg)_6%))] shadow-[0_40px_90px_rgba(2,8,18,0.56)] backdrop-blur-2xl">
           <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-5 sm:py-4">
             <div className="min-w-0">
-              <h3 className="truncate text-sm font-bold text-[rgba(244,248,255,0.96)] sm:text-base">
+              <h3 className="truncate text-sm font-bold text-[color-mix(in_srgb,var(--theme-text)_92%,#ffffff_8%)] sm:text-base">
                 {optionsModalTitle}
               </h3>
-              <p className="mt-1 truncate text-[0.66rem] text-[rgba(203,223,240,0.72)] sm:text-xs">
+              <p className="mt-1 truncate text-[0.66rem] text-[color-mix(in_srgb,var(--theme-text-muted)_88%,var(--theme-bg)_12%)] sm:text-xs">
                 {optionsModalSubtitle}
               </p>
             </div>
             <button
               type="button"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/12 bg-white/[0.05] text-[0.78rem] text-[rgba(240,228,206,0.88)] transition-all duration-150 hover:border-[rgba(110,204,233,0.45)] hover:bg-[rgba(110,204,233,0.14)] hover:text-white"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[0.78rem] text-[color-mix(in_srgb,var(--theme-text)_84%,var(--theme-bg)_16%)] transition-all duration-150 hover:border-[color-mix(in_srgb,var(--theme-primary)_44%,transparent_56%)] hover:bg-[rgba(var(--theme-primary-rgb),0.14)] hover:text-white"
               onClick={() => setOptionsModalOpen(false)}
             >
               <i className="fas fa-xmark" />
@@ -961,6 +1191,11 @@ export default function AudioPlayer() {
                       const active = reciter === r.id;
                       const isLoading =
                         reciterSwitchingId === r.id || (active && networkState === "loading");
+                      const unavailableMs = getReciterUnavailableRemainingMs(
+                        r.id,
+                        reciterAvailabilityById,
+                      );
+                      const isUnavailable = unavailableMs > 0;
                       const initial = (r.nameEn || r.name || "?")[0].toUpperCase();
                       const isFavorite = (favoriteReciters || []).includes(r.id);
                       const latency = getLatencyForReciter(r, reciterLatencyByKey);
@@ -968,9 +1203,13 @@ export default function AudioPlayer() {
                         <button
                           key={`modal-${r.id}`}
                           onClick={() => handleReciterSelect(r.id)}
-                          className={playerReciterButtonClass(active, isLoading)}
+                          className={playerReciterButtonClass(
+                            active,
+                            isLoading,
+                            isUnavailable,
+                          )}
                           aria-pressed={active}
-                          disabled={isAnyReciterSwitching}
+                          disabled={isAnyReciterSwitching || (isUnavailable && !active)}
                         >
                           <span className={playerReciterAvatarClass(active)}>
                             {isLoading ? (
@@ -985,11 +1224,24 @@ export default function AudioPlayer() {
                             <span className="truncate text-[0.7rem] font-semibold leading-tight">
                               {lang === "ar" ? r.name : lang === "fr" ? r.nameFr : r.nameEn}
                             </span>
-                            <span className="mt-1 flex flex-wrap gap-1">
-                              <span className="inline-flex w-fit items-center rounded-full border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-[rgba(225,214,194,0.72)]">
-                                {r.cdnType === "everyayah" ? "EveryAyah CDN" : "Islamic CDN"}
-                              </span>
-                              {isFavorite && (
+                              <span className="mt-1 flex flex-wrap gap-1">
+                                <span className="inline-flex w-fit items-center rounded-full border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-[rgba(225,214,194,0.72)]">
+                                  {r.cdnType === "everyayah"
+                                    ? "EveryAyah CDN"
+                                    : r.cdnType === "mp3quran-surah"
+                                      ? "MP3Quran"
+                                      : "Islamic CDN"}
+                                </span>
+                                {r.audioMode === "surah" && (
+                                  <span className="inline-flex w-fit items-center rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-fuchsia-100">
+                                    {lang === "fr"
+                                      ? "Sourate complete"
+                                      : lang === "ar"
+                                        ? "سورة كاملة"
+                                        : "Full surah"}
+                                  </span>
+                                )}
+                                {isFavorite && (
                                 <span className="inline-flex w-fit items-center rounded-full border border-amber-300/35 bg-amber-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-amber-200">
                                   <i className="fas fa-star mr-1 text-[0.44rem]" />
                                   {lang === "fr" ? "Favori" : lang === "ar" ? "مفضل" : "Favorite"}
@@ -1003,6 +1255,15 @@ export default function AudioPlayer() {
                               {autoSelectFastestReciter && filteredReciters[0]?.id === r.id && (
                                 <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/30 bg-emerald-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-emerald-100">
                                   {lang === "fr" ? "Rapide" : lang === "ar" ? "سريع" : "Fast"}
+                                </span>
+                              )}
+                              {isUnavailable && (
+                                <span className="inline-flex w-fit items-center rounded-full border border-rose-300/40 bg-rose-300/16 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-rose-100">
+                                  {lang === "fr"
+                                    ? `Indisponible ${formatCooldownLabel(unavailableMs, lang)}`
+                                    : lang === "ar"
+                                      ? `غير متاح ${formatCooldownLabel(unavailableMs, lang)}`
+                                      : `Unavailable ${formatCooldownLabel(unavailableMs, lang)}`}
                                 </span>
                               )}
                             </span>
@@ -1098,6 +1359,7 @@ export default function AudioPlayer() {
                   max="500"
                   step="10"
                   value={syncOffsetMs}
+                  disabled={isSurahStreamReciter}
                   onChange={(e) => setSyncOffsetMs(e.target.value)}
                   className="h-1.5 w-full cursor-pointer rounded-full accent-[rgb(110,204,233)]"
                 />
@@ -1113,11 +1375,17 @@ export default function AudioPlayer() {
                   </button>
                 </div>
                 <p className={cn(playerFadedTextClass, "mt-2 text-[0.62rem] leading-relaxed")}>
-                  {lang === "fr"
-                    ? "Le suivi des versets est verrouillé en automatique. La calibration se mémorise par récitateur."
-                    : lang === "ar"
-                      ? "متابعة الآيات مفعّلة تلقائيًا دائمًا. تتم معايرة التزامن لكل قارئ."
-                      : "Verse follow is locked to automatic. Sync calibration is saved per reciter."}
+                  {isSurahStreamReciter
+                    ? lang === "fr"
+                      ? "Ce recitateur lit la sourate complete, donc la synchro mot a mot n'est pas utilisee."
+                      : lang === "ar"
+                        ? "هذا القارئ يقرأ السورة كاملة، لذلك لا تُستخدم مزامنة كلمة بكلمة."
+                        : "This reciter plays the full surah, so word-by-word sync is not used."
+                    : lang === "fr"
+                      ? "Le suivi des versets est verrouillé en automatique. La calibration se mémorise par récitateur."
+                      : lang === "ar"
+                        ? "متابعة الآيات مفعّلة تلقائيًا دائمًا. تتم معايرة التزامن لكل قارئ."
+                        : "Verse follow is locked to automatic. Sync calibration is saved per reciter."}
                 </p>
               </div>
 
@@ -1154,10 +1422,10 @@ export default function AudioPlayer() {
               <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
                 <div className={cn(playerSectionLabelClass, "mb-2")}>A-B Repeat</div>
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <button onClick={markAbA} className={playerAbButtonClass(Boolean(abA))} disabled={!currentPlayingAyah}>
+                  <button onClick={markAbA} className={playerAbButtonClass(Boolean(abA))} disabled={!hasAyahContext}>
                     {abA ? `A: ${abA.surah}:${abA.ayah}` : "A"}
                   </button>
-                  <button onClick={markAbB} className={playerAbButtonClass(Boolean(abB))} disabled={!currentPlayingAyah}>
+                  <button onClick={markAbB} className={playerAbButtonClass(Boolean(abB))} disabled={!hasAyahContext}>
                     {abB ? `B: ${abB.surah}:${abB.ayah}` : "B"}
                   </button>
                   {(abA || abB) && (
@@ -1396,8 +1664,8 @@ export default function AudioPlayer() {
         ? "right-4 top-[calc(var(--header-h)+1rem)] left-auto bottom-auto xl:right-5"
         : "left-[var(--player-left)] top-[var(--player-top)] right-auto bottom-auto";
   const desktopCardShadowClass = isPlaying
-    ? "shadow-[0_24px_60px_rgba(2,8,16,0.56),0_0_0_1px_rgba(110,204,233,0.26)]"
-    : "shadow-[0_18px_46px_rgba(2,8,16,0.5),0_0_0_1px_rgba(255,255,255,0.08)]";
+    ? "shadow-[0_26px_62px_rgba(2,8,18,0.54),0_0_0_1px_rgba(122,188,210,0.2)]"
+    : "shadow-[0_18px_46px_rgba(2,8,18,0.48),0_0_0_1px_rgba(255,255,255,0.08)]";
 
   if (closed) return null;
 
@@ -1409,7 +1677,7 @@ export default function AudioPlayer() {
       return (
         <div
           className={cn(
-            "!fixed bottom-3 left-3 right-3 z-[300] overflow-hidden rounded-2xl text-[rgba(244,236,220,0.95)]",
+            "mp-audio-player mp-audio-player--mobile !fixed bottom-3 left-3 right-3 z-[300] overflow-hidden rounded-2xl text-[color-mix(in_srgb,var(--theme-text)_90%,var(--theme-bg)_10%)]",
             playerPanelSurfaceClass,
             "shadow-[0_20px_44px_rgba(3,8,15,0.48)]",
           )}
@@ -1428,7 +1696,7 @@ export default function AudioPlayer() {
           <div className="flex items-center gap-2.5 px-3 py-2.5">
             <CoverArt isPlaying={isPlaying} size={40} />
             <div className="min-w-0 flex-1">
-              <div className="truncate text-[0.74rem] font-bold leading-tight text-[rgba(247,241,228,0.96)]">
+              <div className="truncate text-[0.74rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-text)_94%,#ffffff_6%)]">
                 {titleLabel ||
                   (lang === "fr"
                     ? "Pret a lire"
@@ -1436,12 +1704,12 @@ export default function AudioPlayer() {
                       ? "جاهز"
                       : "Ready")}
               </div>
-              <div className="truncate text-[0.6rem] text-[rgba(224,212,190,0.62)]">
+              <div className="truncate text-[0.6rem] text-[color-mix(in_srgb,var(--theme-text-muted)_88%,var(--theme-bg)_12%)]">
                 {reciterLabel || "-"}
               </div>
             </div>
             <button
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(110,204,233,0.44)] bg-[linear-gradient(135deg,rgba(68,180,214,0.94),rgba(24,142,184,0.92))] text-[0.88rem] text-white shadow-[0_10px_22px_rgba(24,142,184,0.42)] transition-all duration-150"
+              className={cn(playerPrimaryBtnClass, "h-10 w-10 text-[0.88rem]")}
               onClick={toggle}
               title={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
               aria-pressed={isPlaying}
@@ -1481,7 +1749,7 @@ export default function AudioPlayer() {
     return (
       <div
         className={cn(
-          "!fixed bottom-0 left-0 right-0 z-[300] rounded-t-3xl border-t text-[rgba(244,236,220,0.95)]",
+          "mp-audio-player mp-audio-player--mobile mp-audio-player--dock !fixed bottom-0 left-0 right-0 z-[300] rounded-t-3xl border-t text-[color-mix(in_srgb,var(--theme-text)_92%,var(--theme-bg)_8%)]",
           playerPanelSurfaceClass,
           "rounded-b-none rounded-t-3xl",
           expanded ? "is-expanded" : "is-collapsed",
@@ -1498,8 +1766,39 @@ export default function AudioPlayer() {
               : "Audio Player"
         }
       >
+        <div className="flex items-center justify-between px-3.5 pb-1.5 pt-2">
+          <button
+            className={cn(mBarBtn, "h-10 w-10 rounded-full")}
+            onClick={toggleMinimized}
+            title={
+              lang === "fr"
+                ? "Réduire"
+                : lang === "ar"
+                  ? "تصغير"
+                  : "Minimize"
+            }
+          >
+            <i className="fas fa-chevron-down" />
+          </button>
+          <div className="flex min-w-0 items-center gap-2 px-2">
+            <div className="h-1 w-9 rounded-full bg-[linear-gradient(90deg,rgba(var(--theme-primary-rgb),0.18),rgba(var(--theme-primary-rgb),0.95),rgba(var(--theme-primary-rgb),0.18))]" />
+            <span className="text-[0.54rem] uppercase tracking-[0.16em] text-[color-mix(in_srgb,var(--theme-text-muted)_80%,var(--theme-bg)_20%)] [font-family:var(--font-ui)]">
+              drag
+            </span>
+          </div>
+          <button
+            className={cn(mBarBtn, "h-10 w-10 rounded-full")}
+            onClick={closePlayer}
+            title={
+              lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
+            }
+          >
+            <i className="fas fa-xmark" />
+          </button>
+        </div>
+
         {networkBadge && (
-          <div className="px-3 pt-1.5">
+          <div className="px-3 pb-1">
             <div
               className={cn(
                 "px-2 py-[0.1875rem] text-[0.62rem] font-semibold",
@@ -1529,22 +1828,24 @@ export default function AudioPlayer() {
         </div>
 
         {/* Controls row */}
-        <div className="flex min-h-[3.7rem] items-center gap-2 px-3">
+        <div className="flex min-h-[4.1rem] items-center gap-2.5 px-3 pb-1.5">
           {/* Left: info block */}
           <div
-            className="flex w-[5.35rem] shrink-0 flex-col justify-center gap-[0.15rem] min-w-0"
+            className="flex w-[5.8rem] shrink-0 flex-col justify-center gap-[0.2rem] min-w-0"
             aria-live="polite"
           >
-            <span className="block overflow-hidden text-ellipsis whitespace-nowrap text-[0.7rem] font-semibold leading-tight text-[rgba(245,238,223,0.9)]">
+            <span className="block overflow-hidden text-ellipsis whitespace-nowrap text-[0.7rem] font-semibold leading-tight text-[color-mix(in_srgb,var(--theme-text)_90%,#ffffff_10%)]">
               {currentPlayingAyah
-                ? `${t("quran.surah", lang)} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
+                ? hasAyahContext
+                  ? `${t("quran.surah", lang)} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
+                  : titleLabel
                 : lang === "fr"
                   ? "En attente"
                   : lang === "ar"
                       ? "جاهز"
                       : "Ready"}
             </span>
-            <span className="text-[0.6rem] leading-none text-[rgba(212,200,176,0.56)] font-mono tabular-nums">
+            <span className="text-[0.6rem] leading-none text-[color-mix(in_srgb,var(--theme-text-muted)_86%,var(--theme-bg)_14%)] font-mono tabular-nums">
               {formatTime(currentTime)}
               <span className="opacity-50 mx-0.5">/</span>
               {formatTime(duration)}
@@ -1557,11 +1858,11 @@ export default function AudioPlayer() {
           </div>
 
           {/* Center: main playback controls */}
-          <div className={cn("flex flex-1 items-center justify-center gap-1 rounded-xl px-1 py-1", playerSoftSurfaceClass)}>
+          <div className={cn("flex flex-1 items-center justify-center gap-1.5 rounded-xl px-1.5 py-1", playerSoftSurfaceClass)}>
             <button
               className={cn(
                 mBarBtn,
-                "w-8 h-8 text-[0.72rem] rounded-lg shrink-0",
+                "h-9 w-9 rounded-lg text-[0.74rem] shrink-0",
               )}
               onClick={prev}
               title={t("audio.prev", lang)}
@@ -1570,7 +1871,7 @@ export default function AudioPlayer() {
             </button>
 
             <button
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[rgba(110,204,233,0.44)] bg-[linear-gradient(135deg,rgba(68,180,214,0.94),rgba(24,142,184,0.92))] text-[0.9rem] text-white shadow-[0_10px_22px_rgba(24,142,184,0.4)] transition-all duration-150 hover:scale-[1.06] active:scale-[0.94]"
+              className={cn(playerPrimaryBtnClass, "h-11 w-11 shrink-0 text-[0.94rem] hover:scale-[1.06] active:scale-[0.94]")}
               onClick={toggle}
               title={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
               aria-pressed={isPlaying}
@@ -1583,7 +1884,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "w-8 h-8 text-[0.72rem] rounded-lg shrink-0",
+                "h-9 w-9 rounded-lg text-[0.74rem] shrink-0",
               )}
               onClick={next}
               title={t("audio.next", lang)}
@@ -1594,7 +1895,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "w-8 h-8 text-[0.72rem] rounded-lg shrink-0",
+                "h-9 w-9 rounded-lg text-[0.74rem] shrink-0",
               )}
               onClick={stop}
               title={t("audio.stop", lang)}
@@ -1608,7 +1909,7 @@ export default function AudioPlayer() {
             <button
                 className={cn(
                   mBarBtnSm(),
-                  "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-[1.625rem] min-w-[1.875rem] justify-center",
+                  "px-[0.46rem] py-[0.24rem] text-[0.64rem] min-h-[1.875rem] min-w-[1.95rem] justify-center rounded-full",
                 )}
               onClick={cycleSpeed}
               title={
@@ -1620,7 +1921,7 @@ export default function AudioPlayer() {
             <button
                 className={cn(
                   mBarBtnSm(memMode),
-                  "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-[1.625rem] min-w-[1.625rem] justify-center",
+                  "px-[0.46rem] py-[0.24rem] text-[0.64rem] min-h-[1.875rem] min-w-[1.875rem] justify-center rounded-full",
                 )}
               onClick={() => set({ memMode: !memMode })}
               title={t("audio.memorization", lang)}
@@ -1631,7 +1932,7 @@ export default function AudioPlayer() {
             <button
                 className={cn(
                   mBarBtnSm(optionsModalOpen),
-                  "px-[0.4rem] py-[0.22rem] text-[0.64rem] min-h-[1.625rem] min-w-[1.625rem] justify-center",
+                  "px-[0.46rem] py-[0.24rem] text-[0.64rem] min-h-[1.875rem] min-w-[1.875rem] justify-center rounded-full",
                 )}
               onClick={() => setOptionsModalOpen(true)}
               aria-expanded={optionsModalOpen}
@@ -1657,7 +1958,7 @@ export default function AudioPlayer() {
         {/* Expanded panel */}
         {expanded && (
           <div
-            className="max-h-[62vh] overflow-y-auto border-t border-white/10 bg-[rgba(7,14,24,0.72)] px-3.5 pb-4 pt-3 animate-[fadeInUp_0.18s_var(--ease,ease)]"
+            className="max-h-[62vh] overflow-y-auto border-t border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_82%,transparent_18%),color-mix(in_srgb,var(--theme-panel-bg)_72%,transparent_28%))] px-3.5 pb-4 pt-3 animate-[fadeInUp_0.18s_var(--ease,ease)]"
             data-player-expanded="true"
             data-scroll-panel="true"
             data-no-drag="true"
@@ -1703,6 +2004,16 @@ export default function AudioPlayer() {
                   <span className="inline-flex items-center gap-1 rounded-full border border-[rgba(212,168,32,0.3)] bg-[rgba(212,168,32,0.14)] px-2 py-[0.1875rem] text-[0.6rem] font-bold text-[#f5d785]">
                     <i className="fas fa-check text-[0.48rem]" />
                     {warshVerifiedLabel}
+                  </span>
+                )}
+                {isSurahStreamReciter && (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-fuchsia-300/30 bg-fuchsia-300/12 px-2 py-[0.1875rem] text-[0.6rem] font-bold text-fuchsia-100">
+                    <i className="fas fa-compact-disc text-[0.48rem]" />
+                    {lang === "fr"
+                      ? "Lecture sourate complete"
+                      : lang === "ar"
+                        ? "قراءة السورة كاملة"
+                        : "Full-surah playback"}
                   </span>
                 )}
               </div>
@@ -1820,7 +2131,18 @@ export default function AudioPlayer() {
                               <span className="mt-1 inline-flex items-center rounded-full border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[0.5rem] font-semibold tracking-wide text-[rgba(225,214,194,0.7)]">
                                 {r.cdnType === "islamic"
                                   ? "Islamic CDN"
-                                  : "EveryAyah CDN"}
+                                  : r.cdnType === "mp3quran-surah"
+                                    ? "MP3Quran"
+                                    : "EveryAyah CDN"}
+                              </span>
+                            )}
+                            {r.audioMode === "surah" && (
+                              <span className="mt-1 inline-flex items-center rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-1.5 py-0.5 text-[0.5rem] font-semibold tracking-wide text-fuchsia-100">
+                                {lang === "fr"
+                                  ? "Sourate complete"
+                                  : lang === "ar"
+                                    ? "سورة كاملة"
+                                    : "Full surah"}
                               </span>
                             )}
                           </span>
@@ -1985,7 +2307,7 @@ export default function AudioPlayer() {
                         key={lbl}
                         onClick={mark}
                         className={cn(mBarBtnSm(!!val), "px-2 py-1")}
-                        disabled={!currentPlayingAyah}
+                        disabled={!hasAyahContext}
                       >
                         {val ? `${lbl}: ${val.surah}:${val.ayah}` : lbl}
                       </button>
@@ -2104,7 +2426,7 @@ export default function AudioPlayer() {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         className={cn(
-          "mp-audio-player !fixed z-[300] flex flex-col overflow-hidden select-none touch-auto text-[rgba(245,238,223,0.94)]",
+          "mp-audio-player mp-audio-player--desktop !fixed z-[300] flex flex-col overflow-hidden select-none touch-auto text-[color-mix(in_srgb,var(--theme-text)_92%,var(--theme-bg)_8%)]",
           playerPanelSurfaceClass,
           isContextualDesktop &&
             !manualDockPosition &&
@@ -2188,7 +2510,7 @@ export default function AudioPlayer() {
                   isPlaying ? t("audio.pause", lang) : t("audio.play", lang)
                 }
                 aria-pressed={isPlaying}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(110,204,233,0.44)] bg-[linear-gradient(135deg,rgba(68,180,214,0.94),rgba(24,142,184,0.92))] text-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(110,204,233,0.46)]"
+                className={cn(playerPrimaryBtnClass, "h-10 w-10")}
               >
                 <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`} />
               </button>
@@ -2256,8 +2578,8 @@ export default function AudioPlayer() {
                 <i className="fas fa-chevron-down text-xs" />
               </button>
               <div className="flex items-center gap-1.5">
-                <div className="h-1 w-8 rounded-full bg-[linear-gradient(90deg,rgba(255,255,255,0.12),rgba(110,204,233,0.9),rgba(255,255,255,0.12))]" />
-                <span className="text-[0.52rem] uppercase tracking-[0.16em] text-[rgba(211,201,180,0.6)] [font-family:var(--font-ui)]">
+                <div className="h-1 w-8 rounded-full bg-[linear-gradient(90deg,rgba(var(--theme-primary-rgb),0.18),rgba(var(--theme-primary-rgb),0.95),rgba(var(--theme-primary-rgb),0.18))]" />
+                <span className="text-[0.52rem] uppercase tracking-[0.16em] text-[color-mix(in_srgb,var(--theme-text-muted)_80%,var(--theme-bg)_20%)] [font-family:var(--font-ui)]">
                   drag
                 </span>
               </div>
@@ -2284,7 +2606,7 @@ export default function AudioPlayer() {
                   {/* Arabic surah name — prominent header */}
                   {currentArabicName && (
                     <div
-                      className="mb-0.5 truncate text-[1.05rem] font-bold leading-tight text-[rgba(139,214,238,0.94)] drop-shadow-[0_1px_8px_rgba(75,171,204,0.42)] [font-family:var(--font-quran,serif)] tracking-[0.02em]"
+                      className="mb-0.5 truncate text-[1.05rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-primary)_82%,#ffffff_18%)] drop-shadow-[0_1px_8px_rgba(var(--theme-primary-rgb),0.36)] [font-family:var(--font-quran,serif)] tracking-[0.02em]"
                       dir="rtl"
                       lang="ar"
                     >
@@ -2315,7 +2637,7 @@ export default function AudioPlayer() {
                   {currentAyahPreview && (
                     <p
                       className={cn(
-                        "mt-1 overflow-hidden rounded-lg border border-[rgba(110,204,233,0.26)] bg-[rgba(13,34,58,0.72)] px-2 py-1 text-[0.67rem] leading-relaxed text-[rgba(236,248,255,0.92)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]",
+                        "mt-1 overflow-hidden rounded-lg border border-[color-mix(in_srgb,var(--theme-primary)_34%,transparent_66%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_86%,var(--theme-bg)_14%)] px-2 py-1 text-[0.67rem] leading-relaxed text-[color-mix(in_srgb,var(--theme-text)_92%,#ffffff_8%)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3]",
                       )}
                       dir="rtl"
                       lang="ar"
@@ -2346,8 +2668,8 @@ export default function AudioPlayer() {
                           className={cn(
                             "inline-flex items-center rounded-full border px-2 py-0.5 text-[0.56rem] font-semibold uppercase tracking-wide",
                             chip.accent
-                              ? "border-[rgba(110,204,233,0.42)] bg-[rgba(110,204,233,0.16)] text-[rgba(240,250,255,0.95)]"
-                              : "border-white/12 bg-white/[0.05] text-[rgba(228,218,197,0.72)]",
+                              ? "border-[color-mix(in_srgb,var(--theme-primary)_42%,transparent_58%)] bg-[rgba(var(--theme-primary-rgb),0.16)] text-[color-mix(in_srgb,var(--theme-text)_92%,#ffffff_8%)]"
+                              : "border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_78%,transparent_22%)] text-[color-mix(in_srgb,var(--theme-text-muted)_84%,var(--theme-bg)_16%)]",
                           )}
                         >
                           {chip.label}
@@ -2461,10 +2783,11 @@ export default function AudioPlayer() {
                   }
                   aria-pressed={isPlaying}
                   className={cn(
-                    "flex h-12 w-12 items-center justify-center rounded-full border-[1.5px] border-[rgba(110,204,233,0.44)] text-[1.05rem] text-white transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(110,204,233,0.5)]",
+                    playerPrimaryBtnClass,
+                    "h-12 w-12 border-[1.5px] text-[1.05rem]",
                     isPlaying
-                      ? "scale-[1.04] bg-[linear-gradient(135deg,rgba(68,180,214,0.96),rgba(24,142,184,0.92))] shadow-[0_10px_26px_rgba(24,142,184,0.34),0_1px_4px_rgba(0,0,0,0.16)]"
-                      : "bg-[linear-gradient(135deg,rgba(44,157,196,0.94),rgba(20,123,164,0.9))] shadow-[0_6px_16px_rgba(0,0,0,0.24)]",
+                      ? "scale-[1.04] shadow-[0_12px_28px_rgba(var(--theme-primary-rgb),0.36),0_1px_4px_rgba(0,0,0,0.16)]"
+                      : "shadow-[0_6px_16px_rgba(0,0,0,0.24)]",
                   )}
                 >
                   <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`} />
@@ -2487,7 +2810,7 @@ export default function AudioPlayer() {
               <div className={cn("flex items-center gap-2 px-2 py-2", playerSoftSurfaceClass)}>
                 <button
                   onClick={() => handleVolumeChange(volume > 0 ? 0 : 1)}
-                  className="h-7 w-7 shrink-0 rounded-lg border border-white/12 bg-white/[0.06] text-[0.72rem] text-[rgba(132,205,228,0.9)] transition-colors duration-150 hover:bg-[rgba(110,204,233,0.14)]"
+                  className="h-7 w-7 shrink-0 rounded-lg border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_78%,transparent_22%)] text-[0.72rem] text-[color-mix(in_srgb,var(--theme-primary)_72%,var(--theme-text)_28%)] transition-colors duration-150 hover:bg-[rgba(var(--theme-primary-rgb),0.14)]"
                   title={t("audio.volume", lang)}
                 >
                   <i
@@ -2645,6 +2968,11 @@ export default function AudioPlayer() {
                             const isLoading =
                               reciterSwitchingId === r.id ||
                               (active && networkState === "loading");
+                            const unavailableMs = getReciterUnavailableRemainingMs(
+                              r.id,
+                              reciterAvailabilityById,
+                            );
+                            const isUnavailable = unavailableMs > 0;
                             const initial = (r.nameEn ||
                               r.name ||
                               "?")[0].toUpperCase();
@@ -2652,9 +2980,13 @@ export default function AudioPlayer() {
                               <button
                                 key={r.id}
                                 onClick={() => handleReciterSelect(r.id)}
-                                className={playerReciterButtonClass(active, isLoading)}
+                                className={playerReciterButtonClass(
+                                  active,
+                                  isLoading,
+                                  isUnavailable,
+                                )}
                                 aria-pressed={active}
-                                disabled={Boolean(reciterSwitchingId)}
+                                disabled={Boolean(reciterSwitchingId) || (isUnavailable && !active)}
                               >
                                 <span
                                   className={playerReciterAvatarClass(active)}
@@ -2688,7 +3020,18 @@ export default function AudioPlayer() {
                                     <span className="mt-1 inline-flex items-center rounded-full border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[0.5rem] font-semibold tracking-wide text-[rgba(225,214,194,0.7)]">
                                       {r.cdnType === "islamic"
                                         ? "Islamic CDN"
-                                        : "EveryAyah CDN"}
+                                        : r.cdnType === "mp3quran-surah"
+                                          ? "MP3Quran"
+                                          : "EveryAyah CDN"}
+                                    </span>
+                                  )}
+                                  {isUnavailable && (
+                                    <span className="mt-1 inline-flex items-center rounded-full border border-rose-300/40 bg-rose-300/16 px-1.5 py-0.5 text-[0.5rem] font-semibold tracking-wide text-rose-100">
+                                      {lang === "fr"
+                                        ? `Indisponible ${formatCooldownLabel(unavailableMs, lang)}`
+                                        : lang === "ar"
+                                          ? `غير متاح ${formatCooldownLabel(unavailableMs, lang)}`
+                                          : `Unavailable ${formatCooldownLabel(unavailableMs, lang)}`}
                                     </span>
                                   )}
                                 </span>
@@ -2827,7 +3170,7 @@ export default function AudioPlayer() {
                               onClick={mark}
                               className={playerAbButtonClass(Boolean(val))}
                               title={lang === "fr" ? titleFr : titleEn}
-                              disabled={!currentPlayingAyah}
+                              disabled={!hasAyahContext}
                             >
                               <i
                                 className={`fas fa-flag${label === "A" ? "-checkered" : ""} mr-0.5 text-[0.5rem]`}

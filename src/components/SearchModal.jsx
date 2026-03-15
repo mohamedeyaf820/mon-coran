@@ -22,6 +22,18 @@ function getVoiceLocale(mode, lang) {
   return lang === "fr" ? "fr-FR" : "en-US";
 }
 
+function formatSearchError(error, lang) {
+  const message = String(error?.message || error || "").trim();
+  if (/404|search failed|index unavailable|api error/i.test(message)) {
+    return lang === "fr"
+      ? "La recherche distante a echoue. L'application a tente un fallback local, mais aucun resultat fiable n'a ete trouve."
+      : lang === "ar"
+        ? "تعذر البحث البعيد. حاول التطبيق التراجع محلياً لكن لم يتم العثور على نتيجة موثوقة."
+        : "Remote search failed. The app attempted a local fallback, but no reliable result was found.";
+  }
+  return message;
+}
+
 export default function SearchModal() {
   const { state, dispatch, set } = useApp();
   const { lang, riwaya } = state;
@@ -95,7 +107,7 @@ export default function SearchModal() {
         if (err?.name === "AbortError" || requestId !== searchRequestIdRef.current) {
           return;
         }
-        setError(err.message);
+        setError(formatSearchError(err, lang));
         startTransition(() => {
           setResults([]);
           setResolvedQuery("");
@@ -109,7 +121,7 @@ export default function SearchModal() {
         }
       }
     },
-    [query, riwaya, searchMode],
+    [lang, query, riwaya, searchMode],
   );
 
   useEffect(() => {
@@ -242,7 +254,7 @@ export default function SearchModal() {
   return (
     <div className="modal-overlay" onClick={close}>
       <div
-        className="modal modal-panel--wide modal-search-panel search-modal-shell"
+        className="modal modal-panel--wide modal-search-panel search-modal-shell search-modal-shell--premium-plus"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="modal-header">

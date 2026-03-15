@@ -19,6 +19,18 @@ function buildEveryayahUrl(cdn, surah, ayah) {
   return `https://everyayah.com/data/${cdn}/${s}${a}.mp3`;
 }
 
+function buildMp3QuranSurahUrl(server, surah) {
+  const s = String(surah).padStart(3, '0');
+  return `${server}${s}.mp3`;
+}
+
+function buildWarshUrl(reciter, surah, ayah) {
+  if (reciter.cdnType === 'mp3quran-surah') {
+    return buildMp3QuranSurahUrl(reciter.cdn, surah);
+  }
+  return buildEveryayahUrl(reciter.cdn, surah, ayah);
+}
+
 async function check(url) {
   try {
     const r = await fetch(url, { method: 'HEAD' });
@@ -32,14 +44,17 @@ async function check(url) {
   const rows = [];
   for (const rec of RECITERS.warsh) {
     for (const s of SAMPLES) {
-      const url = buildEveryayahUrl(rec.cdn, s.surah, s.ayah);
+      const url = buildWarshUrl(rec, s.surah, s.ayah);
       const status = await check(url);
       rows.push({ reciter: rec.id, surah: s.surah, ayah: s.ayah, status: status.status, ok: status.ok, url });
     }
   }
 
   const failed = rows.filter(r => !r.ok);
-  const warned = rows.filter(r => !String(r.url).toLowerCase().includes('warsh'));
+  const warned = rows.filter(r => {
+    const reciter = RECITERS.warsh.find(rec => rec.id === r.reciter);
+    return !reciter?.verifiedWarsh;
+  });
 
   console.log(`Warsh audio URL checks: total=${rows.length}, failed=${failed.length}`);
   if (warned.length > 0) {

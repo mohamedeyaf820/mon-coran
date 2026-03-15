@@ -40,9 +40,12 @@ const inflight = new Map();
 let currentAbort = null;
 
 import { dbGet, dbSet, getDB } from './dbService';
+import { normalizeArabicSearchText } from '../utils/searchIntelligence';
 
 const IDB_API_PREFIX = 'api:';
 const IDB_STORE = 'cache';
+const SEARCH_INDEX_IDB_KEY = `${IDB_API_PREFIX}search-index-v1`;
+const SEARCH_INDEX_TTL = 30 * 24 * 60 * 60 * 1000;
 const IDB_CACHE_TTL_BY_KIND = {
   audio: 14 * 24 * 60 * 60 * 1000,       // 14 days
   text: 7 * 24 * 60 * 60 * 1000,         // 7 days
@@ -178,10 +181,44 @@ function _refreshInBackground(url, idbKey) {
   _fetchFromNetwork(url, idbKey, null).catch(() => { });
 }
 
+async function fetchJSONWithCustomTimeout(url, signal, timeoutMs = FETCH_TIMEOUT) {
+  const timeoutCtrl = new AbortController();
+  const timeoutId = setTimeout(() => timeoutCtrl.abort(), timeoutMs);
+
+  try {
+    const combinedSignal = signal
+      ? AbortSignal.any ? AbortSignal.any([signal, timeoutCtrl.signal]) : signal
+      : timeoutCtrl.signal;
+
+    const res = await fetch(url, { signal: combinedSignal });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) throw new Error(`API error ${res.status}: ${url}`);
+    const json = await res.json();
+
+    if (!json || typeof json !== 'object') {
+      throw new Error('Malformed API response');
+    }
+
+    if (json.code !== 200 || json.status !== 'OK') {
+      const msg = typeof json.data === 'string' ? json.data : JSON.stringify(json.data) || 'Unknown API error';
+      throw new Error(msg);
+    }
+
+    return json.data;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    throw err;
+  }
+}
+
 function sanitizeText(text) {
   if (typeof text !== 'string') return text;
   return text.replace(/^\uFEFF/, '');
 }
+
+let arabicSearchIndex = null;
+let arabicSearchIndexPromise = null;
 
 function normalizeQuranPayload(data) {
   if (!data) return data;
@@ -198,6 +235,163 @@ function normalizeQuranPayload(data) {
   }
 
   return data;
+}
+
+function isValidSearchIndex(index) {
+  return (
+    Array.isArray(index) &&
+    index.every(
+      (item) =>
+        item &&
+        Number.isFinite(Number(item.surah)) &&
+        Number.isFinite(Number(item.numberInSurah)) &&
+        typeof item.text === 'string' &&
+        typeof item.normalized === 'string'
+    )
+  );
+}
+
+function buildArabicSearchIndexFromQuran(quranData) {
+  const surahs = Array.isArray(quranData?.surahs) ? quranData.surahs : [];
+  return surahs.flatMap((surah) =>
+    (Array.isArray(surah?.ayahs) ? surah.ayahs : [])
+      .map((ayah) => {
+        const text = sanitizeText(ayah?.text || '');
+        return {
+          surah: surah?.number || ayah?.surah?.number || 0,
+          numberInSurah: ayah?.numberInSurah || 0,
+          number: ayah?.number || 0,
+          text,
+          normalized: normalizeArabicSearchText(text),
+        };
+      })
+      .filter((ayah) => ayah.surah > 0 && ayah.numberInSurah > 0 && ayah.normalized)
+  );
+}
+
+async function loadArabicSearchIndex(signal) {
+  if (arabicSearchIndex) return arabicSearchIndex;
+  if (arabicSearchIndexPromise) return arabicSearchIndexPromise;
+
+  arabicSearchIndexPromise = (async () => {
+    try {
+      const cached = await dbGet(IDB_STORE, SEARCH_INDEX_IDB_KEY);
+      if (
+        cached?.data &&
+        isValidSearchIndex(cached.data) &&
+        (cached.expiryAt || 0) > Date.now()
+      ) {
+        arabicSearchIndex = cached.data;
+        return arabicSearchIndex;
+      }
+    } catch {
+      // continue to network/index build
+    }
+
+    const editions = ['quran-uthmani', 'quran-simple', 'quran-uthmani-min'];
+    let index = null;
+    let lastError = null;
+
+    for (const edition of editions) {
+      try {
+        const data = await fetchJSONWithCustomTimeout(
+          `${BASE}/quran/${edition}`,
+          signal,
+          25000,
+        );
+        index = buildArabicSearchIndexFromQuran(data);
+        if (index.length > 0) break;
+      } catch (err) {
+        if (err.name === 'AbortError') throw err;
+        lastError = err;
+      }
+    }
+
+    if (!index || index.length === 0) {
+      try {
+        const surahPayloads = await Promise.all(
+          Array.from({ length: 114 }, (_, idx) =>
+            fetchWithEditionFallback(`surah/${idx + 1}`, 'hafs', signal)
+          )
+        );
+        index = surahPayloads.flatMap((surahPayload) =>
+          (Array.isArray(surahPayload?.ayahs) ? surahPayload.ayahs : [])
+            .map((ayah) => {
+              const text = sanitizeText(ayah?.text || '');
+              return {
+                surah: ayah?.surah?.number || 0,
+                numberInSurah: ayah?.numberInSurah || 0,
+                number: ayah?.number || 0,
+                text,
+                normalized: normalizeArabicSearchText(text),
+              };
+            })
+            .filter((ayah) => ayah.surah > 0 && ayah.numberInSurah > 0 && ayah.normalized)
+        );
+      } catch (err) {
+        if (err.name === 'AbortError') throw err;
+        lastError = err;
+      }
+    }
+
+    if (!index || index.length === 0) {
+      throw lastError || new Error('Arabic search index unavailable');
+    }
+
+    arabicSearchIndex = index;
+    const now = Date.now();
+    dbSet(IDB_STORE, {
+      key: SEARCH_INDEX_IDB_KEY,
+      data: index,
+      ts: now,
+      kind: 'text',
+      expiryAt: now + SEARCH_INDEX_TTL,
+    }).catch(() => {});
+
+    return arabicSearchIndex;
+  })().catch((err) => {
+    arabicSearchIndexPromise = null;
+    throw err;
+  });
+
+  return arabicSearchIndexPromise;
+}
+
+async function searchArabicLocally(query, surahNum = null, signal) {
+  const normalizedQuery = normalizeArabicSearchText(query);
+  if (!normalizedQuery) return { matches: [] };
+
+  const queryWords = normalizedQuery.split(' ').filter(Boolean);
+  const index = await loadArabicSearchIndex(signal);
+  const matches = [];
+
+  for (const ayah of index) {
+    if (surahNum && Number(ayah.surah) !== Number(surahNum)) continue;
+    if (!ayah.normalized) continue;
+
+    const startsWith = ayah.normalized.startsWith(normalizedQuery);
+    const includes = startsWith ? true : ayah.normalized.includes(normalizedQuery);
+    if (!includes) continue;
+
+    let score = startsWith ? 1000 : 620;
+    if (queryWords.length > 1 && ayah.normalized.startsWith(queryWords[0])) score += 90;
+    if (ayah.normalized.length < normalizedQuery.length + 18) score += 45;
+    score -= ayah.numberInSurah * 0.01;
+    score -= ayah.surah * 0.001;
+
+    matches.push({
+      surah: { number: ayah.surah },
+      numberInSurah: ayah.numberInSurah,
+      number: ayah.number,
+      text: ayah.text,
+      _score: score,
+    });
+  }
+
+  matches.sort((a, b) => b._score - a._score);
+  return {
+    matches: matches.slice(0, 40).map(({ _score, ...rest }) => rest),
+  };
 }
 
 async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal) {
@@ -353,6 +547,12 @@ export async function search(query, riwaya = 'hafs', surahNum = null, signal) {
     }
   }
 
+  try {
+    return await searchArabicLocally(query, surahNum, signal);
+  } catch (fallbackError) {
+    if (fallbackError.name === 'AbortError') throw fallbackError;
+  }
+
   throw lastError || new Error('Search failed');
 }
 
@@ -375,6 +575,8 @@ export async function searchTranslation(query, lang = 'fr', surahNum = null, sig
 
 export async function clearCache() {
   cache.clear();
+  arabicSearchIndex = null;
+  arabicSearchIndexPromise = null;
   try {
     const db = await getDB();
     const tx = db.transaction(IDB_STORE, 'readwrite');

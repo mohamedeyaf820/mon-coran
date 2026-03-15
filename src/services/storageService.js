@@ -62,12 +62,12 @@ const VALID_THEMES = [
   "light",
   "sepia",
   "dark",
-  "quran-night",
 ];
 const LEGACY_THEME_MAP = {
   "premium-beige": "sepia",
-  ocean: "quran-night",
-  "night-blue": "quran-night",
+  ocean: "dark",
+  "night-blue": "dark",
+  "quran-night": "dark",
   forest: "dark",
   oled: "dark",
 };
@@ -132,6 +132,50 @@ function sanitizeLatencyMap(input) {
   }, {});
 }
 
+function sanitizeTimestamp(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return 0;
+  if (numeric < 0 || numeric > 4102444800000) return 0;
+  return Math.round(numeric);
+}
+
+function sanitizeReciterAvailabilityMap(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    return {};
+  }
+  const entries = Object.entries(input)
+    .filter(([id]) => typeof id === "string" && id.trim() && id.length <= 80)
+    .slice(0, 64);
+
+  return entries.reduce((acc, [id, value]) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return acc;
+    const failCount = Math.max(0, Math.min(16, Number(value.failCount) || 0));
+    const lastFailAt = sanitizeTimestamp(value.lastFailAt);
+    const lastSuccessAt = sanitizeTimestamp(value.lastSuccessAt);
+    const cooldownUntil = sanitizeTimestamp(value.cooldownUntil);
+    const lastError =
+      typeof value.lastError === "string" ? value.lastError.trim().slice(0, 160) : "";
+
+    if (
+      failCount <= 0 &&
+      lastFailAt <= 0 &&
+      lastSuccessAt <= 0 &&
+      cooldownUntil <= 0
+    ) {
+      return acc;
+    }
+
+    acc[id] = {
+      failCount,
+      lastFailAt,
+      lastSuccessAt,
+      cooldownUntil,
+      lastError,
+    };
+    return acc;
+  }, {});
+}
+
 const DEFAULT_SETTINGS = {
   lang: "fr",
   theme: "light",
@@ -154,6 +198,7 @@ const DEFAULT_SETTINGS = {
   favoriteReciters: [],
   autoSelectFastestReciter: true,
   reciterLatencyByKey: {},
+  reciterAvailabilityById: {},
   autoNightMode: false,
   nightStart: "20:00",
   nightEnd: "06:00",
@@ -183,7 +228,7 @@ function normalizeDayTheme(theme) {
 
 function normalizeNightTheme(theme) {
   const normalized = normalizeTheme(theme, "dark");
-  return ["dark", "quran-night"].includes(normalized) ? normalized : "dark";
+  return normalized === "dark" ? normalized : "dark";
 }
 
 export function getSettings() {
@@ -207,6 +252,9 @@ export function getSettings() {
           ? Boolean(parsed.autoSelectFastestReciter)
           : DEFAULT_SETTINGS.autoSelectFastestReciter,
       reciterLatencyByKey: sanitizeLatencyMap(parsed?.reciterLatencyByKey),
+      reciterAvailabilityById: sanitizeReciterAvailabilityMap(
+        parsed?.reciterAvailabilityById,
+      ),
     };
   } catch {
     return { ...DEFAULT_SETTINGS };
@@ -274,6 +322,9 @@ function sanitizeSettings(settings) {
         ? Boolean(safeInput.autoSelectFastestReciter)
         : true,
     reciterLatencyByKey: sanitizeLatencyMap(safeInput.reciterLatencyByKey),
+    reciterAvailabilityById: sanitizeReciterAvailabilityMap(
+      safeInput.reciterAvailabilityById,
+    ),
     autoNightMode: Boolean(safeInput.autoNightMode),
     nightStart: /^\d{2}:\d{2}$/.test(safeInput.nightStart)
       ? safeInput.nightStart
