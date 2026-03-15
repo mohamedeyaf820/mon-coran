@@ -1419,6 +1419,19 @@ export default function QuranDisplay() {
             {currentSurah !== 1 &&
               currentSurah !== 9 &&
               mushafLayout !== "mushaf" && <Bismillah />}
+
+            {mushafLayout !== "mushaf" && (
+              <div className="play-surah-bar mt-4 mb-2 flex justify-center">
+                <button 
+                  className="btn-play-surah flex items-center gap-2 px-4 py-2 bg-[var(--theme-primary)] text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity" 
+                  onClick={playSurah} 
+                  title={t('audio.playSurah', lang)}
+                >
+                   <i className="fas fa-play"></i>
+                   <span>{t('audio.playSurah', lang)}</span>
+                </button>
+              </div>
+            )}
             <TajweedLegend lang={lang} visible={showTajwid} riwaya={riwaya} />
 
             {/* Layout mode toggle */}
@@ -1835,6 +1848,19 @@ export default function QuranDisplay() {
                       group.ayahs[0]?.numberInSurah === 1 &&
                       group.surah !== 1 &&
                       group.surah !== 9 && <Bismillah />}
+                    
+                    {!isQCF4 && group.ayahs[0]?.numberInSurah === 1 && (
+                      <div className="play-surah-bar mt-4 mb-2 flex justify-center">
+                        <button 
+                          className="btn-play-surah flex items-center gap-2 px-4 py-2 bg-[var(--theme-primary)] text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity" 
+                          onClick={playSurah} 
+                          title={t('audio.playSurah', lang)}
+                        >
+                           <i className="fas fa-play"></i>
+                           <span>{t('audio.playSurah', lang)}</span>
+                        </button>
+                      </div>
+                    )}
                     <div className="surah-ayahs-list">
                       {group.ayahs.map((ayah) => {
                         const isPlaying =
@@ -2033,6 +2059,19 @@ export default function QuranDisplay() {
                       group.ayahs[0]?.numberInSurah === 1 &&
                       group.surah !== 1 &&
                       group.surah !== 9 && <Bismillah />}
+
+                    {!isQCF4 && group.ayahs[0]?.numberInSurah === 1 && (
+                      <div className="play-surah-bar mt-4 mb-2 flex justify-center">
+                        <button 
+                          className="btn-play-surah flex items-center gap-2 px-4 py-2 bg-[var(--theme-primary)] text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity" 
+                          onClick={playSurah} 
+                          title={t('audio.playSurah', lang)}
+                        >
+                           <i className="fas fa-play"></i>
+                           <span>{t('audio.playSurah', lang)}</span>
+                        </button>
+                      </div>
+                    )}
                     <div
                       className="surah-ayahs-list"
                     >

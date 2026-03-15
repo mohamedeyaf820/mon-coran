@@ -553,7 +553,7 @@ export default function App() {
 
       {/* ── Fixed bottom audio player ── */}
       <Suspense fallback={null}>
-        {deferNonCriticalUI && (state.isPlaying || state.currentPlayingAyah) && (
+        {deferNonCriticalUI && (
           <AudioPlayer />
         )}
       </Suspense>
