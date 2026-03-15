@@ -3884,7 +3884,8 @@
 /* ── Actions panel (shown when verse is active / expanded) ── */
 .qc-ayah-actions-panel {
     margin-top: 1rem;
-    margin-inline-start: 75px;
+    margin-inline-start: 0;
+    width: 100%;
     padding-top: 0.8rem;
     border-top: 1px dashed rgba(var(--primary-rgb), 0.12);
     animation: fadeSlideDown 0.18s ease both;
@@ -5398,6 +5399,8 @@
 
 .quran-display--platform .qc-ayah-actions-panel {
     margin-top: 0.9rem;
+    margin-inline-start: 0;
+    width: 100%;
     padding-top: 0.95rem;
     border-top: 1px solid rgba(var(--primary-rgb), 0.12);
 }

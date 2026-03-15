@@ -24682,3 +24682,75 @@ button:focus:not(:focus-visible) {
             var(--brand-bg) 100%
         );
 }
+
+/* ==========================================================
+   THREE-THEME POLISH PASS (light / sepia / dark)
+   Better contrast, depth and readability with same structure.
+   ========================================================== */
+
+[data-theme="light"] {
+    --theme-bg: #f8fafc;
+    --theme-bg-alt: #eff4f8;
+    --theme-surface: #ffffff;
+    --theme-surface-soft: #f6f9fc;
+    --theme-text: #1c2733;
+    --theme-text-soft: #314355;
+    --theme-text-muted: #54677a;
+    --theme-border: rgba(28, 39, 51, 0.14);
+    --theme-border-strong: rgba(21, 143, 135, 0.44);
+    --theme-shadow-panel:
+        0 14px 30px rgba(18, 34, 53, 0.08),
+        0 1px 0 rgba(255, 255, 255, 0.94) inset;
+}
+
+[data-theme="sepia"] {
+    --theme-bg: #f3eadb;
+    --theme-bg-alt: #ebddc5;
+    --theme-surface: #fbf2e3;
+    --theme-surface-soft: #f6ead7;
+    --theme-text: #432f1d;
+    --theme-text-soft: #5d4128;
+    --theme-text-muted: #7b5d40;
+    --theme-border: rgba(119, 84, 36, 0.2);
+    --theme-border-strong: rgba(179, 138, 58, 0.5);
+    --theme-shadow-panel:
+        0 14px 28px rgba(63, 41, 15, 0.12),
+        0 1px 0 rgba(255, 248, 232, 0.72) inset;
+}
+
+[data-theme="dark"] {
+    --theme-bg: #0f1724;
+    --theme-bg-alt: #111e2d;
+    --theme-surface: #162334;
+    --theme-surface-soft: #1a2a3c;
+    --theme-text: #eaf1fb;
+    --theme-text-soft: #c6d6eb;
+    --theme-text-muted: #9fb2ca;
+    --theme-border: rgba(170, 198, 233, 0.18);
+    --theme-border-strong: rgba(41, 182, 199, 0.52);
+    --theme-shadow-panel:
+        0 18px 38px rgba(2, 8, 20, 0.45),
+        0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+[data-theme="light"] .hdr__main,
+[data-theme="sepia"] .hdr__main,
+[data-theme="dark"] .hdr__main,
+[data-theme="light"] .mp-audio-player,
+[data-theme="sepia"] .mp-audio-player,
+[data-theme="dark"] .mp-audio-player,
+[data-theme="light"] .hp2-panel,
+[data-theme="sepia"] .hp2-panel,
+[data-theme="dark"] .hp2-panel {
+    border-color: var(--theme-border-strong) !important;
+}
+
+[data-theme="light"] .scard,
+[data-theme="sepia"] .scard,
+[data-theme="dark"] .scard,
+[data-theme="light"] .search-result-card,
+[data-theme="sepia"] .search-result-card,
+[data-theme="dark"] .search-result-card {
+    backdrop-filter: blur(8px) saturate(110%);
+    -webkit-backdrop-filter: blur(8px) saturate(110%);
+}

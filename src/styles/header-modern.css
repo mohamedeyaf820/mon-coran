@@ -1040,13 +1040,15 @@
 }
 
 .hdr__nav-shell {
+    width: min(100%, 560px);
+    margin-inline: auto;
     padding: 0.16rem;
 }
 
 .hdr__nav--active {
     width: 100%;
-    max-width: none;
-    margin: 0;
+    max-width: 560px;
+    margin: 0 auto;
     gap: 0.45rem;
 }
 
@@ -1281,9 +1283,13 @@
         display: none;
     }
 
-    .hdr__home-panel,
-    .hdr__nav-shell {
+    .hdr__home-panel {
         width: 100%;
+    }
+
+    .hdr__nav-shell {
+        width: min(100%, 560px);
+        margin-inline: auto;
     }
 
     .hdr__btn-duas {

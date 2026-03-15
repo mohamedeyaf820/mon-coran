@@ -543,6 +543,7 @@
 .ayah-actions {
   position: relative;
   display: grid;
+  width: 100%;
   gap: 0.4rem;
 }
 
@@ -550,7 +551,8 @@
   display: grid;
   gap: 0.42rem;
   padding: 0.42rem;
-  max-width: min(100%, 1040px);
+  width: 100%;
+  max-width: none;
   margin-inline: auto;
   border-radius: calc(var(--app-radius-lg) - 0.05rem);
   border: 1px solid color-mix(in srgb, var(--theme-border-strong) 24%, transparent 76%);
@@ -623,8 +625,9 @@
 
 .ayah-actions__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-  gap: 0.26rem;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 260px));
+  justify-content: start;
+  gap: 0.34rem;
 }
 
 .ayah-action-card {
@@ -633,8 +636,8 @@
   display: grid;
   gap: 0.1rem;
   align-content: start;
-  min-height: 2.24rem;
-  padding: 0.24rem;
+  min-height: 2.86rem;
+  padding: 0.42rem;
   border-radius: 0.62rem;
   border: 1px solid color-mix(in srgb, var(--theme-border) 54%, transparent 46%);
   background: color-mix(in srgb, var(--theme-panel-bg-strong) 84%, transparent 16%);
@@ -669,14 +672,14 @@
 }
 
 .ayah-action-card__icon {
-  width: 0.98rem;
-  height: 0.98rem;
+  width: 1.24rem;
+  height: 1.24rem;
   display: grid;
   place-items: center;
   border-radius: 0.4rem;
   background: color-mix(in srgb, var(--theme-chip-bg) 78%, transparent 22%);
   color: var(--theme-primary);
-  font-size: 0.5rem;
+  font-size: 0.62rem;
 }
 
 .ayah-action-card--play .ayah-action-card__icon,
@@ -699,7 +702,7 @@
   z-index: 1;
   font-weight: 700;
   color: var(--theme-text);
-  font-size: 0.6rem;
+  font-size: 0.78rem;
   line-height: 1.08;
 }
 
@@ -707,7 +710,7 @@
   position: relative;
   z-index: 1;
   color: var(--theme-text-muted);
-  font-size: 0.46rem;
+  font-size: 0.66rem;
   line-height: 1.1;
 }
 
@@ -1643,7 +1646,8 @@
 .app-root.premium-plus .ayah-actions__surface {
   gap: 0.36rem;
   padding: 0.38rem;
-  max-width: min(100%, 1000px);
+  width: 100%;
+  max-width: none;
   border-radius: var(--pp-radius-md);
 }
 
@@ -1666,31 +1670,32 @@
 }
 
 .app-root.premium-plus .ayah-actions__grid {
-  grid-template-columns: repeat(auto-fit, minmax(66px, 1fr));
-  gap: 0.24rem;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 260px));
+  justify-content: start;
+  gap: 0.34rem;
 }
 
 .app-root.premium-plus .ayah-action-card {
-  min-height: 2.34rem;
-  padding: 0.28rem;
+  min-height: 2.78rem;
+  padding: 0.4rem;
   border-radius: 0.56rem;
   gap: 0.08rem;
 }
 
 .app-root.premium-plus .ayah-action-card__icon {
-  width: 1rem;
-  height: 1rem;
+  width: 1.18rem;
+  height: 1.18rem;
   border-radius: 0.34rem;
-  font-size: 0.5rem;
+  font-size: 0.6rem;
 }
 
 .app-root.premium-plus .ayah-action-card__label {
-  font-size: 0.6rem;
+  font-size: 0.74rem;
   line-height: 1.05;
 }
 
 .app-root.premium-plus .ayah-action-card__desc {
-  font-size: 0.47rem;
+  font-size: 0.62rem;
   line-height: 1.08;
 }
 
@@ -2388,5 +2393,85 @@
   .app-root.premium-plus .hp2-vod__btn,
   .app-root.premium-plus .hp2-btn {
     font-size: 0.78rem !important;
+  }
+}
+
+/* Mobile reading: action cards as horizontal strips (en bande) */
+@media (max-width: 768px) {
+  .ayah-actions__grid,
+  .app-root.premium-plus .ayah-actions__grid {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+
+  .ayah-action-card,
+  .app-root.premium-plus .ayah-action-card {
+    width: 100%;
+    min-height: 2.16rem;
+    display: grid;
+    grid-template-columns: 1.52rem minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 0.44rem;
+    row-gap: 0.08rem;
+    padding: 0.34rem 0.44rem;
+  }
+
+  .ayah-action-card__icon,
+  .app-root.premium-plus .ayah-action-card__icon {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    width: 1.12rem;
+    height: 1.12rem;
+    font-size: 0.58rem;
+  }
+
+  .ayah-action-card__label,
+  .app-root.premium-plus .ayah-action-card__label {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 0.74rem;
+    line-height: 1.06;
+  }
+
+  .ayah-action-card__desc,
+  .app-root.premium-plus .ayah-action-card__desc {
+    grid-column: 2;
+    grid-row: 2;
+    display: block;
+    font-size: 0.62rem;
+    line-height: 1.12;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ayah-action-card__state,
+  .app-root.premium-plus .ayah-action-card__state {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: center;
+    justify-self: end;
+    font-size: 0.63rem;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 420px) {
+  .ayah-action-card,
+  .app-root.premium-plus .ayah-action-card {
+    grid-template-columns: 1.42rem minmax(0, 1fr) auto;
+    min-height: 2.02rem;
+    padding: 0.32rem 0.4rem;
+  }
+
+  .ayah-action-card__label,
+  .app-root.premium-plus .ayah-action-card__label {
+    font-size: 0.7rem;
+  }
+
+  .ayah-action-card__desc,
+  .app-root.premium-plus .ayah-action-card__desc {
+    font-size: 0.58rem;
   }
 }
