@@ -15,6 +15,7 @@ import {
 } from "../utils/reciterRanking";
 import { cn, toast } from "../lib/utils";
 import AudioLoadingIndicator from "./AudioLoadingIndicator";
+import "../styles/audio-player.css";
 
 /* ”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€
    Drag / position helpers  (desktop card only)
@@ -1814,6 +1815,7 @@ export default function AudioPlayer() {
         <div
           className={cn(
             "relative h-1 cursor-pointer overflow-visible rounded-t-2xl bg-white/12 transition-[height] duration-150 hover:h-1.5",
+            "mp-player-progress",
             progressDragging && "ring-2 ring-[rgba(110,204,233,0.4)]",
           )}
           ref={progressRef}
@@ -1828,7 +1830,7 @@ export default function AudioPlayer() {
         </div>
 
         {/* Controls row */}
-        <div className="flex min-h-[4.1rem] items-center gap-2.5 px-3 pb-1.5">
+        <div className="mp-player-controls-strip flex min-h-[4.1rem] items-center gap-2.5 px-3 pb-1.5">
           {/* Left: info block */}
           <div
             className="flex w-[5.8rem] shrink-0 flex-col justify-center gap-[0.2rem] min-w-0"
@@ -1858,7 +1860,7 @@ export default function AudioPlayer() {
           </div>
 
           {/* Center: main playback controls */}
-          <div className={cn("flex flex-1 items-center justify-center gap-1.5 rounded-xl px-1.5 py-1", playerSoftSurfaceClass)}>
+          <div className={cn("mp-player-controls-strip flex flex-1 items-center justify-center gap-1.5 rounded-xl px-1.5 py-1", playerSoftSurfaceClass)}>
             <button
               className={cn(
                 mBarBtn,
@@ -1871,7 +1873,7 @@ export default function AudioPlayer() {
             </button>
 
             <button
-              className={cn(playerPrimaryBtnClass, "h-11 w-11 shrink-0 text-[0.94rem] hover:scale-[1.06] active:scale-[0.94]")}
+              className={cn(playerPrimaryBtnClass, "mp-player-play-btn h-11 w-11 shrink-0 text-[0.94rem] hover:scale-[1.06] active:scale-[0.94]")}
               onClick={toggle}
               title={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
               aria-pressed={isPlaying}
@@ -2538,7 +2540,7 @@ export default function AudioPlayer() {
               </IconBtn>
             </div>
             <div className="px-3.5 pb-3">
-              <div className="relative h-1 overflow-hidden rounded-full bg-white/10">
+              <div className="mp-player-progress relative h-1 overflow-hidden rounded-full bg-white/10">
                 <ProgressRail progress={progress} />
               </div>
             </div>
@@ -2736,7 +2738,7 @@ export default function AudioPlayer() {
                   onClick={handleSeek}
                   onMouseDown={handleProgressMouseDown}
                   className={cn(
-                    "relative h-1 cursor-pointer overflow-visible rounded-full bg-white/12",
+                    "mp-player-progress relative h-1 cursor-pointer overflow-visible rounded-full bg-white/12",
                     progressDragging && "ring-2 ring-[rgba(110,204,233,0.4)]",
                   )}
                   role="progressbar"
@@ -2758,7 +2760,7 @@ export default function AudioPlayer() {
               </div>
 
               {/* Main controls */}
-              <div className={cn("flex items-center justify-between px-2 py-2", playerSoftSurfaceClass)}>
+              <div className={cn("mp-player-controls-strip flex items-center justify-between px-2 py-2", playerSoftSurfaceClass)}>
                 {/* Speed */}
                 <button
                   onClick={cycleSpeed}
@@ -2784,6 +2786,7 @@ export default function AudioPlayer() {
                   aria-pressed={isPlaying}
                   className={cn(
                     playerPrimaryBtnClass,
+                    "mp-player-play-btn",
                     "h-12 w-12 border-[1.5px] text-[1.05rem]",
                     isPlaying
                       ? "scale-[1.04] shadow-[0_12px_28px_rgba(var(--theme-primary-rgb),0.36),0_1px_4px_rgba(0,0,0,0.16)]"

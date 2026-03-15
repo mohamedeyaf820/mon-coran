@@ -488,6 +488,13 @@
     transition-duration: 0.08s;
 }
 
+.btn-play-surah:disabled {
+    opacity: 0.62;
+    cursor: wait;
+    transform: none;
+    box-shadow: none;
+}
+
 /* ═══════════════════════════════════════
    Tajweed Legend
    ═══════════════════════════════════════ */

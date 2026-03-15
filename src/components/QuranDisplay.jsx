@@ -212,6 +212,7 @@ export default function QuranDisplay() {
   const [activeAyah, setActiveAyah] = useState(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [fullPage, setFullPage] = useState(false);
+  const [preparingSurah, setPreparingSurah] = useState(null);
   // Surah chunk navigation for long surahs
   const [chunkIndex, setChunkIndex] = useState(0);
   const [mushafPageIndex, setMushafPageIndex] = useState(0);
@@ -529,6 +530,73 @@ export default function QuranDisplay() {
       audioService.play();
     }
   }, [ayahs, state.reciter, riwaya, currentSurah, warshStrictMode, lang]);
+
+  const playSpecificSurah = useCallback(
+    async (surahNum) => {
+      if (!surahNum || preparingSurah === surahNum) return;
+
+      const safeReciterId = ensureReciterForRiwaya(state.reciter, riwaya);
+      const rec = getReciter(safeReciterId, riwaya);
+      if (!rec) return;
+
+      if (
+        riwaya === "warsh" &&
+        warshStrictMode &&
+        !isWarshVerifiedReciter(rec)
+      ) {
+        setError(t("errors.warshStrict", lang));
+        return;
+      }
+
+      setPreparingSurah(surahNum);
+      setError(null);
+
+      try {
+        let surahData;
+        if (riwaya === "warsh") {
+          try {
+            surahData = await getWarshSurahFormatted(surahNum);
+          } catch {
+            surahData = await getSurahText(surahNum, "hafs");
+          }
+        } else {
+          surahData = await getSurahText(surahNum, riwaya);
+        }
+
+        const playlistAyahs = (surahData?.data || surahData || []).map((a) => ({
+          surah: a.surah?.number || surahNum,
+          numberInSurah: a.numberInSurah,
+          number: a.number,
+          text: a.text,
+        }));
+
+        if (playlistAyahs.length === 0) {
+          setError(
+            lang === "fr"
+              ? "Impossible de preparer la sourate pour la recitation."
+              : "Unable to prepare this surah for playback.",
+          );
+          return;
+        }
+
+        audioService.loadPlaylist(
+          playlistAyahs,
+          rec.cdn,
+          rec.cdnType || "islamic",
+        );
+        audioService.play();
+      } catch {
+        setError(
+          lang === "fr"
+            ? "Une erreur est survenue pendant la preparation audio."
+            : "An error occurred while preparing audio playback.",
+        );
+      } finally {
+        setPreparingSurah(null);
+      }
+    },
+    [preparingSurah, state.reciter, riwaya, warshStrictMode, lang],
+  );
 
   /* â”€â”€ Expose playSurah via custom DOM event so AudioPlayer can trigger it â”€â”€ */
   useEffect(() => {
@@ -1422,13 +1490,14 @@ export default function QuranDisplay() {
 
             {mushafLayout !== "mushaf" && (
               <div className="play-surah-bar mt-4 mb-2 flex justify-center">
-                <button 
-                  className="btn-play-surah flex items-center gap-2 px-4 py-2 bg-[var(--theme-primary)] text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity" 
-                  onClick={playSurah} 
-                  title={t('audio.playSurah', lang)}
+                <button
+                  className="btn-play-surah"
+                  onClick={playSurah}
+                  type="button"
+                  title={t("audio.playSurah", lang)}
                 >
-                   <i className="fas fa-play"></i>
-                   <span>{t('audio.playSurah', lang)}</span>
+                  <i className="fas fa-play"></i>
+                  <span>{t("audio.playSurah", lang)}</span>
                 </button>
               </div>
             )}
@@ -1848,19 +1917,28 @@ export default function QuranDisplay() {
                       group.ayahs[0]?.numberInSurah === 1 &&
                       group.surah !== 1 &&
                       group.surah !== 9 && <Bismillah />}
-                    
+
                     {!isQCF4 && group.ayahs[0]?.numberInSurah === 1 && (
-                      <div className="play-surah-bar mt-4 mb-2 flex justify-center">
-                        <button 
-                          className="btn-play-surah flex items-center gap-2 px-4 py-2 bg-[var(--theme-primary)] text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity" 
-                          onClick={playSurah} 
-                          title={t('audio.playSurah', lang)}
+                      <div className="play-surah-bar mt-3 mb-2 flex justify-center">
+                        <button
+                          className="btn-play-surah"
+                          type="button"
+                          onClick={() => playSpecificSurah(group.surah)}
+                          disabled={preparingSurah === group.surah}
+                          title={t("audio.playSurah", lang)}
                         >
-                           <i className="fas fa-play"></i>
-                           <span>{t('audio.playSurah', lang)}</span>
+                          <i className="fas fa-play"></i>
+                          <span>
+                            {preparingSurah === group.surah
+                              ? lang === "fr"
+                                ? "Preparation..."
+                                : "Preparing..."
+                              : t("audio.playSurah", lang)}
+                          </span>
                         </button>
                       </div>
                     )}
+                    
                     <div className="surah-ayahs-list">
                       {group.ayahs.map((ayah) => {
                         const isPlaying =
@@ -2061,17 +2139,26 @@ export default function QuranDisplay() {
                       group.surah !== 9 && <Bismillah />}
 
                     {!isQCF4 && group.ayahs[0]?.numberInSurah === 1 && (
-                      <div className="play-surah-bar mt-4 mb-2 flex justify-center">
-                        <button 
-                          className="btn-play-surah flex items-center gap-2 px-4 py-2 bg-[var(--theme-primary)] text-white rounded-full text-sm font-medium hover:opacity-90 transition-opacity" 
-                          onClick={playSurah} 
-                          title={t('audio.playSurah', lang)}
+                      <div className="play-surah-bar mt-3 mb-2 flex justify-center">
+                        <button
+                          className="btn-play-surah"
+                          type="button"
+                          onClick={() => playSpecificSurah(group.surah)}
+                          disabled={preparingSurah === group.surah}
+                          title={t("audio.playSurah", lang)}
                         >
-                           <i className="fas fa-play"></i>
-                           <span>{t('audio.playSurah', lang)}</span>
+                          <i className="fas fa-play"></i>
+                          <span>
+                            {preparingSurah === group.surah
+                              ? lang === "fr"
+                                ? "Preparation..."
+                                : "Preparing..."
+                              : t("audio.playSurah", lang)}
+                          </span>
                         </button>
                       </div>
                     )}
+
                     <div
                       className="surah-ayahs-list"
                     >

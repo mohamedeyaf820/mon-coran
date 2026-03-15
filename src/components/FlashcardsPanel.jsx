@@ -4,7 +4,6 @@
  */
 import React, { useState, useCallback, useEffect } from "react";
 import { useApp } from "../context/AppContext";
-import "../styles/index.css";
 
 /* ── Static dataset: top-100 most frequent Quranic words ── */
 const VOCAB = [
