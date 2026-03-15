@@ -2329,3 +2329,61 @@
 [data-theme="sepia"] .app-root.premium-plus .hp2 > .pointer-events-none[aria-hidden="true"] > div:nth-child(3) {
   background: rgba(205, 175, 104, 0.12) !important;
 }
+
+@media (max-width: 640px) {
+  .app-root.premium-plus .hp2-hero__title {
+    font-size: clamp(1.42rem, 6.9vw, 1.92rem) !important;
+    line-height: 1.08 !important;
+    word-break: break-word;
+  }
+
+  .app-root.premium-plus .hp2-hero__tagline {
+    max-width: 100% !important;
+    font-size: 0.88rem !important;
+    line-height: 1.45 !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .app-root.premium-plus .hp2-vod__text {
+    font-size: clamp(1.05rem, 5.2vw, 1.22rem) !important;
+    line-height: 1.78 !important;
+  }
+
+  .app-root.premium-plus .hp2-vod__trans {
+    font-size: 0.79rem !important;
+    line-height: 1.42 !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .app-root.premium-plus .hp2-recent-name {
+    font-size: 0.88rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .app-root.premium-plus .hp2-feature__text {
+    font-size: 0.76rem !important;
+    line-height: 1.3 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-root.premium-plus .hp2-hero__date-pill,
+  .app-root.premium-plus .hp2-hero__greeting,
+  .app-root.premium-plus .hp2-hero__badge {
+    font-size: 0.66rem !important;
+    padding-inline: 0.58rem !important;
+  }
+
+  .app-root.premium-plus .hp2-vod__btn,
+  .app-root.premium-plus .hp2-btn {
+    font-size: 0.78rem !important;
+  }
+}

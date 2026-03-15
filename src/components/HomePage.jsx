@@ -999,14 +999,14 @@ export default function HomePage() {
               <div className="hp2-hero__bismallah" aria-hidden="true" dir="rtl">
                 ï·½
               </div>
-              <div className="hp2-hero__brand !items-center !gap-4">
+              <div className="hp2-hero__brand !items-center !gap-4 max-[520px]:!items-start max-[520px]:!gap-2.5">
                 <PlatformLogo
                   className="hp2-hero__logo !h-[84px] !w-[84px] !rounded-3xl"
                   imgClassName="hp2-hero__logo-img !h-[62px] !w-[62px]"
                   decorative
                 />
                 <div className="hp2-hero__brand-text">
-                  <h1 className="hp2-hero__title !text-[clamp(1.95rem,3vw,2.5rem)] !font-black !tracking-tight">
+                  <h1 className="hp2-hero__title !text-[clamp(1.95rem,3vw,2.5rem)] !font-black !tracking-tight max-[520px]:!text-[clamp(1.45rem,7vw,1.95rem)] break-words">
                     MushafPlus
                   </h1>
                   <div className="hp2-hero__badges-row !mt-2 !flex !flex-wrap !gap-2">
@@ -1027,7 +1027,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <p className="hp2-hero__tagline !mt-3 !max-w-[62ch] !text-[0.98rem] !leading-relaxed">
+            <p className="hp2-hero__tagline !mt-3 !max-w-[62ch] !text-[0.98rem] !leading-relaxed max-[520px]:!text-[0.88rem] max-[520px]:!leading-snug [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden">
               {lang === "ar"
                 ? "Ø§Ù‚Ø±Ø£ Ø§Ù„Ù‚Ø±Ø¢Ù† Ø§Ù„ÙƒØ±ÙŠÙ… ÙˆØªØ¯Ø¨ÙŽÙ‘Ø± Ù…Ø¹Ø§Ù†ÙŠÙ‡ ÙÙŠ Ù…Ø³Ø§Ø­Ø© Ø£ÙƒØ«Ø± Ø³ÙƒÙŠÙ†Ø©"
                 : lang === "fr"
@@ -1036,37 +1036,37 @@ export default function HomePage() {
             </p>
 
             {/* CTAs */}
-            <div className="hp2-hero__ctas mt-5! flex! flex-wrap! gap-3">
+            <div className="hp2-hero__ctas mt-5! flex! flex-wrap! gap-3 max-[520px]:gap-2!">
               {hasReadingHistory ? (
                 <button
-                  className="hp2-btn hp2-btn--primary h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.01]"
+                  className="hp2-btn hp2-btn--primary h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.01] max-[520px]:w-full! max-[520px]:justify-center"
                   onClick={continueReading}
                 >
                   <i className="fas fa-circle-play" />
-                  <span>{t("continueReading")}</span>
+                  <span className="truncate max-[520px]:max-w-[62vw]">{t("continueReading")}</span>
                   {surahLabel && (
-                    <span className="hp2-btn__chip">{surahLabel.ar}</span>
+                    <span className="hp2-btn__chip max-[520px]:hidden">{surahLabel.ar}</span>
                   )}
                 </button>
               ) : (
                 <button
-                  className="hp2-btn hp2-btn--primary h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.01]"
+                  className="hp2-btn hp2-btn--primary h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.01] max-[520px]:w-full! max-[520px]:justify-center"
                   onClick={() => goSurah(1)}
                 >
                   <i className="fas fa-book-open" />
-                  <span>
+                  <span className="truncate max-[520px]:max-w-[62vw]">
                     {lang === "ar"
                       ? "Ø§Ø¨Ø¯Ø£ Ø§Ù„Ù‚Ø±Ø§Ø¡Ø©"
                       : lang === "fr"
                         ? "Commencer la lecture"
                         : "Start reading"}
                   </span>
-                  <span className="hp2-btn__chip">Ø§Ù„Ù’ÙÙŽØ§ØªÙØ­ÙŽØ©</span>
+                  <span className="hp2-btn__chip max-[520px]:hidden">Ø§Ù„Ù’ÙÙŽØ§ØªÙØ­ÙŽØ©</span>
                 </button>
               )}
               {hasReadingHistory && (
                 <button
-                  className="hp2-btn hp2-btn--outline h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5"
+                  className="hp2-btn hp2-btn--outline h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5 max-[520px]:w-full! max-[520px]:justify-center"
                   onClick={() => goSurah(1)}
                 >
                   <i className="fas fa-book-open-reader" />
@@ -1074,7 +1074,7 @@ export default function HomePage() {
                 </button>
               )}
               <button
-                className="hp2-btn hp2-btn--soft h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5"
+                className="hp2-btn hp2-btn--soft h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5 max-[520px]:w-full! max-[520px]:justify-center"
                 onClick={openDuas}
               >
                 <i className="fas fa-hands-praying" />
@@ -1097,7 +1097,7 @@ export default function HomePage() {
                   {recentVisits.map((v) => (
                     <button
                       key={v.surah}
-                      className="hp2-recent-item group grid! grid-cols-[auto_1fr_auto]! items-center! gap-3! rounded-xl! border! px-4! py-3! text-left! transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.005]"
+                      className="hp2-recent-item group grid! grid-cols-[auto_1fr_auto]! items-center! gap-3! rounded-xl! border! px-4! py-3! text-left! transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.005] max-[520px]:grid-cols-[auto_1fr]! max-[520px]:gap-2.5! max-[520px]:px-3!"
                       onClick={() => goSurahAyah(v.surah, v.ayah)}
                     >
                       <span className="hp2-recent-num flex! h-9! w-9! items-center! justify-center! rounded-full! border! text-sm! font-bold">
@@ -1113,7 +1113,7 @@ export default function HomePage() {
                           </span>
                         )}
                       </div>
-                      <span className="hp2-recent-play flex! h-8! w-8! items-center! justify-center! rounded-full! transition-transform! duration-300! group-hover:scale-110">
+                      <span className="hp2-recent-play flex! h-8! w-8! items-center! justify-center! rounded-full! transition-transform! duration-300! group-hover:scale-110 max-[520px]:hidden">
                         <i className="fas fa-play text-[0.78rem]" />
                       </span>
                     </button>
@@ -1157,7 +1157,7 @@ export default function HomePage() {
                   <span className="hp2-feature__icon">
                     <i className={`fas ${f.icon}`} />
                   </span>
-                  <span className="hp2-feature__text">
+                  <span className="hp2-feature__text max-[520px]:text-[0.76rem] max-[520px]:leading-tight">
                     {lang === "ar" ? f.ar : lang === "fr" ? f.fr : f.en}
                   </span>
                 </div>
@@ -1182,11 +1182,11 @@ export default function HomePage() {
                   )}
                 </span>
               </div>
-              <p className="hp2-vod__text relative! z-10! text-[1.45rem]! leading-[1.95]" dir="rtl">
+              <p className="hp2-vod__text relative! z-10! text-[1.45rem]! leading-[1.95] max-[520px]:text-[1.2rem]! max-[520px]:leading-[1.8]!" dir="rtl">
                 {dailyVerse.text}
               </p>
               {lang === "fr" && dailyVerse.trans_fr && (
-                <p className="hp2-vod__trans relative! z-10">{dailyVerse.trans_fr}</p>
+                <p className="hp2-vod__trans relative! z-10 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden">{dailyVerse.trans_fr}</p>
               )}
               <span className="hp2-vod__ref relative! z-10">{dailyVerse.ref}</span>
               {vodSurahNum && (
@@ -1220,7 +1220,7 @@ export default function HomePage() {
               </div>
               <div className="hp2-focus-card__body">
                 <h2 className="hp2-focus-card__title">{readingTarget}</h2>
-                {surahLabel && displayMode ==! "juz" && (
+                {surahLabel && displayMode !== "juz" && (
                   <div className="hp2-focus-card__surah-ar" dir="rtl">
                     {surahLabel.ar}
                   </div>
