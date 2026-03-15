@@ -22,16 +22,26 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-(--bg-primary)">
-          <h1 className="mb-4 text-xl font-semibold text-red-500">
+        <div
+          className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
+          style={{
+            background: "var(--bg-primary)",
+            color: "var(--text-primary)",
+          }}
+        >
+          <h1 className="mb-4 text-xl font-semibold" style={{ color: "var(--danger, #ef4444)" }}>
             Une erreur est survenue
           </h1>
-          <p className="mb-4 text-sm text-(--text-muted)">
+          <p className="mb-4 text-sm" style={{ color: "var(--text-muted)" }}>
             {this.state.error?.message || "Erreur inconnue"}
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="rounded-xl bg-[#0d6efd] px-6 py-3 text-base font-semibold text-white transition hover:brightness-110"
+            className="rounded-xl px-6 py-3 text-base font-semibold text-white transition hover:brightness-110"
+            style={{
+              background:
+                "linear-gradient(135deg, var(--primary, #1b5e3b), color-mix(in srgb, var(--primary, #1b5e3b) 82%, #000000 18%))",
+            }}
           >
             Recharger l'application
           </button>

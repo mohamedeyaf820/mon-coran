@@ -5213,6 +5213,11 @@
         0 1px 0 rgba(255, 255, 255, 0.22) inset;
     max-width: 1080px;
     padding: 1.2rem 1.4rem 4rem;
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg, #0f151d) 96%, rgba(255, 255, 255, 0.04) 4%),
+        color-mix(in srgb, var(--surface, #121820) 94%, rgba(0, 0, 0, 0.06) 6%)
+    ) !important;
 }
 
 .quran-display--platform .edition-badge,
@@ -5251,6 +5256,14 @@
 
 .quran-display--platform .surah-header-frame {
     width: min(100%, 760px);
+}
+
+.quran-display--platform .surah-header-inner {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg-card, #121820) 92%, rgba(var(--primary-rgb), 0.08) 8%),
+        color-mix(in srgb, var(--bg-secondary, #0f151d) 94%, rgba(0, 0, 0, 0.06) 6%)
+    );
 }
 
 .quran-display--platform .quran-nav,
@@ -5388,6 +5401,16 @@
 .quran-display--platform .qc-ayah-text-ar {
     line-height: 2.18;
     letter-spacing: 0.004em;
+    color: var(--text-quran, var(--text-primary));
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.quran-display--platform .surah-header-name,
+.quran-display--platform .bismillah-text {
+    color: var(--text-quran, var(--text-primary));
+    text-shadow:
+        0 1px 8px rgba(0, 0, 0, 0.28),
+        0 0 26px rgba(212, 168, 32, 0.14);
 }
 
 .quran-display--platform .qc-ayah-translation {
@@ -5443,8 +5466,12 @@
 [data-theme="oled"] .quran-display--platform .mushaf-layout-toggle-bar,
 [data-theme="oled"] .quran-display--platform .warsh-notice,
 [data-theme="oled"] .quran-display--platform .qc-ayah-block {
-    background: linear-gradient(180deg, rgba(18, 24, 31, 0.95), rgba(12, 17, 24, 0.95));
-    border-color: rgba(212, 170, 64, 0.24);
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg-card, #121820) 96%, rgba(255, 255, 255, 0.04) 4%),
+        color-mix(in srgb, var(--bg-secondary, #0f151d) 94%, rgba(0, 0, 0, 0.08) 6%)
+    );
+    border-color: color-mix(in srgb, var(--border, rgba(212, 170, 64, 0.24)) 82%, rgba(255, 255, 255, 0.12) 18%);
     box-shadow:
         0 22px 54px rgba(0, 0, 0, 0.28),
         0 1px 0 rgba(255, 255, 255, 0.03) inset;
@@ -5461,6 +5488,34 @@
     box-shadow:
         0 18px 40px rgba(92, 66, 23, 0.1),
         0 1px 0 rgba(255, 255, 255, 0.5) inset;
+}
+
+[data-theme="sepia"] .quran-display--platform,
+[data-theme="premium-beige"] .quran-display--platform {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg, #f4ead7) 96%, #ffffff 4%),
+        color-mix(in srgb, var(--surface, #efe0c7) 94%, rgba(154, 110, 26, 0.06) 6%)
+    ) !important;
+}
+
+[data-theme="sepia"] .quran-display--platform .surah-header-inner,
+[data-theme="premium-beige"] .quran-display--platform .surah-header-inner {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg-card, #f6ebd4) 94%, rgba(154, 110, 26, 0.07) 6%),
+        color-mix(in srgb, var(--bg-secondary, #efe0c7) 96%, rgba(154, 110, 26, 0.04) 4%)
+    );
+}
+
+[data-theme="sepia"] .quran-display--platform .qc-ayah-text-ar,
+[data-theme="sepia"] .quran-display--platform .surah-header-name,
+[data-theme="sepia"] .quran-display--platform .bismillah-text,
+[data-theme="premium-beige"] .quran-display--platform .qc-ayah-text-ar,
+[data-theme="premium-beige"] .quran-display--platform .surah-header-name,
+[data-theme="premium-beige"] .quran-display--platform .bismillah-text {
+    color: color-mix(in srgb, var(--text-primary) 88%, #2a1a04 12%);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.2);
 }
 
 @media (max-width: 900px) {

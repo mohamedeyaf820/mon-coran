@@ -44,6 +44,21 @@
   opacity: 0.84;
 }
 
+.app-view-reading::before {
+  background:
+    radial-gradient(
+      circle at 14% 0%,
+      color-mix(in srgb, var(--theme-surface) 92%, transparent 8%),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 90% 3%,
+      color-mix(in srgb, var(--theme-panel-bg) 90%, transparent 10%),
+      transparent 30%
+    );
+  opacity: 0.52;
+}
+
 .app-view-home {
   display: grid;
   gap: 1rem;
@@ -56,8 +71,16 @@
 
 .app-root.is-memorizing .app-view-reading::before {
   background:
-    radial-gradient(circle at 10% 0%, rgba(var(--theme-primary-rgb), 0.14), transparent 30%),
-    radial-gradient(circle at 92% 4%, rgba(var(--theme-primary-rgb), 0.09), transparent 28%);
+    radial-gradient(
+      circle at 10% 0%,
+      color-mix(in srgb, var(--theme-surface) 82%, rgba(var(--theme-primary-rgb), 0.18) 18%),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 92% 4%,
+      color-mix(in srgb, var(--theme-panel-bg-strong) 88%, rgba(var(--theme-primary-rgb), 0.12) 12%),
+      transparent 28%
+    );
 }
 
 .app-view-reading .quran-display--platform {

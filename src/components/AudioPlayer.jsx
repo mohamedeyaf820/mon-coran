@@ -187,7 +187,7 @@ function CoverArt({ isPlaying, size = 52 }) {
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl shrink-0 bg-[linear-gradient(135deg,var(--emerald)_0%,#0e3d26_60%,#0a2d1c_100%)]",
+        "relative overflow-hidden rounded-xl shrink-0 bg-[linear-gradient(135deg,var(--theme-primary)_0%,color-mix(in_srgb,var(--theme-primary)_78%,var(--theme-bg)_22%)_58%,color-mix(in_srgb,var(--theme-primary)_62%,var(--theme-bg)_38%)_100%)]",
         COVER_SIZE_CLASSES[size] || COVER_SIZE_CLASSES[52],
         isPlaying
           ? "shadow-[0_2px_12px_rgba(184,134,11,0.35)]"
@@ -200,8 +200,8 @@ function CoverArt({ isPlaying, size = 52 }) {
         viewBox="0 0 52 52"
         fill="none"
       >
-        <circle cx="26" cy="26" r="20" stroke="#d4a820" strokeWidth="0.6" />
-        <circle cx="26" cy="26" r="12" stroke="#d4a820" strokeWidth="0.5" />
+        <circle cx="26" cy="26" r="20" stroke="var(--gold, #d4a820)" strokeWidth="0.6" />
+        <circle cx="26" cy="26" r="12" stroke="var(--gold, #d4a820)" strokeWidth="0.5" />
         {Array.from({ length: 8 }).map((_, i) => {
           const a = (i * Math.PI * 2) / 8;
           return (
@@ -211,7 +211,7 @@ function CoverArt({ isPlaying, size = 52 }) {
               y1={26 + Math.sin(a) * 12}
               x2={26 + Math.cos(a) * 20}
               y2={26 + Math.sin(a) * 20}
-              stroke="#d4a820"
+              stroke="var(--gold, #d4a820)"
               strokeWidth="0.5"
             />
           );
@@ -246,9 +246,9 @@ function IconBtn({ onClick, title, active, children, size = "md" }) {
         base,
         "flex items-center justify-center rounded-full cursor-pointer outline-none transition-all duration-150",
         active
-          ? "bg-[rgba(212,168,32,0.25)] text-[#f5d785] border border-[rgba(212,168,32,0.45)]"
+          ? "bg-[rgba(212,168,32,0.25)] text-[color-mix(in_srgb,var(--gold-bright,#f5d785)_88%,#ffffff_12%)] border border-[rgba(212,168,32,0.45)]"
           : "bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_78%,transparent_22%)] text-[color-mix(in_srgb,var(--theme-text)_88%,var(--theme-bg)_12%)] border border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)]",
-        "hover:bg-[rgba(212,168,32,0.18)] hover:text-[#f5d785] hover:border-[rgba(212,168,32,0.35)] hover:scale-105",
+        "hover:bg-[rgba(212,168,32,0.18)] hover:text-[color-mix(in_srgb,var(--gold-bright,#f5d785)_90%,#ffffff_10%)] hover:border-[rgba(212,168,32,0.35)] hover:scale-105",
         "active:scale-95",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(212,168,32,0.5)]",
       )}
