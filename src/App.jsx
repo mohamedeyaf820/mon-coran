@@ -198,9 +198,9 @@ export default function App() {
     const loadPremiumStyles = () => {
       if (cancelled || premiumLoaded) return;
 
-      // Keep premium visual layer off low-end/mobile devices to reduce CSS cost.
+      // Keep premium visual layer off low-end devices to reduce CSS cost.
       if (lowPerfMode) return;
-      if (typeof window !== "undefined" && window.innerWidth < 1024) return;
+      // Removed incorrect viewport block to ensure unified design across desktop/mobile
 
       premiumLoaded = true;
       import("./styles/premium-platform.css").catch(() => {});
@@ -244,13 +244,13 @@ export default function App() {
     };
   }, [lowPerfMode]);
 
-  // Load Home-only polish styles only when Home is visible (desktop/high-perf only).
+  // Load Home-only polish styles only when Home is visible (high-perf only).
   useEffect(() => {
     if (homePolishLoadedRef.current) return;
     if (!showHome) return;
     if (lowPerfMode) return;
     if (!deferNonCriticalUI && !hasInteracted) return;
-    if (typeof window !== "undefined" && window.innerWidth < 1024) return;
+    // Removed incorrect viewport block to ensure unified design across desktop/mobile
 
     homePolishLoadedRef.current = true;
     import("./styles/premium-home-polish.css").catch(() => {});

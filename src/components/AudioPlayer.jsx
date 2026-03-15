@@ -16,9 +16,9 @@ import {
 import { cn, toast } from "../lib/utils";
 import AudioLoadingIndicator from "./AudioLoadingIndicator";
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€
    Drag / position helpers  (desktop card only)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€ */
 const CARD_STORAGE_KEY = "mushaf_player_card_pos_v5";
 function isValidCardPos(pos) {
   return (
@@ -151,9 +151,9 @@ function ProgressRail({ progress, className = "", showThumb = false }) {
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€
    Waveform (desktop card)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€ */
 function Waveform({ isPlaying, progress }) {
   const COUNT = 32;
   return (
@@ -180,9 +180,9 @@ function Waveform({ isPlaying, progress }) {
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€
    Cover Art (desktop card)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€ */
 function CoverArt({ isPlaying, size = 52 }) {
   return (
     <div
@@ -227,9 +227,9 @@ function CoverArt({ isPlaying, size = 52 }) {
   );
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€
    Icon button (desktop card)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€”€ */
 function IconBtn({ onClick, title, active, children, size = "md" }) {
   const base =
     size === "sm"
@@ -258,9 +258,9 @@ function IconBtn({ onClick, title, active, children, size = "md" }) {
   );
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* •••••••••••••••••••••••••••••••••••••••••••••••
    Main component
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+••••••••••••••••••••••••••••••••••••••••••••••• */
 export default function AudioPlayer() {
   const { state, dispatch, set } = useApp();
   const {
@@ -300,22 +300,22 @@ export default function AudioPlayer() {
   const [optionsModalOpen, setOptionsModalOpen] = useState(false);
   const [reciterSwitchingId, setReciterSwitchingId] = useState(null);
 
-  /* â”€â”€ Fermeture / refs stables pour callbacks â”€â”€ */
+  /* ”€”€ Fermeture / refs stables pour callbacks ”€”€ */
   const [closed, setClosed] = useState(false);
   const currentSurahRef = useRef(null);
   const karaokeFollowRef = useRef(true);
 
-  /* â”€â”€ A-B Repeat state â”€â”€ */
+  /* ”€”€ A-B Repeat state ”€”€ */
   const [abA, setAbA] = useState(null); // { idx, surah, ayah }
   const [abB, setAbB] = useState(null); // { idx, surah, ayah }
 
-  /* â”€â”€ EQ preset â”€â”€ */
+  /* ”€”€ EQ preset ”€”€ */
   const [eqPreset, setEqPreset] = useState("flat");
 
-  /* â”€â”€ Tartil progressive â”€â”€ */
+  /* ”€”€ Tartil progressive ”€”€ */
   const [tartilMode, setTartilMode] = useState(false);
 
-  /* â”€â”€ Recitation mode (Web Speech API) â”€â”€ */
+  /* ”€”€ Recitation mode (Web Speech API) ”€”€ */
   const [reciteMode, setReciteMode] = useState(false);
   const [reciteText, setReciteText] = useState("");
   const [reciteResult, setReciteResult] = useState(null); // 'ok'|'partial'|'wrong'|null
@@ -413,7 +413,7 @@ export default function AudioPlayer() {
           set({ reciter: candidate.id });
           toast(
             lang === "fr"
-              ? `RÃ©citateur indisponible, bascule vers ${candidate.nameFr || candidate.nameEn || candidate.name}.`
+              ? `Récitateur indisponible, bascule vers ${candidate.nameFr || candidate.nameEn || candidate.name}.`
               : lang === "ar"
                 ? `ØªØ¹Ø°Ø± Ø§Ù„ØªØ­Ù…ÙŠÙ„ØŒ ØªÙ… Ø§Ù„ØªØ­ÙˆÙŠÙ„ Ø¥Ù„Ù‰ ${candidate.name || candidate.nameEn || candidate.id}.`
                 : `Reciter unavailable, switched to ${candidate.nameEn || candidate.nameFr || candidate.name}.`,
@@ -444,7 +444,7 @@ export default function AudioPlayer() {
     set,
   ]);
 
-  /* â”€â”€ Detect mobile â”€â”€ */
+  /* ”€”€ Detect mobile ”€”€ */
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     window.addEventListener("resize", onResize);
@@ -476,10 +476,10 @@ export default function AudioPlayer() {
     return () => window.removeEventListener("keydown", onEscape);
   }, [optionsModalOpen]);
 
-  /* â”€â”€ Wire audio callbacks â”€â”€ */
+  /* ”€”€ Wire audio callbacks ”€”€ */
   useEffect(() => {
     audioService.onPlay = (item) => {
-      setClosed(false); // rÃ©ouvre si fermÃ©
+      setClosed(false); // réouvre si fermé
       setAudioError(null);
       markReciterAvailable(reciter);
       failedRecitersRef.current.clear();
@@ -538,7 +538,7 @@ export default function AudioPlayer() {
       if (failoverWorked) {
         setAudioError(
           lang === "fr"
-            ? "Bascule automatique vers un autre rÃ©citateur..."
+            ? "Bascule automatique vers un autre récitateur..."
             : lang === "ar"
               ? "ØªÙ… Ø§Ù„ØªØ­ÙˆÙŠÙ„ ØªÙ„Ù‚Ø§Ø¦ÙŠØ§Ù‹ Ø¥Ù„Ù‰ Ù‚Ø§Ø±Ø¦ Ø¢Ø®Ø±..."
               : "Auto-switching to another reciter...",
@@ -552,7 +552,7 @@ export default function AudioPlayer() {
       const msg =
         riwaya === "warsh"
           ? lang === "fr"
-            ? "Audio Warsh indisponible. VÃ©rifiez votre connexion ou changez de rÃ©citateur."
+            ? "Audio Warsh indisponible. Vérifiez votre connexion ou changez de récitateur."
             : lang === "ar"
               ? "Ø§Ù„ØµÙˆØª ØºÙŠØ± Ù…ØªØ§Ø­. ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„Ø§ØªØµØ§Ù„ Ø£Ùˆ ØºÙŠÙ‘Ø± Ø§Ù„Ù‚Ø§Ø±Ø¦."
               : "Warsh audio unavailable. Check your connection or switch reciter."
@@ -620,7 +620,7 @@ export default function AudioPlayer() {
     return null;
   })();
 
-  /* â”€â”€ Map internal networkState â†’ AudioLoadingIndicator state â”€â”€ */
+  /* ”€”€ Map internal networkState †’ AudioLoadingIndicator state ”€”€ */
   const audioIndicatorState = (() => {
     if (networkState === "error") return "error";
     if (networkState === "loading") return "loading";
@@ -655,7 +655,7 @@ export default function AudioPlayer() {
     else audioService.disableMemorization();
   }, [memMode, memRepeatCount, memPause]);
 
-  /* â”€â”€ A-B Repeat handlers â”€â”€ */
+  /* ”€”€ A-B Repeat handlers ”€”€ */
   const markAbA = useCallback(() => {
     const idx = audioService.playlistIndex;
     const item = audioService.currentAyah;
@@ -678,20 +678,20 @@ export default function AudioPlayer() {
     audioService.clearAbRepeat();
   }, []);
 
-  /* â”€â”€ EQ preset handler â”€â”€ */
+  /* ”€”€ EQ preset handler ”€”€ */
   const handleEq = useCallback((preset) => {
     setEqPreset(preset);
     audioService.applyEqPreset(preset);
   }, []);
 
-  /* â”€â”€ Tartil toggle â”€â”€ */
+  /* ”€”€ Tartil toggle ”€”€ */
   const toggleTartil = useCallback(() => {
     const next = !tartilMode;
     setTartilMode(next);
     audioService.setTartilMode(next, audioSpeed);
   }, [tartilMode, audioSpeed]);
 
-  /* â”€â”€ Recitation mode â”€â”€ */
+  /* ”€”€ Recitation mode ”€”€ */
   const startRecite = useCallback(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) {
@@ -739,7 +739,7 @@ export default function AudioPlayer() {
     setReciteMode(false);
   }, []);
 
-  /* â”€â”€ Controls â”€â”€ */
+  /* ”€”€ Controls ”€”€ */
   const toggle = useCallback(() => audioService.toggle(), []);
   const stop = useCallback(() => audioService.stop(), []);
   const next = useCallback(() => audioService.next(), []);
@@ -752,7 +752,7 @@ export default function AudioPlayer() {
     audioService.seekPercent(pct);
   };
 
-  /* â”€â”€ Progress bar drag support â”€â”€ */
+  /* ”€”€ Progress bar drag support ”€”€ */
   const [progressDragging, setProgressDragging] = useState(false);
 
   const handleProgressMouseDown = (e) => {
@@ -819,7 +819,7 @@ export default function AudioPlayer() {
   });
   const isWarshMode = riwaya === "warsh";
 
-  /* â”€â”€ Reciter search â”€â”€ */
+  /* ”€”€ Reciter search ”€”€ */
   const [reciterSearch, setReciterSearch] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const filteredReciters = React.useMemo(() => {
@@ -951,7 +951,7 @@ export default function AudioPlayer() {
   })();
   const currentAyahPreview =
     currentAyahText.length > 180
-      ? `${currentAyahText.slice(0, 180).trim()}â€¦`
+      ? `${currentAyahText.slice(0, 180).trim()}€¦`
       : currentAyahText;
 
   // Subtitle shown in the desktop card when nothing is playing
@@ -959,10 +959,10 @@ export default function AudioPlayer() {
     !isPlaying && !currentPlayingAyah
       ? showHome
         ? lang === "ar"
-          ? "Ø§Ø¶ØºØ· â–¶ Ù„Ù„Ø§Ø³ØªÙ…Ø§Ø¹"
+          ? "Ø§Ø¶ØºØ· –¶ Ù„Ù„Ø§Ø³ØªÙ…Ø§Ø¹"
           : lang === "fr"
-            ? "Appuyez â–¶ pour Ã©couter"
-            : "Press â–¶ to listen"
+            ? "Appuyez –¶ pour écouter"
+            : "Press –¶ to listen"
         : null
       : null;
 
@@ -982,7 +982,7 @@ export default function AudioPlayer() {
     lang === "ar"
       ? "ØµÙˆØª ÙˆØ±Ø´ Ù…ÙØªØ­Ù‚Ù‚"
       : lang === "fr"
-        ? "Audio Warsh vÃ©rifiÃ©"
+        ? "Audio Warsh vérifié"
         : "Warsh verified";
   const followShortLabel =
     lang === "ar" ? "ØªØªØ¨Ø¹" : lang === "fr" ? "Suivi" : "Follow";
@@ -1005,7 +1005,7 @@ export default function AudioPlayer() {
     },
   ].filter(Boolean);
 
-  /* â”€â”€â”€ Shared button classes (mobile bar) â”€â”€â”€ */
+  /* ”€”€”€ Shared button classes (mobile bar) ”€”€”€ */
   const playerPanelSurfaceClass =
     "rounded-[26px] border border-[color-mix(in_srgb,var(--theme-border-strong)_34%,transparent_66%)] bg-[linear-gradient(165deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_95%,var(--theme-primary)_5%),color-mix(in_srgb,var(--theme-panel-bg)_93%,var(--theme-bg)_7%))] shadow-[inset_0_1px_0_rgba(255,255,255,0.1),inset_0_-1px_0_rgba(0,0,0,0.14),0_24px_56px_rgba(2,8,22,0.3)] backdrop-blur-2xl";
   const playerSoftSurfaceClass =
@@ -1092,16 +1092,16 @@ export default function AudioPlayer() {
         : "bg-white/[0.08] text-[rgba(233,223,203,0.55)]",
     );
 
-  /* â”€â”€ Drag state (desktop card only) â”€â”€ */
+  /* ”€”€ Drag state (desktop card only) ”€”€ */
   const optionsModalTitle =
     lang === "fr"
-      ? "Options audio avancÃ©es"
+      ? "Options audio avancées"
       : lang === "ar"
         ? "Ø®ÙŠØ§Ø±Ø§Øª Ø§Ù„ØµÙˆØª Ø§Ù„Ù…ØªÙ‚Ø¯Ù…Ø©"
         : "Advanced audio options";
   const optionsModalSubtitle =
     lang === "fr"
-      ? "RÃ©citateurs, synchronisation, mÃ©morisation et qualitÃ© audio"
+      ? "Récitateurs, synchronisation, mémorisation et qualité audio"
       : lang === "ar"
         ? "Ø§Ù„Ù‚Ø±Ø§Ø¡ ÙˆØ§Ù„Ù…Ø²Ø§Ù…Ù†Ø© ÙˆØ§Ù„Ø­ÙØ¸ ÙˆØ¬ÙˆØ¯Ø© Ø§Ù„ØµÙˆØª"
         : "Reciters, synchronization, memorization and audio quality";
@@ -1157,7 +1157,7 @@ export default function AudioPlayer() {
                     onChange={(e) => setReciterSearch(e.target.value)}
                     placeholder={
                       lang === "fr"
-                        ? "Rechercher un rÃ©citateur..."
+                        ? "Rechercher un récitateur..."
                         : lang === "ar"
                           ? "Ø§Ø¨Ø­Ø« Ø¹Ù† Ù‚Ø§Ø±Ø¦..."
                           : "Search reciter..."
@@ -1180,7 +1180,7 @@ export default function AudioPlayer() {
                 {filteredReciters.length === 0 ? (
                   <div className={cn(playerFadedTextClass, "py-6 text-center text-xs")}>
                     {lang === "fr"
-                      ? "Aucun rÃ©citateur trouvÃ©"
+                      ? "Aucun récitateur trouvé"
                       : lang === "ar"
                         ? "Ù„Ø§ ÙŠÙˆØ¬Ø¯ Ù‚Ø§Ø±Ø¦"
                         : "No reciter found"}
@@ -1347,7 +1347,7 @@ export default function AudioPlayer() {
               <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <span className={playerSectionLabelClass}>
-                    {lang === "fr" ? "Synchronisation mot Ã  mot" : lang === "ar" ? "Ù…Ø²Ø§Ù…Ù†Ø© ÙƒÙ„Ù…Ø© Ø¨ÙƒÙ„Ù…Ø©" : "Word sync"}
+                    {lang === "fr" ? "Synchronisation mot à  mot" : lang === "ar" ? "Ù…Ø²Ø§Ù…Ù†Ø© ÙƒÙ„Ù…Ø© Ø¨ÙƒÙ„Ù…Ø©" : "Word sync"}
                   </span>
                   <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums")}>
                     {syncOffsetMs > 0 ? `+${syncOffsetMs}` : syncOffsetMs}ms
@@ -1382,7 +1382,7 @@ export default function AudioPlayer() {
                         ? "Ù‡Ø°Ø§ Ø§Ù„Ù‚Ø§Ø±Ø¦ ÙŠÙ‚Ø±Ø£ Ø§Ù„Ø³ÙˆØ±Ø© ÙƒØ§Ù…Ù„Ø©ØŒ Ù„Ø°Ù„Ùƒ Ù„Ø§ ØªÙØ³ØªØ®Ø¯Ù… Ù…Ø²Ø§Ù…Ù†Ø© ÙƒÙ„Ù…Ø© Ø¨ÙƒÙ„Ù…Ø©."
                         : "This reciter plays the full surah, so word-by-word sync is not used."
                     : lang === "fr"
-                      ? "Le suivi des versets est verrouillÃ© en automatique. La calibration se mÃ©morise par rÃ©citateur."
+                      ? "Le suivi des versets est verrouillé en automatique. La calibration se mémorise par récitateur."
                       : lang === "ar"
                         ? "Ù…ØªØ§Ø¨Ø¹Ø© Ø§Ù„Ø¢ÙŠØ§Øª Ù…ÙØ¹Ù‘Ù„Ø© ØªÙ„Ù‚Ø§Ø¦ÙŠÙ‹Ø§ Ø¯Ø§Ø¦Ù…Ù‹Ø§. ØªØªÙ… Ù…Ø¹Ø§ÙŠØ±Ø© Ø§Ù„ØªØ²Ø§Ù…Ù† Ù„ÙƒÙ„ Ù‚Ø§Ø±Ø¦."
                         : "Verse follow is locked to automatic. Sync calibration is saved per reciter."}
@@ -1474,7 +1474,7 @@ export default function AudioPlayer() {
                 >
                   <span className="flex items-center gap-2">
                     <i className={`fas ${reciteMode ? "fa-stop" : "fa-microphone"} text-[0.62rem]`} />
-                    {lang === "fr" ? "RÃ©citation guidÃ©e" : lang === "ar" ? "Ø§Ù„ØªÙ„Ø§ÙˆØ© Ø§Ù„Ù…ÙˆØ¬Ù‘Ù‡Ø©" : "Guided recitation"}
+                    {lang === "fr" ? "Récitation guidée" : lang === "ar" ? "Ø§Ù„ØªÙ„Ø§ÙˆØ© Ø§Ù„Ù…ÙˆØ¬Ù‘Ù‡Ø©" : "Guided recitation"}
                   </span>
                   <span>{reciteMode ? "ON" : "OFF"}</span>
                 </button>
@@ -1647,7 +1647,7 @@ export default function AudioPlayer() {
     setManualDockPosition(false);
   }, []);
 
-  /* Ne rien afficher si le lecteur est fermÃ© */
+  /* Ne rien afficher si le lecteur est fermé */
   const desktopCardWidthClass = isHomeDesktop
     ? expanded
       ? "w-[320px]"
@@ -1669,9 +1669,9 @@ export default function AudioPlayer() {
 
   if (closed) return null;
 
-  /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-     MOBILE â€” classic bottom bar
-  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+  /* ••••••••••••••••••••••••••••••••••••••••••
+     MOBILE €” classic bottom bar
+  •••••••••••••••••••••••••••••••••••••••••• */
   if (isMobile) {
     if (minimized) {
       return (
@@ -1772,7 +1772,7 @@ export default function AudioPlayer() {
             onClick={toggleMinimized}
             title={
               lang === "fr"
-                ? "RÃ©duire"
+                ? "Réduire"
                 : lang === "ar"
                   ? "ØªØµØºÙŠØ±"
                   : "Minimize"
@@ -1939,7 +1939,7 @@ export default function AudioPlayer() {
               title={
                 optionsModalOpen
                   ? lang === "fr"
-                    ? "RÃ©duire"
+                    ? "Réduire"
                     : lang === "ar"
                       ? "Ø¥ØºÙ„Ø§Ù‚"
                       : "Options opened"
@@ -1973,14 +1973,14 @@ export default function AudioPlayer() {
                   onClick={toggle}
                   title={
                     lang === "fr"
-                      ? "RÃ©essayer"
+                      ? "Réessayer"
                       : lang === "ar"
                         ? "Ø¥Ø¹Ø§Ø¯Ø© Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø©"
                         : "Retry"
                   }
                 >
                   {lang === "fr"
-                    ? "RÃ©essayer"
+                    ? "Réessayer"
                     : lang === "ar"
                       ? "Ø¥Ø¹Ø§Ø¯Ø©"
                       : "Retry"}
@@ -2048,10 +2048,10 @@ export default function AudioPlayer() {
                     onChange={(e) => setReciterSearch(e.target.value)}
                     placeholder={
                       lang === "ar"
-                        ? "Ø¨Ø­Ø«â€¦"
+                        ? "Ø¨Ø­Ø«€¦"
                         : lang === "fr"
-                          ? "Rechercherâ€¦"
-                          : "Searchâ€¦"
+                          ? "Rechercher€¦"
+                          : "Search€¦"
                     }
                     className={playerSearchInputClass}
                   />
@@ -2075,7 +2075,7 @@ export default function AudioPlayer() {
                     className={cn(playerFadedTextClass, "py-2 text-center text-[0.62rem]")}
                   >
                     {lang === "fr"
-                      ? "Aucun rÃ©sultat"
+                      ? "Aucun résultat"
                       : lang === "ar"
                         ? "Ù„Ø§ Ù†ØªØ§Ø¦Ø¬"
                         : "No results"}
@@ -2251,7 +2251,7 @@ export default function AudioPlayer() {
                 aria-pressed={karaokeFollow}
                 disabled
                 title={
-                  lang === "fr" ? "Suivre le verset rÃ©citÃ©" : "Follow verse"
+                  lang === "fr" ? "Suivre le verset récité" : "Follow verse"
                 }
               >
                 <i className="fas fa-crosshairs text-[0.6rem]" />
@@ -2267,7 +2267,7 @@ export default function AudioPlayer() {
               </button>
             </div>
 
-            {/* â”€â”€ Options avancÃ©es toggle (mobile) â”€â”€ */}
+            {/* ”€”€ Options avancées toggle (mobile) ”€”€ */}
             <div className="mt-2 mb-0.5">
               <button
                 onClick={() => setShowAdvanced((v) => !v)}
@@ -2293,7 +2293,7 @@ export default function AudioPlayer() {
             </div>
             {showAdvanced && (
               <>
-                {/* â”€â”€ A-B Repeat (mobile) â”€â”€ */}
+                {/* ”€”€ A-B Repeat (mobile) ”€”€ */}
                 <div className="mt-2.5">
                   <div className={cn(playerSectionLabelClass, "mb-1")}>
                     A-B Repeat
@@ -2323,7 +2323,7 @@ export default function AudioPlayer() {
                   </div>
                 </div>
 
-                {/* â”€â”€ EQ presets (mobile) â”€â”€ */}
+                {/* ”€”€ EQ presets (mobile) ”€”€ */}
                 <div className="mt-2.5">
                   <div className={cn(playerSectionLabelClass, "mb-1")}>
                     {lang === "fr"
@@ -2352,7 +2352,7 @@ export default function AudioPlayer() {
                   </div>
                 </div>
 
-                {/* â”€â”€ Tartil + RÃ©citation (mobile) â”€â”€ */}
+                {/* ”€”€ Tartil + Récitation (mobile) ”€”€ */}
                 <div className="flex gap-1.5 mt-2">
                   <button
                     onClick={toggleTartil}
@@ -2381,7 +2381,7 @@ export default function AudioPlayer() {
                       className={`fas ${reciteMode ? "fa-stop" : "fa-microphone"} text-[0.6rem]`}
                     />
                     {lang === "fr"
-                      ? "RÃ©citer"
+                      ? "Réciter"
                       : lang === "ar"
                         ? "ØªÙ„Ø§ÙˆØ©"
                         : "Recite"}
@@ -2404,9 +2404,9 @@ export default function AudioPlayer() {
     );
   }
 
-  /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-     DESKTOP â€” floating music card
-  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+  /* ••••••••••••••••••••••••••••••••••••••••••
+     DESKTOP €” floating music card
+  •••••••••••••••••••••••••••••••••••••••••• */
   return (
     <>
       {/* Audio error banner */}
@@ -2603,7 +2603,7 @@ export default function AudioPlayer() {
               <div className={cn("flex items-center gap-2.5 p-2.5", playerSoftSurfaceClass)}>
                 <CoverArt isPlaying={isPlaying} />
                 <div className="min-w-0 flex-1">
-                  {/* Arabic surah name â€” prominent header */}
+                  {/* Arabic surah name €” prominent header */}
                   {currentArabicName && (
                     <div
                       className="mb-0.5 truncate text-[0.92rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-primary)_82%,#ffffff_18%)] drop-shadow-[0_1px_6px_rgba(var(--theme-primary-rgb),0.32)] [font-family:var(--font-quran,serif)] tracking-[0.01em]"
@@ -2621,7 +2621,7 @@ export default function AudioPlayer() {
                   >
                     {titleLabel ||
                       (lang === "fr"
-                        ? "PrÃªt Ã  lire"
+                        ? "Pràªt à  lire"
                         : lang === "ar"
                           ? "Ø¬Ø§Ù‡Ø²"
                           : "Ready")}
@@ -2632,7 +2632,7 @@ export default function AudioPlayer() {
                       "mt-0.5 truncate text-[0.61rem]",
                     )}
                   >
-                    {idleSubtitle || reciterLabel || "â€”"}
+                    {idleSubtitle || reciterLabel || "€”"}
                   </div>
                   {currentAyahPreview && (
                     <p
@@ -2652,7 +2652,7 @@ export default function AudioPlayer() {
                         "mt-0.5 inline-block rounded-full border px-1.5 py-px text-[0.55rem] font-bold tracking-wide",
                       )}
                     >
-                      Warsh âœ“
+                      Warsh œ“
                     </span>
                   )}
                   <AudioLoadingIndicator
@@ -2684,10 +2684,10 @@ export default function AudioPlayer() {
                     title={
                       karaokeFollow
                         ? lang === "fr"
-                          ? "Suivi ON â€” clic pour dÃ©sactiver"
+                          ? "Suivi ON €” clic pour désactiver"
                           : "Follow ON"
                         : lang === "fr"
-                          ? "Suivi OFF â€” clic pour activer"
+                          ? "Suivi OFF €” clic pour activer"
                           : "Follow OFF"
                     }
                     active={karaokeFollow}
@@ -2714,7 +2714,7 @@ export default function AudioPlayer() {
                     onClick={toggleMinimized}
                     title={
                       lang === "fr"
-                        ? "RÃ©duire"
+                        ? "Réduire"
                         : lang === "ar"
                           ? "ØªØµØºÙŠØ±"
                           : "Minimize"
@@ -2847,7 +2847,7 @@ export default function AudioPlayer() {
                 <i className="fas fa-sliders text-[0.55rem]" />
                 {expanded
                   ? lang === "fr"
-                    ? "RÃ©duire"
+                    ? "Réduire"
                     : lang === "ar"
                       ? "Ø¥ØºÙ„Ø§Ù‚"
                       : "Collapse"
@@ -2876,14 +2876,14 @@ export default function AudioPlayer() {
                         onClick={toggle}
                         title={
                           lang === "fr"
-                            ? "RÃ©essayer"
+                            ? "Réessayer"
                             : lang === "ar"
                               ? "Ø¥Ø¹Ø§Ø¯Ø© Ø§Ù„Ù…Ø­Ø§ÙˆÙ„Ø©"
                               : "Retry"
                         }
                       >
                         {lang === "fr"
-                          ? "RÃ©essayer"
+                          ? "Réessayer"
                           : lang === "ar"
                             ? "Ø¥Ø¹Ø§Ø¯Ø©"
                             : "Retry"}
@@ -2921,10 +2921,10 @@ export default function AudioPlayer() {
                           onChange={(e) => setReciterSearch(e.target.value)}
                           placeholder={
                             lang === "ar"
-                              ? "Ø¨Ø­Ø«â€¦"
+                              ? "Ø¨Ø­Ø«€¦"
                               : lang === "fr"
-                                ? "Rechercherâ€¦"
-                                : "Searchâ€¦"
+                                ? "Rechercher€¦"
+                                : "Search€¦"
                           }
                           className={playerSearchInputClass}
                         />
@@ -2951,7 +2951,7 @@ export default function AudioPlayer() {
                           )}
                         >
                           {lang === "fr"
-                            ? "Aucun rÃ©sultat"
+                            ? "Aucun résultat"
                             : lang === "ar"
                               ? "Ù„Ø§ Ù†ØªØ§Ø¦Ø¬"
                               : "No results"}
@@ -3088,7 +3088,7 @@ export default function AudioPlayer() {
                     </div>
                   )}
 
-                  {/* â”€â”€ Options avancÃ©es toggle â”€â”€ */}
+                  {/* ”€”€ Options avancées toggle ”€”€ */}
                   <button
                     onClick={() => setShowAdvanced((v) => !v)}
                     className={cn(
@@ -3112,7 +3112,7 @@ export default function AudioPlayer() {
                   </button>
                   {showAdvanced && (
                     <>
-                      {/* Suivre le verset rÃ©citÃ© */}
+                      {/* Suivre le verset récité */}
                       <button
                     onClick={() => set({ karaokeFollow: true })}
                         className={playerCardToggleClass(karaokeFollow)}
@@ -3122,7 +3122,7 @@ export default function AudioPlayer() {
                         <span className="flex items-center gap-2">
                           <i className="fas fa-crosshairs text-[0.6rem]" />
                           {lang === "fr"
-                            ? "Suivre le verset rÃ©citÃ©"
+                            ? "Suivre le verset récité"
                             : lang === "ar"
                               ? "ØªØªØ¨Ø¹ Ø§Ù„Ø¢ÙŠØ© Ø§Ù„Ù…Ù‚Ø±ÙˆØ¡Ø©"
                               : "Follow recited verse"}
@@ -3139,11 +3139,11 @@ export default function AudioPlayer() {
                         </span>
                       </button>
 
-                      {/* â”€â”€ A-B Repeat â”€â”€ */}
+                      {/* ”€”€ A-B Repeat ”€”€ */}
                       <div>
                         <div className={playerSectionLabelClass}>
                           {lang === "fr"
-                            ? "RÃ©pÃ©tition A-B"
+                            ? "Répétition A-B"
                             : lang === "ar"
                               ? "ØªÙƒØ±Ø§Ø± Ø£-Ø¨"
                               : "A-B Repeat"}
@@ -3154,7 +3154,7 @@ export default function AudioPlayer() {
                               mark: markAbA,
                               val: abA,
                               label: "A",
-                              titleFr: "Marquer dÃ©but A",
+                              titleFr: "Marquer début A",
                               titleEn: "Set A point",
                             },
                             {
@@ -3191,7 +3191,7 @@ export default function AudioPlayer() {
                         </div>
                       </div>
 
-                      {/* â”€â”€ Equalizer presets â”€â”€ */}
+                      {/* ”€”€ Equalizer presets ”€”€ */}
                       <div>
                         <div className={playerSectionLabelClass}>
                           {lang === "fr"
@@ -3245,7 +3245,7 @@ export default function AudioPlayer() {
                         </div>
                       </div>
 
-                      {/* â”€â”€ Tartil progressif â”€â”€ */}
+                      {/* ”€”€ Tartil progressif ”€”€ */}
                       <button
                         onClick={toggleTartil}
                         className={playerCardToggleClass(tartilMode)}
@@ -3271,7 +3271,7 @@ export default function AudioPlayer() {
                         </span>
                       </button>
 
-                      {/* â”€â”€ Mode rÃ©citation (Web Speech API) â”€â”€ */}
+                      {/* ”€”€ Mode récitation (Web Speech API) ”€”€ */}
                       <button
                         onClick={reciteMode ? stopRecite : startRecite}
                         className={cn(
@@ -3286,8 +3286,8 @@ export default function AudioPlayer() {
                           />
                           {lang === "fr"
                             ? reciteMode
-                              ? "ArrÃªter la rÃ©citation"
-                              : "Mode rÃ©citation"
+                              ? "Arràªter la récitation"
+                              : "Mode récitation"
                             : lang === "ar"
                               ? reciteMode
                                 ? "Ø¥ÙŠÙ‚Ø§Ù Ø§Ù„ØªÙ„Ø§ÙˆØ©"
@@ -3305,7 +3305,7 @@ export default function AudioPlayer() {
                                 : "text-[#fbbf24]",
                             )}
                           >
-                            {reciteResult === "ok" ? "âœ“" : "~"}
+                            {reciteResult === "ok" ? "œ“" : "~"}
                           </span>
                         )}
                       </button>
