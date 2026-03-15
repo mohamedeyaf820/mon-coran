@@ -5810,7 +5810,7 @@ select,
 /* Sous-titre discret sous le nom */
 .qc-hero-inner::before {
     display: block;
-    content: "ï·½";
+    content: "﷽";
     font-family: var(--font-quran), serif;
     font-size: 1.9rem;
     color: rgba(255, 255, 255, 0.55);
@@ -7669,7 +7669,7 @@ input[type="radio"]:checked {
 }
 
 input[type="checkbox"]:checked::after {
-    content: "âœ“";
+    content: "✓";
     color: white;
     font-size: 12px;
     font-weight: bold;
@@ -11627,7 +11627,7 @@ input:focus-visible {
         0 2px 8px rgba(0, 0, 0, 0.12);
 }
 .hp2-vod::before {
-    content: "ï·½";
+    content: "﷽";
     position: absolute;
     inset-inline-end: 0.8rem;
     top: 0.4rem;

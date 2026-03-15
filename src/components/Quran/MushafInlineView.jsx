@@ -162,14 +162,14 @@ export default function MushafInlineView({
   const hasTranslationPanel = showTranslation && translations?.length > 0;
 
   return (
-    <div className={`mp-frame${isQCF4 ? " mp-qcf4" : ""} relative overflow-hidden rounded-[30px] border border-white/12 bg-[linear-gradient(165deg,rgba(252,248,238,0.95)_0%,rgba(246,239,222,0.98)_100%)] shadow-[0_20px_38px_rgba(12,18,14,0.14)]`}>
+    <div className={`mp-frame${isQCF4 ? " mp-qcf4" : ""} relative overflow-hidden rounded-[30px] border border-[rgba(186,148,74,0.26)] bg-[linear-gradient(165deg,rgba(247,237,213,0.94)_0%,rgba(236,220,183,0.96)_100%)] shadow-[0_20px_38px_rgba(12,18,14,0.14)]`}>
       <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] bg-size-[60px_60px] opacity-[0.16]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(132,102,46,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(132,102,46,0.07)_1px,transparent_1px)] bg-size-[60px_60px] opacity-[0.12]"
         aria-hidden="true"
       />
       {/* ══════════════ CADRE EXTÉRIEUR ══════════════ */}
       <div className="mp-outer-border relative z-10">
-        <div className="mp-inner-border rounded-2xl border border-white/20 bg-white/42 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+        <div className="mp-inner-border rounded-2xl border border-[rgba(186,148,74,0.22)] bg-[rgba(240,226,190,0.2)] p-3">
           {/* ── En-tête sourate ── */}
           <div className="mp-header" dir="rtl">
             {/* Coin gauche: numéro juz */}
@@ -230,7 +230,7 @@ export default function MushafInlineView({
           )}
 
           <div
-            className={`mp-ayahs-flow ${mushafFontClass} rounded-2xl border border-white/12 bg-white/35 px-3 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]`}
+            className={`mp-ayahs-flow ${mushafFontClass} rounded-2xl border border-[rgba(184,146,72,0.22)] bg-[rgba(231,210,160,0.16)] px-3 py-4`}
             dir="rtl"
           >
             {/* Ayahs en flux inline */}

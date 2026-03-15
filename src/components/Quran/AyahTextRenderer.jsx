@@ -59,6 +59,13 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
     calibration,
   });
 
+  const lagWords = useMemo(() => {
+    if (!calibration) return 0;
+    return words.length >= 24
+      ? Number(calibration.lagWordsLong ?? 0)
+      : Number(calibration.lagWordsBase ?? 0);
+  }, [calibration, words.length]);
+
   // Reset highlighted word index when user seeks in audio
   useEffect(() => {
     lastIdxRef.current = 0;
@@ -73,12 +80,12 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
       }
       idx = i;
     }
-    // Pas de lag par mot : on se fie uniquement à l'offsetSec pour la précision
+    const adjustedIdx = Math.max(0, idx - Math.max(0, lagWords));
     const last = lastIdxRef.current;
-    const finalIdx = Math.max(last, idx);
+    const finalIdx = Math.max(last, adjustedIdx);
     lastIdxRef.current = finalIdx;
     return finalIdx;
-  }, [progress, wordWeights]);
+  }, [progress, wordWeights, lagWords]);
 
   if (words.length === 0) return <span>{text}</span>;
 

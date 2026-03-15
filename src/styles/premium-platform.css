@@ -550,6 +550,8 @@
   display: grid;
   gap: 0.42rem;
   padding: 0.42rem;
+  max-width: min(100%, 1040px);
+  margin-inline: auto;
   border-radius: calc(var(--app-radius-lg) - 0.05rem);
   border: 1px solid color-mix(in srgb, var(--theme-border-strong) 24%, transparent 76%);
   background:
@@ -631,8 +633,8 @@
   display: grid;
   gap: 0.1rem;
   align-content: start;
-  min-height: 2.52rem;
-  padding: 0.3rem;
+  min-height: 2.24rem;
+  padding: 0.24rem;
   border-radius: 0.62rem;
   border: 1px solid color-mix(in srgb, var(--theme-border) 54%, transparent 46%);
   background: color-mix(in srgb, var(--theme-panel-bg-strong) 84%, transparent 16%);
@@ -667,14 +669,14 @@
 }
 
 .ayah-action-card__icon {
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 0.98rem;
+  height: 0.98rem;
   display: grid;
   place-items: center;
   border-radius: 0.4rem;
   background: color-mix(in srgb, var(--theme-chip-bg) 78%, transparent 22%);
   color: var(--theme-primary);
-  font-size: 0.56rem;
+  font-size: 0.5rem;
 }
 
 .ayah-action-card--play .ayah-action-card__icon,
@@ -697,7 +699,7 @@
   z-index: 1;
   font-weight: 700;
   color: var(--theme-text);
-  font-size: 0.64rem;
+  font-size: 0.6rem;
   line-height: 1.08;
 }
 
@@ -705,7 +707,7 @@
   position: relative;
   z-index: 1;
   color: var(--theme-text-muted);
-  font-size: 0.5rem;
+  font-size: 0.46rem;
   line-height: 1.1;
 }
 
@@ -724,18 +726,18 @@
 }
 
 .ayah-actions__utility-btn {
-  min-height: 1.52rem;
+  min-height: 1.4rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.22rem;
-  padding: 0.24rem 0.46rem;
+  padding: 0.2rem 0.42rem;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--theme-border) 56%, transparent 44%);
   background: color-mix(in srgb, var(--theme-panel-bg-strong) 78%, transparent 22%);
   color: var(--theme-text-soft);
   font-weight: 600;
-  font-size: 0.66rem;
+  font-size: 0.62rem;
   line-height: 1;
 }
 
@@ -1641,6 +1643,7 @@
 .app-root.premium-plus .ayah-actions__surface {
   gap: 0.36rem;
   padding: 0.38rem;
+  max-width: min(100%, 1000px);
   border-radius: var(--pp-radius-md);
 }
 

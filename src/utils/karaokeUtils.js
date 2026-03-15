@@ -157,10 +157,10 @@ const KARAOKE_RECITER_OVERRIDES = {
       smoothing: 0.92,
     },
     abdulsamad: {
-      offsetSec: 0.15,
+      offsetSec: 0.12,
       lagWordsBase: 0,
-      lagWordsLong: 0,
-      smoothing: 0.9,
+      lagWordsLong: 1,
+      smoothing: 0.88,
     },
     // Saad Al-Ghamdi: energetic, faster murattal
     "ar.maaboralmeem": {

@@ -70,7 +70,7 @@ const EXPERIENCE_PILLS = [
   },
   {
     icon: "fa-repeat",
-    fr: "Memorisation",
+    fr: "Mémorisation",
     en: "Memorization",
     ar: "\u0645\u0631\u0627\u062C\u0639\u0629",
   },
@@ -291,7 +291,7 @@ export default function Footer({ goSurah }) {
                 </span>
                 <span className="text-sm text-[var(--theme-muted,var(--text-tertiary))]">
                   {t({
-                    fr: "Lecture claire, ecoute fluide, memorisation guidee",
+                    fr: "Lecture claire, écoute fluide, mémorisation guidée",
                     en: "Clear reading, smooth listening, guided memorization",
                     ar: "\u0642\u0631\u0627\u0621\u0629 \u0648\u0627\u0636\u062D\u0629 \u0648\u0627\u0633\u062A\u0645\u0627\u0639 \u0633\u0644\u0633 \u0648\u0645\u0631\u0627\u062C\u0639\u0629 \u0645\u0648\u062C\u0647\u0629",
                   })}

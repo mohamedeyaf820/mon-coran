@@ -148,12 +148,12 @@ export default function AyahActions({ surah, ayah, ayahData }) {
       nextLevel > 0 ? "success" : "info",
       nextLevel > 0
         ? toastText(
-            `Niveau de memorisation ${nextLevel}/5`,
+            `Niveau de mémorisation ${nextLevel}/5`,
             `مستوى الحفظ ${nextLevel}/5`,
             `Memorization level ${nextLevel}/5`,
           )
         : toastText(
-            "Progression de memorisation remise a zero",
+            "Progression de mémorisation remise à zéro",
             "تمت إعادة مستوى الحفظ",
             "Memorization progress reset",
           ),

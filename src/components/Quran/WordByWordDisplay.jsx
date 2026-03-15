@@ -88,6 +88,12 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
     calibration,
   });
 
+  const lagWords = useMemo(() => {
+    return words.length >= 24
+      ? Number(calibration?.lagWordsLong ?? 0)
+      : Number(calibration?.lagWordsBase ?? 0);
+  }, [calibration, words.length]);
+
   /* ── Proportional word weights (same algorithm as HafsKaraokeText) ── */
   const wordWeights = useMemo(() => {
     if (words.length === 0) return [];
@@ -146,11 +152,12 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
       idx = i;
     }
 
+    const adjustedIdx = Math.max(0, idx - Math.max(0, lagWords));
     // Monotone guard: never move backward unless seek was detected
-    const finalIdx = Math.max(lastIdxRef.current, idx);
+    const finalIdx = Math.max(lastIdxRef.current, adjustedIdx);
     lastIdxRef.current = finalIdx;
     return finalIdx;
-  }, [isPlaying, progress, wordWeights, words.length]);
+  }, [isPlaying, progress, wordWeights, words.length, lagWords]);
 
   /* ── Word click: play individual word audio ── */
   const handleWordClick = useCallback((word, index) => {

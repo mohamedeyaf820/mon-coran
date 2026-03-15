@@ -1040,7 +1040,7 @@
 }
 
 .hdr__nav-shell {
-    padding: 0.22rem;
+    padding: 0.16rem;
 }
 
 .hdr__nav--active {
@@ -1051,9 +1051,9 @@
 }
 
 .hdr__nav-arrow {
-    width: 2.6rem;
-    height: 2.6rem;
-    border-radius: 0.92rem;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 0.78rem;
     background: rgba(255, 255, 255, 0.45);
     border: 1px solid rgba(var(--primary-rgb), 0.12);
     color: var(--text-secondary, var(--text-muted));
@@ -1072,31 +1072,31 @@
     max-width: none;
     gap: 0.16rem;
     align-items: flex-start;
-    padding: 0.55rem 0.9rem 0.62rem;
-    border-radius: 0.96rem;
+    padding: 0.38rem 0.68rem 0.42rem;
+    border-radius: 0.8rem;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.16) 100%);
     border: 1px solid rgba(var(--primary-rgb), 0.08);
 }
 
 .hdr__nav-center::after {
-    left: 0.9rem;
+    left: 0.78rem;
     transform: none;
     width: calc(var(--reading-progress, 0) * 88%);
     max-width: 110px;
-    bottom: 6px;
+    bottom: 5px;
 }
 
 .hdr__nav-title {
     max-width: 100%;
-    font-size: 1rem;
+    font-size: 0.86rem;
 }
 
 .hdr__nav-sub {
     flex-wrap: wrap;
     justify-content: flex-start;
     gap: 0.3rem;
-    font-size: 0.64rem;
+    font-size: 0.56rem;
     line-height: 1.2;
 }
 
@@ -1122,9 +1122,9 @@
 }
 
 .hdr__btn {
-    width: 2.55rem;
-    height: 2.55rem;
-    border-radius: 0.92rem;
+    width: 2.34rem;
+    height: 2.34rem;
+    border-radius: 0.84rem;
     background: rgba(255, 255, 255, 0.44);
     border: 1px solid rgba(var(--primary-rgb), 0.12);
     color: var(--text-secondary);
@@ -1180,9 +1180,10 @@
 }
 
 .hdr__btn-duas {
-    height: 2.55rem;
-    padding: 0.42rem 0.98rem;
-    border-radius: 0.95rem;
+    height: 2.34rem;
+    min-height: 2.34rem;
+    padding: 0.34rem 0.84rem;
+    border-radius: 0.84rem;
     border: 1px solid rgba(var(--primary-rgb), 0.18);
     background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.18) 0%, rgba(var(--primary-rgb), 0.1) 100%);
     box-shadow:
@@ -1199,15 +1200,19 @@
 }
 
 .hdr__riwaya-toggle {
-    padding: 3px;
+    min-height: 2.34rem;
+    padding: 2px;
     background: rgba(255, 255, 255, 0.4);
     border-color: rgba(var(--primary-rgb), 0.14);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .hdr__riwaya-btn {
-    min-width: 2.65rem;
-    padding: 0.32rem 0.72rem;
+    min-width: 2.95rem;
+    min-height: 1.88rem;
+    padding: 0.3rem 0.66rem;
+    font-size: 0.76rem;
+    letter-spacing: 0.03em;
 }
 
 .hdr .network-status {
@@ -1633,9 +1638,9 @@
 
 .hdr.hdr--themes4 .hdr__nav-arrow,
 .hdr.hdr--themes4 .hdr__btn {
-    width: 2.42rem !important;
-    height: 2.42rem !important;
-    border-radius: 0.78rem !important;
+    width: 2.22rem !important;
+    height: 2.22rem !important;
+    border-radius: 0.72rem !important;
 }
 
 .hdr.hdr--themes4 .hdr__btn--search {
@@ -1643,8 +1648,8 @@
 }
 
 .hdr.hdr--themes4 .hdr__nav-center {
-    padding: 0.48rem 0.76rem 0.54rem !important;
-    border-radius: 0.78rem !important;
+    padding: 0.38rem 0.68rem 0.42rem !important;
+    border-radius: 0.72rem !important;
     align-items: flex-start !important;
 }
 
@@ -1657,11 +1662,11 @@
 }
 
 .hdr.hdr--themes4 .hdr__nav-title {
-    font-size: 0.98rem !important;
+    font-size: 0.86rem !important;
 }
 
 .hdr.hdr--themes4 .hdr__nav-sub {
-    font-size: 0.64rem !important;
+    font-size: 0.56rem !important;
 }
 
 .hdr.hdr--themes4 .hdr__btn--menu-main,
@@ -1803,7 +1808,7 @@
 
 .app-root.premium-plus .hdr.hdr--premium-plus .hdr__btn,
 .app-root.premium-plus .hdr.hdr--premium-plus .hdr__btn-duas {
-    min-height: 2.48rem !important;
+    min-height: 2.28rem !important;
 }
 
 .app-root.premium-plus .hdr.hdr--premium-plus .hdr__btn:hover,
@@ -1832,7 +1837,7 @@
 
 .app-root.premium-plus .hdr.hdr--premium-plus .hdr__nav-shell,
 .app-root.premium-plus .hdr.hdr--premium-plus .hdr__home-panel {
-    border-radius: 1.06rem;
+    border-radius: 0.92rem;
     border: 1px solid color-mix(in srgb, var(--theme-border) 54%, transparent 46%);
     background:
         linear-gradient(
@@ -1844,8 +1849,8 @@
 }
 
 .app-root.premium-plus .hdr.hdr--premium-plus .hdr__nav-center {
-    min-height: 2.64rem !important;
-    padding-inline: 0.82rem !important;
+    min-height: 2.32rem !important;
+    padding-inline: 0.72rem !important;
 }
 
 .app-root.premium-plus .hdr.hdr--premium-plus .hdr__nav-kicker,
@@ -1905,11 +1910,11 @@
 
     .app-root.premium-plus .hdr.hdr--premium-plus .hdr__btn,
     .app-root.premium-plus .hdr.hdr--premium-plus .hdr__btn-duas {
-        min-height: 2.32rem !important;
+        min-height: 2.16rem !important;
     }
 
     .app-root.premium-plus .hdr.hdr--premium-plus .hdr__nav-center {
-        min-height: 2.48rem !important;
+        min-height: 2.24rem !important;
     }
 }
 
@@ -1945,7 +1950,7 @@
 
     .app-root.premium-plus .hdr.hdr--premium-plus .hdr__btn,
     .app-root.premium-plus .hdr.hdr--premium-plus .hdr__btn-duas {
-        min-height: 2.14rem !important;
+        min-height: 2.02rem !important;
     }
 
     .app-root.premium-plus .hdr.hdr--premium-plus .hdr__riwaya-btn {

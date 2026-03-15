@@ -166,10 +166,10 @@ export default function CleanPageView({
   return (
     <div
       ref={containerRef}
-      className={`cpv-container${isQCF4 ? " cpv-qcf4" : ""} relative overflow-hidden rounded-[26px] border border-white/10 bg-[linear-gradient(160deg,rgba(250,247,238,0.96),rgba(245,239,224,0.98))] p-4 shadow-[0_16px_36px_rgba(11,20,15,0.12)]`}
+      className={`cpv-container${isQCF4 ? " cpv-qcf4" : ""} relative overflow-hidden rounded-[26px] border border-[rgba(186,148,74,0.24)] bg-[linear-gradient(160deg,rgba(246,236,211,0.95),rgba(236,221,186,0.96))] p-4 shadow-[0_16px_36px_rgba(11,20,15,0.12)]`}
     >
       <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.1)_1px,transparent_1px)] bg-size-[56px_56px] opacity-[0.22]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(132,102,46,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(132,102,46,0.07)_1px,transparent_1px)] bg-size-[56px_56px] opacity-[0.14]"
         aria-hidden="true"
       />
       {/* Surah title header */}
@@ -196,7 +196,7 @@ export default function CleanPageView({
 
       {/* Flowing text block — all verses inline */}
       <div
-        className={`cpv-flow${isQCF4 ? " qcf4-container" : ""} ${flowFontClass} relative z-10 rounded-2xl border border-white/10 bg-white/35 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)]`}
+        className={`cpv-flow${isQCF4 ? " qcf4-container" : ""} ${flowFontClass} relative z-10 rounded-2xl border border-[rgba(184,146,72,0.22)] bg-[rgba(231,210,160,0.16)] p-4`}
         dir="rtl"
         lang="ar"
       >
@@ -258,7 +258,7 @@ export default function CleanPageView({
       {/* ── Translations panel — numbered list below the Arabic flow ── */}
       {showTranslation && getTranslation && ayahs.length > 0 && (
         <div
-          className="cpv-trans-panel mt-4 rounded-2xl border border-white/12 bg-white/55 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]"
+          className="cpv-trans-panel mt-4 rounded-2xl border border-[rgba(186,148,74,0.24)] bg-[rgba(236,218,177,0.2)] p-3"
           dir={lang === "ar" ? "rtl" : "ltr"}
           aria-label={lang === "ar" ? "الترجمة" : lang === "fr" ? "Traductions" : "Translations"}
         >

@@ -2677,29 +2677,33 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
-    margin: 0.5rem 0 0.75rem;
+    gap: 0.35rem;
+    margin: 0.4rem 0 0.65rem;
     flex-wrap: wrap;
-    padding: 0 0.5rem;
+    padding: 0 0.35rem;
 }
 
 .mushaf-layout-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.4rem 1rem;
-    font-size: 0.8rem;
-    font-weight: 600;
+    gap: 0.42rem;
+    padding: 0.34rem 0.88rem;
+    font-size: 0.75rem;
+    font-weight: 650;
     border-radius: var(--r-pill);
-    border: 2px solid var(--border);
-    background: var(--bg-secondary);
-    color: var(--text-secondary);
+    border: 1.5px solid var(--border);
+    background: linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--bg-secondary) 88%, #ffffff 12%),
+        color-mix(in srgb, var(--bg-secondary) 94%, #000000 6%)
+    );
+    color: color-mix(in srgb, var(--text-secondary) 92%, var(--text-primary) 8%);
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: var(--font-ui);
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
     white-space: nowrap;
-    min-height: 40px;
+    min-height: 35px;
     position: relative;
 }
 
@@ -2718,9 +2722,9 @@
     color: #fff;
     border-color: var(--primary);
     box-shadow:
-        0 4px 12px rgba(var(--primary-rgb), 0.4),
-        0 0 0 3px rgba(var(--primary-rgb), 0.1);
-    transform: translateY(-1px);
+        0 6px 14px rgba(var(--primary-rgb), 0.34),
+        0 0 0 2px rgba(var(--primary-rgb), 0.12);
+    transform: translateY(-0.5px);
     font-weight: 700;
 }
 
@@ -2760,7 +2764,7 @@
 }
 
 .mushaf-layout-btn i {
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     opacity: 0.85;
     transition: transform 0.3s ease;
 }
@@ -2789,16 +2793,16 @@
         flex-wrap: nowrap;
         scrollbar-width: none;
         -ms-overflow-style: none;
-        padding: 0.25rem 0.5rem;
-        margin: 0.4rem 0 0.6rem;
+        padding: 0.2rem 0.38rem;
+        margin: 0.32rem 0 0.5rem;
     }
     .mushaf-layout-toggle-bar::-webkit-scrollbar {
         display: none;
     }
     .mushaf-layout-btn {
-        padding: 0.28rem 0.65rem;
-        font-size: 0.72rem;
-        min-height: 34px;
+        padding: 0.24rem 0.58rem;
+        font-size: 0.69rem;
+        min-height: 32px;
         flex-shrink: 0;
     }
 }
@@ -5262,14 +5266,14 @@
 .quran-display--platform .quran-nav,
 .quran-display--platform .page-header-bar,
 .quran-display--platform .chunk-nav-bar {
-    padding: 0.9rem 1.05rem;
+    padding: 0.74rem 0.92rem;
 }
 
 .quran-display--platform .page-header-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.9rem;
+    gap: 0.62rem;
 }
 
 .quran-display--platform .page-header-bar > span:first-child {
@@ -5278,6 +5282,7 @@
     gap: 0.45rem;
     min-width: 0;
     font-weight: 700;
+    font-size: 0.9rem;
     color: var(--text-primary);
 }
 
@@ -5290,13 +5295,13 @@
     align-items: center;
     gap: 0.35rem;
     flex-shrink: 0;
-    min-height: 2rem;
-    padding: 0.28rem 0.72rem;
+    min-height: 1.78rem;
+    padding: 0.22rem 0.6rem;
     border-radius: 999px;
     border: 1px solid rgba(var(--primary-rgb), 0.22);
     background: rgba(var(--primary-rgb), 0.1);
     color: var(--primary);
-    font-size: 0.72rem;
+    font-size: 0.66rem;
     font-weight: 800;
     letter-spacing: 0.04em;
 }
@@ -5312,14 +5317,14 @@
 }
 
 .quran-display--platform .mushaf-layout-toggle-bar {
-    gap: 0.5rem;
-    padding: 0.42rem;
+    gap: 0.36rem;
+    padding: 0.3rem;
 }
 
 .quran-display--platform .mushaf-layout-btn {
-    min-height: 2.9rem;
-    padding-inline: 1rem;
-    border-radius: 1rem;
+    min-height: 2.45rem;
+    padding-inline: 0.78rem;
+    border-radius: 0.88rem;
     border-color: transparent;
     font-weight: 700;
     letter-spacing: -0.01em;

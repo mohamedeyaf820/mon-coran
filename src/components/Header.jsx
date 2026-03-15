@@ -199,7 +199,7 @@ export default function Header() {
     ar: "عد إلى قراءتك بوضوح",
   });
   const homeSubtitle = tr({
-    fr: "Navigation rapide, ecoute guidee et memorisation apaisee.",
+    fr: "Navigation rapide, écoute guidée et mémorisation apaisée.",
     en: "Quick navigation, guided listening and calmer memorization.",
     ar: "تنقل سريع واستماع موجّه ومراجعة أكثر هدوءا.",
   });
@@ -432,10 +432,10 @@ export default function Header() {
                   riwaya === "hafs" && "hdr__riwaya-btn--active",
                 )}
                 onClick={() => set({ riwaya: "hafs" })}
-                title="Riwāya Ḥafs"
+                title="Riwāya HAFS"
                 aria-pressed={riwaya === "hafs"}
               >
-                حفص
+                HAFS
               </button>
               <button
                 className={cn(
@@ -443,10 +443,10 @@ export default function Header() {
                   riwaya === "warsh" && "hdr__riwaya-btn--active",
                 )}
                 onClick={() => set({ riwaya: "warsh" })}
-                title="Riwāya Warsh"
+                title="Riwāya WARSH"
                 aria-pressed={riwaya === "warsh"}
               >
-                ورش
+                WARSH
               </button>
             </div>
           </div>

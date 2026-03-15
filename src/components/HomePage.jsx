@@ -1,6 +1,4 @@
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   HomePage â€” Design Ã©purÃ©, inspirÃ© de Quran.com
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* HomePage - Design epure, inspire de Quran.com */
 import React, {
   memo,
   startTransition,
@@ -58,7 +56,7 @@ function runWhenIdle(callback, timeout = 160) {
   return () => window.clearTimeout(timeoutId);
 }
 
-/* â”€â”€â”€ Sourates d'accÃ¨s rapide â”€â”€â”€ */
+/* Sourates d'acces rapide */
 const QUICK_ACCESS = [
   { n: 1, icon: "fa-mosque", label_fr: "Al-Fatiha", label_en: "The Opening" },
   { n: 18, icon: "fa-mountain-sun", label_fr: "Al-Kahf", label_en: "The Cave" },
@@ -75,172 +73,48 @@ const QUICK_ACCESS = [
   { n: 114, icon: "fa-shield-halved", label_fr: "An-Nas", label_en: "Mankind" },
 ];
 
-/* â”€â”€â”€ Versets du jour â€” cycle de 30 jours â”€â”€â”€ */
+/* Versets du jour - cycle de 30 jours */
 const DAILY_VERSES = [
   {
-    text: "Ø¥ÙÙ†ÙŽÙ‘ Ù…ÙŽØ¹ÙŽ Ø§Ù„Ù’Ø¹ÙØ³Ù’Ø±Ù ÙŠÙØ³Ù’Ø±Ù‹Ø§",
-    ref: "Al-Inshirah Â· 94:6",
-    trans_fr: "Certes, avec la difficultÃ© vient la facilitÃ©",
+    text: "إن مع العسر يسرا",
+    ref: "Al-Inshirah  94:6",
+    trans_fr: "Certes, avec la difficulté vient la facilité",
   },
   {
-    text: "ÙˆÙŽÙ…ÙŽÙ† ÙŠÙŽØªÙŽÙ‘Ù‚Ù Ø§Ù„Ù„ÙŽÙ‘Ù‡ÙŽ ÙŠÙŽØ¬Ù’Ø¹ÙŽÙ„ Ù„ÙŽÙ‘Ù‡Ù Ù…ÙŽØ®Ù’Ø±ÙŽØ¬Ù‹Ø§",
-    ref: "At-Talaq Â· 65:2",
+    text: "ومن يتق الله يجعل له مخرجا",
+    ref: "At-Talaq  65:2",
     trans_fr: "Qui craint Allah, Il lui accordera une issue",
   },
   {
-    text: "ÙˆÙŽØ§Ù„Ù„ÙŽÙ‘Ù‡Ù ÙŠÙØ­ÙØ¨ÙÙ‘ Ø§Ù„ØµÙŽÙ‘Ø§Ø¨ÙØ±ÙÙŠÙ†ÙŽ",
-    ref: "Ã‚l-ImrÃ¢n Â· 3:146",
-    trans_fr: "Allah aime ceux qui font preuve de patience",
+    text: "ألا بذكر الله تطمئن القلوب",
+    ref: "Ar-Ra'd  13:28",
+    trans_fr: "C'est par le rappel d'Allah que les coeurs trouvent la quiétude",
   },
   {
-    text: "Ø£ÙŽÙ„ÙŽØ§ Ø¨ÙØ°ÙÙƒÙ’Ø±Ù Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù ØªÙŽØ·Ù’Ù…ÙŽØ¦ÙÙ†ÙÙ‘ Ø§Ù„Ù’Ù‚ÙÙ„ÙÙˆØ¨Ù",
-    ref: "Ar-Ra'd Â· 13:28",
-    trans_fr: "C'est par le rappel d'Allah que les cÅ“urs trouvent la quiÃ©tude",
-  },
-  {
-    text: "ÙˆÙŽØªÙŽÙˆÙŽÙƒÙŽÙ‘Ù„Ù’ Ø¹ÙŽÙ„ÙŽÙ‰ Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù Ûš ÙˆÙŽÙƒÙŽÙÙŽÙ‰Ù° Ø¨ÙØ§Ù„Ù„ÙŽÙ‘Ù‡Ù ÙˆÙŽÙƒÙÙŠÙ„Ù‹Ø§",
-    ref: "Al-Ahzab Â· 33:3",
-    trans_fr: "Confie-toi Ã  Allah â€” Il suffit comme garant",
-  },
-  {
-    text: "ÙˆÙŽÙ‚ÙÙ„ Ø±ÙŽÙ‘Ø¨ÙÙ‘ Ø²ÙØ¯Ù’Ù†ÙÙŠ Ø¹ÙÙ„Ù’Ù…Ù‹Ø§",
-    ref: "Ta-Ha Â· 20:114",
-    trans_fr: "Dis : Seigneur, accroÃ®s mes connaissances",
-  },
-  {
-    text: "Ø¥ÙÙ†ÙŽÙ‘ Ø§Ù„Ù„ÙŽÙ‘Ù‡ÙŽ Ù…ÙŽØ¹ÙŽ Ø§Ù„ØµÙŽÙ‘Ø§Ø¨ÙØ±ÙÙŠÙ†ÙŽ",
-    ref: "Al-Baqara Â· 2:153",
+    text: "إن الله مع الصابرين",
+    ref: "Al-Baqara  2:153",
     trans_fr: "Certes, Allah est avec ceux qui endurent",
   },
   {
-    text: "ÙˆÙŽÙ‡ÙÙˆÙŽ Ù…ÙŽØ¹ÙŽÙƒÙÙ…Ù’ Ø£ÙŽÙŠÙ’Ù†ÙŽ Ù…ÙŽØ§ ÙƒÙÙ†ØªÙÙ…Ù’",
-    ref: "Al-Hadid Â· 57:4",
-    trans_fr: "Il est avec vous oÃ¹ que vous soyez",
+    text: "إن الله لطيف بعباده",
+    ref: "Ash-Shura  42:19",
+    trans_fr: "Allah est plein de mansuétude envers Ses serviteurs",
   },
   {
-    text: "ÙˆÙŽØ¹ÙŽØ³ÙŽÙ‰Ù° Ø£ÙŽÙ† ØªÙŽÙƒÙ’Ø±ÙŽÙ‡ÙÙˆØ§ Ø´ÙŽÙŠÙ’Ø¦Ù‹Ø§ ÙˆÙŽÙ‡ÙÙˆÙŽ Ø®ÙŽÙŠÙ’Ø±ÙŒ Ù„ÙŽÙ‘ÙƒÙÙ…Ù’",
-    ref: "Al-Baqara Â· 2:216",
-    trans_fr: "Il se peut que vous dÃ©testiez une chose qui est bonne pour vous",
-  },
-  {
-    text: "Ø¥ÙÙ†ÙŽÙ‘ Ø±ÙŽØ­Ù’Ù…ÙŽØªÙŽ Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù Ù‚ÙŽØ±ÙÙŠØ¨ÙŒ Ù…ÙÙ‘Ù†ÙŽ Ø§Ù„Ù’Ù…ÙØ­Ù’Ø³ÙÙ†ÙÙŠÙ†ÙŽ",
-    ref: "Al-A'raf Â· 7:56",
-    trans_fr: "La misÃ©ricorde d'Allah est proche des bienfaisants",
-  },
-  {
-    text: "ÙˆÙŽÙ„ÙŽØ§ ØªÙŽÙŠÙ’Ø£ÙŽØ³ÙÙˆØ§ Ù…ÙÙ† Ø±ÙŽÙ‘ÙˆÙ’Ø­Ù Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù",
-    ref: "Yusuf Â· 12:87",
-    trans_fr: "Ne dÃ©sespÃ©rez jamais de la grÃ¢ce d'Allah",
-  },
-  {
-    text: "ÙÙŽÙÙØ±ÙÙ‘ÙˆØ§ Ø¥ÙÙ„ÙŽÙ‰ Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù",
-    ref: "Adh-Dhariyat Â· 51:50",
-    trans_fr: "Fuyez donc vers Allah",
-  },
-  {
-    text: "Ø±ÙŽØ¨ÙŽÙ‘Ù†ÙŽØ§ Ø¢ØªÙÙ†ÙŽØ§ ÙÙÙŠ Ø§Ù„Ø¯ÙÙ‘Ù†Ù’ÙŠÙŽØ§ Ø­ÙŽØ³ÙŽÙ†ÙŽØ©Ù‹ ÙˆÙŽÙÙÙŠ Ø§Ù„Ù’Ø¢Ø®ÙØ±ÙŽØ©Ù Ø­ÙŽØ³ÙŽÙ†ÙŽØ©Ù‹",
-    ref: "Al-Baqara Â· 2:201",
-    trans_fr:
-      "Notre Seigneur, accorde-nous ce qui est bon ici-bas et dans l'au-delÃ ",
-  },
-  {
-    text: "ÙˆÙŽÙ…ÙŽÙ† ÙŠÙŽØªÙŽÙˆÙŽÙƒÙŽÙ‘Ù„Ù’ Ø¹ÙŽÙ„ÙŽÙ‰ Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù ÙÙŽÙ‡ÙÙˆÙŽ Ø­ÙŽØ³Ù’Ø¨ÙÙ‡Ù",
-    ref: "At-Talaq Â· 65:3",
-    trans_fr: "Celui qui se confie en Allah, Il lui suffit",
-  },
-  {
-    text: "Ø¥ÙÙ†ÙŽÙ‘ Ø§Ù„Ù„ÙŽÙ‘Ù‡ÙŽ Ù„ÙŽØ·ÙÙŠÙÙŒ Ø¨ÙØ¹ÙØ¨ÙŽØ§Ø¯ÙÙ‡Ù",
-    ref: "Ash-Shura Â· 42:19",
-    trans_fr: "Allah est plein de mansuÃ©tude envers Ses serviteurs",
-  },
-  {
-    text: "ÙˆÙŽØ§Ù„Ù„ÙŽÙ‘Ù‡Ù ÙŠÙŽØ¹Ù’Ù„ÙŽÙ…Ù ÙˆÙŽØ£ÙŽÙ†ØªÙÙ…Ù’ Ù„ÙŽØ§ ØªÙŽØ¹Ù’Ù„ÙŽÙ…ÙÙˆÙ†ÙŽ",
-    ref: "Al-Baqara Â· 2:232",
-    trans_fr: "Allah sait et vous ne savez pas",
-  },
-  {
-    text: "ÙˆÙŽÙ…ÙŽØ§ Ø¹ÙÙ†Ø¯ÙŽ Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù Ø®ÙŽÙŠÙ’Ø±ÙŒ ÙˆÙŽØ£ÙŽØ¨Ù’Ù‚ÙŽÙ‰Ù°",
-    ref: "Ash-Shura Â· 42:36",
-    trans_fr: "Ce qui est auprÃ¨s d'Allah est meilleur et plus durable",
-  },
-  {
-    text: "Ø±ÙŽØ¨ÙÙ‘ Ø¥ÙÙ†ÙÙ‘ÙŠ Ù„ÙÙ…ÙŽØ§ Ø£ÙŽÙ†Ø²ÙŽÙ„Ù’ØªÙŽ Ø¥ÙÙ„ÙŽÙŠÙŽÙ‘ Ù…ÙÙ†Ù’ Ø®ÙŽÙŠÙ’Ø±Ù ÙÙŽÙ‚ÙÙŠØ±ÙŒ",
-    ref: "Al-Qasas Â· 28:24",
-    trans_fr:
-      "Seigneur, j'ai grand besoin du bien que Tu fais descendre sur moi",
-  },
-  {
-    text: "ÙˆÙŽØ°ÙŽÙƒÙÙ‘Ø±Ù’ ÙÙŽØ¥ÙÙ†ÙŽÙ‘ Ø§Ù„Ø°ÙÙ‘ÙƒÙ’Ø±ÙŽÙ‰Ù° ØªÙŽÙ†ÙÙŽØ¹Ù Ø§Ù„Ù’Ù…ÙØ¤Ù’Ù…ÙÙ†ÙÙŠÙ†ÙŽ",
-    ref: "Adh-Dhariyat Â· 51:55",
-    trans_fr: "Rappelle, car le rappel profite aux croyants",
-  },
-  {
-    text: "ÙÙŽØ¥ÙÙ†ÙŽÙ‘ Ù…ÙŽØ¹ÙŽ Ø§Ù„Ù’Ø¹ÙØ³Ù’Ø±Ù ÙŠÙØ³Ù’Ø±Ù‹Ø§",
-    ref: "Al-Inshirah Â· 94:5",
-    trans_fr: "En vÃ©ritÃ©, avec la difficultÃ© vient la facilitÃ©",
-  },
-  {
-    text: "Ø¥ÙÙ† ØªÙŽÙ†ØµÙØ±ÙÙˆØ§ Ø§Ù„Ù„ÙŽÙ‘Ù‡ÙŽ ÙŠÙŽÙ†ØµÙØ±Ù’ÙƒÙÙ…Ù’",
-    ref: "Muhammad Â· 47:7",
-    trans_fr:
-      "Si vous dÃ©fendez la cause d'Allah, Il vous accordera Sa victoire",
-  },
-  {
-    text: "ÙˆÙŽØªÙŽØ²ÙŽÙˆÙŽÙ‘Ø¯ÙÙˆØ§ ÙÙŽØ¥ÙÙ†ÙŽÙ‘ Ø®ÙŽÙŠÙ’Ø±ÙŽ Ø§Ù„Ø²ÙŽÙ‘Ø§Ø¯Ù Ø§Ù„ØªÙŽÙ‘Ù‚Ù’ÙˆÙŽÙ‰Ù°",
-    ref: "Al-Baqara Â· 2:197",
-    trans_fr: "Prenez des provisions â€” la meilleure provision est la piÃ©tÃ©",
-  },
-  {
-    text: "ÙˆÙŽØ§ØªÙŽÙ‘Ù‚ÙÙˆØ§ Ø§Ù„Ù„ÙŽÙ‘Ù‡ÙŽ ÙˆÙŽÙŠÙØ¹ÙŽÙ„ÙÙ‘Ù…ÙÙƒÙÙ…Ù Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù",
-    ref: "Al-Baqara Â· 2:282",
-    trans_fr: "Craignez Allah, et Allah vous enseignera",
-  },
-  {
-    text: "Ø§Ù„ÙŽÙ‘Ø°ÙÙŠÙ†ÙŽ ÙŠÙŽØ°Ù’ÙƒÙØ±ÙÙˆÙ†ÙŽ Ø§Ù„Ù„ÙŽÙ‘Ù‡ÙŽ Ù‚ÙÙŠÙŽØ§Ù…Ù‹Ø§ ÙˆÙŽÙ‚ÙØ¹ÙÙˆØ¯Ù‹Ø§ ÙˆÙŽØ¹ÙŽÙ„ÙŽÙ‰Ù° Ø¬ÙÙ†ÙÙˆØ¨ÙÙ‡ÙÙ…Ù’",
-    ref: "Ã‚l-ImrÃ¢n Â· 3:191",
-    trans_fr: "Ceux qui invoquent Allah debout, assis et couchÃ©s sur le cÃ´tÃ©",
-  },
-  {
-    text: "ÙˆÙŽØ§Ù„Ø³ÙŽÙ‘Ù„ÙŽØ§Ù…Ù Ø¹ÙŽÙ„ÙŽÙ‰Ù° Ù…ÙŽÙ†Ù Ø§ØªÙŽÙ‘Ø¨ÙŽØ¹ÙŽ Ø§Ù„Ù’Ù‡ÙØ¯ÙŽÙ‰Ù°",
-    ref: "Ta-Ha Â· 20:47",
-    trans_fr: "Et la paix soit sur celui qui suit le droit chemin",
-  },
-  {
-    text: "Ø³ÙŽÙ†ÙØ±ÙÙŠÙ‡ÙÙ…Ù’ Ø¢ÙŠÙŽØ§ØªÙÙ†ÙŽØ§ ÙÙÙŠ Ø§Ù„Ù’Ø¢ÙÙŽØ§Ù‚Ù ÙˆÙŽÙÙÙŠ Ø£ÙŽÙ†ÙÙØ³ÙÙ‡ÙÙ…Ù’",
-    ref: "Fussilat Â· 41:53",
-    trans_fr: "Nous leur montrerons Nos signes dans l'univers et en eux-mÃªmes",
-  },
-  {
-    text: "ÙˆÙŽÙ„ÙŽÙ‚ÙŽØ¯Ù’ ÙŠÙŽØ³ÙŽÙ‘Ø±Ù’Ù†ÙŽØ§ Ø§Ù„Ù’Ù‚ÙØ±Ù’Ø¢Ù†ÙŽ Ù„ÙÙ„Ø°ÙÙ‘ÙƒÙ’Ø±Ù ÙÙŽÙ‡ÙŽÙ„Ù’ Ù…ÙÙ† Ù…ÙÙ‘Ø¯ÙŽÙ‘ÙƒÙØ±Ù",
-    ref: "Al-Qamar Â· 54:17",
-    trans_fr:
-      "Nous avons facilitÃ© le Coran â€” y a-t-il des gens pour rÃ©flÃ©chir ?",
-  },
-  {
-    text: "Ù‚ÙÙ„Ù’ Ù‡ÙÙˆÙŽ Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù Ø£ÙŽØ­ÙŽØ¯ÙŒ",
-    ref: "Al-Ikhlas Â· 112:1",
+    text: "قل هو الله أحد",
+    ref: "Al-Ikhlas  112:1",
     trans_fr: "Dis : Il est Allah, Unique",
-  },
-  {
-    text: "ÙˆÙŽÙ„ÙŽÙ‚ÙŽØ¯Ù’ ÙƒÙŽØ±ÙŽÙ‘Ù…Ù’Ù†ÙŽØ§ Ø¨ÙŽÙ†ÙÙŠ Ø¢Ø¯ÙŽÙ…ÙŽ",
-    ref: "Al-Isra Â· 17:70",
-    trans_fr: "Nous avons certes accordÃ© de la dignitÃ© aux fils d'Adam",
-  },
-  {
-    text: "Ø¨ÙØ³Ù’Ù…Ù Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù Ø§Ù„Ø±ÙŽÙ‘Ø­Ù’Ù…ÙŽÙ°Ù†Ù Ø§Ù„Ø±ÙŽÙ‘Ø­ÙÙŠÙ…Ù",
-    ref: "Al-Fatiha Â· 1:1",
-    trans_fr: "Au nom d'Allah, le Tout MisÃ©ricordieux, le TrÃ¨s MisÃ©ricordieux",
   },
 ];
 
-/* Retourne l'index du verset selon le jour de l'annÃ©e (change Ã  minuit) */
+/* Retourne l'index du verset selon le jour de l'année (change à minuit) */
 function getDailyVerseIndex(date = new Date()) {
   const start = new Date(date.getFullYear(), 0, 0);
   const dayOfYear = Math.floor((date - start) / 86400000);
   return dayOfYear % DAILY_VERSES.length;
 }
 
-/* â”€â”€â”€ Suggestions contextuelles selon heure / jour de la semaine â”€â”€â”€ */
+/* Suggestions contextuelles selon heure / jour de la semaine */
 function getSuggestedSurahs(date = new Date()) {
   const h = date.getHours();
   const day = date.getDay(); // 0=Dim, 5=Ven
@@ -250,20 +124,20 @@ function getSuggestedSurahs(date = new Date()) {
       period: {
         fr: "Sunna du vendredi",
         en: "Friday Sunnah",
-        ar: "Ø³Ù†Ø© Ø§Ù„Ø¬Ù…Ø¹Ø©",
+        ar: "سنة الجمعة",
       },
       icon: "fa-star-and-crescent",
       surahs: [
         {
           n: 18,
-          fr: "â€¢ Sunna du vendredi",
-          en: "â€¢ Friday Sunnah",
-          ar: "Ø³Ù†Ø© Ø§Ù„Ø¬Ù…Ø¹Ø©",
+          fr: "Sunna du vendredi",
+          en: "Friday Sunnah",
+          ar: "سنة الجمعة",
         },
-        { n: 1, fr: "L'Ouverture", en: "The Opening", ar: "Ø§Ù„ÙØ§ØªØ­Ø©" },
-        { n: 36, fr: "CÅ“ur du Coran", en: "Heart of Quran", ar: "Ù‚Ù„Ø¨ Ø§Ù„Ù‚Ø±Ø¢Ù†" },
-        { n: 55, fr: "Ar-Rahman", en: "The Merciful", ar: "Ø§Ù„Ø±Ø­Ù…Ù†" },
-        { n: 67, fr: "Al-Mulk", en: "Sovereignty", ar: "Ø§Ù„Ù…Ù„Ùƒ" },
+        { n: 1, fr: "L'Ouverture", en: "The Opening", ar: "الفاتحة" },
+        { n: 36, fr: "Coeur du Coran", en: "Heart of Quran", ar: "قلب القرآن" },
+        { n: 55, fr: "Ar-Rahman", en: "The Merciful", ar: "الرحمن" },
+        { n: 67, fr: "Al-Mulk", en: "Sovereignty", ar: "الملك" },
       ],
     };
 
@@ -272,15 +146,15 @@ function getSuggestedSurahs(date = new Date()) {
       period: {
         fr: "Lecture du matin",
         en: "Morning Reading",
-        ar: "ÙˆØ±Ø¯ Ø§Ù„ØµØ¨Ø§Ø­",
+        ar: "ورد الصباح",
       },
       icon: "fa-sun",
       surahs: [
-        { n: 1, fr: "L'Ouverture", en: "The Opening", ar: "Ø§Ù„ÙØ§ØªØ­Ø©" },
-        { n: 112, fr: "SincÃ©ritÃ© pure", en: "Pure Sincerity", ar: "Ø§Ù„Ø¥Ø®Ù„Ø§Øµ" },
-        { n: 113, fr: "Protection de l'aube", en: "Dawn Guard", ar: "Ø§Ù„ÙÙ„Ù‚" },
-        { n: 114, fr: "Protection du mal", en: "Against Evil", ar: "Ø§Ù„Ù†Ø§Ø³" },
-        { n: 36, fr: "CÅ“ur du Coran", en: "Heart of Quran", ar: "Ù‚Ù„Ø¨ Ø§Ù„Ù‚Ø±Ø¢Ù†" },
+        { n: 1, fr: "L'Ouverture", en: "The Opening", ar: "الفاتحة" },
+        { n: 112, fr: "Sincerite pure", en: "Pure Sincerity", ar: "الإخلاص" },
+        { n: 113, fr: "Protection de l'aube", en: "Dawn Guard", ar: "الفلق" },
+        { n: 114, fr: "Protection du mal", en: "Against Evil", ar: "الناس" },
+        { n: 36, fr: "Coeur du Coran", en: "Heart of Quran", ar: "قلب القرآن" },
       ],
     };
 
@@ -289,20 +163,20 @@ function getSuggestedSurahs(date = new Date()) {
       period: {
         fr: "Lecture du midi",
         en: "Midday Reading",
-        ar: "Ù‚Ø±Ø§Ø¡Ø© Ø§Ù„Ø¸Ù‡Ø±",
+        ar: "قراءة الظهر",
       },
       icon: "fa-cloud-sun",
       surahs: [
         {
           n: 55,
-          fr: "Ar-Rahman â€” La GrÃ¢ce",
-          en: "Ar-Rahman â€” Grace",
-          ar: "Ø§Ù„Ø±Ø­Ù…Ù†",
+          fr: "Ar-Rahman - La Grace",
+          en: "Ar-Rahman - Grace",
+          ar: "الرحمن",
         },
-        { n: 25, fr: "Le CritÃ¨re", en: "The Criterion", ar: "Ø§Ù„ÙØ±Ù‚Ø§Ù†" },
-        { n: 18, fr: "Al-Kahf", en: "The Cave", ar: "Ø§Ù„ÙƒÙ‡Ù" },
-        { n: 56, fr: "L'Ã‰vÃ©nement", en: "The Event", ar: "Ø§Ù„ÙˆØ§Ù‚Ø¹Ø©" },
-        { n: 2, fr: "Al-Baqara", en: "The Cow", ar: "Ø§Ù„Ø¨Ù‚Ø±Ø©" },
+        { n: 25, fr: "Le Critere", en: "The Criterion", ar: "الفرقان" },
+        { n: 18, fr: "Al-Kahf", en: "The Cave", ar: "الكهف" },
+        { n: 56, fr: "L'Evenement", en: "The Event", ar: "الواقعة" },
+        { n: 2, fr: "Al-Baqara", en: "The Cow", ar: "البقرة" },
       ],
     };
 
@@ -311,40 +185,40 @@ function getSuggestedSurahs(date = new Date()) {
       period: {
         fr: "Lecture du soir",
         en: "Evening Reading",
-        ar: "ÙˆØ±Ø¯ Ø§Ù„Ù…Ø³Ø§Ø¡",
+        ar: "ورد المساء",
       },
       icon: "fa-cloud-moon",
       surahs: [
-        { n: 36, fr: "CÅ“ur du Coran", en: "Heart of Quran", ar: "Ù‚Ù„Ø¨ Ø§Ù„Ù‚Ø±Ø¢Ù†" },
-        { n: 67, fr: "Rappel du soir", en: "Evening Reminder", ar: "Ø§Ù„Ù…Ù„Ùƒ" },
-        { n: 55, fr: "Ar-Rahman", en: "The Merciful", ar: "Ø§Ù„Ø±Ø­Ù…Ù†" },
-        { n: 59, fr: "Al-Hashr", en: "The Gathering", ar: "Ø§Ù„Ø­Ø´Ø±" },
-        { n: 103, fr: "Le Temps", en: "Time", ar: "Ø§Ù„Ø¹ØµØ±" },
+        { n: 36, fr: "Coeur du Coran", en: "Heart of Quran", ar: "قلب القرآن" },
+        { n: 67, fr: "Rappel du soir", en: "Evening Reminder", ar: "الملك" },
+        { n: 55, fr: "Ar-Rahman", en: "The Merciful", ar: "الرحمن" },
+        { n: 59, fr: "Al-Hashr", en: "The Gathering", ar: "الحشر" },
+        { n: 103, fr: "Le Temps", en: "Time", ar: "العصر" },
       ],
     };
 
   return {
-    period: { fr: "Lecture de nuit", en: "Night Reading", ar: "ÙˆØ±Ø¯ Ø§Ù„Ù„ÙŠÙ„" },
+    period: { fr: "Lecture de nuit", en: "Night Reading", ar: "ورد الليل" },
     icon: "fa-moon",
     surahs: [
       {
         n: 67,
-        fr: "Al-Mulk â€” Avant le sommeil",
-        en: "Al-Mulk â€” Before Sleep",
-        ar: "Ø§Ù„Ù…Ù„Ùƒ",
+        fr: "Al-Mulk - Avant le sommeil",
+        en: "Al-Mulk - Before Sleep",
+        ar: "الملك",
       },
-      { n: 32, fr: "As-Sajda", en: "The Prostration", ar: "Ø§Ù„Ø³Ø¬Ø¯Ø©" },
-      { n: 36, fr: "Ya-Sin du soir", en: "Ya-Sin at Night", ar: "ÙŠØ³" },
-      { n: 112, fr: "Al-Ikhlas", en: "Sincerity", ar: "Ø§Ù„Ø¥Ø®Ù„Ø§Øµ" },
-      { n: 113, fr: "Al-Falaq", en: "The Dawn", ar: "Ø§Ù„ÙÙ„Ù‚" },
+      { n: 32, fr: "As-Sajda", en: "The Prostration", ar: "السجدة" },
+      { n: 36, fr: "Ya-Sin du soir", en: "Ya-Sin at Night", ar: "يس" },
+      { n: 112, fr: "Al-Ikhlas", en: "Sincerity", ar: "الإخلاص" },
+      { n: 113, fr: "Al-Falaq", en: "The Dawn", ar: "الفلق" },
     ],
   };
 }
 
 /*  Type info  */
 const TYPE_INFO = {
-  Meccan: { fr: "Mecquoise", en: "Meccan", ar: "Ù…ÙƒÙŠØ©" },
-  Medinan: { fr: "MÃ©dinoise", en: "Medinan", ar: "Ù…Ø¯Ù†ÙŠØ©" },
+  Meccan: { fr: "Mecquoise", en: "Meccan", ar: "مكية" },
+  Medinan: { fr: "Medinoise", en: "Medinan", ar: "مدنية" },
 };
 
 function PercentBar({ value }) {
@@ -385,16 +259,16 @@ const SurahCard = memo(function SurahCard({
       : lang === "ar"
         ? typeLabel
         : surah.fr || typeLabel;
-  const ayahLabel = `${surah.ayahs} ${lang === "ar" ? "Ø¢ÙŠØ©" : "Ayat"}`;
+  const ayahLabel = `${surah.ayahs} ${lang === "ar" ? "آية" : "Ayat"}`;
   const pageLabel =
     surah.page &&
     (lang === "ar"
-      ? `ØµÙØ­Ø© ${surah.page}`
+      ? `صفحة ${surah.page}`
       : lang === "fr"
         ? `Page ${surah.page}`
         : `Page ${surah.page}`);
 
-  /* â”€â”€ LIST ROW (unchanged) â”€â”€ */
+  /* LIST ROW (unchanged) */
   if (viewMode === "list") {
     const rowVisibilityStyle = {
       contentVisibility: "auto",
@@ -419,8 +293,8 @@ const SurahCard = memo(function SurahCard({
           <span className="hpl-row__sub">{subLabel}</span>
           <span className="hpl-row__meta">
             <span className={`hpl-dot hpl-dot--${surah.type?.toLowerCase()}`} />
-            {typeLabel} Â· {ayahLabel}
-            {pageLabel ? ` Â· ${pageLabel}` : ""}
+            {typeLabel} · {ayahLabel}
+            {pageLabel ? ` · ${pageLabel}` : ""}
           </span>
         </div>
         <span className="hpl-row__ar" dir="rtl" lang="ar">
@@ -435,7 +309,7 @@ const SurahCard = memo(function SurahCard({
             e.stopPropagation();
             onPlay(surah.n);
           }}
-          aria-label="Ã‰couter"
+          aria-label="Ecouter"
         >
           <i className={`fas fa-${isPlaying ? "pause" : "play"}`} />
         </button>
@@ -443,7 +317,7 @@ const SurahCard = memo(function SurahCard({
     );
   }
 
-  /* â”€â”€ GRID CARD â€” reference-style layout â”€â”€ */
+  /* ���� GRID CARD � reference-style layout ���� */
   const cardVisibilityStyle = {
     contentVisibility: "auto",
     containIntrinsicSize: "164px",
@@ -474,9 +348,9 @@ const SurahCard = memo(function SurahCard({
             className={`scard__dot scard__dot--${surah.type?.toLowerCase()}`}
             aria-hidden="true"
           >
-            {surah.type === "Meccan" ? "â–²" : "â– "}
+            {surah.type === "Meccan" ? "▲" : "■"}
           </span>
-          {typeLabel} Â· {ayahLabel}
+          {typeLabel} · {ayahLabel}
         </span>
       </div>
 
@@ -495,7 +369,7 @@ const SurahCard = memo(function SurahCard({
           e.stopPropagation();
           onPlay(surah.n);
         }}
-        aria-label="Ã‰couter"
+        aria-label="Ecouter"
       >
         <i className={`fas fa-${isPlaying ? "pause" : "play"}`} />
       </button>
@@ -503,7 +377,7 @@ const SurahCard = memo(function SurahCard({
   );
 });
 
-/* â”€â”€â”€ Carte juz â”€â”€â”€ */
+/* Carte juz */
 const JuzCard = memo(function JuzCard({
   juzData,
   onClick,
@@ -563,7 +437,7 @@ const JuzCard = memo(function JuzCard({
   );
 });
 
-/* â”€â”€â”€ Ã‰tat vide â”€â”€â”€ */
+/* Etat vide */
 function EmptyState({ icon, text }) {
   return (
     <div className="hp2-empty">
@@ -573,9 +447,7 @@ function EmptyState({ icon, text }) {
   );
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   HomePage principale
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* HomePage principale */
 export default function HomePage() {
   const { state, dispatch, set } = useApp();
   const {
@@ -601,7 +473,7 @@ export default function HomePage() {
   const deferredFilter = useDeferredValue(filter);
   const loadMoreRef = useRef(null);
 
-  // Historique rÃ©el = l'utilisateur a dÃ©jÃ  naviguÃ© au-delÃ  de Al-Fatiha v.1
+  // Historique réel = l'utilisateur a déjà navigué au-delà de Al-Fatiha v.1
   const hasReadingHistory =
     currentSurah > 1 || (currentSurah === 1 && currentAyah > 1);
 
@@ -803,14 +675,14 @@ export default function HomePage() {
   const riwayaLabel =
     riwaya === "warsh"
       ? lang === "fr"
-        ? "RiwÄya Warsh"
+        ? "Riwaya Warsh"
         : lang === "ar"
-          ? "Ø±ÙˆØ§ÙŠØ© ÙˆØ±Ø´"
+          ? "رواية ورش"
           : "Warsh"
       : lang === "fr"
-        ? "RiwÄya á¸¤afs"
+        ? "Riwaya Hafs"
         : lang === "ar"
-          ? "Ø±ÙˆØ§ÙŠØ© Ø­ÙØµ"
+          ? "رواية حفص"
           : "Hafs";
 
   const readingModeLabel =
@@ -818,43 +690,43 @@ export default function HomePage() {
       ? lang === "fr"
         ? "Mode Juz"
         : lang === "ar"
-          ? "ÙˆØ¶Ø¹ Ø§Ù„Ø¬Ø²Ø¡"
+          ? "وضع الجزء"
           : "Juz mode"
       : displayMode === "page"
         ? lang === "fr"
           ? "Mode Page"
           : lang === "ar"
-            ? "ÙˆØ¶Ø¹ Ø§Ù„ØµÙØ­Ø©"
+            ? "وضع الصفحة"
             : "Page mode"
         : lang === "fr"
           ? "Mode Sourate"
           : lang === "ar"
-            ? "ÙˆØ¶Ø¹ Ø§Ù„Ø³ÙˆØ±Ø©"
+            ? "وضع السورة"
             : "Surah mode";
 
   const readingTarget =
     displayMode === "juz"
       ? lang === "ar"
-        ? `Ø§Ù„Ø¬Ø²Ø¡ ${toAr(currentJuz)}`
+        ? `الجزء ${toAr(currentJuz)}`
         : `Juz ${currentJuz}`
       : displayMode === "page"
         ? lang === "ar"
-          ? `ØµÙØ­Ø© ${toAr(state.currentPage || 1)}`
+          ? `صفحة ${toAr(state.currentPage || 1)}`
           : `${lang === "fr" ? "Page" : "Page"} ${state.currentPage || 1}`
         : lang === "ar"
-          ? `${surahLabel?.ar || "Ø§Ù„ÙØ§ØªØ­Ø©"} Â· ${toAr(currentAyah)}`
-          : `${lang === "fr" ? surahLabel?.fr : surahLabel?.en} Â· v.${currentAyah}`;
+          ? `${surahLabel?.ar || "الفاتحة"} · ${toAr(currentAyah)}`
+          : `${lang === "fr" ? surahLabel?.fr : surahLabel?.en} · v.${currentAyah}`;
 
   const quickResumeLabel = hasReadingHistory
     ? lang === "fr"
       ? "Reprendre la session"
       : lang === "ar"
-        ? "Ù…ØªØ§Ø¨Ø¹Ø© Ø§Ù„Ø¬Ù„Ø³Ø©"
+        ? "متابعة الجلسة"
         : "Resume session"
     : lang === "fr"
-      ? "DÃ©marrer une lecture"
+      ? "Demarrer une lecture"
       : lang === "ar"
-        ? "Ø§Ø¨Ø¯Ø£ Ø§Ù„Ù‚Ø±Ø§Ø¡Ø©"
+        ? "ابدأ القراءة"
         : "Start reading";
 
   const currentYear = now.getFullYear();
@@ -862,75 +734,75 @@ export default function HomePage() {
   const greeting = useMemo(() => {
     const h = now.getHours();
     if (h >= 4 && h < 12)
-      return { fr: "Bonjour", en: "Good morning", ar: "ØµØ¨Ø§Ø­ Ø§Ù„Ø®ÙŠØ±" };
+      return { fr: "Bonjour", en: "Good morning", ar: "صباح الخير" };
     if (h >= 12 && h < 17)
-      return { fr: "Bon aprÃ¨s-midi", en: "Good afternoon", ar: "Ù…Ø³Ø§Ø¡ Ø§Ù„Ù†Ù‡Ø§Ø±" };
+      return { fr: "Bon apres-midi", en: "Good afternoon", ar: "مساء النهار" };
     if (h >= 17 && h < 22)
-      return { fr: "Bonsoir", en: "Good evening", ar: "Ù…Ø³Ø§Ø¡ Ø§Ù„Ø®ÙŠØ±" };
-    return { fr: "Bonne nuit", en: "Good night", ar: "Ø·Ø§Ø¨ Ù„ÙŠÙ„ÙƒÙ…" };
+      return { fr: "Bonsoir", en: "Good evening", ar: "مساء الخير" };
+    return { fr: "Bonne nuit", en: "Good night", ar: "ليلة طيبة" };
   }, [now]);
 
   const currentPrayer = useMemo(() => {
     const h = now.getHours();
     if (h >= 4 && h < 7)
-      return { icon: "fa-star", fr: "Fajr", ar: "Ø§Ù„ÙØ¬Ø±", en: "Fajr" };
+      return { icon: "fa-star", fr: "Fajr", ar: "الفجر", en: "Fajr" };
     if (h >= 7 && h < 12)
-      return { icon: "fa-sun", fr: "DuhÄ", ar: "Ø§Ù„Ø¶Ø­Ù‰", en: "DuhÄ" };
+      return { icon: "fa-sun", fr: "Duha", ar: "الضحى", en: "Duha" };
     if (h >= 12 && h < 15)
-      return { icon: "fa-sun", fr: "Dhuhr", ar: "Ø§Ù„Ø¸Ù‡Ø±", en: "Dhuhr" };
+      return { icon: "fa-sun", fr: "Dhuhr", ar: "الظهر", en: "Dhuhr" };
     if (h >= 15 && h < 18)
-      return { icon: "fa-cloud-sun", fr: "Asr", ar: "Ø§Ù„Ø¹ØµØ±", en: "Asr" };
+      return { icon: "fa-cloud-sun", fr: "Asr", ar: "العصر", en: "Asr" };
     if (h >= 18 && h < 20)
       return {
         icon: "fa-cloud-moon",
         fr: "Maghrib",
-        ar: "Ø§Ù„Ù…ØºØ±Ø¨",
+        ar: "المغرب",
         en: "Maghrib",
       };
-    return { icon: "fa-moon", fr: "IshÄ", ar: "Ø§Ù„Ø¹Ø´Ø§Ø¡", en: "IshÄ" };
+    return { icon: "fa-moon", fr: "Isha", ar: "العشاء", en: "Isha" };
   }, [now]);
 
   const vodSurahNum = useMemo(() => {
-    // Handles formats: "2:255", "Al-Baqarah 2:255", "Ø§Ù„Ø¨Ù‚Ø±Ø© â€” 2:255", "49:13"
+    // Handles formats: "2:255", "Al-Baqarah 2:255", "البقرة - 2:255", "49:13"
     const match = dailyVerse.ref.match(/(\d{1,3}):\d+/);
     return match ? parseInt(match[1], 10) : null;
   }, [dailyVerse]);
 
   const T = {
-    continueReading: { fr: "Continuer", en: "Continue", ar: "Ù…ØªØ§Ø¨Ø¹Ø© Ø§Ù„Ù‚Ø±Ø§Ø¡Ø©" },
-    startFatiha: { fr: "Al-Fatiha", en: "Al-Fatihah", ar: "Ø§Ù„Ø¨Ø¯Ø§ÙŠØ©" },
-    duas: { fr: "Douas", en: "Duas", ar: "Ø§Ù„Ø£Ø¯Ø¹ÙŠØ©" },
-    surahs: { fr: "Sourates", en: "Surahs", ar: "Ø§Ù„Ø³ÙˆØ±" },
-    juz: { fr: "Juz", en: "Juz", ar: "Ø§Ù„Ø£Ø¬Ø²Ø§Ø¡" },
+    continueReading: { fr: "Continuer", en: "Continue", ar: "متابعة القراءة" },
+    startFatiha: { fr: "Al-Fatiha", en: "Al-Fatihah", ar: "البداية" },
+    duas: { fr: "Douas", en: "Duas", ar: "الأدعية" },
+    surahs: { fr: "Sourates", en: "Surahs", ar: "السور" },
+    juz: { fr: "Juz", en: "Juz", ar: "الأجزاء" },
     search: {
-      fr: "Rechercher une sourateâ€¦",
-      en: "Search a surahâ€¦",
-      ar: "Ø§Ø¨Ø­Ø« Ø¹Ù† Ø³ÙˆØ±Ø©â€¦",
+      fr: "Rechercher une sourate...",
+      en: "Search a surah...",
+      ar: "ابحث عن سورة...",
     },
     verseOfDay: {
       fr: "Verset du jour",
       en: "Verse of the Day",
-      ar: "Ø¢ÙŠØ© Ø§Ù„ÙŠÙˆÙ…",
+      ar: "آية اليوم",
     },
-    quickAccess: { fr: "AccÃ¨s rapide", en: "Quick Access", ar: "ÙˆØµÙˆÙ„ Ø³Ø±ÙŠØ¹" },
+    quickAccess: { fr: "Acces rapide", en: "Quick Access", ar: "وصول سريع" },
     noBookmarks: {
-      fr: "Aucun favori â€” appuyez â˜…",
+      fr: "Aucun favori - appuyez sur etoile",
       en: "No bookmarks yet",
-      ar: "Ù„Ø§ ØªÙˆØ¬Ø¯ Ø¥Ø´Ø§Ø±Ø§Øª",
+      ar: "لا توجد إشارات",
     },
     noNotes: {
       fr: "Aucune note encore",
       en: "No notes yet",
-      ar: "Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ù„Ø§Ø­Ø¸Ø§Øª",
+      ar: "لا توجد ملاحظات",
     },
     noResults: {
-      fr: "Aucune sourate trouvÃ©e",
+      fr: "Aucune sourate trouvee",
       en: "No surah found",
-      ar: "Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ±",
+      ar: "لم يتم العثور",
     },
-    bookmarks: { fr: "Favoris", en: "Saved", ar: "Ø§Ù„Ù…ÙØ¶Ù„Ø©" },
-    notes: { fr: "Notes", en: "Notes", ar: "Ù…Ù„Ø§Ø­Ø¸Ø§Øª" },
-    suggest: { fr: "Suggestions", en: "Suggest", ar: "Ø§Ù‚ØªØ±Ø§Ø­Ø§Øª" },
+    bookmarks: { fr: "Favoris", en: "Saved", ar: "المفضلة" },
+    notes: { fr: "Notes", en: "Notes", ar: "ملاحظات" },
+    suggest: { fr: "Suggestions", en: "Suggest", ar: "اقتراحات" },
   };
   const t = (k) =>
     T[k]?.[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"] ?? k;
@@ -965,18 +837,18 @@ export default function HomePage() {
         <div className="absolute -bottom-32 left-[30%] h-96 w-96 rounded-full blur-[130px] motion-safe:animate-pulse [animation-duration:9s]" />
         <div className="absolute inset-0 opacity-[0.16] [background-image:linear-gradient(to_right,rgba(148,163,184,0.2)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.17)_1px,transparent_1px)] [background-size:64px_64px]" />
       </div>
-      {/* â•â•â•â• HERO â•â•â•â• */}
+      {/* HERO */}
       <section className="hp2-hero !relative !z-10 !overflow-hidden !rounded-[28px]">
         <div className="pointer-events-none absolute inset-0" />
         <div className="pointer-events-none absolute -top-12 right-[14%] h-28 w-28 rounded-full border border-white/15 opacity-35 motion-safe:animate-spin [animation-duration:16s]" />
         <div className="pointer-events-none absolute -bottom-14 left-[44%] h-36 w-36 rounded-full border opacity-30 motion-safe:animate-spin [animation-direction:reverse] [animation-duration:22s]" />
-        {/* Orbs dÃ©coratifs */}
+        {/* Orbs décoratifs */}
         <div className="hp2-hero__orb hp2-hero__orb--1 !opacity-65 motion-safe:animate-pulse [animation-duration:9s]" aria-hidden="true" />
         <div className="hp2-hero__orb hp2-hero__orb--2 !opacity-60 motion-safe:animate-pulse [animation-duration:12s]" aria-hidden="true" />
         <div className="hp2-hero__orb hp2-hero__orb--3 !opacity-55 motion-safe:animate-pulse [animation-duration:10s]" aria-hidden="true" />
 
         <div className="hp2-hero__inner !relative !z-10">
-          {/* â”€â”€ Gauche â”€â”€ */}
+          {/* Gauche */}
           <div className="hp2-hero__left">
             {/* Salutation + date */}
             <div className="hp2-hero__top-row !items-center !gap-3">
@@ -994,10 +866,10 @@ export default function HomePage() {
               </span>
             </div>
 
-            {/* Titre principal avec bismallah intÃ©grÃ©e */}
+            {/* Titre principal avec bismallah intégrée */}
             <div className="hp2-hero__headline">
               <div className="hp2-hero__bismallah" aria-hidden="true" dir="rtl">
-                ï·½
+                ﷽
               </div>
               <div className="hp2-hero__brand !items-center !gap-4 max-[520px]:!items-start max-[520px]:!gap-2.5">
                 <PlatformLogo
@@ -1029,9 +901,9 @@ export default function HomePage() {
 
             <p className="hp2-hero__tagline !mt-3 !max-w-[62ch] !text-[0.98rem] !leading-relaxed max-[520px]:!text-[0.88rem] max-[520px]:!leading-snug [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden">
               {lang === "ar"
-                ? "Ø§Ù‚Ø±Ø£ Ø§Ù„Ù‚Ø±Ø¢Ù† Ø§Ù„ÙƒØ±ÙŠÙ… ÙˆØªØ¯Ø¨ÙŽÙ‘Ø± Ù…Ø¹Ø§Ù†ÙŠÙ‡ ÙÙŠ Ù…Ø³Ø§Ø­Ø© Ø£ÙƒØ«Ø± Ø³ÙƒÙŠÙ†Ø©"
+                ? "اقرأ القرآن الكريم وتدبر معانيه في مساحة أكثر سكينة"
                 : lang === "fr"
-                  ? "Lisez, mÃ©ditez, mÃ©morisez â€” La Parole d'Allah dans toute sa beautÃ©"
+                  ? "Lisez, méditez, mémorisez - La Parole d'Allah dans toute sa beauté"
                   : "Read, reflect and memorize the Holy Quran in beauty"}
             </p>
 
@@ -1056,12 +928,12 @@ export default function HomePage() {
                   <i className="fas fa-book-open" />
                   <span className="truncate max-[520px]:max-w-[62vw]">
                     {lang === "ar"
-                      ? "Ø§Ø¨Ø¯Ø£ Ø§Ù„Ù‚Ø±Ø§Ø¡Ø©"
+                      ? "ابدأ القراءة"
                       : lang === "fr"
                         ? "Commencer la lecture"
                         : "Start reading"}
                   </span>
-                  <span className="hp2-btn__chip max-[520px]:hidden">Ø§Ù„Ù’ÙÙŽØ§ØªÙØ­ÙŽØ©</span>
+                  <span className="hp2-btn__chip max-[520px]:hidden">الفاتحة</span>
                 </button>
               )}
               {hasReadingHistory && (
@@ -1082,13 +954,13 @@ export default function HomePage() {
               </button>
             </div>
 
-            {/* Lectures rÃ©centes */}
+            {/* Lectures récentes */}
             {recentVisits.length > 0 && (
               <div className="hp2-recent-history mt-6! rounded-2xl! border! p-4! backdrop-blur-md">
                 <div className="hp2-recent-title mb-3! text-[0.69rem]! font-semibold! uppercase! tracking-[0.18em]">
                   <i className="fas fa-clock-rotate-left" />
                   {lang === "ar"
-                    ? "Ø§Ø³ØªÙƒÙ…Ø§Ù„"
+                    ? "استكمال"
                     : lang === "fr"
                       ? "Reprendre"
                       : "Continue"}
@@ -1127,27 +999,27 @@ export default function HomePage() {
               {[
                 {
                   icon: "fa-palette",
-                  fr: "TajwÃ®d colorÃ©",
+                  fr: "Tajwîd coloré",
                   en: "Color tajweed",
-                  ar: "ØªØ¬ÙˆÙŠØ¯ Ù…Ù„ÙˆÙ†",
+                  ar: "تجويد ملون",
                 },
                 {
                   icon: "fa-language",
-                  fr: "Mot Ã  mot",
+                  fr: "Mot à mot",
                   en: "Word by word",
-                  ar: "ÙƒÙ„Ù…Ø© Ø¨ÙƒÙ„Ù…Ø©",
+                  ar: "كلمة بكلمة",
                 },
                 {
                   icon: "fa-headphones",
-                  fr: "18+ rÃ©citateurs",
+                  fr: "18+ récitateurs",
                   en: "18+ reciters",
-                  ar: "Ù¡Ù¨+ Ù‚Ø§Ø±Ø¦",
+                  ar: "١٨+ قارئ",
                 },
                 {
                   icon: "fa-moon",
-                  fr: "4 themes harmonises",
+                  fr: "4 thèmes harmonisés",
                   en: "4 harmonized themes",
-                  ar: "Ù¤ Ø³Ù…Ø§Øª Ù…Ù†Ø³Ø¬Ù…Ø©",
+                  ar: "٤ سمات منسجمة",
                 },
               ].map((f) => (
                 <div
@@ -1165,9 +1037,9 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* â”€â”€ Droite â”€â”€ */}
+          {/* ���� Droite ���� */}
           <div className="hp2-hero__right relative! z-10! space-y-3">
-            {/* Verset du jour â€” carte principale droite */}
+            {/* Verset du jour � carte principale droite */}
             <div className="hp2-vod relative! overflow-hidden! rounded-2xl! border! p-4! transition-all! duration-300! hover:scale-[1.01]">
               <div className="pointer-events-none absolute -top-8 right-4 h-24 w-24 rounded-full blur-2xl motion-safe:animate-pulse [animation-duration:8s]" />
               <div className="hp2-vod__head relative! z-10">
@@ -1198,7 +1070,7 @@ export default function HomePage() {
                   {lang === "fr"
                     ? "Lire la sourate"
                     : lang === "ar"
-                      ? "Ø§Ù‚Ø±Ø£ Ø§Ù„Ø³ÙˆØ±Ø©"
+                      ? "اقرأ السورة"
                       : "Read surah"}
                   <i className={`fas fa-arrow-${isRtl ? "left" : "right"}`} />
                 </button>
@@ -1213,7 +1085,7 @@ export default function HomePage() {
                   {lang === "fr"
                     ? "Session"
                     : lang === "ar"
-                      ? "Ø§Ù„Ø¬Ù„Ø³Ø©"
+                      ? "الجلسة"
                       : "Session"}
                 </span>
                 <span className="hp2-focus-card__riwaya">{riwayaLabel}</span>
@@ -1241,7 +1113,7 @@ export default function HomePage() {
                     {lang === "fr"
                       ? "Avancement"
                       : lang === "ar"
-                        ? "Ø§Ù„ØªÙ‚Ø¯Ù…"
+                        ? "التقدم"
                         : "Progress"}
                   </span>
                 </span>
@@ -1259,25 +1131,25 @@ export default function HomePage() {
                   ? lang === "fr"
                     ? "Continuer"
                     : lang === "ar"
-                      ? "Ù…ØªØ§Ø¨Ø¹Ø©"
+                      ? "متابعة"
                       : "Continue"
                   : lang === "fr"
                     ? "Commencer"
                     : lang === "ar"
-                      ? "Ø§Ø¨Ø¯Ø£"
+                      ? "ابدأ"
                       : "Start"}
               </button>
             </div>
 
-            {/* PriÃ¨res */}
+            {/* Prières */}
             <div className="hp2-prayers rounded-2xl! border! p-3.5! backdrop-blur-sm">
               <div className="hp2-prayers__head mb-2.5">
                 <i className="fas fa-mosque" />
                 <span>
                   {lang === "fr"
-                    ? "PriÃ¨res"
+                    ? "Prières"
                     : lang === "ar"
-                      ? "Ø§Ù„ØµÙ„ÙˆØ§Øª"
+                      ? "الصلوات"
                       : "Prayers"}
                 </span>
               </div>
@@ -1287,7 +1159,7 @@ export default function HomePage() {
                     key: "fajr",
                     icon: "fa-star",
                     fr: "Fajr",
-                    ar: "Ø§Ù„ÙØ¬Ø±",
+                    ar: "الفجر",
                     en: "Fajr",
                     r: [4, 7],
                   },
@@ -1295,7 +1167,7 @@ export default function HomePage() {
                     key: "dhuhr",
                     icon: "fa-sun",
                     fr: "Dhuhr",
-                    ar: "Ø§Ù„Ø¸Ù‡Ø±",
+                    ar: "الظهر",
                     en: "Dhuhr",
                     r: [12, 15],
                   },
@@ -1303,7 +1175,7 @@ export default function HomePage() {
                     key: "asr",
                     icon: "fa-cloud-sun",
                     fr: "Asr",
-                    ar: "Ø§Ù„Ø¹ØµØ±",
+                    ar: "العصر",
                     en: "Asr",
                     r: [15, 18],
                   },
@@ -1311,16 +1183,16 @@ export default function HomePage() {
                     key: "maghrib",
                     icon: "fa-cloud-moon",
                     fr: "Maghrib",
-                    ar: "Ø§Ù„Ù…ØºØ±Ø¨",
+                    ar: "المغرب",
                     en: "Maghrib",
                     r: [18, 20],
                   },
                   {
                     key: "isha",
                     icon: "fa-moon",
-                    fr: "IshÄ",
-                    ar: "Ø§Ù„Ø¹Ø´Ø§Ø¡",
-                    en: "IshÄ",
+                    fr: "Ishā",
+                    ar: "العشاء",
+                    en: "Ishā",
                     r: [20, 4],
                   },
                 ].map((p) => {
@@ -1334,7 +1206,7 @@ export default function HomePage() {
                       key={p.key}
                       className={cn(
                         "hp2-prayer-row",
-                        "transition-all duration-300",!
+                        "transition-all duration-300",
                         on && "hp2-prayer-row--on",
                       )}
                     >
@@ -1347,7 +1219,7 @@ export default function HomePage() {
                           {lang === "fr"
                             ? "Maintenant"
                             : lang === "ar"
-                              ? "Ø§Ù„Ø¢Ù†"
+                              ? "الآن"
                               : "Now"}
                         </span>
                       )}
@@ -1360,7 +1232,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* â•â•â•â• ACCÃˆS RAPIDE â•â•â•â• */}
+      {/* ACCES RAPIDE */}
       <nav
         className="hp2-quickbar relative! z-10! rounded-2xl! border! px-4! py-3! backdrop-blur-md"
         aria-label={t("quickAccess")}
@@ -1373,7 +1245,7 @@ export default function HomePage() {
         <div className="hp2-quickbar__track mt-2">
           <button className="hp2-qchip hp2-qchip--special transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.02]" onClick={openDuas}>
             <i className="fas fa-hands-praying" />
-            {lang === "ar" ? "Ø£Ø¯Ø¹ÙŠØ©" : lang === "fr" ? "Douas" : "Duas"}
+            {lang === "ar" ? "أدعية" : lang === "fr" ? "Douas" : "Duas"}
           </button>
           {QUICK_ACCESS.map(({ n, label_fr, label_en }) => {
             const s = SURAHS[n - 1];
@@ -1389,7 +1261,7 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* â•â•â•â• BANDE STATS â•â•â•â• */}
+      {/* BANDE STATS */}
       <div
         className="hp2-stats-strip relative! z-10! rounded-2xl! border! p-3"
         style={HOME_DEFERRED_SECTION_STYLE}
@@ -1400,28 +1272,28 @@ export default function HomePage() {
             icon: "fa-quran",
             labelFr: "Sourates",
             labelEn: "Surahs",
-            labelAr: "Ø³ÙˆØ±",
+            labelAr: "سور",
           },
           {
             num: "30",
             icon: "fa-layer-group",
             labelFr: "Juz'",
             labelEn: "Juz",
-            labelAr: "Ø¬Ø²Ø¡",
+            labelAr: "جزء",
           },
           {
             num: "6 236",
             icon: "fa-star",
             labelFr: "Versets",
             labelEn: "Ayahs",
-            labelAr: "Ø¢ÙŠØ©",
+            labelAr: "آية",
           },
           {
             num: "77 430",
             icon: "fa-font",
             labelFr: "Mots",
             labelEn: "Words",
-            labelAr: "ÙƒÙ„Ù…Ø©",
+            labelAr: "كلمة",
           },
         ].map((s, i) => (
           <div key={i} className="hp2-stats-strip__item !rounded-xl !border !transition-all !duration-300 hover:!-translate-y-0.5">
@@ -1440,7 +1312,7 @@ export default function HomePage() {
 
       {/*  GRILLE PRINCIPALE  */}
       <div className="hp2-layout !relative !z-10">
-        {/* Panneau latÃ©ral */}
+        {/* Panneau latéral */}
         <aside className="hp2-aside" style={HOME_DEFERRED_SECTION_STYLE}>
           <div className="hp2-panel !rounded-2xl !border !backdrop-blur-md">
             <div className="hp2-panel__tabs">
@@ -1481,8 +1353,8 @@ export default function HomePage() {
                         <div className="hp2-item__body">
                           <span className="hp2-item__ar">{s?.ar}</span>
                           <span className="hp2-item__sub">
-                            {lang === "fr" ? s?.fr : s?.en} Â· v.{bk.ayah}
-                            {bk.label && <em> â€” {bk.label}</em>}
+                            {lang === "fr" ? s?.fr : s?.en} · v.{bk.ayah}
+                            {bk.label && <em> � {bk.label}</em>}
                           </span>
                         </div>
                         <i
@@ -1511,12 +1383,12 @@ export default function HomePage() {
                         <div className="hp2-item__body">
                           <span className="hp2-item__ar">{s?.ar}</span>
                           <span className="hp2-item__sub">
-                            {lang === "fr" ? s?.fr : s?.en} Â· v.{note.ayah}
+                            {lang === "fr" ? s?.fr : s?.en} · v.{note.ayah}
                           </span>
                           {note.text && (
                             <span className="hp2-item__excerpt">
                               {note.text.slice(0, 70)}
-                              {note.text.length > 70 ? "â€¦" : ""}
+                              {note.text.length > 70 ? "..." : ""}
                             </span>
                           )}
                         </div>
@@ -1627,13 +1499,13 @@ export default function HomePage() {
                 <button
                   className="hp2-icon-btn hp2-icon-btn--with-label !transition-all !duration-300 hover:!scale-110"
                   onClick={toggleSortDirection}
-                  title={sortDir === "asc" ? "DÃ©croissant" : "Croissant"}
+                  title={sortDir === "asc" ? "Decroissant" : "Croissant"}
                 >
                   <i
                     className={`fas fa-sort-${sortDir === "asc" ? "down" : "up"}`}
                   />
                   <span className="hp2-icon-btn__label">
-                    {lang === "ar" ? "ØªØ±ØªÙŠØ¨" : lang === "fr" ? "Tri" : "Sort"}
+                    {lang === "ar" ? "ترتيب" : lang === "fr" ? "Tri" : "Sort"}
                   </span>
                 </button>
               )}
@@ -1647,7 +1519,7 @@ export default function HomePage() {
               >
                 <i className="fas fa-grip" />
                 <span className="hp2-icon-btn__label">
-                  {lang === "ar" ? "Ø´Ø¨ÙƒØ©" : lang === "fr" ? "Grille" : "Grid"}
+                  {lang === "ar" ? "شبكة" : lang === "fr" ? "Grille" : "Grid"}
                 </span>
               </button>
               <button
@@ -1660,7 +1532,7 @@ export default function HomePage() {
               >
                 <i className="fas fa-list" />
                 <span className="hp2-icon-btn__label">
-                  {lang === "ar" ? "Ù‚Ø§Ø¦Ù…Ø©" : lang === "fr" ? "Liste" : "List"}
+                  {lang === "ar" ? "قائمة" : lang === "fr" ? "Liste" : "List"}
                 </span>
               </button>
             </div>
@@ -1717,7 +1589,7 @@ export default function HomePage() {
                 <i className="fas fa-arrow-down" />
                 <span>
                   {lang === "ar"
-                    ? "ØªØ­Ù…ÙŠÙ„ Ø§Ù„Ù…Ø²ÙŠØ¯ Ù…Ù† Ø§Ù„Ø³ÙˆØ±"
+                    ? "تحميل المزيد من السور"
                     : lang === "fr"
                       ? "Charger plus de sourates"
                       : "Load more surahs"}
@@ -1731,7 +1603,7 @@ export default function HomePage() {
         </section>
       </div>
 
-      {/* â•â•â•â• FOOTER â•â•â•â• */}
+      {/* FOOTER */}
       <div className="relative z-10" style={HOME_FOOTER_SECTION_STYLE}>
         <Footer goSurah={goSurah} />
       </div>

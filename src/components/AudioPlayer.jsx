@@ -2598,15 +2598,15 @@ export default function AudioPlayer() {
               </button>
             </div>
 
-            <div className="flex flex-col gap-3.5 px-4 pb-4 pt-2">
+            <div className="flex flex-col gap-3 px-3.5 pb-3.5 pt-1.5">
               {/* Top row: cover + info */}
-              <div className={cn("flex items-center gap-3 p-3", playerSoftSurfaceClass)}>
+              <div className={cn("flex items-center gap-2.5 p-2.5", playerSoftSurfaceClass)}>
                 <CoverArt isPlaying={isPlaying} />
                 <div className="min-w-0 flex-1">
                   {/* Arabic surah name — prominent header */}
                   {currentArabicName && (
                     <div
-                      className="mb-0.5 truncate text-[1.05rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-primary)_82%,#ffffff_18%)] drop-shadow-[0_1px_8px_rgba(var(--theme-primary-rgb),0.36)] [font-family:var(--font-quran,serif)] tracking-[0.02em]"
+                      className="mb-0.5 truncate text-[0.92rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-primary)_82%,#ffffff_18%)] drop-shadow-[0_1px_6px_rgba(var(--theme-primary-rgb),0.32)] [font-family:var(--font-quran,serif)] tracking-[0.01em]"
                       dir="rtl"
                       lang="ar"
                     >
@@ -2616,7 +2616,7 @@ export default function AudioPlayer() {
                   <div
                     className={cn(
                       playerStrongTextClass,
-                      "truncate text-[0.82rem] font-bold leading-tight",
+                      "truncate text-[0.74rem] font-bold leading-tight",
                     )}
                   >
                     {titleLabel ||
@@ -2629,7 +2629,7 @@ export default function AudioPlayer() {
                   <div
                     className={cn(
                       playerSubtitleTextClass,
-                      "mt-0.5 truncate text-[0.67rem]",
+                      "mt-0.5 truncate text-[0.61rem]",
                     )}
                   >
                     {idleSubtitle || reciterLabel || "—"}

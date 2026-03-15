@@ -56,7 +56,7 @@ import CleanPageView from "./Quran/CleanPageView";
 
 import "../styles/quran-display.css";
 
-/* â”€â”€ Surah chunking threshold â”€â”€
+/* Surah chunking threshold
    Surahs with more than this many ayahs are split into Hizb-based chunks.
    Surahs at or below this are always rendered in full (no pagination). */
 const LONG_SURAH_THRESHOLD = 50;
@@ -64,8 +64,8 @@ const LONG_SURAH_THRESHOLD = 50;
 /**
  * Build ordered chunk boundaries for a surah using HIZB_DATA.
  * Each chunk spans [startAyah, endAyah] (1-indexed, inclusive).
- * Short surahs â†’ single chunk covering the whole surah.
- * Long surahs â†’ one chunk per hizb that falls inside this surah.
+ * Short surahs -> single chunk covering the whole surah.
+ * Long surahs -> one chunk per hizb that falls inside this surah.
  */
 function buildSurahChunks(surahNum, totalAyahs, lang = "fr") {
   if (totalAyahs <= LONG_SURAH_THRESHOLD) {
@@ -99,27 +99,27 @@ function getTranslationKeyForAyah(surahNumber, ayahNumber) {
   return `surah:${surahNumber}:${ayahNumber}`;
 }
 
-/* â”€â”€ Font family mapping â”€â”€ */
+/* Font family mapping */
 const FONT_MAP = {
-  /* â”€â”€ Scheherazade New (recommended â€” no black-dot rendering artifacts) â”€â”€ */
+  /* Scheherazade New (recommended - no black-dot rendering artifacts) */
   "scheherazade-new":
     "'Scheherazade New','Amiri Quran','Noto Naskh Arabic',serif",
-  /* â”€â”€ Amiri Quran (clean alternative) â”€â”€ */
+  /* Amiri Quran (clean alternative) */
   "amiri-quran": "'Amiri Quran','Scheherazade New','Noto Naskh Arabic',serif",
-  /* â”€â”€ KFGQPC / ME Quran (may show rendering artifacts in some browsers) â”€â”€ */
+  /* KFGQPC / ME Quran (may show rendering artifacts in some browsers) */
   "mushaf-1441h":
     "'KFGQPC Uthmanic Script HAFS','ME Quran','Scheherazade New','Amiri Quran',serif",
   "mushaf-tajweed":
     "'KFGQPC Uthmanic Script HAFS','ME Quran','Scheherazade New','Amiri Quran',serif",
   "uthmanic-digital": "'ME Quran','Scheherazade New','Amiri Quran',serif",
   "uthmanic-bold": "'ME Quran Bold','ME Quran','Scheherazade New',serif",
-  /* â”€â”€ Indopak â”€â”€ */
+  /* Indopak */
   "qalam-madinah":
     "'Qalam Madinah','Scheherazade New','Noto Naskh Arabic',serif",
   "qalam-hanafi": "'Qalam Hanafi','Scheherazade New','Noto Naskh Arabic',serif",
   "uthman-taha":
     "'Uthman Taha Hafs','KFGQPC Uthmanic Script HAFS','Scheherazade New',serif",
-  /* â”€â”€ legacy aliases â”€â”€ */
+  /* legacy aliases */
   "me-quran": "'ME Quran','Scheherazade New','Amiri Quran',serif",
   scheherazade: "'Scheherazade New','Amiri Quran','Noto Naskh Arabic',serif",
   amiri: "'Amiri','Amiri Quran','Scheherazade New',serif",
@@ -145,12 +145,12 @@ const FONT_MAP = {
 };
 
 const TRANSLATION_LANGUAGE_META = {
-  fr: { fr: "FranÃ§ais", ar: "Ø§Ù„ÙØ±Ù†Ø³ÙŠØ©", en: "French", icon: "fa-language" },
-  en: { fr: "Anglais", ar: "Ø§Ù„Ø¥Ù†Ø¬Ù„ÙŠØ²ÙŠØ©", en: "English", icon: "fa-language" },
-  es: { fr: "Espagnol", ar: "Ø§Ù„Ø¥Ø³Ø¨Ø§Ù†ÙŠØ©", en: "Spanish", icon: "fa-language" },
-  de: { fr: "Allemand", ar: "Ø§Ù„Ø£Ù„Ù…Ø§Ù†ÙŠØ©", en: "German", icon: "fa-language" },
-  tr: { fr: "Turc", ar: "Ø§Ù„ØªØ±ÙƒÙŠØ©", en: "Turkish", icon: "fa-language" },
-  ur: { fr: "Ourdou", ar: "Ø§Ù„Ø£Ø±Ø¯ÙŠØ©", en: "Urdu", icon: "fa-language" },
+  fr: { fr: "Francais", ar: "الفرنسية", en: "French", icon: "fa-language" },
+  en: { fr: "Anglais", ar: "الإنجليزية", en: "English", icon: "fa-language" },
+  es: { fr: "Espagnol", ar: "الإسبانية", en: "Spanish", icon: "fa-language" },
+  de: { fr: "Allemand", ar: "الألمانية", en: "German", icon: "fa-language" },
+  tr: { fr: "Turc", ar: "التركية", en: "Turkish", icon: "fa-language" },
+  ur: { fr: "Ourdou", ar: "الأردية", en: "Urdu", icon: "fa-language" },
 };
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
@@ -634,9 +634,9 @@ export default function QuranDisplay() {
       ) {
         throw new Error(
           lang === "fr"
-            ? "Mode Warsh strict: texte Warsh indisponible (fallback Hafs refusÃ©)."
+            ? "Mode Warsh strict: texte Warsh indisponible (fallback Hafs refuse)."
             : lang === "ar"
-              ? "ÙˆØ¶Ø¹ ÙˆØ±Ø´ Ø§Ù„ØµØ§Ø±Ù…: Ù†Øµ ÙˆØ±Ø´ ØºÙŠØ± Ù…ØªØ§Ø­ (ØªÙ… Ø±ÙØ¶ Ø¨Ø¯ÙŠÙ„ Ø­ÙØµ)."
+              ? "وضع ورش الصارم: نص ورش غير متاح (تم رفض بديل حفص)."
               : "Warsh strict mode: Warsh text unavailable (Hafs fallback blocked).",
         );
       }
@@ -1245,8 +1245,8 @@ export default function QuranDisplay() {
         ? wordTranslationMeta.fr
         : wordTranslationMeta.en;
 
-  /* â”€â”€ Loading / Error states â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-  // Show skeleton ONLY when we have no data at all â€” otherwise show stale data while loading
+  /* Loading / Error states */
+  // Show skeleton ONLY when we have no data at all - otherwise show stale data while loading
   if (loading && ayahs.length === 0) {
     return (
       <div className="quran-loading">
@@ -1286,7 +1286,7 @@ export default function QuranDisplay() {
           <>
             <p className="quran-error-network-msg">
               {lang === "fr"
-                ? "Impossible de charger les donnÃ©es : vÃ©rifiez votre connexion internet et rÃ©essayez."
+                ? "Impossible de charger les donnees : verifiez votre connexion internet et reessayez."
                 : "Unable to load data: please check your internet connection and try again."}
             </p>
             <p className="quran-error-detail">{error}</p>
@@ -1299,7 +1299,7 @@ export default function QuranDisplay() {
             {t("errors.retry", lang)}
           </button>
           <button className="btn btn-outline" onClick={repairPlatform}>
-            {lang === "fr" ? "RÃ©parer la plateforme" : "Repair Platform"}
+            {lang === "fr" ? "Reparer la plateforme" : "Repair Platform"}
           </button>
         </div>
       </div>
@@ -1316,7 +1316,7 @@ export default function QuranDisplay() {
             {t("errors.retry", lang)}
           </button>
           <button className="btn btn-outline" onClick={repairPlatform}>
-            {lang === "fr" ? "RÃ©parer la plateforme" : "Repair Platform"}
+            {lang === "fr" ? "Reparer la plateforme" : "Repair Platform"}
           </button>
         </div>
       </div>
@@ -1409,7 +1409,7 @@ export default function QuranDisplay() {
             aria-label={t("settings.surahMode", lang)}
             className={`quran-mode-pane quran-mode-pane--surah ${modePaneShellClass}`}
           >
-            {/* Surah header â€” always shown except when QCF4 mushaf view handles it */}
+            {/* Surah header - always shown except when QCF4 mushaf view handles it */}
             {!(isQCF4 && mushafLayout === "mushaf") && !isQCF4 && (
               <SurahHeader surahNum={currentSurah} lang={lang} />
             )}
@@ -1438,12 +1438,12 @@ export default function QuranDisplay() {
                     ? lang === "fr"
                       ? "Afficher en liste"
                       : lang === "ar"
-                        ? "Ø¹Ø±Ø¶ ÙƒÙ‚Ø§Ø¦Ù…Ø©"
+                        ? "عرض كقائمة"
                         : "Show as list"
                     : lang === "fr"
-                      ? "Afficher mot Ã  mot"
+                      ? "Afficher mot a mot"
                       : lang === "ar"
-                        ? "Ø¹Ø±Ø¶ ÙƒÙ„Ù…Ø© Ø¨ÙƒÙ„Ù…Ø©"
+                        ? "عرض كلمة بكلمة"
                         : "Show word by word"
                 }
               >
@@ -1453,14 +1453,14 @@ export default function QuranDisplay() {
                 <span>
                   {showWordByWord
                     ? lang === "fr"
-                      ? "Mot Ã  mot"
+                      ? "Mot a mot"
                       : lang === "ar"
-                        ? "ÙƒÙ„Ù…Ø© Ø¨ÙƒÙ„Ù…Ø©"
+                        ? "كلمة بكلمة"
                         : "Word by Word"
                     : lang === "fr"
                       ? "Liste"
                       : lang === "ar"
-                        ? "Ù‚Ø§Ø¦Ù…Ø©"
+                        ? "قائمة"
                         : "List"}
                 </span>
               </button>
@@ -1492,15 +1492,15 @@ export default function QuranDisplay() {
                   })
                 }
                 title={
-                  lang === "fr" ? "Mode mÃ©morisation" : "Memorization mode"
+                  lang === "fr" ? "Mode mémorisation" : "Memorization mode"
                 }
               >
                 <i className="fas fa-graduation-cap"></i>
-                {lang === "fr" ? "MÃ©morisation" : "Memorize"}
+                {lang === "fr" ? "Mémorisation" : "Memorize"}
               </button>
             </div>
 
-            {/* â”€â”€ Mushaf page layout - Clean Page Style (Quran.com like) â”€â”€ */}
+            {/* Mushaf page layout - Clean Page Style (Quran.com like) */}
             {mushafLayout === "mushaf" && (
               <>
                 <CleanPageView
@@ -1534,9 +1534,9 @@ export default function QuranDisplay() {
                         className={`fas fa-arrow-${lang === "ar" ? "right" : "left"}`}
                       ></i>
                       {lang === "fr"
-                        ? "PrÃ©cÃ©dent"
+                        ? "Precedent"
                         : lang === "ar"
-                          ? "Ø§Ù„Ø³Ø§Ø¨Ù‚"
+                          ? "السابق"
                           : "Previous"}
                     </button>
                     <span className="chunk-label">
@@ -1560,7 +1560,7 @@ export default function QuranDisplay() {
                       {lang === "fr"
                         ? "Suivant"
                         : lang === "ar"
-                          ? "Ø§Ù„ØªØ§Ù„ÙŠ"
+                          ? "التالي"
                           : "Next"}
                       <i
                         className={`fas fa-arrow-${lang === "ar" ? "left" : "right"}`}
@@ -1571,10 +1571,10 @@ export default function QuranDisplay() {
               </>
             )}
 
-            {/* â”€â”€ List layout (default) â€” chunks + ayah blocks â”€â”€ */}
+            {/* List layout (default) - chunks + ayah blocks */}
             {mushafLayout !== "mushaf" && (
               <>
-                {/* Ayah list â€” plain render, no virtual scroll */}
+                {/* Ayah list - plain render, no virtual scroll */}
                 <div
                   role="list"
                   className={`surah-ayahs-list ${listSurfaceClass}`}
@@ -1594,7 +1594,7 @@ export default function QuranDisplay() {
                           <div className="page-separator">
                             <span className="page-separator-line"></span>
                             <span className="page-separator-text">
-                              {lang === "ar" ? "ØµÙØ­Ø©" : "Page"}{" "}
+                              {lang === "ar" ? "صفحة" : "Page"}{" "}
                               {lang === "ar" ? toAr(ayah.page) : ayah.page}
                             </span>
                             <span className="page-separator-line"></span>
@@ -1642,7 +1642,7 @@ export default function QuranDisplay() {
                       <i
                         className={`fas fa-arrow-${lang === "ar" ? "right" : "left"}`}
                       ></i>
-                      {lang === "fr" ? "PrÃ©cÃ©dent" : "Previous"}
+                      {lang === "fr" ? "Precedent" : "Previous"}
                     </button>
                     <span className="chunk-label">
                       {lang === "fr"
@@ -1670,7 +1670,7 @@ export default function QuranDisplay() {
               </>
             )}
 
-            {/* Surah navigation â€” always shown */}
+            {/* Surah navigation - always shown */}
             <div className="quran-nav">
               <button
                 className="btn btn-outline"
@@ -1721,7 +1721,7 @@ export default function QuranDisplay() {
                 {showRiwayaStar && (
                   <i className="fas fa-star page-header-bar__riwaya-star"></i>
                 )}
-                {riwaya === "warsh" ? "ÙˆØ±Ø´ Â· Warsh" : "Ø­ÙØµ Â· Hafs"}
+                {riwaya === "warsh" ? "WARSH" : "HAFS"}
               </span>
             </div>
 
@@ -1742,12 +1742,12 @@ export default function QuranDisplay() {
                     ? lang === "fr"
                       ? "Afficher en liste"
                       : lang === "ar"
-                        ? "Ø¹Ø±Ø¶ ÙƒÙ‚Ø§Ø¦Ù…Ø©"
+                        ? "عرض كقائمة"
                         : "Show as list"
                     : lang === "fr"
-                      ? "Afficher mot Ã  mot"
+                      ? "Afficher mot à mot"
                       : lang === "ar"
-                        ? "Ø¹Ø±Ø¶ ÙƒÙ„Ù…Ø© Ø¨ÙƒÙ„Ù…Ø©"
+                        ? "عرض كلمة بكلمة"
                         : "Show word by word"
                 }
               >
@@ -1757,14 +1757,14 @@ export default function QuranDisplay() {
                 <span>
                   {showWordByWord
                     ? lang === "fr"
-                      ? "Mot Ã  mot"
+                      ? "Mot à mot"
                       : lang === "ar"
-                        ? "ÙƒÙ„Ù…Ø© Ø¨ÙƒÙ„Ù…Ø©"
+                        ? "كلمة بكلمة"
                         : "Word by Word"
                     : lang === "fr"
                       ? "Liste"
                       : lang === "ar"
-                        ? "Ù‚Ø§Ø¦Ù…Ø©"
+                        ? "قائمة"
                         : "List"}
                 </span>
               </button>
@@ -1796,11 +1796,11 @@ export default function QuranDisplay() {
                   })
                 }
                 title={
-                  lang === "fr" ? "Mode mÃ©morisation" : "Memorization mode"
+                  lang === "fr" ? "Mode mémorisation" : "Memorization mode"
                 }
               >
                 <i className="fas fa-graduation-cap"></i>
-                {lang === "fr" ? "MÃ©morisation" : "Memorize"}
+                {lang === "fr" ? "Mémorisation" : "Memorize"}
               </button>
             </div>
 
@@ -1823,7 +1823,7 @@ export default function QuranDisplay() {
                 />
               ))}
 
-            {/* Vue liste â€” utilise AyahBlock (cohÃ©rent avec sourate/juz) */}
+            {/* Vue liste - utilise AyahBlock (coherent avec sourate/juz) */}
             {mushafLayout !== "mushaf" && (
               <div className={listSurfaceClass}>
                 {surahGroups.map((group, gi) => (
@@ -1907,7 +1907,7 @@ export default function QuranDisplay() {
             aria-label={t("settings.juzMode", lang)}
             className={`quran-mode-pane quran-mode-pane--juz ${modePaneShellClass}`}
           >
-            {/* En-tÃªte Juz */}
+            {/* En-tete Juz */}
             <div className="page-header-bar">
               <span>
                 <i
@@ -1920,7 +1920,7 @@ export default function QuranDisplay() {
                 {showRiwayaStar && (
                   <i className="fas fa-star page-header-bar__riwaya-star"></i>
                 )}
-                {riwaya === "warsh" ? "ÙˆØ±Ø´ Â· Warsh" : "Ø­ÙØµ Â· Hafs"}
+                {riwaya === "warsh" ? "WARSH" : "HAFS"}
               </span>
             </div>
 
@@ -1941,12 +1941,12 @@ export default function QuranDisplay() {
                     ? lang === "fr"
                       ? "Afficher en liste"
                       : lang === "ar"
-                        ? "Ø¹Ø±Ø¶ ÙƒÙ‚Ø§Ø¦Ù…Ø©"
+                        ? "عرض كقائمة"
                         : "Show as list"
                     : lang === "fr"
-                      ? "Afficher mot Ã  mot"
+                      ? "Afficher mot à mot"
                       : lang === "ar"
-                        ? "Ø¹Ø±Ø¶ ÙƒÙ„Ù…Ø© Ø¨ÙƒÙ„Ù…Ø©"
+                        ? "عرض كلمة بكلمة"
                         : "Show word by word"
                 }
               >
@@ -1956,14 +1956,14 @@ export default function QuranDisplay() {
                 <span>
                   {showWordByWord
                     ? lang === "fr"
-                      ? "Mot Ã  mot"
+                      ? "Mot à mot"
                       : lang === "ar"
-                        ? "ÙƒÙ„Ù…Ø© Ø¨ÙƒÙ„Ù…Ø©"
+                        ? "كلمة بكلمة"
                         : "Word by Word"
                     : lang === "fr"
                       ? "Liste"
                       : lang === "ar"
-                        ? "Ù‚Ø§Ø¦Ù…Ø©"
+                        ? "قائمة"
                         : "List"}
                 </span>
               </button>
@@ -1994,11 +1994,11 @@ export default function QuranDisplay() {
                   })
                 }
                 title={
-                  lang === "fr" ? "Mode mÃ©morisation" : "Memorization mode"
+                  lang === "fr" ? "Mode mémorisation" : "Memorization mode"
                 }
               >
                 <i className="fas fa-graduation-cap"></i>
-                {lang === "fr" ? "MÃ©morisation" : "Memorize"}
+                {lang === "fr" ? "Mémorisation" : "Memorize"}
               </button>
             </div>
 
@@ -2127,7 +2127,7 @@ export default function QuranDisplay() {
             >
               <i className="fas fa-cloud"></i> API
             </a>
-            <span className="footer-dot">Â·</span>
+            <span className="footer-dot">·</span>
             <a
               href="https://archive.org/download/MushafAlMadinahWarsh5488865/Mushaf%20AlMadinah_Warsh.pdf"
               target="_blank"
@@ -2135,7 +2135,7 @@ export default function QuranDisplay() {
             >
               <i className="fas fa-file-pdf"></i> Warsh PDF
             </a>
-            <span className="footer-dot">Â·</span>
+            <span className="footer-dot">·</span>
             <button
               className="footer-link-btn"
               onClick={() => dispatch({ type: "TOGGLE_SETTINGS" })}
@@ -2144,11 +2144,11 @@ export default function QuranDisplay() {
             </button>
           </div>
           <p className="footer-verse">
-            ï´¿ Ø¥ÙÙ†ÙŽÙ‘Ø§ Ù†ÙŽØ­Ù’Ù†Ù Ù†ÙŽØ²ÙŽÙ‘Ù„Ù’Ù†ÙŽØ§ Ø§Ù„Ø°ÙÙ‘ÙƒÙ’Ø±ÙŽ ÙˆÙŽØ¥ÙÙ†ÙŽÙ‘Ø§ Ù„ÙŽÙ‡Ù Ù„ÙŽØ­ÙŽØ§ÙÙØ¸ÙÙˆÙ†ÙŽ ï´¾
+            ﴿ إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ ﴾
           </p>
         </footer>
 
-        {/* â”€â”€ Shared Site Footer â”€â”€ */}
+        {/* Shared Site Footer */}
         <Footer
           goSurah={(n) => {
             set({ displayMode: "surah", showHome: false, showDuas: false });
@@ -2159,7 +2159,7 @@ export default function QuranDisplay() {
           }}
         />
 
-        {/* â”€â”€ Fullscreen Mushaf Overlay â”€â”€ */}
+        {/* Fullscreen Mushaf Overlay */}
         {fullPage && (
           <div
             className="mfp-overlay"
@@ -2184,10 +2184,10 @@ export default function QuranDisplay() {
                   <span className="mfp-page-chip">
                     {riwaya === "warsh"
                       ? lang === "ar"
-                        ? "ÙˆØ±Ø´"
+                        ? "ورش"
                         : "Warsh"
                       : lang === "ar"
-                        ? "Ø­ÙØµ"
+                        ? "حفص"
                         : "Hafs"}
                   </span>
                   <span className="mfp-page-chip">
@@ -2217,7 +2217,7 @@ export default function QuranDisplay() {
                       {a.text || ""}
                     </span>{" "}
                     <span className="mfp-ayah-num">
-                      ï´¿{a.numberInSurah}ï´¾
+                      ﴿{a.numberInSurah}﴾
                     </span>{" "}
                   </React.Fragment>
                 ))}
@@ -2229,7 +2229,7 @@ export default function QuranDisplay() {
                       ? getSurah(currentSurah).fr
                       : getSurah(currentSurah).en
                     : ""}
-                  {" Â· "}
+                  {" · "}
                   {ayahs.length} {lang === "fr" ? "versets" : "ayahs"}
                 </span>
                 <span className="mfp-footer-text mfp-footer-text--muted">

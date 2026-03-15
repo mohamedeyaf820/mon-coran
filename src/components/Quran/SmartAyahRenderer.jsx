@@ -94,6 +94,13 @@ export function KaraokeWarshText({
     calibration: effectiveCalibration,
   });
 
+  const lagWords = useMemo(() => {
+    if (!effectiveCalibration) return 0;
+    return words.length >= 24
+      ? Number(effectiveCalibration.lagWordsLong ?? 0)
+      : Number(effectiveCalibration.lagWordsBase ?? 0);
+  }, [effectiveCalibration, words.length]);
+
   // Reset highlighted word index when user seeks in audio
   useEffect(() => {
     lastIdxRef.current = 0;
@@ -108,12 +115,12 @@ export function KaraokeWarshText({
       }
       idx = i;
     }
-    // Pas de lag par mot — uniquement l'offsetSec gère la précision
+    const adjustedIdx = Math.max(0, idx - Math.max(0, lagWords));
     const last = lastIdxRef.current;
-    const finalIdx = Math.max(last, idx);
+    const finalIdx = Math.max(last, adjustedIdx);
     lastIdxRef.current = finalIdx;
     return finalIdx;
-  }, [progress, wordWeights]);
+  }, [progress, wordWeights, lagWords]);
 
   return (
     <WarshWordText
