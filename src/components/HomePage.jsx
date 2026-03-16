@@ -225,15 +225,39 @@ function PercentBar({ value }) {
   const pct = Math.max(0, Math.min(100, value));
 
   return (
-    <svg viewBox="0 0 100 8" preserveAspectRatio="none" className="block h-full w-full">
+    <svg
+      viewBox="0 0 100 8"
+      preserveAspectRatio="none"
+      className="block h-full w-full"
+    >
       <defs>
-        <linearGradient id="home-progress-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient
+          id="home-progress-gradient"
+          x1="0%"
+          y1="0%"
+          x2="100%"
+          y2="0%"
+        >
           <stop offset="0%" stopColor="var(--primary)" />
           <stop offset="100%" stopColor="var(--gold)" />
         </linearGradient>
       </defs>
-      <rect x="0" y="0" width="100" height="8" rx="4" className="fill-black/5 dark:fill-white/10" />
-      <rect x="0" y="0" width={pct} height="8" rx="4" fill="url(#home-progress-gradient)" />
+      <rect
+        x="0"
+        y="0"
+        width="100"
+        height="8"
+        rx="4"
+        className="fill-black/5 dark:fill-white/10"
+      />
+      <rect
+        x="0"
+        y="0"
+        width={pct}
+        height="8"
+        rx="4"
+        fill="url(#home-progress-gradient)"
+      />
     </svg>
   );
 }
@@ -420,8 +444,8 @@ const JuzCard = memo(function JuzCard({
   return (
     <button
       className={cn(
-          "hpq-card hpq-card--juz !transition-all !duration-300 hover:!-translate-y-1 hover:!scale-[1.01]",
-          isActive && "hpq-card--active",
+        "hpq-card hpq-card--juz !transition-all !duration-300 hover:!-translate-y-1 hover:!scale-[1.01]",
+        isActive && "hpq-card--active",
       )}
       onClick={() => onClick(juz)}
       style={cardVisibilityStyle}
@@ -450,14 +474,8 @@ function EmptyState({ icon, text }) {
 /* HomePage principale */
 export default function HomePage() {
   const { state, dispatch, set } = useApp();
-  const {
-    lang,
-    currentSurah,
-    currentAyah,
-    currentJuz,
-    displayMode,
-    riwaya,
-  } = state;
+  const { lang, currentSurah, currentAyah, currentJuz, displayMode, riwaya } =
+    state;
   const isRtl = lang === "ar";
 
   const [activeTab, setActiveTab] = useState("surah");
@@ -469,7 +487,8 @@ export default function HomePage() {
   const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
   const [now, setNow] = useState(() => new Date());
   const [recentVisits, setRecentVisits] = useState([]);
-  const [visibleSurahCount, setVisibleSurahCount] = useState(HOME_INITIAL_SURAHS);
+  const [visibleSurahCount, setVisibleSurahCount] =
+    useState(HOME_INITIAL_SURAHS);
   const deferredFilter = useDeferredValue(filter);
   const loadMoreRef = useRef(null);
 
@@ -608,7 +627,8 @@ export default function HomePage() {
   const hasSurahFilter = normalizedDeferredFilter.length > 0;
 
   const filteredSurahs = useMemo(() => {
-    const source = !trimmedDeferredFilter ? [...SURAHS]
+    const source = !trimmedDeferredFilter
+      ? [...SURAHS]
       : SURAHS.filter(
           (s) =>
             s.ar.includes(trimmedDeferredFilter) ||
@@ -647,7 +667,8 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!hasMoreSurahs) return;
-    if (typeof window === "undefined" || !("IntersectionObserver" in window)) return;
+    if (typeof window === "undefined" || !("IntersectionObserver" in window))
+      return;
 
     const node = loadMoreRef.current;
     if (!node) return;
@@ -809,6 +830,12 @@ export default function HomePage() {
 
   const infoTabs = [
     {
+      id: "suggest",
+      icon: "fa-lightbulb",
+      label: t("suggest"),
+      count: suggestionSet.surahs.length,
+    },
+    {
       id: "bookmarks",
       icon: "fa-bookmark",
       label: t("bookmarks"),
@@ -820,18 +847,15 @@ export default function HomePage() {
       label: t("notes"),
       count: notes.length,
     },
-    {
-      id: "suggest",
-      icon: "fa-lightbulb",
-      label: t("suggest"),
-      count: suggestionSet.surahs.length,
-    },
   ];
   const useSurahGridScroll = activeTab === "surah" && viewMode === "grid";
 
   return (
     <div className="hp2 hp2--platform !relative !overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
+      <div
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+        aria-hidden="true"
+      >
         <div className="absolute -top-28 left-[6%] h-72 w-72 rounded-full blur-[110px] motion-safe:animate-pulse [animation-duration:8s]" />
         <div className="absolute top-[18%] -right-28 h-80 w-80 rounded-full blur-[120px] motion-safe:animate-pulse [animation-duration:11s]" />
         <div className="absolute -bottom-32 left-[30%] h-96 w-96 rounded-full blur-[130px] motion-safe:animate-pulse [animation-duration:9s]" />
@@ -843,9 +867,18 @@ export default function HomePage() {
         <div className="pointer-events-none absolute -top-12 right-[14%] h-28 w-28 rounded-full border border-white/15 opacity-35 motion-safe:animate-spin [animation-duration:16s]" />
         <div className="pointer-events-none absolute -bottom-14 left-[44%] h-36 w-36 rounded-full border opacity-30 motion-safe:animate-spin [animation-direction:reverse] [animation-duration:22s]" />
         {/* Orbs décoratifs */}
-        <div className="hp2-hero__orb hp2-hero__orb--1 !opacity-65 motion-safe:animate-pulse [animation-duration:9s]" aria-hidden="true" />
-        <div className="hp2-hero__orb hp2-hero__orb--2 !opacity-60 motion-safe:animate-pulse [animation-duration:12s]" aria-hidden="true" />
-        <div className="hp2-hero__orb hp2-hero__orb--3 !opacity-55 motion-safe:animate-pulse [animation-duration:10s]" aria-hidden="true" />
+        <div
+          className="hp2-hero__orb hp2-hero__orb--1 !opacity-65 motion-safe:animate-pulse [animation-duration:9s]"
+          aria-hidden="true"
+        />
+        <div
+          className="hp2-hero__orb hp2-hero__orb--2 !opacity-60 motion-safe:animate-pulse [animation-duration:12s]"
+          aria-hidden="true"
+        />
+        <div
+          className="hp2-hero__orb hp2-hero__orb--3 !opacity-55 motion-safe:animate-pulse [animation-duration:10s]"
+          aria-hidden="true"
+        />
 
         <div className="hp2-hero__inner !relative !z-10">
           {/* Gauche */}
@@ -911,18 +944,22 @@ export default function HomePage() {
             <div className="hp2-hero__ctas mt-5! flex! flex-wrap! gap-3 max-[520px]:gap-2!">
               {hasReadingHistory ? (
                 <button
-                  className="hp2-btn hp2-btn--primary h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.01] max-[520px]:w-full! max-[520px]:justify-center"
+                  className="hp2-btn  h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.01] max-[520px]:w-full! max-[520px]:justify-center"
                   onClick={continueReading}
                 >
                   <i className="fas fa-circle-play" />
-                  <span className="truncate max-[520px]:max-w-[62vw]">{t("continueReading")}</span>
+                  <span className="truncate max-[520px]:max-w-[62vw]">
+                    {t("continueReading")}
+                  </span>
                   {surahLabel && (
-                    <span className="hp2-btn__chip max-[520px]:hidden">{surahLabel.ar}</span>
+                    <span className="hp2-btn__chip max-[520px]:hidden">
+                      {surahLabel.ar}
+                    </span>
                   )}
                 </button>
               ) : (
                 <button
-                  className="hp2-btn hp2-btn--primary h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.01] max-[520px]:w-full! max-[520px]:justify-center"
+                  className="hp2-btn  h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.01] max-[520px]:w-full! max-[520px]:justify-center"
                   onClick={() => goSurah(1)}
                 >
                   <i className="fas fa-book-open" />
@@ -933,7 +970,9 @@ export default function HomePage() {
                         ? "Commencer la lecture"
                         : "Start reading"}
                   </span>
-                  <span className="hp2-btn__chip max-[520px]:hidden">الفاتحة</span>
+                  <span className="hp2-btn__chip max-[520px]:hidden">
+                    الفاتحة
+                  </span>
                 </button>
               )}
               {hasReadingHistory && (
@@ -954,87 +993,138 @@ export default function HomePage() {
               </button>
             </div>
 
-            {/* Lectures récentes */}
-            {recentVisits.length > 0 && (
-              <div className="hp2-recent-history mt-6! rounded-2xl! border! p-4! backdrop-blur-md">
-                <div className="hp2-recent-title mb-3! text-[0.69rem]! font-semibold! uppercase! tracking-[0.18em]">
-                  <i className="fas fa-clock-rotate-left" />
-                  {lang === "ar"
-                    ? "استكمال"
-                    : lang === "fr"
-                      ? "Reprendre"
-                      : "Continue"}
-                </div>
-                <div className="hp2-recent-items grid! gap-2.5">
-                  {recentVisits.map((v) => (
+            {/* Panneau latéral */}
+            <aside className="hp2-aside" style={HOME_DEFERRED_SECTION_STYLE}>
+              <div className="hp2-panel !rounded-2xl !border !backdrop-blur-md">
+                <div className="hp2-panel__tabs">
+                  {infoTabs.map((tab) => (
                     <button
-                      key={v.surah}
-                      className="hp2-recent-item group grid! grid-cols-[auto_1fr_auto]! items-center! gap-3! rounded-xl! border! px-4! py-3! text-left! transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.005] max-[520px]:grid-cols-[auto_1fr]! max-[520px]:gap-2.5! max-[520px]:px-3!"
-                      onClick={() => goSurahAyah(v.surah, v.ayah)}
+                      key={tab.id}
+                      className={cn(
+                        "hp2-panel__tab",
+                        activeInfo === tab.id && "hp2-panel__tab--on",
+                      )}
+                      onClick={() => selectInfoTab(tab.id)}
                     >
-                      <span className="hp2-recent-num flex! h-9! w-9! items-center! justify-center! rounded-full! border! text-sm! font-bold">
-                        {v.surah}
-                      </span>
-                      <div className="hp2-recent-info min-w-0">
-                        <span className="hp2-recent-name block! truncate! text-[0.95rem]! font-semibold">
-                          {v.surahName}
-                        </span>
-                        {v.ayah > 1 && (
-                          <span className="hp2-recent-ayah mt-0.5! block! text-[0.72rem]! font-medium">
-                            v.{v.ayah}
-                          </span>
-                        )}
-                      </div>
-                      <span className="hp2-recent-play flex! h-8! w-8! items-center! justify-center! rounded-full! transition-transform! duration-300! group-hover:scale-110 max-[520px]:hidden">
-                        <i className="fas fa-play text-[0.78rem]" />
-                      </span>
+                      <i className={`fas ${tab.icon}`} />
+                      <span>{tab.label}</span>
+                      {tab.count > 0 && (
+                        <span className="hp2-panel__count">{tab.count}</span>
+                      )}
                     </button>
                   ))}
                 </div>
-              </div>
-            )}
 
-            {/* Features mini grid */}
-            <div className="hp2-features mt-5! grid! grid-cols-1! gap-2! sm:grid-cols-2">
-              {[
-                {
-                  icon: "fa-palette",
-                  fr: "Tajwîd coloré",
-                  en: "Color tajweed",
-                  ar: "تجويد ملون",
-                },
-                {
-                  icon: "fa-language",
-                  fr: "Mot à mot",
-                  en: "Word by word",
-                  ar: "كلمة بكلمة",
-                },
-                {
-                  icon: "fa-headphones",
-                  fr: "18+ récitateurs",
-                  en: "18+ reciters",
-                  ar: "١٨+ قارئ",
-                },
-                {
-                  icon: "fa-moon",
-                  fr: "4 thèmes harmonisés",
-                  en: "4 harmonized themes",
-                  ar: "٤ سمات منسجمة",
-                },
-              ].map((f) => (
-                <div
-                  key={f.icon}
-                  className="hp2-feature flex! items-center! gap-2.5! rounded-xl! border! px-3! py-2.5! backdrop-blur-md! transition-all! duration-300! hover:-translate-y-0.5"
-                >
-                  <span className="hp2-feature__icon">
-                    <i className={`fas ${f.icon}`} />
-                  </span>
-                  <span className="hp2-feature__text max-[520px]:text-[0.76rem] max-[520px]:leading-tight">
-                    {lang === "ar" ? f.ar : lang === "fr" ? f.fr : f.en}
-                  </span>
+                <div className="hp2-panel__body">
+                  {activeInfo === "bookmarks" &&
+                    (bookmarks.length === 0 ? (
+                      <EmptyState icon="fa-bookmark" text={t("noBookmarks")} />
+                    ) : (
+                      bookmarks.slice(0, 10).map((bk) => {
+                        const s = SURAHS[bk.surah - 1];
+                        return (
+                          <button
+                            key={bk.id}
+                            className="hp2-item"
+                            onClick={() => goSurahAyah(bk.surah, bk.ayah)}
+                          >
+                            <span className="hp2-item__icon">
+                              <i className="fas fa-bookmark" />
+                            </span>
+                            <div className="hp2-item__body">
+                              <span className="hp2-item__ar">{s?.ar}</span>
+                              <span className="hp2-item__sub">
+                                {lang === "fr" ? s?.fr : s?.en} · v.{bk.ayah}
+                                {bk.label && <em> � {bk.label}</em>}
+                              </span>
+                            </div>
+                            <i
+                              className={`fas fa-chevron-${isRtl ? "left" : "right"} hp2-item__caret`}
+                            />
+                          </button>
+                        );
+                      })
+                    ))}
+
+                  {activeInfo === "notes" &&
+                    (notes.length === 0 ? (
+                      <EmptyState icon="fa-pen-line" text={t("noNotes")} />
+                    ) : (
+                      notes.slice(0, 10).map((note) => {
+                        const s = SURAHS[note.surah - 1];
+                        return (
+                          <button
+                            key={note.id}
+                            className="hp2-item"
+                            onClick={() => goSurahAyah(note.surah, note.ayah)}
+                          >
+                            <span className="hp2-item__icon">
+                              <i className="fas fa-pen-line" />
+                            </span>
+                            <div className="hp2-item__body">
+                              <span className="hp2-item__ar">{s?.ar}</span>
+                              <span className="hp2-item__sub">
+                                {lang === "fr" ? s?.fr : s?.en} · v.{note.ayah}
+                              </span>
+                              {note.text && (
+                                <span className="hp2-item__excerpt">
+                                  {note.text.slice(0, 70)}
+                                  {note.text.length > 70 ? "..." : ""}
+                                </span>
+                              )}
+                            </div>
+                            <i
+                              className={`fas fa-chevron-${isRtl ? "left" : "right"} hp2-item__caret`}
+                            />
+                          </button>
+                        );
+                      })
+                    ))}
+
+                  {activeInfo === "suggest" && (
+                    <>
+                      <div className="hp2-suggest-period">
+                        <i className={`fas ${suggestionSet.icon}`} />
+                        <span>
+                          {lang === "ar"
+                            ? suggestionSet.period.ar
+                            : lang === "fr"
+                              ? suggestionSet.period.fr
+                              : suggestionSet.period.en}
+                        </span>
+                      </div>
+                      {suggestionSet.surahs.map(
+                        ({ n, fr, en, ar: arLabel }) => {
+                          const s = SURAHS[n - 1];
+                          return (
+                            <button
+                              key={n}
+                              className="hp2-item"
+                              onClick={() => goSurah(n)}
+                            >
+                              <span className="hp2-item__num">{n}</span>
+                              <div className="hp2-item__body">
+                                <span className="hp2-item__ar">{s.ar}</span>
+                                <span className="hp2-item__sub">
+                                  {lang === "ar"
+                                    ? arLabel
+                                    : lang === "fr"
+                                      ? fr
+                                      : en}
+                                </span>
+                              </div>
+                              <i
+                                className={`fas fa-chevron-${isRtl ? "left" : "right"} hp2-item__caret`}
+                              />
+                            </button>
+                          );
+                        },
+                      )}
+                    </>
+                  )}
                 </div>
-              ))}
-            </div>
+              </div>
+            </aside>
           </div>
 
           {/* ���� Droite ���� */}
@@ -1054,13 +1144,20 @@ export default function HomePage() {
                   )}
                 </span>
               </div>
-              <p className="hp2-vod__text relative! z-10! text-[1.45rem]! leading-[1.95] max-[520px]:text-[1.2rem]! max-[520px]:leading-[1.8]!" dir="rtl">
+              <p
+                className="hp2-vod__text relative! z-10! text-[1.45rem]! leading-[1.95] max-[520px]:text-[1.2rem]! max-[520px]:leading-[1.8]!"
+                dir="rtl"
+              >
                 {dailyVerse.text}
               </p>
               {lang === "fr" && dailyVerse.trans_fr && (
-                <p className="hp2-vod__trans relative! z-10 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden">{dailyVerse.trans_fr}</p>
+                <p className="hp2-vod__trans relative! z-10 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden">
+                  {dailyVerse.trans_fr}
+                </p>
               )}
-              <span className="hp2-vod__ref relative! z-10">{dailyVerse.ref}</span>
+              <span className="hp2-vod__ref relative! z-10">
+                {dailyVerse.ref}
+              </span>
               {vodSurahNum && (
                 <button
                   className="hp2-vod__btn relative! z-10! rounded-xl! border! px-3.5! py-2! transition-all! duration-300! hover:-translate-y-0.5"
@@ -1125,7 +1222,10 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <button className="hp2-focus-card__cta transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.01]" onClick={continueReading}>
+              <button
+                className="hp2-focus-card__cta transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.01]"
+                onClick={continueReading}
+              >
                 <i className="fas fa-circle-play" />
                 {hasReadingHistory
                   ? lang === "fr"
@@ -1243,14 +1343,21 @@ export default function HomePage() {
           {t("quickAccess")}
         </span>
         <div className="hp2-quickbar__track mt-2">
-          <button className="hp2-qchip hp2-qchip--special transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.02]" onClick={openDuas}>
+          <button
+            className="hp2-qchip hp2-qchip--special transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.02]"
+            onClick={openDuas}
+          >
             <i className="fas fa-hands-praying" />
             {lang === "ar" ? "أدعية" : lang === "fr" ? "Douas" : "Duas"}
           </button>
           {QUICK_ACCESS.map(({ n, label_fr, label_en }) => {
             const s = SURAHS[n - 1];
             return (
-              <button key={n} className="hp2-qchip transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.02]" onClick={() => goSurah(n)}>
+              <button
+                key={n}
+                className="hp2-qchip transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.02]"
+                onClick={() => goSurah(n)}
+              >
                 <span className="hp2-qchip__ar">{s?.ar}</span>
                 <span className="hp2-qchip__sub">
                   {lang === "fr" ? label_fr : lang === "ar" ? s?.ar : label_en}
@@ -1262,183 +1369,59 @@ export default function HomePage() {
       </nav>
 
       {/* BANDE STATS */}
-      <div
-        className="hp2-stats-strip relative! z-10! rounded-2xl! border! p-3"
-        style={HOME_DEFERRED_SECTION_STYLE}
-      >
-        {[
-          {
-            num: "114",
-            icon: "fa-quran",
-            labelFr: "Sourates",
-            labelEn: "Surahs",
-            labelAr: "سور",
-          },
-          {
-            num: "30",
-            icon: "fa-layer-group",
-            labelFr: "Juz'",
-            labelEn: "Juz",
-            labelAr: "جزء",
-          },
-          {
-            num: "6 236",
-            icon: "fa-star",
-            labelFr: "Versets",
-            labelEn: "Ayahs",
-            labelAr: "آية",
-          },
-          {
-            num: "77 430",
-            icon: "fa-font",
-            labelFr: "Mots",
-            labelEn: "Words",
-            labelAr: "كلمة",
-          },
-        ].map((s, i) => (
-          <div key={i} className="hp2-stats-strip__item !rounded-xl !border !transition-all !duration-300 hover:!-translate-y-0.5">
-            <i className={`fas ${s.icon} hp2-stats-strip__icon`} />
-            <span className="hp2-stats-strip__num">{s.num}</span>
-            <span className="hp2-stats-strip__label">
-              {lang === "ar"
-                ? s.labelAr
-                : lang === "fr"
-                  ? s.labelFr
-                  : s.labelEn}
-            </span>
-          </div>
-        ))}
-      </div>
 
       {/*  GRILLE PRINCIPALE  */}
       <div className="hp2-layout !relative !z-10">
-        {/* Panneau latéral */}
-        <aside className="hp2-aside" style={HOME_DEFERRED_SECTION_STYLE}>
-          <div className="hp2-panel !rounded-2xl !border !backdrop-blur-md">
-            <div className="hp2-panel__tabs">
-              {infoTabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  className={cn(
-                    "hp2-panel__tab",
-                    activeInfo === tab.id && "hp2-panel__tab--on",
-                  )}
-                  onClick={() => selectInfoTab(tab.id)}
-                >
-                  <i className={`fas ${tab.icon}`} />
-                  <span>{tab.label}</span>
-                  {tab.count > 0 && (
-                    <span className="hp2-panel__count">{tab.count}</span>
-                  )}
-                </button>
-              ))}
+        <div
+          className="hp2-stats-strip relative! z-10! rounded-2xl! border! p-3"
+          style={HOME_DEFERRED_SECTION_STYLE}
+        >
+          {[
+            {
+              num: "114",
+              icon: "fa-quran",
+              labelFr: "Sourates",
+              labelEn: "Surahs",
+              labelAr: "سور",
+            },
+            {
+              num: "30",
+              icon: "fa-layer-group",
+              labelFr: "Juz'",
+              labelEn: "Juz",
+              labelAr: "جزء",
+            },
+            {
+              num: "6 236",
+              icon: "fa-star",
+              labelFr: "Versets",
+              labelEn: "Ayahs",
+              labelAr: "آية",
+            },
+            {
+              num: "77 430",
+              icon: "fa-font",
+              labelFr: "Mots",
+              labelEn: "Words",
+              labelAr: "كلمة",
+            },
+          ].map((s, i) => (
+            <div
+              key={i}
+              className="hp2-stats-strip__item !rounded-xl !border !transition-all !duration-300 hover:!-translate-y-0.5"
+            >
+              <i className={`fas ${s.icon} hp2-stats-strip__icon`} />
+              <span className="hp2-stats-strip__num">{s.num}</span>
+              <span className="hp2-stats-strip__label">
+                {lang === "ar"
+                  ? s.labelAr
+                  : lang === "fr"
+                    ? s.labelFr
+                    : s.labelEn}
+              </span>
             </div>
-
-            <div className="hp2-panel__body">
-              {activeInfo === "bookmarks" &&
-                (bookmarks.length === 0 ? (
-                  <EmptyState icon="fa-bookmark" text={t("noBookmarks")} />
-                ) : (
-                  bookmarks.slice(0, 10).map((bk) => {
-                    const s = SURAHS[bk.surah - 1];
-                    return (
-                      <button
-                        key={bk.id}
-                        className="hp2-item"
-                        onClick={() => goSurahAyah(bk.surah, bk.ayah)}
-                      >
-                        <span className="hp2-item__icon">
-                          <i className="fas fa-bookmark" />
-                        </span>
-                        <div className="hp2-item__body">
-                          <span className="hp2-item__ar">{s?.ar}</span>
-                          <span className="hp2-item__sub">
-                            {lang === "fr" ? s?.fr : s?.en} · v.{bk.ayah}
-                            {bk.label && <em> � {bk.label}</em>}
-                          </span>
-                        </div>
-                        <i
-                          className={`fas fa-chevron-${isRtl ? "left" : "right"} hp2-item__caret`}
-                        />
-                      </button>
-                    );
-                  })
-                ))}
-
-              {activeInfo === "notes" &&
-                (notes.length === 0 ? (
-                  <EmptyState icon="fa-pen-line" text={t("noNotes")} />
-                ) : (
-                  notes.slice(0, 10).map((note) => {
-                    const s = SURAHS[note.surah - 1];
-                    return (
-                      <button
-                        key={note.id}
-                        className="hp2-item"
-                        onClick={() => goSurahAyah(note.surah, note.ayah)}
-                      >
-                        <span className="hp2-item__icon">
-                          <i className="fas fa-pen-line" />
-                        </span>
-                        <div className="hp2-item__body">
-                          <span className="hp2-item__ar">{s?.ar}</span>
-                          <span className="hp2-item__sub">
-                            {lang === "fr" ? s?.fr : s?.en} · v.{note.ayah}
-                          </span>
-                          {note.text && (
-                            <span className="hp2-item__excerpt">
-                              {note.text.slice(0, 70)}
-                              {note.text.length > 70 ? "..." : ""}
-                            </span>
-                          )}
-                        </div>
-                        <i
-                          className={`fas fa-chevron-${isRtl ? "left" : "right"} hp2-item__caret`}
-                        />
-                      </button>
-                    );
-                  })
-                ))}
-
-              {activeInfo === "suggest" && (
-                <>
-                  <div className="hp2-suggest-period">
-                    <i className={`fas ${suggestionSet.icon}`} />
-                    <span>
-                      {lang === "ar"
-                        ? suggestionSet.period.ar
-                        : lang === "fr"
-                          ? suggestionSet.period.fr
-                          : suggestionSet.period.en}
-                    </span>
-                  </div>
-                  {suggestionSet.surahs.map(({ n, fr, en, ar: arLabel }) => {
-                    const s = SURAHS[n - 1];
-                    return (
-                      <button
-                        key={n}
-                        className="hp2-item"
-                        onClick={() => goSurah(n)}
-                      >
-                        <span className="hp2-item__num">{n}</span>
-                        <div className="hp2-item__body">
-                          <span className="hp2-item__ar">{s.ar}</span>
-                          <span className="hp2-item__sub">
-                            {lang === "ar" ? arLabel : lang === "fr" ? fr : en}
-                          </span>
-                        </div>
-                        <i
-                          className={`fas fa-chevron-${isRtl ? "left" : "right"} hp2-item__caret`}
-                        />
-                      </button>
-                    );
-                  })}
-                </>
-              )}
-            </div>
-          </div>
-        </aside>
-
+          ))}
+        </div>
         {/* Colonne sourates */}
         <section className="hp2-content !rounded-2xl !border !p-3.5 !backdrop-blur-md">
           <div className="hp2-toolbar !rounded-xl !border !px-3 !py-2.5">
@@ -1449,7 +1432,7 @@ export default function HomePage() {
                   "hp2-seg !transition-all !duration-300",
                   activeTab === "surah" && "hp2-seg--on",
                 )}
-                  onClick={() => selectContentTab("surah")}
+                onClick={() => selectContentTab("surah")}
               >
                 <i className="fas fa-align-justify" />
                 {t("surahs")}
@@ -1459,7 +1442,7 @@ export default function HomePage() {
                   "hp2-seg !transition-all !duration-300",
                   activeTab === "juz" && "hp2-seg--on",
                 )}
-                  onClick={() => selectContentTab("juz")}
+                onClick={() => selectContentTab("juz")}
               >
                 <i className="fas fa-book-open" />
                 {t("juz")}
@@ -1610,5 +1593,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-
