@@ -2,6 +2,40 @@
 @config "../../tailwind.config.js";
 @source "../../src/**/*.{js,jsx,ts,tsx}";
 
+/* Keep Font Awesome glyphs stable even when global typography rules are heavy. */
+.fa-solid,
+.fas,
+.fa-regular,
+.far,
+.fa-brands,
+.fab,
+.fa,
+[class^="fa-"],
+[class*=" fa-"] {
+    font-style: normal;
+}
+
+.fa-solid,
+.fas,
+.fa,
+[class*=" fa-"]::before,
+[class^="fa-"]::before {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900;
+}
+
+.fa-regular,
+.far {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 400;
+}
+
+.fa-brands,
+.fab {
+    font-family: "Font Awesome 6 Brands" !important;
+    font-weight: 400;
+}
+
 /* ============================================
    Radix / shadcn animation utilities
    ============================================ */
