@@ -885,6 +885,38 @@
     isolation: isolate;
 }
 
+/* Keep FA icons visible inside the player even with heavy theme overrides. */
+.mp-audio-player i.fas,
+.mp-audio-player i.fa-solid,
+.mp-audio-player i.fa {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900;
+    font-style: normal;
+    line-height: 1;
+    display: inline-block;
+    color: inherit;
+}
+
+.mp-audio-player i.far,
+.mp-audio-player i.fa-regular {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1;
+    display: inline-block;
+    color: inherit;
+}
+
+.mp-audio-player i.fab,
+.mp-audio-player i.fa-brands {
+    font-family: "Font Awesome 6 Brands" !important;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1;
+    display: inline-block;
+    color: inherit;
+}
+
 .mp-audio-player::after {
     content: "";
     position: absolute;

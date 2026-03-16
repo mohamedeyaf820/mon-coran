@@ -1150,7 +1150,7 @@ export default function AudioPlayer() {
                       lang === "fr"
                         ? "Rechercher un récitateur..."
                         : lang === "ar"
-                          ? "اSearch... عن قارئ..."
+                          ? "ابحث عن قارئ..."
                           : "Search reciter..."
                     }
                     className={playerSearchInputClass}
@@ -1689,7 +1689,7 @@ export default function AudioPlayer() {
             <div className="min-w-0 flex-1">
               <div className="truncate text-[0.82rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-text)_94%,#ffffff_6%)]">
                 {titleLabel ||
-                  (lang === "fr" ? "Pret a lire" : lang === "ar" ? "Ready" : "Ready")}
+                  (lang === "fr" ? "Prêt à lire" : lang === "ar" ? "Ready" : "Ready")}
               </div>
               <div className="truncate text-[0.68rem] text-[color-mix(in_srgb,var(--theme-text-muted)_90%,var(--theme-bg)_10%)]">
                 {reciterLabel || "-"}
@@ -1761,7 +1761,7 @@ export default function AudioPlayer() {
               lang === "fr"
                 ? "Réduire"
                 : lang === "ar"
-                  ? "تصغير±"
+                  ? "تصغير"
                   : "Minimize"
             }
           >
@@ -2416,7 +2416,7 @@ export default function AudioPlayer() {
                   )}
                 >
                   {titleLabel ||
-                    (lang === "fr" ? "Pret a lire" : lang === "ar" ? "Ready" : "Ready")}
+                    (lang === "fr" ? "Prêt à lire" : lang === "ar" ? "Ready" : "Ready")}
                 </div>
                 <div
                   className={cn(
@@ -2498,7 +2498,7 @@ export default function AudioPlayer() {
                   lang === "fr"
                     ? "Minimiser"
                     : lang === "ar"
-                      ? "تصغير±"
+                      ? "تصغير"
                       : "Minimize"
                 }
                 disabled={isHomeDesktop}
@@ -2632,7 +2632,7 @@ export default function AudioPlayer() {
                       lang === "fr"
                         ? "Réduire"
                         : lang === "ar"
-                          ? "تصغير±"
+                          ? "تصغير"
                           : "Minimize"
                     }
                     size="sm"

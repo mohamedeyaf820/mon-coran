@@ -20,19 +20,19 @@
 .fa,
 [class*=" fa-"]::before,
 [class^="fa-"]::before {
-    font-family: "Font Awesome 6 Free" !important;
+    font-family: "Font Awesome 7 Free", "Font Awesome 6 Free" !important;
     font-weight: 900;
 }
 
 .fa-regular,
 .far {
-    font-family: "Font Awesome 6 Free" !important;
+    font-family: "Font Awesome 7 Free", "Font Awesome 6 Free" !important;
     font-weight: 400;
 }
 
 .fa-brands,
 .fab {
-    font-family: "Font Awesome 6 Brands" !important;
+    font-family: "Font Awesome 7 Brands", "Font Awesome 6 Brands" !important;
     font-weight: 400;
 }
 
