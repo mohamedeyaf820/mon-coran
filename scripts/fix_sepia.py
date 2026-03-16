@@ -202,7 +202,11 @@ OLED_THEME = """
 [data-theme="oled"] .hpl-row { background: transparent; border-bottom-color: #111; }
 [data-theme="oled"] .hpl-row:hover { background: rgba(34, 197, 94, 0.04); }
 [data-theme="oled"] .hp2-toolbar { background: #000; border-bottom-color: #1a1a1a; }
-[data-theme="oled"] .hp2-vod { background: linear-gradient(145deg, #000000 0%, #0a1a0a 55%, #0d2010 100%); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9); }
+[data-theme="oled"] .hp2-vod { background: linear-gradient(
+  160deg,
+  rgba(24, 30, 40, 0.94),
+  rgba(20, 26, 35, 0.96)
+) !important; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9); }
 [data-theme="oled"] .hp2-suggest-box { background: rgba(255,255,255,0.02); }
 [data-theme="oled"] .hp2-suggest-chip { background: rgba(255,255,255,0.03); }
 [data-theme="oled"] .hp2-suggest-chip:hover { background: rgba(34,197,94,0.1); }
@@ -215,7 +219,7 @@ night_blue_end = css_lf.rfind('[data-theme="night-blue"]')
 after_nb = css_lf.find('\n\n/* ', night_blue_end)
 if after_nb == -1:
     after_nb = css_lf.find('\n/* ===', night_blue_end)
-    
+
 print(f"night-blue end section at: {after_nb}")
 
 # Find the closing brace of night-blue

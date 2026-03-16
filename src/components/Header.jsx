@@ -32,7 +32,9 @@ export default function Header() {
   const headerRef = useRef(null);
   const currentThemeIndex = THEME_ORDER.indexOf(theme);
   const nextThemeId =
-    THEME_ORDER[(currentThemeIndex + 1 + THEME_ORDER.length) % THEME_ORDER.length];
+    THEME_ORDER[
+      (currentThemeIndex + 1 + THEME_ORDER.length) % THEME_ORDER.length
+    ];
   const nextThemeMeta = getThemeMeta(nextThemeId);
 
   useEffect(() => {
@@ -117,7 +119,8 @@ export default function Header() {
   const goToMax =
     displayMode === "page" ? 604 : displayMode === "juz" ? 30 : 114;
   const isRtl = lang === "ar";
-  const tr = (obj) => (lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en);
+  const tr = (obj) =>
+    lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en;
   const headerLabels = {
     menu: tr({ fr: "Menu", en: "Menu", ar: "القائمة" }),
     duas: tr({ fr: "Douas", en: "Duas", ar: "أدعية" }),
@@ -300,7 +303,7 @@ export default function Header() {
                   {tr({ fr: "MushafPlus", en: "MushafPlus", ar: "مصحف بلس" })}
                 </span>
                 <strong className="hdr__home-title">{homeTitle}</strong>
-                <span className="hdr__home-subtitle">{homeSubtitle}</span>
+                {/* <span className="hdr__home-subtitle">{homeSubtitle}</span>*/}
               </div>
               <div className="hdr__home-meta">
                 {homeHighlights.map((item) => (
@@ -331,10 +334,22 @@ export default function Header() {
                         {showDuas
                           ? tr({ fr: "Douas", en: "Duas", ar: "الأدعية" })
                           : displayMode === "page"
-                            ? tr({ fr: "Lecture page", en: "Page reading", ar: "قراءة الصفحة" })
+                            ? tr({
+                                fr: "Lecture page",
+                                en: "Page reading",
+                                ar: "قراءة الصفحة",
+                              })
                             : displayMode === "juz"
-                              ? tr({ fr: "Lecture par juz", en: "Juz reading", ar: "قراءة الأجزاء" })
-                              : tr({ fr: "Lecture sourate", en: "Surah reading", ar: "قراءة السور" })}
+                              ? tr({
+                                  fr: "Lecture par juz",
+                                  en: "Juz reading",
+                                  ar: "قراءة الأجزاء",
+                                })
+                              : tr({
+                                  fr: "Lecture sourate",
+                                  en: "Surah reading",
+                                  ar: "قراءة السور",
+                                })}
                       </span>
                       <span className="hdr__nav-title">{pagePanelTitle}</span>
                       <span className="hdr__nav-sub">
@@ -395,27 +410,6 @@ export default function Header() {
 
         {/* Actions */}
         <div className="hdr__actions ml-auto flex items-center justify-end gap-2">
-          <div className="hdr__action-cluster hdr__action-cluster--status">
-            <NetworkStatus />
-            <button
-              className="hdr__btn hdr__btn--labeled hdr__btn--theme"
-              onClick={cycleTheme}
-              title={tr({
-                fr: `Passer a ${nextThemeMeta.fr}`,
-                en: `Switch to ${nextThemeMeta.en}`,
-                ar: `التبديل إلى ${nextThemeMeta.ar}`,
-              })}
-              aria-label={tr({
-                fr: `Passer a ${nextThemeMeta.fr}`,
-                en: `Switch to ${nextThemeMeta.en}`,
-                ar: `التبديل إلى ${nextThemeMeta.ar}`,
-              })}
-            >
-              <i className="fas fa-swatchbook" />
-              <span className="hdr__btn-label">{headerLabels.theme}</span>
-            </button>
-          </div>
-
           <div className="hdr__action-cluster hdr__action-cluster--primary">
             <button
               className="hdr__btn-duas"
@@ -425,7 +419,11 @@ export default function Header() {
               <span className="hdr__btn-duas-label">{headerLabels.duas}</span>
             </button>
 
-            <div className="hdr__riwaya-toggle" role="group" aria-label="Riwāya">
+            <div
+              className="hdr__riwaya-toggle"
+              role="group"
+              aria-label="Riwāya"
+            >
               <button
                 className={cn(
                   "hdr__riwaya-btn",
@@ -474,7 +472,6 @@ export default function Header() {
             >
               <i className="fas fa-magnifying-glass" />
               <span className="hdr__btn-label">{headerLabels.search}</span>
-              <span className="hdr__kbd-hint hidden md:inline-flex">K</span>
             </button>
           </div>
         </div>

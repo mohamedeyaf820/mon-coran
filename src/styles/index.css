@@ -116,8 +116,12 @@
 }
 
 @keyframes shimmer {
-    0%   { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
 }
 
 .animate-shimmer {
@@ -1374,14 +1378,14 @@
     --gold-tint: rgba(212, 160, 82, 0.12);
 
     --shadow-xs: 0 1px 2px rgba(51, 41, 30, 0.06);
-    --shadow-sm: 0 2px 6px rgba(51, 41, 30, 0.1),
-                 0 1px 2px rgba(51, 41, 30, 0.06);
-    --shadow-md: 0 4px 14px rgba(51, 41, 30, 0.12),
-                 0 2px 4px rgba(51, 41, 30, 0.07);
-    --shadow-lg: 0 8px 28px rgba(51, 41, 30, 0.15),
-                 0 4px 8px rgba(51, 41, 30, 0.1);
-    --shadow-xl: 0 16px 48px rgba(51, 41, 30, 0.2),
-                 0 8px 16px rgba(51, 41, 30, 0.12);
+    --shadow-sm:
+        0 2px 6px rgba(51, 41, 30, 0.1), 0 1px 2px rgba(51, 41, 30, 0.06);
+    --shadow-md:
+        0 4px 14px rgba(51, 41, 30, 0.12), 0 2px 4px rgba(51, 41, 30, 0.07);
+    --shadow-lg:
+        0 8px 28px rgba(51, 41, 30, 0.15), 0 4px 8px rgba(51, 41, 30, 0.1);
+    --shadow-xl:
+        0 16px 48px rgba(51, 41, 30, 0.2), 0 8px 16px rgba(51, 41, 30, 0.12);
     --shadow-gold: 0 4px 16px rgba(212, 160, 82, 0.25);
     --shadow-emerald: 0 4px 16px rgba(166, 121, 18, 0.2);
 
@@ -5254,11 +5258,7 @@ select,
             rgba(212, 168, 32, 0.08),
             transparent 26%
         ),
-        linear-gradient(
-            180deg,
-            rgba(var(--primary-rgb), 0.02),
-            transparent 58%
-        );
+        linear-gradient(180deg, rgba(var(--primary-rgb), 0.02), transparent 58%);
     pointer-events: none;
     z-index: -1;
 }
@@ -5494,11 +5494,7 @@ select,
 .hp2-focus-card__progress-fill {
     height: 100%;
     border-radius: 999px;
-    background: linear-gradient(
-        90deg,
-        var(--primary),
-        rgba(212, 168, 32, 0.9)
-    );
+    background: linear-gradient(90deg, var(--primary), rgba(212, 168, 32, 0.9));
     transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
     min-width: 4px;
 }
@@ -5565,11 +5561,7 @@ select,
 }
 
 .hp2-toolbar {
-    background: color-mix(
-        in srgb,
-        var(--bg-secondary) 88%,
-        transparent 12%
-    );
+    background: color-mix(in srgb, var(--bg-secondary) 88%, transparent 12%);
 }
 
 .hp2-toolbar__count {
@@ -6200,8 +6192,12 @@ select,
 
 /* ── Arabic calligraphic title inside parchment ── */
 .qc-header-name-ar {
-    font-family: var(--font-surah-display, "Amiri Quran", "Amiri", serif)
-        !important;
+    font-family: var(
+        --font-surah-display,
+        "Amiri Quran",
+        "Amiri",
+        serif
+    ) !important;
     font-size: clamp(2rem, 5.5vw, 3.4rem);
     font-weight: 500;
     color: #8f5f10;
@@ -6214,7 +6210,10 @@ select,
     direction: rtl;
     white-space: nowrap;
     letter-spacing: 0.015em;
-    font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+    font-feature-settings:
+        "liga" 1,
+        "calt" 1,
+        "kern" 1;
     font-variant-ligatures: contextual;
     text-rendering: optimizeLegibility;
 }
@@ -10133,7 +10132,7 @@ input:focus-visible {
     margin: 1rem auto 0;
     padding: 0 clamp(1rem, 3vw, 2rem);
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(1, minmax(0, 1fr));
     gap: 0.85rem;
 }
 
@@ -11279,6 +11278,9 @@ input:focus-visible {
     width: 60px;
     height: 60px;
     border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
     flex-shrink: 0;
     box-shadow:
@@ -17480,10 +17482,10 @@ input:focus-visible {
 
 .hp2-panel__tabs {
     display: flex;
-    gap: 0;
+    gap: 0.5rem;
     background: var(--bg-primary);
     border-bottom: 1px solid var(--border);
-    padding: 0.35rem 0.35rem 0;
+    padding: 1.35rem 1.35rem;
 }
 
 .hp2-panel__tab {
@@ -17582,7 +17584,7 @@ input:focus-visible {
     scrollbar-color: rgba(var(--primary-rgb), 0.15) transparent;
     display: flex;
     flex-direction: column;
-    gap: 0.28rem;
+    gap: 0.8rem;
 }
 
 /* Suggest period header */
@@ -17591,7 +17593,7 @@ input:focus-visible {
     align-items: center;
     gap: 0.4rem;
     padding: 0.5rem 0.65rem;
-    font-size: 0.68rem;
+    font-size: 1rem;
     font-weight: 700;
     color: var(--primary);
     background: rgba(var(--primary-rgb), 0.07);
@@ -18551,8 +18553,14 @@ input:focus-visible {
 
 /* ── Barre d'accès rapide — animation d'entrée ── */
 @keyframes hp2QuickbarIn {
-    from { opacity: 0; transform: translateY(-6px); }
-    to   { opacity: 1; transform: none; }
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
 }
 
 .hp2-quickbar {
@@ -18585,9 +18593,21 @@ input:focus-visible {
 
 /* ── Verset du jour — lueur animée ── */
 @keyframes hp2VodPulse {
-    0%   { box-shadow: 0 10px 40px rgba(27, 94, 59, 0.35), 0 2px 8px rgba(0,0,0,0.12); }
-    50%  { box-shadow: 0 14px 52px rgba(27, 94, 59, 0.48), 0 4px 12px rgba(0,0,0,0.14); }
-    100% { box-shadow: 0 10px 40px rgba(27, 94, 59, 0.35), 0 2px 8px rgba(0,0,0,0.12); }
+    0% {
+        box-shadow:
+            0 10px 40px rgba(27, 94, 59, 0.35),
+            0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+    50% {
+        box-shadow:
+            0 14px 52px rgba(27, 94, 59, 0.48),
+            0 4px 12px rgba(0, 0, 0, 0.14);
+    }
+    100% {
+        box-shadow:
+            0 10px 40px rgba(27, 94, 59, 0.35),
+            0 2px 8px rgba(0, 0, 0, 0.12);
+    }
 }
 
 .hp2-vod {
@@ -18600,9 +18620,18 @@ input:focus-visible {
 
 /* ── Carte session — orb décoratif animé ── */
 @keyframes hp2FocusOrb {
-    0%   { transform: scale(1) translate(0, 0); opacity: 0.65; }
-    50%  { transform: scale(1.14) translate(-6px, 4px); opacity: 0.85; }
-    100% { transform: scale(1) translate(0, 0); opacity: 0.65; }
+    0% {
+        transform: scale(1) translate(0, 0);
+        opacity: 0.65;
+    }
+    50% {
+        transform: scale(1.14) translate(-6px, 4px);
+        opacity: 0.85;
+    }
+    100% {
+        transform: scale(1) translate(0, 0);
+        opacity: 0.65;
+    }
 }
 
 .hp2-focus-card::before {
@@ -18624,27 +18653,46 @@ input:focus-visible {
 .hp2-feature:hover .hp2-feature__icon {
     background: rgba(var(--primary-rgb), 0.18);
     transform: scale(1.08) rotate(-4deg);
-    transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
+    transition:
+        transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+        background 0.2s ease;
 }
 
 .hp2-feature__icon {
-    transition: transform 0.18s ease, background 0.18s ease;
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease;
 }
 
 /* ── Stats strip — animation de compteur visuelle ── */
 @keyframes hp2StatPop {
-    from { transform: scale(0.88); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
+    from {
+        transform: scale(0.88);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .hp2-stats-strip__item {
-    animation: hp2StatPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) calc(0.7s + var(--si, 0) * 0.08s) both;
+    animation: hp2StatPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)
+        calc(0.7s + var(--si, 0) * 0.08s) both;
 }
 
-.hp2-stats-strip__item:nth-child(1) { --si: 0; }
-.hp2-stats-strip__item:nth-child(2) { --si: 1; }
-.hp2-stats-strip__item:nth-child(3) { --si: 2; }
-.hp2-stats-strip__item:nth-child(4) { --si: 3; }
+.hp2-stats-strip__item:nth-child(1) {
+    --si: 0;
+}
+.hp2-stats-strip__item:nth-child(2) {
+    --si: 1;
+}
+.hp2-stats-strip__item:nth-child(3) {
+    --si: 2;
+}
+.hp2-stats-strip__item:nth-child(4) {
+    --si: 3;
+}
 
 /* ── Titre MushafPlus — gradient amélioré ── */
 .hp2-hero__title {
@@ -18663,9 +18711,21 @@ input:focus-visible {
 
 /* ── Bouton CTA primaire — effet pulsé discret ── */
 @keyframes hp2BtnPulse {
-    0%   { box-shadow: 0 2px 10px rgba(var(--primary-rgb), 0.4), 0 1px 2px rgba(var(--primary-rgb), 0.25); }
-    50%  { box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.55), 0 2px 6px rgba(var(--primary-rgb), 0.3); }
-    100% { box-shadow: 0 2px 10px rgba(var(--primary-rgb), 0.4), 0 1px 2px rgba(var(--primary-rgb), 0.25); }
+    0% {
+        box-shadow:
+            0 2px 10px rgba(var(--primary-rgb), 0.4),
+            0 1px 2px rgba(var(--primary-rgb), 0.25);
+    }
+    50% {
+        box-shadow:
+            0 4px 20px rgba(var(--primary-rgb), 0.55),
+            0 2px 6px rgba(var(--primary-rgb), 0.3);
+    }
+    100% {
+        box-shadow:
+            0 2px 10px rgba(var(--primary-rgb), 0.4),
+            0 1px 2px rgba(var(--primary-rgb), 0.25);
+    }
 }
 
 .hp2-btn--primary:not(:hover):not(:active) {
@@ -18920,7 +18980,9 @@ input:focus-visible {
     direction: rtl;
     flex-shrink: 0;
     line-height: 1.5;
-    transition: opacity 0.15s, color 0.15s;
+    transition:
+        opacity 0.15s,
+        color 0.15s;
     white-space: nowrap;
     text-rendering: optimizeLegibility;
     max-width: 5.2rem;
@@ -19042,7 +19104,10 @@ input:focus-visible {
 }
 
 .hp2-focus-card__cta:hover {
-    background: var(--primary-dark, color-mix(in srgb, var(--primary) 80%, #000 20%));
+    background: var(
+        --primary-dark,
+        color-mix(in srgb, var(--primary) 80%, #000 20%)
+    );
     border-color: transparent;
     transform: translateY(-1.5px);
     box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.35);
@@ -19297,8 +19362,16 @@ button:focus:not(:focus-visible) {
     margin-top: 3rem;
     overflow: hidden;
     background:
-        radial-gradient(circle at 10% -40%, rgba(205, 160, 62, 0.17), transparent 62%),
-        radial-gradient(circle at 90% -30%, rgba(205, 160, 62, 0.09), transparent 60%),
+        radial-gradient(
+            circle at 10% -40%,
+            rgba(205, 160, 62, 0.17),
+            transparent 62%
+        ),
+        radial-gradient(
+            circle at 90% -30%,
+            rgba(205, 160, 62, 0.09),
+            transparent 60%
+        ),
         #f9f5ea;
     border-top: 1px solid rgba(172, 126, 37, 0.28);
     color: #4f4633;
@@ -19309,7 +19382,11 @@ button:focus:not(:focus-visible) {
     inset: 0;
     pointer-events: none;
     z-index: 0;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, transparent 55%);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.42) 0%,
+        transparent 55%
+    );
 }
 
 .site-footer__ayah-strip {
@@ -19333,7 +19410,12 @@ button:focus:not(:focus-visible) {
 
 .site-footer__ayah-ar {
     margin: 0;
-    font-family: var(--font-quran, "Scheherazade New", "KFGQPC Uthmanic Script HAFS", serif);
+    font-family: var(
+        --font-quran,
+        "Scheherazade New",
+        "KFGQPC Uthmanic Script HAFS",
+        serif
+    );
     font-size: clamp(1.12rem, 2.1vw, 1.35rem);
     line-height: 1.9;
     direction: rtl;
@@ -19424,7 +19506,10 @@ button:focus:not(:focus-visible) {
     display: inline-flex;
     align-items: center;
     gap: 0.34rem;
-    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    transition:
+        border-color 0.15s,
+        background 0.15s,
+        color 0.15s;
 }
 
 .ftr-action-btn {
@@ -19488,7 +19573,11 @@ button:focus:not(:focus-visible) {
     width: 2px;
     height: 0.9rem;
     border-radius: 999px;
-    background: linear-gradient(180deg, #b8860b 0%, rgba(184, 134, 11, 0.32) 100%);
+    background: linear-gradient(
+        180deg,
+        #b8860b 0%,
+        rgba(184, 134, 11, 0.32) 100%
+    );
 }
 
 .site-footer__surah-list {
@@ -19565,7 +19654,12 @@ button:focus:not(:focus-visible) {
     text-overflow: ellipsis;
     white-space: nowrap;
     direction: rtl;
-    font-family: var(--font-quran, "Scheherazade New", "KFGQPC Uthmanic Script HAFS", serif);
+    font-family: var(
+        --font-quran,
+        "Scheherazade New",
+        "KFGQPC Uthmanic Script HAFS",
+        serif
+    );
     font-size: 0.94rem;
     color: rgba(154, 111, 18, 0.85);
 }
@@ -19610,7 +19704,10 @@ button:focus:not(:focus-visible) {
     font-size: 0.61rem;
     font-weight: 700;
     cursor: pointer;
-    transition: border-color 0.14s, background 0.14s, color 0.14s;
+    transition:
+        border-color 0.14s,
+        background 0.14s,
+        color 0.14s;
 }
 
 .ftr-juz-btn:hover {
@@ -19668,7 +19765,12 @@ button:focus:not(:focus-visible) {
 }
 
 .site-footer__bismallah {
-    font-family: var(--font-quran, "Scheherazade New", "KFGQPC Uthmanic Script HAFS", serif);
+    font-family: var(
+        --font-quran,
+        "Scheherazade New",
+        "KFGQPC Uthmanic Script HAFS",
+        serif
+    );
     font-size: 1.46rem;
     color: rgba(147, 103, 15, 0.75);
     line-height: 1;
@@ -19719,7 +19821,11 @@ button:focus:not(:focus-visible) {
 [data-theme="night-blue"] .site-footer,
 [data-theme="oled"] .site-footer {
     background:
-        radial-gradient(circle at 10% -40%, rgba(212, 170, 64, 0.15), transparent 62%),
+        radial-gradient(
+            circle at 10% -40%,
+            rgba(212, 170, 64, 0.15),
+            transparent 62%
+        ),
         #141821;
     border-top-color: rgba(212, 170, 64, 0.35);
     color: #d2d8e4;
@@ -19761,7 +19867,11 @@ button:focus:not(:focus-visible) {
 [data-theme="night-blue"] .hp2-qchip--special,
 [data-theme="oled"] .hp2-qchip--special,
 [data-theme="forest"] .hp2-qchip--special {
-    background: linear-gradient(120deg, rgba(184, 134, 11, 0.92), rgba(207, 164, 66, 0.9));
+    background: linear-gradient(
+        120deg,
+        rgba(184, 134, 11, 0.92),
+        rgba(207, 164, 66, 0.9)
+    );
     border-color: rgba(216, 183, 108, 0.55);
     color: #fff;
 }
@@ -19924,8 +20034,16 @@ button:focus:not(:focus-visible) {
 
 .app-root {
     background:
-        radial-gradient(circle at 8% -20%, rgba(var(--primary-rgb), 0.1), transparent 42%),
-        radial-gradient(circle at 92% -30%, rgba(184, 134, 11, 0.1), transparent 44%),
+        radial-gradient(
+            circle at 8% -20%,
+            rgba(var(--primary-rgb), 0.1),
+            transparent 42%
+        ),
+        radial-gradient(
+            circle at 92% -30%,
+            rgba(184, 134, 11, 0.1),
+            transparent 44%
+        ),
         var(--bg-primary);
 }
 
@@ -19945,7 +20063,8 @@ button:focus:not(:focus-visible) {
 .hp2-content,
 .quran-display {
     border-radius: 1rem;
-    border: 1px solid color-mix(in srgb, var(--border) 75%, rgba(184, 134, 11, 0.25) 25%);
+    border: 1px solid
+        color-mix(in srgb, var(--border) 75%, rgba(184, 134, 11, 0.25) 25%);
     box-shadow: 0 10px 28px rgba(17, 24, 34, 0.08);
 }
 
@@ -19984,9 +20103,14 @@ button:focus:not(:focus-visible) {
 
 .hp2-hero {
     border-radius: 1.15rem;
-    border: 1px solid color-mix(in srgb, var(--border) 75%, rgba(184, 134, 11, 0.22) 25%);
+    border: 1px solid
+        color-mix(in srgb, var(--border) 75%, rgba(184, 134, 11, 0.22) 25%);
     background:
-        linear-gradient(165deg, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.08)),
+        linear-gradient(
+            165deg,
+            rgba(255, 255, 255, 0.45),
+            rgba(255, 255, 255, 0.08)
+        ),
         color-mix(in srgb, var(--bg-card) 78%, var(--bg-secondary) 22%);
 }
 
@@ -20008,8 +20132,17 @@ button:focus:not(:focus-visible) {
 
 .hp2-focus-card__stat,
 .hp2-stats-strip__item {
-    background: color-mix(in srgb, var(--bg-card) 90%, rgba(var(--primary-rgb), 0.09) 10%);
-    border: 1px solid color-mix(in srgb, var(--border) 80%, rgba(var(--primary-rgb), 0.22) 20%);
+    background: color-mix(
+        in srgb,
+        var(--bg-card) 90%,
+        rgba(var(--primary-rgb), 0.09) 10%
+    );
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--border) 80%,
+            rgba(var(--primary-rgb), 0.22) 20%
+        );
 }
 
 .hp2-toolbar {
@@ -20031,7 +20164,8 @@ button:focus:not(:focus-visible) {
 }
 
 .hp2-qchip {
-    border: 1px solid color-mix(in srgb, var(--border) 74%, rgba(184, 134, 11, 0.26) 26%);
+    border: 1px solid
+        color-mix(in srgb, var(--border) 74%, rgba(184, 134, 11, 0.26) 26%);
     background: color-mix(in srgb, var(--bg-card) 85%, #ffffff 15%);
 }
 
@@ -20045,7 +20179,12 @@ button:focus:not(:focus-visible) {
 .scard,
 .ftr-link {
     border-radius: 0.82rem;
-    border: 1px solid color-mix(in srgb, var(--border) 80%, rgba(var(--primary-rgb), 0.18) 20%);
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--border) 80%,
+            rgba(var(--primary-rgb), 0.18) 20%
+        );
 }
 
 .hp2-item:hover,
@@ -20102,7 +20241,11 @@ button:focus:not(:focus-visible) {
 [data-theme="forest"] .hp2-content,
 [data-theme="forest"] .modal-box,
 [data-theme="forest"] .modal {
-    background: linear-gradient(180deg, rgba(18, 26, 36, 0.95), rgba(13, 19, 27, 0.9));
+    background: linear-gradient(
+        180deg,
+        rgba(18, 26, 36, 0.95),
+        rgba(13, 19, 27, 0.9)
+    );
     border-color: rgba(212, 170, 64, 0.28);
     box-shadow: 0 12px 30px rgba(2, 6, 14, 0.45);
 }
@@ -20111,7 +20254,11 @@ button:focus:not(:focus-visible) {
 [data-theme="night-blue"] .hp2-focus-card,
 [data-theme="oled"] .hp2-focus-card,
 [data-theme="forest"] .hp2-focus-card {
-    background: linear-gradient(165deg, rgba(24, 36, 49, 0.96), rgba(16, 24, 34, 0.92));
+    background: linear-gradient(
+        165deg,
+        rgba(24, 36, 49, 0.96),
+        rgba(16, 24, 34, 0.92)
+    );
     border-color: rgba(212, 170, 64, 0.35);
 }
 
@@ -20154,7 +20301,11 @@ button:focus:not(:focus-visible) {
 [data-theme="oled"] .site-footer,
 [data-theme="forest"] .site-footer {
     background:
-        radial-gradient(circle at 8% -24%, rgba(212, 170, 64, 0.17), transparent 44%),
+        radial-gradient(
+            circle at 8% -24%,
+            rgba(212, 170, 64, 0.17),
+            transparent 44%
+        ),
         #121a25;
     border-top-color: rgba(212, 170, 64, 0.34);
 }
@@ -20527,7 +20678,9 @@ button:focus:not(:focus-visible) {
 .site-footer__brand-link .site-footer__logo-row {
     padding: 0.34rem 0.38rem;
     border-radius: 0.72rem;
-    transition: background 0.16s ease, transform 0.16s ease;
+    transition:
+        background 0.16s ease,
+        transform 0.16s ease;
 }
 
 .site-footer__brand-link:hover .site-footer__logo-row {
@@ -20551,7 +20704,10 @@ button:focus:not(:focus-visible) {
     font-size: 0.62rem;
     font-weight: 700;
     cursor: pointer;
-    transition: background 0.14s, border-color 0.14s, color 0.14s;
+    transition:
+        background 0.14s,
+        border-color 0.14s,
+        color 0.14s;
 }
 
 .site-footer__brand-mini-link:hover {
@@ -20590,12 +20746,14 @@ button:focus:not(:focus-visible) {
 
 .hp2-toolbar {
     padding: 0.8rem 0.95rem;
-    border-bottom: 1px solid color-mix(in srgb, var(--border) 78%, rgba(184, 134, 11, 0.2) 22%);
+    border-bottom: 1px solid
+        color-mix(in srgb, var(--border) 78%, rgba(184, 134, 11, 0.2) 22%);
 }
 
 .hp2-search__input {
     border-radius: 0.7rem;
-    border: 1px solid color-mix(in srgb, var(--border) 80%, rgba(var(--primary-rgb), 0.2) 20%);
+    border: 1px solid
+        color-mix(in srgb, var(--border) 80%, rgba(var(--primary-rgb), 0.2) 20%);
     background: color-mix(in srgb, var(--bg-card) 92%, #ffffff 8%);
 }
 
@@ -20613,7 +20771,8 @@ button:focus:not(:focus-visible) {
 .hpl-row {
     min-height: 74px;
     border-radius: 0.86rem;
-    border: 1px solid color-mix(in srgb, var(--border) 82%, rgba(var(--primary-rgb), 0.2) 18%);
+    border: 1px solid
+        color-mix(in srgb, var(--border) 82%, rgba(var(--primary-rgb), 0.2) 18%);
     background: color-mix(in srgb, var(--bg-card) 90%, #ffffff 10%);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
 }
@@ -20654,7 +20813,8 @@ button:focus:not(:focus-visible) {
 
 .hp2-items--grid .scard {
     border-radius: 0.82rem;
-    border: 1px solid color-mix(in srgb, var(--border) 80%, rgba(184, 134, 11, 0.22) 20%);
+    border: 1px solid
+        color-mix(in srgb, var(--border) 80%, rgba(184, 134, 11, 0.22) 20%);
     box-shadow: 0 7px 18px rgba(0, 0, 0, 0.05);
 }
 
@@ -20726,8 +20886,16 @@ button:focus:not(:focus-visible) {
 
 [data-theme="premium-beige"] .app-root {
     background:
-        radial-gradient(circle at 12% -10%, rgba(184, 134, 11, 0.12), transparent 42%),
-        radial-gradient(circle at 90% -20%, rgba(120, 84, 24, 0.1), transparent 40%),
+        radial-gradient(
+            circle at 12% -10%,
+            rgba(184, 134, 11, 0.12),
+            transparent 42%
+        ),
+        radial-gradient(
+            circle at 90% -20%,
+            rgba(120, 84, 24, 0.1),
+            transparent 40%
+        ),
         repeating-linear-gradient(
             0deg,
             rgba(97, 72, 25, 0.025) 0,
@@ -20740,7 +20908,11 @@ button:focus:not(:focus-visible) {
 
 [data-theme="premium-beige"] .hp2-hero {
     background:
-        linear-gradient(180deg, rgba(255, 251, 242, 0.95), rgba(244, 234, 212, 0.78)),
+        linear-gradient(
+            180deg,
+            rgba(255, 251, 242, 0.95),
+            rgba(244, 234, 212, 0.78)
+        ),
         #f7efdc;
     border: 1px solid rgba(160, 119, 43, 0.34);
     box-shadow:
@@ -20754,7 +20926,11 @@ button:focus:not(:focus-visible) {
 
 [data-theme="premium-beige"] .hp2-focus-card {
     background:
-        linear-gradient(165deg, rgba(253, 247, 233, 0.96), rgba(241, 228, 201, 0.86)),
+        linear-gradient(
+            165deg,
+            rgba(253, 247, 233, 0.96),
+            rgba(241, 228, 201, 0.86)
+        ),
         #f8eed8;
     border: 1px solid rgba(161, 121, 46, 0.36);
     box-shadow:
@@ -20844,7 +21020,11 @@ button:focus:not(:focus-visible) {
 
 [data-theme="premium-beige"] .site-footer {
     background:
-        linear-gradient(180deg, rgba(253, 247, 233, 0.94), rgba(238, 222, 190, 0.94)),
+        linear-gradient(
+            180deg,
+            rgba(253, 247, 233, 0.94),
+            rgba(238, 222, 190, 0.94)
+        ),
         #f0dfbb;
     border-top-color: rgba(161, 121, 46, 0.42);
     color: #4e3a18;
@@ -20852,7 +21032,11 @@ button:focus:not(:focus-visible) {
 
 [data-theme="premium-beige"] .site-footer__ayah-strip {
     border-bottom-color: rgba(161, 121, 46, 0.24);
-    background: linear-gradient(180deg, rgba(184, 134, 11, 0.1), rgba(184, 134, 11, 0.02));
+    background: linear-gradient(
+        180deg,
+        rgba(184, 134, 11, 0.1),
+        rgba(184, 134, 11, 0.02)
+    );
 }
 
 [data-theme="premium-beige"] .site-footer__logo-img {
@@ -20895,7 +21079,11 @@ button:focus:not(:focus-visible) {
 [data-theme="premium-beige"] .modal,
 [data-theme="premium-beige"] .audio-player {
     background:
-        linear-gradient(180deg, rgba(255, 252, 246, 0.95), rgba(243, 235, 221, 0.92)),
+        linear-gradient(
+            180deg,
+            rgba(255, 252, 246, 0.95),
+            rgba(243, 235, 221, 0.92)
+        ),
         #f7f1e7;
     border-color: rgba(166, 121, 18, 0.18);
     box-shadow: 0 14px 34px rgba(88, 67, 30, 0.1);
@@ -20911,7 +21099,11 @@ button:focus:not(:focus-visible) {
 [data-theme="premium-beige"] .hp2-prayers,
 [data-theme="premium-beige"] .hp2-recent-item {
     background:
-        linear-gradient(180deg, rgba(255, 250, 241, 0.97), rgba(245, 236, 221, 0.9)),
+        linear-gradient(
+            180deg,
+            rgba(255, 250, 241, 0.97),
+            rgba(245, 236, 221, 0.9)
+        ),
         #f9f2e7;
     border: 1px solid rgba(166, 121, 18, 0.2);
     box-shadow:
@@ -20972,7 +21164,11 @@ button:focus:not(:focus-visible) {
 [data-theme="oled"] .app-root,
 [data-theme="forest"] .app-root {
     background:
-        radial-gradient(circle at 10% -20%, rgba(212, 170, 64, 0.16), transparent 40%),
+        radial-gradient(
+            circle at 10% -20%,
+            rgba(212, 170, 64, 0.16),
+            transparent 40%
+        ),
         repeating-linear-gradient(
             0deg,
             rgba(212, 170, 64, 0.03) 0,
@@ -21007,7 +21203,11 @@ button:focus:not(:focus-visible) {
 [data-theme="night-blue"] .hp2-items--grid .scard,
 [data-theme="oled"] .hp2-items--grid .scard,
 [data-theme="forest"] .hp2-items--grid .scard {
-    background: linear-gradient(180deg, rgba(24, 33, 44, 0.95), rgba(18, 24, 34, 0.93));
+    background: linear-gradient(
+        180deg,
+        rgba(24, 33, 44, 0.95),
+        rgba(18, 24, 34, 0.93)
+    );
     border-color: rgba(212, 170, 64, 0.34);
 }
 
@@ -21243,8 +21443,9 @@ button:focus:not(:focus-visible) {
 
 /* --- 1. Variables de police arabe (override root) --- */
 :root {
-    --font-surah:    "Amiri", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", serif;
-    --font-home-ar:  "Amiri", "Markazi Text", "Noto Naskh Arabic", serif;
+    --font-surah:
+        "Amiri", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", serif;
+    --font-home-ar: "Amiri", "Markazi Text", "Noto Naskh Arabic", serif;
 }
 
 /* --- 2. Amiri sur tous les noms arabes de l'interface --- */
@@ -21280,9 +21481,7 @@ button:focus:not(:focus-visible) {
 [class*="surah-name"] {
     font-family:
         var(--font-surah-display, "Amiri Quran", "KFGQPC Uthman Taha Naskh"),
-        "Amiri",
-        "Noto Naskh Arabic",
-        serif !important;
+        "Amiri", "Noto Naskh Arabic", serif !important;
     font-weight: 500 !important;
 }
 
@@ -21357,13 +21556,8 @@ button:focus:not(:focus-visible) {
 .ayah-text-ar,
 .word-ar {
     font-family:
-        "KFGQPC Uthmanic Script HAFS",
-        "ME Quran",
-        "Scheherazade New",
-        "Amiri Quran",
-        "Amiri",
-        "Noto Naskh Arabic",
-        serif !important;
+        "KFGQPC Uthmanic Script HAFS", "ME Quran", "Scheherazade New",
+        "Amiri Quran", "Amiri", "Noto Naskh Arabic", serif !important;
 }
 
 /* --- 6. Raffinement: boutons CTA sur tous les thèmes --- */
@@ -21423,8 +21617,7 @@ button:focus:not(:focus-visible) {
         rgba(var(--primary-rgb, 27, 94, 59), 0.04) 100%
     ) !important;
     padding: 3rem 1.5rem 2rem !important;
-    border-bottom: 1px solid
-        rgba(var(--primary-rgb, 27, 94, 59), 0.08) !important;
+    border-bottom: 1px solid rgba(var(--primary-rgb, 27, 94, 59), 0.08) !important;
     position: relative;
     overflow: hidden;
 }
@@ -21436,7 +21629,7 @@ button:focus:not(:focus-visible) {
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cdefs%3E%3Cpattern id='dots' x='0' y='0' width='20' height='20' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='10' cy='10' r='1.5' fill='%23b8860b' opacity='0.06'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23dots)'/%3E%3C/svg%3E");
     pointer-events: none;
-                opacity: 0.5;
+    opacity: 0.5;
 }
 
 .home-hero-inner {
@@ -21476,19 +21669,16 @@ button:focus:not(:focus-visible) {
 .home-reminder-pill {
     padding: 0.7rem 1.2rem !important;
     background: var(--bg-card) !important;
-    border: 1.5px solid
-        rgba(var(--primary-rgb, 27, 94, 59), 0.18) !important;
+    border: 1.5px solid rgba(var(--primary-rgb, 27, 94, 59), 0.18) !important;
     border-radius: var(--r-pill) !important;
-    box-shadow: 0 2px 8px
-        rgba(var(--primary-rgb, 27, 94, 59), 0.06) !important;
+    box-shadow: 0 2px 8px rgba(var(--primary-rgb, 27, 94, 59), 0.06) !important;
     transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
 .home-reminder-pill:hover {
     border-color: var(--gold) !important;
     background: rgba(var(--primary-rgb, 27, 94, 59), 0.04) !important;
-    box-shadow: 0 6px 20px
-        rgba(184, 134, 11, 0.2) !important;
+    box-shadow: 0 6px 20px rgba(184, 134, 11, 0.2) !important;
     transform: translateY(-2px) !important;
 }
 
@@ -21510,11 +21700,9 @@ button:focus:not(:focus-visible) {
         var(--bg-card) 0%,
         rgba(var(--primary-rgb, 27, 94, 59), 0.02) 100%
     ) !important;
-    border: 1.5px solid
-        rgba(var(--primary-rgb, 27, 94, 59), 0.12) !important;
+    border: 1.5px solid rgba(var(--primary-rgb, 27, 94, 59), 0.12) !important;
     border-radius: 1rem !important;
-    box-shadow: 0 3px 12px
-        rgba(var(--primary-rgb, 27, 94, 59), 0.08) !important;
+    box-shadow: 0 3px 12px rgba(var(--primary-rgb, 27, 94, 59), 0.08) !important;
     transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
@@ -21525,8 +21713,7 @@ button:focus:not(:focus-visible) {
         var(--bg-card) 0%,
         rgba(184, 134, 11, 0.06) 100%
     ) !important;
-    box-shadow: 0 8px 28px
-        rgba(184, 134, 11, 0.22) !important;
+    box-shadow: 0 8px 28px rgba(184, 134, 11, 0.22) !important;
     transform: translateY(-2px) !important;
 }
 
@@ -21608,8 +21795,7 @@ button:focus:not(:focus-visible) {
 .hpl-row:hover {
     border-color: var(--gold) !important;
     background: rgba(var(--primary-rgb, 27, 94, 59), 0.02) !important;
-    box-shadow: 0 4px 12px
-        rgba(184, 134, 11, 0.15) !important;
+    box-shadow: 0 4px 12px rgba(184, 134, 11, 0.15) !important;
     transform: translateX(2px) !important;
 }
 
@@ -21645,8 +21831,7 @@ button:focus:not(:focus-visible) {
 /* --- AUDIO PLAYER — Enhanced UI --- */
 .audio-player {
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15) !important;
-    border: 1px solid
-        rgba(var(--primary-rgb, 27, 94, 59), 0.1) !important;
+    border: 1px solid rgba(var(--primary-rgb, 27, 94, 59), 0.1) !important;
     border-radius: 1.2rem !important;
 }
 
@@ -21682,16 +21867,14 @@ button:focus:not(:focus-visible) {
         var(--emerald-mid, #228a50) 100%
     ) !important;
     color: white !important;
-    box-shadow: 0 4px 16px
-        rgba(var(--primary-rgb, 27, 94, 59), 0.3) !important;
+    box-shadow: 0 4px 16px rgba(var(--primary-rgb, 27, 94, 59), 0.3) !important;
     font-weight: 700 !important;
     transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
 .play-btn:hover,
 .control-play:hover {
-    box-shadow: 0 6px 24px
-        rgba(var(--primary-rgb, 27, 94, 59), 0.4) !important;
+    box-shadow: 0 6px 24px rgba(var(--primary-rgb, 27, 94, 59), 0.4) !important;
     transform: translateY(-2px) !important;
 }
 
@@ -21701,8 +21884,7 @@ button:focus:not(:focus-visible) {
 [class*="pause"][class*="btn"] {
     background: var(--bg-secondary) !important;
     color: var(--text-primary) !important;
-    border: 1.5px solid
-        rgba(var(--primary-rgb, 27, 94, 59), 0.2) !important;
+    border: 1.5px solid rgba(var(--primary-rgb, 27, 94, 59), 0.2) !important;
     transition: all 0.2s ease !important;
 }
 
@@ -21773,8 +21955,7 @@ button:focus:not(:focus-visible) {
         var(--primary, #1b5e3b) 0%,
         var(--emerald-mid, #228a50) 100%
     ) !important;
-    box-shadow: 0 3px 12px
-        rgba(var(--primary-rgb, 27, 94, 59), 0.25) !important;
+    box-shadow: 0 3px 12px rgba(var(--primary-rgb, 27, 94, 59), 0.25) !important;
     transform: none;
 }
 
@@ -21883,7 +22064,12 @@ button:focus:not(:focus-visible) {
     padding: 1rem;
     border-radius: 1.2rem;
     background: color-mix(in srgb, var(--bg-card, #ffffff) 86%, #ffffff 14%);
-    border: 1px solid color-mix(in srgb, var(--border, rgba(184, 134, 11, 0.2)) 80%, rgba(184, 134, 11, 0.22) 20%);
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--border, rgba(184, 134, 11, 0.2)) 80%,
+            rgba(184, 134, 11, 0.22) 20%
+        );
     box-shadow:
         0 1px 0 rgba(255, 255, 255, 0.66) inset,
         0 12px 28px rgba(37, 27, 12, 0.06);
@@ -21916,7 +22102,11 @@ button:focus:not(:focus-visible) {
     font-family: var(--font-ui);
     font-size: 0.68rem;
     line-height: 1.55;
-    color: color-mix(in srgb, var(--text-secondary, #6b5a3d) 78%, var(--gold, #b8860b) 22%);
+    color: color-mix(
+        in srgb,
+        var(--text-secondary, #6b5a3d) 78%,
+        var(--gold, #b8860b) 22%
+    );
 }
 
 .site-footer__col-count {
@@ -21928,7 +22118,8 @@ button:focus:not(:focus-visible) {
     padding: 0 0.55rem;
     border-radius: 999px;
     background: color-mix(in srgb, var(--gold, #b8860b) 12%, #ffffff 88%);
-    border: 1px solid color-mix(in srgb, var(--gold, #b8860b) 34%, transparent 66%);
+    border: 1px solid
+        color-mix(in srgb, var(--gold, #b8860b) 34%, transparent 66%);
     color: color-mix(in srgb, var(--gold, #b8860b) 82%, #5f4520 18%);
     font-family: var(--font-ui);
     font-size: 0.66rem;
@@ -21947,8 +22138,17 @@ button:focus:not(:focus-visible) {
     gap: 0.6rem;
     padding: 0.72rem 0.78rem;
     border-radius: 1rem;
-    background: color-mix(in srgb, var(--bg-card, #ffffff) 92%, rgba(184, 134, 11, 0.08) 8%);
-    border: 1px solid color-mix(in srgb, var(--border, rgba(184, 134, 11, 0.2)) 72%, rgba(184, 134, 11, 0.18) 28%);
+    background: color-mix(
+        in srgb,
+        var(--bg-card, #ffffff) 92%,
+        rgba(184, 134, 11, 0.08) 8%
+    );
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--border, rgba(184, 134, 11, 0.2)) 72%,
+            rgba(184, 134, 11, 0.18) 28%
+        );
 }
 
 .site-footer__stat-icon {
@@ -21984,7 +22184,11 @@ button:focus:not(:focus-visible) {
     line-height: 1.2;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--text-secondary, #6b5a3d) 78%, rgba(184, 134, 11, 0.2) 22%);
+    color: color-mix(
+        in srgb,
+        var(--text-secondary, #6b5a3d) 78%,
+        rgba(184, 134, 11, 0.2) 22%
+    );
 }
 
 .site-footer__notice {
@@ -21995,7 +22199,8 @@ button:focus:not(:focus-visible) {
     padding: 0.72rem 0.84rem;
     border-radius: 1rem;
     background: color-mix(in srgb, rgba(184, 134, 11, 0.08) 58%, #ffffff 42%);
-    border: 1px dashed color-mix(in srgb, var(--gold, #b8860b) 32%, transparent 68%);
+    border: 1px dashed
+        color-mix(in srgb, var(--gold, #b8860b) 32%, transparent 68%);
     color: color-mix(in srgb, var(--text-secondary, #6b5a3d) 86%, #7f5b16 14%);
     font-family: var(--font-ui);
     font-size: 0.68rem;
@@ -22010,7 +22215,11 @@ button:focus:not(:focus-visible) {
 .ftr-link {
     padding: 0.5rem 0.58rem;
     border-radius: 0.92rem;
-    background: color-mix(in srgb, var(--bg-card, #ffffff) 74%, transparent 26%);
+    background: color-mix(
+        in srgb,
+        var(--bg-card, #ffffff) 74%,
+        transparent 26%
+    );
 }
 
 .ftr-link__body {
@@ -22030,8 +22239,17 @@ button:focus:not(:focus-visible) {
 }
 
 .site-footer__bottom-link {
-    background: color-mix(in srgb, var(--bg-card, #ffffff) 78%, transparent 22%);
-    border: 1px solid color-mix(in srgb, var(--border, rgba(184, 134, 11, 0.2)) 76%, transparent 24%);
+    background: color-mix(
+        in srgb,
+        var(--bg-card, #ffffff) 78%,
+        transparent 22%
+    );
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--border, rgba(184, 134, 11, 0.2)) 76%,
+            transparent 24%
+        );
     padding: 0.26rem 0.58rem;
     border-radius: 999px;
 }
@@ -22112,8 +22330,17 @@ button:focus:not(:focus-visible) {
 .site-footer__utility-chip,
 .site-footer__experience-chip {
     width: 100%;
-    border: 1px solid color-mix(in srgb, var(--border, rgba(184, 134, 11, 0.2)) 78%, rgba(184, 134, 11, 0.18) 22%);
-    background: color-mix(in srgb, var(--bg-card, #ffffff) 90%, rgba(184, 134, 11, 0.08) 10%);
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--border, rgba(184, 134, 11, 0.2)) 78%,
+            rgba(184, 134, 11, 0.18) 22%
+        );
+    background: color-mix(
+        in srgb,
+        var(--bg-card, #ffffff) 90%,
+        rgba(184, 134, 11, 0.08) 10%
+    );
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.48),
         0 10px 24px rgba(41, 28, 8, 0.05);
@@ -22142,7 +22369,11 @@ button:focus:not(:focus-visible) {
 .site-footer__utility-chip:hover {
     transform: translateY(-1px);
     border-color: color-mix(in srgb, var(--gold, #b8860b) 48%, transparent 52%);
-    background: color-mix(in srgb, var(--bg-card, #ffffff) 84%, rgba(184, 134, 11, 0.14) 16%);
+    background: color-mix(
+        in srgb,
+        var(--bg-card, #ffffff) 84%,
+        rgba(184, 134, 11, 0.14) 16%
+    );
 }
 
 .site-footer__surah-chip-num,
@@ -22155,7 +22386,8 @@ button:focus:not(:focus-visible) {
     border-radius: 0.9rem;
     background: color-mix(in srgb, var(--gold, #b8860b) 12%, #ffffff 88%);
     color: color-mix(in srgb, var(--gold, #b8860b) 82%, #5f4520 18%);
-    border: 1px solid color-mix(in srgb, var(--gold, #b8860b) 32%, transparent 68%);
+    border: 1px solid
+        color-mix(in srgb, var(--gold, #b8860b) 32%, transparent 68%);
 }
 
 .site-footer__surah-chip-num {
@@ -22188,7 +22420,11 @@ button:focus:not(:focus-visible) {
 .site-footer__surah-chip-meta {
     font-family: var(--font-ui);
     font-size: 0.61rem;
-    color: color-mix(in srgb, var(--text-secondary, #6b5a3d) 78%, rgba(184, 134, 11, 0.22) 22%);
+    color: color-mix(
+        in srgb,
+        var(--text-secondary, #6b5a3d) 78%,
+        rgba(184, 134, 11, 0.22) 22%
+    );
 }
 
 .site-footer__surah-chip-ar {
@@ -22240,7 +22476,11 @@ button:focus:not(:focus-visible) {
     font-family: var(--font-ui);
     font-size: 0.61rem;
     line-height: 1.45;
-    color: color-mix(in srgb, var(--text-secondary, #6b5a3d) 80%, rgba(184, 134, 11, 0.24) 20%);
+    color: color-mix(
+        in srgb,
+        var(--text-secondary, #6b5a3d) 80%,
+        rgba(184, 134, 11, 0.24) 20%
+    );
 }
 
 .site-footer__experience-grid {
@@ -22283,7 +22523,11 @@ button:focus:not(:focus-visible) {
 .site-footer__bottom-caption {
     font-family: var(--font-ui);
     font-size: 0.61rem;
-    color: color-mix(in srgb, var(--text-secondary, #6b5a3d) 72%, rgba(184, 134, 11, 0.2) 28%);
+    color: color-mix(
+        in srgb,
+        var(--text-secondary, #6b5a3d) 72%,
+        rgba(184, 134, 11, 0.2) 28%
+    );
 }
 
 @media (max-width: 1024px) {
@@ -22358,8 +22602,16 @@ button:focus:not(:focus-visible) {
     inset: 0;
     pointer-events: none;
     background:
-        radial-gradient(circle at 8% 0%, rgba(var(--primary-rgb), 0.09), transparent 34%),
-        radial-gradient(circle at 92% 0%, rgba(212, 168, 32, 0.08), transparent 30%);
+        radial-gradient(
+            circle at 8% 0%,
+            rgba(var(--primary-rgb), 0.09),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 92% 0%,
+            rgba(212, 168, 32, 0.08),
+            transparent 30%
+        );
     opacity: 0.62;
     mask-image: linear-gradient(
         to bottom,
@@ -22415,7 +22667,12 @@ button:focus:not(:focus-visible) {
 .notes-panel-sheet,
 .modal-content,
 .quran-display {
-    border: 1px solid color-mix(in srgb, var(--border, rgba(184, 134, 11, 0.18)) 78%, rgba(255, 255, 255, 0.22) 22%);
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--border, rgba(184, 134, 11, 0.18)) 78%,
+            rgba(255, 255, 255, 0.22) 22%
+        );
     box-shadow:
         0 18px 42px rgba(16, 23, 20, 0.08),
         0 1px 0 rgba(255, 255, 255, 0.34) inset;
@@ -22431,12 +22688,21 @@ button:focus:not(:focus-visible) {
 
 .quran-display {
     border-radius: 1.3rem;
-    background:
-        linear-gradient(
-            180deg,
-            color-mix(in srgb, var(--bg-card, #ffffff) 92%, rgba(255, 255, 255, 0.28) 8%) 0%,
-            color-mix(in srgb, var(--bg-card, #ffffff) 97%, rgba(var(--primary-rgb), 0.03) 3%) 100%
-        );
+    background: linear-gradient(
+        180deg,
+        color-mix(
+                in srgb,
+                var(--bg-card, #ffffff) 92%,
+                rgba(255, 255, 255, 0.28) 8%
+            )
+            0%,
+        color-mix(
+                in srgb,
+                var(--bg-card, #ffffff) 97%,
+                rgba(var(--primary-rgb), 0.03) 3%
+            )
+            100%
+    );
 }
 
 .sidebar,
@@ -22446,24 +22712,42 @@ button:focus:not(:focus-visible) {
 
 .modal-content {
     border-radius: 1.25rem;
-    background:
-        linear-gradient(
-            180deg,
-            color-mix(in srgb, var(--bg-card, #ffffff) 94%, rgba(255, 255, 255, 0.3) 6%) 0%,
-            color-mix(in srgb, var(--bg-card, #ffffff) 90%, rgba(var(--primary-rgb), 0.04) 10%) 100%
-        );
+    background: linear-gradient(
+        180deg,
+        color-mix(
+                in srgb,
+                var(--bg-card, #ffffff) 94%,
+                rgba(255, 255, 255, 0.3) 6%
+            )
+            0%,
+        color-mix(
+                in srgb,
+                var(--bg-card, #ffffff) 90%,
+                rgba(var(--primary-rgb), 0.04) 10%
+            )
+            100%
+    );
 }
 
 [data-theme="dark"] .quran-display,
 [data-theme="night-blue"] .quran-display,
 [data-theme="oled"] .quran-display,
 [data-theme="forest"] .quran-display {
-    background:
-        linear-gradient(
-            180deg,
-            color-mix(in srgb, var(--bg-card, #10131a) 92%, rgba(255, 255, 255, 0.06) 8%) 0%,
-            color-mix(in srgb, var(--bg-card, #10131a) 96%, rgba(var(--primary-rgb), 0.05) 4%) 100%
-        );
+    background: linear-gradient(
+        180deg,
+        color-mix(
+                in srgb,
+                var(--bg-card, #10131a) 92%,
+                rgba(255, 255, 255, 0.06) 8%
+            )
+            0%,
+        color-mix(
+                in srgb,
+                var(--bg-card, #10131a) 96%,
+                rgba(var(--primary-rgb), 0.05) 4%
+            )
+            100%
+    );
 }
 
 @media (max-width: 980px) {
@@ -22499,7 +22783,11 @@ button:focus:not(:focus-visible) {
     font-family: var(--font-ui);
     font-size: 0.72rem;
     line-height: 1.28;
-    color: color-mix(in srgb, var(--text-muted, #8f8575) 82%, var(--gold, #b8860b) 18%);
+    color: color-mix(
+        in srgb,
+        var(--text-muted, #8f8575) 82%,
+        var(--gold, #b8860b) 18%
+    );
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -22528,7 +22816,11 @@ button:focus:not(:focus-visible) {
 .hp2-items--grid .scard__trans {
     max-width: 16ch;
     font-weight: 600;
-    color: color-mix(in srgb, var(--text-muted, #8f8575) 82%, var(--gold, #b8860b) 18%);
+    color: color-mix(
+        in srgb,
+        var(--text-muted, #8f8575) 82%,
+        var(--gold, #b8860b) 18%
+    );
 }
 
 .hp2-items--grid .scard__meta {
@@ -22545,7 +22837,11 @@ button:focus:not(:focus-visible) {
 }
 
 .hpl-row__play {
-    background: color-mix(in srgb, var(--bg-card, #ffffff) 72%, rgba(184, 134, 11, 0.12) 28%);
+    background: color-mix(
+        in srgb,
+        var(--bg-card, #ffffff) 72%,
+        rgba(184, 134, 11, 0.12) 28%
+    );
 }
 
 .hpl-row__ar,
@@ -22553,7 +22849,10 @@ button:focus:not(:focus-visible) {
 .ftr-link__ar,
 .site-footer__ayah-ar,
 .audio-player__arabic-title {
-    font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+    font-feature-settings:
+        "liga" 1,
+        "calt" 1,
+        "kern" 1;
     font-variant-ligatures: contextual;
     text-rendering: optimizeLegibility;
 }
@@ -22582,7 +22881,12 @@ button:focus:not(:focus-visible) {
     isolation: isolate;
     overflow: hidden;
     padding: 0 !important;
-    border: 1px solid color-mix(in srgb, var(--player-border, rgba(212, 168, 32, 0.22)) 82%, rgba(255, 255, 255, 0.18) 18%) !important;
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--player-border, rgba(212, 168, 32, 0.22)) 82%,
+            rgba(255, 255, 255, 0.18) 18%
+        ) !important;
     box-shadow:
         0 22px 54px rgba(11, 20, 15, 0.2),
         0 1px 0 rgba(255, 255, 255, 0.06) inset !important;
@@ -22594,7 +22898,11 @@ button:focus:not(:focus-visible) {
     inset: 0;
     pointer-events: none;
     background:
-        radial-gradient(circle at 14% 0%, rgba(255, 255, 255, 0.16), transparent 34%),
+        radial-gradient(
+            circle at 14% 0%,
+            rgba(255, 255, 255, 0.16),
+            transparent 34%
+        ),
         linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent 42%);
     z-index: 0;
 }
@@ -22695,7 +23003,11 @@ button:focus:not(:focus-visible) {
     height: 0.88rem;
     border-radius: 999px;
     transform: translateY(-50%);
-    background: radial-gradient(circle at 35% 35%, #fff7da, var(--gold, #d4a820));
+    background: radial-gradient(
+        circle at 35% 35%,
+        #fff7da,
+        var(--gold, #d4a820)
+    );
     border: 2px solid rgba(18, 31, 25, 0.32);
     box-shadow: 0 6px 16px rgba(212, 168, 32, 0.36);
 }
@@ -22711,7 +23023,11 @@ button:focus:not(:focus-visible) {
 .audio-player__volume,
 .audio-player__primary-controls {
     border-radius: 1rem;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.02)
+    );
     border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -22859,8 +23175,11 @@ button:focus:not(:focus-visible) {
 .audio-player--reading-dock .audio-player__waveform,
 .audio-player--reading-dock .audio-player__volume,
 .audio-player--reading-dock .audio-player__primary-controls {
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025));
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.025)
+    );
     border-color: rgba(255, 255, 255, 0.09);
 }
 
@@ -22870,7 +23189,11 @@ button:focus:not(:focus-visible) {
 
 [data-theme="premium-beige"] .audio-player--desktop.audio-player--reading-dock {
     background:
-        linear-gradient(180deg, rgba(255, 251, 243, 0.96), rgba(242, 233, 216, 0.95)),
+        linear-gradient(
+            180deg,
+            rgba(255, 251, 243, 0.96),
+            rgba(242, 233, 216, 0.95)
+        ),
         var(--player-glass) !important;
 }
 
@@ -23233,8 +23556,7 @@ button:focus:not(:focus-visible) {
 .audio-maker-item--selected .audio-maker-item-checkbox {
     background: var(--primary);
     border-color: var(--primary);
-    box-shadow: 0 2px 8px
-        rgba(var(--primary-rgb, 27, 94, 59), 0.25);
+    box-shadow: 0 2px 8px rgba(var(--primary-rgb, 27, 94, 59), 0.25);
 }
 
 .audio-maker-item-num {
@@ -23375,13 +23697,11 @@ button:focus:not(:focus-visible) {
     );
     color: white;
     border: none;
-    box-shadow: 0 4px 12px
-        rgba(var(--primary-rgb, 27, 94, 59), 0.25);
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb, 27, 94, 59), 0.25);
 }
 
 .audio-maker-btn--primary:hover:not(:disabled) {
-    box-shadow: 0 6px 20px
-        rgba(var(--primary-rgb, 27, 94, 59), 0.35);
+    box-shadow: 0 6px 20px rgba(var(--primary-rgb, 27, 94, 59), 0.35);
     transform: translateY(-1px);
 }
 
@@ -23458,19 +23778,41 @@ button:focus:not(:focus-visible) {
     --platform-shadow-soft:
         0 14px 34px rgba(15, 21, 19, 0.08),
         0 1px 0 rgba(255, 255, 255, 0.22) inset;
-    --platform-border: color-mix(in srgb, var(--border, rgba(184, 134, 11, 0.16)) 82%, rgba(255, 255, 255, 0.22) 18%);
-    --platform-surface:
-        linear-gradient(
-            180deg,
-            color-mix(in srgb, var(--bg-card, #ffffff) 94%, rgba(255, 255, 255, 0.4) 6%) 0%,
-            color-mix(in srgb, var(--bg-card, #ffffff) 88%, rgba(var(--primary-rgb), 0.05) 12%) 100%
-        );
-    --platform-surface-soft:
-        linear-gradient(
-            180deg,
-            color-mix(in srgb, var(--bg-card, #ffffff) 92%, rgba(255, 255, 255, 0.28) 8%) 0%,
-            color-mix(in srgb, var(--bg-card, #ffffff) 96%, rgba(var(--primary-rgb), 0.03) 4%) 100%
-        );
+    --platform-border: color-mix(
+        in srgb,
+        var(--border, rgba(184, 134, 11, 0.16)) 82%,
+        rgba(255, 255, 255, 0.22) 18%
+    );
+    --platform-surface: linear-gradient(
+        180deg,
+        color-mix(
+                in srgb,
+                var(--bg-card, #ffffff) 94%,
+                rgba(255, 255, 255, 0.4) 6%
+            )
+            0%,
+        color-mix(
+                in srgb,
+                var(--bg-card, #ffffff) 88%,
+                rgba(var(--primary-rgb), 0.05) 12%
+            )
+            100%
+    );
+    --platform-surface-soft: linear-gradient(
+        180deg,
+        color-mix(
+                in srgb,
+                var(--bg-card, #ffffff) 92%,
+                rgba(255, 255, 255, 0.28) 8%
+            )
+            0%,
+        color-mix(
+                in srgb,
+                var(--bg-card, #ffffff) 96%,
+                rgba(var(--primary-rgb), 0.03) 4%
+            )
+            100%
+    );
 }
 
 .app-view-home,
@@ -23535,8 +23877,16 @@ button:focus:not(:focus-visible) {
     inset: 0;
     pointer-events: none;
     background:
-        radial-gradient(circle at 10% 0%, rgba(var(--primary-rgb), 0.08), transparent 32%),
-        radial-gradient(circle at 100% 0%, rgba(212, 168, 32, 0.08), transparent 28%);
+        radial-gradient(
+            circle at 10% 0%,
+            rgba(var(--primary-rgb), 0.08),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(212, 168, 32, 0.08),
+            transparent 28%
+        );
     opacity: 0.8;
 }
 
@@ -23575,7 +23925,12 @@ button:focus:not(:focus-visible) {
 .modal-action-btn,
 .modal-segmented-btn,
 .search-summary-pill {
-    border: 1px solid color-mix(in srgb, var(--platform-border) 85%, rgba(var(--primary-rgb), 0.15) 15%);
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--platform-border) 85%,
+            rgba(var(--primary-rgb), 0.15) 15%
+        );
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
@@ -23590,7 +23945,12 @@ button:focus:not(:focus-visible) {
 .modal-item-card,
 .search-result-card {
     border-radius: 1.12rem;
-    border: 1px solid color-mix(in srgb, var(--platform-border) 86%, rgba(var(--primary-rgb), 0.14) 14%);
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--platform-border) 86%,
+            rgba(var(--primary-rgb), 0.14) 14%
+        );
     box-shadow: var(--platform-shadow-soft);
 }
 
@@ -23612,7 +23972,11 @@ button:focus:not(:focus-visible) {
 .modal-item-card:hover,
 .search-result-card:hover {
     transform: translateY(-2px);
-    border-color: color-mix(in srgb, var(--gold, #b8860b) 55%, var(--platform-border) 45%);
+    border-color: color-mix(
+        in srgb,
+        var(--gold, #b8860b) 55%,
+        var(--platform-border) 45%
+    );
 }
 
 .modal,
@@ -23625,13 +23989,26 @@ button:focus:not(:focus-visible) {
 .modal-header,
 .settings-header {
     position: relative;
-    background:
-        linear-gradient(
-            180deg,
-            color-mix(in srgb, var(--bg-card, #ffffff) 82%, rgba(255, 255, 255, 0.4) 18%) 0%,
-            color-mix(in srgb, var(--bg-card, #ffffff) 92%, rgba(var(--primary-rgb), 0.04) 8%) 100%
-        );
-    border-bottom-color: color-mix(in srgb, var(--platform-border) 86%, rgba(255, 255, 255, 0.14) 14%);
+    background: linear-gradient(
+        180deg,
+        color-mix(
+                in srgb,
+                var(--bg-card, #ffffff) 82%,
+                rgba(255, 255, 255, 0.4) 18%
+            )
+            0%,
+        color-mix(
+                in srgb,
+                var(--bg-card, #ffffff) 92%,
+                rgba(var(--primary-rgb), 0.04) 8%
+            )
+            100%
+    );
+    border-bottom-color: color-mix(
+        in srgb,
+        var(--platform-border) 86%,
+        rgba(255, 255, 255, 0.14) 14%
+    );
 }
 
 .modal-toolbar {
@@ -23642,8 +24019,17 @@ button:focus:not(:focus-visible) {
 .modal-search-input {
     min-height: 3rem;
     border-radius: 1rem;
-    border: 1px solid color-mix(in srgb, var(--platform-border) 84%, rgba(var(--primary-rgb), 0.16) 16%);
-    background: color-mix(in srgb, var(--bg-card, #ffffff) 92%, rgba(255, 255, 255, 0.08) 8%);
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--platform-border) 84%,
+            rgba(var(--primary-rgb), 0.16) 16%
+        );
+    background: color-mix(
+        in srgb,
+        var(--bg-card, #ffffff) 92%,
+        rgba(255, 255, 255, 0.08) 8%
+    );
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
@@ -23663,7 +24049,11 @@ button:focus:not(:focus-visible) {
 }
 
 .search-summary-pill {
-    background: color-mix(in srgb, var(--bg-card, #ffffff) 88%, rgba(var(--primary-rgb), 0.08) 12%);
+    background: color-mix(
+        in srgb,
+        var(--bg-card, #ffffff) 88%,
+        rgba(var(--primary-rgb), 0.08) 12%
+    );
 }
 
 .notes-fab {
@@ -23678,8 +24068,11 @@ button:focus:not(:focus-visible) {
 }
 
 .notes-card-header {
-    background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.06));
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.3),
+        rgba(255, 255, 255, 0.06)
+    );
 }
 
 .notes-card-body {
@@ -23718,8 +24111,11 @@ button:focus:not(:focus-visible) {
 [data-theme="forest"] .settings-dialog,
 [data-theme="forest"] .notes-panel-desk,
 [data-theme="forest"] .notes-panel-sheet {
-    background:
-        linear-gradient(180deg, rgba(18, 27, 35, 0.94), rgba(14, 20, 27, 0.94));
+    background: linear-gradient(
+        180deg,
+        rgba(18, 27, 35, 0.94),
+        rgba(14, 20, 27, 0.94)
+    );
     border-color: rgba(212, 170, 64, 0.26);
     box-shadow:
         0 24px 56px rgba(0, 0, 0, 0.34),
@@ -23735,8 +24131,11 @@ button:focus:not(:focus-visible) {
 [data-theme="premium-beige"] .notes-panel-desk,
 [data-theme="premium-beige"] .notes-panel-sheet,
 [data-theme="premium-beige"] .site-footer--platform {
-    background:
-        linear-gradient(180deg, rgba(255, 251, 243, 0.96), rgba(241, 231, 212, 0.93));
+    background: linear-gradient(
+        180deg,
+        rgba(255, 251, 243, 0.96),
+        rgba(241, 231, 212, 0.93)
+    );
     border-color: rgba(166, 121, 18, 0.2);
     box-shadow:
         0 20px 44px rgba(92, 66, 23, 0.12),
@@ -23842,7 +24241,9 @@ button:focus:not(:focus-visible) {
     top: var(--notes-panel-y, auto);
     width: var(--notes-panel-w, 340px);
     max-height: min(520px, calc(100dvh - 80px));
-    transition: box-shadow 0.25s ease, transform 0.15s ease;
+    transition:
+        box-shadow 0.25s ease,
+        transform 0.15s ease;
 }
 
 .notes-panel-desk--open {
@@ -24044,8 +24445,16 @@ button:focus:not(:focus-visible) {
 
 .app-main-shell::before {
     background:
-        radial-gradient(circle at 10% 0%, var(--theme-shell-glow-a), transparent 38%),
-        radial-gradient(circle at 90% 0%, var(--theme-shell-glow-b), transparent 34%);
+        radial-gradient(
+            circle at 10% 0%,
+            var(--theme-shell-glow-a),
+            transparent 38%
+        ),
+        radial-gradient(
+            circle at 90% 0%,
+            var(--theme-shell-glow-b),
+            transparent 34%
+        );
     opacity: 0.68;
 }
 
@@ -24101,7 +24510,12 @@ button:focus:not(:focus-visible) {
             color-mix(in srgb, #1f2f3f 14%, transparent 86%),
             transparent 32%
         ),
-        linear-gradient(180deg, #f6f3e8 0%, color-mix(in srgb, #f6f3e8 92%, #1f2f3f 8%) 52%, #f6f3e8 100%);
+        linear-gradient(
+            180deg,
+            #f6f3e8 0%,
+            color-mix(in srgb, #f6f3e8 92%, #1f2f3f 8%) 52%,
+            #f6f3e8 100%
+        );
 }
 
 [data-theme="sepia"] {
@@ -24150,7 +24564,12 @@ button:focus:not(:focus-visible) {
             color-mix(in srgb, #4a321c 14%, transparent 86%),
             transparent 30%
         ),
-        linear-gradient(180deg, #efe2c8 0%, color-mix(in srgb, #efe2c8 90%, #4a321c 10%) 52%, #efe2c8 100%);
+        linear-gradient(
+            180deg,
+            #efe2c8 0%,
+            color-mix(in srgb, #efe2c8 90%, #4a321c 10%) 52%,
+            #efe2c8 100%
+        );
 }
 
 [data-theme="ocean"] {
@@ -24189,8 +24608,16 @@ button:focus:not(:focus-visible) {
             rgba(201, 146, 45, 0.028) 0 1px,
             transparent 1px 120px
         ),
-        radial-gradient(circle at 8% -8%, rgba(23, 111, 159, 0.24), transparent 34%),
-        radial-gradient(circle at 92% -12%, rgba(201, 146, 45, 0.14), transparent 32%),
+        radial-gradient(
+            circle at 8% -8%,
+            rgba(23, 111, 159, 0.24),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 92% -12%,
+            rgba(201, 146, 45, 0.14),
+            transparent 32%
+        ),
         linear-gradient(180deg, #edf5fb 0%, #deebf6 46%, #e9f3fb 100%);
 }
 
@@ -24230,8 +24657,16 @@ button:focus:not(:focus-visible) {
             rgba(184, 139, 47, 0.026) 0 1px,
             transparent 1px 78px
         ),
-        radial-gradient(circle at 8% -8%, rgba(31, 118, 64, 0.23), transparent 34%),
-        radial-gradient(circle at 92% -12%, rgba(184, 139, 47, 0.14), transparent 31%),
+        radial-gradient(
+            circle at 8% -8%,
+            rgba(31, 118, 64, 0.23),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 92% -12%,
+            rgba(184, 139, 47, 0.14),
+            transparent 31%
+        ),
         linear-gradient(180deg, #ebf5ed 0%, #dcecdf 47%, #e8f3ea 100%);
 }
 
@@ -24261,9 +24696,17 @@ button:focus:not(:focus-visible) {
         0 12px 30px color-mix(in srgb, #000000 32%, transparent 68%),
         0 1px 0 color-mix(in srgb, #ffffff 4%, transparent 96%) inset;
     --theme-app-bg:
-        radial-gradient(circle at 12px 16px, color-mix(in srgb, #d0a03d 18%, transparent 82%) 0 1px, transparent 1.2px)
+        radial-gradient(
+                circle at 12px 16px,
+                color-mix(in srgb, #d0a03d 18%, transparent 82%) 0 1px,
+                transparent 1.2px
+            )
             0 0 / 58px 58px repeat,
-        radial-gradient(circle at 28px 36px, color-mix(in srgb, #e8eef8 12%, transparent 88%) 0 1px, transparent 1.2px)
+        radial-gradient(
+                circle at 28px 36px,
+                color-mix(in srgb, #e8eef8 12%, transparent 88%) 0 1px,
+                transparent 1.2px
+            )
             0 0 / 62px 62px repeat,
         repeating-linear-gradient(
             0deg,
@@ -24280,7 +24723,12 @@ button:focus:not(:focus-visible) {
             color-mix(in srgb, #e8eef8 10%, transparent 90%),
             transparent 34%
         ),
-        linear-gradient(180deg, #0b1320 0%, color-mix(in srgb, #0b1320 84%, #e8eef8 16%) 54%, #0b1320 100%);
+        linear-gradient(
+            180deg,
+            #0b1320 0%,
+            color-mix(in srgb, #0b1320 84%, #e8eef8 16%) 54%,
+            #0b1320 100%
+        );
 }
 
 [data-theme="night-blue"] {
@@ -24303,23 +24751,37 @@ button:focus:not(:focus-visible) {
     --theme-glow-a: rgba(77, 121, 218, 0.33);
     --theme-glow-b: rgba(214, 166, 70, 0.18);
     --theme-shadow-panel:
-        0 24px 58px rgba(0, 0, 0, 0.45),
-        0 1px 0 rgba(255, 255, 255, 0.04) inset;
+        0 24px 58px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
     --theme-shadow-soft:
-        0 12px 32px rgba(0, 0, 0, 0.34),
-        0 1px 0 rgba(255, 255, 255, 0.03) inset;
+        0 12px 32px rgba(0, 0, 0, 0.34), 0 1px 0 rgba(255, 255, 255, 0.03) inset;
     --theme-app-bg:
-        radial-gradient(circle at 10px 14px, rgba(214, 166, 70, 0.16) 0 1px, transparent 1.2px)
+        radial-gradient(
+                circle at 10px 14px,
+                rgba(214, 166, 70, 0.16) 0 1px,
+                transparent 1.2px
+            )
             0 0 / 54px 54px repeat,
-        radial-gradient(circle at 30px 30px, rgba(77, 121, 218, 0.2) 0 1px, transparent 1.2px)
+        radial-gradient(
+                circle at 30px 30px,
+                rgba(77, 121, 218, 0.2) 0 1px,
+                transparent 1.2px
+            )
             0 0 / 64px 64px repeat,
         repeating-linear-gradient(
             0deg,
             rgba(133, 159, 227, 0.022) 0 1px,
             transparent 1px 66px
         ),
-        radial-gradient(circle at 10% -10%, rgba(77, 121, 218, 0.32), transparent 37%),
-        radial-gradient(circle at 92% -12%, rgba(214, 166, 70, 0.16), transparent 35%),
+        radial-gradient(
+            circle at 10% -10%,
+            rgba(77, 121, 218, 0.32),
+            transparent 37%
+        ),
+        radial-gradient(
+            circle at 92% -12%,
+            rgba(214, 166, 70, 0.16),
+            transparent 35%
+        ),
         linear-gradient(180deg, #0b1022 0%, #0d1430 52%, #0b1020 100%);
 }
 
@@ -24369,7 +24831,12 @@ button:focus:not(:focus-visible) {
             color-mix(in srgb, #d9e7fb 10%, transparent 90%),
             transparent 34%
         ),
-        linear-gradient(180deg, #0d1b2d 0%, color-mix(in srgb, #0d1b2d 84%, #d9e7fb 16%) 50%, #0d1b2d 100%);
+        linear-gradient(
+            180deg,
+            #0d1b2d 0%,
+            color-mix(in srgb, #0d1b2d 84%, #d9e7fb 16%) 50%,
+            #0d1b2d 100%
+        );
 }
 
 [data-theme="oled"] {
@@ -24392,23 +24859,37 @@ button:focus:not(:focus-visible) {
     --theme-glow-a: rgba(44, 163, 107, 0.34);
     --theme-glow-b: rgba(212, 163, 63, 0.2);
     --theme-shadow-panel:
-        0 24px 60px rgba(0, 0, 0, 0.55),
-        0 1px 0 rgba(255, 255, 255, 0.04) inset;
+        0 24px 60px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
     --theme-shadow-soft:
-        0 12px 30px rgba(0, 0, 0, 0.42),
-        0 1px 0 rgba(255, 255, 255, 0.03) inset;
+        0 12px 30px rgba(0, 0, 0, 0.42), 0 1px 0 rgba(255, 255, 255, 0.03) inset;
     --theme-app-bg:
-        radial-gradient(circle at 14px 12px, rgba(212, 163, 63, 0.15) 0 1px, transparent 1.2px)
+        radial-gradient(
+                circle at 14px 12px,
+                rgba(212, 163, 63, 0.15) 0 1px,
+                transparent 1.2px
+            )
             0 0 / 66px 66px repeat,
-        radial-gradient(circle at 35px 35px, rgba(44, 163, 107, 0.18) 0 1px, transparent 1.2px)
+        radial-gradient(
+                circle at 35px 35px,
+                rgba(44, 163, 107, 0.18) 0 1px,
+                transparent 1.2px
+            )
             0 0 / 70px 70px repeat,
         repeating-linear-gradient(
             0deg,
             rgba(255, 255, 255, 0.014) 0 1px,
             transparent 1px 72px
         ),
-        radial-gradient(circle at 10% -10%, rgba(44, 163, 107, 0.3), transparent 36%),
-        radial-gradient(circle at 92% -12%, rgba(212, 163, 63, 0.17), transparent 35%),
+        radial-gradient(
+            circle at 10% -10%,
+            rgba(44, 163, 107, 0.3),
+            transparent 36%
+        ),
+        radial-gradient(
+            circle at 92% -12%,
+            rgba(212, 163, 63, 0.17),
+            transparent 35%
+        ),
         linear-gradient(180deg, #050708 0%, #06090a 54%, #050607 100%);
 }
 
@@ -24448,8 +24929,16 @@ button:focus:not(:focus-visible) {
             rgba(216, 168, 90, 0.028) 0 1px,
             transparent 1px 96px
         ),
-        radial-gradient(circle at 10% -10%, rgba(155, 115, 31, 0.21), transparent 34%),
-        radial-gradient(circle at 92% -12%, rgba(216, 168, 90, 0.18), transparent 34%),
+        radial-gradient(
+            circle at 10% -10%,
+            rgba(155, 115, 31, 0.21),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 92% -12%,
+            rgba(216, 168, 90, 0.18),
+            transparent 34%
+        ),
         linear-gradient(180deg, #f7f1e8 0%, #ece3d6 48%, #f4ece0 100%);
 }
 
@@ -24458,18 +24947,30 @@ button:focus:not(:focus-visible) {
     --bg: var(--theme-bg);
     --bg-primary: var(--theme-bg);
     --bg-secondary: var(--theme-bg-alt);
-    --bg-tertiary: color-mix(in srgb, var(--theme-bg-alt) 74%, var(--theme-surface) 26%);
+    --bg-tertiary: color-mix(
+        in srgb,
+        var(--theme-bg-alt) 74%,
+        var(--theme-surface) 26%
+    );
     --bg-card: var(--theme-surface);
     --surface: var(--theme-surface);
     --glass-bg: var(--theme-surface-glass);
     --header-bg: var(--theme-surface);
     --header-glass: var(--theme-surface-glass);
     --sidebar-bg: var(--theme-bg-alt);
-    --sidebar-glass: color-mix(in srgb, var(--theme-surface-glass) 82%, var(--theme-bg-alt) 18%);
+    --sidebar-glass: color-mix(
+        in srgb,
+        var(--theme-surface-glass) 82%,
+        var(--theme-bg-alt) 18%
+    );
     --text: var(--theme-text);
     --text-primary: var(--theme-text);
     --text-secondary: var(--theme-text-soft);
-    --text-tertiary: color-mix(in srgb, var(--theme-text-soft) 75%, var(--theme-text-muted) 25%);
+    --text-tertiary: color-mix(
+        in srgb,
+        var(--theme-text-soft) 75%,
+        var(--theme-text-muted) 25%
+    );
     --text-muted: var(--theme-text-muted);
     --text-inverse: var(--theme-text-inverse);
     --primary: var(--theme-primary);
@@ -24478,8 +24979,16 @@ button:focus:not(:focus-visible) {
     --gold: var(--theme-accent);
     --gold-bright: var(--theme-accent-bright);
     --border: var(--theme-border);
-    --border-light: color-mix(in srgb, var(--theme-border) 70%, transparent 30%);
-    --border-subtle: color-mix(in srgb, var(--theme-border) 52%, transparent 48%);
+    --border-light: color-mix(
+        in srgb,
+        var(--theme-border) 70%,
+        transparent 30%
+    );
+    --border-subtle: color-mix(
+        in srgb,
+        var(--theme-border) 52%,
+        transparent 48%
+    );
     --border-strong: var(--theme-border-strong);
     --divider: color-mix(in srgb, var(--theme-border) 78%, transparent 22%);
     --theme-shell-glow-a: var(--theme-glow-a);
@@ -24487,8 +24996,16 @@ button:focus:not(:focus-visible) {
     --theme-panel-bg: var(--theme-surface-glass);
     --theme-panel-bg-strong: var(--theme-surface-soft);
     --theme-panel-border: var(--theme-border);
-    --theme-chip-bg: color-mix(in srgb, rgba(var(--theme-primary-rgb), 0.16) 74%, rgba(255, 255, 255, 0.06) 26%);
-    --theme-chip-border: color-mix(in srgb, var(--theme-border-strong) 80%, rgba(var(--theme-primary-rgb), 0.25) 20%);
+    --theme-chip-bg: color-mix(
+        in srgb,
+        rgba(var(--theme-primary-rgb), 0.16) 74%,
+        rgba(255, 255, 255, 0.06) 26%
+    );
+    --theme-chip-border: color-mix(
+        in srgb,
+        var(--theme-border-strong) 80%,
+        rgba(var(--theme-primary-rgb), 0.25) 20%
+    );
     --theme-muted: var(--theme-text-muted);
 }
 
@@ -24499,12 +25016,11 @@ button:focus:not(:focus-visible) {
 
 .app-main,
 .quran-display-scroll {
-    background:
-        linear-gradient(
-            180deg,
-            color-mix(in srgb, var(--theme-bg) 86%, transparent 14%) 0%,
-            color-mix(in srgb, var(--theme-bg-alt) 88%, transparent 12%) 100%
-        ) !important;
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--theme-bg) 86%, transparent 14%) 0%,
+        color-mix(in srgb, var(--theme-bg-alt) 88%, transparent 12%) 100%
+    ) !important;
 }
 
 .app-main-shell::before {
@@ -24590,7 +25106,11 @@ button:focus:not(:focus-visible) {
         color-mix(in srgb, var(--theme-primary) 68%, var(--theme-accent) 32%)
     ) !important;
     color: var(--theme-text-inverse) !important;
-    border-color: color-mix(in srgb, var(--theme-primary) 78%, var(--theme-accent) 22%) !important;
+    border-color: color-mix(
+        in srgb,
+        var(--theme-primary) 78%,
+        var(--theme-accent) 22%
+    ) !important;
 }
 
 .scard__ar,
@@ -24606,7 +25126,11 @@ button:focus:not(:focus-visible) {
 .modal-inline-input,
 .audio-player__search-input,
 .audio-player__number-input {
-    background: color-mix(in srgb, var(--theme-surface) 86%, transparent 14%) !important;
+    background: color-mix(
+        in srgb,
+        var(--theme-surface) 86%,
+        transparent 14%
+    ) !important;
     border-color: var(--theme-border) !important;
     color: var(--theme-text) !important;
 }
@@ -24661,29 +25185,67 @@ button:focus:not(:focus-visible) {
 [data-theme="dark"],
 [data-theme="quran-night"] {
     --theme-bg: var(--brand-bg);
-    --theme-bg-alt: color-mix(in srgb, var(--brand-bg) 86%, var(--brand-ink) 14%);
-    --theme-surface: color-mix(in srgb, var(--brand-bg) 90%, var(--brand-ink) 10%);
-    --theme-surface-soft: color-mix(in srgb, var(--brand-bg) 84%, var(--brand-ink) 16%);
-    --theme-surface-glass: color-mix(in srgb, var(--theme-surface) 86%, transparent 14%);
+    --theme-bg-alt: color-mix(
+        in srgb,
+        var(--brand-bg) 86%,
+        var(--brand-ink) 14%
+    );
+    --theme-surface: color-mix(
+        in srgb,
+        var(--brand-bg) 90%,
+        var(--brand-ink) 10%
+    );
+    --theme-surface-soft: color-mix(
+        in srgb,
+        var(--brand-bg) 84%,
+        var(--brand-ink) 16%
+    );
+    --theme-surface-glass: color-mix(
+        in srgb,
+        var(--theme-surface) 86%,
+        transparent 14%
+    );
     --theme-text: var(--brand-ink);
-    --theme-text-soft: color-mix(in srgb, var(--brand-ink) 82%, var(--brand-bg) 18%);
-    --theme-text-muted: color-mix(in srgb, var(--brand-ink) 62%, var(--brand-bg) 38%);
+    --theme-text-soft: color-mix(
+        in srgb,
+        var(--brand-ink) 82%,
+        var(--brand-bg) 18%
+    );
+    --theme-text-muted: color-mix(
+        in srgb,
+        var(--brand-ink) 62%,
+        var(--brand-bg) 38%
+    );
     --theme-text-inverse: var(--brand-inverse);
     --theme-primary: var(--brand-accent);
     --theme-primary-rgb: var(--brand-accent-rgb);
     --theme-accent: var(--brand-accent);
-    --theme-accent-bright: color-mix(in srgb, var(--brand-accent) 78%, #ffffff 22%);
+    --theme-accent-bright: color-mix(
+        in srgb,
+        var(--brand-accent) 78%,
+        #ffffff 22%
+    );
     --theme-border: color-mix(in srgb, var(--brand-ink) 24%, transparent 76%);
-    --theme-border-strong: color-mix(in srgb, var(--brand-ink) 36%, var(--brand-accent) 64%);
-    --theme-arabic: color-mix(in srgb, var(--brand-accent) 72%, var(--brand-ink) 28%);
-    --theme-glow-a: color-mix(in srgb, var(--brand-accent) 24%, transparent 76%);
+    --theme-border-strong: color-mix(
+        in srgb,
+        var(--brand-ink) 36%,
+        var(--brand-accent) 64%
+    );
+    --theme-arabic: color-mix(
+        in srgb,
+        var(--brand-accent) 72%,
+        var(--brand-ink) 28%
+    );
+    --theme-glow-a: color-mix(
+        in srgb,
+        var(--brand-accent) 24%,
+        transparent 76%
+    );
     --theme-glow-b: color-mix(in srgb, var(--brand-ink) 12%, transparent 88%);
     --theme-shadow-panel:
-        0 18px 42px rgba(0, 0, 0, 0.16),
-        0 1px 0 rgba(255, 255, 255, 0.08) inset;
+        0 18px 42px rgba(0, 0, 0, 0.16), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
     --theme-shadow-soft:
-        0 10px 24px rgba(0, 0, 0, 0.12),
-        0 1px 0 rgba(255, 255, 255, 0.06) inset;
+        0 10px 24px rgba(0, 0, 0, 0.12), 0 1px 0 rgba(255, 255, 255, 0.06) inset;
     --theme-app-bg:
         repeating-linear-gradient(
             0deg,
