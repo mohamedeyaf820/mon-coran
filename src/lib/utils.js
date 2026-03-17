@@ -18,6 +18,7 @@ export function cn(...inputs) {
  * toast("Erreur réseau", "error");
  */
 export function toast(message, type = "info") {
+  if (typeof window === "undefined") return;
   window.dispatchEvent(
     new CustomEvent("quran-toast", { detail: { message, type } }),
   );

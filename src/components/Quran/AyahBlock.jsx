@@ -92,6 +92,7 @@ const AyahBlock = React.memo(function AyahBlock({
       showTransliteration={showTransliteration}
       showWordTranslation={showWordTranslation}
       fontSize={fontSize}
+      calibration={calibration}
     />
   ) : (
     <SmartAyahRenderer

@@ -4,6 +4,7 @@
  */
 
 import { dbGet, dbSet, dbDelete, dbGetAll } from "./dbService";
+import { encryptData, decryptData } from "./cryptoUtil";
 
 /* ═══════════════════════════════════════════ */
 /*  NOTES                                     */
@@ -235,7 +236,7 @@ export function getSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return { ...DEFAULT_SETTINGS };
-    const parsed = JSON.parse(raw);
+    const parsed = decryptData(raw) || JSON.parse(raw);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       return { ...DEFAULT_SETTINGS };
     }
@@ -394,7 +395,7 @@ function sanitizeSettings(settings) {
 export function saveSettings(settings) {
   const safe = sanitizeSettings(settings);
   try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(safe));
+    localStorage.setItem(SETTINGS_KEY, encryptData(safe));
   } catch {
     // Storage might be unavailable (private mode/quota exceeded)
   }

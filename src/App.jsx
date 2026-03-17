@@ -7,6 +7,7 @@ import React, {
   lazy,
   Suspense,
 } from "react";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useApp } from "./context/AppContext";
 import SplashScreen from "./components/SplashScreen";
 import { getReciter, ensureReciterForRiwaya } from "./data/reciters";
@@ -104,15 +105,17 @@ export default function App() {
     memMode,
   } = state;
 
-  /* ── Initialize reading progress bar on mount ── */
-  useEffect(() => {
-    document.documentElement.style.setProperty("--reading-progress", "0");
-  }, []);
-
   /* ── Reset reading progress bar on navigation ── */
   useEffect(() => {
     document.documentElement.style.setProperty("--reading-progress", "0");
   }, [currentSurah, currentJuz, currentPage, displayMode]);
+
+  const suspenseFallback = (
+    <div
+      className="min-h-10 animate-pulse rounded-2xl border border-[color-mix(in_srgb,var(--theme-border)_35%,transparent_65%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_84%,transparent_16%)]"
+      aria-hidden="true"
+    />
+  );
 
   const lowPerfMode = useMemo(() => detectLowPerformanceDevice(), []);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -472,22 +475,23 @@ export default function App() {
   }
 
   return (
-    <div
-      className={`app-root premium-plus flex flex-col min-h-screen h-dvh w-full overflow-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""}`}
-      dir={lang === "ar" ? "rtl" : "ltr"}
-      data-view={showHome ? "home" : showDuas ? "duas" : "reading"}
-      data-display-mode={displayMode}
-    >
+    <ErrorBoundary>
+      <div
+        className={`app-root premium-plus flex flex-col min-h-screen h-dvh w-full overflow-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""}`}
+        dir={lang === "ar" ? "rtl" : "ltr"}
+        data-view={showHome ? "home" : showDuas ? "duas" : "reading"}
+        data-display-mode={displayMode}
+      >
       {/* Removed legacy Sakina starfield */}
       {/* ── Header ── */}
-      <Suspense fallback={null}>
+      <Suspense fallback={suspenseFallback}>
         <Header />
       </Suspense>
 
       {/* ── Main layout: sidebar + content ── */}
       <div className="app-layout-shell relative flex flex-1 min-h-0">
         {/* Sidebar: keep available in all reading states (including focus mode) */}
-        <Suspense fallback={null}>
+        <Suspense fallback={suspenseFallback}>
           {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
         </Suspense>
 
@@ -508,15 +512,15 @@ export default function App() {
             className={`app-view-shell ${showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas ? `app-mode-${displayMode}` : ""}`}
           >
             {showHome ? (
-              <Suspense fallback={null}>
+              <Suspense fallback={suspenseFallback}>
                 <HomePage />
               </Suspense>
             ) : showDuas ? (
-              <Suspense fallback={null}>
+              <Suspense fallback={suspenseFallback}>
                 <DuasPage />
               </Suspense>
             ) : (
-              <Suspense fallback={null}>
+              <Suspense fallback={suspenseFallback}>
                 <QuranDisplay
                   key={
                     displayMode === "juz"
@@ -533,7 +537,7 @@ export default function App() {
 
         {/* Notes panel (right side) — loaded eagerly, always in the DOM when not in focus mode */}
         {!focusReading && deferNonCriticalUI && (
-          <Suspense fallback={null}>
+          <Suspense fallback={suspenseFallback}>
             <NotesPanel />
           </Suspense>
         )}
@@ -552,14 +556,14 @@ export default function App() {
       )}
 
       {/* ── Fixed bottom audio player ── */}
-      <Suspense fallback={null}>
+      <Suspense fallback={suspenseFallback}>
         {deferNonCriticalUI && (
           <AudioPlayer />
         )}
       </Suspense>
 
       {/* ── Modals — lazy loaded ── */}
-      <Suspense fallback={null}>
+      <Suspense fallback={suspenseFallback}>
         {state.searchOpen && <SearchModal />}
         {state.settingsOpen && <SettingsModal />}
         {state.bookmarksOpen && <BookmarksModal />}
@@ -574,6 +578,7 @@ export default function App() {
         {state.shareImageOpen && <AyahSharePanel />}
         {state.weeklyStatsOpen && <WeeklyStatsPanel />}
       </Suspense>
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }

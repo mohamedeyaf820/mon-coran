@@ -6,6 +6,24 @@
 const AUDIO_LOAD_TIMEOUT = 12000; // 12s max to start loading
 const MAX_RETRIES = 2;
 const RETRY_DELAY = 800; // ms
+const TRUSTED_AUDIO_PREFIXES = [
+  "https://cdn.islamic.network/quran/audio/",
+  "https://everyayah.com/data/",
+  "https://server8.mp3quran.net/",
+  "https://server10.mp3quran.net/",
+  "https://download.quranicaudio.com/",
+  "https://www.everyayah.com/data/",
+];
+
+function devLog(method, ...args) {
+  if (import.meta.env.DEV && typeof console !== "undefined") {
+    console[method]?.(...args);
+  }
+}
+
+function isTrustedAudioUrl(url) {
+  return TRUSTED_AUDIO_PREFIXES.some((prefix) => String(url || "").startsWith(prefix));
+}
 
 class AudioService {
   static isSurahStreamCdn(cdnType = "islamic") {
@@ -104,7 +122,7 @@ class AudioService {
     this._boundError = (e) => {
       // Ignore errors from clearing src
       if (!this.audio.src || this.audio.src === window.location.href) return;
-      console.error("Audio error:", e);
+      devLog("error", "Audio error:", e);
       this.onError?.(e);
     };
     this.audio.addEventListener("ended", this._boundEnded);
@@ -546,7 +564,7 @@ class AudioService {
       try {
         fn(snapshot);
       } catch (error) {
-        console.warn("Latency listener error:", error);
+        devLog("warn", "Latency listener error:", error);
       }
     }
   }
@@ -558,9 +576,14 @@ class AudioService {
   getReciterTimingBiasSec() {
     const key = this._activeReciterKey || "islamic:";
     const measured = this._reciterLatencyByKey[key];
-    const measuredBias = Number.isFinite(measured) ? measured * 0.55 : 0;
-    const cdnBias = this._currentCdnType === "everyayah" ? 0.025 : 0;
-    return Math.max(-0.04, Math.min(0.14, measuredBias + cdnBias));
+    const measuredBias = Number.isFinite(measured) ? measured * 0.52 : 0;
+    const cdnBias =
+      this._currentCdnType === "everyayah"
+        ? 0.025
+        : this._currentCdnType === "mp3quran-surah"
+          ? 0.04
+          : 0;
+    return Math.max(-0.04, Math.min(0.16, measuredBias + cdnBias));
   }
 
   /**
@@ -569,6 +592,11 @@ class AudioService {
    */
   _loadUrlWithRetry(url, retries = MAX_RETRIES) {
     return new Promise((resolve, reject) => {
+      if (!isTrustedAudioUrl(url)) {
+        reject(new Error("Untrusted audio URL"));
+        return;
+      }
+
       const requestId = ++this._loadRequestId;
       this._clearLoadTimeout();
 
@@ -629,7 +657,7 @@ class AudioService {
           cleanup();
           this._clearLoadTimeout();
           if (retriesLeft > 0) {
-            console.warn(`Audio load error, retrying... (${retriesLeft} left)`);
+            devLog("warn", `Audio load error, retrying... (${retriesLeft} left)`);
             setTimeout(() => attempt(retriesLeft - 1), RETRY_DELAY);
           } else {
             finishReject(new Error("Audio load failed after retries"));
@@ -646,7 +674,8 @@ class AudioService {
         this._loadTimeout = setTimeout(() => {
           cleanup();
           if (retriesLeft > 0) {
-            console.warn(
+            devLog(
+              "warn",
               `Audio load timeout, retrying... (${retriesLeft} left)`,
             );
             attempt(retriesLeft - 1);
@@ -671,6 +700,7 @@ class AudioService {
    */
   _preloadTrack(url) {
     if (!url) return;
+    if (!isTrustedAudioUrl(url)) return;
     if (this._preloadPool.some((p) => p.url === url)) return;
 
     try {

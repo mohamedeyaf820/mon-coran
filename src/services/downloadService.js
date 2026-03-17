@@ -12,8 +12,12 @@ const PROGRESS_KEY = "mushaf_offline_progress_v2";
 
 function loadProgress() {
   try {
-    return JSON.parse(localStorage.getItem(PROGRESS_KEY) || "{}");
+    const parsed = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
   } catch {
+    try {
+      localStorage.removeItem(PROGRESS_KEY);
+    } catch {}
     return {};
   }
 }

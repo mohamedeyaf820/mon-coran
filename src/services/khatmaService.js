@@ -23,12 +23,16 @@ export function setKhatmaGoal({ targetDays, startPage = 1, startDate = null }) {
     targetDays: Math.max(1, targetDays),
     startPage: Math.max(1, Math.min(TOTAL_PAGES, startPage)),
   };
-  localStorage.setItem(KEY, JSON.stringify(goal));
+  try {
+    localStorage.setItem(KEY, JSON.stringify(goal));
+  } catch {}
   return goal;
 }
 
 export function clearKhatmaGoal() {
-  localStorage.removeItem(KEY);
+  try {
+    localStorage.removeItem(KEY);
+  } catch {}
 }
 
 export function getDailyQuota(targetDays) {

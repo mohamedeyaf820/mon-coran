@@ -40,6 +40,15 @@ function splitLines(text, wordsPerLine = 6) {
   return lines;
 }
 
+function escapeSvgText(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function buildSVG({ arabicText, translationText, surahName, ayahNum, preset, width = 800 }) {
   const W = width;
   // Dynamic height
@@ -64,17 +73,15 @@ function buildSVG({ arabicText, translationText, surahName, ayahNum, preset, wid
       unicode-bidi="bidi-override"
       font-family="'Amiri', 'Traditional Arabic', serif"
       style="font-weight:700"
-    >${line}</text>`).join('');
+    >${escapeSvgText(line)}</text>`).join('');
 
   const lastArY = arY0 + (arLines.length - 1) * arLineH;
   const metaY   = lastArY + arLineH * 0.8;
   const transY  = metaY + 44;
   const branding = H - 28;
 
-  const escapedTrans = translationText ? translationText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : '';
-  const escapedSurahName = (surahName || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const escapedArabicLines = arabicLines
-    .replace(/&(?!amp;|lt;|gt;|quot;)/g, '&amp;');
+  const escapedTrans = escapeSvgText(translationText);
+  const escapedSurahName = escapeSvgText(surahName);
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">

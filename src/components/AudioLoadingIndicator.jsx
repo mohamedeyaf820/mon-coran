@@ -1,4 +1,5 @@
 import React from "react";
+import { t } from "../i18n";
 import { cn } from "../lib/utils";
 
 /**
@@ -9,6 +10,8 @@ export default function AudioLoadingIndicator({
   state = "ready",
   isPlaying = false,
   errorMessage = null,
+  lang = "fr",
+  showKaraokeFollow = false,
 }) {
   if (state === "ready" && !isPlaying) return null;
 
@@ -78,13 +81,13 @@ export default function AudioLoadingIndicator({
   const getLabel = () => {
     switch (state) {
       case "loading":
-        return "Chargement...";
+        return t("audio.loading", lang);
       case "buffering":
-        return "Buffering...";
+        return t("audio.buffering", lang);
       case "error":
-        return "Erreur";
+        return t("audio.error", lang);
       case "playing":
-        return isPlaying ? "En lecture" : "Prêt";
+        return isPlaying ? t("audio.playing", lang) : t("audio.ready", lang);
       default:
         return "";
     }
@@ -113,6 +116,11 @@ export default function AudioLoadingIndicator({
     >
       {getIcon()}
       <span>{getLabel()}</span>
+      {showKaraokeFollow && (
+        <span className="ml-2 text-blue-600 dark:text-blue-400">
+          {t("audio.karaokeFollow", lang)}
+        </span>
+      )}
       {errorMessage && state === "error" && (
         <span className="text-red-600 text-[11px] ml-1" title={errorMessage}>
           - {errorMessage.substring(0, 30)}...

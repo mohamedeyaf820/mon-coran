@@ -142,8 +142,9 @@ function appReducer(state, action) {
       if (Object.prototype.hasOwnProperty.call(payload, "nightTheme")) {
         next.nightTheme = normalizeNightTheme(payload.nightTheme);
       }
-      // Follow mode is forced ON for reliable ayah/audio tracking.
-      next.karaokeFollow = true;
+      if (!Object.prototype.hasOwnProperty.call(payload, "karaokeFollow")) {
+        next.karaokeFollow = state.karaokeFollow;
+      }
       return next;
     }
 

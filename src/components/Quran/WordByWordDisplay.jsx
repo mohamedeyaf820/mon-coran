@@ -8,7 +8,10 @@ import React, {
 import { getWordByWord } from "../../services/wordByWordService";
 import { useApp } from "../../context/AppContext";
 import { useKaraoke } from "../../hooks/useKaraoke";
-import { getKaraokeCalibration } from "../../utils/karaokeUtils";
+import {
+  getKaraokeCalibration,
+  withWordCountCalibrationBump,
+} from "../../utils/karaokeUtils";
 import TajweedText from "./TajweedText";
 
 /**
@@ -32,6 +35,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
   showWordTranslation = true,
   fontSize = 28,
   showTajwid = true,
+  calibration,
   /** Optional pre-computed text to show while WBW loads */
   text,
 }) {
@@ -75,24 +79,27 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
   }, [surah, ayah, wordTranslationLang]);
 
   /* ── Karaoke calibration — same reciter-aware system as HafsKaraokeText ── */
-  const calibration = useMemo(() => {
-    const base = getKaraokeCalibration(reciter, riwaya, words.length);
-    return base;
-  }, [reciter, riwaya, words.length]);
+  const effectiveCalibration = useMemo(() => {
+    // reciter from state can be a string id or object-like payload.
+    const reciterId = typeof reciter === "string" ? reciter : reciter?.id;
+    const fallbackBase = getKaraokeCalibration(reciterId, riwaya, words.length);
+    const parentBase = calibration && typeof calibration === "object" ? calibration : null;
+    return withWordCountCalibrationBump(parentBase || fallbackBase, words.length);
+  }, [calibration, reciter, riwaya, words.length]);
 
   const isFirstAyah = ayah === 1 && surah !== 1 && surah !== 9;
 
   const { progress, seekCount } = useKaraoke({
     isFirstAyah,
     wordCount: words.length,
-    calibration,
+    calibration: effectiveCalibration,
   });
 
   const lagWords = useMemo(() => {
     return words.length >= 24
-      ? Number(calibration?.lagWordsLong ?? 0)
-      : Number(calibration?.lagWordsBase ?? 0);
-  }, [calibration, words.length]);
+      ? Number(effectiveCalibration?.lagWordsLong ?? 0)
+      : Number(effectiveCalibration?.lagWordsBase ?? 0);
+  }, [effectiveCalibration, words.length]);
 
   /* ── Proportional word weights (same algorithm as HafsKaraokeText) ── */
   const wordWeights = useMemo(() => {

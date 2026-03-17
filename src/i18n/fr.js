@@ -55,6 +55,8 @@ export default {
     memorizeMode: 'Mode mémorisation', tartil: 'Tartîl', murattal: 'Murattal',
     memorization: 'Mode mémorisation', reciter: 'Récitateur',
     speed: 'Vitesse', stop: 'Arrêter', volume: 'Volume',
+    loading: 'Chargement...', buffering: 'Mise en mémoire...', playing: 'En lecture', ready: 'Prêt',
+    karaokeFollow: 'Suivre le texte mot à mot',
   },
   bookmarks: {
     title: 'Favoris', empty: 'Aucun favori pour l\'instant',

@@ -10,6 +10,12 @@ const DB_VERSION = 2;
 
 let dbPromise = null;
 
+function devWarn(...args) {
+    if (import.meta.env.DEV && typeof console !== 'undefined') {
+        console.warn(...args);
+    }
+}
+
 /**
  * Get (or initialize) the IndexedDB instance.
  */
@@ -56,7 +62,7 @@ export async function dbGet(storeName, key) {
         const db = await getDB();
         return db.get(storeName, key);
     } catch (err) {
-        console.warn(`DB read error in ${storeName}:`, err);
+        devWarn(`DB read error in ${storeName}:`, err);
         return undefined;
     }
 }
@@ -69,7 +75,11 @@ export async function dbSet(storeName, value) {
         const db = await getDB();
         return db.put(storeName, value);
     } catch (err) {
-        console.warn(`DB write error in ${storeName}:`, err);
+        if (err?.name === 'QuotaExceededError') {
+            devWarn(`IndexedDB quota exceeded in ${storeName}`);
+            return undefined;
+        }
+        devWarn(`DB write error in ${storeName}:`, err);
     }
 }
 
@@ -81,7 +91,7 @@ export async function dbDelete(storeName, key) {
         const db = await getDB();
         return db.delete(storeName, key);
     } catch (err) {
-        console.warn(`DB delete error in ${storeName}:`, err);
+        devWarn(`DB delete error in ${storeName}:`, err);
     }
 }
 
@@ -93,7 +103,7 @@ export async function dbGetAll(storeName) {
         const db = await getDB();
         return db.getAll(storeName);
     } catch (err) {
-        console.warn(`DB getAll error in ${storeName}:`, err);
+        devWarn(`DB getAll error in ${storeName}:`, err);
         return [];
     }
 }

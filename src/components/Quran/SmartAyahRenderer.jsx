@@ -1,22 +1,9 @@
 import React, { useMemo, useRef, useEffect } from "react";
-import { useKaraoke, buildKaraokeCalibration } from "../../hooks/useKaraoke";
+import { useKaraoke } from "../../hooks/useKaraoke";
 import { stripBasmala } from "../../utils/quranUtils";
+import { withWordCountCalibrationBump } from "../../utils/karaokeUtils";
 import WarshWordText from "./WarshWordText";
 import { AyahTextRenderer } from "./AyahTextRenderer";
-
-/**
- * Applies the wordCount-based offset bump to a calibration object.
- * Ayahs with more than 10 words get +0.02 s of extra lead to compensate for
- * the small timing-model drift that accumulates on dense verses.
- * Returns a new object (never mutates the input).
- */
-function applyWordCountBump(calibration, wordCount) {
-  if (!calibration || !wordCount || wordCount <= 10) return calibration;
-  return {
-    ...calibration,
-    offsetSec: Number(((calibration.offsetSec ?? 0.15) + 0.02).toFixed(3)),
-  };
-}
 
 /**
  * KaraokeWarshText – tracks word-by-word progress for QCF4 words.
@@ -77,14 +64,18 @@ export function KaraokeWarshText({
     return Array.from({ length: total }, (_, i) => (i + 1) / total);
   }, [words, hafsText]);
 
-  const effectiveCalibration = applyWordCountBump(
-    calibration ||
-      buildKaraokeCalibration({
-        reciterId: undefined,
-        riwaya: "warsh",
-        isFirstAyah,
-        wordCount: words.length,
-      }),
+  // CRITICAL: Always use calibration prop (built by QuranDisplay).
+  // Never fallback to undefined reciterId — it breaks all reciter-specific timing.
+  // If calibration is undefined, that's a higher-level bug in the component tree.
+  if (!calibration) {
+    console.warn('[SmartAyahRenderer] Missing calibration prop for Warsh karaoke', {
+      words: words.length,
+      hafsText: hafsText?.length,
+      isFirstAyah,
+    });
+  }
+  const effectiveCalibration = withWordCountCalibrationBump(
+    calibration || { offsetSec: 0.2, smoothing: 0.9, lagWordsBase: 0, lagWordsLong: 0, driftPerProgress: 0.05, speedSensitivity: 0.07 },
     words.length,
   );
 
@@ -186,14 +177,17 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
 
   const text = stripBasmala(ayah.text, surahNum, ayah.numberInSurah);
   const hafsWordCount = (text || "").split(/\s+/).filter(Boolean).length;
-  const hafsCalibration = applyWordCountBump(
-    calibration ||
-      buildKaraokeCalibration({
-        reciterId: undefined,
-        riwaya: effectiveRiwaya,
-        isFirstAyah,
-        wordCount: hafsWordCount,
-      }),
+  // CRITICAL: Always use calibration prop (built by QuranDisplay).
+  // Never fallback to undefined reciterId — it breaks all reciter-specific timing.
+  if (!calibration) {
+    console.warn('[SmartAyahRenderer] Missing calibration prop for Hafs karaoke', {
+      hafsText: text?.length,
+      wordCount: hafsWordCount,
+      isFirstAyah,
+    });
+  }
+  const hafsCalibration = withWordCountCalibrationBump(
+    calibration || { offsetSec: 0.15, smoothing: 0.9, lagWordsBase: 0, lagWordsLong: 0, driftPerProgress: 0.03, speedSensitivity: 0.06 },
     hafsWordCount,
   );
 

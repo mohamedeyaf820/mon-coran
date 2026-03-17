@@ -34,6 +34,15 @@ function formatSearchError(error, lang) {
   return message;
 }
 
+function sanitizeSearchQuery(input) {
+  return String(input || "")
+    .trim()
+    .slice(0, 200)
+    .replace(/[^\p{L}\p{N}\s\u0600-\u06FF'.,;:!?()\-]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export default function SearchModal() {
   const { state, dispatch, set } = useApp();
   const { lang, riwaya } = state;
@@ -53,10 +62,7 @@ export default function SearchModal() {
 
   const runSearch = useCallback(
     async (rawQuery = query, preferredMode = searchMode) => {
-      const sanitized = rawQuery
-        .trim()
-        .slice(0, 200)
-        .replace(/[<>"'&`\\]/g, "");
+      const sanitized = sanitizeSearchQuery(rawQuery);
       const effectiveMode = inferSearchMode(sanitized, preferredMode);
       const candidates = buildSearchCandidates(sanitized, effectiveMode);
 
@@ -131,6 +137,17 @@ export default function SearchModal() {
     setResolvedQuery("");
     setVoiceSummary(null);
   }, [query]);
+
+  useEffect(() => {
+    const sanitized = sanitizeSearchQuery(query);
+    if (!sanitized) return;
+
+    const timeoutId = window.setTimeout(() => {
+      void runSearch(sanitized, searchMode);
+    }, 280);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [query, runSearch, searchMode]);
 
   useEffect(() => {
     return () => {
@@ -291,7 +308,7 @@ export default function SearchModal() {
             <input
               type="text"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => setQuery(sanitizeSearchQuery(event.target.value))}
               onKeyDown={(event) => event.key === "Enter" && handleSearch()}
               placeholder={
                 searchMode === "phonetic"

@@ -10,6 +10,17 @@ export default function PlatformLogo({
   decorative = false,
 }) {
   const [src, setSrc] = useState(PRIMARY_LOGO_SRC);
+  const [loadFailed, setLoadFailed] = useState(false);
+
+  if (loadFailed) {
+    return (
+      <span className={className} aria-hidden={decorative ? "true" : undefined}>
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--theme-primary)_18%,transparent_82%)] text-xs font-semibold text-[color-mix(in_srgb,var(--theme-primary)_85%,var(--theme-text)_15%)] shadow-sm">
+          MP
+        </span>
+      </span>
+    );
+  }
 
   return (
     <span className={className} aria-hidden={decorative ? "true" : undefined}>
@@ -21,6 +32,7 @@ export default function PlatformLogo({
         decoding="async"
         onError={() => {
           if (src !== FALLBACK_LOGO_SRC) setSrc(FALLBACK_LOGO_SRC);
+          else setLoadFailed(true);
         }}
       />
     </span>

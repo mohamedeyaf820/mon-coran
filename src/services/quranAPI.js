@@ -131,7 +131,7 @@ async function _fetchFromNetwork(url, idbKey, signal) {
   try {
     // Combine the navigation signal with the timeout signal
     const combinedSignal = signal
-      ? AbortSignal.any ? AbortSignal.any([signal, timeoutCtrl.signal]) : signal
+      ? createMergedAbortSignal([signal, timeoutCtrl.signal])
       : timeoutCtrl.signal;
 
     const res = await fetch(url, { signal: combinedSignal });
@@ -187,7 +187,7 @@ async function fetchJSONWithCustomTimeout(url, signal, timeoutMs = FETCH_TIMEOUT
 
   try {
     const combinedSignal = signal
-      ? AbortSignal.any ? AbortSignal.any([signal, timeoutCtrl.signal]) : signal
+      ? createMergedAbortSignal([signal, timeoutCtrl.signal])
       : timeoutCtrl.signal;
 
     const res = await fetch(url, { signal: combinedSignal });
@@ -640,4 +640,18 @@ export function prefetchInitialData(surahNum, riwaya, translationLang = 'fr') {
   } catch {
     // Prefetch is best-effort
   }
+}
+
+// Polyfill pour AbortSignal.any (Edge < 125, Safari < 17.4)
+function createMergedAbortSignal(signals) {
+  if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.any === 'function') {
+    return AbortSignal.any(signals);
+  }
+  // Fallback: merge manuellement
+  const controller = new AbortController();
+  const onAbort = () => controller.abort();
+  signals.forEach(signal => {
+    if (signal) signal.addEventListener('abort', onAbort);
+  });
+  return controller.signal;
 }

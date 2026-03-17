@@ -56,6 +56,8 @@ export default {
     memorizeMode: 'وضع الحفظ', tartil: 'ترتيل', murattal: 'مرتل',
     memorization: 'وضع الحفظ', reciter: 'القارئ',
     speed: 'السرعة', stop: 'إيقاف', volume: 'مستوى الصوت',
+    loading: 'جاري التحميل...', buffering: 'جارٍ التخزين المؤقت...', playing: 'قيد التشغيل', ready: 'جاهز',
+    karaokeFollow: 'تتبع النص كلمة كلمة',
   },
   bookmarks: {
     title: 'الإشارات المرجعية', empty: 'لا توجد إشارات مرجعية بعد',

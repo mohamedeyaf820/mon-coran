@@ -22,8 +22,14 @@ export function markRead(surah, ayah) {
 /** Get raw progress map: { [surahNum]: maxAyahRead } */
 export function getReadProgress() {
   try {
-    return JSON.parse(localStorage.getItem(KEY) || '{}');
-  } catch { return {}; }
+    const parsed = JSON.parse(localStorage.getItem(KEY) || '{}');
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    try {
+      localStorage.removeItem(KEY);
+    } catch {}
+    return {};
+  }
 }
 
 /** Compute reading stats from stored progress. */
@@ -46,5 +52,7 @@ export function getReadStats() {
 
 /** Reset all reading progress. */
 export function resetProgress() {
-  localStorage.removeItem(KEY);
+  try {
+    localStorage.removeItem(KEY);
+  } catch {}
 }
