@@ -42,6 +42,7 @@ import {
 import { getKaraokeCalibration } from "../utils/karaokeUtils";
 import { markRead } from "../services/readingProgressService";
 import { addRecentVisit } from "../services/recentHistoryService";
+import { FONT_MAP, resolveFontFamily } from "../data/fonts";
 
 import Footer from "./Footer";
 
@@ -99,50 +100,6 @@ function getTranslationKeyForAyah(surahNumber, ayahNumber) {
   return `surah:${surahNumber}:${ayahNumber}`;
 }
 
-/* Font family mapping */
-const FONT_MAP = {
-  /* Scheherazade New (recommended - no black-dot rendering artifacts) */
-  "scheherazade-new":
-    "'Scheherazade New','Amiri Quran','Noto Naskh Arabic',serif",
-  /* Amiri Quran (clean alternative) */
-  "amiri-quran": "'Amiri Quran','Scheherazade New','Noto Naskh Arabic',serif",
-  /* KFGQPC / ME Quran (may show rendering artifacts in some browsers) */
-  "mushaf-1441h":
-    "'KFGQPC Uthmanic Script HAFS','ME Quran','Scheherazade New','Amiri Quran',serif",
-  "mushaf-tajweed":
-    "'KFGQPC Uthmanic Script HAFS','ME Quran','Scheherazade New','Amiri Quran',serif",
-  "uthmanic-digital": "'ME Quran','Scheherazade New','Amiri Quran',serif",
-  "uthmanic-bold": "'ME Quran Bold','ME Quran','Scheherazade New',serif",
-  /* Indopak */
-  "qalam-madinah":
-    "'Qalam Madinah','Scheherazade New','Noto Naskh Arabic',serif",
-  "qalam-hanafi": "'Qalam Hanafi','Scheherazade New','Noto Naskh Arabic',serif",
-  "uthman-taha":
-    "'Uthman Taha Hafs','KFGQPC Uthmanic Script HAFS','Scheherazade New',serif",
-  /* legacy aliases */
-  "me-quran": "'ME Quran','Scheherazade New','Amiri Quran',serif",
-  scheherazade: "'Scheherazade New','Amiri Quran','Noto Naskh Arabic',serif",
-  amiri: "'Amiri','Amiri Quran','Scheherazade New',serif",
-  "noto-naskh": "'Noto Naskh Arabic','Scheherazade New','Amiri Quran',serif",
-  lateef: "'Scheherazade New','Noto Naskh Arabic',serif",
-  "noto-naskh-arabic":
-    "'Noto Naskh Arabic','Scheherazade New','Amiri Quran',serif",
-  "markazi-text": "'Markazi Text','Amiri Quran','Scheherazade New',serif",
-  "el-messiri": "'El Messiri','Noto Naskh Arabic','Scheherazade New',serif",
-  "kfgqpc-uthman-taha-naskh":
-    "'KFGQPC Uthman Taha Naskh','Uthman Taha Hafs','ME Quran',serif",
-  "reem-kufi": "'Reem Kufi','Cairo','Noto Naskh Arabic',sans-serif",
-  "aref-ruqaa": "'Aref Ruqaa','Scheherazade New','Amiri Quran',serif",
-  cairo: "'Cairo','Noto Naskh Arabic',sans-serif",
-  harmattan: "'Harmattan','Cairo',sans-serif",
-  mada: "'Mada','Cairo',sans-serif",
-  tajawal: "'Tajawal','Cairo',sans-serif",
-  lemonada: "'Lemonada','Cairo',sans-serif",
-  jomhuria: "'Jomhuria','Cairo',sans-serif",
-  rakkas: "'Rakkas','Cairo',sans-serif",
-  marhey: "'Marhey','Cairo',sans-serif",
-  mirza: "'Mirza','Lateef',serif",
-};
 
 const TRANSLATION_LANGUAGE_META = {
   fr: { fr: "Francais", ar: "الفرنسية", en: "French", icon: "fa-language" },
@@ -184,7 +141,7 @@ export default function QuranDisplay() {
     memMode,
   } = state;
 
-  const quranFontCss = FONT_MAP[fontFamily] || FONT_MAP["scheherazade-new"];
+  const quranFontCss = resolveFontFamily(fontFamily);
   const effectiveReciterId = ensureReciterForRiwaya(state.reciter, riwaya);
   const syncKey = `${riwaya}:${effectiveReciterId}`;
   const userSyncOffsetMs = Math.max(

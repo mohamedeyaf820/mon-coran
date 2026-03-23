@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import audioService from "../services/audioService";
@@ -14,6 +14,7 @@ import {
   sortRecitersByPreference,
 } from "../utils/reciterRanking";
 import { cn, toast } from "../lib/utils";
+import { formatCooldownLabel } from "../utils/formatUtils";
 import AudioLoadingIndicator from "./AudioLoadingIndicator";
 import "../styles/audio-player.css";
 
@@ -97,18 +98,6 @@ function getReciterCooldownMs(failCount) {
   return RECITER_COOLDOWN_STEPS_MS[idx];
 }
 
-function formatCooldownLabel(remainingMs, lang) {
-  const totalMinutes = Math.ceil(Math.max(1, remainingMs / 60000));
-  if (totalMinutes < 60) {
-    if (lang === "fr") return `${totalMinutes} min`;
-    if (lang === "ar") return `${totalMinutes} دقيقة`;
-    return `${totalMinutes} min`;
-  }
-  const hours = Math.ceil(totalMinutes / 60);
-  if (lang === "fr") return `${hours} h`;
-  if (lang === "ar") return `${hours} ساعة`;
-  return `${hours}h`;
-}
 
 function ProgressRail({ progress, className = "", showThumb = false }) {
   const pct = Math.max(0, Math.min(100, progress * 100));

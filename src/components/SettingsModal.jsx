@@ -38,6 +38,7 @@ import {
   getReciterUnavailableRemainingMs,
   sortRecitersByPreference,
 } from "../utils/reciterRanking";
+import { formatCooldownLabel } from "../utils/formatUtils";
 import PlatformLogo from "./PlatformLogo";
 import { cn, toast } from "../lib/utils";
 import "../styles/settings-modal.css";
@@ -307,14 +308,7 @@ export default function SettingsModal() {
   ).length;
   const formatLatency = (latencySec) =>
     Number.isFinite(latencySec) ? `${Math.round(latencySec * 1000)} ms` : null;
-  const formatCooldownLabel = (remainingMs) => {
-    const totalMinutes = Math.ceil(Math.max(1, remainingMs / 60000));
-    if (totalMinutes < 60) {
-      return lang === "ar" ? `${totalMinutes} دقيقة` : `${totalMinutes} min`;
-    }
-    const hours = Math.ceil(totalMinutes / 60);
-    return lang === "ar" ? `${hours} ساعة` : `${hours} h`;
-  };
+
   const refreshOfflineMetrics = async () => {
     const [sizeMb, entries] = await Promise.all([
       getCacheSize(),
@@ -2193,8 +2187,10 @@ export default function SettingsModal() {
                           title={
                             isUnavailable && !active
                               ? lang === "fr"
-                                ? `Indisponible encore ${formatCooldownLabel(unavailableMs)}`
-                                : `Unavailable for ${formatCooldownLabel(unavailableMs)}`
+                                ? `Indisponible encore ${formatCooldownLabel(unavailableMs, lang)}`
+                                : lang === "ar"
+                                  ? `غير متاح ${formatCooldownLabel(unavailableMs, lang)}`
+                                  : `Unavailable for ${formatCooldownLabel(unavailableMs, lang)}`
                               : undefined
                           }
                         >

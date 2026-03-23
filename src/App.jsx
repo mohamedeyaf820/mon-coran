@@ -14,6 +14,7 @@ import { getReciter, ensureReciterForRiwaya } from "./data/reciters";
 import { Toast } from "./components/ModernUIComponents";
 import { buildSurahAudioPlaylist } from "./utils/audioPlaylist";
 import { ensureFontLoaded } from "./services/fontLoader";
+import { runWhenIdle } from "./utils/idleUtils";
 
 // Lazy-load view shells and modals to reduce startup JS.
 const Header = lazy(() => import("./components/Header"));
@@ -50,26 +51,6 @@ async function getAudioServiceInstance() {
     );
   }
   return audioServiceLoader;
-}
-
-function runWhenIdle(callback, timeout = 240) {
-  if (typeof window === "undefined") return () => {};
-
-  if ("requestIdleCallback" in window) {
-    const idleId = window.requestIdleCallback(callback, { timeout });
-    return () => window.cancelIdleCallback(idleId);
-  }
-
-  const timeoutId = window.setTimeout(
-    () =>
-      callback({
-        didTimeout: false,
-        timeRemaining: () => 0,
-      }),
-    timeout,
-  );
-
-  return () => window.clearTimeout(timeoutId);
 }
 
 function detectLowPerformanceDevice() {

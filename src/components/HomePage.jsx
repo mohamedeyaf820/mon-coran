@@ -21,6 +21,7 @@ import {
   ensureReciterForRiwaya,
   isWarshVerifiedReciter,
 } from "../data/reciters";
+import { runWhenIdle } from "../utils/idleUtils";
 
 import { ErrorBoundary } from "./ErrorBoundary";
 import PlatformLogo from "./PlatformLogo";
@@ -37,26 +38,6 @@ const HOME_FOOTER_SECTION_STYLE = {
   contentVisibility: "auto",
   containIntrinsicSize: "1px 280px",
 };
-
-function runWhenIdle(callback, timeout = 160) {
-  if (typeof window === "undefined") return () => {};
-
-  if ("requestIdleCallback" in window) {
-    const idleId = window.requestIdleCallback(callback, { timeout });
-    return () => window.cancelIdleCallback(idleId);
-  }
-
-  const timeoutId = window.setTimeout(
-    () =>
-      callback({
-        didTimeout: false,
-        timeRemaining: () => 0,
-      }),
-    timeout,
-  );
-
-  return () => window.clearTimeout(timeoutId);
-}
 
 /* Sourates d'acces rapide */
 const QUICK_ACCESS = [
@@ -431,8 +412,21 @@ const SurahCard = memo(function SurahCard({
         ? `Page ${surah.page}`
         : `Page ${surah.page}`);
 
-  /* LIST ROW (unchanged) */
+  /* LIST ROW */
   if (viewMode === "list") {
+    const typeLabel =
+      surah.type === "Meccan"
+        ? lang === "ar"
+          ? "مكية"
+          : lang === "fr"
+            ? "Mecquoise"
+            : "Meccan"
+        : lang === "ar"
+          ? "مدنية"
+          : lang === "fr"
+            ? "Médinoise"
+            : "Medinan";
+
     const rowVisibilityStyle = {
       contentVisibility: "auto",
       containIntrinsicSize: "82px",
@@ -460,8 +454,8 @@ const SurahCard = memo(function SurahCard({
           {surah.n}
         </span>
         <div className="hpl-row__body">
-          <span className="hpl-row__name">{displayName}</span>
-          <span className="hpl-row__sub">{subLabel}</span>
+          <span className="hpl-row__name">{primaryLabel}</span>
+          <span className="hpl-row__sub">{secondaryLabel}</span>
           <span className="hpl-row__meta">
             <span className={`hpl-dot hpl-dot--${surah.type?.toLowerCase()}`} />
             {typeLabel} · {ayahLabel}
