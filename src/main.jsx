@@ -4,6 +4,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import App from "./App";
 import { AppProvider } from "./context/AppContext";
 import "./styles/index.css";
+import "./styles/mobile-all-versions.css";
 
 // ErrorBoundary global pour capturer les erreurs React
 class ErrorBoundary extends React.Component {

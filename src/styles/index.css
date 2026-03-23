@@ -24569,3 +24569,550 @@ button:focus:not(:focus-visible) {
         line-height: 1.52;
     }
 }
+
+/* ==========================================================
+   GLOBAL MOBILE RESPONSIVE POLISH (2026-03-23)
+   Improves consistency across phones/tablets without changing desktop layout.
+   ========================================================== */
+
+@media (max-width: 1024px) {
+    .app-main-shell {
+        padding-inline: 0.62rem;
+    }
+
+    .app-view-home,
+    .app-view-duas,
+    .app-view-reading {
+        max-width: 100%;
+    }
+
+    .hp2.hp2--platform .hp2-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .hp2.hp2--platform .hp2-aside {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-root {
+        min-height: 100dvh;
+    }
+
+    .app-main-shell {
+        padding-top: 0.52rem;
+        padding-inline: 0.45rem;
+    }
+
+    .app-view-shell {
+        padding-bottom: 0.65rem;
+    }
+
+    .hp2.hp2--platform .hp2-hero {
+        border-radius: 1rem;
+        padding: 1.05rem 0.72rem 0.92rem;
+    }
+
+    .hp2.hp2--platform .hp2-hero__inner,
+    .hp2.hp2--platform .hp2-hero__right {
+        grid-template-columns: 1fr;
+        gap: 0.82rem;
+    }
+
+    .hp2.hp2--platform .hp2-hero__brand {
+        gap: 0.62rem;
+        align-items: center;
+    }
+
+    .hp2.hp2--platform .hp2-hero__logo {
+        width: 64px;
+        height: 64px;
+        border-radius: 1rem;
+    }
+
+    .hp2.hp2--platform .hp2-hero__logo-img {
+        width: 44px;
+        height: 44px;
+    }
+
+    .hp2.hp2--platform .hp2-hero__title {
+        font-size: clamp(1.18rem, 6.2vw, 1.72rem);
+        line-height: 1.16;
+    }
+
+    .hp2.hp2--platform .hp2-hero__tagline {
+        font-size: 0.86rem;
+        line-height: 1.45;
+    }
+
+    .hp2.hp2--platform .hp2-hero__orb,
+    .hp2.hp2--platform .hp2-hero__bismallah {
+        opacity: 0.22;
+    }
+
+    .hp2-toolbar {
+        display: grid;
+        gap: 0.62rem;
+        padding: 0.65rem;
+    }
+
+    .hp2-toolbar__end {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+    }
+
+    .hp2-icon-btn,
+    .hp2-btn,
+    .hp2-qchip,
+    .modal-action-btn,
+    .modal-close,
+    .sidebar-tab-trigger {
+        min-height: 44px;
+    }
+
+    .hp2-content,
+    .hp2-panel,
+    .hp2-stats-strip,
+    .hp2-quickbar,
+    .quran-display {
+        border-radius: 0.92rem;
+    }
+
+    .hp2-quickbar__track {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        padding-bottom: 0.18rem;
+        scroll-snap-type: x proximity;
+    }
+
+    .hp2-quickbar__track > * {
+        scroll-snap-align: start;
+        flex: 0 0 auto;
+    }
+
+    .hp2-items--grid {
+        gap: 0.58rem;
+    }
+
+    .hp2-items--grid .scard {
+        min-height: 88px;
+        padding: 0.6rem 0.7rem;
+    }
+
+    .hp2-items--grid .scard__name {
+        font-size: 0.98rem;
+    }
+
+    .hp2-items--grid .scard__trans,
+    .hp2-items--grid .scard__meta {
+        font-size: 0.73rem;
+    }
+
+    .hp2-items--grid .scard__ar {
+        font-size: clamp(1.5rem, 7vw, 2rem);
+        line-height: 1.14;
+        word-spacing: 0.025em;
+    }
+
+    .hpl-row {
+        min-height: 76px;
+        padding-inline: 0.62rem;
+    }
+
+    .hpl-row__name {
+        font-size: 0.93rem;
+    }
+
+    .hpl-row__sub,
+    .hpl-row__meta {
+        font-size: 0.7rem;
+    }
+
+    .hpl-row__ar {
+        font-size: 1.22rem;
+        line-height: 1.24;
+    }
+
+    .modal-overlay {
+        padding: 0.55rem !important;
+        align-items: flex-end;
+    }
+
+    .modal,
+    .modal-box,
+    .modal-panel,
+    .modal-content,
+    .modal-panel--wide {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 92dvh;
+        border-radius: 1rem 1rem 0.88rem 0.88rem !important;
+    }
+
+    .modal-header {
+        padding: 0.8rem 0.9rem;
+    }
+
+    .modal-body,
+    .modal-list,
+    .modal-results {
+        max-height: min(68dvh, 520px);
+        padding-inline: 0.72rem;
+    }
+
+    .sidebar {
+        width: min(100vw, 380px);
+        max-width: 100vw;
+    }
+
+    .sidebar-content {
+        padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    }
+
+    .audio-player-modal__surface {
+        width: min(100vw, 100vw) !important;
+        height: min(94dvh, 94dvh) !important;
+        border-radius: 1rem !important;
+    }
+}
+
+@media (max-width: 560px) {
+    .app-main-shell {
+        padding-inline: 0.36rem;
+    }
+
+    .hp2-content,
+    .hp2-toolbar,
+    .hp2-stats-strip,
+    .hp2-vod,
+    .hp2-focus-card,
+    .hp2-prayers {
+        padding-inline: 0.64rem;
+    }
+
+    .hp2-toolbar__count {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .hp2-icon-btn--with-label .hp2-icon-btn__label {
+        display: none;
+    }
+
+    .hp2-items--grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .modal-title {
+        font-size: 1rem;
+    }
+
+    .modal-subtitle {
+        font-size: 0.78rem;
+    }
+
+    .audio-player-modal {
+        padding: 0.3rem !important;
+    }
+
+    .audio-player-modal__surface {
+        border-radius: 0.88rem !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .app-main-shell {
+        padding-inline: 0.3rem;
+    }
+
+    .hp2.hp2--platform .hp2-hero {
+        padding-inline: 0.58rem;
+    }
+
+    .hp2.hp2--platform .hp2-hero__title {
+        font-size: clamp(1.05rem, 7.2vw, 1.44rem);
+    }
+
+    .hp2-items--grid .scard {
+        min-height: 82px;
+        gap: 0.5rem;
+    }
+
+    .hp2-items--grid .scard__num {
+        width: 1.72rem;
+        height: 1.72rem;
+        font-size: 0.68rem;
+    }
+
+    .hp2-items--grid .scard__ar {
+        font-size: clamp(1.35rem, 8.1vw, 1.78rem);
+    }
+
+    .modal,
+    .modal-box,
+    .modal-panel,
+    .modal-content {
+        border-radius: 0.88rem 0.88rem 0.78rem 0.78rem !important;
+    }
+}
+
+/* ----------------------------------------------------------
+   Device-targeted breakpoints: 768 / 412 / 390 / 360 / 340
+   ---------------------------------------------------------- */
+
+@media (min-width: 641px) and (max-width: 768px) {
+    .hp2-toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .hp2-items--grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .modal,
+    .modal-box,
+    .modal-panel,
+    .modal-content,
+    .modal-panel--wide {
+        max-height: 88dvh;
+    }
+
+    .modal-results,
+    .modal-list,
+    .modal-body {
+        max-height: min(62dvh, 560px);
+    }
+}
+
+@media (max-width: 412px) {
+    .app-main-shell {
+        padding-inline: 0.28rem;
+    }
+
+    .app-header,
+    .hdr__main {
+        border-radius: 0.78rem;
+    }
+
+    .hp2.hp2--platform .hp2-hero__title {
+        letter-spacing: -0.015em;
+    }
+
+    .hp2-toolbar {
+        gap: 0.46rem;
+        padding: 0.52rem;
+    }
+
+    .hp2-search__input,
+    .sidebar-search-input,
+    .modal-search-input,
+    .modal-inline-input {
+        min-height: 42px;
+        font-size: 0.92rem;
+    }
+
+    .sidebar,
+    .modal,
+    .modal-panel,
+    .modal-box,
+    .modal-content {
+        border-radius: 0.82rem !important;
+    }
+
+    .quran-display,
+    .hp2-content,
+    .hp2-panel {
+        border-radius: 0.84rem;
+    }
+}
+
+@media (max-width: 390px) {
+    .hp2.hp2--platform .hp2-hero {
+        padding: 0.92rem 0.52rem 0.84rem;
+    }
+
+    .hp2.hp2--platform .hp2-hero__logo {
+        width: 56px;
+        height: 56px;
+    }
+
+    .hp2.hp2--platform .hp2-hero__logo-img {
+        width: 38px;
+        height: 38px;
+    }
+
+    .hp2-items--grid .scard {
+        min-height: 78px;
+        padding: 0.52rem 0.56rem;
+        gap: 0.42rem;
+    }
+
+    .hp2-items--grid .scard__name {
+        font-size: 0.92rem;
+    }
+
+    .hp2-items--grid .scard__trans,
+    .hp2-items--grid .scard__meta {
+        font-size: 0.68rem;
+    }
+
+    .hp2-items--grid .scard__ar {
+        font-size: clamp(1.24rem, 7.8vw, 1.66rem);
+    }
+
+    .hpl-row {
+        min-height: 70px;
+    }
+
+    .hpl-row__ar {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .app-main-shell {
+        padding-inline: 0.22rem;
+    }
+
+    .hp2.hp2--platform .hp2-hero__title {
+        font-size: clamp(1rem, 7.4vw, 1.32rem);
+        line-height: 1.14;
+    }
+
+    .hp2.hp2--platform .hp2-hero__tagline {
+        font-size: 0.8rem;
+        line-height: 1.4;
+    }
+
+    .hp2-btn,
+    .hp2-qchip,
+    .modal-action-btn,
+    .modal-close,
+    .sidebar-tab-trigger {
+        min-height: 42px;
+    }
+
+    .hp2-items--grid .scard__num {
+        width: 1.58rem;
+        height: 1.58rem;
+        font-size: 0.64rem;
+    }
+
+    .modal-header {
+        padding: 0.68rem 0.72rem;
+    }
+
+    .modal-title {
+        font-size: 0.94rem;
+    }
+
+    .modal-subtitle {
+        font-size: 0.72rem;
+    }
+}
+
+@media (max-width: 340px) {
+    .hp2.hp2--platform .hp2-hero {
+        padding-inline: 0.44rem;
+    }
+
+    .hp2-toolbar {
+        padding: 0.46rem;
+    }
+
+    .hp2-content,
+    .hp2-panel,
+    .quran-display {
+        border-radius: 0.72rem;
+    }
+
+    .hp2-items--grid .scard {
+        min-height: 72px;
+    }
+
+    .hp2-items--grid .scard__ar {
+        font-size: clamp(1.12rem, 7.5vw, 1.44rem);
+    }
+
+    .modal,
+    .modal-box,
+    .modal-panel,
+    .modal-content {
+        border-radius: 0.72rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .hp2-item__ar,
+    .hp2-qchip__ar,
+    .hp2-focus-card__surah-ar,
+    .modal-item-ar,
+    .search-result-arabic,
+    .sb-recent__ar {
+        font-family:
+            var(--font-surah-display, "Amiri Quran"),
+            var(--font-quran),
+            "KFGQPC Uthmanic Script HAFS",
+            "ME Quran",
+            "Amiri",
+            serif;
+        font-feature-settings: "calt" 1, "liga" 1, "rlig" 1, "kern" 1;
+        text-rendering: optimizeLegibility;
+        font-kerning: normal;
+        letter-spacing: 0;
+    }
+
+    .hp2-item__ar,
+    .hp2-qchip__ar,
+    .modal-item-ar,
+    .search-result-arabic {
+        line-height: 1.5;
+        word-spacing: 0.03em;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-main-shell {
+        padding-bottom: max(0.28rem, env(safe-area-inset-bottom));
+    }
+
+    .mp-audio-player,
+    .audio-player,
+    .audio-player-shell {
+        border-radius: 0.82rem 0.82rem 0 0;
+    }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .hp2.hp2--platform .hp2-hero {
+        padding: 0.72rem 0.8rem;
+    }
+
+    .hp2.hp2--platform .hp2-hero__bismallah,
+    .hp2.hp2--platform .hp2-hero__orb {
+        display: none;
+    }
+
+    .modal-overlay {
+        align-items: center;
+    }
+
+    .modal,
+    .modal-box,
+    .modal-panel,
+    .modal-content,
+    .modal-panel--wide,
+    .audio-player-modal__surface {
+        max-height: 96vh !important;
+    }
+
+    .modal-body,
+    .modal-list,
+    .modal-results {
+        max-height: 58vh;
+    }
+}

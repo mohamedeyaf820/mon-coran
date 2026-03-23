@@ -1146,7 +1146,7 @@ export default function AudioPlayer() {
             </button>
           </div>
 
-          <div className="grid min-h-0 flex-1 gap-4 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+          <div className="audio-player-modal__grid grid min-h-0 flex-1 gap-4 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
             <section className={cn("flex min-h-0 flex-col p-3 sm:p-3.5", playerSoftSurfaceClass)}>
               <div className="mb-2 flex items-center justify-between gap-2">
                 <span className={playerSectionLabelClass}>{t("audio.reciter", lang)}</span>
@@ -1702,14 +1702,14 @@ export default function AudioPlayer() {
           <div className="h-1 bg-white/10">
             <ProgressRail progress={progress} />
           </div>
-          <div className="flex items-center gap-2.5 px-3 py-2.5">
+          <div className="mp-player-minimized-row flex items-center gap-2.5 px-3 py-2.5">
             <CoverArt isPlaying={isPlaying} size={40} />
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-[0.82rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-text)_94%,#ffffff_6%)]">
+            <div className="mp-player-minimized-meta min-w-0 flex-1">
+              <div className="mp-player-minimized-title truncate text-[0.82rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-text)_94%,#ffffff_6%)]">
                 {titleLabel ||
                   (lang === "fr" ? "Prêt à lire" : lang === "ar" ? "Ready" : "Ready")}
               </div>
-              <div className="truncate text-[0.68rem] text-[color-mix(in_srgb,var(--theme-text-muted)_90%,var(--theme-bg)_10%)]">
+              <div className="mp-player-minimized-reciter truncate text-[0.68rem] text-[color-mix(in_srgb,var(--theme-text-muted)_90%,var(--theme-bg)_10%)]">
                 {reciterLabel || "-"}
               </div>
             </div>
@@ -1771,7 +1771,7 @@ export default function AudioPlayer() {
               : "Audio Player"
         }
       >
-        <div className="flex items-center justify-between px-3.5 pb-1.5 pt-2">
+        <div className="mp-player-mobile-head flex items-center justify-between px-3.5 pb-1.5 pt-2">
           <button
             className={cn(mBarBtn, "h-10 w-10 rounded-full")}
             onClick={toggleMinimized}
@@ -1834,10 +1834,10 @@ export default function AudioPlayer() {
         </div>
 
         {/* Controls row */}
-        <div className="mp-player-controls-strip flex min-h-[4.1rem] items-center gap-2.5 px-3 pb-1.5">
+        <div className="mp-player-controls-strip mp-player-mobile-controls flex min-h-[4.1rem] items-center gap-2.5 px-3 pb-1.5">
           {/* Left: info block */}
           <div
-            className="flex w-[5.8rem] shrink-0 flex-col justify-center gap-[0.2rem] min-w-0"
+            className="mp-player-mobile-meta flex w-[5.8rem] shrink-0 flex-col justify-center gap-[0.2rem] min-w-0"
             aria-live="polite"
           >
             <span className="block overflow-hidden text-ellipsis whitespace-nowrap text-[0.7rem] font-semibold leading-tight text-[color-mix(in_srgb,var(--theme-text)_90%,#ffffff_10%)]">
@@ -1860,7 +1860,7 @@ export default function AudioPlayer() {
           </div>
 
           {/* Center: main playback controls */}
-          <div className={cn("mp-player-controls-strip flex flex-1 items-center justify-center gap-1.5 rounded-xl px-1.5 py-1", playerSoftSurfaceClass)}>
+          <div className={cn("mp-player-controls-strip mp-player-mobile-main-controls flex flex-1 items-center justify-center gap-1.5 rounded-xl px-1.5 py-1", playerSoftSurfaceClass)}>
             <button
               className={cn(
                 mBarBtn,
@@ -1907,7 +1907,7 @@ export default function AudioPlayer() {
           </div>
 
           {/* Right: secondary controls */}
-          <div className="flex shrink-0 items-center gap-1">
+          <div className="mp-player-mobile-secondary flex shrink-0 items-center gap-1">
             <button
                 className={cn(
                   mBarBtnSm(),
@@ -1953,7 +1953,7 @@ export default function AudioPlayer() {
         {/* Expanded panel */}
         {expanded && (
           <div
-            className="max-h-[62vh] overflow-y-auto border-t border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_82%,transparent_18%),color-mix(in_srgb,var(--theme-panel-bg)_72%,transparent_28%))] px-3.5 pb-4 pt-3 animate-[fadeInUp_0.18s_var(--ease,ease)]"
+            className="mp-player-mobile-expanded max-h-[62vh] overflow-y-auto border-t border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_82%,transparent_18%),color-mix(in_srgb,var(--theme-panel-bg)_72%,transparent_28%))] px-3.5 pb-4 pt-3 animate-[fadeInUp_0.18s_var(--ease,ease)]"
             data-player-expanded="true"
             data-scroll-panel="true"
             data-no-drag="true"
@@ -3246,6 +3246,5 @@ export default function AudioPlayer() {
     </>
   );
 }
-
 
 

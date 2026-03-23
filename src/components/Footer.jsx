@@ -243,12 +243,12 @@ export default function Footer({ goSurah }) {
       className="mp-footer mp-footer--premium-plus relative mx-auto mt-10 w-full max-w-[1640px] px-3 pb-6 sm:px-5 lg:px-7"
       role="contentinfo"
     >
-      <div className="relative overflow-hidden rounded-[2rem] border border-[var(--theme-panel-border,var(--border))] bg-[var(--theme-panel-bg,var(--bg-card))] text-[var(--text-primary)] shadow-[0_20px_60px_rgba(2,8,23,0.16)] backdrop-blur-xl">
+      <div className="mp-footer__shell relative overflow-hidden rounded-[2rem] border border-[var(--theme-panel-border,var(--border))] bg-[var(--theme-panel-bg,var(--bg-card))] text-[var(--text-primary)] shadow-[0_20px_60px_rgba(2,8,23,0.16)] backdrop-blur-xl">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--gold,#d4a820)] to-transparent" />
         <div className="pointer-events-none absolute -top-20 -left-8 h-44 w-44 rounded-full bg-[rgba(var(--primary-rgb),0.2)] blur-3xl" />
         <div className="pointer-events-none absolute -right-8 -bottom-20 h-44 w-44 rounded-full bg-[rgba(212,168,32,0.15)] blur-3xl" />
 
-        <div className="relative border-b border-[var(--theme-panel-border,var(--border-light))] px-4 py-4 sm:px-7">
+        <div className="mp-footer__verse relative border-b border-[var(--theme-panel-border,var(--border-light))] px-4 py-4 sm:px-7">
           <div
             className={`flex flex-wrap items-center gap-3 ${isRtl ? "sm:flex-row-reverse sm:text-right" : "sm:text-left"}`}
           >
@@ -275,8 +275,8 @@ export default function Footer({ goSurah }) {
           </div>
         </div>
 
-        <div className="relative grid gap-4 p-4 sm:p-7 lg:grid-cols-12">
-          <section className="rounded-3xl border border-[var(--theme-panel-border,var(--border-light))] bg-[var(--theme-panel-bg-strong,var(--bg-secondary))] p-4 sm:p-5 lg:col-span-5">
+        <div className="mp-footer__body relative grid gap-4 p-4 sm:p-7 lg:grid-cols-12">
+          <section className="mp-footer__lead rounded-3xl border border-[var(--theme-panel-border,var(--border-light))] bg-[var(--theme-panel-bg-strong,var(--bg-secondary))] p-4 sm:p-5 lg:col-span-5">
             <button
               type="button"
               className={`group flex w-full items-start gap-3 rounded-2xl border border-[var(--theme-panel-border,var(--border-light))] bg-[var(--theme-panel-bg,var(--bg-card))] p-3 text-left transition duration-300 hover:-translate-y-0.5 hover:border-[rgba(var(--primary-rgb),0.35)] ${isRtl ? "flex-row-reverse text-right" : ""}`}
@@ -307,7 +307,7 @@ export default function Footer({ goSurah }) {
               })}
             </p>
 
-            <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <div className="mp-footer__stats mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
               {FOOTER_STATS.map((stat) => (
                 <div
                   key={stat.icon}
@@ -324,7 +324,7 @@ export default function Footer({ goSurah }) {
               ))}
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mp-footer__pills mt-4 flex flex-wrap gap-2">
               {EXPERIENCE_PILLS.map((feature) => (
                 <span
                   key={feature.icon}
@@ -337,7 +337,7 @@ export default function Footer({ goSurah }) {
             </div>
           </section>
 
-          <section className="grid gap-4 lg:col-span-7 xl:grid-cols-2">
+          <section className="mp-footer__panels grid gap-4 lg:col-span-7 xl:grid-cols-2">
             <div className="rounded-3xl border border-[var(--theme-panel-border,var(--border-light))] bg-[var(--theme-panel-bg-strong,var(--bg-secondary))] p-4">
               <h3 className="flex items-center gap-2 text-sm font-extrabold uppercase tracking-[0.18em] text-[var(--theme-muted,var(--text-tertiary))]">
                 <span className="inline-block h-4 w-0.5 rounded bg-[var(--gold,#d4a820)]" aria-hidden="true" />
@@ -355,7 +355,7 @@ export default function Footer({ goSurah }) {
                 })}
               </p>
 
-              <div className="mt-4 grid gap-2">
+              <div className="mp-footer__starter-list mt-4 grid gap-2">
                 {STARTER_SURAHS.map((surah) => (
                   <button
                     key={surah.n}
@@ -403,7 +403,7 @@ export default function Footer({ goSurah }) {
                 })}
               </p>
 
-              <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <div className="mp-footer__tool-grid mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {utilityItems.map((item) => (
                   <button
                     key={item.label}
@@ -430,7 +430,7 @@ export default function Footer({ goSurah }) {
                     ar: "\u0627\u062E\u062A\u0635\u0627\u0631\u0627\u062A \u0627\u0644\u062C\u0632\u0621",
                   })}
                 </p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="mp-footer__juz-grid grid grid-cols-3 gap-2">
                   {QUICK_JUZ.map((juz) => (
                     <button
                       key={juz}
@@ -447,8 +447,8 @@ export default function Footer({ goSurah }) {
           </section>
         </div>
 
-        <div className="relative border-t border-[var(--theme-panel-border,var(--border-light))] px-4 py-4 sm:px-7">
-          <div className={`flex flex-wrap items-center gap-3 ${isRtl ? "sm:flex-row-reverse" : ""}`}>
+        <div className="mp-footer__bottom relative border-t border-[var(--theme-panel-border,var(--border-light))] px-4 py-4 sm:px-7">
+          <div className={`mp-footer__bottom-inner flex flex-wrap items-center gap-3 ${isRtl ? "sm:flex-row-reverse" : ""}`}>
             <div className={`min-w-0 flex-1 ${isRtl ? "text-right" : ""}`}>
               <p className="text-sm font-semibold text-[var(--text-primary)]">
                 {lang === "ar"
@@ -464,7 +464,7 @@ export default function Footer({ goSurah }) {
               </p>
             </div>
 
-            <nav className="flex flex-wrap items-center gap-2" aria-label="Quick links">
+            <nav className="mp-footer__bottom-links flex flex-wrap items-center gap-2" aria-label="Quick links">
               {bottomLinks.map((link) => (
                 <button
                   key={link.label}

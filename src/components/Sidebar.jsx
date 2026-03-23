@@ -127,7 +127,12 @@ export default function Sidebar() {
           )}
 
           {/* Tab bar */}
-          <div className="sidebar-tabs-list !mt-2 !grid !grid-cols-3 !gap-1 !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-1">
+          <div
+            className={cn(
+              "sidebar-tabs-list !mt-2 !grid !gap-1 !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-1",
+              availableTabs.length === 2 ? "!grid-cols-2" : "!grid-cols-3",
+            )}
+          >
             {availableTabs.map((t2) => (
               <button
                 key={t2}
