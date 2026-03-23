@@ -1724,6 +1724,24 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
+                "mp-player-options-trigger w-8 h-8 text-[0.72rem] rounded-lg shrink-0",
+              )}
+              onClick={() => setOptionsModalOpen(true)}
+              aria-controls="audio-options-modal-title"
+              aria-expanded={optionsModalOpen}
+              title={
+                lang === "fr"
+                  ? "Options et récitateurs"
+                  : lang === "ar"
+                    ? "Options and reciters"
+                    : "Options and reciters"
+              }
+            >
+              <i className="fas fa-sliders" />
+            </button>
+            <button
+              className={cn(
+                mBarBtn,
                 "w-8 h-8 text-[0.72rem] rounded-lg shrink-0",
               )}
               onClick={toggleMinimized}
@@ -1934,7 +1952,7 @@ export default function AudioPlayer() {
             <button
                 className={cn(
                   mBarBtnSm(optionsModalOpen),
-                  "px-[0.46rem] py-[0.24rem] text-[0.64rem] min-h-[1.875rem] min-w-[1.875rem] justify-center rounded-full",
+                  "mp-player-options-trigger px-[0.46rem] py-[0.24rem] text-[0.64rem] min-h-[1.875rem] min-w-[1.875rem] justify-center rounded-full",
                 )}
               onClick={() => setOptionsModalOpen(true)}
               aria-expanded={optionsModalOpen}
@@ -2466,6 +2484,20 @@ export default function AudioPlayer() {
                 <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`} />
               </button>
               <IconBtn
+                className="mp-player-options-trigger"
+                onClick={() => setOptionsModalOpen(true)}
+                title={
+                  lang === "fr"
+                    ? "Options et récitateurs"
+                    : lang === "ar"
+                      ? "Options and reciters"
+                      : "Options and reciters"
+                }
+                size="sm"
+              >
+                <i className="fas fa-sliders" />
+              </IconBtn>
+              <IconBtn
                 onClick={toggleMinimized}
                 title={
                   lang === "fr" ? "Agrandir" : lang === "ar" ? "Expand" : "Expand"
@@ -2523,6 +2555,21 @@ export default function AudioPlayer() {
                 disabled={isHomeDesktop}
               >
                 <i className="fas fa-chevron-down text-xs" />
+              </button>
+              <button
+                className={cn(playerUtilityClass, "mp-player-options-trigger h-6 w-6")}
+                onClick={() => setOptionsModalOpen(true)}
+                title={
+                  lang === "fr"
+                    ? "Options et récitateurs"
+                    : lang === "ar"
+                      ? "Options and reciters"
+                      : "Options and reciters"
+                }
+                aria-controls="audio-options-modal-title"
+                aria-expanded={optionsModalOpen}
+              >
+                <i className="fas fa-sliders text-xs" />
               </button>
               <div className="flex items-center gap-1.5">
                 <div className="h-1 w-8 rounded-full bg-[linear-gradient(90deg,rgba(var(--theme-primary-rgb),0.18),rgba(var(--theme-primary-rgb),0.95),rgba(var(--theme-primary-rgb),0.18))]" />
@@ -2779,7 +2826,7 @@ export default function AudioPlayer() {
               <button
                 onClick={() => setOptionsModalOpen(true)}
                 aria-controls="audio-options-modal-title"
-                className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/12 bg-white/[0.05] py-1.5 text-[0.63rem] text-[rgba(230,219,198,0.62)] transition-all duration-150 [font-family:var(--font-ui)] hover:border-[rgba(110,204,233,0.38)] hover:bg-[rgba(110,204,233,0.1)] hover:text-[rgba(240,250,255,0.95)]"
+                className="mp-player-options-trigger flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/12 bg-white/[0.05] py-1.5 text-[0.63rem] text-[rgba(230,219,198,0.62)] transition-all duration-150 [font-family:var(--font-ui)] hover:border-[rgba(110,204,233,0.38)] hover:bg-[rgba(110,204,233,0.1)] hover:text-[rgba(240,250,255,0.95)]"
               >
                 <i className="fas fa-sliders text-[0.55rem]" />
                 {expanded

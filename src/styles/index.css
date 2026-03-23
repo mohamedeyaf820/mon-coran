@@ -1,4 +1,58 @@
-﻿@import "tailwindcss";
+﻿@media (max-width: 390px) {
+    .app-main-shell {
+        padding-inline: 0.12rem;
+    }
+    .sidebar {
+        width: 100vw !important;
+        min-width: 0 !important;
+        max-width: 100vw !important;
+        border-radius: 0.6rem !important;
+        font-size: 0.92rem;
+    }
+    .modal,
+    .modal-panel,
+    .modal-content {
+        border-radius: 0.6rem !important;
+        padding: 0.5rem 0.3rem !important;
+        font-size: 0.92rem;
+    }
+    .audio-player-modal,
+    .audio-player-modal__surface {
+        min-width: 0 !important;
+        max-width: 100vw !important;
+        border-radius: 0.6rem !important;
+        padding: 0.3rem 0.1rem !important;
+    }
+    .player-btn,
+    .play-btn,
+    .player-btn-sm {
+        min-width: 38px !important;
+        min-height: 38px !important;
+        font-size: 1rem !important;
+    }
+    .hp2-btn,
+    .modal-action-btn,
+    .sidebar-tab-trigger {
+        min-height: 38px !important;
+        font-size: 0.92rem !important;
+    }
+    .modal-header {
+        padding: 0.5rem 0.3rem !important;
+    }
+    .modal-title {
+        font-size: 0.92rem !important;
+    }
+    .modal-subtitle {
+        font-size: 0.7rem !important;
+    }
+    .hp2-hero__title {
+        font-size: clamp(0.98rem, 7vw, 1.18rem) !important;
+    }
+    .hp2-hero__tagline {
+        font-size: 0.7rem !important;
+    }
+}
+@import "tailwindcss";
 @config "../../tailwind.config.js";
 @source "../../src/**/*.{js,jsx,ts,tsx}";
 

@@ -346,17 +346,17 @@ export default function NotesPanel() {
         {notes.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full px-5 text-center gap-3 py-10">
             <div className="notes-empty-icon-shell w-14 h-14 rounded-2xl flex items-center justify-center">
-              <i className="fas fa-sticky-note text-[1.4rem] text-(--text-muted)" />
+              <i className="fas fa-sticky-note text-[1.4rem] text-[var(--text-muted)]" />
             </div>
             <div>
-              <p className="text-[0.84rem] font-semibold text-(--text-primary) mb-1">
+              <p className="text-[0.84rem] font-semibold text-[var(--text-primary)] mb-1">
                 {lang === "fr"
                   ? "Aucune note"
                   : lang === "ar"
                     ? "لا توجد ملاحظات"
                     : "No notes yet"}
               </p>
-              <p className="text-[0.72rem] text-(--text-muted) font-(--font-ui) leading-relaxed">
+              <p className="text-[0.72rem] text-[var(--text-muted)] font-[var(--font-ui)] leading-relaxed">
                 {lang === "fr"
                   ? "Appuyez sur un verset puis sur 📝 pour ajouter."
                   : lang === "ar"

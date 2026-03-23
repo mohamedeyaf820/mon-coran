@@ -19,7 +19,8 @@ export function cn(...inputs) {
  */
 export function toast(message, type = "info") {
   if (typeof window === "undefined") return;
-  window.dispatchEvent(
-    new CustomEvent("quran-toast", { detail: { message, type } }),
-  );
+    window.dispatchEvent(/* ... */); // 🚨 Si window undefined (SSR), crash
 }
+    window.dispatchEvent(
+      new CustomEvent("quran-toast", { detail: { message, type } }),
+    );

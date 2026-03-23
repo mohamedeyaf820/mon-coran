@@ -761,6 +761,14 @@
   .search-toolbar-surface .modal-action-btn {
     width: 100%;
   }
+
+  .app-root .mp-player-options-trigger {
+    border-color: rgba(122, 188, 210, 0.42) !important;
+    background: rgba(122, 188, 210, 0.14) !important;
+    color: rgba(241, 250, 255, 0.96) !important;
+    min-width: 2rem;
+    min-height: 2rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -876,6 +884,12 @@
     justify-content: center;
   }
 
+  .app-root .mp-player-options-trigger {
+    min-height: 2.25rem !important;
+    min-width: 2.25rem !important;
+    box-shadow: 0 0 0 1px rgba(122, 188, 210, 0.22) inset;
+  }
+
   .app-root .mp-player-mobile-expanded {
     padding-inline: 0.85rem;
   }
@@ -938,6 +952,10 @@
   .app-root .mp-player-mobile-main-controls .mp-player-play-btn {
     height: 2.9rem;
     width: 2.9rem;
+  }
+
+  .app-root .mp-player-options-trigger {
+    min-height: 2.4rem !important;
   }
 }
 

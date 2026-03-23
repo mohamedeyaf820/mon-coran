@@ -21,6 +21,8 @@ import {
   ensureReciterForRiwaya,
   isWarshVerifiedReciter,
 } from "../data/reciters";
+
+import { ErrorBoundary } from "./ErrorBoundary";
 import PlatformLogo from "./PlatformLogo";
 import Footer from "./Footer";
 import { buildSurahAudioPlaylist } from "../utils/audioPlaylist";
@@ -1044,6 +1046,24 @@ export default function HomePage() {
       </div>
       {/* HERO */}
       <section className="hp2-hero !relative !z-10 !overflow-hidden !rounded-[28px]">
+        {/* Daily Verse section protégée */}
+        <ErrorBoundary>
+          {/* Remplacer ici par le composant réel si DailyVersesSection existe, sinon protéger le rendu du verset du jour */}
+          <div className="hp2-daily-verse !mb-4">
+            <div className="hp2-daily-verse__label !text-[0.92rem] !font-semibold !mb-1">
+              {t("verseOfDay")}
+            </div>
+            <div className="hp2-daily-verse__text !text-[1.18rem] !font-quran !mb-1" dir="rtl" lang="ar">
+              {dailyVerse.text}
+            </div>
+            <div className="hp2-daily-verse__ref !text-[0.82rem] !text-[var(--text-muted)]">
+              {dailyVerse.ref}
+            </div>
+            <div className="hp2-daily-verse__trans !text-[0.92rem] !text-[var(--text-secondary)]">
+              {dailyVerse.trans_fr}
+            </div>
+          </div>
+        </ErrorBoundary>
         <div className="pointer-events-none absolute inset-0" />
         <div className="pointer-events-none absolute -top-12 right-[14%] h-28 w-28 rounded-full border border-white/15 opacity-35 motion-safe:animate-spin [animation-duration:16s]" />
         <div className="pointer-events-none absolute -bottom-14 left-[44%] h-36 w-36 rounded-full border opacity-30 motion-safe:animate-spin [animation-direction:reverse] [animation-duration:22s]" />
