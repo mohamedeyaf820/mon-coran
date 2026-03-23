@@ -223,9 +223,9 @@ export default function WeeklyStatsPanel() {
   const totalAyahs = days.reduce((s, d) => s + (readingMap[d]?.ayahsRead || 0), 0);
 
   return (
-    <div className="modal-overlay" onClick={close}>
-      <div className="modal modal-panel--wide wst-panel" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
+    <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
+      <div className="modal modal-panel--wide wst-panel !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]" onClick={e => e.stopPropagation()}>
+        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
           <div className="modal-title-stack">
             <div className="modal-kicker">
               {lang === 'fr' ? 'Rapport de lecture' : 'Reading Report'}
@@ -235,44 +235,44 @@ export default function WeeklyStatsPanel() {
             </h2>
             <div className="modal-subtitle">{weekLabel}</div>
           </div>
-          <button className="modal-close" onClick={close}>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
             <i className="fas fa-times"></i>
           </button>
         </div>
 
         {/* Week navigator */}
-        <div className="wst-nav">
-          <button className="wst-nav-btn" onClick={() => setWeekOffset(o => o - 1)}>
+        <div className="wst-nav !mx-3 !mt-3 !flex !items-center !justify-between !rounded-2xl !border !border-white/12 !bg-white/[0.03] !px-2.5 !py-2 sm:!mx-4">
+          <button className="wst-nav-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]" onClick={() => setWeekOffset(o => o - 1)}>
             <i className="fas fa-chevron-left"></i>
           </button>
           <span className="wst-nav-label">{weekLabel}</span>
-          <button className="wst-nav-btn" onClick={() => setWeekOffset(o => Math.min(0, o + 1))} disabled={weekOffset >= 0}>
+          <button className="wst-nav-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12] disabled:!opacity-40" onClick={() => setWeekOffset(o => Math.min(0, o + 1))} disabled={weekOffset >= 0}>
             <i className="fas fa-chevron-right"></i>
           </button>
         </div>
 
         {/* Summary cards */}
-        <div className="wst-summary">
-          <div className="wst-card">
+        <div className="wst-summary !grid !grid-cols-2 !gap-2 !px-3 !py-3 sm:!grid-cols-4 sm:!px-4">
+          <div className="wst-card !rounded-2xl !border !border-white/12 !bg-white/[0.04] !p-3">
             <div className="wst-card__val">{totalPages}</div>
             <div className="wst-card__label">{lang === 'fr' ? 'pages lues' : 'pages'}</div>
           </div>
-          <div className="wst-card">
+          <div className="wst-card !rounded-2xl !border !border-white/12 !bg-white/[0.04] !p-3">
             <div className="wst-card__val green">{activeDays}</div>
             <div className="wst-card__label">{lang === 'fr' ? 'jours actifs' : 'active days'} /7</div>
           </div>
-          <div className="wst-card">
+          <div className="wst-card !rounded-2xl !border !border-white/12 !bg-white/[0.04] !p-3">
             <div className="wst-card__val">{completedDays}</div>
             <div className="wst-card__label">{lang === 'fr' ? 'objectifs ✓' : 'goals ✓'}</div>
           </div>
-          <div className="wst-card">
+          <div className="wst-card !rounded-2xl !border !border-white/12 !bg-white/[0.04] !p-3">
             <div className="wst-card__val">{totalAyahs}</div>
             <div className="wst-card__label">{lang === 'fr' ? 'versets' : 'verses'}</div>
           </div>
         </div>
 
         {/* Bar chart preview (inline) */}
-        <div className="wst-bars">
+        <div className="wst-bars !grid !grid-cols-7 !gap-2 !px-3 sm:!px-4">
           {days.map((date, i) => {
             const pages = wirdMap[date]?.pagesRead || 0;
             const completed = wirdMap[date]?.completed || false;
@@ -280,8 +280,8 @@ export default function WeeklyStatsPanel() {
             const pct = Math.round((pages / maxP) * 100);
             const dayLabel = (lang === 'fr' ? DAY_LABELS_FR : DAY_LABELS_EN)[i];
             return (
-              <div key={date} className="wst-bar-col">
-                <div className="wst-bar-wrap">
+              <div key={date} className="wst-bar-col !rounded-xl !border !border-white/10 !bg-white/[0.03] !p-2">
+                <div className="wst-bar-wrap !relative !h-24 !overflow-hidden !rounded-md !bg-white/[0.06]">
                   <div
                     className={`wst-bar ${completed ? 'completed' : pages > 0 ? 'active' : ''}`}
                     style={{ height: `${Math.max(2, pct)}%` }}
@@ -295,12 +295,12 @@ export default function WeeklyStatsPanel() {
         </div>
 
         {/* Export actions */}
-        <div className="wst-actions">
-          <button className="wst-export-btn" onClick={handleExportSVG}>
+        <div className="wst-actions !flex !items-center !justify-end !gap-2 !p-3 sm:!p-4">
+          <button className="wst-export-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3.5 !py-2 hover:!bg-white/[0.12]" onClick={handleExportSVG}>
             <i className="fas fa-file-code"></i>
             SVG
           </button>
-          <button className="wst-export-btn" onClick={handleExportPNG} disabled={exporting}>
+          <button className="wst-export-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-sky-200/30 !bg-sky-500/20 !px-3.5 !py-2 !text-white hover:!bg-sky-500/30" onClick={handleExportPNG} disabled={exporting}>
             {exporting
               ? <i className="fas fa-spinner fa-spin"></i>
               : <i className="fas fa-image"></i>}

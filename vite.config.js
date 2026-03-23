@@ -1,9 +1,19 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { buildCspPolicy } from "./scripts/cspPolicy.mjs";
 
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    react(),
+    tailwindcss(),
+    {
+      name: "inject-csp-policy",
+      transformIndexHtml(html) {
+        return html.replace("__CSP_POLICY__", buildCspPolicy(mode));
+      },
+    },
+  ],
   server: {
     port: 3002,
     strictPort: false,
@@ -56,4 +66,4 @@ export default defineConfig({
       minifyWhitespace: true,
     },
   },
-});
+}));

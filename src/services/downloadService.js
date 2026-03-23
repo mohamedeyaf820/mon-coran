@@ -6,26 +6,21 @@
 import { AudioService } from "./audioService";
 import { getRecentVisits } from "./recentHistoryService";
 import SURAHS from "../data/surahs";
+import {
+  downloadProgressMapSchema,
+  readLocalStorageWithSchema,
+  writeLocalStorageJson,
+} from "./storageValidation";
 
 const CACHE_NAME = "mushafplus-audio-v2";
 const PROGRESS_KEY = "mushaf_offline_progress_v2";
 
 function loadProgress() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "{}");
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch {
-    try {
-      localStorage.removeItem(PROGRESS_KEY);
-    } catch {}
-    return {};
-  }
+  return readLocalStorageWithSchema(PROGRESS_KEY, downloadProgressMapSchema, {});
 }
 
 function saveProgress(progress) {
-  try {
-    localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
-  } catch {}
+  writeLocalStorageJson(PROGRESS_KEY, progress);
 }
 
 function surahAyahCount(surahMeta) {
@@ -127,6 +122,8 @@ export async function downloadSurahForReciter(
   const normalized = normalizeDownloadOptions({ surahMeta, reciter, riwaya });
   const total = surahAyahCount(normalized.surahMeta);
   let done = 0;
+  let successCount = 0;
+  let failedCount = 0;
   const progress = loadProgress();
   progress[normalized.key] = {
     status: "partial",
@@ -154,36 +151,52 @@ export async function downloadSurahForReciter(
       });
 
       const existing = await cache.match(url);
+      let downloaded = Boolean(existing);
       if (!existing) {
         try {
           const response = await fetch(url, { mode: "cors" });
           if (response.ok) {
             await cache.put(url, response);
+            downloaded = true;
           }
         } catch {
           // Best effort: continue with the rest of the surah.
         }
       }
 
+      if (downloaded) successCount += 1;
+      else failedCount += 1;
+
       done += 1;
-      onProgress?.(done, total, normalized);
+      onProgress?.(done, total, {
+        ...normalized,
+        successCount,
+        failedCount,
+      });
       if (done % 5 === 0) {
         await new Promise((resolve) => setTimeout(resolve, 0));
       }
     }
 
+    const status =
+      failedCount === 0 ? "done" : successCount > 0 ? "partial" : "error";
+
     progress[normalized.key] = {
       ...progress[normalized.key],
-      status: "done",
+      status,
+      downloaded: successCount,
+      failedCount,
       updatedAt: Date.now(),
     };
     saveProgress(progress);
-    return "done";
+    return status;
   } catch (error) {
     console.error("Download error:", error);
     progress[normalized.key] = {
       ...progress[normalized.key],
       status: "error",
+      downloaded: successCount,
+      failedCount: Math.max(failedCount, total - successCount),
       updatedAt: Date.now(),
     };
     saveProgress(progress);

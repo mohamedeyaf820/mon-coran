@@ -24,6 +24,7 @@ import {
   getMemorizationLevel,
   setMemorizationLevel,
 } from "../services/memorizationService";
+import { openExternalUrl } from "../lib/security";
 
 function emitToast(type, message) {
   window.dispatchEvent(
@@ -267,7 +268,7 @@ export default function AyahActions({ surah, ayah, ayahData }) {
   };
 
   const shareTo = (url) => {
-    window.open(url, "_blank", "noopener,noreferrer");
+    openExternalUrl(url);
     closePanels();
   };
 

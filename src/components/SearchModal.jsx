@@ -269,12 +269,12 @@ export default function SearchModal() {
         : "Context search";
 
   return (
-    <div className="modal-overlay" onClick={close}>
+    <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
       <div
-        className="modal modal-panel--wide modal-search-panel search-modal-shell search-modal-shell--premium-plus"
+        className="modal modal-panel--wide modal-search-panel search-modal-shell search-modal-shell--premium-plus !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="modal-header">
+        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
           <div className="modal-title-stack">
             <div className="modal-kicker">
               {lang === "fr" ? "Recherche intelligente" : lang === "ar" ? "بحث ذكي" : "Smart search"}
@@ -289,7 +289,7 @@ export default function SearchModal() {
             </div>
           </div>
           <button
-            className="modal-close"
+            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
             onClick={close}
             aria-label={
               lang === "fr"
@@ -303,8 +303,8 @@ export default function SearchModal() {
           </button>
         </div>
 
-        <div className="search-command-deck">
-          <div className="modal-toolbar search-toolbar-surface">
+        <div className="search-command-deck !space-y-2 !p-3 sm:!p-4">
+          <div className="modal-toolbar search-toolbar-surface !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-2">
             <input
               type="text"
               value={query}
@@ -319,12 +319,12 @@ export default function SearchModal() {
                       : "Ex: bismillah rahmani rahim..."
                   : t("search.placeholder", lang)
               }
-              className="modal-search-input"
+              className="modal-search-input !min-h-11 !flex-1 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3"
               autoFocus
             />
             {SpeechRecognition && (
               <button
-                className={`modal-action-btn modal-voice-btn${listening ? " listening" : ""}`}
+                className={`modal-action-btn modal-voice-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]${listening ? " listening !bg-red-500/20 !border-red-300/30" : ""}`}
                 onClick={startVoiceSearch}
                 title={
                   listening
@@ -344,13 +344,13 @@ export default function SearchModal() {
                 <i className={`fas ${listening ? "fa-stop" : "fa-microphone"}`}></i>
               </button>
             )}
-            <button className="modal-action-btn" onClick={handleSearch} disabled={loading}>
+            <button className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-sky-200/30 !bg-sky-500/20 hover:!bg-sky-500/30" onClick={handleSearch} disabled={loading}>
               {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-search"></i>}
             </button>
           </div>
 
           <div
-            className="modal-segmented"
+            className="modal-segmented !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-1"
             role="tablist"
             aria-label={
               lang === "fr" ? "Mode de recherche" : lang === "ar" ? "وضع البحث" : "Search mode"
@@ -364,7 +364,7 @@ export default function SearchModal() {
             ].map((modeOption) => (
               <button
                 key={modeOption.id}
-                className={`modal-segmented-btn ${searchMode === modeOption.id ? "active" : ""}`}
+                className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${searchMode === modeOption.id ? "active !bg-sky-500/25 !text-white" : ""}`}
                 onClick={() => setSearchMode(modeOption.id)}
               >
                 <i className={`fas ${modeOption.icon}`}></i> {modeOption.label}
@@ -372,21 +372,21 @@ export default function SearchModal() {
             ))}
           </div>
 
-          <div className="search-summary-bar">
-            <span className="search-summary-pill">
+          <div className="search-summary-bar !flex !flex-wrap !gap-2">
+            <span className="search-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
               <i className="fas fa-layer-group"></i>
               {resultCountLabel}
             </span>
-            <span className="search-summary-pill">
+            <span className="search-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
               <i className="fas fa-wave-square"></i>
               {searchModeLabels[searchMode]}
             </span>
-            <span className="search-summary-pill search-summary-pill--riwaya">
+            <span className="search-summary-pill search-summary-pill--riwaya !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
               <i className="fas fa-book-quran"></i>
               {riwaya === "warsh" ? "Warsh" : "Hafs"}
             </span>
             {resolvedQuery && (
-              <span className="search-summary-pill search-summary-pill--query">
+              <span className="search-summary-pill search-summary-pill--query !inline-flex !items-center !gap-1.5 !rounded-full !border !border-sky-200/30 !bg-sky-500/18 !px-2.5 !py-1 !text-xs">
                 <i className="fas fa-sparkles"></i>
                 {resolvedQuery}
               </span>
@@ -394,7 +394,7 @@ export default function SearchModal() {
           </div>
 
           {voiceSummary && (
-            <div className="search-voice-note">
+            <div className="search-voice-note !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-3">
               <div className="search-voice-note__title">
                 <i className="fas fa-microphone-lines"></i>
                 {lang === "fr"
@@ -415,10 +415,10 @@ export default function SearchModal() {
 
         {error && <p className="modal-error">{error}</p>}
 
-        <div className="modal-results modal-search-results">
+        <div className="modal-results modal-search-results !max-h-[58vh] !overflow-auto !px-3 !pb-3 sm:!px-4 sm:!pb-4">
           {!query && !loading && (
-            <div className="search-spotlight">
-              <div className="search-spotlight-icon">
+            <div className="search-spotlight !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-4">
+              <div className="search-spotlight-icon !inline-flex !h-12 !w-12 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05]">
                 <i className="fas fa-compass"></i>
               </div>
               <div className="search-spotlight-body">
@@ -436,12 +436,12 @@ export default function SearchModal() {
                       ? "قل بداية الآية أو اكتبها عربيًا أو صوتيًا، وسيتم عرض الآية كاملة."
                       : "Say the opening of an ayah, type it in Arabic or phonetics, and the full verse will appear."}
                 </p>
-                <div className="search-spotlight-chips">
+                <div className="search-spotlight-chips !mt-3 !grid !grid-cols-1 !gap-2 sm:!grid-cols-3">
                   {suggestionItems.map((suggestion) => (
                     <button
                       key={`${suggestion.mode}-${suggestion.value}`}
                       type="button"
-                      className="search-spotlight-chip"
+                      className="search-spotlight-chip !rounded-xl !border !border-white/14 !bg-white/[0.05] !p-2.5 !text-left !transition-all hover:!border-sky-200/40 hover:!bg-white/[0.1]"
                       onClick={() => applySuggestion(suggestion)}
                     >
                       <span className="search-spotlight-chip__label">{suggestion.label}</span>
@@ -454,7 +454,7 @@ export default function SearchModal() {
           )}
 
           {results.length === 0 && !loading && query && (
-            <div className="modal-empty">
+            <div className="modal-empty !rounded-2xl !border !border-dashed !border-white/15 !bg-white/[0.03] !p-6 !text-center">
               <i className="fas fa-search"></i>
               <div>{t("search.noResults", lang)}</div>
             </div>
@@ -493,7 +493,7 @@ export default function SearchModal() {
             return (
               <button
                 key={`${surahNumber}-${ayahNumber}-${index}`}
-                className={`modal-item-card search-result-card${isTranslationMode ? " search-result-card--translation" : ""}`}
+                className={`modal-item-card search-result-card !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-2.5 !transition-all hover:!border-sky-200/35 hover:!bg-white/[0.07]${isTranslationMode ? " search-result-card--translation" : ""}`}
                 onClick={() => goToAyah(surahNumber, ayahNumber)}
               >
                 <div className="src-badge">

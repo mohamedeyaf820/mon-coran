@@ -979,6 +979,152 @@
     }
 }
 
+/* Premium Plus - HomePage polish pass */
+.app-root.premium-plus .hp2--platform .hp2-focus-card,
+.app-root.premium-plus .hp2--platform .hp2-panel,
+.app-root.premium-plus .hp2--platform .hp2-content,
+.app-root.premium-plus .hp2--platform .hp2-quickbar,
+.app-root.premium-plus .hp2--platform .hp2-stats-strip {
+    position: relative;
+    overflow: hidden;
+}
+
+.app-root.premium-plus .hp2--platform .hp2-focus-card::before,
+.app-root.premium-plus .hp2--platform .hp2-panel::before,
+.app-root.premium-plus .hp2--platform .hp2-content::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 34%);
+}
+
+.app-root.premium-plus .hp2--platform .hp2-qchip,
+.app-root.premium-plus .hp2--platform .scard,
+.app-root.premium-plus .hp2--platform .hpl-row,
+.app-root.premium-plus .hp2--platform .hp2-prayer-row,
+.app-root.premium-plus .hp2--platform .hp2-focus-card__cta {
+    transition:
+        transform 160ms ease,
+        box-shadow 160ms ease,
+        border-color 160ms ease,
+        background-color 160ms ease;
+}
+
+.app-root.premium-plus .hp2--platform .hp2-qchip:hover,
+.app-root.premium-plus .hp2--platform .scard:hover,
+.app-root.premium-plus .hp2--platform .hpl-row:hover,
+.app-root.premium-plus .hp2--platform .hp2-prayer-row:hover,
+.app-root.premium-plus .hp2--platform .hp2-focus-card__cta:hover {
+    transform: translateY(-1px);
+}
+
+.app-root.premium-plus .hp2--platform .hp2-prayer-row {
+    border-color: color-mix(in srgb, var(--theme-border) 56%, transparent 44%);
+}
+
+.app-root.premium-plus .hp2--platform .hp2-prayer-row--on {
+    box-shadow:
+        0 10px 24px rgba(10, 31, 48, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.app-root.premium-plus .hp2--platform .hp2-qchip:focus-visible,
+.app-root.premium-plus .hp2--platform .scard:focus-visible,
+.app-root.premium-plus .hp2--platform .hpl-row:focus-visible,
+.app-root.premium-plus .hp2--platform .hp2-focus-card__cta:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px rgba(var(--theme-primary-rgb), 0.54),
+        0 0 0 6px rgba(var(--theme-primary-rgb), 0.16);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-root.premium-plus .hp2--platform .hp2-qchip,
+    .app-root.premium-plus .hp2--platform .scard,
+    .app-root.premium-plus .hp2--platform .hpl-row,
+    .app-root.premium-plus .hp2--platform .hp2-prayer-row,
+    .app-root.premium-plus .hp2--platform .hp2-focus-card__cta {
+        transition: none !important;
+        transform: none !important;
+    }
+}
+
+/* Premium Plus - mobile home layout and display pass */
+@media (max-width: 640px) {
+    .app-root.premium-plus .hp2--platform {
+        gap: 0.82rem;
+        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    .app-root.premium-plus .hp2--platform .hp2-quickbar__track {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(132px, 46vw);
+        gap: 0.44rem;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        padding-bottom: 0.15rem;
+    }
+
+    .app-root.premium-plus .hp2--platform .hp2-qchip {
+        min-height: 2.68rem;
+        align-items: flex-start;
+        scroll-snap-align: start;
+    }
+
+    .app-root.premium-plus .hp2--platform .hp2-focus-card__cta {
+        width: 100%;
+        min-height: 2.8rem;
+        justify-content: center;
+    }
+
+    .app-root.premium-plus .hp2--platform .hp2-prayers__list {
+        gap: 0.42rem;
+    }
+
+    .app-root.premium-plus .hp2--platform .hp2-prayer-row {
+        min-height: 2.28rem;
+    }
+
+    .app-root.premium-plus .hp2--platform .hp2-stats-strip {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.46rem;
+    }
+
+    .app-root.premium-plus .hp2--platform .scard,
+    .app-root.premium-plus .hp2--platform .hpl-row {
+        min-height: 4.4rem;
+    }
+
+    .app-root.premium-plus .hp2--platform .scard__name,
+    .app-root.premium-plus .hp2--platform .hpl-row__name {
+        font-size: 0.78rem;
+    }
+
+    .app-root.premium-plus .hp2--platform .scard__meta,
+    .app-root.premium-plus .hp2--platform .hpl-row__meta {
+        font-size: 0.6rem;
+        line-height: 1.2;
+    }
+}
+
+@media (max-width: 420px) {
+    .app-root.premium-plus .hp2--platform .hp2-quickbar__track {
+        grid-auto-columns: minmax(126px, 62vw);
+    }
+
+    .app-root.premium-plus .hp2--platform .hp2-stats-strip {
+        grid-template-columns: 1fr;
+    }
+
+    .app-root.premium-plus .hp2--platform .scard__ar,
+    .app-root.premium-plus .hp2--platform .hpl-row__ar {
+        font-size: 0.92rem;
+    }
+}
+
 @media (max-width: 420px) {
     .app-root.premium-plus .hp2--platform .scard,
     .app-root.premium-plus .hp2--platform .hpl-row,

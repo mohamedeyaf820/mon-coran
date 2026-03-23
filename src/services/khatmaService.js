@@ -5,27 +5,27 @@
 
 const KEY = 'mushaf_khatma_v1';
 
+import {
+  khatmaGoalSchema,
+  readLocalStorageWithSchema,
+  writeLocalStorageJson,
+} from "./storageValidation";
+
 const TOTAL_PAGES = 604;
 
 export function getKhatmaGoal() {
-  try {
-    const data = JSON.parse(localStorage.getItem(KEY) || 'null');
-    if (!data) return null;
-    return data;
-  } catch {
-    return null;
-  }
+  return readLocalStorageWithSchema(KEY, khatmaGoalSchema.nullable(), null);
 }
 
 export function setKhatmaGoal({ targetDays, startPage = 1, startDate = null }) {
+  const safeTargetDays = Math.max(1, Math.min(3650, Number(targetDays) || 1));
+  const safeStartPage = Math.max(1, Math.min(TOTAL_PAGES, Number(startPage) || 1));
   const goal = {
     startDate: startDate || new Date().toISOString().slice(0, 10),
-    targetDays: Math.max(1, targetDays),
-    startPage: Math.max(1, Math.min(TOTAL_PAGES, startPage)),
+    targetDays: safeTargetDays,
+    startPage: safeStartPage,
   };
-  try {
-    localStorage.setItem(KEY, JSON.stringify(goal));
-  } catch {}
+  writeLocalStorageJson(KEY, goal);
   return goal;
 }
 

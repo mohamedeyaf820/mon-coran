@@ -73,6 +73,131 @@ const QUICK_ACCESS = [
   { n: 114, icon: "fa-shield-halved", label_fr: "An-Nas", label_en: "Mankind" },
 ];
 
+const SURAH_EN_MEANINGS = {
+  1: "The Opening",
+  2: "The Cow",
+  3: "Family of Imran",
+  4: "The Women",
+  5: "The Table Spread",
+  6: "The Cattle",
+  7: "The Heights",
+  8: "The Spoils of War",
+  9: "The Repentance",
+  10: "Jonah",
+  11: "Hud",
+  12: "Joseph",
+  13: "The Thunder",
+  14: "Abraham",
+  15: "The Rocky Tract",
+  16: "The Bee",
+  17: "The Night Journey",
+  18: "The Cave",
+  19: "Mary",
+  20: "Ta Ha",
+  21: "The Prophets",
+  22: "The Pilgrimage",
+  23: "The Believers",
+  24: "The Light",
+  25: "The Criterion",
+  26: "The Poets",
+  27: "The Ant",
+  28: "The Stories",
+  29: "The Spider",
+  30: "The Romans",
+  31: "Luqman",
+  32: "The Prostration",
+  33: "The Confederates",
+  34: "Sheba",
+  35: "Originator",
+  36: "Ya Sin",
+  37: "Those Who Set the Ranks",
+  38: "Sad",
+  39: "The Groups",
+  40: "The Forgiver",
+  41: "Explained in Detail",
+  42: "Consultation",
+  43: "Gold Adornments",
+  44: "The Smoke",
+  45: "The Kneeling",
+  46: "The Dunes",
+  47: "Muhammad",
+  48: "The Victory",
+  49: "The Rooms",
+  50: "Qaf",
+  51: "The Winnowing Winds",
+  52: "The Mount",
+  53: "The Star",
+  54: "The Moon",
+  55: "The Most Merciful",
+  56: "The Inevitable",
+  57: "The Iron",
+  58: "The Pleading Woman",
+  59: "The Exile",
+  60: "She That Is To Be Examined",
+  61: "The Ranks",
+  62: "The Congregation",
+  63: "The Hypocrites",
+  64: "Mutual Disillusion",
+  65: "Divorce",
+  66: "The Prohibition",
+  67: "The Sovereignty",
+  68: "The Pen",
+  69: "The Reality",
+  70: "The Ascending Stairways",
+  71: "Noah",
+  72: "The Jinn",
+  73: "The Enshrouded One",
+  74: "The Cloaked One",
+  75: "The Resurrection",
+  76: "Man",
+  77: "Those Sent Forth",
+  78: "The Great News",
+  79: "Those Who Drag Forth",
+  80: "He Frowned",
+  81: "The Overthrowing",
+  82: "The Cleaving",
+  83: "Defrauding",
+  84: "The Splitting Open",
+  85: "The Mansions of the Stars",
+  86: "The Morning Star",
+  87: "The Most High",
+  88: "The Overwhelming",
+  89: "The Dawn",
+  90: "The City",
+  91: "The Sun",
+  92: "The Night",
+  93: "The Morning Hours",
+  94: "The Relief",
+  95: "The Fig",
+  96: "The Clot",
+  97: "The Power",
+  98: "The Clear Proof",
+  99: "The Earthquake",
+  100: "The Courser",
+  101: "The Calamity",
+  102: "Rivalry in World Increase",
+  103: "The Declining Day",
+  104: "The Traducer",
+  105: "The Elephant",
+  106: "Quraysh",
+  107: "Small Kindnesses",
+  108: "Abundance",
+  109: "The Disbelievers",
+  110: "Divine Support",
+  111: "The Palm Fiber",
+  112: "Sincerity",
+  113: "The Daybreak",
+  114: "Mankind",
+};
+
+function normalizeLatinSurahName(name = "") {
+  return name.replace(/[-']+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function getSurahEnglishMeaning(surahNumber) {
+  return SURAH_EN_MEANINGS[surahNumber] || "Surah";
+}
+
 /* Versets du jour - cycle de 30 jours */
 const DAILY_VERSES = [
   {
@@ -221,6 +346,30 @@ const TYPE_INFO = {
   Medinan: { fr: "Medinoise", en: "Medinan", ar: "مدنية" },
 };
 
+function FlowerBadge({ className = "" }) {
+  return (
+    <svg
+      viewBox="0 0 40 40"
+      aria-hidden="true"
+      focusable="false"
+      className={className}
+    >
+      <path
+        fill="currentColor"
+        d="M20 2.5c1.84 0 3.32 1.5 3.29 3.34-.01.87-.36 1.67-.92 2.25l-.26.26a2.8 2.8 0 0 0-.82 2v.36a2.8 2.8 0 0 0 .82 2l.26.26a3.3 3.3 0 0 1 0 4.64l-.26.26a2.8 2.8 0 0 0-.82 2v.36c0 .74.29 1.46.82 1.99l.26.26a3.3 3.3 0 0 1 0 4.64l-.26.26a2.8 2.8 0 0 0-.82 2v.36c0 1.84-1.48 3.34-3.3 3.34s-3.3-1.5-3.3-3.34v-.36a2.8 2.8 0 0 0-.82-2l-.26-.26a3.3 3.3 0 0 1 0-4.64l.26-.26a2.8 2.8 0 0 0 .82-1.99v-.36a2.8 2.8 0 0 0-.82-2l-.26-.26a3.3 3.3 0 0 1 0-4.64l.26-.26a2.8 2.8 0 0 0 .82-2v-.36a2.8 2.8 0 0 0-.82-2l-.26-.26a3.25 3.25 0 0 1-.92-2.25A3.3 3.3 0 0 1 20 2.5Zm-10.18 5.06c1.62 0 2.95 1.3 2.98 2.93.02.77-.26 1.5-.78 2.04l-.23.23a2.53 2.53 0 0 0 0 3.58l.23.23a3 3 0 0 1 0 4.2l-.23.23a2.53 2.53 0 0 0 0 3.58l.23.23a2.97 2.97 0 0 1 .78 2.04c-.03 1.62-1.36 2.94-2.98 2.94-1.64 0-2.98-1.34-2.98-3v-.32c0-.67-.26-1.31-.74-1.79l-.22-.22a2.97 2.97 0 0 1 0-4.2l.22-.22a2.53 2.53 0 0 0 0-3.58l-.22-.23a2.97 2.97 0 0 1 0-4.2l.22-.22c.48-.48.74-1.13.74-1.8v-.31c0-1.66 1.34-3 2.98-3Zm20.36 0c1.64 0 2.98 1.34 2.98 3v.31c0 .67.26 1.32.74 1.8l.22.22a2.97 2.97 0 0 1 0 4.2l-.22.23a2.53 2.53 0 0 0 0 3.58l.22.22a2.97 2.97 0 0 1 0 4.2l-.22.22a2.53 2.53 0 0 0-.74 1.79v.32c0 1.66-1.34 3-2.98 3-1.62 0-2.95-1.32-2.98-2.94a2.97 2.97 0 0 1 .78-2.04l.23-.23a2.53 2.53 0 0 0 0-3.58l-.23-.23a3 3 0 0 1 0-4.2l.23-.23a2.53 2.53 0 0 0 0-3.58l-.23-.23a2.9 2.9 0 0 1-.78-2.04c.03-1.63 1.36-2.93 2.98-2.93Z"
+      />
+      <circle
+        cx="20"
+        cy="20"
+        r="9"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.3"
+      />
+    </svg>
+  );
+}
+
 function PercentBar({ value }) {
   const pct = Math.max(0, Math.min(100, value));
 
@@ -231,13 +380,7 @@ function PercentBar({ value }) {
       className="block h-full w-full"
     >
       <defs>
-        <linearGradient
-          id="home-progress-gradient"
-          x1="0%"
-          y1="0%"
-          x2="100%"
-          y2="0%"
-        >
+        <linearGradient id="home-progress-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="var(--primary)" />
           <stop offset="100%" stopColor="var(--gold)" />
         </linearGradient>
@@ -273,17 +416,11 @@ const SurahCard = memo(function SurahCard({
   viewMode,
   animIndex = 0,
 }) {
-  const typeInfo = TYPE_INFO[surah.type] || {};
-  const typeLabel =
-    typeInfo[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"] || surah.type;
-  const displayName = surah.en || surah.fr || surah.ar;
-  const subLabel =
-    lang === "fr"
-      ? surah.fr || typeLabel
-      : lang === "ar"
-        ? typeLabel
-        : surah.fr || typeLabel;
-  const ayahLabel = `${surah.ayahs} ${lang === "ar" ? "آية" : "Ayat"}`;
+  const primaryLabel = normalizeLatinSurahName(surah.en || surah.fr || surah.ar || "");
+  const secondaryLabel = getSurahEnglishMeaning(surah.n);
+  const ayahLabel = `${surah.ayahs} Ayat`;
+  const playAriaLabel =
+    lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen";
   const pageLabel =
     surah.page &&
     (lang === "ar"
@@ -300,13 +437,21 @@ const SurahCard = memo(function SurahCard({
     };
 
     return (
-      <button
+      <div
         className={cn(
           "hpl-row !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.003]",
           isActive && "hpl-row--active",
         )}
         data-stype={surah.type?.toLowerCase()}
         onClick={() => onClick(surah.n)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClick(surah.n);
+          }
+        }}
+        role="button"
+        tabIndex={0}
         style={rowVisibilityStyle}
       >
         <span className={cn("hpl-row__num", isActive && "hpl-row__num--on")}>
@@ -321,7 +466,19 @@ const SurahCard = memo(function SurahCard({
             {pageLabel ? ` · ${pageLabel}` : ""}
           </span>
         </div>
-        <span className="hpl-row__ar" dir="rtl" lang="ar">
+        <span
+          className="hpl-row__ar"
+          dir="rtl"
+          lang="ar"
+          style={{
+            fontFamily:
+              'var(--font-surah-display, "Amiri Quran"), var(--font-quran), "KFGQPC Uthmanic Script HAFS", "ME Quran", "Amiri", serif',
+            fontFeatureSettings: '"calt" 1, "liga" 1, "rlig" 1, "kern" 1',
+            textRendering: "optimizeLegibility",
+            WebkitFontSmoothing: "antialiased",
+            fontKerning: "normal",
+          }}
+        >
           {surah.ar}
         </span>
         <button
@@ -333,71 +490,95 @@ const SurahCard = memo(function SurahCard({
             e.stopPropagation();
             onPlay(surah.n);
           }}
-          aria-label="Ecouter"
+          aria-label={playAriaLabel}
         >
           <i className={`fas fa-${isPlaying ? "pause" : "play"}`} />
         </button>
-      </button>
+      </div>
     );
   }
 
   /* ���� GRID CARD � reference-style layout ���� */
   const cardVisibilityStyle = {
     contentVisibility: "auto",
-    containIntrinsicSize: "164px",
+    containIntrinsicSize: "112px",
   };
 
   return (
-    <button
+    <div
       className={cn(
-        "scard !relative !overflow-hidden !transition-all !duration-300 hover:!-translate-y-1 hover:!scale-[1.01]",
+        "scard group !relative !flex !min-h-[94px] !w-full !flex-row !items-center !gap-3 !overflow-hidden !rounded-[14px] !border !border-[#e3dfd3] !bg-[#f7f5ef] !px-3.5 !py-2.5 !text-left !shadow-[0_2px_6px_rgba(28,25,19,0.06)] !transition-all !duration-200 hover:!border-[#d0c6ad] hover:!shadow-[0_5px_12px_rgba(28,25,19,0.10)]",
         isActive && "scard--active",
         isPlaying && "scard--playing",
       )}
       data-stype={surah.type?.toLowerCase()}
       onClick={() => onClick(surah.n)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick(surah.n);
+        }
+      }}
+      role="button"
+      tabIndex={0}
       style={cardVisibilityStyle}
     >
-      {/* Left: number badge */}
-      <span className={cn("scard__num", isActive && "scard__num--on")}>
+      {/* Number badge */}
+      <span
+        className={cn(
+          "scard__num !relative !z-10 !inline-flex !h-8 !w-8 !shrink-0 !items-center !justify-center !text-[0.8rem] !font-extrabold !text-[#a2894d]",
+          isActive &&
+            "scard__num--on !text-[#8f742f]",
+        )}
+      >
+        <FlowerBadge className="!absolute !inset-0 !h-full !w-full !text-[#ece4d0]" />
         {surah.n}
       </span>
 
-      {/* Centre: transliteration + meaning + ayat */}
-      <div className="scard__body">
-        <span className="scard__name">{displayName}</span>
-        <span className="scard__trans">{subLabel}</span>
-        <span className="scard__meta">
-          <span
-            className={`scard__dot scard__dot--${surah.type?.toLowerCase()}`}
-            aria-hidden="true"
-          >
-            {surah.type === "Meccan" ? "▲" : "■"}
-          </span>
-          {typeLabel} · {ayahLabel}
+      {/* Transliteration + meta */}
+      <div className="scard__body !min-w-0 !flex-1 !space-y-0.5">
+        <span className="scard__name !block !truncate !text-[1.03rem] !font-semibold !tracking-[-0.01em] !text-[#191919]">
+          <span className="!truncate">{primaryLabel}</span>
+        </span>
+        <span className="scard__trans !block !truncate !text-[0.76rem] !font-medium !text-[#55544f]">
+          {secondaryLabel}
+        </span>
+        <span className="scard__meta !inline-flex !items-center !gap-1.5 !text-[0.76rem] !font-medium !text-[#5e5c55]">
+          <span className="!truncate">{ayahLabel}</span>
         </span>
       </div>
 
-      {/* Right: Arabic calligraphy */}
-      <span className="scard__ar" dir="rtl" lang="ar">
+      <span
+        className="scard__ar !ml-auto !pr-1 !text-right !text-[clamp(1.85rem,2.1vw,2.35rem)] !leading-none !text-[#ba932f]"
+        dir="rtl"
+        lang="ar"
+        style={{
+          fontFamily:
+            'var(--font-surah-display, "Amiri Quran"), var(--font-quran), "KFGQPC Uthmanic Script HAFS", "ME Quran", "Amiri", serif',
+          fontFeatureSettings: '"calt" 1, "liga" 1, "rlig" 1, "kern" 1',
+          textRendering: "optimizeLegibility",
+          WebkitFontSmoothing: "antialiased",
+          fontKerning: "normal",
+        }}
+      >
         {surah.ar}
       </span>
 
       {/* Play button (absolute bottom-right) */}
       <button
         className={cn(
-          "scard__play !transition-all !duration-300 hover:!scale-110",
+          "scard__play !absolute !right-2 !top-2 !inline-flex !h-6 !w-6 !items-center !justify-center !rounded-md !border !border-[#d8d1bf] !bg-[#f1ecdf] !text-[0.6rem] !text-[#8f845f] !opacity-0 !transition-all !duration-200 group-hover:!opacity-80 hover:!scale-105",
           isPlaying && "scard__play--on motion-safe:animate-pulse",
         )}
         onClick={(e) => {
           e.stopPropagation();
           onPlay(surah.n);
         }}
-        aria-label="Ecouter"
+        aria-label={playAriaLabel}
       >
         <i className={`fas fa-${isPlaying ? "pause" : "play"}`} />
       </button>
-    </button>
+    </div>
   );
 });
 
@@ -941,10 +1122,10 @@ export default function HomePage() {
             </p>
 
             {/* CTAs */}
-            <div className="hp2-hero__ctas mt-5! flex! flex-wrap! gap-3 max-[520px]:gap-2!">
+            <div className="hp2-hero__ctas !mt-5 !flex !flex-wrap gap-3 max-[520px]:!gap-2">
               {hasReadingHistory ? (
                 <button
-                  className="hp2-btn  h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.01] max-[520px]:w-full! max-[520px]:justify-center"
+                  className="hp2-btn !h-12 !rounded-2xl !px-5 !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.01] max-[520px]:!w-full max-[520px]:!justify-center"
                   onClick={continueReading}
                 >
                   <i className="fas fa-circle-play" />
@@ -959,7 +1140,7 @@ export default function HomePage() {
                 </button>
               ) : (
                 <button
-                  className="hp2-btn  h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.01] max-[520px]:w-full! max-[520px]:justify-center"
+                  className="hp2-btn !h-12 !rounded-2xl !px-5 !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.01] max-[520px]:!w-full max-[520px]:!justify-center"
                   onClick={() => goSurah(1)}
                 >
                   <i className="fas fa-book-open" />
@@ -977,7 +1158,7 @@ export default function HomePage() {
               )}
               {hasReadingHistory && (
                 <button
-                  className="hp2-btn hp2-btn--outline h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5 max-[520px]:w-full! max-[520px]:justify-center"
+                  className="hp2-btn hp2-btn--outline !h-12 !rounded-2xl !px-5 !transition-all !duration-300 hover:!-translate-y-0.5 max-[520px]:!w-full max-[520px]:!justify-center"
                   onClick={() => goSurah(1)}
                 >
                   <i className="fas fa-book-open-reader" />
@@ -985,7 +1166,7 @@ export default function HomePage() {
                 </button>
               )}
               <button
-                className="hp2-btn hp2-btn--soft h-12! rounded-2xl! px-5! transition-all! duration-300! hover:-translate-y-0.5 max-[520px]:w-full! max-[520px]:justify-center"
+                className="hp2-btn hp2-btn--soft !h-12 !rounded-2xl !px-5 !transition-all !duration-300 hover:!-translate-y-0.5 max-[520px]:!w-full max-[520px]:!justify-center"
                 onClick={openDuas}
               >
                 <i className="fas fa-hands-praying" />
@@ -1128,12 +1309,12 @@ export default function HomePage() {
           </div>
 
           {/* ���� Droite ���� */}
-          <div className="hp2-hero__right relative! z-10! space-y-3">
+          <div className="hp2-hero__right !relative !z-10 space-y-3">
             {/* Verset du jour � carte principale droite */}
-            <div className="hp2-vod relative! overflow-hidden! rounded-2xl! border! p-4! transition-all! duration-300! hover:scale-[1.01]">
+            <div className="hp2-vod !relative !overflow-hidden !rounded-2xl !border !p-4 !transition-all !duration-300 hover:!scale-[1.01]">
               <div className="pointer-events-none absolute -top-8 right-4 h-24 w-24 rounded-full blur-2xl motion-safe:animate-pulse [animation-duration:8s]" />
-              <div className="hp2-vod__head relative! z-10">
-                <span className="hp2-vod__label rounded-full! border! px-2.5! py-1">
+              <div className="hp2-vod__head !relative !z-10">
+                <span className="hp2-vod__label !rounded-full !border !px-2.5 !py-1">
                   <i className="fas fa-star-and-crescent" />
                   {t("verseOfDay")}
                 </span>
@@ -1145,22 +1326,22 @@ export default function HomePage() {
                 </span>
               </div>
               <p
-                className="hp2-vod__text relative! z-10! text-[1.45rem]! leading-[1.95] max-[520px]:text-[1.2rem]! max-[520px]:leading-[1.8]!"
+                className="hp2-vod__text !relative !z-10 !text-[1.45rem] !leading-[1.95] max-[520px]:!text-[1.2rem] max-[520px]:!leading-[1.8]"
                 dir="rtl"
               >
                 {dailyVerse.text}
               </p>
               {lang === "fr" && dailyVerse.trans_fr && (
-                <p className="hp2-vod__trans relative! z-10 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden">
+                <p className="hp2-vod__trans !relative !z-10 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden">
                   {dailyVerse.trans_fr}
                 </p>
               )}
-              <span className="hp2-vod__ref relative! z-10">
+              <span className="hp2-vod__ref !relative !z-10">
                 {dailyVerse.ref}
               </span>
               {vodSurahNum && (
                 <button
-                  className="hp2-vod__btn relative! z-10! rounded-xl! border! px-3.5! py-2! transition-all! duration-300! hover:-translate-y-0.5"
+                  className="hp2-vod__btn !relative !z-10 !rounded-xl !border !px-3.5 !py-2 !transition-all !duration-300 hover:!-translate-y-0.5"
                   onClick={() => goSurah(vodSurahNum)}
                 >
                   <i className="fas fa-book-open" />
@@ -1175,7 +1356,7 @@ export default function HomePage() {
             </div>
 
             {/* Carte session active */}
-            <div className="hp2-focus-card rounded-2xl! border! backdrop-blur-md! transition-all! duration-300">
+            <div className="hp2-focus-card !rounded-2xl !border !backdrop-blur-md !transition-all !duration-300">
               <div className="hp2-focus-card__head">
                 <span className="hp2-focus-card__eyebrow">
                   <i className="fas fa-bolt" />
@@ -1223,7 +1404,7 @@ export default function HomePage() {
                 </div>
               </div>
               <button
-                className="hp2-focus-card__cta transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.01]"
+                className="hp2-focus-card__cta !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.01]"
                 onClick={continueReading}
               >
                 <i className="fas fa-circle-play" />
@@ -1242,7 +1423,7 @@ export default function HomePage() {
             </div>
 
             {/* Prières */}
-            <div className="hp2-prayers rounded-2xl! border! p-3.5! backdrop-blur-sm">
+            <div className="hp2-prayers !rounded-2xl !border !p-3.5 !backdrop-blur-sm">
               <div className="hp2-prayers__head mb-2.5">
                 <i className="fas fa-mosque" />
                 <span>
@@ -1334,7 +1515,7 @@ export default function HomePage() {
 
       {/* ACCES RAPIDE */}
       <nav
-        className="hp2-quickbar relative! z-10! rounded-2xl! border! px-4! py-3! backdrop-blur-md"
+        className="hp2-quickbar !relative !z-10 !rounded-2xl !border !px-4 !py-3 !backdrop-blur-md"
         aria-label={t("quickAccess")}
         style={HOME_DEFERRED_SECTION_STYLE}
       >
@@ -1344,7 +1525,7 @@ export default function HomePage() {
         </span>
         <div className="hp2-quickbar__track mt-2">
           <button
-            className="hp2-qchip hp2-qchip--special transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.02]"
+            className="hp2-qchip hp2-qchip--special !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.02]"
             onClick={openDuas}
           >
             <i className="fas fa-hands-praying" />
@@ -1355,7 +1536,7 @@ export default function HomePage() {
             return (
               <button
                 key={n}
-                className="hp2-qchip transition-all! duration-300! hover:-translate-y-0.5! hover:scale-[1.02]"
+                className="hp2-qchip !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.02]"
                 onClick={() => goSurah(n)}
               >
                 <span className="hp2-qchip__ar">{s?.ar}</span>
@@ -1373,7 +1554,7 @@ export default function HomePage() {
       {/*  GRILLE PRINCIPALE  */}
       <div className="hp2-layout !relative !z-10">
         <div
-          className="hp2-stats-strip relative! z-10! rounded-2xl! border! p-3"
+          className="hp2-stats-strip !relative !z-10 !rounded-2xl !border !p-3"
           style={HOME_DEFERRED_SECTION_STYLE}
         >
           {[
@@ -1524,7 +1705,9 @@ export default function HomePage() {
           <div
             className={cn(
               "hp2-items !mt-3",
-              viewMode === "grid" ? "hp2-items--grid" : "hp2-items--list",
+              viewMode === "grid"
+                ? "hp2-items--grid !grid !grid-cols-1 lg:!grid-cols-3 !gap-3"
+                : "hp2-items--list",
               useSurahGridScroll && "hp2-items--surah-scroll",
             )}
           >

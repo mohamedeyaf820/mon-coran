@@ -86,14 +86,14 @@ export default function Sidebar() {
     <>
       <aside
         className={cn(
-          "sidebar sidebar--platform sidebar--themes4 w-[min(92vw,380px)] md:w-[23rem]",
+          "sidebar sidebar--platform sidebar--themes4 w-[min(92vw,380px)] md:w-[23rem] !overflow-hidden !rounded-r-3xl !border-r !border-white/10 !bg-[linear-gradient(180deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_24px_60px_rgba(1,8,22,0.45)]",
           sidebarOpen && "open",
         )}
         role="navigation"
       >
 
         {/* ── HEADER FIXE compact ── */}
-        <div className="sidebar-header">
+        <div className="sidebar-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))] !px-3 !py-3">
           <div className="sidebar-header__top">
             <div className="sidebar-header__identity">
               <span className="sidebar-header__kicker">
@@ -110,7 +110,7 @@ export default function Sidebar() {
                   : (lang === "fr" ? "Hafs" : lang === "ar" ? "حفص" : "Hafs")}
               </span>
               <button
-                className="sidebar-close-btn"
+                className="sidebar-close-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
                 onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
                 aria-label="Fermer"
               >
@@ -127,11 +127,11 @@ export default function Sidebar() {
           )}
 
           {/* Tab bar */}
-          <div className="sidebar-tabs-list">
+          <div className="sidebar-tabs-list !mt-2 !grid !grid-cols-3 !gap-1 !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-1">
             {availableTabs.map((t2) => (
               <button
                 key={t2}
-                className={cn("sidebar-tab-trigger", tab === t2 && "active")}
+                className={cn("sidebar-tab-trigger !rounded-xl !px-2.5 !py-2 !text-xs !transition-all hover:!bg-white/[0.08]", tab === t2 && "active !bg-sky-500/25 !text-white")}
                 onClick={() => setTab(t2)}
               >
                 {t2 === "surah" ? t("sidebar.surahs", lang) : t2 === "juz" ? t("sidebar.juz", lang) : t("quran.page", lang)}
@@ -141,16 +141,16 @@ export default function Sidebar() {
 
           {/* Search (Surah only) */}
           {tab === "surah" && (
-            <div className="sidebar-search-wrap">
+            <div className="sidebar-search-wrap !relative !mt-2">
               <input
                 type="text"
                 placeholder={t("search.placeholder", lang)}
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="sidebar-search-input"
+                className="sidebar-search-input !min-h-11 !w-full !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3"
               />
               {filter && (
-                <button className="sidebar-search-clear" onClick={() => setFilter("")}>
+                <button className="sidebar-search-clear !absolute !right-2 !top-1/2 !-translate-y-1/2 !inline-flex !h-7 !w-7 !items-center !justify-center !rounded-lg !border !border-white/10 !bg-white/[0.06] hover:!bg-white/[0.12]" onClick={() => setFilter("")}>
                   <i className="fas fa-times" />
                 </button>
               )}
@@ -159,11 +159,11 @@ export default function Sidebar() {
         </div>
 
         {/* ── ZONE SCROLLABLE ── */}
-        <div className="sidebar-content">
+        <div className="sidebar-content !space-y-2 !px-2.5 !py-2.5">
 
           {/* ── Section sourates ── */}
           {tab === "surah" && filter && filteredSurahs.length === 0 && (
-            <div className="sidebar-empty-state">
+            <div className="sidebar-empty-state !rounded-2xl !border !border-dashed !border-white/15 !bg-white/[0.03] !p-4 !text-center">
               <i className="fas fa-magnifying-glass sidebar-empty-state__icon" />
               <div className="sidebar-empty-state__title">
                 {lang === "fr" ? "Aucune sourate trouvée" : lang === "ar" ? "لم يتم العثور على سورة" : "No surah found"}
@@ -172,7 +172,7 @@ export default function Sidebar() {
           )}
 
           {tab === "surah" && (
-            <div className="sb-section-title">
+            <div className="sb-section-title !mb-1 !flex !items-center !justify-between !px-1">
               <span>{lang === "fr" ? "Toutes les sourates" : lang === "ar" ? "جميع السور" : "All Surahs"}</span>
               <span className="sb-section-count">{filteredSurahs.length}</span>
             </div>
@@ -184,7 +184,7 @@ export default function Sidebar() {
               <div
                 key={s.n}
                 ref={isActive ? activeItemRef : null}
-                className={cn("sidebar-item-row", isActive && "active")}
+                className={cn("sidebar-item-row !rounded-xl !border !border-white/12 !bg-white/[0.03] !p-2.5 !transition-all hover:!border-sky-200/35 hover:!bg-white/[0.08]", isActive && "active !border-sky-200/35 !bg-sky-500/16")}
                 onClick={() => goSurah(s.n)}
               >
                 <div className="qc-sidebar-num">{s.n}</div>
@@ -211,7 +211,7 @@ export default function Sidebar() {
               <div
                 key={j.juz}
                 ref={isActive ? activeItemRef : null}
-                className={cn("sidebar-item-row", isActive && "active")}
+                className={cn("sidebar-item-row !rounded-xl !border !border-white/12 !bg-white/[0.03] !p-2.5 !transition-all hover:!border-sky-200/35 hover:!bg-white/[0.08]", isActive && "active !border-sky-200/35 !bg-sky-500/16")}
                 onClick={() => goJuz(j.juz)}
               >
                 <div className="qc-sidebar-num">{lang === "ar" ? toAr(j.juz) : j.juz}</div>
@@ -230,18 +230,18 @@ export default function Sidebar() {
 
           {tab === "page" && (
             <div className="page-nav-section">
-              <div className="sidebar-page-input-row">
+              <div className="sidebar-page-input-row !mb-2 !flex !items-center !gap-2">
                 <input
                   type="number"
                   min={1} max={604}
-                  className="sidebar-search-input text-center h-10 px-2"
+                  className="sidebar-search-input !h-10 !flex-1 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-2 !text-center"
                   placeholder={isRtl ? "الصفحة" : "Page"}
                   value={pageInput}
                   onChange={(e) => setPageInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && submitPageJump()}
                 />
                 <button
-                  className="sidebar-tab-trigger sidebar-page-go-btn active"
+                  className="sidebar-tab-trigger sidebar-page-go-btn active !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-sky-200/30 !bg-sky-500/20 hover:!bg-sky-500/30"
                   onClick={submitPageJump}
                 >
                   <i className="fas fa-arrow-right" />

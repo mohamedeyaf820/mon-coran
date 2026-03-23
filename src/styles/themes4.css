@@ -721,6 +721,11 @@
 .quran-display--platform .qc-ayah-text-ar {
     color: var(--theme-arabic) !important;
     text-shadow: none !important;
+    font-family: var(--font-arabic-script, var(--font-quran, "ME Quran", serif)) !important;
+    font-feature-settings: "calt" 1, "liga" 1, "rlig" 1, "kern" 1 !important;
+    font-kerning: normal !important;
+    font-synthesis: none !important;
+    letter-spacing: 0 !important;
 }
 
 .app-view-reading .surah-header-name,
@@ -1475,7 +1480,7 @@ body,
 
     .quran-display--platform .qc-ayah-text-ar {
         font-size: clamp(2.05rem, 8vw, 2.55rem);
-        line-height: 2.25;
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) + 0.01);
     }
 
     .audio-player--mobile.audio-player--mini {
@@ -1540,6 +1545,18 @@ body,
 
     .audio-player__status {
         width: 4.5rem !important;
+    }
+
+    .quran-display--platform .qc-ayah-text-ar {
+        font-size: clamp(1.96rem, 8.9vw, 2.3rem);
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.01);
+    }
+}
+
+@media (max-width: 360px) {
+    .quran-display--platform .qc-ayah-text-ar {
+        font-size: clamp(1.84rem, 9.1vw, 2.12rem);
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.04);
     }
 }
 

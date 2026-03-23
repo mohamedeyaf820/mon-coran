@@ -30,15 +30,19 @@ export default function BookmarksModal() {
   const close = () => dispatch({ type: "TOGGLE_BOOKMARKS" });
 
   return (
-    <div className="modal-overlay" onClick={close} role="presentation">
+    <div
+      className="modal-overlay !p-3 sm:!p-5"
+      onClick={close}
+      role="presentation"
+    >
       <div
-        className="modal"
+        className="modal !w-full !max-w-3xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="bookmarks-modal-title"
       >
-        <div className="modal-header">
+        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
           <div className="modal-title-stack">
             <div className="modal-kicker">
               {lang === "fr"
@@ -59,14 +63,17 @@ export default function BookmarksModal() {
                   : "Quick access to your saved verses."}
             </div>
           </div>
-          <button className="modal-close" onClick={close}>
+          <button
+            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
+            onClick={close}
+          >
             <i className="fas fa-times"></i>
           </button>
         </div>
 
-        <div className="modal-list">
+        <div className="modal-list !max-h-[70vh] !space-y-2 !overflow-auto !p-3 sm:!p-4">
           {bookmarks.length === 0 ? (
-            <div className="modal-empty">
+            <div className="modal-empty !rounded-2xl !border !border-dashed !border-white/15 !bg-white/[0.03] !p-6 !text-center">
               <i className="fas fa-bookmark modal-empty-icon" />
               <p style={{ margin: "0 0 0.3rem", fontWeight: 600 }}>
                 {t("bookmarks.empty", lang)}
@@ -83,19 +90,17 @@ export default function BookmarksModal() {
             bookmarks.map((bm) => {
               const s = getSurah(bm.surah);
               return (
-                <div key={bm.id} className="modal-item-card">
+                <div
+                  key={bm.id}
+                  className="modal-item-card !rounded-2xl !border !border-white/10 !bg-white/[0.03] !p-2.5"
+                >
                   <button
-                    className="modal-item-main"
+                    className="modal-item-main !flex-1 !rounded-xl !px-2 !py-2 !text-left hover:!bg-white/[0.06]"
                     onClick={() => goTo(bm.surah, bm.ayah)}
                   >
                     <span className="modal-item-ar">{s?.ar}</span>
                     <span
-                      className="modal-item-name"
-                      style={{
-                        fontSize: "0.8rem",
-                        opacity: 0.7,
-                        display: "block",
-                      }}
+                      className="modal-item-name !block !text-[0.8rem] !opacity-70"
                     >
                       {lang === "fr" ? s?.fr || s?.en : s?.en} —{" "}
                       {lang === "fr"
@@ -106,19 +111,14 @@ export default function BookmarksModal() {
                       {lang === "ar" ? toAr(bm.surah) : bm.surah}
                     </span>
                     <span
-                      className="modal-item-meta"
-                      style={{
-                        display: "block",
-                        marginTop: "0.24rem",
-                        marginBottom: 0,
-                      }}
+                      className="modal-item-meta !mb-0 !mt-1 !block"
                     >
                       {t("quran.ayah", lang)}{" "}
                       {lang === "ar" ? toAr(bm.ayah) : bm.ayah}
                     </span>
                   </button>
                   <button
-                    className="modal-action-btn modal-delete-btn"
+                    className="modal-action-btn modal-delete-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-red-300/20 !bg-red-500/10 !text-red-200 hover:!bg-red-500/20"
                     onClick={() => handleRemove(bm.surah, bm.ayah)}
                   >
                     <i className="fas fa-trash-alt"></i>

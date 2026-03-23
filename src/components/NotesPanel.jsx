@@ -637,7 +637,7 @@ export default function NotesPanel() {
         className={cn(
           "notes-fab",
           "fixed z-250 flex items-center justify-center",
-          "w-11 h-11 rounded-full cursor-pointer outline-none",
+          "w-11 h-11 rounded-full cursor-pointer outline-none !border !border-amber-200/35 !bg-[radial-gradient(circle_at_30%_25%,rgba(212,168,32,0.28),rgba(212,168,32,0.16)_45%,rgba(7,17,35,0.92))] !text-white",
           "transition-all duration-200",
           "shadow-[0_4px_20px_rgba(212,168,32,0.35)]",
           isMobile ? "notes-fab--mobile" : "notes-fab--desktop",
@@ -684,7 +684,7 @@ export default function NotesPanel() {
             <aside
               className={cn(
                 "notes-panel-sheet",
-                "fixed z-200 flex flex-col left-0 right-0 w-full rounded-t-2xl border-t border-(--border) max-h-[78dvh]",
+                "fixed z-200 flex flex-col left-0 right-0 w-full rounded-t-2xl border-t border-(--border) max-h-[78dvh] !border-t-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))]",
                 "notes-panel-sheet--open",
               )}
               role="complementary"
@@ -698,7 +698,7 @@ export default function NotesPanel() {
               ref={panelRef}
               className={cn(
                 "notes-panel-desk",
-                "fixed z-200 flex flex-col rounded-2xl overflow-hidden",
+                "fixed z-200 flex flex-col rounded-2xl overflow-hidden !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))]",
                 "select-none",
                 "notes-panel-desk--open",
                 isDragging

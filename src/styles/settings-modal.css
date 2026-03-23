@@ -87,6 +87,13 @@
   color: var(--text);
 }
 
+.settings-close-btn:focus-visible,
+.settings-nav-item:focus-visible,
+.settings-chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.42);
+}
+
 /*  Body layout  */
 .settings-body-layout {
   display: flex;
@@ -1900,6 +1907,150 @@ kbd {
   .app-root.premium-plus .settings-chip,
   .app-root.premium-plus .settings-reciter-item {
     border-radius: 1rem;
+  }
+}
+
+/* Premium Plus - visual unification pass (Settings) */
+.app-root.premium-plus .settings-dialog--premium-plus {
+  isolation: isolate;
+}
+
+.app-root.premium-plus .settings-dialog--premium-plus::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(var(--theme-primary-rgb), 0.18), transparent 36%),
+    radial-gradient(circle at 92% 16%, rgba(196, 226, 237, 0.08), transparent 30%);
+  opacity: 0.9;
+  z-index: 0;
+}
+
+.app-root.premium-plus .settings-header--premium-plus,
+.app-root.premium-plus .settings-body-layout {
+  position: relative;
+  z-index: 1;
+}
+
+.app-root.premium-plus .settings-nav-item,
+.app-root.premium-plus .settings-chip,
+.app-root.premium-plus .settings-tool-card,
+.app-root.premium-plus .data-action-btn {
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.app-root.premium-plus .settings-nav-item:hover,
+.app-root.premium-plus .settings-chip:hover,
+.app-root.premium-plus .settings-tool-card:hover,
+.app-root.premium-plus .data-action-btn:hover {
+  transform: translateY(-1px);
+}
+
+.app-root.premium-plus .settings-nav-item.active {
+  box-shadow:
+    0 14px 30px rgba(7, 22, 38, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.app-root.premium-plus .settings-hero-title {
+  text-wrap: balance;
+}
+
+.app-root.premium-plus .settings-hero-copy {
+  max-width: 74ch;
+}
+
+.app-root.premium-plus .settings-hero-pill {
+  position: relative;
+  overflow: hidden;
+}
+
+.app-root.premium-plus .settings-hero-pill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, transparent 34%, rgba(255, 255, 255, 0.16), transparent 66%);
+  transform: translateX(-120%);
+  transition: transform 520ms ease;
+}
+
+.app-root.premium-plus .settings-hero-pill:hover::after {
+  transform: translateX(120%);
+}
+
+.app-root.premium-plus .settings-close-btn:focus-visible,
+.app-root.premium-plus .settings-nav-item:focus-visible,
+.app-root.premium-plus .settings-chip:focus-visible,
+.app-root.premium-plus .settings-tool-card:focus-visible,
+.app-root.premium-plus .data-action-btn:focus-visible {
+  box-shadow:
+    0 0 0 2px rgba(var(--theme-primary-rgb), 0.52),
+    0 0 0 6px rgba(var(--theme-primary-rgb), 0.16);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-root.premium-plus .settings-nav-item,
+  .app-root.premium-plus .settings-chip,
+  .app-root.premium-plus .settings-tool-card,
+  .app-root.premium-plus .data-action-btn,
+  .app-root.premium-plus .settings-hero-pill::after {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* Premium Plus - mobile-first readability and touch pass */
+@media (max-width: 640px) {
+  .app-root.premium-plus .settings-title {
+    font-size: clamp(0.94rem, 2.8vw, 1.06rem);
+  }
+
+  .app-root.premium-plus .settings-hero-copy {
+    font-size: 0.78rem;
+    line-height: 1.48;
+  }
+
+  .app-root.premium-plus .settings-card--premium-plus {
+    padding: 0.72rem 0.72rem !important;
+  }
+
+  .app-root.premium-plus .settings-chip,
+  .app-root.premium-plus .settings-nav-item,
+  .app-root.premium-plus .data-action-btn,
+  .app-root.premium-plus .shortcut-item {
+    min-height: 2.5rem;
+  }
+
+  .app-root.premium-plus .settings-tools-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-root.premium-plus .settings-reciters-list {
+    max-height: min(38vh, 280px);
+  }
+}
+
+@media (max-width: 420px) {
+  .app-root.premium-plus .settings-nav-item {
+    min-width: 4.55rem;
+    min-height: 4.05rem;
+    padding: 0.48rem 0.48rem;
+  }
+
+  .app-root.premium-plus .settings-nav-label {
+    font-size: 0.62rem;
+  }
+
+  .app-root.premium-plus .settings-hero-title {
+    font-size: 0.96rem;
   }
 }
 

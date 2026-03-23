@@ -119,7 +119,6 @@ export default function App() {
 
   const lowPerfMode = useMemo(() => detectLowPerformanceDevice(), []);
   const [hasInteracted, setHasInteracted] = useState(false);
-  const homePolishLoadedRef = useRef(false);
 
   /* ── Immersive reading mode: auto-hide header after 3s inactivity ── */
   const [immersiveHidden, setImmersiveHidden] = useState(false);
@@ -183,19 +182,16 @@ export default function App() {
     return cancelIdle;
   }, [lowPerfMode]);
 
-  // Defer non-critical styles in two stages to protect initial LCP on mobile.
+  // Defer non-critical theme layer to protect initial LCP on mobile.
   useEffect(() => {
     let cancelled = false;
-    let baseLoaded = false;
+    let themeLoaded = false;
     let premiumLoaded = false;
 
-    const loadBaseStyles = () => {
-      if (cancelled || baseLoaded) return;
-      baseLoaded = true;
-      Promise.allSettled([
-        import("./styles/ui-enhancements.css"),
-        import("./styles/themes4.css"),
-      ]).catch(() => {});
+    const loadThemeStyles = () => {
+      if (cancelled || themeLoaded) return;
+      themeLoaded = true;
+      import("./styles/themes4.css").catch(() => {});
     };
 
     const loadPremiumStyles = () => {
@@ -211,7 +207,7 @@ export default function App() {
 
     const onFirstInteraction = () => {
       setHasInteracted(true);
-      loadBaseStyles();
+      loadThemeStyles();
       loadPremiumStyles();
       window.removeEventListener("pointerdown", onFirstInteraction);
       window.removeEventListener("keydown", onFirstInteraction);
@@ -229,7 +225,7 @@ export default function App() {
     });
 
     const cancelIdleBase = runWhenIdle(
-      loadBaseStyles,
+      loadThemeStyles,
       lowPerfMode ? 2600 : 1500,
     );
     const cancelIdlePremium = runWhenIdle(
@@ -246,18 +242,6 @@ export default function App() {
       window.removeEventListener("touchstart", onFirstInteraction);
     };
   }, [lowPerfMode]);
-
-  // Load Home-only polish styles only when Home is visible (high-perf only).
-  useEffect(() => {
-    if (homePolishLoadedRef.current) return;
-    if (!showHome) return;
-    if (lowPerfMode) return;
-    if (!deferNonCriticalUI && !hasInteracted) return;
-    // Removed incorrect viewport block to ensure unified design across desktop/mobile
-
-    homePolishLoadedRef.current = true;
-    import("./styles/premium-home-polish.css").catch(() => {});
-  }, [showHome, lowPerfMode, deferNonCriticalUI, hasInteracted]);
 
   useEffect(() => {
     if (lowPerfMode) return;
@@ -331,8 +315,17 @@ export default function App() {
   /* ── Keyboard shortcuts ── */
   const handleKeyboard = useCallback(
     (e) => {
-      // Don't trigger if user is typing in an input
-      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")
+      if (e.defaultPrevented) return;
+
+      const target = e.target;
+      const isElementTarget = target instanceof Element;
+      // Ignore global shortcuts when focus is inside an interactive control.
+      if (
+        isElementTarget &&
+        target.closest(
+          'input, textarea, select, button, [contenteditable="true"], [role="textbox"], [role="combobox"], [role="slider"]',
+        )
+      )
         return;
 
       switch (e.key) {

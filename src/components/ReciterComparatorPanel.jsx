@@ -91,23 +91,23 @@ function ReciterTrack({ reciter, surah, ayah, lang }) {
   const iconClass = state === 'playing' ? 'fa-pause' : state === 'loading' ? 'fa-spinner fa-spin' : 'fa-play';
 
   return (
-    <div className={`rc-track ${state}`}>
+    <div className={`rc-track ${state} rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur-sm`}>
       <audio ref={audioRef} preload="none" />
       <div className="rc-track__name" dir="rtl">{reciter.name}</div>
       <div className="rc-track__name-en">{reciter.nameEn}</div>
-      <div className="rc-track__controls">
-        <button className="rc-btn rc-btn--play" onClick={toggle} title={state === 'playing' ? 'Pause' : 'Play'}>
+      <div className="rc-track__controls !mt-2 !flex !items-center !gap-2">
+        <button className="rc-btn rc-btn--play !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-sky-500/20 hover:!bg-sky-500/30" onClick={toggle} title={state === 'playing' ? 'Pause' : 'Play'}>
           <i className={`fas ${iconClass}`}></i>
         </button>
-        <button className="rc-btn rc-btn--restart" onClick={restart} title="Relire depuis le début">
+        <button className="rc-btn rc-btn--restart !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]" onClick={restart} title="Relire depuis le début">
           <i className="fas fa-rotate-left"></i>
         </button>
       </div>
-      <div className="rc-progress">
+      <div className="rc-progress !mt-2 !h-1.5 !overflow-hidden !rounded-full !bg-white/10">
         <div className="rc-progress__fill" style={{ width: `${progress * 100}%` }}></div>
       </div>
       {state === 'error' && (
-        <div className="rc-error">
+        <div className="rc-error !mt-2 !inline-flex !items-center !gap-1.5 !rounded-lg !border !border-red-300/25 !bg-red-500/10 !px-2.5 !py-1.5 !text-xs !text-red-100">
           <i className="fas fa-exclamation-triangle"></i>
           {lang === 'fr' ? 'Audio indisponible' : 'Audio unavailable'}
         </div>
@@ -141,9 +141,12 @@ export default function ReciterComparatorPanel() {
   const selectedReciters = COMPARE_RECITERS.filter(r => selected.includes(r.id));
 
   return (
-    <div className="modal-overlay" onClick={close}>
-      <div className="modal modal-panel--wide rc-panel" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
+    <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
+      <div
+        className="modal modal-panel--wide rc-panel !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
           <div className="modal-title-stack">
             <div className="modal-kicker">
               {lang === 'fr' ? 'Écoute comparative' : 'Comparative Listening'}
@@ -157,18 +160,18 @@ export default function ReciterComparatorPanel() {
                 : 'Listen to the same verse by multiple reciters side by side.'}
             </div>
           </div>
-          <button className="modal-close" onClick={close}>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
             <i className="fas fa-times"></i>
           </button>
         </div>
 
         {/* Ayah selector */}
-        <div className="rc-ayah-selector">
+        <div className="rc-ayah-selector !grid !grid-cols-1 !gap-2 !p-3 sm:!grid-cols-[auto,1fr,auto,auto] sm:!items-center sm:!p-4">
           <label className="rc-selector-label">
             {lang === 'fr' ? 'Sourate' : 'Surah'}
           </label>
           <select
-            className="rc-select"
+            className="rc-select !min-h-11 !rounded-xl !border !border-white/15 !bg-white/[0.05] !px-3"
             value={surah}
             onChange={e => { setSurah(Number(e.target.value)); setAyah(1); }}
           >
@@ -179,29 +182,29 @@ export default function ReciterComparatorPanel() {
           <label className="rc-selector-label">
             {lang === 'fr' ? 'Verset' : 'Verse'}
           </label>
-          <div className="rc-ayah-stepper">
-            <button className="rc-step-btn" onClick={() => setAyah(a => Math.max(1, a - 1))} disabled={ayah <= 1}>
+          <div className="rc-ayah-stepper !inline-flex !items-center !gap-2">
+            <button className="rc-step-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]" onClick={() => setAyah(a => Math.max(1, a - 1))} disabled={ayah <= 1}>
               <i className="fas fa-minus"></i>
             </button>
-            <span className="rc-ayah-num">{ayah}</span>
-            <button className="rc-step-btn" onClick={() => setAyah(a => Math.min(maxAyah, a + 1))} disabled={ayah >= maxAyah}>
+            <span className="rc-ayah-num !min-w-10 !text-center !font-semibold">{ayah}</span>
+            <button className="rc-step-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]" onClick={() => setAyah(a => Math.min(maxAyah, a + 1))} disabled={ayah >= maxAyah}>
               <i className="fas fa-plus"></i>
             </button>
           </div>
         </div>
 
         {/* Reciter picker */}
-        <div className="rc-picker">
+        <div className="rc-picker !space-y-2 !px-3 !pb-3 sm:!px-4">
           <div className="rc-picker__label">
             {lang === 'fr'
               ? `Récitateurs sélectionnés (max 4) · ${selected.length}/4`
               : `Selected reciters (max 4) · ${selected.length}/4`}
           </div>
-          <div className="rc-picker__grid">
+          <div className="rc-picker__grid !grid !grid-cols-2 !gap-2 md:!grid-cols-4">
             {COMPARE_RECITERS.map(r => (
               <button
                 key={r.id}
-                className={`rc-pick-btn ${selected.includes(r.id) ? 'active' : ''} ${selected.length >= 4 && !selected.includes(r.id) ? 'disabled' : ''}`}
+                className={`rc-pick-btn !inline-flex !items-center !justify-between !rounded-xl !border !px-3 !py-2 !text-sm !transition-all hover:!border-sky-200/40 hover:!bg-white/[0.08] ${selected.includes(r.id) ? '!border-sky-200/40 !bg-sky-500/20 !text-white active' : '!border-white/14 !bg-white/[0.04]'} ${selected.length >= 4 && !selected.includes(r.id) ? 'disabled !opacity-40' : ''}`}
                 onClick={() => toggleReciter(r.id)}
               >
                 <span dir="rtl">{r.name}</span>
@@ -212,7 +215,7 @@ export default function ReciterComparatorPanel() {
         </div>
 
         {/* Tracks */}
-        <div className="rc-tracks">
+        <div className="rc-tracks !grid !grid-cols-1 !gap-2 !px-3 !pb-4 sm:!px-4 md:!grid-cols-2">
           {selectedReciters.map(r => (
             <ReciterTrack key={`${r.id}-${surah}-${ayah}`} reciter={r} surah={surah} ayah={ayah} lang={lang} />
           ))}

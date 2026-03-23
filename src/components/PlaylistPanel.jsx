@@ -112,12 +112,12 @@ export default function PlaylistPanel() {
   const selected = playlists.find((p) => p.id === selectedId);
 
   return (
-    <div className="modal-overlay" onClick={close}>
+    <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
       <div
-        className="modal modal-panel--wide"
+        className="modal modal-panel--wide !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="modal-header">
+        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
           <div className="modal-title-stack">
             <div className="modal-kicker">
               {lang === "fr"
@@ -138,29 +138,29 @@ export default function PlaylistPanel() {
                   : "Organize verses into fluid lists and replay them instantly."}
             </div>
           </div>
-          <button className="modal-close" onClick={close}>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
             <i className="fas fa-times"></i>
           </button>
         </div>
 
-        <div className="modal-body modal-body--flush">
+        <div className="modal-body modal-body--flush !max-h-[70vh] !overflow-auto !px-3 !pb-3 sm:!px-4 sm:!pb-4">
           {loading ? (
             <div className="wird-loading">
               <i className="fas fa-spinner fa-spin"></i>
             </div>
           ) : !selectedId ? (
             <div className="panel-scroll">
-              <div className="panel-toolbar panel-toolbar--compact">
+              <div className="panel-toolbar panel-toolbar--compact !mb-2 !flex !items-center !gap-2 !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-2">
                 <input
                   type="text"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleCreate()}
                   placeholder={t("playlist.namePlaceholder", lang)}
-                  className="modal-inline-input"
+                  className="modal-inline-input !min-h-11 !flex-1 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3"
                   maxLength={50}
                 />
-                <button className="modal-action-btn" onClick={handleCreate}>
+                <button className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-sky-200/30 !bg-sky-500/20 hover:!bg-sky-500/30" onClick={handleCreate}>
                   <i className="fas fa-plus"></i>
                 </button>
               </div>
@@ -176,11 +176,11 @@ export default function PlaylistPanel() {
                   </div>
                 </div>
               ) : (
-                <div className="panel-stack-list">
+                <div className="panel-stack-list !space-y-2">
                   {playlists.map((pl) => (
-                    <div key={pl.id} className="modal-item-card">
+                    <div key={pl.id} className="modal-item-card !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-2.5">
                       <button
-                        className="modal-item-main"
+                        className="modal-item-main !flex-1 !rounded-xl !px-2 !py-2 !text-left hover:!bg-white/[0.08]"
                         onClick={() => setSelectedId(pl.id)}
                       >
                         <div className="modal-item-shell">
@@ -198,7 +198,7 @@ export default function PlaylistPanel() {
                                   if (e.key === "Escape") setEditing(null);
                                 }}
                                 onClick={(e) => e.stopPropagation()}
-                                className="modal-inline-input"
+                                className="modal-inline-input !min-h-10 !w-full !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3"
                                 autoFocus
                               />
                             ) : (
@@ -213,10 +213,10 @@ export default function PlaylistPanel() {
                           </div>
                         </div>
                       </button>
-                      <div className="modal-item-actions">
+                      <div className="modal-item-actions !flex !items-center !gap-1.5">
                         {pl.ayahs.length > 0 && (
                           <button
-                            className="modal-action-btn"
+                            className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-emerald-300/20 !bg-emerald-500/10 hover:!bg-emerald-500/20"
                             onClick={() => handlePlay(pl)}
                             title={lang === "fr" ? "Écouter" : "Play"}
                           >
@@ -224,7 +224,7 @@ export default function PlaylistPanel() {
                           </button>
                         )}
                         <button
-                          className="modal-action-btn"
+                          className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]"
                           onClick={() => {
                             setEditing(pl.id);
                             setEditName(pl.name);
@@ -234,7 +234,7 @@ export default function PlaylistPanel() {
                           <i className="fas fa-pen"></i>
                         </button>
                         <button
-                          className="modal-action-btn modal-delete-btn"
+                          className="modal-action-btn modal-delete-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-red-300/20 !bg-red-500/10 !text-red-100 hover:!bg-red-500/20"
                           onClick={() => handleDelete(pl.id)}
                           title={lang === "fr" ? "Supprimer" : "Delete"}
                         >
@@ -248,9 +248,9 @@ export default function PlaylistPanel() {
             </div>
           ) : (
             /* Playlist detail view */
-            <div className="panel-scroll">
+            <div className="panel-scroll !space-y-2">
               <button
-                className="panel-back-link"
+                className="panel-back-link !inline-flex !items-center !gap-1.5 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3 !py-2 hover:!bg-white/[0.12]"
                 onClick={() => setSelectedId(null)}
               >
                 <i className="fas fa-arrow-left"></i>{" "}
@@ -260,7 +260,7 @@ export default function PlaylistPanel() {
 
               {selected && selected.ayahs.length > 0 && (
                 <button
-                  className="panel-hero-btn"
+                  className="panel-hero-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-emerald-300/20 !bg-emerald-500/10 !px-3.5 !py-2.5 !text-emerald-100 hover:!bg-emerald-500/20"
                   onClick={() => handlePlay(selected)}
                 >
                   <i className="fas fa-play"></i>
@@ -280,7 +280,7 @@ export default function PlaylistPanel() {
                   </div>
                 </div>
               ) : (
-                <div className="panel-stack-list">
+                <div className="panel-stack-list !space-y-2">
                   {selected.ayahs.map((a, i) => {
                     const surah = getSurah(a.surah);
                     const isActive =
@@ -291,7 +291,7 @@ export default function PlaylistPanel() {
                     return (
                       <div
                         key={i}
-                        className={`modal-item-card${isActive ? " modal-item-card--playing" : ""}`}
+                        className={`modal-item-card !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-2.5${isActive ? " modal-item-card--playing" : ""}`}
                         style={
                           isActive
                             ? {
@@ -303,7 +303,7 @@ export default function PlaylistPanel() {
                         }
                       >
                         <button
-                          className="modal-item-main"
+                          className="modal-item-main !flex-1 !rounded-xl !px-2 !py-2 !text-left hover:!bg-white/[0.08]"
                           onClick={() => {
                             set({
                               displayMode: "surah",
@@ -347,7 +347,7 @@ export default function PlaylistPanel() {
                         </button>
                         <div className="modal-item-side">
                           <button
-                            className="modal-action-btn modal-delete-btn"
+                            className="modal-action-btn modal-delete-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-red-300/20 !bg-red-500/10 !text-red-100 hover:!bg-red-500/20"
                             onClick={() =>
                               handleRemoveAyah(selected.id, a.surah, a.ayah)
                             }

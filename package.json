@@ -6,7 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/audit-performance.mjs",
+    "build:ci": "vite build && node scripts/audit-performance.mjs && node scripts/check-bundle-budget.mjs",
     "preview": "vite preview",
+    "perf:budget": "node scripts/check-bundle-budget.mjs",
+    "test:security": "node --test tests/security-storage.test.mjs",
+    "csp:dev": "node scripts/print-csp.mjs development",
+    "csp:prod": "node scripts/print-csp.mjs production",
     "audit:warsh:audio": "node scripts/audit-warsh-audio.mjs",
     "audit:warsh:tajweed": "node scripts/verify-warsh-tajweed.mjs"
   },
@@ -29,7 +34,8 @@
     "react-dom": "^18.3.1",
     "react-virtuoso": "^4.18.3",
     "react-window": "^2.2.7",
-    "tailwind-merge": "^3.5.0"
+    "tailwind-merge": "^3.5.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.1",

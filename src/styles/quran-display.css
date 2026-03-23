@@ -17,13 +17,30 @@
     scroll-behavior: auto;
     -webkit-overflow-scrolling: touch;
     --font-surah-display:
-        "Amiri Quran",
-        "KFGQPC Uthman Taha Naskh",
         "KFGQPC Uthmanic Script HAFS",
+        "KFGQPC Uthman Taha Naskh",
+        "Amiri Quran",
         "Scheherazade New",
         "Amiri",
         "Noto Naskh Arabic",
         serif;
+}
+
+.quran-display :is(
+        .surah-header-name,
+        .qc-header-name-ar,
+        .mp-surah-name-ar,
+        .cpv-surah-header-name
+    ) {
+    font-family: var(
+        --font-surah-display,
+        "KFGQPC Uthmanic Script HAFS",
+        "Amiri Quran",
+        serif
+    ) !important;
+    font-feature-settings: "liga" 1, "calt" 1, "rlig" 1, "kern" 1;
+    font-variant-ligatures: contextual;
+    text-rendering: optimizeLegibility;
 }
 
 /* Mode transitions: Surah / Page / Juz */
@@ -3103,9 +3120,9 @@
     text-align-last: center;
     font-family: var(--font-quran);
     font-size: var(--mp-fs, 28px);
-    line-height: 2.85;
+    line-height: calc(var(--arabic-reading-line-height, 2.46) + 0.2);
     color: var(--mp-text);
-    word-spacing: 0.07em;
+    word-spacing: calc(var(--arabic-reading-word-spacing, 0.072em) - 0.004em);
     letter-spacing: 0;
     font-feature-settings:
         "liga" 1,
@@ -3122,9 +3139,9 @@
     padding: 1.5rem 1.5rem 2rem;
     text-align: center;
     text-align-last: center;
-    line-height: 3;
-    word-spacing: 0.2em;
-    letter-spacing: 0.03em;
+    line-height: calc(var(--arabic-reading-line-height, 2.46) + 0.22);
+    word-spacing: calc(var(--arabic-reading-word-spacing, 0.072em) + 0.018em);
+    letter-spacing: 0.012em;
     max-width: 100%;
     margin: 0 auto;
 }
@@ -3136,6 +3153,20 @@
 
 .quran-mode-pane--page .mp-body-qcf4 {
     line-height: 2.8;
+}
+
+.quran-display--hafs .quran-mode-pane--page .mp-body {
+    line-height: calc(var(--arabic-reading-line-height, 2.46) + 0.24);
+    word-spacing: calc(var(--arabic-reading-word-spacing, 0.072em) + 0.02em);
+}
+
+.quran-display--warsh .quran-mode-pane--page .mp-body {
+    line-height: calc(var(--arabic-reading-line-height, 2.46) + 0.16);
+    word-spacing: calc(var(--arabic-reading-word-spacing, 0.072em) + 0.006em);
+}
+
+.quran-display--warsh .quran-mode-pane--page .mp-body-qcf4 {
+    line-height: calc(var(--arabic-reading-line-height, 2.46) + 0.18);
 }
 
 /* ── Basmala ── */
@@ -3782,9 +3813,9 @@
     text-align: right;
     direction: rtl;
     color: var(--text-quran);
-    line-height: 2.72;
-    word-spacing: 0.08em;
-    letter-spacing: 0.01em;
+    line-height: var(--arabic-reading-line-height, 2.46);
+    word-spacing: var(--arabic-reading-word-spacing, 0.072em);
+    letter-spacing: 0.005em;
     font-feature-settings:
         "liga" 1,
         "calt" 1,
@@ -3819,7 +3850,6 @@
     transition: opacity 0.2s ease;
 }
 
-/* Warsh QCF4 mode: WBW unavailable notice */
 .qc-wbw-warsh-note {
     display: flex;
     align-items: center;
@@ -3855,13 +3885,13 @@
 
 /* ── Hafs / Warsh typography tweaks ── */
 .quran-display--hafs .qc-ayah-text-ar {
-    word-spacing: 0.09em;
-    line-height: 2.8;
+    word-spacing: calc(var(--arabic-reading-word-spacing, 0.072em) + 0.01em);
+    line-height: calc(var(--arabic-reading-line-height, 2.46) + 0.08);
 }
 
 .quran-display--warsh .qc-ayah-text-ar {
-    word-spacing: 0.05em;
-    line-height: 2.6;
+    word-spacing: calc(var(--arabic-reading-word-spacing, 0.072em) - 0.012em);
+    line-height: calc(var(--arabic-reading-line-height, 2.46) - 0.04);
 }
 
 .quran-display--warsh .qc-ayah-transliteration {
@@ -4011,6 +4041,16 @@
     padding-block: 2rem;
 }
 
+.app-root.focus-reading .qc-ayah-text-ar {
+    line-height: calc(var(--arabic-reading-line-height, 2.46) + 0.06);
+    word-spacing: calc(var(--arabic-reading-word-spacing, 0.072em) + 0.008em);
+}
+
+.app-root.focus-reading .quran-display--warsh .qc-ayah-text-ar {
+    line-height: calc(var(--arabic-reading-line-height, 2.46) + 0.01);
+    word-spacing: calc(var(--arabic-reading-word-spacing, 0.072em) - 0.006em);
+}
+
 .app-root.focus-reading .surah-header {
     margin-bottom: 0.95rem;
 }
@@ -4055,12 +4095,12 @@
 .cpv-flow {
     font-family: var(--font-quran);
     font-size: 2rem;
-    line-height: 3.2;
+    line-height: calc(var(--arabic-reading-line-height, 2.46) + 0.34);
     text-align: justify;
     text-align-last: center;
     direction: rtl;
     color: var(--text-quran);
-    word-spacing: 0.12em;
+    word-spacing: calc(var(--arabic-reading-word-spacing, 0.072em) + 0.02em);
     letter-spacing: 0.01em;
     font-feature-settings:
         "liga" 1,
@@ -4174,7 +4214,7 @@
 
     .cpv-flow {
         font-size: 1.6rem;
-        line-height: 3.05;
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) + 0.44);
     }
 
     .cpv-basmala {
@@ -4186,13 +4226,62 @@
 @media (max-width: 480px) {
     .cpv-flow {
         font-size: 1.4rem;
-        line-height: 2.85;
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) + 0.28);
         text-align: right;
         text-align-last: right;
     }
 
     .cpv-basmala {
         font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .qc-ayah-text-ar {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.03);
+        word-spacing: calc(var(--arabic-reading-word-spacing-mobile, 0.052em) - 0.004em);
+    }
+
+    .quran-display--hafs .qc-ayah-text-ar {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) + 0.03);
+    }
+
+    .quran-display--warsh .qc-ayah-text-ar {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.04);
+        word-spacing: calc(var(--arabic-reading-word-spacing-mobile, 0.052em) - 0.006em);
+    }
+
+    .cpv-flow {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) + 0.24);
+    }
+
+    .quran-display--hafs .cpv-container .cpv-flow {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) + 0.27);
+    }
+
+    .quran-display--warsh .cpv-container .cpv-flow {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) + 0.2);
+        word-spacing: calc(var(--arabic-reading-word-spacing-mobile, 0.052em) + 0.004em);
+    }
+
+    .app-root.focus-reading .qc-ayah-text-ar {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) + 0.02);
+    }
+}
+
+@media (max-width: 360px) {
+    .qc-ayah-text-ar {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.06);
+        word-spacing: calc(var(--arabic-reading-word-spacing-mobile, 0.052em) - 0.008em);
+    }
+
+    .quran-display--platform .surah-header-name,
+    .quran-display--platform .bismillah-text {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.03);
+    }
+
+    .cpv-flow {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) + 0.18);
     }
 }
 
@@ -4516,7 +4605,17 @@
         "ccmp" 1;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
-    word-spacing: 0.12em;
+    word-spacing: calc(var(--arabic-reading-word-spacing, 0.072em) + 0.02em);
+}
+
+.quran-display--hafs .cpv-container .cpv-flow {
+    line-height: calc(var(--arabic-reading-line-height, 2.46) + 0.36);
+    word-spacing: calc(var(--arabic-reading-word-spacing, 0.072em) + 0.024em);
+}
+
+.quran-display--warsh .cpv-container .cpv-flow {
+    line-height: calc(var(--arabic-reading-line-height, 2.46) + 0.28);
+    word-spacing: calc(var(--arabic-reading-word-spacing, 0.072em) + 0.012em);
 }
 
 /* Playing verse highlight — more visible */
@@ -4813,7 +4912,7 @@
 
 /*  qc-ayah-text-ar line-height tweak for readability  */
 .quran-display--hafs .qc-ayah-text-ar {
-    line-height: 2.85;
+    line-height: calc(var(--arabic-reading-line-height, 2.46) + 0.08);
 }
 
 /*  Responsive trans panel  */
@@ -5406,18 +5505,42 @@
 }
 
 .quran-display--platform .qc-ayah-text-ar {
-    line-height: 2.18;
-    letter-spacing: 0.004em;
+    line-height: calc(var(--arabic-reading-line-height, 2.46) - 0.16);
+    letter-spacing: 0.002em;
     color: var(--text-quran, var(--text-primary));
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    font-family: var(--font-arabic-script, var(--font-quran, "ME Quran", serif));
+    font-feature-settings: "calt" 1, "liga" 1, "rlig" 1, "kern" 1;
+    font-kerning: normal;
+    font-synthesis: none;
+    word-spacing: var(--arabic-reading-word-spacing, 0.072em);
+    text-rendering: optimizeLegibility;
 }
 
-.quran-display--platform .surah-header-name,
+.quran-display--platform .surah-header-name {
+    color: var(--text-quran, var(--text-primary));
+    text-shadow:
+        0 1px 8px rgba(0, 0, 0, 0.28),
+        0 0 26px rgba(212, 168, 32, 0.14);
+    font-family: var(--font-surah-display, "KFGQPC Uthmanic Script HAFS", serif);
+    line-height: calc(var(--arabic-reading-line-height, 2.46) - 0.08);
+    letter-spacing: 0;
+    font-feature-settings: "calt" 1, "liga" 1, "rlig" 1, "kern" 1;
+    font-kerning: normal;
+    font-synthesis: none;
+}
+
 .quran-display--platform .bismillah-text {
     color: var(--text-quran, var(--text-primary));
     text-shadow:
         0 1px 8px rgba(0, 0, 0, 0.28),
         0 0 26px rgba(212, 168, 32, 0.14);
+    font-family: var(--font-arabic-script, var(--font-quran, "ME Quran", serif));
+    line-height: calc(var(--arabic-reading-line-height, 2.46) - 0.08);
+    letter-spacing: 0;
+    font-feature-settings: "calt" 1, "liga" 1, "rlig" 1, "kern" 1;
+    font-kerning: normal;
+    font-synthesis: none;
 }
 
 .quran-display--platform .qc-ayah-translation {
@@ -5536,6 +5659,20 @@
 }
 
 @media (max-width: 640px) {
+    .qc-ayah-text-ar {
+        line-height: var(--arabic-reading-line-height-mobile, 2.22);
+        word-spacing: var(--arabic-reading-word-spacing-mobile, 0.052em);
+        letter-spacing: 0;
+    }
+
+    .quran-display--hafs .qc-ayah-text-ar {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) + 0.05);
+    }
+
+    .quran-display--warsh .qc-ayah-text-ar {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.03);
+    }
+
     .quran-display--platform {
         padding: 0.8rem 0.72rem 3rem;
     }
@@ -5550,8 +5687,76 @@
         border-radius: 1.18rem;
     }
 
+    .quran-display--platform .qc-ayah-text-ar {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.01);
+        word-spacing: var(--arabic-reading-word-spacing-mobile, 0.052em);
+    }
+
+    .quran-display--platform .surah-header-name,
+    .quran-display--platform .bismillah-text {
+        line-height: var(--arabic-reading-line-height-mobile, 2.22);
+    }
+
     .quran-display--platform .page-header-bar__riwaya-badge {
         width: 100%;
         justify-content: center;
     }
 }
+
+    /* Final basmala micro-tuning for very small screens */
+    @media (max-width: 420px) {
+        .cpv-basmala-wrap {
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.9rem;
+        }
+
+        .cpv-basmala-wrap::after {
+            bottom: -0.48rem;
+            font-size: 0.46rem;
+            opacity: 0.34;
+        }
+
+        .cpv-container .cpv-basmala,
+        .cpv-basmala {
+            font-size: 1.22rem;
+            line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.04);
+            margin-bottom: 0.4rem;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.14);
+        }
+
+        .cpv-basmala-translation {
+            font-size: 0.66rem;
+            line-height: 1.45;
+            opacity: 0.7;
+        }
+
+        .quran-mode-pane--page .mp-basmala,
+        .quran-display--platform .bismillah-text {
+            line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.02);
+            letter-spacing: 0.004em;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .cpv-basmala-wrap {
+            margin-bottom: 1rem;
+            padding-bottom: 0.78rem;
+        }
+
+        .cpv-container .cpv-basmala,
+        .cpv-basmala {
+            font-size: 1.14rem;
+            line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.08);
+            margin-bottom: 0.32rem;
+        }
+
+        .cpv-basmala-translation {
+            font-size: 0.62rem;
+            opacity: 0.66;
+        }
+
+        .quran-mode-pane--page .mp-basmala,
+        .quran-display--platform .bismillah-text {
+            line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.05);
+        }
+    }

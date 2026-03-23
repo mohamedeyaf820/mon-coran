@@ -1,0 +1,222 @@
+/* Global mobile harmonization layer loaded after index.css. */
+
+.app-root {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 900px) {
+  .quran-display,
+  .quran-display-scroll,
+  .sidebar-content,
+  .modal-list,
+  .modal-body,
+  .duas-results,
+  .settings-body,
+  .notes-panel,
+  .notes-list {
+    overscroll-behavior: contain;
+  }
+
+  .modal-overlay,
+  .settings-overlay,
+  .audio-player-modal {
+    align-items: flex-end;
+    padding: 0.65rem;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.65rem);
+  }
+
+  .modal,
+  .modal-panel,
+  .modal-panel--wide,
+  .search-modal-shell,
+  .settings-modal,
+  .audio-player-modal__surface {
+    width: min(100%, 980px);
+    max-height: min(90dvh, 900px);
+    border-radius: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-root {
+    --mobile-gutter: clamp(0.65rem, 3vw, 0.95rem);
+  }
+
+  .sidebar {
+    width: min(92vw, 360px);
+  }
+
+  .quran-display,
+  .quran-display-scroll,
+  .duas-page,
+  .hp2,
+  .hp2--platform {
+    padding-inline: var(--mobile-gutter);
+  }
+
+  .hp2-hero,
+  .hp2-content,
+  .hp2-quickbar,
+  .hp2-stats-strip,
+  .hp2-focus-card,
+  .hp2-prayers,
+  .duas-hero,
+  .duas-results,
+  .settings-modal,
+  .search-modal-shell {
+    border-radius: 1rem;
+  }
+
+  .settings-nav {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .settings-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .settings-nav-item,
+  .settings-nav-btn {
+    flex: 0 0 auto;
+  }
+
+  .hp2-hero__ctas,
+  .hp2-focus-card__actions,
+  .settings-chips,
+  .duas-tools,
+  .duas-results-head {
+    grid-template-columns: 1fr;
+  }
+
+  .hp2-btn,
+  .modal-action-btn,
+  .modal-close,
+  .settings-nav-item,
+  .settings-nav-btn,
+  .settings-close-btn,
+  .duas-back-btn,
+  .duas-cat-btn,
+  .hdr__btn,
+  .sidebar-tab,
+  .sidebar-item,
+  .search-result-action,
+  .modal-inline-input,
+  button {
+    min-height: 44px;
+  }
+
+  input[type="search"],
+  input[type="text"],
+  select,
+  textarea,
+  .modal-search-input,
+  .duas-search,
+  .font-search-input {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .duas-categories,
+  .hp2-quickbar__track,
+  .settings-nav {
+    scroll-snap-type: x mandatory;
+  }
+
+  .duas-cat-btn,
+  .hp2-qchip,
+  .settings-nav-item,
+  .settings-nav-btn {
+    scroll-snap-align: start;
+  }
+
+  .audio-player-modal {
+    padding: 0.45rem;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.45rem);
+  }
+
+  .audio-player-modal__surface {
+    width: 100%;
+    height: min(93dvh, 860px);
+    border-radius: 1rem;
+  }
+
+  .modal-header,
+  .settings-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    backdrop-filter: blur(8px);
+  }
+}
+
+@media (max-width: 480px) {
+  html,
+  body,
+  #root,
+  .app-root {
+    min-height: 100dvh;
+  }
+
+  .modal-overlay,
+  .settings-overlay,
+  .audio-player-modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal,
+  .modal-panel,
+  .modal-panel--wide,
+  .search-modal-shell,
+  .settings-modal,
+  .audio-player-modal__surface {
+    max-height: 92dvh;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .modal-header,
+  .settings-header {
+    padding: 0.75rem 0.85rem;
+  }
+
+  .modal-title,
+  .settings-title {
+    font-size: 1rem;
+  }
+
+  .modal-subtitle,
+  .settings-hero-copy,
+  .hp2-hero__tagline,
+  .duas-subtitle {
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+
+  .quran-text,
+  .ayah-text,
+  .verse-text {
+    font-size: clamp(1.42rem, 7vw, 1.78rem);
+    line-height: 2.05;
+  }
+
+  .translation-text,
+  .ayah-translation {
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .hp2-btn:hover,
+  .hp2-qchip:hover,
+  .hp2-item:hover,
+  .search-result-card:hover,
+  .sidebar-item:hover,
+  .sidebar-tab:hover,
+  .modal-action-btn:hover {
+    transform: none !important;
+  }
+}

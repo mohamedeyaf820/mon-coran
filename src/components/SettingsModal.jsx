@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useApp } from "../context/AppContext";
 import { t, LANGUAGES } from "../i18n";
 import { downloadExport, importFromFile } from "../services/exportService";
@@ -24,6 +24,15 @@ import {
   THEMES as UI_THEMES,
 } from "../data/themes";
 import { ensureFontLoaded } from "../services/fontLoader";
+import { getSettings, saveSettings } from "../services/storageService";
+import {
+  clearEncryptionSession,
+  configureEncryptionPassphrase,
+  hasEncryptionPassphraseConfigured,
+  isEncryptionUnlocked,
+  removeEncryptionPassphrase,
+  unlockEncryptionWithPassphrase,
+} from "../services/cryptoUtil";
 import {
   getLatencyForReciter,
   getReciterUnavailableRemainingMs,
@@ -222,8 +231,41 @@ export default function SettingsModal() {
   const [offlineProgress, setOfflineProgress] = useState(null);
   const [offlineCacheSizeMb, setOfflineCacheSizeMb] = useState(0);
   const [offlineEntries, setOfflineEntries] = useState([]);
+  const [securityPassphrase, setSecurityPassphrase] = useState("");
+  const [securityUnlockPassphrase, setSecurityUnlockPassphrase] = useState("");
+  const [securityConfigured, setSecurityConfigured] = useState(false);
+  const [securityUnlocked, setSecurityUnlocked] = useState(false);
+  const closeButtonRef = useRef(null);
 
   const close = () => dispatch({ type: "TOGGLE_SETTINGS" });
+  const handleTabKeyNavigation = useCallback(
+    (event, currentIndex) => {
+      const key = event.key;
+      if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(key)) return;
+      event.preventDefault();
+
+      let nextIndex = currentIndex;
+      if (key === "ArrowDown") {
+        nextIndex = (currentIndex + 1) % TABS.length;
+      } else if (key === "ArrowUp") {
+        nextIndex = (currentIndex - 1 + TABS.length) % TABS.length;
+      } else if (key === "Home") {
+        nextIndex = 0;
+      } else if (key === "End") {
+        nextIndex = TABS.length - 1;
+      }
+
+      const nextTab = TABS[nextIndex];
+      if (!nextTab) return;
+      setActiveTab(nextTab.id);
+
+      window.requestAnimationFrame(() => {
+        const nextButton = document.getElementById(`settings-tab-${nextTab.id}`);
+        nextButton?.focus();
+      });
+    },
+    [],
+  );
   const tabLabel = (tab) =>
     lang === "ar" ? tab.ar : lang === "fr" ? tab.fr : tab.en;
   const translationLanguageHint =
@@ -398,6 +440,96 @@ export default function SettingsModal() {
   useEffect(() => {
     ensureFontLoaded(fontFamily).catch(() => {});
   }, [fontFamily]);
+
+  useEffect(() => {
+    setSecurityConfigured(hasEncryptionPassphraseConfigured());
+    setSecurityUnlocked(isEncryptionUnlocked());
+  }, []);
+
+  useEffect(() => {
+    closeButtonRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const handleEsc = (event) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      close();
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
+
+  const handleConfigurePassphrase = useCallback(() => {
+    const result = configureEncryptionPassphrase(securityPassphrase);
+    if (!result.ok) {
+      toast.error(
+        lang === "fr"
+          ? "Mot de passe trop court (6 caractères min)."
+          : lang === "ar"
+            ? "كلمة المرور قصيرة جدا (6 أحرف على الأقل)."
+            : "Passphrase is too short (min 6 chars).",
+      );
+      return;
+    }
+
+    // Re-encrypt current settings with the new active key.
+    saveSettings(getSettings());
+    setSecurityPassphrase("");
+    setSecurityConfigured(true);
+    setSecurityUnlocked(true);
+    toast.success(
+      lang === "fr"
+        ? "Chiffrement renforcé activé."
+        : lang === "ar"
+          ? "تم تفعيل تشفير أقوى."
+          : "Stronger encryption enabled.",
+    );
+  }, [lang, securityPassphrase]);
+
+  const handleUnlockPassphrase = useCallback(() => {
+    const ok = unlockEncryptionWithPassphrase(securityUnlockPassphrase);
+    if (!ok) {
+      toast.error(
+        lang === "fr"
+          ? "Mot de passe invalide."
+          : lang === "ar"
+            ? "كلمة المرور غير صحيحة."
+            : "Invalid passphrase.",
+      );
+      return;
+    }
+
+    setSecurityUnlockPassphrase("");
+    setSecurityUnlocked(true);
+    toast.success(
+      lang === "fr"
+        ? "Coffre déverrouillé."
+        : lang === "ar"
+          ? "تم فتح القفل."
+          : "Secure vault unlocked.",
+    );
+  }, [lang, securityUnlockPassphrase]);
+
+  const handleLockPassphrase = useCallback(() => {
+    clearEncryptionSession();
+    setSecurityUnlocked(false);
+  }, []);
+
+  const handleRemovePassphrase = useCallback(() => {
+    removeEncryptionPassphrase();
+    setSecurityConfigured(false);
+    setSecurityUnlocked(false);
+    setSecurityPassphrase("");
+    setSecurityUnlockPassphrase("");
+    toast.success(
+      lang === "fr"
+        ? "Protection passphrase supprimée."
+        : lang === "ar"
+          ? "تمت إزالة حماية كلمة المرور."
+          : "Passphrase protection removed.",
+    );
+  }, [lang]);
   const getThemeLabel = (themeOption) => getOptionLabel(themeOption);
   const getThemeDescription = (themeOption) =>
     lang === "ar"
@@ -664,6 +796,7 @@ export default function SettingsModal() {
   const fontPreviewSizeClass =
     FONT_PREVIEW_SIZE_CLASSES[fontStepIndex] || "text-[39px]";
   const activeTabConfig = TABS.find((tab) => tab.id === activeTab) || TABS[0];
+  const activePanelId = `settings-panel-${activeTab}`;
   const currentThemeOption = UI_THEMES.find((themeOption) => themeOption.id === theme);
   const currentLanguageLabel =
     LANGUAGES.find((languageOption) => languageOption.code === lang)?.label ||
@@ -961,6 +1094,7 @@ export default function SettingsModal() {
             className="settings-close-btn"
             onClick={close}
             aria-label={lang === "ar" ? "إغلاق" : "Fermer"}
+            ref={closeButtonRef}
           >
             <i className="fas fa-times" aria-hidden="true"></i>
           </button>
@@ -969,13 +1103,19 @@ export default function SettingsModal() {
         {/* ── Body: nav + content ── */}
         <div className={bodyLayoutClass}>
           {/* Left navigation */}
-          <nav className={navClass} aria-label="Navigation paramètres">
-            {TABS.map((tab) => (
+          <nav className={navClass} aria-label="Navigation paramètres" role="tablist" aria-orientation="vertical">
+            {TABS.map((tab, index) => (
               <button
                 key={tab.id}
                 className={navItemClass(activeTab === tab.id)}
                 onClick={() => setActiveTab(tab.id)}
                 aria-pressed={activeTab === tab.id}
+                role="tab"
+                id={`settings-tab-${tab.id}`}
+                aria-selected={activeTab === tab.id}
+                aria-controls={`settings-panel-${tab.id}`}
+                tabIndex={activeTab === tab.id ? 0 : -1}
+                onKeyDown={(event) => handleTabKeyNavigation(event, index)}
               >
                 <i className={`fas ${tab.icon}`} aria-hidden="true"></i>
                 <span className="settings-nav-label">{tabLabel(tab)}</span>
@@ -984,7 +1124,7 @@ export default function SettingsModal() {
           </nav>
 
           {/* Right content panel */}
-          <div className={contentClass}>
+          <div className={contentClass} role="tabpanel" id={activePanelId} aria-labelledby={`settings-tab-${activeTab}`}>
             <div className="settings-hero-card">
               <div className="settings-hero-copywrap">
                 <span className="settings-hero-eyebrow">
@@ -2184,6 +2324,120 @@ export default function SettingsModal() {
                   </div>
                 </div>
 
+                <div className={cn(cardClass, "space-y-3")}>
+                  <div className="settings-card-label">
+                    <i className="fas fa-shield-halved" aria-hidden="true"></i>
+                    {lang === "fr"
+                      ? "Sécurité des données locales"
+                      : lang === "ar"
+                        ? "أمان البيانات المحلية"
+                        : "Local data security"}
+                  </div>
+                  <p className="settings-hint">
+                    {lang === "fr"
+                      ? "Ajoutez une passphrase pour dériver une clé de chiffrement plus robuste."
+                      : lang === "ar"
+                        ? "أضف كلمة مرور لإنشاء مفتاح تشفير أقوى."
+                        : "Add a passphrase to derive a stronger encryption key."}
+                  </p>
+
+                  {!securityConfigured ? (
+                    <div className="space-y-2">
+                      <input
+                        type="password"
+                        value={securityPassphrase}
+                        onChange={(event) => setSecurityPassphrase(event.target.value)}
+                        className="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg-primary)] px-3 py-2 text-sm outline-none focus:border-[color:var(--primary)] focus:ring-2 focus:ring-[rgba(var(--primary-rgb),0.16)]"
+                        placeholder={
+                          lang === "fr"
+                            ? "Passphrase (6 caractères minimum)"
+                            : lang === "ar"
+                              ? "كلمة المرور (6 أحرف على الأقل)"
+                              : "Passphrase (minimum 6 characters)"
+                        }
+                      />
+                      <button className="data-action-btn" onClick={handleConfigurePassphrase}>
+                        <i className="fas fa-key" aria-hidden="true"></i>
+                        <span>
+                          {lang === "fr"
+                            ? "Activer la protection"
+                            : lang === "ar"
+                              ? "تفعيل الحماية"
+                              : "Enable protection"}
+                        </span>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(var(--primary-rgb),0.22)] bg-[rgba(var(--primary-rgb),0.1)] px-3 py-1 text-xs font-semibold text-[color:var(--text-primary)]">
+                        <i className={`fas ${securityUnlocked ? "fa-lock-open" : "fa-lock"}`} aria-hidden="true"></i>
+                        <span>
+                          {securityUnlocked
+                            ? lang === "fr"
+                              ? "Protection active (déverrouillée)"
+                              : lang === "ar"
+                                ? "الحماية مفعلة (مفتوحة)"
+                                : "Protection enabled (unlocked)"
+                            : lang === "fr"
+                              ? "Protection active (verrouillée)"
+                              : lang === "ar"
+                                ? "الحماية مفعلة (مغلقة)"
+                                : "Protection enabled (locked)"}
+                        </span>
+                      </div>
+
+                      {!securityUnlocked && (
+                        <div className="space-y-2">
+                          <input
+                            type="password"
+                            value={securityUnlockPassphrase}
+                            onChange={(event) => setSecurityUnlockPassphrase(event.target.value)}
+                            className="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg-primary)] px-3 py-2 text-sm outline-none focus:border-[color:var(--primary)] focus:ring-2 focus:ring-[rgba(var(--primary-rgb),0.16)]"
+                            placeholder={
+                              lang === "fr"
+                                ? "Entrer la passphrase"
+                                : lang === "ar"
+                                  ? "أدخل كلمة المرور"
+                                  : "Enter passphrase"
+                            }
+                          />
+                          <button className="data-action-btn" onClick={handleUnlockPassphrase}>
+                            <i className="fas fa-unlock" aria-hidden="true"></i>
+                            <span>
+                              {lang === "fr"
+                                ? "Déverrouiller"
+                                : lang === "ar"
+                                  ? "فتح القفل"
+                                  : "Unlock"}
+                            </span>
+                          </button>
+                        </div>
+                      )}
+
+                      <div className="flex flex-wrap gap-2">
+                        {securityUnlocked && (
+                          <button className="data-action-btn" onClick={handleLockPassphrase}>
+                            <i className="fas fa-lock" aria-hidden="true"></i>
+                            <span>
+                              {lang === "fr" ? "Verrouiller" : lang === "ar" ? "قفل" : "Lock"}
+                            </span>
+                          </button>
+                        )}
+                        <button className="data-action-btn" onClick={handleRemovePassphrase}>
+                          <i className="fas fa-trash" aria-hidden="true"></i>
+                          <span>
+                            {lang === "fr"
+                              ? "Supprimer la protection"
+                              : lang === "ar"
+                                ? "إزالة الحماية"
+                                : "Remove protection"}
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Keyboard shortcuts */}
                 <div className={cardClass}>
                   <div className="settings-card-label">
@@ -2252,15 +2506,6 @@ export default function SettingsModal() {
                       imgClassName="about-logo-img"
                       decorative
                     />
-                  {isSurahStreamReciter && (
-                    <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs leading-relaxed text-[var(--text-secondary)]">
-                      {lang === "fr"
-                        ? "La calibration mot a mot ne s'applique pas a la lecture sourate complete."
-                        : lang === "ar"
-                          ? "معايرة الكلمة بالكلمة لا تنطبق على وضع السورة كاملة."
-                          : "Word-by-word calibration does not apply to full-surah playback."}
-                    </div>
-                  )}
                     <div>
                       <strong>MushafPlus</strong>
                       <span className="about-version">v1.1.0</span>

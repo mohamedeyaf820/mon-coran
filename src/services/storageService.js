@@ -5,6 +5,15 @@
 
 import { dbGet, dbSet, dbDelete, dbGetAll } from "./dbService";
 import { encryptData, decryptData } from "./cryptoUtil";
+import {
+  bookmarkRecordSchema,
+  noteRecordSchema,
+} from "./storageValidation";
+
+function parseRecordOrNull(schema, value) {
+  const result = schema.safeParse(value);
+  return result.success ? result.data : null;
+}
 
 /* ═══════════════════════════════════════════ */
 /*  NOTES                                     */
@@ -16,7 +25,8 @@ export async function saveNote(surah, ayah, text) {
 }
 
 export async function getNote(surah, ayah) {
-  return dbGet("notes", `${surah}:${ayah}`);
+  const raw = await dbGet("notes", `${surah}:${ayah}`);
+  return parseRecordOrNull(noteRecordSchema, raw);
 }
 
 export async function deleteNote(surah, ayah) {
@@ -24,7 +34,10 @@ export async function deleteNote(surah, ayah) {
 }
 
 export async function getAllNotes() {
-  return dbGetAll("notes");
+  const raw = await dbGetAll("notes");
+  return (Array.isArray(raw) ? raw : [])
+    .map((entry) => parseRecordOrNull(noteRecordSchema, entry))
+    .filter(Boolean);
 }
 
 /* ═══════════════════════════════════════════ */
@@ -42,11 +55,14 @@ export async function removeBookmark(surah, ayah) {
 
 export async function isBookmarked(surah, ayah) {
   const val = await dbGet("bookmarks", `${surah}:${ayah}`);
-  return !!val;
+  return !!parseRecordOrNull(bookmarkRecordSchema, val);
 }
 
 export async function getAllBookmarks() {
-  return dbGetAll("bookmarks");
+  const raw = await dbGetAll("bookmarks");
+  return (Array.isArray(raw) ? raw : [])
+    .map((entry) => parseRecordOrNull(bookmarkRecordSchema, entry))
+    .filter(Boolean);
 }
 
 /* ═══════════════════════════════════════════ */
@@ -116,6 +132,31 @@ function sanitizeFavoriteReciters(input) {
     .filter((value) => typeof value === "string" && value.trim())
     .map((value) => value.trim().slice(0, 80))
     .slice(0, 24);
+}
+
+function sanitizeSyncOffsetsMap(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    return {};
+  }
+
+  return Object.entries(input)
+    .filter(([key]) => typeof key === "string" && key.length > 0 && key.length <= 120)
+    .slice(0, 240)
+    .reduce((acc, [key, value]) => {
+      const numeric = Number(value);
+      if (!Number.isFinite(numeric)) return acc;
+      acc[key] = Math.max(-500, Math.min(500, Math.round(numeric)));
+      return acc;
+    }, {});
+}
+
+function isValidClockTime(value) {
+  if (typeof value !== "string") return false;
+  const match = value.match(/^(\d{2}):(\d{2})$/);
+  if (!match) return false;
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
 }
 
 function sanitizeLatencyMap(input) {
@@ -243,10 +284,7 @@ export function getSettings() {
     return {
       ...DEFAULT_SETTINGS,
       ...parsed,
-      syncOffsetsMs: {
-        ...DEFAULT_SETTINGS.syncOffsetsMs,
-        ...(parsed?.syncOffsetsMs || {}),
-      },
+      syncOffsetsMs: sanitizeSyncOffsetsMap(parsed?.syncOffsetsMs),
       favoriteReciters: sanitizeFavoriteReciters(parsed?.favoriteReciters),
       autoSelectFastestReciter:
         parsed?.autoSelectFastestReciter !== undefined
@@ -266,11 +304,7 @@ export function getSettings() {
 function sanitizeSettings(settings) {
   const safeInput = settings && typeof settings === "object" ? settings : {};
   const safeSyncOffsets =
-    safeInput.syncOffsetsMs &&
-    typeof safeInput.syncOffsetsMs === "object" &&
-    !Array.isArray(safeInput.syncOffsetsMs)
-      ? safeInput.syncOffsetsMs
-      : {};
+    sanitizeSyncOffsetsMap(safeInput.syncOffsetsMs);
 
   return {
     lang: VALID_LANGS.includes(safeInput.lang) ? safeInput.lang : "fr",
@@ -327,10 +361,10 @@ function sanitizeSettings(settings) {
       safeInput.reciterAvailabilityById,
     ),
     autoNightMode: Boolean(safeInput.autoNightMode),
-    nightStart: /^\d{2}:\d{2}$/.test(safeInput.nightStart)
+    nightStart: isValidClockTime(safeInput.nightStart)
       ? safeInput.nightStart
       : "20:00",
-    nightEnd: /^\d{2}:\d{2}$/.test(safeInput.nightEnd)
+    nightEnd: isValidClockTime(safeInput.nightEnd)
       ? safeInput.nightEnd
       : "06:00",
     nightTheme: normalizeNightTheme(safeInput.nightTheme),

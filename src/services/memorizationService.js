@@ -1,13 +1,19 @@
 /**
  * Memorization service — star rating (0-5) per verse, persisted in localStorage.
  */
+import {
+  memorizationMapSchema,
+  readLocalStorageWithSchema,
+  writeLocalStorageJson,
+} from "./storageValidation";
+
 const KEY = 'mushafplus_memorization_v1';
 
 function load() {
-  try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; }
+  return readLocalStorageWithSchema(KEY, memorizationMapSchema, {});
 }
 function save(data) {
-  try { localStorage.setItem(KEY, JSON.stringify(data)); } catch { /* quota */ }
+  writeLocalStorageJson(KEY, data || {});
 }
 
 /** Stable string key for a verse. */

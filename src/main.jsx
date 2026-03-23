@@ -77,7 +77,14 @@ if ("serviceWorker" in navigator) {
     // En développement: éviter les pages blanches causées par un SW obsolète
     try {
       const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map((r) => r.unregister()));
+      await Promise.all(
+        regs
+          .filter((r) => {
+            const scriptUrl = String(r.active?.scriptURL || r.installing?.scriptURL || "");
+            return scriptUrl.includes("/sw.js") || scriptUrl.includes("mushaf");
+          })
+          .map((r) => r.unregister()),
+      );
       if ("caches" in window) {
         const keys = await caches.keys();
         await Promise.all(

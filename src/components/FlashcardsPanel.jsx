@@ -374,17 +374,17 @@ export default function FlashcardsPanel() {
   if (deck.length === 0) {
     return (
       <div
-        className="modal-overlay"
+        className="modal-overlay !p-3 sm:!p-5"
         onClick={close}
         role="dialog"
         aria-modal="true"
       >
         <div
-          className="modal-panel fc-panel"
+          className="modal-panel fc-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="modal-header">
-            <div className="modal-title">
+          <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
+            <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
               <i className="fas fa-layer-group" />
               {lang === "fr"
                 ? "Flashcards"
@@ -392,11 +392,11 @@ export default function FlashcardsPanel() {
                   ? "بطاقات تعليمية"
                   : "Vocabulary Cards"}
             </div>
-            <button className="modal-close" onClick={close}>
+            <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
               <i className="fas fa-xmark" />
             </button>
           </div>
-          <div className="fc-done">
+          <div className="fc-done !space-y-3 !p-5 !text-center">
             <div className="fc-done__trophy">📭</div>
             <h3>
               {lang === "fr"
@@ -449,7 +449,7 @@ export default function FlashcardsPanel() {
 
   return (
     <div
-      className="modal-overlay"
+      className="modal-overlay !p-3 sm:!p-5"
       onClick={close}
       role="dialog"
       aria-modal="true"
@@ -458,12 +458,12 @@ export default function FlashcardsPanel() {
       }
     >
       <div
-        className="modal-panel fc-panel"
+        className="modal-panel fc-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="modal-header">
-          <div className="modal-title">
+        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
+          <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
             <i className="fas fa-layer-group" />
             {lang === "fr"
               ? "Flashcards"
@@ -471,13 +471,13 @@ export default function FlashcardsPanel() {
                 ? "بطاقات تعليمية"
                 : "Vocabulary Cards"}
           </div>
-          <button className="modal-close" onClick={close}>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
             <i className="fas fa-xmark" />
           </button>
         </div>
 
         {done ? (
-          <div className="fc-done">
+          <div className="fc-done !space-y-3 !p-5 !text-center">
             <div className="fc-done__trophy">🏆</div>
             <h3>
               {lang === "fr"
@@ -502,7 +502,7 @@ export default function FlashcardsPanel() {
                   ? "نجاح"
                   : "success rate"}
             </div>
-            <button className="fc-restart-btn" onClick={restart}>
+            <button className="fc-restart-btn !inline-flex !items-center !gap-2 !rounded-xl !bg-sky-500/80 !px-4 !py-2.5 !font-semibold !text-white hover:!bg-sky-500" onClick={restart}>
               <i className="fas fa-rotate-right" />
               {lang === "fr"
                 ? "Recommencer"
@@ -525,7 +525,7 @@ export default function FlashcardsPanel() {
             </div>
 
             {/* Card */}
-            <div className="fc-card-wrap" onClick={() => setFlipped((f) => !f)}>
+            <div className="fc-card-wrap !px-4 !pt-2" onClick={() => setFlipped((f) => !f)}>
               <div className={`fc-card ${flipped ? "fc-card--flipped" : ""}`}>
                 <div className="fc-card__front">
                   <div className="fc-card__arabic">{card.ar}</div>
@@ -562,7 +562,7 @@ export default function FlashcardsPanel() {
             </div>
 
             {/* Score + actions */}
-            <div className="fc-score-row">
+            <div className="fc-score-row !mt-4 !flex !items-center !justify-center !gap-3">
               <span className="fc-stat correct">
                 <i className="fas fa-check" /> {score.correct}
               </span>
@@ -571,9 +571,9 @@ export default function FlashcardsPanel() {
               </span>
             </div>
             {flipped && (
-              <div className="fc-actions">
+              <div className="fc-actions !mt-3 !flex !items-center !justify-center !gap-2 !pb-4">
                 <button
-                  className="fc-btn fc-btn--wrong"
+                  className="fc-btn fc-btn--wrong !inline-flex !items-center !gap-2 !rounded-xl !border !border-red-300/20 !bg-red-500/10 !px-3.5 !py-2 !text-red-100 hover:!bg-red-500/20"
                   onClick={() => answer(false)}
                 >
                   <i className="fas fa-xmark" />
@@ -584,7 +584,7 @@ export default function FlashcardsPanel() {
                       : "Review"}
                 </button>
                 <button
-                  className="fc-btn fc-btn--correct"
+                  className="fc-btn fc-btn--correct !inline-flex !items-center !gap-2 !rounded-xl !border !border-emerald-300/20 !bg-emerald-500/10 !px-3.5 !py-2 !text-emerald-100 hover:!bg-emerald-500/20"
                   onClick={() => answer(true)}
                 >
                   <i className="fas fa-check" />

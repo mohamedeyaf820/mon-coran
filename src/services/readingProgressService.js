@@ -4,32 +4,27 @@
  * Total Quran ayahs: 6236.
  */
 import SURAHS from '../data/surahs';
+import {
+  readLocalStorageWithSchema,
+  readProgressSchema,
+  writeLocalStorageJson,
+} from "./storageValidation";
 
 const KEY = 'mushafplus_read_progress';
 const TOTAL_AYAHS = 6236;
 
 /** Mark an ayah as read (updates max per surah if new ayah is higher). */
 export function markRead(surah, ayah) {
-  try {
-    const p = JSON.parse(localStorage.getItem(KEY) || '{}');
-    if ((ayah | 0) > (p[surah] || 0)) {
-      p[surah] = ayah | 0;
-      localStorage.setItem(KEY, JSON.stringify(p));
-    }
-  } catch { /* quota exceeded or storage disabled */ }
+  const p = readLocalStorageWithSchema(KEY, readProgressSchema, {});
+  if ((ayah | 0) > (p[surah] || 0)) {
+    p[surah] = ayah | 0;
+    writeLocalStorageJson(KEY, p);
+  }
 }
 
 /** Get raw progress map: { [surahNum]: maxAyahRead } */
 export function getReadProgress() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(KEY) || '{}');
-    return parsed && typeof parsed === 'object' ? parsed : {};
-  } catch {
-    try {
-      localStorage.removeItem(KEY);
-    } catch {}
-    return {};
-  }
+  return readLocalStorageWithSchema(KEY, readProgressSchema, {});
 }
 
 /** Compute reading stats from stored progress. */

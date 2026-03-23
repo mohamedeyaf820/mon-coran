@@ -106,9 +106,12 @@ export default function ReadingHistoryPanel() {
   const MONTH_NAME = new Date(currentYear, currentMonth).toLocaleDateString(lang, { month: 'long', year: 'numeric' });
 
   return (
-    <div className="modal-overlay" onClick={close}>
-      <div className="modal modal-panel--wide" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
+    <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
+      <div
+        className="modal modal-panel--wide !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
           <div className="modal-title-stack">
             <div className="modal-kicker">{lang === 'fr' ? 'Parcours' : lang === 'ar' ? 'المسار' : 'Journey'}</div>
             <h2 className="modal-title">
@@ -123,48 +126,48 @@ export default function ReadingHistoryPanel() {
                   : 'Calendar, sessions and reading continuity in one place.'}
             </div>
           </div>
-          <button className="modal-close" onClick={close}>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
             <i className="fas fa-times"></i>
           </button>
         </div>
 
-        <div className="panel-grid-stats">
-          <div className="panel-stat-card">
+        <div className="panel-grid-stats !grid !grid-cols-1 !gap-2 !p-3 sm:!grid-cols-3 sm:!p-4">
+          <div className="panel-stat-card !rounded-2xl !border !border-white/10 !bg-white/[0.04] !p-3">
             <span className="panel-stat-value">{streak}</span>
             <span className="panel-stat-label">{t('readingHistory.streak', lang)}</span>
           </div>
-          <div className="panel-stat-card">
+          <div className="panel-stat-card !rounded-2xl !border !border-white/10 !bg-white/[0.04] !p-3">
             <span className="panel-stat-value">{totalAyahs}</span>
             <span className="panel-stat-label">{t('readingHistory.ayahsRead', lang)}</span>
           </div>
-          <div className="panel-stat-card">
+          <div className="panel-stat-card !rounded-2xl !border !border-white/10 !bg-white/[0.04] !p-3">
             <span className="panel-stat-value">{formatDuration(totalDuration)}</span>
             <span className="panel-stat-label">{t('readingHistory.totalTime', lang)}</span>
           </div>
         </div>
 
-        <div className="modal-segmented" role="tablist" aria-label={t('readingHistory.title', lang)}>
-          <button className={`modal-segmented-btn ${tab === 'calendar' ? 'active' : ''}`} onClick={() => setTab('calendar')}>
+        <div className="modal-segmented !mx-3 !mb-2 !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-1 sm:!mx-4" role="tablist" aria-label={t('readingHistory.title', lang)}>
+          <button className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === 'calendar' ? '!bg-sky-500/25 !text-white' : ''}`} onClick={() => setTab('calendar')}>
             <i className="fas fa-calendar"></i> {t('readingHistory.calendar', lang)}
           </button>
-          <button className={`modal-segmented-btn ${tab === 'sessions' ? 'active' : ''}`} onClick={() => setTab('sessions')}>
+          <button className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === 'sessions' ? '!bg-sky-500/25 !text-white' : ''}`} onClick={() => setTab('sessions')}>
             <i className="fas fa-list"></i> {t('readingHistory.sessions', lang)}
           </button>
         </div>
 
-        <div className="panel-scroll">
+        <div className="panel-scroll !max-h-[62vh] !overflow-auto !px-3 !pb-3 sm:!px-4 sm:!pb-4">
           {loading ? (
             <div className="wird-loading">
               <i className="fas fa-spinner fa-spin"></i>
             </div>
           ) : tab === 'calendar' ? (
             <div className="panel-calendar-shell">
-              <div className="panel-calendar-nav">
-                <button className="panel-icon-btn" onClick={goMonthPrev} title={lang === 'fr' ? 'Mois précédent' : 'Previous month'}>
+              <div className="panel-calendar-nav !mb-2 !flex !items-center !justify-between">
+                <button className="panel-icon-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={goMonthPrev} title={lang === 'fr' ? 'Mois précédent' : 'Previous month'}>
                   <i className="fas fa-chevron-left"></i>
                 </button>
                 <h4 className="panel-month-title">{MONTH_NAME}</h4>
-                <button className="panel-icon-btn" onClick={goMonthNext} disabled={isCurrentMonth} title={lang === 'fr' ? 'Mois suivant' : 'Next month'}>
+                <button className="panel-icon-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1] disabled:!opacity-40" onClick={goMonthNext} disabled={isCurrentMonth} title={lang === 'fr' ? 'Mois suivant' : 'Next month'}>
                   <i className="fas fa-chevron-right"></i>
                 </button>
               </div>
@@ -198,8 +201,8 @@ export default function ReadingHistoryPanel() {
                   {sessions.slice(0, 50).map((s, i) => {
                     const surah = getSurah(s.surah);
                     return (
-                      <div key={i} className="modal-item-card">
-                        <div className="modal-item-main">
+                      <div key={i} className="modal-item-card !rounded-2xl !border !border-white/10 !bg-white/[0.03] !p-2.5">
+                        <div className="modal-item-main !rounded-xl !px-2 !py-2">
                           <div className="modal-item-meta">
                             {s.ayahFrom === s.ayahTo ? `v.${s.ayahFrom}` : `v.${s.ayahFrom}-${s.ayahTo}`}
                           </div>
@@ -210,14 +213,14 @@ export default function ReadingHistoryPanel() {
                           </div>
                         </div>
                         <div className="modal-item-side">
-                          <button className="modal-action-btn" type="button" onClick={() => goToSession(s.surah, s.ayahFrom)}>
+                          <button className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.05] hover:!bg-white/[0.12]" type="button" onClick={() => goToSession(s.surah, s.ayahFrom)}>
                             <i className="fas fa-arrow-up-right-from-square"></i>
                           </button>
                         </div>
                       </div>
                     );
                   })}
-                  <button className="panel-hero-btn" onClick={handleClear}>
+                  <button className="panel-hero-btn !mt-3 !inline-flex !items-center !gap-2 !rounded-xl !border !border-red-300/20 !bg-red-500/10 !px-3.5 !py-2.5 !text-red-100 hover:!bg-red-500/20" onClick={handleClear}>
                     <i className="fas fa-trash"></i>
                     {lang === 'fr' ? 'Effacer l\'historique' : 'Clear history'}
                   </button>

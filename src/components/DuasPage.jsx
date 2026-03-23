@@ -88,9 +88,9 @@ export default function DuasPage() {
         : `${filteredDuas.length} supplication${filteredDuas.length > 1 ? "s" : ""}`;
 
   return (
-    <div className="duas-page duas-page--platform">
-      <section className="duas-hero">
-        <div className="duas-hero-head">
+    <div className="duas-page duas-page--platform !space-y-3 !px-3 !pb-4 sm:!space-y-4 sm:!px-4">
+      <section className="duas-hero !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.95),rgba(8,15,30,0.94))] !p-4 !shadow-[0_24px_60px_rgba(1,8,22,0.45)] sm:!p-5">
+        <div className="duas-hero-head !flex !flex-wrap !items-start !justify-between !gap-3">
           <div className="duas-hero-content">
             <h1 className="duas-title">
               {lang === "ar"
@@ -109,7 +109,7 @@ export default function DuasPage() {
           </div>
 
           <button
-            className="duas-back-btn"
+            className="duas-back-btn !inline-flex !min-h-11 !items-center !gap-2 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3.5 !py-2 hover:!bg-white/[0.12]"
             onClick={() => set({ showDuas: false, showHome: true })}
           >
             <i className="fas fa-house" aria-hidden="true"></i>
@@ -117,15 +117,15 @@ export default function DuasPage() {
           </button>
         </div>
 
-        <div className="duas-tools">
-          <div className="duas-hero-stats">
-            <div className="duas-hero-stat">
+        <div className="duas-tools !mt-3 !space-y-3">
+          <div className="duas-hero-stats !grid !grid-cols-1 !gap-2 sm:!grid-cols-3">
+            <div className="duas-hero-stat !rounded-2xl !border !border-white/10 !bg-white/[0.04] !p-3">
               <span className="duas-hero-stat-label">
                 {lang === "ar" ? "العرض" : lang === "fr" ? "Affichage" : "View"}
               </span>
               <strong>{resultCountLabel}</strong>
             </div>
-            <div className="duas-hero-stat">
+            <div className="duas-hero-stat !rounded-2xl !border !border-white/10 !bg-white/[0.04] !p-3">
               <span className="duas-hero-stat-label">
                 {lang === "ar"
                   ? "الفئة"
@@ -135,7 +135,7 @@ export default function DuasPage() {
               </span>
               <strong>{activeCategoryLabel}</strong>
             </div>
-            <div className="duas-hero-stat duas-hero-stat--hint">
+            <div className="duas-hero-stat duas-hero-stat--hint !rounded-2xl !border !border-white/10 !bg-white/[0.04] !p-3">
               <span className="duas-hero-stat-label">
                 {lang === "ar" ? "استخدام" : lang === "fr" ? "Usage" : "Use"}
               </span>
@@ -150,14 +150,14 @@ export default function DuasPage() {
           </div>
 
           <div
-            className="duas-categories scrollbar-hide"
+            className="duas-categories scrollbar-hide !flex !gap-2 !overflow-x-auto !pb-1"
             role="tablist"
             aria-label="Dua categories"
           >
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
-                className={`duas-cat-btn ${activeCategory === cat.id ? "active" : ""}`}
+                className={`duas-cat-btn !inline-flex !min-h-11 !items-center !rounded-xl !border !px-3 !py-2 !text-sm !transition-all hover:!border-sky-200/40 hover:!bg-white/[0.12] ${activeCategory === cat.id ? "active !border-sky-200/40 !bg-sky-500/20 !text-white" : "!border-white/14 !bg-white/[0.05]"}`}
                 onClick={() => setActiveCategory(cat.id)}
                 aria-pressed={activeCategory === cat.id}
               >
@@ -166,11 +166,11 @@ export default function DuasPage() {
             ))}
           </div>
 
-          <div className="duas-search-wrap">
+          <div className="duas-search-wrap !relative !rounded-2xl !border !border-white/14 !bg-white/[0.04] !px-3">
             <i className="fas fa-magnifying-glass" aria-hidden="true"></i>
             <input
               type="text"
-              className="duas-search"
+              className="duas-search !min-h-11 !w-full !bg-transparent !pl-7 !pr-2"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={
@@ -185,8 +185,8 @@ export default function DuasPage() {
         </div>
       </section>
 
-      <section className="duas-results" aria-live="polite">
-        <div className="duas-results-head">
+      <section className="duas-results !rounded-3xl !border !border-white/10 !bg-white/[0.03] !p-4 sm:!p-5" aria-live="polite">
+        <div className="duas-results-head !mb-3 !flex !flex-wrap !items-start !justify-between !gap-2">
           <div>
             <h2 className="duas-results-title">
               {lang === "ar"
@@ -203,12 +203,12 @@ export default function DuasPage() {
                   : "Cleaner cards with a clearer hierarchy between Arabic, transliteration and translation."}
             </p>
           </div>
-          <div className="duas-results-badge">{resultCountLabel}</div>
+          <div className="duas-results-badge !rounded-full !border !border-white/14 !bg-white/[0.05] !px-3 !py-1.5 !text-xs">{resultCountLabel}</div>
         </div>
 
-        <div className="gallery-grid">
+        <div className="gallery-grid !grid !grid-cols-1 !gap-3 xl:!grid-cols-2">
           {filteredDuas.length === 0 && (
-            <div className="duas-empty">
+            <div className="duas-empty !rounded-2xl !border !border-dashed !border-white/15 !bg-white/[0.03] !p-6 !text-center">
               <i className="fas fa-magnifying-glass-minus" />
               <p>
                 {lang === "ar"
@@ -231,11 +231,11 @@ export default function DuasPage() {
               lang === "ar" ? sData.ar : lang === "fr" ? sData.fr : sData.en;
 
             return (
-              <article key={`${dua.id}-${idx}`} className="dua-card-v5">
-                <div className="dua-card-inner">
-                  <div className="dua-card-head">
+              <article key={`${dua.id}-${idx}`} className="dua-card-v5 !rounded-2xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(13,24,46,0.75),rgba(9,17,33,0.8))] !p-3 !shadow-[0_12px_28px_rgba(1,8,22,0.28)]">
+                <div className="dua-card-inner !space-y-3">
+                  <div className="dua-card-head !flex !items-start !justify-between !gap-2">
                     <div className="dua-head-main">
-                      <div className="dua-ref-pill">
+                      <div className="dua-ref-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.06] !px-2.5 !py-1.5 !text-xs">
                         <i className="fas fa-book-sparkles" />
                         <span>
                           {sTitle}{" "}
@@ -244,7 +244,7 @@ export default function DuasPage() {
                           </span>
                         </span>
                       </div>
-                      <span className="dua-cat-pill">
+                      <span className="dua-cat-pill !ml-1 !inline-flex !rounded-full !border !border-sky-200/30 !bg-sky-500/18 !px-2.5 !py-1 !text-xs">
                         {lang === "ar"
                           ? CATEGORY_MAP[dua.category]?.ar ||
                             CATEGORY_MAP.all.ar
@@ -281,7 +281,7 @@ export default function DuasPage() {
                         <i className="fas fa-copy" aria-hidden="true"></i>
                       </button>
                       <button
-                        className="dua-open-btn-v5"
+                        className="dua-open-btn-v5 !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]"
                         onClick={() => goToVerse(dua.surah, dua.ayah)}
                         title={
                           lang === "ar" ? "فتح في المصحف" : "Open in Quran"
@@ -295,7 +295,7 @@ export default function DuasPage() {
                     </div>
                   </div>
 
-                  <div className="dua-content-area">
+                  <div className="dua-content-area !space-y-2">
                     <p className="dua-arabic">{dua.arabic}</p>
                     {dua.transliteration && (
                       <p className="dua-translit">{dua.transliteration}</p>
@@ -305,7 +305,7 @@ export default function DuasPage() {
                     </p>
                   </div>
 
-                  <div className="dua-card-footer">
+                  <div className="dua-card-footer !flex !items-center !justify-between !gap-2 !rounded-xl !border !border-white/10 !bg-white/[0.03] !px-3 !py-2">
                     <span className="dua-card-footer-copy">
                       {lang === "ar"
                         ? "انتقال سريع إلى موضع الآية"
@@ -314,7 +314,7 @@ export default function DuasPage() {
                           : "Jump directly to the verse location"}
                     </span>
                     <button
-                      className="dua-card-footer-link"
+                      className="dua-card-footer-link !inline-flex !items-center !gap-1.5 !rounded-lg !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1.5 !text-xs hover:!bg-white/[0.12]"
                       onClick={() => goToVerse(dua.surah, dua.ayah)}
                     >
                       <i className="fas fa-arrow-right"></i>

@@ -5,6 +5,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useApp } from '../context/AppContext';
 import { getSurah } from '../data/surahs';
+import { openExternalUrl, sanitizeSvgMarkup } from '../lib/security';
+
+const MAX_ARABIC_LENGTH = 600;
+const MAX_TRANSLATION_LENGTH = 500;
 
 // Theme-aligned backgrounds (4 active themes)
 const BG_PRESETS = [
@@ -178,7 +182,9 @@ export default function AyahSharePanel() {
   const [includeTranslation, setIncludeTranslation] = useState(true);
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [copyError, setCopyError] = useState(false);
   const svgRef = useRef(null);
+  const closeBtnRef = useRef(null);
 
   const surahData = getSurah(currentSurah);
   const surahName = surahData?.ar || '';
@@ -199,6 +205,21 @@ export default function AyahSharePanel() {
       if (transEl) setTranslationText(transEl.textContent?.trim() || '');
     }
   }, [currentSurah, currentAyah]);
+
+  useEffect(() => {
+    closeBtnRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        close();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   const svgContent = buildSVG({
     arabicText: arabicText || '﴿ بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ ﴾',
@@ -223,10 +244,16 @@ export default function AyahSharePanel() {
 
   const handleCopyLink = useCallback(() => {
     const url = `https://quran.com/${currentSurah}/${currentAyah}`;
-    navigator.clipboard?.writeText(url).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    navigator.clipboard?.writeText(url)
+      .then(() => {
+        setCopyError(false);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(() => {
+        setCopyError(true);
+        setTimeout(() => setCopyError(false), 2200);
+      });
   }, [currentSurah, currentAyah]);
 
   const handleWebShare = useCallback(async () => {
@@ -242,12 +269,20 @@ export default function AyahSharePanel() {
   const handleWhatsAppShare = useCallback(() => {
     const surahFr = surahData?.fr || surahData?.en || '';
     const text = `${arabicText}\n\n— ${surahFr} · verset ${currentAyah}\nhttps://quran.com/${currentSurah}/${currentAyah}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    openExternalUrl(`https://wa.me/?text=${encodeURIComponent(text)}`);
   }, [arabicText, currentSurah, currentAyah, surahData]);
+
+  const previewSvg = sanitizeSvgMarkup(svgContent);
 
   return (
     <div className="modal-overlay" onClick={close}>
-      <div className="modal modal-panel--wide share-panel" onClick={e => e.stopPropagation()}>
+      <div
+        className="modal modal-panel--wide share-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label={lang === 'fr' ? 'Partager un verset' : 'Share a Verse'}
+        onClick={e => e.stopPropagation()}
+      >
         <div className="modal-header">
           <div className="modal-title-stack">
             <div className="modal-kicker">
@@ -260,7 +295,12 @@ export default function AyahSharePanel() {
               {surahName} · {lang === 'fr' ? 'verset' : 'verse'} {currentAyah}
             </div>
           </div>
-          <button className="modal-close" onClick={close}>
+          <button
+            className="modal-close"
+            onClick={close}
+            ref={closeBtnRef}
+            aria-label={lang === 'fr' ? 'Fermer' : 'Close'}
+          >
             <i className="fas fa-times"></i>
           </button>
         </div>
@@ -274,7 +314,7 @@ export default function AyahSharePanel() {
             className="share-textarea share-textarea--ar"
             dir="rtl"
             value={arabicText}
-            onChange={e => setArabicText(e.target.value)}
+            onChange={e => setArabicText(e.target.value.slice(0, MAX_ARABIC_LENGTH))}
             rows={3}
             placeholder="أدخل النص العربي…"
           />
@@ -297,7 +337,7 @@ export default function AyahSharePanel() {
             <textarea
               className="share-textarea"
               value={translationText}
-              onChange={e => setTranslationText(e.target.value)}
+              onChange={e => setTranslationText(e.target.value.slice(0, MAX_TRANSLATION_LENGTH))}
               rows={2}
               placeholder={lang === 'fr' ? 'Traduction…' : 'Translation…'}
             />
@@ -327,7 +367,7 @@ export default function AyahSharePanel() {
         <div className="share-preview" ref={svgRef}>
           <div
             className="share-preview__svg"
-            dangerouslySetInnerHTML={{ __html: svgContent }}
+            dangerouslySetInnerHTML={{ __html: previewSvg }}
           />
         </div>
 
@@ -347,7 +387,9 @@ export default function AyahSharePanel() {
             <i className={`fas ${copied ? 'fa-check' : 'fa-link'}`}></i>
             {copied
               ? (lang === 'fr' ? 'Copié !' : 'Copied!')
-              : (lang === 'fr' ? 'Lien' : 'Link')}
+              : copyError
+                ? (lang === 'fr' ? 'Échec' : 'Failed')
+                : (lang === 'fr' ? 'Lien' : 'Link')}
           </button>
           {navigator.share && (
             <button className="share-action-btn share-action-btn--web" onClick={handleWebShare}>

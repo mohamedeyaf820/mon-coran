@@ -316,12 +316,12 @@ export default function WirdPanel() {
   ];
 
   return (
-    <div className="modal-overlay" onClick={close}>
+    <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
       <div
-        className="modal modal-panel--wide modal-wird"
+        className="modal modal-panel--wide modal-wird !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="modal-header">
+        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
           <div className="modal-title-stack">
             <div className="modal-kicker">
               {lang === "fr"
@@ -342,54 +342,54 @@ export default function WirdPanel() {
                   : "Daily wird tracking, history and goal settings."}
             </div>
           </div>
-          <button className="modal-close" onClick={close}>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
             <i className="fas fa-times"></i>
           </button>
         </div>
 
         <div
-          className="modal-segmented"
+          className="modal-segmented !mx-3 !mt-3 !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-1 sm:!mx-4"
           role="tablist"
           aria-label={t("wird.title", lang)}
         >
           <button
-            className={`modal-segmented-btn ${tab === "today" ? "active" : ""}`}
+            className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "today" ? "active !bg-sky-500/25 !text-white" : ""}`}
             onClick={() => setTab("today")}
           >
             <i className="fas fa-calendar-day"></i> {t("wird.today", lang)}
           </button>
           <button
-            className={`modal-segmented-btn ${tab === "history" ? "active" : ""}`}
+            className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "history" ? "active !bg-sky-500/25 !text-white" : ""}`}
             onClick={() => setTab("history")}
           >
             <i className="fas fa-chart-line"></i> {t("wird.history", lang)}
           </button>
           <button
-            className={`modal-segmented-btn ${tab === "streak" ? "active" : ""}`}
+            className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "streak" ? "active !bg-sky-500/25 !text-white" : ""}`}
             onClick={() => setTab("streak")}
           >
             <i className="fas fa-fire"></i>{" "}
             {lang === "fr" ? "Série" : lang === "ar" ? "سلسلة" : "Streak"}
           </button>
           <button
-            className={`modal-segmented-btn ${tab === "settings" ? "active" : ""}`}
+            className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "settings" ? "active !bg-sky-500/25 !text-white" : ""}`}
             onClick={() => setTab("settings")}
           >
             <i className="fas fa-sliders-h"></i> {t("wird.goal", lang)}
           </button>
         </div>
 
-        <div className="wird-summary-bar">
-          <span className="wird-summary-pill">
+        <div className="wird-summary-bar !mx-3 !mt-2 !flex !flex-wrap !gap-2 sm:!mx-4">
+          <span className="wird-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
             <i className="fas fa-bullseye"></i>
             {goalTarget} {goalLabel}
           </span>
-          <span className="wird-summary-pill">
+          <span className="wird-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
             <i className="fas fa-chart-simple"></i>
             {progressValue} / {goalTarget}
           </span>
           <span
-            className={`wird-summary-pill ${isComplete ? "is-complete" : ""}`}
+            className={`wird-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !px-2.5 !py-1 !text-xs ${isComplete ? "is-complete !border-emerald-300/30 !bg-emerald-500/15" : "!border-white/14 !bg-white/[0.05]"}`}
           >
             <i
               className={`fas ${isComplete ? "fa-check-circle" : "fa-hourglass-half"}`}
@@ -398,14 +398,14 @@ export default function WirdPanel() {
           </span>
         </div>
 
-        <div className="panel-scroll wird-body">
+        <div className="panel-scroll wird-body !max-h-[62vh] !overflow-auto !px-3 !pb-3 sm:!px-4 sm:!pb-4">
           {loading ? (
             <div className="wird-loading">
               <i className="fas fa-spinner fa-spin"></i>
             </div>
           ) : tab === "today" ? (
-            <div className="wird-today">
-              <div className="wird-progress-card">
+            <div className="wird-today !space-y-3">
+              <div className="wird-progress-card !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-4">
                 <div className="wird-progress-wrapper">
                   <svg viewBox="0 0 120 120" className="wird-progress-svg">
                     <circle
@@ -481,7 +481,7 @@ export default function WirdPanel() {
               )}
 
               {todayWird && todayWird.entries.length > 0 && (
-                <div className="wird-entries panel-stack-list">
+                <div className="wird-entries panel-stack-list !space-y-2">
                   <h4 className="wird-entries-title">
                     {lang === "fr"
                       ? "Sessions d'aujourd'hui"
@@ -494,7 +494,7 @@ export default function WirdPanel() {
                     .slice(-5)
                     .reverse()
                     .map((e, i) => (
-                      <div key={i} className="wird-entry modal-item-card">
+                      <div key={i} className="wird-entry modal-item-card !rounded-xl !border !border-white/10 !bg-white/[0.03] !px-3 !py-2">
                         <span className="wird-entry-surah">
                           {lang === "ar" ? "س." : "S."}
                           {e.surah} : {e.fromAyah}-{e.toAyah}
@@ -511,7 +511,7 @@ export default function WirdPanel() {
               )}
 
               {todayWird && todayWird.entries.length > 0 && (
-                <button className="wird-reset-btn" onClick={handleReset}>
+                <button className="wird-reset-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-red-300/20 !bg-red-500/10 !px-3.5 !py-2.5 !text-red-100 hover:!bg-red-500/20" onClick={handleReset}>
                   <i className="fas fa-redo"></i>{" "}
                   {lang === "fr"
                     ? "Réinitialiser"
@@ -602,8 +602,8 @@ export default function WirdPanel() {
             />
           ) : (
             /* Settings tab */
-            <div className="wird-settings">
-              <div className="wird-setting-group settings-card">
+            <div className="wird-settings !space-y-3">
+              <div className="wird-setting-group settings-card !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-3">
                 <label className="wird-setting-label">
                   {lang === "fr"
                     ? "Type d'objectif"
@@ -624,7 +624,7 @@ export default function WirdPanel() {
                 </div>
               </div>
 
-              <div className="wird-setting-group settings-card">
+              <div className="wird-setting-group settings-card !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-3">
                 <label className="wird-setting-label">
                   {lang === "fr"
                     ? "Quantité par jour"
