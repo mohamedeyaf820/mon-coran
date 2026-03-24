@@ -23985,3 +23985,77 @@ button:focus:not(:focus-visible) {
         max-height: 58vh;
     }
 }
+
+/* ==========================================================
+   LIGHT MODE FINAL POLISH
+   Improve daylight readability and reduce visual haze.
+   ========================================================== */
+
+[data-theme="light"] {
+    --theme-text: #122131;
+    --theme-text-soft: #263a4d;
+    --theme-text-muted: #466177;
+    --theme-border: rgba(17, 40, 63, 0.16);
+    --theme-border-strong: rgba(26, 143, 146, 0.46);
+    --theme-surface: #ffffff;
+    --theme-surface-soft: #f4f8fc;
+    --theme-surface-glass: color-mix(in srgb, #ffffff 92%, rgba(18, 33, 49, 0.08) 8%);
+}
+
+[data-theme="light"] .app-main-shell::before {
+    opacity: 0.5 !important;
+}
+
+[data-theme="light"] .app-header,
+[data-theme="light"] .header-glass,
+[data-theme="light"] .sidebar,
+[data-theme="light"] .quran-display,
+[data-theme="light"] .modal,
+[data-theme="light"] .modal-content,
+[data-theme="light"] .hp2-hero,
+[data-theme="light"] .hp2-panel,
+[data-theme="light"] .hp2-content,
+[data-theme="light"] .duas-results,
+[data-theme="light"] .duas-hero {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, #ffffff 96%, rgba(18, 33, 49, 0.04) 4%),
+        color-mix(in srgb, #f5f9fd 94%, rgba(26, 143, 146, 0.06) 6%)
+    ) !important;
+    border-color: var(--theme-border) !important;
+}
+
+[data-theme="light"] .hp2-item,
+[data-theme="light"] .hpl-row,
+[data-theme="light"] .scard,
+[data-theme="light"] .search-result-card,
+[data-theme="light"] .modal-item-card,
+[data-theme="light"] .notes-card,
+[data-theme="light"] .dua-card-v5 {
+    background: linear-gradient(
+        170deg,
+        color-mix(in srgb, #ffffff 94%, rgba(26, 143, 146, 0.06) 6%),
+        color-mix(in srgb, #f3f8fc 94%, rgba(18, 33, 49, 0.04) 6%)
+    ) !important;
+    border-color: color-mix(in srgb, var(--theme-border) 90%, transparent 10%) !important;
+}
+
+[data-theme="light"] .hp2-item__sub,
+[data-theme="light"] .hpl-row__sub,
+[data-theme="light"] .hpl-row__meta,
+[data-theme="light"] .search-result-meta,
+[data-theme="light"] .modal-subtitle,
+[data-theme="light"] .qc-ayah-translation,
+[data-theme="light"] .qc-ayah-transliteration {
+    color: var(--theme-text-soft) !important;
+}
+
+[data-theme="light"] .hp2-item__ar,
+[data-theme="light"] .hpl-row__ar,
+[data-theme="light"] .scard__ar,
+[data-theme="light"] .qc-ayah-text-ar,
+[data-theme="light"] .surah-header-name,
+[data-theme="light"] .bismillah-text {
+    color: #10283b !important;
+    text-shadow: none !important;
+}

@@ -6,19 +6,19 @@
 
 :root[data-theme="light"],
 [data-theme="light"] {
-    --brand-bg: #fcfdfd;
-    --brand-ink: #1f2832;
-    --brand-accent: #2f9ea7;
-    --brand-accent-rgb: 47, 158, 167;
+    --brand-bg: #f6f9fc;
+    --brand-ink: #162433;
+    --brand-accent: #1a8f92;
+    --brand-accent-rgb: 26, 143, 146;
     --theme-arabic-base: #0f0f0f;
     --theme-scene-a: radial-gradient(
         circle at 12% -14%,
-        rgba(47, 158, 167, 0.16),
+        rgba(26, 143, 146, 0.12),
         transparent 38%
     );
     --theme-scene-b: radial-gradient(
         circle at 88% -12%,
-        rgba(110, 127, 145, 0.08),
+        rgba(110, 127, 145, 0.05),
         transparent 34%
     );
     --theme-pattern:
@@ -34,10 +34,10 @@
             0 0 / 92px 92px;
     --theme-veil: linear-gradient(
         180deg,
-        rgba(255, 255, 255, 0.6),
+        rgba(255, 255, 255, 0.45),
         transparent 22%,
         transparent 78%,
-        rgba(246, 250, 251, 0.52)
+        rgba(246, 250, 251, 0.34)
     );
     --theme-ornament:
         linear-gradient(
