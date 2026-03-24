@@ -1758,6 +1758,241 @@ kbd {
   opacity: 0.8;
 }
 
+/* ==========================================================
+   ADAPTIVE DEVICE FIT
+   Smaller settings window + device-aware layout
+   ========================================================== */
+
+.settings-dialog.settings-dialog--adaptive {
+  width: min(92vw, 860px);
+  max-height: min(88dvh, 920px);
+}
+
+.settings-body-layout.settings-body-layout--adaptive {
+  min-height: clamp(420px, 66dvh, 620px);
+}
+
+.settings-content.settings-content--adaptive {
+  padding: clamp(0.85rem, 1.3vw, 1.15rem);
+}
+
+.settings-content.settings-content--adaptive.is-compact-device {
+  padding: 0.8rem 0.78rem 1rem;
+}
+
+.settings-hero-card.is-compact-device {
+  gap: 0.75rem;
+  padding: 0.9rem;
+  border-radius: 1.1rem;
+}
+
+.settings-hero-copy.is-compact-device {
+  font-size: 0.84rem;
+  line-height: 1.48;
+}
+
+.settings-dialog.settings-dialog--adaptive .settings-nav {
+  width: 168px;
+  padding: 0.78rem 0.62rem;
+}
+
+.settings-dialog.settings-dialog--adaptive .settings-nav-item {
+  min-height: 48px;
+  padding: 0.64rem 0.72rem;
+  font-size: 0.76rem;
+}
+
+.settings-dialog.settings-dialog--adaptive .settings-nav-label {
+  font-size: 0.74rem;
+}
+
+.settings-dialog.settings-dialog--adaptive .settings-card {
+  border-radius: 1.08rem;
+  padding: 0.88rem 0.92rem;
+}
+
+.settings-dialog.settings-dialog--adaptive .settings-card-label {
+  margin-bottom: 0.72rem;
+  font-size: 0.82rem;
+}
+
+.settings-dialog.settings-dialog--adaptive .settings-chip {
+  min-height: 1.9rem;
+  padding: 0.34rem 0.75rem;
+  font-size: 0.73rem;
+}
+
+.settings-dialog.settings-dialog--adaptive .settings-tools-grid {
+  gap: 0.56rem;
+}
+
+.settings-dialog.settings-dialog--adaptive .settings-tool-card {
+  padding: 0.78rem 0.62rem;
+}
+
+@media (max-width: 1024px) {
+  .settings-dialog.settings-dialog--adaptive {
+    width: min(94vw, 760px);
+    max-height: 89dvh;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-header {
+    padding: 0.95rem 1rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .settings-dialog.settings-dialog--adaptive {
+    width: min(96vw, 680px);
+    max-height: 90dvh;
+    border-radius: 1.15rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-body-layout {
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-nav {
+    width: 100%;
+    flex-direction: row;
+    gap: 0.45rem;
+    padding: 0.62rem 0.72rem 0.74rem;
+    border-inline-end: none;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-nav-item {
+    min-width: 5.05rem;
+    min-height: 0;
+    padding: 0.58rem 0.62rem;
+    gap: 0.36rem;
+    border-radius: 0.82rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-nav-item i {
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 0.65rem;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 0.76rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-nav-label {
+    font-size: 0.68rem;
+    line-height: 1.14;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-content {
+    padding: 0.82rem 0.78rem 1rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-hero-card {
+    margin-bottom: 0.78rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-hero-title {
+    font-size: clamp(1.02rem, 3.9vw, 1.22rem);
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-hero-copy {
+    margin-top: 0.52rem;
+    font-size: 0.82rem;
+    line-height: 1.46;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-hero-pills {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-hero-pill {
+    min-height: 0;
+    padding: 0.6rem 0.7rem;
+    border-radius: 0.92rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .settings-overlay {
+    align-items: flex-end;
+  }
+
+  .settings-dialog.settings-dialog--adaptive {
+    width: 100%;
+    max-width: 100%;
+    max-height: 85dvh;
+    border-radius: 1rem 1rem 0 0;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-header {
+    padding: 0.78rem 0.85rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-title {
+    font-size: 0.96rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-close-btn {
+    width: 1.82rem;
+    height: 1.82rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-pane {
+    gap: 0.72rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-pane-title {
+    padding: 0.54rem 0.62rem;
+    font-size: 0.56rem;
+    letter-spacing: 0.09em;
+    margin-bottom: 0;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-card {
+    border-radius: 0.92rem;
+    padding: 0.74rem 0.78rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .settings-dialog.settings-dialog--adaptive {
+    max-height: 83dvh;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-nav-item {
+    min-width: 4.6rem;
+    padding: 0.52rem 0.54rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-nav-label {
+    font-size: 0.64rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-hero-card {
+    padding: 0.78rem;
+    border-radius: 0.95rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-hero-copy {
+    display: none;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-hero-pill__label {
+    font-size: 0.62rem;
+  }
+
+  .settings-dialog.settings-dialog--adaptive .settings-hero-pill__value {
+    font-size: 0.84rem;
+  }
+}
+
 .app-root.premium-plus .settings-nav-item {
   min-height: 3rem;
   color: var(--theme-text-muted);

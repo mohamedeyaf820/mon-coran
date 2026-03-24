@@ -236,6 +236,16 @@ export default function SettingsModal() {
   const [securityUnlockPassphrase, setSecurityUnlockPassphrase] = useState("");
   const [securityConfigured, setSecurityConfigured] = useState(false);
   const [securityUnlocked, setSecurityUnlocked] = useState(false);
+  const [isCompactDevice, setIsCompactDevice] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(max-width: 900px)").matches
+      : false,
+  );
+  const [isTouchDevice, setIsTouchDevice] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(hover: none), (pointer: coarse)").matches
+      : false,
+  );
   const closeButtonRef = useRef(null);
 
   const close = () => dispatch({ type: "TOGGLE_SETTINGS" });
@@ -452,6 +462,27 @@ export default function SettingsModal() {
     };
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const compactMedia = window.matchMedia("(max-width: 900px)");
+    const touchMedia = window.matchMedia("(hover: none), (pointer: coarse)");
+
+    const updateCompact = (event) => setIsCompactDevice(event.matches);
+    const updateTouch = (event) => setIsTouchDevice(event.matches);
+
+    setIsCompactDevice(compactMedia.matches);
+    setIsTouchDevice(touchMedia.matches);
+
+    compactMedia.addEventListener("change", updateCompact);
+    touchMedia.addEventListener("change", updateTouch);
+
+    return () => {
+      compactMedia.removeEventListener("change", updateCompact);
+      touchMedia.removeEventListener("change", updateTouch);
+    };
   }, []);
 
   const handleConfigurePassphrase = useCallback(() => {
@@ -825,6 +856,29 @@ export default function SettingsModal() {
     lang === "fr" ? "Actif" : lang === "ar" ? "مفعّل" : "Active";
   const disabledStateLabel =
     lang === "fr" ? "Désactivé" : lang === "ar" ? "متوقف" : "Off";
+  const deviceLabel = isCompactDevice
+    ? lang === "fr"
+      ? "Mobile"
+      : lang === "ar"
+        ? "جوال"
+        : "Mobile"
+    : isTouchDevice
+      ? lang === "fr"
+        ? "Tablette"
+        : lang === "ar"
+          ? "لوحي"
+          : "Tablet"
+      : lang === "fr"
+        ? "Ordinateur"
+        : lang === "ar"
+          ? "سطح المكتب"
+          : "Desktop";
+  const connectionLabel =
+    lang === "fr"
+      ? "Appareil détecté"
+      : lang === "ar"
+        ? "الجهاز المتصل"
+        : "Detected device";
   const settingsHero = (() => {
     const pill = (label, value) => ({ label, value });
 
@@ -844,6 +898,7 @@ export default function SettingsModal() {
                 ? "اضبط اللغة والثيم ودورة الليل والنهار للحفاظ على تجربة متناسقة في كل المنصة."
                 : "Tune language, theme, and day-night behavior to keep the whole platform visually consistent.",
           pills: [
+            pill(connectionLabel, deviceLabel),
             pill(
               lang === "fr" ? "Thème actif" : lang === "ar" ? "الثيم الحالي" : "Active theme",
               currentThemeOption ? getThemeLabel(currentThemeOption) : theme,
@@ -879,6 +934,7 @@ export default function SettingsModal() {
                 ? "اختر الرواية ووضع العرض ووسائل الفهم بحسب أسلوب قراءتك."
                 : "Set the riwaya, reading layout, and comprehension aids around the way you read.",
           pills: [
+            pill(connectionLabel, deviceLabel),
             pill(lang === "fr" ? "Riwaya" : lang === "ar" ? "الرواية" : "Riwaya", riwaya.toUpperCase()),
             pill(lang === "fr" ? "Affichage" : lang === "ar" ? "العرض" : "Layout", displayModeLabel),
             pill(
@@ -906,6 +962,7 @@ export default function SettingsModal() {
                 ? "اضبط الخط والحجم ومساعدات القراءة لعرض أكثر وضوحًا وراحة."
                 : "Dial in font, size, and reading helpers for a calmer, clearer presentation.",
           pills: [
+            pill(connectionLabel, deviceLabel),
             pill(lang === "fr" ? "Police" : lang === "ar" ? "الخط" : "Font", currentFontOption?.label || fontFamily),
             pill(lang === "fr" ? "Taille" : lang === "ar" ? "الحجم" : "Size", `${quranFontSize}px`),
             pill(
@@ -933,6 +990,7 @@ export default function SettingsModal() {
                 ? "احتفظ بقرائك المفضلين واضبط المزامنة حتى تبدأ كل سورة بسلاسة."
                 : "Keep your preferred reciters close and fine-tune sync so every surah starts cleanly.",
           pills: [
+            pill(connectionLabel, deviceLabel),
             pill(
               lang === "fr" ? "Récitateur" : lang === "ar" ? "القارئ" : "Reciter",
               reciterObj?.nameFr || reciterObj?.nameEn || reciterObj?.name || reciter,
@@ -956,6 +1014,7 @@ export default function SettingsModal() {
                 ? "قم بالتصدير والاستيراد وحافظ على قاعدة نظيفة للمفضلة والملاحظات والتفضيلات."
                 : "Export, import, and keep a clean base for bookmarks, notes, and preferences.",
           pills: [
+            pill(connectionLabel, deviceLabel),
             pill(lang === "fr" ? "Format" : lang === "ar" ? "الصيغة" : "Format", "JSON"),
             pill(
               lang === "fr" ? "Stockage" : lang === "ar" ? "التخزين" : "Storage",
@@ -982,6 +1041,7 @@ export default function SettingsModal() {
                 ? "الوصول السريع إلى الوحدات التي توسع القراءة: الحفظ والاختبارات والمقارنة."
                 : "Reach memorization, quiz, and comparison tools faster from one coherent place.",
           pills: [
+            pill(connectionLabel, deviceLabel),
             pill(
               lang === "fr" ? "Tajwid" : lang === "ar" ? "التجويد" : "Tajweed",
               showTajwid ? activeStateLabel : disabledStateLabel,
@@ -1043,14 +1103,20 @@ export default function SettingsModal() {
   const overlayClass =
     "settings-overlay settings-overlay--premium-plus !bg-[radial-gradient(circle_at_14%_10%,rgba(76,170,206,0.18)_0%,transparent_34%),radial-gradient(circle_at_84%_16%,rgba(212,173,89,0.14)_0%,transparent_30%),rgba(3,8,20,0.78)] !backdrop-blur-[14px]";
   const dialogClass =
-    "settings-dialog settings-dialog--premium-plus !overflow-hidden !rounded-[32px] !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]";
+    "settings-dialog settings-dialog--premium-plus settings-dialog--adaptive !overflow-hidden !rounded-[24px] lg:!rounded-[28px] !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_28px_72px_rgba(1,8,22,0.56)] !max-w-[740px] lg:!max-w-[860px]";
   const headerClass =
     "settings-header settings-header--premium-plus !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))] !backdrop-blur-xl";
-  const bodyLayoutClass = "settings-body-layout !min-h-[560px]";
+  const bodyLayoutClass = cn(
+    "settings-body-layout settings-body-layout--adaptive !min-h-[460px] lg:!min-h-[520px]",
+    isCompactDevice && "is-compact-device",
+    isTouchDevice && "is-touch-device",
+  );
   const navClass =
     "settings-nav settings-nav--premium-plus !border-r !border-white/10 !bg-[linear-gradient(180deg,rgba(10,19,38,0.92),rgba(8,15,30,0.94))]";
-  const contentClass =
-    "settings-content settings-content--premium-plus !bg-[linear-gradient(180deg,rgba(10,19,37,0.72),rgba(7,14,27,0.82))]";
+  const contentClass = cn(
+    "settings-content settings-content--premium-plus settings-content--adaptive !bg-[linear-gradient(180deg,rgba(10,19,37,0.72),rgba(7,14,27,0.82))]",
+    isCompactDevice && "is-compact-device",
+  );
   const paneClass = "settings-pane !space-y-4 !animate-[fadeInUp_0.24s_ease]";
   const paneTitleClass =
     "settings-pane-title !rounded-2xl !border !border-white/10 !bg-white/[0.045] !px-3.5 !py-2.5 !text-[rgba(223,238,255,0.92)]";
@@ -1119,17 +1185,17 @@ export default function SettingsModal() {
 
           {/* Right content panel */}
           <div className={contentClass} role="tabpanel" id={activePanelId} aria-labelledby={`settings-tab-${activeTab}`}>
-            <div className="settings-hero-card">
+            <div className={cn("settings-hero-card", isCompactDevice && "is-compact-device") }>
               <div className="settings-hero-copywrap">
                 <span className="settings-hero-eyebrow">
                   <i className={`fas ${activeTabConfig.icon}`} aria-hidden="true"></i>
                   {tabLabel(activeTabConfig)}
                 </span>
                 <h3 className="settings-hero-title">{settingsHero.title}</h3>
-                <p className="settings-hero-copy">{settingsHero.copy}</p>
+                <p className={cn("settings-hero-copy", isCompactDevice && "is-compact-device")}>{settingsHero.copy}</p>
               </div>
               <div className="settings-hero-pills">
-                {settingsHero.pills.map((pill) => (
+                {(isCompactDevice ? settingsHero.pills.slice(0, 3) : settingsHero.pills).map((pill) => (
                   <div
                     key={`${activeTab}-${pill.label}`}
                     className="settings-hero-pill"
