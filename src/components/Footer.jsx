@@ -79,7 +79,7 @@ export default function Footer() {
               <i className="fas fa-star-and-crescent text-xs" />
             </span>
             <p
-              className="min-w-0 flex-1 truncate text-[1.16rem] leading-relaxed text-[var(--text-primary)] [font-family:var(--font-quran,serif)]"
+              className="min-w-0 flex-1 text-[1.04rem] leading-[1.9] text-[var(--text-primary)] sm:text-[1.16rem] [font-family:var(--font-quran,serif)]"
               dir="rtl"
               lang="ar"
             >
@@ -96,25 +96,40 @@ export default function Footer() {
         </div>
 
         <div className="mp-footer__body relative p-4 sm:p-6">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.17em] text-[var(--theme-muted,var(--text-tertiary))]">
+              {t({
+                fr: "Actions essentielles",
+                en: "Essential actions",
+                ar: "الإجراءات الأساسية",
+              })}
+            </p>
+            <span className="text-[0.7rem] font-semibold text-[var(--gold,#d4a820)]">
+              {t({ fr: "Acces rapide", en: "Quick access", ar: "وصول سريع" })}
+            </span>
+          </div>
           <nav
             className="mp-footer__tool-grid grid grid-cols-2 gap-2 sm:grid-cols-5"
             aria-label={t({ fr: "Actions essentielles", en: "Essential actions", ar: "الإجراءات الأساسية" })}
           >
-            {essentialActions.map((item) => (
+            {essentialActions.map((item, index) => (
               <button
                 key={item.label}
                 type="button"
-                className={`rounded-2xl border border-[var(--theme-panel-border,var(--border-light))] bg-[var(--theme-panel-bg,var(--bg-card))] px-3 py-2.5 text-left transition duration-300 hover:-translate-y-0.5 hover:border-[rgba(var(--primary-rgb),0.34)] ${isRtl ? "text-right" : ""}`}
+                className={`group rounded-2xl border border-[var(--theme-panel-border,var(--border-light))] bg-[linear-gradient(180deg,var(--theme-panel-bg,var(--bg-card)),color-mix(in_srgb,var(--theme-panel-bg,var(--bg-card))_88%,rgba(var(--primary-rgb),0.08)_12%))] px-3 py-2.5 text-left shadow-[0_8px_18px_rgba(2,8,23,0.08)] transition duration-300 hover:-translate-y-0.5 hover:border-[rgba(var(--primary-rgb),0.34)] hover:shadow-[0_14px_30px_rgba(2,8,23,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.34)] ${index === essentialActions.length - 1 ? "col-span-2 sm:col-span-1" : ""} ${isRtl ? "text-right" : ""}`}
                 onClick={item.onClick}
+                aria-label={item.label}
               >
-                <span className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
-                  <i className={`fas ${item.icon} text-[var(--gold,#d4a820)]`} aria-hidden="true" />
-                  {item.label}
+                <span className="flex items-center gap-2.5 text-sm font-semibold text-[var(--text-primary)]">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-[var(--theme-chip-border,rgba(var(--primary-rgb),0.2))] bg-[var(--theme-chip-bg,rgba(var(--primary-rgb),0.12))] text-[var(--gold,#d4a820)] transition group-hover:scale-105">
+                    <i className={`fas ${item.icon} text-[0.72rem]`} aria-hidden="true" />
+                  </span>
+                  <span className="truncate">{item.label}</span>
                 </span>
               </button>
             ))}
           </nav>
-          <div className="mt-3 text-center text-xs text-[var(--theme-muted,var(--text-tertiary))]">
+          <div className="mt-3 text-center text-[0.72rem] text-[var(--theme-muted,var(--text-tertiary))]">
             {t({
               fr: "Le Saint Coran",
               en: "The Holy Quran",
