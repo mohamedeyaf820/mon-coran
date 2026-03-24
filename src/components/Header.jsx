@@ -284,6 +284,9 @@ export default function Header() {
                 className="w-full h-full"
                 imgClassName="w-full h-full object-cover"
                 decorative
+                priority
+                width={80}
+                height={80}
               />
             </span>
             <span className="hdr__brand-name">Mushaf.plus</span>

@@ -129,6 +129,9 @@ export default function SplashScreen({
           className="splash-logo-wrap"
           imgClassName="splash-logo"
           decorative
+          priority
+          width={160}
+          height={160}
         />
         <h1 className="splash-title">MushafPlus</h1>
         <p className="splash-subtitle">القرآن الكريم</p>

@@ -8,6 +8,11 @@ export default function PlatformLogo({
   imgClassName = "",
   alt = "MushafPlus",
   decorative = false,
+  priority = false,
+  loading = "lazy",
+  fetchPriority = "auto",
+  width = 64,
+  height = 64,
 }) {
   const [src, setSrc] = useState(PRIMARY_LOGO_SRC);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -28,8 +33,11 @@ export default function PlatformLogo({
         src={src}
         alt={decorative ? "" : alt}
         className={imgClassName}
-        loading="eager"
-        decoding="async"
+        loading={priority ? "eager" : loading}
+        fetchPriority={priority ? "high" : fetchPriority}
+        decoding={priority ? "sync" : "async"}
+        width={width}
+        height={height}
         onError={() => {
           if (src !== FALLBACK_LOGO_SRC) setSrc(FALLBACK_LOGO_SRC);
           else setLoadFailed(true);

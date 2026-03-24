@@ -122,8 +122,8 @@ const RECITERS = {
       nameEn: "Ahmed Al-Ajmy",
       nameFr: "Ahmed Al-Ajmy",
       style: "murattal",
-      cdn: "ahmed_ibn_ali_al_ajamy_128kbps",
-      cdnType: "everyayah",
+      cdn: "ar.ahmedajamy",
+      cdnType: "islamic",
     },
     {
       id: "maher_almuaiqly",
@@ -131,8 +131,8 @@ const RECITERS = {
       nameEn: "Maher Al-Muaiqly",
       nameFr: "Maher Al-Muaiqly",
       style: "murattal",
-      cdn: "Maher_Al_Muaiqly_128kbps",
-      cdnType: "everyayah",
+      cdn: "ar.mahermuaiqly",
+      cdnType: "islamic",
     },
     {
       id: "abdulbari_thubayti",
@@ -158,8 +158,17 @@ const RECITERS = {
       nameEn: "Ali Al-Hudhaify",
       nameFr: "Ali Al-Hudhaify",
       style: "murattal",
-      cdn: "Hudhaify_128kbps",
-      cdnType: "everyayah",
+      cdn: "ar.hudhaify",
+      cdnType: "islamic",
+    },
+    {
+      id: "ar.muhammadjibreel",
+      name: "محمد جبريل",
+      nameEn: "Muhammad Jibreel",
+      nameFr: "Muhammad Jibreel",
+      style: "murattal",
+      cdn: "ar.muhammadjibreel",
+      cdnType: "islamic",
     },
     {
       id: "muhammad_ayyoub",
@@ -346,14 +355,42 @@ const RECITERS = {
   ],
 };
 
-export default RECITERS;
+const REMOVED_RECITER_IDS = new Set([
+  "ar.abdulbasitmurattal",
+  "ar.abdulbasitmujawwad",
+  "ar.minshawimujawwad",
+  "ar.saoodshuraym",
+  "ar.abdurrahmaansudais",
+  "ar.maaboralmeem",
+  "abdulbari_thubayti",
+  "ibrahim_akhdar",
+  "khalid_qahtani",
+]);
+
+function filterRemovedReciters(list = []) {
+  return list.filter((reciter) => !REMOVED_RECITER_IDS.has(reciter.id));
+}
+
+const AVAILABLE_RECITERS = {
+  hafs: filterRemovedReciters(RECITERS.hafs),
+  warsh: filterRemovedReciters(RECITERS.warsh),
+};
+
+const ALL_AVAILABLE_RECITERS = [
+  ...AVAILABLE_RECITERS.hafs,
+  ...AVAILABLE_RECITERS.warsh,
+];
+
+export default AVAILABLE_RECITERS;
 
 export function getRecitersByRiwaya(riwaya = "hafs") {
-  return RECITERS[riwaya] || RECITERS.hafs;
+  return AVAILABLE_RECITERS[riwaya] || AVAILABLE_RECITERS.hafs;
 }
 
 export function getDefaultReciterId(riwaya = "hafs") {
-  return getRecitersByRiwaya(riwaya)?.[0]?.id || RECITERS.hafs[0].id;
+  const reciterId = getRecitersByRiwaya(riwaya)?.[0]?.id;
+  if (reciterId) return reciterId;
+  return getRecitersByRiwaya("hafs")?.[0]?.id || "ar.alafasy";
 }
 
 export function ensureReciterForRiwaya(reciterId, riwaya = "hafs") {
@@ -364,10 +401,10 @@ export function ensureReciterForRiwaya(reciterId, riwaya = "hafs") {
 }
 
 export function getReciter(id, riwaya = null) {
-  if (riwaya && RECITERS[riwaya]) {
-    return RECITERS[riwaya].find((r) => r.id === id) || null;
+  if (riwaya && AVAILABLE_RECITERS[riwaya]) {
+    return getRecitersByRiwaya(riwaya).find((r) => r.id === id) || null;
   }
-  return [...RECITERS.hafs, ...RECITERS.warsh].find((r) => r.id === id) || null;
+  return ALL_AVAILABLE_RECITERS.find((r) => r.id === id) || null;
 }
 
 export function reciterName(id, lang = "ar") {

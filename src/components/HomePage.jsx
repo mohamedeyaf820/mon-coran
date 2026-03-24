@@ -23,13 +23,13 @@ import {
 } from "../data/reciters";
 import { runWhenIdle } from "../utils/idleUtils";
 
-import { ErrorBoundary } from "./ErrorBoundary";
 import PlatformLogo from "./PlatformLogo";
 import Footer from "./Footer";
 import { buildSurahAudioPlaylist } from "../utils/audioPlaylist";
 
-const HOME_INITIAL_SURAHS = SURAHS.length;
-const HOME_SURAHS_BATCH = 18;
+const HOME_INITIAL_SURAHS = 36;
+const HOME_INITIAL_SURAHS_LOW = 18;
+const HOME_SURAHS_BATCH = 24;
 const HOME_DEFERRED_SECTION_STYLE = {
   contentVisibility: "auto",
   containIntrinsicSize: "1px 360px",
@@ -173,8 +173,19 @@ const SURAH_EN_MEANINGS = {
   114: "Mankind",
 };
 
+const SURAH_SEARCH_INDEX = SURAHS.map((surah) => ({
+  surah,
+  number: String(surah.n),
+  ar: String(surah.ar || ""),
+  enLower: String(surah.en || "").toLowerCase(),
+  frLower: String(surah.fr || "").toLowerCase(),
+}));
+
 function normalizeLatinSurahName(name = "") {
-  return name.replace(/[-']+/g, " ").replace(/\s+/g, " ").trim();
+  return String(name)
+    .replace(/[’`´]/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function getSurahEnglishMeaning(surahNumber) {
@@ -399,9 +410,21 @@ const SurahCard = memo(function SurahCard({
   viewMode,
   animIndex = 0,
 }) {
-  const primaryLabel = normalizeLatinSurahName(surah.en || surah.fr || surah.ar || "");
-  const secondaryLabel = getSurahEnglishMeaning(surah.n);
-  const ayahLabel = `${surah.ayahs} Ayat`;
+  const primaryLabel = normalizeLatinSurahName(
+    surah.en || surah.fr || surah.ar || "",
+  );
+  const secondaryLabel =
+    lang === "fr"
+      ? surah.fr || getSurahEnglishMeaning(surah.n)
+      : lang === "ar"
+        ? TYPE_INFO[surah.type]?.ar || ""
+        : getSurahEnglishMeaning(surah.n);
+  const ayahLabel =
+    lang === "ar"
+      ? `${toAr(surah.ayahs)} آية`
+      : lang === "fr"
+        ? `${surah.ayahs} versets`
+        : `${surah.ayahs} ayahs`;
   const playAriaLabel =
     lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen";
   const pageLabel =
@@ -467,6 +490,10 @@ const SurahCard = memo(function SurahCard({
           dir="rtl"
           lang="ar"
           style={{
+            direction: "rtl",
+            unicodeBidi: "isolate",
+            whiteSpace: "nowrap",
+            lineHeight: 1.2,
             fontFamily:
               'var(--font-surah-display, "Amiri Quran"), var(--font-quran), "KFGQPC Uthmanic Script HAFS", "ME Quran", "Amiri", serif',
             fontFeatureSettings: '"calt" 1, "liga" 1, "rlig" 1, "kern" 1',
@@ -494,7 +521,7 @@ const SurahCard = memo(function SurahCard({
     );
   }
 
-  /* ���� GRID CARD � reference-style layout ���� */
+  /* GRID CARD - reference-style layout */
   const cardVisibilityStyle = {
     contentVisibility: "auto",
     containIntrinsicSize: "112px",
@@ -544,36 +571,40 @@ const SurahCard = memo(function SurahCard({
         </span>
       </div>
 
-      <span
-        className="scard__ar !ml-auto !pr-1 !text-right !text-[clamp(1.85rem,2.1vw,2.35rem)] !leading-none !text-[#ba932f]"
-        dir="rtl"
-        lang="ar"
-        style={{
-          fontFamily:
-            'var(--font-surah-display, "Amiri Quran"), var(--font-quran), "KFGQPC Uthmanic Script HAFS", "ME Quran", "Amiri", serif',
-          fontFeatureSettings: '"calt" 1, "liga" 1, "rlig" 1, "kern" 1',
-          textRendering: "optimizeLegibility",
-          WebkitFontSmoothing: "antialiased",
-          fontKerning: "normal",
-        }}
-      >
-        {surah.ar}
-      </span>
+      <div className="!ml-auto !flex !items-center !gap-2 !pl-1">
+        <span
+          className="scard__ar !text-right !text-[clamp(1.85rem,2.1vw,2.35rem)] !leading-[1.15] !text-[#ba932f]"
+          dir="rtl"
+          lang="ar"
+          style={{
+            direction: "rtl",
+            unicodeBidi: "isolate",
+            whiteSpace: "nowrap",
+            fontFamily:
+              'var(--font-surah-display, "Amiri Quran"), var(--font-quran), "KFGQPC Uthmanic Script HAFS", "ME Quran", "Amiri", serif',
+            fontFeatureSettings: '"calt" 1, "liga" 1, "rlig" 1, "kern" 1',
+            textRendering: "optimizeLegibility",
+            WebkitFontSmoothing: "antialiased",
+            fontKerning: "normal",
+          }}
+        >
+          {surah.ar}
+        </span>
 
-      {/* Play button (absolute bottom-right) */}
-      <button
-        className={cn(
-          "scard__play !absolute !right-2 !top-2 !inline-flex !h-6 !w-6 !items-center !justify-center !rounded-md !border !border-[#d8d1bf] !bg-[#f1ecdf] !text-[0.6rem] !text-[#8f845f] !opacity-0 !transition-all !duration-200 group-hover:!opacity-80 hover:!scale-105",
-          isPlaying && "scard__play--on motion-safe:animate-pulse",
-        )}
-        onClick={(e) => {
-          e.stopPropagation();
-          onPlay(surah.n);
-        }}
-        aria-label={playAriaLabel}
-      >
-        <i className={`fas fa-${isPlaying ? "pause" : "play"}`} />
-      </button>
+        <button
+          className={cn(
+            "scard__play !relative !inline-flex !h-6 !w-6 !shrink-0 !items-center !justify-center !rounded-md !border !border-[#d8d1bf] !bg-[#f1ecdf] !text-[0.6rem] !text-[#8f845f] !opacity-65 !transition-all !duration-200 group-hover:!opacity-100 hover:!scale-105 focus-visible:!opacity-100",
+            isPlaying && "scard__play--on motion-safe:animate-pulse",
+          )}
+          onClick={(e) => {
+            e.stopPropagation();
+            onPlay(surah.n);
+          }}
+          aria-label={playAriaLabel}
+        >
+          <i className={`fas fa-${isPlaying ? "pause" : "play"}`} />
+        </button>
+      </div>
     </div>
   );
 });
@@ -649,7 +680,7 @@ function EmptyState({ icon, text }) {
 }
 
 /* HomePage principale */
-export default function HomePage() {
+export default function HomePage({ lowPerfMode = false }) {
   const { state, dispatch, set } = useApp();
   const { lang, currentSurah, currentAyah, currentJuz, displayMode, riwaya } =
     state;
@@ -664,8 +695,12 @@ export default function HomePage() {
   const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
   const [now, setNow] = useState(() => new Date());
   const [recentVisits, setRecentVisits] = useState([]);
-  const [visibleSurahCount, setVisibleSurahCount] =
-    useState(HOME_INITIAL_SURAHS);
+  const homeInitialSurahCount = lowPerfMode
+    ? HOME_INITIAL_SURAHS_LOW
+    : HOME_INITIAL_SURAHS;
+  const [visibleSurahCount, setVisibleSurahCount] = useState(
+    homeInitialSurahCount,
+  );
   const deferredFilter = useDeferredValue(filter);
   const loadMoreRef = useRef(null);
 
@@ -805,16 +840,17 @@ export default function HomePage() {
 
   const filteredSurahs = useMemo(() => {
     const source = !trimmedDeferredFilter
-      ? [...SURAHS]
-      : SURAHS.filter(
-          (s) =>
-            s.ar.includes(trimmedDeferredFilter) ||
-            s.en.toLowerCase().includes(normalizedDeferredFilter) ||
-            s.fr.toLowerCase().includes(normalizedDeferredFilter) ||
-            String(s.n) === trimmedDeferredFilter,
+      ? SURAH_SEARCH_INDEX
+      : SURAH_SEARCH_INDEX.filter(
+          (entry) =>
+            entry.ar.includes(trimmedDeferredFilter) ||
+            entry.enLower.includes(normalizedDeferredFilter) ||
+            entry.frLower.includes(normalizedDeferredFilter) ||
+            entry.number === trimmedDeferredFilter,
         );
-    source.sort((a, b) => (sortDir === "asc" ? a.n - b.n : b.n - a.n));
-    return source;
+    const surahs = source.map((entry) => entry.surah);
+    surahs.sort((a, b) => (sortDir === "asc" ? a.n - b.n : b.n - a.n));
+    return surahs;
   }, [normalizedDeferredFilter, sortDir, trimmedDeferredFilter]);
 
   const renderedSurahs = useMemo(
@@ -839,8 +875,8 @@ export default function HomePage() {
   }, [filteredSurahs.length]);
 
   useEffect(() => {
-    setVisibleSurahCount(HOME_INITIAL_SURAHS);
-  }, [activeTab, normalizedDeferredFilter, sortDir]);
+    setVisibleSurahCount(homeInitialSurahCount);
+  }, [activeTab, normalizedDeferredFilter, sortDir, homeInitialSurahCount]);
 
   useEffect(() => {
     if (!hasMoreSurahs) return;
@@ -1026,54 +1062,47 @@ export default function HomePage() {
     },
   ];
   const useSurahGridScroll = activeTab === "surah" && viewMode === "grid";
+  const shouldReduceHomeFx = lowPerfMode;
 
   return (
     <div className="hp2 hp2--platform !relative !overflow-hidden">
-      <div
-        className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
-        aria-hidden="true"
-      >
-        <div className="absolute -top-28 left-[6%] h-72 w-72 rounded-full blur-[110px] motion-safe:animate-pulse [animation-duration:8s]" />
-        <div className="absolute top-[18%] -right-28 h-80 w-80 rounded-full blur-[120px] motion-safe:animate-pulse [animation-duration:11s]" />
-        <div className="absolute -bottom-32 left-[30%] h-96 w-96 rounded-full blur-[130px] motion-safe:animate-pulse [animation-duration:9s]" />
-        <div className="absolute inset-0 opacity-[0.16] [background-image:linear-gradient(to_right,rgba(148,163,184,0.2)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.17)_1px,transparent_1px)] [background-size:64px_64px]" />
-      </div>
+      {!shouldReduceHomeFx && (
+        <div
+          className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+          aria-hidden="true"
+        >
+          <div className="absolute -top-28 left-[6%] h-72 w-72 rounded-full blur-[110px] motion-safe:animate-pulse [animation-duration:8s]" />
+          <div className="absolute top-[18%] -right-28 h-80 w-80 rounded-full blur-[120px] motion-safe:animate-pulse [animation-duration:11s]" />
+          <div className="absolute -bottom-32 left-[30%] h-96 w-96 rounded-full blur-[130px] motion-safe:animate-pulse [animation-duration:9s]" />
+          <div className="absolute inset-0 opacity-[0.16] [background-image:linear-gradient(to_right,rgba(148,163,184,0.2)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.17)_1px,transparent_1px)] [background-size:64px_64px]" />
+        </div>
+      )}
       {/* HERO */}
       <section className="hp2-hero !relative !z-10 !overflow-hidden !rounded-[28px]">
-        {/* Daily Verse section protégée */}
-        <ErrorBoundary>
-          {/* Remplacer ici par le composant réel si DailyVersesSection existe, sinon protéger le rendu du verset du jour */}
-          <div className="hp2-daily-verse !mb-4">
-            <div className="hp2-daily-verse__label !text-[0.92rem] !font-semibold !mb-1">
-              {t("verseOfDay")}
-            </div>
-            <div className="hp2-daily-verse__text !text-[1.18rem] !font-quran !mb-1" dir="rtl" lang="ar">
-              {dailyVerse.text}
-            </div>
-            <div className="hp2-daily-verse__ref !text-[0.82rem] !text-[var(--text-muted)]">
-              {dailyVerse.ref}
-            </div>
-            <div className="hp2-daily-verse__trans !text-[0.92rem] !text-[var(--text-secondary)]">
-              {dailyVerse.trans_fr}
-            </div>
-          </div>
-        </ErrorBoundary>
         <div className="pointer-events-none absolute inset-0" />
-        <div className="pointer-events-none absolute -top-12 right-[14%] h-28 w-28 rounded-full border border-white/15 opacity-35 motion-safe:animate-spin [animation-duration:16s]" />
-        <div className="pointer-events-none absolute -bottom-14 left-[44%] h-36 w-36 rounded-full border opacity-30 motion-safe:animate-spin [animation-direction:reverse] [animation-duration:22s]" />
+        {!shouldReduceHomeFx && (
+          <>
+            <div className="pointer-events-none absolute -top-12 right-[14%] h-28 w-28 rounded-full border border-white/15 opacity-35 motion-safe:animate-spin [animation-duration:16s]" />
+            <div className="pointer-events-none absolute -bottom-14 left-[44%] h-36 w-36 rounded-full border opacity-30 motion-safe:animate-spin [animation-direction:reverse] [animation-duration:22s]" />
+          </>
+        )}
         {/* Orbs décoratifs */}
-        <div
-          className="hp2-hero__orb hp2-hero__orb--1 !opacity-65 motion-safe:animate-pulse [animation-duration:9s]"
-          aria-hidden="true"
-        />
-        <div
-          className="hp2-hero__orb hp2-hero__orb--2 !opacity-60 motion-safe:animate-pulse [animation-duration:12s]"
-          aria-hidden="true"
-        />
-        <div
-          className="hp2-hero__orb hp2-hero__orb--3 !opacity-55 motion-safe:animate-pulse [animation-duration:10s]"
-          aria-hidden="true"
-        />
+        {!shouldReduceHomeFx && (
+          <>
+            <div
+              className="hp2-hero__orb hp2-hero__orb--1 !opacity-65 motion-safe:animate-pulse [animation-duration:9s]"
+              aria-hidden="true"
+            />
+            <div
+              className="hp2-hero__orb hp2-hero__orb--2 !opacity-60 motion-safe:animate-pulse [animation-duration:12s]"
+              aria-hidden="true"
+            />
+            <div
+              className="hp2-hero__orb hp2-hero__orb--3 !opacity-55 motion-safe:animate-pulse [animation-duration:10s]"
+              aria-hidden="true"
+            />
+          </>
+        )}
 
         <div className="hp2-hero__inner !relative !z-10">
           {/* Gauche */}
@@ -1230,7 +1259,7 @@ export default function HomePage() {
                               <span className="hp2-item__ar">{s?.ar}</span>
                               <span className="hp2-item__sub">
                                 {lang === "fr" ? s?.fr : s?.en} · v.{bk.ayah}
-                                {bk.label && <em> � {bk.label}</em>}
+                                  {bk.label && <em> - {bk.label}</em>}
                               </span>
                             </div>
                             <i
@@ -1322,11 +1351,13 @@ export default function HomePage() {
             </aside>
           </div>
 
-          {/* ���� Droite ���� */}
+          {/* Droite */}
           <div className="hp2-hero__right !relative !z-10 space-y-3">
-            {/* Verset du jour � carte principale droite */}
+            {/* Verset du jour - carte principale droite */}
             <div className="hp2-vod !relative !overflow-hidden !rounded-2xl !border !p-4 !transition-all !duration-300 hover:!scale-[1.01]">
-              <div className="pointer-events-none absolute -top-8 right-4 h-24 w-24 rounded-full blur-2xl motion-safe:animate-pulse [animation-duration:8s]" />
+              {!shouldReduceHomeFx && (
+                <div className="pointer-events-none absolute -top-8 right-4 h-24 w-24 rounded-full blur-2xl motion-safe:animate-pulse [animation-duration:8s]" />
+              )}
               <div className="hp2-vod__head !relative !z-10">
                 <span className="hp2-vod__label !rounded-full !border !px-2.5 !py-1">
                   <i className="fas fa-star-and-crescent" />

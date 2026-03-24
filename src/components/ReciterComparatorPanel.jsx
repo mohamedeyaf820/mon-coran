@@ -3,6 +3,7 @@
  */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useApp } from '../context/AppContext';
+import { getReciter } from '../data/reciters';
 import SURAHS from '../data/surahs';
 
 // Build audio URL compatible with both cdn types
@@ -20,17 +21,21 @@ function buildUrl(reciter, surah, ayah) {
   return `https://cdn.islamic.network/quran/audio/128/${cdn}/${global}.mp3`;
 }
 
-// Compact reciter list for the picker (Hafs reciters, most popular)
-const COMPARE_RECITERS = [
-  { id: 'ar.alafasy',              name: 'العفاسي',       nameEn: 'Alafasy',        cdn: 'ar.alafasy',              cdnType: 'islamic' },
-  { id: 'ar.abdulbasitmurattal',   name: 'عبدالباسط (مر)', nameEn: 'Abdul Basit (M)', cdn: 'ar.abdulbasitmurattal',   cdnType: 'islamic' },
-  { id: 'ar.abdulbasitmujawwad',   name: 'عبدالباسط (مج)', nameEn: 'Abdul Basit (J)', cdn: 'ar.abdulbasitmujawwad',   cdnType: 'islamic' },
-  { id: 'ar.husary',               name: 'الحصري',         nameEn: 'Al-Husary',      cdn: 'ar.husary',               cdnType: 'islamic' },
-  { id: 'ar.minshawi',             name: 'المنشاوي',       nameEn: 'Al-Minshawi',    cdn: 'ar.minshawi',             cdnType: 'islamic' },
-  { id: 'ar.abdurrahmaansudais',   name: 'السديس',         nameEn: 'As-Sudais',      cdn: 'ar.abdurrahmaansudais',   cdnType: 'islamic' },
-  { id: 'ar.saoodshuraym',         name: 'الشريم',         nameEn: 'Ash-Shuraym',    cdn: 'ar.saoodshuraym',         cdnType: 'islamic' },
-  { id: 'ar.maaboralmeem',         name: 'الغامدي',        nameEn: 'Al-Ghamdi',      cdn: 'Saad_Al-Ghamdi_128kbps',  cdnType: 'everyayah' },
+// Compact reciter list for the picker (Hafs reciters, reliable endpoints only)
+const COMPARE_RECITER_IDS = [
+  'ar.alafasy',
+  'ar.husary',
+  'ar.minshawi',
+  'ahmed_ajmy',
+  'ali_jabir',
+  'hudhaify',
+  'yasser_dossari_hafs',
+  'nasser_alqatami',
 ];
+
+const COMPARE_RECITERS = COMPARE_RECITER_IDS
+  .map((id) => getReciter(id, 'hafs'))
+  .filter(Boolean);
 
 function ReciterTrack({ reciter, surah, ayah, lang }) {
   const audioRef = useRef(null);
@@ -121,7 +126,9 @@ export default function ReciterComparatorPanel() {
   const { lang, currentSurah, currentAyah } = state;
 
   // Selected reciters (up to 4, default first 3)
-  const [selected, setSelected] = useState(['ar.alafasy', 'ar.abdulbasitmurattal', 'ar.husary']);
+  const [selected, setSelected] = useState(() =>
+    COMPARE_RECITERS.slice(0, 3).map((reciter) => reciter.id),
+  );
   const [surah, setSurah] = useState(currentSurah);
   const [ayah, setAyah] = useState(currentAyah);
 

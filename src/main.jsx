@@ -1,10 +1,95 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "@fortawesome/fontawesome-free/css/all.min.css";
 import App from "./App";
 import { AppProvider } from "./context/AppContext";
 import "./styles/index.css";
-import "./styles/mobile-all-versions.css";
+
+let fontAwesomeStylesPromise = null;
+
+function loadFontAwesomeStyles() {
+  if (!fontAwesomeStylesPromise) {
+    fontAwesomeStylesPromise = import(
+      "@fortawesome/fontawesome-free/css/all.min.css"
+    ).catch(() => null);
+  }
+  return fontAwesomeStylesPromise;
+}
+
+let mobileStylesPromise = null;
+
+function loadMobileStyles() {
+  if (!mobileStylesPromise) {
+    mobileStylesPromise = import("./styles/mobile-all-versions.css").catch(
+      () => null,
+    );
+  }
+  return mobileStylesPromise;
+}
+
+if (typeof window !== "undefined") {
+  const warmIconStyles = () => {
+    loadFontAwesomeStyles();
+  };
+
+  const onFirstInteraction = () => {
+    loadFontAwesomeStyles();
+    window.removeEventListener("pointerdown", onFirstInteraction);
+    window.removeEventListener("keydown", onFirstInteraction);
+    window.removeEventListener("touchstart", onFirstInteraction);
+  };
+
+  window.addEventListener("pointerdown", onFirstInteraction, {
+    passive: true,
+    once: true,
+  });
+  window.addEventListener("keydown", onFirstInteraction, { once: true });
+  window.addEventListener("touchstart", onFirstInteraction, {
+    passive: true,
+    once: true,
+  });
+
+  if (typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(warmIconStyles, { timeout: 1200 });
+  } else {
+    window.setTimeout(warmIconStyles, 700);
+  }
+
+  const mobileQuery = window.matchMedia("(max-width: 960px)");
+
+  if (mobileQuery.matches) {
+    loadMobileStyles();
+  } else {
+    const onViewportToMobile = (event) => {
+      if (!event.matches) return;
+      loadMobileStyles();
+
+      if (typeof mobileQuery.removeEventListener === "function") {
+        mobileQuery.removeEventListener("change", onViewportToMobile);
+      } else if (typeof mobileQuery.removeListener === "function") {
+        mobileQuery.removeListener(onViewportToMobile);
+      }
+    };
+
+    if (typeof mobileQuery.addEventListener === "function") {
+      mobileQuery.addEventListener("change", onViewportToMobile);
+    } else if (typeof mobileQuery.addListener === "function") {
+      mobileQuery.addListener(onViewportToMobile);
+    }
+
+    const warmMobileStyles = () => {
+      const touchCapable =
+        navigator.maxTouchPoints > 0 || "ontouchstart" in window;
+      if (!touchCapable) return;
+      loadMobileStyles();
+    };
+
+    if (typeof window.requestIdleCallback === "function") {
+      window.requestIdleCallback(warmMobileStyles, { timeout: 2200 });
+    } else {
+      window.setTimeout(warmMobileStyles, 1200);
+    }
+  }
+}
 
 // ErrorBoundary global pour capturer les erreurs React
 class ErrorBoundary extends React.Component {
@@ -52,6 +137,58 @@ class ErrorBoundary extends React.Component {
     }
     return this.props.children;
   }
+}
+
+const CHUNK_RELOAD_KEY = "mushaf-plus:chunk-reload-once";
+let chunkReloadTriggered = false;
+
+function isChunkLoadErrorLike(errorLike) {
+  const message = String(
+    errorLike?.message ||
+      errorLike?.reason?.message ||
+      errorLike?.reason ||
+      errorLike ||
+      "",
+  );
+  return /Failed to fetch dynamically imported module|Importing a module script failed|ChunkLoadError|Loading chunk [\w-]+ failed/i.test(
+    message,
+  );
+}
+
+function tryRecoverFromChunkLoad(errorLike) {
+  if (chunkReloadTriggered || !isChunkLoadErrorLike(errorLike)) return;
+  chunkReloadTriggered = true;
+
+  let alreadyReloaded = false;
+  try {
+    alreadyReloaded = sessionStorage.getItem(CHUNK_RELOAD_KEY) === "1";
+    if (!alreadyReloaded) {
+      sessionStorage.setItem(CHUNK_RELOAD_KEY, "1");
+    }
+  } catch {
+    // Ignore storage edge-cases; fall back to a single in-memory retry.
+  }
+
+  if (!alreadyReloaded) {
+    window.location.reload();
+  }
+}
+
+if (import.meta.env.PROD) {
+  window.addEventListener("error", (event) => {
+    tryRecoverFromChunkLoad(event?.error || event?.message);
+  });
+  window.addEventListener("unhandledrejection", (event) => {
+    tryRecoverFromChunkLoad(event?.reason);
+  });
+
+  window.setTimeout(() => {
+    try {
+      sessionStorage.removeItem(CHUNK_RELOAD_KEY);
+    } catch {
+      // no-op
+    }
+  }, 10000);
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(

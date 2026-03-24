@@ -108,45 +108,7 @@ const KARAOKE_RECITER_OVERRIDES = {
       lagWordsLong: 0,
       smoothing: 0.9,
     },
-    // Minshawi mujawwad: very slow, drawn-out — maximum lead, lower smoothing
-    "ar.minshawimujawwad": {
-      offsetSec: 0.31,
-      lagWordsBase: 0,
-      lagWordsLong: 0,
-      smoothing: 0.83,
-    },
-    // Abdul Basit murattal: clear and measured
-    "ar.abdulbasitmurattal": {
-      offsetSec: 0.22,
-      lagWordsBase: 0,
-      lagWordsLong: 1,
-      smoothing: 0.88,
-      driftPerProgress: 0.05,
-      speedSensitivity: 0.07,
-    },
-    // Abdul Basit mujawwad: the slowest style — large lead, conservative smoothing
-    "ar.abdulbasitmujawwad": {
-      offsetSec: 0.42,
-      lagWordsBase: 0,
-      lagWordsLong: 1,
-      smoothing: 0.8,
-      driftPerProgress: 0.09,
-      speedSensitivity: 0.1,
-    },
-    // Sudais: fast-to-moderate, energetic recitation
-    "ar.abdurrahmaansudais": {
-      offsetSec: 0.17,
-      lagWordsBase: 0,
-      lagWordsLong: 0,
-      smoothing: 0.92,
-    },
-    // Shuraym: similar pace to Sudais
-    "ar.saoodshuraym": {
-      offsetSec: 0.18,
-      lagWordsBase: 0,
-      lagWordsLong: 0,
-      smoothing: 0.92,
-    },
+    // Removed unreliable reciters keep no explicit override here.
     // ── everyayah.com CDN (+0.03 s for CDN first-packet latency) ──────────
     abdullaah_matrood: {
       offsetSec: 0.17,
@@ -168,28 +130,8 @@ const KARAOKE_RECITER_OVERRIDES = {
       driftPerProgress: 0.07,
       speedSensitivity: 0.08,
     },
-    // Saad Al-Ghamdi: energetic, faster murattal
-    "ar.maaboralmeem": {
-      offsetSec: 0.18,
-      lagWordsBase: 0,
-      lagWordsLong: 0,
-      smoothing: 0.92,
-    },
     ahmed_ajmy: {
       offsetSec: 0.17,
-      lagWordsBase: 0,
-      lagWordsLong: 0,
-      smoothing: 0.9,
-    },
-    // Maher Al-Muaiqly: brisk pace, higher lead
-    maher_almuaiqly: {
-      offsetSec: 0.2,
-      lagWordsBase: 0,
-      lagWordsLong: 0,
-      smoothing: 0.92,
-    },
-    abdulbari_thubayti: {
-      offsetSec: 0.16,
       lagWordsBase: 0,
       lagWordsLong: 0,
       smoothing: 0.9,
@@ -243,18 +185,6 @@ const KARAOKE_RECITER_OVERRIDES = {
       lagWordsBase: 0,
       lagWordsLong: 0,
       smoothing: 0.92,
-    },
-    ibrahim_akhdar: {
-      offsetSec: 0.17,
-      lagWordsBase: 0,
-      lagWordsLong: 0,
-      smoothing: 0.9,
-    },
-    khalid_qahtani: {
-      offsetSec: 0.18,
-      lagWordsBase: 0,
-      lagWordsLong: 0,
-      smoothing: 0.9,
     },
     sahl_yassin: {
       offsetSec: 0.18,

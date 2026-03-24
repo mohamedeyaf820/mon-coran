@@ -6,14 +6,7 @@
 const AUDIO_LOAD_TIMEOUT = 12000; // 12s max to start loading
 const MAX_RETRIES = 2;
 const RETRY_DELAY = 800; // ms
-const TRUSTED_AUDIO_PREFIXES = [
-  "https://cdn.islamic.network/quran/audio/",
-  "https://everyayah.com/data/",
-  "https://server8.mp3quran.net/",
-  "https://server10.mp3quran.net/",
-  "https://download.quranicaudio.com/",
-  "https://www.everyayah.com/data/",
-];
+const TRUSTED_MP3QURAN_HOST = /^server\d+\.mp3quran\.net$/i;
 
 function devLog(method, ...args) {
   if (import.meta.env.DEV && typeof console !== "undefined") {
@@ -22,7 +15,30 @@ function devLog(method, ...args) {
 }
 
 function isTrustedAudioUrl(url) {
-  return TRUSTED_AUDIO_PREFIXES.some((prefix) => String(url || "").startsWith(prefix));
+  try {
+    const parsed = new URL(String(url || ""));
+    if (parsed.protocol !== "https:") return false;
+
+    const host = parsed.hostname.toLowerCase();
+    const path = parsed.pathname || "/";
+
+    if (host === "cdn.islamic.network") {
+      return path.startsWith("/quran/audio/") && /\.mp3$/i.test(path);
+    }
+    if (host === "everyayah.com" || host === "www.everyayah.com") {
+      return path.startsWith("/data/") && /\.mp3$/i.test(path);
+    }
+    if (host === "download.quranicaudio.com") {
+      return /\.mp3$/i.test(path);
+    }
+    if (TRUSTED_MP3QURAN_HOST.test(host)) {
+      return /\.mp3$/i.test(path);
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
 }
 
 class AudioService {
@@ -164,6 +180,12 @@ class AudioService {
 
   static buildUrlCandidates(reciterCdn, ayah, cdnType = "islamic") {
     const primary = AudioService.buildUrl(reciterCdn, ayah, cdnType);
+    if (cdnType === "everyayah") {
+      const mirror = primary.includes("://everyayah.com/")
+        ? primary.replace("://everyayah.com/", "://www.everyayah.com/")
+        : primary.replace("://www.everyayah.com/", "://everyayah.com/");
+      return [...new Set([primary, mirror])];
+    }
     if (!AudioService.isSurahStreamCdn(cdnType)) return [primary];
 
     const surah = typeof ayah === "object" ? ayah.surah || ayah.surahNumber || 1 : 1;

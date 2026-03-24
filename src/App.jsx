@@ -67,7 +67,16 @@ function detectLowPerformanceDevice() {
   const slowNetwork =
     navigator.connection?.saveData === true ||
     /2g/.test(navigator.connection?.effectiveType || "");
-  return Boolean(reducedMotion || lowMemory || lowCpu || slowNetwork);
+  const constrainedMobile =
+    window.matchMedia?.("(max-width: 820px)")?.matches &&
+    (lowMemory || lowCpu || /3g|2g/.test(navigator.connection?.effectiveType || ""));
+  return Boolean(
+    reducedMotion ||
+      lowMemory ||
+      lowCpu ||
+      slowNetwork ||
+      constrainedMobile,
+  );
 }
 
 export default function App() {
@@ -487,7 +496,7 @@ export default function App() {
           >
             {showHome ? (
               <Suspense fallback={suspenseFallback}>
-                <HomePage />
+                <HomePage lowPerfMode={lowPerfMode} />
               </Suspense>
             ) : showDuas ? (
               <Suspense fallback={suspenseFallback}>

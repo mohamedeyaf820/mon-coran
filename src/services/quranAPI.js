@@ -33,7 +33,7 @@ const TRANSLATION_EDITIONS = {
 const cache = new Map();
 const CACHE_MAX_SIZE = 500;
 
-// Request deduplication: pending fetches by URL
+// Request deduplication: pending fetches by URL + abort signal identity.
 const inflight = new Map();
 
 // Current AbortController for cancellable navigations
@@ -116,12 +116,24 @@ async function fetchJSON(url, signal) {
 
   // 3. Deduplicate: if same URL is already being fetched, reuse its promise
   if (inflight.has(url)) {
-    return inflight.get(url);
+    const active = inflight.get(url);
+    if (active && active.signal === (signal || null)) {
+      return active.promise;
+    }
   }
 
-  const promise = _fetchFromNetwork(url, idbKey, signal);
-  inflight.set(url, promise);
-  return promise;
+  const entry = {
+    signal: signal || null,
+    promise: _fetchFromNetwork(url, idbKey, signal),
+  };
+  inflight.set(url, entry);
+  entry.promise.finally(() => {
+    const current = inflight.get(url);
+    if (current === entry) {
+      inflight.delete(url);
+    }
+  });
+  return entry.promise;
 }
 
 async function _fetchFromNetwork(url, idbKey, signal) {
@@ -171,8 +183,6 @@ async function _fetchFromNetwork(url, idbKey, signal) {
   } catch (err) {
     clearTimeout(timeoutId);
     throw err;
-  } finally {
-    inflight.delete(url);
   }
 }
 

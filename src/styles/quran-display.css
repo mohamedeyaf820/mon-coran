@@ -5760,3 +5760,52 @@
             line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.05);
         }
     }
+
+/* Ultra-mobile typography pass (final) */
+@media (max-width: 420px) {
+    .quran-display--platform .surah-ayahs-list {
+        font-size: var(--qd-reading-font-size, 34px);
+    }
+
+    .quran-display--platform .qc-ayah-text-ar {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.07);
+        word-spacing: calc(var(--arabic-reading-word-spacing-mobile, 0.052em) - 0.01em);
+    }
+
+    .quran-display--platform .surah-header-name {
+        font-size: clamp(1.42rem, 7.4vw, 1.9rem);
+    }
+
+    .quran-display--platform .bismillah-text {
+        font-size: clamp(1.14rem, 6.2vw, 1.48rem);
+    }
+}
+
+@media (max-width: 360px) {
+    .quran-display--platform .surah-ayahs-list {
+        font-size: var(--qd-reading-font-size, 30px);
+    }
+
+    .quran-display--platform .qc-ayah-text-ar {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.1);
+        word-spacing: calc(var(--arabic-reading-word-spacing-mobile, 0.052em) - 0.014em);
+    }
+
+    .quran-display--platform .surah-header-name {
+        font-size: clamp(1.24rem, 7.2vw, 1.65rem);
+    }
+
+    .quran-display--platform .bismillah-text {
+        font-size: clamp(1.02rem, 5.9vw, 1.32rem);
+    }
+}
+
+@media (max-width: 340px) {
+    .quran-display--platform .surah-ayahs-list {
+        font-size: var(--qd-reading-font-size, 28px);
+    }
+
+    .quran-display--platform .qc-ayah-text-ar {
+        line-height: calc(var(--arabic-reading-line-height-mobile, 2.22) - 0.12);
+    }
+}

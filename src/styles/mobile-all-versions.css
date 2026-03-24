@@ -905,6 +905,25 @@
     gap: 0.5rem;
   }
 
+  .app-root .hp2-item__ar,
+  .app-root .hpl-row__ar,
+  .app-root .scard__ar,
+  .app-root .hp2-qchip__ar,
+  .app-root .search-result-arabic,
+  .app-root .sb-recent__ar {
+    font-size: 0.96rem !important;
+    line-height: 1.4 !important;
+    word-spacing: 0.018em;
+  }
+
+  .app-root .quran-display--platform .surah-header-name {
+    font-size: clamp(1.35rem, 7.2vw, 1.82rem) !important;
+  }
+
+  .app-root .quran-display--platform .bismillah-text {
+    font-size: clamp(1.08rem, 5.9vw, 1.42rem) !important;
+  }
+
   .app-root .hdr__btn-label,
   .app-root .hdr__btn-duas-label {
     font-size: 0.62rem;
@@ -924,6 +943,24 @@
 @media (max-width: 360px) {
   :root {
     --player-h: 132px;
+  }
+
+  .app-root .hp2-item__ar,
+  .app-root .hpl-row__ar,
+  .app-root .scard__ar,
+  .app-root .hp2-qchip__ar,
+  .app-root .search-result-arabic,
+  .app-root .sb-recent__ar {
+    font-size: 0.9rem !important;
+    line-height: 1.34 !important;
+  }
+
+  .app-root .quran-display--platform .surah-header-name {
+    font-size: clamp(1.2rem, 7.1vw, 1.56rem) !important;
+  }
+
+  .app-root .quran-display--platform .bismillah-text {
+    font-size: clamp(0.98rem, 5.8vw, 1.22rem) !important;
   }
 
   .app-root .hdr__action-cluster--tools .hdr__btn-label,

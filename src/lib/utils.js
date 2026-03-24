@@ -6,21 +6,15 @@ export function cn(...inputs) {
 }
 
 /**
- * toast(message, type?) — dispatch a global toast notification.
- * Listens for 'quran-toast' CustomEvent in App.jsx.
- *
- * @param {string} message - The text to display
- * @param {"info"|"success"|"error"|"warning"} type - Toast style (default: "info")
- *
- * @example
- * import { toast } from "../lib/utils";
- * toast("Verset copié !", "success");
- * toast("Erreur réseau", "error");
+ * Dispatch a global toast notification.
+ * App.jsx listens for the "quran-toast" custom event.
  */
 export function toast(message, type = "info") {
   if (typeof window === "undefined") return;
-    window.dispatchEvent(/* ... */); // 🚨 Si window undefined (SSR), crash
+
+  window.dispatchEvent(
+    new CustomEvent("quran-toast", {
+      detail: { message, type },
+    }),
+  );
 }
-    window.dispatchEvent(
-      new CustomEvent("quran-toast", { detail: { message, type } }),
-    );

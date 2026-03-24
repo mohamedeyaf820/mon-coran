@@ -21,11 +21,12 @@ const SurahHeader = React.memo(function SurahHeader({ surahNum, lang }) {
 
       {/* ── Parchment Mushaf banner ── */}
       <div className="qc-sh-parchment">
-        <h1 className="qc-header-name-ar">سُورَةُ {s.ar}</h1>
+        <h1 className="qc-header-name-ar" dir="rtl" lang="ar">سُورَةُ {s.ar}</h1>
       </div>
 
       <div className="qc-header-meta">
         <span className="qc-header-name-en">{lang === "fr" ? s.fr : s.en}</span>
+        {lang !== "ar" && <span className="qc-header-name-lat">{s.en}</span>}
         <div className="qc-header-details">
           <span className="qc-sh-type-pill">
             {isMeccan ? t("quran.meccan", lang) : t("quran.medinan", lang)}

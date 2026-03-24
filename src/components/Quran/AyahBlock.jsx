@@ -159,7 +159,7 @@ const AyahBlock = React.memo(function AyahBlock({
         {/* ── Main content ── */}
         <div className="qc-ayah-content">
           {/* Arabic text — full width, beautifully rendered */}
-          <div className="qc-ayah-text-ar">{arabicContent}</div>
+          <div className="qc-ayah-text-ar" dir="rtl" lang="ar">{arabicContent}</div>
 
           {/* Warsh QCF4 mode: WBW not available — inform user */}
           {!memMode && showWordByWord && ayah.warshWords?.length > 0 && (

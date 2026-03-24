@@ -170,6 +170,10 @@ export default function QuranDisplay() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [fullPage, setFullPage] = useState(false);
   const [preparingSurah, setPreparingSurah] = useState(null);
+  const [isCompactPhone, setIsCompactPhone] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(max-width: 420px)").matches;
+  });
   // Surah chunk navigation for long surahs
   const [chunkIndex, setChunkIndex] = useState(0);
   const [mushafPageIndex, setMushafPageIndex] = useState(0);
@@ -195,6 +199,23 @@ export default function QuranDisplay() {
     setMushafPageIndex(0);
   }, [currentSurah, displayMode, mushafLayout, riwaya]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const media = window.matchMedia("(max-width: 420px)");
+    const onChange = (event) => setIsCompactPhone(event.matches);
+
+    setIsCompactPhone(media.matches);
+    if (typeof media.addEventListener === "function") {
+      media.addEventListener("change", onChange);
+      return () => media.removeEventListener("change", onChange);
+    }
+    if (typeof media.addListener === "function") {
+      media.addListener(onChange);
+      return () => media.removeListener(onChange);
+    }
+    return undefined;
+  }, []);
+
   // Track reading progress
   useEffect(() => {
     if (
@@ -217,12 +238,18 @@ export default function QuranDisplay() {
   }, []);
 
   const readingFontSize = useMemo(
-    () => Math.min(Math.max(quranFontSize, 32), 64),
-    [quranFontSize],
+    () =>
+      isCompactPhone
+        ? Math.min(Math.max(quranFontSize, 27), 52)
+        : Math.min(Math.max(quranFontSize, 32), 64),
+    [isCompactPhone, quranFontSize],
   );
   const fullscreenFontSize = useMemo(
-    () => Math.min(Math.max(readingFontSize + 8, 50), 72),
-    [readingFontSize],
+    () =>
+      isCompactPhone
+        ? Math.min(Math.max(readingFontSize + 5, 40), 60)
+        : Math.min(Math.max(readingFontSize + 8, 50), 72),
+    [isCompactPhone, readingFontSize],
   );
 
   useEffect(() => {

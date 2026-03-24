@@ -1,8 +1,9 @@
-const CACHE_NAME = "mushaf-plus-v3";
+const CACHE_NAME = "mushaf-plus-v4";
 const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
   "/manifest.json",
+  "/logo.png",
   "/favicon.svg",
   "/fonts/scheherazade-new-400.woff2",
   "/fonts/scheherazade-new-700.woff2",
@@ -34,8 +35,10 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
-  // Cache-first for fonts (they never change once loaded)
   const url = new URL(event.request.url);
+  const isSameOrigin = url.origin === self.location.origin;
+
+  // Cache-first for fonts (they rarely change)
   if (url.pathname.startsWith("/fonts/")) {
     event.respondWith(
       caches.match(event.request).then((cached) => {
@@ -50,6 +53,32 @@ self.addEventListener("fetch", (event) => {
           return response;
         });
       }),
+    );
+    return;
+  }
+
+  // Stale-while-revalidate for same-origin images/logo/icons.
+  if (
+    isSameOrigin &&
+    /\.(png|jpe?g|webp|avif|svg|gif|ico)$/i.test(url.pathname)
+  ) {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(CACHE_NAME);
+        const cached = await cache.match(event.request);
+        const networkPromise = fetch(event.request)
+          .then((response) => {
+            if (
+              response &&
+              (response.status === 200 || response.type === "opaque")
+            ) {
+              cache.put(event.request, response.clone());
+            }
+            return response;
+          })
+          .catch(() => null);
+        return cached || (await networkPromise) || Response.error();
+      })(),
     );
     return;
   }
