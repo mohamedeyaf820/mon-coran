@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import {
@@ -22,6 +22,9 @@ export default function PlaylistPanel() {
   const [editing, setEditing] = useState(null);
   const [editName, setEditName] = useState("");
   const [loading, setLoading] = useState(true);
+  const panelRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  const titleId = "playlist-panel-title";
 
   const close = () => dispatch({ type: "TOGGLE_PLAYLIST" });
 
@@ -39,6 +42,47 @@ export default function PlaylistPanel() {
   useEffect(() => {
     loadPlaylists();
   }, [loadPlaylists]);
+
+  useEffect(() => {
+    const previous = document.activeElement;
+    const raf = window.requestAnimationFrame(() => {
+      closeButtonRef.current?.focus();
+    });
+    return () => {
+      window.cancelAnimationFrame(raf);
+      if (previous && typeof previous.focus === "function") previous.focus();
+    };
+  }, []);
+
+  const handleModalKeyDown = useCallback(
+    (event) => {
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        close();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const root = panelRef.current;
+      if (!root) return;
+      const focusable = root.querySelectorAll(
+        'button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    },
+    [close],
+  );
 
   const handleCreate = async () => {
     const name =
@@ -116,6 +160,12 @@ export default function PlaylistPanel() {
       <div
         className="modal modal-panel--wide !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        ref={panelRef}
+        onKeyDown={handleModalKeyDown}
       >
         <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
           <div className="modal-title-stack">
@@ -126,7 +176,7 @@ export default function PlaylistPanel() {
                   ? "الاستماع"
                   : "Listening"}
             </div>
-            <h2 className="modal-title">
+            <h2 className="modal-title" id={titleId}>
               <i className="fas fa-list"></i>
               {t("playlist.title", lang)}
             </h2>
@@ -138,7 +188,12 @@ export default function PlaylistPanel() {
                   : "Organize verses into fluid lists and replay them instantly."}
             </div>
           </div>
-          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
+          <button
+            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
+            onClick={close}
+            ref={closeButtonRef}
+            aria-label={lang === "fr" ? "Fermer les playlists" : "Close playlists"}
+          >
             <i className="fas fa-times"></i>
           </button>
         </div>
@@ -160,7 +215,11 @@ export default function PlaylistPanel() {
                   className="modal-inline-input !min-h-11 !flex-1 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3"
                   maxLength={50}
                 />
-                <button className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-sky-200/30 !bg-sky-500/20 hover:!bg-sky-500/30" onClick={handleCreate}>
+                <button
+                  className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-sky-200/30 !bg-sky-500/20 hover:!bg-sky-500/30"
+                  onClick={handleCreate}
+                  aria-label={lang === "fr" ? "Créer la playlist" : "Create playlist"}
+                >
                   <i className="fas fa-plus"></i>
                 </button>
               </div>
@@ -219,6 +278,7 @@ export default function PlaylistPanel() {
                             className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-emerald-300/20 !bg-emerald-500/10 hover:!bg-emerald-500/20"
                             onClick={() => handlePlay(pl)}
                             title={lang === "fr" ? "Écouter" : "Play"}
+                            aria-label={lang === "fr" ? "Écouter la playlist" : "Play playlist"}
                           >
                             <i className="fas fa-play"></i>
                           </button>
@@ -230,6 +290,7 @@ export default function PlaylistPanel() {
                             setEditName(pl.name);
                           }}
                           title={lang === "fr" ? "Renommer" : "Rename"}
+                          aria-label={lang === "fr" ? "Renommer la playlist" : "Rename playlist"}
                         >
                           <i className="fas fa-pen"></i>
                         </button>
@@ -237,6 +298,7 @@ export default function PlaylistPanel() {
                           className="modal-action-btn modal-delete-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-red-300/20 !bg-red-500/10 !text-red-100 hover:!bg-red-500/20"
                           onClick={() => handleDelete(pl.id)}
                           title={lang === "fr" ? "Supprimer" : "Delete"}
+                          aria-label={lang === "fr" ? "Supprimer la playlist" : "Delete playlist"}
                         >
                           <i className="fas fa-trash"></i>
                         </button>
@@ -352,6 +414,7 @@ export default function PlaylistPanel() {
                               handleRemoveAyah(selected.id, a.surah, a.ayah)
                             }
                             title={lang === "fr" ? "Retirer" : "Remove"}
+                            aria-label={lang === "fr" ? "Retirer le verset" : "Remove verse"}
                           >
                             <i className="fas fa-times"></i>
                           </button>

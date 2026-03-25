@@ -150,11 +150,14 @@ export default function QuranDisplay() {
   );
   const karaokeCalibration = useMemo(() => {
     const base = getKaraokeCalibration(effectiveReciterId, riwaya);
+    const modeSyncBiasSec = displayMode === "surah" ? 0 : -0.02;
+    const mergedOffsetSec =
+      (base.offsetSec ?? 0.15) + userSyncOffsetMs / 1000 + modeSyncBiasSec;
     return {
       ...base,
-      offsetSec: (base.offsetSec ?? 0.15) + userSyncOffsetMs / 1000,
+      offsetSec: Math.max(-0.8, Math.min(0.95, mergedOffsetSec)),
     };
-  }, [effectiveReciterId, riwaya, userSyncOffsetMs]);
+  }, [displayMode, effectiveReciterId, riwaya, userSyncOffsetMs]);
 
   const [ayahs, setAyahs] = useState([]);
   const [translations, setTranslations] = useState([]);
@@ -1039,6 +1042,14 @@ export default function QuranDisplay() {
       dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz - 1 } });
   };
 
+  const toggleWordByWordMode = useCallback(() => {
+    set({
+      mushafLayout: "list",
+      showWordByWord: !showWordByWord,
+      memMode: false,
+    });
+  }, [set, showWordByWord]);
+
   /* â”€â”€ (continuous play is handled in the earlier useEffect) â”€â”€ */
 
   /* â”€â”€ Surah chunks (memoized) â”€â”€ */
@@ -1491,14 +1502,8 @@ export default function QuranDisplay() {
             <div className={mushafToggleBarClass}>
               {/* Toggle between List and Word-by-word */}
               <button
-                className={`mushaf-layout-btn${!showWordByWord && mushafLayout !== "mushaf" && !memMode ? " active" : ""}`}
-                onClick={() =>
-                  set({
-                    mushafLayout: "list",
-                    showWordByWord: !showWordByWord,
-                    memMode: false,
-                  })
-                }
+                className={`mushaf-layout-btn${showWordByWord ? " active" : ""}`}
+                onClick={toggleWordByWordMode}
                 title={
                   showWordByWord
                     ? lang === "fr"
@@ -1513,9 +1518,7 @@ export default function QuranDisplay() {
                         : "Show word by word"
                 }
               >
-                <i
-                  className={`fas ${showWordByWord ? "fa-w" : "fa-list-ul"}`}
-                ></i>
+                <i className={`fas ${showWordByWord ? "fa-language" : "fa-list-ul"}`}></i>
                 <span>
                   {showWordByWord
                     ? lang === "fr"
@@ -1795,14 +1798,8 @@ export default function QuranDisplay() {
             <div className={mushafToggleBarClass}>
               {/* Toggle between List and Word-by-word */}
               <button
-                className={`mushaf-layout-btn${!showWordByWord && mushafLayout !== "mushaf" && !memMode ? " active" : ""}`}
-                onClick={() =>
-                  set({
-                    mushafLayout: "list",
-                    showWordByWord: !showWordByWord,
-                    memMode: false,
-                  })
-                }
+                className={`mushaf-layout-btn${showWordByWord ? " active" : ""}`}
+                onClick={toggleWordByWordMode}
                 title={
                   showWordByWord
                     ? lang === "fr"
@@ -1817,9 +1814,7 @@ export default function QuranDisplay() {
                         : "Show word by word"
                 }
               >
-                <i
-                  className={`fas ${showWordByWord ? "fa-w" : "fa-list-ul"}`}
-                ></i>
+                <i className={`fas ${showWordByWord ? "fa-language" : "fa-list-ul"}`}></i>
                 <span>
                   {showWordByWord
                     ? lang === "fr"
@@ -2016,14 +2011,8 @@ export default function QuranDisplay() {
             <div className={mushafToggleBarClass}>
               {/* Toggle between List and Word-by-word */}
               <button
-                className={`mushaf-layout-btn${!showWordByWord && mushafLayout !== "mushaf" && !memMode ? " active" : ""}`}
-                onClick={() =>
-                  set({
-                    mushafLayout: "list",
-                    showWordByWord: !showWordByWord,
-                    memMode: false,
-                  })
-                }
+                className={`mushaf-layout-btn${showWordByWord ? " active" : ""}`}
+                onClick={toggleWordByWordMode}
                 title={
                   showWordByWord
                     ? lang === "fr"
@@ -2038,9 +2027,7 @@ export default function QuranDisplay() {
                         : "Show word by word"
                 }
               >
-                <i
-                  className={`fas ${showWordByWord ? "fa-w" : "fa-list-ul"}`}
-                ></i>
+                <i className={`fas ${showWordByWord ? "fa-language" : "fa-list-ul"}`}></i>
                 <span>
                   {showWordByWord
                     ? lang === "fr"

@@ -2,8 +2,8 @@ import { readdir, stat } from "node:fs/promises";
 import path from "node:path";
 
 const DIST_ASSETS_DIR = path.resolve("dist/assets");
-const MAX_CSS_KB = Number(process.env.BUDGET_CSS_KB || 970);
-const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 950);
+const MAX_CSS_KB = Number(process.env.BUDGET_CSS_KB || 960);
+const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 940);
 
 async function listFiles(dir) {
   const entries = await readdir(dir);

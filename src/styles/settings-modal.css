@@ -1792,7 +1792,7 @@ kbd {
 }
 
 .settings-dialog.settings-dialog--adaptive .settings-nav {
-  width: 168px;
+  width: 190px;
   padding: 0.78rem 0.62rem;
 }
 
@@ -1981,7 +1981,10 @@ kbd {
   }
 
   .settings-dialog.settings-dialog--adaptive .settings-hero-copy {
-    display: none;
+    display: block;
+    font-size: 0.76rem;
+    line-height: 1.34;
+    margin-top: 0.38rem;
   }
 
   .settings-dialog.settings-dialog--adaptive .settings-hero-pill__label {
@@ -1991,6 +1994,34 @@ kbd {
   .settings-dialog.settings-dialog--adaptive .settings-hero-pill__value {
     font-size: 0.84rem;
   }
+}
+
+/* Visibility fixes: improve contrast for premium settings surfaces */
+.app-root.premium-plus .settings-content--premium-plus {
+  color: color-mix(in srgb, var(--theme-text) 92%, #ffffff 8%);
+}
+
+.app-root.premium-plus .settings-pane-title,
+.app-root.premium-plus .settings-card-label,
+.app-root.premium-plus .settings-hero-title,
+.app-root.premium-plus .settings-hero-pill__value,
+.app-root.premium-plus .settings-nav-item.active {
+  color: color-mix(in srgb, var(--theme-text) 94%, #ffffff 6%) !important;
+}
+
+.app-root.premium-plus .settings-nav-item,
+.app-root.premium-plus .settings-hint,
+.app-root.premium-plus .settings-card-hint,
+.app-root.premium-plus .settings-hero-copy,
+.app-root.premium-plus .settings-hero-pill__label,
+.app-root.premium-plus .swatch-description,
+.app-root.premium-plus .settings-reciter-style,
+.app-root.premium-plus .about-desc {
+  color: color-mix(in srgb, var(--theme-text-muted) 64%, #ffffff 36%) !important;
+}
+
+.app-root.premium-plus .settings-nav-item i {
+  opacity: 0.9;
 }
 
 .app-root.premium-plus .settings-nav-item {

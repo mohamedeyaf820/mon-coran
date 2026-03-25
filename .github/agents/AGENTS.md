@@ -1,140 +1,92 @@
 ---
 name: AGENTS
-description: Registry of custom agents for the Mon Coran project. Lists all available agents and their specializations.
+description: "Registry of custom agents for the Mon Coran project. Lists the 3 combined agents, their dual missions, and the recommended execution workflow."
 ---
 
-# Mon Coran Custom Agents
+# Mon Coran Custom Agents (3 Agents)
 
-This directory contains specialized agents for different aspects of the Mon Coran project. Each agent is optimized for a specific role.
+Cette configuration contient exactement 3 agents combines.
+Chaque agent couvre 2 missions principales.
 
-## Available Agents
+## Workflow recommande (ordre optimal)
 
-### 1. **ProductEngineer** 
-📁 [product-engineer.agent.md](product-engineer.agent.md)
+1. ProductEngineer
+- Prioriser P0/P1/P2
+- Implementer les ameliorations prioritaires
 
-**Specialization:** Fullstack product development combining design, security, and business logic  
-**Use when:**
-- Building new features end-to-end
-- Designing UI/UX with Tailwind CSS
-- Reviewing for security vulnerabilities
-- Architecting complex application flows
-- Optimizing user experience
+2. CodeReviewer
+- Verifier qualite globale
+- Durcir la securite et corriger les risques
 
-**Key Skills:**
-- UI/UX design and design systems
-- React component architecture
-- Feature implementation and business logic
-- Security audits and data protection
-- Performance optimization
+3. PerformanceEngineer
+- Optimiser performance si necessaire
+- Valider quality gates et statuer Ready/Not Ready
 
----
+## Prompts ultra-optimises (copier-coller)
 
-### 2. **CodeReviewer**
-📁 [code-reviewer.agent.md](code-reviewer.agent.md)
+### Prompt 1 - ProductEngineer
+Role: ProductEngineer
+Objectif: Fais un audit P0/P1/P2 du scope cible puis implemente les 3 quick wins a plus fort impact. Respecte l'architecture existante, evite les refactors hors perimetre, et termine avec validations executees + risques residuels.
 
-**Specialization:** Comprehensive code review with automatic fixing across all domains  
-**Use when:**
-- Auditing files for quality and consistency
-- Fixing design/display issues
-- Correcting security vulnerabilities
-- Resolving bugs and errors
-- Refactoring and cleaning up code
-- Running full codebase quality checks
+### Prompt 2 - CodeReviewer
+Role: CodeReviewer
+Objectif: Audit qualite + securite en une passe sur le scope cible. Donne findings par severite (Critique, Eleve, Moyen, Faible), corrige Critique/Eleve en priorite, puis fournis checks anti-regression et risques residuels.
 
-**Key Skills:**
-- Design consistency (Tailwind, theming, responsive)
-- Security fixes (XSS, injection, data exposure)
-- Accessibility and UX improvements
-- Performance optimization
-- Code quality and style consistency
+### Prompt 3 - PerformanceEngineer
+Role: PerformanceEngineer
+Objectif: Optimise performance (bundle/runtime/reseau/audio) sur le scope cible puis execute la passe release readiness. Retourne quality gates (build/tests/budgets), blockers, decision Ready/Not Ready, et actions finales.
 
----
+## 1. ProductEngineer
+Fichier: [product-engineer.agent.md](product-engineer.agent.md)
 
-## Quick Decision Tree
+Missions:
+- Audit de plateforme (priorites P0/P1/P2)
+- Implementation end-to-end des ameliorations
 
-```
-📋 What do you need?
+Utiliser pour:
+- Definir quoi ameliorer en premier
+- Concevoir et livrer une amelioration complete
+- Produire un plan puis executer dans le meme flux
 
-├─ ✨ Build a new feature
-│  └─→ Use ProductEngineer
-│
-├─ 🔍 Review and fix code quality
-│  └─→ Use CodeReviewer
-│
-├─ 🎨 Design UI improvements
-│  └─→ Use ProductEngineer (Designer mode)
-│
-├─ 🔒 Audit for security risks
-│  └─→ Use CodeReviewer (Security)
-│       OR ProductEngineer (Security specialized)
-│
-└─ 🐛 Fix bugs and errors
-   └─→ Use CodeReviewer
-```
+## 2. CodeReviewer
+Fichier: [code-reviewer.agent.md](code-reviewer.agent.md)
 
----
+Missions:
+- Revue qualite (bugs, dette, UX/a11y)
+- Durcissement securite (XSS, injection, exposition donnees)
 
-## How to Use These Agents
+Utiliser pour:
+- Corriger les problemes de code rapidement
+- Faire une passe qualite + securite en une fois
+- Sortir une liste de risques residuels claire
 
-In VS Code Chat:
-1. Type `/` to see agent suggestions
-2. Select the agent matching your task
-3. Describe what you need
+## 3. PerformanceEngineer
+Fichier: [performance-engineer.agent.md](performance-engineer.agent.md)
 
-**Example commands:**
+Missions:
+- Optimisation performance (bundle, runtime, reseau, audio)
+- Validation release (quality gates + decision Ready/Not Ready)
 
-```
-@ProductEngineer Design a new bookmark panel with Tailwind
-@CodeReviewer Audit AudioPlayer.jsx for all issues and fix them
-@ProductEngineer Implement word-by-word Qur'an playback sync
-@CodeReviewer Check src/services for security vulnerabilities
-```
+Utiliser pour:
+- Gagner en vitesse et stabilite
+- Verifier si la version est prete a deployer
+- Donner une decision go/no-go fondee sur des checks
 
----
+## Decision Tree
 
-## Agent Characteristics
+1. Tu veux prioriser et construire une amelioration complete:
+ProductEngineer
 
-| Agent | Focus | Scope | Tool Use |
-|-------|-------|-------|----------|
-| **ProductEngineer** | Creation & Architecture | Feature design, build, improve | Full access |
-| **CodeReviewer** | Quality & Compliance | Audit, fix, refactor | Full access (fix-focused) |
+2. Tu veux corriger qualite + securite:
+CodeReviewer
 
----
+3. Tu veux optimiser perf + valider la release:
+PerformanceEngineer
 
-## Settings & Configuration
+## Notes
 
-All agents inherit the workspace and project context from:
-- `.vscode/settings.json`
-- `tailwind.config.js`
-- `vite.config.js`
-- `package.json` (dependencies, scripts)
-
----
-
-## For Contributors
-
-To add a new agent:
-1. Create a `[name].agent.md` file in `.github/agents/`
-2. Include YAML frontmatter with `name`, `description`
-3. Document the agent's specialization, use cases, and scope
-4. Update this AGENTS.md file with a new section
-
----
-
-## Project Context
-
-These agents work within the Mon Coran project:
-- **React + Vite + Tailwind CSS** tech stack
-- **Qur'anic content** (74 surahs, 6,236 verses)
-- **Multi-language support** (Arabic, English, French; RTL support)
-- **Audio playback** (Warsh variant, multiple reciters)
-- **User features** (bookmarks, khatma tracking, memorization, notes, playlists)
-- **Service-oriented architecture** (API calls, storage, audio management)
-
----
-
-## Questions?
-
-- **agent-customization** skill: Guidelines for creating/updating agents
-- **ProductEngineer**: Full-featured development and design
-- **CodeReviewer**: Comprehensive auditing and fixing
+- Cette structure remplace les agents specialises precedents.
+- Objectif: moins d'agents, plus de clarte, plus de vitesse d'execution.
+- Regle simple: un agent = 2 missions, pas plus.
+- Si un besoin sort du cadre, relancer l'agent suivant dans le workflow.
+- Toujours demander des preuves (checks, mesures, deltas) dans la sortie.

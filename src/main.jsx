@@ -120,7 +120,9 @@ class ErrorBoundary extends React.Component {
             Une erreur est survenue
           </h1>
           <p className="mb-4 text-sm" style={{ color: "var(--text-muted)" }}>
-            {this.state.error?.message || "Erreur inconnue"}
+            {import.meta.env.DEV
+              ? this.state.error?.message || "Erreur inconnue"
+              : "Une erreur inattendue est survenue. Veuillez recharger l'application."}
           </p>
           <button
             onClick={() => window.location.reload()}

@@ -21,10 +21,6 @@
   .app-root .mp-footer__body {
     grid-template-columns: 1fr;
   }
-
-  .app-root .mp-footer__panels {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 1024px) {
@@ -85,13 +81,8 @@
   .qc-sidebar-ar,
   .mp-footer__verse,
   .mp-footer__body,
-  .mp-footer__stats,
-  .mp-footer__pills,
-  .mp-footer__starter-list,
   .mp-footer__tool-grid,
-  .mp-footer__juz-grid,
-  .mp-footer__bottom-inner,
-  .mp-footer__bottom-links {
+  .mp-footer__bottom {
     min-width: 0;
     max-width: 100%;
   }
@@ -571,25 +562,8 @@
     padding: 0.9rem;
   }
 
-  .app-root .mp-footer__lead,
-  .app-root .mp-footer__panels > * {
-    border-radius: 1.4rem;
-  }
-
-  .app-root .mp-footer__stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .app-root .mp-footer__tool-grid {
     grid-template-columns: 1fr;
-  }
-
-  .app-root .mp-footer__juz-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .app-root .mp-footer__bottom-links {
-    width: 100%;
   }
 
   .app-root .mp-audio-player--mobile:not(.mp-audio-player--dock) {
@@ -702,10 +676,6 @@
     max-width: 34%;
   }
 
-  .app-root .mp-footer__stats {
-    grid-template-columns: 1fr;
-  }
-
   .app-root .mp-player-mobile-head {
     padding-inline: 0.95rem;
   }
@@ -815,15 +785,6 @@
 
   .app-root .mp-footer__body {
     padding: 0.8rem;
-  }
-
-  .app-root .mp-footer__lead,
-  .app-root .mp-footer__panels > * {
-    padding: 0.9rem;
-  }
-
-  .app-root .mp-footer__juz-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .app-root .mp-footer__bottom {
@@ -1019,5 +980,55 @@
   .sidebar-tab:hover,
   .modal-action-btn:hover {
     transform: none !important;
+  }
+
+  .hp2-btn,
+  .hp2-qchip,
+  .modal-action-btn,
+  .settings-nav-item,
+  .settings-chip,
+  .settings-tool-card,
+  .ayah-action-card,
+  .ayah-actions__utility-btn,
+  .mp-player-mobile-main-controls > button {
+    min-height: 44px;
+  }
+
+  .search-result-card,
+  .notes-card,
+  .settings-card,
+  .hpl-row,
+  .scard,
+  .ayah-action-card {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-root .modal,
+  .app-root .modal-panel,
+  .app-root .modal-content,
+  .app-root .settings-dialog,
+  .app-root .search-modal-shell,
+  .app-root .sidebar,
+  .app-root .quran-display,
+  .app-root .hp2-hero,
+  .app-root .hp2-panel,
+  .app-root .hp2-content,
+  .app-root .duas-results,
+  .app-root .mp-footer__shell {
+    box-shadow:
+      0 10px 26px rgba(2, 8, 23, 0.12),
+      0 1px 0 rgba(255, 255, 255, 0.08) inset;
+  }
+
+  .app-root .hp2-item,
+  .app-root .hpl-row,
+  .app-root .scard,
+  .app-root .search-result-card,
+  .app-root .settings-card,
+  .app-root .notes-card,
+  .app-root .ayah-action-card {
+    border-width: 1px;
   }
 }

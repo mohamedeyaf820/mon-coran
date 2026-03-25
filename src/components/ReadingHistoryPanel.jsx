@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { t } from '../i18n';
 import { getReadingDates, getAllSessions, clearHistory } from '../services/historyService';
@@ -14,6 +14,9 @@ export default function ReadingHistoryPanel() {
   const [loading, setLoading] = useState(true);
   const [calMonth, setCalMonth] = useState(new Date().getMonth());
   const [calYear, setCalYear] = useState(new Date().getFullYear());
+  const panelRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  const titleId = 'reading-history-title';
 
   const close = () => dispatch({ type: 'TOGGLE_HISTORY' });
 
@@ -33,6 +36,44 @@ export default function ReadingHistoryPanel() {
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  useEffect(() => {
+    const previous = document.activeElement;
+    const raf = window.requestAnimationFrame(() => {
+      closeButtonRef.current?.focus();
+    });
+    return () => {
+      window.cancelAnimationFrame(raf);
+      if (previous && typeof previous.focus === 'function') previous.focus();
+    };
+  }, []);
+
+  const handleModalKeyDown = useCallback((event) => {
+    if (event.key === 'Escape') {
+      event.stopPropagation();
+      close();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+
+    const root = panelRef.current;
+    if (!root) return;
+    const focusable = root.querySelectorAll(
+      'button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])',
+    );
+    if (!focusable.length) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }, [close]);
 
   const handleClear = async () => {
     if (!window.confirm(t('readingHistory.clear', lang) + '?')) return;
@@ -110,11 +151,17 @@ export default function ReadingHistoryPanel() {
       <div
         className="modal modal-panel--wide !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        ref={panelRef}
+        onKeyDown={handleModalKeyDown}
       >
         <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
           <div className="modal-title-stack">
             <div className="modal-kicker">{lang === 'fr' ? 'Parcours' : lang === 'ar' ? 'المسار' : 'Journey'}</div>
-            <h2 className="modal-title">
+            <h2 className="modal-title" id={titleId}>
               <i className="fas fa-clock-rotate-left"></i>
               {t('readingHistory.title', lang)}
             </h2>
@@ -126,7 +173,12 @@ export default function ReadingHistoryPanel() {
                   : 'Calendar, sessions and reading continuity in one place.'}
             </div>
           </div>
-          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
+          <button
+            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
+            onClick={close}
+            ref={closeButtonRef}
+            aria-label={lang === 'fr' ? 'Fermer l\'historique' : 'Close reading history'}
+          >
             <i className="fas fa-times"></i>
           </button>
         </div>
@@ -163,11 +215,11 @@ export default function ReadingHistoryPanel() {
           ) : tab === 'calendar' ? (
             <div className="panel-calendar-shell">
               <div className="panel-calendar-nav !mb-2 !flex !items-center !justify-between">
-                <button className="panel-icon-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={goMonthPrev} title={lang === 'fr' ? 'Mois précédent' : 'Previous month'}>
+                <button className="panel-icon-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={goMonthPrev} title={lang === 'fr' ? 'Mois précédent' : 'Previous month'} aria-label={lang === 'fr' ? 'Mois précédent' : 'Previous month'}>
                   <i className="fas fa-chevron-left"></i>
                 </button>
                 <h4 className="panel-month-title">{MONTH_NAME}</h4>
-                <button className="panel-icon-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1] disabled:!opacity-40" onClick={goMonthNext} disabled={isCurrentMonth} title={lang === 'fr' ? 'Mois suivant' : 'Next month'}>
+                <button className="panel-icon-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1] disabled:!opacity-40" onClick={goMonthNext} disabled={isCurrentMonth} title={lang === 'fr' ? 'Mois suivant' : 'Next month'} aria-label={lang === 'fr' ? 'Mois suivant' : 'Next month'}>
                   <i className="fas fa-chevron-right"></i>
                 </button>
               </div>
@@ -213,7 +265,7 @@ export default function ReadingHistoryPanel() {
                           </div>
                         </div>
                         <div className="modal-item-side">
-                          <button className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.05] hover:!bg-white/[0.12]" type="button" onClick={() => goToSession(s.surah, s.ayahFrom)}>
+                          <button className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.05] hover:!bg-white/[0.12]" type="button" onClick={() => goToSession(s.surah, s.ayahFrom)} aria-label={lang === 'fr' ? 'Ouvrir la session' : 'Open session'}>
                             <i className="fas fa-arrow-up-right-from-square"></i>
                           </button>
                         </div>

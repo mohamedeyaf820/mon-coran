@@ -4,7 +4,11 @@
  */
 
 import { dbGet, dbSet, dbDelete, dbGetAll } from "./dbService";
-import { encryptData, decryptData } from "./cryptoUtil";
+import {
+  encryptData,
+  decryptDataWithMeta,
+  isEncryptionUnlocked,
+} from "./cryptoUtil";
 import {
   bookmarkRecordSchema,
   noteRecordSchema,
@@ -277,11 +281,12 @@ export function getSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return { ...DEFAULT_SETTINGS };
-    const parsed = decryptData(raw) || JSON.parse(raw);
+    const { data: decrypted, usedLegacy } = decryptDataWithMeta(raw);
+    const parsed = decrypted || JSON.parse(raw);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       return { ...DEFAULT_SETTINGS };
     }
-    return {
+    const normalized = {
       ...DEFAULT_SETTINGS,
       ...parsed,
       syncOffsetsMs: sanitizeSyncOffsetsMap(parsed?.syncOffsetsMs),
@@ -295,6 +300,12 @@ export function getSettings() {
         parsed?.reciterAvailabilityById,
       ),
     };
+
+    if (usedLegacy && isEncryptionUnlocked()) {
+      saveSettings(normalized);
+    }
+
+    return normalized;
   } catch {
     return { ...DEFAULT_SETTINGS };
   }

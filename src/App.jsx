@@ -465,6 +465,16 @@ export default function App() {
         data-view={showHome ? "home" : showDuas ? "duas" : "reading"}
         data-display-mode={displayMode}
       >
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[10000] focus:rounded-xl focus:bg-[var(--theme-panel-bg-strong,var(--bg-card))] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--text-primary)] focus:shadow-[0_10px_24px_rgba(2,8,23,0.18)]"
+      >
+        {lang === "fr"
+          ? "Aller au contenu principal"
+          : lang === "ar"
+            ? "الانتقال إلى المحتوى الرئيسي"
+            : "Skip to main content"}
+      </a>
       {/* Removed legacy Sakina starfield */}
       {/* ── Header ── */}
       <Suspense fallback={suspenseFallback}>
@@ -489,6 +499,27 @@ export default function App() {
 
         {/* Main reading area */}
         <main
+          id="main-content"
+          tabIndex={-1}
+          aria-label={
+            showHome
+              ? lang === "fr"
+                ? "Contenu principal - Accueil"
+                : lang === "ar"
+                  ? "المحتوى الرئيسي - الصفحة الرئيسية"
+                  : "Main content - Home"
+              : showDuas
+                ? lang === "fr"
+                  ? "Contenu principal - Douas"
+                  : lang === "ar"
+                    ? "المحتوى الرئيسي - الأدعية"
+                    : "Main content - Duas"
+                : lang === "fr"
+                  ? "Contenu principal - Lecture"
+                  : lang === "ar"
+                    ? "المحتوى الرئيسي - القراءة"
+                    : "Main content - Reading"
+          }
           className={`app-main app-main-shell flex-1 min-w-0 overflow-y-auto overflow-x-hidden pb-(--player-h) transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
         >
           <div

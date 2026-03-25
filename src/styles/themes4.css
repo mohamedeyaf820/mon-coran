@@ -632,9 +632,6 @@
 .display-mode-card,
 .modal-item-card,
 .search-result-card,
-.site-footer__surah-chip,
-.site-footer__utility-chip,
-.site-footer__experience-chip,
 .audio-player__meta-chip,
 .player-reciter-btn {
     background: var(--theme-panel-bg-strong) !important;
@@ -664,8 +661,7 @@
 .hp2-qchip--special,
 .hp2-panel__tab--on,
 .hp2-seg--on,
-.hp2-icon-btn--on,
-.ftr-action-btn--primary {
+.hp2-icon-btn--on {
     background: linear-gradient(
         135deg,
         color-mix(in srgb, var(--theme-primary) 88%, #ffffff 12%),
@@ -715,8 +711,6 @@
 .hp2-item__ar,
 .qc-sidebar-ar,
 .sb-recent__ar,
-.site-footer__ayah-ar,
-.site-footer__surah-chip-ar,
 .audio-player__arabic-title,
 .quran-display--platform .qc-ayah-text-ar {
     color: var(--theme-arabic) !important;
@@ -763,8 +757,7 @@
 }
 
 .mp-footer .group:hover,
-.mp-footer button:hover,
-.site-footer .ftr-link:hover {
+.mp-footer button:hover {
     border-color: color-mix(
         in srgb,
         var(--theme-border-strong) 72%,

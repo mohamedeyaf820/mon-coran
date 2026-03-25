@@ -2195,6 +2195,270 @@
   }
 }
 
+/* Compact premium pass for quick ayah actions */
+.ayah-actions__surface--compact {
+  max-width: min(100%, 1040px);
+  margin-inline: auto;
+  gap: 0.32rem;
+  padding: 0.34rem;
+  border-radius: calc(var(--app-radius-lg) - 0.12rem);
+}
+
+.ayah-actions__surface--compact .ayah-actions__meta {
+  gap: 0.3rem;
+}
+
+.ayah-actions__surface--compact .ayah-actions__kicker {
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+}
+
+.ayah-actions__surface--compact .ayah-actions__verse {
+  margin-top: 0.04rem;
+  font-size: 0.64rem;
+  gap: 0.16rem;
+}
+
+.ayah-actions__surface--compact .ayah-actions__verse-ar {
+  font-size: 0.68rem;
+}
+
+.ayah-actions__surface--compact .ayah-actions__badge {
+  padding: 0.16rem 0.34rem;
+  font-size: 0.52rem;
+}
+
+.ayah-actions__surface--compact .ayah-actions__grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.28rem;
+}
+
+.ayah-actions__surface--compact .ayah-action-card {
+  min-height: 2.56rem;
+  padding: 0.34rem 0.38rem;
+  gap: 0.08rem;
+  border-radius: 0.58rem;
+}
+
+.ayah-actions__surface--compact .ayah-action-card__icon {
+  width: 1.08rem;
+  height: 1.08rem;
+  border-radius: 0.34rem;
+  font-size: 0.58rem;
+}
+
+.ayah-actions__surface--compact .ayah-action-card__label {
+  font-size: 0.74rem;
+  line-height: 1.06;
+}
+
+.ayah-actions__surface--compact .ayah-action-card__desc {
+  font-size: 0.61rem;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ayah-actions__surface--compact .ayah-action-card__state {
+  font-size: 0.47rem;
+}
+
+.ayah-actions__surface--compact .ayah-actions__utility {
+  gap: 0.2rem;
+}
+
+.ayah-actions__surface--compact .ayah-actions__utility-btn {
+  min-height: 1.34rem;
+  padding: 0.18rem 0.36rem;
+  font-size: 0.58rem;
+}
+
+.app-root.premium-plus .ayah-actions__surface--compact {
+  gap: 0.3rem;
+  padding: 0.32rem;
+  border-radius: calc(var(--pp-radius-md) - 0.08rem);
+}
+
+.app-root.premium-plus .ayah-actions__surface--compact .ayah-actions__grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.24rem;
+}
+
+.app-root.premium-plus .ayah-actions__surface--compact .ayah-action-card {
+  min-height: 2.42rem;
+  padding: 0.3rem 0.34rem;
+  border-radius: 0.52rem;
+}
+
+.app-root.premium-plus .ayah-actions__surface--compact .ayah-action-card__icon {
+  width: 1.02rem;
+  height: 1.02rem;
+  font-size: 0.54rem;
+}
+
+.app-root.premium-plus .ayah-actions__surface--compact .ayah-action-card__label {
+  font-size: 0.7rem;
+}
+
+.app-root.premium-plus .ayah-actions__surface--compact .ayah-action-card__desc {
+  font-size: 0.58rem;
+}
+
+.app-root.premium-plus .ayah-actions__surface--compact .ayah-actions__utility-btn {
+  min-height: 1.28rem;
+  font-size: 0.56rem;
+}
+
+.ayah-actions__surface--compact {
+  border-color: color-mix(in srgb, var(--theme-border-strong) 20%, transparent 80%);
+  background:
+    radial-gradient(circle at 88% -20%, rgba(212, 168, 32, 0.08), transparent 36%),
+    linear-gradient(
+      158deg,
+      color-mix(in srgb, var(--theme-panel-bg-strong) 96%, #fff4dc 4%),
+      color-mix(in srgb, var(--theme-panel-bg) 92%, #e8d4ab 8%)
+    );
+  box-shadow:
+    0 10px 24px rgba(26, 22, 14, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.ayah-actions__surface--compact .ayah-actions__kicker {
+  color: color-mix(in srgb, var(--theme-text-muted) 80%, #8d6a2c 20%);
+}
+
+.ayah-actions__surface--compact .ayah-actions__verse {
+  color: color-mix(in srgb, var(--theme-text) 88%, #7d6030 12%);
+}
+
+.ayah-actions__surface--compact .ayah-action-card {
+  border-color: color-mix(in srgb, var(--theme-border) 62%, rgba(166, 121, 18, 0.2) 38%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--theme-panel-bg-strong) 90%, #fff7e8 10%),
+      color-mix(in srgb, var(--theme-panel-bg) 92%, #f2e2c0 8%)
+    );
+  box-shadow:
+    0 6px 16px rgba(28, 22, 12, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.ayah-actions__surface--compact .ayah-action-card:hover {
+  border-color: color-mix(in srgb, var(--theme-border-strong) 42%, rgba(166, 121, 18, 0.58) 58%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--theme-panel-bg-strong) 84%, #fff3dd 16%),
+      color-mix(in srgb, var(--theme-panel-bg) 88%, #ebd6ac 12%)
+    );
+  box-shadow:
+    0 12px 24px rgba(33, 25, 14, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34);
+}
+
+.ayah-actions__surface--compact .ayah-action-card__icon {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.42), transparent 58%),
+    linear-gradient(145deg, rgba(212, 168, 32, 0.18), rgba(212, 168, 32, 0.08));
+  color: color-mix(in srgb, var(--theme-primary) 72%, #8d681f 28%);
+  border: 1px solid color-mix(in srgb, var(--theme-border) 52%, rgba(166, 121, 18, 0.32) 48%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34);
+}
+
+.ayah-actions__surface--compact .ayah-action-card__label {
+  letter-spacing: 0.01em;
+}
+
+.ayah-actions__surface--compact .ayah-action-card__desc {
+  color: color-mix(in srgb, var(--theme-text-muted) 84%, #80663a 16%);
+}
+
+.ayah-actions__surface--compact .ayah-actions__utility-btn {
+  border-color: color-mix(in srgb, var(--theme-border) 64%, rgba(166, 121, 18, 0.24) 36%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--theme-panel-bg-strong) 90%, #fff6e7 10%),
+      color-mix(in srgb, var(--theme-panel-bg) 92%, #efdbb3 8%)
+    );
+}
+
+.ayah-actions__surface--compact .ayah-actions__utility-btn.is-active {
+  color: color-mix(in srgb, var(--gold) 82%, var(--theme-primary) 18%);
+  border-color: color-mix(in srgb, var(--gold) 46%, var(--theme-border-strong) 54%);
+}
+
+/* Keep dark themes crisp without beige cast */
+[data-theme="dark"] .ayah-actions__surface--compact,
+[data-theme="night-blue"] .ayah-actions__surface--compact,
+[data-theme="oled"] .ayah-actions__surface--compact,
+[data-theme="forest"] .ayah-actions__surface--compact {
+  background:
+    radial-gradient(circle at 88% -20%, rgba(212, 168, 32, 0.06), transparent 36%),
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--theme-panel-bg-strong) 97%, transparent 3%),
+      color-mix(in srgb, var(--theme-panel-bg) 95%, transparent 5%)
+    );
+}
+
+[data-theme="dark"] .ayah-actions__surface--compact .ayah-action-card,
+[data-theme="night-blue"] .ayah-actions__surface--compact .ayah-action-card,
+[data-theme="oled"] .ayah-actions__surface--compact .ayah-action-card,
+[data-theme="forest"] .ayah-actions__surface--compact .ayah-action-card {
+  background: color-mix(in srgb, var(--theme-panel-bg-strong) 84%, transparent 16%);
+}
+
+[data-theme="premium-beige"] .ayah-actions__surface--compact {
+  border-color: rgba(166, 121, 18, 0.2);
+}
+
+@media (max-width: 980px) {
+  .ayah-actions__surface--compact .ayah-actions__grid,
+  .app-root.premium-plus .ayah-actions__surface--compact .ayah-actions__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .ayah-actions__surface--compact {
+    gap: 0.42rem;
+    padding: 0.52rem;
+  }
+
+  .ayah-actions__surface--compact .ayah-actions__grid,
+  .app-root.premium-plus .ayah-actions__surface--compact .ayah-actions__grid {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+
+  .ayah-actions__surface--compact .ayah-action-card,
+  .app-root.premium-plus .ayah-actions__surface--compact .ayah-action-card {
+    min-height: 2.14rem;
+    grid-template-columns: 1.46rem minmax(0, 1fr) auto;
+    padding: 0.32rem 0.42rem;
+  }
+
+  .ayah-actions__surface--compact .ayah-action-card__icon,
+  .app-root.premium-plus .ayah-actions__surface--compact .ayah-action-card__icon {
+    width: 1.04rem;
+    height: 1.04rem;
+    font-size: 0.54rem;
+  }
+
+  .ayah-actions__surface--compact .ayah-action-card__label,
+  .app-root.premium-plus .ayah-actions__surface--compact .ayah-action-card__label {
+    font-size: 0.7rem;
+  }
+
+  .ayah-actions__surface--compact .ayah-action-card__desc,
+  .app-root.premium-plus .ayah-actions__surface--compact .ayah-action-card__desc {
+    font-size: 0.58rem;
+  }
+}
+
 /* Reference direction: dark = Quran.com, light = Quran Word By Word */
 [data-theme="dark"] .app-root.premium-plus {
   background:

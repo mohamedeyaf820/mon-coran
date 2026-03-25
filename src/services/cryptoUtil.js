@@ -30,7 +30,7 @@ function createVerifier(secret) {
 
 function getActiveSecretKey() {
   if (runtimeSecretKey) return runtimeSecretKey;
-  return LEGACY_SECRET_KEY;
+  return null;
 }
 
 export function hasEncryptionPassphraseConfigured() {
@@ -108,25 +108,47 @@ function decryptWithKey(ciphertext, key) {
 export function encryptData(data) {
   try {
     const str = typeof data === "string" ? data : JSON.stringify(data);
-    return CryptoJS.AES.encrypt(str, getActiveSecretKey()).toString();
+    const activeKey = getActiveSecretKey();
+    if (!activeKey) return str;
+    return CryptoJS.AES.encrypt(str, activeKey).toString();
   } catch {
     return "";
   }
 }
 
-export function decryptData(ciphertext) {
+export function decryptDataWithMeta(ciphertext) {
+  const payload = typeof ciphertext === "string" ? ciphertext.trim() : "";
+  if (!payload) return { data: null, usedLegacy: false };
+
+  if (payload.startsWith("{") || payload.startsWith("[")) {
+    try {
+      return { data: JSON.parse(payload), usedLegacy: false };
+    } catch {
+      // Continue with encrypted parsing fallback.
+    }
+  }
+
   try {
     const currentKey = getActiveSecretKey();
-    const decoded = decryptWithKey(ciphertext, currentKey);
-    if (decoded !== null) return decoded;
+    if (currentKey) {
+      const decoded = decryptWithKey(payload, currentKey);
+      if (decoded !== null) return { data: decoded, usedLegacy: false };
+    }
   } catch {
     // Try legacy fallback below.
   }
 
   try {
     // Backward compatibility for entries encrypted before passphrase rollout.
-    return decryptWithKey(ciphertext, LEGACY_SECRET_KEY);
+    return {
+      data: decryptWithKey(payload, LEGACY_SECRET_KEY),
+      usedLegacy: true,
+    };
   } catch {
-    return null;
+    return { data: null, usedLegacy: false };
   }
+}
+
+export function decryptData(ciphertext) {
+  return decryptDataWithMeta(ciphertext).data;
 }

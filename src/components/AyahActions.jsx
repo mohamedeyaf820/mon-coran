@@ -579,7 +579,7 @@ export default function AyahActions({ surah, ayah, ayahData }) {
 
   return (
     <div className="ayah-actions" onClick={(event) => event.stopPropagation()}>
-      <div className="ayah-actions__surface">
+      <div className="ayah-actions__surface ayah-actions__surface--compact">
         <div className="ayah-actions__meta">
           <div>
             <span className="ayah-actions__kicker">

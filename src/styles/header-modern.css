@@ -1977,6 +1977,7 @@
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
+
 .app-root.premium-plus .hdr.hdr--premium-plus .hdr__nav-center {
     min-height: 2.32rem !important;
     padding-inline: 0.72rem !important;
@@ -2049,6 +2050,17 @@
 
     .app-root.premium-plus .hdr.hdr--premium-plus .hdr__nav-center {
         min-height: 2.24rem !important;
+    }
+
+    .app-root.premium-plus .hdr.hdr--premium-plus .hdr__btn-label {
+        display: none;
+    }
+
+    .app-root.premium-plus .hdr.hdr--premium-plus .hdr__btn--labeled,
+    .app-root.premium-plus .hdr.hdr--premium-plus .hdr__btn--search {
+        width: 2.2rem;
+        padding-inline: 0;
+        justify-content: center;
     }
 }
 

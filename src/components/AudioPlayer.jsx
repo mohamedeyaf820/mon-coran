@@ -258,7 +258,6 @@ export default function AudioPlayer() {
     showHome,
     showDuas,
     playerMinimized,
-    karaokeFollow,
     syncOffsetsMs,
     favoriteReciters,
     autoSelectFastestReciter,
@@ -442,11 +441,6 @@ export default function AudioPlayer() {
   }, [minimized, playerMinimized, set]);
 
   useEffect(() => {
-    if (karaokeFollow) return;
-    set({ karaokeFollow: true });
-  }, [karaokeFollow, set]);
-
-  useEffect(() => {
     if (!optionsModalOpen) return;
     const onEscape = (event) => {
       if (event.key === "Escape") {
@@ -490,12 +484,8 @@ export default function AudioPlayer() {
       setProgress(0);
     };
     audioService.onAyahChange = (item) => {
-      // Navigation automatique karaoke : suivre la sourate
-      if (
-        karaokeFollowRef.current &&
-        item.surah &&
-        item.surah !== currentSurahRef.current
-      ) {
+      // Navigation automatique : toujours suivre la sourate en cours de récitation.
+      if (item.surah && item.surah !== currentSurahRef.current) {
         dispatch({
           type: "NAVIGATE_SURAH",
           payload: { surah: item.surah, ayah: item.ayah || 1 },
@@ -810,6 +800,9 @@ export default function AudioPlayer() {
   /* Reciter search */
   const [reciterSearch, setReciterSearch] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const essentialPlayerMode = true;
+  const showMemorizationControls = !essentialPlayerMode;
+  const showAdvancedControls = !essentialPlayerMode;
   const filteredReciters = React.useMemo(() => {
     const q = reciterSearch.trim().toLowerCase();
     if (!q) return currentReciters;
@@ -838,6 +831,16 @@ export default function AudioPlayer() {
     },
     [set, syncKey, syncOffsetsMs],
   );
+
+  useEffect(() => {
+    if (essentialPlayerMode && memMode) {
+      set({ memMode: false });
+    }
+  }, [essentialPlayerMode, memMode, set]);
+
+  useEffect(() => {
+    set({ karaokeFollow: true });
+  }, [set]);
 
   const handleReciterSelect = useCallback(
     async (nextReciterId) => {
@@ -972,8 +975,6 @@ export default function AudioPlayer() {
       : lang === "fr"
         ? "Audio Warsh vérifié"
         : "Warsh verified";
-  const followShortLabel =
-    lang === "ar" ? "تتبع" : lang === "fr" ? "Suivi" : "Follow";
   const memorizeShortLabel =
     lang === "ar" ? "حفظ" : lang === "fr" ? "Memo" : "Mem";
   const dockedMetaChips = [
@@ -986,7 +987,6 @@ export default function AudioPlayer() {
     },
     audioSpeed !== 1 && { key: "speed", label: `${audioSpeed}x` },
     memMode && { key: "memorize", label: memorizeShortLabel },
-    karaokeFollow && { key: "follow", label: followShortLabel },
     isSurahStreamReciter && {
       key: "mode",
       label: lang === "fr" ? "Sourate" : lang === "ar" ? "سورة" : "Surah",
@@ -1083,16 +1083,16 @@ export default function AudioPlayer() {
   /* Drag state (desktop card only) */
   const optionsModalTitle =
     lang === "fr"
-      ? "Options audio avancées"
+      ? "Réglages audio"
       : lang === "ar"
-        ? "خيارات الصوت المتقدمة"
-        : "Advanced audio options";
+        ? "إعدادات الصوت"
+        : "Audio settings";
   const optionsModalSubtitle =
     lang === "fr"
-      ? "Récitateurs, synchronisation, mémorisation et qualité audio"
+      ? "Récitateurs, volume et synchronisation"
       : lang === "ar"
-        ? "القراء والمزامنة والحفظ وجودة الصوت"
-        : "Reciters, synchronization, memorization and audio quality";
+        ? "القراء ومستوى الصوت والمزامنة"
+        : "Reciters, volume, and synchronization";
   const isAnyReciterSwitching = Boolean(reciterSwitchingId);
   const renderOptionsModal = () =>
     optionsModalOpen ? (
@@ -1287,28 +1287,6 @@ export default function AudioPlayer() {
                     </span>
                     <span>{audioSpeed}x</span>
                   </button>
-                  <button
-                    onClick={() => set({ memMode: !memMode })}
-                    className={playerCardToggleClass(memMode)}
-                    aria-pressed={memMode}
-                  >
-                    <span className="flex items-center gap-2">
-                      <i className="fas fa-repeat text-[0.62rem]" />
-                      {t("audio.memorization", lang)}
-                    </span>
-                    <span>{memMode ? "ON" : "OFF"}</span>
-                  </button>
-                  <button
-                    onClick={toggleTartil}
-                    className={playerCardToggleClass(tartilMode)}
-                    aria-pressed={tartilMode}
-                  >
-                    <span className="flex items-center gap-2">
-                      <i className="fas fa-wave-square text-[0.62rem]" />
-                      {lang === "fr" ? "Tartil" : lang === "ar" ? "ترتيل" : "Tartil"}
-                    </span>
-                    <span>{tartilMode ? "ON" : "OFF"}</span>
-                  </button>
                 </div>
               </div>
 
@@ -1387,7 +1365,7 @@ export default function AudioPlayer() {
                 </p>
               </div>
 
-              {memMode && (
+              {showMemorizationControls && memMode && (
                 <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
                   <div className={playerSectionLabelClass}>{t("audio.memorization", lang)}</div>
                   <div className="flex flex-wrap items-center gap-3">
@@ -1417,65 +1395,7 @@ export default function AudioPlayer() {
                 </div>
               )}
 
-              <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
-                <div className={cn(playerSectionLabelClass, "mb-2")}>A-B Repeat</div>
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <button onClick={markAbA} className={playerAbButtonClass(Boolean(abA))} disabled={!hasAyahContext}>
-                    {abA ? `A: ${abA.surah}:${abA.ayah}` : "A"}
-                  </button>
-                  <button onClick={markAbB} className={playerAbButtonClass(Boolean(abB))} disabled={!hasAyahContext}>
-                    {abB ? `B: ${abB.surah}:${abB.ayah}` : "B"}
-                  </button>
-                  {(abA || abB) && (
-                    <button
-                      onClick={clearAb}
-                      className="rounded-lg border border-white/12 bg-white/[0.05] px-2 py-1 text-[0.62rem] text-[rgba(228,218,197,0.68)] transition-all hover:border-[rgba(110,204,233,0.4)] hover:bg-[rgba(110,204,233,0.1)]"
-                    >
-                      <i className="fas fa-times" />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
-                <div className={cn(playerSectionLabelClass, "mb-2")}>
-                  {lang === "fr" ? "Acoustique" : lang === "ar" ? "الصوتيات" : "Acoustics"}
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {[
-                    { id: "flat", fr: "Plat", ar: "Flat", en: "Flat" },
-                    { id: "bass", fr: "Graves", ar: "Bass", en: "Bass" },
-                    { id: "treble", fr: "Aigus", ar: "حاد", en: "Treble" },
-                    { id: "near", fr: "Proche", ar: "Near", en: "Near" },
-                    { id: "hall", fr: "Salle", ar: "Hall", en: "Hall" },
-                    { id: "vocals", fr: "Voix", ar: "Vocals", en: "Vocals" },
-                  ].map((preset) => (
-                    <button
-                      key={`modal-eq-${preset.id}`}
-                      onClick={() => handleEq(preset.id)}
-                      className={playerOptionPillClass(eqPreset === preset.id)}
-                    >
-                      {lang === "ar" ? preset.ar : lang === "fr" ? preset.fr : preset.en}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div className="flex flex-wrap items-center gap-2 pb-1">
-                <button
-                  onClick={reciteMode ? stopRecite : startRecite}
-                  className={cn(
-                    playerCardToggleClass(reciteMode),
-                    "min-w-[9rem]",
-                    reciteMode && "border-[rgba(34,197,94,0.4)] text-[#86efac]",
-                  )}
-                >
-                  <span className="flex items-center gap-2">
-                    <i className={`fas ${reciteMode ? "fa-stop" : "fa-microphone"} text-[0.62rem]`} />
-                    {lang === "fr" ? "Récitation guidée" : lang === "ar" ? "Guided recitation" : "Guided recitation"}
-                  </span>
-                  <span>{reciteMode ? "ON" : "OFF"}</span>
-                </button>
                 <button
                   onClick={stop}
                   className={cn(playerSurfaceButtonClass, "px-4 py-2 text-[0.68rem] font-semibold")}
@@ -1929,17 +1849,6 @@ export default function AudioPlayer() {
             </button>
             <button
                 className={cn(
-                  mBarBtnSm(memMode),
-                  "px-[0.46rem] py-[0.24rem] text-[0.64rem] min-h-[1.875rem] min-w-[1.875rem] justify-center rounded-full",
-                )}
-              onClick={() => set({ memMode: !memMode })}
-              title={t("audio.memorization", lang)}
-              aria-pressed={memMode}
-            >
-              <i className="fas fa-repeat" />
-            </button>
-            <button
-                className={cn(
                   mBarBtnSm(optionsModalOpen),
                   "mp-player-options-trigger px-[0.46rem] py-[0.24rem] text-[0.64rem] min-h-[1.875rem] min-w-[1.875rem] justify-center rounded-full",
                 )}
@@ -2175,7 +2084,7 @@ export default function AudioPlayer() {
             </div>
 
             {/* Memorization settings */}
-            {memMode && (
+            {showMemorizationControls && memMode && (
               <div className="mt-2.5">
                 <span className={playerSectionLabelClass}>
                   {t("audio.memorization", lang)}
@@ -2218,25 +2127,10 @@ export default function AudioPlayer() {
               </div>
             )}
 
-            {/* Karaoke + Fermer */}
+            {/* Fermer */}
             <div className={cn("mt-2.5 flex items-center gap-2 p-2", playerSoftSurfaceClass)}>
               <button
-                className={cn(
-                  mBarBtnSm(karaokeFollow),
-                  "flex-1 gap-1.5 justify-center",
-                )}
-                onClick={() => set({ karaokeFollow: true })}
-                aria-pressed={karaokeFollow}
-                disabled
-                title={
-                  lang === "fr" ? "Suivre le verset récité" : "Follow verse"
-                }
-              >
-                <i className="fas fa-crosshairs text-[0.6rem]" />
-                {lang === "fr" ? "Suivre" : lang === "ar" ? "تتبع" : "Follow"}
-              </button>
-              <button
-                className={cn(mBarBtnSm(), "flex-1 gap-1.5 justify-center")}
+                className={cn(mBarBtnSm(), "w-full gap-1.5 justify-center")}
                 onClick={closePlayer}
                 title={lang === "fr" ? "Fermer le lecteur" : "Close player"}
               >
@@ -2246,27 +2140,29 @@ export default function AudioPlayer() {
             </div>
 
             {/* -- Options avancées toggle (mobile) -- */}
-            <div className="mt-2 mb-0.5">
-              <button
-                onClick={() => setShowAdvanced((v) => !v)}
-                className={cn(
-                  "flex w-full items-center justify-between rounded-lg border px-2 py-1 text-[0.58rem] font-bold uppercase tracking-widest transition-all [font-family:var(--font-ui)]",
-                  showAdvanced
-                    ? "border-[rgba(110,204,233,0.35)] bg-[rgba(110,204,233,0.12)] text-[rgba(240,250,255,0.95)]"
-                    : "border-white/10 bg-transparent text-[rgba(230,219,198,0.58)]",
-                )}
-              >
-                <span className="flex items-center gap-1">
-                  <i className="fas fa-sliders text-[0.48rem]" />
-                  {lang === "fr" ? "Options" : lang === "ar" ? "Options" : "Options"}
-                </span>
-                <i
-                  className={`fas fa-chevron-${showAdvanced ? "up" : "down"} text-[0.48rem]`}
-                />
-              </button>
-            </div>
-            {showAdvanced && (
+            {showAdvancedControls && (
               <>
+                <div className="mt-2 mb-0.5">
+                  <button
+                    onClick={() => setShowAdvanced((v) => !v)}
+                    className={cn(
+                      "flex w-full items-center justify-between rounded-lg border px-2 py-1 text-[0.58rem] font-bold uppercase tracking-widest transition-all [font-family:var(--font-ui)]",
+                      showAdvanced
+                        ? "border-[rgba(110,204,233,0.35)] bg-[rgba(110,204,233,0.12)] text-[rgba(240,250,255,0.95)]"
+                        : "border-white/10 bg-transparent text-[rgba(230,219,198,0.58)]",
+                    )}
+                  >
+                    <span className="flex items-center gap-1">
+                      <i className="fas fa-sliders text-[0.48rem]" />
+                      {lang === "fr" ? "Options" : lang === "ar" ? "Options" : "Options"}
+                    </span>
+                    <i
+                      className={`fas fa-chevron-${showAdvanced ? "up" : "down"} text-[0.48rem]`}
+                    />
+                  </button>
+                </div>
+                {showAdvanced && (
+                  <>
                 {/* -- A-B Repeat (mobile) -- */}
                 <div className="mt-2.5">
                   <div className={cn(playerSectionLabelClass, "mb-1")}>
@@ -2357,6 +2253,8 @@ export default function AudioPlayer() {
                     {reciteText}
                   </div>
                 )}
+                  </>
+                )}
               </>
             )}
           </div>
@@ -2388,7 +2286,7 @@ export default function AudioPlayer() {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         className={cn(
-          "mp-audio-player mp-audio-player--desktop !fixed z-[300] flex flex-col overflow-hidden select-none touch-auto text-[color-mix(in_srgb,var(--theme-text)_92%,var(--theme-bg)_8%)]",
+          "mp-audio-player mp-audio-player--desktop !fixed z-[410] flex flex-col overflow-hidden select-none touch-auto text-[color-mix(in_srgb,var(--theme-text)_92%,var(--theme-bg)_8%)]",
           playerPanelSurfaceClass,
           isContextualDesktop &&
             !manualDockPosition &&
@@ -2654,22 +2552,6 @@ export default function AudioPlayer() {
                   )}
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
-                  <IconBtn
-                    onClick={() => set({ karaokeFollow: true })}
-                    title={
-                      karaokeFollow
-                        ? lang === "fr"
-                          ? "Suivi ON -- clic pour désactiver"
-                          : "Follow ON"
-                        : lang === "fr"
-                          ? "Suivi OFF -- clic pour activer"
-                          : "Follow OFF"
-                    }
-                    active={karaokeFollow}
-                    size="sm"
-                  >
-                    <i className="fas fa-crosshairs" />
-                  </IconBtn>
                   {isContextualDesktop && manualDockPosition && (
                     <IconBtn
                       onClick={resetDockPosition}
@@ -2770,11 +2652,10 @@ export default function AudioPlayer() {
                 </IconBtn>
 
                 <IconBtn
-                  onClick={() => set({ memMode: !memMode })}
-                  title={t("audio.memorization", lang)}
-                  active={memMode}
+                  onClick={stop}
+                  title={t("audio.stop", lang)}
                 >
-                  <i className="fas fa-repeat" />
+                  <i className="fas fa-stop" />
                 </IconBtn>
               </div>
 
@@ -3001,7 +2882,7 @@ export default function AudioPlayer() {
                   </div>
 
                   {/* Memorization settings */}
-                  {memMode && (
+                  {showMemorizationControls && memMode && (
                     <div>
                       <div className={playerSectionLabelClass}>
                         {t("audio.memorization", lang)}
@@ -3046,6 +2927,7 @@ export default function AudioPlayer() {
                   )}
 
                   {/* -- Options avancées toggle -- */}
+                  {showAdvancedControls && (
                   <button
                     onClick={() => setShowAdvanced((v) => !v)}
                     className={cn(
@@ -3063,31 +2945,9 @@ export default function AudioPlayer() {
                       className={`fas fa-chevron-${showAdvanced ? "up" : "down"} text-[0.5rem]`}
                     />
                   </button>
-                  {showAdvanced && (
+                  )}
+                  {showAdvancedControls && showAdvanced && (
                     <>
-                      {/* Suivre le verset récité */}
-                      <button
-                    onClick={() => set({ karaokeFollow: true })}
-                        className={playerCardToggleClass(karaokeFollow)}
-                        aria-pressed={karaokeFollow}
-                        disabled
-                      >
-                        <span className="flex items-center gap-2">
-                          <i className="fas fa-crosshairs text-[0.6rem]" />
-                          {lang === "fr" ? "Suivre le verset récité" : lang === "ar" ? "Follow recited verse" : "Follow recited verse"}
-                        </span>
-                        <span
-                          className={cn(
-                            "text-[0.55rem] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wide",
-                            karaokeFollow
-                              ? "bg-[rgba(110,204,233,0.24)] text-[rgba(240,250,255,0.95)]"
-                              : "bg-white/8 text-white/40",
-                          )}
-                        >
-                          {karaokeFollow ? "ON" : "OFF"}
-                        </span>
-                      </button>
-
                       {/* -- A-B Repeat -- */}
                       <div>
                         <div className={playerSectionLabelClass}>

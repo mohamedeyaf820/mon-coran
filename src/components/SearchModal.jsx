@@ -56,9 +56,14 @@ export default function SearchModal() {
   const [resolvedQuery, setResolvedQuery] = useState("");
   const [voiceSummary, setVoiceSummary] = useState(null);
 
+  const close = () => dispatch({ type: "TOGGLE_SEARCH" });
+
   const recognitionRef = useRef(null);
   const searchRequestIdRef = useRef(0);
   const searchAbortRef = useRef(null);
+  const panelRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  const titleId = "search-modal-title";
 
   const runSearch = useCallback(
     async (rawQuery = query, preferredMode = searchMode) => {
@@ -158,6 +163,47 @@ export default function SearchModal() {
     };
   }, []);
 
+  useEffect(() => {
+    const previous = document.activeElement;
+    const raf = window.requestAnimationFrame(() => {
+      closeButtonRef.current?.focus();
+    });
+    return () => {
+      window.cancelAnimationFrame(raf);
+      if (previous && typeof previous.focus === "function") previous.focus();
+    };
+  }, []);
+
+  const handleModalKeyDown = useCallback(
+    (event) => {
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        close();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const root = panelRef.current;
+      if (!root) return;
+      const focusable = root.querySelectorAll(
+        'button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey && active === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    },
+    [close],
+  );
+
   const startVoiceSearch = useCallback(() => {
     if (!SpeechRecognition) {
       setError(
@@ -212,8 +258,6 @@ export default function SearchModal() {
     dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah } });
     dispatch({ type: "TOGGLE_SEARCH" });
   };
-
-  const close = () => dispatch({ type: "TOGGLE_SEARCH" });
 
   const searchModeLabels = {
     arabic: lang === "fr" ? "Arabe" : lang === "ar" ? "عربي" : "Arabic",
@@ -273,13 +317,19 @@ export default function SearchModal() {
       <div
         className="modal modal-panel--wide modal-search-panel search-modal-shell search-modal-shell--premium-plus !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={(event) => event.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        tabIndex={-1}
+        ref={panelRef}
+        onKeyDown={handleModalKeyDown}
       >
         <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
           <div className="modal-title-stack">
             <div className="modal-kicker">
               {lang === "fr" ? "Recherche intelligente" : lang === "ar" ? "بحث ذكي" : "Smart search"}
             </div>
-            <h2 className="modal-title">{t("search.title", lang)}</h2>
+            <h2 className="modal-title" id={titleId}>{t("search.title", lang)}</h2>
             <div className="modal-subtitle">
               {lang === "fr"
                 ? "Texte arabe, phonétique, traduction et recherche vocale sur début de verset."
@@ -291,6 +341,7 @@ export default function SearchModal() {
           <button
             className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
             onClick={close}
+            ref={closeButtonRef}
             aria-label={
               lang === "fr"
                 ? "Fermer la recherche"
@@ -339,12 +390,24 @@ export default function SearchModal() {
                         ? "بحث صوتي"
                         : "Voice search"
                 }
-                aria-label={listening ? "Stop" : "Voice"}
+                  aria-label={
+                    listening
+                      ? lang === "fr"
+                        ? "Arrêter la recherche vocale"
+                        : lang === "ar"
+                          ? "إيقاف البحث الصوتي"
+                          : "Stop voice search"
+                      : lang === "fr"
+                        ? "Démarrer la recherche vocale"
+                        : lang === "ar"
+                          ? "بدء البحث الصوتي"
+                          : "Start voice search"
+                  }
               >
                 <i className={`fas ${listening ? "fa-stop" : "fa-microphone"}`}></i>
               </button>
             )}
-            <button className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-sky-200/30 !bg-sky-500/20 hover:!bg-sky-500/30" onClick={handleSearch} disabled={loading}>
+              <button className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-sky-200/30 !bg-sky-500/20 hover:!bg-sky-500/30" onClick={handleSearch} disabled={loading} aria-label={lang === "fr" ? "Lancer la recherche" : lang === "ar" ? "تنفيذ البحث" : "Run search"}>
               {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-search"></i>}
             </button>
           </div>

@@ -361,6 +361,9 @@ export default function FlashcardsPanel() {
   });
   const [done, setDone] = useState(false);
 
+  const close = () =>
+    dispatch({ type: "SET", payload: { flashcardsOpen: false } });
+
   // Persist score to localStorage whenever it changes
   useEffect(() => {
     try {
@@ -392,7 +395,11 @@ export default function FlashcardsPanel() {
                   ? "بطاقات تعليمية"
                   : "Vocabulary Cards"}
             </div>
-            <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
+            <button
+              className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
+              onClick={close}
+              aria-label={lang === "fr" ? "Fermer" : "Close"}
+            >
               <i className="fas fa-xmark" />
             </button>
           </div>
@@ -413,9 +420,6 @@ export default function FlashcardsPanel() {
 
   const card = deck[idx];
   const total = deck.length;
-
-  const close = () =>
-    dispatch({ type: "SET", payload: { flashcardsOpen: false } });
 
   const answer = useCallback(
     (correct) => {
@@ -471,7 +475,11 @@ export default function FlashcardsPanel() {
                 ? "بطاقات تعليمية"
                 : "Vocabulary Cards"}
           </div>
-          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
+          <button
+            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
+            onClick={close}
+            aria-label={lang === "fr" ? "Fermer" : "Close"}
+          >
             <i className="fas fa-xmark" />
           </button>
         </div>

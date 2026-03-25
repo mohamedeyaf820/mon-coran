@@ -654,14 +654,42 @@ export function prefetchInitialData(surahNum, riwaya, translationLang = 'fr') {
 
 // Polyfill pour AbortSignal.any (Edge < 125, Safari < 17.4)
 function createMergedAbortSignal(signals) {
-  if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.any === 'function') {
-    return AbortSignal.any(signals);
+  const validSignals = (signals || []).filter(Boolean);
+  if (!validSignals.length) {
+    return new AbortController().signal;
   }
-  // Fallback: merge manuellement
+
+  if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.any === 'function') {
+    return AbortSignal.any(validSignals);
+  }
+
+  // Fallback: merge manuel avec gestion des signaux deja abortes + cleanup listeners.
   const controller = new AbortController();
-  const onAbort = () => controller.abort();
-  signals.forEach(signal => {
-    if (signal) signal.addEventListener('abort', onAbort);
+  if (validSignals.some((signal) => signal.aborted)) {
+    controller.abort();
+    return controller.signal;
+  }
+
+  const listeners = [];
+  const cleanup = () => {
+    listeners.forEach(({ signal, onAbort }) => {
+      signal.removeEventListener('abort', onAbort);
+    });
+    listeners.length = 0;
+  };
+
+  const abortMerged = () => {
+    if (!controller.signal.aborted) {
+      controller.abort();
+    }
+    cleanup();
+  };
+
+  validSignals.forEach((signal) => {
+    const onAbort = () => abortMerged();
+    listeners.push({ signal, onAbort });
+    signal.addEventListener('abort', onAbort, { once: true });
   });
+
   return controller.signal;
 }
