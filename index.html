@@ -2,7 +2,7 @@
 <html lang="fr" dir="ltr">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
         <!-- Content Security Policy -->
         <meta
             http-equiv="Content-Security-Policy"
@@ -27,6 +27,9 @@
         <link rel="dns-prefetch" href="https://api.alquran.cloud" />
         <link rel="dns-prefetch" href="https://fonts.quranwbw.com" />
         <link rel="preload" as="image" href="/logo.png" fetchpriority="high" />
+        <!-- Preload critical Quran fonts for faster first render -->
+        <link rel="preload" as="font" type="font/woff2" href="/fonts/sura_names.woff2" crossorigin />
+        <link rel="preload" as="font" type="font/woff2" href="/fonts/scheherazade-new-400.woff2" crossorigin />
         <!-- Keep Quran fonts lazy via @font-face to avoid a heavy blocking OTF preload on mobile -->
         <link rel="icon" href="/logo.png" type="image/png" />
         <link rel="alternate icon" href="/favicon.svg" type="image/svg+xml" />

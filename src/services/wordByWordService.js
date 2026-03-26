@@ -67,7 +67,7 @@ export async function getWordByWord(surah, ayah, translationLang = 'en') {
         ar: null,
       };
       const translationId = translationIds[translationLang] ?? translationIds.en;
-      const wordFields = 'text_uthmani,text_imlaei,transliteration,translation';
+      const wordFields = 'text_uthmani,text_imlaei,transliteration,translation,root,grammar';
       const params = new URLSearchParams({
         words: 'true',
         word_fields: wordFields,
@@ -105,6 +105,8 @@ export async function getWordByWord(surah, ayah, translationLang = 'en') {
         charType: word.char_type_name, // 'word' or 'end'
         audioUrl: normalizeWordAudioUrl(word.audio_url),
         location: word.location,
+        root: word.root?.text || word.root || null,
+        grammar: word.grammar?.text || word.grammar || null,
       })).filter(w => w.charType === 'word'); // Filter out end markers
 
       // Cache the result

@@ -1864,6 +1864,146 @@
 /* ═══════════════════════════════════════
    Loading Skeleton
    ═══════════════════════════════════════ */
+/* ═══════════════════════════════════════
+   Word-by-Word Analysis Panel
+   ═══════════════════════════════════════ */
+.wbw-analysis-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.3s ease;
+}
+
+.wbw-analysis-card {
+    width: 100%;
+    max-width: 500px;
+    background: var(--theme-surface);
+    border-radius: 24px 24px 16px 16px;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--theme-border-strong);
+    overflow: hidden;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.wbw-analysis-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(to right, var(--primary-light), transparent);
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.wbw-analysis-arabic {
+    font-family: var(--font-quran);
+    font-size: 2.2rem;
+    color: var(--theme-arabic);
+}
+
+.wbw-close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--theme-surface-soft);
+    color: var(--text-secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.wbw-close-btn:hover {
+    background: var(--theme-border);
+    color: var(--text-primary);
+}
+
+.wbw-analysis-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.wbw-analysis-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.wbw-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+
+.wbw-value {
+    font-size: 1rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+.wbw-root, .wbw-grammar {
+    font-family: var(--font-ui);
+    color: var(--primary);
+    font-weight: 600;
+    background: var(--primary-light);
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    width: fit-content;
+}
+
+.wbw-analysis-footer {
+    padding: 1.25rem 1.5rem;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--theme-border);
+    display: flex;
+    justify-content: center;
+}
+
+.wbw-audio-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 2rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 99px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.wbw-audio-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.4);
+}
+
+@media (min-width: 768px) {
+    .wbw-analysis-overlay {
+        align-items: center;
+    }
+    .wbw-analysis-card {
+        border-radius: 24px;
+    }
+}
+
 .quran-loading {
     padding: 1.5rem 1.25rem;
     animation: fadeIn 0.25s ease;
@@ -4404,6 +4544,138 @@
     color: color-mix(in srgb, var(--text-secondary) 88%, var(--gold) 12%);
 }
 
+.qc-ayah-ref {
+    font-family: var(--font-ui);
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.3rem;
+}
+
+.qc-ayah-inline-actions {
+    margin-top: 0.85rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(var(--primary-rgb), 0.14);
+}
+
+.ayah-actions-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 0.48rem;
+    padding: 0.62rem 0.68rem;
+    border-radius: 0.82rem;
+    border: 1px solid rgba(var(--primary-rgb), 0.12);
+    background: rgba(var(--primary-rgb), 0.04);
+}
+
+.ayah-actions-inline__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    font-family: var(--font-ui);
+    line-height: 1.15;
+}
+
+.ayah-actions-inline__ref {
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    letter-spacing: 0.04em;
+    font-weight: 700;
+}
+
+.ayah-actions-inline__name {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    opacity: 0.84;
+}
+
+.ayah-actions-inline__icons {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.34rem;
+}
+
+.ayah-actions-inline__icon-btn {
+    width: 2.06rem;
+    height: 2.06rem;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--primary-rgb), 0.22);
+    background: rgba(var(--primary-rgb), 0.06);
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition:
+        background 0.18s ease,
+        color 0.18s ease,
+        border-color 0.18s ease;
+}
+
+.ayah-actions-inline__icon-btn:hover,
+.ayah-actions-inline__icon-btn.is-active {
+    background: rgba(var(--primary-rgb), 0.16);
+    color: var(--text-primary);
+    border-color: rgba(var(--primary-rgb), 0.4);
+}
+
+.ayah-actions-inline__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.24rem;
+    padding-top: 0.05rem;
+}
+
+.ayah-actions-inline__link {
+    border: 1px solid rgba(var(--primary-rgb), 0.18);
+    background: rgba(var(--primary-rgb), 0.035);
+    color: var(--text-secondary);
+    font-family: var(--font-ui);
+    font-size: 0.73rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    padding: 0.19rem 0.44rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition:
+        color 0.15s ease,
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+.ayah-actions-inline__link:hover {
+    color: var(--primary);
+    border-color: rgba(var(--primary-rgb), 0.32);
+    background: rgba(var(--primary-rgb), 0.09);
+}
+
+@media (max-width: 640px) {
+    .ayah-actions-inline {
+        padding: 0.54rem 0.54rem;
+    }
+
+    .ayah-actions-inline__meta {
+        gap: 0.4rem;
+    }
+
+    .ayah-actions-inline__name {
+        font-size: 0.7rem;
+    }
+
+    .ayah-actions-inline__icon-btn {
+        width: 2.14rem;
+        height: 2.14rem;
+    }
+
+    .ayah-actions-inline__link {
+        font-size: 0.7rem;
+        padding: 0.17rem 0.38rem;
+    }
+}
+
 [data-theme="dark"] .qc-ayah-translation,
 [data-theme="night-blue"] .qc-ayah-translation {
     background: rgba(var(--primary-rgb), 0.045);
@@ -5058,27 +5330,19 @@
 
 /* ── Ayah playing state — ambient pulse ── */
 @keyframes ayahPlayPulse {
-    0%,
-    100% {
-        background: linear-gradient(
-            100deg,
-            rgba(212, 168, 32, 0.055) 0%,
-            rgba(var(--primary-rgb), 0.022) 55%,
-            transparent 100%
-        );
+    0%, 100% {
+        background: var(--emerald-tint);
+        box-shadow: inset 4px 0 0 var(--gold);
     }
     50% {
-        background: linear-gradient(
-            100deg,
-            rgba(212, 168, 32, 0.105) 0%,
-            rgba(var(--primary-rgb), 0.04) 55%,
-            transparent 100%
-        );
+        background: rgba(16, 90, 48, 0.12);
+        box-shadow: inset 6px 0 0 var(--gold-bright);
     }
 }
 /* Override the static background with an animated pulse */
 .qc-ayah-block.is-playing {
-    animation: ayahPlayPulse 3.2s ease-in-out infinite;
+    animation: ayahPlayPulse 2.5s ease-in-out infinite;
+    background: var(--emerald-tint);
 }
 
 /* ── Ayah entrance — smoother transition ── */
@@ -5095,10 +5359,13 @@
 
 /* ── Active state — slightly more perceptible ── */
 .qc-ayah-block.is-active {
-    background: rgba(var(--primary-rgb), 0.048);
+    background: var(--emerald-pale);
+    border-radius: var(--radius-lg);
+    border-color: var(--emerald-tint);
 }
 .qc-ayah-block.is-active::before {
-    opacity: 0.75;
+    opacity: 1;
+    background: var(--gold);
 }
 
 /* ── Verse number badge — playing pulsing ring ── */

@@ -9,7 +9,10 @@
     "build:ci": "vite build && node scripts/audit-performance.mjs && node scripts/check-bundle-budget.mjs",
     "preview": "vite preview",
     "perf:budget": "node scripts/check-bundle-budget.mjs",
+    "audit:screen-budget": "node scripts/check-screen-budget.mjs",
     "test:security": "node --test tests/security-storage.test.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
     "csp:dev": "node scripts/print-csp.mjs development",
     "csp:prod": "node scripts/print-csp.mjs production",
     "audit:warsh:audio": "node scripts/audit-warsh-audio.mjs",
@@ -38,6 +41,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/vite": "^4.2.1",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",

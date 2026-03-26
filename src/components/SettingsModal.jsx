@@ -85,30 +85,30 @@ const TABS = [
 const THEMES = [
   {
     id: "light",
-    fr: "Ivoire",
-    ar: "فاتح",
-    en: "Ivory",
-    bg: "#f7f4ea",
-    border: "#1f2c3a",
-    text: "#199b90",
+    fr: "Zen Ivoire",
+    ar: "عاجي زن",
+    en: "Zen Ivory",
+    bg: "#fdfaf4",
+    border: "#105a30",
+    text: "#105a30",
   },
   {
     id: "sepia",
-    fr: "Parchemin",
-    ar: "سيبيا",
-    en: "Sepia",
-    bg: "#efe2c9",
-    border: "#4b3420",
-    text: "#b4883c",
+    fr: "Zen Parchemin",
+    ar: "ورقي زن",
+    en: "Zen Parchment",
+    bg: "#f8f3e8",
+    border: "#b38600",
+    text: "#b38600",
   },
   {
     id: "dark",
-    fr: "Quran Dark",
-    ar: "داكن",
-    en: "Quran Dark",
-    bg: "#111827",
-    border: "#e6eaf0",
-    text: "#2bb6c7",
+    fr: "Zen Nuit",
+    ar: "ليلي زن",
+    en: "Zen Night",
+    bg: "#0f172a",
+    border: "#2dd4bf",
+    text: "#2dd4bf",
   },
 ];
 
@@ -116,16 +116,16 @@ const DAY_THEME_IDS = ["light", "sepia"];
 const NIGHT_THEME_IDS = ["dark"];
 const THEME_SWATCH_CLASSES = {
   light: {
-    circle: "bg-[#f7f4ea] border-[#1f2c3a]",
-    text: "text-[#199b90]",
+    circle: "bg-[#fdfaf4] border-[#105a30]",
+    text: "text-[#105a30]",
   },
   sepia: {
-    circle: "bg-[#efe2c9] border-[#4b3420]",
-    text: "text-[#b4883c]",
+    circle: "bg-[#f8f3e8] border-[#b38600]",
+    text: "text-[#b38600]",
   },
   dark: {
-    circle: "bg-[#111827] border-[#e6eaf0]",
-    text: "text-[#2bb6c7]",
+    circle: "bg-[#0f172a] border-[#2dd4bf]",
+    text: "text-[#2dd4bf]",
   },
 };
 const FONT_SIZE_MIN = 32;
@@ -205,7 +205,7 @@ export default function SettingsModal() {
     showWordByWord,
     showTransliteration,
     showWordTranslation,
-    translationLang,
+    translationLangs = [],
     wordTranslationLang,
     displayMode,
     currentSurah,
@@ -825,11 +825,11 @@ export default function SettingsModal() {
   const currentThemeOption = UI_THEMES.find((themeOption) => themeOption.id === theme);
   const currentLanguageLabel =
     LANGUAGES.find((languageOption) => languageOption.code === lang)?.label ||
-    lang.toUpperCase();
+    (lang ? lang.toUpperCase() : "FR");
   const currentFontOption =
     FONT_OPTIONS.find((fontOption) => fontOption.id === fontFamily) || FONT_OPTIONS[0];
   const currentTranslationOption = TRANSLATION_LANGUAGE_OPTIONS.find(
-    (option) => option.code === translationLang,
+    (option) => (translationLangs || []).includes(option.code),
   );
   const currentWordTranslationOption = WORD_TRANSLATION_LANGUAGE_OPTIONS.find(
     (option) => option.code === wordTranslationLang,
@@ -935,14 +935,14 @@ export default function SettingsModal() {
                 : "Set the riwaya, reading layout, and comprehension aids around the way you read.",
           pills: [
             pill(connectionLabel, deviceLabel),
-            pill(lang === "fr" ? "Riwaya" : lang === "ar" ? "الرواية" : "Riwaya", riwaya.toUpperCase()),
+            pill(lang === "fr" ? "Riwaya" : lang === "ar" ? "الرواية" : "Riwaya", (riwaya || "hafs").toUpperCase()),
             pill(lang === "fr" ? "Affichage" : lang === "ar" ? "العرض" : "Layout", displayModeLabel),
             pill(
               lang === "fr" ? "Traduction" : lang === "ar" ? "الترجمة" : "Translation",
               showTranslation
                 ? currentTranslationOption
                   ? getOptionLabel(currentTranslationOption)
-                  : translationLang.toUpperCase()
+                  : (translationLangs[0] || "FR").toUpperCase()
                 : disabledStateLabel,
             ),
           ],
@@ -1796,11 +1796,11 @@ export default function SettingsModal() {
                         {TRANSLATION_LANGUAGE_OPTIONS.map((option) => (
                           <button
                             key={option.code}
-                            className={chipClass(translationLang === option.code)}
+                            className={chipClass(translationLangs.includes(option.code))}
                             onClick={() =>
-                              set({ translationLang: option.code })
+                              dispatch({ type: "TOGGLE_TRANSLATION", payload: option.code })
                             }
-                            aria-pressed={translationLang === option.code}
+                            aria-pressed={translationLangs.includes(option.code)}
                           >
                             {getOptionLabel(option)}
                           </button>

@@ -166,10 +166,10 @@ export default function CleanPageView({
   return (
     <div
       ref={containerRef}
-      className={`cpv-container${isQCF4 ? " cpv-qcf4" : ""} relative overflow-hidden rounded-[26px] border border-[rgba(186,148,74,0.24)] bg-[linear-gradient(160deg,rgba(246,236,211,0.95),rgba(236,221,186,0.96))] p-4 shadow-[0_16px_36px_rgba(11,20,15,0.12)]`}
+      className={`cpv-container${isQCF4 ? " cpv-qcf4" : ""} relative overflow-hidden rounded-[24px] border border-white/12 bg-[linear-gradient(170deg,rgba(7,13,24,0.94),rgba(4,9,18,0.98))] p-4 shadow-[0_22px_46px_rgba(2,7,18,0.52)]`}
     >
       <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(132,102,46,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(132,102,46,0.07)_1px,transparent_1px)] bg-size-[56px_56px] opacity-[0.14]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-size-[64px_64px] opacity-[0.11]"
         aria-hidden="true"
       />
       {/* Surah title header */}
@@ -196,7 +196,7 @@ export default function CleanPageView({
 
       {/* Flowing text block — all verses inline */}
       <div
-        className={`cpv-flow${isQCF4 ? " qcf4-container" : ""} ${flowFontClass} relative z-10 rounded-2xl border border-[rgba(184,146,72,0.22)] bg-[rgba(231,210,160,0.16)] p-4`}
+        className={`cpv-flow${isQCF4 ? " qcf4-container" : ""} ${flowFontClass} relative z-10 rounded-2xl border border-white/12 bg-[rgba(8,15,30,0.56)] p-5`}
         dir="rtl"
         lang="ar"
       >
@@ -258,13 +258,13 @@ export default function CleanPageView({
       {/* ── Translations panel — numbered list below the Arabic flow ── */}
       {showTranslation && getTranslation && ayahs.length > 0 && (
         <div
-          className="cpv-trans-panel mt-4 rounded-2xl border border-[rgba(186,148,74,0.24)] bg-[rgba(236,218,177,0.2)] p-3"
+          className="cpv-trans-panel mt-4 rounded-2xl border border-white/12 bg-[rgba(8,16,32,0.72)] p-3.5"
           dir={lang === "ar" ? "rtl" : "ltr"}
           aria-label={lang === "ar" ? "الترجمة" : lang === "fr" ? "Traductions" : "Translations"}
         >
           {ayahs.map((ayah) => {
-            const trans = getTranslation(ayah);
-            if (!trans?.text) return null;
+            const transArray = getTranslation(ayah);
+            if (!Array.isArray(transArray) || transArray.length === 0) return null;
             const isPlaying =
               currentPlayingAyah?.ayah === ayah.numberInSurah &&
               (currentPlayingAyah?.surah === surahNum ||
@@ -275,7 +275,18 @@ export default function CleanPageView({
                 className={`cpv-trans-entry${isPlaying ? " cpv-trans-entry--playing" : ""}`}
               >
                 <span className="cpv-trans-num">{toAr(ayah.numberInSurah)}</span>
-                <span className="cpv-trans-text">{trans.text}</span>
+                <div className="cpv-trans-content">
+                  {transArray.map((t, idx) => (
+                    <div key={idx} className="cpv-trans-item">
+                      {transArray.length > 1 && (
+                        <span className="cpv-trans-edition">
+                          [{t.edition?.name || t.edition?.identifier}]{" "}
+                        </span>
+                      )}
+                      <span className="cpv-trans-text">{t.text}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             );
           })}

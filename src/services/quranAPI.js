@@ -437,20 +437,23 @@ export async function getSurahText(surahNum, riwaya = 'hafs', signal) {
   return fetchWithEditionFallback(`surah/${surahNum}`, riwaya, signal);
 }
 
-export async function getSurahTranslation(surahNum, lang = 'fr', signal) {
-  const edition = TRANSLATION_EDITIONS[lang] || TRANSLATION_EDITIONS.fr;
-  return fetchJSON(`${BASE}/surah/${surahNum}/${edition}`, signal);
+export async function getSurahTranslation(surahNum, langs = ['fr'], signal) {
+  const langArray = Array.isArray(langs) ? langs : [langs];
+  const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
+  const data = await fetchJSON(`${BASE}/surah/${surahNum}/${editions}`, signal);
+  // AlQuran Cloud returns an array if multiple editions are requested, otherwise a single object
+  return Array.isArray(data) ? data : [data];
 }
 
 /**
- * Fetch surah text + translation in parallel
+ * Fetch surah text + multiple translations in parallel
  */
-export async function getSurahFull(surahNum, riwaya = 'hafs', transLang = 'fr', signal) {
+export async function getSurahFull(surahNum, riwaya = 'hafs', transLangs = ['fr'], signal) {
   const needsHafsForTranslit = riwaya === 'warsh';
 
   const promises = [
     getSurahText(surahNum, riwaya, signal),
-    getSurahTranslation(surahNum, transLang, signal),
+    getSurahTranslation(surahNum, transLangs, signal),
   ];
 
   if (needsHafsForTranslit) {
@@ -464,7 +467,7 @@ export async function getSurahFull(surahNum, riwaya = 'hafs', transLang = 'fr', 
   }
 
   const arabic = results[0].value;
-  const translation = results[1].status === 'fulfilled' ? results[1].value : { ayahs: [] };
+  const translations = results[1].status === 'fulfilled' ? results[1].value : [];
 
   if (needsHafsForTranslit && results[2].status === 'fulfilled') {
     const hafs = results[2].value;
@@ -476,7 +479,7 @@ export async function getSurahFull(surahNum, riwaya = 'hafs', transLang = 'fr', 
     }
   }
 
-  return { arabic, translation };
+  return { arabic, translations };
 }
 
 /* ── Single Ayah ─────────────────────────────── */
@@ -491,9 +494,11 @@ export async function getJuz(juzNum, riwaya = 'hafs', signal) {
   return fetchWithEditionFallback(`juz/${juzNum}`, riwaya, signal);
 }
 
-export async function getJuzTranslation(juzNum, lang = 'fr', signal) {
-  const edition = TRANSLATION_EDITIONS[lang] || TRANSLATION_EDITIONS.fr;
-  return fetchJSON(`${BASE}/juz/${juzNum}/${edition}`, signal);
+export async function getJuzTranslation(juzNum, langs = ['fr'], signal) {
+  const langArray = Array.isArray(langs) ? langs : [langs];
+  const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
+  const data = await fetchJSON(`${BASE}/juz/${juzNum}/${editions}`, signal);
+  return Array.isArray(data) ? data : [data];
 }
 
 /* ── Page (Mushaf page 1-604) ────────────────── */
@@ -502,17 +507,19 @@ export async function getPage(pageNum, riwaya = 'hafs', signal) {
   return fetchWithEditionFallback(`page/${pageNum}`, riwaya, signal);
 }
 
-export async function getPageTranslation(pageNum, lang = 'fr', signal) {
-  const edition = TRANSLATION_EDITIONS[lang] || TRANSLATION_EDITIONS.fr;
-  return fetchJSON(`${BASE}/page/${pageNum}/${edition}`, signal);
+export async function getPageTranslation(pageNum, langs = ['fr'], signal) {
+  const langArray = Array.isArray(langs) ? langs : [langs];
+  const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
+  const data = await fetchJSON(`${BASE}/page/${pageNum}/${editions}`, signal);
+  return Array.isArray(data) ? data : [data];
 }
 
-export async function getPageFull(pageNum, riwaya = 'hafs', transLang = 'fr', signal) {
+export async function getPageFull(pageNum, riwaya = 'hafs', transLangs = ['fr'], signal) {
   const needsHafsForTranslit = riwaya === 'warsh';
 
   const promises = [
     getPage(pageNum, riwaya, signal),
-    getPageTranslation(pageNum, transLang, signal),
+    getPageTranslation(pageNum, transLangs, signal),
   ];
 
   if (needsHafsForTranslit) {
@@ -526,7 +533,7 @@ export async function getPageFull(pageNum, riwaya = 'hafs', transLang = 'fr', si
   }
 
   const arabic = results[0].value;
-  const translation = results[1].status === 'fulfilled' ? results[1].value : { ayahs: [] };
+  const translations = results[1].status === 'fulfilled' ? results[1].value : [];
 
   if (needsHafsForTranslit && results[2].status === 'fulfilled') {
     const hafs = results[2].value;
@@ -538,7 +545,7 @@ export async function getPageFull(pageNum, riwaya = 'hafs', transLang = 'fr', si
     }
   }
 
-  return { arabic, translation };
+  return { arabic, translations };
 }
 
 /* ── Search ──────────────────────────────────── */

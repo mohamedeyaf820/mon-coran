@@ -11,6 +11,9 @@ const SurahHeader = React.memo(function SurahHeader({ surahNum, lang }) {
 
   const surahLabel = lang === "ar" ? toAr(surahNum) : surahNum;
   const isMeccan = s.type === "Meccan";
+  
+  // Format surah number to 3 digits (e.g. 1 -> 001) for the calligraphy font
+  const paddedId = String(surahNum).padStart(3, "0");
 
   return (
     <div className="qc-surah-header" data-surah-type={isMeccan ? "meccan" : "medinan"}>
@@ -21,6 +24,8 @@ const SurahHeader = React.memo(function SurahHeader({ surahNum, lang }) {
 
       {/* ── Parchment Mushaf banner ── */}
       <div className="qc-sh-parchment">
+        {/* Ornate calligraphy using surahnames font */}
+        <div className="qc-surah-calligraphy" aria-label={s.ar}>{paddedId}</div>
         <h1 className="qc-header-name-ar" dir="rtl" lang="ar">سُورَةُ {s.ar}</h1>
       </div>
 

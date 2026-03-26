@@ -1,4 +1,14 @@
-﻿@media (max-width: 390px) {
+@font-face {
+    font-family: 'surahnames';
+    src: url('/fonts/sura_names.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap');
+
+@media (max-width: 390px) {
     .app-main-shell {
         padding-inline: 0.12rem;
     }
@@ -406,183 +416,62 @@
    DESIGN TOKENS â€” Light (Parchment) Theme
    ============================================ */
 :root {
-    /* â”€â”€ Core Palette â”€â”€ */
-    --ink-1: #1c1917;
-    --ink-2: #3d3531;
-    --ink-3: #78716c;
-    --ink-4: #a8a29e;
+    /* ─── Core Zen Palette ─── */
+    --ink-1: #0f172a; /* Slate 900 */
+    --ink-2: #334155; /* Slate 700 */
+    --ink-3: #64748b; /* Slate 500 */
+    --ink-4: #94a3b8; /* Slate 400 */
+    
     --parchment-1: #fdfaf4;
-    --parchment-2: #f5efe0;
-    --parchment-3: #ede3cc;
-    --parchment-4: #e0d5bb;
+    --parchment-2: #f8f3e8;
+    --parchment-3: #f1ebd8;
+    --parchment-4: #e8dfc5;
 
-    /* â”€â”€ Islamic Green (Primary) â”€â”€ */
-    --emerald: #1b5e3b;
-    --reading-surface-soft: rgba(255, 255, 255, 0.68);
-    --reading-surface-elevated: rgba(255, 255, 255, 0.82);
-    --player-border: rgba(192, 154, 74, 0.18);
-    --player-panel-bg: rgba(12, 18, 14, 0.08);
-    --player-chip-bg: rgba(192, 154, 74, 0.12);
-    --player-chip-border: rgba(192, 154, 74, 0.22);
-    --player-chip-text: #8f6e20;
-    --player-text-strong: rgba(31, 26, 14, 0.92);
-    --player-text-soft: rgba(116, 92, 33, 0.78);
-    --player-accent: #1b5e3b;
-    --player-accent-strong: #2b7a54;
-    --player-accent-deep: #143f2b;
-    --emerald-mid: #236b47;
-    --emerald-lit: #2d8a5a;
-    --emerald-pale: #e8f2ec;
-    --emerald-tint: rgba(27, 94, 59, 0.08);
+    /* ─── Islamic Emerald (Primary) ─── */
+    --emerald: #105a30;
+    --emerald-mid: #0d4a28;
+    --emerald-lit: #15733f;
+    --emerald-pale: #f0f7f3;
+    --emerald-tint: rgba(16, 90, 48, 0.08);
 
-    /* â”€â”€ Gold (Accent) â”€â”€ */
-    --gold: #b8860b;
-    --gold-bright: #d4a820;
-    --gold-pale: #fbf3d5;
-    --gold-tint: rgba(184, 134, 11, 0.12);
+    /* ─── Celestial Gold (Accent) ─── */
+    --gold: #b38600;
+    --gold-bright: #d4a017;
+    --gold-pale: #fffbeb;
+    --gold-tint: rgba(179, 134, 0, 0.12);
 
-    /* â”€â”€ Semantic â”€â”€ */
-    --color-success: #1b5e3b;
-    --color-warning: #b8860b;
-    --color-error: #b91c1c;
-    --color-info: #1d4ed8;
+    /* ─── Semantic ─── */
+    --color-success: #105a30;
+    --color-warning: #b38600;
+    --color-error: #be123c;
+    --color-info: #0369a1;
 
-    /* â”€â”€ Shadows â€” Modern soft design â”€â”€ */
-    --shadow-xs:
-        0 1px 2px rgba(28, 25, 23, 0.04), 0 0 0 1px rgba(28, 25, 23, 0.04);
-    --shadow-sm:
-        0 2px 4px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04),
-        0 0 0 1px rgba(28, 25, 23, 0.04);
-    --shadow-md:
-        0 4px 12px rgba(28, 25, 23, 0.08), 0 2px 4px rgba(28, 25, 23, 0.04),
-        0 0 0 1px rgba(28, 25, 23, 0.05);
-    --shadow-lg:
-        0 8px 24px rgba(28, 25, 23, 0.1), 0 4px 8px rgba(28, 25, 23, 0.06),
-        0 0 0 1px rgba(28, 25, 23, 0.06);
-    --shadow-xl:
-        0 16px 48px rgba(28, 25, 23, 0.12), 0 8px 16px rgba(28, 25, 23, 0.08),
-        0 0 0 1px rgba(28, 25, 23, 0.07);
-    --shadow-gold:
-        0 4px 12px rgba(184, 134, 11, 0.15), 0 0 0 1px rgba(184, 134, 11, 0.2);
-    --shadow-emerald:
-        0 4px 12px rgba(27, 94, 59, 0.15), 0 0 0 1px rgba(27, 94, 59, 0.2);
-    --shadow-glow:
-        0 0 24px rgba(27, 94, 59, 0.2), 0 0 0 1px rgba(27, 94, 59, 0.1);
+    /* ─── Professional Shadows ─── */
+    --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
+    --shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.04);
+    --shadow-lg: 0 12px 24px rgba(15, 23, 42, 0.1), 0 4px 8px rgba(15, 23, 42, 0.06);
+    --shadow-xl: 0 20px 48px rgba(15, 23, 42, 0.12), 0 10px 16px rgba(15, 23, 42, 0.08);
+    --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
 
-    /* â”€â”€ Header & Navigation â”€â”€ */
-    --header-bg: #ffffff;
-    --header-border: #e2e8f0;
-    --header-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    /* ─── Glassmorphism ─── */
+    --glass-bg: rgba(255, 255, 255, 0.82);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-backdrop: blur(14px) saturate(180%);
+    --glass-dark-backdrop: blur(20px) saturate(180%) brightness(0.9);
+    
+    /* ─── Typography ─── */
+    --font-ui: "Figtree", "Inter", "Outfit", "Cairo", system-ui, -apple-system, sans-serif;
+    --font-quran: "KFGQPC Uthmanic Script HAFS", "ME Quran", "Scheherazade New", serif;
+    --font-surah: "surahnames", "Scheherazade New", "Amiri", serif;
+    
+    --line-height-quran: 2.2;
+    --line-height-ui: 1.6;
 
-    --sidebar-bg: var(--parchment-1);
-    --player-bg: linear-gradient(160deg, #0e3d26 0%, #1b5e3b 100%);
-    --player-glass: linear-gradient(
-        120deg,
-        #0f2d21 0%,
-        #163b2c 50%,
-        #0d261d 100%
-    );
-
-    /* â”€â”€ Quran text â”€â”€ */
-    --text-quran: #1c1917;
-    --mushaf-bg: #fdfaf4;
-    --mushaf-border: #c9ba94;
-    --ayah-hover: rgba(27, 94, 59, 0.04);
-    --ayah-playing-bg: rgba(184, 134, 11, 0.07);
-    --bismillah-color: var(--emerald);
-
-    /* â”€â”€ Surah header â”€â”€ */
-    --surah-header-bg: linear-gradient(
-        135deg,
-        #0e3d26 0%,
-        #1b5e3b 60%,
-        #1a6040 100%
-    );
-
-    /* â”€â”€ Couleurs Tajweed â€” Palette exacte quranwbw.com â”€â”€
-     * Vert    #169200  â†’ Ghunna / Idgham bighunna
-     * Teal    #1cc7aa  â†’ Ikhfa'
-     * Bleu    #26bffd  â†’ Iqlab
-     * Orange  #dd6b20  â†’ Qalqala
-     * Violet  #BD97CF  â†’ Madd (toutes catÃ©gories)
-     */
-    /* â”€â”€ Tajweed colors â€” exact quran.com palette (from legend screenshot) â”€
-     * Silent letter          #aaaaaa  grey
-     * Normal madd (2)        #d580c8  pink-purple / orchid
-     * Separated madd (2/4/6) #f0952a  orange
-     * Connected madd (4/5)   #e8409a  hot pink
-     * Necessary madd (6)     #d42020  red
-     * Ghunna / Ikhfa         #22bb44  green
-     * Qalqala (echo)         #00c8d4  cyan-teal
-     * Tafkhim (heavy)        #4060d8  blue / indigo
-     * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-    --tajwid-silent: #aaaaaa; /* Silent / hamzat wasl        */
-    --tajwid-lam-shamsiyya: #aaaaaa; /* Lam shamsiyya               */
-    --tajwid-madd-normal: #d580c8; /* Normal madd (2)             */
-    --tajwid-madd: #d580c8; /* Default madd â†’ same pink    */
-    --tajwid-madd-separated: #f0952a; /* Separated madd (2/4/6)      */
-    --tajwid-madd-connected: #e8409a; /* Connected madd (4/5)        */
-    --tajwid-madd-necessary: #d42020; /* Necessary madd (6)          */
-    --tajwid-madd-badal: #d580c8; /* Madd badal (Warsh) â†’ pink   */
-    --tajwid-ghunna: #22bb44; /* Ghunna                      */
-    --tajwid-idgham: #22bb44; /* Idgham bighunna â†’ green     */
-    --tajwid-ikhfa: #22bb44; /* Ikhfa â†’ green               */
-    --tajwid-iqlab: #22bb44; /* Iqlab â†’ green family        */
-    --tajwid-qalqala: #00c8d4; /* Qalqala (echo) â€” cyan-teal  */
-    --tajwid-tafkhim: #4060d8; /* Tafkhim (heavy) â€” blue      */
-    --tajwid-naql: #f0952a; /* Naql Warsh â†’ orange         */
-    --tajwid-tashil: #22bb44; /* Tashil Warsh â†’ green        */
-    --tajwid-ibdal: #f0952a; /* Ibdal Warsh â†’ orange        */
-    --tajwid-sila-kubra: #d580c8; /* Sila kubra â†’ pink           */
-    --tajwid-tarqiq-ra: #22bb44; /* Tarqiq ra â†’ green           */
-    --tajwid-idgham-warsh: #22bb44; /* Idgham Warsh â†’ green        */
-
-    /* â”€â”€ Scrollbar â”€â”€ */
-    --scrollbar-thumb: rgba(27, 94, 59, 0.25);
-    --scrollbar-track: transparent;
-
-    /* â”€â”€ Fonts â”€â”€ */
-    /* Police principale du Coran : KFGQPC en premier (police Uthmani officielle),
-       suivi de ME Quran (police digitale quranwbw), puis Scheherazade New (Google Fonts).
-       Ce stack garantit le rendu correct des voyelles et diacritiques arabes. */
-    --font-quran:
-        "KFGQPC Uthmanic Script HAFS", "ME Quran", "Scheherazade New",
-        "Noto Naskh Arabic", "Amiri Quran", "Amiri", serif;
-    --font-quran-tajweed:
-        "KFGQPC Uthmanic Script HAFS", "ME Quran", "Scheherazade New",
-        "Noto Naskh Arabic", "Amiri Quran", serif;
-    --font-ui:
-        "Cairo", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
-    /* Police dédiée aux noms de sourates : Scheherazade New = même rendu que la Bismillah */
-    --font-surah:
-        "Scheherazade New", "Noto Naskh Arabic", "Amiri Quran", "Amiri", serif;
-    --font-home-ui:
-        "Manrope", "Cairo", "Inter", -apple-system, BlinkMacSystemFont,
-        "Segoe UI", sans-serif;
-    --font-home-ar:
-        "Markazi Text", "Mirza", "Amiri", "Noto Naskh Arabic", serif;
-    --font-serif: "Amiri", "Georgia", serif;
-    --font-mono: "JetBrains Mono", "Fira Mono", "Menlo", monospace;
-    --type-ui-title: clamp(1rem, 1.15vw, 1.18rem);
-    --type-ui-section: 0.72rem;
-    --type-ui-meta: 0.68rem;
-    --type-ui-body: 0.88rem;
-    --type-arabic-ui: 1.08rem;
-    --type-translation: 0.98rem;
-    --surface-base: rgba(255, 255, 255, 0.78);
-    --surface-soft: rgba(255, 255, 255, 0.64);
-    --surface-elevated: rgba(255, 255, 255, 0.9);
-    --surface-active: rgba(var(--primary-rgb), 0.09);
-    --surface-border: rgba(var(--primary-rgb), 0.09);
-    --surface-overlay: rgba(18, 21, 19, 0.44);
-    --icon-muted: rgba(27, 94, 59, 0.72);
-    --line-height-quran: 2.6;
-
-    /* â”€â”€ Layout â”€â”€ */
-    --header-h: 64px;
-    --player-h: 72px;
-    --sidebar-w: 368px;
+    /* ─── Layout ─── */
+    --header-h: 68px;
+    --player-h: 80px;
+    --sidebar-w: 320px;
 
     /* â”€â”€ Spacing scale â”€â”€ */
     --space-1: 0.25rem;
@@ -4088,7 +3977,7 @@ select,
         0 3px 10px rgba(0, 0, 0, 0.35),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
     /* min-width so short names don't collapse */
-    min-width: min(360px, 80vw);
+    min-width: min(420px, 90vw);
 }
 
 /* Inner dotted bead border */
@@ -4111,32 +4000,31 @@ select,
     border-color: #5c3500;
 }
 
-/* ── Arabic calligraphic title inside parchment ── */
-.qc-header-name-ar {
-    font-family: var(
-        --font-surah-display,
-        "Amiri Quran",
-        "Amiri",
-        serif
-    ) !important;
-    font-size: clamp(2rem, 5.5vw, 3.4rem);
-    font-weight: 500;
-    color: #8f5f10;
-    margin: 0;
-    line-height: 1.6;
+/* Callography font (IDs 001-114 mapped to ornate glyphs) */
+.qc-surah-calligraphy {
+    font-family: "surahnames";
+    font-size: clamp(3.8rem, 13vw, 5.8rem);
+    line-height: 1;
+    margin: 0.1rem 0 0.4rem;
+    color: #1c0800;
     position: relative;
     z-index: 1;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
-    animation: none;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+/* Arabic subtitle (modern font) */
+.qc-header-name-ar {
+    font-family: var(--font-quran);
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: #5c3500;
+    opacity: 0.75;
+    margin: 0;
+    line-height: normal;
+    position: relative;
+    z-index: 1;
     direction: rtl;
     white-space: nowrap;
-    letter-spacing: 0.015em;
-    font-feature-settings:
-        "liga" 1,
-        "calt" 1,
-        "kern" 1;
-    font-variant-ligatures: contextual;
-    text-rendering: optimizeLegibility;
 }
 
 /* ── Ornament: hidden in parchment style ── */

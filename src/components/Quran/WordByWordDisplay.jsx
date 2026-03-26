@@ -13,6 +13,7 @@ import {
   withWordCountCalibrationBump,
 } from "../../utils/karaokeUtils";
 import TajweedText from "./TajweedText";
+import audioService from "../../services/audioService";
 
 /**
  * WordByWordDisplay - Displays ayah text with word-by-word breakdown
@@ -45,7 +46,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
   const [words, setWords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [hoveredWord, setHoveredWord] = useState(null);
+  const [selectedWord, setSelectedWord] = useState(null);
 
   /* ── Fetch word-by-word data ── */
   useEffect(() => {
@@ -145,6 +146,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
   // Reset on seek or ayah change
   useEffect(() => {
     lastIdxRef.current = 0;
+    setSelectedWord(null);
   }, [seekCount, surah, ayah]);
 
   const currentWordIdx = useMemo(() => {
@@ -166,14 +168,18 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
     return finalIdx;
   }, [isPlaying, progress, wordWeights, words.length, lagWords]);
 
-  /* ── Word click: play individual word audio ── */
-  const handleWordClick = useCallback((word, index) => {
-    if (word.audioUrl) {
+  /* ── Word click: select word and play audio ── */
+  const handleWordClick = useCallback((word) => {
+    setSelectedWord(word);
+    if (word?.audioUrl) {
       const audio = new Audio(word.audioUrl);
-      audio.play().catch(() => {});
+      audio.play().catch(() => {
+        audioService.playAyah(surah, ayah);
+      });
+    } else {
+      audioService.playAyah(surah, ayah);
     }
-    setHoveredWord(index);
-  }, []);
+  }, [ayah, surah]);
 
   /* ── Loading / error states ── */
   if (loading) {
@@ -207,20 +213,16 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
       {words.map((word, i) => {
         const isRead = isPlaying && i < currentWordIdx;
         const isCurrent = isPlaying && i === currentWordIdx;
-        const isHovered = hoveredWord === i;
 
         let wordClass = "wbw-word-block";
         if (isRead) wordClass += " wbw-read";
         else if (isCurrent) wordClass += " wbw-current";
-        if (isHovered) wordClass += " wbw-hovered";
 
         return (
           <div
             key={word.id ?? i}
             className={wordClass}
-            onClick={() => handleWordClick(word, i)}
-            onMouseEnter={() => setHoveredWord(i)}
-            onMouseLeave={() => setHoveredWord(null)}
+            onClick={() => handleWordClick(word)}
           >
             {/* Arabic text — tajweed-coloured when enabled */}
             <span className="wbw-arabic" style={{ fontSize: `${fontSize}px` }}>
@@ -246,6 +248,50 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
           </div>
         );
       })}
+
+      {/* ── Word Analysis Panel (Quran.com style) ── */}
+      {selectedWord && (
+        <div className="wbw-analysis-overlay" onClick={() => setSelectedWord(null)}>
+          <div className="wbw-analysis-card" onClick={e => e.stopPropagation()}>
+            <div className="wbw-analysis-header">
+              <span className="wbw-analysis-arabic">{selectedWord.text}</span>
+              <button className="wbw-close-btn" onClick={() => setSelectedWord(null)}>×</button>
+            </div>
+            
+            <div className="wbw-analysis-body">
+              <div className="wbw-analysis-section">
+                <span className="wbw-label">{state.lang === 'fr' ? 'Traduction' : 'Translation'}</span>
+                <span className="wbw-value">{selectedWord.translation}</span>
+              </div>
+              
+              <div className="wbw-analysis-section">
+                <span className="wbw-label">{state.lang === 'fr' ? 'Translittération' : 'Transliteration'}</span>
+                <span className="wbw-value">{selectedWord.transliteration}</span>
+              </div>
+
+              {selectedWord.root && (
+                <div className="wbw-analysis-section">
+                  <span className="wbw-label">{state.lang === 'fr' ? 'Racine' : 'Root'}</span>
+                  <span className="wbw-value wbw-root">{selectedWord.root}</span>
+                </div>
+              )}
+
+              {selectedWord.grammar && (
+                <div className="wbw-analysis-section">
+                  <span className="wbw-label">{state.lang === 'fr' ? 'Grammaire' : 'Grammar'}</span>
+                  <span className="wbw-value wbw-grammar">{selectedWord.grammar}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="wbw-analysis-footer">
+              <button className="wbw-audio-btn" onClick={() => handleWordClick(selectedWord)}>
+                <i className="fas fa-play"></i> {state.lang === 'fr' ? 'Écouter' : 'Listen'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 });

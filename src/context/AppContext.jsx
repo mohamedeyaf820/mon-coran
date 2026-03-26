@@ -78,7 +78,7 @@ const initialState = {
   showWordByWord: stored.showWordByWord ?? false,
   showTransliteration: stored.showTransliteration ?? true,
   showWordTranslation: stored.showWordTranslation ?? true,
-  translationLang: stored.translationLang || "fr",
+  translationLangs: stored.translationLangs || [stored.translationLang || "fr"],
   wordTranslationLang:
     stored.wordTranslationLang || stored.translationLang || "fr",
   continuousPlay: stored.continuousPlay ?? true, // auto-play next surah
@@ -200,6 +200,17 @@ function appReducer(state, action) {
     case "SET_LANG":
       return { ...state, lang: action.payload };
 
+    case "TOGGLE_TRANSLATION": {
+      const lang = action.payload;
+      const current = state.translationLangs || [];
+      const next = current.includes(lang)
+        ? current.filter((l) => l !== lang)
+        : [...current, lang];
+      // Ne pas permettre d'avoir 0 traduction si showTranslation est actif
+      if (next.length === 0) return state;
+      return { ...state, translationLangs: next };
+    }
+
     case "SET_RIWAYA":
       return { ...state, riwaya: action.payload };
 
@@ -260,7 +271,7 @@ export function AppProvider({ children }) {
         quranFontSize: state.quranFontSize,
         fontSize: state.quranFontSize,
         fontFamily: state.fontFamily,
-        translationLang: state.translationLang,
+        translationLangs: state.translationLangs,
         wordTranslationLang: state.wordTranslationLang,
         showTranslation: state.showTranslation,
         showTajwid: state.showTajwid,
@@ -309,7 +320,7 @@ export function AppProvider({ children }) {
     state.reciter,
     state.quranFontSize,
     state.fontFamily,
-    state.translationLang,
+    state.translationLangs,
     state.wordTranslationLang,
     state.showTranslation,
     state.showTajwid,

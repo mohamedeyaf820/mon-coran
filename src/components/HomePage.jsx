@@ -20,12 +20,24 @@ import {
   getReciter,
   ensureReciterForRiwaya,
   isWarshVerifiedReciter,
+  getRecitersByRiwaya,
 } from "../data/reciters";
 import { runWhenIdle } from "../utils/idleUtils";
+import { THEMATIC_STATIONS } from "../services/StationService";
+import {
+  buildStationPlaylist,
+  playPlaylistWithReciter,
+  reciterDownloadUrl,
+} from "../services/RecitationService";
+import {
+  getResumeState,
+  setResumeState,
+} from "../stores/AudioQueueStore";
 
 import PlatformLogo from "./PlatformLogo";
 import Footer from "./Footer";
 import { buildSurahAudioPlaylist } from "../utils/audioPlaylist";
+import ReciterDetailPage from "./recitation/ReciterDetailPage";
 
 const HOME_INITIAL_SURAHS = 36;
 const HOME_INITIAL_SURAHS_LOW = 18;
@@ -38,7 +50,6 @@ const HOME_FOOTER_SECTION_STYLE = {
   contentVisibility: "auto",
   containIntrinsicSize: "1px 280px",
 };
-
 /* Sourates d'acces rapide */
 const QUICK_ACCESS = [
   { n: 1, icon: "fa-mosque", label_fr: "Al-Fatiha", label_en: "The Opening" },
@@ -458,7 +469,7 @@ const SurahCard = memo(function SurahCard({
     return (
       <div
         className={cn(
-          "hpl-row !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.003]",
+          "hpl-row !transition-all !duration-300",
           isActive && "hpl-row--active",
         )}
         data-stype={surah.type?.toLowerCase()}
@@ -530,7 +541,7 @@ const SurahCard = memo(function SurahCard({
   return (
     <div
       className={cn(
-        "scard group !relative !flex !min-h-[94px] !w-full !flex-row !items-center !gap-3 !overflow-hidden !rounded-[14px] !border !border-[#e3dfd3] !bg-[#f7f5ef] !px-3.5 !py-2.5 !text-left !shadow-[0_2px_6px_rgba(28,25,19,0.06)] !transition-all !duration-200 hover:!border-[#d0c6ad] hover:!shadow-[0_5px_12px_rgba(28,25,19,0.10)]",
+        "scard group !relative !flex !min-h-[94px] !w-full !flex-row !items-center !gap-3 !overflow-hidden !rounded-[14px] !border !border-[#e3dfd3] !bg-[#f7f5ef] !px-3.5 !py-2.5 !text-left !transition-all !duration-200 hover:!border-[#d0c6ad]",
         isActive && "scard--active",
         isPlaying && "scard--playing",
       )}
@@ -652,7 +663,7 @@ const JuzCard = memo(function JuzCard({
   return (
     <button
       className={cn(
-        "hpq-card hpq-card--juz !transition-all !duration-300 hover:!-translate-y-1 hover:!scale-[1.01]",
+        "hpq-card hpq-card--juz !transition-all !duration-300 hover:!-translate-y-1",
         isActive && "hpq-card--active",
       )}
       onClick={() => onClick(juz)}
@@ -691,8 +702,11 @@ export default function HomePage({ lowPerfMode = false }) {
   const [bookmarks, setBookmarks] = useState([]);
   const [notes, setNotes] = useState([]);
   const [filter, setFilter] = useState("");
+  const [reciterStyleFilter, setReciterStyleFilter] = useState("all");
   const [sortDir, setSortDir] = useState("asc");
   const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
+  const [selectedReciterId, setSelectedReciterId] = useState(null);
+  const [resumeState, setResumeLocalState] = useState(() => getResumeState());
   const [now, setNow] = useState(() => new Date());
   const [recentVisits, setRecentVisits] = useState([]);
   const homeInitialSurahCount = lowPerfMode
@@ -703,10 +717,23 @@ export default function HomePage({ lowPerfMode = false }) {
   );
   const deferredFilter = useDeferredValue(filter);
   const loadMoreRef = useRef(null);
+  const reciterModalRef = useRef(null);
+  const reciterModalCloseBtnRef = useRef(null);
+  const reciterModalTriggerRef = useRef(null);
 
   // Historique réel = l'utilisateur a déjà navigué au-delà de Al-Fatiha v.1
   const hasReadingHistory =
     currentSurah > 1 || (currentSurah === 1 && currentAyah > 1);
+  const availableReciters = useMemo(
+    () => getRecitersByRiwaya(riwaya),
+    [riwaya],
+  );
+  const selectedReciter = useMemo(
+    () => availableReciters.find((r) => r.id === selectedReciterId) || null,
+    [availableReciters, selectedReciterId],
+  );
+  const canDirectDownloadSelectedReciter =
+    selectedReciter?.cdnType === "mp3quran-surah";
 
   useEffect(() => {
     startTransition(() => {
@@ -794,6 +821,139 @@ export default function HomePage({ lowPerfMode = false }) {
     [set, dispatch],
   );
 
+  const toggleFavoriteReciter = useCallback(
+    (reciterId) => {
+      const favorites = Array.isArray(state.favoriteReciters)
+        ? state.favoriteReciters
+        : [];
+      const next = favorites.includes(reciterId)
+        ? favorites.filter((id) => id !== reciterId)
+        : [...favorites, reciterId].slice(0, 24);
+      set({ favoriteReciters: next });
+    },
+    [set, state.favoriteReciters],
+  );
+
+  const persistQueueAndResume = useCallback((items, targetReciter, source) => {
+    const first = items?.[0] || {};
+    setResumeState({
+      surah: first.surah || 1,
+      ayah: first.ayah || 1,
+      reciterId: targetReciter?.id || "",
+      source,
+    });
+    setResumeLocalState(getResumeState());
+  }, []);
+
+  const playSurahForReciter = useCallback(
+    (surahNum, targetReciter) => {
+      if (!targetReciter) return;
+      const items = buildSurahAudioPlaylist(surahNum);
+      if (!items.length) return;
+      const played = playPlaylistWithReciter({ items, reciter: targetReciter, set });
+      if (!played) return;
+      persistQueueAndResume(items, targetReciter, "reciter-surah");
+    },
+    [persistQueueAndResume, set],
+  );
+
+  const playReciterRadio = useCallback(
+    (targetReciter) => {
+      if (!targetReciter) return;
+      const stationItems = buildStationPlaylist([1, 36, 55, 67, 18]);
+      if (!stationItems.length) return;
+      const played = playPlaylistWithReciter({
+        items: stationItems,
+        reciter: targetReciter,
+        set,
+      });
+      if (!played) return;
+      persistQueueAndResume(stationItems, targetReciter, "reciter-radio");
+    },
+    [persistQueueAndResume, set],
+  );
+
+  const playStation = useCallback(
+    (station) => {
+      const fallbackId = ensureReciterForRiwaya(state.reciter, riwaya);
+      const stationReciter =
+        availableReciters.find((r) => r.id === station.reciterId) ||
+        availableReciters.find((r) => r.id === fallbackId) ||
+        availableReciters[0];
+      if (!stationReciter) return;
+      const items = buildStationPlaylist(station.surahs);
+      if (!items.length) return;
+      const played = playPlaylistWithReciter({ items, reciter: stationReciter, set });
+      if (!played) return;
+      persistQueueAndResume(items, stationReciter, "station");
+    },
+    [availableReciters, persistQueueAndResume, riwaya, set, state.reciter],
+  );
+
+  const resumeListening = useCallback(() => {
+    const current = getResumeState();
+    if (!current) return;
+    const reciter =
+      availableReciters.find((item) => item.id === current.reciterId) ||
+      availableReciters[0];
+    if (!reciter) return;
+    playSurahForReciter(current.surah || 1, reciter);
+  }, [availableReciters, playSurahForReciter]);
+
+  useEffect(() => {
+    if (!selectedReciter) return;
+
+    const previousActiveElement = document.activeElement;
+    reciterModalTriggerRef.current =
+      previousActiveElement instanceof HTMLElement ? previousActiveElement : null;
+
+    const previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const focusInitial = () => {
+      reciterModalCloseBtnRef.current?.focus();
+    };
+    const rafId = window.requestAnimationFrame(focusInitial);
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setSelectedReciterId(null);
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const dialog = reciterModalRef.current;
+      if (!dialog) return;
+      const focusable = dialog.querySelectorAll(
+        'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const activeEl = document.activeElement;
+
+      if (event.shiftKey && activeEl === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && activeEl === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      document.body.style.overflow = previousBodyOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+      reciterModalTriggerRef.current?.focus();
+      reciterModalTriggerRef.current = null;
+    };
+  }, [selectedReciter]);
+
   const continueReading = useCallback(() => {
     set({ showHome: false, showDuas: false });
     if (displayMode === "juz")
@@ -852,6 +1012,40 @@ export default function HomePage({ lowPerfMode = false }) {
     surahs.sort((a, b) => (sortDir === "asc" ? a.n - b.n : b.n - a.n));
     return surahs;
   }, [normalizedDeferredFilter, sortDir, trimmedDeferredFilter]);
+
+  const filteredReciters = useMemo(() => {
+    const favorites = new Set(state.favoriteReciters || []);
+    const list = availableReciters.filter((reciter) => {
+      const styleMatch =
+        reciterStyleFilter === "all" ||
+        String(reciter.style || "").toLowerCase() === reciterStyleFilter;
+      if (!styleMatch) return false;
+      if (!normalizedDeferredFilter) return true;
+      const fr = String(reciter.nameFr || "").toLowerCase();
+      const en = String(reciter.nameEn || "").toLowerCase();
+      const ar = String(reciter.name || "");
+      return (
+        fr.includes(normalizedDeferredFilter) ||
+        en.includes(normalizedDeferredFilter) ||
+        ar.includes(trimmedDeferredFilter)
+      );
+    });
+
+    return list.sort((a, b) => {
+      const aFav = favorites.has(a.id) ? 1 : 0;
+      const bFav = favorites.has(b.id) ? 1 : 0;
+      if (aFav !== bFav) return bFav - aFav;
+      return String(a.nameFr || a.nameEn || a.name).localeCompare(
+        String(b.nameFr || b.nameEn || b.name),
+      );
+    });
+  }, [
+    availableReciters,
+    normalizedDeferredFilter,
+    reciterStyleFilter,
+    state.favoriteReciters,
+    trimmedDeferredFilter,
+  ]);
 
   const renderedSurahs = useMemo(
     () =>
@@ -1008,10 +1202,17 @@ export default function HomePage({ lowPerfMode = false }) {
     duas: { fr: "Douas", en: "Duas", ar: "الأدعية" },
     surahs: { fr: "Sourates", en: "Surahs", ar: "السور" },
     juz: { fr: "Juz", en: "Juz", ar: "الأجزاء" },
+    recitations: { fr: "Recitations", en: "Recitations", ar: "التلاوات" },
+    radio: { fr: "Radio", en: "Radio", ar: "الراديو" },
     search: {
       fr: "Rechercher une sourate...",
       en: "Search a surah...",
       ar: "ابحث عن سورة...",
+    },
+    searchReciter: {
+      fr: "Rechercher un recitateur...",
+      en: "Search a reciter...",
+      ar: "ابحث عن قارئ...",
     },
     verseOfDay: {
       fr: "Verset du jour",
@@ -1576,6 +1777,26 @@ export default function HomePage({ lowPerfMode = false }) {
             <i className="fas fa-hands-praying" />
             {lang === "ar" ? "أدعية" : lang === "fr" ? "Douas" : "Duas"}
           </button>
+          <button
+            className="hp2-qchip !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.02]"
+            onClick={() => selectContentTab("recitations")}
+          >
+            <span className="hp2-qchip__ar">
+              {lang === "ar" ? "التلاوات" : "Recitations"}
+            </span>
+            <span className="hp2-qchip__sub">
+              {lang === "fr" ? "Recitateurs" : lang === "ar" ? "القراء" : "Reciters"}
+            </span>
+          </button>
+          <button
+            className="hp2-qchip !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.02]"
+            onClick={() => selectContentTab("radio")}
+          >
+            <span className="hp2-qchip__ar">{lang === "ar" ? "الراديو" : "Radio"}</span>
+            <span className="hp2-qchip__sub">
+              {lang === "fr" ? "Stations" : lang === "ar" ? "محطات" : "Stations"}
+            </span>
+          </button>
           {QUICK_ACCESS.map(({ n, label_fr, label_en }) => {
             const s = SURAHS[n - 1];
             return (
@@ -1673,15 +1894,35 @@ export default function HomePage({ lowPerfMode = false }) {
                 <i className="fas fa-book-open" />
                 {t("juz")}
               </button>
+              <button
+                className={cn(
+                  "hp2-seg !transition-all !duration-300",
+                  activeTab === "recitations" && "hp2-seg--on",
+                )}
+                onClick={() => selectContentTab("recitations")}
+              >
+                <i className="fas fa-microphone-lines" />
+                {t("recitations")}
+              </button>
+              <button
+                className={cn(
+                  "hp2-seg !transition-all !duration-300",
+                  activeTab === "radio" && "hp2-seg--on",
+                )}
+                onClick={() => selectContentTab("radio")}
+              >
+                <i className="fas fa-broadcast-tower" />
+                {t("radio")}
+              </button>
             </div>
 
             {/* Recherche */}
-            {activeTab === "surah" && (
+            {(activeTab === "surah" || activeTab === "recitations") && (
               <div className="hp2-search !rounded-xl !border !backdrop-blur-sm">
                 <i className="fas fa-magnifying-glass hp2-search__ico" />
                 <input
                   className="hp2-search__input"
-                  placeholder={t("search")}
+                  placeholder={activeTab === "surah" ? t("search") : t("searchReciter")}
                   value={filter}
                   onChange={(e) => setFilter(e.target.value)}
                 />
@@ -1701,8 +1942,20 @@ export default function HomePage({ lowPerfMode = false }) {
               <span className="hp2-toolbar__count">
                 {activeTab === "surah"
                   ? filteredSurahs.length
-                  : JUZ_DATA.length}
-                <span>{activeTab === "surah" ? t("surahs") : t("juz")}</span>
+                  : activeTab === "juz"
+                    ? JUZ_DATA.length
+                    : activeTab === "recitations"
+                      ? filteredReciters.length
+                      : THEMATIC_STATIONS.length + Math.min(8, availableReciters.length)}
+                <span>
+                  {activeTab === "surah"
+                    ? t("surahs")
+                    : activeTab === "juz"
+                      ? t("juz")
+                      : activeTab === "recitations"
+                        ? t("recitations")
+                        : t("radio")}
+                </span>
               </span>
               {activeTab === "surah" && (
                 <button
@@ -1718,32 +1971,36 @@ export default function HomePage({ lowPerfMode = false }) {
                   </span>
                 </button>
               )}
-              <button
-                className={cn(
-                  "hp2-icon-btn hp2-icon-btn--with-label !transition-all !duration-300 hover:!scale-110",
-                  viewMode === "grid" && "hp2-icon-btn--on",
-                )}
-                onClick={() => changeViewMode("grid")}
-                title="Grille"
-              >
-                <i className="fas fa-grip" />
-                <span className="hp2-icon-btn__label">
-                  {lang === "ar" ? "شبكة" : lang === "fr" ? "Grille" : "Grid"}
-                </span>
-              </button>
-              <button
-                className={cn(
-                  "hp2-icon-btn hp2-icon-btn--with-label !transition-all !duration-300 hover:!scale-110",
-                  viewMode === "list" && "hp2-icon-btn--on",
-                )}
-                onClick={() => changeViewMode("list")}
-                title="Liste"
-              >
-                <i className="fas fa-list" />
-                <span className="hp2-icon-btn__label">
-                  {lang === "ar" ? "قائمة" : lang === "fr" ? "Liste" : "List"}
-                </span>
-              </button>
+              {(activeTab === "surah" || activeTab === "juz") && (
+                <>
+                  <button
+                    className={cn(
+                      "hp2-icon-btn hp2-icon-btn--with-label !transition-all !duration-300 hover:!scale-110",
+                      viewMode === "grid" && "hp2-icon-btn--on",
+                    )}
+                    onClick={() => changeViewMode("grid")}
+                    title="Grille"
+                  >
+                    <i className="fas fa-grip" />
+                    <span className="hp2-icon-btn__label">
+                      {lang === "ar" ? "شبكة" : lang === "fr" ? "Grille" : "Grid"}
+                    </span>
+                  </button>
+                  <button
+                    className={cn(
+                      "hp2-icon-btn hp2-icon-btn--with-label !transition-all !duration-300 hover:!scale-110",
+                      viewMode === "list" && "hp2-icon-btn--on",
+                    )}
+                    onClick={() => changeViewMode("list")}
+                    title="Liste"
+                  >
+                    <i className="fas fa-list" />
+                    <span className="hp2-icon-btn__label">
+                      {lang === "ar" ? "قائمة" : lang === "fr" ? "Liste" : "List"}
+                    </span>
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -1753,7 +2010,10 @@ export default function HomePage({ lowPerfMode = false }) {
               viewMode === "grid"
                 ? "hp2-items--grid !grid !grid-cols-1 lg:!grid-cols-3 !gap-3"
                 : "hp2-items--list",
-              useSurahGridScroll && "hp2-items--surah-scroll",
+              (useSurahGridScroll ||
+                activeTab === "recitations" ||
+                activeTab === "radio") &&
+                "hp2-items--surah-scroll",
             )}
           >
             {activeTab === "surah" ? (
@@ -1776,7 +2036,7 @@ export default function HomePage({ lowPerfMode = false }) {
                   />
                 ))
               )
-            ) : (
+            ) : activeTab === "juz" ? (
               JUZ_DATA.map((j, idx) => (
                 <JuzCard
                   key={j.juz}
@@ -1788,8 +2048,214 @@ export default function HomePage({ lowPerfMode = false }) {
                   animIndex={idx}
                 />
               ))
+            ) : activeTab === "recitations" ? (
+              filteredReciters.length === 0 ? (
+                <EmptyState
+                  icon="fa-microphone-lines"
+                  text={
+                    lang === "fr"
+                      ? "Aucun recitateur trouve"
+                      : lang === "ar"
+                        ? "لا يوجد قارئ مطابق"
+                        : "No reciter found"
+                  }
+                />
+              ) : (
+                <>
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    {[
+                      { id: "all", label: "Tous" },
+                      { id: "murattal", label: "Murattal" },
+                      { id: "mujawwad", label: "Mujawwad" },
+                      { id: "muallim", label: "Muallim" },
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={`hp2-chip ${reciterStyleFilter === item.id ? "hp2-chip--on" : ""}`}
+                        onClick={() => setReciterStyleFilter(item.id)}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                  {filteredReciters.map((reciter) => {
+                    const reciterLabel =
+                      lang === "ar"
+                        ? reciter.name
+                        : lang === "fr"
+                          ? reciter.nameFr
+                          : reciter.nameEn;
+                    const isFavorite = (state.favoriteReciters || []).includes(
+                      reciter.id,
+                    );
+                    return (
+                      <div
+                        key={reciter.id}
+                        className="hp2-item items-center gap-3 rounded-2xl border px-3 py-3"
+                      >
+                        <span className="hp2-item__icon h-9 w-9">
+                          <i className="fas fa-microphone-lines" />
+                        </span>
+                        <div className="hp2-item__body min-w-0">
+                          <span
+                            className="hp2-item__ar truncate"
+                            dir={lang === "ar" ? "rtl" : "ltr"}
+                          >
+                            {reciterLabel}
+                          </span>
+                          <span className="hp2-item__sub">{reciter.style || "murattal"}</span>
+                        </div>
+                        <div className="ml-auto flex items-center gap-2">
+                          <button
+                            className={cn(
+                              "hp2-icon-btn",
+                              isFavorite && "hp2-icon-btn--on",
+                            )}
+                            type="button"
+                            onClick={() => toggleFavoriteReciter(reciter.id)}
+                          >
+                            <i className={`fas ${isFavorite ? "fa-star" : "fa-star-half-stroke"}`} />
+                          </button>
+                          <button
+                            className="hp2-icon-btn hp2-icon-btn--on"
+                            type="button"
+                            onClick={() => playReciterRadio(reciter)}
+                          >
+                            <i className="fas fa-play" />
+                          </button>
+                          <button
+                            className="hp2-icon-btn"
+                            type="button"
+                            onClick={() => setSelectedReciterId(reciter.id)}
+                          >
+                            <i className={`fas fa-chevron-${lang === "ar" ? "left" : "right"}`} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </>
+              )
+            ) : (
+              <>
+                {THEMATIC_STATIONS.map((station) => (
+                  <button
+                    key={station.id}
+                    className="hp2-item w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left"
+                    type="button"
+                    onClick={() => playStation(station)}
+                  >
+                    <span className="hp2-item__icon h-9 w-9">
+                      <i className={`fas ${station.icon}`} />
+                    </span>
+                    <div className="hp2-item__body">
+                      <span className="hp2-item__ar text-left" dir={lang === "ar" ? "rtl" : "ltr"}>
+                        {lang === "ar"
+                          ? station.titleAr
+                          : lang === "fr"
+                            ? station.titleFr
+                            : station.titleEn}
+                      </span>
+                      <span className="hp2-item__sub">{station.surahs.length} {lang === "fr" ? "sourates" : "surahs"}</span>
+                    </div>
+                    <i className="fas fa-circle-play hp2-item__caret" />
+                  </button>
+                ))}
+                {availableReciters.slice(0, 8).map((reciter) => (
+                  <button
+                    key={`r-${reciter.id}`}
+                    className="hp2-item w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left"
+                    type="button"
+                    onClick={() =>
+                      playStation({
+                        id: `r-${reciter.id}`,
+                        icon: "fa-user-astronaut",
+                        titleFr: reciter.nameFr,
+                        titleEn: reciter.nameEn,
+                        titleAr: reciter.name,
+                        surahs: [1, 36, 55, 67],
+                        reciterId: reciter.id,
+                      })
+                    }
+                  >
+                    <span className="hp2-item__icon h-9 w-9">
+                      <i className="fas fa-user-astronaut" />
+                    </span>
+                    <div className="hp2-item__body">
+                      <span className="hp2-item__ar text-left" dir={lang === "ar" ? "rtl" : "ltr"}>
+                        {lang === "ar"
+                          ? reciter.name
+                          : lang === "fr"
+                            ? reciter.nameFr
+                            : reciter.nameEn}
+                      </span>
+                      <span className="hp2-item__sub">4 {lang === "fr" ? "sourates" : "surahs"}</span>
+                    </div>
+                    <i className="fas fa-circle-play hp2-item__caret" />
+                  </button>
+                ))}
+              </>
             )}
           </div>
+          {(activeTab === "recitations" || activeTab === "radio") && (
+            <div className="mt-3 space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  className="hp2-chip"
+                  onClick={resumeListening}
+                  disabled={!resumeState}
+                >
+                  {lang === "fr" ? "Reprendre l'ecoute" : lang === "ar" ? "استئناف الاستماع" : "Resume listening"}
+                </button>
+                <span className="text-xs opacity-70">
+                  {resumeState
+                    ? `S${resumeState.surah} · ${resumeState.source}`
+                    : lang === "fr"
+                      ? "Aucune reprise"
+                      : "No resume"}
+                </span>
+                <span className="text-xs opacity-70">{(audioService.playlist || []).length} queued</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-xl border px-3 py-2">
+                {[0.75, 1, 1.25, 1.5].map((speed) => (
+                  <button
+                    key={speed}
+                    type="button"
+                    className={cn("hp2-chip", state.audioSpeed === speed && "hp2-chip--on")}
+                    onClick={() => {
+                      set({ audioSpeed: speed });
+                      audioService.setSpeed(speed);
+                    }}
+                  >
+                    {speed}x
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  className="hp2-icon-btn"
+                  onClick={() => audioService.prev()}
+                >
+                  <i className="fas fa-backward-step" />
+                </button>
+                <button
+                  type="button"
+                  className="hp2-icon-btn hp2-icon-btn--on"
+                  onClick={() => audioService.toggle()}
+                >
+                  <i className={`fas ${state.isPlaying ? "fa-pause" : "fa-play"}`} />
+                </button>
+                <button
+                  type="button"
+                  className="hp2-icon-btn"
+                  onClick={() => audioService.next()}
+                >
+                  <i className="fas fa-forward-step" />
+                </button>
+              </div>
+            </div>
+          )}
           {hasMoreSurahs && (
             <div className="mt-4 !flex !justify-center">
               <button
@@ -1813,6 +2279,33 @@ export default function HomePage({ lowPerfMode = false }) {
           )}
         </section>
       </div>
+
+      {selectedReciter && (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setSelectedReciterId(null)}
+        >
+          <ReciterDetailPage
+            lang={lang}
+            reciter={selectedReciter}
+            canDirectDownload={canDirectDownloadSelectedReciter}
+            onPlayRadio={playReciterRadio}
+            onClose={() => setSelectedReciterId(null)}
+            onPlaySurah={playSurahForReciter}
+            onOpenSurah={(surahNum, reciter) => {
+              setSelectedReciterId(null);
+              set({ reciter: reciter.id, showHome: false, showDuas: false });
+              dispatch({
+                type: "NAVIGATE_SURAH",
+                payload: { surah: surahNum, ayah: 1 },
+              });
+            }}
+            getDownloadUrl={reciterDownloadUrl}
+            dialogRef={reciterModalRef}
+            closeBtnRef={reciterModalCloseBtnRef}
+          />
+        </div>
+      )}
 
       {/* FOOTER */}
       <div className="relative z-10" style={HOME_FOOTER_SECTION_STYLE}>

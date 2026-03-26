@@ -6,10 +6,10 @@
 
 :root[data-theme="light"],
 [data-theme="light"] {
-    --brand-bg: #f6f9fc;
-    --brand-ink: #162433;
-    --brand-accent: #1a8f92;
-    --brand-accent-rgb: 26, 143, 146;
+    --brand-bg: #f8fafc;
+    --brand-ink: #0f172a;
+    --brand-accent: #0d9488;
+    --brand-accent-rgb: 13, 148, 136;
     --theme-arabic-base: #0f0f0f;
     --theme-scene-a: radial-gradient(
         circle at 12% -14%,
@@ -90,10 +90,10 @@
 
 :root[data-theme="sepia"],
 [data-theme="sepia"] {
-    --brand-bg: #f4ead7;
-    --brand-ink: #483723;
-    --brand-accent: #8b6b3e;
-    --brand-accent-rgb: 139, 107, 62;
+    --brand-bg: #fdf6e3;
+    --brand-ink: #433422;
+    --brand-accent: #b25d06;
+    --brand-accent-rgb: 178, 93, 6;
     --theme-arabic-base: #2d1f11;
     --theme-scene-a: radial-gradient(
         circle at 12% -10%,
@@ -174,10 +174,10 @@
 
 :root[data-theme="dark"],
 [data-theme="dark"] {
-    --brand-bg: #171b22;
-    --brand-ink: #e8edf4;
-    --brand-accent: #2cb6c8;
-    --brand-accent-rgb: 44, 182, 200;
+    --brand-bg: #0b111a;
+    --brand-ink: #f1f5f9;
+    --brand-accent: #2dd4bf;
+    --brand-accent-rgb: 45, 212, 191;
     --theme-arabic-base: #ffffff;
     --theme-scene-a: radial-gradient(
         circle at 12% -14%,

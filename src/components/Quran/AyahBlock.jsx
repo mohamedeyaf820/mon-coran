@@ -10,6 +10,7 @@ import {
   getMemorizationLevel,
   setMemorizationLevel,
 } from "../../services/memorizationService";
+import audioService from "../../services/audioService";
 
 /**
  * AyahBlock component – renders a single Arabic verse with a polished design.
@@ -107,7 +108,8 @@ const AyahBlock = React.memo(function AyahBlock({
 
   const shouldShowVerseTranslation =
     showTranslation &&
-    trans?.text &&
+    Array.isArray(trans) &&
+    trans.length > 0 &&
     !(riwaya === "warsh" && showWordByWord);
 
   return (
@@ -126,6 +128,7 @@ const AyahBlock = React.memo(function AyahBlock({
       <div className="qc-ayah-container">
         {/* ── Verse number badge + memorization stars ── */}
         <div className="qc-ayah-sidebar">
+          <span className="qc-ayah-ref">{surahNum}:{ayah.numberInSurah}</span>
           <div className="qc-ayah-num-wrapper">
             <span className="qc-ayah-num-ornament" aria-hidden="true">
               &#xFD3E;
@@ -159,7 +162,24 @@ const AyahBlock = React.memo(function AyahBlock({
         {/* ── Main content ── */}
         <div className="qc-ayah-content">
           {/* Arabic text — full width, beautifully rendered */}
-          <div className="qc-ayah-text-ar" dir="rtl" lang="ar">{arabicContent}</div>
+          <div
+            className="qc-ayah-text-ar"
+            dir="rtl"
+            lang="ar"
+            onClick={(event) => {
+              event.stopPropagation();
+              if (!audioService.playlist?.length) {
+                window.dispatchEvent(new CustomEvent("mushaf:play-surah"));
+                window.setTimeout(() => {
+                  audioService.playAyah(surahNum, ayah.numberInSurah);
+                }, 120);
+                return;
+              }
+              audioService.playAyah(surahNum, ayah.numberInSurah);
+            }}
+          >
+            {arabicContent}
+          </div>
 
           {/* Warsh QCF4 mode: WBW not available — inform user */}
           {!memMode && showWordByWord && ayah.warshWords?.length > 0 && (
@@ -182,23 +202,30 @@ const AyahBlock = React.memo(function AyahBlock({
 
           {/* Translation (optional, shown when enabled) */}
           {shouldShowVerseTranslation && (
-            <div className="qc-ayah-translation" dir="auto">
-              {trans.text}
+            <div className="qc-ayah-translations-container" dir="auto">
+              {trans.map((t, idx) => (
+                <div key={t.edition?.identifier || idx} className="qc-ayah-translation">
+                  {trans.length > 1 && (
+                    <div className="qc-translation-edition-label">
+                      {t.edition?.name || t.edition?.identifier}
+                    </div>
+                  )}
+                  <div className="qc-translation-text">{t.text}</div>
+                </div>
+              ))}
             </div>
           )}
+
+          <div className="qc-ayah-inline-actions">
+            <AyahActions
+              surah={surahNum}
+              ayah={ayah.numberInSurah}
+              ayahData={ayah}
+              compact
+            />
+          </div>
         </div>
       </div>
-
-      {/* ── Expanded actions panel ── */}
-      {isActive && (
-        <div className="qc-ayah-actions-panel">
-          <AyahActions
-            surah={surahNum}
-            ayah={ayah.numberInSurah}
-            ayahData={ayah}
-          />
-        </div>
-      )}
     </div>
   );
 });

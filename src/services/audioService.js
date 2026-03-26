@@ -454,6 +454,7 @@ class AudioService {
     }
     this._preloadPool = [];
     this.isPlaying = false;
+    this.playlist = [];
     this.playlistIndex = -1;
     this._playlistSignature = "";
     this._playlistSourceAyahs = [];

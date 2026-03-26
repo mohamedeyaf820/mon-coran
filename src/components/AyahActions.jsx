@@ -34,7 +34,7 @@ function emitToast(type, message) {
   );
 }
 
-export default function AyahActions({ surah, ayah, ayahData }) {
+export default function AyahActions({ surah, ayah, ayahData, compact = false }) {
   const { state, dispatch, set } = useApp();
   const { lang, reciter, riwaya, warshStrictMode } = state;
 
@@ -448,6 +448,24 @@ export default function AyahActions({ surah, ayah, ayahData }) {
     );
   };
 
+  const openVerseInsight = useCallback(
+    (section = "") => {
+      const base = `https://quran.com/${surah}/${ayah}`;
+      const target = section ? `${base}/${section}` : base;
+      if (openExternalUrl(target)) return;
+      if (openExternalUrl(base)) return;
+      emitToast(
+        "error",
+        toastText(
+          "Ouverture du detail indisponible",
+          "تعذر فتح التفصيل",
+          "Unable to open verse details",
+        ),
+      );
+    },
+    [surah, ayah, toastText],
+  );
+
   const quickActions = [
     {
       key: "play",
@@ -579,116 +597,226 @@ export default function AyahActions({ surah, ayah, ayahData }) {
 
   return (
     <div className="ayah-actions" onClick={(event) => event.stopPropagation()}>
-      <div className="ayah-actions__surface ayah-actions__surface--compact">
-        <div className="ayah-actions__meta">
-          <div>
-            <span className="ayah-actions__kicker">
-              <i className="fas fa-bolt" />
+      {compact ? (
+        <div className="ayah-actions-inline">
+          <div className="ayah-actions-inline__meta">
+            <span className="ayah-actions-inline__ref">{surah}:{ayah}</span>
+            <span className="ayah-actions-inline__name">
               {lang === "fr"
-                ? "Actions rapides"
+                ? surahInfo?.fr || surahInfo?.en
                 : lang === "ar"
-                  ? "إجراءات سريعة"
-                  : "Quick actions"}
+                  ? surahInfo?.ar
+                  : surahInfo?.en}
             </span>
-            <div className="ayah-actions__verse">
-              <span>
+          </div>
+
+          <div className="ayah-actions-inline__icons">
+            <button
+              type="button"
+              className="ayah-actions-inline__icon-btn"
+              onClick={playAyah}
+              title={lang === "fr" ? "Ecouter" : lang === "ar" ? "استماع" : "Listen"}
+              aria-label={lang === "fr" ? "Ecouter le verset" : lang === "ar" ? "تشغيل الآية" : "Play verse"}
+            >
+              <i className={`fas fa-${audioError ? "triangle-exclamation" : "play"}`} />
+            </button>
+            <button
+              type="button"
+              className={`ayah-actions-inline__icon-btn${bookmarked ? " is-active" : ""}`}
+              onClick={toggleBookmark}
+              title={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
+              aria-label={lang === "fr" ? "Favori" : lang === "ar" ? "مفضلة" : "Bookmark"}
+            >
+              <i className="fas fa-bookmark" />
+            </button>
+            <button
+              type="button"
+              className={`ayah-actions-inline__icon-btn${copied ? " is-active" : ""}`}
+              onClick={copyText}
+              title={lang === "fr" ? "Copier" : lang === "ar" ? "نسخ" : "Copy"}
+              aria-label={lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse"}
+            >
+              <i className={`fas ${copied ? "fa-check" : "fa-copy"}`} />
+            </button>
+            <button
+              type="button"
+              className={`ayah-actions-inline__icon-btn${showShare ? " is-active" : ""}`}
+              onClick={() => {
+                setShowPlaylistMenu(false);
+                setShowNote(false);
+                setShowShare((value) => !value);
+              }}
+              title={lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Share"}
+              aria-label={lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Share"}
+            >
+              <i className="fas fa-share-nodes" />
+            </button>
+            <button
+              type="button"
+              className={`ayah-actions-inline__icon-btn${showNote ? " is-active" : ""}`}
+              onClick={() => {
+                setShowPlaylistMenu(false);
+                setShowShare(false);
+                setShowNote((value) => !value);
+              }}
+              title={lang === "fr" ? "Noter" : lang === "ar" ? "ملاحظة" : "Note"}
+              aria-label={lang === "fr" ? "Ajouter une note" : lang === "ar" ? "إضافة ملاحظة" : "Add note"}
+            >
+              <i className="fas fa-pen-to-square" />
+            </button>
+            <button
+              type="button"
+              className="ayah-actions-inline__icon-btn"
+              onClick={openPlaylistMenu}
+              title={lang === "fr" ? "Playlist" : lang === "ar" ? "قائمة" : "Playlist"}
+              aria-label={lang === "fr" ? "Ajouter a la playlist" : lang === "ar" ? "إضافة إلى القائمة" : "Add to playlist"}
+            >
+              <i className="fas fa-ellipsis" />
+            </button>
+          </div>
+
+          <div className="ayah-actions-inline__links" role="group" aria-label="Verse details">
+            <button type="button" className="ayah-actions-inline__link" onClick={() => openVerseInsight("tafsirs")}>
+              {lang === "fr" ? "Tafsir" : lang === "ar" ? "تفاسير" : "Tafsir"}
+            </button>
+            <button
+              type="button"
+              className="ayah-actions-inline__link"
+              onClick={() => {
+                setShowPlaylistMenu(false);
+                setShowShare(false);
+                setShowNote(true);
+              }}
+            >
+              {lang === "fr" ? "Reflexions" : lang === "ar" ? "تدبر" : "Reflections"}
+            </button>
+            <button
+              type="button"
+              className="ayah-actions-inline__link"
+              onClick={() => {
+                handleStudyMode();
+                openVerseInsight("lessons");
+              }}
+            >
+              {lang === "fr" ? "Lecons" : lang === "ar" ? "دروس" : "Lessons"}
+            </button>
+            <button type="button" className="ayah-actions-inline__link" onClick={() => openVerseInsight("answers")}>
+              {lang === "fr" ? "Reponses" : lang === "ar" ? "إجابات" : "Answers"}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="ayah-actions__surface ayah-actions__surface--compact">
+          <div className="ayah-actions__meta">
+            <div>
+              <span className="ayah-actions__kicker">
+                <i className="fas fa-bolt" />
                 {lang === "fr"
-                  ? surahInfo?.fr || surahInfo?.en
+                  ? "Actions rapides"
                   : lang === "ar"
-                    ? surahInfo?.ar
-                    : surahInfo?.en}
+                    ? "إجراءات سريعة"
+                    : "Quick actions"}
               </span>
-              <span className="ayah-actions__verse-ar" dir="rtl">
-                {surahInfo?.ar}
+              <div className="ayah-actions__verse">
+                <span>
+                  {lang === "fr"
+                    ? surahInfo?.fr || surahInfo?.en
+                    : lang === "ar"
+                      ? surahInfo?.ar
+                      : surahInfo?.en}
+                </span>
+                <span className="ayah-actions__verse-ar" dir="rtl">
+                  {surahInfo?.ar}
+                </span>
+                <span>({surah}:{ayah})</span>
+              </div>
+            </div>
+
+            <div className="ayah-actions__badges">
+              <span className={`ayah-actions__badge${bookmarked ? " is-on" : ""}`}>
+                <i className="fas fa-bookmark" />
+                {bookmarked
+                  ? lang === "fr"
+                    ? "favori"
+                    : lang === "ar"
+                      ? "مفضلة"
+                      : "saved"
+                  : lang === "fr"
+                    ? "non epingle"
+                    : lang === "ar"
+                      ? "غير محفوظة"
+                      : "not saved"}
               </span>
-              <span>({surah}:{ayah})</span>
+              <span className={`ayah-actions__badge${memoLevel > 0 ? " is-on" : ""}`}>
+                <i className="fas fa-star" />
+                {memoLevel > 0 ? `${memoLevel}/5` : "0/5"}
+              </span>
             </div>
           </div>
 
-          <div className="ayah-actions__badges">
-            <span className={`ayah-actions__badge${bookmarked ? " is-on" : ""}`}>
+          <div className="ayah-actions__grid">
+            {quickActions.map((action) => (
+              <button
+                key={action.key}
+                type="button"
+                className={`${action.className}${action.active ? " is-active" : ""}`}
+                onClick={action.onClick}
+              >
+                <span className="ayah-action-card__icon">
+                  <i className={`fas ${action.icon}`} />
+                </span>
+                <span className="ayah-action-card__label">{action.label}</span>
+                <span className="ayah-action-card__desc">{action.description}</span>
+                {action.state && (
+                  <span className="ayah-action-card__state">{action.state}</span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div className="ayah-actions__utility">
+            <button
+              type="button"
+              className={`ayah-actions__utility-btn${bookmarked ? " is-active" : ""}`}
+              onClick={toggleBookmark}
+              title={t("bookmarks.add", lang)}
+            >
               <i className="fas fa-bookmark" />
               {bookmarked
                 ? lang === "fr"
-                  ? "favori"
+                  ? "Retirer le favori"
                   : lang === "ar"
-                    ? "مفضلة"
-                    : "saved"
+                    ? "إزالة المفضلة"
+                    : "Remove bookmark"
                 : lang === "fr"
-                  ? "non epingle"
+                  ? "Ajouter aux favoris"
                   : lang === "ar"
-                    ? "غير محفوظة"
-                    : "not saved"}
-            </span>
-            <span className={`ayah-actions__badge${memoLevel > 0 ? " is-on" : ""}`}>
-              <i className="fas fa-star" />
-              {memoLevel > 0 ? `${memoLevel}/5` : "0/5"}
-            </span>
+                    ? "أضف إلى المفضلة"
+                    : "Add bookmark"}
+            </button>
+
+            <button
+              type="button"
+              className={`ayah-actions__utility-btn${copied ? " is-active" : ""}`}
+              onClick={copyText}
+              title={t("actions.copy", lang)}
+            >
+              <i className={`fas ${copied ? "fa-check" : "fa-copy"}`} />
+              {copied
+                ? lang === "fr"
+                  ? "Copie"
+                  : lang === "ar"
+                    ? "تم النسخ"
+                    : "Copied"
+                : lang === "fr"
+                  ? "Copier le texte"
+                  : lang === "ar"
+                    ? "نسخ النص"
+                    : "Copy text"}
+            </button>
           </div>
         </div>
-
-        <div className="ayah-actions__grid">
-          {quickActions.map((action) => (
-            <button
-              key={action.key}
-              type="button"
-              className={`${action.className}${action.active ? " is-active" : ""}`}
-              onClick={action.onClick}
-            >
-              <span className="ayah-action-card__icon">
-                <i className={`fas ${action.icon}`} />
-              </span>
-              <span className="ayah-action-card__label">{action.label}</span>
-              <span className="ayah-action-card__desc">{action.description}</span>
-              {action.state && (
-                <span className="ayah-action-card__state">{action.state}</span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        <div className="ayah-actions__utility">
-          <button
-            type="button"
-            className={`ayah-actions__utility-btn${bookmarked ? " is-active" : ""}`}
-            onClick={toggleBookmark}
-            title={t("bookmarks.add", lang)}
-          >
-            <i className="fas fa-bookmark" />
-            {bookmarked
-              ? lang === "fr"
-                ? "Retirer le favori"
-                : lang === "ar"
-                  ? "إزالة المفضلة"
-                  : "Remove bookmark"
-              : lang === "fr"
-                ? "Ajouter aux favoris"
-                : lang === "ar"
-                  ? "أضف إلى المفضلة"
-                  : "Add bookmark"}
-          </button>
-
-          <button
-            type="button"
-            className={`ayah-actions__utility-btn${copied ? " is-active" : ""}`}
-            onClick={copyText}
-            title={t("actions.copy", lang)}
-          >
-            <i className={`fas ${copied ? "fa-check" : "fa-copy"}`} />
-            {copied
-              ? lang === "fr"
-                ? "Copie"
-                : lang === "ar"
-                  ? "تم النسخ"
-                  : "Copied"
-              : lang === "fr"
-                ? "Copier le texte"
-                : lang === "ar"
-                  ? "نسخ النص"
-                  : "Copy text"}
-          </button>
-        </div>
-      </div>
+      )}
 
       {activeSheet && (
         <button

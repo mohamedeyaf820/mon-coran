@@ -1108,6 +1108,7 @@ export default function AudioPlayer() {
         />
         <div
           className="audio-player-modal__surface relative z-[421] flex h-[min(92vh,860px)] w-[min(96vw,1180px)] min-w-0 flex-col overflow-hidden rounded-3xl border border-[color-mix(in_srgb,var(--theme-border-strong)_30%,transparent_70%)] bg-[linear-gradient(165deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_95%,var(--theme-primary)_5%),color-mix(in_srgb,var(--theme-panel-bg)_94%,var(--theme-bg)_6%))] shadow-[0_40px_90px_rgba(2,8,18,0.56)] backdrop-blur-2xl"
+          style={{ width: "min(94vw, 940px)", height: "min(88vh, 720px)" }}
           role="dialog"
           aria-modal="true"
           aria-labelledby="audio-options-modal-title"
