@@ -39,6 +39,8 @@ import Footer from "./Footer";
 import { buildSurahAudioPlaylist } from "../utils/audioPlaylist";
 import ReciterDetailPage from "./recitation/ReciterDetailPage";
 
+import "../styles/homepage-refonte.css";
+
 const HOME_INITIAL_SURAHS = 36;
 const HOME_INITIAL_SURAHS_LOW = 18;
 const HOME_SURAHS_BATCH = 24;
@@ -469,8 +471,9 @@ const SurahCard = memo(function SurahCard({
     return (
       <div
         className={cn(
-          "hpl-row !transition-all !duration-300",
-          isActive && "hpl-row--active",
+          "hp-row",
+          isActive && "active",
+          isPlaying && "playing"
         )}
         data-stype={surah.type?.toLowerCase()}
         onClick={() => onClick(surah.n)}
@@ -484,42 +487,31 @@ const SurahCard = memo(function SurahCard({
         tabIndex={0}
         style={rowVisibilityStyle}
       >
-        <span className={cn("hpl-row__num", isActive && "hpl-row__num--on")}>
+        <span className="hp-row-num">
           {surah.n}
         </span>
-        <div className="hpl-row__body">
-          <span className="hpl-row__name">{primaryLabel}</span>
-          <span className="hpl-row__sub">{secondaryLabel}</span>
-          <span className="hpl-row__meta">
-            <span className={`hpl-dot hpl-dot--${surah.type?.toLowerCase()}`} />
-            {typeLabel} · {ayahLabel}
-            {pageLabel ? ` · ${pageLabel}` : ""}
-          </span>
+        <div className="hp-row-name">
+          {primaryLabel} <span style={{fontSize: "0.85em", color: "var(--text-secondary)", marginLeft: "0.5rem"}}>{secondaryLabel}</span>
         </div>
+        <span className="hp-row-meta">
+          <span className={`hpl-dot hpl-dot--${surah.type?.toLowerCase()}`} />
+          {typeLabel} · {ayahLabel}
+          {pageLabel ? ` · ${pageLabel}` : ""}
+        </span>
         <span
-          className="hpl-row__ar"
+          className="hp-row-ar"
           dir="rtl"
           lang="ar"
           style={{
             direction: "rtl",
             unicodeBidi: "isolate",
-            whiteSpace: "nowrap",
             lineHeight: 1.2,
-            fontFamily:
-              'var(--font-surah-display, "Amiri Quran"), var(--font-quran), "KFGQPC Uthmanic Script HAFS", "ME Quran", "Amiri", serif',
-            fontFeatureSettings: '"calt" 1, "liga" 1, "rlig" 1, "kern" 1',
-            textRendering: "optimizeLegibility",
-            WebkitFontSmoothing: "antialiased",
-            fontKerning: "normal",
           }}
         >
           {surah.ar}
         </span>
         <button
-          className={cn(
-            "hpl-row__play !transition-all !duration-300 hover:!scale-110",
-            isPlaying && "hpl-row__play--on motion-safe:animate-pulse",
-          )}
+          className="hp-row-play"
           onClick={(e) => {
             e.stopPropagation();
             onPlay(surah.n);
@@ -541,9 +533,9 @@ const SurahCard = memo(function SurahCard({
   return (
     <div
       className={cn(
-        "scard group !relative !flex !min-h-[94px] !w-full !flex-row !items-center !gap-3 !overflow-hidden !rounded-[14px] !border !border-[#e3dfd3] !bg-[#f7f5ef] !px-3.5 !py-2.5 !text-left !transition-all !duration-200 hover:!border-[#d0c6ad]",
-        isActive && "scard--active",
-        isPlaying && "scard--playing",
+        "hp-card",
+        isActive && "active",
+        isPlaying && "playing",
       )}
       data-stype={surah.type?.toLowerCase()}
       onClick={() => onClick(surah.n)}
@@ -558,64 +550,41 @@ const SurahCard = memo(function SurahCard({
       style={cardVisibilityStyle}
     >
       {/* Number badge */}
-      <span
-        className={cn(
-          "scard__num !relative !z-10 !inline-flex !h-8 !w-8 !shrink-0 !items-center !justify-center !text-[0.8rem] !font-extrabold !text-[#a2894d]",
-          isActive &&
-            "scard__num--on !text-[#8f742f]",
-        )}
-      >
-        <FlowerBadge className="!absolute !inset-0 !h-full !w-full !text-[#ece4d0]" />
-        {surah.n}
+      <span className="hp-card-num">
+        <span className="hp-card-num-inner">{surah.n}</span>
       </span>
 
       {/* Transliteration + meta */}
-      <div className="scard__body !min-w-0 !flex-1 !space-y-0.5">
-        <span className="scard__name !block !truncate !text-[1.03rem] !font-semibold !tracking-[-0.01em] !text-[#191919]">
-          <span className="!truncate">{primaryLabel}</span>
+      <div className="hp-card-content">
+        <span className="hp-card-name">
+          {primaryLabel}
         </span>
-        <span className="scard__trans !block !truncate !text-[0.76rem] !font-medium !text-[#55544f]">
+        <span className="hp-card-meta">
           {secondaryLabel}
         </span>
-        <span className="scard__meta !inline-flex !items-center !gap-1.5 !text-[0.76rem] !font-medium !text-[#5e5c55]">
-          <span className="!truncate">{ayahLabel}</span>
+        <span className="hp-card-meta">
+          {ayahLabel}
         </span>
       </div>
 
-      <div className="!ml-auto !flex !items-center !gap-2 !pl-1">
-        <span
-          className="scard__ar !text-right !text-[clamp(1.85rem,2.1vw,2.35rem)] !leading-[1.15] !text-[#ba932f]"
-          dir="rtl"
-          lang="ar"
-          style={{
-            direction: "rtl",
-            unicodeBidi: "isolate",
-            whiteSpace: "nowrap",
-            fontFamily:
-              'var(--font-surah-display, "Amiri Quran"), var(--font-quran), "KFGQPC Uthmanic Script HAFS", "ME Quran", "Amiri", serif',
-            fontFeatureSettings: '"calt" 1, "liga" 1, "rlig" 1, "kern" 1',
-            textRendering: "optimizeLegibility",
-            WebkitFontSmoothing: "antialiased",
-            fontKerning: "normal",
-          }}
-        >
-          {surah.ar}
-        </span>
+      <span
+        className="hp-card-ar"
+        dir="rtl"
+        lang="ar"
+      >
+        {surah.ar}
+      </span>
 
-        <button
-          className={cn(
-            "scard__play !relative !inline-flex !h-6 !w-6 !shrink-0 !items-center !justify-center !rounded-md !border !border-[#d8d1bf] !bg-[#f1ecdf] !text-[0.6rem] !text-[#8f845f] !opacity-65 !transition-all !duration-200 group-hover:!opacity-100 hover:!scale-105 focus-visible:!opacity-100",
-            isPlaying && "scard__play--on motion-safe:animate-pulse",
-          )}
-          onClick={(e) => {
-            e.stopPropagation();
-            onPlay(surah.n);
-          }}
-          aria-label={playAriaLabel}
-        >
-          <i className={`fas fa-${isPlaying ? "pause" : "play"}`} />
-        </button>
-      </div>
+      <button
+        className="hp-card-play"
+        onClick={(e) => {
+          e.stopPropagation();
+          onPlay(surah.n);
+        }}
+        aria-label={playAriaLabel}
+      >
+        <i className={`fas fa-${isPlaying ? "pause" : "play"}`} />
+      </button>
     </div>
   );
 });
@@ -639,18 +608,17 @@ const JuzCard = memo(function JuzCard({
     return (
       <button
         className={cn(
-          "hpl-row !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.003]",
-          isActive && "hpl-row--active",
+          "hp-row",
+          isActive && "active",
         )}
         onClick={() => onClick(juz)}
         style={rowVisibilityStyle}
       >
-        <span className={cn("hpl-row__num", isActive && "hpl-row__num--on")}>
+        <span className="hp-row-num">
           {juz}
         </span>
-        <div className="hpl-row__body">
-          <span className="hpl-row__name">Juz {juz}</span>
-          <span className="hpl-row__meta">{name}</span>
+        <div className="hp-row-name">
+          Juz {juz} <span style={{fontSize: "0.85em", color: "var(--text-secondary)", marginLeft: "0.5rem"}}>{name}</span>
         </div>
       </button>
     );
@@ -663,18 +631,16 @@ const JuzCard = memo(function JuzCard({
   return (
     <button
       className={cn(
-        "hpq-card hpq-card--juz !transition-all !duration-300 hover:!-translate-y-1",
-        isActive && "hpq-card--active",
+        "hp-card hp-card--juz",
+        isActive && "active",
       )}
       onClick={() => onClick(juz)}
       style={cardVisibilityStyle}
     >
-      <span className={cn("hpq-card__num", isActive && "hpq-card__num--on")}>
-        {juz}
-      </span>
-      <div className="hpq-card__info">
-        <span className="hpq-card__name">Juz {juz}</span>
-        <span className="hpq-card__meta">{name}</span>
+      <span className="hp-card-num"><span className="hp-card-num-inner">{juz}</span></span>
+      <div className="hp-card-content">
+        <span className="hp-card-name">Juz {juz}</span>
+        <span className="hp-card-meta">{name}</span>
       </div>
     </button>
   );
@@ -683,7 +649,7 @@ const JuzCard = memo(function JuzCard({
 /* Etat vide */
 function EmptyState({ icon, text }) {
   return (
-    <div className="hp2-empty">
+    <div className="hp-empty">
       <i className={`fas ${icon}`} />
       <p>{text}</p>
     </div>
@@ -1266,7 +1232,7 @@ export default function HomePage({ lowPerfMode = false }) {
   const shouldReduceHomeFx = lowPerfMode;
 
   return (
-    <div className="hp2 hp2--platform !relative !overflow-hidden">
+    <div className="hp-wrapper">
       {!shouldReduceHomeFx && (
         <div
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
@@ -1869,57 +1835,57 @@ export default function HomePage({ lowPerfMode = false }) {
             </div>
           ))}
         </div>
-        {/* Colonne sourates */}
-        <section className="hp2-content !rounded-2xl !border !p-3.5 !backdrop-blur-md">
-          <div className="hp2-toolbar !rounded-xl !border !px-3 !py-2.5">
+        {/* Colonne sourates / contenu */}
+        <section className="hp-content">
+          <div className="hp-actions">
             {/* Onglets Sourates / Juz */}
-            <div className="hp2-segs !rounded-xl !border !p-1">
+            <div className="hp-tabs">
               <button
                 className={cn(
-                  "hp2-seg !transition-all !duration-300",
-                  activeTab === "surah" && "hp2-seg--on",
+                  "hp-tab",
+                  activeTab === "surah" && "active",
                 )}
                 onClick={() => selectContentTab("surah")}
               >
-                <i className="fas fa-align-justify" />
+                <i className="fas fa-align-justify" style={{marginRight: "0.5rem"}} />
                 {t("surahs")}
               </button>
               <button
                 className={cn(
-                  "hp2-seg !transition-all !duration-300",
-                  activeTab === "juz" && "hp2-seg--on",
+                  "hp-tab",
+                  activeTab === "juz" && "active",
                 )}
                 onClick={() => selectContentTab("juz")}
               >
-                <i className="fas fa-book-open" />
+                <i className="fas fa-book-open" style={{marginRight: "0.5rem"}} />
                 {t("juz")}
               </button>
               <button
                 className={cn(
-                  "hp2-seg !transition-all !duration-300",
-                  activeTab === "recitations" && "hp2-seg--on",
+                  "hp-tab",
+                  activeTab === "recitations" && "active",
                 )}
                 onClick={() => selectContentTab("recitations")}
               >
-                <i className="fas fa-microphone-lines" />
+                <i className="fas fa-microphone-lines" style={{marginRight: "0.5rem"}} />
                 {t("recitations")}
               </button>
               <button
                 className={cn(
-                  "hp2-seg !transition-all !duration-300",
-                  activeTab === "radio" && "hp2-seg--on",
+                  "hp-tab",
+                  activeTab === "radio" && "active",
                 )}
                 onClick={() => selectContentTab("radio")}
               >
-                <i className="fas fa-broadcast-tower" />
+                <i className="fas fa-broadcast-tower" style={{marginRight: "0.5rem"}} />
                 {t("radio")}
               </button>
             </div>
 
             {/* Recherche */}
             {(activeTab === "surah" || activeTab === "recitations") && (
-              <div className="hp2-search !rounded-xl !border !backdrop-blur-sm">
-                <i className="fas fa-magnifying-glass hp2-search__ico" />
+              <div className="hp-search-box">
+                <i className="fas fa-magnifying-glass hp-search-icon" />
                 <input
                   className="hp2-search__input"
                   placeholder={activeTab === "surah" ? t("search") : t("searchReciter")}
@@ -1928,7 +1894,7 @@ export default function HomePage({ lowPerfMode = false }) {
                 />
                 {filter && (
                   <button
-                    className="hp2-search__clear"
+                    className="hp-search-clear"
                     onClick={() => setFilter("")}
                   >
                     <i className="fas fa-xmark" />
@@ -1938,16 +1904,15 @@ export default function HomePage({ lowPerfMode = false }) {
             )}
 
             {/* Tri + vue */}
-            <div className="hp2-toolbar__end">
-              <span className="hp2-toolbar__count">
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: "600" }}>
                 {activeTab === "surah"
                   ? filteredSurahs.length
                   : activeTab === "juz"
                     ? JUZ_DATA.length
                     : activeTab === "recitations"
                       ? filteredReciters.length
-                      : THEMATIC_STATIONS.length + Math.min(8, availableReciters.length)}
-                <span>
+                      : THEMATIC_STATIONS.length + Math.min(8, availableReciters.length)}{" "}
                   {activeTab === "surah"
                     ? t("surahs")
                     : activeTab === "juz"
@@ -1955,65 +1920,47 @@ export default function HomePage({ lowPerfMode = false }) {
                       : activeTab === "recitations"
                         ? t("recitations")
                         : t("radio")}
-                </span>
               </span>
               {activeTab === "surah" && (
                 <button
-                  className="hp2-icon-btn hp2-icon-btn--with-label !transition-all !duration-300 hover:!scale-110"
+                  className="hp-tab"
+                  style={{ padding: "0.4rem 0.6rem" }}
                   onClick={toggleSortDirection}
                   title={sortDir === "asc" ? "Decroissant" : "Croissant"}
                 >
-                  <i
-                    className={`fas fa-sort-${sortDir === "asc" ? "down" : "up"}`}
-                  />
-                  <span className="hp2-icon-btn__label">
-                    {lang === "ar" ? "ترتيب" : lang === "fr" ? "Tri" : "Sort"}
-                  </span>
+                  <i className={`fas fa-sort-${sortDir === "asc" ? "down" : "up"}`} />
                 </button>
               )}
               {(activeTab === "surah" || activeTab === "juz") && (
-                <>
+                <div className="hp-view-toggles">
                   <button
                     className={cn(
-                      "hp2-icon-btn hp2-icon-btn--with-label !transition-all !duration-300 hover:!scale-110",
-                      viewMode === "grid" && "hp2-icon-btn--on",
+                      "hp-view-btn",
+                      viewMode === "grid" && "active",
                     )}
                     onClick={() => changeViewMode("grid")}
                     title="Grille"
                   >
                     <i className="fas fa-grip" />
-                    <span className="hp2-icon-btn__label">
-                      {lang === "ar" ? "شبكة" : lang === "fr" ? "Grille" : "Grid"}
-                    </span>
                   </button>
                   <button
                     className={cn(
-                      "hp2-icon-btn hp2-icon-btn--with-label !transition-all !duration-300 hover:!scale-110",
-                      viewMode === "list" && "hp2-icon-btn--on",
+                      "hp-view-btn",
+                      viewMode === "list" && "active",
                     )}
                     onClick={() => changeViewMode("list")}
                     title="Liste"
                   >
                     <i className="fas fa-list" />
-                    <span className="hp2-icon-btn__label">
-                      {lang === "ar" ? "قائمة" : lang === "fr" ? "Liste" : "List"}
-                    </span>
                   </button>
-                </>
+                </div>
               )}
             </div>
           </div>
 
           <div
             className={cn(
-              "hp2-items !mt-3",
-              viewMode === "grid"
-                ? "hp2-items--grid !grid !grid-cols-1 lg:!grid-cols-3 !gap-3"
-                : "hp2-items--list",
-              (useSurahGridScroll ||
-                activeTab === "recitations" ||
-                activeTab === "radio") &&
-                "hp2-items--surah-scroll",
+              viewMode === "grid" ? "hp-grid" : "hp-list"
             )}
           >
             {activeTab === "surah" ? (

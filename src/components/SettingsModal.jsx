@@ -41,7 +41,7 @@ import {
 import { formatCooldownLabel } from "../utils/formatUtils";
 import PlatformLogo from "./PlatformLogo";
 import { cn, toast } from "../lib/utils";
-import "../styles/settings-modal.css";
+import "../styles/settings-refonte.css";
 
 const TABS = [
   {
@@ -82,52 +82,6 @@ const TABS = [
   },
 ];
 
-const THEMES = [
-  {
-    id: "light",
-    fr: "Zen Ivoire",
-    ar: "عاجي زن",
-    en: "Zen Ivory",
-    bg: "#fdfaf4",
-    border: "#105a30",
-    text: "#105a30",
-  },
-  {
-    id: "sepia",
-    fr: "Zen Parchemin",
-    ar: "ورقي زن",
-    en: "Zen Parchment",
-    bg: "#f8f3e8",
-    border: "#b38600",
-    text: "#b38600",
-  },
-  {
-    id: "dark",
-    fr: "Zen Nuit",
-    ar: "ليلي زن",
-    en: "Zen Night",
-    bg: "#0f172a",
-    border: "#2dd4bf",
-    text: "#2dd4bf",
-  },
-];
-
-const DAY_THEME_IDS = ["light", "sepia"];
-const NIGHT_THEME_IDS = ["dark"];
-const THEME_SWATCH_CLASSES = {
-  light: {
-    circle: "bg-[#fdfaf4] border-[#105a30]",
-    text: "text-[#105a30]",
-  },
-  sepia: {
-    circle: "bg-[#f8f3e8] border-[#b38600]",
-    text: "text-[#b38600]",
-  },
-  dark: {
-    circle: "bg-[#0f172a] border-[#2dd4bf]",
-    text: "text-[#2dd4bf]",
-  },
-};
 const FONT_SIZE_MIN = 32;
 const FONT_SIZE_MAX = 64;
 const FONT_SIZE_STEP = 2;
@@ -1100,40 +1054,18 @@ export default function SettingsModal() {
     set(patch);
   };
 
-  const overlayClass =
-    "settings-overlay settings-overlay--premium-plus !bg-[radial-gradient(circle_at_14%_10%,rgba(76,170,206,0.18)_0%,transparent_34%),radial-gradient(circle_at_84%_16%,rgba(212,173,89,0.14)_0%,transparent_30%),rgba(3,8,20,0.78)] !backdrop-blur-[14px]";
-  const dialogClass =
-    "settings-dialog settings-dialog--premium-plus settings-dialog--adaptive !overflow-hidden !rounded-[24px] lg:!rounded-[28px] !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_28px_72px_rgba(1,8,22,0.56)] !max-w-[740px] lg:!max-w-[860px]";
-  const headerClass =
-    "settings-header settings-header--premium-plus !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))] !backdrop-blur-xl";
-  const bodyLayoutClass = cn(
-    "settings-body-layout settings-body-layout--adaptive !min-h-[460px] lg:!min-h-[520px]",
-    isCompactDevice && "is-compact-device",
-    isTouchDevice && "is-touch-device",
-  );
-  const navClass =
-    "settings-nav settings-nav--premium-plus !border-r !border-white/10 !bg-[linear-gradient(180deg,rgba(10,19,38,0.92),rgba(8,15,30,0.94))]";
-  const contentClass = cn(
-    "settings-content settings-content--premium-plus settings-content--adaptive !bg-[linear-gradient(180deg,rgba(10,19,37,0.72),rgba(7,14,27,0.82))]",
-    isCompactDevice && "is-compact-device",
-  );
-  const paneClass = "settings-pane !space-y-4 !animate-[fadeInUp_0.24s_ease]";
-  const paneTitleClass =
-    "settings-pane-title !rounded-2xl !border !border-white/10 !bg-white/[0.045] !px-3.5 !py-2.5 !text-[rgba(223,238,255,0.92)]";
-  const cardClass =
-    "settings-card settings-card--premium-plus !rounded-[26px] !border !border-white/12 !bg-[linear-gradient(160deg,rgba(12,22,44,0.9),rgba(8,16,32,0.92))] !shadow-[0_18px_42px_rgba(3,10,24,0.34)] !backdrop-blur-xl";
-  const navItemClass = (active) =>
-    cn(
-      "settings-nav-item !rounded-2xl !transition-all !duration-200 hover:!bg-white/10 hover:!text-white",
-      active &&
-        "!bg-[linear-gradient(135deg,rgba(76,170,206,0.24),rgba(26,86,140,0.22))] !border !border-sky-200/24 !text-white !shadow-[0_12px_28px_rgba(18,53,95,0.32)]",
-    );
-  const chipClass = (active) =>
-    cn(
-      "settings-chip !rounded-2xl !transition-all !duration-200 hover:!bg-white/14 hover:!text-white",
-      active &&
-        "!border-sky-200/28 !bg-[linear-gradient(135deg,rgba(76,170,206,0.22),rgba(24,88,126,0.18))] !text-white !shadow-[0_10px_22px_rgba(14,44,76,0.28)]",
-    );
+  // ── Nouvelles classes propres (système sm-*) ──
+  const overlayClass = "sm-overlay";
+  const dialogClass = "sm-dialog";
+  const headerClass = "sm-header";
+  const bodyLayoutClass = "sm-body";
+  const navClass = "sm-nav";
+  const contentClass = "sm-content";
+  const paneClass = "sm-pane";
+  const paneTitleClass = "sm-pane-title";
+  const cardClass = "sm-card";
+  const navItemClass = (active) => cn("sm-nav-item", active && "sm-nav-item--active");
+  const chipClass = (active) => cn("sm-chip", active && "sm-chip--active");
 
   return (
     <div
@@ -1145,13 +1077,15 @@ export default function SettingsModal() {
     >
       <div className={dialogClass} onClick={(e) => e.stopPropagation()}>
         {/* ── Header ── */}
-        <div className={headerClass}>
-          <div className="settings-header-left">
-            <i className="fas fa-sliders" aria-hidden="true"></i>
-            <h2 className="settings-title">{t("settings.title", lang)}</h2>
+      <div className={headerClass}>
+          <div className="sm-header__left">
+            <span className="sm-header__icon" aria-hidden="true">
+              <i className="fas fa-sliders" />
+            </span>
+            <h2 className="sm-header__title">{t("settings.title", lang)}</h2>
           </div>
           <button
-            className="settings-close-btn"
+            className="sm-close-btn"
             onClick={close}
             aria-label={lang === "ar" ? "إغلاق" : "Fermer"}
             ref={closeButtonRef}
@@ -1185,25 +1119,18 @@ export default function SettingsModal() {
 
           {/* Right content panel */}
           <div className={contentClass} role="tabpanel" id={activePanelId} aria-labelledby={`settings-tab-${activeTab}`}>
-            <div className={cn("settings-hero-card", isCompactDevice && "is-compact-device") }>
-              <div className="settings-hero-copywrap">
-                <span className="settings-hero-eyebrow">
-                  <i className={`fas ${activeTabConfig.icon}`} aria-hidden="true"></i>
-                  {tabLabel(activeTabConfig)}
-                </span>
-                <h3 className="settings-hero-title">{settingsHero.title}</h3>
-                <p className={cn("settings-hero-copy", isCompactDevice && "is-compact-device")}>{settingsHero.copy}</p>
+            <div className="sm-hero">
+              <div className="sm-hero__eyebrow">
+                <i className={`fas ${activeTabConfig.icon}`} aria-hidden="true" />
+                {tabLabel(activeTabConfig)}
               </div>
-              <div className="settings-hero-pills">
-                {(isCompactDevice ? settingsHero.pills.slice(0, 3) : settingsHero.pills).map((pill) => (
-                  <div
-                    key={`${activeTab}-${pill.label}`}
-                    className="settings-hero-pill"
-                  >
-                    <span className="settings-hero-pill__label">{pill.label}</span>
-                    <strong className="settings-hero-pill__value">
-                      {pill.value}
-                    </strong>
+              <h3 className="sm-hero__title">{settingsHero.title}</h3>
+              <p className={cn("sm-hero__copy", isCompactDevice && "hidden")}>{settingsHero.copy}</p>
+              <div className="sm-hero__pills">
+                {(isCompactDevice ? settingsHero.pills.slice(0, 2) : settingsHero.pills).map((pill) => (
+                  <div key={`${activeTab}-${pill.label}`} className="sm-hero__pill">
+                    <span className="sm-hero__pill-label">{pill.label}</span>
+                    <strong className="sm-hero__pill-value">{pill.value}</strong>
                   </div>
                 ))}
               </div>
@@ -1252,13 +1179,13 @@ export default function SettingsModal() {
                     ></i>
                     {t("settings.darkMode", lang)}
                   </div>
-                  <div className="theme-swatch-grid">
+                  <div className="sm-swatch-grid">
                     {UI_THEMES.map((th) => {
                       const active = theme === th.id;
                       return (
                         <button
                           key={th.id}
-                          className={`theme-swatch-btn ${active ? "active" : ""}`}
+                          className={`sm-swatch-btn ${active ? "sm-swatch-btn--active" : ""}`}
                           onClick={() =>
                             dispatch({ type: "SET_THEME", payload: th.id })
                           }
@@ -1267,9 +1194,8 @@ export default function SettingsModal() {
                         >
                           <span
                             className={cn(
-                              "swatch-circle !border-[3px]",
-                              active &&
-                                "!border-[var(--primary)] shadow-[0_0_0_1px_rgba(255,255,255,0.18)]",
+                              "sm-swatch-circle !border-[2.5px]",
+                              active && "sm-swatch-btn--active"
                             )}
                             style={{
                               background: th.palette.bg,
@@ -1278,22 +1204,22 @@ export default function SettingsModal() {
                             }}
                           >
                             <span
-                              className="swatch-text-ar"
+                              className="sm-swatch-ar"
                             >
                               أ
                             </span>
                             {active && (
                               <i
-                                className="fas fa-check swatch-check"
+                                className="fas fa-check sm-swatch-check"
                                 aria-hidden="true"
                               ></i>
                             )}
                           </span>
-                          <span className="swatch-label">{getThemeLabel(th)}</span>
-                          <span className="swatch-description">
+                          <span className="sm-swatch-label">{getThemeLabel(th)}</span>
+                          <span className="sm-swatch-desc">
                             {getThemeDescription(th)}
                           </span>
-                          <span className="swatch-badge">
+                          <span className="sm-swatch-badge">
                             {th.period === "day"
                               ? lang === "fr"
                                 ? "Jour"
@@ -1335,7 +1261,7 @@ export default function SettingsModal() {
                     </button>
                   </div>
                   {autoNightMode && (
-                    <div className="auto-night-options">
+                    <div className="sm-night-opts">
                       <div className="auto-night-row">
                         <label className="auto-night-label">
                           <i className="fas fa-moon" aria-hidden="true"></i>
@@ -1345,7 +1271,7 @@ export default function SettingsModal() {
                           type="time"
                           value={nightStart}
                           onChange={(e) => set({ nightStart: e.target.value })}
-                          className="auto-night-time"
+                          className="sm-night-input"
                         />
                       </div>
                       <div className="auto-night-row">
@@ -1357,17 +1283,17 @@ export default function SettingsModal() {
                           type="time"
                           value={nightEnd}
                           onChange={(e) => set({ nightEnd: e.target.value })}
-                          className="auto-night-time"
+                          className="sm-night-input"
                         />
                       </div>
-                      <div className="auto-night-row">
-                        <label className="auto-night-label">
+                      <div className="sm-night-row">
+                        <label className="sm-night-label">
                           {t("autoNight.dayTheme", lang)}
                         </label>
                         <select
                           value={dayTheme}
                           onChange={(e) => set({ dayTheme: e.target.value })}
-                          className="auto-night-select"
+                          className="sm-night-select"
                         >
                           {dayThemes.map((themeOption) => (
                             <option key={themeOption.id} value={themeOption.id}>
@@ -1376,14 +1302,14 @@ export default function SettingsModal() {
                           ))}
                         </select>
                       </div>
-                      <div className="auto-night-row">
-                        <label className="auto-night-label">
+                      <div className="sm-night-row">
+                        <label className="sm-night-label">
                           {t("autoNight.nightTheme", lang)}
                         </label>
                         <select
                           value={nightTheme}
                           onChange={(e) => set({ nightTheme: e.target.value })}
-                          className="auto-night-select"
+                          className="sm-night-select"
                         >
                           {nightThemes.map((themeOption) => (
                             <option key={themeOption.id} value={themeOption.id}>
@@ -1409,11 +1335,11 @@ export default function SettingsModal() {
 
                 {/* Riwaya */}
                 <div className={cardClass}>
-                  <div className="settings-card-label">
+                  <div className="sm-card-label">
                     <i className="fas fa-book-quran" aria-hidden="true"></i>
                     {t("settings.riwaya", lang)}
                   </div>
-                  <div className="settings-chips">
+                  <div className="sm-chips">
                     <button
                       className={chipClass(riwaya === "hafs")}
                       onClick={() => applyRiwaya("hafs")}
@@ -1429,11 +1355,11 @@ export default function SettingsModal() {
                       {t("settings.warsh", lang)}
                     </button>
                   </div>
-                  <p className="settings-hint">
+                  <p className="sm-hint">
                     {t("settings.riwayaHint", lang)}
                   </p>
                   {riwaya === "warsh" && (
-                    <div className="settings-info-note">
+                    <div className="sm-info-note">
                       <i className="fas fa-check-circle" aria-hidden="true"></i>
                       <span>{t("settings.warshTextNote", lang)}</span>
                     </div>
@@ -1443,21 +1369,21 @@ export default function SettingsModal() {
                 {/* Warsh strict mode */}
                 {riwaya === "warsh" && (
                   <div className={cardClass}>
-                    <div className="settings-toggle-row">
-                      <div className="settings-toggle-info">
+                    <div className="sm-toggle-row">
+                      <div className="sm-toggle-info">
                         <i
                           className="fas fa-shield-halved"
                           aria-hidden="true"
                         ></i>
                         <div>
-                          <div className="settings-toggle-title">
+                          <div className="sm-toggle-title">
                             {lang === "fr"
                               ? "Mode Warsh strict"
                               : lang === "ar"
                                 ? "وضع ورش الصارم"
                                 : "Warsh strict mode"}
                           </div>
-                          <div className="settings-toggle-hint">
+                          <div className="sm-toggle-hint">
                             {lang === "fr"
                               ? "Refuse tout fallback Hafs quand Warsh est sélectionné."
                               : lang === "ar"
@@ -1467,13 +1393,13 @@ export default function SettingsModal() {
                         </div>
                       </div>
                       <button
-                        className={`toggle-switch ${warshStrictMode ? "on" : ""}`}
+                        className={`sm-switch ${warshStrictMode ? "on" : ""}`}
                         onClick={() =>
                           set({ warshStrictMode: !warshStrictMode })
                         }
                         aria-pressed={warshStrictMode}
                       >
-                        <span className="toggle-knob"></span>
+                        <span className="sm-switch-knob"></span>
                       </button>
                     </div>
                   </div>
@@ -1481,11 +1407,11 @@ export default function SettingsModal() {
 
                 {/* Display mode */}
                 <div className={cardClass}>
-                  <div className="settings-card-label">
+                  <div className="sm-card-label">
                     <i className="fas fa-layer-group" aria-hidden="true"></i>
                     {t("settings.displayMode", lang)}
                   </div>
-                  <p className="settings-hint">
+                  <p className="sm-hint">
                     {riwaya === "warsh"
                       ? lang === "fr"
                         ? "Mode page indisponible pour Warsh (QCF4 par sourate)"
@@ -1498,7 +1424,7 @@ export default function SettingsModal() {
                           ? "اختر طريقة عرض القرآن"
                           : "Choose how the Quran is displayed"}
                   </p>
-                  <div className="display-mode-cards">
+                  <div className="sm-mode-grid">
                     {[
                       {
                         id: "surah",
@@ -1525,7 +1451,7 @@ export default function SettingsModal() {
                     ].map((m) => (
                       <button
                         key={m.id}
-                        className={`display-mode-card ${displayMode === m.id ? "active" : ""} ${m.disabled ? "disabled" : ""}`}
+                        className={`sm-mode-card ${displayMode === m.id ? "sm-mode-card--active" : ""} ${m.disabled ? "sm-mode-card--disabled" : ""}`}
                         onClick={() =>
                           !m.disabled && set({ displayMode: m.id })
                         }
@@ -1543,7 +1469,7 @@ export default function SettingsModal() {
                         <span>
                           {lang === "fr" ? m.fr : lang === "ar" ? m.ar : m.en}
                         </span>
-                        {m.disabled && <span className="mode-badge">⚠</span>}
+                        {m.disabled && <span className="sm-mode-badge">⚠</span>}
                       </button>
                     ))}
                   </div>
@@ -1551,44 +1477,44 @@ export default function SettingsModal() {
 
                 {/* Continuous play */}
                 <div className={cardClass}>
-                  <div className="settings-toggle-row">
-                    <div className="settings-toggle-info">
+                  <div className="sm-toggle-row">
+                    <div className="sm-toggle-info">
                       <i className="fas fa-circle-play" aria-hidden="true"></i>
                       <div>
-                        <div className="settings-toggle-title">
+                        <div className="sm-toggle-title">
                           {t("settings.continuousPlay", lang)}
                         </div>
-                        <div className="settings-toggle-hint">
+                        <div className="sm-toggle-hint">
                           {t("settings.continuousPlayHint", lang)}
                         </div>
                       </div>
                     </div>
                     <button
-                      className={`toggle-switch ${state.continuousPlay ? "on" : ""}`}
+                      className={`sm-switch ${state.continuousPlay ? "on" : ""}`}
                       onClick={() =>
                         set({ continuousPlay: !state.continuousPlay })
                       }
                       aria-pressed={state.continuousPlay}
                     >
-                      <span className="toggle-knob"></span>
+                      <span className="sm-switch-knob"></span>
                     </button>
                   </div>
                 </div>
 
                 {/* Focus reading */}
                 <div className="settings-card">
-                  <div className="settings-toggle-row">
-                    <div className="settings-toggle-info">
+                  <div className="sm-toggle-row">
+                    <div className="sm-toggle-info">
                       <i className="fas fa-expand" aria-hidden="true"></i>
                       <div>
-                        <div className="settings-toggle-title">
+                        <div className="sm-toggle-title">
                           {lang === "fr"
                             ? "Mode lecture zen"
                             : lang === "ar"
                               ? "وضع القراءة الهادئة"
                               : "Zen reading mode"}
                         </div>
-                        <div className="settings-toggle-hint">
+                        <div className="sm-toggle-hint">
                           {lang === "fr"
                             ? "Allège l’interface sur desktop: moins de panneaux, moins de bordures, plus d’air."
                             : lang === "ar"
@@ -1598,11 +1524,11 @@ export default function SettingsModal() {
                       </div>
                     </div>
                     <button
-                      className={`toggle-switch ${state.focusReading ? "on" : ""}`}
+                      className={`sm-switch ${state.focusReading ? "on" : ""}`}
                       onClick={() => set({ focusReading: !state.focusReading })}
                       aria-pressed={state.focusReading}
                     >
-                      <span className="toggle-knob"></span>
+                      <span className="sm-switch-knob"></span>
                     </button>
                   </div>
                 </div>
@@ -1624,17 +1550,17 @@ export default function SettingsModal() {
 
                 {/* Tajweed */}
                 <div className={cardClass}>
-                  <div className="settings-toggle-row">
-                    <div className="settings-toggle-info">
+                  <div className="sm-toggle-row">
+                    <div className="sm-toggle-info">
                       <i
                         className="fas fa-paint-brush text-[#e74c3c]"
                         aria-hidden="true"
                       ></i>
                       <div>
-                        <div className="settings-toggle-title">
+                        <div className="sm-toggle-title">
                           {t("settings.showTajwid", lang)}
                         </div>
-                        <div className="settings-toggle-hint">
+                        <div className="sm-toggle-hint">
                           {lang === "fr"
                             ? "Colorie chaque règle de tajwid dans le texte"
                             : lang === "ar"
@@ -1644,29 +1570,29 @@ export default function SettingsModal() {
                       </div>
                     </div>
                     <button
-                      className={`toggle-switch ${showTajwid ? "on" : ""}`}
+                      className={`sm-switch ${showTajwid ? "on" : ""}`}
                       onClick={() => set({ showTajwid: !showTajwid })}
                       aria-pressed={showTajwid}
                     >
-                      <span className="toggle-knob"></span>
+                      <span className="sm-switch-knob"></span>
                     </button>
                   </div>
                 </div>
 
                 {/* Word by word */}
                 <div className={cardClass}>
-                  <div className="settings-toggle-row">
-                    <div className="settings-toggle-info">
+                  <div className="sm-toggle-row">
+                    <div className="sm-toggle-info">
                       <i className="fas fa-layer-group" aria-hidden="true"></i>
                       <div>
-                        <div className="settings-toggle-title">
+                        <div className="sm-toggle-title">
                           {lang === "fr"
                             ? "Mode mot à mot"
                             : lang === "ar"
                               ? "وضع كلمة بكلمة"
                               : "Word-by-word mode"}
                         </div>
-                        <div className="settings-toggle-hint">
+                        <div className="sm-toggle-hint">
                           {lang === "fr"
                             ? "Affiche chaque mot avec sa traduction et translittération"
                             : lang === "ar"
@@ -1676,16 +1602,16 @@ export default function SettingsModal() {
                       </div>
                     </div>
                     <button
-                      className={`toggle-switch ${showWordByWord ? "on" : ""}`}
+                      className={`sm-switch ${showWordByWord ? "on" : ""}`}
                       onClick={() => set({ showWordByWord: !showWordByWord })}
                       aria-pressed={showWordByWord}
                     >
-                      <span className="toggle-knob"></span>
+                      <span className="sm-switch-knob"></span>
                     </button>
                   </div>
                   {showWordByWord && (
-                    <div className="sub-toggles">
-                      <div className="settings-toggle-row sub">
+                    <div className="sm-sub-toggles">
+                      <div className="sm-toggle-row sm-toggle-row--sub">
                         <span>
                           {lang === "fr"
                             ? "Translittération"
@@ -1694,16 +1620,16 @@ export default function SettingsModal() {
                               : "Transliteration"}
                         </span>
                         <button
-                          className={`toggle-switch ${showTransliteration ? "on" : ""}`}
+                          className={`sm-switch ${showTransliteration ? "on" : ""}`}
                           onClick={() =>
                             set({ showTransliteration: !showTransliteration })
                           }
                           aria-pressed={showTransliteration}
                         >
-                          <span className="toggle-knob"></span>
+                          <span className="sm-switch-knob"></span>
                         </button>
                       </div>
-                      <div className="settings-toggle-row sub">
+                      <div className="sm-toggle-row sm-toggle-row--sub">
                         <span>
                           {lang === "fr"
                             ? "Traduction par mot"
@@ -1712,13 +1638,13 @@ export default function SettingsModal() {
                               : "Word translation"}
                         </span>
                         <button
-                          className={`toggle-switch ${showWordTranslation ? "on" : ""}`}
+                          className={`sm-switch ${showWordTranslation ? "on" : ""}`}
                           onClick={() =>
                             set({ showWordTranslation: !showWordTranslation })
                           }
                           aria-pressed={showWordTranslation}
                         >
-                          <span className="toggle-knob"></span>
+                          <span className="sm-switch-knob"></span>
                         </button>
                       </div>
                       {showWordTranslation && (
@@ -1734,7 +1660,7 @@ export default function SettingsModal() {
                                 ? "لغة الترجمة كلمة بكلمة"
                                 : "Word-by-word language"}
                           </div>
-                          <p className="settings-hint">
+                          <p className="sm-hint">
                             {wordTranslationLanguageHint}
                           </p>
                           <div className="settings-chips mt-[0.55rem]">
@@ -1761,14 +1687,14 @@ export default function SettingsModal() {
 
                 {/* Translation */}
                 <div className={cardClass}>
-                  <div className="settings-toggle-row">
-                    <div className="settings-toggle-info">
+                  <div className="sm-toggle-row">
+                    <div className="sm-toggle-info">
                       <i className="fas fa-language" aria-hidden="true"></i>
                       <div>
-                        <div className="settings-toggle-title">
+                        <div className="sm-toggle-title">
                           {t("settings.showTranslation", lang)}
                         </div>
-                        <div className="settings-toggle-hint">
+                        <div className="sm-toggle-hint">
                           {lang === "fr"
                             ? "Affiche la traduction sous chaque verset"
                             : lang === "ar"
@@ -1778,11 +1704,11 @@ export default function SettingsModal() {
                       </div>
                     </div>
                     <button
-                      className={`toggle-switch ${showTranslation ? "on" : ""}`}
+                      className={`sm-switch ${showTranslation ? "on" : ""}`}
                       onClick={() => set({ showTranslation: !showTranslation })}
                       aria-pressed={showTranslation}
                     >
-                      <span className="toggle-knob"></span>
+                      <span className="sm-switch-knob"></span>
                     </button>
                   </div>
                   {showTranslation && (
@@ -1791,7 +1717,7 @@ export default function SettingsModal() {
                         <i className="fas fa-globe" aria-hidden="true"></i>
                         {t("settings.translationLang", lang)}
                       </div>
-                      <p className="settings-hint">{translationLanguageHint}</p>
+                      <p className="sm-hint">{translationLanguageHint}</p>
                       <div className="settings-chips mt-[0.75rem]">
                         {TRANSLATION_LANGUAGE_OPTIONS.map((option) => (
                           <button
@@ -1812,23 +1738,23 @@ export default function SettingsModal() {
 
                 {/* Font size */}
                 <div className={cardClass}>
-                  <div className="settings-card-label">
+                  <div className="sm-card-label">
                     <i className="fas fa-text-height" aria-hidden="true"></i>
                     {t("settings.fontSize", lang)}
-                    <span className="settings-value-pill">
+                    <span className="sm-value-pill">
                       {quranFontSize}px
                     </span>
                   </div>
-                  <div className="settings-card-hint">
+                  <div className="sm-card-hint">
                     {lang === "fr"
                       ? "Ajuste uniquement la taille du texte coranique arabe."
                       : lang === "ar"
                         ? "هذا الخيار يغيّر حجم النص القرآني العربي فقط."
                         : "This control changes only the Quranic Arabic text size."}
                   </div>
-                  <div className="font-size-stepper">
+                  <div className="sm-font-stepper">
                     <button
-                      className="fss-btn"
+                      className="sm-fss-btn"
                       onClick={() =>
                         dispatch({
                           type: "SET_QURAN_FONT_SIZE",
@@ -1848,11 +1774,11 @@ export default function SettingsModal() {
                         A
                       </span>
                     </button>
-                    <div className="fss-track" role="presentation">
-                      <div className={cn("fss-bar", fontProgressWidthClass)} />
+                    <div className="sm-fss-track" role="presentation">
+                      <div className={cn("sm-fss-bar", fontProgressWidthClass)} />
                     </div>
                     <button
-                      className="fss-btn"
+                      className="sm-fss-btn"
                       onClick={() =>
                         dispatch({
                           type: "SET_QURAN_FONT_SIZE",
@@ -1886,14 +1812,14 @@ export default function SettingsModal() {
 
                 {/* Font family */}
                 <div className={cardClass}>
-                  <div className="settings-card-label">
+                  <div className="sm-card-label">
                     <i className="fas fa-font" aria-hidden="true"></i>
                     {t("settings.fontFamily", lang)}
                   </div>
-                  <div className="font-search-wrap">
+                  <div className="sm-font-search">
                     <input
                       type="text"
-                      className="font-search-input"
+                      className="sm-font-search-input"
                       value={fontFilter}
                       onChange={(e) => setFontFilter(e.target.value)}
                       placeholder={
@@ -1913,17 +1839,13 @@ export default function SettingsModal() {
                     />
                   </div>
                   {FILTERED_FONT_CATEGORIES.map((cat) => (
-                    <div key={cat.label} className="font-category">
-                      <div className="font-category-label">{cat.label}</div>
-                      <div className="setting-options font-options">
+                    <div key={cat.label} className="sm-font-category">
+                      <div className="sm-font-category-label">{cat.label}</div>
+                      <div className="sm-font-options">
                         {cat.fonts.map((f) => (
                           <button
                             key={f.id}
-                            className={cn(
-                              "chip font-chip",
-                              fontFamily === f.id && "active",
-                              f.bold && "font-semibold",
-                            )}
+                            className={cn("sm-font-chip", fontFamily === f.id && "sm-font-chip--active", f.bold && "font-semibold")}
                             onClick={async () => {
                               await ensureFontLoaded(f.id);
                               dispatch({
@@ -1934,17 +1856,17 @@ export default function SettingsModal() {
                             title={f.hint}
                             aria-pressed={fontFamily === f.id}
                           >
-                            <span className="font-chip-name">
+                            <span className="sm-font-chip-preview">
                               بِسْمِ ٱللَّهِ
                             </span>
-                            <span className="font-chip-label">{f.label}</span>
+                            <span className="sm-font-chip-name">{f.label}</span>
                           </button>
                         ))}
                       </div>
                     </div>
                   ))}
                   {FILTERED_FONT_CATEGORIES.length === 0 && (
-                    <div className="font-empty-state">
+                    <div className="sm-font-empty">
                       {lang === "fr"
                         ? "Aucune police trouvée pour cette recherche."
                         : lang === "ar"
@@ -2032,7 +1954,7 @@ export default function SettingsModal() {
                             ? "إضافة إلى المفضلة"
                             : "Add to favorites"}
                     </button>
-                    <span className="settings-value-pill">
+                    <span className="sm-value-pill">
                       {autoSelectFastestReciter
                         ? lang === "fr"
                           ? "Mode source rapide"
@@ -2046,12 +1968,12 @@ export default function SettingsModal() {
                             : "Manual selection"}
                     </span>
                     {formatLatency(currentReciterLatency) && (
-                      <span className="settings-value-pill">
+                      <span className="sm-value-pill">
                         {formatLatency(currentReciterLatency)}
                       </span>
                     )}
                     {isSurahStreamReciter && (
-                      <span className="settings-value-pill">
+                      <span className="sm-value-pill">
                         MP3Quran ·
                         {lang === "fr"
                           ? " sourate"
@@ -2065,7 +1987,7 @@ export default function SettingsModal() {
 
                 {isSurahStreamReciter && (
                   <div className={cn(cardClass, "space-y-2")}>
-                    <div className="settings-card-label">
+                    <div className="sm-card-label">
                       <i className="fas fa-wave-square" aria-hidden="true"></i>
                       {lang === "fr"
                         ? "Mode Warsh etendu"
@@ -2084,7 +2006,7 @@ export default function SettingsModal() {
                 )}
 
                 <div className={cn(cardClass, "space-y-3")}>
-                  <div className="settings-card-label">
+                  <div className="sm-card-label">
                     <i className="fas fa-gauge-high" aria-hidden="true"></i>
                     {lang === "fr"
                       ? "Stratégie audio"
@@ -2123,7 +2045,7 @@ export default function SettingsModal() {
                               : "Favorites stay first, then measured CDN latency takes over."}
                         </div>
                       </div>
-                      <span className="settings-value-pill">
+                      <span className="sm-value-pill">
                         {autoSelectFastestReciter ? "ON" : "OFF"}
                       </span>
                     </div>
@@ -2220,7 +2142,7 @@ export default function SettingsModal() {
 
                 {/* Reciter selector */}
                 <div className={cardClass}>
-                  <div className="settings-card-label">
+                  <div className="sm-card-label">
                     <i
                       className="fas fa-microphone-lines"
                       aria-hidden="true"
@@ -2308,14 +2230,14 @@ export default function SettingsModal() {
 
                 {/* Sync offset */}
                 <div className={cardClass}>
-                  <div className="settings-card-label">
+                  <div className="sm-card-label">
                     <i className="fas fa-sliders" aria-hidden="true"></i>
                     {lang === "fr"
                       ? "Décalage synchro audio"
                       : lang === "ar"
                         ? "إزاحة مزامنة الصوت"
                         : "Audio sync offset"}
-                    <span className="settings-value-pill">
+                    <span className="sm-value-pill">
                       {syncOffsetMs} ms
                     </span>
                   </div>
@@ -2341,7 +2263,7 @@ export default function SettingsModal() {
                     className="setting-slider"
                     aria-label={`${lang === "fr" ? "Décalage synchro" : "Sync offset"}: ${syncOffsetMs} ms`}
                   />
-                  <p className="settings-hint">
+                  <p className="sm-hint">
                     {reciterObj?.nameFr ||
                       reciterObj?.nameEn ||
                       reciterObj?.name ||
@@ -2367,19 +2289,19 @@ export default function SettingsModal() {
 
                 {/* Export / Import */}
                 <div className={cardClass}>
-                  <div className="settings-card-label">
+                  <div className="sm-card-label">
                     <i className="fas fa-hard-drive" aria-hidden="true"></i>
                     {t("export.title", lang)}
                   </div>
-                  <div className="data-action-btns">
+                  <div className="sm-btn-row">
                     <button
-                      className="data-action-btn"
+                      className="sm-btn sm-btn--secondary"
                       onClick={downloadExport}
                     >
                       <i className="fas fa-download" aria-hidden="true"></i>
                       <span>{t("export.export", lang)}</span>
                     </button>
-                    <button className="data-action-btn" onClick={handleImport}>
+                    <button className="sm-btn sm-btn--secondary" onClick={handleImport}>
                       <i className="fas fa-upload" aria-hidden="true"></i>
                       <span>{t("export.import", lang)}</span>
                     </button>
@@ -2387,7 +2309,7 @@ export default function SettingsModal() {
                 </div>
 
                 <div className={cn(cardClass, "space-y-3")}>
-                  <div className="settings-card-label">
+                  <div className="sm-card-label">
                     <i className="fas fa-shield-halved" aria-hidden="true"></i>
                     {lang === "fr"
                       ? "Sécurité des données locales"
@@ -2395,7 +2317,7 @@ export default function SettingsModal() {
                         ? "أمان البيانات المحلية"
                         : "Local data security"}
                   </div>
-                  <p className="settings-hint">
+                  <p className="sm-hint">
                     {lang === "fr"
                       ? "Ajoutez une passphrase pour dériver une clé de chiffrement plus robuste."
                       : lang === "ar"
@@ -2409,7 +2331,7 @@ export default function SettingsModal() {
                         type="password"
                         value={securityPassphrase}
                         onChange={(event) => setSecurityPassphrase(event.target.value)}
-                        className="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg-primary)] px-3 py-2 text-sm outline-none focus:border-[color:var(--primary)] focus:ring-2 focus:ring-[rgba(var(--primary-rgb),0.16)]"
+                        className="sm-passphrase-input"
                         placeholder={
                           lang === "fr"
                             ? "Passphrase (6 caractères minimum)"
@@ -2418,7 +2340,7 @@ export default function SettingsModal() {
                               : "Passphrase (minimum 6 characters)"
                         }
                       />
-                      <button className="data-action-btn" onClick={handleConfigurePassphrase}>
+                      <button className="sm-btn sm-btn--secondary" onClick={handleConfigurePassphrase}>
                         <i className="fas fa-key" aria-hidden="true"></i>
                         <span>
                           {lang === "fr"
@@ -2431,7 +2353,7 @@ export default function SettingsModal() {
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(var(--primary-rgb),0.22)] bg-[rgba(var(--primary-rgb),0.1)] px-3 py-1 text-xs font-semibold text-[color:var(--text-primary)]">
+                      <div className={`sm-security-badge ${securityUnlocked ? "sm-security-badge--ok" : "sm-security-badge--warn"}`}>
                         <i className={`fas ${securityUnlocked ? "fa-lock-open" : "fa-lock"}`} aria-hidden="true"></i>
                         <span>
                           {securityUnlocked
@@ -2454,7 +2376,7 @@ export default function SettingsModal() {
                             type="password"
                             value={securityUnlockPassphrase}
                             onChange={(event) => setSecurityUnlockPassphrase(event.target.value)}
-                            className="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg-primary)] px-3 py-2 text-sm outline-none focus:border-[color:var(--primary)] focus:ring-2 focus:ring-[rgba(var(--primary-rgb),0.16)]"
+                            className="sm-passphrase-input"
                             placeholder={
                               lang === "fr"
                                 ? "Entrer la passphrase"
@@ -2463,7 +2385,7 @@ export default function SettingsModal() {
                                   : "Enter passphrase"
                             }
                           />
-                          <button className="data-action-btn" onClick={handleUnlockPassphrase}>
+                          <button className="sm-btn sm-btn--secondary" onClick={handleUnlockPassphrase}>
                             <i className="fas fa-unlock" aria-hidden="true"></i>
                             <span>
                               {lang === "fr"
@@ -2478,14 +2400,14 @@ export default function SettingsModal() {
 
                       <div className="flex flex-wrap gap-2">
                         {securityUnlocked && (
-                          <button className="data-action-btn" onClick={handleLockPassphrase}>
+                          <button className="sm-btn sm-btn--secondary" onClick={handleLockPassphrase}>
                             <i className="fas fa-lock" aria-hidden="true"></i>
                             <span>
                               {lang === "fr" ? "Verrouiller" : lang === "ar" ? "قفل" : "Lock"}
                             </span>
                           </button>
                         )}
-                        <button className="data-action-btn" onClick={handleRemovePassphrase}>
+                        <button className="sm-btn sm-btn--secondary" onClick={handleRemovePassphrase}>
                           <i className="fas fa-trash" aria-hidden="true"></i>
                           <span>
                             {lang === "fr"
@@ -2502,7 +2424,7 @@ export default function SettingsModal() {
 
                 {/* Keyboard shortcuts */}
                 <div className={cardClass}>
-                  <div className="settings-card-label">
+                  <div className="sm-card-label">
                     <i className="fas fa-keyboard" aria-hidden="true"></i>
                     {lang === "ar"
                       ? "اختصارات لوحة المفاتيح"
@@ -2510,8 +2432,8 @@ export default function SettingsModal() {
                         ? "Raccourcis clavier"
                         : "Keyboard shortcuts"}
                   </div>
-                  <div className="shortcuts-grid">
-                    <div className="shortcut-item">
+                  <div className="sm-shortcuts-grid">
+                    <div className="sm-shortcut-item">
                       <kbd>←</kbd> <kbd>→</kbd>
                       <span>
                         {lang === "ar"
@@ -2521,7 +2443,7 @@ export default function SettingsModal() {
                             : "Navigate (surah/page/juz)"}
                       </span>
                     </div>
-                    <div className="shortcut-item">
+                    <div className="sm-shortcut-item">
                       <kbd>
                         {lang === "fr"
                           ? "Espace"
@@ -2537,7 +2459,7 @@ export default function SettingsModal() {
                             : "Play / Pause audio"}
                       </span>
                     </div>
-                    <div className="shortcut-item">
+                    <div className="sm-shortcut-item">
                       <kbd>Ctrl</kbd>+<kbd>K</kbd>
                       <span>
                         {lang === "ar"
@@ -2547,7 +2469,7 @@ export default function SettingsModal() {
                             : "Open search"}
                       </span>
                     </div>
-                    <div className="shortcut-item">
+                    <div className="sm-shortcut-item">
                       <kbd>{lang === "fr" ? "Échap" : "Esc"}</kbd>
                       <span>
                         {lang === "ar"
@@ -2561,31 +2483,31 @@ export default function SettingsModal() {
                 </div>
 
                 {/* About */}
-                <div className={cn(cardClass, "about-card")}>
-                  <div className="about-brand">
+                <div className={cn(cardClass, "sm-about-card")}>
+                  <div className="sm-about-brand">
                     <PlatformLogo
-                      className="about-logo"
-                      imgClassName="about-logo-img"
+                      className="sm-about-logo"
+                      imgClassName="sm-about-logo-img"
                       decorative
                     />
                     <div>
                       <strong>MushafPlus</strong>
-                      <span className="about-version">v1.1.0</span>
+                      <span className="sm-about-version">v1.1.0</span>
                     </div>
                   </div>
-                  <p className="about-desc">
+                  <p className="sm-about-desc">
                     {lang === "ar"
                       ? "تطبيق لقراءة القرآن الكريم مع دعم حفص وورش، تجويد ملوّن، صوت متزامن والمزيد."
                       : lang === "fr"
                         ? "Application de lecture du Saint Coran avec support Hafs & Warsh, tajweed coloré, audio synchronisé, et bien plus."
                         : "Holy Quran reader with Hafs & Warsh support, colored tajweed, synchronized audio, and more."}
                   </p>
-                  <div className="about-links">
+                  <div className="sm-about-links">
                     <a
                       href="https://alquran.cloud/api"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="about-link"
+                      className="sm-about-link"
                     >
                       <i className="fas fa-cloud" aria-hidden="true"></i> Al
                       Quran Cloud API
@@ -2594,7 +2516,7 @@ export default function SettingsModal() {
                       href="https://fonts.qurancomplex.gov.sa/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="about-link"
+                      className="sm-about-link"
                     >
                       <i className="fas fa-font" aria-hidden="true"></i>
                       {lang === "fr"
@@ -2628,7 +2550,7 @@ export default function SettingsModal() {
                       : "Quick access to learning and memorization tools."}
                 </p>
 
-                <div className="settings-tools-grid">
+                <div className="sm-tools-grid">
                   {[
                     {
                       icon: "fa-layer-group",
@@ -2710,7 +2632,7 @@ export default function SettingsModal() {
                     }) => (
                       <button
                         key={action}
-                        className="settings-tool-card"
+                        className="sm-tool-card"
                         onClick={() => {
                           set({ [action]: true });
                           close();
@@ -2719,13 +2641,13 @@ export default function SettingsModal() {
                           lang === "ar" ? ar : lang === "fr" ? fr : en
                         }
                       >
-                        <span className={cn("settings-tool-icon", iconClass)}>
+                        <span className={cn("sm-tool-icon", iconClass)}>
                           <i className={`fas ${icon}`} aria-hidden="true" />
                         </span>
-                        <span className="settings-tool-name">
+                        <span className="sm-tool-name">
                           {lang === "ar" ? ar : lang === "fr" ? fr : en}
                         </span>
-                        <span className="settings-tool-desc">
+                        <span className="sm-tool-desc">
                           {lang === "ar"
                             ? desc_ar
                             : lang === "fr"

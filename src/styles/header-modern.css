@@ -2081,3 +2081,42 @@
         min-height: 2.04rem !important;
     }
 }
+
+/* Cohesive override layer: authoritative header tuning */
+.app-root .hdr.hdr--cohesive {
+    --hdr-height-desktop: 70px;
+}
+
+.app-root .hdr.hdr--cohesive .hdr__main {
+    min-height: var(--hdr-height-desktop);
+    align-items: center;
+}
+
+.app-root .hdr.hdr--cohesive .hdr__action-cluster--tools,
+.app-root .hdr.hdr--cohesive .hdr__action-cluster--status {
+    flex-shrink: 0;
+}
+
+.app-root .hdr.hdr--cohesive .hdr__action-cluster--status {
+    padding-inline: 0.34rem;
+}
+
+.app-root .hdr.hdr--cohesive .hdr__btn--theme {
+    color: var(--gold, var(--primary));
+}
+
+.app-root .hdr.hdr--cohesive .hdr__btn--theme:hover {
+    color: color-mix(in srgb, var(--gold, var(--primary)) 76%, #ffffff 24%);
+}
+
+@media (max-width: 980px) {
+    .app-root .hdr.hdr--cohesive .hdr__action-cluster--status {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .app-root .hdr.hdr--cohesive .hdr__main {
+        min-height: 54px;
+    }
+}

@@ -1,0 +1,468 @@
+/* ==========================================================================
+   HOMEPAGE REFONTE - Design Zen & Minimaliste (Inspiré Quran.com)
+   ========================================================================== */
+
+/* --- LAYOUT GLOBAL --- */
+.hp-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  /* Espacement sous le header et au-dessus du footer */
+  padding-bottom: 6rem;
+}
+
+/* --- HERO (Barre de bienvenue / Stats) --- */
+.hp-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.hp-hero-title {
+  font-family: var(--font-ui);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.hp-hero-subtitle {
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+/* --- TABS BARR (Navigation Sourate/Juz) --- */
+.hp-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.hp-tab {
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.hp-tab:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.hp-tab.active {
+  color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.08); /* Flat primary hint */
+}
+
+/* --- SEARCH & ACTIONS --- */
+.hp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.hp-search-box {
+  position: relative;
+  flex: 1;
+  min-width: 260px;
+  max-width: 400px;
+}
+
+.hp-search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+[dir="rtl"] .hp-search-input {
+  padding: 0.75rem 2.75rem 0.75rem 1rem;
+}
+
+.hp-search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.hp-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+[dir="rtl"] .hp-search-icon {
+  left: auto;
+  right: 1rem;
+}
+
+/* Toggles d'affichage (Grid/List) */
+.hp-view-toggles {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--bg-secondary);
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+}
+
+.hp-view-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.35rem;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hp-view-btn.active {
+  background: var(--bg-primary);
+  color: var(--primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* --- SURAH GRID (Quran.com style) --- */
+.hp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Mobile override for better fit */
+@media (max-width: 640px) {
+  .hp-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+/* --- SURAH CARD (Flat Design) --- */
+.hp-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.15rem;
+  border-radius: 0.75rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+/* Hover effects: subtle border & background shift */
+.hp-card:hover {
+  border-color: rgba(var(--primary-rgb), 0.4);
+  background: var(--bg-secondary); /* or a very slight tint */
+}
+
+.hp-card.active {
+  border-color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.04);
+}
+
+.hp-card.playing {
+  border-color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.08); /* slightly stronger than active */
+}
+
+/* Elements inside the card */
+.hp-card-num {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
+  transform: rotate(45deg); /* Diamond shape optional, but Quran.com uses diamond badge sometimes */
+  transition: all 0.2s;
+}
+
+.hp-card-num-inner {
+  transform: rotate(-45deg); /* Counter rotate text */
+}
+
+.hp-card:hover .hp-card-num {
+  color: var(--text-primary);
+  background: var(--bg-tertiary); /* Soft hover state */
+}
+
+.hp-card.playing .hp-card-num, .hp-card.active .hp-card-num {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* Content block */
+.hp-card-content {
+  flex: 1;
+  min-width: 0; /* for truncation */
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  text-align: start;
+}
+
+.hp-card-name {
+  font-family: var(--font-ui);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hp-card-meta {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Arabic Name */
+.hp-card-ar {
+  font-family: var(--font-quran, "Amiri Quran"), serif;
+  font-size: 1.65rem;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin-inline-start: auto;
+  text-align: right;
+  transition: color 0.2s;
+}
+
+.hp-card:hover .hp-card-ar {
+  color: var(--primary);
+}
+
+/* Play button - hidden by default unless playing/mobile */
+.hp-card-play {
+  position: absolute;
+  top: 50%;
+  right: 1.25rem;
+  transform: translateY(-50%) translateX(10px);
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 2;
+  pointer-events: none; /* Only active on hover */
+}
+
+[dir="rtl"] .hp-card-play {
+  right: auto;
+  left: 1.25rem;
+  transform: translateY(-50%) translateX(-10px);
+}
+
+.hp-card:hover .hp-card-play {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+  pointer-events: auto;
+}
+
+/* Keep play button visible when actually playing */
+.hp-card.playing .hp-card-play {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+  pointer-events: auto;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+
+
+/* Touch devices: always show a subtle play icon instead of relying on hover */
+@media (hover: none) {
+  .hp-card-play {
+    position: static;
+    transform: none;
+    opacity: 1 !important;
+    pointer-events: auto;
+    width: 2rem;
+    height: 2rem;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    margin-inline-start: 0.5rem;
+  }
+  [dir="rtl"] .hp-card-play {
+    transform: none;
+  }
+  .hp-card.playing .hp-card-play {
+    background: var(--primary);
+    color: #fff;
+  }
+}
+
+/* --- LIST VIEW --- */
+.hp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hp-row {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hp-row:last-child {
+  border-bottom: none;
+}
+
+.hp-row:hover {
+  background: var(--bg-secondary); /* Very soft hover */
+}
+
+.hp-row.active {
+  background: rgba(var(--primary-rgb), 0.04);
+}
+
+.hp-row.playing {
+  background: rgba(var(--primary-rgb), 0.08);
+}
+
+.hp-row-num {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  width: 2.5rem;
+}
+
+.hp-row-name {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  text-align: start;
+}
+
+.hp-row-meta {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  width: 15vw;
+  text-align: center;
+}
+
+.hp-row-ar {
+  font-family: var(--font-quran, "Amiri Quran"), serif;
+  font-size: 1.35rem;
+  color: var(--text-primary);
+  width: 20%;
+  text-align: right;
+  margin-inline-start: auto;
+}
+
+.hp-row-play {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  margin-inline-start: 1rem;
+  transition: all 0.2s;
+}
+
+.hp-row:hover .hp-row-play {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.hp-row.playing .hp-row-play {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* JUZ CARDS OVERRIDES */
+.hp-card--juz .hp-card-num {
+  border-radius: 50%;
+  transform: none; /* Circle instead of diamond */
+}
+.hp-card--juz .hp-card-num-inner {
+  transform: none;
+}
+
+/* --- EMPTY STATE --- */
+.hp-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  border-radius: 1rem;
+  border: 1px dashed var(--border);
+}
+
+.hp-empty i {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.hp-empty p {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 600;
+}

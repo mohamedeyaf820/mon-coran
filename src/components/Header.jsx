@@ -1,15 +1,13 @@
-﻿import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useApp } from "../context/AppContext";
 import { t as i18nT } from "../i18n";
 import { toAr, getSurah, surahName } from "../data/surahs";
-import { JUZ_DATA } from "../data/juz";
-import audioService from "../services/audioService";
 import { cn } from "../lib/utils";
 import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import PlatformLogo from "./PlatformLogo";
 import NetworkStatus from "./NetworkStatus";
-import { THEME_ORDER, getThemeMeta } from "../data/themes";
-import "../styles/header-modern.css";
+import { THEME_ORDER } from "../data/themes";
+import "../styles/navbar-refonte.css";
 
 export default function Header() {
   const { state, dispatch, set } = useApp();
@@ -30,35 +28,30 @@ export default function Header() {
   const [goToOpen, setGoToOpen] = useState(false);
   const inputRef = useRef(null);
   const headerRef = useRef(null);
+
   const currentThemeIndex = THEME_ORDER.indexOf(theme);
   const nextThemeId =
-    THEME_ORDER[
-      (currentThemeIndex + 1 + THEME_ORDER.length) % THEME_ORDER.length
-    ];
-  const nextThemeMeta = getThemeMeta(nextThemeId);
+    THEME_ORDER[(currentThemeIndex + 1 + THEME_ORDER.length) % THEME_ORDER.length];
 
-  useEffect(() => {
-    if (goToOpen) setTimeout(() => inputRef.current?.focus(), 50);
-  }, [goToOpen]);
+  const isRtl = lang === "ar";
 
+  const tr = (obj) =>
+    lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en;
+
+  // Mise à jour de la hauteur du header en CSS var
   useEffect(() => {
     const updateHeaderHeight = () => {
       const el = headerRef.current;
       if (!el) return;
       const h = Math.ceil(el.getBoundingClientRect().height);
-      if (h > 0) {
-        document.documentElement.style.setProperty("--header-h", `${h}px`);
-      }
+      if (h > 0) document.documentElement.style.setProperty("--header-h", `${h}px`);
     };
-
     updateHeaderHeight();
-
     let ro;
     if (typeof ResizeObserver !== "undefined" && headerRef.current) {
       ro = new ResizeObserver(updateHeaderHeight);
       ro.observe(headerRef.current);
     }
-
     window.addEventListener("resize", updateHeaderHeight, { passive: true });
     return () => {
       window.removeEventListener("resize", updateHeaderHeight);
@@ -66,417 +59,297 @@ export default function Header() {
     };
   }, [showHome, showDuas, displayMode, lang, riwaya]);
 
-  const cycleTheme = () => {
-    dispatch({ type: "SET_THEME", payload: nextThemeId });
+  useEffect(() => {
+    if (goToOpen) setTimeout(() => inputRef.current?.focus(), 50);
+  }, [goToOpen]);
+
+  const cycleTheme = () => dispatch({ type: "SET_THEME", payload: nextThemeId });
+
+  const canGoPrev =
+    displayMode === "page" ? currentPage > 1
+    : displayMode === "juz" ? currentJuz > 1
+    : currentSurah > 1;
+
+  const canGoNext =
+    displayMode === "page" ? currentPage < 604
+    : displayMode === "juz" ? currentJuz < 30
+    : currentSurah < 114;
+
+  const handlePrev = () => {
+    set({ showHome: false, showDuas: false });
+    if (displayMode === "page" && currentPage > 1) set({ currentPage: currentPage - 1 });
+    else if (displayMode === "juz" && currentJuz > 1) dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz - 1 } });
+    else if (currentSurah > 1) dispatch({ type: "NAVIGATE_SURAH", payload: { surah: currentSurah - 1 } });
+  };
+
+  const handleNext = () => {
+    set({ showHome: false, showDuas: false });
+    if (displayMode === "page" && currentPage < 604) set({ currentPage: currentPage + 1 });
+    else if (displayMode === "juz" && currentJuz < 30) dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz + 1 } });
+    else if (currentSurah < 114) dispatch({ type: "NAVIGATE_SURAH", payload: { surah: currentSurah + 1 } });
   };
 
   const handleGoTo = (e) => {
     e.preventDefault();
     const num = parseInt(goToValue);
     if (isNaN(num)) return;
-    if (displayMode === "page") {
-      if (num >= 1 && num <= 604) {
-        set({ currentPage: num, showHome: false, showDuas: false });
-        setGoToOpen(false);
-        setGoToValue("");
-      }
-    } else if (displayMode === "juz") {
-      if (num >= 1 && num <= 30) {
-        set({ showHome: false, showDuas: false });
-        dispatch({ type: "NAVIGATE_JUZ", payload: { juz: num } });
-        setGoToOpen(false);
-        setGoToValue("");
-      }
-    } else {
-      if (num >= 1 && num <= 114) {
-        set({ showHome: false, showDuas: false });
-        dispatch({ type: "NAVIGATE_SURAH", payload: { surah: num } });
-        setGoToOpen(false);
-        setGoToValue("");
-      }
+    if (displayMode === "page" && num >= 1 && num <= 604) {
+      set({ currentPage: num, showHome: false, showDuas: false });
+    } else if (displayMode === "juz" && num >= 1 && num <= 30) {
+      set({ showHome: false, showDuas: false });
+      dispatch({ type: "NAVIGATE_JUZ", payload: { juz: num } });
+    } else if (num >= 1 && num <= 114) {
+      set({ showHome: false, showDuas: false });
+      dispatch({ type: "NAVIGATE_SURAH", payload: { surah: num } });
     }
+    setGoToOpen(false);
+    setGoToValue("");
   };
 
+  const goToMax = displayMode === "page" ? 604 : displayMode === "juz" ? 30 : 114;
   const goToLabel =
     displayMode === "page"
-      ? lang === "fr"
-        ? "Page (1-604)"
-        : lang === "en"
-          ? "Page (1-604)"
-          : "صفحة (-)"
+      ? tr({ fr: "Page (1-604)", en: "Page (1-604)", ar: "صفحة (١-٦٠٤)" })
       : displayMode === "juz"
-        ? lang === "fr"
-          ? "Juz (1-30)"
-          : lang === "en"
-            ? "Juz (1-30)"
-            : "جزء (١-٣٠)"
-        : lang === "fr"
-          ? "Sourate (1-114)"
-          : lang === "en"
-            ? "Surah (1-114)"
-            : "سورة (١-١١٤)";
+      ? tr({ fr: "Juz (1-30)", en: "Juz (1-30)", ar: "جزء (١-٣٠)" })
+      : tr({ fr: "Sourate (1-114)", en: "Surah (1-114)", ar: "سورة (١-١١٤)" });
 
-  const goToMax =
-    displayMode === "page" ? 604 : displayMode === "juz" ? 30 : 114;
-  const isRtl = lang === "ar";
-  const tr = (obj) =>
-    lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en;
-  const headerLabels = {
-    menu: tr({ fr: "Menu", en: "Menu", ar: "القائمة" }),
-    duas: tr({ fr: "Douas", en: "Duas", ar: "أدعية" }),
-    theme: tr({ fr: "Theme", en: "Theme", ar: "السمة" }),
-    settings: i18nT("nav.settings", lang),
-    search: i18nT("nav.search", lang),
-  };
-
-  const canGoPrev =
-    displayMode === "page"
-      ? currentPage > 1
-      : displayMode === "juz"
-        ? currentJuz > 1
-        : currentSurah > 1;
-  const canGoNext =
-    displayMode === "page"
-      ? currentPage < 604
-      : displayMode === "juz"
-        ? currentJuz < 30
-        : currentSurah < 114;
-
-  const handlePrev = () => {
-    set({ showHome: false, showDuas: false });
-    if (displayMode === "page") {
-      if (currentPage > 1)
-        set({ currentPage: currentPage - 1, showHome: false, showDuas: false });
-    } else if (displayMode === "juz") {
-      if (currentJuz > 1)
-        dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz - 1 } });
-    } else {
-      if (currentSurah > 1)
-        dispatch({
-          type: "NAVIGATE_SURAH",
-          payload: { surah: currentSurah - 1 },
-        });
-    }
-  };
-
-  const handleNext = () => {
-    set({ showHome: false, showDuas: false });
-    if (displayMode === "page") {
-      if (currentPage < 604)
-        set({ currentPage: currentPage + 1, showHome: false, showDuas: false });
-    } else if (displayMode === "juz") {
-      if (currentJuz < 30)
-        dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz + 1 } });
-    } else {
-      if (currentSurah < 114)
-        dispatch({
-          type: "NAVIGATE_SURAH",
-          payload: { surah: currentSurah + 1 },
-        });
-    }
-  };
-
+  // Données title/subtitle du centre
   const surahMeta = getSurah(currentSurah);
   const arabicName = surahMeta?.ar || "";
   const translatedName = surahName(currentSurah, lang);
-
-  const centerTitle =
-    displayMode === "juz"
-      ? lang === "ar"
-        ? `جزء ${toAr(currentJuz)}`
-        : `Juz ${currentJuz}`
-      : lang === "ar"
-        ? arabicName
-        : translatedName;
-
   const ayahWord = lang === "fr" ? "versets" : lang === "ar" ? "آية" : "ayahs";
   const ayahCount = loadedAyahCount
     ? `${lang === "ar" ? toAr(loadedAyahCount) : loadedAyahCount} ${ayahWord}`
-    : surahMeta
-      ? `${surahMeta.ayahs} ${ayahWord}`
-      : "";
+    : surahMeta ? `${surahMeta.ayahs} ${ayahWord}` : "";
 
-  const homeTitle = tr({
-    fr: "Reprends ta lecture avec clarte",
-    en: "Return to your reading with clarity",
-    ar: "عد إلى قراءتك بوضوح",
-  });
-  const homeSubtitle = tr({
-    fr: "Navigation rapide, écoute guidée et mémorisation apaisée.",
-    en: "Quick navigation, guided listening and calmer memorization.",
-    ar: "تنقل سريع واستماع موجّه ومراجعة أكثر هدوءا.",
-  });
-  const homeHighlights = [
-    {
-      icon: "fa-book-open",
-      value: "114",
-      label: tr({ fr: "sourates", en: "surahs", ar: "سورة" }),
-    },
-    {
-      icon: "fa-layer-group",
-      value: "30",
-      label: tr({ fr: "juz", en: "juz", ar: "جزء" }),
-    },
-    {
-      icon: "fa-wave-square",
-      value: riwaya === "warsh" ? "ورش" : "حفص",
-      label: tr({ fr: "riwaya", en: "riwaya", ar: "الرواية" }),
-    },
-  ];
-  const pagePanelTitle = showDuas
-    ? tr({ fr: "Espace Douas", en: "Duas Space", ar: "فضاء الأدعية" })
-    : centerTitle;
-  const pagePanelSubtitle = showDuas
-    ? tr({
-        fr: "Invocations organisees pour lire, apprendre et revenir plus vite.",
-        en: "Structured invocations to read, learn and return faster.",
-        ar: "أدعية مرتبة للقراءة والتعلم والعودة السريعة.",
-      })
-    : displayMode === "page"
-      ? tr({
-          fr: `Page ${currentPage} sur 604`,
-          en: `Page ${currentPage} of 604`,
-          ar: `الصفحة ${toAr(currentPage)} من ${toAr(604)}`,
-        })
+  const centerTitle =
+    showDuas
+      ? tr({ fr: "Douas", en: "Duas", ar: "الأدعية" })
       : displayMode === "juz"
-        ? tr({
-            fr: `Juz ${currentJuz} sur 30`,
-            en: `Juz ${currentJuz} of 30`,
-            ar: `الجزء ${toAr(currentJuz)} من ${toAr(30)}`,
-          })
-        : ayahCount;
+      ? lang === "ar" ? `جزء ${toAr(currentJuz)}` : `Juz ${currentJuz}`
+      : lang === "ar" ? arabicName : translatedName;
+
+  const centerKicker =
+    showDuas
+      ? tr({ fr: "Espace Douas", en: "Duas Space", ar: "فضاء الأدعية" })
+      : displayMode === "page"
+      ? tr({ fr: "Lecture page", en: "Page reading", ar: "قراءة الصفحة" })
+      : displayMode === "juz"
+      ? tr({ fr: "Lecture par Juz", en: "Juz reading", ar: "قراءة الأجزاء" })
+      : tr({ fr: "Lecture Sourate", en: "Surah reading", ar: "قراءة السورة" });
+
+  const centerSub =
+    showDuas
+      ? ""
+      : displayMode === "page"
+      ? tr({ fr: `Page ${currentPage} sur 604`, en: `Page ${currentPage} of 604`, ar: `الصفحة ${toAr(currentPage)} من ${toAr(604)}` })
+      : displayMode === "juz"
+      ? tr({ fr: `Juz ${currentJuz} sur 30`, en: `Juz ${currentJuz} of 30`, ar: `الجزء ${toAr(currentJuz)} من ${toAr(30)}` })
+      : ayahCount;
+
+  // Couleur du point thème
+  const themeDotColors = {
+    light: "#199b90", dark: "#2bb6c7", sepia: "#b4883c",
+    "quran-night": "#3ca675", oled: "#2db870",
+  };
+  const dotColor = themeDotColors[theme] || "var(--primary)";
+
+  // Chips accueil
+  const homeChips = [
+    { icon: "fa-book-open", value: "114", label: tr({ fr: "sourates", en: "surahs", ar: "سورة" }) },
+    { icon: "fa-layer-group", value: "30", label: "Juz" },
+    { icon: "fa-wave-square", value: riwaya === "warsh" ? "ورش" : "حفص", label: tr({ fr: "Riwaya", en: "Riwaya", ar: "رواية" }) },
+  ];
 
   return (
     <header
       ref={headerRef}
-      className="hdr hdr--themes4 hdr--premium-plus sticky top-0 z-[220] w-full backdrop-blur-xl"
+      className="hdr-v7"
+      role="banner"
     >
-      <div className="hdr__main flex flex-wrap items-center gap-2 px-2 py-2 md:gap-3 md:px-4">
-        <div className="hdr__left flex min-w-0 items-center gap-2">
+      <div className="hdr-v7__inner">
+
+        {/* ── GAUCHE : Menu + Brand ── */}
+        <div className="hdr-v7__left">
           <button
-            className={cn(
-              "hdr__btn",
-              "hdr__btn--labeled",
-              "hdr__btn--menu-main",
-              state.sidebarOpen && "hdr__btn--active",
-            )}
+            className={cn("hdr-v7__menu-btn", state.sidebarOpen && "is-active")}
             onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
-            title={lang === "fr" ? "Menu" : lang === "ar" ? "القائمة" : "Menu"}
-            aria-label={
-              lang === "fr" ? "Menu" : lang === "ar" ? "القائمة" : "Menu"
-            }
+            aria-label={tr({ fr: "Menu", en: "Menu", ar: "القائمة" })}
+            aria-expanded={state.sidebarOpen}
           >
-            <i className="fas fa-bars" />
-            <span className="hdr__btn-label">{headerLabels.menu}</span>
+            <i className={state.sidebarOpen ? "fas fa-times" : "fas fa-bars"} />
           </button>
 
           <button
-            className="hdr__brand"
+            className="hdr-v7__brand"
             onClick={() => set({ showHome: true, showDuas: false })}
-            aria-label={tr({
-              fr: "Retour a l'accueil",
-              en: "Back to home",
-              ar: "العودة إلى الرئيسية",
-            })}
+            aria-label={tr({ fr: "Retour à l'accueil", en: "Back to home", ar: "العودة للرئيسية" })}
           >
-            <span className="hdr__brand-mark">
+            <span className="hdr-v7__brand-logo">
               <PlatformLogo
                 className="w-full h-full"
                 imgClassName="w-full h-full object-cover"
                 decorative
                 priority
-                width={80}
-                height={80}
+                width={34}
+                height={34}
               />
             </span>
-            <span className="hdr__brand-name">Mushaf.plus</span>
-            <span
-              className={`hdr__theme-dot hdr__theme-dot--${theme}`}
-              title={theme}
-              aria-hidden="true"
-            />
+            <span className="hdr-v7__brand-name">
+              Mushaf
+              <span className="hdr-v7__brand-dot" style={{ background: dotColor }} />
+              plus
+            </span>
           </button>
         </div>
 
-        <div className="hdr__center min-w-0 flex-1">
+        {/* ── CENTRE : Accueil ou Navigation ── */}
+        <div className="hdr-v7__center">
           {showHome ? (
-            <div className="hdr__home-panel" aria-label={homeTitle}>
-              <div className="hdr__home-copy">
-                <span className="hdr__home-kicker">
-                  {tr({ fr: "MushafPlus", en: "MushafPlus", ar: "مصحف بلس" })}
-                </span>
-                <strong className="hdr__home-title">{homeTitle}</strong>
-                {/* <span className="hdr__home-subtitle">{homeSubtitle}</span>*/}
-              </div>
-              <div className="hdr__home-meta">
-                {homeHighlights.map((item) => (
-                  <span key={item.icon} className="hdr__home-chip">
-                    <i className={`fas ${item.icon}`} aria-hidden="true" />
-                    <strong>{item.value}</strong>
-                    <span>{item.label}</span>
+            <div className="hdr-v7__home">
+              <span className="hdr-v7__home-title">
+                {tr({ fr: "Reprends ta lecture", en: "Continue your reading", ar: "استأنف قراءتك" })}
+              </span>
+              <div className="hdr-v7__home-chips">
+                {homeChips.map((chip) => (
+                  <span key={chip.icon} className="hdr-v7__home-chip">
+                    <i className={`fas ${chip.icon}`} aria-hidden="true" />
+                    <strong>{chip.value}</strong>
+                    <span>{chip.label}</span>
                   </span>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="hdr__nav-shell">
-              <div className="hdr__nav hdr__nav--active">
-                <button
-                  className="hdr__nav-arrow"
-                  onClick={isRtl ? handleNext : handlePrev}
-                  disabled={isRtl ? !canGoNext : !canGoPrev}
-                  aria-label={i18nT("quran.prevSurah", lang)}
-                >
-                  <i className="fas fa-chevron-left" />
-                </button>
+            <nav className="hdr-v7__nav" aria-label={tr({ fr: "Navigation Coran", en: "Quran navigation", ar: "التنقل في القرآن" })}>
+              <button
+                className="hdr-v7__nav-arrow"
+                onClick={isRtl ? handleNext : handlePrev}
+                disabled={isRtl ? !canGoNext : !canGoPrev}
+                aria-label={i18nT("quran.prevSurah", lang)}
+              >
+                <i className="fas fa-chevron-left" />
+              </button>
 
-                <Popover open={goToOpen} onOpenChange={setGoToOpen}>
-                  <PopoverTrigger asChild>
-                    <button className="hdr__nav-center">
-                      <span className="hdr__nav-kicker">
-                        {showDuas
-                          ? tr({ fr: "Douas", en: "Duas", ar: "الأدعية" })
-                          : displayMode === "page"
-                            ? tr({
-                                fr: "Lecture page",
-                                en: "Page reading",
-                                ar: "قراءة الصفحة",
-                              })
-                            : displayMode === "juz"
-                              ? tr({
-                                  fr: "Lecture par juz",
-                                  en: "Juz reading",
-                                  ar: "قراءة الأجزاء",
-                                })
-                              : tr({
-                                  fr: "Lecture sourate",
-                                  en: "Surah reading",
-                                  ar: "قراءة السور",
-                                })}
-                      </span>
-                      <span className="hdr__nav-title">{pagePanelTitle}</span>
-                      <span className="hdr__nav-sub">
-                        {displayMode === "surah" && !showDuas ? (
-                          <>
-                            <span>
-                              {lang === "ar"
-                                ? toAr(currentSurah)
-                                : `#${currentSurah}`}
-                            </span>
-                            <span className="hdr__nav-dot">·</span>
-                            <span>{pagePanelSubtitle}</span>
-                          </>
-                        ) : (
-                          <span>{pagePanelSubtitle}</span>
-                        )}
-                      </span>
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    align="center"
-                    sideOffset={12}
-                    className="w-60 p-0 border border-(--border) shadow-2xl rounded-2xl bg-(--bg-primary) z-110"
-                  >
-                    <form onSubmit={handleGoTo} className="hdr-goto-form">
-                      <label className="hdr-goto-label">{goToLabel}</label>
-                      <div className="hdr-goto-row">
-                        <input
-                          ref={inputRef}
-                          type="number"
-                          min={1}
-                          max={goToMax}
-                          value={goToValue}
-                          onChange={(e) => setGoToValue(e.target.value)}
-                          placeholder="#"
-                          className="hdr-goto-input"
-                        />
-                        <button type="submit" className="hdr-goto-submit">
-                          <i className="fas fa-arrow-right" />
-                        </button>
-                      </div>
-                    </form>
-                  </PopoverContent>
-                </Popover>
-
-                <button
-                  className="hdr__nav-arrow"
-                  onClick={isRtl ? handlePrev : handleNext}
-                  disabled={isRtl ? !canGoPrev : !canGoNext}
-                  aria-label={i18nT("quran.nextSurah", lang)}
+              <Popover open={goToOpen} onOpenChange={setGoToOpen}>
+                <PopoverTrigger asChild>
+                  <button className="hdr-v7__nav-center" aria-label={tr({ fr: "Aller à", en: "Go to", ar: "انتقل إلى" })}>
+                    <span className="hdr-v7__nav-kicker">{centerKicker}</span>
+                    <span className="hdr-v7__nav-title">{centerTitle}</span>
+                    {centerSub && <span className="hdr-v7__nav-sub">{centerSub}</span>}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="center"
+                  sideOffset={10}
+                  className="w-56 p-0 border border-[var(--border)] shadow-xl rounded-2xl bg-[var(--bg-primary)] z-[300]"
                 >
-                  <i className="fas fa-chevron-right" />
-                </button>
-              </div>
-            </div>
+                  <form onSubmit={handleGoTo} className="hdr-v7-goto">
+                    <label className="hdr-v7-goto__label">{goToLabel}</label>
+                    <div className="hdr-v7-goto__row">
+                      <input
+                        ref={inputRef}
+                        type="number"
+                        min={1}
+                        max={goToMax}
+                        value={goToValue}
+                        onChange={(e) => setGoToValue(e.target.value)}
+                        placeholder="#"
+                        className="hdr-v7-goto__input"
+                      />
+                      <button type="submit" className="hdr-v7-goto__submit">
+                        <i className="fas fa-arrow-right" />
+                      </button>
+                    </div>
+                  </form>
+                </PopoverContent>
+              </Popover>
+
+              <button
+                className="hdr-v7__nav-arrow"
+                onClick={isRtl ? handlePrev : handleNext}
+                disabled={isRtl ? !canGoPrev : !canGoNext}
+                aria-label={i18nT("quran.nextSurah", lang)}
+              >
+                <i className="fas fa-chevron-right" />
+              </button>
+            </nav>
           )}
         </div>
 
-        {/* Actions */}
-        <div className="hdr__actions ml-auto flex items-center justify-end gap-2">
-          <div className="hdr__action-cluster hdr__action-cluster--primary">
-            <button
-              className="hdr__btn-duas"
-              onClick={() => set({ showDuas: true, showHome: false })}
-            >
-              <i className="fas fa-hands-praying text-[0.7rem]" />
-              <span className="hdr__btn-duas-label">{headerLabels.duas}</span>
-            </button>
+        {/* ── DROITE : Actions ── */}
+        <div className="hdr-v7__right">
 
-            <div
-              className="hdr__riwaya-toggle"
-              role="group"
-              aria-label="Riwāya"
+          {/* Riwaya toggle */}
+          <div className="hdr-v7__riwaya" role="group" aria-label="Riwāya">
+            <button
+              className={cn("hdr-v7__riwaya-btn", riwaya === "hafs" && "is-active")}
+              onClick={() => set({ riwaya: "hafs" })}
+              aria-pressed={riwaya === "hafs"}
+              title="Riwāya HAFS"
             >
-              <button
-                className={cn(
-                  "hdr__riwaya-btn",
-                  riwaya === "hafs" && "hdr__riwaya-btn--active",
-                )}
-                onClick={() => set({ riwaya: "hafs" })}
-                title="Riwāya HAFS"
-                aria-pressed={riwaya === "hafs"}
-              >
-                HAFS
-              </button>
-              <button
-                className={cn(
-                  "hdr__riwaya-btn",
-                  riwaya === "warsh" && "hdr__riwaya-btn--active",
-                )}
-                onClick={() => set({ riwaya: "warsh" })}
-                title="Riwāya WARSH"
-                aria-pressed={riwaya === "warsh"}
-              >
-                WARSH
-              </button>
-            </div>
+              HAFS
+            </button>
+            <button
+              className={cn("hdr-v7__riwaya-btn", riwaya === "warsh" && "is-active")}
+              onClick={() => set({ riwaya: "warsh" })}
+              aria-pressed={riwaya === "warsh"}
+              title="Riwāya WARSH"
+            >
+              WARSH
+            </button>
           </div>
 
-          <div className="hdr__action-cluster hdr__action-cluster--tools">
+          {/* Groupe d'outils */}
+          <div className="hdr-v7__btn-group">
+            {/* Douas */}
             <button
-              className={cn(
-                "hdr__btn",
-                "hdr__btn--labeled",
-                state.settingsOpen && "hdr__btn--active",
-              )}
+              className={cn("hdr-v7__action-btn hdr-v7__action-btn--wide", showDuas && "is-active")}
+              onClick={() => set({ showDuas: true, showHome: false })}
+              title={tr({ fr: "Douas", en: "Duas", ar: "الأدعية" })}
+              aria-label={tr({ fr: "Douas", en: "Duas", ar: "الأدعية" })}
+            >
+              <i className="fas fa-hands-praying" style={{ fontSize: ".7rem" }} />
+              <span className="hdr-v7__btn-label" style={{ fontSize: ".7rem", fontWeight: 700, fontFamily: "var(--font-ui)", whiteSpace: "nowrap" }}>
+                {tr({ fr: "Douas", en: "Duas", ar: "الأدعية" })}
+              </span>
+            </button>
+
+            {/* Thème */}
+            <button
+              className="hdr-v7__action-btn"
+              onClick={cycleTheme}
+              title={tr({ fr: "Changer le thème", en: "Change theme", ar: "تغيير الثيم" })}
+              aria-label={tr({ fr: "Changer le thème", en: "Change theme", ar: "تغيير الثيم" })}
+            >
+              <i className="fas fa-palette" />
+            </button>
+
+            {/* Paramètres */}
+            <button
+              className={cn("hdr-v7__action-btn", state.settingsOpen && "is-active")}
               onClick={() => dispatch({ type: "TOGGLE_SETTINGS" })}
               title={i18nT("nav.settings", lang)}
               aria-label={i18nT("nav.settings", lang)}
             >
               <i className="fas fa-sliders" />
-              <span className="hdr__btn-label">{headerLabels.settings}</span>
             </button>
 
+            {/* Recherche */}
             <button
-              className="hdr__btn hdr__btn--labeled hdr__btn--search"
+              className="hdr-v7__search-btn"
               onClick={() => dispatch({ type: "TOGGLE_SEARCH" })}
               title={`${i18nT("nav.search", lang)} — Ctrl+K`}
               aria-label={i18nT("nav.search", lang)}
             >
               <i className="fas fa-magnifying-glass" />
-              <span className="hdr__btn-label">{headerLabels.search}</span>
+              <span>{i18nT("nav.search", lang)}</span>
             </button>
           </div>
+
+          {/* Statut réseau */}
+          <NetworkStatus />
         </div>
       </div>
     </header>

@@ -2615,3 +2615,68 @@ kbd {
     grid-template-columns: 1fr;
   }
 }
+
+/* Cohesive override layer: authoritative settings tuning */
+.app-root .settings-overlay--cohesive {
+  padding: clamp(0.72rem, 2vw, 1.18rem);
+}
+
+.app-root .settings-dialog--cohesive {
+  border-radius: 1.2rem !important;
+}
+
+.app-root .settings-header--cohesive {
+  min-height: 3.3rem;
+}
+
+.app-root .settings-nav--cohesive {
+  gap: 0.48rem;
+}
+
+.app-root .settings-content--cohesive {
+  padding: 1rem 1rem 1.08rem;
+}
+
+.app-root .settings-content--cohesive .settings-hero-card {
+  border-radius: 1rem;
+  margin-bottom: 0.86rem;
+}
+
+.app-root .settings-content--cohesive .settings-pane {
+  gap: 0.82rem;
+}
+
+.app-root .settings-content--cohesive .settings-card {
+  border-radius: 1rem;
+  padding: 0.88rem;
+}
+
+.app-root .settings-content--cohesive .settings-pane-title {
+  margin-bottom: 0.05rem;
+}
+
+@media (max-width: 900px) {
+  .app-root .settings-content--cohesive {
+    padding: 0.86rem 0.86rem 0.96rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-root .settings-overlay--cohesive {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .app-root .settings-dialog--cohesive {
+    border-radius: 1rem 1rem 0 0 !important;
+  }
+
+  .app-root .settings-content--cohesive {
+    padding: 0.74rem 0.72rem 0.88rem;
+  }
+
+  .app-root .settings-content--cohesive .settings-card {
+    border-radius: 0.9rem;
+    padding: 0.74rem 0.76rem;
+  }
+}

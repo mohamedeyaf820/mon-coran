@@ -4,8 +4,7 @@ import { t } from "../i18n";
 import SURAHS, { toAr } from "../data/surahs";
 import { JUZ_DATA, JUZ_PAGE_RANGES } from "../data/juz";
 import { cn } from "../lib/utils";
-import "../styles/sidebar.css";
-import "../styles/zen-platform.css";
+import "../styles/sidebar-refonte.css";
 
 export default function Sidebar() {
   const { state, dispatch, set } = useApp();
@@ -86,21 +85,18 @@ export default function Sidebar() {
   return (
     <>
       <aside
-        className={cn(
-          "sidebar sidebar--platform sidebar--themes4 w-[min(92vw,380px)] md:w-[23rem] !overflow-hidden !rounded-r-3xl !border-r !border-white/10 !bg-[linear-gradient(180deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_24px_60px_rgba(1,8,22,0.45)]",
-          sidebarOpen && "open",
-        )}
+        className={cn("sb-wrapper", sidebarOpen && "open")}
         role="navigation"
+        onClick={(e) => e.stopPropagation()}
       >
-
-        {/* ── HEADER FIXE compact ── */}
-        <div className="sidebar-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))] !px-3 !py-3">
-          <div className="sidebar-header__top">
-            <div className="sidebar-header__identity">
-              <span className="sidebar-header__kicker">
+        {/* ── HEADER ── */}
+        <div className="sb-header">
+          <div className="sb-header-top">
+            <div className="sb-identity">
+              <span className="sb-kicker">
                 {lang === "fr" ? "Navigation" : lang === "ar" ? "التنقل" : "Navigation"}
               </span>
-              <span className="sidebar-header__title">
+              <span className="sb-title">
                 {lang === "fr" ? "Explorer le Mushaf" : lang === "ar" ? "استكشاف المصحف" : "Explore the Mushaf"}
               </span>
             </div>
@@ -111,7 +107,7 @@ export default function Sidebar() {
                   : (lang === "fr" ? "Hafs" : lang === "ar" ? "حفص" : "Hafs")}
               </span>
               <button
-                className="sidebar-close-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
+                className="sb-close-btn"
                 onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
                 aria-label="Fermer"
               >
@@ -121,23 +117,23 @@ export default function Sidebar() {
           </div>
 
           {activeSummary && (
-            <div className="sidebar-current-loc">
-              <i className="fas fa-location-dot sidebar-current-loc__icon" />
-              <span className="sidebar-current-loc__val">{activeSummary}</span>
+            <div className="sb-current-loc">
+              <i className="fas fa-location-dot sb-current-loc__icon" />
+              <span className="sb-current-loc__val">{activeSummary}</span>
             </div>
           )}
 
           {/* Tab bar */}
           <div
             className={cn(
-              "sidebar-tabs-list !mt-2 !grid !gap-1 !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-1",
-              availableTabs.length === 2 ? "!grid-cols-2" : "!grid-cols-3",
+              "sb-tabs-list",
+              availableTabs.length === 2 ? "grid-cols-2" : "grid-cols-3",
             )}
           >
             {availableTabs.map((t2) => (
               <button
                 key={t2}
-                className={cn("sidebar-tab-trigger !rounded-xl !px-2.5 !py-2 !text-xs !transition-all hover:!bg-white/[0.08]", tab === t2 && "active !bg-sky-500/25 !text-white")}
+                className={cn("sb-tab-trigger", tab === t2 && "active")}
                 onClick={() => setTab(t2)}
               >
                 {t2 === "surah" ? t("sidebar.surahs", lang) : t2 === "juz" ? t("sidebar.juz", lang) : t("quran.page", lang)}
@@ -147,16 +143,16 @@ export default function Sidebar() {
 
           {/* Search (Surah only) */}
           {tab === "surah" && (
-            <div className="sidebar-search-wrap !relative !mt-2">
+            <div className="sb-search">
               <input
                 type="text"
                 placeholder={t("search.placeholder", lang)}
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="sidebar-search-input !min-h-11 !w-full !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3"
+                className="sb-search-input"
               />
               {filter && (
-                <button className="sidebar-search-clear !absolute !right-2 !top-1/2 !-translate-y-1/2 !inline-flex !h-7 !w-7 !items-center !justify-center !rounded-lg !border !border-white/10 !bg-white/[0.06] hover:!bg-white/[0.12]" onClick={() => setFilter("")}>
+                <button className="sb-search-clear" onClick={() => setFilter("")}>
                   <i className="fas fa-times" />
                 </button>
               )}
@@ -165,22 +161,22 @@ export default function Sidebar() {
         </div>
 
         {/* ── ZONE SCROLLABLE ── */}
-        <div className="sidebar-content !space-y-2 !px-2.5 !py-2.5">
+        <div className="sb-content">
 
           {/* ── Section sourates ── */}
           {tab === "surah" && filter && filteredSurahs.length === 0 && (
-            <div className="sidebar-empty-state !rounded-2xl !border !border-dashed !border-white/15 !bg-white/[0.03] !p-4 !text-center">
-              <i className="fas fa-magnifying-glass sidebar-empty-state__icon" />
-              <div className="sidebar-empty-state__title">
+            <div className="sb-empty">
+              <i className="fas fa-magnifying-glass" />
+              <p>
                 {lang === "fr" ? "Aucune sourate trouvée" : lang === "ar" ? "لم يتم العثور على سورة" : "No surah found"}
-              </div>
+              </p>
             </div>
           )}
 
           {tab === "surah" && (
-            <div className="sb-section-title !mb-1 !flex !items-center !justify-between !px-1">
+            <div className="sb-section-header">
               <span>{lang === "fr" ? "Toutes les sourates" : lang === "ar" ? "جميع السور" : "All Surahs"}</span>
-              <span className="sb-section-count">{filteredSurahs.length}</span>
+              <span>{filteredSurahs.length}</span>
             </div>
           )}
 
@@ -190,22 +186,22 @@ export default function Sidebar() {
               <div
                 key={s.n}
                 ref={isActive ? activeItemRef : null}
-                className={cn("sidebar-item-row !rounded-xl !border !border-white/12 !bg-white/[0.03] !p-2.5 !transition-all hover:!border-sky-200/35 hover:!bg-white/[0.08]", isActive && "active !border-sky-200/35 !bg-sky-500/16")}
+                className={cn("sb-item", isActive && "active")}
                 onClick={() => goSurah(s.n)}
               >
-                <div className="qc-sidebar-num">{s.n}</div>
-                <div className="qc-sidebar-body">
-                  <span className="qc-sidebar-en">{lang === "fr" ? s.fr : s.en}</span>
-                  <span className="qc-sidebar-meta">
-                    {s.ayahs} {lang === "ar" ? "آية" : "v."}&nbsp;·&nbsp;
-                    <span className={`sb-type-pill sb-type-pill--${s.type.toLowerCase()}`}>
+                <div className="sb-item-num">{s.n}</div>
+                <div className="sb-item-body">
+                  <span className="sb-item-name">{lang === "fr" ? s.fr : s.en}</span>
+                  <span className="sb-item-meta">
+                    <span className={cn("sb-pill", s.type === "Meccan" && "sb-pill--meccan")}>
                       {s.type === "Meccan"
-                        ? (lang === "ar" ? "مكية" : lang === "fr" ? "Mec." : "Mec.")
-                        : (lang === "ar" ? "مدنية" : lang === "fr" ? "Méd." : "Med.")}
+                        ? (lang === "ar" ? "مكية" : lang === "fr" ? "Mecquoise" : "Meccan")
+                        : (lang === "ar" ? "مدنية" : lang === "fr" ? "Médinoise" : "Medinan")}
                     </span>
+                    {s.ayahs} {lang === "ar" ? "آية" : "v."}
                   </span>
                 </div>
-                <div className="qc-sidebar-ar">{s.ar}</div>
+                <div className="sb-item-ar">{s.ar}</div>
               </div>
             );
           })}
@@ -217,48 +213,51 @@ export default function Sidebar() {
               <div
                 key={j.juz}
                 ref={isActive ? activeItemRef : null}
-                className={cn("sidebar-item-row !rounded-xl !border !border-white/12 !bg-white/[0.03] !p-2.5 !transition-all hover:!border-sky-200/35 hover:!bg-white/[0.08]", isActive && "active !border-sky-200/35 !bg-sky-500/16")}
+                className={cn("sb-item", isActive && "active")}
                 onClick={() => goJuz(j.juz)}
               >
-                <div className="qc-sidebar-num">{lang === "ar" ? toAr(j.juz) : j.juz}</div>
-                <div className="qc-sidebar-body">
-                  <span className="qc-sidebar-en">{lang === "ar" ? `الجزء ${toAr(j.juz)}` : `Juz ${j.juz}`}</span>
+                <div className="sb-item-num">{lang === "ar" ? toAr(j.juz) : j.juz}</div>
+                <div className="sb-item-body">
+                  <span className="sb-item-name">{lang === "ar" ? `الجزء ${toAr(j.juz)}` : `Juz ${j.juz}`}</span>
                   {startSurah && (
-                    <span className="qc-sidebar-meta">
+                    <span className="sb-item-meta">
                       {lang === "fr" ? startSurah.fr : lang === "ar" ? startSurah.ar : startSurah.en}
                     </span>
                   )}
                 </div>
-                <div className="qc-sidebar-ar">{j.name}</div>
+                <div className="sb-item-ar">{j.name}</div>
               </div>
             );
           })}
 
           {tab === "page" && (
-            <div className="page-nav-section">
-              <div className="sidebar-page-input-row !mb-2 !flex !items-center !gap-2">
+            <div className="sb-page-nav">
+              <div className="sb-page-controls">
                 <input
                   type="number"
                   min={1} max={604}
-                  className="sidebar-search-input !h-10 !flex-1 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-2 !text-center"
+                  className="sb-search-input"
                   placeholder={isRtl ? "الصفحة" : "Page"}
                   value={pageInput}
                   onChange={(e) => setPageInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && submitPageJump()}
                 />
                 <button
-                  className="sidebar-tab-trigger sidebar-page-go-btn active !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-sky-200/30 !bg-sky-500/20 hover:!bg-sky-500/30"
+                  className="sb-page-go-btn"
                   onClick={submitPageJump}
                 >
                   <i className="fas fa-arrow-right" />
                 </button>
               </div>
-              <div className="sidebar-page-juz-grid">
+              <div className="sb-section-header" style={{ marginBottom: "0.5rem", marginTop: "1rem", padding: "0" }}>
+                 <span>{lang === "fr" ? "Sélection rapide Juz" : lang === "ar" ? "اختيار الجزء السريع" : "Quick Juz Selection"}</span>
+              </div>
+              <div className="sb-page-grid" style={{ gridTemplateColumns: "repeat(5, 1fr)" }}>
                 {JUZ_PAGE_RANGES.map(range => (
                   <button
                     key={range.juz}
                     className={cn(
-                      "page-v4-cell page-v4-cell--juz",
+                      "sb-page-cell sb-page-cell--juz",
                       selectedJuzForPages === range.juz && "active",
                     )}
                     onClick={() => setSelectedJuzForPages(range.juz)}
@@ -267,7 +266,10 @@ export default function Sidebar() {
                   </button>
                 ))}
               </div>
-              <div className="page-grid-v4">
+              <div className="sb-section-header" style={{ marginBottom: "0.5rem", marginTop: "1.5rem", padding: "0" }}>
+                 <span>{lang === "fr" ? "Pages" : lang === "ar" ? "الصفحات" : "Pages"}</span>
+              </div>
+              <div className="sb-page-grid">
                 {(() => {
                   const range = JUZ_PAGE_RANGES.find(r => r.juz === selectedJuzForPages) || JUZ_PAGE_RANGES[0];
                   const pages = [];
@@ -275,7 +277,7 @@ export default function Sidebar() {
                   return pages.map(p => (
                     <button
                       key={p}
-                      className={cn("page-v4-cell", p === currentPage && "active")}
+                      className={cn("sb-page-cell", p === currentPage && "active")}
                       onClick={() => goPage(p)}
                     >
                       {isRtl ? toAr(p) : p}
@@ -288,13 +290,9 @@ export default function Sidebar() {
         </div>
 
         {/* ── FOOTER ── */}
-        <div className="sidebar-footer">
-          <div className="sidebar-footer__meta">
-            <span>{tab === "surah" ? `${filteredSurahs.length} Surahs` : tab === "juz" ? "30 Juz" : "604 Pages"}</span>
-            <span className="sidebar-footer__riwaya">{riwaya === "warsh" ? "Riwaya Warsh" : "Riwaya Hafs"}</span>
-          </div>
-
-
+        <div className="sb-footer">
+          <span>{tab === "surah" ? `${filteredSurahs.length} Surahs` : tab === "juz" ? "30 Juz" : "604 Pages"}</span>
+          <span className="sb-riwaya-badge">{riwaya === "warsh" ? "Riwaya Warsh" : "Riwaya Hafs"}</span>
         </div>
 
       </aside>

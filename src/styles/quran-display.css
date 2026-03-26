@@ -2133,83 +2133,6 @@
 }
 
 /* ═══════════════════════════════════════
-   Footer
-   ═══════════════════════════════════════ */
-.quran-footer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 2rem 1rem 1.25rem;
-    margin-top: 1.5rem;
-    border-top: 1px solid var(--border-light);
-    text-align: center;
-}
-
-.footer-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-ui);
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    letter-spacing: 0.5px;
-}
-
-.footer-brand i {
-    color: var(--primary);
-    opacity: 0.7;
-    font-size: 0.9rem;
-}
-
-.footer-links {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    font-family: var(--font-ui);
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.footer-links a,
-.footer-link-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    color: var(--text-muted);
-    border: none;
-    background: transparent;
-    font-family: var(--font-ui);
-    font-size: 0.75rem;
-    cursor: pointer;
-    padding: 0;
-    transition: color var(--t-fast);
-}
-
-.footer-links a:hover,
-.footer-link-btn:hover {
-    color: var(--primary);
-}
-
-.footer-dot {
-    color: var(--border-strong);
-    font-size: 0.65rem;
-}
-
-.footer-verse {
-    font-family: "Scheherazade New", "Amiri Quran", "Amiri", serif;
-    font-size: 1.08rem;
-    color: var(--text-secondary);
-    direction: rtl;
-    letter-spacing: 1px;
-    line-height: 1.7;
-    opacity: 0.65;
-}
-
-/* ═══════════════════════════════════════
    Low-performance device overrides
    ═══════════════════════════════════════ */
 [data-perf="low"] .quran-display {
@@ -2404,9 +2327,6 @@
         font-size: 0.72rem;
     }
 
-    .footer-verse {
-        font-size: 0.82rem;
-    }
 }
 
 /* ═══════════════════════════════════════
@@ -2806,7 +2726,7 @@
     .chunk-nav-bar,
     .warsh-notice,
     .tajweed-legend,
-    .quran-footer {
+    .mfp-overlay {
         display: none !important;
     }
 
@@ -5837,6 +5757,31 @@
     opacity: 0.56;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+}
+
+/* Cohesive footer layer: shared reading/footer rhythm */
+.app-root .mp-footer.mp-footer--cohesive {
+    max-width: 1020px;
+    margin-top: 2rem;
+}
+
+.app-root .mp-footer.mp-footer--cohesive .mp-footer__shell {
+    border-radius: 1.35rem;
+    border-color: var(--theme-panel-border, var(--border));
+}
+
+.app-root .mp-footer.mp-footer--cohesive .mp-footer__verse {
+    padding-block: 0.9rem;
+}
+
+.app-root .mp-footer.mp-footer--cohesive .mp-footer__tool-grid {
+    gap: 0.58rem;
+}
+
+@media (max-width: 640px) {
+    .app-root .mp-footer.mp-footer--cohesive {
+        margin-top: 1.3rem;
+    }
 }
 
 [data-theme="dark"] .quran-display--platform .quran-nav,

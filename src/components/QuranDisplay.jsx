@@ -57,7 +57,7 @@ import ReadingToolbar from "./Quran/ReadingToolbar";
 
 import "../styles/quran-display.css";
 import "../styles/mobile-quran-reader.css";
-import "../styles/zen-platform.css";
+import "../styles/reader-refonte.css";
 
 function getTranslationKeyForAyah(surahNumber, ayahNumber) {
   if (!surahNumber || !ayahNumber) return null;
@@ -1270,12 +1270,9 @@ export default function QuranDisplay() {
   const riwayaBadgeClassName = `page-header-bar__riwaya-badge${
     riwaya === "warsh" ? " is-warsh" : ""
   }`;
-  const modePaneShellClass =
-    "rounded-[24px] border border-white/10 bg-[linear-gradient(160deg,rgba(8,19,45,0.84),rgba(8,16,34,0.9))] p-3 shadow-[0_14px_34px_rgba(5,14,34,0.3)] backdrop-blur-md sm:p-4";
-  const mushafToggleBarClass =
-    "mushaf-layout-toggle-bar sticky top-2 z-[5] mb-3 border border-white/10 bg-[linear-gradient(155deg,rgba(16,50,119,0.35),rgba(8,27,68,0.55))] shadow-[0_10px_24px_rgba(5,14,34,0.26)]";
-  const listSurfaceClass =
-    "rounded-2xl border border-white/10 bg-white/[0.02] p-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] sm:p-3";
+  const modePaneShellClass = "rd-wrapper";
+  const mushafToggleBarClass = "hp-tabs"; // We can reuse hp-tabs or similar, but let's keep it simple
+  const listSurfaceClass = "";
 
   return (
     <>
@@ -1936,41 +1933,6 @@ export default function QuranDisplay() {
           </button>
         )}
 
-        {/* Footer */}
-        <footer className="quran-footer">
-          <div className="footer-brand">
-            <i className="fas fa-book-quran"></i>
-            <span>MushafPlus v1.1.0</span>
-          </div>
-          <div className="footer-links">
-            <a
-              href="https://alquran.cloud/api"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <i className="fas fa-cloud"></i> API
-            </a>
-            <span className="footer-dot">·</span>
-            <a
-              href="https://archive.org/download/MushafAlMadinahWarsh5488865/Mushaf%20AlMadinah_Warsh.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <i className="fas fa-file-pdf"></i> Warsh PDF
-            </a>
-            <span className="footer-dot">·</span>
-            <button
-              className="footer-link-btn"
-              onClick={() => dispatch({ type: "TOGGLE_SETTINGS" })}
-            >
-              <i className="fas fa-gear"></i> {t("nav.settings", lang)}
-            </button>
-          </div>
-          <p className="footer-verse">
-            ﴿ إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ ﴾
-          </p>
-        </footer>
-
         {/* Shared Site Footer */}
         <Footer
           goSurah={(n) => {
@@ -2066,5 +2028,4 @@ export default function QuranDisplay() {
     </>
   );
 }
-
 
