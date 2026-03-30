@@ -855,17 +855,6 @@
     }
 }
 
-@media (max-width: 640px) {
-    .mp-audio-player--mobile.mp-audio-player--dock {
-        border-top-left-radius: 1.45rem;
-        border-top-right-radius: 1.45rem;
-    }
-
-    .mp-player-controls-strip {
-        border-radius: 0.9rem;
-    }
-}
-
 @media (prefers-reduced-motion: reduce) {
     .audio-player-primary-btn.mp-player-play-btn[aria-pressed="true"] {
         animation: none;
@@ -1044,6 +1033,15 @@
     .mp-audio-player {
         border-top-left-radius: 1.35rem;
         border-top-right-radius: 1.35rem;
+    }
+
+    .mp-audio-player--mobile.mp-audio-player--dock {
+        border-top-left-radius: 1.45rem;
+        border-top-right-radius: 1.45rem;
+    }
+
+    .mp-player-controls-strip {
+        border-radius: 0.9rem;
     }
 
     .mp-audio-player [data-player-drag="true"]::after {

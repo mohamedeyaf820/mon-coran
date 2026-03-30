@@ -96,6 +96,11 @@ class AudioService {
     this.memPauseDuration = 2000; // ms between repeats
     this.memTimer = null;
 
+    // Surah/playlist repeat
+    // 1 => no repeat, N => replay full playlist N times, 0 => infinite.
+    this.surahRepeatCount = 1;
+    this.surahCurrentCycle = 1;
+
     // A-B Repeat
     this.abRepeatStart = -1;
     this.abRepeatEnd = -1;
@@ -239,6 +244,9 @@ class AudioService {
       }
       return;
     }
+
+    // New playlist loaded: restart cycle tracking.
+    this.surahCurrentCycle = 1;
 
     const previousCurrent = this.currentAyah;
     const wasPlaying = this.isPlaying;
@@ -459,6 +467,7 @@ class AudioService {
     this._playlistSignature = "";
     this._playlistSourceAyahs = [];
     this.memCurrentRepeat = 0;
+    this.surahCurrentCycle = 1;
     this.onEnd?.();
   }
 
@@ -549,6 +558,23 @@ class AudioService {
   disableMemorization() {
     this.memMode = false;
     this.memCurrentRepeat = 0;
+  }
+
+  setSurahRepeatCount(count = 1) {
+    const parsed = Number(count);
+    if (!Number.isFinite(parsed)) {
+      this.surahRepeatCount = 1;
+      return;
+    }
+
+    const intValue = Math.floor(parsed);
+    // 0 => infinite, otherwise clamp to a sane max.
+    if (intValue <= 0) {
+      this.surahRepeatCount = 0;
+      return;
+    }
+
+    this.surahRepeatCount = Math.max(1, Math.min(999, intValue));
   }
 
   /* ── Internal: Load with retry + timeout ───── */
@@ -847,6 +873,19 @@ class AudioService {
     if (this.playlistIndex < this.playlist.length - 1) {
       this._loadAndPlay(this.playlistIndex + 1);
     } else {
+      const repeatInfinitely = this.surahRepeatCount === 0;
+      const hasMoreCycles =
+        repeatInfinitely || this.surahCurrentCycle < this.surahRepeatCount;
+
+      if (this.playlist.length > 0 && hasMoreCycles) {
+        if (!repeatInfinitely) {
+          this.surahCurrentCycle += 1;
+        }
+        this._loadAndPlay(0);
+        return;
+      }
+
+      this.surahCurrentCycle = 1;
       this.isPlaying = false;
       this.onEnd?.();
       for (const fn of this._endListeners) fn();

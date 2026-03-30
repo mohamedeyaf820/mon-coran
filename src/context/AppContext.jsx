@@ -4,6 +4,7 @@ import React, {
   useReducer,
   useEffect,
   useCallback,
+  useMemo,
   useRef,
 } from "react";
 import { getSettings, saveSettings } from "../services/storageService";
@@ -102,6 +103,12 @@ const initialState = {
   memMode: false,
   memRepeatCount: 3,
   memPause: 2,
+  surahRepeatCount: (() => {
+    const value = Number(stored.surahRepeatCount);
+    if (!Number.isFinite(value)) return 1;
+    if (value <= 0) return 0;
+    return Math.max(1, Math.min(999, Math.floor(value)));
+  })(),
 
   // Karaoke / suivi auto
   karaokeFollow: true,
@@ -254,6 +261,9 @@ function appReducer(state, action) {
 /* ── Context ────────────────────────────────── */
 
 const AppContext = createContext(null);
+const AppStateContext = createContext(null);
+const AppActionsContext = createContext(null);
+const AppLocaleContext = createContext({ lang: "fr", riwaya: "hafs" });
 
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
@@ -300,6 +310,7 @@ export function AppProvider({ children }) {
         dayTheme: state.dayTheme,
         usePrayerTimes: state.usePrayerTimes,
         karaokeFollow: state.karaokeFollow,
+        surahRepeatCount: state.surahRepeatCount,
         wirdGoalType: state.wirdGoalType,
         wirdGoalAmount: state.wirdGoalAmount,
         lastPosition: {
@@ -352,6 +363,7 @@ export function AppProvider({ children }) {
     state.dayTheme,
     state.usePrayerTimes,
     state.karaokeFollow,
+    state.surahRepeatCount,
     state.wirdGoalType,
     state.wirdGoalAmount,
     state.volume,
@@ -485,17 +497,49 @@ export function AppProvider({ children }) {
     [dispatch],
   );
 
+  const actionsValue = useMemo(() => ({ dispatch, set }), [dispatch, set]);
+  const localeValue = useMemo(
+    () => ({ lang: state.lang, riwaya: state.riwaya }),
+    [state.lang, state.riwaya],
+  );
+  const appValue = useMemo(
+    () => ({ state, dispatch, set }),
+    [state, dispatch, set],
+  );
+
   return (
-    <AppContext.Provider value={{ state, dispatch, set }}>
-      {children}
-    </AppContext.Provider>
+    <AppActionsContext.Provider value={actionsValue}>
+      <AppLocaleContext.Provider value={localeValue}>
+        <AppStateContext.Provider value={state}>
+          <AppContext.Provider value={appValue}>{children}</AppContext.Provider>
+        </AppStateContext.Provider>
+      </AppLocaleContext.Provider>
+    </AppActionsContext.Provider>
   );
 }
 
-export function useApp() {
-  const ctx = useContext(AppContext);
-  if (!ctx) throw new Error("useApp must be used within AppProvider");
+export function useAppState() {
+  const ctx = useContext(AppStateContext);
+  if (!ctx) throw new Error("useAppState must be used within AppProvider");
   return ctx;
+}
+
+export function useAppActions() {
+  const ctx = useContext(AppActionsContext);
+  if (!ctx) throw new Error("useAppActions must be used within AppProvider");
+  return ctx;
+}
+
+export function useAppLocale() {
+  const ctx = useContext(AppLocaleContext);
+  if (!ctx) throw new Error("useAppLocale must be used within AppProvider");
+  return ctx;
+}
+
+export function useApp() {
+  const state = useAppState();
+  const { dispatch, set } = useAppActions();
+  return useMemo(() => ({ state, dispatch, set }), [state, dispatch, set]);
 }
 
 export default AppContext;

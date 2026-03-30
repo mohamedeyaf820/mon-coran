@@ -55,7 +55,7 @@ export default function KhatmaPanel() {
             <i className="fas fa-book-open-reader" />
             {L('Objectif Khatma', 'هدف الختمة', 'Khatma Goal')}
           </div>
-          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}><i className="fas fa-xmark" /></button>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={L('Fermer', 'اغلاق', 'Close')}><i className="fas fa-xmark" /></button>
         </div>
 
         {tab === 'setup' ? (

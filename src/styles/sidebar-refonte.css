@@ -53,6 +53,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.8rem;
 }
 
 .sb-identity {
@@ -78,6 +79,27 @@
   letter-spacing: 0.05em;
 }
 
+.sidebar-header__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.sidebar-riwaya-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.9rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--primary) 34%, var(--border) 66%);
+  background: color-mix(in srgb, rgba(var(--primary-rgb), 0.14) 70%, transparent 30%);
+  color: var(--primary);
+  font-family: var(--font-ui);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 .sb-close-btn {
   display: inline-flex;
   align-items: center;
@@ -97,8 +119,36 @@
   color: var(--text-primary);
 }
 
+.sb-current-loc {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.15rem;
+  padding: 0.5rem 0.72rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent 28%);
+  background: color-mix(in srgb, var(--bg-secondary) 88%, transparent 12%);
+}
+
+.sb-current-loc__icon {
+  font-size: 0.78rem;
+  color: var(--primary);
+}
+
+.sb-current-loc__val {
+  min-width: 0;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 0.79rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* --- TABS --- */
-.sb-tabs {
+.sb-tabs,
+.sb-tabs-list {
   display: flex;
   gap: 0.25rem;
   background: var(--bg-secondary);
@@ -107,7 +157,20 @@
   border: 1px solid var(--border);
 }
 
-.sb-tab {
+.sb-tabs-list {
+  display: grid;
+}
+
+.sb-tabs-list.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sb-tabs-list.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sb-tab,
+.sb-tab-trigger {
   flex: 1;
   text-align: center;
   padding: 0.5rem 0;
@@ -122,15 +185,19 @@
   border: none;
 }
 
-.sb-tab.active {
+.sb-tab.active,
+.sb-tab-trigger.active {
   background: var(--bg-primary);
   color: var(--primary);
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 [data-theme="dark"] .sb-tab.active,
+[data-theme="dark"] .sb-tab-trigger.active,
 [data-theme="quran-night"] .sb-tab.active,
-[data-theme="oled"] .sb-tab.active {
+[data-theme="quran-night"] .sb-tab-trigger.active,
+[data-theme="oled"] .sb-tab.active,
+[data-theme="oled"] .sb-tab-trigger.active {
   box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 

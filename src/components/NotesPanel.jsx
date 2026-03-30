@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback, useRef } from "react";
-import { useApp } from "../context/AppContext";
+import { useAppActions, useAppLocale } from "../context/AppContext";
 import { t } from "../i18n";
 import { getAllNotes, deleteNote, saveNote } from "../services/storageService";
 import { getSurah, toAr } from "../data/surahs";
@@ -42,8 +42,8 @@ function defaultPos(w, h) {
    Main component
 ───────────────────────────────────────────── */
 export default function NotesPanel() {
-  const { state, dispatch, set } = useApp();
-  const { lang } = state;
+  const { dispatch, set } = useAppActions();
+  const { lang } = useAppLocale();
 
   const [notes, setNotes] = useState([]);
   const [open, setOpen] = useState(false);

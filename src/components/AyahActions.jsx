@@ -36,7 +36,7 @@ function emitToast(type, message) {
 
 export default function AyahActions({ surah, ayah, ayahData, compact = false }) {
   const { state, dispatch, set } = useApp();
-  const { lang, reciter, riwaya, warshStrictMode } = state;
+  const { lang, reciter, riwaya, warshStrictMode, displayMode } = state;
 
   const [bookmarked, setBookmarked] = useState(false);
   const [memoLevel, setMemoLevel] = useState(0);
@@ -601,13 +601,15 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
         <div className="ayah-actions-inline">
           <div className="ayah-actions-inline__meta">
             <span className="ayah-actions-inline__ref">{surah}:{ayah}</span>
-            <span className="ayah-actions-inline__name">
-              {lang === "fr"
-                ? surahInfo?.fr || surahInfo?.en
-                : lang === "ar"
-                  ? surahInfo?.ar
-                  : surahInfo?.en}
-            </span>
+            {displayMode !== "page" && (
+              <span className="ayah-actions-inline__name">
+                {lang === "fr"
+                  ? surahInfo?.fr || surahInfo?.en
+                  : lang === "ar"
+                    ? surahInfo?.ar
+                    : surahInfo?.en}
+              </span>
+            )}
           </div>
 
           <div className="ayah-actions-inline__icons">
@@ -864,48 +866,56 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
           </p>
 
           <div className="ayah-actions__sheet-grid">
-            <button className="share-btn" onClick={shareWhatsApp}>
+            <button className="share-btn share-btn--whatsapp" onClick={shareWhatsApp}>
               <i className="fab fa-whatsapp" />
-              WhatsApp
+              <span className="share-btn__label">WhatsApp</span>
             </button>
-            <button className="share-btn" onClick={shareTelegram}>
+            <button className="share-btn share-btn--telegram" onClick={shareTelegram}>
               <i className="fab fa-telegram-plane" />
-              Telegram
+              <span className="share-btn__label">Telegram</span>
             </button>
-            <button className="share-btn" onClick={shareTwitter}>
+            <button className="share-btn share-btn--x" onClick={shareTwitter}>
               <i className="fab fa-x-twitter" />
-              X / Twitter
+              <span className="share-btn__label">X / Twitter</span>
             </button>
-            <button className="share-btn" onClick={shareEmail}>
+            <button className="share-btn share-btn--email" onClick={shareEmail}>
               <i className="fas fa-envelope" />
-              Email
+              <span className="share-btn__label">Email</span>
             </button>
-            <button className="share-btn" onClick={shareCopyText}>
+            <button className="share-btn share-btn--copy" onClick={shareCopyText}>
               <i className="fas fa-copy" />
-              {lang === "fr" ? "Texte de partage" : lang === "ar" ? "نسخ النص" : "Copy share text"}
+              <span className="share-btn__label">
+                {lang === "fr" ? "Texte de partage" : lang === "ar" ? "نسخ النص" : "Copy share text"}
+              </span>
             </button>
-            <button className="share-btn" onClick={shareAsImage}>
+            <button className="share-btn share-btn--image" onClick={shareAsImage}>
               <i className="fas fa-image" />
-              {lang === "fr" ? "Image sobre" : lang === "ar" ? "صورة" : "Simple image"}
+              <span className="share-btn__label">
+                {lang === "fr" ? "Image sobre" : lang === "ar" ? "صورة" : "Simple image"}
+              </span>
             </button>
             <button
-              className="share-btn"
+              className="share-btn share-btn--card"
               onClick={() => {
                 dispatch({ type: "SET", payload: { shareImageOpen: true } });
                 closePanels();
               }}
             >
               <i className="fas fa-wand-magic-sparkles" />
-              {lang === "fr"
-                ? "Carte calligraphique"
-                : lang === "ar"
-                  ? "بطاقة خطية"
-                  : "Calligraphic card"}
+              <span className="share-btn__label">
+                {lang === "fr"
+                  ? "Carte calligraphique"
+                  : lang === "ar"
+                    ? "بطاقة خطية"
+                    : "Calligraphic card"}
+              </span>
             </button>
             {navigator.share && (
-              <button className="share-btn" onClick={shareNative}>
+              <button className="share-btn share-btn--native" onClick={shareNative}>
                 <i className="fas fa-share-nodes" />
-                {lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Native share"}
+                <span className="share-btn__label">
+                  {lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Native share"}
+                </span>
               </button>
             )}
           </div>

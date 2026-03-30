@@ -4,49 +4,12 @@ import { toAr, getSurah } from "../../data/surahs";
 import { getJuzForAyah } from "../../data/juz";
 import { t } from "../../i18n";
 
-/* ── Circular ayah-end marker (style Mushaf authentique) ── */
+/* ── Ayah-end marker (sans cercle dessine, taille liee au texte arabe) ── */
 function AyahMarker({ num, lang }) {
   const display = lang === "ar" ? toAr(num) : num;
-  // 8 diamond petals every 45°
-  const petals = [0, 45, 90, 135, 180, 225, 270, 315];
   return (
     <span className="mp-ayah-marker" aria-label={`Fin verset ${num}`}>
-      <svg
-        className="mp-ayah-marker-svg"
-        viewBox="0 0 44 44"
-        width="1.5em"
-        height="1.5em"
-        aria-hidden="true"
-      >
-        {/* Subtle center fill */}
-        <circle cx="22" cy="22" r="11" className="mp-center-fill" />
-        {/* 8 diamond petals */}
-        {petals.map(angle => (
-          <path
-            key={angle}
-            d="M22,3.5 L24,11 L22,18 L20,11 Z"
-            transform={`rotate(${angle}, 22, 22)`}
-            className="mp-petal"
-          />
-        ))}
-        {/* Inner ring */}
-        <circle cx="22" cy="22" r="12" fill="none" strokeWidth="0.9" className="mp-ring-inner" />
-        {/* Outer ring */}
-        <circle cx="22" cy="22" r="20" fill="none" strokeWidth="1.4" className="mp-ring-outer" />
-        {/* 8 tiny accent dots at inter-petal positions */}
-        {[22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5].map(a => {
-          const rad = (a * Math.PI) / 180;
-          return (
-            <circle
-              key={a}
-              cx={22 + 20 * Math.cos(rad)}
-              cy={22 + 20 * Math.sin(rad)}
-              r="1"
-              className="mp-dot"
-            />
-          );
-        })}
-      </svg>
+      <span className="mp-ayah-marker-glyph" aria-hidden="true">۝</span>
       <span className="mp-ayah-num">{display}</span>
     </span>
   );

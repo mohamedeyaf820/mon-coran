@@ -2,6 +2,15 @@ import React, { useMemo, useRef, useEffect } from "react";
 import { useKaraoke } from "../../hooks/useKaraoke";
 import TajweedText from "./TajweedText";
 
+const AYAH_MARKER_TOKEN_RE = /^[۝۞۩﴿﴾\d٠-٩۰-۹]+$/u;
+
+function isAyahMarkerToken(word) {
+  if (!word) return false;
+  const compact = String(word).replace(/\s+/g, "");
+  if (!compact) return false;
+  return AYAH_MARKER_TOKEN_RE.test(compact);
+}
+
 /**
  * HafsKaraokeText – word-by-word karaoke for Hafs text.
  *
@@ -94,11 +103,13 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
       {words.map((word, i) => {
         const isRead = i < currentIdx;
         const isCurrent = i === currentIdx;
+        const isMarkerToken = isAyahMarkerToken(word);
 
         let cls = "wbw-word";
         if (isRead) cls += " wbw-read";
         else if (isCurrent) cls += " wbw-current";
         else cls += " wbw-upcoming";
+        if (isMarkerToken) cls += " wbw-marker-token";
 
         return (
           <React.Fragment key={i}>

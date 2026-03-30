@@ -41,6 +41,7 @@ import {
 import { formatCooldownLabel } from "../utils/formatUtils";
 import PlatformLogo from "./PlatformLogo";
 import { cn, toast } from "../lib/utils";
+import { openExternalUrl } from "../lib/security";
 import "../styles/settings-refonte.css";
 
 const TABS = [
@@ -2503,19 +2504,17 @@ export default function SettingsModal() {
                         : "Holy Quran reader with Hafs & Warsh support, colored tajweed, synchronized audio, and more."}
                   </p>
                   <div className="sm-about-links">
-                    <a
-                      href="https://alquran.cloud/api"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
+                      onClick={() => openExternalUrl("https://alquran.cloud/api")}
                       className="sm-about-link"
                     >
                       <i className="fas fa-cloud" aria-hidden="true"></i> Al
                       Quran Cloud API
-                    </a>
-                    <a
-                      href="https://fonts.qurancomplex.gov.sa/"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openExternalUrl("https://fonts.qurancomplex.gov.sa/")}
                       className="sm-about-link"
                     >
                       <i className="fas fa-font" aria-hidden="true"></i>
@@ -2524,7 +2523,7 @@ export default function SettingsModal() {
                         : lang === "ar"
                           ? "خطوط QCF4 (مجمع الملك فهد)"
                           : "QCF4 Fonts (King Fahd Complex)"}
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>

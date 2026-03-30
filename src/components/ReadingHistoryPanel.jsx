@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useApp } from '../context/AppContext';
+import { useAppActions, useAppLocale } from '../context/AppContext';
 import { t } from '../i18n';
 import { getReadingDates, getAllSessions, clearHistory } from '../services/historyService';
 import { getSurah } from '../data/surahs';
 
 export default function ReadingHistoryPanel() {
-  const { state, dispatch, set } = useApp();
-  const { lang } = state;
+  const { dispatch, set } = useAppActions();
+  const { lang } = useAppLocale();
 
   const [dates, setDates] = useState([]);
   const [sessions, setSessions] = useState([]);

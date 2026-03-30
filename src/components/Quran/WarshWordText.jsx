@@ -47,7 +47,7 @@ function mapTajweedToQCF4(tajweedColors, qcf4Count) {
  *  tajweedColors – Optional rule-ID array per word
  *  fallbackText  – Plain Arabic string shown when fonts can't load
  */
-const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, tajweedColors, fallbackText }) {
+const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, tajweedColors, fallbackText, markerFlags }) {
     // Re-render whenever a font finishes (or fails) loading
     const [fontTick, setFontTick] = useState(0);
     useEffect(() => {
@@ -68,14 +68,16 @@ const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, t
         return mapTajweedToQCF4(tajweedColors, words.length);
     }, [tajweedColors, words.length]);
 
-    // Count loaded fonts on every render (fontTick drives the re-renders)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const loadedCount = useMemo(
-        () => words.filter(w => isFontPageLoaded(w.p)).length,
-        // fontTick included via state re-render — no direct dep needed
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+    const fontReadyFlags = useMemo(
+        () => words.map((w) => isFontPageLoaded(w.p)),
         [words, fontTick],
     );
+
+    const loadedCount = useMemo(
+        () => fontReadyFlags.reduce((sum, isReady) => sum + (isReady ? 1 : 0), 0),
+        [fontReadyFlags],
+    );
+
     const allFontsReady = loadedCount === words.length;
 
     // Show plain-Arabic fallback when fonts never loaded after grace period
@@ -99,7 +101,9 @@ const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, t
     return (
         <span className="warsh-qcf4-text" dir="rtl">
             {words.map((word, i) => {
-                const fontReady = isFontPageLoaded(word.p);
+                const fontReady = fontReadyFlags[i];
+                const glyph = fontReady ? String.fromCodePoint(word.c) : '';
+                const isMarkerToken = Boolean(markerFlags?.[i]);
                 let cls = 'warsh-qcf4-word';
                 if (!fontReady) cls += ' qcf4-loading';
                 if (highlightIdx !== undefined && highlightIdx !== null) {
@@ -107,12 +111,13 @@ const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, t
                     else if (i === highlightIdx) cls += ' wbw-qcf4-current';
                     else cls += ' wbw-qcf4-upcoming';
                 }
+                if (isMarkerToken) cls += ' wbw-qcf4-marker';
                 const ruleId = qcf4Colors?.[i];
                 const wordStyle = { fontFamily: `'${getFontFamily(word.p)}', serif` };
                 if (ruleId) wordStyle.color = `var(--tajwid-${ruleId}, ${TAJWID_FALLBACK_COLORS[ruleId] || 'inherit'})`;
                 return (
                     <span key={i} className={cls} style={wordStyle}>
-                        {fontReady ? String.fromCodePoint(word.c) : '\u00A0\u00A0'}
+                        {fontReady ? glyph : '\u00A0\u00A0'}
                     </span>
                 );
             })}

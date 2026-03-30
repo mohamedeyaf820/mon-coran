@@ -16,14 +16,16 @@
     width: 100%;
     scroll-behavior: auto;
     -webkit-overflow-scrolling: touch;
-    --font-surah-display:
-        "KFGQPC Uthmanic Script HAFS",
-        "KFGQPC Uthman Taha Naskh",
-        "Amiri Quran",
-        "Scheherazade New",
-        "Amiri",
-        "Noto Naskh Arabic",
-        serif;
+    --font-surah-display: var(
+        --font-surah-name,
+        var(
+            --font-surah,
+            "KFGQPC Uthmanic Script HAFS",
+            "Amiri Quran",
+            "Scheherazade New",
+            serif
+        )
+    );
 }
 
 .quran-display :is(
@@ -36,10 +38,10 @@
         --font-surah-display,
         "KFGQPC Uthmanic Script HAFS",
         "Amiri Quran",
+        "Scheherazade New",
         serif
     ) !important;
     font-feature-settings: "liga" 1, "calt" 1, "rlig" 1, "kern" 1;
-    font-variant-ligatures: contextual;
     text-rendering: optimizeLegibility;
 }
 
@@ -53,13 +55,13 @@
 
     to {
         opacity: 1;
-        transform: translateY(0);
         filter: blur(0);
+        transform: translateY(0);
     }
 }
 
 .quran-mode-pane {
-    animation: quran-mode-in 200ms var(--ease-out);
+    animation: quran-mode-in 220ms ease-out both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -68,72 +70,35 @@
     }
 }
 
-/* Display-mode-bar has been relocated to the Header.
-   These rules are kept as no-ops for backwards compat. */
-.display-mode-bar {
-    display: none;
-}
-
-.mode-btn {
-    display: none;
-}
-
-.mode-bar-divider {
-    display: none;
-}
-
-/* ═══════════════════════════════════════
-   Edition / Source Badge
-   ═══════════════════════════════════════ */
-.edition-badge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    margin: 0 auto 0.75rem;
-    padding: 0.22rem 0.8rem;
-    border-radius: var(--r-pill);
-    background: var(--primary-light);
-    color: var(--primary);
-    border: 1px solid rgba(var(--primary-rgb), 0.2);
-    font-family: var(--font-ui);
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    width: fit-content;
-}
-
 .edition-badge i {
     font-size: 0.72rem;
-    opacity: 0.8;
 }
 
 .translation-active-strip {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.55rem;
+    gap: 0.45rem;
     margin: 0.1rem 0 0.8rem;
 }
 
 .translation-active-chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    min-height: 2rem;
-    padding: 0.38rem 0.78rem;
-    border-radius: 999px;
-    background: rgba(var(--primary-rgb), 0.08);
-    border: 1px solid rgba(var(--primary-rgb), 0.14);
-    color: var(--text-secondary);
+    gap: 0.35rem;
+    padding: 0.28rem 0.6rem;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg-secondary) 80%, transparent);
     font-family: var(--font-ui);
     font-size: 0.72rem;
     letter-spacing: 0.02em;
+    line-height: 1;
 }
 
 .translation-active-chip i {
     color: var(--primary);
     font-size: 0.68rem;
+    text-shadow: 0 0 2px rgba(184, 134, 11, 0.18);
 }
 
 .translation-active-chip__label {
@@ -1782,6 +1747,34 @@
     opacity: 0.7;
 }
 
+/* Verse-end markers must stay stable and readable during karaoke.
+   Prevent glow/underline effects that create oversized target-like halos. */
+.wbw-marker-token,
+.wbw-qcf4-marker {
+    animation: none !important;
+    text-shadow: none !important;
+    filter: none !important;
+}
+
+.wbw-marker-token::after,
+.wbw-qcf4-marker::after {
+    display: none !important;
+}
+
+.wbw-marker-token.wbw-current,
+.wbw-marker-token.wbw-read,
+.wbw-marker-token.wbw-upcoming,
+.hafs-karaoke .wbw-marker-token.wbw-current,
+.hafs-karaoke .wbw-marker-token.wbw-read,
+.hafs-karaoke .wbw-marker-token.wbw-upcoming,
+.wbw-qcf4-marker.wbw-qcf4-current,
+.wbw-qcf4-marker.wbw-qcf4-read,
+.wbw-qcf4-marker.wbw-qcf4-upcoming {
+    color: var(--text-quran) !important;
+    opacity: 0.9 !important;
+    font-weight: inherit !important;
+}
+
 /* Words not yet spoken — slightly dimmed, full color */
 .wbw-upcoming {
     color: var(--text-quran);
@@ -1812,6 +1805,16 @@
 [data-theme="night-blue"] .wbw-qcf4-current {
     color: var(--gold-bright, #e0b424) !important;
     text-shadow: 0 0 14px rgba(200, 152, 14, 0.65) !important;
+}
+
+[data-theme="dark"] .wbw-qcf4-marker.wbw-qcf4-current,
+[data-theme="dark"] .wbw-qcf4-marker.wbw-qcf4-read,
+[data-theme="dark"] .wbw-qcf4-marker.wbw-qcf4-upcoming,
+[data-theme="night-blue"] .wbw-qcf4-marker.wbw-qcf4-current,
+[data-theme="night-blue"] .wbw-qcf4-marker.wbw-qcf4-read,
+[data-theme="night-blue"] .wbw-qcf4-marker.wbw-qcf4-upcoming {
+    color: var(--text-quran) !important;
+    text-shadow: none !important;
 }
 
 [data-theme="dark"] .wbw-qcf4-read,
@@ -3298,16 +3301,23 @@
     justify-content: center;
     position: relative;
     vertical-align: middle;
-    margin: 0 0.18em;
+    margin: 0 0.2em;
+    width: 1em;
+    height: 1em;
+    font-size: 1em;
+    line-height: 1;
     user-select: none;
     cursor: default;
     white-space: nowrap;
-    filter: drop-shadow(0 0 2px rgba(184, 134, 11, 0.25));
+    filter: drop-shadow(0 0 1.2px rgba(184, 134, 11, 0.2));
 }
 
-.mp-ayah-marker-svg {
+.mp-ayah-marker-glyph {
     display: inline-block;
-    vertical-align: middle;
+    font-size: 1em;
+    line-height: 1;
+    color: var(--mp-gold);
+    opacity: 0.72;
 }
 
 /* Page mode: clean inline verse markers like quran.com */
@@ -3316,55 +3326,18 @@
     align-items: center;
     justify-content: center;
     position: relative;
-    margin: 0 0.25em;
+    margin: 0 0.22em;
     vertical-align: baseline;
-    font-size: 0.55em;
-    transform: translateY(-0.05em);
-}
-
-.quran-mode-pane--page .mp-ayah-marker-svg {
-    width: 2.4em;
-    height: 2.4em;
-    display: block;
-    opacity: 0.85;
+    font-size: 0.58em;
+    transform: translateY(-0.04em);
 }
 
 .quran-mode-pane--page .mp-ayah-num {
-    font-size: 0.85em;
-    font-weight: 600;
+    font-size: 0.36em;
+    font-weight: 700;
 }
 
-/* Couleurs SVG des anneaux */
-.mp-ring-outer {
-    stroke: var(--mp-gold);
-    stroke-opacity: 0.9;
-}
-
-.mp-ring-inner {
-    stroke: var(--mp-gold);
-    opacity: 0.45;
-}
-
-.mp-center-fill {
-    fill: var(--mp-gold);
-    opacity: 0.07;
-}
-
-.mp-petal {
-    fill: var(--mp-gold);
-    opacity: 0.7;
-}
-
-.mp-petal--diag {
-    opacity: 0.5;
-}
-
-.mp-dot {
-    fill: var(--mp-gold);
-    opacity: 0.55;
-}
-
-/* Numéro centré sur le SVG */
+/* Numéro centré sur le glyphe */
 .mp-ayah-num {
     position: absolute;
     inset: 0;
@@ -3372,13 +3345,19 @@
     align-items: center;
     justify-content: center;
     font-family: var(--font-surah, "Amiri", serif);
-    font-size: 0.4em;
+    font-size: 0.38em;
     font-weight: 700;
     color: var(--mp-gold);
     line-height: 1;
     letter-spacing: 0;
     pointer-events: none;
     text-shadow: 0 0 4px rgba(184, 134, 11, 0.25);
+}
+
+/* ── Thème sombre: ajustements marqueur ── */
+[data-theme="dark"] .mp-ayah-marker-glyph,
+[data-theme="night-blue"] .mp-ayah-marker-glyph {
+    opacity: 0.8;
 }
 
 /* ── Traductions (hors cadre) ── */
@@ -3437,18 +3416,6 @@
 
 .mp-trans-text {
     flex: 1;
-}
-
-/* ── Thème sombre: ajustements SVG ── */
-[data-theme="dark"] .mp-ring-outer,
-[data-theme="night-blue"] .mp-ring-outer {
-    stroke: var(--mp-gold);
-    opacity: 0.9;
-}
-
-[data-theme="dark"] .mp-petal,
-[data-theme="night-blue"] .mp-petal {
-    opacity: 0.8;
 }
 
 /* ── Responsive ── */
@@ -5005,6 +4972,41 @@
         background 0.15s ease,
         color 0.15s ease;
     border-radius: 0.35rem;
+}
+
+/* Page mode cleanup: keep a single surah title at top and simplify verse marker visuals. */
+.page-mode-top-surah {
+    margin: 0.4rem auto 0.78rem;
+}
+
+.quran-mode-pane--page .surah-ayahs-list .qc-surah-header {
+    display: none !important;
+}
+
+.quran-mode-pane--page .surah-ayahs-list .play-surah-bar {
+    display: none !important;
+}
+
+.quran-mode-pane--page .ayah-actions-inline__name {
+    display: none !important;
+}
+
+.cpv-medallion {
+    min-width: 1.22em;
+    height: 1.22em;
+    padding: 0 0.24em;
+    border-radius: 0.36em;
+    border: 1px solid color-mix(in srgb, var(--cpv-gold) 52%, transparent 48%);
+    background: color-mix(in srgb, var(--cpv-bg) 82%, rgba(255, 255, 255, 0.12) 18%);
+    font-family: var(--font-surah-name, var(--font-surah, "Amiri Quran", serif));
+    font-size: 0.52em;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.cpv-medallion-svg,
+.cpv-medallion-num {
+    display: none !important;
 }
 .cpv-trans-entry:last-child {
     border-bottom: none;

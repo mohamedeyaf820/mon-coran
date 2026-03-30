@@ -167,7 +167,7 @@ export default function ReciterComparatorPanel() {
                 : 'Listen to the same verse by multiple reciters side by side.'}
             </div>
           </div>
-          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={lang === 'fr' ? 'Fermer' : 'Close'}>
             <i className="fas fa-times"></i>
           </button>
         </div>
@@ -190,11 +190,11 @@ export default function ReciterComparatorPanel() {
             {lang === 'fr' ? 'Verset' : 'Verse'}
           </label>
           <div className="rc-ayah-stepper !inline-flex !items-center !gap-2">
-            <button className="rc-step-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]" onClick={() => setAyah(a => Math.max(1, a - 1))} disabled={ayah <= 1}>
+            <button className="rc-step-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]" type="button" onClick={() => setAyah(a => Math.max(1, a - 1))} disabled={ayah <= 1} aria-label={lang === 'fr' ? 'Verset precedent' : 'Previous verse'}>
               <i className="fas fa-minus"></i>
             </button>
             <span className="rc-ayah-num !min-w-10 !text-center !font-semibold">{ayah}</span>
-            <button className="rc-step-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]" onClick={() => setAyah(a => Math.min(maxAyah, a + 1))} disabled={ayah >= maxAyah}>
+            <button className="rc-step-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]" type="button" onClick={() => setAyah(a => Math.min(maxAyah, a + 1))} disabled={ayah >= maxAyah} aria-label={lang === 'fr' ? 'Verset suivant' : 'Next verse'}>
               <i className="fas fa-plus"></i>
             </button>
           </div>

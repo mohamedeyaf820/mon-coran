@@ -43,6 +43,7 @@ import { getKaraokeCalibration } from "../utils/karaokeUtils";
 import { markRead } from "../services/readingProgressService";
 import { addRecentVisit } from "../services/recentHistoryService";
 import { FONT_MAP, resolveFontFamily } from "../data/fonts";
+import { openExternalUrl } from "../lib/security";
 
 import Footer from "./Footer";
 
@@ -185,9 +186,7 @@ export default function QuranDisplay() {
     }
   }, [currentSurah, currentAyah, state.showHome, displayMode]);
 
-  // Stable toggle callback â€” prevents re-creating closures per ayah
-  const toggleActiveRef = useRef(null);
-  toggleActiveRef.current = activeAyah;
+  // Stable toggle callback avoids re-creating closures for each ayah row.
   const toggleAyah = useCallback((id) => {
     setActiveAyah((prev) => (prev === id ? null : id));
   }, []);
@@ -1091,6 +1090,11 @@ export default function QuranDisplay() {
     return groups;
   }, [ayahs, displayMode, currentSurah]);
 
+  const pageTopSurah = useMemo(() => {
+    if (displayMode !== "page") return null;
+    return surahGroups[0]?.surah || currentSurah;
+  }, [displayMode, surahGroups, currentSurah]);
+
   /* â”€â”€ Translation Map for O(1) lookup (juz mode) â”€â”€ */
   const translationMap = useMemo(() => {
     if (!Array.isArray(translations) || translations.length === 0) return null;
@@ -1107,13 +1111,15 @@ export default function QuranDisplay() {
         const ayahNumber = tr.numberInSurah;
         const localKey = getTranslationKeyForAyah(surahNumber, ayahNumber);
         if (localKey) {
-          const existing = map.get(localKey) || [];
-          map.set(localKey, [...existing, tr]);
+          const existing = map.get(localKey);
+          if (existing) existing.push(tr);
+          else map.set(localKey, [tr]);
         }
         if (typeof tr.number === "number") {
           const globalKey = `global:${tr.number}`;
-          const existingGlobal = map.get(globalKey) || [];
-          map.set(globalKey, [...existingGlobal, tr]);
+          const existingGlobal = map.get(globalKey);
+          if (existingGlobal) existingGlobal.push(tr);
+          else map.set(globalKey, [tr]);
         }
       });
     });
@@ -1140,11 +1146,6 @@ export default function QuranDisplay() {
   const visibleTranslations = useMemo(
     () => visibleAyahs.map((ayah) => getTranslationForAyah(ayah)),
     [visibleAyahs, getTranslationForAyah],
-  );
-
-  const visibleMushafTranslations = useMemo(
-    () => visibleMushafAyahs.map((ayah) => getTranslationForAyah(ayah)),
-    [visibleMushafAyahs, getTranslationForAyah],
   );
 
   const fullscreenAyahs = useMemo(() => {
@@ -1330,15 +1331,18 @@ export default function QuranDisplay() {
                 {t("settings.warshFallbackText", lang)}
               </p>
             </div>
-            <a
-              href="https://archive.org/download/MushafAlMadinahWarsh5488865/Mushaf%20AlMadinah_Warsh.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() =>
+                openExternalUrl(
+                  "https://archive.org/download/MushafAlMadinahWarsh5488865/Mushaf%20AlMadinah_Warsh.pdf",
+                )
+              }
               className="warsh-mushaf-link"
             >
               <i className="fas fa-external-link-alt"></i>
               {t("settings.warshMushafLink", lang)}
-            </a>
+            </button>
           </div>
         )}
 
@@ -1448,8 +1452,8 @@ export default function QuranDisplay() {
                           lang={lang}
                           fontSize={readingFontSize}
                           memMode={memMode}
-                          mushafLayout={mushafLayout}
-                          onToggleActive={() => toggleAyah(ayah.numberInSurah)}
+                          toggleId={ayah.numberInSurah}
+                          onToggleActive={toggleAyah}
                         />
                       </React.Fragment>
                     );
@@ -1512,6 +1516,12 @@ export default function QuranDisplay() {
                 {riwaya === "warsh" ? "WARSH" : "HAFS"}
               </span>
             </div>
+
+            {!isQCF4 && pageTopSurah && (
+              <div className="page-mode-top-surah">
+                <SurahHeader surahNum={pageTopSurah} lang={lang} />
+              </div>
+            )}
 
             {/* Layout mode toggle */}
             <div className={mushafToggleBarClass}>
@@ -1602,6 +1612,7 @@ export default function QuranDisplay() {
                   riwaya={riwaya}
                   showTranslation={showTranslation}
                   getTranslation={getTranslationForAyah}
+                  showSurahHeader={false}
                 />
               ))}
 
@@ -1610,35 +1621,7 @@ export default function QuranDisplay() {
               <div className={listSurfaceClass}>
                 {surahGroups.map((group, gi) => (
                   <div key={gi}>
-                    {!isQCF4 && group.ayahs[0]?.numberInSurah === 1 && (
-                      <SurahHeader surahNum={group.surah} lang={lang} />
-                    )}
-                    {!isQCF4 &&
-                      group.ayahs[0]?.numberInSurah === 1 &&
-                      group.surah !== 1 &&
-                      group.surah !== 9 && <Bismillah />}
 
-                    {!isQCF4 && group.ayahs[0]?.numberInSurah === 1 && (
-                      <div className="play-surah-bar mt-3 mb-2 flex justify-center">
-                        <button
-                          className="btn-play-surah"
-                          type="button"
-                          onClick={() => playSpecificSurah(group.surah)}
-                          disabled={preparingSurah === group.surah}
-                          title={t("audio.playSurah", lang)}
-                        >
-                          <i className="fas fa-play"></i>
-                          <span>
-                            {preparingSurah === group.surah
-                              ? lang === "fr"
-                                ? "Preparation..."
-                                : "Preparing..."
-                              : t("audio.playSurah", lang)}
-                          </span>
-                        </button>
-                      </div>
-                    )}
-                    
                     <div className="surah-ayahs-list">
                       {group.ayahs.map((ayah) => {
                         const isPlaying =
@@ -1664,8 +1647,8 @@ export default function QuranDisplay() {
                             lang={lang}
                             fontSize={readingFontSize}
                             memMode={memMode}
-                            mushafLayout={mushafLayout}
-                            onToggleActive={() => toggleAyah(ayah.number)}
+                            toggleId={ayah.number}
+                            onToggleActive={toggleAyah}
                           />
                         );
                       })}
@@ -1880,8 +1863,8 @@ export default function QuranDisplay() {
                             lang={lang}
                             fontSize={readingFontSize}
                             memMode={memMode}
-                            mushafLayout={mushafLayout}
-                            onToggleActive={() => toggleAyah(ayah.number)}
+                            toggleId={ayah.number}
+                            onToggleActive={toggleAyah}
                           />
                         );
                       })}

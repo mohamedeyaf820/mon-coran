@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { toAr } from "../../data/surahs";
 import { t } from "../../i18n";
 import { arabicToLatin } from "../../data/transliteration";
@@ -10,7 +10,6 @@ import {
   getMemorizationLevel,
   setMemorizationLevel,
 } from "../../services/memorizationService";
-import audioService from "../../services/audioService";
 
 /**
  * AyahBlock component – renders a single Arabic verse with a polished design.
@@ -31,19 +30,19 @@ const AyahBlock = React.memo(function AyahBlock({
   riwaya,
   lang,
   onToggleActive,
+  toggleId,
   ayahId,
   progress,
   fontSize,
   memMode,
-  mushafLayout,
 }) {
   const transliterationSource =
     riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text;
-  // Warsh mode: transliteration not reliable — hide it, show translation only
-  const ayahTransliteration =
-    showTransliteration && !showWordByWord && riwaya !== "warsh"
-      ? arabicToLatin(transliterationSource, riwaya)
-      : "";
+  // Memoized transliteration avoids expensive recomputation while scrolling long surahs.
+  const ayahTransliteration = useMemo(() => {
+    if (!showTransliteration || showWordByWord || riwaya === "warsh") return "";
+    return arabicToLatin(transliterationSource, riwaya);
+  }, [riwaya, showTransliteration, showWordByWord, transliterationSource]);
 
   // Memorization star rating
   const [memoLevel, setMemoLevel] = useState(0);
@@ -81,36 +80,71 @@ const AyahBlock = React.memo(function AyahBlock({
     [memoLevel, surahNum, ayah.numberInSurah],
   );
 
-  const arabicContent = memMode ? (
-    <MemorizationText text={ayah.hafsText || ayah.text} lang={lang} />
-  ) : showWordByWord && !(ayah.warshWords?.length > 0) ? (
-    <WordByWordDisplay
-      surah={surahNum}
-      ayah={ayah.numberInSurah}
-      text={ayah.text}
-      isPlaying={isPlaying}
-      showTajwid={showTajwid}
-      showTransliteration={showTransliteration}
-      showWordTranslation={showWordTranslation}
-      fontSize={fontSize}
-      calibration={calibration}
-    />
-  ) : (
-    <SmartAyahRenderer
-      ayah={ayah}
-      showTajwid={showTajwid}
-      isPlaying={isPlaying}
-      surahNum={surahNum}
-      calibration={calibration}
-      riwaya={riwaya}
-    />
-  );
+  const arabicContent = useMemo(() => {
+    if (memMode) {
+      return <MemorizationText text={ayah.hafsText || ayah.text} lang={lang} />;
+    }
+    if (showWordByWord && !(ayah.warshWords?.length > 0)) {
+      return (
+        <WordByWordDisplay
+          surah={surahNum}
+          ayah={ayah.numberInSurah}
+          text={ayah.text}
+          isPlaying={isPlaying}
+          showTajwid={showTajwid}
+          showTransliteration={showTransliteration}
+          showWordTranslation={showWordTranslation}
+          fontSize={fontSize}
+          calibration={calibration}
+        />
+      );
+    }
+    return (
+      <SmartAyahRenderer
+        ayah={ayah}
+        showTajwid={showTajwid}
+        isPlaying={isPlaying}
+        surahNum={surahNum}
+        calibration={calibration}
+        riwaya={riwaya}
+      />
+    );
+  }, [
+    ayah,
+    calibration,
+    fontSize,
+    isPlaying,
+    lang,
+    memMode,
+    riwaya,
+    showTajwid,
+    showTransliteration,
+    showWordByWord,
+    showWordTranslation,
+    surahNum,
+  ]);
 
   const shouldShowVerseTranslation =
     showTranslation &&
     Array.isArray(trans) &&
     trans.length > 0 &&
     !(riwaya === "warsh" && showWordByWord);
+
+  const handleToggleActive = useCallback(() => {
+    if (typeof onToggleActive === "function") {
+      onToggleActive(toggleId ?? ayah.numberInSurah);
+    }
+  }, [onToggleActive, toggleId, ayah.numberInSurah]);
+
+  const handleToggleActiveFromKeyboard = useCallback(
+    (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        handleToggleActive();
+      }
+    },
+    [handleToggleActive],
+  );
 
   return (
     <div
@@ -122,37 +156,22 @@ const AyahBlock = React.memo(function AyahBlock({
       aria-label={`${t("quran.ayah", lang)} ${ayah.numberInSurah}`}
       aria-current={isPlaying ? "true" : undefined}
       className={`rd-ayah${isPlaying ? " playing" : ""}${isActive ? " active" : ""}`}
-      onClick={onToggleActive}
+      onClick={handleToggleActive}
+      onKeyDown={handleToggleActiveFromKeyboard}
       tabIndex={0}
     >
       {/* ── Main content (Arabic + Num) ── */}
-      <div
-        className="rd-arabic"
-        onClick={(event) => {
-          event.stopPropagation();
-          if (!audioService.playlist?.length) {
-            window.dispatchEvent(new CustomEvent("mushaf:play-surah"));
-            window.setTimeout(() => {
-              audioService.playAyah(surahNum, ayah.numberInSurah);
-            }, 120);
-            return;
-          }
-          audioService.playAyah(surahNum, ayah.numberInSurah);
-        }}
-      >
+      <div className="rd-arabic qc-ayah-text-ar">
         {arabicContent}
-        <span className="rd-ayah-end">
-          <svg viewBox="0 0 40 40">
-             <path fill="currentColor" d="M20,1.2C9.6,1.2,1.2,9.6,1.2,20s8.4,18.8,18.8,18.8S38.8,30.4,38.8,20S30.4,1.2,20,1.2z M20,36.5c-9.1,0-16.5-7.4-16.5-16.5S10.9,3.5,20,3.5S36.5,10.9,36.5,20S29.1,36.5,20,36.5z" />
-             <path fill="currentColor" d="M20,6.5c-7.4,0-13.5,6.1-13.5,13.5S12.6,33.5,20,33.5S33.5,27.4,33.5,20S27.4,6.5,20,6.5z M20,31.2c-6.1,0-11.2-5.1-11.2-11.2S13.9,8.8,20,8.8S31.2,13.9,31.2,20S26.1,31.2,20,31.2z" />
-          </svg>
+        <span className="rd-ayah-end" aria-hidden="true">
+          <span className="rd-ayah-end-glyph">۝</span>
           <span className="rd-ayah-end-num">{toAr(ayah.numberInSurah)}</span>
         </span>
       </div>
 
       {/* Warsh QCF4 mode note */}
       {!memMode && showWordByWord && ayah.warshWords?.length > 0 && (
-        <div style={{ color: "var(--text-muted)", fontSize: "0.85rem", display: "flex", gap: "0.5rem", alignItems: "center" }}>
+        <div className="rd-warsh-note">
           <i className="fas fa-info-circle" />
           <span>
             {lang === "fr"
@@ -166,7 +185,7 @@ const AyahBlock = React.memo(function AyahBlock({
 
       {/* Transliteration */}
       {ayahTransliteration && (
-        <div className="rd-translations" style={{ marginBottom: "0" }}>
+        <div className="rd-translations rd-translations--tight">
           <div className="rd-trans-item transliteration">{ayahTransliteration}</div>
         </div>
       )}
@@ -199,16 +218,12 @@ const AyahBlock = React.memo(function AyahBlock({
         
         {/* Memorization stars */}
         {(isActive || memoLevel > 0) && (
-          <div className="rd-action-meta" style={{ display: "flex", gap: "0.15rem", fontSize: "1rem" }}>
+          <div className="rd-action-meta rd-action-meta-stars">
             {[1, 2, 3, 4, 5].map((n) => (
               <button
                 key={n}
                 onClick={(e) => handleStar(e, n)}
-                style={{
-                   background: "none", border: "none", cursor: "pointer",
-                   color: n <= memoLevel ? "var(--gold)" : "var(--border)",
-                   padding: "0"
-                }}
+                className={`rd-star-btn${n <= memoLevel ? " is-on" : ""}`}
               >
                 ★
               </button>

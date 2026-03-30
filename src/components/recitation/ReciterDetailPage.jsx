@@ -35,7 +35,13 @@ export default function ReciterDetailPage({
         </div>
         <div className="flex items-center gap-2">
           <ReciterRadioButton lang={lang} onClick={() => onPlayRadio(reciter)} />
-          <button className="hp2-icon-btn" type="button" onClick={onClose} ref={closeBtnRef}><i className="fas fa-xmark" /></button>
+          <button
+            className="hp2-icon-btn"
+            type="button"
+            onClick={onClose}
+            ref={closeBtnRef}
+            aria-label={lang === "fr" ? "Fermer" : lang === "ar" ? "اغلاق" : "Close"}
+          ><i className="fas fa-xmark" /></button>
         </div>
       </div>
       <SurahRecitationList

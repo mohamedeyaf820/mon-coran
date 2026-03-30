@@ -1,5 +1,5 @@
 import React, { startTransition, useCallback, useEffect, useRef, useState } from "react";
-import { useApp } from "../context/AppContext";
+import { useAppActions, useAppLocale } from "../context/AppContext";
 import { t } from "../i18n";
 import { search, searchTranslation } from "../services/quranAPI";
 import { getSurah, toAr } from "../data/surahs";
@@ -44,8 +44,8 @@ function sanitizeSearchQuery(input) {
 }
 
 export default function SearchModal() {
-  const { state, dispatch, set } = useApp();
-  const { lang, riwaya } = state;
+  const { dispatch, set } = useAppActions();
+  const { lang, riwaya } = useAppLocale();
 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);

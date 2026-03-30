@@ -8,6 +8,11 @@ on:
 jobs:
   bundle-budget:
     runs-on: ubuntu-latest
+    env:
+      BUDGET_CSS_KB: 940
+      BUDGET_JS_KB: 950
+      BUDGET_SINGLE_CSS_KB: 525
+      BUDGET_SINGLE_JS_KB: 190
     steps:
       - name: Checkout
         uses: actions/checkout@v4

@@ -1,10 +1,10 @@
 import React from "react";
-import { useApp } from "../context/AppContext";
+import { useAppActions, useAppLocale } from "../context/AppContext";
 import "../styles/footer-refonte.css";
 
 export default function Footer() {
-  const { state, dispatch, set } = useApp();
-  const { lang } = state;
+  const { dispatch, set } = useAppActions();
+  const { lang } = useAppLocale();
 
   const t = (obj) =>
     lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en;

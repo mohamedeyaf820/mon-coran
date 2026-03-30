@@ -235,18 +235,18 @@ export default function WeeklyStatsPanel() {
             </h2>
             <div className="modal-subtitle">{weekLabel}</div>
           </div>
-          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={lang === 'fr' ? 'Fermer' : 'Close'}>
             <i className="fas fa-times"></i>
           </button>
         </div>
 
         {/* Week navigator */}
         <div className="wst-nav !mx-3 !mt-3 !flex !items-center !justify-between !rounded-2xl !border !border-white/12 !bg-white/[0.03] !px-2.5 !py-2 sm:!mx-4">
-          <button className="wst-nav-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]" onClick={() => setWeekOffset(o => o - 1)}>
+          <button className="wst-nav-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]" type="button" onClick={() => setWeekOffset(o => o - 1)} aria-label={lang === 'fr' ? 'Semaine precedente' : 'Previous week'}>
             <i className="fas fa-chevron-left"></i>
           </button>
           <span className="wst-nav-label">{weekLabel}</span>
-          <button className="wst-nav-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12] disabled:!opacity-40" onClick={() => setWeekOffset(o => Math.min(0, o + 1))} disabled={weekOffset >= 0}>
+          <button className="wst-nav-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12] disabled:!opacity-40" type="button" onClick={() => setWeekOffset(o => Math.min(0, o + 1))} disabled={weekOffset >= 0} aria-label={lang === 'fr' ? 'Semaine suivante' : 'Next week'}>
             <i className="fas fa-chevron-right"></i>
           </button>
         </div>

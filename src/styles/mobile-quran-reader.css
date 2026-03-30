@@ -452,7 +452,7 @@
 [data-theme="dark"] .qc-surah-calligraphy { color: #e8d8a0; }
 
 .qc-header-name-ar {
-  font-family: 'Scheherazade New', 'Amiri', serif;
+  font-family: var(--font-surah-name, var(--font-surah, 'KFGQPC Uthmanic Script HAFS', 'Amiri Quran', serif));
   font-size: 1.1rem;
   font-weight: 400;
   color: #5a4010;

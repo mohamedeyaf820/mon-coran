@@ -93,7 +93,7 @@ export default function TajweedQuizPanel() {
             <i className="fas fa-spell-check" />
             {lang === 'fr' ? 'Quiz Tajweed' : lang === 'ar' ? 'مسابقة التجويد' : 'Tajweed Quiz'}
           </div>
-          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}><i className="fas fa-xmark" /></button>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={lang === 'fr' ? 'Fermer' : lang === 'ar' ? 'اغلاق' : 'Close'}><i className="fas fa-xmark" /></button>
         </div>
 
         {done ? (

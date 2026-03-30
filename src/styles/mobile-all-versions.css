@@ -165,7 +165,8 @@
   .search-modal-shell,
   .settings-dialog,
   .audio-player-modal__surface {
-    width: min(100%, 100vw);
+    width: 100%;
+    max-width: 100%;
     max-height: min(92dvh, 920px);
     border-radius: 1rem;
   }
@@ -596,7 +597,7 @@
 
 @media (max-width: 640px) {
   :root {
-    --player-h: 120px;
+    --player-h: 104px;
   }
 
   .app-root .hdr__nav-center {
@@ -623,8 +624,16 @@
   }
 
   .app-root .search-modal-shell .modal-segmented-btn {
-    width: 100%;
+    width: auto !important;
     min-width: 0;
+  }
+
+  .app-root .search-modal-shell .modal-segmented-btn:nth-child(odd) {
+    grid-column: 1 !important;
+  }
+
+  .app-root .search-modal-shell .modal-segmented-btn:nth-child(even) {
+    grid-column: 2 !important;
   }
 
   .app-root .search-summary-bar {
@@ -736,14 +745,14 @@
     border-color: rgba(122, 188, 210, 0.42) !important;
     background: rgba(122, 188, 210, 0.14) !important;
     color: rgba(241, 250, 255, 0.96) !important;
-    min-width: 2rem;
-    min-height: 2rem;
+    min-width: 1.8rem;
+    min-height: 1.8rem;
   }
 }
 
 @media (max-width: 480px) {
   :root {
-    --player-h: 126px;
+    --player-h: 110px;
   }
 
   html,
@@ -846,8 +855,8 @@
   }
 
   .app-root .mp-player-options-trigger {
-    min-height: 2.25rem !important;
-    min-width: 2.25rem !important;
+    min-height: 1.95rem !important;
+    min-width: 1.95rem !important;
     box-shadow: 0 0 0 1px rgba(122, 188, 210, 0.22) inset;
   }
 
@@ -897,13 +906,21 @@
   }
 
   .app-root .search-modal-shell .modal-segmented {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-root .search-modal-shell .modal-segmented-btn:nth-child(odd) {
+    grid-column: 1 !important;
+  }
+
+  .app-root .search-modal-shell .modal-segmented-btn:nth-child(even) {
+    grid-column: 2 !important;
   }
 }
 
 @media (max-width: 360px) {
   :root {
-    --player-h: 132px;
+    --player-h: 116px;
   }
 
   .app-root .hp2-item__ar,
@@ -922,6 +939,15 @@
 
   .app-root .quran-display--platform .bismillah-text {
     font-size: clamp(0.98rem, 5.8vw, 1.22rem) !important;
+  }
+
+  .app-root .search-modal-shell .modal-segmented {
+    grid-template-columns: 1fr;
+  }
+
+  .app-root .search-modal-shell .modal-segmented-btn {
+    width: 100% !important;
+    grid-column: 1 / -1 !important;
   }
 
   .app-root .hdr__action-cluster--tools .hdr__btn-label,
@@ -953,7 +979,7 @@
   }
 
   .app-root .mp-player-options-trigger {
-    min-height: 2.4rem !important;
+    min-height: 2rem !important;
   }
 }
 

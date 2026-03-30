@@ -447,6 +447,7 @@ const SurahCard = memo(function SurahCard({
       : lang === "fr"
         ? `Page ${surah.page}`
         : `Page ${surah.page}`);
+  const surahCalligraphyId = String(surah.n).padStart(3, "0");
 
   /* LIST ROW */
   if (viewMode === "list") {
@@ -571,8 +572,10 @@ const SurahCard = memo(function SurahCard({
         className="hp-card-ar"
         dir="rtl"
         lang="ar"
+        aria-label={surah.ar}
+        title={surah.ar}
       >
-        {surah.ar}
+        {surahCalligraphyId}
       </span>
 
       <button
@@ -1841,43 +1844,51 @@ export default function HomePage({ lowPerfMode = false }) {
             {/* Onglets Sourates / Juz */}
             <div className="hp-tabs">
               <button
+                type="button"
                 className={cn(
                   "hp-tab",
                   activeTab === "surah" && "active",
                 )}
                 onClick={() => selectContentTab("surah")}
+                aria-pressed={activeTab === "surah"}
               >
-                <i className="fas fa-align-justify" style={{marginRight: "0.5rem"}} />
+                <i className="fas fa-align-justify hp-tab__icon" />
                 {t("surahs")}
               </button>
               <button
+                type="button"
                 className={cn(
                   "hp-tab",
                   activeTab === "juz" && "active",
                 )}
                 onClick={() => selectContentTab("juz")}
+                aria-pressed={activeTab === "juz"}
               >
-                <i className="fas fa-book-open" style={{marginRight: "0.5rem"}} />
+                <i className="fas fa-book-open hp-tab__icon" />
                 {t("juz")}
               </button>
               <button
+                type="button"
                 className={cn(
                   "hp-tab",
                   activeTab === "recitations" && "active",
                 )}
                 onClick={() => selectContentTab("recitations")}
+                aria-pressed={activeTab === "recitations"}
               >
-                <i className="fas fa-microphone-lines" style={{marginRight: "0.5rem"}} />
+                <i className="fas fa-microphone-lines hp-tab__icon" />
                 {t("recitations")}
               </button>
               <button
+                type="button"
                 className={cn(
                   "hp-tab",
                   activeTab === "radio" && "active",
                 )}
                 onClick={() => selectContentTab("radio")}
+                aria-pressed={activeTab === "radio"}
               >
-                <i className="fas fa-broadcast-tower" style={{marginRight: "0.5rem"}} />
+                <i className="fas fa-broadcast-tower hp-tab__icon" />
                 {t("radio")}
               </button>
             </div>
@@ -1889,13 +1900,22 @@ export default function HomePage({ lowPerfMode = false }) {
                 <input
                   className="hp2-search__input"
                   placeholder={activeTab === "surah" ? t("search") : t("searchReciter")}
+                  aria-label={activeTab === "surah" ? t("search") : t("searchReciter")}
                   value={filter}
                   onChange={(e) => setFilter(e.target.value)}
                 />
                 {filter && (
                   <button
+                    type="button"
                     className="hp-search-clear"
                     onClick={() => setFilter("")}
+                    aria-label={
+                      lang === "fr"
+                        ? "Effacer la recherche"
+                        : lang === "ar"
+                          ? "مسح البحث"
+                          : "Clear search"
+                    }
                   >
                     <i className="fas fa-xmark" />
                   </button>
@@ -1904,8 +1924,8 @@ export default function HomePage({ lowPerfMode = false }) {
             )}
 
             {/* Tri + vue */}
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: "600" }}>
+            <div className="hp-actions-meta">
+              <span className="hp-actions-count">
                 {activeTab === "surah"
                   ? filteredSurahs.length
                   : activeTab === "juz"
@@ -1923,10 +1943,11 @@ export default function HomePage({ lowPerfMode = false }) {
               </span>
               {activeTab === "surah" && (
                 <button
-                  className="hp-tab"
-                  style={{ padding: "0.4rem 0.6rem" }}
+                  type="button"
+                  className="hp-tab hp-sort-btn"
                   onClick={toggleSortDirection}
                   title={sortDir === "asc" ? "Decroissant" : "Croissant"}
+                  aria-label={sortDir === "asc" ? "Tri décroissant" : "Tri croissant"}
                 >
                   <i className={`fas fa-sort-${sortDir === "asc" ? "down" : "up"}`} />
                 </button>
@@ -1934,22 +1955,28 @@ export default function HomePage({ lowPerfMode = false }) {
               {(activeTab === "surah" || activeTab === "juz") && (
                 <div className="hp-view-toggles">
                   <button
+                    type="button"
                     className={cn(
                       "hp-view-btn",
                       viewMode === "grid" && "active",
                     )}
                     onClick={() => changeViewMode("grid")}
                     title="Grille"
+                    aria-label="Grille"
+                    aria-pressed={viewMode === "grid"}
                   >
                     <i className="fas fa-grip" />
                   </button>
                   <button
+                    type="button"
                     className={cn(
                       "hp-view-btn",
                       viewMode === "list" && "active",
                     )}
                     onClick={() => changeViewMode("list")}
                     title="Liste"
+                    aria-label="Liste"
+                    aria-pressed={viewMode === "list"}
                   >
                     <i className="fas fa-list" />
                   </button>
@@ -1960,7 +1987,9 @@ export default function HomePage({ lowPerfMode = false }) {
 
           <div
             className={cn(
-              viewMode === "grid" ? "hp-grid" : "hp-list"
+              viewMode === "grid"
+                ? cn("hp-grid", activeTab === "surah" && "hp-grid--surah")
+                : "hp-list"
             )}
           >
             {activeTab === "surah" ? (
@@ -2061,6 +2090,19 @@ export default function HomePage({ lowPerfMode = false }) {
                             )}
                             type="button"
                             onClick={() => toggleFavoriteReciter(reciter.id)}
+                            aria-label={
+                              isFavorite
+                                ? lang === "fr"
+                                  ? "Retirer des favoris"
+                                  : lang === "ar"
+                                    ? "ازالة من المفضلة"
+                                    : "Remove from favorites"
+                                : lang === "fr"
+                                  ? "Ajouter aux favoris"
+                                  : lang === "ar"
+                                    ? "اضافة الى المفضلة"
+                                    : "Add to favorites"
+                            }
                           >
                             <i className={`fas ${isFavorite ? "fa-star" : "fa-star-half-stroke"}`} />
                           </button>
@@ -2068,6 +2110,7 @@ export default function HomePage({ lowPerfMode = false }) {
                             className="hp2-icon-btn hp2-icon-btn--on"
                             type="button"
                             onClick={() => playReciterRadio(reciter)}
+                            aria-label={lang === "fr" ? "Ecouter la radio" : lang === "ar" ? "تشغيل البث" : "Play radio"}
                           >
                             <i className="fas fa-play" />
                           </button>
@@ -2075,6 +2118,7 @@ export default function HomePage({ lowPerfMode = false }) {
                             className="hp2-icon-btn"
                             type="button"
                             onClick={() => setSelectedReciterId(reciter.id)}
+                            aria-label={lang === "fr" ? "Ouvrir le detail" : lang === "ar" ? "فتح التفاصيل" : "Open details"}
                           >
                             <i className={`fas fa-chevron-${lang === "ar" ? "left" : "right"}`} />
                           </button>
@@ -2183,6 +2227,7 @@ export default function HomePage({ lowPerfMode = false }) {
                   type="button"
                   className="hp2-icon-btn"
                   onClick={() => audioService.prev()}
+                  aria-label={lang === "fr" ? "Piste precedente" : lang === "ar" ? "المقطع السابق" : "Previous track"}
                 >
                   <i className="fas fa-backward-step" />
                 </button>
@@ -2190,6 +2235,19 @@ export default function HomePage({ lowPerfMode = false }) {
                   type="button"
                   className="hp2-icon-btn hp2-icon-btn--on"
                   onClick={() => audioService.toggle()}
+                  aria-label={
+                    state.isPlaying
+                      ? lang === "fr"
+                        ? "Pause"
+                        : lang === "ar"
+                          ? "ايقاف مؤقت"
+                          : "Pause"
+                      : lang === "fr"
+                        ? "Lecture"
+                        : lang === "ar"
+                          ? "تشغيل"
+                          : "Play"
+                  }
                 >
                   <i className={`fas ${state.isPlaying ? "fa-pause" : "fa-play"}`} />
                 </button>
@@ -2197,6 +2255,7 @@ export default function HomePage({ lowPerfMode = false }) {
                   type="button"
                   className="hp2-icon-btn"
                   onClick={() => audioService.next()}
+                  aria-label={lang === "fr" ? "Piste suivante" : lang === "ar" ? "المقطع التالي" : "Next track"}
                 >
                   <i className="fas fa-forward-step" />
                 </button>

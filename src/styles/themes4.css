@@ -522,6 +522,33 @@
         rgba(var(--theme-primary-rgb), 0.22) 66%,
         var(--theme-bg) 34%
     );
+    --ayah-stop-ring: color-mix(
+        in srgb,
+        var(--theme-primary) 64%,
+        #b1821d 36%
+    );
+    --ayah-stop-core: color-mix(
+        in srgb,
+        rgba(var(--theme-primary-rgb), 0.2) 64%,
+        var(--theme-surface-soft) 36%
+    );
+    --ayah-stop-core-border: color-mix(
+        in srgb,
+        var(--theme-border-strong) 72%,
+        rgba(var(--theme-primary-rgb), 0.32) 28%
+    );
+    --ayah-stop-text: color-mix(
+        in srgb,
+        var(--theme-text) 74%,
+        var(--theme-primary) 26%
+    );
+    --font-surah-name: var(
+        --font-surah,
+        "KFGQPC Uthmanic Script HAFS",
+        "Amiri Quran",
+        "Scheherazade New",
+        serif
+    );
     --text-quran: var(--theme-arabic);
     --bismillah-color: var(--theme-arabic);
 }

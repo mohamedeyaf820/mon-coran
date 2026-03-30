@@ -212,7 +212,7 @@ function CoverArt({ isPlaying, size = 52 }) {
 }
 
 /* Icon button (desktop card) */
-function IconBtn({ onClick, title, active, children, size = "md" }) {
+function IconBtn({ onClick, title, active, children, size = "md", className = "" }) {
   const base =
     size === "sm"
       ? "w-7 h-7 text-[0.72rem]"
@@ -221,6 +221,7 @@ function IconBtn({ onClick, title, active, children, size = "md" }) {
         : "w-9 h-9 text-[0.82rem]";
   return (
     <button
+      type="button"
       onClick={onClick}
       title={title}
       aria-label={title}
@@ -233,6 +234,7 @@ function IconBtn({ onClick, title, active, children, size = "md" }) {
         "hover:bg-[rgba(212,168,32,0.18)] hover:text-[color-mix(in_srgb,var(--gold-bright,#f5d785)_90%,#ffffff_10%)] hover:border-[rgba(212,168,32,0.35)] hover:scale-105",
         "active:scale-95",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(212,168,32,0.5)]",
+        className,
       )}
     >
       {children}
@@ -253,6 +255,7 @@ export default function AudioPlayer() {
     memMode,
     memRepeatCount,
     memPause,
+    surahRepeatCount,
     warshStrictMode,
     volume: savedVolume,
     showHome,
@@ -306,6 +309,7 @@ export default function AudioPlayer() {
   const autoFailoverBusyRef = useRef(false);
   const failedRecitersRef = useRef(new Set());
   const reciterAvailabilityRef = useRef(reciterAvailabilityById || {});
+  const autoIdleMinimizeArmedRef = useRef(false);
 
   useEffect(() => {
     reciterAvailabilityRef.current = reciterAvailabilityById || {};
@@ -633,6 +637,10 @@ export default function AudioPlayer() {
     else audioService.disableMemorization();
   }, [memMode, memRepeatCount, memPause]);
 
+  useEffect(() => {
+    audioService.setSurahRepeatCount(surahRepeatCount);
+  }, [surahRepeatCount]);
+
   /* A-B Repeat handlers */
   const markAbA = useCallback(() => {
     const idx = audioService.playlistIndex;
@@ -769,6 +777,23 @@ export default function AudioPlayer() {
     set({ volume: v });
   };
 
+  const setSurahRepeatSetting = useCallback(
+    (value) => {
+      const parsed = Number(value);
+      if (!Number.isFinite(parsed)) {
+        set({ surahRepeatCount: 1 });
+        return;
+      }
+      if (parsed <= 0) {
+        set({ surahRepeatCount: 0 }); // 0 => infinite
+        return;
+      }
+      const safe = Math.max(1, Math.min(999, Math.floor(parsed)));
+      set({ surahRepeatCount: safe });
+    },
+    [set],
+  );
+
   const cycleSpeed = () => {
     const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
     const idx = speeds.indexOf(audioSpeed);
@@ -779,6 +804,14 @@ export default function AudioPlayer() {
     setExpanded(false);
     setOptionsModalOpen(false);
     setMinimized((prev) => !prev);
+  }, []);
+
+  const closeOptionsModal = useCallback(() => {
+    setOptionsModalOpen(false);
+  }, []);
+
+  const toggleOptionsModal = useCallback(() => {
+    setOptionsModalOpen((prev) => !prev);
   }, []);
 
   const closePlayer = useCallback(() => {
@@ -986,6 +1019,21 @@ export default function AudioPlayer() {
         : `S.${currentPlayingAyah.surah}`,
     },
     audioSpeed !== 1 && { key: "speed", label: `${audioSpeed}x` },
+    (surahRepeatCount === 0 || surahRepeatCount > 1) && {
+      key: "surah-repeat",
+      label:
+        surahRepeatCount === 0
+          ? lang === "fr"
+            ? "Sourate ∞"
+            : lang === "ar"
+              ? "سورة ∞"
+              : "Surah ∞"
+          : lang === "fr"
+            ? `Sourate x${surahRepeatCount}`
+            : lang === "ar"
+              ? `سورة ×${surahRepeatCount}`
+              : `Surah x${surahRepeatCount}`,
+    },
     memMode && { key: "memorize", label: memorizeShortLabel },
     isSurahStreamReciter && {
       key: "mode",
@@ -1001,14 +1049,14 @@ export default function AudioPlayer() {
   const playerPrimaryBtnClass =
     "audio-player-primary-btn flex items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--theme-primary)_52%,#ffffff_48%)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--theme-primary)_86%,#ffffff_14%),color-mix(in_srgb,var(--theme-primary)_66%,var(--theme-bg)_34%))] text-white shadow-[0_10px_24px_rgba(var(--theme-primary-rgb),0.34)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--theme-primary-rgb),0.44)]";
   const mBarBtn = cn(
-    "h-9 w-9 shrink-0 rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[0.84rem] text-[color-mix(in_srgb,var(--theme-text)_82%,var(--theme-bg)_18%)]",
+    "h-8 w-8 shrink-0 rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[0.76rem] text-[color-mix(in_srgb,var(--theme-text)_82%,var(--theme-bg)_18%)]",
     "flex items-center justify-center outline-none transition-all duration-150",
     "hover:border-[color-mix(in_srgb,var(--theme-primary)_42%,transparent_58%)] hover:bg-[rgba(var(--theme-primary-rgb),0.16)] hover:text-white",
     "active:scale-95 focus-visible:ring-2 focus-visible:ring-[rgba(var(--theme-primary-rgb),0.32)]",
   );
   const mBarBtnSm = (active = false) =>
     cn(
-      "flex min-h-[1.875rem] items-center justify-center whitespace-nowrap rounded-lg border px-2 py-1 text-[0.68rem] font-semibold outline-none transition-all duration-150",
+      "flex min-h-[1.72rem] items-center justify-center whitespace-nowrap rounded-lg border px-1.5 py-[0.22rem] text-[0.62rem] font-semibold outline-none transition-all duration-150",
       active
         ? "border-[color-mix(in_srgb,var(--theme-primary)_42%,transparent_58%)] bg-[rgba(var(--theme-primary-rgb),0.18)] text-white"
         : "border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[color-mix(in_srgb,var(--theme-text)_76%,var(--theme-bg)_24%)] hover:border-[color-mix(in_srgb,var(--theme-primary)_36%,transparent_64%)] hover:bg-[rgba(var(--theme-primary-rgb),0.12)] hover:text-white",
@@ -1103,7 +1151,7 @@ export default function AudioPlayer() {
         <button
           type="button"
           className="audio-player-modal__backdrop absolute inset-0 bg-[color-mix(in_srgb,var(--theme-bg)_68%,#040810_32%)] backdrop-blur-sm"
-          onClick={() => setOptionsModalOpen(false)}
+          onClick={closeOptionsModal}
           aria-label={lang === "fr" ? "Fermer les options" : "Close options"}
         />
         <div
@@ -1127,8 +1175,8 @@ export default function AudioPlayer() {
             </div>
             <button
               type="button"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[0.78rem] text-[color-mix(in_srgb,var(--theme-text)_84%,var(--theme-bg)_16%)] transition-all duration-150 hover:border-[color-mix(in_srgb,var(--theme-primary)_44%,transparent_56%)] hover:bg-[rgba(var(--theme-primary-rgb),0.14)] hover:text-white"
-              onClick={() => setOptionsModalOpen(false)}
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[0.72rem] text-[color-mix(in_srgb,var(--theme-text)_84%,var(--theme-bg)_16%)] transition-all duration-150 hover:border-[color-mix(in_srgb,var(--theme-primary)_44%,transparent_56%)] hover:bg-[rgba(var(--theme-primary-rgb),0.14)] hover:text-white"
+              onClick={closeOptionsModal}
               aria-label={lang === "fr" ? "Fermer" : "Close"}
               ref={optionsCloseButtonRef}
             >
@@ -1294,6 +1342,87 @@ export default function AudioPlayer() {
               <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <span className={playerSectionLabelClass}>
+                    {lang === "fr"
+                      ? "Répétition de sourate"
+                      : lang === "ar"
+                        ? "تكرار السورة"
+                        : "Surah repeat"}
+                  </span>
+                  <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums")}>
+                    {surahRepeatCount === 0
+                      ? lang === "fr"
+                        ? "Infini"
+                        : lang === "ar"
+                          ? "لا نهائي"
+                          : "Infinite"
+                      : `x${surahRepeatCount}`}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className={cn(playerMutedTextClass, "text-[0.68rem]")}>
+                      {lang === "fr" ? "Nombre" : lang === "ar" ? "العدد" : "Count"}
+                    </span>
+                    <input
+                      type="number"
+                      min={0}
+                      max={999}
+                      value={surahRepeatCount}
+                      onChange={(e) => setSurahRepeatSetting(e.target.value)}
+                      className={playerNumberInputClass}
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setSurahRepeatSetting(1)}
+                    className={playerOptionPillClass(surahRepeatCount === 1)}
+                  >
+                    {lang === "fr" ? "Une fois" : lang === "ar" ? "مرة واحدة" : "Once"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSurahRepeatSetting(3)}
+                    className={playerOptionPillClass(surahRepeatCount === 3)}
+                  >
+                    x3
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSurahRepeatSetting(5)}
+                    className={playerOptionPillClass(surahRepeatCount === 5)}
+                  >
+                    x5
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSurahRepeatSetting(10)}
+                    className={playerOptionPillClass(surahRepeatCount === 10)}
+                  >
+                    x10
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSurahRepeatSetting(0)}
+                    className={playerOptionPillClass(surahRepeatCount === 0)}
+                  >
+                    {lang === "fr" ? "Infini" : lang === "ar" ? "لا نهائي" : "Infinite"}
+                  </button>
+                </div>
+
+                <p className={cn(playerFadedTextClass, "mt-2 text-[0.62rem] leading-relaxed")}>
+                  {lang === "fr"
+                    ? "0 = répétition infinie. La sourate recommence automatiquement à la fin."
+                    : lang === "ar"
+                      ? "0 يعني تكرارًا لا نهائيًا. تبدأ السورة من جديد تلقائيًا عند النهاية."
+                      : "0 means infinite repeat. The surah restarts automatically at the end."}
+                </p>
+              </div>
+
+              <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <span className={playerSectionLabelClass}>
                     {lang === "fr" ? "Volume" : lang === "ar" ? "مستوى الصوت" : "Volume"}
                   </span>
                   <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums")}>
@@ -1405,10 +1534,10 @@ export default function AudioPlayer() {
                   {t("audio.stop", lang)}
                 </button>
                 <button
-                  onClick={() => setOptionsModalOpen(false)}
+                  onClick={closeOptionsModal}
                   className={cn(playerSurfaceButtonClass, "px-4 py-2 text-[0.68rem] font-semibold")}
                 >
-                  {lang === "fr" ? "Terminer" : lang === "ar" ? "Done" : "Done"}
+                  {lang === "fr" ? "Terminer" : lang === "ar" ? "تم" : "Done"}
                 </button>
               </div>
             </section>
@@ -1434,6 +1563,43 @@ export default function AudioPlayer() {
   );
   const canFreePosition = !isContextualDesktop || manualDockPosition;
   const canDragDesktopCard = !isMobile;
+
+  useEffect(() => {
+    if (isPlaying || currentPlayingAyah) {
+      autoIdleMinimizeArmedRef.current = true;
+      return;
+    }
+    if (!isContextualDesktop || isMobile) return;
+    if (manualDockPosition) return;
+    if (autoIdleMinimizeArmedRef.current && !minimized) {
+      setMinimized(true);
+      autoIdleMinimizeArmedRef.current = false;
+    }
+  }, [
+    currentPlayingAyah,
+    isContextualDesktop,
+    isMobile,
+    isPlaying,
+    manualDockPosition,
+    minimized,
+  ]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (!isMobile || closed) {
+      root.style.removeProperty("--player-h");
+      return;
+    }
+
+    // Reserve enough space for the mobile dock so verses and controls are never hidden behind it.
+    const reservedHeight = minimized ? 86 : expanded ? 198 : 136;
+    root.style.setProperty("--player-h", `${reservedHeight}px`);
+
+    return () => {
+      root.style.removeProperty("--player-h");
+    };
+  }, [closed, expanded, isMobile, minimized]);
 
   useEffect(() => {
     const onResize = () => {
@@ -1580,7 +1746,7 @@ export default function AudioPlayer() {
     !manualDockPosition && isHomeDesktop
       ? "right-6 bottom-6 left-auto top-auto"
       : isContextualDesktop && !manualDockPosition
-        ? "right-4 top-[calc(var(--header-h)+1rem)] left-auto bottom-auto xl:right-5"
+        ? "right-4 bottom-6 left-auto top-auto xl:right-5"
         : "left-[var(--player-left)] top-[var(--player-top)] right-auto bottom-auto";
   const desktopCardShadowClass = isPlaying
     ? "shadow-[0_26px_62px_rgba(2,8,18,0.54),0_0_0_1px_rgba(122,188,210,0.2)]"
@@ -1614,17 +1780,22 @@ export default function AudioPlayer() {
           </div>
           <div className="mp-player-minimized-row flex items-center gap-2.5 px-3 py-2.5">
             <CoverArt isPlaying={isPlaying} size={40} />
-            <div className="mp-player-minimized-meta min-w-0 flex-1">
+            <button
+              type="button"
+              className="mp-player-minimized-meta mp-player-minimized-open min-w-0 flex-1 text-left"
+              onClick={toggleMinimized}
+              title={lang === "fr" ? "Ouvrir le lecteur" : "Open player"}
+            >
               <div className="mp-player-minimized-title truncate text-[0.82rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-text)_94%,#ffffff_6%)]">
                 {titleLabel ||
-                  (lang === "fr" ? "Prêt à lire" : lang === "ar" ? "Ready" : "Ready")}
+                  (lang === "fr" ? "Prêt à lire" : lang === "ar" ? "جاهز" : "Ready")}
               </div>
               <div className="mp-player-minimized-reciter truncate text-[0.68rem] text-[color-mix(in_srgb,var(--theme-text-muted)_90%,var(--theme-bg)_10%)]">
                 {reciterLabel || "-"}
               </div>
-            </div>
+            </button>
             <button
-              className={cn(playerPrimaryBtnClass, "h-10 w-10 text-[0.88rem]")}
+              className={cn(playerPrimaryBtnClass, "h-9 w-9 text-[0.8rem]")}
               onClick={toggle}
               title={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
               aria-pressed={isPlaying}
@@ -1634,9 +1805,9 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "mp-player-options-trigger w-8 h-8 text-[0.72rem] rounded-lg shrink-0",
+                "mp-player-options-trigger w-7 h-7 text-[0.66rem] rounded-lg shrink-0",
               )}
-              onClick={() => setOptionsModalOpen(true)}
+              onClick={toggleOptionsModal}
               aria-controls="audio-options-modal-title"
               aria-expanded={optionsModalOpen}
               title={
@@ -1652,11 +1823,11 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "w-8 h-8 text-[0.72rem] rounded-lg shrink-0",
+                "w-7 h-7 text-[0.66rem] rounded-lg shrink-0",
               )}
               onClick={toggleMinimized}
               title={
-                lang === "fr" ? "Agrandir" : lang === "ar" ? "Expand" : "Expand"
+                lang === "fr" ? "Agrandir" : lang === "ar" ? "توسيع" : "Expand"
               }
             >
               <i className="fas fa-expand-alt" />
@@ -1664,11 +1835,11 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "w-8 h-8 text-[0.72rem] rounded-lg shrink-0",
+                "w-7 h-7 text-[0.66rem] rounded-lg shrink-0",
               )}
               onClick={closePlayer}
               title={
-                lang === "fr" ? "Fermer" : lang === "ar" ? "Close" : "Close"
+                lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
               }
             >
               <i className="fas fa-times" />
@@ -1701,7 +1872,7 @@ export default function AudioPlayer() {
       >
         <div className="mp-player-mobile-head flex items-center justify-between px-3.5 pb-1.5 pt-2">
           <button
-            className={cn(mBarBtn, "h-10 w-10 rounded-full")}
+            className={cn(mBarBtn, "h-9 w-9 rounded-full")}
             onClick={toggleMinimized}
             title={
               lang === "fr"
@@ -1720,10 +1891,10 @@ export default function AudioPlayer() {
             </span>
           </div>
           <button
-            className={cn(mBarBtn, "h-10 w-10 rounded-full")}
+            className={cn(mBarBtn, "h-9 w-9 rounded-full")}
             onClick={closePlayer}
             title={
-              lang === "fr" ? "Fermer" : lang === "ar" ? "Close" : "Close"
+              lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
             }
           >
             <i className="fas fa-times" />
@@ -1762,10 +1933,10 @@ export default function AudioPlayer() {
         </div>
 
         {/* Controls row */}
-        <div className="mp-player-controls-strip mp-player-mobile-controls flex min-h-[4.1rem] items-center gap-2.5 px-3 pb-1.5">
+        <div className="mp-player-controls-strip mp-player-mobile-controls flex min-h-[3.55rem] items-center gap-2 px-2.5 pb-1.5">
           {/* Left: info block */}
           <div
-            className="mp-player-mobile-meta flex w-[5.8rem] shrink-0 flex-col justify-center gap-[0.2rem] min-w-0"
+            className="mp-player-mobile-meta flex w-[5.1rem] shrink-0 flex-col justify-center gap-[0.16rem] min-w-0"
             aria-live="polite"
           >
             <span className="block overflow-hidden text-ellipsis whitespace-nowrap text-[0.7rem] font-semibold leading-tight text-[color-mix(in_srgb,var(--theme-text)_90%,#ffffff_10%)]">
@@ -1773,7 +1944,7 @@ export default function AudioPlayer() {
                 ? hasAyahContext
                   ? `${t("quran.surah", lang)} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
                   : titleLabel
-                : lang === "fr" ? "En attente" : lang === "ar" ? "Ready" : "Ready"}
+                : lang === "fr" ? "En attente" : lang === "ar" ? "جاهز" : "Ready"}
             </span>
             <span className="text-[0.6rem] leading-none text-[color-mix(in_srgb,var(--theme-text-muted)_86%,var(--theme-bg)_14%)] font-mono tabular-nums">
               {formatTime(currentTime)}
@@ -1792,7 +1963,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "h-9 w-9 rounded-lg text-[0.74rem] shrink-0",
+                "h-8 w-8 rounded-lg text-[0.68rem] shrink-0",
               )}
               onClick={prev}
               title={t("audio.prev", lang)}
@@ -1801,7 +1972,7 @@ export default function AudioPlayer() {
             </button>
 
             <button
-              className={cn(playerPrimaryBtnClass, "mp-player-play-btn h-11 w-11 shrink-0 text-[0.94rem] hover:scale-[1.06] active:scale-[0.94]")}
+              className={cn(playerPrimaryBtnClass, "mp-player-play-btn h-9 w-9 shrink-0 text-[0.82rem] hover:scale-[1.04] active:scale-[0.94]")}
               onClick={toggle}
               title={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
               aria-pressed={isPlaying}
@@ -1814,7 +1985,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "h-9 w-9 rounded-lg text-[0.74rem] shrink-0",
+                "h-8 w-8 rounded-lg text-[0.68rem] shrink-0",
               )}
               onClick={next}
               title={t("audio.next", lang)}
@@ -1825,7 +1996,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "h-9 w-9 rounded-lg text-[0.74rem] shrink-0",
+                "h-8 w-8 rounded-lg text-[0.68rem] shrink-0",
               )}
               onClick={stop}
               title={t("audio.stop", lang)}
@@ -1839,11 +2010,11 @@ export default function AudioPlayer() {
             <button
                 className={cn(
                   mBarBtnSm(),
-                  "px-[0.46rem] py-[0.24rem] text-[0.64rem] min-h-[1.875rem] min-w-[1.95rem] justify-center rounded-full",
+                  "px-[0.38rem] py-[0.18rem] text-[0.58rem] min-h-[1.72rem] min-w-[1.72rem] justify-center rounded-full",
                 )}
               onClick={cycleSpeed}
               title={
-                lang === "fr" ? "Vitesse" : lang === "ar" ? "Speed" : "Speed"
+                lang === "fr" ? "Vitesse" : lang === "ar" ? "السرعة" : "Speed"
               }
             >
               {audioSpeed}x
@@ -1851,15 +2022,15 @@ export default function AudioPlayer() {
             <button
                 className={cn(
                   mBarBtnSm(optionsModalOpen),
-                  "mp-player-options-trigger px-[0.46rem] py-[0.24rem] text-[0.64rem] min-h-[1.875rem] min-w-[1.875rem] justify-center rounded-full",
+                  "mp-player-options-trigger px-[0.38rem] py-[0.18rem] text-[0.58rem] min-h-[1.72rem] min-w-[1.72rem] justify-center rounded-full",
                 )}
-              onClick={() => setOptionsModalOpen(true)}
+              onClick={toggleOptionsModal}
               aria-expanded={optionsModalOpen}
               aria-controls="audio-options-modal-title"
               title={
                 optionsModalOpen
-                  ? lang === "fr" ? "Réduire" : lang === "ar" ? "Options opened" : "Options opened"
-                  : lang === "fr" ? "Plus d'options" : lang === "ar" ? "More options" : "More options"
+                  ? lang === "fr" ? "Réduire" : lang === "ar" ? "الخيارات مفتوحة" : "Options opened"
+                  : lang === "fr" ? "Plus d'options" : lang === "ar" ? "خيارات إضافية" : "More options"
               }
             >
               <i className="fas fa-sliders" />
@@ -1870,7 +2041,7 @@ export default function AudioPlayer() {
         {/* Expanded panel */}
         {expanded && (
           <div
-            className="mp-player-mobile-expanded max-h-[62vh] overflow-y-auto border-t border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_82%,transparent_18%),color-mix(in_srgb,var(--theme-panel-bg)_72%,transparent_28%))] px-3.5 pb-4 pt-3 animate-[fadeInUp_0.18s_var(--ease,ease)]"
+            className="mp-player-mobile-expanded max-h-[56vh] overflow-y-auto border-t border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_82%,transparent_18%),color-mix(in_srgb,var(--theme-panel-bg)_72%,transparent_28%))] px-3 pb-3.5 pt-2.5 animate-[fadeInUp_0.18s_var(--ease,ease)]"
             data-player-expanded="true"
             data-scroll-panel="true"
             data-no-drag="true"
@@ -1884,7 +2055,7 @@ export default function AudioPlayer() {
                   className="ml-auto rounded-full border border-rose-200/35 bg-white/10 px-2 py-0.5 text-[0.6rem] font-semibold text-rose-50 transition-colors hover:bg-white/20"
                   onClick={toggle}
                   title={
-                    lang === "fr" ? "Réessayer" : lang === "ar" ? "Retry" : "Retry"
+                    lang === "fr" ? "Réessayer" : lang === "ar" ? "إعادة المحاولة" : "Retry"
                   }
                 >
                   {lang === "fr"
@@ -1917,7 +2088,7 @@ export default function AudioPlayer() {
                 {isSurahStreamReciter && (
                   <span className="inline-flex items-center gap-1 rounded-full border border-fuchsia-300/30 bg-fuchsia-300/12 px-2 py-[0.1875rem] text-[0.6rem] font-bold text-fuchsia-100">
                     <i className="fas fa-compact-disc text-[0.48rem]" />
-                    {lang === "fr" ? "Lecture sourate complete" : lang === "ar" ? "Full-surah playback" : "Full-surah playback"}
+                    {lang === "fr" ? "Lecture sourate complete" : lang === "ar" ? "تشغيل السورة كاملة" : "Full-surah playback"}
                   </span>
                 )}
               </div>
@@ -1978,7 +2149,7 @@ export default function AudioPlayer() {
                   <div
                     className={cn(playerFadedTextClass, "py-2 text-center text-[0.62rem]")}
                   >
-                    {lang === "fr" ? "Aucun résultat" : lang === "ar" ? "No results" : "No results"}
+                    {lang === "fr" ? "Aucun résultat" : lang === "ar" ? "لا توجد نتائج" : "No results"}
                   </div>
                 ) : (
                   <div
@@ -2038,7 +2209,7 @@ export default function AudioPlayer() {
                             )}
                             {r.audioMode === "surah" && (
                               <span className="mt-1 inline-flex items-center rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-1.5 py-0.5 text-[0.5rem] font-semibold tracking-wide text-fuchsia-100">
-                                {lang === "fr" ? "Sourate complete" : lang === "ar" ? "Full surah" : "Full surah"}
+                                {lang === "fr" ? "Sourate complete" : lang === "ar" ? "سورة كاملة" : "Full surah"}
                               </span>
                             )}
                           </span>
@@ -2057,8 +2228,8 @@ export default function AudioPlayer() {
                 className="h-7 w-7 shrink-0 rounded-lg border border-white/12 bg-white/[0.06] text-[0.72rem] text-[rgba(132,205,228,0.9)] transition-colors duration-150 hover:bg-[rgba(110,204,233,0.14)]"
                 title={
                   volume > 0
-                    ? lang === "fr" ? "Muet" : lang === "ar" ? "Mute" : "Mute"
-                    : lang === "fr" ? "Activer" : lang === "ar" ? "Unmute" : "Unmute"
+                    ? lang === "fr" ? "Muet" : lang === "ar" ? "كتم" : "Mute"
+                    : lang === "fr" ? "Activer" : lang === "ar" ? "إلغاء الكتم" : "Unmute"
                 }
               >
                 <i
@@ -2136,7 +2307,7 @@ export default function AudioPlayer() {
                 title={lang === "fr" ? "Fermer le lecteur" : "Close player"}
               >
                 <i className="fas fa-times text-[0.6rem]" />
-                {lang === "fr" ? "Fermer" : lang === "ar" ? "Close" : "Close"}
+                {lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
               </button>
             </div>
 
@@ -2155,7 +2326,7 @@ export default function AudioPlayer() {
                   >
                     <span className="flex items-center gap-1">
                       <i className="fas fa-sliders text-[0.48rem]" />
-                      {lang === "fr" ? "Options" : lang === "ar" ? "Options" : "Options"}
+                      {lang === "fr" ? "Options" : lang === "ar" ? "خيارات" : "Options"}
                     </span>
                     <i
                       className={`fas fa-chevron-${showAdvanced ? "up" : "down"} text-[0.48rem]`}
@@ -2197,7 +2368,7 @@ export default function AudioPlayer() {
                 {/* -- EQ presets (mobile) -- */}
                 <div className="mt-2.5">
                   <div className={cn(playerSectionLabelClass, "mb-1")}>
-                    {lang === "fr" ? "Acoustique" : lang === "ar" ? "Acoustics" : "Acoustics"}
+                    {lang === "fr" ? "Acoustique" : lang === "ar" ? "الصوتيات" : "Acoustics"}
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {[
@@ -2230,7 +2401,7 @@ export default function AudioPlayer() {
                     aria-pressed={tartilMode}
                   >
                     <i className="fas fa-wave-square text-[0.6rem]" />
-                    {lang === "fr" ? "Tartil" : lang === "ar" ? "Tartil" : "Tartil"}
+                    {lang === "fr" ? "Tartil" : lang === "ar" ? "ترتيل" : "Tartil"}
                   </button>
                   <button
                     onClick={reciteMode ? stopRecite : startRecite}
@@ -2243,7 +2414,7 @@ export default function AudioPlayer() {
                     <i
                       className={`fas ${reciteMode ? "fa-stop" : "fa-microphone"} text-[0.6rem]`}
                     />
-                    {lang === "fr" ? "Réciter" : lang === "ar" ? "Recite" : "Recite"}
+                    {lang === "fr" ? "Réciter" : lang === "ar" ? "التلاوة" : "Recite"}
                   </button>
                 </div>
                 {reciteMode && reciteText && (
@@ -2322,7 +2493,12 @@ export default function AudioPlayer() {
               data-player-drag="true"
             >
               <CoverArt isPlaying={isPlaying} size={42} />
-              <div className="min-w-0 flex-1">
+              <button
+                type="button"
+                className="mp-player-minimized-open min-w-0 flex-1 text-left"
+                onClick={toggleMinimized}
+                title={lang === "fr" ? "Ouvrir le lecteur" : "Open player"}
+              >
                 {networkBadge && (
                   <div
                     className={cn(
@@ -2341,7 +2517,7 @@ export default function AudioPlayer() {
                   )}
                 >
                   {titleLabel ||
-                    (lang === "fr" ? "Prêt à lire" : lang === "ar" ? "Ready" : "Ready")}
+                    (lang === "fr" ? "Prêt à lire" : lang === "ar" ? "جاهز" : "Ready")}
                 </div>
                 <div
                   className={cn(
@@ -2360,20 +2536,20 @@ export default function AudioPlayer() {
                     {currentAyahPreview}
                   </div>
                 )}
-              </div>
+              </button>
               <button
                 onClick={toggle}
                 title={
                   isPlaying ? t("audio.pause", lang) : t("audio.play", lang)
                 }
                 aria-pressed={isPlaying}
-                className={cn(playerPrimaryBtnClass, "h-10 w-10")}
+                className={cn(playerPrimaryBtnClass, "h-9 w-9")}
               >
                 <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`} />
               </button>
               <IconBtn
                 className="mp-player-options-trigger"
-                onClick={() => setOptionsModalOpen(true)}
+                onClick={toggleOptionsModal}
                 title={
                   lang === "fr"
                     ? "Options et récitateurs"
@@ -2388,7 +2564,7 @@ export default function AudioPlayer() {
               <IconBtn
                 onClick={toggleMinimized}
                 title={
-                  lang === "fr" ? "Agrandir" : lang === "ar" ? "Expand" : "Expand"
+                  lang === "fr" ? "Agrandir" : lang === "ar" ? "توسيع" : "Expand"
                 }
                 size="sm"
               >
@@ -2397,7 +2573,7 @@ export default function AudioPlayer() {
               <IconBtn
                 onClick={closePlayer}
                 title={
-                  lang === "fr" ? "Fermer" : lang === "ar" ? "Close" : "Close"
+                  lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
                 }
                 size="sm"
               >
@@ -2446,7 +2622,7 @@ export default function AudioPlayer() {
               </button>
               <button
                 className={cn(playerUtilityClass, "mp-player-options-trigger h-6 w-6")}
-                onClick={() => setOptionsModalOpen(true)}
+                onClick={toggleOptionsModal}
                 title={
                   lang === "fr"
                     ? "Options et récitateurs"
@@ -2469,7 +2645,7 @@ export default function AudioPlayer() {
                 onClick={closePlayer}
                 className={cn(playerUtilityClass, "h-6 w-6")}
                 title={
-                  lang === "fr" ? "Fermer le lecteur" : lang === "ar" ? "Close player" : "Close player"
+                  lang === "fr" ? "Fermer le lecteur" : lang === "ar" ? "إغلاق المشغل" : "Close player"
                 }
               >
                 <i className="fas fa-times text-xs" />
@@ -2498,7 +2674,7 @@ export default function AudioPlayer() {
                     )}
                   >
                     {titleLabel ||
-                      (lang === "fr" ? "Prêt à lire" : lang === "ar" ? "Ready" : "Ready")}
+                      (lang === "fr" ? "Prêt à lire" : lang === "ar" ? "جاهز" : "Ready")}
                   </div>
                   <div
                     className={cn(
@@ -2557,7 +2733,7 @@ export default function AudioPlayer() {
                     <IconBtn
                       onClick={resetDockPosition}
                       title={
-                        lang === "fr" ? "Revenir au dock" : lang === "ar" ? "Reset dock position" : "Reset dock position"
+                        lang === "fr" ? "Revenir au dock" : lang === "ar" ? "إعادة تثبيت الموضع" : "Reset dock position"
                       }
                       size="sm"
                     >
@@ -2695,14 +2871,15 @@ export default function AudioPlayer() {
 
               {/* Expand toggle */}
               <button
-                onClick={() => setOptionsModalOpen(true)}
+                onClick={toggleOptionsModal}
                 aria-controls="audio-options-modal-title"
+                aria-expanded={optionsModalOpen}
                 className="mp-player-options-trigger flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/12 bg-white/[0.05] py-1.5 text-[0.63rem] text-[rgba(230,219,198,0.62)] transition-all duration-150 [font-family:var(--font-ui)] hover:border-[rgba(110,204,233,0.38)] hover:bg-[rgba(110,204,233,0.1)] hover:text-[rgba(240,250,255,0.95)]"
               >
                 <i className="fas fa-sliders text-[0.55rem]" />
-                {expanded
-                  ? lang === "fr" ? "Réduire" : lang === "ar" ? "Collapse" : "Collapse"
-                  : lang === "fr" ? "Plus d'options" : lang === "ar" ? "More" : "More"}
+                {optionsModalOpen
+                  ? lang === "fr" ? "Fermer les options" : lang === "ar" ? "إغلاق الخيارات" : "Close options"
+                  : lang === "fr" ? "Plus d'options" : lang === "ar" ? "خيارات إضافية" : "More options"}
               </button>
 
               {/* Expanded panel */}
@@ -2722,7 +2899,7 @@ export default function AudioPlayer() {
                         className="ml-auto rounded-full border border-rose-200/35 bg-white/10 px-2 py-0.5 text-[0.6rem] font-semibold text-rose-50 transition-colors hover:bg-white/20"
                         onClick={toggle}
                         title={
-                          lang === "fr" ? "Réessayer" : lang === "ar" ? "Retry" : "Retry"
+                          lang === "fr" ? "Réessayer" : lang === "ar" ? "إعادة المحاولة" : "Retry"
                         }
                       >
                         {lang === "fr"
@@ -2793,7 +2970,7 @@ export default function AudioPlayer() {
                             "py-3 text-center text-[0.62rem]",
                           )}
                         >
-                          {lang === "fr" ? "Aucun résultat" : lang === "ar" ? "No results" : "No results"}
+                          {lang === "fr" ? "Aucun résultat" : lang === "ar" ? "لا توجد نتائج" : "No results"}
                         </div>
                       ) : (
                         <div
@@ -2940,7 +3117,7 @@ export default function AudioPlayer() {
                   >
                     <span className="flex items-center gap-1.5">
                       <i className="fas fa-sliders text-[0.5rem]" />
-                      {lang === "fr" ? "Options" : lang === "ar" ? "Options" : "Options"}
+                      {lang === "fr" ? "Options" : lang === "ar" ? "خيارات" : "Options"}
                     </span>
                     <i
                       className={`fas fa-chevron-${showAdvanced ? "up" : "down"} text-[0.5rem]`}
@@ -3004,7 +3181,7 @@ export default function AudioPlayer() {
                       {/* -- Equalizer presets -- */}
                       <div>
                         <div className={playerSectionLabelClass}>
-                          {lang === "fr" ? "Acoustique" : lang === "ar" ? "Acoustics" : "Acoustics"}
+                          {lang === "fr" ? "Acoustique" : lang === "ar" ? "الصوتيات" : "Acoustics"}
                         </div>
                         <div className="flex flex-wrap gap-1">
                           {[
@@ -3059,7 +3236,7 @@ export default function AudioPlayer() {
                       >
                         <span className="flex items-center gap-2">
                           <i className="fas fa-wave-square text-[0.6rem]" />
-                          {lang === "fr" ? "Tartil progressif" : lang === "ar" ? "Progressive Tartil" : "Progressive Tartil"}
+                          {lang === "fr" ? "Tartil progressif" : lang === "ar" ? "ترتيل تدريجي" : "Progressive Tartil"}
                         </span>
                         <span
                           className={cn(

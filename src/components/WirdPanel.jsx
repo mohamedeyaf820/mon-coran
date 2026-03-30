@@ -342,7 +342,7 @@ export default function WirdPanel() {
                   : "Daily wird tracking, history and goal settings."}
             </div>
           </div>
-          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={close}>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={lang === "fr" ? "Fermer" : lang === "ar" ? "اغلاق" : "Close"}>
             <i className="fas fa-times"></i>
           </button>
         </div>

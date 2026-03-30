@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useApp } from "../context/AppContext";
+import { useAppActions, useAppLocale } from "../context/AppContext";
 import { t } from "../i18n";
 import { getAllBookmarks, removeBookmark } from "../services/storageService";
 import { getSurah, toAr } from "../data/surahs";
 
 export default function BookmarksModal() {
-  const { state, dispatch, set } = useApp();
-  const { lang } = state;
+  const { dispatch, set } = useAppActions();
+  const { lang } = useAppLocale();
 
   const [bookmarks, setBookmarks] = useState([]);
 
@@ -66,6 +66,8 @@ export default function BookmarksModal() {
           <button
             className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
             onClick={close}
+            type="button"
+            aria-label={lang === "fr" ? "Fermer" : lang === "ar" ? "اغلاق" : "Close"}
           >
             <i className="fas fa-times"></i>
           </button>

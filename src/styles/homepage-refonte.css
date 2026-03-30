@@ -4,14 +4,16 @@
 
 /* --- LAYOUT GLOBAL --- */
 .hp-wrapper {
+  width: min(100%, 1200px);
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  /* Espacement sous le header et au-dessus du footer */
-  padding-bottom: 6rem;
+  /* Espace dynamique pour eviter que le player mobile cache le contenu */
+  padding-bottom: calc(var(--player-h, 88px) + 2rem);
+  overflow-x: clip;
 }
 
 /* --- HERO (Barre de bienvenue / Stats) --- */
@@ -24,7 +26,7 @@
 
 .hp-hero-title {
   font-family: var(--font-ui);
-  font-size: 1.75rem;
+  font-size: clamp(1.35rem, 1.1rem + 1.2vw, 1.75rem);
   font-weight: 800;
   color: var(--text-primary);
   letter-spacing: -0.02em;
@@ -39,10 +41,12 @@
 /* --- TABS BARR (Navigation Sourate/Juz) --- */
 .hp-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   border-bottom: 1px solid var(--border);
   margin-bottom: 1.5rem;
   padding-bottom: 0.5rem;
+  min-width: 0;
 }
 
 .hp-tab {
@@ -78,6 +82,35 @@
   margin-bottom: 1.5rem;
 }
 
+.hp-actions > * {
+  min-width: 0;
+}
+
+.hp-actions-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hp-actions-count {
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.hp-sort-btn {
+  min-width: 2.1rem;
+  min-height: 2.1rem;
+  padding: 0;
+}
+
+.hp-tab__icon {
+  margin-inline-end: 0.5rem;
+  font-size: 0.92em;
+}
+
 .hp-search-box {
   position: relative;
   flex: 1;
@@ -105,6 +138,31 @@
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.hp-search-clear {
+  position: absolute;
+  right: 0.55rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hp-search-clear:hover {
+  color: var(--text-primary);
+  border-color: rgba(var(--primary-rgb), 0.45);
+}
+
+[dir="rtl"] .hp-search-clear {
+  right: auto;
+  left: 0.55rem;
 }
 
 .hp-search-icon {
@@ -176,24 +234,60 @@
   background: var(--bg-primary);
   border: 1px solid var(--border);
   cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: 0 6px 14px rgba(8, 20, 44, 0.07);
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
   overflow: hidden;
+}
+
+.hp-card::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0.58rem;
+  bottom: 0.58rem;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(var(--primary-rgb), 0.86), rgba(var(--primary-rgb), 0.2));
+  opacity: 0.35;
+  transition: opacity 0.2s ease;
 }
 
 /* Hover effects: subtle border & background shift */
 .hp-card:hover {
+  transform: translateY(-1px);
   border-color: rgba(var(--primary-rgb), 0.4);
-  background: var(--bg-secondary); /* or a very slight tint */
+  background: var(--bg-secondary);
+  box-shadow: 0 12px 20px rgba(var(--primary-rgb), 0.12);
+}
+
+.hp-card:hover::before,
+.hp-card.active::before,
+.hp-card.playing::before {
+  opacity: 0.8;
 }
 
 .hp-card.active {
   border-color: var(--primary);
   background: rgba(var(--primary-rgb), 0.04);
+  box-shadow: 0 12px 20px rgba(var(--primary-rgb), 0.12);
 }
 
 .hp-card.playing {
   border-color: var(--primary);
-  background: rgba(var(--primary-rgb), 0.08); /* slightly stronger than active */
+  background: rgba(var(--primary-rgb), 0.1);
+  box-shadow: 0 14px 24px rgba(var(--primary-rgb), 0.18);
+}
+
+.hp-card:focus-visible {
+  outline: none;
+  border-color: rgba(var(--primary-rgb), 0.75);
+  box-shadow:
+    0 0 0 3px rgba(var(--primary-rgb), 0.2),
+    0 12px 22px rgba(var(--primary-rgb), 0.16);
 }
 
 /* Elements inside the card */
@@ -235,7 +329,7 @@
   min-width: 0; /* for truncation */
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.2rem;
   text-align: start;
 }
 
@@ -254,6 +348,7 @@
   font-size: 0.75rem;
   color: var(--text-secondary);
   font-weight: 500;
+  line-height: 1.25;
 }
 
 /* Arabic Name */
@@ -286,7 +381,7 @@
   border-radius: 50%;
   background: var(--primary);
   color: #fff;
-  border: none;
+  border: 1px solid rgba(var(--primary-rgb), 0.44);
   cursor: pointer;
   transition: all 0.2s ease;
   z-index: 2;
@@ -329,6 +424,11 @@
     color: var(--text-secondary);
     margin-inline-start: 0.5rem;
   }
+
+  .hp-card:active {
+    transform: scale(0.992);
+  }
+
   [dir="rtl"] .hp-card-play {
     transform: none;
   }
@@ -393,7 +493,7 @@
   font-family: var(--font-ui);
   font-size: 0.85rem;
   color: var(--text-muted);
-  width: 15vw;
+  width: clamp(92px, 16vw, 180px);
   text-align: center;
 }
 
@@ -401,7 +501,7 @@
   font-family: var(--font-quran, "Amiri Quran"), serif;
   font-size: 1.35rem;
   color: var(--text-primary);
-  width: 20%;
+  width: clamp(96px, 22vw, 210px);
   text-align: right;
   margin-inline-start: auto;
 }
@@ -465,4 +565,259 @@
   font-family: var(--font-ui);
   font-size: 1rem;
   font-weight: 600;
+}
+
+@media (max-width: 1024px) {
+  .hp-wrapper {
+    padding: 1.15rem 0.92rem;
+    gap: 1.35rem;
+    padding-bottom: calc(var(--player-h, 88px) + 1.8rem);
+  }
+
+  .hp-actions {
+    gap: 0.72rem;
+  }
+
+  .hp-search-box {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 820px) {
+  .hp-wrapper {
+    padding-inline: 0.72rem;
+  }
+
+  .hp-hero-subtitle {
+    font-size: 0.88rem;
+  }
+
+  .hp-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .hp-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hp-tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 0.44rem 0.84rem;
+  }
+
+  .hp-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.58rem;
+  }
+
+  .hp-actions-meta {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .hp-search-box {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .hp-view-toggles {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 640px) {
+  .hp-wrapper {
+    padding: 0.96rem 0.5rem;
+    gap: 1.05rem;
+    padding-bottom: calc(var(--player-h, 88px) + 1.5rem);
+  }
+
+  .hp-hero {
+    margin-bottom: 0.72rem;
+  }
+
+  .hp-hero-subtitle {
+    font-size: 0.84rem;
+  }
+
+  .hp-tab {
+    font-size: 0.84rem;
+    padding: 0.4rem 0.72rem;
+  }
+
+  .hp-search-input {
+    min-height: 2.34rem;
+    font-size: 0.88rem;
+  }
+
+  .hp-actions-meta {
+    width: 100%;
+    flex-wrap: wrap;
+    row-gap: 0.35rem;
+  }
+
+  .hp-actions-count {
+    font-size: 0.78rem;
+  }
+
+  .hp-card {
+    gap: 0.72rem;
+    padding: 0.82rem 0.86rem;
+    border-radius: 0.68rem;
+  }
+
+  .hp-card-num {
+    width: 2.18rem;
+    height: 2.18rem;
+    font-size: 0.76rem;
+  }
+
+  .hp-card-name {
+    font-size: 0.96rem;
+  }
+
+  .hp-card-meta {
+    font-size: 0.7rem;
+  }
+
+  .hp-card-ar {
+    font-size: clamp(1.18rem, 1.08rem + 0.8vw, 1.36rem);
+  }
+
+  .hp-list {
+    gap: 0.36rem;
+  }
+
+  .hp-row {
+    padding: 0.62rem 0.74rem;
+    gap: 0.46rem;
+    border-radius: 0.62rem;
+  }
+
+  .hp-row-num {
+    width: 2.12rem;
+    font-size: 0.78rem;
+  }
+
+  .hp-row-name {
+    min-width: 0;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hp-row-meta {
+    display: none;
+  }
+
+  .hp-row-ar {
+    width: auto;
+    max-width: 44%;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hp-row-play {
+    width: 1.84rem;
+    height: 1.84rem;
+    margin-inline-start: 0.42rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .hp-wrapper {
+    padding-inline: 0.4rem;
+  }
+
+  .hp-hero-title {
+    font-size: 1.22rem;
+  }
+
+  .hp-hero-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .hp-view-btn {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .hp-card {
+    padding: 0.76rem;
+    gap: 0.62rem;
+  }
+
+  .hp-card-ar {
+    font-size: 1.05rem;
+  }
+
+  .hp-card-play {
+    width: 1.88rem;
+    height: 1.88rem;
+  }
+
+  .hp-row {
+    padding: 0.56rem 0.6rem;
+  }
+
+  .hp-row-ar {
+    font-size: 0.98rem;
+    max-width: 40%;
+  }
+}
+
+@media (max-width: 360px) {
+  .hp-wrapper {
+    padding-inline: 0.3rem;
+  }
+
+  .hp-tab {
+    font-size: 0.78rem;
+    padding: 0.34rem 0.62rem;
+  }
+
+  .hp-card {
+    gap: 0.52rem;
+    padding: 0.66rem;
+  }
+
+  .hp-card-num {
+    width: 1.94rem;
+    height: 1.94rem;
+    font-size: 0.72rem;
+  }
+
+  .hp-card-name {
+    font-size: 0.88rem;
+  }
+
+  .hp-card-meta {
+    font-size: 0.66rem;
+  }
+
+  .hp-row {
+    gap: 0.36rem;
+  }
+
+  .hp-row-name {
+    font-size: 0.86rem;
+  }
+
+  .hp-row-play {
+    width: 1.72rem;
+    height: 1.72rem;
+  }
+}
+
+@media (max-height: 560px) and (orientation: landscape) {
+  .hp-wrapper {
+    padding-bottom: calc(var(--player-h, 88px) + 1.1rem);
+  }
 }

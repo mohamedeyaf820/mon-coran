@@ -305,7 +305,7 @@ export default function Header() {
           <div className="hdr-v7__btn-group">
             {/* Douas */}
             <button
-              className={cn("hdr-v7__action-btn hdr-v7__action-btn--wide", showDuas && "is-active")}
+              className={cn("hdr-v7__action-btn hdr-v7__action-btn--wide hdr-v7__btn-duas", showDuas && "is-active")}
               onClick={() => set({ showDuas: true, showHome: false })}
               title={tr({ fr: "Douas", en: "Duas", ar: "الأدعية" })}
               aria-label={tr({ fr: "Douas", en: "Duas", ar: "الأدعية" })}
@@ -318,7 +318,7 @@ export default function Header() {
 
             {/* Thème */}
             <button
-              className="hdr-v7__action-btn"
+              className="hdr-v7__action-btn hdr-v7__btn-theme"
               onClick={cycleTheme}
               title={tr({ fr: "Changer le thème", en: "Change theme", ar: "تغيير الثيم" })}
               aria-label={tr({ fr: "Changer le thème", en: "Change theme", ar: "تغيير الثيم" })}
@@ -328,7 +328,7 @@ export default function Header() {
 
             {/* Paramètres */}
             <button
-              className={cn("hdr-v7__action-btn", state.settingsOpen && "is-active")}
+              className={cn("hdr-v7__action-btn hdr-v7__btn-settings", state.settingsOpen && "is-active")}
               onClick={() => dispatch({ type: "TOGGLE_SETTINGS" })}
               title={i18nT("nav.settings", lang)}
               aria-label={i18nT("nav.settings", lang)}
@@ -338,7 +338,7 @@ export default function Header() {
 
             {/* Recherche */}
             <button
-              className="hdr-v7__search-btn"
+              className="hdr-v7__search-btn hdr-v7__btn-search"
               onClick={() => dispatch({ type: "TOGGLE_SEARCH" })}
               title={`${i18nT("nav.search", lang)} — Ctrl+K`}
               aria-label={i18nT("nav.search", lang)}
@@ -349,7 +349,9 @@ export default function Header() {
           </div>
 
           {/* Statut réseau */}
-          <NetworkStatus />
+          <div className="hdr-v7__net">
+            <NetworkStatus />
+          </div>
         </div>
       </div>
     </header>

@@ -10,7 +10,7 @@ async function openReader(page) {
   await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible();
 }
 
-test("E2E: clic verset recharge playlist vide puis joue", async ({ page }) => {
+test("E2E: clic verset n'active pas l'audio, bouton play explicite oui", async ({ page }) => {
   await page.addInitScript(() => {
     try {
       localStorage.clear();
@@ -33,6 +33,16 @@ test("E2E: clic verset recharge playlist vide puis joue", async ({ page }) => {
   });
 
   await page.locator(".qc-ayah-text-ar").first().click();
+
+  await expect
+    .poll(async () => page.evaluate(() => Number(window.__audioPlayCalls || 0)))
+    .toBe(0);
+
+  const explicitPlay = page
+    .locator(".reader-toolbar-btn--primary, .btn-play-surah")
+    .first();
+  await expect(explicitPlay).toBeVisible();
+  await explicitPlay.click();
 
   await expect
     .poll(async () => page.evaluate(() => Number(window.__audioPlayCalls || 0)))

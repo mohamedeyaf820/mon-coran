@@ -67,6 +67,68 @@ function getCacheTtlByUrl(url) {
   return IDB_CACHE_TTL_BY_KIND[kind] || IDB_CACHE_TTL_BY_KIND.text;
 }
 
+function isObjectLike(value) {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isAyahLike(value) {
+  return (
+    isObjectLike(value) &&
+    Number.isFinite(Number(value.numberInSurah)) &&
+    Number.isFinite(Number(value.number || 0)) &&
+    typeof value.text === 'string'
+  );
+}
+
+function isSurahLike(value) {
+  return (
+    isObjectLike(value) &&
+    Number.isFinite(Number(value.number || 0)) &&
+    Array.isArray(value.ayahs)
+  );
+}
+
+function validateApiDataShape(url, data) {
+  const u = String(url || '').toLowerCase();
+
+  if (/\/search\//.test(u)) {
+    if (!isObjectLike(data) || !Array.isArray(data.matches)) {
+      throw new Error('Invalid API schema: search.matches[] expected');
+    }
+    return data;
+  }
+
+  if (/\/quran\//.test(u)) {
+    if (!isObjectLike(data) || !Array.isArray(data.surahs) || !data.surahs.every(isSurahLike)) {
+      throw new Error('Invalid API schema: quran.surahs[] expected');
+    }
+    return data;
+  }
+
+  if (/\/(surah|juz|page|ayah)\//.test(u)) {
+    if (Array.isArray(data)) {
+      const allObjects = data.every(isObjectLike);
+      if (!allObjects) {
+        throw new Error('Invalid API schema: editions[] objects expected');
+      }
+      return data;
+    }
+
+    if (!isObjectLike(data)) {
+      throw new Error('Invalid API schema: object payload expected');
+    }
+
+    const hasAyahs = Array.isArray(data.ayahs) && data.ayahs.every(isAyahLike);
+    const hasSurahs = Array.isArray(data.surahs) && data.surahs.every(isSurahLike);
+    if (!hasAyahs && !hasSurahs) {
+      throw new Error('Invalid API schema: ayahs[] or surahs[] expected');
+    }
+    return data;
+  }
+
+  return data;
+}
+
 /**
  * Create a new AbortController, cancelling the previous one.
  * This prevents stale requests from slower navigations.
@@ -166,20 +228,21 @@ async function _fetchFromNetwork(url, idbKey, signal) {
       throw new Error(msg);
     }
 
-    cache.set(url, json.data);
+    const validatedData = validateApiDataShape(url, json.data);
+    cache.set(url, validatedData);
     pruneCache();
 
     // Persist to IndexedDB in the background (non-blocking)
     const now = Date.now();
     dbSet(IDB_STORE, {
       key: idbKey || (IDB_API_PREFIX + url),
-      data: json.data,
+      data: validatedData,
       ts: now,
       kind: getCacheKindByUrl(url),
       expiryAt: now + getCacheTtlByUrl(url),
     }).catch(() => { });
 
-    return json.data;
+    return validatedData;
   } catch (err) {
     clearTimeout(timeoutId);
     throw err;
@@ -215,7 +278,7 @@ async function fetchJSONWithCustomTimeout(url, signal, timeoutMs = FETCH_TIMEOUT
       throw new Error(msg);
     }
 
-    return json.data;
+    return validateApiDataShape(url, json.data);
   } catch (err) {
     clearTimeout(timeoutId);
     throw err;

@@ -5,6 +5,31 @@ import { withWordCountCalibrationBump } from "../../utils/karaokeUtils";
 import WarshWordText from "./WarshWordText";
 import { AyahTextRenderer } from "./AyahTextRenderer";
 
+const AYAH_MARKER_TOKEN_RE = /^[۝۞۩﴿﴾\d٠-٩۰-۹]+$/u;
+const DEFAULT_WARSH_CALIBRATION = {
+  offsetSec: 0.2,
+  smoothing: 0.9,
+  lagWordsBase: 0,
+  lagWordsLong: 0,
+  driftPerProgress: 0.05,
+  speedSensitivity: 0.07,
+};
+const DEFAULT_HAFS_CALIBRATION = {
+  offsetSec: 0.15,
+  smoothing: 0.9,
+  lagWordsBase: 0,
+  lagWordsLong: 0,
+  driftPerProgress: 0.03,
+  speedSensitivity: 0.06,
+};
+
+function isAyahMarkerToken(word) {
+  if (!word) return false;
+  const compact = String(word).replace(/\s+/g, "");
+  if (!compact) return false;
+  return AYAH_MARKER_TOKEN_RE.test(compact);
+}
+
 /**
  * KaraokeWarshText – tracks word-by-word progress for QCF4 words.
  */
@@ -64,6 +89,19 @@ export function KaraokeWarshText({
     return Array.from({ length: total }, (_, i) => (i + 1) / total);
   }, [words, hafsText]);
 
+  const markerFlags = useMemo(() => {
+    const total = words?.length || 0;
+    if (total === 0 || !hafsText) return Array.from({ length: total }, () => false);
+    const hafsWords = hafsText.split(/\s+/).filter((w) => w.length > 0);
+    return Array.from({ length: total }, (_, i) => {
+      const hIdx =
+        hafsWords.length <= 1
+          ? 0
+          : Math.round((i * (hafsWords.length - 1)) / Math.max(1, total - 1));
+      return isAyahMarkerToken(hafsWords[hIdx] || "");
+    });
+  }, [words, hafsText]);
+
   // CRITICAL: Always use calibration prop (built by QuranDisplay).
   // Never fallback to undefined reciterId — it breaks all reciter-specific timing.
   // If calibration is undefined, that's a higher-level bug in the component tree.
@@ -75,7 +113,7 @@ export function KaraokeWarshText({
     });
   }
   const effectiveCalibration = withWordCountCalibrationBump(
-    calibration || { offsetSec: 0.2, smoothing: 0.9, lagWordsBase: 0, lagWordsLong: 0, driftPerProgress: 0.05, speedSensitivity: 0.07 },
+    calibration || DEFAULT_WARSH_CALIBRATION,
     words.length,
   );
 
@@ -119,6 +157,7 @@ export function KaraokeWarshText({
       highlightIdx={currentIdx >= 0 ? currentIdx : undefined}
       tajweedColors={tajweedColors}
       fallbackText={fallbackText}
+      markerFlags={markerFlags}
     />
   );
 }
@@ -144,6 +183,15 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
     if (!ayah.hafsText) return null;
     return stripBasmala(ayah.hafsText, surahNum, ayah.numberInSurah);
   }, [ayah.hafsText, surahNum, ayah.numberInSurah]);
+
+  const cleanHafsFallbackText = useMemo(
+    () => stripBasmala(ayah.text, surahNum, ayah.numberInSurah),
+    [ayah.text, surahNum, ayah.numberInSurah],
+  );
+
+  const hafsWordCount = useMemo(() => {
+    return (cleanHafsFallbackText || "").split(/\s+/).filter(Boolean).length;
+  }, [cleanHafsFallbackText]);
 
   if (ayah.warshWords && ayah.warshWords.length > 0) {
     if (isPlaying) {
@@ -175,25 +223,23 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
     );
   }
 
-  const text = stripBasmala(ayah.text, surahNum, ayah.numberInSurah);
-  const hafsWordCount = (text || "").split(/\s+/).filter(Boolean).length;
   // CRITICAL: Always use calibration prop (built by QuranDisplay).
   // Never fallback to undefined reciterId — it breaks all reciter-specific timing.
   if (!calibration) {
     console.warn('[SmartAyahRenderer] Missing calibration prop for Hafs karaoke', {
-      hafsText: text?.length,
+      hafsText: cleanHafsFallbackText?.length,
       wordCount: hafsWordCount,
       isFirstAyah,
     });
   }
   const hafsCalibration = withWordCountCalibrationBump(
-    calibration || { offsetSec: 0.15, smoothing: 0.9, lagWordsBase: 0, lagWordsLong: 0, driftPerProgress: 0.03, speedSensitivity: 0.06 },
+    calibration || DEFAULT_HAFS_CALIBRATION,
     hafsWordCount,
   );
 
   return (
     <AyahTextRenderer
-      text={text}
+      text={cleanHafsFallbackText}
       showTajwid={showTajwid}
       isPlaying={isPlaying}
       isFirstAyah={isFirstAyah}

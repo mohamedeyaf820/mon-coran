@@ -1,4 +1,20 @@
 const ALLOWED_EXTERNAL_PROTOCOLS = new Set(["https:", "mailto:"]);
+const ALLOWED_SVG_TAGS = new Set([
+  "svg",
+  "g",
+  "defs",
+  "radialgradient",
+  "lineargradient",
+  "stop",
+  "rect",
+  "circle",
+  "path",
+  "line",
+  "polyline",
+  "polygon",
+  "text",
+  "tspan",
+]);
 
 const ALLOWED_EXTERNAL_HOSTS = new Set([
   "wa.me",
@@ -19,22 +35,42 @@ export function sanitizeSvgMarkup(svg) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(String(svg || ""), "image/svg+xml");
 
-    doc.querySelectorAll("script,foreignObject").forEach((element) => {
+    doc
+      .querySelectorAll("script,foreignObject,iframe,object,embed,link,meta")
+      .forEach((element) => {
       element.remove();
     });
 
     doc.querySelectorAll("*").forEach((element) => {
+      const tag = String(element.tagName || "").toLowerCase();
+      if (!ALLOWED_SVG_TAGS.has(tag)) {
+        element.remove();
+        return;
+      }
+
       [...element.attributes].forEach((attribute) => {
         const name = attribute.name.toLowerCase();
-        const value = String(attribute.value || "").toLowerCase();
+        const valueRaw = String(attribute.value || "");
+        const value = valueRaw.toLowerCase();
 
         if (name.startsWith("on")) {
           element.removeAttribute(attribute.name);
           return;
         }
 
-        if ((name === "href" || name === "xlink:href") && value.startsWith("javascript:")) {
+        if (
+          name === "style" &&
+          (value.includes("javascript:") || value.includes("expression(") || value.includes("url("))
+        ) {
           element.removeAttribute(attribute.name);
+          return;
+        }
+
+        if (name === "href" || name === "xlink:href") {
+          const isFragmentRef = valueRaw.trim().startsWith("#");
+          if (!isFragmentRef || value.startsWith("javascript:") || value.startsWith("data:")) {
+            element.removeAttribute(attribute.name);
+          }
         }
       });
     });

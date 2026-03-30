@@ -4,6 +4,10 @@ node_modules/
 # Build output
 dist/
 
+# Test artifacts
+test-results/
+playwright-report/
+
 # Backend cache
 server/.cache/
 
