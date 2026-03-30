@@ -100,6 +100,14 @@
     overscroll-behavior: contain;
   }
 
+  /* Reading surface must keep native vertical chaining on mobile. */
+  .app-root .app-main-shell,
+  .app-root .quran-display,
+  .app-root .quran-display-scroll {
+    overscroll-behavior-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .qc-ayah-block,
   .surah-header,
   .page-separator,

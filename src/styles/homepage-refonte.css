@@ -72,6 +72,16 @@
   background: rgba(var(--primary-rgb), 0.08); /* Flat primary hint */
 }
 
+.hp-tab:focus-visible,
+.hp-view-btn:focus-visible,
+.hp-sort-btn:focus-visible,
+.hp-search-clear:focus-visible,
+.hp-card-play:focus-visible,
+.hp-row-play:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.2);
+}
+
 /* --- SEARCH & ACTIONS --- */
 .hp-actions {
   display: flex;
@@ -138,6 +148,11 @@
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.hp-search-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.9;
 }
 
 .hp-search-clear {
@@ -241,6 +256,8 @@
     box-shadow 0.2s ease,
     background 0.2s ease;
   overflow: hidden;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 98px;
 }
 
 .hp-card::before {
@@ -306,7 +323,9 @@
   background: var(--bg-secondary);
   border-radius: 0.5rem;
   transform: rotate(45deg); /* Diamond shape optional, but Quran.com uses diamond badge sometimes */
-  transition: all 0.2s;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .hp-card-num-inner {
@@ -383,7 +402,12 @@
   color: #fff;
   border: 1px solid rgba(var(--primary-rgb), 0.44);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
   z-index: 2;
   pointer-events: none; /* Only active on hover */
 }
@@ -454,6 +478,8 @@
   background: transparent;
   cursor: pointer;
   transition: all 0.2s;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 66px;
 }
 
 .hp-row:last-child {
@@ -518,7 +544,9 @@
   color: var(--text-muted);
   cursor: pointer;
   margin-inline-start: 1rem;
-  transition: all 0.2s;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .hp-row:hover .hp-row-play {
@@ -636,6 +664,16 @@
     padding-bottom: calc(var(--player-h, 88px) + 1.5rem);
   }
 
+  .hp-tab,
+  .hp-view-btn,
+  .hp-sort-btn,
+  .hp-search-clear,
+  .hp-row-play,
+  .hp-card-play {
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+  }
+
   .hp-hero {
     margin-bottom: 0.72rem;
   }
@@ -650,7 +688,7 @@
   }
 
   .hp-search-input {
-    min-height: 2.34rem;
+    min-height: 2.5rem;
     font-size: 0.88rem;
   }
 
@@ -725,9 +763,28 @@
   }
 
   .hp-row-play {
-    width: 1.84rem;
-    height: 1.84rem;
+    width: 2.5rem;
+    height: 2.5rem;
     margin-inline-start: 0.42rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-tab,
+  .hp-search-input,
+  .hp-search-clear,
+  .hp-view-btn,
+  .hp-card,
+  .hp-card-play,
+  .hp-row,
+  .hp-row-play {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .hp-card:hover,
+  .hp-card:active {
+    transform: none !important;
   }
 }
 

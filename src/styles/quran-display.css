@@ -1371,8 +1371,13 @@
     width: 42px;
     height: 42px;
     border: none;
+    border: 1px solid color-mix(in srgb, rgba(var(--primary-rgb), 0.7) 74%, #ffffff 26%);
     border-radius: 50%;
-    background: var(--primary);
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--primary) 86%, #ffffff 14%),
+        var(--primary)
+    );
     color: white;
     font-size: 0.85rem;
     cursor: pointer;
@@ -1400,6 +1405,23 @@
 
 .scroll-top-btn:active {
     transform: translateY(0);
+}
+
+.scroll-top-btn:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 3px rgba(var(--primary-rgb), 0.25),
+        0 8px 22px rgba(var(--primary-rgb), 0.36),
+        0 3px 6px rgba(var(--primary-rgb), 0.2);
+}
+
+@media (max-height: 560px) and (orientation: landscape) {
+    .scroll-top-btn {
+        bottom: calc(var(--player-h) + 0.72rem);
+        inset-inline-end: 0.78rem;
+        width: 38px;
+        height: 38px;
+    }
 }
 
 /* ═══════════════════════════════════════
