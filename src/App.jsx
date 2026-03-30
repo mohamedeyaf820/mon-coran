@@ -460,7 +460,8 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div
-        className={`app-root premium-plus flex flex-col min-h-screen h-dvh w-full overflow-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""}`}
+        className={`app-root premium-plus flex h-dvh min-h-screen flex-col w-full overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""}`}
+        style={{ height: "100dvh", minHeight: "100dvh" }}
         dir={lang === "ar" ? "rtl" : "ltr"}
         data-view={showHome ? "home" : showDuas ? "duas" : "reading"}
         data-display-mode={displayMode}
@@ -520,7 +521,11 @@ export default function App() {
                     ? "المحتوى الرئيسي - القراءة"
                     : "Main content - Reading"
           }
-          className={`app-main app-main-shell flex-1 min-w-0 overflow-y-auto overflow-x-hidden pb-(--player-h) transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
+          className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden pb-(--player-h) transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
+          style={{
+            height: "calc(100dvh - var(--header-h, 72px))",
+            maxHeight: "calc(100dvh - var(--header-h, 72px))",
+          }}
         >
           <div
             className={`app-view-shell ${showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas ? `app-mode-${displayMode}` : ""}`}
@@ -571,9 +576,7 @@ export default function App() {
 
       {/* ── Fixed bottom audio player ── */}
       <Suspense fallback={suspenseFallback}>
-        {deferNonCriticalUI && (
-          <AudioPlayer />
-        )}
+        <AudioPlayer />
       </Suspense>
 
       {/* ── Modals — lazy loaded ── */}

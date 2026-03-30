@@ -53,6 +53,7 @@ import SurahHeader from "./Quran/SurahHeader";
 import TajweedLegend from "./Quran/TajweedLegend";
 import SmartAyahRenderer from "./Quran/SmartAyahRenderer";
 import AyahBlock from "./Quran/AyahBlock";
+import AyahActions from "./AyahActions";
 import CleanPageView from "./Quran/CleanPageView";
 import ReadingToolbar from "./Quran/ReadingToolbar";
 
@@ -144,6 +145,24 @@ export default function QuranDisplay() {
   });
   const followRetryTimerRef = useRef(null);
   const lastFollowKeyRef = useRef("");
+
+  // Reading area scroll can live on .app-main (shell) or on .quran-display.
+  // Always target the active scroll container to keep UX stable across layouts.
+  const getScrollContainer = useCallback(() => {
+    const content = contentRef.current;
+    const shell = content?.closest(".app-main");
+    if (shell && shell.scrollHeight - shell.clientHeight > 1) return shell;
+
+    const docScroll =
+      typeof document !== "undefined"
+        ? document.scrollingElement || document.documentElement
+        : null;
+    if (docScroll && docScroll.scrollHeight - docScroll.clientHeight > 1) {
+      return docScroll;
+    }
+
+    return shell || content || docScroll || null;
+  }, []);
 
   // Close fullPage overlay on Escape key
   useEffect(() => {
@@ -259,7 +278,7 @@ export default function QuranDisplay() {
 
   /* â”€â”€ Track scroll for back-to-top button + reading progress (throttled) â”€â”€ */
   useEffect(() => {
-    const el = contentRef.current;
+    const el = getScrollContainer();
     if (!el) return;
     let ticking = false;
     const handler = () => {
@@ -281,10 +300,10 @@ export default function QuranDisplay() {
     };
     el.addEventListener("scroll", handler, { passive: true });
     return () => el.removeEventListener("scroll", handler);
-  }, []);
+  }, [displayMode, ayahs.length, getScrollContainer]);
 
   const scrollToTop = () => {
-    contentRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    getScrollContainer()?.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const clearFollowRetryTimer = useCallback(() => {
@@ -929,8 +948,8 @@ export default function QuranDisplay() {
 
   // Scroll to top on navigation (instant for speed)
   useEffect(() => {
-    contentRef.current?.scrollTo({ top: 0, behavior: "auto" });
-  }, [currentSurah, currentPage, currentJuz]);
+    getScrollContainer()?.scrollTo({ top: 0, behavior: "auto" });
+  }, [currentSurah, currentPage, currentJuz, getScrollContainer]);
 
   /* â”€â”€ Scroll to specific ayah on initial navigation (e.g. from Duas page) â”€â”€ */
   // Capture the target ayah at mount time â€” only relevant when ayah > 1
@@ -1021,7 +1040,7 @@ export default function QuranDisplay() {
       if (stopped) return;
       const target = resolvePlayingAyahElement(currentPlayingAyah);
       if (target) {
-        const container = contentRef.current;
+        const container = getScrollContainer();
         if (container) {
           const cRect = container.getBoundingClientRect();
           const eRect = target.getBoundingClientRect();
@@ -1063,6 +1082,7 @@ export default function QuranDisplay() {
     mushafLayout,
     resolvePlayingAyahElement,
     clearFollowRetryTimer,
+    getScrollContainer,
   ]);
 
   // Display all ayahs (no chunking)
@@ -1271,9 +1291,9 @@ export default function QuranDisplay() {
   const riwayaBadgeClassName = `page-header-bar__riwaya-badge${
     riwaya === "warsh" ? " is-warsh" : ""
   }`;
-  const modePaneShellClass = "rd-wrapper";
-  const mushafToggleBarClass = "hp-tabs"; // We can reuse hp-tabs or similar, but let's keep it simple
-  const listSurfaceClass = "";
+  const modePaneShellClass = "rd-wrapper rd-shell";
+  const mushafToggleBarClass = "mushaf-layout-toggle-bar rd-mode-switch";
+  const listSurfaceClass = "rd-list-surface";
 
   return (
     <>
@@ -1402,7 +1422,23 @@ export default function QuranDisplay() {
                   riwaya={riwaya}
                   showTranslation={showTranslation}
                   getTranslation={getTranslationForAyah}
+                  onAyahClick={(n) => toggleAyah(n)}
                 />
+                
+                {activeAyah && (
+                  <div className="ayah-actions-modal-overlay" onClick={() => toggleAyah(null)}>
+                    <div className="ayah-actions-modal-content animate-reveal-up" onClick={(e) => e.stopPropagation()}>
+                      <button className="ayah-actions-modal-close" onClick={() => toggleAyah(null)}>
+                        <i className="fas fa-times"></i>
+                      </button>
+                      <AyahActions
+                        surah={currentSurah}
+                        ayah={activeAyah}
+                        ayahData={visibleMushafAyahs.find(a => a.numberInSurah === activeAyah)}
+                      />
+                    </div>
+                  </div>
+                )}
               </>
             )}
 
@@ -1612,9 +1648,25 @@ export default function QuranDisplay() {
                   riwaya={riwaya}
                   showTranslation={showTranslation}
                   getTranslation={getTranslationForAyah}
+                  onAyahClick={(n) => toggleAyah(n)}
                   showSurahHeader={false}
                 />
               ))}
+
+            {activeAyah && mushafLayout === "mushaf" && (
+              <div className="ayah-actions-modal-overlay" onClick={() => toggleAyah(null)}>
+                <div className="ayah-actions-modal-content animate-reveal-up" onClick={(e) => e.stopPropagation()}>
+                  <button className="ayah-actions-modal-close" onClick={() => toggleAyah(null)}>
+                    <i className="fas fa-times"></i>
+                  </button>
+                  <AyahActions
+                    surah={ayahs.find(a => a.number === activeAyah || a.numberInSurah === activeAyah)?.surah?.number || currentSurah}
+                    ayah={activeAyah}
+                    ayahData={ayahs.find(a => a.numberInSurah === activeAyah || a.number === activeAyah)}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Vue liste - utilise AyahBlock (coherent avec sourate/juz) */}
             {mushafLayout !== "mushaf" && (

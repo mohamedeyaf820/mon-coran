@@ -84,6 +84,7 @@ export default function CleanPageView({
   riwaya,
   showTranslation,
   getTranslation,
+  onAyahClick,
   showSurahHeader = true,
 }) {
   const containerRef = useRef(null);
@@ -199,6 +200,13 @@ export default function CleanPageView({
               data-ayah-number={ayah.numberInSurah}
               data-ayah-global={ayah.number}
               className={`cpv-verse${isPlaying ? " cpv-verse--playing" : ""}`}
+              onClick={() => onAyahClick?.(ayah.numberInSurah)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) =>
+                (e.key === "Enter" || e.key === " ") &&
+                onAyahClick?.(ayah.numberInSurah)
+              }
               aria-label={`${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`}
               aria-current={isPlaying ? "true" : undefined}
             >

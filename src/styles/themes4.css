@@ -8,9 +8,9 @@
 [data-theme="light"] {
     --brand-bg: #f8fafc;
     --brand-ink: #0f172a;
-    --brand-accent: #0d9488;
-    --brand-accent-rgb: 13, 148, 136;
-    --theme-arabic-base: #0f0f0f;
+    --brand-accent: #10b981;
+    --brand-accent-rgb: 16, 185, 129;
+    --theme-arabic-base: #000000;
     --theme-scene-a: radial-gradient(
         circle at 12% -14%,
         rgba(26, 143, 146, 0.12),
@@ -92,53 +92,59 @@
 [data-theme="sepia"] {
     --brand-bg: #fdf6e3;
     --brand-ink: #433422;
-    --brand-accent: #b25d06;
-    --brand-accent-rgb: 178, 93, 6;
-    --theme-arabic-base: #2d1f11;
+    --brand-accent: #b57d2a;
+    --brand-accent-rgb: 181, 125, 42;
+    --theme-arabic-base: #1a0f00;
+    
+    /* Audit Fix: Tone down emerald for Sepia to feel more 'Manuscript' (Bronze/Amber) */
+    --emerald: #b57d2a;
+    --emerald-lit: #d4a017;
+    --emerald-pale: #fcf1d1;
+
     --theme-scene-a: radial-gradient(
         circle at 12% -10%,
-        rgba(139, 107, 62, 0.18),
+        rgba(139, 107, 62, 0.22),
         transparent 38%
     );
     --theme-scene-b: radial-gradient(
         circle at 88% -16%,
-        rgba(168, 132, 82, 0.12),
+        rgba(168, 132, 82, 0.16),
         transparent 36%
     );
     --theme-pattern:
-        linear-gradient(90deg, rgba(72, 55, 35, 0.022) 1px, transparent 1px) 0
+        linear-gradient(90deg, rgba(72, 55, 35, 0.025) 1px, transparent 1px) 0
             0 / 92px 92px,
-        linear-gradient(rgba(139, 107, 62, 0.022) 1px, transparent 1px) 0 0 /
+        linear-gradient(rgba(139, 107, 62, 0.025) 1px, transparent 1px) 0 0 /
             92px 92px,
         radial-gradient(
                 circle at 24px 24px,
-                rgba(168, 132, 82, 0.07) 0 1.1px,
+                rgba(168, 132, 82, 0.08) 0 1.1px,
                 transparent 1.35px
             )
             0 0 / 92px 92px;
     --theme-veil: linear-gradient(
         180deg,
-        rgba(255, 250, 242, 0.4),
+        rgba(255, 250, 242, 0.5),
         transparent 24%,
         transparent 76%,
-        rgba(120, 89, 52, 0.18)
+        rgba(120, 89, 52, 0.2)
     );
     --theme-ornament:
         linear-gradient(
             125deg,
-            rgba(255, 248, 238, 0.15),
+            rgba(255, 248, 238, 0.2),
             transparent 30%,
             transparent 70%,
-            rgba(139, 107, 62, 0.09)
+            rgba(139, 107, 62, 0.12)
         ),
         radial-gradient(
             circle at 14% 18%,
-            rgba(168, 132, 82, 0.12),
+            rgba(168, 132, 82, 0.15),
             transparent 18%
         ),
         radial-gradient(
             circle at 84% 18%,
-            rgba(72, 55, 35, 0.085),
+            rgba(72, 55, 35, 0.1),
             transparent 18%
         );
     --theme-hero-wash:
@@ -1687,4 +1693,19 @@ body,
         padding-inline-start: clamp(0.5rem, 1.2vw, 1rem) !important;
         padding-inline-end: clamp(16rem, 24vw, 22rem) !important;
     }
+}
+
+/* ── Surah Names Calligraphy Utility ── */
+.font-surah-names {
+    font-family: 'surahnames', serif !important;
+    font-weight: normal !important;
+    font-style: normal !important;
+    text-transform: none !important;
+    font-variant-numeric: normal !important;
+}
+
+[data-theme="light"] .font-surah-names,
+[data-theme="sepia"] .font-surah-names {
+    opacity: 0.92;
+    filter: brightness(0.6) contrast(1.2);
 }

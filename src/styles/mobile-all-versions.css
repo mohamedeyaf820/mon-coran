@@ -25,7 +25,7 @@
 
 @media (max-width: 1024px) {
   :root {
-    --player-h: 104px;
+    --player-h: 96px;
   }
 
   .app-root {
@@ -59,7 +59,7 @@
   .app-main-shell {
     padding-inline: calc(env(safe-area-inset-left, 0px) + var(--mobile-gutter))
       calc(env(safe-area-inset-right, 0px) + var(--mobile-gutter));
-    padding-bottom: calc(var(--player-h, 72px) + env(safe-area-inset-bottom, 0px) + 0.35rem);
+    padding-bottom: calc(var(--player-h, 72px) + env(safe-area-inset-bottom, 0px) + 0.15rem);
     scroll-padding-top: calc(var(--header-h, 64px) + 0.75rem);
   }
 
@@ -98,6 +98,14 @@
   .notes-list,
   [data-scroll-panel="true"] {
     overscroll-behavior: contain;
+  }
+
+  /* Reading surface must keep native vertical chaining on mobile. */
+  .app-root .app-main-shell,
+  .app-root .quran-display,
+  .app-root .quran-display-scroll {
+    overscroll-behavior-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .qc-ayah-block,
@@ -282,7 +290,7 @@
 
 @media (max-width: 768px) {
   :root {
-    --player-h: 112px;
+    --player-h: 92px;
   }
 
   .app-root .hdr {
@@ -597,7 +605,7 @@
 
 @media (max-width: 640px) {
   :root {
-    --player-h: 104px;
+    --player-h: 88px;
   }
 
   .app-root .hdr__nav-center {
@@ -752,7 +760,7 @@
 
 @media (max-width: 480px) {
   :root {
-    --player-h: 110px;
+    --player-h: 84px;
   }
 
   html,
@@ -920,7 +928,7 @@
 
 @media (max-width: 360px) {
   :root {
-    --player-h: 116px;
+    --player-h: 82px;
   }
 
   .app-root .hp2-item__ar,
@@ -985,7 +993,7 @@
 
 @media (max-height: 500px) and (orientation: landscape) {
   :root {
-    --player-h: 88px;
+    --player-h: 74px;
   }
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock {

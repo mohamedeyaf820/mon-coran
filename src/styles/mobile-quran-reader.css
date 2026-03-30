@@ -491,15 +491,16 @@
 
 .qc-sh-type-pill {
   font-family: var(--font-ui);
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.68rem;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: 3px 10px;
+  padding: 3px 12px;
   border-radius: 20px;
   background: var(--emerald-tint);
   color: var(--emerald);
-  border: 1px solid rgba(16, 90, 48, 0.2);
+  border: 1px solid rgba(var(--primary-rgb), 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .qc-sh-detail-sep {
@@ -509,9 +510,10 @@
 
 .qc-sh-ayah-count {
   font-family: var(--font-ui);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-tertiary);
-  font-weight: 500;
+  font-weight: 600;
+  opacity: 0.85;
 }
 
 /* ─── Reading Toolbar (Quran.com-style) ────────────────────────── */
@@ -543,6 +545,9 @@
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
 }
 
 .reader-toolbar-btn {
@@ -579,7 +584,8 @@
   background: linear-gradient(135deg, var(--emerald), var(--emerald-lit));
   color: #fff;
   border-color: var(--emerald);
-  box-shadow: 0 6px 16px rgba(var(--primary-rgb), 0.28);
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
+  padding: 6px 14px;
 }
 
 .reader-toolbar-btn--primary:disabled {
@@ -587,7 +593,12 @@
   box-shadow: none;
 }
 
-.reader-toolbar-btn i { font-size: 0.8rem; }
+.reader-toolbar-btn i,
+.reader-toolbar-btn svg { 
+  font-size: 0.9rem; 
+  width: 16px;
+  height: 16px;
+}
 
 @media (max-width: 768px) {
   .reader-toolbar {
@@ -605,6 +616,9 @@
     overflow-x: auto;
     flex-wrap: nowrap;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    mask-image: linear-gradient(to right, black 88%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black 88%, transparent 100%);
   }
 
   .reader-toolbar__center::-webkit-scrollbar {
@@ -612,9 +626,10 @@
   }
 
   .reader-toolbar-btn {
-    min-height: 33px;
-    padding: 6px 9px;
-    font-size: 0.71rem;
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 0.72rem;
+    flex-shrink: 0;
   }
 
   .reader-toolbar-btn span {
@@ -623,6 +638,7 @@
 
   .reader-toolbar-btn--primary span {
     display: inline;
+    font-weight: 700;
   }
 }
 

@@ -227,6 +227,9 @@ body {
 
 .app-root .hp2-hero__title {
   font-family: var(--ux-font-display);
+  margin-top: 0.75rem;
+  margin-bottom: 1rem;
+  line-height: 1.1;
 }
 
 .app-root .hp2-panel,

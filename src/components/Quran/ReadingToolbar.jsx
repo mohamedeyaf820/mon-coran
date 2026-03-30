@@ -1,6 +1,17 @@
 import React from "react";
 import { useApp } from "../../context/AppContext";
 import { t } from "../../i18n";
+import { 
+  Play, 
+  Loader2, 
+  List, 
+  BookOpen, 
+  Languages, 
+  Palette, 
+  Type, 
+  GraduationCap 
+} from "lucide-react";
+import { cn } from "../../lib/utils";
 
 /**
  * ReadingToolbar – Quran.com-style compact toolbar below the surah header.
@@ -41,12 +52,15 @@ export default function ReadingToolbar({ surahNum, onPlaySurah, preparingSurah }
           onClick={onPlaySurah}
           disabled={preparingSurah === surahNum}
           aria-label={t("audio.playSurah", lang)}
-          style={{ gap: 8 }}
         >
-          <i className={`fas fa-${preparingSurah === surahNum ? "circle-notch fa-spin" : "play"}`} />
+          {preparingSurah === surahNum ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <Play size={16} fill="currentColor" />
+          )}
           <span className="hidden sm:inline">
             {preparingSurah === surahNum
-              ? lang === "fr" ? "Préparation..." : "Loading..."
+              ? lang === "fr" ? "Chargement..." : "Loading..."
               : t("audio.playSurah", lang)}
           </span>
         </button>
@@ -55,7 +69,7 @@ export default function ReadingToolbar({ surahNum, onPlaySurah, preparingSurah }
       {/* Center: Reading mode toggles */}
       <div className="reader-toolbar__center" style={{ gap: 4 }}>
         <button
-          className={`reader-toolbar-btn${mushafIsOn ? " active" : ""}`}
+          className={cn("reader-toolbar-btn", mushafIsOn && "active")}
           onClick={toggleMushaf}
           title={
             mushafIsOn
@@ -68,7 +82,7 @@ export default function ReadingToolbar({ surahNum, onPlaySurah, preparingSurah }
           }
           aria-pressed={mushafIsOn}
         >
-          <i className={`fas ${mushafIsOn ? "fa-list-ul" : "fa-book-open"}`} />
+          {mushafIsOn ? <List size={16} /> : <BookOpen size={16} />}
           <span className="hidden md:inline">
             {mushafIsOn
               ? lang === "fr"
@@ -79,37 +93,40 @@ export default function ReadingToolbar({ surahNum, onPlaySurah, preparingSurah }
         </button>
 
         <button
-          className={`reader-toolbar-btn${showTranslation ? " active" : ""}`}
+          className={cn("reader-toolbar-btn", showTranslation && "active")}
           onClick={toggleTranslation}
           title={lang === "fr" ? "Traduction" : "Translation"}
           aria-pressed={showTranslation}
         >
-          <i className="fas fa-language" />
+          <Languages size={16} />
           <span className="hidden md:inline">
             {lang === "fr" ? "Traduction" : "Translation"}
           </span>
         </button>
 
         <button
-          className={`reader-toolbar-btn${showTajwid ? " active" : ""}`}
+          className={cn("reader-toolbar-btn", showTajwid && "active")}
           onClick={toggleTajweed}
           title={lang === "fr" ? "Couleurs Tajwid" : "Tajweed Colors"}
           aria-pressed={showTajwid}
         >
-          <i className="fas fa-palette" />
+          <Palette size={16} />
           <span className="hidden md:inline">Tajweed</span>
         </button>
 
         {riwaya !== "warsh" && (
           <button
-            className={`reader-toolbar-btn${showWordByWord ? " active" : ""}`}
+            className={cn("reader-toolbar-btn", showWordByWord && "active")}
             onClick={toggleWBW}
             title={lang === "fr" ? "Mot à mot" : "Word by Word"}
             aria-pressed={showWordByWord}
           >
-            <i className="fas fa-text-width" />
+            <Type size={16} />
             <span className="hidden md:inline">
-              {lang === "fr" ? "Mot à mot" : "Word by Word"}
+              {lang === "fr" ? "Mot à mot" : "WbW"}
+            </span>
+            <span className="md:hidden">
+              {lang === "fr" ? "M-à-M" : "WbW"}
             </span>
           </button>
         )}
@@ -118,14 +135,14 @@ export default function ReadingToolbar({ surahNum, onPlaySurah, preparingSurah }
       {/* Right: View mode */}
       <div className="reader-toolbar__right">
         <button
-          className={`reader-toolbar-btn${memMode ? " active" : ""}`}
+          className={cn("reader-toolbar-btn", memMode && "active")}
           onClick={toggleMem}
           title={lang === "fr" ? "Mémorisation" : "Memorize"}
           aria-pressed={memMode}
         >
-          <i className="fas fa-graduation-cap" />
+          <GraduationCap size={16} />
           <span className="hidden md:inline">
-            {lang === "fr" ? "Memo" : "Mem"}
+            {lang === "fr" ? "Mémo" : "Mem"}
           </span>
         </button>
       </div>

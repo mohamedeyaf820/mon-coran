@@ -3,13 +3,7 @@ import { parseTajwid } from '../../data/tajwidRules';
 
 /**
  * TajweedText — renders Arabic text with Tajweed colour-coding.
- *
- * Each segment produced by parseTajwid() that carries a ruleId is wrapped
- * in a <span> whose colour maps to the CSS variable --tajwid-{ruleId}.
- * Plain segments (ruleId === null) render without any wrapper.
- *
- * Performance: memoised on (text, riwaya, enabled) so repeated re-renders
- * from parent state changes are cheap.
+ * Plus custom 'Waqf' (Stop Signs) redesign for Expert UI/UX (Sakīna).
  */
 const TajweedText = React.memo(function TajweedText({
     text,
@@ -26,27 +20,52 @@ const TajweedText = React.memo(function TajweedText({
         }
     }, [text, riwaya, enabled]);
 
+    const waqfRegex = /([\u06D6-\u06DC])/g;
+
     if (!text) return null;
 
-    // Tajweed disabled or parse failed → plain text
+    // Simple plain text path (handling waqf even if tajwed is off)
     if (!enabled || !segments || segments.length === 0) {
-        return <span>{text}</span>;
-    }
-
-    // Single plain segment → no extra DOM node
-    if (segments.length === 1 && !segments[0].ruleId) {
+        if (waqfRegex.test(text)) {
+            const parts = text.split(waqfRegex);
+            return (
+                <span>
+                    {parts.map((p, j) => 
+                        waqfRegex.test(p) 
+                            ? <span key={j} className="waqf-marker" title="Stop Sign">{p}</span>
+                            : p
+                    )}
+                </span>
+            );
+        }
         return <span>{text}</span>;
     }
 
     return (
         <span>
             {segments.map((seg, i) => {
+                const color = seg.ruleId
+                    ? (tajweedColors && tajweedColors[seg.ruleId]) || `var(--tajwid-${seg.ruleId})`
+                    : 'inherit';
+
+                // Redesign: Waqf markers identification within segments
+                if (waqfRegex.test(seg.text)) {
+                    const parts = seg.text.split(waqfRegex);
+                    return (
+                        <span key={i} style={{ color }} data-tajwid={seg.ruleId || 'none'}>
+                            {parts.map((p, j) => 
+                                waqfRegex.test(p) 
+                                    ? <span key={j} className="waqf-marker" title="Stop Sign">{p}</span>
+                                    : p
+                            )}
+                        </span>
+                    );
+                }
+
                 if (!seg.ruleId) {
                     return <React.Fragment key={i}>{seg.text}</React.Fragment>;
                 }
-                // Use CSS variable so themes can override individual colours
-                const color = (tajweedColors && tajweedColors[seg.ruleId])
-                    || `var(--tajwid-${seg.ruleId})`;
+
                 return (
                     <span
                         key={i}

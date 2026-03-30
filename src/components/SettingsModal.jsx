@@ -1,4 +1,29 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { 
+  Palette, 
+  Book, 
+  Type, 
+  Volume2, 
+  Database, 
+  Wrench,
+  X,
+  ChevronDown,
+  Loader2,
+  AlertTriangle,
+  SkipBack,
+  Play,
+  Pause,
+  SkipForward,
+  Settings2,
+  Maximize2,
+  Minimize2,
+  Volume1,
+  VolumeX,
+  Mic2,
+  Check,
+  SlidersHorizontal
+} from "lucide-react";
+
 import { useApp } from "../context/AppContext";
 import { t, LANGUAGES } from "../i18n";
 import { downloadExport, importFromFile } from "../services/exportService";
@@ -12,10 +37,10 @@ import {
   removeSurahCacheForReciter,
 } from "../services/downloadService";
 import {
-  getDefaultReciterId,
   getReciter,
   getRecitersByRiwaya,
   isSurahOnlyReciter,
+  RECITER_PHOTOS_MAP,
 } from "../data/reciters";
 import SURAHS from "../data/surahs";
 import {
@@ -44,39 +69,40 @@ import { cn, toast } from "../lib/utils";
 import { openExternalUrl } from "../lib/security";
 import "../styles/settings-refonte.css";
 
+
 const TABS = [
   {
     id: "apparence",
-    icon: "fa-palette",
+    icon: <Palette size={18} />,
     fr: "Apparence",
     ar: "المظهر",
     en: "Appearance",
   },
   {
     id: "coran",
-    icon: "fa-book-quran",
+    icon: <Book size={18} />,
     fr: "Coran",
     ar: "القرآن",
     en: "Quran",
   },
-  { id: "texte", icon: "fa-font", fr: "Texte", ar: "النص", en: "Text" },
+  { id: "texte", icon: <Type size={18} />, fr: "Texte", ar: "النص", en: "Text" },
   {
     id: "audio",
-    icon: "fa-volume-high",
+    icon: <Volume2 size={18} />,
     fr: "Audio",
     ar: "الصوت",
     en: "Audio",
   },
   {
     id: "donnees",
-    icon: "fa-database",
+    icon: <Database size={18} />,
     fr: "Données",
     ar: "البيانات",
     en: "Data",
   },
   {
     id: "outils",
-    icon: "fa-screwdriver-wrench",
+    icon: <Wrench size={18} />,
     fr: "Outils",
     ar: "الأدوات",
     en: "Tools",
@@ -1081,7 +1107,7 @@ export default function SettingsModal() {
       <div className={headerClass}>
           <div className="sm-header__left">
             <span className="sm-header__icon" aria-hidden="true">
-              <i className="fas fa-sliders" />
+              <Settings2 size={20} />
             </span>
             <h2 className="sm-header__title">{t("settings.title", lang)}</h2>
           </div>
@@ -1091,7 +1117,7 @@ export default function SettingsModal() {
             aria-label={lang === "ar" ? "إغلاق" : "Fermer"}
             ref={closeButtonRef}
           >
-            <i className="fas fa-times" aria-hidden="true"></i>
+            <X size={20} />
           </button>
         </div>
 
@@ -1112,7 +1138,7 @@ export default function SettingsModal() {
                 tabIndex={activeTab === tab.id ? 0 : -1}
                 onKeyDown={(event) => handleTabKeyNavigation(event, index)}
               >
-                <i className={`fas ${tab.icon}`} aria-hidden="true"></i>
+                {tab.icon}
                 <span className="settings-nav-label">{tabLabel(tab)}</span>
               </button>
             ))}
@@ -1122,7 +1148,7 @@ export default function SettingsModal() {
           <div className={contentClass} role="tabpanel" id={activePanelId} aria-labelledby={`settings-tab-${activeTab}`}>
             <div className="sm-hero">
               <div className="sm-hero__eyebrow">
-                <i className={`fas ${activeTabConfig.icon}`} aria-hidden="true" />
+                {activeTabConfig.icon}
                 {tabLabel(activeTabConfig)}
               </div>
               <h3 className="sm-hero__title">{settingsHero.title}</h3>
@@ -1903,10 +1929,7 @@ export default function SettingsModal() {
                 <div className={cn(cardClass, "settings-reciter-card")}>
                   <div className="reciter-info-row">
                     <span className="reciter-avatar">
-                      <i
-                        className="fas fa-microphone-lines"
-                        aria-hidden="true"
-                      ></i>
+                      <Mic2 size={24} />
                     </span>
                     <div className="reciter-info-text">
                       <div className="reciter-name">
@@ -2104,7 +2127,7 @@ export default function SettingsModal() {
                     {isSurahStreamReciter && (
                       <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs leading-relaxed text-[var(--text-secondary)]">
                         {lang === "fr"
-                          ? "Le hors ligne ayah par ayah n'est pas encore disponible pour les recitateurs Warsh en sourate complete."
+                          ? "Le hors ligne ayah par ayah n'est pas encore disponible pour les récitateurs Warsh en sourate complète."
                           : lang === "ar"
                             ? "التحميل دون اتصال آية بآية غير متاح بعد لقراء ورش بصيغة السورة كاملة."
                             : "Ayah-by-ayah offline download is not available yet for full-surah Warsh reciters."}
@@ -2144,10 +2167,7 @@ export default function SettingsModal() {
                 {/* Reciter selector */}
                 <div className={cardClass}>
                   <div className="sm-card-label">
-                    <i
-                      className="fas fa-microphone-lines"
-                      aria-hidden="true"
-                    ></i>
+                    <Mic2 size={16} className="text-amber-400" />
                     {lang === "fr"
                       ? "Choisir le récitateur"
                       : lang === "ar"
@@ -2163,10 +2183,20 @@ export default function SettingsModal() {
                         reciterAvailabilityById,
                       );
                       const isUnavailable = unavailableMs > 0;
+                      
+                      // Using the same URL mapping logic as AudioPlayer
+                      const reciterPhoto = RECITER_PHOTOS_MAP[r.id] || `https://ui-avatars.com/api/?name=${r.nameEn || r.id}&background=105a30&color=fff&size=256`;
+                      
                       return (
                         <button
                           key={r.id}
-                          className={`settings-reciter-item${active ? " active" : ""}${isUnavailable && !active ? " is-unavailable" : ""}`}
+                          className={cn(
+                            "group relative flex flex-col p-3 rounded-2xl border transition-all duration-300",
+                            active 
+                              ? "bg-amber-400/15 border-amber-400/40 shadow-lg shadow-amber-900/20" 
+                              : "bg-white/[0.04] border-white/10 hover:bg-white/[0.08] hover:border-white/20",
+                            isUnavailable && !active && "opacity-50 cursor-not-allowed"
+                          )}
                           onClick={() => {
                             if (isUnavailable && !active) return;
                             set({ reciter: r.id });
@@ -2183,46 +2213,57 @@ export default function SettingsModal() {
                               : undefined
                           }
                         >
-                          <span className="settings-reciter-avatar">
-                            <i
-                              className="fas fa-microphone"
-                              aria-hidden="true"
-                            />
-                          </span>
-                          <span className="settings-reciter-info">
-                            <span className="settings-reciter-name">
+                          <div className="relative mb-3 flex justify-center">
+                            <div className={cn(
+                              "relative w-20 h-20 rounded-2xl overflow-hidden border-2 transition-transform duration-300 group-hover:scale-105",
+                              active ? "border-amber-400" : "border-white/10"
+                            )}>
+                              <img 
+                                src={reciterPhoto} 
+                                alt="" 
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = `https://ui-avatars.com/api/?name=${r.nameEn || r.id}&background=105a30&color=fff&size=256`;
+                                }}
+                              />
+                              {active && (
+                                <div className="absolute inset-0 bg-amber-400/20 flex items-center justify-center">
+                                  <div className="bg-amber-400 text-black rounded-full p-1 shadow-lg">
+                                    <Check size={14} strokeWidth={4} />
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className="flex flex-col items-center text-center gap-1">
+                            <span className="text-sm font-bold text-[var(--text-primary)] line-clamp-1">
                               {lang === "ar"
                                 ? r.name
                                 : lang === "fr"
                                   ? r.nameFr
                                   : r.nameEn}
                             </span>
-                            <span className="settings-reciter-style">
+                            <span className="text-[0.68rem] text-[var(--text-secondary)] font-medium uppercase tracking-wider opacity-60">
                               {r.style || "murattal"}
-                              {r.audioMode === "surah"
-                                ? lang === "fr"
-                                  ? " · sourate complete"
-                                  : lang === "ar"
-                                    ? " · سورة كاملة"
-                                    : " · full surah"
-                                : ""}
-                              {index === 0
-                                ? lang === "fr"
-                                  ? " · rapide"
-                                  : lang === "ar"
-                                    ? " · سريع"
-                                  : " · fast"
-                                : ""}
-                              {latency ? ` · ${formatLatency(latency)}` : ""}
-                              {r.cdnType === "mp3quran-surah" ? " · MP3Quran" : ""}
                             </span>
-                          </span>
-                          {active && (
-                            <i
-                              className="fas fa-check settings-reciter-check"
-                              aria-hidden="true"
-                            />
-                          )}
+                            
+                            {(latency || r.audioMode === "surah" || index === 0) && (
+                              <div className="mt-1 flex flex-wrap justify-center gap-1">
+                                {index === 0 && (
+                                  <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 text-[0.6rem] font-bold border border-emerald-500/20">
+                                    {lang === "fr" ? "RAPIDE" : lang === "ar" ? "سريع" : "FAST"}
+                                  </span>
+                                )}
+                                {r.audioMode === "surah" && (
+                                  <span className="px-1.5 py-0.5 rounded-md bg-sky-500/10 text-sky-400 text-[0.6rem] font-bold border border-sky-500/20">
+                                    {lang === "fr" ? "SOURATE" : lang === "ar" ? "سورة" : "SURAH"}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </button>
                       );
                     })}
@@ -2232,7 +2273,7 @@ export default function SettingsModal() {
                 {/* Sync offset */}
                 <div className={cardClass}>
                   <div className="sm-card-label">
-                    <i className="fas fa-sliders" aria-hidden="true"></i>
+                    <SlidersHorizontal size={16} className="text-sky-400" />
                     {lang === "fr"
                       ? "Décalage synchro audio"
                       : lang === "ar"

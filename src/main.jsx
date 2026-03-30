@@ -4,6 +4,7 @@ import App from "./App";
 import { AppProvider } from "./context/AppContext";
 import "./styles/index.css";
 import "./styles/platform-overhaul.css";
+import "./styles/responsive-zen.css";
 
 let fontAwesomeStylesPromise = null;
 

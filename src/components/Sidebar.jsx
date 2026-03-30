@@ -87,6 +87,7 @@ export default function Sidebar() {
       <aside
         className={cn("sb-wrapper", sidebarOpen && "open")}
         role="navigation"
+        data-tab={tab}
         onClick={(e) => e.stopPropagation()}
       >
         {/* ── HEADER ── */}
@@ -182,6 +183,7 @@ export default function Sidebar() {
 
           {tab === "surah" && filteredSurahs.map((s) => {
             const isActive = s.n === currentSurah && displayMode === "surah";
+            const surahCalligraphyId = String(s.n).padStart(3, "0");
             return (
               <div
                 key={s.n}
@@ -201,7 +203,7 @@ export default function Sidebar() {
                     {s.ayahs} {lang === "ar" ? "آية" : "v."}
                   </span>
                 </div>
-                <div className="sb-item-ar">{s.ar}</div>
+                <div className="sb-item-ar font-surah-names" aria-label={s.ar}>{surahCalligraphyId}</div>
               </div>
             );
           })}
@@ -245,14 +247,15 @@ export default function Sidebar() {
                 <button
                   className="sb-page-go-btn"
                   onClick={submitPageJump}
+                  aria-label={lang === "fr" ? "Aller a la page" : lang === "ar" ? "الانتقال الى الصفحة" : "Go to page"}
                 >
-                  <i className="fas fa-arrow-right" />
+                  <i className={`fas fa-arrow-${isRtl ? "left" : "right"}`} />
                 </button>
               </div>
-              <div className="sb-section-header" style={{ marginBottom: "0.5rem", marginTop: "1rem", padding: "0" }}>
+              <div className="sb-section-header sb-section-header--plain">
                  <span>{lang === "fr" ? "Sélection rapide Juz" : lang === "ar" ? "اختيار الجزء السريع" : "Quick Juz Selection"}</span>
               </div>
-              <div className="sb-page-grid" style={{ gridTemplateColumns: "repeat(5, 1fr)" }}>
+              <div className="sb-page-grid sb-page-grid--juz">
                 {JUZ_PAGE_RANGES.map(range => (
                   <button
                     key={range.juz}
@@ -266,10 +269,10 @@ export default function Sidebar() {
                   </button>
                 ))}
               </div>
-              <div className="sb-section-header" style={{ marginBottom: "0.5rem", marginTop: "1.5rem", padding: "0" }}>
+              <div className="sb-section-header sb-section-header--plain">
                  <span>{lang === "fr" ? "Pages" : lang === "ar" ? "الصفحات" : "Pages"}</span>
               </div>
-              <div className="sb-page-grid">
+              <div className="sb-page-grid sb-page-grid--pages">
                 {(() => {
                   const range = JUZ_PAGE_RANGES.find(r => r.juz === selectedJuzForPages) || JUZ_PAGE_RANGES[0];
                   const pages = [];

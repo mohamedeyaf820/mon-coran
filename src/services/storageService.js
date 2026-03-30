@@ -94,6 +94,7 @@ const LEGACY_THEME_MAP = {
 };
 const VALID_RIWAYAS = ["hafs", "warsh"];
 const VALID_DISPLAY_MODES = ["surah", "page", "juz"];
+const VALID_AUDIO_PLAYER_SKINS = ["orbit", "classic"];
 const VALID_FONTS = [
   // Polices officielles mushaf (priorité)
   "mushaf-1441h",
@@ -161,6 +162,10 @@ function isValidClockTime(value) {
   const hours = Number(match[1]);
   const minutes = Number(match[2]);
   return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
+}
+
+function sanitizeAudioPlayerSkin(value) {
+  return VALID_AUDIO_PLAYER_SKINS.includes(value) ? value : "orbit";
 }
 
 function sanitizeLatencyMap(input) {
@@ -256,6 +261,7 @@ const DEFAULT_SETTINGS = {
   showDuas: false,
   focusReading: false,
   playerMinimized: false,
+  audioPlayerSkin: "orbit",
   lastPosition: { surah: 1, ayah: 1, page: 1, juz: 1 },
 };
 
@@ -299,6 +305,7 @@ export function getSettings() {
       reciterAvailabilityById: sanitizeReciterAvailabilityMap(
         parsed?.reciterAvailabilityById,
       ),
+      audioPlayerSkin: sanitizeAudioPlayerSkin(parsed?.audioPlayerSkin),
     };
 
     if (usedLegacy && isEncryptionUnlocked()) {
@@ -408,6 +415,7 @@ function sanitizeSettings(settings) {
       safeInput.playerMinimized !== undefined
         ? Boolean(safeInput.playerMinimized)
         : false,
+    audioPlayerSkin: sanitizeAudioPlayerSkin(safeInput.audioPlayerSkin),
     wirdGoalType: ["pages", "hizb", "juz"].includes(safeInput.wirdGoalType)
       ? safeInput.wirdGoalType
       : "pages",

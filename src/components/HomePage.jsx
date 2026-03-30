@@ -377,6 +377,32 @@ function FlowerBadge({ className = "" }) {
   );
 }
 
+/* Helper to get reciter photo */
+const RECITER_PHOTOS = {
+  "ar.alafasy": "https://static.quran.com/images/reciters/7/mishary-rashid-alafasy.png",
+  "ar.abdulbasitmurattal": "https://static.quran.com/images/reciters/1/abdul-basit.png",
+  "ar.abdulbasitmujawwad": "https://static.quran.com/images/reciters/1/abdul-basit.png",
+  "ar.husary": "https://static.quran.com/images/reciters/10/mahmoud-khalil-al-husary.png",
+  "ar.minshawi": "https://static.quran.com/images/reciters/12/muhammad-siddiq-al-minshawi.png",
+  "ar.minshawimujawwad": "https://static.quran.com/images/reciters/12/muhammad-siddiq-al-minshawi.png",
+  "ar.saoodshuraym": "https://static.quran.com/images/reciters/8/saud-ash-shuraym.png",
+  "ar.abdurrahmaansudais": "https://static.quran.com/images/reciters/3/abdur-rahman-as-sudais.png",
+  "ahmed_ajmy": "https://static.quran.com/images/reciters/5/ahmed-al-ajamy.png",
+  "maher_almuaiqly": "https://static.quran.com/images/reciters/11/maher-al-muaiqly.png",
+  "yasser_dossari_hafs": "https://static.quran.com/images/reciters/14/yasser-ad-dussary.png",
+  "nasser_alqatami": "https://static.quran.com/images/reciters/13/nasser-al-qatami.png",
+  "ali_jabir": "https://static.quran.com/images/reciters/2/ali-jaber.png",
+  "hudhaify": "https://static.quran.com/images/reciters/4/ali-al-hudhaify.png",
+  "muhammad_ayyoub": "https://static.quran.com/images/reciters/9/muhammad-ayyoub.png",
+  "fares_abbad": "https://static.quran.com/images/reciters/6/fares-abbad.png",
+};
+
+function getReciterPhoto(id) {
+  if (RECITER_PHOTOS[id]) return RECITER_PHOTOS[id];
+  // Fallback high-quality placeholder with gradient
+  return `https://ui-avatars.com/api/?name=${id}&background=105a30&color=fff&size=128&bold=true`;
+}
+
 function PercentBar({ value }) {
   const pct = Math.max(0, Math.min(100, value));
 
@@ -503,13 +529,23 @@ const SurahCard = memo(function SurahCard({
           className="hp-row-ar"
           dir="rtl"
           lang="ar"
+          aria-label={surah.ar}
           style={{
             direction: "rtl",
             unicodeBidi: "isolate",
-            lineHeight: 1.2,
+            lineHeight: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end"
           }}
         >
-          {surah.ar}
+          <img 
+            src={`https://static.quran.com/images/surah/symbols/sname_${surah.n}.svg`} 
+            alt={surah.ar}
+            className="surah-name-svg"
+            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
+          />
+          <span style={{ display: 'none' }}>{surah.ar}</span>
         </span>
         <button
           className="hp-row-play"
@@ -575,7 +611,13 @@ const SurahCard = memo(function SurahCard({
         aria-label={surah.ar}
         title={surah.ar}
       >
-        {surahCalligraphyId}
+        <img 
+          src={`https://static.quran.com/images/surah/symbols/sname_${surah.n}.svg`} 
+          alt={surah.ar}
+          className="surah-name-svg"
+          onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
+        />
+        <span style={{ display: 'none' }}>{surah.ar}</span>
       </span>
 
       <button
@@ -646,6 +688,52 @@ const JuzCard = memo(function JuzCard({
         <span className="hp-card-meta">{name}</span>
       </div>
     </button>
+  );
+});
+
+/* --- BLOG & REFLECTIONS (Expert UI/UX) --- */
+const MOCK_BLOG_POSTS = [
+  {
+    id: 1,
+    tag: "Reflections",
+    title: "Les bienfaits spirituels de la lecture quotidienne du Coran",
+    date: "30 Mars 2026",
+    readTime: "5 min",
+    img: "/quran_reflection_blog_thumb_1774927526673.png"
+  },
+  {
+    id: 2,
+    tag: "Apprentissage",
+    title: "Guide pratique : Perfectionner son Tajwid en 5 étapes",
+    date: "28 Mars 2026",
+    readTime: "8 min",
+    img: "/tajweed_learning_blog_thumb_1774927566373.png"
+  },
+  {
+    id: 3,
+    tag: "Conseils",
+    title: "Mémoriser le Coran : Stratégies pour une rétention durable",
+    date: "25 Mars 2026",
+    readTime: "6 min",
+    img: "/hifz_tips_blog_thumb_1774927620229.png"
+  }
+];
+
+const BlogCard = memo(function BlogCard({ post, lang }) {
+  return (
+    <div className="hp-card hp-card--blog animate-fadeInScale">
+      <div className="hp-blog-img-wrap">
+        <img src={post.img} alt={post.title} className="hp-blog-img" loading="lazy" />
+      </div>
+      <div className="hp-blog-content">
+        <span className="hp-blog-tag">{post.tag}</span>
+        <h3 className="hp-blog-title">{post.title}</h3>
+        <div className="hp-blog-footer">
+          <span>{post.date}</span>
+          <span><i className="far fa-clock mr-1" /> {post.readTime}</span>
+        </div>
+      </div>
+    </div>
   );
 });
 
@@ -1728,61 +1816,6 @@ export default function HomePage({ lowPerfMode = false }) {
         </div>
       </section>
 
-      {/* ACCES RAPIDE */}
-      <nav
-        className="hp2-quickbar !relative !z-10 !rounded-2xl !border !px-4 !py-3 !backdrop-blur-md"
-        aria-label={t("quickAccess")}
-        style={HOME_DEFERRED_SECTION_STYLE}
-      >
-        <span className="hp2-quickbar__title">
-          <i className="fas fa-bolt" />
-          {t("quickAccess")}
-        </span>
-        <div className="hp2-quickbar__track mt-2">
-          <button
-            className="hp2-qchip hp2-qchip--special !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.02]"
-            onClick={openDuas}
-          >
-            <i className="fas fa-hands-praying" />
-            {lang === "ar" ? "أدعية" : lang === "fr" ? "Douas" : "Duas"}
-          </button>
-          <button
-            className="hp2-qchip !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.02]"
-            onClick={() => selectContentTab("recitations")}
-          >
-            <span className="hp2-qchip__ar">
-              {lang === "ar" ? "التلاوات" : "Recitations"}
-            </span>
-            <span className="hp2-qchip__sub">
-              {lang === "fr" ? "Recitateurs" : lang === "ar" ? "القراء" : "Reciters"}
-            </span>
-          </button>
-          <button
-            className="hp2-qchip !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.02]"
-            onClick={() => selectContentTab("radio")}
-          >
-            <span className="hp2-qchip__ar">{lang === "ar" ? "الراديو" : "Radio"}</span>
-            <span className="hp2-qchip__sub">
-              {lang === "fr" ? "Stations" : lang === "ar" ? "محطات" : "Stations"}
-            </span>
-          </button>
-          {QUICK_ACCESS.map(({ n, label_fr, label_en }) => {
-            const s = SURAHS[n - 1];
-            return (
-              <button
-                key={n}
-                className="hp2-qchip !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.02]"
-                onClick={() => goSurah(n)}
-              >
-                <span className="hp2-qchip__ar">{s?.ar}</span>
-                <span className="hp2-qchip__sub">
-                  {lang === "fr" ? label_fr : lang === "ar" ? s?.ar : label_en}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </nav>
 
       {/* BANDE STATS */}
 
@@ -1891,6 +1924,18 @@ export default function HomePage({ lowPerfMode = false }) {
                 <i className="fas fa-broadcast-tower hp-tab__icon" />
                 {t("radio")}
               </button>
+              <button
+                type="button"
+                className={cn(
+                  "hp-tab",
+                  activeTab === "blog" && "active",
+                )}
+                onClick={() => selectContentTab("blog")}
+                aria-pressed={activeTab === "blog"}
+              >
+                <i className="fas fa-feather-pointed hp-tab__icon" />
+                {lang === "fr" ? "Blog" : lang === "ar" ? "مقالات" : "Blog"}
+              </button>
             </div>
 
             {/* Recherche */}
@@ -1984,11 +2029,33 @@ export default function HomePage({ lowPerfMode = false }) {
               )}
             </div>
           </div>
+          {activeTab === "recitations" && (
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              {[
+                { id: "all", label: "Tous" },
+                { id: "murattal", label: "Murattal" },
+                { id: "mujawwad", label: "Mujawwad" },
+                { id: "muallim", label: "Muallim" },
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`hp2-chip ${reciterStyleFilter === item.id ? "hp2-chip--on" : ""}`}
+                  onClick={() => setReciterStyleFilter(item.id)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div
             className={cn(
-              viewMode === "grid"
-                ? cn("hp-grid", activeTab === "surah" && "hp-grid--surah")
+              viewMode === "grid" ||
+                activeTab === "recitations" ||
+                activeTab === "radio" ||
+                activeTab === "blog"
+                ? cn("hp-grid", `hp-grid--${activeTab}`)
                 : "hp-list"
             )}
           >
@@ -2037,126 +2104,101 @@ export default function HomePage({ lowPerfMode = false }) {
                   }
                 />
               ) : (
-                <>
-                  <div className="mb-2 flex flex-wrap items-center gap-2">
-                    {[
-                      { id: "all", label: "Tous" },
-                      { id: "murattal", label: "Murattal" },
-                      { id: "mujawwad", label: "Mujawwad" },
-                      { id: "muallim", label: "Muallim" },
-                    ].map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        className={`hp2-chip ${reciterStyleFilter === item.id ? "hp2-chip--on" : ""}`}
-                        onClick={() => setReciterStyleFilter(item.id)}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                  {filteredReciters.map((reciter) => {
-                    const reciterLabel =
-                      lang === "ar"
-                        ? reciter.name
-                        : lang === "fr"
-                          ? reciter.nameFr
-                          : reciter.nameEn;
-                    const isFavorite = (state.favoriteReciters || []).includes(
-                      reciter.id,
-                    );
-                    return (
-                      <div
-                        key={reciter.id}
-                        className="hp2-item items-center gap-3 rounded-2xl border px-3 py-3"
-                      >
-                        <span className="hp2-item__icon h-9 w-9">
-                          <i className="fas fa-microphone-lines" />
-                        </span>
-                        <div className="hp2-item__body min-w-0">
-                          <span
-                            className="hp2-item__ar truncate"
-                            dir={lang === "ar" ? "rtl" : "ltr"}
-                          >
-                            {reciterLabel}
-                          </span>
-                          <span className="hp2-item__sub">{reciter.style || "murattal"}</span>
-                        </div>
-                        <div className="ml-auto flex items-center gap-2">
-                          <button
-                            className={cn(
-                              "hp2-icon-btn",
-                              isFavorite && "hp2-icon-btn--on",
-                            )}
-                            type="button"
-                            onClick={() => toggleFavoriteReciter(reciter.id)}
-                            aria-label={
-                              isFavorite
-                                ? lang === "fr"
-                                  ? "Retirer des favoris"
-                                  : lang === "ar"
-                                    ? "ازالة من المفضلة"
-                                    : "Remove from favorites"
-                                : lang === "fr"
-                                  ? "Ajouter aux favoris"
-                                  : lang === "ar"
-                                    ? "اضافة الى المفضلة"
-                                    : "Add to favorites"
-                            }
-                          >
-                            <i className={`fas ${isFavorite ? "fa-star" : "fa-star-half-stroke"}`} />
-                          </button>
-                          <button
-                            className="hp2-icon-btn hp2-icon-btn--on"
-                            type="button"
-                            onClick={() => playReciterRadio(reciter)}
-                            aria-label={lang === "fr" ? "Ecouter la radio" : lang === "ar" ? "تشغيل البث" : "Play radio"}
-                          >
-                            <i className="fas fa-play" />
-                          </button>
-                          <button
-                            className="hp2-icon-btn"
-                            type="button"
-                            onClick={() => setSelectedReciterId(reciter.id)}
-                            aria-label={lang === "fr" ? "Ouvrir le detail" : lang === "ar" ? "فتح التفاصيل" : "Open details"}
-                          >
-                            <i className={`fas fa-chevron-${lang === "ar" ? "left" : "right"}`} />
-                          </button>
-                        </div>
+                filteredReciters.map((reciter) => {
+                  const reciterLabel =
+                    lang === "ar"
+                      ? reciter.name
+                      : lang === "fr"
+                        ? reciter.nameFr
+                        : reciter.nameEn;
+                  const isFavorite = (state.favoriteReciters || []).includes(
+                    reciter.id,
+                  );
+                  return (
+                    <div
+                      key={reciter.id}
+                      className={cn(
+                        "hp-card hp-card--reciter animate-fadeInScale",
+                        state.reciter === reciter.id && "active"
+                      )}
+                      onClick={() => setSelectedReciterId(reciter.id)}
+                    >
+                      <div className="hp-card-num !flex !h-12 !w-12 !overflow-hidden !border-0 !bg-transparent !p-0">
+                         <img 
+                           src={getReciterPhoto(reciter.id)} 
+                           alt="" 
+                           className="h-full w-full object-cover"
+                           loading="lazy"
+                         />
                       </div>
-                    );
-                  })}
-                </>
+                      <div className="hp-card-content">
+                        <span className="hp-card-name">{reciterLabel}</span>
+                        <span className="hp-card-meta uppercase tracking-wider">{reciter.style || "murattal"}</span>
+                      </div>
+                      <div className="hp-card-actions ml-auto flex items-center gap-1.5">
+                        <button
+                          className={cn(
+                            "hp-card-play !static !flex !translate-x-0 !opacity-100 !h-9 !w-9",
+                            isFavorite && "!bg-amber-500 !text-white"
+                          )}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavoriteReciter(reciter.id);
+                          }}
+                        >
+                           <i className={`fas ${isFavorite ? "fa-star" : "fa-star-half-stroke"}`} />
+                        </button>
+                        <button
+                          className="hp-card-play !static !flex !translate-x-0 !opacity-100 !h-9 !w-9"
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            playReciterRadio(reciter);
+                          }}
+                        >
+                           <i className="fas fa-play" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
               )
+            ) : activeTab === "blog" ? (
+               MOCK_BLOG_POSTS.map(post => (
+                 <BlogCard key={post.id} post={post} lang={lang} />
+               ))
             ) : (
               <>
                 {THEMATIC_STATIONS.map((station) => (
                   <button
                     key={station.id}
-                    className="hp2-item w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left"
+                    className="hp-card hp-card--radio animate-fadeInScale"
                     type="button"
                     onClick={() => playStation(station)}
                   >
-                    <span className="hp2-item__icon h-9 w-9">
-                      <i className={`fas ${station.icon}`} />
-                    </span>
-                    <div className="hp2-item__body">
-                      <span className="hp2-item__ar text-left" dir={lang === "ar" ? "rtl" : "ltr"}>
+                    <div className="hp-card-num !h-11 !w-11 !rounded-xl !bg-emerald-600/10 !text-emerald-700 dark:!bg-emerald-400/10 dark:!text-emerald-400">
+                       <i className={`fas ${station.icon}`} />
+                    </div>
+                    <div className="hp-card-content">
+                      <span className="hp-card-name" dir={lang === "ar" ? "rtl" : "ltr"}>
                         {lang === "ar"
                           ? station.titleAr
                           : lang === "fr"
                             ? station.titleFr
                             : station.titleEn}
                       </span>
-                      <span className="hp2-item__sub">{station.surahs.length} {lang === "fr" ? "sourates" : "surahs"}</span>
+                      <span className="hp-card-meta">{station.surahs.length} {lang === "fr" ? "sourates" : "surahs"}</span>
                     </div>
-                    <i className="fas fa-circle-play hp2-item__caret" />
+                    <div className="hp-card-play !static !flex !translate-x-0 !opacity-100 !h-9 !w-9">
+                       <i className="fas fa-circle-play" />
+                    </div>
                   </button>
                 ))}
                 {availableReciters.slice(0, 8).map((reciter) => (
                   <button
                     key={`r-${reciter.id}`}
-                    className="hp2-item w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left"
+                    className="hp-card hp-card--radio animate-fadeInScale"
                     type="button"
                     onClick={() =>
                       playStation({
@@ -2170,20 +2212,27 @@ export default function HomePage({ lowPerfMode = false }) {
                       })
                     }
                   >
-                    <span className="hp2-item__icon h-9 w-9">
-                      <i className="fas fa-user-astronaut" />
-                    </span>
-                    <div className="hp2-item__body">
-                      <span className="hp2-item__ar text-left" dir={lang === "ar" ? "rtl" : "ltr"}>
+                    <div className="hp-card-num !flex !h-11 !w-11 !overflow-hidden !p-0">
+                       <img 
+                         src={getReciterPhoto(reciter.id)} 
+                         alt="" 
+                         className="h-full w-full object-cover"
+                         loading="lazy"
+                       />
+                    </div>
+                    <div className="hp-card-content">
+                      <span className="hp-card-name" dir={lang === "ar" ? "rtl" : "ltr"}>
                         {lang === "ar"
                           ? reciter.name
                           : lang === "fr"
                             ? reciter.nameFr
                             : reciter.nameEn}
                       </span>
-                      <span className="hp2-item__sub">4 {lang === "fr" ? "sourates" : "surahs"}</span>
+                      <span className="hp-card-meta">4 {lang === "fr" ? "sourates" : "surahs"}</span>
                     </div>
-                    <i className="fas fa-circle-play hp2-item__caret" />
+                    <div className="hp-card-play !static !flex !translate-x-0 !opacity-100 !h-9 !w-9">
+                       <i className="fas fa-circle-play" />
+                    </div>
                   </button>
                 ))}
               </>

@@ -381,6 +381,29 @@ const ALL_AVAILABLE_RECITERS = [
   ...AVAILABLE_RECITERS.warsh,
 ];
 
+export const RECITER_PHOTOS_MAP = {
+  "ar.alafasy": "https://static.qurancdn.com/images/reciters/6/mishary-rashid-alafasy-profile.jpeg",
+  "ar.abdulbasitmurattal": "https://static.qurancdn.com/images/reciters/1/abdelbasset-profile.jpeg",
+  "ar.abdulbasitmujawwad": "https://static.qurancdn.com/images/reciters/1/abdelbasset-profile.jpeg",
+  "ar.husary": "https://static.qurancdn.com/images/reciters/5/mahmoud-khalil-al-hussary-profile.png",
+  "ar.minshawi": "https://static.qurancdn.com/images/reciters/14/muhammad-siddiq-al-minshawi-profile.jpeg",
+  "ar.minshawimujawwad": "https://static.qurancdn.com/images/reciters/14/muhammad-siddiq-al-minshawi-profile.jpeg",
+  "ahmed_ajmy": "https://static.qurancdn.com/images/reciters/22/Ahmed-ibn-Ali-al-Ajmy-profile.png",
+  "maher_almuaiqly": "https://static.qurancdn.com/images/reciters/11/maher-al-muaiqly-profile.jpeg",
+  "yasser_dossari_hafs": "https://static.qurancdn.com/images/reciters/20/yasser-profile.png",
+  "nasser_alqatami": "https://static.qurancdn.com/images/reciters/13/nasser-al-qatami-profile.jpeg",
+  "ali_jabir": "https://static.qurancdn.com/images/reciters/7/ali-jaber-profile.jpeg",
+  "hudhaify": "https://static.qurancdn.com/images/reciters/10/ali-al-hudhaifi-profile.jpeg",
+  "muhammad_ayyoub": "https://static.qurancdn.com/images/reciters/12/muhammad-ayyoub-profile.jpeg",
+  "fares_abbad": "https://static.qurancdn.com/images/reciters/21/fares-abbad-profile.png",
+  "ar.saoodshuraym": "https://static.qurancdn.com/images/reciters/3/saud-ash-shuraym-profile.jpeg",
+  "ar.abdurrahmaansudais": "https://static.qurancdn.com/images/reciters/2/abdul-rahman-al-sudais-profile.jpeg",
+  "ar.muhammadjibreel": "https://static.qurancdn.com/images/reciters/15/muhammad-jibreel-profile.png",
+  "warsh_abdulbasit": "https://static.qurancdn.com/images/reciters/1/abdelbasset-profile.jpeg",
+  "warsh_hussary": "https://static.qurancdn.com/images/reciters/5/mahmoud-khalil-al-hussary-profile.png",
+  "warsh_omar_al_qazabri": "https://static.qurancdn.com/images/reciters/18/omar-al-qazabri-profile.png",
+};
+
 export default AVAILABLE_RECITERS;
 
 export function getRecitersByRiwaya(riwaya = "hafs") {

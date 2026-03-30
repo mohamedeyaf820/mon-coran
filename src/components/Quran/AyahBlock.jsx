@@ -164,8 +164,24 @@ const AyahBlock = React.memo(function AyahBlock({
       <div className="rd-arabic qc-ayah-text-ar">
         {arabicContent}
         <span className="rd-ayah-end" aria-hidden="true">
-          <span className="rd-ayah-end-glyph">۝</span>
-          <span className="rd-ayah-end-num">{toAr(ayah.numberInSurah)}</span>
+           <svg width="42" height="42" viewBox="0 0 100 100" className="rd-ayah-end-svg">
+              <path 
+                d="M50 5L85 20L95 50L85 80L50 95L15 80L5 50L15 20L50 5Z" 
+                fill="none" 
+                stroke="var(--gold)" 
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path 
+                d="M50 12L78 24L88 50L78 76L50 88L22 76L12 50L22 24L50 12Z" 
+                fill="none" 
+                stroke="var(--gold)" 
+                strokeWidth="1"
+                opacity="0.5"
+              />
+           </svg>
+           <span className="rd-ayah-end-num">{toAr(ayah.numberInSurah)}</span>
         </span>
       </div>
 
@@ -206,31 +222,35 @@ const AyahBlock = React.memo(function AyahBlock({
         </div>
       )}
 
-      <div className="rd-actions">
-        {/* Actions button group (bookmark, play) */}
-        <AyahActions
-          surah={surahNum}
-          ayah={ayah.numberInSurah}
-          ayahData={ayah}
-          compact
-        />
-        {/* Play shortcut logic is also handled in AyahActions, so we can keep it clean.*/}
-        
-        {/* Memorization stars */}
-        {(isActive || memoLevel > 0) && (
-          <div className="rd-action-meta rd-action-meta-stars">
-            {[1, 2, 3, 4, 5].map((n) => (
-              <button
-                key={n}
-                onClick={(e) => handleStar(e, n)}
-                className={`rd-star-btn${n <= memoLevel ? " is-on" : ""}`}
-              >
-                ★
-              </button>
-            ))}
+      {/* Actions card - only visible when active/clicked */}
+      {isActive && (
+        <div className="rd-actions-container animate-reveal-down">
+          <div className="rd-actions">
+            {/* Actions button group (bookmark, play, tafsir, etc.) */}
+            <AyahActions
+              surah={surahNum}
+              ayah={ayah.numberInSurah}
+              ayahData={ayah}
+              compact
+            />
+            
+            {/* Memorization stars */}
+            {(isActive || memoLevel > 0) && (
+              <div className="rd-action-meta rd-action-meta-stars">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    key={n}
+                    onClick={(e) => handleStar(e, n)}
+                    className={`rd-star-btn${n <= memoLevel ? " is-on" : ""}`}
+                  >
+                    ★
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 });
