@@ -25,6 +25,7 @@ import {
   setMemorizationLevel,
 } from "../services/memorizationService";
 import { openExternalUrl } from "../lib/security";
+import { cn } from "../lib/utils";
 
 function emitToast(type, message) {
   window.dispatchEvent(
@@ -595,14 +596,23 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
     },
   ];
 
+  const inlineIconButtonClass =
+    "ayah-actions-inline__icon-btn inline-flex h-[2.06rem] w-[2.06rem] cursor-pointer items-center justify-center rounded-full border border-[rgba(var(--primary-rgb),0.22)] bg-[rgba(var(--primary-rgb),0.06)] text-[var(--text-secondary)] transition-[background,color,border-color] duration-150 ease-out hover:border-[rgba(var(--primary-rgb),0.4)] hover:bg-[rgba(var(--primary-rgb),0.16)] hover:text-[var(--text-primary)] max-[640px]:h-[2.14rem] max-[640px]:w-[2.14rem]";
+  const inlineIconButtonActiveClass =
+    "is-active border-[rgba(var(--primary-rgb),0.4)] bg-[rgba(var(--primary-rgb),0.16)] text-[var(--text-primary)]";
+  const inlineLinkClass =
+    "ayah-actions-inline__link cursor-pointer rounded-full border border-[rgba(var(--primary-rgb),0.18)] bg-[rgba(var(--primary-rgb),0.035)] px-[0.44rem] py-[0.19rem] font-[var(--font-ui)] text-[0.73rem] font-semibold tracking-[0.01em] text-[var(--text-secondary)] transition-[color,border-color,background] duration-150 ease-out hover:border-[rgba(var(--primary-rgb),0.32)] hover:bg-[rgba(var(--primary-rgb),0.09)] hover:text-[var(--primary)] max-[640px]:px-[0.38rem] max-[640px]:py-[0.17rem] max-[640px]:text-[0.7rem]";
+
   return (
     <div className="ayah-actions" onClick={(event) => event.stopPropagation()}>
       {compact ? (
-        <div className="ayah-actions-inline">
-          <div className="ayah-actions-inline__meta">
-            <span className="ayah-actions-inline__ref">{surah}:{ayah}</span>
+        <div className="ayah-actions-inline flex flex-col gap-[0.48rem] rounded-[0.82rem] border border-[rgba(var(--primary-rgb),0.12)] bg-[rgba(var(--primary-rgb),0.04)] px-[0.68rem] py-[0.62rem] max-[640px]:px-[0.54rem] max-[640px]:py-[0.54rem]">
+          <div className="ayah-actions-inline__meta flex items-center justify-between gap-[0.6rem] font-[var(--font-ui)] leading-[1.15] max-[640px]:gap-[0.4rem]">
+            <span className="ayah-actions-inline__ref text-[0.74rem] font-bold tracking-[0.04em] text-[var(--text-muted)]">
+              {surah}:{ayah}
+            </span>
             {displayMode !== "page" && (
-              <span className="ayah-actions-inline__name">
+              <span className="ayah-actions-inline__name text-[0.76rem] text-[var(--text-secondary)] opacity-[0.84] max-[640px]:text-[0.7rem]">
                 {lang === "fr"
                   ? surahInfo?.fr || surahInfo?.en
                   : lang === "ar"
@@ -612,10 +622,10 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
             )}
           </div>
 
-          <div className="ayah-actions-inline__icons">
+          <div className="ayah-actions-inline__icons flex justify-start gap-[0.34rem]">
             <button
               type="button"
-              className="ayah-actions-inline__icon-btn"
+              className={inlineIconButtonClass}
               onClick={playAyah}
               title={lang === "fr" ? "Ecouter" : lang === "ar" ? "استماع" : "Listen"}
               aria-label={lang === "fr" ? "Ecouter le verset" : lang === "ar" ? "تشغيل الآية" : "Play verse"}
@@ -624,7 +634,10 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
             </button>
             <button
               type="button"
-              className={`ayah-actions-inline__icon-btn${bookmarked ? " is-active" : ""}`}
+              className={cn(
+                inlineIconButtonClass,
+                bookmarked && inlineIconButtonActiveClass,
+              )}
               onClick={toggleBookmark}
               title={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
               aria-label={lang === "fr" ? "Favori" : lang === "ar" ? "مفضلة" : "Bookmark"}
@@ -633,7 +646,10 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
             </button>
             <button
               type="button"
-              className={`ayah-actions-inline__icon-btn${copied ? " is-active" : ""}`}
+              className={cn(
+                inlineIconButtonClass,
+                copied && inlineIconButtonActiveClass,
+              )}
               onClick={copyText}
               title={lang === "fr" ? "Copier" : lang === "ar" ? "نسخ" : "Copy"}
               aria-label={lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse"}
@@ -642,7 +658,10 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
             </button>
             <button
               type="button"
-              className={`ayah-actions-inline__icon-btn${showShare ? " is-active" : ""}`}
+              className={cn(
+                inlineIconButtonClass,
+                showShare && inlineIconButtonActiveClass,
+              )}
               onClick={() => {
                 setShowPlaylistMenu(false);
                 setShowNote(false);
@@ -655,7 +674,10 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
             </button>
             <button
               type="button"
-              className={`ayah-actions-inline__icon-btn${showNote ? " is-active" : ""}`}
+              className={cn(
+                inlineIconButtonClass,
+                showNote && inlineIconButtonActiveClass,
+              )}
               onClick={() => {
                 setShowPlaylistMenu(false);
                 setShowShare(false);
@@ -668,7 +690,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
             </button>
             <button
               type="button"
-              className="ayah-actions-inline__icon-btn"
+              className={inlineIconButtonClass}
               onClick={openPlaylistMenu}
               title={lang === "fr" ? "Playlist" : lang === "ar" ? "قائمة" : "Playlist"}
               aria-label={lang === "fr" ? "Ajouter a la playlist" : lang === "ar" ? "إضافة إلى القائمة" : "Add to playlist"}
@@ -677,13 +699,13 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
             </button>
           </div>
 
-          <div className="ayah-actions-inline__links" role="group" aria-label="Verse details">
-            <button type="button" className="ayah-actions-inline__link" onClick={() => openVerseInsight("tafsirs")}>
+          <div className="ayah-actions-inline__links flex flex-wrap items-center gap-[0.24rem] pt-[0.05rem]" role="group" aria-label="Verse details">
+            <button type="button" className={inlineLinkClass} onClick={() => openVerseInsight("tafsirs")}>
               {lang === "fr" ? "Tafsir" : lang === "ar" ? "تفاسير" : "Tafsir"}
             </button>
             <button
               type="button"
-              className="ayah-actions-inline__link"
+              className={inlineLinkClass}
               onClick={() => {
                 setShowPlaylistMenu(false);
                 setShowShare(false);
@@ -694,7 +716,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
             </button>
             <button
               type="button"
-              className="ayah-actions-inline__link"
+              className={inlineLinkClass}
               onClick={() => {
                 handleStudyMode();
                 openVerseInsight("lessons");
@@ -702,7 +724,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
             >
               {lang === "fr" ? "Lecons" : lang === "ar" ? "دروس" : "Lessons"}
             </button>
-            <button type="button" className="ayah-actions-inline__link" onClick={() => openVerseInsight("answers")}>
+            <button type="button" className={inlineLinkClass} onClick={() => openVerseInsight("answers")}>
               {lang === "fr" ? "Reponses" : lang === "ar" ? "إجابات" : "Answers"}
             </button>
           </div>

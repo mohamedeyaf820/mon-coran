@@ -84,7 +84,7 @@ const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, t
     if (graceExpired && loadedCount === 0 && fallbackText) {
         return (
             <span
-                className="warsh-font-fallback"
+                className='warsh-font-fallback text-quran opacity-[0.88] [font-family:var(--font-quran,"KFGQPC_Uthmanic_Script_HAFS","ME_Quran",serif)] [letter-spacing:0] [font-feature-settings:"liga"_1,"calt"_1,"kern"_1] [-webkit-font-smoothing:antialiased]'
                 dir="rtl"
                 title="Warsh — polices QCF4 indisponibles, affichage orthographe Ḥafṣ"
             >

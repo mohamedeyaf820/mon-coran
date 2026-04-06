@@ -2,10 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import audioService from "../services/audioService";
-import {
-  ensureReciterForRiwaya,
-  getRecitersByRiwaya,
-} from "../data/reciters";
+import { ensureReciterForRiwaya, getRecitersByRiwaya } from "../data/reciters";
 import { getSurah, surahName } from "../data/surahs";
 import {
   getLatencyForReciter,
@@ -16,7 +13,6 @@ import {
 import { cn, toast } from "../lib/utils";
 import { formatCooldownLabel } from "../utils/formatUtils";
 import AudioLoadingIndicator from "./AudioLoadingIndicator";
-import "../styles/audio-player.css";
 
 /* Drag / position helpers (desktop card only) */
 const CARD_STORAGE_KEY = "mushaf_player_card_pos_v5";
@@ -98,7 +94,6 @@ function getReciterCooldownMs(failCount) {
   return RECITER_COOLDOWN_STEPS_MS[idx];
 }
 
-
 function ProgressRail({ progress, className = "", showThumb = false }) {
   const pct = Math.max(0, Math.min(100, progress * 100));
 
@@ -110,12 +105,25 @@ function ProgressRail({ progress, className = "", showThumb = false }) {
         className="block h-full w-full overflow-visible"
       >
         <defs>
-          <linearGradient id="audio-progress-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient
+            id="audio-progress-gradient"
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="0%"
+          >
             <stop offset="0%" stopColor="var(--gold)" />
             <stop offset="100%" stopColor="var(--gold-bright)" />
           </linearGradient>
         </defs>
-        <rect x="0" y="0" width="100" height="4" rx="2" className="fill-white/10" />
+        <rect
+          x="0"
+          y="0"
+          width="100"
+          height="4"
+          rx="2"
+          className="fill-white/10"
+        />
         <rect
           x="0"
           y="0"
@@ -184,8 +192,20 @@ function CoverArt({ isPlaying, size = 52 }) {
         viewBox="0 0 52 52"
         fill="none"
       >
-        <circle cx="26" cy="26" r="20" stroke="var(--gold, #d4a820)" strokeWidth="0.6" />
-        <circle cx="26" cy="26" r="12" stroke="var(--gold, #d4a820)" strokeWidth="0.5" />
+        <circle
+          cx="26"
+          cy="26"
+          r="20"
+          stroke="var(--gold, #d4a820)"
+          strokeWidth="0.6"
+        />
+        <circle
+          cx="26"
+          cy="26"
+          r="12"
+          stroke="var(--gold, #d4a820)"
+          strokeWidth="0.5"
+        />
         {Array.from({ length: 8 }).map((_, i) => {
           const a = (i * Math.PI * 2) / 8;
           return (
@@ -212,7 +232,14 @@ function CoverArt({ isPlaying, size = 52 }) {
 }
 
 /* Icon button (desktop card) */
-function IconBtn({ onClick, title, active, children, size = "md", className = "" }) {
+function IconBtn({
+  onClick,
+  title,
+  active,
+  children,
+  size = "md",
+  className = "",
+}) {
   const base =
     size === "sm"
       ? "w-7 h-7 text-[0.72rem]"
@@ -356,18 +383,24 @@ export default function AudioPlayer() {
     if (!autoSelectFastestReciter) return false;
     if (autoFailoverBusyRef.current || reciterSwitchingId) return false;
 
-    const rankedReciters = sortRecitersByPreference(getRecitersByRiwaya(riwaya), {
-      currentReciterId: reciter,
-      favoriteReciters,
-      latencyByKey: reciterLatencyByKey,
-      availabilityById: reciterAvailabilityRef.current,
-    });
+    const rankedReciters = sortRecitersByPreference(
+      getRecitersByRiwaya(riwaya),
+      {
+        currentReciterId: reciter,
+        favoriteReciters,
+        latencyByKey: reciterLatencyByKey,
+        availabilityById: reciterAvailabilityRef.current,
+      },
+    );
     if (!rankedReciters.length) return false;
 
     const currentIdx = rankedReciters.findIndex((item) => item.id === reciter);
     const rotated =
       currentIdx >= 0
-        ? [...rankedReciters.slice(currentIdx + 1), ...rankedReciters.slice(0, currentIdx)]
+        ? [
+            ...rankedReciters.slice(currentIdx + 1),
+            ...rankedReciters.slice(0, currentIdx),
+          ]
         : rankedReciters;
     const candidates = rotated.filter(
       (item) => item.id !== reciter && !failedRecitersRef.current.has(item.id),
@@ -822,12 +855,15 @@ export default function AudioPlayer() {
     setClosed(true);
   }, [set]);
 
-  const currentReciters = sortRecitersByPreference(getRecitersByRiwaya(riwaya), {
-    currentReciterId: reciter,
-    favoriteReciters,
-    latencyByKey: reciterLatencyByKey,
-    availabilityById: reciterAvailabilityById,
-  });
+  const currentReciters = sortRecitersByPreference(
+    getRecitersByRiwaya(riwaya),
+    {
+      currentReciterId: reciter,
+      favoriteReciters,
+      latencyByKey: reciterLatencyByKey,
+      availabilityById: reciterAvailabilityById,
+    },
+  );
   const isWarshMode = riwaya === "warsh";
 
   /* Reciter search */
@@ -854,7 +890,10 @@ export default function AudioPlayer() {
   );
   const setSyncOffsetMs = useCallback(
     (value) => {
-      const next = Math.max(-500, Math.min(500, Math.round(Number(value) || 0)));
+      const next = Math.max(
+        -500,
+        Math.min(500, Math.round(Number(value) || 0)),
+      );
       set({
         syncOffsetsMs: {
           ...(syncOffsetsMs || {}),
@@ -877,7 +916,8 @@ export default function AudioPlayer() {
 
   const handleReciterSelect = useCallback(
     async (nextReciterId) => {
-      if (!nextReciterId || nextReciterId === reciter || reciterSwitchingId) return;
+      if (!nextReciterId || nextReciterId === reciter || reciterSwitchingId)
+        return;
       const target = currentReciters.find((r) => r.id === nextReciterId);
       if (!target) return;
 
@@ -900,7 +940,10 @@ export default function AudioPlayer() {
 
       setReciterSwitchingId(nextReciterId);
       try {
-        await audioService.switchReciter(target.cdn, target.cdnType || "islamic");
+        await audioService.switchReciter(
+          target.cdn,
+          target.cdnType || "islamic",
+        );
         markReciterAvailable(nextReciterId);
         set({ reciter: nextReciterId });
       } catch (error) {
@@ -953,11 +996,13 @@ export default function AudioPlayer() {
     ? `${t("quran.surah", lang)} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
     : currentPlayingAyah?.surah
       ? lang === "ar"
-        ? currentArabicName || `${t("quran.surah", lang)} ${currentPlayingAyah.surah}`
-        : currentSurahName || `${t("quran.surah", lang)} ${currentPlayingAyah.surah}`
-    : lang === "ar"
-      ? currentArabicName
-      : currentSurahName;
+        ? currentArabicName ||
+          `${t("quran.surah", lang)} ${currentPlayingAyah.surah}`
+        : currentSurahName ||
+          `${t("quran.surah", lang)} ${currentPlayingAyah.surah}`
+      : lang === "ar"
+        ? currentArabicName
+        : currentSurahName;
   const normalizeAyahText = (value) =>
     typeof value === "string" ? value.replace(/\s+/g, " ").trim() : "";
   const currentAyahText = (() => {
@@ -969,7 +1014,8 @@ export default function AudioPlayer() {
     if (!hasAyahContext || !currentPlayingAyah) return "";
     const fromPlaylist = audioService.playlist?.find(
       (p) =>
-        p.surah === currentPlayingAyah.surah && p.ayah === currentPlayingAyah.ayah,
+        p.surah === currentPlayingAyah.surah &&
+        p.ayah === currentPlayingAyah.ayah,
     )?.text;
     return normalizeAyahText(fromPlaylist);
   })();
@@ -1185,10 +1231,22 @@ export default function AudioPlayer() {
           </div>
 
           <div className="audio-player-modal__grid grid min-h-0 flex-1 gap-4 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-            <section className={cn("flex min-h-0 flex-col p-3 sm:p-3.5", playerSoftSurfaceClass)}>
+            <section
+              className={cn(
+                "flex min-h-0 flex-col p-3 sm:p-3.5",
+                playerSoftSurfaceClass,
+              )}
+            >
               <div className="mb-2 flex items-center justify-between gap-2">
-                <span className={playerSectionLabelClass}>{t("audio.reciter", lang)}</span>
-                <span className={cn(playerGoldMetaClass, "text-[0.6rem] font-semibold tabular-nums")}>
+                <span className={playerSectionLabelClass}>
+                  {t("audio.reciter", lang)}
+                </span>
+                <span
+                  className={cn(
+                    playerGoldMetaClass,
+                    "text-[0.6rem] font-semibold tabular-nums",
+                  )}
+                >
                   {filteredReciters.length !== currentReciters.length
                     ? `${filteredReciters.length} / ${currentReciters.length}`
                     : currentReciters.length}
@@ -1223,9 +1281,17 @@ export default function AudioPlayer() {
                 </div>
               )}
 
-              <div className="min-h-0 flex-1 overflow-y-auto pr-1" data-scroll-panel="true">
+              <div
+                className="min-h-0 flex-1 overflow-y-auto pr-1"
+                data-scroll-panel="true"
+              >
                 {filteredReciters.length === 0 ? (
-                  <div className={cn(playerFadedTextClass, "py-6 text-center text-xs")}>
+                  <div
+                    className={cn(
+                      playerFadedTextClass,
+                      "py-6 text-center text-xs",
+                    )}
+                  >
                     {lang === "fr"
                       ? "Aucun récitateur trouvé"
                       : lang === "ar"
@@ -1237,15 +1303,23 @@ export default function AudioPlayer() {
                     {filteredReciters.map((r) => {
                       const active = reciter === r.id;
                       const isLoading =
-                        reciterSwitchingId === r.id || (active && networkState === "loading");
+                        reciterSwitchingId === r.id ||
+                        (active && networkState === "loading");
                       const unavailableMs = getReciterUnavailableRemainingMs(
                         r.id,
                         reciterAvailabilityById,
                       );
                       const isUnavailable = unavailableMs > 0;
-                      const initial = (r.nameEn || r.name || "?")[0].toUpperCase();
-                      const isFavorite = (favoriteReciters || []).includes(r.id);
-                      const latency = getLatencyForReciter(r, reciterLatencyByKey);
+                      const initial = (r.nameEn ||
+                        r.name ||
+                        "?")[0].toUpperCase();
+                      const isFavorite = (favoriteReciters || []).includes(
+                        r.id,
+                      );
+                      const latency = getLatencyForReciter(
+                        r,
+                        reciterLatencyByKey,
+                      );
                       return (
                         <button
                           key={`modal-${r.id}`}
@@ -1256,7 +1330,9 @@ export default function AudioPlayer() {
                             isUnavailable,
                           )}
                           aria-pressed={active}
-                          disabled={isAnyReciterSwitching || (isUnavailable && !active)}
+                          disabled={
+                            isAnyReciterSwitching || (isUnavailable && !active)
+                          }
                         >
                           <span className={playerReciterAvatarClass(active)}>
                             {isLoading ? (
@@ -1269,29 +1345,37 @@ export default function AudioPlayer() {
                           </span>
                           <span className="flex min-w-0 flex-col">
                             <span className="truncate text-[0.7rem] font-semibold leading-tight">
-                              {lang === "ar" ? r.name : lang === "fr" ? r.nameFr : r.nameEn}
+                              {lang === "ar"
+                                ? r.name
+                                : lang === "fr"
+                                  ? r.nameFr
+                                  : r.nameEn}
                             </span>
-                              <span className="mt-1 flex flex-wrap gap-1">
-                                <span className="inline-flex w-fit items-center rounded-full border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-[rgba(225,214,194,0.72)]">
-                                  {r.cdnType === "everyayah"
-                                    ? "EveryAyah CDN"
-                                    : r.cdnType === "mp3quran-surah"
-                                      ? "MP3Quran"
-                                      : "Islamic CDN"}
+                            <span className="mt-1 flex flex-wrap gap-1">
+                              <span className="inline-flex w-fit items-center rounded-full border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-[rgba(225,214,194,0.72)]">
+                                {r.cdnType === "everyayah"
+                                  ? "EveryAyah CDN"
+                                  : r.cdnType === "mp3quran-surah"
+                                    ? "MP3Quran"
+                                    : "Islamic CDN"}
+                              </span>
+                              {r.audioMode === "surah" && (
+                                <span className="inline-flex w-fit items-center rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-fuchsia-100">
+                                  {lang === "fr"
+                                    ? "Sourate complete"
+                                    : lang === "ar"
+                                      ? "سورة كاملة"
+                                      : "Full surah"}
                                 </span>
-                                {r.audioMode === "surah" && (
-                                  <span className="inline-flex w-fit items-center rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-fuchsia-100">
-                                    {lang === "fr"
-                                      ? "Sourate complete"
-                                      : lang === "ar"
-                                        ? "سورة كاملة"
-                                        : "Full surah"}
-                                  </span>
-                                )}
-                                {isFavorite && (
+                              )}
+                              {isFavorite && (
                                 <span className="inline-flex w-fit items-center rounded-full border border-amber-300/35 bg-amber-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-amber-200">
                                   <i className="fas fa-star mr-1 text-[0.44rem]" />
-                                  {lang === "fr" ? "Favori" : lang === "ar" ? "مفضل" : "Favorite"}
+                                  {lang === "fr"
+                                    ? "Favori"
+                                    : lang === "ar"
+                                      ? "مفضل"
+                                      : "Favorite"}
                                 </span>
                               )}
                               {latency && (
@@ -1299,11 +1383,16 @@ export default function AudioPlayer() {
                                   {Math.round(latency * 1000)}ms
                                 </span>
                               )}
-                              {autoSelectFastestReciter && filteredReciters[0]?.id === r.id && (
-                                <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/30 bg-emerald-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-emerald-100">
-                                  {lang === "fr" ? "Rapide" : lang === "ar" ? "سريع" : "Fast"}
-                                </span>
-                              )}
+                              {autoSelectFastestReciter &&
+                                filteredReciters[0]?.id === r.id && (
+                                  <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/30 bg-emerald-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-emerald-100">
+                                    {lang === "fr"
+                                      ? "Rapide"
+                                      : lang === "ar"
+                                        ? "سريع"
+                                        : "Fast"}
+                                  </span>
+                                )}
                               {isUnavailable && (
                                 <span className="inline-flex w-fit items-center rounded-full border border-rose-300/40 bg-rose-300/16 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-rose-100">
                                   {lang === "fr"
@@ -1323,16 +1412,26 @@ export default function AudioPlayer() {
               </div>
             </section>
 
-            <section className="min-h-0 overflow-y-auto pr-1" data-scroll-panel="true">
+            <section
+              className="min-h-0 overflow-y-auto pr-1"
+              data-scroll-panel="true"
+            >
               <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
                 <div className="flex flex-wrap items-center gap-2">
                   <button
                     onClick={cycleSpeed}
-                    className={cn(playerCardToggleClass(false), "min-w-[7.5rem]")}
+                    className={cn(
+                      playerCardToggleClass(false),
+                      "min-w-[7.5rem]",
+                    )}
                   >
                     <span className="flex items-center gap-2">
                       <i className="fas fa-gauge-high text-[0.62rem]" />
-                      {lang === "fr" ? "Vitesse" : lang === "ar" ? "السرعة" : "Speed"}
+                      {lang === "fr"
+                        ? "Vitesse"
+                        : lang === "ar"
+                          ? "السرعة"
+                          : "Speed"}
                     </span>
                     <span>{audioSpeed}x</span>
                   </button>
@@ -1348,7 +1447,12 @@ export default function AudioPlayer() {
                         ? "تكرار السورة"
                         : "Surah repeat"}
                   </span>
-                  <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums")}>
+                  <span
+                    className={cn(
+                      playerGoldMetaClass,
+                      "text-[0.64rem] tabular-nums",
+                    )}
+                  >
                     {surahRepeatCount === 0
                       ? lang === "fr"
                         ? "Infini"
@@ -1361,8 +1465,14 @@ export default function AudioPlayer() {
 
                 <div className="flex flex-wrap items-center gap-2">
                   <div className="flex items-center gap-1.5">
-                    <span className={cn(playerMutedTextClass, "text-[0.68rem]")}>
-                      {lang === "fr" ? "Nombre" : lang === "ar" ? "العدد" : "Count"}
+                    <span
+                      className={cn(playerMutedTextClass, "text-[0.68rem]")}
+                    >
+                      {lang === "fr"
+                        ? "Nombre"
+                        : lang === "ar"
+                          ? "العدد"
+                          : "Count"}
                     </span>
                     <input
                       type="number"
@@ -1379,7 +1489,11 @@ export default function AudioPlayer() {
                     onClick={() => setSurahRepeatSetting(1)}
                     className={playerOptionPillClass(surahRepeatCount === 1)}
                   >
-                    {lang === "fr" ? "Une fois" : lang === "ar" ? "مرة واحدة" : "Once"}
+                    {lang === "fr"
+                      ? "Une fois"
+                      : lang === "ar"
+                        ? "مرة واحدة"
+                        : "Once"}
                   </button>
                   <button
                     type="button"
@@ -1407,11 +1521,20 @@ export default function AudioPlayer() {
                     onClick={() => setSurahRepeatSetting(0)}
                     className={playerOptionPillClass(surahRepeatCount === 0)}
                   >
-                    {lang === "fr" ? "Infini" : lang === "ar" ? "لا نهائي" : "Infinite"}
+                    {lang === "fr"
+                      ? "Infini"
+                      : lang === "ar"
+                        ? "لا نهائي"
+                        : "Infinite"}
                   </button>
                 </div>
 
-                <p className={cn(playerFadedTextClass, "mt-2 text-[0.62rem] leading-relaxed")}>
+                <p
+                  className={cn(
+                    playerFadedTextClass,
+                    "mt-2 text-[0.62rem] leading-relaxed",
+                  )}
+                >
                   {lang === "fr"
                     ? "0 = répétition infinie. La sourate recommence automatiquement à la fin."
                     : lang === "ar"
@@ -1423,9 +1546,18 @@ export default function AudioPlayer() {
               <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <span className={playerSectionLabelClass}>
-                    {lang === "fr" ? "Volume" : lang === "ar" ? "مستوى الصوت" : "Volume"}
+                    {lang === "fr"
+                      ? "Volume"
+                      : lang === "ar"
+                        ? "مستوى الصوت"
+                        : "Volume"}
                   </span>
-                  <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums")}>
+                  <span
+                    className={cn(
+                      playerGoldMetaClass,
+                      "text-[0.64rem] tabular-nums",
+                    )}
+                  >
                     {Math.round(volume * 100)}%
                   </span>
                 </div>
@@ -1444,7 +1576,9 @@ export default function AudioPlayer() {
                     max="1"
                     step="0.05"
                     value={volume}
-                    onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                    onChange={(e) =>
+                      handleVolumeChange(parseFloat(e.target.value))
+                    }
                     className="h-1.5 flex-1 cursor-pointer rounded-full accent-[rgb(110,204,233)]"
                   />
                 </div>
@@ -1453,9 +1587,18 @@ export default function AudioPlayer() {
               <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <span className={playerSectionLabelClass}>
-                    {lang === "fr" ? "Synchronisation mot a mot" : lang === "ar" ? "مزامنة كلمة بكلمة" : "Word sync"}
+                    {lang === "fr"
+                      ? "Synchronisation mot a mot"
+                      : lang === "ar"
+                        ? "مزامنة كلمة بكلمة"
+                        : "Word sync"}
                   </span>
-                  <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums")}>
+                  <span
+                    className={cn(
+                      playerGoldMetaClass,
+                      "text-[0.64rem] tabular-nums",
+                    )}
+                  >
                     {syncOffsetMs > 0 ? `+${syncOffsetMs}` : syncOffsetMs}ms
                   </span>
                 </div>
@@ -1470,17 +1613,35 @@ export default function AudioPlayer() {
                   className="h-1.5 w-full cursor-pointer rounded-full accent-[rgb(110,204,233)]"
                 />
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                  <button onClick={() => setSyncOffsetMs(syncOffsetMs - 40)} className={playerOptionPillClass(false)}>
+                  <button
+                    onClick={() => setSyncOffsetMs(syncOffsetMs - 40)}
+                    className={playerOptionPillClass(false)}
+                  >
                     -40ms
                   </button>
-                  <button onClick={() => setSyncOffsetMs(syncOffsetMs + 40)} className={playerOptionPillClass(false)}>
+                  <button
+                    onClick={() => setSyncOffsetMs(syncOffsetMs + 40)}
+                    className={playerOptionPillClass(false)}
+                  >
                     +40ms
                   </button>
-                  <button onClick={() => setSyncOffsetMs(0)} className={playerOptionPillClass(syncOffsetMs === 0)}>
-                    {lang === "fr" ? "Reset" : lang === "ar" ? "إعادة" : "Reset"}
+                  <button
+                    onClick={() => setSyncOffsetMs(0)}
+                    className={playerOptionPillClass(syncOffsetMs === 0)}
+                  >
+                    {lang === "fr"
+                      ? "Reset"
+                      : lang === "ar"
+                        ? "إعادة"
+                        : "Reset"}
                   </button>
                 </div>
-                <p className={cn(playerFadedTextClass, "mt-2 text-[0.62rem] leading-relaxed")}>
+                <p
+                  className={cn(
+                    playerFadedTextClass,
+                    "mt-2 text-[0.62rem] leading-relaxed",
+                  )}
+                >
                   {isSurahStreamReciter
                     ? lang === "fr"
                       ? "Ce recitateur lit la sourate complete, donc la synchro mot a mot n'est pas utilisee."
@@ -1497,27 +1658,41 @@ export default function AudioPlayer() {
 
               {showMemorizationControls && memMode && (
                 <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
-                  <div className={playerSectionLabelClass}>{t("audio.memorization", lang)}</div>
+                  <div className={playerSectionLabelClass}>
+                    {t("audio.memorization", lang)}
+                  </div>
                   <div className="flex flex-wrap items-center gap-3">
                     <div className="flex items-center gap-1.5">
-                      <span className={cn(playerMutedTextClass, "text-[0.68rem]")}>{t("audio.repeat", lang)}</span>
+                      <span
+                        className={cn(playerMutedTextClass, "text-[0.68rem]")}
+                      >
+                        {t("audio.repeat", lang)}
+                      </span>
                       <input
                         type="number"
                         min={1}
                         max={100}
                         value={memRepeatCount}
-                        onChange={(e) => set({ memRepeatCount: parseInt(e.target.value, 10) || 1 })}
+                        onChange={(e) =>
+                          set({
+                            memRepeatCount: parseInt(e.target.value, 10) || 1,
+                          })
+                        }
                         className={playerNumberInputClass}
                       />
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className={cn(playerMutedTextClass, "text-[0.68rem]")}>{`${t("audio.pause", lang)} (s)`}</span>
+                      <span
+                        className={cn(playerMutedTextClass, "text-[0.68rem]")}
+                      >{`${t("audio.pause", lang)} (s)`}</span>
                       <input
                         type="number"
                         min={0}
                         max={60}
                         value={memPause}
-                        onChange={(e) => set({ memPause: parseInt(e.target.value, 10) || 0 })}
+                        onChange={(e) =>
+                          set({ memPause: parseInt(e.target.value, 10) || 0 })
+                        }
                         className={playerNumberInputClass}
                       />
                     </div>
@@ -1528,14 +1703,20 @@ export default function AudioPlayer() {
               <div className="flex flex-wrap items-center gap-2 pb-1">
                 <button
                   onClick={stop}
-                  className={cn(playerSurfaceButtonClass, "px-4 py-2 text-[0.68rem] font-semibold")}
+                  className={cn(
+                    playerSurfaceButtonClass,
+                    "px-4 py-2 text-[0.68rem] font-semibold",
+                  )}
                 >
                   <i className="fas fa-stop mr-1" />
                   {t("audio.stop", lang)}
                 </button>
                 <button
                   onClick={closeOptionsModal}
-                  className={cn(playerSurfaceButtonClass, "px-4 py-2 text-[0.68rem] font-semibold")}
+                  className={cn(
+                    playerSurfaceButtonClass,
+                    "px-4 py-2 text-[0.68rem] font-semibold",
+                  )}
                 >
                   {lang === "fr" ? "Terminer" : lang === "ar" ? "تم" : "Done"}
                 </button>
@@ -1684,12 +1865,7 @@ export default function AudioPlayer() {
       };
       setIsDragging(true);
     },
-    [
-      canDragDesktopCard,
-      cardPos.x,
-      cardPos.y,
-      manualDockPosition,
-    ],
+    [canDragDesktopCard, cardPos.x, cardPos.y, manualDockPosition],
   );
 
   const onPointerMove = useCallback((e) => {
@@ -1709,21 +1885,18 @@ export default function AudioPlayer() {
     );
   }, []);
 
-  const onPointerUp = useCallback(
-    () => {
-      if (!dragState.current) return;
-      const card = cardRef.current;
-      const w = card ? card.offsetWidth : 264;
-      const h = card ? card.offsetHeight : 400;
-      const next = clamp(cardPos.x, cardPos.y, w, h);
-      setCardPos(next);
-      saveCardPos(next);
-      setManualDockPosition(true);
-      dragState.current = null;
-      setIsDragging(false);
-    },
-    [cardPos],
-  );
+  const onPointerUp = useCallback(() => {
+    if (!dragState.current) return;
+    const card = cardRef.current;
+    const w = card ? card.offsetWidth : 264;
+    const h = card ? card.offsetHeight : 400;
+    const next = clamp(cardPos.x, cardPos.y, w, h);
+    setCardPos(next);
+    saveCardPos(next);
+    setManualDockPosition(true);
+    dragState.current = null;
+    setIsDragging(false);
+  }, [cardPos]);
   const resetDockPosition = useCallback(() => {
     clearCardPos();
     hasSavedCardPosRef.current = false;
@@ -1788,7 +1961,11 @@ export default function AudioPlayer() {
             >
               <div className="mp-player-minimized-title truncate text-[0.82rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-text)_94%,#ffffff_6%)]">
                 {titleLabel ||
-                  (lang === "fr" ? "Prêt à lire" : lang === "ar" ? "جاهز" : "Ready")}
+                  (lang === "fr"
+                    ? "Prêt à lire"
+                    : lang === "ar"
+                      ? "جاهز"
+                      : "Ready")}
               </div>
               <div className="mp-player-minimized-reciter truncate text-[0.68rem] text-[color-mix(in_srgb,var(--theme-text-muted)_90%,var(--theme-bg)_10%)]">
                 {reciterLabel || "-"}
@@ -1875,11 +2052,7 @@ export default function AudioPlayer() {
             className={cn(mBarBtn, "h-9 w-9 rounded-full")}
             onClick={toggleMinimized}
             title={
-              lang === "fr"
-                ? "Réduire"
-                : lang === "ar"
-                  ? "تصغير"
-                  : "Minimize"
+              lang === "fr" ? "Réduire" : lang === "ar" ? "تصغير" : "Minimize"
             }
           >
             <i className="fas fa-chevron-down" />
@@ -1893,9 +2066,7 @@ export default function AudioPlayer() {
           <button
             className={cn(mBarBtn, "h-9 w-9 rounded-full")}
             onClick={closePlayer}
-            title={
-              lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
-            }
+            title={lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
           >
             <i className="fas fa-times" />
           </button>
@@ -1944,7 +2115,11 @@ export default function AudioPlayer() {
                 ? hasAyahContext
                   ? `${t("quran.surah", lang)} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
                   : titleLabel
-                : lang === "fr" ? "En attente" : lang === "ar" ? "جاهز" : "Ready"}
+                : lang === "fr"
+                  ? "En attente"
+                  : lang === "ar"
+                    ? "جاهز"
+                    : "Ready"}
             </span>
             <span className="text-[0.6rem] leading-none text-[color-mix(in_srgb,var(--theme-text-muted)_86%,var(--theme-bg)_14%)] font-mono tabular-nums">
               {formatTime(currentTime)}
@@ -1959,7 +2134,12 @@ export default function AudioPlayer() {
           </div>
 
           {/* Center: main playback controls */}
-          <div className={cn("mp-player-controls-strip mp-player-mobile-main-controls flex flex-1 items-center justify-center gap-1.5 rounded-xl px-1.5 py-1", playerSoftSurfaceClass)}>
+          <div
+            className={cn(
+              "mp-player-controls-strip mp-player-mobile-main-controls flex flex-1 items-center justify-center gap-1.5 rounded-xl px-1.5 py-1",
+              playerSoftSurfaceClass,
+            )}
+          >
             <button
               className={cn(
                 mBarBtn,
@@ -1972,7 +2152,10 @@ export default function AudioPlayer() {
             </button>
 
             <button
-              className={cn(playerPrimaryBtnClass, "mp-player-play-btn h-9 w-9 shrink-0 text-[0.82rem] hover:scale-[1.04] active:scale-[0.94]")}
+              className={cn(
+                playerPrimaryBtnClass,
+                "mp-player-play-btn h-9 w-9 shrink-0 text-[0.82rem] hover:scale-[1.04] active:scale-[0.94]",
+              )}
               onClick={toggle}
               title={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
               aria-pressed={isPlaying}
@@ -2008,10 +2191,10 @@ export default function AudioPlayer() {
           {/* Right: secondary controls */}
           <div className="mp-player-mobile-secondary flex shrink-0 items-center gap-1">
             <button
-                className={cn(
-                  mBarBtnSm(),
-                  "px-[0.38rem] py-[0.18rem] text-[0.58rem] min-h-[1.72rem] min-w-[1.72rem] justify-center rounded-full",
-                )}
+              className={cn(
+                mBarBtnSm(),
+                "px-[0.38rem] py-[0.18rem] text-[0.58rem] min-h-[1.72rem] min-w-[1.72rem] justify-center rounded-full",
+              )}
               onClick={cycleSpeed}
               title={
                 lang === "fr" ? "Vitesse" : lang === "ar" ? "السرعة" : "Speed"
@@ -2020,17 +2203,25 @@ export default function AudioPlayer() {
               {audioSpeed}x
             </button>
             <button
-                className={cn(
-                  mBarBtnSm(optionsModalOpen),
-                  "mp-player-options-trigger px-[0.38rem] py-[0.18rem] text-[0.58rem] min-h-[1.72rem] min-w-[1.72rem] justify-center rounded-full",
-                )}
+              className={cn(
+                mBarBtnSm(optionsModalOpen),
+                "mp-player-options-trigger px-[0.38rem] py-[0.18rem] text-[0.58rem] min-h-[1.72rem] min-w-[1.72rem] justify-center rounded-full",
+              )}
               onClick={toggleOptionsModal}
               aria-expanded={optionsModalOpen}
               aria-controls="audio-options-modal-title"
               title={
                 optionsModalOpen
-                  ? lang === "fr" ? "Réduire" : lang === "ar" ? "الخيارات مفتوحة" : "Options opened"
-                  : lang === "fr" ? "Plus d'options" : lang === "ar" ? "خيارات إضافية" : "More options"
+                  ? lang === "fr"
+                    ? "Réduire"
+                    : lang === "ar"
+                      ? "الخيارات مفتوحة"
+                      : "Options opened"
+                  : lang === "fr"
+                    ? "Plus d'options"
+                    : lang === "ar"
+                      ? "خيارات إضافية"
+                      : "More options"
               }
             >
               <i className="fas fa-sliders" />
@@ -2055,7 +2246,11 @@ export default function AudioPlayer() {
                   className="ml-auto rounded-full border border-rose-200/35 bg-white/10 px-2 py-0.5 text-[0.6rem] font-semibold text-rose-50 transition-colors hover:bg-white/20"
                   onClick={toggle}
                   title={
-                    lang === "fr" ? "Réessayer" : lang === "ar" ? "إعادة المحاولة" : "Retry"
+                    lang === "fr"
+                      ? "Réessayer"
+                      : lang === "ar"
+                        ? "إعادة المحاولة"
+                        : "Retry"
                   }
                 >
                   {lang === "fr"
@@ -2088,7 +2283,11 @@ export default function AudioPlayer() {
                 {isSurahStreamReciter && (
                   <span className="inline-flex items-center gap-1 rounded-full border border-fuchsia-300/30 bg-fuchsia-300/12 px-2 py-[0.1875rem] text-[0.6rem] font-bold text-fuchsia-100">
                     <i className="fas fa-compact-disc text-[0.48rem]" />
-                    {lang === "fr" ? "Lecture sourate complete" : lang === "ar" ? "تشغيل السورة كاملة" : "Full-surah playback"}
+                    {lang === "fr"
+                      ? "Lecture sourate complete"
+                      : lang === "ar"
+                        ? "تشغيل السورة كاملة"
+                        : "Full-surah playback"}
                   </span>
                 )}
               </div>
@@ -2114,9 +2313,7 @@ export default function AudioPlayer() {
               {/* Search box */}
               {currentReciters.length > 4 && (
                 <div className="relative mb-1.5">
-                  <i
-                    className="fas fa-search pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[0.5rem] text-[rgba(240,234,214,0.3)]"
-                  />
+                  <i className="fas fa-search pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[0.5rem] text-[rgba(240,234,214,0.3)]" />
                   <input
                     type="text"
                     value={reciterSearch}
@@ -2147,9 +2344,16 @@ export default function AudioPlayer() {
               >
                 {filteredReciters.length === 0 ? (
                   <div
-                    className={cn(playerFadedTextClass, "py-2 text-center text-[0.62rem]")}
+                    className={cn(
+                      playerFadedTextClass,
+                      "py-2 text-center text-[0.62rem]",
+                    )}
                   >
-                    {lang === "fr" ? "Aucun résultat" : lang === "ar" ? "لا توجد نتائج" : "No results"}
+                    {lang === "fr"
+                      ? "Aucun résultat"
+                      : lang === "ar"
+                        ? "لا توجد نتائج"
+                        : "No results"}
                   </div>
                 ) : (
                   <div
@@ -2170,7 +2374,10 @@ export default function AudioPlayer() {
                         <button
                           key={r.id}
                           onClick={() => handleReciterSelect(r.id)}
-                          className={playerReciterButtonClass(active, isLoading)}
+                          className={playerReciterButtonClass(
+                            active,
+                            isLoading,
+                          )}
                           aria-pressed={active}
                           disabled={Boolean(reciterSwitchingId)}
                         >
@@ -2192,9 +2399,7 @@ export default function AudioPlayer() {
                                   : r.nameEn}
                             </span>
                             {r.style && (
-                              <span
-                                className="truncate text-[0.52rem] uppercase leading-tight tracking-wide text-[rgba(240,234,214,0.35)]"
-                              >
+                              <span className="truncate text-[0.52rem] uppercase leading-tight tracking-wide text-[rgba(240,234,214,0.35)]">
                                 {r.style}
                               </span>
                             )}
@@ -2209,7 +2414,11 @@ export default function AudioPlayer() {
                             )}
                             {r.audioMode === "surah" && (
                               <span className="mt-1 inline-flex items-center rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-1.5 py-0.5 text-[0.5rem] font-semibold tracking-wide text-fuchsia-100">
-                                {lang === "fr" ? "Sourate complete" : lang === "ar" ? "سورة كاملة" : "Full surah"}
+                                {lang === "fr"
+                                  ? "Sourate complete"
+                                  : lang === "ar"
+                                    ? "سورة كاملة"
+                                    : "Full surah"}
                               </span>
                             )}
                           </span>
@@ -2222,14 +2431,27 @@ export default function AudioPlayer() {
             </div>
 
             {/* Volume */}
-            <div className={cn("mt-2.5 flex items-center gap-2 px-2 py-2", playerSoftSurfaceClass)}>
+            <div
+              className={cn(
+                "mt-2.5 flex items-center gap-2 px-2 py-2",
+                playerSoftSurfaceClass,
+              )}
+            >
               <button
                 onClick={() => handleVolumeChange(volume > 0 ? 0 : 1)}
                 className="h-7 w-7 shrink-0 rounded-lg border border-white/12 bg-white/[0.06] text-[0.72rem] text-[rgba(132,205,228,0.9)] transition-colors duration-150 hover:bg-[rgba(110,204,233,0.14)]"
                 title={
                   volume > 0
-                    ? lang === "fr" ? "Muet" : lang === "ar" ? "كتم" : "Mute"
-                    : lang === "fr" ? "Activer" : lang === "ar" ? "إلغاء الكتم" : "Unmute"
+                    ? lang === "fr"
+                      ? "Muet"
+                      : lang === "ar"
+                        ? "كتم"
+                        : "Mute"
+                    : lang === "fr"
+                      ? "Activer"
+                      : lang === "ar"
+                        ? "إلغاء الكتم"
+                        : "Unmute"
                 }
               >
                 <i
@@ -2300,7 +2522,12 @@ export default function AudioPlayer() {
             )}
 
             {/* Fermer */}
-            <div className={cn("mt-2.5 flex items-center gap-2 p-2", playerSoftSurfaceClass)}>
+            <div
+              className={cn(
+                "mt-2.5 flex items-center gap-2 p-2",
+                playerSoftSurfaceClass,
+              )}
+            >
               <button
                 className={cn(mBarBtnSm(), "w-full gap-1.5 justify-center")}
                 onClick={closePlayer}
@@ -2326,7 +2553,11 @@ export default function AudioPlayer() {
                   >
                     <span className="flex items-center gap-1">
                       <i className="fas fa-sliders text-[0.48rem]" />
-                      {lang === "fr" ? "Options" : lang === "ar" ? "خيارات" : "Options"}
+                      {lang === "fr"
+                        ? "Options"
+                        : lang === "ar"
+                          ? "خيارات"
+                          : "Options"}
                     </span>
                     <i
                       className={`fas fa-chevron-${showAdvanced ? "up" : "down"} text-[0.48rem]`}
@@ -2335,96 +2566,122 @@ export default function AudioPlayer() {
                 </div>
                 {showAdvanced && (
                   <>
-                {/* -- A-B Repeat (mobile) -- */}
-                <div className="mt-2.5">
-                  <div className={cn(playerSectionLabelClass, "mb-1")}>
-                    A-B Repeat
-                  </div>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {[
-                      { mark: markAbA, val: abA, lbl: "A" },
-                      { mark: markAbB, val: abB, lbl: "B" },
-                    ].map(({ mark, val, lbl }) => (
-                      <button
-                        key={lbl}
-                        onClick={mark}
-                        className={cn(mBarBtnSm(!!val), "px-2 py-1")}
-                        disabled={!hasAyahContext}
-                      >
-                        {val ? `${lbl}: ${val.surah}:${val.ayah}` : lbl}
-                      </button>
-                    ))}
-                    {(abA || abB) && (
-                      <button
-                        onClick={clearAb}
-                        className={cn(mBarBtnSm(), "px-2 py-1")}
-                      >
-                        <i className="fas fa-times" />
-                      </button>
-                    )}
-                  </div>
-                </div>
+                    {/* -- A-B Repeat (mobile) -- */}
+                    <div className="mt-2.5">
+                      <div className={cn(playerSectionLabelClass, "mb-1")}>
+                        A-B Repeat
+                      </div>
+                      <div className="flex gap-1.5 flex-wrap">
+                        {[
+                          { mark: markAbA, val: abA, lbl: "A" },
+                          { mark: markAbB, val: abB, lbl: "B" },
+                        ].map(({ mark, val, lbl }) => (
+                          <button
+                            key={lbl}
+                            onClick={mark}
+                            className={cn(mBarBtnSm(!!val), "px-2 py-1")}
+                            disabled={!hasAyahContext}
+                          >
+                            {val ? `${lbl}: ${val.surah}:${val.ayah}` : lbl}
+                          </button>
+                        ))}
+                        {(abA || abB) && (
+                          <button
+                            onClick={clearAb}
+                            className={cn(mBarBtnSm(), "px-2 py-1")}
+                          >
+                            <i className="fas fa-times" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
 
-                {/* -- EQ presets (mobile) -- */}
-                <div className="mt-2.5">
-                  <div className={cn(playerSectionLabelClass, "mb-1")}>
-                    {lang === "fr" ? "Acoustique" : lang === "ar" ? "الصوتيات" : "Acoustics"}
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {[
-                      { id: "flat", fr: "Plat", ar: "Flat", en: "Flat" },
-                      { id: "bass", fr: "Graves", ar: "Bass", en: "Bass" },
-                      { id: "treble", fr: "Aigus", ar: "حاد", en: "Treble" },
-                      { id: "near", fr: "Proche", ar: "Near", en: "Near" },
-                      { id: "hall", fr: "Salle", ar: "Hall", en: "Hall" },
-                      { id: "vocals", fr: "Voix", ar: "Vocals", en: "Vocals" },
-                    ].map((p) => (
-                      <button
-                        key={p.id}
-                        onClick={() => handleEq(p.id)}
-                        className={cn(mBarBtnSm(eqPreset === p.id), "px-1.5")}
-                      >
-                        {lang === "ar" ? p.ar : lang === "fr" ? p.fr : p.en}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                    {/* -- EQ presets (mobile) -- */}
+                    <div className="mt-2.5">
+                      <div className={cn(playerSectionLabelClass, "mb-1")}>
+                        {lang === "fr"
+                          ? "Acoustique"
+                          : lang === "ar"
+                            ? "الصوتيات"
+                            : "Acoustics"}
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {[
+                          { id: "flat", fr: "Plat", ar: "Flat", en: "Flat" },
+                          { id: "bass", fr: "Graves", ar: "Bass", en: "Bass" },
+                          {
+                            id: "treble",
+                            fr: "Aigus",
+                            ar: "حاد",
+                            en: "Treble",
+                          },
+                          { id: "near", fr: "Proche", ar: "Near", en: "Near" },
+                          { id: "hall", fr: "Salle", ar: "Hall", en: "Hall" },
+                          {
+                            id: "vocals",
+                            fr: "Voix",
+                            ar: "Vocals",
+                            en: "Vocals",
+                          },
+                        ].map((p) => (
+                          <button
+                            key={p.id}
+                            onClick={() => handleEq(p.id)}
+                            className={cn(
+                              mBarBtnSm(eqPreset === p.id),
+                              "px-1.5",
+                            )}
+                          >
+                            {lang === "ar" ? p.ar : lang === "fr" ? p.fr : p.en}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
 
-                {/* -- Tartil + Récitation (mobile) -- */}
-                <div className="flex gap-1.5 mt-2">
-                  <button
-                    onClick={toggleTartil}
-                    className={cn(
-                      mBarBtnSm(tartilMode),
-                      "flex-1 gap-1 justify-center",
+                    {/* -- Tartil + Récitation (mobile) -- */}
+                    <div className="flex gap-1.5 mt-2">
+                      <button
+                        onClick={toggleTartil}
+                        className={cn(
+                          mBarBtnSm(tartilMode),
+                          "flex-1 gap-1 justify-center",
+                        )}
+                        aria-pressed={tartilMode}
+                      >
+                        <i className="fas fa-wave-square text-[0.6rem]" />
+                        {lang === "fr"
+                          ? "Tartil"
+                          : lang === "ar"
+                            ? "ترتيل"
+                            : "Tartil"}
+                      </button>
+                      <button
+                        onClick={reciteMode ? stopRecite : startRecite}
+                        className={cn(
+                          mBarBtnSm(reciteMode),
+                          reciteMode &&
+                            "border-[rgba(34,197,94,0.4)] text-[#86efac]",
+                          "flex-1 gap-1 justify-center",
+                        )}
+                      >
+                        <i
+                          className={`fas ${reciteMode ? "fa-stop" : "fa-microphone"} text-[0.6rem]`}
+                        />
+                        {lang === "fr"
+                          ? "Réciter"
+                          : lang === "ar"
+                            ? "التلاوة"
+                            : "Recite"}
+                      </button>
+                    </div>
+                    {reciteMode && reciteText && (
+                      <div
+                        className="mt-1.5 rounded-lg border border-[rgba(34,197,94,0.2)] bg-[rgba(34,197,94,0.08)] px-2 py-1.5 text-right text-[0.65rem] text-[#86efac]"
+                        dir="rtl"
+                      >
+                        {reciteText}
+                      </div>
                     )}
-                    aria-pressed={tartilMode}
-                  >
-                    <i className="fas fa-wave-square text-[0.6rem]" />
-                    {lang === "fr" ? "Tartil" : lang === "ar" ? "ترتيل" : "Tartil"}
-                  </button>
-                  <button
-                    onClick={reciteMode ? stopRecite : startRecite}
-                    className={cn(
-                      mBarBtnSm(reciteMode),
-                      reciteMode && "border-[rgba(34,197,94,0.4)] text-[#86efac]",
-                      "flex-1 gap-1 justify-center",
-                    )}
-                  >
-                    <i
-                      className={`fas ${reciteMode ? "fa-stop" : "fa-microphone"} text-[0.6rem]`}
-                    />
-                    {lang === "fr" ? "Réciter" : lang === "ar" ? "التلاوة" : "Recite"}
-                  </button>
-                </div>
-                {reciteMode && reciteText && (
-                  <div
-                    className="mt-1.5 rounded-lg border border-[rgba(34,197,94,0.2)] bg-[rgba(34,197,94,0.08)] px-2 py-1.5 text-right text-[0.65rem] text-[#86efac]"
-                    dir="rtl"
-                  >
-                    {reciteText}
-                  </div>
-                )}
                   </>
                 )}
               </>
@@ -2443,9 +2700,7 @@ export default function AudioPlayer() {
     <>
       {/* Audio error banner */}
       {audioError && (
-        <div
-          className="pointer-events-none fixed left-1/2 top-[72px] z-[400] flex max-w-[340px] -translate-x-1/2 items-center gap-2 rounded-xl bg-[rgba(180,30,30,0.93)] px-[18px] py-[10px] text-center text-[13px] text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)] animate-[slideDownFade_0.25s_var(--ease,ease)]"
-        >
+        <div className="pointer-events-none fixed left-1/2 top-[72px] z-[400] flex max-w-[340px] -translate-x-1/2 items-center gap-2 rounded-xl bg-[rgba(180,30,30,0.93)] px-[18px] py-[10px] text-center text-[13px] text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)] animate-[slideDownFade_0.25s_var(--ease,ease)]">
           <i className="fas fa-exclamation-circle shrink-0" />
           <span>{audioError}</span>
         </div>
@@ -2463,14 +2718,16 @@ export default function AudioPlayer() {
           isContextualDesktop &&
             !manualDockPosition &&
             "mp-audio-player--reading-dock",
-          isReadingDesktop &&
-            "max-h-[calc(100vh-var(--header-h)-1.6rem)]",
-          minimized ? "is-minimized rounded-[20px]" : "is-maximized rounded-[24px]",
+          isReadingDesktop && "max-h-[calc(100vh-var(--header-h)-1.6rem)]",
+          minimized
+            ? "is-minimized rounded-[20px]"
+            : "is-maximized rounded-[24px]",
           expanded ? "is-expanded" : "is-collapsed",
           desktopCardWidthClass,
           desktopCardPositionClass,
           desktopCardShadowClass,
-          !isDragging && "transition-[box-shadow,width] duration-300 ease-[var(--ease,ease)]",
+          !isDragging &&
+            "transition-[box-shadow,width] duration-300 ease-[var(--ease,ease)]",
           !canDragDesktopCard
             ? "cursor-default"
             : isDragging
@@ -2517,7 +2774,11 @@ export default function AudioPlayer() {
                   )}
                 >
                   {titleLabel ||
-                    (lang === "fr" ? "Prêt à lire" : lang === "ar" ? "جاهز" : "Ready")}
+                    (lang === "fr"
+                      ? "Prêt à lire"
+                      : lang === "ar"
+                        ? "جاهز"
+                        : "Ready")}
                 </div>
                 <div
                   className={cn(
@@ -2564,7 +2825,11 @@ export default function AudioPlayer() {
               <IconBtn
                 onClick={toggleMinimized}
                 title={
-                  lang === "fr" ? "Agrandir" : lang === "ar" ? "توسيع" : "Expand"
+                  lang === "fr"
+                    ? "Agrandir"
+                    : lang === "ar"
+                      ? "توسيع"
+                      : "Expand"
                 }
                 size="sm"
               >
@@ -2603,7 +2868,10 @@ export default function AudioPlayer() {
             )}
             {/* Drag handle + minimize button */}
             <div
-              className={cn("flex shrink-0 items-center justify-between px-4 pb-1 pt-2.5", playerSoftSurfaceClass)}
+              className={cn(
+                "flex shrink-0 items-center justify-between px-4 pb-1 pt-2.5",
+                playerSoftSurfaceClass,
+              )}
               data-player-drag="true"
             >
               <button
@@ -2621,7 +2889,7 @@ export default function AudioPlayer() {
                 <i className="fas fa-chevron-down text-xs" />
               </button>
               <button
-                className={cn(playerUtilityClass, "mp-player-options-trigger h-6 w-6")}
+                className={cn(playerUtilityClass, " h-6 w-6")}
                 onClick={toggleOptionsModal}
                 title={
                   lang === "fr"
@@ -2645,7 +2913,11 @@ export default function AudioPlayer() {
                 onClick={closePlayer}
                 className={cn(playerUtilityClass, "h-6 w-6")}
                 title={
-                  lang === "fr" ? "Fermer le lecteur" : lang === "ar" ? "إغلاق المشغل" : "Close player"
+                  lang === "fr"
+                    ? "Fermer le lecteur"
+                    : lang === "ar"
+                      ? "إغلاق المشغل"
+                      : "Close player"
                 }
               >
                 <i className="fas fa-times text-xs" />
@@ -2654,7 +2926,12 @@ export default function AudioPlayer() {
 
             <div className="flex flex-col gap-3 px-3.5 pb-3.5 pt-1.5">
               {/* Top row: cover + info */}
-              <div className={cn("flex items-center gap-2.5 p-2.5", playerSoftSurfaceClass)}>
+              <div
+                className={cn(
+                  "flex items-center gap-2.5 p-2.5",
+                  playerSoftSurfaceClass,
+                )}
+              >
                 <CoverArt isPlaying={isPlaying} />
                 <div className="min-w-0 flex-1">
                   {/* Arabic surah name -- prominent header */}
@@ -2674,7 +2951,11 @@ export default function AudioPlayer() {
                     )}
                   >
                     {titleLabel ||
-                      (lang === "fr" ? "Prêt à lire" : lang === "ar" ? "جاهز" : "Ready")}
+                      (lang === "fr"
+                        ? "Prêt à lire"
+                        : lang === "ar"
+                          ? "جاهز"
+                          : "Ready")}
                   </div>
                   <div
                     className={cn(
@@ -2733,7 +3014,11 @@ export default function AudioPlayer() {
                     <IconBtn
                       onClick={resetDockPosition}
                       title={
-                        lang === "fr" ? "Revenir au dock" : lang === "ar" ? "إعادة تثبيت الموضع" : "Reset dock position"
+                        lang === "fr"
+                          ? "Revenir au dock"
+                          : lang === "ar"
+                            ? "إعادة تثبيت الموضع"
+                            : "Reset dock position"
                       }
                       size="sm"
                     >
@@ -2760,7 +3045,12 @@ export default function AudioPlayer() {
               <Waveform isPlaying={isPlaying} progress={progress} />
 
               {/* Seek bar + times */}
-              <div className={cn("flex flex-col gap-1 rounded-xl px-2 py-1.5", playerSoftSurfaceClass)}>
+              <div
+                className={cn(
+                  "flex flex-col gap-1 rounded-xl px-2 py-1.5",
+                  playerSoftSurfaceClass,
+                )}
+              >
                 <div
                   ref={progressRef}
                   onClick={handleSeek}
@@ -2788,7 +3078,12 @@ export default function AudioPlayer() {
               </div>
 
               {/* Main controls */}
-              <div className={cn("mp-player-controls-strip flex items-center justify-between px-2 py-2", playerSoftSurfaceClass)}>
+              <div
+                className={cn(
+                  "mp-player-controls-strip flex items-center justify-between px-2 py-2",
+                  playerSoftSurfaceClass,
+                )}
+              >
                 {/* Speed */}
                 <button
                   onClick={cycleSpeed}
@@ -2828,16 +3123,18 @@ export default function AudioPlayer() {
                   <i className="fas fa-step-forward" />
                 </IconBtn>
 
-                <IconBtn
-                  onClick={stop}
-                  title={t("audio.stop", lang)}
-                >
+                <IconBtn onClick={stop} title={t("audio.stop", lang)}>
                   <i className="fas fa-stop" />
                 </IconBtn>
               </div>
 
               {/* Volume */}
-              <div className={cn("flex items-center gap-2 px-2 py-2", playerSoftSurfaceClass)}>
+              <div
+                className={cn(
+                  "flex items-center gap-2 px-2 py-2",
+                  playerSoftSurfaceClass,
+                )}
+              >
                 <button
                   onClick={() => handleVolumeChange(volume > 0 ? 0 : 1)}
                   className="h-7 w-7 shrink-0 rounded-lg border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_78%,transparent_22%)] text-[0.72rem] text-[color-mix(in_srgb,var(--theme-primary)_72%,var(--theme-text)_28%)] transition-colors duration-150 hover:bg-[rgba(var(--theme-primary-rgb),0.14)]"
@@ -2878,8 +3175,16 @@ export default function AudioPlayer() {
               >
                 <i className="fas fa-sliders text-[0.55rem]" />
                 {optionsModalOpen
-                  ? lang === "fr" ? "Fermer les options" : lang === "ar" ? "إغلاق الخيارات" : "Close options"
-                  : lang === "fr" ? "Plus d'options" : lang === "ar" ? "خيارات إضافية" : "More options"}
+                  ? lang === "fr"
+                    ? "Fermer les options"
+                    : lang === "ar"
+                      ? "إغلاق الخيارات"
+                      : "Close options"
+                  : lang === "fr"
+                    ? "Plus d'options"
+                    : lang === "ar"
+                      ? "خيارات إضافية"
+                      : "More options"}
               </button>
 
               {/* Expanded panel */}
@@ -2899,7 +3204,11 @@ export default function AudioPlayer() {
                         className="ml-auto rounded-full border border-rose-200/35 bg-white/10 px-2 py-0.5 text-[0.6rem] font-semibold text-rose-50 transition-colors hover:bg-white/20"
                         onClick={toggle}
                         title={
-                          lang === "fr" ? "Réessayer" : lang === "ar" ? "إعادة المحاولة" : "Retry"
+                          lang === "fr"
+                            ? "Réessayer"
+                            : lang === "ar"
+                              ? "إعادة المحاولة"
+                              : "Retry"
                         }
                       >
                         {lang === "fr"
@@ -2913,9 +3222,7 @@ export default function AudioPlayer() {
                   {/* Reciter grid */}
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <div
-                        className={playerSectionLabelClass}
-                      >
+                      <div className={playerSectionLabelClass}>
                         {t("audio.reciter", lang)}
                       </div>
                       <span
@@ -2932,16 +3239,14 @@ export default function AudioPlayer() {
                     {/* Search */}
                     {currentReciters.length > 4 && (
                       <div className="relative mb-1.5">
-                        <i
-                          className="fas fa-magnifying-glass pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[0.5rem] text-[rgba(240,234,214,0.3)]"
-                        />
+                        <i className="fas fa-magnifying-glass pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[0.5rem] text-[rgba(240,234,214,0.3)]" />
                         <input
                           type="text"
                           value={reciterSearch}
                           onChange={(e) => setReciterSearch(e.target.value)}
                           placeholder={
                             lang === "ar"
-                                ? "Search..."
+                              ? "Search..."
                               : lang === "fr"
                                 ? "Rechercher..."
                                 : "Search..."
@@ -2970,7 +3275,11 @@ export default function AudioPlayer() {
                             "py-3 text-center text-[0.62rem]",
                           )}
                         >
-                          {lang === "fr" ? "Aucun résultat" : lang === "ar" ? "لا توجد نتائج" : "No results"}
+                          {lang === "fr"
+                            ? "Aucun résultat"
+                            : lang === "ar"
+                              ? "لا توجد نتائج"
+                              : "No results"}
                         </div>
                       ) : (
                         <div
@@ -2984,10 +3293,11 @@ export default function AudioPlayer() {
                             const isLoading =
                               reciterSwitchingId === r.id ||
                               (active && networkState === "loading");
-                            const unavailableMs = getReciterUnavailableRemainingMs(
-                              r.id,
-                              reciterAvailabilityById,
-                            );
+                            const unavailableMs =
+                              getReciterUnavailableRemainingMs(
+                                r.id,
+                                reciterAvailabilityById,
+                              );
                             const isUnavailable = unavailableMs > 0;
                             const initial = (r.nameEn ||
                               r.name ||
@@ -3002,7 +3312,10 @@ export default function AudioPlayer() {
                                   isUnavailable,
                                 )}
                                 aria-pressed={active}
-                                disabled={Boolean(reciterSwitchingId) || (isUnavailable && !active)}
+                                disabled={
+                                  Boolean(reciterSwitchingId) ||
+                                  (isUnavailable && !active)
+                                }
                               >
                                 <span
                                   className={playerReciterAvatarClass(active)}
@@ -3016,9 +3329,7 @@ export default function AudioPlayer() {
                                   )}
                                 </span>
                                 <span className="flex min-w-0 flex-col">
-                                  <span
-                                    className="[font-family:var(--font-ui)] truncate text-[0.68rem] font-semibold leading-tight"
-                                  >
+                                  <span className="[font-family:var(--font-ui)] truncate text-[0.68rem] font-semibold leading-tight">
                                     {lang === "ar"
                                       ? r.name
                                       : lang === "fr"
@@ -3026,9 +3337,7 @@ export default function AudioPlayer() {
                                         : r.nameEn}
                                   </span>
                                   {r.style && (
-                                    <span
-                                      className="[font-family:var(--font-ui)] truncate text-[0.52rem] uppercase leading-tight tracking-wide text-[rgba(240,234,214,0.35)]"
-                                    >
+                                    <span className="[font-family:var(--font-ui)] truncate text-[0.52rem] uppercase leading-tight tracking-wide text-[rgba(240,234,214,0.35)]">
                                       {r.style}
                                     </span>
                                   )}
@@ -3084,7 +3393,10 @@ export default function AudioPlayer() {
                         ].map(({ label, val, key, min, max }) => (
                           <div key={key} className="flex items-center gap-1.5">
                             <span
-                              className={cn(playerMutedTextClass, "text-[0.68rem]")}
+                              className={cn(
+                                playerMutedTextClass,
+                                "text-[0.68rem]",
+                              )}
                             >
                               {label}
                             </span>
@@ -3106,23 +3418,27 @@ export default function AudioPlayer() {
 
                   {/* -- Options avancées toggle -- */}
                   {showAdvancedControls && (
-                  <button
-                    onClick={() => setShowAdvanced((v) => !v)}
-                    className={cn(
-                      "flex w-full items-center justify-between rounded-lg border px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-widest transition-all [font-family:var(--font-ui)]",
-                      showAdvanced
-                        ? "border-[rgba(110,204,233,0.35)] bg-[rgba(110,204,233,0.12)] text-[rgba(240,250,255,0.95)]"
-                        : "border-white/10 bg-transparent text-[rgba(230,219,198,0.58)]",
-                    )}
-                  >
-                    <span className="flex items-center gap-1.5">
-                      <i className="fas fa-sliders text-[0.5rem]" />
-                      {lang === "fr" ? "Options" : lang === "ar" ? "خيارات" : "Options"}
-                    </span>
-                    <i
-                      className={`fas fa-chevron-${showAdvanced ? "up" : "down"} text-[0.5rem]`}
-                    />
-                  </button>
+                    <button
+                      onClick={() => setShowAdvanced((v) => !v)}
+                      className={cn(
+                        "flex w-full items-center justify-between rounded-lg border px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-widest transition-all [font-family:var(--font-ui)]",
+                        showAdvanced
+                          ? "border-[rgba(110,204,233,0.35)] bg-[rgba(110,204,233,0.12)] text-[rgba(240,250,255,0.95)]"
+                          : "border-white/10 bg-transparent text-[rgba(230,219,198,0.58)]",
+                      )}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <i className="fas fa-sliders text-[0.5rem]" />
+                        {lang === "fr"
+                          ? "Options"
+                          : lang === "ar"
+                            ? "خيارات"
+                            : "Options"}
+                      </span>
+                      <i
+                        className={`fas fa-chevron-${showAdvanced ? "up" : "down"} text-[0.5rem]`}
+                      />
+                    </button>
                   )}
                   {showAdvancedControls && showAdvanced && (
                     <>
@@ -3181,7 +3497,11 @@ export default function AudioPlayer() {
                       {/* -- Equalizer presets -- */}
                       <div>
                         <div className={playerSectionLabelClass}>
-                          {lang === "fr" ? "Acoustique" : lang === "ar" ? "الصوتيات" : "Acoustics"}
+                          {lang === "fr"
+                            ? "Acoustique"
+                            : lang === "ar"
+                              ? "الصوتيات"
+                              : "Acoustics"}
                         </div>
                         <div className="flex flex-wrap gap-1">
                           {[
@@ -3215,7 +3535,9 @@ export default function AudioPlayer() {
                             <button
                               key={p.id}
                               onClick={() => handleEq(p.id)}
-                              className={playerOptionPillClass(eqPreset === p.id)}
+                              className={playerOptionPillClass(
+                                eqPreset === p.id,
+                              )}
                               aria-pressed={eqPreset === p.id}
                             >
                               {lang === "ar"
@@ -3236,7 +3558,11 @@ export default function AudioPlayer() {
                       >
                         <span className="flex items-center gap-2">
                           <i className="fas fa-wave-square text-[0.6rem]" />
-                          {lang === "fr" ? "Tartil progressif" : lang === "ar" ? "ترتيل تدريجي" : "Progressive Tartil"}
+                          {lang === "fr"
+                            ? "Tartil progressif"
+                            : lang === "ar"
+                              ? "ترتيل تدريجي"
+                              : "Progressive Tartil"}
                         </span>
                         <span
                           className={cn(
@@ -3320,5 +3646,3 @@ export default function AudioPlayer() {
     </>
   );
 }
-
-

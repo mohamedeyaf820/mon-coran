@@ -217,7 +217,7 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
 
   if (ayah.requestedRiwaya === "warsh") {
     return (
-      <span className="warsh-missing-text">
+      <span className="warsh-missing-text inline-block rounded-[5px] border border-dashed border-[rgba(192,57,43,0.3)] bg-[rgba(192,57,43,0.08)] px-[0.4rem] py-[0.15rem] font-[var(--font-ui)] text-[0.5em] text-[#c0392b]">
         ⚠︎ Warsh text unavailable for this ayah
       </span>
     );
