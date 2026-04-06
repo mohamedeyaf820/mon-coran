@@ -1,17 +1,33 @@
 import React from "react";
 import { useApp } from "../../context/AppContext";
 import { t } from "../../i18n";
-import { 
-  Play, 
-  Loader2, 
-  List, 
-  BookOpen, 
-  Languages, 
-  Palette, 
-  Type, 
-  GraduationCap 
-} from "lucide-react";
 import { cn } from "../../lib/utils";
+
+function ToolbarButton({
+  active = false,
+  primary = false,
+  className,
+  children,
+  ...props
+}) {
+  return (
+    <button
+      className={cn(
+        "reader-toolbar-btn inline-flex min-h-[34px] items-center gap-[5px] whitespace-nowrap rounded-[20px] border px-[11px] py-[6px]",
+        "font-ui text-[0.75rem] font-medium transition duration-150",
+        primary
+          ? "reader-toolbar-btn--primary border-[var(--emerald)] bg-[linear-gradient(135deg,var(--emerald),var(--emerald-lit))] text-white shadow-[0_6px_16px_rgba(var(--primary-rgb),0.28)] disabled:opacity-65 disabled:shadow-none"
+          : active
+            ? "active border-[var(--emerald)] bg-[linear-gradient(135deg,var(--emerald),var(--emerald-lit))] text-white"
+            : "border-[var(--border-subtle)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:border-[var(--emerald)] hover:bg-[var(--emerald-tint)] hover:text-[var(--emerald)]",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
 
 /**
  * ReadingToolbar – Quran.com-style compact toolbar below the surah header.
@@ -44,14 +60,18 @@ export default function ReadingToolbar({ surahNum, onPlaySurah, preparingSurah }
   const mushafIsOn = mushafLayout === "mushaf";
 
   return (
-    <div className="reader-toolbar" role="toolbar" aria-label={t("settings.title", lang)}>
-      {/* Left: Play button */}
-      <div className="reader-toolbar__left">
-        <button
-          className="reader-toolbar-btn reader-toolbar-btn--primary"
+    <div
+      className="reader-toolbar sticky top-[var(--header-h,68px)] z-50 flex items-center justify-between gap-[10px] border-b border-[var(--border-subtle)] bg-[var(--glass-bg)] px-[14px] py-2 backdrop-blur-[var(--glass-backdrop)] max-md:gap-[7px] max-md:px-[10px]"
+      role="toolbar"
+      aria-label={t("settings.title", lang)}
+    >
+      <div className="reader-toolbar__left flex items-center gap-[6px] max-md:gap-1">
+        <ToolbarButton
+          primary
           onClick={onPlaySurah}
           disabled={preparingSurah === surahNum}
           aria-label={t("audio.playSurah", lang)}
+          className="gap-2 max-md:min-h-[33px] max-md:px-[9px] max-md:py-[6px] max-md:text-[0.71rem]"
         >
           {preparingSurah === surahNum ? (
             <Loader2 size={16} className="animate-spin" />
@@ -63,13 +83,12 @@ export default function ReadingToolbar({ surahNum, onPlaySurah, preparingSurah }
               ? lang === "fr" ? "Chargement..." : "Loading..."
               : t("audio.playSurah", lang)}
           </span>
-        </button>
+        </ToolbarButton>
       </div>
 
-      {/* Center: Reading mode toggles */}
-      <div className="reader-toolbar__center" style={{ gap: 4 }}>
-        <button
-          className={cn("reader-toolbar-btn", mushafIsOn && "active")}
+      <div className="reader-toolbar__center flex flex-1 flex-wrap items-center justify-center gap-1 max-md:flex-nowrap max-md:justify-start max-md:overflow-x-auto max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden">
+        <ToolbarButton
+          active={mushafIsOn}
           onClick={toggleMushaf}
           title={
             mushafIsOn
@@ -81,6 +100,7 @@ export default function ReadingToolbar({ surahNum, onPlaySurah, preparingSurah }
                 : "Switch to Mushaf view"
           }
           aria-pressed={mushafIsOn}
+          className="max-md:min-h-[33px] max-md:px-[9px] max-md:py-[6px] max-md:text-[0.71rem]"
         >
           {mushafIsOn ? <List size={16} /> : <BookOpen size={16} />}
           <span className="hidden md:inline">
@@ -90,36 +110,39 @@ export default function ReadingToolbar({ surahNum, onPlaySurah, preparingSurah }
                 : "List"
               : "Mushaf"}
           </span>
-        </button>
+        </ToolbarButton>
 
-        <button
-          className={cn("reader-toolbar-btn", showTranslation && "active")}
+        <ToolbarButton
+          active={showTranslation}
           onClick={toggleTranslation}
           title={lang === "fr" ? "Traduction" : "Translation"}
           aria-pressed={showTranslation}
+          className="max-md:min-h-[33px] max-md:px-[9px] max-md:py-[6px] max-md:text-[0.71rem]"
         >
           <Languages size={16} />
           <span className="hidden md:inline">
             {lang === "fr" ? "Traduction" : "Translation"}
           </span>
-        </button>
+        </ToolbarButton>
 
-        <button
-          className={cn("reader-toolbar-btn", showTajwid && "active")}
+        <ToolbarButton
+          active={showTajwid}
           onClick={toggleTajweed}
           title={lang === "fr" ? "Couleurs Tajwid" : "Tajweed Colors"}
           aria-pressed={showTajwid}
+          className="max-md:min-h-[33px] max-md:px-[9px] max-md:py-[6px] max-md:text-[0.71rem]"
         >
           <Palette size={16} />
           <span className="hidden md:inline">Tajweed</span>
-        </button>
+        </ToolbarButton>
 
         {riwaya !== "warsh" && (
-          <button
-            className={cn("reader-toolbar-btn", showWordByWord && "active")}
+          <ToolbarButton
+            active={showWordByWord}
             onClick={toggleWBW}
             title={lang === "fr" ? "Mot à mot" : "Word by Word"}
             aria-pressed={showWordByWord}
+            className="max-md:min-h-[33px] max-md:px-[9px] max-md:py-[6px] max-md:text-[0.71rem]"
           >
             <Type size={16} />
             <span className="hidden md:inline">
@@ -128,23 +151,23 @@ export default function ReadingToolbar({ surahNum, onPlaySurah, preparingSurah }
             <span className="md:hidden">
               {lang === "fr" ? "M-à-M" : "WbW"}
             </span>
-          </button>
+          </ToolbarButton>
         )}
       </div>
 
-      {/* Right: View mode */}
-      <div className="reader-toolbar__right">
-        <button
-          className={cn("reader-toolbar-btn", memMode && "active")}
+      <div className="reader-toolbar__right flex items-center gap-[6px] max-md:gap-1">
+        <ToolbarButton
+          active={memMode}
           onClick={toggleMem}
           title={lang === "fr" ? "Mémorisation" : "Memorize"}
           aria-pressed={memMode}
+          className="max-md:min-h-[33px] max-md:px-[9px] max-md:py-[6px] max-md:text-[0.71rem]"
         >
           <GraduationCap size={16} />
           <span className="hidden md:inline">
             {lang === "fr" ? "Mémo" : "Mem"}
           </span>
-        </button>
+        </ToolbarButton>
       </div>
     </div>
   );

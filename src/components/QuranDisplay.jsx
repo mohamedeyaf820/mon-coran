@@ -58,8 +58,6 @@ import CleanPageView from "./Quran/CleanPageView";
 import ReadingToolbar from "./Quran/ReadingToolbar";
 
 import "../styles/quran-display.css";
-import "../styles/mobile-quran-reader.css";
-import "../styles/reader-refonte.css";
 
 function getTranslationKeyForAyah(surahNumber, ayahNumber) {
   if (!surahNumber || !ayahNumber) return null;
@@ -101,6 +99,7 @@ export default function QuranDisplay() {
     currentPlayingAyah,
     loading,
     currentJuz,
+    theme,
     continuousPlay,
     warshStrictMode,
     syncOffsetsMs,
@@ -1291,9 +1290,10 @@ export default function QuranDisplay() {
   const riwayaBadgeClassName = `page-header-bar__riwaya-badge${
     riwaya === "warsh" ? " is-warsh" : ""
   }`;
-  const modePaneShellClass = "rd-wrapper rd-shell";
-  const mushafToggleBarClass = "mushaf-layout-toggle-bar rd-mode-switch";
-  const listSurfaceClass = "rd-list-surface";
+  const modePaneShellClass =
+    "rd-wrapper mx-auto flex max-w-[1040px] flex-col gap-[1.2rem] px-[0.9rem] pt-[1.15rem] pb-[calc(var(--player-h,88px)+2.4rem)] max-[640px]:gap-[0.9rem] max-[640px]:px-[0.56rem] max-[640px]:pt-[0.78rem] max-[640px]:pb-[calc(var(--player-h,88px)+1.6rem)] max-[560px]:landscape:gap-[0.66rem] max-[560px]:landscape:px-[0.62rem] max-[560px]:landscape:pt-[0.58rem] max-[560px]:landscape:pb-[calc(var(--player-h,88px)+1rem)]";
+  const mushafToggleBarClass = "hp-tabs"; // We can reuse hp-tabs or similar, but let's keep it simple
+  const listSurfaceClass = "";
 
   return (
     <>
@@ -1380,20 +1380,6 @@ export default function QuranDisplay() {
                 {currentSurah !== 1 &&
                   currentSurah !== 9 &&
                   mushafLayout !== "mushaf" && <Bismillah />}
-                
-                {mushafLayout !== "mushaf" && (
-                  <div className="play-surah-bar mt-6 mb-8 flex justify-center">
-                    <button
-                      className="btn-play-surah"
-                      onClick={playSurah}
-                      type="button"
-                      title={t("audio.playSurah", lang)}
-                    >
-                      <i className="fas fa-play"></i>
-                      <span>{t("audio.playSurah", lang)}</span>
-                    </button>
-                  </div>
-                )}
               </div>
             )}
 
@@ -1462,13 +1448,15 @@ export default function QuranDisplay() {
                     return (
                       <React.Fragment key={ayah.number}>
                         {showPageSeparator && (
-                          <div className="page-separator">
-                            <span className="page-separator-line"></span>
-                            <span className="page-separator-text">
+                          <div className="page-separator relative my-[2.25rem] flex items-center justify-center gap-[0.85rem] py-4 max-[640px]:my-[1.5rem] max-[640px]:gap-[0.6rem] max-[640px]:py-3">
+                            <span className="page-separator-line h-px flex-1 rounded-[1px] bg-[linear-gradient(to_right,transparent,rgba(var(--primary-rgb,27,94,59),0.35)_35%,rgba(var(--primary-rgb,27,94,59),0.55)_65%,transparent)]"></span>
+                            <span
+                              className={`page-separator-text inline-flex items-center gap-[0.45rem] whitespace-nowrap rounded-full border border-[rgba(var(--primary-rgb,27,94,59),0.18)] bg-[rgba(var(--primary-rgb,27,94,59),0.04)] px-[0.65rem] py-[0.2rem] font-[var(--font-ui,sans-serif)] text-[0.78rem] font-semibold uppercase tracking-[0.07em] text-[var(--primary,#d4a822)] transition-[opacity,background] duration-200 before:text-[0.4em] before:leading-none before:text-[var(--gold,#b8860b)] before:opacity-60 before:content-['◆'] after:text-[0.4em] after:leading-none after:text-[var(--gold,#b8860b)] after:opacity-60 after:content-['◆'] max-[640px]:px-[0.5rem] max-[640px]:py-[0.15rem] max-[640px]:text-[0.68rem] max-[640px]:tracking-[0.05em]${theme === "dark" || theme === "night-blue" ? " border-[rgba(var(--primary-rgb,42,158,94),0.2)] bg-[rgba(var(--primary-rgb,42,158,94),0.06)] opacity-[0.62]" : " opacity-[0.72]"}`}
+                            >
                               {lang === "ar" ? "صفحة" : "Page"}{" "}
                               {lang === "ar" ? toAr(ayah.page) : ayah.page}
                             </span>
-                            <span className="page-separator-line"></span>
+                            <span className="page-separator-line h-px flex-1 rounded-[1px] bg-[linear-gradient(to_left,transparent,rgba(var(--primary-rgb,27,94,59),0.35)_35%,rgba(var(--primary-rgb,27,94,59),0.55)_65%,transparent)]"></span>
                           </div>
                         )}
                         <AyahBlock
@@ -1554,7 +1542,7 @@ export default function QuranDisplay() {
             </div>
 
             {!isQCF4 && pageTopSurah && (
-              <div className="page-mode-top-surah">
+              <div className="page-mode-top-surah mx-auto mt-[0.4rem] mb-[0.78rem]">
                 <SurahHeader surahNum={pageTopSurah} lang={lang} />
               </div>
             )}
@@ -1859,15 +1847,20 @@ export default function QuranDisplay() {
               <div role="list" className={listSurfaceClass}>
                 {surahGroups.map((group, gi) => (
                   <div key={gi}>
-                    {!isQCF4 && group.ayahs[0]?.numberInSurah === 1 && (
+                    {!isQCF4 &&
+                      displayMode !== "page" &&
+                      group.ayahs[0]?.numberInSurah === 1 && (
                       <SurahHeader surahNum={group.surah} lang={lang} />
                     )}
                     {!isQCF4 &&
+                      displayMode !== "page" &&
                       group.ayahs[0]?.numberInSurah === 1 &&
                       group.surah !== 1 &&
                       group.surah !== 9 && <Bismillah />}
 
-                    {!isQCF4 && group.ayahs[0]?.numberInSurah === 1 && (
+                    {!isQCF4 &&
+                      displayMode !== "page" &&
+                      group.ayahs[0]?.numberInSurah === 1 && (
                       <div className="play-surah-bar mt-3 mb-2 flex justify-center">
                         <button
                           className="btn-play-surah"
@@ -2063,4 +2056,3 @@ export default function QuranDisplay() {
     </>
   );
 }
-

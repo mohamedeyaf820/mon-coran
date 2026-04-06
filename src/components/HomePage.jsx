@@ -29,10 +29,7 @@ import {
   playPlaylistWithReciter,
   reciterDownloadUrl,
 } from "../services/RecitationService";
-import {
-  getResumeState,
-  setResumeState,
-} from "../stores/AudioQueueStore";
+import { getResumeState, setResumeState } from "../stores/AudioQueueStore";
 
 import PlatformLogo from "./PlatformLogo";
 import Footer from "./Footer";
@@ -195,10 +192,7 @@ const SURAH_SEARCH_INDEX = SURAHS.map((surah) => ({
 }));
 
 function normalizeLatinSurahName(name = "") {
-  return String(name)
-    .replace(/[’`´]/g, "'")
-    .replace(/\s+/g, " ")
-    .trim();
+  return String(name).replace(/[’`´]/g, "'").replace(/\s+/g, " ").trim();
 }
 
 function getSurahEnglishMeaning(surahNumber) {
@@ -413,7 +407,13 @@ function PercentBar({ value }) {
       className="block h-full w-full"
     >
       <defs>
-        <linearGradient id="home-progress-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <linearGradient
+          id="home-progress-gradient"
+          x1="0%"
+          y1="0%"
+          x2="100%"
+          y2="0%"
+        >
           <stop offset="0%" stopColor="var(--primary)" />
           <stop offset="100%" stopColor="var(--gold)" />
         </linearGradient>
@@ -497,11 +497,7 @@ const SurahCard = memo(function SurahCard({
 
     return (
       <div
-        className={cn(
-          "hp-row",
-          isActive && "active",
-          isPlaying && "playing"
-        )}
+        className={cn("hp-row", isActive && "active", isPlaying && "playing")}
         data-stype={surah.type?.toLowerCase()}
         onClick={() => onClick(surah.n)}
         onKeyDown={(e) => {
@@ -514,11 +510,18 @@ const SurahCard = memo(function SurahCard({
         tabIndex={0}
         style={rowVisibilityStyle}
       >
-        <span className="hp-row-num">
-          {surah.n}
-        </span>
+        <span className="hp-row-num">{surah.n}</span>
         <div className="hp-row-name">
-          {primaryLabel} <span style={{fontSize: "0.85em", color: "var(--text-secondary)", marginLeft: "0.5rem"}}>{secondaryLabel}</span>
+          {primaryLabel}{" "}
+          <span
+            style={{
+              fontSize: "0.85em",
+              color: "var(--text-secondary)",
+              marginLeft: "0.5rem",
+            }}
+          >
+            {secondaryLabel}
+          </span>
         </div>
         <span className="hp-row-meta">
           <span className={`hpl-dot hpl-dot--${surah.type?.toLowerCase()}`} />
@@ -569,11 +572,7 @@ const SurahCard = memo(function SurahCard({
 
   return (
     <div
-      className={cn(
-        "hp-card",
-        isActive && "active",
-        isPlaying && "playing",
-      )}
+      className={cn("hp-card", isActive && "active", isPlaying && "playing")}
       data-stype={surah.type?.toLowerCase()}
       onClick={() => onClick(surah.n)}
       onKeyDown={(e) => {
@@ -593,15 +592,9 @@ const SurahCard = memo(function SurahCard({
 
       {/* Transliteration + meta */}
       <div className="hp-card-content">
-        <span className="hp-card-name">
-          {primaryLabel}
-        </span>
-        <span className="hp-card-meta">
-          {secondaryLabel}
-        </span>
-        <span className="hp-card-meta">
-          {ayahLabel}
-        </span>
+        <span className="hp-card-name">{primaryLabel}</span>
+        <span className="hp-card-meta">{secondaryLabel}</span>
+        <span className="hp-card-meta">{ayahLabel}</span>
       </div>
 
       <span
@@ -652,18 +645,22 @@ const JuzCard = memo(function JuzCard({
 
     return (
       <button
-        className={cn(
-          "hp-row",
-          isActive && "active",
-        )}
+        className={cn("hp-row", isActive && "active")}
         onClick={() => onClick(juz)}
         style={rowVisibilityStyle}
       >
-        <span className="hp-row-num">
-          {juz}
-        </span>
+        <span className="hp-row-num">{juz}</span>
         <div className="hp-row-name">
-          Juz {juz} <span style={{fontSize: "0.85em", color: "var(--text-secondary)", marginLeft: "0.5rem"}}>{name}</span>
+          Juz {juz}{" "}
+          <span
+            style={{
+              fontSize: "0.85em",
+              color: "var(--text-secondary)",
+              marginLeft: "0.5rem",
+            }}
+          >
+            {name}
+          </span>
         </div>
       </button>
     );
@@ -675,14 +672,13 @@ const JuzCard = memo(function JuzCard({
 
   return (
     <button
-      className={cn(
-        "hp-card hp-card--juz",
-        isActive && "active",
-      )}
+      className={cn("hp-card hp-card--juz", isActive && "active")}
       onClick={() => onClick(juz)}
       style={cardVisibilityStyle}
     >
-      <span className="hp-card-num"><span className="hp-card-num-inner">{juz}</span></span>
+      <span className="hp-card-num">
+        <span className="hp-card-num-inner">{juz}</span>
+      </span>
       <div className="hp-card-content">
         <span className="hp-card-name">Juz {juz}</span>
         <span className="hp-card-meta">{name}</span>
@@ -907,7 +903,11 @@ export default function HomePage({ lowPerfMode = false }) {
       if (!targetReciter) return;
       const items = buildSurahAudioPlaylist(surahNum);
       if (!items.length) return;
-      const played = playPlaylistWithReciter({ items, reciter: targetReciter, set });
+      const played = playPlaylistWithReciter({
+        items,
+        reciter: targetReciter,
+        set,
+      });
       if (!played) return;
       persistQueueAndResume(items, targetReciter, "reciter-surah");
     },
@@ -940,7 +940,11 @@ export default function HomePage({ lowPerfMode = false }) {
       if (!stationReciter) return;
       const items = buildStationPlaylist(station.surahs);
       if (!items.length) return;
-      const played = playPlaylistWithReciter({ items, reciter: stationReciter, set });
+      const played = playPlaylistWithReciter({
+        items,
+        reciter: stationReciter,
+        set,
+      });
       if (!played) return;
       persistQueueAndResume(items, stationReciter, "station");
     },
@@ -962,7 +966,9 @@ export default function HomePage({ lowPerfMode = false }) {
 
     const previousActiveElement = document.activeElement;
     reciterModalTriggerRef.current =
-      previousActiveElement instanceof HTMLElement ? previousActiveElement : null;
+      previousActiveElement instanceof HTMLElement
+        ? previousActiveElement
+        : null;
 
     const previousBodyOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -1517,7 +1523,7 @@ export default function HomePage({ lowPerfMode = false }) {
                               <span className="hp2-item__ar">{s?.ar}</span>
                               <span className="hp2-item__sub">
                                 {lang === "fr" ? s?.fr : s?.en} · v.{bk.ayah}
-                                  {bk.label && <em> - {bk.label}</em>}
+                                {bk.label && <em> - {bk.label}</em>}
                               </span>
                             </div>
                             <i
@@ -1816,13 +1822,14 @@ export default function HomePage({ lowPerfMode = false }) {
         </div>
       </section>
 
+      {/* ACCES RAPIDE */}
 
       {/* BANDE STATS */}
 
       {/*  GRILLE PRINCIPALE  */}
       <div className="hp2-layout !relative !z-10">
         <div
-          className="hp2-stats-strip !relative !z-10 !rounded-2xl !border !p-3"
+          className="flex flex-col gap-4 !relative !z-10 !rounded-2xl !border !p-3"
           style={HOME_DEFERRED_SECTION_STYLE}
         >
           {[
@@ -1878,10 +1885,7 @@ export default function HomePage({ lowPerfMode = false }) {
             <div className="hp-tabs">
               <button
                 type="button"
-                className={cn(
-                  "hp-tab",
-                  activeTab === "surah" && "active",
-                )}
+                className={cn("hp-tab", activeTab === "surah" && "active")}
                 onClick={() => selectContentTab("surah")}
                 aria-pressed={activeTab === "surah"}
               >
@@ -1890,10 +1894,7 @@ export default function HomePage({ lowPerfMode = false }) {
               </button>
               <button
                 type="button"
-                className={cn(
-                  "hp-tab",
-                  activeTab === "juz" && "active",
-                )}
+                className={cn("hp-tab", activeTab === "juz" && "active")}
                 onClick={() => selectContentTab("juz")}
                 aria-pressed={activeTab === "juz"}
               >
@@ -1914,10 +1915,7 @@ export default function HomePage({ lowPerfMode = false }) {
               </button>
               <button
                 type="button"
-                className={cn(
-                  "hp-tab",
-                  activeTab === "radio" && "active",
-                )}
+                className={cn("hp-tab", activeTab === "radio" && "active")}
                 onClick={() => selectContentTab("radio")}
                 aria-pressed={activeTab === "radio"}
               >
@@ -1944,8 +1942,12 @@ export default function HomePage({ lowPerfMode = false }) {
                 <i className="fas fa-magnifying-glass hp-search-icon" />
                 <input
                   className="hp2-search__input"
-                  placeholder={activeTab === "surah" ? t("search") : t("searchReciter")}
-                  aria-label={activeTab === "surah" ? t("search") : t("searchReciter")}
+                  placeholder={
+                    activeTab === "surah" ? t("search") : t("searchReciter")
+                  }
+                  aria-label={
+                    activeTab === "surah" ? t("search") : t("searchReciter")
+                  }
                   value={filter}
                   onChange={(e) => setFilter(e.target.value)}
                 />
@@ -1977,14 +1979,15 @@ export default function HomePage({ lowPerfMode = false }) {
                     ? JUZ_DATA.length
                     : activeTab === "recitations"
                       ? filteredReciters.length
-                      : THEMATIC_STATIONS.length + Math.min(8, availableReciters.length)}{" "}
-                  {activeTab === "surah"
-                    ? t("surahs")
-                    : activeTab === "juz"
-                      ? t("juz")
-                      : activeTab === "recitations"
-                        ? t("recitations")
-                        : t("radio")}
+                      : THEMATIC_STATIONS.length +
+                        Math.min(8, availableReciters.length)}{" "}
+                {activeTab === "surah"
+                  ? t("surahs")
+                  : activeTab === "juz"
+                    ? t("juz")
+                    : activeTab === "recitations"
+                      ? t("recitations")
+                      : t("radio")}
               </span>
               {activeTab === "surah" && (
                 <button
@@ -1992,9 +1995,13 @@ export default function HomePage({ lowPerfMode = false }) {
                   className="hp-tab hp-sort-btn"
                   onClick={toggleSortDirection}
                   title={sortDir === "asc" ? "Decroissant" : "Croissant"}
-                  aria-label={sortDir === "asc" ? "Tri décroissant" : "Tri croissant"}
+                  aria-label={
+                    sortDir === "asc" ? "Tri décroissant" : "Tri croissant"
+                  }
                 >
-                  <i className={`fas fa-sort-${sortDir === "asc" ? "down" : "up"}`} />
+                  <i
+                    className={`fas fa-sort-${sortDir === "asc" ? "down" : "up"}`}
+                  />
                 </button>
               )}
               {(activeTab === "surah" || activeTab === "juz") && (
@@ -2051,12 +2058,9 @@ export default function HomePage({ lowPerfMode = false }) {
 
           <div
             className={cn(
-              viewMode === "grid" ||
-                activeTab === "recitations" ||
-                activeTab === "radio" ||
-                activeTab === "blog"
-                ? cn("hp-grid", `hp-grid--${activeTab}`)
-                : "hp-list"
+              viewMode === "grid"
+                ? cn("hp-grid", activeTab === "surah" && "hp-grid--surah")
+                : "hp-list",
             )}
           >
             {activeTab === "surah" ? (
@@ -2104,65 +2108,114 @@ export default function HomePage({ lowPerfMode = false }) {
                   }
                 />
               ) : (
-                filteredReciters.map((reciter) => {
-                  const reciterLabel =
-                    lang === "ar"
-                      ? reciter.name
-                      : lang === "fr"
-                        ? reciter.nameFr
-                        : reciter.nameEn;
-                  const isFavorite = (state.favoriteReciters || []).includes(
-                    reciter.id,
-                  );
-                  return (
-                    <div
-                      key={reciter.id}
-                      className={cn(
-                        "hp-card hp-card--reciter animate-fadeInScale",
-                        state.reciter === reciter.id && "active"
-                      )}
-                      onClick={() => setSelectedReciterId(reciter.id)}
-                    >
-                      <div className="hp-card-num !flex !h-12 !w-12 !overflow-hidden !border-0 !bg-transparent !p-0">
-                         <img 
-                           src={getReciterPhoto(reciter.id)} 
-                           alt="" 
-                           className="h-full w-full object-cover"
-                           loading="lazy"
-                         />
+                <>
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    {[
+                      { id: "all", label: "Tous" },
+                      { id: "murattal", label: "Murattal" },
+                      { id: "mujawwad", label: "Mujawwad" },
+                      { id: "muallim", label: "Muallim" },
+                    ].map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={`hp2-chip ${reciterStyleFilter === item.id ? "hp2-chip--on" : ""}`}
+                        onClick={() => setReciterStyleFilter(item.id)}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                  {filteredReciters.map((reciter) => {
+                    const reciterLabel =
+                      lang === "ar"
+                        ? reciter.name
+                        : lang === "fr"
+                          ? reciter.nameFr
+                          : reciter.nameEn;
+                    const isFavorite = (state.favoriteReciters || []).includes(
+                      reciter.id,
+                    );
+                    return (
+                      <div
+                        key={reciter.id}
+                        className="hp2-item items-center gap-3 rounded-2xl border px-3 py-3"
+                      >
+                        <span className="hp2-item__icon h-9 w-9">
+                          <i className="fas fa-microphone-lines" />
+                        </span>
+                        <div className="hp2-item__body min-w-0">
+                          <span
+                            className="hp2-item__ar truncate"
+                            dir={lang === "ar" ? "rtl" : "ltr"}
+                          >
+                            {reciterLabel}
+                          </span>
+                          <span className="hp2-item__sub">
+                            {reciter.style || "murattal"}
+                          </span>
+                        </div>
+                        <div className="ml-auto flex items-center gap-2">
+                          <button
+                            className={cn(
+                              "hp2-icon-btn",
+                              isFavorite && "hp2-icon-btn--on",
+                            )}
+                            type="button"
+                            onClick={() => toggleFavoriteReciter(reciter.id)}
+                            aria-label={
+                              isFavorite
+                                ? lang === "fr"
+                                  ? "Retirer des favoris"
+                                  : lang === "ar"
+                                    ? "ازالة من المفضلة"
+                                    : "Remove from favorites"
+                                : lang === "fr"
+                                  ? "Ajouter aux favoris"
+                                  : lang === "ar"
+                                    ? "اضافة الى المفضلة"
+                                    : "Add to favorites"
+                            }
+                          >
+                            <i
+                              className={`fas ${isFavorite ? "fa-star" : "fa-star-half-stroke"}`}
+                            />
+                          </button>
+                          <button
+                            className="hp2-icon-btn hp2-icon-btn--on"
+                            type="button"
+                            onClick={() => playReciterRadio(reciter)}
+                            aria-label={
+                              lang === "fr"
+                                ? "Ecouter la radio"
+                                : lang === "ar"
+                                  ? "تشغيل البث"
+                                  : "Play radio"
+                            }
+                          >
+                            <i className="fas fa-play" />
+                          </button>
+                          <button
+                            className="hp2-icon-btn"
+                            type="button"
+                            onClick={() => setSelectedReciterId(reciter.id)}
+                            aria-label={
+                              lang === "fr"
+                                ? "Ouvrir le detail"
+                                : lang === "ar"
+                                  ? "فتح التفاصيل"
+                                  : "Open details"
+                            }
+                          >
+                            <i
+                              className={`fas fa-chevron-${lang === "ar" ? "left" : "right"}`}
+                            />
+                          </button>
+                        </div>
                       </div>
-                      <div className="hp-card-content">
-                        <span className="hp-card-name">{reciterLabel}</span>
-                        <span className="hp-card-meta uppercase tracking-wider">{reciter.style || "murattal"}</span>
-                      </div>
-                      <div className="hp-card-actions ml-auto flex items-center gap-1.5">
-                        <button
-                          className={cn(
-                            "hp-card-play !static !flex !translate-x-0 !opacity-100 !h-9 !w-9",
-                            isFavorite && "!bg-amber-500 !text-white"
-                          )}
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleFavoriteReciter(reciter.id);
-                          }}
-                        >
-                           <i className={`fas ${isFavorite ? "fa-star" : "fa-star-half-stroke"}`} />
-                        </button>
-                        <button
-                          className="hp-card-play !static !flex !translate-x-0 !opacity-100 !h-9 !w-9"
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            playReciterRadio(reciter);
-                          }}
-                        >
-                           <i className="fas fa-play" />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })
+                    );
+                  })}
+                </>
               )
             ) : activeTab === "blog" ? (
                MOCK_BLOG_POSTS.map(post => (
@@ -2177,18 +2230,24 @@ export default function HomePage({ lowPerfMode = false }) {
                     type="button"
                     onClick={() => playStation(station)}
                   >
-                    <div className="hp-card-num !h-11 !w-11 !rounded-xl !bg-emerald-600/10 !text-emerald-700 dark:!bg-emerald-400/10 dark:!text-emerald-400">
-                       <i className={`fas ${station.icon}`} />
-                    </div>
-                    <div className="hp-card-content">
-                      <span className="hp-card-name" dir={lang === "ar" ? "rtl" : "ltr"}>
+                    <span className="hp2-item__icon h-9 w-9">
+                      <i className={`fas ${station.icon}`} />
+                    </span>
+                    <div className="hp2-item__body">
+                      <span
+                        className="hp2-item__ar text-left"
+                        dir={lang === "ar" ? "rtl" : "ltr"}
+                      >
                         {lang === "ar"
                           ? station.titleAr
                           : lang === "fr"
                             ? station.titleFr
                             : station.titleEn}
                       </span>
-                      <span className="hp-card-meta">{station.surahs.length} {lang === "fr" ? "sourates" : "surahs"}</span>
+                      <span className="hp2-item__sub">
+                        {station.surahs.length}{" "}
+                        {lang === "fr" ? "sourates" : "surahs"}
+                      </span>
                     </div>
                     <div className="hp-card-play !static !flex !translate-x-0 !opacity-100 !h-9 !w-9">
                        <i className="fas fa-circle-play" />
@@ -2212,23 +2271,23 @@ export default function HomePage({ lowPerfMode = false }) {
                       })
                     }
                   >
-                    <div className="hp-card-num !flex !h-11 !w-11 !overflow-hidden !p-0">
-                       <img 
-                         src={getReciterPhoto(reciter.id)} 
-                         alt="" 
-                         className="h-full w-full object-cover"
-                         loading="lazy"
-                       />
-                    </div>
-                    <div className="hp-card-content">
-                      <span className="hp-card-name" dir={lang === "ar" ? "rtl" : "ltr"}>
+                    <span className="hp2-item__icon h-9 w-9">
+                      <i className="fas fa-user-astronaut" />
+                    </span>
+                    <div className="hp2-item__body">
+                      <span
+                        className="hp2-item__ar text-left"
+                        dir={lang === "ar" ? "rtl" : "ltr"}
+                      >
                         {lang === "ar"
                           ? reciter.name
                           : lang === "fr"
                             ? reciter.nameFr
                             : reciter.nameEn}
                       </span>
-                      <span className="hp-card-meta">4 {lang === "fr" ? "sourates" : "surahs"}</span>
+                      <span className="hp2-item__sub">
+                        4 {lang === "fr" ? "sourates" : "surahs"}
+                      </span>
                     </div>
                     <div className="hp-card-play !static !flex !translate-x-0 !opacity-100 !h-9 !w-9">
                        <i className="fas fa-circle-play" />
@@ -2247,7 +2306,11 @@ export default function HomePage({ lowPerfMode = false }) {
                   onClick={resumeListening}
                   disabled={!resumeState}
                 >
-                  {lang === "fr" ? "Reprendre l'ecoute" : lang === "ar" ? "استئناف الاستماع" : "Resume listening"}
+                  {lang === "fr"
+                    ? "Reprendre l'ecoute"
+                    : lang === "ar"
+                      ? "استئناف الاستماع"
+                      : "Resume listening"}
                 </button>
                 <span className="text-xs opacity-70">
                   {resumeState
@@ -2256,14 +2319,19 @@ export default function HomePage({ lowPerfMode = false }) {
                       ? "Aucune reprise"
                       : "No resume"}
                 </span>
-                <span className="text-xs opacity-70">{(audioService.playlist || []).length} queued</span>
+                <span className="text-xs opacity-70">
+                  {(audioService.playlist || []).length} queued
+                </span>
               </div>
               <div className="flex items-center gap-2 rounded-xl border px-3 py-2">
                 {[0.75, 1, 1.25, 1.5].map((speed) => (
                   <button
                     key={speed}
                     type="button"
-                    className={cn("hp2-chip", state.audioSpeed === speed && "hp2-chip--on")}
+                    className={cn(
+                      "hp2-chip",
+                      state.audioSpeed === speed && "hp2-chip--on",
+                    )}
                     onClick={() => {
                       set({ audioSpeed: speed });
                       audioService.setSpeed(speed);
@@ -2276,7 +2344,13 @@ export default function HomePage({ lowPerfMode = false }) {
                   type="button"
                   className="hp2-icon-btn"
                   onClick={() => audioService.prev()}
-                  aria-label={lang === "fr" ? "Piste precedente" : lang === "ar" ? "المقطع السابق" : "Previous track"}
+                  aria-label={
+                    lang === "fr"
+                      ? "Piste precedente"
+                      : lang === "ar"
+                        ? "المقطع السابق"
+                        : "Previous track"
+                  }
                 >
                   <i className="fas fa-backward-step" />
                 </button>
@@ -2298,13 +2372,21 @@ export default function HomePage({ lowPerfMode = false }) {
                           : "Play"
                   }
                 >
-                  <i className={`fas ${state.isPlaying ? "fa-pause" : "fa-play"}`} />
+                  <i
+                    className={`fas ${state.isPlaying ? "fa-pause" : "fa-play"}`}
+                  />
                 </button>
                 <button
                   type="button"
                   className="hp2-icon-btn"
                   onClick={() => audioService.next()}
-                  aria-label={lang === "fr" ? "Piste suivante" : lang === "ar" ? "المقطع التالي" : "Next track"}
+                  aria-label={
+                    lang === "fr"
+                      ? "Piste suivante"
+                      : lang === "ar"
+                        ? "المقطع التالي"
+                        : "Next track"
+                  }
                 >
                   <i className="fas fa-forward-step" />
                 </button>
