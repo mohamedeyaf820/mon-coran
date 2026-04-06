@@ -13,7 +13,6 @@ import {
 import { cn, toast } from "../lib/utils";
 import { formatCooldownLabel } from "../utils/formatUtils";
 import AudioLoadingIndicator from "./AudioLoadingIndicator";
-import "../styles/audio-player.css";
 
 /* Drag / position helpers (desktop card only) */
 const CARD_STORAGE_KEY = "mushaf_player_card_pos_v5";
