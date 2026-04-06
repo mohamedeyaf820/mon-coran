@@ -16,7 +16,7 @@ function getFlowClassName(fontSize, riwaya, isQCF4) {
 }
 
 /**
- * Surah title header banner — mushaf-style decorated box.
+ * Surah title header banner Ã¢â‚¬â€ mushaf-style decorated box.
  */
 function SurahHeader({ surahMeta, lang }) {
   const subtitle = lang === "fr" ? surahMeta?.fr : lang === "ar" ? null : surahMeta?.en;
@@ -25,10 +25,10 @@ function SurahHeader({ surahMeta, lang }) {
       <span className="cpv-surah-header-line h-px flex-1 bg-[linear-gradient(to_left,var(--cpv-gold),transparent)] opacity-[0.45]" />
       <div className="cpv-surah-header-frame relative inline-flex min-w-[210px] flex-col items-center border-[1.5px] border-[var(--cpv-gold)] bg-[linear-gradient(135deg,rgba(184,134,11,0.05)_0%,transparent_45%,transparent_55%,rgba(184,134,11,0.05)_100%)] px-8 pt-[0.45rem] pb-[0.5rem] shadow-[inset_0_0_0_3px_var(--cpv-bg),inset_0_0_0_5px_rgba(184,134,11,0.22)] [box-shadow:inset_0_0_0_3px_var(--cpv-bg),inset_0_0_0_5px_rgba(184,134,11,0.22)]">
         <span className="pointer-events-none absolute top-1/2 left-[-1.2em] -translate-y-1/2 text-[0.55rem] leading-none text-[var(--cpv-gold)] opacity-70">
-          ❖
+          Ã¢Ââ€“
         </span>
         <span className="cpv-surah-header-name" dir="rtl" lang="ar">
-          سُورَةُ {surahMeta?.ar}
+          Ã˜Â³Ã™ÂÃ™Ë†Ã˜Â±Ã™Å½Ã˜Â©Ã™Â {surahMeta?.ar}
         </span>
         {subtitle && (
           <span className="cpv-surah-header-sub mt-[0.1rem] font-[var(--font-ui)] text-[0.62rem] uppercase tracking-[0.08em] text-[var(--text-secondary)] opacity-[0.55] [direction:ltr]">
@@ -36,7 +36,7 @@ function SurahHeader({ surahMeta, lang }) {
           </span>
         )}
         <span className="pointer-events-none absolute top-1/2 right-[-1.2em] -translate-y-1/2 text-[0.55rem] leading-none text-[var(--cpv-gold)] opacity-70">
-          ❖
+          Ã¢Ââ€“
         </span>
       </div>
       <span className="cpv-surah-header-line h-px flex-1 bg-[linear-gradient(to_right,var(--cpv-gold),transparent)] opacity-[0.45]" />
@@ -45,7 +45,7 @@ function SurahHeader({ surahMeta, lang }) {
 }
 
 /**
- * Ornamental verse-end medallion — quran.com style.
+ * Ornamental verse-end medallion Ã¢â‚¬â€ quran.com style.
  * Rendered inline after each verse's text, sized relative to the font.
  */
 function VerseMedallion({ num, isPlaying = false }) {
@@ -61,7 +61,7 @@ function VerseMedallion({ num, isPlaying = false }) {
 }
 
 /**
- * Page separator — a subtle horizontal rule with the page number centred.
+ * Page separator Ã¢â‚¬â€ a subtle horizontal rule with the page number centred.
  */
 function PageSeparator({ pageNum, isDarkTheme = false }) {
   return (
@@ -90,7 +90,7 @@ function getFlowFontClass(fontSize) {
 }
 
 /**
- * CleanPageView — Mushaf-style flowing inline layout.
+ * CleanPageView Ã¢â‚¬â€ Mushaf-style flowing inline layout.
  *
  * All verses flow as continuous inline text (like a real Mushaf page).
  * Each verse ends with an ornamental medallion badge (quran.com style)
@@ -121,10 +121,10 @@ export default function CleanPageView({
   const containerRef = useRef(null);
   const isDarkTheme = theme === "dark" || theme === "night-blue";
 
-  /* ── Surah metadata ── */
+  /* Ã¢â€â‚¬Ã¢â€â‚¬ Surah metadata Ã¢â€â‚¬Ã¢â€â‚¬ */
   const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
 
-  /* ── Basmala ── */
+  /* Ã¢â€â‚¬Ã¢â€â‚¬ Basmala Ã¢â€â‚¬Ã¢â€â‚¬ */
   const showBasmala = useMemo(
     () =>
       surahNum !== 1 &&
@@ -134,7 +134,7 @@ export default function CleanPageView({
     [surahNum, ayahs],
   );
 
-  /* ── Surah header ── show at the start of every surah (ayah 1) ── */
+  /* Ã¢â€â‚¬Ã¢â€â‚¬ Surah header Ã¢â€â‚¬Ã¢â€â‚¬ show at the start of every surah (ayah 1) Ã¢â€â‚¬Ã¢â€â‚¬ */
   const showEmbeddedSurahHeader = useMemo(
     () =>
       showSurahHeader &&
@@ -144,16 +144,16 @@ export default function CleanPageView({
     [showSurahHeader, ayahs, surahMeta],
   );
 
-  /* ── Basmala translation for FR/EN ── */
+  /* Ã¢â€â‚¬Ã¢â€â‚¬ Basmala translation for FR/EN Ã¢â€â‚¬Ã¢â€â‚¬ */
   const basmalaTranslation = useMemo(() => {
     if (!showBasmala) return null;
     if (lang === "ar") return null;
     return lang === "fr"
-      ? "Au nom d’Allah, le Tout Miséricordieux, le Très Miséricordieux"
+      ? "Au nom d\u2019Allah, le Tout Mis\u00e9ricordieux, le Tr\u00e8s Mis\u00e9ricordieux"
       : "In the Name of Allah, the Most Compassionate, the Most Merciful";
   }, [lang, showBasmala]);
 
-  /* ── Build flat list: ayahs + page-separator markers ── */
+  /* Ã¢â€â‚¬Ã¢â€â‚¬ Build flat list: ayahs + page-separator markers Ã¢â€â‚¬Ã¢â€â‚¬ */
   const items = useMemo(() => {
     if (!ayahs || ayahs.length === 0) return [];
     const result = [];
@@ -198,7 +198,7 @@ export default function CleanPageView({
             lang="ar"
             aria-label="Basmala"
           >
-            بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
+            {"\u0628\u0650\u0633\u0652\u0645\u0650 \u0671\u0644\u0644\u0651\u064e\u0647\u0650 \u0671\u0644\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0670\u0646\u0650 \u0671\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650"}
           </div>
           {basmalaTranslation && (
             <p className="cpv-basmala-translation m-0 text-center font-[var(--font-ui)] text-[0.72rem] italic leading-[1.6] tracking-[0.025em] text-[var(--cpv-gold)] opacity-[0.75] [direction:ltr] max-[420px]:text-[0.66rem] max-[420px]:leading-[1.45] max-[420px]:opacity-[0.7] max-[360px]:text-[0.62rem] max-[360px]:opacity-[0.66]">
@@ -208,14 +208,14 @@ export default function CleanPageView({
         </div>
       )}
 
-      {/* Flowing text block — all verses inline */}
+      {/* Flowing text block Ã¢â‚¬â€ all verses inline */}
       <div
         className={flowClassName}
         dir="rtl"
         lang="ar"
       >
         {items.map((item) => {
-          /* Page separator — block-level break in the flow */
+          /* Page separator Ã¢â‚¬â€ block-level break in the flow */
           if (item.type === "sep") {
             return (
               <PageSeparator
@@ -239,7 +239,7 @@ export default function CleanPageView({
               data-ayah-number={ayah.numberInSurah}
               data-ayah-global={ayah.number}
               className={`cpv-verse inline transition-colors duration-200${isPlaying ? " cpv-verse--playing rounded-[5px] bg-[rgba(212,168,32,0.1)] px-[0.15em] py-[0.04em] text-[color:color-mix(in_srgb,var(--text-quran)_85%,var(--gold,#c9a33d)_15%)] shadow-[0_0_0_2px_rgba(212,168,32,0.18)] [text-shadow:0_0_20px_rgba(212,168,32,0.13)] animate-[cpv-glow_2.8s_ease-in-out_infinite]" : ""}`}
-              aria-label={`${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`}
+              aria-label={`${lang === "ar" ? "\u0627\u0644\u0622\u064a\u0629" : lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`}
               aria-current={isPlaying ? "true" : undefined}
             >
               {/* Arabic text */}
@@ -263,19 +263,19 @@ export default function CleanPageView({
           <div className="cpv-closure mt-[1.8rem] mb-[0.5rem] flex w-full items-center gap-4 [direction:rtl]" aria-hidden="true">
             <span className="cpv-closure-line h-px flex-1 bg-[linear-gradient(to_right,transparent,var(--cpv-border))]" />
             <span className="cpv-closure-ornament shrink-0 whitespace-nowrap font-quran text-[1.1rem] leading-[1.8] tracking-[0.06em] text-[var(--cpv-gold)] opacity-[0.65] max-[768px]:text-[0.95rem]">
-              {surahMeta?.ar || "❖"}
+              {surahMeta?.ar || "\u2756"}
             </span>
             <span className="cpv-closure-line h-px flex-1 bg-[linear-gradient(to_left,transparent,var(--cpv-border))]" />
           </div>
         )}
       </div>
 
-      {/* ── Translations panel — numbered list below the Arabic flow ── */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Translations panel Ã¢â‚¬â€ numbered list below the Arabic flow Ã¢â€â‚¬Ã¢â€â‚¬ */}
       {showTranslation && getTranslation && ayahs.length > 0 && (
         <div
           className="cpv-trans-panel mt-[1.8rem] flex flex-col gap-0 rounded-2xl border border-white/12 border-t-[1px] border-t-[rgba(var(--primary-rgb),0.12)] bg-[rgba(8,16,32,0.72)] p-3.5 pt-[1.4rem] [font-family:var(--font-ui)]"
           dir={lang === "ar" ? "rtl" : "ltr"}
-          aria-label={lang === "ar" ? "الترجمة" : lang === "fr" ? "Traductions" : "Translations"}
+          aria-label={lang === "ar" ? "Ã˜Â§Ã™â€žÃ˜ÂªÃ˜Â±Ã˜Â¬Ã™â€¦Ã˜Â©" : lang === "fr" ? "Traductions" : "Translations"}
         >
           {ayahs.map((ayah) => {
             const transArray = getTranslation(ayah);

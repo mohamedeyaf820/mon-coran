@@ -172,33 +172,9 @@ export default function App() {
     return cancelIdle;
   }, [lowPerfMode]);
 
-  // Defer non-critical theme layer to protect initial LCP on mobile.
   useEffect(() => {
-    let cancelled = false;
-    let themeLoaded = false;
-    let premiumLoaded = false;
-
-    const loadThemeStyles = () => {
-      if (cancelled || themeLoaded) return;
-      themeLoaded = true;
-      import("./styles/themes4.css").catch(() => {});
-    };
-
-    const loadPremiumStyles = () => {
-      if (cancelled || premiumLoaded) return;
-
-      // Keep premium visual layer off low-end devices to reduce CSS cost.
-      if (lowPerfMode) return;
-      // Removed incorrect viewport block to ensure unified design across desktop/mobile
-
-      premiumLoaded = true;
-      import("./styles/premium-platform.css").catch(() => {});
-    };
-
     const onFirstInteraction = () => {
       setHasInteracted(true);
-      loadThemeStyles();
-      loadPremiumStyles();
       window.removeEventListener("pointerdown", onFirstInteraction);
       window.removeEventListener("keydown", onFirstInteraction);
       window.removeEventListener("touchstart", onFirstInteraction);
@@ -214,24 +190,12 @@ export default function App() {
       once: true,
     });
 
-    const cancelIdleBase = runWhenIdle(
-      loadThemeStyles,
-      lowPerfMode ? 2600 : 1500,
-    );
-    const cancelIdlePremium = runWhenIdle(
-      loadPremiumStyles,
-      lowPerfMode ? 14000 : 7000,
-    );
-
     return () => {
-      cancelled = true;
-      cancelIdleBase();
-      cancelIdlePremium();
       window.removeEventListener("pointerdown", onFirstInteraction);
       window.removeEventListener("keydown", onFirstInteraction);
       window.removeEventListener("touchstart", onFirstInteraction);
     };
-  }, [lowPerfMode]);
+  }, []);
 
   useEffect(() => {
     if (lowPerfMode) return;

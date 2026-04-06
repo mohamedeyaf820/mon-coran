@@ -36,8 +36,6 @@ import Footer from "./Footer";
 import { buildSurahAudioPlaylist } from "../utils/audioPlaylist";
 import ReciterDetailPage from "./recitation/ReciterDetailPage";
 
-import "../styles/homepage-refonte.css";
-
 const HOME_INITIAL_SURAHS = 36;
 const HOME_INITIAL_SURAHS_LOW = 18;
 const HOME_SURAHS_BATCH = 24;

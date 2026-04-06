@@ -1,4 +1,14 @@
 import React from "react";
+import {
+  BookOpen,
+  GraduationCap,
+  Languages,
+  List,
+  Loader2,
+  Palette,
+  Play,
+  Type,
+} from "lucide-react";
 import { useApp } from "../../context/AppContext";
 import { t } from "../../i18n";
 import { cn } from "../../lib/utils";

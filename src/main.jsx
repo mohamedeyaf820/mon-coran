@@ -2,9 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { AppProvider } from "./context/AppContext";
-import "./styles/index.css";
-import "./styles/platform-overhaul.css";
-import "./styles/responsive-zen.css";
+import "./styles/tailwind.css";
 
 let fontAwesomeStylesPromise = null;
 
@@ -15,17 +13,6 @@ function loadFontAwesomeStyles() {
     ).catch(() => null);
   }
   return fontAwesomeStylesPromise;
-}
-
-let mobileStylesPromise = null;
-
-function loadMobileStyles() {
-  if (!mobileStylesPromise) {
-    mobileStylesPromise = import("./styles/mobile-all-versions.css").catch(
-      () => null,
-    );
-  }
-  return mobileStylesPromise;
 }
 
 if (typeof window !== "undefined") {
@@ -54,42 +41,6 @@ if (typeof window !== "undefined") {
     window.requestIdleCallback(warmIconStyles, { timeout: 1200 });
   } else {
     window.setTimeout(warmIconStyles, 700);
-  }
-
-  const mobileQuery = window.matchMedia("(max-width: 960px)");
-
-  if (mobileQuery.matches) {
-    loadMobileStyles();
-  } else {
-    const onViewportToMobile = (event) => {
-      if (!event.matches) return;
-      loadMobileStyles();
-
-      if (typeof mobileQuery.removeEventListener === "function") {
-        mobileQuery.removeEventListener("change", onViewportToMobile);
-      } else if (typeof mobileQuery.removeListener === "function") {
-        mobileQuery.removeListener(onViewportToMobile);
-      }
-    };
-
-    if (typeof mobileQuery.addEventListener === "function") {
-      mobileQuery.addEventListener("change", onViewportToMobile);
-    } else if (typeof mobileQuery.addListener === "function") {
-      mobileQuery.addListener(onViewportToMobile);
-    }
-
-    const warmMobileStyles = () => {
-      const touchCapable =
-        navigator.maxTouchPoints > 0 || "ontouchstart" in window;
-      if (!touchCapable) return;
-      loadMobileStyles();
-    };
-
-    if (typeof window.requestIdleCallback === "function") {
-      window.requestIdleCallback(warmMobileStyles, { timeout: 2200 });
-    } else {
-      window.setTimeout(warmMobileStyles, 1200);
-    }
   }
 }
 

@@ -3,7 +3,6 @@ import { useApp } from "../context/AppContext";
 import QURAN_DUAS from "../data/duas";
 import SURAHS from "../data/surahs";
 import Footer from "./Footer";
-import "../styles/duas-page.css";
 
 const CATEGORIES = [
   { id: "all", fr: "Toutes", en: "All", ar: "الكل" },

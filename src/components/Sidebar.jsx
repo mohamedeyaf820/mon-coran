@@ -4,7 +4,6 @@ import { t } from "../i18n";
 import SURAHS, { toAr } from "../data/surahs";
 import { JUZ_DATA, JUZ_PAGE_RANGES } from "../data/juz";
 import { cn } from "../lib/utils";
-import "../styles/sidebar-refonte.css";
 
 export default function Sidebar() {
   const { state, dispatch, set } = useApp();

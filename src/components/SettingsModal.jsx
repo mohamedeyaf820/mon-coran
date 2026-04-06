@@ -67,7 +67,6 @@ import { formatCooldownLabel } from "../utils/formatUtils";
 import PlatformLogo from "./PlatformLogo";
 import { cn, toast } from "../lib/utils";
 import { openExternalUrl } from "../lib/security";
-import "../styles/settings-refonte.css";
 
 
 const TABS = [

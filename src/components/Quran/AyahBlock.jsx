@@ -14,7 +14,7 @@ import {
 } from "../../services/memorizationService";
 
 /**
- * AyahBlock component – renders a single Arabic verse with a polished design.
+ * AyahBlock component â€“ renders a single Arabic verse with a polished design.
  * Arabic remains the visual focus, with optional transliteration and translation.
  */
 const AyahBlock = React.memo(function AyahBlock({
@@ -199,7 +199,7 @@ const AyahBlock = React.memo(function AyahBlock({
             )}
           >
             <span className="rd-ayah-end-glyph inline-block text-[1em] leading-none text-[color:var(--ayah-stop-text,color-mix(in_srgb,var(--text-primary)_74%,#7b5820_26%))] opacity-70">
-              ۝
+              {"\u06dd"}
             </span>
             <span className="rd-ayah-end-num absolute inset-0 inline-flex items-center justify-center font-[var(--font-surah-name,var(--font-surah,var(--font-ui)))] text-[0.38em] font-bold leading-none text-[color:var(--ayah-stop-text,color-mix(in_srgb,var(--text-primary)_70%,#5a3a06_30%))]">
               {toAr(ayah.numberInSurah)}
@@ -213,9 +213,9 @@ const AyahBlock = React.memo(function AyahBlock({
           <i className="fas fa-info-circle" />
           <span>
             {lang === "fr"
-              ? "Mot à mot non disponible en mode Warsh"
+              ? "Mot \u00e0 mot non disponible en mode Warsh"
               : lang === "ar"
-                ? "الكلمة بكلمة غير متاحة في رواية ورش QCF4"
+                ? "\u0627\u0644\u0643\u0644\u0645\u0629 \u0628\u0643\u0644\u0645\u0629 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u0641\u064a \u0631\u0648\u0627\u064a\u0629 \u0648\u0631\u0634 QCF4"
                 : "Word-by-word unavailable in Warsh QCF4"}
           </span>
         </div>
@@ -294,7 +294,7 @@ const AyahBlock = React.memo(function AyahBlock({
                   n <= memoLevel && "is-on text-[var(--gold)]",
                 )}
               >
-                ★
+                {"\u2605"}
               </button>
             ))}
           </div>

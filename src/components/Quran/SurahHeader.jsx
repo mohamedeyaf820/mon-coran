@@ -5,7 +5,7 @@ import { cn } from "../../lib/utils";
 import { useAppState } from "../../context/AppContext";
 
 /**
- * SurahHeader component – renders the decorative header for each surah.
+ * SurahHeader component â€“ renders the decorative header for each surah.
  */
 const SurahHeader = React.memo(function SurahHeader({ surahNum, lang }) {
   const { theme } = useAppState();
@@ -91,7 +91,7 @@ const SurahHeader = React.memo(function SurahHeader({ surahNum, lang }) {
             {isMeccan ? t("quran.meccan", lang) : t("quran.medinan", lang)}
           </span>
           <span className="qc-sh-detail-sep text-[0.8rem] text-[var(--text-muted)]">
-            ·
+            {"\u00b7"}
           </span>
           <span className="qc-sh-ayah-count font-ui text-[0.75rem] font-medium text-[var(--text-tertiary)]">
             {s.ayahs} {t("quran.ayahs", lang)}

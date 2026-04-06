@@ -7,7 +7,6 @@ import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import PlatformLogo from "./PlatformLogo";
 import NetworkStatus from "./NetworkStatus";
 import { THEME_ORDER } from "../data/themes";
-import "../styles/navbar-refonte.css";
 
 export default function Header() {
   const { state, dispatch, set } = useApp();

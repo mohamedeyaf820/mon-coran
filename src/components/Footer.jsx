@@ -1,6 +1,5 @@
 import React from "react";
 import { useAppActions, useAppLocale } from "../context/AppContext";
-import "../styles/footer-refonte.css";
 
 export default function Footer() {
   const { dispatch, set } = useAppActions();

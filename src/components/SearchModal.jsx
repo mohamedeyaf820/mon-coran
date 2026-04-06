@@ -8,7 +8,6 @@ import {
   inferSearchMode,
   sanitizeVoiceTranscript,
 } from "../utils/searchIntelligence";
-import "../styles/search-modal.css";
 
 const SpeechRecognition =
   typeof window !== "undefined"
