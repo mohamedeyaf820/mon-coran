@@ -3,7 +3,6 @@ import { toAr } from "../../data/surahs";
 import { t } from "../../i18n";
 import { arabicToLatin } from "../../data/transliteration";
 import { cn } from "../../lib/utils";
-import { useAppState } from "../../context/AppContext";
 import MemorizationText from "./MemorizationText";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 import useMemorizationLevel from "./useMemorizationLevel";
@@ -31,13 +30,11 @@ const AyahBlock = React.memo(function AyahBlock({
   fontSize,
   memMode,
 }) {
-  const { theme } = useAppState();
   const { memoLevel, updateMemoLevel } = useMemorizationLevel(
     surahNum,
     ayah.numberInSurah,
   );
   const isRtl = lang === "ar";
-  const isDarkTheme = theme === "dark" || theme === "night-blue" || theme === "oled";
   const transliterationSource =
     riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text;
   const ayahTransliteration = useMemo(() => {
@@ -72,9 +69,11 @@ const AyahBlock = React.memo(function AyahBlock({
       <div className={cn("rd-arabic qc-ayah-text-ar text-right [direction:rtl] [font-family:var(--qd-font-family,var(--font-quran,\"Amiri Quran\")),serif] text-[max(1.86rem,var(--qd-reading-font-size,36px))] leading-[1.92] text-[var(--text-primary)] break-words [text-rendering:optimizeLegibility] [font-feature-settings:\"kern\"_1,\"liga\"_1] [-webkit-font-smoothing:antialiased] max-[640px]:text-[max(1.34rem,calc(var(--qd-reading-font-size,36px)*0.62))] max-[640px]:leading-[1.82] max-[560px]:landscape:text-[max(1.2rem,calc(var(--qd-reading-font-size,36px)*0.56))] max-[560px]:landscape:leading-[1.68]", riwaya === "hafs" && "[word-spacing:calc(var(--arabic-reading-word-spacing,0.072em)+0.01em)] [line-height:calc(var(--arabic-reading-line-height,2.46)+0.08)]", riwaya === "warsh" && "[word-spacing:calc(var(--arabic-reading-word-spacing,0.072em)-0.012em)] [line-height:calc(var(--arabic-reading-line-height,2.46)-0.04)]")}>
         {arabicContent}
         <span className="rd-ayah-end" aria-hidden="true">
-          <span className={cn("rd-ayah-end relative mx-[0.24em] inline-flex h-[1em] w-[1em] items-center justify-center align-middle text-[1em] leading-none [filter:none]", isDarkTheme && "drop-shadow-[0_2px_3px_rgba(0,0,0,0.3)]")}>
-            <span className="rd-ayah-end-glyph inline-block text-[1em] leading-none text-[color:var(--ayah-stop-text,color-mix(in_srgb,var(--text-primary)_74%,#7b5820_26%))] opacity-70">{"\u06dd"}</span>
-            <span className="rd-ayah-end-num absolute inset-0 inline-flex items-center justify-center font-[var(--font-surah-name,var(--font-surah,var(--font-ui)))] text-[0.38em] font-bold leading-none text-[color:var(--ayah-stop-text,color-mix(in_srgb,var(--text-primary)_70%,#5a3a06_30%))]">{toAr(ayah.numberInSurah)}</span>
+          <span className="rd-ayah-end verse-stop-medallion">
+            <span className="verse-stop-medallion__ring" />
+            <span className="rd-ayah-end-num verse-stop-number">
+              {toAr(ayah.numberInSurah)}
+            </span>
           </span>
         </span>
       </div>

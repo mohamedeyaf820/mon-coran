@@ -1217,6 +1217,13 @@ export default function HomePage({ lowPerfMode = false }) {
       : lang === "ar"
         ? "ابدأ القراءة"
         : "Start reading";
+  const primaryReadingCtaLabel = hasReadingHistory
+    ? t("continueReading")
+    : lang === "ar"
+      ? "Ø§Ø¨Ø¯Ø£ Ø§Ù„Ù‚Ø±Ø§Ø¡Ø©"
+      : lang === "fr"
+        ? "Commencer la lecture"
+        : "Start reading";
 
   const currentYear = now.getFullYear();
 
@@ -1431,6 +1438,7 @@ export default function HomePage({ lowPerfMode = false }) {
               {hasReadingHistory ? (
                 <button
                   className="hp2-btn !h-12 !rounded-2xl !px-5 !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.01] max-[520px]:!w-full max-[520px]:!justify-center"
+                  aria-label={primaryReadingCtaLabel}
                   onClick={continueReading}
                 >
                   <i className="fas fa-circle-play" />
@@ -1446,6 +1454,7 @@ export default function HomePage({ lowPerfMode = false }) {
               ) : (
                 <button
                   className="hp2-btn !h-12 !rounded-2xl !px-5 !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.01] max-[520px]:!w-full max-[520px]:!justify-center"
+                  aria-label={primaryReadingCtaLabel}
                   onClick={() => goSurah(1)}
                 >
                   <i className="fas fa-book-open" />
@@ -1712,6 +1721,7 @@ export default function HomePage({ lowPerfMode = false }) {
               </div>
               <button
                 className="hp2-focus-card__cta !transition-all !duration-300 hover:!-translate-y-0.5 hover:!scale-[1.01]"
+                aria-label={primaryReadingCtaLabel}
                 onClick={continueReading}
               >
                 <i className="fas fa-circle-play" />

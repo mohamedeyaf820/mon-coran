@@ -32,10 +32,11 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
 export function VerseMedallion({ isPlaying = false, num }) {
   return (
     <span
-      className={`cpv-medallion relative mx-[0.2em] inline-flex h-[1.25em] w-[1.25em] shrink-0 translate-y-[-0.04em] items-center justify-center align-middle text-[var(--cpv-gold)] transition-colors duration-200${isPlaying ? " text-[var(--gold,#c9a33d)]" : ""}`}
+      className={`cpv-medallion verse-stop-medallion${isPlaying ? " is-playing" : ""}`}
       aria-label={`Verse ${num}`}
     >
-      {toAr(num)}
+      <span className="verse-stop-medallion__ring" />
+      <span className="verse-stop-number">{toAr(num)}</span>
     </span>
   );
 }

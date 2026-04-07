@@ -10,15 +10,15 @@ import React, {
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useApp } from "./context/AppContext";
 import SplashScreen from "./components/SplashScreen";
+import HomePage from "./components/HomePage";
 import { getReciter, ensureReciterForRiwaya } from "./data/reciters";
 import { Toast } from "./components/ModernUIComponents";
 import { buildSurahAudioPlaylist } from "./utils/audioPlaylist";
 import { ensureFontLoaded } from "./services/fontLoader";
 import { runWhenIdle } from "./utils/idleUtils";
 
-// Lazy-load view shells and modals to reduce startup JS.
+// Lazy-load secondary view shells and modals to reduce startup JS.
 const Header = lazy(() => import("./components/Header"));
-const HomePage = lazy(() => import("./components/HomePage"));
 const QuranDisplay = lazy(() => import("./components/QuranDisplay"));
 const NotesPanel = lazy(() => import("./components/NotesPanel"));
 const Sidebar = lazy(() => import("./components/Sidebar"));
