@@ -17,7 +17,6 @@ import { buildSurahAudioPlaylist } from "./utils/audioPlaylist";
 import { ensureFontLoaded } from "./services/fontLoader";
 import { runWhenIdle } from "./utils/idleUtils";
 
-// Lazy-load secondary view shells and modals to reduce startup JS.
 const Header = lazy(() => import("./components/Header"));
 const QuranDisplay = lazy(() => import("./components/QuranDisplay"));
 const NotesPanel = lazy(() => import("./components/NotesPanel"));
@@ -54,8 +53,10 @@ async function getAudioServiceInstance() {
 }
 
 function detectLowPerformanceDevice() {
-  if (typeof window === "undefined" || typeof navigator === "undefined")
+  if (typeof window === "undefined" || typeof navigator === "undefined") {
     return false;
+  }
+
   const reducedMotion = window.matchMedia?.(
     "(prefers-reduced-motion: reduce)",
   )?.matches;
@@ -70,6 +71,7 @@ function detectLowPerformanceDevice() {
   const constrainedMobile =
     window.matchMedia?.("(max-width: 820px)")?.matches &&
     (lowMemory || lowCpu || /3g|2g/.test(navigator.connection?.effectiveType || ""));
+
   return Boolean(
     reducedMotion ||
       lowMemory ||
@@ -95,7 +97,6 @@ export default function App() {
     memMode,
   } = state;
 
-  /* ── Reset reading progress bar on navigation ── */
   useEffect(() => {
     document.documentElement.style.setProperty("--reading-progress", "0");
   }, [currentSurah, currentJuz, currentPage, displayMode]);
@@ -109,26 +110,11 @@ export default function App() {
 
   const lowPerfMode = useMemo(() => detectLowPerformanceDevice(), []);
   const [hasInteracted, setHasInteracted] = useState(false);
-
-  /* ── Immersive reading mode: auto-hide header after 3s inactivity ── */
   const [immersiveHidden, setImmersiveHidden] = useState(false);
-
-  /* ── Global Toast notification system ── */
   const [toast, setToast] = useState(null);
   const [deferNonCriticalUI, setDeferNonCriticalUI] = useState(false);
-
-  // Listen for custom 'quran-toast' events dispatched anywhere in the app
-  useEffect(() => {
-    const handleToast = (e) => {
-      setToast({
-        type: e.detail?.type || "info",
-        message: e.detail?.message || "",
-      });
-    };
-    window.addEventListener("quran-toast", handleToast);
-    return () => window.removeEventListener("quran-toast", handleToast);
-  }, []);
   const immersiveTimer = useRef(null);
+
   const immersiveActive = focusReading && !showHome && !showDuas;
   const sidebarShiftClass =
     !focusReading && sidebarOpen
@@ -138,25 +124,40 @@ export default function App() {
       : "";
 
   useEffect(() => {
+    const handleToast = (event) => {
+      setToast({
+        type: event.detail?.type || "info",
+        message: event.detail?.message || "",
+      });
+    };
+
+    window.addEventListener("quran-toast", handleToast);
+    return () => window.removeEventListener("quran-toast", handleToast);
+  }, []);
+
+  useEffect(() => {
     if (!immersiveActive) {
       setImmersiveHidden(false);
       clearTimeout(immersiveTimer.current);
       return;
     }
-    const show = () => {
+
+    const showChrome = () => {
       setImmersiveHidden(false);
       clearTimeout(immersiveTimer.current);
       immersiveTimer.current = setTimeout(() => setImmersiveHidden(true), 3000);
     };
-    show();
-    window.addEventListener("mousemove", show, { passive: true });
-    window.addEventListener("touchstart", show, { passive: true });
-    window.addEventListener("scroll", show, { passive: true });
+
+    showChrome();
+    window.addEventListener("mousemove", showChrome, { passive: true });
+    window.addEventListener("touchstart", showChrome, { passive: true });
+    window.addEventListener("scroll", showChrome, { passive: true });
+
     return () => {
       clearTimeout(immersiveTimer.current);
-      window.removeEventListener("mousemove", show);
-      window.removeEventListener("touchstart", show);
-      window.removeEventListener("scroll", show);
+      window.removeEventListener("mousemove", showChrome);
+      window.removeEventListener("touchstart", showChrome);
+      window.removeEventListener("scroll", showChrome);
     };
   }, [immersiveActive]);
 
@@ -198,7 +199,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (lowPerfMode) return;
+    if (lowPerfMode) return undefined;
 
     const cancelIdle = runWhenIdle(() => {
       ensureFontLoaded(state.fontFamily).catch(() => {});
@@ -207,16 +208,10 @@ export default function App() {
     return cancelIdle;
   }, [state.fontFamily, lowPerfMode]);
 
-  /* ── Pre-load audio playlist when on the home page ──
-     QuranDisplay handles playlist loading when in reading mode.
-     When showHome is true it's not mounted, so we build a minimal
-     playlist here (surah number + ayah index, no text) so the
-     AudioPlayer play button works directly from the home page. */
   useEffect(() => {
-    if (!showHome) return;
-    if (lowPerfMode) return;
-    if (!deferNonCriticalUI) return;
-    if (!hasInteracted) return;
+    if (!showHome || lowPerfMode || !deferNonCriticalUI || !hasInteracted) {
+      return undefined;
+    }
 
     let cancelled = false;
     const {
@@ -226,27 +221,34 @@ export default function App() {
       warshStrictMode,
     } = state;
     const safeId = ensureReciterForRiwaya(reciterId, riwaya);
-    const rec = getReciter(safeId, riwaya);
-    if (!rec) return;
-    // Respect Warsh strict-mode: don't load non-warsh voices
+    const reciter = getReciter(safeId, riwaya);
+
+    if (!reciter) return undefined;
+
     if (
       riwaya === "warsh" &&
       warshStrictMode &&
-      !String(rec.cdn || "")
+      !String(reciter.cdn || "")
         .toLowerCase()
         .includes("warsh")
-    )
-      return;
+    ) {
+      return undefined;
+    }
+
     const items = buildSurahAudioPlaylist(surahNum);
-    if (items.length === 0) return;
+    if (items.length === 0) return undefined;
 
     const cancelIdle = runWhenIdle(async () => {
       try {
         const audioService = await getAudioServiceInstance();
         if (cancelled) return;
-        audioService.loadPlaylist(items, rec.cdn, rec.cdnType || "islamic");
+        audioService.loadPlaylist(
+          items,
+          reciter.cdn,
+          reciter.cdnType || "islamic",
+        );
       } catch {
-        // Silent fallback: home remains usable even if preload fails.
+        // The home page stays usable even if the preload fails.
       }
     }, 420);
 
@@ -254,7 +256,6 @@ export default function App() {
       cancelled = true;
       cancelIdle();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     showHome,
     state.riwaya,
@@ -266,86 +267,86 @@ export default function App() {
     hasInteracted,
   ]);
 
-  /* ── Keyboard shortcuts ── */
   const handleKeyboard = useCallback(
-    (e) => {
-      if (e.defaultPrevented) return;
+    (event) => {
+      if (event.defaultPrevented) return;
 
-      const target = e.target;
+      const target = event.target;
       const isElementTarget = target instanceof Element;
-      // Ignore global shortcuts when focus is inside an interactive control.
       if (
         isElementTarget &&
         target.closest(
           'input, textarea, select, button, [contenteditable="true"], [role="textbox"], [role="combobox"], [role="slider"]',
         )
-      )
+      ) {
         return;
+      }
 
-      switch (e.key) {
+      switch (event.key) {
         case "ArrowLeft":
           if (state.showDuas) return;
-          e.preventDefault();
+          event.preventDefault();
           set({ showHome: false, showDuas: false });
           if (displayMode === "page") {
-            if (lang === "ar" ? currentPage > 1 : currentPage < 604)
+            if (lang === "ar" ? currentPage > 1 : currentPage < 604) {
               set({
                 currentPage: lang === "ar" ? currentPage - 1 : currentPage + 1,
               });
+            }
           } else if (displayMode === "juz") {
-            if (lang === "ar" ? currentJuz > 1 : currentJuz < 30)
+            if (lang === "ar" ? currentJuz > 1 : currentJuz < 30) {
               dispatch({
                 type: "NAVIGATE_JUZ",
                 payload: {
                   juz: lang === "ar" ? currentJuz - 1 : currentJuz + 1,
                 },
               });
-          } else {
-            if (lang === "ar" ? currentSurah > 1 : currentSurah < 114)
-              dispatch({
-                type: "NAVIGATE_SURAH",
-                payload: {
-                  surah: lang === "ar" ? currentSurah - 1 : currentSurah + 1,
-                },
-              });
+            }
+          } else if (lang === "ar" ? currentSurah > 1 : currentSurah < 114) {
+            dispatch({
+              type: "NAVIGATE_SURAH",
+              payload: {
+                surah: lang === "ar" ? currentSurah - 1 : currentSurah + 1,
+              },
+            });
           }
           break;
         case "ArrowRight":
           if (state.showDuas) return;
-          e.preventDefault();
+          event.preventDefault();
           set({ showHome: false, showDuas: false });
           if (displayMode === "page") {
-            if (lang === "ar" ? currentPage < 604 : currentPage > 1)
+            if (lang === "ar" ? currentPage < 604 : currentPage > 1) {
               set({
                 currentPage: lang === "ar" ? currentPage + 1 : currentPage - 1,
               });
+            }
           } else if (displayMode === "juz") {
-            if (lang === "ar" ? currentJuz < 30 : currentJuz > 1)
+            if (lang === "ar" ? currentJuz < 30 : currentJuz > 1) {
               dispatch({
                 type: "NAVIGATE_JUZ",
                 payload: {
                   juz: lang === "ar" ? currentJuz + 1 : currentJuz - 1,
                 },
               });
-          } else {
-            if (lang === "ar" ? currentSurah < 114 : currentSurah > 1)
-              dispatch({
-                type: "NAVIGATE_SURAH",
-                payload: {
-                  surah: lang === "ar" ? currentSurah + 1 : currentSurah - 1,
-                },
-              });
+            }
+          } else if (lang === "ar" ? currentSurah < 114 : currentSurah > 1) {
+            dispatch({
+              type: "NAVIGATE_SURAH",
+              payload: {
+                surah: lang === "ar" ? currentSurah + 1 : currentSurah - 1,
+              },
+            });
           }
           break;
         case "k":
         case "K":
-          if (e.ctrlKey || e.metaKey) {
-            e.preventDefault();
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
             dispatch({ type: "TOGGLE_SEARCH" });
           }
           break;
         case "Escape":
-          // Close any open modal/panel
           if (state.searchOpen) dispatch({ type: "TOGGLE_SEARCH" });
           else if (state.settingsOpen) dispatch({ type: "TOGGLE_SETTINGS" });
           else if (state.bookmarksOpen) dispatch({ type: "TOGGLE_BOOKMARKS" });
@@ -362,8 +363,7 @@ export default function App() {
           else if (sidebarOpen) dispatch({ type: "TOGGLE_SIDEBAR" });
           break;
         case " ":
-          // Space pour play/pause audio
-          e.preventDefault();
+          event.preventDefault();
           getAudioServiceInstance()
             .then((audioService) => audioService.toggle())
             .catch(() => {});
@@ -403,7 +403,6 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKeyboard);
   }, [handleKeyboard]);
 
-  // If splash not done, show splash
   if (!splashDone) {
     return (
       <SplashScreen
@@ -413,7 +412,7 @@ export default function App() {
           return prefetchInitialData(
             state.currentSurah,
             state.riwaya,
-            state.translationLang,
+            state.translationLangs?.[0] || "fr",
           );
         }}
         lowPerfMode={lowPerfMode}
@@ -424,141 +423,136 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div
-        className={`app-root premium-plus flex h-dvh min-h-screen flex-col w-full overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""}`}
+        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""}`}
         style={{ height: "100dvh", minHeight: "100dvh" }}
         dir={lang === "ar" ? "rtl" : "ltr"}
         data-view={showHome ? "home" : showDuas ? "duas" : "reading"}
         data-display-mode={displayMode}
       >
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[10000] focus:rounded-xl focus:bg-[var(--theme-panel-bg-strong,var(--bg-card))] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--text-primary)] focus:shadow-[0_10px_24px_rgba(2,8,23,0.18)]"
-      >
-        {lang === "fr"
-          ? "Aller au contenu principal"
-          : lang === "ar"
-            ? "الانتقال إلى المحتوى الرئيسي"
-            : "Skip to main content"}
-      </a>
-      {/* Removed legacy Sakina starfield */}
-      {/* ── Header ── */}
-      <Suspense fallback={suspenseFallback}>
-        <Header />
-      </Suspense>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[10000] focus:rounded-xl focus:bg-[var(--theme-panel-bg-strong,var(--bg-card))] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--text-primary)] focus:shadow-[0_10px_24px_rgba(2,8,23,0.18)]"
+        >
+          {lang === "fr"
+            ? "Aller au contenu principal"
+            : lang === "ar"
+              ? "الانتقال إلى المحتوى الرئيسي"
+              : "Skip to main content"}
+        </a>
 
-      {/* ── Main layout: sidebar + content ── */}
-      <div className="app-layout-shell relative flex flex-1 min-h-0">
-        {/* Sidebar: keep available in all reading states (including focus mode) */}
         <Suspense fallback={suspenseFallback}>
-          {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
+          <Header />
         </Suspense>
 
-        {/* Invisible overlay for sidebar (to capture outside clicks without dimming) */}
-        {sidebarOpen && (
-          <div
-            className="sidebar-clickout-overlay fixed inset-0 z-190"
-            onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
-            aria-hidden="true"
-          />
-        )}
-
-        {/* Main reading area */}
-        <main
-          id="main-content"
-          tabIndex={-1}
-          aria-label={
-            showHome
-              ? lang === "fr"
-                ? "Contenu principal - Accueil"
-                : lang === "ar"
-                  ? "المحتوى الرئيسي - الصفحة الرئيسية"
-                  : "Main content - Home"
-              : showDuas
-                ? lang === "fr"
-                  ? "Contenu principal - Douas"
-                  : lang === "ar"
-                    ? "المحتوى الرئيسي - الأدعية"
-                    : "Main content - Duas"
-                : lang === "fr"
-                  ? "Contenu principal - Lecture"
-                  : lang === "ar"
-                    ? "المحتوى الرئيسي - القراءة"
-                    : "Main content - Reading"
-          }
-          className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-y-auto overflow-x-hidden pb-(--player-h) transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
-          style={{
-            height: "calc(100dvh - var(--header-h, 72px))",
-            maxHeight: "calc(100dvh - var(--header-h, 72px))",
-          }}
-        >
-          <div
-            className={`app-view-shell ${showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas ? `app-mode-${displayMode}` : ""}`}
-          >
-            {showHome ? (
-              <Suspense fallback={suspenseFallback}>
-                <HomePage lowPerfMode={lowPerfMode} />
-              </Suspense>
-            ) : showDuas ? (
-              <Suspense fallback={suspenseFallback}>
-                <DuasPage />
-              </Suspense>
-            ) : (
-              <Suspense fallback={suspenseFallback}>
-                <QuranDisplay
-                  key={
-                    displayMode === "juz"
-                      ? `juz-${currentJuz}`
-                      : displayMode === "page"
-                        ? `page-${currentPage}`
-                        : `surah-${currentSurah}`
-                  }
-                />
-              </Suspense>
-            )}
-          </div>
-        </main>
-
-        {/* Notes panel (right side) — loaded eagerly, always in the DOM when not in focus mode */}
-        {!focusReading && deferNonCriticalUI && (
+        <div className="app-layout-shell relative flex min-h-0 flex-1">
           <Suspense fallback={suspenseFallback}>
-            <NotesPanel />
+            {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
           </Suspense>
-        )}
-      </div>
 
-      {/* ── Global Toast notifications ── */}
-      {toast && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-9999 w-[min(90vw,400px)]" role="alert" aria-live="polite">
-          <Toast
-            type={toast.type}
-            message={toast.message}
-            onClose={() => setToast(null)}
-            autoClose={4500}
-          />
+          {sidebarOpen && (
+            <div
+              className="sidebar-clickout-overlay fixed inset-0 z-190"
+              onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
+              aria-hidden="true"
+            />
+          )}
+
+          <main
+            id="main-content"
+            tabIndex={-1}
+            aria-label={
+              showHome
+                ? lang === "fr"
+                  ? "Contenu principal - Accueil"
+                  : lang === "ar"
+                    ? "المحتوى الرئيسي - الصفحة الرئيسية"
+                    : "Main content - Home"
+                : showDuas
+                  ? lang === "fr"
+                    ? "Contenu principal - Douas"
+                    : lang === "ar"
+                      ? "المحتوى الرئيسي - الأدعية"
+                      : "Main content - Duas"
+                  : lang === "fr"
+                    ? "Contenu principal - Lecture"
+                    : lang === "ar"
+                      ? "المحتوى الرئيسي - القراءة"
+                      : "Main content - Reading"
+            }
+            className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto pb-(--player-h) transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
+            style={{
+              height: "calc(100dvh - var(--header-h, 72px))",
+              maxHeight: "calc(100dvh - var(--header-h, 72px))",
+            }}
+          >
+            <div
+              className={`app-view-shell ${showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas ? `app-mode-${displayMode}` : ""}`}
+            >
+              {showHome ? (
+                <Suspense fallback={suspenseFallback}>
+                  <HomePage lowPerfMode={lowPerfMode} />
+                </Suspense>
+              ) : showDuas ? (
+                <Suspense fallback={suspenseFallback}>
+                  <DuasPage />
+                </Suspense>
+              ) : (
+                <Suspense fallback={suspenseFallback}>
+                  <QuranDisplay
+                    key={
+                      displayMode === "juz"
+                        ? `juz-${currentJuz}`
+                        : displayMode === "page"
+                          ? `page-${currentPage}`
+                          : `surah-${currentSurah}`
+                    }
+                  />
+                </Suspense>
+              )}
+            </div>
+          </main>
+
+          {!focusReading && deferNonCriticalUI && (
+            <Suspense fallback={suspenseFallback}>
+              <NotesPanel />
+            </Suspense>
+          )}
         </div>
-      )}
 
-      {/* ── Fixed bottom audio player ── */}
-      <Suspense fallback={suspenseFallback}>
-        <AudioPlayer />
-      </Suspense>
+        {toast && (
+          <div
+            className="fixed left-1/2 top-4 z-9999 w-[min(90vw,400px)] -translate-x-1/2"
+            role="alert"
+            aria-live="polite"
+          >
+            <Toast
+              type={toast.type}
+              message={toast.message}
+              onClose={() => setToast(null)}
+              autoClose={4500}
+            />
+          </div>
+        )}
 
-      {/* ── Modals — lazy loaded ── */}
-      <Suspense fallback={suspenseFallback}>
-        {state.searchOpen && <SearchModal />}
-        {state.settingsOpen && <SettingsModal />}
-        {state.bookmarksOpen && <BookmarksModal />}
-        {state.wirdOpen && <WirdPanel />}
-        {state.historyOpen && <ReadingHistoryPanel />}
-        {state.playlistOpen && <PlaylistPanel />}
-        {state.audioMakerOpen && <AudioMakerPanel />}
-        {state.flashcardsOpen && <FlashcardsPanel />}
-        {state.tajweedQuizOpen && <TajweedQuizPanel />}
-        {state.khatmaOpen && <KhatmaPanel />}
-        {state.comparatorOpen && <ReciterComparatorPanel />}
-        {state.shareImageOpen && <AyahSharePanel />}
-        {state.weeklyStatsOpen && <WeeklyStatsPanel />}
-      </Suspense>
+        <Suspense fallback={suspenseFallback}>
+          <AudioPlayer />
+        </Suspense>
+
+        <Suspense fallback={suspenseFallback}>
+          {state.searchOpen && <SearchModal />}
+          {state.settingsOpen && <SettingsModal />}
+          {state.bookmarksOpen && <BookmarksModal />}
+          {state.wirdOpen && <WirdPanel />}
+          {state.historyOpen && <ReadingHistoryPanel />}
+          {state.playlistOpen && <PlaylistPanel />}
+          {state.audioMakerOpen && <AudioMakerPanel />}
+          {state.flashcardsOpen && <FlashcardsPanel />}
+          {state.tajweedQuizOpen && <TajweedQuizPanel />}
+          {state.khatmaOpen && <KhatmaPanel />}
+          {state.comparatorOpen && <ReciterComparatorPanel />}
+          {state.shareImageOpen && <AyahSharePanel />}
+          {state.weeklyStatsOpen && <WeeklyStatsPanel />}
+        </Suspense>
       </div>
     </ErrorBoundary>
   );

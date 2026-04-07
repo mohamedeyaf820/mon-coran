@@ -1218,7 +1218,11 @@ export default function HomePage({ lowPerfMode = false }) {
         ? "ابدأ القراءة"
         : "Start reading";
   const primaryReadingCtaLabel = hasReadingHistory
-    ? t("continueReading")
+    ? lang === "ar"
+      ? "متابعة القراءة"
+      : lang === "fr"
+        ? "Continuer"
+        : "Continue"
     : lang === "ar"
       ? "Ø§Ø¨Ø¯Ø£ Ø§Ù„Ù‚Ø±Ø§Ø¡Ø©"
       : lang === "fr"
@@ -1272,6 +1276,9 @@ export default function HomePage({ lowPerfMode = false }) {
     juz: { fr: "Juz", en: "Juz", ar: "الأجزاء" },
     recitations: { fr: "Recitations", en: "Recitations", ar: "التلاوات" },
     radio: { fr: "Radio", en: "Radio", ar: "الراديو" },
+    reciters: { fr: "Recitateurs", en: "Reciters", ar: "القراء" },
+    radioStations: { fr: "Stations", en: "Stations", ar: "محطات" },
+    articles: { fr: "Articles", en: "Articles", ar: "مقالات" },
     search: {
       fr: "Rechercher une sourate...",
       en: "Search a surah...",
@@ -1330,6 +1337,26 @@ export default function HomePage({ lowPerfMode = false }) {
       count: notes.length,
     },
   ];
+  const activeCollectionCount =
+    activeTab === "surah"
+      ? filteredSurahs.length
+      : activeTab === "juz"
+        ? JUZ_DATA.length
+        : activeTab === "recitations"
+          ? filteredReciters.length
+          : activeTab === "blog"
+            ? MOCK_BLOG_POSTS.length
+            : THEMATIC_STATIONS.length + Math.min(8, availableReciters.length);
+  const activeCollectionLabel =
+    activeTab === "surah"
+      ? t("surahs")
+      : activeTab === "juz"
+        ? t("juz")
+        : activeTab === "recitations"
+          ? t("reciters")
+          : activeTab === "blog"
+            ? t("articles")
+            : t("radioStations");
   const useSurahGridScroll = activeTab === "surah" && viewMode === "grid";
   const shouldReduceHomeFx = lowPerfMode;
 
@@ -1888,7 +1915,7 @@ export default function HomePage({ lowPerfMode = false }) {
         </div>
         {/* Colonne sourates / contenu */}
         <section className="hp-content">
-          <div className="hp-actions">
+          <div className="hp-actions hp-actions--sticky">
             {/* Onglets Sourates / Juz */}
             <div className="hp-tabs">
               <button
@@ -1981,21 +2008,7 @@ export default function HomePage({ lowPerfMode = false }) {
             {/* Tri + vue */}
             <div className="hp-actions-meta">
               <span className="hp-actions-count">
-                {activeTab === "surah"
-                  ? filteredSurahs.length
-                  : activeTab === "juz"
-                    ? JUZ_DATA.length
-                    : activeTab === "recitations"
-                      ? filteredReciters.length
-                      : THEMATIC_STATIONS.length +
-                        Math.min(8, availableReciters.length)}{" "}
-                {activeTab === "surah"
-                  ? t("surahs")
-                  : activeTab === "juz"
-                    ? t("juz")
-                    : activeTab === "recitations"
-                      ? t("recitations")
-                      : t("radio")}
+                {activeCollectionCount} {activeCollectionLabel}
               </span>
               {activeTab === "surah" && (
                 <button
@@ -2117,23 +2130,6 @@ export default function HomePage({ lowPerfMode = false }) {
                 />
               ) : (
                 <>
-                  <div className="mb-2 flex flex-wrap items-center gap-2">
-                    {[
-                      { id: "all", label: "Tous" },
-                      { id: "murattal", label: "Murattal" },
-                      { id: "mujawwad", label: "Mujawwad" },
-                      { id: "muallim", label: "Muallim" },
-                    ].map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        className={`hp2-chip ${reciterStyleFilter === item.id ? "hp2-chip--on" : ""}`}
-                        onClick={() => setReciterStyleFilter(item.id)}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
                   {filteredReciters.map((reciter) => {
                     const reciterLabel =
                       lang === "ar"

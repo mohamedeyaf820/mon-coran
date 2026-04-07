@@ -3,13 +3,19 @@ import ar from './ar';
 import fr from './fr';
 import en from './en';
 
-const locales = { ar, fr, en };
+const LOCALES_MAP = { ar, fr, en };
 
+/**
+ * Global translation function.
+ * @param {string|object} key - The translation key or an object with language keys.
+ * @param {string} lang - The target language code ('ar', 'fr', 'en').
+ * @returns {string} The translated string or the key itself if not found.
+ */
 export function t(key, lang = 'fr') {
   if (key == null) return '';
-  const safeLang = locales[lang] ? lang : 'fr';
+  const safeLang = LOCALES_MAP[lang] ? lang : 'fr';
 
-  // Defensive fallback: some callsites may pass an object map by mistake.
+  // Defensive fallback: support object maps passed directly.
   if (typeof key === 'object') {
     if (Array.isArray(key)) {
       return key.filter(Boolean).join(' ');
@@ -28,21 +34,27 @@ export function t(key, lang = 'fr') {
   if (!safeKey || typeof safeKey.split !== 'function') return '';
 
   const keys = safeKey.split('.');
-  let val = locales[safeLang] || locales.fr;
+  
+  // Use a fresh reference to the locale tree for each call to ensure we don't 
+  // hit TDZ issues if this is called early in some complex module grafts.
+  const currentLocale = LOCALES_MAP[safeLang] || LOCALES_MAP.fr;
+  let val = currentLocale;
+
   for (const k of keys) {
-    if (!val) return safeKey;
+    if (val == null) break;
     val = val[k];
   }
+
   if (val != null) return val;
 
-  // Fallback to French tree when key is missing in current language.
+  // Global fallback to French for missing keys in other languages.
   if (safeLang !== 'fr') {
-    let frVal = locales.fr;
+    let frVal = LOCALES_MAP.fr;
     for (const k of keys) {
-      if (!frVal) return safeKey;
+      if (frVal == null) break;
       frVal = frVal[k];
     }
-    return frVal ?? safeKey;
+    if (frVal != null) return frVal;
   }
 
   return safeKey;
@@ -54,4 +66,4 @@ export const LANGUAGES = [
   { code: 'ar', label: 'العربية', dir: 'rtl' },
 ];
 
-export default locales;
+export default LOCALES_MAP;

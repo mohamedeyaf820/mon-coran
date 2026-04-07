@@ -1,39 +1,37 @@
 import React from "react";
 import { useAppActions, useAppLocale } from "../context/AppContext";
+import { t } from "../i18n";
 
 export default function Footer() {
   const { dispatch, set } = useAppActions();
   const { lang } = useAppLocale();
-
-  const t = (obj) =>
-    lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en;
 
   const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   const navItems = [
     {
       icon: "fa-house",
-      label: t({ fr: "Accueil", en: "Home", ar: "الرئيسية" }),
+      label: t({ fr: "Accueil", en: "Home", ar: "الرئيسية" }, lang),
       onClick: () => { set({ showHome: true, showDuas: false }); scrollTop(); },
     },
     {
       icon: "fa-magnifying-glass",
-      label: t({ fr: "Recherche", en: "Search", ar: "بحث" }),
+      label: t({ fr: "Recherche", en: "Search", ar: "بحث" }, lang),
       onClick: () => dispatch({ type: "TOGGLE_SEARCH" }),
     },
     {
       icon: "fa-bookmark",
-      label: t({ fr: "Favoris", en: "Bookmarks", ar: "إشارات" }),
+      label: t({ fr: "Favoris", en: "Bookmarks", ar: "إشارات" }, lang),
       onClick: () => dispatch({ type: "TOGGLE_BOOKMARKS" }),
     },
     {
       icon: "fa-hands-praying",
-      label: t({ fr: "Douas", en: "Duas", ar: "الأدعية" }),
+      label: t({ fr: "Douas", en: "Duas", ar: "الأدعية" }, lang),
       onClick: () => { set({ showHome: false, showDuas: true }); scrollTop(); },
     },
     {
       icon: "fa-gear",
-      label: t({ fr: "Réglages", en: "Settings", ar: "الإعدادات" }),
+      label: t({ fr: "Réglages", en: "Settings", ar: "الإعدادات" }, lang),
       onClick: () => dispatch({ type: "TOGGLE_SETTINGS" }),
     },
   ];
@@ -56,7 +54,7 @@ export default function Footer() {
             {"وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ"}
           </p>
           <span className="mp-footer-v2__verse-ref">
-            {t({ fr: "Az-Zariyat · 51:56", en: "Az-Zariyat · 51:56", ar: "الذاريات · ٥١:٥٦" })}
+            {t({ fr: "Az-Zariyat · 51:56", en: "Az-Zariyat · 51:56", ar: "الذاريات · ٥١:٥٦" }, lang)}
           </span>
         </div>
 
@@ -64,7 +62,7 @@ export default function Footer() {
         <div className="mp-footer-v2__body">
           <nav
             className="mp-footer-v2__nav"
-            aria-label={t({ fr: "Navigation rapide", en: "Quick navigation", ar: "التنقل السريع" })}
+            aria-label={t({ fr: "Navigation rapide", en: "Quick navigation", ar: "التنقل السريع" }, lang)}
           >
             {navItems.map((item) => (
               <button
@@ -84,7 +82,7 @@ export default function Footer() {
 
           <div className="mp-footer-v2__bottom">
             <span className="mp-footer-v2__credit">
-              {t({ fr: "Le Saint Coran", en: "The Holy Quran", ar: "القرآن الكريم" })}
+              {t({ fr: "Le Saint Coran", en: "The Holy Quran", ar: "القرآن الكريم" }, lang)}
             </span>
             <span className="mp-footer-v2__brand">Mushaf.plus</span>
           </div>

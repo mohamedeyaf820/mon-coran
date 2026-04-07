@@ -24387,6 +24387,27 @@ body {
     margin-bottom: 1.1rem;
 }
 
+.app-root .hp-actions--sticky {
+    position: sticky;
+    top: 0.7rem;
+    z-index: 18;
+    padding: 0.8rem;
+    border: 1px solid
+        color-mix(in srgb, var(--ux-panel-border) 84%, transparent 16%);
+    border-radius: 1.18rem;
+    background:
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--ux-panel) 94%, transparent 6%),
+            color-mix(in srgb, var(--ux-panel) 86%, transparent 14%)
+        );
+    box-shadow:
+        0 18px 36px rgba(15, 23, 42, 0.08),
+        0 0 0 1px color-mix(in srgb, var(--bg-card) 60%, transparent 40%) inset;
+    backdrop-filter: blur(16px) saturate(138%);
+    -webkit-backdrop-filter: blur(16px) saturate(138%);
+}
+
 .app-root .hp-actions .hp-tabs {
     margin: 0;
     padding: 0.28rem;
@@ -24656,6 +24677,11 @@ body {
     .app-root .hp-actions {
         grid-template-columns: 1fr;
         gap: 0.62rem;
+    }
+
+    .app-root .hp-actions--sticky {
+        top: 0.5rem;
+        padding: 0.68rem;
     }
 
     .app-root .hp-search-box {

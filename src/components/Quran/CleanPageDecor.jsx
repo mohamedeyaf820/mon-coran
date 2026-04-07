@@ -1,5 +1,6 @@
 import React from "react";
 import { toAr } from "../../data/surahs";
+import AyahMarker from "./AyahMarker";
 
 export function CleanPageSurahHeader({ lang, surahMeta }) {
   const subtitle =
@@ -30,15 +31,7 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
 }
 
 export function VerseMedallion({ isPlaying = false, num }) {
-  return (
-    <span
-      className={`cpv-medallion verse-stop-medallion${isPlaying ? " is-playing" : ""}`}
-      aria-label={`Verse ${num}`}
-    >
-      <span className="verse-stop-medallion__ring" />
-      <span className="verse-stop-number">{toAr(num)}</span>
-    </span>
-  );
+  return <AyahMarker num={num} isPlaying={isPlaying} />;
 }
 
 export function CleanPageSeparator({ isDarkTheme = false, pageNum }) {
