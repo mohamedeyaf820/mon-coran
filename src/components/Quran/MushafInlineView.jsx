@@ -2,244 +2,67 @@ import React, { useMemo } from "react";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 import { toAr, getSurah } from "../../data/surahs";
 import { getJuzForAyah } from "../../data/juz";
-import { t } from "../../i18n";
+import MushafInlineHeader from "./MushafInlineHeader";
+import { getMushafFontClass, getRevelationBadge } from "./mushafInlineUtils";
 
-/* ── Ayah-end marker (sans cercle dessine, taille liee au texte arabe) ── */
-function AyahMarker({ num, lang }) {
-  const display = lang === "ar" ? toAr(num) : num;
+function AyahMarker({ lang, num }) {
   return (
     <span className="mp-ayah-marker" aria-label={`Fin verset ${num}`}>
-      <span className="mp-ayah-marker-glyph" aria-hidden="true">۝</span>
-      <span className="mp-ayah-num">{display}</span>
+      <span className="mp-ayah-marker-glyph" aria-hidden="true">
+        {"\u06dd"}
+      </span>
+      <span className="mp-ayah-num">{lang === "ar" ? toAr(num) : num}</span>
     </span>
   );
 }
 
-function getMushafFontClass(size) {
-  const n = Number(size);
-  if (!Number.isFinite(n)) return "text-[58px]";
-  if (n <= 54) return "text-[54px]";
-  if (n <= 58) return "text-[58px]";
-  if (n <= 62) return "text-[62px]";
-  if (n <= 66) return "text-[66px]";
-  return "text-[70px]";
-}
-
-/**
- * MushafInlineView – affichage style page Mushaf authentique.
- * Fonctionne pour Hafs (police var(--font-quran)) et Warsh QCF4
- * (SmartAyahRenderer gère les polices par mot automatiquement).
- */
 export default function MushafInlineView({
   ayahs,
-  translations,
   surahNum,
   displayMode,
   currentPage,
   currentJuz,
   isQCF4,
   showTajwid,
-  showTranslation,
   currentPlayingAyah,
   calibration,
   riwaya,
   lang,
   fontSize,
   onAyahClick,
-  onIncreaseFont,
-  onDecreaseFont,
-  canIncreaseFont,
-  canDecreaseFont,
 }) {
   const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
-
-  const juzNum = useMemo(
-    () =>
-      ayahs.length > 0 ? getJuzForAyah(surahNum, ayahs[0].numberInSurah) : 1,
-    [ayahs, surahNum],
-  );
-  const juzNumEnd = useMemo(
-    () =>
-      ayahs.length > 0
-        ? getJuzForAyah(surahNum, ayahs[ayahs.length - 1].numberInSurah)
-        : juzNum,
-    [ayahs, surahNum, juzNum],
-  );
-
-  const showBasmala =
-    surahNum !== 1 &&
-    surahNum !== 9 &&
-    ayahs.length > 0 &&
-    ayahs[0].numberInSurah === 1;
-
+  const juzNum = useMemo(() => (ayahs.length > 0 ? getJuzForAyah(surahNum, ayahs[0].numberInSurah) : 1), [ayahs, surahNum]);
+  const juzNumEnd = useMemo(() => (ayahs.length > 0 ? getJuzForAyah(surahNum, ayahs[ayahs.length - 1].numberInSurah) : juzNum), [ayahs, surahNum, juzNum]);
+  const showBasmala = surahNum !== 1 && surahNum !== 9 && ayahs.length > 0 && ayahs[0].numberInSurah === 1;
   const surahNameAr = surahMeta?.ar || "";
-  const surahNameDisplay =
-    lang === "ar"
-      ? surahNameAr
-      : lang === "fr"
-        ? surahMeta?.fr || surahNameAr
-        : surahMeta?.en || surahNameAr;
-
-  const revelBadge =
-    surahMeta?.type === "Meccan"
-      ? lang === "fr"
-        ? "Mecquoise"
-        : lang === "ar"
-          ? "مكية"
-          : "Meccan"
-      : lang === "fr"
-        ? "Médinoise"
-        : lang === "ar"
-          ? "مدنية"
-          : "Medinan";
-
-  const juzLabel = lang === "ar" ? "جزء" : "Juz";
+  const displayName = lang === "ar" ? surahNameAr : lang === "fr" ? surahMeta?.fr || surahNameAr : surahMeta?.en || surahNameAr;
   const ayahCountLabel = surahMeta?.ayahs ?? "?";
-  const pageStart =
-    (displayMode === "page" ? currentPage : null) ?? ayahs[0]?.page ?? null;
-  const pageEnd = ayahs[ayahs.length - 1]?.page ?? pageStart;
-  const hizbNumber = ayahs[0]?.hizbQuarter
-    ? Math.ceil(ayahs[0].hizbQuarter / 4)
-    : null;
-  const activeJuz = displayMode === "juz" ? (currentJuz ?? juzNum) : juzNum;
-  const heroSubtitle =
-    lang === "ar"
-      ? `${revelBadge} · ${toAr(ayahCountLabel)} آية`
-      : `${revelBadge} · ${ayahCountLabel} ${lang === "fr" ? "versets" : "ayahs"}`;
-  const heroBadge =
-    riwaya === "warsh"
-      ? lang === "ar"
-        ? "ورش"
-        : "Warsh"
-      : lang === "ar"
-        ? "حفص"
-        : "Hafs";
-  const basmalaTranslation =
-    lang === "fr"
-      ? "Au nom d'Allah, le Tout Misericordieux, le Tres Misericordieux"
-      : lang === "ar"
-        ? null
-        : "In the Name of Allah, the Most Compassionate, the Most Merciful";
-  const mushafFontSize = Math.min(Math.max((fontSize ?? 38) + 16, 54), 72);
-  const mushafFontClass = getMushafFontClass(mushafFontSize);
-  const hasTranslationPanel = showTranslation && translations?.length > 0;
+  const basmalaTranslation = lang === "fr" ? "Au nom d'Allah, le Tout Misericordieux, le Tres Misericordieux" : lang === "ar" ? null : "In the Name of Allah, the Most Compassionate, the Most Merciful";
 
   return (
     <div className={`mp-frame${isQCF4 ? " mp-qcf4" : ""} relative overflow-hidden rounded-[30px] border border-[rgba(186,148,74,0.26)] bg-[linear-gradient(165deg,rgba(247,237,213,0.94)_0%,rgba(236,220,183,0.96)_100%)] shadow-[0_20px_38px_rgba(12,18,14,0.14)]`}>
-      <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(132,102,46,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(132,102,46,0.07)_1px,transparent_1px)] bg-size-[60px_60px] opacity-[0.12]"
-        aria-hidden="true"
-      />
-      {/* ══════════════ CADRE EXTÉRIEUR ══════════════ */}
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(132,102,46,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(132,102,46,0.07)_1px,transparent_1px)] bg-size-[60px_60px] opacity-[0.12]" aria-hidden="true" />
       <div className="mp-outer-border relative z-10">
         <div className="mp-inner-border rounded-2xl border border-[rgba(186,148,74,0.22)] bg-[rgba(240,226,190,0.2)] p-3">
-          {/* ── En-tête sourate ── */}
-          <div className="mp-header" dir="rtl">
-            {/* Coin gauche: numéro juz */}
-            <div className="mp-header-side">
-              <span className="mp-header-label">{juzLabel}</span>
-              <span className="mp-header-value">
-                {lang === "ar" ? toAr(juzNum) : juzNum}
-                {juzNumEnd !== juzNum && (
-                  <span className="mp-header-value-end">
-                    {" - "}
-                    {lang === "ar" ? toAr(juzNumEnd) : juzNumEnd}
-                  </span>
-                )}
-              </span>
-            </div>
-
-            {/* Centre: nom de la sourate */}
-            <div className="mp-header-center">
-              <span className="mp-ornament" aria-hidden="true">
-                ﴾
-              </span>
-              <div className="mp-surah-title">
-                <span className="mp-surah-name-ar" dir="rtl">
-                  سُورَةُ {surahNameAr}
-                </span>
-                {lang !== "ar" && surahNameDisplay !== surahNameAr && (
-                  <span className="mp-surah-name-tr">{surahNameDisplay}</span>
-                )}
-              </div>
-              <span className="mp-ornament" aria-hidden="true">
-                ﴿
-              </span>
-            </div>
-
-            {/* Coin droit: type + nb versets */}
-            <div className="mp-header-side mp-header-side--end">
-              <span className="mp-header-label">{revelBadge}</span>
-              <span className="mp-header-value">
-                {lang === "ar" ? toAr(ayahCountLabel) : ayahCountLabel}{" "}
-                <span className="mp-header-label">
-                  {lang === "ar" ? "آية" : lang === "fr" ? "v." : "v."}
-                </span>
-              </span>
-            </div>
-          </div>
-
-          {showBasmala && (
-            <div className="mp-basmala-wrap">
-              <div className="mp-basmala" dir="rtl" aria-label="Basmala">
-                {isQCF4 ? "﷽" : "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ"}
-              </div>
-              {basmalaTranslation && (
-                <div className="mp-basmala-translation">
-                  {basmalaTranslation}
-                </div>
-              )}
-            </div>
-          )}
-
-          <div
-            className={`mp-ayahs-flow ${mushafFontClass} rounded-2xl border border-[rgba(184,146,72,0.22)] bg-[rgba(231,210,160,0.16)] px-3 py-4`}
-            dir="rtl"
-          >
-            {/* Ayahs en flux inline */}
+          <MushafInlineHeader ayahCountLabel={ayahCountLabel} basmalaTranslation={basmalaTranslation} currentJuz={currentJuz} displayName={displayName} isQCF4={isQCF4} juzNum={displayMode === "juz" ? currentJuz ?? juzNum : juzNum} juzNumEnd={juzNumEnd} lang={lang} pageStart={(displayMode === "page" ? currentPage : null) ?? ayahs[0]?.page ?? null} revelBadge={getRevelationBadge(lang, surahMeta)} showBasmala={showBasmala} surahNameAr={surahNameAr} />
+          <div className={`mp-ayahs-flow ${getMushafFontClass(Math.min(Math.max((fontSize ?? 38) + 16, 54), 72))} rounded-2xl border border-[rgba(184,146,72,0.22)] bg-[rgba(231,210,160,0.16)] px-3 py-4`} dir="rtl">
             {ayahs.map((ayah) => {
-              const isPlaying =
-                currentPlayingAyah?.ayah === ayah.numberInSurah &&
-                (currentPlayingAyah?.surah === surahNum ||
-                  currentPlayingAyah?.surah == null);
-
+              const isPlaying = currentPlayingAyah?.ayah === ayah.numberInSurah && (currentPlayingAyah?.surah === surahNum || currentPlayingAyah?.surah == null);
               return (
                 <React.Fragment key={ayah.number ?? ayah.numberInSurah}>
-                  <span
-                    id={`ayah-${ayah.numberInSurah}`}
-                    data-surah-number={surahNum}
-                    data-ayah-number={ayah.numberInSurah}
-                    data-ayah-global={ayah.number}
-                    className={`mp-ayah${isPlaying ? " mp-ayah--playing" : ""}`}
-                    onClick={() => onAyahClick?.(ayah.numberInSurah)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && onAyahClick?.(ayah.numberInSurah)
-                    }
-                    aria-label={`Verset ${ayah.numberInSurah}`}
-                  >
-                    <SmartAyahRenderer
-                      ayah={ayah}
-                      showTajwid={showTajwid}
-                      isPlaying={isPlaying}
-                      surahNum={surahNum}
-                      calibration={calibration}
-                      riwaya={riwaya}
-                    />
+                  <span id={`ayah-${ayah.numberInSurah}`} data-surah-number={surahNum} data-ayah-number={ayah.numberInSurah} data-ayah-global={ayah.number} className={`mp-ayah${isPlaying ? " mp-ayah--playing" : ""}`} onClick={() => onAyahClick?.(ayah.numberInSurah)} role="button" tabIndex={0} onKeyDown={(event) => event.key === "Enter" && onAyahClick?.(ayah.numberInSurah)} aria-label={`Verset ${ayah.numberInSurah}`}>
+                    <SmartAyahRenderer ayah={ayah} showTajwid={showTajwid} isPlaying={isPlaying} surahNum={surahNum} calibration={calibration} riwaya={riwaya} />
                   </span>
-                  {/* QCF4 fonts embed ayah-end numbers inside glyphs — skip separate marker */}
-                  {!isQCF4 && <AyahMarker num={ayah.numberInSurah} lang={lang} />}
+                  {!isQCF4 ? <AyahMarker num={ayah.numberInSurah} lang={lang} /> : null}
                   {"\u200C"}
                 </React.Fragment>
               );
             })}
           </div>
-
-          {/* ── Séparateur bas ── */}
           <div className="mp-separator mp-separator--bottom" aria-hidden="true">
             <span className="mp-sep-line"></span>
-            <span className="mp-sep-diamond">◆</span>
+            <span className="mp-sep-diamond">{"\u25c6"}</span>
             <span className="mp-sep-line"></span>
           </div>
         </div>
