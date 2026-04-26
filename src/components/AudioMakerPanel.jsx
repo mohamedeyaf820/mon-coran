@@ -7,7 +7,8 @@ import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import SURAHS from "../data/surahs";
 import audioService from "../services/audioService";
-import { getReciter } from "../data/reciters";
+import { ensureReciterForRiwaya, getReciter } from "../data/reciters";
+import { buildAudioPlaylistForSurahs } from "../utils/audioPlaylist";
 import { cn } from "../lib/utils";
 
 export default function AudioMakerPanel() {
@@ -50,24 +51,13 @@ export default function AudioMakerPanel() {
     setIsCreating(true);
 
     try {
-      const reciterObj = getReciter(reciter, riwaya);
+      const safeReciterId = ensureReciterForRiwaya(reciter, riwaya);
+      const reciterObj = getReciter(safeReciterId, riwaya);
       const cdnPath = reciterObj?.cdn || reciter;
       const cdnType = reciterObj?.cdnType || "islamic";
 
       /* Build playlist for audioService — include ayah numbers */
-      const playlist = selectedSurahs.flatMap((surahNum) => {
-        const surah = SURAHS.find((s) => s.n === surahNum);
-        if (!surah) return [];
-        /* For simplicity, add first ayah of each surah */
-        return [{
-          surah: surahNum,
-          surahNumber: surahNum,
-          ayah: 1,
-          numberInSurah: 1,
-          number: computeGlobalAyahNumber(surahNum, 1),
-          text: surah.ar || "",
-        }];
-      });
+      const playlist = await buildAudioPlaylistForSurahs(selectedSurahs, riwaya);
 
       if (playlist.length === 0) {
         setIsCreating(false);
@@ -306,23 +296,4 @@ export default function AudioMakerPanel() {
       </div>
     </div>
   );
-}
-
-/* --- Helper: compute global ayah number --- */
-function computeGlobalAyahNumber(surahNum, surahAyahNum) {
-  const offsets = [
-    0, 7, 286, 468, 645, 864, 1038, 1230, 1505, 1763, 1986, 2192, 2368, 2606,
-    2877, 3144, 3326, 3597, 3842, 4119, 4340, 4689, 4852, 5037, 5204, 5571,
-    5683, 5900, 6118, 6325, 6632, 6948, 7191, 7487, 7686, 7942, 8285, 8578,
-    8942, 9287, 9629, 9956, 10237, 10492, 10688, 11007, 11311, 11588, 11931,
-    12182, 12545, 12800, 13055, 13315, 13612, 13992, 14257, 14504, 14896,
-    15122, 15378, 15760, 16169, 16430, 16673, 16923, 17418, 17776, 18098,
-    18435, 18674, 18953, 19260, 19542, 19812, 20097, 20407, 20667, 20931,
-    21246, 21519, 21905, 22204, 22496, 22703, 23064, 23239, 23453, 23632,
-    24035, 24237, 24524, 24793, 25108, 25457, 25761, 26200, 26532, 26841,
-    27096, 27481, 27801, 28087, 28369, 28626, 28977, 29196, 29471, 29755,
-    29968, 30331, 30556, 30866, 31109, 31405, 31632, 31932, 32285, 32543,
-    32623,
-  ];
-  return (offsets[surahNum - 1] || 0) + surahAyahNum;
 }

@@ -11,9 +11,13 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useApp } from "./context/AppContext";
 import SplashScreen from "./components/SplashScreen";
 import HomePage from "./components/HomePage";
-import { getReciter, ensureReciterForRiwaya } from "./data/reciters";
+import {
+  getReciter,
+  ensureReciterForRiwaya,
+  isWarshVerifiedReciter,
+} from "./data/reciters";
 import { Toast } from "./components/ModernUIComponents";
-import { buildSurahAudioPlaylist } from "./utils/audioPlaylist";
+import { buildAudioPlaylistForSurah } from "./utils/audioPlaylist";
 import { ensureFontLoaded } from "./services/fontLoader";
 import { runWhenIdle } from "./utils/idleUtils";
 
@@ -228,18 +232,15 @@ export default function App() {
     if (
       riwaya === "warsh" &&
       warshStrictMode &&
-      !String(reciter.cdn || "")
-        .toLowerCase()
-        .includes("warsh")
+      !isWarshVerifiedReciter(reciter)
     ) {
       return undefined;
     }
 
-    const items = buildSurahAudioPlaylist(surahNum);
-    if (items.length === 0) return undefined;
-
     const cancelIdle = runWhenIdle(async () => {
       try {
+        const items = await buildAudioPlaylistForSurah(surahNum, riwaya);
+        if (cancelled || items.length === 0) return;
         const audioService = await getAudioServiceInstance();
         if (cancelled) return;
         audioService.loadPlaylist(
@@ -470,14 +471,14 @@ export default function App() {
                 : showDuas
                   ? lang === "fr"
                     ? "Contenu principal - Douas"
-                    : lang === "ar"
-                      ? "المحتوى الرئيسي - الأدعية"
-                      : "Main content - Duas"
-                  : lang === "fr"
-                    ? "Contenu principal - Lecture"
-                    : lang === "ar"
-                      ? "المحتوى الرئيسي - القراءة"
-                      : "Main content - Reading"
+                  : lang === "ar"
+                    ? "المحتوى الرئيسي - الأدعية"
+                    : "Main content - Duas"
+                : lang === "fr"
+                  ? "Contenu principal - Lecture"
+                  : lang === "ar"
+                    ? "المحتوى الرئيسي - القراءة"
+                    : "Main content - Reading"
             }
             className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto pb-(--player-h) transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
             style={{

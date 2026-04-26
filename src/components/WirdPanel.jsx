@@ -22,7 +22,7 @@ function Sparkline({ data, goalTarget, lang }) {
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <div className="wird-sparkline">
+    <div className="flex flex-col items-center pt-3 px-2 pb-1 mb-2 border-b border-dashed border-[rgba(128,128,128,0.18)]">
       <svg width={W} height={H + 20} aria-hidden="true">
         {/* Goal line */}
         <line
@@ -87,10 +87,10 @@ function Sparkline({ data, goalTarget, lang }) {
           );
         })}
       </svg>
-      <div className="wird-sparkline__legend">
+      <div className="flex gap-4 text-[0.65rem] text-[var(--text-secondary,#888)] mt-[0.1rem]">
         <span>
           <span
-            className="wird-spark-dot"
+            className="inline-block w-2 h-2 rounded-full me-[3px] align-middle"
             style={{ background: "rgba(34,197,94,0.75)" }}
           />
           {lang === "fr"
@@ -101,7 +101,7 @@ function Sparkline({ data, goalTarget, lang }) {
         </span>
         <span>
           <span
-            className="wird-spark-dot"
+            className="inline-block w-2 h-2 rounded-full me-[3px] align-middle"
             style={{ background: "rgba(212,168,32,0.6)" }}
           />
           {lang === "fr" ? "Partiel" : lang === "ar" ? "جزئي" : "Partial"}

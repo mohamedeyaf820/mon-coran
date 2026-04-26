@@ -18,17 +18,16 @@ function isAyahMarkerToken(word) {
   return compact ? AYAH_MARKER_TOKEN_RE.test(compact) : false;
 }
 
-function buildWordWeights(words, hafsText) {
-  if (!words?.length) return [];
-  if (!hafsText) return Array.from({ length: words.length }, (_, index) => (index + 1) / words.length);
+function getWordText(word) {
+  if (typeof word === "string") return word;
+  return word?.text || word?.textSimple || "";
+}
 
-  const hafsWords = hafsText.split(/\s+/).filter(Boolean);
-  const raw = words.map((_, index) => {
-    const hafsIndex =
-      hafsWords.length <= 1
-        ? 0
-        : Math.round((index * (hafsWords.length - 1)) / Math.max(1, words.length - 1));
-    const word = hafsWords[hafsIndex] || "";
+function buildWordWeights(words) {
+  if (!words?.length) return [];
+
+  const raw = words.map((item, index) => {
+    const word = getWordText(item);
     const base = word.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u06E1]/g, "");
     let weight = Math.max(1, base.length);
     weight += (word.match(/[\u0627\u0648\u064a\u0670\u0649]/g) || []).length * 0.8;
@@ -51,41 +50,38 @@ function buildWordWeights(words, hafsText) {
 
 export default function KaraokeWarshText({
   words,
-  hafsText,
   isFirstAyah,
   calibration,
   tajweedColors,
   fallbackText,
 }) {
   const lastIdxRef = useRef(0);
+  const normalizedWords = useMemo(
+    () => (Array.isArray(words) ? words.map(getWordText).filter(Boolean) : []),
+    [words],
+  );
   const effectiveCalibration = withWordCountCalibrationBump(
     calibration || DEFAULT_WARSH_CALIBRATION,
-    words.length,
+    normalizedWords.length,
   );
   const { progress, seekCount } = useKaraoke({
     isFirstAyah,
-    wordCount: words.length,
+    wordCount: normalizedWords.length,
     calibration: effectiveCalibration,
   });
-  const wordWeights = useMemo(() => buildWordWeights(words, hafsText), [hafsText, words]);
-  const markerFlags = useMemo(() => {
-    const hafsWords = hafsText?.split(/\s+/).filter(Boolean) || [];
-    return words.map((_, index) => {
-      const hafsIndex =
-        hafsWords.length <= 1
-          ? 0
-          : Math.round((index * (hafsWords.length - 1)) / Math.max(1, words.length - 1));
-      return isAyahMarkerToken(hafsWords[hafsIndex] || "");
-    });
-  }, [hafsText, words]);
+  const wordWeights = useMemo(() => buildWordWeights(normalizedWords), [normalizedWords]);
+  const markerFlags = useMemo(
+    () => normalizedWords.map((word) => isAyahMarkerToken(getWordText(word))),
+    [normalizedWords],
+  );
   const lagWords =
-    words.length >= 24
+    normalizedWords.length >= 24
       ? Number(effectiveCalibration.lagWordsLong ?? 0)
       : Number(effectiveCalibration.lagWordsBase ?? 0);
 
   useEffect(() => {
     lastIdxRef.current = 0;
-  }, [seekCount, words]);
+  }, [normalizedWords, seekCount]);
 
   const highlightIdx = useMemo(() => {
     let currentIndex = 0;
@@ -97,9 +93,13 @@ export default function KaraokeWarshText({
     return finalIndex;
   }, [lagWords, progress, wordWeights]);
 
+  if (!normalizedWords.length) {
+    return <span>{fallbackText || ""}</span>;
+  }
+
   return (
     <WarshWordText
-      words={words}
+      words={normalizedWords}
       highlightIdx={highlightIdx >= 0 ? highlightIdx : undefined}
       tajweedColors={tajweedColors}
       fallbackText={fallbackText}

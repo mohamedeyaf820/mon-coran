@@ -63,8 +63,8 @@ export default function useQuranDisplayData({
       dispatch({ type: "SET", payload: { loadedAyahCount: fetchedAyahs.length } });
       dispatch({ type: "SET_LOADING", payload: false });
 
-      if (riwaya === "warsh" && displayMode !== "page") {
-        loadHafsSupportData({ currentJuz, currentSurah, displayMode, signal })
+      if (riwaya === "warsh") {
+        loadHafsSupportData({ currentJuz, currentPage, currentSurah, displayMode, signal })
           .then((hafsData) => {
             if (signal.aborted) return;
             const hafsMap = new Map(

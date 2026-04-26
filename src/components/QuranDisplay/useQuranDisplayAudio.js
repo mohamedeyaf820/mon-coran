@@ -10,12 +10,20 @@ import { getSurahText } from "../../services/quranAPI";
 import { getWarshSurahFormatted } from "../../services/warshService";
 
 function toPlaylistAyahs(ayahs, currentSurah) {
-  return ayahs.map((ayah) => ({
+  return (Array.isArray(ayahs) ? ayahs : []).map((ayah) => ({
     surah: ayah.surah?.number || currentSurah,
     numberInSurah: ayah.numberInSurah,
     number: ayah.number,
     text: ayah.text,
   }));
+}
+
+function extractAyahs(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.ayahs)) return payload.ayahs;
+  if (Array.isArray(payload?.data?.ayahs)) return payload.data.ayahs;
+  if (Array.isArray(payload?.data)) return payload.data;
+  return [];
 }
 
 export default function useQuranDisplayAudio({
@@ -134,7 +142,7 @@ export default function useQuranDisplayAudio({
         surahData = await getSurahText(surahNumber, riwaya);
       }
 
-      const playlistAyahs = toPlaylistAyahs(surahData?.data || surahData || [], surahNumber);
+      const playlistAyahs = toPlaylistAyahs(extractAyahs(surahData), surahNumber);
       if (playlistAyahs.length === 0) {
         setError(
           lang === "fr"

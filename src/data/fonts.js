@@ -63,13 +63,26 @@ export const FONT_MAP = {
 /** Default font fallback (always safe to render). */
 export const DEFAULT_FONT_ID = "scheherazade-new";
 
+const RIWAYA_QCF_PREFIX = {
+  hafs: "'QCF4_Hafs_01_W'",
+  warsh: "'QCF4_Warsh_01_W'",
+};
+
+function withRiwayaQcfPrefix(fontStack, riwaya = "hafs") {
+  const qcfPrefix = RIWAYA_QCF_PREFIX[riwaya] ?? RIWAYA_QCF_PREFIX.hafs;
+  if (fontStack.includes(qcfPrefix)) return fontStack;
+  return `${qcfPrefix},${fontStack}`;
+}
+
 /**
  * Resolve a font-id to its CSS font-family string.
  * Falls back to the default if the id is unknown.
  *
  * @param {string} id
+ * @param {"hafs"|"warsh"} [riwaya="hafs"]
  * @returns {string}
  */
-export function resolveFontFamily(id) {
-  return FONT_MAP[id] ?? FONT_MAP[DEFAULT_FONT_ID];
+export function resolveFontFamily(id, riwaya = "hafs") {
+  const baseStack = FONT_MAP[id] ?? FONT_MAP[DEFAULT_FONT_ID];
+  return withRiwayaQcfPrefix(baseStack, riwaya);
 }

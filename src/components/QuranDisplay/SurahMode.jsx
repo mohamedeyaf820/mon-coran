@@ -5,6 +5,7 @@ import Bismillah from "../Quran/Bismillah";
 import CleanPageView from "../Quran/CleanPageView";
 import SurahHeader from "../Quran/SurahHeader";
 import TajweedLegend from "../Quran/TajweedLegend";
+import { shouldShowStandaloneBasmala } from "../../utils/quranUtils";
 import AyahActionsModal from "./AyahActionsModal";
 import AyahList from "./AyahList";
 import ModeNavigation from "./ModeNavigation";
@@ -45,7 +46,7 @@ export default function SurahMode({
       {!(isQCF4 && mushafLayout === "mushaf") && (
         <div className="qc-surah-header-wrap animate-in">
           <SurahHeader surahNum={currentSurah} lang={lang} />
-          {currentSurah !== 1 && currentSurah !== 9 && mushafLayout !== "mushaf" ? (
+          {shouldShowStandaloneBasmala(currentSurah, riwaya, ayahs[0]?.text) && mushafLayout !== "mushaf" ? (
             <Bismillah />
           ) : null}
         </div>

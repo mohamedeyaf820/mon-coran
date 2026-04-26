@@ -1,6 +1,7 @@
 import React from "react";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
+import { shouldShowStandaloneBasmala } from "../../utils/quranUtils";
 import Bismillah from "../Quran/Bismillah";
 import CleanPageView from "../Quran/CleanPageView";
 import SurahHeader from "../Quran/SurahHeader";
@@ -92,7 +93,7 @@ export default function JuzMode({
               {!isQCF4 && group.ayahs[0]?.numberInSurah === 1 ? (
                 <>
                   <SurahHeader surahNum={group.surah} lang={lang} />
-                  {group.surah !== 1 && group.surah !== 9 ? <Bismillah /> : null}
+                  {shouldShowStandaloneBasmala(group.surah, riwaya, group.ayahs[0]?.text) ? <Bismillah /> : null}
                   <div className="play-surah-bar mt-3 mb-2 flex justify-center">
                     <button
                       className="btn-play-surah"

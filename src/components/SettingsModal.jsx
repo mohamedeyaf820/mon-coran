@@ -37,6 +37,7 @@ import {
   removeSurahCacheForReciter,
 } from "../services/downloadService";
 import {
+  getDefaultReciterId,
   getReciter,
   getRecitersByRiwaya,
   isSurahOnlyReciter,
@@ -1073,10 +1074,6 @@ export default function SettingsModal() {
       currentPlayingAyah: null,
       currentAyah: 1,
     };
-    // Warsh doesn't support page mode
-    if (nextRiwaya === "warsh" && displayMode === "page") {
-      patch.displayMode = "surah";
-    }
     set(patch);
   };
 
@@ -1440,10 +1437,10 @@ export default function SettingsModal() {
                   <p className="sm-hint">
                     {riwaya === "warsh"
                       ? lang === "fr"
-                        ? "Mode page indisponible pour Warsh (QCF4 par sourate)"
+                        ? "Les modes sourate, page Mushaf et juz utilisent les donnees Warsh synchronisees."
                         : lang === "ar"
                           ? "وضع الصفحة غير متاح لورش"
-                          : "Page mode unavailable for Warsh"
+                          : "Surah, Mushaf page, and juz modes use synchronized Warsh data."
                       : lang === "fr"
                         ? "Choisissez comment le Coran est affiché"
                         : lang === "ar"
@@ -1465,7 +1462,6 @@ export default function SettingsModal() {
                         fr: "Mushaf",
                         ar: "مصحف",
                         en: "Mushaf page",
-                        disabled: riwaya === "warsh",
                       },
                       {
                         id: "juz",
@@ -2089,7 +2085,7 @@ export default function SettingsModal() {
                       <button
                         type="button"
                         onClick={handleDownloadCurrentSurah}
-                        disabled={offlineBusy || isSurahStreamReciter}
+                        disabled={offlineBusy}
                         className="rounded-xl border border-emerald-300/25 bg-emerald-400/10 px-3 py-2 text-xs font-semibold text-emerald-50 transition hover:bg-emerald-400/18 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {lang === "fr"
@@ -2101,7 +2097,7 @@ export default function SettingsModal() {
                       <button
                         type="button"
                         onClick={handleDownloadRecentPack}
-                        disabled={offlineBusy || isSurahStreamReciter}
+                        disabled={offlineBusy}
                         className="rounded-xl border border-sky-300/25 bg-sky-400/10 px-3 py-2 text-xs font-semibold text-sky-50 transition hover:bg-sky-400/18 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         {lang === "fr"
@@ -2113,7 +2109,7 @@ export default function SettingsModal() {
                       <button
                         type="button"
                         onClick={handleRemoveCurrentOffline}
-                        disabled={offlineBusy || !currentOfflineEntry || isSurahStreamReciter}
+                        disabled={offlineBusy || !currentOfflineEntry}
                         className="rounded-xl border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-semibold text-[var(--text-secondary)] transition hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {lang === "fr"
@@ -2126,10 +2122,10 @@ export default function SettingsModal() {
                     {isSurahStreamReciter && (
                       <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs leading-relaxed text-[var(--text-secondary)]">
                         {lang === "fr"
-                          ? "Le hors ligne ayah par ayah n'est pas encore disponible pour les récitateurs Warsh en sourate complète."
+                          ? "Le hors ligne met en cache le flux complet de la sourate pour ce recitateur."
                           : lang === "ar"
-                            ? "التحميل دون اتصال آية بآية غير متاح بعد لقراء ورش بصيغة السورة كاملة."
-                            : "Ayah-by-ayah offline download is not available yet for full-surah Warsh reciters."}
+                            ? "سيحفظ وضع دون اتصال تدفق السورة الكامل لهذا القارئ."
+                            : "Offline mode caches the full-surah stream for this reciter."}
                       </div>
                     )}
                     {offlineProgress && (
@@ -2288,7 +2284,6 @@ export default function SettingsModal() {
                     max={500}
                     step={10}
                     value={syncOffsetMs}
-                    disabled={isSurahStreamReciter}
                     onChange={(e) => {
                       const value = Math.max(
                         -500,

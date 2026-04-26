@@ -26,6 +26,18 @@ const BASMALA_PATTERNS = [
     /^بسم الله الرحمن الرحيم\s*/,
 ];
 
+export function startsWithBasmala(text) {
+    const input = String(text || '').replace(/[\u200F\u200E]/g, '');
+    return BASMALA_PATTERNS.some((pattern) => pattern.test(input));
+}
+
+export function shouldShowStandaloneBasmala(surahNum, riwaya = 'hafs', firstAyahText = '') {
+    const surahNumber = Number(surahNum);
+    if (!surahNumber || surahNumber === 9) return false;
+    if (surahNumber !== 1) return true;
+    return riwaya === 'warsh' && !startsWithBasmala(firstAyahText);
+}
+
 /**
  * Strips the Basmala from the beginning of a verse text.
  */

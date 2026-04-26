@@ -4,6 +4,8 @@
  * Optimized: AbortController, timeout, request deduplication, IndexedDB persistent cache.
  */
 
+import { WARSH_DATA_URL } from '../constants/warshSource';
+
 // Direct call to AlQuran Cloud public API (supports CORS).
 // No backend proxy needed — the app is a pure static SPA.
 const BASE = 'https://api.alquran.cloud/v1';
@@ -11,7 +13,7 @@ const FETCH_TIMEOUT = 8000; // 8s timeout for API requests
 
 const EDITIONS = {
   hafs: ['quran-uthmani', 'quran-uthmani-min', 'quran-simple'],
-  // Warsh text is now handled natively via QCF4 fonts (warshService.js).
+  // Warsh text is handled by warshService.js from the shared JSON source.
   // This fallback is only used if the local Warsh data fails to load.
   warsh: ['quran-uthmani', 'quran-uthmani-min'],
 };
@@ -700,8 +702,8 @@ export function prefetchInitialData(surahNum, riwaya, translationLang = 'fr') {
     const transUrl = `${BASE}/surah/${surahNum}/${transEdition}`;
 
     if (riwaya === 'warsh') {
-      // Prefetch warsh.json (local, fast) + Hafs text (for karaoke) + translation
-      fetch('/data/warsh.json', { priority: 'high' }).catch(() => { });
+      // Prefetch the Warsh dataset from the shared remote source + Hafs text (for karaoke) + translation
+      fetch(WARSH_DATA_URL, { priority: 'high' }).catch(() => { });
       // Also warm the Hafs text cache for karaoke word weighting
       const editions = EDITIONS.hafs;
       fetchJSON(`${BASE}/surah/${surahNum}/${editions[0]}`).catch(() => { });

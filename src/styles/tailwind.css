@@ -300,6 +300,23 @@ html {
     font-display: swap;
 }
 
+/* ---------- QCF4 Base Fonts (from typst-quran-package) ---------- */
+@font-face {
+    font-family: "QCF4_Hafs_01_W";
+    src: url("/fonts/QCF4_Hafs_01_W.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "QCF4_Warsh_01_W";
+    src: url("/fonts/QCF4_Warsh_01_W.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
 /* ---------- ME Quran V2 Ã¢â‚¬â€ Digital Font (quranwbw.com) ---------- */
 @font-face {
     font-family: "ME Quran";
@@ -509,8 +526,13 @@ html {
     
     /* â”€â”€â”€ Typography â”€â”€â”€ */
     --font-ui: "Figtree", "Inter", "Outfit", "Cairo", system-ui, -apple-system, sans-serif;
-    --font-quran: "KFGQPC Uthmanic Script HAFS", "ME Quran", "Scheherazade New", serif;
-    --font-surah: "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Scheherazade New", "Amiri", serif;
+    --font-quran-hafs: "QCF4_Hafs_01_W", "KFGQPC Uthmanic Script HAFS", "ME Quran", "Scheherazade New", serif;
+    --font-quran-warsh: "QCF4_Warsh_01_W", "KFGQPC Uthmanic Script HAFS", "ME Quran", "Scheherazade New", serif;
+    --font-quran: var(--font-quran-hafs);
+    --font-quran-tajweed: var(--font-quran);
+    --font-surah-hafs: "QCF4_Hafs_01_W", "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Scheherazade New", "Amiri", serif;
+    --font-surah-warsh: "QCF4_Warsh_01_W", "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Scheherazade New", "Amiri", serif;
+    --font-surah: var(--font-surah-hafs);
     
     --line-height-quran: 2.2;
     --line-height-ui: 1.6;
@@ -18265,10 +18287,8 @@ button:focus:not(:focus-visible) {
 
 /* --- 1. Variables de police arabe (override root) --- */
 :root {
-    --font-surah:
-        "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", serif;
-    --font-home-ar:
-        "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", serif;
+    --font-surah: var(--font-surah-hafs);
+    --font-home-ar: var(--font-quran-hafs);
 }
 
 /* --- 2. Amiri sur tous les noms arabes de l'interface --- */
@@ -22751,8 +22771,8 @@ html {
     );
     --ayah-stop-text: color-mix(in srgb, var(--text-primary) 72%, #5b3f10 28%);
     --font-ui: var(--ux-font-ui);
-    --font-quran:
-        "KFGQPC Uthmanic Script HAFS", "ME Quran", "Noto Naskh Arabic", serif;
+    --font-quran: var(--font-quran-hafs);
+    --font-quran-tajweed: var(--font-quran);
 }
 
 [data-theme="light"] {
@@ -23057,6 +23077,18 @@ body {
             color-mix(in srgb, var(--bg-secondary) 94%, transparent 6%)
         );
     box-shadow: var(--ux-shadow-panel);
+}
+
+.app-root .quran-display--hafs {
+    --font-quran: var(--font-quran-hafs);
+    --font-surah: var(--font-surah-hafs);
+    --font-quran-tajweed: var(--font-quran-hafs);
+}
+
+.app-root .quran-display--warsh {
+    --font-quran: var(--font-quran-warsh);
+    --font-surah: var(--font-surah-warsh);
+    --font-quran-tajweed: var(--font-quran-warsh);
 }
 
 .app-root .quran-display.quran-display--platform,
@@ -30156,6 +30188,25 @@ body {
     animation: none !important;
     text-shadow: none !important;
     filter: none !important;
+}
+
+.waqf-marker {
+    display: inline-block;
+    margin-inline: 0.03em;
+    line-height: 1;
+    opacity: 0.92;
+}
+
+.quran-display--hafs .waqf-marker,
+.quran-display--hafs .wbw-marker-token,
+.quran-display--hafs .wbw-qcf4-marker {
+    font-family: "QCF4_Hafs_01_W", var(--font-quran), serif;
+}
+
+.quran-display--warsh .waqf-marker,
+.quran-display--warsh .wbw-marker-token,
+.quran-display--warsh .wbw-qcf4-marker {
+    font-family: "QCF4_Warsh_01_W", var(--font-quran), serif;
 }
 
 .wbw-marker-token::after,

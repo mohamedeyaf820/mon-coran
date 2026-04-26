@@ -25,7 +25,8 @@ import {
 import { runWhenIdle } from "../utils/idleUtils";
 import { THEMATIC_STATIONS } from "../services/StationService";
 import {
-  buildStationPlaylist,
+  buildStationPlaylistForRiwaya,
+  buildSurahPlaylistForRiwaya,
   playPlaylistWithReciter,
   reciterDownloadUrl,
 } from "../services/RecitationService";
@@ -33,7 +34,7 @@ import { getResumeState, setResumeState } from "../stores/AudioQueueStore";
 
 import PlatformLogo from "./PlatformLogo";
 import Footer from "./Footer";
-import { buildSurahAudioPlaylist } from "../utils/audioPlaylist";
+import { buildAudioPlaylistForSurah } from "../utils/audioPlaylist";
 import ReciterDetailPage from "./recitation/ReciterDetailPage";
 
 const HOME_INITIAL_SURAHS = 36;
@@ -825,7 +826,7 @@ export default function HomePage({ lowPerfMode = false }) {
   }, []);
 
   const playFromHome = useCallback(
-    (surahNum) => {
+    async (surahNum) => {
       const safeId = ensureReciterForRiwaya(state.reciter, state.riwaya);
       const rec = getReciter(safeId, state.riwaya);
       if (!rec) return;
@@ -835,15 +836,19 @@ export default function HomePage({ lowPerfMode = false }) {
         !isWarshVerifiedReciter(rec)
       )
         return;
-      const items = buildSurahAudioPlaylist(surahNum);
-      if (items.length === 0) return;
-      set({
-        displayMode: "surah",
-        currentSurah: surahNum,
-        currentAyah: 1,
-      });
-      audioService.loadPlaylist(items, rec.cdn, rec.cdnType || "islamic");
-      audioService.play();
+      try {
+        const items = await buildAudioPlaylistForSurah(surahNum, state.riwaya);
+        if (items.length === 0) return;
+        set({
+          displayMode: "surah",
+          currentSurah: surahNum,
+          currentAyah: 1,
+        });
+        audioService.loadPlaylist(items, rec.cdn, rec.cdnType || "islamic");
+        audioService.play();
+      } catch (error) {
+        console.error("Home play error:", error);
+      }
     },
     [state.reciter, state.riwaya, state.warshStrictMode, set],
   );
@@ -897,54 +902,69 @@ export default function HomePage({ lowPerfMode = false }) {
   }, []);
 
   const playSurahForReciter = useCallback(
-    (surahNum, targetReciter) => {
+    async (surahNum, targetReciter) => {
       if (!targetReciter) return;
-      const items = buildSurahAudioPlaylist(surahNum);
-      if (!items.length) return;
-      const played = playPlaylistWithReciter({
-        items,
-        reciter: targetReciter,
-        set,
-      });
-      if (!played) return;
-      persistQueueAndResume(items, targetReciter, "reciter-surah");
+      try {
+        const items = await buildSurahPlaylistForRiwaya(surahNum, riwaya);
+        if (!items.length) return;
+        const played = playPlaylistWithReciter({
+          items,
+          reciter: targetReciter,
+          set,
+        });
+        if (!played) return;
+        persistQueueAndResume(items, targetReciter, "reciter-surah");
+      } catch (error) {
+        console.error("Reciter surah play error:", error);
+      }
     },
-    [persistQueueAndResume, set],
+    [persistQueueAndResume, riwaya, set],
   );
 
   const playReciterRadio = useCallback(
-    (targetReciter) => {
+    async (targetReciter) => {
       if (!targetReciter) return;
-      const stationItems = buildStationPlaylist([1, 36, 55, 67, 18]);
-      if (!stationItems.length) return;
-      const played = playPlaylistWithReciter({
-        items: stationItems,
-        reciter: targetReciter,
-        set,
-      });
-      if (!played) return;
-      persistQueueAndResume(stationItems, targetReciter, "reciter-radio");
+      try {
+        const stationItems = await buildStationPlaylistForRiwaya(
+          [1, 36, 55, 67, 18],
+          riwaya,
+        );
+        if (!stationItems.length) return;
+        const played = playPlaylistWithReciter({
+          items: stationItems,
+          reciter: targetReciter,
+          set,
+        });
+        if (!played) return;
+        persistQueueAndResume(stationItems, targetReciter, "reciter-radio");
+      } catch (error) {
+        console.error("Reciter radio play error:", error);
+      }
     },
-    [persistQueueAndResume, set],
+    [persistQueueAndResume, riwaya, set],
   );
 
   const playStation = useCallback(
-    (station) => {
+    async (station) => {
       const fallbackId = ensureReciterForRiwaya(state.reciter, riwaya);
       const stationReciter =
         availableReciters.find((r) => r.id === station.reciterId) ||
         availableReciters.find((r) => r.id === fallbackId) ||
         availableReciters[0];
       if (!stationReciter) return;
-      const items = buildStationPlaylist(station.surahs);
-      if (!items.length) return;
-      const played = playPlaylistWithReciter({
-        items,
-        reciter: stationReciter,
-        set,
-      });
-      if (!played) return;
-      persistQueueAndResume(items, stationReciter, "station");
+      try {
+        const items = await buildStationPlaylistForRiwaya(station.surahs, riwaya);
+        if (!items.length) return;
+        const played = playPlaylistWithReciter({
+          items,
+          reciter: stationReciter,
+          set,
+        });
+        if (!played) return;
+        persistQueueAndResume(items, stationReciter, "station");
+      } catch (error) {
+        console.error("Station play error:", error);
+      }
     },
     [availableReciters, persistQueueAndResume, riwaya, set, state.reciter],
   );

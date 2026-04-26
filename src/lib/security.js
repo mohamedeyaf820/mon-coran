@@ -22,6 +22,7 @@ const ALLOWED_EXTERNAL_HOSTS = new Set([
   "x.com",
   "twitter.com",
   "quran.com",
+  "raw.githubusercontent.com",
   "alquran.cloud",
   "api.alquran.cloud",
   "fonts.qurancomplex.gov.sa",

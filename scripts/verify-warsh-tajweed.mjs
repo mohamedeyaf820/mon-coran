@@ -1,15 +1,20 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { getPerWordTajweedColors } from '../src/data/tajwidRules.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const warshPath = path.join(__dirname, '..', 'public', 'data', 'warsh.json');
-const warsh = JSON.parse(fs.readFileSync(warshPath, 'utf-8'));
+import { WARSH_DATA_URL } from '../src/constants/warshSource.js';
 
 const TEST_SURAHS = [1, 2, 18, 36, 55, 67, 78, 93, 112, 114];
+
+async function fetchWarshGrouped() {
+  const response = await fetch(WARSH_DATA_URL);
+  if (!response.ok) throw new Error(`Warsh dataset HTTP ${response.status}`);
+  const flatData = await response.json();
+
+  const grouped = Array.from({ length: 114 }, () => []);
+  for (const ayah of flatData) {
+    if (!ayah || ayah.sura_no < 1 || ayah.sura_no > 114 || ayah.aya_no < 1) continue;
+    grouped[ayah.sura_no - 1][ayah.aya_no - 1] = ayah.aya_text || '';
+  }
+  return grouped;
+}
 
 async function fetchHafsSurah(surah) {
   const u = `https://api.alquran.cloud/v1/surah/${surah}/quran-uthmani`;
@@ -23,6 +28,7 @@ async function fetchHafsSurah(surah) {
 (async () => {
   let emptyMappings = 0;
   let checked = 0;
+  const warsh = await fetchWarshGrouped();
 
   for (const surahNum of TEST_SURAHS) {
     const hafsAyahs = await fetchHafsSurah(surahNum);

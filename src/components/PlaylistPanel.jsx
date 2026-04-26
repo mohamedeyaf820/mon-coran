@@ -11,6 +11,10 @@ import {
 import { getSurah } from "../data/surahs";
 import audioService from "../services/audioService";
 import { getReciter } from "../data/reciters";
+import {
+  buildAudioPlaylistForSurah,
+  normalizeAyahsForAudioPlaylist,
+} from "../utils/audioPlaylist";
 
 export default function PlaylistPanel() {
   const { state, dispatch, set } = useApp();
@@ -117,22 +121,33 @@ export default function PlaylistPanel() {
     loadPlaylists();
   };
 
-  const handlePlay = (playlist) => {
+  const handlePlay = async (playlist) => {
     if (!playlist || playlist.ayahs.length === 0) return;
     const reciterObj = getReciter(reciter, riwaya);
     const cdnPath = reciterObj?.cdn || reciter;
     const cdnType = reciterObj?.cdnType || "islamic";
 
-    // Build a playlist for audioService
-    // Global ayah numbers are required by some CDN modes.
-    // We compute them from canonical cumulative surah offsets.
-    const ayahsForAudio = playlist.ayahs.map((a) => ({
-      surah: a.surah,
-      ayah: a.ayah,
-      numberInSurah: a.ayah,
-      number: computeGlobalAyahNumber(a.surah, a.ayah),
-      text: a.text || "",
-    }));
+    let ayahsForAudio = [];
+    try {
+      ayahsForAudio =
+        riwaya === "warsh"
+          ? (
+              await Promise.all(
+                playlist.ayahs.map(async (a) => {
+                  const surahItems = await buildAudioPlaylistForSurah(a.surah, riwaya);
+                  return (
+                    surahItems.find((item) => item.numberInSurah === a.ayah) || null
+                  );
+                }),
+              )
+            ).filter(Boolean)
+          : normalizeAyahsForAudioPlaylist(playlist.ayahs);
+    } catch (error) {
+      console.error("Playlist audio build error:", error);
+      return;
+    }
+
+    if (!ayahsForAudio.length) return;
 
     audioService.loadPlaylist(ayahsForAudio, cdnPath, cdnType);
     audioService.play();
@@ -430,23 +445,4 @@ export default function PlaylistPanel() {
       </div>
     </div>
   );
-}
-
-/* ── Utility: compute approximate global ayah number ── */
-// Surah start positions (cumulative ayah counts minus 1)
-const SURAH_AYAH_STARTS = [
-  0, 1, 8, 35, 91, 121, 166, 207, 283, 296, 310, 334, 343, 396, 451, 462, 473,
-  483, 494, 522, 530, 544, 572, 597, 612, 627, 636, 662, 683, 704, 729, 750,
-  773, 796, 819, 852, 883, 915, 954, 987, 1013, 1047, 1075, 1108, 1128, 1160,
-  1190, 1204, 1234, 1252, 1270, 1303, 1320, 1362, 1389, 1412, 1473, 1510, 1553,
-  1575, 1596, 1610, 1621, 1633, 1645, 1658, 1670, 1699, 1721, 1750, 1764, 1793,
-  1821, 1841, 1862, 1898, 1931, 1981, 2027, 2073, 2082, 2110, 2136, 2155, 2174,
-  2187, 2197, 2213, 2239, 2265, 2284, 2298, 2313, 2333, 2348, 2353, 2358, 2363,
-  2376, 2384, 2392, 2400, 2407, 2413, 2418, 2424, 2429, 2433, 2437, 2440, 2444,
-  2449, 2455, 2461,
-];
-
-function computeGlobalAyahNumber(surah, ayah) {
-  if (surah < 1 || surah > 114) return ayah;
-  return (SURAH_AYAH_STARTS[surah - 1] || 0) + ayah;
 }

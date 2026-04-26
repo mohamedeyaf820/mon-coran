@@ -17,12 +17,8 @@ export default function Sidebar() {
     riwaya,
   } = state;
 
-  const availableTabs = riwaya === "warsh" ? ["surah", "juz"] : ["surah", "juz", "page"];
+  const availableTabs = ["surah", "juz", "page"];
   const [tab, setTab] = useState("surah");
-
-  useEffect(() => {
-    if (riwaya === "warsh" && tab === "page") setTab("surah");
-  }, [riwaya, tab]);
 
   const [filter, setFilter] = useState("");
   const [pageInput, setPageInput] = useState("");

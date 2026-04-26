@@ -7,7 +7,7 @@ import {
   getSurahText,
   getSurahTranslation,
 } from "../../services/quranAPI";
-import { getWarshJuzVerses, preloadWarshSurah } from "../../services/warshService";
+import { getWarshJuzVerses, getWarshPageVerses, preloadWarshSurah } from "../../services/warshService";
 
 export default function useQuranDisplayPrefetch({
   currentJuz,
@@ -46,7 +46,7 @@ export default function useQuranDisplayPrefetch({
       if (displayMode === "page") {
         [currentPage - 1, currentPage + 1].forEach((page) => {
           if (page < 1 || page > 604) return;
-          getPage(page, "hafs").catch(() => {});
+          (riwaya === "warsh" ? getWarshPageVerses(page) : getPage(page, riwaya)).catch(() => {});
           if (showTranslation) getPageTranslation(page, translationLang).catch(() => {});
         });
       }

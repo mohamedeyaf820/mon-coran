@@ -1,5 +1,9 @@
 import audioService, { AudioService } from "./audioService";
-import { buildSurahAudioPlaylist } from "../utils/audioPlaylist";
+import {
+  buildAudioPlaylistForSurah,
+  buildAudioPlaylistForSurahs,
+  buildSurahAudioPlaylist,
+} from "../utils/audioPlaylist";
 
 const TRUSTED_MP3QURAN_HOST = /^server\d+\.mp3quran\.net$/i;
 
@@ -19,6 +23,19 @@ function isSafeReciterDownloadUrl(url) {
 
 export function buildStationPlaylist(surahNumbers = []) {
   return surahNumbers.flatMap((num) => buildSurahAudioPlaylist(num));
+}
+
+export async function buildStationPlaylistForRiwaya(
+  surahNumbers = [],
+  riwaya = "hafs",
+) {
+  if (riwaya === "hafs") return buildStationPlaylist(surahNumbers);
+  return buildAudioPlaylistForSurahs(surahNumbers, riwaya);
+}
+
+export async function buildSurahPlaylistForRiwaya(surahNum, riwaya = "hafs") {
+  if (riwaya === "hafs") return buildSurahAudioPlaylist(surahNum);
+  return buildAudioPlaylistForSurah(surahNum, riwaya);
 }
 
 export function reciterDownloadUrl(targetReciter, surahNum) {

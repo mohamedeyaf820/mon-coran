@@ -7,6 +7,7 @@ export default function useQuranDisplayView({
   fontFamily,
   isQCF4,
   quranFontSize,
+  riwaya,
   syncKey,
   syncOffsetsMs,
 }) {
@@ -18,7 +19,7 @@ export default function useQuranDisplayView({
     return window.matchMedia("(max-width: 420px)").matches;
   });
 
-  const quranFontCss = resolveFontFamily(fontFamily);
+  const quranFontCss = resolveFontFamily(fontFamily, riwaya);
   const userSyncOffsetMs = Math.max(
     -500,
     Math.min(500, Number(syncOffsetsMs?.[syncKey] ?? 0)),

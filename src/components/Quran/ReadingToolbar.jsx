@@ -52,7 +52,6 @@ export default function ReadingToolbar({ surahNum, onPlaySurah, preparingSurah }
     showWordByWord,
     memMode,
     mushafLayout,
-    riwaya,
   } = state;
 
   const toggleTranslation = () => set({ showTranslation: !showTranslation });
@@ -146,8 +145,7 @@ export default function ReadingToolbar({ surahNum, onPlaySurah, preparingSurah }
           <span className="hidden md:inline">Tajweed</span>
         </ToolbarButton>
 
-        {riwaya !== "warsh" && (
-          <ToolbarButton
+        <ToolbarButton
             active={showWordByWord}
             onClick={toggleWBW}
             title={lang === "fr" ? "Mot à mot" : "Word by Word"}
@@ -161,8 +159,7 @@ export default function ReadingToolbar({ surahNum, onPlaySurah, preparingSurah }
             <span className="md:hidden">
               {lang === "fr" ? "M-à-M" : "WbW"}
             </span>
-          </ToolbarButton>
-        )}
+        </ToolbarButton>
       </div>
 
       <div className="reader-toolbar__right flex items-center gap-[6px] max-md:gap-1">

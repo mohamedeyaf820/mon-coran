@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 import { toAr, getSurah } from "../../data/surahs";
 import { getJuzForAyah } from "../../data/juz";
+import { shouldShowStandaloneBasmala } from "../../utils/quranUtils";
 import MushafInlineHeader from "./MushafInlineHeader";
 import { getMushafFontClass, getRevelationBadge } from "./mushafInlineUtils";
 
@@ -33,9 +34,22 @@ export default function MushafInlineView({
   onAyahClick,
 }) {
   const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
-  const juzNum = useMemo(() => (ayahs.length > 0 ? getJuzForAyah(surahNum, ayahs[0].numberInSurah) : 1), [ayahs, surahNum]);
-  const juzNumEnd = useMemo(() => (ayahs.length > 0 ? getJuzForAyah(surahNum, ayahs[ayahs.length - 1].numberInSurah) : juzNum), [ayahs, surahNum, juzNum]);
-  const showBasmala = surahNum !== 1 && surahNum !== 9 && ayahs.length > 0 && ayahs[0].numberInSurah === 1;
+  const juzNum = useMemo(
+    () => (ayahs.length > 0 ? ayahs[0].juz || getJuzForAyah(surahNum, ayahs[0].numberInSurah) : 1),
+    [ayahs, surahNum],
+  );
+  const juzNumEnd = useMemo(
+    () =>
+      ayahs.length > 0
+        ? ayahs[ayahs.length - 1].juz ||
+          getJuzForAyah(surahNum, ayahs[ayahs.length - 1].numberInSurah)
+        : juzNum,
+    [ayahs, surahNum, juzNum],
+  );
+  const showBasmala =
+    shouldShowStandaloneBasmala(surahNum, riwaya, ayahs[0]?.text) &&
+    ayahs.length > 0 &&
+    ayahs[0].numberInSurah === 1;
   const surahNameAr = surahMeta?.ar || "";
   const displayName = lang === "ar" ? surahNameAr : lang === "fr" ? surahMeta?.fr || surahNameAr : surahMeta?.en || surahNameAr;
   const ayahCountLabel = surahMeta?.ayahs ?? "?";

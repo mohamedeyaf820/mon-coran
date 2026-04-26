@@ -59,7 +59,7 @@ export default function PageMode({
         {ayahs[0] ? (
           <span className={classes.pageHeaderSecondaryMetaClass}>
             {t("sidebar.juz", lang)}{" "}
-            {getJuzForAyah(ayahs[0].surah?.number, ayahs[0].numberInSurah)}
+            {ayahs[0].juz || getJuzForAyah(ayahs[0].surah?.number, ayahs[0].numberInSurah)}
           </span>
         ) : null}
         <span className={classes.riwayaBadgeClassName}>

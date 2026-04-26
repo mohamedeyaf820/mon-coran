@@ -7,58 +7,9 @@ import {
 import { stripBasmala } from "../../utils/quranUtils";
 import {
   getWarshJuzVerses,
+  getWarshPageVerses,
   getWarshSurahFormatted,
-  loadFontsForVerses,
-  loadWarshData,
 } from "../../services/warshService";
-
-async function enrichPageForWarsh(arabicData) {
-  try {
-    const warshJson = await loadWarshData();
-    const ayahs = (arabicData?.ayahs || []).map((ayah) => {
-      try {
-        const surahNumber = ayah.surah?.number;
-        const ayahNumber = ayah.numberInSurah;
-        const words = warshJson?.[surahNumber - 1]?.[ayahNumber - 1];
-        const validWords = Array.isArray(words)
-          ? words.filter(
-              (word) =>
-                word &&
-                typeof word === "object" &&
-                Number.isFinite(Number(word.p)) &&
-                Number.isFinite(Number(word.c)),
-            )
-          : [];
-
-        return validWords.length === 0
-          ? ayah
-          : {
-              ...ayah,
-              warshWords: validWords,
-              hafsText: ayah.text,
-              requestedRiwaya: "warsh",
-            };
-      } catch {
-        return ayah;
-      }
-    });
-
-    loadFontsForVerses(ayahs.map((ayah) => ayah.warshWords || [])).catch(() => {});
-    return {
-      ...arabicData,
-      ayahs,
-      isTextFallback: !ayahs.every((ayah) => ayah.warshWords?.length > 0),
-      isQCF4: ayahs.every((ayah) => ayah.warshWords?.length > 0),
-      requestedRiwaya: "warsh",
-    };
-  } catch {
-    return {
-      ...arabicData,
-      isTextFallback: true,
-      requestedRiwaya: "warsh",
-    };
-  }
-}
 
 export async function loadArabicData({
   currentJuz,
@@ -68,15 +19,14 @@ export async function loadArabicData({
   riwaya,
   signal,
 }) {
-  if (displayMode === "page") {
-    const pageData = await getPage(currentPage, "hafs", signal);
-    return riwaya === "warsh" ? enrichPageForWarsh(pageData) : pageData;
+  if (riwaya === "warsh") {
+    if (displayMode === "page") return getWarshPageVerses(currentPage);
+    if (displayMode === "juz") return getWarshJuzVerses(currentJuz);
+    return getWarshSurahFormatted(currentSurah);
   }
 
-  if (riwaya === "warsh") {
-    return displayMode === "juz"
-      ? getWarshJuzVerses(currentJuz)
-      : getWarshSurahFormatted(currentSurah);
+  if (displayMode === "page") {
+    return getPage(currentPage, riwaya, signal);
   }
 
   return displayMode === "juz"
@@ -109,8 +59,7 @@ export function assertWarshStrict({
   if (
     riwaya === "warsh" &&
     warshStrictMode &&
-    arabicData?.isTextFallback &&
-    displayMode !== "page"
+    arabicData?.isTextFallback
   ) {
     throw new Error(
       lang === "fr"
@@ -129,10 +78,15 @@ export function assertWarshStrict({
 
 export function loadHafsSupportData({
   currentJuz,
+  currentPage,
   currentSurah,
   displayMode,
   signal,
 }) {
+  if (displayMode === "page") {
+    return getPage(currentPage, "hafs", signal);
+  }
+
   return displayMode === "juz"
     ? getJuz(currentJuz, "hafs", signal)
     : getSurahText(currentSurah, "hafs", signal);

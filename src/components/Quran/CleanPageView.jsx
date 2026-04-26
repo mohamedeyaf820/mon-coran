@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { getSurah } from "../../data/surahs";
 import { useAppState } from "../../context/AppContext";
+import { shouldShowStandaloneBasmala } from "../../utils/quranUtils";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 import CleanPageTranslationPanel from "./CleanPageTranslationPanel";
 import {
@@ -28,7 +29,9 @@ export default function CleanPageView({
   const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
   const isDarkTheme = theme === "dark" || theme === "night-blue";
   const showBasmala =
-    surahNum !== 1 && surahNum !== 9 && ayahs.length > 0 && ayahs[0].numberInSurah === 1;
+    shouldShowStandaloneBasmala(surahNum, riwaya, ayahs[0]?.text) &&
+    ayahs.length > 0 &&
+    ayahs[0].numberInSurah === 1;
   const basmalaTranslation =
     showBasmala && lang !== "ar"
       ? lang === "fr"
