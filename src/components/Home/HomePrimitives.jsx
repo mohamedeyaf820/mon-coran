@@ -88,6 +88,8 @@ export const SurahCard = memo(function SurahCard({
   const primaryLabel = normalizeLatinSurahName(
     surah.en || surah.fr || surah.ar || "",
   );
+
+  console.log(surah)
   const secondaryLabel =
     lang === "fr"
       ? surah.fr || getSurahEnglishMeaning(surah.n)
@@ -251,24 +253,12 @@ export const SurahCard = memo(function SurahCard({
         </span>
       </div>
 
-      <span
-        className="text-[1.5rem] sm:text-[1.8rem] font-quran text-primary/80 group-hover:text-primary transition-colors ml-2 shrink-0"
-        dir="rtl"
-        lang="ar"
+      <div
+        className="shrink-0 font-surah-names text-[1.6rem] opacity-60 transition-opacity group-hover:opacity-100"
         aria-label={surah.ar}
-        title={surah.ar}
       >
-        <img
-          src={`https://static.quran.com/images/surah/symbols/sname_${surah.n}.svg`}
-          alt={surah.ar}
-          className="h-10 sm:h-12 invert dark:invert-0 opacity-80 group-hover:opacity-100"
-          onError={(e) => {
-            e.target.style.display = "none";
-            e.target.nextSibling.style.display = "block";
-          }}
-        />
-        <span style={{ display: "none" }}>{surah.ar}</span>
-      </span>
+        {surah.n > 9 ? "0" + surah.n : "00" + surah.n}
+      </div>
 
       <button
         className={cn(

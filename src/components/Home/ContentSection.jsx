@@ -96,7 +96,7 @@ export default function ContentSection({
   return (
     <section className="flex flex-col gap-6">
       {/* ── Barre d'actions sticky ──────────────────────────────────────── */}
-      <div className="sticky top-2 z-20 flex flex-col md:flex-row items-center gap-3 p-3 rounded-[1.18rem] bg-bg-card/90 border border-border/50 shadow-lg backdrop-blur-xl">
+      <div className=" z-20 flex flex-col md:flex-row items-center gap-3 p-3 rounded-[1.18rem] bg-bg-card/90 border border-border/50 shadow-lg backdrop-blur-xl">
         {/* Onglets */}
         <div className="flex items-center gap-1 p-1 rounded-xl bg-bg-secondary border border-border/50 shadow-sm overflow-x-auto w-full md:w-auto no-scrollbar">
           <button
