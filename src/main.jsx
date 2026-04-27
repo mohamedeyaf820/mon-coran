@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+
 import App from "./App";
 import { AppProvider } from "./context/AppContext";
 import "./styles/tailwind.css";
@@ -8,9 +9,8 @@ let fontAwesomeStylesPromise = null;
 
 function loadFontAwesomeStyles() {
   if (!fontAwesomeStylesPromise) {
-    fontAwesomeStylesPromise = import(
-      "@fortawesome/fontawesome-free/css/all.min.css"
-    ).catch(() => null);
+    fontAwesomeStylesPromise =
+      import("@fortawesome/fontawesome-free/css/all.min.css").catch(() => null);
   }
   return fontAwesomeStylesPromise;
 }
@@ -69,7 +69,10 @@ class ErrorBoundary extends React.Component {
             color: "var(--text-primary)",
           }}
         >
-          <h1 className="mb-4 text-xl font-semibold" style={{ color: "var(--danger, #ef4444)" }}>
+          <h1
+            className="mb-4 text-xl font-semibold"
+            style={{ color: "var(--danger, #ef4444)" }}
+          >
             Une erreur est survenue
           </h1>
           <p className="mb-4 text-sm" style={{ color: "var(--text-muted)" }}>
@@ -173,7 +176,9 @@ if ("serviceWorker" in navigator) {
       await Promise.all(
         regs
           .filter((r) => {
-            const scriptUrl = String(r.active?.scriptURL || r.installing?.scriptURL || "");
+            const scriptUrl = String(
+              r.active?.scriptURL || r.installing?.scriptURL || "",
+            );
             return scriptUrl.includes("/sw.js") || scriptUrl.includes("mushaf");
           })
           .map((r) => r.unregister()),

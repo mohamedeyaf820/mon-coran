@@ -9,10 +9,7 @@ import {
   decryptDataWithMeta,
   isEncryptionUnlocked,
 } from "./cryptoUtil";
-import {
-  bookmarkRecordSchema,
-  noteRecordSchema,
-} from "./storageValidation";
+import { bookmarkRecordSchema, noteRecordSchema } from "./storageValidation";
 
 function parseRecordOrNull(schema, value) {
   const result = schema.safeParse(value);
@@ -79,11 +76,7 @@ const SETTINGS_KEY = "mushaf-plus-settings";
 const VALID_LANGS = ["fr", "en"];
 const VALID_TRANSLATION_LANGS = ["fr", "en", "es", "de", "tr", "ur"];
 const VALID_WORD_TRANSLATION_LANGS = ["fr", "en"];
-const VALID_THEMES = [
-  "light",
-  "sepia",
-  "dark",
-];
+const VALID_THEMES = ["light", "sepia", "dark"];
 const LEGACY_THEME_MAP = {
   "premium-beige": "sepia",
   ocean: "dark",
@@ -96,39 +89,48 @@ const VALID_RIWAYAS = ["hafs", "warsh"];
 const VALID_DISPLAY_MODES = ["surah", "page", "juz"];
 const VALID_AUDIO_PLAYER_SKINS = ["orbit", "classic"];
 const VALID_FONTS = [
-  // Polices officielles mushaf (priorité)
+  // ── 8 polices premium soigneusement sélectionnées ──────────────────────────
+  // 1. Mushaf KFGQPC — police officielle du Mushaf de Médine (référence absolue)
+  "kfgqpc-uthman-taha-naskh",
+  // 2. Scheherazade New — Naskh académique, lisibilité maximale (SIL)
+  "scheherazade-new",
+  // 3. Amiri Quran — calligraphique élégant, idéal pour la lecture dévotionnelle
+  "amiri-quran",
+  // 4. Noto Naskh Arabic — clarté optimale sur écran, style Google Fonts
+  "noto-naskh-arabic",
+  // 5. Uthman Taha Naskh — style Madina, proche du Mushaf imprimé
+  "uthman-taha",
+  // 6. El Messiri — moderne et contemporain, excellent sur mobile
+  "el-messiri",
+  // 7. Rakkas — display expressif, idéal pour les titres et affiches
+  "rakkas",
+  // 8. Cairo — polyvalent, très lisible en petite taille
+  "cairo",
+  // ── Fallbacks legacy (migration des anciens paramètres utilisateurs) ────────
+  "scheherazade",
+  "me-quran",
+  // Anciens noms acceptés pour compatibilité
   "mushaf-1441h",
+  "mushaf-kfgqpc",
+  "mushaf-warsh",
   "mushaf-tajweed",
   "uthmanic-digital",
   "uthmanic-bold",
   "qalam-madinah",
   "qalam-hanafi",
-  "uthman-taha",
-  // Polices Naskh académiques
-  "scheherazade-new",
-  "amiri-quran",
   "amiri",
   "noto-naskh",
-  "noto-naskh-arabic",
   "lateef",
-  // Polices display
   "markazi-text",
-  "el-messiri",
-  "kfgqpc-uthman-taha-naskh",
   "reem-kufi",
   "aref-ruqaa",
-  "cairo",
   "harmattan",
   "mada",
   "tajawal",
   "lemonada",
   "jomhuria",
-  "rakkas",
   "marhey",
   "mirza",
-  // legacy fallbacks kept for migration
-  "scheherazade",
-  "me-quran",
 ];
 
 function sanitizeFavoriteReciters(input) {
@@ -139,13 +141,42 @@ function sanitizeFavoriteReciters(input) {
     .slice(0, 24);
 }
 
+function sanitizePinnedAyahs(input) {
+  if (!Array.isArray(input)) return [];
+
+  const seen = new Set();
+  return input
+    .map((item) => ({
+      surah: Math.max(1, Math.min(114, Number(item?.surah) || 1)),
+      ayah: Math.max(1, Math.min(286, Number(item?.ayah) || 1)),
+      number: Number.isFinite(Number(item?.number)) ? Number(item.number) : null,
+      text:
+        typeof item?.text === "string"
+          ? item.text.trim().slice(0, 1200)
+          : "",
+      surahName:
+        typeof item?.surahName === "string"
+          ? item.surahName.trim().slice(0, 120)
+          : "",
+    }))
+    .filter((item) => {
+      const key = `${item.surah}:${item.ayah}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 4);
+}
+
 function sanitizeSyncOffsetsMap(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     return {};
   }
 
   return Object.entries(input)
-    .filter(([key]) => typeof key === "string" && key.length > 0 && key.length <= 120)
+    .filter(
+      ([key]) => typeof key === "string" && key.length > 0 && key.length <= 120,
+    )
     .slice(0, 240)
     .reduce((acc, [key, value]) => {
       const numeric = Number(value);
@@ -205,7 +236,9 @@ function sanitizeReciterAvailabilityMap(input) {
     const lastSuccessAt = sanitizeTimestamp(value.lastSuccessAt);
     const cooldownUntil = sanitizeTimestamp(value.cooldownUntil);
     const lastError =
-      typeof value.lastError === "string" ? value.lastError.trim().slice(0, 160) : "";
+      typeof value.lastError === "string"
+        ? value.lastError.trim().slice(0, 160)
+        : "";
 
     if (
       failCount <= 0 &&
@@ -239,6 +272,11 @@ const DEFAULT_SETTINGS = {
   wordTranslationLang: "fr",
   showTranslation: true,
   showTajwid: true,
+  showWordByWord: false,
+  showTransliteration: true,
+  showWordTranslation: true,
+  translationReadingMode: false,
+  pinnedAyahs: [],
   displayMode: "surah", // 'surah' | 'page' | 'juz'
   mushafLayout: "list", // 'list' | 'mushaf'
   audioSpeed: 1,
@@ -297,6 +335,7 @@ export function getSettings() {
       ...parsed,
       syncOffsetsMs: sanitizeSyncOffsetsMap(parsed?.syncOffsetsMs),
       favoriteReciters: sanitizeFavoriteReciters(parsed?.favoriteReciters),
+      pinnedAyahs: sanitizePinnedAyahs(parsed?.pinnedAyahs),
       autoSelectFastestReciter:
         parsed?.autoSelectFastestReciter !== undefined
           ? Boolean(parsed.autoSelectFastestReciter)
@@ -321,8 +360,7 @@ export function getSettings() {
 // Sanitize et valide les settings avant sauvegarde
 function sanitizeSettings(settings) {
   const safeInput = settings && typeof settings === "object" ? settings : {};
-  const safeSyncOffsets =
-    sanitizeSyncOffsetsMap(safeInput.syncOffsetsMs);
+  const safeSyncOffsets = sanitizeSyncOffsetsMap(safeInput.syncOffsetsMs);
 
   return {
     lang: VALID_LANGS.includes(safeInput.lang) ? safeInput.lang : "fr",
@@ -403,6 +441,11 @@ function sanitizeSettings(settings) {
       safeInput.showWordTranslation !== undefined
         ? Boolean(safeInput.showWordTranslation)
         : true,
+    translationReadingMode:
+      safeInput.translationReadingMode !== undefined
+        ? Boolean(safeInput.translationReadingMode)
+        : false,
+    pinnedAyahs: sanitizePinnedAyahs(safeInput.pinnedAyahs),
     showHome:
       safeInput.showHome !== undefined ? Boolean(safeInput.showHome) : true,
     showDuas:
