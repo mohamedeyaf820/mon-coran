@@ -5,7 +5,7 @@ function Panel({ children, isRtl }) {
   return (
     <div
       className={cn(
-        "mt-[0.18rem] flex flex-col gap-[0.62rem] rounded-[0.74rem] border border-[rgba(var(--primary-rgb),0.18)] bg-[color-mix(in_srgb,rgba(var(--primary-rgb),0.05)_48%,transparent)] py-[0.58rem] [font-family:var(--font-ui)] max-[640px]:rounded-[0.64rem] max-[640px]:py-[0.5rem] max-[560px]:landscape:gap-[0.42rem] max-[560px]:landscape:py-[0.44rem]",
+        "rd-supplement-panel mt-[0.18rem] flex flex-col gap-[0.62rem] rounded-[0.74rem] border border-[rgba(var(--primary-rgb),0.18)] bg-[color-mix(in_srgb,rgba(var(--primary-rgb),0.05)_48%,transparent)] py-[0.58rem] [font-family:var(--font-ui)] max-[640px]:rounded-[0.64rem] max-[640px]:py-[0.5rem] max-[560px]:landscape:gap-[0.42rem] max-[560px]:landscape:py-[0.44rem]",
         isRtl
           ? "pl-[0.72rem] pr-[0.76rem] [border-inline-start:0] [border-inline-end:2px_solid_rgba(var(--primary-rgb),0.24)] max-[640px]:pl-[0.52rem] max-[640px]:pr-[0.62rem] max-[560px]:landscape:pl-[0.5rem] max-[560px]:landscape:pr-[0.6rem]"
           : "pl-[0.76rem] pr-[0.72rem] [border-inline-start:2px_solid_rgba(var(--primary-rgb),0.28)] max-[640px]:pl-[0.62rem] max-[640px]:pr-[0.56rem] max-[560px]:landscape:pl-[0.6rem] max-[560px]:landscape:pr-[0.54rem]",

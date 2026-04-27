@@ -1,14 +1,15 @@
 import React from "react";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
+import { cn } from "../../lib/utils";
 import { shouldShowStandaloneBasmala } from "../../utils/quranUtils";
 import Bismillah from "../Quran/Bismillah";
 import CleanPageView from "../Quran/CleanPageView";
+import ReadingToolbar from "../Quran/ReadingToolbar";
 import SurahHeader from "../Quran/SurahHeader";
 import AyahActionsModal from "./AyahActionsModal";
 import AyahList from "./AyahList";
 import ModeNavigation from "./ModeNavigation";
-import ModeToggleBar from "./ModeToggleBar";
 import { modePaneShellClass } from "./displayClasses";
 
 export default function JuzMode({
@@ -17,7 +18,6 @@ export default function JuzMode({
   classes,
   currentJuz,
   currentPlayingAyah,
-  getMushafLayoutButtonClass,
   getTranslationForAyah,
   isQCF4,
   lang,
@@ -51,6 +51,7 @@ export default function JuzMode({
         ayah.number === activeAyah || ayah.numberInSurah === activeAyah,
     );
   const activeAyahData = activeAyahEntry?.ayah;
+  const firstSurah = surahGroups[0]?.surah;
 
   return (
     <div
@@ -58,28 +59,40 @@ export default function JuzMode({
       aria-label={t("settings.juzMode", lang)}
       className={`quran-mode-pane quran-mode-pane--juz ${modePaneShellClass}`}
     >
-      <div className={classes.pageHeaderBarClass}>
-        <span className={classes.pageHeaderPrimaryMetaClass}>
-          <i className={`fas fa-book-open ${classes.pageHeaderLeadIconClass}`}></i>
-          {t("sidebar.juz", lang)} {lang === "ar" ? toAr(currentJuz) : currentJuz}
-        </span>
-        <span className={classes.riwayaBadgeClassName}>
-          {showRiwayaStar ? <i className="fas fa-star text-[0.62rem]"></i> : null}
+      {/* ── En-tête de Juz — style Quran.com ── */}
+      <div className="flex items-center justify-between px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] mb-4">
+        <div className="flex items-center gap-2">
+          <i className="fas fa-book-open text-[var(--primary)] text-sm" />
+          <span className="font-[var(--font-ui)] text-sm font-bold text-[var(--text-primary)]">
+            {t("sidebar.juz", lang)}{" "}
+            {lang === "ar" ? toAr(currentJuz) : currentJuz} / 30
+          </span>
+        </div>
+
+        {/* Badge riwaya */}
+        <span
+          className={cn(
+            "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.65rem] font-bold tracking-wide",
+            riwaya === "warsh"
+              ? "bg-[rgba(212,168,32,0.12)] text-[var(--gold,#b8860b)] border border-[rgba(212,168,32,0.3)]"
+              : "bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] border border-[rgba(var(--primary-rgb),0.2)]",
+          )}
+        >
+          {showRiwayaStar && <i className="fas fa-star text-[0.55rem]" />}
           {riwaya === "warsh" ? "WARSH" : "HAFS"}
         </span>
       </div>
-      <ModeToggleBar
-        className={classes.mushafToggleBarClass}
-        separatorClassName={classes.mushafToggleSeparatorClass}
-        getButtonClassName={getMushafLayoutButtonClass}
-        lang={lang}
-        mushafLayout={mushafLayout}
-        memMode={memMode}
-        showWordByWord={showWordByWord}
-        onToggleWordByWord={onToggleWordByWord}
-        onToggleMushaf={onToggleMushaf}
-        onToggleMemorization={onToggleMemorization}
+
+      {/* ── Barre toggle simplifiée ── */}
+      <ReadingToolbar
+        contextLabel={`Juz ${lang === "ar" ? toAr(currentJuz) : currentJuz}`}
+        onPlay={() => firstSurah && onPlaySpecificSurah(firstSurah)}
+        playLabel={lang === "fr" ? "Ecouter le juz" : "Listen juz"}
+        preparingSurah={preparingSurah}
+        surahNum={firstSurah}
       />
+
+      {/* ── Contenu principal ── */}
       {mushafLayout === "mushaf" ? (
         <>
           {surahGroups.map((group, index) => (
@@ -115,7 +128,13 @@ export default function JuzMode({
               {!isQCF4 && group.ayahs[0]?.numberInSurah === 1 ? (
                 <>
                   <SurahHeader surahNum={group.surah} lang={lang} />
-                  {shouldShowStandaloneBasmala(group.surah, riwaya, group.ayahs[0]?.text) ? <Bismillah /> : null}
+                  {shouldShowStandaloneBasmala(
+                    group.surah,
+                    riwaya,
+                    group.ayahs[0]?.text,
+                  ) ? (
+                    <Bismillah />
+                  ) : null}
                   <div className="play-surah-bar mt-3 mb-2 flex justify-center">
                     <button
                       className="btn-play-surah"
@@ -128,7 +147,7 @@ export default function JuzMode({
                       <span>
                         {preparingSurah === group.surah
                           ? lang === "fr"
-                            ? "Pr\u00e9paration..."
+                            ? "Préparation..."
                             : "Preparing..."
                           : t("audio.playSurah", lang)}
                       </span>
@@ -163,6 +182,8 @@ export default function JuzMode({
           ))}
         </div>
       )}
+
+      {/* ── Navigation bas de Juz ── */}
       <ModeNavigation
         className={classes.quranNavClass}
         buttonClassName={classes.quranNavButtonClass}
@@ -174,7 +195,8 @@ export default function JuzMode({
         onNext={onNextJuz}
         centerContent={
           <span className={classes.pageIndicatorClass}>
-            {t("sidebar.juz", lang)} {lang === "ar" ? toAr(currentJuz) : currentJuz} / 30
+            {t("sidebar.juz", lang)}{" "}
+            {lang === "ar" ? toAr(currentJuz) : currentJuz} / 30
           </span>
         }
         lang={lang}

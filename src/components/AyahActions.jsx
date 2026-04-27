@@ -69,6 +69,12 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
         : showNote
           ? "note"
           : null;
+  const pinnedAyahs = Array.isArray(state.pinnedAyahs)
+    ? state.pinnedAyahs
+    : [];
+  const isPinnedForCompare = pinnedAyahs.some(
+    (item) => Number(item.surah) === Number(surah) && Number(item.ayah) === Number(ayah),
+  );
 
   useEffect(() => {
     isBookmarked(surah, ayah).then(setBookmarked);
@@ -616,6 +622,30 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
       },
     },
     {
+      key: "compare",
+      className: `ayah-action-card${isPinnedForCompare ? " is-active" : ""}`,
+      icon: "fa-thumbtack",
+      label:
+        lang === "fr"
+          ? "Comparer"
+          : lang === "ar"
+            ? "Pin"
+            : "Compare",
+      description:
+        lang === "fr"
+          ? "Epingler ce verset"
+          : lang === "ar"
+            ? "Pin this verse"
+            : "Pin this verse",
+      state: isPinnedForCompare
+        ? lang === "fr"
+          ? "Epingle"
+          : "Pinned"
+        : `${pinnedAyahs.length}/4`,
+      active: isPinnedForCompare,
+      onClick: toggleComparePin,
+    },
+    {
       key: "playlist",
       className: `ayah-action-card${playlistAdded || showPlaylistMenu ? " is-complete" : ""}`,
       icon: playlistAdded ? "fa-check" : "fa-list",
@@ -894,6 +924,54 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
     );
   };
 
+  const toggleComparePin = () => {
+    if (isPinnedForCompare) {
+      set({
+        pinnedAyahs: pinnedAyahs.filter(
+          (item) =>
+            !(Number(item.surah) === Number(surah) && Number(item.ayah) === Number(ayah)),
+        ),
+      });
+      emitToast(
+        "info",
+        toastText("Verset retire de la comparaison", "Pin removed", "Verse removed from compare"),
+      );
+      return;
+    }
+
+    if (pinnedAyahs.length >= 4) {
+      emitToast(
+        "info",
+        toastText(
+          "Gardez 4 versets maximum dans la comparaison",
+          "Compare up to 4 verses",
+          "Compare up to 4 verses",
+        ),
+      );
+      return;
+    }
+
+    set({
+      pinnedAyahs: [
+        ...pinnedAyahs,
+        {
+          surah,
+          ayah,
+          number: ayahData?.number || null,
+          text: ayahData?.text || "",
+          surahName:
+            lang === "fr"
+              ? surahInfo?.fr || surahInfo?.en || ""
+              : surahInfo?.en || "",
+        },
+      ],
+    });
+    emitToast(
+      "success",
+      toastText("Verset epingle pour comparaison", "Pinned for compare", "Verse pinned for compare"),
+    );
+  };
+
   return (
     <div className="ayah-actions" onClick={(event) => event.stopPropagation()}>
       {compact ? (
@@ -934,6 +1012,26 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
               aria-label={lang === "fr" ? "Favori" : lang === "ar" ? "مفضلة" : "Bookmark"}
             >
               <i className="fas fa-bookmark" />
+            </button>
+            <button
+              type="button"
+              className={cn(
+                inlineIconButtonClass,
+                isPinnedForCompare && inlineIconButtonActiveClass,
+              )}
+              onClick={toggleComparePin}
+              title={
+                isPinnedForCompare
+                  ? lang === "fr"
+                    ? "Retirer de la comparaison"
+                    : "Remove from compare"
+                  : lang === "fr"
+                    ? "Epingler pour comparer"
+                    : "Pin to compare"
+              }
+              aria-label={lang === "fr" ? "Comparer le verset" : "Compare verse"}
+            >
+              <i className="fas fa-thumbtack" />
             </button>
             <button
               type="button"
@@ -1053,6 +1151,10 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
               <span className={`ayah-actions__badge${memoLevel > 0 ? " is-on" : ""}`}>
                 <i className="fas fa-star" />
                 {memoLevel > 0 ? `${memoLevel}/5` : "0/5"}
+              </span>
+              <span className={`ayah-actions__badge${isPinnedForCompare ? " is-on" : ""}`}>
+                <i className="fas fa-thumbtack" />
+                {isPinnedForCompare ? "pin" : `${pinnedAyahs.length}/4`}
               </span>
             </div>
           </div>

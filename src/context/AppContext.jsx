@@ -18,6 +18,7 @@ import {
   normalizeThemeId,
 } from "../data/themes";
 import { getPreferredReciterId } from "../utils/reciterRanking";
+import { parseInitialRoute } from "../hooks/useUrlSync";
 
 /* ── Initial State ──────────────────────────── */
 
@@ -32,6 +33,8 @@ const initialReciter = ensureReciterForRiwaya(
 // build where it was briefly allowed), or if no lang is stored yet (first
 // launch), fall back to "fr" so the interface is always readable.
 const initialLang = stored.lang === "ar" || !stored.lang ? "fr" : stored.lang;
+
+const routeOverrides = parseInitialRoute();
 
 const initialState = {
   // UI
@@ -61,24 +64,29 @@ const initialState = {
 
   // Quran
   riwaya: initialRiwaya,
-  displayMode: stored.displayMode || "surah", // 'surah' | 'page' | 'juz'
+  displayMode: routeOverrides.displayMode ?? (stored.displayMode || "surah"), // 'surah' | 'page' | 'juz'
   mushafLayout: stored.mushafLayout || "list", // 'list' | 'mushaf'
-  currentSurah: stored.lastPosition?.surah || 1,
-  currentAyah: stored.lastPosition?.ayah || 1,
-  currentPage: stored.lastPosition?.page || 1,
-  currentJuz: stored.lastPosition?.juz || 1,
+  currentSurah:
+    routeOverrides.currentSurah ?? (stored.lastPosition?.surah || 1),
+  currentAyah: routeOverrides.currentAyah ?? (stored.lastPosition?.ayah || 1),
+  currentPage: routeOverrides.currentPage ?? (stored.lastPosition?.page || 1),
+  currentJuz: routeOverrides.currentJuz ?? (stored.lastPosition?.juz || 1),
   quranFontSize: (() => {
     const stored_fs = stored.quranFontSize ?? stored.fontSize;
     return stored_fs != null ? Math.max(Number(stored_fs), 32) : 42;
   })(),
   fontFamily: stored.fontFamily || "scheherazade-new",
-  showHome: stored.showHome ?? true,
-  showDuas: stored.showDuas ?? false,
+  showHome:
+    routeOverrides.showHome ??
+    (stored.showHome !== undefined ? Boolean(stored.showHome) : true),
+  showDuas: routeOverrides.showDuas ?? false,
   showTranslation: stored.showTranslation ?? true,
   showTajwid: stored.showTajwid ?? false,
   showWordByWord: stored.showWordByWord ?? false,
   showTransliteration: stored.showTransliteration ?? true,
   showWordTranslation: stored.showWordTranslation ?? true,
+  translationReadingMode: stored.translationReadingMode ?? false,
+  pinnedAyahs: stored.pinnedAyahs || [],
   translationLangs: stored.translationLangs || [stored.translationLang || "fr"],
   wordTranslationLang:
     stored.wordTranslationLang || stored.translationLang || "fr",
@@ -288,6 +296,8 @@ export function AppProvider({ children }) {
         showWordByWord: state.showWordByWord,
         showTransliteration: state.showTransliteration,
         showWordTranslation: state.showWordTranslation,
+        translationReadingMode: state.translationReadingMode,
+        pinnedAyahs: state.pinnedAyahs,
         showHome: state.showHome,
         showDuas: state.showDuas,
         displayMode: state.displayMode,
@@ -338,6 +348,8 @@ export function AppProvider({ children }) {
     state.showWordByWord,
     state.showTransliteration,
     state.showWordTranslation,
+    state.translationReadingMode,
+    state.pinnedAyahs,
     state.showHome,
     state.showDuas,
     state.displayMode,
@@ -391,16 +403,13 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (!state.autoSelectFastestReciter || state.isPlaying) return;
     const hasFavoriteSignals =
-      Array.isArray(state.favoriteReciters) && state.favoriteReciters.length > 0;
+      Array.isArray(state.favoriteReciters) &&
+      state.favoriteReciters.length > 0;
     const hasLatencySignals =
       Object.keys(state.reciterLatencyByKey || {}).length > 0;
     const hasAvailabilitySignals =
       Object.keys(state.reciterAvailabilityById || {}).length > 0;
-    if (
-      !hasFavoriteSignals &&
-      !hasLatencySignals &&
-      !hasAvailabilitySignals
-    ) {
+    if (!hasFavoriteSignals && !hasLatencySignals && !hasAvailabilitySignals) {
       return;
     }
     const preferredReciter = getPreferredReciterId(state.riwaya, {

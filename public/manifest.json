@@ -1,36 +1,69 @@
 {
-    "name": "MushafPlus - Le Saint Coran",
-    "short_name": "MushafPlus",
-    "description": "Une expérience de lecture du Coran premium, fluide et authentique.",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#FEFAF3",
-    "theme_color": "#1B5E3A",
-    "icons": [
-        {
-            "src": "/logo.png",
-            "sizes": "1024x1024",
-            "type": "image/png",
-            "purpose": "any"
-        },
-        {
-            "src": "/logo.png",
-            "sizes": "1024x1024",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "/favicon.svg",
-            "sizes": "any",
-            "type": "image/svg+xml"
-        }
-    ],
-    "orientation": "any",
-    "dir": "auto",
-    "lang": "fr-FR",
-    "categories": [
-        "books",
-        "reference",
-        "education"
-    ]
+  "name": "MushafPlus - Le Saint Coran",
+  "short_name": "MushafPlus",
+  "description": "Une expérience de lecture du Coran premium, fluide et authentique.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FEFAF3",
+  "theme_color": "#1B5E3A",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "orientation": "any",
+  "dir": "auto",
+  "lang": "fr-FR",
+  "categories": ["books", "reference", "education"],
+  "shortcuts": [
+    {
+      "name": "Lire Al-Fatiha",
+      "short_name": "Al-Fatiha",
+      "description": "Ouvrir la Sourate Al-Fatiha",
+      "url": "/surah/1",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Sourate Al-Mulk",
+      "short_name": "Al-Mulk",
+      "description": "Ouvrir la Sourate Al-Mulk",
+      "url": "/surah/67",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Sourate Al-Kahf",
+      "short_name": "Al-Kahf",
+      "description": "Ouvrir la Sourate Al-Kahf",
+      "url": "/surah/18",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
 }

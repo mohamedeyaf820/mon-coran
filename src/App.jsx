@@ -18,8 +18,10 @@ import {
 } from "./data/reciters";
 import { Toast } from "./components/ModernUIComponents";
 import { buildAudioPlaylistForSurah } from "./utils/audioPlaylist";
+import { getSurah } from "./data/surahs";
 import { ensureFontLoaded } from "./services/fontLoader";
 import { runWhenIdle } from "./utils/idleUtils";
+import { useUrlSync } from "./hooks/useUrlSync";
 
 const Header = lazy(() => import("./components/Header"));
 const QuranDisplay = lazy(() => import("./components/QuranDisplay"));
@@ -44,6 +46,9 @@ const ReciterComparatorPanel = lazy(
 const AyahSharePanel = lazy(() => import("./components/AyahSharePanel"));
 const WeeklyStatsPanel = lazy(() => import("./components/WeeklyStatsPanel"));
 const AudioMakerPanel = lazy(() => import("./components/AudioMakerPanel"));
+const KeyboardShortcutsModal = lazy(
+  () => import("./components/KeyboardShortcutsModal"),
+);
 
 let audioServiceLoader = null;
 
@@ -74,14 +79,12 @@ function detectLowPerformanceDevice() {
     /2g/.test(navigator.connection?.effectiveType || "");
   const constrainedMobile =
     window.matchMedia?.("(max-width: 820px)")?.matches &&
-    (lowMemory || lowCpu || /3g|2g/.test(navigator.connection?.effectiveType || ""));
+    (lowMemory ||
+      lowCpu ||
+      /3g|2g/.test(navigator.connection?.effectiveType || ""));
 
   return Boolean(
-    reducedMotion ||
-      lowMemory ||
-      lowCpu ||
-      slowNetwork ||
-      constrainedMobile,
+    reducedMotion || lowMemory || lowCpu || slowNetwork || constrainedMobile,
   );
 }
 
@@ -101,9 +104,89 @@ export default function App() {
     memMode,
   } = state;
 
+  // Synchronisation URL ↔ état de navigation
+  useUrlSync({
+    showHome,
+    showDuas,
+    displayMode,
+    currentSurah,
+    currentPage,
+    currentJuz,
+    currentAyah: state.currentAyah,
+  });
+
   useEffect(() => {
     document.documentElement.style.setProperty("--reading-progress", "0");
   }, [currentSurah, currentJuz, currentPage, displayMode]);
+
+  // ── Titre dynamique du navigateur (style Spotify) ────────────────────────
+  useEffect(() => {
+    const APP_NAME = "MushafPlus";
+    const { isPlaying, currentPlayingAyah } = state;
+
+    if (showHome) {
+      document.title = APP_NAME;
+      return;
+    }
+    if (showDuas) {
+      document.title =
+        lang === "ar"
+          ? `الأدعية · ${APP_NAME}`
+          : lang === "fr"
+            ? `Douas · ${APP_NAME}`
+            : `Duas · ${APP_NAME}`;
+      return;
+    }
+
+    // Helper : nom de sourate selon la langue
+    const surahLabel = (surahNum) => {
+      const s = getSurah(surahNum);
+      if (!s) return `S${surahNum}`;
+      return lang === "ar" ? s.ar : lang === "fr" ? s.fr : s.en;
+    };
+
+    // Pendant la lecture active → "🎵 Sourate · MushafPlus"
+    if (isPlaying && currentPlayingAyah) {
+      document.title = `🎵 ${surahLabel(currentPlayingAyah.surah)} · ${APP_NAME}`;
+      return;
+    }
+
+    // En lecture sans audio actif — afficher la position
+    if (displayMode === "surah") {
+      document.title = `${surahLabel(currentSurah)} · ${APP_NAME}`;
+    } else if (displayMode === "page") {
+      document.title =
+        lang === "ar"
+          ? `صفحة ${currentPage} · ${APP_NAME}`
+          : lang === "fr"
+            ? `Page ${currentPage} · ${APP_NAME}`
+            : `Page ${currentPage} · ${APP_NAME}`;
+    } else if (displayMode === "juz") {
+      document.title =
+        lang === "ar"
+          ? `الجزء ${currentJuz} · ${APP_NAME}`
+          : lang === "fr"
+            ? `Juz ${currentJuz} · ${APP_NAME}`
+            : `Juz ${currentJuz} · ${APP_NAME}`;
+    } else {
+      document.title = APP_NAME;
+    }
+
+    return () => {
+      // Restaurer le titre par défaut si le composant se démonte
+      document.title = APP_NAME;
+    };
+  }, [
+    showHome,
+    showDuas,
+    displayMode,
+    currentSurah,
+    currentPage,
+    currentJuz,
+    lang,
+    state.isPlaying,
+    state.currentPlayingAyah,
+  ]);
 
   const suspenseFallback = (
     <div
@@ -117,6 +200,7 @@ export default function App() {
   const [immersiveHidden, setImmersiveHidden] = useState(false);
   const [toast, setToast] = useState(null);
   const [deferNonCriticalUI, setDeferNonCriticalUI] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const immersiveTimer = useRef(null);
 
   const immersiveActive = focusReading && !showHome && !showDuas;
@@ -361,6 +445,7 @@ export default function App() {
           else if (state.comparatorOpen) set({ comparatorOpen: false });
           else if (state.shareImageOpen) set({ shareImageOpen: false });
           else if (state.weeklyStatsOpen) set({ weeklyStatsOpen: false });
+          else if (showShortcuts) setShowShortcuts(false);
           else if (sidebarOpen) dispatch({ type: "TOGGLE_SIDEBAR" });
           break;
         case " ":
@@ -369,6 +454,10 @@ export default function App() {
             .then((audioService) => audioService.toggle())
             .catch(() => {});
           break;
+        case "?":
+          event.preventDefault();
+          setShowShortcuts((prev) => !prev);
+          return;
         default:
           break;
       }
@@ -394,6 +483,8 @@ export default function App() {
       state.shareImageOpen,
       state.weeklyStatsOpen,
       state.showDuas,
+      showShortcuts,
+      setShowShortcuts,
       dispatch,
       set,
     ],
@@ -471,14 +562,14 @@ export default function App() {
                 : showDuas
                   ? lang === "fr"
                     ? "Contenu principal - Douas"
-                  : lang === "ar"
-                    ? "المحتوى الرئيسي - الأدعية"
-                    : "Main content - Duas"
-                : lang === "fr"
-                  ? "Contenu principal - Lecture"
-                  : lang === "ar"
-                    ? "المحتوى الرئيسي - القراءة"
-                    : "Main content - Reading"
+                    : lang === "ar"
+                      ? "المحتوى الرئيسي - الأدعية"
+                      : "Main content - Duas"
+                  : lang === "fr"
+                    ? "Contenu principal - Lecture"
+                    : lang === "ar"
+                      ? "المحتوى الرئيسي - القراءة"
+                      : "Main content - Reading"
             }
             className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto pb-(--player-h) transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
             style={{
@@ -538,6 +629,41 @@ export default function App() {
         <Suspense fallback={suspenseFallback}>
           <AudioPlayer />
         </Suspense>
+
+        {/* ── Bouton raccourcis clavier (desktop uniquement) ───────────── */}
+        {!showHome && !showDuas && (
+          <button
+            type="button"
+            className="fixed bottom-6 right-6 z-[250] hidden md:flex w-9 h-9 items-center justify-center rounded-full bg-[var(--bg-card)] border border-[var(--border)] shadow-md text-[var(--text-muted)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-all duration-200 text-sm font-bold font-mono"
+            onClick={() => setShowShortcuts(true)}
+            title={
+              lang === "fr"
+                ? "Raccourcis clavier (?)"
+                : lang === "ar"
+                  ? "اختصارات لوحة المفاتيح (?)"
+                  : "Keyboard shortcuts (?)"
+            }
+            aria-label={
+              lang === "fr"
+                ? "Raccourcis clavier"
+                : lang === "ar"
+                  ? "اختصارات لوحة المفاتيح"
+                  : "Keyboard shortcuts"
+            }
+          >
+            ?
+          </button>
+        )}
+
+        {/* ── Modal raccourcis clavier ─────────────────────────────────── */}
+        {showShortcuts && (
+          <Suspense fallback={null}>
+            <KeyboardShortcutsModal
+              lang={lang}
+              onClose={() => setShowShortcuts(false)}
+            />
+          </Suspense>
+        )}
 
         <Suspense fallback={suspenseFallback}>
           {state.searchOpen && <SearchModal />}

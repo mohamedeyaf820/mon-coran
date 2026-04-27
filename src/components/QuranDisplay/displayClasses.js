@@ -16,7 +16,7 @@ export function createDisplayClasses({ focusReading, riwaya }) {
 
   return {
     ayahListClass:
-      "relative mb-[0.75rem] grid gap-[clamp(0.45rem,0.85vw,0.72rem)] overflow-hidden rounded-[var(--r-xl)] border border-[var(--border)] bg-[var(--mushaf-bg,var(--bg-card))] shadow-[0_4px_20px_rgba(28,25,23,0.08),0_1px_4px_rgba(28,25,23,0.05),inset_0_1px_0_rgba(255,255,255,0.65)] [overflow-wrap:break-word] [word-break:break-word] before:block before:h-[3px] before:bg-[linear-gradient(90deg,transparent_0%,rgba(184,134,11,0.4)_20%,rgba(184,134,11,0.75)_50%,rgba(184,134,11,0.4)_80%,transparent_100%)]",
+      "surah-ayahs-list relative mb-[0.75rem] grid gap-[clamp(0.45rem,0.85vw,0.72rem)] overflow-hidden rounded-[var(--r-xl)] border border-[var(--border)] bg-[var(--mushaf-bg,var(--bg-card))] shadow-[0_4px_20px_rgba(28,25,23,0.08),0_1px_4px_rgba(28,25,23,0.05),inset_0_1px_0_rgba(255,255,255,0.65)] [overflow-wrap:break-word] [word-break:break-word] before:block before:h-[3px] before:bg-[linear-gradient(90deg,transparent_0%,rgba(184,134,11,0.4)_20%,rgba(184,134,11,0.75)_50%,rgba(184,134,11,0.4)_80%,transparent_100%)]",
     getMushafLayoutButtonClass: (active) =>
       cn(
         "relative inline-flex min-h-[2.45rem] shrink-0 items-center gap-[0.42rem] rounded-[0.88rem] border px-[0.78rem] py-[0.34rem] font-[var(--font-ui)] text-[0.75rem] font-bold tracking-[-0.01em] transition-all duration-300 ease-out [&_i]:text-[0.78rem] [&_i]:opacity-85 [&_i]:transition-transform [&_i]:duration-300 max-[480px]:min-h-[32px] max-[480px]:px-[0.58rem] max-[480px]:py-[0.24rem] max-[480px]:text-[0.69rem]",

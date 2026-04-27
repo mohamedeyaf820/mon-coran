@@ -1,10 +1,10 @@
 import React from "react";
 import { t } from "../../i18n";
+import { getSurah } from "../../data/surahs";
 import ReadingToolbar from "../Quran/ReadingToolbar";
 import Bismillah from "../Quran/Bismillah";
 import CleanPageView from "../Quran/CleanPageView";
 import SurahHeader from "../Quran/SurahHeader";
-import TajweedLegend from "../Quran/TajweedLegend";
 import { shouldShowStandaloneBasmala } from "../../utils/quranUtils";
 import AyahActionsModal from "./AyahActionsModal";
 import AyahList from "./AyahList";
@@ -37,6 +37,15 @@ export default function SurahMode({
   showWordTranslation,
   theme,
 }) {
+  const surahMeta = getSurah(currentSurah);
+
+  const endOfSurahLabel =
+    lang === "fr"
+      ? "Fin de la Sourate"
+      : lang === "ar"
+        ? "نهاية السورة"
+        : "End of Surah";
+
   return (
     <div
       role="region"
@@ -46,17 +55,21 @@ export default function SurahMode({
       {!(isQCF4 && mushafLayout === "mushaf") && (
         <div className="qc-surah-header-wrap animate-in">
           <SurahHeader surahNum={currentSurah} lang={lang} />
-          {shouldShowStandaloneBasmala(currentSurah, riwaya, ayahs[0]?.text) && mushafLayout !== "mushaf" ? (
+          {shouldShowStandaloneBasmala(currentSurah, riwaya, ayahs[0]?.text) &&
+          mushafLayout !== "mushaf" ? (
             <Bismillah />
           ) : null}
         </div>
       )}
+
       <ReadingToolbar
+        contextLabel={surahMeta ? `${currentSurah}. ${lang === "fr" ? surahMeta.fr || surahMeta.en : surahMeta.en}` : undefined}
+        playLabel={lang === "fr" ? "Ecouter la sourate" : "Listen surah"}
         surahNum={currentSurah}
         onPlaySurah={onPlaySurah}
         preparingSurah={preparingSurah}
       />
-      <TajweedLegend lang={lang} visible={showTajwid} riwaya={riwaya} />
+
       {mushafLayout === "mushaf" ? (
         <>
           <CleanPageView
@@ -108,6 +121,29 @@ export default function SurahMode({
           getSurahNumber={() => currentSurah}
         />
       )}
+
+      {ayahs.length > 0 && (
+        <div className="flex flex-col items-center gap-3 py-8 text-center">
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.3)] to-transparent" />
+          <div className="flex items-center gap-3">
+            <span className="text-[var(--text-muted)] text-sm">☽</span>
+            <span className="font-[var(--font-ui)] text-sm font-semibold text-[var(--text-muted)] uppercase tracking-widest">
+              {endOfSurahLabel}
+            </span>
+            <span className="text-[var(--text-muted)] text-sm">☾</span>
+          </div>
+          {surahMeta?.ar && (
+            <div
+              className="font-[var(--font-quran)] text-2xl text-[var(--primary)] opacity-70"
+              dir="rtl"
+            >
+              {surahMeta.ar}
+            </div>
+          )}
+          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.3)] to-transparent" />
+        </div>
+      )}
+
       <ModeNavigation
         className={classes.quranNavClass}
         buttonClassName={classes.quranNavButtonClass}

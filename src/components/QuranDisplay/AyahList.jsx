@@ -1,28 +1,28 @@
 import React from "react";
 import { toAr } from "../../data/surahs";
+import { cn } from "../../lib/utils";
 import AyahBlock from "../Quran/AyahBlock";
 
 function PageSeparator({ ayah, lang, theme }) {
-  const isDarkTheme = theme === "dark" || theme === "night-blue";
-
   return (
-    <div className="page-separator relative my-[2.25rem] flex items-center justify-center gap-[0.85rem] py-4 max-[640px]:my-[1.5rem] max-[640px]:gap-[0.6rem] max-[640px]:py-3">
-      <span className="h-px flex-1 rounded-[1px] bg-[linear-gradient(to_right,transparent,rgba(var(--primary-rgb,27,94,59),0.35)_35%,rgba(var(--primary-rgb,27,94,59),0.55)_65%,transparent)]"></span>
-      <span
-        className={`inline-flex items-center gap-[0.45rem] whitespace-nowrap rounded-full border border-[rgba(var(--primary-rgb,27,94,59),0.18)] bg-[rgba(var(--primary-rgb,27,94,59),0.04)] px-[0.65rem] py-[0.2rem] font-[var(--font-ui,sans-serif)] text-[0.78rem] font-semibold uppercase tracking-[0.07em] text-[var(--primary,#d4a822)] transition-[opacity,background] duration-200 max-[640px]:px-[0.5rem] max-[640px]:py-[0.15rem] max-[640px]:text-[0.68rem] max-[640px]:tracking-[0.05em]${isDarkTheme ? " border-[rgba(var(--primary-rgb,42,158,94),0.2)] bg-[rgba(var(--primary-rgb,42,158,94),0.06)] opacity-[0.62]" : " opacity-[0.72]"}`}
-      >
-        <span className="text-[0.4em] leading-none text-[var(--gold,#b8860b)] opacity-60">
-          {"\u2756"}
-        </span>
-        <span>
-          {lang === "ar" ? "\u0635\u0641\u062d\u0629" : "Page"}{" "}
+    <div
+      className="page-separator relative my-8 flex items-center justify-center gap-4 select-none"
+      aria-hidden="true"
+    >
+      {/* Ligne gauche */}
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[rgba(var(--primary-rgb),0.2)]" />
+
+      {/* Badge central */}
+      <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-[rgba(var(--primary-rgb),0.15)] bg-[var(--bg-secondary)]">
+        <i className="fas fa-bookmark text-[var(--primary)] text-[0.5rem]" />
+        <span className="font-[var(--font-ui)] text-[0.72rem] font-semibold text-[var(--text-muted)] tracking-wide uppercase">
+          {lang === "ar" ? "صفحة" : "Page"}{" "}
           {lang === "ar" ? toAr(ayah.page) : ayah.page}
         </span>
-        <span className="text-[0.4em] leading-none text-[var(--gold,#b8860b)] opacity-60">
-          {"\u2756"}
-        </span>
-      </span>
-      <span className="h-px flex-1 rounded-[1px] bg-[linear-gradient(to_left,transparent,rgba(var(--primary-rgb,27,94,59),0.35)_35%,rgba(var(--primary-rgb,27,94,59),0.55)_65%,transparent)]"></span>
+      </div>
+
+      {/* Ligne droite */}
+      <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[rgba(var(--primary-rgb),0.2)]" />
     </div>
   );
 }
@@ -61,7 +61,9 @@ export default function AyahList({
           currentPlayingAyah?.surah === surahNumber;
         const trans = getTranslationForAyah(ayah);
         const showPageSeparator =
-          showPageSeparators && index > 0 && ayahs[index - 1].page !== ayah.page;
+          showPageSeparators &&
+          index > 0 &&
+          ayahs[index - 1].page !== ayah.page;
 
         return (
           <React.Fragment key={ayah.number}>
