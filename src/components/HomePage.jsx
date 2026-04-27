@@ -718,8 +718,8 @@ export default function HomePage({ lowPerfMode = false }) {
       </HeroSection>
 
       {/* ── Layout principal (stats + grille) ─────────────────────────── */}
-      <div className="hp2-layout !relative !z-10">
-        <StatsStrip lang={lang} />
+      <div className=" !relative !z-10">
+        {/* <StatsStrip lang={lang} /> */}
 
         <ContentSection
           lang={lang}
