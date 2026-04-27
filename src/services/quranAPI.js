@@ -4,7 +4,9 @@
  * Optimized: AbortController, timeout, request deduplication, IndexedDB persistent cache.
  */
 
-import { WARSH_DATA_URL } from '../constants/warshSource';
+import { WARSH_DATA_BASE_URL } from '../constants/warshSource';
+import { preloadWarshSurah } from './warshService';
+
 
 // Direct call to AlQuran Cloud public API (supports CORS).
 // No backend proxy needed — the app is a pure static SPA.
@@ -703,7 +705,7 @@ export function prefetchInitialData(surahNum, riwaya, translationLang = 'fr') {
 
     if (riwaya === 'warsh') {
       // Prefetch the Warsh dataset from the shared remote source + Hafs text (for karaoke) + translation
-      fetch(WARSH_DATA_URL, { priority: 'high' }).catch(() => { });
+      preloadWarshSurah(surahNum);
       // Also warm the Hafs text cache for karaoke word weighting
       const editions = EDITIONS.hafs;
       fetchJSON(`${BASE}/surah/${surahNum}/${editions[0]}`).catch(() => { });

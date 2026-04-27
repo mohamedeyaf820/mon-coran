@@ -101,6 +101,8 @@ export default function PageMode({
               showTranslation={showTranslation}
               getTranslation={getTranslationForAyah}
               onAyahClick={onToggleActive}
+              activeAyah={activeAyah}
+              getAyahToggleId={(ayah) => ayah.number}
               showSurahHeader={false}
             />
           ))}

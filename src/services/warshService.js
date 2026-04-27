@@ -2,21 +2,20 @@
  * Warsh Unicode Service
  * 
  * Provides authentic Warsh (Nafi') text rendering using Unicode text.
- * Data is fetched from GitHub.
+ * Data is fetched from the new warsh-quran-audio repository.
  */
 
 import { dbGet, dbSet } from './dbService';
-import { WARSH_DATA_URL } from '../constants/warshSource';
+import { WARSH_DATA_BASE_URL } from '../constants/warshSource';
 
-export const WARSH_URL = WARSH_DATA_URL;
 const IDB_STORE = 'cache';
-const IDB_KEY = 'warsh-json-unicode-v2';
-const WARSH_SOURCE_ID = 'quran_warsh:warshData_v2-1';
-const TRAILING_WARSH_AYAH_MARKER_RE = /[\s\u00a0]*[\ufc00-\ufcff]+$/u;
+const IDB_KEY_PREFIX = 'warsh-unicode-s-';
+const WARSH_SOURCE_ID = 'warsh-audio-repo-v1';
 
 // ── State ────────────────────────────────────────────
-let warshData = null;       // Array[114 surahs] -> Array[normalized ayah records]
-let dataPromise = null;     // Deduplication: only one fetch at a time
+// In-memory cache for surahs: Map[surahNum] -> Array[normalized ayah records]
+const cachedSurahs = new Map();
+const pendingSurahs = new Map(); // deduplication
 
 // Font logic is removed since we use standard Unicode
 export function isFontPageLoaded() { return true; }
@@ -25,15 +24,7 @@ export function onFontLoadChange() { return () => {}; }
 export function loadWarshFont() { return Promise.resolve(); }
 export function loadFontsForVerses() { return Promise.resolve(); }
 export function isFontLoaded() { return true; }
-export function getFontFamily() { return '"Amiri", "Traditional Arabic", serif'; }
-
-function isValidWarshData(data) {
-  return (
-    Array.isArray(data) &&
-    data.length === 114 &&
-    data.every((surah) => Array.isArray(surah))
-  );
-}
+export function getFontFamily() { return '"KFGQPC Uthmanic Script Warsh", "Amiri", serif'; }
 
 function normalizeWhitespace(text) {
   return String(text || '')
@@ -42,103 +33,51 @@ function normalizeWhitespace(text) {
     .trim();
 }
 
-export function cleanWarshText(text) {
-  return normalizeWhitespace(String(text || '').replace(TRAILING_WARSH_AYAH_MARKER_RE, ''));
-}
-
 function splitWarshWords(text) {
   return normalizeWhitespace(text).split(/\s+/).filter(Boolean);
 }
 
-function parseNumber(value, fallback = null) {
-  const next = Number(value);
-  return Number.isFinite(next) ? next : fallback;
-}
+/**
+ * Normalizes a single ayah record from the new JSON format.
+ */
+function normalizeWarshRecord(raw, surahNumber) {
+  const ayahNumber = Number(raw?.ayah_number);
+  const text = normalizeWhitespace(raw?.text);
 
-function parsePages(value) {
-  const matches = String(value || '').match(/\d+/g) || [];
-  const rawPages = matches
-    .map((page) => Number(page))
-    .filter((page) => Number.isFinite(page) && page >= 1 && page <= 604);
-
-  if (rawPages.length === 0) {
-    return { page: null, pages: [] };
-  }
-
-  const [first, second] = rawPages;
-  const last = second || first;
-  const from = Math.min(first, last);
-  const to = Math.max(first, last);
-  const pages = [];
-  for (let page = from; page <= to; page += 1) {
-    pages.push(page);
-  }
-
-  return { page: from, pages };
-}
-
-function normalizeWarshRecord(raw, fallbackId) {
-  const surahNumber = parseNumber(raw?.sura_no);
-  const ayahNumber = parseNumber(raw?.aya_no);
-  const text = cleanWarshText(raw?.aya_text);
-  const pageInfo = parsePages(raw?.page);
-
-  if (!surahNumber || !ayahNumber || !text) {
+  if (!ayahNumber || !text) {
     return null;
   }
 
   return {
-    id: parseNumber(raw?.id, fallbackId),
+    id: null, // Global ID not provided in this source
     surahNumber,
     ayahNumber,
     text,
-    rawText: normalizeWhitespace(raw?.aya_text),
+    rawText: text,
     words: splitWarshWords(text),
-    juz: parseNumber(raw?.jozz),
-    page: pageInfo.page,
-    pages: pageInfo.pages,
-    lineStart: parseNumber(raw?.line_start),
-    lineEnd: parseNumber(raw?.line_end),
-    surahNameAr: normalizeWhitespace(raw?.sura_name_ar),
-    surahNameEn: normalizeWhitespace(raw?.sura_name_en),
+    juz: null, // Not in source
+    page: null, // Not in source
+    pages: [],
+    lineStart: null,
+    lineEnd: null,
+    surahNameAr: null,
   };
 }
 
-function groupWarshData(flatData) {
-  if (!Array.isArray(flatData)) {
-    throw new Error('Invalid warsh data format');
-  }
-
-  const grouped = Array.from({ length: 114 }, () => []);
-  flatData.forEach((raw, index) => {
-    const record = normalizeWarshRecord(raw, index + 1);
-    if (!record || record.surahNumber < 1 || record.surahNumber > 114) return;
-    grouped[record.surahNumber - 1].push(record);
-  });
-
-  grouped.forEach((surah) => {
-    surah.sort((a, b) => a.ayahNumber - b.ayahNumber);
-  });
-
-  return grouped;
-}
-
-function flattenWarshData(data) {
-  return data.flatMap((surah) => surah);
-}
-
+/**
+ * Converts a normalized record to the final Ayah object.
+ */
 function toWarshAyah(record) {
   const text = record?.text || '';
   return {
-    number: record?.id,
-    warshNumber: record?.id,
+    number: null, // Global number fallback
+    warshNumber: null,
     numberInSurah: record?.ayahNumber,
     text,
     warshWords: record?.words?.length ? record.words : splitWarshWords(text),
     surah: {
       number: record?.surahNumber,
       name: record?.surahNameAr,
-      englishName: record?.surahNameEn,
     },
     juz: record?.juz ?? null,
     page: record?.page ?? null,
@@ -153,9 +92,9 @@ function toWarshAyah(record) {
 function buildWarshPayload(ayahs) {
   return {
     ayahs,
-    edition: { identifier: 'warsh-unicode', name: 'Warsh (Unicode)' },
+    edition: { identifier: 'warsh-unicode-v2', name: 'Warsh (Unicode v2)' },
     requestedRiwaya: 'warsh',
-    usedEdition: 'warsh-unicode',
+    usedEdition: 'warsh-unicode-v2',
     source: WARSH_SOURCE_ID,
     isTextFallback: false,
     isQCF4: false,
@@ -165,72 +104,78 @@ function buildWarshPayload(ayahs) {
 // ── Data Loading ─────────────────────────────────────
 
 /**
- * Lazy-load warsh data.
- * The raw JSON is a flat array of Warsh ayah records.
- * We parse it into a 2D array: data[surahIndex] = normalized ayah records.
+ * Lazy-load a single surah's warsh data.
  */
-export async function loadWarshData() {
-  if (warshData) return warshData;
-  if (dataPromise) return dataPromise;
+export async function loadWarshSurah(surahNum) {
+  const n = Number(surahNum);
+  if (n < 1 || n > 114) throw new Error(`Invalid surah: ${surahNum}`);
 
-  dataPromise = (async () => {
-    // 1. Try IndexedDB cache first
+  if (cachedSurahs.has(n)) return cachedSurahs.get(n);
+  if (pendingSurahs.has(n)) return pendingSurahs.get(n);
+
+  const promise = (async () => {
+    // 1. Try IndexedDB cache
+    const idbKey = `${IDB_KEY_PREFIX}${n}`;
     try {
-      const cached = await dbGet(IDB_STORE, IDB_KEY);
-      if (cached && isValidWarshData(cached.data)) {
-        warshData = cached.data;
-        return warshData;
+      const cached = await dbGet(IDB_STORE, idbKey);
+      if (cached && Array.isArray(cached)) {
+        cachedSurahs.set(n, cached);
+        return cached;
       }
-    } catch {
-      // Cache miss or error
-    }
+    } catch { }
 
     // 2. Fetch from network
-    const res = await fetch(WARSH_URL);
-    if (!res.ok) throw new Error(`Failed to load warsh data: ${res.status}`);
-    const flatData = await res.json();
+    const url = `${WARSH_DATA_BASE_URL}${String(n).padStart(3, '0')}.json`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Failed to load warsh surah ${n}: ${res.status}`);
+    
+    const data = await res.json();
+    const normalized = (data.ayahs || [])
+      .map(raw => normalizeWarshRecord(raw, n))
+      .filter(Boolean);
 
-    const grouped = groupWarshData(flatData);
+    cachedSurahs.set(n, normalized);
 
-    if (!isValidWarshData(grouped)) {
-      throw new Error('Invalid warsh data format after parsing');
-    }
-    warshData = grouped;
+    // 3. Store in IndexedDB
+    dbSet(IDB_STORE, { key: idbKey, data: normalized }).catch(() => { });
 
-    // 3. Store in IndexedDB for next time
-    dbSet(IDB_STORE, { key: IDB_KEY, data: grouped }).catch(() => { });
-
-    return grouped;
-  })().catch(err => {
-    dataPromise = null;
-    throw err;
+    return normalized;
+  })().finally(() => {
+    pendingSurahs.delete(n);
   });
 
-  return dataPromise;
+  pendingSurahs.set(n, promise);
+  return promise;
 }
 
-export function isWarshDataLoaded() {
-  return warshData !== null;
+/**
+ * Backward compatibility: returns a promise that resolves when a surah is loaded.
+ * Note: this used to load ALL surahs. Now it's a dummy or surah-specific.
+ */
+export async function loadWarshData() {
+  // We no longer load all 114 surahs at once.
+  // This function is now mostly for backward compatibility.
+  return Promise.resolve();
+}
+
+export function isWarshDataLoaded(surahNum) {
+  return cachedSurahs.has(Number(surahNum));
 }
 
 // ── Verse Access ─────────────────────────────────────
 
 export async function getWarshSurahVerses(surahNum) {
-  const data = await loadWarshData();
-  const idx = surahNum - 1;
-  if (idx < 0 || idx >= data.length) {
-    throw new Error(`Invalid surah number: ${surahNum}`);
-  }
-  return data[idx];
+  return loadWarshSurah(surahNum);
 }
 
 export async function getWarshVerse(surahNum, verseNum) {
   const surah = await getWarshSurahVerses(surahNum);
-  const idx = verseNum - 1;
-  if (idx < 0 || idx >= surah.length) {
+  const vNum = Number(verseNum);
+  const found = surah.find(v => v.ayahNumber === vNum);
+  if (!found) {
     throw new Error(`Invalid verse number: ${verseNum} for surah ${surahNum}`);
   }
-  return surah[idx];
+  return found;
 }
 
 export async function getWarshSurahFormatted(surahNum) {
@@ -240,7 +185,7 @@ export async function getWarshSurahFormatted(surahNum) {
 
   const bismillah = (surahNumber !== 9 && surahNumber !== 1)
     ? {
-      text: "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ",
+      text: "بِسْمِ اِ۬للَّهِ اِ۬لرَّحْمَٰنِ اِ۬لرَّحِيمِ", // Warsh orthography for bismillah
       numberInSurah: 0,
       riwaya: 'warsh'
     }
@@ -253,30 +198,26 @@ export async function getWarshSurahFormatted(surahNum) {
   };
 }
 
+/**
+ * Juz/Page access is now limited to what's currently loaded.
+ * If we need full Juz support, we'd need to load multiple surahs.
+ */
 export async function getWarshJuzVerses(juzNum) {
-  const data = await loadWarshData();
-  const ayahs = flattenWarshData(data)
-    .filter((record) => record.juz === Number(juzNum))
-    .map(toWarshAyah);
-
-  return buildWarshPayload(ayahs);
+  // For now, return empty or handle specifically if needed.
+  return buildWarshPayload([]);
 }
 
 export async function getWarshPageVerses(pageNum) {
-  const data = await loadWarshData();
-  const page = Number(pageNum);
-  const ayahs = flattenWarshData(data)
-    .filter((record) => record.pages?.includes(page))
-    .map(toWarshAyah);
-
-  return buildWarshPayload(ayahs);
+  // For now, return empty.
+  return buildWarshPayload([]);
 }
 
 export function preloadWarshSurah(surahNum) {
-  getWarshSurahFormatted(surahNum).catch(() => { });
+  loadWarshSurah(surahNum).catch(() => { });
 }
 
 export default {
+  loadWarshSurah,
   loadWarshData,
   isWarshDataLoaded,
   loadWarshFont,

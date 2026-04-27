@@ -24,6 +24,9 @@ export default function CleanPageView({
   showTranslation,
   getTranslation,
   showSurahHeader = true,
+  activeAyah = null,
+  getAyahToggleId = (ayah) => ayah.numberInSurah,
+  onAyahClick,
 }) {
   const { theme } = useAppState();
   const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
@@ -51,7 +54,9 @@ export default function CleanPageView({
           if (item.type === "sep") return <CleanPageSeparator key={`sep-${item.pageNum}`} pageNum={item.pageNum} isDarkTheme={isDarkTheme} />;
           const ayah = item.data;
           const isPlaying = currentPlayingAyah?.ayah === ayah.numberInSurah && currentPlayingAyah?.surah === surahNum;
-          return <span key={ayah.number} id={`ayah-${ayah.numberInSurah}`} data-surah-number={surahNum} data-ayah-number={ayah.numberInSurah} data-ayah-global={ayah.number} className={`cpv-verse inline transition-colors duration-200${isPlaying ? " cpv-verse--playing rounded-[5px] bg-[rgba(212,168,32,0.1)] px-[0.15em] py-[0.04em] text-[color:color-mix(in_srgb,var(--text-quran)_85%,var(--gold,#c9a33d)_15%)] shadow-[0_0_0_2px_rgba(212,168,32,0.18)] [text-shadow:0_0_20px_rgba(212,168,32,0.13)] animate-[cpv-glow_2.8s_ease-in-out_infinite]" : ""}`} aria-label={`${lang === "ar" ? "\u0627\u0644\u0622\u064a\u0629" : lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`} aria-current={isPlaying ? "true" : undefined}><SmartAyahRenderer ayah={ayah} showTajwid={showTajwid} isPlaying={isPlaying} surahNum={surahNum} calibration={calibration} riwaya={riwaya} /><VerseMedallion num={ayah.numberInSurah} isPlaying={isPlaying} />{"\u200A"}</span>;
+          const toggleId = getAyahToggleId(ayah);
+          const isActive = activeAyah === toggleId;
+          return <span key={ayah.number} id={`ayah-${ayah.numberInSurah}`} data-surah-number={surahNum} data-ayah-number={ayah.numberInSurah} data-ayah-global={ayah.number} className={`cpv-verse inline rounded-[5px] transition-[background,color,box-shadow] duration-200${isActive ? " cpv-verse--active" : ""}${isPlaying ? " cpv-verse--playing rounded-[5px] bg-[rgba(212,168,32,0.1)] px-[0.15em] py-[0.04em] text-[color:color-mix(in_srgb,var(--text-quran)_85%,var(--gold,#c9a33d)_15%)] shadow-[0_0_0_2px_rgba(212,168,32,0.18)] [text-shadow:0_0_20px_rgba(212,168,32,0.13)] animate-[cpv-glow_2.8s_ease-in-out_infinite]" : ""}`} onClick={() => onAyahClick?.(toggleId)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onAyahClick?.(toggleId); } }} role={onAyahClick ? "button" : undefined} tabIndex={onAyahClick ? 0 : undefined} aria-label={`${lang === "ar" ? "\u0627\u0644\u0622\u064a\u0629" : lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`} aria-current={isPlaying ? "true" : undefined}><SmartAyahRenderer ayah={ayah} showTajwid={showTajwid} isPlaying={isPlaying} surahNum={surahNum} calibration={calibration} riwaya={riwaya} /><VerseMedallion num={ayah.numberInSurah} isPlaying={isPlaying} />{"\u200A"}</span>;
         })}
         {ayahs.length > 0 ? <div className="cpv-closure mt-[1.8rem] mb-[0.5rem] flex w-full items-center gap-4 [direction:rtl]" aria-hidden="true"><span className="cpv-closure-line h-px flex-1 bg-[linear-gradient(to_right,transparent,var(--cpv-border))]" /><span className="cpv-closure-ornament shrink-0 whitespace-nowrap font-quran text-[1.1rem] leading-[1.8] tracking-[0.06em] text-[var(--cpv-gold)] opacity-[0.65] max-[768px]:text-[0.95rem]">{surahMeta?.ar || "\u2756"}</span><span className="cpv-closure-line h-px flex-1 bg-[linear-gradient(to_left,transparent,var(--cpv-border))]" /></div> : null}
       </div>

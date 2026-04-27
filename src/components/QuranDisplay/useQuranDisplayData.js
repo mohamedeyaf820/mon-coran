@@ -13,6 +13,21 @@ import {
   loadHafsSupportData,
 } from "./quranDisplayDataApi";
 
+function runWhenIdle(callback) {
+  if (typeof window === "undefined") {
+    callback();
+    return () => {};
+  }
+
+  if ("requestIdleCallback" in window) {
+    const idleId = window.requestIdleCallback(callback, { timeout: 1600 });
+    return () => window.cancelIdleCallback?.(idleId);
+  }
+
+  const timeoutId = window.setTimeout(callback, 0);
+  return () => window.clearTimeout(timeoutId);
+}
+
 export default function useQuranDisplayData({
   currentAyah,
   currentJuz,
@@ -28,14 +43,15 @@ export default function useQuranDisplayData({
   const [ayahs, setAyahs] = useState([]);
   const [error, setError] = useState(null);
   const [isWarshFallback, setIsWarshFallback] = useState(false);
-  const [isQCF4, setIsQCF4] = useState(false);
   const readingStartRef = useRef(Date.now());
 
   useEffect(() => {
     if (showHome || !currentSurah || !currentAyah || displayMode !== "surah") return;
-    markRead(currentSurah, currentAyah);
-    const meta = getSurah(currentSurah);
-    addRecentVisit(currentSurah, currentAyah, meta?.fr || meta?.en || "");
+    return runWhenIdle(() => {
+      markRead(currentSurah, currentAyah);
+      const meta = getSurah(currentSurah);
+      addRecentVisit(currentSurah, currentAyah, meta?.fr || meta?.en || "");
+    });
   }, [currentAyah, currentSurah, displayMode, showHome]);
 
   const fetchData = useCallback(async () => {
@@ -59,7 +75,6 @@ export default function useQuranDisplayData({
       const fetchedAyahs = ensureRequestedRiwaya(arabicData.ayahs || [], riwaya);
       setAyahs(fetchedAyahs);
       setIsWarshFallback(Boolean(arabicData?.isTextFallback));
-      setIsQCF4(Boolean(arabicData?.isQCF4));
       dispatch({ type: "SET", payload: { loadedAyahCount: fetchedAyahs.length } });
       dispatch({ type: "SET_LOADING", payload: false });
 
@@ -86,31 +101,33 @@ export default function useQuranDisplayData({
       }
 
       const allAyahs = arabicData.ayahs || [];
-      const firstAyah = allAyahs[0];
-      if (displayMode === "page") {
-        savePosition(firstAyah?.surah?.number || currentSurah, firstAyah?.numberInSurah || 1, currentPage);
-      } else if (firstAyah) {
-        savePosition(firstAyah.surah?.number || currentSurah, 1, firstAyah.page);
-      }
+      runWhenIdle(() => {
+        const firstAyah = allAyahs[0];
+        if (displayMode === "page") {
+          savePosition(firstAyah?.surah?.number || currentSurah, firstAyah?.numberInSurah || 1, currentPage);
+        } else if (firstAyah) {
+          savePosition(firstAyah.surah?.number || currentSurah, 1, firstAyah.page);
+        }
 
-      if (allAyahs.length > 0) {
-        const lastAyah = allAyahs[allAyahs.length - 1];
-        const elapsed = Date.now() - readingStartRef.current;
-        readingStartRef.current = Date.now();
-        logSession({
-          surah: firstAyah.surah?.number || currentSurah,
-          ayahFrom: firstAyah.numberInSurah || 1,
-          ayahTo: lastAyah.numberInSurah || firstAyah.numberInSurah || 1,
-          page: currentPage,
-          durationMs: elapsed,
-        }).catch(() => {});
-        logWirdProgress({
-          surah: firstAyah.surah?.number || currentSurah,
-          fromAyah: firstAyah.numberInSurah || 1,
-          toAyah: lastAyah.numberInSurah || firstAyah.numberInSurah || 1,
-          pagesCount: displayMode === "page" ? 1 : Math.ceil(allAyahs.length / 15),
-        }).catch(() => {});
-      }
+        if (allAyahs.length > 0) {
+          const lastAyah = allAyahs[allAyahs.length - 1];
+          const elapsed = Date.now() - readingStartRef.current;
+          readingStartRef.current = Date.now();
+          logSession({
+            surah: firstAyah.surah?.number || currentSurah,
+            ayahFrom: firstAyah.numberInSurah || 1,
+            ayahTo: lastAyah.numberInSurah || firstAyah.numberInSurah || 1,
+            page: currentPage,
+            durationMs: elapsed,
+          }).catch(() => {});
+          logWirdProgress({
+            surah: firstAyah.surah?.number || currentSurah,
+            fromAyah: firstAyah.numberInSurah || 1,
+            toAyah: lastAyah.numberInSurah || firstAyah.numberInSurah || 1,
+            pagesCount: displayMode === "page" ? 1 : Math.ceil(allAyahs.length / 15),
+          }).catch(() => {});
+        }
+      });
     } catch (err) {
       if (err?.name === "AbortError") return;
       console.error("Fetch error:", err);
@@ -150,5 +167,5 @@ export default function useQuranDisplayData({
     [],
   );
 
-  return { ayahs, error, fetchData, isQCF4, isWarshFallback, setError };
+  return { ayahs, error, fetchData, isWarshFallback, setError };
 }

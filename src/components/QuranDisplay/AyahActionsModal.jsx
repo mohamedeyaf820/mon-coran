@@ -18,7 +18,11 @@ export default function AyahActionsModal({
         <button className="ayah-actions-modal-close" onClick={onClose}>
           <i className="fas fa-times"></i>
         </button>
-        <AyahActions surah={surah} ayah={activeAyah} ayahData={ayahData} />
+        <AyahActions
+          surah={surah}
+          ayah={ayahData?.numberInSurah || activeAyah}
+          ayahData={ayahData}
+        />
       </div>
     </div>
   );

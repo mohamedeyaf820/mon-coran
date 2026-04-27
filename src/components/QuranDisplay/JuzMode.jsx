@@ -5,6 +5,7 @@ import { shouldShowStandaloneBasmala } from "../../utils/quranUtils";
 import Bismillah from "../Quran/Bismillah";
 import CleanPageView from "../Quran/CleanPageView";
 import SurahHeader from "../Quran/SurahHeader";
+import AyahActionsModal from "./AyahActionsModal";
 import AyahList from "./AyahList";
 import ModeNavigation from "./ModeNavigation";
 import ModeToggleBar from "./ModeToggleBar";
@@ -41,6 +42,16 @@ export default function JuzMode({
   surahGroups,
   theme,
 }) {
+  const activeAyahEntry = surahGroups
+    .flatMap((group) =>
+      group.ayahs.map((ayah) => ({ ayah, surah: group.surah })),
+    )
+    .find(
+      ({ ayah }) =>
+        ayah.number === activeAyah || ayah.numberInSurah === activeAyah,
+    );
+  const activeAyahData = activeAyahEntry?.ayah;
+
   return (
     <div
       role="region"
@@ -70,22 +81,33 @@ export default function JuzMode({
         onToggleMemorization={onToggleMemorization}
       />
       {mushafLayout === "mushaf" ? (
-        surahGroups.map((group, index) => (
-          <CleanPageView
-            key={`cpv-jz-${group.surah}-${index}`}
-            ayahs={group.ayahs}
-            lang={lang}
-            fontSize={readingFontSize}
-            isQCF4={isQCF4}
-            showTajwid={showTajwid}
-            currentPlayingAyah={currentPlayingAyah}
-            surahNum={group.surah}
-            calibration={calibration}
-            riwaya={riwaya}
-            showTranslation={showTranslation}
-            getTranslation={getTranslationForAyah}
+        <>
+          {surahGroups.map((group, index) => (
+            <CleanPageView
+              key={`cpv-jz-${group.surah}-${index}`}
+              ayahs={group.ayahs}
+              lang={lang}
+              fontSize={readingFontSize}
+              isQCF4={isQCF4}
+              showTajwid={showTajwid}
+              currentPlayingAyah={currentPlayingAyah}
+              surahNum={group.surah}
+              calibration={calibration}
+              riwaya={riwaya}
+              showTranslation={showTranslation}
+              getTranslation={getTranslationForAyah}
+              onAyahClick={onToggleActive}
+              activeAyah={activeAyah}
+              getAyahToggleId={(ayah) => ayah.number}
+            />
+          ))}
+          <AyahActionsModal
+            activeAyah={activeAyah}
+            onClose={() => onToggleActive(null)}
+            surah={activeAyahData?.surah?.number || activeAyahEntry?.surah}
+            ayahData={activeAyahData}
           />
-        ))
+        </>
       ) : (
         <div role="list">
           {surahGroups.map((group) => (

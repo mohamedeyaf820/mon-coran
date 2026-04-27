@@ -300,18 +300,14 @@ html {
     font-display: swap;
 }
 
-/* ---------- QCF4 Base Fonts (from typst-quran-package) ---------- */
+/* ---------- KFGQPC Uthmanic Script WARSH ---------- */
 @font-face {
-    font-family: "QCF4_Hafs_01_W";
-    src: url("/fonts/QCF4_Hafs_01_W.ttf") format("truetype");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "QCF4_Warsh_01_W";
-    src: url("/fonts/QCF4_Warsh_01_W.ttf") format("truetype");
+    font-family: "KFGQPC Uthmanic Script WARSH";
+    src:
+        url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2")
+            format("woff2"),
+        url("https://cdn.jsdelivr.net/gh/AymanSiddiqui/ME_Quran_Hafs_V4@main/KFGQPC_WARSH.woff2")
+            format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -526,12 +522,12 @@ html {
     
     /* â”€â”€â”€ Typography â”€â”€â”€ */
     --font-ui: "Figtree", "Inter", "Outfit", "Cairo", system-ui, -apple-system, sans-serif;
-    --font-quran-hafs: "QCF4_Hafs_01_W", "KFGQPC Uthmanic Script HAFS", "ME Quran", "Scheherazade New", serif;
-    --font-quran-warsh: "QCF4_Warsh_01_W", "KFGQPC Uthmanic Script HAFS", "ME Quran", "Scheherazade New", serif;
+    --font-quran-hafs: "KFGQPC Uthmanic Script HAFS", "ME Quran", "Amiri Quran", serif;
+    --font-quran-warsh: "KFGQPC Uthmanic Script WARSH", "Amiri Quran", "Amiri", serif;
     --font-quran: var(--font-quran-hafs);
     --font-quran-tajweed: var(--font-quran);
-    --font-surah-hafs: "QCF4_Hafs_01_W", "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Scheherazade New", "Amiri", serif;
-    --font-surah-warsh: "QCF4_Warsh_01_W", "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Scheherazade New", "Amiri", serif;
+    --font-surah-hafs: "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Amiri", serif;
+    --font-surah-warsh: "KFGQPC Uthmanic Script WARSH", "Amiri Quran", "Amiri", serif;
     --font-surah: var(--font-surah-hafs);
     
     --line-height-quran: 2.2;
@@ -44696,5 +44692,996 @@ body,
   .app-root .mp-player-minimized-row button:not(.mp-player-minimized-open) {
     width: 1.82rem;
     height: 1.82rem;
+  }
+}
+
+/* Active ayah tools: shown only after selecting a verse. */
+@keyframes qdAyahActionsReveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.app-root .quran-display--platform .rd-ayah {
+  cursor: pointer;
+}
+
+.app-root .quran-display--platform .rd-ayah:focus-visible {
+  outline: 2px solid rgba(var(--primary-rgb), 0.42);
+  outline-offset: 3px;
+}
+
+.app-root .quran-display--platform .rd-actions {
+  width: 100%;
+  margin-top: 0.12rem;
+  padding-top: 0.68rem;
+  border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent 30%);
+  animation: qdAyahActionsReveal 180ms ease-out both;
+}
+
+.app-root .quran-display--platform .rd-actions .ayah-actions {
+  min-width: 0;
+}
+
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline {
+  display: grid !important;
+  grid-template-columns: minmax(7.8rem, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: 0.54rem 0.72rem !important;
+  width: 100%;
+  padding: 0.58rem 0.66rem !important;
+  border-radius: 0.72rem !important;
+  border: 1px solid color-mix(in srgb, var(--border) 68%, rgba(var(--primary-rgb), 0.28) 32%) !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-card) 92%, rgba(var(--primary-rgb), 0.08) 8%),
+    color-mix(in srgb, var(--bg-primary) 94%, rgba(var(--primary-rgb), 0.05) 6%)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 8px 18px rgba(2, 8, 23, 0.07) !important;
+}
+
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline__meta {
+  min-width: 0;
+  justify-content: flex-start !important;
+  gap: 0.5rem !important;
+  padding-inline-end: 0.66rem;
+  border-inline-end: 1px solid color-mix(in srgb, var(--border) 72%, transparent 28%);
+}
+
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline__ref {
+  min-height: 1.38rem;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--border) 62%, rgba(var(--primary-rgb), 0.34) 38%);
+  background: color-mix(in srgb, var(--bg-card) 80%, rgba(var(--primary-rgb), 0.18) 20%);
+  color: color-mix(in srgb, var(--text-primary) 84%, var(--primary) 16%);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+}
+
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--text-primary) 82%, var(--primary) 18%);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline__icons {
+  justify-content: flex-end !important;
+  gap: 0.42rem !important;
+  min-width: 0;
+}
+
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline__icon-btn {
+  width: 2.08rem !important;
+  height: 2.08rem !important;
+  border-radius: 999px;
+  border-color: color-mix(in srgb, var(--border) 62%, rgba(var(--primary-rgb), 0.34) 38%) !important;
+  background: color-mix(in srgb, var(--bg-card) 86%, rgba(var(--primary-rgb), 0.12) 14%) !important;
+  color: color-mix(in srgb, var(--text-secondary) 74%, var(--text-primary) 26%) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline__icon-btn:hover,
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline__icon-btn.is-active {
+  border-color: rgba(var(--primary-rgb), 0.54) !important;
+  background: color-mix(in srgb, var(--primary) 18%, var(--bg-card) 82%) !important;
+  color: var(--text-primary) !important;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+  .app-root .quran-display--platform .rd-actions {
+    padding-top: 0.52rem;
+  }
+
+  .app-root
+    .quran-display--platform
+    :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+    .ayah-actions-inline {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.48rem !important;
+    padding: 0.52rem !important;
+  }
+
+  .app-root
+    .quran-display--platform
+    :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+    .ayah-actions-inline__meta {
+    padding-inline-end: 0;
+    border-inline-end: 0;
+  }
+
+  .app-root
+    .quran-display--platform
+    :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+    .ayah-actions-inline__icons {
+    flex-wrap: nowrap;
+    justify-content: flex-start !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .app-root
+    .quran-display--platform
+    :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+    .ayah-actions-inline__icons::-webkit-scrollbar {
+    display: none;
+  }
+
+  .app-root
+    .quran-display--platform
+    :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+    .ayah-actions-inline__icon-btn {
+    flex: 0 0 auto;
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+}
+
+/* Reading UX refinement: note dialog, list mode, and mushaf mode. */
+.app-root .ayah-action-sheet-backdrop {
+  z-index: 240;
+  background:
+    linear-gradient(rgba(8, 13, 20, 0.38), rgba(8, 13, 20, 0.46)),
+    color-mix(in srgb, var(--bg-primary) 14%, transparent 86%);
+  backdrop-filter: blur(5px) saturate(112%);
+}
+
+.app-root .ayah-action-sheet {
+  position: fixed;
+  z-index: 241;
+  top: 50%;
+  left: 50%;
+  width: min(92vw, 440px);
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  transform: translate(-50%, -50%);
+  padding: 1rem;
+  border-radius: 1.05rem;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, rgba(var(--primary-rgb), 0.28) 40%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--bg-card) 94%, rgba(var(--primary-rgb), 0.06) 6%),
+      color-mix(in srgb, var(--bg-primary) 94%, rgba(var(--primary-rgb), 0.04) 6%)
+    );
+  box-shadow:
+    0 28px 70px rgba(2, 8, 23, 0.28),
+    0 2px 0 rgba(255, 255, 255, 0.22) inset;
+}
+
+.app-root .ayah-action-sheet--share {
+  width: min(94vw, 660px);
+}
+
+.app-root .ayah-action-sheet--playlist {
+  width: min(94vw, 520px);
+}
+
+.app-root .ayah-action-sheet--note {
+  gap: 0.78rem;
+}
+
+.app-root .ayah-action-sheet__header {
+  align-items: flex-start;
+}
+
+.app-root .ayah-action-sheet__eyebrow {
+  color: color-mix(in srgb, var(--text-muted) 72%, var(--primary) 28%);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+}
+
+.app-root .ayah-action-sheet__title {
+  margin-top: 0.16rem;
+  font-size: clamp(1.05rem, 0.96rem + 0.26vw, 1.22rem);
+  color: var(--text-primary);
+}
+
+.app-root .ayah-action-sheet__close {
+  width: 2.28rem;
+  height: 2.28rem;
+  border-radius: 0.78rem;
+  border-color: color-mix(in srgb, var(--border) 70%, transparent 30%);
+  background: color-mix(in srgb, var(--bg-card) 78%, var(--bg-secondary) 22%);
+  box-shadow: 0 8px 18px rgba(2, 8, 23, 0.08);
+}
+
+.app-root .ayah-action-sheet__verse-preview {
+  display: grid;
+  gap: 0.38rem;
+  padding: 0.72rem 0.82rem;
+  border-radius: 0.86rem;
+  border: 1px solid color-mix(in srgb, var(--border) 64%, rgba(var(--primary-rgb), 0.24) 36%);
+  background: color-mix(in srgb, var(--bg-secondary) 72%, rgba(var(--primary-rgb), 0.08) 28%);
+}
+
+.app-root .ayah-action-sheet__verse-preview-ref {
+  justify-self: start;
+  min-height: 1.38rem;
+  padding: 0.12rem 0.52rem;
+  border-radius: 999px;
+  background: rgba(var(--primary-rgb), 0.1);
+  color: color-mix(in srgb, var(--text-primary) 78%, var(--primary) 22%);
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.app-root .ayah-action-sheet__verse-preview-text {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--text-quran, var(--text-primary));
+  font-family: var(--font-quran);
+  font-size: clamp(1.18rem, 1.02rem + 0.46vw, 1.44rem);
+  line-height: 1.9;
+  text-align: right;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.app-root .ayah-actions__textarea {
+  min-height: 9rem;
+  padding: 0.88rem 0.95rem;
+  border-radius: 0.9rem;
+  border-color: color-mix(in srgb, var(--border) 70%, rgba(var(--primary-rgb), 0.2) 30%);
+  background: color-mix(in srgb, var(--bg-card) 86%, var(--bg-secondary) 14%);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.62;
+  box-shadow: inset 0 1px 2px rgba(2, 8, 23, 0.05);
+}
+
+.app-root .ayah-actions__textarea::placeholder {
+  color: color-mix(in srgb, var(--text-muted) 82%, var(--text-primary) 18%);
+}
+
+.app-root .ayah-action-sheet__actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.58rem;
+}
+
+.app-root .ayah-action-sheet__btn {
+  min-height: 2.6rem;
+  justify-content: center;
+  border-radius: 0.86rem;
+  font-size: 0.86rem;
+}
+
+.app-root .quran-display--platform .surah-ayahs-list {
+  max-width: min(100%, 960px);
+  margin-inline: auto;
+  padding: clamp(0.58rem, 1vw, 0.86rem);
+  border-radius: 1.08rem;
+  border-color: color-mix(in srgb, var(--border) 72%, rgba(var(--primary-rgb), 0.2) 28%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--bg-primary) 94%, rgba(var(--primary-rgb), 0.06) 6%),
+      color-mix(in srgb, var(--bg-secondary) 90%, rgba(var(--primary-rgb), 0.05) 10%)
+    );
+  box-shadow:
+    0 18px 44px rgba(2, 8, 23, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.app-root .quran-display--platform .surah-ayahs-list::before {
+  margin: calc(clamp(0.58rem, 1vw, 0.86rem) * -1)
+    calc(clamp(0.58rem, 1vw, 0.86rem) * -1)
+    clamp(0.58rem, 1vw, 0.86rem);
+  height: 4px;
+}
+
+.app-root .quran-display--platform .rd-ayah {
+  gap: clamp(0.72rem, 1vw, 1rem);
+  padding: clamp(0.92rem, 1.35vw, 1.28rem) clamp(0.88rem, 1.55vw, 1.45rem);
+  border-radius: 0.88rem !important;
+  border-color: color-mix(in srgb, var(--border) 70%, transparent 30%) !important;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--bg-card) 90%, rgba(var(--primary-rgb), 0.05) 10%),
+      color-mix(in srgb, var(--bg-primary) 94%, rgba(var(--primary-rgb), 0.03) 6%)
+    ) !important;
+  box-shadow:
+    0 8px 20px rgba(2, 8, 23, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+}
+
+.app-root .quran-display--platform .rd-ayah:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--primary-rgb), 0.34) !important;
+  box-shadow:
+    0 14px 26px rgba(var(--primary-rgb), 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+
+.app-root .quran-display--platform .rd-ayah.active,
+.app-root .quran-display--platform .rd-ayah.playing {
+  border-color: color-mix(in srgb, var(--primary) 42%, var(--border) 58%) !important;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--bg-card) 82%, rgba(var(--primary-rgb), 0.15) 18%),
+      color-mix(in srgb, var(--bg-primary) 88%, rgba(var(--primary-rgb), 0.08) 12%)
+    ) !important;
+}
+
+.app-root .quran-display--platform .rd-arabic {
+  max-width: 34em;
+  margin-inline: auto;
+  text-align: justify;
+  text-align-last: right;
+}
+
+.app-root .quran-display--platform .rd-trans-item {
+  max-width: 74ch;
+}
+
+.app-root .quran-display--platform .cpv-container {
+  max-width: min(100%, 880px);
+  border-radius: 1.08rem !important;
+  border-color: color-mix(in srgb, var(--cpv-border) 74%, rgba(var(--primary-rgb), 0.18) 26%) !important;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--cpv-bg) 96%, #ffffff 4%),
+      color-mix(in srgb, var(--cpv-bg) 88%, rgba(var(--primary-rgb), 0.05) 12%)
+    ) !important;
+  box-shadow:
+    0 24px 58px rgba(2, 8, 23, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+}
+
+.app-root .quran-display--platform .cpv-flow {
+  padding: clamp(1.1rem, 2.2vw, 1.8rem) clamp(0.9rem, 2.2vw, 1.7rem) !important;
+  border-radius: 0.86rem !important;
+  border-color: color-mix(in srgb, var(--cpv-border) 76%, rgba(var(--primary-rgb), 0.14) 24%) !important;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--cpv-bg) 84%, rgba(var(--primary-rgb), 0.04) 16%),
+      color-mix(in srgb, var(--cpv-bg) 90%, transparent 10%)
+    ) !important;
+  color: var(--text-quran);
+  text-align: justify;
+  text-align-last: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.app-root .quran-display--platform .cpv-verse {
+  cursor: pointer;
+  outline: none;
+}
+
+.app-root .quran-display--platform .cpv-verse:hover,
+.app-root .quran-display--platform .cpv-verse:focus-visible,
+.app-root .quran-display--platform .cpv-verse--active {
+  background: rgba(var(--primary-rgb), 0.1);
+  box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.13);
+}
+
+.app-root .quran-display--platform .cpv-surah-header-frame {
+  border-radius: 0.62rem;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(var(--primary-rgb), 0.06),
+      color-mix(in srgb, var(--cpv-bg) 86%, rgba(184, 134, 11, 0.08) 14%)
+    );
+}
+
+.app-root .quran-display--platform .cpv-trans-panel {
+  border-color: color-mix(in srgb, var(--cpv-border) 76%, rgba(var(--primary-rgb), 0.14) 24%);
+  background: color-mix(in srgb, var(--cpv-bg) 82%, var(--bg-secondary) 18%);
+}
+
+@media (max-width: 640px) {
+  .app-root .ayah-action-sheet {
+    top: auto;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 0.72rem);
+    width: min(calc(100vw - 1rem), 440px);
+    max-height: min(78dvh, 620px);
+    transform: translateX(-50%);
+    padding: 0.86rem;
+    border-radius: 1rem;
+  }
+
+  .app-root .ayah-action-sheet__actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-root .ayah-actions__textarea {
+    min-height: 8.2rem;
+  }
+
+  .app-root .quran-display--platform .surah-ayahs-list {
+    padding: 0.48rem;
+    border-radius: 0.9rem;
+  }
+
+  .app-root .quran-display--platform .rd-ayah {
+    padding: 0.82rem 0.72rem;
+    border-radius: 0.74rem !important;
+  }
+
+  .app-root .quran-display--platform .rd-arabic {
+    max-width: 100%;
+    text-align: right;
+    text-align-last: right;
+  }
+
+  .app-root .quran-display--platform .cpv-container {
+    border-radius: 0.92rem !important;
+  }
+
+  .app-root .quran-display--platform .cpv-flow {
+    text-align: right;
+    text-align-last: right;
+  }
+}
+
+/* Quran.com-inspired reading pass: calmer surfaces and faster painting. */
+.app-root .quran-display.quran-display--platform {
+  background: var(--bg-primary);
+}
+
+.app-root .quran-display--platform .rd-wrapper {
+  max-width: min(100%, 980px);
+  gap: 0;
+}
+
+.app-root .quran-display--platform .quran-nav,
+.app-root .quran-display--platform .page-header-bar,
+.app-root .quran-display--platform .mushaf-layout-toggle-bar,
+.app-root .quran-display--platform .reader-toolbar {
+  border-radius: 0.75rem;
+  border-color: color-mix(in srgb, var(--border) 82%, transparent 18%);
+  background: var(--bg-card);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.app-root .quran-display--platform .surah-ayahs-list {
+  display: block;
+  max-width: min(100%, 920px);
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-root .quran-display--platform .surah-ayahs-list::before {
+  display: none;
+}
+
+.app-root .quran-display--platform .rd-ayah {
+  gap: 0.9rem;
+  margin: 0;
+  padding: clamp(1.05rem, 1.8vw, 1.55rem) 0 !important;
+  border: 0 !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 76%, transparent 24%) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  contain-intrinsic-size: 1px 210px;
+}
+
+.app-root .quran-display--platform .rd-ayah:hover {
+  background: color-mix(in srgb, var(--bg-secondary) 38%, transparent 62%) !important;
+  box-shadow: none !important;
+}
+
+.app-root .quran-display--platform .rd-ayah.active,
+.app-root .quran-display--platform .rd-ayah.playing {
+  background: color-mix(in srgb, var(--bg-secondary) 55%, rgba(var(--primary-rgb), 0.05) 45%) !important;
+  box-shadow: none !important;
+}
+
+.app-root .quran-display--platform .rd-ayah-head {
+  min-height: 2rem;
+  padding-inline: clamp(0.42rem, 1vw, 0.8rem);
+}
+
+.app-root .quran-display--platform .rd-ayah-ref,
+.app-root .quran-display--platform .ayah-actions-inline__ref {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.72rem;
+  padding: 0.18rem 0.58rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, rgba(var(--primary-rgb), 0.2) 28%);
+  background: var(--bg-card);
+  color: color-mix(in srgb, var(--text-secondary) 78%, var(--primary) 22%);
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.app-root .quran-display--platform .rd-arabic {
+  max-width: 100%;
+  padding-inline: clamp(0.42rem, 1vw, 0.8rem);
+  color: var(--text-quran, var(--text-primary));
+  text-align: right;
+  text-align-last: right;
+  line-height: 2.35;
+}
+
+.app-root .quran-display--platform .rd-trans-item,
+.app-root .quran-display--platform .rd-trans-author {
+  font-family: var(--font-ui);
+}
+
+.app-root .quran-display--platform .rd-trans-item {
+  max-width: 76ch;
+  color: var(--text-secondary);
+  font-size: 0.98rem;
+  line-height: 1.75;
+}
+
+.app-root .quran-display--platform .rd-actions {
+  margin-inline: clamp(0.42rem, 1vw, 0.8rem);
+  padding-top: 0.72rem;
+  border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent 30%);
+}
+
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline__meta {
+  display: none;
+}
+
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline__icons {
+  justify-content: flex-start !important;
+  gap: 0.5rem !important;
+}
+
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline__icon-btn {
+  width: 2.18rem !important;
+  height: 2.18rem !important;
+  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent 22%) !important;
+  background: var(--bg-card) !important;
+  color: var(--text-secondary) !important;
+  box-shadow: none !important;
+}
+
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline__icon-btn:hover,
+.app-root
+  .quran-display--platform
+  :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz)
+  .ayah-actions-inline__icon-btn.is-active {
+  border-color: color-mix(in srgb, var(--primary) 34%, var(--border) 66%) !important;
+  background: color-mix(in srgb, var(--bg-card) 82%, rgba(var(--primary-rgb), 0.12) 18%) !important;
+  color: var(--primary) !important;
+  transform: none;
+}
+
+.app-root .quran-display--platform .rd-action-meta-stars,
+.app-root .quran-display--platform .rd-star-btn {
+  display: none !important;
+}
+
+.app-root .quran-display--platform .page-separator {
+  margin-block: 1.2rem;
+}
+
+.app-root .quran-display--platform .cpv-container {
+  max-width: min(100%, 860px);
+  padding: clamp(1rem, 2.2vw, 1.8rem) !important;
+  overflow: visible;
+  border-radius: 0.75rem !important;
+  border: 1px solid color-mix(in srgb, var(--border) 78%, rgba(var(--primary-rgb), 0.14) 22%) !important;
+  background: var(--bg-card) !important;
+  box-shadow: none !important;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 760px;
+}
+
+.app-root .quran-display--platform .cpv-container > .pointer-events-none.absolute,
+.app-root .quran-display--platform .cpv-container > .pointer-events-none.mb-0 {
+  display: none;
+}
+
+.app-root .quran-display--platform .cpv-flow {
+  padding: clamp(0.8rem, 1.8vw, 1.35rem) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--text-quran, var(--text-primary));
+  text-align: justify;
+  text-align-last: center;
+}
+
+.app-root .quran-display--platform .cpv-verse {
+  padding: 0.02em 0.04em;
+}
+
+.app-root .quran-display--platform .cpv-verse:hover,
+.app-root .quran-display--platform .cpv-verse:focus-visible,
+.app-root .quran-display--platform .cpv-verse--active {
+  background: color-mix(in srgb, var(--primary) 12%, transparent 88%);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 24%, transparent 76%);
+}
+
+.app-root .quran-display--platform .cpv-surah-header {
+  margin-bottom: 1.25rem;
+}
+
+.app-root .quran-display--platform .cpv-surah-header-frame {
+  min-width: min(100%, 240px);
+  border-radius: 0.5rem;
+  border-color: color-mix(in srgb, var(--border) 60%, var(--primary) 40%);
+  background: var(--bg-secondary);
+  box-shadow: none;
+}
+
+.app-root .quran-display--platform .cpv-basmala-wrap {
+  border-color: color-mix(in srgb, var(--border) 72%, transparent 28%);
+}
+
+.app-root .quran-display--platform .cpv-trans-panel {
+  border-radius: 0.75rem;
+  border-color: color-mix(in srgb, var(--border) 78%, transparent 22%);
+  background: var(--bg-secondary);
+}
+
+.app-root .ayah-action-sheet {
+  border-radius: 0.75rem;
+  background: var(--bg-card);
+  box-shadow: 0 24px 64px rgba(2, 8, 23, 0.28);
+}
+
+.app-root .ayah-action-sheet__verse-preview,
+.app-root .ayah-actions__textarea {
+  border-radius: 0.75rem;
+  background: var(--bg-secondary);
+  box-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .app-root .quran-display--platform .rd-wrapper {
+    gap: 0;
+  }
+
+  .app-root .quran-display--platform .rd-ayah {
+    padding-block: 1rem !important;
+  }
+
+  .app-root .quran-display--platform .rd-ayah-head,
+  .app-root .quran-display--platform .rd-arabic {
+    padding-inline: 0.2rem;
+  }
+
+  .app-root .quran-display--platform .cpv-container {
+    padding: 0.75rem !important;
+    border-radius: 0.65rem !important;
+  }
+
+  .app-root .quran-display--platform .cpv-flow {
+    padding: 0.35rem !important;
+    text-align-last: right;
+  }
+}
+
+/* Quran.com-style verse study sheet: tafsir, lessons, reflections, notes. */
+.app-root .ayah-action-sheet--study {
+  width: min(94vw, 640px);
+  gap: 0.8rem;
+}
+
+.app-root .ayah-study-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.42rem;
+  padding: 0.24rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent 22%);
+  background: color-mix(in srgb, var(--bg-secondary) 84%, transparent 16%);
+}
+
+.app-root .ayah-study-tab {
+  min-height: 2.42rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+  padding: 0.42rem 0.52rem;
+  border-radius: 0.58rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.app-root .ayah-study-tab i {
+  font-size: 0.82rem;
+}
+
+.app-root .ayah-study-tab:hover,
+.app-root .ayah-study-tab.is-active {
+  background: var(--bg-card);
+  color: var(--primary);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.app-root .ayah-study-content {
+  max-height: min(42dvh, 360px);
+  overflow: auto;
+  padding: 0.78rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent 22%);
+  background: color-mix(in srgb, var(--bg-secondary) 76%, var(--bg-card) 24%);
+}
+
+.app-root .ayah-study-tafsir {
+  display: grid;
+  gap: 0.66rem;
+}
+
+.app-root .ayah-study-source {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.28rem 0.58rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 12%, transparent 88%);
+  color: color-mix(in srgb, var(--text-primary) 78%, var(--primary) 22%);
+  font-family: var(--font-ui);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.app-root .ayah-study-tafsir p,
+.app-root .ayah-study-card p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 0.88rem;
+  line-height: 1.72;
+}
+
+.app-root .ayah-study-loading {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.app-root .ayah-study-loading span {
+  height: 0.86rem;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--bg-card) 88%, transparent 12%),
+      color-mix(in srgb, var(--primary) 12%, var(--bg-card) 88%),
+      color-mix(in srgb, var(--bg-card) 88%, transparent 12%)
+    );
+  background-size: 220% 100%;
+  animation: ayah-study-pulse 1.25s ease-in-out infinite;
+}
+
+.app-root .ayah-study-loading span:nth-child(2) {
+  width: 86%;
+}
+
+.app-root .ayah-study-loading span:nth-child(3) {
+  width: 64%;
+}
+
+@keyframes ayah-study-pulse {
+  from {
+    background-position: 120% 0;
+  }
+
+  to {
+    background-position: -120% 0;
+  }
+}
+
+.app-root .ayah-study-empty {
+  display: grid;
+  justify-items: center;
+  gap: 0.56rem;
+  padding: 1.1rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.app-root .ayah-study-empty i {
+  color: var(--primary);
+  font-size: 1.25rem;
+}
+
+.app-root .ayah-study-empty p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.app-root .ayah-study-empty button,
+.app-root .ayah-study-primary {
+  min-height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.46rem;
+  padding: 0.56rem 0.88rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--primary) 42%, transparent 58%);
+  background: color-mix(in srgb, var(--primary) 16%, var(--bg-card) 84%);
+  color: var(--primary);
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.app-root .ayah-study-lessons,
+.app-root .ayah-study-reflections,
+.app-root .ayah-study-notes {
+  display: grid;
+  gap: 0.58rem;
+}
+
+.app-root .ayah-study-card,
+.app-root .ayah-study-prompt {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.62rem;
+  width: 100%;
+  padding: 0.72rem;
+  border-radius: 0.72rem;
+  border: 1px solid color-mix(in srgb, var(--border) 76%, transparent 24%);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  text-align: start;
+  box-shadow: none;
+}
+
+.app-root .ayah-study-card > i,
+.app-root .ayah-study-prompt > i {
+  width: 1.82rem;
+  height: 1.82rem;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.58rem;
+  background: color-mix(in srgb, var(--primary) 12%, transparent 88%);
+  color: var(--primary);
+  font-size: 0.82rem;
+}
+
+.app-root .ayah-study-card strong,
+.app-root .ayah-study-prompt span {
+  display: block;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.38;
+}
+
+.app-root .ayah-study-prompt {
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.app-root .ayah-study-prompt:hover {
+  border-color: color-mix(in srgb, var(--primary) 34%, var(--border) 66%);
+  background: color-mix(in srgb, var(--bg-card) 82%, rgba(var(--primary-rgb), 0.08) 18%);
+}
+
+@media (max-width: 640px) {
+  .app-root .ayah-action-sheet--study {
+    width: min(calc(100vw - 1rem), 520px);
+  }
+
+  .app-root .ayah-study-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-root .ayah-study-content {
+    max-height: min(42dvh, 330px);
+    padding: 0.62rem;
   }
 }

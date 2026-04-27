@@ -24,6 +24,7 @@ import {
   getMemorizationLevel,
   setMemorizationLevel,
 } from "../services/memorizationService";
+import { getVerseTafsir } from "../services/quranComStudyService";
 import { openExternalUrl } from "../lib/security";
 import { cn } from "../lib/utils";
 
@@ -44,6 +45,14 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
   const [showNote, setShowNote] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
+  const [showStudy, setShowStudy] = useState(false);
+  const [studyTab, setStudyTab] = useState("tafsir");
+  const [tafsirState, setTafsirState] = useState({
+    key: null,
+    status: "idle",
+    data: null,
+    error: null,
+  });
   const [playlists, setPlaylists] = useState([]);
   const [playlistAdded, setPlaylistAdded] = useState(false);
   const [noteText, setNoteText] = useState("");
@@ -51,13 +60,15 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
   const [audioError, setAudioError] = useState(false);
 
   const surahInfo = useMemo(() => getSurah(surah), [surah]);
-  const activeSheet = showShare
-    ? "share"
-    : showPlaylistMenu
-      ? "playlist"
-      : showNote
-        ? "note"
-        : null;
+  const activeSheet = showStudy
+    ? "study"
+    : showShare
+      ? "share"
+      : showPlaylistMenu
+        ? "playlist"
+        : showNote
+          ? "note"
+          : null;
 
   useEffect(() => {
     isBookmarked(surah, ayah).then(setBookmarked);
@@ -92,6 +103,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
   useEffect(() => {
     const handleEscape = (event) => {
       if (event.key === "Escape") {
+        setShowStudy(false);
         setShowNote(false);
         setShowShare(false);
         setShowPlaylistMenu(false);
@@ -103,10 +115,58 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
   }, []);
 
   const closePanels = useCallback(() => {
+    setShowStudy(false);
     setShowNote(false);
     setShowShare(false);
     setShowPlaylistMenu(false);
   }, []);
+
+  useEffect(() => {
+    if (!showStudy || studyTab !== "tafsir") return undefined;
+
+    const key = `${surah}:${ayah}`;
+    if (
+      tafsirState.key === key &&
+      ["loading", "ready", "error"].includes(tafsirState.status)
+    ) {
+      return undefined;
+    }
+
+    const controller = new AbortController();
+    let mounted = true;
+
+    setTafsirState({
+      key,
+      status: "loading",
+      data: null,
+      error: null,
+    });
+
+    getVerseTafsir({ surah, ayah, signal: controller.signal })
+      .then((data) => {
+        if (!mounted) return;
+        setTafsirState({
+          key,
+          status: "ready",
+          data,
+          error: null,
+        });
+      })
+      .catch((error) => {
+        if (!mounted || error?.name === "AbortError") return;
+        setTafsirState({
+          key,
+          status: "error",
+          data: null,
+          error: error?.message || "Unable to load tafsir",
+        });
+      });
+
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
+  }, [ayah, showStudy, studyTab, surah, tafsirState.key, tafsirState.status]);
 
   const toastText = useCallback(
     (fr, ar, en) =>
@@ -429,9 +489,27 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
       const nextPlaylists = await getAllPlaylists();
       setPlaylists(nextPlaylists);
     }
+    setShowStudy(false);
     setShowShare(false);
     setShowNote(false);
     setShowPlaylistMenu((value) => !value);
+  };
+
+  const toggleStudyPanel = (tab = "tafsir") => {
+    setShowPlaylistMenu(false);
+    setShowShare(false);
+    setShowNote(false);
+    setStudyTab(tab);
+    setShowStudy((value) => (value && studyTab === tab ? false : true));
+  };
+
+  const retryTafsir = () => {
+    setTafsirState({
+      key: null,
+      status: "idle",
+      data: null,
+      error: null,
+    });
   };
 
   const handleStudyMode = () => {
@@ -448,24 +526,6 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
       toastText("Mode etude active", "تم تفعيل وضع الدراسة", "Study mode enabled"),
     );
   };
-
-  const openVerseInsight = useCallback(
-    (section = "") => {
-      const base = `https://quran.com/${surah}/${ayah}`;
-      const target = section ? `${base}/${section}` : base;
-      if (openExternalUrl(target)) return;
-      if (openExternalUrl(base)) return;
-      emitToast(
-        "error",
-        toastText(
-          "Ouverture du detail indisponible",
-          "تعذر فتح التفصيل",
-          "Unable to open verse details",
-        ),
-      );
-    },
-    [surah, ayah, toastText],
-  );
 
   const quickActions = [
     {
@@ -529,6 +589,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
         : null,
       active: showNote || Boolean(noteText.trim()),
       onClick: () => {
+        setShowStudy(false);
         setShowPlaylistMenu(false);
         setShowShare(false);
         setShowNote((value) => !value);
@@ -548,6 +609,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
       state: null,
       active: showShare,
       onClick: () => {
+        setShowStudy(false);
         setShowPlaylistMenu(false);
         setShowNote(false);
         setShowShare((value) => !value);
@@ -581,18 +643,18 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
     },
     {
       key: "study",
-      className: "ayah-action-card ayah-action-card--study",
-      icon: "fa-layer-group",
+      className: `ayah-action-card ayah-action-card--study${showStudy ? " is-active" : ""}`,
+      icon: "fa-book-open",
       label: lang === "fr" ? "Etude" : lang === "ar" ? "دراسة" : "Study",
       description:
         lang === "fr"
-          ? "Traduction et mot a mot"
+          ? "Tafsir, lecons, notes"
           : lang === "ar"
             ? "ترجمة وكلمة بكلمة"
-            : "Translation and word by word",
+            : "Tafsir, lessons, notes",
       state: null,
-      active: false,
-      onClick: handleStudyMode,
+      active: showStudy,
+      onClick: () => toggleStudyPanel("tafsir"),
     },
   ];
 
@@ -600,8 +662,237 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
     "ayah-actions-inline__icon-btn inline-flex h-[2.06rem] w-[2.06rem] cursor-pointer items-center justify-center rounded-full border border-[rgba(var(--primary-rgb),0.22)] bg-[rgba(var(--primary-rgb),0.06)] text-[var(--text-secondary)] transition-[background,color,border-color] duration-150 ease-out hover:border-[rgba(var(--primary-rgb),0.4)] hover:bg-[rgba(var(--primary-rgb),0.16)] hover:text-[var(--text-primary)] max-[640px]:h-[2.14rem] max-[640px]:w-[2.14rem]";
   const inlineIconButtonActiveClass =
     "is-active border-[rgba(var(--primary-rgb),0.4)] bg-[rgba(var(--primary-rgb),0.16)] text-[var(--text-primary)]";
-  const inlineLinkClass =
-    "ayah-actions-inline__link cursor-pointer rounded-full border border-[rgba(var(--primary-rgb),0.18)] bg-[rgba(var(--primary-rgb),0.035)] px-[0.44rem] py-[0.19rem] font-[var(--font-ui)] text-[0.73rem] font-semibold tracking-[0.01em] text-[var(--text-secondary)] transition-[color,border-color,background] duration-150 ease-out hover:border-[rgba(var(--primary-rgb),0.32)] hover:bg-[rgba(var(--primary-rgb),0.09)] hover:text-[var(--primary)] max-[640px]:px-[0.38rem] max-[640px]:py-[0.17rem] max-[640px]:text-[0.7rem]";
+
+  const studyTabs = useMemo(
+    () => [
+      {
+        key: "tafsir",
+        icon: "fa-book-open",
+        label: lang === "fr" ? "Tafsir" : lang === "ar" ? "تفسير" : "Tafsir",
+      },
+      {
+        key: "lessons",
+        icon: "fa-lightbulb",
+        label: lang === "fr" ? "Lecons" : lang === "ar" ? "فوائد" : "Lessons",
+      },
+      {
+        key: "reflections",
+        icon: "fa-feather",
+        label:
+          lang === "fr"
+            ? "Reflexions"
+            : lang === "ar"
+              ? "تدبر"
+              : "Reflections",
+      },
+      {
+        key: "notes",
+        icon: "fa-pen-line",
+        label: lang === "fr" ? "Notes" : lang === "ar" ? "ملاحظات" : "Notes",
+      },
+    ],
+    [lang],
+  );
+
+  const studyLessons = useMemo(
+    () => [
+      {
+        icon: "fa-language",
+        title:
+          lang === "fr"
+            ? "Lire avec le mot a mot"
+            : lang === "ar"
+              ? "اقرأ كلمة بكلمة"
+              : "Read word by word",
+        text:
+          lang === "fr"
+            ? "Active l'analyse pour suivre le sens de chaque mot sans quitter le verset."
+            : lang === "ar"
+              ? "فعل التحليل لمتابعة معنى كل كلمة داخل الآية."
+              : "Turn on analysis to follow each word while staying in the verse.",
+      },
+      {
+        icon: "fa-headphones",
+        title:
+          lang === "fr"
+            ? "Ecouter puis relire"
+            : lang === "ar"
+              ? "استمع ثم أعد القراءة"
+              : "Listen then reread",
+        text:
+          lang === "fr"
+            ? "Lance l'audio du verset, puis reviens au texte arabe pour fixer le rythme."
+            : lang === "ar"
+              ? "شغل صوت الآية ثم عد إلى النص لتثبيت الإيقاع."
+              : "Play the verse, then return to the Arabic text to anchor the rhythm.",
+      },
+      {
+        icon: "fa-quote-right",
+        title:
+          lang === "fr"
+            ? "Comparer avec la traduction"
+            : lang === "ar"
+              ? "قارن مع الترجمة"
+              : "Compare translation",
+        text:
+          lang === "fr"
+            ? "Garde la traduction ouverte pour verifier le sens avant de prendre une note."
+            : lang === "ar"
+              ? "اترك الترجمة مفتوحة لفهم المعنى قبل تدوين ملاحظة."
+              : "Keep translation open to check the meaning before writing a note.",
+      },
+    ],
+    [lang],
+  );
+
+  const reflectionPrompts = useMemo(
+    () => [
+      lang === "fr"
+        ? "Quel sens revient directement dans ma vie aujourd'hui ?"
+        : lang === "ar"
+          ? "ما المعنى الذي يلامس حياتي اليوم؟"
+          : "What meaning touches my life today?",
+      lang === "fr"
+        ? "Quel nom, ordre ou rappel d'Allah apparait ici ?"
+        : lang === "ar"
+          ? "أي اسم أو أمر أو تذكير يظهر هنا؟"
+          : "Which name, command, or reminder appears here?",
+      lang === "fr"
+        ? "Quelle action simple puis-je garder apres cette lecture ?"
+        : lang === "ar"
+          ? "ما العمل البسيط الذي أحفظه بعد القراءة؟"
+          : "What simple action can I keep after this reading?",
+    ],
+    [lang],
+  );
+
+  const renderStudyContent = () => {
+    if (studyTab === "tafsir") {
+      if (tafsirState.status === "loading") {
+        return (
+          <div className="ayah-study-loading" aria-live="polite">
+            <span />
+            <span />
+            <span />
+          </div>
+        );
+      }
+
+      if (tafsirState.status === "error") {
+        return (
+          <div className="ayah-study-empty">
+            <i className="fas fa-circle-exclamation" />
+            <p>
+              {lang === "fr"
+                ? "Tafsir indisponible pour le moment."
+                : lang === "ar"
+                  ? "التفسير غير متاح حاليا."
+                  : "Tafsir is unavailable for now."}
+            </p>
+            <button type="button" onClick={retryTafsir}>
+              {lang === "fr" ? "Reessayer" : lang === "ar" ? "أعد المحاولة" : "Retry"}
+            </button>
+          </div>
+        );
+      }
+
+      return (
+        <div className="ayah-study-tafsir">
+          <div className="ayah-study-source">
+            <i className="fas fa-book-open" />
+            <span>{tafsirState.data?.source || "Tafsir Ibn Kathir"}</span>
+          </div>
+          <p>
+            {tafsirState.data?.text ||
+              (lang === "fr"
+                ? "Ouvre cet onglet pour charger le tafsir du verset."
+                : lang === "ar"
+                  ? "افتح هذا التبويب لتحميل تفسير الآية."
+                  : "Open this tab to load the verse tafsir.")}
+          </p>
+        </div>
+      );
+    }
+
+    if (studyTab === "lessons") {
+      return (
+        <div className="ayah-study-lessons">
+          {studyLessons.map((lesson) => (
+            <div className="ayah-study-card" key={lesson.title}>
+              <i className={`fas ${lesson.icon}`} />
+              <div>
+                <strong>{lesson.title}</strong>
+                <p>{lesson.text}</p>
+              </div>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="ayah-study-primary"
+            onClick={handleStudyMode}
+          >
+            <i className="fas fa-language" />
+            {lang === "fr"
+              ? "Activer le mode etude"
+              : lang === "ar"
+                ? "تفعيل وضع الدراسة"
+                : "Enable study mode"}
+          </button>
+        </div>
+      );
+    }
+
+    if (studyTab === "reflections") {
+      return (
+        <div className="ayah-study-reflections">
+          {reflectionPrompts.map((prompt) => (
+            <button
+              type="button"
+              className="ayah-study-prompt"
+              key={prompt}
+              onClick={() => {
+                setNoteText((value) =>
+                  value.trim() ? value : `${prompt}\n`,
+                );
+                setStudyTab("notes");
+              }}
+            >
+              <i className="fas fa-feather" />
+              <span>{prompt}</span>
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div className="ayah-study-notes">
+        <textarea
+          value={noteText}
+          onChange={(event) => setNoteText(event.target.value)}
+          placeholder={t("notes.placeholder", lang)}
+          className="ayah-actions__textarea"
+          rows={4}
+        />
+        <div className="ayah-action-sheet__actions">
+          <button
+            type="button"
+            className="ayah-action-sheet__btn"
+            onClick={closePanels}
+          >
+            {lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
+          </button>
+          <button
+            type="button"
+            className="ayah-action-sheet__btn ayah-action-sheet__btn--primary"
+            onClick={handleSaveNote}
+          >
+            {t("notes.save", lang)}
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="ayah-actions" onClick={(event) => event.stopPropagation()}>
@@ -663,6 +954,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
                 showShare && inlineIconButtonActiveClass,
               )}
               onClick={() => {
+                setShowStudy(false);
                 setShowPlaylistMenu(false);
                 setShowNote(false);
                 setShowShare((value) => !value);
@@ -676,9 +968,22 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
               type="button"
               className={cn(
                 inlineIconButtonClass,
+                showStudy && inlineIconButtonActiveClass,
+              )}
+              onClick={() => toggleStudyPanel("tafsir")}
+              title={lang === "fr" ? "Etude" : lang === "ar" ? "دراسة" : "Study"}
+              aria-label={lang === "fr" ? "Ouvrir l'etude" : lang === "ar" ? "فتح الدراسة" : "Open study"}
+            >
+              <i className="fas fa-book-open" />
+            </button>
+            <button
+              type="button"
+              className={cn(
+                inlineIconButtonClass,
                 showNote && inlineIconButtonActiveClass,
               )}
               onClick={() => {
+                setShowStudy(false);
                 setShowPlaylistMenu(false);
                 setShowShare(false);
                 setShowNote((value) => !value);
@@ -690,7 +995,10 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
             </button>
             <button
               type="button"
-              className={inlineIconButtonClass}
+              className={cn(
+                inlineIconButtonClass,
+                showPlaylistMenu && inlineIconButtonActiveClass,
+              )}
               onClick={openPlaylistMenu}
               title={lang === "fr" ? "Playlist" : lang === "ar" ? "قائمة" : "Playlist"}
               aria-label={lang === "fr" ? "Ajouter a la playlist" : lang === "ar" ? "إضافة إلى القائمة" : "Add to playlist"}
@@ -699,35 +1007,6 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
             </button>
           </div>
 
-          <div className="ayah-actions-inline__links flex flex-wrap items-center gap-[0.24rem] pt-[0.05rem]" role="group" aria-label="Verse details">
-            <button type="button" className={inlineLinkClass} onClick={() => openVerseInsight("tafsirs")}>
-              {lang === "fr" ? "Tafsir" : lang === "ar" ? "تفاسير" : "Tafsir"}
-            </button>
-            <button
-              type="button"
-              className={inlineLinkClass}
-              onClick={() => {
-                setShowPlaylistMenu(false);
-                setShowShare(false);
-                setShowNote(true);
-              }}
-            >
-              {lang === "fr" ? "Reflexions" : lang === "ar" ? "تدبر" : "Reflections"}
-            </button>
-            <button
-              type="button"
-              className={inlineLinkClass}
-              onClick={() => {
-                handleStudyMode();
-                openVerseInsight("lessons");
-              }}
-            >
-              {lang === "fr" ? "Lecons" : lang === "ar" ? "دروس" : "Lessons"}
-            </button>
-            <button type="button" className={inlineLinkClass} onClick={() => openVerseInsight("answers")}>
-              {lang === "fr" ? "Reponses" : lang === "ar" ? "إجابات" : "Answers"}
-            </button>
-          </div>
         </div>
       ) : (
         <div className="ayah-actions__surface ayah-actions__surface--compact">
@@ -849,6 +1128,65 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
           aria-label={lang === "fr" ? "Fermer le panneau" : "Close panel"}
           onClick={closePanels}
         />
+      )}
+
+      {showStudy && (
+        <div className="ayah-action-sheet ayah-action-sheet--study">
+          <div className="ayah-action-sheet__header">
+            <div>
+              <div className="ayah-action-sheet__eyebrow">
+                {lang === "fr"
+                  ? "Etude du verset"
+                  : lang === "ar"
+                    ? "دراسة الآية"
+                    : "Verse study"}
+              </div>
+              <div className="ayah-action-sheet__title">
+                {lang === "fr"
+                  ? "Comprendre cette ayah"
+                  : lang === "ar"
+                    ? "فهم هذه الآية"
+                    : "Understand this ayah"}
+              </div>
+            </div>
+            <button
+              type="button"
+              className="ayah-action-sheet__close"
+              onClick={closePanels}
+            >
+              <i className="fas fa-times" />
+            </button>
+          </div>
+
+          {ayahData?.text ? (
+            <div className="ayah-action-sheet__verse-preview" dir="rtl" lang="ar">
+              <span className="ayah-action-sheet__verse-preview-ref">
+                {surah}:{ayah}
+              </span>
+              <p className="ayah-action-sheet__verse-preview-text">
+                {ayahData.text}
+              </p>
+            </div>
+          ) : null}
+
+          <div className="ayah-study-tabs" role="tablist">
+            {studyTabs.map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                role="tab"
+                aria-selected={studyTab === tab.key}
+                className={`ayah-study-tab${studyTab === tab.key ? " is-active" : ""}`}
+                onClick={() => setStudyTab(tab.key)}
+              >
+                <i className={`fas ${tab.icon}`} />
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="ayah-study-content">{renderStudyContent()}</div>
+        </div>
       )}
 
       {showShare && (
@@ -1044,6 +1382,17 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
               <i className="fas fa-times" />
             </button>
           </div>
+
+          {ayahData?.text ? (
+            <div className="ayah-action-sheet__verse-preview" dir="rtl" lang="ar">
+              <span className="ayah-action-sheet__verse-preview-ref">
+                {surah}:{ayah}
+              </span>
+              <p className="ayah-action-sheet__verse-preview-text">
+                {ayahData.text}
+              </p>
+            </div>
+          ) : null}
 
           <textarea
             value={noteText}

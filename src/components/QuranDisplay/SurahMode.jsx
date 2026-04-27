@@ -72,6 +72,8 @@ export default function SurahMode({
             showTranslation={showTranslation}
             getTranslation={getTranslationForAyah}
             onAyahClick={onToggleActive}
+            activeAyah={activeAyah}
+            getAyahToggleId={(ayah) => ayah.numberInSurah}
           />
           <AyahActionsModal
             activeAyah={activeAyah}
