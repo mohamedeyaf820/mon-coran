@@ -533,6 +533,54 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
     );
   };
 
+  const toggleComparePin = () => {
+    if (isPinnedForCompare) {
+      set({
+        pinnedAyahs: pinnedAyahs.filter(
+          (item) =>
+            !(Number(item.surah) === Number(surah) && Number(item.ayah) === Number(ayah)),
+        ),
+      });
+      emitToast(
+        "info",
+        toastText("Verset retire de la comparaison", "Pin removed", "Verse removed from compare"),
+      );
+      return;
+    }
+
+    if (pinnedAyahs.length >= 4) {
+      emitToast(
+        "info",
+        toastText(
+          "Gardez 4 versets maximum dans la comparaison",
+          "Compare up to 4 verses",
+          "Compare up to 4 verses",
+        ),
+      );
+      return;
+    }
+
+    set({
+      pinnedAyahs: [
+        ...pinnedAyahs,
+        {
+          surah,
+          ayah,
+          number: ayahData?.number || null,
+          text: ayahData?.text || "",
+          surahName:
+            lang === "fr"
+              ? surahInfo?.fr || surahInfo?.en || ""
+              : surahInfo?.en || "",
+        },
+      ],
+    });
+    emitToast(
+      "success",
+      toastText("Verset epingle pour comparaison", "Pinned for compare", "Verse pinned for compare"),
+    );
+  };
+
   const quickActions = [
     {
       key: "play",
@@ -921,54 +969,6 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
           </button>
         </div>
       </div>
-    );
-  };
-
-  const toggleComparePin = () => {
-    if (isPinnedForCompare) {
-      set({
-        pinnedAyahs: pinnedAyahs.filter(
-          (item) =>
-            !(Number(item.surah) === Number(surah) && Number(item.ayah) === Number(ayah)),
-        ),
-      });
-      emitToast(
-        "info",
-        toastText("Verset retire de la comparaison", "Pin removed", "Verse removed from compare"),
-      );
-      return;
-    }
-
-    if (pinnedAyahs.length >= 4) {
-      emitToast(
-        "info",
-        toastText(
-          "Gardez 4 versets maximum dans la comparaison",
-          "Compare up to 4 verses",
-          "Compare up to 4 verses",
-        ),
-      );
-      return;
-    }
-
-    set({
-      pinnedAyahs: [
-        ...pinnedAyahs,
-        {
-          surah,
-          ayah,
-          number: ayahData?.number || null,
-          text: ayahData?.text || "",
-          surahName:
-            lang === "fr"
-              ? surahInfo?.fr || surahInfo?.en || ""
-              : surahInfo?.en || "",
-        },
-      ],
-    });
-    emitToast(
-      "success",
-      toastText("Verset epingle pour comparaison", "Pinned for compare", "Verse pinned for compare"),
     );
   };
 

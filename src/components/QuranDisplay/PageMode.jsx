@@ -2,10 +2,8 @@ import React from "react";
 import { getJuzForAyah } from "../../data/juz";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
-import { cn } from "../../lib/utils";
 import CleanPageView from "../Quran/CleanPageView";
 import ReadingToolbar from "../Quran/ReadingToolbar";
-import SurahHeader from "../Quran/SurahHeader";
 import AyahActionsModal from "./AyahActionsModal";
 import AyahList from "./AyahList";
 import ModeNavigation from "./ModeNavigation";
@@ -28,14 +26,10 @@ export default function PageMode({
   onPlaySurah,
   onPrevPage,
   onToggleActive,
-  onToggleMemorization,
-  onToggleMushaf,
-  onToggleWordByWord,
   pageTopSurah,
   preparingSurah,
   readingFontSize,
   riwaya,
-  showRiwayaStar,
   showTajwid,
   showTranslation,
   showTransliteration,
@@ -47,6 +41,13 @@ export default function PageMode({
   const activeAyahData = ayahs.find(
     (ayah) => ayah.number === activeAyah || ayah.numberInSurah === activeAyah,
   );
+  const currentJuz =
+    ayahs[0]?.juz ||
+    getJuzForAyah(ayahs[0]?.surah?.number, ayahs[0]?.numberInSurah);
+  const pageLabel = lang === "ar" ? toAr(currentPage) : currentPage;
+  const contextLabel = `Page ${pageLabel} / 604 \u00b7 ${t("sidebar.juz", lang)} ${
+    currentJuz || ""
+  } \u00b7 ${riwaya.toUpperCase()}`;
 
   return (
     <div
@@ -54,52 +55,14 @@ export default function PageMode({
       role="region"
       aria-label={t("settings.pageMode", lang)}
     >
-      {/* ── En-tête de page — style Quran.com ── */}
-      <div className="flex items-center justify-between px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] mb-4">
-        <div className="flex items-center gap-2">
-          <i className="fas fa-file-lines text-[var(--primary)] text-sm" />
-          <span className="font-[var(--font-ui)] text-sm font-bold text-[var(--text-primary)]">
-            {lang === "ar" ? toAr(currentPage) : currentPage} / 604
-          </span>
-          <span className="text-[var(--text-muted)] text-xs">·</span>
-          <span className="font-[var(--font-ui)] text-xs text-[var(--text-muted)]">
-            {t("sidebar.juz", lang)}{" "}
-            {ayahs[0]?.juz ||
-              getJuzForAyah(ayahs[0]?.surah?.number, ayahs[0]?.numberInSurah)}
-          </span>
-        </div>
-
-        {/* Badge riwaya */}
-        <span
-          className={cn(
-            "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.65rem] font-bold tracking-wide",
-            riwaya === "warsh"
-              ? "bg-[rgba(212,168,32,0.12)] text-[var(--gold,#b8860b)] border border-[rgba(212,168,32,0.3)]"
-              : "bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] border border-[rgba(var(--primary-rgb),0.2)]",
-          )}
-        >
-          {showRiwayaStar && <i className="fas fa-star text-[0.55rem]" />}
-          {riwaya === "warsh" ? "WARSH" : "HAFS"}
-        </span>
-      </div>
-
-      {/* ── En-tête de sourate (mode liste uniquement) ── */}
-      {!isQCF4 && pageTopSurah ? (
-        <div className="page-mode-top-surah mx-auto mt-[0.4rem] mb-[0.78rem]">
-          <SurahHeader surahNum={pageTopSurah} lang={lang} />
-        </div>
-      ) : null}
-
-      {/* ── Barre toggle simplifiée ── */}
       <ReadingToolbar
-        contextLabel={`Page ${lang === "ar" ? toAr(currentPage) : currentPage}`}
+        contextLabel={contextLabel}
         onPlay={onPlaySurah}
         playLabel={lang === "fr" ? "Ecouter la page" : "Listen page"}
         preparingSurah={preparingSurah}
         surahNum={pageTopSurah || currentSurah}
       />
 
-      {/* ── Contenu principal ── */}
       {mushafLayout === "mushaf" ? (
         <>
           {surahGroups.map((group, index) => (
@@ -160,7 +123,6 @@ export default function PageMode({
         </div>
       )}
 
-      {/* ── Navigation bas de page ── */}
       <ModeNavigation
         className={classes.quranNavClass}
         buttonClassName={classes.quranNavButtonClass}
@@ -172,7 +134,7 @@ export default function PageMode({
         onNext={onNextPage}
         centerContent={
           <span className={classes.pageIndicatorClass}>
-            {lang === "ar" ? toAr(currentPage) : currentPage} / 604
+            {pageLabel} / 604
           </span>
         }
         lang={lang}

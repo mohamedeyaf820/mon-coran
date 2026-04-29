@@ -216,7 +216,6 @@ const AyahBlock = React.memo(function AyahBlock({
           <AyahBlockSupplement
             ayahTransliteration={ayahTransliteration}
             isRtl={isRtl}
-            lang={lang}
             riwaya={riwaya}
             trans={showTranslation ? trans : []}
           />

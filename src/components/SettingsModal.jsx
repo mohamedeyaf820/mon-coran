@@ -1077,6 +1077,163 @@ export default function SettingsModal() {
     set(patch);
   };
 
+  const settingsSuggestions = (() => {
+    const suggestion = (icon, title, copy, action) => ({ icon, title, copy, action });
+
+    switch (activeTab) {
+      case "apparence":
+        return [
+          suggestion(
+            <Palette size={18} />,
+            lang === "fr" ? "Lecture claire" : lang === "ar" ? "قراءة نهارية" : "Clear reading",
+            lang === "fr"
+              ? "Fond clair, vert profond, sans mode nuit automatique."
+              : lang === "ar"
+                ? "خلفية فاتحة مع لون أخضر واضح وبدون تبديل تلقائي."
+                : "Light surface, deep green actions, no automatic night switch.",
+            () => set({ theme: "light", dayTheme: "light", autoNightMode: false }),
+          ),
+          suggestion(
+            <SlidersHorizontal size={18} />,
+            lang === "fr" ? "Nuit automatique" : lang === "ar" ? "ليل تلقائي" : "Auto night",
+            lang === "fr"
+              ? "Passe au sombre le soir et revient au clair le matin."
+              : lang === "ar"
+                ? "ينتقل إلى الوضع الداكن ليلا ويعود صباحا."
+                : "Switches dark at night and back to light in the morning.",
+            () => set({ autoNightMode: true, dayTheme: "light", nightTheme: "dark" }),
+          ),
+        ];
+      case "coran":
+        return [
+          suggestion(
+            <Book size={18} />,
+            lang === "fr" ? "Lecture continue" : lang === "ar" ? "قراءة مستمرة" : "Continuous reading",
+            lang === "fr"
+              ? "Mode sourate avec lecture audio qui enchaine."
+              : lang === "ar"
+                ? "وضع السورة مع تشغيل متتابع."
+                : "Surah mode with audio continuity.",
+            () => set({ displayMode: "surah", continuousPlay: true, focusReading: false }),
+          ),
+          suggestion(
+            <Maximize2 size={18} />,
+            lang === "fr" ? "Mode mushaf" : lang === "ar" ? "وضع المصحف" : "Mushaf mode",
+            lang === "fr"
+              ? "Affichage par page pour une lecture plus traditionnelle."
+              : lang === "ar"
+                ? "عرض الصفحات لتجربة أقرب إلى المصحف."
+                : "Page layout for a more traditional reading flow.",
+            () => set({ displayMode: "page", showHome: false }),
+          ),
+        ];
+      case "texte":
+        return [
+          suggestion(
+            <Type size={18} />,
+            lang === "fr" ? "Grand confort" : lang === "ar" ? "راحة أكبر" : "Comfort text",
+            lang === "fr"
+              ? "Texte arabe plus grand avec traduction visible."
+              : lang === "ar"
+                ? "نص عربي أكبر مع الترجمة."
+                : "Larger Arabic text with translation visible.",
+            () => set({ quranFontSize: Math.max(quranFontSize, 48), showTranslation: true }),
+          ),
+          suggestion(
+            <Minimize2 size={18} />,
+            lang === "fr" ? "Memorisation" : lang === "ar" ? "حفظ" : "Memorization",
+            lang === "fr"
+              ? "Masque les aides pour se concentrer sur le verset."
+              : lang === "ar"
+                ? "إخفاء المساعدات للتركيز على الآية."
+                : "Hides helpers so the verse stays central.",
+            () =>
+              set({
+                showTranslation: false,
+                showWordByWord: false,
+                showTransliteration: false,
+                showWordTranslation: false,
+              }),
+          ),
+        ];
+      case "audio":
+        return [
+          suggestion(
+            <Volume1 size={18} />,
+            lang === "fr" ? "Audio stable" : lang === "ar" ? "صوت ثابت" : "Stable audio",
+            lang === "fr"
+              ? "Vitesse normale et recitateur le plus fiable automatiquement."
+              : lang === "ar"
+                ? "سرعة عادية مع اختيار القارئ الأكثر استقرارا."
+                : "Normal speed with the most reliable reciter selected automatically.",
+            () => set({ audioSpeed: 1, autoSelectFastestReciter: true }),
+          ),
+          suggestion(
+            <SkipBack size={18} />,
+            lang === "fr" ? "Sync a zero" : lang === "ar" ? "مزامنة صفر" : "Zero sync",
+            lang === "fr"
+              ? "Reinitialise le decalage audio du recitateur courant."
+              : lang === "ar"
+                ? "إعادة ضبط تأخير صوت القارئ الحالي."
+                : "Resets the current reciter audio offset.",
+            () =>
+              set({
+                syncOffsetsMs: {
+                  ...(syncOffsetsMs || {}),
+                  [syncKey]: 0,
+                },
+              }),
+          ),
+        ];
+      case "donnees":
+        return [
+          suggestion(
+            <Database size={18} />,
+            lang === "fr" ? "Exporter" : lang === "ar" ? "تصدير" : "Export",
+            lang === "fr"
+              ? "Sauvegarde favoris, notes et preferences en JSON."
+              : lang === "ar"
+                ? "حفظ المفضلة والملاحظات والإعدادات كملف JSON."
+                : "Backs up bookmarks, notes, and preferences as JSON.",
+            downloadExport,
+          ),
+          suggestion(
+            <Loader2 size={18} />,
+            lang === "fr" ? "Importer" : lang === "ar" ? "استيراد" : "Import",
+            lang === "fr"
+              ? "Restaure une sauvegarde depuis un fichier local."
+              : lang === "ar"
+                ? "استعادة نسخة احتياطية من ملف محلي."
+                : "Restores a backup from a local file.",
+            handleImport,
+          ),
+        ];
+      default:
+        return [
+          suggestion(
+            <Check size={18} />,
+            lang === "fr" ? "Tajwid visible" : lang === "ar" ? "إظهار التجويد" : "Show tajweed",
+            lang === "fr"
+              ? "Active les couleurs utiles pour l'apprentissage."
+              : lang === "ar"
+                ? "تشغيل ألوان التجويد للمراجعة."
+                : "Turns on helpful color cues for learning.",
+            () => set({ showTajwid: true }),
+          ),
+          suggestion(
+            <Minimize2 size={18} />,
+            lang === "fr" ? "Mode zen" : lang === "ar" ? "وضع هادئ" : "Zen mode",
+            lang === "fr"
+              ? "Garde la lecture plus calme et moins distraite."
+              : lang === "ar"
+                ? "تجربة قراءة أهدأ وأقل تشتيتا."
+                : "Keeps the reading view calmer and less distracting.",
+            () => set({ focusReading: true }),
+          ),
+        ];
+    }
+  })();
+
   // ── Nouvelles classes propres (système sm-*) ──
   const overlayClass = "sm-overlay";
   const dialogClass = "sm-dialog";
@@ -1161,6 +1318,40 @@ export default function SettingsModal() {
             {/* ════════════════════════════════
                 TAB: Apparence
             ════════════════════════════════ */}
+            <div className="settings-suggestion-strip" aria-label="Suggestions rapides">
+              <div className="settings-suggestion-strip__head">
+                <span>
+                  {lang === "fr"
+                    ? "Suggestions rapides"
+                    : lang === "ar"
+                      ? "اقتراحات سريعة"
+                      : "Quick suggestions"}
+                </span>
+                <small>
+                  {lang === "fr"
+                    ? "Presets utiles pour corriger vite l'experience."
+                    : lang === "ar"
+                      ? "إعدادات جاهزة لتحسين التجربة بسرعة."
+                      : "Useful presets to improve the experience fast."}
+                </small>
+              </div>
+              <div className="settings-suggestion-grid">
+                {settingsSuggestions.map((item) => (
+                  <button
+                    key={`${activeTab}-${item.title}`}
+                    type="button"
+                    className="settings-suggestion-card"
+                    onClick={item.action}
+                  >
+                    <span className="settings-suggestion-card__icon">{item.icon}</span>
+                    <span className="settings-suggestion-card__body">
+                      <strong>{item.title}</strong>
+                      <small>{item.copy}</small>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
             {activeTab === "apparence" && (
               <div className={paneClass}>
                 <div className={paneTitleClass}>

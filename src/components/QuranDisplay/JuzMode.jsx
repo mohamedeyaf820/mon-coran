@@ -24,6 +24,7 @@ export default function JuzMode({
   memMode,
   mushafLayout,
   onNextJuz,
+  onPlayJuz,
   onPlaySpecificSurah,
   onPrevJuz,
   onToggleActive,
@@ -86,7 +87,7 @@ export default function JuzMode({
       {/* ── Barre toggle simplifiée ── */}
       <ReadingToolbar
         contextLabel={`Juz ${lang === "ar" ? toAr(currentJuz) : currentJuz}`}
-        onPlay={() => firstSurah && onPlaySpecificSurah(firstSurah)}
+        onPlay={onPlayJuz || (() => firstSurah && onPlaySpecificSurah(firstSurah))}
         playLabel={lang === "fr" ? "Ecouter le juz" : "Listen juz"}
         preparingSurah={preparingSurah}
         surahNum={firstSurah}

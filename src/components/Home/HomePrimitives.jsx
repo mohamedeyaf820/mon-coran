@@ -89,7 +89,6 @@ export const SurahCard = memo(function SurahCard({
     surah.en || surah.fr || surah.ar || "",
   );
 
-  console.log(surah)
   const secondaryLabel =
     lang === "fr"
       ? surah.fr || getSurahEnglishMeaning(surah.n)
@@ -219,9 +218,9 @@ export const SurahCard = memo(function SurahCard({
   return (
     <div
       className={cn(
-        "group relative flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-border bg-bg-primary shadow-sm cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:border-primary/40 hover:bg-bg-secondary hover:shadow-md overflow-hidden",
-        isActive && "border-primary/60 bg-primary/5",
-        isPlaying && "border-gold/60 bg-gold/5",
+        "hp-card hp-card--surah group relative flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-border bg-bg-primary shadow-sm cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:border-primary/40 hover:bg-bg-secondary hover:shadow-md overflow-hidden",
+        isActive && "active border-primary/60 bg-primary/5",
+        isPlaying && "playing border-gold/60 bg-gold/5",
       )}
       data-stype={surah.type?.toLowerCase()}
       onClick={() => onClick(surah.n)}
@@ -235,26 +234,26 @@ export const SurahCard = memo(function SurahCard({
       tabIndex={0}
       style={cardVisibilityStyle}
     >
-      <div className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-primary/80 to-primary/20 opacity-0 group-hover:opacity-40 transition-opacity" />
+      <div className="hp-card-accent absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-primary/80 to-primary/20 opacity-0 group-hover:opacity-40 transition-opacity" />
 
-      <span className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full bg-bg-secondary text-[0.8rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
-        {surah.n}
+      <span className="hp-card-num flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full bg-bg-secondary text-[0.8rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
+        <span className="hp-card-num-inner">{surah.n}</span>
       </span>
 
-      <div className="flex flex-col flex-1 min-w-0">
-        <span className="text-[0.95rem] sm:text-[1.05rem] font-bold text-text-primary truncate">
+      <div className="hp-card-content flex flex-col flex-1 min-w-0">
+        <span className="hp-card-name text-[0.95rem] sm:text-[1.05rem] font-bold text-text-primary truncate">
           {primaryLabel}
         </span>
-        <span className="text-[0.7rem] sm:text-[0.75rem] text-text-secondary truncate mt-0.5">
+        <span className="hp-card-meta hp-card-meta--meaning text-[0.7rem] sm:text-[0.75rem] text-text-secondary truncate mt-0.5">
           {secondaryLabel}
         </span>
-        <span className="text-[0.65rem] sm:text-[0.7rem] text-text-muted truncate">
+        <span className="hp-card-meta hp-card-meta--ayahs text-[0.65rem] sm:text-[0.7rem] text-text-muted truncate">
           {ayahLabel}
         </span>
       </div>
 
       <div
-        className="shrink-0 font-surah-names text-[1.6rem] opacity-60 transition-opacity group-hover:opacity-100"
+        className="hp-card-ar shrink-0 font-surah-names text-[1.6rem] opacity-60 transition-opacity group-hover:opacity-100"
         aria-label={surah.ar}
       >
         {surah.n > 9 ? "0" + surah.n : "00" + surah.n}
@@ -262,7 +261,7 @@ export const SurahCard = memo(function SurahCard({
 
       <button
         className={cn(
-          "absolute right-2 sm:right-3 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-bg-primary border border-border text-text-muted opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all hover:bg-primary hover:text-white hover:border-primary",
+          "hp-card-play absolute right-2 sm:right-3 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-bg-primary border border-border text-text-muted opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all hover:bg-primary hover:text-white hover:border-primary",
           isPlaying &&
             "opacity-100 translate-x-0 bg-gold border-gold text-white",
         )}

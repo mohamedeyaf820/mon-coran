@@ -411,6 +411,7 @@ export default function QuranDisplay() {
             memMode={memMode}
             mushafLayout={mushafLayout}
             onNextJuz={navigation.goNextJuz}
+            onPlayJuz={playSurah}
             onPlaySpecificSurah={playSpecificSurah}
             onPrevJuz={navigation.goPrevJuz}
             onToggleActive={toggleAyah}

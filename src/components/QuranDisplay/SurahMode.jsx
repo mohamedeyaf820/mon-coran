@@ -153,6 +153,18 @@ export default function SurahMode({
         nextDisabled={currentSurah >= 114}
         onPrevious={onPrevSurah}
         onNext={onNextSurah}
+        centerContent={
+          surahMeta ? (
+            <div className="mode-nav-current">
+              <strong>
+                {lang === "fr" ? surahMeta.fr || surahMeta.en : lang === "ar" ? surahMeta.ar : surahMeta.en}
+              </strong>
+              <span>
+                {surahMeta.ayahs} {t("quran.ayahs", lang)}
+              </span>
+            </div>
+          ) : null
+        }
         lang={lang}
       />
     </div>

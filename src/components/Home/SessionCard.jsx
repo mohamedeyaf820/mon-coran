@@ -129,7 +129,7 @@ export default function SessionCard({
   return (
     <>
       {/* ── Carte session active ──────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-[1.4rem] p-[1.4rem_1.5rem] bg-[var(--bg-secondary)] border border-[var(--border)] shadow-[0_4px_20px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(var(--primary-rgb),0.12),0_2px_8px_rgba(0,0,0,0.06)]">
+      <div className="home-session-card relative overflow-hidden rounded-2xl p-4 bg-[var(--bg-secondary)] border border-[var(--border)] shadow-[0_4px_20px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(var(--primary-rgb),0.12),0_2px_8px_rgba(0,0,0,0.06)]">
         {/* Barre gradient animée en haut (remplace le ::before pseudo-element) */}
         <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[var(--primary)] via-[#d4a820] to-[var(--primary)]" />
 
@@ -227,7 +227,7 @@ export default function SessionCard({
       </div>
 
       {/* ── Carte prières ─────────────────────────────────────────────── */}
-      <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-[1.3rem] p-[1rem_1.1rem] shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
+      <div className="home-prayer-card bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
         {/* En-tête prières */}
         <div className="flex items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] mb-[0.75rem] font-[var(--font-ui)] uppercase tracking-[0.06em]">
           <i className="fas fa-mosque" />
@@ -247,7 +247,7 @@ export default function SessionCard({
         </div>
 
         {/* Liste — grille 5 col sur mobile, colonne verticale sur md+ */}
-        <div className="grid grid-cols-5 gap-[0.2rem] md:flex md:flex-col md:gap-[0.25rem]">
+        <div className="home-prayer-list grid grid-cols-1 gap-1 min-[420px]:grid-cols-2 md:flex md:flex-col md:gap-1">
           {PRAYERS_BASE.map((p) => {
             const isActive = p.key === currentPrayerKey;
 
@@ -255,7 +255,7 @@ export default function SessionCard({
               <div
                 key={p.key}
                 className={cn(
-                  "flex items-center gap-[0.7rem] px-[0.8rem] py-[0.55rem] rounded-[0.8rem] transition-all duration-200 border border-transparent",
+                  "home-prayer-item flex min-w-0 items-center gap-2 px-2.5 py-2 rounded-xl transition-all duration-200 border border-transparent",
                   isActive &&
                     "bg-[rgba(var(--primary-rgb),0.07)] border-[rgba(var(--primary-rgb),0.2)]",
                 )}
@@ -273,7 +273,7 @@ export default function SessionCard({
                 {/* Nom de la prière */}
                 <span
                   className={cn(
-                    "flex-1 text-[0.78rem] font-[600] text-[var(--text-secondary)] font-[var(--font-ui)]",
+                    "min-w-0 flex-1 text-[0.78rem] font-[600] text-[var(--text-secondary)] font-[var(--font-ui)]",
                     isActive && "text-[var(--primary)] font-[700]",
                   )}
                 >

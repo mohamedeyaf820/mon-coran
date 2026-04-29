@@ -297,8 +297,8 @@ class AudioService {
       this.currentAyah = this.playlist[preservedIndex];
     }
 
-    // Preload first relevant tracks immediately
-    if (this.playlist.length > 0) {
+    // Keep reading pages quiet: preloading begins once playback starts.
+    if (wasPlaying && this.playlist.length > 0) {
       const preloadIndex = preservedIndex >= 0 ? preservedIndex : 0;
       this._preloadAhead(preloadIndex, 3);
     }

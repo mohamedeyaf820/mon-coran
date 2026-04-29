@@ -20,39 +20,42 @@ function Panel({ children, isRtl }) {
 export default function AyahBlockSupplement({
   ayahTransliteration,
   isRtl,
-  lang,
   riwaya,
   trans,
 }) {
+  const translations = Array.isArray(trans) ? trans : [];
+  const hasContent = Boolean(ayahTransliteration) || translations.length > 0;
+
+  if (!hasContent) return null;
+
   return (
-    <>
+    <Panel isRtl={isRtl}>
       {ayahTransliteration ? (
-        <Panel isRtl={isRtl}>
-          <div className="rd-trans-item transliteration flex max-w-[72ch] flex-col gap-1 text-[clamp(0.86rem,0.82rem+0.16vw,0.94rem)] italic leading-[1.66] text-[color-mix(in_srgb,var(--text-primary)_80%,var(--text-secondary)_20%)] max-[640px]:text-[0.82rem] max-[640px]:leading-[1.56] max-[560px]:landscape:leading-[1.56]">
-            {ayahTransliteration}
-          </div>
-        </Panel>
+        <div className="rd-trans-item rd-trans-item--translit flex max-w-[72ch] flex-col gap-1 text-[clamp(0.86rem,0.82rem+0.16vw,0.94rem)] italic leading-[1.66] text-[color-mix(in_srgb,var(--text-primary)_80%,var(--text-secondary)_20%)] max-[640px]:text-[0.82rem] max-[640px]:leading-[1.56] max-[560px]:landscape:leading-[1.56]">
+          {ayahTransliteration}
+        </div>
       ) : null}
-      {Array.isArray(trans) && trans.length > 0 ? (
-        <Panel isRtl={isRtl}>
-          {trans.map((item, index) => (
-            <div
-              key={item.edition?.identifier || index}
-              className={cn(
-                "rd-trans-item flex max-w-[72ch] flex-col gap-1 text-[clamp(0.97rem,0.9rem+0.22vw,1.08rem)] leading-[1.78] text-[var(--text-secondary)] max-[640px]:text-[0.92rem] max-[640px]:leading-[1.66] max-[560px]:landscape:leading-[1.56]",
-                riwaya === "warsh" && "[text-align:start] [unicode-bidi:isolate]",
-              )}
-            >
-              {trans.length > 1 ? (
-                <div className="rd-trans-author text-[0.8rem] font-semibold uppercase tracking-[0.05em] text-[var(--text-muted)]">
-                  {item.edition?.name || item.edition?.identifier}
-                </div>
-              ) : null}
-              <div>{item.text}</div>
+
+      {ayahTransliteration && translations.length > 0 ? (
+        <div className="rd-trans-separator h-px w-full bg-[color-mix(in_srgb,var(--border)_72%,transparent_28%)]" />
+      ) : null}
+
+      {translations.map((item, index) => (
+        <div
+          key={item.edition?.identifier || index}
+          className={cn(
+            "rd-trans-item flex max-w-[72ch] flex-col gap-1 text-[clamp(0.97rem,0.9rem+0.22vw,1.08rem)] leading-[1.78] text-[var(--text-secondary)] max-[640px]:text-[0.92rem] max-[640px]:leading-[1.66] max-[560px]:landscape:leading-[1.56]",
+            riwaya === "warsh" && "[text-align:start] [unicode-bidi:isolate]",
+          )}
+        >
+          {translations.length > 1 ? (
+            <div className="rd-trans-author text-[0.8rem] font-semibold uppercase tracking-[0.05em] text-[var(--text-muted)]">
+              {item.edition?.name || item.edition?.identifier}
             </div>
-          ))}
-        </Panel>
-      ) : null}
-    </>
+          ) : null}
+          <div>{item.text}</div>
+        </div>
+      ))}
+    </Panel>
   );
 }

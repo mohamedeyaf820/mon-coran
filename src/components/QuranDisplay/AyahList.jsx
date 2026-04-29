@@ -2,6 +2,8 @@ import React from "react";
 import { toAr } from "../../data/surahs";
 import { cn } from "../../lib/utils";
 import AyahBlock from "../Quran/AyahBlock";
+import AyahMarker from "../Quran/AyahMarker";
+import SmartAyahRenderer from "../Quran/SmartAyahRenderer";
 
 function PageSeparator({ ayah, lang, theme }) {
   return (
@@ -51,6 +53,82 @@ export default function AyahList({
   getAyahId,
   getSurahNumber,
 }) {
+  const useContinuousFlow =
+    !showTranslation &&
+    !showWordByWord &&
+    !showTransliteration &&
+    !showWordTranslation &&
+    !memMode;
+
+  if (useContinuousFlow) {
+    return (
+      <div
+        role="list"
+        className={cn(className, "qcom-continuous-list")}
+        dir="rtl"
+        lang="ar"
+      >
+        {ayahs.map((ayah, index) => {
+          const surahNumber = getSurahNumber(ayah);
+          const toggleId = getToggleId(ayah);
+          const isPlaying =
+            currentPlayingAyah?.ayah === ayah.numberInSurah &&
+            currentPlayingAyah?.surah === surahNumber;
+          const isActive = activeAyah === toggleId;
+          const showPageSeparator =
+            showPageSeparators &&
+            index > 0 &&
+            ayahs[index - 1].page !== ayah.page;
+
+          return (
+            <React.Fragment key={ayah.number}>
+              {showPageSeparator ? (
+                <PageSeparator ayah={ayah} lang={lang} theme={theme} />
+              ) : null}
+              <span
+                id={getAyahId(ayah)}
+                role="listitem"
+                data-surah-number={surahNumber || currentSurah}
+                data-ayah-number={ayah.numberInSurah}
+                data-ayah-global={ayah.number}
+                aria-current={isPlaying ? "true" : undefined}
+                tabIndex={0}
+                className={cn(
+                  "qcom-continuous-verse",
+                  isActive && "qcom-continuous-verse--active",
+                  isPlaying && "qcom-continuous-verse--playing",
+                )}
+                onClick={() => onToggleActive?.(toggleId)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onToggleActive?.(toggleId);
+                  }
+                }}
+              >
+                <SmartAyahRenderer
+                  ayah={ayah}
+                  showTajwid={showTajwid}
+                  isPlaying={isPlaying}
+                  surahNum={surahNumber || currentSurah}
+                  calibration={calibration}
+                  riwaya={riwaya}
+                />
+                <AyahMarker
+                  num={ayah.numberInSurah}
+                  isPlaying={isPlaying}
+                  className="qcom-verse-stop"
+                  size="0.96em"
+                />
+                {"\u200A"}
+              </span>
+            </React.Fragment>
+          );
+        })}
+      </div>
+    );
+  }
+
   return (
     <div role="list" className={className}>
       {ayahs.map((ayah, index) => {

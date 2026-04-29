@@ -15,7 +15,7 @@ export function buildCspPolicy(mode = "production") {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
     "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
     "style-src-attr 'unsafe-inline'",
-    "font-src 'self' https://fonts.gstatic.com https://quran.com https://*.quran.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com data:",
+    "font-src 'self' https://fonts.gstatic.com https://fonts.quranwbw.com https://quran.com https://*.quran.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com data:",
     "img-src 'self' data: blob: https:",
     `connect-src ${connectSrc}`,
     "media-src 'self' blob: https://cdn.islamic.network https://everyayah.com https://audio.qurancdn.com https://verses.quran.com https://*.mp3quran.net",

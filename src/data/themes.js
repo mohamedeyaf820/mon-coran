@@ -17,14 +17,14 @@ export const THEMES = [
     fr: "Lueur du Fajr",
     ar: "نور الفجر",
     en: "Fajr Glow",
-    descriptionFr: "Blanc doux, contraste net et turquoise discret.",
+    descriptionFr: "Blanc doux, contraste net et vert profond.",
     descriptionAr: "إضاءة بيضاء هادئة مع تباين واضح ولمسة تركواز خفيفة.",
-    descriptionEn: "Soft white clarity with crisp contrast and subtle turquoise.",
+    descriptionEn: "Soft white clarity with crisp contrast and deep green.",
     period: "day",
     palette: {
       bg: "#fcfdfd",
       ink: "#1f2832",
-      accent: "#2f9ea7",
+      accent: "#0b6235",
     },
   },
   {

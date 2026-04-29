@@ -58,7 +58,7 @@ export default function HomePage({ lowPerfMode = false }) {
 
   /* ── State local ─────────────────────────────────────────────────────── */
   const [activeTab, setActiveTab] = useState("surah");
-  const [activeInfo, setActiveInfo] = useState("bookmarks");
+  const [activeInfo, setActiveInfo] = useState("suggest");
   const [bookmarks, setBookmarks] = useState([]);
   const [notes, setNotes] = useState([]);
   const [filter, setFilter] = useState("");
