@@ -23,49 +23,58 @@ const SurahHeader = React.memo(function SurahHeader({ surahNum, lang }) {
 
   return (
     <section
-      className="qc-surah-header qc-surah-header--minimal"
-      data-surah-type={isMeccan ? "meccan" : "medinan"}
+      className="qc-reader-surah-header"
+      aria-labelledby={`surah-title-${surahNum}`}
     >
-      <div className="qc-surah-header__summary">
-        <div className="qc-surah-header__arabic font-surah-names" dir="rtl" lang="ar">
-          {s.ar}
+      <div className="qc-reader-surah-header__number" aria-hidden="true">
+        {surahNum}
+      </div>
+
+      <div className="qc-reader-surah-header__body">
+        <div
+          className="qc-reader-surah-header__arabic"
+          dir="rtl"
+          lang="ar"
+          aria-label={s.ar}
+        >
+          {String(surahNum).padStart(3, "0")}
         </div>
 
-        <div className="qc-surah-header__title">
-          <h1>
-            <span>{surahNum}. </span>
-            {s.en}
-          </h1>
-          <span>{translatedName}</span>
-        </div>
+        <h1
+          id={`surah-title-${surahNum}`}
+          className="qc-reader-surah-header__title"
+        >
+          {translatedName}
+        </h1>
+        <div className="qc-reader-surah-header__subtitle">{s.en}</div>
 
-        <div className="qc-surah-header__meta">
+        <div className="qc-reader-surah-header__meta">
           <span
             className={cn(
-              "qc-surah-header__pill",
-              isMeccan
-                ? "qc-surah-header__pill--gold"
-                : "qc-surah-header__pill--green",
+              "qc-reader-surah-header__pill",
+              isMeccan && "qc-reader-surah-header__pill--gold",
             )}
           >
             {revelationLabel}
           </span>
-          <span>
+          <span className="qc-reader-surah-header__dot" aria-hidden="true">
+            .
+          </span>
+          <span className="qc-reader-surah-header__pill">
             {s.ayahs} {ayahLabel}
           </span>
         </div>
-
-        <button
-          type="button"
-          className="qc-sh-info-toggle"
-          onClick={() => setShowInfo((value) => !value)}
-          aria-expanded={showInfo}
-          aria-label={labelFor(lang, "Informations sur la sourate", "Surah information")}
-        >
-          <Info size={15} />
-          <span>Info</span>
-        </button>
       </div>
+
+      <button
+        type="button"
+        className="qc-reader-surah-header__info"
+        onClick={() => setShowInfo((v) => !v)}
+        aria-expanded={showInfo}
+        aria-label={labelFor(lang, "Informations sur la sourate", "Surah information")}
+      >
+        <Info size={16} />
+      </button>
 
       {showInfo ? <SurahInfoPanel surahNum={surahNum} lang={lang} /> : null}
     </section>

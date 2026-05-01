@@ -31,6 +31,12 @@ function isTrustedAudioUrl(url) {
     if (host === "download.quranicaudio.com") {
       return /\.mp3$/i.test(path);
     }
+    if (host === "audio.qurancdn.com") {
+      return /\.mp3$/i.test(path);
+    }
+    if (host === "verses.quran.com") {
+      return /\.mp3$/i.test(path);
+    }
     if (TRUSTED_MP3QURAN_HOST.test(host)) {
       return /\.mp3$/i.test(path);
     }
@@ -88,6 +94,7 @@ class AudioService {
     this._hasCapturedLatency = false;
     this._reciterLatencyByKey = Object.create(null);
     this._latencyListeners = [];
+    this._oneShotMode = false;
 
     // Memorization mode
     this.memMode = false;
@@ -198,6 +205,17 @@ class AudioService {
     return [...new Set([primary, unpadded])];
   }
 
+  static withQuranComPrimary(candidates, timing) {
+    const quranComUrl =
+      timing &&
+      Array.isArray(timing.segments) &&
+      timing.segments.length > 0 &&
+      typeof timing.url === "string"
+        ? timing.url
+        : null;
+    return quranComUrl ? [...new Set([quranComUrl, ...candidates])] : candidates;
+  }
+
   static buildPlaylistSignature(ayahs, reciterCdn, cdnType = "islamic") {
     const base = `${cdnType}:${reciterCdn || ""}`;
     const preparedAyahs = AudioService.normalizePlaylistAyahs(ayahs, cdnType);
@@ -230,16 +248,30 @@ class AudioService {
     );
     if (nextSignature === this._playlistSignature && this.playlist.length > 0) {
       let hasTextUpdates = false;
+      let hasTimingUpdates = false;
       this.playlist = this.playlist.map((item, index) => {
         const nextText = preparedAyahs?.[index]?.text;
+        const nextTiming = preparedAyahs?.[index]?.quranComAudioTiming || null;
+        let nextItem = item;
         if (nextText && nextText !== item.text) {
           hasTextUpdates = true;
-          return { ...item, text: nextText };
+          nextItem = { ...nextItem, text: nextText };
         }
-        return item;
+        if (nextTiming && nextTiming !== item.quranComAudioTiming) {
+          const nextUrls = AudioService.withQuranComPrimary(item.urls || [item.url], nextTiming);
+          hasTimingUpdates = true;
+          nextItem = {
+            ...nextItem,
+            quranComAudioTiming: nextTiming,
+            urls: nextUrls,
+            url: nextUrls[0] || item.url,
+            segments: Array.isArray(nextTiming.segments) ? nextTiming.segments : item.segments,
+          };
+        }
+        return nextItem;
       });
 
-      if (hasTextUpdates && this.playlistIndex >= 0) {
+      if ((hasTextUpdates || hasTimingUpdates) && this.playlistIndex >= 0) {
         this.currentAyah = this.playlist[this.playlistIndex] || this.currentAyah;
       }
       return;
@@ -260,7 +292,9 @@ class AudioService {
     );
 
     this.playlist = preparedAyahs.map((a) => {
-      const urlCandidates = AudioService.buildUrlCandidates(
+      const timing = a.quranComAudioTiming || null;
+      const urlCandidates = AudioService.withQuranComPrimary(
+        AudioService.buildUrlCandidates(
         reciterCdn,
         {
           surah: a.surah || a.surahNumber,
@@ -268,6 +302,8 @@ class AudioService {
           number: a.number,
         },
         cdnType,
+        ),
+        timing,
       );
       return {
         surah: a.surah || a.surahNumber,
@@ -278,6 +314,10 @@ class AudioService {
         urls: urlCandidates,
         url: urlCandidates[0],
         text: a.text,
+        quranComAudioTiming: timing,
+        segments: Array.isArray(timing?.segments)
+          ? timing.segments
+          : [],
       };
     });
 
@@ -505,15 +545,26 @@ class AudioService {
    */
   async playSingle(url, meta = {}) {
     try {
+      this._oneShotMode = true;
       this.onNetworkState?.("loading");
       await this._loadUrlWithRetry(url);
       this.isPlaying = true;
       this.onNetworkState?.("playing");
       this.onPlay?.({ url, ...meta });
+      return true;
     } catch (err) {
       this.onNetworkState?.("error");
       this.onError?.(err);
+      return false;
     }
+  }
+
+  async playWordAudio(url, meta = {}) {
+    return this.playSingle(url, {
+      type: "word",
+      source: "word-by-word",
+      ...meta,
+    });
   }
 
   /* ── Speed ─────────────────────────────────── */
@@ -840,6 +891,14 @@ class AudioService {
   }
 
   _handleEnded() {
+    if (this._oneShotMode) {
+      this._oneShotMode = false;
+      this.isPlaying = false;
+      this.onEnd?.();
+      for (const fn of this._endListeners) fn();
+      return;
+    }
+
     // Memorization mode: repeat current ayah
     if (this.memMode) {
       this.memCurrentRepeat++;

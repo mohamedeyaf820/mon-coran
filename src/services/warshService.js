@@ -6,16 +6,19 @@
  */
 
 import { dbGet, dbSet } from './dbService';
-import { WARSH_DATA_BASE_URL } from '../constants/warshSource';
+import { WARSH_DATA_BASE_URL, WARSH_LEGACY_JSON_URL } from '../constants/warshSource';
+import { fetchQuranComText } from './quranComAPI';
+import { getSurah } from '../data/surahs';
 
 const IDB_STORE = 'cache';
-const IDB_KEY_PREFIX = 'warsh-unicode-s-';
-const WARSH_SOURCE_ID = 'warsh-audio-repo-v1';
+const IDB_KEY_PREFIX = 'warsh-unicode-v4-s-';
+const WARSH_SOURCE_ID = 'warsh-unicode-v4';
 
 // ── State ────────────────────────────────────────────
 // In-memory cache for surahs: Map[surahNum] -> Array[normalized ayah records]
 const cachedSurahs = new Map();
 const pendingSurahs = new Map(); // deduplication
+let legacyWarshDataPromise = null;
 
 // Font logic is removed since we use standard Unicode
 export function isFontPageLoaded() { return true; }
@@ -29,6 +32,7 @@ export function getFontFamily() { return '"KFGQPC Uthmanic Script Warsh", "Amiri
 function normalizeWhitespace(text) {
   return String(text || '')
     .replace(/\u00a0/g, ' ')
+    .replace(/[\uFC00-\uFCFF\uFDF0-\uFDFF]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -37,12 +41,84 @@ function splitWarshWords(text) {
   return normalizeWhitespace(text).split(/\s+/).filter(Boolean);
 }
 
+function getSurahNumberFromRaw(raw) {
+  return Number(
+    raw?.surah_number ??
+      raw?.sura_no ??
+      raw?.sura ??
+      raw?.surah ??
+      raw?.chapter_id ??
+      raw?.chapter,
+  );
+}
+
+function rowsFromLegacyData(data, surahNumber) {
+  const n = Number(surahNumber);
+
+  if (Array.isArray(data)) {
+    const flatRows = data.filter((item) => getSurahNumberFromRaw(item) === n);
+    if (flatRows.length > 0) return flatRows;
+
+    const nested = data[n - 1] || data[n];
+    if (Array.isArray(nested)) return nested;
+    if (nested && typeof nested === 'object') {
+      return Object.entries(nested).map(([ayahNumber, text]) => ({
+        ayah_number: ayahNumber,
+        text,
+      }));
+    }
+    return [];
+  }
+
+  if (!data || typeof data !== 'object') return [];
+
+  const nested =
+    data[n] ||
+    data[String(n)] ||
+    data?.surahs?.[n] ||
+    data?.surahs?.[String(n)] ||
+    data?.chapters?.[n] ||
+    data?.chapters?.[String(n)];
+
+  if (Array.isArray(nested)) return nested;
+  if (nested && typeof nested === 'object') {
+    const ayahs = nested.ayahs || nested.verses;
+    if (Array.isArray(ayahs)) return ayahs;
+    return Object.entries(nested).map(([ayahNumber, text]) => ({
+      ayah_number: ayahNumber,
+      text,
+    }));
+  }
+
+  return [];
+}
+
+function normalizeWarshRows(rows, surahNumber) {
+  const seen = new Set();
+  return (Array.isArray(rows) ? rows : [])
+    .map((raw, index) => normalizeWarshRecord(raw, surahNumber, index + 1))
+    .filter(Boolean)
+    .filter((record) => {
+      if (seen.has(record.ayahNumber)) return false;
+      seen.add(record.ayahNumber);
+      return true;
+    })
+    .sort((a, b) => a.ayahNumber - b.ayahNumber);
+}
+
+function validateWarshRows(records, surahNumber) {
+  const expected = Number(getSurah(surahNumber)?.ayahs || 0);
+  if (!Array.isArray(records) || records.length === 0) return false;
+  if (expected && records.length !== expected) return false;
+  return records.every((record, index) => Number(record.ayahNumber) === index + 1);
+}
+
 /**
  * Normalizes a single ayah record from the new JSON format.
  */
-function normalizeWarshRecord(raw, surahNumber) {
-  const ayahNumber = Number(raw?.ayah_number);
-  const text = normalizeWhitespace(raw?.text);
+function normalizeWarshRecord(raw, surahNumber, fallbackAyahNumber = null) {
+  const ayahNumber = Number(raw?.ayah_number ?? raw?.aya_no ?? raw?.ayah ?? raw?.verse ?? fallbackAyahNumber);
+  const text = normalizeWhitespace(raw?.text ?? raw?.aya_text ?? raw?.ayah_text ?? raw?.verse_text ?? raw);
 
   if (!ayahNumber || !text) {
     return null;
@@ -124,15 +200,26 @@ export async function loadWarshSurah(surahNum) {
       }
     } catch { }
 
-    // 2. Fetch from network
-    const url = `${WARSH_DATA_BASE_URL}${String(n).padStart(3, '0')}.json`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Failed to load warsh surah ${n}: ${res.status}`);
-    
-    const data = await res.json();
-    const normalized = (data.ayahs || [])
-      .map(raw => normalizeWarshRecord(raw, n))
-      .filter(Boolean);
+    // 2. Fetch from the per-surah source first, then fall back to the shared JSON.
+    let normalized = [];
+    try {
+      const url = `${WARSH_DATA_BASE_URL}${String(n).padStart(3, '0')}.json`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Failed to load warsh surah ${n}: ${res.status}`);
+      const data = await res.json();
+      const rows = Array.isArray(data) ? data : (data.ayahs || data.verses || []);
+      normalized = normalizeWarshRows(rows, n);
+      if (!validateWarshRows(normalized, n)) {
+        throw new Error(`Invalid per-surah Warsh source for ${n}`);
+      }
+    } catch {
+      const legacy = await loadLegacyWarshData();
+      normalized = normalizeWarshRows(rowsFromLegacyData(legacy, n), n);
+    }
+
+    if (!validateWarshRows(normalized, n)) {
+      throw new Error(`Failed to load warsh surah ${n}: invalid or incomplete source`);
+    }
 
     cachedSurahs.set(n, normalized);
 
@@ -146,6 +233,75 @@ export async function loadWarshSurah(surahNum) {
 
   pendingSurahs.set(n, promise);
   return promise;
+}
+
+async function loadLegacyWarshData() {
+  if (!legacyWarshDataPromise) {
+    legacyWarshDataPromise = (async () => {
+      const idbKey = `${IDB_KEY_PREFIX}legacy-all`;
+      try {
+        const cached = await dbGet(IDB_STORE, idbKey);
+        if (cached && typeof cached === 'object') return cached;
+      } catch { }
+
+      const res = await fetch(WARSH_LEGACY_JSON_URL);
+      if (!res.ok) throw new Error(`Failed to load legacy Warsh JSON: ${res.status}`);
+      const data = await res.json();
+      dbSet(IDB_STORE, { key: idbKey, data }).catch(() => { });
+      return data;
+    })();
+  }
+  return legacyWarshDataPromise;
+}
+
+function toWarshAyahWithHafsMeta(record, hafsAyah) {
+  const ayah = toWarshAyah(record);
+  return {
+    ...ayah,
+    number: hafsAyah?.number ?? ayah.number,
+    juz: hafsAyah?.juz ?? ayah.juz,
+    page: hafsAyah?.page ?? ayah.page,
+    hizb: hafsAyah?.hizb ?? null,
+    rubElHizb: hafsAyah?.rubElHizb ?? null,
+    ruku: hafsAyah?.ruku ?? null,
+    manzil: hafsAyah?.manzil ?? null,
+    hafsText: hafsAyah?.text || hafsAyah?.quranCom?.textUthmani || null,
+    hafsSupport: hafsAyah
+      ? {
+          text: hafsAyah.text || hafsAyah.quranCom?.textUthmani || null,
+          quranCom: hafsAyah.quranCom || null,
+          words: Array.isArray(hafsAyah.words) ? hafsAyah.words : [],
+        }
+      : null,
+  };
+}
+
+async function getWarshVersesByHafsScope(pathPrefix) {
+  const hafsData = await fetchQuranComText(pathPrefix);
+  const hafsAyahs = Array.isArray(hafsData?.ayahs) ? hafsData.ayahs : [];
+  const groupedRecords = new Map();
+  const result = [];
+
+  for (const hafsAyah of hafsAyahs) {
+    const surahNumber = Number(hafsAyah?.surah?.number);
+    const ayahNumber = Number(hafsAyah?.numberInSurah);
+    if (!surahNumber || !ayahNumber) continue;
+
+    if (!groupedRecords.has(surahNumber)) {
+      groupedRecords.set(surahNumber, await getWarshSurahVerses(surahNumber));
+    }
+
+    const record = groupedRecords
+      .get(surahNumber)
+      .find((item) => Number(item.ayahNumber) === ayahNumber);
+
+    if (record) result.push(toWarshAyahWithHafsMeta(record, hafsAyah));
+  }
+
+  return {
+    ...buildWarshPayload(result),
+    number: Number(pathPrefix.split('/')[1]) || null,
+  };
 }
 
 /**
@@ -203,13 +359,11 @@ export async function getWarshSurahFormatted(surahNum) {
  * If we need full Juz support, we'd need to load multiple surahs.
  */
 export async function getWarshJuzVerses(juzNum) {
-  // For now, return empty or handle specifically if needed.
-  return buildWarshPayload([]);
+  return getWarshVersesByHafsScope(`juz/${juzNum}`);
 }
 
 export async function getWarshPageVerses(pageNum) {
-  // For now, return empty.
-  return buildWarshPayload([]);
+  return getWarshVersesByHafsScope(`page/${pageNum}`);
 }
 
 export function preloadWarshSurah(surahNum) {

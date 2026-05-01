@@ -67,11 +67,29 @@ export async function getWordByWord(surah, ayah, translationLang = 'en') {
         ar: null,
       };
       const translationId = translationIds[translationLang] ?? translationIds.en;
-      const wordFields = 'text_uthmani,text_imlaei,transliteration,translation,root,grammar';
+      const wordFields = [
+        'text_uthmani',
+        'text_uthmani_tajweed',
+        'text_qpc_hafs',
+        'text_indopak',
+        'text_imlaei',
+        'transliteration',
+        'translation',
+        'root',
+        'grammar',
+        'audio_url',
+        'code_v1',
+        'code_v2',
+        'page_number',
+        'line_number',
+        'line_v1',
+        'line_v2',
+      ].join(',');
       const params = new URLSearchParams({
         words: 'true',
         word_fields: wordFields,
         translation_fields: 'text',
+        mushaf: '1',
       });
       if (translationId) {
         params.set('translations', String(translationId));
@@ -99,11 +117,20 @@ export async function getWordByWord(surah, ayah, translationLang = 'en') {
         id: word.id,
         position: word.position,
         text: word.text_uthmani || word.text,
+        textQpcHafs: word.text_qpc_hafs || '',
+        textTajweed: word.text_uthmani_tajweed || '',
+        textIndopak: word.text_indopak || '',
         textSimple: word.text_imlaei || word.text,
+        codeV1: word.code_v1 || '',
+        codeV2: word.code_v2 || '',
         transliteration: word.transliteration?.text || '',
         translation: word.translation?.text || '',
         charType: word.char_type_name, // 'word' or 'end'
         audioUrl: normalizeWordAudioUrl(word.audio_url),
+        page: Number(word.page_number) || null,
+        lineNumber: Number(word.line_number) || null,
+        lineV1: Number(word.line_v1) || null,
+        lineV2: Number(word.line_v2) || null,
         location: word.location,
         root: word.root?.text || word.root || null,
         grammar: word.grammar?.text || word.grammar || null,

@@ -2,12 +2,11 @@ import React from "react";
 import { t } from "../../i18n";
 import { getSurah } from "../../data/surahs";
 import ReadingToolbar from "../Quran/ReadingToolbar";
-import Bismillah from "../Quran/Bismillah";
+import ReadingProgressBar from "../Quran/ReadingProgressBar";
 import CleanPageView from "../Quran/CleanPageView";
 import SurahHeader from "../Quran/SurahHeader";
-import { shouldShowStandaloneBasmala } from "../../utils/quranUtils";
 import AyahActionsModal from "./AyahActionsModal";
-import AyahList from "./AyahList";
+import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
 import { modePaneShellClass } from "./displayClasses";
 
@@ -42,9 +41,7 @@ export default function SurahMode({
   const endOfSurahLabel =
     lang === "fr"
       ? "Fin de la Sourate"
-      : lang === "ar"
-        ? "نهاية السورة"
-        : "End of Surah";
+      : "End of Surah";
 
   return (
     <div
@@ -52,13 +49,10 @@ export default function SurahMode({
       aria-label={t("settings.surahMode", lang)}
       className={`quran-mode-pane quran-mode-pane--surah ${modePaneShellClass}`}
     >
+      <ReadingProgressBar />
       {!(isQCF4 && mushafLayout === "mushaf") && (
         <div className="qc-surah-header-wrap animate-in">
           <SurahHeader surahNum={currentSurah} lang={lang} />
-          {shouldShowStandaloneBasmala(currentSurah, riwaya, ayahs[0]?.text) &&
-          mushafLayout !== "mushaf" ? (
-            <Bismillah />
-          ) : null}
         </div>
       )}
 
@@ -87,6 +81,7 @@ export default function SurahMode({
             onAyahClick={onToggleActive}
             activeAyah={activeAyah}
             getAyahToggleId={(ayah) => ayah.numberInSurah}
+            showSurahHeader={false}
           />
           <AyahActionsModal
             activeAyah={activeAyah}
@@ -96,14 +91,11 @@ export default function SurahMode({
           />
         </>
       ) : (
-        <AyahList
+        <QCVerseByVerseView
           ayahs={ayahs}
-          className={classes.ayahListClass}
           currentPlayingAyah={currentPlayingAyah}
           activeAyah={activeAyah}
           lang={lang}
-          theme={theme}
-          currentSurah={currentSurah}
           getTranslationForAyah={getTranslationForAyah}
           showPageSeparators
           showTajwid={showTajwid}
@@ -116,9 +108,8 @@ export default function SurahMode({
           fontSize={readingFontSize}
           memMode={memMode}
           onToggleActive={onToggleActive}
-          getToggleId={(ayah) => ayah.numberInSurah}
-          getAyahId={(ayah) => `ayah-${ayah.numberInSurah}`}
-          getSurahNumber={() => currentSurah}
+          displayMode="surah"
+          surahMeta={surahMeta}
         />
       )}
 
@@ -132,14 +123,6 @@ export default function SurahMode({
             </span>
             <span className="text-[var(--text-muted)] text-sm">☾</span>
           </div>
-          {surahMeta?.ar && (
-            <div
-              className="font-[var(--font-quran)] text-2xl text-[var(--primary)] opacity-70"
-              dir="rtl"
-            >
-              {surahMeta.ar}
-            </div>
-          )}
           <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.3)] to-transparent" />
         </div>
       )}
@@ -157,7 +140,7 @@ export default function SurahMode({
           surahMeta ? (
             <div className="mode-nav-current">
               <strong>
-                {lang === "fr" ? surahMeta.fr || surahMeta.en : lang === "ar" ? surahMeta.ar : surahMeta.en}
+                {lang === "fr" ? surahMeta.fr || surahMeta.en : surahMeta.en}
               </strong>
               <span>
                 {surahMeta.ayahs} {t("quran.ayahs", lang)}

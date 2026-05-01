@@ -38,7 +38,16 @@ function emitToast(type, message) {
 
 export default function AyahActions({ surah, ayah, ayahData, compact = false }) {
   const { state, dispatch, set } = useApp();
-  const { lang, reciter, riwaya, warshStrictMode, displayMode } = state;
+  const {
+    lang,
+    reciter,
+    riwaya,
+    warshStrictMode,
+    displayMode,
+    memPause,
+    memRepeatCount,
+    showTranslation,
+  } = state;
 
   const [bookmarked, setBookmarked] = useState(false);
   const [memoLevel, setMemoLevel] = useState(0);
@@ -148,7 +157,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
       error: null,
     });
 
-    getVerseTafsir({ surah, ayah, signal: controller.signal })
+    getVerseTafsir({ surah, ayah, lang, signal: controller.signal })
       .then((data) => {
         if (!mounted) return;
         setTafsirState({
@@ -303,6 +312,34 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
         ),
       );
     });
+  };
+
+  const repeatAyah = () => {
+    const repeatCount = Math.max(2, Number(memRepeatCount) || 3);
+    const pauseMs = Math.max(500, Number(memPause || 2) * 1000);
+    set({ memMode: true, memRepeatCount: repeatCount, memPause: memPause || 2 });
+    audioService.enableMemorization(repeatCount, pauseMs);
+    playAyah();
+    emitToast(
+      "success",
+      toastText(
+        `Repetition du verset activee x${repeatCount}`,
+        `تكرار الآية ×${repeatCount}`,
+        `Verse repeat enabled x${repeatCount}`,
+      ),
+    );
+  };
+
+  const showTranslationForAyah = () => {
+    set({ showTranslation: true, showWordByWord: false });
+    emitToast(
+      "info",
+      toastText(
+        "Traduction affichee sous les versets",
+        "تم إظهار الترجمة",
+        "Translation shown below verses",
+      ),
+    );
   };
 
   const copyVerseText = async (value, successMessage) => {
@@ -624,6 +661,26 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
       onClick: handleMemorizationBoost,
     },
     {
+      key: "repeat",
+      className: "ayah-action-card ayah-action-card--repeat",
+      icon: "fa-repeat",
+      label:
+        lang === "fr"
+          ? "Repeter"
+          : lang === "ar"
+            ? "تكرار"
+            : "Repeat",
+      description:
+        lang === "fr"
+          ? "Relire cette ayah"
+          : lang === "ar"
+            ? "إعادة هذه الآية"
+            : "Replay this ayah",
+      state: `x${Math.max(2, Number(memRepeatCount) || 3)}`,
+      active: false,
+      onClick: repeatAyah,
+    },
+    {
       key: "note",
       className: `ayah-action-card${showNote ? " is-active" : ""}`,
       icon: "fa-pen-line",
@@ -718,6 +775,32 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
         : null,
       active: playlistAdded || showPlaylistMenu,
       onClick: openPlaylistMenu,
+    },
+    {
+      key: "translation",
+      className: `ayah-action-card${showTranslation ? " is-active" : ""}`,
+      icon: "fa-language",
+      label:
+        lang === "fr"
+          ? "Traduction"
+          : lang === "ar"
+            ? "ترجمة"
+            : "Translation",
+      description:
+        lang === "fr"
+          ? "Afficher le sens"
+          : lang === "ar"
+            ? "إظهار المعنى"
+            : "Show meaning",
+      state: showTranslation
+        ? lang === "fr"
+          ? "Visible"
+          : lang === "ar"
+            ? "ظاهرة"
+            : "Visible"
+        : null,
+      active: showTranslation,
+      onClick: showTranslationForAyah,
     },
     {
       key: "study",
@@ -888,6 +971,11 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
                   ? "افتح هذا التبويب لتحميل تفسير الآية."
                   : "Open this tab to load the verse tafsir.")}
           </p>
+          {tafsirState.data?.note ? (
+            <div className="mt-3 rounded-lg border border-[rgba(var(--primary-rgb),0.18)] bg-[rgba(var(--primary-rgb),0.06)] px-3 py-2 text-sm text-[var(--text-secondary)]">
+              {tafsirState.data.note}
+            </div>
+          ) : null}
         </div>
       );
     }
@@ -1000,6 +1088,15 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
               aria-label={lang === "fr" ? "Ecouter le verset" : lang === "ar" ? "تشغيل الآية" : "Play verse"}
             >
               <i className={`fas fa-${audioError ? "triangle-exclamation" : "play"}`} />
+            </button>
+            <button
+              type="button"
+              className={inlineIconButtonClass}
+              onClick={repeatAyah}
+              title={lang === "fr" ? "Repeter le verset" : lang === "ar" ? "تكرار الآية" : "Repeat verse"}
+              aria-label={lang === "fr" ? "Repeter le verset" : lang === "ar" ? "تكرار الآية" : "Repeat verse"}
+            >
+              <i className="fas fa-repeat" />
             </button>
             <button
               type="button"
@@ -1166,6 +1263,9 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false }) 
                 type="button"
                 className={`${action.className}${action.active ? " is-active" : ""}`}
                 onClick={action.onClick}
+                aria-pressed={Boolean(action.active)}
+                aria-label={action.label}
+                title={action.description}
               >
                 <span className="ayah-action-card__icon">
                   <i className={`fas ${action.icon}`} />

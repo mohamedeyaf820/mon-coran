@@ -2,64 +2,8 @@
 > mushafplus@1.1.0 dev
 > vite --host 127.0.0.1 --port 5174
 
-Port 5174 is in use, trying another one...
-Port 5175 is in use, trying another one...
-Port 5176 is in use, trying another one...
 
-  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m772[22m[2m[0m ms[22m
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m2321[22m[2m[0m ms[22m
 
-  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5177[22m/[39m
-[2m01:27:15[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\ReadingToolbar.jsx, /src/styles/tailwind.css[22m
-[2m01:28:09[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\ReadingToolbar.jsx, /src/styles/tailwind.css[22m
-[2m01:28:10[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\SurahInfoPanel.jsx, /src/styles/tailwind.css[22m
-[2m01:28:10[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\SurahInfoPanel.jsx, /src/styles/tailwind.css[22m
-[2m01:29:40[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\SurahHeader.jsx, /src/styles/tailwind.css[22m
-[2m01:30:33[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m01:47:34[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Home\HomePrimitives.jsx, /src/styles/tailwind.css[22m
-[2m01:47:45[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\SurahMode.jsx, /src/styles/tailwind.css[22m
-[2m01:48:05[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\ModeNavigation.jsx, /src/styles/tailwind.css[22m
-[2m01:49:20[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m02:02:19[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m02:28:43[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m02:41:38[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\SurahHeader.jsx, /src/styles/tailwind.css[22m
-[2m02:42:08[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\CleanPageDecor.jsx, /src/styles/tailwind.css[22m
-[2m02:42:59[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\CleanPageView.jsx, /src/styles/tailwind.css[22m
-[2m02:44:23[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\SurahInfoPanel.jsx, /src/styles/tailwind.css[22m
-[2m02:44:24[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\SurahInfoPanel.jsx, /src/styles/tailwind.css[22m
-[2m02:45:20[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m02:56:13[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\SurahHeader.jsx, /src/styles/tailwind.css[22m
-[2m02:56:36[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\CleanPageDecor.jsx, /src/styles/tailwind.css[22m
-[2m02:57:29[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\AyahList.jsx, /src/styles/tailwind.css[22m
-[2m02:58:45[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m03:03:09[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m03:05:43[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m03:06:49[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m03:07:17[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\ReadingToolbar.jsx, /src/styles/tailwind.css[22m
-[2m03:07:47[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m03:09:05[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\JuzMode.jsx, /src/styles/tailwind.css[22m
-[2m03:09:24[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/QuranDisplay.jsx, /src/styles/tailwind.css[22m
-es/tailwind.css[22m
-[2m01:30:33[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m01:47:34[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Home\HomePrimitives.jsx, /src/styles/tailwind.css[22m
-[2m01:47:45[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\SurahMode.jsx, /src/styles/tailwind.css[22m
-[2m01:48:05[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\ModeNavigation.jsx, /src/styles/tailwind.css[22m
-[2m01:49:20[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m02:02:19[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m02:28:43[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m02:41:38[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\SurahHeader.jsx, /src/styles/tailwind.css[22m
-[2m02:42:08[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\CleanPageDecor.jsx, /src/styles/tailwind.css[22m
-[2m02:42:59[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\CleanPageView.jsx, /src/styles/tailwind.css[22m
-[2m02:44:23[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\SurahInfoPanel.jsx, /src/styles/tailwind.css[22m
-[2m02:44:24[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\SurahInfoPanel.jsx, /src/styles/tailwind.css[22m
-[2m02:45:20[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m02:56:13[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\SurahHeader.jsx, /src/styles/tailwind.css[22m
-[2m02:56:36[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\CleanPageDecor.jsx, /src/styles/tailwind.css[22m
-[2m02:57:29[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\AyahList.jsx, /src/styles/tailwind.css[22m
-[2m02:58:45[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m03:03:09[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m03:05:43[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m03:06:49[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m03:07:17[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\Quran\ReadingToolbar.jsx, /src/styles/tailwind.css[22m
-[2m03:07:47[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/tailwind.css[22m
-[2m03:09:05[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/E:\mon coran\src\components\QuranDisplay\JuzMode.jsx, /src/styles/tailwind.css[22m
-[2m03:09:24[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/QuranDisplay.jsx, /src/styles/tailwind.css[22m
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5174[22m/[39m
+[2m15:14:08[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/PlatformLogo.jsx, /src/styles/tailwind.css[22m

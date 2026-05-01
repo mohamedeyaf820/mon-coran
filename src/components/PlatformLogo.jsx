@@ -34,7 +34,7 @@ export default function PlatformLogo({
         alt={decorative ? "" : alt}
         className={imgClassName}
         loading={priority ? "eager" : loading}
-        fetchPriority={priority ? "high" : fetchPriority}
+        fetchpriority={priority ? "high" : fetchPriority}
         decoding={priority ? "sync" : "async"}
         width={width}
         height={height}

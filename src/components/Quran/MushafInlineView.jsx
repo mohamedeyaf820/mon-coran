@@ -10,6 +10,7 @@ function AyahMarker({ lang, num }) {
   return (
     <span className="mp-ayah-marker verse-stop-medallion" aria-label={`Fin verset ${num}`}>
       <span className="verse-stop-medallion__ring" aria-hidden="true" />
+      <span className="verse-stop-medallion__inner" aria-hidden="true" />
       <span className="mp-ayah-marker-glyph" aria-hidden="true">
         {"\u06dd"}
       </span>

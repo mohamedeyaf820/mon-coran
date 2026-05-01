@@ -32,6 +32,7 @@ function buildWordWeights(words) {
 export default function useWordByWordDisplay({
   ayah,
   calibration,
+  initialWords,
   isPlaying,
   reciter,
   riwaya,
@@ -41,10 +42,27 @@ export default function useWordByWordDisplay({
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [words, setWords] = useState([]);
+  const [activeWordId, setActiveWordId] = useState(null);
+  const [exactWordIdx, setExactWordIdx] = useState(-1);
   const lastIdxRef = useRef(0);
 
   useEffect(() => {
     let cancelled = false;
+    const embeddedWords = Array.isArray(initialWords)
+      ? initialWords.filter((word) => (word.charType || word.char_type_name) === "word")
+      : [];
+    const embeddedWordsHaveTranslations =
+      wordTranslationLang === "ar" || embeddedWords.some((word) => word.translation);
+
+    if (embeddedWords.length > 0 && embeddedWordsHaveTranslations) {
+      setWords(embeddedWords);
+      setLoading(false);
+      setError(null);
+      return () => {
+        cancelled = true;
+      };
+    }
+
     setLoading(true);
     setError(null);
 
@@ -66,7 +84,7 @@ export default function useWordByWordDisplay({
     return () => {
       cancelled = true;
     };
-  }, [ayah, surah, wordTranslationLang]);
+  }, [ayah, initialWords, surah, wordTranslationLang]);
 
   const effectiveCalibration = useMemo(() => {
     const reciterId = typeof reciter === "string" ? reciter : reciter?.id;
@@ -89,9 +107,64 @@ export default function useWordByWordDisplay({
 
   useEffect(() => {
     lastIdxRef.current = 0;
+    setExactWordIdx(-1);
+    setActiveWordId(null);
   }, [ayah, seekCount, surah]);
 
+  useEffect(() => {
+    return audioService.addEndListener(() => {
+      setActiveWordId(null);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!isPlaying) {
+      setExactWordIdx(-1);
+      return undefined;
+    }
+
+    const updateFromSegments = (timeSec = audioService.currentTime || 0) => {
+      const currentAyah = audioService.currentAyah;
+      if (
+        !currentAyah ||
+        Number(currentAyah.surah) !== Number(surah) ||
+        Number(currentAyah.ayah) !== Number(ayah)
+      ) {
+        setExactWordIdx(-1);
+        return;
+      }
+
+      const segments = Array.isArray(currentAyah.segments) ? currentAyah.segments : [];
+      if (segments.length === 0) {
+        setExactWordIdx(-1);
+        return;
+      }
+
+      const timeMs = timeSec * 1000;
+      let nextIndex = -1;
+      for (const segment of segments) {
+        if (timeMs >= segment.startMs && timeMs <= segment.endMs) {
+          nextIndex = Number.isFinite(segment.wordIndex)
+            ? segment.wordIndex
+            : Math.max(0, Number(segment.wordPosition || 1) - 1);
+          break;
+        }
+        if (timeMs > segment.endMs) {
+          nextIndex = Number.isFinite(segment.wordIndex)
+            ? segment.wordIndex
+            : Math.max(0, Number(segment.wordPosition || 1) - 1);
+        }
+      }
+
+      setExactWordIdx(nextIndex);
+    };
+
+    updateFromSegments();
+    return audioService.addTimeUpdateListener(updateFromSegments);
+  }, [ayah, isPlaying, surah]);
+
   const currentWordIdx = useMemo(() => {
+    if (exactWordIdx >= 0) return exactWordIdx;
     if (!isPlaying || words.length === 0) return -1;
     let currentIndex = 0;
     wordWeights.forEach((weight, index) => {
@@ -100,20 +173,42 @@ export default function useWordByWordDisplay({
     const finalIndex = Math.max(lastIdxRef.current, Math.max(0, currentIndex - lagWords));
     lastIdxRef.current = finalIndex;
     return finalIndex;
-  }, [isPlaying, lagWords, progress, wordWeights, words.length]);
+  }, [exactWordIdx, isPlaying, lagWords, progress, wordWeights, words.length]);
 
   const handleWordClick = useCallback(
-    (word, onSelect) => {
+    (word, onSelect, event) => {
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
       onSelect(word);
+      const wordId = word?.id ?? `${surah}:${ayah}:${word?.position ?? ""}`;
+      setActiveWordId(wordId);
       if (word?.audioUrl) {
-        const audio = new Audio(word.audioUrl);
-        audio.play().catch(() => audioService.playAyah(surah, ayah));
+        audioService
+          .playWordAudio(word.audioUrl, {
+            surah,
+            ayah,
+            wordId,
+            wordPosition: word.position,
+            wordText: word.text,
+            translation: word.translation,
+          })
+          .then((played) => {
+            if (!played) {
+              setActiveWordId(null);
+              audioService.playAyah(surah, ayah);
+            }
+          })
+          .catch(() => {
+            setActiveWordId(null);
+            audioService.playAyah(surah, ayah);
+          });
         return;
       }
+      setActiveWordId(null);
       audioService.playAyah(surah, ayah);
     },
     [ayah, surah],
   );
 
-  return { currentWordIdx, error, handleWordClick, loading, words };
+  return { activeWordId, currentWordIdx, error, handleWordClick, loading, words };
 }

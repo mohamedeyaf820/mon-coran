@@ -23,7 +23,7 @@ const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, t
     if (!words || words.length === 0) return null;
 
     return (
-        <span className="warsh-unicode-text inline-flex flex-wrap gap-x-[0.3em] gap-y-1" dir="rtl">
+        <span className="warsh-unicode-text inline" dir="rtl">
             {words.map((word, i) => {
                 const isMarkerToken = Boolean(markerFlags?.[i]);
                 let cls = 'warsh-unicode-word';
@@ -43,9 +43,12 @@ const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, t
                 if (ruleId) wordStyle.color = `var(--tajwid-${ruleId}, ${TAJWID_FALLBACK_COLORS[ruleId] || 'inherit'})`;
 
                 return (
-                    <span key={i} className={cls} style={wordStyle}>
-                        {word}
-                    </span>
+                    <React.Fragment key={i}>
+                        <span className={cls} style={wordStyle}>
+                            {word}
+                        </span>
+                        {i < words.length - 1 && " "}
+                    </React.Fragment>
                 );
             })}
         </span>

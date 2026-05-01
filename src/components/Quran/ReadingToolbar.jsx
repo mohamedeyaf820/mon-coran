@@ -4,18 +4,13 @@ import {
   Languages,
   List,
   Loader2,
-  Minus,
   Palette,
   Play,
-  Plus,
   Type,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 import { cn } from "../../lib/utils";
-
-const FONT_SIZE_MIN = 32;
-const FONT_SIZE_MAX = 64;
-const FONT_SIZE_STEP = 4;
+import ArabicFontControls from "../ArabicFontControls";
 
 function labelFor(lang, fr, en, ar = en) {
   if (lang === "ar") return ar;
@@ -33,13 +28,13 @@ function ToolbarButton({
     <button
       type="button"
       className={cn(
-        "reader-toolbar-btn inline-flex h-9 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[10px] border px-3",
-        "font-ui text-[0.78rem] font-semibold transition duration-150",
+        "inline-flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full px-4",
+        "font-[var(--font-ui)] text-[0.82rem] font-semibold tracking-wide transition-all duration-300",
         primary
-          ? "reader-toolbar-btn--primary border-[var(--primary)] bg-[var(--primary)] text-white shadow-none disabled:opacity-60"
+          ? "bg-[var(--primary)] text-white shadow-[0_4px_14px_rgba(var(--primary-rgb),0.35)] hover:shadow-[0_6px_20px_rgba(var(--primary-rgb),0.45)] hover:-translate-y-0.5 active:scale-[0.96] disabled:opacity-50 disabled:hover:translate-y-0"
           : active
-            ? "active border-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] text-[var(--primary)]"
-            : "border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:border-[rgba(var(--primary-rgb),0.34)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
+            ? "bg-[rgba(var(--primary-rgb),0.12)] text-[var(--primary)] ring-1 ring-[color-mix(in_srgb,var(--primary)_40%,transparent_60%)] shadow-sm"
+            : "text-[var(--text-secondary)] hover:bg-[color-mix(in_srgb,var(--text-primary)_6%,transparent_94%)] hover:text-[var(--text-primary)] active:scale-[0.96]",
         className,
       )}
       {...props}
@@ -56,11 +51,10 @@ export default function ReadingToolbar({
   preparingSurah,
   surahNum,
 }) {
-  const { state, dispatch, set } = useApp();
+  const { state, set } = useApp();
   const {
     lang,
     mushafLayout,
-    quranFontSize,
     riwaya,
     showTajwid,
     showTranslation,
@@ -70,10 +64,6 @@ export default function ReadingToolbar({
   const playHandler = onPlay || onPlaySurah;
   const isPreparing = Boolean(preparingSurah && preparingSurah === surahNum);
   const mushafIsOn = mushafLayout === "mushaf";
-  const currentFontSize = Math.max(
-    FONT_SIZE_MIN,
-    Math.min(FONT_SIZE_MAX, Number(quranFontSize) || 42),
-  );
 
   const toggleMushaf = () =>
     set({
@@ -81,125 +71,86 @@ export default function ReadingToolbar({
       memMode: false,
       showWordByWord: false,
       showTajwid: true,
-      fontFamily: riwaya === "warsh" ? "mushaf-warsh" : "mushaf-kfgqpc",
+      fontFamily: riwaya === "warsh" ? "qpc-warsh" : "qpc-hafs",
     });
-
-  const setFontSize = (nextSize) =>
-    dispatch({
-      type: "SET_QURAN_FONT_SIZE",
-      payload: Math.max(FONT_SIZE_MIN, Math.min(FONT_SIZE_MAX, nextSize)),
-    });
-
-  const decreaseFontSize = () =>
-    setFontSize(currentFontSize - FONT_SIZE_STEP);
-  const increaseFontSize = () =>
-    setFontSize(currentFontSize + FONT_SIZE_STEP);
 
   return (
     <div
-      className="reader-toolbar sticky top-[var(--header-h,68px)] z-50 flex items-center gap-2 border-b border-[var(--border)] bg-[var(--bg-primary)] px-3 py-2 max-md:px-2"
+      className="sticky top-[var(--header-h,68px)] z-50 mx-auto mb-7 flex w-full max-w-[920px] items-center gap-1.5 rounded-2xl border border-[color-mix(in_srgb,var(--border)_50%,transparent_50%)] bg-[color-mix(in_srgb,var(--bg-card)_70%,transparent_30%)] px-3 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.08)] backdrop-blur-md transition-all duration-300 hover:bg-[color-mix(in_srgb,var(--bg-card)_85%,transparent_15%)] max-md:overflow-x-auto max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden"
       role="toolbar"
-      aria-label={labelFor(lang, "Outils de lecture", "Reading tools", "Reading tools")}
+      aria-label={labelFor(lang, "Outils de lecture", "Reading tools")}
     >
-      <div className="reader-toolbar__left flex min-w-0 items-center gap-2">
-        {playHandler ? (
-          <ToolbarButton
-            primary
-            onClick={playHandler}
-            disabled={isPreparing}
-            aria-label={playLabel || labelFor(lang, "Ecouter", "Listen")}
-            title={playLabel || labelFor(lang, "Ecouter", "Listen")}
-          >
-            {isPreparing ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <Play size={16} fill="currentColor" />
-            )}
-            <span className="hidden sm:inline">
-              {isPreparing
-                ? labelFor(lang, "Chargement", "Loading")
-                : playLabel || labelFor(lang, "Ecouter", "Listen")}
-            </span>
-          </ToolbarButton>
-        ) : null}
-
-      </div>
-
-      <div className="reader-toolbar__center flex flex-1 items-center justify-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {playHandler ? (
         <ToolbarButton
-          active={mushafIsOn}
-          onClick={toggleMushaf}
-          aria-pressed={mushafIsOn}
-          title={mushafIsOn ? labelFor(lang, "Vue liste", "List view") : "Mushaf"}
+          primary
+          onClick={playHandler}
+          disabled={isPreparing}
+          aria-label={playLabel || labelFor(lang, "Ecouter", "Listen")}
+          title={playLabel || labelFor(lang, "Ecouter", "Listen")}
         >
-          {mushafIsOn ? <List size={16} /> : <BookOpen size={16} />}
-          <span className="hidden lg:inline">
-            {mushafIsOn ? labelFor(lang, "Liste", "List") : "Mushaf"}
+          {isPreparing ? (
+            <Loader2 size={15} className="animate-spin" />
+          ) : (
+            <Play size={15} fill="currentColor" />
+          )}
+          <span className="max-sm:hidden">
+            {isPreparing
+              ? labelFor(lang, "Chargement...", "Loading...")
+              : labelFor(lang, "Ecouter", "Listen")}
           </span>
         </ToolbarButton>
+      ) : null}
 
-        <ToolbarButton
-          active={showTranslation}
-          onClick={() => set({ showTranslation: !showTranslation })}
-          aria-pressed={showTranslation}
-          title={labelFor(lang, "Traduction", "Translation")}
-        >
-          <Languages size={16} />
-          <span className="hidden lg:inline">
-            {labelFor(lang, "Traduction", "Translation")}
-          </span>
-        </ToolbarButton>
+      <div className="h-5 w-px shrink-0 bg-[var(--border)] opacity-60" />
 
-        <ToolbarButton
-          active={showWordByWord}
-          onClick={() => set({ showWordByWord: !showWordByWord, memMode: false })}
-          aria-pressed={showWordByWord}
-          title={labelFor(lang, "Mot a mot", "Word by word")}
-        >
-          <Type size={16} />
-          <span className="hidden lg:inline">
-            {labelFor(lang, "Mot a mot", "WbW")}
-          </span>
-        </ToolbarButton>
+      <ToolbarButton
+        active={mushafIsOn}
+        onClick={toggleMushaf}
+        aria-pressed={mushafIsOn}
+        title={mushafIsOn ? labelFor(lang, "Vue liste", "List view") : "Mushaf"}
+      >
+        {mushafIsOn ? <List size={15} /> : <BookOpen size={15} />}
+        <span className="max-sm:hidden">
+          {mushafIsOn ? labelFor(lang, "Liste", "List") : "Mushaf"}
+        </span>
+      </ToolbarButton>
 
-        <ToolbarButton
-          active={showTajwid}
-          onClick={() => set({ showTajwid: !showTajwid })}
-          aria-pressed={showTajwid}
-          title="Tajweed"
-        >
-          <Palette size={16} />
-          <span className="hidden lg:inline">Tajweed</span>
-        </ToolbarButton>
-      </div>
+      <ToolbarButton
+        active={showTranslation}
+        onClick={() => set({ showTranslation: !showTranslation })}
+        aria-pressed={showTranslation}
+        title={labelFor(lang, "Traduction", "Translation")}
+      >
+        <Languages size={15} />
+        <span className="max-sm:hidden">
+          {labelFor(lang, "Trad.", "Trans.")}
+        </span>
+      </ToolbarButton>
 
-      <div className="reader-toolbar__right flex items-center gap-1">
-        <div className="reader-toolbar__font-stepper flex items-center rounded-[10px] border border-[var(--border)] bg-[var(--bg-card)] p-1">
-          <button
-            type="button"
-            onClick={decreaseFontSize}
-            disabled={currentFontSize <= FONT_SIZE_MIN}
-            className="flex h-7 w-7 items-center justify-center rounded-[8px] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--primary)]"
-            aria-label={labelFor(lang, "Reduire la taille", "Decrease font size")}
-            title="A-"
-          >
-            <Minus size={14} />
-          </button>
-          <span className="reader-toolbar__font-value min-w-7 text-center font-[var(--font-ui)] text-[0.68rem] font-extrabold text-[var(--text-tertiary)]">
-            {currentFontSize}
-          </span>
-          <button
-            type="button"
-            onClick={increaseFontSize}
-            disabled={currentFontSize >= FONT_SIZE_MAX}
-            className="flex h-7 w-7 items-center justify-center rounded-[8px] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--primary)]"
-            aria-label={labelFor(lang, "Augmenter la taille", "Increase font size")}
-            title="A+"
-          >
-            <Plus size={14} />
-          </button>
-        </div>
-      </div>
+      <ToolbarButton
+        active={showWordByWord}
+        onClick={() => set({ showWordByWord: !showWordByWord, memMode: false })}
+        aria-pressed={showWordByWord}
+        title={labelFor(lang, "Mot a mot", "Word by word")}
+      >
+        <Type size={15} />
+        <span className="max-sm:hidden">
+          {labelFor(lang, "Mot/mot", "WbW")}
+        </span>
+      </ToolbarButton>
+
+      <ToolbarButton
+        active={showTajwid}
+        onClick={() => set({ showTajwid: !showTajwid })}
+        aria-pressed={showTajwid}
+        title="Tajweed"
+      >
+        <Palette size={15} />
+        <span className="max-sm:hidden">Tajweed</span>
+      </ToolbarButton>
+
+      <div className="flex-1" />
+      <ArabicFontControls lang={lang} compact />
     </div>
   );
 }

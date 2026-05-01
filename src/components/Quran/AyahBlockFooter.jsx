@@ -8,10 +8,9 @@ export default function AyahBlockFooter({ ayah, isActive, surahNum }) {
   return (
     <div
       className={cn(
-        "rd-actions mt-3 flex flex-wrap items-center gap-2",
+        "mt-4 flex flex-wrap items-center gap-2 pt-2 border-t border-[var(--border)]",
         "opacity-100 transition-opacity duration-200",
-        "max-[640px]:mt-[0.28rem] max-[640px]:gap-[0.34rem]",
-        "max-[560px]:landscape:mt-[0.2rem] max-[560px]:landscape:gap-[0.24rem]",
+        "max-[640px]:mt-3 max-[640px]:pt-2"
       )}
     >
       <AyahActions

@@ -20,7 +20,14 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
 }
 
 export function VerseMedallion({ isPlaying = false, num }) {
-  return <AyahMarker num={num} isPlaying={isPlaying} className="qcom-verse-stop" size="0.96em" />;
+  return (
+    <AyahMarker
+      num={num}
+      isPlaying={isPlaying}
+      className="qcom-verse-stop verse-end-marker"
+      size="md"
+    />
+  );
 }
 
 export function CleanPageSeparator({ isDarkTheme = false, pageNum }) {

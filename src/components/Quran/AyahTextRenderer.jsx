@@ -1,5 +1,6 @@
-import React, { useMemo, useRef, useEffect } from "react";
+import React, { useMemo, useRef, useEffect, useState } from "react";
 import { useKaraoke } from "../../hooks/useKaraoke";
+import audioService from "../../services/audioService";
 import TajweedText from "./TajweedText";
 
 const AYAH_MARKER_TOKEN_RE = /^[۝۞۩﴿﴾\d٠-٩۰-۹]+$/u;
@@ -26,6 +27,7 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
   calibration,
 }) {
   const lastIdxRef = useRef(0);
+  const [exactWordIdx, setExactWordIdx] = useState(-1);
 
   const words = useMemo(() => {
     if (!text) return [];
@@ -35,6 +37,7 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
   // Reset highlighted word index when the ayah changes
   useEffect(() => {
     lastIdxRef.current = 0;
+    setExactWordIdx(-1);
   }, [text]);
 
   // Proportional word weights (identical algorithm used in KaraokeWarshText)
@@ -80,7 +83,41 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
     lastIdxRef.current = 0;
   }, [seekCount]);
 
+  useEffect(() => {
+    const updateFromSegments = (timeSec = audioService.currentTime || 0) => {
+      const segments = Array.isArray(audioService.currentAyah?.segments)
+        ? audioService.currentAyah.segments
+        : [];
+
+      if (segments.length === 0) {
+        setExactWordIdx(-1);
+        return;
+      }
+
+      const timeMs = timeSec * 1000;
+      let nextIndex = -1;
+      for (const segment of segments) {
+        if (timeMs >= segment.startMs && timeMs <= segment.endMs) {
+          nextIndex = Number.isFinite(segment.wordIndex)
+            ? segment.wordIndex
+            : Math.max(0, Number(segment.wordPosition || 1) - 1);
+          break;
+        }
+        if (timeMs > segment.endMs) {
+          nextIndex = Number.isFinite(segment.wordIndex)
+            ? segment.wordIndex
+            : Math.max(0, Number(segment.wordPosition || 1) - 1);
+        }
+      }
+      setExactWordIdx(nextIndex);
+    };
+
+    updateFromSegments();
+    return audioService.addTimeUpdateListener(updateFromSegments);
+  }, [text]);
+
   const currentIdx = useMemo(() => {
+    if (exactWordIdx >= 0) return Math.min(words.length - 1, exactWordIdx);
     let idx = 0;
     for (let i = 0; i < wordWeights.length; i++) {
       if (progress < wordWeights[i]) {
@@ -94,7 +131,7 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
     const finalIdx = Math.max(last, adjustedIdx);
     lastIdxRef.current = finalIdx;
     return finalIdx;
-  }, [progress, wordWeights, lagWords]);
+  }, [exactWordIdx, progress, wordWeights, lagWords, words.length]);
 
   if (words.length === 0) return <span>{text}</span>;
 
@@ -132,6 +169,7 @@ export { HafsKaraokeText as KaraokeAyahText };
  */
 export function AyahTextRenderer({
   text,
+  tajweedText,
   showTajwid,
   isPlaying,
   isFirstAyah,
@@ -153,7 +191,7 @@ export function AyahTextRenderer({
 
   return (
     <TajweedText
-      text={text}
+      text={showTajwid && tajweedText ? tajweedText : text}
       enabled={showTajwid}
       riwaya={riwaya}
       tajweedColors={tajweedColors}

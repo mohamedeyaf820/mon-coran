@@ -81,7 +81,7 @@ export default function AyahList({
             ayahs[index - 1].page !== ayah.page;
 
           return (
-            <React.Fragment key={ayah.number}>
+            <React.Fragment key={ayah.number || `${surahNumber}:${ayah.numberInSurah}`}>
               {showPageSeparator ? (
                 <PageSeparator ayah={ayah} lang={lang} theme={theme} />
               ) : null}
@@ -118,7 +118,7 @@ export default function AyahList({
                   num={ayah.numberInSurah}
                   isPlaying={isPlaying}
                   className="qcom-verse-stop"
-                  size="0.96em"
+                  size="md"
                 />
                 {"\u200A"}
               </span>
@@ -144,7 +144,7 @@ export default function AyahList({
           ayahs[index - 1].page !== ayah.page;
 
         return (
-          <React.Fragment key={ayah.number}>
+          <React.Fragment key={ayah.number || `${surahNumber}:${ayah.numberInSurah}`}>
             {showPageSeparator ? (
               <PageSeparator ayah={ayah} lang={lang} theme={theme} />
             ) : null}

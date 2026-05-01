@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "../../lib/utils";
 import { t } from "../../i18n";
+import { getQuranComRecitationId } from "../../services/quranComAudioTimingService";
 
 export function OptionsModal({
   optionsModalOpen,
@@ -172,6 +173,7 @@ export function OptionsModal({
                     const initial = (r.nameEn || r.name || "?")[0].toUpperCase();
                     const isFavorite = (favoriteReciters || []).includes(r.id);
                     const latency = getLatencyForReciter(r, reciterLatencyByKey);
+                    const hasQuranComSync = Boolean(getQuranComRecitationId(r.id));
                     return (
                       <button
                         key={`modal-${r.id}`}
@@ -211,6 +213,24 @@ export function OptionsModal({
                                   ? "MP3Quran"
                                   : "Islamic CDN"}
                             </span>
+                            {hasQuranComSync ? (
+                              <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/35 bg-emerald-300/12 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-emerald-100">
+                                <i className="fas fa-wave-square mr-1 text-[0.42rem]" />
+                                {lang === "fr"
+                                  ? "Sync audio"
+                                  : lang === "ar"
+                                    ? "مزامنة الصوت"
+                                    : "Audio sync"}
+                              </span>
+                            ) : (
+                              <span className="inline-flex w-fit items-center rounded-full border border-white/10 bg-white/[0.035] px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-[rgba(225,214,194,0.5)]">
+                                {lang === "fr"
+                                  ? "Audio simple"
+                                  : lang === "ar"
+                                    ? "ØµÙˆØª Ø¹Ø§Ø¯ÙŠ"
+                                    : "Basic audio"}
+                              </span>
+                            )}
                             {r.audioMode === "surah" && (
                               <span className="inline-flex w-fit items-center rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-fuchsia-100">
                                 {lang === "fr"

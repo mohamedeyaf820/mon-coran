@@ -49,7 +49,9 @@ import {
   NIGHT_THEME_IDS as AUTO_NIGHT_THEME_IDS,
   THEMES as UI_THEMES,
 } from "../data/themes";
+import { normalizeFontId } from "../data/fonts";
 import { ensureFontLoaded } from "../services/fontLoader";
+import { getQuranComRecitationId } from "../services/quranComAudioTimingService";
 import { getSettings, saveSettings } from "../services/storageService";
 import {
   clearEncryptionSession,
@@ -181,6 +183,7 @@ export default function SettingsModal() {
     riwaya,
     reciter,
     quranFontSize,
+    quranTranslationFontSize = 18,
     showTranslation,
     showTajwid,
     showWordByWord,
@@ -206,6 +209,7 @@ export default function SettingsModal() {
   const syncKey = `${riwaya}:${reciter}`;
   const syncOffsetMs = Number(syncOffsetsMs?.[syncKey] ?? 0);
   const reciterObj = getReciter(reciter, riwaya);
+  const quranComRecitationId = getQuranComRecitationId(reciter);
   const isSurahStreamReciter = isSurahOnlyReciter(reciterObj);
   const [fontFilter, setFontFilter] = useState("");
   const [activeTab, setActiveTab] = useState("apparence");
@@ -550,236 +554,109 @@ export default function SettingsModal() {
     AUTO_NIGHT_THEME_IDS.includes(themeOption.id),
   );
 
-  // Font options — extended library inspired by arabic-calligraphy-generator.com
   const FONT_CATEGORIES = [
     {
-      label:
-        lang === "fr"
-          ? "Recommandée (sans artefacts visuels)"
-          : "Recommended (no rendering artifacts)",
+      label: lang === "fr" ? "Polices du Mushaf" : lang === "ar" ? "خطوط المصحف" : "Mushaf fonts",
       fonts: [
         {
-          id: "scheherazade-new",
-          label: "Scheherazade New",
+          id: "qpc-hafs",
+          label: "QPC Hafs",
+          kind: "Unicode",
           hint:
             lang === "fr"
-              ? "Rendu optimal — aucun artefact visuel"
-              : "Best rendering — no visual artifacts",
-          css: "'Scheherazade New','Amiri Quran','Noto Naskh Arabic',serif",
+              ? "Police Unicode simple pour une lecture claire"
+              : "Simple Unicode font for clear reading",
+          css: "'QPC Hafs','KFGQPC Uthmanic Script HAFS','ME Quran',serif",
         },
         {
           id: "amiri-quran",
-          label: "Amiri Quran",
+          label: "Amiri",
+          kind: "Google Fonts",
           hint:
-            lang === "fr" ? "Police Naskh classique" : "Classic Naskh typeface",
-          css: "'Amiri Quran','Scheherazade New','Noto Naskh Arabic',serif",
+            lang === "fr"
+              ? "Police naskh elegante adaptee au texte coranique"
+              : "Elegant Naskh font tuned for Quranic text",
+          css: "'Amiri Quran','Amiri','Scheherazade New',serif",
+        },
+        {
+          id: "scheherazade-new",
+          label: "Scheherazade New",
+          kind: "Google Fonts",
+          hint:
+            lang === "fr"
+              ? "Naskh ample, excellent pour la lecture longue"
+              : "Spacious Naskh, excellent for long reading",
+          css: "'Scheherazade New','Amiri Quran','Noto Naskh Arabic',serif",
         },
         {
           id: "noto-naskh-arabic",
           label: "Noto Naskh Arabic",
+          kind: "Google Fonts",
           hint:
             lang === "fr"
-              ? "Très lisible pour interface et texte"
-              : "Highly readable for text & UI",
+              ? "Naskh tres lisible, robuste sur mobile et desktop"
+              : "Highly readable Naskh, robust on mobile and desktop",
           css: "'Noto Naskh Arabic','Scheherazade New','Amiri Quran',serif",
         },
         {
-          id: "markazi-text",
-          label: "Markazi Text",
+          id: "qpc-indopak",
+          label: "IndoPak",
+          kind: "Unicode",
           hint:
             lang === "fr"
-              ? "Naskh classique, lecture continue"
-              : "Classic Naskh for long reading",
-          css: "'Markazi Text','Amiri Quran','Scheherazade New',serif",
+              ? "Script indo-pakistanais pour les lecteurs sud-asiatiques"
+              : "IndoPak script for South Asian readers",
+          css: "'QPC IndoPak','IndoPak','Noto Nastaliq Urdu',serif",
         },
         {
-          id: "el-messiri",
-          label: "El Messiri",
+          id: "qpc-nastaleeq",
+          label: "Nastaleeq",
+          kind: "Unicode",
           hint:
             lang === "fr"
-              ? "Style Naskh moderne pour titres/sous-titres"
-              : "Modern Naskh-inspired style",
-          css: "'El Messiri','Noto Naskh Arabic','Scheherazade New',serif",
+              ? "Style Nastaleeq lisible et elegant"
+              : "Readable and elegant Nastaleeq style",
+          css: "'QPC Nastaleeq','KFGQPC Nastaleeq','Noto Nastaliq Urdu',serif",
         },
-      ],
-    },
-    {
-      label:
-        lang === "fr" ? "Écriture Ottomane (Uthmanique)" : "Uthmanic Script",
-      fonts: [
         {
-          id: "mushaf-1441h",
-          label: "Mushaf 1441H",
+          id: "qcf-v1",
+          label: "QCF V1",
+          kind: lang === "fr" ? "Glyph page" : "Page glyph",
           hint:
             lang === "fr"
-              ? "Police officielle du Complexe du Roi Fahd"
-              : "Official King Fahd Complex font",
-          css: "'KFGQPC Uthmanic Script HAFS','ME Quran','Amiri Quran','Scheherazade New',serif",
+              ? "Glyphs page par page, style Madani classique"
+              : "Page-based glyphs, classic Madani style",
+          css: "'QCF V1','KFGQPC Uthmanic Script HAFS','QPC Hafs',serif",
         },
         {
-          id: "mushaf-tajweed",
-          label: "Mushaf Tajweed 1441H",
-          hint:
-            lang === "fr" ? "Avec coloration Tajwid" : "With Tajweed coloring",
-          css: "'KFGQPC Uthmanic Script HAFS','ME Quran','Amiri Quran','Scheherazade New',serif",
-        },
-        {
-          id: "uthmanic-digital",
-          label:
-            lang === "fr" ? "Police Numérique (Digital Font)" : "Digital Font",
-          hint: "ME Quran V2 · quranwbw.com",
-          css: "'ME Quran','KFGQPC Uthmanic Script HAFS','Amiri Quran','Scheherazade New',serif",
-        },
-        {
-          id: "uthmanic-bold",
-          label:
-            lang === "fr"
-              ? "Police Numérique Gras (Digital Bold)"
-              : "Digital Bold Font",
-          hint: "ME Quran Bold V2 · quranwbw.com",
-          css: "'ME Quran Bold','ME Quran','KFGQPC Uthmanic Script HAFS','Amiri Quran',serif",
-          bold: true,
-        },
-      ],
-    },
-    {
-      label:
-        lang === "fr" ? "Style Indopak / Nastaleeq" : "Indopak / Nastaleeq",
-      fonts: [
-        {
-          id: "qalam-madinah",
-          label:
-            lang === "fr"
-              ? "Qalam – Édition Madinah"
-              : "Qalam Digital (Madinah Edition)",
-          hint: "Qalam Digital Font · Madinah Edition",
-          css: "'Qalam Madinah','Scheherazade New','Noto Naskh Arabic',serif",
-        },
-        {
-          id: "qalam-hanafi",
-          label:
-            lang === "fr"
-              ? "Qalam – Édition Hanafi"
-              : "Qalam Digital (Hanafi Edition)",
-          hint: "Qalam Digital Font · Hanafi Edition",
-          css: "'Qalam Hanafi','Scheherazade New','Noto Naskh Arabic',serif",
-        },
-        {
-          id: "uthman-taha",
-          label:
-            lang === "fr"
-              ? "Uthman Taha (Numérique)"
-              : "Uthman Taha Digital Font",
-          hint: "KFGQPC Uthman Taha",
-          css: "'Uthman Taha Hafs','KFGQPC Uthmanic Script HAFS','ME Quran',serif",
-        },
-        {
-          id: "kfgqpc-uthman-taha-naskh",
-          label: "KFGQPC Uthman Taha Naskh",
+          id: "qcf-v2",
+          label: "QCF V2",
+          kind: lang === "fr" ? "Mushaf exact" : "Mushaf exact",
           hint:
             lang === "fr"
-              ? "Variante Uthman Taha Naskh demandée"
-              : "Requested Uthman Taha Naskh variant",
-          css: "'KFGQPC Uthman Taha Naskh','Uthman Taha Hafs','ME Quran',serif",
+              ? "Rendu mushaf page par page, proche du Madani imprime"
+              : "Page-based Mushaf rendering, close to printed Madani layout",
+          css: "'QCF V2','KFGQPC Uthmanic Script HAFS','QPC Hafs',serif",
         },
-      ],
-    },
-    {
-      label: lang === "fr" ? "Kufi & Diwani" : "Kufi & Diwani",
-      fonts: [
         {
-          id: "reem-kufi",
-          label: "Reem Kufi",
+          id: "qcf-v4-tajweed",
+          label: "QCF V4 Tajweed",
+          kind: "Tajweed",
           hint:
             lang === "fr"
-              ? "Kufi géométrique moderne"
-              : "Geometric modern Kufi",
-          css: "'Reem Kufi','Cairo','Noto Naskh Arabic',sans-serif",
+              ? "Base stable pour les couleurs de tajweed"
+              : "Stable base for tajweed colors",
+          css: "'QCF V4 Tajweed','QCF V2','KFGQPC Uthmanic Script HAFS',serif",
         },
         {
-          id: "aref-ruqaa",
-          label: "Aref Ruqaa",
+          id: "qpc-warsh",
+          label: "QPC Warsh",
+          kind: "Warsh",
           hint:
             lang === "fr"
-              ? "Style calligraphique décoratif"
-              : "Decorative calligraphic style",
-          css: "'Aref Ruqaa','Scheherazade New','Amiri Quran',serif",
-        },
-      ],
-    },
-    {
-      label:
-        lang === "fr" ? "Modernes UI / Sans-serif" : "Modern UI / Sans-serif",
-      fonts: [
-        {
-          id: "cairo",
-          label: "Cairo",
-          hint: "Modern UI",
-          css: "'Cairo','Noto Naskh Arabic',sans-serif",
-        },
-        {
-          id: "harmattan",
-          label: "Harmattan",
-          hint: "Clean digital",
-          css: "'Harmattan','Cairo',sans-serif",
-        },
-        {
-          id: "mada",
-          label: "Mada",
-          hint: "Geometric minimal",
-          css: "'Mada','Cairo',sans-serif",
-        },
-        {
-          id: "tajawal",
-          label: "Tajawal",
-          hint: "Versatile UI font",
-          css: "'Tajawal','Cairo',sans-serif",
-        },
-        {
-          id: "lemonada",
-          label: "Lemonada",
-          hint: "Rounded friendly",
-          css: "'Lemonada','Cairo',sans-serif",
-        },
-      ],
-    },
-    {
-      label: lang === "fr" ? "Display / Titres" : "Display / Headlines",
-      fonts: [
-        {
-          id: "jomhuria",
-          label: "Jomhuria",
-          hint: "Bold display",
-          css: "'Jomhuria','Cairo',sans-serif",
-        },
-        {
-          id: "rakkas",
-          label: "Rakkas",
-          hint: "Decorative display",
-          css: "'Rakkas','Cairo',sans-serif",
-        },
-        {
-          id: "marhey",
-          label: "Marhey",
-          hint: "Playful display",
-          css: "'Marhey','Cairo',sans-serif",
-        },
-      ],
-    },
-    {
-      label: lang === "fr" ? "Nastaliq / Littéraire" : "Nastaliq / Literary",
-      fonts: [
-        {
-          id: "lateef",
-          label: "Lateef",
-          hint: "Flowing literary",
-          css: "'Lateef','Scheherazade New','Amiri',serif",
-        },
-        {
-          id: "mirza",
-          label: "Mirza",
-          hint: "Persian-influenced",
-          css: "'Mirza','Lateef',serif",
+              ? "Police reservee a la riwaya Warsh"
+              : "Font reserved for the Warsh riwaya",
+          css: "'QPC Warsh','KFGQPC Uthmanic Script WARSH','QPC Hafs',serif",
         },
       ],
     },
@@ -807,8 +684,9 @@ export default function SettingsModal() {
   const currentLanguageLabel =
     LANGUAGES.find((languageOption) => languageOption.code === lang)?.label ||
     (lang ? lang.toUpperCase() : "FR");
+  const normalizedFontFamily = normalizeFontId(fontFamily, riwaya);
   const currentFontOption =
-    FONT_OPTIONS.find((fontOption) => fontOption.id === fontFamily) || FONT_OPTIONS[0];
+    FONT_OPTIONS.find((fontOption) => fontOption.id === normalizedFontFamily) || FONT_OPTIONS[0];
   const currentTranslationOption = TRANSLATION_LANGUAGE_OPTIONS.find(
     (option) => (translationLangs || []).includes(option.code),
   );
@@ -1898,6 +1776,70 @@ export default function SettingsModal() {
                   )}
                 </div>
 
+                <div className={cardClass}>
+                  <div className="sm-card-label">
+                    <i className="fas fa-book-open-reader" aria-hidden="true"></i>
+                    {lang === "fr"
+                      ? "Experience de lecture"
+                      : lang === "ar"
+                        ? "Experience de lecture"
+                        : "Reading experience"}
+                  </div>
+                  <div className="sm-sub-toggles">
+                    <div className="sm-toggle-row sm-toggle-row--sub">
+                      <span>
+                        {lang === "fr"
+                          ? "Mode étude verset par verset"
+                          : lang === "ar"
+                            ? "دراسة آية بآية"
+                            : "Verse-by-verse study"}
+                      </span>
+                      <button
+                        className={`sm-switch ${state.translationReadingMode ? "on" : ""}`}
+                        onClick={() =>
+                          set({
+                            translationReadingMode: !state.translationReadingMode,
+                            mushafLayout: "list",
+                          })
+                        }
+                        aria-pressed={state.translationReadingMode}
+                      >
+                        <span className="sm-switch-knob"></span>
+                      </button>
+                    </div>
+                    <div className="sm-toggle-row sm-toggle-row--sub">
+                      <span>
+                        {lang === "fr"
+                          ? "Page Mushaf 15 lignes"
+                          : lang === "ar"
+                            ? "صفحة مصحف 15 سطرا"
+                            : "15-line Mushaf page"}
+                      </span>
+                      <button
+                        className={`sm-switch ${state.mushafLayout === "mushaf" ? "on" : ""}`}
+                        onClick={() =>
+                          set({
+                            mushafLayout:
+                              state.mushafLayout === "mushaf" ? "list" : "mushaf",
+                            showWordByWord: false,
+                            memMode: false,
+                          })
+                        }
+                        aria-pressed={state.mushafLayout === "mushaf"}
+                      >
+                        <span className="sm-switch-knob"></span>
+                      </button>
+                    </div>
+                    <p className="sm-hint">
+                      {lang === "fr"
+                        ? "Le rendu Mushaf utilise les glyphes QCF par page quand ils sont disponibles."
+                        : lang === "ar"
+                          ? "Le rendu Mushaf utilise les glyphes QCF par page quand ils sont disponibles."
+                          : "Mushaf rendering uses page-specific QCF glyphs when available."}
+                    </p>
+                  </div>
+                </div>
+
                 {/* Translation */}
                 <div className={cardClass}>
                   <div className="sm-toggle-row">
@@ -1947,6 +1889,58 @@ export default function SettingsModal() {
                       </div>
                     </>
                   )}
+                </div>
+
+                {/* Translation font size */}
+                <div className={cardClass}>
+                  <div className="sm-card-label">
+                    <i className="fas fa-align-left" aria-hidden="true"></i>
+                    {lang === "fr"
+                      ? "Taille des traductions"
+                      : lang === "ar"
+                        ? "حجم الترجمة"
+                        : "Translation size"}
+                    <span className="sm-value-pill">
+                      {quranTranslationFontSize}px
+                    </span>
+                  </div>
+                  <div className="sm-card-hint">
+                    {lang === "fr"
+                      ? "Règle séparément la taille des traductions et notes sous les versets."
+                      : lang === "ar"
+                        ? "يضبط حجم الترجمات والملاحظات تحت الآيات بشكل مستقل."
+                        : "Controls translation and notes size independently from Arabic text."}
+                  </div>
+                  <input
+                    type="range"
+                    min={12}
+                    max={28}
+                    step={1}
+                    value={quranTranslationFontSize}
+                    onChange={(event) =>
+                      dispatch({
+                        type: "SET_TRANSLATION_FONT_SIZE",
+                        payload: Math.max(
+                          12,
+                          Math.min(28, Number(event.target.value) || 18),
+                        ),
+                      })
+                    }
+                    className="setting-slider"
+                    aria-label={
+                      lang === "fr"
+                        ? "Taille des traductions"
+                        : "Translation size"
+                    }
+                  />
+                  <div
+                    className="mt-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 leading-relaxed text-[var(--text-secondary)]"
+                    style={{ fontSize: `${quranTranslationFontSize}px` }}
+                  >
+                    {lang === "fr"
+                      ? "Au nom d’Allah, le Tout Miséricordieux, le Très Miséricordieux."
+                      : "In the name of Allah, the Entirely Merciful, the Especially Merciful."}
+                  </div>
                 </div>
 
                 {/* Font size */}
@@ -2058,7 +2052,7 @@ export default function SettingsModal() {
                         {cat.fonts.map((f) => (
                           <button
                             key={f.id}
-                            className={cn("sm-font-chip", fontFamily === f.id && "sm-font-chip--active", f.bold && "font-semibold")}
+                            className={cn("sm-font-chip", normalizedFontFamily === f.id && "sm-font-chip--active", f.bold && "font-semibold")}
                             onClick={async () => {
                               await ensureFontLoaded(f.id);
                               dispatch({
@@ -2067,12 +2061,13 @@ export default function SettingsModal() {
                               });
                             }}
                             title={f.hint}
-                            aria-pressed={fontFamily === f.id}
+                            aria-pressed={normalizedFontFamily === f.id}
                           >
                             <span className="sm-font-chip-preview">
                               بِسْمِ ٱللَّهِ
                             </span>
                             <span className="sm-font-chip-name">{f.label}</span>
+                            <span className="sm-font-chip-kind">{f.kind}</span>
                           </button>
                         ))}
                       </div>
@@ -2090,7 +2085,7 @@ export default function SettingsModal() {
                   <div
                     className={cn(
                       "font-preview mt-2 text-center text-[1.4rem] leading-[2] text-[var(--text-quran)] [font-family:var(--font-quran,serif)]",
-                      FONT_OPTIONS.find((f) => f.id === fontFamily)?.bold &&
+                      FONT_OPTIONS.find((f) => f.id === normalizedFontFamily)?.bold &&
                         "font-semibold",
                     )}
                     dir="rtl"
@@ -2182,6 +2177,15 @@ export default function SettingsModal() {
                         {formatLatency(currentReciterLatency)}
                       </span>
                     )}
+                    {riwaya === "hafs" && quranComRecitationId ? (
+                      <span className="sm-value-pill">
+                        {lang === "fr"
+                          ? "Segments synchronis?s"
+                          : lang === "ar"
+                            ? "Experience de lecture"
+                            : "Synced segments"}
+                      </span>
+                    ) : null}
                     {isSurahStreamReciter && (
                       <span className="sm-value-pill">
                         MP3Quran ·

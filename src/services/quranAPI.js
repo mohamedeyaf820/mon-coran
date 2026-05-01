@@ -6,12 +6,18 @@
 
 import { WARSH_DATA_BASE_URL } from '../constants/warshSource';
 import { preloadWarshSurah } from './warshService';
+import {
+  canLoadFromQuranCom,
+  fetchQuranComText,
+  fetchQuranComTranslations,
+} from './quranComAPI';
 
 
 // Direct call to AlQuran Cloud public API (supports CORS).
 // No backend proxy needed — the app is a pure static SPA.
 const BASE = 'https://api.alquran.cloud/v1';
 const FETCH_TIMEOUT = 8000; // 8s timeout for API requests
+const USE_QURAN_COM_TEXT = true;
 
 const EDITIONS = {
   hafs: ['quran-uthmani', 'quran-uthmani-min', 'quran-simple'],
@@ -472,6 +478,16 @@ async function searchArabicLocally(query, surahNum = null, signal) {
 }
 
 async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal) {
+  if (USE_QURAN_COM_TEXT && canLoadFromQuranCom(pathPrefix, riwaya)) {
+    try {
+      lastWarshFallback = false;
+      return await fetchQuranComText(pathPrefix, signal);
+    } catch (err) {
+      if (err.name === 'AbortError') throw err;
+      console.warn('Primary text API fallback to AlQuran.cloud:', err);
+    }
+  }
+
   const editions = EDITIONS[riwaya] || EDITIONS.hafs;
   let lastError = null;
 
@@ -505,6 +521,13 @@ export async function getSurahText(surahNum, riwaya = 'hafs', signal) {
 }
 
 export async function getSurahTranslation(surahNum, langs = ['fr'], signal) {
+  try {
+    return await fetchQuranComTranslations(`surah/${surahNum}`, langs, signal);
+  } catch (err) {
+    if (err.name === 'AbortError') throw err;
+    console.warn('Quran.com translation fallback to AlQuran.cloud:', err);
+  }
+
   const langArray = Array.isArray(langs) ? langs : [langs];
   const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
   const data = await fetchJSON(`${BASE}/surah/${surahNum}/${editions}`, signal);
@@ -539,10 +562,19 @@ export async function getSurahFull(surahNum, riwaya = 'hafs', transLangs = ['fr'
   if (needsHafsForTranslit && results[2].status === 'fulfilled') {
     const hafs = results[2].value;
     if (arabic.ayahs && hafs.ayahs) {
-      arabic.ayahs = arabic.ayahs.map((a, i) => ({
-        ...a,
-        hafsText: hafs.ayahs[i]?.text || null
-      }));
+      const hafsByKey = new Map(
+        hafs.ayahs.map((ayah) => [
+          `${ayah.surah?.number}:${ayah.numberInSurah}`,
+          ayah,
+        ]),
+      );
+      arabic.ayahs = arabic.ayahs.map((a) => {
+        const hafsAyah = hafsByKey.get(`${a.surah?.number}:${a.numberInSurah}`);
+        return {
+          ...a,
+          hafsText: hafsAyah?.text || null
+        };
+      });
     }
   }
 
@@ -562,6 +594,13 @@ export async function getJuz(juzNum, riwaya = 'hafs', signal) {
 }
 
 export async function getJuzTranslation(juzNum, langs = ['fr'], signal) {
+  try {
+    return await fetchQuranComTranslations(`juz/${juzNum}`, langs, signal);
+  } catch (err) {
+    if (err.name === 'AbortError') throw err;
+    console.warn('Quran.com translation fallback to AlQuran.cloud:', err);
+  }
+
   const langArray = Array.isArray(langs) ? langs : [langs];
   const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
   const data = await fetchJSON(`${BASE}/juz/${juzNum}/${editions}`, signal);
@@ -575,6 +614,13 @@ export async function getPage(pageNum, riwaya = 'hafs', signal) {
 }
 
 export async function getPageTranslation(pageNum, langs = ['fr'], signal) {
+  try {
+    return await fetchQuranComTranslations(`page/${pageNum}`, langs, signal);
+  } catch (err) {
+    if (err.name === 'AbortError') throw err;
+    console.warn('Quran.com translation fallback to AlQuran.cloud:', err);
+  }
+
   const langArray = Array.isArray(langs) ? langs : [langs];
   const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
   const data = await fetchJSON(`${BASE}/page/${pageNum}/${editions}`, signal);
@@ -605,10 +651,19 @@ export async function getPageFull(pageNum, riwaya = 'hafs', transLangs = ['fr'],
   if (needsHafsForTranslit && results[2].status === 'fulfilled') {
     const hafs = results[2].value;
     if (arabic.ayahs && hafs.ayahs) {
-      arabic.ayahs = arabic.ayahs.map((a, i) => ({
-        ...a,
-        hafsText: hafs.ayahs[i]?.text || null
-      }));
+      const hafsByKey = new Map(
+        hafs.ayahs.map((ayah) => [
+          `${ayah.surah?.number}:${ayah.numberInSurah}`,
+          ayah,
+        ]),
+      );
+      arabic.ayahs = arabic.ayahs.map((a) => {
+        const hafsAyah = hafsByKey.get(`${a.surah?.number}:${a.numberInSurah}`);
+        return {
+          ...a,
+          hafsText: hafsAyah?.text || null
+        };
+      });
     }
   }
 

@@ -9,6 +9,7 @@ import {
   decryptDataWithMeta,
   isEncryptionUnlocked,
 } from "./cryptoUtil";
+import { ACCEPTED_FONT_IDS, DEFAULT_FONT_ID, normalizeFontId } from "../data/fonts";
 import { bookmarkRecordSchema, noteRecordSchema } from "./storageValidation";
 
 function parseRecordOrNull(schema, value) {
@@ -88,50 +89,7 @@ const LEGACY_THEME_MAP = {
 const VALID_RIWAYAS = ["hafs", "warsh"];
 const VALID_DISPLAY_MODES = ["surah", "page", "juz"];
 const VALID_AUDIO_PLAYER_SKINS = ["orbit", "classic"];
-const VALID_FONTS = [
-  // ── 8 polices premium soigneusement sélectionnées ──────────────────────────
-  // 1. Mushaf KFGQPC — police officielle du Mushaf de Médine (référence absolue)
-  "kfgqpc-uthman-taha-naskh",
-  // 2. Scheherazade New — Naskh académique, lisibilité maximale (SIL)
-  "scheherazade-new",
-  // 3. Amiri Quran — calligraphique élégant, idéal pour la lecture dévotionnelle
-  "amiri-quran",
-  // 4. Noto Naskh Arabic — clarté optimale sur écran, style Google Fonts
-  "noto-naskh-arabic",
-  // 5. Uthman Taha Naskh — style Madina, proche du Mushaf imprimé
-  "uthman-taha",
-  // 6. El Messiri — moderne et contemporain, excellent sur mobile
-  "el-messiri",
-  // 7. Rakkas — display expressif, idéal pour les titres et affiches
-  "rakkas",
-  // 8. Cairo — polyvalent, très lisible en petite taille
-  "cairo",
-  // ── Fallbacks legacy (migration des anciens paramètres utilisateurs) ────────
-  "scheherazade",
-  "me-quran",
-  // Anciens noms acceptés pour compatibilité
-  "mushaf-1441h",
-  "mushaf-kfgqpc",
-  "mushaf-warsh",
-  "mushaf-tajweed",
-  "uthmanic-digital",
-  "uthmanic-bold",
-  "qalam-madinah",
-  "qalam-hanafi",
-  "amiri",
-  "noto-naskh",
-  "lateef",
-  "markazi-text",
-  "reem-kufi",
-  "aref-ruqaa",
-  "harmattan",
-  "mada",
-  "tajawal",
-  "lemonada",
-  "jomhuria",
-  "marhey",
-  "mirza",
-];
+const VALID_FONTS = ACCEPTED_FONT_IDS;
 
 function sanitizeFavoriteReciters(input) {
   if (!Array.isArray(input)) return [];
@@ -265,9 +223,10 @@ const DEFAULT_SETTINGS = {
   theme: "light",
   riwaya: "hafs",
   reciter: "ar.alafasy",
-  fontSize: 42,
-  quranFontSize: 42,
-  fontFamily: "scheherazade-new",
+  fontSize: 48,
+  quranFontSize: 48,
+  quranTranslationFontSize: 18,
+  fontFamily: DEFAULT_FONT_ID,
   translationLang: "fr",
   wordTranslationLang: "fr",
   showTranslation: true,
@@ -373,16 +332,23 @@ function sanitizeSettings(settings) {
         ? safeInput.reciter.slice(0, 50)
         : "ar.alafasy",
     quranFontSize: Math.max(
-      32,
-      Math.min(64, Number(safeInput.quranFontSize ?? safeInput.fontSize) || 42),
+      36,
+      Math.min(72, Number(safeInput.quranFontSize ?? safeInput.fontSize) || 48),
     ),
     fontSize: Math.max(
-      32,
-      Math.min(64, Number(safeInput.quranFontSize ?? safeInput.fontSize) || 42),
+      36,
+      Math.min(72, Number(safeInput.quranFontSize ?? safeInput.fontSize) || 48),
     ),
-    fontFamily: VALID_FONTS.includes(safeInput.fontFamily)
-      ? safeInput.fontFamily
-      : "scheherazade-new",
+    quranTranslationFontSize: Math.max(
+      12,
+      Math.min(28, Number(safeInput.quranTranslationFontSize) || 18),
+    ),
+    fontFamily: normalizeFontId(
+      VALID_FONTS.includes(safeInput.fontFamily)
+        ? safeInput.fontFamily
+        : DEFAULT_FONT_ID,
+      safeInput.riwaya,
+    ),
     translationLang: VALID_TRANSLATION_LANGS.includes(safeInput.translationLang)
       ? safeInput.translationLang
       : "fr",

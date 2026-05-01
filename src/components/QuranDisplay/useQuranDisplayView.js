@@ -7,6 +7,7 @@ export default function useQuranDisplayView({
   fontFamily,
   isQCF4,
   quranFontSize,
+  quranTranslationFontSize,
   riwaya,
   syncKey,
   syncOffsetsMs,
@@ -27,8 +28,8 @@ export default function useQuranDisplayView({
   const readingFontSize = useMemo(
     () =>
       isCompactPhone
-        ? Math.min(Math.max(quranFontSize, 27), 52)
-        : Math.min(Math.max(quranFontSize, 32), 64),
+        ? Math.min(Math.max(quranFontSize, 32), 58)
+        : Math.min(Math.max(quranFontSize, 40), 72),
     [isCompactPhone, quranFontSize],
   );
   const fullscreenFontSize = useMemo(
@@ -76,11 +77,18 @@ export default function useQuranDisplayView({
     const element = contentRef.current;
     if (!element) return;
 
+    const pageScale = displayMode === "page" ? 1.28 : 1;
+    const quranFontSizeCss = `${Math.round(readingFontSize * pageScale)}px`;
+    const quranLineHeight = displayMode === "page" ? "3.05" : "2.2";
+    element.style.setProperty("--qd-reading-font-size", quranFontSizeCss);
     element.style.setProperty(
-      "--qd-reading-font-size",
-      `${displayMode === "page" ? readingFontSize * 1.15 : readingFontSize}px`,
+      "--qd-translation-font-size",
+      `${Math.max(12, Math.min(28, Number(quranTranslationFontSize) || 18))}px`,
     );
     element.style.setProperty("--qd-fullscreen-font-size", `${fullscreenFontSize}px`);
+    document.documentElement.style.setProperty("--quran-font-family", quranFontCss);
+    document.documentElement.style.setProperty("--quran-font-size", quranFontSizeCss);
+    document.documentElement.style.setProperty("--quran-line-height", quranLineHeight);
     if (isQCF4) {
       element.style.removeProperty("--qd-font-family");
       element.dataset.qcf4Font = "true";
@@ -88,10 +96,26 @@ export default function useQuranDisplayView({
     }
 
     element.style.setProperty("--qd-font-family", quranFontCss);
+    element.style.setProperty("--quran-font-family", quranFontCss);
+    element.style.setProperty("--quran-font-size", quranFontSizeCss);
+    element.style.setProperty("--quran-line-height", quranLineHeight);
     element.dataset.qcf4Font = "false";
     document.documentElement.style.setProperty("--font-quran", quranFontCss);
     document.documentElement.style.setProperty("--font-quran-tajweed", quranFontCss);
-  }, [displayMode, fullscreenFontSize, isQCF4, quranFontCss, readingFontSize]);
+
+    element
+      .querySelectorAll(".verse-text, .mushaf-container, .quran-text, [lang='ar']")
+      .forEach((arabicElement) => {
+        arabicElement.style.fontFamily = quranFontCss;
+      });
+  }, [
+    displayMode,
+    fullscreenFontSize,
+    isQCF4,
+    quranFontCss,
+    quranTranslationFontSize,
+    readingFontSize,
+  ]);
 
   const touchHandlers = {
     onTouchStart: (event) => {
@@ -111,7 +135,7 @@ export default function useQuranDisplayView({
         event.touches[0].clientY - event.touches[1].clientY,
       );
       const nextSize = Math.round(
-        Math.max(32, Math.min(64, pinchRef.current.startSize * (distance / pinchRef.current.startDist))),
+        Math.max(32, Math.min(72, pinchRef.current.startSize * (distance / pinchRef.current.startDist))),
       );
       if (nextSize !== quranFontSize) {
         dispatch({ type: "SET_QURAN_FONT_SIZE", payload: nextSize });

@@ -18,12 +18,8 @@ export default defineConfig(({ mode }) => ({
     port: 3002,
     strictPort: false,
     host: true,
-    hmr: {
-      host: "localhost",
-      protocol: "ws",
-      clientPort: 3002,
-    },
-    open: true,
+    hmr: true,
+    open: false,
   },
   build: {
     outDir: "dist",

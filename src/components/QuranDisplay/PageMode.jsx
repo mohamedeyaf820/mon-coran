@@ -4,9 +4,11 @@ import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
 import CleanPageView from "../Quran/CleanPageView";
 import ReadingToolbar from "../Quran/ReadingToolbar";
+import ReadingProgressBar from "../Quran/ReadingProgressBar";
 import AyahActionsModal from "./AyahActionsModal";
-import AyahList from "./AyahList";
+import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
+import QuranMushafPage from "./QuranMushafPage";
 import { modePaneShellClass } from "./displayClasses";
 
 export default function PageMode({
@@ -48,13 +50,25 @@ export default function PageMode({
   const contextLabel = `Page ${pageLabel} / 604 \u00b7 ${t("sidebar.juz", lang)} ${
     currentJuz || ""
   } \u00b7 ${riwaya.toUpperCase()}`;
+  const canUseFifteenLinePage = ayahs.some((ayah) => {
+    const words = Array.isArray(ayah.words) ? ayah.words : [];
+    const supportWords = Array.isArray(ayah.hafsSupport?.words)
+      ? ayah.hafsSupport.words
+      : [];
+    return [...words, ...supportWords].some(
+      (word) => word.lineNumber || word.lineV2 || word.lineV1,
+    );
+  });
 
   return (
     <div
-      className={`quran-mode-pane quran-mode-pane--page ${modePaneShellClass}`}
+      className={`quran-mode-pane quran-mode-pane--page ${
+        canUseFifteenLinePage ? "quran-mode-pane--mushaf-exact" : ""
+      } ${modePaneShellClass}`}
       role="region"
       aria-label={t("settings.pageMode", lang)}
     >
+      <ReadingProgressBar />
       <ReadingToolbar
         contextLabel={contextLabel}
         onPlay={onPlaySurah}
@@ -63,7 +77,26 @@ export default function PageMode({
         surahNum={pageTopSurah || currentSurah}
       />
 
-      {mushafLayout === "mushaf" ? (
+      {canUseFifteenLinePage ? (
+        <>
+          <QuranMushafPage
+            activeAyah={activeAyah}
+            ayahs={ayahs}
+            currentPage={currentPage}
+            currentPlayingAyah={currentPlayingAyah}
+            lang={lang}
+            onToggleActive={onToggleActive}
+            riwaya={riwaya}
+            showTajwid={showTajwid}
+          />
+          <AyahActionsModal
+            activeAyah={activeAyah}
+            onClose={() => onToggleActive(null)}
+            surah={activeAyahData?.surah?.number || currentSurah}
+            ayahData={activeAyahData}
+          />
+        </>
+      ) : mushafLayout === "mushaf" ? (
         <>
           {surahGroups.map((group, index) => (
             <CleanPageView
@@ -93,34 +126,25 @@ export default function PageMode({
           />
         </>
       ) : (
-        <div>
-          {surahGroups.map((group) => (
-            <AyahList
-              key={`page-list-${group.surah}-${group.ayahs[0]?.number}`}
-              ayahs={group.ayahs}
-              className={classes.ayahListClass}
-              currentPlayingAyah={currentPlayingAyah}
-              activeAyah={activeAyah}
-              lang={lang}
-              theme={theme}
-              currentSurah={currentSurah}
-              getTranslationForAyah={getTranslationForAyah}
-              showTajwid={showTajwid}
-              showTranslation={showTranslation}
-              showWordByWord={showWordByWord}
-              showTransliteration={showTransliteration}
-              showWordTranslation={showWordTranslation}
-              calibration={calibration}
-              riwaya={riwaya}
-              fontSize={readingFontSize}
-              memMode={memMode}
-              onToggleActive={onToggleActive}
-              getToggleId={(ayah) => ayah.number}
-              getAyahId={(ayah) => `ayah-pg-${ayah.number}`}
-              getSurahNumber={(ayah) => ayah.surah?.number || group.surah}
-            />
-          ))}
-        </div>
+        <QCVerseByVerseView
+          surahGroups={surahGroups}
+          currentPlayingAyah={currentPlayingAyah}
+          activeAyah={activeAyah}
+          lang={lang}
+          getTranslationForAyah={getTranslationForAyah}
+          showTajwid={showTajwid}
+          showTranslation={showTranslation}
+          showWordByWord={showWordByWord}
+          showTransliteration={showTransliteration}
+          showWordTranslation={showWordTranslation}
+          calibration={calibration}
+          riwaya={riwaya}
+          fontSize={readingFontSize}
+          memMode={memMode}
+          onToggleActive={onToggleActive}
+          displayMode="page"
+          showPageSeparators
+        />
       )}
 
       <ModeNavigation

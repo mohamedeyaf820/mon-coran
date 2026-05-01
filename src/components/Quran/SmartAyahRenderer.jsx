@@ -25,11 +25,19 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
     ayah.numberInSurah === 1 && surahNum !== 1 && surahNum !== 9;
   const effectiveRiwaya = ayah.warshWords ? "warsh" : riwaya || "hafs";
   const cleanFallbackText = useMemo(
-    () => stripBasmala(ayah.text, surahNum, ayah.numberInSurah),
+    () => stripBasmala(ayah.text, surahNum, ayah.numberInSurah).trim(),
     [ayah.numberInSurah, ayah.text, surahNum],
   );
 
   const wordCount = cleanFallbackText.split(/\s+/).filter(Boolean).length;
+  const tajweedText =
+    effectiveRiwaya === "hafs"
+      ? ayah.quranCom?.textTajweed ||
+        ayah.words
+          ?.map((word) => word.textTajweed || word.textUthmani || word.text)
+          .filter(Boolean)
+          .join(" ")
+      : null;
   const effectiveCalibration = withWordCountCalibrationBump(
     calibration || DEFAULT_HAFS_CALIBRATION,
     wordCount,
@@ -51,6 +59,7 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
     return (
       <AyahTextRenderer
         text={cleanFallbackText}
+        tajweedText={tajweedText}
         showTajwid={showTajwid}
         isPlaying={isPlaying}
         isFirstAyah={isFirstAyah}
@@ -72,6 +81,7 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
   return (
     <AyahTextRenderer
       text={cleanFallbackText}
+      tajweedText={tajweedText}
       showTajwid={showTajwid}
       isPlaying={isPlaying}
       isFirstAyah={isFirstAyah}

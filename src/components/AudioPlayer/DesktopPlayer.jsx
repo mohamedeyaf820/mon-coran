@@ -155,8 +155,9 @@ export function DesktopPlayer({
             <div className="flex items-center gap-0.5">
               <button
                 onClick={onToggleOptions}
-                className="h-7 w-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition-all"
+                className="mp-player-options-trigger h-7 w-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition-all"
                 title="Options"
+                aria-label={lang === "fr" ? "Options audio et récitateur" : "Audio and reciter options"}
               >
                 <i className="fas fa-sliders text-[10px]" />
               </button>

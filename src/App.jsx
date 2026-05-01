@@ -22,6 +22,7 @@ import { getSurah } from "./data/surahs";
 import { ensureFontLoaded } from "./services/fontLoader";
 import { runWhenIdle } from "./utils/idleUtils";
 import { useUrlSync } from "./hooks/useUrlSync";
+import ProgressBar from "./components/ProgressBar";
 
 const Header = lazy(() => import("./components/Header"));
 const QuranDisplay = lazy(() => import("./components/QuranDisplay"));
@@ -521,6 +522,7 @@ export default function App() {
         data-view={showHome ? "home" : showDuas ? "duas" : "reading"}
         data-display-mode={displayMode}
       >
+        <ProgressBar />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[10000] focus:rounded-xl focus:bg-[var(--theme-panel-bg-strong,var(--bg-card))] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--text-primary)] focus:shadow-[0_10px_24px_rgba(2,8,23,0.18)]"

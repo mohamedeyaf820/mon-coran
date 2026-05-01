@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useApp } from "../../context/AppContext";
-import TajweedText from "./TajweedText";
+import QuranWord from "./QuranWord";
 import useWordByWordDisplay from "./useWordByWordDisplay";
 import WordByWordAnalysisOverlay from "./WordByWordAnalysisOverlay";
 
@@ -11,16 +11,18 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
   showTransliteration = true,
   showWordTranslation = true,
   fontSize = 28,
+  initialWords,
   showTajwid = true,
   calibration,
   text,
 }) {
   const { state } = useApp();
   const [selectedWord, setSelectedWord] = useState(null);
-  const { currentWordIdx, error, handleWordClick, loading, words } =
+  const { activeWordId, currentWordIdx, error, handleWordClick, loading, words } =
     useWordByWordDisplay({
       ayah,
       calibration,
+      initialWords,
       isPlaying,
       reciter: state.reciter,
       riwaya: state.riwaya,
@@ -54,36 +56,25 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
   return (
     <div className="wbw-display" dir="rtl">
       {words.map((word, index) => {
-        const currentClass =
-          isPlaying && index < currentWordIdx
-            ? " wbw-read"
-            : isPlaying && index === currentWordIdx
-              ? " wbw-current"
-              : "";
+        const wordId = word.id ?? `${surah}:${ayah}:${word.position ?? index}`;
+        const isClickedWord = activeWordId === wordId;
 
         return (
-          <div
+          <QuranWord
             key={word.id ?? index}
-            className={`wbw-word-block${currentClass}`}
-            onClick={() => handleWordClick(word, setSelectedWord)}
-          >
-            <span className="wbw-arabic" style={{ fontSize: `${fontSize}px` }}>
-              <TajweedText
-                text={word.text}
-                enabled={showTajwid}
-                riwaya={state.riwaya}
-                tajweedColors={null}
-              />
-            </span>
-            {showTransliteration && word.transliteration ? (
-              <span className="wbw-transliteration" dir="ltr">
-                {word.transliteration}
-              </span>
-            ) : null}
-            {showWordTranslation && word.translation ? (
-              <span className="wbw-translation">{word.translation}</span>
-            ) : null}
-          </div>
+            active={isClickedWord}
+            current={isPlaying && index === currentWordIdx}
+            fontSize={fontSize}
+            lang={state.lang}
+            onSelect={(event) => handleWordClick(word, setSelectedWord, event)}
+            read={isPlaying && index < currentWordIdx}
+            riwaya={state.riwaya}
+            showTajwid={showTajwid}
+            showTransliteration={showTransliteration}
+            showWordTranslation={showWordTranslation}
+            word={word}
+            wordId={String(wordId)}
+          />
         );
       })}
       <WordByWordAnalysisOverlay

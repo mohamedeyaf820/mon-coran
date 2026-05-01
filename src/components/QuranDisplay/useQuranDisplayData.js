@@ -85,15 +85,28 @@ export default function useQuranDisplayData({
             const hafsMap = new Map(
               (hafsData?.ayahs || []).map((ayah) => [
                 `${ayah.surah?.number}:${ayah.numberInSurah}`,
-                ayah.text,
+                ayah,
               ]),
             );
             setAyahs((previous) =>
               previous.map((ayah) => {
-                const hafsText = hafsMap.get(
+                const hafsAyah = hafsMap.get(
                   `${ayah.surah?.number}:${ayah.numberInSurah}`,
                 );
-                return hafsText ? { ...ayah, hafsText } : ayah;
+                return hafsAyah
+                  ? {
+                      ...ayah,
+                      number: ayah.number ?? hafsAyah.number,
+                      page: ayah.page ?? hafsAyah.page,
+                      juz: ayah.juz ?? hafsAyah.juz,
+                      hafsText: hafsAyah.text,
+                      hafsSupport: {
+                        text: hafsAyah.text,
+                        quranCom: hafsAyah.quranCom || null,
+                        words: Array.isArray(hafsAyah.words) ? hafsAyah.words : [],
+                      },
+                    }
+                  : ayah;
               }),
             );
           })

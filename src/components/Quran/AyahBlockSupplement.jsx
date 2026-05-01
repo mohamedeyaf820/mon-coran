@@ -1,22 +1,6 @@
 import React from "react";
 import { cn } from "../../lib/utils";
 
-function Panel({ children, isRtl }) {
-  return (
-    <div
-      className={cn(
-        "rd-supplement-panel mt-[0.18rem] flex flex-col gap-[0.62rem] rounded-[0.74rem] border border-[rgba(var(--primary-rgb),0.18)] bg-[color-mix(in_srgb,rgba(var(--primary-rgb),0.05)_48%,transparent)] py-[0.58rem] [font-family:var(--font-ui)] max-[640px]:rounded-[0.64rem] max-[640px]:py-[0.5rem] max-[560px]:landscape:gap-[0.42rem] max-[560px]:landscape:py-[0.44rem]",
-        isRtl
-          ? "pl-[0.72rem] pr-[0.76rem] [border-inline-start:0] [border-inline-end:2px_solid_rgba(var(--primary-rgb),0.24)] max-[640px]:pl-[0.52rem] max-[640px]:pr-[0.62rem] max-[560px]:landscape:pl-[0.5rem] max-[560px]:landscape:pr-[0.6rem]"
-          : "pl-[0.76rem] pr-[0.72rem] [border-inline-start:2px_solid_rgba(var(--primary-rgb),0.28)] max-[640px]:pl-[0.62rem] max-[640px]:pr-[0.56rem] max-[560px]:landscape:pl-[0.6rem] max-[560px]:landscape:pr-[0.54rem]",
-      )}
-      dir="auto"
-    >
-      {children}
-    </div>
-  );
-}
-
 export default function AyahBlockSupplement({
   ayahTransliteration,
   isRtl,
@@ -29,33 +13,35 @@ export default function AyahBlockSupplement({
   if (!hasContent) return null;
 
   return (
-    <Panel isRtl={isRtl}>
+    <div
+      className="mt-7 flex flex-col gap-6 px-1 [font-family:var(--font-serif)]"
+      dir="auto"
+    >
+      {/* Refined Transliteration styling */}
       {ayahTransliteration ? (
-        <div className="rd-trans-item rd-trans-item--translit flex max-w-[72ch] flex-col gap-1 text-[clamp(0.86rem,0.82rem+0.16vw,0.94rem)] italic leading-[1.66] text-[color-mix(in_srgb,var(--text-primary)_80%,var(--text-secondary)_20%)] max-[640px]:text-[0.82rem] max-[640px]:leading-[1.56] max-[560px]:landscape:leading-[1.56]">
+        <div className="text-[1.05rem] italic leading-[1.7] tracking-wide text-[var(--text-secondary)] opacity-80 max-w-[80ch] pb-4 border-b border-[color-mix(in_srgb,var(--border)_40%,transparent_60%)]">
           {ayahTransliteration}
         </div>
       ) : null}
 
-      {ayahTransliteration && translations.length > 0 ? (
-        <div className="rd-trans-separator h-px w-full bg-[color-mix(in_srgb,var(--border)_72%,transparent_28%)]" />
-      ) : null}
-
+      {/* Refined Translation styling */}
       {translations.map((item, index) => (
         <div
           key={item.edition?.identifier || index}
           className={cn(
-            "rd-trans-item flex max-w-[72ch] flex-col gap-1 text-[clamp(0.97rem,0.9rem+0.22vw,1.08rem)] leading-[1.78] text-[var(--text-secondary)] max-[640px]:text-[0.92rem] max-[640px]:leading-[1.66] max-[560px]:landscape:leading-[1.56]",
+            "flex flex-col gap-2 text-[1rem] leading-[1.8] text-[var(--text-primary)] opacity-90 max-w-[80ch]",
             riwaya === "warsh" && "[text-align:start] [unicode-bidi:isolate]",
+            index < translations.length - 1 && "pb-6 border-b border-[color-mix(in_srgb,var(--border)_30%,transparent_70%)]"
           )}
         >
           {translations.length > 1 ? (
-            <div className="rd-trans-author text-[0.8rem] font-semibold uppercase tracking-[0.05em] text-[var(--text-muted)]">
+            <div className="text-[0.65rem] font-bold uppercase tracking-[0.1em] text-[var(--primary)] opacity-80">
               {item.edition?.name || item.edition?.identifier}
             </div>
           ) : null}
-          <div>{item.text}</div>
+          <div className="font-medium text-[var(--text-primary)]">{item.text}</div>
         </div>
       ))}
-    </Panel>
+    </div>
   );
 }

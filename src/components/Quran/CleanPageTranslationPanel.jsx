@@ -1,5 +1,6 @@
 import React from "react";
 import { toAr } from "../../data/surahs";
+import { cn } from "../../lib/utils";
 
 export default function CleanPageTranslationPanel({
   ayahs,
@@ -10,7 +11,7 @@ export default function CleanPageTranslationPanel({
 }) {
   return (
     <div
-      className="cpv-trans-panel mt-[1.8rem] flex flex-col gap-0 rounded-2xl border border-white/12 border-t-[1px] border-t-[rgba(var(--primary-rgb),0.12)] bg-[rgba(8,16,32,0.72)] p-3.5 pt-[1.4rem] [font-family:var(--font-ui)]"
+      className="mt-6 flex flex-col gap-0 rounded-2xl border border-[var(--border)] bg-[var(--bg-secondary)] p-4 [font-family:var(--font-ui)] shadow-sm"
       dir={lang === "ar" ? "rtl" : "ltr"}
       aria-label={lang === "ar" ? "\u0627\u0644\u062a\u0631\u062c\u0645\u0629" : lang === "fr" ? "Traductions" : "Translations"}
     >
@@ -24,20 +25,32 @@ export default function CleanPageTranslationPanel({
         return (
           <div
             key={ayah.numberInSurah}
-            className={`cpv-trans-entry flex items-baseline gap-3 rounded-[0.35rem] border-b border-[rgba(var(--primary-rgb),0.05)] px-[0.4rem] py-[0.55rem] text-[0.88rem] leading-[1.9] text-[var(--text-secondary)] transition-[background,color] duration-150 ease-out last:border-b-0 hover:bg-[rgba(var(--primary-rgb),0.025)] hover:text-[var(--text-primary)] max-[640px]:px-[0.3rem] max-[640px]:py-[0.45rem] max-[640px]:text-[0.82rem]${isPlaying ? " cpv-trans-entry--playing bg-[rgba(212,168,32,0.03)] text-[color:color-mix(in_srgb,var(--text-secondary)_80%,var(--gold,#c9a33d)_20%)]" : ""}`}
+            className={cn(
+              "flex items-start gap-4 rounded-xl border-b border-[var(--border)] px-3 py-3 text-[0.88rem] leading-[1.8] text-[var(--text-secondary)] transition-[background,color] duration-200 ease-out last:border-b-0 hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)]",
+              "max-[640px]:px-2 max-[640px]:py-3 max-[640px]:text-[0.82rem] max-[640px]:gap-3",
+              isPlaying && "bg-[rgba(var(--primary-rgb),0.05)] text-[var(--text-primary)] shadow-sm border border-[rgba(var(--primary-rgb),0.2)]"
+            )}
           >
-            <span className={`cpv-trans-num inline-flex h-[1.85rem] min-w-[1.85rem] shrink-0 items-center justify-center rounded-full border border-[rgba(var(--primary-rgb),0.12)] bg-[rgba(var(--primary-rgb),0.06)] font-["Scheherazade_New","Amiri",serif] text-[0.72rem] font-bold leading-none text-[var(--primary)] [direction:rtl] transition-[background] duration-150 ease-out max-[640px]:h-[1.6rem] max-[640px]:min-w-[1.6rem] max-[640px]:text-[0.66rem]${isPlaying ? " border-[rgba(212,168,32,0.3)] bg-[rgba(212,168,32,0.12)] text-[var(--gold,#c9a33d)]" : ""}`}>
-              {toAr(ayah.numberInSurah)}
+            <span
+              className={cn(
+                "inline-flex h-7 min-w-7 shrink-0 items-center justify-center rounded-full font-[var(--font-ui)] text-[0.75rem] font-bold leading-none select-none transition-colors mt-0.5",
+                isPlaying
+                  ? "bg-[var(--primary)] text-white"
+                  : "bg-[var(--bg-card)] text-[var(--text-muted)] border border-[var(--border)]",
+                "max-[640px]:h-6 max-[640px]:min-w-6 max-[640px]:text-[0.65rem]"
+              )}
+            >
+              {lang === "ar" ? toAr(ayah.numberInSurah) : ayah.numberInSurah}
             </span>
-            <div className="cpv-trans-content flex-1">
+            <div className="flex-1 space-y-2">
               {translations.map((translation, index) => (
-                <div key={index} className="cpv-trans-item">
+                <div key={index} className="flex flex-col gap-0.5">
                   {translations.length > 1 ? (
-                    <span className="cpv-trans-edition">
-                      [{translation.edition?.name || translation.edition?.identifier}]{" "}
+                    <span className="text-[0.7rem] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                      {translation.edition?.name || translation.edition?.identifier}
                     </span>
                   ) : null}
-                  <span className="cpv-trans-text flex-1 font-[420] tracking-[0.008em]">
+                  <span className="flex-1 font-medium text-[var(--text-secondary)]">
                     {translation.text}
                   </span>
                 </div>

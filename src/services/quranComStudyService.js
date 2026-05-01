@@ -1,7 +1,11 @@
 import { dbGet, dbSet } from "./dbService";
 
 const BASE_URL = "https://api.quran.com/api/v4";
-const TAFSIR_RESOURCE_ID = 169;
+const TAFSIR_RESOURCE_IDS = {
+  ar: 168,
+  en: 169,
+  fr: 169,
+};
 const CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
 const IDB_STORE = "cache";
 const IDB_PREFIX = "qcom-study:";
@@ -107,9 +111,11 @@ function extractTafsir(json) {
   };
 }
 
-export async function getVerseTafsir({ surah, ayah, signal } = {}) {
+export async function getVerseTafsir({ surah, ayah, lang = "en", signal } = {}) {
   const verseKey = normalizeVerseKey(surah, ayah);
-  const cacheKey = `${IDB_PREFIX}tafsir:${verseKey}:${TAFSIR_RESOURCE_ID}`;
+  const requestedLang = TAFSIR_RESOURCE_IDS[lang] ? lang : "en";
+  const resourceId = TAFSIR_RESOURCE_IDS[requestedLang];
+  const cacheKey = `${IDB_PREFIX}tafsir:${verseKey}:${resourceId}:${requestedLang}`;
 
   if (memCache.has(cacheKey)) {
     return memCache.get(cacheKey);
@@ -132,7 +138,7 @@ export async function getVerseTafsir({ surah, ayah, signal } = {}) {
   const request = (async () => {
     try {
       const params = new URLSearchParams({
-        tafsirs: String(TAFSIR_RESOURCE_ID),
+        tafsirs: String(resourceId),
         fields: "verse_key",
         tafsir_fields: "text,resource_name,language_name",
       });
@@ -140,7 +146,13 @@ export async function getVerseTafsir({ surah, ayah, signal } = {}) {
         `${BASE_URL}/verses/by_key/${verseKey}?${params.toString()}`,
         signal,
       );
-      const result = extractTafsir(json);
+      const result = {
+        ...extractTafsir(json),
+        note:
+          requestedLang === "fr"
+            ? "Le tafsir est basé sur le sens du verset, commun aux deux riwayat."
+            : null,
+      };
 
       if (!result.text) {
         throw new Error("No tafsir found for this verse");

@@ -73,7 +73,7 @@ const initialState = {
   currentJuz: routeOverrides.currentJuz ?? (stored.lastPosition?.juz || 1),
   quranFontSize: (() => {
     const stored_fs = stored.quranFontSize ?? stored.fontSize;
-    return stored_fs != null ? Math.max(Number(stored_fs), 32) : 42;
+    return stored_fs != null ? Math.max(Number(stored_fs), 36) : 48;
   })(),
   fontFamily: stored.fontFamily || "scheherazade-new",
   showHome:

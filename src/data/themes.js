@@ -22,8 +22,8 @@ export const THEMES = [
     descriptionEn: "Soft white clarity with crisp contrast and deep green.",
     period: "day",
     palette: {
-      bg: "#fcfdfd",
-      ink: "#1f2832",
+      bg: "#f7f9f8",
+      ink: "#17211c",
       accent: "#0b6235",
     },
   },
@@ -37,9 +37,9 @@ export const THEMES = [
     descriptionEn: "Warmer parchment feel with manuscript depth and readable brown contrast.",
     period: "day",
     palette: {
-      bg: "#f4ead7",
-      ink: "#483723",
-      accent: "#8b6b3e",
+      bg: "#f3e8cf",
+      ink: "#241505",
+      accent: "#7c4a17",
     },
   },
   {
@@ -47,14 +47,14 @@ export const THEMES = [
     fr: "Nuit de Medine",
     ar: "ليل المدينة",
     en: "Madinah Night",
-    descriptionFr: "Indigo profond, contraste net et accents celestes.",
+    descriptionFr: "Nuit bleu carbone, texte clair et accents menthe.",
     descriptionAr: "نيلي عميق وتباين واضح مع لمعة سماوية.",
     descriptionEn: "Deep indigo, crisp contrast and celestial accents.",
     period: "night",
     palette: {
-      bg: "#111827",
-      ink: "#e6eaf0",
-      accent: "#2bb6c7",
+      bg: "#0d1117",
+      ink: "#f3f6f9",
+      accent: "#42d3b0",
     },
   },
 ];
