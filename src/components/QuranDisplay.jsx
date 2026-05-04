@@ -2,6 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { clearCache } from "../services/quranAPI";
+import { clearWarshCache } from "../services/warshService";
 import { ensureReciterForRiwaya } from "../data/reciters";
 import { getKaraokeCalibration } from "../utils/karaokeUtils";
 import { openExternalUrl } from "../lib/security";
@@ -175,6 +176,7 @@ export default function QuranDisplay() {
   const repairPlatform = useCallback(async () => {
     try {
       await clearCache();
+      await clearWarshCache(); // Also clear Warsh-specific cache
       if ("serviceWorker" in navigator) {
         const registrations = await navigator.serviceWorker.getRegistrations();
         await Promise.all(
@@ -185,7 +187,7 @@ export default function QuranDisplay() {
         const keys = await caches.keys();
         await Promise.all(keys.map((key) => caches.delete(key)));
       }
-      localStorage.removeItem("mushaf-plus-settings");
+      try { localStorage.removeItem("mushaf-plus-settings"); } catch {}
     } finally {
       window.location.reload();
     }

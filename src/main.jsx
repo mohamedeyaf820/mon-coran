@@ -4,6 +4,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { AppProvider } from "./context/AppContext";
 import "./styles/tailwind.css";
+import "./styles/responsive.css";
 
 let fontAwesomeStylesPromise = null;
 
@@ -56,7 +57,8 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("React Error:", error, errorInfo);
+    console.error("React Error:", error);
+    console.error("Component Stack:", errorInfo.componentStack);
   }
 
   render() {
@@ -149,15 +151,30 @@ if (import.meta.env.PROD) {
   }, 10000);
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <ErrorBoundary>
-      <AppProvider>
-        <App />
-      </AppProvider>
-    </ErrorBoundary>
-  </React.StrictMode>,
-);
+// Vérifier que l'élément root existe avant de rendre
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+  console.error("[Main] Root element not found - cannot mount React application");
+  document.body.innerHTML = `
+    <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
+      <h1 style="color: #ef4444; margin-bottom: 1rem;">Erreur de chargement</h1>
+      <p>L'application n'a pas pu démarrer. Veuillez recharger la page.</p>
+      <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; cursor: pointer;">
+        Recharger
+      </button>
+    </div>
+  `;
+} else {
+  ReactDOM.createRoot(rootElement).render(
+    <React.StrictMode>
+      <ErrorBoundary>
+        <AppProvider>
+          <App />
+        </AppProvider>
+      </ErrorBoundary>
+    </React.StrictMode>,
+  );
+}
 
 // Service Worker: actif uniquement en production
 if ("serviceWorker" in navigator) {

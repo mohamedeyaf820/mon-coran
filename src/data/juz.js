@@ -148,3 +148,136 @@ export function getJuzForPage(pageNum) {
   }
   return 1;
 }
+
+/**
+ * Ruku (Sajdah) positions - verses with obligatory prostration
+ * Each entry: { surah, ayah, type: 'obligatory' | 'recommended' }
+ */
+export const RUKU_DATA = [
+  { surah: 7, ayah: 206, type: 'obligatory' },
+  { surah: 13, ayah: 15, type: 'obligatory' },
+  { surah: 16, ayah: 49, type: 'obligatory' },
+  { surah: 17, ayah: 107, type: 'obligatory' },
+  { surah: 19, ayah: 58, type: 'obligatory' },
+  { surah: 22, ayah: 18, type: 'obligatory' },
+  { surah: 22, ayah: 77, type: 'obligatory' },
+  { surah: 25, ayah: 60, type: 'obligatory' },
+  { surah: 27, ayah: 25, type: 'obligatory' },
+  { surah: 32, ayah: 15, type: 'obligatory' },
+  { surah: 38, ayah: 24, type: 'obligatory' },
+  { surah: 41, ayah: 37, type: 'obligatory' },
+  { surah: 50, ayah: 40, type: 'obligatory' },
+  { surah: 53, ayah: 62, type: 'obligatory' },
+  { surah: 84, ayah: 21, type: 'obligatory' },
+  { surah: 96, ayah: 19, type: 'obligatory' },
+];
+
+/**
+ * Check if a verse has obligatory sajdah
+ */
+export function hasSajdah(surah, ayah) {
+  return RUKU_DATA.some(r => r.surah === surah && r.ayah === ayah);
+}
+
+/**
+ * Get next sajdah position from current position
+ */
+export function getNextSajdah(surah, ayah) {
+  for (const r of RUKU_DATA) {
+    if (r.surah > surah || (r.surah === surah && r.ayah > ayah)) {
+      return r;
+    }
+  }
+  return null; // No more sajdah
+}
+
+/**
+ * Get previous sajdah position from current position
+ */
+export function getPrevSajdah(surah, ayah) {
+  for (let i = RUKU_DATA.length - 1; i >= 0; i--) {
+    const r = RUKU_DATA[i];
+    if (r.surah < surah || (r.surah === surah && r.ayah < ayah)) {
+      return r;
+    }
+  }
+  return null; // No previous sajdah
+}
+
+/**
+ * Hizb page ranges
+ */
+export const HIZB_PAGE_RANGES = [
+  { hizb: 1, startPage: 1, endPage: 10 },
+  { hizb: 2, startPage: 11, endPage: 21 },
+  { hizb: 3, startPage: 22, endPage: 31 },
+  { hizb: 4, startPage: 32, endPage: 41 },
+  { hizb: 5, startPage: 42, endPage: 51 },
+  { hizb: 6, startPage: 52, endPage: 61 },
+  { hizb: 7, startPage: 62, endPage: 71 },
+  { hizb: 8, startPage: 72, endPage: 81 },
+  { hizb: 9, startPage: 82, endPage: 91 },
+  { hizb: 10, startPage: 92, endPage: 101 },
+  { hizb: 11, startPage: 102, endPage: 111 },
+  { hizb: 12, startPage: 112, endPage: 121 },
+  { hizb: 13, startPage: 122, endPage: 131 },
+  { hizb: 14, startPage: 132, endPage: 141 },
+  { hizb: 15, startPage: 142, endPage: 151 },
+  { hizb: 16, startPage: 152, endPage: 161 },
+  { hizb: 17, startPage: 162, endPage: 171 },
+  { hizb: 18, startPage: 172, endPage: 181 },
+  { hizb: 19, startPage: 182, endPage: 191 },
+  { hizb: 20, startPage: 192, endPage: 201 },
+  { hizb: 21, startPage: 202, endPage: 211 },
+  { hizb: 22, startPage: 212, endPage: 221 },
+  { hizb: 23, startPage: 222, endPage: 231 },
+  { hizb: 24, startPage: 232, endPage: 241 },
+  { hizb: 25, startPage: 242, endPage: 251 },
+  { hizb: 26, startPage: 252, endPage: 261 },
+  { hizb: 27, startPage: 262, endPage: 271 },
+  { hizb: 28, startPage: 272, endPage: 281 },
+  { hizb: 29, startPage: 282, endPage: 291 },
+  { hizb: 30, startPage: 292, endPage: 301 },
+  { hizb: 31, startPage: 302, endPage: 311 },
+  { hizb: 32, startPage: 312, endPage: 321 },
+  { hizb: 33, startPage: 322, endPage: 331 },
+  { hizb: 34, startPage: 332, endPage: 341 },
+  { hizb: 35, startPage: 342, endPage: 351 },
+  { hizb: 36, startPage: 352, endPage: 361 },
+  { hizb: 37, startPage: 362, endPage: 371 },
+  { hizb: 38, startPage: 372, endPage: 381 },
+  { hizb: 39, startPage: 382, endPage: 391 },
+  { hizb: 40, startPage: 392, endPage: 401 },
+  { hizb: 41, startPage: 402, endPage: 411 },
+  { hizb: 42, startPage: 412, endPage: 421 },
+  { hizb: 43, startPage: 422, endPage: 431 },
+  { hizb: 44, startPage: 432, endPage: 441 },
+  { hizb: 45, startPage: 442, endPage: 451 },
+  { hizb: 46, startPage: 452, endPage: 461 },
+  { hizb: 47, startPage: 462, endPage: 471 },
+  { hizb: 48, startPage: 472, endPage: 481 },
+  { hizb: 49, startPage: 482, endPage: 491 },
+  { hizb: 50, startPage: 492, endPage: 501 },
+  { hizb: 51, startPage: 502, endPage: 511 },
+  { hizb: 52, startPage: 512, endPage: 521 },
+  { hizb: 53, startPage: 522, endPage: 531 },
+  { hizb: 54, startPage: 532, endPage: 541 },
+  { hizb: 55, startPage: 542, endPage: 551 },
+  { hizb: 56, startPage: 552, endPage: 561 },
+  { hizb: 57, startPage: 562, endPage: 571 },
+  { hizb: 58, startPage: 572, endPage: 581 },
+  { hizb: 59, startPage: 582, endPage: 591 },
+  { hizb: 60, startPage: 592, endPage: 604 },
+];
+
+/**
+ * Get hizb number for a given page
+ */
+export function getHizbForPage(pageNum) {
+  for (const range of HIZB_PAGE_RANGES) {
+    if (pageNum >= range.startPage && pageNum <= range.endPage) {
+      return range.hizb;
+    }
+  }
+  return 1;
+}

@@ -82,6 +82,10 @@ export default function JuzMode({
         playLabel={lang === "fr" ? "Ecouter le juz" : "Listen juz"}
         preparingSurah={preparingSurah}
         surahNum={firstSurah}
+        currentAyah={activeAyah || 1}
+        onNavigateToAyah={({ surah, ayah }) => {
+          console.log("Navigate to:", surah, ayah);
+        }}
       />
 
       {mushafLayout === "mushaf" ? (

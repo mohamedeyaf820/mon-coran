@@ -31,61 +31,57 @@ function isQuranWord(word) {
   return !word?.charType || word.charType === "word";
 }
 
+// Normalize Arabic text to ensure proper diacritic rendering
+function normalizeArabicText(text) {
+  if (!text) return "";
+  return String(text).normalize("NFC");
+}
+
 function groupWarshPageLines(ayahs) {
   const lines = new Map();
 
   ayahs.forEach((ayah) => {
     const surah = ayah.surah?.number;
     const ayahNum = ayah.numberInSurah;
-    const supportWords = getSupportWords(ayah);
+    const rawText = normalizeArabicText(ayah.text || "");
     const warshWords = Array.isArray(ayah.warshWords)
-      ? [...ayah.warshWords]
-      : String(ayah.text || "").split(/\s+/).filter(Boolean);
-    let lastLineNumber = null;
-    let warshIndex = 0;
+      ? ayah.warshWords.map(w => normalizeArabicText(w))
+      : rawText.split(/\s+/).filter(Boolean);
 
-    supportWords.forEach((supportWord) => {
-      const lineNumber = getLineNumber(supportWord) || lastLineNumber;
-      if (!lineNumber) return;
-      lastLineNumber = lineNumber;
+    if (warshWords.length === 0) return;
+
+    // Distribute words across lines using line_start and line_end from the ayah
+    const lineStart = Number(ayah.lineStart) || 1;
+    const lineEnd = Number(ayah.lineEnd) || 15;
+    const lineSpan = Math.max(1, lineEnd - lineStart + 1);
+    const wordsPerLine = Math.max(1, Math.ceil(warshWords.length / lineSpan));
+
+    warshWords.forEach((text, idx) => {
+      const lineIndex = Math.min(lineSpan - 1, Math.floor(idx / wordsPerLine));
+      const lineNumber = lineStart + lineIndex;
+
+      if (lineNumber < 1 || lineNumber > 15) return;
       if (!lines.has(lineNumber)) lines.set(lineNumber, []);
 
-      if (supportWord.charType === "end") {
-        lines.get(lineNumber).push({
-          charType: "end",
-          globalAyah: ayah.number,
-          surah,
-          ayah: ayahNum,
-          isWarsh: true,
-        });
-        return;
-      }
-
-      if (!isQuranWord(supportWord)) return;
-
-      const text = warshWords[warshIndex++];
-      if (!text) return;
       lines.get(lineNumber).push({
         charType: "word",
         globalAyah: ayah.number,
         surah,
         ayah: ayahNum,
-        position: warshIndex,
+        position: idx + 1,
         text,
         isWarsh: true,
       });
     });
 
-    const fallbackLine = lastLineNumber || Number(ayah.lineStart) || 15;
-    while (warshIndex < warshWords.length) {
-      if (!lines.has(fallbackLine)) lines.set(fallbackLine, []);
-      lines.get(fallbackLine).push({
-        charType: "word",
+    // Add ayah end marker on the last line
+    const lastLine = Math.min(15, lineEnd);
+    if (lines.has(lastLine)) {
+      lines.get(lastLine).push({
+        charType: "end",
         globalAyah: ayah.number,
         surah,
         ayah: ayahNum,
-        position: warshIndex + 1,
-        text: warshWords[warshIndex++],
         isWarsh: true,
       });
     }
@@ -231,9 +227,22 @@ export default function QuranMushafPage({
               onToggleActive?.(word.globalAyah);
             }
           }}
-          style={{ fontFamily: "var(--quran-font-family)" }}
+          style={{ 
+            fontFamily: 'var(--font-quran)',
+            fontSize: 'var(--qd-font-size, 28px)',
+            lineHeight: 'var(--line-height-quran)',
+            letterSpacing: '0.01em',
+            wordSpacing: '0.05em',
+            textRendering: 'optimizeLegibility',
+            WebkitFontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
+            fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
+            WebkitFontSmoothing: 'antialiased',
+            MozOsxFontSmoothing: 'grayscale',
+            unicodeBidi: 'plaintext',
+            whiteSpace: 'nowrap',
+          }}
         >
-          {word.text}
+          {normalizeArabicText(word.text)}
         </span>
       );
     }
@@ -279,7 +288,7 @@ export default function QuranMushafPage({
           <span>{meta.top}</span>
           <strong>{meta.middle}</strong>
         </header>
-        <div className="qcm-lines" dir="rtl" lang="ar">
+        <div className="qcm-lines" dir="rtl" lang="ar" data-warsh={isWarsh ? "true" : undefined}>
           {lines.map((line) => (
             <div
               key={line.lineNumber}

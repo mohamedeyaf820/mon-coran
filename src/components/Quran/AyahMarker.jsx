@@ -2,6 +2,10 @@ import React, { useId } from "react";
 import { cn } from "../../lib/utils";
 import { toArabicNumeral } from "../../utils/arabicNumerals";
 
+/**
+ * AyahMarker - Decorative verse end marker in traditional mushaf style
+ * Features: circular border, ornamental ring, Arabic numeral center
+ */
 export const AyahMarker = React.memo(function AyahMarker({
   number,
   num,
@@ -13,22 +17,18 @@ export const AyahMarker = React.memo(function AyahMarker({
   const markerNumber = number ?? num;
   const gradientId = useId().replace(/:/g, "");
   const sizes = {
-    sm: { box: "0.72em", fontSize: 28, stroke: 1.5 },
-    md: { box: "0.88em", fontSize: 31, stroke: 2 },
-    lg: { box: "1.05em", fontSize: 34, stroke: 2 },
+    sm: { box: "2em", inner: 0.78, strokeWidth: 1.2, fontSize: 22 },
+    md: { box: "2.4em", inner: 0.8, strokeWidth: 1.5, fontSize: 26 },
+    lg: { box: "2.8em", inner: 0.82, strokeWidth: 1.8, fontSize: 30 },
   };
-  const preset = sizes[size] || {
-    box: size || "1.25em",
-    fontSize: 34,
-    stroke: 2,
-  };
+  const preset = sizes[size] || sizes.md;
   const arabicNum = toArabicNumeral(markerNumber);
 
   return (
     <span
       dir="rtl"
       className={cn(
-        "ayah-marker-wrap ayat-marker qurancom-ayah-marker verse-end-marker inline-flex select-none items-center justify-center align-middle transition-transform hover:scale-110",
+        "ayah-marker-wrap ayat-marker qurancom-ayah-marker verse-end-marker inline-flex select-none items-center justify-center align-middle",
         isPlaying && "is-playing",
         className,
       )}
@@ -36,6 +36,8 @@ export const AyahMarker = React.memo(function AyahMarker({
       style={{
         width: preset.box,
         height: preset.box,
+        verticalAlign: "middle",
+        marginInline: "0.15em",
       }}
       title={`Verset ${markerNumber}`}
       role={onClick ? "button" : undefined}
@@ -52,56 +54,91 @@ export const AyahMarker = React.memo(function AyahMarker({
         focusable="false"
       >
         <defs>
-          <radialGradient id={`gold-${gradientId}`} cx="40%" cy="35%">
+          {/* Gold gradient for center */}
+          <radialGradient id={`bg-${gradientId}`} cx="50%" cy="45%">
             <stop offset="0%" stopColor="#FDF3DC" />
-            <stop offset="60%" stopColor="#F5E0A0" />
+            <stop offset="50%" stopColor="#F5E0A0" />
             <stop offset="100%" stopColor="#E8C84A" />
           </radialGradient>
+          {/* Outer glow */}
+          <radialGradient id={`glow-${gradientId}`} cx="50%" cy="50%">
+            <stop offset="0%" stopColor="#C8A84B" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="#C8A84B" stopOpacity="0" />
+          </radialGradient>
         </defs>
+
+        {/* Outer decorative border - thick circle */}
         <circle
           cx="50"
           cy="50"
-          r="47"
+          r="48"
           fill="none"
-          stroke="#C8A84B"
-          strokeWidth={preset.stroke * 1.5}
+          stroke="#B8983A"
+          strokeWidth="2.5"
+          opacity="0.9"
         />
+
+        {/* Middle ornamental ring - dashed pattern */}
         <circle
           cx="50"
           cy="50"
-          r="40"
+          r="42"
           fill="none"
           stroke="#C8A84B"
-          strokeWidth={preset.stroke * 0.6}
-          strokeDasharray="4 3"
+          strokeWidth="1"
+          strokeDasharray="3 2"
+          opacity="0.7"
         />
-        <circle cx="50" cy="50" r="39" fill={`url(#gold-${gradientId})`} />
-        {Array.from({ length: 8 }).map((_, index) => {
-          const angle = (index * 45 - 22.5) * (Math.PI / 180);
-          const radius = 43.5;
+
+        {/* Inner filled circle with gold gradient */}
+        <circle
+          cx="50"
+          cy="50"
+          r="36"
+          fill={`url(#bg-${gradientId})`}
+          stroke="#D4A820"
+          strokeWidth="1.5"
+        />
+
+        {/* 8 decorative dots around the border */}
+        {Array.from({ length: 8 }).map((_, i) => {
+          const angle = (i * 45) * (Math.PI / 180);
+          const r = 44;
           return (
             <circle
-              key={index}
-              cx={50 + radius * Math.cos(angle)}
-              cy={50 + radius * Math.sin(angle)}
-              r="2.2"
+              key={i}
+              cx={50 + r * Math.cos(angle)}
+              cy={50 + r * Math.sin(angle)}
+              r="2"
               fill="#C8A84B"
+              opacity="0.8"
             />
           );
         })}
-        <path
-          d="M50 18 L54 46 L82 50 L54 54 L50 82 L46 54 L18 50 L46 46 Z"
-          fill="none"
-          stroke="#C8A84B"
-          strokeWidth="0.8"
-          opacity="0.5"
-        />
+
+        {/* 4 corner ornaments */}
+        {[0, 90, 180, 270].map((deg) => {
+          const angle = deg * (Math.PI / 180);
+          const r = 40;
+          return (
+            <circle
+              key={`corner-${deg}`}
+              cx={50 + r * Math.cos(angle)}
+              cy={50 + r * Math.sin(angle)}
+              r="1.5"
+              fill="#A07820"
+              opacity="0.5"
+            />
+          );
+        })}
+
+        {/* Arabic numeral */}
         <text
           className="qurancom-ayah-marker__number verse-number-arabic ayat-marker__number"
           x="50"
-          y={arabicNum.length <= 2 ? "58" : "56"}
+          y={arabicNum.length <= 2 ? "57" : "55"}
           textAnchor="middle"
-          fontSize={arabicNum.length <= 2 ? preset.fontSize + 3 : preset.fontSize}
+          fontSize={arabicNum.length <= 2 ? preset.fontSize : preset.fontSize - 2}
           fontFamily="'Amiri', 'Scheherazade New', serif"
           fill="#5C3D00"
           fontWeight="bold"

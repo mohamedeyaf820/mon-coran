@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 @font-face {
     font-family: "surahnames";
     src: url("/fonts/sura_names.woff2") format("woff2");
@@ -107,9 +109,6 @@ button:active:not(:disabled),
 ::-webkit-scrollbar-thumb:hover {
     background: color-mix(in srgb, var(--theme-text) 25%, transparent);
 }
-@import "tailwindcss";
-@config "../../tailwind.config.js";
-@source "../../src/**/*.{js,jsx,ts,tsx}";
 
 /* Prevent horizontal header/layout jumps when overlays change viewport scrollbar state. */
 html {
@@ -299,12 +298,14 @@ html {
 
 @font-face {
     font-family: "KFGQPC Uthmanic Script WARSH";
-    src: url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2")
-        format("woff2");
+    src: url("https://static.qurancdn.com/fonts/quran/hafs/uthmanic_hafs/UthmanicHafs1Ver18.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
+    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
+
+/* Amiri font loaded via Google Fonts CSS in index.html */
 /* ============================================
    DESIGN TOKENS Ã¢â‚¬â€ Light (Parchment) Theme
    ============================================ */
@@ -511,7 +512,6 @@ html {
     --emerald-mid: #0d4a28;
     --emerald-lit: #15733f;
     --emerald-pale: #f0f7f3;
-    --emerald-tint: rgba(16, 90, 48, 0.08);
     --emerald-tint: rgba(42, 158, 94, 0.1);
 
     /* Gold stays gold Ã¢â‚¬â€ never changes across themes */
@@ -52501,12 +52501,16 @@ html body .app-root .quran-display--platform .mushaf-container .cpv-verse--playi
     --quran-font-family: "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", "Scheherazade New", serif;
     --quran-font-size: 2rem;
     --quran-line-height: 2.8;
+    --quran-text-rendering: optimizeLegibility;
 }
 
 .app-root .quran-display--platform :is(.verse-text, .quran-text, .rd-arabic, .mushaf-container),
 .app-root .quran-display--platform :is(.verse-text, .quran-text, .quran-arabic-text, .rd-arabic, .mushaf-container)
     :not(.ayat-marker, .ayat-marker *) {
     font-family: var(--quran-font-family) !important;
+    text-rendering: var(--quran-text-rendering, optimizeLegibility);
+    -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
 }
 
 .app-root .quran-display--platform :is(.verse-text, .quran-text, .quran-arabic-text, .mushaf-container) [data-tajwid],
@@ -53012,11 +53016,56 @@ html body .app-root .quran-display--platform .qcm-word {
     transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
+/* Warsh-specific line styling - proper mushaf layout */
+html body .app-root .quran-display--platform .qcm-lines .qcm-word--warsh {
+    display: inline;
+    white-space: nowrap;
+    font-family: var(--font-quran);
+    unicode-bidi: plaintext;
+}
+
+html body .app-root .quran-display--platform .qcm-lines[data-warsh="true"] {
+    font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+    line-height: 2;
+    direction: rtl;
+}
+
+html body .app-root .quran-display--platform .qcm-lines[data-warsh="true"] .qcm-line {
+    display: flex;
+    flex-wrap: wrap;
+    direction: rtl;
+    justify-content: flex-start;
+    gap: 0 0.4em;
+    white-space: nowrap;
+    align-items: baseline;
+    padding-inline: 0.5em;
+}
+
+html body .app-root .quran-display--platform .qcm-lines[data-warsh="true"] .qcm-line .qcm-word--warsh {
+    flex-shrink: 0;
+}
+
+/* End-of-ayah marker spacing */
+html body .app-root .quran-display--platform .qcm-lines[data-warsh="true"] .qcm-line .ayah-marker,
+html body .app-root .quran-display--platform .qcm-lines[data-warsh="true"] .qcm-line .ayat-marker {
+    flex-shrink: 0;
+    margin-inline-start: 0.3em;
+}
+
 html body .app-root .quran-display--platform .qcm-word--warsh {
-    font-family: var(--quran-font-family) !important;
-    font-size: inherit;
-    line-height: 1.35;
+    font-family: "KFGQPC Uthmanic Script WARSH", "Amiri Quran", "Amiri", serif !important;
+    font-size: 1.8rem !important;
+    line-height: 2.6 !important;
     letter-spacing: 0;
+    text-rendering: optimizeLegibility;
+    -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    direction: rtl;
+    /* Ensure proper diacritic positioning */
+    unicode-bidi: normal;
+    white-space: nowrap;
 }
 
 html body .app-root .quran-display--platform .qcm-word:hover,
@@ -53088,5 +53137,766 @@ html body .app-root .quran-display--platform .qcm-edge {
     html body .app-root .quran-display--platform .qcm-page-header,
     html body .app-root .quran-display--platform .qcm-page-footer {
         font-size: 0.62rem;
+    }
+}
+
+/* ============================================
+   MOBILE RESPONSIVE IMPROVEMENTS
+   Améliorations UI/UX pour mobile
+   ============================================ */
+
+/* Small mobile devices (up to 480px) */
+@media (max-width: 480px) {
+    /* Header improvements */
+    .app-root .hdr-v7__inner {
+        height: 48px;
+        padding: 0 0.75rem;
+    }
+    
+    .app-root .hdr-v7__nav-center {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    /* Surah header improvements */
+    .app-root .qc-reader-surah-header {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .app-root .qc-surah-title {
+        font-size: 1.75rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .app-root .qc-surah-subtitle {
+        font-size: 0.8rem;
+    }
+    
+    /* Toolbar improvements */
+    .app-root .qc-reader-toolbar {
+        padding: 0.75rem;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .app-root .qc-reader-toolbar button {
+        min-height: 40px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Reading view improvements */
+    .app-root .qc-reading-view {
+        padding: 1rem 0.75rem 6rem 0.75rem;
+    }
+    
+    .app-root .qc-reading-view .quran-text {
+        font-size: 1.6rem !important;
+        line-height: 2.3;
+    }
+    
+    /* Audio player improvements - FIX: better height and spacing */
+    .app-root .mp-audio-player--mobile {
+        border-radius: 1rem 1rem 0 0;
+        min-height: 72px;
+    }
+    
+    .app-root .mp-audio-player--mobile .flex.items-center.gap-3 {
+        gap: 0.75rem;
+        padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    }
+    
+    .app-root .mp-audio-player--mobile button {
+        min-height: 40px;
+        min-width: 40px;
+    }
+    
+    /* Warsh notice */
+    .app-root .warsh-notice {
+        margin: 0.75rem;
+        padding: 1rem;
+        font-size: 0.8rem;
+        border-radius: 0.75rem;
+    }
+    
+    /* Main content spacing - FIX: more padding for audio player */
+    .app-root .app-view-shell {
+        padding: 0.75rem;
+        padding-bottom: calc(100px + env(safe-area-inset-bottom, 20px));
+    }
+    
+    /* Ensure content doesn't get hidden behind player */
+    .app-root .quran-display--platform {
+        padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+        margin-bottom: 1rem;
+    }
+}
+
+/* Extra small devices (up to 375px) */
+@media (max-width: 375px) {
+    .app-root .hdr-v7__nav-center {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .app-root .qc-surah-title {
+        font-size: 1.3rem;
+    }
+    
+    .app-root .qc-reading-view .quran-text {
+        font-size: 1.35rem !important;
+    }
+    
+    /* Compact toolbar */
+    .app-root .qc-reader-toolbar {
+        flex-wrap: wrap;
+    }
+    
+    .app-root .qc-reader-toolbar button {
+        flex: 1;
+        min-width: 60px;
+        font-size: 0.7rem;
+    }
+    
+    /* Smaller audio player controls */
+    .app-root .mp-audio-player--mobile .text-\[0\.84rem\] {
+        font-size: 0.75rem;
+    }
+    
+    .app-root .mp-audio-player--mobile .text-\[0\.66rem\] {
+        font-size: 0.6rem;
+    }
+}
+
+/* Fix audio player overlap on mobile */
+@media (max-width: 768px) {
+    .app-root .quran-display--platform {
+        padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+        margin-bottom: 1.5rem;
+    }
+    
+    .app-root .qc-reading-view {
+        padding-bottom: 4rem;
+    }
+    
+    /* Safe area support for notched devices - FIX: proper padding */
+    .app-root .mp-audio-player--mobile {
+        padding-bottom: env(safe-area-inset-bottom, 12px);
+        min-height: 70px;
+    }
+    
+    /* Ensure player is fully visible */
+    .app-root .mp-audio-player--mobile,
+    .app-root .mp-audio-player--mobile.mp-audio-player--dock {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-height: none;
+        height: auto;
+    }
+    
+    /* Improved touch targets */
+    .app-root .mp-audio-player--mobile button {
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Better spacing for mobile header */
+    .app-root .qc-reader-surah-header {
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Improve verse markers on mobile */
+    .app-root .ayat-marker {
+        transform: scale(0.9);
+    }
+    
+    /* Fix for bottom spacing on scrollable content */
+    .app-root .quran-display-scroll {
+        padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+    }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+    .app-root .mp-audio-player--mobile:not(.minimized) {
+        max-height: 60vh;
+    }
+    
+    .app-root .qc-reading-view .quran-text {
+        font-size: 1.4rem !important;
+    }
+}
+
+/* ============================================
+   AUDIO PLAYER MOBILE VISUAL FIXES
+   ============================================ */
+
+/* Ensure mobile audio player is always visible and not truncated */
+@media (max-width: 768px) {
+    /* Fix audio player height and positioning */
+    .app-root .mp-audio-player--mobile {
+        min-height: 72px !important;
+        height: auto !important;
+        max-height: none !important;
+        box-sizing: border-box;
+    }
+    
+    /* Ensure content above player has enough margin */
+    .app-root .quran-display--platform > *:last-child,
+    .app-root .qc-reading-view > *:last-child {
+        margin-bottom: 100px;
+        padding-bottom: 2rem;
+    }
+    
+    /* Fix for verse display being cut off */
+    .app-root .verse-wrapper:last-of-type {
+        margin-bottom: 120px;
+    }
+    
+    /* Ensure proper z-index layering */
+    .app-root .mp-audio-player--mobile {
+        z-index: 9999 !important;
+    }
+    
+    /* Fix for text truncation in player */
+    .app-root .mp-audio-player--mobile .truncate {
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    /* Better button alignment */
+    .app-root .mp-audio-player--mobile .shrink-0 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    /* Fix safe area inset causing issues */
+    @supports (padding: max(0px)) {
+        .app-root .mp-audio-player--mobile {
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+        }
+    }
+}
+
+/* ============================================
+   ADDITIONAL MOBILE POLISH
+   ============================================ */
+
+/* Improve touch scrolling on mobile */
+@media (max-width: 768px) {
+    .app-root .quran-display-scroll {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+    
+    /* Better verse spacing on mobile */
+    .app-root .verse-wrapper {
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Improve basmala display on mobile */
+    .app-root .basmala {
+        font-size: 1.4rem !important;
+        margin: 1rem 0;
+    }
+    
+    /* Compact surah info panel */
+    .app-root .surah-info-panel {
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+    }
+    
+    .app-root .surah-info-panel h2 {
+        font-size: 1.1rem;
+    }
+    
+    .app-root .surah-info-panel p {
+        font-size: 0.75rem;
+    }
+}
+
+/* Very small screens (iPhone SE, etc.) */
+@media (max-width: 340px) {
+    .app-root .mp-audio-player--mobile {
+        min-height: 64px;
+    }
+    
+    .app-root .mp-audio-player--mobile .flex.items-center.gap-3 {
+        padding: 0.5rem 0.75rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+        gap: 0.5rem;
+    }
+    
+    .app-root .mp-audio-player--mobile button {
+        min-height: 36px;
+        min-width: 36px;
+    }
+    
+    .app-root .mp-audio-player--mobile .h-11.w-11 {
+        height: 40px;
+        width: 40px;
+    }
+    
+    /* Ensure text doesn't overflow */
+    .app-root .mp-audio-player--mobile .text-\[0\.84rem\] {
+        font-size: 0.75rem;
+        max-width: 120px;
+    }
+}
+
+/* Foldable devices and unusual aspect ratios */
+@media (max-width: 280px) {
+    .app-root .hdr-v7__nav-center {
+        font-size: 0.6rem;
+        max-width: 100px;
+    }
+    
+    .app-root .qc-reading-view .quran-text {
+        font-size: 1.15rem !important;
+    }
+}
+
+/* ============================================
+   MODERN SETTINGS DESIGN - Clean & Premium
+   ============================================ */
+
+/* Settings Overlay - Frosted glass effect */
+.settings-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: modalOverlayIn 200ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Settings Dialog - Modern card design */
+.settings-dialog {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 900px;
+    max-height: 85vh;
+    background: var(--bg-card, #ffffff);
+    border-radius: 20px;
+    border: 1px solid var(--border, rgba(0,0,0,0.08));
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.04),
+        0 10px 40px rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    overflow: hidden;
+    animation: modalBoxIn 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Settings Header - Clean minimal */
+.settings-dialog .sm-header,
+.settings-dialog > div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border, rgba(0,0,0,0.06));
+    background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+}
+
+/* Settings Navigation - Pill-style tabs */
+.settings-dialog nav,
+.settings-dialog .settings-nav {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--border, rgba(0,0,0,0.06));
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.settings-dialog nav::-webkit-scrollbar,
+.settings-dialog .settings-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.settings-dialog nav button,
+.settings-dialog .settings-nav button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-secondary, #666);
+    font-family: var(--font-ui, system-ui);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.settings-dialog nav button:hover {
+    background: var(--hover-bg, rgba(0,0,0,0.04));
+    color: var(--text-primary, #111);
+}
+
+.settings-dialog nav button[aria-pressed="true"],
+.settings-dialog nav button.is-active,
+.settings-dialog nav button.active {
+    background: var(--primary, #0b6235);
+    color: white;
+    box-shadow: 0 2px 8px rgba(var(--primary-rgb, 11, 98, 53), 0.3);
+}
+
+/* Settings Content - Clean scrollable area */
+.settings-dialog .settings-content,
+.settings-dialog > div:last-child {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border, rgba(0,0,0,0.1)) transparent;
+}
+
+/* Settings Sections - Card-based layout */
+.settings-section,
+.settings-group {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border-radius: 12px;
+    background: var(--bg-secondary, rgba(0,0,0,0.02));
+    border: 1px solid var(--border-light, rgba(0,0,0,0.04));
+}
+
+.settings-section-title,
+.settings-group-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted, #888);
+}
+
+/* Settings Items - Row-based controls */
+.settings-item,
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-light, rgba(0,0,0,0.04));
+}
+
+.settings-item:last-child,
+.settings-row:last-child {
+    border-bottom: none;
+}
+
+.settings-item-label {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-primary, #111);
+}
+
+.settings-item-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted, #888);
+    margin-top: 0.15rem;
+}
+
+/* Settings Controls - Toggle, Select, Slider */
+.settings-toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: var(--border, #ccc);
+    cursor: pointer;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+}
+
+.settings-toggle::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease;
+}
+
+.settings-toggle.active,
+.settings-toggle[aria-checked="true"] {
+    background: var(--primary, #0b6235);
+}
+
+.settings-toggle.active::after,
+.settings-toggle[aria-checked="true"]::after {
+    transform: translateX(20px);
+}
+
+.settings-select {
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    border: 1px solid var(--border, #ddd);
+    border-radius: 8px;
+    background: var(--bg-card, #fff);
+    color: var(--text-primary, #111);
+    font-family: var(--font-ui, system-ui);
+    font-size: 0.82rem;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+}
+
+.settings-slider {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border, #ddd);
+    appearance: none;
+    cursor: pointer;
+}
+
+.settings-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--primary, #0b6235);
+    box-shadow: 0 2px 6px rgba(var(--primary-rgb, 11, 98, 53), 0.3);
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.settings-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+/* Settings Chips - Option selectors */
+.settings-chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.settings-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--border, #ddd);
+    border-radius: 8px;
+    background: var(--bg-card, #fff);
+    color: var(--text-secondary, #666);
+    font-family: var(--font-ui, system-ui);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.settings-chip:hover {
+    border-color: var(--primary, #0b6235);
+    color: var(--primary, #0b6235);
+}
+
+.settings-chip.active,
+.settings-chip[aria-pressed="true"] {
+    background: var(--primary, #0b6235);
+    color: white;
+    border-color: var(--primary, #0b6235);
+}
+
+/* Theme Preview Cards */
+.settings-theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.75rem;
+}
+
+.settings-theme-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.5rem;
+    border: 2px solid var(--border, #ddd);
+    border-radius: 12px;
+    background: var(--bg-card, #fff);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.settings-theme-card:hover {
+    border-color: var(--primary, #0b6235);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.settings-theme-card.active {
+    border-color: var(--primary, #0b6235);
+    background: rgba(var(--primary-rgb, 11, 98, 53), 0.05);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 11, 98, 53), 0.15);
+}
+
+.settings-theme-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.settings-theme-name {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--text-secondary, #666);
+}
+
+/* Settings Footer */
+.settings-dialog .sm-footer,
+.settings-dialog footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border, rgba(0,0,0,0.06));
+    background: var(--bg-secondary, rgba(0,0,0,0.02));
+}
+
+/* Close Button - X icon */
+.sm-close-btn,
+.settings-dialog .sm-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted, #888);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.sm-close-btn:hover,
+.settings-dialog .sm-close-btn:hover {
+    background: rgba(0,0,0,0.06);
+    color: var(--text-primary, #111);
+}
+
+/* Mobile Responsive - Stack layout */
+@media (max-width: 768px) {
+    .settings-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .settings-dialog {
+        max-width: 100%;
+        max-height: 92vh;
+        border-radius: 20px 20px 0 0;
+        animation: slideUp 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .settings-dialog nav,
+    .settings-dialog .settings-nav {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .settings-dialog nav button,
+    .settings-dialog .settings-nav button {
+        padding: 0.4rem 0.65rem;
+        font-size: 0.75rem;
+    }
+
+    .settings-dialog .settings-content,
+    .settings-dialog > div:last-child {
+        padding: 1rem 0.75rem;
+    }
+
+    .settings-section,
+    .settings-group {
+        padding: 0.75rem;
+    }
+
+    .settings-item,
+    .settings-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .settings-theme-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Mobile drag handle */
+    .settings-dialog::before {
+        content: "";
+        display: block;
+        width: 36px;
+        height: 4px;
+        margin: 0.5rem auto;
+        border-radius: 2px;
+        background: var(--border, #ccc);
+    }
+}
+
+/* Large screens - Side navigation */
+@media (min-width: 769px) {
+    .settings-dialog {
+        flex-direction: row;
+        max-height: 80vh;
+    }
+
+    .settings-dialog > div:first-child {
+        flex-direction: column;
+        width: 200px;
+        border-bottom: none;
+        border-right: 1px solid var(--border, rgba(0,0,0,0.06));
+    }
+
+    .settings-dialog nav,
+    .settings-dialog .settings-nav {
+        flex-direction: column;
+        padding: 0.75rem;
+        border-bottom: none;
+    }
+
+    .settings-dialog > div:last-child {
+        flex: 1;
+    }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .settings-dialog {
+        max-width: 800px;
     }
 }

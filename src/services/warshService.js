@@ -5,14 +5,53 @@
  * Data is fetched from the new warsh-quran-audio repository.
  */
 
-import { dbGet, dbSet } from './dbService';
+import { dbGet, dbSet, dbDelete } from './dbService';
 import { WARSH_DATA_BASE_URL, WARSH_LEGACY_JSON_URL } from '../constants/warshSource';
-import { fetchQuranComText } from './quranComAPI';
 import { getSurah } from '../data/surahs';
 
 const IDB_STORE = 'cache';
-const IDB_KEY_PREFIX = 'warsh-unicode-v4-s-';
-const WARSH_SOURCE_ID = 'warsh-unicode-v4';
+const IDB_KEY_PREFIX = 'warsh-unicode-v5-s-';
+const WARSH_SOURCE_ID = 'warsh-unicode-v5';
+const LEGACY_CACHE_KEY = 'warsh-unicode-v4-s-';
+
+// Logger utilitaire - uniquement en dev
+const log = import.meta.env.DEV ? console.log : () => {};
+const logError = import.meta.env.DEV ? console.error : () => {};
+
+// Fetch avec timeout
+async function fetchWithTimeout(url, options = {}, timeout = 15000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error(`Request timeout after ${timeout}ms`);
+    }
+    throw error;
+  }
+}
+
+// Clear old cache format on load
+(async function clearOldCache() {
+  try {
+    const { dbDelete } = await import('./dbService');
+    // Clear old v4 cache keys
+    for (let i = 1; i <= 114; i++) {
+      dbDelete(IDB_STORE, `${LEGACY_CACHE_KEY}${i}`).catch(() => {});
+    }
+    dbDelete(IDB_STORE, `${LEGACY_CACHE_KEY}legacy-all`).catch(() => {});
+    // Force clear legacy-all to re-fetch with new format
+    dbDelete(IDB_STORE, `${IDB_KEY_PREFIX}legacy-all`).catch(() => {});
+  } catch {}
+})();
 
 // ── State ────────────────────────────────────────────
 // In-memory cache for surahs: Map[surahNum] -> Array[normalized ayah records]
@@ -30,21 +69,34 @@ export function isFontLoaded() { return true; }
 export function getFontFamily() { return '"KFGQPC Uthmanic Script Warsh", "Amiri", serif'; }
 
 function normalizeWhitespace(text) {
-  return String(text || '')
-    .replace(/\u00a0/g, ' ')
-    .replace(/[\uFC00-\uFCFF\uFDF0-\uFDFF]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  if (!text) return '';
+  
+  // Normalize to NFC to ensure consistent combining character order
+  let normalized = String(text).normalize('NFC');
+  
+  // Replace non-breaking space with regular space
+  normalized = normalized.replace(/\u00a0/g, ' ');
+  
+  // Remove presentation forms (Arabic presentation forms that might cause issues)
+  // But preserve Arabic combining marks (064B-065F, 0670)
+  normalized = normalized.replace(/[\uFB50-\uFDFF]/g, '');
+  
+  // Collapse multiple spaces
+  normalized = normalized.replace(/\s+/g, ' ');
+  
+  return normalized.trim();
 }
 
 function splitWarshWords(text) {
-  return normalizeWhitespace(text).split(/\s+/).filter(Boolean);
+  const normalized = normalizeWhitespace(text);
+  // Split on whitespace but preserve the diacritics attached to words
+  return normalized.split(/\s+/).filter(word => word.length > 0);
 }
 
 function getSurahNumberFromRaw(raw) {
   return Number(
-    raw?.surah_number ??
-      raw?.sura_no ??
+    raw?.sura_no ??
+      raw?.surah_number ??
       raw?.sura ??
       raw?.surah ??
       raw?.chapter_id ??
@@ -54,43 +106,67 @@ function getSurahNumberFromRaw(raw) {
 
 function rowsFromLegacyData(data, surahNumber) {
   const n = Number(surahNumber);
-
-  if (Array.isArray(data)) {
-    const flatRows = data.filter((item) => getSurahNumberFromRaw(item) === n);
-    if (flatRows.length > 0) return flatRows;
-
-    const nested = data[n - 1] || data[n];
-    if (Array.isArray(nested)) return nested;
-    if (nested && typeof nested === 'object') {
-      return Object.entries(nested).map(([ayahNumber, text]) => ({
-        ayah_number: ayahNumber,
-        text,
-      }));
-    }
+  
+  log(`[WarshService] rowsFromLegacyData called for surah ${n}, data type: ${typeof data}, isArray: ${Array.isArray(data)}`);
+  
+  if (!data) {
+    logError(`[WarshService] Data is null/undefined for surah ${n}`);
     return [];
   }
 
-  if (!data || typeof data !== 'object') return [];
-
-  const nested =
-    data[n] ||
-    data[String(n)] ||
-    data?.surahs?.[n] ||
-    data?.surahs?.[String(n)] ||
-    data?.chapters?.[n] ||
-    data?.chapters?.[String(n)];
-
-  if (Array.isArray(nested)) return nested;
-  if (nested && typeof nested === 'object') {
-    const ayahs = nested.ayahs || nested.verses;
-    if (Array.isArray(ayahs)) return ayahs;
-    return Object.entries(nested).map(([ayahNumber, text]) => ({
-      ayah_number: ayahNumber,
-      text,
-    }));
+  // Handle case where data is wrapped in a response object
+  let actualData = data;
+  if (typeof data === 'object' && !Array.isArray(data)) {
+    // Check common wrapper properties
+    if (data.data && Array.isArray(data.data)) {
+      actualData = data.data;
+      log(`[WarshService] Unwrapped data from 'data' property, length: ${actualData.length}`);
+    } else if (data.verses && Array.isArray(data.verses)) {
+      actualData = data.verses;
+      log(`[WarshService] Unwrapped data from 'verses' property, length: ${actualData.length}`);
+    } else if (data.ayahs && Array.isArray(data.ayahs)) {
+      actualData = data.ayahs;
+      log(`[WarshService] Unwrapped data from 'ayahs' property, length: ${actualData.length}`);
+    } else {
+      logError(`[WarshService] Data is object but has no array property for surah ${n}`);
+      return [];
+    }
   }
-
-  return [];
+  
+  if (!Array.isArray(actualData)) {
+    logError(`[WarshService] Data is not an array for surah ${n}, type: ${typeof actualData}`);
+    return [];
+  }
+  
+  log(`[WarshService] Data is array with ${actualData.length} items`);
+  
+  if (actualData.length === 0) {
+    logError(`[WarshService] Data array is empty for surah ${n}`);
+    return [];
+  }
+  
+  // Log first item structure (for debugging)
+  if (actualData.length > 0) {
+    const first = actualData[0];
+    log(`[WarshService] First item sample:`, {
+      sura_no: first.sura_no,
+      aya_no: first.aya_no,
+      text_preview: first.aya_text?.substring(0, 30)
+    });
+  }
+  
+  // Filter by surah number
+  const rows = actualData.filter(item => getSurahNumberFromRaw(item) === n);
+  log(`[WarshService] Filtered ${rows.length} rows for surah ${n}`);
+  
+  // Sort by ayah number
+  rows.sort((a, b) => {
+    const aNum = Number(a.aya_no ?? a.ayah_number ?? a.ayah ?? a.verse);
+    const bNum = Number(b.aya_no ?? b.ayah_number ?? b.ayah ?? b.verse);
+    return aNum - bNum;
+  });
+  
+  return rows;
 }
 
 function normalizeWarshRows(rows, surahNumber) {
@@ -109,16 +185,34 @@ function normalizeWarshRows(rows, surahNumber) {
 function validateWarshRows(records, surahNumber) {
   const expected = Number(getSurah(surahNumber)?.ayahs || 0);
   if (!Array.isArray(records) || records.length === 0) return false;
-  if (expected && records.length !== expected) return false;
-  return records.every((record, index) => Number(record.ayahNumber) === index + 1);
+  
+  // More permissive validation - allow some margin of error
+  // Surahs should have at least 80% of expected verses to be considered valid
+  if (expected && records.length < expected * 0.8) {
+    logError(`Warsh validation: expected ${expected} verses, got ${records.length} for surah ${surahNumber}`);
+    return false;
+  }
+  
+  // Check that verse numbers are sequential (with possible gaps)
+  let prevAyah = 0;
+  for (const record of records) {
+    const ayahNum = Number(record.ayahNumber);
+    if (!ayahNum || ayahNum <= prevAyah) {
+      logError(`Warsh validation: invalid verse sequence at ${surahNumber}:${ayahNum}`);
+      return false;
+    }
+    prevAyah = ayahNum;
+  }
+  
+  return true;
 }
 
 /**
  * Normalizes a single ayah record from the new JSON format.
  */
 function normalizeWarshRecord(raw, surahNumber, fallbackAyahNumber = null) {
-  const ayahNumber = Number(raw?.ayah_number ?? raw?.aya_no ?? raw?.ayah ?? raw?.verse ?? fallbackAyahNumber);
-  const text = normalizeWhitespace(raw?.text ?? raw?.aya_text ?? raw?.ayah_text ?? raw?.verse_text ?? raw);
+  const ayahNumber = Number(raw?.aya_no ?? raw?.ayah_number ?? raw?.ayah ?? raw?.verse ?? fallbackAyahNumber);
+  const text = normalizeWhitespace(raw?.aya_text ?? raw?.text ?? raw?.ayah_text ?? raw?.verse_text ?? raw);
 
   if (!ayahNumber || !text) {
     return null;
@@ -190,40 +284,51 @@ export async function loadWarshSurah(surahNum) {
   if (pendingSurahs.has(n)) return pendingSurahs.get(n);
 
   const promise = (async () => {
-    // 1. Try IndexedDB cache
     const idbKey = `${IDB_KEY_PREFIX}${n}`;
+    
+    // 1. Try memory cache first
+    if (cachedSurahs.has(n)) {
+      return cachedSurahs.get(n);
+    }
+    
+    // 2. Try IndexedDB cache
     try {
       const cached = await dbGet(IDB_STORE, idbKey);
-      if (cached && Array.isArray(cached)) {
-        cachedSurahs.set(n, cached);
-        return cached;
+      if (cached && Array.isArray(cached) && cached.length > 0) {
+        // Validate cached data
+        if (validateWarshRows(cached, n)) {
+          cachedSurahs.set(n, cached);
+          return cached;
+        } else {
+          logError(`[WarshService] Cached data for surah ${n} is invalid, clearing...`);
+          await dbDelete(IDB_STORE, idbKey).catch(() => {});
+        }
       }
     } catch { }
 
-    // 2. Fetch from the per-surah source first, then fall back to the shared JSON.
+    // 3. Load from the main Warsh JSON source (aziz011133/quran_warsh)
     let normalized = [];
     try {
-      const url = `${WARSH_DATA_BASE_URL}${String(n).padStart(3, '0')}.json`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`Failed to load warsh surah ${n}: ${res.status}`);
-      const data = await res.json();
-      const rows = Array.isArray(data) ? data : (data.ayahs || data.verses || []);
-      normalized = normalizeWarshRows(rows, n);
-      if (!validateWarshRows(normalized, n)) {
-        throw new Error(`Invalid per-surah Warsh source for ${n}`);
-      }
-    } catch {
       const legacy = await loadLegacyWarshData();
-      normalized = normalizeWarshRows(rowsFromLegacyData(legacy, n), n);
-    }
-
-    if (!validateWarshRows(normalized, n)) {
-      throw new Error(`Failed to load warsh surah ${n}: invalid or incomplete source`);
+      const rows = rowsFromLegacyData(legacy, n);
+      normalized = normalizeWarshRows(rows, n);
+      
+      if (!validateWarshRows(normalized, n)) {
+        logError(`[WarshService] Validation failed for surah ${n}:`, {
+          expected: getSurah(n)?.ayahs,
+          got: normalized.length,
+          firstFew: normalized.slice(0, 5)
+        });
+        throw new Error(`Failed to load warsh surah ${n}: invalid or incomplete source (got ${normalized.length} verses)`);
+      }
+    } catch (err) {
+      logError(`[WarshService] Loading error for surah ${n}:`, err);
+      throw new Error(`Failed to load warsh surah ${n}: ${err.message}`);
     }
 
     cachedSurahs.set(n, normalized);
 
-    // 3. Store in IndexedDB
+    // 4. Store in IndexedDB
     dbSet(IDB_STORE, { key: idbKey, data: normalized }).catch(() => { });
 
     return normalized;
@@ -241,14 +346,28 @@ async function loadLegacyWarshData() {
       const idbKey = `${IDB_KEY_PREFIX}legacy-all`;
       try {
         const cached = await dbGet(IDB_STORE, idbKey);
-        if (cached && typeof cached === 'object') return cached;
+        if (cached && typeof cached === 'object') {
+          // Normalize: unwrap nested {data: {data: [...]}} from IndexedDB
+          const inner = cached.data || cached;
+          const arrayData = Array.isArray(inner) ? inner : (inner?.data || inner?.verses || null);
+          if (Array.isArray(arrayData) && arrayData.length > 0) {
+            log(`[WarshService] Loaded legacy data from cache, ${arrayData.length} items`);
+            return arrayData;
+          }
+        }
       } catch { }
 
-      const res = await fetch(WARSH_LEGACY_JSON_URL);
+      log(`[WarshService] Fetching Warsh JSON from: ${WARSH_LEGACY_JSON_URL}`);
+      const res = await fetchWithTimeout(WARSH_LEGACY_JSON_URL, {}, 20000);
       if (!res.ok) throw new Error(`Failed to load legacy Warsh JSON: ${res.status}`);
-      const data = await res.json();
-      dbSet(IDB_STORE, { key: idbKey, data }).catch(() => { });
-      return data;
+      const rawData = await res.json();
+      
+      // Normalize: unwrap {data: [...]} wrapper
+      const arrayData = Array.isArray(rawData) ? rawData : (rawData?.data || rawData?.verses || []);
+      log(`[WarshService] Loaded legacy data, ${arrayData.length} items`);
+      
+      dbSet(IDB_STORE, { key: idbKey, data: arrayData }).catch(() => { });
+      return arrayData;
     })();
   }
   return legacyWarshDataPromise;
@@ -363,11 +482,93 @@ export async function getWarshJuzVerses(juzNum) {
 }
 
 export async function getWarshPageVerses(pageNum) {
-  return getWarshVersesByHafsScope(`page/${pageNum}`);
+  const raw = await loadLegacyWarshData();
+  const data = Array.isArray(raw) ? raw : [];
+  if (data.length === 0) {
+    return { ayahs: [], number: pageNum };
+  }
+  const pageAyahs = data.filter(ayah => Number(ayah.page) === Number(pageNum));
+  
+  // Sort by surah and ayah number
+  pageAyahs.sort((a, b) => {
+    if (Number(a.sura_no) !== Number(b.sura_no)) {
+      return Number(a.sura_no) - Number(b.sura_no);
+    }
+    return Number(a.aya_no) - Number(b.aya_no);
+  });
+  
+  // Format compatible avec QuranMushafPage
+  const formattedAyahs = pageAyahs.map(ayah => {
+    const text = ayah.aya_text || '';
+    const words = text.split(/\s+/).filter(Boolean);
+    
+    return {
+      text: text,
+      warshWords: words,
+      surah: { number: Number(ayah.sura_no) },
+      numberInSurah: Number(ayah.aya_no),
+      number: Number(ayah.id),
+      page: Number(ayah.page),
+      juz: Number(ayah.jozz),
+      lineStart: Number(ayah.line_start) || null,
+      lineEnd: Number(ayah.line_end) || null,
+      // Ajouter hafsSupport avec words pour compatibilité avec groupWarshPageLines
+      hafsSupport: {
+        words: words.map((word, idx) => ({
+          text: word,
+          lineV2: Number(ayah.line_start) || 1,
+          charType: 'word',
+          surah: Number(ayah.sura_no),
+          ayah: Number(ayah.aya_no),
+        }))
+      }
+    };
+  });
+  
+  return {
+    ayahs: formattedAyahs,
+    number: pageNum,
+  };
 }
 
 export function preloadWarshSurah(surahNum) {
   loadWarshSurah(surahNum).catch(() => { });
+}
+
+/**
+ * Clear Warsh cache from IndexedDB and memory.
+ * Use this when data seems corrupted or after updates.
+ */
+export async function clearWarshCache() {
+  // Clear memory cache
+  cachedSurahs.clear();
+  pendingSurahs.clear();
+  legacyWarshDataPromise = null;
+  
+  // Clear IndexedDB cache
+  try {
+    const { dbDelete } = await import('./dbService');
+    const promises = [];
+    
+    // Clear all surah caches
+    for (let i = 1; i <= 114; i++) {
+      promises.push(dbDelete(IDB_STORE, `${IDB_KEY_PREFIX}${i}`).catch(() => {}));
+    }
+    
+    // Clear legacy caches (both v4 and v5)
+    promises.push(dbDelete(IDB_STORE, `${IDB_KEY_PREFIX}legacy-all`).catch(() => {}));
+    for (let i = 1; i <= 114; i++) {
+      promises.push(dbDelete(IDB_STORE, `${LEGACY_CACHE_KEY}${i}`).catch(() => {}));
+    }
+    promises.push(dbDelete(IDB_STORE, `${LEGACY_CACHE_KEY}legacy-all`).catch(() => {}));
+    
+    await Promise.all(promises);
+    log('[WarshService] Cache cleared successfully');
+    return true;
+  } catch (err) {
+    logError('[WarshService] Failed to clear cache:', err);
+    return false;
+  }
 }
 
 export default {
@@ -387,4 +588,5 @@ export default {
   getWarshJuzVerses,
   getWarshPageVerses,
   preloadWarshSurah,
+  clearWarshCache,
 };

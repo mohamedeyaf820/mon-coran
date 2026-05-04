@@ -1,4 +1,4 @@
-import React, { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
+﻿import React, { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { search, searchTranslation } from "../services/quranAPI";
@@ -28,7 +28,7 @@ function formatSearchError(error, lang) {
     return lang === "fr"
       ? "La recherche distante a echoue. L'application a tente un fallback local, mais aucun resultat fiable n'a ete trouve."
       : lang === "ar"
-        ? "تعذر البحث البعيد. حاول التطبيق التراجع محلياً لكن لم يتم العثور على نتيجة موثوقة."
+        ? "ØªØ¹Ø°Ø± Ø§Ù„Ø¨Ø­Ø« Ø§Ù„Ø¨Ø¹ÙŠØ¯. Ø­Ø§ÙˆÙ„ Ø§Ù„ØªØ·Ø¨ÙŠÙ‚ Ø§Ù„ØªØ±Ø§Ø¬Ø¹ Ù…Ø­Ù„ÙŠØ§Ù‹ Ù„ÙƒÙ† Ù„Ù… ÙŠØªÙ… Ø§Ù„Ø¹Ø«ÙˆØ± Ø¹Ù„Ù‰ Ù†ØªÙŠØ¬Ø© Ù…ÙˆØ«ÙˆÙ‚Ø©."
         : "Remote search failed. The app attempted a local fallback, but no reliable result was found.";
   }
   return message;
@@ -222,9 +222,9 @@ export default function SearchModal() {
     if (!SpeechRecognition) {
       setError(
         lang === "fr"
-          ? "Recherche vocale non supportée sur ce navigateur."
+          ? "Recherche vocale non supportÃ©e sur ce navigateur."
           : lang === "ar"
-            ? "البحث الصوتي غير متاح على هذا المتصفح."
+            ? "Ø§Ù„Ø¨Ø­Ø« Ø§Ù„ØµÙˆØªÙŠ ØºÙŠØ± Ù…ØªØ§Ø­ Ø¹Ù„Ù‰ Ù‡Ø°Ø§ Ø§Ù„Ù…ØªØµÙØ­."
             : "Voice search is not supported on this browser.",
       );
       return;
@@ -274,9 +274,9 @@ export default function SearchModal() {
   };
 
   const searchModeLabels = {
-    arabic: lang === "fr" ? "Arabe" : lang === "ar" ? "عربي" : "Arabic",
+    arabic: lang === "fr" ? "Arabe" : lang === "ar" ? "Ø¹Ø±Ø¨ÙŠ" : "Arabic",
     phonetic:
-      lang === "fr" ? "Phonétique" : lang === "ar" ? "صوتي" : "Phonetic",
+      lang === "fr" ? "PhonÃ©tique" : lang === "ar" ? "ØµÙˆØªÙŠ" : "Phonetic",
     fr: "Traduction FR",
     en: "Translation EN",
   };
@@ -284,24 +284,24 @@ export default function SearchModal() {
   const suggestionItems = [
     {
       mode: "arabic",
-      value: "الرحمن",
+      value: "Ø§Ù„Ø±Ø­Ù…Ù†",
       label:
-        lang === "fr" ? "Texte arabe" : lang === "ar" ? "نص عربي" : "Arabic text",
+        lang === "fr" ? "Texte arabe" : lang === "ar" ? "Ù†Øµ Ø¹Ø±Ø¨ÙŠ" : "Arabic text",
     },
     {
       mode: "phonetic",
       value: "bismillah",
       label:
-        lang === "fr" ? "Début de verset" : lang === "ar" ? "بداية آية" : "Verse opening",
+        lang === "fr" ? "DÃ©but de verset" : lang === "ar" ? "Ø¨Ø¯Ø§ÙŠØ© Ø¢ÙŠØ©" : "Verse opening",
     },
     {
       mode: "fr",
-      value: "miséricorde",
+      value: "misÃ©ricorde",
       label:
         lang === "fr"
-          ? "Traduction française"
+          ? "Traduction franÃ§aise"
           : lang === "ar"
-            ? "ترجمة فرنسية"
+            ? "ØªØ±Ø¬Ù…Ø© ÙØ±Ù†Ø³ÙŠØ©"
             : "French translation",
     },
   ];
@@ -363,7 +363,7 @@ export default function SearchModal() {
   ]);
 
   const scopeOptions = [
-    { id: "all", icon: "fa-layer-group", label: lang === "fr" ? "Tout" : lang === "ar" ? "الكل" : "All" },
+    { id: "all", icon: "fa-layer-group", label: lang === "fr" ? "Tout" : lang === "ar" ? "Ø§Ù„ÙƒÙ„" : "All" },
     {
       id: "currentSurah",
       icon: "fa-book-open",
@@ -371,30 +371,30 @@ export default function SearchModal() {
         lang === "fr"
           ? "Sourate actuelle"
           : lang === "ar"
-            ? "السورة الحالية"
+            ? "Ø§Ù„Ø³ÙˆØ±Ø© Ø§Ù„Ø­Ø§Ù„ÙŠØ©"
             : "Current surah",
     },
     {
       id: "currentJuz",
       icon: "fa-book-bookmark",
-      label: lang === "fr" ? "Juz actuel" : lang === "ar" ? "الجزء الحالي" : "Current juz",
+      label: lang === "fr" ? "Juz actuel" : lang === "ar" ? "Ø§Ù„Ø¬Ø²Ø¡ Ø§Ù„Ø­Ø§Ù„ÙŠ" : "Current juz",
     },
     {
       id: "meccan",
       icon: "fa-kaaba",
-      label: lang === "fr" ? "Mecquoises" : lang === "ar" ? "مكية" : "Meccan",
+      label: lang === "fr" ? "Mecquoises" : lang === "ar" ? "Ù…ÙƒÙŠØ©" : "Meccan",
     },
     {
       id: "medinan",
       icon: "fa-mosque",
-      label: lang === "fr" ? "Medinoises" : lang === "ar" ? "مدنية" : "Medinan",
+      label: lang === "fr" ? "Medinoises" : lang === "ar" ? "Ù…Ø¯Ù†ÙŠØ©" : "Medinan",
     },
   ];
   const filterTip =
     lang === "fr"
       ? "Possibilites: limiter a la sourate en cours, au juz, au type de revelation, ou chercher uniquement un debut de verset."
       : lang === "ar"
-        ? "خيارات: حصر البحث في السورة الحالية أو الجزء أو نوع النزول أو بداية الآية فقط."
+        ? "Ø®ÙŠØ§Ø±Ø§Øª: Ø­ØµØ± Ø§Ù„Ø¨Ø­Ø« ÙÙŠ Ø§Ù„Ø³ÙˆØ±Ø© Ø§Ù„Ø­Ø§Ù„ÙŠØ© Ø£Ùˆ Ø§Ù„Ø¬Ø²Ø¡ Ø£Ùˆ Ù†ÙˆØ¹ Ø§Ù„Ù†Ø²ÙˆÙ„ Ø£Ùˆ Ø¨Ø¯Ø§ÙŠØ© Ø§Ù„Ø¢ÙŠØ© ÙÙ‚Ø·."
         : "Options: limit to the current surah, juz, revelation type, or verse openings only.";
   const activeFilterCount =
     (scopeFilter !== "all" ? 1 : 0) +
@@ -420,7 +420,7 @@ export default function SearchModal() {
         lang === "fr"
           ? "Dans la sourate actuelle"
           : lang === "ar"
-            ? "ÙÙŠ Ø§Ù„Ø³ÙˆØ±Ø© Ø§Ù„Ø­Ø§Ù„ÙŠØ©"
+            ? "Ã™ÂÃ™Å  Ã˜Â§Ã™â€žÃ˜Â³Ã™Ë†Ã˜Â±Ã˜Â© Ã˜Â§Ã™â€žÃ˜Â­Ã˜Â§Ã™â€žÃ™Å Ã˜Â©"
             : "Current surah only",
       action: () => setScopeFilter("currentSurah"),
     },
@@ -430,7 +430,7 @@ export default function SearchModal() {
         lang === "fr"
           ? "Dans le juz actuel"
           : lang === "ar"
-            ? "ÙÙŠ Ø§Ù„Ø¬Ø²Ø¡ Ø§Ù„Ø­Ø§Ù„ÙŠ"
+            ? "Ã™ÂÃ™Å  Ã˜Â§Ã™â€žÃ˜Â¬Ã˜Â²Ã˜Â¡ Ã˜Â§Ã™â€žÃ˜Â­Ã˜Â§Ã™â€žÃ™Å "
             : "Current juz only",
       action: () => setScopeFilter("currentJuz"),
     },
@@ -440,21 +440,21 @@ export default function SearchModal() {
         lang === "fr"
           ? "Debut exact"
           : lang === "ar"
-            ? "Ø¨Ø¯Ø§ÙŠØ© Ø¯Ù‚ÙŠÙ‚Ø©"
+            ? "Ã˜Â¨Ã˜Â¯Ã˜Â§Ã™Å Ã˜Â© Ã˜Â¯Ã™â€šÃ™Å Ã™â€šÃ˜Â©"
             : "Exact opening",
       action: () => setOpeningOnly(true),
     },
   ];
   const resultCountLabel = query
     ? lang === "fr"
-      ? `${filteredResults.length} résultat${filteredResults.length > 1 ? "s" : ""}`
+      ? `${filteredResults.length} rÃ©sultat${filteredResults.length > 1 ? "s" : ""}`
       : lang === "ar"
-        ? `${filteredResults.length} نتيجة`
+        ? `${filteredResults.length} Ù†ØªÙŠØ¬Ø©`
         : `${filteredResults.length} result${filteredResults.length > 1 ? "s" : ""}`
     : lang === "fr"
       ? "Recherche contextuelle"
       : lang === "ar"
-        ? "بحث سياقي"
+        ? "Ø¨Ø­Ø« Ø³ÙŠØ§Ù‚ÙŠ"
         : "Context search";
 
   return (
@@ -476,14 +476,14 @@ export default function SearchModal() {
             </span>
             <div>
               <p className="search-pro__eyebrow">
-                {lang === "fr" ? "Recherche intelligente" : lang === "ar" ? "بحث ذكي" : "Smart search"}
+                {lang === "fr" ? "Recherche intelligente" : lang === "ar" ? "Ø¨Ø­Ø« Ø°ÙƒÙŠ" : "Smart search"}
               </p>
               <h2 id={titleId}>{t("search.title", lang)}</h2>
               <p className="search-pro__subtitle">
                 {lang === "fr"
                   ? "Arabe, phonetique, traduction, voix et debut de verset dans une seule recherche."
                   : lang === "ar"
-                    ? "بحث بالعربية والصوت والترجمة وبداية الآية في مكان واحد."
+                    ? "Ø¨Ø­Ø« Ø¨Ø§Ù„Ø¹Ø±Ø¨ÙŠØ© ÙˆØ§Ù„ØµÙˆØª ÙˆØ§Ù„ØªØ±Ø¬Ù…Ø© ÙˆØ¨Ø¯Ø§ÙŠØ© Ø§Ù„Ø¢ÙŠØ© ÙÙŠ Ù…ÙƒØ§Ù† ÙˆØ§Ø­Ø¯."
                     : "Arabic, phonetic, translation, voice, and verse-opening search in one place."}
               </p>
             </div>
@@ -497,7 +497,7 @@ export default function SearchModal() {
             className="search-pro__close"
             onClick={close}
             ref={closeButtonRef}
-            aria-label={lang === "fr" ? "Fermer la recherche" : lang === "ar" ? "إغلاق البحث" : "Close search"}
+            aria-label={lang === "fr" ? "Fermer la recherche" : lang === "ar" ? "Ø¥ØºÙ„Ø§Ù‚ Ø§Ù„Ø¨Ø­Ø«" : "Close search"}
           >
             <i className="fas fa-times"></i>
           </button>
@@ -529,7 +529,7 @@ export default function SearchModal() {
                 )}
                 <button className="search-pro__submit" onClick={handleSearch} disabled={loading}>
                   {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-arrow-right"></i>}
-                  <span>{lang === "fr" ? "Chercher" : lang === "ar" ? "بحث" : "Search"}</span>
+                  <span>{lang === "fr" ? "Chercher" : lang === "ar" ? "Ø¨Ø­Ø«" : "Search"}</span>
                 </button>
               </div>
             </section>
@@ -562,7 +562,7 @@ export default function SearchModal() {
               <div className="search-pro__voice">
                 <i className="fas fa-microphone-lines"></i>
                 <div>
-                  <strong>{lang === "fr" ? "Interpretation vocale" : lang === "ar" ? "تحليل الصوت" : "Voice interpretation"}</strong>
+                  <strong>{lang === "fr" ? "Interpretation vocale" : lang === "ar" ? "ØªØ­Ù„ÙŠÙ„ Ø§Ù„ØµÙˆØª" : "Voice interpretation"}</strong>
                   <span>{voiceSummary.cleaned || voiceSummary.transcript}</span>
                 </div>
               </div>
@@ -575,12 +575,12 @@ export default function SearchModal() {
                 <div className="search-pro__empty">
                   <span className="search-pro__empty-icon"><i className="fas fa-compass"></i></span>
                   <div>
-                    <h3>{lang === "fr" ? "Retrouver rapidement un verset" : lang === "ar" ? "اعثر على الآية بسرعة" : "Find a verse quickly"}</h3>
+                    <h3>{lang === "fr" ? "Retrouver rapidement un verset" : lang === "ar" ? "Ø§Ø¹Ø«Ø± Ø¹Ù„Ù‰ Ø§Ù„Ø¢ÙŠØ© Ø¨Ø³Ø±Ø¹Ø©" : "Find a verse quickly"}</h3>
                     <p>
                       {lang === "fr"
                         ? "Essaie un mot arabe, une transcription phonetique, une traduction ou le debut d'une ayah."
                         : lang === "ar"
-                          ? "جرّب كلمة عربية أو كتابة صوتية أو ترجمة أو بداية آية."
+                          ? "Ø¬Ø±Ù‘Ø¨ ÙƒÙ„Ù…Ø© Ø¹Ø±Ø¨ÙŠØ© Ø£Ùˆ ÙƒØªØ§Ø¨Ø© ØµÙˆØªÙŠØ© Ø£Ùˆ ØªØ±Ø¬Ù…Ø© Ø£Ùˆ Ø¨Ø¯Ø§ÙŠØ© Ø¢ÙŠØ©."
                           : "Try an Arabic word, phonetic spelling, translation, or verse opening."}
                     </p>
                     <div className="search-pro__suggestions">
@@ -603,7 +603,7 @@ export default function SearchModal() {
                     {lang === "fr"
                       ? "Essaie un autre mode, retire un filtre ou cherche seulement le debut du verset."
                       : lang === "ar"
-                        ? "جرّب وضعا آخر أو أزل بعض الفلاتر."
+                        ? "Ø¬Ø±Ù‘Ø¨ ÙˆØ¶Ø¹Ø§ Ø¢Ø®Ø± Ø£Ùˆ Ø£Ø²Ù„ Ø¨Ø¹Ø¶ Ø§Ù„ÙÙ„Ø§ØªØ±."
                         : "Try another mode, remove a filter, or search only the verse opening."}
                   </span>
                 </div>
@@ -611,8 +611,8 @@ export default function SearchModal() {
 
               {filteredResults.length > 0 && (
                 <div className="search-pro__results-head">
-                  <strong>{lang === "fr" ? "Resultats les plus proches" : lang === "ar" ? "أقرب النتائج" : "Closest matches"}</strong>
-                  <span>{lang === "fr" ? "Ouvrir pour continuer la lecture" : lang === "ar" ? "افتح لمتابعة القراءة" : "Open to continue reading"}</span>
+                  <strong>{lang === "fr" ? "Resultats les plus proches" : lang === "ar" ? "Ø£Ù‚Ø±Ø¨ Ø§Ù„Ù†ØªØ§Ø¦Ø¬" : "Closest matches"}</strong>
+                  <span>{lang === "fr" ? "Ouvrir pour continuer la lecture" : lang === "ar" ? "Ø§ÙØªØ­ Ù„Ù…ØªØ§Ø¨Ø¹Ø© Ø§Ù„Ù‚Ø±Ø§Ø¡Ø©" : "Open to continue reading"}</span>
                 </div>
               )}
 
@@ -627,12 +627,12 @@ export default function SearchModal() {
                       ? lang === "fr"
                         ? "Medinoise"
                         : lang === "ar"
-                          ? "مدنية"
+                          ? "Ù…Ø¯Ù†ÙŠØ©"
                           : "Medinan"
                       : lang === "fr"
                         ? "Mecquoise"
                         : lang === "ar"
-                          ? "مكية"
+                          ? "Ù…ÙƒÙŠØ©"
                           : "Meccan";
                   const translatedName =
                     lang === "ar"
@@ -667,7 +667,7 @@ export default function SearchModal() {
                         )}
                         <span className="search-pro__open">
                           <i className="fas fa-arrow-up-right-from-square"></i>
-                          {lang === "fr" ? "Ouvrir dans la lecture" : lang === "ar" ? "فتح في القراءة" : "Open in reading"}
+                          {lang === "fr" ? "Ouvrir dans la lecture" : lang === "ar" ? "ÙØªØ­ ÙÙŠ Ø§Ù„Ù‚Ø±Ø§Ø¡Ø©" : "Open in reading"}
                         </span>
                       </span>
                     </button>
@@ -681,7 +681,7 @@ export default function SearchModal() {
             <section className="search-pro__panel">
               <div className="search-pro__panel-head">
                 <div>
-                  <strong>{lang === "fr" ? "Filtres" : lang === "ar" ? "الفلاتر" : "Filters"}</strong>
+                  <strong>{lang === "fr" ? "Filtres" : lang === "ar" ? "Ø§Ù„ÙÙ„Ø§ØªØ±" : "Filters"}</strong>
                   <span>{activeFilterCount} {lang === "fr" ? "actif(s)" : "active"}</span>
                 </div>
                 {activeFilterCount > 0 && (
@@ -693,7 +693,7 @@ export default function SearchModal() {
                       setOpeningOnly(false);
                     }}
                   >
-                    {lang === "fr" ? "Reset" : lang === "ar" ? "إعادة" : "Reset"}
+                    {lang === "fr" ? "Reset" : lang === "ar" ? "Ø¥Ø¹Ø§Ø¯Ø©" : "Reset"}
                   </button>
                 )}
               </div>
@@ -723,10 +723,10 @@ export default function SearchModal() {
               </div>
 
               <label className="search-pro__select">
-                <span>{lang === "fr" ? "Tri" : lang === "ar" ? "الترتيب" : "Sort"}</span>
+                <span>{lang === "fr" ? "Tri" : lang === "ar" ? "Ø§Ù„ØªØ±ØªÙŠØ¨" : "Sort"}</span>
                 <select value={sortMode} onChange={(event) => setSortMode(event.target.value)}>
-                  <option value="relevance">{lang === "fr" ? "Pertinence" : lang === "ar" ? "الأقرب" : "Relevance"}</option>
-                  <option value="mushaf">{lang === "fr" ? "Ordre du mushaf" : lang === "ar" ? "ترتيب المصحف" : "Mushaf order"}</option>
+                  <option value="relevance">{lang === "fr" ? "Pertinence" : lang === "ar" ? "Ø§Ù„Ø£Ù‚Ø±Ø¨" : "Relevance"}</option>
+                  <option value="mushaf">{lang === "fr" ? "Ordre du mushaf" : lang === "ar" ? "ØªØ±ØªÙŠØ¨ Ø§Ù„Ù…ØµØ­Ù" : "Mushaf order"}</option>
                 </select>
               </label>
 
@@ -737,434 +737,12 @@ export default function SearchModal() {
                 aria-pressed={openingOnly}
               >
                 <i className="fas fa-quote-left"></i>
-                <span>{lang === "fr" ? "Debut de verset uniquement" : lang === "ar" ? "بداية الآية فقط" : "Verse opening only"}</span>
+                <span>{lang === "fr" ? "Debut de verset uniquement" : lang === "ar" ? "Ø¨Ø¯Ø§ÙŠØ© Ø§Ù„Ø¢ÙŠØ© ÙÙ‚Ø·" : "Verse opening only"}</span>
               </button>
             </section>
           </aside>
         </div>
       </section>
-    </div>
-  );
-
-  return (
-    <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
-      <div
-        className="modal modal-panel--wide modal-search-panel search-modal-shell search-modal-shell--premium-plus search-modal-shell--refonte !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
-        onClick={(event) => event.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        tabIndex={-1}
-        ref={panelRef}
-        onKeyDown={handleModalKeyDown}
-      >
-        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
-          <div className="modal-title-stack">
-            <div className="modal-kicker">
-              {lang === "fr" ? "Recherche intelligente" : lang === "ar" ? "بحث ذكي" : "Smart search"}
-            </div>
-            <h2 className="modal-title" id={titleId}>{t("search.title", lang)}</h2>
-            <div className="modal-subtitle">
-              {lang === "fr"
-                ? "Texte arabe, phonétique, traduction et recherche vocale sur début de verset."
-                : lang === "ar"
-                  ? "بحث بالنص العربي أو الصوتي أو الترجمة مع فهم لبداية الآية."
-                  : "Arabic, phonetic, translation, and verse-opening voice search."}
-            </div>
-          </div>
-          <div className="search-header-metrics" aria-hidden="true">
-            <span>
-              <i className="fas fa-book-open"></i>
-              {currentSurahLabel}
-            </span>
-            <span>
-              <i className="fas fa-book-bookmark"></i>
-              Juz {lang === "ar" ? toAr(currentJuz) : currentJuz}
-            </span>
-            <span>
-              <i className="fas fa-sliders"></i>
-              {activeFilterCount || (lang === "ar" ? toAr(0) : 0)}
-            </span>
-          </div>
-          <button
-            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
-            onClick={close}
-            ref={closeButtonRef}
-            aria-label={
-              lang === "fr"
-                ? "Fermer la recherche"
-                : lang === "ar"
-                  ? "إغلاق البحث"
-                  : "Close search"
-            }
-          >
-            <i className="fas fa-times"></i>
-          </button>
-        </div>
-
-        <div className="search-command-deck !space-y-2 !p-3 sm:!p-4">
-          <div className="search-command-title">
-            <span className="search-command-title__icon">
-              <i className="fas fa-magnifying-glass"></i>
-            </span>
-            <div>
-              <strong>
-                {lang === "fr" ? "Que veux-tu retrouver ?" : lang === "ar" ? "Ù…Ø§ Ø§Ù„Ø°ÙŠ ØªØ±ÙŠØ¯ Ø§Ù„Ø¨Ø­Ø« Ø¹Ù†Ù‡ØŸ" : "What are you looking for?"}
-              </strong>
-              <span>
-                {lang === "fr"
-                  ? "Tape un mot, une traduction ou le debut d'une ayah."
-                  : lang === "ar"
-                    ? "Ø§ÙƒØªØ¨ ÙƒÙ„Ù…Ø© Ø£Ùˆ ØªØ±Ø¬Ù…Ø© Ø£Ùˆ Ø¨Ø¯Ø§ÙŠØ© Ø¢ÙŠØ©."
-                    : "Type a word, translation, or opening of an ayah."}
-              </span>
-            </div>
-          </div>
-          <div className="modal-toolbar search-toolbar-surface !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-2">
-            <input
-              type="text"
-              value={query}
-              onChange={(event) => setQuery(sanitizeSearchQuery(event.target.value))}
-              onKeyDown={(event) => event.key === "Enter" && handleSearch()}
-              placeholder={
-                searchMode === "phonetic"
-                  ? lang === "fr"
-                    ? "Ex: bismillah rahmani rahim..."
-                    : lang === "ar"
-                      ? "مثال: بسم الله الرحمن الرحيم"
-                      : "Ex: bismillah rahmani rahim..."
-                  : t("search.placeholder", lang)
-              }
-              className="modal-search-input !min-h-11 !flex-1 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3"
-              autoFocus
-            />
-            {SpeechRecognition && (
-              <button
-                className={`modal-action-btn modal-voice-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]${listening ? " listening !bg-red-500/20 !border-red-300/30" : ""}`}
-                onClick={startVoiceSearch}
-                title={
-                  listening
-                    ? lang === "fr"
-                      ? "Arrêter l'écoute"
-                      : lang === "ar"
-                        ? "إيقاف الاستماع"
-                        : "Stop listening"
-                    : lang === "fr"
-                      ? "Recherche vocale"
-                      : lang === "ar"
-                        ? "بحث صوتي"
-                        : "Voice search"
-                }
-                  aria-label={
-                    listening
-                      ? lang === "fr"
-                        ? "Arrêter la recherche vocale"
-                        : lang === "ar"
-                          ? "إيقاف البحث الصوتي"
-                          : "Stop voice search"
-                      : lang === "fr"
-                        ? "Démarrer la recherche vocale"
-                        : lang === "ar"
-                          ? "بدء البحث الصوتي"
-                          : "Start voice search"
-                  }
-              >
-                <i className={`fas ${listening ? "fa-stop" : "fa-microphone"}`}></i>
-              </button>
-            )}
-              <button className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-sky-200/30 !bg-sky-500/20 hover:!bg-sky-500/30" onClick={handleSearch} disabled={loading} aria-label={lang === "fr" ? "Lancer la recherche" : lang === "ar" ? "تنفيذ البحث" : "Run search"}>
-              {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-search"></i>}
-            </button>
-          </div>
-
-          <div
-            className="modal-segmented !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-1"
-            role="tablist"
-            aria-label={
-              lang === "fr" ? "Mode de recherche" : lang === "ar" ? "وضع البحث" : "Search mode"
-            }
-          >
-            {searchModeOptions.map((modeOption) => (
-              <button
-                key={modeOption.id}
-                className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${searchMode === modeOption.id ? "active !bg-sky-500/25 !text-white" : ""}`}
-                onClick={() => setSearchMode(modeOption.id)}
-              >
-                <i className={`fas ${modeOption.icon}`}></i> {modeOption.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="search-summary-bar !flex !flex-wrap !gap-2">
-            <span className="search-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
-              <i className="fas fa-layer-group"></i>
-              {resultCountLabel}
-            </span>
-            <span className="search-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
-              <i className="fas fa-wave-square"></i>
-              {searchModeLabels[searchMode]}
-            </span>
-            <span className="search-summary-pill search-summary-pill--riwaya !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
-              <i className="fas fa-book-quran"></i>
-              {riwaya === "warsh" ? "Warsh" : "Hafs"}
-            </span>
-            {resolvedQuery && (
-              <span className="search-summary-pill search-summary-pill--query !inline-flex !items-center !gap-1.5 !rounded-full !border !border-sky-200/30 !bg-sky-500/18 !px-2.5 !py-1 !text-xs">
-                <i className="fas fa-sparkles"></i>
-                {resolvedQuery}
-              </span>
-            )}
-          </div>
-
-          <div className="search-filter-panel">
-            <div className="search-filter-panel__head">
-              <div>
-                <strong>
-                  {lang === "fr" ? "Filtres de recherche" : lang === "ar" ? "فلاتر البحث" : "Search filters"}
-                </strong>
-                <span>{filterTip}</span>
-              </div>
-              {activeFilterCount > 0 && (
-                <button
-                  type="button"
-                  className="search-filter-reset"
-                  onClick={() => {
-                    setScopeFilter("all");
-                    setSortMode("relevance");
-                    setOpeningOnly(false);
-                  }}
-                >
-                  {lang === "fr" ? "Reinitialiser" : lang === "ar" ? "إعادة ضبط" : "Reset"}
-                </button>
-              )}
-            </div>
-            <div className="search-filter-presets">
-              {filterPresets.map((preset) => (
-                <button key={preset.label} type="button" onClick={preset.action}>
-                  <i className={`fas ${preset.icon}`}></i>
-                  <span>{preset.label}</span>
-                </button>
-              ))}
-            </div>
-            <div className="search-filter-panel__grid">
-              <div className="search-filter-chipset" role="group" aria-label="Portee de recherche">
-                {scopeOptions.map((option) => (
-                  <button
-                    key={option.id}
-                    type="button"
-                    className={`search-filter-chip ${scopeFilter === option.id ? "is-active" : ""}`}
-                    onClick={() => setScopeFilter(option.id)}
-                    aria-pressed={scopeFilter === option.id}
-                  >
-                    <i className={`fas ${option.icon}`}></i>
-                    <span>{option.label}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="search-filter-controls">
-                <label className="search-filter-select">
-                  <span>{lang === "fr" ? "Tri" : lang === "ar" ? "الترتيب" : "Sort"}</span>
-                  <select value={sortMode} onChange={(event) => setSortMode(event.target.value)}>
-                    <option value="relevance">
-                      {lang === "fr" ? "Pertinence" : lang === "ar" ? "الأقرب" : "Relevance"}
-                    </option>
-                    <option value="mushaf">
-                      {lang === "fr" ? "Ordre du mushaf" : lang === "ar" ? "ترتيب المصحف" : "Mushaf order"}
-                    </option>
-                  </select>
-                </label>
-                <button
-                  type="button"
-                  className={`search-filter-toggle ${openingOnly ? "is-active" : ""}`}
-                  onClick={() => setOpeningOnly((value) => !value)}
-                  aria-pressed={openingOnly}
-                >
-                  <i className="fas fa-quote-left"></i>
-                  <span>
-                    {lang === "fr" ? "Debut de verset" : lang === "ar" ? "بداية الآية" : "Verse opening"}
-                  </span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {voiceSummary && (
-            <div className="search-voice-note !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-3">
-              <div className="search-voice-note__title">
-                <i className="fas fa-microphone-lines"></i>
-                {lang === "fr"
-                  ? "Interprétation vocale"
-                  : lang === "ar"
-                    ? "تحليل الإدخال الصوتي"
-                    : "Voice interpretation"}
-              </div>
-              <div className="search-voice-note__body">
-                <span>{voiceSummary.transcript}</span>
-                {voiceSummary.cleaned && voiceSummary.cleaned !== voiceSummary.transcript && (
-                  <span className="search-voice-note__cleaned">{voiceSummary.cleaned}</span>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {error && <p className="modal-error">{error}</p>}
-
-        <div className="modal-results modal-search-results !max-h-[58vh] !overflow-auto !px-3 !pb-3 sm:!px-4 sm:!pb-4">
-          {!query && !loading && (
-            <div className="search-spotlight !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-4">
-              <div className="search-spotlight-icon !inline-flex !h-12 !w-12 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05]">
-                <i className="fas fa-compass"></i>
-              </div>
-              <div className="search-spotlight-body">
-                <h3>
-                  {lang === "fr"
-                    ? "Retrouver un verset à partir de son début"
-                    : lang === "ar"
-                      ? "اعثر على الآية من بدايتها"
-                      : "Find a verse from its opening words"}
-                </h3>
-                <p>
-                  {lang === "fr"
-                    ? "Dicte le début d'une ayah, écris en arabe ou en phonétique, et l'application retrouve le verset complet."
-                    : lang === "ar"
-                      ? "قل بداية الآية أو اكتبها عربيًا أو صوتيًا، وسيتم عرض الآية كاملة."
-                      : "Say the opening of an ayah, type it in Arabic or phonetics, and the full verse will appear."}
-                </p>
-                <div className="search-spotlight-chips !mt-3 !grid !grid-cols-1 !gap-2 sm:!grid-cols-3">
-                  {suggestionItems.map((suggestion) => (
-                    <button
-                      key={`${suggestion.mode}-${suggestion.value}`}
-                      type="button"
-                      className="search-spotlight-chip !rounded-xl !border !border-white/14 !bg-white/[0.05] !p-2.5 !text-left !transition-all hover:!border-sky-200/40 hover:!bg-white/[0.1]"
-                      onClick={() => applySuggestion(suggestion)}
-                    >
-                      <span className="search-spotlight-chip__label">{suggestion.label}</span>
-                      <span className="search-spotlight-chip__value">{suggestion.value}</span>
-                    </button>
-                  ))}
-                </div>
-                <div className="search-empty-hints">
-                  <span>
-                    <i className="fas fa-wand-magic-sparkles"></i>
-                    {lang === "fr"
-                      ? "Recherche intelligente arabe/phonetique"
-                      : lang === "ar"
-                        ? "Ø¨Ø­Ø« Ø°ÙƒÙŠ Ø¹Ø±Ø¨ÙŠ ÙˆØµÙˆØªÙŠ"
-                        : "Smart Arabic and phonetic search"}
-                  </span>
-                  <span>
-                    <i className="fas fa-filter"></i>
-                    {lang === "fr"
-                      ? "Filtres par sourate, juz et revelation"
-                      : lang === "ar"
-                        ? "ÙÙ„Ø§ØªØ± Ø¨Ø§Ù„Ø³ÙˆØ±Ø© ÙˆØ§Ù„Ø¬Ø²Ø¡ ÙˆØ§Ù„Ù†Ø²ÙˆÙ„"
-                        : "Filters by surah, juz, and revelation"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {filteredResults.length === 0 && !loading && query && (
-            <div className="modal-empty !rounded-2xl !border !border-dashed !border-white/15 !bg-white/[0.03] !p-6 !text-center">
-              <i className="fas fa-search"></i>
-              <div>{t("search.noResults", lang)}</div>
-            </div>
-          )}
-
-          {filteredResults.length > 0 && (
-            <div className="search-results-meta">
-              <span>
-                {lang === "fr"
-                  ? "Résultats les plus proches"
-                  : lang === "ar"
-                    ? "أقرب النتائج"
-                    : "Closest matches"}
-              </span>
-              <span>
-                {lang === "fr"
-                  ? "Ouvrir pour lire le verset complet"
-                  : lang === "ar"
-                    ? "افتح لقراءة الآية كاملة"
-                    : "Open to read the full verse"}
-              </span>
-            </div>
-          )}
-
-          {filteredResults.map((result, index) => {
-            const surahNumber = result?.surah?.number || result?.surah || 1;
-            const ayahNumber = result?.numberInSurah || result?.number || 1;
-            const surahMeta = getSurah(surahNumber);
-            const resultJuz = getJuzForAyah(Number(surahNumber), Number(ayahNumber));
-            const revelationLabel =
-              surahMeta?.type === "Medinan"
-                ? lang === "fr"
-                  ? "Medinoise"
-                  : lang === "ar"
-                    ? "Ù…Ø¯Ù†ÙŠØ©"
-                    : "Medinan"
-                : lang === "fr"
-                  ? "Mecquoise"
-                  : lang === "ar"
-                    ? "Ù…ÙƒÙŠØ©"
-                    : "Meccan";
-            const translatedName =
-              lang === "ar"
-                ? surahMeta?.ar
-                : lang === "fr"
-                  ? surahMeta?.fr || surahMeta?.en
-                  : surahMeta?.en;
-
-            return (
-              <button
-                key={`${surahNumber}-${ayahNumber}-${index}`}
-                className={`modal-item-card search-result-card !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-2.5 !transition-all hover:!border-sky-200/35 hover:!bg-white/[0.07]${isTranslationMode ? " search-result-card--translation" : ""}`}
-                onClick={() => goToAyah(surahNumber, ayahNumber)}
-              >
-                <div className="src-badge">
-                  <span className="src-badge__num">
-                    {lang === "ar" ? toAr(surahNumber) : surahNumber}
-                  </span>
-                </div>
-                <div className="modal-item-main">
-                  <div className="search-result-head">
-                    <div className="search-result-ref">
-                      <span className="search-result-ref__ar">{surahMeta?.ar}</span>
-                      <span className="search-result-ref__dot">·</span>
-                      <span className="search-result-ref__name">{translatedName}</span>
-                      <span className="search-result-ref__ayah">
-                        :{lang === "ar" ? toAr(ayahNumber) : ayahNumber}
-                      </span>
-                    </div>
-                    <div className="search-result-tags">
-                      <span>{revelationLabel}</span>
-                      <span>Juz {lang === "ar" ? toAr(resultJuz) : resultJuz}</span>
-                    </div>
-                  </div>
-                  {isTranslationMode ? (
-                    <div className="search-result-translation">{result.text}</div>
-                  ) : (
-                    <div className="modal-item-ar search-result-arabic" dir="rtl">
-                      {result.text}
-                    </div>
-                  )}
-                  <div className="search-result-action">
-                    <i className="fas fa-arrow-up-right-from-square"></i>
-                    <span>
-                      {lang === "fr"
-                        ? "Ouvrir dans la lecture"
-                        : lang === "ar"
-                          ? "فتح في القراءة"
-                          : "Open in reading"}
-                    </span>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }

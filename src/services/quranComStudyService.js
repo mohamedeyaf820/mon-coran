@@ -1,180 +1,123 @@
-import { dbGet, dbSet } from "./dbService";
+/**
+ * Quran.com Study API Service
+ * Fetches tafsir and translations from Quran.com API
+ */
 
-const BASE_URL = "https://api.quran.com/api/v4";
-const TAFSIR_RESOURCE_IDS = {
-  ar: 168,
-  en: 169,
-  fr: 169,
+const BASE_URL = 'https://api.quran.com/api/v4';
+
+// Tafsir resource mappings
+const TAFSIR_RESOURCES = {
+  "ar-muyassar": { id: 168, name: "Tafsir Al-Muyassar", nameFr: "Tafsir Al-Muyassar", lang: "ar" },
+  "ar-jalalayn": { id: 168, name: "Tafsir Al-Jalalayn", nameFr: "Tafsir Al-Jalalayn", lang: "ar" },
+  "en-kathir": { id: 169, name: "Tafsir Ibn Kathir", nameFr: "Tafsir Ibn Kathir", lang: "en" },
+  "fr-kathir": { id: 169, name: "Tafsir Ibn Kathir", nameFr: "Tafsir Ibn Kathir", lang: "fr" },
+  "ar-kathir": { id: 90, name: "Tafsir Ibn Kathir", nameFr: "Tafsir Ibn Kathir", lang: "ar" },
+  "ar-tabari": { id: 92, name: "Tafsir Al-Tabari", nameFr: "Tafsir Al-Tabari", lang: "ar" },
+  "ar-qurtubi": { id: 93, name: "Tafsir Al-Qurtubi", nameFr: "Tafsir Al-Qurtubi", lang: "ar" },
+  "ar-baghawi": { id: 94, name: "Tafsir Al-Baghawi", nameFr: "Tafsir Al-Baghawi", lang: "ar" },
+  "ar-saadi": { id: 91, name: "Tafsir Al-Saadi", nameFr: "Tafsir Al-Saadi", lang: "ar" },
 };
-const CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
-const IDB_STORE = "cache";
-const IDB_PREFIX = "qcom-study:";
-
-const memCache = new Map();
-const inflight = new Map();
-
-function normalizeVerseKey(surah, ayah) {
-  return `${Number(surah)}:${Number(ayah)}`;
-}
-
-function decodeHtmlEntities(value) {
-  if (!value) return "";
-  if (typeof document !== "undefined") {
-    const textarea = document.createElement("textarea");
-    textarea.innerHTML = value;
-    return textarea.value;
-  }
-
-  return String(value)
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
-}
 
 function htmlToText(html) {
   if (!html) return "";
-
-  if (typeof DOMParser !== "undefined") {
+  if (typeof document !== "undefined") {
     const doc = new DOMParser().parseFromString(String(html), "text/html");
-    doc.querySelectorAll("script,style,noscript,iframe").forEach((node) => node.remove());
-    return decodeHtmlEntities(doc.body?.textContent || "")
-      .replace(/\s+/g, " ")
-      .trim();
+    return doc.body?.textContent || "";
   }
-
-  return decodeHtmlEntities(String(html).replace(/<[^>]+>/g, " "))
-    .replace(/\s+/g, " ")
-    .trim();
+  return String(html).replace(/<[^>]+>/g, " ").trim();
 }
 
-function createTimedSignal(signal, timeoutMs = 9000) {
-  const controller = new AbortController();
-  const abort = () => controller.abort();
-  const timeoutId = globalThis.setTimeout(abort, timeoutMs);
+export function getAvailableTafsirs() {
+  return Object.entries(TAFSIR_RESOURCES).map(([id, data]) => ({
+    id,
+    ...data,
+  }));
+}
 
-  if (signal) {
-    if (signal.aborted) {
-      abort();
-    } else {
-      signal.addEventListener("abort", abort, { once: true });
-    }
+export async function getVerseTafsir({ surah, ayah, lang = "en", tafsirId, signal } = {}) {
+  const verseKey = `${Number(surah)}:${Number(ayah)}`;
+  const requestedTafsir = tafsirId || (lang === "ar" ? "ar-muyassar" : lang === "fr" ? "fr-kathir" : "en-kathir");
+  const resource = TAFSIR_RESOURCES[requestedTafsir] || TAFSIR_RESOURCES["ar-muyassar"];
+  
+  const params = new URLSearchParams({
+    tafsirs: String(resource.id),
+    fields: "verse_key",
+    tafsir_fields: "text,resource_name,language_name",
+  });
+  
+  const response = await fetch(`${BASE_URL}/verses/by_key/${verseKey}?${params.toString()}`, { signal });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch tafsir: ${response.status}`);
   }
-
+  
+  const json = await response.json();
+  const tafsir = json?.verse?.tafsirs?.[0] || json?.tafsirs?.[0] || null;
+  const text = htmlToText(tafsir?.text || tafsir?.body || "");
+  
+  if (!text) {
+    throw new Error("No tafsir text found");
+  }
+  
   return {
-    signal: controller.signal,
-    cleanup() {
-      globalThis.clearTimeout(timeoutId);
-      signal?.removeEventListener?.("abort", abort);
-    },
-  };
-}
-
-async function fetchJson(url, signal) {
-  const timed = createTimedSignal(signal);
-  try {
-    const response = await fetch(url, {
-      signal: timed.signal,
-      headers: { Accept: "application/json" },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Quran.com API error ${response.status}`);
-    }
-
-    return response.json();
-  } finally {
-    timed.cleanup();
-  }
-}
-
-function extractTafsir(json) {
-  const tafsir =
-    json?.verse?.tafsirs?.[0] ||
-    json?.tafsirs?.[0] ||
-    json?.tafsir ||
-    null;
-
-  const rawText = tafsir?.text || tafsir?.body || "";
-  const text = htmlToText(rawText);
-
-  return {
-    source:
-      tafsir?.resource_name ||
-      tafsir?.name ||
-      tafsir?.translated_name?.name ||
-      "Tafsir Ibn Kathir",
-    language: tafsir?.language_name || "english",
+    source: resource.name,
+    sourceFr: resource.nameFr,
+    language: resource.lang,
     text,
+    tafsirId: requestedTafsir,
+    note: lang === "fr" 
+      ? "Le tafsir est basé sur le sens du verset, commun aux deux riwayat."
+      : null,
   };
 }
 
-export async function getVerseTafsir({ surah, ayah, lang = "en", signal } = {}) {
-  const verseKey = normalizeVerseKey(surah, ayah);
-  const requestedLang = TAFSIR_RESOURCE_IDS[lang] ? lang : "en";
-  const resourceId = TAFSIR_RESOURCE_IDS[requestedLang];
-  const cacheKey = `${IDB_PREFIX}tafsir:${verseKey}:${resourceId}:${requestedLang}`;
-
-  if (memCache.has(cacheKey)) {
-    return memCache.get(cacheKey);
-  }
-
-  try {
-    const cached = await dbGet(IDB_STORE, cacheKey);
-    if (cached?.data && cached?.ts && Date.now() - cached.ts < CACHE_TTL) {
-      memCache.set(cacheKey, cached.data);
-      return cached.data;
-    }
-  } catch (error) {
-    console.warn("Quran.com study cache read failed:", error);
-  }
-
-  if (inflight.has(cacheKey)) {
-    return inflight.get(cacheKey);
-  }
-
-  const request = (async () => {
-    try {
-      const params = new URLSearchParams({
-        tafsirs: String(resourceId),
-        fields: "verse_key",
-        tafsir_fields: "text,resource_name,language_name",
-      });
-      const json = await fetchJson(
-        `${BASE_URL}/verses/by_key/${verseKey}?${params.toString()}`,
-        signal,
-      );
-      const result = {
-        ...extractTafsir(json),
-        note:
-          requestedLang === "fr"
-            ? "Le tafsir est basé sur le sens du verset, commun aux deux riwayat."
-            : null,
-      };
-
-      if (!result.text) {
-        throw new Error("No tafsir found for this verse");
-      }
-
-      memCache.set(cacheKey, result);
-      try {
-        await dbSet(IDB_STORE, { key: cacheKey, data: result, ts: Date.now() });
-      } catch (error) {
-        console.warn("Quran.com study cache write failed:", error);
-      }
-
-      return result;
-    } finally {
-      inflight.delete(cacheKey);
-    }
-  })();
-
-  inflight.set(cacheKey, request);
-  return request;
-}
+// Translation resources
+const TRANSLATION_RESOURCES = {
+  fr: 136,
+  en: 131,
+  es: 141,
+  de: 46,
+  tr: 77,
+  ru: 120,
+  id: 127,
+  ur: 135,
+  zh: 206,
+  it: 153,
+  pt: 44,
+  nl: 209,
+};
 
 export function getQuranComVerseUrl(surah, ayah) {
   return `https://quran.com/${Number(surah)}/${Number(ayah)}`;
+}
+
+export async function getVerseTranslation({ surah, ayah, lang = "fr", signal } = {}) {
+  const verseKey = `${Number(surah)}:${Number(ayah)}`;
+  const resourceId = TRANSLATION_RESOURCES[lang] || TRANSLATION_RESOURCES.fr;
+  
+  const params = new URLSearchParams({
+    translations: String(resourceId),
+    fields: "verse_key",
+    translation_fields: "text,resource_name,language_name",
+  });
+  
+  const response = await fetch(`${BASE_URL}/verses/by_key/${verseKey}?${params.toString()}`, { signal });
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch translation: ${response.status}`);
+  }
+  
+  const json = await response.json();
+  const translation = json?.verse?.translations?.[0] || null;
+  const text = htmlToText(translation?.text || "");
+  
+  if (!text) {
+    throw new Error("No translation text found");
+  }
+  
+  return {
+    text,
+    language: lang,
+    resourceName: translation?.resource_name || "Translation",
+  };
 }

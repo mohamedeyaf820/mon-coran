@@ -3,6 +3,7 @@ import { Settings, Play, Loader2, Home, ChevronDown, BookOpen, AlignJustify, Lan
 import { cn } from "../../lib/utils";
 import { getSurah, toAr } from "../../data/surahs";
 import { t } from "../../i18n";
+import HizbRukuNavigator from "../Quran/HizbRukuNavigator";
 
 function lbl(lang, fr, en, ar = en) {
   if (lang === "ar") return ar;
@@ -21,6 +22,7 @@ export default function QCReaderHeader({
   currentSurah,
   currentPage,
   currentJuz,
+  currentAyah = 1,
   readingView,           // "verseByVerse" | "translation" | "reading"
   onReadingViewChange,   // (view) => void
   onSettingsOpen,
@@ -28,6 +30,7 @@ export default function QCReaderHeader({
   onGoHome,
   preparingSurah,
   isPlaying,
+  onNavigateToAyah,
 }) {
   const surahMeta = getSurah(currentSurah);
   const [surahDropOpen, setSurahDropOpen] = useState(false);
@@ -244,6 +247,17 @@ export default function QCReaderHeader({
               : lbl(lang, "Écouter", "Listen", "استمع")}
           </span>
         </button>
+      </div>
+
+      {/* Hizb/Ruku Navigation Sub-header */}
+      <div className="absolute left-0 right-0 -bottom-7 px-4">
+        <HizbRukuNavigator
+          currentSurah={currentSurah}
+          currentAyah={currentAyah}
+          currentPage={currentPage}
+          onNavigate={onNavigateToAyah}
+          className="justify-center"
+        />
       </div>
     </header>
   );

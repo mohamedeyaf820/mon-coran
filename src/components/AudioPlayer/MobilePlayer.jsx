@@ -50,12 +50,17 @@ export function MobilePlayer({
     return (
       <div
         className={cn(
-          "mp-audio-player mp-audio-player--mobile !fixed bottom-0 left-0 right-0 z-[500] overflow-hidden",
+          "mp-audio-player mp-audio-player--mobile !fixed bottom-0 left-0 right-0 z-[9999] overflow-visible",
           "border-t border-white/[0.07]",
           "bg-[linear-gradient(180deg,rgba(10,18,12,0.97)_0%,rgba(6,12,8,0.99)_100%)]",
           "backdrop-blur-2xl",
           "animate-in slide-in-from-bottom-2 duration-300"
         )}
+        style={{
+          minHeight: '72px',
+          height: 'auto',
+          paddingBottom: 'env(safe-area-inset-bottom, 12px)'
+        }}
       >
         {/* Gold progress line at top */}
         <div className="h-[2px] w-full bg-white/5 overflow-hidden">
@@ -65,25 +70,35 @@ export function MobilePlayer({
           />
         </div>
 
-        <div className="flex items-center gap-3 px-4 py-3 safe-area-inset-bottom">
-          <CoverArt isPlaying={isPlaying} size={40} pulse={false} />
+        <div 
+          className="flex items-center gap-2 px-3 py-2"
+          style={{ paddingBottom: 'calc(0.5rem + env(safe-area-inset-bottom, 0px))' }}
+        >
+          <CoverArt isPlaying={isPlaying} size={36} pulse={false} />
 
           <button
             onClick={onToggleMinimized}
-            className="flex-1 text-left min-w-0"
+            className="flex-1 text-left min-w-0 px-1"
           >
-            <div className="text-[0.84rem] font-semibold text-white/90 truncate leading-tight">
+            <div 
+              className="font-semibold text-white/90 truncate leading-tight"
+              style={{ fontSize: '0.8rem', maxWidth: '120px' }}
+            >
               {titleLabel || (lang === "fr" ? "Prêt à lire" : "Ready")}
             </div>
-            <div className="text-[0.66rem] text-white/38 truncate mt-0.5">
+            <div 
+              className="text-white/38 truncate mt-0.5"
+              style={{ fontSize: '0.65rem', maxWidth: '120px' }}
+            >
               {reciterLabel || "—"}
             </div>
           </button>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={onToggleOptions}
-              className="mp-player-options-trigger mp-player-mobile-options h-9 w-9 flex items-center justify-center text-white/44 hover:text-white/80 active:scale-90 transition-all"
+              className="mp-player-options-trigger mp-player-mobile-options flex items-center justify-center text-white/44 hover:text-white/80 active:scale-90 transition-all rounded-lg"
+              style={{ width: '40px', height: '40px', minWidth: '40px' }}
               aria-label={
                 lang === "fr"
                   ? "Options audio et récitateur"
@@ -92,35 +107,39 @@ export function MobilePlayer({
                     : "Audio and reciter options"
               }
             >
-              <i className="fas fa-sliders text-sm" />
+              <i className="fas fa-sliders" style={{ fontSize: '0.85rem' }} />
             </button>
             <button
               onClick={onPrev}
-              className="h-9 w-9 flex items-center justify-center text-white/40 hover:text-white/70 active:scale-90 transition-all"
+              className="flex items-center justify-center text-white/40 hover:text-white/70 active:scale-90 transition-all rounded-lg"
+              style={{ width: '40px', height: '40px', minWidth: '40px' }}
               aria-label={lang === "fr" ? "Précédent" : "Previous"}
             >
-              <i className="fas fa-backward-step" />
+              <i className="fas fa-backward-step" style={{ fontSize: '0.85rem' }} />
             </button>
             <button
               onClick={onToggle}
-              className="h-11 w-11 rounded-full flex items-center justify-center text-black font-bold bg-gradient-to-br from-amber-300 via-[var(--gold,#d4a820)] to-amber-600 shadow-[0_4px_16px_rgba(180,140,20,0.4)] active:scale-95 transition-transform"
+              className="rounded-full flex items-center justify-center text-black font-bold bg-gradient-to-br from-amber-300 via-[var(--gold,#d4a820)] to-amber-600 shadow-[0_4px_16px_rgba(180,140,20,0.4)] active:scale-95 transition-transform"
+              style={{ width: '48px', height: '48px', minWidth: '48px' }}
               aria-label={isPlaying ? "Pause" : "Lecture"}
             >
-              <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"} ${!isPlaying ? "ml-0.5" : ""}`} />
+              <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"} ${!isPlaying ? "ml-0.5" : ""}`} style={{ fontSize: '1rem' }} />
             </button>
             <button
               onClick={onNext}
-              className="h-9 w-9 flex items-center justify-center text-white/40 hover:text-white/70 active:scale-90 transition-all"
+              className="flex items-center justify-center text-white/40 hover:text-white/70 active:scale-90 transition-all rounded-lg"
+              style={{ width: '40px', height: '40px', minWidth: '40px' }}
               aria-label={lang === "fr" ? "Suivant" : "Next"}
             >
-              <i className="fas fa-forward-step" />
+              <i className="fas fa-forward-step" style={{ fontSize: '0.85rem' }} />
             </button>
             <button
               onClick={onClose}
-              className="h-9 w-9 flex items-center justify-center text-white/20 hover:text-white/50 active:scale-90 transition-all"
+              className="flex items-center justify-center text-white/20 hover:text-white/50 active:scale-90 transition-all rounded-lg"
+              style={{ width: '36px', height: '36px', minWidth: '36px' }}
               aria-label={lang === "fr" ? "Fermer le lecteur" : "Close player"}
             >
-              <i className="fas fa-times text-sm" />
+              <i className="fas fa-times" style={{ fontSize: '0.8rem' }} />
             </button>
           </div>
         </div>

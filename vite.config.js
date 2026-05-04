@@ -30,6 +30,9 @@ export default defineConfig(({ mode }) => ({
     minify: "esbuild",
     cssCodeSplit: true,
     cssMinify: true,
+    // Enable compression
+    reportCompressedSize: true,
+    chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
         // Noms de chunks hachés, pas de noms lisibles
@@ -37,29 +40,26 @@ export default defineConfig(({ mode }) => ({
         entryFileNames: "assets/[hash].js",
         assetFileNames: "assets/[hash].[ext]",
         manualChunks: {
-          _r: ["react", "react-dom"],
-          _s: [
-            "./src/services/quranAPI.js",
-            "./src/services/warshService.js",
-            "./src/services/audioService.js",
-            "./src/services/storageService.js",
-          ],
-          _d: [
-            "./src/data/surahs.js",
-            "./src/data/juz.js",
-            "./src/data/reciters.js",
-            "./src/data/tajwidRules.js",
-          ],
+          // Vendor chunks - third party libraries
+          vendor: ["react", "react-dom"],
+          // UI components (lazy loaded)
+          ui: ["@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu", "@radix-ui/react-popover", "@radix-ui/react-tabs", "@radix-ui/react-tooltip"],
         },
       },
     },
     // Supprimer console.*, debugger et commentaires
     esbuildOptions: {
-      drop: ["console", "debugger"],
+      drop: mode === "production" ? ["console", "debugger"] : [],
       legalComments: "none",
       minifyIdentifiers: true,
       minifySyntax: true,
       minifyWhitespace: true,
+      treeShaking: true,
     },
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ["react", "react-dom", "idb", "zod"],
+    exclude: ["./src/services/audioService.js"], // Lazy load audio service
   },
 }));

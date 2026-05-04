@@ -62,6 +62,11 @@ export default function SurahMode({
         surahNum={currentSurah}
         onPlaySurah={onPlaySurah}
         preparingSurah={preparingSurah}
+        currentAyah={activeAyah || 1}
+        onNavigateToAyah={({ surah, ayah }) => {
+          // Navigate to the specified ayah - would need parent to handle this
+          console.log("Navigate to:", surah, ayah);
+        }}
       />
 
       {mushafLayout === "mushaf" ? (

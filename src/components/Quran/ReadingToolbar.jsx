@@ -11,6 +11,7 @@ import {
 import { useApp } from "../../context/AppContext";
 import { cn } from "../../lib/utils";
 import ArabicFontControls from "../ArabicFontControls";
+import HizbRukuNavigator from "./HizbRukuNavigator";
 
 function labelFor(lang, fr, en, ar = en) {
   if (lang === "ar") return ar;
@@ -50,6 +51,9 @@ export default function ReadingToolbar({
   playLabel,
   preparingSurah,
   surahNum,
+  currentAyah,
+  currentPage,
+  onNavigateToAyah,
 }) {
   const { state, set } = useApp();
   const {
@@ -59,6 +63,7 @@ export default function ReadingToolbar({
     showTajwid,
     showTranslation,
     showWordByWord,
+    currentSurah,
   } = state;
 
   const playHandler = onPlay || onPlaySurah;
@@ -148,6 +153,15 @@ export default function ReadingToolbar({
         <Palette size={15} />
         <span className="max-sm:hidden">Tajweed</span>
       </ToolbarButton>
+
+      {/* Hizb/Ruku Navigation */}
+      <HizbRukuNavigator
+        currentSurah={currentSurah}
+        currentAyah={currentAyah || 1}
+        currentPage={currentPage}
+        onNavigate={onNavigateToAyah}
+        className="hidden md:flex"
+      />
 
       <div className="flex-1" />
       <ArabicFontControls lang={lang} compact />

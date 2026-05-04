@@ -671,9 +671,8 @@ export default function AudioPlayer() {
   /* Reciter search */
   const [reciterSearch, setReciterSearch] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const essentialPlayerMode = true;
-  const showMemorizationControls = !essentialPlayerMode;
-  const showAdvancedControls = !essentialPlayerMode;
+  const showMemorizationControls = memMode;
+  const showAdvancedControls = showAdvanced;
   const filteredReciters = React.useMemo(() => {
     const q = reciterSearch.trim().toLowerCase();
     if (!q) return currentReciters;
@@ -705,12 +704,6 @@ export default function AudioPlayer() {
     },
     [set, syncKey, syncOffsetsMs],
   );
-
-  useEffect(() => {
-    if (essentialPlayerMode && memMode) {
-      set({ memMode: false });
-    }
-  }, [essentialPlayerMode, memMode, set]);
 
   useEffect(() => {
     set({ karaokeFollow: true });

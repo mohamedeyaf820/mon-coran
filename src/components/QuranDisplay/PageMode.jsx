@@ -75,6 +75,11 @@ export default function PageMode({
         playLabel={lang === "fr" ? "Ecouter la page" : "Listen page"}
         preparingSurah={preparingSurah}
         surahNum={pageTopSurah || currentSurah}
+        currentAyah={activeAyah || 1}
+        currentPage={currentPage}
+        onNavigateToAyah={({ surah, ayah }) => {
+          console.log("Navigate to:", surah, ayah);
+        }}
       />
 
       {canUseFifteenLinePage ? (
