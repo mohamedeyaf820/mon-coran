@@ -54,16 +54,16 @@ for (const viewport of VIEWPORTS) {
         },
       );
 
-      await page.goto(baseURL || "http://127.0.0.1:4173", {
+      await page.goto((baseURL || "http://127.0.0.1:4173") + "/surah/4", {
         waitUntil: "domcontentloaded",
       });
 
-      await page.waitForSelector(".qc-surah-header", { timeout: 30000 });
+      await page.waitForSelector(".qc-reader-surah-header", { timeout: 30000 });
       await page.waitForTimeout(1000);
 
       const prefix = `${viewport.id}-${theme}`;
 
-      await page.locator(".qc-surah-header").first().screenshot({
+      await page.locator(".qc-reader-surah-header").first().screenshot({
         path: path.join(OUTPUT_DIR, `${prefix}-header.png`),
       });
 

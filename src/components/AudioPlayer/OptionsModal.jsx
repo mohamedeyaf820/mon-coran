@@ -58,7 +58,7 @@ export function OptionsModal({
         type="button"
         className="audio-player-modal__backdrop absolute inset-0 bg-[color-mix(in_srgb,var(--theme-bg)_68%,#040810_32%)] backdrop-blur-sm"
         onClick={closeOptionsModal}
-        aria-label={lang === "fr" ? "Fermer les options" : "Close options"}
+        aria-label={t({ fr: "Fermer les options", en: "Close options", ar: "إغلاق الخيارات" }, lang)}
       />
       <div
         className="audio-player-modal__surface relative z-[421] flex h-[min(92vh,860px)] w-[min(96vw,1180px)] min-w-0 flex-col overflow-hidden rounded-3xl border border-[color-mix(in_srgb,var(--theme-border-strong)_30%,transparent_70%)] bg-[linear-gradient(165deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_95%,var(--theme-primary)_5%),color-mix(in_srgb,var(--theme-panel-bg)_94%,var(--theme-bg)_6%))] shadow-[0_40px_90px_rgba(2,8,18,0.56)] backdrop-blur-2xl"
@@ -83,7 +83,7 @@ export function OptionsModal({
             type="button"
             className="flex h-8 w-8 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[0.72rem] text-[color-mix(in_srgb,var(--theme-text)_84%,var(--theme-bg)_16%)] transition-all duration-150 hover:border-[color-mix(in_srgb,var(--theme-primary)_44%,transparent_56%)] hover:bg-[rgba(var(--theme-primary-rgb),0.14)] hover:text-white"
             onClick={closeOptionsModal}
-            aria-label={lang === "fr" ? "Fermer" : "Close"}
+            aria-label={t("audio.close", lang)}
             ref={optionsCloseButtonRef}
           >
             <i className="fas fa-times" />
@@ -121,11 +121,11 @@ export function OptionsModal({
                   value={reciterSearch}
                   onChange={(e) => setReciterSearch(e.target.value)}
                   placeholder={
-                    lang === "fr"
-                      ? "Rechercher un récitateur..."
-                      : lang === "ar"
-                        ? "ابحث عن قارئ..."
-                        : "Search reciter..."
+                    t({
+                      fr: "Rechercher un récitateur...",
+                      ar: "ابحث عن قارئ...",
+                      en: "Search reciter...",
+                    }, lang)
                   }
                   className={playerSearchInputClass}
                 />
@@ -152,11 +152,11 @@ export function OptionsModal({
                     "py-6 text-center text-xs",
                   )}
                 >
-                  {lang === "fr"
-                    ? "Aucun récitateur trouvé"
-                    : lang === "ar"
-                      ? "لا يوجد قارئ"
-                      : "No reciter found"}
+                  {t({
+                    fr: "Aucun récitateur trouvé",
+                    ar: "لا يوجد قارئ",
+                    en: "No reciter found",
+                  }, lang)}
                 </div>
               ) : (
                 <div className="grid gap-2 sm:grid-cols-2">
@@ -216,38 +216,22 @@ export function OptionsModal({
                             {hasQuranComSync ? (
                               <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/35 bg-emerald-300/12 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-emerald-100">
                                 <i className="fas fa-wave-square mr-1 text-[0.42rem]" />
-                                {lang === "fr"
-                                  ? "Sync audio"
-                                  : lang === "ar"
-                                    ? "مزامنة الصوت"
-                                    : "Audio sync"}
+                                {t({ fr: "Sync audio", ar: "مزامنة الصوت", en: "Audio sync" }, lang)}
                               </span>
                             ) : (
                               <span className="inline-flex w-fit items-center rounded-full border border-white/10 bg-white/[0.035] px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-[rgba(225,214,194,0.5)]">
-                                {lang === "fr"
-                                  ? "Audio simple"
-                                  : lang === "ar"
-                                    ? "ØµÙˆØª Ø¹Ø§Ø¯ÙŠ"
-                                    : "Basic audio"}
+                                {t({ fr: "Audio simple", ar: "صوت عادي", en: "Basic audio" }, lang)}
                               </span>
                             )}
                             {r.audioMode === "surah" && (
                               <span className="inline-flex w-fit items-center rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-fuchsia-100">
-                                {lang === "fr"
-                                  ? "Sourate complete"
-                                  : lang === "ar"
-                                    ? "سورة كاملة"
-                                    : "Full surah"}
+                                {t({ fr: "Sourate complète", ar: "سورة كاملة", en: "Full surah" }, lang)}
                               </span>
                             )}
                             {isFavorite && (
                               <span className="inline-flex w-fit items-center rounded-full border border-amber-300/35 bg-amber-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-amber-200">
                                 <i className="fas fa-star mr-1 text-[0.44rem]" />
-                                {lang === "fr"
-                                  ? "Favori"
-                                  : lang === "ar"
-                                    ? "مفضل"
-                                    : "Favorite"}
+                                {t({ fr: "Favori", ar: "مفضل", en: "Favorite" }, lang)}
                               </span>
                             )}
                             {latency && (
@@ -258,16 +242,16 @@ export function OptionsModal({
                             {autoSelectFastestReciter &&
                               filteredReciters[0]?.id === r.id && (
                                 <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/30 bg-emerald-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-emerald-100">
-                                  {lang === "fr" ? "Rapide" : lang === "ar" ? "سريع" : "Fast"}
+                                  {t({ fr: "Rapide", ar: "سريع", en: "Fast" }, lang)}
                                 </span>
                               )}
                             {isUnavailable && (
                               <span className="inline-flex w-fit items-center rounded-full border border-rose-300/40 bg-rose-300/16 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-rose-100">
-                                {lang === "fr"
-                                  ? `Indisponible ${formatCooldownLabel(unavailableMs, lang)}`
-                                  : lang === "ar"
-                                    ? `غير متاح ${formatCooldownLabel(unavailableMs, lang)}`
-                                    : `Unavailable ${formatCooldownLabel(unavailableMs, lang)}`}
+                                {t({
+                                  fr: `Indisponible ${formatCooldownLabel(unavailableMs, lang)}`,
+                                  ar: `غير متاح ${formatCooldownLabel(unavailableMs, lang)}`,
+                                  en: `Unavailable ${formatCooldownLabel(unavailableMs, lang)}`,
+                                }, lang)}
                               </span>
                             )}
                           </span>
@@ -295,7 +279,7 @@ export function OptionsModal({
                 >
                   <span className="flex items-center gap-2">
                     <i className="fas fa-gauge-high text-[0.62rem]" />
-                    {lang === "fr" ? "Vitesse" : lang === "ar" ? "السرعة" : "Speed"}
+                    {t("audio.speed", lang)}
                   </span>
                   <span>{audioSpeed}x</span>
                 </button>
@@ -305,7 +289,7 @@ export function OptionsModal({
             <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
               <div className="mb-2 flex items-center justify-between gap-2">
                 <span className={playerSectionLabelClass}>
-                  {lang === "fr" ? "Répétition de sourate" : lang === "ar" ? "تكرار السورة" : "Surah repeat"}
+                  {t({ fr: "Répétition de sourate", ar: "تكرar السورة", en: "Surah repeat" }, lang)}
                 </span>
                 <span
                   className={cn(
@@ -314,7 +298,7 @@ export function OptionsModal({
                   )}
                 >
                   {surahRepeatCount === 0
-                    ? lang === "fr" ? "Infini" : lang === "ar" ? "لا نهائي" : "Infinite"
+                    ? t({ fr: "Infini", ar: "لا نهائي", en: "Infinite" }, lang)
                     : `x${surahRepeatCount}`}
                 </span>
               </div>
@@ -322,7 +306,7 @@ export function OptionsModal({
               <div className="flex flex-wrap items-center gap-2">
                 <div className="flex items-center gap-1.5">
                   <span className={cn(playerMutedTextClass, "text-[0.68rem]")}>
-                    {lang === "fr" ? "Nombre" : lang === "ar" ? "العدد" : "Count"}
+                    {t({ fr: "Nombre", ar: "العدد", en: "Count" }, lang)}
                   </span>
                   <input
                     type="number"
@@ -339,7 +323,7 @@ export function OptionsModal({
                   onClick={() => setSurahRepeatSetting(1)}
                   className={playerOptionPillClass(surahRepeatCount === 1)}
                 >
-                  {lang === "fr" ? "Une fois" : lang === "ar" ? "مرة واحدة" : "Once"}
+                  {t({ fr: "Une fois", ar: "مرة واحدة", en: "Once" }, lang)}
                 </button>
                 <button
                   type="button"
@@ -367,7 +351,7 @@ export function OptionsModal({
                   onClick={() => setSurahRepeatSetting(0)}
                   className={playerOptionPillClass(surahRepeatCount === 0)}
                 >
-                  {lang === "fr" ? "Infini" : lang === "ar" ? "لا نهائي" : "Infinite"}
+                  {t({ fr: "Infini", ar: "لا نهائي", en: "Infinite" }, lang)}
                 </button>
               </div>
 
@@ -377,18 +361,18 @@ export function OptionsModal({
                   "mt-2 text-[0.62rem] leading-relaxed",
                 )}
               >
-                {lang === "fr"
-                  ? "0 = répétition infinie. La sourate recommence automatiquement à la fin."
-                  : lang === "ar"
-                    ? "0 يعني تكرارًا لا نهائيًا. تبدأ السورة من جديد تلقائيًا عند النهاية."
-                    : "0 means infinite repeat. The surah restarts automatically at the end."}
+                {t({
+                  fr: "0 = répétition infinie. La sourate recommence automatiquement à la fin.",
+                  ar: "0 يعني تكرارًا لا نهائيًا. تبدأ السورة من جديد تلقائيًا عند النهاية.",
+                  en: "0 means infinite repeat. The surah restarts automatically at the end.",
+                }, lang)}
               </p>
             </div>
 
             <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
               <div className="mb-2 flex items-center justify-between gap-2">
                 <span className={playerSectionLabelClass}>
-                  {lang === "fr" ? "Volume" : lang === "ar" ? "مستوى الصوت" : "Volume"}
+                  {t("audio.volume", lang)}
                 </span>
                 <span
                   className={cn(
@@ -425,7 +409,7 @@ export function OptionsModal({
             <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
               <div className="mb-2 flex items-center justify-between gap-2">
                 <span className={playerSectionLabelClass}>
-                  {lang === "fr" ? "Synchronisation mot a mot" : lang === "ar" ? "مزامنة كلمة بكلمة" : "Word sync"}
+                  {t({ fr: "Synchronisation mot à mot", ar: "مزامنة كلمة بكلمة", en: "Word sync" }, lang)}
                 </span>
                 <span
                   className={cn(
@@ -463,7 +447,7 @@ export function OptionsModal({
                   onClick={() => setSyncOffsetMs(0)}
                   className={playerOptionPillClass(syncOffsetMs === 0)}
                 >
-                  {lang === "fr" ? "Reset" : lang === "ar" ? "إعادة" : "Reset"}
+                  {t({ fr: "Réinitialiser", ar: "إعادة", en: "Reset" }, lang)}
                 </button>
               </div>
               <p
@@ -473,16 +457,16 @@ export function OptionsModal({
                 )}
               >
                 {isSurahStreamReciter
-                  ? lang === "fr"
-                    ? "Ce recitateur lit la sourate complete, donc la synchro mot a mot n'est pas utilisee."
-                    : lang === "ar"
-                      ? "هذا القارئ يقرأ السورة كاملة، لذلك لا تستخدم مزامنة كلمة بكلمة."
-                      : "This reciter reads the full surah, so word-by-word sync is not used."
-                  : lang === "fr"
-                    ? "Ajustez le délai si l'audio et les mots ne sont pas parfaitement synchronisés."
-                    : lang === "ar"
-                      ? "اضبط التأخير إذا لم تكن الصوت والكلمات متزامنة تمامًا."
-                      : "Adjust the delay if audio and words are not perfectly synchronized."}
+                  ? t({
+                      fr: "Ce récitateur lit la sourate complète, donc la synchro mot à mot n'est pas utilisée.",
+                      ar: "هذا القارئ يقرأ السورة كاملة، لذلك لا تستخدم مزامنة كلمة بكلمة.",
+                      en: "This reciter reads the full surah, so word-by-word sync is not used.",
+                    }, lang)
+                  : t({
+                      fr: "Ajustez le délai si l'audio et les mots ne sont pas parfaitement synchronisés.",
+                      ar: "اضبط التأخير إذا لم تكن الصوت والكلمات متزامنة تمامًا.",
+                      en: "Adjust the delay if audio and words are not perfectly synchronized.",
+                    }, lang)}
               </p>
             </div>
           </section>

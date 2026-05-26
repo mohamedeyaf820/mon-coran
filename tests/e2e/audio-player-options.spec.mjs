@@ -27,7 +27,7 @@ test("E2E: audio player minimized click restores panel and options modal opens",
 
   if (!startsMinimized) {
     const minimizeBtn = desktopPlayer
-      .locator("button:has(i.fa-chevron-down), button:has(i.fa-window-minimize)")
+      .locator("button:has(i.fa-chevron-down), button:has(i.fa-window-minimize), button:has(i.fa-minus)")
       .first();
     await expect(minimizeBtn).toBeVisible();
     await minimizeBtn.click();
@@ -84,7 +84,9 @@ test.describe("mobile", () => {
     await page.keyboard.press("Escape");
     await expect(optionsModal).toBeHidden();
 
-    const minimizeBtn = dockPlayer.locator("button:has(i.fa-chevron-down)").first();
+    const minimizeBtn = dockPlayer
+      .locator("button[aria-label*='Minimiser le lecteur'], button[aria-label*='Minimize player'], button:has(i.fa-chevron-down)")
+      .first();
     await expect(minimizeBtn).toBeVisible();
     await minimizeBtn.click();
 

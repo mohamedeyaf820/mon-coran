@@ -20,7 +20,7 @@ test("Visual desktop: navbar + modal audio options", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openReader(page);
 
-  const header = page.locator(".hdr-v7").first();
+  const header = page.locator(".mp-header").first();
   await expect(header).toBeVisible();
   await header.screenshot({
     path: path.join(OUTPUT_DIR, "desktop-navbar.png"),
@@ -48,7 +48,7 @@ test.describe("mobile", () => {
 
     await openReader(page);
 
-    const header = page.locator(".hdr-v7").first();
+    const header = page.locator(".mp-header").first();
     await expect(header).toBeVisible();
     await header.screenshot({
       path: path.join(OUTPUT_DIR, "mobile-navbar.png"),

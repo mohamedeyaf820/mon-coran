@@ -4,6 +4,7 @@ import AyahMarker from "./AyahMarker";
 export function CleanPageSurahHeader({ lang, surahMeta }) {
   const title = lang === "en" ? surahMeta?.en : surahMeta?.fr || surahMeta?.en;
   const displayName = title || surahMeta?.en || "";
+  const surahNum = surahMeta?.n || surahMeta?.id || surahMeta?.number;
 
   return (
     <div className="cpv-surah-header-container flex items-center justify-center w-full my-8 select-none pointer-events-none">
@@ -13,11 +14,18 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
         <div className="cpv-divider-diamond text-[#c8a84b] text-xs">❖</div>
         
         {/* Central Box */}
-        <div className="cpv-surah-title-box border border-[#16342f] rounded-lg px-8 py-3 bg-[#0d2522] shadow-lg flex flex-col items-center justify-center min-w-[220px]">
-          <span className="cpv-surah-name-ar text-white text-lg font-bold font-amiri leading-normal" dir="rtl">
-            سُورَةُ {surahMeta?.ar}
+        <div className="cpv-surah-title-box border rounded-lg px-8 py-3 shadow-lg flex flex-col items-center justify-center min-w-[220px]">
+          <span className="cpv-surah-name-ar text-lg font-bold leading-normal" dir="rtl">
+            <span className="cpv-surah-prefix">سُورَةُ</span>{" "}
+            {surahNum ? (
+              <span className="cpv-surah-name-ligature">
+                {String(surahNum).padStart(3, "0")}
+              </span>
+            ) : (
+              surahMeta?.ar
+            )}
           </span>
-          <span className="cpv-surah-name-tr text-[#a1a1aa] text-[9.5px] font-semibold tracking-[0.14em] uppercase mt-0.5">
+          <span className="cpv-surah-name-tr text-[9.5px] font-semibold tracking-[0.14em] uppercase mt-0.5">
             {displayName}
           </span>
         </div>

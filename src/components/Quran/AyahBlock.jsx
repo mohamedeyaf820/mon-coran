@@ -190,7 +190,6 @@ const AyahBlock = React.memo(function AyahBlock({
         )}
       >
         {arabicContent}
-        {"\u00A0"}
         <AyahMarker num={ayah.numberInSurah} isPlaying={isPlaying} size="lg" />
       </div>
 

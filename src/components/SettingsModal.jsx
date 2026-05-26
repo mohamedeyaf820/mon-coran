@@ -187,8 +187,12 @@ export default function SettingsModal() {
         </header>
 
         {/* Tab Selection */}
-        <nav className="flex border-b border-[var(--border)] px-4 bg-[var(--bg-secondary)]" aria-label="Tabs">
+        <nav className="flex border-b border-[var(--border)] px-4 bg-[var(--bg-secondary)]" aria-label="Tabs" role="tablist">
           <button
+            id="tab-apparence"
+            role="tab"
+            aria-selected={activeTab === "apparence"}
+            aria-controls="panel-apparence"
             onClick={() => setActiveTab("apparence")}
             className={`flex-1 py-3 text-sm font-semibold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
               activeTab === "apparence"
@@ -200,6 +204,10 @@ export default function SettingsModal() {
             <span>{lang === "fr" ? "Général" : "General"}</span>
           </button>
           <button
+            id="tab-affichage"
+            role="tab"
+            aria-selected={activeTab === "affichage"}
+            aria-controls="panel-affichage"
             onClick={() => setActiveTab("affichage")}
             className={`flex-1 py-3 text-sm font-semibold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
               activeTab === "affichage"
@@ -211,6 +219,10 @@ export default function SettingsModal() {
             <span>{lang === "fr" ? "Affichage" : "Display"}</span>
           </button>
           <button
+            id="tab-audio"
+            role="tab"
+            aria-selected={activeTab === "audio"}
+            aria-controls="panel-audio"
             onClick={() => setActiveTab("audio")}
             className={`flex-1 py-3 text-sm font-semibold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
               activeTab === "audio"
@@ -228,13 +240,19 @@ export default function SettingsModal() {
           
           {/* TAB 1: Apparence */}
           {activeTab === "apparence" && (
-            <div className="space-y-6 animate-fade-in">
+            <div
+              id="panel-apparence"
+              role="tabpanel"
+              aria-labelledby="tab-apparence"
+              className="space-y-6 animate-fade-in"
+            >
               {/* App Language */}
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                <label htmlFor="settings-lang-select" className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
                   {lang === "fr" ? "Langue de l'application" : "Application Language"}
                 </label>
                 <select
+                  id="settings-lang-select"
                   value={lang}
                   onChange={(e) => set({ lang: e.target.value })}
                   className="w-full px-3 py-2 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] font-medium text-sm focus:outline-none focus:ring-2 focus:ring-[rgba(var(--primary-rgb),0.5)]"
@@ -247,10 +265,10 @@ export default function SettingsModal() {
 
               {/* Theme Mode */}
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
                   {lang === "fr" ? "Thème visuel" : "Visual Theme"}
-                </label>
-                <div className="grid grid-cols-3 gap-2">
+                </span>
+                <div className="grid grid-cols-3 gap-2" role="group" aria-label={lang === "fr" ? "Thème visuel" : "Visual Theme"}>
                   {THEMES.map((t) => (
                     <button
                       key={t.id}
@@ -270,49 +288,52 @@ export default function SettingsModal() {
               {/* Auto Night Mode */}
               <div className="p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border)] space-y-3">
                 <div className="flex items-center justify-between">
-                  <div>
+                  <label htmlFor="settings-auto-night" className="cursor-pointer">
                     <h3 className="text-sm font-semibold">{lang === "fr" ? "Mode nuit automatique" : "Auto Night Mode"}</h3>
                     <p className="text-xs text-[var(--text-muted)]">
                       {lang === "fr" ? "Bascule automatique selon l'heure" : "Automatic switch based on time"}
                     </p>
-                  </div>
+                  </label>
                   <input
+                    id="settings-auto-night"
                     type="checkbox"
                     checked={autoNightMode}
                     onChange={(e) => set({ autoNightMode: e.target.checked })}
-                    className="w-4 h-4 text-[var(--primary)] rounded focus:ring-[var(--primary)]"
+                    className="w-4 h-4 text-[var(--primary)] rounded focus:ring-[var(--primary)] cursor-pointer"
                   />
                 </div>
 
                 {autoNightMode && (
                   <div className="flex items-center gap-4 pt-2 border-t border-[var(--border)]">
-                    <label className="flex-1 flex flex-col gap-1 text-xs text-[var(--text-muted)]">
-                      <span>{lang === "fr" ? "Début" : "Start"}</span>
+                    <div className="flex-1 flex flex-col gap-1 text-xs text-[var(--text-muted)]">
+                      <label htmlFor="settings-night-start">{lang === "fr" ? "Début" : "Start"}</label>
                       <input
+                        id="settings-night-start"
                         type="time"
                         value={nightStart || "20:00"}
                         onChange={(e) => set({ nightStart: e.target.value })}
                         className="px-2 py-1 bg-[var(--bg-card)] rounded border border-[var(--border)] focus:outline-none"
                       />
-                    </label>
-                    <label className="flex-1 flex flex-col gap-1 text-xs text-[var(--text-muted)]">
-                      <span>{lang === "fr" ? "Fin" : "End"}</span>
+                    </div>
+                    <div className="flex-1 flex flex-col gap-1 text-xs text-[var(--text-muted)]">
+                      <label htmlFor="settings-night-end">{lang === "fr" ? "Fin" : "End"}</label>
                       <input
+                        id="settings-night-end"
                         type="time"
                         value={nightEnd || "06:00"}
                         onChange={(e) => set({ nightEnd: e.target.value })}
                         className="px-2 py-1 bg-[var(--bg-card)] rounded border border-[var(--border)] focus:outline-none"
                       />
-                    </label>
+                    </div>
                   </div>
                 )}
               </div>
 
               {/* Import/Export simple parameters */}
               <div className="pt-4 border-t border-[var(--border)] space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
                   {lang === "fr" ? "Sauvegarde & Restauration" : "Backup & Restore"}
-                </h3>
+                </span>
                 <div className="flex gap-2">
                   <button
                     onClick={handleExport}
@@ -321,10 +342,11 @@ export default function SettingsModal() {
                     <Download size={15} />
                     <span>Exporter</span>
                   </button>
-                  <label className="flex-1 py-2 px-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer">
+                  <label htmlFor="settings-import-file" className="flex-1 py-2 px-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer">
                     <Upload size={15} />
                     <span>Importer</span>
                     <input
+                      id="settings-import-file"
                       type="file"
                       accept=".json"
                       onChange={handleImport}
@@ -338,15 +360,21 @@ export default function SettingsModal() {
 
           {/* TAB 2: Affichage & Coran */}
           {activeTab === "affichage" && (
-            <div className="space-y-6 animate-fade-in">
+            <div
+              id="panel-affichage"
+              role="tabpanel"
+              aria-labelledby="tab-affichage"
+              className="space-y-6 animate-fade-in"
+            >
               {/* Riwaya */}
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                <span id="settings-riwaya-label" className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
                   Riwaya
-                </label>
-                <div className="grid grid-cols-2 gap-2">
+                </span>
+                <div className="grid grid-cols-2 gap-2" role="group" aria-labelledby="settings-riwaya-label">
                   <button
                     onClick={() => set({ riwaya: "hafs" })}
+                    aria-pressed={riwaya === "hafs"}
                     className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-all ${
                       riwaya === "hafs"
                         ? "border-[var(--primary)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] shadow-sm"
@@ -357,6 +385,7 @@ export default function SettingsModal() {
                   </button>
                   <button
                     onClick={() => set({ riwaya: "warsh" })}
+                    aria-pressed={riwaya === "warsh"}
                     className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-all ${
                       riwaya === "warsh"
                         ? "border-[var(--primary)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] shadow-sm"
@@ -370,10 +399,11 @@ export default function SettingsModal() {
 
               {/* Font selection */}
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                <label htmlFor="settings-font-family" className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
                   {lang === "fr" ? "Police d'écriture Arabe" : "Arabic Font Family"}
                 </label>
                 <select
+                  id="settings-font-family"
                   value={fontFamily}
                   onChange={(e) => set({ fontFamily: e.target.value })}
                   className="w-full px-3 py-2 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] font-medium text-sm focus:outline-none focus:ring-2 focus:ring-[rgba(var(--primary-rgb),0.5)]"
@@ -391,10 +421,11 @@ export default function SettingsModal() {
                 {/* Quran font size */}
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs font-bold uppercase text-[var(--text-muted)]">
-                    <span>{lang === "fr" ? "Taille texte Arabe" : "Arabic Font Size"}</span>
+                    <label htmlFor="settings-font-size-quran">{lang === "fr" ? "Taille texte Arabe" : "Arabic Font Size"}</label>
                     <span>{quranFontSize}px</span>
                   </div>
                   <input
+                    id="settings-font-size-quran"
                     type="range"
                     min="12"
                     max="96"
@@ -408,10 +439,11 @@ export default function SettingsModal() {
                 {/* Translation font size */}
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs font-bold uppercase text-[var(--text-muted)]">
-                    <span>{lang === "fr" ? "Taille Traductions" : "Translation Font Size"}</span>
+                    <label htmlFor="settings-font-size-translation">{lang === "fr" ? "Taille Traductions" : "Translation Font Size"}</label>
                     <span>{quranTranslationFontSize}px</span>
                   </div>
                   <input
+                    id="settings-font-size-translation"
                     type="range"
                     min="14"
                     max="28"
@@ -425,12 +457,13 @@ export default function SettingsModal() {
 
               {/* Display checkboxes helpers */}
               <div className="space-y-3">
-                <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
                   {lang === "fr" ? "Aides de lecture" : "Reading helpers"}
-                </label>
+                </span>
                 <div className="space-y-2">
-                  <label className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] cursor-pointer select-none">
+                  <label htmlFor="settings-show-tajwid" className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] cursor-pointer select-none">
                     <input
+                      id="settings-show-tajwid"
                       type="checkbox"
                       checked={showTajwid}
                       onChange={(e) => set({ showTajwid: e.target.checked })}
@@ -442,8 +475,9 @@ export default function SettingsModal() {
                     </div>
                   </label>
 
-                  <label className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] cursor-pointer select-none">
+                  <label htmlFor="settings-show-translation" className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] cursor-pointer select-none">
                     <input
+                      id="settings-show-translation"
                       type="checkbox"
                       checked={showTranslation}
                       onChange={(e) => set({ showTranslation: e.target.checked })}
@@ -455,8 +489,9 @@ export default function SettingsModal() {
                     </div>
                   </label>
 
-                  <label className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] cursor-pointer select-none">
+                  <label htmlFor="settings-show-transliteration" className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] cursor-pointer select-none">
                     <input
+                      id="settings-show-transliteration"
                       type="checkbox"
                       checked={showTransliteration}
                       onChange={(e) => set({ showTransliteration: e.target.checked })}
@@ -468,8 +503,9 @@ export default function SettingsModal() {
                     </div>
                   </label>
 
-                  <label className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] cursor-pointer select-none">
+                  <label htmlFor="settings-show-word-by-word" className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] cursor-pointer select-none">
                     <input
+                      id="settings-show-word-by-word"
                       type="checkbox"
                       checked={showWordByWord}
                       onChange={(e) => set({ showWordByWord: e.target.checked })}
@@ -487,10 +523,15 @@ export default function SettingsModal() {
 
           {/* TAB 3: Audio */}
           {activeTab === "audio" && (
-            <div className="space-y-6 animate-fade-in">
+            <div
+              id="panel-audio"
+              role="tabpanel"
+              aria-labelledby="tab-audio"
+              className="space-y-6 animate-fade-in"
+            >
               {/* Reciter searchable selector */}
               <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                <label htmlFor="settings-reciter-search" className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
                   {lang === "fr" ? "Sélection du Récitateur" : "Select Reciter"}
                 </label>
                 <div className="relative">
@@ -498,6 +539,7 @@ export default function SettingsModal() {
                     <Search size={16} />
                   </span>
                   <input
+                    id="settings-reciter-search"
                     type="text"
                     placeholder={lang === "fr" ? "Rechercher un récitant..." : "Search reciters..."}
                     value={reciterSearch}
@@ -534,10 +576,11 @@ export default function SettingsModal() {
               {/* Playback speed */}
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-bold uppercase text-[var(--text-muted)]">
-                  <span>{lang === "fr" ? "Vitesse de lecture" : "Playback Speed"}</span>
+                  <label htmlFor="settings-audio-speed">{lang === "fr" ? "Vitesse de lecture" : "Playback Speed"}</label>
                   <span>{audioSpeed}x</span>
                 </div>
                 <input
+                  id="settings-audio-speed"
                   type="range"
                   min="0.5"
                   max="2.0"
@@ -551,10 +594,11 @@ export default function SettingsModal() {
               {/* Volume */}
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-bold uppercase text-[var(--text-muted)]">
-                  <span>Volume</span>
+                  <label htmlFor="settings-audio-volume">Volume</label>
                   <span>{Math.round(volume * 100)}%</span>
                 </div>
                 <input
+                  id="settings-audio-volume"
                   type="range"
                   min="0"
                   max="1.0"

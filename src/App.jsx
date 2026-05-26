@@ -572,25 +572,31 @@ export default function App() {
               className={`app-view-shell ${showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas ? `app-mode-${displayMode}` : ""}`}
             >
               {showHome ? (
-                <Suspense fallback={suspenseFallback}>
-                  <HomePage lowPerfMode={lowPerfMode} />
-                </Suspense>
+                <ErrorBoundary>
+                  <Suspense fallback={suspenseFallback}>
+                    <HomePage lowPerfMode={lowPerfMode} />
+                  </Suspense>
+                </ErrorBoundary>
               ) : showDuas ? (
-                <Suspense fallback={suspenseFallback}>
-                  <DuasPage />
-                </Suspense>
+                <ErrorBoundary>
+                  <Suspense fallback={suspenseFallback}>
+                    <DuasPage />
+                  </Suspense>
+                </ErrorBoundary>
               ) : (
-                <Suspense fallback={suspenseFallback}>
-                  <QuranDisplay
-                    key={
-                      displayMode === "juz"
-                        ? `juz-${currentJuz}`
-                        : displayMode === "page"
-                          ? `page-${currentPage}`
-                          : `surah-${currentSurah}`
-                    }
-                  />
-                </Suspense>
+                <ErrorBoundary>
+                  <Suspense fallback={suspenseFallback}>
+                    <QuranDisplay
+                      key={
+                        displayMode === "juz"
+                          ? `juz-${currentJuz}`
+                          : displayMode === "page"
+                            ? `page-${currentPage}`
+                            : `surah-${currentSurah}`
+                      }
+                    />
+                  </Suspense>
+                </ErrorBoundary>
               )}
             </div>
           </main>

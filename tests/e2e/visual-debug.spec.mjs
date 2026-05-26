@@ -7,7 +7,12 @@ test('visual debug - capture screenshots of Warsh mode', async ({ page }) => {
   page.on('pageerror', err => console.error(`[PageError] ${err.message}`));
   
   // Navigate to app
-  await page.goto('/');
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem('mushaf-plus-settings', JSON.stringify({ splashDone: true }));
+    } catch {}
+  });
+  await page.goto('/surah/4');
   await page.waitForTimeout(2000);
   
   // Screenshot 1: Initial load
@@ -54,7 +59,8 @@ test('visual debug - capture screenshots of Warsh mode', async ({ page }) => {
   await page.screenshot({ path: 'test-results/03-after-navigation.png', fullPage: true });
   
   // Check for error modal
-  const errorText = await page.locator('text=Failed to load').first().textContent().catch(() => null);
+  const errorLocator = page.locator('text=Failed to load').first();
+  const errorText = await errorLocator.isVisible().catch(() => false) ? await errorLocator.textContent().catch(() => null) : null;
   if (errorText) {
     console.log('ERROR FOUND:', errorText);
     await page.screenshot({ path: 'test-results/04-error-state.png', fullPage: true });
@@ -71,7 +77,8 @@ test('visual debug - capture screenshots of Warsh mode', async ({ page }) => {
   console.log('Page has content length:', pageContent.length);
   
   // Look for Arabic text
-  const arabicText = await page.locator('text=/[\u0600-\u06FF]/').first().textContent().catch(() => null);
+  const arabicLocator = page.locator('text=/[\u0600-\u06FF]/').first();
+  const arabicText = await arabicLocator.isVisible().catch(() => false) ? await arabicLocator.textContent().catch(() => null) : null;
   if (arabicText) {
     console.log('Found Arabic text:', arabicText.substring(0, 100));
   }

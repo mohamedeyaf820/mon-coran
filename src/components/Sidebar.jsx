@@ -85,9 +85,9 @@ export default function Sidebar() {
     <>
       <aside
         className={cn(
-          "fixed top-0 left-0 z-[1000] flex h-[100dvh] w-[min(92vw,360px)] flex-col bg-bg-primary border-r border-border shadow-2xl transition-transform duration-300 rtl:left-auto rtl:right-0 rtl:border-r-0 rtl:border-l",
+          "sb-wrapper fixed top-0 left-0 z-[1000] flex h-[100dvh] w-[min(92vw,360px)] flex-col bg-bg-primary border-r border-border shadow-2xl transition-transform duration-300 rtl:left-auto rtl:right-0 rtl:border-r-0 rtl:border-l",
           sidebarOpen
-            ? "translate-x-0"
+            ? "open translate-x-0"
             : "-translate-x-full rtl:translate-x-full",
         )}
         role="navigation"

@@ -7,6 +7,18 @@ import {
 } from "../../services/fontLoader";
 import AyahMarker from "../Quran/AyahMarker";
 
+function decodeHtmlEntity(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#([0-9]+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'");
+}
+
 function getVerseKey(word) {
   return `${Number(word.surah)}:${Number(word.ayah)}`;
 }
@@ -268,12 +280,13 @@ export default function QuranMushafPage({
         style={{
           fontFamily: fontLoaded ? pageFontFamily : fallbackFontFamily,
         }}
-        dangerouslySetInnerHTML={
+      >
+        {decodeHtmlEntity(
           fontLoaded && glyph
-            ? { __html: glyph }
-            : { __html: word.textQpcHafs || word.textUthmani || word.text || "" }
-        }
-      />
+            ? glyph
+            : (word.textQpcHafs || word.textUthmani || word.text || "")
+        )}
+      </span>
     );
   };
 

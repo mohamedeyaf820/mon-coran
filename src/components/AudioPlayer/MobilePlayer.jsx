@@ -1,4 +1,5 @@
 import React from "react";
+import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 import CoverArt from "./CoverArt";
 import ProgressRail from "./ProgressRail";
@@ -78,13 +79,13 @@ export function MobilePlayer({
 
           <button
             onClick={onToggleMinimized}
-            className="flex-1 text-left min-w-0 px-1"
+            className="mp-player-minimized-open flex-1 text-left min-w-0 px-1"
           >
             <div 
               className="font-semibold text-white/90 truncate leading-tight"
               style={{ fontSize: '0.8rem', maxWidth: '120px' }}
             >
-              {titleLabel || (lang === "fr" ? "Prêt à lire" : "Ready")}
+              {titleLabel || t({ fr: "Prêt à lire", en: "Ready", ar: "جاهز للتشغيل" }, lang)}
             </div>
             <div 
               className="text-white/38 truncate mt-0.5"
@@ -100,11 +101,11 @@ export function MobilePlayer({
               className="mp-player-options-trigger mp-player-mobile-options flex items-center justify-center text-white/44 hover:text-white/80 active:scale-90 transition-all rounded-lg"
               style={{ width: '40px', height: '40px', minWidth: '40px' }}
               aria-label={
-                lang === "fr"
-                  ? "Options audio et récitateur"
-                  : lang === "ar"
-                    ? "خيارات الصوت والقارئ"
-                    : "Audio and reciter options"
+                t({
+                  fr: "Options audio et récitateur",
+                  en: "Audio and reciter options",
+                  ar: "خيارات الصوت والقارئ",
+                }, lang)
               }
             >
               <i className="fas fa-sliders" style={{ fontSize: '0.85rem' }} />
@@ -113,7 +114,7 @@ export function MobilePlayer({
               onClick={onPrev}
               className="flex items-center justify-center text-white/40 hover:text-white/70 active:scale-90 transition-all rounded-lg"
               style={{ width: '40px', height: '40px', minWidth: '40px' }}
-              aria-label={lang === "fr" ? "Précédent" : "Previous"}
+              aria-label={t("audio.prev", lang)}
             >
               <i className="fas fa-backward-step" style={{ fontSize: '0.85rem' }} />
             </button>
@@ -121,7 +122,7 @@ export function MobilePlayer({
               onClick={onToggle}
               className="rounded-full flex items-center justify-center text-black font-bold bg-gradient-to-br from-amber-300 via-[var(--gold,#d4a820)] to-amber-600 shadow-[0_4px_16px_rgba(180,140,20,0.4)] active:scale-95 transition-transform"
               style={{ width: '48px', height: '48px', minWidth: '48px' }}
-              aria-label={isPlaying ? "Pause" : "Lecture"}
+              aria-label={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
             >
               <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"} ${!isPlaying ? "ml-0.5" : ""}`} style={{ fontSize: '1rem' }} />
             </button>
@@ -129,7 +130,7 @@ export function MobilePlayer({
               onClick={onNext}
               className="flex items-center justify-center text-white/40 hover:text-white/70 active:scale-90 transition-all rounded-lg"
               style={{ width: '40px', height: '40px', minWidth: '40px' }}
-              aria-label={lang === "fr" ? "Suivant" : "Next"}
+              aria-label={t("audio.next", lang)}
             >
               <i className="fas fa-forward-step" style={{ fontSize: '0.85rem' }} />
             </button>
@@ -137,7 +138,7 @@ export function MobilePlayer({
               onClick={onClose}
               className="flex items-center justify-center text-white/20 hover:text-white/50 active:scale-90 transition-all rounded-lg"
               style={{ width: '36px', height: '36px', minWidth: '36px' }}
-              aria-label={lang === "fr" ? "Fermer le lecteur" : "Close player"}
+              aria-label={t({ fr: "Fermer le lecteur", en: "Close player", ar: "إغلاق المشغل" }, lang)}
             >
               <i className="fas fa-times" style={{ fontSize: '0.8rem' }} />
             </button>
@@ -171,10 +172,10 @@ export function MobilePlayer({
             <button
               onClick={onToggleMinimized}
               className="block w-full min-w-0 text-left"
-              aria-label={lang === "fr" ? "Minimiser le lecteur" : "Minimize player"}
+              aria-label={t({ fr: "Minimiser le lecteur", en: "Minimize player", ar: "تصغير المشغل" }, lang)}
             >
               <div className="truncate text-[0.82rem] font-semibold leading-tight text-white/92">
-                {titleLabel || (lang === "fr" ? "Prêt à lire" : "Ready")}
+                {titleLabel || t({ fr: "Prêt à lire", en: "Ready", ar: "جاهز للتشغيل" }, lang)}
               </div>
               <div className="mt-0.5 truncate text-[0.64rem] text-white/45">
                 {reciterLabel || "—"}
@@ -209,11 +210,11 @@ export function MobilePlayer({
               onClick={onToggleOptions}
               className="mp-player-options-trigger mp-player-mobile-options flex h-9 w-9 items-center justify-center rounded-xl text-white/76 transition-all hover:text-white active:scale-90"
               aria-label={
-                lang === "fr"
-                  ? "Options audio et récitateur"
-                  : lang === "ar"
-                    ? "خيارات الصوت والقارئ"
-                    : "Audio and reciter options"
+                t({
+                  fr: "Options audio et récitateur",
+                  en: "Audio and reciter options",
+                  ar: "خيارات الصوت والقارئ",
+                }, lang)
               }
             >
               <i className="fas fa-sliders text-sm" />
@@ -221,28 +222,28 @@ export function MobilePlayer({
             <button
               onClick={cycleSpeed}
               className="flex h-9 min-w-9 items-center justify-center rounded-xl border border-white/[0.09] bg-white/[0.045] px-2 text-[0.66rem] font-black text-white/52 transition-all hover:text-white active:scale-90"
-              aria-label={lang === "fr" ? "Vitesse audio" : "Audio speed"}
+              aria-label={t("audio.speed", lang)}
             >
               {audioSpeed}×
             </button>
             <button
               onClick={onPrev}
               className="flex h-9 w-9 items-center justify-center text-white/44 transition-all hover:text-white/80 active:scale-90"
-              aria-label={lang === "fr" ? "Précédent" : "Previous"}
+              aria-label={t("audio.prev", lang)}
             >
               <i className="fas fa-backward-step" />
             </button>
             <button
               onClick={onToggle}
               className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 via-[var(--gold,#d4a820)] to-amber-600 font-bold text-black shadow-[0_4px_16px_rgba(180,140,20,0.4)] transition-transform active:scale-95"
-              aria-label={isPlaying ? "Pause" : "Lecture"}
+              aria-label={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
             >
               <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"} ${!isPlaying ? "ml-0.5" : ""}`} />
             </button>
             <button
               onClick={onNext}
               className="flex h-9 w-9 items-center justify-center text-white/44 transition-all hover:text-white/80 active:scale-90"
-              aria-label={lang === "fr" ? "Suivant" : "Next"}
+              aria-label={t("audio.next", lang)}
             >
               <i className="fas fa-forward-step" />
             </button>
@@ -296,11 +297,11 @@ export function MobilePlayer({
           onClick={onToggleOptions}
           className="mp-player-options-trigger w-10 h-10 flex items-center justify-center text-white/40 hover:text-white active:scale-90 transition-all"
           aria-label={
-            lang === "fr"
-              ? "Options audio et récitateur"
-              : lang === "ar"
-                ? "خيارات الصوت والقارئ"
-                : "Audio and reciter options"
+            t({
+              fr: "Options audio et récitateur",
+              en: "Audio and reciter options",
+              ar: "خيارات الصوت والقارئ",
+            }, lang)
           }
         >
           <i className="fas fa-sliders text-base" />
@@ -353,7 +354,7 @@ export function MobilePlayer({
           </div>
         )}
         <h2 className="text-xl font-bold text-white/95 truncate leading-tight mb-1">
-          {titleLabel || (lang === "fr" ? "Aucune lecture" : "Nothing playing")}
+          {titleLabel || t({ fr: "Aucune lecture", en: "Nothing playing", ar: "لا يوجد تشغيل" }, lang)}
         </h2>
         <p className="text-[0.82rem] text-white/40 truncate">
           {reciterLabel || "—"}

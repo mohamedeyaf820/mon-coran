@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 import CoverArt from "./CoverArt";
 import ProgressRail from "./ProgressRail";
@@ -107,9 +108,9 @@ export function DesktopPlayer({
       {minimized && !isHomeDesktop ? (
         <div className="flex items-center gap-3 px-3.5 py-2.5" data-player-drag="true">
           <CoverArt isPlaying={isPlaying} size={40} />
-          <button onClick={onToggleMinimized} className="flex-1 text-left min-w-0">
+          <button onClick={onToggleMinimized} className="mp-player-minimized-open flex-1 text-left min-w-0">
             <div className="text-[0.78rem] font-semibold text-white/90 truncate leading-tight">
-              {titleLabel || (lang === "fr" ? "Prêt" : "Ready")}
+              {titleLabel || t("audio.ready", lang)}
             </div>
             <div className="text-[0.62rem] text-white/40 truncate mt-0.5">
               {reciterLabel || "—"}
@@ -149,7 +150,7 @@ export function DesktopPlayer({
                 <div className="w-1 h-1 rounded-full bg-white" />
               </div>
               <span className="text-[0.55rem] font-black text-white/25 uppercase tracking-[0.2em]">
-                {lang === "ar" ? "مشغل الصوت" : lang === "fr" ? "Lecteur" : "Player"}
+                {t({ ar: "مشغل الصوت", fr: "Lecteur", en: "Player" }, lang)}
               </span>
             </div>
             <div className="flex items-center gap-0.5">
@@ -157,7 +158,7 @@ export function DesktopPlayer({
                 onClick={onToggleOptions}
                 className="mp-player-options-trigger h-7 w-7 rounded-lg flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/[0.06] transition-all"
                 title="Options"
-                aria-label={lang === "fr" ? "Options audio et récitateur" : "Audio and reciter options"}
+                aria-label={t({ fr: "Options audio et récitateur", en: "Audio and reciter options", ar: "خيارات الصوت والقارئ" }, lang)}
               >
                 <i className="fas fa-sliders text-[10px]" />
               </button>
@@ -194,7 +195,7 @@ export function DesktopPlayer({
                   </div>
                 )}
                 <div className="text-[0.82rem] font-semibold text-white/90 truncate leading-snug">
-                  {titleLabel || (lang === "fr" ? "Aucune lecture" : "Nothing playing")}
+                  {titleLabel || t({ fr: "Aucune lecture", en: "Nothing playing", ar: "لا يوجد تشغيل" }, lang)}
                 </div>
                 <div className="text-[0.64rem] text-white/38 truncate mt-0.5">
                   {reciterLabel || "—"}

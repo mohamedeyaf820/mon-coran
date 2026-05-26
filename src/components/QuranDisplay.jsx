@@ -188,7 +188,7 @@ export default function QuranDisplay() {
       showTajwid: true,
       fontFamily: riwaya === "warsh" ? "mushaf-warsh" : "mushaf-kfgqpc",
     });
-  }, [mushafLayout, set]);
+  }, [mushafLayout, riwaya, set]);
   const toggleMemorization = useCallback(() => {
     set({ mushafLayout: "list", memMode: !memMode, showWordByWord: false });
   }, [memMode, set]);

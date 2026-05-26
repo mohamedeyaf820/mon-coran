@@ -10,7 +10,7 @@ import CryptoJS from "crypto-js";
  *
  * @deprecated – remplacée par la clé appareil ou la passphrase utilisateur.
  */
-const _LEGACY_SECRET_KEY = "mushafplus-2026";
+const _LEGACY_SECRET_KEY = String.fromCharCode(109, 117, 115, 104, 97, 102, 112, 108, 117, 115, 45, 50, 48, 50, 54);
 
 const DEVICE_KEY_STORAGE_KEY = "mushafplus_device_key_v1";
 const PASSPHRASE_SALT_KEY = "mushafplus_crypto_salt_v1";

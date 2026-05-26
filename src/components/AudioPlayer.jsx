@@ -71,6 +71,11 @@ const RECITER_COOLDOWN_STEPS_MS = [
   4 * 60 * 60 * 1000,
 ];
 
+function getReciterCooldownMs(failCount) {
+  const index = Math.min(failCount - 1, RECITER_COOLDOWN_STEPS_MS.length - 1);
+  return RECITER_COOLDOWN_STEPS_MS[Math.max(0, index)];
+}
+
 /* Main component */
 export default function AudioPlayer() {
   const { state, dispatch, set } = useApp();

@@ -14,6 +14,7 @@ export default function MushafInlineHeader({
   revelBadge,
   showBasmala,
   surahNameAr,
+  surahNum,
 }) {
   return (
     <>
@@ -36,7 +37,14 @@ export default function MushafInlineHeader({
           </span>
           <div className="mp-surah-title">
             <span className="mp-surah-name-ar" dir="rtl">
-              {"\u0633\u064f\u0648\u0631\u064e\u0629\u064f"} {surahNameAr}
+              <span className="mp-surah-prefix">{"\u0633\u064f\u0648\u0631\u064e\u0629\u064f"}</span>{" "}
+              {surahNum ? (
+                <span className="mp-surah-name-ligature">
+                  {String(surahNum).padStart(3, "0")}
+                </span>
+              ) : (
+                surahNameAr
+              )}
             </span>
             {lang !== "ar" && displayName !== surahNameAr ? (
               <span className="mp-surah-name-tr">{displayName}</span>
