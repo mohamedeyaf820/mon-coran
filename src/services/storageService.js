@@ -74,7 +74,7 @@ export async function getAllBookmarks() {
 const SETTINGS_KEY = "mushaf-plus-settings";
 
 // Valeurs valides pour validation
-const VALID_LANGS = ["fr", "en"];
+const VALID_LANGS = ["fr", "en", "ar"];
 const VALID_TRANSLATION_LANGS = ["fr", "en", "es", "de", "tr", "ur"];
 const VALID_WORD_TRANSLATION_LANGS = ["fr", "en"];
 const VALID_THEMES = ["light", "sepia", "dark"];

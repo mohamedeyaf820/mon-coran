@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 import App from "./App";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AppProvider } from "./context/AppContext";
 import "./styles/tailwind.css";
 import "./styles/responsive.css";
@@ -42,60 +43,6 @@ if (typeof window !== "undefined") {
     window.requestIdleCallback(warmIconStyles, { timeout: 1200 });
   } else {
     window.setTimeout(warmIconStyles, 700);
-  }
-}
-
-// ErrorBoundary global pour capturer les erreurs React
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error("React Error:", error);
-    console.error("Component Stack:", errorInfo.componentStack);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div
-          className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
-          style={{
-            background: "var(--bg-primary)",
-            color: "var(--text-primary)",
-          }}
-        >
-          <h1
-            className="mb-4 text-xl font-semibold"
-            style={{ color: "var(--danger, #ef4444)" }}
-          >
-            Une erreur est survenue
-          </h1>
-          <p className="mb-4 text-sm" style={{ color: "var(--text-muted)" }}>
-            {import.meta.env.DEV
-              ? this.state.error?.message || "Erreur inconnue"
-              : "Une erreur inattendue est survenue. Veuillez recharger l'application."}
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="rounded-xl px-6 py-3 text-base font-semibold text-white transition hover:brightness-110"
-            style={{
-              background:
-                "linear-gradient(135deg, var(--primary, #1b5e3b), color-mix(in srgb, var(--primary, #1b5e3b) 82%, #000000 18%))",
-            }}
-          >
-            Recharger l'application
-          </button>
-        </div>
-      );
-    }
-    return this.props.children;
   }
 }
 

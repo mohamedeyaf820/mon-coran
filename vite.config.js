@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist",
-    // Pas de sourcemap en production — empêche la reconstruction du code source
+    // Pas de sourcemap en production: empeche la reconstruction du code source.
     sourcemap: false,
     target: "es2020",
     // Minification agressive + suppression console/debugger
@@ -35,19 +35,20 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
-        // Noms de chunks hachés, pas de noms lisibles
+        // Noms de chunks haches, pas de noms lisibles.
         chunkFileNames: "assets/[hash].js",
         entryFileNames: "assets/[hash].js",
         assetFileNames: "assets/[hash].[ext]",
-        manualChunks: {
-          // Vendor chunks - third party libraries
-          vendor: ["react", "react-dom"],
-          // UI components (lazy loaded)
-          ui: ["@radix-ui/react-dialog", "@radix-ui/react-dropdown-menu", "@radix-ui/react-popover", "@radix-ui/react-tabs", "@radix-ui/react-tooltip"],
+        manualChunks(id) {
+          if (id.includes("node_modules/react")) return "vendor-react";
+          if (id.includes("node_modules/zod")) return "vendor-validation";
+          if (id.includes("node_modules/crypto-js")) return "vendor-crypto";
+          if (id.includes("node_modules/idb")) return "vendor-storage";
+          if (id.includes("node_modules/@radix-ui")) return "vendor-ui";
         },
       },
     },
-    // Supprimer console.*, debugger et commentaires
+    // Supprimer console.*, debugger et commentaires.
     esbuildOptions: {
       drop: mode === "production" ? ["console", "debugger"] : [],
       legalComments: "none",
@@ -60,6 +61,6 @@ export default defineConfig(({ mode }) => ({
   // Optimize dependencies
   optimizeDeps: {
     include: ["react", "react-dom", "idb", "zod"],
-    exclude: ["./src/services/audioService.js"], // Lazy load audio service
+    exclude: ["./src/services/audioService.js"],
   },
 }));

@@ -1,10 +1,10 @@
 export function buildCspPolicy(mode = "production") {
   const isDev = mode !== "production";
   
-  // Script sources - unsafe-eval needed for React and dynamic imports
+  // Dev tooling needs eval for source maps/HMR. Production does not.
   const scriptSrc = isDev 
     ? "'self' 'unsafe-inline' 'unsafe-eval'" 
-    : "'self' 'unsafe-eval' 'unsafe-inline'";
+    : "'self'";
   
   // Connect sources - API endpoints and CDNs
   const connectSrc = isDev
@@ -15,9 +15,10 @@ export function buildCspPolicy(mode = "production") {
     "default-src 'self'",
     "base-uri 'self'",
     "object-src 'none'",
+    "frame-ancestors 'none'",
     "form-action 'self'",
     `script-src ${scriptSrc}`,
-    "script-src-elem 'self' 'unsafe-inline'",
+    `script-src-elem ${scriptSrc}`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
     "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
     "style-src-attr 'unsafe-inline'",

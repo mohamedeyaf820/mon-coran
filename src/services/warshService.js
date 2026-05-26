@@ -43,7 +43,6 @@ async function fetchWithTimeout(url, options = {}, timeout = 15000) {
 // Clear old cache format on load
 (async function clearOldCache() {
   try {
-    const { dbDelete } = await import('./dbService');
     // Clear old v4 cache keys
     for (let i = 1; i <= 114; i++) {
       dbDelete(IDB_STORE, `${LEGACY_CACHE_KEY}${i}`).catch(() => {});
@@ -548,7 +547,6 @@ export async function clearWarshCache() {
   
   // Clear IndexedDB cache
   try {
-    const { dbDelete } = await import('./dbService');
     const promises = [];
     
     // Clear all surah caches

@@ -10,6 +10,7 @@ import React, {
 import { getSettings, saveSettings } from "../services/storageService";
 import { ensureReciterForRiwaya } from "../data/reciters";
 import audioService from "../services/audioService";
+import { fetchPrayerTimes } from "../services/prayerTimesService";
 import { getPreferredReciterId } from "../utils/reciterRanking";
 import {
   normalizeDayTheme,
@@ -17,10 +18,6 @@ import {
   normalizeThemeId,
 } from "../data/themes";
 import { parseInitialRoute } from "../hooks/useUrlSync";
-
-/* ── Lazy-loaded Services ──────────────────────────── */
-// Chargement paresseux des services lourds (optionnel)
-const prayerTimesPromise = import("../services/prayerTimesService").then(m => m.fetchPrayerTimes);
 
 /* ── Initial State ──────────────────────────── */
 // Lazy initialization pour éviter les calculs au démarrage
@@ -31,7 +28,9 @@ const getInitialState = () => {
     stored.reciter || "ar.alafasy",
     initialRiwaya,
   );
-  const initialLang = stored.lang === "ar" || !stored.lang ? "fr" : stored.lang;
+  const initialLang = ["fr", "en", "ar"].includes(stored.lang)
+    ? stored.lang
+    : "fr";
   const routeOverrides = parseInitialRoute();
 
   return {
@@ -488,25 +487,23 @@ export function AppProvider({ children }) {
   ]);
 
   // Prayer-time based auto-night: compute Fajr/Isha from geolocation
-  // NOTE: Lazy loaded to avoid blocking startup
+  // Delay the geolocation request so startup stays responsive.
   useEffect(() => {
     if (!state.autoNightMode || !state.usePrayerTimes) return;
     
     let cancelled = false;
     
-    // Délai pour ne pas bloquer le démarrage
+    // Delai pour ne pas bloquer le demarrage
     const timer = setTimeout(() => {
-      prayerTimesPromise.then(fetchPrayerTimes => {
-        if (cancelled) return;
-        fetchPrayerTimes((times) => {
-          if (cancelled || !times) return;
-          dispatch({
-            type: "SET",
-            payload: { nightEnd: times.fajr, nightStart: times.isha },
-          });
+      if (cancelled) return;
+      fetchPrayerTimes((times) => {
+        if (cancelled || !times) return;
+        dispatch({
+          type: "SET",
+          payload: { nightEnd: times.fajr, nightStart: times.isha },
         });
       });
-    }, 2000); // Attendre 2 secondes après le chargement initial
+    }, 2000); // Attendre 2 secondes apres le chargement initial
     
     return () => {
       cancelled = true;

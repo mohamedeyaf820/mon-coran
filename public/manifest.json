@@ -1,7 +1,7 @@
 {
   "name": "MushafPlus - Le Saint Coran",
   "short_name": "MushafPlus",
-  "description": "Une expÃ©rience de lecture du Coran premium, fluide et authentique.",
+  "description": "Une expérience de lecture du Coran premium, fluide et authentique.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FEFAF3",

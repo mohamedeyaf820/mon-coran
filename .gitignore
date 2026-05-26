@@ -8,6 +8,11 @@ dist/
 test-results/
 playwright-report/
 
+# Local dev artifacts
+vite-dev*.log
+vite.config.js.timestamp-*.mjs
+debug.log
+
 # Backend cache
 server/.cache/
 

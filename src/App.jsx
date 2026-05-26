@@ -20,6 +20,7 @@ import { Toast } from "./components/ModernUIComponents";
 import { buildAudioPlaylistForSurah } from "./utils/audioPlaylist";
 import { getSurah } from "./data/surahs";
 import { ensureFontLoaded } from "./services/fontLoader";
+import audioService from "./services/audioService";
 import { runWhenIdle } from "./utils/idleUtils";
 import { useUrlSync } from "./hooks/useUrlSync";
 import ProgressBar from "./components/ProgressBar";
@@ -52,15 +53,8 @@ const KeyboardShortcutsModal = lazy(
 );
 const TafsirSidebar = lazy(() => import("./components/TafsirSidebar"));
 
-let audioServiceLoader = null;
-
 async function getAudioServiceInstance() {
-  if (!audioServiceLoader) {
-    audioServiceLoader = import("./services/audioService").then(
-      (mod) => mod.default,
-    );
-  }
-  return audioServiceLoader;
+  return audioService;
 }
 
 function detectLowPerformanceDevice() {
