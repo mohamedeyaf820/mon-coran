@@ -202,7 +202,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       setBookmarked(false);
       emitToast(
         "info",
-        toastText("Favori retire", "تمت إزالة الحفظ", "Bookmark removed"),
+        t("toast.bookmarkRemoved", lang),
       );
       return;
     }
@@ -211,7 +211,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     setBookmarked(true);
     emitToast(
       "success",
-      toastText("Verset ajoute aux favoris", "تمت إضافة الآية للمفضلة", "Verse bookmarked"),
+      t("toast.bookmarkAdded", lang),
     );
   };
 
@@ -231,16 +231,8 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     emitToast(
       nextLevel > 0 ? "success" : "info",
       nextLevel > 0
-        ? toastText(
-            `Niveau de mémorisation ${nextLevel}/5`,
-            `مستوى الحفظ ${nextLevel}/5`,
-            `Memorization level ${nextLevel}/5`,
-          )
-        : toastText(
-            "Progression de mémorisation remise à zéro",
-            "تمت إعادة مستوى الحفظ",
-            "Memorization progress reset",
-          ),
+        ? t("toast.memorizationLevel", lang).replace("{level}", nextLevel)
+        : t("toast.memorizationReset", lang),
     );
   };
 
@@ -255,7 +247,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     closePanels();
     emitToast(
       "success",
-      toastText("Note enregistree", "تم حفظ الملاحظة", "Note saved"),
+      t("toast.noteSaved", lang),
     );
   };
 
@@ -276,11 +268,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       window.setTimeout(() => setAudioError(false), 2500);
       emitToast(
         "error",
-        toastText(
-          "Recitateur incompatible avec le mode Warsh strict",
-          "القارئ غير متوافق مع وضع ورش الصارم",
-          "Reciter is incompatible with strict Warsh mode",
-        ),
+        t("toast.reciterIncompatible", lang),
       );
       return;
     }
@@ -301,11 +289,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
         window.setTimeout(() => setAudioError(false), 2500);
         emitToast(
           "error",
-          toastText(
-            "Lecture impossible pour cette ayah",
-            "تعذر تشغيل هذه الآية",
-            "Unable to play this ayah",
-          ),
+          t("toast.unableToPlay", lang),
         );
       });
       return;
@@ -325,11 +309,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     if (isSurahOnlyReciter(rec)) {
       emitToast(
         "info",
-        toastText(
-          "Ce recitateur Warsh diffuse la sourate complete.",
-          "هذا القارئ في ورش يقرأ السورة كاملة.",
-          "This Warsh reciter plays the full surah.",
-        ),
+        t("toast.warshFullSurah", lang),
       );
     }
 
@@ -338,11 +318,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       window.setTimeout(() => setAudioError(false), 2500);
       emitToast(
         "error",
-        toastText(
-          "Lecture impossible pour cette ayah",
-          "تعذر تشغيل هذه الآية",
-          "Unable to play this ayah",
-        ),
+        t("toast.unableToPlay", lang),
       );
     });
   };
@@ -355,11 +331,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     playAyah();
     emitToast(
       "success",
-      toastText(
-        `Repetition du verset activee x${repeatCount}`,
-        `تكرار الآية ×${repeatCount}`,
-        `Verse repeat enabled x${repeatCount}`,
-      ),
+      t("toast.repeatEnabled", lang).replace("{count}", repeatCount),
     );
   };
 
@@ -367,11 +339,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     set({ showTranslation: true, showWordByWord: false });
     emitToast(
       "info",
-      toastText(
-        "Traduction affichee sous les versets",
-        "تم إظهار الترجمة",
-        "Translation shown below verses",
-      ),
+      t("toast.translationShown", lang),
     );
   };
 
@@ -391,7 +359,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
   const copyText = async () => {
     await copyVerseText(
       ayahData?.text,
-      toastText("Texte copie", "تم نسخ النص", "Text copied"),
+      t("toast.textCopied", lang),
     );
   };
 
@@ -451,7 +419,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
   const shareCopyText = async () => {
     await copyVerseText(
       getShareText(),
-      toastText("Texte de partage copie", "تم نسخ نص المشاركة", "Share text copied"),
+      t("toast.shareTextCopied", lang),
     );
     closePanels();
   };
@@ -599,7 +567,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     });
     emitToast(
       "info",
-      toastText("Mode etude active", "تم تفعيل وضع الدراسة", "Study mode enabled"),
+      t("toast.studyModeEnabled", lang),
     );
   };
 
@@ -613,7 +581,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       });
       emitToast(
         "info",
-        toastText("Verset retire de la comparaison", "Pin removed", "Verse removed from compare"),
+        t("toast.pinRemoved", lang),
       );
       return;
     }
@@ -621,11 +589,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     if (pinnedAyahs.length >= 4) {
       emitToast(
         "info",
-        toastText(
-          "Gardez 4 versets maximum dans la comparaison",
-          "Compare up to 4 verses",
-          "Compare up to 4 verses",
-        ),
+        t("toast.pinLimit", lang),
       );
       return;
     }
@@ -647,7 +611,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     });
     emitToast(
       "success",
-      toastText("Verset epingle pour comparaison", "Pinned for compare", "Verse pinned for compare"),
+      t("toast.pinAdded", lang),
     );
   };
 
@@ -1201,7 +1165,27 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           </button>
         </div>
       ) : layout === "qcom-footer" ? (
-        <div className="qcom-verse-card-footer flex flex-wrap gap-2 text-xs select-none">
+        <div className="qcom-verse-card-footer flex flex-wrap items-center gap-2 text-xs select-none">
+          {/* Play/Pause */}
+          <button
+            type="button"
+            className={cn(
+              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              isPlayingThisAyah && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
+            )}
+            onClick={() => {
+              if (isCurrentAyah) {
+                audioService.toggle();
+              } else {
+                playAyah();
+              }
+            }}
+            title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
+          >
+            <i className={`fas ${audioError ? "fa-triangle-exclamation" : isPlayingThisAyah ? "fa-pause" : "fa-play"} text-[0.72rem]`} />
+            <span>{isPlayingThisAyah ? (lang === "fr" ? "Pause" : "Pause") : (lang === "fr" ? "Écouter" : "Play")}</span>
+          </button>
+
           {/* Tafsir */}
           <button
             type="button"
@@ -1215,17 +1199,48 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             <span>Tafsir</span>
           </button>
 
-          {/* Playlists */}
+          {/* Bookmark */}
           <button
             type="button"
             className={cn(
               "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
-              showPlaylistMenu && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
+              bookmarked && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
             )}
-            onClick={openPlaylistMenu}
+            onClick={toggleBookmark}
           >
-            <i className="fas fa-list text-[0.72rem]" />
-            <span>Playlists</span>
+            <i className={`${bookmarked ? "fas" : "far"} fa-bookmark text-[0.72rem]`} />
+            <span>{bookmarked ? (lang === "fr" ? "Favori" : "Bookmarked") : (lang === "fr" ? "Favori" : "Bookmark")}</span>
+          </button>
+
+          {/* Copy */}
+          <button
+            type="button"
+            className={cn(
+              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              copied && "text-green-500 bg-green-500/10 font-semibold"
+            )}
+            onClick={copyText}
+          >
+            <i className={`fas ${copied ? "fa-check" : "fa-copy"} text-[0.72rem]`} />
+            <span>{copied ? (lang === "fr" ? "Copié" : "Copied") : (lang === "fr" ? "Copier" : "Copy")}</span>
+          </button>
+
+          {/* Share */}
+          <button
+            type="button"
+            className={cn(
+              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              showShare && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
+            )}
+            onClick={() => {
+              setShowStudy(false);
+              setShowPlaylistMenu(false);
+              setShowNote(false);
+              setShowShare((value) => !value);
+            }}
+          >
+            <i className="fas fa-share-nodes text-[0.72rem]" />
+            <span>{lang === "fr" ? "Partager" : "Share"}</span>
           </button>
 
           {/* Note */}
@@ -1244,6 +1259,19 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           >
             <i className="fas fa-pen-to-square text-[0.72rem]" />
             <span>{noteText.trim() ? (lang === "fr" ? "Voir la note" : "View note") : "Note"}</span>
+          </button>
+
+          {/* Playlists */}
+          <button
+            type="button"
+            className={cn(
+              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              showPlaylistMenu && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
+            )}
+            onClick={openPlaylistMenu}
+          >
+            <i className="fas fa-list text-[0.72rem]" />
+            <span>Playlists</span>
           </button>
 
           {/* Compare */}
@@ -1777,35 +1805,36 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           </p>
 
           <div className="ayah-actions__sheet-grid">
-            <button className="share-btn share-btn--whatsapp" onClick={shareWhatsApp}>
+            <button type="button" className="share-btn share-btn--whatsapp" onClick={shareWhatsApp}>
               <i className="fab fa-whatsapp" />
               <span className="share-btn__label">WhatsApp</span>
             </button>
-            <button className="share-btn share-btn--telegram" onClick={shareTelegram}>
+            <button type="button" className="share-btn share-btn--telegram" onClick={shareTelegram}>
               <i className="fab fa-telegram-plane" />
               <span className="share-btn__label">Telegram</span>
             </button>
-            <button className="share-btn share-btn--x" onClick={shareTwitter}>
+            <button type="button" className="share-btn share-btn--x" onClick={shareTwitter}>
               <i className="fab fa-x-twitter" />
               <span className="share-btn__label">X / Twitter</span>
             </button>
-            <button className="share-btn share-btn--email" onClick={shareEmail}>
+            <button type="button" className="share-btn share-btn--email" onClick={shareEmail}>
               <i className="fas fa-envelope" />
               <span className="share-btn__label">Email</span>
             </button>
-            <button className="share-btn share-btn--copy" onClick={shareCopyText}>
+            <button type="button" className="share-btn share-btn--copy" onClick={shareCopyText}>
               <i className="fas fa-copy" />
               <span className="share-btn__label">
                 {lang === "fr" ? "Texte de partage" : lang === "ar" ? "نسخ النص" : "Copy share text"}
               </span>
             </button>
-            <button className="share-btn share-btn--image" onClick={shareAsImage}>
+            <button type="button" className="share-btn share-btn--image" onClick={shareAsImage}>
               <i className="fas fa-image" />
               <span className="share-btn__label">
                 {lang === "fr" ? "Image sobre" : lang === "ar" ? "صورة" : "Simple image"}
               </span>
             </button>
             <button
+              type="button"
               className="share-btn share-btn--card"
               onClick={() => {
                 dispatch({ type: "SET", payload: { shareImageOpen: true } });
@@ -1822,7 +1851,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               </span>
             </button>
             {navigator.share && (
-              <button className="share-btn share-btn--native" onClick={shareNative}>
+              <button type="button" className="share-btn share-btn--native" onClick={shareNative}>
                 <i className="fas fa-share-nodes" />
                 <span className="share-btn__label">
                   {lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Native share"}
@@ -1874,6 +1903,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               {playlists.map((playlist) => (
                 <button
                   key={playlist.id}
+                  type="button"
                   className="ayah-actions__playlist-btn"
                   onClick={async () => {
                     await addAyahToPlaylist(
@@ -1886,11 +1916,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                     closePanels();
                     emitToast(
                       "success",
-                      toastText(
-                        "Ayah ajoutee a la playlist",
-                        "تمت إضافة الآية إلى القائمة",
-                        "Ayah added to playlist",
-                      ),
+                      t("toast.ayahAddedToPlaylist", lang),
                     );
                     window.setTimeout(() => setPlaylistAdded(false), 1800);
                   }}

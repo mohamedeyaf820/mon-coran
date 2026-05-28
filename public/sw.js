@@ -4,7 +4,7 @@
 //   • /assets/       → Cache-First  (hachés à la compilation)
 //   • images locales → Stale-While-Revalidate
 //   • HTML           → Network-First  (évite les pages blanches avec SW obsolète)
-//   • api.alquran.cloud → Stale-While-Revalidate  (texte coranique offline)
+//   • api.alquran.cloud & api.quran.com → Stale-While-Revalidate  (texte coranique offline)
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
@@ -149,8 +149,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // ── 4. API Coran (alquran.cloud) – Stale-While-Revalidate ──────────────────
-  if (url.hostname === "api.alquran.cloud") {
+  // ── 4. API Coran (alquran.cloud & quran.com) – Stale-While-Revalidate ──────
+  if (url.hostname === "api.alquran.cloud" || url.hostname === "api.quran.com") {
     event.respondWith(staleWhileRevalidate(event.request, API_CACHE_NAME));
     return;
   }
@@ -217,7 +217,7 @@ async function cacheQuranUrls(urls) {
         .filter((u) => {
           try {
             const parsed = new URL(u);
-            return parsed.hostname === "api.alquran.cloud";
+            return parsed.hostname === "api.alquran.cloud" || parsed.hostname === "api.quran.com";
           } catch {
             return false;
           }

@@ -96,7 +96,7 @@ function ReciterTrack({ reciter, surah, ayah, lang }) {
   const iconClass = state === 'playing' ? 'fa-pause' : state === 'loading' ? 'fa-spinner fa-spin' : 'fa-play';
 
   return (
-    <div className={`rc-track ${state} rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur-sm`}>
+    <div className={`rc-track ${state} rounded-2xl border border-[var(--border)] bg-white/[0.03] p-3 backdrop-blur-sm`}>
       <audio ref={audioRef} preload="none" />
       <div className="rc-track__name" dir="rtl">{reciter.name}</div>
       <div className="rc-track__name-en">{reciter.nameEn}</div>
@@ -150,10 +150,10 @@ export default function ReciterComparatorPanel() {
   return (
     <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
       <div
-        className="modal modal-panel--wide rc-panel !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+        className="modal modal-panel--wide rc-panel !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={e => e.stopPropagation()}
       >
-        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
+        <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
           <div className="modal-title-stack">
             <div className="modal-kicker">
               {lang === 'fr' ? 'Écoute comparative' : 'Comparative Listening'}
@@ -167,7 +167,7 @@ export default function ReciterComparatorPanel() {
                 : 'Listen to the same verse by multiple reciters side by side.'}
             </div>
           </div>
-          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={lang === 'fr' ? 'Fermer' : 'Close'}>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={lang === 'fr' ? 'Fermer' : 'Close'}>
             <i className="fas fa-times"></i>
           </button>
         </div>

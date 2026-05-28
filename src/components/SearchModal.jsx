@@ -1,4 +1,4 @@
-import React, { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { startTransition, useCallback, useEffect, useRef, useState } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { search, searchTranslation } from "../services/quranAPI";
@@ -235,9 +235,7 @@ export default function SearchModal() {
   };
 
   const isTranslationMode = searchMode === "fr" || searchMode === "en";
-  const filteredResults = useMemo(() => {
-    return results;
-  }, [results]);
+  const filteredResults = results;
 
   const searchModeOptions = [
     { id: "arabic", icon: "fa-font", label: searchModeLabels.arabic },

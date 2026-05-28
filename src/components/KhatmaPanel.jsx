@@ -47,15 +47,15 @@ export default function KhatmaPanel() {
   return (
     <div className="modal-overlay !p-3 sm:!p-5" onClick={close} role="dialog" aria-modal="true">
       <div
-        className="modal-panel khatma-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+        className="modal-panel khatma-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={e => e.stopPropagation()}
       >
-        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
+        <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
           <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
             <i className="fas fa-book-open-reader" />
             {L('Objectif Khatma', 'هدف الختمة', 'Khatma Goal')}
           </div>
-          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={L('Fermer', 'اغلاق', 'Close')}><i className="fas fa-xmark" /></button>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={L('Fermer', 'اغلاق', 'Close')}><i className="fas fa-xmark" /></button>
         </div>
 
         {tab === 'setup' ? (
@@ -69,7 +69,7 @@ export default function KhatmaPanel() {
             <div className="khatma-presets !grid !grid-cols-2 !gap-2 sm:!grid-cols-3">
               {KHATMA_PRESETS.map(p => (
                 <button key={p.days}
-                  className={`khatma-preset !rounded-xl !border !px-3 !py-2 !text-left !transition-all hover:!border-sky-200/40 hover:!bg-white/[0.08] ${selectedDays === p.days ? 'active !border-sky-200/40 !bg-sky-500/20 !text-white' : '!border-white/12 !bg-white/[0.04]'}`}
+                  className={`khatma-preset !rounded-xl !border !px-3 !py-2 !text-left !transition-all hover:!border-sky-200/40 hover:!bg-white/[0.08] ${selectedDays === p.days ? 'active !border-sky-200/40 !bg-sky-500/20 !text-white' : '!border-[var(--border)] !bg-white/[0.04]'}`}
                   onClick={() => { setSelectedDays(p.days); setCustomDays(''); }}
                 >
                   <span className="khatma-preset__label">{L(p.labelFr, p.labelAr, p.labelEn)}</span>
@@ -80,7 +80,7 @@ export default function KhatmaPanel() {
               ))}
             </div>
 
-            <div className="khatma-custom !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-3">
+            <div className="khatma-custom !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-3">
               <label>{L('Ou personnaliser (jours) :', 'أو خصص (أيام) :', 'Or customize (days):')}</label>
               <input className="!mt-1.5 !min-h-11 !w-full !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3"
                 type="number" min="1" max="3650" value={customDays}
@@ -128,7 +128,7 @@ export default function KhatmaPanel() {
                 { label: L('Quota/jour', 'ح/يوم', 'Daily quota'), val: stats.dailyQuota },
                 { label: L('Jours restants', 'أيام متبقية', 'Days left'), val: stats.remainingDays },
               ].map(({ label, val }) => (
-                <div key={label} className="khatma-stat-card !rounded-xl !border !border-white/12 !bg-white/[0.04] !p-2.5">
+                <div key={label} className="khatma-stat-card !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] !p-2.5">
                   <div className="khatma-stat-val">{val}</div>
                   <div className="khatma-stat-label">{label}</div>
                 </div>

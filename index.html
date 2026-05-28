@@ -13,30 +13,35 @@
             content="__CSP_POLICY__"
         />
         <title>MushafPlus - Le Saint Coran</title>
-        <!-- Preconnect to all external origins for faster loading -->
-        <link rel="preconnect" href="https://cdn.islamic.network" crossorigin />
-        <link rel="preconnect" href="https://everyayah.com" crossorigin />
-        <link rel="preconnect" href="https://api.alquran.cloud" crossorigin />
-        <link rel="preconnect" href="https://api.quran.com" crossorigin />
-        <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin />
-        <link rel="preconnect" href="https://audio.qurancdn.com" crossorigin />
-        <link rel="preconnect" href="https://static.qurancdn.com" crossorigin />
-        <link
-            rel="preconnect"
-            href="https://cdnjs.cloudflare.com"
-            crossorigin
-        />
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-        <!-- Note: fonts.quranwbw.com is not resolving, using alternatives -->
+        <meta name="description" content="MushafPlus — Lisez, écoutez et mémorisez le Saint Coran. Riwaya Hafs et Warsh, traductions en français, anglais et arabe, Tajwid, mode page Mushaf." />
+        <!-- Open Graph -->
+        <meta property="og:title" content="MushafPlus — Le Saint Coran" />
+        <meta property="og:description" content="Application Coran complète : lecture, écoute, mémorisation, Tajwid, Riwaya Hafs &amp; Warsh, traductions multilingues." />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="/logo.png" />
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="MushafPlus — Le Saint Coran" />
+        <meta name="twitter:description" content="Lisez et mémorisez le Coran avec Tajwid, traductions et audio. Hafs &amp; Warsh." />
+        <!-- Preconnect : domaines critiques au premier chargement uniquement -->
         <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="preconnect" href="https://cdn.islamic.network" crossorigin />
+        <link rel="preconnect" href="https://audio.qurancdn.com" crossorigin />
+        <link rel="preconnect" href="https://api.alquran.cloud" crossorigin />
+        <link rel="preconnect" href="https://api.quran.com" crossorigin />
+        <!-- DNS prefetch : domaines secondaires (chargés à la demande) -->
+        <link rel="dns-prefetch" href="https://verses.quran.foundation" />
+        <link rel="dns-prefetch" href="https://everyayah.com" />
+        <link rel="dns-prefetch" href="https://raw.githubusercontent.com" />
+        <link rel="dns-prefetch" href="https://static.qurancdn.com" />
+        <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+        <!-- Google Fonts : polices UI critiques -->
         <link
             href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap"
             rel="stylesheet"
         />
-        <!-- DNS prefetch for AlQuran API -->
-        <link rel="dns-prefetch" href="https://api.alquran.cloud" />
-        <link rel="dns-prefetch" href="https://raw.githubusercontent.com" />
 
         <link rel="preload" as="image" href="/logo.png" fetchpriority="high" />
         <!-- Preload critical Quran fonts for faster first render -->

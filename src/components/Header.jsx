@@ -170,10 +170,12 @@ export default function Header() {
   const openSearch = () => dispatch({ type: "TOGGLE_SEARCH" });
   const openSettings = () => dispatch({ type: "TOGGLE_SETTINGS" });
 
+  const openToolsHub = () => set({ toolsHubOpen: true });
+
   const quickItems = [
-    { key: "duas", icon: "fa-hands-praying", label: tr({ fr: "Douas", en: "Duas", ar: "الأدعية" }), action: openDuas },
-    { key: "settings", icon: "fa-sliders", label: i18nT("nav.settings", lang), action: openSettings },
-    { key: "theme", icon: "fa-palette", label: tr({ fr: "Thème", en: "Theme", ar: "الثيم" }), action: cycleTheme },
+    { key: "duas", icon: "fa-hands-praying", label: tr({ fr: "Douas / Invocations", en: "Duas / Supplications", ar: "الأدعية والأذكار" }), action: openDuas },
+    { key: "theme", icon: "fa-palette", label: tr({ fr: "Changer de Thème", en: "Switch Theme", ar: "تغيير المظهر" }), action: cycleTheme },
+    { key: "tools", icon: "fa-shapes", label: tr({ fr: "Espace Outils", en: "Tools Hub", ar: "مركز الأدوات" }), action: openToolsHub },
   ];
 
   return (
@@ -186,11 +188,16 @@ export default function Header() {
             onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
             aria-label={tr({ fr: "Menu", en: "Menu", ar: "القائمة" })}
             aria-expanded={state.sidebarOpen}
+            aria-controls="sidebar"
           >
             <i className={state.sidebarOpen ? "fas fa-times" : "fas fa-bars"} />
           </button>
 
-          <button className="mp-header__brand" type="button" onClick={goHome}>
+          <button
+            className={cn("mp-header__brand", !showHome && "hidden md:flex")}
+            type="button"
+            onClick={goHome}
+          >
             <span className="mp-header__logo">
               <PlatformLogo
                 className="h-full w-full"
@@ -201,7 +208,7 @@ export default function Header() {
                 height={38}
               />
             </span>
-            <span className="mp-header__brand-text">
+            <span className="mp-header__brand-text hidden lg:inline">
               Mushaf<span style={{ color: dotColor }}>.</span>plus
             </span>
           </button>
@@ -281,40 +288,57 @@ export default function Header() {
         </div>
 
         <div className="mp-header__actions">
-          <div className="mp-header__riwaya" role="group" aria-label="Riwaya">
+          {/* Recherche */}
+          <button
+            className="mp-header__action mp-header__search hdr-v7__search-btn"
+            type="button"
+            onClick={openSearch}
+            aria-label={i18nT("nav.search", lang)}
+          >
+            <i className="fas fa-magnifying-glass" />
+            <span>{i18nT("nav.search", lang)}</span>
+          </button>
+
+          {/* Sélecteur de Riwaya (Desktop) */}
+          <div className="hidden md:flex items-center gap-0.5 rounded-xl bg-[var(--bg-secondary)] p-1 border border-[var(--border)] shrink-0 mr-2">
             {["hafs", "warsh"].map((id) => (
               <button
                 key={id}
-                className={cn("mp-header__seg", riwaya === id && "is-active")}
+                className={cn(
+                  "px-3 py-1 text-[0.7rem] font-bold rounded-lg transition-all cursor-pointer",
+                  riwaya === id
+                    ? "bg-[var(--bg-card)] text-[var(--primary)] shadow-sm font-extrabold"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                )}
                 type="button"
                 onClick={() => set({ riwaya: id })}
-                aria-pressed={riwaya === id}
               >
                 {id.toUpperCase()}
               </button>
             ))}
           </div>
 
+          {/* Sélecteur de Riwaya (Mobile) */}
           <button
-            className={cn("mp-header__action mp-header__action--duas", showDuas && "is-active")}
+            className="md:hidden flex font-bold text-xs min-w-[54px] h-9 rounded-xl hover:bg-[var(--bg-secondary)] items-center justify-center border border-[var(--border)] text-[var(--text-primary)] mr-2 cursor-pointer"
             type="button"
-            onClick={openDuas}
-            aria-label={tr({ fr: "Douas", en: "Duas", ar: "الأدعية" })}
+            onClick={() => set({ riwaya: riwaya === "hafs" ? "warsh" : "hafs" })}
           >
-            <i className="fas fa-hands-praying" />
-            <span>{tr({ fr: "Douas", en: "Duas", ar: "الأدعية" })}</span>
-          </button>
-          <button className="mp-header__action" type="button" onClick={cycleTheme} aria-label={tr({ fr: "Thème", en: "Theme", ar: "الثيم" })}>
-            <i className="fas fa-palette" />
-          </button>
-          <button className={cn("mp-header__action", state.settingsOpen && "is-active")} type="button" onClick={openSettings} aria-label={i18nT("nav.settings", lang)}>
-            <i className="fas fa-sliders" />
-          </button>
-          <button className="mp-header__action mp-header__search hdr-v7__search-btn" type="button" onClick={openSearch} aria-label={i18nT("nav.search", lang)}>
-            <i className="fas fa-magnifying-glass" />
-            <span>{i18nT("nav.search", lang)}</span>
+            {riwaya.toUpperCase()}
           </button>
 
+          {/* Paramètres */}
+          <button
+            className={cn("mp-header__action", state.settingsOpen && "is-active")}
+            type="button"
+            onClick={openSettings}
+            aria-label={i18nT("nav.settings", lang)}
+            title={i18nT("nav.settings", lang)}
+          >
+            <i className="fas fa-sliders" />
+          </button>
+
+          {/* Quick Menu */}
           <Popover open={quickMenuOpen} onOpenChange={setQuickMenuOpen}>
             <PopoverTrigger asChild>
               <button className="mp-header__more" type="button" aria-label="Plus">

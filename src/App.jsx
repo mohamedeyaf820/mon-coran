@@ -9,8 +9,8 @@ import React, {
 } from "react";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { useApp } from "./context/AppContext";
+import { t } from "./i18n";
 import SplashScreen from "./components/SplashScreen";
-import HomePage from "./components/HomePage";
 import {
   getReciter,
   ensureReciterForRiwaya,
@@ -25,6 +25,7 @@ import { runWhenIdle } from "./utils/idleUtils";
 import { useUrlSync } from "./hooks/useUrlSync";
 import ProgressBar from "./components/ProgressBar";
 
+const HomePage = lazy(() => import("./components/HomePage"));
 const Header = lazy(() => import("./components/Header"));
 const QuranDisplay = lazy(() => import("./components/QuranDisplay"));
 const NotesPanel = lazy(() => import("./components/NotesPanel"));
@@ -52,6 +53,7 @@ const KeyboardShortcutsModal = lazy(
   () => import("./components/KeyboardShortcutsModal"),
 );
 const TafsirSidebar = lazy(() => import("./components/TafsirSidebar"));
+const ToolsHubModal = lazy(() => import("./components/ToolsHubModal"));
 
 async function getAudioServiceInstance() {
   return audioService;
@@ -83,6 +85,13 @@ function detectLowPerformanceDevice() {
     reducedMotion || lowMemory || lowCpu || slowNetwork || constrainedMobile,
   );
 }
+
+const SUSPENSE_FALLBACK = (
+  <div className="flex items-center justify-center min-h-[60vh]" role="status">
+    <div className="w-10 h-10 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+    <span className="sr-only">Chargement en cours...</span>
+  </div>
+);
 
 export default function App() {
   const { state, dispatch, set } = useApp();
@@ -183,13 +192,6 @@ export default function App() {
     state.isPlaying,
     state.currentPlayingAyah,
   ]);
-
-  const suspenseFallback = (
-    <div
-      className="min-h-10 animate-pulse rounded-2xl border border-[color-mix(in_srgb,var(--theme-border)_35%,transparent_65%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_84%,transparent_16%)]"
-      aria-hidden="true"
-    />
-  );
 
   const lowPerfMode = useMemo(() => detectLowPerformanceDevice(), []);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -414,11 +416,67 @@ export default function App() {
             });
           }
           break;
+        case "/":
+          if (state.showDuas) return;
+          event.preventDefault();
+          dispatch({ type: "TOGGLE_SEARCH" });
+          break;
         case "k":
         case "K":
           if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
             dispatch({ type: "TOGGLE_SEARCH" });
+          }
+          break;
+        case ",":
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            dispatch({ type: "TOGGLE_SETTINGS" });
+          }
+          break;
+        case "b":
+        case "B":
+          if (event.ctrlKey || event.metaKey) {
+            event.preventDefault();
+            dispatch({ type: "TOGGLE_BOOKMARKS" });
+          }
+          break;
+        case "m":
+        case "M":
+          if (event.altKey) {
+            event.preventDefault();
+            set({
+              showHome: false,
+              showDuas: false,
+              memMode: !state.memMode,
+            });
+          }
+          break;
+        case "h":
+        case "H":
+          if (state.showDuas || !state.showHome) {
+            event.preventDefault();
+            set({ showHome: true, showDuas: false });
+          }
+          break;
+        case "ArrowUp":
+          if (event.altKey && !state.showDuas) {
+            event.preventDefault();
+            if (displayMode === "page" && (lang === "ar" ? currentPage > 1 : currentPage < 604)) {
+              set({ currentPage: lang === "ar" ? currentPage - 1 : currentPage + 1 });
+            } else if (displayMode === "juz" && (lang === "ar" ? currentJuz > 1 : currentJuz < 30)) {
+              dispatch({ type: "NAVIGATE_JUZ", payload: { juz: lang === "ar" ? currentJuz - 1 : currentJuz + 1 } });
+            }
+          }
+          break;
+        case "ArrowDown":
+          if (event.altKey && !state.showDuas) {
+            event.preventDefault();
+            if (displayMode === "page" && (lang === "ar" ? currentPage < 604 : currentPage > 1)) {
+              set({ currentPage: lang === "ar" ? currentPage + 1 : currentPage - 1 });
+            } else if (displayMode === "juz" && (lang === "ar" ? currentJuz < 30 : currentJuz > 1)) {
+              dispatch({ type: "NAVIGATE_JUZ", payload: { juz: lang === "ar" ? currentJuz + 1 : currentJuz - 1 } });
+            }
           }
           break;
         case "Escape":
@@ -473,6 +531,8 @@ export default function App() {
       state.shareImageOpen,
       state.weeklyStatsOpen,
       state.showDuas,
+      state.showHome,
+      state.memMode,
       showShortcuts,
       setShowShortcuts,
       dispatch,
@@ -516,25 +576,21 @@ export default function App() {
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[10000] focus:rounded-xl focus:bg-[var(--theme-panel-bg-strong,var(--bg-card))] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--text-primary)] focus:shadow-[0_10px_24px_rgba(2,8,23,0.18)]"
         >
-          {lang === "fr"
-            ? "Aller au contenu principal"
-            : lang === "ar"
-              ? "الانتقال إلى المحتوى الرئيسي"
-              : "Skip to main content"}
+          {t("app.skipToContent", lang)}
         </a>
 
-        <Suspense fallback={suspenseFallback}>
+        <Suspense fallback={SUSPENSE_FALLBACK}>
           <Header />
         </Suspense>
 
         <div className="app-layout-shell relative flex min-h-0 flex-1">
-          <Suspense fallback={suspenseFallback}>
+          <Suspense fallback={SUSPENSE_FALLBACK}>
             {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
           </Suspense>
 
           {sidebarOpen && (
             <div
-              className="sidebar-clickout-overlay fixed inset-0 z-190"
+              className="sidebar-clickout-overlay fixed inset-0 z-[999]"
               onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
               aria-hidden="true"
             />
@@ -573,19 +629,19 @@ export default function App() {
             >
               {showHome ? (
                 <ErrorBoundary>
-                  <Suspense fallback={suspenseFallback}>
+                  <Suspense fallback={SUSPENSE_FALLBACK}>
                     <HomePage lowPerfMode={lowPerfMode} />
                   </Suspense>
                 </ErrorBoundary>
               ) : showDuas ? (
                 <ErrorBoundary>
-                  <Suspense fallback={suspenseFallback}>
+                  <Suspense fallback={SUSPENSE_FALLBACK}>
                     <DuasPage />
                   </Suspense>
                 </ErrorBoundary>
               ) : (
                 <ErrorBoundary>
-                  <Suspense fallback={suspenseFallback}>
+                  <Suspense fallback={SUSPENSE_FALLBACK}>
                     <QuranDisplay
                       key={
                         displayMode === "juz"
@@ -602,7 +658,7 @@ export default function App() {
           </main>
 
           {!focusReading && deferNonCriticalUI && (
-            <Suspense fallback={suspenseFallback}>
+            <Suspense fallback={SUSPENSE_FALLBACK}>
               <NotesPanel />
             </Suspense>
           )}
@@ -623,7 +679,7 @@ export default function App() {
           </div>
         )}
 
-        <Suspense fallback={suspenseFallback}>
+        <Suspense fallback={SUSPENSE_FALLBACK}>
           <AudioPlayer />
         </Suspense>
 
@@ -633,20 +689,8 @@ export default function App() {
             type="button"
             className="fixed bottom-6 right-6 z-[250] hidden md:flex w-9 h-9 items-center justify-center rounded-full bg-[var(--bg-card)] border border-[var(--border)] shadow-md text-[var(--text-muted)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-all duration-200 text-sm font-bold font-mono"
             onClick={() => setShowShortcuts(true)}
-            title={
-              lang === "fr"
-                ? "Raccourcis clavier (?)"
-                : lang === "ar"
-                  ? "اختصارات لوحة المفاتيح (?)"
-                  : "Keyboard shortcuts (?)"
-            }
-            aria-label={
-              lang === "fr"
-                ? "Raccourcis clavier"
-                : lang === "ar"
-                  ? "اختصارات لوحة المفاتيح"
-                  : "Keyboard shortcuts"
-            }
+            title={t("app.keyboardShortcutsHint", lang)}
+            aria-label={t("app.keyboardShortcuts", lang)}
           >
             ?
           </button>
@@ -662,9 +706,10 @@ export default function App() {
           </Suspense>
         )}
 
-        <Suspense fallback={suspenseFallback}>
+        <Suspense fallback={SUSPENSE_FALLBACK}>
           {state.searchOpen && <SearchModal />}
           {state.settingsOpen && <SettingsModal />}
+          {state.toolsHubOpen && <ToolsHubModal />}
           {state.bookmarksOpen && <BookmarksModal />}
           {state.wirdOpen && <WirdPanel />}
           {state.historyOpen && <ReadingHistoryPanel />}

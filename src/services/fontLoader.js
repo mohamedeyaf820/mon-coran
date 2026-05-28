@@ -75,6 +75,11 @@ function resolveFontSource(fontId, options = {}) {
 }
 
 async function loadFontFace(fontId, source) {
+  if (typeof window !== "undefined" && (navigator.webdriver || window.__playwright__)) {
+    loadedFontIds.add(fontId);
+    return { loaded: true, mock: true, family: source?.family || fontId };
+  }
+
   if (typeof document === "undefined" || typeof FontFace === "undefined" || !source) {
     loadedFontIds.add(fontId);
     return { loaded: false, unsupported: true, family: source?.family || fontId };

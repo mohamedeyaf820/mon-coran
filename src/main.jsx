@@ -7,9 +7,31 @@ import { AppProvider } from "./context/AppContext";
 import "./styles/tailwind.css";
 import "./styles/responsive.css";
 
+/**
+ * FontAwesome is loaded lazily (~3 MB CSS when fetched) and used by 200+ legacy
+ * icon instances across the app.
+ *
+ * Migration plan:
+ *   - Use <Icon name="..." /> from src/components/ui/icon.jsx for all new icons.
+ *   - Replace <i className="fas fa-*"/> with <Icon name="*"/> as components are
+ *     refactored.
+ *   - Once no files reference fa-* classes, remove @fortawesome/fontawesome-free
+ *     dependency and delete this block.
+ *
+ * To disable FontAwesome globally during migration, set:
+ *   window.__DISABLE_FONTAWESOME__ = true;
+ * before this script runs.
+ */
+
 let fontAwesomeStylesPromise = null;
 
 function loadFontAwesomeStyles() {
+  if (
+    typeof window !== "undefined" &&
+    window.__DISABLE_FONTAWESOME__
+  ) {
+    return null;
+  }
   if (!fontAwesomeStylesPromise) {
     fontAwesomeStylesPromise =
       import("@fortawesome/fontawesome-free/css/all.min.css").catch(() => null);

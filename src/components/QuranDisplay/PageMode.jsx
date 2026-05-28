@@ -52,9 +52,10 @@ export default function PageMode({
     ayahs[0]?.juz ||
     getJuzForAyah(ayahs[0]?.surah?.number, ayahs[0]?.numberInSurah);
   const pageLabel = lang === "ar" ? toAr(currentPage) : currentPage;
-  const contextLabel = `Page ${pageLabel} / 604 \u00b7 ${t("sidebar.juz", lang)} ${
+  const pageWord = lang === "fr" ? "Page" : lang === "ar" ? "صفحة" : "Page";
+  const contextLabel = `${pageWord} ${pageLabel} / 604 · ${t("sidebar.juz", lang)} ${
     currentJuz || ""
-  } \u00b7 ${riwaya.toUpperCase()}`;
+  } · ${riwaya.toUpperCase()}`;
   // Disable exact 15-line QCF coordinate rendering in favor of clean normal Arabic text (Unicode)
   const canUseFifteenLinePage = false;
 
@@ -70,7 +71,7 @@ export default function PageMode({
       <ReadingToolbar
         contextLabel={contextLabel}
         onPlay={onPlaySurah}
-        playLabel={lang === "fr" ? "Ecouter la page" : "Listen page"}
+        playLabel={lang === "fr" ? "Écouter la page" : "Listen page"}
         preparingSurah={preparingSurah}
         surahNum={pageTopSurah || currentSurah}
         currentAyah={activeAyah || 1}

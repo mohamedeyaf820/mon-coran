@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useRef, useMemo } from "react";
+import React, { useCallback, useState, useEffect, useRef, useMemo, memo } from "react";
 import { arabicToLatin } from "../../data/transliteration";
 import { cn } from "../../lib/utils";
 import MemorizationText from "../Quran/MemorizationText";
@@ -25,20 +25,24 @@ function PageSeparator({ page }) {
 }
 
 function SurahEndMarker({ lang }) {
-  const label = lang === "fr" ? "Fin de la sourate" : "End of surah";
+  const label = lang === "fr" ? "Fin de la sourate" : lang === "ar" ? "نهاية السورة" : "End of Surah";
 
   return (
-    <div className="flex flex-col items-center gap-3 py-8 text-center select-none" aria-hidden="true">
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.25)] to-transparent" />
-      <span className="font-[var(--font-ui)] text-[0.7rem] font-bold uppercase tracking-widest text-[var(--text-muted)]">
-        {label}
-      </span>
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.25)] to-transparent" />
+    <div className="flex flex-col items-center gap-4 py-10 text-center select-none" aria-hidden="true">
+      <div className="h-px w-3/4 bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.3)] to-transparent" />
+      <div className="flex items-center gap-3">
+        <div className="text-lg text-[rgba(var(--primary-rgb),0.35)]">&#x2739;</div>
+        <span className="font-[var(--font-ui)] text-[0.65rem] font-bold uppercase tracking-[0.3em] text-[var(--text-muted)]">
+          {label}
+        </span>
+        <div className="text-lg text-[rgba(var(--primary-rgb),0.35)]">&#x2739;</div>
+      </div>
+      <div className="h-px w-3/4 bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.3)] to-transparent" />
     </div>
   );
 }
 
-function QCVerseCard({
+const QCVerseCard = memo(function QCVerseCard({
   ayah,
   surahNum,
   lang,
@@ -62,15 +66,17 @@ function QCVerseCard({
     if (typeof onToggleActive === "function") onToggleActive(toggleId);
   }, [onToggleActive, toggleId]);
 
-  const transliterationText =
+  const transliterationText = useMemo(() =>
     showTransliteration && !showWordByWord
       ? arabicToLatin(
           riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text,
           riwaya,
         )
-      : "";
+      : "",
+    [showTransliteration, showWordByWord, ayah.text, ayah.hafsText, riwaya]
+  );
 
-  const arabicContent = (() => {
+  const arabicContent = useMemo(() => {
     if (memMode) return <MemorizationText text={ayah.hafsText || ayah.text} lang={lang} />;
     if (showWordByWord) {
       return (
@@ -100,7 +106,7 @@ function QCVerseCard({
         riwaya={riwaya}
       />
     );
-  })();
+  }, [memMode, showWordByWord, ayah, surahNum, isPlaying, showTajwid, showTransliteration, showWordTranslation, fontSize, calibration, riwaya, lang]);
 
   const translations = Array.isArray(translation) ? translation : [];
 
@@ -111,42 +117,39 @@ function QCVerseCard({
       data-ayah-number={ayah.numberInSurah}
       data-ayah-global={ayah.number}
       className={cn(
-        "qc-verse-card group relative transition-all duration-200 outline-none flex flex-col gap-4 py-6 px-1 sm:px-2 border-b border-[var(--border)]",
-        isPlaying && "bg-[rgba(var(--primary-rgb),0.02)]",
+        "qc-verse-card group relative transition-colors duration-200 outline-none",
+        "px-4 sm:px-6 py-5 sm:py-6",
+        "border-b border-[var(--border)]",
+        isPlaying && "is-playing",
+        isActive && "is-active",
+        isPlaying
+          ? "bg-[rgba(var(--primary-rgb),0.05)] border-l-[3px] border-l-[var(--primary)]"
+          : isActive
+          ? "bg-[rgba(var(--primary-rgb),0.03)]"
+          : "hover:bg-[var(--bg-secondary)]",
       )}
     >
-      {isPlaying ? <div className="absolute bottom-6 left-0 top-6 w-[3px] rounded-full bg-[var(--primary)]" /> : null}
+      {/* Card Header: verse number + actions */}
+      <div className="flex items-center justify-between mb-4 select-none">
+        <button
+          type="button"
+          onClick={handleClick}
+          aria-label={`${lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Verse"} ${ayah.numberInSurah}`}
+          aria-expanded={isActive}
+          className={cn(
+            "flex items-center justify-center w-8 h-8 rounded-full text-[0.75rem] font-bold transition-all duration-200 shrink-0",
+            isPlaying
+              ? "bg-[var(--primary)] text-white shadow-[0_2px_8px_rgba(var(--primary-rgb),0.4)]"
+              : isActive
+              ? "bg-[rgba(var(--primary-rgb),0.12)] text-[var(--primary)]"
+              : "bg-[var(--bg-secondary)] text-[var(--text-muted)] border border-[var(--border)] hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] hover:border-[rgba(var(--primary-rgb),0.2)]",
+          )}
+        >
+          {ayah.numberInSurah}
+        </button>
 
-      {/* Quran.com Card Header */}
-      <div className="flex items-center justify-between w-full pb-2 select-none border-b border-[rgba(var(--primary-rgb),0.03)]">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={handleClick}
-            aria-label={`${lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`}
-            aria-expanded={isActive}
-            className={cn(
-              "px-3 py-1 rounded-full font-[var(--font-ui)] text-[0.72rem] font-bold transition-all text-center shrink-0 whitespace-nowrap",
-              isPlaying
-                ? "bg-[var(--primary)] text-white shadow-sm"
-                : "bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] hover:bg-[rgba(var(--primary-rgb),0.14)]",
-            )}
-          >
-            <span>{surahNum}:{ayah.numberInSurah}</span>
-          </button>
-
-          <div className="opacity-75 hover:opacity-100 focus-within:opacity-100 transition-opacity">
-            <QCVerseActions
-              surah={surahNum}
-              ayah={ayah.numberInSurah}
-              ayahData={ayah}
-              lang={lang}
-              layout="qcom-header-left"
-            />
-          </div>
-        </div>
-
-        <div className="opacity-75 hover:opacity-100 focus-within:opacity-100 transition-opacity">
+        {/* Actions: visible on hover/playing */}
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-150">
           <QCVerseActions
             surah={surahNum}
             ayah={ayah.numberInSurah}
@@ -157,13 +160,13 @@ function QCVerseCard({
         </div>
       </div>
 
-      {/* Quran.com Card Content */}
-      <div className="flex-1 min-w-0 flex flex-col gap-2.5">
+      {/* Arabic text */}
+      <div className="flex-1 min-w-0 flex flex-col gap-3">
         <div
           dir="rtl"
           lang="ar"
           className="qc-ayah-text-ar text-right font-[var(--qd-font-family,var(--font-quran,'Amiri Quran'))] text-[var(--text-quran,var(--text-primary))] [-webkit-font-smoothing:antialiased] [text-rendering:optimizeLegibility]"
-          style={{ fontSize: `${fontSize || 48}px`, lineHeight: "2.25" }}
+          style={{ fontSize: `${fontSize || 48}px`, lineHeight: "2.15" }}
           onClick={handleClick}
           role="button"
           tabIndex={0}
@@ -178,21 +181,24 @@ function QCVerseCard({
           {!showWordByWord ? <AyahMarker num={ayah.numberInSurah} isPlaying={isPlaying} /> : null}
         </div>
 
+        {/* Transliteration */}
         {transliterationText ? (
-          <div className="font-[var(--font-ui)] text-[0.82rem] italic leading-relaxed text-[var(--text-muted)] text-left" dir="ltr">
+          <div className="font-[var(--font-ui)] text-[0.8rem] italic leading-relaxed text-[var(--text-muted)] text-left border-l-2 border-[rgba(var(--primary-rgb),0.15)] pl-3" dir="ltr">
             {transliterationText}
           </div>
         ) : null}
 
+        {/* Translation block — clean, no card */}
         {showTranslation && translations.length > 0 ? (
-          <div className="mt-1 border-t border-[rgba(var(--primary-rgb),0.03)] pt-3">
+          <div className="mt-1">
             {translations.map((item, index) => (
               <p
                 key={item.id || item.resourceId || index}
                 className={cn(
-                  "text-left text-[0.95rem] leading-relaxed text-[var(--text-secondary)]",
-                  index > 0 && "mt-2 border-t border-[var(--border)] pt-2",
+                  "text-left leading-[1.85] text-[var(--text-secondary)]",
+                  index > 0 && "mt-2 pt-2 border-t border-[var(--border)]",
                 )}
+                style={{ fontSize: "var(--qd-translation-font-size, 0.95rem)" }}
                 dir="ltr"
               >
                 {item.text}
@@ -200,21 +206,22 @@ function QCVerseCard({
             ))}
           </div>
         ) : null}
-      </div>
 
-      {/* Quran.com Card Footer */}
-      <div className="mt-2 pt-2 select-none border-t border-[rgba(var(--primary-rgb),0.03)]">
-        <QCVerseActions
-          surah={surahNum}
-          ayah={ayah.numberInSurah}
-          ayahData={ayah}
-          lang={lang}
-          layout="qcom-footer"
-        />
+        {/* Footer actions row */}
+        <div className="mt-4 pt-3 border-t border-[rgba(var(--primary-rgb),0.06)] flex items-center justify-between transition-opacity duration-200 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 opacity-100">
+          <QCVerseActions
+            surah={surahNum}
+            ayah={ayah.numberInSurah}
+            ayahData={ayah}
+            lang={lang}
+            layout="qcom-footer"
+          />
+        </div>
       </div>
     </article>
   );
-}
+
+});
 
 export default function QCVerseByVerseView({
   ayahs,
@@ -237,11 +244,14 @@ export default function QCVerseByVerseView({
   showPageSeparators,
   surahMeta,
 }) {
-  const items = surahGroups
-    ? surahGroups.flatMap((group) =>
-        group.ayahs.map((ayah) => ({ ayah, surahNum: group.surah })),
-      )
-    : (ayahs || []).map((ayah) => ({ ayah, surahNum: ayah.surah?.number || 1 }));
+  const items = useMemo(() =>
+    surahGroups
+      ? surahGroups.flatMap((group) =>
+          group.ayahs.map((ayah) => ({ ayah, surahNum: group.surah })),
+        )
+      : (ayahs || []).map((ayah) => ({ ayah, surahNum: ayah.surah?.number || 1 })),
+    [surahGroups, ayahs]
+  );
 
   const [visibleCount, setVisibleCount] = useState(15);
   const sentinelRef = useRef(null);
@@ -301,7 +311,7 @@ export default function QCVerseByVerseView({
   const hasMore = visibleCount < items.length;
 
   return (
-    <div className="qc-verse-by-verse-view mx-auto w-full max-w-[860px] space-y-3 px-3 py-4 sm:px-4">
+    <div className="qc-verse-by-verse-view mx-auto w-full max-w-[800px] px-2 sm:px-4 py-4">
       {visibleItems.map(({ ayah, surahNum }, index) => {
         const toggleId = displayMode === "surah" ? ayah.numberInSurah : ayah.number;
         const isPlaying =

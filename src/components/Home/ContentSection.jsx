@@ -4,6 +4,7 @@ import { JUZ_DATA } from "../../data/juz";
 import { THEMATIC_STATIONS } from "../../services/StationService";
 import audioService from "../../services/audioService";
 import { SurahCard, JuzCard, EmptyState } from "./HomePrimitives";
+import { RECITER_PHOTOS_MAP } from "../../data/reciters";
 
 /**
  * ContentSection — onglets, barre de recherche/tri, grille de contenu,
@@ -333,84 +334,107 @@ export default function ContentSection({
                 const isFavorite = (state.favoriteReciters || []).includes(
                   reciter.id,
                 );
+                const photo = RECITER_PHOTOS_MAP[reciter.id];
+                const initials = reciterLabel ? reciterLabel.split(" ").map(w => w[0]).slice(0, 2).join("") : "Q";
 
                 return (
                   <div
                     key={reciter.id}
-                    className="group relative flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-border bg-bg-primary shadow-sm transition-all duration-200 hover:-translate-y-[2px] hover:border-primary/40 hover:bg-bg-secondary hover:shadow-md animate-fadeInScale"
+                    className="group relative flex flex-col p-4 rounded-2xl border border-[var(--border-light)] bg-[var(--bg-card)] shadow-sm hover:shadow-xl hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 animate-fadeInScale overflow-hidden"
                   >
-                    <span className="flex items-center justify-center h-9 w-9 rounded-full bg-bg-secondary text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
-                      <i className="fas fa-microphone-lines" />
-                    </span>
-                    <div className="flex flex-col flex-1 min-w-0">
-                      <span
-                        className="text-[0.95rem] sm:text-[1.05rem] font-bold text-text-primary text-left truncate"
-                        dir={lang === "ar" ? "rtl" : "ltr"}
-                      >
-                        {reciterLabel}
-                      </span>
-                      <span className="text-[0.7rem] sm:text-[0.75rem] text-text-secondary text-left truncate mt-0.5 uppercase tracking-wider">
-                        {reciter.style || "murattal"}
-                      </span>
+                    {/* Glowing background blur effect */}
+                    <div className="absolute -top-12 -right-12 w-24 h-24 rounded-full bg-[rgba(var(--primary-rgb),0.06)] blur-2xl group-hover:scale-150 transition-transform duration-500 pointer-events-none" />
+                    
+                    <div className="flex items-center gap-4 mb-3 relative z-10">
+                      {/* Avatar container with ambient glow */}
+                      <div className="relative shrink-0 w-14 h-14 rounded-2xl overflow-hidden shadow-md group-hover:shadow-lg transition-shadow duration-300">
+                        {photo ? (
+                          <img
+                            src={photo}
+                            alt={reciterLabel}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[rgba(var(--primary-rgb),0.15)] to-[rgba(var(--primary-rgb),0.05)] text-[var(--primary)] font-bold text-base uppercase tracking-wider">
+                            {initials}
+                          </div>
+                        )}
+                        {/* Hover Overlay Play button */}
+                        <div 
+                          className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer"
+                          onClick={() => playReciterRadio(reciter)}
+                          role="button"
+                          aria-label="Play"
+                        >
+                          <i className="fas fa-play text-white text-sm animate-pulse" />
+                        </div>
+                      </div>
+
+                      <div className="min-w-0 flex-1 flex flex-col text-left">
+                        <span
+                          className="text-[0.95rem] font-bold text-text-primary group-hover:text-primary transition-colors duration-200 truncate leading-snug"
+                          dir={lang === "ar" ? "rtl" : "ltr"}
+                        >
+                          {reciterLabel}
+                        </span>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[0.62rem] font-extrabold uppercase tracking-wider bg-[rgba(var(--primary-rgb),0.06)] text-[var(--primary)] border border-[rgba(var(--primary-rgb),0.12)]">
+                            {reciter.style || "murattal"}
+                          </span>
+                          {reciter.cdnType === "everyayah" ? (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[0.58rem] font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+                              Ayah mode
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[0.58rem] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                              Surah mode
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <div className="ml-auto flex items-center gap-1 sm:gap-2 shrink-0">
+
+                    {/* Divider */}
+                    <div className="h-px bg-gradient-to-r from-transparent via-[var(--border-light)] to-transparent my-1" />
+
+                    {/* Actions row */}
+                    <div className="flex items-center justify-between mt-2 relative z-10">
+                      {/* Left: Favorite Button */}
                       <button
                         className={cn(
-                          "flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full transition-all shrink-0",
+                          "flex items-center justify-center gap-1.5 h-8 px-3 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer active:scale-95",
                           isFavorite
-                            ? "bg-gold text-white hover:bg-gold-bright shadow-sm"
-                            : "bg-bg-secondary text-text-muted hover:bg-bg-tertiary hover:text-text-primary",
+                            ? "bg-gold/15 text-gold border border-gold/25 hover:bg-gold/20"
+                            : "bg-bg-secondary text-text-muted border border-border/40 hover:bg-bg-tertiary hover:text-text-primary",
                         )}
                         type="button"
                         onClick={() => onToggleFavoriteReciter(reciter.id)}
-                        aria-label={
-                          isFavorite
-                            ? lang === "fr"
-                              ? "Retirer des favoris"
-                              : lang === "ar"
-                                ? "ازالة من المفضلة"
-                                : "Remove from favorites"
-                            : lang === "fr"
-                              ? "Ajouter aux favoris"
-                              : lang === "ar"
-                                ? "اضافة الى المفضلة"
-                                : "Add to favorites"
-                        }
                       >
-                        <i
-                          className={`fas ${isFavorite ? "fa-star" : "fa-star-half-stroke"}`}
-                        />
+                        <i className={`fas ${isFavorite ? "fa-star" : "fa-star-half-stroke"}`} />
+                        <span>{isFavorite ? (lang === "fr" ? "Favori" : "Favorite") : (lang === "fr" ? "Ajouter" : "Add")}</span>
                       </button>
-                      <button
-                        className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary text-white hover:bg-primary-dark shadow-sm transition-all shrink-0"
-                        type="button"
-                        onClick={() => playReciterRadio(reciter)}
-                        aria-label={
-                          lang === "fr"
-                            ? "Ecouter la radio"
-                            : lang === "ar"
-                              ? "تشغيل البث"
-                              : "Play radio"
-                        }
-                      >
-                        <i className="fas fa-play" />
-                      </button>
-                      <button
-                        className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-bg-secondary text-text-muted transition-all hover:bg-bg-tertiary hover:text-text-primary shrink-0"
-                        type="button"
-                        onClick={() => setSelectedReciterId(reciter.id)}
-                        aria-label={
-                          lang === "fr"
-                            ? "Ouvrir le detail"
-                            : lang === "ar"
-                              ? "فتح التفاصيل"
-                              : "Open details"
-                        }
-                      >
-                        <i
-                          className={`fas fa-chevron-${lang === "ar" ? "left" : "right"}`}
-                        />
-                      </button>
+
+                      {/* Right actions: Radio + Details */}
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          className="flex items-center justify-center gap-1 h-8 px-3 rounded-full bg-primary text-white hover:bg-primary-dark hover:shadow-md transition-all shrink-0 cursor-pointer active:scale-95 font-bold text-xs"
+                          type="button"
+                          onClick={() => playReciterRadio(reciter)}
+                        >
+                          <i className="fas fa-play text-[0.66rem]" />
+                          <span>Radio</span>
+                        </button>
+                        <button
+                          className="flex items-center justify-center h-8 w-8 rounded-full bg-bg-secondary text-text-muted border border-border/40 hover:bg-bg-tertiary hover:text-text-primary transition-all shrink-0 cursor-pointer active:scale-95"
+                          type="button"
+                          onClick={() => setSelectedReciterId(reciter.id)}
+                          title={lang === "fr" ? "Détails" : "Details"}
+                          aria-label="Details"
+                        >
+                          <i className={`fas fa-chevron-${lang === "ar" ? "left" : "right"} text-xs`} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );

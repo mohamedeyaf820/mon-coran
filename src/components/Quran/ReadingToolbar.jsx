@@ -1,11 +1,13 @@
 import React from "react";
 import {
+  Brain,
   BookOpen,
   Languages,
   List,
   Loader2,
   Palette,
   Play,
+  Pause,
   Type,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
@@ -18,34 +20,8 @@ function labelFor(lang, fr, en, ar = en) {
   return lang === "fr" ? fr : en;
 }
 
-function ToolbarButton({
-  active = false,
-  primary = false,
-  className,
-  children,
-  ...props
-}) {
-  return (
-    <button
-      type="button"
-      className={cn(
-        "inline-flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full px-4",
-        "font-[var(--font-ui)] text-[0.82rem] font-semibold tracking-wide transition-all duration-300",
-        primary
-          ? "bg-[var(--primary)] text-white shadow-[0_4px_14px_rgba(var(--primary-rgb),0.35)] hover:shadow-[0_6px_20px_rgba(var(--primary-rgb),0.45)] hover:-translate-y-0.5 active:scale-[0.96] disabled:opacity-50 disabled:hover:translate-y-0"
-          : active
-            ? "bg-[rgba(var(--primary-rgb),0.12)] text-[var(--primary)] ring-1 ring-[color-mix(in_srgb,var(--primary)_40%,transparent_60%)] shadow-sm"
-            : "text-[var(--text-secondary)] hover:bg-[color-mix(in_srgb,var(--text-primary)_6%,transparent_94%)] hover:text-[var(--text-primary)] active:scale-[0.96]",
-        className,
-      )}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
-
 export default function ReadingToolbar({
+  contextLabel,
   onPlay,
   onPlaySurah,
   playLabel,
@@ -60,13 +36,15 @@ export default function ReadingToolbar({
 }) {
   const { state, set } = useApp();
   const {
+    currentSurah,
     lang,
+    memMode,
     mushafLayout,
     riwaya,
     showTajwid,
     showTranslation,
     showWordByWord,
-    currentSurah,
+    isPlaying,
   } = state;
 
   const playHandler = onPlay || onPlaySurah;
@@ -82,94 +60,181 @@ export default function ReadingToolbar({
       fontFamily: riwaya === "warsh" ? "qpc-warsh" : "qpc-hafs",
     }));
 
+  const toggleMemorization =
+    onToggleMemorization ||
+    (() =>
+      set({
+        memMode: !memMode,
+        mushafLayout: "list",
+        showWordByWord: false,
+      }));
+
+  // Determine if audio is playing for this specific surah/page
+  const isPlayingThisContext = isPlaying;
+
   return (
     <div
-      className="sticky top-[var(--header-h,68px)] z-50 mx-auto mb-7 flex w-full max-w-[920px] items-center gap-1.5 rounded-2xl border border-[color-mix(in_srgb,var(--border)_50%,transparent_50%)] bg-[color-mix(in_srgb,var(--bg-card)_70%,transparent_30%)] px-3 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.08)] backdrop-blur-md transition-all duration-300 hover:bg-[color-mix(in_srgb,var(--bg-card)_85%,transparent_15%)] overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex-nowrap"
+      className="qc-reader-toolbar sticky top-[var(--header-h,68px)] z-40 mx-auto mb-6 flex flex-col md:flex-row items-center justify-between gap-4 w-full max-w-[980px] rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.04)] backdrop-blur-md transition-all duration-300"
+      style={{
+        boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.08)",
+        color: "var(--text-primary)"
+      }}
       role="toolbar"
       aria-label={labelFor(lang, "Outils de lecture", "Reading tools")}
     >
-      {playHandler ? (
-        <ToolbarButton
-          primary
-          className="reader-toolbar-btn--primary"
-          onClick={playHandler}
-          disabled={isPreparing}
-          aria-label={playLabel || labelFor(lang, "Ecouter", "Listen")}
-          title={playLabel || labelFor(lang, "Ecouter", "Listen")}
-        >
-          {isPreparing ? (
-            <Loader2 size={15} className="animate-spin" />
-          ) : (
-            <Play size={15} fill="currentColor" />
-          )}
-          <span className="max-sm:hidden">
-            {isPreparing
-              ? labelFor(lang, "Chargement...", "Loading...")
-              : labelFor(lang, "Ecouter", "Listen")}
+      {/* 1. LEFT SECTION: Context label & Navigator */}
+      <div className="flex w-full md:w-auto items-center justify-between md:justify-start gap-3 flex-wrap">
+        {contextLabel && (
+          <span className="px-3 py-1.5 rounded-xl bg-[rgba(var(--primary-rgb),0.06)] text-[var(--primary)] text-[0.72rem] font-bold font-[var(--font-ui)] tracking-wide shrink-0">
+            {contextLabel}
           </span>
-        </ToolbarButton>
-      ) : null}
+        )}
+        <HizbRukuNavigator
+          currentSurah={currentSurah}
+          currentAyah={currentAyah || 1}
+          currentPage={currentPage}
+          onNavigate={onNavigateToAyah}
+          className="shrink-0"
+        />
+      </div>
 
-      <div className="h-5 w-px shrink-0 bg-[var(--border)] opacity-60" />
+      {/* 2. CENTER SECTION: View Switcher & Toggles */}
+      <div className="flex w-full md:w-auto items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none justify-start md:justify-center">
+        {/* Segmented control for Mushaf vs List */}
+        <div className="flex items-center gap-1 rounded-xl bg-[var(--bg-secondary)] p-1 border border-[var(--border)] shrink-0">
+          <button
+            type="button"
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer",
+              mushafIsOn
+                ? "bg-[var(--bg-card)] text-[var(--primary)] shadow-sm font-bold"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            )}
+            onClick={toggleMushaf}
+          >
+            <BookOpen size={13} />
+            <span>Mushaf</span>
+          </button>
+          <button
+            type="button"
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer",
+              !mushafIsOn
+                ? "bg-[var(--bg-card)] text-[var(--primary)] shadow-sm font-bold"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+            )}
+            onClick={toggleMushaf}
+          >
+            <List size={13} />
+            <span>{labelFor(lang, "Liste", "List")}</span>
+          </button>
+        </div>
 
-      <ToolbarButton
-        active={mushafIsOn}
-        onClick={toggleMushaf}
-        aria-pressed={mushafIsOn}
-        title={mushafIsOn ? labelFor(lang, "Vue liste", "List view") : "Mushaf"}
-      >
-        {mushafIsOn ? <List size={15} /> : <BookOpen size={15} />}
-        <span className="max-sm:hidden">
-          {mushafIsOn ? labelFor(lang, "Liste", "List") : "Mushaf"}
-        </span>
-      </ToolbarButton>
+        {/* Small separator */}
+        <div className="h-6 w-[1px] bg-[var(--border)] shrink-0 hidden sm:block mx-1" />
 
-      <ToolbarButton
-        active={showTranslation}
-        onClick={() => set({ showTranslation: !showTranslation })}
-        aria-pressed={showTranslation}
-        title={labelFor(lang, "Traduction", "Translation")}
-      >
-        <Languages size={15} />
-        <span className="max-sm:hidden">
-          {labelFor(lang, "Trad.", "Trans.")}
-        </span>
-      </ToolbarButton>
+        {/* Feature Toggles Cluster */}
+        <div className="flex items-center gap-1 shrink-0">
+          {/* Translation Toggle */}
+          <button
+            type="button"
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer",
+              showTranslation
+                ? "bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] border-[rgba(var(--primary-rgb),0.2)]"
+                : "bg-transparent text-[var(--text-secondary)] border-transparent hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+            )}
+            onClick={() => set({ showTranslation: !showTranslation })}
+            title={labelFor(lang, "Traduction", "Translation")}
+          >
+            <Languages size={13} />
+            <span>{labelFor(lang, "Traduction", "Translation")}</span>
+          </button>
 
-      <ToolbarButton
-        active={showWordByWord}
-        onClick={onToggleWordByWord || (() => set({ showWordByWord: !showWordByWord, memMode: false }))}
-        aria-pressed={showWordByWord}
-        title={labelFor(lang, "Mot a mot", "Word by word")}
-        aria-label={labelFor(lang, "Mot à mot", "Word by Word")}
-      >
-        <Type size={15} />
-        <span className="max-sm:hidden">
-          {labelFor(lang, "Mot/mot", "WbW")}
-        </span>
-      </ToolbarButton>
+          {/* Word By Word Toggle */}
+          <button
+            type="button"
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer",
+              showWordByWord
+                ? "bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] border-[rgba(var(--primary-rgb),0.2)]"
+                : "bg-transparent text-[var(--text-secondary)] border-transparent hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+            )}
+            onClick={onToggleWordByWord || (() => set({ showWordByWord: !showWordByWord, memMode: false }))}
+            title={labelFor(lang, "Mot à mot", "Word by word")}
+          >
+            <Type size={13} />
+            <span>{labelFor(lang, "Mot à mot", "WbW")}</span>
+          </button>
 
-      <ToolbarButton
-        active={showTajwid}
-        onClick={() => set({ showTajwid: !showTajwid })}
-        aria-pressed={showTajwid}
-        title="Tajweed"
-      >
-        <Palette size={15} />
-        <span className="max-sm:hidden">Tajweed</span>
-      </ToolbarButton>
+          {/* Tajweed Toggle */}
+          <button
+            type="button"
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer",
+              showTajwid
+                ? "bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] border-[rgba(var(--primary-rgb),0.2)]"
+                : "bg-transparent text-[var(--text-secondary)] border-transparent hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+            )}
+            onClick={() => set({ showTajwid: !showTajwid })}
+            title="Tajweed"
+          >
+            <Palette size={13} />
+            <span>Tajweed</span>
+          </button>
 
-      {/* Hizb/Ruku Navigation */}
-      <HizbRukuNavigator
-        currentSurah={currentSurah}
-        currentAyah={currentAyah || 1}
-        currentPage={currentPage}
-        onNavigate={onNavigateToAyah}
-        className="flex"
-      />
+          {/* Memorization Toggle */}
+          <button
+            type="button"
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer",
+              memMode
+                ? "bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] border-[rgba(var(--primary-rgb),0.2)]"
+                : "bg-transparent text-[var(--text-secondary)] border-transparent hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+            )}
+            onClick={toggleMemorization}
+            title={labelFor(lang, "Mémorisation", "Memorization")}
+          >
+            <Brain size={13} />
+            <span>{labelFor(lang, "Mémorisation", "Memo")}</span>
+          </button>
+        </div>
+      </div>
 
-      <div className="flex-grow shrink" />
-      <ArabicFontControls lang={lang} compact />
+      {/* 3. RIGHT SECTION: Font Adjustments & Primary Play Button */}
+      <div className="flex w-full md:w-auto items-center justify-between md:justify-end gap-3 border-t md:border-t-0 pt-2.5 md:pt-0 border-[var(--border)] flex-wrap">
+        <ArabicFontControls lang={lang} compact />
+        
+        {playHandler && (
+          <button
+            type="button"
+            onClick={playHandler}
+            disabled={isPreparing}
+            className={cn(
+              "flex items-center justify-center gap-1.5 px-4 h-9 rounded-xl text-xs font-bold text-white shadow-sm transition-all cursor-pointer disabled:opacity-50",
+              isPlayingThisContext
+                ? "bg-amber-600 hover:bg-amber-700"
+                : "bg-[var(--primary)] hover:bg-[var(--primary-dark,var(--primary))]"
+            )}
+            title={playLabel || labelFor(lang, "Écouter", "Listen")}
+          >
+            {isPreparing ? (
+              <Loader2 size={13} className="animate-spin" />
+            ) : isPlayingThisContext ? (
+              <Pause size={13} fill="currentColor" />
+            ) : (
+              <Play size={13} fill="currentColor" />
+            )}
+            <span>
+              {isPreparing
+                ? labelFor(lang, "Chargement", "Loading")
+                : isPlayingThisContext
+                ? labelFor(lang, "Pause", "Pause")
+                : labelFor(lang, "Écouter", "Listen")}
+            </span>
+          </button>
+        )}
+      </div>
     </div>
   );
 }

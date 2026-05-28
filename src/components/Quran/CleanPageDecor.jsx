@@ -8,15 +8,13 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
 
   return (
     <div className="cpv-surah-header-container flex items-center justify-center w-full my-8 select-none pointer-events-none">
-      {/* Decorative divider line with diamond motifs */}
       <div className="cpv-surah-header-divider flex items-center justify-center w-full gap-4 px-2">
         <div className="cpv-divider-line h-px flex-grow bg-gradient-to-r from-transparent via-[#c8a84b]/40 to-[#c8a84b]/70" />
         <div className="cpv-divider-diamond text-[#c8a84b] text-xs">❖</div>
-        
-        {/* Central Box */}
+
         <div className="cpv-surah-title-box border rounded-lg px-8 py-3 shadow-lg flex flex-col items-center justify-center min-w-[220px]">
           <span className="cpv-surah-name-ar text-lg font-bold leading-normal" dir="rtl">
-            <span className="cpv-surah-prefix">سُورَةُ</span>{" "}
+            <span className="cpv-surah-prefix">سورة</span>{" "}
             {surahNum ? (
               <span className="cpv-surah-name-ligature">
                 {String(surahNum).padStart(3, "0")}
@@ -29,7 +27,7 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
             {displayName}
           </span>
         </div>
-        
+
         <div className="cpv-divider-diamond text-[#c8a84b] text-xs">❖</div>
         <div className="cpv-divider-line h-px flex-grow bg-gradient-to-l from-transparent via-[#c8a84b]/40 to-[#c8a84b]/70" />
       </div>

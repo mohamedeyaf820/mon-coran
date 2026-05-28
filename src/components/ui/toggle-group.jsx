@@ -8,7 +8,7 @@ const ToggleGroupContext = React.createContext({
 })
 
 const toggleGroupVariants = {
-  base: "inline-flex items-center justify-center gap-1 rounded-lg bg-white/[0.06] border border-white/[0.08] p-1",
+  base: "inline-flex items-center justify-center gap-1 rounded-lg bg-white/[0.06] border border-[var(--border)] p-1",
   variants: {
     variant: {
       default: "",

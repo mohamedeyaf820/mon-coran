@@ -33,6 +33,7 @@ export default function AyahActionsModal({
             {surah}:{ayahData?.numberInSurah ?? activeAyah}
           </span>
           <button
+            type="button"
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)] transition-colors"
             aria-label="Fermer"

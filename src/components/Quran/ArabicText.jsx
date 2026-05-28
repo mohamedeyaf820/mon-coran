@@ -1,4 +1,5 @@
 import React from "react";
+import { sanitizeHtml } from "../../lib/security";
 
 function parseHtmlSafely(html, keyPrefix = "") {
   if (!html) return [];
@@ -64,7 +65,7 @@ export default function ArabicText({
         dir="rtl"
         lang="ar"
       >
-        {parseHtmlSafely(tajweedHtml, "arabic-text")}
+        {parseHtmlSafely(sanitizeHtml(tajweedHtml), "arabic-text")}
       </span>
     );
   }

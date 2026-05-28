@@ -8,9 +8,9 @@ const BASE_URL = 'https://api.quran.com/api/v4';
 // Tafsir resource mappings
 const TAFSIR_RESOURCES = {
   "ar-muyassar": { id: 16, name: "Tafsir Al-Muyassar", nameFr: "Tafsir Al-Muyassar", lang: "ar" },
-  "ar-jalalayn": { id: 16, name: "Tafsir Al-Muyassar", nameFr: "Tafsir Al-Muyassar", lang: "ar" },
-  "en-kathir": { id: 169, name: "Tafsir Ibn Kathir", nameFr: "Tafsir Ibn Kathir", lang: "en" },
-  "fr-kathir": { id: 169, name: "Tafsir Ibn Kathir", nameFr: "Tafsir Ibn Kathir", lang: "fr" },
+  "ar-wasit": { id: 93, name: "Tafsir Al-Wasit (Tantawi)", nameFr: "Tafsir Al-Wasit (Tantawi)", lang: "ar" },
+  "en-kathir": { id: 169, name: "Tafsir Ibn Kathir (English)", nameFr: "Tafsir Ibn Kathir (Anglais)", lang: "en" },
+  "fr-kathir": { id: 169, name: "Tafsir Ibn Kathir (English)", nameFr: "Tafsir Ibn Kathir (Trad. Anglais)", lang: "fr" },
   "ar-kathir": { id: 14, name: "Tafsir Ibn Kathir", nameFr: "Tafsir Ibn Kathir", lang: "ar" },
   "ar-tabari": { id: 15, name: "Tafsir Al-Tabari", nameFr: "Tafsir Al-Tabari", lang: "ar" },
   "ar-qurtubi": { id: 90, name: "Tafsir Al-Qurtubi", nameFr: "Tafsir Al-Qurtubi", lang: "ar" },

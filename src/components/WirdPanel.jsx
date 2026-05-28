@@ -318,10 +318,10 @@ export default function WirdPanel() {
   return (
     <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
       <div
-        className="modal modal-panel--wide modal-wird !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+        className="modal modal-panel--wide modal-wird !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
+        <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
           <div className="modal-title-stack">
             <div className="modal-kicker">
               {lang === "fr"
@@ -342,13 +342,13 @@ export default function WirdPanel() {
                   : "Daily wird tracking, history and goal settings."}
             </div>
           </div>
-          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={lang === "fr" ? "Fermer" : lang === "ar" ? "اغلاق" : "Close"}>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={lang === "fr" ? "Fermer" : lang === "ar" ? "اغلاق" : "Close"}>
             <i className="fas fa-times"></i>
           </button>
         </div>
 
         <div
-          className="modal-segmented !mx-3 !mt-3 !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-1 sm:!mx-4"
+          className="modal-segmented !mx-3 !mt-3 !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-1 sm:!mx-4"
           role="tablist"
           aria-label={t("wird.title", lang)}
         >
@@ -405,7 +405,7 @@ export default function WirdPanel() {
             </div>
           ) : tab === "today" ? (
             <div className="wird-today !space-y-3">
-              <div className="wird-progress-card !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-4">
+              <div className="wird-progress-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-4">
                 <div className="wird-progress-wrapper">
                   <svg viewBox="0 0 120 120" className="wird-progress-svg">
                     <circle
@@ -494,7 +494,7 @@ export default function WirdPanel() {
                     .slice(-5)
                     .reverse()
                     .map((e, i) => (
-                      <div key={i} className="wird-entry modal-item-card !rounded-xl !border !border-white/10 !bg-white/[0.03] !px-3 !py-2">
+                      <div key={i} className="wird-entry modal-item-card !rounded-xl !border !border-[var(--border)] !bg-white/[0.03] !px-3 !py-2">
                         <span className="wird-entry-surah">
                           {lang === "ar" ? "س." : "S."}
                           {e.surah} : {e.fromAyah}-{e.toAyah}
@@ -603,7 +603,7 @@ export default function WirdPanel() {
           ) : (
             /* Settings tab */
             <div className="wird-settings !space-y-3">
-              <div className="wird-setting-group settings-card !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-3">
+              <div className="wird-setting-group settings-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-3">
                 <label className="wird-setting-label">
                   {lang === "fr"
                     ? "Type d'objectif"
@@ -624,7 +624,7 @@ export default function WirdPanel() {
                 </div>
               </div>
 
-              <div className="wird-setting-group settings-card !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-3">
+              <div className="wird-setting-group settings-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-3">
                 <label className="wird-setting-label">
                   {lang === "fr"
                     ? "Quantité par jour"

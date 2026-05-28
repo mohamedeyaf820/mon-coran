@@ -1,6 +1,7 @@
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { t } from "../../i18n";
 
 export default function QCModeNavigator({
   lang,
@@ -18,16 +19,16 @@ export default function QCModeNavigator({
 
   const labels = {
     surah: {
-      prev: lang === "fr" ? "Sourate précédente" : lang === "ar" ? "السورة السابقة" : "Previous Surah",
-      next: lang === "fr" ? "Sourate suivante" : lang === "ar" ? "السورة التالية" : "Next Surah",
+      prev: t("quran.prevSurah", lang),
+      next: t("quran.nextSurah", lang),
     },
     page: {
-      prev: lang === "fr" ? "Page précédente" : lang === "ar" ? "الصفحة السابقة" : "Previous Page",
-      next: lang === "fr" ? "Page suivante" : lang === "ar" ? "الصفحة التالية" : "Next Page",
+      prev: t("quran.prevPage", lang),
+      next: t("quran.nextPage", lang),
     },
     juz: {
-      prev: lang === "fr" ? "Juz précédent" : lang === "ar" ? "الجزء السابق" : "Previous Juz",
-      next: lang === "fr" ? "Juz suivant" : lang === "ar" ? "الجزء التالي" : "Next Juz",
+      prev: t("quran.prevJuz", lang),
+      next: t("quran.nextJuz", lang),
     },
   };
 
@@ -38,7 +39,7 @@ export default function QCModeNavigator({
   return (
     <nav
       className="qc-mode-navigator flex items-center justify-between gap-4 px-4 py-5 border-t border-[var(--border)]"
-      aria-label={lang === "fr" ? "Navigation" : "Navigation"}
+      aria-label={t("nav.navigation", lang)}
     >
       <button
         type="button"

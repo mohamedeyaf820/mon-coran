@@ -684,7 +684,7 @@ export default function NotesPanel() {
             <aside
               className={cn(
                 "notes-panel-sheet",
-                "fixed z-200 flex flex-col left-0 right-0 w-full rounded-t-2xl border-t border-(--border) max-h-[78dvh] !border-t-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))]",
+                "fixed z-200 flex flex-col left-0 right-0 w-full rounded-t-2xl border-t border-(--border) max-h-[78dvh] !border-t-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl",
                 "notes-panel-sheet--open",
               )}
               role="complementary"
@@ -698,7 +698,7 @@ export default function NotesPanel() {
               ref={panelRef}
               className={cn(
                 "notes-panel-desk",
-                "fixed z-200 flex flex-col rounded-2xl overflow-hidden !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))]",
+                "fixed z-200 flex flex-col rounded-2xl overflow-hidden !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl",
                 "select-none",
                 "notes-panel-desk--open",
                 isDragging

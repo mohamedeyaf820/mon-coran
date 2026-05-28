@@ -11,6 +11,7 @@ export default function useQuranDisplayView({
   riwaya,
   syncKey,
   syncOffsetsMs,
+  mushafLayout,
 }) {
   const contentRef = useRef(null);
   const pinchRef = useRef({ startDist: null, startSize: null });
@@ -109,6 +110,7 @@ export default function useQuranDisplayView({
     quranFontCss,
     quranTranslationFontSize,
     readingFontSize,
+    mushafLayout,
   ]);
 
   const touchHandlers = {

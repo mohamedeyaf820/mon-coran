@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
 import { cn } from "../../lib/utils";
@@ -42,14 +42,17 @@ export default function JuzMode({
   showWordTranslation,
   surahGroups,
 }) {
-  const activeAyahEntry = surahGroups
-    .flatMap((group) =>
-      group.ayahs.map((ayah) => ({ ayah, surah: group.surah })),
-    )
-    .find(
-      ({ ayah }) =>
-        ayah.number === activeAyah || ayah.numberInSurah === activeAyah,
-    );
+  const activeAyahEntry = useMemo(() =>
+    surahGroups
+      .flatMap((group) =>
+        group.ayahs.map((ayah) => ({ ayah, surah: group.surah })),
+      )
+      .find(
+        ({ ayah }) =>
+          ayah.number === activeAyah || ayah.numberInSurah === activeAyah,
+      ),
+    [surahGroups, activeAyah]
+  );
   const activeAyahData = activeAyahEntry?.ayah;
   const firstSurah = surahGroups[0]?.surah;
 
@@ -82,9 +85,9 @@ export default function JuzMode({
       </div>
 
       <ReadingToolbar
-        contextLabel={`Juz ${lang === "ar" ? toAr(currentJuz) : currentJuz}`}
+        contextLabel={`${t("sidebar.juz", lang)} ${lang === "ar" ? toAr(currentJuz) : currentJuz} / 30`}
         onPlay={onPlayJuz || (() => firstSurah && onPlaySpecificSurah(firstSurah))}
-        playLabel={lang === "fr" ? "Ecouter le juz" : "Listen juz"}
+        playLabel={lang === "fr" ? "Écouter le juz" : "Listen juz"}
         preparingSurah={preparingSurah}
         surahNum={firstSurah}
         currentAyah={activeAyah || 1}

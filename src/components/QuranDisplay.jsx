@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { clearCache } from "../services/quranAPI";
@@ -95,13 +95,14 @@ export default function QuranDisplay() {
     riwaya,
     syncKey,
     syncOffsetsMs,
+    mushafLayout,
   });
   const karaokeCalibration = useMemo(() => {
     const reciterId = ensureReciterForRiwaya(reciter, riwaya);
     const base = getKaraokeCalibration(reciterId, riwaya);
     const offsetSec =
       (base.offsetSec ?? 0.15) +
-      view.userSyncOffsetMs / 1000 +
+      (view.userSyncOffsetMs ?? 0) / 1000 +
       (displayMode === "surah" ? 0 : -0.02);
     return { ...base, offsetSec: Math.max(-0.8, Math.min(0.95, offsetSec)) };
   }, [displayMode, reciter, riwaya, view.userSyncOffsetMs]);
@@ -180,15 +181,18 @@ export default function QuranDisplay() {
     },
     [ayahs, displayMode, dispatch]
   );
+  const riwayaRef = useRef(riwaya);
+  riwayaRef.current = riwaya;
+
   const toggleMushaf = useCallback(() => {
     set({
       mushafLayout: mushafLayout === "mushaf" ? "list" : "mushaf",
       showWordByWord: false,
       memMode: false,
       showTajwid: true,
-      fontFamily: riwaya === "warsh" ? "mushaf-warsh" : "mushaf-kfgqpc",
+      fontFamily: riwayaRef.current === "warsh" ? "mushaf-warsh" : "mushaf-kfgqpc",
     });
-  }, [mushafLayout, riwaya, set]);
+  }, [mushafLayout, set]);
   const toggleMemorization = useCallback(() => {
     set({ mushafLayout: "list", memMode: !memMode, showWordByWord: false });
   }, [memMode, set]);
@@ -216,28 +220,54 @@ export default function QuranDisplay() {
     }
   }, []);
 
-  if (loading && ayahs.length === 0)
+  const [fontLoading, setFontLoading] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const loadFont = async () => {
+      setFontLoading(true);
+      try {
+        const { ensureFontLoaded } = await import("../services/fontLoader");
+        const isQcfPageFont = fontFamily === "qcf-v1" || fontFamily === "qcf-v2" || fontFamily === "qcf-v4-tajweed";
+        if (isQcfPageFont && displayMode === "page") {
+          const { ensureQcfPageFontLoaded } = await import("../services/fontLoader");
+          await ensureQcfPageFontLoaded(currentPage, fontFamily === "qcf-v4-tajweed" ? "v4" : fontFamily === "qcf-v2" ? "v2" : "v1");
+        } else {
+          await ensureFontLoaded(fontFamily);
+        }
+      } catch (err) {
+        console.error("Font loading error:", err);
+      } finally {
+        if (active) {
+          setFontLoading(false);
+        }
+      }
+    };
+    loadFont();
+    return () => {
+      active = false;
+    };
+  }, [fontFamily, currentPage, displayMode]);
+
+  if (loading || fontLoading)
     return (
       <div className="flex justify-center items-center min-h-[50vh] p-8">
-        <div className="w-full max-w-3xl flex flex-col gap-6 animate-pulse p-8 rounded-3xl backdrop-blur-xl bg-bg-card/90 shadow-xl border border-white/10">
+        <div className="w-full max-w-3xl flex flex-col gap-6 p-8 rounded-3xl backdrop-blur-xl bg-bg-card/90 shadow-xl border border-white/10 relative overflow-hidden">
+          {/* Shimmer overlay */}
+          <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.06)] to-transparent pointer-events-none" aria-hidden="true" />
           <div className="flex justify-between items-center mb-4">
-            <div className="h-8 w-24 bg-primary/20 rounded-full"></div>
-            <div className="h-8 w-32 bg-primary/20 rounded-full"></div>
+            <div className="h-8 w-24 bg-primary/15 rounded-full animate-pulse"></div>
+            <div className="h-8 w-32 bg-primary/15 rounded-full animate-pulse" style={{ animationDelay: "150ms" }}></div>
           </div>
-          <div className="h-16 w-3/4 mx-auto bg-primary/10 rounded-2xl mb-6"></div>
-          <div className="h-10 w-1/2 mx-auto bg-primary/10 rounded-xl mb-8"></div>
-          <div className="h-4 w-full bg-primary/10 rounded-full"></div>
-          <div className="h-4 w-11/12 bg-primary/10 rounded-full"></div>
-          <div className="h-4 w-4/5 bg-primary/10 rounded-full"></div>
-          <div className="h-4 w-full bg-primary/10 rounded-full"></div>
-          <div className="h-4 w-2/3 bg-primary/10 rounded-full"></div>
-          <div className="h-4 w-11/12 bg-primary/10 rounded-full"></div>
-          <div className="h-4 w-5/6 bg-primary/10 rounded-full"></div>
-          <div className="h-4 w-full bg-primary/10 rounded-full"></div>
-          <div className="h-4 w-1/2 bg-primary/10 rounded-full"></div>
-          <div className="h-4 w-4/5 bg-primary/10 rounded-full"></div>
-          <div className="h-4 w-11/12 bg-primary/10 rounded-full"></div>
+          <div className="h-16 w-3/4 mx-auto bg-primary/8 rounded-2xl mb-6 animate-pulse" style={{ animationDelay: "300ms" }}></div>
+          <div className="h-10 w-1/2 mx-auto bg-primary/8 rounded-xl mb-8 animate-pulse" style={{ animationDelay: "450ms" }}></div>
+          <div className="space-y-3">
+            {[1, 0.92, 0.8, 1, 0.66, 0.92, 0.85, 1, 0.5, 0.8, 0.92].map((w, i) => (
+              <div key={i} className="h-4 bg-primary/8 rounded-full animate-pulse" style={{ width: `${w * 100}%`, animationDelay: `${i * 75}ms` }}></div>
+            ))}
+          </div>
         </div>
+        <style>{`@keyframes shimmer { to { transform: translateX(100%); } }`}</style>
       </div>
     );
   if (error)

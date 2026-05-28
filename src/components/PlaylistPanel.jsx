@@ -173,7 +173,7 @@ export default function PlaylistPanel() {
   return (
     <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
       <div
-        className="modal modal-panel--wide !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+        className="modal modal-panel--wide !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -182,7 +182,7 @@ export default function PlaylistPanel() {
         ref={panelRef}
         onKeyDown={handleModalKeyDown}
       >
-        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
+        <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
           <div className="modal-title-stack">
             <div className="modal-kicker">
               {lang === "fr"
@@ -204,7 +204,7 @@ export default function PlaylistPanel() {
             </div>
           </div>
           <button
-            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
+            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
             onClick={close}
             ref={closeButtonRef}
             aria-label={lang === "fr" ? "Fermer les playlists" : "Close playlists"}
@@ -220,7 +220,7 @@ export default function PlaylistPanel() {
             </div>
           ) : !selectedId ? (
             <div className="panel-scroll">
-              <div className="panel-toolbar panel-toolbar--compact !mb-2 !flex !items-center !gap-2 !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-2">
+              <div className="panel-toolbar panel-toolbar--compact !mb-2 !flex !items-center !gap-2 !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-2">
                 <input
                   type="text"
                   value={newName}
@@ -252,7 +252,7 @@ export default function PlaylistPanel() {
               ) : (
                 <div className="panel-stack-list !space-y-2">
                   {playlists.map((pl) => (
-                    <div key={pl.id} className="modal-item-card !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-2.5">
+                    <div key={pl.id} className="modal-item-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-2.5">
                       <button
                         className="modal-item-main !flex-1 !rounded-xl !px-2 !py-2 !text-left hover:!bg-white/[0.08]"
                         onClick={() => setSelectedId(pl.id)}
@@ -368,7 +368,7 @@ export default function PlaylistPanel() {
                     return (
                       <div
                         key={i}
-                        className={`modal-item-card !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-2.5${isActive ? " modal-item-card--playing" : ""}`}
+                        className={`modal-item-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-2.5${isActive ? " modal-item-card--playing" : ""}`}
                         style={
                           isActive
                             ? {

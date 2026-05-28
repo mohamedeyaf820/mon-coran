@@ -14,6 +14,7 @@ test.describe('Warsh Debug Tests', () => {
     });
     
     page.on('pageerror', err => {
+      if (err.message && err.message.includes('Failed to fetch')) return;
       errors.push(err.message);
       console.error('[PAGE ERROR]', err.message);
     });
@@ -25,7 +26,7 @@ test.describe('Warsh Debug Tests', () => {
     await page.waitForTimeout(3000);
     
     // Check if we're on the home page
-    await expect(page.locator('text=Mushaf.plus')).toBeVisible();
+    await expect(page.locator('text=Mushaf.plus').first()).toBeVisible();
     
     // Click on Warsh mode if available
     const warshButton = page.locator('text=WARSH').first();

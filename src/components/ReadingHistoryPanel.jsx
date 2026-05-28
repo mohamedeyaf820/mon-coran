@@ -149,7 +149,7 @@ export default function ReadingHistoryPanel() {
   return (
     <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
       <div
-        className="modal modal-panel--wide !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+        className="modal modal-panel--wide !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -158,7 +158,7 @@ export default function ReadingHistoryPanel() {
         ref={panelRef}
         onKeyDown={handleModalKeyDown}
       >
-        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
+        <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
           <div className="modal-title-stack">
             <div className="modal-kicker">{lang === 'fr' ? 'Parcours' : lang === 'ar' ? 'المسار' : 'Journey'}</div>
             <h2 className="modal-title" id={titleId}>
@@ -174,7 +174,7 @@ export default function ReadingHistoryPanel() {
             </div>
           </div>
           <button
-            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
+            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
             onClick={close}
             ref={closeButtonRef}
             aria-label={lang === 'fr' ? 'Fermer l\'historique' : 'Close reading history'}
@@ -184,21 +184,21 @@ export default function ReadingHistoryPanel() {
         </div>
 
         <div className="panel-grid-stats !grid !grid-cols-1 !gap-2 !p-3 sm:!grid-cols-3 sm:!p-4">
-          <div className="panel-stat-card !rounded-2xl !border !border-white/10 !bg-white/[0.04] !p-3">
+          <div className="panel-stat-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.04] !p-3">
             <span className="panel-stat-value">{streak}</span>
             <span className="panel-stat-label">{t('readingHistory.streak', lang)}</span>
           </div>
-          <div className="panel-stat-card !rounded-2xl !border !border-white/10 !bg-white/[0.04] !p-3">
+          <div className="panel-stat-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.04] !p-3">
             <span className="panel-stat-value">{totalAyahs}</span>
             <span className="panel-stat-label">{t('readingHistory.ayahsRead', lang)}</span>
           </div>
-          <div className="panel-stat-card !rounded-2xl !border !border-white/10 !bg-white/[0.04] !p-3">
+          <div className="panel-stat-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.04] !p-3">
             <span className="panel-stat-value">{formatDuration(totalDuration)}</span>
             <span className="panel-stat-label">{t('readingHistory.totalTime', lang)}</span>
           </div>
         </div>
 
-        <div className="modal-segmented !mx-3 !mb-2 !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-1 sm:!mx-4" role="tablist" aria-label={t('readingHistory.title', lang)}>
+        <div className="modal-segmented !mx-3 !mb-2 !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-1 sm:!mx-4" role="tablist" aria-label={t('readingHistory.title', lang)}>
           <button className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === 'calendar' ? '!bg-sky-500/25 !text-white' : ''}`} onClick={() => setTab('calendar')}>
             <i className="fas fa-calendar"></i> {t('readingHistory.calendar', lang)}
           </button>
@@ -215,11 +215,11 @@ export default function ReadingHistoryPanel() {
           ) : tab === 'calendar' ? (
             <div className="panel-calendar-shell">
               <div className="panel-calendar-nav !mb-2 !flex !items-center !justify-between">
-                <button className="panel-icon-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={goMonthPrev} title={lang === 'fr' ? 'Mois précédent' : 'Previous month'} aria-label={lang === 'fr' ? 'Mois précédent' : 'Previous month'}>
+                <button className="panel-icon-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]" onClick={goMonthPrev} title={lang === 'fr' ? 'Mois précédent' : 'Previous month'} aria-label={lang === 'fr' ? 'Mois précédent' : 'Previous month'}>
                   <i className="fas fa-chevron-left"></i>
                 </button>
                 <h4 className="panel-month-title">{MONTH_NAME}</h4>
-                <button className="panel-icon-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1] disabled:!opacity-40" onClick={goMonthNext} disabled={isCurrentMonth} title={lang === 'fr' ? 'Mois suivant' : 'Next month'} aria-label={lang === 'fr' ? 'Mois suivant' : 'Next month'}>
+                <button className="panel-icon-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1] disabled:!opacity-40" onClick={goMonthNext} disabled={isCurrentMonth} title={lang === 'fr' ? 'Mois suivant' : 'Next month'} aria-label={lang === 'fr' ? 'Mois suivant' : 'Next month'}>
                   <i className="fas fa-chevron-right"></i>
                 </button>
               </div>
@@ -253,7 +253,7 @@ export default function ReadingHistoryPanel() {
                   {sessions.slice(0, 50).map((s, i) => {
                     const surah = getSurah(s.surah);
                     return (
-                      <div key={i} className="modal-item-card !rounded-2xl !border !border-white/10 !bg-white/[0.03] !p-2.5">
+                      <div key={i} className="modal-item-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-2.5">
                         <div className="modal-item-main !rounded-xl !px-2 !py-2">
                           <div className="modal-item-meta">
                             {s.ayahFrom === s.ayahTo ? `v.${s.ayahFrom}` : `v.${s.ayahFrom}-${s.ayahTo}`}
@@ -265,7 +265,7 @@ export default function ReadingHistoryPanel() {
                           </div>
                         </div>
                         <div className="modal-item-side">
-                          <button className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.05] hover:!bg-white/[0.12]" type="button" onClick={() => goToSession(s.surah, s.ayahFrom)} aria-label={lang === 'fr' ? 'Ouvrir la session' : 'Open session'}>
+                          <button className="modal-action-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.05] hover:!bg-white/[0.12]" type="button" onClick={() => goToSession(s.surah, s.ayahFrom)} aria-label={lang === 'fr' ? 'Ouvrir la session' : 'Open session'}>
                             <i className="fas fa-arrow-up-right-from-square"></i>
                           </button>
                         </div>

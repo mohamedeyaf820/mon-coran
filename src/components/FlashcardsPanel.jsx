@@ -383,10 +383,10 @@ export default function FlashcardsPanel() {
         aria-modal="true"
       >
         <div
-          className="modal-panel fc-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+          className="modal-panel fc-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
+          <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
             <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
               <i className="fas fa-layer-group" />
               {lang === "fr"
@@ -396,7 +396,7 @@ export default function FlashcardsPanel() {
                   : "Vocabulary Cards"}
             </div>
             <button
-              className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
+              className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
               onClick={close}
               aria-label={lang === "fr" ? "Fermer" : "Close"}
             >
@@ -462,11 +462,11 @@ export default function FlashcardsPanel() {
       }
     >
       <div
-        className="modal-panel fc-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+        className="modal-panel fc-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
+        <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
           <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
             <i className="fas fa-layer-group" />
             {lang === "fr"
@@ -476,7 +476,7 @@ export default function FlashcardsPanel() {
                 : "Vocabulary Cards"}
           </div>
           <button
-            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
+            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
             onClick={close}
             aria-label={lang === "fr" ? "Fermer" : "Close"}
           >

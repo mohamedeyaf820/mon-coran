@@ -84,13 +84,16 @@ export default function Sidebar() {
   return (
     <>
       <aside
+        id="sidebar"
         className={cn(
           "sb-wrapper fixed top-0 left-0 z-[1000] flex h-[100dvh] w-[min(92vw,360px)] flex-col bg-bg-primary border-r border-border shadow-2xl transition-transform duration-300 rtl:left-auto rtl:right-0 rtl:border-r-0 rtl:border-l",
           sidebarOpen
             ? "open translate-x-0"
             : "-translate-x-full rtl:translate-x-full",
         )}
-        role="navigation"
+        aria-label={
+          lang === "fr" ? "Navigation Coran" : lang === "ar" ? "التنقل في القرآن" : "Quran Navigation"
+        }
         data-tab={tab}
         onClick={(e) => e.stopPropagation()}
       >
@@ -130,7 +133,9 @@ export default function Sidebar() {
               <button
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-bg-secondary text-text-muted transition-colors hover:bg-bg-tertiary hover:text-text-primary"
                 onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
-                aria-label="Fermer"
+                aria-label={
+                  lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
+                }
               >
                 <i className="fas fa-times" />
               </button>
@@ -227,11 +232,12 @@ export default function Sidebar() {
               const isActive = s.n === currentSurah && displayMode === "surah";
               const surahCalligraphyId = String(s.n).padStart(3, "0");
               return (
-                <div
+                <button
                   key={s.n}
                   ref={isActive ? activeItemRef : null}
+                  type="button"
                   className={cn(
-                    "group flex w-full cursor-pointer items-center gap-3 rounded-xl p-2.5 transition-all hover:bg-bg-secondary",
+                    "group flex w-full cursor-pointer items-center gap-3 rounded-xl p-2.5 transition-all hover:bg-bg-secondary text-left",
                     isActive && "bg-primary/10",
                   )}
                   onClick={() => goSurah(s.n)}
@@ -280,7 +286,7 @@ export default function Sidebar() {
                   >
                     {surahCalligraphyId}
                   </div>
-                </div>
+                </button>
               );
             })}
 
@@ -289,11 +295,12 @@ export default function Sidebar() {
               const isActive = j.juz === currentJuz && displayMode === "juz";
               const startSurah = SURAHS[j.start.s - 1];
               return (
-                <div
+                <button
                   key={j.juz}
                   ref={isActive ? activeItemRef : null}
+                  type="button"
                   className={cn(
-                    "group flex w-full cursor-pointer items-center gap-3 rounded-xl p-2.5 transition-all hover:bg-bg-secondary",
+                    "group flex w-full cursor-pointer items-center gap-3 rounded-xl p-2.5 transition-all hover:bg-bg-secondary text-left",
                     isActive && "bg-primary/10",
                   )}
                   onClick={() => goJuz(j.juz)}
@@ -325,7 +332,7 @@ export default function Sidebar() {
                   <div className="shrink-0 text-[0.75rem] font-bold text-text-muted">
                     {j.name}
                   </div>
-                </div>
+                </button>
               );
             })}
 
@@ -421,13 +428,15 @@ export default function Sidebar() {
         <div className="flex shrink-0 items-center justify-between border-t border-border bg-bg-primary px-5 py-3 text-[0.75rem] font-bold text-text-muted">
           <span>
             {tab === "surah"
-              ? `${filteredSurahs.length} Surahs`
+              ? `${filteredSurahs.length} ${lang === "ar" ? "سورة" : lang === "fr" ? "Sourates" : "Surahs"}`
               : tab === "juz"
-                ? "30 Juz"
-                : "604 Pages"}
+                ? `30 ${lang === "ar" ? "جزء" : "Juz"}`
+                : `604 ${lang === "ar" ? "صفحة" : lang === "fr" ? "Pages" : "Pages"}`}
           </span>
           <span className="rounded-full bg-bg-secondary px-2 py-0.5">
-            {riwaya === "warsh" ? "Riwaya Warsh" : "Riwaya Hafs"}
+            {riwaya === "warsh"
+              ? lang === "ar" ? "رواية ورش" : lang === "fr" ? "Riwaya Warsh" : "Warsh"
+              : lang === "ar" ? "رواية حفص" : lang === "fr" ? "Riwaya Hafs" : "Hafs"}
           </span>
         </div>
       </aside>

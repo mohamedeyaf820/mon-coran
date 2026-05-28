@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PlatformLogo from "./PlatformLogo";
+import { t } from "../i18n";
 
 /* 8 particules dorées flottantes générées statiquement */
 const PARTICLES = [
@@ -148,7 +149,7 @@ export default function SplashScreen({
         <div
           className="splash-loader"
           role="progressbar"
-          aria-label="Chargement"
+          aria-label={t("splash.loading")}
         >
           <div className="splash-loader-bar" />
         </div>

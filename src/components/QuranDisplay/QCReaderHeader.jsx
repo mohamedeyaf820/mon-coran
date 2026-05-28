@@ -114,13 +114,6 @@ export default function QCReaderHeader({
             {lbl(lang, "Juz", "Juz", "جزء")} {lang === "ar" ? toAr(currentJuz) : currentJuz}
           </span>
         )}
-
-        {/* Page badge (in surah mode) */}
-        {displayMode === "surah" && currentPage && (
-          <span className="hidden lg:inline-flex items-center px-2 py-0.5 rounded-full bg-[var(--bg-secondary)] border border-[var(--border)] text-[0.62rem] font-semibold text-[var(--text-muted)] shrink-0">
-            {lbl(lang, "Page", "Page", "صفحة")} {lang === "ar" ? toAr(currentPage) : currentPage}
-          </span>
-        )}
       </div>
 
       {/* ── Center: View mode pills ── */}

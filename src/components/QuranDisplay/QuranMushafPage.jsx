@@ -6,6 +6,7 @@ import {
   getQcfPageFontFamily,
 } from "../../services/fontLoader";
 import AyahMarker from "../Quran/AyahMarker";
+import { sanitizeHtml } from "../../lib/security";
 
 function decodeHtmlEntity(str) {
   if (!str) return "";
@@ -151,11 +152,15 @@ function getPageMeta(ayahs, currentPage, lang, riwaya) {
 
   return {
     page,
-    top: `Page ${page}`,
-    middle: `${riwaya.toUpperCase()} · ${first.surah?.number || ""}:${first.numberInSurah || ""} - ${last.surah?.number || ""}:${last.numberInSurah || ""}`,
-    sideA: `${lang === "fr" ? "Juz" : "Juz"} ${lang === "ar" ? toAr(juz) : juz}`,
-    sideB: `${lang === "fr" ? "Hizb" : "Hizb"} ${lang === "ar" ? toAr(hizb) : hizb}`,
-    sideC: rub ? `Rub ${lang === "ar" ? toAr(rub) : rub}` : "",
+    top: lang === "ar" ? `صفحة ${page}` : `Page ${page}`,
+    middle:
+      lang === "ar"
+        ? `سورة ${first.surah?.number || ""} · ${first.numberInSurah || ""}‏–‏${last.numberInSurah || ""}`
+        : `Surah ${first.surah?.number || ""} · ${first.numberInSurah || ""}–${last.numberInSurah || ""}`,
+    sideA: `${lang === "ar" ? "جزء" : "Juz"} ${lang === "ar" ? toAr(juz) : juz}`,
+    sideB: `${lang === "ar" ? "حزب" : "Hizb"} ${lang === "ar" ? toAr(hizb) : hizb}`,
+    sideC: rub ? `${lang === "ar" ? "ربع" : "Rubʿ"} ${lang === "ar" ? toAr(rub) : rub}` : "",
+    fontLabel: isWarsh ? (lang === "ar" ? "رواية ورش" : "Warsh") : (lang === "ar" ? "رواية حفص" : "Hafs"),
   };
 }
 
@@ -181,8 +186,8 @@ export default function QuranMushafPage({
     [ayahs, isWarsh],
   );
   const meta = useMemo(
-    () => getPageMeta(ayahs, currentPage, lang, riwaya),
-    [ayahs, currentPage, lang, riwaya],
+    () => getPageMeta(ayahs, currentPage, lang, riwaya, isWarsh),
+    [ayahs, currentPage, lang, riwaya, isWarsh],
   );
 
   useEffect(() => {
@@ -281,25 +286,25 @@ export default function QuranMushafPage({
           fontFamily: fontLoaded ? pageFontFamily : fallbackFontFamily,
         }}
       >
-        {decodeHtmlEntity(
+        {sanitizeHtml(decodeHtmlEntity(
           fontLoaded && glyph
             ? glyph
             : (word.textQpcHafs || word.textUthmani || word.text || "")
-        )}
+        ))}
       </span>
     );
   };
 
   return (
-    <section className="qcm-page-shell" aria-label={`Mushaf page ${currentPage}`}>
+    <section className="qcm-page-shell" aria-label={`${lang === "ar" ? "صفحة" : "Page"} ${currentPage}`}>
       <div className="qcm-edge qcm-edge--start">
         <span>{meta.sideA}</span>
         <span>{meta.sideB}</span>
       </div>
       <div className="qcm-page">
         <header className="qcm-page-header">
-          <span>{meta.top}</span>
-          <strong>{meta.middle}</strong>
+          <span className="text-[var(--text-muted)] text-[0.65rem] font-semibold">{meta.top}</span>
+          <strong className="text-[var(--text-primary)] text-[0.72rem] font-bold tracking-wide">{meta.middle}</strong>
         </header>
         <div className="qcm-lines" dir="rtl" lang="ar" data-warsh={isWarsh ? "true" : undefined}>
           {lines.map((line) => (
@@ -313,13 +318,13 @@ export default function QuranMushafPage({
           ))}
         </div>
         <footer className="qcm-page-footer" aria-hidden="true">
-          <span>{isWarsh ? "Warsh Unicode" : fontLabel}</span>
-          <span>{isWarsh ? "15 lignes" : fontLoaded ? "Glyphs actifs" : "Unicode fallback"}</span>
+          <span>{meta.fontLabel}</span>
+          <span>{meta.page} / 604</span>
         </footer>
       </div>
       <div className="qcm-edge qcm-edge--end">
         <span>{meta.sideC || meta.sideB}</span>
-        <span>{meta.page} / 604</span>
+        <span>{meta.page}</span>
       </div>
     </section>
   );

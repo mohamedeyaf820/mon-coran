@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, BookOpen, ChevronRight, AlertCircle, RefreshCw } from "lucide-react";
 import { useApp } from "../context/AppContext";
-import { getVerseTafsir, getAvailableTafsirs } from "../services/quranComStudyService";
+import { getVerseTafsir, getAvailableTafsirs, getVerseTranslation } from "../services/quranComStudyService";
 import { getSurah } from "../data/surahs";
 
 export default function TafsirSidebar() {
@@ -11,9 +11,14 @@ export default function TafsirSidebar() {
   const [tafsirData, setTafsirData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [retryKey, setRetryKey] = useState(0);
   const [selectedTafsirId, setSelectedTafsirId] = useState(() => {
     return lang === "ar" ? "ar-muyassar" : lang === "fr" ? "fr-kathir" : "en-kathir";
   });
+
+  const [showFrenchTranslation, setShowFrenchTranslation] = useState(false);
+  const [frenchTranslation, setFrenchTranslation] = useState(null);
+  const [loadingTranslation, setLoadingTranslation] = useState(false);
 
   const sidebarRef = useRef(null);
 
@@ -21,6 +26,11 @@ export default function TafsirSidebar() {
   const close = () => {
     set({ tafsirSidebarOpen: false });
   };
+
+  // Sync selectedTafsirId when language changes
+  useEffect(() => {
+    setSelectedTafsirId(lang === "ar" ? "ar-muyassar" : lang === "fr" ? "fr-kathir" : "en-kathir");
+  }, [lang]);
 
   // Fetch Tafsir on verse or selection change
   useEffect(() => {
@@ -31,6 +41,9 @@ export default function TafsirSidebar() {
 
     setLoading(true);
     setError(null);
+    setTafsirData(null);
+    setFrenchTranslation(null);
+    setShowFrenchTranslation(false);
 
     getVerseTafsir({
       surah: tafsirSidebarVerse.surah,
@@ -53,11 +66,34 @@ export default function TafsirSidebar() {
         }
       });
 
+    // Fetch French Translation of the verse if application is in French and Tafsir is in English
+    if (lang === "fr" && (selectedTafsirId === "fr-kathir" || selectedTafsirId === "en-kathir")) {
+      setLoadingTranslation(true);
+      getVerseTranslation({
+        surah: tafsirSidebarVerse.surah,
+        ayah: tafsirSidebarVerse.ayah,
+        lang: "fr",
+        signal: controller.signal
+      })
+        .then((transData) => {
+          if (active) {
+            setFrenchTranslation(transData);
+            setLoadingTranslation(false);
+          }
+        })
+        .catch((err) => {
+          if (active && err.name !== "AbortError") {
+            console.error("Failed to load French translation in Tafsir sidebar:", err);
+            setLoadingTranslation(false);
+          }
+        });
+    }
+
     return () => {
       active = false;
       controller.abort();
     };
-  }, [tafsirSidebarOpen, tafsirSidebarVerse, selectedTafsirId, lang]);
+  }, [tafsirSidebarOpen, tafsirSidebarVerse, selectedTafsirId, lang, retryKey]);
 
   if (!tafsirSidebarOpen || !tafsirSidebarVerse) return null;
 
@@ -156,7 +192,7 @@ export default function TafsirSidebar() {
                 {error}
               </p>
               <button
-                onClick={() => setSelectedTafsirId(selectedTafsirId)} // trigger reload
+                onClick={() => setRetryKey(k => k + 1)}
                 className="mt-2 px-3.5 py-1.5 rounded-lg bg-[var(--primary)] text-white text-xs font-semibold hover:brightness-110 active:scale-95 transition-all cursor-pointer"
               >
                 {lang === "fr" ? "Réessayer" : "Retry"}
@@ -164,6 +200,16 @@ export default function TafsirSidebar() {
             </div>
           ) : tafsirData ? (
             <article className="space-y-4">
+              {/* English warning banner for French users */}
+              {lang === "fr" && (selectedTafsirId === "fr-kathir" || selectedTafsirId === "en-kathir") && (
+                <div className="text-[0.72rem] text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-xl p-3 mb-3 leading-relaxed flex items-start gap-2 select-none">
+                  <AlertCircle size={14} className="shrink-0 mt-0.5" />
+                  <span>
+                    <strong>Note :</strong> L'API de Quran.com ne contient pas de Tafsir en Français. Nous affichons le <strong>Tafsir Ibn Kathir en Anglais</strong>. Vous pouvez afficher la traduction française du verset ci-dessous.
+                  </span>
+                </div>
+              )}
+
               {/* Tafsir source display */}
               <div className="flex items-center gap-2 text-xs font-semibold text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.06)] px-3 py-1.5 rounded-lg">
                 <BookOpen size={14} />
@@ -171,6 +217,29 @@ export default function TafsirSidebar() {
                   {lang === "fr" ? tafsirData.sourceFr || tafsirData.source : tafsirData.source}
                 </span>
               </div>
+
+              {/* French translation toggle */}
+              {lang === "fr" && frenchTranslation && (
+                <div className="border border-[var(--border)] rounded-xl p-3 bg-[var(--bg-secondary)] mb-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[0.72rem] font-bold text-[var(--text-secondary)]">
+                      Traduction du verset en Français
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowFrenchTranslation(!showFrenchTranslation)}
+                      className="px-2 py-1 text-[0.7rem] font-bold rounded bg-[var(--primary)] text-white hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                    >
+                      {showFrenchTranslation ? "Masquer" : "Afficher"}
+                    </button>
+                  </div>
+                  {showFrenchTranslation && (
+                    <p className="mt-2 text-xs text-[var(--text-primary)] leading-relaxed italic border-l-2 border-[var(--primary)] pl-2 select-text">
+                      {frenchTranslation.text}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* Tafsir Text (support Arabic RTL text formatting if source language is arabic) */}
               <div

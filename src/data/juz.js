@@ -153,7 +153,7 @@ export function getJuzForPage(pageNum) {
  * Ruku (Sajdah) positions - verses with obligatory prostration
  * Each entry: { surah, ayah, type: 'obligatory' | 'recommended' }
  */
-export const RUKU_DATA = [
+export const SAJDAH_DATA = [
   { surah: 7, ayah: 206, type: 'obligatory' },
   { surah: 13, ayah: 15, type: 'obligatory' },
   { surah: 16, ayah: 49, type: 'obligatory' },
@@ -171,6 +171,8 @@ export const RUKU_DATA = [
   { surah: 84, ayah: 21, type: 'obligatory' },
   { surah: 96, ayah: 19, type: 'obligatory' },
 ];
+
+export const RUKU_DATA = SAJDAH_DATA;
 
 /**
  * Check if a verse has obligatory sajdah

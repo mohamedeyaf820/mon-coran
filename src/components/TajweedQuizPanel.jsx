@@ -87,13 +87,13 @@ export default function TajweedQuizPanel() {
   return (
     <div className="modal-overlay !p-3 sm:!p-5" onClick={close} role="dialog" aria-modal="true"
       aria-label={lang === 'fr' ? 'Quiz Tajweed' : 'Tajweed Quiz'}>
-      <div className="modal-panel tq-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]" onClick={e => e.stopPropagation()}>
-        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
+      <div className="modal-panel tq-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]" onClick={e => e.stopPropagation()}>
+        <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
           <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
             <i className="fas fa-spell-check" />
             {lang === 'fr' ? 'Quiz Tajweed' : lang === 'ar' ? 'مسابقة التجويد' : 'Tajweed Quiz'}
           </div>
-          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={lang === 'fr' ? 'Fermer' : lang === 'ar' ? 'اغلاق' : 'Close'}><i className="fas fa-xmark" /></button>
+          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={lang === 'fr' ? 'Fermer' : lang === 'ar' ? 'اغلاق' : 'Close'}><i className="fas fa-xmark" /></button>
         </div>
 
         {done ? (
@@ -122,7 +122,7 @@ export default function TajweedQuizPanel() {
             <div className="fc-count !pb-2">{questionIdx + 1} / {orderedQuestions.length}</div>
 
             {/* Question card */}
-            <div className="tq-question-card !mx-4 !rounded-2xl !border !border-white/12 !bg-white/[0.03] !p-4">
+            <div className="tq-question-card !mx-4 !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-4">
               <div className="tq-cue">
                 <div className="tq-sample-word" style={{ color: question.color, textShadow: `0 0 12px ${question.color}66` }}>
                   {SAMPLE_WORDS[question.id] || DEFAULT_WORD}

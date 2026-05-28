@@ -112,30 +112,21 @@ export default function QCReadingView({
 
   return (
     <div className="qc-reading-view w-full max-w-[860px] mx-auto px-3 sm:px-6 py-6">
-      {/* Parchment-style reading card */}
+      {/* Clean reading surface */}
       <div
         className={cn(
-          "relative rounded-2xl border border-[var(--border)]",
-          "bg-[var(--mushaf-bg,var(--bg-card))]",
-          "shadow-[0_4px_24px_rgba(0,0,0,0.06),inset_0_1px_0_rgba(255,255,255,0.6)]",
+          "relative rounded-xl border border-[var(--border)]",
+          "bg-[var(--bg-card)]",
+          "shadow-[0_2px_12px_rgba(0,0,0,0.04)]",
           "px-6 sm:px-10 pt-8 pb-10",
           "overflow-hidden",
         )}
       >
-        {/* Gold top accent line */}
-        <div
-          className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent, rgba(184,134,11,0.45) 25%, rgba(184,134,11,0.75) 50%, rgba(184,134,11,0.45) 75%, transparent)",
-          }}
-          aria-hidden="true"
-        />
 
         {/* Basmala */}
         {showBasmala && (
           <div
-            className="text-center text-[2rem] leading-[2] font-[var(--font-quran,serif)] text-[var(--text-quran,var(--text-primary))] mb-6 pb-4 border-b border-[rgba(var(--primary-rgb),0.1)]"
+            className="text-center text-[2rem] leading-[2] font-[var(--font-quran,serif)] text-[var(--text-quran,var(--text-primary))] mb-6 pb-4"
             dir="rtl"
             lang="ar"
             aria-label="Basmala"
@@ -258,15 +249,6 @@ export default function QCReadingView({
           </div>
         )}
 
-        {/* Bottom gold accent */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-[2px] rounded-b-2xl"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent, rgba(184,134,11,0.2) 40%, rgba(184,134,11,0.4) 50%, rgba(184,134,11,0.2) 60%, transparent)",
-          }}
-          aria-hidden="true"
-        />
       </div>
     </div>
   );

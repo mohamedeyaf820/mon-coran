@@ -2,7 +2,7 @@ import { dbGet, dbSet } from "./dbService";
 
 const BASE_URL = "https://api.quran.com/api/v4";
 const CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
-const FETCH_TIMEOUT = 9000;
+const FETCH_TIMEOUT = 4000;
 const IDB_STORE = "cache";
 const IDB_PREFIX = "qcom-api:";
 
@@ -85,6 +85,48 @@ function createTimedSignal(signal, timeoutMs = FETCH_TIMEOUT) {
   };
 }
 
+function refreshInBackground(url, cacheKey) {
+  const timed = createTimedSignal(null, FETCH_TIMEOUT);
+  fetch(url, {
+    signal: timed.signal,
+    headers: { Accept: "application/json" },
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(`Background fetch failed ${response.status}`);
+    })
+    .then((json) => {
+      if (json && typeof json === "object") {
+        memCache.set(cacheKey, json);
+        dbSet(IDB_STORE, { key: cacheKey, data: json, ts: Date.now() }).catch(() => {});
+      }
+    })
+    .catch((err) => {
+      console.warn("Background cache refresh failed for:", url, err);
+    })
+    .finally(() => {
+      timed.cleanup();
+    });
+}
+
+async function mapWithConcurrency(items, limit, fn) {
+  const results = [];
+  const executing = new Set();
+  for (const item of items) {
+    const p = Promise.resolve().then(() => fn(item));
+    results.push(p);
+    executing.add(p);
+    const clean = () => executing.delete(p);
+    p.then(clean, clean);
+    if (executing.size >= limit) {
+      await Promise.race(executing);
+    }
+  }
+  return Promise.all(results);
+}
+
 async function fetchJson(url, signal) {
   const cacheKey = IDB_PREFIX + url;
 
@@ -92,9 +134,15 @@ async function fetchJson(url, signal) {
 
   try {
     const cached = await dbGet(IDB_STORE, cacheKey);
-    if (cached?.data && cached?.ts && Date.now() - cached.ts < CACHE_TTL) {
+    if (cached?.data && cached?.ts) {
       memCache.set(cacheKey, cached.data);
-      return cached.data;
+      const isFresh = Date.now() - cached.ts < CACHE_TTL;
+      if (isFresh) {
+        return cached.data;
+      } else {
+        refreshInBackground(url, cacheKey);
+        return cached.data;
+      }
     }
   } catch {
     // Network fetch below remains the source of truth.
@@ -334,8 +382,10 @@ async function fetchPaginated(path, meta, signal) {
 
   if (totalPages > 1) {
     const remainingPages = Array.from({ length: totalPages - 1 }, (_, index) => index + 2);
-    const chunks = await Promise.all(
-      remainingPages.map((page) => fetchJson(buildUrl(path, { page: String(page) }), signal)),
+    const chunks = await mapWithConcurrency(
+      remainingPages,
+      2,
+      (page) => fetchJson(buildUrl(path, { page: String(page) }), signal)
     );
     chunks.forEach((chunk) => verses.push(...(chunk.verses || [])));
   }
@@ -390,12 +440,15 @@ async function fetchQuranComTranslationPath(path, resourceId, lang, meta, signal
   const totalPages = Number(first.pagination?.total_pages || 1);
 
   if (totalPages > 1) {
-    const chunks = await Promise.all(
-      Array.from({ length: totalPages - 1 }, (_, index) => {
+    const remainingPages = Array.from({ length: totalPages - 1 }, (_, index) => index + 2);
+    const chunks = await mapWithConcurrency(
+      remainingPages,
+      2,
+      (page) => {
         const pageParams = new URLSearchParams(params);
-        pageParams.set("page", String(index + 2));
+        pageParams.set("page", String(page));
         return fetchJson(`${BASE_URL}${path}?${pageParams.toString()}`, signal);
-      }),
+      }
     );
     chunks.forEach((chunk) => verses.push(...(chunk.verses || [])));
   }

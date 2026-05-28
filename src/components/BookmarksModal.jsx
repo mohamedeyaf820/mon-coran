@@ -36,13 +36,13 @@ export default function BookmarksModal() {
       role="presentation"
     >
       <div
-        className="modal !w-full !max-w-3xl !overflow-hidden !rounded-3xl !border !border-white/12 !bg-[linear-gradient(160deg,rgba(10,18,35,0.98),rgba(8,15,30,0.96))] !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+        className="modal !w-full !max-w-3xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="bookmarks-modal-title"
       >
-        <div className="modal-header !border-b !border-white/10 !bg-[linear-gradient(135deg,rgba(35,62,110,0.34),rgba(18,29,58,0.2))]">
+        <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
           <div className="modal-title-stack">
             <div className="modal-kicker">
               {lang === "fr"
@@ -64,7 +64,7 @@ export default function BookmarksModal() {
             </div>
           </div>
           <button
-            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/12 !bg-white/[0.04] hover:!bg-white/[0.1]"
+            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
             onClick={close}
             type="button"
             aria-label={lang === "fr" ? "Fermer" : lang === "ar" ? "اغلاق" : "Close"}
@@ -94,7 +94,7 @@ export default function BookmarksModal() {
               return (
                 <div
                   key={bm.id}
-                  className="modal-item-card !rounded-2xl !border !border-white/10 !bg-white/[0.03] !p-2.5"
+                  className="modal-item-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-2.5"
                 >
                   <button
                     className="modal-item-main !flex-1 !rounded-xl !px-2 !py-2 !text-left hover:!bg-white/[0.06]"

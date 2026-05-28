@@ -82,6 +82,49 @@ export function sanitizeSvgMarkup(svg) {
   }
 }
 
+const ALLOWED_HTML_TAGS = new Set([
+  "span", "b", "i", "mark", "em", "strong", "br", "small", "sup", "sub",
+  "u", "s", "del", "ins", "abbr", "code", "kbd", "samp", "var",
+]);
+
+export function sanitizeHtml(html) {
+  if (!html || typeof html !== "string") return "";
+  try {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    const walk = (node) => {
+      if (node.nodeType === 1) {
+        const tag = node.tagName.toLowerCase();
+        if (!ALLOWED_HTML_TAGS.has(tag)) {
+          node.remove();
+          return;
+        }
+        const attrs = [...node.attributes];
+        for (const attr of attrs) {
+          const name = attr.name.toLowerCase();
+          const value = attr.value.toLowerCase();
+          if (
+            name.startsWith("on") ||
+            (name === "href" && (value.startsWith("javascript:") || value.startsWith("data:"))) ||
+            (name === "src" && value.startsWith("javascript:")) ||
+            (name === "style" && (value.includes("javascript:") || value.includes("expression(") || value.includes("behavior"))) ||
+            name === "formaction"
+          ) {
+            node.removeAttribute(attr.name);
+          }
+        }
+      }
+      const children = [...node.childNodes];
+      for (const child of children) {
+        walk(child);
+      }
+    };
+    walk(doc.body);
+    return doc.body.innerHTML;
+  } catch {
+    return "";
+  }
+}
+
 export function isAllowedExternalUrl(url) {
   if (typeof url !== "string") return false;
   const trimmed = url.trim();

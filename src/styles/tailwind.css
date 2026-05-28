@@ -805,7 +805,21 @@ html {
    Reading Surface Tokens Per Theme
    Harmonises sidebar, floating player and ayah panels
    ============================================ */
-[data-theme="dark"],
+[data-theme="dark"] {
+    --reading-surface-soft: #151719;
+    --reading-surface-elevated: #0c0d0e;
+    --player-border: rgba(255, 255, 255, 0.06);
+    --player-panel-bg: rgba(21, 23, 25, 0.7);
+    --player-chip-bg: rgba(16, 185, 129, 0.1);
+    --player-chip-border: rgba(16, 185, 129, 0.2);
+    --player-chip-text: #10b981;
+    --player-text-strong: #f3f4f6;
+    --player-text-soft: #9ca3af;
+    --player-accent: #10b981;
+    --player-accent-strong: #059669;
+    --player-accent-deep: #047857;
+}
+
 [data-theme="sepia"] {
     --reading-surface-soft: rgba(255, 248, 236, 0.72);
     --reading-surface-elevated: rgba(255, 251, 243, 0.86);
@@ -34748,10 +34762,10 @@ body {
 
 :root[data-theme="dark"],
 [data-theme="dark"] {
-    --brand-bg: #0b111a;
-    --brand-ink: #f1f5f9;
-    --brand-accent: #2dd4bf;
-    --brand-accent-rgb: 45, 212, 191;
+    --brand-bg: #0c0d0e;
+    --brand-ink: #f3f4f6;
+    --brand-accent: #10b981;
+    --brand-accent-rgb: 16, 185, 129;
     --theme-arabic-base: #ffffff;
     --theme-scene-a: radial-gradient(
         circle at 12% -14%,
@@ -46080,7 +46094,7 @@ html[data-split-view="on"]
 }
 
 .app-root .mp-header__bar {
-    grid-template-columns: minmax(13rem, 0.95fr) minmax(13rem, 1fr) minmax(16rem, 0.95fr) !important;
+    grid-template-columns: minmax(13rem, 0.95fr) minmax(13rem, 1fr) minmax(16rem, 0.95fr);
     min-height: 3.75rem !important;
     padding: 0.42rem clamp(0.72rem, 1.5vw, 1.25rem) !important;
     gap: clamp(0.48rem, 1vw, 0.86rem) !important;
@@ -51556,26 +51570,26 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
 
 :root[data-theme="dark"],
 [data-theme="dark"] {
-    --bg-primary: #0d1117;
-    --bg-secondary: #131a22;
-    --bg-tertiary: #1a2430;
-    --bg-card: #161d26;
-    --surface: #161d26;
-    --border: rgba(177, 190, 205, 0.16);
-    --border-subtle: rgba(177, 190, 205, 0.1);
-    --text-primary: #f3f6f9;
-    --text-secondary: #c9d2dc;
-    --text-tertiary: #a7b4c2;
-    --text-muted: #91a0af;
-    --text-quran: #f7f4ea;
-    --primary: #42d3b0;
-    --primary-rgb: 66, 211, 176;
-    --primary-light: rgba(66, 211, 176, 0.14);
-    --qcom-page-bg: #0f151d;
-    --qcom-page-ink: #f7f4ea;
-    --qcom-page-muted: #b9c5d0;
-    --qcom-page-line: rgba(177, 190, 205, 0.15);
-    --qcom-page-soft-hover: rgba(66, 211, 176, 0.1);
+    --bg-primary: #0c0d0e;
+    --bg-secondary: #121315;
+    --bg-tertiary: #1e2023;
+    --bg-card: #151719;
+    --surface: #151719;
+    --border: rgba(177, 190, 205, 0.12);
+    --border-subtle: rgba(177, 190, 205, 0.07);
+    --text-primary: #f3f4f6;
+    --text-secondary: #d1d5db;
+    --text-tertiary: #9ca3af;
+    --text-muted: #6b7280;
+    --text-quran: #f3f4f6;
+    --primary: #10b981;
+    --primary-rgb: 16, 185, 129;
+    --primary-light: rgba(16, 185, 129, 0.14);
+    --qcom-page-bg: #0c0d0e;
+    --qcom-page-ink: #f3f4f6;
+    --qcom-page-muted: #9ca3af;
+    --qcom-page-line: rgba(177, 190, 205, 0.12);
+    --qcom-page-soft-hover: rgba(16, 185, 129, 0.1);
 }
 
 :root[data-theme="sepia"],
@@ -52557,7 +52571,7 @@ html body .app-root .quran-display--platform .mushaf-container .cpv-verse--playi
 /* Final Quran font and ayat marker authority layer. */
 :root {
     --quran-font-family: "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", "Scheherazade New", serif;
-    --quran-font-size: 2rem;
+    --quran-font-size: var(--quran-font-size, 2rem);
     --quran-line-height: 2.8;
     --quran-text-rendering: optimizeLegibility;
 }
@@ -52771,7 +52785,7 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     --color-bg-mushaf: #fdfaf4;
     --color-text: #1a1a1a;
     --color-text-muted: #6b7280;
-    --quran-font-size: 48px;
+    --quran-font-size: var(--quran-font-size, 48px);
     --quran-line-height: 3.05;
 }
 

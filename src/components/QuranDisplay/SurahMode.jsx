@@ -43,11 +43,6 @@ export default function SurahMode({
 }) {
   const surahMeta = getSurah(currentSurah);
 
-  const endOfSurahLabel =
-    lang === "fr"
-      ? "Fin de la Sourate"
-      : "End of Surah";
-
   return (
     <div
       role="region"
@@ -63,7 +58,7 @@ export default function SurahMode({
 
       <ReadingToolbar
         contextLabel={surahMeta ? `${currentSurah}. ${lang === "fr" ? surahMeta.fr || surahMeta.en : surahMeta.en}` : undefined}
-        playLabel={lang === "fr" ? "Ecouter la sourate" : "Listen surah"}
+        playLabel={lang === "fr" ? "Écouter la sourate" : "Listen surah"}
         surahNum={currentSurah}
         onPlaySurah={onPlaySurah}
         preparingSurah={preparingSurah}
@@ -127,20 +122,6 @@ export default function SurahMode({
           displayMode="surah"
           surahMeta={surahMeta}
         />
-      )}
-
-      {ayahs.length > 0 && (
-        <div className="flex flex-col items-center gap-3 py-8 text-center">
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.3)] to-transparent" />
-          <div className="flex items-center gap-3">
-            <span className="text-[var(--text-muted)] text-sm">☽</span>
-            <span className="font-[var(--font-ui)] text-sm font-semibold text-[var(--text-muted)] uppercase tracking-widest">
-              {endOfSurahLabel}
-            </span>
-            <span className="text-[var(--text-muted)] text-sm">☾</span>
-          </div>
-          <div className="w-full h-px bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.3)] to-transparent" />
-        </div>
       )}
 
       <ModeNavigation

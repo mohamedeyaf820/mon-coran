@@ -50,6 +50,49 @@ import SessionCard from "./Home/SessionCard";
 import StatsStrip from "./Home/StatsStrip";
 import ContentSection from "./Home/ContentSection";
 
+function ToolsQuickCard({ lang, set, t }) {
+  const tr = (obj) => (lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en);
+
+  const quickTools = [
+    { id: "wird", icon: "fa-calendar-check", label: tr({ fr: "Wird", en: "Wird", ar: "الورد" }), action: () => set({ wirdOpen: true }) },
+    { id: "khatma", icon: "fa-book-open", label: tr({ fr: "Khatma", en: "Khatma", ar: "الختمة" }), action: () => set({ khatmaOpen: true }) },
+    { id: "playlist", icon: "fa-list-music", label: tr({ fr: "Listes", en: "Playlists", ar: "القوائم" }), action: () => set({ playlistOpen: true }) },
+    { id: "stats", icon: "fa-chart-line", label: tr({ fr: "Stats", en: "Stats", ar: "الإحصائيات" }), action: () => set({ weeklyStatsOpen: true }) },
+  ];
+
+  return (
+    <div className="home-tools-quick-card bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+      <div className="flex items-center justify-between mb-3 select-none">
+        <div className="flex items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] font-[var(--font-ui)] uppercase tracking-[0.06em]">
+          <i className="fas fa-shapes text-primary" />
+          <span>{tr({ fr: "Outils Spirituels", en: "Spiritual Tools", ar: "الأدوات الروحية" })}</span>
+        </div>
+        <button
+          onClick={() => set({ toolsHubOpen: true })}
+          className="text-[0.68rem] text-primary hover:underline font-bold font-[var(--font-ui)] cursor-pointer"
+        >
+          {tr({ fr: "Voir tout", en: "View all", ar: "عرض الكل" })}
+        </button>
+      </div>
+
+      <div className="grid grid-cols-4 gap-2">
+        {quickTools.map((tool) => (
+          <button
+            key={tool.id}
+            onClick={tool.action}
+            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-light)] hover:border-primary/30 hover:bg-primary/5 transition-all text-center group cursor-pointer"
+          >
+            <i className={`fas ${tool.icon} text-base text-text-secondary group-hover:text-primary transition-colors mb-1.5`} />
+            <span className="text-[0.62rem] text-text-secondary group-hover:text-primary transition-colors font-semibold truncate w-full">
+              {tool.label}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage({ lowPerfMode = false }) {
   const { state, dispatch, set } = useApp();
   const { lang, currentSurah, currentAyah, currentJuz, displayMode, riwaya } =
@@ -523,7 +566,7 @@ export default function HomePage({ lowPerfMode = false }) {
     if (h >= 4 && h < 12)
       return { fr: "Bonjour", en: "Good morning", ar: "صباح الخير" };
     if (h >= 12 && h < 17)
-      return { fr: "Bon apres-midi", en: "Good afternoon", ar: "مساء النهار" };
+      return { fr: "Bon après-midi", en: "Good afternoon", ar: "مساء النهار" };
     if (h >= 17 && h < 22)
       return { fr: "Bonsoir", en: "Good evening", ar: "مساء الخير" };
     return { fr: "Bonne nuit", en: "Good night", ar: "ليلة طيبة" };
@@ -659,10 +702,18 @@ export default function HomePage({ lowPerfMode = false }) {
           className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
           aria-hidden="true"
         >
-          <div className="absolute -top-28 left-[6%] h-72 w-72 rounded-full blur-[110px] motion-safe:animate-pulse [animation-duration:8s]" />
-          <div className="absolute top-[18%] -right-28 h-80 w-80 rounded-full blur-[120px] motion-safe:animate-pulse [animation-duration:11s]" />
-          <div className="absolute -bottom-32 left-[30%] h-96 w-96 rounded-full blur-[130px] motion-safe:animate-pulse [animation-duration:9s]" />
-          <div className="absolute inset-0 opacity-[0.16] [background-image:linear-gradient(to_right,rgba(148,163,184,0.2)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.17)_1px,transparent_1px)] [background-size:64px_64px]" />
+          <div
+            className="absolute -top-28 left-[6%] h-72 w-72 rounded-full blur-[110px] motion-safe:animate-pulse [animation-duration:8s]"
+            style={{ background: "radial-gradient(circle, rgba(var(--primary-rgb,11,98,53),0.30) 0%, transparent 70%)" }}
+          />
+          <div
+            className="absolute top-[18%] -right-28 h-80 w-80 rounded-full blur-[120px] motion-safe:animate-pulse [animation-duration:11s]"
+            style={{ background: "radial-gradient(circle, rgba(var(--primary-rgb,11,98,53),0.16) 0%, transparent 70%)" }}
+          />
+          <div
+            className="absolute -bottom-32 left-[30%] h-96 w-96 rounded-full blur-[130px] motion-safe:animate-pulse [animation-duration:9s]"
+            style={{ background: "radial-gradient(circle, rgba(var(--primary-rgb,11,98,53),0.22) 0%, transparent 70%)" }}
+          />
         </div>
       )}
 
@@ -715,6 +766,11 @@ export default function HomePage({ lowPerfMode = false }) {
           now={now}
           t={t}
         />
+        <ToolsQuickCard
+          lang={lang}
+          set={set}
+          t={t}
+        />
       </HeroSection>
 
       {/* ── Layout principal (stats + grille) ─────────────────────────── */}
@@ -765,7 +821,7 @@ export default function HomePage({ lowPerfMode = false }) {
       {/* ── Modal détail récitateur ────────────────────────────────────── */}
       {selectedReciter && (
         <div
-          className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 p-4"
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300"
           onClick={() => setSelectedReciterId(null)}
         >
           <ReciterDetailPage

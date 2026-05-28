@@ -18,12 +18,8 @@ import { ensureFontLoaded } from "../services/fontLoader";
 import { getSettings, saveSettings } from "../services/storageService";
 import { downloadExport, importFromFile } from "../services/exportService";
 import { clearCache } from "../services/quranAPI";
+import { toast } from "../lib/utils";
 
-const THEMES = [
-  { id: "light", fr: "Clair", en: "Light", ar: "فاتح" },
-  { id: "dark", fr: "Sombre", en: "Dark", ar: "داكن" },
-  { id: "sepia", fr: "Sépia", en: "Sepia", ar: "سيبيا" }
-];
 
 const FONT_OPTIONS = [
   {
@@ -104,14 +100,6 @@ export default function SettingsModal() {
 
   const close = () => dispatch({ type: "TOGGLE_SETTINGS" });
 
-  useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === "Escape") close();
-    };
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, []);
-
   // Ensure font loaded when font family changes
   useEffect(() => {
     ensureFontLoaded(fontFamily).catch(() => {});
@@ -119,17 +107,23 @@ export default function SettingsModal() {
 
   // Reciters matching search query
   const recitersList = getRecitersByRiwaya(riwaya || "hafs");
-  const filteredReciters = recitersList.filter((r) =>
-    r.name.toLowerCase().includes(reciterSearch.toLowerCase())
-  );
+  const filteredReciters = recitersList.filter((r) => {
+    const q = reciterSearch.toLowerCase();
+    return (
+      (r.name || "").toLowerCase().includes(q) ||
+      (r.nameFr || "").toLowerCase().includes(q) ||
+      (r.nameEn || "").toLowerCase().includes(q)
+    );
+  });
 
   const handleClearCache = async () => {
     try {
       await clearCache();
-      alert(lang === "fr" ? "Le cache de l'application a été vidé." : "App cache cleared.");
-      window.location.reload();
+      toast(t("settings.cacheCleared", lang), "success");
+      setTimeout(() => window.location.reload(), 1500);
     } catch (err) {
       console.error(err);
+      toast(t("errors.generic", lang), "error");
     }
   };
 
@@ -143,11 +137,13 @@ export default function SettingsModal() {
     try {
       const ok = await importFromFile(file);
       if (ok) {
-        alert(lang === "fr" ? "Paramètres importés avec succès." : "Settings imported successfully.");
-        window.location.reload();
+        toast(t("settings.importSettingsSuccess", lang), "success");
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        toast(t("settings.importSettingsFailed", lang), "error");
       }
     } catch {
-      alert(lang === "fr" ? "Échec de l'import." : "Import failed.");
+      toast(t("settings.importSettingsFailed", lang), "error");
     }
   };
 
@@ -175,7 +171,7 @@ export default function SettingsModal() {
               <BookOpen size={20} />
             </span>
             <h2 className="text-lg font-bold font-[var(--font-ui)]">
-              {lang === "fr" ? "Paramètres de lecture" : lang === "ar" ? "خيارات القراءة" : "Reading Settings"}
+              {t("settings.readingSettings", lang)}
             </h2>
           </div>
           <button
@@ -194,14 +190,14 @@ export default function SettingsModal() {
             aria-selected={activeTab === "apparence"}
             aria-controls="panel-apparence"
             onClick={() => setActiveTab("apparence")}
-            className={`flex-1 py-3 text-sm font-semibold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
+            className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-1.5 border-b-[3px] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] focus-visible:rounded-lg ${
               activeTab === "apparence"
                 ? "border-[var(--primary)] text-[var(--primary)]"
                 : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             <Palette size={16} />
-            <span>{lang === "fr" ? "Général" : "General"}</span>
+            <span>{t("settings.general", lang)}</span>
           </button>
           <button
             id="tab-affichage"
@@ -209,14 +205,14 @@ export default function SettingsModal() {
             aria-selected={activeTab === "affichage"}
             aria-controls="panel-affichage"
             onClick={() => setActiveTab("affichage")}
-            className={`flex-1 py-3 text-sm font-semibold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
+            className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-1.5 border-b-[3px] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] focus-visible:rounded-lg ${
               activeTab === "affichage"
                 ? "border-[var(--primary)] text-[var(--primary)]"
                 : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             <BookOpen size={16} />
-            <span>{lang === "fr" ? "Affichage" : "Display"}</span>
+            <span>{t("settings.display", lang)}</span>
           </button>
           <button
             id="tab-audio"
@@ -224,14 +220,14 @@ export default function SettingsModal() {
             aria-selected={activeTab === "audio"}
             aria-controls="panel-audio"
             onClick={() => setActiveTab("audio")}
-            className={`flex-1 py-3 text-sm font-semibold flex items-center justify-center gap-1.5 border-b-2 transition-all ${
+            className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-1.5 border-b-[3px] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] focus-visible:rounded-lg ${
               activeTab === "audio"
                 ? "border-[var(--primary)] text-[var(--primary)]"
                 : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             <Volume2 size={16} />
-            <span>Audio</span>
+            <span>{t("settings.audio", lang)}</span>
           </button>
         </nav>
 
@@ -249,7 +245,7 @@ export default function SettingsModal() {
               {/* App Language */}
               <div className="space-y-2">
                 <label htmlFor="settings-lang-select" className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
-                  {lang === "fr" ? "Langue de l'application" : "Application Language"}
+                  {t("settings.appLanguage", lang)}
                 </label>
                 <select
                   id="settings-lang-select"
@@ -266,22 +262,42 @@ export default function SettingsModal() {
               {/* Theme Mode */}
               <div className="space-y-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
-                  {lang === "fr" ? "Thème visuel" : "Visual Theme"}
+                  {t("settings.visualTheme", lang)}
                 </span>
-                <div className="grid grid-cols-3 gap-2" role="group" aria-label={lang === "fr" ? "Thème visuel" : "Visual Theme"}>
-                  {THEMES.map((t) => (
-                    <button
-                      key={t.id}
-                      onClick={() => set({ theme: t.id })}
-                      className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-all ${
-                        theme === t.id
-                          ? "border-[var(--primary)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] shadow-sm"
-                          : "border-[var(--border)] hover:bg-[var(--bg-secondary)]"
-                      }`}
-                    >
-                      {lang === "fr" ? t.fr : lang === "ar" ? t.ar : t.en}
-                    </button>
-                  ))}
+                <div className="grid grid-cols-1 gap-2" role="group" aria-label={t("settings.visualTheme", lang)}>
+                  {UI_THEMES.map((thm) => {
+                    const label = lang === "ar" ? thm.ar : lang === "fr" ? thm.fr : thm.en;
+                    const desc = lang === "ar" ? thm.descriptionAr : lang === "fr" ? thm.descriptionFr : thm.descriptionEn;
+                    const isActive = theme === thm.id;
+                    return (
+                      <button
+                        key={thm.id}
+                        type="button"
+                        onClick={() => set({ theme: thm.id })}
+                        className={`flex items-center gap-3 w-full py-2.5 px-3 rounded-xl border text-left transition-all ${
+                          isActive
+                            ? "border-[var(--primary)] bg-[rgba(var(--primary-rgb),0.08)] shadow-sm"
+                            : "border-[var(--border)] hover:bg-[var(--bg-secondary)]"
+                        }`}
+                        aria-pressed={isActive}
+                      >
+                        {/* Palette aperçu */}
+                        <span
+                          className="shrink-0 w-7 h-7 rounded-full border border-black/10 shadow-sm"
+                          style={{ background: thm.palette?.bg || "var(--bg-primary)" }}
+                        />
+                        <span className="flex flex-col min-w-0 flex-1">
+                          <span className={`text-sm font-bold ${
+                            isActive ? "text-[var(--primary)]" : "text-[var(--text-primary)]"
+                          }`}>{label}</span>
+                          <span className="text-[0.71rem] text-[var(--text-muted)] truncate leading-tight">{desc}</span>
+                        </span>
+                        {isActive && (
+                          <span className="shrink-0 w-2 h-2 rounded-full bg-[var(--primary)]" />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -289,9 +305,9 @@ export default function SettingsModal() {
               <div className="p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border)] space-y-3">
                 <div className="flex items-center justify-between">
                   <label htmlFor="settings-auto-night" className="cursor-pointer">
-                    <h3 className="text-sm font-semibold">{lang === "fr" ? "Mode nuit automatique" : "Auto Night Mode"}</h3>
+                    <h3 className="text-sm font-semibold">{t("settings.autoNightMode", lang)}</h3>
                     <p className="text-xs text-[var(--text-muted)]">
-                      {lang === "fr" ? "Bascule automatique selon l'heure" : "Automatic switch based on time"}
+                      {t("settings.autoNightHint", lang)}
                     </p>
                   </label>
                   <input
@@ -306,7 +322,7 @@ export default function SettingsModal() {
                 {autoNightMode && (
                   <div className="flex items-center gap-4 pt-2 border-t border-[var(--border)]">
                     <div className="flex-1 flex flex-col gap-1 text-xs text-[var(--text-muted)]">
-                      <label htmlFor="settings-night-start">{lang === "fr" ? "Début" : "Start"}</label>
+                      <label htmlFor="settings-night-start">{t("settings.start", lang)}</label>
                       <input
                         id="settings-night-start"
                         type="time"
@@ -316,7 +332,7 @@ export default function SettingsModal() {
                       />
                     </div>
                     <div className="flex-1 flex flex-col gap-1 text-xs text-[var(--text-muted)]">
-                      <label htmlFor="settings-night-end">{lang === "fr" ? "Fin" : "End"}</label>
+                      <label htmlFor="settings-night-end">{t("settings.end", lang)}</label>
                       <input
                         id="settings-night-end"
                         type="time"
@@ -332,7 +348,7 @@ export default function SettingsModal() {
               {/* Import/Export simple parameters */}
               <div className="pt-4 border-t border-[var(--border)] space-y-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
-                  {lang === "fr" ? "Sauvegarde & Restauration" : "Backup & Restore"}
+                  {t("settings.backupRestore", lang)}
                 </span>
                 <div className="flex gap-2">
                   <button
@@ -340,11 +356,11 @@ export default function SettingsModal() {
                     className="flex-1 py-2 px-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] text-sm font-semibold flex items-center justify-center gap-2"
                   >
                     <Download size={15} />
-                    <span>Exporter</span>
+                    <span>{t("export.export", lang)}</span>
                   </button>
                   <label htmlFor="settings-import-file" className="flex-1 py-2 px-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer">
                     <Upload size={15} />
-                    <span>Importer</span>
+                    <span>{t("export.import", lang)}</span>
                     <input
                       id="settings-import-file"
                       type="file"
@@ -354,6 +370,31 @@ export default function SettingsModal() {
                     />
                   </label>
                 </div>
+              </div>
+
+              {/* Espace Outils */}
+              <div className="pt-4 border-t border-[var(--border)] space-y-3">
+                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
+                  {lang === "ar" ? "الأدوات" : lang === "fr" ? "Outils" : "Tools"}
+                </span>
+                <button
+                  onClick={() => {
+                    set({ toolsHubOpen: true });
+                    close();
+                  }}
+                  className="w-full py-3 px-4 rounded-xl border border-[var(--primary)] bg-[rgba(var(--primary-rgb),0.05)] hover:bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)] text-sm font-semibold flex items-center justify-between transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <i className="fas fa-shapes text-lg" />
+                    <div className="text-left">
+                      <p className="font-bold">{lang === "ar" ? "مركز الأدوات" : lang === "fr" ? "Espace Outils" : "Tools Hub"}</p>
+                      <p className="text-[0.71rem] text-[var(--text-muted)]">
+                        {lang === "ar" ? "البطاقات التعليمية، الإحصائيات، الحفظ والمزيد" : lang === "fr" ? "Flashcards, statistiques, mémorisation et plus" : "Flashcards, stats, memorization and more"}
+                      </p>
+                    </div>
+                  </div>
+                  <i className="fas fa-chevron-right text-xs opacity-60" />
+                </button>
               </div>
             </div>
           )}
@@ -400,7 +441,7 @@ export default function SettingsModal() {
               {/* Font selection */}
               <div className="space-y-2">
                 <label htmlFor="settings-font-family" className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
-                  {lang === "fr" ? "Police d'écriture Arabe" : "Arabic Font Family"}
+                  {t("settings.arabicFontFamily", lang)}
                 </label>
                 <select
                   id="settings-font-family"
@@ -421,7 +462,7 @@ export default function SettingsModal() {
                 {/* Quran font size */}
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs font-bold uppercase text-[var(--text-muted)]">
-                    <label htmlFor="settings-font-size-quran">{lang === "fr" ? "Taille texte Arabe" : "Arabic Font Size"}</label>
+                    <label htmlFor="settings-font-size-quran">{t("settings.arabicFontSize", lang)}</label>
                     <span>{quranFontSize}px</span>
                   </div>
                   <input
@@ -439,7 +480,7 @@ export default function SettingsModal() {
                 {/* Translation font size */}
                 <div className="space-y-1">
                   <div className="flex justify-between text-xs font-bold uppercase text-[var(--text-muted)]">
-                    <label htmlFor="settings-font-size-translation">{lang === "fr" ? "Taille Traductions" : "Translation Font Size"}</label>
+                    <label htmlFor="settings-font-size-translation">{t("settings.translationFontSize", lang)}</label>
                     <span>{quranTranslationFontSize}px</span>
                   </div>
                   <input
@@ -458,7 +499,7 @@ export default function SettingsModal() {
               {/* Display checkboxes helpers */}
               <div className="space-y-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
-                  {lang === "fr" ? "Aides de lecture" : "Reading helpers"}
+                  {t("settings.readingHelpers", lang)}
                 </span>
                 <div className="space-y-2">
                   <label htmlFor="settings-show-tajwid" className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] cursor-pointer select-none">
@@ -470,8 +511,8 @@ export default function SettingsModal() {
                       className="w-4 h-4 text-[var(--primary)] rounded focus:ring-[var(--primary)]"
                     />
                     <div className="text-left">
-                      <p className="text-sm font-semibold">{lang === "fr" ? "Colorisation Tajwid" : "Tajweed Colors"}</p>
-                      <p className="text-xs text-[var(--text-muted)]">{lang === "fr" ? "Colore les règles de prononciation" : "Colors rules of recitation"}</p>
+                      <p className="text-sm font-semibold">{t("settings.tajweedColors", lang)}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{t("settings.tajweedDesc", lang)}</p>
                     </div>
                   </label>
 
@@ -484,8 +525,8 @@ export default function SettingsModal() {
                       className="w-4 h-4 text-[var(--primary)] rounded focus:ring-[var(--primary)]"
                     />
                     <div className="text-left">
-                      <p className="text-sm font-semibold">{lang === "fr" ? "Afficher les Traductions" : "Show Translations"}</p>
-                      <p className="text-xs text-[var(--text-muted)]">{lang === "fr" ? "Affiche la traduction sous le verset" : "Shows translations below verses"}</p>
+                      <p className="text-sm font-semibold">{t("settings.showTranslationsDetail", lang)}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{t("settings.showTranslationsDesc", lang)}</p>
                     </div>
                   </label>
 
@@ -498,8 +539,8 @@ export default function SettingsModal() {
                       className="w-4 h-4 text-[var(--primary)] rounded focus:ring-[var(--primary)]"
                     />
                     <div className="text-left">
-                      <p className="text-sm font-semibold">{lang === "fr" ? "Afficher la Translittération" : "Show Transliteration"}</p>
-                      <p className="text-xs text-[var(--text-muted)]">{lang === "fr" ? "Phonétique en caractères latins" : "Phonetics in latin characters"}</p>
+                      <p className="text-sm font-semibold">{t("settings.showTransliteration", lang)}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{t("settings.showTransliterationDesc", lang)}</p>
                     </div>
                   </label>
 
@@ -512,8 +553,8 @@ export default function SettingsModal() {
                       className="w-4 h-4 text-[var(--primary)] rounded focus:ring-[var(--primary)]"
                     />
                     <div className="text-left">
-                      <p className="text-sm font-semibold">{lang === "fr" ? "Mode Mot-à-mot" : "Word-by-Word Mode"}</p>
-                      <p className="text-xs text-[var(--text-muted)]">{lang === "fr" ? "Affiche la traduction individuelle sous chaque mot" : "Shows individual translation below each word"}</p>
+                      <p className="text-sm font-semibold">{t("settings.wordByWordMode", lang)}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{t("settings.wordByWordDesc", lang)}</p>
                     </div>
                   </label>
                 </div>
@@ -532,7 +573,7 @@ export default function SettingsModal() {
               {/* Reciter searchable selector */}
               <div className="space-y-2">
                 <label htmlFor="settings-reciter-search" className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
-                  {lang === "fr" ? "Sélection du Récitateur" : "Select Reciter"}
+                  {t("settings.selectReciter", lang)}
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-[var(--text-muted)]">
@@ -541,7 +582,7 @@ export default function SettingsModal() {
                   <input
                     id="settings-reciter-search"
                     type="text"
-                    placeholder={lang === "fr" ? "Rechercher un récitant..." : "Search reciters..."}
+                    placeholder={t("settings.searchReciters", lang)}
                     value={reciterSearch}
                     onChange={(e) => setReciterSearch(e.target.value)}
                     className="w-full pl-9 pr-4 py-2 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] text-sm focus:outline-none focus:ring-2 focus:ring-[rgba(var(--primary-rgb),0.5)]"
@@ -567,7 +608,7 @@ export default function SettingsModal() {
                     })
                   ) : (
                     <div className="p-4 text-center text-xs text-[var(--text-muted)]">
-                      {lang === "fr" ? "Aucun récitant trouvé" : "No reciter found"}
+                      {t("settings.noReciterFound", lang)}
                     </div>
                   )}
                 </div>
@@ -576,7 +617,7 @@ export default function SettingsModal() {
               {/* Playback speed */}
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-bold uppercase text-[var(--text-muted)]">
-                  <label htmlFor="settings-audio-speed">{lang === "fr" ? "Vitesse de lecture" : "Playback Speed"}</label>
+                  <label htmlFor="settings-audio-speed">{t("settings.playbackSpeed", lang)}</label>
                   <span>{audioSpeed}x</span>
                 </div>
                 <input
@@ -613,14 +654,14 @@ export default function SettingsModal() {
               <div className="pt-4 border-t border-[var(--border)] space-y-3">
                 <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
                   <Info size={14} />
-                  <span>{lang === "fr" ? "Videz le cache si vous rencontrez des problèmes audio." : "Clear cache if you experience audio issues."}</span>
+                  <span>{t("settings.cacheInfo", lang)}</span>
                 </div>
                 <button
                   onClick={handleClearCache}
                   className="w-full py-2.5 px-4 rounded-xl border border-red-500/20 hover:bg-red-500/5 text-red-500 text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
                   <Trash2 size={16} />
-                  <span>{lang === "fr" ? "Vider le cache de l'application" : "Clear Application Cache"}</span>
+                  <span>{t("settings.clearCache", lang)}</span>
                 </button>
               </div>
             </div>

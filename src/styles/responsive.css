@@ -1,681 +1,513 @@
-/* ============================================
-   GLOBAL RESPONSIVE SYSTEM - MushafPlus
-   Complete mobile-first responsive design
-   ============================================ */
+/* ==========================================================================
+   MUSHAFPLUS RESPONSIVE STYLE SYSTEM
+   Clean, mobile-first responsive layouts
+   ========================================================================== */
 
-/* ── Base Touch Targets ──────────────────────── */
-/* Minimum 44px touch targets for all interactive elements */
+/* ── 1. Base Touch Targets ── */
 @media (pointer: coarse) {
   button,
   [role="button"],
   a,
-  input[type="checkbox"],
-  input[type="radio"],
   select,
   .chip,
   .sidebar-item,
-  .sidebar-tab,
   .mode-btn,
-  .player-btn,
-  .reciter-chip,
-  .theme-chip,
-  .toggle-switch,
-  .ayah-block,
-  .page-cell,
-  .page-juz-btn {
+  .player-btn {
     min-height: 44px;
     min-width: 44px;
   }
-
-  /* Compact buttons can be slightly smaller but still touchable */
-  .btn-sm,
-  .btn-icon,
-  .icon-btn,
-  .sm-close-btn,
-  .search-pro__icon-btn {
-    min-height: 36px;
-    min-width: 36px;
-  }
 }
 
-/* ── Safe Area Insets (iPhone notch) ──────────── */
+/* ── 2. Safe Area Insets (iPhone notch & virtual home bar support) ── */
 @supports (padding: env(safe-area-inset-bottom)) {
-  .audio-player,
-  .mp-footer,
-  .mobile-player,
-  .player-bottom {
-    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  .app-main {
+    padding-bottom: env(safe-area-inset-bottom) !important;
   }
-
-  .app-main-shell,
-  .quran-display {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  .app-header,
-  .hdr,
-  .hdr__main {
-    padding-top: env(safe-area-inset-top);
+  .app-header {
+    padding-top: env(safe-area-inset-top) !important;
   }
 }
 
-/* ── Scrollable containers ────────────────────── */
-.scroll-x-auto {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+/* ── 3. Universal Scroll Helpers ── */
+.scroll-x-swipe {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
+}
+.scroll-x-swipe::-webkit-scrollbar {
+  display: none !important;
 }
 
-.scroll-x-auto::-webkit-scrollbar {
-  display: none;
-}
-
-/* ── Header Responsive ────────────────────────── */
-@media (max-width: 640px) {
-  .hdr,
-  .app-header,
-  .qc-reader-header {
-    padding-inline: 0.5rem !important;
-    gap: 0.25rem !important;
-  }
-
-  .hdr__main > *:not(:first-child):not(:last-child) {
-    display: none !important;
-  }
-
-  .qc-reader-header {
-    height: 48px !important;
-  }
-}
-
-/* ── Sidebar Responsive ───────────────────────── */
-@media (max-width: 768px) {
-  .sidebar,
-  .sidebar--open {
+/* ── 4. Main App Layout & Sidebar Shell ── */
+@media (max-width: 1024px) {
+  .sidebar {
     position: fixed !important;
     top: 0;
-    left: 0;
-    right: 0;
     bottom: 0;
+    width: 290px !important;
+    max-width: 85vw !important;
+    z-index: 9999 !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 20px 0 30px rgba(0, 0, 0, 0.25) !important;
+  }
+  
+  html[dir="rtl"] .sidebar {
+    transform: translateX(100%);
+    box-shadow: -20px 0 30px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .is-sidebar-open .sidebar {
+    transform: translateX(0) !important;
+  }
+
+  .sidebar-clickout-overlay {
+    background: rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(4px) !important;
+    transition: opacity 0.3s ease;
+  }
+}
+
+/* ── 5. Header Responsiveness ── */
+@media (max-width: 640px) {
+  .mp-header {
+    padding-inline: 0.5rem !important;
+    height: 58px !important;
+  }
+
+  .mp-header__title {
+    font-size: 1.1rem !important;
+  }
+
+  /* Hide decorative / secondary controls on mobile header */
+  .mp-header__action--shortcut,
+  .mp-header__action--stats {
+    display: none !important;
+  }
+}
+
+/* ── 6. Audio Player Responsiveness ── */
+/* Mobile Audio Player (< 768px) */
+@media (max-width: 768px) {
+  .audio-player-modal__surface,
+  .mp-audio-player {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
     width: 100vw !important;
     max-width: 100vw !important;
-    z-index: 400;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .sidebar--open,
-  .sidebar[aria-hidden="false"] {
-    transform: translateX(0);
-  }
-
-  .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 390;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-  }
-
-  .sidebar-nav-item {
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
-  }
-
-  .sidebar-search {
-    margin: 0.5rem;
-    padding: 0.5rem 0.75rem;
-  }
-}
-
-/* ── Audio Player Responsive ──────────────────── */
-
-/* Mobile Player - Bottom bar */
-@media (max-width: 768px) {
-  .audio-player,
-  .mp-footer {
-    position: fixed !important;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 300;
-    height: auto !important;
-    max-height: 100px;
-    border-radius: 16px 16px 0 0;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  .mp-progress {
-    height: 3px !important;
-    margin: 0 0.75rem !important;
-  }
-
-  .mp-controls {
-    gap: 0.25rem !important;
-    padding: 0.25rem 0.5rem !important;
-  }
-
-  .mp-btn {
-    min-width: 36px !important;
-    min-height: 36px !important;
-    padding: 0.35rem !important;
-  }
-
-  .mp-btn-play {
-    min-width: 42px !important;
-    min-height: 42px !important;
-  }
-
-  .mp-info {
-    flex: 1;
-    min-width: 0;
-    padding: 0 0.5rem;
-  }
-
-  .mp-title {
-    font-size: 0.75rem !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .mp-surah {
-    font-size: 0.65rem !important;
-  }
-
-  .mp-volume {
-    display: none !important;
-  }
-
-  .mp-speed {
-    font-size: 0.6rem !important;
-    padding: 0.2rem 0.35rem !important;
-  }
-}
-
-/* Desktop Player - Card style */
-@media (min-width: 769px) {
-  .audio-player,
-  .mp-footer {
-    max-width: 420px;
-    margin: 0 auto;
-    border-radius: 16px;
-    bottom: 1.5rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  }
-
-  .mp-btn:hover {
-    transform: scale(1.05);
-  }
-
-  .mp-progress:hover {
-    height: 6px;
-  }
-}
-
-/* ── Quran Reading Responsive ─────────────────── */
-
-/* Mobile Reading */
-@media (max-width: 640px) {
-  .quran-display--platform .qcm-page-shell {
-    grid-template-columns: 1fr !important;
-    padding: 0 !important;
-  }
-
-  .quran-display--platform .qcm-edge {
-    display: none !important;
-  }
-
-  .quran-display--platform .qcm-page {
-    border-radius: 0 !important;
     margin: 0 !important;
-    box-shadow: none !important;
-  }
-
-  .quran-display--platform .qcm-lines {
-    font-size: clamp(1.2rem, 5vw, 1.8rem) !important;
-    padding: 0.5rem !important;
-    min-height: auto !important;
-  }
-
-  .quran-display--platform .qcm-line {
-    gap: 0 0.15em !important;
-  }
-
-  .quran-display--platform .qcm-page-header,
-  .quran-display--platform .qcm-page-footer {
-    font-size: 0.6rem !important;
-    padding: 0.3rem 0.5rem !important;
-  }
-}
-
-/* Tablet Reading */
-@media (min-width: 641px) and (max-width: 1024px) {
-  .quran-display--platform .qcm-lines {
-    font-size: clamp(1.5rem, 3.5vw, 2.2rem) !important;
-  }
-
-  .quran-display--platform .qcm-edge {
-    padding-inline: 0.5rem !important;
-  }
-}
-
-/* ── Settings Modal Responsive ────────────────── */
-@media (max-width: 768px) {
-  .settings-dialog {
-    max-width: 100% !important;
-    max-height: 92vh !important;
     border-radius: 20px 20px 0 0 !important;
-    margin: 0 !important;
+    border-width: 1px 0 0 0 !important;
+    height: auto !important;
+    padding: 0.6rem 0.8rem calc(0.4rem + env(safe-area-inset-bottom, 0px)) !important;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.2) !important;
   }
 
-  .settings-dialog > div:first-child {
-    flex-direction: row !important;
-    width: 100% !important;
-    border-right: none !important;
-    border-bottom: 1px solid var(--border) !important;
-  }
-
-  .settings-dialog nav,
-  .settings-dialog .settings-nav {
-    flex-direction: row !important;
-    overflow-x: auto !important;
-    padding: 0.5rem !important;
-    border-bottom: none !important;
-  }
-
-  .settings-dialog nav button,
-  .settings-dialog .settings-nav button {
-    flex-shrink: 0;
-    padding: 0.4rem 0.65rem !important;
-    font-size: 0.72rem !important;
-  }
-
-  .settings-dialog > div:last-child {
-    padding: 0.75rem !important;
-  }
-
-  .settings-section,
-  .settings-group {
-    padding: 0.75rem !important;
-    margin-bottom: 0.75rem !important;
-  }
-
-  .settings-item,
-  .settings-row {
-    flex-direction: column !important;
-    align-items: flex-start !important;
+  /* Compact controls row for mobile */
+  .audio-player-modal__controls-row {
+    flex-wrap: nowrap !important;
     gap: 0.5rem !important;
   }
 
-  .settings-theme-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
+  /* Hide volume slider on mobile player since device hardware keys are used */
+  .audio-player-modal__volume-container {
+    display: none !important;
+  }
+
+  /* Ensure reciter info doesn't overflow */
+  .audio-player-modal__meta {
+    max-width: 45% !important;
   }
 }
 
-/* ── Search Modal Responsive ──────────────────── */
-@media (max-width: 768px) {
-  .search-pro-overlay {
-    padding: 0 !important;
-  }
-
-  .search-pro {
-    height: 100vh;
-    border-radius: 0 !important;
-  }
-
-  .search-pro__header {
-    padding: 0.75rem !important;
-  }
-
-  .search-pro__body {
-    flex-direction: column !important;
-  }
-
-  .search-pro__rail {
-    width: 100% !important;
-    max-height: 200px;
-    overflow-y: auto;
-    border-top: 1px solid var(--border);
-    border-left: none !important;
-  }
-
-  .search-pro__preset-grid {
-    display: flex !important;
-    overflow-x: auto;
-    gap: 0.5rem;
-    padding-bottom: 0.5rem;
-  }
-
-  .search-pro__preset-grid button {
-    flex-shrink: 0;
-    padding: 0.4rem 0.6rem !important;
-    font-size: 0.7rem !important;
-  }
-
-  .search-pro__result {
-    padding: 0.6rem !important;
+/* Desktop Audio Player (>= 768px) */
+@media (min-width: 769px) {
+  .audio-player-modal__surface,
+  .mp-audio-player {
+    max-width: 460px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    bottom: 1.5rem !important;
+    border-radius: 24px !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25) !important;
   }
 }
 
-/* ── Homepage Responsive ──────────────────────── */
+/* ── 7. Home Page Grid Responsiveness ── */
 @media (max-width: 640px) {
+  .hp-grid {
+    grid-template-columns: 1fr !important; /* Single column for list items on mobile */
+    gap: 0.65rem !important;
+  }
+
+  .hp-grid--surah {
+    grid-template-columns: repeat(2, 1fr) !important; /* Double column for Surahs only */
+    gap: 0.55rem !important;
+  }
+
+  .hp-wrapper {
+    padding: 0.8rem !important;
+  }
+
   .hp2-hero {
-    padding: 1rem !important;
-    min-height: auto !important;
-  }
-
-  .hp2-hero__title {
-    font-size: clamp(1.5rem, 6vw, 2rem) !important;
-  }
-
-  .hp2-hero__tagline {
-    font-size: 0.8rem !important;
-  }
-
-  .hp2-grid,
-  .surah-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 0.5rem !important;
-  }
-
-  .hp2-item,
-  .surah-card {
-    padding: 0.6rem !important;
-  }
-
-  .hp2-item__number,
-  .surah-card__number {
-    width: 28px !important;
-    height: 28px !important;
-    font-size: 0.65rem !important;
+    padding: 1.25rem 1rem !important;
   }
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
-  .hp2-grid,
-  .surah-grid {
+  .hp-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .hp-grid--surah {
     grid-template-columns: repeat(3, 1fr) !important;
   }
 }
 
 @media (min-width: 1025px) {
-  .hp2-grid,
-  .surah-grid {
+  .hp-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  .hp-grid--surah {
     grid-template-columns: repeat(4, 1fr) !important;
   }
 }
 
-/* ── Modals Responsive ────────────────────────── */
+/* ── 8. Settings & Search Modals Responsiveness ── */
 @media (max-width: 768px) {
-  .modal-overlay {
-    padding: 0 !important;
+  /* Turn modals into sliding bottom sheets */
+  .modal-overlay,
+  .search-pro-overlay {
     align-items: flex-end !important;
+    padding: 0 !important;
   }
 
   .modal-box,
-  .modal {
-    max-width: 100% !important;
-    max-height: 90vh !important;
-    border-radius: 16px 16px 0 0 !important;
+  .search-pro,
+  .settings-dialog {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 85vh !important;
+    max-height: 85vh !important;
+    border-radius: 24px 24px 0 0 !important;
     margin: 0 !important;
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
-  .modal-header {
-    padding: 0.75rem 1rem !important;
-  }
-
-  .modal-body {
-    padding: 0.75rem !important;
-  }
-
-  /* Bottom sheet handle */
+  /* Add bottom sheet indicator bar */
   .modal-box::before,
-  .modal::before {
+  .settings-dialog::before {
     content: "";
     display: block;
-    width: 36px;
-    height: 4px;
-    margin: 0 auto 0.5rem;
-    border-radius: 2px;
-    background: var(--border);
+    width: 40px;
+    height: 5px;
+    margin: 0.6rem auto 0.2rem;
+    border-radius: 99px;
+    background: var(--border-strong, #ccc);
+    opacity: 0.6;
   }
-}
 
-/* ── Ayah Actions Responsive ──────────────────── */
-@media (max-width: 640px) {
-  .ayah-action-card {
-    flex: 1 1 calc(50% - 0.25rem) !important;
-    min-height: 44px;
+  /* Horizontal scrolling settings tabs for mobile */
+  .settings-nav {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
     padding: 0.5rem !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    width: 100% !important;
   }
 
-  .ayah-action-card i {
-    font-size: 0.9rem !important;
+  .settings-nav button {
+    white-space: nowrap !important;
   }
 
-  .ayah-action-card span {
-    font-size: 0.65rem !important;
+  .settings-dialog {
+    flex-direction: column !important;
   }
 
-  .ayah-study-tafsir {
-    font-size: 0.85rem !important;
-    line-height: 1.6 !important;
-  }
-}
-
-/* ── Reading Toolbar Responsive ───────────────── */
-@media (max-width: 640px) {
-  .reading-toolbar,
-  [role="toolbar"] {
-    gap: 0.25rem !important;
-    padding: 0.35rem 0.5rem !important;
-    margin-bottom: 0.5rem !important;
-    overflow-x: auto;
+  .settings-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.6rem !important;
   }
 
-  .reading-toolbar button,
-  [role="toolbar"] button {
-    padding: 0.35rem 0.5rem !important;
-    font-size: 0.7rem !important;
-    white-space: nowrap;
+  /* Adjust theme grid to fit 3 columns */
+  .settings-theme-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.4rem !important;
   }
 }
 
-/* ── Surah List Responsive ────────────────────── */
-@media (max-width: 640px) {
-  .surah-ayahs-list {
-    padding: 0 !important;
-  }
+/* ==========================================================================
+   UI/UX ENHANCEMENTS — PREMIUM COHERENCE
+   ========================================================================== */
 
-  .qc-ayah-block {
-    padding: 0.5rem !important;
-    margin-bottom: 0.25rem !important;
-  }
+/* Dark mode text adjustments — use CSS variables, avoid !important overrides */
 
-  .quran-text {
-    font-size: 1.1rem !important;
-    line-height: 2 !important;
-  }
+/* Surlignage et glow du mot actif dans le Mushaf pour être magnifique */
+[data-theme="dark"] .qcm-word--playing {
+  color: #34d399 !important;
+  text-shadow: 0 0 16px rgba(52, 211, 153, 0.5) !important;
+}
+[data-theme="dark"] .qcm-word--active {
+  background: rgba(16, 185, 129, 0.15) !important;
+}
 
-  .translation-text {
+/* Karaoke word timing highlight in dark mode */
+[data-theme="dark"] .wbw-current {
+  color: #34d399 !important;
+  text-shadow:
+    0 0 12px rgba(52, 211, 153, 0.55),
+    0 0 28px rgba(52, 211, 153, 0.2) !important;
+}
+[data-theme="dark"] .wbw-current::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #34d399,
+    transparent
+  ) !important;
+}
+
+/* ============================================
+   LIGHT THEME ACCESSIBILITY OVERHAUL
+   ============================================ */
+:root,
+[data-theme="light"] {
+  /* Élimination des lignes et grilles */
+  --theme-bg: #f8fafc !important;
+  --theme-bg-alt: #f1f5f9 !important;
+  --theme-surface: #ffffff !important;
+  --theme-surface-soft: #f1f5f9 !important;
+  --theme-surface-glass: rgba(255, 255, 255, 0.85) !important;
+  --theme-text: #0f172a !important;
+  --theme-text-soft: #334155 !important;
+  --theme-text-muted: #64748b !important;
+  --theme-text-inverse: #ffffff !important;
+  --theme-primary: #059669 !important;
+  --theme-primary-rgb: 5, 150, 105 !important;
+  --theme-accent: #059669 !important;
+  --theme-accent-bright: #34d399 !important;
+  --theme-border: #e2e8f0 !important;
+  --theme-border-strong: #cbd5e1 !important;
+  --theme-arabic: #0f172a !important; /* Texte arabe noir contrasté */
+  --theme-glow-a: rgba(5, 150, 105, 0.04) !important;
+  --theme-glow-b: rgba(212, 168, 32, 0.03) !important;
+  --theme-shadow-panel: 0 20px 48px rgba(15, 23, 42, 0.06) !important;
+  --theme-shadow-soft: 0 10px 24px rgba(15, 23, 42, 0.04) !important;
+  --theme-app-bg: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
+
+  /* Variables de Tajweed adaptées au mode clair (couleurs foncées et saturées) */
+  --tajwid-silent: #8892b0 !important;
+  --tajwid-lam-shamsiyya: #8892b0 !important;
+  --tajwid-madd-normal: #b5179e !important;
+  --tajwid-madd: #b5179e !important;
+  --tajwid-madd-separated: #d97706 !important;
+  --tajwid-madd-connected: #db2777 !important;
+  --tajwid-madd-necessary: #dc2626 !important;
+  --tajwid-ghunna: #059669 !important;
+  --tajwid-idgham: #059669 !important;
+  --tajwid-ikhfa: #059669 !important;
+  --tajwid-qalqala: #0284c7 !important;
+  --tajwid-tafkhim: #4f46e5 !important;
+}
+
+/* ============================================
+   SEPIA THEME ACCESSIBILITY OVERHAUL
+   ============================================ */
+[data-theme="sepia"] {
+  /* Élimination des lignes et grilles */
+  --theme-bg: #f7f3e8 !important;
+  --theme-bg-alt: #ecdcb9 !important;
+  --theme-surface: #fbf9f3 !important;
+  --theme-surface-soft: #ecdcb9 !important;
+  --theme-surface-glass: rgba(247, 243, 232, 0.88) !important;
+  --theme-text: #271c0c !important;
+  --theme-text-soft: #4a3721 !important;
+  --theme-text-muted: #7c5e3f !important;
+  --theme-text-inverse: #f7f3e8 !important;
+  --theme-primary: #9a6800 !important;
+  --theme-primary-rgb: 154, 104, 0 !important;
+  --theme-accent: #9a6800 !important;
+  --theme-accent-bright: #bc8200 !important;
+  --theme-border: #e3d2b5 !important;
+  --theme-border-strong: #d4bc94 !important;
+  --theme-arabic: #271c0c !important; /* Texte arabe brun foncé */
+  --theme-glow-a: rgba(154, 104, 0, 0.06) !important;
+  --theme-glow-b: rgba(74, 50, 28, 0.05) !important;
+  --theme-shadow-panel: 0 20px 48px rgba(39, 28, 12, 0.08) !important;
+  --theme-shadow-soft: 0 10px 24px rgba(39, 28, 12, 0.05) !important;
+  --theme-app-bg: linear-gradient(180deg, #f7f3e8 0%, #ecdcb9 100%) !important;
+
+  /* Variables d'affichage pour les pages de lecture */
+  --reader-page-bg: #f7f3e8 !important;
+  --reader-card-bg: rgba(251, 249, 243, 0.92) !important;
+  --reader-card-border: #e3d2b5 !important;
+  --reader-card-hover: rgba(154, 104, 0, 0.06) !important;
+  --reader-page-paper: #fbf9f3 !important;
+  --reader-page-ink: #271c0c !important;
+  --reader-page-muted: #7c5e3f !important;
+  --reader-page-rule: rgba(154, 104, 0, 0.25) !important;
+  --reader-page-shadow: 0 18px 48px rgba(39, 28, 12, 0.1) !important;
+  --reader-page-surface: rgba(251, 249, 243, 0.88) !important;
+  --reader-page-surface-strong: #fbf9f3 !important;
+  --reader-page-border: #e3d2b5 !important;
+  --reader-paper-bg: #fbf9f3 !important;
+  --reader-paper-border: #d4bc94 !important;
+
+  /* Variables de Tajweed adaptées au mode sépia (couleurs d'encre chaudes) */
+  --tajwid-silent: #7c5e3f !important;
+  --tajwid-lam-shamsiyya: #7c5e3f !important;
+  --tajwid-madd-normal: #8a2566 !important;
+  --tajwid-madd: #8a2566 !important;
+  --tajwid-madd-separated: #a16207 !important;
+  --tajwid-madd-connected: #be185d !important;
+  --tajwid-madd-necessary: #b91c1c !important;
+  --tajwid-ghunna: #15803d !important;
+  --tajwid-idgham: #15803d !important;
+  --tajwid-ikhfa: #15803d !important;
+  --tajwid-qalqala: #0369a1 !important;
+  --tajwid-tafkhim: #4338ca !important;
+}
+
+/* ==========================================================================
+   UI/UX OVERHAUL — QURAN.COM-INSPIRED PREMIUM DESIGN FOR READING PAGES
+   ========================================================================== */
+
+/* ── Mushaf Mode Overhaul (CleanPageView) ── */
+/* Remove heavy Uthmanic vintage frame, corners, and gradients in favor of clean modern typography */
+html body .app-root .quran-display--platform .cpv-container.mushaf-page-wrapper {
+    border: 1px solid var(--reader-page-border) !important;
+    border-radius: 20px !important;
+    background: var(--reader-page-paper) !important;
+    box-shadow: var(--reader-page-shadow, 0 10px 40px rgba(0, 0, 0, 0.04)) !important;
+    padding: clamp(1.5rem, 5vw, 3rem) clamp(1.2rem, 6vw, 3.5rem) !important;
+}
+
+/* Hide rotated manuscript corners and inner border frame */
+html body .app-root .quran-display--platform .mushaf-corner {
+    display: none !important;
+}
+html body .app-root .quran-display--platform .cpv-container.mushaf-page-wrapper::after {
+    display: none !important;
+}
+
+/* Clean up Mushaf text spacing and alignment */
+html body .app-root .quran-display--platform .mushaf-container {
+    text-align: justify !important;
+    text-align-last: center !important;
+    word-spacing: 0.16em !important;
+    line-height: 2.8 !important;
+}
+
+/* Mushaf Verse Highlight (Hover, Active, Playing) */
+html body .app-root .quran-display--platform .mushaf-container .cpv-verse {
+    padding: 0.12rem 0.22rem !important;
+    border-radius: 6px !important;
+}
+
+html body .app-root .quran-display--platform .mushaf-container .cpv-verse:hover {
+    background: rgba(var(--primary-rgb), 0.05) !important;
+}
+
+html body .app-root .quran-display--platform .mushaf-container .cpv-verse--active {
+    background: rgba(var(--primary-rgb), 0.12) !important;
+    box-shadow: 0 0 0 1.5px rgba(var(--primary-rgb), 0.3) !important;
+}
+
+html body .app-root .quran-display--platform .mushaf-container .cpv-verse--playing {
+    background: rgba(var(--primary-rgb), 0.15) !important;
+    box-shadow: 0 0 0 2px var(--primary) !important;
+    color: var(--reader-page-ink) !important;
+}
+
+/* ── List Mode Overhaul (QCVerseByVerseView) ── */
+/* Modern clean cards with spacious padding and border dividers */
+html body .app-root .quran-display--platform .qc-verse-card {
+    margin-bottom: 0px !important;
+    border-width: 0 0 1px 0 !important; /* Separator lines like Quran.com */
+    border-color: var(--reader-page-border) !important;
+    border-radius: 0px !important;
+    background: transparent !important;
+    padding: 2rem 1.5rem !important;
+    box-shadow: none !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+html body .app-root .quran-display--platform .qc-verse-card:hover {
+    background: color-mix(in srgb, var(--reader-page-surface) 97%, var(--primary) 3%) !important;
+}
+
+/* Active & Playing verse cards in list mode */
+html body .app-root .quran-display--platform .qc-verse-card.is-active {
+    background: color-mix(in srgb, var(--reader-page-surface) 95%, var(--primary) 5%) !important;
+    border-bottom-color: color-mix(in srgb, var(--primary) 30%, var(--reader-page-border)) !important;
+}
+
+html body .app-root .quran-display--platform .qc-verse-card.is-playing {
+    background: color-mix(in srgb, var(--reader-page-surface) 90%, var(--primary) 10%) !important;
+    border-bottom-color: var(--primary) !important;
+}
+
+/* Rounded, clean Play/Verse Number button similar to Quran.com */
+html body .app-root .quran-display--platform .qc-verse-card button[aria-label^="Verset"],
+html body .app-root .quran-display--platform .qc-verse-card button[aria-label^="Verse"] {
+    width: 2.25rem !important;
+    height: 2.25rem !important;
     font-size: 0.8rem !important;
-    line-height: 1.6 !important;
-  }
+    border-radius: 50% !important;
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-secondary) !important;
+    transition: all 0.2s ease !important;
 }
 
-/* ── Utilities ────────────────────────────────── */
+html body .app-root .qc-verse-card.is-playing button[aria-label^="Verset"],
+html body .app-root .qc-verse-card.is-playing button[aria-label^="Verse"] {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.35) !important;
+}
 
-/* Hide on mobile */
+/* Clean translation block */
+html body .app-root .quran-display--platform .qc-verse-card p {
+    font-size: 0.95rem !important;
+    color: var(--text-secondary) !important;
+    line-height: 1.8 !important;
+}
+
+/* ── Reading Toolbar Responsive & Scrollability Adjustments ── */
 @media (max-width: 640px) {
-  .hidden-mobile {
-    display: none !important;
-  }
-}
-
-/* Hide on desktop */
-@media (min-width: 641px) {
-  .hidden-desktop {
-    display: none !important;
-  }
-}
-
-/* Show on mobile only */
-@media (max-width: 640px) {
-  .mobile-only {
-    display: block !important;
-  }
-}
-
-/* Show on desktop only */
-@media (min-width: 641px) {
-  .desktop-only {
-    display: block !important;
-  }
-}
-
-/* Touch-friendly hover states */
-@media (hover: none) {
-  .hover-card:hover {
-    transform: none !important;
-    box-shadow: none !important;
-  }
-
-  button:hover {
-    transform: none !important;
-  }
-}
-
-/* Reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
-  }
-}
-
-/* Landscape mode */
-@media (orientation: landscape) and (max-height: 500px) {
-  .audio-player,
-  .mp-footer {
-    max-height: 60px !important;
-  }
-
-  .quran-display--platform .qcm-lines {
-    min-height: 400px !important;
-  }
-}
-
-/* High DPI screens */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .quran-text {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-}
-
-/* Print styles */
-@media print {
-  .audio-player,
-  .mp-footer,
-  .sidebar,
-  .app-header,
-  .hdr,
+  .reader-toolbar,
   .reading-toolbar,
   [role="toolbar"] {
-    display: none !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
-  .quran-display {
-    padding: 0 !important;
-  }
-
-  .qcm-page {
-    box-shadow: none !important;
-    border: 1px solid #ccc !important;
+  .reader-toolbar__navigator {
+    flex-shrink: 0 !important;
   }
 }
 
-/* Word by Word Continuous/Inline Mode Override */
-.wbw-display-inline {
-  display: inline !important;
-  direction: rtl;
-}
-
-.wbw-word-block--inline {
-  display: inline-flex !important;
-  vertical-align: middle;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0.15rem 0.2rem 0.25rem !important;
-  margin: 0 0.1rem;
-  min-width: unset !important;
-  max-width: fit-content;
-  border: 1px solid transparent !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-.wbw-word-block--inline:hover {
-  border-color: rgba(var(--primary-rgb), 0.25) !important;
-  background: rgba(var(--primary-rgb), 0.05) !important;
-  border-radius: 0.35rem;
-}
-
-.wbw-word-block--inline.wbw-current {
-  border-color: rgba(212, 168, 32, 0.5) !important;
-  background: rgba(212, 168, 32, 0.1) !important;
-  border-radius: 0.35rem;
-}
-
-/* Stacked mushaf pages margin */
-.quran-display--platform .cpv-container.mushaf-page-wrapper {
-  margin-bottom: 2.5rem !important;
-}
-
-/* Full responsiveness for the search-pro container and single-column layout */
-.search-pro {
-  max-width: 760px;
-}
-
-.search-pro__body {
-  grid-template-columns: minmax(0, 1fr) !important;
-}
-
-/* Make sure search results display full width on desktop */
-.search-pro__main {
-  width: 100% !important;
-  max-width: 100% !important;
-  padding: 1.25rem !important;
-}
-
-@media (max-width: 768px) {
-  .quran-display--platform .cpv-container.mushaf-page-wrapper {
-    margin-bottom: 1.5rem !important;
-    border-left: 0 !important;
-    border-right: 0 !important;
-    border-radius: 0 !important;
-    padding: 1.15rem 0.9rem 1.5rem !important;
+/* ── Mobile Arabic Text Responsive Sizing ── */
+@media (max-width: 480px) {
+  .qc-ayah-text-ar {
+    font-size: clamp(24px, 7vw, 36px) !important;
   }
-
-  /* Hide inner borders and corner motif diamonds on narrow mobile devices to optimize text width */
-  .quran-display--platform .cpv-container.mushaf-page-wrapper::after {
-    display: none !important;
+  .qc-reading-view {
+    padding-inline: 0.75rem !important;
   }
-
-  .quran-display--platform .mushaf-corner {
-    display: none !important;
+  .qc-verse-card {
+    padding-inline: 0.75rem !important;
+  }
+  .qc-verse-by-verse-view {
+    padding-inline: 0.25rem !important;
   }
 }

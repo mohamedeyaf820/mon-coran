@@ -57,6 +57,7 @@ const getInitialState = () => {
   shareImageOpen: false,
   weeklyStatsOpen: false,
   audioMakerOpen: false,
+  toolsHubOpen: false,
   splashDone: false,
   tafsirSidebarOpen: false,
   tafsirSidebarVerse: null,

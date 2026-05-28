@@ -1,4 +1,4 @@
-import { useContext, useMemo, useCallback } from "react";
+import { useContext, useMemo, useCallback, useRef } from "react";
 import { AppContext, AppStateContext, AppActionsContext } from "../context/AppContext";
 
 /**
@@ -46,7 +46,9 @@ export function useAppActions() {
  */
 export function useAppSelector(selector) {
   const state = useAppState();
-  return useMemo(() => selector(state), [state, selector]);
+  const selectorRef = useRef(selector);
+  selectorRef.current = selector;
+  return useMemo(() => selectorRef.current(state), [state]);
 }
 
 /**
