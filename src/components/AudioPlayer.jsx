@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import audioService from "../services/audioService";
-import { ensureReciterForRiwaya, getRecitersByRiwaya } from "../data/reciters";
+import { ensureReciterForRiwaya, getRecitersByRiwaya, getReciter } from "../data/reciters";
 import { getSurah, surahName } from "../data/surahs";
 import {
   getLatencyForReciter,
@@ -659,6 +659,25 @@ export default function AudioPlayer() {
     const safe = ensureReciterForRiwaya(reciter, riwaya);
     if (safe !== reciter) set({ reciter: safe });
   }, [reciter, riwaya, set]);
+
+  // Synchronize audioService with active reciter/riwaya from global state
+  useEffect(() => {
+    if (!reciter) return;
+    const currentReciter = getReciter(reciter, riwaya);
+    if (!currentReciter) return;
+
+    const activeCdn = currentReciter.cdn;
+    const activeCdnType = currentReciter.cdnType || "islamic";
+
+    if (
+      audioService._currentReciterCdn !== activeCdn ||
+      audioService._currentCdnType !== activeCdnType
+    ) {
+      audioService.switchReciter(activeCdn, activeCdnType).catch((err) => {
+        console.warn("Global reciter synchronization failed:", err);
+      });
+    }
+  }, [reciter, riwaya]);
 
   useEffect(() => {
     failedRecitersRef.current.clear();

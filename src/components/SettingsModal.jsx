@@ -151,7 +151,7 @@ export default function SettingsModal() {
     <div className="fixed inset-0 z-[500] flex justify-end" role="dialog" aria-modal="true">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/45 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/35 backdrop-blur-md transition-opacity"
         onClick={close}
       />
 
@@ -160,43 +160,43 @@ export default function SettingsModal() {
         ref={panelRef}
         className="relative w-full max-w-md h-full bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl flex flex-col z-10 transition-transform duration-300 transform translate-x-0"
         style={{
-          boxShadow: "-10px 0 30px -5px rgba(0, 0, 0, 0.15)",
+          boxShadow: "-10px 0 40px -6px rgba(0, 0, 0, 0.15)",
           color: "var(--text-primary)"
         }}
       >
         {/* Header */}
-        <header className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)]">
-              <BookOpen size={20} />
+        <header className="flex items-center justify-between px-6 py-4.5 border-b border-[var(--border)]">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] shadow-sm">
+              <BookOpen size={18} />
             </span>
-            <h2 className="text-lg font-bold font-[var(--font-ui)]">
+            <h2 className="text-md font-extrabold font-[var(--font-ui)] tracking-tight">
               {t("settings.readingSettings", lang)}
             </h2>
           </div>
           <button
             onClick={close}
-            className="p-1.5 rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+            className="p-1.5 rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer hover:scale-105 active:scale-95"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </header>
 
         {/* Tab Selection */}
-        <nav className="flex border-b border-[var(--border)] px-4 bg-[var(--bg-secondary)]" aria-label="Tabs" role="tablist">
+        <nav className="flex gap-1 border-b border-[var(--border)] p-1.5 bg-[var(--bg-secondary)]" aria-label="Tabs" role="tablist">
           <button
             id="tab-apparence"
             role="tab"
             aria-selected={activeTab === "apparence"}
             aria-controls="panel-apparence"
             onClick={() => setActiveTab("apparence")}
-            className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-1.5 border-b-[3px] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] focus-visible:rounded-lg ${
+            className={`flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 rounded-xl transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] ${
               activeTab === "apparence"
-                ? "border-[var(--primary)] text-[var(--primary)]"
-                : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                ? "bg-[var(--primary)] text-white shadow-md shadow-[rgba(var(--primary-rgb),0.2)] font-extrabold"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[rgba(var(--primary-rgb),0.04)]"
             }`}
           >
-            <Palette size={16} />
+            <Palette size={14} />
             <span>{t("settings.general", lang)}</span>
           </button>
           <button
@@ -205,13 +205,13 @@ export default function SettingsModal() {
             aria-selected={activeTab === "affichage"}
             aria-controls="panel-affichage"
             onClick={() => setActiveTab("affichage")}
-            className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-1.5 border-b-[3px] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] focus-visible:rounded-lg ${
+            className={`flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 rounded-xl transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] ${
               activeTab === "affichage"
-                ? "border-[var(--primary)] text-[var(--primary)]"
-                : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                ? "bg-[var(--primary)] text-white shadow-md shadow-[rgba(var(--primary-rgb),0.2)] font-extrabold"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[rgba(var(--primary-rgb),0.04)]"
             }`}
           >
-            <BookOpen size={16} />
+            <BookOpen size={14} />
             <span>{t("settings.display", lang)}</span>
           </button>
           <button
@@ -220,19 +220,19 @@ export default function SettingsModal() {
             aria-selected={activeTab === "audio"}
             aria-controls="panel-audio"
             onClick={() => setActiveTab("audio")}
-            className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-1.5 border-b-[3px] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] focus-visible:rounded-lg ${
+            className={`flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 rounded-xl transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] ${
               activeTab === "audio"
-                ? "border-[var(--primary)] text-[var(--primary)]"
-                : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                ? "bg-[var(--primary)] text-white shadow-md shadow-[rgba(var(--primary-rgb),0.2)] font-extrabold"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[rgba(var(--primary-rgb),0.04)]"
             }`}
           >
-            <Volume2 size={16} />
+            <Volume2 size={14} />
             <span>{t("settings.audio", lang)}</span>
           </button>
         </nav>
 
         {/* Panel Content (Scrollable) */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-5 space-y-6">
           
           {/* TAB 1: Apparence */}
           {activeTab === "apparence" && (
@@ -244,14 +244,14 @@ export default function SettingsModal() {
             >
               {/* App Language */}
               <div className="space-y-2">
-                <label htmlFor="settings-lang-select" className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                <label htmlFor="settings-lang-select" className="text-xs font-extrabold uppercase tracking-wider text-[var(--text-muted)]">
                   {t("settings.appLanguage", lang)}
                 </label>
                 <select
                   id="settings-lang-select"
                   value={lang}
                   onChange={(e) => set({ lang: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] font-medium text-sm focus:outline-none focus:ring-2 focus:ring-[rgba(var(--primary-rgb),0.5)]"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] font-medium text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
                 >
                   <option value="fr">Français</option>
                   <option value="en">English</option>
@@ -260,41 +260,45 @@ export default function SettingsModal() {
               </div>
 
               {/* Theme Mode */}
-              <div className="space-y-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
+              <div className="space-y-2.5">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-[var(--text-muted)] block">
                   {t("settings.visualTheme", lang)}
                 </span>
-                <div className="grid grid-cols-1 gap-2" role="group" aria-label={t("settings.visualTheme", lang)}>
+                <div className="grid grid-cols-2 gap-3" role="group" aria-label={t("settings.visualTheme", lang)}>
                   {UI_THEMES.map((thm) => {
                     const label = lang === "ar" ? thm.ar : lang === "fr" ? thm.fr : thm.en;
-                    const desc = lang === "ar" ? thm.descriptionAr : lang === "fr" ? thm.descriptionFr : thm.descriptionEn;
                     const isActive = theme === thm.id;
                     return (
                       <button
                         key={thm.id}
                         type="button"
                         onClick={() => set({ theme: thm.id })}
-                        className={`flex items-center gap-3 w-full py-2.5 px-3 rounded-xl border text-left transition-all ${
+                        className={`relative flex flex-col items-center justify-center p-4.5 rounded-2xl border text-center transition-all cursor-pointer ${
                           isActive
-                            ? "border-[var(--primary)] bg-[rgba(var(--primary-rgb),0.08)] shadow-sm"
-                            : "border-[var(--border)] hover:bg-[var(--bg-secondary)]"
+                            ? "border-[var(--primary)] bg-[rgba(var(--primary-rgb),0.06)] shadow-md scale-[1.02]"
+                            : "border-[var(--border)] hover:bg-[var(--bg-secondary)] hover:scale-[1.01]"
                         }`}
                         aria-pressed={isActive}
                       >
-                        {/* Palette aperçu */}
-                        <span
-                          className="shrink-0 w-7 h-7 rounded-full border border-black/10 shadow-sm"
+                        {/* Theme color preview swatch */}
+                        <div
+                          className="w-11 h-11 rounded-full border border-black/10 shadow-inner mb-2.5 flex items-center justify-center relative overflow-hidden shrink-0"
                           style={{ background: thm.palette?.bg || "var(--bg-primary)" }}
-                        />
-                        <span className="flex flex-col min-w-0 flex-1">
-                          <span className={`text-sm font-bold ${
-                            isActive ? "text-[var(--primary)]" : "text-[var(--text-primary)]"
-                          }`}>{label}</span>
-                          <span className="text-[0.71rem] text-[var(--text-muted)] truncate leading-tight">{desc}</span>
+                        >
+                          {/* Inner color details */}
+                          <div className="absolute inset-0 flex">
+                            <div className="w-1/2 h-full opacity-10" style={{ backgroundColor: thm.palette?.primary || "var(--primary)" }} />
+                            <div className="w-1/2 h-full opacity-20" style={{ backgroundColor: thm.palette?.text || "var(--text-primary)" }} />
+                          </div>
+                          {isActive && (
+                            <i className="fas fa-check text-[0.62rem] text-[var(--primary)] bg-[var(--bg-card)] p-1 rounded-full shadow-sm z-10" />
+                          )}
+                        </div>
+                        <span className={`text-xs font-bold tracking-tight ${
+                          isActive ? "text-[var(--primary)] font-extrabold" : "text-[var(--text-primary)]"
+                        }`}>
+                          {label}
                         </span>
-                        {isActive && (
-                          <span className="shrink-0 w-2 h-2 rounded-full bg-[var(--primary)]" />
-                        )}
                       </button>
                     );
                   })}
@@ -409,28 +413,26 @@ export default function SettingsModal() {
             >
               {/* Riwaya */}
               <div className="space-y-2">
-                <span id="settings-riwaya-label" className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
+                <span id="settings-riwaya-label" className="text-xs font-extrabold uppercase tracking-wider text-[var(--text-muted)] block">
                   Riwaya
                 </span>
-                <div className="grid grid-cols-2 gap-2" role="group" aria-labelledby="settings-riwaya-label">
+                <div className="relative p-1 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border)] flex gap-1" role="group" aria-labelledby="settings-riwaya-label">
                   <button
                     onClick={() => set({ riwaya: "hafs" })}
-                    aria-pressed={riwaya === "hafs"}
-                    className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-all ${
+                    className={`flex-1 py-2 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
                       riwaya === "hafs"
-                        ? "border-[var(--primary)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] shadow-sm"
-                        : "border-[var(--border)] hover:bg-[var(--bg-secondary)]"
+                        ? "bg-[var(--bg-card)] text-[var(--primary)] shadow-sm"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     }`}
                   >
                     Hafs (حفص)
                   </button>
                   <button
                     onClick={() => set({ riwaya: "warsh" })}
-                    aria-pressed={riwaya === "warsh"}
-                    className={`py-2 px-3 rounded-xl border text-sm font-semibold transition-all ${
+                    className={`flex-1 py-2 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
                       riwaya === "warsh"
-                        ? "border-[var(--primary)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] shadow-sm"
-                        : "border-[var(--border)] hover:bg-[var(--bg-secondary)]"
+                        ? "bg-[var(--bg-card)] text-[var(--primary)] shadow-sm"
+                        : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                     }`}
                   >
                     Warsh (ورش)

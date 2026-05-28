@@ -148,16 +148,7 @@ const QCVerseCard = memo(function QCVerseCard({
           {ayah.numberInSurah}
         </button>
 
-        {/* Actions: visible on hover/playing */}
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-150">
-          <QCVerseActions
-            surah={surahNum}
-            ayah={ayah.numberInSurah}
-            ayahData={ayah}
-            lang={lang}
-            layout="qcom-header-right"
-          />
-        </div>
+
       </div>
 
       {/* Arabic text */}
