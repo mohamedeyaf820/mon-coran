@@ -117,7 +117,7 @@ const QCVerseCard = memo(function QCVerseCard({
       data-ayah-number={ayah.numberInSurah}
       data-ayah-global={ayah.number}
       className={cn(
-        "qc-verse-card group relative transition-colors duration-200 outline-none",
+        "qc-verse-card qc-list-card group relative transition-colors duration-200 outline-none",
         "px-4 sm:px-6 py-5 sm:py-6",
         "border-b border-[var(--border)]",
         isPlaying && "is-playing",
@@ -130,25 +130,38 @@ const QCVerseCard = memo(function QCVerseCard({
       )}
     >
       {/* Card Header: verse number + actions */}
-      <div className="flex items-center justify-between mb-4 select-none">
+      <div className="qc-list-card__top select-none">
+        <div className="qc-list-card__start">
         <button
           type="button"
           onClick={handleClick}
           aria-label={`${lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Verse"} ${ayah.numberInSurah}`}
           aria-expanded={isActive}
           className={cn(
-            "flex items-center justify-center w-8 h-8 rounded-full text-[0.75rem] font-bold transition-all duration-200 shrink-0",
-            isPlaying
-              ? "bg-[var(--primary)] text-white shadow-[0_2px_8px_rgba(var(--primary-rgb),0.4)]"
-              : isActive
-              ? "bg-[rgba(var(--primary-rgb),0.12)] text-[var(--primary)]"
-              : "bg-[var(--bg-secondary)] text-[var(--text-muted)] border border-[var(--border)] hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] hover:border-[rgba(var(--primary-rgb),0.2)]",
+            "qc-list-card__reference",
+            isPlaying && "is-playing",
+            isActive && "is-active",
           )}
         >
-          {ayah.numberInSurah}
+          {surahNum}:{ayah.numberInSurah}
         </button>
-
-
+          <QCVerseActions
+            surah={surahNum}
+            ayah={ayah.numberInSurah}
+            ayahData={ayah}
+            lang={lang}
+            layout="qcom-header-left"
+          />
+        </div>
+        <div className="qc-list-card__end">
+          <QCVerseActions
+            surah={surahNum}
+            ayah={ayah.numberInSurah}
+            ayahData={ayah}
+            lang={lang}
+            layout="qcom-header-right"
+          />
+        </div>
       </div>
 
       {/* Arabic text */}
@@ -198,14 +211,13 @@ const QCVerseCard = memo(function QCVerseCard({
           </div>
         ) : null}
 
-        {/* Footer actions row */}
-        <div className="mt-4 pt-3 border-t border-[rgba(var(--primary-rgb),0.06)] flex items-center justify-between transition-opacity duration-200 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 opacity-100">
+        <div className="qc-list-card__study">
           <QCVerseActions
             surah={surahNum}
             ayah={ayah.numberInSurah}
             ayahData={ayah}
             lang={lang}
-            layout="qcom-footer"
+            layout="qcom-list-study"
           />
         </div>
       </div>

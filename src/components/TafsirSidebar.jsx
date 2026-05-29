@@ -1,272 +1,322 @@
-import React, { useState, useEffect, useRef } from "react";
-import { X, BookOpen, ChevronRight, AlertCircle, RefreshCw } from "lucide-react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import {
+  AlertCircle,
+  BookOpen,
+  ExternalLink,
+  Languages,
+  RefreshCw,
+  X,
+} from "lucide-react";
 import { useApp } from "../context/AppContext";
-import { getVerseTafsir, getAvailableTafsirs, getVerseTranslation } from "../services/quranComStudyService";
 import { getSurah } from "../data/surahs";
+import {
+  getAvailableTafsirs,
+  getQuranComVerseUrl,
+  getVerseTafsir,
+  getVerseTranslation,
+} from "../services/quranComStudyService";
+import { cn } from "../lib/utils";
+
+const DEFAULT_TAFSIR_BY_LANG = {
+  ar: "ar-muyassar",
+  fr: "en-kathir",
+  en: "en-kathir",
+};
+
+function label(lang, fr, en, ar = en) {
+  if (lang === "ar") return ar;
+  return lang === "fr" ? fr : en;
+}
+
+function getSourceName(source, lang) {
+  if (!source) return "";
+  return lang === "fr" ? source.nameFr || source.name : source.name;
+}
 
 export default function TafsirSidebar() {
   const { state, set } = useApp();
-  const { lang, tafsirSidebarOpen, tafsirSidebarVerse } = state;
-
-  const [tafsirData, setTafsirData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [retryKey, setRetryKey] = useState(0);
-  const [selectedTafsirId, setSelectedTafsirId] = useState(() => {
-    return lang === "ar" ? "ar-muyassar" : lang === "fr" ? "fr-kathir" : "en-kathir";
+  const { lang, tafsirSidebarVerse } = state;
+  const closeButtonRef = useRef(null);
+  const [selectedTafsirId, setSelectedTafsirId] = useState(
+    DEFAULT_TAFSIR_BY_LANG[lang] || DEFAULT_TAFSIR_BY_LANG.en,
+  );
+  const [tafsirState, setTafsirState] = useState({
+    status: "idle",
+    data: null,
+    error: null,
   });
+  const [translationState, setTranslationState] = useState({
+    status: "idle",
+    data: null,
+    error: null,
+  });
+  const [showTranslation, setShowTranslation] = useState(lang === "fr");
+  const [retryToken, setRetryToken] = useState(0);
 
-  const [showFrenchTranslation, setShowFrenchTranslation] = useState(false);
-  const [frenchTranslation, setFrenchTranslation] = useState(null);
-  const [loadingTranslation, setLoadingTranslation] = useState(false);
+  const verse = tafsirSidebarVerse || {};
+  const surahNumber = Number(verse.surah);
+  const ayahNumber = Number(verse.ayah);
+  const surahInfo = useMemo(() => getSurah(surahNumber), [surahNumber]);
+  const tafsirOptions = useMemo(() => getAvailableTafsirs(), []);
+  const selectedSource = tafsirOptions.find(
+    (item) => item.id === selectedTafsirId,
+  );
+  const isArabicTafsir = selectedSource?.lang === "ar";
+  const quranComUrl = getQuranComVerseUrl(surahNumber, ayahNumber);
 
-  const sidebarRef = useRef(null);
-
-  // Close sidebar
-  const close = () => {
-    set({ tafsirSidebarOpen: false });
-  };
-
-  // Sync selectedTafsirId when language changes
   useEffect(() => {
-    setSelectedTafsirId(lang === "ar" ? "ar-muyassar" : lang === "fr" ? "fr-kathir" : "en-kathir");
+    setSelectedTafsirId(DEFAULT_TAFSIR_BY_LANG[lang] || DEFAULT_TAFSIR_BY_LANG.en);
+    setShowTranslation(lang === "fr");
   }, [lang]);
 
-  // Fetch Tafsir on verse or selection change
   useEffect(() => {
-    if (!tafsirSidebarOpen || !tafsirSidebarVerse) return;
+    closeButtonRef.current?.focus?.();
+  }, []);
 
-    let active = true;
+  useEffect(() => {
+    if (!surahNumber || !ayahNumber) return undefined;
+
     const controller = new AbortController();
-
-    setLoading(true);
-    setError(null);
-    setTafsirData(null);
-    setFrenchTranslation(null);
-    setShowFrenchTranslation(false);
+    setTafsirState({ status: "loading", data: null, error: null });
 
     getVerseTafsir({
-      surah: tafsirSidebarVerse.surah,
-      ayah: tafsirSidebarVerse.ayah,
+      surah: surahNumber,
+      ayah: ayahNumber,
       lang,
       tafsirId: selectedTafsirId,
-      signal: controller.signal
+      signal: controller.signal,
     })
       .then((data) => {
-        if (active) {
-          setTafsirData(data);
-          setLoading(false);
-        }
+        setTafsirState({ status: "ready", data, error: null });
       })
-      .catch((err) => {
-        if (active && err.name !== "AbortError") {
-          console.error("Failed to load tafsir:", err);
-          setError(err.message || "Failed to load tafsir");
-          setLoading(false);
-        }
+      .catch((error) => {
+        if (error?.name === "AbortError") return;
+        setTafsirState({
+          status: "error",
+          data: null,
+          error:
+            error?.message ||
+            label(
+              lang,
+              "Impossible de charger le tafsir.",
+              "Unable to load tafsir.",
+              "Unable to load tafsir.",
+            ),
+        });
       });
 
-    // Fetch French Translation of the verse if application is in French and Tafsir is in English
-    if (lang === "fr" && (selectedTafsirId === "fr-kathir" || selectedTafsirId === "en-kathir")) {
-      setLoadingTranslation(true);
-      getVerseTranslation({
-        surah: tafsirSidebarVerse.surah,
-        ayah: tafsirSidebarVerse.ayah,
-        lang: "fr",
-        signal: controller.signal
-      })
-        .then((transData) => {
-          if (active) {
-            setFrenchTranslation(transData);
-            setLoadingTranslation(false);
-          }
-        })
-        .catch((err) => {
-          if (active && err.name !== "AbortError") {
-            console.error("Failed to load French translation in Tafsir sidebar:", err);
-            setLoadingTranslation(false);
-          }
-        });
+    return () => controller.abort();
+  }, [ayahNumber, lang, retryToken, selectedTafsirId, surahNumber]);
+
+  useEffect(() => {
+    if (!surahNumber || !ayahNumber || lang !== "fr") {
+      setTranslationState({ status: "idle", data: null, error: null });
+      return undefined;
     }
 
-    return () => {
-      active = false;
-      controller.abort();
-    };
-  }, [tafsirSidebarOpen, tafsirSidebarVerse, selectedTafsirId, lang, retryKey]);
+    const controller = new AbortController();
+    setTranslationState({ status: "loading", data: null, error: null });
 
-  if (!tafsirSidebarOpen || !tafsirSidebarVerse) return null;
+    getVerseTranslation({
+      surah: surahNumber,
+      ayah: ayahNumber,
+      lang: "fr",
+      signal: controller.signal,
+    })
+      .then((data) => {
+        setTranslationState({ status: "ready", data, error: null });
+      })
+      .catch((error) => {
+        if (error?.name === "AbortError") return;
+        setTranslationState({
+          status: "error",
+          data: null,
+          error: error?.message || "Traduction indisponible.",
+        });
+      });
 
-  const surahInfo = getSurah(tafsirSidebarVerse.surah);
-  const surahName = surahInfo
-    ? lang === "fr"
-      ? surahInfo.fr || surahInfo.en
-      : lang === "ar"
-      ? surahInfo.ar
-      : surahInfo.en
-    : `Sourate ${tafsirSidebarVerse.surah}`;
+    return () => controller.abort();
+  }, [ayahNumber, lang, surahNumber]);
 
-  const availableTafsirs = getAvailableTafsirs();
+  const closeSidebar = () => {
+    set({ tafsirSidebarOpen: false, tafsirSidebarVerse: null });
+  };
+
+  const retry = () => {
+    setRetryToken((value) => value + 1);
+  };
 
   return (
-    <div
-      className="fixed inset-y-0 right-0 z-[450] flex"
+    <aside
+      className="fixed inset-y-0 right-0 z-[390] flex w-full max-w-[min(100vw,34rem)] flex-col border-l border-[color-mix(in_srgb,var(--theme-border)_70%,transparent_30%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_96%,#ffffff_4%)] text-[color-mix(in_srgb,var(--theme-text)_92%,#ffffff_8%)] shadow-[-28px_0_70px_rgba(3,10,18,0.34)] backdrop-blur-2xl"
       role="dialog"
       aria-modal="true"
-      aria-label="Tafsir"
+      aria-labelledby="tafsir-sidebar-title"
     >
-      {/* Backdrop for mobile only (closes sidebar when clicking outside) */}
-      <div
-        className="fixed inset-0 bg-black/30 backdrop-blur-[1px] md:hidden"
-        onClick={close}
-      />
-
-      {/* Sidebar Panel */}
-      <div
-        ref={sidebarRef}
-        className="relative w-full max-w-md md:max-w-lg h-full bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl flex flex-col z-10 transition-transform duration-300"
-        style={{
-          boxShadow: "-10px 0 30px -5px rgba(0, 0, 0, 0.15)",
-          color: "var(--text-primary)"
-        }}
-      >
-        {/* Header */}
-        <header className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
-          <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)]">
-              <BookOpen size={18} />
-            </span>
-            <div>
-              <h2 className="text-sm font-bold font-[var(--font-ui)]">
-                Tafsir {surahName} ({tafsirSidebarVerse.surah}:{tafsirSidebarVerse.ayah})
-              </h2>
-              <p className="text-[0.68rem] text-[var(--text-muted)] font-[var(--font-ui)]">
-                {lang === "fr" ? "Explication détaillée du verset" : "Detailed verse explanation"}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={close}
-            className="p-1.5 rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
-            aria-label="Fermer"
+      <div className="flex items-start justify-between gap-3 border-b border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] px-4 py-4 sm:px-5">
+        <div className="min-w-0">
+          <p className="mb-1 flex items-center gap-2 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[color-mix(in_srgb,var(--theme-primary)_72%,var(--theme-text)_28%)]">
+            <BookOpen size={15} />
+            {label(lang, "Tafsir", "Tafsir", "Tafsir")}
+          </p>
+          <h2
+            id="tafsir-sidebar-title"
+            className="truncate text-lg font-black leading-tight"
           >
-            <X size={18} />
-          </button>
-        </header>
+            {surahInfo
+              ? `${lang === "fr" ? surahInfo.fr : surahInfo.en} ${surahNumber}:${ayahNumber}`
+              : `${surahNumber}:${ayahNumber}`}
+          </h2>
+          <p className="mt-1 text-sm text-[color-mix(in_srgb,var(--theme-text-muted)_88%,var(--theme-bg)_12%)]">
+            {label(
+              lang,
+              "Explication du verset",
+              "Verse explanation",
+              "Verse explanation",
+            )}
+          </p>
+        </div>
+        <button
+          type="button"
+          ref={closeButtonRef}
+          onClick={closeSidebar}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_80%,transparent_20%)] text-[color-mix(in_srgb,var(--theme-text)_82%,var(--theme-bg)_18%)] transition hover:border-[color-mix(in_srgb,var(--theme-primary)_44%,transparent_56%)] hover:text-[color-mix(in_srgb,var(--theme-text)_96%,#ffffff_4%)]"
+          aria-label={label(lang, "Fermer", "Close", "Close")}
+        >
+          <X size={18} />
+        </button>
+      </div>
 
-        {/* Tafsir Source Dropdown Selector */}
-        <div className="px-5 py-3 border-b border-[var(--border)] bg-[var(--bg-secondary)] flex items-center justify-between gap-3">
-          <label htmlFor="tafsir-selector" className="text-xs font-semibold text-[var(--text-muted)] font-[var(--font-ui)] shrink-0">
-            {lang === "fr" ? "Source du Tafsir :" : "Tafsir Source:"}
+      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5">
+        <section className="mb-4 rounded-2xl border border-[color-mix(in_srgb,var(--theme-border)_56%,transparent_44%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_78%,transparent_22%)] p-3">
+          <label
+            htmlFor="tafsir-source-select"
+            className="mb-2 block text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[color-mix(in_srgb,var(--theme-primary)_72%,var(--theme-text)_28%)]"
+          >
+            {label(lang, "Source du tafsir", "Tafsir source", "Tafsir source")}
           </label>
           <select
-            id="tafsir-selector"
+            id="tafsir-source-select"
             value={selectedTafsirId}
-            onChange={(e) => setSelectedTafsirId(e.target.value)}
-            className="text-xs px-2 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-primary)] outline-none focus:border-[var(--primary)] max-w-[220px]"
+            onChange={(event) => setSelectedTafsirId(event.target.value)}
+            className="w-full rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_88%,transparent_12%)] px-3 py-2 text-sm font-semibold outline-none focus:border-[color-mix(in_srgb,var(--theme-primary)_52%,transparent_48%)] focus:ring-2 focus:ring-[rgba(var(--theme-primary-rgb),0.16)]"
           >
-            {availableTafsirs.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name} ({t.lang.toUpperCase()})
+            {tafsirOptions.map((source) => (
+              <option key={source.id} value={source.id}>
+                {getSourceName(source, lang)}
               </option>
             ))}
           </select>
-        </div>
+        </section>
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-y-auto px-6 py-5">
-          {loading ? (
-            <div className="flex flex-col items-center justify-center h-48 gap-3">
-              <RefreshCw className="animate-spin text-[var(--primary)]" size={24} />
-              <p className="text-xs text-[var(--text-muted)] font-[var(--font-ui)]">
-                {lang === "fr" ? "Chargement du tafsir..." : "Loading tafsir..."}
-              </p>
+        {lang === "fr" && selectedSource?.lang !== "fr" ? (
+          <div className="mb-4 flex gap-2 rounded-2xl border border-amber-300/30 bg-amber-300/10 p-3 text-sm leading-relaxed text-[color-mix(in_srgb,var(--theme-text)_88%,#fff2cf_12%)]">
+            <AlertCircle size={17} className="mt-0.5 shrink-0 text-amber-300" />
+            <p>
+              Quran.com ne propose pas de tafsir fiable en francais pour cette
+              source. Le commentaire est affiche dans sa langue d'origine.
+            </p>
+          </div>
+        ) : null}
+
+        <section className="rounded-3xl border border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_76%,transparent_24%)] p-4">
+          {tafsirState.status === "loading" ? (
+            <div className="flex min-h-[14rem] items-center justify-center">
+              <div className="flex items-center gap-3 text-sm font-semibold text-[color-mix(in_srgb,var(--theme-text-muted)_88%,var(--theme-bg)_12%)]">
+                <RefreshCw size={17} className="animate-spin" />
+                {label(
+                  lang,
+                  "Chargement du tafsir...",
+                  "Loading tafsir...",
+                  "Loading tafsir...",
+                )}
+              </div>
             </div>
-          ) : error ? (
-            <div className="flex flex-col items-center justify-center h-48 gap-3 text-center px-4">
-              <AlertCircle className="text-red-500" size={28} />
-              <p className="text-sm font-semibold text-[var(--text-primary)]">
-                {lang === "fr" ? "Erreur de chargement" : "Error loading tafsir"}
-              </p>
-              <p className="text-xs text-[var(--text-muted)] max-w-xs leading-relaxed">
-                {error}
+          ) : tafsirState.status === "error" ? (
+            <div className="flex min-h-[14rem] flex-col items-center justify-center gap-3 text-center">
+              <AlertCircle className="text-rose-300" size={28} />
+              <p className="text-sm text-[color-mix(in_srgb,var(--theme-text)_86%,var(--theme-bg)_14%)]">
+                {tafsirState.error}
               </p>
               <button
-                onClick={() => setRetryKey(k => k + 1)}
-                className="mt-2 px-3.5 py-1.5 rounded-lg bg-[var(--primary)] text-white text-xs font-semibold hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                type="button"
+                onClick={retry}
+                className="inline-flex items-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--theme-primary)_48%,transparent_52%)] bg-[rgba(var(--theme-primary-rgb),0.14)] px-3 py-2 text-sm font-bold text-[color-mix(in_srgb,var(--theme-text)_94%,#ffffff_6%)]"
               >
-                {lang === "fr" ? "Réessayer" : "Retry"}
+                <RefreshCw size={15} />
+                {label(lang, "Reessayer", "Retry", "Retry")}
               </button>
             </div>
-          ) : tafsirData ? (
-            <article className="space-y-4">
-              {/* English warning banner for French users */}
-              {lang === "fr" && (selectedTafsirId === "fr-kathir" || selectedTafsirId === "en-kathir") && (
-                <div className="text-[0.72rem] text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-xl p-3 mb-3 leading-relaxed flex items-start gap-2 select-none">
-                  <AlertCircle size={14} className="shrink-0 mt-0.5" />
-                  <span>
-                    <strong>Note :</strong> L'API de Quran.com ne contient pas de Tafsir en Français. Nous affichons le <strong>Tafsir Ibn Kathir en Anglais</strong>. Vous pouvez afficher la traduction française du verset ci-dessous.
-                  </span>
-                </div>
+          ) : tafsirState.data?.text ? (
+            <article
+              dir={isArabicTafsir ? "rtl" : "ltr"}
+              lang={isArabicTafsir ? "ar" : tafsirState.data.language || "en"}
+              className={cn(
+                "whitespace-pre-wrap text-[0.96rem] leading-8 text-[color-mix(in_srgb,var(--theme-text)_92%,#ffffff_8%)]",
+                isArabicTafsir && "text-right text-[1.08rem] leading-10",
               )}
-
-              {/* Tafsir source display */}
-              <div className="flex items-center gap-2 text-xs font-semibold text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.06)] px-3 py-1.5 rounded-lg">
-                <BookOpen size={14} />
-                <span>
-                  {lang === "fr" ? tafsirData.sourceFr || tafsirData.source : tafsirData.source}
-                </span>
-              </div>
-
-              {/* French translation toggle */}
-              {lang === "fr" && frenchTranslation && (
-                <div className="border border-[var(--border)] rounded-xl p-3 bg-[var(--bg-secondary)] mb-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[0.72rem] font-bold text-[var(--text-secondary)]">
-                      Traduction du verset en Français
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setShowFrenchTranslation(!showFrenchTranslation)}
-                      className="px-2 py-1 text-[0.7rem] font-bold rounded bg-[var(--primary)] text-white hover:brightness-110 active:scale-95 transition-all cursor-pointer"
-                    >
-                      {showFrenchTranslation ? "Masquer" : "Afficher"}
-                    </button>
-                  </div>
-                  {showFrenchTranslation && (
-                    <p className="mt-2 text-xs text-[var(--text-primary)] leading-relaxed italic border-l-2 border-[var(--primary)] pl-2 select-text">
-                      {frenchTranslation.text}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {/* Tafsir Text (support Arabic RTL text formatting if source language is arabic) */}
-              <div
-                dir={tafsirData.language === "ar" ? "rtl" : "ltr"}
-                className={`text-[0.95rem] leading-relaxed text-[var(--text-secondary)] whitespace-pre-wrap select-text selection:bg-[rgba(var(--primary-rgb),0.2)] ${
-                  tafsirData.language === "ar"
-                    ? "font-[var(--font-quran)] text-right text-lg [word-spacing:0.04em]"
-                    : "text-left font-sans"
-                }`}
-              >
-                {tafsirData.text}
-              </div>
-
-              {/* Note */}
-              {tafsirData.note && (
-                <div className="mt-6 border-t border-[var(--border)] pt-4 text-[0.72rem] text-[var(--text-muted)] italic leading-relaxed">
-                  {tafsirData.note}
-                </div>
-              )}
+            >
+              {tafsirState.data.text}
             </article>
           ) : (
-            <div className="text-center text-xs text-[var(--text-muted)] py-12">
-              {lang === "fr" ? "Aucune donnée disponible." : "No data available."}
+            <div className="flex min-h-[14rem] items-center justify-center text-sm text-[color-mix(in_srgb,var(--theme-text-muted)_88%,var(--theme-bg)_12%)]">
+              {label(
+                lang,
+                "Aucune donnee disponible.",
+                "No data available.",
+                "No data available.",
+              )}
             </div>
           )}
-        </div>
+        </section>
+
+        {lang === "fr" ? (
+          <section className="mt-4 rounded-3xl border border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_72%,transparent_28%)] p-4">
+            <button
+              type="button"
+              onClick={() => setShowTranslation((value) => !value)}
+              className="flex w-full items-center justify-between gap-3 text-left"
+            >
+              <span className="inline-flex items-center gap-2 text-sm font-black">
+                <Languages size={17} />
+                Traduction francaise du verset
+              </span>
+              <span className="text-xs font-bold text-[color-mix(in_srgb,var(--theme-primary)_72%,var(--theme-text)_28%)]">
+                {showTranslation ? "Masquer" : "Afficher"}
+              </span>
+            </button>
+
+            {showTranslation ? (
+              <div className="mt-3 text-sm leading-7 text-[color-mix(in_srgb,var(--theme-text)_88%,var(--theme-bg)_12%)]">
+                {translationState.status === "loading" ? (
+                  <span className="inline-flex items-center gap-2">
+                    <RefreshCw size={14} className="animate-spin" />
+                    Chargement...
+                  </span>
+                ) : translationState.status === "error" ? (
+                  <span className="text-rose-200">
+                    {translationState.error || "Traduction indisponible."}
+                  </span>
+                ) : (
+                  translationState.data?.text || "Traduction indisponible."
+                )}
+              </div>
+            ) : null}
+          </section>
+        ) : null}
       </div>
-    </div>
+
+      <div className="border-t border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] px-4 py-3 sm:px-5">
+        <a
+          href={quranComUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_78%,transparent_22%)] px-3 py-2 text-sm font-bold transition hover:border-[color-mix(in_srgb,var(--theme-primary)_46%,transparent_54%)]"
+        >
+          <ExternalLink size={16} />
+          Quran.com {surahNumber}:{ayahNumber}
+        </a>
+      </div>
+    </aside>
   );
 }

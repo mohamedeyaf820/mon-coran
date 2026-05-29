@@ -197,6 +197,97 @@ const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
     );
 });
 
+const TAJWEED_RULES_DESC = {
+    ghunna: {
+        name: { fr: "Ghunnah (غنة)", en: "Ghunnah", ar: "غنة" },
+        desc: { 
+            fr: "Nasalisation produite par la cavité nasale pendant 2 temps.", 
+            en: "Nasalization produced from the nose, lasting for 2 beats.", 
+            ar: "صوت يخرج من الخيشوم بمقدار حركتين." 
+        }
+    },
+    ikhfa: {
+        name: { fr: "Ikhfā' (إخفاء)", en: "Ikhfā'", ar: "إخفاء" },
+        desc: { 
+            fr: "Dissimulation de la lettre Nūn ou Tanwīn devant les lettres de l'Ikhfā'.", 
+            en: "Hiding the sound of Nūn or Tanwīn when followed by an Ikhfā' letter.", 
+            ar: "نطق الحرف بصفة بين الإظهار والإدغام مع الغنة." 
+        }
+    },
+    idgham: {
+        name: { fr: "Idghām (إدغام)", en: "Idghām", ar: "إدغام" },
+        desc: { 
+            fr: "Assimilation ou fusion de la lettre Nūn ou Tanwīn avec la lettre suivante.", 
+            en: "Merging the sound of Nūn or Tanwīn into the following letter.", 
+            ar: "إدخل حرف ساكن في حرف متحرك بحيث يصيران حرفاً واحداً مشدداً." 
+        }
+    },
+    iqlab: {
+        name: { fr: "Iqlāb (إقلاب)", en: "Iqlāb", ar: "إقلاب" },
+        desc: { 
+            fr: "Conversion du Nūn ou Tanwīn en un Mīm léger avec Ghunnah.", 
+            en: "Converting the sound of Nūn or Tanwīn into a light Mīm with Ghunnah.", 
+            ar: "قلب النون الساكنة أو التنوين ميماً مخفاة مع الغنة." 
+        }
+    },
+    qalqala: {
+        name: { fr: "Qalqalah (قلقلة)", en: "Qalqalah", ar: "قلقلة" },
+        desc: { 
+            fr: "Rebondissement ou écho de la consonne lorsqu'elle est calme (Sākīnah).", 
+            en: "Echoing or bouncing sound of the consonant when silent (Sākīnah).", 
+            ar: "اضطراب الحرف في مخرجه عند النطق به ساكناً." 
+        }
+    },
+    "madd-connected": {
+        name: { fr: "Madd Muttasil (مد متصل)", en: "Madd Muttasil", ar: "مد متصل" },
+        desc: { 
+            fr: "Allongement obligatoire lié : la lettre de Madd et le Hamzah sont dans le même mot (4 à 5 temps).", 
+            en: "Required connected elongation: madd letter and Hamzah are in the same word (4-5 beats).", 
+            ar: "أن يأتي حرف المد والهمزة في كلمة واحدة بمقدار ٤-٥ حركات." 
+        }
+    },
+    "madd-separated": {
+        name: { fr: "Madd Munfasil (مد منفصل)", en: "Madd Munfasil", ar: "مد منفصل" },
+        desc: { 
+            fr: "Allongement permis séparé : la lettre de Madd est à la fin du mot et le Hamzah au début du suivant (2 à 5 temps).", 
+            en: "Permissible separated elongation: madd letter is at the end of the word and Hamzah at the start of the next (2-5 beats).", 
+            ar: "أن يكون حرف المد في آخر كلمة والهمزة في أول الكلمة التالية." 
+        }
+    },
+    madd: {
+        name: { fr: "Madd Lāzim (مد لازم)", en: "Madd Lāzim", ar: "مد لازم" },
+        desc: { 
+            fr: "Allongement nécessaire ou obligatoire (6 temps).", 
+            en: "Necessary/obligatory elongation (6 beats).", 
+            ar: "أن يأتي بعد حرف المد حرف ساكن سكوناً أصلياً بمقدار ٦ حركات." 
+        }
+    },
+    "madd-normal": {
+        name: { fr: "Madd Tabī'ī (مد طبيعي)", en: "Madd Tabī'ī", ar: "مد طبيعي" },
+        desc: { 
+            fr: "Allongement naturel ou normal (2 temps).", 
+            en: "Natural or normal elongation (2 beats).", 
+            ar: "المد الطبيعي الذي لا تقوم ذات الحرف إلا به بمقدار حركتين." 
+        }
+    },
+    silent: {
+        name: { fr: "Lettre Muette (حرف صامت)", en: "Silent Letter", ar: "حرف مهمل" },
+        desc: { 
+            fr: "Lettre écrite mais non prononcée (ex: Hamzat al-Wasl ou Alif muet).", 
+            en: "Written but unpronounced letter (e.g., Hamzat al-Wasl or silent Alif).", 
+            ar: "حرف يكتب ولا ينطق في القراءة." 
+        }
+    },
+    "lam-shamsiyya": {
+        name: { fr: "Lām Shamsiyyah (لام شمسية)", en: "Lām Shamsiyyah", ar: "لام شمسية" },
+        desc: { 
+            fr: "Lām solaire assimilé dans la lettre suivante (non prononcé).", 
+            en: "Solar Lām merged into the following letter (unpronounced).", 
+            ar: "اللام التي تكتب ولا تلفظ ويشدد الحرف بعدها." 
+        }
+    }
+};
+
 /**
  * TajweedText — renders Arabic text with Tajweed colour-coding.
  * Plus custom 'Waqf' (Stop Signs) redesign for Expert UI/UX (Sakīna).
@@ -268,15 +359,45 @@ const TajweedText = React.memo(function TajweedText({
                         return <React.Fragment key={i}>{seg.text}</React.Fragment>;
                     }
 
+                    const rule = TAJWEED_RULES_DESC[seg.ruleId];
+                    if (!rule) {
+                        return (
+                            <span
+                                key={i}
+                                style={{ color }}
+                                data-tajwid={seg.ruleId}
+                                aria-label={seg.ruleId}
+                            >
+                                {seg.text}
+                            </span>
+                        );
+                    }
+
+                    const activeLang = lang === 'ar' || lang === 'en' || lang === 'fr' ? lang : 'fr';
+                    const name = rule.name[activeLang] || rule.name['en'] || rule.name['fr'];
+                    const desc = rule.desc[activeLang] || rule.desc['en'] || rule.desc['fr'];
+
                     return (
-                        <span
-                            key={i}
-                            style={{ color }}
-                            data-tajwid={seg.ruleId}
-                            aria-label={seg.ruleId}
-                        >
-                            {seg.text}
-                        </span>
+                        <Tooltip key={i}>
+                            <TooltipTrigger asChild>
+                                <span
+                                    style={{ color, cursor: 'help' }}
+                                    data-tajwid={seg.ruleId}
+                                    aria-label={name}
+                                    className="border-b border-dashed border-transparent hover:border-current transition-colors"
+                                >
+                                    {seg.text}
+                                </span>
+                            </TooltipTrigger>
+                            <TooltipContent 
+                                className="max-w-[260px] text-center p-3 rounded-2xl bg-[var(--bg-card)] border border-[rgba(var(--primary-rgb),0.25)] shadow-xl z-[9999]" 
+                                side="top" 
+                                sideOffset={6}
+                            >
+                                <div className="font-bold text-[var(--primary)] text-xs mb-1">{name}</div>
+                                <div className="text-[10px] text-[var(--theme-text)] leading-relaxed">{desc}</div>
+                            </TooltipContent>
+                        </Tooltip>
                     );
                 })}
             </span>

@@ -430,9 +430,9 @@ export default function AudioPlayer() {
           set({ reciter: candidate.id });
           toast(
             lang === "fr"
-              ? `R├®citateur indisponible, bascule vers ${candidate.nameFr || candidate.nameEn || candidate.name}.`
+              ? `Recitateur indisponible, bascule vers ${candidate.nameFr || candidate.nameEn || candidate.name}.`
               : lang === "ar"
-                ? `Ï¬Ï╣Ï░Ï▒ Ïº┘äÏ¬Ï¡┘à┘è┘äÏî Ï¬┘à Ïº┘äÏ¬Ï¡┘ê┘è┘ä ÏÑ┘ä┘ë ${candidate.name || candidate.nameEn || candidate.id}.`
+                ? `ÃÂ¬Ãâ•£Ãâ–‘Ãâ–’ ÃÂºâ”˜Ã¤ÃÂ¬ÃÂ¡â”˜Ã â”˜Ã¨â”˜Ã¤ÃÃ® ÃÂ¬â”˜Ã  ÃÂºâ”˜Ã¤ÃÂ¬ÃÂ¡â”˜Ãªâ”˜Ã¨â”˜Ã¤ ÃÃ‘â”˜Ã¤â”˜Ã« ${candidate.name || candidate.nameEn || candidate.id}.`
                 : `Reciter unavailable, switched to ${candidate.nameEn || candidate.nameFr || candidate.name}.`,
             "warning",
           );
@@ -498,7 +498,7 @@ export default function AudioPlayer() {
   /* Wire audio callbacks */
   useEffect(() => {
     audioService.onPlay = (item) => {
-      setClosed(false); // r├®ouvre si ferm├®
+      setClosed(false); // râ”œÂ®ouvre si fermâ”œÂ®
       setAudioError(null);
       markReciterAvailable(reciter);
       failedRecitersRef.current.clear();
@@ -521,7 +521,7 @@ export default function AudioPlayer() {
       setProgress(0);
     };
     audioService.onAyahChange = (item) => {
-      // Navigation automatique : toujours suivre la sourate en cours de r├®citation.
+      // Navigation automatique : toujours suivre la sourate en cours de râ”œÂ®citation.
       if (item.surah && item.surah !== currentSurahRef.current) {
         dispatch({
           type: "NAVIGATE_SURAH",
@@ -553,9 +553,9 @@ export default function AudioPlayer() {
       if (failoverWorked) {
         setAudioError(
           lang === "fr"
-            ? "Bascule automatique vers un autre r├®citateur..."
+            ? "Bascule automatique vers un autre recitateur..."
             : lang === "ar"
-              ? "Ï¬┘à Ïº┘äÏ¬Ï¡┘ê┘è┘ä Ï¬┘ä┘éÏºÏª┘èÏº ÏÑ┘ä┘ë ┘éÏºÏ▒Ïª ÏóÏ«Ï▒..."
+              ? "ÃÂ¬â”˜Ã  ÃÂºâ”˜Ã¤ÃÂ¬ÃÂ¡â”˜Ãªâ”˜Ã¨â”˜Ã¤ ÃÂ¬â”˜Ã¤â”˜Ã©ÃÂºÃÂªâ”˜Ã¨ÃÂº ÃÃ‘â”˜Ã¤â”˜Ã« â”˜Ã©ÃÂºÃâ–’ÃÂª ÃÃ³ÃÂ«Ãâ–’..."
               : "Auto-switching to another reciter...",
         );
         audioErrorTimerRef.current = setTimeout(() => {
@@ -567,14 +567,14 @@ export default function AudioPlayer() {
       const msg =
         riwaya === "warsh"
           ? lang === "fr"
-            ? "Audio Warsh indisponible. V├®rifiez votre connexion ou changez de r├®citateur."
+            ? "Audio Warsh indisponible. Verifiez votre connexion ou changez de recitateur."
             : lang === "ar"
-              ? "Ïº┘äÏÁ┘êÏ¬ Ï║┘èÏ▒ ┘àÏ¬ÏºÏ¡. Ï¬Ï¡┘é┘é ┘à┘å Ïº┘äÏºÏ¬ÏÁÏº┘ä Ïú┘ê Ï║┘èÏ▒ Ïº┘ä┘éÏºÏ▒Ïª."
+              ? "ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬ Ãâ•‘â”˜Ã¨Ãâ–’ â”˜Ã ÃÂ¬ÃÂºÃÂ¡. ÃÂ¬ÃÂ¡â”˜Ã©â”˜Ã© â”˜Ã â”˜Ã¥ ÃÂºâ”˜Ã¤ÃÂºÃÂ¬ÃÃÃÂºâ”˜Ã¤ ÃÃºâ”˜Ãª Ãâ•‘â”˜Ã¨Ãâ–’ ÃÂºâ”˜Ã¤â”˜Ã©ÃÂºÃâ–’ÃÂª."
               : "Warsh audio unavailable. Check your connection or switch reciter."
           : lang === "fr"
             ? "Erreur de chargement audio."
             : lang === "ar"
-              ? "Ï«ÏÀÏú ┘ü┘è Ï¬Ï¡┘à┘è┘ä Ïº┘äÏÁ┘êÏ¬."
+              ? "ÃÂ«ÃÃ€ÃÃº â”˜Ã¼â”˜Ã¨ ÃÂ¬ÃÂ¡â”˜Ã â”˜Ã¨â”˜Ã¤ ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬."
               : "Audio load error.";
       setAudioError(msg);
       audioErrorTimerRef.current = setTimeout(() => {
@@ -617,7 +617,7 @@ export default function AudioPlayer() {
           lang === "fr"
             ? "Chargement audio..."
             : lang === "ar"
-              ? "Ï¼ÏºÏ▒┘è Ï¬Ï¡┘à┘è┘ä Ïº┘äÏÁ┘êÏ¬..."
+              ? "ÃÂ¼ÃÂºÃâ–’â”˜Ã¨ ÃÂ¬ÃÂ¡â”˜Ã â”˜Ã¨â”˜Ã¤ ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬..."
               : "Loading audio...",
       };
     }
@@ -628,7 +628,7 @@ export default function AudioPlayer() {
           lang === "fr"
             ? "Connexion instable"
             : lang === "ar"
-              ? "ÏºÏ¬ÏÁÏº┘ä Ï║┘èÏ▒ ┘àÏ│Ï¬┘éÏ▒"
+              ? "ÃÂºÃÂ¬ÃÃÃÂºâ”˜Ã¤ Ãâ•‘â”˜Ã¨Ãâ–’ â”˜Ã Ãâ”‚ÃÂ¬â”˜Ã©Ãâ–’"
               : "Unstable connection",
       };
     }
@@ -737,7 +737,7 @@ export default function AudioPlayer() {
         lang === "fr"
           ? "Reconnaissance vocale non disponible sur ce navigateur."
           : lang === "ar"
-            ? "Ïº┘äÏ¬Ï╣Ï▒┘ü Ïº┘äÏÁ┘êÏ¬┘è Ï║┘èÏ▒ ┘àÏ¬ÏºÏ¡ ┘ü┘è ┘çÏ░Ïº Ïº┘ä┘àÏ¬ÏÁ┘üÏ¡."
+            ? "ÃÂºâ”˜Ã¤ÃÂ¬Ãâ•£Ãâ–’â”˜Ã¼ ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬â”˜Ã¨ Ãâ•‘â”˜Ã¨Ãâ–’ â”˜Ã ÃÂ¬ÃÂºÃÂ¡ â”˜Ã¼â”˜Ã¨ â”˜Ã§Ãâ–‘ÃÂº ÃÂºâ”˜Ã¤â”˜Ã ÃÂ¬ÃÃâ”˜Ã¼ÃÂ¡."
             : "Speech recognition is not available in this browser.",
         "warning",
       );
@@ -950,7 +950,7 @@ export default function AudioPlayer() {
           lang === "fr"
             ? `Ce recitateur est temporairement indisponible. Reessayez dans ${retryLabel}.`
             : lang === "ar"
-              ? `┘çÏ░Ïº Ïº┘ä┘éÏºÏ▒Ïª Ï║┘èÏ▒ ┘àÏ¬ÏºÏ¡ ┘àÏñ┘éÏ¬Ïº. Ï¡Ïº┘ê┘ä Ï¿Ï╣Ï» ${retryLabel}.`
+              ? `â”˜Ã§Ãâ–‘ÃÂº ÃÂºâ”˜Ã¤â”˜Ã©ÃÂºÃâ–’ÃÂª Ãâ•‘â”˜Ã¨Ãâ–’ â”˜Ã ÃÂ¬ÃÂºÃÂ¡ â”˜Ã ÃÃ±â”˜Ã©ÃÂ¬ÃÂº. ÃÂ¡ÃÂºâ”˜Ãªâ”˜Ã¤ ÃÂ¿Ãâ•£ÃÂ» ${retryLabel}.`
               : `This reciter is temporarily unavailable. Try again in ${retryLabel}.`,
           "warning",
         );
@@ -972,7 +972,7 @@ export default function AudioPlayer() {
           lang === "fr"
             ? "Le changement instantane du recitateur a echoue."
             : lang === "ar"
-              ? "Ï¬Ï╣Ï░Ï▒ Ï¬Ï¿Ï»┘è┘ä Ïº┘ä┘éÏºÏ▒Ïª ┘ü┘êÏ▒┘èÏº."
+              ? "ÃÂ¬Ãâ•£Ãâ–‘Ãâ–’ ÃÂ¬ÃÂ¿ÃÂ»â”˜Ã¨â”˜Ã¤ ÃÂºâ”˜Ã¤â”˜Ã©ÃÂºÃâ–’ÃÂª â”˜Ã¼â”˜ÃªÃâ–’â”˜Ã¨ÃÂº."
               : "Instant reciter switch failed.",
           "warning",
         );
@@ -1048,7 +1048,7 @@ export default function AudioPlayer() {
     !isPlaying && !currentPlayingAyah
       ? showHome
         ? lang === "ar"
-          ? "ÏºÏÂÏ║ÏÀ Ï¬Ï┤Ï║┘è┘ä ┘ä┘äÏºÏ│Ï¬┘àÏºÏ╣"
+          ? "ÃÂºÃÃ‚Ãâ•‘ÃÃ€ ÃÂ¬Ãâ”¤Ãâ•‘â”˜Ã¨â”˜Ã¤ â”˜Ã¤â”˜Ã¤ÃÂºÃâ”‚ÃÂ¬â”˜Ã ÃÂºÃâ•£"
           : lang === "fr"
             ? "Appuyez sur Play pour ecouter"
             : "Press Play to listen"
@@ -1057,24 +1057,24 @@ export default function AudioPlayer() {
 
   const warshStrictLabel =
     lang === "ar"
-      ? "┘êÏ▒Ï┤ Ïº┘äÏÁÏºÏ▒┘à"
+      ? "â”˜ÃªÃâ–’Ãâ”¤ ÃÂºâ”˜Ã¤ÃÃÃÂºÃâ–’â”˜Ã "
       : lang === "fr"
         ? "Warsh strict"
         : "Warsh strict";
   const warshNonStrictLabel =
     lang === "ar"
-      ? "┘êÏÂÏ╣ ┘êÏ▒Ï┤ Ï╣ÏºÏ»┘è"
+      ? "â”˜ÃªÃÃ‚Ãâ•£ â”˜ÃªÃâ–’Ãâ”¤ Ãâ•£ÃÂºÃÂ»â”˜Ã¨"
       : lang === "fr"
         ? "Warsh standard"
         : "Warsh standard";
   const warshVerifiedLabel =
     lang === "ar"
-      ? "ÏÁ┘êÏ¬ ┘êÏ▒Ï┤ ┘àÏ¬Ï¡┘é┘é"
+      ? "ÃÃâ”˜ÃªÃÂ¬ â”˜ÃªÃâ–’Ãâ”¤ â”˜Ã ÃÂ¬ÃÂ¡â”˜Ã©â”˜Ã©"
       : lang === "fr"
-        ? "Audio Warsh v├®rifi├®"
+        ? "Audio Warsh vâ”œÂ®rifiâ”œÂ®"
         : "Warsh verified";
   const memorizeShortLabel =
-    lang === "ar" ? "Ï¡┘üÏ©" : lang === "fr" ? "Memo" : "Mem";
+    lang === "ar" ? "ÃÂ¡â”˜Ã¼ÃÂ©" : lang === "fr" ? "Memo" : "Mem";
   const dockedMetaChips = [
     { key: "riwaya", label: isWarshMode ? "Warsh" : "Hafs", accent: true },
     currentPlayingAyah && {
@@ -1089,20 +1089,20 @@ export default function AudioPlayer() {
       label:
         surahRepeatCount === 0
           ? lang === "fr"
-            ? "Sourate Ôê×"
+            ? "Sourate Ã”ÃªÃ—"
             : lang === "ar"
-              ? "Ï│┘êÏ▒Ï® Ôê×"
-              : "Surah Ôê×"
+              ? "Ãâ”‚â”˜ÃªÃâ–’ÃÂ® Ã”ÃªÃ—"
+              : "Surah Ã”ÃªÃ—"
           : lang === "fr"
             ? `Sourate x${surahRepeatCount}`
             : lang === "ar"
-              ? `Ï│┘êÏ▒Ï® ├ù${surahRepeatCount}`
+              ? `Ãâ”‚â”˜ÃªÃâ–’ÃÂ® â”œÃ¹${surahRepeatCount}`
               : `Surah x${surahRepeatCount}`,
     },
     memMode && { key: "memorize", label: memorizeShortLabel },
     isSurahStreamReciter && {
       key: "mode",
-      label: lang === "fr" ? "Sourate" : lang === "ar" ? "Ï│┘êÏ▒Ï®" : "Surah",
+      label: lang === "fr" ? "Sourate" : lang === "ar" ? "Ãâ”‚â”˜ÃªÃâ–’ÃÂ®" : "Surah",
     },
   ].filter(Boolean);
 
@@ -1176,7 +1176,7 @@ export default function AudioPlayer() {
     isUnavailable = false,
   ) =>
     cn(
-      "group flex w-full items-start gap-2.5 rounded-2xl border px-2.5 py-2 text-left transition-all duration-150",
+      "group flex min-h-[4.65rem] w-full items-start gap-3 rounded-2xl border px-3 py-2.5 text-left transition-all duration-150",
       active
         ? "border-[rgba(122,188,210,0.42)] bg-[rgba(122,188,210,0.16)] text-[rgba(249,253,255,0.98)]"
         : "border-white/10 bg-white/[0.04] text-[rgba(232,222,202,0.74)] hover:border-[rgba(122,188,210,0.34)] hover:bg-[rgba(122,188,210,0.1)]",
@@ -1187,7 +1187,7 @@ export default function AudioPlayer() {
     );
   const playerReciterAvatarClass = (active = false) =>
     cn(
-      "mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-xl text-[0.62rem] font-black",
+      "mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[0.68rem] font-black",
       active
         ? "bg-[rgba(122,188,210,0.24)] text-white"
         : "bg-white/[0.08] text-[rgba(233,223,203,0.55)]",
@@ -1196,15 +1196,15 @@ export default function AudioPlayer() {
   /* Drag state (desktop card only) */
   const optionsModalTitle =
     lang === "fr"
-      ? "R├®glages audio"
+      ? "Reglages audio"
       : lang === "ar"
-        ? "ÏÑÏ╣Ï»ÏºÏ»ÏºÏ¬ Ïº┘äÏÁ┘êÏ¬"
+        ? "ÃÃ‘Ãâ•£ÃÂ»ÃÂºÃÂ»ÃÂºÃÂ¬ ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬"
         : "Audio settings";
   const optionsModalSubtitle =
     lang === "fr"
-      ? "R├®citateurs, volume et synchronisation"
+      ? "Recitateurs, volume et synchronisation"
       : lang === "ar"
-        ? "Ïº┘ä┘éÏ▒ÏºÏí ┘ê┘àÏ│Ï¬┘ê┘ë Ïº┘äÏÁ┘êÏ¬ ┘êÏº┘ä┘àÏ▓Ïº┘à┘åÏ®"
+        ? "ÃÂºâ”˜Ã¤â”˜Ã©Ãâ–’ÃÂºÃÃ­ â”˜Ãªâ”˜Ã Ãâ”‚ÃÂ¬â”˜Ãªâ”˜Ã« ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬ â”˜ÃªÃÂºâ”˜Ã¤â”˜Ã Ãâ–“ÃÂºâ”˜Ã â”˜Ã¥ÃÂ®"
         : "Reciters, volume, and synchronization";
   const isAnyReciterSwitching = Boolean(reciterSwitchingId);
   const renderOptionsModal = () =>
@@ -1281,9 +1281,9 @@ export default function AudioPlayer() {
                     onChange={(e) => setReciterSearch(e.target.value)}
                     placeholder={
                       lang === "fr"
-                        ? "Rechercher un r├®citateur..."
+                        ? "Rechercher un recitateur..."
                         : lang === "ar"
-                          ? "ÏºÏ¿Ï¡Ï½ Ï╣┘å ┘éÏºÏ▒Ïª..."
+                          ? "ÃÂºÃÂ¿ÃÂ¡ÃÂ½ Ãâ•£â”˜Ã¥ â”˜Ã©ÃÂºÃâ–’ÃÂª..."
                           : "Search reciter..."
                     }
                     className={playerSearchInputClass}
@@ -1312,13 +1312,13 @@ export default function AudioPlayer() {
                     )}
                   >
                     {lang === "fr"
-                      ? "Aucun r├®citateur trouv├®"
+                      ? "Aucun recitateur trouve"
                       : lang === "ar"
-                        ? "┘äÏº ┘è┘êÏ¼Ï» ┘éÏºÏ▒Ïª"
+                        ? "â”˜Ã¤ÃÂº â”˜Ã¨â”˜ÃªÃÂ¼ÃÂ» â”˜Ã©ÃÂºÃâ–’ÃÂª"
                         : "No reciter found"}
                   </div>
                 ) : (
-                  <div className="grid gap-2 sm:grid-cols-2">
+                  <div className="grid gap-2 xl:grid-cols-2">
                     {filteredReciters.map((r) => {
                       const active = reciter === r.id;
                       const isLoading =
@@ -1363,7 +1363,7 @@ export default function AudioPlayer() {
                             )}
                           </span>
                           <span className="flex min-w-0 flex-col">
-                            <span className="truncate text-[0.7rem] font-semibold leading-tight">
+                            <span className="text-[0.76rem] font-bold leading-snug">
                               {lang === "ar"
                                 ? r.name
                                 : lang === "fr"
@@ -1383,7 +1383,7 @@ export default function AudioPlayer() {
                                   {lang === "fr"
                                     ? "Sourate complete"
                                     : lang === "ar"
-                                      ? "Ï│┘êÏ▒Ï® ┘âÏº┘à┘äÏ®"
+                                      ? "Ãâ”‚â”˜ÃªÃâ–’ÃÂ® â”˜Ã¢ÃÂºâ”˜Ã â”˜Ã¤ÃÂ®"
                                       : "Full surah"}
                                 </span>
                               )}
@@ -1393,7 +1393,7 @@ export default function AudioPlayer() {
                                   {lang === "fr"
                                     ? "Favori"
                                     : lang === "ar"
-                                      ? "┘à┘üÏÂ┘ä"
+                                      ? "â”˜Ã â”˜Ã¼ÃÃ‚â”˜Ã¤"
                                       : "Favorite"}
                                 </span>
                               )}
@@ -1408,7 +1408,7 @@ export default function AudioPlayer() {
                                     {lang === "fr"
                                       ? "Rapide"
                                       : lang === "ar"
-                                        ? "Ï│Ï▒┘èÏ╣"
+                                        ? "Ãâ”‚Ãâ–’â”˜Ã¨Ãâ•£"
                                         : "Fast"}
                                   </span>
                                 )}
@@ -1417,7 +1417,7 @@ export default function AudioPlayer() {
                                   {lang === "fr"
                                     ? `Indisponible ${formatCooldownLabel(unavailableMs, lang)}`
                                     : lang === "ar"
-                                      ? `Ï║┘èÏ▒ ┘àÏ¬ÏºÏ¡ ${formatCooldownLabel(unavailableMs, lang)}`
+                                      ? `Ãâ•‘â”˜Ã¨Ãâ–’ â”˜Ã ÃÂ¬ÃÂºÃÂ¡ ${formatCooldownLabel(unavailableMs, lang)}`
                                       : `Unavailable ${formatCooldownLabel(unavailableMs, lang)}`}
                                 </span>
                               )}
@@ -1449,7 +1449,7 @@ export default function AudioPlayer() {
                       {lang === "fr"
                         ? "Vitesse"
                         : lang === "ar"
-                          ? "Ïº┘äÏ│Ï▒Ï╣Ï®"
+                          ? "ÃÂºâ”˜Ã¤Ãâ”‚Ãâ–’Ãâ•£ÃÂ®"
                           : "Speed"}
                     </span>
                     <span>{audioSpeed}x</span>
@@ -1461,9 +1461,9 @@ export default function AudioPlayer() {
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <span className={playerSectionLabelClass}>
                     {lang === "fr"
-                      ? "R├®p├®tition de sourate"
+                      ? "Repetition de sourate"
                       : lang === "ar"
-                        ? "Ï¬┘âÏ▒ÏºÏ▒ Ïº┘äÏ│┘êÏ▒Ï®"
+                        ? "ÃÂ¬â”˜Ã¢Ãâ–’ÃÂºÃâ–’ ÃÂºâ”˜Ã¤Ãâ”‚â”˜ÃªÃâ–’ÃÂ®"
                         : "Surah repeat"}
                   </span>
                   <span
@@ -1476,7 +1476,7 @@ export default function AudioPlayer() {
                       ? lang === "fr"
                         ? "Infini"
                         : lang === "ar"
-                          ? "┘äÏº ┘å┘çÏºÏª┘è"
+                          ? "â”˜Ã¤ÃÂº â”˜Ã¥â”˜Ã§ÃÂºÃÂªâ”˜Ã¨"
                           : "Infinite"
                       : `x${surahRepeatCount}`}
                   </span>
@@ -1490,7 +1490,7 @@ export default function AudioPlayer() {
                       {lang === "fr"
                         ? "Nombre"
                         : lang === "ar"
-                          ? "Ïº┘äÏ╣Ï»Ï»"
+                          ? "ÃÂºâ”˜Ã¤Ãâ•£ÃÂ»ÃÂ»"
                           : "Count"}
                     </span>
                     <input
@@ -1511,7 +1511,7 @@ export default function AudioPlayer() {
                     {lang === "fr"
                       ? "Une fois"
                       : lang === "ar"
-                        ? "┘àÏ▒Ï® ┘êÏºÏ¡Ï»Ï®"
+                        ? "â”˜Ã Ãâ–’ÃÂ® â”˜ÃªÃÂºÃÂ¡ÃÂ»ÃÂ®"
                         : "Once"}
                   </button>
                   <button
@@ -1543,7 +1543,7 @@ export default function AudioPlayer() {
                     {lang === "fr"
                       ? "Infini"
                       : lang === "ar"
-                        ? "┘äÏº ┘å┘çÏºÏª┘è"
+                        ? "â”˜Ã¤ÃÂº â”˜Ã¥â”˜Ã§ÃÂºÃÂªâ”˜Ã¨"
                         : "Infinite"}
                   </button>
                 </div>
@@ -1555,9 +1555,9 @@ export default function AudioPlayer() {
                   )}
                 >
                   {lang === "fr"
-                    ? "0 = r├®p├®tition infinie. La sourate recommence automatiquement ├á la fin."
+                    ? "0 = repetition infinie. La sourate recommence automatiquement a la fin."
                     : lang === "ar"
-                      ? "0 ┘èÏ╣┘å┘è Ï¬┘âÏ▒ÏºÏ▒┘ïÏº ┘äÏº ┘å┘çÏºÏª┘è┘ïÏº. Ï¬Ï¿Ï»Ïú Ïº┘äÏ│┘êÏ▒Ï® ┘à┘å Ï¼Ï»┘èÏ» Ï¬┘ä┘éÏºÏª┘è┘ïÏº Ï╣┘åÏ» Ïº┘ä┘å┘çÏº┘èÏ®."
+                      ? "0 â”˜Ã¨Ãâ•£â”˜Ã¥â”˜Ã¨ ÃÂ¬â”˜Ã¢Ãâ–’ÃÂºÃâ–’â”˜Ã¯ÃÂº â”˜Ã¤ÃÂº â”˜Ã¥â”˜Ã§ÃÂºÃÂªâ”˜Ã¨â”˜Ã¯ÃÂº. ÃÂ¬ÃÂ¿ÃÂ»ÃÃº ÃÂºâ”˜Ã¤Ãâ”‚â”˜ÃªÃâ–’ÃÂ® â”˜Ã â”˜Ã¥ ÃÂ¼ÃÂ»â”˜Ã¨ÃÂ» ÃÂ¬â”˜Ã¤â”˜Ã©ÃÂºÃÂªâ”˜Ã¨â”˜Ã¯ÃÂº Ãâ•£â”˜Ã¥ÃÂ» ÃÂºâ”˜Ã¤â”˜Ã¥â”˜Ã§ÃÂºâ”˜Ã¨ÃÂ®."
                       : "0 means infinite repeat. The surah restarts automatically at the end."}
                 </p>
               </div>
@@ -1568,7 +1568,7 @@ export default function AudioPlayer() {
                     {lang === "fr"
                       ? "Volume"
                       : lang === "ar"
-                        ? "┘àÏ│Ï¬┘ê┘ë Ïº┘äÏÁ┘êÏ¬"
+                        ? "â”˜Ã Ãâ”‚ÃÂ¬â”˜Ãªâ”˜Ã« ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬"
                         : "Volume"}
                   </span>
                   <span
@@ -1609,7 +1609,7 @@ export default function AudioPlayer() {
                     {lang === "fr"
                       ? "Synchronisation mot a mot"
                       : lang === "ar"
-                        ? "┘àÏ▓Ïº┘à┘åÏ® ┘â┘ä┘àÏ® Ï¿┘â┘ä┘àÏ®"
+                        ? "â”˜Ã Ãâ–“ÃÂºâ”˜Ã â”˜Ã¥ÃÂ® â”˜Ã¢â”˜Ã¤â”˜Ã ÃÂ® ÃÂ¿â”˜Ã¢â”˜Ã¤â”˜Ã ÃÂ®"
                         : "Word sync"}
                   </span>
                   <span
@@ -1651,7 +1651,7 @@ export default function AudioPlayer() {
                     {lang === "fr"
                       ? "Reset"
                       : lang === "ar"
-                        ? "ÏÑÏ╣ÏºÏ»Ï®"
+                        ? "ÃÃ‘Ãâ•£ÃÂºÃÂ»ÃÂ®"
                         : "Reset"}
                   </button>
                 </div>
@@ -1665,12 +1665,12 @@ export default function AudioPlayer() {
                     ? lang === "fr"
                       ? "Ce recitateur lit la sourate complete, donc la synchro mot a mot n'est pas utilisee."
                       : lang === "ar"
-                        ? "┘çÏ░Ïº Ïº┘ä┘éÏºÏ▒Ïª ┘è┘éÏ▒Ïú Ïº┘äÏ│┘êÏ▒Ï® ┘âÏº┘à┘äÏ®Ïî ┘äÏ░┘ä┘â ┘äÏº Ï¬Ï│Ï¬Ï«Ï»┘à ┘àÏ▓Ïº┘à┘åÏ® ┘â┘ä┘àÏ® Ï¿┘â┘ä┘àÏ®."
+                        ? "â”˜Ã§Ãâ–‘ÃÂº ÃÂºâ”˜Ã¤â”˜Ã©ÃÂºÃâ–’ÃÂª â”˜Ã¨â”˜Ã©Ãâ–’ÃÃº ÃÂºâ”˜Ã¤Ãâ”‚â”˜ÃªÃâ–’ÃÂ® â”˜Ã¢ÃÂºâ”˜Ã â”˜Ã¤ÃÂ®ÃÃ® â”˜Ã¤Ãâ–‘â”˜Ã¤â”˜Ã¢ â”˜Ã¤ÃÂº ÃÂ¬Ãâ”‚ÃÂ¬ÃÂ«ÃÂ»â”˜Ã  â”˜Ã Ãâ–“ÃÂºâ”˜Ã â”˜Ã¥ÃÂ® â”˜Ã¢â”˜Ã¤â”˜Ã ÃÂ® ÃÂ¿â”˜Ã¢â”˜Ã¤â”˜Ã ÃÂ®."
                         : "This reciter plays the full surah, so word-by-word sync is not used."
                     : lang === "fr"
-                      ? "Le suivi des versets est verrouill├® en automatique. La calibration se m├®morise par r├®citateur."
+                      ? "Le suivi des versets est verrouille en automatique. La calibration se memorise par recitateur."
                       : lang === "ar"
-                        ? "┘àÏ¬ÏºÏ¿Ï╣Ï® Ïº┘äÏó┘èÏºÏ¬ ┘à┘üÏ╣┘äÏ® Ï¬┘ä┘éÏºÏª┘èÏº Ï»ÏºÏª┘àÏº. Ï¬Ï¬┘à ┘àÏ╣Ïº┘èÏ▒Ï® Ïº┘äÏ¬Ï▓Ïº┘à┘å ┘ä┘â┘ä ┘éÏºÏ▒Ïª."
+                        ? "â”˜Ã ÃÂ¬ÃÂºÃÂ¿Ãâ•£ÃÂ® ÃÂºâ”˜Ã¤ÃÃ³â”˜Ã¨ÃÂºÃÂ¬ â”˜Ã â”˜Ã¼Ãâ•£â”˜Ã¤ÃÂ® ÃÂ¬â”˜Ã¤â”˜Ã©ÃÂºÃÂªâ”˜Ã¨ÃÂº ÃÂ»ÃÂºÃÂªâ”˜Ã ÃÂº. ÃÂ¬ÃÂ¬â”˜Ã  â”˜Ã Ãâ•£ÃÂºâ”˜Ã¨Ãâ–’ÃÂ® ÃÂºâ”˜Ã¤ÃÂ¬Ãâ–“ÃÂºâ”˜Ã â”˜Ã¥ â”˜Ã¤â”˜Ã¢â”˜Ã¤ â”˜Ã©ÃÂºÃâ–’ÃÂª."
                         : "Verse follow is locked to automatic. Sync calibration is saved per reciter."}
                 </p>
               </div>
@@ -1737,7 +1737,7 @@ export default function AudioPlayer() {
                     "px-4 py-2 text-[0.68rem] font-semibold",
                   )}
                 >
-                  {lang === "fr" ? "Terminer" : lang === "ar" ? "Ï¬┘à" : "Done"}
+                  {lang === "fr" ? "Terminer" : lang === "ar" ? "ÃÂ¬â”˜Ã " : "Done"}
                 </button>
               </div>
             </section>
@@ -1924,7 +1924,7 @@ export default function AudioPlayer() {
     setManualDockPosition(false);
   }, []);
 
-  /* Ne rien afficher si le lecteur est ferm├® */
+  /* Ne rien afficher si le lecteur est fermâ”œÂ® */
   const desktopCardWidthClass = isHomeDesktop
     ? expanded
       ? "w-[320px]"
@@ -1946,9 +1946,9 @@ export default function AudioPlayer() {
 
   if (closed) return null;
 
-  /* ÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬É
+  /* Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰
      MOBILE -- classic bottom bar
-  ÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬É */
+  Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰ */
   if (isMobile) {
     if (minimized) {
       return (
@@ -1981,9 +1981,9 @@ export default function AudioPlayer() {
               <div className="mp-player-minimized-title truncate text-[0.82rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-text)_94%,#ffffff_6%)]">
                 {titleLabel ||
                   (lang === "fr"
-                    ? "Pr├¬t ├á lire"
+                    ? "Pret a lire"
                     : lang === "ar"
-                      ? "Ï¼Ïº┘çÏ▓"
+                      ? "ÃÂ¼ÃÂºâ”˜Ã§Ãâ–“"
                       : "Ready")}
               </div>
               <div className="mp-player-minimized-reciter truncate text-[0.68rem] text-[color-mix(in_srgb,var(--theme-text-muted)_90%,var(--theme-bg)_10%)]">
@@ -2008,7 +2008,7 @@ export default function AudioPlayer() {
               aria-expanded={optionsModalOpen}
               title={
                 lang === "fr"
-                  ? "Options et r├®citateurs"
+                  ? "Options et recitateurs"
                   : lang === "ar"
                     ? "Options and reciters"
                     : "Options and reciters"
@@ -2023,7 +2023,7 @@ export default function AudioPlayer() {
               )}
               onClick={toggleMinimized}
               title={
-                lang === "fr" ? "Agrandir" : lang === "ar" ? "Ï¬┘êÏ│┘èÏ╣" : "Expand"
+                lang === "fr" ? "Agrandir" : lang === "ar" ? "ÃÂ¬â”˜ÃªÃâ”‚â”˜Ã¨Ãâ•£" : "Expand"
               }
             >
               <i className="fas fa-expand-alt" />
@@ -2035,7 +2035,7 @@ export default function AudioPlayer() {
               )}
               onClick={closePlayer}
               title={
-                lang === "fr" ? "Fermer" : lang === "ar" ? "ÏÑÏ║┘äÏº┘é" : "Close"
+                lang === "fr" ? "Fermer" : lang === "ar" ? "ÃÃ‘Ãâ•‘â”˜Ã¤ÃÂºâ”˜Ã©" : "Close"
               }
             >
               <i className="fas fa-times" />
@@ -2071,7 +2071,7 @@ export default function AudioPlayer() {
             className={cn(mBarBtn, "h-9 w-9 rounded-full")}
             onClick={toggleMinimized}
             title={
-              lang === "fr" ? "R├®duire" : lang === "ar" ? "Ï¬ÏÁÏ║┘èÏ▒" : "Minimize"
+              lang === "fr" ? "Reduire" : lang === "ar" ? "Minimize" : "Minimize"
             }
           >
             <i className="fas fa-chevron-down" />
@@ -2085,7 +2085,7 @@ export default function AudioPlayer() {
           <button
             className={cn(mBarBtn, "h-9 w-9 rounded-full")}
             onClick={closePlayer}
-            title={lang === "fr" ? "Fermer" : lang === "ar" ? "ÏÑÏ║┘äÏº┘é" : "Close"}
+            title={lang === "fr" ? "Fermer" : lang === "ar" ? "ÃÃ‘Ãâ•‘â”˜Ã¤ÃÂºâ”˜Ã©" : "Close"}
           >
             <i className="fas fa-times" />
           </button>
@@ -2137,7 +2137,7 @@ export default function AudioPlayer() {
                 : lang === "fr"
                   ? "En attente"
                   : lang === "ar"
-                    ? "Ï¼Ïº┘çÏ▓"
+                    ? "ÃÂ¼ÃÂºâ”˜Ã§Ãâ–“"
                     : "Ready"}
             </span>
             <span className="text-[0.6rem] leading-none text-[color-mix(in_srgb,var(--theme-text-muted)_86%,var(--theme-bg)_14%)] font-mono tabular-nums">
@@ -2216,7 +2216,7 @@ export default function AudioPlayer() {
               )}
               onClick={cycleSpeed}
               title={
-                lang === "fr" ? "Vitesse" : lang === "ar" ? "Ïº┘äÏ│Ï▒Ï╣Ï®" : "Speed"
+                lang === "fr" ? "Vitesse" : lang === "ar" ? "ÃÂºâ”˜Ã¤Ãâ”‚Ãâ–’Ãâ•£ÃÂ®" : "Speed"
               }
             >
               {audioSpeed}x
@@ -2232,14 +2232,14 @@ export default function AudioPlayer() {
               title={
                 optionsModalOpen
                   ? lang === "fr"
-                    ? "R├®duire"
+                    ? "Reduire"
                     : lang === "ar"
-                      ? "Ïº┘äÏ«┘èÏºÏ▒ÏºÏ¬ ┘à┘üÏ¬┘êÏ¡Ï®"
+                      ? "ÃÂºâ”˜Ã¤ÃÂ«â”˜Ã¨ÃÂºÃâ–’ÃÂºÃÂ¬ â”˜Ã â”˜Ã¼ÃÂ¬â”˜ÃªÃÂ¡ÃÂ®"
                       : "Options opened"
                   : lang === "fr"
                     ? "Plus d'options"
                     : lang === "ar"
-                      ? "Ï«┘èÏºÏ▒ÏºÏ¬ ÏÑÏÂÏº┘ü┘èÏ®"
+                      ? "ÃÂ«â”˜Ã¨ÃÂºÃâ–’ÃÂºÃÂ¬ ÃÃ‘ÃÃ‚ÃÂºâ”˜Ã¼â”˜Ã¨ÃÂ®"
                       : "More options"
               }
             >
@@ -2266,16 +2266,16 @@ export default function AudioPlayer() {
                   onClick={toggle}
                   title={
                     lang === "fr"
-                      ? "R├®essayer"
+                      ? "Reessayer"
                       : lang === "ar"
-                        ? "ÏÑÏ╣ÏºÏ»Ï® Ïº┘ä┘àÏ¡Ïº┘ê┘äÏ®"
+                        ? "ÃÃ‘Ãâ•£ÃÂºÃÂ»ÃÂ® ÃÂºâ”˜Ã¤â”˜Ã ÃÂ¡ÃÂºâ”˜Ãªâ”˜Ã¤ÃÂ®"
                         : "Retry"
                   }
                 >
                   {lang === "fr"
-                    ? "R├®essayer"
+                    ? "Reessayer"
                     : lang === "ar"
-                      ? "ÏÑÏ╣ÏºÏ»Ï®"
+                      ? "ÃÃ‘Ãâ•£ÃÂºÃÂ»ÃÂ®"
                       : "Retry"}
                 </button>
               </div>
@@ -2305,7 +2305,7 @@ export default function AudioPlayer() {
                     {lang === "fr"
                       ? "Lecture sourate complete"
                       : lang === "ar"
-                        ? "Ï¬Ï┤Ï║┘è┘ä Ïº┘äÏ│┘êÏ▒Ï® ┘âÏº┘à┘äÏ®"
+                        ? "ÃÂ¬Ãâ”¤Ãâ•‘â”˜Ã¨â”˜Ã¤ ÃÂºâ”˜Ã¤Ãâ”‚â”˜ÃªÃâ–’ÃÂ® â”˜Ã¢ÃÂºâ”˜Ã â”˜Ã¤ÃÂ®"
                         : "Full-surah playback"}
                   </span>
                 )}
@@ -2369,9 +2369,9 @@ export default function AudioPlayer() {
                     )}
                   >
                     {lang === "fr"
-                      ? "Aucun r├®sultat"
+                      ? "Aucun resultat"
                       : lang === "ar"
-                        ? "┘äÏº Ï¬┘êÏ¼Ï» ┘åÏ¬ÏºÏªÏ¼"
+                        ? "â”˜Ã¤ÃÂº ÃÂ¬â”˜ÃªÃÂ¼ÃÂ» â”˜Ã¥ÃÂ¬ÃÂºÃÂªÃÂ¼"
                         : "No results"}
                   </div>
                 ) : (
@@ -2436,7 +2436,7 @@ export default function AudioPlayer() {
                                 {lang === "fr"
                                   ? "Sourate complete"
                                   : lang === "ar"
-                                    ? "Ï│┘êÏ▒Ï® ┘âÏº┘à┘äÏ®"
+                                    ? "Ãâ”‚â”˜ÃªÃâ–’ÃÂ® â”˜Ã¢ÃÂºâ”˜Ã â”˜Ã¤ÃÂ®"
                                     : "Full surah"}
                               </span>
                             )}
@@ -2464,12 +2464,12 @@ export default function AudioPlayer() {
                     ? lang === "fr"
                       ? "Muet"
                       : lang === "ar"
-                        ? "┘âÏ¬┘à"
+                        ? "â”˜Ã¢ÃÂ¬â”˜Ã "
                         : "Mute"
                     : lang === "fr"
                       ? "Activer"
                       : lang === "ar"
-                        ? "ÏÑ┘äÏ║ÏºÏí Ïº┘ä┘âÏ¬┘à"
+                        ? "ÃÃ‘â”˜Ã¤Ãâ•‘ÃÂºÃÃ­ ÃÂºâ”˜Ã¤â”˜Ã¢ÃÂ¬â”˜Ã "
                         : "Unmute"
                 }
               >
@@ -2553,11 +2553,11 @@ export default function AudioPlayer() {
                 title={lang === "fr" ? "Fermer le lecteur" : "Close player"}
               >
                 <i className="fas fa-times text-[0.6rem]" />
-                {lang === "fr" ? "Fermer" : lang === "ar" ? "ÏÑÏ║┘äÏº┘é" : "Close"}
+                {lang === "fr" ? "Fermer" : lang === "ar" ? "ÃÃ‘Ãâ•‘â”˜Ã¤ÃÂºâ”˜Ã©" : "Close"}
               </button>
             </div>
 
-            {/* -- Options avanc├®es toggle (mobile) -- */}
+            {/* -- Options avancâ”œÂ®es toggle (mobile) -- */}
             {showAdvancedControls && (
               <>
                 <div className="mt-2 mb-0.5">
@@ -2575,7 +2575,7 @@ export default function AudioPlayer() {
                       {lang === "fr"
                         ? "Options"
                         : lang === "ar"
-                          ? "Ï«┘èÏºÏ▒ÏºÏ¬"
+                          ? "ÃÂ«â”˜Ã¨ÃÂºÃâ–’ÃÂºÃÂ¬"
                           : "Options"}
                     </span>
                     <i
@@ -2621,7 +2621,7 @@ export default function AudioPlayer() {
                         {lang === "fr"
                           ? "Acoustique"
                           : lang === "ar"
-                            ? "Ïº┘äÏÁ┘êÏ¬┘èÏºÏ¬"
+                            ? "ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬â”˜Ã¨ÃÂºÃÂ¬"
                             : "Acoustics"}
                       </div>
                       <div className="flex flex-wrap gap-1">
@@ -2631,7 +2631,7 @@ export default function AudioPlayer() {
                           {
                             id: "treble",
                             fr: "Aigus",
-                            ar: "Ï¡ÏºÏ»",
+                            ar: "ÃÂ¡ÃÂºÃÂ»",
                             en: "Treble",
                           },
                           { id: "near", fr: "Proche", ar: "Near", en: "Near" },
@@ -2657,7 +2657,7 @@ export default function AudioPlayer() {
                       </div>
                     </div>
 
-                    {/* -- Tartil + R├®citation (mobile) -- */}
+                    {/* -- Tartil + Râ”œÂ®citation (mobile) -- */}
                     <div className="flex gap-1.5 mt-2">
                       <button
                         onClick={toggleTartil}
@@ -2671,7 +2671,7 @@ export default function AudioPlayer() {
                         {lang === "fr"
                           ? "Tartil"
                           : lang === "ar"
-                            ? "Ï¬Ï▒Ï¬┘è┘ä"
+                            ? "ÃÂ¬Ãâ–’ÃÂ¬â”˜Ã¨â”˜Ã¤"
                             : "Tartil"}
                       </button>
                       <button
@@ -2687,9 +2687,9 @@ export default function AudioPlayer() {
                           className={`fas ${reciteMode ? "fa-stop" : "fa-microphone"} text-[0.6rem]`}
                         />
                         {lang === "fr"
-                          ? "R├®citer"
+                          ? "Râ”œÂ®citer"
                           : lang === "ar"
-                            ? "Ïº┘äÏ¬┘äÏº┘êÏ®"
+                            ? "ÃÂºâ”˜Ã¤ÃÂ¬â”˜Ã¤ÃÂºâ”˜ÃªÃÂ®"
                             : "Recite"}
                       </button>
                     </div>
@@ -2712,9 +2712,9 @@ export default function AudioPlayer() {
     );
   }
 
-  /* ÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬É
+  /* Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰
      DESKTOP -- floating music card
-  ÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬ÉÔÇó┬É */
+  Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰ */
   return (
     <>
       {/* Audio error banner */}
@@ -2794,9 +2794,9 @@ export default function AudioPlayer() {
                 >
                   {titleLabel ||
                     (lang === "fr"
-                      ? "Pr├¬t ├á lire"
+                      ? "Pret a lire"
                       : lang === "ar"
-                        ? "Ï¼Ïº┘çÏ▓"
+                        ? "ÃÂ¼ÃÂºâ”˜Ã§Ãâ–“"
                         : "Ready")}
                 </div>
                 <div
@@ -2832,7 +2832,7 @@ export default function AudioPlayer() {
                 onClick={toggleOptionsModal}
                 title={
                   lang === "fr"
-                    ? "Options et r├®citateurs"
+                    ? "Options et recitateurs"
                     : lang === "ar"
                       ? "Options and reciters"
                       : "Options and reciters"
@@ -2847,7 +2847,7 @@ export default function AudioPlayer() {
                   lang === "fr"
                     ? "Agrandir"
                     : lang === "ar"
-                      ? "Ï¬┘êÏ│┘èÏ╣"
+                      ? "ÃÂ¬â”˜ÃªÃâ”‚â”˜Ã¨Ãâ•£"
                       : "Expand"
                 }
                 size="sm"
@@ -2857,7 +2857,7 @@ export default function AudioPlayer() {
               <IconBtn
                 onClick={closePlayer}
                 title={
-                  lang === "fr" ? "Fermer" : lang === "ar" ? "ÏÑÏ║┘äÏº┘é" : "Close"
+                  lang === "fr" ? "Fermer" : lang === "ar" ? "ÃÃ‘Ãâ•‘â”˜Ã¤ÃÂºâ”˜Ã©" : "Close"
                 }
                 size="sm"
               >
@@ -2900,7 +2900,7 @@ export default function AudioPlayer() {
                   lang === "fr"
                     ? "Minimiser"
                     : lang === "ar"
-                      ? "Ï¬ÏÁÏ║┘èÏ▒"
+                      ? "ÃÂ¬ÃÃÃâ•‘â”˜Ã¨Ãâ–’"
                       : "Minimize"
                 }
                 disabled={isHomeDesktop}
@@ -2912,7 +2912,7 @@ export default function AudioPlayer() {
                 onClick={toggleOptionsModal}
                 title={
                   lang === "fr"
-                    ? "Options et r├®citateurs"
+                    ? "Options et recitateurs"
                     : lang === "ar"
                       ? "Options and reciters"
                       : "Options and reciters"
@@ -2935,7 +2935,7 @@ export default function AudioPlayer() {
                   lang === "fr"
                     ? "Fermer le lecteur"
                     : lang === "ar"
-                      ? "ÏÑÏ║┘äÏº┘é Ïº┘ä┘àÏ┤Ï║┘ä"
+                      ? "ÃÃ‘Ãâ•‘â”˜Ã¤ÃÂºâ”˜Ã© ÃÂºâ”˜Ã¤â”˜Ã Ãâ”¤Ãâ•‘â”˜Ã¤"
                       : "Close player"
                 }
               >
@@ -2971,9 +2971,9 @@ export default function AudioPlayer() {
                   >
                     {titleLabel ||
                       (lang === "fr"
-                        ? "Pr├¬t ├á lire"
+                        ? "Pret a lire"
                         : lang === "ar"
-                          ? "Ï¼Ïº┘çÏ▓"
+                          ? "ÃÂ¼ÃÂºâ”˜Ã§Ãâ–“"
                           : "Ready")}
                   </div>
                   <div
@@ -3002,7 +3002,7 @@ export default function AudioPlayer() {
                         "mt-0.5 inline-block rounded-full border px-1.5 py-px text-[0.55rem] font-bold tracking-wide",
                       )}
                     >
-                      Warsh ÔÇ£
+                      Warsh Ã”Ã‡Â£
                     </span>
                   )}
                   <AudioLoadingIndicator
@@ -3036,7 +3036,7 @@ export default function AudioPlayer() {
                         lang === "fr"
                           ? "Revenir au dock"
                           : lang === "ar"
-                            ? "ÏÑÏ╣ÏºÏ»Ï® Ï¬Ï½Ï¿┘èÏ¬ Ïº┘ä┘à┘êÏÂÏ╣"
+                            ? "ÃÃ‘Ãâ•£ÃÂºÃÂ»ÃÂ® ÃÂ¬ÃÂ½ÃÂ¿â”˜Ã¨ÃÂ¬ ÃÂºâ”˜Ã¤â”˜Ã â”˜ÃªÃÃ‚Ãâ•£"
                             : "Reset dock position"
                       }
                       size="sm"
@@ -3048,9 +3048,9 @@ export default function AudioPlayer() {
                     onClick={toggleMinimized}
                     title={
                       lang === "fr"
-                        ? "R├®duire"
+                        ? "Reduire"
                         : lang === "ar"
-                          ? "Ï¬ÏÁÏ║┘èÏ▒"
+                          ? "ÃÂ¬ÃÃÃâ•‘â”˜Ã¨Ãâ–’"
                           : "Minimize"
                     }
                     size="sm"
@@ -3197,12 +3197,12 @@ export default function AudioPlayer() {
                   ? lang === "fr"
                     ? "Fermer les options"
                     : lang === "ar"
-                      ? "ÏÑÏ║┘äÏº┘é Ïº┘äÏ«┘èÏºÏ▒ÏºÏ¬"
+                      ? "ÃÃ‘Ãâ•‘â”˜Ã¤ÃÂºâ”˜Ã© ÃÂºâ”˜Ã¤ÃÂ«â”˜Ã¨ÃÂºÃâ–’ÃÂºÃÂ¬"
                       : "Close options"
                   : lang === "fr"
                     ? "Plus d'options"
                     : lang === "ar"
-                      ? "Ï«┘èÏºÏ▒ÏºÏ¬ ÏÑÏÂÏº┘ü┘èÏ®"
+                      ? "ÃÂ«â”˜Ã¨ÃÂºÃâ–’ÃÂºÃÂ¬ ÃÃ‘ÃÃ‚ÃÂºâ”˜Ã¼â”˜Ã¨ÃÂ®"
                       : "More options"}
               </button>
 
@@ -3224,16 +3224,16 @@ export default function AudioPlayer() {
                         onClick={toggle}
                         title={
                           lang === "fr"
-                            ? "R├®essayer"
+                            ? "Reessayer"
                             : lang === "ar"
-                              ? "ÏÑÏ╣ÏºÏ»Ï® Ïº┘ä┘àÏ¡Ïº┘ê┘äÏ®"
+                              ? "ÃÃ‘Ãâ•£ÃÂºÃÂ»ÃÂ® ÃÂºâ”˜Ã¤â”˜Ã ÃÂ¡ÃÂºâ”˜Ãªâ”˜Ã¤ÃÂ®"
                               : "Retry"
                         }
                       >
                         {lang === "fr"
-                          ? "R├®essayer"
+                          ? "Reessayer"
                           : lang === "ar"
-                            ? "ÏÑÏ╣ÏºÏ»Ï®"
+                            ? "ÃÃ‘Ãâ•£ÃÂºÃÂ»ÃÂ®"
                             : "Retry"}
                       </button>
                     </div>
@@ -3295,9 +3295,9 @@ export default function AudioPlayer() {
                           )}
                         >
                           {lang === "fr"
-                            ? "Aucun r├®sultat"
+                            ? "Aucun resultat"
                             : lang === "ar"
-                              ? "┘äÏº Ï¬┘êÏ¼Ï» ┘åÏ¬ÏºÏªÏ¼"
+                              ? "â”˜Ã¤ÃÂº ÃÂ¬â”˜ÃªÃÂ¼ÃÂ» â”˜Ã¥ÃÂ¬ÃÂºÃÂªÃÂ¼"
                               : "No results"}
                         </div>
                       ) : (
@@ -3435,7 +3435,7 @@ export default function AudioPlayer() {
                     </div>
                   )}
 
-                  {/* -- Options avanc├®es toggle -- */}
+                  {/* -- Options avancâ”œÂ®es toggle -- */}
                   {showAdvancedControls && (
                     <button
                       onClick={() => setShowAdvanced((v) => !v)}
@@ -3451,7 +3451,7 @@ export default function AudioPlayer() {
                         {lang === "fr"
                           ? "Options"
                           : lang === "ar"
-                            ? "Ï«┘èÏºÏ▒ÏºÏ¬"
+                            ? "ÃÂ«â”˜Ã¨ÃÂºÃâ–’ÃÂºÃÂ¬"
                             : "Options"}
                       </span>
                       <i
@@ -3465,9 +3465,9 @@ export default function AudioPlayer() {
                       <div>
                         <div className={playerSectionLabelClass}>
                           {lang === "fr"
-                            ? "R├®p├®tition A-B"
+                            ? "Râ”œÂ®pâ”œÂ®tition A-B"
                             : lang === "ar"
-                              ? "Ï¬┘ÆÏ▒ÏºÏ▒ Ïú-Ï¿"
+                              ? "ÃÂ¬â”˜Ã†Ãâ–’ÃÂºÃâ–’ ÃÃº-ÃÂ¿"
                               : "A-B Repeat"}
                         </div>
                         <div className="flex items-center gap-1.5 flex-wrap">
@@ -3476,7 +3476,7 @@ export default function AudioPlayer() {
                               mark: markAbA,
                               val: abA,
                               label: "A",
-                              titleFr: "Marquer d├®but A",
+                              titleFr: "Marquer dâ”œÂ®but A",
                               titleEn: "Set A point",
                             },
                             {
@@ -3519,7 +3519,7 @@ export default function AudioPlayer() {
                           {lang === "fr"
                             ? "Acoustique"
                             : lang === "ar"
-                              ? "Ïº┘äÏÁ┘êÏ¬┘èÏºÏ¬"
+                              ? "ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬â”˜Ã¨ÃÂºÃÂ¬"
                               : "Acoustics"}
                         </div>
                         <div className="flex flex-wrap gap-1">
@@ -3534,7 +3534,7 @@ export default function AudioPlayer() {
                             {
                               id: "treble",
                               fr: "Aigus",
-                              ar: "Ï¡ÏºÏ»",
+                              ar: "ÃÂ¡ÃÂºÃÂ»",
                               en: "Treble",
                             },
                             {
@@ -3580,7 +3580,7 @@ export default function AudioPlayer() {
                           {lang === "fr"
                             ? "Tartil progressif"
                             : lang === "ar"
-                              ? "Ï¬Ï▒Ï¬┘è┘ä Ï¬Ï»Ï▒┘èÏ¼┘è"
+                              ? "ÃÂ¬Ãâ–’ÃÂ¬â”˜Ã¨â”˜Ã¤ ÃÂ¬ÃÂ»Ãâ–’â”˜Ã¨ÃÂ¼â”˜Ã¨"
                               : "Progressive Tartil"}
                         </span>
                         <span
@@ -3595,7 +3595,7 @@ export default function AudioPlayer() {
                         </span>
                       </button>
 
-                      {/* -- Mode r├®citation (Web Speech API) -- */}
+                      {/* -- Mode râ”œÂ®citation (Web Speech API) -- */}
                       <button
                         onClick={reciteMode ? stopRecite : startRecite}
                         className={cn(
@@ -3610,8 +3610,8 @@ export default function AudioPlayer() {
                           />
                           {lang === "fr"
                             ? reciteMode
-                              ? "Arr├¬ter la r├®citation"
-                              : "Mode r├®citation"
+                              ? "Arrâ”œÂ¬ter la râ”œÂ®citation"
+                              : "Mode râ”œÂ®citation"
                             : lang === "ar"
                               ? reciteMode
                                 ? "Stop reciting"
@@ -3629,7 +3629,7 @@ export default function AudioPlayer() {
                                 : "text-[#fbbf24]",
                             )}
                           >
-                            {reciteResult === "ok" ? "ÔÇ£" : "~"}
+                            {reciteResult === "ok" ? "Ã”Ã‡Â£" : "~"}
                           </span>
                         )}
                       </button>

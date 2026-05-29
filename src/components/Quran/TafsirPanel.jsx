@@ -24,7 +24,7 @@ export default function TafsirPanel({ surah, ayah, onClose }) {
   const [showSourcePicker, setShowSourcePicker] = useState(false);
 
   const availableTafsirs = getAvailableTafsirs(lang);
-  const defaultTafsirId = availableTafsirs[0]?.id || 167;
+  const defaultTafsirId = availableTafsirs[0]?.id || 169;
 
   useEffect(() => {
     if (!surah || !ayah) return;

@@ -1149,6 +1149,26 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             <i className="fas fa-share-nodes text-[0.8rem]" />
           </button>
 
+          {/* Note */}
+          <button
+            type="button"
+            className={cn(
+              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              (showNote || noteText.trim())
+                ? "bg-[var(--primary)] text-white"
+                : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
+            )}
+            onClick={() => {
+              setShowStudy(false);
+              setShowPlaylistMenu(false);
+              setShowShare(false);
+              setShowNote((value) => !value);
+            }}
+            title={lang === "fr" ? "Note" : "Note"}
+          >
+            <i className="fas fa-pen-to-square text-[0.8rem]" />
+          </button>
+
           {/* Playlist / Options */}
           <button
             type="button"
@@ -1162,6 +1182,35 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             title="Options"
           >
             <i className="fas fa-ellipsis text-[0.8rem]" />
+          </button>
+        </div>
+      ) : layout === "qcom-list-study" ? (
+        <div className="qcom-list-study-links select-none">
+          <button
+            type="button"
+            className={cn("qcom-list-study-link", showStudy && studyTab === "tafsir" && "is-active")}
+            onClick={() => toggleStudyPanel("tafsir")}
+          >
+            <i className="fas fa-book-open" />
+            <span>{lang === "fr" ? "Tafsirs" : lang === "ar" ? "تفسير" : "Tafsirs"}</span>
+          </button>
+          <span className="qcom-list-study-separator" aria-hidden="true" />
+          <button
+            type="button"
+            className={cn("qcom-list-study-link", showStudy && studyTab === "lessons" && "is-active")}
+            onClick={() => toggleStudyPanel("lessons")}
+          >
+            <i className="fas fa-layer-group" />
+            <span>{lang === "fr" ? "Lecons" : lang === "ar" ? "فوائد" : "Lessons"}</span>
+          </button>
+          <span className="qcom-list-study-separator" aria-hidden="true" />
+          <button
+            type="button"
+            className={cn("qcom-list-study-link", showStudy && studyTab === "reflections" && "is-active")}
+            onClick={() => toggleStudyPanel("reflections")}
+          >
+            <i className="far fa-comment" />
+            <span>{lang === "fr" ? "Reflexions" : lang === "ar" ? "تدبر" : "Reflections"}</span>
           </button>
         </div>
       ) : layout === "qcom-footer" ? (
