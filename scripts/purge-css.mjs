@@ -14,9 +14,6 @@ import { PurgeCSS } from "purgecss";
 const CONTENT_PATTERNS = [
   "dist/**/*.html",
   "dist/**/*.js",
-  "src/**/*.jsx",
-  "src/**/*.js",
-  "index.html",
 ];
 
 const SAFELIST = {

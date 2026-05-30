@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useApp } from "../../context/AppContext";
 import QuranWord from "./QuranWord";
 import useWordByWordDisplay from "./useWordByWordDisplay";
@@ -30,6 +30,20 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
       surah,
       wordTranslationLang: state.wordTranslationLang,
     });
+  const fallbackWords = useMemo(() => {
+    if (!text || typeof text !== "string") return [];
+    return text
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((wordText, index) => ({
+        id: `${surah}:${ayah}:fallback:${index + 1}`,
+        position: index + 1,
+        text: wordText,
+        textQpcHafs: wordText,
+      }));
+  }, [ayah, surah, text]);
+  const displayWords = words.length > 0 ? words : fallbackWords;
 
   if (loading) {
     return (
@@ -46,7 +60,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
     );
   }
 
-  if (error || words.length === 0) {
+  if ((error || words.length === 0) && displayWords.length === 0) {
     return (
       <span className="wbw-text-fallback" style={{ fontSize: `${fontSize}px` }}>
         {text || ""}
@@ -57,7 +71,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
   if (inline) {
     return (
       <span className="wbw-display-inline inline" dir="rtl">
-        {words.map((word, index) => {
+        {displayWords.map((word, index) => {
           const wordId = word.id ?? `${surah}:${ayah}:${word.position ?? index}`;
           const isClickedWord = activeWordId === wordId;
 
@@ -92,7 +106,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
 
   return (
     <div className="wbw-display" dir="rtl">
-      {words.map((word, index) => {
+        {displayWords.map((word, index) => {
         const wordId = word.id ?? `${surah}:${ayah}:${word.position ?? index}`;
         const isClickedWord = activeWordId === wordId;
 

@@ -3,14 +3,14 @@
  * Stores: notes, bookmarks, reading-position, cached text, settings.
  */
 
-import { dbGet, dbSet, dbDelete, dbGetAll } from "./dbService";
+import { dbGet, dbSet, dbDelete, dbGetAll } from "./dbService.js";
 import {
   encryptData,
   decryptDataWithMeta,
   isEncryptionUnlocked,
-} from "./cryptoUtil";
-import { ACCEPTED_FONT_IDS, DEFAULT_FONT_ID, normalizeFontId } from "../data/fonts";
-import { bookmarkRecordSchema, noteRecordSchema } from "./storageValidation";
+} from "./cryptoUtil.js";
+import { ACCEPTED_FONT_IDS, DEFAULT_FONT_ID, normalizeFontId } from "../data/fonts.js";
+import { bookmarkRecordSchema, noteRecordSchema } from "./storageValidation.js";
 
 function parseRecordOrNull(schema, value) {
   const result = schema.safeParse(value);

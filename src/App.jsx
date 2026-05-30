@@ -8,7 +8,11 @@ import React, {
   Suspense,
 } from "react";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { useApp } from "./context/AppContext";
+import {
+  shallowEqual,
+  useAppActions,
+  useAppSelector,
+} from "./context/AppContext";
 import { t } from "./i18n";
 import SplashScreen from "./components/SplashScreen";
 import {
@@ -94,7 +98,46 @@ const SUSPENSE_FALLBACK = (
 );
 
 export default function App() {
-  const { state, dispatch, set } = useApp();
+  const { dispatch, set } = useAppActions();
+  const state = useAppSelector(
+    (current) => ({
+      splashDone: current.splashDone,
+      lang: current.lang,
+      sidebarOpen: current.sidebarOpen,
+      displayMode: current.displayMode,
+      currentSurah: current.currentSurah,
+      currentAyah: current.currentAyah,
+      currentPage: current.currentPage,
+      currentJuz: current.currentJuz,
+      showHome: current.showHome,
+      showDuas: current.showDuas,
+      focusReading: current.focusReading,
+      memMode: current.memMode,
+      isPlaying: current.isPlaying,
+      currentPlayingAyah: current.currentPlayingAyah,
+      fontFamily: current.fontFamily,
+      riwaya: current.riwaya,
+      reciter: current.reciter,
+      warshStrictMode: current.warshStrictMode,
+      translationLangs: current.translationLangs,
+      searchOpen: current.searchOpen,
+      settingsOpen: current.settingsOpen,
+      toolsHubOpen: current.toolsHubOpen,
+      bookmarksOpen: current.bookmarksOpen,
+      wirdOpen: current.wirdOpen,
+      historyOpen: current.historyOpen,
+      playlistOpen: current.playlistOpen,
+      audioMakerOpen: current.audioMakerOpen,
+      flashcardsOpen: current.flashcardsOpen,
+      tajweedQuizOpen: current.tajweedQuizOpen,
+      khatmaOpen: current.khatmaOpen,
+      comparatorOpen: current.comparatorOpen,
+      shareImageOpen: current.shareImageOpen,
+      weeklyStatsOpen: current.weeklyStatsOpen,
+      tafsirSidebarOpen: current.tafsirSidebarOpen,
+    }),
+    shallowEqual,
+  );
   const {
     splashDone,
     lang,
@@ -352,9 +395,32 @@ export default function App() {
     hasInteracted,
   ]);
 
+  const keyboardSnapshotRef = useRef({});
+  keyboardSnapshotRef.current = {
+    state,
+    displayMode,
+    currentSurah,
+    currentPage,
+    currentJuz,
+    lang,
+    sidebarOpen,
+    showShortcuts,
+  };
+
   const handleKeyboard = useCallback(
     (event) => {
       if (event.defaultPrevented) return;
+
+      const {
+        state,
+        displayMode,
+        currentSurah,
+        currentPage,
+        currentJuz,
+        lang,
+        sidebarOpen,
+        showShortcuts,
+      } = keyboardSnapshotRef.current;
 
       const target = event.target;
       const isElementTarget = target instanceof Element;
@@ -518,34 +584,7 @@ export default function App() {
           break;
       }
     },
-    [
-      displayMode,
-      currentSurah,
-      currentPage,
-      currentJuz,
-      lang,
-      sidebarOpen,
-      state.searchOpen,
-      state.settingsOpen,
-      state.bookmarksOpen,
-      state.wirdOpen,
-      state.historyOpen,
-      state.playlistOpen,
-      state.audioMakerOpen,
-      state.flashcardsOpen,
-      state.tajweedQuizOpen,
-      state.khatmaOpen,
-      state.comparatorOpen,
-      state.shareImageOpen,
-      state.weeklyStatsOpen,
-      state.showDuas,
-      state.showHome,
-      state.memMode,
-      showShortcuts,
-      setShowShortcuts,
-      dispatch,
-      set,
-    ],
+    [dispatch, set],
   );
 
   useEffect(() => {

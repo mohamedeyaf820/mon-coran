@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useApp } from "../context/AppContext";
+import {
+  shallowEqual,
+  useAppActions,
+  useAppSelector,
+} from "../context/AppContext";
 import { t as i18nT } from "../i18n";
 import { getSurah, surahName, toAr, getSurahForPage } from "../data/surahs";
 import { cn } from "../lib/utils";
@@ -9,7 +13,24 @@ import PlatformLogo from "./PlatformLogo";
 import { THEME_ORDER } from "../data/themes";
 
 export default function Header() {
-  const { state, dispatch, set } = useApp();
+  const { dispatch, set } = useAppActions();
+  const state = useAppSelector(
+    (current) => ({
+      lang: current.lang,
+      theme: current.theme,
+      currentSurah: current.currentSurah,
+      displayMode: current.displayMode,
+      currentPage: current.currentPage,
+      currentJuz: current.currentJuz,
+      riwaya: current.riwaya,
+      loadedAyahCount: current.loadedAyahCount,
+      showHome: current.showHome,
+      showDuas: current.showDuas,
+      sidebarOpen: current.sidebarOpen,
+      settingsOpen: current.settingsOpen,
+    }),
+    shallowEqual,
+  );
   const {
     lang,
     theme,
@@ -21,6 +42,8 @@ export default function Header() {
     loadedAyahCount,
     showHome,
     showDuas,
+    sidebarOpen,
+    settingsOpen,
   } = state;
 
   const [goToValue, setGoToValue] = useState("");
@@ -183,14 +206,14 @@ export default function Header() {
       <div className="mp-header__bar">
         <div className="mp-header__brand-row">
           <button
-            className={cn("mp-header__icon-btn hdr-v7__menu-btn", state.sidebarOpen && "is-active")}
+            className={cn("mp-header__icon-btn hdr-v7__menu-btn", sidebarOpen && "is-active")}
             type="button"
             onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
             aria-label={tr({ fr: "Menu", en: "Menu", ar: "القائمة" })}
-            aria-expanded={state.sidebarOpen}
+            aria-expanded={sidebarOpen}
             aria-controls="sidebar"
           >
-            <i className={state.sidebarOpen ? "fas fa-times" : "fas fa-bars"} />
+            <i className={sidebarOpen ? "fas fa-times" : "fas fa-bars"} />
           </button>
 
           <button
@@ -329,7 +352,7 @@ export default function Header() {
 
           {/* Paramètres */}
           <button
-            className={cn("mp-header__action", state.settingsOpen && "is-active")}
+            className={cn("mp-header__action", settingsOpen && "is-active")}
             type="button"
             onClick={openSettings}
             aria-label={i18nT("nav.settings", lang)}

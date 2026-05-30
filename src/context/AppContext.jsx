@@ -3,9 +3,11 @@ import React, {
   useContext,
   useReducer,
   useEffect,
+  useLayoutEffect,
   useCallback,
   useMemo,
   useRef,
+  useSyncExternalStore,
 } from "react";
 import { getSettings, saveSettings } from "../services/storageService";
 import { ensureReciterForRiwaya } from "../data/reciters";
@@ -147,7 +149,7 @@ const initialState = getInitialState();
 
 /* ── Reducer ────────────────────────────────── */
 
-function appReducer(state, action) {
+export function appReducer(state, action) {
   switch (action.type) {
     case "SET": {
       const payload = action.payload || {};
@@ -282,15 +284,46 @@ function appReducer(state, action) {
 
 /* ── Context ────────────────────────────────── */
 
-const AppContext = createContext(null);
-const AppStateContext = createContext(null);
-const AppActionsContext = createContext(null);
-const AppLocaleContext = createContext({ lang: "fr", riwaya: "hafs" });
+export const AppContext = createContext(null);
+export const AppStateContext = createContext(null);
+export const AppActionsContext = createContext(null);
+export const AppLocaleContext = createContext({ lang: "fr", riwaya: "hafs" });
+const AppSelectorStoreContext = createContext(null);
+
+export function shallowEqual(a, b) {
+  if (Object.is(a, b)) return true;
+  if (!a || !b || typeof a !== "object" || typeof b !== "object") {
+    return false;
+  }
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  if (aKeys.length !== bKeys.length) return false;
+  return aKeys.every((key) => Object.is(a[key], b[key]));
+}
 
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
   const saveTimerRef = useRef(null);
   const persistentSettingsRef = useRef(null);
+  const stateRef = useRef(state);
+  const selectorListenersRef = useRef(new Set());
+  stateRef.current = state;
+
+  const selectorStore = useMemo(
+    () => ({
+      getSnapshot: () => stateRef.current,
+      subscribe: (listener) => {
+        selectorListenersRef.current.add(listener);
+        return () => selectorListenersRef.current.delete(listener);
+      },
+    }),
+    [],
+  );
+
+  useLayoutEffect(() => {
+    stateRef.current = state;
+    selectorListenersRef.current.forEach((listener) => listener());
+  }, [state]);
 
   // Create persistent settings object - memoized to avoid unnecessary recalculations
   const persistentSettings = useMemo(() => ({
@@ -579,9 +612,11 @@ export function AppProvider({ children }) {
   return (
     <AppActionsContext.Provider value={actionsValue}>
       <AppLocaleContext.Provider value={localeValue}>
-        <AppStateContext.Provider value={state}>
-          <AppContext.Provider value={appValue}>{children}</AppContext.Provider>
-        </AppStateContext.Provider>
+        <AppSelectorStoreContext.Provider value={selectorStore}>
+          <AppStateContext.Provider value={state}>
+            <AppContext.Provider value={appValue}>{children}</AppContext.Provider>
+          </AppStateContext.Provider>
+        </AppSelectorStoreContext.Provider>
       </AppLocaleContext.Provider>
     </AppActionsContext.Provider>
   );
@@ -603,6 +638,35 @@ export function useAppLocale() {
   const ctx = useContext(AppLocaleContext);
   if (!ctx) throw new Error("useAppLocale must be used within AppProvider");
   return ctx;
+}
+
+export function useAppSelector(selector, isEqual = Object.is) {
+  const store = useContext(AppSelectorStoreContext);
+  if (!store) throw new Error("useAppSelector must be used within AppProvider");
+
+  const selectorRef = useRef(selector);
+  const isEqualRef = useRef(isEqual);
+  const selectedRef = useRef();
+  selectorRef.current = selector;
+  isEqualRef.current = isEqual;
+
+  const getSelectedSnapshot = useCallback(() => {
+    const next = selectorRef.current(store.getSnapshot());
+    if (
+      selectedRef.current !== undefined &&
+      isEqualRef.current(selectedRef.current, next)
+    ) {
+      return selectedRef.current;
+    }
+    selectedRef.current = next;
+    return next;
+  }, [store]);
+
+  return useSyncExternalStore(
+    store.subscribe,
+    getSelectedSnapshot,
+    getSelectedSnapshot,
+  );
 }
 
 export function useApp() {

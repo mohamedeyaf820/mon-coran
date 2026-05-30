@@ -137,6 +137,7 @@ export default function ReadingToolbar({
           <button
             type="button"
             className={cn(
+              "reader-toolbar-btn--word-by-word",
               "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer",
               showTranslation
                 ? "bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] border-[rgba(var(--primary-rgb),0.2)]"
@@ -209,6 +210,7 @@ export default function ReadingToolbar({
             onClick={playHandler}
             disabled={isPreparing}
             className={cn(
+              "reader-toolbar-btn--primary btn-play-surah",
               "flex items-center justify-center gap-1.5 px-4 h-9 rounded-xl text-xs font-bold text-white shadow-sm transition-all cursor-pointer disabled:opacity-50",
               isPlayingThisContext
                 ? "bg-amber-600 hover:bg-amber-700"

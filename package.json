@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "perf:budget": "node scripts/check-bundle-budget.mjs",
     "audit:screen-budget": "node scripts/check-screen-budget.mjs",
-    "test:security": "node --test tests/security-storage.test.mjs",
+    "test:security": "node --test tests/*.test.mjs",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test tests/e2e/audio-fallback.spec.mjs tests/e2e/a11y-smoke.spec.mjs",
     "test:e2e:audio": "playwright test tests/e2e/audio-fallback.spec.mjs",

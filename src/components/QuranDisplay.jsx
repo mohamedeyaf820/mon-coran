@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useApp } from "../context/AppContext";
+import {
+  shallowEqual,
+  useAppActions,
+  useAppSelector,
+} from "../context/AppContext";
 import { t } from "../i18n";
 import { clearCache } from "../services/quranAPI";
 import { clearWarshCache } from "../services/warshService";
@@ -23,7 +27,37 @@ import useQuranDisplayView from "./QuranDisplay/useQuranDisplayView";
 import useQuranTranslations from "./QuranDisplay/useQuranTranslations";
 
 export default function QuranDisplay() {
-  const { state, dispatch, set } = useApp();
+  const { dispatch, set } = useAppActions();
+  const state = useAppSelector(
+    (current) => ({
+      currentAyah: current.currentAyah,
+      currentJuz: current.currentJuz,
+      currentPage: current.currentPage,
+      currentPlayingAyah: current.currentPlayingAyah,
+      currentSurah: current.currentSurah,
+      displayMode: current.displayMode,
+      focusReading: current.focusReading,
+      fontFamily: current.fontFamily,
+      lang: current.lang,
+      loading: current.loading,
+      memMode: current.memMode,
+      mushafLayout: current.mushafLayout,
+      quranFontSize: current.quranFontSize,
+      quranTranslationFontSize: current.quranTranslationFontSize,
+      reciter: current.reciter,
+      riwaya: current.riwaya,
+      showHome: current.showHome,
+      showTajwid: current.showTajwid,
+      showTranslation: current.showTranslation,
+      showTransliteration: current.showTransliteration,
+      showWordByWord: current.showWordByWord,
+      showWordTranslation: current.showWordTranslation,
+      syncOffsetsMs: current.syncOffsetsMs,
+      translationLangs: current.translationLangs,
+      warshStrictMode: current.warshStrictMode,
+    }),
+    shallowEqual,
+  );
   const [activeAyah, setActiveAyah] = useState(null);
   const {
     currentAyah,
