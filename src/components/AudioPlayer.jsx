@@ -15,7 +15,7 @@ import { formatCooldownLabel } from "../utils/formatUtils";
 import AudioLoadingIndicator from "./AudioLoadingIndicator";
 
 /* Drag / position helpers (desktop card only) */
-const CARD_STORAGE_KEY = "mushaf_player_card_pos_v5";
+const CARD_STORAGE_KEY = "mushaf_player_card_pos_v6";
 function isValidCardPos(pos) {
   return (
     pos &&
@@ -783,38 +783,55 @@ export default function AudioPlayer() {
   const next = useCallback(() => audioService.next(), []);
   const prev = useCallback(() => audioService.prev(), []);
 
-  const handleSeek = (e) => {
+  const seekFromClientX = useCallback((clientX) => {
     if (!progressRef.current) return;
     const rect = progressRef.current.getBoundingClientRect();
-    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    if (rect.width <= 0) return;
+    const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
     audioService.seekPercent(pct);
-  };
+  }, []);
+
+  const handleSeek = useCallback(
+    (e) => {
+      seekFromClientX(e.clientX);
+    },
+    [seekFromClientX],
+  );
 
   /*Progress bar drag support*/
   const [progressDragging, setProgressDragging] = useState(false);
 
-  const handleProgressMouseDown = (e) => {
-    e.preventDefault();
-    if (!progressRef.current) return;
-    setProgressDragging(true);
-    const rect = progressRef.current.getBoundingClientRect();
-    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    audioService.seekPercent(pct);
-
-    const onMouseMove = (ev) => {
+  const handleProgressPointerDown = useCallback(
+    (e) => {
       if (!progressRef.current) return;
-      const r = progressRef.current.getBoundingClientRect();
-      const p = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width));
-      audioService.seekPercent(p);
-    };
-    const onMouseUp = () => {
-      setProgressDragging(false);
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-    };
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-  };
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      e.preventDefault();
+      e.stopPropagation();
+      setProgressDragging(true);
+      seekFromClientX(e.clientX);
+
+      const pointerId = e.pointerId;
+      e.currentTarget.setPointerCapture?.(pointerId);
+
+      const onPointerMove = (ev) => {
+        if (ev.pointerId !== pointerId) return;
+        seekFromClientX(ev.clientX);
+      };
+
+      const cleanup = (ev) => {
+        if (ev && ev.pointerId !== pointerId) return;
+        setProgressDragging(false);
+        window.removeEventListener("pointermove", onPointerMove);
+        window.removeEventListener("pointerup", cleanup);
+        window.removeEventListener("pointercancel", cleanup);
+      };
+
+      window.addEventListener("pointermove", onPointerMove);
+      window.addEventListener("pointerup", cleanup);
+      window.addEventListener("pointercancel", cleanup);
+    },
+    [seekFromClientX],
+  );
 
   const formatTime = (s) => {
     if (!s || isNaN(s)) return "0:00";
@@ -1758,11 +1775,16 @@ export default function AudioPlayer() {
       y: Math.max(88, window.innerHeight - 360 - 24),
     };
   });
+  const cardPosRef = useRef(cardPos);
   const [manualDockPosition, setManualDockPosition] = useState(
     () => hasSavedCardPosRef.current,
   );
   const canFreePosition = !isContextualDesktop || manualDockPosition;
   const canDragDesktopCard = !isMobile;
+
+  useEffect(() => {
+    cardPosRef.current = cardPos;
+  }, [cardPos]);
 
   useEffect(() => {
     if (isPlaying || currentPlayingAyah) {
@@ -1858,7 +1880,7 @@ export default function AudioPlayer() {
         target.closest("[data-player-expanded='true']")
       )
         return;
-      // Allow dragging from any non-interactive area of the player.
+      if (!target.closest("[data-player-drag='true']")) return;
 
       const card = cardRef.current;
       const rect = card?.getBoundingClientRect();
@@ -1873,10 +1895,12 @@ export default function AudioPlayer() {
       if (!manualDockPosition) {
         setManualDockPosition(true);
       }
+      cardPosRef.current = startPos;
       setCardPos(startPos);
       e.preventDefault();
-      e.currentTarget.setPointerCapture(e.pointerId);
+      e.currentTarget.setPointerCapture?.(e.pointerId);
       dragState.current = {
+        pointerId: e.pointerId,
         startX: e.clientX,
         startY: e.clientY,
         originX: startPos.x,
@@ -1889,33 +1913,63 @@ export default function AudioPlayer() {
 
   const onPointerMove = useCallback((e) => {
     if (!dragState.current) return;
+    if (e.pointerId !== dragState.current.pointerId) return;
     const dx = e.clientX - dragState.current.startX;
     const dy = e.clientY - dragState.current.startY;
     const card = cardRef.current;
     const w = card ? card.offsetWidth : 264;
     const h = card ? card.offsetHeight : 400;
-    setCardPos(
-      clamp(
-        dragState.current.originX + dx,
-        dragState.current.originY + dy,
-        w,
-        h,
-      ),
+    const next = clamp(
+      dragState.current.originX + dx,
+      dragState.current.originY + dy,
+      w,
+      h,
     );
+    cardPosRef.current = next;
+    setCardPos(next);
   }, []);
 
-  const onPointerUp = useCallback(() => {
+  const finishPointerDrag = useCallback((e) => {
     if (!dragState.current) return;
+    if (
+      typeof e?.pointerId === "number" &&
+      e.pointerId !== dragState.current.pointerId
+    )
+      return;
     const card = cardRef.current;
     const w = card ? card.offsetWidth : 264;
     const h = card ? card.offsetHeight : 400;
-    const next = clamp(cardPos.x, cardPos.y, w, h);
+    const current = cardPosRef.current;
+    const next = clamp(current.x, current.y, w, h);
+    if (e?.currentTarget?.hasPointerCapture?.(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    cardPosRef.current = next;
     setCardPos(next);
     saveCardPos(next);
+    hasSavedCardPosRef.current = true;
     setManualDockPosition(true);
     dragState.current = null;
     setIsDragging(false);
-  }, [cardPos]);
+  }, []);
+
+  const onPointerLostCapture = useCallback(() => {
+    if (dragState.current) {
+      const card = cardRef.current;
+      const w = card ? card.offsetWidth : 264;
+      const h = card ? card.offsetHeight : 400;
+      const current = cardPosRef.current;
+      const next = clamp(current.x, current.y, w, h);
+      cardPosRef.current = next;
+      setCardPos(next);
+      saveCardPos(next);
+      hasSavedCardPosRef.current = true;
+      setManualDockPosition(true);
+    }
+    dragState.current = null;
+    setIsDragging(false);
+  }, []);
+
   const resetDockPosition = useCallback(() => {
     clearCardPos();
     hasSavedCardPosRef.current = false;
@@ -2113,7 +2167,7 @@ export default function AudioPlayer() {
           )}
           ref={progressRef}
           onClick={handleSeek}
-          onMouseDown={handleProgressMouseDown}
+          onPointerDown={handleProgressPointerDown}
           role="progressbar"
           aria-valuenow={Math.round(progress * 100)}
           aria-valuemin={0}
@@ -2729,8 +2783,10 @@ export default function AudioPlayer() {
         ref={cardRef}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
+        onPointerUp={finishPointerDrag}
+        onPointerCancel={finishPointerDrag}
+        onLostPointerCapture={onPointerLostCapture}
+        data-dragging={isDragging ? "true" : undefined}
         className={cn(
           "mp-audio-player mp-audio-player--desktop !fixed z-[410] flex flex-col overflow-hidden select-none touch-auto text-[color-mix(in_srgb,var(--theme-text)_92%,var(--theme-bg)_8%)]",
           playerPanelSurfaceClass,
@@ -3029,12 +3085,12 @@ export default function AudioPlayer() {
                   )}
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
-                  {isContextualDesktop && manualDockPosition && (
+                  {manualDockPosition && (
                     <IconBtn
                       onClick={resetDockPosition}
                       title={
                         lang === "fr"
-                          ? "Revenir au dock"
+                          ? "Replacer le lecteur"
                           : lang === "ar"
                             ? "ÃÃ‘Ãâ•£ÃÂºÃÂ»ÃÂ® ÃÂ¬ÃÂ½ÃÂ¿â”˜Ã¨ÃÂ¬ ÃÂºâ”˜Ã¤â”˜Ã â”˜ÃªÃÃ‚Ãâ•£"
                             : "Reset dock position"
@@ -3073,7 +3129,7 @@ export default function AudioPlayer() {
                 <div
                   ref={progressRef}
                   onClick={handleSeek}
-                  onMouseDown={handleProgressMouseDown}
+                  onPointerDown={handleProgressPointerDown}
                   className={cn(
                     "mp-player-progress relative h-1 cursor-pointer overflow-visible rounded-full bg-white/12",
                     progressDragging && "ring-2 ring-[rgba(110,204,233,0.4)]",

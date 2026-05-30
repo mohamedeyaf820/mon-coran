@@ -109,6 +109,13 @@ export default function App() {
     memMode,
   } = state;
 
+  const handleUrlRouteChange = useCallback(
+    (route) => {
+      set(route);
+    },
+    [set],
+  );
+
   // Synchronisation URL ↔ état de navigation
   useUrlSync({
     showHome,
@@ -118,6 +125,7 @@ export default function App() {
     currentPage,
     currentJuz,
     currentAyah: state.currentAyah,
+    onRouteChange: handleUrlRouteChange,
   });
 
   useEffect(() => {
@@ -570,6 +578,7 @@ export default function App() {
         dir={lang === "ar" ? "rtl" : "ltr"}
         data-view={showHome ? "home" : showDuas ? "duas" : "reading"}
         data-display-mode={displayMode}
+        data-riwaya={state.riwaya}
       >
         <ProgressBar />
         <a

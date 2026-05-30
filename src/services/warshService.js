@@ -77,9 +77,8 @@ function normalizeWhitespace(text) {
   // Replace non-breaking space with regular space
   normalized = normalized.replace(/\u00a0/g, ' ');
   
-  // Remove presentation forms (Arabic presentation forms that might cause issues)
-  // But preserve Arabic combining marks (064B-065F, 0670)
-  normalized = normalized.replace(/[\uFB50-\uFDFF]/g, '');
+  // Keep Arabic presentation forms: Warsh sources may contain sacred ligatures
+  // such as Allah and salawat symbols that are real reader-visible content.
   
   // Collapse multiple spaces
   normalized = normalized.replace(/\s+/g, ' ');

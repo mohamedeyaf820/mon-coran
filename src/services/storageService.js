@@ -262,6 +262,13 @@ const DEFAULT_SETTINGS = {
   lastPosition: { surah: 1, ayah: 1, page: 1, juz: 1 },
 };
 
+function cloneDefaultSettings() {
+  if (typeof structuredClone === "function") {
+    return structuredClone(DEFAULT_SETTINGS);
+  }
+  return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+}
+
 function normalizeTheme(theme, fallback = "light") {
   if (VALID_THEMES.includes(theme)) return theme;
   if (typeof theme === "string" && LEGACY_THEME_MAP[theme]) {
@@ -283,14 +290,14 @@ function normalizeNightTheme(theme) {
 export function getSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
-    if (!raw) return { ...DEFAULT_SETTINGS };
+    if (!raw) return cloneDefaultSettings();
     const { data: decrypted, usedLegacy } = decryptDataWithMeta(raw);
     const parsed = decrypted || JSON.parse(raw);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-      return { ...DEFAULT_SETTINGS };
+      return cloneDefaultSettings();
     }
     const normalized = {
-      ...DEFAULT_SETTINGS,
+      ...cloneDefaultSettings(),
       ...parsed,
       syncOffsetsMs: sanitizeSyncOffsetsMap(parsed?.syncOffsetsMs),
       favoriteReciters: sanitizeFavoriteReciters(parsed?.favoriteReciters),
@@ -312,7 +319,7 @@ export function getSettings() {
 
     return normalized;
   } catch {
-    return { ...DEFAULT_SETTINGS };
+    return cloneDefaultSettings();
   }
 }
 

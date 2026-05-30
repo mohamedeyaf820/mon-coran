@@ -40,7 +40,6 @@ export default function ReadingToolbar({
     lang,
     memMode,
     mushafLayout,
-    riwaya,
     showTajwid,
     showTranslation,
     showWordByWord,
@@ -57,7 +56,6 @@ export default function ReadingToolbar({
       memMode: false,
       showWordByWord: false,
       showTajwid: true,
-      fontFamily: riwaya === "warsh" ? "qpc-warsh" : "qpc-hafs",
     }));
 
   const toggleMemorization =

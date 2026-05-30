@@ -153,20 +153,17 @@ function decryptWithKey(ciphertext, key) {
 
 /**
  * Chiffre `data` avec la clé active (passphrase utilisateur ou clé appareil).
- * Retourne toujours une chaîne chiffrée – jamais du JSON en clair.
+ * Retourne une chaine chiffree ou leve une erreur; jamais du JSON en clair.
  */
 export function encryptData(data) {
   try {
     const str = typeof data === "string" ? data : JSON.stringify(data);
     const activeKey = getActiveSecretKey();
     return CryptoJS.AES.encrypt(str, activeKey).toString();
-  } catch {
-    // Dernier recours : retour en JSON non chiffré pour ne pas perdre les données.
-    try {
-      return typeof data === "string" ? data : JSON.stringify(data);
-    } catch {
-      return "";
-    }
+  } catch (error) {
+    throw new Error("Encryption failed; refusing to store plaintext data", {
+      cause: error,
+    });
   }
 }
 

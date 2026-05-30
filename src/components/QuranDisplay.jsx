@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { clearCache } from "../services/quranAPI";
 import { clearWarshCache } from "../services/warshService";
 import { ensureReciterForRiwaya } from "../data/reciters";
 import { getKaraokeCalibration } from "../utils/karaokeUtils";
-import { openExternalUrl } from "../lib/security";
 import Footer from "./Footer";
 import FullscreenMushafOverlay from "./QuranDisplay/FullscreenMushafOverlay";
 import JuzMode from "./QuranDisplay/JuzMode";
@@ -181,16 +180,12 @@ export default function QuranDisplay() {
     },
     [ayahs, displayMode, dispatch]
   );
-  const riwayaRef = useRef(riwaya);
-  riwayaRef.current = riwaya;
-
   const toggleMushaf = useCallback(() => {
     set({
       mushafLayout: mushafLayout === "mushaf" ? "list" : "mushaf",
       showWordByWord: false,
       memMode: false,
       showTajwid: true,
-      fontFamily: riwayaRef.current === "warsh" ? "mushaf-warsh" : "mushaf-kfgqpc",
     });
   }, [mushafLayout, set]);
   const toggleMemorization = useCallback(() => {
@@ -384,13 +379,6 @@ export default function QuranDisplay() {
             badgeLabel={t("settings.warshFallbackBadge", lang)}
             body={t("settings.warshFallbackText", lang)}
             frameClassName={classes.readingChromeFrameClass}
-            linkLabel={t("settings.warshMushafLink", lang)}
-            linkClassName={classes.warshMushafLinkClass}
-            onLinkClick={() =>
-              openExternalUrl(
-                "https://archive.org/download/MushafAlMadinahWarsh5488865/Mushaf%20AlMadinah_Warsh.pdf",
-              )
-            }
           />
         ) : null}
         {displayMode === "surah" ? (

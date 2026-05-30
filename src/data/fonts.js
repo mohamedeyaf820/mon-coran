@@ -39,7 +39,7 @@ export const FONT_MAP = {
   "qcf-v4-tajweed":
     "'QCF V4 Tajweed','QCF_V4_Tajweed','QCF V2','KFGQPC Uthmanic Script HAFS','Segoe UI Arabic','Amiri','Scheherazade New','Noto Naskh Arabic',serif",
   "qpc-warsh":
-    "'QPC Warsh','KFGQPC Uthmanic Script WARSH','QPC Hafs','Segoe UI Arabic','Amiri','Scheherazade New','Noto Naskh Arabic',serif",
+    "'QPC Warsh','KFGQPC Uthmanic Script WARSH','Amiri Quran','Amiri','Scheherazade New','Noto Naskh Arabic','Segoe UI Arabic',serif",
 };
 
 export const DEFAULT_FONT_ID = "qpc-hafs";

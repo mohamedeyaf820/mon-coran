@@ -1,22 +1,11 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Synchronise l'état de navigation React ↔ URL du navigateur.
+ * Synchronise React navigation state with the browser URL.
  *
- * Utilise l'API History native (history.replaceState / popstate) sans dépendance
- * externe, ce qui évite le besoin d'installer react-router ou react-router-dom.
- *
- * - state → URL : met à jour l'URL quand l'état de navigation change
- * - URL → state : fournit les overrides initiaux depuis l'URL au chargement
- *
- * @param {object} params
- * @param {boolean} params.showHome
- * @param {boolean} params.showDuas
- * @param {string}  params.displayMode  - 'surah' | 'page' | 'juz'
- * @param {number}  params.currentSurah
- * @param {number}  params.currentAyah
- * @param {number}  params.currentPage
- * @param {number}  params.currentJuz
+ * - state -> URL: push a history entry for major route changes and replace it
+ *   for intra-route ayah updates.
+ * - URL -> state: read the URL on initial load and on browser back/forward.
  */
 export function useUrlSync({
   showHome,
@@ -26,45 +15,61 @@ export function useUrlSync({
   currentAyah,
   currentPage,
   currentJuz,
+  onRouteChange,
 }) {
   const isFirstRender = useRef(true);
+  const lastRouteKey = useRef(null);
+
+  const buildRoute = () => {
+    if (showHome) return { targetPath: "/", routeKey: "home" };
+    if (showDuas) return { targetPath: "/duas", routeKey: "duas" };
+
+    if (displayMode === "surah") {
+      return {
+        targetPath:
+          currentAyah > 1
+            ? `/surah/${currentSurah}/${currentAyah}`
+            : `/surah/${currentSurah}`,
+        routeKey: `surah:${currentSurah}`,
+      };
+    }
+
+    if (displayMode === "page") {
+      return {
+        targetPath: `/page/${currentPage}`,
+        routeKey: `page:${currentPage}`,
+      };
+    }
+
+    if (displayMode === "juz") {
+      return {
+        targetPath: `/juz/${currentJuz}`,
+        routeKey: `juz:${currentJuz}`,
+      };
+    }
+
+    return { targetPath: "/", routeKey: "home" };
+  };
 
   useEffect(() => {
-    // Ne pas mettre à jour l'URL au 1er rendu : l'URL initiale est déjà la bonne.
+    const { targetPath, routeKey } = buildRoute();
+
     if (isFirstRender.current) {
       isFirstRender.current = false;
+      lastRouteKey.current = routeKey;
       return;
     }
 
-    let targetPath;
-
-    if (showHome) {
-      targetPath = "/";
-    } else if (showDuas) {
-      targetPath = "/duas";
-    } else if (displayMode === "surah") {
-      // N'inclure l'ayah dans l'URL que si elle est > 1 (évite /surah/1/1 redondant)
-      targetPath =
-        currentAyah > 1
-          ? `/surah/${currentSurah}/${currentAyah}`
-          : `/surah/${currentSurah}`;
-    } else if (displayMode === "page") {
-      targetPath = `/page/${currentPage}`;
-    } else if (displayMode === "juz") {
-      targetPath = `/juz/${currentJuz}`;
-    } else {
-      targetPath = "/";
-    }
-
-    // replaceState évite de polluer l'historique du navigateur pour chaque
-    // changement d'ayah ou de page ; l'utilisateur peut toujours utiliser
-    // le bouton "Retour" pour revenir à l'URL précédente de manière naturelle.
     if (
       typeof window !== "undefined" &&
       window.location.pathname !== targetPath
     ) {
-      window.history.replaceState(null, "", targetPath);
+      const method =
+        lastRouteKey.current !== routeKey ? "pushState" : "replaceState";
+      window.history[method](null, "", targetPath);
     }
+
+    lastRouteKey.current = routeKey;
   }, [
     showHome,
     showDuas,
@@ -74,28 +79,33 @@ export function useUrlSync({
     currentPage,
     currentJuz,
   ]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof onRouteChange !== "function") {
+      return undefined;
+    }
+
+    const handlePopState = () => {
+      onRouteChange(parseInitialRoute());
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [onRouteChange]);
 }
 
 /**
- * Lit le chemin URL au moment du chargement initial et retourne les overrides
- * d'état à appliquer dans initialState de AppContext.
- *
- * Appelée en dehors du cycle React (avant le 1er render), donc on lit
- * directement window.location.pathname sans useLocation.
- *
- * @returns {object} overrides partiels pour initialState
+ * Read the current URL path and return partial AppContext state.
  */
 export function parseInitialRoute() {
   if (typeof window === "undefined") return {};
 
   const path = window.location.pathname;
 
-  // /duas
   if (path === "/duas") {
     return { showHome: false, showDuas: true };
   }
 
-  // /surah/:number  ou  /surah/:number/:ayah
   const surahMatch = path.match(/^\/surah\/(\d+)(?:\/(\d+))?/);
   if (surahMatch) {
     const surah = Math.max(1, Math.min(114, Number(surahMatch[1]) || 1));
@@ -111,7 +121,6 @@ export function parseInitialRoute() {
     };
   }
 
-  // /page/:number
   const pageMatch = path.match(/^\/page\/(\d+)/);
   if (pageMatch) {
     const page = Math.max(1, Math.min(604, Number(pageMatch[1]) || 1));
@@ -123,7 +132,6 @@ export function parseInitialRoute() {
     };
   }
 
-  // /juz/:number
   const juzMatch = path.match(/^\/juz\/(\d+)/);
   if (juzMatch) {
     const juz = Math.max(1, Math.min(30, Number(juzMatch[1]) || 1));
@@ -135,6 +143,5 @@ export function parseInitialRoute() {
     };
   }
 
-  // / ou toute autre route inconnue → accueil
   return { showHome: true, showDuas: false };
 }

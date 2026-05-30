@@ -26,8 +26,6 @@ const ALLOWED_EXTERNAL_HOSTS = new Set([
   "alquran.cloud",
   "api.alquran.cloud",
   "fonts.qurancomplex.gov.sa",
-  "archive.org",
-  "www.archive.org",
 ]);
 
 export function sanitizeSvgMarkup(svg) {
@@ -37,7 +35,7 @@ export function sanitizeSvgMarkup(svg) {
     const doc = parser.parseFromString(String(svg || ""), "image/svg+xml");
 
     doc
-      .querySelectorAll("script,foreignObject,iframe,object,embed,link,meta")
+      .querySelectorAll("script,style,use,foreignObject,iframe,object,embed,link,meta")
       .forEach((element) => {
       element.remove();
     });

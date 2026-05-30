@@ -3,10 +3,6 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-        <!-- Cache busting - force reload with new version -->
-        <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
-        <meta http-equiv="pragma" content="no-cache" />
-        <meta http-equiv="expires" content="0" />
         <!-- Content Security Policy -->
         <meta
             http-equiv="Content-Security-Policy"
@@ -32,6 +28,7 @@
         <link rel="preconnect" href="https://api.quran.com" crossorigin />
         <!-- DNS prefetch : domaines secondaires (chargés à la demande) -->
         <link rel="dns-prefetch" href="https://verses.quran.foundation" />
+        <link rel="dns-prefetch" href="https://fonts.quranwbw.com" />
         <link rel="dns-prefetch" href="https://everyayah.com" />
         <link rel="dns-prefetch" href="https://raw.githubusercontent.com" />
         <link rel="dns-prefetch" href="https://static.qurancdn.com" />
@@ -64,6 +61,16 @@
 
     <body>
         <div id="root"></div>
+        <script>
+            if (window.location.protocol === "file:") {
+                document.body.innerHTML =
+                    '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#fefaf3;color:#17352b;text-align:center">' +
+                    '<div style="max-width:560px"><h1 style="margin:0 0 12px;font-size:26px">MushafPlus doit être lancé avec Vite</h1>' +
+                    '<p style="margin:0 0 18px;line-height:1.6;color:#52635b">Cette application React ne peut pas s’ouvrir directement depuis <code>index.html</code>. Lance le serveur local puis ouvre l’URL localhost.</p>' +
+                    '<code style="display:inline-block;padding:10px 14px;border-radius:8px;background:#e9efe9;color:#0f3d2e">npm run dev</code></div></div>';
+            }
+        </script>
+        <script src="/boot-recovery.js"></script>
         <script type="module" src="/src/main.jsx"></script>
     </body>
 </html>

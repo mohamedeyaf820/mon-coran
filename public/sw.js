@@ -8,13 +8,12 @@
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v5";
+const CACHE_NAME = "mushaf-plus-v6";
 const API_CACHE_NAME = "mushaf-plus-api-v2";
 
 // Ressources de l'app shell à pré-cacher à l'installation
 const ASSETS_TO_CACHE = [
-  "/",
-  "/index.html",
+  "/boot-recovery.js",
   "/manifest.json",
   "/logo.png",
   "/favicon.svg",

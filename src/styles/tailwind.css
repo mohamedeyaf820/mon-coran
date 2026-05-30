@@ -297,8 +297,18 @@ html {
 }
 
 @font-face {
+    font-family: "QPC Warsh";
+    src: url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2")
+        format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
     font-family: "KFGQPC Uthmanic Script WARSH";
-    src: url("https://static.qurancdn.com/fonts/quran/hafs/uthmanic_hafs/UthmanicHafs1Ver18.woff2") format("woff2");
+    src: url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -365,13 +375,13 @@ html {
     --font-quran-hafs:
         "KFGQPC Uthmanic Script HAFS", "ME Quran", "Amiri Quran", serif;
     --font-quran-warsh:
-        "KFGQPC Uthmanic Script WARSH", "Amiri Quran", "Amiri", serif;
+        "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Amiri Quran", "Amiri", serif;
     --font-quran: var(--font-quran-hafs);
     --font-quran-tajweed: var(--font-quran);
     --font-surah-hafs:
         "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Amiri", serif;
     --font-surah-warsh:
-        "KFGQPC Uthmanic Script WARSH", "Amiri Quran", "Amiri", serif;
+        "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Amiri Quran", "Amiri", serif;
     --font-surah: var(--font-surah-hafs);
 
     --line-height-quran: 2.2;
@@ -20086,6 +20096,13 @@ html {
 
 .mp-audio-player [data-player-drag="true"] {
     position: relative;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.mp-audio-player[data-dragging="true"] [data-player-drag="true"] {
+    cursor: grabbing;
 }
 
 .mp-audio-player [data-player-drag="true"]::after {
@@ -50753,8 +50770,8 @@ html[data-split-view="on"]
         "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs",
         "ME Quran", serif;
     --font-quran-warsh:
-        "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "QPC Hafs",
-        "ME Quran", serif;
+        "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Amiri Quran",
+        "Amiri", "Scheherazade New", serif;
     --font-quran: var(--font-quran-hafs);
     --font-quran-tajweed: var(--font-quran-hafs);
     --font-surah-hafs: var(--font-quran-hafs);
@@ -50772,6 +50789,14 @@ html[data-split-view="on"]
 .app-root .quran-display--warsh {
     --font-quran: var(--font-quran-warsh);
     --font-quran-tajweed: var(--font-quran-warsh);
+}
+
+.app-root[data-riwaya="warsh"] {
+    --font-quran: var(--font-quran-warsh);
+    --font-quran-tajweed: var(--font-quran-warsh);
+    --font-surah: var(--font-surah-warsh);
+    --font-arabic: var(--font-quran-warsh);
+    --font-arabic-script: var(--font-quran-warsh);
 }
 
 .app-root .quran-display--platform .qcom-page-flow {

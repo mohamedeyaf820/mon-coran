@@ -166,7 +166,6 @@ function appReducer(state, action) {
       }
       if (Object.prototype.hasOwnProperty.call(payload, "riwaya")) {
         next.reciter = ensureReciterForRiwaya(next.reciter, payload.riwaya);
-        next.fontFamily = payload.riwaya === "warsh" ? "qpc-warsh" : "qpc-hafs";
       }
       return next;
     }
@@ -237,12 +236,10 @@ function appReducer(state, action) {
     case "SET_RIWAYA": {
       const nextRiwaya = action.payload;
       const nextReciter = ensureReciterForRiwaya(state.reciter, nextRiwaya);
-      const nextFont = nextRiwaya === "warsh" ? "qpc-warsh" : "qpc-hafs";
       return {
         ...state,
         riwaya: nextRiwaya,
         reciter: nextReciter,
-        fontFamily: nextFont,
       };
     }
 
@@ -293,6 +290,7 @@ const AppLocaleContext = createContext({ lang: "fr", riwaya: "hafs" });
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
   const saveTimerRef = useRef(null);
+  const persistentSettingsRef = useRef(null);
 
   // Create persistent settings object - memoized to avoid unnecessary recalculations
   const persistentSettings = useMemo(() => ({
@@ -392,14 +390,43 @@ export function AppProvider({ children }) {
 
   // Persist settings to localStorage on change (debounced — 500ms)
   useEffect(() => {
+    persistentSettingsRef.current = persistentSettings;
+  }, [persistentSettings]);
+
+  const flushSettings = useCallback(() => {
+    if (saveTimerRef.current) {
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+    if (persistentSettingsRef.current) {
+      saveSettings(persistentSettingsRef.current);
+    }
+  }, []);
+
+  useEffect(() => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
       saveSettings(persistentSettings);
+      saveTimerRef.current = null;
     }, 500);
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
   }, [persistentSettings]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => flushSettings();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") flushSettings();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [flushSettings]);
 
   // Apply theme to <html>
   useEffect(() => {
