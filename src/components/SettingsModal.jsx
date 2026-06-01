@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
-import { getRecitersByRiwaya, getReciter } from "../data/reciters";
+import { getRecitersByRiwaya, getReciterVisual } from "../data/reciters";
 import { THEMES as UI_THEMES } from "../data/themes";
 import { ensureFontLoaded } from "../services/fontLoader";
 import { getSettings, saveSettings } from "../services/storageService";
@@ -21,56 +21,58 @@ import { clearCache } from "../services/quranAPI";
 import { toast } from "../lib/utils";
 
 
-const FONT_OPTIONS = [
+const RIWAYA_FONT_OPTIONS = [
   {
     id: "qpc-hafs",
     label: "QPC Hafs",
-    hint: "Police officielle Uthmani",
-    css: "'QPC Hafs','KFGQPC Uthmanic Script HAFS','ME Quran',serif",
-  },
-  {
-    id: "amiri-quran",
-    label: "Amiri",
-    hint: "Naskh élégante classique",
-    css: "'Amiri Quran','Amiri','Scheherazade New',serif",
-  },
-  {
-    id: "scheherazade-new",
-    label: "Scheherazade",
-    hint: "Naskh aéré lisible",
-    css: "'Scheherazade New','Amiri Quran','Noto Naskh Arabic',serif",
-  },
-  {
-    id: "noto-naskh-arabic",
-    label: "Noto Naskh",
-    hint: "Robuste sur tous écrans",
-    css: "'Noto Naskh Arabic','Scheherazade New','Amiri Quran',serif",
+    hint: "Police officielle Hafs",
+    riwaya: "hafs",
   },
   {
     id: "qpc-indopak",
-    label: "IndoPak",
-    hint: "Script indo-pakistanais",
-    css: "'QPC IndoPak','IndoPak','Noto Nastaliq Urdu',serif",
+    label: "IndoPak Nastaleeq",
+    hint: "Hafs IndoPak avec waqf lazim",
+    riwaya: "hafs",
   },
   {
     id: "qpc-nastaleeq",
-    label: "Nastaleeq",
-    hint: "Style script Nastaliq",
-    css: "'QPC Nastaleeq','KFGQPC Nastaleeq','Noto Nastaliq Urdu',serif",
-  },
-  {
-    id: "qcf-v2",
-    label: "QCF V2",
-    hint: "Rendu Mushaf imprimé",
-    css: "'QCF V2','KFGQPC Uthmanic Script HAFS','QPC Hafs',serif",
+    label: "KFGQPC Nastaleeq",
+    hint: "Hafs style Nastaleeq",
+    riwaya: "hafs",
   },
   {
     id: "qpc-warsh",
     label: "QPC Warsh",
     hint: "Police riwaya Warsh",
-    css: "'QPC Warsh','KFGQPC Uthmanic Script WARSH','QPC Hafs',serif",
-  }
+    riwaya: "warsh",
+  },
+  {
+    id: "kfgqpc-warsh",
+    label: "KFGQPC Warsh",
+    hint: "Warsh Unicode KFGQPC, charge via CDN",
+    riwaya: "warsh",
+  },
 ];
+
+function SettingsReciterAvatar({ reciter }) {
+  const visual = getReciterVisual(reciter);
+  if (visual.type === "photo") {
+    return (
+      <span className="settings-reciter-avatar settings-reciter-avatar--photo">
+        <img src={visual.photo} alt="" loading="lazy" />
+      </span>
+    );
+  }
+  return (
+    <span
+      className="settings-reciter-avatar"
+      style={{ "--avatar-bg": visual.avatar.color }}
+      aria-hidden="true"
+    >
+      {visual.avatar.initials}
+    </span>
+  );
+}
 
 export default function SettingsModal() {
   const { state, dispatch, set } = useApp();
@@ -97,16 +99,21 @@ export default function SettingsModal() {
   const [activeTab, setActiveTab] = useState("apparence"); // 'apparence' | 'affichage' | 'audio'
   const [reciterSearch, setReciterSearch] = useState("");
   const panelRef = useRef(null);
+  const activeRiwaya = riwaya || "hafs";
+  const availableFontOptions = RIWAYA_FONT_OPTIONS.filter((font) => font.riwaya === activeRiwaya);
+  const selectedFontFamily = availableFontOptions.some((font) => font.id === fontFamily)
+    ? fontFamily
+    : availableFontOptions[0]?.id || "qpc-hafs";
 
   const close = () => dispatch({ type: "TOGGLE_SETTINGS" });
 
   // Ensure font loaded when font family changes
   useEffect(() => {
-    ensureFontLoaded(fontFamily).catch(() => {});
-  }, [fontFamily]);
+    ensureFontLoaded(selectedFontFamily).catch(() => {});
+  }, [selectedFontFamily]);
 
   // Reciters matching search query
-  const recitersList = getRecitersByRiwaya(riwaya || "hafs");
+  const recitersList = getRecitersByRiwaya(activeRiwaya);
   const filteredReciters = recitersList.filter((r) => {
     const q = reciterSearch.toLowerCase();
     return (
@@ -148,24 +155,24 @@ export default function SettingsModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-[500] flex justify-end" role="dialog" aria-modal="true">
+    <div className="settings-overlay fixed inset-0 z-[500] flex justify-end" role="dialog" aria-modal="true">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/35 backdrop-blur-md transition-opacity"
+        className="settings-backdrop fixed inset-0 bg-black/35 backdrop-blur-md transition-opacity"
         onClick={close}
       />
 
       {/* Settings Drawer Panel */}
       <div
         ref={panelRef}
-        className="relative w-full max-w-md h-full bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl flex flex-col z-10 transition-transform duration-300 transform translate-x-0"
+        className="settings-drawer relative h-full w-full max-w-md bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl flex flex-col z-10 transition-transform duration-300 transform translate-x-0"
         style={{
           boxShadow: "-10px 0 40px -6px rgba(0, 0, 0, 0.15)",
           color: "var(--text-primary)"
         }}
       >
         {/* Header */}
-        <header className="flex items-center justify-between px-6 py-4.5 border-b border-[var(--border)]">
+        <header className="settings-drawer__header flex items-center justify-between px-6 py-4.5 border-b border-[var(--border)]">
           <div className="flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] shadow-sm">
               <BookOpen size={18} />
@@ -183,7 +190,7 @@ export default function SettingsModal() {
         </header>
 
         {/* Tab Selection */}
-        <nav className="flex gap-1 border-b border-[var(--border)] p-1.5 bg-[var(--bg-secondary)]" aria-label="Tabs" role="tablist">
+        <nav className="settings-drawer__tabs flex gap-1 border-b border-[var(--border)] p-1.5 bg-[var(--bg-secondary)]" aria-label="Tabs" role="tablist">
           <button
             id="tab-apparence"
             role="tab"
@@ -232,7 +239,7 @@ export default function SettingsModal() {
         </nav>
 
         {/* Panel Content (Scrollable) */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-6">
+        <div className="settings-drawer__content flex-1 overflow-y-auto p-5 space-y-6">
           
           {/* TAB 1: Apparence */}
           {activeTab === "apparence" && (
@@ -447,11 +454,11 @@ export default function SettingsModal() {
                 </label>
                 <select
                   id="settings-font-family"
-                  value={fontFamily}
+                  value={selectedFontFamily}
                   onChange={(e) => set({ fontFamily: e.target.value })}
                   className="w-full px-3 py-2 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] font-medium text-sm focus:outline-none focus:ring-2 focus:ring-[rgba(var(--primary-rgb),0.5)]"
                 >
-                  {FONT_OPTIONS.map((f) => (
+                  {availableFontOptions.map((f) => (
                     <option key={f.id} value={f.id}>
                       {f.label} ({f.hint})
                     </option>
@@ -591,7 +598,7 @@ export default function SettingsModal() {
                   />
                 </div>
 
-                <div className="border border-[var(--border)] rounded-2xl max-h-56 overflow-y-auto divide-y divide-[var(--border)] bg-[var(--bg-card)]">
+                <div className="settings-reciter-list border border-[var(--border)] rounded-2xl max-h-64 overflow-y-auto divide-y divide-[var(--border)] bg-[var(--bg-card)]">
                   {filteredReciters.length > 0 ? (
                     filteredReciters.map((r) => {
                       const isActive = r.id === reciter;
@@ -599,11 +606,19 @@ export default function SettingsModal() {
                         <button
                           key={r.id}
                           onClick={() => set({ reciter: r.id })}
-                          className={`w-full px-4 py-2.5 text-left text-sm font-semibold transition-all hover:bg-[var(--bg-secondary)] flex items-center justify-between ${
+                          className={`settings-reciter-option w-full px-4 py-2.5 text-left text-sm font-semibold transition-all hover:bg-[var(--bg-secondary)] flex items-center justify-between gap-3 ${
                             isActive ? "bg-[rgba(var(--primary-rgb),0.06)] text-[var(--primary)]" : ""
                           }`}
                         >
-                          <span>{r.name}</span>
+                          <span className="flex min-w-0 items-center gap-3">
+                            <SettingsReciterAvatar reciter={r} />
+                            <span className="min-w-0">
+                              <span className="block truncate">{lang === "fr" ? r.nameFr || r.name : lang === "en" ? r.nameEn || r.name : r.name}</span>
+                              <span className="settings-reciter-option__meta block truncate">
+                                {r.style || "murattal"} - {r.cdnType || r.source || "audio"}
+                              </span>
+                            </span>
+                          </span>
                           {isActive && <span className="w-2 h-2 rounded-full bg-[var(--primary)]" />}
                         </button>
                       );

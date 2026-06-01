@@ -4,7 +4,7 @@ import { JUZ_DATA } from "../../data/juz";
 import { THEMATIC_STATIONS } from "../../services/StationService";
 import audioService from "../../services/audioService";
 import { SurahCard, JuzCard, EmptyState } from "./HomePrimitives";
-import { RECITER_PHOTOS_MAP } from "../../data/reciters";
+import { getReciterVisual } from "../../data/reciters";
 
 /**
  * ContentSection — onglets, barre de recherche/tri, grille de contenu,
@@ -334,79 +334,86 @@ export default function ContentSection({
                 const isFavorite = (state.favoriteReciters || []).includes(
                   reciter.id,
                 );
-                const photo = RECITER_PHOTOS_MAP[reciter.id];
-                const initials = reciterLabel ? reciterLabel.split(" ").map(w => w[0]).slice(0, 2).join("") : "Q";
+                const visual = getReciterVisual(reciter);
+                const avatar = visual.avatar;
 
                 return (
                   <div
                     key={reciter.id}
-                    className="group relative flex flex-col p-4 rounded-2xl border border-[var(--border-light)] bg-[var(--bg-card)] shadow-sm hover:shadow-xl hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 animate-fadeInScale overflow-hidden"
+                    className="reciter-card group relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3.5 shadow-sm transition-all duration-300 animate-fadeInScale hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-lg sm:p-4"
                   >
-                    {/* Glowing background blur effect */}
-                    <div className="absolute -top-12 -right-12 w-24 h-24 rounded-full bg-[rgba(var(--primary-rgb),0.06)] blur-2xl group-hover:scale-150 transition-transform duration-500 pointer-events-none" />
-                    
-                    <div className="flex items-center gap-4 mb-3 relative z-10">
-                      {/* Avatar container with ambient glow */}
-                      <div className="relative shrink-0 w-14 h-14 rounded-2xl overflow-hidden shadow-md group-hover:shadow-lg transition-shadow duration-300">
-                        {photo ? (
+                    <div className="reciter-card__top relative z-10 flex min-w-0 items-start gap-3">
+                      <button
+                        type="button"
+                        className="reciter-card__media relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-white/30 shadow-sm transition-transform duration-300 group-hover:scale-[1.02] sm:h-[72px] sm:w-[72px]"
+                        onClick={() => playReciterRadio(reciter)}
+                        aria-label={lang === "fr" ? `Écouter ${reciterLabel}` : `Play ${reciterLabel}`}
+                      >
+                        {visual.photo ? (
                           <img
-                            src={photo}
+                            src={visual.photo}
                             alt={reciterLabel}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                             loading="lazy"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[rgba(var(--primary-rgb),0.15)] to-[rgba(var(--primary-rgb),0.05)] text-[var(--primary)] font-bold text-base uppercase tracking-wider">
-                            {initials}
+                          <div
+                            className="flex h-full w-full items-center justify-center text-lg font-black uppercase tracking-normal text-white"
+                            style={{ backgroundColor: avatar.color }}
+                          >
+                            {avatar.initials}
                           </div>
                         )}
-                        {/* Hover Overlay Play button */}
-                        <div 
-                          className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer"
-                          onClick={() => playReciterRadio(reciter)}
-                          role="button"
-                          aria-label="Play"
-                        >
-                          <i className="fas fa-play text-white text-sm animate-pulse" />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/35 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[var(--primary)] shadow-md">
+                            <i className="fas fa-play text-[0.72rem] pl-[1px]" />
+                          </span>
                         </div>
-                      </div>
+                      </button>
 
-                      <div className="min-w-0 flex-1 flex flex-col text-left">
+                      <div className="min-w-0 flex-1 text-left">
                         <span
-                          className="text-[0.95rem] font-bold text-text-primary group-hover:text-primary transition-colors duration-200 truncate leading-snug"
+                          className="reciter-card__name line-clamp-2 text-[0.95rem] font-extrabold leading-snug text-text-primary transition-colors duration-200 group-hover:text-primary sm:text-[1rem]"
                           dir={lang === "ar" ? "rtl" : "ltr"}
                         >
                           {reciterLabel}
                         </span>
-                        <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[0.62rem] font-extrabold uppercase tracking-wider bg-[rgba(var(--primary-rgb),0.06)] text-[var(--primary)] border border-[rgba(var(--primary-rgb),0.12)]">
+                        <div className="mt-1.5 flex max-w-full flex-wrap items-center gap-1.5">
+                          <span className="reciter-card__chip inline-flex items-center rounded-full border border-[rgba(var(--primary-rgb),0.14)] bg-[rgba(var(--primary-rgb),0.07)] px-2 py-0.5 text-[0.62rem] font-extrabold uppercase tracking-wider text-[var(--primary)]">
                             {reciter.style || "murattal"}
                           </span>
                           {reciter.cdnType === "everyayah" ? (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[0.58rem] font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+                            <span className="reciter-card__chip inline-flex items-center rounded-full border border-cyan-500/20 bg-cyan-500/10 px-1.5 py-0.5 text-[0.58rem] font-bold text-cyan-600 dark:text-cyan-400">
                               Ayah mode
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[0.58rem] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            <span className="reciter-card__chip inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-1.5 py-0.5 text-[0.58rem] font-bold text-amber-600 dark:text-amber-400">
                               Surah mode
                             </span>
                           )}
+                          {reciter.verifiedWarsh && (
+                            <span className="reciter-card__chip inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[0.58rem] font-bold text-emerald-600 dark:text-emerald-400">
+                              Warsh
+                            </span>
+                          )}
                         </div>
+                        {reciter.country && (
+                          <div className="mt-2 text-[0.68rem] font-semibold text-text-secondary">
+                            {reciter.country}
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    {/* Divider */}
-                    <div className="h-px bg-gradient-to-r from-transparent via-[var(--border-light)] to-transparent my-1" />
+                    <div className="my-3 h-px bg-gradient-to-r from-transparent via-[var(--border-light)] to-transparent" />
 
-                    {/* Actions row */}
-                    <div className="flex items-center justify-between mt-2 relative z-10">
-                      {/* Left: Favorite Button */}
+                    <div className="reciter-card__actions relative z-10 flex flex-wrap items-center justify-between gap-2">
                       <button
                         className={cn(
-                          "flex items-center justify-center gap-1.5 h-8 px-3 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer active:scale-95",
+                          "flex h-9 min-w-0 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-bold transition-all shrink-0 cursor-pointer active:scale-95",
                           isFavorite
-                            ? "bg-gold/15 text-gold border border-gold/25 hover:bg-gold/20"
-                            : "bg-bg-secondary text-text-muted border border-border/40 hover:bg-bg-tertiary hover:text-text-primary",
+                            ? "border border-gold/25 bg-gold/15 text-gold hover:bg-gold/20"
+                            : "border border-border/40 bg-bg-secondary text-text-muted hover:bg-bg-tertiary hover:text-text-primary",
                         )}
                         type="button"
                         onClick={() => onToggleFavoriteReciter(reciter.id)}
@@ -415,10 +422,9 @@ export default function ContentSection({
                         <span>{isFavorite ? (lang === "fr" ? "Favori" : "Favorite") : (lang === "fr" ? "Ajouter" : "Add")}</span>
                       </button>
 
-                      {/* Right actions: Radio + Details */}
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5">
                         <button
-                          className="flex items-center justify-center gap-1 h-8 px-3 rounded-full bg-primary text-white hover:bg-primary-dark hover:shadow-md transition-all shrink-0 cursor-pointer active:scale-95 font-bold text-xs"
+                          className="flex h-9 items-center justify-center gap-1 rounded-lg bg-primary px-3 text-xs font-bold text-white transition-all shrink-0 cursor-pointer active:scale-95 hover:bg-primary-dark hover:shadow-md"
                           type="button"
                           onClick={() => playReciterRadio(reciter)}
                         >
@@ -426,7 +432,7 @@ export default function ContentSection({
                           <span>Radio</span>
                         </button>
                         <button
-                          className="flex items-center justify-center h-8 w-8 rounded-full bg-bg-secondary text-text-muted border border-border/40 hover:bg-bg-tertiary hover:text-text-primary transition-all shrink-0 cursor-pointer active:scale-95"
+                          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border/40 bg-bg-secondary text-text-muted transition-all active:scale-95 hover:bg-bg-tertiary hover:text-text-primary"
                           type="button"
                           onClick={() => setSelectedReciterId(reciter.id)}
                           title={lang === "fr" ? "Détails" : "Details"}
@@ -489,46 +495,65 @@ export default function ContentSection({
               </button>
             ))}
 
-            {availableReciters.slice(0, 8).map((reciter) => (
-              <button
-                key={`r-${reciter.id}`}
-                className="group relative flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-border bg-bg-primary shadow-sm cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:border-primary/40 hover:bg-bg-secondary hover:shadow-md animate-fadeInScale"
-                type="button"
-                onClick={() =>
-                  playStation({
-                    id: `r-${reciter.id}`,
-                    icon: "fa-user-astronaut",
-                    titleFr: reciter.nameFr,
-                    titleEn: reciter.nameEn,
-                    titleAr: reciter.name,
-                    surahs: [1, 36, 55, 67],
-                    reciterId: reciter.id,
-                  })
-                }
-              >
-                <span className="flex items-center justify-center h-9 w-9 rounded-full bg-bg-secondary text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
-                  <i className="fas fa-user-astronaut" />
-                </span>
-                <div className="flex flex-col flex-1 min-w-0">
-                  <span
-                    className="text-[0.95rem] sm:text-[1.05rem] font-bold text-text-primary text-left truncate"
-                    dir={lang === "ar" ? "rtl" : "ltr"}
-                  >
-                    {lang === "ar"
-                      ? reciter.name
-                      : lang === "fr"
-                        ? reciter.nameFr
-                        : reciter.nameEn}
+            {availableReciters.slice(0, 8).map((reciter) => {
+              const visual = getReciterVisual(reciter);
+              const reciterLabel =
+                lang === "ar"
+                  ? reciter.name
+                  : lang === "fr"
+                    ? reciter.nameFr
+                    : reciter.nameEn;
+              return (
+                <button
+                  key={`r-${reciter.id}`}
+                        className="reciter-radio-card group relative flex min-w-0 items-center gap-3 rounded-xl border border-border bg-bg-primary p-3 shadow-sm transition-all duration-200 animate-fadeInScale hover:-translate-y-[2px] hover:border-primary/40 hover:bg-bg-secondary hover:shadow-md sm:gap-4 sm:p-4"
+                  type="button"
+                  onClick={() =>
+                    playStation({
+                      id: `r-${reciter.id}`,
+                      icon: "fa-user-astronaut",
+                      titleFr: reciter.nameFr,
+                      titleEn: reciter.nameEn,
+                      titleAr: reciter.name,
+                      surahs: [1, 36, 55, 67],
+                      reciterId: reciter.id,
+                    })
+                  }
+                >
+                  <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-bg-secondary text-sm font-black text-white shadow-sm transition-colors group-hover:border-primary/30 sm:h-12 sm:w-12">
+                    {visual.photo ? (
+                      <img
+                        src={visual.photo}
+                        alt={reciterLabel}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span
+                        className="flex h-full w-full items-center justify-center"
+                        style={{ backgroundColor: visual.avatar.color }}
+                      >
+                        {visual.avatar.initials}
+                      </span>
+                    )}
                   </span>
-                  <span className="text-[0.7rem] sm:text-[0.75rem] text-text-secondary text-left truncate mt-0.5">
-                    4 {lang === "fr" ? "sourates" : "surahs"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-bg-primary border border-border text-text-muted transition-all hover:bg-primary hover:text-white hover:border-primary shrink-0">
-                  <i className="fas fa-circle-play text-[0.8rem] sm:text-[0.9rem] pl-[1px]" />
-                </div>
-              </button>
-            ))}
+                  <div className="flex min-w-0 flex-1 flex-col">
+                    <span
+                      className="text-left text-[0.95rem] font-bold leading-snug text-text-primary line-clamp-2 sm:text-[1.05rem]"
+                      dir={lang === "ar" ? "rtl" : "ltr"}
+                    >
+                      {reciterLabel}
+                    </span>
+                    <span className="mt-0.5 truncate text-left text-[0.7rem] text-text-secondary sm:text-[0.75rem]">
+                      4 {lang === "fr" ? "sourates" : "surahs"} · {reciter.style || "murattal"}
+                    </span>
+                  </div>
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-bg-primary text-text-muted transition-all hover:border-primary hover:bg-primary hover:text-white sm:h-10 sm:w-10">
+                    <i className="fas fa-circle-play pl-[1px] text-[0.9rem]" />
+                  </div>
+                </button>
+              );
+            })}
           </>
         )}
       </div>

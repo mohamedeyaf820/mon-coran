@@ -1,6 +1,7 @@
 import React from "react";
 import { useAppActions, useAppLocale } from "../context/AppContext";
 import { t } from "../i18n";
+import "../styles/domains/footer-refonte.css";
 
 export default function Footer() {
   const { dispatch, set } = useAppActions();
@@ -12,7 +13,10 @@ export default function Footer() {
     {
       icon: "fa-house",
       label: t({ fr: "Accueil", en: "Home", ar: "الرئيسية" }, lang),
-      onClick: () => { set({ showHome: true, showDuas: false }); scrollTop(); },
+      onClick: () => {
+        set({ showHome: true, showDuas: false });
+        scrollTop();
+      },
     },
     {
       icon: "fa-magnifying-glass",
@@ -27,7 +31,10 @@ export default function Footer() {
     {
       icon: "fa-hands-praying",
       label: t({ fr: "Douas", en: "Duas", ar: "الأدعية" }, lang),
-      onClick: () => { set({ showHome: false, showDuas: true }); scrollTop(); },
+      onClick: () => {
+        set({ showHome: false, showDuas: true });
+        scrollTop();
+      },
     },
     {
       icon: "fa-gear",
@@ -39,8 +46,6 @@ export default function Footer() {
   return (
     <footer className="mp-footer-v2" role="contentinfo">
       <div className="mp-footer-v2__shell">
-
-        {/* Verset */}
         <div className="mp-footer-v2__verse">
           <span className="mp-footer-v2__verse-icon" aria-hidden="true">
             <i className="fas fa-star-and-crescent" />
@@ -54,15 +59,28 @@ export default function Footer() {
             {"وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ"}
           </p>
           <span className="mp-footer-v2__verse-ref">
-            {t({ fr: "Az-Zariyat · 51:56", en: "Az-Zariyat · 51:56", ar: "الذاريات · ٥١:٥٦" }, lang)}
+            {t(
+              {
+                fr: "Az-Zariyat · 51:56",
+                en: "Az-Zariyat · 51:56",
+                ar: "الذاريات · ٥١:٥٦",
+              },
+              lang,
+            )}
           </span>
         </div>
 
-        {/* Corps */}
         <div className="mp-footer-v2__body">
           <nav
             className="mp-footer-v2__nav"
-            aria-label={t({ fr: "Navigation rapide", en: "Quick navigation", ar: "التنقل السريع" }, lang)}
+            aria-label={t(
+              {
+                fr: "Navigation rapide",
+                en: "Quick navigation",
+                ar: "التنقل السريع",
+              },
+              lang,
+            )}
           >
             {navItems.map((item) => (
               <button
@@ -82,12 +100,18 @@ export default function Footer() {
 
           <div className="mp-footer-v2__bottom">
             <span className="mp-footer-v2__credit">
-              {t({ fr: "Le Saint Coran", en: "The Holy Quran", ar: "القرآن الكريم" }, lang)}
+              {t(
+                {
+                  fr: "Le Saint Coran",
+                  en: "The Holy Quran",
+                  ar: "القرآن الكريم",
+                },
+                lang,
+              )}
             </span>
             <span className="mp-footer-v2__brand">Mushaf.plus</span>
           </div>
         </div>
-
       </div>
     </footer>
   );

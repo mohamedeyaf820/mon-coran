@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import "../styles/domains/duas-page.css";
 import { useApp } from "../context/AppContext";
 import QURAN_DUAS from "../data/duas";
 import SURAHS from "../data/surahs";

@@ -126,6 +126,14 @@ function sanitizePinnedAyahs(input) {
     .slice(0, 4);
 }
 
+function sanitizeTranslationLangs(input, fallback = "fr") {
+  const values = Array.isArray(input) ? input : [fallback];
+  const cleaned = [...new Set(values)]
+    .filter((value) => VALID_TRANSLATION_LANGS.includes(value))
+    .slice(0, 3);
+  return cleaned.length ? cleaned : ["fr"];
+}
+
 function sanitizeSyncOffsetsMap(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     return {};
@@ -227,7 +235,12 @@ const DEFAULT_SETTINGS = {
   quranFontSize: 25,
   quranTranslationFontSize: 18,
   fontFamily: DEFAULT_FONT_ID,
+  fontFamilyByRiwaya: {
+    hafs: DEFAULT_FONT_ID,
+    warsh: "qpc-warsh",
+  },
   translationLang: "fr",
+  translationLangs: ["fr"],
   wordTranslationLang: "fr",
   showTranslation: true,
   showTajwid: true,
@@ -244,7 +257,7 @@ const DEFAULT_SETTINGS = {
   warshStrictMode: true,
   syncOffsetsMs: {},
   favoriteReciters: [],
-  autoSelectFastestReciter: true,
+  autoSelectFastestReciter: false,
   reciterLatencyByKey: {},
   reciterAvailabilityById: {},
   autoNightMode: false,
@@ -252,8 +265,10 @@ const DEFAULT_SETTINGS = {
   nightEnd: "06:00",
   nightTheme: "dark",
   dayTheme: "light",
+  usePrayerTimes: false,
   wirdGoalType: "pages",
   wirdGoalAmount: 5,
+  surahRepeatCount: 1,
   showHome: true,
   showDuas: false,
   focusReading: false,
@@ -287,6 +302,16 @@ function normalizeNightTheme(theme) {
   return normalized === "dark" ? normalized : "dark";
 }
 
+function sanitizeFontFamilyByRiwaya(input, fallbackFont, fallbackRiwaya) {
+  const source = input && typeof input === "object" && !Array.isArray(input)
+    ? input
+    : {};
+  return {
+    hafs: normalizeFontId(source.hafs || (fallbackRiwaya === "hafs" ? fallbackFont : DEFAULT_SETTINGS.fontFamily), "hafs"),
+    warsh: normalizeFontId(source.warsh || (fallbackRiwaya === "warsh" ? fallbackFont : DEFAULT_SETTINGS.fontFamilyByRiwaya.warsh), "warsh"),
+  };
+}
+
 export function getSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
@@ -296,9 +321,27 @@ export function getSettings() {
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       return cloneDefaultSettings();
     }
+    const normalizedRiwaya = VALID_RIWAYAS.includes(parsed?.riwaya)
+      ? parsed.riwaya
+      : DEFAULT_SETTINGS.riwaya;
     const normalized = {
       ...cloneDefaultSettings(),
       ...parsed,
+      riwaya: normalizedRiwaya,
+      fontFamily: normalizeFontId(parsed?.fontFamily, normalizedRiwaya),
+      fontFamilyByRiwaya: sanitizeFontFamilyByRiwaya(
+        parsed?.fontFamilyByRiwaya,
+        parsed?.fontFamily,
+        normalizedRiwaya,
+      ),
+      translationLangs: sanitizeTranslationLangs(
+        parsed?.translationLangs,
+        parsed?.translationLang,
+      ),
+      quranTranslationFontSize: Math.max(
+        12,
+        Math.min(28, Number(parsed?.quranTranslationFontSize) || 18),
+      ),
       syncOffsetsMs: sanitizeSyncOffsetsMap(parsed?.syncOffsetsMs),
       favoriteReciters: sanitizeFavoriteReciters(parsed?.favoriteReciters),
       pinnedAyahs: sanitizePinnedAyahs(parsed?.pinnedAyahs),
@@ -311,6 +354,14 @@ export function getSettings() {
         parsed?.reciterAvailabilityById,
       ),
       audioPlayerSkin: sanitizeAudioPlayerSkin(parsed?.audioPlayerSkin),
+      usePrayerTimes:
+        parsed?.usePrayerTimes !== undefined
+          ? Boolean(parsed.usePrayerTimes)
+          : DEFAULT_SETTINGS.usePrayerTimes,
+      surahRepeatCount:
+        Number.isFinite(Number(parsed?.surahRepeatCount))
+          ? Math.max(0, Math.min(999, Math.floor(Number(parsed.surahRepeatCount))))
+          : DEFAULT_SETTINGS.surahRepeatCount,
     };
 
     if (usedLegacy && isEncryptionUnlocked()) {
@@ -356,9 +407,18 @@ function sanitizeSettings(settings) {
         : DEFAULT_FONT_ID,
       safeInput.riwaya,
     ),
+    fontFamilyByRiwaya: sanitizeFontFamilyByRiwaya(
+      safeInput.fontFamilyByRiwaya,
+      safeInput.fontFamily,
+      safeInput.riwaya,
+    ),
     translationLang: VALID_TRANSLATION_LANGS.includes(safeInput.translationLang)
       ? safeInput.translationLang
       : "fr",
+    translationLangs: sanitizeTranslationLangs(
+      safeInput.translationLangs,
+      safeInput.translationLang,
+    ),
     wordTranslationLang: VALID_WORD_TRANSLATION_LANGS.includes(
       safeInput.wordTranslationLang,
     )
@@ -384,7 +444,7 @@ function sanitizeSettings(settings) {
     autoSelectFastestReciter:
       safeInput.autoSelectFastestReciter !== undefined
         ? Boolean(safeInput.autoSelectFastestReciter)
-        : true,
+        : DEFAULT_SETTINGS.autoSelectFastestReciter,
     reciterLatencyByKey: sanitizeLatencyMap(safeInput.reciterLatencyByKey),
     reciterAvailabilityById: sanitizeReciterAvailabilityMap(
       safeInput.reciterAvailabilityById,
@@ -398,6 +458,10 @@ function sanitizeSettings(settings) {
       : "06:00",
     nightTheme: normalizeNightTheme(safeInput.nightTheme),
     dayTheme: normalizeDayTheme(safeInput.dayTheme),
+    usePrayerTimes:
+      safeInput.usePrayerTimes !== undefined
+        ? Boolean(safeInput.usePrayerTimes)
+        : DEFAULT_SETTINGS.usePrayerTimes,
     volume:
       typeof safeInput.volume === "number"
         ? Math.max(0, Math.min(1, safeInput.volume))
@@ -432,6 +496,10 @@ function sanitizeSettings(settings) {
         ? Boolean(safeInput.playerMinimized)
         : false,
     audioPlayerSkin: sanitizeAudioPlayerSkin(safeInput.audioPlayerSkin),
+    surahRepeatCount:
+      Number.isFinite(Number(safeInput.surahRepeatCount))
+        ? Math.max(0, Math.min(999, Math.floor(Number(safeInput.surahRepeatCount))))
+        : DEFAULT_SETTINGS.surahRepeatCount,
     wirdGoalType: ["pages", "hizb", "juz"].includes(safeInput.wirdGoalType)
       ? safeInput.wirdGoalType
       : "pages",

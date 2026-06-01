@@ -1,4 +1,5 @@
 import React from "react";
+import "../../styles/domains/recitation-polish.css";
 import ReciterHero from "./ReciterHero";
 import ReciterBioCollapse from "./ReciterBioCollapse";
 import ReciterRadioButton from "./ReciterRadioButton";
@@ -18,10 +19,33 @@ export default function ReciterDetailPage({
   closeBtnRef,
 }) {
   const isRtl = lang === "ar";
+  const sourceLabel =
+    reciter.source === "mp3quran"
+      ? "MP3Quran"
+      : reciter.source === "everyayah"
+        ? "EveryAyah"
+        : reciter.cdnType || "Audio";
+  const audioModeLabel =
+    reciter.audioMode === "surah"
+      ? lang === "fr"
+        ? "Sourate complète"
+        : lang === "ar"
+          ? "سورة كاملة"
+          : "Full surah"
+      : lang === "fr"
+        ? "Verset par verset"
+        : lang === "ar"
+          ? "آية بآية"
+          : "Ayah by ayah";
+  const riwayaLabel = reciter.verifiedWarsh
+    ? "Warsh"
+    : lang === "ar"
+      ? "حفص"
+      : "Hafs";
 
   return (
     <div
-      className="reciter-detail relative w-full max-w-5xl rounded-3xl border border-border/80 bg-bg-card/90 shadow-[0_25px_60px_rgba(0,0,0,0.35)] p-5 sm:p-7 overflow-hidden backdrop-blur-2xl animate-fadeInScale max-h-[90vh] flex flex-col"
+      className="reciter-detail relative flex max-h-[90vh] w-full max-w-5xl min-w-0 flex-col overflow-hidden rounded-2xl border border-border/80 bg-bg-card/90 p-4 shadow-[0_25px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl animate-fadeInScale sm:p-7"
       onClick={(event) => event.stopPropagation()}
       role="dialog"
       aria-modal="true"
@@ -44,16 +68,37 @@ export default function ReciterDetailPage({
         <i className="fas fa-xmark text-sm" />
       </button>
 
-      <div className="reciter-detail__header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border">
+      <div className="reciter-detail__header flex min-w-0 flex-col gap-4 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
         <ReciterHero reciter={reciter} lang={lang} />
 
-        <div className="flex items-center shrink-0 self-start sm:self-center">
+        <div className="flex shrink-0 items-center self-start sm:self-center">
           <ReciterRadioButton lang={lang} onClick={() => onPlayRadio(reciter)} />
         </div>
       </div>
 
-      <div className="reciter-detail__bio my-4 p-4 rounded-2xl bg-[rgba(var(--primary-rgb),0.02)] border border-[rgba(var(--primary-rgb),0.05)] text-text-secondary leading-relaxed">
-        <ReciterBioCollapse lang={lang} text={reciter?.bio} />
+      <div className="reciter-detail__stats my-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {[
+          { icon: "fa-wave-square", label: riwayaLabel },
+          { icon: "fa-music", label: reciter.style || "murattal" },
+          { icon: "fa-server", label: sourceLabel },
+          { icon: "fa-list-ul", label: audioModeLabel },
+        ].map((item) => (
+          <div
+            key={`${item.icon}-${item.label}`}
+            className="reciter-detail__stat min-w-0 rounded-xl border border-border bg-bg-secondary/60 px-3 py-2.5"
+          >
+            <div className="mb-1 text-[0.68rem] text-text-muted">
+              <i className={`fas ${item.icon}`} />
+            </div>
+            <div className="truncate text-[0.78rem] font-extrabold text-text-primary">
+              {item.label}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="reciter-detail__bio mb-4 min-w-0 rounded-xl border border-[rgba(var(--primary-rgb),0.08)] bg-[rgba(var(--primary-rgb),0.035)] p-3 text-text-secondary leading-relaxed sm:p-4">
+        <ReciterBioCollapse lang={lang} text={reciter?.bio} reciter={reciter} />
 
         {!canDirectDownload && (
           <p className="text-[0.7rem] text-text-muted font-semibold mt-2 flex items-center gap-1.5 opacity-75">
@@ -74,7 +119,7 @@ export default function ReciterDetailPage({
         </h4>
       </div>
 
-      <div className="reciter-detail__list flex-1 overflow-y-auto min-h-0 pr-1">
+      <div className="reciter-detail__list min-h-0 flex-1 overflow-y-auto pr-1">
         <SurahRecitationList
           lang={lang}
           reciter={reciter}

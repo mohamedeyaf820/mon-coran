@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import "../styles/domains/audio-legacy.css";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import audioService from "../services/audioService";
-import { ensureReciterForRiwaya, getRecitersByRiwaya, getReciter } from "../data/reciters";
+import {
+  ensureReciterForRiwaya,
+  getReciter,
+  getRecitersByRiwaya,
+} from "../data/reciters";
 import { getSurah, surahName } from "../data/surahs";
 import {
   getLatencyForReciter,
@@ -13,261 +18,19 @@ import {
 import { cn, toast } from "../lib/utils";
 import { formatCooldownLabel } from "../utils/formatUtils";
 import AudioLoadingIndicator from "./AudioLoadingIndicator";
-
-/* Drag / position helpers (desktop card only) */
-const CARD_STORAGE_KEY = "mushaf_player_card_pos_v6";
-function isValidCardPos(pos) {
-  return (
-    pos &&
-    typeof pos === "object" &&
-    Number.isFinite(pos.x) &&
-    Number.isFinite(pos.y)
-  );
-}
-
-function loadCardPos() {
-  try {
-    const raw = localStorage.getItem(CARD_STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (isValidCardPos(parsed)) return parsed;
-    localStorage.removeItem(CARD_STORAGE_KEY);
-  } catch {}
-  return null;
-}
-function saveCardPos(pos) {
-  if (!isValidCardPos(pos)) return;
-  try {
-    localStorage.setItem(CARD_STORAGE_KEY, JSON.stringify(pos));
-  } catch {}
-}
-function clearCardPos() {
-  try {
-    localStorage.removeItem(CARD_STORAGE_KEY);
-  } catch {}
-}
-function clamp(x, y, w, h, margin = 12) {
-  const fallbackX = window.innerWidth - w - margin;
-  const fallbackY = Math.max(88, window.innerHeight - h - 24);
-  const safeX = Number.isFinite(x) ? x : fallbackX;
-  const safeY = Number.isFinite(y) ? y : fallbackY;
-  return {
-    x: Math.max(margin, Math.min(window.innerWidth - w - margin, safeX)),
-    y: Math.max(margin, Math.min(window.innerHeight - h - margin, safeY)),
-  };
-}
-
-const COVER_SIZE_CLASSES = {
-  40: "w-10 h-10",
-  42: "w-[42px] h-[42px]",
-  52: "w-[52px] h-[52px]",
-};
-
-const WAVE_HEIGHT_CLASSES = [
-  "h-[22%]",
-  "h-[26.62%]",
-  "h-[31.23%]",
-  "h-[35.85%]",
-  "h-[40.46%]",
-  "h-[45.08%]",
-  "h-[49.69%]",
-  "h-[54.31%]",
-  "h-[58.92%]",
-  "h-[63.54%]",
-  "h-[68.15%]",
-  "h-[72.77%]",
-  "h-[77.38%]",
-];
-
-const MOBILE_BREAKPOINT = 1024;
-const RECITER_COOLDOWN_STEPS_MS = [
-  90 * 1000,
-  8 * 60 * 1000,
-  25 * 60 * 1000,
-  90 * 60 * 1000,
-  4 * 60 * 60 * 1000,
-];
-
-function getReciterCooldownMs(failCount) {
-  const safeFails = Math.max(1, Number(failCount) || 1);
-  const idx = Math.min(RECITER_COOLDOWN_STEPS_MS.length - 1, safeFails - 1);
-  return RECITER_COOLDOWN_STEPS_MS[idx];
-}
-
-function ProgressRail({ progress, className = "", showThumb = false }) {
-  const pct = Math.max(0, Math.min(100, progress * 100));
-
-  return (
-    <div className={cn("h-full w-full", className)}>
-      <svg
-        viewBox="0 0 100 4"
-        preserveAspectRatio="none"
-        className="block h-full w-full overflow-visible"
-      >
-        <defs>
-          <linearGradient
-            id="audio-progress-gradient"
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="0%"
-          >
-            <stop offset="0%" stopColor="var(--gold)" />
-            <stop offset="100%" stopColor="var(--gold-bright)" />
-          </linearGradient>
-        </defs>
-        <rect
-          x="0"
-          y="0"
-          width="100"
-          height="4"
-          rx="2"
-          className="fill-white/10"
-        />
-        <rect
-          x="0"
-          y="0"
-          width={pct}
-          height="4"
-          rx="2"
-          fill="url(#audio-progress-gradient)"
-        />
-        {showThumb && (
-          <circle
-            cx={pct}
-            cy="2"
-            r="1.7"
-            fill="#fff7da"
-            stroke="rgba(18,31,25,0.32)"
-            strokeWidth="0.8"
-          />
-        )}
-      </svg>
-    </div>
-  );
-}
-
-/* Waveform (desktop card) */
-function Waveform({ isPlaying, progress }) {
-  const COUNT = 32;
-  return (
-    <div className="flex h-8 w-full items-end justify-center gap-0.5 rounded-xl border border-white/10 bg-white/[0.05] px-2 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-      {Array.from({ length: COUNT }).map((_, i) => {
-        const pct = i / COUNT;
-        const filled = pct <= progress;
-        const seedIndex = (i * 7 + 3) % 13;
-        return (
-          <div
-            key={i}
-            className={cn(
-              "min-w-[2px] flex-1 rounded-full origin-bottom",
-              WAVE_HEIGHT_CLASSES[seedIndex],
-              filled
-                ? "bg-gradient-to-b from-[var(--gold-bright)] to-[var(--gold)]"
-                : "bg-white/12",
-              isPlaying && "animate-pulse",
-            )}
-          />
-        );
-      })}
-    </div>
-  );
-}
-
-/* Cover Art (desktop card) */
-function CoverArt({ isPlaying, size = 52 }) {
-  return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-xl shrink-0 bg-[linear-gradient(135deg,var(--theme-primary)_0%,color-mix(in_srgb,var(--theme-primary)_78%,var(--theme-bg)_22%)_58%,color-mix(in_srgb,var(--theme-primary)_62%,var(--theme-bg)_38%)_100%)]",
-        COVER_SIZE_CLASSES[size] || COVER_SIZE_CLASSES[52],
-        isPlaying
-          ? "shadow-[0_2px_12px_rgba(184,134,11,0.35)]"
-          : "shadow-[0_2px_8px_rgba(0,0,0,0.3)]",
-      )}
-    >
-      <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_35%_40%,rgba(212,168,32,0.5)_0%,transparent_60%)]" />
-      <svg
-        className="absolute inset-0 w-full h-full opacity-25"
-        viewBox="0 0 52 52"
-        fill="none"
-      >
-        <circle
-          cx="26"
-          cy="26"
-          r="20"
-          stroke="var(--gold, #d4a820)"
-          strokeWidth="0.6"
-        />
-        <circle
-          cx="26"
-          cy="26"
-          r="12"
-          stroke="var(--gold, #d4a820)"
-          strokeWidth="0.5"
-        />
-        {Array.from({ length: 8 }).map((_, i) => {
-          const a = (i * Math.PI * 2) / 8;
-          return (
-            <line
-              key={i}
-              x1={26 + Math.cos(a) * 12}
-              y1={26 + Math.sin(a) * 12}
-              x2={26 + Math.cos(a) * 20}
-              y2={26 + Math.sin(a) * 20}
-              stroke="var(--gold, #d4a820)"
-              strokeWidth="0.5"
-            />
-          );
-        })}
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <i className="fas fa-quran text-xl text-[rgba(253,243,213,0.9)] drop-shadow-[0_1px_4px_rgba(184,134,11,0.5)]" />
-      </div>
-      {isPlaying && (
-        <div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-[var(--gold-bright)] shadow-[0_0_6px_var(--gold)] animate-pulse" />
-      )}
-    </div>
-  );
-}
-
-/* Icon button (desktop card) */
-function IconBtn({
-  onClick,
-  title,
-  active,
-  children,
-  size = "md",
-  className = "",
-}) {
-  const base =
-    size === "sm"
-      ? "w-7 h-7 text-[0.72rem]"
-      : size === "lg"
-        ? "w-12 h-12 text-base"
-        : "w-9 h-9 text-[0.82rem]";
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      title={title}
-      aria-label={title}
-      className={cn(
-        base,
-        "flex items-center justify-center rounded-full cursor-pointer outline-none transition-all duration-150",
-        active
-          ? "bg-[rgba(212,168,32,0.25)] text-[color-mix(in_srgb,var(--gold-bright,#f5d785)_88%,#ffffff_12%)] border border-[rgba(212,168,32,0.45)]"
-          : "bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_78%,transparent_22%)] text-[color-mix(in_srgb,var(--theme-text)_88%,var(--theme-bg)_12%)] border border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)]",
-        "hover:bg-[rgba(212,168,32,0.18)] hover:text-[color-mix(in_srgb,var(--gold-bright,#f5d785)_90%,#ffffff_10%)] hover:border-[rgba(212,168,32,0.35)] hover:scale-105",
-        "active:scale-95",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(212,168,32,0.5)]",
-        className,
-      )}
-    >
-      {children}
-    </button>
-  );
-}
+import AudioOptionsModal from "./audioPlayer/AudioOptionsModal";
+import {
+  CoverArt,
+  IconBtn,
+  ProgressRail,
+  ReciterAvatar,
+  Waveform,
+} from "./audioPlayer/AudioPlayerPrimitives";
+import {
+  MOBILE_BREAKPOINT,
+  getReciterCooldownMs,
+} from "./audioPlayer/audioPlayerUtils";
+import { usePlayerDragPosition } from "./audioPlayer/usePlayerDragPosition";
 
 /* Main component */
 export default function AudioPlayer() {
@@ -287,6 +50,7 @@ export default function AudioPlayer() {
     volume: savedVolume,
     showHome,
     showDuas,
+    showWordByWord,
     playerMinimized,
     syncOffsetsMs,
     favoriteReciters,
@@ -432,7 +196,7 @@ export default function AudioPlayer() {
             lang === "fr"
               ? `Recitateur indisponible, bascule vers ${candidate.nameFr || candidate.nameEn || candidate.name}.`
               : lang === "ar"
-                ? `ÃÂ¬Ãâ•£Ãâ–‘Ãâ–’ ÃÂºâ”˜Ã¤ÃÂ¬ÃÂ¡â”˜Ã â”˜Ã¨â”˜Ã¤ÃÃ® ÃÂ¬â”˜Ã  ÃÂºâ”˜Ã¤ÃÂ¬ÃÂ¡â”˜Ãªâ”˜Ã¨â”˜Ã¤ ÃÃ‘â”˜Ã¤â”˜Ã« ${candidate.name || candidate.nameEn || candidate.id}.`
+                ? `القارئ غير متاح، تم التبديل إلى ${candidate.name || candidate.nameEn || candidate.id}.`
                 : `Reciter unavailable, switched to ${candidate.nameEn || candidate.nameFr || candidate.name}.`,
             "warning",
           );
@@ -498,7 +262,7 @@ export default function AudioPlayer() {
   /* Wire audio callbacks */
   useEffect(() => {
     audioService.onPlay = (item) => {
-      setClosed(false); // râ”œÂ®ouvre si fermâ”œÂ®
+      setClosed(false); // rouvre le lecteur s'il etait ferme
       setAudioError(null);
       markReciterAvailable(reciter);
       failedRecitersRef.current.clear();
@@ -521,7 +285,7 @@ export default function AudioPlayer() {
       setProgress(0);
     };
     audioService.onAyahChange = (item) => {
-      // Navigation automatique : toujours suivre la sourate en cours de râ”œÂ®citation.
+      // Navigation automatique : toujours suivre la sourate en cours de recitation.
       if (item.surah && item.surah !== currentSurahRef.current) {
         dispatch({
           type: "NAVIGATE_SURAH",
@@ -549,32 +313,17 @@ export default function AudioPlayer() {
       }
       markReciterUnavailable(reciter, error);
       failedRecitersRef.current.add(reciter);
-      const failoverWorked = await tryAutoReciterFailover();
-      if (failoverWorked) {
-        setAudioError(
-          lang === "fr"
-            ? "Bascule automatique vers un autre recitateur..."
-            : lang === "ar"
-              ? "ÃÂ¬â”˜Ã  ÃÂºâ”˜Ã¤ÃÂ¬ÃÂ¡â”˜Ãªâ”˜Ã¨â”˜Ã¤ ÃÂ¬â”˜Ã¤â”˜Ã©ÃÂºÃÂªâ”˜Ã¨ÃÂº ÃÃ‘â”˜Ã¤â”˜Ã« â”˜Ã©ÃÂºÃâ–’ÃÂª ÃÃ³ÃÂ«Ãâ–’..."
-              : "Auto-switching to another reciter...",
-        );
-        audioErrorTimerRef.current = setTimeout(() => {
-          setAudioError(null);
-          audioErrorTimerRef.current = null;
-        }, 3200);
-        return;
-      }
       const msg =
         riwaya === "warsh"
           ? lang === "fr"
-            ? "Audio Warsh indisponible. Verifiez votre connexion ou changez de recitateur."
+            ? "Ce recitateur Warsh ne charge pas pour le moment. Reessayez ou choisissez un autre recitateur."
             : lang === "ar"
-              ? "ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬ Ãâ•‘â”˜Ã¨Ãâ–’ â”˜Ã ÃÂ¬ÃÂºÃÂ¡. ÃÂ¬ÃÂ¡â”˜Ã©â”˜Ã© â”˜Ã â”˜Ã¥ ÃÂºâ”˜Ã¤ÃÂºÃÂ¬ÃÃÃÂºâ”˜Ã¤ ÃÃºâ”˜Ãª Ãâ•‘â”˜Ã¨Ãâ–’ ÃÂºâ”˜Ã¤â”˜Ã©ÃÂºÃâ–’ÃÂª."
+              ? "صوت ورش غير متاح الآن. تحقق من الاتصال أو اختر قارئا آخر."
               : "Warsh audio unavailable. Check your connection or switch reciter."
           : lang === "fr"
-            ? "Erreur de chargement audio."
+            ? "Ce recitateur ne charge pas pour le moment. Reessayez ou choisissez un autre recitateur."
             : lang === "ar"
-              ? "ÃÂ«ÃÃ€ÃÃº â”˜Ã¼â”˜Ã¨ ÃÂ¬ÃÂ¡â”˜Ã â”˜Ã¨â”˜Ã¤ ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬."
+              ? "تعذر تحميل الصوت."
               : "Audio load error.";
       setAudioError(msg);
       audioErrorTimerRef.current = setTimeout(() => {
@@ -617,7 +366,7 @@ export default function AudioPlayer() {
           lang === "fr"
             ? "Chargement audio..."
             : lang === "ar"
-              ? "ÃÂ¼ÃÂºÃâ–’â”˜Ã¨ ÃÂ¬ÃÂ¡â”˜Ã â”˜Ã¨â”˜Ã¤ ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬..."
+              ? "جار تحميل الصوت..."
               : "Loading audio...",
       };
     }
@@ -628,7 +377,7 @@ export default function AudioPlayer() {
           lang === "fr"
             ? "Connexion instable"
             : lang === "ar"
-              ? "ÃÂºÃÂ¬ÃÃÃÂºâ”˜Ã¤ Ãâ•‘â”˜Ã¨Ãâ–’ â”˜Ã Ãâ”‚ÃÂ¬â”˜Ã©Ãâ–’"
+              ? "اتصال غير مستقر"
               : "Unstable connection",
       };
     }
@@ -737,7 +486,7 @@ export default function AudioPlayer() {
         lang === "fr"
           ? "Reconnaissance vocale non disponible sur ce navigateur."
           : lang === "ar"
-            ? "ÃÂºâ”˜Ã¤ÃÂ¬Ãâ•£Ãâ–’â”˜Ã¼ ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬â”˜Ã¨ Ãâ•‘â”˜Ã¨Ãâ–’ â”˜Ã ÃÂ¬ÃÂºÃÂ¡ â”˜Ã¼â”˜Ã¨ â”˜Ã§Ãâ–‘ÃÂº ÃÂºâ”˜Ã¤â”˜Ã ÃÂ¬ÃÃâ”˜Ã¼ÃÂ¡."
+            ? "القارئ الصوتي غير متاح في هذا المصحف."
             : "Speech recognition is not available in this browser.",
         "warning",
       );
@@ -967,7 +716,7 @@ export default function AudioPlayer() {
           lang === "fr"
             ? `Ce recitateur est temporairement indisponible. Reessayez dans ${retryLabel}.`
             : lang === "ar"
-              ? `â”˜Ã§Ãâ–‘ÃÂº ÃÂºâ”˜Ã¤â”˜Ã©ÃÂºÃâ–’ÃÂª Ãâ•‘â”˜Ã¨Ãâ–’ â”˜Ã ÃÂ¬ÃÂºÃÂ¡ â”˜Ã ÃÃ±â”˜Ã©ÃÂ¬ÃÂº. ÃÂ¡ÃÂºâ”˜Ãªâ”˜Ã¤ ÃÂ¿Ãâ•£ÃÂ» ${retryLabel}.`
+              ? `هذا القارئ غير متاح مؤقتا. حاول بعد ${retryLabel}.`
               : `This reciter is temporarily unavailable. Try again in ${retryLabel}.`,
           "warning",
         );
@@ -989,7 +738,7 @@ export default function AudioPlayer() {
           lang === "fr"
             ? "Le changement instantane du recitateur a echoue."
             : lang === "ar"
-              ? "ÃÂ¬Ãâ•£Ãâ–‘Ãâ–’ ÃÂ¬ÃÂ¿ÃÂ»â”˜Ã¨â”˜Ã¤ ÃÂºâ”˜Ã¤â”˜Ã©ÃÂºÃâ–’ÃÂª â”˜Ã¼â”˜ÃªÃâ–’â”˜Ã¨ÃÂº."
+              ? "تعذر تبديل القارئ فوريا."
               : "Instant reciter switch failed.",
           "warning",
         );
@@ -1065,7 +814,7 @@ export default function AudioPlayer() {
     !isPlaying && !currentPlayingAyah
       ? showHome
         ? lang === "ar"
-          ? "ÃÂºÃÃ‚Ãâ•‘ÃÃ€ ÃÂ¬Ãâ”¤Ãâ•‘â”˜Ã¨â”˜Ã¤ â”˜Ã¤â”˜Ã¤ÃÂºÃâ”‚ÃÂ¬â”˜Ã ÃÂºÃâ•£"
+          ? "اضغط للتشغيل"
           : lang === "fr"
             ? "Appuyez sur Play pour ecouter"
             : "Press Play to listen"
@@ -1074,24 +823,24 @@ export default function AudioPlayer() {
 
   const warshStrictLabel =
     lang === "ar"
-      ? "â”˜ÃªÃâ–’Ãâ”¤ ÃÂºâ”˜Ã¤ÃÃÃÂºÃâ–’â”˜Ã "
+      ? "وضع ورش صارم"
       : lang === "fr"
         ? "Warsh strict"
         : "Warsh strict";
   const warshNonStrictLabel =
     lang === "ar"
-      ? "â”˜ÃªÃÃ‚Ãâ•£ â”˜ÃªÃâ–’Ãâ”¤ Ãâ•£ÃÂºÃÂ»â”˜Ã¨"
+      ? "وضع ورش عادي"
       : lang === "fr"
         ? "Warsh standard"
         : "Warsh standard";
   const warshVerifiedLabel =
     lang === "ar"
-      ? "ÃÃâ”˜ÃªÃÂ¬ â”˜ÃªÃâ–’Ãâ”¤ â”˜Ã ÃÂ¬ÃÂ¡â”˜Ã©â”˜Ã©"
+      ? "صوت ورش موثق"
       : lang === "fr"
-        ? "Audio Warsh vâ”œÂ®rifiâ”œÂ®"
+        ? "Audio Warsh vérifié"
         : "Warsh verified";
   const memorizeShortLabel =
-    lang === "ar" ? "ÃÂ¡â”˜Ã¼ÃÂ©" : lang === "fr" ? "Memo" : "Mem";
+    lang === "ar" ? "حفظ" : lang === "fr" ? "Memo" : "Mem";
   const dockedMetaChips = [
     { key: "riwaya", label: isWarshMode ? "Warsh" : "Hafs", accent: true },
     currentPlayingAyah && {
@@ -1106,20 +855,20 @@ export default function AudioPlayer() {
       label:
         surahRepeatCount === 0
           ? lang === "fr"
-            ? "Sourate Ã”ÃªÃ—"
+            ? "Sourate infinie"
             : lang === "ar"
-              ? "Ãâ”‚â”˜ÃªÃâ–’ÃÂ® Ã”ÃªÃ—"
-              : "Surah Ã”ÃªÃ—"
+              ? "سورة بلا نهاية"
+              : "Surah infinite"
           : lang === "fr"
             ? `Sourate x${surahRepeatCount}`
             : lang === "ar"
-              ? `Ãâ”‚â”˜ÃªÃâ–’ÃÂ® â”œÃ¹${surahRepeatCount}`
+              ? `سورة x${surahRepeatCount}`
               : `Surah x${surahRepeatCount}`,
     },
     memMode && { key: "memorize", label: memorizeShortLabel },
     isSurahStreamReciter && {
       key: "mode",
-      label: lang === "fr" ? "Sourate" : lang === "ar" ? "Ãâ”‚â”˜ÃªÃâ–’ÃÂ®" : "Surah",
+      label: lang === "fr" ? "Sourate" : lang === "ar" ? "سورة" : "Surah",
     },
   ].filter(Boolean);
 
@@ -1202,589 +951,71 @@ export default function AudioPlayer() {
         "border-rose-300/30 bg-rose-300/10 text-rose-100 hover:border-rose-300/40 hover:bg-rose-300/16",
       isLoading && "animate-pulse",
     );
-  const playerReciterAvatarClass = (active = false) =>
-    cn(
-      "mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[0.68rem] font-black",
-      active
-        ? "bg-[rgba(122,188,210,0.24)] text-white"
-        : "bg-white/[0.08] text-[rgba(233,223,203,0.55)]",
-    );
-
-  /* Drag state (desktop card only) */
-  const optionsModalTitle =
-    lang === "fr"
-      ? "Reglages audio"
-      : lang === "ar"
-        ? "ÃÃ‘Ãâ•£ÃÂ»ÃÂºÃÂ»ÃÂºÃÂ¬ ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬"
-        : "Audio settings";
-  const optionsModalSubtitle =
-    lang === "fr"
-      ? "Recitateurs, volume et synchronisation"
-      : lang === "ar"
-        ? "ÃÂºâ”˜Ã¤â”˜Ã©Ãâ–’ÃÂºÃÃ­ â”˜Ãªâ”˜Ã Ãâ”‚ÃÂ¬â”˜Ãªâ”˜Ã« ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬ â”˜ÃªÃÂºâ”˜Ã¤â”˜Ã Ãâ–“ÃÂºâ”˜Ã â”˜Ã¥ÃÂ®"
-        : "Reciters, volume, and synchronization";
-  const isAnyReciterSwitching = Boolean(reciterSwitchingId);
-  const renderOptionsModal = () =>
-    optionsModalOpen ? (
-      <div
-        className="audio-player-modal fixed inset-0 z-[420] flex items-center justify-center p-2 sm:p-4"
-        data-no-drag="true"
-      >
-        <button
-          type="button"
-          className="audio-player-modal__backdrop absolute inset-0 bg-[color-mix(in_srgb,var(--theme-bg)_68%,#040810_32%)] backdrop-blur-sm"
-          onClick={closeOptionsModal}
-          aria-label={lang === "fr" ? "Fermer les options" : "Close options"}
-        />
-        <div
-          className="audio-player-modal__surface relative z-[421] flex h-[min(92vh,860px)] w-[min(96vw,1180px)] min-w-0 flex-col overflow-hidden rounded-3xl border border-[color-mix(in_srgb,var(--theme-border-strong)_30%,transparent_70%)] bg-[linear-gradient(165deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_95%,var(--theme-primary)_5%),color-mix(in_srgb,var(--theme-panel-bg)_94%,var(--theme-bg)_6%))] shadow-[0_40px_90px_rgba(2,8,18,0.56)] backdrop-blur-2xl"
-          style={{ width: "min(94vw, 940px)", height: "min(88vh, 720px)" }}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="audio-options-modal-title"
-        >
-          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 sm:px-5 sm:py-4">
-            <div className="min-w-0">
-              <h3
-                id="audio-options-modal-title"
-                className="truncate text-sm font-bold text-[color-mix(in_srgb,var(--theme-text)_92%,#ffffff_8%)] sm:text-base"
-              >
-                {optionsModalTitle}
-              </h3>
-              <p className="mt-1 truncate text-[0.66rem] text-[color-mix(in_srgb,var(--theme-text-muted)_88%,var(--theme-bg)_12%)] sm:text-xs">
-                {optionsModalSubtitle}
-              </p>
-            </div>
-            <button
-              type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[0.72rem] text-[color-mix(in_srgb,var(--theme-text)_84%,var(--theme-bg)_16%)] transition-all duration-150 hover:border-[color-mix(in_srgb,var(--theme-primary)_44%,transparent_56%)] hover:bg-[rgba(var(--theme-primary-rgb),0.14)] hover:text-white"
-              onClick={closeOptionsModal}
-              aria-label={lang === "fr" ? "Fermer" : "Close"}
-              ref={optionsCloseButtonRef}
-            >
-              <i className="fas fa-times" />
-            </button>
-          </div>
-
-          <div className="audio-player-modal__grid grid min-h-0 flex-1 gap-4 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-            <section
-              className={cn(
-                "flex min-h-0 flex-col p-3 sm:p-3.5",
-                playerSoftSurfaceClass,
-              )}
-            >
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <span className={playerSectionLabelClass}>
-                  {t("audio.reciter", lang)}
-                </span>
-                <span
-                  className={cn(
-                    playerGoldMetaClass,
-                    "text-[0.6rem] font-semibold tabular-nums",
-                  )}
-                >
-                  {filteredReciters.length !== currentReciters.length
-                    ? `${filteredReciters.length} / ${currentReciters.length}`
-                    : currentReciters.length}
-                </span>
-              </div>
-
-              {currentReciters.length > 4 && (
-                <div className="relative mb-2">
-                  <i className="fas fa-magnifying-glass pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[0.6rem] text-[rgba(241,230,209,0.35)]" />
-                  <input
-                    type="text"
-                    value={reciterSearch}
-                    onChange={(e) => setReciterSearch(e.target.value)}
-                    placeholder={
-                      lang === "fr"
-                        ? "Rechercher un recitateur..."
-                        : lang === "ar"
-                          ? "ÃÂºÃÂ¿ÃÂ¡ÃÂ½ Ãâ•£â”˜Ã¥ â”˜Ã©ÃÂºÃâ–’ÃÂª..."
-                          : "Search reciter..."
-                    }
-                    className={playerSearchInputClass}
-                  />
-                  {reciterSearch && (
-                    <button
-                      type="button"
-                      onClick={() => setReciterSearch("")}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-[0.58rem] text-[rgba(241,230,209,0.42)]"
-                    >
-                      <i className="fas fa-times" />
-                    </button>
-                  )}
-                </div>
-              )}
-
-              <div
-                className="min-h-0 flex-1 overflow-y-auto pr-1"
-                data-scroll-panel="true"
-              >
-                {filteredReciters.length === 0 ? (
-                  <div
-                    className={cn(
-                      playerFadedTextClass,
-                      "py-6 text-center text-xs",
-                    )}
-                  >
-                    {lang === "fr"
-                      ? "Aucun recitateur trouve"
-                      : lang === "ar"
-                        ? "â”˜Ã¤ÃÂº â”˜Ã¨â”˜ÃªÃÂ¼ÃÂ» â”˜Ã©ÃÂºÃâ–’ÃÂª"
-                        : "No reciter found"}
-                  </div>
-                ) : (
-                  <div className="grid gap-2 xl:grid-cols-2">
-                    {filteredReciters.map((r) => {
-                      const active = reciter === r.id;
-                      const isLoading =
-                        reciterSwitchingId === r.id ||
-                        (active && networkState === "loading");
-                      const unavailableMs = getReciterUnavailableRemainingMs(
-                        r.id,
-                        reciterAvailabilityById,
-                      );
-                      const isUnavailable = unavailableMs > 0;
-                      const initial = (r.nameEn ||
-                        r.name ||
-                        "?")[0].toUpperCase();
-                      const isFavorite = (favoriteReciters || []).includes(
-                        r.id,
-                      );
-                      const latency = getLatencyForReciter(
-                        r,
-                        reciterLatencyByKey,
-                      );
-                      return (
-                        <button
-                          key={`modal-${r.id}`}
-                          onClick={() => handleReciterSelect(r.id)}
-                          className={playerReciterButtonClass(
-                            active,
-                            isLoading,
-                            isUnavailable,
-                          )}
-                          aria-pressed={active}
-                          disabled={
-                            isAnyReciterSwitching || (isUnavailable && !active)
-                          }
-                        >
-                          <span className={playerReciterAvatarClass(active)}>
-                            {isLoading ? (
-                              <i className="fas fa-spinner fa-spin text-[0.48rem]" />
-                            ) : active ? (
-                              <i className="fas fa-check text-[0.48rem]" />
-                            ) : (
-                              initial
-                            )}
-                          </span>
-                          <span className="flex min-w-0 flex-col">
-                            <span className="text-[0.76rem] font-bold leading-snug">
-                              {lang === "ar"
-                                ? r.name
-                                : lang === "fr"
-                                  ? r.nameFr
-                                  : r.nameEn}
-                            </span>
-                            <span className="mt-1 flex flex-wrap gap-1">
-                              <span className="inline-flex w-fit items-center rounded-full border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-[rgba(225,214,194,0.72)]">
-                                {r.cdnType === "everyayah"
-                                  ? "EveryAyah CDN"
-                                  : r.cdnType === "mp3quran-surah"
-                                    ? "MP3Quran"
-                                    : "Islamic CDN"}
-                              </span>
-                              {r.audioMode === "surah" && (
-                                <span className="inline-flex w-fit items-center rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-fuchsia-100">
-                                  {lang === "fr"
-                                    ? "Sourate complete"
-                                    : lang === "ar"
-                                      ? "Ãâ”‚â”˜ÃªÃâ–’ÃÂ® â”˜Ã¢ÃÂºâ”˜Ã â”˜Ã¤ÃÂ®"
-                                      : "Full surah"}
-                                </span>
-                              )}
-                              {isFavorite && (
-                                <span className="inline-flex w-fit items-center rounded-full border border-amber-300/35 bg-amber-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-amber-200">
-                                  <i className="fas fa-star mr-1 text-[0.44rem]" />
-                                  {lang === "fr"
-                                    ? "Favori"
-                                    : lang === "ar"
-                                      ? "â”˜Ã â”˜Ã¼ÃÃ‚â”˜Ã¤"
-                                      : "Favorite"}
-                                </span>
-                              )}
-                              {latency && (
-                                <span className="inline-flex w-fit items-center rounded-full border border-sky-300/30 bg-sky-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-sky-100">
-                                  {Math.round(latency * 1000)}ms
-                                </span>
-                              )}
-                              {autoSelectFastestReciter &&
-                                filteredReciters[0]?.id === r.id && (
-                                  <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/30 bg-emerald-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-emerald-100">
-                                    {lang === "fr"
-                                      ? "Rapide"
-                                      : lang === "ar"
-                                        ? "Ãâ”‚Ãâ–’â”˜Ã¨Ãâ•£"
-                                        : "Fast"}
-                                  </span>
-                                )}
-                              {isUnavailable && (
-                                <span className="inline-flex w-fit items-center rounded-full border border-rose-300/40 bg-rose-300/16 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-rose-100">
-                                  {lang === "fr"
-                                    ? `Indisponible ${formatCooldownLabel(unavailableMs, lang)}`
-                                    : lang === "ar"
-                                      ? `Ãâ•‘â”˜Ã¨Ãâ–’ â”˜Ã ÃÂ¬ÃÂºÃÂ¡ ${formatCooldownLabel(unavailableMs, lang)}`
-                                      : `Unavailable ${formatCooldownLabel(unavailableMs, lang)}`}
-                                </span>
-                              )}
-                            </span>
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </section>
-
-            <section
-              className="min-h-0 overflow-y-auto pr-1"
-              data-scroll-panel="true"
-            >
-              <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    onClick={cycleSpeed}
-                    className={cn(
-                      playerCardToggleClass(false),
-                      "min-w-[7.5rem]",
-                    )}
-                  >
-                    <span className="flex items-center gap-2">
-                      <i className="fas fa-gauge-high text-[0.62rem]" />
-                      {lang === "fr"
-                        ? "Vitesse"
-                        : lang === "ar"
-                          ? "ÃÂºâ”˜Ã¤Ãâ”‚Ãâ–’Ãâ•£ÃÂ®"
-                          : "Speed"}
-                    </span>
-                    <span>{audioSpeed}x</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <span className={playerSectionLabelClass}>
-                    {lang === "fr"
-                      ? "Repetition de sourate"
-                      : lang === "ar"
-                        ? "ÃÂ¬â”˜Ã¢Ãâ–’ÃÂºÃâ–’ ÃÂºâ”˜Ã¤Ãâ”‚â”˜ÃªÃâ–’ÃÂ®"
-                        : "Surah repeat"}
-                  </span>
-                  <span
-                    className={cn(
-                      playerGoldMetaClass,
-                      "text-[0.64rem] tabular-nums",
-                    )}
-                  >
-                    {surahRepeatCount === 0
-                      ? lang === "fr"
-                        ? "Infini"
-                        : lang === "ar"
-                          ? "â”˜Ã¤ÃÂº â”˜Ã¥â”˜Ã§ÃÂºÃÂªâ”˜Ã¨"
-                          : "Infinite"
-                      : `x${surahRepeatCount}`}
-                  </span>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="flex items-center gap-1.5">
-                    <span
-                      className={cn(playerMutedTextClass, "text-[0.68rem]")}
-                    >
-                      {lang === "fr"
-                        ? "Nombre"
-                        : lang === "ar"
-                          ? "ÃÂºâ”˜Ã¤Ãâ•£ÃÂ»ÃÂ»"
-                          : "Count"}
-                    </span>
-                    <input
-                      type="number"
-                      min={0}
-                      max={999}
-                      value={surahRepeatCount}
-                      onChange={(e) => setSurahRepeatSetting(e.target.value)}
-                      className={playerNumberInputClass}
-                    />
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setSurahRepeatSetting(1)}
-                    className={playerOptionPillClass(surahRepeatCount === 1)}
-                  >
-                    {lang === "fr"
-                      ? "Une fois"
-                      : lang === "ar"
-                        ? "â”˜Ã Ãâ–’ÃÂ® â”˜ÃªÃÂºÃÂ¡ÃÂ»ÃÂ®"
-                        : "Once"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSurahRepeatSetting(3)}
-                    className={playerOptionPillClass(surahRepeatCount === 3)}
-                  >
-                    x3
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSurahRepeatSetting(5)}
-                    className={playerOptionPillClass(surahRepeatCount === 5)}
-                  >
-                    x5
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSurahRepeatSetting(10)}
-                    className={playerOptionPillClass(surahRepeatCount === 10)}
-                  >
-                    x10
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSurahRepeatSetting(0)}
-                    className={playerOptionPillClass(surahRepeatCount === 0)}
-                  >
-                    {lang === "fr"
-                      ? "Infini"
-                      : lang === "ar"
-                        ? "â”˜Ã¤ÃÂº â”˜Ã¥â”˜Ã§ÃÂºÃÂªâ”˜Ã¨"
-                        : "Infinite"}
-                  </button>
-                </div>
-
-                <p
-                  className={cn(
-                    playerFadedTextClass,
-                    "mt-2 text-[0.62rem] leading-relaxed",
-                  )}
-                >
-                  {lang === "fr"
-                    ? "0 = repetition infinie. La sourate recommence automatiquement a la fin."
-                    : lang === "ar"
-                      ? "0 â”˜Ã¨Ãâ•£â”˜Ã¥â”˜Ã¨ ÃÂ¬â”˜Ã¢Ãâ–’ÃÂºÃâ–’â”˜Ã¯ÃÂº â”˜Ã¤ÃÂº â”˜Ã¥â”˜Ã§ÃÂºÃÂªâ”˜Ã¨â”˜Ã¯ÃÂº. ÃÂ¬ÃÂ¿ÃÂ»ÃÃº ÃÂºâ”˜Ã¤Ãâ”‚â”˜ÃªÃâ–’ÃÂ® â”˜Ã â”˜Ã¥ ÃÂ¼ÃÂ»â”˜Ã¨ÃÂ» ÃÂ¬â”˜Ã¤â”˜Ã©ÃÂºÃÂªâ”˜Ã¨â”˜Ã¯ÃÂº Ãâ•£â”˜Ã¥ÃÂ» ÃÂºâ”˜Ã¤â”˜Ã¥â”˜Ã§ÃÂºâ”˜Ã¨ÃÂ®."
-                      : "0 means infinite repeat. The surah restarts automatically at the end."}
-                </p>
-              </div>
-
-              <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <span className={playerSectionLabelClass}>
-                    {lang === "fr"
-                      ? "Volume"
-                      : lang === "ar"
-                        ? "â”˜Ã Ãâ”‚ÃÂ¬â”˜Ãªâ”˜Ã« ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬"
-                        : "Volume"}
-                  </span>
-                  <span
-                    className={cn(
-                      playerGoldMetaClass,
-                      "text-[0.64rem] tabular-nums",
-                    )}
-                  >
-                    {Math.round(volume * 100)}%
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleVolumeChange(volume > 0 ? 0 : 1)}
-                    className="h-8 w-8 shrink-0 rounded-lg border border-white/12 bg-white/[0.06] text-[0.8rem] text-[rgba(132,205,228,0.9)] transition-colors duration-150 hover:bg-[rgba(110,204,233,0.14)]"
-                  >
-                    <i
-                      className={`fas ${volume === 0 ? "fa-volume-xmark" : volume < 0.5 ? "fa-volume-low" : "fa-volume-high"}`}
-                    />
-                  </button>
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.05"
-                    value={volume}
-                    onChange={(e) =>
-                      handleVolumeChange(parseFloat(e.target.value))
-                    }
-                    className="h-1.5 flex-1 cursor-pointer rounded-full accent-[rgb(110,204,233)]"
-                  />
-                </div>
-              </div>
-
-              <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <span className={playerSectionLabelClass}>
-                    {lang === "fr"
-                      ? "Synchronisation mot a mot"
-                      : lang === "ar"
-                        ? "â”˜Ã Ãâ–“ÃÂºâ”˜Ã â”˜Ã¥ÃÂ® â”˜Ã¢â”˜Ã¤â”˜Ã ÃÂ® ÃÂ¿â”˜Ã¢â”˜Ã¤â”˜Ã ÃÂ®"
-                        : "Word sync"}
-                  </span>
-                  <span
-                    className={cn(
-                      playerGoldMetaClass,
-                      "text-[0.64rem] tabular-nums",
-                    )}
-                  >
-                    {syncOffsetMs > 0 ? `+${syncOffsetMs}` : syncOffsetMs}ms
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="-500"
-                  max="500"
-                  step="10"
-                  value={syncOffsetMs}
-                  disabled={isSurahStreamReciter}
-                  onChange={(e) => setSyncOffsetMs(e.target.value)}
-                  className="h-1.5 w-full cursor-pointer rounded-full accent-[rgb(110,204,233)]"
-                />
-                <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                  <button
-                    onClick={() => setSyncOffsetMs(syncOffsetMs - 40)}
-                    className={playerOptionPillClass(false)}
-                  >
-                    -40ms
-                  </button>
-                  <button
-                    onClick={() => setSyncOffsetMs(syncOffsetMs + 40)}
-                    className={playerOptionPillClass(false)}
-                  >
-                    +40ms
-                  </button>
-                  <button
-                    onClick={() => setSyncOffsetMs(0)}
-                    className={playerOptionPillClass(syncOffsetMs === 0)}
-                  >
-                    {lang === "fr"
-                      ? "Reset"
-                      : lang === "ar"
-                        ? "ÃÃ‘Ãâ•£ÃÂºÃÂ»ÃÂ®"
-                        : "Reset"}
-                  </button>
-                </div>
-                <p
-                  className={cn(
-                    playerFadedTextClass,
-                    "mt-2 text-[0.62rem] leading-relaxed",
-                  )}
-                >
-                  {isSurahStreamReciter
-                    ? lang === "fr"
-                      ? "Ce recitateur lit la sourate complete, donc la synchro mot a mot n'est pas utilisee."
-                      : lang === "ar"
-                        ? "â”˜Ã§Ãâ–‘ÃÂº ÃÂºâ”˜Ã¤â”˜Ã©ÃÂºÃâ–’ÃÂª â”˜Ã¨â”˜Ã©Ãâ–’ÃÃº ÃÂºâ”˜Ã¤Ãâ”‚â”˜ÃªÃâ–’ÃÂ® â”˜Ã¢ÃÂºâ”˜Ã â”˜Ã¤ÃÂ®ÃÃ® â”˜Ã¤Ãâ–‘â”˜Ã¤â”˜Ã¢ â”˜Ã¤ÃÂº ÃÂ¬Ãâ”‚ÃÂ¬ÃÂ«ÃÂ»â”˜Ã  â”˜Ã Ãâ–“ÃÂºâ”˜Ã â”˜Ã¥ÃÂ® â”˜Ã¢â”˜Ã¤â”˜Ã ÃÂ® ÃÂ¿â”˜Ã¢â”˜Ã¤â”˜Ã ÃÂ®."
-                        : "This reciter plays the full surah, so word-by-word sync is not used."
-                    : lang === "fr"
-                      ? "Le suivi des versets est verrouille en automatique. La calibration se memorise par recitateur."
-                      : lang === "ar"
-                        ? "â”˜Ã ÃÂ¬ÃÂºÃÂ¿Ãâ•£ÃÂ® ÃÂºâ”˜Ã¤ÃÃ³â”˜Ã¨ÃÂºÃÂ¬ â”˜Ã â”˜Ã¼Ãâ•£â”˜Ã¤ÃÂ® ÃÂ¬â”˜Ã¤â”˜Ã©ÃÂºÃÂªâ”˜Ã¨ÃÂº ÃÂ»ÃÂºÃÂªâ”˜Ã ÃÂº. ÃÂ¬ÃÂ¬â”˜Ã  â”˜Ã Ãâ•£ÃÂºâ”˜Ã¨Ãâ–’ÃÂ® ÃÂºâ”˜Ã¤ÃÂ¬Ãâ–“ÃÂºâ”˜Ã â”˜Ã¥ â”˜Ã¤â”˜Ã¢â”˜Ã¤ â”˜Ã©ÃÂºÃâ–’ÃÂª."
-                        : "Verse follow is locked to automatic. Sync calibration is saved per reciter."}
-                </p>
-              </div>
-
-              {showMemorizationControls && memMode && (
-                <div className={cn("mb-3 p-3", playerSoftSurfaceClass)}>
-                  <div className={playerSectionLabelClass}>
-                    {t("audio.memorization", lang)}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className={cn(playerMutedTextClass, "text-[0.68rem]")}
-                      >
-                        {t("audio.repeat", lang)}
-                      </span>
-                      <input
-                        type="number"
-                        min={1}
-                        max={100}
-                        value={memRepeatCount}
-                        onChange={(e) =>
-                          set({
-                            memRepeatCount: parseInt(e.target.value, 10) || 1,
-                          })
-                        }
-                        className={playerNumberInputClass}
-                      />
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className={cn(playerMutedTextClass, "text-[0.68rem]")}
-                      >{`${t("audio.pause", lang)} (s)`}</span>
-                      <input
-                        type="number"
-                        min={0}
-                        max={60}
-                        value={memPause}
-                        onChange={(e) =>
-                          set({ memPause: parseInt(e.target.value, 10) || 0 })
-                        }
-                        className={playerNumberInputClass}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex flex-wrap items-center gap-2 pb-1">
-                <button
-                  onClick={stop}
-                  className={cn(
-                    playerSurfaceButtonClass,
-                    "px-4 py-2 text-[0.68rem] font-semibold",
-                  )}
-                >
-                  <i className="fas fa-stop mr-1" />
-                  {t("audio.stop", lang)}
-                </button>
-                <button
-                  onClick={closeOptionsModal}
-                  className={cn(
-                    playerSurfaceButtonClass,
-                    "px-4 py-2 text-[0.68rem] font-semibold",
-                  )}
-                >
-                  {lang === "fr" ? "Terminer" : lang === "ar" ? "ÃÂ¬â”˜Ã " : "Done"}
-                </button>
-              </div>
-            </section>
-          </div>
-        </div>
-      </div>
-    ) : null;
+  const audioOptionsModal = (
+    <AudioOptionsModal
+      audioSpeed={audioSpeed}
+      autoSelectFastestReciter={autoSelectFastestReciter}
+      closeOptionsModal={closeOptionsModal}
+      currentReciters={currentReciters}
+      cycleSpeed={cycleSpeed}
+      filteredReciters={filteredReciters}
+      favoriteReciters={favoriteReciters}
+      handleReciterSelect={handleReciterSelect}
+      handleVolumeChange={handleVolumeChange}
+      isSurahStreamReciter={isSurahStreamReciter}
+      lang={lang}
+      memMode={memMode}
+      memPause={memPause}
+      memRepeatCount={memRepeatCount}
+      networkState={networkState}
+      optionsCloseButtonRef={optionsCloseButtonRef}
+      optionsModalOpen={optionsModalOpen}
+      playerCardToggleClass={playerCardToggleClass}
+      playerFadedTextClass={playerFadedTextClass}
+      playerGoldMetaClass={playerGoldMetaClass}
+      playerMutedTextClass={playerMutedTextClass}
+      playerNumberInputClass={playerNumberInputClass}
+      playerOptionPillClass={playerOptionPillClass}
+      playerReciterButtonClass={playerReciterButtonClass}
+      playerSearchInputClass={playerSearchInputClass}
+      playerSectionLabelClass={playerSectionLabelClass}
+      playerSoftSurfaceClass={playerSoftSurfaceClass}
+      playerSurfaceButtonClass={playerSurfaceButtonClass}
+      reciter={reciter}
+      reciterAvailabilityById={reciterAvailabilityById}
+      reciterLatencyByKey={reciterLatencyByKey}
+      reciterSearch={reciterSearch}
+      reciterSwitchingId={reciterSwitchingId}
+      set={set}
+      setReciterSearch={setReciterSearch}
+      setSurahRepeatSetting={setSurahRepeatSetting}
+      setSyncOffsetMs={setSyncOffsetMs}
+      showMemorizationControls={showMemorizationControls}
+      stop={stop}
+      surahRepeatCount={surahRepeatCount}
+      syncOffsetMs={syncOffsetMs}
+      volume={volume}
+    />
+  );
 
   const cardRef = useRef(null);
-  const dragState = useRef(null);
-  const hasSavedCardPosRef = useRef(Boolean(loadCardPos()));
-  const [isDragging, setIsDragging] = useState(false);
-  const [cardPos, setCardPos] = useState(() => {
-    const saved = loadCardPos();
-    if (saved) return saved;
-    return {
-      x: window.innerWidth - 280 - 16,
-      y: Math.max(88, window.innerHeight - 360 - 24),
-    };
+  const {
+    canDragDesktopCard,
+    canFreePosition,
+    finishPointerDrag,
+    isDragging,
+    manualDockPosition,
+    onPointerDown,
+    onPointerLostCapture,
+    onPointerMove,
+    resetDockPosition,
+  } = usePlayerDragPosition({
+    cardRef,
+    expanded,
+    isContextualDesktop,
+    isMobile,
+    minimized,
   });
-  const cardPosRef = useRef(cardPos);
-  const [manualDockPosition, setManualDockPosition] = useState(
-    () => hasSavedCardPosRef.current,
-  );
-  const canFreePosition = !isContextualDesktop || manualDockPosition;
-  const canDragDesktopCard = !isMobile;
-
-  useEffect(() => {
-    cardPosRef.current = cardPos;
-  }, [cardPos]);
 
   useEffect(() => {
     if (isPlaying || currentPlayingAyah) {
@@ -1807,187 +1038,70 @@ export default function AudioPlayer() {
   ]);
 
   useEffect(() => {
+    if (!showWordByWord) return;
+    if (!isContextualDesktop || isMobile || manualDockPosition || minimized) {
+      return;
+    }
+    setExpanded(false);
+    setOptionsModalOpen(false);
+    setMinimized(true);
+  }, [
+    isContextualDesktop,
+    isMobile,
+    manualDockPosition,
+    minimized,
+    showWordByWord,
+  ]);
+
+  useEffect(() => {
     const root = document.documentElement;
 
     if (!isMobile || closed) {
       root.style.removeProperty("--player-h");
+      root.style.removeProperty("--desktop-player-reserved-h");
       return;
     }
 
     // Reserve enough space for the mobile dock so verses and controls are never hidden behind it.
     const reservedHeight = minimized ? 86 : expanded ? 198 : 136;
     root.style.setProperty("--player-h", `${reservedHeight}px`);
+    root.style.removeProperty("--desktop-player-reserved-h");
 
     return () => {
       root.style.removeProperty("--player-h");
+      root.style.removeProperty("--desktop-player-reserved-h");
     };
   }, [closed, expanded, isMobile, minimized]);
 
   useEffect(() => {
-    const onResize = () => {
-      if (!cardRef.current) return;
-      const { offsetWidth: w, offsetHeight: h } = cardRef.current;
-      setCardPos((prev) => {
-        const next = clamp(prev.x, prev.y, w, h);
-        if (manualDockPosition || !isContextualDesktop) {
-          saveCardPos(next);
-        }
-        return next;
-      });
-    };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [manualDockPosition, isContextualDesktop]);
+    const root = document.documentElement;
 
-  useEffect(() => {
-    if (isMobile || !cardRef.current) return;
-    const { offsetWidth: w, offsetHeight: h } = cardRef.current;
-    setCardPos((prev) => {
-      const next = clamp(prev.x, prev.y, w, h);
-      if (next.x === prev.x && next.y === prev.y) return prev;
-      if (manualDockPosition || !isContextualDesktop) {
-        saveCardPos(next);
-      }
-      return next;
-    });
-  }, [expanded, minimized, isMobile, manualDockPosition, isContextualDesktop]);
-
-  useEffect(() => {
-    if (!cardRef.current || isMobile || !canFreePosition) return;
-    cardRef.current.style.setProperty("--player-left", `${cardPos.x}px`);
-    cardRef.current.style.setProperty("--player-top", `${cardPos.y}px`);
-  }, [cardPos, isMobile, canFreePosition]);
-
-  const onPointerDown = useCallback(
-    (e) => {
-      if (!canDragDesktopCard) return;
-      if (!e.isPrimary || e.button !== 0) return;
-      const target = e.target instanceof Element ? e.target : null;
-      if (!target) return;
-      if (
-        target.closest("button") ||
-        target.closest("input") ||
-        target.closest("textarea") ||
-        target.closest("select") ||
-        target.closest("a") ||
-        target.closest("label") ||
-        target.closest("[role='button']") ||
-        target.closest("[data-no-drag='true']")
-      )
-        return;
-      if (
-        target.closest("[data-scroll-panel='true']") ||
-        target.closest("[data-player-expanded='true']")
-      )
-        return;
-      if (!target.closest("[data-player-drag='true']")) return;
-
-      const card = cardRef.current;
-      const rect = card?.getBoundingClientRect();
-      const w = card ? card.offsetWidth : 264;
-      const h = card ? card.offsetHeight : 400;
-      const startPos = clamp(
-        rect?.left ?? cardPos.x,
-        rect?.top ?? cardPos.y,
-        w,
-        h,
-      );
-      if (!manualDockPosition) {
-        setManualDockPosition(true);
-      }
-      cardPosRef.current = startPos;
-      setCardPos(startPos);
-      e.preventDefault();
-      e.currentTarget.setPointerCapture?.(e.pointerId);
-      dragState.current = {
-        pointerId: e.pointerId,
-        startX: e.clientX,
-        startY: e.clientY,
-        originX: startPos.x,
-        originY: startPos.y,
-      };
-      setIsDragging(true);
-    },
-    [canDragDesktopCard, cardPos.x, cardPos.y, manualDockPosition],
-  );
-
-  const onPointerMove = useCallback((e) => {
-    if (!dragState.current) return;
-    if (e.pointerId !== dragState.current.pointerId) return;
-    const dx = e.clientX - dragState.current.startX;
-    const dy = e.clientY - dragState.current.startY;
-    const card = cardRef.current;
-    const w = card ? card.offsetWidth : 264;
-    const h = card ? card.offsetHeight : 400;
-    const next = clamp(
-      dragState.current.originX + dx,
-      dragState.current.originY + dy,
-      w,
-      h,
-    );
-    cardPosRef.current = next;
-    setCardPos(next);
-  }, []);
-
-  const finishPointerDrag = useCallback((e) => {
-    if (!dragState.current) return;
-    if (
-      typeof e?.pointerId === "number" &&
-      e.pointerId !== dragState.current.pointerId
-    )
+    if (isMobile || closed || !isContextualDesktop || manualDockPosition) {
+      root.style.removeProperty("--desktop-player-reserved-h");
       return;
-    const card = cardRef.current;
-    const w = card ? card.offsetWidth : 264;
-    const h = card ? card.offsetHeight : 400;
-    const current = cardPosRef.current;
-    const next = clamp(current.x, current.y, w, h);
-    if (e?.currentTarget?.hasPointerCapture?.(e.pointerId)) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
     }
-    cardPosRef.current = next;
-    setCardPos(next);
-    saveCardPos(next);
-    hasSavedCardPosRef.current = true;
-    setManualDockPosition(true);
-    dragState.current = null;
-    setIsDragging(false);
-  }, []);
 
-  const onPointerLostCapture = useCallback(() => {
-    if (dragState.current) {
-      const card = cardRef.current;
-      const w = card ? card.offsetWidth : 264;
-      const h = card ? card.offsetHeight : 400;
-      const current = cardPosRef.current;
-      const next = clamp(current.x, current.y, w, h);
-      cardPosRef.current = next;
-      setCardPos(next);
-      saveCardPos(next);
-      hasSavedCardPosRef.current = true;
-      setManualDockPosition(true);
-    }
-    dragState.current = null;
-    setIsDragging(false);
-  }, []);
+    const reservedHeight = minimized ? 132 : expanded ? 390 : 320;
+    root.style.setProperty("--desktop-player-reserved-h", `${reservedHeight}px`);
 
-  const resetDockPosition = useCallback(() => {
-    clearCardPos();
-    hasSavedCardPosRef.current = false;
-    dragState.current = null;
-    setIsDragging(false);
-    setManualDockPosition(false);
-  }, []);
+    return () => {
+      root.style.removeProperty("--desktop-player-reserved-h");
+    };
+  }, [
+    closed,
+    expanded,
+    isContextualDesktop,
+    isMobile,
+    manualDockPosition,
+    minimized,
+  ]);
 
-  /* Ne rien afficher si le lecteur est fermâ”œÂ® */
+  /* Ne rien afficher si le lecteur est ferme */
   const desktopCardWidthClass = isHomeDesktop
-    ? expanded
-      ? "w-[320px]"
-      : "w-[300px]"
+    ? "w-[320px]"
     : minimized
-      ? "w-[248px]"
-      : expanded
-        ? "w-[336px]"
-        : "w-[320px]";
+      ? "w-[272px]"
+      : "w-[336px]";
   const desktopCardPositionClass =
     !manualDockPosition && isHomeDesktop
       ? "right-6 bottom-6 left-auto top-auto"
@@ -2000,9 +1114,8 @@ export default function AudioPlayer() {
 
   if (closed) return null;
 
-  /* Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰
-     MOBILE -- classic bottom bar
-  Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰ */
+  /* Mobile dock */
+
   if (isMobile) {
     if (minimized) {
       return (
@@ -2025,7 +1138,7 @@ export default function AudioPlayer() {
             <ProgressRail progress={progress} />
           </div>
           <div className="mp-player-minimized-row flex items-center gap-2.5 px-3 py-2.5">
-            <CoverArt isPlaying={isPlaying} size={40} />
+            <CoverArt isPlaying={isPlaying} size={40} reciter={reciterObj} />
             <button
               type="button"
               className="mp-player-minimized-meta mp-player-minimized-open min-w-0 flex-1 text-left"
@@ -2037,7 +1150,7 @@ export default function AudioPlayer() {
                   (lang === "fr"
                     ? "Pret a lire"
                     : lang === "ar"
-                      ? "ÃÂ¼ÃÂºâ”˜Ã§Ãâ–“"
+                      ? "جاهز"
                       : "Ready")}
               </div>
               <div className="mp-player-minimized-reciter truncate text-[0.68rem] text-[color-mix(in_srgb,var(--theme-text-muted)_90%,var(--theme-bg)_10%)]">
@@ -2077,7 +1190,7 @@ export default function AudioPlayer() {
               )}
               onClick={toggleMinimized}
               title={
-                lang === "fr" ? "Agrandir" : lang === "ar" ? "ÃÂ¬â”˜ÃªÃâ”‚â”˜Ã¨Ãâ•£" : "Expand"
+                lang === "fr" ? "Agrandir" : lang === "ar" ? "توسيع" : "Expand"
               }
             >
               <i className="fas fa-expand-alt" />
@@ -2089,13 +1202,13 @@ export default function AudioPlayer() {
               )}
               onClick={closePlayer}
               title={
-                lang === "fr" ? "Fermer" : lang === "ar" ? "ÃÃ‘Ãâ•‘â”˜Ã¤ÃÂºâ”˜Ã©" : "Close"
+                lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
               }
             >
               <i className="fas fa-times" />
             </button>
           </div>
-          {renderOptionsModal()}
+          {audioOptionsModal}
         </div>
       );
     }
@@ -2120,7 +1233,7 @@ export default function AudioPlayer() {
               : "Audio Player"
         }
       >
-        <div className="mp-player-mobile-head flex items-center justify-between px-3.5 pb-1.5 pt-2">
+          <div className="mp-player-mobile-head flex items-center justify-between px-3.5 pb-1.5 pt-2">
           <button
             className={cn(mBarBtn, "h-9 w-9 rounded-full")}
             onClick={toggleMinimized}
@@ -2130,16 +1243,16 @@ export default function AudioPlayer() {
           >
             <i className="fas fa-chevron-down" />
           </button>
-          <div className="flex min-w-0 items-center gap-2 px-2">
+          <div className="mp-player-mobile-brand flex min-w-0 items-center gap-2 px-2">
             <div className="h-1 w-9 rounded-full bg-[linear-gradient(90deg,rgba(var(--theme-primary-rgb),0.18),rgba(var(--theme-primary-rgb),0.95),rgba(var(--theme-primary-rgb),0.18))]" />
             <span className="text-[0.62rem] uppercase tracking-[0.14em] text-[color-mix(in_srgb,var(--theme-text-muted)_92%,var(--theme-bg)_8%)] [font-family:var(--font-ui)]">
-              DRAG
+              AUDIO
             </span>
           </div>
           <button
             className={cn(mBarBtn, "h-9 w-9 rounded-full")}
             onClick={closePlayer}
-            title={lang === "fr" ? "Fermer" : lang === "ar" ? "ÃÃ‘Ãâ•‘â”˜Ã¤ÃÂºâ”˜Ã©" : "Close"}
+            title={lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
           >
             <i className="fas fa-times" />
           </button>
@@ -2191,7 +1304,7 @@ export default function AudioPlayer() {
                 : lang === "fr"
                   ? "En attente"
                   : lang === "ar"
-                    ? "ÃÂ¼ÃÂºâ”˜Ã§Ãâ–“"
+                    ? "في الانتظار"
                     : "Ready"}
             </span>
             <span className="text-[0.6rem] leading-none text-[color-mix(in_srgb,var(--theme-text-muted)_86%,var(--theme-bg)_14%)] font-mono tabular-nums">
@@ -2270,7 +1383,7 @@ export default function AudioPlayer() {
               )}
               onClick={cycleSpeed}
               title={
-                lang === "fr" ? "Vitesse" : lang === "ar" ? "ÃÂºâ”˜Ã¤Ãâ”‚Ãâ–’Ãâ•£ÃÂ®" : "Speed"
+                lang === "fr" ? "Vitesse" : lang === "ar" ? "السرعة" : "Speed"
               }
             >
               {audioSpeed}x
@@ -2288,12 +1401,12 @@ export default function AudioPlayer() {
                   ? lang === "fr"
                     ? "Reduire"
                     : lang === "ar"
-                      ? "ÃÂºâ”˜Ã¤ÃÂ«â”˜Ã¨ÃÂºÃâ–’ÃÂºÃÂ¬ â”˜Ã â”˜Ã¼ÃÂ¬â”˜ÃªÃÂ¡ÃÂ®"
+                      ? "الخيارات مفتوحة"
                       : "Options opened"
                   : lang === "fr"
                     ? "Plus d'options"
                     : lang === "ar"
-                      ? "ÃÂ«â”˜Ã¨ÃÂºÃâ–’ÃÂºÃÂ¬ ÃÃ‘ÃÃ‚ÃÂºâ”˜Ã¼â”˜Ã¨ÃÂ®"
+                      ? "خيارات أكثر"
                       : "More options"
               }
             >
@@ -2305,7 +1418,7 @@ export default function AudioPlayer() {
         {/* Expanded panel */}
         {expanded && (
           <div
-            className="mp-player-mobile-expanded max-h-[56vh] overflow-y-auto border-t border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_82%,transparent_18%),color-mix(in_srgb,var(--theme-panel-bg)_72%,transparent_28%))] px-3 pb-3.5 pt-2.5 animate-[fadeInUp_0.18s_var(--ease,ease)]"
+              className="mp-player-mobile-expanded max-h-[42vh] overflow-y-auto border-t border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_82%,transparent_18%),color-mix(in_srgb,var(--theme-panel-bg)_72%,transparent_28%))] px-3 pb-3.5 pt-2.5 animate-[fadeInUp_0.18s_var(--ease,ease)]"
             data-player-expanded="true"
             data-scroll-panel="true"
             data-no-drag="true"
@@ -2322,14 +1435,14 @@ export default function AudioPlayer() {
                     lang === "fr"
                       ? "Reessayer"
                       : lang === "ar"
-                        ? "ÃÃ‘Ãâ•£ÃÂºÃÂ»ÃÂ® ÃÂºâ”˜Ã¤â”˜Ã ÃÂ¡ÃÂºâ”˜Ãªâ”˜Ã¤ÃÂ®"
+                        ? "إعادة المحاولة"
                         : "Retry"
                   }
                 >
                   {lang === "fr"
                     ? "Reessayer"
                     : lang === "ar"
-                      ? "ÃÃ‘Ãâ•£ÃÂºÃÂ»ÃÂ®"
+                       ? "إعادة"
                       : "Retry"}
                 </button>
               </div>
@@ -2359,7 +1472,7 @@ export default function AudioPlayer() {
                     {lang === "fr"
                       ? "Lecture sourate complete"
                       : lang === "ar"
-                        ? "ÃÂ¬Ãâ”¤Ãâ•‘â”˜Ã¨â”˜Ã¤ ÃÂºâ”˜Ã¤Ãâ”‚â”˜ÃªÃâ–’ÃÂ® â”˜Ã¢ÃÂºâ”˜Ã â”˜Ã¤ÃÂ®"
+                         ? "قراءة السورة كاملة"
                         : "Full-surah playback"}
                   </span>
                 )}
@@ -2425,7 +1538,7 @@ export default function AudioPlayer() {
                     {lang === "fr"
                       ? "Aucun resultat"
                       : lang === "ar"
-                        ? "â”˜Ã¤ÃÂº ÃÂ¬â”˜ÃªÃÂ¼ÃÂ» â”˜Ã¥ÃÂ¬ÃÂºÃÂªÃÂ¼"
+                         ? "لا توجد نتائج"
                         : "No results"}
                   </div>
                 ) : (
@@ -2454,15 +1567,11 @@ export default function AudioPlayer() {
                           aria-pressed={active}
                           disabled={Boolean(reciterSwitchingId)}
                         >
-                          <span className={playerReciterAvatarClass(active)}>
-                            {isLoading ? (
-                              <i className="fas fa-spinner fa-spin text-[0.45rem]" />
-                            ) : active ? (
-                              <i className="fas fa-check text-[0.45rem]" />
-                            ) : (
-                              initial
-                            )}
-                          </span>
+                          <ReciterAvatar
+                            reciter={r}
+                            active={active}
+                            loading={isLoading}
+                          />
                           <span className="flex min-w-0 flex-col">
                             <span className="text-[0.68rem] font-semibold leading-tight truncate">
                               {lang === "ar"
@@ -2490,7 +1599,7 @@ export default function AudioPlayer() {
                                 {lang === "fr"
                                   ? "Sourate complete"
                                   : lang === "ar"
-                                    ? "Ãâ”‚â”˜ÃªÃâ–’ÃÂ® â”˜Ã¢ÃÂºâ”˜Ã â”˜Ã¤ÃÂ®"
+                                     ? "سورة كاملة"
                                     : "Full surah"}
                               </span>
                             )}
@@ -2518,12 +1627,12 @@ export default function AudioPlayer() {
                     ? lang === "fr"
                       ? "Muet"
                       : lang === "ar"
-                        ? "â”˜Ã¢ÃÂ¬â”˜Ã "
+                         ? "كتم"
                         : "Mute"
                     : lang === "fr"
                       ? "Activer"
                       : lang === "ar"
-                        ? "ÃÃ‘â”˜Ã¤Ãâ•‘ÃÂºÃÃ­ ÃÂºâ”˜Ã¤â”˜Ã¢ÃÂ¬â”˜Ã "
+                         ? "رفع الصوت"
                         : "Unmute"
                 }
               >
@@ -2607,11 +1716,11 @@ export default function AudioPlayer() {
                 title={lang === "fr" ? "Fermer le lecteur" : "Close player"}
               >
                 <i className="fas fa-times text-[0.6rem]" />
-                {lang === "fr" ? "Fermer" : lang === "ar" ? "ÃÃ‘Ãâ•‘â”˜Ã¤ÃÂºâ”˜Ã©" : "Close"}
+                {lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
               </button>
             </div>
 
-            {/* -- Options avancâ”œÂ®es toggle (mobile) -- */}
+            {/* -- Options avancees toggle (mobile) -- */}
             {showAdvancedControls && (
               <>
                 <div className="mt-2 mb-0.5">
@@ -2629,7 +1738,7 @@ export default function AudioPlayer() {
                       {lang === "fr"
                         ? "Options"
                         : lang === "ar"
-                          ? "ÃÂ«â”˜Ã¨ÃÂºÃâ–’ÃÂºÃÂ¬"
+                          ? "خيارات"
                           : "Options"}
                     </span>
                     <i
@@ -2675,7 +1784,7 @@ export default function AudioPlayer() {
                         {lang === "fr"
                           ? "Acoustique"
                           : lang === "ar"
-                            ? "ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬â”˜Ã¨ÃÂºÃÂ¬"
+                            ? "الصوتيات"
                             : "Acoustics"}
                       </div>
                       <div className="flex flex-wrap gap-1">
@@ -2685,7 +1794,7 @@ export default function AudioPlayer() {
                           {
                             id: "treble",
                             fr: "Aigus",
-                            ar: "ÃÂ¡ÃÂºÃÂ»",
+                            ar: "حاد",
                             en: "Treble",
                           },
                           { id: "near", fr: "Proche", ar: "Near", en: "Near" },
@@ -2711,7 +1820,7 @@ export default function AudioPlayer() {
                       </div>
                     </div>
 
-                    {/* -- Tartil + Râ”œÂ®citation (mobile) -- */}
+                    {/* -- Tartil + recitation (mobile) -- */}
                     <div className="flex gap-1.5 mt-2">
                       <button
                         onClick={toggleTartil}
@@ -2725,7 +1834,7 @@ export default function AudioPlayer() {
                         {lang === "fr"
                           ? "Tartil"
                           : lang === "ar"
-                            ? "ÃÂ¬Ãâ–’ÃÂ¬â”˜Ã¨â”˜Ã¤"
+                          ? "ترتيل"
                             : "Tartil"}
                       </button>
                       <button
@@ -2741,9 +1850,9 @@ export default function AudioPlayer() {
                           className={`fas ${reciteMode ? "fa-stop" : "fa-microphone"} text-[0.6rem]`}
                         />
                         {lang === "fr"
-                          ? "Râ”œÂ®citer"
+                        ? "Réciter"
                           : lang === "ar"
-                            ? "ÃÂºâ”˜Ã¤ÃÂ¬â”˜Ã¤ÃÂºâ”˜ÃªÃÂ®"
+                             ? "التلاوة"
                             : "Recite"}
                       </button>
                     </div>
@@ -2761,14 +1870,13 @@ export default function AudioPlayer() {
             )}
           </div>
         )}
-        {renderOptionsModal()}
+        {audioOptionsModal}
       </div>
     );
   }
 
-  /* Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰
-     DESKTOP -- floating music card
-  Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰Ã”Ã‡Ã³â”¬Ã‰ */
+  /* Desktop card */
+
   return (
     <>
       {/* Audio error banner */}
@@ -2802,7 +1910,7 @@ export default function AudioPlayer() {
           desktopCardPositionClass,
           desktopCardShadowClass,
           !isDragging &&
-            "transition-[box-shadow,width] duration-300 ease-[var(--ease,ease)]",
+            "transition-[box-shadow,transform] duration-300 ease-[var(--ease,ease)]",
           !canDragDesktopCard
             ? "cursor-default"
             : isDragging
@@ -2824,7 +1932,7 @@ export default function AudioPlayer() {
               className="flex items-center gap-3 px-3.5 pb-2.5 pt-3"
               data-player-drag="true"
             >
-              <CoverArt isPlaying={isPlaying} size={42} />
+              <CoverArt isPlaying={isPlaying} size={42} reciter={reciterObj} />
               <button
                 type="button"
                 className="mp-player-minimized-open min-w-0 flex-1 text-left"
@@ -2852,7 +1960,7 @@ export default function AudioPlayer() {
                     (lang === "fr"
                       ? "Pret a lire"
                       : lang === "ar"
-                        ? "ÃÂ¼ÃÂºâ”˜Ã§Ãâ–“"
+                         ? "جاهز"
                         : "Ready")}
                 </div>
                 <div
@@ -2903,7 +2011,7 @@ export default function AudioPlayer() {
                   lang === "fr"
                     ? "Agrandir"
                     : lang === "ar"
-                      ? "ÃÂ¬â”˜ÃªÃâ”‚â”˜Ã¨Ãâ•£"
+                       ? "توسيع"
                       : "Expand"
                 }
                 size="sm"
@@ -2913,7 +2021,7 @@ export default function AudioPlayer() {
               <IconBtn
                 onClick={closePlayer}
                 title={
-                  lang === "fr" ? "Fermer" : lang === "ar" ? "ÃÃ‘Ãâ•‘â”˜Ã¤ÃÂºâ”˜Ã©" : "Close"
+                  lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
                 }
                 size="sm"
               >
@@ -2944,10 +2052,17 @@ export default function AudioPlayer() {
             {/* Drag handle + minimize button */}
             <div
               className={cn(
-                "flex shrink-0 items-center justify-between px-4 pb-1 pt-2.5",
+                "mp-player-drag-zone flex shrink-0 items-center justify-between px-4 pb-1 pt-2.5",
                 playerSoftSurfaceClass,
               )}
               data-player-drag="true"
+              title={
+                canDragDesktopCard
+                  ? lang === "fr"
+                    ? "Maintenir et deplacer le lecteur"
+                    : "Hold and drag the player"
+                  : undefined
+              }
             >
               <button
                 onClick={toggleMinimized}
@@ -2956,7 +2071,7 @@ export default function AudioPlayer() {
                   lang === "fr"
                     ? "Minimiser"
                     : lang === "ar"
-                      ? "ÃÂ¬ÃÃÃâ•‘â”˜Ã¨Ãâ–’"
+                       ? "تصغير"
                       : "Minimize"
                 }
                 disabled={isHomeDesktop}
@@ -2991,7 +2106,7 @@ export default function AudioPlayer() {
                   lang === "fr"
                     ? "Fermer le lecteur"
                     : lang === "ar"
-                      ? "ÃÃ‘Ãâ•‘â”˜Ã¤ÃÂºâ”˜Ã© ÃÂºâ”˜Ã¤â”˜Ã Ãâ”¤Ãâ•‘â”˜Ã¤"
+                       ? "إغلاق القارئ"
                       : "Close player"
                 }
               >
@@ -3007,7 +2122,7 @@ export default function AudioPlayer() {
                   playerSoftSurfaceClass,
                 )}
               >
-                <CoverArt isPlaying={isPlaying} />
+                <CoverArt isPlaying={isPlaying} reciter={reciterObj} />
                 <div className="min-w-0 flex-1">
                   {/* Arabic surah name -- prominent header */}
                   {currentArabicName && (
@@ -3029,7 +2144,7 @@ export default function AudioPlayer() {
                       (lang === "fr"
                         ? "Pret a lire"
                         : lang === "ar"
-                          ? "ÃÂ¼ÃÂºâ”˜Ã§Ãâ–“"
+                           ? "جاهز"
                           : "Ready")}
                   </div>
                   <div
@@ -3058,7 +2173,7 @@ export default function AudioPlayer() {
                         "mt-0.5 inline-block rounded-full border px-1.5 py-px text-[0.55rem] font-bold tracking-wide",
                       )}
                     >
-                      Warsh Ã”Ã‡Â£
+                    Warsh OK
                     </span>
                   )}
                   <AudioLoadingIndicator
@@ -3092,7 +2207,7 @@ export default function AudioPlayer() {
                         lang === "fr"
                           ? "Replacer le lecteur"
                           : lang === "ar"
-                            ? "ÃÃ‘Ãâ•£ÃÂºÃÂ»ÃÂ® ÃÂ¬ÃÂ½ÃÂ¿â”˜Ã¨ÃÂ¬ ÃÂºâ”˜Ã¤â”˜Ã â”˜ÃªÃÃ‚Ãâ•£"
+                             ? "إعادة موضع القارئ"
                             : "Reset dock position"
                       }
                       size="sm"
@@ -3106,7 +2221,7 @@ export default function AudioPlayer() {
                       lang === "fr"
                         ? "Reduire"
                         : lang === "ar"
-                          ? "ÃÂ¬ÃÃÃâ•‘â”˜Ã¨Ãâ–’"
+                           ? "تصغير"
                           : "Minimize"
                     }
                     size="sm"
@@ -3253,12 +2368,12 @@ export default function AudioPlayer() {
                   ? lang === "fr"
                     ? "Fermer les options"
                     : lang === "ar"
-                      ? "ÃÃ‘Ãâ•‘â”˜Ã¤ÃÂºâ”˜Ã© ÃÂºâ”˜Ã¤ÃÂ«â”˜Ã¨ÃÂºÃâ–’ÃÂºÃÂ¬"
+                       ? "إغلاق الخيارات"
                       : "Close options"
                   : lang === "fr"
                     ? "Plus d'options"
                     : lang === "ar"
-                      ? "ÃÂ«â”˜Ã¨ÃÂºÃâ–’ÃÂºÃÂ¬ ÃÃ‘ÃÃ‚ÃÂºâ”˜Ã¼â”˜Ã¨ÃÂ®"
+                       ? "خيارات أكثر"
                       : "More options"}
               </button>
 
@@ -3282,14 +2397,14 @@ export default function AudioPlayer() {
                           lang === "fr"
                             ? "Reessayer"
                             : lang === "ar"
-                              ? "ÃÃ‘Ãâ•£ÃÂºÃÂ»ÃÂ® ÃÂºâ”˜Ã¤â”˜Ã ÃÂ¡ÃÂºâ”˜Ãªâ”˜Ã¤ÃÂ®"
+                               ? "إعادة المحاولة"
                               : "Retry"
                         }
                       >
                         {lang === "fr"
                           ? "Reessayer"
                           : lang === "ar"
-                            ? "ÃÃ‘Ãâ•£ÃÂºÃÂ»ÃÂ®"
+                             ? "إعادة"
                             : "Retry"}
                       </button>
                     </div>
@@ -3353,7 +2468,7 @@ export default function AudioPlayer() {
                           {lang === "fr"
                             ? "Aucun resultat"
                             : lang === "ar"
-                              ? "â”˜Ã¤ÃÂº ÃÂ¬â”˜ÃªÃÂ¼ÃÂ» â”˜Ã¥ÃÂ¬ÃÂºÃÂªÃÂ¼"
+                               ? "لا توجد نتائج"
                               : "No results"}
                         </div>
                       ) : (
@@ -3392,17 +2507,11 @@ export default function AudioPlayer() {
                                   (isUnavailable && !active)
                                 }
                               >
-                                <span
-                                  className={playerReciterAvatarClass(active)}
-                                >
-                                  {isLoading ? (
-                                    <i className="fas fa-spinner fa-spin text-[0.45rem]" />
-                                  ) : active ? (
-                                    <i className="fas fa-check text-[0.45rem]" />
-                                  ) : (
-                                    initial
-                                  )}
-                                </span>
+                                <ReciterAvatar
+                                  reciter={r}
+                                  active={active}
+                                  loading={isLoading}
+                                />
                                 <span className="flex min-w-0 flex-col">
                                   <span className="[font-family:var(--font-ui)] truncate text-[0.68rem] font-semibold leading-tight">
                                     {lang === "ar"
@@ -3491,7 +2600,7 @@ export default function AudioPlayer() {
                     </div>
                   )}
 
-                  {/* -- Options avancâ”œÂ®es toggle -- */}
+                  {/* -- Options avancees toggle -- */}
                   {showAdvancedControls && (
                     <button
                       onClick={() => setShowAdvanced((v) => !v)}
@@ -3507,7 +2616,7 @@ export default function AudioPlayer() {
                         {lang === "fr"
                           ? "Options"
                           : lang === "ar"
-                            ? "ÃÂ«â”˜Ã¨ÃÂºÃâ–’ÃÂºÃÂ¬"
+                             ? "خيارات"
                             : "Options"}
                       </span>
                       <i
@@ -3521,9 +2630,9 @@ export default function AudioPlayer() {
                       <div>
                         <div className={playerSectionLabelClass}>
                           {lang === "fr"
-                            ? "Râ”œÂ®pâ”œÂ®tition A-B"
+                            ? "Répétition A-B"
                             : lang === "ar"
-                              ? "ÃÂ¬â”˜Ã†Ãâ–’ÃÂºÃâ–’ ÃÃº-ÃÂ¿"
+                               ? "تكرار A-B"
                               : "A-B Repeat"}
                         </div>
                         <div className="flex items-center gap-1.5 flex-wrap">
@@ -3532,7 +2641,7 @@ export default function AudioPlayer() {
                               mark: markAbA,
                               val: abA,
                               label: "A",
-                              titleFr: "Marquer dâ”œÂ®but A",
+                              titleFr: "Marquer début A",
                               titleEn: "Set A point",
                             },
                             {
@@ -3575,7 +2684,7 @@ export default function AudioPlayer() {
                           {lang === "fr"
                             ? "Acoustique"
                             : lang === "ar"
-                              ? "ÃÂºâ”˜Ã¤ÃÃâ”˜ÃªÃÂ¬â”˜Ã¨ÃÂºÃÂ¬"
+                              ? "الصوتيات"
                               : "Acoustics"}
                         </div>
                         <div className="flex flex-wrap gap-1">
@@ -3590,7 +2699,7 @@ export default function AudioPlayer() {
                             {
                               id: "treble",
                               fr: "Aigus",
-                              ar: "ÃÂ¡ÃÂºÃÂ»",
+                              ar: "حاد",
                               en: "Treble",
                             },
                             {
@@ -3636,7 +2745,7 @@ export default function AudioPlayer() {
                           {lang === "fr"
                             ? "Tartil progressif"
                             : lang === "ar"
-                              ? "ÃÂ¬Ãâ–’ÃÂ¬â”˜Ã¨â”˜Ã¤ ÃÂ¬ÃÂ»Ãâ–’â”˜Ã¨ÃÂ¼â”˜Ã¨"
+                              ? "ترتيل تدريجي"
                               : "Progressive Tartil"}
                         </span>
                         <span
@@ -3651,7 +2760,7 @@ export default function AudioPlayer() {
                         </span>
                       </button>
 
-                      {/* -- Mode râ”œÂ®citation (Web Speech API) -- */}
+                      {/* -- Mode recitation (Web Speech API) -- */}
                       <button
                         onClick={reciteMode ? stopRecite : startRecite}
                         className={cn(
@@ -3666,8 +2775,8 @@ export default function AudioPlayer() {
                           />
                           {lang === "fr"
                             ? reciteMode
-                              ? "Arrâ”œÂ¬ter la râ”œÂ®citation"
-                              : "Mode râ”œÂ®citation"
+                              ? "Arrêter la récitation"
+                              : "Mode récitation"
                             : lang === "ar"
                               ? reciteMode
                                 ? "Stop reciting"
@@ -3685,7 +2794,7 @@ export default function AudioPlayer() {
                                 : "text-[#fbbf24]",
                             )}
                           >
-                            {reciteResult === "ok" ? "Ã”Ã‡Â£" : "~"}
+                            {reciteResult === "ok" ? "OK" : "~"}
                           </span>
                         )}
                       </button>
@@ -3717,7 +2826,7 @@ export default function AudioPlayer() {
           </>
         )}
       </div>
-      {renderOptionsModal()}
+      {audioOptionsModal}
     </>
   );
 }

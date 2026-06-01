@@ -40,17 +40,28 @@ async function fetchWithTimeout(url, options = {}, timeout = 15000) {
   }
 }
 
-// Clear old cache format on load
-(async function clearOldCache() {
+// Clear old cache format once per browser, not on every module import.
+// Re-clearing the current Warsh JSON cache on startup makes Hafs/Warsh switches
+// feel network-bound and can force the app to re-download the large source.
+(async function clearOldCacheOnce() {
+  const migrationKey = 'mushaf-warsh-cache-migration-v5';
   try {
+    if (typeof localStorage !== 'undefined' && localStorage.getItem(migrationKey) === 'done') {
+      return;
+    }
+
     // Clear old v4 cache keys
     for (let i = 1; i <= 114; i++) {
       dbDelete(IDB_STORE, `${LEGACY_CACHE_KEY}${i}`).catch(() => {});
     }
     dbDelete(IDB_STORE, `${LEGACY_CACHE_KEY}legacy-all`).catch(() => {});
-    // Force clear legacy-all to re-fetch with new format
-    dbDelete(IDB_STORE, `${IDB_KEY_PREFIX}legacy-all`).catch(() => {});
-  } catch {}
+
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(migrationKey, 'done');
+    }
+  } catch {
+    // Cache migration is best-effort.
+  }
 })();
 
 // ── State ────────────────────────────────────────────
@@ -58,6 +69,10 @@ async function fetchWithTimeout(url, options = {}, timeout = 15000) {
 const cachedSurahs = new Map();
 const pendingSurahs = new Map(); // deduplication
 let legacyWarshDataPromise = null;
+let legacyIndex = null;
+const cachedPagePayloads = new Map();
+const cachedJuzPayloads = new Map();
+const cachedSurahPayloads = new Map();
 
 // Font logic is removed since we use standard Unicode
 export function isFontPageLoaded() { return true; }
@@ -66,7 +81,9 @@ export function onFontLoadChange() { return () => {}; }
 export function loadWarshFont() { return Promise.resolve(); }
 export function loadFontsForVerses() { return Promise.resolve(); }
 export function isFontLoaded() { return true; }
-export function getFontFamily() { return '"KFGQPC Uthmanic Script Warsh", "Amiri", serif'; }
+export function getFontFamily() {
+  return '"QPC Warsh", "KFGQPC Uthmanic Script WARSH", serif';
+}
 
 function normalizeWhitespace(text) {
   if (!text) return '';
@@ -103,8 +120,67 @@ function getSurahNumberFromRaw(raw) {
   );
 }
 
+function unwrapLegacyArray(data) {
+  if (Array.isArray(data)) return data;
+  if (!data || typeof data !== 'object') return [];
+  if (Array.isArray(data.data)) return data.data;
+  if (Array.isArray(data.verses)) return data.verses;
+  if (Array.isArray(data.ayahs)) return data.ayahs;
+  return [];
+}
+
+function getLegacyIndex(data) {
+  const actualData = unwrapLegacyArray(data);
+  if (!Array.isArray(actualData) || actualData.length === 0) return null;
+  if (legacyIndex?.source === actualData) return legacyIndex;
+
+  const bySurah = new Map();
+  const byPage = new Map();
+  const byJuz = new Map();
+
+  actualData.forEach((item) => {
+    const surah = getSurahNumberFromRaw(item);
+    const page = Number(item?.page ?? item?.page_number ?? item?.pageNo);
+    const juz = Number(item?.jozz ?? item?.juz ?? item?.juz_number);
+
+    if (surah) {
+      if (!bySurah.has(surah)) bySurah.set(surah, []);
+      bySurah.get(surah).push(item);
+    }
+    if (page) {
+      if (!byPage.has(page)) byPage.set(page, []);
+      byPage.get(page).push(item);
+    }
+    if (juz) {
+      if (!byJuz.has(juz)) byJuz.set(juz, []);
+      byJuz.get(juz).push(item);
+    }
+  });
+
+  const sortRows = (rows) =>
+    rows.sort((a, b) => {
+      const surahA = getSurahNumberFromRaw(a);
+      const surahB = getSurahNumberFromRaw(b);
+      if (surahA !== surahB) return surahA - surahB;
+      const ayahA = Number(a.aya_no ?? a.ayah_number ?? a.ayah ?? a.verse);
+      const ayahB = Number(b.aya_no ?? b.ayah_number ?? b.ayah ?? b.verse);
+      return ayahA - ayahB;
+    });
+
+  bySurah.forEach(sortRows);
+  byPage.forEach(sortRows);
+  byJuz.forEach(sortRows);
+
+  legacyIndex = { source: actualData, bySurah, byPage, byJuz };
+  return legacyIndex;
+}
+
 function rowsFromLegacyData(data, surahNumber) {
   const n = Number(surahNumber);
+  const indexed = getLegacyIndex(data);
+  if (indexed?.bySurah?.has(n)) {
+    return indexed.bySurah.get(n) || [];
+  }
   
   log(`[WarshService] rowsFromLegacyData called for surah ${n}, data type: ${typeof data}, isArray: ${Array.isArray(data)}`);
   
@@ -351,6 +427,7 @@ async function loadLegacyWarshData() {
           const arrayData = Array.isArray(inner) ? inner : (inner?.data || inner?.verses || null);
           if (Array.isArray(arrayData) && arrayData.length > 0) {
             log(`[WarshService] Loaded legacy data from cache, ${arrayData.length} items`);
+            getLegacyIndex(arrayData);
             return arrayData;
           }
         }
@@ -364,6 +441,7 @@ async function loadLegacyWarshData() {
       // Normalize: unwrap {data: [...]} wrapper
       const arrayData = Array.isArray(rawData) ? rawData : (rawData?.data || rawData?.verses || []);
       log(`[WarshService] Loaded legacy data, ${arrayData.length} items`);
+      getLegacyIndex(arrayData);
       
       dbSet(IDB_STORE, { key: idbKey, data: arrayData }).catch(() => { });
       return arrayData;
@@ -453,6 +531,9 @@ export async function getWarshVerse(surahNum, verseNum) {
 }
 
 export async function getWarshSurahFormatted(surahNum) {
+  const cacheKey = Number(surahNum);
+  if (cachedSurahPayloads.has(cacheKey)) return cachedSurahPayloads.get(cacheKey);
+
   const verses = await getWarshSurahVerses(surahNum);
   const surahNumber = Number(surahNum);
   const ayahs = verses.map(toWarshAyah);
@@ -465,11 +546,13 @@ export async function getWarshSurahFormatted(surahNum) {
     }
     : null;
 
-  return {
+  const payload = {
     ayahs,
     bismillah,
     ...buildWarshPayload(ayahs),
   };
+  cachedSurahPayloads.set(cacheKey, payload);
+  return payload;
 }
 
 /**
@@ -477,29 +560,54 @@ export async function getWarshSurahFormatted(surahNum) {
  * If we need full Juz support, we'd need to load multiple surahs.
  */
 export async function getWarshJuzVerses(juzNum) {
-  return getWarshVersesByHafsScope(`juz/${juzNum}`);
+  const cacheKey = Number(juzNum);
+  if (cachedJuzPayloads.has(cacheKey)) return cachedJuzPayloads.get(cacheKey);
+
+  const indexed = getLegacyIndex(await loadLegacyWarshData());
+  const rows = indexed?.byJuz?.get(cacheKey) || [];
+  if (rows.length > 0) {
+    const ayahs = rows.map((ayah) => {
+      const text = normalizeWhitespace(ayah.aya_text || ayah.text || '');
+      const words = splitWarshWords(text);
+      return {
+        text,
+        warshWords: words,
+        surah: { number: Number(ayah.sura_no) },
+        numberInSurah: Number(ayah.aya_no),
+        number: Number(ayah.id) || null,
+        page: Number(ayah.page) || null,
+        juz: Number(ayah.jozz ?? ayah.juz) || cacheKey,
+        lineStart: Number(ayah.line_start) || null,
+        lineEnd: Number(ayah.line_end) || null,
+        requestedRiwaya: 'warsh',
+        source: WARSH_SOURCE_ID,
+      };
+    });
+    const payload = { ...buildWarshPayload(ayahs), number: cacheKey };
+    cachedJuzPayloads.set(cacheKey, payload);
+    return payload;
+  }
+
+  const payload = await getWarshVersesByHafsScope(`juz/${juzNum}`);
+  cachedJuzPayloads.set(cacheKey, payload);
+  return payload;
 }
 
 export async function getWarshPageVerses(pageNum) {
+  const cacheKey = Number(pageNum);
+  if (cachedPagePayloads.has(cacheKey)) return cachedPagePayloads.get(cacheKey);
+
   const raw = await loadLegacyWarshData();
-  const data = Array.isArray(raw) ? raw : [];
-  if (data.length === 0) {
+  const indexed = getLegacyIndex(raw);
+  if (!indexed) {
     return { ayahs: [], number: pageNum };
   }
-  const pageAyahs = data.filter(ayah => Number(ayah.page) === Number(pageNum));
-  
-  // Sort by surah and ayah number
-  pageAyahs.sort((a, b) => {
-    if (Number(a.sura_no) !== Number(b.sura_no)) {
-      return Number(a.sura_no) - Number(b.sura_no);
-    }
-    return Number(a.aya_no) - Number(b.aya_no);
-  });
+  const pageAyahs = indexed.byPage.get(cacheKey) || [];
   
   // Format compatible avec QuranMushafPage
   const formattedAyahs = pageAyahs.map(ayah => {
-    const text = ayah.aya_text || '';
-    const words = text.split(/\s+/).filter(Boolean);
+    const text = normalizeWhitespace(ayah.aya_text || ayah.text || '');
+    const words = splitWarshWords(text);
     
     return {
       text: text,
@@ -524,10 +632,12 @@ export async function getWarshPageVerses(pageNum) {
     };
   });
   
-  return {
+  const payload = {
     ayahs: formattedAyahs,
     number: pageNum,
   };
+  cachedPagePayloads.set(cacheKey, payload);
+  return payload;
 }
 
 export function preloadWarshSurah(surahNum) {
@@ -543,6 +653,10 @@ export async function clearWarshCache() {
   cachedSurahs.clear();
   pendingSurahs.clear();
   legacyWarshDataPromise = null;
+  legacyIndex = null;
+  cachedPagePayloads.clear();
+  cachedJuzPayloads.clear();
+  cachedSurahPayloads.clear();
   
   // Clear IndexedDB cache
   try {

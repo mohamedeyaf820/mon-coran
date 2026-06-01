@@ -1,45 +1,40 @@
 /**
  * Quran font map.
  *
- * The app intentionally exposes only Quran.com/Quran Foundation style fonts:
- * QPC Hafs for simple Unicode reading, QCF V2 for page-style Mushaf rendering,
- * QCF V4 for Tajweed rendering, and QPC Warsh for the Warsh riwaya.
+ * The app intentionally exposes only riwaya-safe Quran fonts.
+ * Public choices are scoped by riwaya. QCF page fonts stay internal for
+ * page/Mushaf rendering, so users cannot accidentally mix Hafs glyphs into Warsh.
  */
 
-export const QURAN_COM_FONT_IDS = [
+export const HAFS_FONT_IDS = [
   "qpc-hafs",
-  "amiri-quran",
-  "scheherazade-new",
-  "noto-naskh-arabic",
   "qpc-indopak",
   "qpc-nastaleeq",
-  "qcf-v1",
-  "qcf-v2",
-  "qcf-v4-tajweed",
-  "qpc-warsh",
 ];
+
+export const WARSH_FONT_IDS = [
+  "qpc-warsh",
+  "kfgqpc-warsh",
+];
+
+export const QURAN_COM_FONT_IDS = [...HAFS_FONT_IDS, ...WARSH_FONT_IDS];
+export const INTERNAL_QURAN_FONT_IDS = ["qcf-v2", "qcf-v4-tajweed"];
 
 export const FONT_MAP = {
   "qpc-hafs":
-    "'QPC Hafs','KFGQPC Uthmanic Script HAFS','UthmanicHafs','Segoe UI Arabic','Amiri','Scheherazade New','Noto Naskh Arabic',serif",
-  "amiri-quran":
-    "'Amiri Quran','Amiri','Scheherazade New','Noto Naskh Arabic','Segoe UI Arabic',serif",
-  "scheherazade-new":
-    "'Scheherazade New','Amiri Quran','Noto Naskh Arabic','Segoe UI Arabic',serif",
-  "noto-naskh-arabic":
-    "'Noto Naskh Arabic','Scheherazade New','Amiri Quran','Segoe UI Arabic',serif",
+    "'QPC Hafs','KFGQPC Uthmanic Script HAFS','UthmanicHafs',serif",
   "qpc-indopak":
-    "'QPC IndoPak','IndoPak','Noto Nastaliq Urdu','Segoe UI Arabic','Scheherazade New',serif",
+    "'IndoPak','QPC IndoPak','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
   "qpc-nastaleeq":
-    "'QPC Nastaleeq','KFGQPC Nastaleeq','Noto Nastaliq Urdu','Segoe UI Arabic','Scheherazade New',serif",
-  "qcf-v1":
-    "'QCF V1','QCF_V1','KFGQPC Uthmanic Script HAFS','QPC Hafs','Segoe UI Arabic','Amiri','Scheherazade New','Noto Naskh Arabic',serif",
+    "'KFGQPC Nastaleeq','QPC Nastaleeq','IndoPak','QPC Hafs',serif",
   "qcf-v2":
-    "'QCF V2','QCF_V2','KFGQPC Uthmanic Script HAFS','QPC Hafs','Segoe UI Arabic','Amiri','Scheherazade New','Noto Naskh Arabic',serif",
+    "'QCF V2','QCF_V2','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
   "qcf-v4-tajweed":
-    "'QCF V4 Tajweed','QCF_V4_Tajweed','QCF V2','KFGQPC Uthmanic Script HAFS','Segoe UI Arabic','Amiri','Scheherazade New','Noto Naskh Arabic',serif",
+    "'QCF V4 Tajweed','QCF_V4_Tajweed','QCF V2','QPC Hafs',serif",
   "qpc-warsh":
-    "'QPC Warsh','KFGQPC Uthmanic Script WARSH','Amiri Quran','Amiri','Scheherazade New','Noto Naskh Arabic','Segoe UI Arabic',serif",
+    "'QPC Warsh','KFGQPC Uthmanic Script WARSH',serif",
+  "kfgqpc-warsh":
+    "'KFGQPC Warsh','warsh10','QPC Warsh','KFGQPC Uthmanic Script WARSH',serif",
 };
 
 export const DEFAULT_FONT_ID = "qpc-hafs";
@@ -52,14 +47,18 @@ const LEGACY_FONT_ALIASES = {
   "indopak-nastaleeq": "qpc-nastaleeq",
   "mushaf-tajweed": "qcf-v4-tajweed",
   "mushaf-warsh": "qpc-warsh",
-  "digital-khatt-v1": "qcf-v1",
+  "aal-maghribi-warsh": "kfgqpc-warsh",
+  "maghribi-warsh": "kfgqpc-warsh",
+  "digital-khatt-v1": "qcf-v2",
   "uthmanic-digital": "qcf-v2",
   "uthmanic-bold": "qcf-v2",
   "kfgqpc-uthman-taha-naskh": "qcf-v2",
   "uthman-taha": "qcf-v2",
   "me-quran": "qpc-hafs",
-  "scheherazade": "scheherazade-new",
-  "amiri": "amiri-quran",
+  "scheherazade": "qpc-hafs",
+  "scheherazade-new": "qpc-hafs",
+  "amiri": "qpc-hafs",
+  "amiri-quran": "qpc-hafs",
   "noto-naskh": "qpc-hafs",
   "markazi-text": "qpc-hafs",
   "qalam-madinah": "qpc-hafs",
@@ -81,13 +80,18 @@ const LEGACY_FONT_ALIASES = {
 
 export const ACCEPTED_FONT_IDS = [
   ...QURAN_COM_FONT_IDS,
+  ...INTERNAL_QURAN_FONT_IDS,
   ...Object.keys(LEGACY_FONT_ALIASES),
 ];
 
 export function normalizeFontId(id, riwaya = "hafs") {
-  if (QURAN_COM_FONT_IDS.includes(id)) return id;
-  if (LEGACY_FONT_ALIASES[id]) return LEGACY_FONT_ALIASES[id];
-  return riwaya === "warsh" ? DEFAULT_WARSH_FONT_ID : DEFAULT_FONT_ID;
+  const aliasedId = LEGACY_FONT_ALIASES[id] || id;
+  if (riwaya === "warsh") {
+    return WARSH_FONT_IDS.includes(aliasedId) ? aliasedId : DEFAULT_WARSH_FONT_ID;
+  }
+  if (HAFS_FONT_IDS.includes(aliasedId)) return aliasedId;
+  if (INTERNAL_QURAN_FONT_IDS.includes(aliasedId)) return aliasedId;
+  return DEFAULT_FONT_ID;
 }
 
 export function resolveFontFamily(id, riwaya = "hafs") {

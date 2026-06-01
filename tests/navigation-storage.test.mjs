@@ -108,3 +108,43 @@ test("storage: settings round-trip encrypted and sanitized", () => {
     juz: 30,
   });
 });
+
+test("storage: preserves per-riwaya Quran font choices", () => {
+  globalThis.localStorage = createMockStorage();
+
+  saveSettings({
+    riwaya: "warsh",
+    fontFamily: "kfgqpc-warsh",
+    fontFamilyByRiwaya: {
+      hafs: "qpc-indopak",
+      warsh: "kfgqpc-warsh",
+    },
+  });
+
+  const settings = getSettings();
+  assert.equal(settings.fontFamily, "kfgqpc-warsh");
+  assert.deepEqual(settings.fontFamilyByRiwaya, {
+    hafs: "qpc-indopak",
+    warsh: "kfgqpc-warsh",
+  });
+});
+
+test("storage: migrates removed local-only Warsh font aliases", () => {
+  globalThis.localStorage = createMockStorage();
+
+  saveSettings({
+    riwaya: "warsh",
+    fontFamily: "aal-maghribi-warsh",
+    fontFamilyByRiwaya: {
+      hafs: "qpc-nastaleeq",
+      warsh: "aal-maghribi-warsh",
+    },
+  });
+
+  const settings = getSettings();
+  assert.equal(settings.fontFamily, "kfgqpc-warsh");
+  assert.deepEqual(settings.fontFamilyByRiwaya, {
+    hafs: "qpc-nastaleeq",
+    warsh: "kfgqpc-warsh",
+  });
+});

@@ -7,10 +7,11 @@ import useArabicFontPreferences, {
 import { cn } from "../lib/utils";
 
 const ARABIC_FONT_OPTIONS = [
-  { id: "qpc-hafs", label: "Uthmanic" },
-  { id: "amiri-quran", label: "Amiri" },
-  { id: "noto-naskh-arabic", label: "Noto Naskh" },
-  { id: "qpc-warsh", label: "Warsh" },
+  { id: "qpc-hafs", label: "QPC Hafs", riwaya: "hafs" },
+  { id: "qpc-indopak", label: "IndoPak", riwaya: "hafs" },
+  { id: "qpc-nastaleeq", label: "Nastaleeq", riwaya: "hafs" },
+  { id: "qpc-warsh", label: "QPC Warsh", riwaya: "warsh" },
+  { id: "kfgqpc-warsh", label: "KFGQPC Warsh", riwaya: "warsh" },
 ];
 
 function labelFor(lang, fr, en, ar = en) {
@@ -22,11 +23,16 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
   const {
     arabicFontFamily,
     arabicFontSize,
+    riwaya,
     setArabicFontFamily,
     setArabicFontSize,
   } = useArabicFontPreferences();
 
   const currentSize = Math.round(arabicFontSize);
+  const availableFonts = ARABIC_FONT_OPTIONS.filter((font) => font.riwaya === (riwaya || "hafs"));
+  const selectedFont = availableFonts.some((font) => font.id === arabicFontFamily)
+    ? arabicFontFamily
+    : availableFonts[0]?.id || "qpc-hafs";
 
   return (
     <div
@@ -40,11 +46,11 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
         <Type size={14} className="afc-leading-icon" aria-hidden="true" />
         <select
           className="afc-select"
-          value={arabicFontFamily}
+          value={selectedFont}
           onChange={(event) => setArabicFontFamily(event.target.value)}
           aria-label={labelFor(lang, "Police arabe", "Arabic font")}
         >
-          {ARABIC_FONT_OPTIONS.map((font) => (
+          {availableFonts.map((font) => (
             <option key={font.id} value={font.id}>
               {font.label}
             </option>

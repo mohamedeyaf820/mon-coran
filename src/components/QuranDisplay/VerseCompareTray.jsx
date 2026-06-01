@@ -1,6 +1,6 @@
 import React from "react";
 import { getSurah } from "../../data/surahs";
-import { useApp } from "../../context/AppContext";
+import { shallowEqual, useAppActions, useAppSelector } from "../../context/AppContext";
 import { openExternalUrl } from "../../lib/security";
 import { getQuranComVerseUrl } from "../../services/quranComStudyService";
 
@@ -9,10 +9,11 @@ function labelFor(lang, fr, en) {
 }
 
 export default function VerseCompareTray({ lang }) {
-  const { state, set } = useApp();
-  const pinnedAyahs = Array.isArray(state.pinnedAyahs)
-    ? state.pinnedAyahs
-    : [];
+  const pinnedAyahs = useAppSelector(
+    (state) => (Array.isArray(state.pinnedAyahs) ? state.pinnedAyahs : []),
+    shallowEqual,
+  );
+  const { set } = useAppActions();
 
   if (pinnedAyahs.length === 0) return null;
 

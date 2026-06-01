@@ -72,10 +72,10 @@ export default function useQuranDisplayView({
     const element = contentRef.current;
     if (!element) return;
 
-    const pageScale = displayMode === "page" ? 1.28 : 1;
-    const quranFontSizeCss = `${Math.round(readingFontSize * pageScale)}px`;
+    const quranFontSizeCss = `${Math.round(readingFontSize)}px`;
     const quranLineHeight = displayMode === "page" ? "3.05" : "2.2";
     element.style.setProperty("--qd-reading-font-size", quranFontSizeCss);
+    element.style.setProperty("--qd-font-size", quranFontSizeCss);
     element.style.setProperty(
       "--qd-translation-font-size",
       `${Math.max(12, Math.min(28, Number(quranTranslationFontSize) || 18))}px`,
@@ -91,6 +91,7 @@ export default function useQuranDisplayView({
     }
 
     element.style.setProperty("--qd-font-family", quranFontCss);
+    element.style.setProperty("--qd-font-size", quranFontSizeCss);
     element.style.setProperty("--quran-font-family", quranFontCss);
     element.style.setProperty("--quran-font-size", quranFontSizeCss);
     element.style.setProperty("--quran-line-height", quranLineHeight);

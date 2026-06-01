@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import "../styles/domains/reader-consolidation.css";
+import "../styles/domains/reading-platform.css";
 import {
   shallowEqual,
   useAppActions,
@@ -254,13 +256,19 @@ export default function QuranDisplay() {
   useEffect(() => {
     let active = true;
     const loadFont = async () => {
-      setFontLoading(true);
       try {
-        const { ensureFontLoaded } = await import("../services/fontLoader");
+        const {
+          ensureFontLoaded,
+          ensureQcfPageFontLoaded,
+          isFontMarkedLoaded,
+        } = await import("../services/fontLoader");
         const isQcfPageFont = fontFamily === "qcf-v1" || fontFamily === "qcf-v2" || fontFamily === "qcf-v4-tajweed";
+        const shouldBlockReader = isQcfPageFont && displayMode === "page" && !isFontMarkedLoaded(fontFamily);
+        if (shouldBlockReader) setFontLoading(true);
+
         if (isQcfPageFont && displayMode === "page") {
-          const { ensureQcfPageFontLoaded } = await import("../services/fontLoader");
-          await ensureQcfPageFontLoaded(currentPage, fontFamily === "qcf-v4-tajweed" ? "v4" : fontFamily === "qcf-v2" ? "v2" : "v1");
+          const qcfVersion = fontFamily === "qcf-v4-tajweed" ? "v4" : fontFamily === "qcf-v2" ? "v2" : "v1";
+          await ensureQcfPageFontLoaded(currentPage, qcfVersion);
         } else {
           await ensureFontLoaded(fontFamily);
         }
@@ -278,7 +286,7 @@ export default function QuranDisplay() {
     };
   }, [fontFamily, currentPage, displayMode]);
 
-  if (loading || fontLoading)
+  if ((loading && ayahs.length === 0) || fontLoading)
     return (
       <div className="flex justify-center items-center min-h-[50vh] p-8">
         <div className="w-full max-w-3xl flex flex-col gap-6 p-8 rounded-3xl backdrop-blur-xl bg-bg-card/90 shadow-xl border border-white/10 relative overflow-hidden">

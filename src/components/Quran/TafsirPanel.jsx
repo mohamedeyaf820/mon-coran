@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { BookOpen, Loader2, X, ChevronDown, ExternalLink } from "lucide-react";
 import { fetchTafsir, getAvailableTafsirs, getTafsirName } from "../../services/tafsirService";
-import { useApp } from "../../context/AppContext";
+import { useAppSelector } from "../../context/AppContext";
 import { cn } from "../../lib/utils";
 
 function labelFor(lang, fr, en, ar = en) {
@@ -14,8 +14,7 @@ function labelFor(lang, fr, en, ar = en) {
  * Inspired by Quran.com's tafsir feature
  */
 export default function TafsirPanel({ surah, ayah, onClose }) {
-  const { state } = useApp();
-  const { lang } = state;
+  const lang = useAppSelector((state) => state.lang);
   
   const [tafsirText, setTafsirText] = useState("");
   const [loading, setLoading] = useState(false);

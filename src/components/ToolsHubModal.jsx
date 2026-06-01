@@ -1,11 +1,11 @@
 import React from "react";
-import { useApp } from "../context/AppContext";
+import { useAppActions, useAppSelector } from "../context/AppContext";
 import { t } from "../i18n";
 import { cn } from "../lib/utils";
 
 export default function ToolsHubModal() {
-  const { state, set } = useApp();
-  const { lang, theme } = state;
+  const lang = useAppSelector((state) => state.lang);
+  const { set } = useAppActions();
 
   const close = () => set({ toolsHubOpen: false });
 

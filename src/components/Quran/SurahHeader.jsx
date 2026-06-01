@@ -15,7 +15,8 @@ const SurahHeader = React.memo(function SurahHeader({ surahNum, lang }) {
   if (!s) return null;
 
   const isMeccan = s.type === "Meccan";
-  const translatedName = lang === "en" ? s.fr || s.en : s.fr || s.en;
+  const translatedName =
+    lang === "ar" ? s.en : lang === "fr" ? s.fr || s.en : s.en;
   const revelationLabel = isMeccan
     ? labelFor(lang, "Mecquoise", "Meccan")
     : labelFor(lang, "Medinoise", "Medinan");
@@ -37,7 +38,8 @@ const SurahHeader = React.memo(function SurahHeader({ surahNum, lang }) {
           lang="ar"
           aria-label={s.ar}
         >
-          {String(surahNum).padStart(3, "0")}
+          <span className="qc-reader-surah-header__arabic-kicker">سورة</span>
+          <span className="qc-reader-surah-header__arabic-name">{s.ar}</span>
         </div>
 
         <h1

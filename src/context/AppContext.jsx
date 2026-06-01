@@ -19,7 +19,19 @@ import {
   normalizeNightTheme,
   normalizeThemeId,
 } from "../data/themes";
+import {
+  DEFAULT_FONT_ID,
+  DEFAULT_WARSH_FONT_ID,
+  normalizeFontId,
+} from "../data/fonts";
 import { parseInitialRoute } from "../hooks/useUrlSync";
+
+const clampQuranFontSize = (value, fallback = 25) => {
+  const numeric = Number(value);
+  return Number.isFinite(numeric)
+    ? Math.max(12, Math.min(96, numeric))
+    : fallback;
+};
 
 /* ── Initial State ──────────────────────────── */
 // Lazy initialization pour éviter les calculs au démarrage
@@ -34,6 +46,17 @@ const getInitialState = () => {
     ? stored.lang
     : "fr";
   const routeOverrides = parseInitialRoute();
+  const initialFontFamilyByRiwaya = {
+    hafs: normalizeFontId(stored.fontFamilyByRiwaya?.hafs || DEFAULT_FONT_ID, "hafs"),
+    warsh: normalizeFontId(
+      stored.fontFamilyByRiwaya?.warsh || DEFAULT_WARSH_FONT_ID,
+      "warsh",
+    ),
+  };
+  const initialFontFamily = normalizeFontId(
+    initialFontFamilyByRiwaya[initialRiwaya] || stored.fontFamily,
+    initialRiwaya,
+  );
 
   return {
     // UI
@@ -75,9 +98,17 @@ const getInitialState = () => {
   currentJuz: routeOverrides.currentJuz ?? (stored.lastPosition?.juz || 1),
   quranFontSize: (() => {
     const stored_fs = stored.quranFontSize ?? stored.fontSize;
-    return stored_fs != null ? Math.max(Number(stored_fs), 12) : 25;
+    return stored_fs != null ? clampQuranFontSize(stored_fs) : 25;
   })(),
-  fontFamily: stored.fontFamily || "scheherazade-new",
+  quranTranslationFontSize: (() => {
+    const value = Number(stored.quranTranslationFontSize);
+    return Number.isFinite(value) ? Math.max(12, Math.min(28, value)) : 18;
+  })(),
+  fontFamily: initialFontFamily,
+  fontFamilyByRiwaya: {
+    ...initialFontFamilyByRiwaya,
+    [initialRiwaya]: initialFontFamily,
+  },
   showHome:
     routeOverrides.showHome ??
     (stored.showHome !== undefined ? Boolean(stored.showHome) : true),
@@ -102,7 +133,7 @@ const getInitialState = () => {
   syncOffsetsMs: stored.syncOffsetsMs || {},
   warshStrictMode: stored.warshStrictMode ?? true,
   favoriteReciters: stored.favoriteReciters || [],
-  autoSelectFastestReciter: stored.autoSelectFastestReciter ?? true,
+  autoSelectFastestReciter: false,
   reciterLatencyByKey: stored.reciterLatencyByKey || {},
   reciterAvailabilityById: stored.reciterAvailabilityById || {},
   isPlaying: false,
@@ -154,6 +185,9 @@ export function appReducer(state, action) {
     case "SET": {
       const payload = action.payload || {};
       const next = { ...state, ...payload };
+      const hasRiwaya = Object.prototype.hasOwnProperty.call(payload, "riwaya");
+      const hasFontFamily = Object.prototype.hasOwnProperty.call(payload, "fontFamily");
+      const targetRiwaya = hasRiwaya ? payload.riwaya : state.riwaya;
       if (Object.prototype.hasOwnProperty.call(payload, "theme")) {
         next.theme = normalizeThemeId(payload.theme, state.theme);
       }
@@ -163,11 +197,34 @@ export function appReducer(state, action) {
       if (Object.prototype.hasOwnProperty.call(payload, "nightTheme")) {
         next.nightTheme = normalizeNightTheme(payload.nightTheme);
       }
+      if (Object.prototype.hasOwnProperty.call(payload, "quranFontSize")) {
+        next.quranFontSize = clampQuranFontSize(payload.quranFontSize, state.quranFontSize);
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, "fontSize")) {
+        next.quranFontSize = clampQuranFontSize(payload.fontSize, state.quranFontSize);
+      }
       if (!Object.prototype.hasOwnProperty.call(payload, "karaokeFollow")) {
         next.karaokeFollow = state.karaokeFollow;
       }
-      if (Object.prototype.hasOwnProperty.call(payload, "riwaya")) {
+      if (hasRiwaya) {
+        const fontByRiwaya = {
+          ...(state.fontFamilyByRiwaya || {}),
+          [state.riwaya]: normalizeFontId(state.fontFamily, state.riwaya),
+        };
         next.reciter = ensureReciterForRiwaya(next.reciter, payload.riwaya);
+        next.fontFamily = normalizeFontId(
+          fontByRiwaya[payload.riwaya],
+          payload.riwaya,
+        );
+        next.fontFamilyByRiwaya = fontByRiwaya;
+      }
+      if (hasFontFamily) {
+        const normalizedFont = normalizeFontId(payload.fontFamily, targetRiwaya);
+        next.fontFamily = normalizedFont;
+        next.fontFamilyByRiwaya = {
+          ...(next.fontFamilyByRiwaya || state.fontFamilyByRiwaya || {}),
+          [targetRiwaya]: normalizedFont,
+        };
       }
       return next;
     }
@@ -238,10 +295,20 @@ export function appReducer(state, action) {
     case "SET_RIWAYA": {
       const nextRiwaya = action.payload;
       const nextReciter = ensureReciterForRiwaya(state.reciter, nextRiwaya);
+      const fontByRiwaya = {
+        ...(state.fontFamilyByRiwaya || {}),
+        [state.riwaya]: normalizeFontId(state.fontFamily, state.riwaya),
+      };
+      const nextFont = normalizeFontId(fontByRiwaya[nextRiwaya], nextRiwaya);
       return {
         ...state,
         riwaya: nextRiwaya,
         reciter: nextReciter,
+        fontFamily: nextFont,
+        fontFamilyByRiwaya: {
+          ...fontByRiwaya,
+          [nextRiwaya]: nextFont,
+        },
       };
     }
 
@@ -250,10 +317,20 @@ export function appReducer(state, action) {
 
     case "SET_QURAN_FONT_SIZE":
     case "SET_FONT_SIZE":
-      return { ...state, quranFontSize: action.payload };
+      return { ...state, quranFontSize: clampQuranFontSize(action.payload, state.quranFontSize) };
 
     case "SET_FONT_FAMILY":
-      return { ...state, fontFamily: action.payload };
+      {
+        const normalizedFont = normalizeFontId(action.payload, state.riwaya);
+        return {
+          ...state,
+          fontFamily: normalizedFont,
+          fontFamilyByRiwaya: {
+            ...(state.fontFamilyByRiwaya || {}),
+            [state.riwaya]: normalizedFont,
+          },
+        };
+      }
 
     case "SET_PLAYING": {
       let ayah = action.payload.ayah ?? state.currentPlayingAyah;
@@ -332,8 +409,10 @@ export function AppProvider({ children }) {
     riwaya: state.riwaya,
     reciter: state.reciter,
     quranFontSize: state.quranFontSize,
+    quranTranslationFontSize: state.quranTranslationFontSize,
     fontSize: state.quranFontSize,
     fontFamily: state.fontFamily,
+    fontFamilyByRiwaya: state.fontFamilyByRiwaya,
     translationLangs: state.translationLangs,
     wordTranslationLang: state.wordTranslationLang,
     showTranslation: state.showTranslation,
@@ -380,7 +459,9 @@ export function AppProvider({ children }) {
     state.riwaya,
     state.reciter,
     state.quranFontSize,
+    state.quranTranslationFontSize,
     state.fontFamily,
+    state.fontFamilyByRiwaya,
     state.translationLangs,
     state.wordTranslationLang,
     state.showTranslation,

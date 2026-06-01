@@ -9,33 +9,23 @@ const FONT_SOURCES = {
     format: "woff2",
   },
   "qpc-indopak": {
-    family: "QPC IndoPak",
+    family: "IndoPak",
     url: "https://verses.quran.foundation/fonts/quran/hafs/nastaleeq/indopak/indopak-nastaleeq-waqf-lazim-v4.2.1.woff2",
     format: "woff2",
-  },
-  "amiri-quran": {
-    family: "Amiri Quran",
-    cssUrl:
-      "https://fonts.googleapis.com/css2?family=Amiri+Quran&display=swap",
-  },
-  "scheherazade-new": {
-    family: "Scheherazade New",
-    cssUrl:
-      "https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&display=swap",
-  },
-  "noto-naskh-arabic": {
-    family: "Noto Naskh Arabic",
-    cssUrl:
-      "https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&display=swap",
   },
   "qpc-nastaleeq": {
-    family: "QPC Nastaleeq",
-    url: "https://verses.quran.foundation/fonts/quran/hafs/nastaleeq/indopak/indopak-nastaleeq-waqf-lazim-v4.2.1.woff2",
-    format: "woff2",
+    family: "KFGQPC Nastaleeq",
+    url: "https://static-cdn.tarteel.ai/qul/fonts/nastaleeq/KFGQPCNastaleeq-Regular.ttf",
+    format: "truetype",
   },
   "qpc-warsh": {
     family: "QPC Warsh",
     url: "https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2",
+    format: "woff2",
+  },
+  "kfgqpc-warsh": {
+    family: "KFGQPC Warsh",
+    url: "https://cdn.jsdelivr.net/gh/thetruetruth/quran-data-kfgqpc@main/warsh/font/warsh.10.woff2",
     format: "woff2",
   },
 };
@@ -83,6 +73,17 @@ async function loadFontFace(fontId, source) {
   if (typeof document === "undefined" || typeof FontFace === "undefined" || !source) {
     loadedFontIds.add(fontId);
     return { loaded: false, unsupported: true, family: source?.family || fontId };
+  }
+
+  if (source.localOnly) {
+    let available = false;
+    try {
+      available = document.fonts.check(`16px "${source.family}"`);
+    } catch {
+      available = false;
+    }
+    loadedFontIds.add(fontId);
+    return { loaded: available, localOnly: true, family: source.family };
   }
 
   if (source.cssUrl) {

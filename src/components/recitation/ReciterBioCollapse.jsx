@@ -1,11 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
+import { getReciterBio } from "../../data/reciters";
 
-export default function ReciterBioCollapse({ lang, text }) {
+export default function ReciterBioCollapse({ lang, text, reciter }) {
   const [open, setOpen] = useState(false);
   const contentRef = useRef(null);
   const [contentHeight, setContentHeight] = useState(0);
 
-  const safeText = String(text || "").trim() || (lang === "fr" ? "Recitation authentique et régulière." : "Authentic and regular recitation.");
+  const safeText =
+    String(text || getReciterBio(reciter, lang) || "").trim() ||
+    (lang === "fr"
+      ? "Récitation authentique et régulière."
+      : lang === "ar"
+        ? "تلاوة موثوقة ومنتظمة."
+        : "Authentic and regular recitation.");
   const short = safeText.slice(0, 140);
   const shouldCollapse = safeText.length > 140;
 

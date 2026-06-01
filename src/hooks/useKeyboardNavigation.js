@@ -1,9 +1,6 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { getAudioServiceInstance } from "../services/audioService";
 
-/**
- * Vérifie si l'événement clavier doit être ignoré (focus sur un élément interactif)
- */
 function shouldIgnoreKeyboardEvent(event) {
   if (event.defaultPrevented) return true;
 
@@ -21,9 +18,6 @@ function shouldIgnoreKeyboardEvent(event) {
   return false;
 }
 
-/**
- * Hook pour la navigation clavier dans l'application Quran
- */
 export function useKeyboardNavigation({
   state,
   displayMode,
@@ -37,95 +31,113 @@ export function useKeyboardNavigation({
   dispatch,
   set,
 }) {
-  // Handler pour la navigation vers l'élément précédent
+  const latestRef = useRef({
+    state,
+    displayMode,
+    currentSurah,
+    currentPage,
+    currentJuz,
+    lang,
+    sidebarOpen,
+    showShortcuts,
+  });
+
+  useEffect(() => {
+    latestRef.current = {
+      state,
+      displayMode,
+      currentSurah,
+      currentPage,
+      currentJuz,
+      lang,
+      sidebarOpen,
+      showShortcuts,
+    };
+  }, [
+    state,
+    displayMode,
+    currentSurah,
+    currentPage,
+    currentJuz,
+    lang,
+    sidebarOpen,
+    showShortcuts,
+  ]);
+
   const handlePrevious = useCallback(() => {
-    if (state.showDuas) return;
+    const latest = latestRef.current;
+    if (latest.state.showDuas) return;
 
     set({ showHome: false, showDuas: false });
 
-    if (displayMode === "page") {
-      const isRTL = lang === "ar";
-      const canNavigate = isRTL ? currentPage > 1 : currentPage < 604;
+    if (latest.displayMode === "page") {
+      const isRTL = latest.lang === "ar";
+      const canNavigate = isRTL ? latest.currentPage > 1 : latest.currentPage < 604;
       if (canNavigate) {
-        set({
-          currentPage: isRTL ? currentPage - 1 : currentPage + 1,
-        });
+        set({ currentPage: isRTL ? latest.currentPage - 1 : latest.currentPage + 1 });
       }
-    } else if (displayMode === "juz") {
-      const isRTL = lang === "ar";
-      const canNavigate = isRTL ? currentJuz > 1 : currentJuz < 30;
+      return;
+    }
+
+    if (latest.displayMode === "juz") {
+      const isRTL = latest.lang === "ar";
+      const canNavigate = isRTL ? latest.currentJuz > 1 : latest.currentJuz < 30;
       if (canNavigate) {
         dispatch({
           type: "NAVIGATE_JUZ",
-          payload: { juz: isRTL ? currentJuz - 1 : currentJuz + 1 },
+          payload: { juz: isRTL ? latest.currentJuz - 1 : latest.currentJuz + 1 },
         });
       }
-    } else {
-      const isRTL = lang === "ar";
-      const canNavigate = isRTL ? currentSurah > 1 : currentSurah < 114;
-      if (canNavigate) {
-        dispatch({
-          type: "NAVIGATE_SURAH",
-          payload: { surah: isRTL ? currentSurah - 1 : currentSurah + 1 },
-        });
-      }
+      return;
     }
-  }, [
-    state.showDuas,
-    displayMode,
-    lang,
-    currentPage,
-    currentJuz,
-    currentSurah,
-    set,
-    dispatch,
-  ]);
 
-  // Handler pour la navigation vers l'élément suivant
+    const isRTL = latest.lang === "ar";
+    const canNavigate = isRTL ? latest.currentSurah > 1 : latest.currentSurah < 114;
+    if (canNavigate) {
+      dispatch({
+        type: "NAVIGATE_SURAH",
+        payload: { surah: isRTL ? latest.currentSurah - 1 : latest.currentSurah + 1 },
+      });
+    }
+  }, [dispatch, set]);
+
   const handleNext = useCallback(() => {
-    if (state.showDuas) return;
+    const latest = latestRef.current;
+    if (latest.state.showDuas) return;
 
     set({ showHome: false, showDuas: false });
 
-    if (displayMode === "page") {
-      const isRTL = lang === "ar";
-      const canNavigate = isRTL ? currentPage < 604 : currentPage > 1;
+    if (latest.displayMode === "page") {
+      const isRTL = latest.lang === "ar";
+      const canNavigate = isRTL ? latest.currentPage < 604 : latest.currentPage > 1;
       if (canNavigate) {
-        set({
-          currentPage: isRTL ? currentPage + 1 : currentPage - 1,
-        });
+        set({ currentPage: isRTL ? latest.currentPage + 1 : latest.currentPage - 1 });
       }
-    } else if (displayMode === "juz") {
-      const isRTL = lang === "ar";
-      const canNavigate = isRTL ? currentJuz < 30 : currentJuz > 1;
+      return;
+    }
+
+    if (latest.displayMode === "juz") {
+      const isRTL = latest.lang === "ar";
+      const canNavigate = isRTL ? latest.currentJuz < 30 : latest.currentJuz > 1;
       if (canNavigate) {
         dispatch({
           type: "NAVIGATE_JUZ",
-          payload: { juz: isRTL ? currentJuz + 1 : currentJuz - 1 },
+          payload: { juz: isRTL ? latest.currentJuz + 1 : latest.currentJuz - 1 },
         });
       }
-    } else {
-      const isRTL = lang === "ar";
-      const canNavigate = isRTL ? currentSurah < 114 : currentSurah > 1;
-      if (canNavigate) {
-        dispatch({
-          type: "NAVIGATE_SURAH",
-          payload: { surah: isRTL ? currentSurah + 1 : currentSurah - 1 },
-        });
-      }
+      return;
     }
-  }, [
-    state.showDuas,
-    displayMode,
-    lang,
-    currentPage,
-    currentJuz,
-    currentSurah,
-    set,
-    dispatch,
-  ]);
 
-  // Handler pour ouvrir la recherche
+    const isRTL = latest.lang === "ar";
+    const canNavigate = isRTL ? latest.currentSurah < 114 : latest.currentSurah > 1;
+    if (canNavigate) {
+      dispatch({
+        type: "NAVIGATE_SURAH",
+        payload: { surah: isRTL ? latest.currentSurah + 1 : latest.currentSurah - 1 },
+      });
+    }
+  }, [dispatch, set]);
+
   const handleSearch = useCallback(
     (event) => {
       if (event.ctrlKey || event.metaKey) {
@@ -136,64 +148,40 @@ export function useKeyboardNavigation({
     [dispatch],
   );
 
-  // Handler pour fermer les modales/panneaux
   const handleEscape = useCallback(() => {
+    const latest = latestRef.current;
     const closeActions = [
-      { condition: state.searchOpen, action: () => dispatch({ type: "TOGGLE_SEARCH" }) },
-      { condition: state.settingsOpen, action: () => dispatch({ type: "TOGGLE_SETTINGS" }) },
-      { condition: state.bookmarksOpen, action: () => dispatch({ type: "TOGGLE_BOOKMARKS" }) },
-      { condition: state.wirdOpen, action: () => set({ wirdOpen: false }) },
-      { condition: state.historyOpen, action: () => set({ historyOpen: false }) },
-      { condition: state.playlistOpen, action: () => set({ playlistOpen: false }) },
-      { condition: state.audioMakerOpen, action: () => set({ audioMakerOpen: false }) },
-      { condition: state.flashcardsOpen, action: () => set({ flashcardsOpen: false }) },
-      { condition: state.tajweedQuizOpen, action: () => set({ tajweedQuizOpen: false }) },
-      { condition: state.khatmaOpen, action: () => set({ khatmaOpen: false }) },
-      { condition: state.comparatorOpen, action: () => set({ comparatorOpen: false }) },
-      { condition: state.shareImageOpen, action: () => set({ shareImageOpen: false }) },
-      { condition: state.weeklyStatsOpen, action: () => set({ weeklyStatsOpen: false }) },
-      { condition: showShortcuts, action: () => setShowShortcuts(false) },
-      { condition: sidebarOpen, action: () => dispatch({ type: "TOGGLE_SIDEBAR" }) },
+      { condition: latest.state.searchOpen, action: () => dispatch({ type: "TOGGLE_SEARCH" }) },
+      { condition: latest.state.settingsOpen, action: () => dispatch({ type: "TOGGLE_SETTINGS" }) },
+      { condition: latest.state.bookmarksOpen, action: () => dispatch({ type: "TOGGLE_BOOKMARKS" }) },
+      { condition: latest.state.wirdOpen, action: () => set({ wirdOpen: false }) },
+      { condition: latest.state.historyOpen, action: () => set({ historyOpen: false }) },
+      { condition: latest.state.playlistOpen, action: () => set({ playlistOpen: false }) },
+      { condition: latest.state.audioMakerOpen, action: () => set({ audioMakerOpen: false }) },
+      { condition: latest.state.flashcardsOpen, action: () => set({ flashcardsOpen: false }) },
+      { condition: latest.state.tajweedQuizOpen, action: () => set({ tajweedQuizOpen: false }) },
+      { condition: latest.state.khatmaOpen, action: () => set({ khatmaOpen: false }) },
+      { condition: latest.state.comparatorOpen, action: () => set({ comparatorOpen: false }) },
+      { condition: latest.state.shareImageOpen, action: () => set({ shareImageOpen: false }) },
+      { condition: latest.state.weeklyStatsOpen, action: () => set({ weeklyStatsOpen: false }) },
+      { condition: latest.showShortcuts, action: () => setShowShortcuts(false) },
+      { condition: latest.sidebarOpen, action: () => dispatch({ type: "TOGGLE_SIDEBAR" }) },
     ];
 
     const actionToExecute = closeActions.find(({ condition }) => condition);
-    if (actionToExecute) {
-      actionToExecute.action();
-    }
-  }, [
-    state.searchOpen,
-    state.settingsOpen,
-    state.bookmarksOpen,
-    state.wirdOpen,
-    state.historyOpen,
-    state.playlistOpen,
-    state.audioMakerOpen,
-    state.flashcardsOpen,
-    state.tajweedQuizOpen,
-    state.khatmaOpen,
-    state.comparatorOpen,
-    state.shareImageOpen,
-    state.weeklyStatsOpen,
-    showShortcuts,
-    sidebarOpen,
-    dispatch,
-    set,
-    setShowShortcuts,
-  ]);
+    if (actionToExecute) actionToExecute.action();
+  }, [dispatch, set, setShowShortcuts]);
 
-  // Handler pour play/pause audio
   const handlePlayPause = useCallback(() => {
     getAudioServiceInstance()
       .then((audioService) => audioService.toggle())
       .catch(() => {});
   }, []);
 
-  // Handler pour afficher/masquer les raccourcis
   const handleToggleShortcuts = useCallback(() => {
     setShowShortcuts((prev) => !prev);
   }, [setShowShortcuts]);
 
-  // Handler principal regroupant tous les raccourcis
   const handleKeyboard = useCallback(
     (event) => {
       if (shouldIgnoreKeyboardEvent(event)) return;
@@ -229,7 +217,6 @@ export function useKeyboardNavigation({
     [handlePrevious, handleNext, handleSearch, handleEscape, handlePlayPause, handleToggleShortcuts],
   );
 
-  // Enregistrer/désenregistrer le listener
   useEffect(() => {
     window.addEventListener("keydown", handleKeyboard);
     return () => window.removeEventListener("keydown", handleKeyboard);

@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import "../styles/domains/search-home-polish.css";
 import { useApp } from "../context/AppContext";
 import SURAHS, { toAr } from "../data/surahs";
 import { JUZ_DATA } from "../data/juz";

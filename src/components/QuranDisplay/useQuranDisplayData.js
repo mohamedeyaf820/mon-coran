@@ -28,6 +28,41 @@ function runWhenIdle(callback) {
   return () => window.clearTimeout(timeoutId);
 }
 
+const DISPLAY_DATA_CACHE = new Map();
+const DISPLAY_DATA_CACHE_MAX = 56;
+
+function displayCacheKey(displayMode, currentSurah, currentPage, currentJuz, riwaya, warshStrictMode) {
+  const scope = displayMode === "page" ? `p:${currentPage}` : displayMode === "juz" ? `j:${currentJuz}` : `s:${currentSurah}`;
+  return `${riwaya}:${scope}:${riwaya === "warsh" && warshStrictMode ? 1 : 0}`;
+}
+
+function rememberLimited(map, key, value, maxSize) {
+  if (map.has(key)) map.delete(key);
+  map.set(key, value);
+  if (map.size > maxSize) map.delete(map.keys().next().value);
+}
+
+function mergeHafsSupport(ayahs, hafsMap) {
+  if (!hafsMap?.size) return ayahs;
+  return ayahs.map((ayah) => {
+    const hafsAyah = hafsMap.get(`${ayah.surah?.number}:${ayah.numberInSurah}`);
+    return hafsAyah
+      ? {
+          ...ayah,
+          number: ayah.number ?? hafsAyah.number,
+          page: ayah.page ?? hafsAyah.page,
+          juz: ayah.juz ?? hafsAyah.juz,
+          hafsText: hafsAyah.text,
+          hafsSupport: {
+            text: hafsAyah.text,
+            quranCom: hafsAyah.quranCom || null,
+            words: Array.isArray(hafsAyah.words) ? hafsAyah.words : [],
+          },
+        }
+      : ayah;
+  });
+}
+
 export default function useQuranDisplayData({
   currentAyah,
   currentJuz,
@@ -44,6 +79,7 @@ export default function useQuranDisplayData({
   const [error, setError] = useState(null);
   const [isWarshFallback, setIsWarshFallback] = useState(false);
   const readingStartRef = useRef(Date.now());
+  const requestSeqRef = useRef(0);
 
   useEffect(() => {
     if (showHome || !currentSurah || !currentAyah || displayMode !== "surah") return;
@@ -55,9 +91,22 @@ export default function useQuranDisplayData({
   }, [currentAyah, currentSurah, displayMode, showHome]);
 
   const fetchData = useCallback(async () => {
+    const requestId = requestSeqRef.current + 1;
+    requestSeqRef.current = requestId;
     const signal = abortPendingRequests();
-    dispatch({ type: "SET_LOADING", payload: true });
+    const cacheKey = displayCacheKey(displayMode, currentSurah, currentPage, currentJuz, riwaya, warshStrictMode);
+    const cachedData = DISPLAY_DATA_CACHE.get(cacheKey);
+
     setError(null);
+    if (cachedData) {
+      setAyahs(cachedData.ayahs);
+      setIsWarshFallback(Boolean(cachedData.isWarshFallback));
+      dispatch({ type: "SET", payload: { loadedAyahCount: cachedData.ayahs.length } });
+      dispatch({ type: "SET_LOADING", payload: false });
+      return;
+    }
+
+    dispatch({ type: "SET_LOADING", payload: true });
 
     try {
       const arabicData = await loadArabicData({
@@ -69,46 +118,42 @@ export default function useQuranDisplayData({
         signal,
       });
 
-      if (signal.aborted) return;
+      if (signal.aborted || requestSeqRef.current !== requestId) return;
       assertWarshStrict({ arabicData, displayMode, lang, riwaya, warshStrictMode });
 
       const fetchedAyahs = ensureRequestedRiwaya(arabicData.ayahs || [], riwaya);
+      const fallback = Boolean(arabicData?.isTextFallback);
+      rememberLimited(
+        DISPLAY_DATA_CACHE,
+        cacheKey,
+        { ayahs: fetchedAyahs, isWarshFallback: fallback },
+        DISPLAY_DATA_CACHE_MAX,
+      );
       setAyahs(fetchedAyahs);
-      setIsWarshFallback(Boolean(arabicData?.isTextFallback));
+      setIsWarshFallback(fallback);
       dispatch({ type: "SET", payload: { loadedAyahCount: fetchedAyahs.length } });
       dispatch({ type: "SET_LOADING", payload: false });
 
       if (riwaya === "warsh") {
         loadHafsSupportData({ currentJuz, currentPage, currentSurah, displayMode, signal })
           .then((hafsData) => {
-            if (signal.aborted) return;
+            if (signal.aborted || requestSeqRef.current !== requestId) return;
             const hafsMap = new Map(
               (hafsData?.ayahs || []).map((ayah) => [
                 `${ayah.surah?.number}:${ayah.numberInSurah}`,
                 ayah,
               ]),
             );
-            setAyahs((previous) =>
-              previous.map((ayah) => {
-                const hafsAyah = hafsMap.get(
-                  `${ayah.surah?.number}:${ayah.numberInSurah}`,
-                );
-                return hafsAyah
-                  ? {
-                      ...ayah,
-                      number: ayah.number ?? hafsAyah.number,
-                      page: ayah.page ?? hafsAyah.page,
-                      juz: ayah.juz ?? hafsAyah.juz,
-                      hafsText: hafsAyah.text,
-                      hafsSupport: {
-                        text: hafsAyah.text,
-                        quranCom: hafsAyah.quranCom || null,
-                        words: Array.isArray(hafsAyah.words) ? hafsAyah.words : [],
-                      },
-                    }
-                  : ayah;
-              }),
-            );
+            setAyahs((previous) => {
+              const merged = mergeHafsSupport(previous, hafsMap);
+              rememberLimited(
+                DISPLAY_DATA_CACHE,
+                cacheKey,
+                { ayahs: merged, isWarshFallback: fallback },
+                DISPLAY_DATA_CACHE_MAX,
+              );
+              return merged;
+            });
           })
           .catch(() => {});
       }
@@ -142,12 +187,14 @@ export default function useQuranDisplayData({
         }
       });
     } catch (err) {
-      if (err?.name === "AbortError") return;
+      if (err?.name === "AbortError" || requestSeqRef.current !== requestId) return;
       console.error("Fetch error:", err);
       setError(err.message);
       dispatch({ type: "SET_ERROR", payload: err.message });
     } finally {
-      if (!signal.aborted) dispatch({ type: "SET_LOADING", payload: false });
+      if (!signal.aborted && requestSeqRef.current === requestId) {
+        dispatch({ type: "SET_LOADING", payload: false });
+      }
     }
   }, [
     currentJuz,

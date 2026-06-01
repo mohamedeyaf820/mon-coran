@@ -10,6 +10,9 @@ const TAJWID_FALLBACK_COLORS = {
     'idgham-warsh': '#ababab',
 };
 
+const WAQF_MARKER_SPLIT_RE = /([\u06d6-\u06dc])/u;
+const WAQF_MARKER_CHAR_RE = /^[\u06d6-\u06dc]$/u;
+
 /**
  * WarshWordText – renders Unicode Warsh text.
  * Falls back to plain text if no tajweed.
@@ -38,14 +41,27 @@ const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, t
 
                 const ruleId = tajweedColors?.[i];
                 const wordStyle = {
-                    fontFamily: 'var(--qd-font-family, var(--font-quran-warsh, var(--font-quran, "Amiri Quran", serif)))',
+                    fontFamily: 'var(--qd-font-family, var(--font-quran-warsh, var(--font-quran, serif)))',
                 };
                 if (ruleId) wordStyle.color = `var(--tajwid-${ruleId}, ${TAJWID_FALLBACK_COLORS[ruleId] || 'inherit'})`;
+                const parts = String(word).split(WAQF_MARKER_SPLIT_RE).filter(Boolean);
 
                 return (
                     <React.Fragment key={i}>
                         <span className={cls} style={wordStyle}>
-                            {word}
+                            {parts.map((part, partIdx) => (
+                                WAQF_MARKER_CHAR_RE.test(part) ? (
+                                    <span
+                                        key={`${i}-${partIdx}`}
+                                        className="warsh-waqf-marker"
+                                        aria-hidden="true"
+                                    >
+                                        {part}
+                                    </span>
+                                ) : (
+                                    <React.Fragment key={`${i}-${partIdx}`}>{part}</React.Fragment>
+                                )
+                            ))}
                         </span>
                         {i < words.length - 1 && " "}
                     </React.Fragment>

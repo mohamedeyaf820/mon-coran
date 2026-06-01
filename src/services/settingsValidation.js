@@ -26,7 +26,7 @@ export const settingsSchema = z.object({
   displayMode: z.enum(["surah", "page", "juz"]).default("surah"),
   mushafLayout: z.enum(["list", "mushaf"]).default("list"),
   quranFontSize: z.number().min(20).max(200).default(48),
-  fontFamily: z.string().default("scheherazade-new"),
+  fontFamily: z.string().default("qpc-hafs"),
   
   // Affichage
   showTranslation: z.boolean().default(true),
@@ -73,7 +73,7 @@ export const settingsSchema = z.object({
   usePrayerTimes: z.boolean().default(false),
   
   // Wird
-  wirdGoalType: z.enum(["pages", "time", "verses"]).default("pages"),
+  wirdGoalType: z.enum(["pages", "hizb", "juz"]).default("pages"),
   wirdGoalAmount: z.number().int().min(1).default(5),
 });
 

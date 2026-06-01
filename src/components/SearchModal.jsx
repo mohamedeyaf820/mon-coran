@@ -1,4 +1,5 @@
 import React, { startTransition, useCallback, useEffect, useRef, useState } from "react";
+import "../styles/domains/search-home-polish.css";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { search, searchTranslation } from "../services/quranAPI";

@@ -7,7 +7,7 @@ export default function RowActions({ lang, onPlay, onOpen, downloadUrl }) {
     openExternalUrl(downloadUrl);
   };
 
-  const btnClass = "recitation-action-btn flex items-center justify-center w-9 h-9 rounded-full border border-border bg-bg-card/40 text-text-muted hover:text-primary hover:border-primary/40 hover:bg-[rgba(var(--primary-rgb),0.06)] active:scale-95 transition-all duration-200";
+  const btnClass = "recitation-action-btn flex items-center justify-center w-9 h-9 rounded-lg border border-border bg-bg-card/55 text-text-muted hover:text-primary hover:border-primary/40 hover:bg-[rgba(var(--primary-rgb),0.08)] active:scale-95 transition-all duration-200";
 
   return (
     <div className="recitation-row__actions flex items-center gap-1.5">

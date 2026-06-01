@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { useApp } from "../../context/AppContext";
+import { shallowEqual, useAppSelector } from "../../context/AppContext";
 import QuranWord from "./QuranWord";
 import useWordByWordDisplay from "./useWordByWordDisplay";
 import WordByWordAnalysisOverlay from "./WordByWordAnalysisOverlay";
@@ -17,7 +17,15 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
   text,
   inline = false,
 }) {
-  const { state } = useApp();
+  const { lang, reciter, riwaya, wordTranslationLang } = useAppSelector(
+    (state) => ({
+      lang: state.lang,
+      reciter: state.reciter,
+      riwaya: state.riwaya,
+      wordTranslationLang: state.wordTranslationLang,
+    }),
+    shallowEqual,
+  );
   const [selectedWord, setSelectedWord] = useState(null);
   const { activeWordId, currentWordIdx, error, handleWordClick, loading, words } =
     useWordByWordDisplay({
@@ -25,10 +33,10 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
       calibration,
       initialWords,
       isPlaying,
-      reciter: state.reciter,
-      riwaya: state.riwaya,
+      reciter,
+      riwaya,
       surah,
-      wordTranslationLang: state.wordTranslationLang,
+      wordTranslationLang,
     });
   const fallbackWords = useMemo(() => {
     if (!text || typeof text !== "string") return [];
@@ -81,10 +89,10 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
               active={isClickedWord}
               current={isPlaying && index === currentWordIdx}
               fontSize={fontSize}
-              lang={state.lang}
+              lang={lang}
               onSelect={(event) => handleWordClick(word, setSelectedWord, event)}
               read={isPlaying && index < currentWordIdx}
-              riwaya={state.riwaya}
+              riwaya={riwaya}
               showTajwid={showTajwid}
               showTransliteration={showTransliteration}
               showWordTranslation={showWordTranslation}
@@ -95,7 +103,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
           );
         })}
         <WordByWordAnalysisOverlay
-          lang={state.lang}
+          lang={lang}
           onClose={() => setSelectedWord(null)}
           onReplay={() => handleWordClick(selectedWord, setSelectedWord)}
           selectedWord={selectedWord}
@@ -116,10 +124,10 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
             active={isClickedWord}
             current={isPlaying && index === currentWordIdx}
             fontSize={fontSize}
-            lang={state.lang}
+            lang={lang}
             onSelect={(event) => handleWordClick(word, setSelectedWord, event)}
             read={isPlaying && index < currentWordIdx}
-            riwaya={state.riwaya}
+            riwaya={riwaya}
             showTajwid={showTajwid}
             showTransliteration={showTransliteration}
             showWordTranslation={showWordTranslation}
@@ -130,7 +138,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
         );
       })}
       <WordByWordAnalysisOverlay
-        lang={state.lang}
+        lang={lang}
         onClose={() => setSelectedWord(null)}
         onReplay={() => handleWordClick(selectedWord, setSelectedWord)}
         selectedWord={selectedWord}

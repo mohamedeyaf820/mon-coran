@@ -4,6 +4,7 @@ import { withWordCountCalibrationBump } from "../../utils/karaokeUtils";
 import WarshWordText from "./WarshWordText";
 
 const AYAH_MARKER_TOKEN_RE = /^[\u06dd\u06de\u06e9\ufd3f\ufd3e\d\u0660-\u0669\u06f0-\u06f9]+$/u;
+const WAQF_MARKER_TOKEN_RE = /^[\u06d6-\u06dc]+$/u;
 const DEFAULT_WARSH_CALIBRATION = {
   offsetSec: 0.2,
   smoothing: 0.9,
@@ -15,7 +16,9 @@ const DEFAULT_WARSH_CALIBRATION = {
 
 function isAyahMarkerToken(word) {
   const compact = String(word || "").replace(/\s+/g, "");
-  return compact ? AYAH_MARKER_TOKEN_RE.test(compact) : false;
+  return compact
+    ? AYAH_MARKER_TOKEN_RE.test(compact) || WAQF_MARKER_TOKEN_RE.test(compact)
+    : false;
 }
 
 function getWordText(word) {

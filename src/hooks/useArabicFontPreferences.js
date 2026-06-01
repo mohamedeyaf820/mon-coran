@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import { useApp } from "../context/AppContext";
+import { shallowEqual, useAppActions, useAppSelector } from "../context/AppContext";
 import { normalizeFontId } from "../data/fonts";
 import { ensureFontLoaded } from "../services/fontLoader";
 
@@ -13,46 +13,54 @@ function clampSize(value) {
   return Math.max(ARABIC_FONT_SIZE_MIN, Math.min(ARABIC_FONT_SIZE_MAX, numeric));
 }
 
-function readStoredPreferences(riwaya) {
+function readStoredFontPreference(riwaya) {
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    return {
-      fontFamily: normalizeFontId(parsed.fontFamily, riwaya),
-      quranFontSize: clampSize(parsed.quranFontSize),
-    };
+    const hasScopedStore =
+      parsed.byRiwaya && typeof parsed.byRiwaya === "object" && !Array.isArray(parsed.byRiwaya);
+    const scoped = hasScopedStore ? parsed.byRiwaya?.[riwaya] || {} : {};
+    const storedFont = scoped.fontFamily || (!hasScopedStore ? parsed.fontFamily : null);
+    return storedFont ? normalizeFontId(storedFont, riwaya) : null;
   } catch {
     return null;
   }
 }
 
 export default function useArabicFontPreferences() {
-  const { state, dispatch } = useApp();
-  const { fontFamily, quranFontSize, riwaya } = state;
+  const { fontFamily, quranFontSize, riwaya } = useAppSelector(
+    (state) => ({
+      fontFamily: state.fontFamily,
+      quranFontSize: state.quranFontSize,
+      riwaya: state.riwaya,
+    }),
+    shallowEqual,
+  );
+  const { dispatch } = useAppActions();
 
   useEffect(() => {
-    const stored = readStoredPreferences(riwaya);
-    if (!stored) return;
-
-    const payload = {};
-    if (stored.fontFamily && stored.fontFamily !== fontFamily) {
-      payload.fontFamily = stored.fontFamily;
+    const storedFont = readStoredFontPreference(riwaya);
+    if (storedFont && storedFont !== fontFamily) {
+      dispatch({ type: "SET", payload: { fontFamily: storedFont } });
     }
-    if (stored.quranFontSize && stored.quranFontSize !== quranFontSize) {
-      payload.quranFontSize = stored.quranFontSize;
-    }
-    if (Object.keys(payload).length > 0) {
-      dispatch({ type: "SET", payload });
-    }
-  }, []);
+  }, [dispatch, fontFamily, riwaya]);
 
   useEffect(() => {
     try {
+      const previous = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      const previousByRiwaya =
+        previous.byRiwaya && typeof previous.byRiwaya === "object" && !Array.isArray(previous.byRiwaya)
+          ? previous.byRiwaya
+          : {};
+      const byRiwaya = {
+        ...previousByRiwaya,
+        [riwaya]: {
+          ...(previousByRiwaya[riwaya] || {}),
+          fontFamily: normalizeFontId(fontFamily, riwaya),
+        },
+      };
       localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({
-          fontFamily: normalizeFontId(fontFamily, riwaya),
-          quranFontSize: clampSize(quranFontSize),
-        }),
+        JSON.stringify({ byRiwaya }),
       );
     } catch {
       // Preferences are also persisted by AppContext; this key is a light fallback.
@@ -81,6 +89,7 @@ export default function useArabicFontPreferences() {
   return {
     arabicFontFamily: normalizeFontId(fontFamily, riwaya),
     arabicFontSize: clampSize(quranFontSize),
+    riwaya,
     setArabicFontFamily,
     setArabicFontSize,
   };

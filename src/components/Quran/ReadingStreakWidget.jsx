@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Flame, Calendar, Trophy, TrendingUp } from "lucide-react";
 import { getStreakData, getReadingHistory, getStreakMessage, getMotivationalMessage } from "../../services/readingStreakService";
-import { useApp } from "../../context/AppContext";
+import { useAppSelector } from "../../context/AppContext";
 
 function labelFor(lang, fr, en, ar = en) {
   if (lang === "ar") return ar;
@@ -13,8 +13,7 @@ function labelFor(lang, fr, en, ar = en) {
  * Inspired by Muslim Pro and Quran.com
  */
 export default function ReadingStreakWidget({ compact = false }) {
-  const { state } = useApp();
-  const { lang } = state;
+  const lang = useAppSelector((state) => state.lang);
   
   const streakData = useMemo(() => getStreakData(), []);
   const history = useMemo(() => getReadingHistory(7), []);
