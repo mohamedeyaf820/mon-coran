@@ -242,6 +242,11 @@ export default function AudioPlayer() {
   }, [minimized, playerMinimized, set]);
 
   useEffect(() => {
+    if (isMobile || !showHome || isPlaying || currentPlayingAyah) return;
+    setMinimized(true);
+  }, [currentPlayingAyah, isMobile, isPlaying, showHome]);
+
+  useEffect(() => {
     if (!optionsModalOpen) return;
     const onEscape = (event) => {
       if (event.key === "Escape") {
@@ -263,6 +268,7 @@ export default function AudioPlayer() {
   useEffect(() => {
     audioService.onPlay = (item) => {
       setClosed(false); // rouvre le lecteur s'il etait ferme
+      setMinimized(false);
       setAudioError(null);
       markReciterAvailable(reciter);
       failedRecitersRef.current.clear();
@@ -1926,7 +1932,7 @@ export default function AudioPlayer() {
               : "Audio Player"
         }
       >
-        {minimized && !isHomeDesktop ? (
+        {minimized ? (
           <>
             <div
               className="flex items-center gap-3 px-3.5 pb-2.5 pt-3"
@@ -2074,7 +2080,6 @@ export default function AudioPlayer() {
                        ? "تصغير"
                       : "Minimize"
                 }
-                disabled={isHomeDesktop}
               >
                 <i className="fas fa-chevron-down text-xs" />
               </button>

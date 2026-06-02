@@ -27,12 +27,16 @@ export default function HeroSection({
   children,
 }) {
   return (
-    <section className="home-hero-compact relative z-10 overflow-hidden rounded-2xl border border-border/75 bg-bg-primary px-4 py-5 shadow-lg sm:px-6 sm:py-6 lg:p-7">
+    <section className="home-hero-compact home-hero-shell relative z-10 overflow-hidden rounded-2xl border border-border/75 bg-bg-primary px-4 py-5 shadow-lg sm:px-6 sm:py-6 lg:p-7">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-transparent" />
 
-      <div className="relative z-10 flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(300px,380px)] xl:gap-7">
-        <div className="flex min-w-0 flex-col">
-          <div className="mb-4 flex flex-wrap items-center gap-2">
+      <div
+        className={cn(
+          "home-hero-layout relative z-10 grid gap-5 xl:gap-7",
+        )}
+      >
+        <div className="home-hero-main flex min-w-0 flex-col">
+          <div className="home-hero-kicker-row mb-4 flex flex-wrap items-center gap-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-primary">
               <i className={`fas ${currentPrayer.icon}`} />
               <span>{greeting[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"]}</span>
@@ -45,17 +49,17 @@ export default function HeroSection({
             </span>
           </div>
 
-          <div className="flex items-center gap-4 max-[520px]:items-start max-[520px]:gap-3">
+          <div className="home-brand-row flex items-center gap-4 max-[520px]:items-start max-[520px]:gap-3">
             <PlatformLogo
               className="h-14 w-14 shrink-0 rounded-2xl shadow-sm sm:h-16 sm:w-16"
               imgClassName="h-10 w-10 object-cover sm:h-12 sm:w-12"
               decorative
             />
             <div className="min-w-0">
-              <div className="pointer-events-none mb-1 text-right font-quran text-2xl text-text-muted/30" dir="rtl">
+              <div className="home-brand-ar pointer-events-none mb-1 text-right font-quran text-2xl text-text-muted/30" dir="rtl">
                 ﷽
               </div>
-              <h1 className="mb-2 text-[clamp(1.75rem,4vw,2.45rem)] font-black leading-none tracking-tight text-text-primary">
+              <h1 className="home-hero-title mb-2 text-[clamp(1.75rem,4vw,2.45rem)] font-black leading-none tracking-tight text-text-primary">
                 MushafPlus
               </h1>
               <div className="flex flex-wrap gap-2">
@@ -71,7 +75,7 @@ export default function HeroSection({
             </div>
           </div>
 
-          <p className="mt-4 max-w-[58ch] text-[0.95rem] leading-relaxed text-text-secondary max-[520px]:text-[0.88rem] max-[520px]:leading-snug">
+          <p className="home-hero-copy mt-4 max-w-[58ch] text-[0.95rem] leading-relaxed text-text-secondary max-[520px]:text-[0.88rem] max-[520px]:leading-snug">
             {lang === "ar"
               ? "اقرأ القرآن الكريم وتدبر معانيه في مساحة أكثر سكينة"
               : lang === "fr"
@@ -79,9 +83,9 @@ export default function HeroSection({
                 : "Read, reflect and memorize the Holy Quran in beauty"}
           </p>
 
-          <div className="mt-5 flex flex-wrap items-center gap-3 max-[520px]:gap-2">
+          <div className="home-hero-actions mt-5 flex flex-wrap items-center gap-3 max-[520px]:gap-2">
             <button
-              className="inline-flex h-12 items-center gap-2.5 rounded-2xl bg-primary px-5 text-[0.9rem] font-bold text-white shadow-lg shadow-primary/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-dark max-[520px]:w-full max-[520px]:justify-center"
+              className="home-cta-primary inline-flex h-12 items-center gap-2.5 rounded-2xl bg-primary px-5 text-[0.9rem] font-bold text-white shadow-lg shadow-primary/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-dark max-[520px]:w-full max-[520px]:justify-center"
               aria-label={primaryReadingCtaLabel}
               onClick={hasReadingHistory ? continueReading : () => goSurah(1)}
               type="button"
@@ -104,7 +108,7 @@ export default function HeroSection({
             </button>
 
             <button
-              className="inline-flex h-12 items-center gap-2 rounded-2xl bg-bg-secondary px-5 text-[0.9rem] font-bold text-text-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-bg-tertiary max-[520px]:w-full max-[520px]:justify-center"
+              className="home-cta-secondary inline-flex h-12 items-center gap-2 rounded-2xl bg-bg-secondary px-5 text-[0.9rem] font-bold text-text-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-bg-tertiary max-[520px]:w-full max-[520px]:justify-center"
               onClick={openDuas}
               type="button"
             >
@@ -113,8 +117,11 @@ export default function HeroSection({
             </button>
           </div>
 
-          <aside className="home-info-panel mt-5 hidden xl:block">
-            <div className="overflow-hidden rounded-2xl border border-border/50 bg-bg-secondary/40 backdrop-blur-md">
+        </div>
+
+        <div className="home-hero-side flex min-w-0 flex-col gap-4">
+          <aside className="home-info-panel">
+            <div className="home-info-card overflow-hidden rounded-2xl border border-border/50 bg-bg-secondary/40 backdrop-blur-md">
               <div className="flex items-center overflow-x-auto border-b border-border/50 no-scrollbar">
                 {infoTabs.map((tab) => (
                   <button
@@ -234,9 +241,13 @@ export default function HeroSection({
               </div>
             </div>
           </aside>
-        </div>
 
-        <div className="home-hero-compact__side flex flex-col gap-4">{children}</div>
+          {children && (
+            <div className="home-hero-compact__side flex flex-col gap-4">
+              {children}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );

@@ -741,6 +741,17 @@ export default function HomePage({ lowPerfMode = false }) {
         notes={notes}
         suggestionSet={suggestionSet}
         goSurahAyah={goSurahAyah}
+      />
+
+      <section
+        className="home-top-cards-grid relative z-10"
+        aria-label={
+          lang === "fr"
+            ? "Apercu de lecture"
+            : lang === "ar"
+              ? "ملخص القراءة"
+              : "Reading overview"
+        }
       >
         <DailyVerseCard
           lang={lang}
@@ -772,10 +783,10 @@ export default function HomePage({ lowPerfMode = false }) {
           set={set}
           t={t}
         />
-      </HeroSection>
+      </section>
 
       {/* ── Layout principal (stats + grille) ─────────────────────────── */}
-      <div className=" !relative !z-10">
+      <div className="home-content-zone !relative !z-10">
         {/* <StatsStrip lang={lang} /> */}
 
         <ContentSection

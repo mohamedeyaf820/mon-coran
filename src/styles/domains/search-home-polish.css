@@ -1776,6 +1776,55 @@
     }
 }
 
+.home-top-cards-grid {
+    width: min(100%, 1200px);
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(0.85rem, 1.4vw, 1.15rem);
+    align-items: stretch;
+}
+
+.home-top-cards-grid > * {
+    min-width: 0;
+    height: 100%;
+}
+
+.home-top-cards-grid .home-prayer-card {
+    max-height: 100%;
+}
+
+@media (max-width: 1180px) {
+    .home-top-cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .home-top-cards-grid {
+        width: 100%;
+        max-width: calc(100vw - 0.85rem);
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        margin-inline: auto;
+    }
+
+    .home-hero-compact {
+        padding: 1rem !important;
+    }
+
+    .home-hero-compact h1 {
+        font-size: clamp(2rem, 11vw, 2.55rem) !important;
+        line-height: 1.02 !important;
+    }
+
+    .home-hero-compact p {
+        max-width: 100%;
+        font-size: 0.94rem !important;
+        line-height: 1.48 !important;
+    }
+}
+
 /* Search modal shell styles - moved from src\styles\tailwind.css */
 .search-modal-shell {
     position: relative;
@@ -2537,5 +2586,581 @@
     .app-root.premium-plus .search-modal-shell--premium-plus .modal-action-btn {
         min-width: 2.36rem;
         min-height: 2.36rem;
+    }
+}
+
+/* Home page system refresh: calm hierarchy, stable cards, responsive first view. */
+.app-root .app-view-home .hp-wrapper,
+.app-root[data-view="home"] .hp-wrapper {
+    width: min(100%, 1240px);
+    max-width: calc(100vw - clamp(1rem, 3vw, 2.5rem));
+    margin-inline: auto;
+    padding: clamp(1rem, 2.2vw, 1.6rem) 0 clamp(5.5rem, 8vw, 7rem);
+    gap: clamp(0.9rem, 1.6vw, 1.25rem);
+}
+
+.app-root .app-view-home .hp-wrapper > .pointer-events-none[aria-hidden="true"],
+.app-root[data-view="home"] .hp-wrapper > .pointer-events-none[aria-hidden="true"] {
+    display: none;
+}
+
+.app-root .app-view-home .home-hero-shell,
+.app-root[data-view="home"] .home-hero-shell {
+    border-radius: 24px;
+    border-color: color-mix(in srgb, var(--border, #d6e4df) 76%, transparent);
+    background:
+        linear-gradient(140deg,
+            color-mix(in srgb, var(--bg-primary, #ffffff) 96%, var(--primary, #0b6235) 4%),
+            color-mix(in srgb, var(--bg-secondary, #f5faf7) 97%, var(--primary, #0b6235) 3%));
+    box-shadow:
+        0 22px 54px rgba(19, 42, 34, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.app-root .app-view-home .home-hero-shell > .pointer-events-none,
+.app-root[data-view="home"] .home-hero-shell > .pointer-events-none {
+    opacity: 0.38;
+}
+
+.app-root .app-view-home .home-hero-layout,
+.app-root[data-view="home"] .home-hero-layout {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+}
+
+@media (min-width: 980px) {
+    .app-root .app-view-home .home-hero-layout,
+    .app-root[data-view="home"] .home-hero-layout {
+        grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.78fr);
+    }
+}
+
+.app-root .app-view-home .home-hero-main,
+.app-root[data-view="home"] .home-hero-main {
+    justify-content: center;
+    min-height: clamp(270px, 28vw, 340px);
+}
+
+.app-root .app-view-home .home-hero-title,
+.app-root[data-view="home"] .home-hero-title {
+    font-size: clamp(2.25rem, 4.4vw, 4.1rem) !important;
+    line-height: 0.92 !important;
+    color: var(--text-primary, #14231d);
+    letter-spacing: 0 !important;
+}
+
+.app-root .app-view-home .home-brand-ar,
+.app-root[data-view="home"] .home-brand-ar {
+    font-size: clamp(1.45rem, 2.4vw, 2.25rem);
+    color: color-mix(in srgb, var(--primary, #0b6235) 35%, transparent);
+}
+
+.app-root .app-view-home .home-hero-copy,
+.app-root[data-view="home"] .home-hero-copy {
+    max-width: 48rem;
+    font-size: clamp(0.98rem, 1.2vw, 1.08rem) !important;
+    line-height: 1.65 !important;
+    color: var(--text-secondary, #4d635b);
+}
+
+.app-root .app-view-home .home-hero-kicker-row > *,
+.app-root .app-view-home .home-brand-row span,
+.app-root[data-view="home"] .home-hero-kicker-row > *,
+.app-root[data-view="home"] .home-brand-row span {
+    border-radius: 999px;
+    box-shadow: none;
+}
+
+.app-root .app-view-home .home-cta-primary,
+.app-root .app-view-home .home-cta-secondary,
+.app-root[data-view="home"] .home-cta-primary,
+.app-root[data-view="home"] .home-cta-secondary {
+    min-height: 48px;
+    border-radius: 14px;
+}
+
+.app-root .app-view-home .home-cta-primary,
+.app-root[data-view="home"] .home-cta-primary {
+    border: 1px solid color-mix(in srgb, var(--primary, #0b6235) 86%, #ffffff 14%) !important;
+    background: linear-gradient(135deg, var(--primary, #0b6235), color-mix(in srgb, var(--primary, #0b6235) 82%, #0f9f6a 18%)) !important;
+    color: #ffffff !important;
+    box-shadow: 0 14px 30px rgba(var(--primary-rgb, 11, 98, 53), 0.25) !important;
+}
+
+.app-root .app-view-home .home-cta-secondary,
+.app-root[data-view="home"] .home-cta-secondary {
+    border: 1px solid color-mix(in srgb, var(--border, #d6e4df) 76%, transparent);
+    background: color-mix(in srgb, var(--bg-primary, #ffffff) 88%, var(--primary, #0b6235) 12%) !important;
+    color: var(--text-primary, #14231d) !important;
+}
+
+.app-root .app-view-home .home-hero-side,
+.app-root[data-view="home"] .home-hero-side {
+    min-height: 0;
+}
+
+.app-root .app-view-home .home-info-panel,
+.app-root[data-view="home"] .home-info-panel {
+    display: block;
+    height: 100%;
+}
+
+.app-root .app-view-home .home-info-card,
+.app-root[data-view="home"] .home-info-card {
+    height: 100%;
+    min-height: 270px;
+    border-radius: 20px;
+    border-color: color-mix(in srgb, var(--border, #d6e4df) 76%, transparent) !important;
+    background: color-mix(in srgb, var(--bg-primary, #ffffff) 74%, var(--primary, #0b6235) 5%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+.app-root .app-view-home .home-info-card > div:first-child,
+.app-root[data-view="home"] .home-info-card > div:first-child {
+    border-color: color-mix(in srgb, var(--border, #d6e4df) 70%, transparent) !important;
+}
+
+.app-root .app-view-home .home-info-card > div:first-child button,
+.app-root[data-view="home"] .home-info-card > div:first-child button {
+    border-bottom-width: 0 !important;
+}
+
+.app-root .app-view-home .home-info-card button,
+.app-root[data-view="home"] .home-info-card button {
+    min-height: 44px;
+}
+
+.app-root .app-view-home .home-top-cards-grid,
+.app-root[data-view="home"] .home-top-cards-grid {
+    width: min(100%, 1240px);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(0.8rem, 1.3vw, 1rem);
+    align-items: stretch;
+}
+
+.app-root .app-view-home .home-top-cards-grid > *,
+.app-root[data-view="home"] .home-top-cards-grid > * {
+    min-width: 0;
+    height: 100%;
+    border-radius: 18px !important;
+}
+
+.app-root .app-view-home :is(.home-daily-verse-card, .home-session-card, .home-prayer-card, .home-tools-quick-card),
+.app-root[data-view="home"] :is(.home-daily-verse-card, .home-session-card, .home-prayer-card, .home-tools-quick-card) {
+    border-color: color-mix(in srgb, var(--border, #d6e4df) 72%, transparent) !important;
+    background: color-mix(in srgb, var(--bg-primary, #ffffff) 90%, var(--primary, #0b6235) 5%) !important;
+    box-shadow: 0 14px 34px rgba(21, 43, 35, 0.07) !important;
+}
+
+.app-root .app-view-home .home-content-zone,
+.app-root[data-view="home"] .home-content-zone {
+    margin-top: clamp(0.8rem, 1.5vw, 1.2rem);
+}
+
+.app-root .app-view-home .home-content-zone > section > div:first-child,
+.app-root[data-view="home"] .home-content-zone > section > div:first-child {
+    border-radius: 18px !important;
+    border-color: color-mix(in srgb, var(--border, #d6e4df) 70%, transparent) !important;
+    background: color-mix(in srgb, var(--bg-primary, #ffffff) 82%, transparent) !important;
+    box-shadow: 0 16px 38px rgba(17, 38, 31, 0.08) !important;
+}
+
+[data-theme="dark"] .app-root .app-view-home,
+[data-theme="dark"] .app-root[data-view="home"] {
+    background:
+        linear-gradient(180deg, #07110e 0%, #091712 48%, #07110e 100%) !important;
+}
+
+[data-theme="dark"] .app-root .app-view-home .home-hero-shell,
+[data-theme="dark"] .app-root[data-view="home"] .home-hero-shell {
+    border-color: rgba(126, 179, 156, 0.16);
+    background:
+        linear-gradient(145deg, rgba(15, 31, 25, 0.98), rgba(8, 20, 16, 0.98));
+    box-shadow:
+        0 24px 58px rgba(0, 0, 0, 0.32),
+        inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+[data-theme="dark"] .app-root .app-view-home .home-info-card,
+[data-theme="dark"] .app-root[data-view="home"] .home-info-card,
+[data-theme="dark"] .app-root .app-view-home :is(.home-daily-verse-card, .home-session-card, .home-prayer-card, .home-tools-quick-card),
+[data-theme="dark"] .app-root[data-view="home"] :is(.home-daily-verse-card, .home-session-card, .home-prayer-card, .home-tools-quick-card),
+[data-theme="dark"] .app-root .app-view-home .home-content-zone > section > div:first-child,
+[data-theme="dark"] .app-root[data-view="home"] .home-content-zone > section > div:first-child {
+    border-color: rgba(126, 179, 156, 0.15) !important;
+    background: linear-gradient(145deg, rgba(16, 31, 26, 0.96), rgba(9, 19, 16, 0.96)) !important;
+    box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.035) !important;
+}
+
+[data-theme="dark"] .app-root .app-view-home .home-hero-title,
+[data-theme="dark"] .app-root[data-view="home"] .home-hero-title {
+    color: rgba(246, 250, 247, 0.96);
+}
+
+[data-theme="dark"] .app-root .app-view-home .home-cta-primary,
+[data-theme="dark"] .app-root[data-view="home"] .home-cta-primary {
+    background: linear-gradient(135deg, #0b6b3b, #0f8f5a) !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .app-root .app-view-home .home-cta-secondary,
+[data-theme="dark"] .app-root[data-view="home"] .home-cta-secondary {
+    background: rgba(255, 255, 255, 0.065) !important;
+    color: rgba(246, 250, 247, 0.94) !important;
+}
+
+[data-theme="dark"] .app-root .app-view-home .home-hero-copy,
+[data-theme="dark"] .app-root[data-view="home"] .home-hero-copy {
+    color: rgba(204, 222, 214, 0.82);
+}
+
+@media (max-width: 1180px) {
+    .app-root .app-view-home .home-top-cards-grid,
+    .app-root[data-view="home"] .home-top-cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 979px) {
+    .app-root .app-view-home .home-hero-main,
+    .app-root[data-view="home"] .home-hero-main {
+        min-height: 0;
+    }
+
+    .app-root .app-view-home .home-info-panel,
+    .app-root[data-view="home"] .home-info-panel {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .app-root .app-view-home .hp-wrapper,
+    .app-root[data-view="home"] .hp-wrapper {
+        max-width: calc(100vw - 0.9rem);
+        padding-top: 0.7rem;
+        gap: 0.75rem;
+    }
+
+    .app-root .app-view-home .home-hero-shell,
+    .app-root[data-view="home"] .home-hero-shell {
+        border-radius: 18px;
+        padding: 1rem !important;
+    }
+
+    .app-root .app-view-home .home-brand-row,
+    .app-root[data-view="home"] .home-brand-row {
+        align-items: center;
+    }
+
+    .app-root .app-view-home .home-hero-title,
+    .app-root[data-view="home"] .home-hero-title {
+        font-size: clamp(2rem, 12vw, 2.75rem) !important;
+    }
+
+    .app-root .app-view-home .home-hero-copy,
+    .app-root[data-view="home"] .home-hero-copy {
+        font-size: 0.92rem !important;
+        line-height: 1.5 !important;
+    }
+
+    .app-root .app-view-home .home-hero-actions,
+    .app-root[data-view="home"] .home-hero-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.55rem;
+    }
+
+    .app-root .app-view-home .home-top-cards-grid,
+    .app-root[data-view="home"] .home-top-cards-grid {
+        max-width: 100%;
+        grid-template-columns: 1fr;
+        gap: 0.7rem;
+    }
+
+    .app-root .app-view-home .home-content-zone > section > div:first-child,
+    .app-root[data-view="home"] .home-content-zone > section > div:first-child {
+        padding: 0.65rem !important;
+    }
+}
+
+/* Home typography and recitation catalogue refinement. */
+.app-root .app-view-home .home-hero-shell,
+.app-root .app-view-home .home-content-section,
+.app-root[data-view="home"] .home-hero-shell,
+.app-root[data-view="home"] .home-content-section {
+    letter-spacing: 0;
+}
+
+.app-root .app-view-home .home-hero-kicker-row,
+.app-root[data-view="home"] .home-hero-kicker-row {
+    font-size: 0.78rem;
+}
+
+.app-root .app-view-home .home-hero-kicker-row > *,
+.app-root .app-view-home .home-brand-row span,
+.app-root[data-view="home"] .home-hero-kicker-row > *,
+.app-root[data-view="home"] .home-brand-row span {
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
+.app-root .app-view-home .home-collection-heading,
+.app-root[data-view="home"] .home-collection-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: clamp(0.6rem, 1vw, 1rem);
+}
+
+.app-root .app-view-home .home-collection-heading__copy,
+.app-root[data-view="home"] .home-collection-heading__copy {
+    min-width: 0;
+}
+
+.app-root .app-view-home .home-collection-heading__eyebrow,
+.app-root[data-view="home"] .home-collection-heading__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    border: 1px solid color-mix(in srgb, var(--primary, #0b6235) 22%, transparent);
+    border-radius: 999px;
+    background: rgba(var(--primary-rgb, 11, 98, 53), 0.08);
+    color: var(--primary, #0b6235);
+    font-size: 0.74rem;
+    font-weight: 800;
+    padding: 0.28rem 0.62rem;
+}
+
+.app-root .app-view-home .home-collection-heading h2,
+.app-root[data-view="home"] .home-collection-heading h2 {
+    margin: 0.45rem 0 0;
+    color: var(--text-primary, #10231b);
+    font-size: clamp(1.45rem, 1.1rem + 1.2vw, 2.15rem);
+    font-weight: 900;
+    line-height: 1.08;
+}
+
+.app-root .app-view-home .home-collection-heading p,
+.app-root[data-view="home"] .home-collection-heading p {
+    max-width: 58rem;
+    margin: 0.35rem 0 0;
+    color: var(--text-secondary, #526960);
+    font-size: clamp(0.9rem, 0.86rem + 0.2vw, 1rem);
+    line-height: 1.58;
+}
+
+.app-root .app-view-home .home-content-toolbar,
+.app-root[data-view="home"] .home-content-toolbar {
+    border-radius: 20px !important;
+    border: 1px solid rgba(27, 56, 45, 0.13) !important;
+    padding: 0.72rem !important;
+    background:
+        linear-gradient(180deg,
+            color-mix(in srgb, var(--bg-primary, #ffffff) 92%, transparent),
+            color-mix(in srgb, var(--bg-secondary, #f5faf7) 94%, transparent)) !important;
+    box-shadow: 0 16px 36px rgba(18, 39, 31, 0.08) !important;
+}
+
+.app-root .app-view-home .home-content-toolbar > div:first-child,
+.app-root[data-view="home"] .home-content-toolbar > div:first-child {
+    border: 1px solid rgba(27, 56, 45, 0.12) !important;
+    border-radius: 15px !important;
+    background: color-mix(in srgb, var(--bg-secondary, #f5faf7) 86%, transparent) !important;
+}
+
+.app-root .app-view-home .home-content-toolbar > div:first-child button[aria-pressed="true"],
+.app-root[data-view="home"] .home-content-toolbar > div:first-child button[aria-pressed="true"] {
+    background: color-mix(in srgb, var(--bg-primary, #ffffff) 92%, var(--primary, #0b6235) 8%) !important;
+    color: var(--primary, #0b6235) !important;
+}
+
+.app-root .app-view-home .home-content-toolbar button,
+.app-root[data-view="home"] .home-content-toolbar button {
+    letter-spacing: 0 !important;
+}
+
+.app-root .app-view-home .home-content-toolbar input,
+.app-root[data-view="home"] .home-content-toolbar input {
+    min-height: 46px;
+    border-radius: 15px !important;
+    font-size: 0.94rem !important;
+    font-weight: 650;
+}
+
+.app-root .app-view-home .hp-grid.hp-grid--reciters,
+.app-root[data-view="home"] .hp-grid.hp-grid--reciters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 285px), 1fr));
+    gap: clamp(0.8rem, 1.2vw, 1rem);
+}
+
+.app-root .app-view-home .home-style-filters,
+.app-root[data-view="home"] .home-style-filters {
+    gap: 0.55rem !important;
+    margin-top: -0.2rem;
+}
+
+.app-root .app-view-home .home-style-filter,
+.app-root[data-view="home"] .home-style-filter {
+    min-height: 36px;
+    border-radius: 999px !important;
+    letter-spacing: 0 !important;
+    font-size: 0.86rem !important;
+    font-weight: 750 !important;
+}
+
+.app-root .app-view-home .hp-grid.hp-grid--radio,
+.app-root[data-view="home"] .hp-grid.hp-grid--radio {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: clamp(0.75rem, 1.1vw, 1rem);
+}
+
+.app-root .app-view-home .reciter-card,
+.app-root[data-view="home"] .reciter-card {
+    min-height: 190px;
+    border-radius: 20px !important;
+    border-color: color-mix(in srgb, var(--border, #d6e4df) 72%, transparent) !important;
+    background:
+        radial-gradient(circle at 14% 0%, rgba(var(--primary-rgb, 11, 98, 53), 0.13), transparent 34%),
+        linear-gradient(180deg,
+            color-mix(in srgb, var(--bg-primary, #ffffff) 96%, var(--primary, #0b6235) 4%),
+            color-mix(in srgb, var(--bg-secondary, #f5faf7) 96%, transparent)) !important;
+    box-shadow: 0 16px 34px rgba(15, 33, 27, 0.08) !important;
+}
+
+.app-root .app-view-home .reciter-card__media,
+.app-root[data-view="home"] .reciter-card__media {
+    width: 76px !important;
+    height: 76px !important;
+    border-radius: 18px !important;
+    border-color: rgba(255, 255, 255, 0.62) !important;
+}
+
+.app-root .app-view-home .reciter-card__name,
+.app-root[data-view="home"] .reciter-card__name {
+    color: var(--text-primary, #10231b) !important;
+    font-size: clamp(1rem, 0.95rem + 0.22vw, 1.12rem) !important;
+    line-height: 1.22 !important;
+}
+
+.app-root .app-view-home .reciter-card__chip,
+.app-root[data-view="home"] .reciter-card__chip {
+    min-height: 24px;
+    border-radius: 999px !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+}
+
+.app-root .app-view-home .reciter-card__actions,
+.app-root[data-view="home"] .reciter-card__actions {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 0.55rem !important;
+}
+
+.app-root .app-view-home .reciter-card__actions button,
+.app-root[data-view="home"] .reciter-card__actions button {
+    min-height: 40px;
+    border-radius: 13px !important;
+}
+
+.app-root .app-view-home .reciter-card__actions button[class*="bg-primary"],
+.app-root[data-view="home"] .reciter-card__actions button[class*="bg-primary"] {
+    border-color: var(--primary, #0b6235) !important;
+    background: var(--primary, #0b6235) !important;
+    color: #ffffff !important;
+}
+
+.app-root .app-view-home .reciter-card__actions button:not([class*="bg-primary"]),
+.app-root[data-view="home"] .reciter-card__actions button:not([class*="bg-primary"]) {
+    color: var(--text-secondary, #526960) !important;
+}
+
+.app-root .app-view-home .reciter-radio-card,
+.app-root[data-view="home"] .reciter-radio-card {
+    border-radius: 18px !important;
+    border-color: color-mix(in srgb, var(--border, #d6e4df) 70%, transparent) !important;
+    background: color-mix(in srgb, var(--bg-primary, #ffffff) 92%, var(--primary, #0b6235) 4%) !important;
+    box-shadow: 0 12px 28px rgba(15, 33, 27, 0.06) !important;
+}
+
+[data-theme="dark"] .app-root .app-view-home .home-collection-heading h2,
+[data-theme="dark"] .app-root[data-view="home"] .home-collection-heading h2 {
+    color: rgba(246, 250, 247, 0.96);
+}
+
+[data-theme="dark"] .app-root .app-view-home .home-collection-heading p,
+[data-theme="dark"] .app-root[data-view="home"] .home-collection-heading p {
+    color: rgba(204, 222, 214, 0.78);
+}
+
+[data-theme="dark"] .app-root .app-view-home .home-content-toolbar,
+[data-theme="dark"] .app-root[data-view="home"] .home-content-toolbar {
+    border-color: rgba(126, 179, 156, 0.15) !important;
+    background: linear-gradient(145deg, rgba(16, 31, 26, 0.96), rgba(8, 18, 15, 0.96)) !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28) !important;
+}
+
+[data-theme="dark"] .app-root .app-view-home .home-content-toolbar > div:first-child,
+[data-theme="dark"] .app-root[data-view="home"] .home-content-toolbar > div:first-child {
+    border-color: rgba(126, 179, 156, 0.14) !important;
+    background: rgba(255, 255, 255, 0.035) !important;
+}
+
+[data-theme="dark"] .app-root .app-view-home .reciter-card,
+[data-theme="dark"] .app-root[data-view="home"] .reciter-card,
+[data-theme="dark"] .app-root .app-view-home .reciter-radio-card,
+[data-theme="dark"] .app-root[data-view="home"] .reciter-radio-card {
+    border-color: rgba(126, 179, 156, 0.16) !important;
+    background:
+        radial-gradient(circle at 16% 0%, rgba(var(--primary-rgb, 11, 98, 53), 0.18), transparent 34%),
+        linear-gradient(145deg, rgba(15, 31, 25, 0.96), rgba(8, 18, 15, 0.97)) !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28) !important;
+}
+
+[data-theme="dark"] .app-root .app-view-home .reciter-card__name,
+[data-theme="dark"] .app-root[data-view="home"] .reciter-card__name {
+    color: rgba(246, 250, 247, 0.96) !important;
+}
+
+@media (max-width: 640px) {
+    .app-root .app-view-home .home-collection-heading,
+    .app-root[data-view="home"] .home-collection-heading {
+        margin-top: 0.15rem;
+    }
+
+    .app-root .app-view-home .home-collection-heading__eyebrow,
+    .app-root[data-view="home"] .home-collection-heading__eyebrow {
+        font-size: 0.68rem;
+    }
+
+    .app-root .app-view-home .home-collection-heading h2,
+    .app-root[data-view="home"] .home-collection-heading h2 {
+        font-size: 1.35rem;
+    }
+
+    .app-root .app-view-home .home-collection-heading p,
+    .app-root[data-view="home"] .home-collection-heading p {
+        font-size: 0.86rem;
+        line-height: 1.48;
+    }
+
+    .app-root .app-view-home .home-content-toolbar,
+    .app-root[data-view="home"] .home-content-toolbar {
+        gap: 0.55rem !important;
+        padding: 0.55rem !important;
+    }
+
+    .app-root .app-view-home .reciter-card__media,
+    .app-root[data-view="home"] .reciter-card__media {
+        width: 64px !important;
+        height: 64px !important;
     }
 }

@@ -27,7 +27,7 @@ export default function DailyVerseCard({
     <div
       className={cn(
         /* structure */
-        "relative overflow-hidden rounded-[1.2rem]",
+        "home-daily-verse-card relative overflow-hidden rounded-[1.2rem]",
         /* bordure */
         "border border-[var(--border)]",
         /* espacement */

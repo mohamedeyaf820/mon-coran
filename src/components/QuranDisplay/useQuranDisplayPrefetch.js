@@ -29,9 +29,26 @@ export default function useQuranDisplayPrefetch({
 
     const translationLang = translationLangs[0] || "fr";
     const runPrefetch = () => {
+      const alternateRiwaya = riwaya === "warsh" ? "hafs" : "warsh";
+      const prefetchText = (mode, value, targetRiwaya) => {
+        if (mode === "surah") {
+          if (targetRiwaya === "warsh") preloadWarshSurah(value);
+          else getSurahText(value, targetRiwaya).catch(() => {});
+          return;
+        }
+        if (mode === "page") {
+          (targetRiwaya === "warsh" ? getWarshPageVerses(value) : getPage(value, targetRiwaya)).catch(() => {});
+          return;
+        }
+        if (mode === "juz") {
+          (targetRiwaya === "warsh" ? getWarshJuzVerses(value) : getJuz(value, targetRiwaya)).catch(() => {});
+        }
+      };
+
       if (displayMode === "surah") {
         const next = currentSurah + 1;
         const previous = currentSurah - 1;
+        prefetchText("surah", currentSurah, alternateRiwaya);
         if (riwaya === "warsh") {
           if (next <= 114) preloadWarshSurah(next);
           if (previous >= 1) preloadWarshSurah(previous);
@@ -44,6 +61,7 @@ export default function useQuranDisplayPrefetch({
       }
 
       if (displayMode === "page") {
+        prefetchText("page", currentPage, alternateRiwaya);
         [currentPage - 1, currentPage + 1].forEach((page) => {
           if (page < 1 || page > 604) return;
           (riwaya === "warsh" ? getWarshPageVerses(page) : getPage(page, riwaya)).catch(() => {});
@@ -52,6 +70,7 @@ export default function useQuranDisplayPrefetch({
       }
 
       if (displayMode === "juz") {
+        prefetchText("juz", currentJuz, alternateRiwaya);
         [currentJuz - 1, currentJuz + 1].forEach((juz) => {
           if (juz < 1 || juz > 30) return;
           (riwaya === "warsh" ? getWarshJuzVerses(juz) : getJuz(juz, riwaya)).catch(() => {});

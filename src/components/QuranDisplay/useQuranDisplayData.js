@@ -91,6 +91,11 @@ export default function useQuranDisplayData({
   }, [currentAyah, currentSurah, displayMode, showHome]);
 
   const fetchData = useCallback(async () => {
+    if (showHome) {
+      dispatch({ type: "SET_LOADING", payload: false });
+      return;
+    }
+
     const requestId = requestSeqRef.current + 1;
     requestSeqRef.current = requestId;
     const signal = abortPendingRequests();
@@ -204,12 +209,14 @@ export default function useQuranDisplayData({
     displayMode,
     lang,
     riwaya,
+    showHome,
     warshStrictMode,
   ]);
 
   useEffect(() => {
+    if (showHome) return;
     fetchData();
-  }, [fetchData]);
+  }, [fetchData, showHome]);
 
   useEffect(
     () => () => {

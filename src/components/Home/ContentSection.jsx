@@ -94,10 +94,47 @@ export default function ContentSection({
     ? filteredReciters
     : filteredReciters.slice(0, 8);
 
+  const refinedCollectionCopy = {
+    surah: {
+      fr: ["Explorer les sourates", "Une liste claire, rapide a parcourir, avec recherche et tri."],
+      en: ["Explore surahs", "A clear, fast list with search and sorting."],
+      ar: ["استكشاف السور", "قائمة واضحة وسريعة مع البحث والترتيب."],
+    },
+    juz: {
+      fr: ["Lecture par Juz", "Avance par sections regulieres, pratique pour suivre une khatma."],
+      en: ["Read by Juz", "Move through regular sections, useful for khatma tracking."],
+      ar: ["القراءة حسب الجزء", "تصفح الاجزاء بسهولة لمتابعة الختمة."],
+    },
+    recitations: {
+      fr: ["Choisir une recitation", "Photos, styles et modes audio sont regroupes pour choisir une voix rapidement."],
+      en: ["Choose a recitation", "Photos, styles and audio modes are grouped so you can choose a voice quickly."],
+      ar: ["اختر التلاوة", "الصور والانماط واوضاع الصوت مجمعة لاختيار القارئ بسرعة."],
+    },
+    radio: {
+      fr: ["Stations audio", "Lance une station thematique ou une voix favorite en un geste."],
+      en: ["Audio stations", "Start a themed station or a favorite voice in one step."],
+      ar: ["محطات الاستماع", "شغل محطة موضوعية او صوتا مفضلا بسرعة."],
+    },
+  };
+  const [displayCollectionTitle, displayCollectionSubtitle] =
+    refinedCollectionCopy[activeTab]?.[lang] ||
+    refinedCollectionCopy[activeTab]?.fr ||
+    refinedCollectionCopy.surah.fr;
+
   return (
-    <section className="flex flex-col gap-6">
+    <section className="home-content-section flex flex-col gap-6">
+      <div className="home-collection-heading">
+        <div className="home-collection-heading__copy">
+          <span className="home-collection-heading__eyebrow">
+            {activeCollectionCount} {activeCollectionLabel}
+          </span>
+          <h2>{displayCollectionTitle}</h2>
+          <p>{displayCollectionSubtitle}</p>
+        </div>
+      </div>
+
       {/* ── Barre d'actions sticky ──────────────────────────────────────── */}
-      <div className=" z-20 flex flex-col md:flex-row items-center gap-3 p-3 rounded-[1.18rem] bg-bg-card/90 border border-border/50 shadow-lg backdrop-blur-xl">
+      <div className="home-content-toolbar z-20 flex flex-col md:flex-row items-center gap-3 p-3 rounded-[1.18rem] bg-bg-card/90 border border-border/50 shadow-lg backdrop-blur-xl">
         {/* Onglets */}
         <div className="flex items-center gap-1 p-1 rounded-xl bg-bg-secondary border border-border/50 shadow-sm overflow-x-auto w-full md:w-auto no-scrollbar">
           <button
@@ -244,13 +281,13 @@ export default function ContentSection({
 
       {/* Filtre de style récitateur */}
       {activeTab === "recitations" && (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="home-style-filters flex flex-wrap items-center gap-2">
           {STYLE_FILTERS.map((item) => (
             <button
               key={item.id}
               type="button"
               className={cn(
-                "px-3.5 py-1.5 rounded-full text-[0.8rem] font-bold border transition-colors",
+                "home-style-filter px-3.5 py-1.5 rounded-full text-[0.8rem] font-bold border transition-colors",
                 reciterStyleFilter === item.id
                   ? "bg-primary text-white border-primary"
                   : "bg-bg-secondary text-text-secondary border-border hover:bg-bg-tertiary hover:text-text-primary",
@@ -267,7 +304,12 @@ export default function ContentSection({
       <div
         className={cn(
           viewMode === "grid"
-            ? cn("hp-grid", activeTab === "surah" && "hp-grid--surah")
+            ? cn(
+                "hp-grid",
+                activeTab === "surah" && "hp-grid--surah",
+                activeTab === "recitations" && "hp-grid--reciters",
+                activeTab === "radio" && "hp-grid--radio",
+              )
             : "hp-list",
         )}
       >
@@ -384,11 +426,11 @@ export default function ContentSection({
                           </span>
                           {reciter.cdnType === "everyayah" ? (
                             <span className="reciter-card__chip inline-flex items-center rounded-full border border-cyan-500/20 bg-cyan-500/10 px-1.5 py-0.5 text-[0.58rem] font-bold text-cyan-600 dark:text-cyan-400">
-                              Ayah mode
+                              {lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Ayah"}
                             </span>
                           ) : (
                             <span className="reciter-card__chip inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-1.5 py-0.5 text-[0.58rem] font-bold text-amber-600 dark:text-amber-400">
-                              Surah mode
+                              {lang === "fr" ? "Sourate" : lang === "ar" ? "سورة" : "Surah"}
                             </span>
                           )}
                           {reciter.verifiedWarsh && (
@@ -429,14 +471,14 @@ export default function ContentSection({
                           onClick={() => playReciterRadio(reciter)}
                         >
                           <i className="fas fa-play text-[0.66rem]" />
-                          <span>Radio</span>
+                          <span>{lang === "fr" ? "Ecouter" : lang === "ar" ? "\u0627\u0633\u062a\u0645\u0627\u0639" : "Listen"}</span>
                         </button>
                         <button
                           className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border/40 bg-bg-secondary text-text-muted transition-all active:scale-95 hover:bg-bg-tertiary hover:text-text-primary"
                           type="button"
                           onClick={() => setSelectedReciterId(reciter.id)}
-                          title={lang === "fr" ? "Détails" : "Details"}
-                          aria-label="Details"
+                          title={lang === "fr" ? "Details du recitateur" : lang === "ar" ? "تفاصيل القارئ" : "Reciter details"}
+                          aria-label={lang === "fr" ? "Details du recitateur" : lang === "ar" ? "تفاصيل القارئ" : "Reciter details"}
                         >
                           <i className={`fas fa-chevron-${lang === "ar" ? "left" : "right"} text-xs`} />
                         </button>

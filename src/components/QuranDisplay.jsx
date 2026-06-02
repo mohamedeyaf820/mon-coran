@@ -286,7 +286,7 @@ export default function QuranDisplay() {
     };
   }, [fontFamily, currentPage, displayMode]);
 
-  if ((loading && ayahs.length === 0) || fontLoading)
+  if ((loading && ayahs.length === 0) || (fontLoading && ayahs.length === 0))
     return (
       <div className="flex justify-center items-center min-h-[50vh] p-8">
         <div className="w-full max-w-3xl flex flex-col gap-6 p-8 rounded-3xl backdrop-blur-xl bg-bg-card/90 shadow-xl border border-white/10 relative overflow-hidden">

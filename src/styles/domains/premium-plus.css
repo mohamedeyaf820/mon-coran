@@ -1780,8 +1780,8 @@
 }
 
 .app-root.premium-plus .app-view-home {
-    position: sticky;
-    top: calc(var(--header-h, 60px) + 0.45rem);
+    position: relative;
+    top: auto;
     z-index: 16;
     margin-bottom: 0.84rem;
     padding: 0.52rem;

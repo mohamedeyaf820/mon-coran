@@ -6,6 +6,12 @@ import AyahMarker from "../Quran/AyahMarker";
 
 const BASMALA = "\uFDFD";
 
+function getInitialVisibleCount(total, displayMode) {
+  if (displayMode === "page") return total;
+  if (displayMode === "juz") return Math.min(total, 64);
+  return Math.min(total, 42);
+}
+
 function PageSeparator({ page, lang }) {
   return (
     <div className="relative flex items-center justify-center gap-4 my-2 select-none" aria-hidden="true">
@@ -46,7 +52,23 @@ export default function QCReadingView({
       )
     : (ayahs || []).map((a) => ({ ayah: a, surahNum: a.surah?.number || 1 }));
 
-  const [visibleCount, setVisibleCount] = useState(15);
+  const contentKey = useMemo(() => {
+    const first = items[0]?.ayah;
+    const last = items[items.length - 1]?.ayah;
+    return [
+      displayMode,
+      riwaya,
+      items.length,
+      first?.surah?.number,
+      first?.numberInSurah,
+      last?.surah?.number,
+      last?.numberInSurah,
+    ].join(":");
+  }, [displayMode, items, riwaya]);
+
+  const [visibleCount, setVisibleCount] = useState(() =>
+    getInitialVisibleCount(items.length, displayMode),
+  );
   const sentinelRef = useRef(null);
 
   const activeIndex = useMemo(() => {
@@ -74,14 +96,14 @@ export default function QCReadingView({
   }, [activeIndex, playingIndex, visibleCount]);
 
   useEffect(() => {
-    setVisibleCount(15);
-  }, [items.length, currentPlayingAyah?.surah]);
+    setVisibleCount(getInitialVisibleCount(items.length, displayMode));
+  }, [contentKey, displayMode, items.length]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setVisibleCount((prev) => Math.min(prev + 15, items.length));
+          setVisibleCount((prev) => Math.min(prev + 32, items.length));
         }
       },
       { rootMargin: "300px" }

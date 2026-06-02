@@ -1202,6 +1202,23 @@
         padding-inline: 0;
     }
 
+    .app-root .app-view-home .hp-wrapper,
+    .app-root.premium-plus .app-view-home .hp-wrapper {
+        box-sizing: border-box;
+        inline-size: 100%;
+        max-inline-size: 100%;
+        overflow-x: clip;
+    }
+
+    .app-root .app-view-home .home-hero-compact,
+    .app-root.premium-plus .app-view-home .home-hero-compact,
+    .app-root .app-view-home .home-hero-compact__side,
+    .app-root.premium-plus .app-view-home .home-hero-compact__side {
+        box-sizing: border-box;
+        inline-size: 100%;
+        max-inline-size: 100%;
+    }
+
     .app-root .quran-display.quran-display--platform,
     .app-root.premium-plus .quran-display.quran-display--platform {
         padding: 0.4rem 0 calc(var(--player-h, 84px) + 1.18rem);

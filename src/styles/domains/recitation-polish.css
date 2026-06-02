@@ -102,11 +102,94 @@
 
 .reciter-detail {
     border-radius: 26px !important;
+    max-width: min(1060px, calc(100vw - 1.25rem)) !important;
+    border-color: color-mix(in srgb, var(--border, #d6e4df) 72%, transparent) !important;
+    background:
+        radial-gradient(circle at 12% 0%, rgba(var(--primary-rgb), 0.12), transparent 34%),
+        linear-gradient(180deg,
+            color-mix(in srgb, var(--bg-primary, #ffffff) 94%, var(--primary, #0b6235) 4%),
+            color-mix(in srgb, var(--bg-card, #ffffff) 96%, transparent)) !important;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28) !important;
+}
+
+.reciter-detail__header {
+    border-color: color-mix(in srgb, var(--border, #d6e4df) 68%, transparent) !important;
+}
+
+.reciter-hero {
+    align-items: center !important;
+}
+
+.reciter-hero__avatar {
+    width: clamp(4.2rem, 8vw, 5.5rem) !important;
+    height: clamp(4.2rem, 8vw, 5.5rem) !important;
+    border-radius: 22px !important;
+}
+
+.reciter-hero__name {
+    max-width: 36rem;
+    color: var(--text-primary, #10231b) !important;
+    font-size: clamp(1.35rem, 1.05rem + 1.2vw, 2.2rem) !important;
+    line-height: 1.08 !important;
+    letter-spacing: 0 !important;
+}
+
+.reciter-hero__meta {
+    gap: 0.45rem !important;
+}
+
+.reciter-hero__meta > span {
+    min-height: 27px;
+    border-radius: 999px !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    font-size: 0.72rem !important;
 }
 
 .reciter-detail__stat,
 .reciter-detail__bio {
     border-radius: 18px !important;
+}
+
+.reciter-detail__stat {
+    background: color-mix(in srgb, var(--bg-primary, #ffffff) 88%, var(--primary, #0b6235) 6%) !important;
+}
+
+.reciter-detail__bio {
+    background: color-mix(in srgb, var(--bg-primary, #ffffff) 88%, var(--primary, #0b6235) 5%) !important;
+    font-size: 0.94rem;
+}
+
+.reciter-detail__section-title h4 {
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    color: var(--text-secondary, #526960) !important;
+    font-size: 0.86rem !important;
+}
+
+.recitation-surah-list {
+    gap: 0.62rem !important;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--primary-rgb), 0.46) transparent;
+}
+
+.recitation-row {
+    min-height: 68px;
+    border-color: color-mix(in srgb, var(--border, #d6e4df) 70%, transparent) !important;
+    background:
+        linear-gradient(180deg,
+            color-mix(in srgb, var(--bg-primary, #ffffff) 94%, var(--primary, #0b6235) 3%),
+            color-mix(in srgb, var(--bg-card, #ffffff) 96%, transparent)) !important;
+}
+
+.recitation-row__title {
+    font-size: 0.95rem !important;
+    line-height: 1.24 !important;
+}
+
+.recitation-row__index {
+    width: 2.55rem !important;
+    height: 2.55rem !important;
 }
 
 .line-clamp-2 {
@@ -171,12 +254,49 @@
 
 [data-theme="dark"] .reciter-detail {
     background:
+        radial-gradient(circle at 12% 0%, rgba(var(--primary-rgb), 0.18), transparent 34%),
         linear-gradient(180deg, rgba(18, 28, 25, 0.98), rgba(5, 10, 9, 0.98)),
         var(--bg-card);
     border-color: rgba(148, 163, 184, 0.18);
 }
 
+[data-theme="dark"] .reciter-detail__bio,
+[data-theme="dark"] .reciter-detail__stat {
+    border-color: rgba(126, 179, 156, 0.16) !important;
+    background: linear-gradient(145deg, rgba(16, 31, 26, 0.96), rgba(8, 18, 15, 0.96)) !important;
+}
+
+[data-theme="dark"] .reciter-detail__section-title h4 {
+    color: rgba(204, 222, 214, 0.8) !important;
+}
+
 @media (max-width: 520px) {
+    .reciter-detail {
+        max-height: calc(100dvh - 0.75rem) !important;
+        border-radius: 20px !important;
+        padding: 1rem !important;
+    }
+
+    .reciter-detail__header {
+        gap: 0.85rem !important;
+        padding-right: 2.25rem;
+    }
+
+    .reciter-hero__avatar {
+        width: 4rem !important;
+        height: 4rem !important;
+        border-radius: 18px !important;
+    }
+
+    .reciter-hero__name {
+        font-size: 1.25rem !important;
+    }
+
+    .reciter-detail__stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        margin-block: 0.75rem !important;
+    }
+
     .reciter-card {
         min-height: 0;
         padding: 0.85rem !important;

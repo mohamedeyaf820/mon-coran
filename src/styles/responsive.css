@@ -186,8 +186,23 @@ html {
     gap: 0.55rem !important;
   }
 
-  .hp-wrapper {
-    padding: 0.8rem !important;
+  .app-root .app-view-home .hp-wrapper,
+  .app-root.premium-plus .app-view-home .hp-wrapper {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-inline-size: calc(100vw - 0.85rem) !important;
+    margin-inline: auto !important;
+    padding: 0.55rem !important;
+    overflow-x: clip !important;
+  }
+
+  .app-root .app-view-home .home-hero-compact,
+  .app-root.premium-plus .app-view-home .home-hero-compact {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
   }
 }
 

@@ -47,9 +47,16 @@ const getInitialState = () => {
     : "fr";
   const routeOverrides = parseInitialRoute();
   const initialFontFamilyByRiwaya = {
-    hafs: normalizeFontId(stored.fontFamilyByRiwaya?.hafs || DEFAULT_FONT_ID, "hafs"),
+    hafs: normalizeFontId(
+      stored.fontFamilyByRiwaya?.hafs ||
+        (initialRiwaya === "hafs" ? stored.fontFamily : null) ||
+        DEFAULT_FONT_ID,
+      "hafs",
+    ),
     warsh: normalizeFontId(
-      stored.fontFamilyByRiwaya?.warsh || DEFAULT_WARSH_FONT_ID,
+      stored.fontFamilyByRiwaya?.warsh ||
+        (initialRiwaya === "warsh" ? stored.fontFamily : null) ||
+        DEFAULT_WARSH_FONT_ID,
       "warsh",
     ),
   };
@@ -187,7 +194,11 @@ export function appReducer(state, action) {
       const next = { ...state, ...payload };
       const hasRiwaya = Object.prototype.hasOwnProperty.call(payload, "riwaya");
       const hasFontFamily = Object.prototype.hasOwnProperty.call(payload, "fontFamily");
-      const targetRiwaya = hasRiwaya ? payload.riwaya : state.riwaya;
+      const targetRiwaya = hasRiwaya
+        ? payload.riwaya === "warsh"
+          ? "warsh"
+          : "hafs"
+        : state.riwaya;
       if (Object.prototype.hasOwnProperty.call(payload, "theme")) {
         next.theme = normalizeThemeId(payload.theme, state.theme);
       }
@@ -211,10 +222,12 @@ export function appReducer(state, action) {
           ...(state.fontFamilyByRiwaya || {}),
           [state.riwaya]: normalizeFontId(state.fontFamily, state.riwaya),
         };
-        next.reciter = ensureReciterForRiwaya(next.reciter, payload.riwaya);
+        const nextRiwaya = payload.riwaya === "warsh" ? "warsh" : "hafs";
+        next.riwaya = nextRiwaya;
+        next.reciter = ensureReciterForRiwaya(next.reciter, nextRiwaya);
         next.fontFamily = normalizeFontId(
-          fontByRiwaya[payload.riwaya],
-          payload.riwaya,
+          fontByRiwaya[nextRiwaya],
+          nextRiwaya,
         );
         next.fontFamilyByRiwaya = fontByRiwaya;
       }
@@ -293,7 +306,7 @@ export function appReducer(state, action) {
     }
 
     case "SET_RIWAYA": {
-      const nextRiwaya = action.payload;
+      const nextRiwaya = action.payload === "warsh" ? "warsh" : "hafs";
       const nextReciter = ensureReciterForRiwaya(state.reciter, nextRiwaya);
       const fontByRiwaya = {
         ...(state.fontFamilyByRiwaya || {}),
