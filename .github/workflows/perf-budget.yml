@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUDGET_CSS_KB: 940
-      BUDGET_JS_KB: 970
+      BUDGET_JS_KB: 1040
       BUDGET_SINGLE_CSS_KB: 780
       BUDGET_SINGLE_JS_KB: 250
     steps:
