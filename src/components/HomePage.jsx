@@ -522,7 +522,7 @@ export default function HomePage({ lowPerfMode = false }) {
   );
   const suggestionSet = useMemo(() => getSuggestedSurahs(now), [now]);
   const surahLabel = SURAHS[currentSurah - 1];
-  const progressPct = Math.round(((Math.max(1, currentSurah) - 1) / 113) * 100);
+  const progressPct = Math.round((Math.max(1, Math.min(114, currentSurah)) / 114) * 100);
 
   const riwayaLabel =
     riwaya === "warsh"

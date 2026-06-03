@@ -42,18 +42,6 @@ export function PercentBar({ value }) {
       preserveAspectRatio="none"
       className="block h-full w-full"
     >
-      <defs>
-        <linearGradient
-          id="home-progress-gradient"
-          x1="0%"
-          y1="0%"
-          x2="100%"
-          y2="0%"
-        >
-          <stop offset="0%" stopColor="var(--primary)" />
-          <stop offset="100%" stopColor="var(--gold)" />
-        </linearGradient>
-      </defs>
       <rect
         x="0"
         y="0"
@@ -68,7 +56,7 @@ export function PercentBar({ value }) {
         width={pct}
         height="8"
         rx="4"
-        fill="url(#home-progress-gradient)"
+        fill="var(--primary)"
       />
     </svg>
   );
@@ -255,8 +243,10 @@ export const SurahCard = memo(function SurahCard({
       <div
         className="hp-card-ar shrink-0 font-surah-names text-[1.6rem] opacity-60 transition-opacity group-hover:opacity-100"
         aria-label={surah.ar}
+        dir="rtl"
+        lang="ar"
       >
-        {surah.n > 9 ? "0" + surah.n : "00" + surah.n}
+        {surah.ar}
       </div>
 
       <button

@@ -191,6 +191,10 @@ export default function QuranDisplay() {
     translationLangs,
   });
 
+  useEffect(() => {
+    setActiveAyah(null);
+  }, [currentJuz, currentPage, currentSurah, displayMode, riwaya]);
+
   const toggleAyah = useCallback(
     (id) => setActiveAyah((current) => (current === id ? null : id)),
     [],

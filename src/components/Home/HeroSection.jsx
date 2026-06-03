@@ -26,6 +26,14 @@ export default function HeroSection({
   goSurahAyah,
   children,
 }) {
+  const uiLang = lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en";
+  const heroCopy =
+    uiLang === "ar"
+      ? "\u0627\u0642\u0631\u0623 \u0627\u0644\u0642\u0631\u0622\u0646 \u0628\u0647\u062f\u0648\u0621\u060c \u0627\u0633\u062a\u0645\u0639\u060c \u0648\u0627\u062d\u0641\u0638 \u0628\u0648\u062a\u064a\u0631\u062a\u0643."
+      : uiLang === "fr"
+        ? "Lisez, ecoutez et memorisez le Quran dans une interface claire, rapide et apaisee."
+        : "Read, listen and memorize the Quran in a clear, fast and calm interface.";
+
   return (
     <section className="home-hero-compact home-hero-shell relative z-10 overflow-hidden rounded-2xl border border-border/75 bg-bg-primary px-4 py-5 shadow-lg sm:px-6 sm:py-6 lg:p-7">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-transparent" />
@@ -81,6 +89,10 @@ export default function HeroSection({
               : lang === "fr"
                 ? "Lisez, méditez, mémorisez - La Parole d'Allah dans toute sa beauté"
                 : "Read, reflect and memorize the Holy Quran in beauty"}
+          </p>
+
+          <p className="home-hero-copy home-hero-copy-clean mt-4 max-w-[58ch] text-[0.95rem] leading-relaxed text-text-secondary max-[520px]:text-[0.88rem] max-[520px]:leading-snug">
+            {heroCopy}
           </p>
 
           <div className="home-hero-actions mt-5 flex flex-wrap items-center gap-3 max-[520px]:gap-2">

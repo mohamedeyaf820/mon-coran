@@ -15,6 +15,7 @@ import "./styles/responsive-experience.css";
 import "./styles/riwaya-fonts.css";
 import "./styles/dark-mode-refonte.css";
 import "./styles/reading-ux-refonte.css";
+import "./styles/home-audio-ux-refonte.css";
 
 /**
  * FontAwesome is loaded lazily (~3 MB CSS when fetched) and used by 200+ legacy

@@ -382,6 +382,7 @@ export default function ContentSection({
                 return (
                   <div
                     key={reciter.id}
+                    data-reciter-card="true"
                     className="reciter-card group relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3.5 shadow-sm transition-all duration-300 animate-fadeInScale hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-lg sm:p-4"
                   >
                     <div className="reciter-card__top relative z-10 flex min-w-0 items-start gap-3">

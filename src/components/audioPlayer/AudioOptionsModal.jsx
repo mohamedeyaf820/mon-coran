@@ -62,6 +62,11 @@ export default function AudioOptionsModal(props) {
       : lang === "ar"
         ? "القراء ومستوى الصوت والمزامنة"
         : "Reciters, volume, and synchronization";
+  const cleanOptionsModalTitle =
+    lang === "ar" ? "\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0627\u0644\u0635\u0648\u062a" : lang === "fr" ? "Reglages audio" : optionsModalTitle;
+  const closeOptionsLabel =
+    lang === "ar" ? "\u0625\u063a\u0644\u0627\u0642 \u0627\u0644\u062e\u064a\u0627\u0631\u0627\u062a" : lang === "fr" ? "Fermer les options" : "Close options";
+
   return optionsModalOpen ? (
       <div
         className="audio-player-modal fixed inset-0 z-[420] flex items-center justify-center p-2 sm:p-4"
@@ -71,7 +76,7 @@ export default function AudioOptionsModal(props) {
           type="button"
           className="audio-player-modal__backdrop absolute inset-0 bg-[color-mix(in_srgb,var(--theme-bg)_68%,#040810_32%)] backdrop-blur-sm"
           onClick={closeOptionsModal}
-          aria-label={lang === "fr" ? "Fermer les options" : "Close options"}
+          aria-label={closeOptionsLabel}
         />
         <div
           className="audio-player-modal__surface relative z-[421] flex h-[min(92vh,860px)] w-[min(96vw,1180px)] min-w-0 flex-col overflow-hidden rounded-3xl border border-[color-mix(in_srgb,var(--theme-border-strong)_30%,transparent_70%)] bg-[linear-gradient(165deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_95%,var(--theme-primary)_5%),color-mix(in_srgb,var(--theme-panel-bg)_94%,var(--theme-bg)_6%))] shadow-[0_40px_90px_rgba(2,8,18,0.56)] backdrop-blur-2xl"
@@ -86,7 +91,7 @@ export default function AudioOptionsModal(props) {
                 id="audio-options-modal-title"
                 className="truncate text-sm font-bold text-[color-mix(in_srgb,var(--theme-text)_92%,#ffffff_8%)] sm:text-base"
               >
-                {optionsModalTitle}
+                {cleanOptionsModalTitle}
               </h3>
               <p className="mt-1 truncate text-[0.66rem] text-[color-mix(in_srgb,var(--theme-text-muted)_88%,var(--theme-bg)_12%)] sm:text-xs">
                 {optionsModalSubtitle}
@@ -96,7 +101,7 @@ export default function AudioOptionsModal(props) {
               type="button"
               className="flex h-8 w-8 items-center justify-center rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[0.72rem] text-[color-mix(in_srgb,var(--theme-text)_84%,var(--theme-bg)_16%)] transition-all duration-150 hover:border-[color-mix(in_srgb,var(--theme-primary)_44%,transparent_56%)] hover:bg-[rgba(var(--theme-primary-rgb),0.14)] hover:text-white"
               onClick={closeOptionsModal}
-              aria-label={lang === "fr" ? "Fermer" : "Close"}
+              aria-label={lang === "ar" ? "\u0625\u063a\u0644\u0627\u0642" : lang === "fr" ? "Fermer" : "Close"}
               ref={optionsCloseButtonRef}
             >
               <i className="fas fa-times" />

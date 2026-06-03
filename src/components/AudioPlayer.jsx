@@ -319,6 +319,22 @@ export default function AudioPlayer() {
       }
       markReciterUnavailable(reciter, error);
       failedRecitersRef.current.add(reciter);
+      const switched = await tryAutoReciterFailover();
+      if (switched) {
+        setNetworkState("loading");
+        setAudioError(
+          lang === "fr"
+            ? "Le recitateur ne chargeait pas. Bascule automatique vers une voix disponible..."
+            : lang === "ar"
+              ? "\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0647\u0630\u0627 \u0627\u0644\u0642\u0627\u0631\u0626. \u064a\u062a\u0645 \u0627\u0644\u062a\u0628\u062f\u064a\u0644 \u062a\u0644\u0642\u0627\u0626\u064a\u0627..."
+              : "The reciter failed to load. Switching to an available voice...",
+        );
+        audioErrorTimerRef.current = setTimeout(() => {
+          setAudioError(null);
+          audioErrorTimerRef.current = null;
+        }, 2600);
+        return;
+      }
       const msg =
         riwaya === "warsh"
           ? lang === "fr"
@@ -632,16 +648,23 @@ export default function AudioPlayer() {
 
   const closeOptionsModal = useCallback(() => {
     setOptionsModalOpen(false);
+    setExpanded(false);
   }, []);
 
   const toggleOptionsModal = useCallback(() => {
-    setOptionsModalOpen((prev) => !prev);
+    setOptionsModalOpen((prev) => {
+      if (prev) setExpanded(false);
+      return !prev;
+    });
   }, []);
 
   const closePlayer = useCallback(() => {
     audioService.stop();
     setMinimized(false);
+    setExpanded(false);
     setOptionsModalOpen(false);
+    setAudioError(null);
+    setNetworkState("idle");
     set({ playerMinimized: false });
     setClosed(true);
   }, [set]);
@@ -877,6 +900,22 @@ export default function AudioPlayer() {
       label: lang === "fr" ? "Sourate" : lang === "ar" ? "سورة" : "Surah",
     },
   ].filter(Boolean);
+  const audioRegionLabel =
+    lang === "ar" ? "\u0645\u0634\u063a\u0644 \u0627\u0644\u0635\u0648\u062a" : lang === "fr" ? "Lecteur audio" : "Audio player";
+  const minimizedAudioRegionLabel =
+    lang === "ar" ? "\u0645\u0634\u063a\u0644 \u0627\u0644\u0635\u0648\u062a \u0627\u0644\u0645\u0635\u063a\u0631" : lang === "fr" ? "Lecteur audio reduit" : "Minimized audio player";
+  const readyLabel =
+    lang === "ar" ? "\u062c\u0627\u0647\u0632" : lang === "fr" ? "Pret a lire" : "Ready";
+  const closeLabel =
+    lang === "ar" ? "\u0627\u063a\u0644\u0627\u0642" : lang === "fr" ? "Fermer" : "Close";
+  const expandLabel =
+    lang === "ar" ? "\u062a\u0648\u0633\u064a\u0639" : lang === "fr" ? "Agrandir" : "Expand";
+  const minimizeLabel =
+    lang === "ar" ? "\u062a\u0635\u063a\u064a\u0631" : lang === "fr" ? "Reduire" : "Minimize";
+  const optionsLabel =
+    lang === "ar" ? "\u0627\u0644\u062e\u064a\u0627\u0631\u0627\u062a \u0648\u0627\u0644\u0642\u0631\u0627\u0621" : lang === "fr" ? "Options et recitateurs" : "Options and reciters";
+  const searchPlaceholder =
+    lang === "ar" ? "\u0627\u0628\u062d\u062b..." : lang === "fr" ? "Rechercher..." : "Search...";
 
   /* Shared button classes (mobile bar) */
   const playerPanelSurfaceClass =
@@ -1132,13 +1171,7 @@ export default function AudioPlayer() {
             "shadow-[0_20px_44px_rgba(3,8,15,0.48)]",
           )}
           role="region"
-          aria-label={
-            lang === "ar"
-              ? "Minimized audio player"
-              : lang === "fr"
-                ? "Lecteur audio reduit"
-                : "Minimized audio player"
-          }
+          aria-label={minimizedAudioRegionLabel}
         >
           <div className="h-1 bg-white/10">
             <ProgressRail progress={progress} />
@@ -1149,7 +1182,7 @@ export default function AudioPlayer() {
               type="button"
               className="mp-player-minimized-meta mp-player-minimized-open min-w-0 flex-1 text-left"
               onClick={toggleMinimized}
-              title={lang === "fr" ? "Ouvrir le lecteur" : "Open player"}
+              title={lang === "ar" ? "\u0641\u062a\u062d \u0627\u0644\u0645\u0634\u063a\u0644" : lang === "fr" ? "Ouvrir le lecteur" : "Open player"}
             >
               <div className="mp-player-minimized-title truncate text-[0.82rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-text)_94%,#ffffff_6%)]">
                 {titleLabel ||
@@ -1179,13 +1212,7 @@ export default function AudioPlayer() {
               onClick={toggleOptionsModal}
               aria-controls="audio-options-modal-title"
               aria-expanded={optionsModalOpen}
-              title={
-                lang === "fr"
-                  ? "Options et recitateurs"
-                  : lang === "ar"
-                    ? "Options and reciters"
-                    : "Options and reciters"
-              }
+              title={optionsLabel}
             >
               <i className="fas fa-sliders" />
             </button>
@@ -1231,13 +1258,7 @@ export default function AudioPlayer() {
             : "shadow-[0_-10px_32px_rgba(3,8,15,0.36)]",
         )}
         role="region"
-        aria-label={
-          lang === "ar"
-            ? "Audio Player"
-            : lang === "fr"
-              ? "Lecteur Audio"
-              : "Audio Player"
-        }
+        aria-label={audioRegionLabel}
       >
           <div className="mp-player-mobile-head flex items-center justify-between px-3.5 pb-1.5 pt-2">
           <button
@@ -1511,11 +1532,7 @@ export default function AudioPlayer() {
                     value={reciterSearch}
                     onChange={(e) => setReciterSearch(e.target.value)}
                     placeholder={
-                      lang === "ar"
-                        ? "Search..."
-                        : lang === "fr"
-                          ? "Rechercher..."
-                          : "Search..."
+                      searchPlaceholder
                     }
                     className={playerSearchInputClass}
                   />
@@ -1924,13 +1941,7 @@ export default function AudioPlayer() {
               : "cursor-grab",
         )}
         role="region"
-        aria-label={
-          lang === "ar"
-            ? "Audio Player"
-            : lang === "fr"
-              ? "Lecteur Audio"
-              : "Audio Player"
-        }
+        aria-label={audioRegionLabel}
       >
         {minimized ? (
           <>
@@ -2440,11 +2451,7 @@ export default function AudioPlayer() {
                           value={reciterSearch}
                           onChange={(e) => setReciterSearch(e.target.value)}
                           placeholder={
-                            lang === "ar"
-                              ? "Search..."
-                              : lang === "fr"
-                                ? "Rechercher..."
-                                : "Search..."
+                            searchPlaceholder
                           }
                           className={playerSearchInputClass}
                         />
