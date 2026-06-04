@@ -13,14 +13,14 @@ import {
   loadHafsSupportData,
 } from "./quranDisplayDataApi";
 
-function runWhenIdle(callback) {
+function runWhenIdle(callback, timeout = 1600) {
   if (typeof window === "undefined") {
     callback();
     return () => {};
   }
 
   if ("requestIdleCallback" in window) {
-    const idleId = window.requestIdleCallback(callback, { timeout: 1600 });
+    const idleId = window.requestIdleCallback(callback, { timeout });
     return () => window.cancelIdleCallback?.(idleId);
   }
 
@@ -75,9 +75,20 @@ export default function useQuranDisplayData({
   riwaya,
   warshStrictMode,
 }) {
-  const [ayahs, setAyahs] = useState([]);
+  const currentCacheKey = displayCacheKey(
+    displayMode,
+    currentSurah,
+    currentPage,
+    currentJuz,
+    riwaya,
+    warshStrictMode,
+  );
+  const initialCachedData = DISPLAY_DATA_CACHE.get(currentCacheKey);
+  const [ayahs, setAyahs] = useState(() => initialCachedData?.ayahs || []);
   const [error, setError] = useState(null);
-  const [isWarshFallback, setIsWarshFallback] = useState(false);
+  const [isWarshFallback, setIsWarshFallback] = useState(() =>
+    Boolean(initialCachedData?.isWarshFallback),
+  );
   const readingStartRef = useRef(Date.now());
   const requestSeqRef = useRef(0);
 
@@ -99,7 +110,7 @@ export default function useQuranDisplayData({
     const requestId = requestSeqRef.current + 1;
     requestSeqRef.current = requestId;
     const signal = abortPendingRequests();
-    const cacheKey = displayCacheKey(displayMode, currentSurah, currentPage, currentJuz, riwaya, warshStrictMode);
+    const cacheKey = currentCacheKey;
     const cachedData = DISPLAY_DATA_CACHE.get(cacheKey);
 
     setError(null);
@@ -140,7 +151,9 @@ export default function useQuranDisplayData({
       dispatch({ type: "SET_LOADING", payload: false });
 
       if (riwaya === "warsh") {
-        loadHafsSupportData({ currentJuz, currentPage, currentSurah, displayMode, signal })
+        runWhenIdle(() => {
+          if (signal.aborted || requestSeqRef.current !== requestId) return;
+          loadHafsSupportData({ currentJuz, currentPage, currentSurah, displayMode, signal })
           .then((hafsData) => {
             if (signal.aborted || requestSeqRef.current !== requestId) return;
             const hafsMap = new Map(
@@ -161,6 +174,7 @@ export default function useQuranDisplayData({
             });
           })
           .catch(() => {});
+        }, 2400);
       }
 
       const allAyahs = arabicData.ayahs || [];
@@ -205,6 +219,7 @@ export default function useQuranDisplayData({
     currentJuz,
     currentPage,
     currentSurah,
+    currentCacheKey,
     dispatch,
     displayMode,
     lang,

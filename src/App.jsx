@@ -259,6 +259,12 @@ export default function App() {
         ? "lg:mr-[23rem]"
         : "lg:ml-[23rem]"
       : "";
+  const shouldMountAudioPlayer =
+    !showHome ||
+    deferNonCriticalUI ||
+    hasInteracted ||
+    state.isPlaying ||
+    Boolean(state.currentPlayingAyah);
 
   useEffect(() => {
     const handleToast = (event) => {
@@ -727,9 +733,11 @@ export default function App() {
           </div>
         )}
 
-        <Suspense fallback={SUSPENSE_FALLBACK}>
-          <AudioPlayer />
-        </Suspense>
+        {shouldMountAudioPlayer && (
+          <Suspense fallback={null}>
+            <AudioPlayer />
+          </Suspense>
+        )}
 
         {/* ── Bouton raccourcis clavier (desktop uniquement) ───────────── */}
         {!showHome && !showDuas && (

@@ -181,14 +181,17 @@ async function fetchJson(url, signal) {
 }
 
 function buildVerseParams(extra = {}) {
+  const includeWords = extra.words === true || extra.words === "true";
   const params = new URLSearchParams({
     fields: VERSE_FIELDS,
-    word_fields: WORD_FIELDS,
-    words: "true",
     mushaf: "1",
     per_page: "50",
     ...extra,
   });
+  params.set("words", includeWords ? "true" : "false");
+  if (includeWords) {
+    params.set("word_fields", WORD_FIELDS);
+  }
   return params;
 }
 

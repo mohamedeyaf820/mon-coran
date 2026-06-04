@@ -103,6 +103,7 @@ export default function QuranDisplay() {
       warshStrictMode,
     });
   const { getTranslationForAyah } = useQuranTranslations({
+    arabicReady: ayahs.length > 0,
     currentJuz,
     currentPage,
     currentSurah,

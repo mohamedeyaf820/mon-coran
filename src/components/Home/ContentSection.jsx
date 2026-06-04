@@ -82,10 +82,10 @@ export default function ContentSection({
   t,
 }) {
   const STYLE_FILTERS = [
-    { id: "all", label: "Tous" },
-    { id: "murattal", label: "Murattal" },
-    { id: "mujawwad", label: "Mujawwad" },
-    { id: "muallim", label: "Muallim" },
+    { id: "all", label: { fr: "Tous", en: "All", ar: "\u0627\u0644\u0643\u0644" } },
+    { id: "murattal", label: { fr: "Murattal", en: "Murattal", ar: "\u0645\u0631\u062a\u0644" } },
+    { id: "mujawwad", label: { fr: "Mujawwad", en: "Mujawwad", ar: "\u0645\u062c\u0648\u062f" } },
+    { id: "muallim", label: { fr: "Muallim", en: "Muallim", ar: "\u0645\u0639\u0644\u0645" } },
   ];
 
   // Pagination des récitateurs
@@ -96,22 +96,22 @@ export default function ContentSection({
 
   const refinedCollectionCopy = {
     surah: {
-      fr: ["Explorer les sourates", "Une liste claire, rapide a parcourir, avec recherche et tri."],
+      fr: ["Explorer les sourates", "Une liste claire, rapide à parcourir, avec recherche et tri."],
       en: ["Explore surahs", "A clear, fast list with search and sorting."],
       ar: ["استكشاف السور", "قائمة واضحة وسريعة مع البحث والترتيب."],
     },
     juz: {
-      fr: ["Lecture par Juz", "Avance par sections regulieres, pratique pour suivre une khatma."],
+      fr: ["Lecture par Juz", "Avance par sections régulières, pratique pour suivre une khatma."],
       en: ["Read by Juz", "Move through regular sections, useful for khatma tracking."],
       ar: ["القراءة حسب الجزء", "تصفح الاجزاء بسهولة لمتابعة الختمة."],
     },
     recitations: {
-      fr: ["Choisir une recitation", "Photos, styles et modes audio sont regroupes pour choisir une voix rapidement."],
+      fr: ["Choisir une récitation", "Photos, styles et modes audio sont regroupés pour choisir une voix rapidement."],
       en: ["Choose a recitation", "Photos, styles and audio modes are grouped so you can choose a voice quickly."],
       ar: ["اختر التلاوة", "الصور والانماط واوضاع الصوت مجمعة لاختيار القارئ بسرعة."],
     },
     radio: {
-      fr: ["Stations audio", "Lance une station thematique ou une voix favorite en un geste."],
+      fr: ["Stations audio", "Lance une station thématique ou une voix favorite en un geste."],
       en: ["Audio stations", "Start a themed station or a favorite voice in one step."],
       ar: ["محطات الاستماع", "شغل محطة موضوعية او صوتا مفضلا بسرعة."],
     },
@@ -233,7 +233,7 @@ export default function ContentSection({
                 type="button"
                 className="flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-bg-secondary border border-border/50 text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
                 onClick={onToggleSort}
-                title={sortDir === "asc" ? "Decroissant" : "Croissant"}
+                title={sortDir === "asc" ? "Décroissant" : "Croissant"}
                 aria-label={
                   sortDir === "asc" ? "Tri décroissant" : "Tri croissant"
                 }
@@ -294,7 +294,7 @@ export default function ContentSection({
               )}
               onClick={() => onStyleFilterChange(item.id)}
             >
-              {item.label}
+              {item.label[lang] || item.label.fr}
             </button>
           ))}
         </div>

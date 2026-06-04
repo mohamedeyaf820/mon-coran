@@ -70,9 +70,9 @@ export default function SplashScreen({
       }, 350);
     }, 1600);
 
-    // Fade-out à 3 s, fin à 3.6 s
-    const t1 = setTimeout(() => setFadeOut(true), 3000);
-    const t2 = setTimeout(() => onDone(), 3600);
+    // Keep the splash decorative, but do not let it feel like a loading wall.
+    const t1 = setTimeout(() => setFadeOut(true), 950);
+    const t2 = setTimeout(() => onDone(), 1250);
 
     return () => {
       clearInterval(verseTick);

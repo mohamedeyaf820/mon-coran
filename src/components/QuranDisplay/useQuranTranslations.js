@@ -22,6 +22,7 @@ function scheduleIdle(callback) {
 }
 
 export default function useQuranTranslations({
+  arabicReady = true,
   currentJuz,
   currentPage,
   currentSurah,
@@ -32,7 +33,7 @@ export default function useQuranTranslations({
   const [translations, setTranslations] = useState([]);
 
   useEffect(() => {
-    if (!showTranslation) {
+    if (!showTranslation || !arabicReady) {
       setTranslations([]);
       return;
     }
@@ -40,6 +41,7 @@ export default function useQuranTranslations({
     const controller = new AbortController();
     const signal = controller.signal;
     let cancelIdle = () => {};
+    let startTimer = null;
     setTranslations([]);
 
     const loadTranslations = async () => {
@@ -60,12 +62,14 @@ export default function useQuranTranslations({
       }
     };
 
-    loadTranslations();
+    startTimer = window.setTimeout(loadTranslations, 180);
     return () => {
+      if (startTimer) window.clearTimeout(startTimer);
       controller.abort();
       cancelIdle();
     };
   }, [
+    arabicReady,
     currentJuz,
     currentPage,
     currentSurah,

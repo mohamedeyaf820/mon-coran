@@ -1,5 +1,7 @@
 /* HomePage - orchestrateur ─ gère le state et délègue le rendu aux sous-composants Home/ */
 import React, {
+  Suspense,
+  lazy,
   startTransition,
   useCallback,
   useDeferredValue,
@@ -32,7 +34,8 @@ import {
 import { getResumeState, setResumeState } from "../stores/AudioQueueStore";
 import Footer from "./Footer";
 import { buildAudioPlaylistForSurah } from "../utils/audioPlaylist";
-import ReciterDetailPage from "./recitation/ReciterDetailPage";
+
+const ReciterDetailPage = lazy(() => import("./recitation/ReciterDetailPage"));
 
 import {
   HOME_INITIAL_SURAHS,
@@ -836,25 +839,27 @@ export default function HomePage({ lowPerfMode = false }) {
           className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300"
           onClick={() => setSelectedReciterId(null)}
         >
-          <ReciterDetailPage
-            lang={lang}
-            reciter={selectedReciter}
-            canDirectDownload={canDirectDownloadSelectedReciter}
-            onPlayRadio={playReciterRadio}
-            onClose={() => setSelectedReciterId(null)}
-            onPlaySurah={playSurahForReciter}
-            onOpenSurah={(surahNum, reciter) => {
-              setSelectedReciterId(null);
-              set({ reciter: reciter.id, showHome: false, showDuas: false });
-              dispatch({
-                type: "NAVIGATE_SURAH",
-                payload: { surah: surahNum, ayah: 1 },
-              });
-            }}
-            getDownloadUrl={reciterDownloadUrl}
-            dialogRef={reciterModalRef}
-            closeBtnRef={reciterModalCloseBtnRef}
-          />
+          <Suspense fallback={null}>
+            <ReciterDetailPage
+              lang={lang}
+              reciter={selectedReciter}
+              canDirectDownload={canDirectDownloadSelectedReciter}
+              onPlayRadio={playReciterRadio}
+              onClose={() => setSelectedReciterId(null)}
+              onPlaySurah={playSurahForReciter}
+              onOpenSurah={(surahNum, reciter) => {
+                setSelectedReciterId(null);
+                set({ reciter: reciter.id, showHome: false, showDuas: false });
+                dispatch({
+                  type: "NAVIGATE_SURAH",
+                  payload: { surah: surahNum, ayah: 1 },
+                });
+              }}
+              getDownloadUrl={reciterDownloadUrl}
+              dialogRef={reciterModalRef}
+              closeBtnRef={reciterModalCloseBtnRef}
+            />
+          </Suspense>
         </div>
       )}
 

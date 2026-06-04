@@ -72,9 +72,27 @@ export function usePlayerDragPosition({
   ]);
 
   useEffect(() => {
-    if (!cardRef.current || isMobile || !canFreePosition) return;
-    cardRef.current.style.setProperty("--player-left", `${cardPos.x}px`);
-    cardRef.current.style.setProperty("--player-top", `${cardPos.y}px`);
+    const card = cardRef.current;
+    if (!card) return;
+
+    if (isMobile || !canFreePosition) {
+      card.style.removeProperty("--player-left");
+      card.style.removeProperty("--player-top");
+      card.style.removeProperty("left");
+      card.style.removeProperty("top");
+      card.style.removeProperty("right");
+      card.style.removeProperty("bottom");
+      card.style.removeProperty("transform");
+      return;
+    }
+
+    card.style.setProperty("--player-left", `${cardPos.x}px`);
+    card.style.setProperty("--player-top", `${cardPos.y}px`);
+    card.style.setProperty("left", `${cardPos.x}px`, "important");
+    card.style.setProperty("top", `${cardPos.y}px`, "important");
+    card.style.setProperty("right", "auto", "important");
+    card.style.setProperty("bottom", "auto", "important");
+    card.style.setProperty("transform", "none", "important");
   }, [cardRef, cardPos, isMobile, canFreePosition]);
 
   const onPointerDown = useCallback(
@@ -94,12 +112,12 @@ export function usePlayerDragPosition({
         target.closest("[data-no-drag='true']")
       )
         return;
-      if (
-        target.closest("[data-scroll-panel='true']") ||
-        target.closest("[data-player-expanded='true']")
-      )
+      const explicitDragHandle = target.closest("[data-player-drag='true']");
+      if (target.closest("[data-scroll-panel='true']") && !explicitDragHandle)
         return;
-      if (!target.closest("[data-player-drag='true']")) return;
+      if (target.closest("[data-player-expanded='true']") && !explicitDragHandle)
+        return;
+      if (!explicitDragHandle && !target.closest(".mp-audio-player")) return;
 
       const card = cardRef.current;
       const rect = card?.getBoundingClientRect();
