@@ -31,8 +31,16 @@ export default function HeroSection({
     uiLang === "ar"
       ? "\u0627\u0642\u0631\u0623 \u0627\u0644\u0642\u0631\u0622\u0646 \u0628\u0647\u062f\u0648\u0621\u060c \u0627\u0633\u062a\u0645\u0639\u060c \u0648\u0627\u062d\u0641\u0638 \u0628\u0648\u062a\u064a\u0631\u062a\u0643."
       : uiLang === "fr"
-        ? "Lisez, ecoutez et memorisez le Quran dans une interface claire, rapide et apaisee."
+        ? "Lisez, \u00e9coutez et m\u00e9morisez le Coran dans une interface claire, rapide et apais\u00e9e."
         : "Read, listen and memorize the Quran in a clear, fast and calm interface.";
+  const startReadingLabel =
+    uiLang === "ar"
+      ? "\u0627\u0628\u062f\u0623 \u0627\u0644\u0642\u0631\u0627\u0621\u0629"
+      : uiLang === "fr"
+        ? "Commencer la lecture"
+        : "Start reading";
+  const fatihaLabel =
+    uiLang === "ar" ? "\u0627\u0644\u0641\u0627\u062a\u062d\u0629" : "Al-Fatiha";
 
   return (
     <section className="home-hero-compact home-hero-shell relative z-10 overflow-hidden rounded-2xl border border-border/75 bg-bg-primary px-4 py-5 shadow-lg sm:px-6 sm:py-6 lg:p-7">
@@ -103,6 +111,14 @@ export default function HeroSection({
               type="button"
             >
               <i className={`fas ${hasReadingHistory ? "fa-circle-play" : "fa-book-open"} text-[1.1rem]`} />
+              <span className="home-cta-label-clean truncate max-[520px]:max-w-[62vw]">
+                {hasReadingHistory ? t("continueReading") : startReadingLabel}
+              </span>
+              {!hasReadingHistory && (
+                <span className="home-cta-badge-clean ml-1 rounded-md bg-white/20 px-2 py-0.5 text-[0.75rem] max-[520px]:hidden">
+                  {fatihaLabel}
+                </span>
+              )}
               <span className="truncate max-[520px]:max-w-[62vw]">
                 {hasReadingHistory
                   ? t("continueReading")

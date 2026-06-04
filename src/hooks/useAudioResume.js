@@ -70,7 +70,7 @@ export function useAudioResume() {
 
   // Save on pause/stop
   useEffect(() => {
-    const unsubscribePause = audioService.onPause = () => {
+    const unsubscribePause = audioService.addPauseListener(() => {
       const position = {
         surah: audioService.currentAyah?.surah?.number || audioService.currentAyah?.surah,
         ayah: audioService.currentAyah?.numberInSurah || audioService.currentAyah?.ayah,
@@ -82,11 +82,9 @@ export function useAudioResume() {
       if (position.surah && position.ayah) {
         saveAudioPosition(position);
       }
-    };
+    });
 
-    return () => {
-      audioService.onPause = null;
-    };
+    return unsubscribePause;
   }, []);
 
   /**

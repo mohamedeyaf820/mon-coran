@@ -60,7 +60,9 @@ export default function JuzMode({
     <div
       role="region"
       aria-label={t("settings.juzMode", lang)}
-      className={`quran-mode-pane quran-mode-pane--juz ${modePaneShellClass}`}
+      className={`quran-mode-pane quran-mode-pane--juz ${
+        mushafLayout === "mushaf" ? "quran-mode-pane--mushaf" : ""
+      } ${modePaneShellClass}`}
     >
       <ReadingProgressBar />
       <div className="mb-4 flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-4 py-3">

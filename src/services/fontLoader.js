@@ -13,11 +13,6 @@ const FONT_SOURCES = {
     url: "https://verses.quran.foundation/fonts/quran/hafs/nastaleeq/indopak/indopak-nastaleeq-waqf-lazim-v4.2.1.woff2",
     format: "woff2",
   },
-  "qpc-nastaleeq": {
-    family: "KFGQPC Nastaleeq",
-    url: "https://static-cdn.tarteel.ai/qul/fonts/nastaleeq/KFGQPCNastaleeq-Regular.ttf",
-    format: "truetype",
-  },
   "qpc-warsh": {
     family: "QPC Warsh",
     url: "https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2",

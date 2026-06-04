@@ -265,12 +265,12 @@ export default function PlaybackSettingsPanel(props) {
                 >
                   {isSurahStreamReciter
                     ? lang === "fr"
-                      ? "Ce recitateur lit la sourate complete, donc la synchro mot a mot n'est pas utilisee."
+                      ? "Ce récitateur lit la sourate complète, donc la synchro mot à mot n'est pas utilisée."
                       : lang === "ar"
                         ? "هذا القارئ يشغل السورة كاملة، لذلك لا تستخدم مزامنة كلمة بكلمة."
                         : "This reciter plays the full surah, so word-by-word sync is not used."
                     : lang === "fr"
-                      ? "Le suivi des versets est verrouille en automatique. La calibration se memorise par recitateur."
+                      ? "Le suivi des versets est verrouillé en automatique. La calibration se mémorise par récitateur."
                       : lang === "ar"
                         ? "متابعة الآيات تلقائية. تحفظ المعايرة لكل قارئ."
                         : "Verse follow is locked to automatic. Sync calibration is saved per reciter."}

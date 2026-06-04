@@ -9,7 +9,6 @@
 export const HAFS_FONT_IDS = [
   "qpc-hafs",
   "qpc-indopak",
-  "qpc-nastaleeq",
 ];
 
 export const WARSH_FONT_IDS = [
@@ -25,8 +24,6 @@ export const FONT_MAP = {
     "'QPC Hafs','KFGQPC Uthmanic Script HAFS','UthmanicHafs',serif",
   "qpc-indopak":
     "'IndoPak','QPC IndoPak','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
-  "qpc-nastaleeq":
-    "'KFGQPC Nastaleeq','QPC Nastaleeq','IndoPak','QPC Hafs',serif",
   "qcf-v2":
     "'QCF V2','QCF_V2','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
   "qcf-v4-tajweed":
@@ -44,7 +41,8 @@ const LEGACY_FONT_ALIASES = {
   "mushaf-kfgqpc": "qpc-hafs",
   "mushaf-1441h": "qpc-hafs",
   "indopak": "qpc-indopak",
-  "indopak-nastaleeq": "qpc-nastaleeq",
+  "indopak-nastaleeq": "qpc-indopak",
+  "qpc-nastaleeq": "qpc-indopak",
   "mushaf-tajweed": "qcf-v4-tajweed",
   "mushaf-warsh": "qpc-warsh",
   "aal-maghribi-warsh": "kfgqpc-warsh",

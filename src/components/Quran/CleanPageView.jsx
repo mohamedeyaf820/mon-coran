@@ -3,7 +3,7 @@ import { getSurah, toAr } from "../../data/surahs";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 import WordByWordDisplay from "./WordByWordDisplay";
 import CleanPageTranslationPanel from "./CleanPageTranslationPanel";
-import { CleanPageSurahHeader, VerseMedallion } from "./CleanPageDecor";
+import { CleanPageSurahHeader } from "./CleanPageDecor";
 import Bismillah from "./Bismillah";
 
 export default function CleanPageView({
@@ -30,6 +30,9 @@ export default function CleanPageView({
   const pageNumber = ayahs[0]?.page ?? null;
   const juzNumber = ayahs[0]?.juz ?? null;
   const headerSurahName = surahMeta?.name_arabic || surahMeta?.name || "";
+  const mushafFontSize = Math.max(38, Math.min(72, Number(fontSize) || 42));
+  const mushafLineHeight = riwaya === "warsh" ? 2.5 : 2.42;
+  const mushafWordSpacing = riwaya === "warsh" ? "0.07em" : "0.1em";
 
   const juzLabel = useMemo(() => {
     if (!juzNumber) return "";
@@ -57,6 +60,11 @@ export default function CleanPageView({
         className="mushaf-text-block mushaf-container"
         dir="rtl"
         lang="ar"
+        style={{
+          "--cpv-font-size": `${Math.round(mushafFontSize)}px`,
+          "--cpv-line-height": String(mushafLineHeight),
+          "--cpv-word-spacing": mushafWordSpacing,
+        }}
       >
         {ayahs.flatMap((ayah) => {
           const ayahSurahNum = ayah.surah?.number || ayah.surah || surahNum;
@@ -126,7 +134,6 @@ export default function CleanPageView({
                   />
                 )}
               </span>
-              <VerseMedallion num={ayah.numberInSurah} isPlaying={isPlaying} />
             </span>,
           );
 

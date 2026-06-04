@@ -4,7 +4,6 @@ import { cn } from "../../lib/utils";
 import MemorizationText from "../Quran/MemorizationText";
 import SmartAyahRenderer from "../Quran/SmartAyahRenderer";
 import WordByWordDisplay from "../Quran/WordByWordDisplay";
-import AyahMarker from "../Quran/AyahMarker";
 import QCVerseActions from "./QCVerseActions";
 
 function getInitialVisibleCount(total, displayMode) {
@@ -188,7 +187,6 @@ const QCVerseCard = memo(function QCVerseCard({
           }}
         >
           {arabicContent}
-          {!showWordByWord ? <AyahMarker num={ayah.numberInSurah} isPlaying={isPlaying} /> : null}
         </div>
 
         {/* Transliteration */}
@@ -336,7 +334,7 @@ export default function QCVerseByVerseView({
   const hasMore = visibleCount < items.length;
 
   return (
-    <div className="qc-verse-by-verse-view mx-auto w-full max-w-[800px] px-2 sm:px-4 py-4">
+    <div className="qc-verse-by-verse-view mx-auto w-full max-w-[1120px] px-2 sm:px-4 py-4">
       {visibleItems.map(({ ayah, surahNum }, index) => {
         const toggleId = displayMode === "surah" ? ayah.numberInSurah : ayah.number;
         const isPlaying =

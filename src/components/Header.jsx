@@ -194,11 +194,64 @@ export default function Header() {
   const openSettings = () => dispatch({ type: "TOGGLE_SETTINGS" });
 
   const openToolsHub = () => set({ toolsHubOpen: true });
+  const headerLabels = {
+    menu: tr({ fr: "Menu", en: "Menu", ar: "\u0627\u0644\u0642\u0627\u0626\u0645\u0629" }),
+    more: tr({ fr: "Plus d'options", en: "More options", ar: "\u062e\u064a\u0627\u0631\u0627\u062a \u0625\u0636\u0627\u0641\u064a\u0629" }),
+    homeSummary: tr({
+      fr: "Reprendre la lecture",
+      en: "Continue reading",
+      ar: "\u0627\u0633\u062a\u0626\u0646\u0627\u0641 \u0627\u0644\u0642\u0631\u0627\u0621\u0629",
+    }),
+    homeMeta: `${riwaya.toUpperCase()} \u00b7 114 ${lang === "fr" ? "sourates" : lang === "ar" ? "\u0633\u0648\u0631\u0629" : "surahs"} \u00b7 30 Juz`,
+    quranNav: tr({
+      fr: "Navigation du Coran",
+      en: "Quran navigation",
+      ar: "\u0627\u0644\u062a\u0646\u0642\u0644 \u0641\u064a \u0627\u0644\u0642\u0631\u0622\u0646",
+    }),
+    riwayaToggle: tr({
+      fr: "Changer de riwaya",
+      en: "Switch riwaya",
+      ar: "\u062a\u0628\u062f\u064a\u0644 \u0627\u0644\u0631\u0648\u0627\u064a\u0629",
+    }),
+  };
 
   const quickItems = [
     { key: "duas", icon: "fa-hands-praying", label: tr({ fr: "Douas / Invocations", en: "Duas / Supplications", ar: "الأدعية والأذكار" }), action: openDuas },
     { key: "theme", icon: "fa-palette", label: tr({ fr: "Changer de Thème", en: "Switch Theme", ar: "تغيير المظهر" }), action: cycleTheme },
     { key: "tools", icon: "fa-shapes", label: tr({ fr: "Espace Outils", en: "Tools Hub", ar: "مركز الأدوات" }), action: openToolsHub },
+  ];
+
+  const cleanQuickItems = [
+    {
+      key: "duas",
+      icon: "fa-hands-praying",
+      label: tr({
+        fr: "Douas / Invocations",
+        en: "Duas / Supplications",
+        ar: "\u0627\u0644\u0623\u062f\u0639\u064a\u0629 \u0648\u0627\u0644\u0623\u0630\u0643\u0627\u0631",
+      }),
+      action: openDuas,
+    },
+    {
+      key: "theme",
+      icon: "fa-palette",
+      label: tr({
+        fr: "Changer de th\u00e8me",
+        en: "Switch theme",
+        ar: "\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0645\u0638\u0647\u0631",
+      }),
+      action: cycleTheme,
+    },
+    {
+      key: "tools",
+      icon: "fa-shapes",
+      label: tr({
+        fr: "Espace outils",
+        en: "Tools hub",
+        ar: "\u0645\u0631\u0643\u0632 \u0627\u0644\u0623\u062f\u0648\u0627\u062a",
+      }),
+      action: openToolsHub,
+    },
   ];
 
   return (
@@ -240,6 +293,8 @@ export default function Header() {
         <div className="mp-header__center">
           {showHome ? (
             <button className="mp-header__home-summary" type="button" onClick={() => set({ showHome: false, showDuas: false })}>
+              <strong className="mp-header__home-summary-clean">{headerLabels.homeSummary}</strong>
+              <span className="mp-header__home-meta-clean">{headerLabels.homeMeta}</span>
               <strong>{tr({ fr: "Reprends ta lecture", en: "Continue reading", ar: "استأنف القراءة" })}</strong>
               <span>{riwaya.toUpperCase()} · 114 sourates · 30 Juz</span>
             </button>
@@ -323,7 +378,7 @@ export default function Header() {
           </button>
 
           {/* Sélecteur de Riwaya (Desktop) */}
-          <div className="hidden md:flex items-center gap-0.5 rounded-xl bg-[var(--bg-secondary)] p-1 border border-[var(--border)] shrink-0 mr-2">
+          <div className="mp-header__riwaya-switch hidden md:flex items-center gap-0.5 rounded-xl bg-[var(--bg-secondary)] p-1 border border-[var(--border)] shrink-0 mr-2">
             {["hafs", "warsh"].map((id) => (
               <button
                 key={id}
@@ -343,9 +398,11 @@ export default function Header() {
 
           {/* Sélecteur de Riwaya (Mobile) */}
           <button
-            className="md:hidden flex font-bold text-xs min-w-[54px] h-9 rounded-xl hover:bg-[var(--bg-secondary)] items-center justify-center border border-[var(--border)] text-[var(--text-primary)] mr-2 cursor-pointer"
+            className="mp-header__riwaya-mobile md:hidden flex font-bold text-xs min-w-[54px] h-9 rounded-xl hover:bg-[var(--bg-secondary)] items-center justify-center border border-[var(--border)] text-[var(--text-primary)] mr-2 cursor-pointer"
             type="button"
             onClick={() => set({ riwaya: riwaya === "hafs" ? "warsh" : "hafs" })}
+            aria-label={headerLabels.riwayaToggle}
+            title={headerLabels.riwayaToggle}
           >
             {riwaya.toUpperCase()}
           </button>
@@ -364,7 +421,7 @@ export default function Header() {
           {/* Quick Menu */}
           <Popover open={quickMenuOpen} onOpenChange={setQuickMenuOpen}>
             <PopoverTrigger asChild>
-              <button className="mp-header__more" type="button" aria-label="Plus">
+              <button className="mp-header__more" type="button" aria-label={headerLabels.more} title={headerLabels.more}>
                 <i className="fas fa-ellipsis" />
               </button>
             </PopoverTrigger>
@@ -373,7 +430,7 @@ export default function Header() {
               sideOffset={10}
               className="z-[300] w-64 rounded-2xl border border-border bg-bg-primary p-2 shadow-xl"
             >
-              {quickItems.map((item) => (
+              {cleanQuickItems.map((item) => (
                 <button
                   key={item.key}
                   className="mp-header-menu__item"

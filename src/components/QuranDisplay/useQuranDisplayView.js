@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { resolveFontFamily } from "../../data/fonts";
 
 export default function useQuranDisplayView({
@@ -68,12 +68,14 @@ export default function useQuranDisplayView({
     return () => media.removeListener(onChange);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = contentRef.current;
     if (!element) return;
 
-    const quranFontSizeCss = `${Math.round(readingFontSize)}px`;
-    const quranLineHeight = displayMode === "page" ? "3.05" : "2.2";
+    const stableReadingSize = Math.max(mushafLayout === "mushaf" ? 38 : 28, readingFontSize);
+    const quranFontSizeCss = `${Math.round(stableReadingSize)}px`;
+    const quranLineHeight =
+      mushafLayout === "mushaf" ? "2.48" : displayMode === "page" ? "3.05" : "2.2";
     element.style.setProperty("--qd-reading-font-size", quranFontSizeCss);
     element.style.setProperty("--qd-font-size", quranFontSizeCss);
     element.style.setProperty(
@@ -110,8 +112,8 @@ export default function useQuranDisplayView({
     isQCF4,
     quranFontCss,
     quranTranslationFontSize,
-    readingFontSize,
     mushafLayout,
+    readingFontSize,
   ]);
 
   const touchHandlers = {

@@ -58,12 +58,18 @@ export default function AudioOptionsModal(props) {
         : "Audio settings";
   const optionsModalSubtitle =
     lang === "fr"
-      ? "Recitateurs, volume et synchronisation"
+      ? "Récitateurs, volume et synchronisation"
       : lang === "ar"
         ? "القراء ومستوى الصوت والمزامنة"
         : "Reciters, volume, and synchronization";
   const cleanOptionsModalTitle =
-    lang === "ar" ? "\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0627\u0644\u0635\u0648\u062a" : lang === "fr" ? "Reglages audio" : optionsModalTitle;
+    lang === "ar" ? "\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0627\u0644\u0635\u0648\u062a" : lang === "fr" ? "R\u00e9glages audio" : optionsModalTitle;
+  const cleanOptionsModalSubtitle =
+    lang === "ar"
+      ? "\u0627\u0644\u0642\u0631\u0627\u0621 \u0648\u0645\u0633\u062a\u0648\u0649 \u0627\u0644\u0635\u0648\u062a \u0648\u0627\u0644\u0645\u0632\u0627\u0645\u0646\u0629"
+      : lang === "fr"
+        ? "R\u00e9citateurs, volume et synchronisation"
+        : optionsModalSubtitle;
   const closeOptionsLabel =
     lang === "ar" ? "\u0625\u063a\u0644\u0627\u0642 \u0627\u0644\u062e\u064a\u0627\u0631\u0627\u062a" : lang === "fr" ? "Fermer les options" : "Close options";
 
@@ -94,7 +100,7 @@ export default function AudioOptionsModal(props) {
                 {cleanOptionsModalTitle}
               </h3>
               <p className="mt-1 truncate text-[0.66rem] text-[color-mix(in_srgb,var(--theme-text-muted)_88%,var(--theme-bg)_12%)] sm:text-xs">
-                {optionsModalSubtitle}
+                {cleanOptionsModalSubtitle}
               </p>
             </div>
             <button

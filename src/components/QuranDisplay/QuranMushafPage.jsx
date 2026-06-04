@@ -139,7 +139,7 @@ function groupPageLines(ayahs) {
   });
 }
 
-function getPageMeta(ayahs, currentPage, lang, riwaya) {
+function getPageMeta(ayahs, currentPage, lang, riwaya, isWarsh = riwaya === "warsh") {
   const first = ayahs[0] || {};
   const last = ayahs[ayahs.length - 1] || first;
   const juz =

@@ -63,7 +63,7 @@ export default function PageMode({
     <div
       className={`quran-mode-pane quran-mode-pane--page ${
         canUseFifteenLinePage ? "quran-mode-pane--mushaf-exact" : ""
-      } ${modePaneShellClass}`}
+      } ${mushafLayout === "mushaf" ? "quran-mode-pane--mushaf" : ""} ${modePaneShellClass}`}
       role="region"
       aria-label={t("settings.pageMode", lang)}
     >

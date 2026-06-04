@@ -144,7 +144,7 @@ test("storage: migrates removed local-only Warsh font aliases", () => {
   const settings = getSettings();
   assert.equal(settings.fontFamily, "kfgqpc-warsh");
   assert.deepEqual(settings.fontFamilyByRiwaya, {
-    hafs: "qpc-nastaleeq",
+    hafs: "qpc-indopak",
     warsh: "kfgqpc-warsh",
   });
 });

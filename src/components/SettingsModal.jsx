@@ -24,20 +24,14 @@ import { toast } from "../lib/utils";
 const RIWAYA_FONT_OPTIONS = [
   {
     id: "qpc-hafs",
-    label: "QPC Hafs",
-    hint: "Police officielle Hafs",
+    label: "Quran.com Hafs",
+    hint: "Police Hafs depuis Quran Foundation",
     riwaya: "hafs",
   },
   {
     id: "qpc-indopak",
-    label: "IndoPak Nastaleeq",
-    hint: "Hafs IndoPak avec waqf lazim",
-    riwaya: "hafs",
-  },
-  {
-    id: "qpc-nastaleeq",
-    label: "KFGQPC Nastaleeq",
-    hint: "Hafs style Nastaleeq",
+    label: "Quran.com IndoPak",
+    hint: "Police IndoPak avec marqueurs de waqf",
     riwaya: "hafs",
   },
   {

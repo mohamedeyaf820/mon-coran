@@ -7,9 +7,8 @@ import useArabicFontPreferences, {
 import { cn } from "../lib/utils";
 
 const ARABIC_FONT_OPTIONS = [
-  { id: "qpc-hafs", label: "QPC Hafs", riwaya: "hafs" },
-  { id: "qpc-indopak", label: "IndoPak", riwaya: "hafs" },
-  { id: "qpc-nastaleeq", label: "Nastaleeq", riwaya: "hafs" },
+  { id: "qpc-hafs", label: "Quran.com Hafs", riwaya: "hafs" },
+  { id: "qpc-indopak", label: "Quran.com IndoPak", riwaya: "hafs" },
   { id: "qpc-warsh", label: "QPC Warsh", riwaya: "warsh" },
   { id: "kfgqpc-warsh", label: "KFGQPC Warsh", riwaya: "warsh" },
 ];
@@ -40,15 +39,15 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
         "arabic-font-controls flex shrink-0 items-center gap-2",
         compact && "arabic-font-controls--compact",
       )}
-      aria-label={labelFor(lang, "Police arabe", "Arabic font")}
+      aria-label={labelFor(lang, "Police arabe", "Arabic font", "الخط العربي")}
     >
-      <div className="afc-font-group" role="group" aria-label={labelFor(lang, "Choisir la police arabe", "Choose Arabic font")}>
+      <div className="afc-font-group" role="group" aria-label={labelFor(lang, "Choisir la police arabe", "Choose Arabic font", "اختيار الخط العربي")}>
         <Type size={14} className="afc-leading-icon" aria-hidden="true" />
         <select
           className="afc-select"
           value={selectedFont}
           onChange={(event) => setArabicFontFamily(event.target.value)}
-          aria-label={labelFor(lang, "Police arabe", "Arabic font")}
+          aria-label={labelFor(lang, "Police arabe", "Arabic font", "الخط العربي")}
         >
           {availableFonts.map((font) => (
             <option key={font.id} value={font.id}>
@@ -58,13 +57,13 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
         </select>
       </div>
 
-      <div className="afc-size-group" role="group" aria-label={labelFor(lang, "Taille du texte arabe", "Arabic text size")}>
+      <div className="afc-size-group" role="group" aria-label={labelFor(lang, "Taille du texte arabe", "Arabic text size", "حجم النص العربي")}>
         <button
           type="button"
           className="afc-size-btn"
           onClick={() => setArabicFontSize(currentSize - 2)}
           disabled={currentSize <= ARABIC_FONT_SIZE_MIN}
-          aria-label={labelFor(lang, "Reduire la taille arabe", "Decrease Arabic size")}
+          aria-label={labelFor(lang, "Réduire la taille arabe", "Decrease Arabic size", "تصغير الخط العربي")}
           title="A-"
         >
           <Minus size={13} />
@@ -77,7 +76,7 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
           step="2"
           value={currentSize}
           onChange={(event) => setArabicFontSize(event.target.value)}
-          aria-label={labelFor(lang, "Taille de police arabe", "Arabic font size")}
+          aria-label={labelFor(lang, "Taille de police arabe", "Arabic font size", "حجم الخط العربي")}
         />
         <span className="afc-size-value" aria-live="polite">
           {currentSize}
@@ -87,7 +86,7 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
           className="afc-size-btn"
           onClick={() => setArabicFontSize(currentSize + 2)}
           disabled={currentSize >= ARABIC_FONT_SIZE_MAX}
-          aria-label={labelFor(lang, "Augmenter la taille arabe", "Increase Arabic size")}
+          aria-label={labelFor(lang, "Augmenter la taille arabe", "Increase Arabic size", "تكبير الخط العربي")}
           title="A+"
         >
           <Plus size={13} />

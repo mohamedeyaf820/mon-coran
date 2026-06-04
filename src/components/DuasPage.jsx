@@ -58,7 +58,7 @@ export default function DuasPage() {
         : lang === "fr"
           ? "Cartes simples: reference, categorie, arabe lisible, traduction, puis actions."
           : "Simple cards: reference, category, readable Arabic, translation, then actions.",
-    noResults: lang === "ar" ? "لا توجد نتائج مطابقة" : lang === "fr" ? "Aucune invocation trouvee" : "No results found",
+    noResults: lang === "ar" ? "لا توجد نتائج مطابقة" : lang === "fr" ? "Aucune invocation trouvée" : "No results found",
   };
 
   const copyDua = (text) => {

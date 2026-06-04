@@ -324,7 +324,7 @@ export default function AudioPlayer() {
         setNetworkState("loading");
         setAudioError(
           lang === "fr"
-            ? "Le recitateur ne chargeait pas. Bascule automatique vers une voix disponible..."
+            ? "Le r\u00e9citateur ne chargeait pas. Bascule automatique vers une voix disponible..."
             : lang === "ar"
               ? "\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0647\u0630\u0627 \u0627\u0644\u0642\u0627\u0631\u0626. \u064a\u062a\u0645 \u0627\u0644\u062a\u0628\u062f\u064a\u0644 \u062a\u0644\u0642\u0627\u0626\u064a\u0627..."
               : "The reciter failed to load. Switching to an available voice...",
@@ -338,12 +338,12 @@ export default function AudioPlayer() {
       const msg =
         riwaya === "warsh"
           ? lang === "fr"
-            ? "Ce recitateur Warsh ne charge pas pour le moment. Reessayez ou choisissez un autre recitateur."
+            ? "Ce r\u00e9citateur Warsh ne charge pas pour le moment. R\u00e9essayez ou choisissez un autre r\u00e9citateur."
             : lang === "ar"
               ? "صوت ورش غير متاح الآن. تحقق من الاتصال أو اختر قارئا آخر."
               : "Warsh audio unavailable. Check your connection or switch reciter."
           : lang === "fr"
-            ? "Ce recitateur ne charge pas pour le moment. Reessayez ou choisissez un autre recitateur."
+            ? "Ce r\u00e9citateur ne charge pas pour le moment. R\u00e9essayez ou choisissez un autre r\u00e9citateur."
             : lang === "ar"
               ? "تعذر تحميل الصوت."
               : "Audio load error.";
@@ -743,7 +743,7 @@ export default function AudioPlayer() {
         const retryLabel = formatCooldownLabel(remainingMs, lang);
         toast(
           lang === "fr"
-            ? `Ce recitateur est temporairement indisponible. Reessayez dans ${retryLabel}.`
+            ? `Ce r\u00e9citateur est temporairement indisponible. R\u00e9essayez dans ${retryLabel}.`
             : lang === "ar"
               ? `هذا القارئ غير متاح مؤقتا. حاول بعد ${retryLabel}.`
               : `This reciter is temporarily unavailable. Try again in ${retryLabel}.`,
@@ -765,7 +765,7 @@ export default function AudioPlayer() {
         console.error("Instant reciter switch failed:", error);
         toast(
           lang === "fr"
-            ? "Le changement instantane du recitateur a echoue."
+            ? "Le changement instantan\u00e9 du r\u00e9citateur a \u00e9chou\u00e9."
             : lang === "ar"
               ? "تعذر تبديل القارئ فوريا."
               : "Instant reciter switch failed.",
@@ -903,17 +903,17 @@ export default function AudioPlayer() {
   const audioRegionLabel =
     lang === "ar" ? "\u0645\u0634\u063a\u0644 \u0627\u0644\u0635\u0648\u062a" : lang === "fr" ? "Lecteur audio" : "Audio player";
   const minimizedAudioRegionLabel =
-    lang === "ar" ? "\u0645\u0634\u063a\u0644 \u0627\u0644\u0635\u0648\u062a \u0627\u0644\u0645\u0635\u063a\u0631" : lang === "fr" ? "Lecteur audio reduit" : "Minimized audio player";
+    lang === "ar" ? "\u0645\u0634\u063a\u0644 \u0627\u0644\u0635\u0648\u062a \u0627\u0644\u0645\u0635\u063a\u0631" : lang === "fr" ? "Lecteur audio r\u00e9duit" : "Minimized audio player";
   const readyLabel =
-    lang === "ar" ? "\u062c\u0627\u0647\u0632" : lang === "fr" ? "Pret a lire" : "Ready";
+    lang === "ar" ? "\u062c\u0627\u0647\u0632" : lang === "fr" ? "Pr\u00eat \u00e0 lire" : "Ready";
   const closeLabel =
     lang === "ar" ? "\u0627\u063a\u0644\u0627\u0642" : lang === "fr" ? "Fermer" : "Close";
   const expandLabel =
     lang === "ar" ? "\u062a\u0648\u0633\u064a\u0639" : lang === "fr" ? "Agrandir" : "Expand";
   const minimizeLabel =
-    lang === "ar" ? "\u062a\u0635\u063a\u064a\u0631" : lang === "fr" ? "Reduire" : "Minimize";
+    lang === "ar" ? "\u062a\u0635\u063a\u064a\u0631" : lang === "fr" ? "R\u00e9duire" : "Minimize";
   const optionsLabel =
-    lang === "ar" ? "\u0627\u0644\u062e\u064a\u0627\u0631\u0627\u062a \u0648\u0627\u0644\u0642\u0631\u0627\u0621" : lang === "fr" ? "Options et recitateurs" : "Options and reciters";
+    lang === "ar" ? "\u0627\u0644\u062e\u064a\u0627\u0631\u0627\u062a \u0648\u0627\u0644\u0642\u0631\u0627\u0621" : lang === "fr" ? "Options et r\u00e9citateurs" : "Options and reciters";
   const searchPlaceholder =
     lang === "ar" ? "\u0627\u0628\u062d\u062b..." : lang === "fr" ? "Rechercher..." : "Search...";
 
@@ -1264,9 +1264,8 @@ export default function AudioPlayer() {
           <button
             className={cn(mBarBtn, "h-9 w-9 rounded-full")}
             onClick={toggleMinimized}
-            title={
-              lang === "fr" ? "Reduire" : lang === "ar" ? "Minimize" : "Minimize"
-            }
+            title={minimizeLabel}
+            aria-label={minimizeLabel}
           >
             <i className="fas fa-chevron-down" />
           </button>
@@ -1426,7 +1425,7 @@ export default function AudioPlayer() {
               title={
                 optionsModalOpen
                   ? lang === "fr"
-                    ? "Reduire"
+                    ? "Réduire"
                     : lang === "ar"
                       ? "الخيارات مفتوحة"
                       : "Options opened"
@@ -1497,7 +1496,7 @@ export default function AudioPlayer() {
                   <span className="inline-flex items-center gap-1 rounded-full border border-fuchsia-300/30 bg-fuchsia-300/12 px-2 py-[0.1875rem] text-[0.6rem] font-bold text-fuchsia-100">
                     <i className="fas fa-compact-disc text-[0.48rem]" />
                     {lang === "fr"
-                      ? "Lecture sourate complete"
+                      ? "Lecture sourate complète"
                       : lang === "ar"
                          ? "قراءة السورة كاملة"
                         : "Full-surah playback"}
@@ -1620,7 +1619,7 @@ export default function AudioPlayer() {
                             {r.audioMode === "surah" && (
                               <span className="mt-1 inline-flex items-center rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-1.5 py-0.5 text-[0.5rem] font-semibold tracking-wide text-fuchsia-100">
                                 {lang === "fr"
-                                  ? "Sourate complete"
+                                  ? "Sourate complète"
                                   : lang === "ar"
                                      ? "سورة كاملة"
                                     : "Full surah"}
@@ -2013,9 +2012,9 @@ export default function AudioPlayer() {
                 onClick={toggleOptionsModal}
                 title={
                   lang === "fr"
-                    ? "Options et recitateurs"
+                    ? "Options et récitateurs"
                     : lang === "ar"
-                      ? "Options and reciters"
+                      ? "الخيارات والقراء"
                       : "Options and reciters"
                 }
                 size="sm"
@@ -2076,8 +2075,10 @@ export default function AudioPlayer() {
               title={
                 canDragDesktopCard
                   ? lang === "fr"
-                    ? "Maintenir et deplacer le lecteur"
-                    : "Hold and drag the player"
+                    ? "Maintenir et déplacer le lecteur"
+                    : lang === "ar"
+                      ? "اضغط مطولا واسحب المشغل"
+                      : "Hold and drag the player"
                   : undefined
               }
             >
@@ -2099,9 +2100,9 @@ export default function AudioPlayer() {
                 onClick={toggleOptionsModal}
                 title={
                   lang === "fr"
-                    ? "Options et recitateurs"
+                    ? "Options et récitateurs"
                     : lang === "ar"
-                      ? "Options and reciters"
+                      ? "الخيارات والقراء"
                       : "Options and reciters"
                 }
                 aria-controls="audio-options-modal-title"
@@ -2235,7 +2236,7 @@ export default function AudioPlayer() {
                     onClick={toggleMinimized}
                     title={
                       lang === "fr"
-                        ? "Reduire"
+                        ? "Réduire"
                         : lang === "ar"
                            ? "تصغير"
                           : "Minimize"

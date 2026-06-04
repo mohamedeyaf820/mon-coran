@@ -358,7 +358,7 @@ export default function ContentSection({
               icon="fa-microphone-lines"
               text={
                 lang === "fr"
-                  ? "Aucun recitateur trouve"
+                  ? "Aucun récitateur trouvé"
                   : lang === "ar"
                     ? "لا يوجد قارئ مطابق"
                     : "No reciter found"
@@ -472,14 +472,14 @@ export default function ContentSection({
                           onClick={() => playReciterRadio(reciter)}
                         >
                           <i className="fas fa-play text-[0.66rem]" />
-                          <span>{lang === "fr" ? "Ecouter" : lang === "ar" ? "\u0627\u0633\u062a\u0645\u0627\u0639" : "Listen"}</span>
+                          <span>{lang === "fr" ? "Écouter" : lang === "ar" ? "\u0627\u0633\u062a\u0645\u0627\u0639" : "Listen"}</span>
                         </button>
                         <button
                           className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border/40 bg-bg-secondary text-text-muted transition-all active:scale-95 hover:bg-bg-tertiary hover:text-text-primary"
                           type="button"
                           onClick={() => setSelectedReciterId(reciter.id)}
-                          title={lang === "fr" ? "Details du recitateur" : lang === "ar" ? "تفاصيل القارئ" : "Reciter details"}
-                          aria-label={lang === "fr" ? "Details du recitateur" : lang === "ar" ? "تفاصيل القارئ" : "Reciter details"}
+                          title={lang === "fr" ? "Détails du récitateur" : lang === "ar" ? "تفاصيل القارئ" : "Reciter details"}
+                          aria-label={lang === "fr" ? "Détails du récitateur" : lang === "ar" ? "تفاصيل القارئ" : "Reciter details"}
                         >
                           <i className={`fas fa-chevron-${lang === "ar" ? "left" : "right"} text-xs`} />
                         </button>

@@ -47,7 +47,9 @@ export default function SurahMode({
     <div
       role="region"
       aria-label={t("settings.surahMode", lang)}
-      className={`quran-mode-pane quran-mode-pane--surah ${modePaneShellClass}`}
+      className={`quran-mode-pane quran-mode-pane--surah ${
+        mushafLayout === "mushaf" ? "quran-mode-pane--mushaf" : ""
+      } ${modePaneShellClass}`}
     >
       <ReadingProgressBar />
       {!(isQCF4 && mushafLayout === "mushaf") && (

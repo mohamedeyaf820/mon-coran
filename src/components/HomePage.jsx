@@ -605,9 +605,9 @@ export default function HomePage({ lowPerfMode = false }) {
     duas: { fr: "Douas", en: "Duas", ar: "الأدعية" },
     surahs: { fr: "Sourates", en: "Surahs", ar: "السور" },
     juz: { fr: "Juz", en: "Juz", ar: "الأجزاء" },
-    recitations: { fr: "Recitations", en: "Recitations", ar: "التلاوات" },
+    recitations: { fr: "Récitations", en: "Recitations", ar: "التلاوات" },
     radio: { fr: "Radio", en: "Radio", ar: "الراديو" },
-    reciters: { fr: "Recitateurs", en: "Reciters", ar: "القراء" },
+    reciters: { fr: "Récitateurs", en: "Reciters", ar: "القراء" },
     radioStations: { fr: "Stations", en: "Stations", ar: "محطات" },
     articles: { fr: "Articles", en: "Articles", ar: "مقالات" },
     search: {
@@ -616,7 +616,7 @@ export default function HomePage({ lowPerfMode = false }) {
       ar: "ابحث عن سورة...",
     },
     searchReciter: {
-      fr: "Rechercher un recitateur...",
+      fr: "Rechercher un récitateur...",
       en: "Search a reciter...",
       ar: "ابحث عن قارئ...",
     },
@@ -625,9 +625,9 @@ export default function HomePage({ lowPerfMode = false }) {
       en: "Verse of the Day",
       ar: "آية اليوم",
     },
-    quickAccess: { fr: "Acces rapide", en: "Quick Access", ar: "وصول سريع" },
+    quickAccess: { fr: "Accès rapide", en: "Quick Access", ar: "وصول سريع" },
     noBookmarks: {
-      fr: "Aucun favori - appuyez sur etoile",
+      fr: "Aucun favori - appuyez sur l'étoile",
       en: "No bookmarks yet",
       ar: "لا توجد إشارات",
     },
@@ -637,9 +637,9 @@ export default function HomePage({ lowPerfMode = false }) {
       ar: "لا توجد ملاحظات",
     },
     noResults: {
-      fr: "Aucune sourate trouvee",
+      fr: "Aucune sourate trouvée",
       en: "No surah found",
-      ar: "لم يتم العثور",
+      ar: "لم يتم العثور على سورة",
     },
     bookmarks: { fr: "Favoris", en: "Saved", ar: "المفضلة" },
     notes: { fr: "Notes", en: "Notes", ar: "ملاحظات" },
@@ -747,7 +747,7 @@ export default function HomePage({ lowPerfMode = false }) {
         className="home-top-cards-grid relative z-10"
         aria-label={
           lang === "fr"
-            ? "Apercu de lecture"
+            ? "Aperçu de lecture"
             : lang === "ar"
               ? "ملخص القراءة"
               : "Reading overview"

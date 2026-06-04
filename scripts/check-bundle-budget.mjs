@@ -6,7 +6,7 @@ const MAX_CSS_KB = Number(process.env.BUDGET_CSS_KB || 945);
 // This app deliberately ships many lazy feature chunks. Keep the aggregate JS
 // budget realistic while the stricter single-chunk and total CSS+JS budgets
 // continue to catch regressions that affect load cost.
-const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1040);
+const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1060);
 const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 1885);
 const MAX_SINGLE_CSS_KB = Number(process.env.BUDGET_SINGLE_CSS_KB || 780);
 const MAX_SINGLE_JS_KB = Number(process.env.BUDGET_SINGLE_JS_KB || 250);

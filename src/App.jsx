@@ -705,7 +705,7 @@ export default function App() {
             </div>
           </main>
 
-          {!focusReading && deferNonCriticalUI && (
+          {showHome && !focusReading && deferNonCriticalUI && (
             <Suspense fallback={SUSPENSE_FALLBACK}>
               <NotesPanel />
             </Suspense>

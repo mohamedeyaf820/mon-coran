@@ -5,7 +5,6 @@ import { getJuzForAyah } from "../../data/juz";
 import { shouldShowStandaloneBasmala } from "../../utils/quranUtils";
 import MushafInlineHeader from "./MushafInlineHeader";
 import { getMushafFontClass, getRevelationBadge } from "./mushafInlineUtils";
-import AyahMarker from "./AyahMarker";
 
 export default function MushafInlineView({
   ayahs,
@@ -58,7 +57,6 @@ export default function MushafInlineView({
                   <span id={`ayah-${ayah.numberInSurah}`} data-surah-number={surahNum} data-ayah-number={ayah.numberInSurah} data-ayah-global={ayah.number} className={`mp-ayah${isPlaying ? " mp-ayah--playing" : ""}`} onClick={() => onAyahClick?.(ayah.numberInSurah)} role="button" tabIndex={0} onKeyDown={(event) => event.key === "Enter" && onAyahClick?.(ayah.numberInSurah)} aria-label={`Verset ${ayah.numberInSurah}`}>
                     <SmartAyahRenderer ayah={ayah} showTajwid={showTajwid} isPlaying={isPlaying} surahNum={surahNum} calibration={calibration} riwaya={riwaya} />
                   </span>
-                  {!isQCF4 ? <AyahMarker num={ayah.numberInSurah} className="mp-ayah-marker verse-stop-medallion" /> : null}
                   {"\u200C"}
                 </React.Fragment>
               );

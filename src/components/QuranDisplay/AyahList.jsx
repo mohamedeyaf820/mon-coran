@@ -2,7 +2,6 @@ import React from "react";
 import { toAr } from "../../data/surahs";
 import { cn } from "../../lib/utils";
 import AyahBlock from "../Quran/AyahBlock";
-import AyahMarker from "../Quran/AyahMarker";
 import SmartAyahRenderer from "../Quran/SmartAyahRenderer";
 
 function PageSeparator({ ayah, lang, theme }) {
@@ -113,12 +112,6 @@ export default function AyahList({
                   surahNum={surahNumber || currentSurah}
                   calibration={calibration}
                   riwaya={riwaya}
-                />
-                <AyahMarker
-                  num={ayah.numberInSurah}
-                  isPlaying={isPlaying}
-                  className="qcom-verse-stop"
-                  size="md"
                 />
                 {"\u200A"}
               </span>

@@ -5,8 +5,8 @@
 }
 
 .app-root[data-view="reading"] .quran-display.quran-display--platform {
-  --reader-page-max: min(100%, 1180px);
-  --reader-content-max: min(100%, 980px);
+  --reader-page-max: min(100%, 1280px);
+  --reader-content-max: min(100%, 1120px);
   --reader-card-bg: color-mix(in srgb, var(--bg-card, #111827) 94%, transparent 6%);
   --reader-card-border: color-mix(in srgb, var(--border, rgba(148, 163, 184, 0.18)) 74%, rgba(var(--primary-rgb), 0.2) 26%);
   --reader-card-shadow: 0 18px 48px rgba(2, 8, 23, 0.08);
@@ -72,8 +72,8 @@
   background: var(--reader-card-bg) !important;
   box-shadow: var(--reader-card-shadow) !important;
   transform: translateZ(0);
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 320px;
+  content-visibility: visible;
+  contain-intrinsic-size: auto;
 }
 
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card:hover {
@@ -120,6 +120,8 @@
   text-align: right !important;
   text-align-last: right !important;
   text-shadow: none !important;
+  filter: none !important;
+  opacity: 1 !important;
 }
 
 .app-root[data-view="reading"] .quran-display--hafs .qc-list-card .qc-ayah-text-ar {

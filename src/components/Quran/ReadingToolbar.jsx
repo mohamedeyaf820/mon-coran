@@ -6,12 +6,13 @@ import {
   List,
   Loader2,
   Palette,
-  Play,
   Pause,
+  Play,
   Type,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 import { cn } from "../../lib/utils";
+import audioService from "../../services/audioService";
 import ArabicFontControls from "../ArabicFontControls";
 import HizbRukuNavigator from "./HizbRukuNavigator";
 
@@ -49,14 +50,43 @@ export default function ReadingToolbar({
   const playHandler = onPlay || onPlaySurah;
   const isPreparing = Boolean(preparingSurah && preparingSurah === surahNum);
   const mushafIsOn = mushafLayout === "mushaf";
+  const isPlayingThisContext = isPlaying;
 
-  const toggleMushaf = onToggleMushaf || (() =>
+  const labels = {
+    toolbar: labelFor(lang, "Outils de lecture", "Reading tools", "أدوات القراءة"),
+    mushaf: labelFor(lang, "Mushaf", "Mushaf", "المصحف"),
+    list: labelFor(lang, "Liste", "List", "قائمة"),
+    translation: labelFor(lang, "Traduction", "Translation", "الترجمة"),
+    wordByWord: labelFor(lang, "Mot à mot", "Word by word", "كلمة بكلمة"),
+    tajweed: labelFor(lang, "Tajweed", "Tajweed", "التجويد"),
+    memorization: labelFor(lang, "Mémorisation", "Memorization", "الحفظ"),
+    listen: labelFor(lang, "Écouter", "Listen", "استماع"),
+    pause: labelFor(lang, "Pause", "Pause", "إيقاف مؤقت"),
+    loading: labelFor(lang, "Chargement", "Loading", "جار التحميل"),
+  };
+
+  const setMushafLayout = () => {
+    if (mushafIsOn) return;
+    if (onToggleMushaf) {
+      onToggleMushaf();
+      return;
+    }
     set({
-      mushafLayout: mushafIsOn ? "list" : "mushaf",
+      mushafLayout: "mushaf",
       memMode: false,
       showWordByWord: false,
       showTajwid: true,
-    }));
+    });
+  };
+
+  const setListLayout = () => {
+    if (!mushafIsOn) return;
+    if (onToggleMushaf) {
+      onToggleMushaf();
+      return;
+    }
+    set({ mushafLayout: "list" });
+  };
 
   const toggleMemorization =
     onToggleMemorization ||
@@ -67,23 +97,35 @@ export default function ReadingToolbar({
         showWordByWord: false,
       }));
 
-  // Determine if audio is playing for this specific surah/page
-  const isPlayingThisContext = isPlaying;
+  const toggleWordByWord =
+    onToggleWordByWord ||
+    (() =>
+      set({
+        showWordByWord: !showWordByWord,
+        memMode: false,
+      }));
+
+  const handlePrimaryPlay = () => {
+    if (isPlayingThisContext) {
+      audioService.pause();
+      return;
+    }
+    playHandler?.();
+  };
 
   return (
     <div
-      className="qc-reader-toolbar sticky top-[var(--header-h,68px)] z-40 mx-auto mb-6 flex flex-col md:flex-row items-center justify-between gap-4 w-full max-w-[980px] rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.04)] backdrop-blur-md transition-all duration-300"
+      className="qc-reader-toolbar mx-auto mb-6 flex w-full max-w-[980px] flex-col items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.04)] backdrop-blur-md transition-all duration-300 md:flex-row"
       style={{
         boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.08)",
-        color: "var(--text-primary)"
+        color: "var(--text-primary)",
       }}
       role="toolbar"
-      aria-label={labelFor(lang, "Outils de lecture", "Reading tools")}
+      aria-label={labels.toolbar}
     >
-      {/* 1. LEFT SECTION: Context label & Navigator */}
-      <div className="flex w-full md:w-auto items-center justify-between md:justify-start gap-3 flex-wrap">
+      <div className="flex w-full flex-wrap items-center justify-between gap-3 md:w-auto md:justify-start">
         {contextLabel && (
-          <span className="px-3 py-1.5 rounded-xl bg-[rgba(var(--primary-rgb),0.06)] text-[var(--primary)] text-[0.72rem] font-bold font-[var(--font-ui)] tracking-wide shrink-0">
+          <span className="shrink-0 rounded-xl bg-[rgba(var(--primary-rgb),0.06)] px-3 py-1.5 font-[var(--font-ui)] text-[0.72rem] font-bold tracking-wide text-[var(--primary)]">
             {contextLabel}
           </span>
         )}
@@ -96,141 +138,145 @@ export default function ReadingToolbar({
         />
       </div>
 
-      {/* 2. CENTER SECTION: View Switcher & Toggles */}
-      <div className="flex w-full md:w-auto items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none justify-start md:justify-center">
-        {/* Segmented control for Mushaf vs List */}
-        <div className="flex items-center gap-1 rounded-xl bg-[var(--bg-secondary)] p-1 border border-[var(--border)] shrink-0">
-          <button
-            type="button"
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer",
-              mushafIsOn
-                ? "bg-[var(--bg-card)] text-[var(--primary)] shadow-sm font-bold"
-                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-            )}
-            onClick={toggleMushaf}
-          >
-            <BookOpen size={13} />
-            <span>Mushaf</span>
-          </button>
-          <button
-            type="button"
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer",
-              !mushafIsOn
-                ? "bg-[var(--bg-card)] text-[var(--primary)] shadow-sm font-bold"
-                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-            )}
-            onClick={toggleMushaf}
-          >
-            <List size={13} />
-            <span>{labelFor(lang, "Liste", "List")}</span>
-          </button>
+      <div className="scrollbar-none flex w-full items-center justify-start gap-2 overflow-x-auto pb-1 md:w-auto md:justify-center md:pb-0">
+        <div className="shrink-0 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-1">
+          <div className="flex items-center gap-1" role="group" aria-label={labels.toolbar}>
+            <button
+              type="button"
+              className={cn(
+                "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all",
+                mushafIsOn
+                  ? "bg-[var(--bg-card)] font-bold text-[var(--primary)] shadow-sm"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
+              )}
+              onClick={setMushafLayout}
+              aria-pressed={mushafIsOn}
+              aria-label={labels.mushaf}
+            >
+              <BookOpen size={13} aria-hidden="true" />
+              <span>{labels.mushaf}</span>
+            </button>
+            <button
+              type="button"
+              className={cn(
+                "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all",
+                !mushafIsOn
+                  ? "bg-[var(--bg-card)] font-bold text-[var(--primary)] shadow-sm"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
+              )}
+              onClick={setListLayout}
+              aria-pressed={!mushafIsOn}
+              aria-label={labels.list}
+            >
+              <List size={13} aria-hidden="true" />
+              <span>{labels.list}</span>
+            </button>
+          </div>
         </div>
 
-        {/* Small separator */}
-        <div className="h-6 w-[1px] bg-[var(--border)] shrink-0 hidden sm:block mx-1" />
+        <div className="mx-1 hidden h-6 w-px shrink-0 bg-[var(--border)] sm:block" />
 
-        {/* Feature Toggles Cluster */}
-        <div className="flex items-center gap-1 shrink-0">
-          {/* Translation Toggle */}
+        <div className="flex shrink-0 items-center gap-1">
           <button
             type="button"
             className={cn(
-              "reader-toolbar-btn--word-by-word",
-              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer",
+              "reader-toolbar-btn--word-by-word flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
               showTranslation
-                ? "bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] border-[rgba(var(--primary-rgb),0.2)]"
-                : "bg-transparent text-[var(--text-secondary)] border-transparent hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+                ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
+                : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
             )}
             onClick={() => set({ showTranslation: !showTranslation })}
-            title={labelFor(lang, "Traduction", "Translation")}
+            aria-pressed={showTranslation}
+            aria-label={labels.translation}
+            title={labels.translation}
           >
-            <Languages size={13} />
-            <span>{labelFor(lang, "Traduction", "Translation")}</span>
+            <Languages size={13} aria-hidden="true" />
+            <span>{labels.translation}</span>
           </button>
 
-          {/* Word By Word Toggle */}
           <button
             type="button"
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer",
+              "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
               showWordByWord
-                ? "bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] border-[rgba(var(--primary-rgb),0.2)]"
-                : "bg-transparent text-[var(--text-secondary)] border-transparent hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+                ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
+                : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
             )}
-            onClick={onToggleWordByWord || (() => set({ showWordByWord: !showWordByWord, memMode: false }))}
-            title={labelFor(lang, "Mot à mot", "Word by word")}
+            onClick={toggleWordByWord}
+            aria-pressed={showWordByWord}
+            aria-label={labels.wordByWord}
+            title={labels.wordByWord}
           >
-            <Type size={13} />
-            <span>{labelFor(lang, "Mot à mot", "WbW")}</span>
+            <Type size={13} aria-hidden="true" />
+            <span>{labels.wordByWord}</span>
           </button>
 
-          {/* Tajweed Toggle */}
           <button
             type="button"
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer",
+              "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
               showTajwid
-                ? "bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] border-[rgba(var(--primary-rgb),0.2)]"
-                : "bg-transparent text-[var(--text-secondary)] border-transparent hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+                ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
+                : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
             )}
             onClick={() => set({ showTajwid: !showTajwid })}
-            title="Tajweed"
+            aria-pressed={showTajwid}
+            aria-label={labels.tajweed}
+            title={labels.tajweed}
           >
-            <Palette size={13} />
-            <span>Tajweed</span>
+            <Palette size={13} aria-hidden="true" />
+            <span>{labels.tajweed}</span>
           </button>
 
-          {/* Memorization Toggle */}
           <button
             type="button"
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer",
+              "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
               memMode
-                ? "bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] border-[rgba(var(--primary-rgb),0.2)]"
-                : "bg-transparent text-[var(--text-secondary)] border-transparent hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+                ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
+                : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
             )}
             onClick={toggleMemorization}
-            title={labelFor(lang, "Mémorisation", "Memorization")}
+            aria-pressed={memMode}
+            aria-label={labels.memorization}
+            title={labels.memorization}
           >
-            <Brain size={13} />
-            <span>{labelFor(lang, "Mémorisation", "Memo")}</span>
+            <Brain size={13} aria-hidden="true" />
+            <span>{labels.memorization}</span>
           </button>
         </div>
       </div>
 
-      {/* 3. RIGHT SECTION: Font Adjustments & Primary Play Button */}
-      <div className="flex w-full md:w-auto items-center justify-between md:justify-end gap-3 border-t md:border-t-0 pt-2.5 md:pt-0 border-[var(--border)] flex-wrap">
+      <div className="flex w-full flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] pt-2.5 md:w-auto md:justify-end md:border-t-0 md:pt-0">
         <ArabicFontControls lang={lang} compact />
-        
+
         {playHandler && (
           <button
             type="button"
-            onClick={playHandler}
+            onClick={handlePrimaryPlay}
             disabled={isPreparing}
             className={cn(
-              "reader-toolbar-btn--primary btn-play-surah",
-              "flex items-center justify-center gap-1.5 px-4 h-9 rounded-xl text-xs font-bold text-white shadow-sm transition-all cursor-pointer disabled:opacity-50",
+              "reader-toolbar-btn--primary btn-play-surah flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-4 text-xs font-bold text-white shadow-sm transition-all disabled:cursor-not-allowed disabled:opacity-50",
               isPlayingThisContext
                 ? "bg-amber-600 hover:bg-amber-700"
-                : "bg-[var(--primary)] hover:bg-[var(--primary-dark,var(--primary))]"
+                : "bg-[var(--primary)] hover:bg-[var(--primary-dark,var(--primary))]",
             )}
-            title={playLabel || labelFor(lang, "Écouter", "Listen")}
+            aria-label={isPlayingThisContext ? labels.pause : playLabel || labels.listen}
+            title={playLabel || labels.listen}
           >
             {isPreparing ? (
-              <Loader2 size={13} className="animate-spin" />
+              <Loader2 size={13} className="animate-spin" aria-hidden="true" />
             ) : isPlayingThisContext ? (
-              <Pause size={13} fill="currentColor" />
+              <Pause size={13} fill="currentColor" aria-hidden="true" />
             ) : (
-              <Play size={13} fill="currentColor" />
+              <Play size={13} fill="currentColor" aria-hidden="true" />
             )}
             <span>
               {isPreparing
-                ? labelFor(lang, "Chargement", "Loading")
+                ? labels.loading
                 : isPlayingThisContext
-                ? labelFor(lang, "Pause", "Pause")
-                : labelFor(lang, "Écouter", "Listen")}
+                  ? labels.pause
+                  : labels.listen}
             </span>
           </button>
         )}

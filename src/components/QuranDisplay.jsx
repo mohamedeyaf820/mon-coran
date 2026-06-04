@@ -169,7 +169,6 @@ export default function QuranDisplay() {
     displayMode,
     getScrollContainer: view.getScrollContainer,
     mushafLayout,
-    onInitialFocusAyah: setActiveAyah,
   });
   const navigation = useQuranDisplayNavigation({
     currentJuz,
@@ -249,7 +248,9 @@ export default function QuranDisplay() {
         const keys = await caches.keys();
         await Promise.all(keys.map((key) => caches.delete(key)));
       }
-      try { localStorage.removeItem("mushaf-plus-settings"); } catch {}
+      try {
+        localStorage.removeItem("mushaf-plus-settings");
+      } catch {}
     } finally {
       window.location.reload();
     }
@@ -322,7 +323,7 @@ export default function QuranDisplay() {
           <>
             <p className="text-lg text-text-main font-medium mb-3">
               {lang === "fr"
-                ? "Impossible de charger les donnees : verifiez votre connexion internet et reessayez."
+                ? "Impossible de charger les données : vérifiez votre connexion internet et réessayez."
                 : "Unable to load data: please check your internet connection and try again."}
             </p>
             <p className="text-sm text-text-muted/70 bg-black/10 p-3 rounded-lg font-mono text-left w-full break-words mb-8">
@@ -376,7 +377,7 @@ export default function QuranDisplay() {
     <>
       <div className="reading-progress-bar" aria-hidden="true" />
 
-      {/* ── FAB "Quitter mémorisation" — visible uniquement quand memMode est actif ── */}
+      {/* Memorization exit action, only visible while memMode is active. */}
       {memMode && (
         <button
           onClick={exitMemorization}

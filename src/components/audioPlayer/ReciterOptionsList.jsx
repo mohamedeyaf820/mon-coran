@@ -31,6 +31,12 @@ export default function ReciterOptionsList(props) {
     setReciterSearch,
   } = props;
   const isAnyReciterSwitching = Boolean(reciterSwitchingId);
+  const cleanSearchLabel =
+    lang === "ar"
+      ? "\u0627\u0628\u062d\u062b \u0639\u0646 \u0642\u0627\u0631\u0626"
+      : lang === "fr"
+        ? "Rechercher un r\u00e9citateur"
+        : "Search reciter";
 
   return (
             <section
@@ -64,11 +70,12 @@ export default function ReciterOptionsList(props) {
                     onChange={(e) => setReciterSearch(e.target.value)}
                     placeholder={
                       lang === "fr"
-                        ? "Rechercher un recitateur..."
+                        ? "Rechercher un récitateur..."
                         : lang === "ar"
                           ? "ابحث عن قارئ..."
                           : "Search reciter..."
                     }
+                    aria-label={cleanSearchLabel}
                     className={playerSearchInputClass}
                   />
                   {reciterSearch && (
@@ -95,7 +102,7 @@ export default function ReciterOptionsList(props) {
                     )}
                   >
                     {lang === "fr"
-                      ? "Aucun recitateur trouve"
+                      ? "Aucun récitateur trouvé"
                       : lang === "ar"
                         ? "لا يوجد قارئ"
                         : "No reciter found"}
@@ -157,7 +164,7 @@ export default function ReciterOptionsList(props) {
                               {r.audioMode === "surah" && (
                                 <span className="inline-flex w-fit items-center rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-fuchsia-100">
                                   {lang === "fr"
-                                    ? "Sourate complete"
+                                    ? "Sourate complète"
                                     : lang === "ar"
                                       ? "سورة كاملة"
                                       : "Full surah"}

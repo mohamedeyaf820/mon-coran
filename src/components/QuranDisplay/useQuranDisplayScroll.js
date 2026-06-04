@@ -11,7 +11,6 @@ export default function useQuranDisplayScroll({
   displayMode,
   getScrollContainer,
   mushafLayout,
-  onInitialFocusAyah,
 }) {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const followRetryTimerRef = useRef(null);
@@ -88,10 +87,9 @@ export default function useQuranDisplayScroll({
         behavior: "smooth",
         block: "center",
       });
-      if (typeof onInitialFocusAyah === "function") onInitialFocusAyah(currentAyah);
     }, 120);
     return () => window.clearTimeout(timer);
-  }, [currentAyah, ayahCount, displayMode, onInitialFocusAyah]);
+  }, [currentAyah, ayahCount, displayMode]);
 
   useEffect(() => {
     clearFollowRetryTimer();

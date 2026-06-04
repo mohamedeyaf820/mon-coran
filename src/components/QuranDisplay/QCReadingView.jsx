@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { cn } from "../../lib/utils";
 import { shouldShowStandaloneBasmala } from "../../utils/quranUtils";
 import SmartAyahRenderer from "../Quran/SmartAyahRenderer";
-import AyahMarker from "../Quran/AyahMarker";
 
 const BASMALA = "\uFDFD";
 
@@ -219,11 +218,6 @@ export default function QCReadingView({
                     surahNum={surahNum}
                     calibration={calibration}
                     riwaya={riwaya}
-                  />
-                  <AyahMarker
-                    num={ayah.numberInSurah}
-                    isPlaying={isPlaying}
-                    size="0.92em"
                   />
                   {"\u200A"}
                 </span>

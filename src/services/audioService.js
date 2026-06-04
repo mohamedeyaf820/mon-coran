@@ -135,6 +135,7 @@ class AudioService {
     // Extra listeners (for word-by-word tracking etc.)
     this._timeUpdateListeners = [];
     this._endListeners = [];
+    this._pauseListeners = [];
     this._ayahChangeListeners = [];
 
     // Wire up native events (store bound refs for cleanup)
@@ -456,6 +457,7 @@ class AudioService {
     this.audio.pause();
     this.isPlaying = false;
     this.onPause?.();
+    for (const fn of this._pauseListeners) fn(this.currentAyah);
   }
 
   resume() {
@@ -794,6 +796,25 @@ class AudioService {
         this.audio.preload = "auto";
         this.audio.src = url;
         this.audio.load();
+
+        // Start playback immediately while still inside the user's activation
+        // chain. Waiting for `canplay` first can lose that activation on mobile
+        // browsers and also leaves mocked media elements idle in CI.
+        this.audio
+          .play()
+          .then(() => finishResolve())
+          .catch((e) => {
+            if (settled || requestId !== this._loadRequestId) return;
+            if (e?.name === "NotAllowedError") {
+              finishResolve();
+            } else if (retriesLeft > 0) {
+              cleanup();
+              this._clearLoadTimeout();
+              setTimeout(() => attempt(retriesLeft - 1), RETRY_DELAY);
+            } else {
+              finishReject(e);
+            }
+          });
       };
 
       attempt(retries);
@@ -992,6 +1013,14 @@ class AudioService {
     this._endListeners.push(fn);
     return () => {
       this._endListeners = this._endListeners.filter((f) => f !== fn);
+    };
+  }
+
+  /** Subscribe to pause events without replacing the main UI callback. */
+  addPauseListener(fn) {
+    this._pauseListeners.push(fn);
+    return () => {
+      this._pauseListeners = this._pauseListeners.filter((f) => f !== fn);
     };
   }
 

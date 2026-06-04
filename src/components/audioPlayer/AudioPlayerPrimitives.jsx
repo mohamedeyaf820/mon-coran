@@ -34,18 +34,6 @@ export function ProgressRail({ progress, className = "", showThumb = false }) {
         preserveAspectRatio="none"
         className="block h-full w-full overflow-visible"
       >
-        <defs>
-          <linearGradient
-            id="audio-progress-gradient"
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="0%"
-          >
-            <stop offset="0%" stopColor="var(--gold)" />
-            <stop offset="100%" stopColor="var(--gold-bright)" />
-          </linearGradient>
-        </defs>
         <rect
           x="0"
           y="0"
@@ -60,7 +48,7 @@ export function ProgressRail({ progress, className = "", showThumb = false }) {
           width={pct}
           height="4"
           rx="2"
-          fill="url(#audio-progress-gradient)"
+          fill="var(--theme-primary, var(--gold))"
         />
         {showThumb && (
           <circle

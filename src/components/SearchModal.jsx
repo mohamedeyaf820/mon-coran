@@ -339,7 +339,7 @@ export default function SearchModal() {
 
             {error && <p className="search-pro__error">{error}</p>}
 
-            <section className="search-pro__results" aria-label={lang === "fr" ? "Resultats" : "Search results"}>
+            <section className="search-pro__results" aria-label={lang === "fr" ? "Résultats" : lang === "ar" ? "نتائج البحث" : "Search results"}>
               {!query && !loading && (
                 <div className="search-pro__empty">
                   <span className="search-pro__empty-icon"><i className="fas fa-compass"></i></span>
@@ -347,9 +347,9 @@ export default function SearchModal() {
                     <h3>{lang === "fr" ? "Retrouver rapidement un verset" : lang === "ar" ? "اعثر على الآية بسرعة" : "Find a verse quickly"}</h3>
                     <p>
                       {lang === "fr"
-                        ? "Essaie un mot arabe, une transcription phonétique, une traduction ou le début d'une ayah."
+                        ? "Essaie un mot arabe, une transcription phonétique, une traduction ou le début d'un verset."
                         : lang === "ar"
-                          ? "جرّب كلمة عربية ou transcription phonétique ou traduction."
+                          ? "جرّب كلمة عربية أو كتابة صوتية أو ترجمة."
                           : "Try an Arabic word, phonetic spelling, or translation."}
                     </p>
                     <div className="search-pro__suggestions">

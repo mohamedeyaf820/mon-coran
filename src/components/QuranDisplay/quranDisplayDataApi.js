@@ -5,6 +5,7 @@ import {
   getSurahText,
 } from "../../services/quranAPI";
 import { stripBasmala } from "../../utils/quranUtils";
+import { getOfflineArabicData } from "../../data/offlineQuranFallback";
 import {
   getWarshJuzVerses,
   getWarshPageVerses,
@@ -34,9 +35,10 @@ function normalizeRiwayaText(ayah, riwaya) {
   }
 
   const hafsText =
+    ayah?.quranCom?.textQpcHafs ||
+    ayah?.quranCom?.textQpcNastaleeqHafs ||
     ayah?.quranCom?.textUthmani ||
     ayah?.text ||
-    ayah?.quranCom?.textQpcHafs ||
     "";
 
   return {
@@ -63,12 +65,44 @@ export async function loadArabicData({
   }
 
   if (displayMode === "page") {
-    return getPage(currentPage, riwaya, signal);
+    try {
+      return await getPage(currentPage, riwaya, signal);
+    } catch (error) {
+      if (error?.name === "AbortError") throw error;
+      const fallback = getOfflineArabicData({
+        currentJuz,
+        currentPage,
+        currentSurah,
+        displayMode,
+        riwaya,
+      });
+      if (fallback) {
+        console.warn("Using offline Quran text fallback after page fetch failure:", error);
+        return fallback;
+      }
+      throw error;
+    }
   }
 
-  return displayMode === "juz"
-    ? getJuz(currentJuz, riwaya, signal)
-    : getSurahText(currentSurah, riwaya, signal);
+  try {
+    return displayMode === "juz"
+      ? await getJuz(currentJuz, riwaya, signal)
+      : await getSurahText(currentSurah, riwaya, signal);
+  } catch (error) {
+    if (error?.name === "AbortError") throw error;
+    const fallback = getOfflineArabicData({
+      currentJuz,
+      currentPage,
+      currentSurah,
+      displayMode,
+      riwaya,
+    });
+    if (fallback) {
+      console.warn("Using offline Quran text fallback after fetch failure:", error);
+      return fallback;
+    }
+    throw error;
+  }
 }
 
 export function ensureRequestedRiwaya(ayahs, riwaya) {

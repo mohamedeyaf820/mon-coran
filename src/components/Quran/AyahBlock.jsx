@@ -10,7 +10,6 @@ import SmartAyahRenderer from "./SmartAyahRenderer";
 import WordByWordDisplay from "./WordByWordDisplay";
 import AyahBlockFooter from "./AyahBlockFooter";
 import AyahBlockSupplement from "./AyahBlockSupplement";
-import AyahMarker from "./AyahMarker";
 
 const AyahBlock = React.memo(function AyahBlock({
   ayah,
@@ -112,7 +111,7 @@ const AyahBlock = React.memo(function AyahBlock({
       className={cn(
         /* Base card */
         "rd-ayah qc-ayah-block group relative",
-        "mx-auto mb-6 w-full max-w-[820px]",
+        "mx-auto mb-6 w-full max-w-[1080px]",
         "rounded-[1.5rem] border border-[color-mix(in_srgb,var(--border)_50%,transparent_50%)]",
         "bg-[var(--bg-card)]",
         "px-7 py-6",
@@ -190,7 +189,6 @@ const AyahBlock = React.memo(function AyahBlock({
         )}
       >
         {arabicContent}
-        <AyahMarker num={ayah.numberInSurah} isPlaying={isPlaying} size="lg" />
       </div>
 
       {/* Transliteration + Translation */}
