@@ -1,16 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { cn } from "../../lib/utils";
 import audioService from "../../services/audioService";
+import { getAudioPlayerLabels } from "../audioPlayer/audioPlayerLabels";
 
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds <= 0) return "0:00";
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
   return `${m}:${s.toString().padStart(2, "0")}`;
-}
-
-function pick(lang, values) {
-  return values[lang] || values.fr;
 }
 
 export default function QCAudioBar({
@@ -26,58 +23,7 @@ export default function QCAudioBar({
   const [localPlaying, setLocalPlaying] = useState(false);
   const progressRailRef = useRef(null);
 
-  const labels = {
-    player: pick(lang, {
-      fr: "Lecteur audio",
-      en: "Audio player",
-      ar: "\u0645\u0634\u063a\u0644 \u0627\u0644\u0635\u0648\u062a",
-    }),
-    progress: pick(lang, {
-      fr: "Progression audio",
-      en: "Audio progress",
-      ar: "\u062a\u0642\u062f\u0645 \u0627\u0644\u0635\u0648\u062a",
-    }),
-    ready: pick(lang, {
-      fr: "Pr\u00eat \u00e0 lire",
-      en: "Ready",
-      ar: "\u062c\u0627\u0647\u0632",
-    }),
-    verse: pick(lang, {
-      fr: "Verset",
-      en: "Verse",
-      ar: "\u0622\u064a\u0629",
-    }),
-    speed: pick(lang, {
-      fr: "Vitesse",
-      en: "Speed",
-      ar: "\u0627\u0644\u0633\u0631\u0639\u0629",
-    }),
-    previous: pick(lang, {
-      fr: "Pr\u00e9c\u00e9dent",
-      en: "Previous",
-      ar: "\u0627\u0644\u0633\u0627\u0628\u0642",
-    }),
-    pause: pick(lang, {
-      fr: "Pause",
-      en: "Pause",
-      ar: "\u0625\u064a\u0642\u0627\u0641 \u0645\u0624\u0642\u062a",
-    }),
-    play: pick(lang, {
-      fr: "Lecture",
-      en: "Play",
-      ar: "\u062a\u0634\u063a\u064a\u0644",
-    }),
-    next: pick(lang, {
-      fr: "Suivant",
-      en: "Next",
-      ar: "\u0627\u0644\u062a\u0627\u0644\u064a",
-    }),
-    stop: pick(lang, {
-      fr: "Arr\u00eater",
-      en: "Stop",
-      ar: "\u0625\u064a\u0642\u0627\u0641",
-    }),
-  };
+  const labels = getAudioPlayerLabels(lang);
 
   useEffect(() => {
     const syncSnapshot = () => {
@@ -133,7 +79,7 @@ export default function QCAudioBar({
         "shadow-[0_-4px_24px_rgba(0,0,0,0.12)]",
       )}
       role="region"
-      aria-label={labels.player}
+      aria-label={labels.region}
     >
       <div
         ref={progressRailRef}
