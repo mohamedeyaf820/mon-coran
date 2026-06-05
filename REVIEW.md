@@ -55,9 +55,11 @@ Fichiers principaux:
 
 Ces tailles rendent les regressions UI plus probables, compliquent la revue et ralentissent les iterations. L'audio player doit etre extrait en hooks et sous-composants, sans changer le comportement utilisateur d'un seul coup.
 
-### P1 - Audit npm avec vulnerabilites moderees
+### Resolu - Audit npm avec vulnerabilites moderees
 
-`npm audit --json` signale des vulnerabilites moderees dans `brace-expansion`, `postcss`, `vite` et `esbuild`. Les correctifs Vite/esbuild disponibles demandent une mise a jour majeure de Vite. Il faut appliquer les correctifs lockfile possibles, puis planifier la migration Vite separement.
+Etat initial: `npm audit --json` signalait des vulnerabilites moderees dans `brace-expansion`, `postcss`, `vite` et `esbuild`.
+
+Etat 2026-06-05: migration effectuee vers Vite 8, `@vitejs/plugin-react` 6, `@tailwindcss/vite` compatible Vite 8 et `esbuild` explicite. `npm audit --audit-level=moderate` ne signale plus de vulnerabilite.
 
 ### P1 - Donnees locales chiffrees mais menace XSS encore importante
 

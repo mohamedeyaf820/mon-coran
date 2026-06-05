@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => ({
     // Minification agressive + suppression console/debugger
     minify: "esbuild",
     cssCodeSplit: true,
-    cssMinify: true,
+    cssMinify: "esbuild",
     // Enable compression
     reportCompressedSize: true,
     chunkSizeWarningLimit: 500,

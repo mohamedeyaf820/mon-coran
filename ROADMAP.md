@@ -10,7 +10,7 @@ Objectif: garder `main` vert, corriger les bugs reels et reduire les risques de 
 - Ajouter des tests de securite pour le sanitizer SVG.
 - Retirer les domaines CSP inutilises ou risqués.
 - Synchroniser `scripts/cspPolicy.mjs`, `netlify.toml` et `vercel.json`.
-- Appliquer les mises a jour lockfile possibles sans migration majeure.
+- Maintenir `npm audit --audit-level=moderate` a zero apres la migration Vite 8.
 - Garder `npm run build:ci`, `npm run test:security` et `npm run perf:budget` verts.
 
 ## Phase 1 - Lecture et performance percue

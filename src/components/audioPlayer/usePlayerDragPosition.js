@@ -6,6 +6,17 @@ import {
   saveCardPos,
 } from "./audioPlayerUtils";
 
+function applyCardPosition(card, pos) {
+  if (!card || !pos) return;
+  card.style.setProperty("--player-left", `${pos.x}px`);
+  card.style.setProperty("--player-top", `${pos.y}px`);
+  card.style.setProperty("left", `${pos.x}px`, "important");
+  card.style.setProperty("top", `${pos.y}px`, "important");
+  card.style.setProperty("right", "auto", "important");
+  card.style.setProperty("bottom", "auto", "important");
+  card.style.setProperty("transform", "none", "important");
+}
+
 export function usePlayerDragPosition({
   cardRef,
   expanded,
@@ -28,7 +39,7 @@ export function usePlayerDragPosition({
   const [manualDockPosition, setManualDockPosition] = useState(
     () => hasSavedCardPosRef.current,
   );
-  const canFreePosition = !isContextualDesktop || manualDockPosition;
+  const canFreePosition = !isContextualDesktop || manualDockPosition || isDragging;
   const canDragDesktopCard = !isMobile;
 
   useEffect(() => {
@@ -86,13 +97,7 @@ export function usePlayerDragPosition({
       return;
     }
 
-    card.style.setProperty("--player-left", `${cardPos.x}px`);
-    card.style.setProperty("--player-top", `${cardPos.y}px`);
-    card.style.setProperty("left", `${cardPos.x}px`, "important");
-    card.style.setProperty("top", `${cardPos.y}px`, "important");
-    card.style.setProperty("right", "auto", "important");
-    card.style.setProperty("bottom", "auto", "important");
-    card.style.setProperty("transform", "none", "important");
+    applyCardPosition(card, cardPos);
   }, [cardRef, cardPos, isMobile, canFreePosition]);
 
   const onPointerDown = useCallback(
@@ -134,6 +139,7 @@ export function usePlayerDragPosition({
       }
       cardPosRef.current = startPos;
       setCardPos(startPos);
+      applyCardPosition(card, startPos);
       e.preventDefault();
       e.currentTarget.setPointerCapture?.(e.pointerId);
       dragState.current = {
@@ -171,6 +177,7 @@ export function usePlayerDragPosition({
       );
       cardPosRef.current = next;
       setCardPos(next);
+      applyCardPosition(card, next);
     },
     [cardRef],
   );
@@ -193,6 +200,7 @@ export function usePlayerDragPosition({
       }
       cardPosRef.current = next;
       setCardPos(next);
+      applyCardPosition(card, next);
       saveCardPos(next);
       hasSavedCardPosRef.current = true;
       setManualDockPosition(true);
@@ -211,6 +219,7 @@ export function usePlayerDragPosition({
       const next = clampCardPosition(current.x, current.y, w, h);
       cardPosRef.current = next;
       setCardPos(next);
+      applyCardPosition(card, next);
       saveCardPos(next);
       hasSavedCardPosRef.current = true;
       setManualDockPosition(true);
