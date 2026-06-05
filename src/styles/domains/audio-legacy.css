@@ -1,0 +1,880 @@
+﻿
+.mp-audio-player {
+    --player-surface: color-mix(in srgb, var(--theme-panel-bg-strong, #0e1916) 88%, transparent 12%);
+    --player-surface-soft: color-mix(in srgb, var(--theme-panel-bg, #111f1b) 82%, transparent 18%);
+    --player-line: color-mix(in srgb, var(--theme-border, rgba(255,255,255,0.14)) 64%, transparent 36%);
+}
+
+.mp-audio-player--desktop,
+.mp-audio-player--mobile {
+    border-color: var(--player-line) !important;
+    background:
+        linear-gradient(155deg, color-mix(in srgb, var(--theme-primary, #0f766e) 12%, transparent 88%), transparent 42%),
+        linear-gradient(180deg, var(--player-surface), var(--player-surface-soft)) !important;
+}
+
+.mp-audio-player--desktop {
+    border-radius: 24px !important;
+}
+
+.mp-audio-player--dock {
+    border-radius: 24px 24px 0 0 !important;
+}
+
+.audio-cover-art {
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+.audio-cover-art img {
+    filter: saturate(1.04) contrast(1.02);
+}
+
+.audio-player-primary-btn {
+    box-shadow:
+        0 12px 28px rgba(var(--theme-primary-rgb, 15, 118, 110), 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+}
+
+.audio-player-primary-btn:hover {
+    transform: translateY(-1px);
+}
+
+.player-reciter-btn,
+.mp-audio-player [aria-pressed] {
+    min-width: 0;
+}
+
+.mp-audio-player .audio-loading-indicator,
+.mp-audio-player [role="status"] {
+    min-width: 0;
+}
+
+[data-theme="dark"] .mp-audio-player {
+    --player-surface: rgba(10, 17, 15, 0.96);
+    --player-surface-soft: rgba(6, 11, 10, 0.94);
+    --player-line: rgba(148, 163, 184, 0.18);
+    color: rgba(245, 248, 246, 0.94);
+}
+
+[data-theme="dark"] .mp-audio-player--desktop,
+[data-theme="dark"] .mp-audio-player--mobile {
+    background:
+        linear-gradient(145deg, rgba(var(--theme-primary-rgb, 15, 118, 110), 0.2), transparent 40%),
+        linear-gradient(180deg, rgba(16, 26, 23, 0.98), rgba(5, 10, 9, 0.98)) !important;
+    box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.48),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .audio-cover-art {
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+[data-theme="dark"] .audio-player-modal__surface {
+    background:
+        linear-gradient(150deg, rgba(var(--theme-primary-rgb, 15, 118, 110), 0.16), transparent 42%),
+        linear-gradient(180deg, rgba(16, 26, 23, 0.98), rgba(5, 10, 9, 0.98)) !important;
+}
+
+@media (max-width: 520px) {
+    .mp-audio-player--mobile {
+        left: 0.65rem !important;
+        right: 0.65rem !important;
+    }
+
+    .mp-player-mobile-controls {
+        gap: 0.35rem !important;
+    }
+
+    .mp-audio-player {
+        border-top-left-radius: 1.35rem;
+        border-top-right-radius: 1.35rem;
+    }
+
+    .mp-audio-player--mobile.mp-audio-player--dock {
+        border-top-left-radius: 1.45rem;
+        border-top-right-radius: 1.45rem;
+    }
+
+    .mp-player-controls-strip {
+        border-radius: 0.9rem;
+    }
+
+    .mp-audio-player [data-player-drag="true"]::after {
+        left: 10px;
+        right: 10px;
+    }
+}
+
+/* Audio player shell styles - moved from src\styles\tailwind.css */
+.mp-audio-player {
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border-strong) 42%,
+        transparent 58%
+    );
+    background:
+        radial-gradient(
+            120% 160% at 15% 0%,
+            rgba(var(--theme-primary-rgb), 0.16) 0%,
+            transparent 55%
+        ),
+        linear-gradient(
+            160deg,
+            color-mix(
+                in srgb,
+                var(--theme-panel-bg-strong) 95%,
+                var(--theme-primary) 5%
+            ),
+            color-mix(in srgb, var(--theme-panel-bg) 92%, var(--theme-bg) 8%)
+        );
+    box-shadow:
+        0 28px 64px rgba(2, 8, 22, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.11),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.22);
+    isolation: isolate;
+}
+
+.mp-audio-player::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.08),
+        transparent 25%
+    );
+    opacity: 0.7;
+}
+
+.mp-audio-player::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.28;
+    background:
+        radial-gradient(
+            circle at 88% 8%,
+            rgba(var(--theme-primary-rgb), 0.22) 0%,
+            transparent 38%
+        ),
+        radial-gradient(
+            circle at 6% 92%,
+            rgba(212, 168, 32, 0.18) 0%,
+            transparent 44%
+        );
+}
+
+.mp-audio-player > * {
+    position: relative;
+    z-index: 1;
+}
+
+.mp-audio-player--dock {
+    border-top-color: color-mix(
+        in srgb,
+        var(--theme-primary) 34%,
+        transparent 66%
+    );
+    backdrop-filter: blur(24px) saturate(1.25);
+    -webkit-backdrop-filter: blur(24px) saturate(1.25);
+}
+
+.mp-audio-player--desktop {
+    animation: mp-player-rise-in 0.42s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.mp-audio-player--mobile.mp-audio-player--dock {
+    animation: mp-player-slide-in 0.34s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+@keyframes mp-player-rise-in {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes mp-player-slide-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mp-audio-player i.fas,
+.mp-audio-player i.fa-solid,
+.mp-audio-player i.fa {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 900;
+    font-style: normal;
+    line-height: 1;
+    display: inline-block;
+    color: inherit;
+}
+
+.mp-audio-player i.far,
+.mp-audio-player i.fa-regular {
+    font-family: "Font Awesome 6 Free" !important;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1;
+    display: inline-block;
+    color: inherit;
+}
+
+.mp-audio-player i.fab,
+.mp-audio-player i.fa-brands {
+    font-family: "Font Awesome 6 Brands" !important;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1;
+    display: inline-block;
+    color: inherit;
+}
+
+.mp-audio-player [data-player-drag="true"] {
+    position: relative;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.mp-audio-player[data-dragging="true"] [data-player-drag="true"] {
+    cursor: grabbing;
+}
+
+.mp-audio-player [data-player-drag="true"]::after {
+    content: "";
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--theme-primary-rgb), 0.32),
+        transparent
+    );
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.mp-player-controls-strip {
+    border: 1px solid
+        color-mix(in srgb, var(--theme-border) 56%, transparent 44%);
+    background: linear-gradient(
+        150deg,
+        color-mix(in srgb, var(--theme-panel-bg-strong) 82%, transparent 18%),
+        color-mix(in srgb, var(--theme-panel-bg) 72%, transparent 28%)
+    );
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.mp-player-controls-strip button {
+    letter-spacing: 0.01em;
+}
+
+.mp-player-progress {
+    border-radius: 999px;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+        0 0 0 1px rgba(var(--theme-primary-rgb), 0.08);
+}
+
+.mp-player-progress::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.06),
+        transparent 45%,
+        rgba(255, 255, 255, 0.04)
+    );
+    opacity: 0.85;
+}
+
+.mp-player-progress:hover {
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 0 0 1px rgba(var(--theme-primary-rgb), 0.22),
+        0 0 16px rgba(var(--theme-primary-rgb), 0.24);
+}
+
+.audio-player-primary-btn.mp-player-play-btn {
+    position: relative;
+    overflow: hidden;
+    border-color: color-mix(in srgb, var(--theme-primary) 56%, #ffffff 44%);
+    box-shadow:
+        0 12px 30px rgba(var(--theme-primary-rgb), 0.42),
+        0 0 0 1px rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.audio-player-primary-btn.mp-player-play-btn::after {
+    content: "";
+    position: absolute;
+    inset: -40% -55%;
+    background: linear-gradient(
+        115deg,
+        transparent 32%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 68%
+    );
+    transform: translateX(-52%);
+    transition: transform 0.45s ease;
+}
+
+.audio-player-primary-btn.mp-player-play-btn:hover::after {
+    transform: translateX(52%);
+}
+
+.audio-player-primary-btn.mp-player-play-btn[aria-pressed="true"] {
+    animation: mp-player-breathe 2.2s ease-in-out infinite;
+}
+
+.audio-player-primary-btn.mp-player-play-btn i {
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.24));
+}
+
+@keyframes mp-player-breathe {
+    0%,
+    100% {
+        transform: scale(1.02);
+        box-shadow:
+            0 10px 24px rgba(var(--theme-primary-rgb), 0.36),
+            0 0 0 0 rgba(var(--theme-primary-rgb), 0.36);
+    }
+    50% {
+        transform: scale(1.06);
+        box-shadow:
+            0 14px 34px rgba(var(--theme-primary-rgb), 0.5),
+            0 0 0 8px rgba(var(--theme-primary-rgb), 0);
+    }
+}
+
+.mp-audio-player [dir="rtl"][lang="ar"] {
+    text-rendering: optimizeLegibility;
+    font-feature-settings:
+        "liga" 1,
+        "calt" 1;
+}
+
+.mp-audio-player [data-scroll-panel="true"] {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--theme-primary-rgb), 0.42)
+        rgba(255, 255, 255, 0.04);
+}
+
+.mp-audio-player [data-scroll-panel="true"]::-webkit-scrollbar {
+    width: 5px;
+}
+
+.mp-audio-player [data-scroll-panel="true"]::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 999px;
+}
+
+.mp-audio-player [data-scroll-panel="true"]::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+        180deg,
+        rgba(var(--theme-primary-rgb), 0.58),
+        rgba(212, 168, 32, 0.62)
+    );
+    border-radius: 999px;
+}
+
+.mp-audio-player [data-scroll-panel="true"]::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+        180deg,
+        rgba(var(--theme-primary-rgb), 0.74),
+        rgba(212, 168, 32, 0.82)
+    );
+}
+
+/* Audio and reader responsive polish - moved from src\styles\responsive.css */
+.app-root .mp-audio-player,
+.app-root .audio-player-modal__surface {
+  --audio-glass: color-mix(in srgb, var(--theme-panel-bg-strong) 86%, transparent 14%);
+  --audio-glass-2: color-mix(in srgb, var(--theme-panel-bg) 82%, var(--theme-bg) 18%);
+  --audio-line: color-mix(in srgb, var(--theme-border) 58%, transparent 42%);
+  --audio-ink: color-mix(in srgb, var(--theme-text) 93%, #ffffff 7%);
+  --audio-muted: color-mix(in srgb, var(--theme-text-muted) 84%, var(--theme-bg) 16%);
+  --audio-accent: color-mix(in srgb, var(--theme-primary) 86%, #ffffff 14%);
+  --audio-accent-strong: color-mix(in srgb, var(--theme-primary) 72%, #06150f 28%);
+  color: var(--audio-ink) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0) 34%),
+    linear-gradient(155deg, var(--audio-glass), var(--audio-glass-2)) !important;
+  border-color: color-mix(in srgb, var(--audio-line) 82%, #ffffff 18%) !important;
+  box-shadow:
+    0 30px 72px rgba(4, 12, 24, 0.34),
+    inset 0 1px 0 rgba(255,255,255,0.18),
+    inset 0 -1px 0 rgba(0,0,0,0.12) !important;
+}
+
+.app-root .mp-audio-player {
+  isolation: isolate;
+}
+
+.app-root .mp-audio-player::before,
+.app-root .audio-player-modal__surface::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(var(--theme-primary-rgb),0.08), transparent 44%, rgba(212,168,32,0.06)),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 12px);
+  opacity: 0.72;
+  z-index: 0;
+}
+
+.app-root .mp-audio-player > *,
+.app-root .audio-player-modal__surface > * {
+  position: relative;
+  z-index: 1;
+}
+
+.app-root .mp-audio-player--desktop.is-maximized {
+  border-radius: 26px !important;
+}
+
+.app-root .mp-audio-player--desktop.is-minimized {
+  border-radius: 22px !important;
+}
+
+.app-root .mp-audio-player [data-player-drag="true"],
+.app-root .mp-player-mobile-head {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.11), rgba(255,255,255,0.03)) !important;
+  border-color: color-mix(in srgb, var(--audio-line) 72%, transparent 28%) !important;
+}
+
+.app-root .mp-player-mobile-head > div,
+.app-root .mp-audio-player [data-player-drag="true"] > div {
+  opacity: 0.78;
+}
+
+.app-root .mp-player-mobile-head span,
+.app-root .mp-audio-player [data-player-drag="true"] span {
+  color: var(--audio-muted) !important;
+}
+
+.app-root .mp-player-progress {
+  height: 0.38rem !important;
+  border-radius: 999px !important;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.12), rgba(255,255,255,0.08)),
+    color-mix(in srgb, var(--theme-border) 44%, transparent 56%) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(0,0,0,0.16),
+    0 1px 0 rgba(255,255,255,0.1) !important;
+}
+
+.app-root .mp-player-progress svg rect:nth-of-type(2) {
+  filter: drop-shadow(0 0 6px rgba(var(--theme-primary-rgb),0.4));
+}
+
+.app-root .audio-player-primary-btn,
+.app-root .mp-player-play-btn {
+  border: 1px solid color-mix(in srgb, var(--theme-primary) 55%, #ffffff 45%) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.02)),
+    linear-gradient(135deg, var(--audio-accent), var(--audio-accent-strong)) !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 14px 30px rgba(var(--theme-primary-rgb),0.32),
+    0 4px 10px rgba(0,0,0,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.24) !important;
+}
+
+.app-root .audio-player-primary-btn:hover,
+.app-root .mp-player-play-btn:hover {
+  transform: translateY(-1px) scale(1.04);
+  box-shadow:
+    0 18px 38px rgba(var(--theme-primary-rgb),0.38),
+    0 6px 14px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.26) !important;
+}
+
+.app-root .audio-player-primary-btn:active,
+.app-root .mp-player-play-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.app-root .mp-player-controls-strip,
+.app-root .mp-audio-player .rounded-\[20px\],
+.app-root .mp-audio-player .rounded-xl {
+  border-color: color-mix(in srgb, var(--audio-line) 70%, transparent 30%) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.025)),
+    color-mix(in srgb, var(--theme-panel-bg-strong) 72%, transparent 28%) !important;
+}
+
+.app-root .mp-player-controls-strip button,
+.app-root .mp-player-minimized-row button:not(.mp-player-minimized-open),
+.app-root .mp-player-options-trigger,
+.app-root .audio-player-modal__surface button {
+  border-color: color-mix(in srgb, var(--audio-line) 76%, transparent 24%) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.035)),
+    color-mix(in srgb, var(--theme-panel-bg-strong) 66%, transparent 34%) !important;
+  color: var(--audio-ink) !important;
+}
+
+.app-root .mp-player-controls-strip button:hover,
+.app-root .mp-player-minimized-row button:not(.mp-player-minimized-open):hover,
+.app-root .mp-player-options-trigger:hover,
+.app-root .audio-player-modal__surface button:hover {
+  border-color: color-mix(in srgb, var(--theme-primary) 48%, transparent 52%) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04)),
+    color-mix(in srgb, var(--theme-primary) 18%, var(--theme-panel-bg-strong) 82%) !important;
+}
+
+.app-root .mp-player-minimized-row {
+  min-height: 4.25rem;
+}
+
+.app-root .mp-player-minimized-title {
+  font-size: 0.86rem !important;
+  letter-spacing: 0 !important;
+}
+
+.app-root .mp-player-minimized-reciter,
+.app-root .mp-player-mobile-meta {
+  color: var(--audio-muted) !important;
+}
+
+.app-root .mp-player-mobile-expanded {
+  border-color: color-mix(in srgb, var(--audio-line) 70%, transparent 30%) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--theme-panel-bg-strong) 78%, transparent 22%), color-mix(in srgb, var(--theme-panel-bg) 68%, transparent 32%)) !important;
+}
+
+.app-root .audio-player-modal__surface {
+  border-radius: 28px !important;
+  overflow: hidden !important;
+}
+
+.app-root .audio-player-modal__backdrop {
+  background: color-mix(in srgb, var(--theme-bg) 62%, #020712 38%) !important;
+  backdrop-filter: blur(14px) saturate(1.08);
+}
+
+.app-root .audio-player-modal__surface > div:first-child {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.03)) !important;
+  border-color: color-mix(in srgb, var(--audio-line) 72%, transparent 28%) !important;
+}
+
+.app-root .audio-player-modal__grid > section {
+  border-radius: 22px !important;
+}
+
+.app-root .audio-player-modal__surface input,
+.app-root .audio-player-modal__surface select {
+  min-height: 2.7rem;
+  border-color: color-mix(in srgb, var(--audio-line) 78%, transparent 22%) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)),
+    color-mix(in srgb, var(--theme-panel-bg-strong) 72%, transparent 28%) !important;
+  color: var(--audio-ink) !important;
+}
+
+.app-root .audio-player-modal__surface button[aria-pressed] {
+  border-radius: 18px !important;
+}
+
+.app-root .audio-player-modal__surface button[aria-pressed="true"] {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04)),
+    color-mix(in srgb, var(--theme-primary) 34%, var(--theme-panel-bg-strong) 66%) !important;
+  border-color: color-mix(in srgb, var(--theme-primary) 56%, transparent 44%) !important;
+  box-shadow:
+    0 12px 26px rgba(var(--theme-primary-rgb),0.18),
+    inset 0 1px 0 rgba(255,255,255,0.18) !important;
+}
+
+.app-root .mp-audio-player [data-scroll-panel="true"],
+.app-root .audio-player-modal__surface [data-scroll-panel="true"] {
+  scrollbar-color: color-mix(in srgb, var(--theme-primary) 42%, transparent 58%) transparent;
+}
+
+@media (max-width: 1024px) {
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock {
+    border-radius: 24px 24px 0 0 !important;
+    box-shadow:
+      0 -22px 54px rgba(4, 12, 24, 0.28),
+      inset 0 1px 0 rgba(255,255,255,0.18) !important;
+  }
+
+  .app-root .mp-player-mobile-head {
+    padding-top: 0.7rem !important;
+    padding-bottom: 0.35rem !important;
+  }
+
+  .app-root .mp-player-mobile-controls {
+    min-height: 4.05rem !important;
+  }
+
+  .app-root .mp-player-mobile-main-controls {
+    border-radius: 18px !important;
+  }
+
+  .app-root .audio-player-modal__surface {
+    border-radius: 24px 24px 0 0 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-root .mp-player-mobile-controls {
+    min-height: 3.8rem !important;
+  }
+
+  .app-root .mp-player-mobile-secondary > * {
+    border-radius: 14px !important;
+  }
+}
+
+.app-root .quran-display--platform .qcom-verse-card-footer,
+.app-root .quran-display--platform .ayah-actions-inline {
+  border: 0 !important;
+  border-top: 1px solid color-mix(in srgb, var(--theme-border) 68%, transparent 32%) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.app-root .quran-display--platform .qcom-verse-card-footer {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  margin-top: clamp(1rem, 2vw, 1.45rem) !important;
+  padding: 0.72rem 0 0 !important;
+}
+
+.app-root .quran-display--platform .qcom-verse-card-footer-btn,
+.app-root .quran-display--platform .ayah-actions-inline__link {
+  min-height: 2.15rem !important;
+  border: 1px solid transparent !important;
+  border-radius: 0.55rem !important;
+  background: transparent !important;
+  color: color-mix(in srgb, var(--theme-text-secondary, var(--theme-text)) 86%, var(--theme-bg) 14%) !important;
+  font-size: 0.78rem !important;
+  font-weight: 650 !important;
+  letter-spacing: 0 !important;
+  line-height: 1 !important;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease !important;
+}
+
+.app-root .quran-display--platform .qcom-verse-card-footer-btn {
+  padding: 0 0.58rem !important;
+}
+
+.app-root .quran-display--platform .ayah-actions-inline__link {
+  padding: 0 0.64rem !important;
+}
+
+.app-root .quran-display--platform .qcom-verse-card-footer-btn i,
+.app-root .quran-display--platform .qcom-verse-card-footer-btn svg,
+.app-root .quran-display--platform .ayah-actions-inline__link i,
+.app-root .quran-display--platform .ayah-actions-inline__link svg {
+  width: 0.98rem !important;
+  height: 0.98rem !important;
+  color: currentColor !important;
+  opacity: 0.9 !important;
+}
+
+.app-root .quran-display--platform .qcom-verse-card-footer-btn:hover,
+.app-root .quran-display--platform .qcom-verse-card-footer-btn.is-active,
+.app-root .quran-display--platform .ayah-actions-inline__link:hover {
+  border-color: color-mix(in srgb, var(--theme-primary) 18%, transparent 82%) !important;
+  background: color-mix(in srgb, var(--theme-primary) 8%, var(--theme-panel-bg) 92%) !important;
+  color: var(--theme-primary) !important;
+  transform: translateY(-1px);
+}
+
+.app-root .quran-display--platform .ayah-actions-inline {
+  gap: 0.55rem !important;
+  margin-top: clamp(0.9rem, 1.8vw, 1.25rem) !important;
+  padding: 0.68rem 0 0 !important;
+}
+
+.app-root .quran-display--platform .ayah-actions-inline__meta {
+  padding-inline: 0.12rem !important;
+}
+
+.app-root .quran-display--platform .ayah-actions-inline__ref {
+  color: var(--theme-primary) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.035em !important;
+}
+
+.app-root .quran-display--platform .ayah-actions-inline__name {
+  color: var(--theme-text-muted) !important;
+  font-size: 0.74rem !important;
+}
+
+.app-root .quran-display--platform .ayah-actions-inline__icons,
+.app-root .quran-display--platform .ayah-actions-inline__links {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.38rem !important;
+}
+
+.app-root .quran-display--platform .ayah-actions-inline__icon-btn {
+  width: 2.05rem !important;
+  height: 2.05rem !important;
+  min-width: 2.05rem !important;
+  min-height: 2.05rem !important;
+  border: 1px solid transparent !important;
+  border-radius: 0.62rem !important;
+  background: transparent !important;
+  color: color-mix(in srgb, var(--theme-text-secondary, var(--theme-text)) 86%, var(--theme-bg) 14%) !important;
+  box-shadow: none !important;
+}
+
+.app-root .quran-display--platform .ayah-actions-inline__icon-btn:hover,
+.app-root .quran-display--platform .ayah-actions-inline__icon-btn.is-active {
+  border-color: color-mix(in srgb, var(--theme-primary) 18%, transparent 82%) !important;
+  background: color-mix(in srgb, var(--theme-primary) 8%, var(--theme-panel-bg) 92%) !important;
+  color: var(--theme-primary) !important;
+  transform: translateY(-1px);
+}
+
+.app-root .quran-display--platform .qc-verse-card {
+  border-radius: 1rem !important;
+  border-color: color-mix(in srgb, var(--theme-border) 72%, var(--theme-primary) 28%) !important;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03) !important;
+}
+
+.app-root .quran-display--platform .qc-verse-card:hover {
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.055),
+    0 1px 0 rgba(15, 23, 42, 0.04) !important;
+}
+
+.app-root .mp-audio-player::before,
+.app-root .audio-player-modal__surface::before {
+  background:
+    linear-gradient(90deg, rgba(var(--theme-primary-rgb),0.055), transparent 48%, rgba(212,168,32,0.045)) !important;
+  opacity: 0.42 !important;
+}
+
+@media (max-width: 1024px) {
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    border-radius: 1.1rem 1.1rem 0 0 !important;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04)),
+      color-mix(in srgb, var(--theme-panel-bg-strong) 88%, transparent 12%) !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head,
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed > .px-3.pb-1 {
+    display: none !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-progress {
+    height: 0.24rem !important;
+    margin: 0.55rem 0.95rem 0 !important;
+    border-radius: 999px !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    min-height: 3.35rem !important;
+    padding: 0.42rem 0.65rem 0.64rem !important;
+    gap: 0.46rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
+    width: min(7.4rem, 28vw) !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    min-height: 2.75rem !important;
+    border-radius: 999px !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
+    width: 2.45rem !important;
+    height: 2.45rem !important;
+    min-width: 2.45rem !important;
+    min-height: 2.45rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-expanded {
+    max-height: min(72dvh, 34rem) !important;
+    border-radius: 1.25rem 1.25rem 0 0 !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-root .quran-display--platform .qcom-verse-card-footer,
+  .app-root .quran-display--platform .ayah-actions-inline__icons,
+  .app-root .quran-display--platform .ayah-actions-inline__links {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding-bottom: 0.1rem !important;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .app-root .quran-display--platform .qcom-verse-card-footer::-webkit-scrollbar,
+  .app-root .quran-display--platform .ayah-actions-inline__icons::-webkit-scrollbar,
+  .app-root .quran-display--platform .ayah-actions-inline__links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .app-root .quran-display--platform .qcom-verse-card-footer-btn,
+  .app-root .quran-display--platform .ayah-actions-inline__link,
+  .app-root .quran-display--platform .ayah-actions-inline__icon-btn {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
+    width: 4.85rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
+    gap: 0.32rem !important;
+  }
+
+  .app-root .quran-display--platform .qcom-verse-card-footer-btn,
+  .app-root .quran-display--platform .ayah-actions-inline__link {
+    min-height: 2rem !important;
+    padding-inline: 0.5rem !important;
+    font-size: 0.74rem !important;
+  }
+}
+

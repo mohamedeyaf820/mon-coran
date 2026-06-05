@@ -1,0 +1,2180 @@
+
+.app-root.premium-plus {
+    background:
+        radial-gradient(
+            circle at 14% 0%,
+            rgba(var(--theme-primary-rgb), 0.14),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 84% 8%,
+            rgba(var(--theme-primary-rgb), 0.1),
+            transparent 24%
+        ),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--theme-bg) 96%, var(--theme-bg-alt) 4%),
+            color-mix(in srgb, var(--theme-bg-alt) 94%, var(--theme-bg) 6%)
+        );
+}
+
+.app-root.premium-plus::before {
+    opacity: 0.32;
+    filter: blur(18px);
+}
+
+.app-root.premium-plus::after {
+    opacity: 0.22;
+}
+
+.app-root.premium-plus .app-main-shell::before {
+    opacity: 0.9;
+    background:
+        radial-gradient(
+            circle at 10% 6%,
+            rgba(var(--theme-primary-rgb), 0.1),
+            transparent 26%
+        ),
+        radial-gradient(
+            circle at 86% 12%,
+            rgba(var(--theme-primary-rgb), 0.07),
+            transparent 22%
+        );
+}
+
+.app-root.premium-plus .app-view-home::before,
+.app-root.premium-plus .app-view-reading::before,
+.app-root.premium-plus .app-view-duas::before {
+    opacity: 0.68;
+    background:
+        radial-gradient(
+            circle at 10% 0%,
+            rgba(var(--theme-primary-rgb), 0.08),
+            transparent 26%
+        ),
+        radial-gradient(
+            circle at 88% 4%,
+            rgba(var(--theme-primary-rgb), 0.06),
+            transparent 22%
+        );
+}
+
+.app-root.premium-plus .hp2-btn--soft {
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border-strong) 26%,
+        transparent 74%
+    );
+    background: linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.08),
+        rgba(255, 255, 255, 0.04)
+    );
+    box-shadow: none;
+}
+
+.app-root.premium-plus .app-view-reading .quran-display--platform {
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--theme-bg) 96%, transparent 4%) 0%,
+        color-mix(in srgb, var(--theme-surface) 94%, transparent 6%) 100%
+    );
+    box-shadow:
+        0 30px 74px rgba(2, 8, 23, 0.16),
+        0 1px 0 rgba(255, 255, 255, 0.08) inset;
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .surah-header-frame,
+.app-root.premium-plus .app-view-reading .quran-display--platform .quran-nav,
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .page-header-bar,
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .chunk-nav-bar,
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .mushaf-layout-toggle-bar,
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .warsh-notice {
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border-strong) 22%,
+        transparent 78%
+    );
+    background: linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--theme-panel-bg-strong) 95%, transparent 5%),
+        color-mix(in srgb, var(--theme-panel-bg) 90%, transparent 10%)
+    );
+    box-shadow:
+        0 18px 36px rgba(2, 8, 22, 0.08),
+        0 1px 0 rgba(255, 255, 255, 0.05) inset;
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-block {
+    border-color: color-mix(in srgb, var(--theme-border) 54%, transparent 46%);
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--theme-panel-bg-strong) 97%, transparent 3%),
+        color-mix(in srgb, var(--theme-panel-bg) 92%, transparent 8%)
+    );
+    box-shadow: 0 10px 30px rgba(2, 8, 22, 0.06);
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-block.is-active,
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-block.is-playing {
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border-strong) 44%,
+        transparent 56%
+    );
+    background: linear-gradient(
+        180deg,
+        color-mix(
+            in srgb,
+            var(--theme-panel-bg-strong) 84%,
+            rgba(var(--theme-primary-rgb), 0.12) 16%
+        ),
+        color-mix(
+            in srgb,
+            var(--theme-panel-bg) 90%,
+            rgba(var(--theme-primary-rgb), 0.1) 10%
+        )
+    );
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-text-ar {
+    color: var(--theme-arabic);
+    line-height: 2.06;
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-translation {
+    color: color-mix(in srgb, var(--theme-text) 78%, transparent 22%);
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-actions-panel {
+    border-top-color: color-mix(
+        in srgb,
+        var(--theme-border-strong) 22%,
+        transparent 78%
+    );
+}
+
+.app-root.premium-plus .mp-footer--premium-plus > div {
+    border-color: var(--app-shell-border);
+    background:
+        radial-gradient(
+            circle at 14% 0%,
+            rgba(var(--theme-primary-rgb), 0.12),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 86% 10%,
+            rgba(var(--theme-primary-rgb), 0.1),
+            transparent 22%
+        ),
+        linear-gradient(
+            160deg,
+            color-mix(
+                in srgb,
+                var(--theme-panel-bg-strong) 95%,
+                transparent 5%
+            ),
+            color-mix(in srgb, var(--theme-panel-bg) 91%, transparent 9%)
+        );
+    box-shadow:
+        0 26px 66px rgba(2, 8, 22, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.app-root.premium-plus .mp-footer--premium-plus section,
+.app-root.premium-plus .mp-footer--premium-plus button {
+    transition:
+        transform 180ms ease,
+        border-color 180ms ease,
+        background 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.app-root.premium-plus .mp-footer--premium-plus section {
+    border-color: color-mix(in srgb, var(--theme-border) 56%, transparent 44%);
+    background: linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--theme-panel-bg-strong) 94%, transparent 6%),
+        color-mix(in srgb, var(--theme-panel-bg) 88%, transparent 12%)
+    );
+}
+
+.app-root.premium-plus .mp-footer--premium-plus button:hover {
+    transform: translateY(-1px);
+}
+
+.app-root.premium-plus .mp-footer--premium-plus button:hover,
+.app-root.premium-plus .mp-footer--premium-plus .group:hover {
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border-strong) 40%,
+        transparent 60%
+    );
+    background: color-mix(
+        in srgb,
+        var(--theme-panel-bg-strong) 70%,
+        rgba(var(--theme-primary-rgb), 0.14) 30%
+    );
+}
+
+.app-root.premium-plus .mp-audio-player,
+.app-root.premium-plus .audio-player-modal__surface {
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border-strong) 22%,
+        transparent 78%
+    );
+    background:
+        radial-gradient(
+            circle at 14% 0%,
+            rgba(var(--theme-primary-rgb), 0.12),
+            transparent 30%
+        ),
+        linear-gradient(
+            165deg,
+            color-mix(
+                in srgb,
+                var(--theme-panel-bg-strong) 96%,
+                var(--theme-primary) 4%
+            ),
+            color-mix(in srgb, var(--theme-panel-bg) 95%, var(--theme-bg) 5%)
+        );
+    box-shadow:
+        0 26px 60px rgba(2, 8, 22, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.app-root.premium-plus .audio-player-modal__backdrop {
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(var(--theme-primary-rgb), 0.12),
+            transparent 28%
+        ),
+        rgba(4, 10, 18, 0.78);
+    backdrop-filter: blur(18px);
+}
+
+.app-root.premium-plus .mp-audio-player [data-player-expanded="true"] {
+    background: linear-gradient(
+        180deg,
+        rgba(7, 14, 25, 0.78),
+        rgba(6, 11, 20, 0.82)
+    );
+}
+
+.app-root.premium-plus .audio-player-primary-btn {
+    border-color: color-mix(in srgb, var(--theme-primary) 62%, #ffffff 38%);
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--theme-primary) 86%, #ffffff 14%),
+        color-mix(in srgb, var(--theme-primary) 66%, var(--theme-bg) 34%)
+    );
+    box-shadow:
+        0 12px 28px rgba(var(--theme-primary-rgb), 0.28),
+        0 1px 0 rgba(255, 255, 255, 0.08) inset;
+}
+
+.app-root.premium-plus .audio-player-primary-btn:hover {
+    filter: brightness(1.05);
+}
+
+.app-root.premium-plus .mp-audio-player input[type="range"] {
+    accent-color: rgb(122, 188, 210);
+}
+
+.app-root.premium-plus .modal-empty,
+.app-root.premium-plus .loading-skeleton,
+.app-root.premium-plus .quran-error {
+    backdrop-filter: blur(14px);
+}
+
+[data-theme="light"] .app-root.premium-plus {
+    background:
+        radial-gradient(
+            circle at 14% -8%,
+            rgba(31, 143, 125, 0.2),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 84% -6%,
+            rgba(var(--theme-primary-rgb), 0.12),
+            transparent 28%
+        ),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--theme-bg) 97%, #ffffff 3%) 0%,
+            color-mix(in srgb, var(--theme-bg-alt) 95%, #f8f2e3 5%) 52%,
+            color-mix(in srgb, var(--theme-bg) 96%, #ffffff 4%) 100%
+        );
+}
+
+[data-theme="light"] .app-root.premium-plus::before {
+    opacity: 0.74;
+    filter: none;
+    background: var(--theme-veil);
+}
+
+[data-theme="light"] .app-root.premium-plus::after {
+    opacity: 0.7;
+    background: var(--theme-ornament);
+}
+
+[data-theme="light"] .app-root.premium-plus .app-main-shell::before {
+    background:
+        radial-gradient(
+            circle at 12% 8%,
+            rgba(31, 143, 125, 0.11),
+            transparent 24%
+        ),
+        radial-gradient(
+            circle at 86% 12%,
+            rgba(var(--theme-primary-rgb), 0.08),
+            transparent 22%
+        ),
+        linear-gradient(
+            60deg,
+            transparent 0 42%,
+            rgba(35, 49, 61, 0.03) 42.4%,
+            transparent 42.8% 57%,
+            rgba(35, 49, 61, 0.03) 57.4%,
+            transparent 57.8% 100%
+        );
+    opacity: 1;
+}
+
+[data-theme="light"] .app-root.premium-plus .app-view-home::before,
+[data-theme="light"] .app-root.premium-plus .app-view-reading::before,
+[data-theme="light"] .app-root.premium-plus .app-view-duas::before {
+    opacity: 0.8;
+    background:
+        radial-gradient(
+            circle at 12% 0%,
+            rgba(31, 143, 125, 0.1),
+            transparent 24%
+        ),
+        radial-gradient(
+            circle at 90% 6%,
+            rgba(var(--theme-primary-rgb), 0.09),
+            transparent 24%
+        ),
+        linear-gradient(
+            120deg,
+            rgba(255, 255, 255, 0.18),
+            transparent 34%,
+            transparent 66%,
+            rgba(31, 143, 125, 0.05)
+        );
+}
+
+[data-theme="light"] .app-root.premium-plus .audio-player-primary-btn {
+    border-color: color-mix(in srgb, var(--theme-primary) 62%, #ffffff 38%);
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--theme-primary) 86%, #ffffff 14%),
+        color-mix(in srgb, var(--theme-primary) 64%, #1b2e44 36%)
+    );
+    box-shadow:
+        0 12px 28px rgba(var(--theme-primary-rgb), 0.3),
+        0 1px 0 rgba(255, 255, 255, 0.12) inset;
+}
+
+[data-theme="light"] .app-root.premium-plus .mp-audio-player,
+[data-theme="light"] .app-root.premium-plus .audio-player-modal__surface {
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border-strong) 28%,
+        transparent 72%
+    );
+    background:
+        radial-gradient(
+            circle at 12% 0%,
+            rgba(31, 143, 125, 0.12),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 88% 8%,
+            rgba(var(--theme-primary-rgb), 0.1),
+            transparent 26%
+        ),
+        linear-gradient(
+            165deg,
+            color-mix(in srgb, var(--theme-panel-bg-strong) 97%, #ffffff 3%),
+            color-mix(in srgb, var(--theme-panel-bg) 94%, #f6f0df 6%)
+        );
+    box-shadow:
+        0 22px 54px rgba(36, 49, 68, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+[data-theme="light"] .app-root.premium-plus .audio-player-modal__backdrop {
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(31, 143, 125, 0.12),
+            transparent 30%
+        ),
+        color-mix(in srgb, var(--theme-bg) 56%, #122032 44%);
+}
+
+[data-theme="sepia"] .app-root.premium-plus .audio-player-modal__backdrop {
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(var(--theme-primary-rgb), 0.13),
+            transparent 30%
+        ),
+        color-mix(in srgb, var(--theme-bg) 62%, #332313 38%);
+}
+
+@media (max-width: 900px) {
+
+    .app-root.premium-plus .mp-footer--premium-plus > div {
+        border-radius: 1.6rem;
+    }
+}
+
+@media (max-width: 640px) {
+
+    .app-root.premium-plus .mp-audio-player--mobile {
+        left: 0.4rem;
+        right: 0.4rem;
+        bottom: 0.4rem;
+    }
+
+    .app-root.premium-plus .mp-audio-player--dock {
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+}
+
+.app-root.premium-plus {
+    --pp-radius-xs: 0.7rem;
+    --pp-radius-sm: 0.88rem;
+    --pp-radius-md: 1.04rem;
+    --pp-radius-lg: 1.22rem;
+    --pp-control-h-lg: 2.56rem;
+    --pp-control-h: 2.32rem;
+    --pp-control-h-sm: 2rem;
+}
+
+.app-root.premium-plus .hp2-btn--soft {
+    min-height: var(--pp-control-h);
+    border-radius: var(--pp-radius-sm);
+    padding-block: 0.4rem;
+}
+
+.app-root.premium-plus .app-view-reading .quran-display--platform .quran-nav,
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .page-header-bar,
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .chunk-nav-bar,
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .mushaf-layout-toggle-bar,
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .warsh-notice {
+    border-radius: var(--pp-radius-md);
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-actions-panel {
+    margin-top: 0.36rem;
+    padding-top: 0.36rem;
+}
+
+.app-root.premium-plus .ayah-actions {
+    gap: 0.34rem;
+}
+
+.app-root.premium-plus .ayah-actions__surface {
+    gap: 0.36rem;
+    padding: 0.38rem;
+    width: 100%;
+    max-width: none;
+    border-radius: var(--pp-radius-md);
+}
+
+.app-root.premium-plus .ayah-actions__kicker {
+    font-size: 0.54rem;
+    letter-spacing: 0.1em;
+}
+
+.app-root.premium-plus .ayah-actions__verse {
+    font-size: 0.65rem;
+}
+
+.app-root.premium-plus .ayah-actions__verse-ar {
+    font-size: 0.7rem;
+}
+
+.app-root.premium-plus .ayah-actions__badge {
+    padding: 0.18rem 0.38rem;
+    font-size: 0.54rem;
+}
+
+.app-root.premium-plus .ayah-actions__grid {
+    grid-template-columns: repeat(auto-fit, minmax(190px, 260px));
+    justify-content: start;
+    gap: 0.34rem;
+}
+
+.app-root.premium-plus .ayah-action-card {
+    min-height: 2.78rem;
+    padding: 0.4rem;
+    border-radius: 0.56rem;
+    gap: 0.08rem;
+}
+
+.app-root.premium-plus .ayah-action-card__icon {
+    width: 1.18rem;
+    height: 1.18rem;
+    border-radius: 0.34rem;
+    font-size: 0.6rem;
+}
+
+.app-root.premium-plus .ayah-action-card__label {
+    font-size: 0.74rem;
+    line-height: 1.05;
+}
+
+.app-root.premium-plus .ayah-action-card__desc {
+    font-size: 0.62rem;
+    line-height: 1.08;
+}
+
+.app-root.premium-plus .ayah-action-card__state {
+    font-size: 0.45rem;
+}
+
+.app-root.premium-plus .ayah-actions__utility {
+    gap: 0.3rem;
+}
+
+.app-root.premium-plus .ayah-actions__utility-btn {
+    min-height: 1.42rem;
+    padding: 0.22rem 0.42rem;
+    font-size: 0.62rem;
+}
+
+.app-root.premium-plus .ayah-action-sheet {
+    max-width: min(100%, 700px);
+    margin-inline: auto;
+    gap: 0.56rem;
+    padding: 0.68rem;
+    border-radius: var(--pp-radius-md);
+}
+
+.app-root.premium-plus .ayah-action-sheet__header {
+    gap: 0.44rem;
+}
+
+.app-root.premium-plus .ayah-action-sheet__eyebrow {
+    font-size: 0.58rem;
+    letter-spacing: 0.11em;
+}
+
+.app-root.premium-plus .ayah-action-sheet__title {
+    font-size: 0.92rem;
+}
+
+.app-root.premium-plus .ayah-action-sheet__copy {
+    font-size: 0.74rem;
+    line-height: 1.34;
+}
+
+.app-root.premium-plus .ayah-action-sheet__close {
+    width: 1.78rem;
+    height: 1.78rem;
+    border-radius: 0.62rem;
+}
+
+.app-root.premium-plus .ayah-actions__sheet-grid {
+    grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+    gap: 0.32rem;
+}
+
+.app-root.premium-plus .ayah-action-sheet--share .ayah-actions__sheet-grid {
+    grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+}
+
+.app-root.premium-plus .ayah-action-sheet--playlist .ayah-actions__sheet-grid {
+    grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+}
+
+.app-root.premium-plus .ayah-action-sheet .share-btn,
+.app-root.premium-plus .ayah-action-sheet .ayah-actions__playlist-btn {
+    min-height: 2.18rem;
+    padding: 0.46rem 0.58rem;
+    border-radius: 0.72rem;
+    font-size: 0.76rem;
+}
+
+.app-root.premium-plus .ayah-action-sheet .share-btn i,
+.app-root.premium-plus .ayah-action-sheet .ayah-actions__playlist-btn i {
+    width: 1.18rem;
+    height: 1.18rem;
+    font-size: 0.66rem;
+}
+
+.app-root.premium-plus .ayah-actions__textarea {
+    min-height: 5.2rem;
+    padding: 0.62rem 0.68rem;
+    border-radius: 0.78rem;
+    font-size: 0.8rem;
+}
+
+.app-root.premium-plus .ayah-action-sheet__btn {
+    min-height: 1.96rem;
+    padding: 0.4rem 0.68rem;
+    font-size: 0.74rem;
+}
+
+.app-root.premium-plus .mp-audio-player .player-controls {
+    min-height: 60px;
+    padding: 0.36rem 0.78rem;
+    gap: 0.52rem;
+}
+
+.app-root.premium-plus .mp-audio-player .player-ayah-info {
+    font-size: 0.78rem;
+}
+
+.app-root.premium-plus .mp-audio-player .player-time {
+    font-size: 0.64rem;
+}
+
+@media (max-width: 640px) {
+
+    
+    .app-root.premium-plus .audio-player-modal {
+        animation: pp-audio-modal-fade 180ms ease;
+    }
+
+    @keyframes pp-audio-modal-fade {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    .app-root.premium-plus .audio-player-modal__backdrop {
+        background:
+            radial-gradient(
+                circle at 12% 6%,
+                rgba(var(--theme-primary-rgb), 0.2),
+                transparent 34%
+            ),
+            radial-gradient(
+                circle at 84% 8%,
+                rgba(201, 230, 241, 0.1),
+                transparent 28%
+            ),
+            color-mix(in srgb, var(--theme-bg) 64%, #040912 36%);
+    }
+
+    .app-root.premium-plus .audio-player-modal__surface {
+        position: relative;
+        isolation: isolate;
+    }
+
+    .app-root.premium-plus .audio-player-modal__surface::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border-radius: inherit;
+        background:
+            radial-gradient(
+                circle at 14% 0%,
+                rgba(var(--theme-primary-rgb), 0.16),
+                transparent 34%
+            ),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 26%);
+        z-index: 0;
+    }
+
+    .app-root.premium-plus .audio-player-modal__surface > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .app-root.premium-plus .audio-player-modal__surface button {
+        transition:
+            transform 150ms ease,
+            box-shadow 150ms ease,
+            border-color 150ms ease,
+            background-color 150ms ease;
+    }
+
+    .app-root.premium-plus .audio-player-modal__surface button:hover {
+        transform: translateY(-1px);
+    }
+
+    .app-root.premium-plus .audio-player-modal__surface button:focus-visible {
+        outline: none;
+        box-shadow:
+            0 0 0 2px rgba(var(--theme-primary-rgb), 0.54),
+            0 0 0 6px rgba(var(--theme-primary-rgb), 0.16);
+    }
+
+    .app-root.premium-plus .audio-player-primary-btn {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .app-root.premium-plus .audio-player-primary-btn::after {
+        content: "";
+        position: absolute;
+        inset: -40% -55%;
+        background: linear-gradient(
+            120deg,
+            transparent 36%,
+            rgba(255, 255, 255, 0.28),
+            transparent 64%
+        );
+        transform: translateX(-48%);
+        transition: transform 460ms ease;
+        pointer-events: none;
+    }
+
+    .app-root.premium-plus .audio-player-primary-btn:hover::after {
+        transform: translateX(48%);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .app-root.premium-plus .audio-player-modal,
+        .app-root.premium-plus .audio-player-modal__surface button,
+        .app-root.premium-plus .audio-player-primary-btn::after {
+            animation: none !important;
+            transition: none !important;
+            transform: none !important;
+        }
+    }
+
+    
+    @media (max-width: 640px) {
+        .app-root.premium-plus .mp-audio-player--mobile {
+            left: max(0.36rem, env(safe-area-inset-left));
+            right: max(0.36rem, env(safe-area-inset-right));
+            bottom: max(0.36rem, env(safe-area-inset-bottom));
+            border-radius: 1.08rem;
+        }
+
+        .app-root.premium-plus .mp-audio-player--dock {
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        .app-root.premium-plus .mp-audio-player .player-controls {
+            min-height: 62px;
+            padding: 0.34rem 0.58rem;
+            gap: 0.44rem;
+        }
+
+        .app-root.premium-plus .mp-audio-player .player-ayah-info {
+            font-size: 0.74rem;
+            line-height: 1.2;
+        }
+
+        .app-root.premium-plus .mp-audio-player .player-time {
+            font-size: 0.6rem;
+        }
+
+        .app-root.premium-plus
+            .audio-player-modal__surface
+            [data-scroll-panel="true"] {
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .app-root.premium-plus .mp-audio-player .player-controls {
+            min-height: 60px;
+            padding-inline: 0.5rem;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .app-view-shell {
+        padding: 0.62rem;
+    }
+
+    .app-view-reading .quran-display--platform {
+        padding-inline: 0.45rem;
+        padding-block: 0.75rem 1.7rem;
+        border-radius: calc(var(--app-radius-lg) + 0.1rem);
+    }
+
+    .app-root.premium-plus .mp-audio-player--mobile {
+        left: max(0.3rem, env(safe-area-inset-left));
+        right: max(0.3rem, env(safe-area-inset-right));
+        bottom: max(0.3rem, env(safe-area-inset-bottom));
+    }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+
+    .app-root.premium-plus .mp-audio-player .player-controls {
+        min-height: 50px;
+    }
+}
+
+@media (max-width: 640px) {
+    .app-root.premium-plus {
+        --pp-radius-xs: 0.66rem;
+        --pp-radius-sm: 0.8rem;
+        --pp-radius-md: 0.94rem;
+        --pp-radius-lg: 1.08rem;
+        --pp-control-h-lg: 2.38rem;
+        --pp-control-h: 2.18rem;
+        --pp-control-h-sm: 1.9rem;
+    }
+
+    .app-root.premium-plus .ayah-actions__grid {
+        grid-template-columns: repeat(auto-fit, minmax(62px, 1fr));
+        gap: 0.22rem;
+    }
+
+    .app-root.premium-plus .ayah-action-card {
+        min-height: 2.16rem;
+        padding: 0.24rem;
+    }
+
+    .app-root.premium-plus .ayah-action-sheet {
+        max-width: 100%;
+        padding: 0.54rem;
+    }
+
+    .app-root.premium-plus .ayah-action-sheet .share-btn,
+    .app-root.premium-plus .ayah-action-sheet .ayah-actions__playlist-btn {
+        min-height: 1.86rem;
+        font-size: 0.7rem;
+    }
+
+    .app-root.premium-plus .mp-audio-player .player-controls {
+        min-height: 54px;
+        padding: 0.3rem 0.62rem;
+        gap: 0.4rem;
+    }
+}
+
+.ayah-actions__surface--compact {
+    max-width: min(100%, 1040px);
+    margin-inline: auto;
+    gap: 0.32rem;
+    padding: 0.34rem;
+    border-radius: calc(var(--app-radius-lg) - 0.12rem);
+}
+
+.ayah-actions__surface--compact .ayah-actions__meta {
+    gap: 0.3rem;
+}
+
+.ayah-actions__surface--compact .ayah-actions__kicker {
+    font-size: 0.52rem;
+    letter-spacing: 0.1em;
+}
+
+.ayah-actions__surface--compact .ayah-actions__verse {
+    margin-top: 0.04rem;
+    font-size: 0.64rem;
+    gap: 0.16rem;
+}
+
+.ayah-actions__surface--compact .ayah-actions__verse-ar {
+    font-size: 0.68rem;
+}
+
+.ayah-actions__surface--compact .ayah-actions__badge {
+    padding: 0.16rem 0.34rem;
+    font-size: 0.52rem;
+}
+
+.ayah-actions__surface--compact .ayah-actions__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.28rem;
+}
+
+.ayah-actions__surface--compact .ayah-action-card {
+    min-height: 2.56rem;
+    padding: 0.34rem 0.38rem;
+    gap: 0.08rem;
+    border-radius: 0.58rem;
+}
+
+.ayah-actions__surface--compact .ayah-action-card__icon {
+    width: 1.08rem;
+    height: 1.08rem;
+    border-radius: 0.34rem;
+    font-size: 0.58rem;
+}
+
+.ayah-actions__surface--compact .ayah-action-card__label {
+    font-size: 0.74rem;
+    line-height: 1.06;
+}
+
+.ayah-actions__surface--compact .ayah-action-card__desc {
+    font-size: 0.61rem;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ayah-actions__surface--compact .ayah-action-card__state {
+    font-size: 0.47rem;
+}
+
+.ayah-actions__surface--compact .ayah-actions__utility {
+    gap: 0.2rem;
+}
+
+.ayah-actions__surface--compact .ayah-actions__utility-btn {
+    min-height: 1.34rem;
+    padding: 0.18rem 0.36rem;
+    font-size: 0.58rem;
+}
+
+.app-root.premium-plus .ayah-actions__surface--compact {
+    gap: 0.3rem;
+    padding: 0.32rem;
+    border-radius: calc(var(--pp-radius-md) - 0.08rem);
+}
+
+.app-root.premium-plus .ayah-actions__surface--compact .ayah-actions__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.24rem;
+}
+
+.app-root.premium-plus .ayah-actions__surface--compact .ayah-action-card {
+    min-height: 2.42rem;
+    padding: 0.3rem 0.34rem;
+    border-radius: 0.52rem;
+}
+
+.app-root.premium-plus .ayah-actions__surface--compact .ayah-action-card__icon {
+    width: 1.02rem;
+    height: 1.02rem;
+    font-size: 0.54rem;
+}
+
+.app-root.premium-plus
+    .ayah-actions__surface--compact
+    .ayah-action-card__label {
+    font-size: 0.7rem;
+}
+
+.app-root.premium-plus .ayah-actions__surface--compact .ayah-action-card__desc {
+    font-size: 0.58rem;
+}
+
+.app-root.premium-plus
+    .ayah-actions__surface--compact
+    .ayah-actions__utility-btn {
+    min-height: 1.28rem;
+    font-size: 0.56rem;
+}
+
+.ayah-actions__surface--compact {
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border-strong) 20%,
+        transparent 80%
+    );
+    background:
+        radial-gradient(
+            circle at 88% -20%,
+            rgba(212, 168, 32, 0.08),
+            transparent 36%
+        ),
+        linear-gradient(
+            158deg,
+            color-mix(in srgb, var(--theme-panel-bg-strong) 96%, #fff4dc 4%),
+            color-mix(in srgb, var(--theme-panel-bg) 92%, #e8d4ab 8%)
+        );
+    box-shadow:
+        0 10px 24px rgba(26, 22, 14, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.ayah-actions__surface--compact .ayah-actions__kicker {
+    color: color-mix(in srgb, var(--theme-text-muted) 80%, #8d6a2c 20%);
+}
+
+.ayah-actions__surface--compact .ayah-actions__verse {
+    color: color-mix(in srgb, var(--theme-text) 88%, #7d6030 12%);
+}
+
+.ayah-actions__surface--compact .ayah-action-card {
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border) 62%,
+        rgba(166, 121, 18, 0.2) 38%
+    );
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--theme-panel-bg-strong) 90%, #fff7e8 10%),
+        color-mix(in srgb, var(--theme-panel-bg) 92%, #f2e2c0 8%)
+    );
+    box-shadow:
+        0 6px 16px rgba(28, 22, 12, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.ayah-actions__surface--compact .ayah-action-card:hover {
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border-strong) 42%,
+        rgba(166, 121, 18, 0.58) 58%
+    );
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--theme-panel-bg-strong) 84%, #fff3dd 16%),
+        color-mix(in srgb, var(--theme-panel-bg) 88%, #ebd6ac 12%)
+    );
+    box-shadow:
+        0 12px 24px rgba(33, 25, 14, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.34);
+}
+
+.ayah-actions__surface--compact .ayah-action-card__icon {
+    background:
+        radial-gradient(
+            circle at 30% 25%,
+            rgba(255, 255, 255, 0.42),
+            transparent 58%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(212, 168, 32, 0.18),
+            rgba(212, 168, 32, 0.08)
+        );
+    color: color-mix(in srgb, var(--theme-primary) 72%, #8d681f 28%);
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--theme-border) 52%,
+            rgba(166, 121, 18, 0.32) 48%
+        );
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34);
+}
+
+.ayah-actions__surface--compact .ayah-action-card__label {
+    letter-spacing: 0.01em;
+}
+
+.ayah-actions__surface--compact .ayah-action-card__desc {
+    color: color-mix(in srgb, var(--theme-text-muted) 84%, #80663a 16%);
+}
+
+.ayah-actions__surface--compact .ayah-actions__utility-btn {
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border) 64%,
+        rgba(166, 121, 18, 0.24) 36%
+    );
+    background: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--theme-panel-bg-strong) 90%, #fff6e7 10%),
+        color-mix(in srgb, var(--theme-panel-bg) 92%, #efdbb3 8%)
+    );
+}
+
+.ayah-actions__surface--compact .ayah-actions__utility-btn.is-active {
+    color: color-mix(in srgb, var(--gold) 82%, var(--theme-primary) 18%);
+    border-color: color-mix(
+        in srgb,
+        var(--gold) 46%,
+        var(--theme-border-strong) 54%
+    );
+}
+
+@media (max-width: 980px) {
+    .ayah-actions__surface--compact .ayah-actions__grid,
+    .app-root.premium-plus .ayah-actions__surface--compact .ayah-actions__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .ayah-actions__surface--compact {
+        gap: 0.42rem;
+        padding: 0.52rem;
+    }
+
+    .ayah-actions__surface--compact .ayah-actions__grid,
+    .app-root.premium-plus .ayah-actions__surface--compact .ayah-actions__grid {
+        grid-template-columns: 1fr;
+        gap: 0.3rem;
+    }
+
+    .ayah-actions__surface--compact .ayah-action-card,
+    .app-root.premium-plus .ayah-actions__surface--compact .ayah-action-card {
+        min-height: 2.14rem;
+        grid-template-columns: 1.46rem minmax(0, 1fr) auto;
+        padding: 0.32rem 0.42rem;
+    }
+
+    .ayah-actions__surface--compact .ayah-action-card__icon,
+    .app-root.premium-plus
+        .ayah-actions__surface--compact
+        .ayah-action-card__icon {
+        width: 1.04rem;
+        height: 1.04rem;
+        font-size: 0.54rem;
+    }
+
+    .ayah-actions__surface--compact .ayah-action-card__label,
+    .app-root.premium-plus
+        .ayah-actions__surface--compact
+        .ayah-action-card__label {
+        font-size: 0.7rem;
+    }
+
+    .ayah-actions__surface--compact .ayah-action-card__desc,
+    .app-root.premium-plus
+        .ayah-actions__surface--compact
+        .ayah-action-card__desc {
+        font-size: 0.58rem;
+    }
+}
+
+[data-theme="dark"] .app-root.premium-plus {
+    background:
+        radial-gradient(
+            circle at 16% -12%,
+            rgba(44, 182, 200, 0.12),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 86% -10%,
+            rgba(90, 116, 149, 0.13),
+            transparent 30%
+        ),
+        linear-gradient(180deg, #161a21 0%, #171b22 52%, #161921 100%);
+}
+
+[data-theme="dark"] .app-root.premium-plus::before {
+    opacity: 0.5;
+    filter: blur(8px);
+}
+
+[data-theme="dark"] .app-root.premium-plus::after {
+    opacity: 0.24;
+}
+
+[data-theme="dark"] .app-root.premium-plus .app-main-shell::before {
+    opacity: 0.82;
+    background:
+        radial-gradient(
+            circle at 12% 8%,
+            rgba(44, 182, 200, 0.09),
+            transparent 26%
+        ),
+        radial-gradient(
+            circle at 86% 12%,
+            rgba(95, 122, 160, 0.08),
+            transparent 24%
+        );
+}
+
+[data-theme="dark"] .app-root.premium-plus .app-view-home::before,
+[data-theme="dark"] .app-root.premium-plus .app-view-reading::before,
+[data-theme="dark"] .app-root.premium-plus .app-view-duas::before {
+    opacity: 0.62;
+    background:
+        radial-gradient(
+            circle at 12% 0%,
+            rgba(44, 182, 200, 0.08),
+            transparent 26%
+        ),
+        radial-gradient(
+            circle at 88% 6%,
+            rgba(95, 122, 160, 0.06),
+            transparent 24%
+        );
+}
+
+[data-theme="dark"] .app-root.premium-plus .audio-player-primary-btn {
+    border-color: rgba(116, 215, 227, 0.34);
+    background: linear-gradient(135deg, #1f8aa0 0%, #176f83 100%);
+}
+
+[data-theme="dark"] .app-root.premium-plus .hp2-btn--soft {
+    color: #dbe4ee;
+    border-color: rgba(122, 140, 165, 0.34);
+    background: rgba(28, 36, 48, 0.74);
+}
+
+[data-theme="light"] .app-root.premium-plus {
+    background:
+        radial-gradient(
+            circle at 14% -12%,
+            rgba(185, 141, 45, 0.16),
+            transparent 33%
+        ),
+        radial-gradient(
+            circle at 86% -10%,
+            rgba(133, 116, 80, 0.11),
+            transparent 28%
+        ),
+        linear-gradient(180deg, #f6f3eb 0%, #f2efe6 52%, #f6f3eb 100%);
+}
+
+[data-theme="light"] .app-root.premium-plus::before {
+    opacity: 0.84;
+    filter: none;
+}
+
+[data-theme="light"] .app-root.premium-plus::after {
+    opacity: 0.72;
+}
+
+[data-theme="light"] .app-root.premium-plus .app-main-shell::before {
+    opacity: 0.92;
+    background:
+        radial-gradient(
+            circle at 12% 8%,
+            rgba(185, 141, 45, 0.11),
+            transparent 24%
+        ),
+        radial-gradient(
+            circle at 86% 12%,
+            rgba(133, 116, 80, 0.08),
+            transparent 22%
+        ),
+        linear-gradient(
+            60deg,
+            transparent 0 42%,
+            rgba(112, 95, 56, 0.025) 42.4%,
+            transparent 42.8% 57%,
+            rgba(112, 95, 56, 0.025) 57.4%,
+            transparent 57.8% 100%
+        );
+}
+
+[data-theme="light"] .app-root.premium-plus .app-view-home::before,
+[data-theme="light"] .app-root.premium-plus .app-view-reading::before,
+[data-theme="light"] .app-root.premium-plus .app-view-duas::before {
+    opacity: 0.82;
+    background:
+        radial-gradient(
+            circle at 12% 0%,
+            rgba(185, 141, 45, 0.1),
+            transparent 24%
+        ),
+        radial-gradient(
+            circle at 90% 6%,
+            rgba(126, 107, 68, 0.08),
+            transparent 22%
+        ),
+        linear-gradient(
+            120deg,
+            rgba(255, 255, 255, 0.16),
+            transparent 34%,
+            transparent 66%,
+            rgba(185, 141, 45, 0.05)
+        );
+}
+
+[data-theme="light"] .app-root.premium-plus .audio-player-primary-btn {
+    color: #fffdf6;
+    border-color: rgba(148, 114, 47, 0.44);
+    background: linear-gradient(135deg, #bc9334 0%, #a57a26 100%);
+    box-shadow: 0 12px 28px rgba(149, 113, 41, 0.24);
+}
+
+[data-theme="light"] .app-root.premium-plus .hp2-btn--soft {
+    color: #56482f;
+    border-color: rgba(170, 137, 66, 0.3);
+    background: rgba(252, 247, 235, 0.9);
+}
+
+[data-theme="light"] .app-root.premium-plus .audio-player-modal__backdrop {
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(185, 141, 45, 0.12),
+            transparent 30%
+        ),
+        rgba(40, 31, 17, 0.34);
+}
+
+[data-theme="dark"] .app-root.premium-plus .hp2-btn__chip {
+    border-color: rgba(88, 197, 214, 0.38);
+    background: rgba(26, 120, 136, 0.22);
+    color: #aeeaf2;
+}
+
+[data-theme="light"] .app-root.premium-plus .hp2-btn__chip {
+    border-color: rgba(166, 130, 56, 0.34);
+    background: rgba(185, 141, 45, 0.14);
+    color: #89651f;
+}
+
+.app-root.premium-plus {
+    --home-accent-a: color-mix(in srgb, var(--theme-primary) 82%, #5de7d3 18%);
+    --home-accent-b: color-mix(in srgb, var(--theme-primary) 68%, #0f2135 32%);
+    --home-surface-soft: color-mix(
+        in srgb,
+        var(--theme-panel-bg-strong) 86%,
+        rgba(255, 255, 255, 0.08) 14%
+    );
+    --home-surface-press: color-mix(
+        in srgb,
+        var(--theme-panel-bg-strong) 72%,
+        rgba(var(--theme-primary-rgb), 0.16) 28%
+    );
+}
+
+.app-root.premium-plus {
+    --surah-tile-h: 4.7rem;
+    --surah-tile-pad-y: 0.58rem;
+    --surah-tile-pad-x: 0.66rem;
+    --reading-card-pad-y: 0.54rem;
+    --reading-card-pad-x: 0.56rem;
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .surah-ayahs-list {
+    gap: clamp(0.34rem, 0.6vw, 0.52rem);
+}
+
+.app-root.premium-plus .app-view-reading .quran-display--platform .rd-wrapper {
+    gap: 0.92rem;
+}
+
+.app-root.premium-plus .app-view-reading .quran-display--platform .rd-ayah {
+    border-radius: 1rem;
+    border-color: color-mix(in srgb, var(--theme-border) 62%, transparent 38%);
+    background:
+        radial-gradient(
+            circle at 10% 0%,
+            rgba(var(--theme-primary-rgb), 0.1),
+            transparent 55%
+        ),
+        color-mix(in srgb, var(--theme-panel-bg-strong) 91%, transparent 9%);
+    box-shadow: 0 12px 24px rgba(2, 8, 22, 0.09);
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .rd-ayah:hover {
+    border-color: color-mix(in srgb, var(--theme-primary) 40%, transparent 60%);
+    box-shadow: 0 18px 30px rgba(var(--theme-primary-rgb), 0.16);
+}
+
+.app-root.premium-plus .app-view-reading .quran-display--platform .rd-arabic {
+    color: color-mix(in srgb, var(--theme-text) 88%, #ffffff 12%);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-block {
+    padding: var(--reading-card-pad-y) var(--reading-card-pad-x);
+    border-radius: 1rem;
+    border-color: color-mix(in srgb, var(--theme-border) 58%, transparent 42%);
+    box-shadow: 0 8px 18px rgba(2, 8, 22, 0.06);
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-container {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 0.58rem;
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-text-ar {
+    font-size: clamp(1.2rem, 1.02rem + 0.44vw, 1.52rem);
+    line-height: 1.84;
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-translation {
+    margin-top: 0.28rem;
+    font-size: clamp(0.8rem, 0.72rem + 0.2vw, 0.9rem);
+    line-height: 1.54;
+    color: color-mix(in srgb, var(--theme-text) 86%, transparent 14%);
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .rd-translations,
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-translation {
+    border-radius: 0.76rem;
+    border-inline-start: 2px solid
+        color-mix(in srgb, var(--theme-primary) 36%, transparent 64%);
+    background: color-mix(
+        in srgb,
+        rgba(var(--theme-primary-rgb), 0.09) 50%,
+        transparent
+    );
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .rd-trans-item {
+    color: color-mix(
+        in srgb,
+        var(--theme-text) 82%,
+        var(--theme-text-muted) 18%
+    );
+    max-width: 76ch;
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .rd-trans-item.transliteration {
+    color: color-mix(
+        in srgb,
+        var(--theme-text-muted) 76%,
+        var(--theme-text) 24%
+    );
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-actions-panel {
+    margin-top: 0.3rem;
+    padding-top: 0.32rem;
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .ayah-actions-inline {
+    border-radius: 0.82rem;
+    border: 1px solid
+        color-mix(in srgb, var(--theme-border) 62%, transparent 38%);
+    background: color-mix(in srgb, var(--theme-panel-bg) 90%, transparent 10%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .ayah-actions-inline__meta {
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    column-gap: 0.48rem;
+    row-gap: 0.18rem;
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .ayah-actions-inline__name {
+    font-weight: 650;
+    opacity: 0.92;
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .ayah-actions-inline__icons {
+    gap: 0.36rem;
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .ayah-actions-inline__icon-btn {
+    width: 1.98rem;
+    height: 1.98rem;
+    font-size: 0.76rem;
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .ayah-actions-inline__link {
+    min-height: 1.84rem;
+    padding: 0.2rem 0.52rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-block.is-active,
+.app-root.premium-plus
+    .app-view-reading
+    .quran-display--platform
+    .qc-ayah-block.is-playing {
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border-strong) 48%,
+        transparent 52%
+    );
+    box-shadow: 0 12px 24px rgba(var(--theme-primary-rgb), 0.14);
+}
+
+.app-root.premium-plus .hp-grid.hp-grid--surah {
+    gap: 0.58rem;
+}
+
+.app-root.premium-plus .hp-grid.hp-grid--surah .hp-card {
+    min-height: var(--surah-tile-h);
+    gap: 0.56rem;
+    padding: var(--surah-tile-pad-y) var(--surah-tile-pad-x);
+    border-radius: 0.88rem;
+    border-color: color-mix(in srgb, var(--theme-border) 62%, transparent 38%);
+    background:
+        radial-gradient(
+            circle at 11% 0%,
+            rgba(var(--theme-primary-rgb), 0.1),
+            transparent 52%
+        ),
+        linear-gradient(
+            160deg,
+            color-mix(
+                in srgb,
+                var(--theme-panel-bg-strong) 93%,
+                transparent 7%
+            ),
+            color-mix(in srgb, var(--theme-panel-bg) 89%, transparent 11%)
+        );
+}
+
+.app-root.premium-plus .hp-grid.hp-grid--surah .hp-card:hover {
+    transform: translateY(-1px);
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border-strong) 46%,
+        transparent 54%
+    );
+    box-shadow: 0 14px 22px rgba(var(--theme-primary-rgb), 0.14);
+}
+
+.app-root.premium-plus .hp-grid.hp-grid--surah .hp-card-num {
+    width: 1.9rem;
+    height: 1.9rem;
+    font-size: 0.7rem;
+}
+
+.app-root.premium-plus .hp-grid.hp-grid--surah .hp-card-name {
+    font-size: 0.84rem;
+}
+
+.app-root.premium-plus .hp-grid.hp-grid--surah .hp-card-meta {
+    font-size: 0.64rem;
+}
+
+.app-root.premium-plus .hp-grid.hp-grid--surah .hp-card-ar {
+    font-size: 1.34rem;
+    line-height: 1.03;
+}
+
+.app-root.premium-plus .hp-grid.hp-grid--surah .hp-card-play {
+    width: 1.84rem;
+    height: 1.84rem;
+    right: 0.54rem;
+}
+
+@media (max-width: 900px) {
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .qc-ayah-container {
+        grid-template-columns: 44px minmax(0, 1fr);
+        gap: 0.52rem;
+    }
+
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .qc-ayah-text-ar {
+        font-size: clamp(1.1rem, 0.98rem + 0.55vw, 1.36rem);
+    }
+
+    .app-root.premium-plus .hp-grid.hp-grid--surah .hp-card {
+        min-height: 4.48rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .app-root.premium-plus .app-view-reading .quran-display--platform,
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .surah-ayahs-list,
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .qc-ayah-block,
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .qc-ayah-content {
+        min-width: 0;
+        max-width: 100%;
+        overflow-x: clip;
+    }
+
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .qc-ayah-container {
+        grid-template-columns: 40px minmax(0, 1fr);
+        gap: 0.46rem;
+        padding-inline: 0.22rem;
+    }
+
+    .app-root.premium-plus .hp-grid.hp-grid--surah .hp-card {
+        min-height: 4.2rem;
+        padding: 0.52rem 0.58rem;
+        gap: 0.5rem;
+    }
+
+    .app-root.premium-plus .hp-grid.hp-grid--surah .hp-card-ar {
+        font-size: 1.26rem;
+    }
+
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .qc-ayah-block {
+        padding: 0.48rem 0.5rem;
+        border-radius: 0.9rem;
+    }
+
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .qc-ayah-inline-actions {
+        margin-top: 0.32rem;
+        padding-top: 0.32rem;
+    }
+
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .ayah-actions-inline {
+        padding: 0.4rem;
+        gap: 0.34rem;
+    }
+
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .ayah-actions-inline__meta {
+        flex-wrap: wrap;
+        row-gap: 0.2rem;
+    }
+
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .ayah-actions-inline__icons {
+        flex-wrap: wrap;
+        gap: 0.3rem;
+    }
+
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .ayah-actions-inline__icon-btn {
+        width: 1.88rem;
+        height: 1.88rem;
+        font-size: 0.72rem;
+    }
+
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .quran-mode-pane--surah
+        .ayah-actions-inline__links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.24rem;
+        border-top: 0;
+        padding-top: 0.2rem;
+        overflow: visible;
+    }
+
+    .app-root.premium-plus
+        .app-view-reading
+        .quran-display--platform
+        .quran-mode-pane--surah
+        .ayah-actions-inline__link {
+        min-width: 0;
+        min-height: 1.9rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.2rem 0.38rem;
+        font-size: 0.67rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.app-root.premium-plus .app-view-home {
+    position: relative;
+    top: auto;
+    z-index: 16;
+    margin-bottom: 0.84rem;
+    padding: 0.52rem;
+    border-radius: 1rem;
+    border: 1px solid
+        color-mix(in srgb, var(--theme-border) 64%, transparent 36%);
+    background:
+        radial-gradient(
+            circle at 10% 0%,
+            rgba(var(--theme-primary-rgb), 0.12),
+            transparent 52%
+        ),
+        color-mix(in srgb, var(--theme-panel-bg-strong) 88%, transparent 12%);
+    box-shadow: 0 16px 26px rgba(2, 8, 22, 0.12);
+    backdrop-filter: blur(8px);
+}
+
+.app-root.premium-plus .app-view-home .hp-actions .hp-tabs {
+    margin-bottom: 0;
+    padding: 0.24rem;
+    border: 1px solid
+        color-mix(in srgb, var(--theme-border) 62%, transparent 38%);
+    border-radius: 0.88rem;
+    background: color-mix(in srgb, var(--theme-panel-bg) 88%, transparent 12%);
+}
+
+.app-root.premium-plus .app-view-home .hp-actions .hp-tab {
+    min-height: 2.18rem;
+    padding: 0.48rem 0.72rem;
+    border-radius: 0.72rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: color-mix(
+        in srgb,
+        var(--theme-text-muted) 84%,
+        var(--theme-text) 16%
+    );
+}
+
+.app-root.premium-plus .app-view-home .hp-actions .hp-tab__icon {
+    margin-inline-end: 0.36rem;
+}
+
+.app-root.premium-plus .app-view-home .hp-actions .hp-tab.active {
+    color: #f2fdff;
+    border-color: color-mix(in srgb, var(--theme-primary) 54%, transparent 46%);
+    background:
+        radial-gradient(
+            circle at 16% 0%,
+            rgba(120, 244, 232, 0.24),
+            transparent 56%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(var(--theme-primary-rgb), 0.54),
+            rgba(var(--theme-primary-rgb), 0.3)
+        );
+    box-shadow: 0 12px 18px rgba(var(--theme-primary-rgb), 0.22);
+}
+
+.app-root.premium-plus .app-view-home .hp-actions .hp-search-box {
+    max-width: none;
+    min-height: 2.46rem;
+    border-radius: 0.88rem;
+    border: 1px solid
+        color-mix(in srgb, var(--theme-border) 60%, transparent 40%);
+    background: color-mix(in srgb, var(--theme-panel-bg) 90%, transparent 10%);
+}
+
+.app-root.premium-plus .app-view-home .hp-actions .hp-search-box:focus-within {
+    border-color: color-mix(in srgb, var(--theme-primary) 54%, transparent 46%);
+    box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb), 0.18);
+}
+
+.app-root.premium-plus .app-view-home .hp-actions .hp-search-clear {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 999px;
+    border: 1px solid
+        color-mix(in srgb, var(--theme-border) 66%, transparent 34%);
+    background: color-mix(
+        in srgb,
+        var(--theme-panel-bg-strong) 84%,
+        transparent 16%
+    );
+    color: color-mix(
+        in srgb,
+        var(--theme-text-muted) 88%,
+        var(--theme-text) 12%
+    );
+}
+
+.app-root.premium-plus .app-view-home .hp-actions .hp-search-clear:hover {
+    color: var(--theme-text);
+    border-color: color-mix(in srgb, var(--theme-primary) 48%, transparent 52%);
+}
+
+.app-root.premium-plus .app-view-home .hp-actions .hp-actions-count {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.06rem;
+    padding: 0.2rem 0.66rem;
+    border-radius: 999px;
+    border: 1px solid
+        color-mix(in srgb, var(--theme-border) 62%, transparent 38%);
+    background: color-mix(in srgb, var(--theme-panel-bg) 88%, transparent 12%);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.app-root.premium-plus .app-view-home .hp-actions .hp-view-toggles {
+    padding: 0.16rem;
+    border-radius: 0.72rem;
+    border-color: color-mix(in srgb, var(--theme-border) 62%, transparent 38%);
+}
+
+.app-root.premium-plus .app-view-home .hp-actions .hp-view-btn {
+    width: 1.86rem;
+    height: 1.86rem;
+    border-radius: 0.58rem;
+}
+
+.app-root.premium-plus .app-view-home .hp-actions .hp-view-btn.active {
+    box-shadow: 0 8px 14px rgba(var(--theme-primary-rgb), 0.2);
+}
+
+.app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.72rem;
+}
+
+.app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card {
+    position: relative;
+    align-items: center;
+    min-height: 5.04rem;
+    border-radius: 0.98rem;
+    border-color: color-mix(in srgb, var(--theme-border) 56%, transparent 44%);
+    box-shadow: 0 10px 20px rgba(4, 14, 35, 0.12);
+    transition:
+        transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.22s ease,
+        box-shadow 0.22s ease,
+        background 0.22s ease;
+}
+
+.app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0.62rem;
+    bottom: 0.62rem;
+    width: 3px;
+    border-radius: 999px;
+    background: linear-gradient(
+        180deg,
+        rgba(var(--theme-primary-rgb), 0.88),
+        rgba(var(--theme-primary-rgb), 0.24)
+    );
+    opacity: 0.44;
+    transition: opacity 0.2s ease;
+}
+
+.app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(
+        in srgb,
+        var(--theme-border-strong) 52%,
+        transparent 48%
+    );
+    box-shadow: 0 18px 30px rgba(var(--theme-primary-rgb), 0.2);
+}
+
+.app-root.premium-plus
+    .app-view-home
+    .hp-grid.hp-grid--surah
+    .hp-card:hover::before,
+.app-root.premium-plus
+    .app-view-home
+    .hp-grid.hp-grid--surah
+    .hp-card.active::before,
+.app-root.premium-plus
+    .app-view-home
+    .hp-grid.hp-grid--surah
+    .hp-card.playing::before {
+    opacity: 0.9;
+}
+
+.app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card.active,
+.app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card.playing {
+    border-color: color-mix(in srgb, var(--theme-primary) 58%, transparent 42%);
+    background:
+        radial-gradient(
+            circle at 0% 0%,
+            rgba(var(--theme-primary-rgb), 0.16),
+            transparent 44%
+        ),
+        linear-gradient(
+            156deg,
+            color-mix(
+                in srgb,
+                var(--theme-panel-bg-strong) 96%,
+                transparent 4%
+            ),
+            color-mix(in srgb, var(--theme-panel-bg) 88%, transparent 12%)
+        );
+    box-shadow: 0 16px 28px rgba(var(--theme-primary-rgb), 0.24);
+}
+
+.app-root.premium-plus
+    .app-view-home
+    .hp-grid.hp-grid--surah
+    .hp-card:focus-visible {
+    outline: none;
+    border-color: color-mix(in srgb, var(--theme-primary) 66%, transparent 34%);
+    box-shadow:
+        0 0 0 3px rgba(var(--theme-primary-rgb), 0.24),
+        0 16px 28px rgba(var(--theme-primary-rgb), 0.22);
+}
+
+.app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card-num {
+    width: 2.08rem;
+    height: 2.08rem;
+    font-size: 0.74rem;
+    border-radius: 0.58rem;
+    border: 1px solid
+        color-mix(in srgb, var(--theme-border-strong) 42%, transparent 58%);
+    background: linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--theme-panel-bg-strong) 92%, transparent 8%),
+        color-mix(in srgb, var(--theme-panel-bg) 88%, transparent 12%)
+    );
+}
+
+.app-root.premium-plus
+    .app-view-home
+    .hp-grid.hp-grid--surah
+    .hp-card.playing
+    .hp-card-num,
+.app-root.premium-plus
+    .app-view-home
+    .hp-grid.hp-grid--surah
+    .hp-card.active
+    .hp-card-num {
+    border-color: color-mix(in srgb, var(--theme-primary) 56%, transparent 44%);
+}
+
+.app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card-content {
+    gap: 0.18rem;
+}
+
+.app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card-name {
+    font-size: 0.95rem;
+    line-height: 1.24;
+    letter-spacing: 0.01em;
+}
+
+.app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card-meta {
+    font-size: 0.71rem;
+    line-height: 1.28;
+    color: color-mix(
+        in srgb,
+        var(--theme-text-muted) 90%,
+        var(--theme-text) 10%
+    );
+    opacity: 0.94;
+}
+
+.app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card-ar {
+    margin-top: 0;
+    font-size: 1.46rem;
+    color: color-mix(in srgb, var(--theme-text) 88%, var(--theme-primary) 12%);
+    font-family: var(
+        --font-surah-name,
+        var(--font-surah, "Amiri Quran", serif)
+    );
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+    letter-spacing: 0;
+}
+
+.app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card-play {
+    width: 1.92rem;
+    height: 1.92rem;
+    right: 0.62rem;
+    border: 1px solid
+        color-mix(in srgb, var(--theme-primary) 38%, transparent 62%);
+    box-shadow: 0 10px 18px rgba(var(--theme-primary-rgb), 0.24);
+}
+
+[dir="rtl"]
+    .app-root.premium-plus
+    .app-view-home
+    .hp-grid.hp-grid--surah
+    .hp-card-play {
+    right: auto;
+    left: 0.62rem;
+}
+
+@media (max-width: 1200px) {
+    .app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (hover: none) {
+    .app-root.premium-plus
+        .app-view-home
+        .hp-grid.hp-grid--surah
+        .hp-card-play {
+        position: static;
+        transform: none;
+        opacity: 1;
+        width: 1.84rem;
+        height: 1.84rem;
+        margin-inline-start: auto;
+    }
+
+    .app-root.premium-plus
+        .app-view-home
+        .hp-grid.hp-grid--surah
+        .hp-card:active {
+        transform: scale(0.992);
+    }
+}
+
+@media (max-width: 1080px) {
+    .app-root.premium-plus .app-view-home .hp-actions {
+        top: calc(var(--header-h, 60px) + 0.35rem);
+        padding: 0.46rem;
+    }
+
+    .app-root.premium-plus .app-view-home .hp-actions .hp-actions-meta {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .app-root.premium-plus .app-view-home .hp-actions {
+        position: static;
+        margin-bottom: 0.72rem;
+        padding: 0.42rem;
+    }
+
+    .app-root.premium-plus .app-view-home .hp-actions .hp-tabs {
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .app-root.premium-plus
+        .app-view-home
+        .hp-actions
+        .hp-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .app-root.premium-plus .app-view-home .hp-actions .hp-tab {
+        flex: 0 0 auto;
+    }
+
+    .app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah {
+        grid-template-columns: 1fr;
+        gap: 0.62rem;
+    }
+
+    .app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card {
+        min-height: 4.74rem;
+        padding: 0.64rem 0.7rem;
+        gap: 0.56rem;
+    }
+
+    .app-root.premium-plus
+        .app-view-home
+        .hp-grid.hp-grid--surah
+        .hp-card-name {
+        font-size: 0.92rem;
+    }
+
+    .app-root.premium-plus
+        .app-view-home
+        .hp-grid.hp-grid--surah
+        .hp-card-meta {
+        font-size: 0.69rem;
+    }
+
+    .app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card-ar {
+        font-size: 1.32rem;
+    }
+
+    .app-root.premium-plus
+        .app-view-home
+        .hp-grid.hp-grid--surah
+        .hp-card-play {
+        width: 1.8rem;
+        height: 1.8rem;
+    }
+}

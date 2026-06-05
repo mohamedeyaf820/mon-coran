@@ -1,0 +1,161 @@
+import React, { useMemo } from "react";
+import { getSurah, toAr } from "../../data/surahs";
+import SmartAyahRenderer from "./SmartAyahRenderer";
+import WordByWordDisplay from "./WordByWordDisplay";
+import CleanPageTranslationPanel from "./CleanPageTranslationPanel";
+import { CleanPageSurahHeader } from "./CleanPageDecor";
+import Bismillah from "./Bismillah";
+
+export default function CleanPageView({
+  ayahs,
+  lang,
+  fontSize,
+  isQCF4,
+  showTajwid,
+  currentPlayingAyah,
+  surahNum,
+  calibration,
+  riwaya,
+  showTranslation,
+  getTranslation,
+  showSurahHeader = true,
+  activeAyah = null,
+  getAyahToggleId = (ayah) => ayah.numberInSurah,
+  onAyahClick,
+  showWordByWord = false,
+  showWordTranslation = true,
+  showTransliteration = true,
+}) {
+  const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
+  const pageNumber = ayahs[0]?.page ?? null;
+  const juzNumber = ayahs[0]?.juz ?? null;
+  const headerSurahName = surahMeta?.name_arabic || surahMeta?.name || "";
+  const mushafFontSize = Math.max(38, Math.min(72, Number(fontSize) || 42));
+  const mushafLineHeight = riwaya === "warsh" ? 2.5 : 2.42;
+  const mushafWordSpacing = riwaya === "warsh" ? "0.07em" : "0.1em";
+
+  const juzLabel = useMemo(() => {
+    if (!juzNumber) return "";
+    return lang === "ar" ? `﴿ الجزء ${toAr(juzNumber)} ﴾` : `﴿ Juz ${juzNumber} ﴾`;
+  }, [juzNumber, lang]);
+
+  const surahLabel = useMemo(() => {
+    if (!headerSurahName) return "";
+    return `﴿ ${headerSurahName} ﴾`;
+  }, [headerSurahName]);
+
+  return (
+    <div className={`cpv-container mushaf-wrapper mushaf-page-wrapper${isQCF4 ? " cpv-qcf4" : ""}`}>
+      <div className="mushaf-corner mushaf-corner--tr" aria-hidden="true" />
+      <div className="mushaf-corner mushaf-corner--tl" aria-hidden="true" />
+      <div className="mushaf-corner mushaf-corner--br" aria-hidden="true" />
+      <div className="mushaf-corner mushaf-corner--bl" aria-hidden="true" />
+
+      <div className="pointer-events-none mb-0 block h-[2px] bg-[linear-gradient(90deg,transparent,rgba(var(--primary-rgb),0.35)_25%,rgba(184,134,11,0.65)_50%,rgba(var(--primary-rgb),0.35)_75%,transparent)]" aria-hidden="true" />
+      <div className="mushaf-page-header" aria-hidden="true">
+        <span>{juzLabel}</span>
+        <span>{surahLabel}</span>
+      </div>
+      <div
+        className="mushaf-text-block mushaf-container"
+        dir="rtl"
+        lang="ar"
+        style={{
+          "--cpv-font-size": `${Math.round(mushafFontSize)}px`,
+          "--cpv-line-height": String(mushafLineHeight),
+          "--cpv-word-spacing": mushafWordSpacing,
+        }}
+      >
+        {ayahs.flatMap((ayah) => {
+          const ayahSurahNum = ayah.surah?.number || ayah.surah || surahNum;
+          const isPlaying =
+            currentPlayingAyah?.ayah === ayah.numberInSurah &&
+            Number(currentPlayingAyah?.surah) === Number(ayahSurahNum);
+          const toggleId = getAyahToggleId(ayah);
+          const isActive = activeAyah === toggleId;
+          const elements = [];
+
+          if (showSurahHeader && ayah.numberInSurah === 1) {
+            const sMeta = getSurah(ayahSurahNum);
+            if (sMeta) {
+              elements.push(
+                <div key={`header-${ayahSurahNum}`} className="mushaf-surah-header-inline w-full my-6 block pointer-events-none select-none">
+                  <CleanPageSurahHeader surahMeta={sMeta} lang={lang} />
+                  {ayahSurahNum !== 9 && ayahSurahNum !== 1 && <Bismillah />}
+                </div>,
+              );
+            }
+          }
+
+          elements.push(
+            <span
+              key={ayah.number || `${ayahSurahNum}:${ayah.numberInSurah}`}
+              id={`ayah-${getAyahToggleId(ayah)}`}
+              data-surah-number={ayahSurahNum}
+              data-ayah-number={ayah.numberInSurah}
+              data-ayah-global={ayah.number}
+              className={`quran-verse-inline cpv-verse mushaf-verse${isActive ? " cpv-verse--active" : ""}${isPlaying ? " cpv-verse--playing" : ""}`}
+              onClick={() => onAyahClick?.(toggleId)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onAyahClick?.(toggleId);
+                }
+              }}
+              role={onAyahClick ? "button" : undefined}
+              tabIndex={onAyahClick ? 0 : undefined}
+              aria-label={`${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`}
+              aria-current={isPlaying ? "true" : undefined}
+            >
+              <span className="qc-ayah-text-ar quran-arabic-text verse-text">
+                {showWordByWord ? (
+                  <WordByWordDisplay
+                    surah={ayahSurahNum}
+                    ayah={ayah.numberInSurah}
+                    text={ayah.text}
+                    isPlaying={isPlaying}
+                    showTajwid={showTajwid}
+                    showTransliteration={false}
+                    showWordTranslation={false}
+                    fontSize={fontSize}
+                    calibration={calibration}
+                    initialWords={ayah.words}
+                    warshWords={ayah.warshWords}
+                    inline={true}
+                  />
+                ) : (
+                  <SmartAyahRenderer
+                    ayah={ayah}
+                    showTajwid={showTajwid}
+                    isPlaying={isPlaying}
+                    surahNum={ayahSurahNum}
+                    calibration={calibration}
+                    riwaya={riwaya}
+                  />
+                )}
+              </span>
+            </span>,
+          );
+
+          return elements;
+        })}
+      </div>
+      <div className="mushaf-page-footer" aria-hidden="true">
+        <span />
+        <span className="mushaf-page-number-medallion">
+          {lang === "ar" && pageNumber ? toAr(pageNumber) : pageNumber ?? ""}
+        </span>
+        <span />
+      </div>
+      {showTranslation && getTranslation && ayahs.length > 0 ? (
+        <CleanPageTranslationPanel
+          ayahs={ayahs}
+          currentPlayingAyah={currentPlayingAyah}
+          getTranslation={getTranslation}
+          lang={lang}
+          surahNum={surahNum}
+        />
+      ) : null}
+    </div>
+  );
+}

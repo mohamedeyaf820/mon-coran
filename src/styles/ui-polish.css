@@ -1,0 +1,438 @@
+
+
+.app-root .mp-audio-player {
+  contain: layout paint;
+}
+
+.app-root .mp-audio-player--desktop {
+  width: min(22.5rem, calc(100vw - 1.5rem)) !important;
+  min-height: 0;
+  border-radius: 20px !important;
+}
+
+.app-root .mp-audio-player--desktop.is-minimized {
+  width: min(18rem, calc(100vw - 1.5rem)) !important;
+}
+
+@media (min-width: 1025px) {
+  .app-root .quran-display--platform {
+    scroll-padding-bottom: calc(var(--desktop-player-reserved-h, 0px) + 2rem);
+    padding-bottom: calc(var(--desktop-player-reserved-h, 0px) + 2rem);
+  }
+
+  .app-root .quran-display--platform :is(
+    .surah-ayahs-list,
+    .qcom-continuous-list,
+    .cpv-container,
+    .mushaf-container
+  ) {
+    scroll-margin-bottom: calc(var(--desktop-player-reserved-h, 0px) + 2rem);
+  }
+
+  .app-root .quran-display--platform :is(.wbw-word-block, .qc-verse-card, .qc-ayah-block, .cpv-verse) {
+    scroll-margin-bottom: calc(var(--desktop-player-reserved-h, 0px) + 2rem);
+  }
+}
+
+.app-root .mp-player-drag-zone,
+.app-root .mp-audio-player [data-player-drag="true"] {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.app-root .mp-audio-player[data-dragging="true"] .mp-player-drag-zone,
+.app-root .mp-audio-player[data-dragging="true"] [data-player-drag="true"] {
+  cursor: grabbing;
+}
+
+.app-root .mp-player-drag-zone {
+  min-height: 2.35rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-border, rgba(148, 163, 184, 0.22)) 42%, transparent);
+  background: rgba(255, 255, 255, 0.045) !important;
+}
+
+.app-root .mp-player-drag-zone span,
+.app-root .mp-player-mobile-brand span {
+  font-size: 0.58rem !important;
+  letter-spacing: 0.16em !important;
+}
+
+.app-root .mp-audio-player--mobile.mp-audio-player--dock {
+  left: max(0.75rem, env(safe-area-inset-left)) !important;
+  right: max(0.75rem, env(safe-area-inset-right)) !important;
+  bottom: 0 !important;
+  max-height: min(58vh, 31rem);
+  overflow: hidden;
+  border-radius: 1.35rem 1.35rem 0 0 !important;
+}
+
+.app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+  max-height: 10.75rem;
+}
+
+.app-root .mp-audio-player--mobile.mp-audio-player--dock.is-expanded {
+  max-height: min(62vh, 34rem);
+}
+
+.app-root .mp-player-mobile-expanded {
+  max-height: min(38vh, 21.5rem) !important;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.app-root .mp-player-mobile-controls {
+  min-height: 3.65rem !important;
+}
+
+.app-root .mp-player-mobile-main-controls,
+.app-root .mp-player-controls-strip {
+  min-width: 0;
+}
+
+@media (max-width: 430px) {
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock {
+    left: 0.45rem !important;
+    right: 0.45rem !important;
+    max-height: min(60vh, 30rem);
+  }
+
+  .app-root .mp-player-mobile-meta {
+    width: 4.55rem !important;
+  }
+}
+
+.settings-overlay {
+  align-items: stretch;
+  justify-content: flex-end !important;
+}
+
+.settings-backdrop {
+  background:
+    radial-gradient(circle at 74% 16%, rgba(var(--primary-rgb, 16, 120, 80), 0.16), transparent 32%),
+    rgba(6, 12, 11, 0.46) !important;
+}
+
+.settings-drawer {
+  width: min(100vw, 31rem) !important;
+  max-width: min(100vw, 31rem) !important;
+  border-color: color-mix(in srgb, var(--border, rgba(148, 163, 184, 0.22)) 72%, transparent) !important;
+  background:
+    linear-gradient(155deg, color-mix(in srgb, var(--bg-card, #ffffff) 94%, var(--primary, #0f766e) 6%), var(--bg-card, #ffffff)) !important;
+  color: var(--text-primary, #111827) !important;
+  box-shadow: -22px 0 60px rgba(2, 8, 23, 0.26) !important;
+}
+
+.settings-drawer__header {
+  min-height: 4.4rem;
+  background: color-mix(in srgb, var(--bg-card, #ffffff) 88%, transparent);
+}
+
+.settings-drawer__tabs {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  gap: 0.4rem !important;
+  padding: 0.55rem !important;
+  background: color-mix(in srgb, var(--bg-secondary, #f7f8f7) 92%, transparent) !important;
+}
+
+.settings-drawer__tabs button {
+  min-height: 2.35rem;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.settings-drawer__tabs button[aria-selected="true"] {
+  border-color: color-mix(in srgb, var(--primary, #0f766e) 42%, transparent);
+}
+
+.settings-drawer__content {
+  scrollbar-gutter: stable;
+}
+
+.settings-drawer__content :is(select, input[type="text"], input[type="time"]) {
+  min-height: 2.55rem;
+  color: var(--text-primary) !important;
+}
+
+.settings-reciter-list {
+  scrollbar-gutter: stable;
+}
+
+.settings-reciter-option {
+  min-height: 3.45rem;
+  color: var(--text-primary);
+}
+
+.settings-reciter-option__meta {
+  margin-top: 0.1rem;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.settings-reciter-avatar {
+  display: inline-flex;
+  width: 2.35rem;
+  height: 2.35rem;
+  flex: 0 0 2.35rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--primary, #0f766e) 26%, transparent);
+  background: var(--avatar-bg, linear-gradient(135deg, #0f766e, #155e75));
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  box-shadow: 0 10px 22px rgba(2, 8, 23, 0.14);
+}
+
+.settings-reciter-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 680px) {
+  .settings-overlay {
+    align-items: flex-end;
+  }
+
+  .settings-drawer {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: min(92vh, 46rem) !important;
+    border-left: 0 !important;
+    border-top: 1px solid var(--border) !important;
+    border-radius: 1.4rem 1.4rem 0 0;
+  }
+
+  .settings-drawer__header {
+    padding-inline: 1rem !important;
+  }
+
+  .settings-drawer__tabs {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .settings-drawer__tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .settings-drawer__tabs button {
+    flex: 1 0 7rem;
+  }
+
+  .settings-drawer__content {
+    padding: 1rem !important;
+  }
+}
+
+html[data-theme="dark"] body,
+[data-theme="dark"] .app-root {
+  background:
+    linear-gradient(180deg, #07110f 0%, #050908 46%, #030605 100%) !important;
+  color: rgba(244, 247, 245, 0.94);
+}
+
+html[data-theme="dark"] body .app-root.premium-plus .home-hero-compact.home-hero-compact {
+  border-color: rgba(148, 163, 184, 0.18) !important;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(47, 159, 107, 0.2), transparent 34%),
+    radial-gradient(circle at 88% 6%, rgba(214, 180, 92, 0.1), transparent 32%),
+    linear-gradient(145deg, rgba(18, 29, 25, 0.98), rgba(6, 11, 10, 0.99)) !important;
+  color: rgba(244, 247, 245, 0.96) !important;
+  box-shadow:
+    0 22px 58px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+html[data-theme="dark"] body .app-root.premium-plus .home-hero-compact.home-hero-compact :is(h1, h2, h3, strong, .font-bold, .font-extrabold) {
+  color: rgba(248, 250, 252, 0.98) !important;
+}
+
+html[data-theme="dark"] body .app-root.premium-plus .home-hero-compact.home-hero-compact :is(p, span, small) {
+  color: rgba(214, 222, 216, 0.82) !important;
+}
+
+html[data-theme="dark"] body .app-root.premium-plus .home-hero-compact.home-hero-compact :is(.bg-bg-secondary, .bg-bg-primary, .bg-\[var\(--bg-secondary\)\], .bg-\[var\(--bg-primary\)\]) {
+  border-color: rgba(148, 163, 184, 0.17) !important;
+  background: rgba(255, 255, 255, 0.065) !important;
+}
+
+html[data-theme="dark"] body .app-root.premium-plus .home-hero-compact.home-hero-compact :is(button.bg-primary, .bg-primary) {
+  background: linear-gradient(135deg, #17865f, #0f5f45) !important;
+  color: #fff !important;
+}
+
+html[data-theme="dark"] body .app-root.premium-plus :is(.mp-audio-player--desktop, .mp-audio-player--mobile) {
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  background:
+    linear-gradient(145deg, rgba(47, 159, 107, 0.12), transparent 38%),
+    linear-gradient(180deg, rgba(14, 23, 20, 0.985), rgba(4, 8, 7, 0.985)) !important;
+  color: rgba(244, 247, 245, 0.96) !important;
+  box-shadow:
+    0 22px 58px rgba(0, 0, 0, 0.46),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+html[data-theme="dark"] body .app-root.premium-plus .settings-drawer.settings-drawer {
+  border-color: rgba(148, 163, 184, 0.18) !important;
+  background:
+    linear-gradient(160deg, rgba(47, 159, 107, 0.12), transparent 34%),
+    linear-gradient(180deg, rgba(17, 26, 23, 0.99), rgba(6, 10, 9, 0.99)) !important;
+  color: rgba(244, 247, 245, 0.96) !important;
+}
+
+html[data-theme="dark"] .settings-drawer__content :is(select, input[type="text"], input[type="time"]) {
+  border-color: rgba(148, 163, 184, 0.2) !important;
+  background: rgba(7, 12, 11, 0.82) !important;
+  color: rgba(244, 247, 245, 0.96) !important;
+}
+
+html[data-theme="dark"] .settings-reciter-list {
+  border-color: rgba(148, 163, 184, 0.18) !important;
+  background: rgba(7, 12, 11, 0.78) !important;
+}
+
+html[data-theme="dark"] .settings-reciter-option:hover,
+html[data-theme="dark"] .settings-reciter-option:focus-visible {
+  background: rgba(47, 159, 107, 0.16) !important;
+}
+
+.mp-footer-v2 {
+  margin-top: clamp(2.4rem, 5vw, 4.5rem) !important;
+  padding: 0 clamp(0.75rem, 2vw, 1.5rem) calc(5.5rem + env(safe-area-inset-bottom)) !important;
+}
+
+.mp-footer-v2__shell {
+  max-width: 1120px;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 1.15rem !important;
+  border-color: color-mix(in srgb, var(--border, rgba(148, 163, 184, 0.22)) 70%, transparent) !important;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--bg-card, #fff) 94%, var(--primary, #0f766e) 6%), var(--bg-card, #fff)) !important;
+  box-shadow: 0 18px 46px rgba(2, 8, 23, 0.08) !important;
+}
+
+.mp-footer-v2__body {
+  padding: 0.9rem 1rem 1rem !important;
+}
+
+.mp-footer-v2__verse {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: 4.2rem;
+  gap: 1rem !important;
+  padding: 0.85rem 1rem !important;
+}
+
+.mp-footer-v2__verse-icon {
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+}
+
+.mp-footer-v2__verse-text {
+  margin: 0;
+  overflow-wrap: normal;
+  text-wrap: balance;
+  font-size: clamp(1.05rem, 0.94rem + 0.42vw, 1.35rem) !important;
+  line-height: 1.75 !important;
+}
+
+.mp-footer-v2__nav {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+}
+
+.mp-footer-v2__nav-btn {
+  min-height: 4rem !important;
+  padding: 0.55rem 0.35rem !important;
+  border-radius: 0.9rem !important;
+}
+
+.mp-footer-v2__nav-label {
+  display: block !important;
+  font-size: 0.68rem !important;
+}
+
+.mp-footer-v2__nav-label,
+.mp-footer-v2__credit,
+.mp-footer-v2__brand {
+  overflow-wrap: anywhere;
+}
+
+html[data-theme="dark"] .mp-footer-v2__shell,
+html[data-theme="quran-night"] .mp-footer-v2__shell {
+  border-color: rgba(148, 163, 184, 0.16) !important;
+  background:
+    linear-gradient(145deg, rgba(47, 159, 107, 0.1), transparent 36%),
+    linear-gradient(180deg, rgba(13, 20, 18, 0.96), rgba(5, 9, 8, 0.96)) !important;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.28) !important;
+}
+
+html[data-theme="dark"] .mp-footer-v2__nav-btn,
+html[data-theme="quran-night"] .mp-footer-v2__nav-btn {
+  border-color: rgba(148, 163, 184, 0.16) !important;
+  background: rgba(11, 18, 16, 0.78) !important;
+  color: rgba(226, 232, 240, 0.86) !important;
+}
+
+html[data-theme="dark"] .mp-footer-v2__nav-btn:hover,
+html[data-theme="quran-night"] .mp-footer-v2__nav-btn:hover {
+  border-color: rgba(47, 159, 107, 0.48) !important;
+  background: rgba(47, 159, 107, 0.14) !important;
+  color: rgba(244, 247, 245, 0.96) !important;
+}
+
+html[data-theme="dark"] .mp-footer-v2__verse-text,
+html[data-theme="quran-night"] .mp-footer-v2__verse-text {
+  color: rgba(244, 247, 245, 0.94) !important;
+}
+
+@media (max-width: 520px) {
+  .mp-footer-v2__shell {
+    border-radius: 1rem !important;
+  }
+
+  .mp-footer-v2__verse {
+    grid-template-columns: 1fr !important;
+    justify-items: center;
+    text-align: center;
+    gap: 0.45rem !important;
+  }
+
+  .mp-footer-v2__verse-icon {
+    display: none !important;
+  }
+
+  .mp-footer-v2__verse-ref {
+    grid-column: auto !important;
+    justify-self: center !important;
+  }
+
+  .mp-footer-v2__nav {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 0.35rem !important;
+  }
+
+  .mp-footer-v2__nav-btn {
+    min-height: 3.85rem !important;
+    border-radius: 0.75rem !important;
+  }
+
+  .mp-footer-v2__nav-icon {
+    width: 1.65rem !important;
+    height: 1.65rem !important;
+  }
+
+  .mp-footer-v2__nav-label {
+    font-size: 0.54rem !important;
+  }
+}
