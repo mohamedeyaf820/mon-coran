@@ -68,8 +68,14 @@ test("navigation: clamps invalid route numbers", () => {
     showDuas: false,
     displayMode: "surah",
     currentSurah: 114,
-    currentAyah: 286,
+    currentAyah: 6,
   });
+
+  setPathname("/surah/2/999");
+  assert.equal(parseInitialRoute().currentAyah, 286);
+
+  setPathname("/surah/1/999");
+  assert.equal(parseInitialRoute().currentAyah, 7);
 
   setPathname("/page/0");
   assert.equal(parseInitialRoute().currentPage, 1);

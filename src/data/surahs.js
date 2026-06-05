@@ -1035,6 +1035,10 @@ export function getSurah(n) {
   return SURAHS[n - 1];
 }
 
+export function getSurahAyahCount(n) {
+  return SURAHS[n - 1]?.ayahs || 1;
+}
+
 const AR_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
 export function toAr(num) {
   return String(num)

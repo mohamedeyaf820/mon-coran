@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { getSurahAyahCount } from "../data/surahs.js";
 
 /**
  * Synchronise React navigation state with the browser URL.
@@ -109,8 +110,9 @@ export function parseInitialRoute() {
   const surahMatch = path.match(/^\/surah\/(\d+)(?:\/(\d+))?/);
   if (surahMatch) {
     const surah = Math.max(1, Math.min(114, Number(surahMatch[1]) || 1));
+    const maxAyah = getSurahAyahCount(surah);
     const ayah = surahMatch[2]
-      ? Math.max(1, Math.min(286, Number(surahMatch[2]) || 1))
+      ? Math.max(1, Math.min(maxAyah, Number(surahMatch[2]) || 1))
       : 1;
     return {
       showHome: false,
