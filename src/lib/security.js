@@ -28,26 +28,43 @@ const ALLOWED_EXTERNAL_HOSTS = new Set([
   "fonts.qurancomplex.gov.sa",
 ]);
 
+const BLOCKED_SVG_TAGS = new Set([
+  "script",
+  "style",
+  "use",
+  "foreignobject",
+  "iframe",
+  "object",
+  "embed",
+  "link",
+  "meta",
+]);
+
+function removeNode(node) {
+  if (!node?.parentNode) return;
+  node.parentNode.removeChild(node);
+}
+
+function getSvgElements(doc) {
+  const root = doc?.documentElement;
+  if (!root) return [];
+  return [root, ...Array.from(root.getElementsByTagName?.("*") || [])];
+}
+
 export function sanitizeSvgMarkup(svg) {
   if (typeof window === "undefined") return "";
   try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(String(svg || ""), "image/svg+xml");
 
-    doc
-      .querySelectorAll("script,style,use,foreignObject,iframe,object,embed,link,meta")
-      .forEach((element) => {
-      element.remove();
-    });
-
-    doc.querySelectorAll("*").forEach((element) => {
+    getSvgElements(doc).forEach((element) => {
       const tag = String(element.tagName || "").toLowerCase();
-      if (!ALLOWED_SVG_TAGS.has(tag)) {
-        element.remove();
+      if (BLOCKED_SVG_TAGS.has(tag) || !ALLOWED_SVG_TAGS.has(tag)) {
+        removeNode(element);
         return;
       }
 
-      [...element.attributes].forEach((attribute) => {
+      Array.from(element.attributes || []).forEach((attribute) => {
         const name = attribute.name.toLowerCase();
         const valueRaw = String(attribute.value || "");
         const value = valueRaw.toLowerCase();

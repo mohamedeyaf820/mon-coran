@@ -175,7 +175,10 @@ const QCVerseCard = memo(function QCVerseCard({
           dir="rtl"
           lang="ar"
           className="qc-ayah-text-ar text-right font-[var(--qd-font-family,var(--font-quran,'Amiri Quran'))] text-[var(--text-quran,var(--text-primary))] [-webkit-font-smoothing:antialiased] [text-rendering:optimizeLegibility]"
-          style={{ fontSize: `${fontSize || 48}px`, lineHeight: "2.15" }}
+          style={{
+            fontSize: "var(--reader-arabic-size, var(--qd-reading-font-size, 42px))",
+            lineHeight: "var(--quran-line-height, 2.15)",
+          }}
           onClick={handleClick}
           role="button"
           tabIndex={0}

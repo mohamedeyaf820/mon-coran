@@ -2,6 +2,13 @@
 
 Date: 2026-06-05
 
+## Etat actuel
+
+- Phase 0: terminee et validee sur CI.
+- Phase 1: en cours. Les tailles de police, le skeleton sans blur, la largeur liste/mushaf et le prechargement de police ont ete renforces.
+- Phase 2: en cours. Le drag desktop du lecteur audio est stabilise; le decoupage complet du composant reste a faire.
+- Phases 3 a 7: planifiees, non terminees.
+
 ## Phase 0 - Stabilisation immediate
 
 Objectif: garder `main` vert, corriger les bugs reels et reduire les risques de regression.

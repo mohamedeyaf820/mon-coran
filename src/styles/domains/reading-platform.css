@@ -3316,7 +3316,7 @@ html body .app-root .quran-display--platform .qc-verse-card:focus-within {
 html body .app-root .quran-display--platform .qcm-page-shell {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 4.75rem) minmax(0, 760px) minmax(0, 4.75rem);
+    grid-template-columns: minmax(0, 4.75rem) minmax(0, 860px) minmax(0, 4.75rem);
     align-items: stretch;
     justify-content: center;
     gap: clamp(0.5rem, 2vw, 1rem);
@@ -3365,7 +3365,7 @@ html body .app-root .quran-display--platform .qcm-lines {
     margin-top: clamp(1.15rem, 2vw, 1.75rem);
     direction: rtl;
     color: var(--reader-page-ink);
-    font-size: clamp(2.1rem, 4.6vw, 3.35rem);
+    font-size: clamp(2.1rem, 4.25vw, 3.45rem);
     line-height: 1.35;
 }
 
@@ -3407,7 +3407,7 @@ html body .app-root .quran-display--platform .qcm-lines .qcm-word--warsh {
 }
 
 html body .app-root .quran-display--platform .qcm-lines[data-warsh="true"] {
-    font-size: clamp(1.6rem, 3.5vw, 2.5rem);
+    font-size: clamp(1.7rem, 3.15vw, 2.62rem);
     line-height: 2;
     direction: rtl;
 }

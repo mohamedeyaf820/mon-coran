@@ -269,7 +269,9 @@ export default function QuranDisplay() {
           isFontMarkedLoaded,
         } = await import("../services/fontLoader");
         const isQcfPageFont = fontFamily === "qcf-v1" || fontFamily === "qcf-v2" || fontFamily === "qcf-v4-tajweed";
-        const shouldBlockReader = isQcfPageFont && displayMode === "page" && !isFontMarkedLoaded(fontFamily);
+        const shouldBlockReader =
+          !isFontMarkedLoaded(fontFamily) ||
+          (isQcfPageFont && displayMode === "page" && !isFontMarkedLoaded(fontFamily));
         if (shouldBlockReader) setFontLoading(true);
 
         if (isQcfPageFont && displayMode === "page") {
@@ -295,7 +297,7 @@ export default function QuranDisplay() {
   if ((loading && ayahs.length === 0) || (fontLoading && ayahs.length === 0))
     return (
       <div className="flex justify-center items-center min-h-[50vh] p-8">
-        <div className="w-full max-w-3xl flex flex-col gap-6 p-8 rounded-3xl backdrop-blur-xl bg-bg-card/90 shadow-xl border border-white/10 relative overflow-hidden">
+        <div className="w-full max-w-3xl flex flex-col gap-6 p-8 rounded-3xl bg-bg-card/95 shadow-xl border border-white/10 relative overflow-hidden">
           {/* Shimmer overlay */}
           <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.06)] to-transparent pointer-events-none" aria-hidden="true" />
           <div className="flex justify-between items-center mb-4">

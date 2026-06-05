@@ -1,8 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
 
-import { isAllowedExternalUrl } from "../src/lib/security.js";
+import { isAllowedExternalUrl, sanitizeSvgMarkup } from "../src/lib/security.js";
 import { buildCspPolicy } from "../scripts/cspPolicy.mjs";
 import {
   readLocalStorageWithSchema,
@@ -54,6 +55,44 @@ test("security: deployment CSP headers match the generated production policy", (
 
   assert.equal(netlify, generated);
   assert.equal(vercel, generated);
+});
+
+test("security: SVG sanitizer strips active content and external references", () => {
+  const previousWindow = globalThis.window;
+  const previousDOMParser = globalThis.DOMParser;
+  const previousXMLSerializer = globalThis.XMLSerializer;
+
+  globalThis.window = {};
+  globalThis.DOMParser = DOMParser;
+  globalThis.XMLSerializer = XMLSerializer;
+
+  try {
+    const clean = sanitizeSvgMarkup(`
+      <svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)">
+        <style>@import url(https://evil.example.com/a.css)</style>
+        <script>alert(1)</script>
+        <foreignObject><div onclick="alert(1)">x</div></foreignObject>
+        <use href="https://evil.example.com/icon.svg#x" />
+        <text onclick="alert(1)" style="background:url(javascript:alert(1))">ok</text>
+        <path d="M0 0 L1 1" />
+      </svg>
+    `);
+
+    assert.match(clean, /<svg/);
+    assert.match(clean, /<path/);
+    assert.match(clean, />ok</);
+    assert.doesNotMatch(clean, /script/i);
+    assert.doesNotMatch(clean, /style=/i);
+    assert.doesNotMatch(clean, /<style/i);
+    assert.doesNotMatch(clean, /foreignObject/i);
+    assert.doesNotMatch(clean, /<use/i);
+    assert.doesNotMatch(clean, /onload|onclick/i);
+    assert.doesNotMatch(clean, /evil\.example\.com|javascript:/i);
+  } finally {
+    globalThis.window = previousWindow;
+    globalThis.DOMParser = previousDOMParser;
+    globalThis.XMLSerializer = previousXMLSerializer;
+  }
 });
 
 test("storage: rejects invalid localStorage key format", () => {

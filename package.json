@@ -54,6 +54,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^6.0.2",
+    "@xmldom/xmldom": "^0.9.10",
     "esbuild": "^0.28.0",
     "glob": "^13.0.6",
     "playwright": "^1.59.1",

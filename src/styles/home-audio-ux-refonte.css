@@ -1221,19 +1221,19 @@ html.dark .audio-player-modal__surface {
 
 /* Reading list final pass: wider Arabic surface, no refresh veil/blur. */
 .app-root[data-view="reading"] .quran-display.quran-display--platform {
-  --reader-page-max: min(100%, 1280px) !important;
-  --reader-content-max: min(100%, 1120px) !important;
+  --reader-page-max: min(100%, 1360px) !important;
+  --reader-content-max: min(100%, 1180px) !important;
 }
 
 .app-root[data-view="reading"] .quran-display--platform :is(.qc-verse-by-verse-view, .surah-ayahs-list, .qcom-continuous-list) {
-  width: min(100%, 1120px) !important;
-  max-width: min(100%, 1120px) !important;
+  width: min(100%, 1180px) !important;
+  max-width: min(100%, 1180px) !important;
   margin-inline: auto !important;
 }
 
 .app-root[data-view="reading"] .quran-display--platform :is(.qc-list-card, .qc-ayah-block, .rd-ayah) {
   width: 100% !important;
-  max-width: min(100%, 1080px) !important;
+  max-width: min(100%, 1140px) !important;
   margin-inline: auto !important;
   content-visibility: visible !important;
   contain: none !important;
@@ -1268,14 +1268,14 @@ html.dark .audio-player-modal__surface {
 /* Mushaf refresh stability: no initial veil, wider Arabic page, stable font size. */
 .app-root[data-view="reading"] .quran-mode-pane--mushaf {
   width: 100% !important;
-  max-width: min(100%, 1220px) !important;
+  max-width: min(100%, 1320px) !important;
   padding-inline: clamp(0.72rem, 2vw, 1.6rem) !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-container.mushaf-page-wrapper {
   position: relative !important;
-  width: min(100%, 1160px) !important;
-  max-width: 1160px !important;
+  width: min(100%, 1240px) !important;
+  max-width: 1240px !important;
   margin-inline: auto !important;
   padding: clamp(1rem, 2.2vw, 2rem) clamp(0.85rem, 2.6vw, 2.25rem) !important;
   overflow: visible !important;
@@ -1295,7 +1295,7 @@ html.dark .audio-player-modal__surface {
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
   width: 100% !important;
-  max-width: min(100%, 1040px) !important;
+  max-width: min(100%, 1120px) !important;
   margin-inline: auto !important;
   padding: clamp(1.15rem, 2.2vw, 2.15rem) clamp(0.55rem, 1.8vw, 1.5rem) !important;
   color: var(--text-quran, var(--reader-page-ink, var(--text-primary))) !important;
