@@ -7,11 +7,17 @@ dist/
 # Test artifacts
 test-results/
 playwright-report/
+coverage/
 
 # Local dev artifacts
 vite-dev*.log
+vite-preview*.log
+vite-preview*.err.log
 vite.config.js.timestamp-*.mjs
 debug.log
+currentAyah_matches*.txt
+template_currentAyah*.txt
+scratch/
 
 # Backend cache
 server/.cache/

@@ -1,4 +1,4 @@
-// e2e/visual-debug.spec.js
+// tests/e2e/visual-debug.spec.mjs
 import { test, expect } from '@playwright/test';
 
 test('visual debug - capture screenshots of Warsh mode', async ({ page }) => {

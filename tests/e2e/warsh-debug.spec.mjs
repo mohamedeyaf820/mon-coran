@@ -1,4 +1,4 @@
-// e2e/warsh-debug.spec.js
+// tests/e2e/warsh-debug.spec.mjs
 import { test, expect } from '@playwright/test';
 
 test.describe('Warsh Debug Tests', () => {

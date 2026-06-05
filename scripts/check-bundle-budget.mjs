@@ -42,7 +42,7 @@ let files = [];
 try {
   files = await listFiles(DIST_ASSETS_DIR);
 } catch (error) {
-  console.error(`[budget] Unable to read ${DIST_ASSETS_DIR}. Run npm.cmd run build first.`);
+  console.error(`[budget] Unable to read ${DIST_ASSETS_DIR}. Run npm run build first.`);
   console.error(`[budget] ${error?.message || error}`);
   process.exit(1);
 }
