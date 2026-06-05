@@ -916,6 +916,10 @@ export default function AudioPlayer() {
     lang === "ar" ? "\u0627\u0644\u062e\u064a\u0627\u0631\u0627\u062a \u0648\u0627\u0644\u0642\u0631\u0627\u0621" : lang === "fr" ? "Options et r\u00e9citateurs" : "Options and reciters";
   const searchPlaceholder =
     lang === "ar" ? "\u0627\u0628\u062d\u062b..." : lang === "fr" ? "Rechercher..." : "Search...";
+  const openPlayerLabel =
+    lang === "ar" ? "\u0641\u062a\u062d \u0627\u0644\u0645\u0634\u063a\u0644" : lang === "fr" ? "Ouvrir le lecteur" : "Open player";
+  const audioBrandLabel =
+    lang === "ar" ? "\u0635\u0648\u062a" : lang === "fr" ? "Audio" : "Audio";
 
   /* Shared button classes (mobile bar) */
   const playerPanelSurfaceClass =
@@ -1182,7 +1186,7 @@ export default function AudioPlayer() {
               type="button"
               className="mp-player-minimized-meta mp-player-minimized-open min-w-0 flex-1 text-left"
               onClick={toggleMinimized}
-              title={lang === "ar" ? "\u0641\u062a\u062d \u0627\u0644\u0645\u0634\u063a\u0644" : lang === "fr" ? "Ouvrir le lecteur" : "Open player"}
+              title={openPlayerLabel}
             >
               <div className="mp-player-minimized-title truncate text-[0.82rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-text)_94%,#ffffff_6%)]">
                 {titleLabel ||
@@ -1272,7 +1276,7 @@ export default function AudioPlayer() {
           <div className="mp-player-mobile-brand flex min-w-0 items-center gap-2 px-2">
             <div className="h-1 w-9 rounded-full bg-[linear-gradient(90deg,rgba(var(--theme-primary-rgb),0.18),rgba(var(--theme-primary-rgb),0.95),rgba(var(--theme-primary-rgb),0.18))]" />
             <span className="text-[0.62rem] uppercase tracking-[0.14em] text-[color-mix(in_srgb,var(--theme-text-muted)_92%,var(--theme-bg)_8%)] [font-family:var(--font-ui)]">
-              AUDIO
+              {audioBrandLabel}
             </span>
           </div>
           <button

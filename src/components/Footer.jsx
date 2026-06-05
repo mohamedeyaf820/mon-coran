@@ -60,7 +60,7 @@ export default function Footer() {
     {
       icon: "fa-gear",
       label: pick(lang, {
-        fr: "Réglages",
+        fr: "R\u00e9glages",
         en: "Settings",
         ar: "\u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a",
       }),
@@ -85,9 +85,9 @@ export default function Footer() {
           </p>
           <span className="mp-footer-v2__verse-ref">
             {pick(lang, {
-              fr: "Adh-Dhariyat · 51:56",
-              en: "Adh-Dhariyat · 51:56",
-              ar: "\u0627\u0644\u0630\u0627\u0631\u064a\u0627\u062a · \u0665\u0661:\u0665\u0666",
+              fr: "Adh-Dhariyat \u00b7 51:56",
+              en: "Adh-Dhariyat \u00b7 51:56",
+              ar: "\u0627\u0644\u0630\u0627\u0631\u064a\u0627\u062a \u00b7 \u0665\u0661:\u0665\u0666",
             })}
           </span>
         </div>
@@ -119,7 +119,7 @@ export default function Footer() {
         <div className="mp-footer-v2__bottom">
           <span className="mp-footer-v2__credit">
             {pick(lang, {
-              fr: "Lire, écouter, mémoriser",
+              fr: "Lire, \u00e9couter, m\u00e9moriser",
               en: "Read, listen, memorize",
               ar: "\u0627\u0642\u0631\u0623\u060c \u0627\u0633\u062a\u0645\u0639\u060c \u0627\u062d\u0641\u0638",
             })}

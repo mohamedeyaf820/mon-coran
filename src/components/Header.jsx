@@ -58,7 +58,8 @@ export default function Header() {
       (currentThemeIndex + 1 + THEME_ORDER.length) % THEME_ORDER.length
     ];
   const isRtl = lang === "ar";
-  const tr = (obj) => (lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en);
+  const tr = (obj) =>
+    lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en;
 
   useEffect(() => {
     const updateHeaderHeight = () => {
@@ -69,6 +70,7 @@ export default function Header() {
         document.documentElement.style.setProperty("--header-h", `${h}px`);
       }
     };
+
     updateHeaderHeight();
     let ro;
     if (typeof ResizeObserver !== "undefined" && headerRef.current) {
@@ -87,6 +89,11 @@ export default function Header() {
   }, [goToOpen]);
 
   const cycleTheme = () => dispatch({ type: "SET_THEME", payload: nextThemeId });
+  const goHome = () => set({ showHome: true, showDuas: false });
+  const openDuas = () => set({ showDuas: true, showHome: false });
+  const openSearch = () => dispatch({ type: "TOGGLE_SEARCH" });
+  const openSettings = () => dispatch({ type: "TOGGLE_SETTINGS" });
+  const openToolsHub = () => set({ toolsHubOpen: true });
 
   const canGoPrev =
     displayMode === "page"
@@ -103,20 +110,24 @@ export default function Header() {
 
   const handlePrev = () => {
     set({ showHome: false, showDuas: false });
-    if (displayMode === "page" && currentPage > 1) set({ currentPage: currentPage - 1 });
-    else if (displayMode === "juz" && currentJuz > 1)
+    if (displayMode === "page" && currentPage > 1) {
+      set({ currentPage: currentPage - 1 });
+    } else if (displayMode === "juz" && currentJuz > 1) {
       dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz - 1 } });
-    else if (currentSurah > 1)
+    } else if (currentSurah > 1) {
       dispatch({ type: "NAVIGATE_SURAH", payload: { surah: currentSurah - 1 } });
+    }
   };
 
   const handleNext = () => {
     set({ showHome: false, showDuas: false });
-    if (displayMode === "page" && currentPage < 604) set({ currentPage: currentPage + 1 });
-    else if (displayMode === "juz" && currentJuz < 30)
+    if (displayMode === "page" && currentPage < 604) {
+      set({ currentPage: currentPage + 1 });
+    } else if (displayMode === "juz" && currentJuz < 30) {
       dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz + 1 } });
-    else if (currentSurah < 114)
+    } else if (currentSurah < 114) {
       dispatch({ type: "NAVIGATE_SURAH", payload: { surah: currentSurah + 1 } });
+    }
   };
 
   const handleGoTo = (event) => {
@@ -139,14 +150,16 @@ export default function Header() {
   const goToMax = displayMode === "page" ? 604 : displayMode === "juz" ? 30 : 114;
   const goToLabel =
     displayMode === "page"
-      ? tr({ fr: "Page (1-604)", en: "Page (1-604)", ar: "صفحة (١-٦٠٤)" })
+      ? tr({ fr: "Page (1-604)", en: "Page (1-604)", ar: "\u0635\u0641\u062d\u0629 (\u0661-\u0666\u0660\u0664)" })
       : displayMode === "juz"
-        ? tr({ fr: "Juz (1-30)", en: "Juz (1-30)", ar: "جزء (١-٣٠)" })
-        : tr({ fr: "Sourate (1-114)", en: "Surah (1-114)", ar: "سورة (١-١١٤)" });
+        ? tr({ fr: "Juz (1-30)", en: "Juz (1-30)", ar: "\u062c\u0632\u0621 (\u0661-\u0663\u0660)" })
+        : tr({ fr: "Sourate (1-114)", en: "Surah (1-114)", ar: "\u0633\u0648\u0631\u0629 (\u0661-\u0661\u0661\u0664)" });
 
-  const activeSurahNum = displayMode === "page" ? getSurahForPage(currentPage) : currentSurah;
+  const activeSurahNum =
+    displayMode === "page" ? getSurahForPage(currentPage) : currentSurah;
   const surahMeta = getSurah(activeSurahNum);
-  const ayahWord = lang === "fr" ? "versets" : lang === "ar" ? "آية" : "ayahs";
+  const ayahWord =
+    lang === "fr" ? "versets" : lang === "ar" ? "\u0622\u064a\u0629" : "ayahs";
   const ayahCount = loadedAyahCount
     ? `${lang === "ar" ? toAr(loadedAyahCount) : loadedAyahCount} ${ayahWord}`
     : surahMeta
@@ -154,29 +167,29 @@ export default function Header() {
       : "";
 
   const centerTitle = showDuas
-    ? tr({ fr: "Douas", en: "Duas", ar: "الأدعية" })
+    ? tr({ fr: "Douas", en: "Duas", ar: "\u0627\u0644\u0623\u062f\u0639\u064a\u0629" })
     : displayMode === "juz"
       ? lang === "ar"
-        ? `جزء ${toAr(currentJuz)}`
+        ? `\u062c\u0632\u0621 ${toAr(currentJuz)}`
         : `Juz ${currentJuz}`
       : lang === "ar"
         ? surahMeta?.ar || ""
         : surahName(activeSurahNum, lang);
 
   const centerKicker = showDuas
-    ? tr({ fr: "Espace Douas", en: "Duas", ar: "الأدعية" })
+    ? tr({ fr: "Espace Douas", en: "Duas", ar: "\u0627\u0644\u0623\u062f\u0639\u064a\u0629" })
     : displayMode === "page"
-      ? tr({ fr: "Page", en: "Page", ar: "صفحة" })
+      ? tr({ fr: "Page", en: "Page", ar: "\u0635\u0641\u062d\u0629" })
       : displayMode === "juz"
-        ? tr({ fr: "Juz", en: "Juz", ar: "جزء" })
-        : tr({ fr: "Sourate", en: "Surah", ar: "سورة" });
+        ? tr({ fr: "Juz", en: "Juz", ar: "\u062c\u0632\u0621" })
+        : tr({ fr: "Sourate", en: "Surah", ar: "\u0633\u0648\u0631\u0629" });
 
   const centerSub = showDuas
-    ? tr({ fr: "Invocations coraniques", en: "Quranic supplications", ar: "أدعية قرآنية" })
+    ? tr({ fr: "Invocations coraniques", en: "Quranic supplications", ar: "\u0623\u062f\u0639\u064a\u0629 \u0642\u0631\u0622\u0646\u064a\u0629" })
     : displayMode === "page"
-      ? tr({ fr: `Page ${currentPage} / 604`, en: `Page ${currentPage} / 604`, ar: `صفحة ${toAr(currentPage)} / ${toAr(604)}` })
+      ? tr({ fr: `Page ${currentPage} / 604`, en: `Page ${currentPage} / 604`, ar: `\u0635\u0641\u062d\u0629 ${toAr(currentPage)} / ${toAr(604)}` })
       : displayMode === "juz"
-        ? tr({ fr: `Juz ${currentJuz} / 30`, en: `Juz ${currentJuz} / 30`, ar: `جزء ${toAr(currentJuz)} / ${toAr(30)}` })
+        ? tr({ fr: `Juz ${currentJuz} / 30`, en: `Juz ${currentJuz} / 30`, ar: `\u062c\u0632\u0621 ${toAr(currentJuz)} / ${toAr(30)}` })
         : ayahCount;
 
   const themeDotColors = {
@@ -188,12 +201,6 @@ export default function Header() {
   };
   const dotColor = themeDotColors[theme] || "var(--primary)";
 
-  const goHome = () => set({ showHome: true, showDuas: false });
-  const openDuas = () => set({ showDuas: true, showHome: false });
-  const openSearch = () => dispatch({ type: "TOGGLE_SEARCH" });
-  const openSettings = () => dispatch({ type: "TOGGLE_SETTINGS" });
-
-  const openToolsHub = () => set({ toolsHubOpen: true });
   const headerLabels = {
     menu: tr({ fr: "Menu", en: "Menu", ar: "\u0627\u0644\u0642\u0627\u0626\u0645\u0629" }),
     more: tr({ fr: "Plus d'options", en: "More options", ar: "\u062e\u064a\u0627\u0631\u0627\u062a \u0625\u0636\u0627\u0641\u064a\u0629" }),
@@ -202,7 +209,9 @@ export default function Header() {
       en: "Continue reading",
       ar: "\u0627\u0633\u062a\u0626\u0646\u0627\u0641 \u0627\u0644\u0642\u0631\u0627\u0621\u0629",
     }),
-    homeMeta: `${riwaya.toUpperCase()} \u00b7 114 ${lang === "fr" ? "sourates" : lang === "ar" ? "\u0633\u0648\u0631\u0629" : "surahs"} \u00b7 30 Juz`,
+    homeMeta: `${riwaya.toUpperCase()} \u00b7 114 ${
+      lang === "fr" ? "sourates" : lang === "ar" ? "\u0633\u0648\u0631\u0629" : "surahs"
+    } \u00b7 30 Juz`,
     quranNav: tr({
       fr: "Navigation du Coran",
       en: "Quran navigation",
@@ -214,12 +223,6 @@ export default function Header() {
       ar: "\u062a\u0628\u062f\u064a\u0644 \u0627\u0644\u0631\u0648\u0627\u064a\u0629",
     }),
   };
-
-  const quickItems = [
-    { key: "duas", icon: "fa-hands-praying", label: tr({ fr: "Douas / Invocations", en: "Duas / Supplications", ar: "الأدعية والأذكار" }), action: openDuas },
-    { key: "theme", icon: "fa-palette", label: tr({ fr: "Changer de Thème", en: "Switch Theme", ar: "تغيير المظهر" }), action: cycleTheme },
-    { key: "tools", icon: "fa-shapes", label: tr({ fr: "Espace Outils", en: "Tools Hub", ar: "مركز الأدوات" }), action: openToolsHub },
-  ];
 
   const cleanQuickItems = [
     {
@@ -262,7 +265,7 @@ export default function Header() {
             className={cn("mp-header__icon-btn hdr-v7__menu-btn", sidebarOpen && "is-active")}
             type="button"
             onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
-            aria-label={tr({ fr: "Menu", en: "Menu", ar: "القائمة" })}
+            aria-label={headerLabels.menu}
             aria-expanded={sidebarOpen}
             aria-controls="sidebar"
           >
@@ -292,17 +295,20 @@ export default function Header() {
 
         <div className="mp-header__center">
           {showHome ? (
-            <button className="mp-header__home-summary" type="button" onClick={() => set({ showHome: false, showDuas: false })}>
-              <strong className="mp-header__home-summary-clean">{headerLabels.homeSummary}</strong>
-              <span className="mp-header__home-meta-clean">{headerLabels.homeMeta}</span>
-              <strong>{tr({ fr: "Reprends ta lecture", en: "Continue reading", ar: "استأنف القراءة" })}</strong>
-              <span>{riwaya.toUpperCase()} · 114 sourates · 30 Juz</span>
+            <button
+              className="mp-header__home-summary"
+              type="button"
+              onClick={() => set({ showHome: false, showDuas: false })}
+            >
+              <strong className="mp-header__home-summary-clean">
+                {headerLabels.homeSummary}
+              </strong>
+              <span className="mp-header__home-meta-clean">
+                {headerLabels.homeMeta}
+              </span>
             </button>
           ) : (
-            <nav
-              className="mp-header__nav"
-              aria-label={tr({ fr: "Navigation Coran", en: "Quran navigation", ar: "التنقل في القرآن" })}
-            >
+            <nav className="mp-header__nav" aria-label={headerLabels.quranNav}>
               <button
                 className="mp-header__nav-arrow"
                 type="button"
@@ -344,6 +350,7 @@ export default function Header() {
                       <button
                         type="submit"
                         className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white transition-colors hover:bg-primary-dark"
+                        aria-label={tr({ fr: "Aller", en: "Go", ar: "\u0627\u0646\u062a\u0642\u0644" })}
                       >
                         <i className="fas fa-arrow-right" />
                       </button>
@@ -366,7 +373,6 @@ export default function Header() {
         </div>
 
         <div className="mp-header__actions">
-          {/* Recherche */}
           <button
             className="mp-header__action mp-header__search hdr-v7__search-btn"
             type="button"
@@ -377,7 +383,6 @@ export default function Header() {
             <span>{i18nT("nav.search", lang)}</span>
           </button>
 
-          {/* Sélecteur de Riwaya (Desktop) */}
           <div className="mp-header__riwaya-switch hidden md:flex items-center gap-0.5 rounded-xl bg-[var(--bg-secondary)] p-1 border border-[var(--border)] shrink-0 mr-2">
             {["hafs", "warsh"].map((id) => (
               <button
@@ -386,7 +391,7 @@ export default function Header() {
                   "px-3 py-1 text-[0.7rem] font-bold rounded-lg transition-all cursor-pointer",
                   riwaya === id
                     ? "bg-[var(--bg-card)] text-[var(--primary)] shadow-sm font-extrabold"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
                 )}
                 type="button"
                 onClick={() => set({ riwaya: id })}
@@ -396,7 +401,6 @@ export default function Header() {
             ))}
           </div>
 
-          {/* Sélecteur de Riwaya (Mobile) */}
           <button
             className="mp-header__riwaya-mobile md:hidden flex font-bold text-xs min-w-[54px] h-9 rounded-xl hover:bg-[var(--bg-secondary)] items-center justify-center border border-[var(--border)] text-[var(--text-primary)] mr-2 cursor-pointer"
             type="button"
@@ -407,7 +411,6 @@ export default function Header() {
             {riwaya.toUpperCase()}
           </button>
 
-          {/* Paramètres */}
           <button
             className={cn("mp-header__action", settingsOpen && "is-active")}
             type="button"
@@ -418,10 +421,14 @@ export default function Header() {
             <i className="fas fa-sliders" />
           </button>
 
-          {/* Quick Menu */}
           <Popover open={quickMenuOpen} onOpenChange={setQuickMenuOpen}>
             <PopoverTrigger asChild>
-              <button className="mp-header__more" type="button" aria-label={headerLabels.more} title={headerLabels.more}>
+              <button
+                className="mp-header__more"
+                type="button"
+                aria-label={headerLabels.more}
+                title={headerLabels.more}
+              >
                 <i className="fas fa-ellipsis" />
               </button>
             </PopoverTrigger>

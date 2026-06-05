@@ -9,13 +9,75 @@ function formatTime(seconds) {
   return `${m}:${s.toString().padStart(2, "0")}`;
 }
 
-export default function QCAudioBar({ lang, currentPlayingAyah, isPlaying, surahName }) {
+function pick(lang, values) {
+  return values[lang] || values.fr;
+}
+
+export default function QCAudioBar({
+  lang,
+  currentPlayingAyah,
+  isPlaying,
+  surahName,
+}) {
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [speed, setSpeed] = useState(1);
   const [localPlaying, setLocalPlaying] = useState(false);
   const progressRailRef = useRef(null);
+
+  const labels = {
+    player: pick(lang, {
+      fr: "Lecteur audio",
+      en: "Audio player",
+      ar: "\u0645\u0634\u063a\u0644 \u0627\u0644\u0635\u0648\u062a",
+    }),
+    progress: pick(lang, {
+      fr: "Progression audio",
+      en: "Audio progress",
+      ar: "\u062a\u0642\u062f\u0645 \u0627\u0644\u0635\u0648\u062a",
+    }),
+    ready: pick(lang, {
+      fr: "Pr\u00eat \u00e0 lire",
+      en: "Ready",
+      ar: "\u062c\u0627\u0647\u0632",
+    }),
+    verse: pick(lang, {
+      fr: "Verset",
+      en: "Verse",
+      ar: "\u0622\u064a\u0629",
+    }),
+    speed: pick(lang, {
+      fr: "Vitesse",
+      en: "Speed",
+      ar: "\u0627\u0644\u0633\u0631\u0639\u0629",
+    }),
+    previous: pick(lang, {
+      fr: "Pr\u00e9c\u00e9dent",
+      en: "Previous",
+      ar: "\u0627\u0644\u0633\u0627\u0628\u0642",
+    }),
+    pause: pick(lang, {
+      fr: "Pause",
+      en: "Pause",
+      ar: "\u0625\u064a\u0642\u0627\u0641 \u0645\u0624\u0642\u062a",
+    }),
+    play: pick(lang, {
+      fr: "Lecture",
+      en: "Play",
+      ar: "\u062a\u0634\u063a\u064a\u0644",
+    }),
+    next: pick(lang, {
+      fr: "Suivant",
+      en: "Next",
+      ar: "\u0627\u0644\u062a\u0627\u0644\u064a",
+    }),
+    stop: pick(lang, {
+      fr: "Arr\u00eater",
+      en: "Stop",
+      ar: "\u0625\u064a\u0642\u0627\u0641",
+    }),
+  };
 
   useEffect(() => {
     const syncSnapshot = () => {
@@ -56,11 +118,10 @@ export default function QCAudioBar({ lang, currentPlayingAyah, isPlaying, surahN
   };
 
   const playing = Boolean(isPlaying || localPlaying);
-
   const trackLabel =
     surahName && currentPlayingAyah?.ayah
-      ? `${surahName} · ${lang === "fr" ? "Verset" : "Verse"} ${currentPlayingAyah.ayah}`
-      : surahName || (lang === "fr" ? "Prêt" : "Ready");
+      ? `${surahName} \u00b7 ${labels.verse} ${currentPlayingAyah.ayah}`
+      : surahName || labels.ready;
 
   return (
     <div
@@ -72,18 +133,17 @@ export default function QCAudioBar({ lang, currentPlayingAyah, isPlaying, surahN
         "shadow-[0_-4px_24px_rgba(0,0,0,0.12)]",
       )}
       role="region"
-      aria-label={lang === "fr" ? "Lecteur audio" : "Audio player"}
+      aria-label={labels.player}
     >
-      {/* Progress rail */}
       <div
         ref={progressRailRef}
         onClick={handleProgressClick}
-        className="h-1 w-full cursor-pointer bg-[var(--border)] relative"
+        className="relative h-1 w-full cursor-pointer bg-[var(--border)]"
         role="slider"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(progress * 100)}
-        aria-label="Progression"
+        aria-label={labels.progress}
       >
         <div
           className="absolute inset-y-0 left-0 bg-[var(--primary)] transition-all duration-150 ease-linear"
@@ -91,79 +151,75 @@ export default function QCAudioBar({ lang, currentPlayingAyah, isPlaying, surahN
         />
       </div>
 
-      {/* Controls */}
       <div className="flex items-center gap-3 px-4 py-2.5 max-[480px]:px-3">
-        {/* Track info */}
-        <div className="flex-1 min-w-0">
-          <div className="text-[0.76rem] font-semibold text-[var(--text-primary)] truncate leading-tight">
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-[0.76rem] font-semibold leading-tight text-[var(--text-primary)]">
             {trackLabel}
           </div>
-          <div className="text-[0.62rem] text-[var(--text-muted)] tabular-nums">
+          <div className="text-[0.62rem] tabular-nums text-[var(--text-muted)]">
             {formatTime(currentTime)} / {formatTime(duration)}
           </div>
         </div>
 
-        {/* Playback controls */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          {/* Speed */}
+        <div className="flex shrink-0 items-center gap-1.5">
           <button
             type="button"
             onClick={cycleSpeed}
             className={cn(
-              "h-7 px-2 rounded-lg text-[0.62rem] font-extrabold transition-all",
+              "h-7 rounded-lg px-2 text-[0.62rem] font-extrabold transition-all",
               speed !== 1
-                ? "bg-[rgba(var(--primary-rgb),0.12)] text-[var(--primary)] border border-[rgba(var(--primary-rgb),0.25)]"
+                ? "border border-[rgba(var(--primary-rgb),0.25)] bg-[rgba(var(--primary-rgb),0.12)] text-[var(--primary)]"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
             )}
-            aria-label={`Vitesse: ${speed}×`}
+            aria-label={`${labels.speed}: ${speed}x`}
           >
-            {speed}×
+            {speed}x
           </button>
 
-          {/* Prev */}
           <button
             type="button"
             onClick={() => audioService.prev()}
-            className="h-9 w-9 flex items-center justify-center rounded-full text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[rgba(var(--primary-rgb),0.08)] transition-all"
-            aria-label={lang === "fr" ? "Précédent" : "Previous"}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-secondary)] transition-all hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)]"
+            aria-label={labels.previous}
           >
             <i className="fas fa-backward-step text-sm" />
           </button>
 
-          {/* Play / Pause */}
           <button
             type="button"
             onClick={() => {
               audioService.toggle();
-              window.setTimeout(() => setLocalPlaying(Boolean(audioService.isPlaying)), 60);
+              window.setTimeout(
+                () => setLocalPlaying(Boolean(audioService.isPlaying)),
+                60,
+              );
             }}
             className={cn(
-              "h-10 w-10 rounded-full flex items-center justify-center",
-              "bg-[var(--primary)] text-white font-bold",
+              "flex h-10 w-10 items-center justify-center rounded-full",
+              "bg-[var(--primary)] font-bold text-white",
               "shadow-[0_4px_14px_rgba(var(--primary-rgb),0.4)]",
               "transition-all duration-150 hover:brightness-110 active:scale-95",
             )}
-            aria-label={playing ? "Pause" : "Play"}
+            aria-label={playing ? labels.pause : labels.play}
+            aria-pressed={playing}
           >
             <i className={`fas ${playing ? "fa-pause" : "fa-play"} text-sm ${!playing ? "ml-0.5" : ""}`} />
           </button>
 
-          {/* Next */}
           <button
             type="button"
             onClick={() => audioService.next()}
-            className="h-9 w-9 flex items-center justify-center rounded-full text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[rgba(var(--primary-rgb),0.08)] transition-all"
-            aria-label={lang === "fr" ? "Suivant" : "Next"}
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-secondary)] transition-all hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)]"
+            aria-label={labels.next}
           >
             <i className="fas fa-forward-step text-sm" />
           </button>
 
-          {/* Stop */}
           <button
             type="button"
             onClick={() => audioService.stop()}
-            className="h-9 w-9 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all"
-            aria-label="Stop"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-900/20"
+            aria-label={labels.stop}
           >
             <i className="fas fa-stop text-xs" />
           </button>

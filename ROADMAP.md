@@ -6,8 +6,10 @@ Date: 2026-06-05
 
 - Phase 0: terminee et validee sur CI.
 - Phase 1: en cours. Les tailles de police, le skeleton sans blur, la largeur liste/mushaf et le prechargement de police ont ete renforces.
-- Phase 2: en cours. Le drag desktop du lecteur audio est stabilise; le decoupage complet du composant reste a faire.
-- Phases 3 a 7: planifiees, non terminees.
+- Phase 2: en cours. Le drag desktop du lecteur audio est stabilise; les libelles principaux audio ont ete durcis. Le decoupage complet du composant reste a faire.
+- Phase 3: en cours. Les premiers nettoyages de textes et surfaces communes sont faits, mais le design system complet reste a consolider.
+- Phase 4: en cours. Header, footer et barre audio de lecture ont ete nettoyes cote libelles, hierarchie et accessibilite.
+- Phase 5 a 7: planifiees, non terminees.
 
 ## Phase 0 - Stabilisation immediate
 
