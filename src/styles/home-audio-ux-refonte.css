@@ -2158,3 +2158,266 @@ body > .audio-player-modal .audio-settings-icon-btn {
     display: none !important;
   }
 }
+
+/* Header/audio density pass requested after visual QA. */
+@media (max-width: 1024px) {
+  .app-root > .mp-header .mp-header__bar {
+    min-height: 3.35rem !important;
+    padding: 0.34rem clamp(0.48rem, 1.2vw, 0.78rem) !important;
+  }
+
+  .app-root > .mp-header :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__nav-arrow, .mp-header__riwaya-mobile) {
+    width: clamp(2.38rem, 2.18rem + 0.38vw, 2.62rem) !important;
+    min-width: clamp(2.38rem, 2.18rem + 0.38vw, 2.62rem) !important;
+    height: clamp(2.38rem, 2.18rem + 0.38vw, 2.62rem) !important;
+    min-height: clamp(2.38rem, 2.18rem + 0.38vw, 2.62rem) !important;
+    border-radius: 0.86rem !important;
+    font-size: clamp(0.78rem, 0.72rem + 0.12vw, 0.9rem) !important;
+  }
+
+  .app-root > .mp-header .mp-header__search {
+    width: clamp(2.55rem, 2.25rem + 0.7vw, 3rem) !important;
+    min-width: clamp(2.55rem, 2.25rem + 0.7vw, 3rem) !important;
+    padding-inline: 0 !important;
+  }
+
+  .app-root > .mp-header .mp-header__search span {
+    display: none !important;
+  }
+
+  .app-root > .mp-header .mp-header__riwaya-mobile {
+    width: auto !important;
+    min-width: clamp(2.74rem, 2.5rem + 0.6vw, 3.18rem) !important;
+    padding-inline: 0.52rem !important;
+    font-size: clamp(0.68rem, 0.64rem + 0.12vw, 0.76rem) !important;
+  }
+
+  .app-root > .mp-header .mp-header__title-btn,
+  .app-root > .mp-header .mp-header__home-summary {
+    min-height: clamp(2.45rem, 2.22rem + 0.48vw, 2.82rem) !important;
+    border-radius: 1rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__title,
+  .app-root > .mp-header .mp-header__home-summary-clean {
+    font-size: clamp(0.78rem, 0.7rem + 0.24vw, 0.94rem) !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock {
+    border-radius: 1rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 4.7rem !important;
+    max-height: 4.7rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head {
+    inset: 0.36rem 0.48rem auto !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head button {
+    width: 2.18rem !important;
+    min-width: 2.18rem !important;
+    height: 2.18rem !important;
+    min-height: 2.18rem !important;
+    border-radius: 0.82rem !important;
+    font-size: 0.72rem !important;
+    background: color-mix(in srgb, var(--theme-panel-bg-strong) 86%, var(--theme-primary) 14%) !important;
+    color: color-mix(in srgb, var(--theme-text) 88%, var(--theme-bg) 12%) !important;
+    box-shadow: 0 8px 20px rgba(2, 10, 18, 0.12) !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-progress {
+    height: 0.16rem !important;
+    margin: 0.42rem 3rem 0 !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    min-height: 3.72rem !important;
+    padding: 0.52rem 0.5rem 0.42rem !important;
+    gap: 0.28rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
+    width: clamp(4.2rem, 15vw, 5rem) !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta > :first-child {
+    font-size: 0.64rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta > :nth-child(2) {
+    font-size: 0.54rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    min-height: 2.52rem !important;
+    gap: 0.35rem !important;
+    padding: 0.18rem 0.38rem !important;
+    border-radius: 0.95rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: 2.34rem !important;
+    min-width: 2.34rem !important;
+    height: 2.34rem !important;
+    min-height: 2.34rem !important;
+    border-radius: 0.82rem !important;
+    font-size: 0.68rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
+    width: 2.72rem !important;
+    min-width: 2.72rem !important;
+    height: 2.72rem !important;
+    min-height: 2.72rem !important;
+    border-radius: 0.95rem !important;
+    font-size: 0.84rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
+    gap: 0.28rem !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .app-root > .mp-header .mp-header__bar {
+    gap: 0.3rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__brand {
+    margin-inline-end: 0.08rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__logo {
+    width: 2.28rem !important;
+    height: 2.28rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__nav {
+    gap: 0.28rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__title-btn {
+    padding-inline: 0.54rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 4.55rem !important;
+    max-height: 4.55rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    min-height: 3.58rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  html body .app-root > .mp-header .mp-header__actions .mp-header__action.mp-header__search.hdr-v7__search-btn {
+    width: 2.62rem !important;
+    min-width: 2.62rem !important;
+    max-width: 2.62rem !important;
+    height: 2.62rem !important;
+    min-height: 2.62rem !important;
+    padding-inline: 0 !important;
+    border-radius: 0.92rem !important;
+    font-size: 0.86rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__actions .mp-header__action.mp-header__search.hdr-v7__search-btn span {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 4.5rem !important;
+    max-height: 4.5rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    display: flex !important;
+    height: 3.05rem !important;
+    min-height: 3.05rem !important;
+    max-height: 3.05rem !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    padding-block: 0.28rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    height: 2.58rem !important;
+    min-height: 2.58rem !important;
+    max-height: 2.58rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: 2.28rem !important;
+    min-width: 2.28rem !important;
+    height: 2.28rem !important;
+    min-height: 2.28rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
+    width: 2.56rem !important;
+    min-width: 2.56rem !important;
+    height: 2.56rem !important;
+    min-height: 2.56rem !important;
+  }
+}
+
+@media (max-width: 520px) {
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 4.32rem !important;
+    max-height: 4.32rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    height: 2.88rem !important;
+    min-height: 2.88rem !important;
+    max-height: 2.88rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    height: 2.44rem !important;
+    min-height: 2.44rem !important;
+    max-height: 2.44rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: 2.12rem !important;
+    min-width: 2.12rem !important;
+    height: 2.12rem !important;
+    min-height: 2.12rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
+    width: 2.42rem !important;
+    min-width: 2.42rem !important;
+    height: 2.42rem !important;
+    min-height: 2.42rem !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+}
