@@ -926,6 +926,16 @@ export default function AudioPlayer() {
       : lang === "fr"
         ? "Maintenir et déplacer le lecteur"
         : "Hold and drag the player";
+  const playPauseLabel = isPlaying ? t("audio.pause", lang) : t("audio.play", lang);
+  const speedLabel =
+    lang === "ar" ? "\u0627\u0644\u0633\u0631\u0639\u0629" : lang === "fr" ? "Vitesse" : "Speed";
+  const progressLabel =
+    lang === "ar"
+      ? "\u062a\u0642\u062f\u0645 \u0627\u0644\u062a\u0634\u063a\u064a\u0644"
+      : lang === "fr"
+        ? "Progression audio"
+        : "Audio progress";
+  const volumeLabel = t("audio.volume", lang);
 
   /* Shared button classes (mobile bar) */
   const playerPanelSurfaceClass =
@@ -1209,7 +1219,8 @@ export default function AudioPlayer() {
             <button
               className={cn(playerPrimaryBtnClass, "h-9 w-9 text-[0.8rem]")}
               onClick={toggle}
-              title={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
+              title={playPauseLabel}
+              aria-label={playPauseLabel}
               aria-pressed={isPlaying}
             >
               <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`} />
@@ -1223,6 +1234,7 @@ export default function AudioPlayer() {
               aria-controls="audio-options-modal-title"
               aria-expanded={optionsModalOpen}
               title={optionsLabel}
+              aria-label={optionsLabel}
             >
               <i className="fas fa-sliders" />
             </button>
@@ -1232,9 +1244,8 @@ export default function AudioPlayer() {
                 "w-7 h-7 text-[0.66rem] rounded-lg shrink-0",
               )}
               onClick={toggleMinimized}
-              title={
-                lang === "fr" ? "Agrandir" : lang === "ar" ? "توسيع" : "Expand"
-              }
+              title={expandLabel}
+              aria-label={expandLabel}
             >
               <i className="fas fa-expand-alt" />
             </button>
@@ -1244,9 +1255,8 @@ export default function AudioPlayer() {
                 "w-7 h-7 text-[0.66rem] rounded-lg shrink-0",
               )}
               onClick={closePlayer}
-              title={
-                lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
-              }
+              title={closeLabel}
+              aria-label={closeLabel}
             >
               <i className="fas fa-times" />
             </button>
@@ -1288,7 +1298,8 @@ export default function AudioPlayer() {
           <button
             className={cn(mBarBtn, "h-9 w-9 rounded-full")}
             onClick={closePlayer}
-            title={lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
+            title={closeLabel}
+            aria-label={closeLabel}
           >
             <i className="fas fa-times" />
           </button>
@@ -1318,6 +1329,7 @@ export default function AudioPlayer() {
           onClick={handleSeek}
           onPointerDown={handleProgressPointerDown}
           role="progressbar"
+          aria-label={progressLabel}
           aria-valuenow={Math.round(progress * 100)}
           aria-valuemin={0}
           aria-valuemax={100}
@@ -1369,6 +1381,7 @@ export default function AudioPlayer() {
               )}
               onClick={prev}
               title={t("audio.prev", lang)}
+              aria-label={t("audio.prev", lang)}
             >
               <i className="fas fa-step-backward" />
             </button>
@@ -1379,7 +1392,8 @@ export default function AudioPlayer() {
                 "mp-player-play-btn h-9 w-9 shrink-0 text-[0.82rem] hover:scale-[1.04] active:scale-[0.94]",
               )}
               onClick={toggle}
-              title={isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
+              title={playPauseLabel}
+              aria-label={playPauseLabel}
               aria-pressed={isPlaying}
             >
               <i
@@ -1394,6 +1408,7 @@ export default function AudioPlayer() {
               )}
               onClick={next}
               title={t("audio.next", lang)}
+              aria-label={t("audio.next", lang)}
             >
               <i className="fas fa-step-forward" />
             </button>
@@ -1405,6 +1420,7 @@ export default function AudioPlayer() {
               )}
               onClick={stop}
               title={t("audio.stop", lang)}
+              aria-label={t("audio.stop", lang)}
             >
               <i className="fas fa-stop" />
             </button>
@@ -1418,9 +1434,8 @@ export default function AudioPlayer() {
                 "px-[0.38rem] py-[0.18rem] text-[0.58rem] min-h-[1.72rem] min-w-[1.72rem] justify-center rounded-full",
               )}
               onClick={cycleSpeed}
-              title={
-                lang === "fr" ? "Vitesse" : lang === "ar" ? "السرعة" : "Speed"
-              }
+              title={speedLabel}
+              aria-label={`${speedLabel} ${audioSpeed}x`}
             >
               {audioSpeed}x
             </button>
@@ -1432,6 +1447,7 @@ export default function AudioPlayer() {
               onClick={toggleOptionsModal}
               aria-expanded={optionsModalOpen}
               aria-controls="audio-options-modal-title"
+              aria-label={optionsLabel}
               title={
                 optionsModalOpen
                   ? lang === "fr"
@@ -2087,26 +2103,16 @@ export default function AudioPlayer() {
               <button
                 onClick={toggleMinimized}
                 className={cn(playerUtilityClass, "h-6 w-6")}
-                title={
-                  lang === "fr"
-                    ? "Minimiser"
-                    : lang === "ar"
-                       ? "تصغير"
-                      : "Minimize"
-                }
+                title={minimizeLabel}
+                aria-label={minimizeLabel}
               >
                 <i className="fas fa-chevron-down text-xs" />
               </button>
               <button
                 className={cn(playerUtilityClass, " h-6 w-6")}
                 onClick={toggleOptionsModal}
-                title={
-                  lang === "fr"
-                    ? "Options et récitateurs"
-                    : lang === "ar"
-                      ? "الخيارات والقراء"
-                      : "Options and reciters"
-                }
+                title={optionsLabel}
+                aria-label={optionsLabel}
                 aria-controls="audio-options-modal-title"
                 aria-expanded={optionsModalOpen}
               >
@@ -2121,13 +2127,8 @@ export default function AudioPlayer() {
               <button
                 onClick={closePlayer}
                 className={cn(playerUtilityClass, "h-6 w-6")}
-                title={
-                  lang === "fr"
-                    ? "Fermer le lecteur"
-                    : lang === "ar"
-                       ? "إغلاق القارئ"
-                      : "Close player"
-                }
+                title={closeLabel}
+                aria-label={closeLabel}
               >
                 <i className="fas fa-times text-xs" />
               </button>
@@ -2300,7 +2301,8 @@ export default function AudioPlayer() {
                     playerBadgeClass,
                     "rounded-md px-2 py-[0.1875rem] text-[0.62rem] font-bold transition-all duration-150",
                   )}
-                  title="Vitesse"
+                  title={speedLabel}
+                  aria-label={`${speedLabel} ${audioSpeed}x`}
                 >
                   {audioSpeed}x
                 </button>
@@ -2313,8 +2315,9 @@ export default function AudioPlayer() {
                 <button
                   onClick={toggle}
                   title={
-                    isPlaying ? t("audio.pause", lang) : t("audio.play", lang)
+                    playPauseLabel
                   }
+                  aria-label={playPauseLabel}
                   aria-pressed={isPlaying}
                   className={cn(
                     playerPrimaryBtnClass,
@@ -2347,7 +2350,8 @@ export default function AudioPlayer() {
                 <button
                   onClick={() => handleVolumeChange(volume > 0 ? 0 : 1)}
                   className="h-7 w-7 shrink-0 rounded-lg border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_78%,transparent_22%)] text-[0.72rem] text-[color-mix(in_srgb,var(--theme-primary)_72%,var(--theme-text)_28%)] transition-colors duration-150 hover:bg-[rgba(var(--theme-primary-rgb),0.14)]"
-                  title={t("audio.volume", lang)}
+                  title={volumeLabel}
+                  aria-label={volumeLabel}
                 >
                   <i
                     className={`fas ${volume === 0 ? "fa-volume-xmark" : volume < 0.5 ? "fa-volume-low" : "fa-volume-high"}`}
@@ -2363,7 +2367,7 @@ export default function AudioPlayer() {
                     handleVolumeChange(parseFloat(e.target.value))
                   }
                   className="h-1 flex-1 cursor-pointer rounded-full accent-[rgb(110,204,233)]"
-                  aria-label="Volume"
+                  aria-label={volumeLabel}
                 />
                 <span
                   className={cn(
