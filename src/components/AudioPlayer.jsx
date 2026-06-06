@@ -920,6 +920,12 @@ export default function AudioPlayer() {
     lang === "ar" ? "\u0641\u062a\u062d \u0627\u0644\u0645\u0634\u063a\u0644" : lang === "fr" ? "Ouvrir le lecteur" : "Open player";
   const audioBrandLabel =
     lang === "ar" ? "\u0635\u0648\u062a" : lang === "fr" ? "Audio" : "Audio";
+  const dragPlayerLabel =
+    lang === "ar"
+      ? "\u0627\u0633\u062d\u0628 \u0644\u062a\u062d\u0631\u064a\u0643 \u0627\u0644\u0645\u0634\u063a\u0644"
+      : lang === "fr"
+        ? "Maintenir et déplacer le lecteur"
+        : "Hold and drag the player";
 
   /* Shared button classes (mobile bar) */
   const playerPanelSurfaceClass =
@@ -2076,15 +2082,7 @@ export default function AudioPlayer() {
                 playerSoftSurfaceClass,
               )}
               data-player-drag="true"
-              title={
-                canDragDesktopCard
-                  ? lang === "fr"
-                    ? "Maintenir et déplacer le lecteur"
-                    : lang === "ar"
-                      ? "اضغط مطولا واسحب المشغل"
-                      : "Hold and drag the player"
-                  : undefined
-              }
+              title={canDragDesktopCard ? dragPlayerLabel : undefined}
             >
               <button
                 onClick={toggleMinimized}

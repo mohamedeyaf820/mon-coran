@@ -438,6 +438,25 @@
   isolation: isolate;
 }
 
+.app-root .mp-audio-player--desktop {
+  min-width: min(18rem, calc(100vw - 1.5rem)) !important;
+  max-width: calc(100vw - 1.5rem) !important;
+  contain: layout paint;
+}
+
+.app-root .mp-audio-player--desktop.is-minimized {
+  min-height: 5.75rem;
+}
+
+.app-root .mp-audio-player--desktop.is-maximized {
+  min-height: 31rem;
+}
+
+.app-root .mp-audio-player[data-dragging="true"] {
+  transition: none !important;
+  will-change: left, top;
+}
+
 .app-root .mp-audio-player::before,
 .app-root .audio-player-modal__surface::before {
   content: "";
@@ -480,6 +499,33 @@
 .app-root .mp-player-mobile-head span,
 .app-root .mp-audio-player [data-player-drag="true"] span {
   color: var(--audio-muted) !important;
+}
+
+.app-root .mp-player-drag-zone {
+  min-height: 3rem;
+  touch-action: none;
+}
+
+.app-root .mp-player-drag-zone::before {
+  content: "";
+  position: absolute;
+  inset: 0.18rem 3.35rem;
+  border-radius: 999px;
+  border: 1px dashed color-mix(in srgb, var(--theme-primary) 24%, transparent 76%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.16s ease;
+}
+
+.app-root .mp-player-drag-zone:hover::before,
+.app-root .mp-audio-player[data-dragging="true"] .mp-player-drag-zone::before {
+  opacity: 0.36;
+}
+
+.app-root .mp-player-drag-zone button {
+  cursor: pointer;
+  min-width: 2.25rem !important;
+  min-height: 2.25rem !important;
 }
 
 .app-root .mp-player-progress {
@@ -701,8 +747,14 @@
     min-height: 4.05rem !important;
   }
 
+  .app-root .mp-audio-player--mobile button {
+    min-width: 2.75rem !important;
+    min-height: 2.75rem !important;
+  }
+
   .app-root .mp-player-mobile-main-controls {
     border-radius: 18px !important;
+    min-height: 3.1rem !important;
   }
 
   .app-root .audio-player-modal__surface {
@@ -727,6 +779,11 @@
 @media (max-width: 420px) {
   .app-root .mp-player-mobile-controls {
     min-height: 3.8rem !important;
+    padding-inline: 0.6rem !important;
+  }
+
+  .app-root .mp-player-mobile-meta {
+    width: min(6rem, 24vw) !important;
   }
 
   .app-root .mp-player-mobile-secondary > * {
@@ -915,9 +972,18 @@
       color-mix(in srgb, var(--theme-panel-bg-strong) 88%, transparent 12%) !important;
   }
 
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head,
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed > .px-3.pb-1 {
     display: none !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head {
+    display: flex !important;
+    min-height: 3rem !important;
+    padding: 0.45rem 0.85rem 0.1rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-brand {
+    opacity: 0.72;
   }
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-progress {
@@ -942,10 +1008,10 @@
   }
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
-    width: 2.45rem !important;
-    height: 2.45rem !important;
-    min-width: 2.45rem !important;
-    min-height: 2.45rem !important;
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+    min-width: 2.75rem !important;
+    min-height: 2.75rem !important;
   }
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-expanded {
@@ -989,11 +1055,37 @@
     gap: 0.32rem !important;
   }
 
+  .app-root .mp-player-mobile-main-controls {
+    gap: 0.28rem !important;
+  }
+
+  .app-root .mp-player-mobile-secondary {
+    gap: 0.28rem !important;
+  }
+
+  .app-root .mp-player-mobile-secondary > * {
+    min-width: 2.55rem !important;
+  }
+
+  .app-root .mp-player-mobile-main-controls button:not(.mp-player-play-btn) {
+    min-width: 2.55rem !important;
+  }
+
+  .app-root .mp-player-mobile-main-controls .mp-player-play-btn {
+    min-width: 2.75rem !important;
+  }
+
   .app-root .quran-display--platform .qcom-verse-card-footer-btn,
   .app-root .quran-display--platform .ayah-actions-inline__link {
     min-height: 2rem !important;
     padding-inline: 0.5rem !important;
     font-size: 0.74rem !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-root .mp-player-mobile-meta {
+    display: none !important;
   }
 }
 

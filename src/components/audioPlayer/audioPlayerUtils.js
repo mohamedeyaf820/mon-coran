@@ -42,14 +42,23 @@ export function clearCardPos() {
   } catch {}
 }
 
-export function clampCardPosition(x, y, w, h, margin = 12) {
-  const fallbackX = window.innerWidth - w - margin;
-  const fallbackY = Math.max(88, window.innerHeight - h - 24);
+export function clampCardPosition(x, y, w, h, margin = 12, viewport) {
+  const viewportWidth = viewport?.width ?? window.innerWidth;
+  const viewportHeight = viewport?.height ?? window.innerHeight;
+  const safeWidth = Math.max(1, Math.min(Number(w) || 1, viewportWidth - margin * 2));
+  const safeHeight = Math.max(
+    1,
+    Math.min(Number(h) || 1, viewportHeight - margin * 2),
+  );
+  const maxX = Math.max(margin, viewportWidth - safeWidth - margin);
+  const maxY = Math.max(margin, viewportHeight - safeHeight - margin);
+  const fallbackX = maxX;
+  const fallbackY = Math.max(Math.min(88, maxY), viewportHeight - safeHeight - 24);
   const safeX = Number.isFinite(x) ? x : fallbackX;
   const safeY = Number.isFinite(y) ? y : fallbackY;
   return {
-    x: Math.max(margin, Math.min(window.innerWidth - w - margin, safeX)),
-    y: Math.max(margin, Math.min(window.innerHeight - h - margin, safeY)),
+    x: Math.max(margin, Math.min(maxX, safeX)),
+    y: Math.max(margin, Math.min(maxY, safeY)),
   };
 }
 

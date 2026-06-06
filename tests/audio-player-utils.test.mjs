@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import { getAudioPlayerLabels } from "../src/components/audioPlayer/audioPlayerLabels.js";
 import {
+  clampCardPosition,
   formatAudioTime,
   getReciterCooldownMs,
 } from "../src/components/audioPlayer/audioPlayerUtils.js";
@@ -22,6 +23,21 @@ test("audio utils: reciter cooldown grows within defined bounds", () => {
   assert.equal(getReciterCooldownMs(1), 30_000);
   assert.equal(getReciterCooldownMs(2), 8 * 60 * 1000);
   assert.equal(getReciterCooldownMs(99), 4 * 60 * 60 * 1000);
+});
+
+test("audio utils: clamps draggable player inside viewport", () => {
+  assert.deepEqual(
+    clampCardPosition(-40, -20, 320, 220, 12, { width: 1024, height: 768 }),
+    { x: 12, y: 12 },
+  );
+  assert.deepEqual(
+    clampCardPosition(980, 760, 320, 220, 12, { width: 1024, height: 768 }),
+    { x: 692, y: 536 },
+  );
+  assert.deepEqual(
+    clampCardPosition(300, 240, 420, 520, 12, { width: 360, height: 420 }),
+    { x: 12, y: 12 },
+  );
 });
 
 test("audio labels: core controls are available in every UI language", () => {
