@@ -2,13 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { cn } from "../../lib/utils";
 import audioService from "../../services/audioService";
 import { getAudioPlayerLabels } from "../audioPlayer/audioPlayerLabels";
-
-function formatTime(seconds) {
-  if (!Number.isFinite(seconds) || seconds <= 0) return "0:00";
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
+import { formatAudioTime } from "../audioPlayer/audioPlayerUtils";
 
 export default function QCAudioBar({
   lang,
@@ -103,7 +97,7 @@ export default function QCAudioBar({
             {trackLabel}
           </div>
           <div className="text-[0.62rem] tabular-nums text-[var(--text-muted)]">
-            {formatTime(currentTime)} / {formatTime(duration)}
+            {formatAudioTime(currentTime)} / {formatAudioTime(duration)}
           </div>
         </div>
 

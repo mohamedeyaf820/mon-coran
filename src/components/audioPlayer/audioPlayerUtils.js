@@ -58,3 +58,10 @@ export function getReciterCooldownMs(failCount) {
   const idx = Math.min(RECITER_COOLDOWN_STEPS_MS.length - 1, safeFails - 1);
   return RECITER_COOLDOWN_STEPS_MS[idx];
 }
+
+export function formatAudioTime(seconds) {
+  if (!Number.isFinite(seconds) || seconds <= 0) return "0:00";
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+}
