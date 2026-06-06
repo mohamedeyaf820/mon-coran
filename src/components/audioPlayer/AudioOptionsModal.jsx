@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 import { getAudioPlayerLabels } from "./audioPlayerLabels";
@@ -53,7 +54,9 @@ export default function AudioOptionsModal(props) {
 
   const labels = getAudioPlayerLabels(lang);
 
-  return optionsModalOpen ? (
+  if (!optionsModalOpen) return null;
+
+  const modal = (
       <div
         className="audio-player-modal fixed inset-0 z-[420] flex items-center justify-center p-2 sm:p-4"
         data-no-drag="true"
@@ -148,5 +151,11 @@ export default function AudioOptionsModal(props) {
           </div>
         </div>
       </div>
-    ) : null;
+    );
+
+  if (typeof document === "undefined") {
+    return modal;
+  }
+
+  return createPortal(modal, document.body);
 }
