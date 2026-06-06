@@ -83,7 +83,7 @@ export default function ReciterOptionsList(props) {
   return (
     <section
       className={cn(
-        "flex min-h-0 flex-col p-3 sm:p-3.5",
+        "audio-reciter-options flex min-h-0 flex-col p-3 sm:p-3.5",
         playerSoftSurfaceClass,
       )}
     >
@@ -104,7 +104,7 @@ export default function ReciterOptionsList(props) {
       </div>
 
       {currentReciters.length > 4 && (
-        <div className="relative mb-2">
+        <div className="audio-reciter-options__search relative mb-2">
           <i className="fas fa-magnifying-glass pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[0.6rem] text-[rgba(241,230,209,0.35)]" />
           <input
             type="text"
@@ -128,7 +128,7 @@ export default function ReciterOptionsList(props) {
       )}
 
       <div
-        className="min-h-0 flex-1 overflow-y-auto pr-1"
+        className="audio-reciter-options__scroll min-h-0 flex-1 overflow-y-auto pr-1"
         data-scroll-panel="true"
       >
         {filteredReciters.length === 0 ? (
@@ -141,7 +141,7 @@ export default function ReciterOptionsList(props) {
             {labels.noReciter}
           </div>
         ) : (
-          <div className="grid gap-2 xl:grid-cols-2">
+          <div className="audio-reciter-options__grid grid gap-2 xl:grid-cols-2">
             {filteredReciters.map((r) => {
               const active = reciter === r.id;
               const isLoading =
@@ -159,10 +159,13 @@ export default function ReciterOptionsList(props) {
                 <button
                   key={`modal-${r.id}`}
                   onClick={() => handleReciterSelect(r.id)}
-                  className={playerReciterButtonClass(
-                    active,
-                    isLoading,
-                    isUnavailable,
+                  className={cn(
+                    "audio-reciter-options__item",
+                    playerReciterButtonClass(
+                      active,
+                      isLoading,
+                      isUnavailable,
+                    ),
                   )}
                   aria-pressed={active}
                   disabled={isAnyReciterSwitching || (isUnavailable && !active)}
@@ -181,7 +184,7 @@ export default function ReciterOptionsList(props) {
                           : r.nameEn}
                     </span>
                     <span className="mt-1 flex flex-wrap gap-1">
-                      <span className="inline-flex w-fit items-center rounded-full border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-[rgba(225,214,194,0.72)]">
+                      <span className="audio-reciter-options__badge inline-flex w-fit items-center rounded-full border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-[rgba(225,214,194,0.72)]">
                         {r.cdnType === "everyayah"
                           ? "EveryAyah CDN"
                           : r.cdnType === "mp3quran-surah"
@@ -189,29 +192,29 @@ export default function ReciterOptionsList(props) {
                             : "Islamic CDN"}
                       </span>
                       {r.audioMode === "surah" && (
-                        <span className="inline-flex w-fit items-center rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-fuchsia-100">
+                        <span className="audio-reciter-options__badge inline-flex w-fit items-center rounded-full border border-fuchsia-300/30 bg-fuchsia-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-fuchsia-100">
                           {labels.fullSurah}
                         </span>
                       )}
                       {isFavorite && (
-                        <span className="inline-flex w-fit items-center rounded-full border border-amber-300/35 bg-amber-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-amber-200">
+                        <span className="audio-reciter-options__badge inline-flex w-fit items-center rounded-full border border-amber-300/35 bg-amber-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-amber-200">
                           <i className="fas fa-star mr-1 text-[0.44rem]" />
                           {labels.favorite}
                         </span>
                       )}
                       {latency && (
-                        <span className="inline-flex w-fit items-center rounded-full border border-sky-300/30 bg-sky-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-sky-100">
+                        <span className="audio-reciter-options__badge inline-flex w-fit items-center rounded-full border border-sky-300/30 bg-sky-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-sky-100">
                           {Math.round(latency * 1000)}ms
                         </span>
                       )}
                       {autoSelectFastestReciter &&
                         filteredReciters[0]?.id === r.id && (
-                          <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/30 bg-emerald-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-emerald-100">
+                          <span className="audio-reciter-options__badge inline-flex w-fit items-center rounded-full border border-emerald-300/30 bg-emerald-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-emerald-100">
                             {labels.fast}
                           </span>
                         )}
                       {isUnavailable && (
-                        <span className="inline-flex w-fit items-center rounded-full border border-rose-300/40 bg-rose-300/16 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-rose-100">
+                        <span className="audio-reciter-options__badge inline-flex w-fit items-center rounded-full border border-rose-300/40 bg-rose-300/16 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-rose-100">
                           {`${labels.unavailable} ${formatCooldownLabel(unavailableMs, lang)}`}
                         </span>
                       )}
