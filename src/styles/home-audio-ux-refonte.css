@@ -2677,3 +2677,212 @@ body > .audio-player-modal .audio-settings-icon-btn {
     grid-area: secondary !important;
   }
 }
+
+/* Device density contract: consistent text, icon and tap sizing across phones/tablets. */
+:root {
+  --mp-device-ui: clamp(0.88rem, 0.82rem + 0.18vw, 1rem);
+  --mp-device-ui-sm: clamp(0.72rem, 0.68rem + 0.15vw, 0.84rem);
+  --mp-device-icon: clamp(0.92rem, 0.82rem + 0.25vw, 1.1rem);
+  --mp-device-touch: 44px;
+}
+
+@media (max-width: 1024px) {
+  html body .app-root {
+    --mp-device-touch: 42px;
+  }
+
+  html body .app-root :is(
+    .mp-header__icon-btn,
+    .mp-header__action:not(.mp-header__search),
+    .mp-header__more,
+    .mp-header__nav-arrow,
+    .mp-header__riwaya-mobile,
+    .modal-close,
+    .modal-action-btn,
+    .audio-player-modal__close,
+    .ayah-action-sheet__close,
+    .ayah-actions__utility-btn,
+    .ayah-actions-inline__icon-btn,
+    .qcom-verse-card-footer-btn,
+    .hp-card-play,
+    .mp-footer-v2__nav-btn
+  ) {
+    min-width: var(--mp-device-touch) !important;
+    min-height: var(--mp-device-touch) !important;
+  }
+
+  html body .app-root :is(
+    .mp-header__icon-btn,
+    .mp-header__action,
+    .mp-header__more,
+    .mp-header__nav-arrow,
+    .mp-header__riwaya-mobile,
+    .qc-reader-toolbar button,
+    .settings-drawer button,
+    .audio-player-modal button,
+    .modal button,
+    .home-content-toolbar button,
+    .home-hero-shell button,
+    .hp-card,
+    .surah-card,
+    .qcom-verse-card-footer-btn
+  ) {
+    font-size: var(--mp-device-ui-sm) !important;
+    letter-spacing: 0 !important;
+  }
+
+  html body .app-root :is(button, [role="button"]) :is(svg, i),
+  html body .app-root :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more) :is(svg, i) {
+    width: var(--mp-device-icon) !important;
+    height: var(--mp-device-icon) !important;
+    font-size: var(--mp-device-icon) !important;
+    line-height: 1 !important;
+  }
+
+  html body .app-root :is(
+    .home-hero-title,
+    .home-collection-heading__copy h2,
+    .modal-title,
+    .settings-drawer__title,
+    .audio-player-modal__title-wrap h3,
+    .reciter-detail__name
+  ) {
+    font-size: clamp(1.08rem, 0.92rem + 1vw, 1.72rem) !important;
+    line-height: 1.15 !important;
+    text-wrap: balance;
+  }
+
+  html body .app-root :is(
+    .home-hero-copy-clean,
+    .home-collection-heading__copy p,
+    .modal-subtitle,
+    .settings-drawer__subtitle,
+    .audio-player-modal__title-wrap p,
+    .hp-card-meta,
+    .mp-footer-v2__copy
+  ) {
+    font-size: var(--mp-device-ui-sm) !important;
+    line-height: 1.45 !important;
+  }
+
+  html body .app-root :is(
+    .home-top-cards-grid,
+    .hp-grid,
+    .hp-grid--surah,
+    .reciter-detail__stats,
+    .mp-footer-v2__nav
+  ) {
+    gap: clamp(0.42rem, 1.35vw, 0.75rem) !important;
+  }
+
+  html body .app-root :is(.home-content-section, .home-hero-shell, .hp-card, .home-info-card, .surah-card, .qcom-verse-card) {
+    border-radius: clamp(0.86rem, 2.2vw, 1.15rem) !important;
+  }
+
+  body > .audio-player-modal .audio-reciter-options__item,
+  html body .app-root .settings-reciter-option {
+    min-height: clamp(3.2rem, 7vw, 3.75rem) !important;
+    padding: clamp(0.5rem, 1.6vw, 0.75rem) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html body .app-root {
+    --mp-device-touch: 40px;
+    --mp-device-ui: 0.86rem;
+    --mp-device-ui-sm: 0.68rem;
+    --mp-device-icon: 0.92rem;
+  }
+
+  html body .app-root :is(.mp-header__brand-text, .mp-header__sub, .mp-header__kicker) {
+    display: none !important;
+  }
+
+  html body .app-root :is(
+    .mp-header__title,
+    .mp-header__home-summary-clean,
+    .hp-card-name,
+    .home-cta-label-clean,
+    .settings-drawer label,
+    .audio-player-modal label,
+    .qcom-verse-card-footer-btn span
+  ) {
+    font-size: var(--mp-device-ui-sm) !important;
+    line-height: 1.18 !important;
+  }
+
+  html body .app-root :is(.home-hero-shell, .home-content-section) {
+    padding: clamp(0.82rem, 3.8vw, 1.05rem) !important;
+  }
+
+  html body .app-root .app-view-home .home-hero-title {
+    font-size: clamp(1.78rem, 8.6vw, 2.22rem) !important;
+    line-height: 1.05 !important;
+  }
+
+  html body .app-root .app-view-home :is(.hp-card, .surah-card, .home-top-cards-grid > *) {
+    font-size: max(0.76rem, var(--mp-device-ui-sm)) !important;
+  }
+
+  html body .app-root .app-view-home :is(.hp-card-name, .hp-card-meta, .hp-card-ar, .home-info-card, .home-content-toolbar) {
+    font-size: max(0.74rem, var(--mp-device-ui-sm)) !important;
+  }
+
+  html body .app-root .app-view-home :is(.hp-list, .hp-grid, .hp-grid--surah) :is(.hp-card-name, .hp-card-meta, .hp-card-ar) {
+    font-size: max(0.76rem, var(--mp-device-ui-sm)) !important;
+    line-height: 1.25 !important;
+  }
+
+  html body .app-root .app-view-home :is(.hp-list, .hp-grid, .hp-grid--surah) .hp-card-name {
+    font-size: max(0.8rem, var(--mp-device-ui)) !important;
+  }
+
+  html body .app-root .app-view-home .hp-card :is(.hp-card-meta, .hp-card-ar) {
+    font-size: max(0.72rem, var(--mp-device-ui-sm)) !important;
+  }
+
+  html body .app-root .app-view-home .hp-card-meta,
+  html body .app-root .app-view-home .hp-card-meta.hp-card-meta--meaning,
+  html body .app-root .app-view-home .hp-card-meta.hp-card-meta--ayahs {
+    font-size: 0.8rem !important;
+  }
+
+  html body .app-root :is(.hp-card, .home-top-cards-grid > *, .surah-card) {
+    min-height: 0 !important;
+    padding: clamp(0.72rem, 3vw, 0.95rem) !important;
+  }
+
+  html body .app-root .quran-display--platform .qc-ayah-text-ar {
+    font-size: clamp(1.62rem, calc(var(--qd-reading-font-size, 34px) * 0.58), 2.28rem) !important;
+    line-height: 2.05 !important;
+  }
+
+  html body .app-root :is(.settings-drawer__tabs, .audio-player-modal__grid, .qcom-verse-card-footer, .home-content-toolbar) {
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  html body .app-root :is(.settings-drawer__tabs, .audio-player-modal__grid, .qcom-verse-card-footer, .home-content-toolbar)::-webkit-scrollbar {
+    display: none !important;
+  }
+}
+
+@media (max-width: 380px) {
+  html body .app-root {
+    --mp-device-touch: 38px;
+    --mp-device-ui-sm: 0.64rem;
+    --mp-device-icon: 0.86rem;
+  }
+
+  html body .app-root > .mp-header .mp-header__bar {
+    gap: 0.18rem !important;
+  }
+
+  html body .app-root > .mp-header :is(.mp-header__riwaya-mobile, .mp-header__action:not(.mp-header__search), .mp-header__more, .mp-header__icon-btn) {
+    border-radius: 0.78rem !important;
+  }
+
+  html body .app-root .qc-reader-toolbar .afc-size-value {
+    display: none !important;
+  }
+}

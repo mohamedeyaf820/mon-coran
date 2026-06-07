@@ -41,13 +41,58 @@ async function openReader(page, viewport) {
   await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible({ timeout: 30_000 });
 }
 
+async function openHome(page, viewport) {
+  await page.addInitScript((key) => {
+    try {
+      localStorage.setItem(
+        key,
+        JSON.stringify({
+          splashDone: true,
+          showHome: true,
+          showDuas: false,
+          sidebarOpen: false,
+          lang: "fr",
+          riwaya: "hafs",
+        }),
+      );
+    } catch {
+      // The visible assertions below will fail if the state cannot be seeded.
+    }
+  }, SETTINGS_KEY);
+  await page.setViewportSize(viewport);
+  await page.goto("/");
+  await expect(page.locator(".mp-header").first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(".app-view-home").first()).toBeVisible({ timeout: 30_000 });
+}
+
 async function box(page, selector) {
   return page.locator(selector).first().boundingBox();
+}
+
+async function fontSizePx(page, selector) {
+  return page.locator(selector).first().evaluate((node) => Number.parseFloat(getComputedStyle(node).fontSize));
 }
 
 async function overflowX(page) {
   return page.evaluate(() => Math.max(0, document.documentElement.scrollWidth - window.innerWidth));
 }
+
+test("home density: mobile and tablet text, icons and cards scale with viewport", async ({ page }) => {
+  await openHome(page, { width: 390, height: 844 });
+
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+  expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(38);
+  expect((await box(page, ".mp-header__action:not(.mp-header__search)"))?.width || 0).toBeGreaterThanOrEqual(38);
+  expect(await fontSizePx(page, ".home-hero-title")).toBeLessThanOrEqual(34);
+  expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(12);
+  expect(await fontSizePx(page, ".hp-card-meta")).toBeGreaterThanOrEqual(11);
+
+  await openHome(page, { width: 820, height: 920 });
+
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+  expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(40);
+  expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(14);
+});
 
 test("mobile density: header, reading toolbar and audio dock fit without horizontal overflow", async ({ page }) => {
   await openReader(page, { width: 390, height: 844 });
