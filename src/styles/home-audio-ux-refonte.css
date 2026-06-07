@@ -2421,3 +2421,347 @@ body > .audio-player-modal .audio-settings-icon-btn {
     max-width: none !important;
   }
 }
+
+/* Final responsive density pass: mobile/tablet header, reading toolbar and audio dock. */
+@media (max-width: 900px) {
+  html body .app-root > .mp-header {
+    --mp-tap: 44px;
+  }
+
+  html body .app-root > .mp-header .mp-header__bar {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+    min-height: 3.35rem !important;
+    gap: 0.38rem !important;
+    padding: 0.28rem max(0.5rem, env(safe-area-inset-left)) 0.28rem max(0.5rem, env(safe-area-inset-right)) !important;
+    align-items: center !important;
+  }
+
+  html body .app-root > .mp-header :is(.mp-header__brand-row, .mp-header__center, .mp-header__actions, .mp-header__nav) {
+    min-width: 0 !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__brand-row,
+  html body .app-root > .mp-header .mp-header__actions {
+    gap: 0.32rem !important;
+  }
+
+  html body .app-root > .mp-header :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__nav-arrow, .mp-header__riwaya-mobile) {
+    width: var(--mp-tap) !important;
+    min-width: var(--mp-tap) !important;
+    height: var(--mp-tap) !important;
+    min-height: var(--mp-tap) !important;
+    border-radius: 0.9rem !important;
+    font-size: 0.86rem !important;
+  }
+
+  html body .app-root > .mp-header :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__nav-arrow, .mp-header__riwaya-mobile) i {
+    font-size: 0.88rem !important;
+    line-height: 1 !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__nav {
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 0.28rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title-btn,
+  html body .app-root > .mp-header .mp-header__home-summary {
+    min-width: 0 !important;
+    min-height: var(--mp-tap) !important;
+    padding: 0.34rem 0.62rem !important;
+    border-radius: 1rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title,
+  html body .app-root > .mp-header .mp-header__home-summary-clean {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: clamp(0.78rem, 0.72rem + 0.28vw, 0.95rem) !important;
+    line-height: 1.12 !important;
+  }
+
+  html body .app-root > .mp-header :is(.mp-header__kicker, .mp-header__sub, .mp-header__home-meta-clean) {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: 0.58rem !important;
+    line-height: 1.05 !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__riwaya-mobile {
+    width: auto !important;
+    min-width: 3rem !important;
+    padding-inline: 0.44rem !important;
+    font-size: 0.68rem !important;
+    letter-spacing: 0 !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__network {
+    display: none !important;
+  }
+
+  html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane {
+    padding-inline: clamp(0.58rem, 2.5vw, 1.1rem) !important;
+  }
+
+  html body .app-root .qc-reader-toolbar {
+    max-width: min(100%, 64rem) !important;
+    gap: 0.55rem !important;
+    padding: 0.58rem !important;
+    border-radius: 1rem !important;
+  }
+
+  html body .app-root .qc-reader-toolbar > div {
+    width: 100% !important;
+    gap: 0.44rem !important;
+  }
+
+  html body .app-root .qc-reader-toolbar .scrollbar-none {
+    scroll-snap-type: x proximity !important;
+    padding-bottom: 0 !important;
+  }
+
+  html body .app-root .qc-reader-toolbar button,
+  html body .app-root .qc-reader-toolbar select,
+  html body .app-root .qc-reader-toolbar .afc-size-group,
+  html body .app-root .qc-reader-toolbar .afc-font-group {
+    min-height: 2.35rem !important;
+    border-radius: 0.82rem !important;
+    font-size: 0.72rem !important;
+  }
+
+  html body .app-root .qc-reader-toolbar button svg,
+  html body .app-root .qc-reader-toolbar button i {
+    width: 0.9rem !important;
+    height: 0.9rem !important;
+    font-size: 0.86rem !important;
+  }
+
+  html body .app-root .qc-reader-toolbar .reader-toolbar-btn--primary {
+    flex: 1 1 11rem !important;
+    min-height: 2.52rem !important;
+    font-size: 0.76rem !important;
+  }
+
+  html body .app-root .qc-reader-toolbar .arabic-font-controls--compact {
+    flex: 1 1 16rem !important;
+    min-width: min(100%, 16rem) !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head {
+    position: relative !important;
+    inset: auto !important;
+    padding: 0.16rem 0.42rem 0 !important;
+    pointer-events: none !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head button {
+    pointer-events: auto !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-brand {
+    max-width: 4.8rem !important;
+    overflow: hidden !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html body .app-root > .mp-header {
+    --mp-tap: 42px;
+  }
+
+  html body .app-root > .mp-header .mp-header__bar {
+    min-height: 3.08rem !important;
+    gap: 0.24rem !important;
+    padding-block: 0.22rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__brand {
+    display: none !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title-btn,
+  html body .app-root > .mp-header .mp-header__home-summary {
+    padding-inline: 0.46rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__sub,
+  html body .app-root > .mp-header .mp-header__home-meta-clean {
+    display: none !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__actions {
+    gap: 0.2rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__riwaya-mobile {
+    min-width: 2.76rem !important;
+    font-size: 0.62rem !important;
+  }
+
+  html body .app-root .qc-reader-toolbar {
+    margin-bottom: 0.72rem !important;
+  }
+
+  html body .app-root .qc-reader-toolbar > div:first-child {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    justify-content: flex-start !important;
+    scrollbar-width: none !important;
+  }
+
+  html body .app-root .qc-reader-toolbar > div:first-child::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  html body .app-root .qc-reader-toolbar button {
+    padding-inline: 0.72rem !important;
+    white-space: nowrap !important;
+  }
+
+  html body .app-root .qc-reader-toolbar .reader-toolbar-btn--word-by-word span {
+    max-width: 5.4rem !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card {
+    padding: 1rem 0.86rem !important;
+  }
+
+  html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card .qc-ayah-text-ar {
+    font-size: clamp(1.72rem, 1.42rem + 4.2vw, 2.55rem) !important;
+    line-height: 2.05 !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 4.05rem !important;
+    max-height: 4.05rem !important;
+    border-radius: 1.05rem 1.05rem 0 0 !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head {
+    position: relative !important;
+    inset: auto !important;
+    padding: 0.16rem 0.42rem 0 !important;
+    pointer-events: none !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head button {
+    pointer-events: auto !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-brand {
+    max-width: 4.4rem !important;
+    overflow: hidden !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    height: 2.72rem !important;
+    min-height: 2.72rem !important;
+    max-height: 2.72rem !important;
+    gap: 0.22rem !important;
+    padding: 0.22rem 0.42rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    height: 2.34rem !important;
+    min-height: 2.34rem !important;
+    max-height: 2.34rem !important;
+    gap: 0.24rem !important;
+    padding-inline: 0.28rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: 2.06rem !important;
+    min-width: 2.06rem !important;
+    height: 2.06rem !important;
+    min-height: 2.06rem !important;
+    font-size: 0.66rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
+    width: 2.34rem !important;
+    min-width: 2.34rem !important;
+    height: 2.34rem !important;
+    min-height: 2.34rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  body > .audio-player-modal .audio-player-modal__surface--settings {
+    width: min(100vw - 0.7rem, 30rem) !important;
+    max-height: min(82dvh, 42rem) !important;
+    border-radius: 1.05rem 1.05rem 0 0 !important;
+  }
+
+  body > .audio-player-modal .audio-player-modal__header {
+    padding: 0.72rem 0.82rem !important;
+  }
+
+  body > .audio-player-modal .audio-player-modal__title-wrap h3 {
+    font-size: 0.9rem !important;
+  }
+
+  body > .audio-player-modal .audio-player-modal__title-wrap p {
+    font-size: 0.66rem !important;
+  }
+
+  body > .audio-player-modal .audio-reciter-options__item {
+    min-height: 3.62rem !important;
+    padding: 0.58rem 0.66rem !important;
+    gap: 0.58rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  html body .app-root > .mp-header {
+    --mp-tap: 40px;
+  }
+
+  html body .app-root > .mp-header .mp-header__riwaya-mobile {
+    min-width: 2.55rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__kicker {
+    display: none !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title,
+  html body .app-root > .mp-header .mp-header__home-summary-clean {
+    font-size: 0.74rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__actions .mp-header__action.mp-header__search.hdr-v7__search-btn {
+    width: var(--mp-tap) !important;
+    min-width: var(--mp-tap) !important;
+    max-width: var(--mp-tap) !important;
+    height: var(--mp-tap) !important;
+    min-height: var(--mp-tap) !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__icon-btn.hdr-v7__menu-btn,
+  html body .app-root > .mp-header .mp-header__more,
+  html body .app-root > .mp-header .mp-header__riwaya-mobile {
+    width: var(--mp-tap) !important;
+    min-width: var(--mp-tap) !important;
+    height: var(--mp-tap) !important;
+    min-height: var(--mp-tap) !important;
+  }
+
+  html body .app-root .qc-reader-toolbar {
+    padding: 0.48rem !important;
+  }
+
+  html body .app-root .qc-reader-toolbar button,
+  html body .app-root .qc-reader-toolbar select,
+  html body .app-root .qc-reader-toolbar .afc-size-group,
+  html body .app-root .qc-reader-toolbar .afc-font-group {
+    min-height: 2.24rem !important;
+    font-size: 0.68rem !important;
+  }
+}
