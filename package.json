@@ -16,7 +16,7 @@
     "test:e2e:audio": "playwright test tests/e2e/audio-fallback.spec.mjs",
     "test:e2e:visual": "playwright test tests/e2e/visual-debug.spec.mjs --headed",
     "test:e2e:a11y": "playwright test tests/e2e/a11y-smoke.spec.mjs",
-    "test:e2e:reading": "playwright test tests/e2e/reading-scroll.spec.mjs",
+    "test:e2e:reading": "playwright test tests/e2e/reading-scroll.spec.mjs tests/e2e/reading-stability.spec.mjs",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",

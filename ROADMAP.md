@@ -5,11 +5,13 @@ Date: 2026-06-05
 ## Etat actuel
 
 - Phase 0: terminee et validee sur CI.
-- Phase 1: en cours. Les tailles de police, le skeleton sans blur, la largeur liste/mushaf et le prechargement de police ont ete renforces.
-- Phase 2: en cours. Le drag desktop du lecteur audio est stabilise; les libelles audio communs sont centralises dans `audioPlayerLabels`; le formatage du temps audio est extrait et teste; la liste des recitateurs dans les options audio est nettoyee. Le decoupage complet du composant reste a faire.
-- Phase 3: en cours. Les premiers nettoyages de textes et surfaces communes sont faits, mais le design system complet reste a consolider.
-- Phase 4: en cours. Header, footer et barre audio de lecture ont ete nettoyes cote libelles, hierarchie et accessibilite.
-- Phase 5 a 7: planifiees, non terminees.
+- Phase 1: en cours. Les tailles de police, le skeleton sans blur, la largeur liste/mushaf et le prechargement de police ont ete renforces. Un test E2E cible couvre maintenant refresh lecture, stabilite de taille et navigation historique.
+- Phase 2: en cours. Le drag desktop du lecteur audio est stabilise; les libelles audio communs sont centralises dans `audioPlayerLabels`; le formatage du temps audio est extrait et teste; la liste des recitateurs dans les options audio est nettoyee; le modal options est portale hors du player pour eviter les conflits de z-index. Le decoupage complet du composant reste a faire.
+- Phase 3: en cours. Les premiers nettoyages de textes et surfaces communes sont faits. Un guide court de design system existe dans `docs/DESIGN_SYSTEM.md`; la consolidation CSS complete reste a faire.
+- Phase 4: en cours. Header, footer, barre audio de lecture et densite responsive du player ont ete nettoyes cote libelles, hierarchie et accessibilite.
+- Phase 5: planifiee. Les donnees de recitateurs et biographies restent a normaliser.
+- Phase 6: en cours. Les notes de securite et confidentialite sont documentees dans `docs/SECURITY_PRIVACY.md`; le mode protege par phrase secrete reste a implementer.
+- Phase 7: planifiee, non terminee.
 
 ## Phase 0 - Stabilisation immediate
 
@@ -17,7 +19,7 @@ Objectif: garder `main` vert, corriger les bugs reels et reduire les risques de 
 
 - Corriger le clamp URL des ayahs par sourate.
 - Ajouter des tests de securite pour le sanitizer SVG.
-- Retirer les domaines CSP inutilises ou risqués.
+- Retirer les domaines CSP inutilises ou risques.
 - Synchroniser `scripts/cspPolicy.mjs`, `netlify.toml` et `vercel.json`.
 - Maintenir `npm audit --audit-level=moderate` a zero apres la migration Vite 8.
 - Garder `npm run build:ci`, `npm run test:security` et `npm run perf:budget` verts.
@@ -31,7 +33,7 @@ Objectif: rendre les pages de lecture rapides, stables et lisibles.
 - Nettoyer l'overlay de chargement mushaf/liste pour qu'il ne reste jamais apres refresh.
 - Renforcer la largeur responsive du bloc de texte arabe.
 - Reinitialiser clairement les etats d'ayah active lors des changements sourate/page/juz.
-- Ajouter des tests E2E ciblés sur refresh lecture, changement riwaya et navigation URL.
+- Ajouter des tests E2E cibles sur refresh lecture, changement riwaya et navigation URL.
 
 ## Phase 2 - Audio player modulaire
 
