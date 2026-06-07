@@ -106,6 +106,7 @@ test("mobile density: header, reading toolbar and audio dock fit without horizon
   const fontControls = await box(page, ".qc-reader-toolbar .arabic-font-controls--compact");
   const fontSelect = await box(page, ".qc-reader-toolbar .afc-select");
   const sizeControls = await box(page, ".qc-reader-toolbar .afc-size-group");
+  const audioOptionsButton = await box(page, ".mp-player-options-trigger");
 
   expect(header?.height || 0).toBeLessThanOrEqual(62);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
@@ -117,6 +118,44 @@ test("mobile density: header, reading toolbar and audio dock fit without horizon
   expect(fontControls?.height || 0).toBeGreaterThanOrEqual(38);
   expect(fontSelect?.width || 0).toBeGreaterThanOrEqual(120);
   expect(sizeControls?.width || 0).toBeGreaterThanOrEqual(145);
+  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(38);
+  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(38);
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+});
+
+test("mobile surfaces: sidebar, settings drawer and audio modal fit the viewport", async ({ page }) => {
+  await openReader(page, { width: 390, height: 844 });
+
+  await page.locator(".mp-header__icon-btn").first().click();
+  const sidebar = page.locator(".sb-wrapper").first();
+  await expect(sidebar).toBeVisible();
+  const sidebarBox = await sidebar.boundingBox();
+  const sidebarClose = await box(page, ".sb-wrapper button");
+  expect(sidebarBox?.width || 0).toBeLessThanOrEqual(390);
+  expect(sidebarBox?.height || 0).toBeLessThanOrEqual(844);
+  expect(sidebarClose?.width || 0).toBeGreaterThanOrEqual(38);
+  expect(sidebarClose?.height || 0).toBeGreaterThanOrEqual(38);
+  await page.locator('.sb-wrapper button[aria-label="Fermer"]').first().click();
+  await expect(sidebar).not.toHaveClass(/open/);
+
+  await page.locator(".mp-header__actions .mp-header__action:not(.mp-header__search)").first().click();
+  const settingsDrawer = page.locator(".settings-drawer").first();
+  await expect(settingsDrawer).toBeVisible();
+  const settingsBox = await settingsDrawer.boundingBox();
+  const settingsClose = await box(page, '.settings-drawer button[aria-label="Fermer les paramètres"]');
+  expect(settingsBox?.width || 0).toBeLessThanOrEqual(390);
+  expect(settingsBox?.height || 0).toBeLessThanOrEqual(844);
+  expect(settingsClose?.width || 0).toBeGreaterThanOrEqual(38);
+  expect(settingsClose?.height || 0).toBeGreaterThanOrEqual(38);
+  await page.locator('.settings-drawer button[aria-label="Fermer les paramètres"]').first().click();
+  await expect(settingsDrawer).toBeHidden();
+
+  await page.locator(".mp-player-options-trigger").first().click();
+  const audioModal = page.locator(".audio-player-modal__surface--settings").first();
+  await expect(audioModal).toBeVisible();
+  const audioModalBox = await audioModal.boundingBox();
+  expect(audioModalBox?.width || 0).toBeLessThanOrEqual(390);
+  expect(audioModalBox?.height || 0).toBeLessThanOrEqual(844);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -127,11 +166,14 @@ test("tablet density: header controls and audio options modal remain compact", a
   const toolbar = await box(page, ".qc-reader-toolbar");
   const settingsButton = await box(page, ".mp-header__actions .mp-header__action:not(.mp-header__search)");
   const fontControls = await box(page, ".qc-reader-toolbar .arabic-font-controls--compact");
+  const audioOptionsButton = await box(page, ".mp-player-options-trigger");
 
   expect(header?.height || 0).toBeLessThanOrEqual(70);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
   expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(40);
   expect(fontControls?.height || 0).toBeGreaterThanOrEqual(38);
+  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(38);
+  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(38);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 
   const optionsTrigger = page.locator(".mp-player-options-trigger").first();

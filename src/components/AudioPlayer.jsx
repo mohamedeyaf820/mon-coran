@@ -952,7 +952,7 @@ export default function AudioPlayer() {
   );
   const mBarBtnSm = (active = false) =>
     cn(
-      "flex min-h-[1.72rem] items-center justify-center whitespace-nowrap rounded-lg border px-1.5 py-[0.22rem] text-[0.62rem] font-semibold outline-none transition-all duration-150",
+      "flex min-h-10 min-w-10 items-center justify-center whitespace-nowrap rounded-lg border px-2 py-1 text-[0.68rem] font-semibold outline-none transition-all duration-150",
       active
         ? "border-[color-mix(in_srgb,var(--theme-primary)_42%,transparent_58%)] bg-[rgba(var(--theme-primary-rgb),0.18)] text-white"
         : "border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[color-mix(in_srgb,var(--theme-text)_76%,var(--theme-bg)_24%)] hover:border-[color-mix(in_srgb,var(--theme-primary)_36%,transparent_64%)] hover:bg-[rgba(var(--theme-primary-rgb),0.12)] hover:text-white",
@@ -1228,7 +1228,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "mp-player-options-trigger w-7 h-7 text-[0.66rem] rounded-lg shrink-0",
+                "mp-player-options-trigger h-10 w-10 text-[0.72rem] rounded-xl shrink-0",
               )}
               onClick={toggleOptionsModal}
               aria-controls="audio-options-modal-title"
@@ -1241,7 +1241,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "w-7 h-7 text-[0.66rem] rounded-lg shrink-0",
+                "h-10 w-10 text-[0.72rem] rounded-xl shrink-0",
               )}
               onClick={toggleMinimized}
               title={expandLabel}
@@ -1252,7 +1252,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "w-7 h-7 text-[0.66rem] rounded-lg shrink-0",
+                "h-10 w-10 text-[0.72rem] rounded-xl shrink-0",
               )}
               onClick={closePlayer}
               title={closeLabel}
@@ -1431,7 +1431,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtnSm(),
-                "px-[0.38rem] py-[0.18rem] text-[0.58rem] min-h-[1.72rem] min-w-[1.72rem] justify-center rounded-full",
+                "justify-center rounded-full",
               )}
               onClick={cycleSpeed}
               title={speedLabel}
@@ -1442,7 +1442,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtnSm(optionsModalOpen),
-                "mp-player-options-trigger px-[0.38rem] py-[0.18rem] text-[0.58rem] min-h-[1.72rem] min-w-[1.72rem] justify-center rounded-full",
+                "mp-player-options-trigger justify-center rounded-full",
               )}
               onClick={toggleOptionsModal}
               aria-expanded={optionsModalOpen}

@@ -2676,6 +2676,14 @@ body > .audio-player-modal .audio-settings-icon-btn {
   html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
     grid-area: secondary !important;
   }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-options-trigger,
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+  }
 }
 
 /* Device density contract: consistent text, icon and tap sizing across phones/tablets. */
@@ -2705,7 +2713,8 @@ body > .audio-player-modal .audio-settings-icon-btn {
     .ayah-actions-inline__icon-btn,
     .qcom-verse-card-footer-btn,
     .hp-card-play,
-    .mp-footer-v2__nav-btn
+    .mp-footer-v2__nav-btn,
+    .sb-wrapper button
   ) {
     min-width: var(--mp-device-touch) !important;
     min-height: var(--mp-device-touch) !important;
@@ -2719,6 +2728,7 @@ body > .audio-player-modal .audio-settings-icon-btn {
     .mp-header__riwaya-mobile,
     .qc-reader-toolbar button,
     .settings-drawer button,
+    .sb-wrapper button,
     .audio-player-modal button,
     .modal button,
     .home-content-toolbar button,

@@ -2,11 +2,11 @@ import { test, expect } from "@playwright/test";
 
 async function openReader(page) {
   await page.goto("/");
-  const quranDisplay = page.locator(".quran-display").first();
+  const quranDisplay = page.locator(".quran-display, .quran-display--platform").first();
 
   if (!(await quranDisplay.isVisible().catch(() => false))) {
     const start = page.getByRole("button", {
-      name: /Commencer la lecture|Continuer|Start reading|Continue|Reprends ta lecture|ابدأ القراءة|متابعة|Demarrer une lecture|Resume session/i,
+      name: /Commencer la lecture|Reprendre la lecture|Continuer|Start reading|Continue|Reprends ta lecture|ابدأ القراءة|متابعة|Demarrer une lecture|Resume session|Resume reading/i,
     });
     try {
       await start.first().waitFor({ state: "visible", timeout: 8000 });
@@ -34,11 +34,12 @@ async function resolveReadingScrollRoot(page) {
       };
     }
 
-    const quran = document.querySelector(".quran-display");
+    const quran = document.querySelector(".quran-display, .quran-display--platform");
     const doc = document.scrollingElement || document.documentElement;
     const selectors = [
       ".quran-display-scroll",
       ".quran-display",
+      ".quran-display--platform",
       ".app-main-shell",
       ".app-main",
       "#main-content",

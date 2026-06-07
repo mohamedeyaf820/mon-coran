@@ -7,7 +7,7 @@ const OUTPUT_DIR = path.join("test-results", "visual-navbar-audio");
 async function openReader(page) {
   await page.goto("/");
   const start = page.getByRole("button", {
-    name: /Commencer la lecture|Continuer|Start reading|Continue|ابدأ القراءة|متابعة/i,
+    name: /Commencer la lecture|Reprendre la lecture|Continuer|Start reading|Continue|Resume reading/i,
   });
   await expect(start.first()).toBeVisible();
   await start.first().click();

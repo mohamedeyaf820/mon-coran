@@ -178,6 +178,8 @@ export default function SettingsModal() {
           <button
             onClick={close}
             className="p-1.5 rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer hover:scale-105 active:scale-95"
+            aria-label={lang === "ar" ? "\u0625\u063a\u0644\u0627\u0642" : lang === "en" ? "Close settings" : "Fermer les paramètres"}
+            title={lang === "ar" ? "\u0625\u063a\u0644\u0627\u0642" : lang === "en" ? "Close settings" : "Fermer les paramètres"}
           >
             <X size={18} />
           </button>
