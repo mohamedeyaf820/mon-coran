@@ -56,12 +56,22 @@ test("mobile density: header, reading toolbar and audio dock fit without horizon
   const toolbar = await box(page, ".qc-reader-toolbar");
   const audioDock = await box(page, ".mp-audio-player--mobile.mp-audio-player--dock");
   const firstAction = await box(page, ".mp-header__icon-btn");
+  const settingsButton = await box(page, ".mp-header__actions .mp-header__action:not(.mp-header__search)");
+  const moreButton = await box(page, ".mp-header__more");
+  const fontControls = await box(page, ".qc-reader-toolbar .arabic-font-controls--compact");
+  const fontSelect = await box(page, ".qc-reader-toolbar .afc-select");
+  const sizeControls = await box(page, ".qc-reader-toolbar .afc-size-group");
 
   expect(header?.height || 0).toBeLessThanOrEqual(62);
-  expect(toolbar?.height || 0).toBeLessThanOrEqual(190);
-  expect(audioDock?.height || 0).toBeLessThanOrEqual(118);
+  expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
+  expect(audioDock?.height || 0).toBeLessThanOrEqual(126);
   expect(firstAction?.width || 0).toBeGreaterThanOrEqual(38);
   expect(firstAction?.height || 0).toBeGreaterThanOrEqual(38);
+  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(38);
+  expect(moreButton?.width || 0).toBeGreaterThanOrEqual(38);
+  expect(fontControls?.height || 0).toBeGreaterThanOrEqual(38);
+  expect(fontSelect?.width || 0).toBeGreaterThanOrEqual(120);
+  expect(sizeControls?.width || 0).toBeGreaterThanOrEqual(145);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -70,9 +80,13 @@ test("tablet density: header controls and audio options modal remain compact", a
 
   const header = await box(page, ".mp-header");
   const toolbar = await box(page, ".qc-reader-toolbar");
+  const settingsButton = await box(page, ".mp-header__actions .mp-header__action:not(.mp-header__search)");
+  const fontControls = await box(page, ".qc-reader-toolbar .arabic-font-controls--compact");
 
-  expect(header?.height || 0).toBeLessThanOrEqual(68);
-  expect(toolbar?.height || 0).toBeLessThanOrEqual(180);
+  expect(header?.height || 0).toBeLessThanOrEqual(70);
+  expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
+  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(40);
+  expect(fontControls?.height || 0).toBeGreaterThanOrEqual(38);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 
   const optionsTrigger = page.locator(".mp-player-options-trigger").first();

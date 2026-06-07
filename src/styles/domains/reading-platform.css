@@ -2529,7 +2529,11 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     }
 
     .app-root .quran-display--platform [role="toolbar"] .arabic-font-controls {
-        display: none !important;
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) minmax(9.25rem, 0.92fr) !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        align-items: center !important;
     }
 }
 
@@ -2786,7 +2790,11 @@ html body .app-root .quran-display--platform .mushaf-container .cpv-verse--playi
 
 @media (max-width: 900px) {
     .app-root .quran-display--platform [role="toolbar"] .arabic-font-controls {
-        display: none !important;
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) minmax(9.25rem, 0.92fr) !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        align-items: center !important;
     }
 }
 
