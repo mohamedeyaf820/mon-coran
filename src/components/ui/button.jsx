@@ -26,12 +26,12 @@ const buttonVariants = cva(
           "bg-white/15 text-white shadow-sm hover:bg-white/[0.2] active:scale-95 focus-visible:ring-[var(--gold)]/40 focus-visible:ring-offset-transparent",
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8 text-base",
-        icon: "h-10 w-10 rounded-xl",
-        iconSm: "h-9 w-9 rounded-xl text-xs",
-        iconXs: "h-10 w-10 rounded-xl text-[0.9rem]",
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3 text-xs",
+        lg: "h-11 rounded-md px-8 text-base",
+        icon: "h-11 w-11 rounded-xl",
+        iconSm: "h-10 w-10 rounded-xl text-xs",
+        iconXs: "h-11 w-11 rounded-xl text-[0.9rem]",
       },
     },
     defaultVariants: {

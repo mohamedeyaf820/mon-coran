@@ -745,6 +745,7 @@ export function getReciterAvatar(reciter) {
     reciter?.nameEn || reciter?.nameFr || reciter?.name || id,
   );
   const initials = label
+    .replace(/[^a-zA-Z0-9\s؀-ۿ]/g, "")
     .split(/\s+/)
     .filter(Boolean)
     .map((part) => part[0])

@@ -744,7 +744,7 @@
   }
 
   .app-root .mp-player-mobile-controls {
-    min-height: 4.05rem !important;
+    min-height: 3.2rem !important;
   }
 
   .app-root .mp-audio-player--mobile button {
@@ -753,8 +753,8 @@
   }
 
   .app-root .mp-player-mobile-main-controls {
-    border-radius: 18px !important;
-    min-height: 3.1rem !important;
+    border-radius: 14px !important;
+    min-height: 2.75rem !important;
   }
 
   .app-root .audio-player-modal__surface {
@@ -778,8 +778,8 @@
 
 @media (max-width: 420px) {
   .app-root .mp-player-mobile-controls {
-    min-height: 3.8rem !important;
-    padding-inline: 0.6rem !important;
+    min-height: 3rem !important;
+    padding-inline: 0.5rem !important;
   }
 
   .app-root .mp-player-mobile-meta {

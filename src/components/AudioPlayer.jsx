@@ -950,7 +950,7 @@ export default function AudioPlayer() {
   const playerPrimaryBtnClass =
     "audio-player-primary-btn flex items-center justify-center rounded-full border border-[color-mix(in_srgb,var(--theme-primary)_52%,#ffffff_48%)] bg-[linear-gradient(135deg,color-mix(in_srgb,var(--theme-primary)_86%,#ffffff_14%),color-mix(in_srgb,var(--theme-primary)_66%,var(--theme-bg)_34%))] text-white shadow-[0_10px_24px_rgba(var(--theme-primary-rgb),0.34)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--theme-primary-rgb),0.44)]";
   const mBarBtn = cn(
-    "h-8 w-8 shrink-0 rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[0.76rem] text-[color-mix(in_srgb,var(--theme-text)_82%,var(--theme-bg)_18%)]",
+    "h-10 w-10 shrink-0 rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_60%,transparent_40%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_74%,transparent_26%)] text-[0.76rem] text-[color-mix(in_srgb,var(--theme-text)_82%,var(--theme-bg)_18%)]",
     "flex items-center justify-center outline-none transition-all duration-150",
     "hover:border-[color-mix(in_srgb,var(--theme-primary)_42%,transparent_58%)] hover:bg-[rgba(var(--theme-primary-rgb),0.16)] hover:text-white",
     "active:scale-95 focus-visible:ring-2 focus-visible:ring-[rgba(var(--theme-primary-rgb),0.32)]",
@@ -1133,7 +1133,7 @@ export default function AudioPlayer() {
     }
 
     // Reserve enough space for the mobile dock so verses and controls are never hidden behind it.
-    const reservedHeight = minimized ? 78 : expanded ? 190 : 112;
+    const reservedHeight = minimized ? 56 : expanded ? 170 : 96;
     root.style.setProperty("--player-h", `${reservedHeight}px`);
     root.style.removeProperty("--desktop-player-reserved-h");
 
@@ -1382,7 +1382,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "h-8 w-8 rounded-lg text-[0.68rem] shrink-0",
+                "h-10 w-10 rounded-lg text-[0.68rem] shrink-0",
               )}
               onClick={prev}
               title={t("audio.prev", lang)}
@@ -1409,7 +1409,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "h-8 w-8 rounded-lg text-[0.68rem] shrink-0",
+                "h-10 w-10 rounded-lg text-[0.68rem] shrink-0",
               )}
               onClick={next}
               title={t("audio.next", lang)}
@@ -1421,7 +1421,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtn,
-                "h-8 w-8 rounded-lg text-[0.68rem] shrink-0",
+                "h-10 w-10 rounded-lg text-[0.68rem] shrink-0",
               )}
               onClick={stop}
               title={t("audio.stop", lang)}

@@ -94,6 +94,28 @@ export default function Header() {
     };
   }, [showHome, showDuas, displayMode, lang, riwaya]);
 
+  // Compact header on scroll (reading view only)
+  const [headerCompact, setHeaderCompact] = useState(false);
+  useEffect(() => {
+    if (showHome || showDuas) {
+      setHeaderCompact(false);
+      return;
+    }
+    const mainEl = document.querySelector("#main-content");
+    if (!mainEl) return;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setHeaderCompact(mainEl.scrollTop > 100);
+        ticking = false;
+      });
+    };
+    mainEl.addEventListener("scroll", onScroll, { passive: true });
+    return () => mainEl.removeEventListener("scroll", onScroll);
+  }, [showHome, showDuas]);
+
   useEffect(() => {
     if (goToOpen) window.setTimeout(() => inputRef.current?.focus(), 50);
   }, [goToOpen]);
@@ -325,7 +347,7 @@ export default function Header() {
   ];
 
   return (
-    <header ref={headerRef} className="mp-header" role="banner">
+    <header ref={headerRef} className={cn("mp-header", headerCompact && "mp-header--compact")} role="banner">
       <div className="mp-header__bar">
         {/* ── LEFT: hamburger + brand ─────────────────────── */}
         <div className="mp-header__brand-row">
@@ -467,40 +489,7 @@ export default function Header() {
 
         {/* ── RIGHT: riwaya + search + settings + theme + more ── */}
         <div className="mp-header__actions">
-          {/* Riwaya pill — desktop */}
-          <div
-            className="mp-header__riwaya-switch hidden md:flex items-center gap-0.5 rounded-xl bg-[var(--bg-secondary)] p-1 border border-[var(--border)] shrink-0"
-            title={headerLabels.riwayaToggle}
-          >
-            {["hafs", "warsh"].map((id) => (
-              <button
-                key={id}
-                className={cn(
-                  "px-3 py-1 text-[0.7rem] font-bold rounded-lg transition-all cursor-pointer",
-                  riwaya === id
-                    ? "bg-[var(--bg-card)] text-[var(--primary)] shadow-sm font-extrabold"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
-                )}
-                type="button"
-                onClick={() => set({ riwaya: id })}
-              >
-                {id.toUpperCase()}
-              </button>
-            ))}
-          </div>
-
-          {/* Riwaya tap — mobile */}
-          <button
-            className="mp-header__riwaya-mobile md:hidden flex font-bold text-xs min-w-[54px] h-9 rounded-xl hover:bg-[var(--bg-secondary)] items-center justify-center border border-[var(--border)] text-[var(--text-primary)] cursor-pointer"
-            type="button"
-            onClick={() =>
-              set({ riwaya: riwaya === "hafs" ? "warsh" : "hafs" })
-            }
-            aria-label={headerLabels.riwayaToggle}
-            title={headerLabels.riwayaToggle}
-          >
-            {riwaya.toUpperCase()}
-          </button>
+          {/* Riwaya — moved to "More" menu for cleaner header */}
 
           {/* Search */}
           <button
@@ -525,16 +514,7 @@ export default function Header() {
             <Settings size={16} strokeWidth={2.2} />
           </button>
 
-          {/* Theme cycle */}
-          <button
-            className="mp-header__action hidden sm:flex"
-            type="button"
-            onClick={cycleTheme}
-            aria-label={headerLabels.cycleTheme}
-            title={headerLabels.cycleTheme}
-          >
-            <Moon size={16} strokeWidth={2.2} style={{ color: dotColor }} />
-          </button>
+          {/* Theme cycle — moved to "More" menu for cleaner header */}
 
           {/* More / ellipsis */}
           <Popover open={quickMenuOpen} onOpenChange={setQuickMenuOpen}>

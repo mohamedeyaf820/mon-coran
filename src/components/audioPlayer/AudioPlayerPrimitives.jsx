@@ -190,10 +190,10 @@ export function IconBtn({
 }) {
   const base =
     size === "sm"
-      ? "w-7 h-7 text-[0.72rem]"
+      ? "w-9 h-9 text-[0.72rem]"
       : size === "lg"
         ? "w-12 h-12 text-base"
-        : "w-9 h-9 text-[0.82rem]";
+        : "w-10 h-10 text-[0.82rem]";
   return (
     <button
       type="button"

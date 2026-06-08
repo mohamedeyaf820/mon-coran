@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* ── Type Scale — standardized responsive tokens ── */
+:root {
+  --ts-xs: clamp(0.7rem, 0.65rem + 0.15vw, 0.75rem);      /* ~11-12px */
+  --ts-sm: clamp(0.8rem, 0.75rem + 0.15vw, 0.875rem);     /* ~13-14px */
+  --ts-base: clamp(0.875rem, 0.82rem + 0.18vw, 1rem);     /* ~14-16px */
+  --ts-lg: clamp(1rem, 0.92rem + 0.25vw, 1.125rem);       /* ~16-18px */
+  --ts-xl: clamp(1.15rem, 1rem + 0.4vw, 1.35rem);         /* ~18-22px */
+  --ts-2xl: clamp(1.4rem, 1.2rem + 0.6vw, 1.75rem);       /* ~22-28px */
+  --ts-3xl: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);        /* ~28-36px */
+  --ts-4xl: clamp(2rem, 1.6rem + 1.2vw, 2.5rem);          /* ~32-40px */
+}
+
 @font-face {
     font-family: "surahnames";
     src: url("/fonts/sura_names.woff2") format("woff2");
