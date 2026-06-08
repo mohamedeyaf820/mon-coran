@@ -7,12 +7,18 @@ export default function AyahActionsModal({
   onClose,
   surah,
   ayahData,
+  quietBackdrop = false,
 }) {
   if (!activeAyah) return null;
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      className={cn(
+        "ayah-actions-modal fixed inset-0 z-40 flex items-end justify-center p-3 sm:items-center sm:p-4",
+        quietBackdrop
+          ? "ayah-actions-modal--quiet bg-transparent"
+          : "bg-black/40 backdrop-blur-sm",
+      )}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -21,7 +27,7 @@ export default function AyahActionsModal({
         className={cn(
           "w-full max-w-lg rounded-2xl",
           "bg-[var(--bg-card)] border border-[var(--border)]",
-          "shadow-2xl",
+          quietBackdrop ? "shadow-xl" : "shadow-2xl",
           "animate-in slide-in-from-bottom-2",
           "max-h-[80vh] overflow-y-auto",
         )}

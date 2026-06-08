@@ -309,6 +309,15 @@ function normalizeWarshRecord(raw, surahNumber, fallbackAyahNumber = null) {
   };
 }
 
+async function fetchWarshSurahRows(surahNumber) {
+  const padded = String(surahNumber).padStart(3, '0');
+  const response = await fetchWithTimeout(`${WARSH_DATA_BASE_URL}${padded}.json`, {}, 8000);
+  if (!response.ok) throw new Error(`Failed to load Warsh surah JSON: ${response.status}`);
+  const json = await response.json();
+  const rows = unwrapLegacyArray(json);
+  return rows.length ? rows : unwrapLegacyArray(json?.ayahs);
+}
+
 /**
  * Converts a normalized record to the final Ayah object.
  */
@@ -381,24 +390,26 @@ export async function loadWarshSurah(surahNum) {
       }
     } catch { }
 
-    // 3. Load from the main Warsh JSON source (aziz011133/quran_warsh)
     let normalized = [];
     try {
-      const legacy = await loadLegacyWarshData();
-      const rows = rowsFromLegacyData(legacy, n);
+      const rows = await fetchWarshSurahRows(n);
       normalized = normalizeWarshRows(rows, n);
-      
+
       if (!validateWarshRows(normalized, n)) {
-        logError(`[WarshService] Validation failed for surah ${n}:`, {
-          expected: getSurah(n)?.ayahs,
-          got: normalized.length,
-          firstFew: normalized.slice(0, 5)
-        });
-        throw new Error(`Failed to load warsh surah ${n}: invalid or incomplete source (got ${normalized.length} verses)`);
+        throw new Error(`Invalid per-surah Warsh source (got ${normalized.length} verses)`);
       }
     } catch (err) {
-      logError(`[WarshService] Loading error for surah ${n}:`, err);
-      throw new Error(`Failed to load warsh surah ${n}: ${err.message}`);
+      try {
+        const legacy = await loadLegacyWarshData();
+        const rows = rowsFromLegacyData(legacy, n);
+        normalized = normalizeWarshRows(rows, n);
+        if (!validateWarshRows(normalized, n)) {
+          throw new Error(`invalid or incomplete source (got ${normalized.length} verses)`);
+        }
+      } catch (fallbackErr) {
+        logError(`[WarshService] Loading error for surah ${n}:`, fallbackErr);
+        throw new Error(`Failed to load warsh surah ${n}: ${fallbackErr.message || err.message}`);
+      }
     }
 
     cachedSurahs.set(n, normalized);
@@ -596,6 +607,14 @@ export async function getWarshJuzVerses(juzNum) {
 export async function getWarshPageVerses(pageNum) {
   const cacheKey = Number(pageNum);
   if (cachedPagePayloads.has(cacheKey)) return cachedPagePayloads.get(cacheKey);
+
+  try {
+    const scoped = await getWarshVersesByHafsScope(`page/${pageNum}`);
+    if (scoped?.ayahs?.length) {
+      cachedPagePayloads.set(cacheKey, scoped);
+      return scoped;
+    }
+  } catch {}
 
   const raw = await loadLegacyWarshData();
   const indexed = getLegacyIndex(raw);

@@ -16,6 +16,15 @@ import "./styles/riwaya-fonts.css";
 import "./styles/dark-mode-refonte.css";
 import "./styles/reading-ux-refonte.css";
 import "./styles/home-audio-ux-refonte.css";
+import "./styles/expert-overhaul.css";
+import "./styles/responsive-polish.css";
+import "./styles/surah-banner.css";
+import "./styles/surah-reader-header.css";
+import "./styles/sidebar-enhanced.css";
+import "./styles/settings-enhanced.css";
+import "./styles/header-enhanced.css";
+import "./styles/surah-info-panel.css";
+import "./styles/reciter-enhanced.css";
 
 /**
  * FontAwesome is loaded lazily (~3 MB CSS when fetched) and used by 200+ legacy
@@ -36,10 +45,7 @@ import "./styles/home-audio-ux-refonte.css";
 let fontAwesomeStylesPromise = null;
 
 function loadFontAwesomeStyles() {
-  if (
-    typeof window !== "undefined" &&
-    window.__DISABLE_FONTAWESOME__
-  ) {
+  if (typeof window !== "undefined" && window.__DISABLE_FONTAWESOME__) {
     return null;
   }
   if (!fontAwesomeStylesPromise) {
@@ -114,7 +120,9 @@ function tryRecoverFromChunkLoad(errorLike) {
         ? navigator.serviceWorker
             .getRegistrations()
             .then((registrations) =>
-              Promise.all(registrations.map((registration) => registration.unregister())),
+              Promise.all(
+                registrations.map((registration) => registration.unregister()),
+              ),
             )
             .catch(() => null)
         : Promise.resolve(null),
@@ -156,7 +164,9 @@ if (import.meta.env.PROD) {
 // Vérifier que l'élément root existe avant de rendre
 const rootElement = document.getElementById("root");
 if (!rootElement) {
-  console.error("[Main] Root element not found - cannot mount React application");
+  console.error(
+    "[Main] Root element not found - cannot mount React application",
+  );
   document.body.innerHTML = `
     <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
       <h1 style="color: #ef4444; margin-bottom: 1rem;">Erreur de chargement</h1>

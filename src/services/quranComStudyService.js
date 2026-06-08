@@ -24,6 +24,18 @@ export const TAFSIR_RESOURCES = {
     nameFr: "Tafsir Ibn Kathir (anglais)",
     lang: "en",
   },
+  "en-maarif": {
+    id: 168,
+    name: "Ma'arif al-Qur'an",
+    nameFr: "Ma'arif al-Qur'an (anglais)",
+    lang: "en",
+  },
+  "en-tazkir": {
+    id: 817,
+    name: "Tazkirul Quran",
+    nameFr: "Tazkirul Quran (anglais)",
+    lang: "en",
+  },
   "ar-kathir": {
     id: 14,
     name: "Tafsir Ibn Kathir",
@@ -75,27 +87,32 @@ function htmlToText(html) {
 }
 
 export function getAvailableTafsirs() {
-  return Object.entries(TAFSIR_RESOURCES).map(([id, data]) => ({
-    id,
+  return Object.entries(TAFSIR_RESOURCES).map(([key, data]) => ({
     ...data,
+    key,
   }));
 }
 
-export async function getVerseTafsir({
-  surah,
-  ayah,
-  lang = "en",
-  tafsirId,
-  signal,
-} = {}) {
-  const verseKey = `${Number(surah)}:${Number(ayah)}`;
-  const requestedTafsir =
-    tafsirId || (lang === "ar" ? "ar-muyassar" : "en-kathir");
-  const normalizedTafsir =
-    requestedTafsir === "fr-kathir" ? "en-kathir" : requestedTafsir;
-  const resource =
-    TAFSIR_RESOURCES[normalizedTafsir] || TAFSIR_RESOURCES["en-kathir"];
+const FALLBACK_TAFSIRS_BY_LANG = {
+  ar: ["ar-muyassar", "ar-kathir", "en-kathir"],
+  en: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
+  fr: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
+  wo: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
+};
 
+function resolveTafsirKey(value, lang = "en") {
+  if (value && TAFSIR_RESOURCES[value]) return value;
+  const numericId = Number(value);
+  if (Number.isFinite(numericId)) {
+    const found = Object.entries(TAFSIR_RESOURCES).find(
+      ([, resource]) => Number(resource.id) === numericId,
+    );
+    if (found) return found[0];
+  }
+  return lang === "ar" ? "ar-muyassar" : "en-kathir";
+}
+
+async function fetchTafsirText(resource, verseKey, signal) {
   const response = await fetch(
     `${BASE_URL}/tafsirs/${resource.id}/by_ayah/${verseKey}`,
     { signal },
@@ -113,17 +130,53 @@ export async function getVerseTafsir({
     throw new Error("No tafsir text found");
   }
 
-  return {
-    source: resource.name,
-    sourceFr: resource.nameFr,
-    language: resource.lang,
-    text,
-    tafsirId: normalizedTafsir,
-    note:
-      lang === "fr"
-        ? "Quran.com ne fournit pas de tafsir en français pour cette source. Le commentaire est affiché dans sa langue d'origine."
-        : null,
-  };
+  return text;
+}
+
+export async function getVerseTafsir({
+  surah,
+  ayah,
+  lang = "en",
+  tafsirId,
+  signal,
+} = {}) {
+  const verseKey = `${Number(surah)}:${Number(ayah)}`;
+  const normalizedLang = ["ar", "fr", "wo"].includes(lang) ? lang : "en";
+  const requestedKey = resolveTafsirKey(
+    tafsirId === "fr-kathir" ? "en-kathir" : tafsirId,
+    normalizedLang,
+  );
+  const candidates = [
+    requestedKey,
+    ...(FALLBACK_TAFSIRS_BY_LANG[normalizedLang] || FALLBACK_TAFSIRS_BY_LANG.en),
+  ].filter((key, index, list) => key && list.indexOf(key) === index);
+
+  let lastError = null;
+  for (const key of candidates) {
+    const resource = TAFSIR_RESOURCES[key];
+    if (!resource) continue;
+    try {
+      const text = await fetchTafsirText(resource, verseKey, signal);
+      return {
+        source: resource.name,
+        sourceFr: resource.nameFr,
+        language: resource.lang,
+        text,
+        tafsirId: key,
+        note:
+          normalizedLang === "fr"
+            ? "Aucun tafsir français vérifié n'est disponible dans Quran.com pour cette source. Le commentaire est affiché dans sa langue d'origine."
+            : normalizedLang === "wo"
+              ? "Aucun tafsir wolof vérifié n'est disponible dans Quran.com pour cette source. Le commentaire est affiché dans sa langue d'origine."
+              : null,
+      };
+    } catch (error) {
+      if (error?.name === "AbortError") throw error;
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error("No tafsir text found");
 }
 
 const TRANSLATION_RESOURCES = {

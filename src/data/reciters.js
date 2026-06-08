@@ -327,8 +327,8 @@ const RECITERS = {
       nameEn: "Mishary Rashid Alafasy",
       nameFr: "Mishary Rashid Alafasy",
       style: "murattal",
-      cdn: "Alafasy_128kbps",
-      cdnType: "everyayah",
+      cdn: "ar.alafasy",
+      cdnType: "islamic",
     },
     {
       id: "ar.abdulbasitmurattal",
@@ -336,8 +336,8 @@ const RECITERS = {
       nameEn: "Abdul Basit (Murattal)",
       nameFr: "Abdul Basit (Murattal)",
       style: "murattal",
-      cdn: "Abdul_Basit_Murattal_192kbps",
-      cdnType: "everyayah",
+      cdn: "ar.abdulbasitmurattal",
+      cdnType: "islamic",
     },
     {
       id: "ar.abdulbasitmujawwad",
@@ -345,8 +345,8 @@ const RECITERS = {
       nameEn: "Abdul Basit (Mujawwad)",
       nameFr: "Abdul Basit (Mujawwad)",
       style: "mujawwad",
-      cdn: "Abdul_Basit_Mujawwad_128kbps",
-      cdnType: "everyayah",
+      cdn: "ar.abdulbasitmujawwad",
+      cdnType: "islamic",
     },
     {
       id: "ar.husary",
@@ -354,8 +354,8 @@ const RECITERS = {
       nameEn: "Mahmoud Khalil Al-Husary",
       nameFr: "Mahmoud Khalil Al-Husary",
       style: "murattal",
-      cdn: "Husary_128kbps",
-      cdnType: "everyayah",
+      cdn: "ar.husary",
+      cdnType: "islamic",
     },
     {
       id: "ar.minshawi",
@@ -363,8 +363,8 @@ const RECITERS = {
       nameEn: "Muhammad Siddiq al-Minshawi",
       nameFr: "Muhammad Siddiq al-Minshawi",
       style: "murattal",
-      cdn: "Minshawy_Murattal_128kbps",
-      cdnType: "everyayah",
+      cdn: "ar.minshawi",
+      cdnType: "islamic",
     },
     {
       id: "ar.minshawimujawwad",
@@ -372,8 +372,8 @@ const RECITERS = {
       nameEn: "Al-Minshawi (Mujawwad)",
       nameFr: "Al-Minshawi (Mujawwad)",
       style: "mujawwad",
-      cdn: "Minshawy_Mujawwad_192kbps",
-      cdnType: "everyayah",
+      cdn: "ar.minshawimujawwad",
+      cdnType: "islamic",
     },
     {
       id: "ar.saoodshuraym",
@@ -381,8 +381,8 @@ const RECITERS = {
       nameEn: "Saud ash-Shuraym",
       nameFr: "Saud ash-Shuraym",
       style: "murattal",
-      cdn: "Saood_ash-Shuraym_128kbps",
-      cdnType: "everyayah",
+      cdn: "ar.saoodshuraym",
+      cdnType: "islamic",
     },
     {
       id: "abdullaah_matrood",
@@ -417,8 +417,8 @@ const RECITERS = {
       nameEn: "Abdur-Rahman as-Sudais",
       nameFr: "Abdur-Rahman as-Sudais",
       style: "murattal",
-      cdn: "Abdurrahmaan_As-Sudais_192kbps",
-      cdnType: "everyayah",
+      cdn: "ar.abdurrahmaansudais",
+      cdnType: "islamic",
     },
     {
       id: "ar.maaboralmeem",
@@ -670,13 +670,12 @@ const RECITERS = {
   ],
 };
 
+// Reciters removed from the selectable list because their audio CDN was unreliable.
+// Note: ar.abdulbasitmurattal, ar.abdulbasitmujawwad, ar.minshawimujawwad,
+// ar.saoodshuraym, ar.abdurrahmaansudais have been migrated to Islamic Network CDN
+// and are now re-enabled.
 const REMOVED_RECITER_IDS = new Set([
   "badr_al_turki",
-  "ar.abdulbasitmurattal",
-  "ar.abdulbasitmujawwad",
-  "ar.minshawimujawwad",
-  "ar.saoodshuraym",
-  "ar.abdurrahmaansudais",
   "ar.maaboralmeem",
   "abdulbari_thubayti",
   "ibrahim_akhdar",
@@ -710,31 +709,23 @@ export const RECITER_PHOTOS_MAP = {
   "ar.abdulbasitmurattal": quranPhoto("1/abdelbasset-profile.jpeg"),
   "ar.abdulbasitmujawwad": quranPhoto("1/abdelbasset-profile.jpeg"),
   "ar.husary": quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
-  "husary_muallim": quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
-  "husary_mujawwad_hafs": quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
-  "ar.minshawi": quranPhoto("14/muhammad-siddiq-al-minshawi-profile.jpeg"),
-  "ar.minshawimujawwad": quranPhoto("14/muhammad-siddiq-al-minshawi-profile.jpeg"),
-  "abu_bakr_ash_shaatree": quranPhoto("3/abu-bakr-al-shatri-pofile.jpeg?v=1"),
-  "ahmed_ajmy": quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
-  "ahmed_ibn_ali_al_ajamy_64": quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
-  "maher_almuaiqly": quranPhoto("11/maher-al-muaiqly-profile.jpeg"),
-  "yasser_dossari_hafs": quranPhoto("20/yasser-profile.png"),
-  "nasser_alqatami": quranPhoto("13/nasser-al-qatami-profile.jpeg"),
-  "ali_jabir": quranPhoto("23/Abdullah-Ali-Jabir-profile.png?v=1"),
-  "hudhaify": quranPhoto("10/ali-al-hudhaifi-profile.jpeg"),
-  "muhammad_ayyoub": quranPhoto("12/muhammad-ayyoub-profile.jpeg"),
-  "fares_abbad": quranPhoto("21/fares-abbad-profile.png"),
+  husary_muallim: quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
+  husary_mujawwad_hafs: quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
+  abu_bakr_ash_shaatree: quranPhoto("3/abu-bakr-al-shatri-pofile.jpeg?v=1"),
+  ahmed_ajmy: quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
+  ahmed_ibn_ali_al_ajamy_64: quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
+  yasser_dossari_hafs: quranPhoto("20/yasser-profile.png"),
+  ali_jabir: quranPhoto("23/Abdullah-Ali-Jabir-profile.png?v=1"),
   "ar.saoodshuraym": quranPhoto("3/saud-ash-shuraym-profile.jpeg"),
   "ar.abdurrahmaansudais": quranPhoto("2/abdul-rahman-al-sudais-profile.jpeg"),
   "ar.maaboralmeem": quranPhoto("16/saad-al-ghamdi-profile.png?v=1"),
-  "ghamadi_40": quranPhoto("16/saad-al-ghamdi-profile.png?v=1"),
-  "warsh_saad_ghamidi": quranPhoto("16/saad-al-ghamdi-profile.png?v=1"),
-  "ar.muhammadjibreel": quranPhoto("15/muhammad-jibreel-profile.png"),
-  "hani_rifai": quranPhoto("4/hani-ar-rifai-profile.jpeg?v=1"),
-  "khalefa_al_tunaiji": quranPhoto("11/khalifa-al-tunaiji-profile.jpeg?v=1"),
-  "warsh_abdulbasit": quranPhoto("1/abdelbasset-profile.jpeg"),
-  "warsh_hussary": quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
-  "warsh_omar_al_qazabri": quranPhoto("18/omar-al-qazabri-profile.png"),
+  ghamadi_40: quranPhoto("16/saad-al-ghamdi-profile.png?v=1"),
+  warsh_saad_ghamidi: quranPhoto("16/saad-al-ghamdi-profile.png?v=1"),
+  "ar.muhammadjibreel": quranPhoto("10/muhammad-jebril-profile.jpeg"),
+  hani_rifai: quranPhoto("4/hani-ar-rifai-profile.jpeg?v=1"),
+  khalefa_al_tunaiji: quranPhoto("11/khalifa-al-tunaiji-profile.jpeg?v=1"),
+  warsh_abdulbasit: quranPhoto("1/abdelbasset-profile.jpeg"),
+  warsh_hussary: quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
 };
 
 const AVATAR_COLORS = [
@@ -750,7 +741,9 @@ const AVATAR_COLORS = [
 
 export function getReciterAvatar(reciter) {
   const id = String(reciter?.id || reciter?.nameEn || "reciter");
-  const label = String(reciter?.nameEn || reciter?.nameFr || reciter?.name || id);
+  const label = String(
+    reciter?.nameEn || reciter?.nameFr || reciter?.name || id,
+  );
   const initials = label
     .split(/\s+/)
     .filter(Boolean)
@@ -759,15 +752,21 @@ export function getReciterAvatar(reciter) {
     .slice(0, 2)
     .toUpperCase();
   const hash = [...id].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const color = AVATAR_COLORS[hash % AVATAR_COLORS.length];
+  const colorAlt = AVATAR_COLORS[(hash + 3) % AVATAR_COLORS.length];
   return {
     initials: initials || "MP",
-    color: AVATAR_COLORS[hash % AVATAR_COLORS.length],
+    color,
+    colorAlt,
+    gradient: `linear-gradient(135deg, ${color}, ${colorAlt})`,
   };
 }
 
 export function getReciterPhoto(reciterOrId) {
   const id =
-    typeof reciterOrId === "string" ? reciterOrId : String(reciterOrId?.id || "");
+    typeof reciterOrId === "string"
+      ? reciterOrId
+      : String(reciterOrId?.id || "");
   if (!id) return null;
   return RECITER_PHOTOS_MAP[id] || null;
 }
@@ -785,7 +784,13 @@ export function getReciterBio(reciter, lang = "fr") {
   if (!reciter) return "";
   if (typeof reciter.bio === "string") return reciter.bio;
   if (reciter.bio && typeof reciter.bio === "object") {
-    return reciter.bio[lang] || reciter.bio.fr || reciter.bio.en || reciter.bio.ar || "";
+    return (
+      reciter.bio[lang] ||
+      reciter.bio.fr ||
+      reciter.bio.en ||
+      reciter.bio.ar ||
+      ""
+    );
   }
 
   const name =
@@ -859,7 +864,9 @@ export function isWarshVerifiedReciter(reciterOrId, riwaya = "warsh") {
       : reciterOrId;
   if (!reciter) return false;
   if (reciter.verifiedWarsh) return true;
-  return String(reciter.cdn || "").toLowerCase().includes("warsh");
+  return String(reciter.cdn || "")
+    .toLowerCase()
+    .includes("warsh");
 }
 
 export function isSurahOnlyReciter(reciterOrId, riwaya = null) {

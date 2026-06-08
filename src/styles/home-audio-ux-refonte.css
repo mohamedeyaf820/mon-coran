@@ -1472,7 +1472,6 @@ html.dark .mp-footer-v2__shell {
   }
 
   .app-root > .mp-header .mp-header__bar {
-    min-height: 3.1rem !important;
     gap: 0.35rem !important;
   }
 
@@ -2894,5 +2893,155 @@ body > .audio-player-modal .audio-settings-icon-btn {
 
   html body .app-root .qc-reader-toolbar .afc-size-value {
     display: none !important;
+  }
+}
+
+/* Dark theme final legibility patch. This file is imported last, so it catches
+   low-contrast leftovers from older component styles without changing markup. */
+html[data-theme="dark"] body .app-root {
+  --night-readable: #f7fbf8;
+  --night-readable-soft: #dce8e2;
+  --night-readable-muted: #b7c8bf;
+}
+
+html[data-theme="dark"] body .app-root :is(.mp-header, .mp-header__bar, .settings-drawer, .audio-player-modal__surface, .modal, .modal-panel, .modal-box, .reciter-detail, .sb-wrapper, .mp-footer-v2__shell) {
+  color: var(--night-readable) !important;
+}
+
+html[data-theme="dark"] body .app-root :is(.mp-header__action, .mp-header__more, .mp-header__icon-btn, .mp-header__nav-arrow, .settings-drawer button, .audio-player-modal button, .modal button, .sb-wrapper button, .mp-footer-v2__nav-btn) {
+  color: var(--night-readable-soft) !important;
+  border-color: rgba(220, 235, 228, 0.2) !important;
+}
+
+html[data-theme="dark"] body .app-root :is(.text-text-muted, .hp-card-meta, .settings-drawer label, .audio-player-modal p, .modal-subtitle, .reciter-detail__bio, .mp-footer-v2__copy) {
+  color: var(--night-readable-muted) !important;
+}
+
+html[data-theme="dark"] body .app-root :is(input, select, textarea) {
+  background: rgba(3, 7, 6, 0.72) !important;
+  color: var(--night-readable) !important;
+}
+
+html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-text-ar, .rd-arabic, .quran-arabic-text, .verse-text, .mushaf-container, .qcm-word) {
+  color: #fff8ea !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-translation, .rd-trans-item, .translation-text) {
+  color: var(--night-readable-soft) !important;
+}
+
+.ayah-actions-modal--quiet {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.cpv-container, .mushaf-container, .cpv-verse, .quran-arabic-text, .verse-text, .wbw-word-block, .wbw-word) {
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.app-root > .mp-header .mp-header__center {
+  min-width: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.app-root > .mp-header .mp-header__nav {
+  width: fit-content !important;
+  max-width: 100% !important;
+  grid-template-columns: auto minmax(0, max-content) auto !important;
+  align-items: center !important;
+  gap: clamp(0.28rem, 0.8vw, 0.5rem) !important;
+}
+
+.app-root > .mp-header .mp-header__title-btn,
+.app-root > .mp-header .mp-header__home-summary {
+  width: fit-content !important;
+  min-width: clamp(10.5rem, 26vw, 19rem) !important;
+  max-width: min(52vw, 27rem) !important;
+  min-height: clamp(2.35rem, 4.5vw, 2.85rem) !important;
+  padding: 0.32rem clamp(0.7rem, 1.2vw, 1rem) !important;
+  border-radius: clamp(0.88rem, 1.8vw, 1.12rem) !important;
+}
+
+.app-root > .mp-header .mp-header__nav-arrow {
+  width: clamp(2.35rem, 4.6vw, 2.75rem) !important;
+  min-width: clamp(2.35rem, 4.6vw, 2.75rem) !important;
+  height: clamp(2.35rem, 4.6vw, 2.75rem) !important;
+}
+
+.app-root > .mp-header .mp-header__title,
+.app-root > .mp-header .mp-header__home-summary-clean {
+  font-size: clamp(0.86rem, 0.78rem + 0.32vw, 1.02rem) !important;
+}
+
+.app-root .quran-display--platform .qc-surah-header-wrap > section {
+  width: fit-content !important;
+  min-width: min(100%, 18rem) !important;
+  max-width: min(100%, 42rem) !important;
+  margin-bottom: clamp(0.42rem, 1.1vw, 0.65rem) !important;
+}
+
+.app-root .quran-display--platform .qc-reader-surah-header {
+  padding: clamp(0.75rem, 1.5vw, 1rem) clamp(0.85rem, 2vw, 1.15rem) !important;
+  gap: clamp(0.65rem, 1.5vw, 1rem) !important;
+}
+
+.app-root .quran-display--platform .qc-surah-header-wrap > section:not(.qc-reader-surah-header) > div.relative > div:nth-child(2) {
+  width: fit-content !important;
+  max-width: min(100%, 18rem) !important;
+  margin-bottom: 0.55rem !important;
+  padding: 0.58rem 1rem !important;
+}
+
+@media (max-width: 720px) {
+  .app-root > .mp-header .mp-header__title-btn,
+  .app-root > .mp-header .mp-header__home-summary {
+    min-width: min(12.5rem, 48vw) !important;
+    max-width: 50vw !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-root > .mp-header .mp-header__bar {
+    grid-template-columns: auto minmax(0, 1fr) max-content !important;
+    gap: 0.2rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__title-btn,
+  .app-root > .mp-header .mp-header__home-summary {
+    min-width: min(10.8rem, 54vw) !important;
+    max-width: 56vw !important;
+    padding-inline: 0.5rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__nav-arrow {
+    width: 2.38rem !important;
+    min-width: 2.38rem !important;
+    height: 2.38rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__title {
+    font-size: clamp(0.72rem, 3.25vw, 0.86rem) !important;
+    line-height: 1.06 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html body .app-root > .mp-header {
+    padding-block: 0.14rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__bar {
+    height: 2.84rem !important;
+    min-height: 2.84rem !important;
+    max-height: 2.84rem !important;
+  }
+
+  html body .app-root .sb-wrapper {
+    width: calc(100vw - 1px) !important;
+    max-width: calc(100vw - 1px) !important;
   }
 }

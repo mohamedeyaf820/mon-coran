@@ -1,0 +1,1019 @@
+/*
+ * expert-overhaul.css
+ * Comprehensive UX/UI expert overhaul layer.
+ * Imported last — highest specificity wins intentionally.
+ * Covers: fluid typography, responsive sizing, animation polish,
+ *         touch targets, accessibility, performance, visual coherence.
+ */
+
+/* ═══════════════════════════════════════════════
+   1. DESIGN TOKENS — Extended system
+   ═══════════════════════════════════════════════ */
+:root {
+  /* Fluid spacing scale */
+  --space-2xs: clamp(0.25rem, 0.5vw, 0.375rem);
+  --space-xs:  clamp(0.375rem, 0.75vw, 0.5rem);
+  --space-sm:  clamp(0.5rem, 1vw, 0.75rem);
+  --space-md:  clamp(0.75rem, 1.5vw, 1rem);
+  --space-lg:  clamp(1rem, 2vw, 1.5rem);
+  --space-xl:  clamp(1.5rem, 3vw, 2.5rem);
+
+  /* Touch target minimum (WCAG 2.5.5) */
+  --tap-min: 44px;
+
+  /* Elevation system */
+  --elev-1: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --elev-2: 0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.05);
+  --elev-3: 0 10px 24px rgba(0,0,0,.10), 0 4px 8px rgba(0,0,0,.05);
+  --elev-4: 0 20px 48px rgba(0,0,0,.14), 0 8px 16px rgba(0,0,0,.07);
+  --elev-5: 0 32px 72px rgba(0,0,0,.20), 0 12px 24px rgba(0,0,0,.09);
+
+  /* Animation system */
+  --dur-instant: 80ms;
+  --dur-fast: 150ms;
+  --dur-normal: 250ms;
+  --dur-slow: 400ms;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Z-index scale */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  /* Radius system */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-pill: 9999px;
+}
+
+/* ═══════════════════════════════════════════════
+   2. PERFORMANCE — GPU layer optimization
+   ═══════════════════════════════════════════════ */
+
+/* Will-change only on elements that animate */
+.mp-audio-player,
+.mp-audio-player--desktop,
+.mp-audio-player--mobile {
+  will-change: transform;
+}
+
+/* Force GPU compositing on animated overlays */
+.settings-overlay,
+.modal-overlay,
+.audio-player-modal {
+  will-change: opacity;
+}
+
+/* Reduce repaints on frequently updated elements */
+.mp-player-progress,
+.audio-player-timeline {
+  contain: layout style;
+  will-change: width;
+}
+
+/* ═══════════════════════════════════════════════
+   3. GLOBAL TYPOGRAPHY — Fluid + Responsive
+   ═══════════════════════════════════════════════ */
+
+html {
+  font-size: clamp(15px, 1.1vw + 10px, 17px);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ═══════════════════════════════════════════════
+   4. HEADER — Precise responsive fixes
+   ═══════════════════════════════════════════════ */
+
+/* Mobile (< 480px): very compact, show only essentials */
+@media (max-width: 479px) {
+  .app-root > .mp-header {
+    padding: 0.3rem 0.4rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__bar {
+    min-height: 3rem !important;
+    gap: 0.25rem !important;
+  }
+
+  /* Hide settings button on very small screens - accessible via "more" menu */
+  .app-root > .mp-header .mp-header__action:not(.mp-header__search):not(.mp-header__more) {
+    display: none !important;
+  }
+
+  .app-root > .mp-header .mp-header__search {
+    display: none !important;
+  }
+}
+
+/* Mobile (480-767px): compact with riwaya toggle */
+@media (min-width: 480px) and (max-width: 767px) {
+  .app-root > .mp-header {
+    padding: 0.32rem 0.5rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__bar {
+    grid-template-columns: auto 1fr auto !important;
+    min-height: 3.2rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__center {
+    display: flex !important;
+    justify-content: center !important;
+  }
+}
+
+/* Tablet (768-1023px): show full nav center */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .app-root > .mp-header .mp-header__bar {
+    grid-template-columns: minmax(8rem, auto) 1fr auto !important;
+  }
+}
+
+/* Header button active state */
+.app-root > .mp-header :is(.mp-header__action.is-active, .mp-header__icon-btn.is-active) {
+  background: rgba(var(--theme-primary-rgb, 11,98,53), 0.15) !important;
+  border-color: rgba(var(--theme-primary-rgb, 11,98,53), 0.5) !important;
+  color: var(--theme-primary, #0b6235) !important;
+}
+
+/* ═══════════════════════════════════════════════
+   5. SIDEBAR — Responsive improvements
+   ═══════════════════════════════════════════════ */
+
+/* On very small screens, sidebar takes full width */
+@media (max-width: 360px) {
+  #sidebar.sb-wrapper {
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+}
+
+/* Sidebar list items — better touch targets */
+#sidebar button[type="button"].group {
+  min-height: 3.25rem !important;
+  padding: 0.6rem 0.65rem !important;
+  transition: background-color var(--dur-fast) ease, transform var(--dur-fast) ease !important;
+}
+
+#sidebar button[type="button"].group:active {
+  transform: scale(0.98) !important;
+}
+
+/* Sidebar number badges — consistent sizing */
+#sidebar .flex.h-9.w-9 {
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  min-width: 2.25rem !important;
+  font-size: 0.78rem !important;
+  transition: all var(--dur-fast) ease !important;
+}
+
+/* Sidebar tab bar — equal height tabs */
+#sidebar .grid.rounded-xl button {
+  min-height: 2.35rem !important;
+  font-size: 0.78rem !important;
+  transition: all var(--dur-fast) ease !important;
+}
+
+/* Sidebar Arabic surah names — proper sizing */
+#sidebar .font-surah-names {
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem) !important;
+  line-height: 1 !important;
+}
+
+/* ═══════════════════════════════════════════════
+   6. AUDIO PLAYER — Responsive & UX fixes
+   ═══════════════════════════════════════════════ */
+
+/* Mobile player: ensure proper bottom safe area */
+@media (max-width: 1024px) {
+  .mp-audio-player--mobile.mp-audio-player--dock {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.2rem) !important;
+  }
+}
+
+/* Desktop player: smooth drag animation */
+.mp-audio-player--desktop {
+  transition: box-shadow var(--dur-fast) ease !important;
+}
+
+.mp-audio-player--desktop:hover {
+  box-shadow: var(--elev-5) !important;
+}
+
+/* Player progress bar — improved visual */
+.mp-player-progress,
+input[type="range"].mp-progress-input {
+  height: 5px !important;
+  border-radius: 9999px !important;
+  cursor: pointer !important;
+  accent-color: var(--primary, #0f766e) !important;
+}
+
+input[type="range"].mp-progress-input::-webkit-slider-thumb {
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 50% !important;
+  cursor: pointer !important;
+  transition: transform var(--dur-fast) ease !important;
+}
+
+input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
+  transform: scale(1.25) !important;
+}
+
+/* Player buttons — consistent sizes per device */
+@media (max-width: 640px) {
+  .mp-audio-player--mobile .mp-player-play-btn {
+    width: 2.65rem !important;
+    height: 2.65rem !important;
+    min-width: 2.65rem !important;
+    border-radius: 50% !important;
+  }
+
+  /* Secondary controls (skip, repeat) */
+  .mp-audio-player--mobile button:not(.mp-player-play-btn) {
+    min-width: var(--tap-min) !important;
+    min-height: var(--tap-min) !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .mp-audio-player--mobile .mp-player-play-btn {
+    width: 2.8rem !important;
+    height: 2.8rem !important;
+    min-width: 2.8rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   7. MODALS & SETTINGS — Bottom sheet on mobile
+   ═══════════════════════════════════════════════ */
+
+/* Settings drawer animation */
+.settings-drawer {
+  transition: transform var(--dur-slow) var(--ease-out) !important;
+}
+
+@media (max-width: 680px) {
+  /* Settings as bottom sheet */
+  .settings-overlay {
+    align-items: flex-end !important;
+    justify-content: center !important;
+  }
+
+  .settings-drawer {
+    border-radius: 1.5rem 1.5rem 0 0 !important;
+    height: min(90dvh, 48rem) !important;
+    max-height: 90dvh !important;
+  }
+
+  /* Pull handle indicator */
+  .settings-drawer__header::before {
+    content: '';
+    display: block;
+    width: 2.5rem;
+    height: 4px;
+    margin: 0 auto 0.75rem;
+    border-radius: 9999px;
+    background: var(--border, rgba(148,163,184,0.3));
+    flex-shrink: 0;
+  }
+}
+
+/* Settings tab bar — scrollable on mobile */
+@media (max-width: 680px) {
+  .settings-drawer__tabs {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    gap: 0.35rem !important;
+    padding: 0.5rem !important;
+  }
+
+  .settings-drawer__tabs::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .settings-drawer__tabs button {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    min-height: 2.4rem !important;
+    padding-inline: 0.85rem !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Settings content — proper spacing */
+.settings-drawer__content {
+  padding: clamp(0.75rem, 2vw, 1.25rem) !important;
+}
+
+/* ═══════════════════════════════════════════════
+   8. RECITERS GRID — Enhanced 2-col layout
+   ═══════════════════════════════════════════════ */
+
+.settings-reciter-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.45rem !important;
+  padding: 0.35rem !important;
+}
+
+/* Single column on very small screens */
+@media (max-width: 360px) {
+  .settings-reciter-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Reciter option card — improved layout */
+.settings-reciter-option {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.55rem !important;
+  padding: 0.55rem 0.65rem !important;
+  border-radius: var(--radius-md) !important;
+  min-height: 3.35rem !important;
+  border: 1px solid transparent !important;
+  transition: all var(--dur-fast) ease !important;
+  cursor: pointer !important;
+  text-align: left !important;
+  width: 100% !important;
+}
+
+.settings-reciter-option:hover {
+  border-color: rgba(var(--primary-rgb, 15,118,110), 0.25) !important;
+  background: rgba(var(--primary-rgb, 15,118,110), 0.06) !important;
+  transform: translateY(-1px) !important;
+}
+
+.settings-reciter-option:active {
+  transform: scale(0.98) !important;
+}
+
+.settings-reciter-option.is-selected,
+.settings-reciter-option[aria-selected="true"] {
+  border-color: rgba(var(--primary-rgb, 15,118,110), 0.45) !important;
+  background: rgba(var(--primary-rgb, 15,118,110), 0.1) !important;
+}
+
+/* Avatar — consistent sizing */
+.settings-reciter-avatar {
+  width: 2.1rem !important;
+  height: 2.1rem !important;
+  min-width: 2.1rem !important;
+  flex: 0 0 2.1rem !important;
+  font-size: 0.62rem !important;
+  border-radius: 50% !important;
+}
+
+/* Reciter name — clamp to 2 lines */
+.settings-reciter-option__name {
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+/* Reciter meta — smaller, muted */
+.settings-reciter-option__meta {
+  font-size: 0.65rem !important;
+  opacity: 0.72 !important;
+  margin-top: 0.1rem !important;
+}
+
+/* ═══════════════════════════════════════════════
+   9. QURAN READER — Typography & Layout
+   ═══════════════════════════════════════════════ */
+
+/* Fluid Arabic text sizing */
+.qc-ayah-text-ar,
+.rd-arabic,
+.quran-arabic-text,
+.mushaf-text-block,
+.mp-ayah,
+.qcm-word,
+.cpv-word {
+  font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.8rem) !important;
+  line-height: clamp(2.2, 2.1 + 0.2vw, 2.6) !important;
+  word-spacing: clamp(0.08em, 0.4vw, 0.18em) !important;
+}
+
+/* Mobile-specific Quran text */
+@media (max-width: 479px) {
+  .qc-ayah-text-ar,
+  .rd-arabic {
+    font-size: clamp(1.45rem, 5.5vw, 1.85rem) !important;
+    line-height: 2.2 !important;
+  }
+}
+
+/* Translation text — responsive */
+.qc-ayah-translation,
+.rd-trans-item,
+.translation-text {
+  font-size: clamp(0.85rem, 0.75rem + 0.4vw, 1rem) !important;
+  line-height: 1.75 !important;
+  color: var(--text-secondary, #475569) !important;
+}
+
+/* Verse number badges */
+.rd-ayah-head,
+.qc-ayah-number,
+.ayah-number-badge {
+  width: clamp(1.8rem, 3vw, 2.15rem) !important;
+  height: clamp(1.8rem, 3vw, 2.15rem) !important;
+  font-size: clamp(0.68rem, 1vw, 0.82rem) !important;
+  flex: 0 0 clamp(1.8rem, 3vw, 2.15rem) !important;
+}
+
+/* Reader cards — consistent spacing */
+.qc-verse-card,
+.qc-ayah-block,
+.rd-ayah {
+  padding: clamp(0.75rem, 2vw, 1.25rem) clamp(0.75rem, 2.5vw, 1.5rem) !important;
+  transition: background-color var(--dur-normal) ease, border-color var(--dur-normal) ease, transform var(--dur-fast) ease !important;
+}
+
+/* Playing verse — smooth highlight animation */
+.qc-verse-card.is-playing,
+.rd-ayah.playing,
+.mp-ayah--playing {
+  animation: verse-pulse 2.5s ease-in-out infinite !important;
+}
+
+@keyframes verse-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--primary-rgb, 15,118,110), 0); }
+  50% { box-shadow: 0 0 0 4px rgba(var(--primary-rgb, 15,118,110), 0.15); }
+}
+
+/* ═══════════════════════════════════════════════
+   10. HOME PAGE — Grid & Cards responsive
+   ═══════════════════════════════════════════════ */
+
+/* Hero section — better mobile stacking */
+@media (max-width: 639px) {
+  .home-hero-shell {
+    padding: 1rem !important;
+    border-radius: 1.25rem !important;
+  }
+
+  .home-hero-title {
+    font-size: clamp(1.35rem, 5vw, 1.75rem) !important;
+    line-height: 1.2 !important;
+  }
+
+  .home-hero-copy-clean {
+    font-size: 0.88rem !important;
+    line-height: 1.6 !important;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1024px) {
+  .home-hero-title {
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem) !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .home-hero-title {
+    font-size: clamp(2.25rem, 3vw, 3rem) !important;
+  }
+}
+
+/* Surah grid — responsive columns */
+.hp-grid--surah {
+  display: grid !important;
+}
+
+@media (max-width: 479px) {
+  .hp-grid--surah {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.45rem !important;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .hp-grid--surah {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.55rem !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hp-grid--surah {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0.65rem !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .hp-grid--surah {
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+}
+
+/* Reciter cards grid */
+.hp-grid {
+  display: grid !important;
+}
+
+@media (max-width: 479px) {
+  .hp-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.6rem !important;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .hp-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .hp-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .hp-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1.25rem !important;
+  }
+}
+
+/* Reciter card — refined layout */
+.home-reciter-card,
+.reciter-card,
+[data-reciter-card="true"] {
+  transition: transform var(--dur-normal) var(--ease-out), box-shadow var(--dur-normal) ease !important;
+}
+
+.home-reciter-card:hover,
+.reciter-card:hover,
+[data-reciter-card="true"]:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: var(--elev-4) !important;
+}
+
+.home-reciter-card:active,
+.reciter-card:active {
+  transform: scale(0.98) !important;
+}
+
+/* ═══════════════════════════════════════════════
+   11. TOUCH TARGETS — WCAG 2.5.5 compliance
+   ═══════════════════════════════════════════════ */
+
+/* All interactive elements must meet 44px minimum */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  a,
+  input,
+  select {
+    min-height: var(--tap-min);
+    min-width: var(--tap-min);
+  }
+
+  /* Exception: icon-only buttons that are visually smaller
+     use padding to extend the hit area instead */
+  .mp-header__icon-btn,
+  .mp-header__action,
+  .mp-header__nav-arrow,
+  .mp-header__more {
+    position: relative !important;
+  }
+
+  .mp-header__icon-btn::before,
+  .mp-header__action::before,
+  .mp-header__nav-arrow::before,
+  .mp-header__more::before {
+    content: '' !important;
+    position: absolute !important;
+    inset: -6px !important;
+  }
+
+  /* Sidebar close button */
+  #sidebar .h-8.w-8 {
+    width: 2.55rem !important;
+    height: 2.55rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   12. ICON CONSISTENCY — Size system
+   ═══════════════════════════════════════════════ */
+
+/* FontAwesome icons — size scale by context */
+
+/* Header icons */
+.mp-header__icon-btn i,
+.mp-header__action i,
+.mp-header__more i,
+.mp-header__nav-arrow i {
+  font-size: clamp(0.82rem, 1.1vw, 0.96rem) !important;
+}
+
+/* Sidebar icons */
+#sidebar i.fas,
+#sidebar i.far {
+  font-size: 0.9rem !important;
+  width: 1.1rem !important;
+  text-align: center !important;
+}
+
+/* Card/verse action icons */
+.qcom-verse-card-footer-btn i,
+.ayah-actions-inline__icon-btn i {
+  font-size: 0.82rem !important;
+}
+
+/* Floating action buttons */
+.notes-fab i,
+[class*="fab"] i {
+  font-size: 1rem !important;
+}
+
+/* ═══════════════════════════════════════════════
+   13. MODAL BASE — Consistent across all modals
+   ═══════════════════════════════════════════════ */
+
+/* All overlays */
+.modal-overlay,
+.settings-backdrop,
+.audio-player-modal {
+  backdrop-filter: blur(8px) !important;
+  transition: opacity var(--dur-normal) ease !important;
+}
+
+/* Search modal — proper mobile layout */
+@media (max-width: 640px) {
+  .search-pro-overlay {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+
+  .search-pro-modal,
+  .search-modal-box {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    border-radius: 1.5rem 1.5rem 0 0 !important;
+    max-height: 88dvh !important;
+  }
+}
+
+/* Bookmarks, Notes, Playlist modals — consistent sizing */
+@media (max-width: 640px) {
+  .modal-panel,
+  .modal-box {
+    border-radius: 1.4rem 1.4rem 0 0 !important;
+    max-height: 88dvh !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   14. FOOTER — Compact on mobile
+   ═══════════════════════════════════════════════ */
+
+@media (max-width: 479px) {
+  .mp-footer-v2 {
+    padding: 0 0.65rem calc(4.5rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .mp-footer-v2__nav-btn {
+    min-height: 3.65rem !important;
+    padding: 0.45rem 0.25rem !important;
+  }
+
+  .mp-footer-v2__nav-icon {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+
+  .mp-footer-v2__nav-label {
+    font-size: 0.52rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   15. ANIMATIONS — Micro-interactions
+   ═══════════════════════════════════════════════ */
+
+/* Sidebar item hover animation */
+@media (hover: hover) {
+  #sidebar button[type="button"].group:hover .flex.shrink-0 {
+    border-color: rgba(var(--primary-rgb, 15,118,110), 0.45) !important;
+    background: rgba(var(--primary-rgb, 15,118,110), 0.08) !important;
+    color: var(--primary, #0f766e) !important;
+  }
+
+  .hp-card:hover {
+    transform: translateY(-3px) !important;
+  }
+}
+
+/* Button press feedback */
+button:active:not(:disabled),
+[role="button"]:active:not([aria-disabled="true"]) {
+  transition-duration: var(--dur-instant) !important;
+}
+
+/* Smooth appear for dropdowns */
+[data-radix-popper-content-wrapper] {
+  animation: popover-in var(--dur-normal) var(--ease-spring) !important;
+}
+
+@keyframes popover-in {
+  from { opacity: 0; transform: scale(0.94) translateY(-6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Sidebar slide animation */
+.sb-wrapper {
+  transition: transform 280ms var(--ease-out) !important;
+}
+
+/* ═══════════════════════════════════════════════
+   16. SCROLLBARS — Refined for light & dark
+   ═══════════════════════════════════════════════ */
+
+/* Light theme scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 9999px;
+  background-clip: padding-box;
+  background-color: rgba(100,116,139,0.28);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100,116,139,0.5);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100,116,139,0.28) transparent;
+}
+
+/* ═══════════════════════════════════════════════
+   17. ACCESSIBILITY — Focus & Reduced motion
+   ═══════════════════════════════════════════════ */
+
+/* Disable animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .mp-audio-player--desktop {
+    will-change: auto !important;
+  }
+}
+
+/* Focus visible — consistent across all themes */
+:focus-visible {
+  outline: 2.5px solid rgba(var(--primary-rgb, 15,118,110), 0.85) !important;
+  outline-offset: 2px !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* Skip links for keyboard navigation */
+.skip-link {
+  position: absolute !important;
+  top: -100% !important;
+  left: 0 !important;
+  padding: 0.5rem 1rem !important;
+  background: var(--primary) !important;
+  color: white !important;
+  z-index: 9999 !important;
+  border-radius: 0 0 var(--radius-md) 0 !important;
+  font-weight: 700 !important;
+}
+
+.skip-link:focus {
+  top: 0 !important;
+}
+
+/* ═══════════════════════════════════════════════
+   18. DARK MODE — Specific fixes
+   ═══════════════════════════════════════════════ */
+
+/* Dark mode scrollbars */
+html[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-color: rgba(180,202,191,0.22) !important;
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(47,208,142,0.38) !important;
+}
+
+html[data-theme="dark"] * {
+  scrollbar-color: rgba(180,202,191,0.22) transparent !important;
+}
+
+/* Dark mode popover backgrounds */
+html[data-theme="dark"] [data-radix-popper-content-wrapper] > div,
+html[data-theme="dark"] .z-\[300\] {
+  border-color: rgba(196,219,208,0.16) !important;
+  background: rgba(16,29,25,0.97) !important;
+  backdrop-filter: blur(16px) !important;
+  color: var(--night-text, #f4f8f5) !important;
+}
+
+/* Dark mode: settings row text fix */
+html[data-theme="dark"] .settings-row label,
+html[data-theme="dark"] .settings-row span {
+  color: inherit !important;
+}
+
+/* ═══════════════════════════════════════════════
+   19. THEME-SPECIFIC — Sepia & OLED
+   ═══════════════════════════════════════════════ */
+
+/* Sepia theme — warm scrollbars */
+html[data-theme="sepia"] ::-webkit-scrollbar-thumb {
+  background-color: rgba(154,104,0,0.28) !important;
+}
+
+html[data-theme="sepia"] ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(154,104,0,0.48) !important;
+}
+
+/* OLED theme — true black */
+html[data-theme="oled"] {
+  background: #000000 !important;
+}
+
+html[data-theme="oled"] .app-root,
+html[data-theme="oled"] body {
+  background: #000000 !important;
+}
+
+html[data-theme="oled"] :is(.qc-verse-card, .rd-ayah, .settings-drawer, .sidebar) {
+  background: rgba(4,8,6,0.98) !important;
+  border-color: rgba(180,202,191,0.12) !important;
+}
+
+/* ═══════════════════════════════════════════════
+   20. PRINT — Hide interactive elements
+   ═══════════════════════════════════════════════ */
+
+@media print {
+  .mp-audio-player,
+  .mp-header,
+  #sidebar,
+  .settings-overlay,
+  .modal-overlay,
+  .mp-footer-v2 {
+    display: none !important;
+  }
+
+  .quran-display--platform {
+    padding-bottom: 0 !important;
+  }
+
+  .qc-verse-card,
+  .rd-ayah {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   21. SEARCH MODAL — Enhanced mobile layout
+   ═══════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .search-pro-input {
+    font-size: 1rem !important; /* Prevent iOS zoom on focus */
+    height: 3rem !important;
+  }
+
+  .search-pro-results {
+    max-height: calc(75dvh - 5rem) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   22. HOME STATS STRIP — Responsive
+   ═══════════════════════════════════════════════ */
+
+.home-stats-strip,
+.hp-stats {
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.home-stats-strip::-webkit-scrollbar,
+.hp-stats::-webkit-scrollbar {
+  display: none !important;
+}
+
+@media (max-width: 479px) {
+  .home-stats-strip > *,
+  .hp-stats > * {
+    flex: 0 0 auto !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   23. NETWORK STATUS — Better mobile display
+   ═══════════════════════════════════════════════ */
+
+/* Hide network text on mobile, show only icon */
+@media (max-width: 767px) {
+  .network-status__text {
+    display: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   24. INPUT — Prevent iOS zoom
+   ═══════════════════════════════════════════════ */
+
+@media (max-width: 767px) {
+  input[type="text"],
+  input[type="number"],
+  input[type="search"],
+  input[type="email"],
+  textarea,
+  select {
+    font-size: 1rem !important; /* 16px minimum prevents iOS auto-zoom */
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   25. LOGO — Consistent sizing across devices
+   ═══════════════════════════════════════════════ */
+
+.mp-header__logo {
+  border-radius: var(--radius-md) !important;
+  overflow: hidden !important;
+}
+
+@media (max-width: 767px) {
+  .mp-header__logo {
+    width: 2.1rem !important;
+    height: 2.1rem !important;
+    min-width: 2.1rem !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .mp-header__logo {
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .mp-header__logo {
+    width: 2.4rem !important;
+    height: 2.4rem !important;
+  }
+}

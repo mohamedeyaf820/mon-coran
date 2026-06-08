@@ -594,31 +594,37 @@ export default function SettingsModal() {
                   />
                 </div>
 
-                <div className="settings-reciter-list border border-[var(--border)] rounded-2xl max-h-64 overflow-y-auto divide-y divide-[var(--border)] bg-[var(--bg-card)]">
+                <div className="settings-reciter-list border border-[var(--border)] rounded-2xl max-h-72 overflow-y-auto bg-[var(--bg-card)]">
                   {filteredReciters.length > 0 ? (
-                    filteredReciters.map((r) => {
-                      const isActive = r.id === reciter;
-                      return (
-                        <button
-                          key={r.id}
-                          onClick={() => set({ reciter: r.id })}
-                          className={`settings-reciter-option w-full px-4 py-2.5 text-left text-sm font-semibold transition-all hover:bg-[var(--bg-secondary)] flex items-center justify-between gap-3 ${
-                            isActive ? "bg-[rgba(var(--primary-rgb),0.06)] text-[var(--primary)]" : ""
-                          }`}
-                        >
-                          <span className="flex min-w-0 items-center gap-3">
-                            <SettingsReciterAvatar reciter={r} />
-                            <span className="min-w-0">
-                              <span className="block truncate">{lang === "fr" ? r.nameFr || r.name : lang === "en" ? r.nameEn || r.name : r.name}</span>
-                              <span className="settings-reciter-option__meta block truncate">
-                                {r.style || "murattal"} - {r.cdnType || r.source || "audio"}
+                    <div className="settings-reciter-grid p-2 grid grid-cols-1 min-[380px]:grid-cols-2 gap-2">
+                      {filteredReciters.map((r) => {
+                        const isActive = r.id === reciter;
+                        return (
+                          <button
+                            key={r.id}
+                            onClick={() => set({ reciter: r.id })}
+                            className={`settings-reciter-option w-full px-3 py-2 rounded-xl text-left text-sm font-semibold transition-all border flex items-center justify-between gap-2.5 cursor-pointer ${
+                              isActive
+                                ? "border-[rgba(var(--primary-rgb),0.32)] bg-[rgba(var(--primary-rgb),0.06)] text-[var(--primary)] font-bold shadow-sm"
+                                : "border-transparent hover:bg-[var(--bg-secondary)] text-[var(--text-primary)]"
+                            }`}
+                          >
+                            <span className="flex min-w-0 items-center gap-2.5">
+                              <SettingsReciterAvatar reciter={r} />
+                              <span className="min-w-0">
+                                <span className="block truncate text-xs font-bold leading-tight">
+                                  {lang === "fr" ? r.nameFr || r.name : lang === "en" ? r.nameEn || r.name : r.name}
+                                </span>
+                                <span className="settings-reciter-option__meta block truncate text-[0.62rem] mt-0.5">
+                                  {r.style || "murattal"}
+                                </span>
                               </span>
                             </span>
-                          </span>
-                          {isActive && <span className="w-2 h-2 rounded-full bg-[var(--primary)]" />}
-                        </button>
-                      );
-                    })
+                            {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] shrink-0" />}
+                          </button>
+                        );
+                      })}
+                    </div>
                   ) : (
                     <div className="p-4 text-center text-xs text-[var(--text-muted)]">
                       {t("settings.noReciterFound", lang)}

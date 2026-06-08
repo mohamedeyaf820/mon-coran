@@ -1,75 +1,128 @@
 import React from "react";
-import { BookOpen, Clock3, Hash, Layers3, MapPin, Sparkles } from "lucide-react";
+import { BookOpen, Clock, Hash, Layers, MapPin, Sparkles } from "lucide-react";
 import { getJuzForAyah } from "../../data/juz";
 import { getSurah } from "../../data/surahs";
+import { useApp } from "../../context/AppContext";
 
-function labelFor(lang, fr, en) {
+function lbl(lang, fr, en, ar = en) {
+  if (lang === "ar") return ar;
   return lang === "fr" ? fr : en;
 }
 
-function StatCard({ icon: Icon, label, value, tone = "primary" }) {
+function StatTile({ icon: Icon, label, value, accent = false, gold = false }) {
   return (
-    <div className={`surah-info-card surah-info-card--${tone}`}>
-      <span className="surah-info-card__icon" aria-hidden="true">
-        <Icon size={16} />
-      </span>
-      <span className="surah-info-card__value">{value}</span>
-      <span className="surah-info-card__label">{label}</span>
+    <div
+      className={[
+        "sip-tile",
+        accent ? "sip-tile--accent" : "",
+        gold ? "sip-tile--gold" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <div className="sip-tile__icon" aria-hidden="true">
+        <Icon size={14} />
+      </div>
+      <div className="sip-tile__body">
+        <span className="sip-tile__value">{value}</span>
+        <span className="sip-tile__label">{label}</span>
+      </div>
     </div>
   );
 }
 
-export default function SurahInfoPanel({ surahNum, lang }) {
+export default function SurahInfoPanel({ surahNum, lang: langProp }) {
+  const { state } = useApp();
+  const lang = langProp || state?.lang || "fr";
   const s = getSurah(surahNum);
   if (!s) return null;
 
-  const revelation =
-    s.type === "Meccan"
-      ? labelFor(lang, "Mecquoise", "Meccan")
-      : labelFor(lang, "Medinoise", "Medinan");
+  const isMeccan = s.type === "Meccan";
+  const revelation = isMeccan
+    ? lbl(lang, "Mecquoise", "Meccan", "مكية")
+    : lbl(lang, "Médinoise", "Medinan", "مدنية");
   const juzStart = getJuzForAyah(surahNum, 1);
   const readingMinutes = Math.max(1, Math.ceil(s.ayahs / 18));
   const sizeLabel =
     s.ayahs <= 20
-      ? labelFor(lang, "Courte", "Short")
+      ? lbl(lang, "Courte", "Short", "قصيرة")
       : s.ayahs <= 90
-        ? labelFor(lang, "Moyenne", "Medium")
-        : labelFor(lang, "Longue", "Long");
-  const displayName = lang === "en" ? s.en : s.fr || s.en;
+        ? lbl(lang, "Moyenne", "Medium", "متوسطة")
+        : lbl(lang, "Longue", "Long", "طويلة");
+  const displayName =
+    lang === "ar" ? s.ar : lang === "fr" ? s.fr || s.en : s.en;
 
   return (
     <section
-      className="surah-info-inline"
-      aria-label={labelFor(lang, "Informations sur la sourate", "Surah information")}
+      className="sip-root"
+      aria-label={lbl(
+        lang,
+        "Informations sur la sourate",
+        "Surah information",
+        "معلومات السورة",
+      )}
     >
-      <div className="surah-info-inline__intro">
-        <span className="surah-info-inline__mark" aria-hidden="true">
-          <Sparkles size={18} />
-        </span>
-        <div>
-          <strong>{displayName}</strong>
-          <span>
-            {labelFor(
+      {/* Header */}
+      <div className="sip-header">
+        <div className="sip-header__icon" aria-hidden="true">
+          <Sparkles size={16} />
+        </div>
+        <div className="sip-header__text">
+          <strong className="sip-header__name">{displayName}</strong>
+          <span className="sip-header__desc">
+            {lbl(
               lang,
               "Fiche rapide pour situer la sourate avant la lecture.",
               "Quick reference before reading this surah.",
+              "معلومات سريعة عن السورة.",
             )}
           </span>
         </div>
+        {/* Arabic name badge */}
+        <div
+          className="sip-header__arabic"
+          dir="rtl"
+          lang="ar"
+          aria-hidden="true"
+        >
+          {s.ar}
+        </div>
       </div>
 
-      <div className="surah-info-inline__grid">
-        <StatCard icon={Hash} label={labelFor(lang, "Sourate", "Surah")} value={surahNum} />
-        <StatCard icon={BookOpen} label={labelFor(lang, "Versets", "Verses")} value={s.ayahs} />
-        <StatCard
-          icon={MapPin}
-          label={labelFor(lang, "Revelation", "Revelation")}
-          value={revelation}
-          tone={s.type === "Meccan" ? "gold" : "primary"}
+      {/* Stats grid */}
+      <div className="sip-grid">
+        <StatTile
+          icon={Hash}
+          label={lbl(lang, "Sourate", "Surah", "سورة")}
+          value={`#${surahNum}`}
         />
-        <StatCard icon={Layers3} label={labelFor(lang, "Juz debut", "Start juz")} value={juzStart} />
-        <StatCard icon={BookOpen} label={labelFor(lang, "Page", "Page")} value={s.page} />
-        <StatCard icon={Clock3} label={sizeLabel} value={`${readingMinutes} min`} tone="soft" />
+        <StatTile
+          icon={BookOpen}
+          label={lbl(lang, "Versets", "Verses", "آيات")}
+          value={s.ayahs}
+        />
+        <StatTile
+          icon={MapPin}
+          label={lbl(lang, "Révélation", "Revelation", "النزول")}
+          value={revelation}
+          gold={isMeccan}
+          accent={!isMeccan}
+        />
+        <StatTile
+          icon={Layers}
+          label={lbl(lang, "Juz début", "Start juz", "الجزء")}
+          value={`Juz ${juzStart}`}
+        />
+        <StatTile
+          icon={BookOpen}
+          label={lbl(lang, "Page", "Page", "الصفحة")}
+          value={`P. ${s.page}`}
+        />
+        <StatTile
+          icon={Clock}
+          label={sizeLabel}
+          value={`~${readingMinutes} min`}
+        />
       </div>
     </section>
   );

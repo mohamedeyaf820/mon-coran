@@ -1,0 +1,285 @@
+/* Compact Surah Banner — inspired by quran.com */
+
+/* Override old generic section rules that come from reading-platform.css and home-audio-ux-refonte.css */
+.app-root
+    .quran-display--platform
+    .qc-surah-header-wrap
+    > section.qc-surah-banner,
+.app-root .quran-display--platform .qc-surah-header-wrap > .qc-surah-banner {
+    width: min(100%, 980px) !important;
+    max-width: min(100%, 980px) !important;
+    min-width: 0 !important;
+    margin: 0 auto clamp(0.75rem, 1.5vw, 1.25rem) !important;
+    padding: clamp(0.85rem, 2vw, 1.25rem) clamp(0.75rem, 2vw, 1.5rem) !important;
+    border-radius: 16px !important;
+}
+
+.qc-surah-banner {
+    width: min(100%, 980px);
+    margin: 0 auto clamp(0.75rem, 1.5vw, 1.25rem);
+    padding: clamp(0.85rem, 2vw, 1.25rem) clamp(0.75rem, 2vw, 1.5rem);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--bg-card);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    position: relative;
+}
+
+.qc-surah-banner__inner {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    flex-wrap: wrap;
+}
+
+/* Left: identity */
+.qc-surah-banner__identity {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+    flex: 1;
+    min-width: 0;
+}
+
+.qc-surah-banner__arabic {
+    flex-shrink: 0;
+    font-family: var(--font-quran, serif);
+    font-size: clamp(1.6rem, 4vw, 2.6rem);
+    line-height: 1.4;
+    color: var(--text-primary);
+    direction: rtl;
+    text-align: right;
+    padding: 0.25rem 0;
+    max-width: clamp(4rem, 10vw, 6rem);
+    word-break: break-word;
+}
+
+.qc-surah-banner__meta {
+    min-width: 0;
+}
+
+.qc-surah-banner__title {
+    margin: 0 0 0.2rem;
+    font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+    font-weight: 750;
+    color: var(--text-primary);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+}
+
+.qc-surah-banner__num {
+    color: var(--primary);
+}
+
+.qc-surah-banner__sub {
+    margin: 0;
+    font-size: 0.88rem;
+    font-style: italic;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.qc-surah-banner__desc {
+    margin: 0.35rem 0 0;
+    font-size: clamp(0.72rem, 1.2vw, 0.82rem);
+    color: var(--text-muted);
+    line-height: 1.5;
+    max-width: 65ch;
+}
+
+/* Right: actions */
+.qc-surah-banner__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.qc-surah-banner__badges {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.qc-surah-banner__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.qc-surah-banner__badge--gold {
+    border-color: color-mix(
+        in srgb,
+        var(--color-gold, #c8a84b) 40%,
+        transparent 60%
+    );
+    background: color-mix(
+        in srgb,
+        var(--color-gold, #c8a84b) 10%,
+        transparent 90%
+    );
+    color: var(--color-gold, #c8a84b);
+}
+
+.qc-surah-banner__badge--blue {
+    border-color: rgba(var(--color-info-rgb, 100, 149, 237), 0.35);
+    background: rgba(var(--color-info-rgb, 100, 149, 237), 0.08);
+    color: var(--color-info, #6495ed);
+}
+
+.qc-surah-banner__btns {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.qc-surah-banner__play-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    border: none;
+    border-radius: 999px;
+    background: var(--primary);
+    color: white;
+    font-size: 0.78rem;
+    font-weight: 650;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.qc-surah-banner__play-btn:hover {
+    filter: brightness(1.1);
+}
+
+.qc-surah-banner__play-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.qc-surah-banner__info-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.38rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.qc-surah-banner__info-btn:hover {
+    border-color: color-mix(in srgb, var(--primary) 40%, transparent 60%);
+    color: var(--primary);
+}
+
+.qc-surah-banner__translation-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+/* Dark mode */
+[data-theme="dark"] .qc-surah-banner {
+    background: linear-gradient(
+        180deg,
+        rgba(20, 35, 30, 0.9),
+        rgba(10, 18, 16, 0.92)
+    );
+    border-color: rgba(196, 219, 208, 0.14);
+    box-shadow:
+        0 12px 36px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .qc-surah-banner__arabic {
+    color: #f4f1e6;
+}
+
+[data-theme="dark"] .qc-surah-banner__badge--gold {
+    border-color: rgba(214, 179, 92, 0.35);
+    background: rgba(214, 179, 92, 0.08);
+    color: #d6b35c;
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+    .qc-surah-banner {
+        border-radius: 12px;
+        padding: 0.75rem;
+        margin-inline: 0;
+    }
+
+    .qc-surah-banner__inner {
+        gap: 0.5rem;
+    }
+
+    .qc-surah-banner__arabic {
+        font-size: clamp(1.3rem, 6vw, 1.8rem);
+        max-width: 3.5rem;
+    }
+
+    .qc-surah-banner__title {
+        font-size: clamp(0.95rem, 4vw, 1.2rem);
+    }
+
+    .qc-surah-banner__desc {
+        display: none;
+    }
+
+    .qc-surah-banner__actions {
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+    }
+
+    .qc-surah-banner__badges {
+        justify-content: flex-start;
+        order: -1;
+    }
+
+    .qc-surah-banner__btns {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 420px) {
+    .qc-surah-banner__play-btn span {
+        display: none;
+    }
+    .qc-surah-banner__info-btn span {
+        display: none;
+    }
+}
+
+/* Tablet */
+@media (min-width: 641px) and (max-width: 1024px) {
+    .qc-surah-banner__arabic {
+        font-size: clamp(1.4rem, 3vw, 2rem);
+        max-width: 5rem;
+    }
+
+    .qc-surah-banner__desc {
+        font-size: 0.78rem;
+    }
+}

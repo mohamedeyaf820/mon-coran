@@ -1,0 +1,271 @@
+/* ══════════════════════════════════════════════════════
+   Settings Modal Enhanced
+   ══════════════════════════════════════════════════════ */
+
+/* ── Overlay ── */
+.settings-overlay {
+  backdrop-filter: none; /* overlay is transparent; blur lives on backdrop */
+}
+
+/* ── Backdrop ── */
+.settings-backdrop {
+  backdrop-filter: blur(16px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
+  transition: opacity 0.25s !important;
+}
+
+/* ── Drawer panel ── */
+.settings-drawer {
+  border-radius: 22px 0 0 22px !important;
+  border-left: 1px solid var(--border) !important;
+  overflow: hidden !important;
+  box-shadow:
+    -12px 0 48px rgba(0, 0, 0, 0.14),
+    -4px 0 16px rgba(0, 0, 0, 0.08) !important;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+[data-theme="dark"] .settings-drawer {
+  background: linear-gradient(
+    160deg,
+    rgba(14, 26, 22, 0.99),
+    rgba(6, 12, 10, 0.99)
+  ) !important;
+  border-left-color: rgba(196, 219, 208, 0.15) !important;
+  box-shadow:
+    -16px 0 60px rgba(0, 0, 0, 0.52),
+    -4px 0 20px rgba(0, 0, 0, 0.32) !important;
+}
+
+/* ── Scrollable content area ── */
+.settings-drawer .overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 28%, transparent 72%) transparent;
+}
+
+.settings-drawer .overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+.settings-drawer .overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.settings-drawer .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--primary) 28%, transparent 72%);
+  border-radius: 999px;
+}
+
+/* ── Header / close row ── */
+.settings-drawer > div:first-child {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-secondary) 70%, transparent 30%);
+}
+
+[data-theme="dark"] .settings-drawer > div:first-child {
+  background: rgba(6, 11, 10, 0.65);
+  border-bottom-color: rgba(196, 219, 208, 0.1);
+}
+
+/* ── Tab bar ── */
+.settings-drawer [class*="grid-cols-3"],
+.settings-drawer [class*="grid-cols-2"] {
+  display: flex !important;
+  gap: 0.3rem !important;
+  padding: 0.3rem !important;
+  border-radius: 14px !important;
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.settings-drawer [class*="grid-cols-3"] button,
+.settings-drawer [class*="grid-cols-2"] button {
+  flex: 1 !important;
+  padding: 0.45rem 0.6rem !important;
+  border-radius: 10px !important;
+  font-size: 0.78rem !important;
+  font-weight: 650 !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+
+/* Active tab — marked with bg-bg-primary or text-primary classes */
+.settings-drawer [class*="grid-cols-3"] button.bg-bg-primary,
+.settings-drawer [class*="grid-cols-3"] button[class*="text-primary"],
+.settings-drawer [class*="grid-cols-2"] button.bg-bg-primary,
+.settings-drawer [class*="grid-cols-2"] button[class*="text-primary"] {
+  background: var(--bg-card) !important;
+  color: var(--primary) !important;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1) !important;
+  font-weight: 750 !important;
+}
+
+[data-theme="dark"] .settings-drawer [class*="grid-cols-3"] button.bg-bg-primary,
+[data-theme="dark"] .settings-drawer [class*="grid-cols-2"] button.bg-bg-primary {
+  background: rgba(20, 36, 30, 0.9) !important;
+  color: #2fd08e !important;
+}
+
+/* ── Section headings ── */
+.settings-drawer h3,
+.settings-drawer [class*="section"] > p,
+.settings-drawer [class*="label-heading"] {
+  font-size: 0.7rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: var(--text-muted) !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* ── Setting rows ── */
+.settings-drawer [class*="flex items-center justify-between"] {
+  padding: 0.65rem 0 !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent 40%) !important;
+}
+
+/* ── Reciter grid cards ── */
+.settings-reciter-card,
+[class*="reciter-card"],
+.settings-drawer [class*="reciter"] button,
+.settings-drawer [class*="reciter"] label {
+  border-radius: 14px !important;
+  border: 1.5px solid var(--border) !important;
+  transition: all 0.15s !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+}
+
+.settings-reciter-card:hover,
+[class*="reciter-card"]:hover {
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent 60%) !important;
+  background: color-mix(in srgb, var(--primary) 5%, var(--bg-card) 95%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.settings-reciter-card.is-active,
+[class*="reciter-card"].is-selected,
+.settings-drawer [class*="reciter"] input:checked + label,
+.settings-drawer [class*="reciter"] label[class*="selected"] {
+  border-color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 8%, var(--bg-card) 92%) !important;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--primary) 20%, transparent 80%) !important;
+}
+
+[data-theme="dark"] .settings-reciter-card {
+  border-color: rgba(196, 219, 208, 0.13) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(16, 29, 25, 0.9),
+    rgba(8, 15, 13, 0.92)
+  ) !important;
+}
+
+[data-theme="dark"] .settings-reciter-card:hover,
+[data-theme="dark"] [class*="reciter-card"]:hover {
+  border-color: rgba(47, 208, 142, 0.32) !important;
+}
+
+[data-theme="dark"] .settings-reciter-card.is-active,
+[data-theme="dark"] [class*="reciter-card"].is-selected {
+  border-color: #2fd08e !important;
+  background: rgba(47, 208, 142, 0.08) !important;
+}
+
+/* ── Reciter avatar ── */
+.settings-reciter-avatar {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 2.4rem !important;
+  height: 2.4rem !important;
+  border-radius: 50% !important;
+  background: var(--avatar-bg, var(--primary)) !important;
+  color: #fff !important;
+  font-size: 0.75rem !important;
+  font-weight: 800 !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+}
+
+.settings-reciter-avatar--photo img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+}
+
+/* ── Theme swatches grid ── */
+.settings-theme-grid > *,
+.settings-drawer [class*="theme-grid"] > * {
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  transition: transform 0.15s, box-shadow 0.15s !important;
+  cursor: pointer !important;
+}
+
+.settings-theme-grid > *:hover,
+.settings-drawer [class*="theme-grid"] > *:hover {
+  transform: scale(1.04) !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14) !important;
+}
+
+/* ── Sliders ── */
+.settings-drawer input[type="range"] {
+  accent-color: var(--primary) !important;
+  border-radius: 999px !important;
+  height: 4px !important;
+  cursor: pointer !important;
+}
+
+/* ── Toggle / switch buttons ── */
+.settings-drawer [role="switch"],
+.settings-drawer button[aria-checked] {
+  transition: background 0.2s, border-color 0.2s !important;
+}
+
+.settings-drawer [role="switch"][aria-checked="true"],
+.settings-drawer button[aria-checked="true"] {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+/* ── Danger / action buttons ── */
+.settings-drawer button[class*="destructive"],
+.settings-drawer button[class*="danger"] {
+  border-radius: 10px !important;
+  transition: background 0.15s, transform 0.1s !important;
+}
+
+.settings-drawer button[class*="destructive"]:hover,
+.settings-drawer button[class*="danger"]:hover {
+  transform: translateY(-1px) !important;
+}
+
+/* ── Input fields inside settings ── */
+.settings-drawer input[type="text"],
+.settings-drawer input[type="search"],
+.settings-drawer input[type="number"] {
+  border-radius: 10px !important;
+  border: 1px solid var(--border) !important;
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  font-size: 0.85rem !important;
+  padding: 0.45rem 0.75rem !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+  outline: none !important;
+}
+
+.settings-drawer input[type="text"]:focus,
+.settings-drawer input[type="search"]:focus,
+.settings-drawer input[type="number"]:focus {
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent 50%) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent 88%) !important;
+}

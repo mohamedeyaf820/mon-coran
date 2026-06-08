@@ -43,6 +43,15 @@ export default function useQuranDisplayPrefetch({
       }
     };
 
+    const runCurrentAlternatePrefetch = () => {
+      const alternateRiwaya = riwaya === "warsh" ? "hafs" : "warsh";
+      prefetchText(
+        displayMode,
+        displayMode === "page" ? currentPage : displayMode === "juz" ? currentJuz : currentSurah,
+        alternateRiwaya,
+      );
+    };
+
     const runNearbyPrefetch = () => {
       if (displayMode === "surah") {
         [currentSurah - 1, currentSurah + 1].forEach((surah) => {
@@ -72,13 +81,11 @@ export default function useQuranDisplayPrefetch({
       if (displayMode === "surah") {
         const next = currentSurah + 1;
         const previous = currentSurah - 1;
-        prefetchText("surah", currentSurah, alternateRiwaya);
         if (showTranslation && next <= 114) getSurahTranslation(next, translationLang).catch(() => {});
         if (showTranslation && previous >= 1) getSurahTranslation(previous, translationLang).catch(() => {});
       }
 
       if (displayMode === "page") {
-        prefetchText("page", currentPage, alternateRiwaya);
         [currentPage - 1, currentPage + 1].forEach((page) => {
           if (page < 1 || page > 604) return;
           if (showTranslation) getPageTranslation(page, translationLang).catch(() => {});
@@ -86,7 +93,6 @@ export default function useQuranDisplayPrefetch({
       }
 
       if (displayMode === "juz") {
-        prefetchText("juz", currentJuz, alternateRiwaya);
         [currentJuz - 1, currentJuz + 1].forEach((juz) => {
           if (juz < 1 || juz > 30) return;
           if (showTranslation) getJuzTranslation(juz, translationLang).catch(() => {});
@@ -95,12 +101,14 @@ export default function useQuranDisplayPrefetch({
     };
 
     let secondaryTimer = null;
+    const alternateTimer = window.setTimeout(runCurrentAlternatePrefetch, 240);
     if (typeof window.requestIdleCallback === "function") {
       const idleId = window.requestIdleCallback(runNearbyPrefetch, { timeout: 2400 });
       secondaryTimer = window.setTimeout(() => {
         window.requestIdleCallback(runSecondaryPrefetch, { timeout: 3600 });
       }, 1800);
       return () => {
+        window.clearTimeout(alternateTimer);
         window.cancelIdleCallback?.(idleId);
         if (secondaryTimer) window.clearTimeout(secondaryTimer);
       };
@@ -109,6 +117,7 @@ export default function useQuranDisplayPrefetch({
     const timer = window.setTimeout(runNearbyPrefetch, 1200);
     secondaryTimer = window.setTimeout(runSecondaryPrefetch, 3200);
     return () => {
+      window.clearTimeout(alternateTimer);
       window.clearTimeout(timer);
       if (secondaryTimer) window.clearTimeout(secondaryTimer);
     };

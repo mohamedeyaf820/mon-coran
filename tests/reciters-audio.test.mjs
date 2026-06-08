@@ -71,6 +71,8 @@ test("reciters: ids are unique and metadata is compatible with the player", () =
     const avatar = getReciterAvatar(reciter);
     assert.match(avatar.initials, /^[A-Z0-9]{1,2}$/);
     assert.match(avatar.color, /^#[0-9a-f]{6}$/i);
+    assert.match(avatar.colorAlt, /^#[0-9a-f]{6}$/i);
+    assert.match(avatar.gradient, /^linear-gradient\(/);
     const visual = getReciterVisual(reciter);
     assert.ok(["photo", "avatar"].includes(visual.type), reciter.id);
     assert.ok(visual.photo || visual.avatar?.initials, reciter.id);
@@ -82,13 +84,13 @@ test("reciters: verified Quran.com photos are wired for known public profiles", 
   const knownPhotoIds = [
     "ar.alafasy",
     "ar.husary",
-    "ar.minshawi",
     "abu_bakr_ash_shaatree",
+    "ahmed_ajmy",
     "ghamadi_40",
+    "ar.muhammadjibreel",
     "hani_rifai",
     "khalefa_al_tunaiji",
     "warsh_hussary",
-    "warsh_omar_al_qazabri",
   ];
 
   for (const id of knownPhotoIds) {

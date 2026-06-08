@@ -1,0 +1,177 @@
+/* ── SurahInfoPanel ─────────────────────────────────────── */
+
+.sip-root {
+  margin-top: 0.25rem;
+  padding: clamp(0.65rem, 1.5vw, 0.9rem) clamp(0.75rem, 2vw, 1.1rem);
+  border-top: 1px solid var(--border);
+  animation: sip-in 0.18s ease-out;
+}
+
+@keyframes sip-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Header row */
+.sip-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sip-header__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--primary) 10%, transparent 90%);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.sip-header__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.sip-header__name {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 750;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.sip-header__desc {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: 0.1rem;
+}
+
+.sip-header__arabic {
+  font-family: var(--font-quran, serif);
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  color: var(--text-primary);
+  direction: rtl;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* Stats grid */
+.sip-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+/* Stat tile */
+.sip-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.52rem 0.6rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  transition: border-color 0.15s;
+}
+
+.sip-tile--accent {
+  border-color: color-mix(in srgb, var(--primary) 30%, transparent 70%);
+  background: color-mix(in srgb, var(--primary) 6%, var(--bg-secondary) 94%);
+}
+
+.sip-tile--gold {
+  border-color: color-mix(in srgb, var(--color-gold, #c8a84b) 35%, transparent 65%);
+  background: color-mix(in srgb, var(--color-gold, #c8a84b) 6%, var(--bg-secondary) 94%);
+}
+
+.sip-tile__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--primary) 8%, transparent 92%);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.sip-tile--gold .sip-tile__icon {
+  background: color-mix(in srgb, var(--color-gold, #c8a84b) 10%, transparent 90%);
+  color: var(--color-gold, #c8a84b);
+}
+
+.sip-tile__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sip-tile__value {
+  font-size: 0.82rem;
+  font-weight: 750;
+  color: var(--text-primary);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.sip-tile__label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Dark mode */
+[data-theme="dark"] .sip-tile {
+  background: rgba(13,25,22,0.7);
+  border-color: rgba(196,219,208,0.12);
+}
+
+[data-theme="dark"] .sip-tile--accent {
+  border-color: rgba(47,208,142,0.22);
+  background: rgba(47,208,142,0.06);
+}
+
+[data-theme="dark"] .sip-tile--gold {
+  border-color: rgba(214,179,92,0.25);
+  background: rgba(214,179,92,0.06);
+}
+
+[data-theme="dark"] .sip-tile__icon {
+  background: rgba(47,208,142,0.1);
+  color: #2fd08e;
+}
+
+[data-theme="dark"] .sip-tile--gold .sip-tile__icon {
+  background: rgba(214,179,92,0.1);
+  color: #d6b35c;
+}
+
+[data-theme="dark"] .sip-header__icon {
+  background: rgba(47,208,142,0.1);
+  color: #2fd08e;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .sip-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  .sip-tile {
+    padding: 0.42rem 0.5rem;
+  }
+}

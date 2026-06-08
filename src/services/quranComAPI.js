@@ -103,9 +103,7 @@ function refreshInBackground(url, cacheKey) {
         dbSet(IDB_STORE, { key: cacheKey, data: json, ts: Date.now() }).catch(() => {});
       }
     })
-    .catch((err) => {
-      console.warn("Background cache refresh failed for:", url, err);
-    })
+    .catch(()=>{})
     .finally(() => {
       timed.cleanup();
     });
@@ -387,7 +385,7 @@ async function fetchPaginated(path, meta, signal) {
     const remainingPages = Array.from({ length: totalPages - 1 }, (_, index) => index + 2);
     const chunks = await mapWithConcurrency(
       remainingPages,
-      2,
+      4,
       (page) => fetchJson(buildUrl(path, { page: String(page) }), signal)
     );
     chunks.forEach((chunk) => verses.push(...(chunk.verses || [])));

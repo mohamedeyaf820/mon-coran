@@ -28,6 +28,15 @@ import {
 import { getVerseTafsir } from "../services/quranComStudyService";
 import { openExternalUrl } from "../lib/security";
 import { cn } from "../lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "./ui/dropdown-menu";
+
 
 function emitToast(type, message) {
   window.dispatchEvent(
@@ -146,7 +155,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
   useEffect(() => {
     if (!showStudy || studyTab !== "tafsir") return undefined;
 
-    const key = `${surah}:${ayah}`;
+    const key = `${lang}:${surah}:${ayah}`;
     if (
       tafsirState.key === key &&
       ["loading", "ready", "error"].includes(tafsirState.status)
@@ -188,7 +197,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       mounted = false;
       controller.abort();
     };
-  }, [ayah, showStudy, studyTab, surah, tafsirState.key, tafsirState.status]);
+  }, [ayah, lang, showStudy, studyTab, surah, tafsirState.key, tafsirState.status]);
 
   const toastText = useCallback(
     (fr, ar, en) =>
@@ -1170,6 +1179,8 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           </button>
 
           {/* Playlist / Options */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
           <button
             type="button"
             className={cn(
@@ -1178,11 +1189,39 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
-            onClick={openPlaylistMenu}
+
             title="Options"
           >
             <i className="fas fa-ellipsis text-[0.8rem]" />
           </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>
+                {lang === "fr" ? "Options du verset" : lang === "ar" ? "خيارات الآية" : "Verse options"}
+              </DropdownMenuLabel>
+              <DropdownMenuItem onClick={openPlaylistMenu}>
+                <i className="fas fa-list text-[var(--primary)]" />
+                <span>{lang === "fr" ? "Playlists / Listes" : lang === "ar" ? "قوائم التشغيل" : "Playlists"}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={repeatAyah}>
+                <i className="fas fa-repeat text-[var(--primary)]" />
+                <span>{lang === "fr" ? "Répéter le verset" : lang === "ar" ? "تكرار الآية" : "Repeat verse"}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={toggleComparePin}>
+                <i className="fas fa-thumbtack text-[var(--primary)]" />
+                <span>
+                  {isPinnedForCompare
+                    ? (lang === "fr" ? "Retirer de la comparaison" : lang === "ar" ? "إزالة من المقارنة" : "Remove compare")
+                    : (lang === "fr" ? "Épingler pour comparer" : lang === "ar" ? "Épingler pour comparer" : "Compare verse")}
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => toggleStudyPanel("tafsir")}>
+                <i className="fas fa-book-open text-[var(--primary)]" />
+                <span>Tafsir &amp; {lang === "fr" ? "Étude" : lang === "ar" ? "دراسة" : "Study"}</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ) : layout === "qcom-list-study" ? (
         <div className="qcom-list-study-links select-none">
@@ -1647,7 +1686,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               title={lang === "fr" ? "Playlist" : lang === "ar" ? "قائمة" : "Playlist"}
               aria-label={lang === "fr" ? "Ajouter a la playlist" : lang === "ar" ? "إضافة إلى القائمة" : "Add to playlist"}
             >
-              <i className="fas fa-ellipsis" />
+              <i className="fas fa-list" />
             </button>
           </div>
 

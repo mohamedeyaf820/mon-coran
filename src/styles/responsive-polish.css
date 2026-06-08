@@ -1,0 +1,161 @@
+/* ── Responsive Polish — adapts text/icons/cards to device size ── */
+
+/* ═══ MOBILE (phones ≤ 480px) ═══════════════════════════════════ */
+@media (max-width: 480px) {
+  /* Smaller icon buttons in header */
+  .app-root .mp-header__action,
+  .app-root .mp-header__more,
+  .app-root .mp-header__icon-btn {
+    width: 2.1rem !important;
+    height: 2.1rem !important;
+    font-size: 0.78rem !important;
+  }
+
+  /* Smaller sidebar */
+  .sidebar {
+    padding: 0.5rem 0.25rem !important;
+  }
+
+  /* Reading cards padding smaller on phones */
+  .app-root .quran-display--platform .qc-list-card.qc-list-card {
+    padding: 0.72rem 0.6rem !important;
+  }
+
+  /* Arabic text slightly smaller */
+  .app-root .quran-display--platform .qc-ayah-text-ar {
+    font-size: clamp(1.55rem, 8vw, 2.1rem) !important;
+    line-height: 2.05 !important;
+  }
+
+  /* Translation smaller */
+  .app-root .quran-display--platform .qc-list-card p {
+    font-size: 0.85rem !important;
+    line-height: 1.7 !important;
+  }
+
+  /* Study links smaller */
+  .app-root .quran-display--platform .qcom-list-study-link {
+    font-size: 0.75rem !important;
+  }
+
+  /* Toolbar compact */
+  .reader-toolbar,
+  .qc-reader-toolbar {
+    padding: 0.5rem !important;
+    gap: 0.4rem !important;
+  }
+}
+
+/* ═══ TABLET (641px–1024px) ════════════════════════════════════ */
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* Moderate icon size */
+  .app-root .mp-header__action,
+  .app-root .mp-header__more,
+  .app-root .mp-header__icon-btn {
+    width: 2.35rem !important;
+    height: 2.35rem !important;
+  }
+
+  /* Reading text comfortable on tablet */
+  .app-root .quran-display--platform .qc-ayah-text-ar {
+    font-size: clamp(2rem, 4vw, 2.7rem) !important;
+    line-height: 2.1 !important;
+  }
+
+  /* Card padding comfortable */
+  .app-root .quran-display--platform .qc-list-card.qc-list-card {
+    padding: 1.05rem 1.15rem !important;
+  }
+
+  /* Surah cards grid */
+  .hp-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)) !important;
+  }
+}
+
+/* ═══ DESKTOP (≥ 1025px) ════════════════════════════════════════ */
+@media (min-width: 1025px) {
+  /* Header icon size optimal */
+  .app-root .mp-header__action,
+  .app-root .mp-header__more,
+  .app-root .mp-header__icon-btn {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+  }
+
+  /* Reading text comfortable on desktop */
+  .app-root .quran-display--platform .qc-ayah-text-ar {
+    font-size: clamp(2.4rem, 3vw, 3.2rem) !important;
+    line-height: 2.15 !important;
+  }
+
+  /* Cards wider padding on large screens */
+  .app-root .quran-display--platform .qc-list-card.qc-list-card {
+    padding: 1.25rem 1.75rem !important;
+  }
+
+  /* Surah grid 4 columns on large */
+  .hp-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)) !important;
+  }
+}
+
+/* ═══ MUSHAF MODE responsive ═══════════════════════════════════ */
+@media (max-width: 640px) {
+  .app-root .quran-display--platform .cpv-container.mushaf-page-wrapper {
+    padding: 0.5rem !important;
+    border-radius: 10px !important;
+  }
+
+  .app-root .quran-display--platform .mushaf-container {
+    font-size: clamp(1.4rem, 5.5vw, 1.8rem) !important;
+    line-height: 2.2 !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .app-root .quran-display--platform .mushaf-container {
+    font-size: clamp(1.55rem, 3.5vw, 2.1rem) !important;
+    line-height: 2.2 !important;
+  }
+}
+
+/* ═══ AUDIO PLAYER responsive ═══════════════════════════════════ */
+@media (max-width: 480px) {
+  .mp-audio-player--mobile {
+    padding: 0.5rem 0.35rem !important;
+  }
+
+  .mp-player-mobile-meta {
+    font-size: 0.72rem !important;
+  }
+
+  .mp-player-play-btn {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+  }
+}
+
+/* ═══ CARDS GRID responsive ════════════════════════════════════ */
+@media (max-width: 480px) {
+  .app-root .hp-grid--surah {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.5rem !important;
+  }
+
+  .app-root .surah-card {
+    padding: 0.6rem 0.5rem !important;
+    font-size: 0.82rem !important;
+  }
+}
+
+/* ═══ FOOTER responsive ════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .mp-footer-v2__shell {
+    padding: 0.75rem 0.5rem !important;
+  }
+
+  .mp-footer-v2__surah-name {
+    font-size: 0.78rem !important;
+  }
+}

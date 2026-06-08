@@ -1,0 +1,217 @@
+/* ══════════════════════════════════════════════════════
+   Sidebar Enhanced Styles
+   ══════════════════════════════════════════════════════ */
+
+/* ── Base panel ── */
+#sidebar,
+.sb-wrapper {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(360px, 92vw);
+  z-index: 1000;
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border);
+  box-shadow: 12px 0 48px rgba(0, 0, 0, 0.12);
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+}
+
+#sidebar.open,
+.sb-wrapper.open {
+  transform: translateX(0);
+}
+
+/* RTL support */
+#sidebar[dir="rtl"],
+.sb-wrapper[dir="rtl"] {
+  left: auto;
+  right: 0;
+  border-right: none;
+  border-left: 1px solid var(--border);
+  transform: translateX(100%);
+  box-shadow: -12px 0 48px rgba(0, 0, 0, 0.12);
+}
+
+#sidebar.open[dir="rtl"],
+.sb-wrapper.open[dir="rtl"] {
+  transform: translateX(0);
+}
+
+/* Dark mode sidebar */
+[data-theme="dark"] #sidebar,
+[data-theme="dark"] .sb-wrapper {
+  background: rgba(8, 15, 13, 0.98);
+  border-right-color: rgba(196, 219, 208, 0.12);
+  box-shadow: 12px 0 56px rgba(0, 0, 0, 0.42);
+}
+
+/* ── Header (first direct div child) ── */
+#sidebar > div:first-child,
+.sb-wrapper > div:first-child {
+  flex-shrink: 0;
+  padding: 1rem 1.15rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-secondary) 80%, transparent 20%);
+}
+
+[data-theme="dark"] #sidebar > div:first-child,
+[data-theme="dark"] .sb-wrapper > div:first-child {
+  background: rgba(6, 11, 10, 0.7);
+  border-bottom-color: rgba(196, 219, 208, 0.1);
+}
+
+/* ── Scrollable zone ── */
+#sidebar .overflow-y-auto,
+.sb-wrapper .overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 30%, transparent 70%) transparent;
+}
+
+#sidebar .overflow-y-auto::-webkit-scrollbar,
+.sb-wrapper .overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+#sidebar .overflow-y-auto::-webkit-scrollbar-track,
+.sb-wrapper .overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#sidebar .overflow-y-auto::-webkit-scrollbar-thumb,
+.sb-wrapper .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--primary) 30%, transparent 70%);
+  border-radius: 999px;
+}
+
+/* ── Tab bar ── */
+#sidebar .grid.gap-1,
+.sb-wrapper .grid.gap-1 {
+  gap: 0.25rem !important;
+  padding: 0.25rem !important;
+  border-radius: 12px !important;
+  border: 1px solid var(--border) !important;
+  background: var(--bg-secondary) !important;
+}
+
+#sidebar .grid.gap-1 button,
+.sb-wrapper .grid.gap-1 button {
+  border-radius: 9px !important;
+  font-size: 0.75rem !important;
+  font-weight: 650 !important;
+  padding: 0.35rem 0.5rem !important;
+  transition: all 0.15s !important;
+  border: none !important;
+  color: var(--text-secondary) !important;
+  background: transparent !important;
+  min-height: 2rem !important;
+}
+
+/* Active tab button — uses Tailwind bg-bg-primary text-primary shadow-sm */
+#sidebar .grid.gap-1 button.bg-bg-primary,
+.sb-wrapper .grid.gap-1 button.bg-bg-primary {
+  background: var(--bg-card) !important;
+  color: var(--primary) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+  font-weight: 750 !important;
+}
+
+[data-theme="dark"] #sidebar .grid.gap-1 button.bg-bg-primary,
+[data-theme="dark"] .sb-wrapper .grid.gap-1 button.bg-bg-primary {
+  background: rgba(20, 36, 30, 0.9) !important;
+  color: #2fd08e !important;
+}
+
+/* ── Search input ── */
+#sidebar input[type="text"],
+#sidebar input[type="search"],
+.sb-wrapper input[type="text"],
+.sb-wrapper input[type="search"] {
+  border-radius: 12px !important;
+  border: 1px solid var(--border) !important;
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  font-size: 0.85rem !important;
+  padding: 0.5rem 0.85rem !important;
+  transition: border-color 0.15s, box-shadow 0.15s !important;
+  outline: none !important;
+  width: 100% !important;
+}
+
+#sidebar input:focus,
+.sb-wrapper input:focus {
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent 50%) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent 88%) !important;
+}
+
+/* ── Surah / Juz / Page list items ── */
+#sidebar .overflow-y-auto button.w-full,
+.sb-wrapper .overflow-y-auto button.w-full {
+  border-radius: 10px !important;
+  transition: background 0.12s, border-color 0.12s !important;
+}
+
+#sidebar .overflow-y-auto button.w-full:hover,
+.sb-wrapper .overflow-y-auto button.w-full:hover {
+  background: color-mix(in srgb, var(--primary) 6%, var(--bg-secondary) 94%) !important;
+}
+
+/* Active list item — uses border-primary/30 bg-primary/8 classes */
+#sidebar .overflow-y-auto button.border-primary\/30,
+#sidebar .overflow-y-auto button[class*="bg-primary"],
+.sb-wrapper .overflow-y-auto button.border-primary\/30,
+.sb-wrapper .overflow-y-auto button[class*="bg-primary"] {
+  background: color-mix(in srgb, var(--primary) 10%, var(--bg-secondary) 90%) !important;
+  border-color: color-mix(in srgb, var(--primary) 30%, transparent 70%) !important;
+  color: var(--primary) !important;
+}
+
+/* ── Number circles (surah index badges) ── */
+#sidebar span.rounded-full.flex,
+#sidebar span[class*="rounded-full"][class*="flex"],
+.sb-wrapper span.rounded-full.flex,
+.sb-wrapper span[class*="rounded-full"][class*="flex"] {
+  border-radius: 50% !important;
+  font-size: 0.65rem !important;
+  font-weight: 800 !important;
+  min-width: 1.6rem !important;
+  height: 1.6rem !important;
+}
+
+/* ── Surah name / title text ── */
+#sidebar span.font-semibold,
+#sidebar p.font-semibold,
+.sb-wrapper span.font-semibold,
+.sb-wrapper p.font-semibold {
+  font-size: 0.88rem !important;
+}
+
+/* ── Arabic calligraphy glyph ── */
+#sidebar [class*="font-surah"],
+.sb-wrapper [class*="font-surah"] {
+  font-size: 1.3rem !important;
+  opacity: 0.65 !important;
+}
+
+/* ── Subtle entry animation for list items ── */
+@media (prefers-reduced-motion: no-preference) {
+  #sidebar .overflow-y-auto > *,
+  .sb-wrapper .overflow-y-auto > * {
+    animation: sb-item-in 0.18s ease both;
+  }
+}
+
+@keyframes sb-item-in {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

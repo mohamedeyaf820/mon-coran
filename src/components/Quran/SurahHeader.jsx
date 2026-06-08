@@ -1,14 +1,21 @@
 import React, { useState } from "react";
-import { Info } from "lucide-react";
+import { Info, Play, Loader2 } from "lucide-react";
 import { getSurah } from "../../data/surahs";
 import { cn } from "../../lib/utils";
 import SurahInfoPanel from "../QuranDisplay/SurahInfoPanel";
 
-function labelFor(lang, fr, en) {
+function labelFor(lang, fr, en, ar = en) {
+  if (lang === "ar") return ar;
   return lang === "fr" ? fr : en;
 }
 
-const SurahHeader = React.memo(function SurahHeader({ surahNum, lang }) {
+const SurahHeader = React.memo(function SurahHeader({
+  surahNum,
+  lang,
+  onPlaySurah,
+  preparingSurah,
+  translationLabel,
+}) {
   const s = getSurah(surahNum);
   const [showInfo, setShowInfo] = useState(false);
 
@@ -16,69 +23,128 @@ const SurahHeader = React.memo(function SurahHeader({ surahNum, lang }) {
 
   const isMeccan = s.type === "Meccan";
   const translatedName =
-    lang === "ar" ? s.en : lang === "fr" ? s.fr || s.en : s.en;
+    lang === "ar" ? s.ar : lang === "fr" ? s.fr || s.en : s.en;
   const revelationLabel = isMeccan
-    ? labelFor(lang, "Mecquoise", "Meccan")
-    : labelFor(lang, "Medinoise", "Medinan");
-  const ayahLabel = labelFor(lang, "versets", "verses");
+    ? labelFor(lang, "Mecquoise", "Meccan", "مكية")
+    : labelFor(lang, "Médinoise", "Medinan", "مدنية");
+  const ayahLabel = labelFor(lang, "versets", "verses", "آيات");
+  const isPreparing = Boolean(preparingSurah && preparingSurah === surahNum);
 
   return (
     <section
-      className="qc-reader-surah-header"
+      className="qc-surah-banner"
       aria-labelledby={`surah-title-${surahNum}`}
     >
-      <div className="qc-reader-surah-header__number" aria-hidden="true">
-        {surahNum}
-      </div>
-
-      <div className="qc-reader-surah-header__body">
-        <div
-          className="qc-reader-surah-header__arabic"
-          dir="rtl"
-          lang="ar"
-          aria-label={s.ar}
-        >
-          <span className="qc-reader-surah-header__arabic-kicker">سورة</span>
-          <span className="qc-reader-surah-header__arabic-name">{s.ar}</span>
-        </div>
-
-        <h1
-          id={`surah-title-${surahNum}`}
-          className="qc-reader-surah-header__title"
-        >
-          {translatedName}
-        </h1>
-        <div className="qc-reader-surah-header__subtitle">{s.en}</div>
-
-        <div className="qc-reader-surah-header__meta">
-          <span
-            className={cn(
-              "qc-reader-surah-header__pill",
-              isMeccan && "qc-reader-surah-header__pill--gold",
-            )}
+      <div className="qc-surah-banner__inner">
+        {/* Left: Arabic name + info */}
+        <div className="qc-surah-banner__identity">
+          {/* Arabic calligraphy */}
+          <div
+            className="qc-surah-banner__arabic"
+            dir="rtl"
+            lang="ar"
+            aria-label={s.ar}
           >
-            {revelationLabel}
-          </span>
-          <span className="qc-reader-surah-header__dot" aria-hidden="true">
-            .
-          </span>
-          <span className="qc-reader-surah-header__pill">
-            {s.ayahs} {ayahLabel}
-          </span>
+            {s.ar}
+          </div>
+
+          {/* Text info */}
+          <div className="qc-surah-banner__meta">
+            <h1
+              id={`surah-title-${surahNum}`}
+              className="qc-surah-banner__title"
+            >
+              <span className="qc-surah-banner__num">{surahNum}.</span>{" "}
+              {translatedName}
+            </h1>
+            <p className="qc-surah-banner__sub">{s.en}</p>
+            <p className="qc-surah-banner__desc">
+              {labelFor(
+                lang,
+                `Lisez et écoutez la Sourate ${s.fr || s.en} — traduction, tafsir, récitation audio.`,
+                `Read and listen to Surah ${s.en} — translation, tafsir, audio recitation.`,
+                `اقرأ واستمع إلى سورة ${s.ar}`,
+              )}
+            </p>
+          </div>
+        </div>
+
+        {/* Right: Actions */}
+        <div className="qc-surah-banner__actions">
+          {/* Badges */}
+          <div className="qc-surah-banner__badges">
+            <span
+              className={cn(
+                "qc-surah-banner__badge",
+                isMeccan
+                  ? "qc-surah-banner__badge--gold"
+                  : "qc-surah-banner__badge--blue",
+              )}
+            >
+              {revelationLabel}
+            </span>
+            <span className="qc-surah-banner__badge">
+              {s.ayahs} {ayahLabel}
+            </span>
+          </div>
+
+          {/* Buttons */}
+          <div className="qc-surah-banner__btns">
+            {onPlaySurah && (
+              <button
+                type="button"
+                className="qc-surah-banner__play-btn"
+                onClick={onPlaySurah}
+                disabled={isPreparing}
+                aria-label={labelFor(
+                  lang,
+                  "Écouter la sourate",
+                  "Listen to surah",
+                  "استمع للسورة",
+                )}
+              >
+                {isPreparing ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Play size={14} fill="currentColor" />
+                )}
+                <span>
+                  {isPreparing
+                    ? labelFor(lang, "Chargement...", "Loading...", "جاري...")
+                    : labelFor(lang, "Écouter", "Listen", "استمع")}
+                </span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              className="qc-surah-banner__info-btn"
+              onClick={() => setShowInfo((v) => !v)}
+              aria-expanded={showInfo}
+              aria-label={labelFor(
+                lang,
+                "Informations sur la sourate",
+                "Surah information",
+                "معلومات السورة",
+              )}
+            >
+              <Info size={15} />
+              <span className="hidden sm:inline">
+                {labelFor(lang, "Info", "Info", "معلومات")}
+              </span>
+            </button>
+          </div>
+
+          {/* Translation label if provided */}
+          {translationLabel && (
+            <div className="qc-surah-banner__translation-label">
+              {translationLabel}
+            </div>
+          )}
         </div>
       </div>
 
-      <button
-        type="button"
-        className="qc-reader-surah-header__info"
-        onClick={() => setShowInfo((v) => !v)}
-        aria-expanded={showInfo}
-        aria-label={labelFor(lang, "Informations sur la sourate", "Surah information")}
-      >
-        <Info size={16} />
-      </button>
-
-      {showInfo ? <SurahInfoPanel surahNum={surahNum} lang={lang} /> : null}
+      {showInfo && <SurahInfoPanel surahNum={surahNum} lang={lang} />}
     </section>
   );
 });

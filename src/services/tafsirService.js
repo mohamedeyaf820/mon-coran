@@ -27,6 +27,7 @@ const DEFAULT_TAFSIR_KEY = {
   fr: "en-kathir",
   en: "en-kathir",
   ar: "ar-muyassar",
+  wo: "en-kathir",
 };
 
 function getDocumentLang() {
@@ -86,7 +87,7 @@ export async function fetchTafsirRange(surah, fromAyah, toAyah, tafsirId = null)
 }
 
 export function getAvailableTafsirs(lang = "fr") {
-  const normalizedLang = lang === "fr" ? "en" : lang;
+  const normalizedLang = lang === "fr" || lang === "wo" ? "en" : lang;
   return Object.values(TAFSIR_SOURCES)
     .filter((source) => source.lang === normalizedLang || source.lang === "ar")
     .map((source) => ({

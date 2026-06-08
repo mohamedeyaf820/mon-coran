@@ -186,16 +186,12 @@ async function fetchJSON(url, signal) {
     }
   } catch { /* IDB read failure — continue to network */ }
 
-  // 3. Deduplicate: if same URL is already being fetched, reuse its promise
+  // Reuse prefetches for fast riwaya/page switches.
   if (inflight.has(url)) {
-    const active = inflight.get(url);
-    if (active && active.signal === (signal || null)) {
-      return active.promise;
-    }
+    return inflight.get(url).promise;
   }
 
   const entry = {
-    signal: signal || null,
     promise: _fetchFromNetwork(url, idbKey, signal),
   };
   inflight.set(url, entry);
@@ -423,7 +419,9 @@ async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal) {
   if (USE_QURAN_COM_TEXT && canLoadFromQuranCom(pathPrefix, riwaya)) {
     try {
       lastWarshFallback = false;
-      return await fetchQuranComText(pathPrefix, signal);
+      const data = await fetchQuranComText(pathPrefix, signal);
+      if (!Array.isArray(data?.ayahs) || data.ayahs.length) return data;
+      throw new Error('Empty Quran.com text payload');
     } catch (err) {
       if (err.name === 'AbortError') throw err;
       console.warn('Primary text API fallback to AlQuran.cloud:', err);

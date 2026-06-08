@@ -1,10 +1,9 @@
 import React from "react";
 import { t } from "../../i18n";
 import { getSurah } from "../../data/surahs";
-import ReadingToolbar from "../Quran/ReadingToolbar";
+import SurahReaderHeader from "../Quran/SurahReaderHeader";
 import ReadingProgressBar from "../Quran/ReadingProgressBar";
 import CleanPageView from "../Quran/CleanPageView";
-import SurahHeader from "../Quran/SurahHeader";
 import AyahActionsModal from "./AyahActionsModal";
 import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
@@ -52,24 +51,22 @@ export default function SurahMode({
       } ${modePaneShellClass}`}
     >
       <ReadingProgressBar />
+
+      {/* Unified surah identity + controls header */}
       {!(isQCF4 && mushafLayout === "mushaf") && (
         <div className="qc-surah-header-wrap animate-in">
-          <SurahHeader surahNum={currentSurah} lang={lang} />
+          <SurahReaderHeader
+            surahNum={currentSurah}
+            currentAyah={activeAyah || 1}
+            onPlaySurah={onPlaySurah}
+            preparingSurah={preparingSurah}
+            onNavigateToAyah={onNavigateToAyah}
+            onToggleMushaf={onToggleMushaf}
+            onToggleMemorization={onToggleMemorization}
+            onToggleWordByWord={onToggleWordByWord}
+          />
         </div>
       )}
-
-      <ReadingToolbar
-        contextLabel={surahMeta ? `${currentSurah}. ${lang === "fr" ? surahMeta.fr || surahMeta.en : surahMeta.en}` : undefined}
-        playLabel={lang === "fr" ? "Écouter la sourate" : "Listen surah"}
-        surahNum={currentSurah}
-        onPlaySurah={onPlaySurah}
-        preparingSurah={preparingSurah}
-        currentAyah={activeAyah || 1}
-        onNavigateToAyah={onNavigateToAyah}
-        onToggleMushaf={onToggleMushaf}
-        onToggleMemorization={onToggleMemorization}
-        onToggleWordByWord={onToggleWordByWord}
-      />
 
       {mushafLayout === "mushaf" ? (
         <>
@@ -101,6 +98,7 @@ export default function SurahMode({
             onClose={() => onToggleActive(null)}
             surah={currentSurah}
             ayahData={ayahs.find((ayah) => ayah.numberInSurah === activeAyah)}
+            quietBackdrop
           />
         </>
       ) : (

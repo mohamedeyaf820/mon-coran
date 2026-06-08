@@ -298,7 +298,6 @@ export default function QuranDisplay() {
     return (
       <div className="flex justify-center items-center min-h-[50vh] p-8">
         <div className="w-full max-w-3xl flex flex-col gap-6 p-8 rounded-3xl bg-bg-card/95 shadow-xl border border-white/10 relative overflow-hidden">
-          {/* Shimmer overlay */}
           <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.06)] to-transparent pointer-events-none" aria-hidden="true" />
           <div className="flex justify-between items-center mb-4">
             <div className="h-8 w-24 bg-primary/15 rounded-full animate-pulse"></div>
@@ -312,7 +311,6 @@ export default function QuranDisplay() {
             ))}
           </div>
         </div>
-        <style>{`@keyframes shimmer { to { transform: translateX(100%); } }`}</style>
       </div>
     );
   if (error)

@@ -1023,16 +1023,6 @@ ol {
     }
 }
 
-@keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
-
-    100% {
-        background-position: 200% 0;
-    }
-}
-
 @keyframes skeletonShimmer {
     0% {
         background-position: -200% 0;
@@ -4116,18 +4106,6 @@ ol {
     }
 }
 
-@keyframes slideUpAudio {
-    from {
-        transform: translateY(100%);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
 @keyframes slideDownFade {
     from {
         transform: translateY(-10px);
@@ -4137,38 +4115,6 @@ ol {
     to {
         transform: translateY(0);
         opacity: 1;
-    }
-}
-
-@keyframes pulseGlow {
-    0%,
-    100% {
-        box-shadow: 0 0 12px rgba(27, 94, 59, 0.2);
-    }
-
-    50% {
-        box-shadow: 0 0 20px rgba(27, 94, 59, 0.35);
-    }
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: -200% center;
-    }
-
-    100% {
-        background-position: 200% center;
-    }
-}
-
-@keyframes float {
-    0%,
-    100% {
-        transform: translateY(0px);
-    }
-
-    50% {
-        transform: translateY(-4px);
     }
 }
 
@@ -8914,91 +8860,6 @@ input:focus-visible {
     cursor: not-allowed;
 }
 
-@keyframes hp2FadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(14px);
-    }
-    to {
-        opacity: 1;
-        transform: none;
-    }
-}
-@keyframes hp2BisEnter {
-    from {
-        opacity: 0;
-        transform: scale(0.88) translateY(-8px);
-    }
-    to {
-        transform: none; 
-    }
-}
-@keyframes hp2SlideRight {
-    from {
-        opacity: 0;
-        transform: translateX(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: none;
-    }
-}
-
-@keyframes hp2VodGlow {
-    0%,
-    100% {
-        box-shadow: 0 0 0 4px rgba(var(--gold-rgb, 184, 134, 11), 0.07);
-    }
-    50% {
-        box-shadow: 0 0 0 8px rgba(var(--gold-rgb, 184, 134, 11), 0.12);
-    }
-}
-
-@keyframes hp2StatNum {
-    from {
-        opacity: 0;
-        transform: translateY(6px) scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: none;
-    }
-}
-
-@keyframes hplRowIn {
-    from {
-        opacity: 0;
-        transform: translateX(-8px);
-    }
-    to {
-        opacity: 1;
-        transform: none;
-    }
-}
-
-@keyframes hp2ItemFade {
-    from {
-        opacity: 0;
-        transform: translateX(-5px);
-    }
-    to {
-        opacity: 1;
-        transform: none;
-    }
-}
-
-@keyframes hp2OrbPulse {
-    0%,
-    100% {
-        opacity: 0.8;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.06);
-    }
-}
-
 .hp2-btn {
     display: inline-flex;
     align-items: center;
@@ -9050,59 +8911,6 @@ input:focus-visible {
     background: rgba(var(--primary-rgb), 0.04);
 }
 
-@keyframes hp2GradientShift {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-@keyframes hp2PulseDot {
-    0%,
-    100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.6;
-    }
-}
-
-@keyframes hp2FadeSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(14px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes hp2FadeSlideRight {
-    from {
-        opacity: 0;
-        transform: translateX(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes hp2FadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
 @media (max-width: 640px) {
     .hp2-btn {
         width: 100%;
@@ -9114,79 +8922,6 @@ input:focus-visible {
 }
 
 @media (max-width: 380px) {
-}
-
-@keyframes hp2QuickbarIn {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-    to {
-        opacity: 1;
-        transform: none;
-    }
-}
-
-@keyframes hp2VodPulse {
-    0% {
-        box-shadow:
-            0 10px 40px rgba(27, 94, 59, 0.35),
-            0 2px 8px rgba(0, 0, 0, 0.12);
-    }
-    50% {
-        box-shadow:
-            0 14px 52px rgba(27, 94, 59, 0.48),
-            0 4px 12px rgba(0, 0, 0, 0.14);
-    }
-    100% {
-        box-shadow:
-            0 10px 40px rgba(27, 94, 59, 0.35),
-            0 2px 8px rgba(0, 0, 0, 0.12);
-    }
-}
-
-@keyframes hp2FocusOrb {
-    0% {
-        transform: scale(1) translate(0, 0);
-        opacity: 0.65;
-    }
-    50% {
-        transform: scale(1.14) translate(-6px, 4px);
-        opacity: 0.85;
-    }
-    100% {
-        transform: scale(1) translate(0, 0);
-        opacity: 0.65;
-    }
-}
-
-@keyframes hp2StatPop {
-    from {
-        transform: scale(0.88);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-@keyframes hp2BtnPulse {
-    0% {
-        box-shadow:
-            0 2px 10px rgba(var(--primary-rgb), 0.4),
-            0 1px 2px rgba(var(--primary-rgb), 0.25);
-    }
-    50% {
-        box-shadow:
-            0 4px 20px rgba(var(--primary-rgb), 0.55),
-            0 2px 6px rgba(var(--primary-rgb), 0.3);
-    }
-    100% {
-        box-shadow:
-            0 2px 10px rgba(var(--primary-rgb), 0.4),
-            0 1px 2px rgba(var(--primary-rgb), 0.25);
-    }
 }
 
 @media (max-width: 520px) {
@@ -20471,16 +20206,6 @@ body {
     }
 }
 
-@keyframes shimmer {
-    0% {
-        background-position: -400px 0;
-    }
-
-    100% {
-        background-position: 400px 0;
-    }
-}
-
 .loading-ayah {
     height: 1.5rem;
     border-radius: 6px;
@@ -20491,7 +20216,7 @@ body {
         var(--bg-secondary) 75%
     );
     background-size: 800px 100%;
-    animation: shimmer 1.6s ease-in-out infinite;
+    animation: skeletonShimmer 1.6s ease-in-out infinite;
     margin-bottom: 0.6rem;
 }
 

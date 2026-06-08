@@ -65,9 +65,11 @@ export default function AudioPlayer() {
   const [expanded, setExpanded] = useState(false);
   const [minimized, setMinimized] = useState(Boolean(playerMinimized));
   const [volume, setVolume] = useState(savedVolume ?? 1);
-  const [isMobile, setIsMobile] = useState(
-    () => window.innerWidth < MOBILE_BREAKPOINT,
-  );
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const isTouch = window.matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0;
+    return window.innerWidth < MOBILE_BREAKPOINT || isTouch;
+  });
   const [audioError, setAudioError] = useState(null);
   const [networkState, setNetworkState] = useState("idle");
   const [optionsModalOpen, setOptionsModalOpen] = useState(false);
@@ -227,7 +229,10 @@ export default function AudioPlayer() {
 
   /* Detect mobile */
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    const onResize = () => {
+      const isTouch = window.matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0;
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT || isTouch);
+    };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -1128,7 +1133,7 @@ export default function AudioPlayer() {
     }
 
     // Reserve enough space for the mobile dock so verses and controls are never hidden behind it.
-    const reservedHeight = minimized ? 86 : expanded ? 198 : 136;
+    const reservedHeight = minimized ? 78 : expanded ? 190 : 112;
     root.style.setProperty("--player-h", `${reservedHeight}px`);
     root.style.removeProperty("--desktop-player-reserved-h");
 
