@@ -7,7 +7,6 @@ import { dbGet, dbSet, dbDelete, dbGetAll } from "./dbService.js";
 import {
   encryptData,
   decryptDataWithMeta,
-  isEncryptionUnlocked,
 } from "./cryptoUtil.js";
 import { ACCEPTED_FONT_IDS, DEFAULT_FONT_ID, normalizeFontId } from "../data/fonts.js";
 import { bookmarkRecordSchema, noteRecordSchema } from "./storageValidation.js";
@@ -364,7 +363,9 @@ export function getSettings() {
           : DEFAULT_SETTINGS.surahRepeatCount,
     };
 
-    if (usedLegacy && isEncryptionUnlocked()) {
+    if (usedLegacy) {
+      // Toujours migrer depuis la clé legacy (publique) vers la clé appareil,
+      // sans attendre le déverrouillage de la passphrase utilisateur.
       saveSettings(normalized);
     }
 

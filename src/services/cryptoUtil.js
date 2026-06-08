@@ -27,8 +27,9 @@ function generateSecretKey() {
     crypto.getRandomValues(bytes);
     return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
   }
-  // Fallback basique si l'API Web Crypto n'est pas disponible
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+  // Aucun navigateur supportant les Service Workers ne manque de Web Crypto.
+  // Refuser de générer une clé faible plutôt que de donner une fausse sécurité.
+  throw new Error("crypto.getRandomValues is required for encryption — environment unsupported");
 }
 
 /**
