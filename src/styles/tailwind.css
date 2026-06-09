@@ -5123,7 +5123,8 @@ input:focus-visible {
 }
 
 .mem-words {
-    font-family: var(--font-quran, "Scheherazade New", serif);
+    font-family: var(--qd-font-family, var(--font-quran, "Scheherazade New", serif));
+    font-size: var(--reader-arabic-size, var(--qd-reading-font-size, 28px));
     line-height: 2.5;
     word-spacing: 0.2em;
     display: block;

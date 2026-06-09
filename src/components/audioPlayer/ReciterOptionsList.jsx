@@ -141,7 +141,7 @@ export default function ReciterOptionsList(props) {
             {labels.noReciter}
           </div>
         ) : (
-          <div className="audio-reciter-options__grid grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="audio-reciter-options__grid grid grid-cols-2 gap-2 xl:grid-cols-3">
             {filteredReciters.map((r) => {
               const active = reciter === r.id;
               const isLoading =

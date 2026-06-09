@@ -11,7 +11,7 @@
 .mp-header__bar {
   display: flex;
   align-items: center;
-  height: clamp(56px, 8vh, 64px);
+  height: clamp(48px, 7vh, 56px);
   padding: 0 clamp(0.5rem, 2vw, 1.25rem);
   gap: 0.5rem;
   background: color-mix(in srgb, var(--bg-primary) 88%, transparent 12%);
@@ -109,8 +109,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 10px;
   border: none;
   background: transparent;
@@ -134,14 +134,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.25rem 0.6rem;
+  padding: 0.15rem 0.6rem;
   border-radius: 10px;
   border: none;
   background: transparent;
   cursor: pointer;
   transition: background 0.15s;
   min-width: 0;
-  max-width: clamp(110px, 28vw, 260px);
+  max-width: min(65vw, 300px);
   text-align: center;
 }
 .mp-header__title-btn:hover {
@@ -247,6 +247,21 @@
   background: var(--bg-secondary);
   border-color: var(--border);
   color: var(--primary);
+}
+
+.mp-header__riwaya-toggle {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  background: rgba(var(--primary-rgb), 0.08);
+  border: 1px solid rgba(var(--primary-rgb), 0.2);
+  color: var(--primary);
+  border-radius: 10px;
+  padding: 0 0.6rem;
+}
+.mp-header__riwaya-toggle:hover {
+  background: rgba(var(--primary-rgb), 0.15);
+  border-color: rgba(var(--primary-rgb), 0.35);
 }
 
 .mp-header__more {
@@ -360,7 +375,7 @@
   .mp-header__bar {
     padding: 0 0.5rem;
     gap: 0.3rem;
-    height: 52px;
+    height: 46px;
   }
 
   .mp-header__action span {
@@ -388,7 +403,7 @@
   }
 
   .mp-header__title-btn {
-    max-width: clamp(80px, 22vw, 160px);
+    max-width: min(50vw, 200px);
   }
 }
 

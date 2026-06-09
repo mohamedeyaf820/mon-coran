@@ -1,19 +1,60 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 
 /**
  * Displays Quran ayah text in memorization mode.
  * Words are hidden by default and can be revealed sequentially or by click.
+ * When `isPlaying` is true, words auto-reveal progressively over the repeat cycle.
  */
-export default function MemorizationText({ text, lang = 'fr' }) {
+export default function MemorizationText({ text, lang = 'fr', isPlaying = false, repeatCount = 3 }) {
   const words = text ? text.trim().split(/\s+/) : [];
   const [seqRevealed, setSeqRevealed] = useState(0);
   const [clickRevealed, setClickRevealed] = useState(new Set());
+  const autoRevealTimer = useRef(null);
 
   // Reset when the ayah changes
   useEffect(() => {
     setSeqRevealed(0);
     setClickRevealed(new Set());
+    if (autoRevealTimer.current) {
+      clearInterval(autoRevealTimer.current);
+      autoRevealTimer.current = null;
+    }
   }, [text]);
+
+  // Auto-reveal words when playing (memorization + audio sync)
+  useEffect(() => {
+    if (!isPlaying || words.length === 0) {
+      if (autoRevealTimer.current) {
+        clearInterval(autoRevealTimer.current);
+        autoRevealTimer.current = null;
+      }
+      return;
+    }
+
+    // Reveal words progressively over the repeat duration.
+    // Each repeat reveals a chunk of words. With N repeats and W words,
+    // we reveal ceil(W/N) words per repeat, spaced evenly over ~2.5s per word.
+    const wordsPerChunk = Math.max(1, Math.ceil(words.length / Math.max(1, repeatCount)));
+    const intervalMs = 1800; // Reveal a word every 1.8s when playing
+
+    autoRevealTimer.current = setInterval(() => {
+      setSeqRevealed((prev) => {
+        const next = prev + 1;
+        if (next >= words.length) {
+          clearInterval(autoRevealTimer.current);
+          autoRevealTimer.current = null;
+        }
+        return Math.min(next, words.length);
+      });
+    }, intervalMs);
+
+    return () => {
+      if (autoRevealTimer.current) {
+        clearInterval(autoRevealTimer.current);
+        autoRevealTimer.current = null;
+      }
+    };
+  }, [isPlaying, words.length, repeatCount]);
 
   const isRevealed = (i) => i < seqRevealed || clickRevealed.has(i);
   const revealedCount = words.filter((_, i) => isRevealed(i)).length;

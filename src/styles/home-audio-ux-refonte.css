@@ -318,9 +318,7 @@ html.dark .home-info-card {
   line-height: 1;
 }
 
-.home-hero-copy:not(.home-hero-copy-clean) {
-  display: none !important;
-}
+/* Hero copy is now always visible — handled in HeroSection.jsx */
 
 .home-hero-title {
   letter-spacing: 0 !important;
@@ -331,9 +329,7 @@ html.dark .home-info-card {
   color: color-mix(in srgb, var(--theme-text, #111827) 70%, var(--theme-text-muted, #64748b)) !important;
 }
 
-.home-cta-primary > span:not(.home-cta-label-clean):not(.home-cta-badge-clean) {
-  display: none !important;
-}
+/* CTA label is now handled directly in HeroSection.jsx — no hiding */
 
 .home-cta-primary,
 .home-cta-secondary {

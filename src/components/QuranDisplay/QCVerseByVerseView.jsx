@@ -109,7 +109,7 @@ const QCVerseCard = memo(function QCVerseCard({
       // For memorization, use the correct riwaya text
       const memoText =
         riwaya === "warsh" ? ayah.text : ayah.hafsText || ayah.text;
-      return <MemorizationText text={memoText} lang={lang} />;
+      return <MemorizationText text={memoText} lang={lang} isPlaying={isPlaying} />;
     }
     if (showWordByWord) {
       return (

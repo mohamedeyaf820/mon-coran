@@ -373,119 +373,75 @@ export default function ContentSection({
                     : lang === "fr"
                       ? reciter.nameFr
                       : reciter.nameEn;
-                const isFavorite = (state.favoriteReciters || []).includes(
-                  reciter.id,
-                );
                 const visual = getReciterVisual(reciter);
                 const avatar = visual.avatar;
 
                 return (
-                  <div
+                  <button
                     key={reciter.id}
                     data-reciter-card="true"
-                    className="reciter-card group relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] p-3.5 shadow-sm transition-all duration-300 animate-fadeInScale hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-lg sm:p-4"
+                    type="button"
+                    className="reciter-card group flex w-full items-center gap-3 rounded-xl border-b border-border/60 bg-transparent px-2 py-3 text-left transition-all duration-200 active:scale-[0.98]"
+                    onClick={() => setSelectedReciterId(reciter.id)}
                   >
-                    <div className="reciter-card__top relative z-10 flex min-w-0 items-start gap-3">
-                      <button
-                        type="button"
-                        className="reciter-card__media relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-white/30 shadow-sm transition-transform duration-300 group-hover:scale-[1.02] sm:h-[72px] sm:w-[72px]"
-                        onClick={() => playReciterRadio(reciter)}
-                        aria-label={lang === "fr" ? `Écouter ${reciterLabel}` : `Play ${reciterLabel}`}
-                      >
-                        {visual.photo ? (
-                          <img
-                            src={visual.photo}
-                            alt={reciterLabel}
-                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div
-                            className="flex h-full w-full items-center justify-center text-lg font-black uppercase tracking-normal text-white"
-                            style={{ backgroundColor: avatar.color }}
-                          >
-                            {avatar.initials}
-                          </div>
-                        )}
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/35 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[var(--primary)] shadow-md">
-                            <i className="fas fa-play text-[0.72rem] pl-[1px]" />
-                          </span>
-                        </div>
-                      </button>
-
-                      <div className="min-w-0 flex-1 text-left">
-                        <span
-                          className="reciter-card__name line-clamp-2 text-[0.95rem] font-extrabold leading-snug text-text-primary transition-colors duration-200 group-hover:text-primary sm:text-[1rem]"
-                          dir={lang === "ar" ? "rtl" : "ltr"}
+                    {/* Avatar */}
+                    <div className="reciter-card__media relative h-12 w-12 shrink-0 overflow-hidden rounded-full shadow-sm">
+                      {visual.photo ? (
+                        <img
+                          src={visual.photo}
+                          alt={reciterLabel}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div
+                          className="flex h-full w-full items-center justify-center text-sm font-black uppercase text-white"
+                          style={{ background: avatar.gradient }}
                         >
-                          {reciterLabel}
+                          {avatar.initials}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Info */}
+                    <div className="min-w-0 flex-1">
+                      <span
+                        className="reciter-card__name block truncate text-[0.88rem] font-bold text-text-primary group-hover:text-primary transition-colors"
+                        dir={lang === "ar" ? "rtl" : "ltr"}
+                      >
+                        {reciterLabel}
+                      </span>
+                      <div className="mt-0.5 flex items-center gap-1.5">
+                        <span className="text-[0.7rem] text-text-muted">
+                          {reciter.style || "murattal"}
                         </span>
-                        <div className="mt-1.5 flex max-w-full flex-wrap items-center gap-1.5">
-                          <span className="reciter-card__chip inline-flex items-center rounded-full border border-[rgba(var(--primary-rgb),0.14)] bg-[rgba(var(--primary-rgb),0.07)] px-2 py-0.5 text-[0.62rem] font-extrabold uppercase tracking-wider text-[var(--primary)]">
-                            {reciter.style || "murattal"}
-                          </span>
-                          {reciter.cdnType === "everyayah" ? (
-                            <span className="reciter-card__chip inline-flex items-center rounded-full border border-cyan-500/20 bg-cyan-500/10 px-1.5 py-0.5 text-[0.58rem] font-bold text-cyan-600 dark:text-cyan-400">
-                              {lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Ayah"}
-                            </span>
-                          ) : (
-                            <span className="reciter-card__chip inline-flex items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-1.5 py-0.5 text-[0.58rem] font-bold text-amber-600 dark:text-amber-400">
-                              {lang === "fr" ? "Sourate" : lang === "ar" ? "سورة" : "Surah"}
-                            </span>
-                          )}
-                          {reciter.verifiedWarsh && (
-                            <span className="reciter-card__chip inline-flex items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[0.58rem] font-bold text-emerald-600 dark:text-emerald-400">
-                              Warsh
-                            </span>
-                          )}
-                        </div>
                         {reciter.country && (
-                          <div className="mt-2 text-[0.68rem] font-semibold text-text-secondary">
-                            {reciter.country}
-                          </div>
+                          <>
+                            <span className="text-[0.5rem] text-text-muted/50">·</span>
+                            <span className="text-[0.7rem] text-text-muted">
+                              {reciter.country}
+                            </span>
+                          </>
                         )}
                       </div>
                     </div>
 
-                    <div className="my-3 h-px bg-gradient-to-r from-transparent via-[var(--border-light)] to-transparent" />
-
-                    <div className="reciter-card__actions relative z-10 flex flex-wrap items-center justify-between gap-2">
+                    {/* Play action */}
+                    <div
+                      className="flex shrink-0 items-center gap-1.5"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
-                        className={cn(
-                          "flex h-9 min-w-0 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-bold transition-all shrink-0 cursor-pointer active:scale-95",
-                          isFavorite
-                            ? "border border-gold/25 bg-gold/15 text-gold hover:bg-gold/20"
-                            : "border border-border/40 bg-bg-secondary text-text-muted hover:bg-bg-tertiary hover:text-text-primary",
-                        )}
+                        className="flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-[0.7rem] font-bold text-white transition-all hover:bg-primary-dark active:scale-95"
                         type="button"
-                        onClick={() => onToggleFavoriteReciter(reciter.id)}
+                        onClick={() => playReciterRadio(reciter)}
                       >
-                        <i className={`fas ${isFavorite ? "fa-star" : "fa-star-half-stroke"}`} />
-                        <span>{isFavorite ? (lang === "fr" ? "Favori" : "Favorite") : (lang === "fr" ? "Ajouter" : "Add")}</span>
+                        <i className="fas fa-play text-[0.6rem]" />
+                        <span className="hidden sm:inline">{lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen"}</span>
                       </button>
-
-                      <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5">
-                        <button
-                          className="flex h-9 items-center justify-center gap-1 rounded-lg bg-primary px-3 text-xs font-bold text-white transition-all shrink-0 cursor-pointer active:scale-95 hover:bg-primary-dark hover:shadow-md"
-                          type="button"
-                          onClick={() => playReciterRadio(reciter)}
-                        >
-                          <i className="fas fa-play text-[0.66rem]" />
-                          <span>{lang === "fr" ? "Écouter" : lang === "ar" ? "\u0627\u0633\u062a\u0645\u0627\u0639" : "Listen"}</span>
-                        </button>
-                        <button
-                          className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-border/40 bg-bg-secondary text-text-muted transition-all active:scale-95 hover:bg-bg-tertiary hover:text-text-primary"
-                          type="button"
-                          onClick={() => setSelectedReciterId(reciter.id)}
-                          title={lang === "fr" ? "Détails du récitateur" : lang === "ar" ? "تفاصيل القارئ" : "Reciter details"}
-                          aria-label={lang === "fr" ? "Détails du récitateur" : lang === "ar" ? "تفاصيل القارئ" : "Reciter details"}
-                        >
-                          <i className={`fas fa-chevron-${lang === "ar" ? "left" : "right"} text-xs`} />
-                        </button>
-                      </div>
+                      <i className={`fas fa-chevron-${lang === "ar" ? "left" : "right"} text-[0.65rem] text-text-muted`} />
                     </div>
-                  </div>
+                  </button>
                 );
               })}
               {!showAllReciters && filteredReciters.length > 8 && (
@@ -601,103 +557,24 @@ export default function ContentSection({
         )}
       </div>
 
-      {/* ── Mini-player audio (recitations + radio) ─────────────────────── */}
-      {(activeTab === "recitations" || activeTab === "radio") && (
-        <div className="mt-3 space-y-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              className="px-3.5 py-1.5 rounded-full text-[0.8rem] font-bold border border-border bg-bg-secondary text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary disabled:opacity-50 disabled:pointer-events-none"
-              onClick={resumeListening}
-              disabled={!resumeState}
-            >
-              {lang === "fr"
-                ? "Reprendre l'ecoute"
-                : lang === "ar"
-                  ? "استئناف الاستماع"
-                  : "Resume listening"}
-            </button>
-            <span className="text-xs opacity-70">
-              {resumeState
-                ? `S${resumeState.surah} · ${resumeState.source}`
-                : lang === "fr"
-                  ? "Aucune reprise"
-                  : "No resume"}
+      {/* ── Resume listening button (recitations + radio) ── */}
+      {(activeTab === "recitations" || activeTab === "radio") && resumeState && (
+        <div className="mt-3 flex justify-center">
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[0.8rem] font-semibold border border-border bg-bg-secondary text-text-primary transition-colors hover:bg-bg-tertiary"
+            onClick={resumeListening}
+          >
+            <i className="fas fa-play text-primary text-[0.65rem]" />
+            {lang === "fr"
+              ? "Reprendre l'écoute"
+              : lang === "ar"
+                ? "استئناف الاستماع"
+                : "Resume listening"}
+            <span className="text-[0.7rem] text-text-muted">
+              S{resumeState.surah}
             </span>
-            <span className="text-xs opacity-70">
-              {(audioService.playlist || []).length} queued
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2 rounded-xl border border-border px-3 py-2">
-            {[0.75, 1, 1.25, 1.5].map((speed) => (
-              <button
-                key={speed}
-                type="button"
-                className={cn(
-                  "px-2.5 py-1 rounded-full text-[0.75rem] font-bold border transition-colors",
-                  state.audioSpeed === speed
-                    ? "bg-primary text-white border-primary"
-                    : "bg-bg-secondary text-text-secondary border-border hover:bg-bg-tertiary hover:text-text-primary",
-                )}
-                onClick={() => {
-                  onSetAudioSpeed?.(speed);
-                }}
-              >
-                {speed}x
-              </button>
-            ))}
-            <button
-              type="button"
-              className="flex items-center justify-center w-8 h-8 rounded-lg bg-bg-secondary text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary ml-auto"
-              onClick={() => audioService.prev()}
-              aria-label={
-                lang === "fr"
-                  ? "Piste precedente"
-                  : lang === "ar"
-                    ? "المقطع السابق"
-                    : "Previous track"
-              }
-            >
-              <i className="fas fa-backward-step text-[0.8rem]" />
-            </button>
-            <button
-              type="button"
-              className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary text-white transition-colors hover:bg-primary-dark shadow-sm"
-              onClick={() => audioService.toggle()}
-              aria-label={
-                state.isPlaying
-                  ? lang === "fr"
-                    ? "Pause"
-                    : lang === "ar"
-                      ? "ايقاف مؤقت"
-                      : "Pause"
-                  : lang === "fr"
-                    ? "Lecture"
-                    : lang === "ar"
-                      ? "تشغيل"
-                      : "Play"
-              }
-            >
-              <i
-                className={`fas ${state.isPlaying ? "fa-pause" : "fa-play"} text-[0.9rem] pl-[1px]`}
-              />
-            </button>
-            <button
-              type="button"
-              className="flex items-center justify-center w-8 h-8 rounded-lg bg-bg-secondary text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
-              onClick={() => audioService.next()}
-              aria-label={
-                lang === "fr"
-                  ? "Piste suivante"
-                  : lang === "ar"
-                    ? "المقطع التالي"
-                    : "Next track"
-              }
-            >
-              <i className="fas fa-forward-step text-[0.8rem]" />
-            </button>
-          </div>
+          </button>
         </div>
       )}
 

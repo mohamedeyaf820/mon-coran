@@ -134,9 +134,9 @@
 }
 
 .app-root .quran-display--platform .ayah-marker-wrap {
-    --verse-stop-size: 1.18em;
-    margin-inline: 0.22em;
-    transform: translateY(0.12em);
+    --verse-stop-size: 0.82em;
+    margin-inline: 0.18em;
+    transform: translateY(0.08em);
 }
 
 .app-root .quran-display--platform .rd-supplement-panel {
@@ -624,9 +624,9 @@
 }
 
 .app-root .quran-display--platform :is(.cpv-flow, .qcom-continuous-list) .qcom-verse-stop {
-    --verse-stop-size: 0.96em;
-    margin-inline: 0.18em 0.24em;
-    transform: translateY(0.09em);
+    --verse-stop-size: 0.78em;
+    margin-inline: 0.14em 0.18em;
+    transform: translateY(0.06em);
 }
 
 .app-root .quran-display--platform :is(.cpv-flow, .qcom-continuous-list) .verse-stop-number {
@@ -758,8 +758,8 @@
     }
 
     .app-root .quran-display--platform :is(.cpv-flow, .qcom-continuous-list) .qcom-verse-stop {
-        --verse-stop-size: 0.9em;
-        margin-inline: 0.14em 0.18em;
+        --verse-stop-size: 0.72em;
+        margin-inline: 0.1em 0.14em;
     }
 }
 

@@ -97,64 +97,37 @@ export default function Sidebar() {
         data-tab={tab}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* ── HEADER ── */}
-        <div className="flex shrink-0 flex-col gap-4 border-b border-border bg-bg-primary p-4 sm:p-5">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-[0.67rem] font-bold tracking-widest text-primary uppercase">
-                {lang === "fr"
-                  ? "Navigation"
-                  : lang === "ar"
-                    ? "التنقل"
-                    : "Navigation"}
-              </span>
-              <span className="font-ui text-[1.15rem] font-extrabold leading-[1.2] text-text-primary">
-                {lang === "fr"
-                  ? "Explorer le Mushaf"
-                  : lang === "ar"
-                    ? "استكشاف المصحف"
-                    : "Explore the Mushaf"}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="rounded-full border border-border/50 bg-bg-secondary px-2.5 py-1 text-[0.7rem] font-bold text-text-secondary hidden sm:inline-flex">
-                {riwaya === "warsh"
-                  ? lang === "fr"
-                    ? "Warsh"
-                    : lang === "ar"
-                      ? "ورش"
-                      : "Warsh"
-                  : lang === "fr"
-                    ? "Hafs"
-                    : lang === "ar"
-                      ? "حفص"
-                      : "Hafs"}
-              </span>
+        {/* ── HEADER — compact single-row close + tabs + search ── */}
+        <div className="flex shrink-0 flex-col gap-1.5 border-b border-border bg-bg-primary px-2.5 py-2">
+          {/* Row 1: Close + current position */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 min-w-0">
               <button
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-bg-secondary text-text-muted transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-bg-secondary text-text-muted transition-colors hover:bg-bg-tertiary hover:text-text-primary"
                 onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
                 aria-label={
                   lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
                 }
               >
-                <i className="fas fa-times" />
+                <i className="fas fa-times text-[0.7rem]" />
               </button>
+              {activeSummary && (
+                <span className="truncate text-[0.72rem] font-semibold text-primary">
+                  {activeSummary}
+                </span>
+              )}
             </div>
+            <span className="shrink-0 text-[0.6rem] font-bold text-text-muted uppercase tracking-wide">
+              {riwaya === "warsh"
+                ? "Warsh"
+                : "Hafs"}
+            </span>
           </div>
 
-          {activeSummary && (
-            <div className="flex min-h-[2rem] items-center gap-2.5 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2">
-              <i className="fas fa-location-dot text-[0.8rem] text-primary" />
-              <span className="truncate text-[0.8rem] font-bold text-primary">
-                {activeSummary}
-              </span>
-            </div>
-          )}
-
-          {/* Tab bar */}
+          {/* Row 2: Tab bar */}
           <div
             className={cn(
-              "grid gap-1 rounded-xl bg-bg-secondary p-1 border border-border/50",
+              "grid gap-0.5 rounded-lg bg-bg-secondary p-0.5 border border-border/40",
               availableTabs.length === 2 ? "grid-cols-2" : "grid-cols-3",
             )}
           >
@@ -162,7 +135,7 @@ export default function Sidebar() {
               <button
                 key={t2}
                 className={cn(
-                  "flex min-h-[2.2rem] items-center justify-center rounded-lg px-2 text-[0.76rem] font-bold text-text-secondary transition-all hover:text-text-primary",
+                  "flex h-8 items-center justify-center rounded-md px-2 text-[0.72rem] font-bold text-text-secondary transition-all hover:text-text-primary",
                   tab === t2 && "bg-bg-primary text-primary shadow-sm",
                 )}
                 onClick={() => setTab(t2)}
@@ -176,7 +149,7 @@ export default function Sidebar() {
             ))}
           </div>
 
-          {/* Search (Surah only) */}
+          {/* Row 3: Search (Surah only) */}
           {tab === "surah" && (
             <div className="relative flex items-center">
               <input
@@ -184,11 +157,11 @@ export default function Sidebar() {
                 placeholder={t("search.placeholder", lang)}
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="h-10 w-full rounded-xl border border-border bg-bg-secondary px-4 pr-10 text-[0.85rem] text-text-primary outline-none transition-colors focus:border-primary focus:bg-bg-primary focus:ring-1 focus:ring-primary"
+                className="h-8 w-full rounded-lg border border-border bg-bg-secondary px-3 pr-8 text-[0.78rem] text-text-primary outline-none transition-colors focus:border-primary focus:bg-bg-primary"
               />
               {filter && (
                 <button
-                  className="absolute right-2 flex h-6 w-6 items-center justify-center rounded-full text-[0.75rem] text-text-muted hover:bg-bg-tertiary hover:text-text-primary"
+                  className="absolute right-1.5 flex h-5 w-5 items-center justify-center rounded text-[0.65rem] text-text-muted hover:bg-bg-tertiary hover:text-text-primary"
                   onClick={() => setFilter("")}
                 >
                   <i className="fas fa-times" />
@@ -199,7 +172,7 @@ export default function Sidebar() {
         </div>
 
         {/* ── ZONE SCROLLABLE ── */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-1">
+        <div className="flex-1 overflow-y-auto p-2 sm:p-2.5 space-y-0.5">
           {/* ── Section sourates ── */}
           {tab === "surah" && filter && filteredSurahs.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-text-muted opacity-60 gap-3">
@@ -214,16 +187,9 @@ export default function Sidebar() {
             </div>
           )}
 
-          {tab === "surah" && (
-            <div className="flex items-center justify-between px-2 py-3 text-[0.75rem] font-bold text-text-muted">
-              <span>
-                {lang === "fr"
-                  ? "Toutes les sourates"
-                  : lang === "ar"
-                    ? "جميع السور"
-                    : "All Surahs"}
-              </span>
-              <span>{filteredSurahs.length}</span>
+          {tab === "surah" && filter && filteredSurahs.length > 0 && filteredSurahs.length < 114 && (
+            <div className="flex items-center px-1.5 py-1 text-[0.62rem] font-medium text-text-muted">
+              <span>{filteredSurahs.length} {lang === "fr" ? "résultats" : "results"}</span>
             </div>
           )}
 
@@ -237,18 +203,18 @@ export default function Sidebar() {
                   ref={isActive ? activeItemRef : null}
                   type="button"
                   className={cn(
-                    "group flex w-full cursor-pointer items-center gap-3 rounded-xl p-2.5 transition-all hover:bg-bg-secondary text-left",
-                    isActive && "bg-primary/10",
+                    "group flex w-full cursor-pointer items-center gap-2.5 rounded-lg p-2 transition-all hover:bg-bg-secondary text-left",
+                    isActive && "bg-primary/8",
                   )}
                   onClick={() => goSurah(s.n)}
                 >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/50 bg-bg-primary text-[0.8rem] font-bold text-text-secondary group-hover:border-primary/30 group-hover:text-primary transition-colors">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-border/40 bg-bg-secondary text-[0.68rem] font-bold text-text-muted group-hover:border-primary/30 group-hover:text-primary transition-colors">
                     {s.n}
                   </div>
                   <div className="flex flex-1 flex-col items-start min-w-0">
                     <span
                       className={cn(
-                        "truncate text-[0.9rem] font-bold transition-colors",
+                        "truncate text-[0.82rem] font-semibold transition-colors",
                         isActive
                           ? "text-primary"
                           : "text-text-primary group-hover:text-primary",
@@ -256,13 +222,13 @@ export default function Sidebar() {
                     >
                       {lang === "fr" ? s.fr : s.en}
                     </span>
-                    <span className="flex items-center gap-1.5 truncate text-[0.7rem] text-text-muted mt-0.5">
+                    <span className="flex items-center gap-1 truncate text-[0.64rem] text-text-muted">
                       <span
                         className={cn(
-                          "inline-flex items-center rounded-full px-1.5 py-0.5 text-[0.6rem] font-bold",
+                          "inline-flex items-center rounded px-1 py-0.5 text-[0.56rem] font-bold",
                           s.type === "Meccan"
                             ? "bg-gold/10 text-gold"
-                            : "bg-primary/10 text-primary",
+                            : "bg-primary/8 text-primary",
                         )}
                       >
                         {s.type === "Meccan"
@@ -281,7 +247,7 @@ export default function Sidebar() {
                     </span>
                   </div>
                   <div
-                    className="shrink-0 font-surah-names text-[1.6rem] opacity-60 transition-opacity group-hover:opacity-100"
+                    className="shrink-0 font-surah-names text-[1.3rem] opacity-50 transition-opacity group-hover:opacity-85"
                     aria-label={s.ar}
                   >
                     {surahCalligraphyId}
@@ -300,18 +266,18 @@ export default function Sidebar() {
                   ref={isActive ? activeItemRef : null}
                   type="button"
                   className={cn(
-                    "group flex w-full cursor-pointer items-center gap-3 rounded-xl p-2.5 transition-all hover:bg-bg-secondary text-left",
-                    isActive && "bg-primary/10",
+                    "group flex w-full cursor-pointer items-center gap-2.5 rounded-lg p-2 transition-all hover:bg-bg-secondary text-left",
+                    isActive && "bg-primary/8",
                   )}
                   onClick={() => goJuz(j.juz)}
                 >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/50 bg-bg-primary text-[0.8rem] font-bold text-text-secondary group-hover:border-primary/30 group-hover:text-primary transition-colors">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-border/40 bg-bg-secondary text-[0.68rem] font-bold text-text-muted group-hover:border-primary/30 group-hover:text-primary transition-colors">
                     {lang === "ar" ? toAr(j.juz) : j.juz}
                   </div>
                   <div className="flex flex-1 flex-col items-start min-w-0">
                     <span
                       className={cn(
-                        "truncate text-[0.9rem] font-bold transition-colors",
+                        "truncate text-[0.82rem] font-semibold transition-colors",
                         isActive
                           ? "text-primary"
                           : "text-text-primary group-hover:text-primary",
@@ -320,7 +286,7 @@ export default function Sidebar() {
                       {lang === "ar" ? `الجزء ${toAr(j.juz)}` : `Juz ${j.juz}`}
                     </span>
                     {startSurah && (
-                      <span className="flex items-center gap-1.5 truncate text-[0.7rem] text-text-muted mt-0.5">
+                      <span className="flex items-center gap-1 truncate text-[0.64rem] text-text-muted">
                         {lang === "fr"
                           ? startSurah.fr
                           : lang === "ar"
@@ -329,7 +295,7 @@ export default function Sidebar() {
                       </span>
                     )}
                   </div>
-                  <div className="shrink-0 text-[0.75rem] font-bold text-text-muted">
+                  <div className="shrink-0 text-[0.65rem] font-bold text-text-muted">
                     {j.name}
                   </div>
                 </button>
@@ -337,20 +303,20 @@ export default function Sidebar() {
             })}
 
           {tab === "page" && (
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-2.5">
+              <div className="flex items-center gap-1.5">
                 <input
                   type="number"
                   min={1}
                   max={604}
-                  className="h-10 w-full rounded-xl border border-border bg-bg-secondary px-4 text-[0.85rem] text-text-primary outline-none transition-colors focus:border-primary focus:bg-bg-primary focus:ring-1 focus:ring-primary"
-                  placeholder={isRtl ? "الصفحة" : "Page"}
+                  className="h-8 w-full rounded-lg border border-border bg-transparent px-3 text-[0.78rem] text-text-primary outline-none transition-colors focus:border-primary"
+                  placeholder={isRtl ? "الصفحة" : "Page 1-604"}
                   value={pageInput}
                   onChange={(e) => setPageInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && submitPageJump()}
                 />
                 <button
-                  className="flex h-10 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-white transition-colors hover:bg-primary-dark"
+                  className="flex h-8 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-white text-[0.75rem] transition-colors hover:bg-primary-dark"
                   onClick={submitPageJump}
                   aria-label={
                     lang === "fr"
@@ -363,23 +329,24 @@ export default function Sidebar() {
                   <i className={`fas fa-arrow-${isRtl ? "left" : "right"}`} />
                 </button>
               </div>
-              <div className="flex items-center px-2 pt-2 pb-1 text-[0.75rem] font-bold text-text-muted">
+              <div className="flex items-center px-1 text-[0.65rem] font-bold text-text-muted uppercase tracking-wide">
                 <span>
                   {lang === "fr"
-                    ? "Sélection rapide Juz"
+                    ? "Juz"
                     : lang === "ar"
-                      ? "اختيار الجزء السريع"
-                      : "Quick Juz Selection"}
+                      ? "الجزء"
+                      : "Juz"}
                 </span>
               </div>
-              <div className="grid grid-cols-6 gap-1.5">
+              <div className="grid grid-cols-6 gap-1">
                 {JUZ_PAGE_RANGES.map((range) => (
                   <button
                     key={range.juz}
                     className={cn(
-                      "flex h-8 items-center justify-center rounded-lg border border-border/50 bg-bg-secondary text-[0.75rem] font-bold text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary",
-                      selectedJuzForPages === range.juz &&
-                        "bg-primary/10 text-primary border-primary/30",
+                      "flex h-7 items-center justify-center rounded-md border text-[0.7rem] font-bold transition-colors",
+                      selectedJuzForPages === range.juz
+                        ? "border-primary/40 bg-primary/10 text-primary"
+                        : "border-border bg-transparent text-text-secondary hover:bg-primary/5 hover:text-primary",
                     )}
                     onClick={() => setSelectedJuzForPages(range.juz)}
                   >
@@ -387,7 +354,7 @@ export default function Sidebar() {
                   </button>
                 ))}
               </div>
-              <div className="flex items-center px-2 pt-2 pb-1 text-[0.75rem] font-bold text-text-muted">
+              <div className="flex items-center px-1 pt-1 text-[0.65rem] font-bold text-text-muted uppercase tracking-wide">
                 <span>
                   {lang === "fr"
                     ? "Pages"
@@ -396,7 +363,7 @@ export default function Sidebar() {
                       : "Pages"}
                 </span>
               </div>
-              <div className="grid grid-cols-5 gap-1.5">
+              <div className="grid grid-cols-5 gap-1">
                 {(() => {
                   const range =
                     JUZ_PAGE_RANGES.find(
@@ -409,9 +376,10 @@ export default function Sidebar() {
                     <button
                       key={p}
                       className={cn(
-                        "flex h-9 items-center justify-center rounded-lg border border-border/50 bg-bg-secondary text-[0.8rem] font-semibold text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary",
-                        p === currentPage &&
-                          "bg-primary text-white border-primary",
+                        "flex h-7 items-center justify-center rounded-md border text-[0.72rem] font-semibold transition-colors",
+                        p === currentPage
+                          ? "border-primary bg-primary text-white"
+                          : "border-border bg-transparent text-text-secondary hover:bg-primary/5 hover:text-primary",
                       )}
                       onClick={() => goPage(p)}
                     >
@@ -425,7 +393,7 @@ export default function Sidebar() {
         </div>
 
         {/* ── FOOTER ── */}
-        <div className="flex shrink-0 items-center justify-between border-t border-border bg-bg-primary px-5 py-3 text-[0.75rem] font-bold text-text-muted">
+        <div className="flex shrink-0 items-center justify-between border-t border-border bg-bg-primary px-3 py-1.5 text-[0.65rem] font-medium text-text-muted">
           <span>
             {tab === "surah"
               ? `${filteredSurahs.length} ${lang === "ar" ? "سورة" : lang === "fr" ? "Sourates" : "Surahs"}`
@@ -433,10 +401,8 @@ export default function Sidebar() {
                 ? `30 ${lang === "ar" ? "جزء" : "Juz"}`
                 : `604 ${lang === "ar" ? "صفحة" : lang === "fr" ? "Pages" : "Pages"}`}
           </span>
-          <span className="rounded-full bg-bg-secondary px-2 py-0.5">
-            {riwaya === "warsh"
-              ? lang === "ar" ? "رواية ورش" : lang === "fr" ? "Riwaya Warsh" : "Warsh"
-              : lang === "ar" ? "رواية حفص" : lang === "fr" ? "Riwaya Hafs" : "Hafs"}
+          <span className="text-[0.6rem] font-bold uppercase tracking-wide">
+            {riwaya === "warsh" ? "Warsh" : "Hafs"}
           </span>
         </div>
       </aside>

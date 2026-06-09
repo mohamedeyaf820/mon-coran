@@ -20,6 +20,7 @@ import {
   ChevronRight,
   Menu,
   X,
+  BookOpen,
 } from "lucide-react";
 
 export default function Header() {
@@ -423,8 +424,8 @@ export default function Header() {
                     className="mp-header__title-btn"
                     type="button"
                     style={{
-                      width: "max-content",
-                      maxWidth: "clamp(120px, 30vw, 280px)",
+                      width: "fit-content",
+                      maxWidth: "min(65vw, 300px)",
                     }}
                   >
                     <span className="mp-header__kicker">{centerKicker}</span>
@@ -489,7 +490,17 @@ export default function Header() {
 
         {/* ── RIGHT: riwaya + search + settings + theme + more ── */}
         <div className="mp-header__actions">
-          {/* Riwaya — moved to "More" menu for cleaner header */}
+          {/* Riwaya toggle — always visible */}
+          <button
+            className="mp-header__action mp-header__riwaya-toggle"
+            type="button"
+            onClick={() => set({ riwaya: riwaya === "hafs" ? "warsh" : "hafs" })}
+            aria-label={headerLabels.riwayaToggle}
+            title={headerLabels.riwayaToggle}
+          >
+            <BookOpen size={14} strokeWidth={2.2} />
+            <span>{riwaya === "hafs" ? "WARSH" : "HAFS"}</span>
+          </button>
 
           {/* Search */}
           <button

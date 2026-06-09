@@ -76,7 +76,8 @@ test("reciters: ids are unique and metadata is compatible with the player", () =
     const visual = getReciterVisual(reciter);
     assert.ok(["photo", "avatar"].includes(visual.type), reciter.id);
     assert.ok(visual.photo || visual.avatar?.initials, reciter.id);
-    assert.ok(getReciterBio(reciter, "fr").includes(reciter.nameFr));
+    const bio = getReciterBio(reciter, "fr");
+    assert.ok(bio.length > 20, `bio too short for ${reciter.id}`);
   }
 });
 

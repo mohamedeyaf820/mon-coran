@@ -86,6 +86,8 @@ export default function useQuranDisplayView({
     document.documentElement.style.setProperty("--quran-font-family", quranFontCss);
     document.documentElement.style.setProperty("--quran-font-size", quranFontSizeCss);
     document.documentElement.style.setProperty("--quran-line-height", quranLineHeight);
+    document.documentElement.style.setProperty("--font-quran", quranFontCss);
+    document.documentElement.style.setProperty("--font-quran-tajweed", quranFontCss);
     if (isQCF4) {
       element.style.removeProperty("--qd-font-family");
       element.dataset.qcf4Font = "true";
@@ -98,8 +100,6 @@ export default function useQuranDisplayView({
     element.style.setProperty("--quran-font-size", quranFontSizeCss);
     element.style.setProperty("--quran-line-height", quranLineHeight);
     element.dataset.qcf4Font = "false";
-    document.documentElement.style.setProperty("--font-quran", quranFontCss);
-    document.documentElement.style.setProperty("--font-quran-tajweed", quranFontCss);
 
     element
       .querySelectorAll(".verse-text, .mushaf-container, .quran-text, [lang='ar']")

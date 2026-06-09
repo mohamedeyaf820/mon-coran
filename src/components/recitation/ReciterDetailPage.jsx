@@ -19,12 +19,6 @@ export default function ReciterDetailPage({
   closeBtnRef,
 }) {
   const isRtl = lang === "ar";
-  const sourceLabel =
-    reciter.source === "mp3quran"
-      ? "MP3Quran"
-      : reciter.source === "everyayah"
-        ? "EveryAyah"
-        : reciter.cdnType || "Audio";
   const audioModeLabel =
     reciter.audioMode === "surah"
       ? lang === "fr"
@@ -37,39 +31,23 @@ export default function ReciterDetailPage({
         : lang === "ar"
           ? "آية بآية"
           : "Ayah by ayah";
-  const riwayaLabel = reciter.verifiedWarsh
-    ? "Warsh"
-    : lang === "ar"
-      ? "حفص"
-      : "Hafs";
 
   return (
     <div
-      className="reciter-detail relative flex max-h-[90dvh] w-full max-w-5xl min-w-0 flex-col overflow-hidden rounded-2xl border border-border/80 bg-bg-card/90 shadow-[0_25px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl animate-fadeInScale"
+      className="reciter-detail relative flex max-h-[92dvh] w-full max-w-2xl min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-bg-card shadow-2xl animate-fadeInScale"
       onClick={(event) => event.stopPropagation()}
       role="dialog"
       aria-modal="true"
       aria-labelledby="reciter-modal-title"
       ref={dialogRef}
     >
-      {/* ── Sticky head: hero + stats + radio — never scrolls away ── */}
-      <div className="rd-sticky-head relative">
-        {/* Decorative accent line */}
-        <div
-          className="reciter-detail__accent absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[var(--primary)] to-transparent opacity-60"
-          aria-hidden="true"
-        />
-        {/* Subtle top gradient wash */}
-        <div
-          className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[rgba(var(--primary-rgb),0.04)] to-transparent pointer-events-none rounded-t-3xl"
-          aria-hidden="true"
-        />
-
-        {/* Close button — sits inside the sticky zone so it's always visible */}
+      {/* ── Sticky head ── */}
+      <div className="rd-sticky-head relative px-5 pt-5 pb-4 sm:px-6 sm:pt-6">
+        {/* Close button */}
         <button
           className={cn(
-            "reciter-detail__close absolute top-4 z-20 flex items-center justify-center w-8 h-8 rounded-full border border-border bg-bg-card/85 text-text-muted hover:text-red-500 hover:border-red-200 active:scale-95 transition-all duration-200",
-            isRtl ? "left-4" : "right-4",
+            "absolute top-3 z-20 flex items-center justify-center w-8 h-8 rounded-full bg-bg-secondary text-text-muted hover:text-red-500 hover:bg-red-50 active:scale-95 transition-all",
+            isRtl ? "left-3" : "right-3",
           )}
           type="button"
           onClick={onClose}
@@ -81,72 +59,59 @@ export default function ReciterDetailPage({
           <i className="fas fa-xmark text-sm" />
         </button>
 
-        {/* Hero row: avatar + name + badges + radio button */}
-        <div className="reciter-detail__header flex min-w-0 flex-col gap-4 pb-3 sm:flex-row sm:items-center sm:justify-between">
-          <ReciterHero reciter={reciter} lang={lang} />
-          <div className="flex shrink-0 items-center self-start sm:self-center">
-            <ReciterRadioButton
-              lang={lang}
-              onClick={() => onPlayRadio(reciter)}
-            />
-          </div>
-        </div>
+        {/* Hero: avatar + name + badges */}
+        <ReciterHero reciter={reciter} lang={lang} />
 
-        {/* Stats chips grid */}
-        <div className="reciter-detail__stats mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {[
-            { icon: "fa-wave-square", label: riwayaLabel },
-            { icon: "fa-music", label: reciter.style || "murattal" },
-            { icon: "fa-server", label: sourceLabel },
-            { icon: "fa-list-ul", label: audioModeLabel },
-          ].map((item) => (
-            <div
-              key={`${item.icon}-${item.label}`}
-              className="reciter-detail__stat flex min-w-0 flex-col items-center gap-1 rounded-xl border border-border bg-bg-secondary/60 px-3 py-2.5 text-center"
-            >
-              <div className="text-[0.68rem] text-text-muted">
-                <i className={`fas ${item.icon}`} />
-              </div>
-              <div className="truncate text-[0.78rem] font-extrabold text-text-primary">
-                {item.label}
-              </div>
-            </div>
-          ))}
+        {/* Radio button + audio mode tag */}
+        <div className="mt-4 flex items-center gap-3 flex-wrap">
+          <ReciterRadioButton
+            lang={lang}
+            onClick={() => onPlayRadio(reciter)}
+          />
+          <span className="inline-flex items-center gap-1.5 text-[0.72rem] font-medium text-text-muted">
+            <i className="fas fa-list-ul text-[0.6rem]" />
+            {audioModeLabel}
+          </span>
         </div>
       </div>
 
-      {/* ── Scrollable body: bio + surah list ── */}
-      <div className="rd-scrollable-body">
-        {/* Biography / download notice */}
-        <div className="reciter-detail__bio mb-4 min-w-0 rounded-xl border border-[rgba(var(--primary-rgb),0.08)] bg-[rgba(var(--primary-rgb),0.035)] p-3 text-text-secondary leading-relaxed sm:p-4">
-          <ReciterBioCollapse
-            lang={lang}
-            text={reciter?.bio}
-            reciter={reciter}
-          />
+      {/* ── Scrollable body ── */}
+      <div className="rd-scrollable-body px-5 pb-5 sm:px-6 sm:pb-6">
+        {/* Biography */}
+        <div className="reciter-detail__bio mb-5 rounded-xl border border-border bg-bg-secondary/50 p-4">
+          <h4 className="mb-2 flex items-center gap-1.5 text-[0.7rem] font-semibold uppercase tracking-wide text-text-muted">
+            <i className="fas fa-user text-[0.58rem] text-primary" />
+            {lang === "fr" ? "Biographie" : lang === "ar" ? "السيرة الذاتية" : "Biography"}
+          </h4>
+          <div className="text-[0.84rem] leading-relaxed text-text-secondary">
+            <ReciterBioCollapse
+              lang={lang}
+              reciter={reciter}
+            />
+          </div>
 
           {!canDirectDownload && (
-            <p className="mt-2 flex items-center gap-1.5 text-[0.7rem] font-semibold text-text-muted opacity-75">
-              <i className="fas fa-circle-info text-amber-500" />
+            <p className="mt-3 flex items-center gap-1.5 text-[0.7rem] text-text-muted">
+              <i className="fas fa-circle-info text-amber-500 text-[0.6rem]" />
               {lang === "fr"
-                ? "Téléchargement direct non disponible pour ce serveur."
+                ? "Téléchargement direct non disponible."
                 : lang === "ar"
-                  ? "التنزيل المباشر غير متاح لهذا القارئ."
-                  : "Direct download is not supported for this reciter."}
+                  ? "التنزيل المباشر غير متاح."
+                  : "Direct download not available."}
             </p>
           )}
         </div>
 
         {/* Section heading */}
-        <div className="reciter-detail__section-title mb-3 flex items-center gap-2">
-          <i className="fas fa-music text-xs text-[var(--primary)]" />
-          <h4 className="font-[var(--font-ui)] text-xs font-bold uppercase tracking-wider text-text-muted">
+        <div className="mb-3 flex items-center gap-2">
+          <h4 className="text-[0.76rem] font-semibold text-text-muted">
             {lang === "fr"
               ? "Récitations par sourate"
               : lang === "ar"
                 ? "تلاوات السور"
                 : "Surah recitations"}
           </h4>
+          <div className="flex-1 h-px bg-border" />
         </div>
 
         {/* Surah recitation list */}

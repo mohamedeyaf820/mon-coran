@@ -413,22 +413,6 @@ export default function QuranDisplay() {
         ref={view.contentRef}
         {...view.touchHandlers}
       >
-        {riwaya === "warsh" && !isWarshFallback ? (
-          <WarshNotice
-            kind="ok"
-            badgeLabel={t("settings.warshUnicodeBadge", lang)}
-            body={t("settings.warshUnicodeText", lang)}
-            frameClassName={classes.readingChromeFrameClass}
-          />
-        ) : null}
-        {riwaya === "warsh" && isWarshFallback ? (
-          <WarshNotice
-            kind="fallback"
-            badgeLabel={t("settings.warshFallbackBadge", lang)}
-            body={t("settings.warshFallbackText", lang)}
-            frameClassName={classes.readingChromeFrameClass}
-          />
-        ) : null}
         {displayMode === "surah" ? (
           <SurahMode
             activeAyah={activeAyah}

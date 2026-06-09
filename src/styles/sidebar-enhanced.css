@@ -1,5 +1,7 @@
 /* ══════════════════════════════════════════════════════
-   Sidebar Enhanced Styles
+   Sidebar — Clean, focused navigation
+   Inspired by Quran.com's sidebar: compact items,
+   clear hierarchy, minimal decoration.
    ══════════════════════════════════════════════════════ */
 
 /* ── Base panel ── */
@@ -11,13 +13,13 @@
   top: 0;
   left: 0;
   bottom: 0;
-  width: min(360px, 92vw);
+  width: min(340px, 88vw);
   z-index: 1000;
   background: var(--bg-primary);
   border-right: 1px solid var(--border);
-  box-shadow: 12px 0 48px rgba(0, 0, 0, 0.12);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
   transform: translateX(-100%);
-  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
   overflow: hidden;
 }
 
@@ -34,7 +36,7 @@
   border-right: none;
   border-left: 1px solid var(--border);
   transform: translateX(100%);
-  box-shadow: -12px 0 48px rgba(0, 0, 0, 0.12);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.08);
 }
 
 #sidebar.open[dir="rtl"],
@@ -42,39 +44,39 @@
   transform: translateX(0);
 }
 
-/* Dark mode sidebar */
+/* Dark mode */
 [data-theme="dark"] #sidebar,
 [data-theme="dark"] .sb-wrapper {
   background: rgba(8, 15, 13, 0.98);
-  border-right-color: rgba(196, 219, 208, 0.12);
-  box-shadow: 12px 0 56px rgba(0, 0, 0, 0.42);
+  border-right-color: rgba(196, 219, 208, 0.08);
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.3);
 }
 
-/* ── Header (first direct div child) ── */
+/* ── Header ── */
 #sidebar > div:first-child,
 .sb-wrapper > div:first-child {
   flex-shrink: 0;
-  padding: 1rem 1.15rem 0.85rem;
+  padding: 0.75rem 0.85rem 0.65rem;
   border-bottom: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg-secondary) 80%, transparent 20%);
+  background: var(--bg-primary);
 }
 
 [data-theme="dark"] #sidebar > div:first-child,
 [data-theme="dark"] .sb-wrapper > div:first-child {
-  background: rgba(6, 11, 10, 0.7);
-  border-bottom-color: rgba(196, 219, 208, 0.1);
+  background: rgba(6, 11, 10, 0.6);
+  border-bottom-color: rgba(196, 219, 208, 0.08);
 }
 
 /* ── Scrollable zone ── */
 #sidebar .overflow-y-auto,
 .sb-wrapper .overflow-y-auto {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--primary) 30%, transparent 70%) transparent;
+  scrollbar-color: color-mix(in srgb, var(--primary) 25%, transparent 75%) transparent;
 }
 
 #sidebar .overflow-y-auto::-webkit-scrollbar,
 .sb-wrapper .overflow-y-auto::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 
 #sidebar .overflow-y-auto::-webkit-scrollbar-track,
@@ -84,39 +86,39 @@
 
 #sidebar .overflow-y-auto::-webkit-scrollbar-thumb,
 .sb-wrapper .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--primary) 30%, transparent 70%);
+  background: color-mix(in srgb, var(--primary) 25%, transparent 75%);
   border-radius: 999px;
 }
 
 /* ── Tab bar ── */
 #sidebar .grid.gap-1,
 .sb-wrapper .grid.gap-1 {
-  gap: 0.25rem !important;
-  padding: 0.25rem !important;
-  border-radius: 12px !important;
+  gap: 0.2rem !important;
+  padding: 0.2rem !important;
+  border-radius: 10px !important;
   border: 1px solid var(--border) !important;
   background: var(--bg-secondary) !important;
 }
 
 #sidebar .grid.gap-1 button,
 .sb-wrapper .grid.gap-1 button {
-  border-radius: 9px !important;
-  font-size: var(--ts-xs) !important;
+  border-radius: 8px !important;
+  font-size: 0.72rem !important;
   font-weight: 650 !important;
-  padding: 0.45rem 0.6rem !important;
+  padding: 0.35rem 0.5rem !important;
   transition: all 0.15s !important;
   border: none !important;
   color: var(--text-secondary) !important;
   background: transparent !important;
-  min-height: 2.75rem !important; /* 44px touch target */
+  min-height: 2.2rem !important;
 }
 
-/* Active tab button — uses Tailwind bg-bg-primary text-primary shadow-sm */
+/* Active tab */
 #sidebar .grid.gap-1 button.bg-bg-primary,
 .sb-wrapper .grid.gap-1 button.bg-bg-primary {
   background: var(--bg-card) !important;
   color: var(--primary) !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
   font-weight: 750 !important;
 }
 
@@ -131,12 +133,13 @@
 #sidebar input[type="search"],
 .sb-wrapper input[type="text"],
 .sb-wrapper input[type="search"] {
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   border: 1px solid var(--border) !important;
   background: var(--bg-secondary) !important;
   color: var(--text-primary) !important;
-  font-size: var(--ts-sm) !important;
-  padding: 0.5rem 0.85rem !important;
+  font-size: 0.8rem !important;
+  padding: 0.4rem 0.75rem !important;
+  min-height: 2.25rem !important;
   transition: border-color 0.15s, box-shadow 0.15s !important;
   outline: none !important;
   width: 100% !important;
@@ -145,75 +148,119 @@
 #sidebar input:focus,
 .sb-wrapper input:focus {
   border-color: color-mix(in srgb, var(--primary) 50%, transparent 50%) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent 88%) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 10%, transparent 90%) !important;
 }
 
-/* ── Surah / Juz / Page list items ── */
+/* ── List items (Surah / Juz / Page) ── */
 #sidebar .overflow-y-auto button.w-full,
 .sb-wrapper .overflow-y-auto button.w-full {
-  border-radius: 10px !important;
-  transition: background 0.12s, border-color 0.12s !important;
-  min-height: 2.75rem !important; /* 44px touch target */
-  padding: 0.5rem 0.625rem !important;
+  border-radius: 8px !important;
+  transition: background 0.12s !important;
+  min-height: 2.5rem !important;
+  padding: 0.35rem 0.5rem !important;
 }
 
 #sidebar .overflow-y-auto button.w-full:hover,
 .sb-wrapper .overflow-y-auto button.w-full:hover {
-  background: color-mix(in srgb, var(--primary) 6%, var(--bg-secondary) 94%) !important;
+  background: color-mix(in srgb, var(--primary) 5%, var(--bg-secondary) 95%) !important;
 }
 
-/* Active list item — uses border-primary/30 bg-primary/8 classes */
+/* Active list item */
 #sidebar .overflow-y-auto button.border-primary\/30,
 #sidebar .overflow-y-auto button[class*="bg-primary"],
 .sb-wrapper .overflow-y-auto button.border-primary\/30,
 .sb-wrapper .overflow-y-auto button[class*="bg-primary"] {
-  background: color-mix(in srgb, var(--primary) 10%, var(--bg-secondary) 90%) !important;
-  border-color: color-mix(in srgb, var(--primary) 30%, transparent 70%) !important;
+  background: color-mix(in srgb, var(--primary) 8%, var(--bg-secondary) 92%) !important;
+  border-color: color-mix(in srgb, var(--primary) 25%, transparent 75%) !important;
   color: var(--primary) !important;
 }
 
-/* ── Number circles (surah index badges) ── */
+/* ── Number circles (surah/juz badges) ── */
 #sidebar span.rounded-full.flex,
 #sidebar span[class*="rounded-full"][class*="flex"],
 .sb-wrapper span.rounded-full.flex,
 .sb-wrapper span[class*="rounded-full"][class*="flex"] {
   border-radius: 50% !important;
-  font-size: 0.65rem !important;
+  font-size: 0.62rem !important;
   font-weight: 800 !important;
-  min-width: 1.6rem !important;
-  height: 1.6rem !important;
+  min-width: 1.5rem !important;
+  height: 1.5rem !important;
 }
 
-/* ── Surah name / title text ── */
+/* ── Surah name text ── */
 #sidebar span.font-semibold,
 #sidebar p.font-semibold,
 .sb-wrapper span.font-semibold,
 .sb-wrapper p.font-semibold {
-  font-size: var(--ts-sm) !important;
+  font-size: 0.82rem !important;
 }
 
 /* ── Arabic calligraphy glyph ── */
 #sidebar [class*="font-surah"],
 .sb-wrapper [class*="font-surah"] {
-  font-size: 1.3rem !important;
-  opacity: 0.65 !important;
+  font-size: 1.2rem !important;
+  opacity: 0.55 !important;
 }
 
-/* ── Subtle entry animation for list items ── */
+/* ── Subtle entry animation ── */
 @media (prefers-reduced-motion: no-preference) {
   #sidebar .overflow-y-auto > *,
   .sb-wrapper .overflow-y-auto > * {
-    animation: sb-item-in 0.18s ease both;
+    animation: sb-item-in 0.14s ease both;
   }
 }
 
 @keyframes sb-item-in {
   from {
     opacity: 0;
-    transform: translateX(-6px);
+    transform: translateX(-4px);
   }
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+/* ── Tablet: wider sidebar ── */
+@media (min-width: 640px) and (max-width: 1024px) {
+  #sidebar,
+  .sb-wrapper {
+    width: min(380px, 80vw);
+  }
+}
+
+/* ── Mobile compact ── */
+@media (max-width: 420px) {
+  #sidebar,
+  .sb-wrapper {
+    width: min(300px, 85vw);
+  }
+
+  #sidebar > div:first-child,
+  .sb-wrapper > div:first-child {
+    padding: 0.6rem 0.7rem 0.5rem;
+  }
+
+  #sidebar .overflow-y-auto button.w-full,
+  .sb-wrapper .overflow-y-auto button.w-full {
+    min-height: 2.25rem !important;
+    padding: 0.3rem 0.4rem !important;
+  }
+
+  #sidebar .grid.gap-1 button,
+  .sb-wrapper .grid.gap-1 button {
+    min-height: 2rem !important;
+    font-size: 0.68rem !important;
+  }
+}
+
+/* ── Desktop large: sidebar can stay open alongside content ── */
+@media (min-width: 1280px) {
+  #sidebar.open,
+  .sb-wrapper.open {
+    position: relative;
+    transform: none;
+    box-shadow: none;
+    border-right: 1px solid var(--border);
   }
 }
