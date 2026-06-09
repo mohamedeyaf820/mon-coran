@@ -146,8 +146,6 @@
 [class*="reciter-card"]:hover {
   border-color: color-mix(in srgb, var(--primary) 40%, transparent 60%) !important;
   background: color-mix(in srgb, var(--primary) 5%, var(--bg-card) 95%) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
 }
 
 .settings-reciter-card.is-active,
@@ -213,8 +211,7 @@
 
 .settings-theme-grid > *:hover,
 .settings-drawer [class*="theme-grid"] > *:hover {
-  transform: scale(1.04) !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
 
 /* ── Sliders ── */
@@ -246,7 +243,7 @@
 
 .settings-drawer button[class*="destructive"]:hover,
 .settings-drawer button[class*="danger"]:hover {
-  transform: translateY(-1px) !important;
+  opacity: 0.9 !important;
 }
 
 /* ── Input fields inside settings ── */
@@ -268,4 +265,32 @@
 .settings-drawer input[type="number"]:focus {
   border-color: color-mix(in srgb, var(--primary) 50%, transparent 50%) !important;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent 88%) !important;
+}
+
+/* ── Sepia theme ── */
+[data-theme="sepia"] .settings-drawer {
+  background: var(--bg-primary) !important;
+  border-left-color: rgba(180, 140, 80, 0.2) !important;
+}
+
+[data-theme="sepia"] .settings-drawer > div:first-child {
+  background: color-mix(in srgb, var(--bg-secondary) 80%, transparent 20%);
+  border-bottom-color: rgba(180, 140, 80, 0.15);
+}
+
+[data-theme="sepia"] .settings-drawer [class*="grid-cols-3"],
+[data-theme="sepia"] .settings-drawer [class*="grid-cols-2"] {
+  background: var(--bg-secondary) !important;
+  border-color: rgba(180, 140, 80, 0.12) !important;
+}
+
+[data-theme="sepia"] .settings-drawer [class*="grid-cols-3"] button.bg-bg-primary,
+[data-theme="sepia"] .settings-drawer [class*="grid-cols-2"] button.bg-bg-primary {
+  background: var(--bg-card) !important;
+  color: var(--primary) !important;
+}
+
+[data-theme="sepia"] .settings-reciter-card {
+  border-color: rgba(180, 140, 80, 0.15) !important;
+  background: var(--bg-card) !important;
 }

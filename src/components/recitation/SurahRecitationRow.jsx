@@ -6,20 +6,20 @@ const SurahRecitationRow = memo(function SurahRecitationRow({ surah, lang, onPla
   const label = lang === "ar" ? surah.ar : lang === "fr" ? surah.fr : surah.en;
 
   return (
-    <div className="recitation-row group flex min-w-0 items-center gap-3 rounded-xl border border-border bg-bg-card/65 px-3 py-3 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-200 hover:-translate-y-[1px] hover:border-primary/35 hover:bg-bg-card hover:shadow-[0_8px_24px_rgba(0,0,0,0.07)] sm:px-4">
-      <span className="recitation-row__index inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)] text-xs font-black font-mono transition-all duration-300 group-hover:bg-[rgba(var(--primary-rgb),0.16)] group-hover:shadow-[0_2px_8px_rgba(var(--primary-rgb),0.15)]">
+    <div className="recitation-row group flex min-w-0 items-center gap-3 border-b border-border bg-transparent px-2 py-3 transition-colors duration-150 hover:bg-[rgba(var(--primary-rgb),0.03)]">
+      <span className="recitation-row__index inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] text-xs font-bold font-mono">
         {lang === "ar" ? toAr(surah.n) : surah.n}
       </span>
-      
+
       <div className="recitation-row__copy min-w-0 flex-1">
-        <div className="recitation-row__title truncate text-sm font-extrabold text-text-primary transition-colors duration-200 group-hover:text-primary">
+        <div className="recitation-row__title truncate text-sm font-bold text-text-primary">
           {label}
         </div>
-        <div className="recitation-row__arabic mt-0.5 truncate text-[0.72rem] text-text-secondary opacity-80">
+        <div className="recitation-row__arabic mt-0.5 truncate text-[0.72rem] text-text-muted">
           {surah.ar}
         </div>
       </div>
-      
+
       <RowActions
         lang={lang}
         onPlay={onPlay}

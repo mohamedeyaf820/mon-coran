@@ -39,7 +39,26 @@
 }
 
 .audio-player-primary-btn:hover {
-    transform: translateY(-1px);
+    opacity: 0.92;
+}
+
+/* Sepia theme */
+[data-theme="sepia"] .mp-audio-player {
+    --player-surface: rgba(60, 40, 20, 0.92);
+    --player-surface-soft: rgba(50, 30, 15, 0.9);
+    --player-line: rgba(180, 140, 80, 0.2);
+    color: rgba(255, 248, 235, 0.94);
+}
+
+[data-theme="sepia"] .mp-audio-player--desktop,
+[data-theme="sepia"] .mp-audio-player--mobile {
+    background:
+        linear-gradient(155deg, rgba(var(--theme-primary-rgb, 124, 74, 23), 0.15), transparent 42%),
+        linear-gradient(180deg, var(--player-surface), var(--player-surface-soft)) !important;
+}
+
+[data-theme="sepia"] .audio-cover-art {
+    border-color: rgba(180, 140, 80, 0.3);
 }
 
 .player-reciter-btn,

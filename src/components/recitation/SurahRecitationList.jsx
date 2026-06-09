@@ -56,7 +56,7 @@ export default function SurahRecitationList({ lang, reciter, getDownloadUrl, onP
 
   return (
     <div
-      className="recitation-surah-list grid flex-1 min-h-0 grid-cols-1 gap-2.5 overflow-y-auto pr-1 md:grid-cols-2"
+      className="recitation-surah-list flex flex-1 min-h-0 flex-col gap-0 overflow-y-auto"
       onScroll={handleScroll}
     >
       {visibleSurahs.map((surah) => (
@@ -72,7 +72,7 @@ export default function SurahRecitationList({ lang, reciter, getDownloadUrl, onP
       {visibleCount < SURAHS.length ? (
         <button
           type="button"
-          className="recitation-row recitation-row--load-more col-span-1 rounded-xl border border-dashed border-border bg-bg-card/45 px-4 py-3 text-sm font-bold text-primary transition hover:bg-bg-card md:col-span-2"
+          className="recitation-row--load-more border-t border-border bg-transparent py-3 text-center text-sm font-semibold text-primary transition-colors hover:bg-bg-secondary/50"
           onClick={revealMore}
         >
           {lang === "fr" ? "Afficher plus de sourates" : lang === "ar" ? "عرض المزيد من السور" : "Show more surahs"}
