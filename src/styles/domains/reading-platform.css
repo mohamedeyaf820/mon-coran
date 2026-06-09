@@ -287,6 +287,15 @@
     }
 }
 
+/* Extra-small phones (≤380px) — compact Arabic + tighter spacing */
+@media (max-width: 380px) {
+    .app-root .quran-display--platform {
+        --qcom-ar-size: clamp(1.3rem, 7.2vw, 1.8rem);
+        --qcom-ar-leading: 1.85;
+        --qcom-ar-word-spacing: 0.015em;
+    }
+}
+
 .app-root .quran-display--platform .qc-surah-header--minimal {
     width: min(100%, 1040px);
     margin: 0 auto 0.8rem;
@@ -1464,8 +1473,8 @@
 }
 
 :root {
-    --ui-icon-btn: 2.32rem;
-    --ui-icon-size: 0.9rem;
+    --ui-icon-btn: clamp(1.92rem, 1.6rem + 1vw, 2.32rem);
+    --ui-icon-size: clamp(0.72rem, 0.6rem + 0.4vw, 0.9rem);
     --ui-card-radius: 14px;
     --ui-page-pad: clamp(0.62rem, 1.5vw, 1.1rem);
     --ui-section-gap: clamp(0.72rem, 1.4vw, 1.15rem);
@@ -1613,11 +1622,6 @@ html body .app-root .quran-display--platform .cpv-container {
 }
 
 @media (max-width: 1180px) {
-    :root {
-        --ui-icon-btn: 2.18rem;
-        --ui-icon-size: 0.84rem;
-    }
-
     .app-root .mp-header__bar {
         min-height: 3.2rem !important;
         padding-block: 0.34rem !important;
@@ -1683,8 +1687,6 @@ html body .app-root .quran-display--platform .cpv-container {
 
 @media (max-width: 640px) {
     :root {
-        --ui-icon-btn: 2.05rem;
-        --ui-icon-size: 0.78rem;
         --ui-page-pad: 0.42rem;
         --ui-card-radius: 12px;
         --player-h: 78px;
@@ -1839,11 +1841,6 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
 }
 
 @media (max-width: 380px) {
-    :root {
-        --ui-icon-btn: 1.92rem;
-        --ui-icon-size: 0.72rem;
-    }
-
     .app-root .mp-header__brand {
         width: 2.32rem !important;
         height: 2.32rem !important;
