@@ -547,8 +547,17 @@ export default function Header() {
             <PopoverContent
               align="end"
               sideOffset={10}
-              className="z-[300] w-64 rounded-2xl border border-border bg-bg-primary p-2 shadow-xl"
+              className="z-[300] w-60 rounded-2xl border border-border bg-bg-primary p-1 shadow-2xl"
             >
+              <div className="mp-header-menu__header">
+                <span className="mp-header-menu__header-icon">
+                  <MoreHorizontal size={14} strokeWidth={2.2} />
+                </span>
+                <span className="mp-header-menu__header-text">
+                  {tr({ fr: "Actions rapides", en: "Quick actions", ar: "إجراءات سريعة" })}
+                </span>
+              </div>
+
               {cleanQuickItems.map((item) => (
                 <button
                   key={item.key}
@@ -559,27 +568,32 @@ export default function Header() {
                     setQuickMenuOpen(false);
                   }}
                 >
-                  <item.Icon size={16} />
+                  <span className="mp-header-menu__item-icon">
+                    <item.Icon size={15} strokeWidth={2} />
+                  </span>
                   <span>{item.label}</span>
                 </button>
               ))}
+
               <div className="mp-header-menu__riwaya">
-                {["hafs", "warsh"].map((id) => (
-                  <button
-                    key={id}
-                    className={cn(
-                      "mp-header__seg",
-                      riwaya === id && "is-active",
-                    )}
-                    type="button"
-                    onClick={() => {
-                      set({ riwaya: id });
-                      setQuickMenuOpen(false);
-                    }}
-                  >
-                    {id.toUpperCase()}
-                  </button>
-                ))}
+                <div className="mp-header-menu__riwaya-label">
+                  {tr({ fr: "Riwaya", en: "Riwaya", ar: "الرواية" })}
+                </div>
+                <div className="mp-header-menu__riwaya-btns">
+                  {["hafs", "warsh"].map((id) => (
+                    <button
+                      key={id}
+                      className={cn("mp-header__seg", riwaya === id && "is-active")}
+                      type="button"
+                      onClick={() => {
+                        set({ riwaya: id });
+                        setQuickMenuOpen(false);
+                      }}
+                    >
+                      {id.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
               </div>
             </PopoverContent>
           </Popover>
