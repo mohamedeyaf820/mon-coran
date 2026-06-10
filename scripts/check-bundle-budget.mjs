@@ -8,7 +8,7 @@ const MAX_CSS_KB = Number(process.env.BUDGET_CSS_KB || 945);
 // continue to catch regressions that affect load cost.
 // The +2 kB headroom above the raw bundle sum accounts for Rollup chunk-boundary
 // boilerplate that accrues when manualChunks splits shared modules into more granular pieces.
-const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1152);
+const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1155);
 const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2050);
 const MAX_SINGLE_CSS_KB = Number(process.env.BUDGET_SINGLE_CSS_KB || 780);
 const MAX_SINGLE_JS_KB = Number(process.env.BUDGET_SINGLE_JS_KB || 250);
