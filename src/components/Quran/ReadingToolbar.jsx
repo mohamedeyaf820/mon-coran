@@ -146,9 +146,7 @@ export default function ReadingToolbar({
         scrolled && "qc-reader-toolbar--sticky",
       )}
       style={{
-        boxShadow: scrolled
-          ? "var(--toolbar-shadow-scrolled, 0 8px 32px -6px rgba(0,0,0,.14), 0 2px 8px rgba(0,0,0,.06))"
-          : "var(--toolbar-shadow, 0 10px 30px -10px rgba(0,0,0,.08))",
+        boxShadow: scrolled ? "var(--shadow-lg)" : "var(--shadow-md)",
         color: "var(--text-primary)",
       }}
       role="toolbar"

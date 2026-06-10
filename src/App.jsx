@@ -675,8 +675,8 @@ export default function App() {
                       : "Main content - Reading"
             }
             className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
-            style={{ paddingBottom: 'calc(var(--player-h, 0px) + var(--mini-player-h, 0px))' }}
             style={{
+              paddingBottom: 'calc(var(--player-h, 0px) + var(--mini-player-h, 0px))',
               height: "calc(100dvh - var(--header-h, 72px))",
               maxHeight: "calc(100dvh - var(--header-h, 72px))",
             }}

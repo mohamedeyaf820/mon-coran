@@ -2,7 +2,7 @@ import React from "react";
 import {
   BookOpenText,
   Bookmark,
-  Heart,
+  HandHeart,
   Home,
   Search,
   Settings,
@@ -57,7 +57,7 @@ export default function Footer() {
       onClick: () => dispatch({ type: "TOGGLE_BOOKMARKS" }),
     },
     {
-      Icon: Heart,
+      Icon: HandHeart,
       label: pick(lang, {
         fr: "Douas",
         en: "Duas",

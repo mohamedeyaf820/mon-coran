@@ -411,8 +411,20 @@ export default function QuranDisplay() {
           <i className="fas fa-xmark text-xs opacity-80" />
         </button>
       )}
-      {riwaya === "warsh" && !isWarshFallback ? <WarshNotice kind="ok" /> : null}
-      {riwaya === "warsh" && isWarshFallback ? <WarshNotice kind="fallback" /> : null}
+      {riwaya === "warsh" && !isWarshFallback ? (
+        <WarshNotice
+          kind="ok"
+          badgeLabel={t("settings.warshUnicodeBadge", lang)}
+          body={t("settings.warshUnicodeText", lang)}
+        />
+      ) : null}
+      {riwaya === "warsh" && isWarshFallback ? (
+        <WarshNotice
+          kind="fallback"
+          badgeLabel={t("settings.warshFallbackBadge", lang)}
+          body={t("settings.warshFallbackText", lang)}
+        />
+      ) : null}
       <div
         className={`quran-display quran-display--${riwaya} quran-display--platform`}
         ref={view.contentRef}
