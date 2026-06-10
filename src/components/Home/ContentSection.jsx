@@ -375,6 +375,7 @@ export default function ContentSection({
                       : reciter.nameEn;
                 const visual = getReciterVisual(reciter);
                 const avatar = visual.avatar;
+                const isFavorite = (favoriteReciters || []).includes(reciter.id);
 
                 return (
                   <button
@@ -426,11 +427,31 @@ export default function ContentSection({
                       </div>
                     </div>
 
-                    {/* Play action */}
+                    {/* Actions */}
                     <div
                       className="flex shrink-0 items-center gap-1.5"
                       onClick={(e) => e.stopPropagation()}
                     >
+                      {/* Favori */}
+                      <button
+                        type="button"
+                        className={cn(
+                          "flex h-8 w-8 items-center justify-center rounded-lg border transition-all active:scale-95",
+                          isFavorite
+                            ? "border-amber-400/40 bg-amber-50 text-amber-500 dark:bg-amber-900/20"
+                            : "border-border bg-transparent text-text-muted hover:text-amber-400",
+                        )}
+                        onClick={() => onToggleFavoriteReciter(reciter.id)}
+                        aria-label={
+                          lang === "fr"
+                            ? isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"
+                            : isFavorite ? "Remove from favorites" : "Add to favorites"
+                        }
+                        aria-pressed={isFavorite}
+                      >
+                        <i className={`fas fa-star text-[0.6rem]`} />
+                      </button>
+                      {/* Écouter */}
                       <button
                         className="flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-[0.7rem] font-bold text-white transition-all hover:bg-primary-dark active:scale-95"
                         type="button"
@@ -556,6 +577,35 @@ export default function ContentSection({
           </>
         )}
       </div>
+
+      {/* ── Audio speed controls (recitations) ── */}
+      {activeTab === "recitations" && (
+        <div className="mt-3 flex items-center justify-center gap-2">
+          <span className="text-[0.72rem] text-text-muted">
+            {lang === "fr" ? "Vitesse" : lang === "ar" ? "السرعة" : "Speed"}
+          </span>
+          {[0.5, 0.75, 1, 1.25, 1.5, 2].map((speed) => {
+            const isActive = (state?.audioSpeed ?? 1) === speed;
+            return (
+              <button
+                key={speed}
+                type="button"
+                className={cn(
+                  "rounded-md px-2 py-1 text-[0.7rem] font-bold transition-all active:scale-95",
+                  isActive
+                    ? "bg-primary text-white shadow-sm"
+                    : "border border-border bg-transparent text-text-muted hover:border-primary/40 hover:text-text-primary",
+                )}
+                onClick={() => onSetAudioSpeed(speed)}
+                aria-pressed={isActive}
+                aria-label={`${speed}x`}
+              >
+                {speed}x
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* ── Resume listening button (recitations + radio) ── */}
       {(activeTab === "recitations" || activeTab === "radio") && resumeState && (

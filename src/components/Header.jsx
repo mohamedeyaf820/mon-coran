@@ -18,7 +18,7 @@ import {
   MoreHorizontal,
   ChevronLeft,
   ChevronRight,
-  Heart,
+  HandHeart,
   Menu,
   Palette,
   Shapes,
@@ -320,7 +320,7 @@ export default function Header() {
   const cleanQuickItems = [
     {
       key: "duas",
-      Icon: Heart,
+      Icon: HandHeart,
       label: tr({
         fr: "Douas / Invocations",
         en: "Duas / Supplications",
@@ -502,7 +502,7 @@ export default function Header() {
             title={headerLabels.riwayaToggle}
           >
             <BookOpen size={14} strokeWidth={2.2} />
-            <span>{riwaya === "hafs" ? "WARSH" : "HAFS"}</span>
+            <span>{riwaya.toUpperCase()}</span>
           </button>
 
           {/* Search */}

@@ -83,17 +83,19 @@ export default function useQuranDisplayView({
       `${Math.max(12, Math.min(28, Number(quranTranslationFontSize) || 18))}px`,
     );
     element.style.setProperty("--qd-fullscreen-font-size", `${fullscreenFontSize}px`);
-    document.documentElement.style.setProperty("--quran-font-family", quranFontCss);
     document.documentElement.style.setProperty("--quran-font-size", quranFontSizeCss);
     document.documentElement.style.setProperty("--quran-line-height", quranLineHeight);
-    document.documentElement.style.setProperty("--font-quran", quranFontCss);
-    document.documentElement.style.setProperty("--font-quran-tajweed", quranFontCss);
     if (isQCF4) {
+      // QCF4 page fonts are loaded per-page by fontLoader — do NOT overwrite
+      // --font-quran or --quran-font-family here, they must stay as set by fontLoader
       element.style.removeProperty("--qd-font-family");
       element.dataset.qcf4Font = "true";
       return;
     }
 
+    document.documentElement.style.setProperty("--quran-font-family", quranFontCss);
+    document.documentElement.style.setProperty("--font-quran", quranFontCss);
+    document.documentElement.style.setProperty("--font-quran-tajweed", quranFontCss);
     element.style.setProperty("--qd-font-family", quranFontCss);
     element.style.setProperty("--qd-font-size", quranFontSizeCss);
     element.style.setProperty("--quran-font-family", quranFontCss);

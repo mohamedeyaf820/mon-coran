@@ -36,7 +36,6 @@ export default function MemorizationText({ text, lang = 'fr', isPlaying = false,
     // Reveal words progressively over the repeat duration.
     // Each repeat reveals a chunk of words. With N repeats and W words,
     // we reveal ceil(W/N) words per repeat, spaced evenly over ~2.5s per word.
-    const wordsPerChunk = Math.max(1, Math.ceil(words.length / Math.max(1, repeatCount)));
     const intervalMs = 1800; // Reveal a word every 1.8s when playing
 
     autoRevealTimer.current = setInterval(() => {

@@ -64,9 +64,11 @@ export default function ReadingToolbar({
 
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const mainEl = document.querySelector("#main-content") || window;
+    const getScroll = () => (mainEl === window ? window.scrollY : mainEl.scrollTop);
+    const onScroll = () => setScrolled(getScroll() > 40);
+    mainEl.addEventListener("scroll", onScroll, { passive: true });
+    return () => mainEl.removeEventListener("scroll", onScroll);
   }, []);
 
   const playHandler = onPlay || onPlaySurah;
@@ -145,8 +147,8 @@ export default function ReadingToolbar({
       )}
       style={{
         boxShadow: scrolled
-          ? "0 8px 32px -6px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06)"
-          : "0 10px 30px -10px rgba(0, 0, 0, 0.08)",
+          ? "var(--toolbar-shadow-scrolled, 0 8px 32px -6px rgba(0,0,0,.14), 0 2px 8px rgba(0,0,0,.06))"
+          : "var(--toolbar-shadow, 0 10px 30px -10px rgba(0,0,0,.08))",
         color: "var(--text-primary)",
       }}
       role="toolbar"

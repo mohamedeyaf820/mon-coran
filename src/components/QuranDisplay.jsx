@@ -411,6 +411,8 @@ export default function QuranDisplay() {
           <i className="fas fa-xmark text-xs opacity-80" />
         </button>
       )}
+      {riwaya === "warsh" && !isWarshFallback ? <WarshNotice kind="ok" /> : null}
+      {riwaya === "warsh" && isWarshFallback ? <WarshNotice kind="fallback" /> : null}
       <div
         className={`quran-display quran-display--${riwaya} quran-display--platform`}
         ref={view.contentRef}
