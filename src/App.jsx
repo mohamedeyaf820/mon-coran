@@ -35,6 +35,7 @@ const QuranDisplay = lazy(() => import("./components/QuranDisplay"));
 const NotesPanel = lazy(() => import("./components/NotesPanel"));
 const Sidebar = lazy(() => import("./components/Sidebar"));
 const AudioPlayer = lazy(() => import("./components/AudioPlayer"));
+const MiniPlayer = lazy(() => import("./components/MiniPlayer"));
 const SearchModal = lazy(() => import("./components/SearchModal"));
 const SettingsModal = lazy(() => import("./components/SettingsModal"));
 const BookmarksModal = lazy(() => import("./components/BookmarksModal"));
@@ -673,7 +674,8 @@ export default function App() {
                       ? "المحتوى الرئيسي - القراءة"
                       : "Main content - Reading"
             }
-            className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto pb-(--player-h) transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
+            className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
+            style={{ paddingBottom: 'calc(var(--player-h, 0px) + var(--mini-player-h, 0px))' }}
             style={{
               height: "calc(100dvh - var(--header-h, 72px))",
               maxHeight: "calc(100dvh - var(--header-h, 72px))",
@@ -739,6 +741,11 @@ export default function App() {
             <AudioPlayer />
           </Suspense>
         )}
+
+        {/* ── Mini-player persistant (barre fixe au bas de chaque page) ────── */}
+        <Suspense fallback={null}>
+          <MiniPlayer />
+        </Suspense>
 
         {/* ── Bouton raccourcis clavier (desktop uniquement) ───────────── */}
         {!showHome && !showDuas && (

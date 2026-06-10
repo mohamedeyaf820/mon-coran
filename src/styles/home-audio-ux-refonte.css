@@ -446,7 +446,7 @@ html.dark [data-reciter-card="true"] {
 .quran-display-container,
 .quran-reading-page,
 .quran-page-shell {
-  scroll-padding-bottom: calc(var(--player-h, 0px) + var(--desktop-player-reserved-h, 0px) + 2rem);
+  scroll-padding-bottom: calc(var(--player-h, 0px) + var(--desktop-player-reserved-h, 0px) + var(--mini-player-h, 0px) + 2rem);
 }
 
 .quran-display,
