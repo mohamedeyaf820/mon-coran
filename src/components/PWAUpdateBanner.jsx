@@ -35,19 +35,19 @@ export default function PWAUpdateBanner() {
       role="alert"
       aria-live="polite"
       style={{
-        position: 'fixed', bottom: '1.25rem', left: '50%', transform: 'translateX(-50%)',
-        zIndex: 9999, background: 'var(--bg-card,#fff)', border: '1px solid var(--border,#e5e7eb)',
-        borderRadius: '0.75rem', padding: '0.65rem 1rem', display: 'flex', alignItems: 'center',
-        gap: '0.75rem', boxShadow: '0 4px 24px rgba(0,0,0,.15)', maxWidth: '92vw',
-        fontFamily: 'var(--font-ui,sans-serif)', fontSize: '0.85rem',
+        position: 'fixed', bottom: 'var(--space-5)', left: '50%', transform: 'translateX(-50%)',
+        zIndex: 9999, background: 'var(--bg-card)', border: '1px solid var(--border)',
+        borderRadius: 'var(--r-lg)', padding: 'var(--space-2) var(--space-4)', display: 'flex',
+        alignItems: 'center', gap: 'var(--space-3)', boxShadow: 'var(--shadow-md)',
+        maxWidth: '92vw', fontFamily: 'var(--font-ui,sans-serif)', fontSize: '0.85rem',
       }}
     >
-      <span style={{ color: 'var(--text-primary,#111)' }}>{t('pwa.updateAvailable', lang)}</span>
+      <span style={{ color: 'var(--text-primary)' }}>{t('pwa.updateAvailable', lang)}</span>
       <button
         onClick={reload}
         style={{
-          background: 'var(--primary,#2563eb)', color: '#fff', border: 'none',
-          borderRadius: '0.5rem', padding: '0.35rem 0.9rem', fontWeight: 700,
+          background: 'var(--primary)', color: '#fff', border: 'none',
+          borderRadius: 'var(--r-sm)', padding: 'var(--space-1) var(--space-3)', fontWeight: 700,
           cursor: 'pointer', fontSize: '0.8rem', whiteSpace: 'nowrap',
         }}
       >
@@ -58,7 +58,7 @@ export default function PWAUpdateBanner() {
         aria-label={t('pwa.dismiss', lang)}
         style={{
           background: 'transparent', border: 'none', cursor: 'pointer',
-          color: 'var(--text-muted,#6b7280)', fontSize: '1.1rem', lineHeight: 1, padding: '0 0.15rem',
+          color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1, padding: '0 0.15rem',
         }}
       >×</button>
     </div>
