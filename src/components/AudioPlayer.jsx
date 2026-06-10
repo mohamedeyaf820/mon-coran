@@ -95,8 +95,9 @@ export default function AudioPlayer() {
   const [reciteText, setReciteText] = useState("");
   const [reciteResult, setReciteResult] = useState(null); // 'ok'|'partial'|'wrong'|null
   const reciteRecogRef = useRef(null);
-  const optionsCloseButtonRef = useRef(null);
 
+
+  const optionsCloseButtonRef = useRef(null);
   const progressRef = useRef(null);
   const audioErrorTimerRef = useRef(null);
   const autoFailoverBusyRef = useRef(false);

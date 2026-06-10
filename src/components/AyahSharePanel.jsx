@@ -3,8 +3,10 @@
  * Calligraphie arabe dorée sur fond islamique.
  */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { X, FileCode, Image, Loader2, Link2, Check, Share2, MessageCircle } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { getSurah } from '../data/surahs';
+import { t } from '../i18n';
 import { openExternalUrl, sanitizeSvgMarkup } from '../lib/security';
 
 const MAX_ARABIC_LENGTH = 600;
@@ -280,35 +282,35 @@ export default function AyahSharePanel() {
         className="modal modal-panel--wide share-panel"
         role="dialog"
         aria-modal="true"
-        aria-label={lang === 'fr' ? 'Partager un verset' : 'Share a Verse'}
+        aria-label={t('share.title', lang)}
         onClick={e => e.stopPropagation()}
       >
         <div className="modal-header">
           <div className="modal-title-stack">
             <div className="modal-kicker">
-              {lang === 'fr' ? 'Partager un verset' : 'Share a Verse'}
+              {t('share.title', lang)}
             </div>
             <h2 className="modal-title">
-              {lang === 'fr' ? 'Image calligraphique' : 'Calligraphic Image'}
+              {t('share.imageTitle', lang)}
             </h2>
             <div className="modal-subtitle">
-              {surahName} · {lang === 'fr' ? 'verset' : 'verse'} {currentAyah}
+              {surahName} · {t('share.verse', lang)} {currentAyah}
             </div>
           </div>
           <button
             className="modal-close"
             onClick={close}
             ref={closeBtnRef}
-            aria-label={lang === 'fr' ? 'Fermer' : 'Close'}
+            aria-label={t('share.close', lang)}
           >
-            <i className="fas fa-times"></i>
+            <X size={16} />
           </button>
         </div>
 
         {/* Arabic text override */}
         <div className="share-section">
           <label className="share-label">
-            {lang === 'fr' ? 'Texte arabe' : 'Arabic text'}
+            {t('share.arabicText', lang)}
           </label>
           <textarea
             className="share-textarea share-textarea--ar"
@@ -323,7 +325,7 @@ export default function AyahSharePanel() {
         {/* Translation toggle */}
         <div className="share-section share-section--row">
           <label className="share-label">
-            {lang === 'fr' ? 'Inclure la traduction' : 'Include translation'}
+            {t('share.includeTranslation', lang)}
           </label>
           <button
             className={`share-toggle ${includeTranslation ? 'on' : 'off'}`}
@@ -339,7 +341,7 @@ export default function AyahSharePanel() {
               value={translationText}
               onChange={e => setTranslationText(e.target.value.slice(0, MAX_TRANSLATION_LENGTH))}
               rows={2}
-              placeholder={lang === 'fr' ? 'Traduction…' : 'Translation…'}
+              placeholder={t('share.translationPlaceholder', lang)}
             />
           </div>
         )}
@@ -347,7 +349,7 @@ export default function AyahSharePanel() {
         {/* Color preset picker */}
         <div className="share-section">
           <label className="share-label">
-            {lang === 'fr' ? 'Thème' : 'Theme'}
+            {t('share.theme', lang)}
           </label>
           <div className="share-presets">
             {BG_PRESETS.map(p => (
@@ -374,31 +376,29 @@ export default function AyahSharePanel() {
         {/* Download actions */}
         <div className="share-actions">
           <button className="share-action-btn share-action-btn--svg" onClick={handleDownloadSVG}>
-            <i className="fas fa-file-code"></i>
+            <FileCode size={15} />
             SVG
           </button>
           <button className="share-action-btn share-action-btn--png" onClick={handleDownloadPNG} disabled={downloading}>
-            {downloading
-              ? <i className="fas fa-spinner fa-spin"></i>
-              : <i className="fas fa-image"></i>}
+            {downloading ? <Loader2 size={15} className="animate-spin" /> : <Image size={15} />}
             PNG
           </button>
           <button className="share-action-btn share-action-btn--copy" onClick={handleCopyLink}>
-            <i className={`fas ${copied ? 'fa-check' : 'fa-link'}`}></i>
+            {copied ? <Check size={15} /> : <Link2 size={15} />}
             {copied
-              ? (lang === 'fr' ? 'Copié !' : 'Copied!')
+              ? t('share.copied', lang)
               : copyError
-                ? (lang === 'fr' ? 'Échec' : 'Failed')
-                : (lang === 'fr' ? 'Lien' : 'Link')}
+                ? t('share.failed', lang)
+                : t('share.link', lang)}
           </button>
           {navigator.share && (
             <button className="share-action-btn share-action-btn--web" onClick={handleWebShare}>
-              <i className="fas fa-share-nodes"></i>
-              {lang === 'fr' ? 'Partager' : 'Share'}
+              <Share2 size={15} />
+              {t('share.share', lang)}
             </button>
           )}
           <button className="share-action-btn share-action-btn--whatsapp" onClick={handleWhatsAppShare}>
-            <i className="fab fa-whatsapp"></i>
+            <MessageCircle size={15} />
             WhatsApp
           </button>
         </div>

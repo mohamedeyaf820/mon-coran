@@ -95,6 +95,13 @@ export default {
     shareEmail: 'Email', shareNative: 'Share via…',
     shareTitle: 'Share this verse',
   },
+  share: {
+    title: 'Share a Verse', imageTitle: 'Calligraphic Image',
+    verse: 'verse', close: 'Close',
+    arabicText: 'Arabic text', includeTranslation: 'Include translation',
+    translationPlaceholder: 'Translation…', theme: 'Theme',
+    copied: 'Copied!', failed: 'Failed', link: 'Link', share: 'Share',
+  },
   export: {
     title: 'Export / Import', export: 'Export', import: 'Import',
     exportData: 'Export Data', importData: 'Import Data',

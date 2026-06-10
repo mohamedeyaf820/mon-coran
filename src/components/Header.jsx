@@ -121,7 +121,9 @@ export default function Header() {
   }, [showHome, showDuas]);
 
   useEffect(() => {
-    if (goToOpen) window.setTimeout(() => inputRef.current?.focus(), 50);
+    if (!goToOpen) return;
+    const id = window.setTimeout(() => inputRef.current?.focus(), 50);
+    return () => window.clearTimeout(id);
   }, [goToOpen]);
 
   const cycleTheme = () =>

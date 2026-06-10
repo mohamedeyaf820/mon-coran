@@ -1,12 +1,16 @@
 export default {
   app: { name: 'MushafPlus', subtitle: 'المصحف الشريف', loading: 'جاري التحميل...', skipToContent: 'الانتقال إلى المحتوى الرئيسي', keyboardShortcuts: 'اختصارات لوحة المفاتيح', keyboardShortcutsHint: 'اختصارات لوحة المفاتيح (؟)' },
   nav: {
-    menu: 'القائمة', search: 'البحث', bookmarks: 'الإشارات المرجعية',
-    settings: 'الإعدادات', theme: 'تبديل السمة', scrollTop: 'العودة للأعلى',
+    menu: 'القائمة', home: 'الرئيسية', search: 'البحث', bookmarks: 'العلامات',
+    duas: 'الأدعية', settings: 'الإعدادات', theme: 'تبديل السمة', scrollTop: 'العودة للأعلى',
     surahList: 'فهرس السور',
     goTo: 'اذهب إلى…', goToSurah: 'سورة (١-١١٤)',
     goToPage: 'صفحة (١-٦٠٤)', goToJuz: 'جزء (١-٣٠)',
-    navigation: 'تنقل',
+    navigation: 'تنقل', quickNav: 'التنقل السريع',
+  },
+  footer: {
+    verseRef: 'الذاريات · ٥١:٥٦',
+    credit: 'اقرأ، استمع، احفظ',
   },
   sidebar: {
     title: 'فهرس السور', surahs: 'السور', juz: 'الأجزاء',
@@ -95,6 +99,13 @@ export default {
     shareTwitter: 'تويتر/إكس', shareCopy: 'نسخ النص',
     shareEmail: 'بريد إلكتروني', shareNative: 'مشاركة عبر…',
     shareTitle: 'مشاركة هذه الآية',
+  },
+  share: {
+    title: 'مشاركة آية', imageTitle: 'صورة خطية',
+    verse: 'آية', close: 'إغلاق',
+    arabicText: 'النص العربي', includeTranslation: 'تضمين الترجمة',
+    translationPlaceholder: 'الترجمة…', theme: 'المظهر',
+    copied: 'تم النسخ!', failed: 'فشل', link: 'رابط', share: 'مشاركة',
   },
   export: {
     title: 'تصدير / استيراد', export: 'تصدير', import: 'استيراد',

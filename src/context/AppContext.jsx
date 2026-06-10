@@ -346,10 +346,14 @@ export function appReducer(state, action) {
       }
 
     case "SET_PLAYING": {
-      let ayah = action.payload.ayah ?? state.currentPlayingAyah;
-      // Normalize: ensure currentPlayingAyah is always an object or null
-      if (typeof ayah === "number") {
-        ayah = { surah: null, ayah: ayah, globalNumber: ayah };
+      const raw = action.payload.ayah ?? state.currentPlayingAyah;
+      let ayah;
+      if (raw === null || raw === undefined) {
+        ayah = null;
+      } else if (typeof raw === "number") {
+        ayah = { surah: action.payload.surah ?? null, ayah: raw, globalNumber: raw };
+      } else {
+        ayah = raw;
       }
       return {
         ...state,
