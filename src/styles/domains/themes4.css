@@ -1159,3 +1159,544 @@ body,
     opacity: 0.92;
     filter: brightness(0.6) contrast(1.2);
 }
+
+/* ── Sepia component overrides ─────────────────────────────────────
+   Mirrors the dark-mode-refonte.css component styling with warm
+   parchment/amber tones appropriate for the sepia reading mode.
+*/
+
+html[data-theme="sepia"] .app-root,
+html[data-theme="sepia"] .app-main,
+html[data-theme="sepia"] .quran-display-scroll {
+    background: transparent;
+    color: var(--brand-ink);
+}
+
+html[data-theme="sepia"]
+    :is(.mp-header, .mp-header__bar, .app-header, header[role="banner"]) {
+    border-color: rgba(139, 107, 62, 0.22);
+    background: linear-gradient(
+        180deg,
+        rgba(253, 246, 227, 0.96),
+        rgba(243, 232, 207, 0.94)
+    );
+    box-shadow: 0 8px 24px rgba(72, 55, 35, 0.1);
+    backdrop-filter: blur(14px) saturate(120%);
+}
+
+html[data-theme="sepia"]
+    :is(.mp-header__title, .mp-header__brand-text, .mp-header__title-btn) {
+    color: #2c1d0b;
+}
+
+html[data-theme="sepia"]
+    :is(.mp-header__kicker, .mp-header__sub, .mp-header__network) {
+    color: #6b5535;
+}
+
+html[data-theme="sepia"]
+    :is(
+        .mp-header__action,
+        .mp-header__more,
+        .mp-header__icon-btn,
+        .mp-header__nav-arrow,
+        .mp-header__title-btn
+    ) {
+    border-color: rgba(139, 107, 62, 0.24);
+    background: rgba(255, 250, 238, 0.82);
+    color: #5a4528;
+}
+
+html[data-theme="sepia"]
+    :is(
+        .mp-header__action:hover,
+        .mp-header__more:hover,
+        .mp-header__icon-btn:hover,
+        .mp-header__nav-arrow:hover,
+        .mp-header__action.is-active
+    ) {
+    border-color: rgba(181, 125, 42, 0.4);
+    background: rgba(181, 125, 42, 0.1);
+    color: #3d2b10;
+}
+
+html[data-theme="sepia"]
+    .app-root
+    :is(
+        .home-hero-compact,
+        .home-session-card,
+        .content-card,
+        .premium-card,
+        .qcom-verse-card,
+        .qc-verse-card,
+        .qc-ayah-block,
+        .rd-ayah,
+        .surah-card,
+        .dua-card,
+        .duas-card,
+        .settings-card,
+        .modal-item-card,
+        .verse-compare-card,
+        .tools-hub-card,
+        .reciter-card,
+        .reciter-radio-card,
+        .recitation-row,
+        .surah-info-card
+    ) {
+    border-color: rgba(139, 107, 62, 0.18);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 252, 244, 0.95),
+        rgba(248, 240, 220, 0.92)
+    );
+    color: var(--brand-ink);
+    box-shadow:
+        0 8px 24px rgba(72, 55, 35, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+html[data-theme="sepia"] .quran-display--platform {
+    background:
+        radial-gradient(
+            circle at 50% -10%,
+            rgba(181, 125, 42, 0.06),
+            transparent 32rem
+        ),
+        transparent;
+}
+
+html[data-theme="sepia"]
+    .quran-display--platform
+    :is(.surah-ayahs-list, .qcom-continuous-list, .cpv-container) {
+    border-color: rgba(139, 107, 62, 0.16);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 253, 247, 0.96),
+        rgba(250, 244, 228, 0.94)
+    );
+    box-shadow:
+        0 16px 42px rgba(72, 55, 35, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+html[data-theme="sepia"] .quran-display--platform .rd-ayah.qc-ayah-block {
+    background: transparent;
+    border-color: rgba(139, 107, 62, 0.12);
+    box-shadow: none;
+}
+
+html[data-theme="sepia"]
+    .quran-display--platform
+    :is(.qc-ayah-text-ar, .rd-arabic, .quran-text, .ayah-text) {
+    color: #1a0f00;
+}
+
+html[data-theme="sepia"]
+    .quran-display--platform
+    :is(
+        .qc-ayah-translation,
+        .translation-text,
+        .quran-translation,
+        .rd-trans-item
+    ) {
+    color: #4a3520;
+}
+
+html[data-theme="sepia"]
+    .quran-display--platform
+    :is(
+        .qc-reader-surah-header,
+        .reader-toolbar,
+        .qc-reader-toolbar,
+        .page-header-bar,
+        .quran-nav,
+        .chunk-nav-bar,
+        .mushaf-layout-toggle-bar
+    ) {
+    border-color: rgba(139, 107, 62, 0.2);
+    background: linear-gradient(
+        180deg,
+        rgba(253, 248, 235, 0.94),
+        rgba(245, 237, 215, 0.92)
+    );
+    color: var(--brand-ink);
+    box-shadow: 0 8px 24px rgba(72, 55, 35, 0.08);
+}
+
+html[data-theme="sepia"]
+    .quran-display--platform
+    .qc-reader-surah-header__arabic {
+    border-color: rgba(181, 125, 42, 0.3);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 250, 235, 0.98),
+        rgba(248, 238, 210, 0.96)
+    );
+    color: #5c3d12;
+    box-shadow: 0 8px 24px rgba(72, 55, 35, 0.1);
+}
+
+html[data-theme="sepia"]
+    .quran-display--platform
+    :is(.rd-ayah-head, .qc-ayah-number, .ayah-number) {
+    border-color: rgba(181, 125, 42, 0.28);
+    background: rgba(181, 125, 42, 0.08);
+    color: #7c4a17;
+}
+
+html[data-theme="sepia"]
+    .quran-display--platform
+    :is(.rd-ayah:hover, .rd-ayah.active, .rd-ayah.playing) {
+    background: rgba(181, 125, 42, 0.06);
+}
+
+html[data-theme="sepia"]
+    :is(.modal-overlay, .settings-backdrop, .audio-player-modal) {
+    background: rgba(72, 55, 35, 0.32);
+    backdrop-filter: blur(10px) saturate(110%);
+}
+
+html[data-theme="sepia"]
+    :is(
+        .settings-drawer,
+        .modal,
+        .modal-box,
+        .modal-panel,
+        .modal-panel--wide,
+        .audio-player-modal__surface,
+        .reciter-detail,
+        .sidebar
+    ) {
+    border-color: rgba(139, 107, 62, 0.2);
+    background:
+        radial-gradient(
+            circle at 18% 0%,
+            rgba(181, 125, 42, 0.06),
+            transparent 22rem
+        ),
+        linear-gradient(180deg, rgba(255, 252, 244, 0.99), rgba(248, 240, 220, 0.99));
+    color: var(--brand-ink);
+    box-shadow: 0 24px 72px rgba(72, 55, 35, 0.14);
+}
+
+html[data-theme="sepia"]
+    :is(
+        .settings-drawer__header,
+        .modal-header,
+        .audio-player-modal__surface > div:first-child
+    ) {
+    border-color: rgba(139, 107, 62, 0.16);
+    background: rgba(255, 250, 238, 0.6);
+}
+
+html[data-theme="sepia"] .settings-drawer__tabs {
+    border-color: rgba(139, 107, 62, 0.16);
+    background: rgba(248, 240, 220, 0.5);
+}
+
+html[data-theme="sepia"] .settings-drawer__tabs button[aria-selected="true"],
+html[data-theme="sepia"] .modal-segmented-btn.active {
+    background: linear-gradient(
+        135deg,
+        rgba(181, 125, 42, 0.2),
+        rgba(181, 125, 42, 0.12)
+    );
+    color: #3d2b10;
+    box-shadow: 0 4px 12px rgba(181, 125, 42, 0.12);
+}
+
+html[data-theme="sepia"]
+    .app-root
+    :is(input, select, textarea, .modal-search-input, .modal-inline-input) {
+    border-color: rgba(139, 107, 62, 0.22);
+    background: rgba(255, 252, 244, 0.8);
+    color: var(--brand-ink);
+    box-shadow: inset 0 1px 2px rgba(72, 55, 35, 0.06);
+}
+
+html[data-theme="sepia"] .mp-audio-player {
+    --player-surface: rgba(253, 248, 235, 0.98);
+    --player-surface-soft: rgba(248, 240, 220, 0.96);
+    --player-line: rgba(139, 107, 62, 0.2);
+    color: var(--brand-ink);
+}
+
+html[data-theme="sepia"]
+    :is(.mp-audio-player--desktop, .mp-audio-player--mobile) {
+    border-color: rgba(139, 107, 62, 0.22);
+    background:
+        radial-gradient(
+            circle at 20% 0%,
+            rgba(181, 125, 42, 0.08),
+            transparent 18rem
+        ),
+        linear-gradient(180deg, rgba(255, 252, 244, 0.98), rgba(248, 240, 220, 0.98));
+    box-shadow:
+        0 16px 42px rgba(72, 55, 35, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+html[data-theme="sepia"]
+    :is(.audio-player-primary-btn, .btn-play-surah, .hp2-btn--primary) {
+    background: linear-gradient(135deg, #c9882e, #9a6418);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(181, 125, 42, 0.22);
+}
+
+html[data-theme="sepia"]
+    :is(.reciter-card__media, .reciter-hero__avatar, .settings-reciter-avatar) {
+    border-color: rgba(139, 107, 62, 0.22);
+    box-shadow: 0 8px 20px rgba(72, 55, 35, 0.1);
+}
+
+html[data-theme="sepia"] .reciter-card__chip {
+    border-color: rgba(181, 125, 42, 0.24);
+    background: rgba(181, 125, 42, 0.08);
+    color: #7c4a17;
+}
+
+html[data-theme="sepia"] .recitation-action-btn {
+    border-color: rgba(139, 107, 62, 0.2);
+    background: rgba(255, 250, 238, 0.7);
+    color: #5a4528;
+}
+
+html[data-theme="sepia"] .mp-footer-v2__shell {
+    border-color: rgba(139, 107, 62, 0.18);
+    background:
+        radial-gradient(
+            circle at 12% 0%,
+            rgba(181, 125, 42, 0.06),
+            transparent 18rem
+        ),
+        linear-gradient(180deg, rgba(253, 248, 235, 0.96), rgba(245, 237, 215, 0.97));
+    box-shadow: 0 -8px 24px rgba(72, 55, 35, 0.06);
+}
+
+html[data-theme="sepia"] .mp-footer-v2__verse {
+    border-color: rgba(139, 107, 62, 0.14);
+}
+
+html[data-theme="sepia"] .mp-footer-v2__verse-text {
+    color: #2c1d0b;
+}
+
+html[data-theme="sepia"] .mp-footer-v2__nav-btn {
+    border-color: rgba(139, 107, 62, 0.18);
+    background: rgba(255, 250, 238, 0.7);
+    color: #5a4528;
+}
+
+html[data-theme="sepia"] .mp-footer-v2__nav-btn:hover {
+    border-color: rgba(181, 125, 42, 0.38);
+    background: rgba(181, 125, 42, 0.1);
+    color: #3d2b10;
+}
+
+html[data-theme="sepia"]
+    .app-root
+    :is(button, a, input, select, textarea):focus-visible {
+    outline: 2px solid rgba(181, 125, 42, 0.7);
+    outline-offset: 2px;
+}
+
+html[data-theme="sepia"] .sidebar,
+html[data-theme="sepia"] .app-sidebar {
+    background: rgba(250, 244, 228, 0.98);
+    border-color: rgba(139, 107, 62, 0.16);
+    color: var(--brand-ink);
+}
+
+html[data-theme="sepia"] .sidebar-item,
+html[data-theme="sepia"] .sidebar-link,
+html[data-theme="sepia"] .sidebar-section-title {
+    color: #5a4528;
+}
+
+html[data-theme="sepia"] .sidebar-item:hover,
+html[data-theme="sepia"] .sidebar-item.active,
+html[data-theme="sepia"] .sidebar-link:hover {
+    background: rgba(181, 125, 42, 0.1);
+    color: #3d2b10;
+}
+
+html[data-theme="sepia"] .app-root .hp-wrapper,
+html[data-theme="sepia"] .app-root .home-wrapper {
+    background: transparent;
+}
+
+html[data-theme="sepia"] .app-root .hp-grid > *,
+html[data-theme="sepia"] .app-root .surah-card,
+html[data-theme="sepia"] .app-root .home-card {
+    border-color: rgba(139, 107, 62, 0.16);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 252, 244, 0.95),
+        rgba(248, 240, 220, 0.92)
+    );
+}
+
+html[data-theme="sepia"] .app-root .surah-card:hover,
+html[data-theme="sepia"] .app-root .home-card:hover {
+    border-color: rgba(181, 125, 42, 0.3);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 250, 238, 0.98),
+        rgba(250, 242, 222, 0.96)
+    );
+}
+
+html[data-theme="sepia"] .app-header,
+html[data-theme="sepia"] header.mp-header {
+    background: linear-gradient(
+        180deg,
+        rgba(253, 248, 235, 0.97),
+        rgba(248, 240, 220, 0.96)
+    );
+    border-bottom-color: rgba(139, 107, 62, 0.16);
+}
+
+html[data-theme="sepia"] footer,
+html[data-theme="sepia"] .app-footer {
+    background: linear-gradient(
+        180deg,
+        rgba(248, 240, 220, 0.96),
+        rgba(243, 232, 207, 0.98)
+    );
+    border-top-color: rgba(139, 107, 62, 0.14);
+    color: #5a4528;
+}
+
+html[data-theme="sepia"] .qc-reader-toolbar,
+html[data-theme="sepia"] .reader-toolbar {
+    background: linear-gradient(
+        180deg,
+        rgba(253, 248, 235, 0.94),
+        rgba(248, 240, 220, 0.92)
+    );
+    border-color: rgba(139, 107, 62, 0.18);
+}
+
+html[data-theme="sepia"] .qc-reader-toolbar button,
+html[data-theme="sepia"] .reader-toolbar button {
+    color: #5a4528;
+}
+
+html[data-theme="sepia"] .qc-reader-toolbar button[aria-pressed="true"],
+html[data-theme="sepia"] .reader-toolbar button[aria-pressed="true"],
+html[data-theme="sepia"] .qc-reader-toolbar button.active,
+html[data-theme="sepia"] .reader-toolbar button.active {
+    background: rgba(181, 125, 42, 0.14);
+    color: #7c4a17;
+    border-color: rgba(181, 125, 42, 0.3);
+}
+
+html[data-theme="sepia"] .app-root .ayah-action-sheet {
+    background: linear-gradient(
+        160deg,
+        rgba(255, 252, 244, 0.99) 0%,
+        rgba(248, 240, 220, 0.99) 100%
+    );
+    border-color: rgba(139, 107, 62, 0.2);
+    color: var(--brand-ink);
+    box-shadow: 0 20px 56px rgba(72, 55, 35, 0.12);
+}
+
+html[data-theme="sepia"] .app-root .ayah-study-content {
+    background: rgba(255, 250, 238, 0.7);
+    border-color: rgba(139, 107, 62, 0.14);
+}
+
+html[data-theme="sepia"] .app-root .ayah-study-source {
+    background: rgba(181, 125, 42, 0.1);
+    color: #7c4a17;
+}
+
+html[data-theme="sepia"] .app-root .ayah-study-tafsir p {
+    color: #4a3520;
+}
+
+html[data-theme="sepia"] .app-root .ayah-study-tab {
+    color: #6b5535;
+}
+
+html[data-theme="sepia"] .app-root .ayah-study-tab.is-active {
+    background: rgba(181, 125, 42, 0.12);
+    color: #7c4a17;
+    border-color: rgba(181, 125, 42, 0.28);
+}
+
+html[data-theme="sepia"] [role="menu"],
+html[data-theme="sepia"] .dropdown-content,
+html[data-theme="sepia"] [data-radix-popper-content-wrapper] > div {
+    background: rgba(255, 252, 244, 0.99);
+    border-color: rgba(139, 107, 62, 0.18);
+    box-shadow: 0 12px 36px rgba(72, 55, 35, 0.12);
+}
+
+html[data-theme="sepia"] [role="menuitem"]:hover,
+html[data-theme="sepia"] [data-highlighted] {
+    background: rgba(181, 125, 42, 0.1);
+    color: #3d2b10;
+}
+
+html[data-theme="sepia"] .app-root .qc-surah-banner {
+    background: linear-gradient(
+        180deg,
+        rgba(255, 250, 238, 0.96),
+        rgba(248, 240, 220, 0.94)
+    );
+    border-color: rgba(139, 107, 62, 0.16);
+}
+
+html[data-theme="sepia"] .app-root .qc-surah-banner__arabic {
+    color: #2c1d0b;
+}
+
+html[data-theme="sepia"] .search-modal,
+html[data-theme="sepia"] .search-pro__container {
+    background: linear-gradient(
+        180deg,
+        rgba(255, 252, 244, 0.99),
+        rgba(248, 240, 220, 0.99)
+    );
+    border-color: rgba(139, 107, 62, 0.18);
+}
+
+html[data-theme="sepia"] .search-pro__input {
+    background: rgba(255, 250, 238, 0.8);
+    border-color: rgba(139, 107, 62, 0.2);
+    color: var(--brand-ink);
+}
+
+html[data-theme="sepia"] .bismillah-text,
+html[data-theme="sepia"] .cpv-bismillah {
+    color: #2c1d0b;
+}
+
+html[data-theme="sepia"] .app-root aside[role="dialog"] {
+    background: linear-gradient(
+        180deg,
+        rgba(255, 252, 244, 0.99),
+        rgba(248, 240, 220, 0.99)
+    );
+}
+
+html[data-theme="sepia"] ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+html[data-theme="sepia"] ::-webkit-scrollbar-track {
+    background: rgba(243, 232, 207, 0.9);
+}
+
+html[data-theme="sepia"] ::-webkit-scrollbar-thumb {
+    border: 2px solid rgba(243, 232, 207, 0.9);
+    border-radius: 999px;
+    background: rgba(139, 107, 62, 0.3);
+}
+
+html[data-theme="sepia"] ::-webkit-scrollbar-thumb:hover {
+    background: rgba(181, 125, 42, 0.5);
+}

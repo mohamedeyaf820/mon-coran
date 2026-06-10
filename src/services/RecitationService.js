@@ -48,6 +48,16 @@ export function reciterDownloadUrl(targetReciter, surahNum) {
   return isSafeReciterDownloadUrl(url) ? url : null;
 }
 
+export async function buildContinuousRadioPlaylist(startSurah = 1, riwaya = "hafs") {
+  const start = Math.max(1, Math.min(114, Math.trunc(Number(startSurah)) || 1));
+  const surahNumbers = [];
+  for (let i = start; i <= 114; i++) surahNumbers.push(i);
+  if (start > 1) {
+    for (let i = 1; i < start; i++) surahNumbers.push(i);
+  }
+  return buildStationPlaylistForRiwaya(surahNumbers, riwaya);
+}
+
 export function playPlaylistWithReciter({ items, reciter, set }) {
   if (!reciter || !Array.isArray(items) || items.length === 0) return false;
   set?.({

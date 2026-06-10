@@ -14,6 +14,7 @@ export default function useQuranDisplayPrefetch({
   currentPage,
   currentSurah,
   displayMode,
+  isPlaying,
   loading,
   riwaya,
   showTranslation,
@@ -24,8 +25,13 @@ export default function useQuranDisplayPrefetch({
 
     const connection = navigator.connection;
     const constrained =
-      connection?.saveData === true || /2g|3g/.test(connection?.effectiveType || "");
+      connection?.saveData === true ||
+      /2g|3g/.test(connection?.effectiveType || "") ||
+      (connection?.downlink != null && connection.downlink < 1.5);
     if (constrained) return;
+
+    // Skip all prefetching during audio playback to avoid competing with streaming
+    if (isPlaying) return;
 
     const translationLang = translationLangs[0] || "fr";
     const prefetchText = (mode, value, targetRiwaya) => {
@@ -101,12 +107,14 @@ export default function useQuranDisplayPrefetch({
     };
 
     let secondaryTimer = null;
-    const alternateTimer = window.setTimeout(runCurrentAlternatePrefetch, 240);
+    // Delay alternate riwaya from 240ms → 2000ms (let current page render first)
+    const alternateTimer = window.setTimeout(runCurrentAlternatePrefetch, 2000);
     if (typeof window.requestIdleCallback === "function") {
-      const idleId = window.requestIdleCallback(runNearbyPrefetch, { timeout: 2400 });
+      // Delay nearby from idle/2400ms → 3000ms
+      const idleId = window.requestIdleCallback(runNearbyPrefetch, { timeout: 3000 });
       secondaryTimer = window.setTimeout(() => {
-        window.requestIdleCallback(runSecondaryPrefetch, { timeout: 3600 });
-      }, 1800);
+        window.requestIdleCallback(runSecondaryPrefetch, { timeout: 4500 });
+      }, 4000);
       return () => {
         window.clearTimeout(alternateTimer);
         window.cancelIdleCallback?.(idleId);
@@ -114,8 +122,8 @@ export default function useQuranDisplayPrefetch({
       };
     }
 
-    const timer = window.setTimeout(runNearbyPrefetch, 1200);
-    secondaryTimer = window.setTimeout(runSecondaryPrefetch, 3200);
+    const timer = window.setTimeout(runNearbyPrefetch, 3000);
+    secondaryTimer = window.setTimeout(runSecondaryPrefetch, 5000);
     return () => {
       window.clearTimeout(alternateTimer);
       window.clearTimeout(timer);
@@ -126,6 +134,7 @@ export default function useQuranDisplayPrefetch({
     currentPage,
     currentSurah,
     displayMode,
+    isPlaying,
     loading,
     riwaya,
     showTranslation,

@@ -93,6 +93,7 @@ export async function loadQcf4FontForMushafPage(riwaya, mushafPage) {
   }
 
   const fontUrl = getFontUrl(riwaya, index);
+  const FONT_LOAD_TIMEOUT_MS = 4000;
   const loadPromise = (async () => {
     try {
       const font = new FontFace(fontFamily, `url(${fontUrl})`, {
@@ -100,7 +101,12 @@ export async function loadQcf4FontForMushafPage(riwaya, mushafPage) {
         weight: "400",
         display: "swap",
       });
-      const loadedFont = await font.load();
+      const loadedFont = await Promise.race([
+        font.load(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Font load timeout")), FONT_LOAD_TIMEOUT_MS)
+        ),
+      ]);
       document.fonts.add(loadedFont);
       loadedFamilies.add(fontFamily);
       failedFamilies.delete(fontFamily);
@@ -111,6 +117,7 @@ export async function loadQcf4FontForMushafPage(riwaya, mushafPage) {
         family: fontFamily,
         index,
         loaded: false,
+        timedOut: error?.message === "Font load timeout",
         url: fontUrl,
         error,
       };

@@ -542,6 +542,13 @@
     transform: translateY(-1px);
 }
 
+.search-pro__result.is-keyboard-active {
+    border-color: color-mix(in srgb, var(--theme-primary, #10b981) 48%, transparent);
+    background: color-mix(in srgb, var(--theme-panel-bg-strong, #111827) 88%, var(--theme-primary, #10b981) 12%);
+    outline: 2px solid rgba(var(--theme-primary-rgb, 16, 185, 129), 0.4);
+    outline-offset: -2px;
+}
+
 .search-pro__result-number {
     width: 46px;
     height: 46px;

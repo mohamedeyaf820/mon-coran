@@ -26,6 +26,7 @@ import {
 import { runWhenIdle } from "../utils/idleUtils";
 import { THEMATIC_STATIONS } from "../services/StationService";
 import {
+  buildContinuousRadioPlaylist,
   buildStationPlaylistForRiwaya,
   buildSurahPlaylistForRiwaya,
   playPlaylistWithReciter,
@@ -421,10 +422,7 @@ export default function HomePage({ lowPerfMode = false }) {
     async (targetReciter) => {
       if (!targetReciter) return;
       try {
-        const stationItems = await buildStationPlaylistForRiwaya(
-          [1, 36, 55, 67, 18],
-          riwaya,
-        );
+        const stationItems = await buildContinuousRadioPlaylist(1, riwaya);
         if (!stationItems.length) return;
         const played = playPlaylistWithReciter({
           items: stationItems,

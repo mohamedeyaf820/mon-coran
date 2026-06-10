@@ -259,7 +259,7 @@
     }
 
     .qc-surah-banner__btns {
-        margin-left: auto;
+        margin-inline-start: auto;
     }
 }
 

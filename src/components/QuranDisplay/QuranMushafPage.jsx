@@ -180,6 +180,7 @@ export default function QuranMushafPage({
   const fallbackFontFamily = "var(--font-quran, 'QPC Hafs', serif)";
   const isWarsh = riwaya === "warsh";
   const [fontLoaded, setFontLoaded] = useState(false);
+  const [fontFailed, setFontFailed] = useState(false);
 
   const lines = useMemo(
     () => (isWarsh ? groupWarshPageLines(ayahs) : groupPageLines(ayahs)),
@@ -193,13 +194,19 @@ export default function QuranMushafPage({
   useEffect(() => {
     if (isWarsh) {
       setFontLoaded(false);
+      setFontFailed(false);
       return undefined;
     }
 
     let cancelled = false;
     setFontLoaded(false);
+    setFontFailed(false);
     ensureQcfPageFontLoaded(currentPage, version).then((result) => {
-      if (!cancelled) setFontLoaded(Boolean(result.loaded || result.cached));
+      if (!cancelled) {
+        const loaded = Boolean(result.loaded || result.cached);
+        setFontLoaded(loaded);
+        setFontFailed(!loaded);
+      }
     });
     return () => {
       cancelled = true;
@@ -297,6 +304,17 @@ export default function QuranMushafPage({
 
   return (
     <section className="qcm-page-shell" aria-label={`${lang === "ar" ? "صفحة" : "Page"} ${currentPage}`}>
+      {fontFailed && !isWarsh && (
+        <div className="qcm-font-warning" role="alert">
+          <span>
+            {lang === "ar"
+              ? "تعذّر تحميل الخط — يُعرض النص بخط بديل"
+              : lang === "fr"
+                ? "Police non chargée — affichage en mode texte"
+                : "Font failed to load — showing text fallback"}
+          </span>
+        </div>
+      )}
       <div className="qcm-edge qcm-edge--start">
         <span>{meta.sideA}</span>
         <span>{meta.sideB}</span>

@@ -84,7 +84,7 @@ export default function useQuranTranslations({
     translations.forEach((edition) => {
       const editionAyahs = edition.ayahs || [];
       const inferredSurah =
-        editionAyahs[0]?.surah?.number != null ? null : currentSurah;
+        editionAyahs[0]?.surah?.number ?? currentSurah;
 
       editionAyahs.forEach((translation) => {
         const surahNumber = translation.surah?.number ?? inferredSurah;

@@ -45,12 +45,35 @@ export default function SplashScreen({
 
   useEffect(() => {
     if (lowPerfMode) return;
-    const t = setTimeout(() => setShowSkip(true), 800);
+    const t = setTimeout(() => setShowSkip(true), 400);
     return () => clearTimeout(t);
   }, [lowPerfMode]);
 
   useEffect(() => {
-    if (onPrefetch) onPrefetch();
+    let dismissed = false;
+    const dismiss = () => {
+      if (dismissed) return;
+      dismissed = true;
+      setFadeOut(true);
+      setTimeout(onDone, 300);
+    };
+
+    let prefetchDone = false;
+    let timerDone = false;
+    const tryEarlyDismiss = () => {
+      if (prefetchDone && timerDone) dismiss();
+    };
+
+    if (onPrefetch) {
+      const result = onPrefetch();
+      if (result && typeof result.then === "function") {
+        result.then(() => { prefetchDone = true; tryEarlyDismiss(); }).catch(() => { prefetchDone = true; tryEarlyDismiss(); });
+      } else {
+        prefetchDone = true;
+      }
+    } else {
+      prefetchDone = true;
+    }
 
     if (lowPerfMode) {
       const t1 = setTimeout(() => setFadeOut(true), 300);
@@ -70,11 +93,12 @@ export default function SplashScreen({
       }, 350);
     }, 1600);
 
-    // Keep the splash decorative, but do not let it feel like a loading wall.
-    const t1 = setTimeout(() => setFadeOut(true), 950);
-    const t2 = setTimeout(() => onDone(), 1250);
+    // Minimum display time reduced from 950/1250ms to 500/700ms
+    const t1 = setTimeout(() => { setFadeOut(true); timerDone = true; tryEarlyDismiss(); }, 500);
+    const t2 = setTimeout(() => dismiss(), 700);
 
     return () => {
+      dismissed = true;
       clearInterval(verseTick);
       clearTimeout(t1);
       clearTimeout(t2);

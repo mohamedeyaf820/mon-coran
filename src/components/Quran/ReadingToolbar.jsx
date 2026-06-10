@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Brain,
   BookOpen,
@@ -61,6 +61,13 @@ export default function ReadingToolbar({
     showWordByWord,
     isPlaying,
   } = state;
+
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const playHandler = onPlay || onPlaySurah;
   const isPreparing = Boolean(preparingSurah && preparingSurah === surahNum);
@@ -132,9 +139,14 @@ export default function ReadingToolbar({
 
   return (
     <div
-      className="qc-reader-toolbar mx-auto mb-6 flex w-full max-w-[980px] flex-col items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.04)] backdrop-blur-md transition-all duration-300 md:flex-row"
+      className={cn(
+        "qc-reader-toolbar mx-auto mb-6 flex w-full max-w-[980px] flex-col items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 backdrop-blur-md transition-all duration-300 md:flex-row",
+        scrolled && "qc-reader-toolbar--sticky",
+      )}
       style={{
-        boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.08)",
+        boxShadow: scrolled
+          ? "0 8px 32px -6px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.06)"
+          : "0 10px 30px -10px rgba(0, 0, 0, 0.08)",
         color: "var(--text-primary)",
       }}
       role="toolbar"
@@ -205,7 +217,7 @@ export default function ReadingToolbar({
             onClick={() => set({ showTranslation: !showTranslation })}
             aria-pressed={showTranslation}
             aria-label={labels.translation}
-            title={labels.translation}
+            title={`${labels.translation} (T)`}
           >
             <Languages size={13} aria-hidden="true" />
             <span>{labels.translation}</span>
@@ -222,7 +234,7 @@ export default function ReadingToolbar({
             onClick={toggleWordByWord}
             aria-pressed={showWordByWord}
             aria-label={labels.wordByWord}
-            title={labels.wordByWord}
+            title={`${labels.wordByWord} (W)`}
           >
             <Type size={13} aria-hidden="true" />
             <span>{labels.wordByWord}</span>
@@ -239,7 +251,7 @@ export default function ReadingToolbar({
             onClick={() => set({ showTajwid: !showTajwid })}
             aria-pressed={showTajwid}
             aria-label={labels.tajweed}
-            title={labels.tajweed}
+            title={`${labels.tajweed} (J)`}
           >
             <Palette size={13} aria-hidden="true" />
             <span>{labels.tajweed}</span>
@@ -256,7 +268,7 @@ export default function ReadingToolbar({
             onClick={toggleMemorization}
             aria-pressed={memMode}
             aria-label={labels.memorization}
-            title={labels.memorization}
+            title={`${labels.memorization} (M)`}
           >
             <Brain size={13} aria-hidden="true" />
             <span>{labels.memorization}</span>
@@ -279,7 +291,7 @@ export default function ReadingToolbar({
                 : "bg-[var(--primary)] hover:bg-[var(--primary-dark,var(--primary))]",
             )}
             aria-label={isPlayingThisContext ? labels.pause : playLabel || labels.listen}
-            title={playLabel || labels.listen}
+            title={`${isPlayingThisContext ? labels.pause : labels.listen} (Space)`}
           >
             {isPreparing ? (
               <Loader2 size={13} className="animate-spin" aria-hidden="true" />

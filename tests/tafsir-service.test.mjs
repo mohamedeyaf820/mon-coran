@@ -69,8 +69,8 @@ test("tafsir: falls back when the selected resource fails", async () => {
       tafsirId: "ar-qurtubi",
     });
     assert.equal(result.text, "Fallback tafsir");
-    assert.equal(result.tafsirId, "en-kathir");
-    assert.match(result.note, /fran/);
+    assert.equal(result.tafsirId, "fr-mukhtasar");
+    assert.equal(result.note, null);
     assert.equal(calls.length, 2);
   } finally {
     restore();

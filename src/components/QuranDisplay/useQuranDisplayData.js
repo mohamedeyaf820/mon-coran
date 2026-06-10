@@ -29,7 +29,8 @@ function runWhenIdle(callback, timeout = 1600) {
 }
 
 const DISPLAY_DATA_CACHE = new Map();
-const DISPLAY_DATA_CACHE_MAX = 56;
+const DISPLAY_DATA_CACHE_MAX = 120;
+const INFLIGHT_REQUESTS = new Map();
 
 function displayCacheKey(displayMode, currentSurah, currentPage, currentJuz, riwaya, warshStrictMode) {
   const scope = displayMode === "page" ? `p:${currentPage}` : displayMode === "juz" ? `j:${currentJuz}` : `s:${currentSurah}`;
@@ -124,7 +125,22 @@ export default function useQuranDisplayData({
 
     dispatch({ type: "SET_LOADING", payload: true });
 
-    try {
+    // Deduplicate: if same key already in-flight, attach to it
+    if (INFLIGHT_REQUESTS.has(cacheKey)) {
+      try {
+        const { ayahs: fetchedAyahs, isWarshFallback: fallback } = await INFLIGHT_REQUESTS.get(cacheKey);
+        if (signal.aborted || requestSeqRef.current !== requestId) return;
+        setAyahs(fetchedAyahs);
+        setIsWarshFallback(fallback);
+        dispatch({ type: "SET", payload: { loadedAyahCount: fetchedAyahs.length } });
+        dispatch({ type: "SET_LOADING", payload: false });
+        return;
+      } catch {
+        // fall through to fresh fetch
+      }
+    }
+
+    const fetchPromise = (async () => {
       const arabicData = await loadArabicData({
         currentJuz,
         currentPage,
@@ -133,12 +149,19 @@ export default function useQuranDisplayData({
         riwaya,
         signal,
       });
+      const fetchedAyahs = ensureRequestedRiwaya(arabicData.ayahs || [], riwaya);
+      const fallback = Boolean(arabicData?.isTextFallback);
+      return { arabicData, ayahs: fetchedAyahs, isWarshFallback: fallback };
+    })();
+    INFLIGHT_REQUESTS.set(cacheKey, fetchPromise);
+
+    try {
+      const { arabicData, ayahs: fetchedAyahs, isWarshFallback: fallback } = await fetchPromise;
+      INFLIGHT_REQUESTS.delete(cacheKey);
 
       if (signal.aborted || requestSeqRef.current !== requestId) return;
       assertWarshStrict({ arabicData, displayMode, lang, riwaya, warshStrictMode });
 
-      const fetchedAyahs = ensureRequestedRiwaya(arabicData.ayahs || [], riwaya);
-      const fallback = Boolean(arabicData?.isTextFallback);
       rememberLimited(
         DISPLAY_DATA_CACHE,
         cacheKey,
@@ -151,30 +174,31 @@ export default function useQuranDisplayData({
       dispatch({ type: "SET_LOADING", payload: false });
 
       if (riwaya === "warsh") {
-        runWhenIdle(() => {
+        // Fetch Hafs support data immediately (microtask) instead of delaying 2.4s
+        Promise.resolve().then(() => {
           if (signal.aborted || requestSeqRef.current !== requestId) return;
           loadHafsSupportData({ currentJuz, currentPage, currentSurah, displayMode, signal })
-          .then((hafsData) => {
-            if (signal.aborted || requestSeqRef.current !== requestId) return;
-            const hafsMap = new Map(
-              (hafsData?.ayahs || []).map((ayah) => [
-                `${ayah.surah?.number}:${ayah.numberInSurah}`,
-                ayah,
-              ]),
-            );
-            setAyahs((previous) => {
-              const merged = mergeHafsSupport(previous, hafsMap);
-              rememberLimited(
-                DISPLAY_DATA_CACHE,
-                cacheKey,
-                { ayahs: merged, isWarshFallback: fallback },
-                DISPLAY_DATA_CACHE_MAX,
+            .then((hafsData) => {
+              if (signal.aborted || requestSeqRef.current !== requestId) return;
+              const hafsMap = new Map(
+                (hafsData?.ayahs || []).map((ayah) => [
+                  `${ayah.surah?.number}:${ayah.numberInSurah}`,
+                  ayah,
+                ]),
               );
-              return merged;
-            });
-          })
-          .catch(() => {});
-        }, 2400);
+              setAyahs((previous) => {
+                const merged = mergeHafsSupport(previous, hafsMap);
+                rememberLimited(
+                  DISPLAY_DATA_CACHE,
+                  cacheKey,
+                  { ayahs: merged, isWarshFallback: fallback },
+                  DISPLAY_DATA_CACHE_MAX,
+                );
+                return merged;
+              });
+            })
+            .catch(() => {});
+        });
       }
 
       const allAyahs = arabicData.ayahs || [];
@@ -206,6 +230,7 @@ export default function useQuranDisplayData({
         }
       });
     } catch (err) {
+      INFLIGHT_REQUESTS.delete(cacheKey);
       if (err?.name === "AbortError" || requestSeqRef.current !== requestId) return;
       console.error("Fetch error:", err);
       setError(err.message);

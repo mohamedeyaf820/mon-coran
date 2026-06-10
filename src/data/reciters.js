@@ -8,23 +8,6 @@
 
 const SUPPLEMENTAL_HAFS_RECITERS = [
   {
-    id: "badr_al_turki",
-    name: "بدر التركي",
-    nameEn: "Badr Al-Turki",
-    nameFr: "Badr Al-Turki",
-    style: "murattal",
-    cdn: "Badr_Al-Turki_128kbps",
-    cdnType: "everyayah",
-    audioMode: "ayah",
-    country: "KSA",
-    source: "everyayah",
-    bio: {
-      fr: "Badr Al-Turki est un récitateur saoudien reconnu pour sa voix douce et apaisante. Il est spécialisé dans le style murattal et ses enregistrements sont largement diffusés en ligne.",
-      en: "Badr Al-Turki is a Saudi reciter known for his soft and soothing voice. He specializes in the murattal style and his recordings are widely available online.",
-      ar: "بدر التركي قارئ سعودي يتميز بصوته الهادئ والمريح. متخصص في أسلوب الترتيل وتلاواته منتشرة على نطاق واسع عبر الإنترنت.",
-    },
-  },
-  {
     id: "abu_bakr_ash_shaatree",
     name: "أبو بكر الشاطري",
     nameEn: "Abu Bakr Ash-Shaatree",
@@ -395,93 +378,6 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
 
 const SUPPLEMENTAL_WARSH_RECITERS = [
   {
-    id: "warsh_muhammad_hifnawi",
-    name: "محمد الحفناوي",
-    nameEn: "Muhammad Al-Hifnawi",
-    nameFr: "Muhammad Al-Hifnawi",
-    style: "murattal",
-    cdn: "https://server7.mp3quran.net/hifnawi/",
-    cdnType: "mp3quran-surah",
-    audioMode: "surah",
-    verifiedWarsh: true,
-    country: "Egypt",
-    source: "mp3quran",
-    bio: {
-      fr: "Muhammad Al-Hifnawi est un récitateur égyptien spécialisé dans la riwaya Warsh. Il est reconnu pour sa maîtrise approfondie de cette voie de lecture et sa transmission fidèle de la tradition nord-africaine.",
-      en: "Muhammad Al-Hifnawi is an Egyptian reciter specializing in the Warsh narration. He is recognized for his deep mastery of this reading and his faithful transmission of the North African tradition.",
-      ar: "محمد الحفناوي قارئ مصري متخصص في رواية ورش عن نافع. يُعرف بإتقانه العميق لهذه الرواية ونقله الأمين للتقاليد المغاربية.",
-    },
-  },
-  {
-    id: "warsh_ahmed_mesairi",
-    name: "أحمد المصيري",
-    nameEn: "Ahmed Al-Mesairi",
-    nameFr: "Ahmed Al-Mesairi",
-    style: "murattal",
-    cdn: "https://server10.mp3quran.net/mesairi/",
-    cdnType: "mp3quran-surah",
-    audioMode: "surah",
-    verifiedWarsh: true,
-    source: "mp3quran",
-    bio: {
-      fr: "Ahmed Al-Mesairi est un récitateur spécialisé dans la riwaya Warsh. Sa récitation se distingue par sa fidélité aux règles spécifiques de cette voie de lecture et son style murattal fluide.",
-      en: "Ahmed Al-Mesairi is a reciter specializing in the Warsh narration. His recitation is distinguished by its fidelity to the specific rules of this reading and his fluid murattal style.",
-      ar: "أحمد المصيري قارئ متخصص في رواية ورش عن نافع. تتميز تلاوته بالأمانة في تطبيق أحكام هذه الرواية وأسلوبه السلس في الترتيل.",
-    },
-  },
-  {
-    id: "warsh_bilal_jaabir",
-    name: "بلال جابر",
-    nameEn: "Bilal Jaabir",
-    nameFr: "Bilal Jaabir",
-    style: "murattal",
-    cdn: "https://server14.mp3quran.net/bilal/",
-    cdnType: "mp3quran-surah",
-    audioMode: "surah",
-    verifiedWarsh: true,
-    source: "mp3quran",
-    bio: {
-      fr: "Bilal Jaabir est un récitateur spécialisé dans la riwaya Warsh. Il se distingue par son style clair et accessible, idéal pour les auditeurs souhaitant se familiariser avec cette voie de lecture.",
-      en: "Bilal Jaabir is a reciter specializing in the Warsh narration. He stands out for his clear and accessible style, ideal for listeners wishing to familiarize themselves with this reading.",
-      ar: "بلال جابر قارئ متخصص في رواية ورش عن نافع. يتميز بأسلوبه الواضح والسهل، المناسب للمستمعين الراغبين في التعرف على هذه الرواية.",
-    },
-  },
-  {
-    id: "warsh_muhammad_abdullah",
-    name: "محمد عبد الله",
-    nameEn: "Muhammad Abdullah",
-    nameFr: "Muhammad Abdullah",
-    style: "murattal",
-    cdn: "https://server15.mp3quran.net/abdullah/",
-    cdnType: "mp3quran-surah",
-    audioMode: "surah",
-    verifiedWarsh: true,
-    source: "mp3quran",
-    bio: {
-      fr: "Muhammad Abdullah est un récitateur spécialisé dans la riwaya Warsh. Sa récitation fidèle et son style murattal posé en font une référence pour l'étude de cette voie de lecture.",
-      en: "Muhammad Abdullah is a reciter specializing in the Warsh narration. His faithful recitation and composed murattal style make him a reference for studying this reading.",
-      ar: "محمد عبد الله قارئ متخصص في رواية ورش عن نافع. تلاوته الأمينة وأسلوبه الرصين في الترتيل يجعلانه مرجعاً لدراسة هذه الرواية.",
-    },
-  },
-  {
-    id: "warsh_saad_ghamidi",
-    name: "سعد الغامدي (ورش)",
-    nameEn: "Saad Al-Ghamdi (Warsh)",
-    nameFr: "Saad Al-Ghamdi (Warsh)",
-    style: "murattal",
-    cdn: "https://server8.mp3quran.net/s_gmd/",
-    cdnType: "mp3quran-surah",
-    audioMode: "surah",
-    verifiedWarsh: true,
-    country: "KSA",
-    source: "mp3quran",
-    bio: {
-      fr: "Version Warsh de la récitation de Saad Al-Ghamdi, récitateur saoudien né en 1967. Cette version présente le Coran selon la voie de lecture Warsh, démontrant la polyvalence de ce récitateur renommé.",
-      en: "Warsh version of the recitation by Saad Al-Ghamdi, a Saudi reciter born in 1967. This version presents the Quran according to the Warsh reading, demonstrating the versatility of this renowned reciter.",
-      ar: "نسخة ورش من تلاوة سعد الغامدي، القارئ السعودي المولود عام 1967. تقدم هذه النسخة القرآن برواية ورش عن نافع، مما يُظهر تعدد مواهب هذا القارئ المشهور.",
-    },
-  },
-  {
     id: "warsh_mahmoud_shuraym",
     name: "محمود الشريم (ورش)",
     nameEn: "Mahmoud Ash-Shuraym (Warsh)",
@@ -691,20 +587,6 @@ const RECITERS = {
       },
     },
     {
-      id: "ar.maaboralmeem",
-      name: "سعد الغامدي",
-      nameEn: "Saad Al-Ghamdi",
-      nameFr: "Saad Al-Ghamdi",
-      style: "murattal",
-      cdn: "Saad_Al-Ghamdi_128kbps",
-      cdnType: "everyayah",
-      bio: {
-        fr: "Saad Al-Ghamdi, né en 1967 en Arabie saoudite, est un imam et récitateur de renommée internationale. Sa voix puissante et émouvante lui a valu une immense popularité dans le monde musulman.",
-        en: "Saad Al-Ghamdi, born in 1967 in Saudi Arabia, is an internationally renowned imam and reciter. His powerful and moving voice has earned him immense popularity across the Muslim world.",
-        ar: "سعد الغامدي، ولد عام 1967 في المملكة العربية السعودية، إمام وقارئ ذو شهرة عالمية. صوته القوي والمؤثر أكسبه شعبية واسعة في العالم الإسلامي.",
-      },
-    },
-    {
       id: "ahmed_ajmy",
       name: "أحمد العجمي",
       nameEn: "Ahmed Al-Ajmy",
@@ -730,20 +612,6 @@ const RECITERS = {
         fr: "Maher Al-Muaiqly, né en 1969 à Médine, est imam au Masjid al-Haram à La Mecque et professeur de mathématiques à l'Université Umm al-Qura. Il a été nommé imam du Haram en 2007 et est rapidement devenu l'un des récitateurs les plus écoutés sur YouTube avec des milliards de vues. Sa voix claire et puissante, son rythme parfaitement maîtrisé et son style murattal fluide et accessible séduisent un large public, des plus jeunes aux plus âgés.",
         en: "Maher Al-Muaiqly, born in 1969 in Medina, is an imam at Masjid al-Haram in Mecca and a mathematics professor at Umm al-Qura University. Appointed imam of the Haram in 2007, he quickly became one of the most listened-to reciters on YouTube with billions of views. His clear and powerful voice, perfectly controlled rhythm, and fluid, accessible murattal style appeal to a broad audience from the youngest to the eldest.",
         ar: "ماهر المعيقلي، ولد عام 1969 في المدينة المنورة، إمام في المسجد الحرام بمكة وأستاذ رياضيات بجامعة أم القرى. عُيّن إماماً للحرم عام 2007 وأصبح سريعاً من أكثر القراء استماعاً على يوتيوب بمليارات المشاهدات. صوته الواضح والقوي وإيقاعه المتقن وأسلوبه السلس في الترتيل يجذبان جمهوراً واسعاً من مختلف الأعمار.",
-      },
-    },
-    {
-      id: "abdulbari_thubayti",
-      name: "عبد الباري الثبيتي",
-      nameEn: "Abdul Bari ath-Thubaity",
-      nameFr: "Abdul Bari ath-Thubaity",
-      style: "murattal",
-      cdn: "Abdulbari_ath-Thubaity_128kbps",
-      cdnType: "everyayah",
-      bio: {
-        fr: "Abdul Bari ath-Thubaity est un récitateur saoudien et imam au Masjid an-Nabawi à Médine. Il est connu pour sa voix profonde et son style de récitation mesuré et solennel.",
-        en: "Abdul Bari ath-Thubaity is a Saudi reciter and imam at Masjid an-Nabawi in Medina. He is known for his deep voice and measured, solemn recitation style.",
-        ar: "عبد الباري الثبيتي قارئ سعودي وإمام في المسجد النبوي بالمدينة المنورة. يُعرف بصوته العميق وأسلوبه الرصين والخاشع في التلاوة.",
       },
     },
     {
@@ -870,34 +738,6 @@ const RECITERS = {
         fr: "Nasser Al-Qatami, né en 1980 en Arabie saoudite, est un récitateur au style murattal distinctif et émouvant. Sa voix caractéristique et sa récitation passionnée lui ont acquis un large public.",
         en: "Nasser Al-Qatami, born in 1980 in Saudi Arabia, is a reciter with a distinctive and moving murattal style. His characteristic voice and passionate recitation have won him a wide audience.",
         ar: "ناصر القطامي، ولد عام 1980 في المملكة العربية السعودية، قارئ بأسلوب ترتيل مميز ومؤثر. صوته المعروف وتلاوته العاطفية أكسباه جمهوراً واسعاً.",
-      },
-    },
-    {
-      id: "ibrahim_akhdar",
-      name: "إبراهيم الأخضر",
-      nameEn: "Ibrahim Al-Akhdar",
-      nameFr: "Ibrahim Al-Akhdar",
-      style: "murattal",
-      cdn: "Ibrahim_Akhdar_128kbps",
-      cdnType: "everyayah",
-      bio: {
-        fr: "Ibrahim Al-Akhdar est un récitateur saoudien au style murattal soigné et traditionnel. Il est apprécié pour sa diction claire et son respect rigoureux des règles de récitation.",
-        en: "Ibrahim Al-Akhdar is a Saudi reciter with a careful and traditional murattal style. He is appreciated for his clear diction and rigorous adherence to recitation rules.",
-        ar: "إبراهيم الأخضر قارئ سعودي بأسلوب ترتيل متقن وتقليدي. يُقدَّر لوضوح نطقه والتزامه الدقيق بقواعد التلاوة.",
-      },
-    },
-    {
-      id: "khalid_qahtani",
-      name: "خالد القحطاني",
-      nameEn: "Khalid Al-Qahtani",
-      nameFr: "Khalid Al-Qahtani",
-      style: "murattal",
-      cdn: "Khalid_Qahtani_128kbps",
-      cdnType: "everyayah",
-      bio: {
-        fr: "Khalid Al-Qahtani est un récitateur saoudien connu pour son style murattal fluide et accessible. Sa récitation claire et son rythme régulier sont idéals pour la mémorisation et l'écoute quotidienne.",
-        en: "Khalid Al-Qahtani is a Saudi reciter known for his fluid and accessible murattal style. His clear recitation and steady rhythm are ideal for memorization and daily listening.",
-        ar: "خالد القحطاني قارئ سعودي يُعرف بأسلوبه السلس والمتاح في الترتيل. تلاوته الواضحة وإيقاعه المنتظم مثاليان للحفظ والاستماع اليومي.",
       },
     },
     {
@@ -1065,30 +905,9 @@ const RECITERS = {
   ],
 };
 
-// Reciters removed from the selectable list because their audio CDN was unreliable.
-// Note: ar.abdulbasitmurattal, ar.abdulbasitmujawwad, ar.minshawimujawwad,
-// ar.saoodshuraym, ar.abdurrahmaansudais have been migrated to Islamic Network CDN
-// and are now re-enabled.
-const REMOVED_RECITER_IDS = new Set([
-  "badr_al_turki",
-  "ar.maaboralmeem",
-  "abdulbari_thubayti",
-  "ibrahim_akhdar",
-  "khalid_qahtani",
-  "warsh_muhammad_hifnawi",
-  "warsh_ahmed_mesairi",
-  "warsh_bilal_jaabir",
-  "warsh_muhammad_abdullah",
-  "warsh_saad_ghamidi",
-]);
-
-function filterRemovedReciters(list = []) {
-  return list.filter((reciter) => !REMOVED_RECITER_IDS.has(reciter.id));
-}
-
 const AVAILABLE_RECITERS = {
-  hafs: filterRemovedReciters(RECITERS.hafs),
-  warsh: filterRemovedReciters(RECITERS.warsh),
+  hafs: RECITERS.hafs,
+  warsh: RECITERS.warsh,
 };
 
 const ALL_AVAILABLE_RECITERS = [
@@ -1113,9 +932,7 @@ export const RECITER_PHOTOS_MAP = {
   ali_jabir: quranPhoto("23/Abdullah-Ali-Jabir-profile.png?v=1"),
   "ar.saoodshuraym": quranPhoto("3/saud-ash-shuraym-profile.jpeg"),
   "ar.abdurrahmaansudais": quranPhoto("2/abdul-rahman-al-sudais-profile.jpeg"),
-  "ar.maaboralmeem": quranPhoto("16/saad-al-ghamdi-profile.png?v=1"),
   ghamadi_40: quranPhoto("16/saad-al-ghamdi-profile.png?v=1"),
-  warsh_saad_ghamidi: quranPhoto("16/saad-al-ghamdi-profile.png?v=1"),
   "ar.muhammadjibreel": quranPhoto("10/muhammad-jebril-profile.jpeg"),
   hani_rifai: quranPhoto("4/hani-ar-rifai-profile.jpeg?v=1"),
   khalefa_al_tunaiji: quranPhoto("11/khalifa-al-tunaiji-profile.jpeg?v=1"),

@@ -18,7 +18,10 @@ import {
   MoreHorizontal,
   ChevronLeft,
   ChevronRight,
+  Heart,
   Menu,
+  Palette,
+  Shapes,
   X,
   BookOpen,
 } from "lucide-react";
@@ -317,7 +320,7 @@ export default function Header() {
   const cleanQuickItems = [
     {
       key: "duas",
-      icon: "fa-hands-praying",
+      Icon: Heart,
       label: tr({
         fr: "Douas / Invocations",
         en: "Duas / Supplications",
@@ -327,7 +330,7 @@ export default function Header() {
     },
     {
       key: "theme",
-      icon: "fa-palette",
+      Icon: Palette,
       label: tr({
         fr: "Changer de th\u00e8me",
         en: "Switch theme",
@@ -337,7 +340,7 @@ export default function Header() {
     },
     {
       key: "tools",
-      icon: "fa-shapes",
+      Icon: Shapes,
       label: tr({
         fr: "Espace outils",
         en: "Tools hub",
@@ -554,7 +557,7 @@ export default function Header() {
                     setQuickMenuOpen(false);
                   }}
                 >
-                  <i className={`fas ${item.icon}`} />
+                  <item.Icon size={16} />
                   <span>{item.label}</span>
                 </button>
               ))}

@@ -54,16 +54,18 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
   const displayWords = words.length > 0 ? words : fallbackWords;
 
   if (loading) {
+    const skeletonCount = text ? text.trim().split(/\s+/).length : 5;
     return (
-      <div className="wbw-display wbw-loading">
-        {text ? (
-          <span className="wbw-text-fallback" style={{ fontSize: `${fontSize}px` }}>
-            {text}
-          </span>
-        ) : null}
-        <span className="wbw-loading-indicator">
-          <i className="fas fa-spinner fa-spin" />
-        </span>
+      <div className="wbw-display wbw-loading" dir="rtl" aria-busy="true" aria-label={lang === "ar" ? "جاري التحميل" : "Loading"}>
+        <div className="wbw-skeleton-row">
+          {Array.from({ length: Math.min(skeletonCount, 12) }, (_, i) => (
+            <div key={i} className="wbw-skeleton-word">
+              <div className="wbw-skeleton-pulse wbw-skeleton-arabic" />
+              {showTransliteration && <div className="wbw-skeleton-pulse wbw-skeleton-translit" />}
+              {showWordTranslation && <div className="wbw-skeleton-pulse wbw-skeleton-meaning" />}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

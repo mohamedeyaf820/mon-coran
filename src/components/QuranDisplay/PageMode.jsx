@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getJuzForAyah } from "../../data/juz";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
@@ -45,6 +45,18 @@ export default function PageMode({
   surahGroups,
   theme,
 }) {
+  const prevPageRef = useRef(currentPage);
+  const [turnClass, setTurnClass] = useState("");
+
+  useEffect(() => {
+    if (prevPageRef.current === currentPage) return;
+    const direction = currentPage > prevPageRef.current ? "next" : "prev";
+    prevPageRef.current = currentPage;
+    setTurnClass(`page-turn--${direction}`);
+    const id = setTimeout(() => setTurnClass(""), 280);
+    return () => clearTimeout(id);
+  }, [currentPage]);
+
   const activeAyahData = ayahs.find(
     (ayah) => ayah.number === activeAyah || ayah.numberInSurah === activeAyah,
   );
@@ -82,6 +94,7 @@ export default function PageMode({
         onToggleWordByWord={onToggleWordByWord}
       />
 
+      <div className={`page-turn-container ${turnClass}`}>
       {canUseFifteenLinePage ? (
         <>
           <QuranMushafPage
@@ -154,6 +167,7 @@ export default function PageMode({
           showPageSeparators
         />
       )}
+      </div>
 
       <ModeNavigation
         className={classes.quranNavClass}

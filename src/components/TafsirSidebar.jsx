@@ -17,34 +17,56 @@ import {
 } from "../services/quranComStudyService";
 import { cn } from "../lib/utils";
 
-// Simplified tafsir list — only authenticated, well-known sources
 const TAFSIR_OPTIONS = [
   {
     key: "en-kathir",
     id: 169,
     name: "Ibn Kathir",
     lang: "en",
-    labelFr: "Ibn Kathir (Anglais)",
-    labelEn: "Ibn Kathir (English)",
-    labelAr: "ابن كثير (إنجليزي)",
+    langBadge: "EN",
+    labelFr: "Ibn Kathir",
+    labelEn: "Ibn Kathir",
+    labelAr: "ابن كثير",
   },
   {
     key: "ar-kathir",
     id: 14,
     name: "Ibn Kathir",
     lang: "ar",
-    labelFr: "Ibn Kathir (Arabe)",
-    labelEn: "Ibn Kathir (Arabic)",
-    labelAr: "ابن كثير (عربي)",
+    langBadge: "AR",
+    labelFr: "Ibn Kathir",
+    labelEn: "Ibn Kathir",
+    labelAr: "ابن كثير",
   },
   {
     key: "ar-muyassar",
     id: 16,
     name: "Al-Muyassar",
     lang: "ar",
-    labelFr: "Al-Muyassar (Arabe)",
-    labelEn: "Al-Muyassar (Arabic)",
+    langBadge: "AR",
+    labelFr: "Al-Muyassar",
+    labelEn: "Al-Muyassar",
     labelAr: "التفسير الميسر",
+  },
+  {
+    key: "ar-saadi",
+    id: 91,
+    name: "Al-Saadi",
+    lang: "ar",
+    langBadge: "AR",
+    labelFr: "Al-Saadi",
+    labelEn: "Al-Saadi",
+    labelAr: "تفسير السعدي",
+  },
+  {
+    key: "en-maarif",
+    id: 168,
+    name: "Ma'arif al-Qur'an",
+    lang: "en",
+    langBadge: "EN",
+    labelFr: "Ma'arif al-Qur'an",
+    labelEn: "Ma'arif al-Qur'an",
+    labelAr: "معارف القرآن",
   },
 ];
 
@@ -54,9 +76,8 @@ function label(lang, fr, en, ar = en) {
 }
 
 function getTafsirLabel(option, lang) {
-  if (lang === "ar") return option.labelAr;
-  if (lang === "fr") return option.labelFr;
-  return option.labelEn;
+  const name = lang === "ar" ? option.labelAr : lang === "fr" ? option.labelFr : option.labelEn;
+  return `${name} [${option.langBadge}]`;
 }
 
 export default function TafsirSidebar() {
@@ -229,15 +250,23 @@ export default function TafsirSidebar() {
               </option>
             ))}
           </select>
-          {lang !== "ar" && selectedOption.lang === "en" && (
-            <p className="mt-2 flex items-center gap-1.5 text-[0.7rem] text-[color-mix(in_srgb,var(--theme-text-muted)_80%,var(--theme-text)_20%)]">
-              <Info size={12} className="shrink-0" />
-              {label(
-                lang,
-                "Aucun tafsir en français n'est disponible. Le tafsir Ibn Kathir est affiché en anglais.",
-                "No French tafsir available. Showing Ibn Kathir in English.",
-              )}
-            </p>
+          {lang !== "ar" && (
+            <div className="mt-2 flex items-start gap-1.5 text-[0.7rem] text-[color-mix(in_srgb,var(--theme-text-muted)_80%,var(--theme-text)_20%)]">
+              <Languages size={12} className="mt-0.5 shrink-0" />
+              <span>
+                {selectedOption.lang === "en"
+                  ? label(
+                      lang,
+                      "Ce tafsir est affiché en anglais. Sélectionnez une source [AR] pour lire en arabe.",
+                      "This tafsir is shown in English. Select an [AR] source to read in Arabic.",
+                    )
+                  : label(
+                      lang,
+                      "Ce tafsir est affiché en arabe.",
+                      "This tafsir is shown in Arabic.",
+                    )}
+              </span>
+            </div>
           )}
         </section>
 
@@ -247,6 +276,7 @@ export default function TafsirSidebar() {
             <button
               type="button"
               onClick={() => setShowTranslation((v) => !v)}
+              aria-expanded={showTranslation}
               className="flex w-full items-center justify-between gap-3 text-left"
             >
               <span className="inline-flex items-center gap-2 text-sm font-black">

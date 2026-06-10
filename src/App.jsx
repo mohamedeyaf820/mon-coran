@@ -21,7 +21,6 @@ import {
   isWarshVerifiedReciter,
 } from "./data/reciters";
 import { Toast } from "./components/ModernUIComponents";
-import { buildAudioPlaylistForSurah } from "./utils/audioPlaylist";
 import { getSurah } from "./data/surahs";
 import { ensureFontLoaded } from "./services/fontLoader";
 import audioService from "./services/audioService";
@@ -372,6 +371,7 @@ export default function App() {
 
     const cancelIdle = runWhenIdle(async () => {
       try {
+        const { buildAudioPlaylistForSurah } = await import("./utils/audioPlaylist");
         const items = await buildAudioPlaylistForSurah(surahNum, riwaya);
         if (cancelled || items.length === 0) return;
         const audioService = await getAudioServiceInstance();

@@ -4,27 +4,19 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AppProvider } from "./context/AppContext";
+// Critical CSS — must be available before first paint
 import "./styles/tailwind.css";
 import "./styles/domains/themes4.css";
-import "./styles/domains/premium-platform.css";
-import "./styles/domains/premium-plus.css";
-import "./styles/domains/mobile-all-versions.css";
 import "./styles/responsive.css";
 import "./styles/ui-polish.css";
 import "./styles/responsive-experience.css";
 import "./styles/riwaya-fonts.css";
 import "./styles/dark-mode-refonte.css";
-import "./styles/reading-ux-refonte.css";
+import "./styles/domains/mobile-all-versions.css";
 import "./styles/home-audio-ux-refonte.css";
-import "./styles/expert-overhaul.css";
 import "./styles/responsive-polish.css";
 import "./styles/surah-banner.css";
-import "./styles/surah-reader-header.css";
-import "./styles/sidebar-enhanced.css";
-import "./styles/settings-enhanced.css";
 import "./styles/header-enhanced.css";
-import "./styles/surah-info-panel.css";
-import "./styles/reciter-enhanced.css";
 
 /**
  * FontAwesome is loaded lazily (~3 MB CSS when fetched) and used by 200+ legacy
@@ -81,6 +73,26 @@ if (typeof window !== "undefined") {
     window.requestIdleCallback(warmIconStyles, { timeout: 1200 });
   } else {
     window.setTimeout(warmIconStyles, 700);
+  }
+
+  // Defer non-critical feature CSS until idle — these are only needed after
+  // the user navigates to reading/settings/recitation pages
+  const loadDeferredStyles = () => {
+    import("./styles/domains/premium-platform.css").catch(() => null);
+    import("./styles/domains/premium-plus.css").catch(() => null);
+    import("./styles/reading-ux-refonte.css").catch(() => null);
+    import("./styles/expert-overhaul.css").catch(() => null);
+    import("./styles/surah-reader-header.css").catch(() => null);
+    import("./styles/sidebar-enhanced.css").catch(() => null);
+    import("./styles/settings-enhanced.css").catch(() => null);
+    import("./styles/surah-info-panel.css").catch(() => null);
+    import("./styles/reciter-enhanced.css").catch(() => null);
+  };
+
+  if (typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(loadDeferredStyles, { timeout: 2000 });
+  } else {
+    window.setTimeout(loadDeferredStyles, 500);
   }
 }
 

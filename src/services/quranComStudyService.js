@@ -66,6 +66,12 @@ export const TAFSIR_RESOURCES = {
     nameFr: "Tafsir Al-Saadi",
     lang: "ar",
   },
+  "fr-mukhtasar": {
+    id: 816,
+    name: "Al-Mukhtasar (French)",
+    nameFr: "Al-Mukhtasar (français)",
+    lang: "fr",
+  },
 };
 
 function normalizeText(text) {
@@ -96,7 +102,7 @@ export function getAvailableTafsirs() {
 const FALLBACK_TAFSIRS_BY_LANG = {
   ar: ["ar-muyassar", "ar-kathir", "en-kathir"],
   en: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
-  fr: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
+  fr: ["fr-mukhtasar", "en-kathir", "en-maarif", "ar-muyassar"],
   wo: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
 };
 
@@ -157,6 +163,7 @@ export async function getVerseTafsir({
     if (!resource) continue;
     try {
       const text = await fetchTafsirText(resource, verseKey, signal);
+      const langMismatch = resource.lang !== normalizedLang;
       return {
         source: resource.name,
         sourceFr: resource.nameFr,
@@ -164,9 +171,9 @@ export async function getVerseTafsir({
         text,
         tafsirId: key,
         note:
-          normalizedLang === "fr"
+          normalizedLang === "fr" && langMismatch
             ? "Aucun tafsir français vérifié n'est disponible dans Quran.com pour cette source. Le commentaire est affiché dans sa langue d'origine."
-            : normalizedLang === "wo"
+            : normalizedLang === "wo" && langMismatch
               ? "Aucun tafsir wolof vérifié n'est disponible dans Quran.com pour cette source. Le commentaire est affiché dans sa langue d'origine."
               : null,
       };

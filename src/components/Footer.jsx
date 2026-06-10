@@ -1,4 +1,12 @@
 import React from "react";
+import {
+  BookOpenText,
+  Bookmark,
+  Heart,
+  Home,
+  Search,
+  Settings,
+} from "lucide-react";
 import { useAppActions, useAppLocale } from "../context/AppContext";
 import "../styles/domains/footer-refonte.css";
 
@@ -22,7 +30,7 @@ export default function Footer() {
 
   const navItems = [
     {
-      icon: "fa-house",
+      Icon: Home,
       label: pick(lang, {
         fr: "Accueil",
         en: "Home",
@@ -31,7 +39,7 @@ export default function Footer() {
       onClick: openHome,
     },
     {
-      icon: "fa-magnifying-glass",
+      Icon: Search,
       label: pick(lang, {
         fr: "Recherche",
         en: "Search",
@@ -40,7 +48,7 @@ export default function Footer() {
       onClick: () => dispatch({ type: "TOGGLE_SEARCH" }),
     },
     {
-      icon: "fa-bookmark",
+      Icon: Bookmark,
       label: pick(lang, {
         fr: "Signets",
         en: "Bookmarks",
@@ -49,7 +57,7 @@ export default function Footer() {
       onClick: () => dispatch({ type: "TOGGLE_BOOKMARKS" }),
     },
     {
-      icon: "fa-hands-praying",
+      Icon: Heart,
       label: pick(lang, {
         fr: "Douas",
         en: "Duas",
@@ -58,7 +66,7 @@ export default function Footer() {
       onClick: openDuas,
     },
     {
-      icon: "fa-gear",
+      Icon: Settings,
       label: pick(lang, {
         fr: "R\u00e9glages",
         en: "Settings",
@@ -73,7 +81,7 @@ export default function Footer() {
       <div className="mp-footer-v2__shell">
         <div className="mp-footer-v2__verse">
           <span className="mp-footer-v2__verse-icon" aria-hidden="true">
-            <i className="fas fa-book-quran" />
+            <BookOpenText size={14} />
           </span>
           <p
             className="mp-footer-v2__verse-text"
@@ -109,7 +117,7 @@ export default function Footer() {
               aria-label={item.label}
             >
               <span className="mp-footer-v2__nav-icon" aria-hidden="true">
-                <i className={`fas ${item.icon}`} />
+                <item.Icon size={14} />
               </span>
               <span className="mp-footer-v2__nav-label">{item.label}</span>
             </button>

@@ -310,7 +310,9 @@ const TajweedText = React.memo(function TajweedText({
         }
     }, [text, riwaya, enabled]);
 
-    const waqfRegex = /([\u06D6-\u06DC])/g;
+    // No /g flag: using with .test() on a stateful regex resets lastIndex and
+    // causes alternating misses. split() with a capturing group works without /g.
+    const waqfRegex = /([\u06D6-\u06DC])/;
 
     if (!text) return null;
 

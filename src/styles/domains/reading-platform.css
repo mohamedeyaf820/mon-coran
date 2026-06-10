@@ -867,6 +867,53 @@
     padding-block: 0.5rem;
 }
 
+.wbw-skeleton-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.55rem;
+    width: 100%;
+    direction: rtl;
+}
+
+.wbw-skeleton-word {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    min-width: 4.5rem;
+    padding: 0.58rem 0.64rem;
+    border-radius: 14px;
+    border: 1px solid var(--reader-border, var(--border));
+    background: var(--reader-surface-soft, var(--bg-secondary));
+}
+
+.wbw-skeleton-pulse {
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--text-muted, #94a3b8) 18%, transparent);
+    animation: wbw-pulse 1.2s ease-in-out infinite;
+}
+
+.wbw-skeleton-arabic {
+    width: 3.2rem;
+    height: 1.4rem;
+}
+
+.wbw-skeleton-translit {
+    width: 2.6rem;
+    height: 0.7rem;
+}
+
+.wbw-skeleton-meaning {
+    width: 3rem;
+    height: 0.65rem;
+}
+
+@keyframes wbw-pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.85; }
+}
+
 .app-root .quran-display--platform .wbw-word-block {
     min-width: 5.1rem;
     border-radius: 14px;
@@ -3330,6 +3377,17 @@ html body .app-root .quran-display--platform .qcm-page-shell {
     color: var(--reader-page-ink);
 }
 
+html body .app-root .quran-display--platform .qcm-font-warning {
+    grid-column: 1 / -1;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--warning, #f59e0b) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--warning, #f59e0b) 30%, transparent);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
 html body .app-root .quran-display--platform .qcm-page {
     position: relative;
     width: 100%;
@@ -4308,5 +4366,177 @@ html body .app-root .quran-display--platform .qcm-edge {
             var(--arabic-reading-line-height-mobile, 2.22) - 0.12
         );
     }
+}
+
+/* ═══ Tajweed Legend (colorblind-accessible) ═══ */
+.tjl-root {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 10;
+}
+
+.tjl-toggle-row {
+    display: flex;
+    justify-content: center;
+}
+
+.tjl-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-family: var(--font-ui);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.tjl-toggle-btn:hover {
+    background: var(--bg-tertiary, var(--bg-card));
+    border-color: var(--primary);
+}
+
+.tjl-toggle-btn--open {
+    background: var(--bg-tertiary, var(--bg-card));
+    border-color: var(--primary);
+}
+
+.tjl-chevron {
+    transition: transform 0.2s ease;
+}
+
+.tjl-chevron--up {
+    transform: rotate(180deg);
+}
+
+.tjl-strip {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    max-width: 100%;
+}
+
+.tjl-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    position: relative;
+    cursor: default;
+}
+
+.tjl-chip:hover .tjl-chip-desc {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.tjl-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1.5px solid rgba(0, 0, 0, 0.1);
+}
+
+.tjl-dot--ghunna { box-shadow: inset 0 0 0 2px rgba(255,255,255,0.3); }
+.tjl-dot--qalqala { border-radius: 2px; }
+.tjl-dot--idgham { border-style: dashed; }
+.tjl-dot--iqlab { border-radius: 2px; transform: rotate(45deg); }
+.tjl-dot--madd-normal,
+.tjl-dot--madd-separated,
+.tjl-dot--madd-connected,
+.tjl-dot--madd { border-radius: 8px 2px; }
+.tjl-dot--lam-shamsiyya { opacity: 0.55; }
+.tjl-dot--tafkhim { border-width: 2.5px; border-color: rgba(0,0,0,0.25); }
+.tjl-dot--naql { border-radius: 0; }
+.tjl-dot--tashil { border-style: dotted; }
+.tjl-dot--ibdal { border-radius: 0; transform: rotate(45deg); }
+.tjl-dot--madd-badal { border-radius: 8px 2px; border-style: dashed; }
+.tjl-dot--tarqiq-ra { border-radius: 50%; border-style: dotted; }
+
+.tjl-chip-label {
+    font-size: 0.66rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    font-family: var(--font-ui);
+}
+
+.tjl-chip-desc {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+    pointer-events: none;
+    z-index: 20;
+    font-family: var(--font-ui);
+}
+
+/* ═══ Page-turn animation ═══ */
+.page-turn-container {
+    will-change: opacity, transform;
+}
+
+.page-turn--next {
+    animation: page-turn-next 0.28s ease-out;
+}
+
+.page-turn--prev {
+    animation: page-turn-prev 0.28s ease-out;
+}
+
+@keyframes page-turn-next {
+    0% { opacity: 0.4; transform: translateX(-3%); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes page-turn-prev {
+    0% { opacity: 0.4; transform: translateX(3%); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-turn--next,
+    .page-turn--prev {
+        animation: none;
+    }
+}
+
+/* ═══ Sticky toolbar shadow on scroll ═══ */
+.qc-reader-toolbar--sticky {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    border-color: color-mix(in srgb, var(--border) 70%, transparent);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 

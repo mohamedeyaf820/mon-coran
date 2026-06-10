@@ -182,6 +182,26 @@ export function useKeyboardNavigation({
     setShowShortcuts((prev) => !prev);
   }, [setShowShortcuts]);
 
+  const handleToggleTranslation = useCallback(() => {
+    set((prev) => ({ showTranslation: !prev.showTranslation }));
+  }, [set]);
+
+  const handleToggleWordByWord = useCallback(() => {
+    set((prev) => ({ showWordByWord: !prev.showWordByWord, memMode: false }));
+  }, [set]);
+
+  const handleToggleTajweed = useCallback(() => {
+    set((prev) => ({ showTajwid: !prev.showTajwid }));
+  }, [set]);
+
+  const handleToggleMemorization = useCallback(() => {
+    set((prev) => ({
+      memMode: !prev.memMode,
+      mushafLayout: "list",
+      showWordByWord: false,
+    }));
+  }, [set]);
+
   const handleKeyboard = useCallback(
     (event) => {
       if (shouldIgnoreKeyboardEvent(event)) return;
@@ -199,6 +219,34 @@ export function useKeyboardNavigation({
         case "K":
           handleSearch(event);
           break;
+        case "t":
+        case "T":
+          if (!event.ctrlKey && !event.metaKey) {
+            event.preventDefault();
+            handleToggleTranslation();
+          }
+          break;
+        case "w":
+        case "W":
+          if (!event.ctrlKey && !event.metaKey) {
+            event.preventDefault();
+            handleToggleWordByWord();
+          }
+          break;
+        case "j":
+        case "J":
+          if (!event.ctrlKey && !event.metaKey) {
+            event.preventDefault();
+            handleToggleTajweed();
+          }
+          break;
+        case "m":
+        case "M":
+          if (!event.ctrlKey && !event.metaKey) {
+            event.preventDefault();
+            handleToggleMemorization();
+          }
+          break;
         case "Escape":
           handleEscape();
           break;
@@ -214,7 +262,7 @@ export function useKeyboardNavigation({
           break;
       }
     },
-    [handlePrevious, handleNext, handleSearch, handleEscape, handlePlayPause, handleToggleShortcuts],
+    [handlePrevious, handleNext, handleSearch, handleEscape, handlePlayPause, handleToggleShortcuts, handleToggleTranslation, handleToggleWordByWord, handleToggleTajweed, handleToggleMemorization],
   );
 
   useEffect(() => {

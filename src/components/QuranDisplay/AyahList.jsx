@@ -67,6 +67,11 @@ export default function AyahList({
         dir="rtl"
         lang="ar"
       >
+        {currentPlayingAyah && (
+          <div aria-live="polite" aria-atomic="true" className="sr-only">
+            {lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} {currentPlayingAyah.surah}:{currentPlayingAyah.ayah}
+          </div>
+        )}
         {ayahs.map((ayah, index) => {
           const surahNumber = getSurahNumber(ayah);
           const toggleId = getToggleId(ayah);
@@ -122,8 +127,17 @@ export default function AyahList({
     );
   }
 
+  const playingAnnouncement = currentPlayingAyah
+    ? `${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
+    : "";
+
   return (
     <div role="list" className={className}>
+      {currentPlayingAyah && (
+        <div aria-live="polite" aria-atomic="true" className="sr-only">
+          {playingAnnouncement}
+        </div>
+      )}
       {ayahs.map((ayah, index) => {
         const surahNumber = getSurahNumber(ayah);
         const toggleId = getToggleId(ayah);

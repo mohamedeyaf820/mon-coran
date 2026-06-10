@@ -46,6 +46,11 @@ export default defineConfig(({ mode }) => ({
           if (id.includes("node_modules/idb")) return "vendor-storage";
           if (id.includes("node_modules/@radix-ui")) return "vendor-ui";
           if (id.includes("node_modules/lucide-react")) return "vendor-icons";
+          // Route-based splitting — each lazy route gets its own chunk
+          if (id.includes("src/components/Home/") || id.includes("src/components/HomePage")) return "route-home";
+          if (id.includes("src/components/QuranDisplay")) return "route-reader";
+          if (id.includes("src/components/recitation")) return "route-recitation";
+          if (id.includes("src/components/Quran/")) return "route-quran-components";
         },
       },
     },

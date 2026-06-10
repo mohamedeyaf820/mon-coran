@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 
 /**
  * Displays Quran ayah text in memorization mode.
@@ -6,13 +6,15 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
  * When `isPlaying` is true, words auto-reveal progressively over the repeat cycle.
  */
 export default function MemorizationText({ text, lang = 'fr', isPlaying = false, repeatCount = 3 }) {
-  const words = text ? text.trim().split(/\s+/) : [];
+  const words = useMemo(() => (text ? text.trim().split(/\s+/) : []), [text]);
   const [seqRevealed, setSeqRevealed] = useState(0);
   const [clickRevealed, setClickRevealed] = useState(new Set());
   const autoRevealTimer = useRef(null);
+  const seqRevealedRef = useRef(0);
 
   // Reset when the ayah changes
   useEffect(() => {
+    seqRevealedRef.current = 0;
     setSeqRevealed(0);
     setClickRevealed(new Set());
     if (autoRevealTimer.current) {
@@ -38,14 +40,14 @@ export default function MemorizationText({ text, lang = 'fr', isPlaying = false,
     const intervalMs = 1800; // Reveal a word every 1.8s when playing
 
     autoRevealTimer.current = setInterval(() => {
-      setSeqRevealed((prev) => {
-        const next = prev + 1;
-        if (next >= words.length) {
-          clearInterval(autoRevealTimer.current);
-          autoRevealTimer.current = null;
-        }
-        return Math.min(next, words.length);
-      });
+      const next = seqRevealedRef.current + 1;
+      // Clear interval synchronously before state update to avoid extra ticks
+      if (next >= words.length) {
+        clearInterval(autoRevealTimer.current);
+        autoRevealTimer.current = null;
+      }
+      seqRevealedRef.current = next;
+      setSeqRevealed(Math.min(next, words.length));
     }, intervalMs);
 
     return () => {

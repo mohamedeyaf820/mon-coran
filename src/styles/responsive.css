@@ -237,7 +237,7 @@ html {
     flex-direction: row !important;
     overflow-x: auto !important;
     padding: 0.5rem !important;
-    border-right: none !important;
+    border-inline-end: none !important;
     border-bottom: 1px solid var(--border) !important;
     width: 100% !important;
   }

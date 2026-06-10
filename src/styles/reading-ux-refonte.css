@@ -83,7 +83,7 @@
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-active,
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-playing {
   background: rgba(var(--primary-rgb), 0.06) !important;
-  border-left: 3px solid var(--primary) !important;
+  border-inline-start: 3px solid var(--primary) !important;
 }
 
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top {

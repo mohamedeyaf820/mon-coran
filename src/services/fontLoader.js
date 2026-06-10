@@ -125,7 +125,13 @@ async function loadFontFace(fontId, source) {
     },
   );
 
-  const loadedFont = await fontFace.load();
+  const FONT_LOAD_TIMEOUT_MS = 4000;
+  const loadedFont = await Promise.race([
+    fontFace.load(),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Font load timeout")), FONT_LOAD_TIMEOUT_MS)
+    ),
+  ]);
   document.fonts.add(loadedFont);
   loadedFontIds.add(fontId);
   failedFontIds.delete(fontId);

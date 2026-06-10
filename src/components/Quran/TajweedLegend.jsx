@@ -83,11 +83,14 @@ const TajweedLegend = React.memo(function TajweedLegend({
           {rules.map((rule) => (
             <span key={rule.id} className="tjl-chip" role="listitem">
               <span
-                className="tjl-dot"
+                className={`tjl-dot tjl-dot--${rule.id}`}
                 style={{ background: rule.color }}
                 aria-hidden="true"
               />
               <span className="tjl-chip-label">{rule[labelKey]}</span>
+              {rule.description && (
+                <span className="tjl-chip-desc">{rule.description}</span>
+              )}
             </span>
           ))}
         </div>

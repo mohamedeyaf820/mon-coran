@@ -93,6 +93,26 @@ export default function SettingsModal() {
   const [activeTab, setActiveTab] = useState("apparence"); // 'apparence' | 'affichage' | 'audio'
   const [reciterSearch, setReciterSearch] = useState("");
   const panelRef = useRef(null);
+  const tabIds = ["apparence", "affichage", "audio"];
+
+  const handleTabKeyDown = (e) => {
+    const idx = tabIds.indexOf(activeTab);
+    let next = -1;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      next = (idx + 1) % tabIds.length;
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      next = (idx - 1 + tabIds.length) % tabIds.length;
+    } else if (e.key === "Home") {
+      next = 0;
+    } else if (e.key === "End") {
+      next = tabIds.length - 1;
+    }
+    if (next >= 0) {
+      e.preventDefault();
+      setActiveTab(tabIds[next]);
+      document.getElementById(`tab-${tabIds[next]}`)?.focus();
+    }
+  };
   const activeRiwaya = riwaya || "hafs";
   const availableFontOptions = RIWAYA_FONT_OPTIONS.filter((font) => font.riwaya === activeRiwaya);
   const selectedFontFamily = availableFontOptions.some((font) => font.id === fontFamily)
@@ -186,12 +206,13 @@ export default function SettingsModal() {
         </header>
 
         {/* Tab Selection */}
-        <nav className="settings-drawer__tabs flex gap-1 border-b border-[var(--border)] p-1.5 bg-[var(--bg-secondary)]" aria-label="Tabs" role="tablist">
+        <nav className="settings-drawer__tabs flex gap-1 border-b border-[var(--border)] p-1.5 bg-[var(--bg-secondary)]" aria-label="Tabs" role="tablist" aria-orientation="horizontal" onKeyDown={handleTabKeyDown}>
           <button
             id="tab-apparence"
             role="tab"
             aria-selected={activeTab === "apparence"}
             aria-controls="panel-apparence"
+            tabIndex={activeTab === "apparence" ? 0 : -1}
             onClick={() => setActiveTab("apparence")}
             className={`flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 rounded-xl transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] ${
               activeTab === "apparence"
@@ -207,6 +228,7 @@ export default function SettingsModal() {
             role="tab"
             aria-selected={activeTab === "affichage"}
             aria-controls="panel-affichage"
+            tabIndex={activeTab === "affichage" ? 0 : -1}
             onClick={() => setActiveTab("affichage")}
             className={`flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 rounded-xl transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] ${
               activeTab === "affichage"
@@ -222,6 +244,7 @@ export default function SettingsModal() {
             role="tab"
             aria-selected={activeTab === "audio"}
             aria-controls="panel-audio"
+            tabIndex={activeTab === "audio" ? 0 : -1}
             onClick={() => setActiveTab("audio")}
             className={`flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 rounded-xl transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] ${
               activeTab === "audio"

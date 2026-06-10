@@ -17,7 +17,7 @@
 /* ── Drawer panel ── */
 .settings-drawer {
   border-radius: 22px 0 0 22px !important;
-  border-left: 1px solid var(--border) !important;
+  border-inline-start: 1px solid var(--border) !important;
   overflow: hidden !important;
   box-shadow:
     -12px 0 48px rgba(0, 0, 0, 0.14),
