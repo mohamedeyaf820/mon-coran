@@ -24,6 +24,7 @@ export default function ModeNavigation({
       <button
         onClick={onPrevious}
         disabled={previousDisabled}
+        aria-label={previousLabel}
         className={cn(
           "mode-nav-btn mode-nav-btn--previous flex items-center gap-2 px-5 py-2.5 rounded-full",
           "font-[var(--font-ui)] text-sm font-semibold",
@@ -45,6 +46,7 @@ export default function ModeNavigation({
       <button
         onClick={onNext}
         disabled={nextDisabled}
+        aria-label={nextLabel}
         className={cn(
           "mode-nav-btn mode-nav-btn--next flex items-center gap-2 px-5 py-2.5 rounded-full",
           "font-[var(--font-ui)] text-sm font-semibold",

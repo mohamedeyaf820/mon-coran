@@ -92,6 +92,7 @@ export default function SettingsModal() {
 
   const [activeTab, setActiveTab] = useState("apparence"); // 'apparence' | 'affichage' | 'audio'
   const [reciterSearch, setReciterSearch] = useState("");
+  const modalRef = useRef(null);
   const panelRef = useRef(null);
   const tabIds = ["apparence", "affichage", "audio"];
 
@@ -125,6 +126,25 @@ export default function SettingsModal() {
   useEffect(() => {
     ensureFontLoaded(selectedFontFamily).catch(() => {});
   }, [selectedFontFamily]);
+
+  // Focus trap
+  useEffect(() => {
+    const modal = modalRef.current;
+    if (!modal) return;
+    const focusable = Array.from(modal.querySelectorAll(
+      'button:not([disabled]),[href],input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])'
+    ));
+    if (!focusable.length) return;
+    focusable[0].focus();
+    const onKey = (e) => {
+      if (e.key !== 'Tab') return;
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey) { if (document.activeElement === first) { e.preventDefault(); last.focus(); } }
+      else { if (document.activeElement === last) { e.preventDefault(); first.focus(); } }
+    };
+    modal.addEventListener('keydown', onKey);
+    return () => modal.removeEventListener('keydown', onKey);
+  }, []);
 
   // Reciters matching search query
   const recitersList = getRecitersByRiwaya(activeRiwaya);
@@ -169,7 +189,7 @@ export default function SettingsModal() {
   };
 
   return (
-    <div className="settings-overlay fixed inset-0 z-[500] flex justify-end" role="dialog" aria-modal="true">
+    <div ref={modalRef} className="settings-overlay fixed inset-0 z-[500] flex justify-end" role="dialog" aria-modal="true" aria-label="Paramètres">
       {/* Backdrop */}
       <div
         className="settings-backdrop fixed inset-0 bg-black/35 backdrop-blur-md transition-opacity"

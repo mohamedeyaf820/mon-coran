@@ -15,6 +15,7 @@ import {
 } from "./context/AppContext";
 import { t } from "./i18n";
 import SplashScreen from "./components/SplashScreen";
+import PWAUpdateBanner from "./components/PWAUpdateBanner";
 import {
   getReciter,
   ensureReciterForRiwaya,
@@ -780,6 +781,7 @@ export default function App() {
           {state.tafsirSidebarOpen && <TafsirSidebar />}
         </Suspense>
       </div>
+      <PWAUpdateBanner />
     </ErrorBoundary>
   );
 }

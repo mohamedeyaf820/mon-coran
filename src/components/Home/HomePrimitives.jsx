@@ -171,6 +171,7 @@ export const SurahCard = memo(function SurahCard({
             src={`https://static.quran.com/images/surah/symbols/sname_${surah.n}.svg`}
             alt={surah.ar}
             className="h-8 sm:h-10 invert dark:invert-0"
+            loading="lazy"
             onError={(e) => {
               e.target.style.display = "none";
               e.target.nextSibling.style.display = "block";

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { getJuzForAyah } from "../../data/juz";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
@@ -71,6 +71,27 @@ export default function PageMode({
   // Disable exact 15-line QCF coordinate rendering in favor of clean normal Arabic text (Unicode)
   const canUseFifteenLinePage = false;
 
+  const touchStartX = useRef(null);
+
+  const handleTouchStart = useCallback((e) => {
+    if (e.touches.length !== 1) return;
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback((e) => {
+    if (touchStartX.current === null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(delta) < 55) return;
+    const isRTL = document.documentElement.dir === 'rtl';
+    const goNext = isRTL ? delta > 0 : delta < 0;
+    if (goNext) {
+      if (currentPage < 604) onNextPage();
+    } else {
+      if (currentPage > 1) onPrevPage();
+    }
+  }, [currentPage, onNextPage, onPrevPage]);
+
   return (
     <div
       className={`quran-mode-pane quran-mode-pane--page ${
@@ -78,6 +99,8 @@ export default function PageMode({
       } ${mushafLayout === "mushaf" ? "quran-mode-pane--mushaf" : ""} ${modePaneShellClass}`}
       role="region"
       aria-label={t("settings.pageMode", lang)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <ReadingProgressBar />
       <ReadingToolbar

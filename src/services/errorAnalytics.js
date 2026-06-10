@@ -1,0 +1,28 @@
+const KEY = 'mp_error_log';
+const MAX = 50;
+
+function getLog() {
+  try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { return []; }
+}
+
+export function logError(error, context) {
+  const entry = {
+    ts: typeof error === 'object' && error !== null ? String(error.name || 'Error') : 'Error',
+    msg: error?.message || String(error),
+    stack: error?.stack?.split('\n').slice(0, 3).join(' | '),
+    context: context || '',
+  };
+  try {
+    const log = getLog();
+    log.unshift(entry);
+    if (log.length > MAX) log.length = MAX;
+    localStorage.setItem(KEY, JSON.stringify(log));
+  } catch { }
+}
+
+export function initErrorAnalytics() {
+  window.addEventListener('error', (e) => logError(e.error || new Error(e.message), 'window.error'));
+  window.addEventListener('unhandledrejection', (e) => logError(e.reason, 'unhandledrejection'));
+}
+
+export function getErrorReport() { return getLog(); }

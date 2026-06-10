@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { initErrorAnalytics } from "./services/errorAnalytics.js";
 
 import App from "./App";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -189,6 +190,7 @@ if (!rootElement) {
     </div>
   `;
 } else {
+  initErrorAnalytics();
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <ErrorBoundary>

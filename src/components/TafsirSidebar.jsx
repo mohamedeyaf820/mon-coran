@@ -84,6 +84,7 @@ export default function TafsirSidebar() {
   const { state, set } = useApp();
   const { lang, tafsirSidebarVerse } = state;
   const closeButtonRef = useRef(null);
+  const sidebarRef = useRef(null);
 
   const defaultTafsirKey = lang === "ar" ? "ar-muyassar" : "en-kathir";
   const [selectedTafsirKey, setSelectedTafsirKey] = useState(defaultTafsirKey);
@@ -117,6 +118,24 @@ export default function TafsirSidebar() {
 
   useEffect(() => {
     closeButtonRef.current?.focus?.();
+  }, []);
+
+  // Focus trap (Tab cycle)
+  useEffect(() => {
+    const modal = sidebarRef.current;
+    if (!modal) return;
+    const focusable = Array.from(modal.querySelectorAll(
+      'button:not([disabled]),[href],input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])'
+    ));
+    if (!focusable.length) return;
+    const onKey = (e) => {
+      if (e.key !== 'Tab') return;
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey) { if (document.activeElement === first) { e.preventDefault(); last.focus(); } }
+      else { if (document.activeElement === last) { e.preventDefault(); first.focus(); } }
+    };
+    modal.addEventListener('keydown', onKey);
+    return () => modal.removeEventListener('keydown', onKey);
   }, []);
 
   // Fetch tafsir
@@ -191,6 +210,7 @@ export default function TafsirSidebar() {
 
   return (
     <aside
+      ref={sidebarRef}
       className="fixed inset-y-0 right-0 z-[390] flex w-full max-w-[min(100vw,34rem)] flex-col border-l border-[color-mix(in_srgb,var(--theme-border)_70%,transparent_30%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_96%,#ffffff_4%)] text-[color-mix(in_srgb,var(--theme-text)_92%,#ffffff_8%)] shadow-[-28px_0_70px_rgba(3,10,18,0.34)] backdrop-blur-2xl"
       role="dialog"
       aria-modal="true"
