@@ -7,7 +7,8 @@ function getLog() {
 
 export function logError(error, context) {
   const entry = {
-    ts: typeof error === 'object' && error !== null ? String(error.name || 'Error') : 'Error',
+    ts: new Date().toISOString(),
+    type: typeof error === 'object' && error !== null ? String(error.name || 'Error') : 'Error',
     msg: error?.message || String(error),
     stack: error?.stack?.split('\n').slice(0, 3).join(' | '),
     context: context || '',

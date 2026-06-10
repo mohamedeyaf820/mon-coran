@@ -147,7 +147,7 @@ export default function ContentSection({
             aria-pressed={activeTab === "surah"}
           >
             <i className="fas fa-align-justify text-[0.85em] opacity-70" />
-            {t("surahs")}
+            {t("home.surahs", lang)}
           </button>
           <button
             type="button"
@@ -159,7 +159,7 @@ export default function ContentSection({
             aria-pressed={activeTab === "juz"}
           >
             <i className="fas fa-book-open text-[0.85em] opacity-70" />
-            {t("juz")}
+            {t("home.juz", lang)}
           </button>
           <button
             type="button"
@@ -172,7 +172,7 @@ export default function ContentSection({
             aria-pressed={activeTab === "recitations"}
           >
             <i className="fas fa-microphone-lines text-[0.85em] opacity-70" />
-            {t("recitations")}
+            {t("home.recitations", lang)}
           </button>
           <button
             type="button"
@@ -184,7 +184,7 @@ export default function ContentSection({
             aria-pressed={activeTab === "radio"}
           >
             <i className="fas fa-broadcast-tower text-[0.85em] opacity-70" />
-            {t("radio")}
+            {t("home.radio", lang)}
           </button>
         </div>
 
@@ -195,10 +195,10 @@ export default function ContentSection({
             <input
               className="h-10 sm:h-11 w-full rounded-xl border border-border/70 bg-bg-secondary pl-10 pr-10 text-[0.85rem] sm:text-[0.9rem] text-text-primary outline-none transition-colors focus:border-primary focus:bg-bg-primary focus:ring-1 focus:ring-primary"
               placeholder={
-                activeTab === "surah" ? t("search") : t("searchReciter")
+                activeTab === "surah" ? t("search.placeholder", lang) : t("home.searchReciter", lang)
               }
               aria-label={
-                activeTab === "surah" ? t("search") : t("searchReciter")
+                activeTab === "surah" ? t("search.placeholder", lang) : t("home.searchReciter", lang)
               }
               value={filter}
               onChange={(e) => onFilterChange(e.target.value)}
@@ -208,13 +208,7 @@ export default function ContentSection({
                 type="button"
                 className="absolute right-2 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full text-[0.8rem] text-text-muted transition-colors hover:bg-bg-tertiary hover:text-text-primary"
                 onClick={() => onFilterChange("")}
-                aria-label={
-                  lang === "fr"
-                    ? "Effacer la recherche"
-                    : lang === "ar"
-                      ? "مسح البحث"
-                      : "Clear search"
-                }
+                aria-label={t("home.clearSearch", lang)}
               >
                 <i className="fas fa-xmark" />
               </button>
@@ -233,10 +227,8 @@ export default function ContentSection({
                 type="button"
                 className="flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-bg-secondary border border-border/50 text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
                 onClick={onToggleSort}
-                title={sortDir === "asc" ? "Décroissant" : "Croissant"}
-                aria-label={
-                  sortDir === "asc" ? "Tri décroissant" : "Tri croissant"
-                }
+                title={sortDir === "asc" ? t("home.sortDesc", lang) : t("home.sortAsc", lang)}
+                aria-label={sortDir === "asc" ? t("home.sortDesc", lang) : t("home.sortAsc", lang)}
               >
                 <i
                   className={`fas fa-sort-${sortDir === "asc" ? "down" : "up"} text-[1.1rem]`}
@@ -253,8 +245,8 @@ export default function ContentSection({
                       "bg-bg-primary text-primary shadow-sm",
                   )}
                   onClick={() => onChangeViewMode("grid")}
-                  title="Grille"
-                  aria-label="Grille"
+                  title={t("home.grid", lang)}
+                  aria-label={t("home.grid", lang)}
                   aria-pressed={viewMode === "grid"}
                 >
                   <i className="fas fa-grip" />
@@ -267,8 +259,8 @@ export default function ContentSection({
                       "bg-bg-primary text-primary shadow-sm",
                   )}
                   onClick={() => onChangeViewMode("list")}
-                  title="Liste"
-                  aria-label="Liste"
+                  title={t("home.list", lang)}
+                  aria-label={t("home.list", lang)}
                   aria-pressed={viewMode === "list"}
                 >
                   <i className="fas fa-list" />
@@ -316,7 +308,7 @@ export default function ContentSection({
         {/* SOURATES */}
         {activeTab === "surah" ? (
           filteredSurahs.length === 0 ? (
-            <EmptyState icon="fa-magnifying-glass" text={t("noResults")} />
+            <EmptyState icon="fa-magnifying-glass" text={t("search.noResults", lang)} />
           ) : (
             renderedSurahs.map((s, idx) => (
               <SurahCard
@@ -442,11 +434,7 @@ export default function ContentSection({
                             : "border-border bg-transparent text-text-muted hover:text-amber-400",
                         )}
                         onClick={() => onToggleFavoriteReciter(reciter.id)}
-                        aria-label={
-                          lang === "fr"
-                            ? isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"
-                            : isFavorite ? "Remove from favorites" : "Add to favorites"
-                        }
+                        aria-label={isFavorite ? t("home.removeFavorite", lang) : t("home.addFavorite", lang)}
                         aria-pressed={isFavorite}
                       >
                         <i className={`fas fa-star text-[0.6rem]`} />

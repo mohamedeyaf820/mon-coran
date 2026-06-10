@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { t } from '../i18n';
+import { useAppSelector } from '../context/AppContext';
 
 export default function PWAUpdateBanner() {
+  const lang = useAppSelector((s) => s.lang);
   const [waiting, setWaiting] = useState(false);
 
   useEffect(() => {
@@ -39,7 +42,7 @@ export default function PWAUpdateBanner() {
         fontFamily: 'var(--font-ui,sans-serif)', fontSize: '0.85rem',
       }}
     >
-      <span style={{ color: 'var(--text-primary,#111)' }}>✨ Nouvelle version disponible</span>
+      <span style={{ color: 'var(--text-primary,#111)' }}>{t('pwa.updateAvailable', lang)}</span>
       <button
         onClick={reload}
         style={{
@@ -48,11 +51,11 @@ export default function PWAUpdateBanner() {
           cursor: 'pointer', fontSize: '0.8rem', whiteSpace: 'nowrap',
         }}
       >
-        Mettre à jour
+        {t('pwa.update', lang)}
       </button>
       <button
         onClick={() => setWaiting(false)}
-        aria-label="Ignorer la mise à jour"
+        aria-label={t('pwa.dismiss', lang)}
         style={{
           background: 'transparent', border: 'none', cursor: 'pointer',
           color: 'var(--text-muted,#6b7280)', fontSize: '1.1rem', lineHeight: 1, padding: '0 0.15rem',

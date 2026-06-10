@@ -14,7 +14,7 @@ export async function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
     return res;
   } catch (err) {
     clearTimeout(id);
-    if (err.name === 'AbortError') throw new Error('Request timed out (' + timeoutMs + 'ms): ' + url);
+    if (err.name === 'AbortError') throw new Error(`Request timed out (${timeoutMs}ms): ${url}`);
     throw err;
   }
 }

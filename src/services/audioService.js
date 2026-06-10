@@ -905,7 +905,7 @@ class AudioService {
       // Preload next tracks (3 ahead for smoother continuous playback)
       this._preloadAhead(index + 1, 3);
     } catch (err) {
-      console.error("Audio play error:", err);
+      devLog("error", "Audio play error:", err);
       this.onNetworkState?.("error");
       this.onError?.(err);
       // Keep current ayah on error (don't skip ahead and desync highlighting)
@@ -929,6 +929,8 @@ class AudioService {
     if (this.memMode) {
       this.memCurrentRepeat++;
       if (this.memCurrentRepeat < this.memRepeatCount) {
+        clearTimeout(this.memTimer);
+        this.memTimer = null;
         this.memTimer = setTimeout(() => {
           this.memTimer = null;
           if (
@@ -1115,7 +1117,7 @@ class AudioService {
       this._eqConnected = true;
       this._applyEqGains();
     } catch (e) {
-      console.warn("EQ init failed:", e);
+      devLog("warn", "EQ init failed:", e);
     }
   }
   _applyEqGains() {
