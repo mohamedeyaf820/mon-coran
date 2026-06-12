@@ -193,7 +193,7 @@ export default function ContentSection({
           <div className="relative flex flex-1 items-center w-full min-w-[200px]">
             <i className="fas fa-magnifying-glass absolute left-3.5 text-[0.9rem] text-text-muted" />
             <input
-              className="h-10 sm:h-11 w-full rounded-xl border border-border/70 bg-bg-secondary pl-10 pr-10 text-[0.85rem] sm:text-[0.9rem] text-text-primary outline-none transition-colors focus:border-primary focus:bg-bg-primary focus:ring-1 focus:ring-primary"
+              className="h-11 w-full rounded-xl border border-border/70 bg-bg-secondary pl-10 pr-10 text-[0.85rem] sm:text-[0.9rem] text-text-primary outline-none transition-colors focus:border-primary focus:bg-bg-primary focus:ring-1 focus:ring-primary"
               placeholder={
                 activeTab === "surah" ? t("search.placeholder", lang) : t("home.searchReciter", lang)
               }
@@ -225,7 +225,7 @@ export default function ContentSection({
             {activeTab === "surah" && (
               <button
                 type="button"
-                className="flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-bg-secondary border border-border/50 text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+                className="flex items-center justify-center h-11 w-11 rounded-xl bg-bg-secondary border border-border/50 text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
                 onClick={onToggleSort}
                 title={sortDir === "asc" ? t("home.sortDesc", lang) : t("home.sortAsc", lang)}
                 aria-label={sortDir === "asc" ? t("home.sortDesc", lang) : t("home.sortAsc", lang)}
