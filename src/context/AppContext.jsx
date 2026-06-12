@@ -246,6 +246,15 @@ export function appReducer(state, action) {
       return { ...state, sidebarOpen: !state.sidebarOpen };
     case "TOGGLE_SEARCH":
       return { ...state, searchOpen: !state.searchOpen };
+    case "TOGGLE_MEM_MODE":
+      return {
+        ...state,
+        showHome: false,
+        showDuas: false,
+        mushafLayout: "list",
+        showWordByWord: false,
+        memMode: !state.memMode,
+      };
     case "TOGGLE_SETTINGS":
       return { ...state, settingsOpen: !state.settingsOpen };
     case "TOGGLE_BOOKMARKS":

@@ -725,12 +725,6 @@ export default function AudioPlayer() {
   );
 
   useEffect(() => {
-    if (essentialPlayerMode && memMode) {
-      set({ memMode: false });
-    }
-  }, [essentialPlayerMode, memMode, set]);
-
-  useEffect(() => {
     set({ karaokeFollow: true });
   }, [set]);
 
