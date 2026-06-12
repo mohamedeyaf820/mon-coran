@@ -40,6 +40,8 @@
   cursor: pointer;
   transition: background 0.15s;
   text-decoration: none;
+  min-height: 44px;
+  min-width: 44px;
 }
 .mp-header__brand:hover {
   background: var(--bg-secondary);
@@ -55,7 +57,7 @@
 
 .mp-header__brand-text {
   font-size: 1rem;
-  font-weight: 750;
+  font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.02em;
   white-space: nowrap;
@@ -164,7 +166,7 @@
   display: block;
   font-family: var(--font-ui, sans-serif);
   font-size: var(--ts-base);
-  font-weight: 750;
+  font-weight: 700;
   color: var(--text-primary);
   line-height: 1.2;
   white-space: nowrap;
@@ -204,7 +206,7 @@
 .mp-header__home-summary-clean {
   display: block;
   font-size: var(--ts-sm);
-  font-weight: 750;
+  font-weight: 700;
   color: var(--text-primary);
   white-space: nowrap;
 }

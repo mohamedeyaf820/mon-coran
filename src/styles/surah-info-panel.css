@@ -41,7 +41,7 @@
 .sip-header__name {
   display: block;
   font-size: 0.9rem;
-  font-weight: 750;
+  font-weight: 700;
   color: var(--text-primary);
   line-height: 1.2;
 }
@@ -117,7 +117,7 @@
 
 .sip-tile__value {
   font-size: 0.82rem;
-  font-weight: 750;
+  font-weight: 700;
   color: var(--text-primary);
   line-height: 1.2;
   white-space: nowrap;

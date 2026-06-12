@@ -358,7 +358,7 @@
     color: var(--qcom-reader-muted, var(--text-tertiary));
     font-family: var(--font-ui);
     font-size: 0.76rem;
-    font-weight: 750;
+    font-weight: 700;
 }
 
 .app-root .quran-display--platform .qc-surah-header__meta {
@@ -2278,7 +2278,7 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     color: var(--qcom-page-ink, var(--text-primary)) !important;
     font-family: var(--font-ui) !important;
     font-size: clamp(1.4rem, 2.5vw, 1.85rem) !important;
-    font-weight: 760 !important;
+    font-weight: 700 !important;
     letter-spacing: 0 !important;
 }
 

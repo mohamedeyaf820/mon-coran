@@ -326,7 +326,7 @@
     color: var(--text-secondary);
     font-family: var(--font-ui);
     font-size: 0.78rem;
-    font-weight: 750;
+    font-weight: 700;
     line-height: 1;
     transition:
         background-color 150ms ease,
@@ -1104,7 +1104,7 @@ html[data-split-view="on"]
     color: var(--text-secondary);
     font-family: var(--font-ui);
     font-size: 0.76rem;
-    font-weight: 750;
+    font-weight: 700;
 }
 
 .verse-compare-tray__clear {
@@ -1374,7 +1374,7 @@ html[data-split-view="on"]
     gap: 0.45rem;
     padding-inline: 0.72rem;
     font-size: 0.8rem;
-    font-weight: 750;
+    font-weight: 700;
 }
 
 .app-root .mp-header__action:not(.mp-header__search) {
@@ -1511,7 +1511,7 @@ html[data-split-view="on"]
     border-radius: 0.9rem;
     background: var(--primary);
     color: #fff;
-    font-weight: 780;
+    font-weight: 800;
     box-shadow: 0 12px 24px rgba(var(--primary-rgb), 0.2);
 }
 
@@ -1598,7 +1598,7 @@ html[data-split-view="on"]
     background: var(--bg-primary) !important;
     color: var(--text-secondary) !important;
     font-size: 0.84rem;
-    font-weight: 760;
+    font-weight: 700;
 }
 
 .app-root[data-view="duas"] .duas-cat-btn.active {
@@ -1788,7 +1788,7 @@ html[data-split-view="on"]
     min-height: 2.15rem;
     padding-inline: 0.75rem;
     font-size: 0.78rem;
-    font-weight: 780;
+    font-weight: 800;
 }
 
 @media (max-width: 1024px) {

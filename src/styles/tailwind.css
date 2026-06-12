@@ -19546,10 +19546,10 @@ body {
 .app-root > .mp-header .mp-header__more,
 .app-root > .mp-header .mp-header__nav-arrow {
     flex: 0 0 auto;
-    width: 2.35rem;
-    min-width: 2.35rem;
-    height: 2.35rem;
-    min-height: 2.35rem;
+    width: 2.75rem;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    min-height: 2.75rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -19644,7 +19644,7 @@ body {
     white-space: nowrap;
     color: var(--text-muted);
     font-size: 0.68rem;
-    font-weight: 750;
+    font-weight: 700;
 }
 
 .app-root > .mp-header .mp-header__search {
@@ -19714,10 +19714,10 @@ body {
     .app-root > .mp-header .mp-header__icon-btn,
     .app-root > .mp-header .mp-header__action,
     .app-root > .mp-header .mp-header__more {
-        width: 2.25rem;
-        min-width: 2.25rem;
-        height: 2.25rem;
-        min-height: 2.25rem;
+        width: 2.75rem;
+        min-width: 2.75rem;
+        height: 2.75rem;
+        min-height: 2.75rem;
     }
 
     .app-root > .mp-header .mp-header__search {

@@ -115,7 +115,7 @@ html {
 
   .app-root .mp-header__title {
     font-size: 0.95rem !important;
-    font-weight: 750 !important;
+    font-weight: 700 !important;
   }
 
   .app-root .mp-header__kicker,
@@ -1484,7 +1484,7 @@ html body .app-root .quran-display--platform .qc-list-card__reference.qc-list-ca
   color: color-mix(in srgb, var(--theme-text-muted, var(--text-muted)) 78%, var(--theme-text, var(--text-primary)) 22%) !important;
   font-family: var(--font-ui) !important;
   font-size: clamp(0.88rem, 1.35vw, 1rem) !important;
-  font-weight: 750 !important;
+  font-weight: 700 !important;
   letter-spacing: 0 !important;
   line-height: 1 !important;
   white-space: nowrap !important;

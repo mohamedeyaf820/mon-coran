@@ -119,7 +119,7 @@
   background: var(--bg-card) !important;
   color: var(--primary) !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
-  font-weight: 750 !important;
+  font-weight: 700 !important;
 }
 
 [data-theme="dark"] #sidebar .grid.gap-1 button.bg-bg-primary,
