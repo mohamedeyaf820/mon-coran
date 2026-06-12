@@ -75,7 +75,7 @@ export default function HeroSection({
               <h1 className="home-hero-title text-[clamp(1.5rem,3.5vw,2rem)] font-black leading-none tracking-tight text-text-primary">
                 MushafPlus
               </h1>
-              <span className="mt-1 inline-flex items-center gap-1.5 text-[0.7rem] font-semibold text-text-muted">
+              <span className="mt-1 inline-flex items-center gap-1.5 text-[0.75rem] font-semibold text-text-muted">
                 <i
                   className="fas fa-feather-pointed text-primary text-[0.6rem]"
                   aria-hidden="true"
@@ -85,7 +85,7 @@ export default function HeroSection({
             </div>
           </div>
 
-          <p className="home-hero-copy mt-3 max-w-[52ch] text-[0.88rem] leading-relaxed text-text-secondary max-[520px]:text-[0.82rem]">
+          <p className="home-hero-copy mt-3 max-w-[52ch] text-[0.88rem] leading-relaxed text-text-secondary max-[520px]:text-[0.85rem]">
             {heroCopy}
           </p>
 
