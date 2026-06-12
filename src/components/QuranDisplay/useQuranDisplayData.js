@@ -256,7 +256,10 @@ export default function useQuranDisplayData({
   useEffect(() => {
     if (showHome) return;
     fetchData();
-  }, [fetchData, showHome]);
+    // Clear any in-flight requests for this key on unmount to avoid stale
+    // promise attachments surviving HMR module reloads in development.
+    return () => INFLIGHT_REQUESTS.delete(currentCacheKey);
+  }, [fetchData, showHome, currentCacheKey]);
 
   useEffect(
     () => () => {

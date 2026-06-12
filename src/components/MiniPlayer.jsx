@@ -84,10 +84,11 @@ export default function MiniPlayer() {
   }, []);
 
   const handleDismiss = useCallback(() => {
+    // audioService.stop() fires onPlaybackStateChange which updates AppContext —
+    // we only need to set the local dismissed flag here to hide the bar.
     audioService.stop();
-    set({ isPlaying: false, currentPlayingAyah: null });
     setDismissed(true);
-  }, [set]);
+  }, []);
 
   // ── MediaSession API ────────────────────────────────────────────────────
   useMediaSession({

@@ -16,6 +16,7 @@ import { useEffect, useRef } from 'react';
  */
 export function useAutoScrollAyah({ currentAyah, currentSurah, isPlaying }) {
   const debounceRef     = useRef(null);
+  const observerRef     = useRef(null);
   const userScrolledRef = useRef(false);
   const resumeTimerRef  = useRef(null);
   const prevAyahRef     = useRef(null);
@@ -75,9 +76,11 @@ export function useAutoScrollAyah({ currentAyah, currentSurah, isPlaying }) {
       if (!el) return;
 
       // Use IntersectionObserver to check visibility before scrolling
+      observerRef.current?.disconnect();
       const observer = new IntersectionObserver(
         ([entry]) => {
           observer.disconnect();
+          observerRef.current = null;
           if (!entry.isIntersecting) {
             el.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
@@ -87,11 +90,14 @@ export function useAutoScrollAyah({ currentAyah, currentSurah, isPlaying }) {
           threshold: 0.5,
         },
       );
+      observerRef.current = observer;
       observer.observe(el);
     }, 300);
 
     return () => {
       clearTimeout(debounceRef.current);
+      observerRef.current?.disconnect();
+      observerRef.current = null;
     };
   }, [currentAyah, currentSurah, isPlaying]);
 
@@ -100,6 +106,8 @@ export function useAutoScrollAyah({ currentAyah, currentSurah, isPlaying }) {
     return () => {
       clearTimeout(debounceRef.current);
       clearTimeout(resumeTimerRef.current);
+      observerRef.current?.disconnect();
+      observerRef.current = null;
     };
   }, []);
 }

@@ -25,9 +25,11 @@ export default function PWAUpdateBanner() {
 
   const reload = () => {
     navigator.serviceWorker.getRegistration().then((reg) => {
-      reg?.waiting?.postMessage({ type: 'SKIP_WAITING' });
+      if (!reg?.waiting) return;
+      // Attach listener before postMessage to avoid missing the controllerchange event
+      navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload(), { once: true });
+      reg.waiting.postMessage({ type: 'SKIP_WAITING' });
     });
-    navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload(), { once: true });
   };
 
   return (

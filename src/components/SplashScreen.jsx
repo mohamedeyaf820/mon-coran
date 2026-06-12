@@ -93,7 +93,9 @@ export default function SplashScreen({
       }, 350);
     }, 1600);
 
-    // Minimum display time reduced from 950/1250ms to 500/700ms
+    // Minimum display time: fade starts at 500ms, dismiss fires at 700ms.
+    // After t1, tryEarlyDismiss() handles early exit if prefetch already resolved.
+    // t2 is the hard deadline — dismiss() is idempotent so no double-run risk.
     const t1 = setTimeout(() => { setFadeOut(true); timerDone = true; tryEarlyDismiss(); }, 500);
     const t2 = setTimeout(() => dismiss(), 700);
 

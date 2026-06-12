@@ -195,12 +195,9 @@ export function useKeyboardNavigation({
   }, [set]);
 
   const handleToggleMemorization = useCallback(() => {
-    set((prev) => ({
-      memMode: !prev.memMode,
-      mushafLayout: "list",
-      showWordByWord: false,
-    }));
-  }, [set]);
+    // Use the dedicated reducer to ensure showHome/showDuas are also reset
+    dispatch({ type: "TOGGLE_MEM_MODE" });
+  }, [dispatch]);
 
   const handleKeyboard = useCallback(
     (event) => {
