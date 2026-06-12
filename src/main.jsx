@@ -8,14 +8,12 @@ import { AppProvider } from "./context/AppContext";
 // Critical CSS — must be available before first paint
 import "./styles/tailwind.css";
 import "./styles/domains/themes4.css";
-import "./styles/responsive.css";
+import "./styles/responsive-all.css";
 import "./styles/ui-polish.css";
-import "./styles/responsive-experience.css";
 import "./styles/riwaya-fonts.css";
 import "./styles/dark-mode-refonte.css";
 import "./styles/domains/mobile-all-versions.css";
 import "./styles/home-audio-ux-refonte.css";
-import "./styles/responsive-polish.css";
 import "./styles/surah-banner.css";
 import "./styles/header-enhanced.css";
 
@@ -180,15 +178,27 @@ if (!rootElement) {
   console.error(
     "[Main] Root element not found - cannot mount React application",
   );
-  document.body.innerHTML = `
-    <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
-      <h1 style="color: #ef4444; margin-bottom: 1rem;">Erreur de chargement</h1>
-      <p>L'application n'a pas pu démarrer. Veuillez recharger la page.</p>
-      <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; cursor: pointer;">
-        Recharger
-      </button>
-    </div>
-  `;
+  const fallback = document.createElement("div");
+  fallback.style.cssText =
+    "padding:2rem;text-align:center;font-family:system-ui,sans-serif;";
+
+  const title = document.createElement("h1");
+  title.style.cssText = "color:#ef4444;margin-bottom:1rem;";
+  title.textContent = "Erreur de chargement";
+
+  const message = document.createElement("p");
+  message.textContent =
+    "L'application n'a pas pu demarrer. Veuillez recharger la page.";
+
+  const reloadButton = document.createElement("button");
+  reloadButton.type = "button";
+  reloadButton.style.cssText =
+    "margin-top:1rem;padding:0.5rem 1rem;cursor:pointer;";
+  reloadButton.textContent = "Recharger";
+  reloadButton.addEventListener("click", () => window.location.reload());
+
+  fallback.append(title, message, reloadButton);
+  document.body.replaceChildren(fallback);
 } else {
   initErrorAnalytics();
   ReactDOM.createRoot(rootElement).render(
