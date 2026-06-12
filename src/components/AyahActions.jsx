@@ -1101,6 +1101,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 playAyah();
               }
             }}
+            aria-label={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen")}
             title={lang === "fr" ? "Écouter" : "Listen"}
           >
             <i className={`fas ${audioError ? "fa-triangle-exclamation" : isPlayingThisAyah ? "fa-pause" : "fa-play"} text-[0.8rem]`} />
@@ -1116,6 +1117,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleBookmark}
+            aria-label={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
             title={lang === "fr" ? "Favori" : "Bookmark"}
           >
             <i className={`${bookmarked ? "fas" : "far"} fa-bookmark text-[0.8rem]`} />
@@ -1133,6 +1135,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={copyText}
+            aria-label={copied ? (lang === "fr" ? "Copié !" : lang === "ar" ? "تم النسخ!" : "Copied!") : (lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse")}
             title={lang === "fr" ? "Copier" : "Copy"}
           >
             <i className={`fas ${copied ? "fa-check" : "fa-copy"} text-[0.8rem]`} />
@@ -1153,6 +1156,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               setShowNote(false);
               setShowShare((value) => !value);
             }}
+            aria-label={lang === "fr" ? "Partager ce verset" : lang === "ar" ? "مشاركة الآية" : "Share verse"}
             title={lang === "fr" ? "Partager" : "Share"}
           >
             <i className="fas fa-share-nodes text-[0.8rem]" />
@@ -1173,6 +1177,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               setShowShare(false);
               setShowNote((value) => !value);
             }}
+            aria-label={lang === "fr" ? "Ajouter une note" : lang === "ar" ? "إضافة ملاحظة" : "Add note"}
             title={lang === "fr" ? "Note" : "Note"}
           >
             <i className="fas fa-pen-to-square text-[0.8rem]" />
@@ -1189,7 +1194,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
-
+            aria-label={lang === "fr" ? "Options du verset" : lang === "ar" ? "خيارات الآية" : "Verse options"}
             title="Options"
           >
             <i className="fas fa-ellipsis text-[0.8rem]" />
@@ -1393,6 +1398,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 playAyah();
               }
             }}
+            aria-label={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen")}
             title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
           >
             <i className={`fas ${audioError ? "fa-triangle-exclamation" : isPlayingThisAyah ? "fa-pause" : "fa-play"} text-[0.72rem]`} />
@@ -1408,6 +1414,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleTafsir}
+            aria-label={lang === "fr" ? "Tafsir" : lang === "ar" ? "تفسير" : "Tafsir"}
             title="Tafsir"
           >
             <i className="fas fa-book-open text-[0.72rem]" />
@@ -1423,6 +1430,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleBookmark}
+            aria-label={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
             title={lang === "fr" ? "Favori" : "Bookmark"}
           >
             <i className={`${bookmarked ? "fas" : "far"} fa-bookmark text-[0.72rem]`} />
@@ -1438,6 +1446,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={copyText}
+            aria-label={copied ? (lang === "fr" ? "Copié !" : lang === "ar" ? "تم النسخ!" : "Copied!") : (lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse")}
             title={lang === "fr" ? "Copier" : "Copy"}
           >
             <i className={`fas ${copied ? "fa-check" : "fa-copy"} text-[0.72rem]`} />
@@ -1453,6 +1462,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               setShowNote(false);
               setShowShare(true);
             }}
+            aria-label={lang === "fr" ? "Partager ce verset" : lang === "ar" ? "مشاركة الآية" : "Share verse"}
             title={lang === "fr" ? "Partager" : "Share"}
           >
             <i className="fas fa-share-nodes text-[0.72rem]" />
@@ -1476,6 +1486,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 playAyah();
               }
             }}
+            aria-label={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen")}
             title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
           >
             <i className={`fas ${audioError ? "fa-triangle-exclamation" : isPlayingThisAyah ? "fa-pause" : "fa-play"} text-[0.8rem]`} />
@@ -1491,6 +1502,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleTafsir}
+            aria-label={lang === "fr" ? "Tafsir" : lang === "ar" ? "تفسير" : "Tafsir"}
             title="Tafsir"
           >
             <i className="fas fa-book-open text-[0.8rem]" />
@@ -1506,6 +1518,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleBookmark}
+            aria-label={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
             title={lang === "fr" ? "Favori" : "Bookmark"}
           >
             <i className={`${bookmarked ? "fas" : "far"} fa-bookmark text-[0.8rem]`} />
@@ -1521,6 +1534,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={copyText}
+            aria-label={copied ? (lang === "fr" ? "Copié !" : lang === "ar" ? "تم النسخ!" : "Copied!") : (lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse")}
             title={lang === "fr" ? "Copier" : "Copy"}
           >
             <i className={`fas ${copied ? "fa-check" : "fa-copy"} text-[0.8rem]`} />
@@ -1536,6 +1550,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               setShowNote(false);
               setShowShare(true);
             }}
+            aria-label={lang === "fr" ? "Partager ce verset" : lang === "ar" ? "مشاركة الآية" : "Share verse"}
             title={lang === "fr" ? "Partager" : "Share"}
           >
             <i className="fas fa-share-nodes text-[0.8rem]" />
@@ -1573,7 +1588,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 }
               }}
               title={isPlayingThisAyah ? (lang === "fr" ? "Pause" : "Pause") : (lang === "fr" ? "Ecouter" : lang === "ar" ? "استماع" : "Listen")}
-              aria-label={isPlayingThisAyah ? "Pause" : "Play"}
+              aria-label={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Play")}
             >
               <i className={`fas fa-${audioError ? "triangle-exclamation" : isPlayingThisAyah ? "pause" : "play"}`} />
             </button>

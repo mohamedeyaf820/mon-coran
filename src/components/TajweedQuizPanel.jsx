@@ -6,6 +6,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useApp } from "../context/AppContext";
 import TAJWID_RULES from "../data/tajwidRules";
+import { Icon } from "./ui/icon";
 
 function shuffle(arr) {
   const a = [...arr];
@@ -108,12 +109,16 @@ export default function TajweedQuizPanel() {
           <Dialog.Content
             className="modal-panel tq-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
             aria-label={lang === "fr" ? "Quiz Tajweed" : "Tajweed Quiz"}
-            onEscapeKeyDown={close}
+            onClick={(event) => event.stopPropagation()}
+            onEscapeKeyDown={(event) => {
+              event.preventDefault();
+              close();
+            }}
             onInteractOutside={close}
           >
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
               <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
-                <i className="fas fa-spell-check" />
+                <Icon name="spell-check" size={18} />
                 {lang === "fr"
                   ? "Quiz Tajweed"
                   : lang === "ar"
@@ -128,7 +133,7 @@ export default function TajweedQuizPanel() {
                   lang === "fr" ? "Fermer" : lang === "ar" ? "اغلاق" : "Close"
                 }
               >
-                <i className="fas fa-xmark" />
+                <Icon name="xmark" size={18} />
               </button>
             </div>
 
@@ -144,10 +149,10 @@ export default function TajweedQuizPanel() {
                 </h3>
                 <div className="fc-done__stats">
                   <span className="fc-stat correct">
-                    <i className="fas fa-check" /> {score.correct}
+                    <Icon name="check" size={15} /> {score.correct}
                   </span>
                   <span className="fc-stat wrong">
-                    <i className="fas fa-xmark" /> {score.wrong}
+                    <Icon name="xmark" size={15} /> {score.wrong}
                   </span>
                 </div>
                 <div className="fc-done__pct">
@@ -161,8 +166,9 @@ export default function TajweedQuizPanel() {
                 <button
                   className="fc-restart-btn !inline-flex !items-center !gap-2 !rounded-xl !bg-sky-500/80 !px-4 !py-2.5 !font-semibold !text-white hover:!bg-sky-500"
                   onClick={restart}
+                  type="button"
                 >
-                  <i className="fas fa-rotate-right" />
+                  <Icon name="rotate-right" size={16} />
                   {lang === "fr"
                     ? "Recommencer"
                     : lang === "ar"
@@ -205,7 +211,7 @@ export default function TajweedQuizPanel() {
                         color: question.color,
                       }}
                     >
-                      <i className="fas fa-palette text-[0.5rem]" />
+                      <Icon name="palette" size={12} />
                       {question.color}
                     </div>
                   </div>
@@ -235,6 +241,7 @@ export default function TajweedQuizPanel() {
                         onClick={() => handleAnswer(choice.id)}
                         disabled={!!answered}
                         className={`tq-choice !inline-flex !items-center !justify-center !gap-2 !rounded-xl !border !px-3.5 !py-2.5 !text-sm !transition-all hover:!bg-white/[0.08] ${isCorrect ? "tq-choice--correct !border-emerald-300/25 !bg-emerald-500/12" : ""} ${isWrong ? "tq-choice--wrong !border-red-300/25 !bg-red-500/12" : ""}`}
+                        type="button"
                       >
                         <span
                           className="tq-choice__dot"
@@ -242,10 +249,10 @@ export default function TajweedQuizPanel() {
                         />
                         {nameFor(choice)}
                         {isCorrect && (
-                          <i className="fas fa-check ml-1.5 text-[0.7rem]" />
+                          <Icon name="check" size={14} className="ml-1.5" />
                         )}
                         {isWrong && (
-                          <i className="fas fa-xmark ml-1.5 text-[0.7rem]" />
+                          <Icon name="xmark" size={14} className="ml-1.5" />
                         )}
                       </button>
                     );
@@ -256,16 +263,17 @@ export default function TajweedQuizPanel() {
                 <div className="tq-footer !flex !items-center !justify-between !gap-2 !px-4 !pb-4">
                   <div className="fc-score-row !flex !items-center !gap-2">
                     <span className="fc-stat correct">
-                      <i className="fas fa-check" /> {score.correct}
+                      <Icon name="check" size={15} /> {score.correct}
                     </span>
                     <span className="fc-stat wrong">
-                      <i className="fas fa-xmark" /> {score.wrong}
+                      <Icon name="xmark" size={15} /> {score.wrong}
                     </span>
                   </div>
                   {answered && (
                     <button
                       className="tq-next-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-sky-200/30 !bg-sky-500/20 !px-3.5 !py-2.5 !text-sm !text-white hover:!bg-sky-500/30"
                       onClick={nextQuestion}
+                      type="button"
                     >
                       {questionIdx >= orderedQuestions.length - 1
                         ? lang === "fr"

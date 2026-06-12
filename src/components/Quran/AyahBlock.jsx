@@ -159,8 +159,8 @@ function AyahBlockComponent({
           onClick={(e) => {
             e.stopPropagation();
           }}
-          aria-label="Bookmark"
-          title={lang === "fr" ? "Marquer ce verset" : "Bookmark this verse"}
+          aria-label={lang === "fr" ? "Marquer ce verset" : lang === "ar" ? "وضع إشارة مرجعية" : "Bookmark this verse"}
+          title={lang === "fr" ? "Marquer ce verset" : lang === "ar" ? "وضع إشارة مرجعية" : "Bookmark this verse"}
         >
           <Bookmark size={16} strokeWidth={2.5} />
         </button>

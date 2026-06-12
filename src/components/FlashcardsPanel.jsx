@@ -5,6 +5,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useApp } from "../context/AppContext";
+import { Icon } from "./ui/icon";
 
 /* ── Static dataset: top-100 most frequent Quranic words ── */
 const VOCAB = [
@@ -387,12 +388,16 @@ export default function FlashcardsPanel() {
           <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
             <Dialog.Content
               className="modal-panel fc-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
-              onEscapeKeyDown={close}
+              onClick={(event) => event.stopPropagation()}
+              onEscapeKeyDown={(event) => {
+                event.preventDefault();
+                close();
+              }}
               onInteractOutside={close}
             >
               <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
                 <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
-                  <i className="fas fa-layer-group" />
+                  <Icon name="layer-group" size={18} />
                   {lang === "fr"
                     ? "Flashcards"
                     : lang === "ar"
@@ -402,9 +407,10 @@ export default function FlashcardsPanel() {
                 <button
                   className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
                   onClick={close}
+                  type="button"
                   aria-label={lang === "fr" ? "Fermer" : "Close"}
                 >
-                  <i className="fas fa-xmark" />
+                  <Icon name="xmark" size={18} />
                 </button>
               </div>
               <div className="fc-done !space-y-3 !p-5 !text-center">
@@ -471,13 +477,17 @@ export default function FlashcardsPanel() {
             aria-label={
               lang === "fr" ? "Flashcards vocabulaire" : "Vocabulary Flashcards"
             }
-            onEscapeKeyDown={close}
+            onClick={(event) => event.stopPropagation()}
+            onEscapeKeyDown={(event) => {
+              event.preventDefault();
+              close();
+            }}
             onInteractOutside={close}
           >
             {/* Header */}
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
               <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
-                <i className="fas fa-layer-group" />
+                <Icon name="layer-group" size={18} />
                 {lang === "fr"
                   ? "Flashcards"
                   : lang === "ar"
@@ -487,9 +497,10 @@ export default function FlashcardsPanel() {
               <button
                 className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
                 onClick={close}
+                type="button"
                 aria-label={lang === "fr" ? "Fermer" : "Close"}
               >
-                <i className="fas fa-xmark" />
+                <Icon name="xmark" size={18} />
               </button>
             </div>
 
@@ -505,10 +516,10 @@ export default function FlashcardsPanel() {
                 </h3>
                 <div className="fc-done__stats">
                   <span className="fc-stat correct">
-                    <i className="fas fa-check" /> {score.correct}
+                    <Icon name="check" size={15} /> {score.correct}
                   </span>
                   <span className="fc-stat wrong">
-                    <i className="fas fa-xmark" /> {score.wrong}
+                    <Icon name="xmark" size={15} /> {score.wrong}
                   </span>
                 </div>
                 <div className="fc-done__pct">
@@ -523,7 +534,7 @@ export default function FlashcardsPanel() {
                   className="fc-restart-btn !inline-flex !items-center !gap-2 !rounded-xl !bg-sky-500/80 !px-4 !py-2.5 !font-semibold !text-white hover:!bg-sky-500"
                   onClick={restart}
                 >
-                  <i className="fas fa-rotate-right" />
+                  <Icon name="rotate-right" size={16} />
                   {lang === "fr"
                     ? "Recommencer"
                     : lang === "ar"
@@ -591,10 +602,10 @@ export default function FlashcardsPanel() {
                 {/* Score + actions */}
                 <div className="fc-score-row !mt-4 !flex !items-center !justify-center !gap-3">
                   <span className="fc-stat correct">
-                    <i className="fas fa-check" /> {score.correct}
+                    <Icon name="check" size={15} /> {score.correct}
                   </span>
                   <span className="fc-stat wrong">
-                    <i className="fas fa-xmark" /> {score.wrong}
+                    <Icon name="xmark" size={15} /> {score.wrong}
                   </span>
                 </div>
                 {flipped && (
@@ -603,7 +614,7 @@ export default function FlashcardsPanel() {
                       className="fc-btn fc-btn--wrong !inline-flex !items-center !gap-2 !rounded-xl !border !border-red-300/20 !bg-red-500/10 !px-3.5 !py-2 !text-red-100 hover:!bg-red-500/20"
                       onClick={() => answer(false)}
                     >
-                      <i className="fas fa-xmark" />
+                      <Icon name="xmark" size={15} />
                       {lang === "fr"
                         ? "À revoir"
                         : lang === "ar"
@@ -614,7 +625,7 @@ export default function FlashcardsPanel() {
                       className="fc-btn fc-btn--correct !inline-flex !items-center !gap-2 !rounded-xl !border !border-emerald-300/20 !bg-emerald-500/10 !px-3.5 !py-2 !text-emerald-100 hover:!bg-emerald-500/20"
                       onClick={() => answer(true)}
                     >
-                      <i className="fas fa-check" />
+                      <Icon name="check" size={15} />
                       {lang === "fr"
                         ? "Connu !"
                         : lang === "ar"
