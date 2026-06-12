@@ -92,7 +92,11 @@ export default function Sidebar() {
             : "-translate-x-full rtl:translate-x-full",
         )}
         aria-label={
-          lang === "fr" ? "Navigation Coran" : lang === "ar" ? "التنقل في القرآن" : "Quran Navigation"
+          lang === "fr"
+            ? "Navigation Coran"
+            : lang === "ar"
+              ? "التنقل في القرآن"
+              : "Quran Navigation"
         }
         data-tab={tab}
         onClick={(e) => e.stopPropagation()}
@@ -118,9 +122,7 @@ export default function Sidebar() {
               )}
             </div>
             <span className="shrink-0 text-[0.6rem] font-bold text-text-muted uppercase tracking-wide">
-              {riwaya === "warsh"
-                ? "Warsh"
-                : "Hafs"}
+              {riwaya === "warsh" ? "Warsh" : "Hafs"}
             </span>
           </div>
 
@@ -187,11 +189,17 @@ export default function Sidebar() {
             </div>
           )}
 
-          {tab === "surah" && filter && filteredSurahs.length > 0 && filteredSurahs.length < 114 && (
-            <div className="flex items-center px-1.5 py-1 text-[0.62rem] font-medium text-text-muted">
-              <span>{filteredSurahs.length} {lang === "fr" ? "résultats" : "results"}</span>
-            </div>
-          )}
+          {tab === "surah" &&
+            filter &&
+            filteredSurahs.length > 0 &&
+            filteredSurahs.length < 114 && (
+              <div className="flex items-center px-1.5 py-1 text-[0.62rem] font-medium text-text-muted">
+                <span>
+                  {filteredSurahs.length}{" "}
+                  {lang === "fr" ? "résultats" : "results"}
+                </span>
+              </div>
+            )}
 
           {tab === "surah" &&
             filteredSurahs.map((s) => {
@@ -286,7 +294,11 @@ export default function Sidebar() {
                       {lang === "ar" ? `الجزء ${toAr(j.juz)}` : `Juz ${j.juz}`}
                     </span>
                     {startSurah && (
-                      <span className="flex items-center gap-1 truncate text-[0.64rem] text-text-muted">
+                      <span
+                        className="flex items-center gap-1 truncate text-[0.64rem] text-text-muted"
+                        lang={lang === "ar" ? "ar" : undefined}
+                        dir={lang === "ar" ? "rtl" : undefined}
+                      >
                         {lang === "fr"
                           ? startSurah.fr
                           : lang === "ar"
@@ -331,11 +343,7 @@ export default function Sidebar() {
               </div>
               <div className="flex items-center px-1 text-[0.65rem] font-bold text-text-muted uppercase tracking-wide">
                 <span>
-                  {lang === "fr"
-                    ? "Juz"
-                    : lang === "ar"
-                      ? "الجزء"
-                      : "Juz"}
+                  {lang === "fr" ? "Juz" : lang === "ar" ? "الجزء" : "Juz"}
                 </span>
               </div>
               <div className="grid grid-cols-6 gap-1">

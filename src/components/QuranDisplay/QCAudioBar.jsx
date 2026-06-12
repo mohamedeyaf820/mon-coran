@@ -3,6 +3,7 @@ import { cn } from "../../lib/utils";
 import audioService from "../../services/audioService";
 import { getAudioPlayerLabels } from "../audioPlayer/audioPlayerLabels";
 import { formatAudioTime } from "../audioPlayer/audioPlayerUtils";
+import { Icon } from "../ui/icon";
 
 export default function QCAudioBar({
   lang,
@@ -122,7 +123,7 @@ export default function QCAudioBar({
             className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-secondary)] transition-all hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)]"
             aria-label={labels.previous}
           >
-            <i className="fas fa-backward-step text-sm" />
+            <Icon name="backward-step" size={17} />
           </button>
 
           <button
@@ -143,7 +144,11 @@ export default function QCAudioBar({
             aria-label={playing ? labels.pause : labels.play}
             aria-pressed={playing}
           >
-            <i className={`fas ${playing ? "fa-pause" : "fa-play"} text-sm ${!playing ? "ml-0.5" : ""}`} />
+            <Icon
+              name={playing ? "pause" : "play"}
+              size={17}
+              className={!playing ? "ml-0.5" : undefined}
+            />
           </button>
 
           <button
@@ -152,7 +157,7 @@ export default function QCAudioBar({
             className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-secondary)] transition-all hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)]"
             aria-label={labels.next}
           >
-            <i className="fas fa-forward-step text-sm" />
+            <Icon name="forward-step" size={17} />
           </button>
 
           <button
@@ -161,7 +166,7 @@ export default function QCAudioBar({
             className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-900/20"
             aria-label={labels.stop}
           >
-            <i className="fas fa-stop text-xs" />
+            <Icon name="stop" size={15} />
           </button>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { join, relative } from "node:path";
 import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
 
 import { isAllowedExternalUrl, sanitizeSvgMarkup } from "../src/lib/security.js";
@@ -24,6 +25,17 @@ function createMockStorage() {
       map.delete(key);
     },
   };
+}
+
+function collectSourceFiles(dir) {
+  return readdirSync(dir).flatMap((entry) => {
+    const path = join(dir, entry);
+    const stat = statSync(path);
+
+    if (stat.isDirectory()) return collectSourceFiles(path);
+    if (!/\.(jsx?|tsx?)$/.test(entry)) return [];
+    return [path];
+  });
 }
 
 test("security: allows only whitelisted https hosts", () => {
@@ -93,6 +105,23 @@ test("security: SVG sanitizer strips active content and external references", ()
     globalThis.DOMParser = previousDOMParser;
     globalThis.XMLSerializer = previousXMLSerializer;
   }
+});
+
+test("security: source avoids raw HTML injection sinks", () => {
+  const offenders = [];
+
+  for (const file of collectSourceFiles("src")) {
+    const source = readFileSync(file, "utf8");
+    if (
+      /dangerouslySetInnerHTML/.test(source) ||
+      /\.innerHTML\s*=/.test(source) ||
+      /insertAdjacentHTML\s*\(/.test(source)
+    ) {
+      offenders.push(relative(process.cwd(), file));
+    }
+  }
+
+  assert.deepEqual(offenders, []);
 });
 
 test("storage: rejects invalid localStorage key format", () => {

@@ -527,11 +527,7 @@ export default function App() {
         case "M":
           if (event.altKey) {
             event.preventDefault();
-            set({
-              showHome: false,
-              showDuas: false,
-              memMode: !state.memMode,
-            });
+            dispatch({ type: "TOGGLE_MEM_MODE" });
           }
           break;
         case "h":

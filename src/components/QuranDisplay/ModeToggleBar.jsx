@@ -5,6 +5,7 @@ import {
   getWordModeLabel,
   getWordModeTitle,
 } from "./displayHelpers";
+import { Icon } from "../ui/icon";
 
 export default function ModeToggleBar({
   className,
@@ -25,7 +26,7 @@ export default function ModeToggleBar({
         onClick={onToggleWordByWord}
         title={getWordModeTitle(lang, showWordByWord)}
       >
-        <i className={`fas ${showWordByWord ? "fa-language" : "fa-list-ul"}`}></i>
+        <Icon name={showWordByWord ? "language" : "list-ul"} size={14} />
         <span>{getWordModeLabel(lang, showWordByWord)}</span>
       </button>
       <span className={separatorClassName} aria-hidden="true" />
@@ -34,7 +35,7 @@ export default function ModeToggleBar({
         onClick={onToggleMushaf}
         title={lang === "fr" ? "Vue Mushaf" : "Mushaf view"}
       >
-        <i className="fas fa-book-open"></i>
+        <Icon name="book-open" size={14} />
         <span>Mushaf</span>
       </button>
       <span className={separatorClassName} aria-hidden="true" />
@@ -43,7 +44,7 @@ export default function ModeToggleBar({
         onClick={onToggleMemorization}
         title={getMemorizationTitle(lang)}
       >
-        <i className="fas fa-graduation-cap"></i>
+        <Icon name="graduation-cap" size={14} />
         <span>{getMemorizationLabel(lang)}</span>
       </button>
     </div>

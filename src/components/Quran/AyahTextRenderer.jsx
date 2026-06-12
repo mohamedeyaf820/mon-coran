@@ -167,7 +167,7 @@ export { HafsKaraokeText as KaraokeAyahText };
  * • isPlaying  → HafsKaraokeText (word-by-word highlight with timing calibration)
  * • !isPlaying → TajweedText     (coloured tajweed segments or plain text)
  */
-export function AyahTextRenderer({
+function AyahTextRendererComponent({
   text,
   tajweedText,
   showTajwid,
@@ -198,3 +198,21 @@ export function AyahTextRenderer({
     />
   );
 }
+
+function areAyahTextRendererEqual(prev, next) {
+  return (
+    prev.text === next.text &&
+    prev.tajweedText === next.tajweedText &&
+    prev.showTajwid === next.showTajwid &&
+    prev.isPlaying === next.isPlaying &&
+    prev.isFirstAyah === next.isFirstAyah &&
+    prev.calibration === next.calibration &&
+    prev.riwaya === next.riwaya &&
+    prev.tajweedColors === next.tajweedColors
+  );
+}
+
+export const AyahTextRenderer = React.memo(
+  AyahTextRendererComponent,
+  areAyahTextRendererEqual,
+);

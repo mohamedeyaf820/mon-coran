@@ -2,7 +2,7 @@ import React from "react";
 import TajweedText from "./TajweedText";
 import WordTooltip from "./WordTooltip";
 
-export default function QuranWord({
+function QuranWordComponent({
   active,
   current,
   fontSize,
@@ -65,3 +65,23 @@ export default function QuranWord({
     </button>
   );
 }
+
+function areQuranWordEqual(prev, next) {
+  return (
+    prev.word === next.word &&
+    prev.wordId === next.wordId &&
+    prev.active === next.active &&
+    prev.current === next.current &&
+    prev.read === next.read &&
+    prev.fontSize === next.fontSize &&
+    prev.lang === next.lang &&
+    prev.riwaya === next.riwaya &&
+    prev.showTajwid === next.showTajwid &&
+    prev.showTransliteration === next.showTransliteration &&
+    prev.showWordTranslation === next.showWordTranslation &&
+    prev.inline === next.inline &&
+    prev.onSelect === next.onSelect
+  );
+}
+
+export default React.memo(QuranWordComponent, areQuranWordEqual);

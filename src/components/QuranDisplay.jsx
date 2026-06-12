@@ -27,6 +27,8 @@ import useQuranDisplayPrefetch from "./QuranDisplay/useQuranDisplayPrefetch";
 import useQuranDisplayScroll from "./QuranDisplay/useQuranDisplayScroll";
 import useQuranDisplayView from "./QuranDisplay/useQuranDisplayView";
 import useQuranTranslations from "./QuranDisplay/useQuranTranslations";
+import AyahSkeleton from "./Quran/AyahSkeleton";
+import { Icon } from "./ui/icon";
 
 export default function QuranDisplay() {
   const { dispatch, set } = useAppActions();
@@ -122,7 +124,10 @@ export default function QuranDisplay() {
     () => createDisplayClasses({ focusReading, riwaya }),
     [focusReading, riwaya],
   );
-  const isQCF4 = fontFamily === "qcf-v4-tajweed" || fontFamily === "mushaf-tajweed" || fontFamily === "qcf-v4";
+  const isQCF4 =
+    fontFamily === "qcf-v4-tajweed" ||
+    fontFamily === "mushaf-tajweed" ||
+    fontFamily === "qcf-v4";
   const view = useQuranDisplayView({
     dispatch,
     displayMode,
@@ -207,11 +212,12 @@ export default function QuranDisplay() {
       const match = ayahs.find(
         (a) =>
           Number(a.numberInSurah) === Number(ayah) &&
-          Number(a.surah?.number || a.surah) === Number(surah)
+          Number(a.surah?.number || a.surah) === Number(surah),
       );
       if (match) {
         setActiveAyah(displayMode === "surah" ? ayah : match.number);
-        const elementId = displayMode === "surah" ? `ayah-${ayah}` : `ayah-${match.number}`;
+        const elementId =
+          displayMode === "surah" ? `ayah-${ayah}` : `ayah-${match.number}`;
         document.getElementById(elementId)?.scrollIntoView({
           behavior: "smooth",
           block: "center",
@@ -221,7 +227,7 @@ export default function QuranDisplay() {
         setActiveAyah(ayah);
       }
     },
-    [ayahs, displayMode, dispatch]
+    [ayahs, displayMode, dispatch],
   );
   const toggleMushaf = useCallback(() => {
     set({
@@ -232,8 +238,8 @@ export default function QuranDisplay() {
     });
   }, [mushafLayout, set]);
   const toggleMemorization = useCallback(() => {
-    set({ mushafLayout: "list", memMode: !memMode, showWordByWord: false });
-  }, [memMode, set]);
+    dispatch({ type: "TOGGLE_MEM_MODE" });
+  }, [dispatch]);
 
   const exitMemorization = useCallback(() => {
     set({ memMode: false, mushafLayout: "list", showWordByWord: false });
@@ -271,14 +277,24 @@ export default function QuranDisplay() {
           ensureQcfPageFontLoaded,
           isFontMarkedLoaded,
         } = await import("../services/fontLoader");
-        const isQcfPageFont = fontFamily === "qcf-v1" || fontFamily === "qcf-v2" || fontFamily === "qcf-v4-tajweed";
+        const isQcfPageFont =
+          fontFamily === "qcf-v1" ||
+          fontFamily === "qcf-v2" ||
+          fontFamily === "qcf-v4-tajweed";
         const shouldBlockReader =
           !isFontMarkedLoaded(fontFamily) ||
-          (isQcfPageFont && displayMode === "page" && !isFontMarkedLoaded(fontFamily));
+          (isQcfPageFont &&
+            displayMode === "page" &&
+            !isFontMarkedLoaded(fontFamily));
         if (shouldBlockReader) setFontLoading(true);
 
         if (isQcfPageFont && displayMode === "page") {
-          const qcfVersion = fontFamily === "qcf-v4-tajweed" ? "v4" : fontFamily === "qcf-v2" ? "v2" : "v1";
+          const qcfVersion =
+            fontFamily === "qcf-v4-tajweed"
+              ? "v4"
+              : fontFamily === "qcf-v2"
+                ? "v2"
+                : "v1";
           await ensureQcfPageFontLoaded(currentPage, qcfVersion);
         } else {
           await ensureFontLoaded(fontFamily);
@@ -299,29 +315,23 @@ export default function QuranDisplay() {
 
   if ((loading && ayahs.length === 0) || (fontLoading && ayahs.length === 0))
     return (
-      <div className="flex justify-center items-center min-h-[50vh] p-8">
-        <div className="w-full max-w-3xl flex flex-col gap-6 p-8 rounded-3xl bg-bg-card/95 shadow-xl border border-white/10 relative overflow-hidden">
-          <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.06)] to-transparent pointer-events-none" aria-hidden="true" />
-          <div className="flex justify-between items-center mb-4">
-            <div className="h-8 w-24 bg-primary/15 rounded-full animate-pulse"></div>
-            <div className="h-8 w-32 bg-primary/15 rounded-full animate-pulse" style={{ animationDelay: "150ms" }}></div>
-          </div>
-          <div className="h-16 w-3/4 mx-auto bg-primary/8 rounded-2xl mb-6 animate-pulse" style={{ animationDelay: "300ms" }}></div>
-          <div className="h-10 w-1/2 mx-auto bg-primary/8 rounded-xl mb-8 animate-pulse" style={{ animationDelay: "450ms" }}></div>
-          <div className="space-y-3">
-            {[1, 0.92, 0.8, 1, 0.66, 0.92, 0.85, 1, 0.5, 0.8, 0.92].map((w, i) => (
-              <div key={i} className="h-4 bg-primary/8 rounded-full animate-pulse" style={{ width: `${w * 100}%`, animationDelay: `${i * 75}ms` }}></div>
-            ))}
-          </div>
-        </div>
+      <div className="quran-display--platform flex-1 overflow-y-auto px-4 py-4">
+        <AyahSkeleton count={6} showTranslation={showTranslation} />
       </div>
     );
   if (error)
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] p-8 text-center backdrop-blur-xl bg-bg-card/90 m-4 rounded-3xl shadow-xl border border-red-500/20 max-w-2xl mx-auto">
-        <i
-          className={`fas ${ayahs.length === 0 && /Failed to fetch|NetworkError|timeout|AbortError/i.test(error) ? "fa-wifi-slash" : "fa-circle-exclamation"} text-4xl text-red-500/80 mb-6`}
-        ></i>
+        <Icon
+          name={
+            ayahs.length === 0 &&
+            /Failed to fetch|NetworkError|timeout|AbortError/i.test(error)
+              ? "wifi-slash"
+              : "circle-exclamation"
+          }
+          size={42}
+          className="mb-6 text-red-500/80"
+        />
         {ayahs.length === 0 &&
         /Failed to fetch|NetworkError|timeout|AbortError/i.test(error) ? (
           <>
@@ -356,7 +366,7 @@ export default function QuranDisplay() {
   if (!loading && ayahs.length === 0)
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] p-8 text-center backdrop-blur-xl bg-bg-card/90 m-4 rounded-3xl shadow-xl border border-white/10 max-w-2xl mx-auto">
-        <i className="fas fa-book-open text-4xl text-primary/60 mb-6"></i>
+        <Icon name="book-open" size={42} className="mb-6 text-primary/60" />
         <p className="text-lg text-text-main font-medium mb-8">
           {t("errors.emptyData", lang)}
         </p>
@@ -400,7 +410,7 @@ export default function QuranDisplay() {
                 : "Exit memorization mode"
           }
         >
-          <i className="fas fa-brain text-xs" />
+          <Icon name="brain" size={14} />
           <span>
             {lang === "fr"
               ? "Quitter mémorisation"
@@ -408,7 +418,7 @@ export default function QuranDisplay() {
                 ? "خروج من الحفظ"
                 : "Exit memorization"}
           </span>
-          <i className="fas fa-xmark text-xs opacity-80" />
+          <Icon name="xmark" size={14} className="opacity-80" />
         </button>
       )}
       {riwaya === "warsh" && !isWarshFallback ? (
@@ -544,7 +554,7 @@ export default function QuranDisplay() {
             title={t("nav.scrollTop", lang)}
             aria-label={t("nav.scrollTop", lang)}
           >
-            <i className="fas fa-chevron-up"></i>
+            <Icon name="chevron-up" size={20} />
           </button>
         ) : null}
         <VerseCompareTray lang={lang} />

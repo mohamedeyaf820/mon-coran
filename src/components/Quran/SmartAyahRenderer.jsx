@@ -13,7 +13,18 @@ const DEFAULT_HAFS_CALIBRATION = {
   speedSensitivity: 0.06,
 };
 
-const ARABIC_INDIC_DIGITS = ["\u0660", "\u0661", "\u0662", "\u0663", "\u0664", "\u0665", "\u0666", "\u0667", "\u0668", "\u0669"];
+const ARABIC_INDIC_DIGITS = [
+  "\u0660",
+  "\u0661",
+  "\u0662",
+  "\u0663",
+  "\u0664",
+  "\u0665",
+  "\u0666",
+  "\u0667",
+  "\u0668",
+  "\u0669",
+];
 const NATIVE_AYAH_MARKER_RE = /[\u06DD\u06DE]/u;
 
 function toArabicIndicNumber(value) {
@@ -31,7 +42,7 @@ function withNativeHafsAyahMarker(text, ayahNumber, riwaya) {
   return `${value} \u06DD${toArabicIndicNumber(ayahNumber)}`;
 }
 
-const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
+function SmartAyahRendererComponent({
   ayah,
   showTajwid,
   isPlaying,
@@ -47,7 +58,12 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
     [ayah.numberInSurah, ayah.text, surahNum],
   );
   const cleanFallbackText = useMemo(
-    () => withNativeHafsAyahMarker(baseCleanText, ayah.numberInSurah, effectiveRiwaya),
+    () =>
+      withNativeHafsAyahMarker(
+        baseCleanText,
+        ayah.numberInSurah,
+        effectiveRiwaya,
+      ),
     [ayah.numberInSurah, baseCleanText, effectiveRiwaya],
   );
 
@@ -61,7 +77,12 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
         .filter(Boolean)
         .join(" ");
     return withNativeHafsAyahMarker(value, ayah.numberInSurah, effectiveRiwaya);
-  }, [ayah.numberInSurah, ayah.quranCom?.textTajweed, ayah.words, effectiveRiwaya]);
+  }, [
+    ayah.numberInSurah,
+    ayah.quranCom?.textTajweed,
+    ayah.words,
+    effectiveRiwaya,
+  ]);
   const effectiveCalibration = withWordCountCalibrationBump(
     calibration || DEFAULT_HAFS_CALIBRATION,
     wordCount,
@@ -114,6 +135,20 @@ const SmartAyahRenderer = React.memo(function SmartAyahRenderer({
       tajweedColors={null}
     />
   );
-});
+}
 
-export default SmartAyahRenderer;
+function areSmartAyahRendererEqual(prev, next) {
+  return (
+    prev.ayah === next.ayah &&
+    prev.showTajwid === next.showTajwid &&
+    prev.isPlaying === next.isPlaying &&
+    prev.surahNum === next.surahNum &&
+    prev.calibration === next.calibration &&
+    prev.riwaya === next.riwaya
+  );
+}
+
+export default React.memo(
+  SmartAyahRendererComponent,
+  areSmartAyahRendererEqual,
+);

@@ -12,6 +12,7 @@ import MemorizationText from "../Quran/MemorizationText";
 import SmartAyahRenderer from "../Quran/SmartAyahRenderer";
 import WordByWordDisplay from "../Quran/WordByWordDisplay";
 import QCVerseActions from "./QCVerseActions";
+import AyahSkeleton from "../Quran/AyahSkeleton";
 
 function getInitialVisibleCount(total, displayMode) {
   if (displayMode === "page") return total;
@@ -109,7 +110,9 @@ const QCVerseCard = memo(function QCVerseCard({
       // For memorization, use the correct riwaya text
       const memoText =
         riwaya === "warsh" ? ayah.text : ayah.hafsText || ayah.text;
-      return <MemorizationText text={memoText} lang={lang} isPlaying={isPlaying} />;
+      return (
+        <MemorizationText text={memoText} lang={lang} isPlaying={isPlaying} />
+      );
     }
     if (showWordByWord) {
       return (
@@ -380,7 +383,8 @@ export default function QCVerseByVerseView({
     };
   }, [items.length]);
 
-  if (items.length === 0) return null;
+  if (items.length === 0)
+    return <AyahSkeleton count={5} showTranslation={showTranslation} />;
 
   const visibleItems = items.slice(0, visibleCount);
   const hasMore = visibleCount < items.length;

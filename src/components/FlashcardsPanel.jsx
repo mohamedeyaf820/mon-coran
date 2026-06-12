@@ -3,6 +3,7 @@
  * 100 most-frequent words with Arabic, transliteration, French/English translation and root
  */
 import React, { useState, useCallback, useEffect } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { useApp } from "../context/AppContext";
 
 /* ── Static dataset: top-100 most frequent Quranic words ── */
@@ -376,45 +377,50 @@ export default function FlashcardsPanel() {
   // Guard: if deck is somehow empty, show a fallback
   if (deck.length === 0) {
     return (
-      <div
-        className="modal-overlay !p-3 sm:!p-5"
-        onClick={close}
-        role="dialog"
-        aria-modal="true"
+      <Dialog.Root
+        open
+        onOpenChange={(o) => {
+          if (!o) close();
+        }}
       >
-        <div
-          className="modal-panel fc-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
-            <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
-              <i className="fas fa-layer-group" />
-              {lang === "fr"
-                ? "Flashcards"
-                : lang === "ar"
-                  ? "بطاقات تعليمية"
-                  : "Vocabulary Cards"}
-            </div>
-            <button
-              className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
-              onClick={close}
-              aria-label={lang === "fr" ? "Fermer" : "Close"}
+        <Dialog.Portal>
+          <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
+            <Dialog.Content
+              className="modal-panel fc-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+              onEscapeKeyDown={close}
+              onInteractOutside={close}
             >
-              <i className="fas fa-xmark" />
-            </button>
+              <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
+                <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
+                  <i className="fas fa-layer-group" />
+                  {lang === "fr"
+                    ? "Flashcards"
+                    : lang === "ar"
+                      ? "بطاقات تعليمية"
+                      : "Vocabulary Cards"}
+                </div>
+                <button
+                  className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
+                  onClick={close}
+                  aria-label={lang === "fr" ? "Fermer" : "Close"}
+                >
+                  <i className="fas fa-xmark" />
+                </button>
+              </div>
+              <div className="fc-done !space-y-3 !p-5 !text-center">
+                <div className="fc-done__trophy">📭</div>
+                <h3>
+                  {lang === "fr"
+                    ? "Aucune carte disponible"
+                    : lang === "ar"
+                      ? "لا توجد بطاقات"
+                      : "No cards available"}
+                </h3>
+              </div>
+            </Dialog.Content>
           </div>
-          <div className="fc-done !space-y-3 !p-5 !text-center">
-            <div className="fc-done__trophy">📭</div>
-            <h3>
-              {lang === "fr"
-                ? "Aucune carte disponible"
-                : lang === "ar"
-                  ? "لا توجد بطاقات"
-                  : "No cards available"}
-            </h3>
-          </div>
-        </div>
-      </div>
+        </Dialog.Portal>
+      </Dialog.Root>
     );
   }
 
@@ -452,161 +458,176 @@ export default function FlashcardsPanel() {
   };
 
   return (
-    <div
-      className="modal-overlay !p-3 sm:!p-5"
-      onClick={close}
-      role="dialog"
-      aria-modal="true"
-      aria-label={
-        lang === "fr" ? "Flashcards vocabulaire" : "Vocabulary Flashcards"
-      }
+    <Dialog.Root
+      open
+      onOpenChange={(o) => {
+        if (!o) close();
+      }}
     >
-      <div
-        className="modal-panel fc-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
-          <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
-            <i className="fas fa-layer-group" />
-            {lang === "fr"
-              ? "Flashcards"
-              : lang === "ar"
-                ? "بطاقات تعليمية"
-                : "Vocabulary Cards"}
-          </div>
-          <button
-            className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
-            onClick={close}
-            aria-label={lang === "fr" ? "Fermer" : "Close"}
+      <Dialog.Portal>
+        <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
+          <Dialog.Content
+            className="modal-panel fc-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+            aria-label={
+              lang === "fr" ? "Flashcards vocabulaire" : "Vocabulary Flashcards"
+            }
+            onEscapeKeyDown={close}
+            onInteractOutside={close}
           >
-            <i className="fas fa-xmark" />
-          </button>
-        </div>
-
-        {done ? (
-          <div className="fc-done !space-y-3 !p-5 !text-center">
-            <div className="fc-done__trophy">🏆</div>
-            <h3>
-              {lang === "fr"
-                ? "Session terminée !"
-                : lang === "ar"
-                  ? "انتهت الجلسة!"
-                  : "Session complete!"}
-            </h3>
-            <div className="fc-done__stats">
-              <span className="fc-stat correct">
-                <i className="fas fa-check" /> {score.correct}
-              </span>
-              <span className="fc-stat wrong">
-                <i className="fas fa-xmark" /> {score.wrong}
-              </span>
-            </div>
-            <div className="fc-done__pct">
-              {Math.round((score.correct / total) * 100)}%{" "}
-              {lang === "fr"
-                ? "de réussite"
-                : lang === "ar"
-                  ? "نجاح"
-                  : "success rate"}
-            </div>
-            <button className="fc-restart-btn !inline-flex !items-center !gap-2 !rounded-xl !bg-sky-500/80 !px-4 !py-2.5 !font-semibold !text-white hover:!bg-sky-500" onClick={restart}>
-              <i className="fas fa-rotate-right" />
-              {lang === "fr"
-                ? "Recommencer"
-                : lang === "ar"
-                  ? "إعادة"
-                  : "Restart"}
-            </button>
-          </div>
-        ) : (
-          <>
-            {/* Progress bar */}
-            <div className="fc-progress-bar">
-              <div
-                className="fc-progress-fill"
-                style={{ width: `${(idx / total) * 100}%` }}
-              />
-            </div>
-            <div className="fc-count">
-              {idx + 1} / {total}
+            {/* Header */}
+            <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
+              <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
+                <i className="fas fa-layer-group" />
+                {lang === "fr"
+                  ? "Flashcards"
+                  : lang === "ar"
+                    ? "بطاقات تعليمية"
+                    : "Vocabulary Cards"}
+              </div>
+              <button
+                className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
+                onClick={close}
+                aria-label={lang === "fr" ? "Fermer" : "Close"}
+              >
+                <i className="fas fa-xmark" />
+              </button>
             </div>
 
-            {/* Card */}
-            <div className="fc-card-wrap !px-4 !pt-2" onClick={() => setFlipped((f) => !f)}>
-              <div className={`fc-card ${flipped ? "fc-card--flipped" : ""}`}>
-                <div className="fc-card__front">
-                  <div className="fc-card__arabic">{card.ar}</div>
-                  <div className="fc-card__hint">
-                    {lang === "fr"
-                      ? "Appuyez pour voir"
-                      : lang === "ar"
-                        ? "اضغط للكشف"
-                        : "Tap to reveal"}
-                  </div>
+            {done ? (
+              <div className="fc-done !space-y-3 !p-5 !text-center">
+                <div className="fc-done__trophy">🏆</div>
+                <h3>
+                  {lang === "fr"
+                    ? "Session terminée !"
+                    : lang === "ar"
+                      ? "انتهت الجلسة!"
+                      : "Session complete!"}
+                </h3>
+                <div className="fc-done__stats">
+                  <span className="fc-stat correct">
+                    <i className="fas fa-check" /> {score.correct}
+                  </span>
+                  <span className="fc-stat wrong">
+                    <i className="fas fa-xmark" /> {score.wrong}
+                  </span>
                 </div>
-                <div className="fc-card__back">
-                  <div className="fc-card__translation">
-                    {lang === "ar"
-                      ? card.en
-                      : lang === "fr"
-                        ? card.fr
-                        : card.en}
-                  </div>
-                  <div className="fc-card__root">
-                    <span className="fc-card__root-label">
-                      {lang === "fr" ? "Racine" : "Root"}
-                    </span>
-                    <span className="fc-card__root-val">{card.root}</span>
-                  </div>
-                  {card.freq > 0 && (
-                    <div className="fc-card__freq">
-                      ×{card.freq.toLocaleString()}{" "}
-                      {lang === "fr" ? "fois dans le Coran" : "times in Quran"}
+                <div className="fc-done__pct">
+                  {Math.round((score.correct / total) * 100)}%{" "}
+                  {lang === "fr"
+                    ? "de réussite"
+                    : lang === "ar"
+                      ? "نجاح"
+                      : "success rate"}
+                </div>
+                <button
+                  className="fc-restart-btn !inline-flex !items-center !gap-2 !rounded-xl !bg-sky-500/80 !px-4 !py-2.5 !font-semibold !text-white hover:!bg-sky-500"
+                  onClick={restart}
+                >
+                  <i className="fas fa-rotate-right" />
+                  {lang === "fr"
+                    ? "Recommencer"
+                    : lang === "ar"
+                      ? "إعادة"
+                      : "Restart"}
+                </button>
+              </div>
+            ) : (
+              <>
+                {/* Progress bar */}
+                <div className="fc-progress-bar">
+                  <div
+                    className="fc-progress-fill"
+                    style={{ width: `${(idx / total) * 100}%` }}
+                  />
+                </div>
+                <div className="fc-count">
+                  {idx + 1} / {total}
+                </div>
+
+                {/* Card */}
+                <div
+                  className="fc-card-wrap !px-4 !pt-2"
+                  onClick={() => setFlipped((f) => !f)}
+                >
+                  <div
+                    className={`fc-card ${flipped ? "fc-card--flipped" : ""}`}
+                  >
+                    <div className="fc-card__front">
+                      <div className="fc-card__arabic">{card.ar}</div>
+                      <div className="fc-card__hint">
+                        {lang === "fr"
+                          ? "Appuyez pour voir"
+                          : lang === "ar"
+                            ? "اضغط للكشف"
+                            : "Tap to reveal"}
+                      </div>
                     </div>
-                  )}
+                    <div className="fc-card__back">
+                      <div className="fc-card__translation">
+                        {lang === "ar"
+                          ? card.en
+                          : lang === "fr"
+                            ? card.fr
+                            : card.en}
+                      </div>
+                      <div className="fc-card__root">
+                        <span className="fc-card__root-label">
+                          {lang === "fr" ? "Racine" : "Root"}
+                        </span>
+                        <span className="fc-card__root-val">{card.root}</span>
+                      </div>
+                      {card.freq > 0 && (
+                        <div className="fc-card__freq">
+                          ×{card.freq.toLocaleString()}{" "}
+                          {lang === "fr"
+                            ? "fois dans le Coran"
+                            : "times in Quran"}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Score + actions */}
-            <div className="fc-score-row !mt-4 !flex !items-center !justify-center !gap-3">
-              <span className="fc-stat correct">
-                <i className="fas fa-check" /> {score.correct}
-              </span>
-              <span className="fc-stat wrong">
-                <i className="fas fa-xmark" /> {score.wrong}
-              </span>
-            </div>
-            {flipped && (
-              <div className="fc-actions !mt-3 !flex !items-center !justify-center !gap-2 !pb-4">
-                <button
-                  className="fc-btn fc-btn--wrong !inline-flex !items-center !gap-2 !rounded-xl !border !border-red-300/20 !bg-red-500/10 !px-3.5 !py-2 !text-red-100 hover:!bg-red-500/20"
-                  onClick={() => answer(false)}
-                >
-                  <i className="fas fa-xmark" />
-                  {lang === "fr"
-                    ? "À revoir"
-                    : lang === "ar"
-                      ? "مراجعة"
-                      : "Review"}
-                </button>
-                <button
-                  className="fc-btn fc-btn--correct !inline-flex !items-center !gap-2 !rounded-xl !border !border-emerald-300/20 !bg-emerald-500/10 !px-3.5 !py-2 !text-emerald-100 hover:!bg-emerald-500/20"
-                  onClick={() => answer(true)}
-                >
-                  <i className="fas fa-check" />
-                  {lang === "fr"
-                    ? "Connu !"
-                    : lang === "ar"
-                      ? "أعرفه"
-                      : "Got it!"}
-                </button>
-              </div>
+                {/* Score + actions */}
+                <div className="fc-score-row !mt-4 !flex !items-center !justify-center !gap-3">
+                  <span className="fc-stat correct">
+                    <i className="fas fa-check" /> {score.correct}
+                  </span>
+                  <span className="fc-stat wrong">
+                    <i className="fas fa-xmark" /> {score.wrong}
+                  </span>
+                </div>
+                {flipped && (
+                  <div className="fc-actions !mt-3 !flex !items-center !justify-center !gap-2 !pb-4">
+                    <button
+                      className="fc-btn fc-btn--wrong !inline-flex !items-center !gap-2 !rounded-xl !border !border-red-300/20 !bg-red-500/10 !px-3.5 !py-2 !text-red-100 hover:!bg-red-500/20"
+                      onClick={() => answer(false)}
+                    >
+                      <i className="fas fa-xmark" />
+                      {lang === "fr"
+                        ? "À revoir"
+                        : lang === "ar"
+                          ? "مراجعة"
+                          : "Review"}
+                    </button>
+                    <button
+                      className="fc-btn fc-btn--correct !inline-flex !items-center !gap-2 !rounded-xl !border !border-emerald-300/20 !bg-emerald-500/10 !px-3.5 !py-2 !text-emerald-100 hover:!bg-emerald-500/20"
+                      onClick={() => answer(true)}
+                    >
+                      <i className="fas fa-check" />
+                      {lang === "fr"
+                        ? "Connu !"
+                        : lang === "ar"
+                          ? "أعرفه"
+                          : "Got it!"}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
-          </>
-        )}
-      </div>
-    </div>
+          </Dialog.Content>
+        </div>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
