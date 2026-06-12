@@ -333,7 +333,7 @@
   border: none;
   background: transparent;
   color: var(--text-primary);
-  font-size: 0.875rem;
+  font-size: var(--ts-sm);
   font-weight: 500;
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
@@ -403,7 +403,7 @@
   background: var(--primary);
   border-color: var(--primary);
   color: white;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--primary) 35%, transparent);
+  box-shadow: var(--shadow-xs);
 }
 
 /* Dark mode overrides */
