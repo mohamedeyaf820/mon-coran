@@ -6,9 +6,11 @@ const MAX_CSS_KB = Number(process.env.BUDGET_CSS_KB || 945);
 // This app deliberately ships many lazy feature chunks. Keep the aggregate JS
 // budget realistic while the stricter single-chunk and total CSS+JS budgets
 // continue to catch regressions that affect load cost.
-// The +2 kB headroom above the raw bundle sum accounts for Rollup chunk-boundary
-// boilerplate that accrues when manualChunks splits shared modules into more granular pieces.
-const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1155);
+// +25 kB added (1155→1180): Radix Dialog fully adopted across 14 panel/modal
+// components (AudioMakerPanel, BookmarksModal, FlashcardsPanel, etc.) — the
+// shared @radix-ui/react-dialog bundle cost is paid once, enabling consistent
+// accessibility (focus traps, ARIA roles) without per-component boilerplate.
+const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1180);
 const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2050);
 const MAX_SINGLE_CSS_KB = Number(process.env.BUDGET_SINGLE_CSS_KB || 780);
 const MAX_SINGLE_JS_KB = Number(process.env.BUDGET_SINGLE_JS_KB || 250);
