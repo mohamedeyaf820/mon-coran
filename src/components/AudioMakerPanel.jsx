@@ -153,6 +153,7 @@ export default function AudioMakerPanel() {
             onEscapeKeyDown={close}
             onInteractOutside={close}
           >
+          <Dialog.Title className="sr-only">Audio Maker</Dialog.Title>
             {/* Header */}
             <div className="audio-maker-header">
               <h2 className="audio-maker-title">

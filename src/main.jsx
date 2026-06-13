@@ -13,8 +13,6 @@ import "./styles/ui-polish.css";
 import "./styles/riwaya-fonts.css";
 import "./styles/dark-mode-refonte.css";
 import "./styles/domains/mobile-all-versions.css";
-import "./styles/home-audio-ux-refonte.css";
-import "./styles/surah-banner.css";
 import "./styles/header-enhanced.css";
 
 /**
@@ -86,6 +84,8 @@ if (typeof window !== "undefined") {
     import("./styles/settings-enhanced.css").catch(() => null);
     import("./styles/surah-info-panel.css").catch(() => null);
     import("./styles/reciter-enhanced.css").catch(() => null);
+    import("./styles/home-audio-ux-refonte.css").catch(() => null);
+    import("./styles/surah-banner.css").catch(() => null);
   };
 
   if (typeof window.requestIdleCallback === "function") {

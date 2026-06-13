@@ -143,7 +143,8 @@ export default function ReadingHistoryPanel() {
           <Dialog.Content
             className="modal modal-panel--wide !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
             aria-labelledby={titleId}
-            onClick={(event) => event.stopPropagation()}
+            onClick={(event) =>
+            <Dialog.Title className="sr-only">Modal</Dialog.Title> event.stopPropagation()}
             onEscapeKeyDown={(event) => {
               event.preventDefault();
               close();

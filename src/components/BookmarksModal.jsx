@@ -60,10 +60,10 @@ export default function BookmarksModal() {
                       ? "المكتبة"
                       : "Library"}
                 </div>
-                <h2 className="modal-title" id="bookmarks-modal-title">
+                <Dialog.Title asChild><h2 className="modal-title" id="bookmarks-modal-title">
                   <Icon name="bookmark" size={18} />
                   {t("bookmarks.title", lang)}
-                </h2>
+                </h2></Dialog.Title>
                 <div className="modal-subtitle">
                   {lang === "fr"
                     ? "Retrouvez rapidement vos versets enregistres."

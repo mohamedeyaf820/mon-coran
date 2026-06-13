@@ -287,7 +287,8 @@ export default function SearchModal() {
           <Dialog.Content
             asChild
             aria-labelledby={titleId}
-            onEscapeKeyDown={(e) => {
+            onEscapeKeyDown={(e) =>
+            <Dialog.Title className="sr-only">Dialog</Dialog.Title> {
               e.preventDefault();
               e.stopPropagation();
               close();

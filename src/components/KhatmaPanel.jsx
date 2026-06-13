@@ -59,6 +59,7 @@ export default function KhatmaPanel() {
             onEscapeKeyDown={close}
             onInteractOutside={close}
           >
+          <Dialog.Title className="sr-only">Khatma</Dialog.Title>
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
               <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
                 <i className="fas fa-book-open-reader" />
