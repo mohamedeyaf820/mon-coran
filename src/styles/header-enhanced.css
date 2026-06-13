@@ -491,10 +491,6 @@
 .mp-header--compact .mp-header__more {
   width: 38px;
   height: 38px;
-  /* Maintain WCAG 2.5.5 44×44px touch target while keeping visual 38px size */
-  min-width: 44px;
-  min-height: 44px;
-  overflow: visible;
 }
 
 .mp-header--compact .mp-header__logo {

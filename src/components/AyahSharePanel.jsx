@@ -335,7 +335,6 @@ export default function AyahSharePanel() {
             onEscapeKeyDown={close}
             onInteractOutside={close}
           >
-          <Dialog.Title className="sr-only">Partager le verset</Dialog.Title>
             <div className="modal-header">
               <div className="modal-title-stack">
                 <div className="modal-kicker">{t("share.title", lang)}</div>
