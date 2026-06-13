@@ -395,6 +395,7 @@ export default function FlashcardsPanel() {
               }}
               onInteractOutside={close}
             >
+              <Dialog.Title className="sr-only">Flashcards - Editer</Dialog.Title>
               <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
                 <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
                   <Icon name="layer-group" size={18} />
@@ -484,6 +485,7 @@ export default function FlashcardsPanel() {
             }}
             onInteractOutside={close}
           >
+            <Dialog.Title className="sr-only">Flashcards</Dialog.Title>
             {/* Header */}
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
               <div className="modal-title !inline-flex !items-center !gap-2 !text-white">

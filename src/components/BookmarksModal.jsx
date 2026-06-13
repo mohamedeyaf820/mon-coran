@@ -51,6 +51,7 @@ export default function BookmarksModal() {
             }}
             onInteractOutside={close}
           >
+            <Dialog.Title className="sr-only">Favoris</Dialog.Title>
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
               <div className="modal-title-stack">
                 <div className="modal-kicker">

@@ -150,6 +150,7 @@ export default function ReadingHistoryPanel() {
             }}
             onInteractOutside={close}
           >
+            <Dialog.Title className="sr-only">Historique de lecture</Dialog.Title>
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
               <div className="modal-title-stack">
                 <div className="modal-kicker">

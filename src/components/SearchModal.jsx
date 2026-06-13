@@ -294,6 +294,7 @@ export default function SearchModal() {
             }}
             onInteractOutside={close}
           >
+            <Dialog.Title className="sr-only">Recherche</Dialog.Title>
             <section
               className="search-pro"
               role="dialog"

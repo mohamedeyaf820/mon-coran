@@ -190,6 +190,7 @@ export default function SettingsModal() {
           onEscapeKeyDown={close}
           onInteractOutside={close}
         >
+          <Dialog.Title className="sr-only">Parametres</Dialog.Title>
           <div className="settings-overlay fixed inset-0 z-[500] flex justify-end pointer-events-none">
             {/* Settings Drawer Panel */}
             <div

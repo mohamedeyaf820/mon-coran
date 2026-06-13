@@ -216,6 +216,7 @@ export default function TafsirSidebar() {
           onEscapeKeyDown={closeSidebar}
           onInteractOutside={closeSidebar}
         >
+          <Dialog.Title className="sr-only">Tafsir</Dialog.Title>
           <aside
             ref={sidebarRef}
             className="fixed inset-y-0 right-0 z-[390] flex w-full max-w-[min(100vw,34rem)] flex-col border-l border-[color-mix(in_srgb,var(--theme-border)_70%,transparent_30%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_96%,#ffffff_4%)] text-[color-mix(in_srgb,var(--theme-text)_92%,#ffffff_8%)] shadow-[-28px_0_70px_rgba(3,10,18,0.34)] backdrop-blur-2xl"

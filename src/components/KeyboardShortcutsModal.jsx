@@ -124,6 +124,7 @@ export default function KeyboardShortcutsModal({ lang, onClose }) {
             onEscapeKeyDown={onClose}
             onInteractOutside={onClose}
           >
+            <Dialog.Title className="sr-only">Raccourcis clavier</Dialog.Title>
             {/* En-tête */}
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-base font-bold text-[var(--text)] font-[var(--font-ui)] flex items-center gap-2">

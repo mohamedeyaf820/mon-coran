@@ -148,6 +148,7 @@ export default function ToolsHubModal() {
             }}
             onInteractOutside={close}
           >
+            <Dialog.Title className="sr-only">Outils</Dialog.Title>
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)] flex items-center justify-between !py-4 !px-5">
               <div className="modal-title-stack">
                 <div className="modal-kicker">
