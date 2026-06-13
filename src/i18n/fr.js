@@ -1,11 +1,15 @@
 export default {
   app: { name: 'MushafPlus', subtitle: 'Le Saint Coran', loading: 'Chargement...', skipToContent: 'Aller au contenu principal', keyboardShortcuts: 'Raccourcis clavier', keyboardShortcutsHint: 'Raccourcis clavier (?)' },
   nav: {
-    menu: 'Menu', search: 'Rechercher', bookmarks: 'Favoris',
-    settings: 'Paramètres', theme: 'Thème', scrollTop: 'Haut de page',
+    menu: 'Menu', home: 'Accueil', search: 'Rechercher', bookmarks: 'Favoris',
+    duas: 'Invocations', settings: 'Paramètres', theme: 'Thème', scrollTop: 'Haut de page',
     surahList: 'Liste des sourates',    goTo: 'Aller \u00e0\u2026', goToSurah: 'Sourate (1-114)',
     goToPage: 'Page (1-604)', goToJuz: 'Juz (1-30)',
-    navigation: 'Navigation',
+    navigation: 'Navigation', quickNav: 'Navigation rapide',
+  },
+  footer: {
+    verseRef: 'Adh-Dhariyat · 51:56',
+    credit: 'Lis, écoute, mémorise',
   },
   sidebar: {
     title: 'Index des sourates', surahs: 'Sourates', juz: 'Juz',

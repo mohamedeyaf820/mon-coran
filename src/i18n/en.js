@@ -1,12 +1,16 @@
 export default {
   app: { name: 'MushafPlus', subtitle: 'The Noble Quran', loading: 'Loading...', skipToContent: 'Skip to main content', keyboardShortcuts: 'Keyboard shortcuts', keyboardShortcutsHint: 'Keyboard shortcuts (?)' },
   nav: {
-    menu: 'Menu', search: 'Search', bookmarks: 'Bookmarks',
-    settings: 'Settings', theme: 'Toggle theme', scrollTop: 'Back to top',
+    menu: 'Menu', home: 'Home', search: 'Search', bookmarks: 'Bookmarks',
+    duas: 'Supplications', settings: 'Settings', theme: 'Toggle theme', scrollTop: 'Back to top',
     surahList: 'Surah list',
     goTo: 'Go to\u2026', goToSurah: 'Surah (1-114)',
     goToPage: 'Page (1-604)', goToJuz: 'Juz (1-30)',
-    navigation: 'Navigation',
+    navigation: 'Navigation', quickNav: 'Quick navigation',
+  },
+  footer: {
+    verseRef: 'Adh-Dhariyat · 51:56',
+    credit: 'Read, listen, memorize',
   },
   sidebar: {
     title: 'Surah Index', surahs: 'Surahs', juz: 'Juz',
