@@ -26,28 +26,28 @@ function AyahSkeletonCard({ showTranslation = false, index = 0 }) {
     >
       {/* Numéro de verset */}
       <div className="mb-3 flex items-center justify-between">
-        <SkeletonLine width="2rem" height="2rem" className="rounded-full" />
+        <SkeletonLine width="var(--space-8, 2rem)" height="var(--space-8, 2rem)" className="rounded-full" />
         <div className="flex gap-2">
-          <SkeletonLine width="1.8rem" height="1.8rem" className="rounded-lg" />
-          <SkeletonLine width="1.8rem" height="1.8rem" className="rounded-lg" />
+          <SkeletonLine width="var(--space-8, 2rem)" height="var(--space-8, 2rem)" className="rounded-lg" />
+          <SkeletonLine width="var(--space-8, 2rem)" height="var(--space-8, 2rem)" className="rounded-lg" />
         </div>
       </div>
 
       {/* Texte arabe — 2-3 lignes */}
       <div className="mb-4 space-y-3 text-right" dir="rtl">
-        <SkeletonLine width={arabicWidth} height="2.2rem" className="rounded-lg ml-auto" />
-        <SkeletonLine width="82%" height="2.2rem" className="rounded-lg ml-auto" />
+        <SkeletonLine width={arabicWidth} height="var(--ts-2xl, 2.2rem)" className="rounded-lg ml-auto" />
+        <SkeletonLine width="82%" height="var(--ts-2xl, 2.2rem)" className="rounded-lg ml-auto" />
         {index % 3 === 0 && (
-          <SkeletonLine width="60%" height="2.2rem" className="rounded-lg ml-auto" />
+          <SkeletonLine width="60%" height="var(--ts-2xl, 2.2rem)" className="rounded-lg ml-auto" />
         )}
       </div>
 
       {/* Traduction (optionnelle) */}
       {showTranslation && (
         <div className="space-y-2 border-t border-[var(--border)] pt-3">
-          <SkeletonLine width="96%" height="0.85rem" />
-          <SkeletonLine width="78%" height="0.85rem" />
-          <SkeletonLine width="88%" height="0.85rem" />
+          <SkeletonLine width="96%" height="var(--ts-xs, 0.75rem)" />
+          <SkeletonLine width="78%" height="var(--ts-xs, 0.75rem)" />
+          <SkeletonLine width="88%" height="var(--ts-xs, 0.75rem)" />
         </div>
       )}
     </div>
