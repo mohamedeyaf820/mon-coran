@@ -23,7 +23,7 @@ export default {
     page: 'Page', prevSurah: 'Previous surah', nextSurah: 'Next surah',
     prevPage: 'Previous page', nextPage: 'Next page',
     prevJuz: 'Previous Juz', nextJuz: 'Next Juz',
-    loadMore: 'Load more ayahs',
+    loadMore: 'Load more ayahs', loading: 'Loading verses…', loadingAria: 'Loading verses…',
   },
   search: {
     title: 'Search the Quran', placeholder: 'Search the Holy Quran…',

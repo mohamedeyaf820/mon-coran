@@ -23,7 +23,7 @@ export default {
     page: 'صفحة', prevSurah: 'السورة السابقة', nextSurah: 'السورة التالية',
     prevPage: 'الصفحة السابقة', nextPage: 'الصفحة التالية',
     prevJuz: 'الجزء السابق', nextJuz: 'الجزء التالي',
-    loadMore: 'تحميل المزيد من الآيات',
+    loadMore: 'تحميل المزيد من الآيات', loading: 'جاري تحميل الآيات…', loadingAria: 'جاري تحميل الآيات…',
   },
   search: {
     title: 'البحث في القرآن', placeholder: 'ابحث في القرآن الكريم...',

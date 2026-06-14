@@ -1,4 +1,5 @@
 import React from "react";
+import { t } from "../../i18n";
 
 /**
  * AyahSkeleton — placeholder animé affiché pendant le chargement des versets.
@@ -58,16 +59,17 @@ export default function AyahSkeleton({
   count = 5,
   showTranslation = false,
   className = "",
+  lang = "fr",
 }) {
   return (
     <div
       className={`ayah-skeleton-list ${className}`}
       role="status"
-      aria-label="Chargement des versets…"
+      aria-label={t("quran.loading", lang)}
       aria-live="polite"
       aria-busy="true"
     >
-      <span className="sr-only">Chargement des versets en cours…</span>
+      <span className="sr-only">{t("quran.loadingAria", lang)}</span>
       {Array.from({ length: count }, (_, i) => (
         <AyahSkeletonCard key={i} index={i} showTranslation={showTranslation} />
       ))}

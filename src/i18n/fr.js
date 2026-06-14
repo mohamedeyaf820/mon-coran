@@ -22,7 +22,7 @@ export default {
     page: 'Page', prevSurah: 'Sourate précédente', nextSurah: 'Sourate suivante',
     prevPage: 'Page précédente', nextPage: 'Page suivante',
     prevJuz: 'Juz précédent', nextJuz: 'Juz suivant',
-    loadMore: 'Charger plus de versets',
+    loadMore: 'Charger plus de versets', loading: 'Chargement des versets…', loadingAria: 'Chargement des versets en cours…',
   },
   search: {
     title: 'Recherche dans le Coran', placeholder: 'Rechercher dans le Saint Coran…',

@@ -316,7 +316,7 @@ export default function QuranDisplay() {
   if ((loading && ayahs.length === 0) || (fontLoading && ayahs.length === 0))
     return (
       <div className="quran-display--platform flex-1 overflow-y-auto px-4 py-4">
-        <AyahSkeleton count={6} showTranslation={showTranslation} />
+        <AyahSkeleton count={6} showTranslation={showTranslation} lang={lang} />
       </div>
     );
   if (error)

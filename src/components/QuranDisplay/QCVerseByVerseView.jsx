@@ -384,7 +384,7 @@ export default function QCVerseByVerseView({
   }, [items.length]);
 
   if (items.length === 0)
-    return <AyahSkeleton count={5} showTranslation={showTranslation} />;
+    return <AyahSkeleton count={5} showTranslation={showTranslation} lang={lang} />;
 
   const visibleItems = items.slice(0, visibleCount);
   const hasMore = visibleCount < items.length;
