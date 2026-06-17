@@ -521,7 +521,7 @@ export default function Header() {
 
           {/* Settings */}
           <button
-            className={cn("mp-header__action", settingsOpen && "is-active")}
+            className={cn("mp-header__action mp-header__settings", settingsOpen && "is-active")}
             type="button"
             onClick={openSettings}
             aria-label={i18nT("nav.settings", lang)}

@@ -433,7 +433,9 @@
   .mp-header__bar {
     padding: 0 0.5rem;
     gap: 0.3rem;
-    height: 46px;
+    height: clamp(48px, 7vh, 54px);
+    /* account for iOS status bar */
+    padding-top: env(safe-area-inset-top, 0px);
   }
 
   .mp-header__action span {
@@ -441,27 +443,67 @@
   }
 
   .mp-header__action {
-    width: 36px;
+    width: 40px;
+    height: 40px;
     padding: 0;
     justify-content: center;
+    /* keep 44px tap target */
+    min-width: 44px;
+    min-height: 44px;
   }
 
   .mp-header__title {
-    font-size: clamp(0.72rem, 3.5vw, 0.9rem);
+    font-size: clamp(0.78rem, 3.8vw, 0.92rem);
   }
 
   .mp-header__kicker {
-    font-size: 0.52rem;
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+  }
+
+  /* On narrow phones hide search+settings — they're in the … menu */
+  .mp-header__search,
+  .mp-header__settings {
+    display: none;
+  }
+
+  .mp-header__riwaya-toggle span {
+    display: none;
+  }
+  .mp-header__riwaya-toggle {
+    width: 40px;
+    padding: 0;
+    justify-content: center;
+    font-size: 0.7rem;
+    min-width: 44px;
+    min-height: 44px;
   }
 }
 
 @media (max-width: 420px) {
+  .mp-header__bar {
+    height: 46px;
+    padding-top: max(0px, env(safe-area-inset-top));
+    gap: 0.2rem;
+  }
+
   .mp-header__sub {
     display: none;
   }
 
   .mp-header__title-btn {
-    max-width: min(50vw, 200px);
+    max-width: min(48vw, 200px);
+  }
+
+  .mp-header__logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Show riwaya text again at very small size */
+  .mp-header__riwaya-toggle {
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
   }
 }
 

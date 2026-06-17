@@ -72,7 +72,8 @@ export default function useQuranDisplayView({
     const element = contentRef.current;
     if (!element) return;
 
-    const stableReadingSize = Math.max(mushafLayout === "mushaf" ? 38 : 28, readingFontSize);
+    const minSize = mushafLayout === "mushaf" ? (isCompactPhone ? 32 : 38) : (isCompactPhone ? 22 : 28);
+    const stableReadingSize = Math.max(minSize, readingFontSize);
     const quranFontSizeCss = `${Math.round(stableReadingSize)}px`;
     const quranLineHeight =
       mushafLayout === "mushaf" ? "2.48" : displayMode === "page" ? "3.05" : "2.2";
@@ -111,6 +112,7 @@ export default function useQuranDisplayView({
   }, [
     displayMode,
     fullscreenFontSize,
+    isCompactPhone,
     isQCF4,
     quranFontCss,
     quranTranslationFontSize,

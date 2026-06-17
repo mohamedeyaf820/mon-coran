@@ -1468,14 +1468,17 @@ html.dark .mp-footer-v2__shell {
   }
 
   .app-root > .mp-header .mp-header__bar {
+    display: flex !important;
     gap: 0.35rem !important;
+    height: clamp(48px, 7vh, 54px) !important;
+    min-height: unset !important;
   }
 
   .app-root > .mp-header :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__nav-arrow, .mp-header__riwaya-mobile) {
-    width: 2.45rem !important;
-    min-width: 2.45rem !important;
-    height: 2.45rem !important;
-    min-height: 2.45rem !important;
+    width: 2.75rem !important;
+    min-width: 44px !important;
+    height: 2.75rem !important;
+    min-height: 44px !important;
   }
 
   .app-root > .mp-header .mp-header__center {
@@ -2870,6 +2873,14 @@ body > .audio-player-modal .audio-settings-icon-btn {
   html body .app-root :is(.settings-drawer__tabs, .audio-player-modal__grid, .qcom-verse-card-footer, .home-content-toolbar)::-webkit-scrollbar {
     display: none !important;
   }
+
+  /* AyahActions: keep tap area but shrink visual size on mobile */
+  html body .app-root .ayah-actions button {
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
 }
 
 @media (max-width: 380px) {
@@ -3031,9 +3042,10 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
   }
 
   html body .app-root > .mp-header .mp-header__bar {
-    height: 2.84rem !important;
-    min-height: 2.84rem !important;
-    max-height: 2.84rem !important;
+    display: flex !important;
+    height: clamp(48px, 7vh, 54px) !important;
+    min-height: unset !important;
+    max-height: unset !important;
   }
 
   html body .app-root .sb-wrapper {
