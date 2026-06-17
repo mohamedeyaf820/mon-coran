@@ -466,13 +466,22 @@
 /* ── Mobile ≤ 640px ── */
 @media (max-width: 640px) {
     .srh-root {
-        border-radius: 14px;
+        border-radius: 12px;
         margin-inline: 0;
+        /* Remove sticky on mobile — header nav already shows title,
+           no need to lock 65px of identity above the quran text */
+        position: static;
+        top: unset;
     }
 
+    /* Identity row already visible in navbar → hide on mobile */
     .srh-identity {
-        padding: 0.75rem;
-        gap: 0.5rem;
+        display: none;
+    }
+
+    /* Also hide the divider right after identity */
+    .srh-identity + .srh-divider {
+        display: none;
     }
 
     .srh-arabic {
@@ -484,7 +493,7 @@
     }
 
     .srh-sub {
-        display: none; /* only show on larger screens */
+        display: none;
     }
 
     .srh-desc {

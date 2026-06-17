@@ -3313,27 +3313,24 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
     padding: 0.1rem 0.3rem !important;
   }
 
+  /* Kicker "SOURATE" hidden on mobile — title alone saves vertical space
+     and avoids pill being too tall to fit one clear text line */
   html body .app-root > .mp-header .mp-header__kicker {
-    font-size: 0.54rem !important;
-    letter-spacing: 0.1em !important;
-    line-height: 1.2 !important;
-    white-space: nowrap !important;
+    display: none !important;
   }
 
   html body .app-root > .mp-header .mp-header__title {
-    font-size: clamp(0.8rem, 4vw, 0.95rem) !important;
+    font-size: clamp(0.82rem, 4vw, 1rem) !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     max-width: 100% !important;
+    font-weight: 700 !important;
+    color: var(--text-primary) !important;
   }
 
   html body .app-root > .mp-header .mp-header__sub {
-    font-size: 0.58rem !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    max-width: 100% !important;
+    display: none !important;
   }
 
   /* ── Right actions ── */
