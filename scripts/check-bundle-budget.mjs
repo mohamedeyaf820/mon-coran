@@ -13,7 +13,10 @@ const MAX_CSS_KB = Number(process.env.BUDGET_CSS_KB || 945);
 // +1 kB added (1180→1181): Dialog.Title sr-only nodes added to all 14 dialogs.
 // +1 kB added (1181→1182): WCAG touch targets h-8/h-9→h-11 in AyahActions (×11) and AudioPlayer (×5).
 const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1182);
-const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2050);
+// +8 kB added (2050→2058): mobile UX fixes — navbar redesign CSS (home-audio-ux-refonte.css +5 kB)
+// and srh-identity hide rules (surah-reader-header.css +3 kB). Net CSS cost of fixing header
+// collapse, double-layer identity duplication, and audio player control clipping on ≤640px.
+const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2058);
 const MAX_SINGLE_CSS_KB = Number(process.env.BUDGET_SINGLE_CSS_KB || 780);
 const MAX_SINGLE_JS_KB = Number(process.env.BUDGET_SINGLE_JS_KB || 250);
 
