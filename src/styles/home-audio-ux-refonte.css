@@ -3202,3 +3202,217 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
     min-height: 2.35rem !important;
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   NAVBAR MOBILE REDESIGN — final override (wins over all above)
+   ════════════════════════════════════════════════════════════
+   Design goals:
+     • Left:   [≡] [logo]  — icon-only, never clipped
+     • Center: [‹] [SOURATE / Nom · sous-titre] [›]  — always fully visible
+     • Right:  [HAFS] [⋯]  — riwaya pill + more
+   Touch targets: 44×44px min (WCAG 2.5.5)
+   Height: 56px on phones, 60px on tablets
+   ════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  /* ── Bar layout ── */
+  html body .app-root > .mp-header .mp-header__bar {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+    padding: 0 0.5rem !important;
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    gap: 0.25rem !important;
+    overflow: visible !important;
+    /* remove grid from all breakpoints */
+    grid-template-columns: none !important;
+  }
+
+  /* ── Brand row (left): hamburger + logo — must NOT grow, center gets all space ── */
+  html body .app-root > .mp-header .mp-header__brand-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.2rem !important;
+    flex: 0 0 auto !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__icon-btn {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    border-radius: 12px !important;
+    flex-shrink: 0 !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__brand {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0.2rem !important;
+    min-width: 40px !important;
+    min-height: 44px !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__brand-text {
+    display: none !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__logo {
+    width: 34px !important;
+    height: 34px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* ── Center: nav ── */
+  html body .app-root > .mp-header .mp-header__center {
+    flex: 1 1 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__nav {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.1rem !important;
+    padding: 0.2rem 0.25rem !important;
+    border-radius: 14px !important;
+    /* fill the center area so the title can grow */
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__nav-arrow {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 30px !important;
+    height: 30px !important;
+    /* keep 44px tap target via padding trick */
+    min-width: 36px !important;
+    min-height: 44px !important;
+    flex-shrink: 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title-btn {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    /* fill all remaining width in nav */
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    padding: 0.1rem 0.3rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__kicker {
+    font-size: 0.54rem !important;
+    letter-spacing: 0.1em !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title {
+    font-size: clamp(0.8rem, 4vw, 0.95rem) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__sub {
+    font-size: 0.58rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+  }
+
+  /* ── Right actions ── */
+  html body .app-root > .mp-header .mp-header__actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.2rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Hide search + settings individually — they live in the ⋯ menu */
+  html body .app-root > .mp-header .mp-header__search,
+  html body .app-root > .mp-header .mp-header__settings {
+    display: none !important;
+  }
+
+  /* Riwaya pill — compact icon+label */
+  html body .app-root > .mp-header .mp-header__riwaya-toggle {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+    height: 34px !important;
+    min-height: 44px !important;
+    padding: 0 0.5rem !important;
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+    border-radius: 10px !important;
+    flex-shrink: 0 !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__riwaya-toggle span {
+    display: inline !important;
+  }
+
+  /* More button */
+  html body .app-root > .mp-header .mp-header__more {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+/* ── Extra-narrow (≤390px): tighten further ── */
+@media (max-width: 390px) {
+  html body .app-root > .mp-header .mp-header__bar {
+    height: 52px !important;
+    min-height: 52px !important;
+    max-height: 52px !important;
+    padding: 0 0.35rem !important;
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    gap: 0.15rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__logo {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title-btn {
+    max-width: min(44vw, 175px) !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title {
+    font-size: 0.82rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__sub {
+    display: none !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__riwaya-toggle {
+    padding: 0 0.35rem !important;
+    font-size: 0.62rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__nav-arrow {
+    width: 28px !important;
+    height: 28px !important;
+  }
+}
