@@ -3053,3 +3053,152 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
     max-width: calc(100vw - 1px) !important;
   }
 }
+
+/* ── Audio Player mobile/tablet definitive layout ─────────────────────────
+   Overrides the conflicting grid/flex rules above for all ≤1024px screens.
+   Two layouts:
+     • ≤640px  → 2-row grid: [meta | secondary] / [controls full-width]
+     • 641–1024px → single-row flex: meta | controls | secondary
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Tablet (641–1024px): single-row flex, full controls visible */
+@media (min-width: 641px) and (max-width: 1024px) {
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 5.2rem !important;
+    max-height: 5.2rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    height: auto !important;
+    min-height: 3.6rem !important;
+    max-height: none !important;
+    gap: 0.5rem !important;
+    padding: 0.4rem 0.75rem 0.55rem !important;
+    overflow: visible !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 5.5rem !important;
+    min-width: 5rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    height: 3rem !important;
+    min-height: 3rem !important;
+    max-height: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.4rem !important;
+    padding: 0.2rem 0.5rem !important;
+    border-radius: 1rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
+    display: flex !important;
+    flex-shrink: 0 !important;
+    gap: 0.35rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: 2.5rem !important;
+    min-width: 2.5rem !important;
+    height: 2.5rem !important;
+    min-height: 2.5rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
+    width: 3rem !important;
+    min-width: 3rem !important;
+    height: 3rem !important;
+    min-height: 3rem !important;
+  }
+}
+
+/* Mobile (≤640px): 2-row grid so controls fill full width */
+@media (max-width: 640px) {
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: auto !important;
+    max-height: none !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    grid-template-rows: auto auto !important;
+    grid-template-areas:
+      "meta secondary"
+      "controls controls" !important;
+    height: auto !important;
+    min-height: unset !important;
+    max-height: none !important;
+    gap: 0.3rem 0.4rem !important;
+    padding: 0.3rem 0.6rem 0.55rem !important;
+    overflow: visible !important;
+    align-items: center !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
+    grid-area: meta !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    grid-area: controls !important;
+    width: 100% !important;
+    flex: unset !important;
+    height: 2.8rem !important;
+    min-height: 2.8rem !important;
+    max-height: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.4rem !important;
+    padding: 0.2rem 0.5rem !important;
+    border-radius: 0.9rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
+    grid-area: secondary !important;
+    display: flex !important;
+    gap: 0.3rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Controls buttons sizing */
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn) {
+    width: 2.35rem !important;
+    min-width: 2.35rem !important;
+    height: 2.35rem !important;
+    min-height: 2.35rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
+    width: 2.75rem !important;
+    min-width: 2.75rem !important;
+    height: 2.75rem !important;
+    min-height: 2.75rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: 2.35rem !important;
+    min-width: 2.35rem !important;
+    height: 2.35rem !important;
+    min-height: 2.35rem !important;
+  }
+}
