@@ -4,6 +4,7 @@
     width: 100%;
     margin: 2rem auto 0;
     padding: 0 1rem 1.5rem;
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
 }
 
 .mp-footer-v2__shell {
