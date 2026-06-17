@@ -1217,7 +1217,7 @@ export default function AudioPlayer() {
               </div>
             </button>
             <button
-              className={cn(playerPrimaryBtnClass, "h-9 w-9 text-[0.8rem]")}
+              className={cn(playerPrimaryBtnClass, "h-11 w-11 text-[0.8rem]")}
               onClick={toggle}
               title={playPauseLabel}
               aria-label={playPauseLabel}
@@ -1282,7 +1282,7 @@ export default function AudioPlayer() {
       >
           <div className="mp-player-mobile-head flex items-center justify-between px-3.5 pb-1.5 pt-2">
           <button
-            className={cn(mBarBtn, "h-9 w-9 rounded-full")}
+            className={cn(mBarBtn, "h-11 w-11 rounded-full")}
             onClick={toggleMinimized}
             title={minimizeLabel}
             aria-label={minimizeLabel}
@@ -1296,7 +1296,7 @@ export default function AudioPlayer() {
             </span>
           </div>
           <button
-            className={cn(mBarBtn, "h-9 w-9 rounded-full")}
+            className={cn(mBarBtn, "h-11 w-11 rounded-full")}
             onClick={closePlayer}
             title={closeLabel}
             aria-label={closeLabel}
@@ -1389,7 +1389,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 playerPrimaryBtnClass,
-                "mp-player-play-btn h-9 w-9 shrink-0 text-[0.82rem] hover:scale-[1.04] active:scale-[0.94]",
+                "mp-player-play-btn h-11 w-11 shrink-0 text-[0.82rem] hover:scale-[1.04] active:scale-[0.94]",
               )}
               onClick={toggle}
               title={playPauseLabel}
@@ -2029,7 +2029,7 @@ export default function AudioPlayer() {
                   isPlaying ? t("audio.pause", lang) : t("audio.play", lang)
                 }
                 aria-pressed={isPlaying}
-                className={cn(playerPrimaryBtnClass, "h-9 w-9")}
+                className={cn(playerPrimaryBtnClass, "h-11 w-11")}
               >
                 <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`} />
               </button>

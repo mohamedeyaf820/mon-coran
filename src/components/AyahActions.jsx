@@ -1089,7 +1089,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
               isPlayingThisAyah
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1111,7 +1111,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
               bookmarked
                 ? "text-[var(--primary)]"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1129,7 +1129,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
               copied
                 ? "text-green-500"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1145,7 +1145,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
               showShare
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1166,7 +1166,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
               (showNote || noteText.trim())
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1189,7 +1189,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
               showPlaylistMenu
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1474,7 +1474,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
               isPlayingThisAyah
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1496,7 +1496,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
               isTafsirActive
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1512,7 +1512,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
               bookmarked
                 ? "text-[var(--primary)]"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1528,7 +1528,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
               copied
                 ? "text-green-500"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"

@@ -67,6 +67,10 @@ export default {
     warshFallbackBadge: 'Texte Hafs (fallback)',
     warshFallbackText: 'Le texte Warsh n\'a pas pu être chargé. Le texte affiché est en écriture Hafs, l\'audio est en Warsh.',
     warshQcf4Badge: 'Mushaf Warsh Authentique',
+    qpcHafsHint: 'Police Hafs depuis Quran Foundation',
+    qpcIndopakHint: 'Police IndoPak avec marqueurs de waqf',
+    qpcWarshHint: 'Police riwaya Warsh',
+    kfgqpcWarshHint: 'Warsh Unicode KFGQPC, chargé via CDN',
   },
   audio: {
     play: 'Lecture', pause: 'Pause', next: 'Verset suivant', prev: 'Verset précédent',

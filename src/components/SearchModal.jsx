@@ -435,6 +435,8 @@ export default function SearchModal() {
 
                   <section
                     className="search-pro__results"
+                    aria-live="polite"
+                    aria-atomic="false"
                     aria-label={
                       lang === "fr"
                         ? "Résultats"

@@ -68,6 +68,10 @@ export default {
     warshFallbackBadge: 'Hafs text (fallback)',
     warshFallbackText: 'Warsh text could not be loaded. Text is displayed in Hafs script, audio is Warsh.',
     warshQcf4Badge: 'Authentic Warsh Mushaf',
+    qpcHafsHint: 'Hafs font from Quran Foundation',
+    qpcIndopakHint: 'IndoPak font with waqf markers',
+    qpcWarshHint: 'Warsh riwaya font',
+    kfgqpcWarshHint: 'Warsh Unicode KFGQPC, loaded via CDN',
   },
   audio: {
     play: 'Play', pause: 'Pause', next: 'Next Ayah', prev: 'Previous Ayah',

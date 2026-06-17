@@ -67,6 +67,10 @@ export default {
     warshFallbackBadge: 'نص حفص (بديل)',
     warshFallbackText: 'لم يتم تحميل نص ورش. النص المعروض بخط حفص والصوت بقراءة ورش.',
     warshQcf4Badge: 'مصحف ورش أصلي',
+    qpcHafsHint: 'خط حفص من مؤسسة Quran Foundation',
+    qpcIndopakHint: 'خط إندوباك مع علامات الوقف',
+    qpcWarshHint: 'خط رواية ورش',
+    kfgqpcWarshHint: 'ورش Unicode KFGQPC، يُحمَّل عبر CDN',
   },
   audio: {
     play: 'تشغيل', pause: 'إيقاف', next: 'الآية التالية', prev: 'الآية السابقة',

@@ -10,7 +10,7 @@ export function logError(error, context) {
     ts: new Date().toISOString(),
     type: typeof error === 'object' && error !== null ? String(error.name || 'Error') : 'Error',
     msg: error?.message || String(error),
-    stack: error?.stack?.split('\n').slice(0, 3).join(' | '),
+    stack: error?.stack?.split('\n').slice(0, 2).map(l => l.replace(/\(.*?\)/g, '(…)')).join(' | '),
     context: context || '',
   };
   try {

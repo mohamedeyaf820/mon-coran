@@ -22,30 +22,10 @@ import { clearCache } from "../services/quranAPI";
 import { toast } from "../lib/utils";
 
 const RIWAYA_FONT_OPTIONS = [
-  {
-    id: "qpc-hafs",
-    label: "Quran.com Hafs",
-    hint: "Police Hafs depuis Quran Foundation",
-    riwaya: "hafs",
-  },
-  {
-    id: "qpc-indopak",
-    label: "Quran.com IndoPak",
-    hint: "Police IndoPak avec marqueurs de waqf",
-    riwaya: "hafs",
-  },
-  {
-    id: "qpc-warsh",
-    label: "QPC Warsh",
-    hint: "Police riwaya Warsh",
-    riwaya: "warsh",
-  },
-  {
-    id: "kfgqpc-warsh",
-    label: "KFGQPC Warsh",
-    hint: "Warsh Unicode KFGQPC, charge via CDN",
-    riwaya: "warsh",
-  },
+  { id: "qpc-hafs",     label: "Quran.com Hafs",   hintKey: "settings.qpcHafsHint",     riwaya: "hafs" },
+  { id: "qpc-indopak",  label: "Quran.com IndoPak", hintKey: "settings.qpcIndopakHint",  riwaya: "hafs" },
+  { id: "qpc-warsh",    label: "QPC Warsh",         hintKey: "settings.qpcWarshHint",    riwaya: "warsh" },
+  { id: "kfgqpc-warsh", label: "KFGQPC Warsh",      hintKey: "settings.kfgqpcWarshHint", riwaya: "warsh" },
 ];
 
 function SettingsReciterAvatar({ reciter }) {
@@ -587,7 +567,7 @@ export default function SettingsModal() {
                       >
                         {availableFontOptions.map((f) => (
                           <option key={f.id} value={f.id}>
-                            {f.label} ({f.hint})
+                            {f.label} ({t(f.hintKey, lang)})
                           </option>
                         ))}
                       </select>
