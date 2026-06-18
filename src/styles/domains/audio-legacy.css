@@ -491,7 +491,7 @@
 
 .app-root .mp-audio-player[data-dragging="true"] {
   transition: none !important;
-  will-change: left, top;
+  will-change: transform;
 }
 
 .app-root .mp-audio-player::before,

@@ -214,6 +214,38 @@ export default function SurahReaderHeader({
         </div>
       </div>
 
+      {/* Mobile-only compact action row (identity hidden on ≤640px) */}
+      <div className="srh-mobile-bar" aria-hidden={undefined}>
+        <span className="srh-mobile-bar__name" dir="rtl" lang="ar">{s.ar}</span>
+        <span className="srh-mobile-bar__title">{surahNum}. {translatedName}</span>
+        <div className="srh-mobile-bar__actions">
+          <button
+            type="button"
+            className={cn("srh-play-btn", isPlaying && "srh-play-btn--playing")}
+            onClick={handlePlay}
+            disabled={isPreparing}
+            aria-label={isPlaying ? lbl(lang, "Pause", "Pause", "إيقاف") : lbl(lang, "Écouter", "Listen", "استمع")}
+          >
+            {isPreparing ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : isPlaying ? (
+              <Pause size={14} fill="currentColor" />
+            ) : (
+              <Play size={14} fill="currentColor" />
+            )}
+          </button>
+          <button
+            type="button"
+            className={cn("srh-info-btn", showInfo && "srh-info-btn--active")}
+            onClick={() => setShowInfo((v) => !v)}
+            aria-expanded={showInfo}
+            aria-label={lbl(lang, "Informations sur la sourate", "Surah info", "معلومات السورة")}
+          >
+            <Info size={15} />
+          </button>
+        </div>
+      </div>
+
       {/* Info panel */}
       {showInfo && (
         <div className="srh-info-panel">

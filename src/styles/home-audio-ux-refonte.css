@@ -1367,7 +1367,7 @@ html.dark .audio-player-modal__surface {
 }
 
 .app-root .mp-audio-player--desktop {
-  will-change: transform, left, top;
+  will-change: transform;
 }
 
 .app-root .mp-audio-player--desktop[data-dragging="true"] {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { toAr } from "../../data/surahs";
 import { cn } from "../../lib/utils";
 import AyahBlock from "../Quran/AyahBlock";
@@ -28,7 +28,7 @@ function PageSeparator({ ayah, lang, theme }) {
   );
 }
 
-export default function AyahList({
+function AyahList({
   ayahs,
   className,
   currentPlayingAyah,
@@ -181,3 +181,5 @@ export default function AyahList({
     </div>
   );
 }
+
+export default memo(AyahList);

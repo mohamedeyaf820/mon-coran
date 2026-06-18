@@ -33,13 +33,11 @@ export default function QCAudioBar({
     const unsubscribeTime = audioService.addTimeUpdateListener(syncSnapshot);
     const unsubscribeAyah = audioService.addAyahChangeListener(syncSnapshot);
     const unsubscribeEnd = audioService.addEndListener(syncSnapshot);
-    const interval = window.setInterval(syncSnapshot, 500);
 
     return () => {
       unsubscribeTime();
       unsubscribeAyah();
       unsubscribeEnd();
-      window.clearInterval(interval);
     };
   }, []);
 

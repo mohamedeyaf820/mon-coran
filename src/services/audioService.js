@@ -860,6 +860,8 @@ class AudioService {
     }
   }
 
+  loadAndPlay(index) { return this._loadAndPlay(index); }
+
   async _loadAndPlay(index, { throwOnError = false } = {}) {
     if (index < 0 || index >= this.playlist.length) return;
 
@@ -1004,9 +1006,8 @@ class AudioService {
   addTimeUpdateListener(fn) {
     this._timeUpdateListeners.push(fn);
     return () => {
-      this._timeUpdateListeners = this._timeUpdateListeners.filter(
-        (f) => f !== fn,
-      );
+      const i = this._timeUpdateListeners.indexOf(fn);
+      if (i !== -1) this._timeUpdateListeners.splice(i, 1);
     };
   }
 
@@ -1014,7 +1015,8 @@ class AudioService {
   addEndListener(fn) {
     this._endListeners.push(fn);
     return () => {
-      this._endListeners = this._endListeners.filter((f) => f !== fn);
+      const i = this._endListeners.indexOf(fn);
+      if (i !== -1) this._endListeners.splice(i, 1);
     };
   }
 
@@ -1022,7 +1024,8 @@ class AudioService {
   addPauseListener(fn) {
     this._pauseListeners.push(fn);
     return () => {
-      this._pauseListeners = this._pauseListeners.filter((f) => f !== fn);
+      const i = this._pauseListeners.indexOf(fn);
+      if (i !== -1) this._pauseListeners.splice(i, 1);
     };
   }
 
@@ -1030,9 +1033,8 @@ class AudioService {
   addAyahChangeListener(fn) {
     this._ayahChangeListeners.push(fn);
     return () => {
-      this._ayahChangeListeners = this._ayahChangeListeners.filter(
-        (f) => f !== fn,
-      );
+      const i = this._ayahChangeListeners.indexOf(fn);
+      if (i !== -1) this._ayahChangeListeners.splice(i, 1);
     };
   }
 
@@ -1040,7 +1042,8 @@ class AudioService {
     if (typeof fn !== "function") return () => {};
     this._latencyListeners.push(fn);
     return () => {
-      this._latencyListeners = this._latencyListeners.filter((f) => f !== fn);
+      const i = this._latencyListeners.indexOf(fn);
+      if (i !== -1) this._latencyListeners.splice(i, 1);
     };
   }
 

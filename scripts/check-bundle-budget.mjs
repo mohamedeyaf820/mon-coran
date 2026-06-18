@@ -12,7 +12,9 @@ const MAX_CSS_KB = Number(process.env.BUDGET_CSS_KB || 945);
 // accessibility (focus traps, ARIA roles) without per-component boilerplate.
 // +1 kB added (1180→1181): Dialog.Title sr-only nodes added to all 14 dialogs.
 // +1 kB added (1181→1182): WCAG touch targets h-8/h-9→h-11 in AyahActions (×11) and AudioPlayer (×5).
-const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1182);
+// +1 kB added (1182→1183): WCAG tablist keyboard nav in ContentSection + ErrorBoundary wrapping lazy modals + esbuild update.
+// +1 kB added (1183→1184): React.memo on AyahList/SurahMode/JuzMode/PageMode + mobile compact play bar in SurahReaderHeader.
+const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1184);
 // +8 kB added (2050→2058): mobile UX fixes — navbar redesign CSS (home-audio-ux-refonte.css +5 kB)
 // and srh-identity hide rules (surah-reader-header.css +3 kB). Net CSS cost of fixing header
 // collapse, double-layer identity duplication, and audio player control clipping on ≤640px.

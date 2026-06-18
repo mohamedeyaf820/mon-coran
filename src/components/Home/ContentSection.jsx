@@ -136,52 +136,64 @@ export default function ContentSection({
       {/* ── Barre d'actions sticky ──────────────────────────────────────── */}
       <div className="home-content-toolbar z-20 flex flex-col md:flex-row items-center gap-3 p-3 rounded-[1.18rem] bg-bg-card/90 border border-border/50 shadow-lg backdrop-blur-xl">
         {/* Onglets */}
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-bg-secondary border border-border/50 shadow-sm overflow-x-auto w-full md:w-auto no-scrollbar">
+        <div
+          role="tablist"
+          aria-label={t("home.tabs", lang)}
+          className="flex items-center gap-1 p-1 rounded-xl bg-bg-secondary border border-border/50 shadow-sm overflow-x-auto w-full md:w-auto no-scrollbar"
+        >
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "surah"}
             className={cn(
               "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-all hover:text-text-primary",
               activeTab === "surah" && "bg-bg-primary text-primary shadow-sm",
             )}
             onClick={() => onSelectTab("surah")}
-            aria-pressed={activeTab === "surah"}
+            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("juz"); if (e.key === "ArrowLeft") onSelectTab("radio"); }}
           >
             <i className="fas fa-align-justify text-[0.85em] opacity-70" />
             {t("home.surahs", lang)}
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "juz"}
             className={cn(
               "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-all hover:text-text-primary",
               activeTab === "juz" && "bg-bg-primary text-primary shadow-sm",
             )}
             onClick={() => onSelectTab("juz")}
-            aria-pressed={activeTab === "juz"}
+            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("recitations"); if (e.key === "ArrowLeft") onSelectTab("surah"); }}
           >
             <i className="fas fa-book-open text-[0.85em] opacity-70" />
             {t("home.juz", lang)}
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "recitations"}
             className={cn(
               "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-all hover:text-text-primary",
               activeTab === "recitations" &&
                 "bg-bg-primary text-primary shadow-sm",
             )}
             onClick={() => onSelectTab("recitations")}
-            aria-pressed={activeTab === "recitations"}
+            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("radio"); if (e.key === "ArrowLeft") onSelectTab("juz"); }}
           >
             <i className="fas fa-microphone-lines text-[0.85em] opacity-70" />
             {t("home.recitations", lang)}
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "radio"}
             className={cn(
               "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-all hover:text-text-primary",
               activeTab === "radio" && "bg-bg-primary text-primary shadow-sm",
             )}
             onClick={() => onSelectTab("radio")}
-            aria-pressed={activeTab === "radio"}
+            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("surah"); if (e.key === "ArrowLeft") onSelectTab("recitations"); }}
           >
             <i className="fas fa-broadcast-tower text-[0.85em] opacity-70" />
             {t("home.radio", lang)}

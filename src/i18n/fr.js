@@ -180,6 +180,7 @@ export default {
     nightTheme: 'Thème nuit',
   },
   home: {
+    tabs: 'Navigation des onglets',
     surahs: 'Sourates',
     juz: 'Juz',
     recitations: 'Récitations',

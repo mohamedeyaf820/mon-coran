@@ -182,6 +182,7 @@ export default {
     nightTheme: 'سمة الليل',
   },
   home: {
+    tabs: 'التنقل بين التبويبات',
     surahs: 'السور',
     juz: 'الأجزاء',
     recitations: 'التلاوات',

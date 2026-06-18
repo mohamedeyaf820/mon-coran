@@ -48,6 +48,11 @@
     padding: clamp(0.85rem, 2vw, 1.2rem) clamp(0.85rem, 2vw, 1.4rem);
 }
 
+/* Mobile-only compact row: surah name + play + info buttons */
+.srh-mobile-bar {
+    display: none;
+}
+
 /* Arabic name — large calligraphic display */
 .srh-arabic {
     flex-shrink: 0;
@@ -446,6 +451,10 @@
     background: rgba(196, 219, 208, 0.12);
 }
 
+[data-theme="dark"] .srh-mobile-bar {
+    border-bottom-color: rgba(196, 219, 208, 0.12);
+}
+
 [data-theme="dark"] .srh-toggle {
     color: rgba(167, 184, 175, 0.7);
 }
@@ -482,6 +491,39 @@
     /* Also hide the divider right after identity */
     .srh-identity + .srh-divider {
         display: none;
+    }
+
+    /* Show compact mobile bar (hidden by default on desktop) */
+    .srh-mobile-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.45rem 0.75rem;
+        border-bottom: 1px solid var(--border-subtle, rgba(0,0,0,0.08));
+    }
+
+    .srh-mobile-bar__name {
+        font-family: var(--font-quran, serif);
+        font-size: 1.1rem;
+        line-height: 1.3;
+        color: var(--text-primary);
+        flex-shrink: 0;
+    }
+
+    .srh-mobile-bar__title {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .srh-mobile-bar__actions {
+        display: flex;
+        gap: 0.35rem;
+        flex-shrink: 0;
     }
 
     .srh-arabic {

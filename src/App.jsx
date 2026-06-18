@@ -766,23 +766,25 @@ export default function App() {
           </Suspense>
         )}
 
-        <Suspense fallback={SUSPENSE_FALLBACK}>
-          {state.searchOpen && <SearchModal />}
-          {state.settingsOpen && <SettingsModal />}
-          {state.toolsHubOpen && <ToolsHubModal />}
-          {state.bookmarksOpen && <BookmarksModal />}
-          {state.wirdOpen && <WirdPanel />}
-          {state.historyOpen && <ReadingHistoryPanel />}
-          {state.playlistOpen && <PlaylistPanel />}
-          {state.audioMakerOpen && <AudioMakerPanel />}
-          {state.flashcardsOpen && <FlashcardsPanel />}
-          {state.tajweedQuizOpen && <TajweedQuizPanel />}
-          {state.khatmaOpen && <KhatmaPanel />}
-          {state.comparatorOpen && <ReciterComparatorPanel />}
-          {state.shareImageOpen && <AyahSharePanel />}
-          {state.weeklyStatsOpen && <WeeklyStatsPanel />}
-          {state.tafsirSidebarOpen && <TafsirSidebar />}
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={SUSPENSE_FALLBACK}>
+            {state.searchOpen && <SearchModal />}
+            {state.settingsOpen && <SettingsModal />}
+            {state.toolsHubOpen && <ToolsHubModal />}
+            {state.bookmarksOpen && <BookmarksModal />}
+            {state.wirdOpen && <WirdPanel />}
+            {state.historyOpen && <ReadingHistoryPanel />}
+            {state.playlistOpen && <PlaylistPanel />}
+            {state.audioMakerOpen && <AudioMakerPanel />}
+            {state.flashcardsOpen && <FlashcardsPanel />}
+            {state.tajweedQuizOpen && <TajweedQuizPanel />}
+            {state.khatmaOpen && <KhatmaPanel />}
+            {state.comparatorOpen && <ReciterComparatorPanel />}
+            {state.shareImageOpen && <AyahSharePanel />}
+            {state.weeklyStatsOpen && <WeeklyStatsPanel />}
+            {state.tafsirSidebarOpen && <TafsirSidebar />}
+          </Suspense>
+        </ErrorBoundary>
       </div>
       <PWAUpdateBanner />
     </ErrorBoundary>

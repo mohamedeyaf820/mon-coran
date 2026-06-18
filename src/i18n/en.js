@@ -181,6 +181,7 @@ export default {
     nightTheme: 'Night theme',
   },
   home: {
+    tabs: 'Tab navigation',
     surahs: 'Surahs',
     juz: 'Juz',
     recitations: 'Recitations',

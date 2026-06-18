@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { getJuzForAyah } from "../../data/juz";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
@@ -11,7 +11,7 @@ import ModeNavigation from "./ModeNavigation";
 import QuranMushafPage from "./QuranMushafPage";
 import { modePaneShellClass } from "./displayClasses";
 
-export default function PageMode({
+function PageMode({
   activeAyah,
   ayahs,
   calibration,
@@ -211,3 +211,5 @@ export default function PageMode({
     </div>
   );
 }
+
+export default memo(PageMode);

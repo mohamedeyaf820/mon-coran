@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
 import { cn } from "../../lib/utils";
@@ -10,7 +10,7 @@ import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
 import { modePaneShellClass } from "./displayClasses";
 
-export default function JuzMode({
+function JuzMode({
   activeAyah,
   calibration,
   classes,
@@ -172,3 +172,5 @@ export default function JuzMode({
     </div>
   );
 }
+
+export default memo(JuzMode);

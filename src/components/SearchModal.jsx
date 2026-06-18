@@ -6,7 +6,6 @@ import React, {
   useState,
 } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import "../styles/domains/search-home-polish.css";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { search, searchTranslation } from "../services/quranAPI";

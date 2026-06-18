@@ -182,8 +182,7 @@ const getInitialState = () => {
   };
 };
 
-// Lazy initialization - ne calcule l'état initial qu'une fois au premier render
-const initialState = getInitialState();
+// initialState is computed lazily inside useReducer (third-argument form)
 
 /* ── Reducer ────────────────────────────────── */
 
@@ -405,12 +404,14 @@ export function shallowEqual(a, b) {
 }
 
 export function AppProvider({ children }) {
-  const [state, dispatch] = useReducer(appReducer, initialState);
+  const [state, dispatch] = useReducer(appReducer, undefined, getInitialState);
   const saveTimerRef = useRef(null);
   const persistentSettingsRef = useRef(null);
   const stateRef = useRef(state);
+  const themeRef = useRef(state.theme);
   const selectorListenersRef = useRef(new Set());
   stateRef.current = state;
+  themeRef.current = state.theme;
 
   const selectorStore = useMemo(
     () => ({
@@ -637,7 +638,7 @@ export function AppProvider({ children }) {
       const target = isNight
         ? normalizeNightTheme(state.nightTheme)
         : normalizeDayTheme(state.dayTheme);
-      if (state.theme !== target) {
+      if (themeRef.current !== target) {
         dispatch({ type: "SET_THEME", payload: target });
       }
     };
@@ -650,7 +651,6 @@ export function AppProvider({ children }) {
     state.nightEnd,
     state.nightTheme,
     state.dayTheme,
-    state.theme,
     dispatch,
   ]);
 

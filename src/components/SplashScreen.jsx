@@ -33,6 +33,9 @@ const VERSES = [
   },
 ];
 
+const skipLabels = { ar: 'تخطي', fr: 'Passer', en: 'Skip' };
+const uiLang = (() => { try { return JSON.parse(localStorage.getItem('mushafplus_settings') || '{}').lang || 'fr'; } catch { return 'fr'; } })();
+
 export default function SplashScreen({
   onDone,
   onPrefetch,
@@ -122,7 +125,7 @@ export default function SplashScreen({
             setTimeout(onDone, 600);
           }}
         >
-          Skip ›
+          {skipLabels[uiLang] ?? 'Passer'} ›
         </button>
       )}
       {/* Halo doré central */}
@@ -174,9 +177,10 @@ export default function SplashScreen({
         {/* Barre de progression */}
         <div
           className="splash-loader"
-          role="progressbar"
-          aria-label={t("splash.loading")}
+          role="status"
+          aria-live="polite"
         >
+          <span className="sr-only">{t("splash.loading")}</span>
           <div className="splash-loader-bar" />
         </div>
         <div className="splash-ornament" aria-hidden="true">
@@ -321,6 +325,7 @@ export default function SplashScreen({
           background: linear-gradient(90deg, #8B6914, #D4AF37, #F5D785, #D4AF37, #8B6914);
           background-size: 300% 100%;
           border-radius: 99px;
+          transform-origin: left center;
           animation: loadBar 3s cubic-bezier(0.4,0,0.6,1) forwards,
                      shimmerBar 1.8s linear infinite;
         }
@@ -348,8 +353,8 @@ export default function SplashScreen({
           to   { opacity: 1; transform: translateY(0)   scale(1);    }
         }
         @keyframes logoPulse {
-          0%,100% { filter: drop-shadow(0 6px 24px rgba(212,175,55,0.28)); transform: scale(1);    }
-          50%     { filter: drop-shadow(0 8px 32px rgba(212,175,55,0.45)); transform: scale(1.03); }
+          0%,100% { opacity: 1;   transform: scale(1);    }
+          50%     { opacity: 0.8; transform: scale(1.03); }
         }
         @keyframes splashHalo {
           0%,100% { transform: translate(-50%,-50%) scale(1);    opacity: 1;   }
@@ -364,12 +369,12 @@ export default function SplashScreen({
           to   { transform: translateX(-50%); }
         }
         @keyframes loadBar {
-          0%   { width: 0%;    }
-          15%  { width: 18%;   }
-          40%  { width: 45%;   }
-          70%  { width: 72%;   }
-          90%  { width: 90%;   }
-          100% { width: 100%;  }
+          0%   { transform: scaleX(0);    transform-origin: left; }
+          15%  { transform: scaleX(0.18); transform-origin: left; }
+          40%  { transform: scaleX(0.45); transform-origin: left; }
+          70%  { transform: scaleX(0.72); transform-origin: left; }
+          90%  { transform: scaleX(0.90); transform-origin: left; }
+          100% { transform: scaleX(1);    transform-origin: left; }
         }
         @keyframes shimmerBar {
           0%   { background-position: 200% center; }

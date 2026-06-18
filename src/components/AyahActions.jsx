@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
@@ -83,6 +83,9 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
   const [noteText, setNoteText] = useState("");
   const [copied, setCopied] = useState(false);
   const [audioError, setAudioError] = useState(false);
+  const audioErrTimerRef = useRef(null);
+  const copiedTimerRef = useRef(null);
+  const playlistTimerRef = useRef(null);
 
   const surahInfo = useMemo(() => getSurah(surah), [surah]);
   const activeSheet = showStudy
@@ -274,7 +277,8 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       !isWarshVerifiedReciter(rec)
     ) {
       setAudioError(true);
-      window.setTimeout(() => setAudioError(false), 2500);
+      clearTimeout(audioErrTimerRef.current);
+      audioErrTimerRef.current = window.setTimeout(() => setAudioError(false), 2500);
       emitToast(
         "error",
         t("toast.reciterIncompatible", lang),
@@ -293,9 +297,10 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     }
 
     if (idx >= 0) {
-      audioService._loadAndPlay(idx).catch(() => {
+      audioService.loadAndPlay(idx).catch(() => {
         setAudioError(true);
-        window.setTimeout(() => setAudioError(false), 2500);
+        clearTimeout(audioErrTimerRef.current);
+        audioErrTimerRef.current = window.setTimeout(() => setAudioError(false), 2500);
         emitToast(
           "error",
           t("toast.unableToPlay", lang),
@@ -324,7 +329,8 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
 
     audioService.playSingle(url, { surah, ayah: isSurahOnlyReciter(rec) ? null : ayah }).catch(() => {
       setAudioError(true);
-      window.setTimeout(() => setAudioError(false), 2500);
+      clearTimeout(audioErrTimerRef.current);
+      audioErrTimerRef.current = window.setTimeout(() => setAudioError(false), 2500);
       emitToast(
         "error",
         t("toast.unableToPlay", lang),
@@ -358,7 +364,8 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     try {
       await navigator.clipboard.writeText(value);
       setCopied(true);
-      window.setTimeout(() => setCopied(false), 1500);
+      clearTimeout(copiedTimerRef.current);
+      copiedTimerRef.current = window.setTimeout(() => setCopied(false), 1500);
       emitToast("success", successMessage);
     } catch (error) {
       console.warn("Copy failed:", error);
