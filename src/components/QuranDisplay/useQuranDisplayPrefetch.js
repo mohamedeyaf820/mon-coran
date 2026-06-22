@@ -23,7 +23,7 @@ export default function useQuranDisplayPrefetch({
   useEffect(() => {
     if (loading) return;
 
-    const connection = navigator.connection;
+    const connection = typeof navigator !== "undefined" ? navigator.connection : null;
     const constrained =
       connection?.saveData === true ||
       /2g|3g/.test(connection?.effectiveType || "") ||

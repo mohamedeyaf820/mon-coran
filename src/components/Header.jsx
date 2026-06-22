@@ -301,7 +301,7 @@ export default function Header() {
         : lang === "ar"
           ? "\u0633\u0648\u0631\u0629"
           : "surahs"
-    } \u00b7 30 Juz`,
+    } \u00b7 ${lang === "ar" ? "\u0663\u0660 \u062c\u0632\u0621" : "30 Juz"}`,
     quranNav: tr({
       fr: "Navigation du Coran",
       en: "Quran navigation",
@@ -320,6 +320,12 @@ export default function Header() {
   };
 
   const cleanQuickItems = [
+    {
+      key: "settings",
+      Icon: Settings,
+      label: i18nT("nav.settings", lang),
+      action: openSettings,
+    },
     {
       key: "duas",
       Icon: HandHeart,
@@ -376,7 +382,7 @@ export default function Header() {
             className="mp-header__brand"
             type="button"
             onClick={goHome}
-            aria-label="Mushaf.plus — Accueil"
+            aria-label={lang === "ar" ? "Mushaf.plus — الرئيسية" : lang === "en" ? "Mushaf.plus — Home" : "Mushaf.plus — Accueil"}
           >
             <span className="mp-header__logo">
               <PlatformLogo

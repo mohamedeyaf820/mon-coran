@@ -175,13 +175,13 @@
     color: #fff;
     font-family: var(--font-ui, sans-serif);
     font-size: 0.78rem;
-    font-weight: 650;
+    font-weight: 700;
     cursor: pointer;
     transition:
         filter 0.15s,
         transform 0.1s;
     white-space: nowrap;
-    box-shadow: 0 3px 12px rgba(var(--primary-rgb, 0, 128, 60), 0.35);
+    box-shadow: 0 3px 12px color-mix(in srgb, var(--primary) 35%, transparent 65%);
 }
 
 .srh-play-btn:hover:not(:disabled) {

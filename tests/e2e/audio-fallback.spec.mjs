@@ -43,9 +43,7 @@ test("E2E: clic verset n'active pas l'audio, bouton play explicite oui", async (
     .poll(async () => page.evaluate(() => Number(window.__audioPlayCalls || 0)))
     .toBe(0);
 
-  const explicitPlay = page
-    .locator(".reader-toolbar-btn--primary, .btn-play-surah")
-    .first();
+  const explicitPlay = page.locator(".srh-play-btn").first();
   await expect(explicitPlay).toBeVisible();
   await explicitPlay.click();
 

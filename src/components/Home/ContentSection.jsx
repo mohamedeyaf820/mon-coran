@@ -506,7 +506,7 @@ export default function ContentSection({
                   </span>
                   <span className="text-[0.7rem] sm:text-[0.75rem] text-text-secondary text-left truncate mt-0.5">
                     {station.surahs.length}{" "}
-                    {lang === "fr" ? "sourates" : "surahs"}
+                    {lang === "ar" ? "سورة" : lang === "fr" ? "sourates" : "surahs"}
                   </span>
                 </div>
                 <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-bg-primary border border-border text-text-muted transition-all hover:bg-primary hover:text-white hover:border-primary shrink-0">
@@ -565,7 +565,7 @@ export default function ContentSection({
                       {reciterLabel}
                     </span>
                     <span className="mt-0.5 truncate text-left text-[0.7rem] text-text-secondary sm:text-[0.75rem]">
-                      4 {lang === "fr" ? "sourates" : "surahs"} · {reciter.style || "murattal"}
+                      {lang === "ar" ? "٤" : "4"} {lang === "ar" ? "سور" : lang === "fr" ? "sourates" : "surahs"} · {reciter.style || "murattal"}
                     </span>
                   </div>
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-bg-primary text-text-muted transition-all hover:border-primary hover:bg-primary hover:text-white sm:h-10 sm:w-10">

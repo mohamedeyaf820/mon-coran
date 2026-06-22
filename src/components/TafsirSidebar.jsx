@@ -92,8 +92,9 @@ export default function TafsirSidebar() {
   const closeButtonRef = useRef(null);
   const sidebarRef = useRef(null);
 
-  const defaultTafsirKey = lang === "ar" ? "ar-muyassar" : "en-kathir";
-  const [selectedTafsirKey, setSelectedTafsirKey] = useState(defaultTafsirKey);
+  const [selectedTafsirKey, setSelectedTafsirKey] = useState(() =>
+    lang === "ar" ? "ar-muyassar" : "en-kathir",
+  );
   const [tafsirState, setTafsirState] = useState({
     status: "idle",
     data: null,
@@ -118,9 +119,14 @@ export default function TafsirSidebar() {
   const quranComUrl = getQuranComVerseUrl(surahNumber, ayahNumber);
 
   useEffect(() => {
-    setSelectedTafsirKey(lang === "ar" ? "ar-muyassar" : "en-kathir");
+    // Only reset tafsir key if the current selection is no longer valid for this lang;
+    // preserve user's explicit choice otherwise.
+    const currentOption = TAFSIR_OPTIONS.find((o) => o.key === selectedTafsirKey);
+    if (!currentOption) {
+      setSelectedTafsirKey(lang === "ar" ? "ar-muyassar" : "en-kathir");
+    }
     setShowTranslation(lang !== "ar");
-  }, [lang]);
+  }, [lang, selectedTafsirKey]);
 
   useEffect(() => {
     closeButtonRef.current?.focus?.();
@@ -207,20 +213,19 @@ export default function TafsirSidebar() {
         {/* Backdrop semi-transparent cliquable pour fermer */}
         <Dialog.Overlay
           className="fixed inset-0 z-[389] bg-black/30 backdrop-blur-[2px]"
-          onClick={closeSidebar}
         />
         {/* Panel latéral avec asChild pour garder l'<aside> */}
         <Dialog.Content
           asChild
           aria-labelledby="tafsir-sidebar-title"
           onEscapeKeyDown={closeSidebar}
-          onInteractOutside={closeSidebar}
+          onInteractOutside={(e) => { e.preventDefault(); closeSidebar(); }}
         >
-          <Dialog.Title className="sr-only">Tafsir</Dialog.Title>
           <aside
             ref={sidebarRef}
             className="fixed inset-y-0 right-0 z-[390] flex w-full max-w-[min(100vw,34rem)] flex-col border-l border-[color-mix(in_srgb,var(--theme-border)_70%,transparent_30%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_96%,#ffffff_4%)] text-[color-mix(in_srgb,var(--theme-text)_92%,#ffffff_8%)] shadow-[-28px_0_70px_rgba(3,10,18,0.34)] backdrop-blur-2xl"
           >
+            <Dialog.Title className="sr-only">Tafsir</Dialog.Title>
             {/* Header */}
             <div className="flex items-start justify-between gap-3 border-b border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] px-4 py-4 sm:px-5">
               <div className="min-w-0">

@@ -107,7 +107,7 @@ export default function Sidebar() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
               <button
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-bg-secondary text-text-muted transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-bg-secondary text-text-muted transition-colors hover:bg-bg-tertiary hover:text-text-primary"
                 onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
                 aria-label={
                   lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
@@ -128,23 +128,27 @@ export default function Sidebar() {
 
           {/* Row 2: Tab bar */}
           <div
+            role="tablist"
+            aria-label={lang === "ar" ? "التنقل في القرآن" : lang === "fr" ? "Navigation dans le Coran" : "Quran navigation"}
             className={cn(
               "grid gap-0.5 rounded-lg bg-bg-secondary p-0.5 border border-border/40",
               availableTabs.length === 2 ? "grid-cols-2" : "grid-cols-3",
             )}
           >
-            {availableTabs.map((t2) => (
+            {availableTabs.map((tabId) => (
               <button
-                key={t2}
+                key={tabId}
+                role="tab"
+                aria-selected={tab === tabId}
                 className={cn(
                   "flex h-8 items-center justify-center rounded-md px-2 text-[0.72rem] font-bold text-text-secondary transition-all hover:text-text-primary",
-                  tab === t2 && "bg-bg-primary text-primary shadow-sm",
+                  tab === tabId && "bg-bg-primary text-primary shadow-sm",
                 )}
-                onClick={() => setTab(t2)}
+                onClick={() => setTab(tabId)}
               >
-                {t2 === "surah"
+                {tabId === "surah"
                   ? t("sidebar.surahs", lang)
-                  : t2 === "juz"
+                  : tabId === "juz"
                     ? t("sidebar.juz", lang)
                     : t("quran.page", lang)}
               </button>
@@ -196,7 +200,7 @@ export default function Sidebar() {
               <div className="flex items-center px-1.5 py-1 text-[0.62rem] font-medium text-text-muted">
                 <span>
                   {filteredSurahs.length}{" "}
-                  {lang === "fr" ? "résultats" : "results"}
+                  {lang === "ar" ? "نتائج" : lang === "fr" ? "résultats" : "results"}
                 </span>
               </div>
             )}

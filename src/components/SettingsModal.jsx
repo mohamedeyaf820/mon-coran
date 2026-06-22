@@ -127,7 +127,7 @@ export default function SettingsModal() {
       toast(t("settings.cacheCleared", lang), "success");
       setTimeout(() => window.location.reload(), 1500);
     } catch (err) {
-      console.error(err);
+      if (import.meta.env.DEV) console.warn("clearCache error:", err);
       toast(t("errors.generic", lang), "error");
     }
   };
@@ -166,12 +166,12 @@ export default function SettingsModal() {
         />
         <Dialog.Content
           asChild
-          aria-label="Paramètres"
+          aria-label={lang === "ar" ? "الإعدادات" : lang === "en" ? "Settings" : "Paramètres"}
           onEscapeKeyDown={close}
           onInteractOutside={close}
         >
-          <Dialog.Title className="sr-only">Parametres</Dialog.Title>
           <div className="settings-overlay fixed inset-0 z-[500] flex justify-end pointer-events-none">
+            <Dialog.Title className="sr-only">{lang === "ar" ? "الإعدادات" : lang === "en" ? "Settings" : "Paramètres"}</Dialog.Title>
             {/* Settings Drawer Panel */}
             <div
               ref={panelRef}
@@ -216,7 +216,7 @@ export default function SettingsModal() {
               {/* Tab Selection */}
               <nav
                 className="settings-drawer__tabs flex gap-1 border-b border-[var(--border)] p-1.5 bg-[var(--bg-secondary)]"
-                aria-label="Tabs"
+                aria-label={lang === "ar" ? "التبويبات" : lang === "en" ? "Settings tabs" : "Onglets des paramètres"}
                 role="tablist"
                 aria-orientation="horizontal"
                 onKeyDown={handleTabKeyDown}

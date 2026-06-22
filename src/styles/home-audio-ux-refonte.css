@@ -2614,10 +2614,10 @@ body > .audio-player-modal .audio-settings-icon-btn {
   html body .app-root > .mp-header .mp-header__action:not(.mp-header__search),
   html body .app-root > .mp-header .mp-header__more,
   html body .app-root > .mp-header .mp-header__riwaya-mobile {
-    width: 40px !important;
-    min-width: 40px !important;
-    height: 40px !important;
-    min-height: 40px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
   }
 
   html body .app-root > .mp-header .mp-header__riwaya-mobile {
@@ -2673,14 +2673,26 @@ body > .audio-player-modal .audio-settings-icon-btn {
 
   html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
     grid-area: secondary !important;
+    width: 92px !important;
+    min-width: 92px !important;
+    flex-shrink: 0 !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock .mp-player-options-trigger {
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    max-width: none !important;
+    flex-shrink: 0 !important;
   }
 
   html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-options-trigger,
   html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
-    width: 40px !important;
-    min-width: 40px !important;
-    height: 40px !important;
-    min-height: 40px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
   }
 }
 

@@ -462,14 +462,17 @@ class AudioService {
 
   resume() {
     if (this.audio.src && this.audio.src !== window.location.href) {
-      this.audio.play().catch((err) => {
-        if (err?.name !== "NotAllowedError") {
-          this.isPlaying = false;
-          this.onError?.(err);
-        }
-      });
-      this.isPlaying = true;
-      this.onPlay?.(this.playlist[this.playlistIndex]);
+      this.audio.play()
+        .then(() => {
+          this.isPlaying = true;
+          this.onPlay?.(this.playlist[this.playlistIndex]);
+        })
+        .catch((err) => {
+          if (err?.name !== "NotAllowedError") {
+            this.isPlaying = false;
+            this.onError?.(err);
+          }
+        });
     }
   }
 
@@ -984,13 +987,13 @@ class AudioService {
   /* ── Getters ───────────────────────────────── */
 
   get currentTime() {
-    return this.audio.currentTime;
+    return this.audio?.currentTime ?? 0;
   }
   get duration() {
-    return this.audio.duration || 0;
+    return this.audio?.duration || 0;
   }
   get playbackRate() {
-    return this.audio.playbackRate || 1;
+    return this.audio?.playbackRate || 1;
   }
   get progress() {
     return this.duration ? this.currentTime / this.duration : 0;

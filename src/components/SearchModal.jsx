@@ -291,9 +291,8 @@ export default function SearchModal() {
               e.stopPropagation();
               close();
             }}
-            onInteractOutside={close}
+            onInteractOutside={(e) => { e.preventDefault(); close(); }}
           >
-            <Dialog.Title className="sr-only">Recherche</Dialog.Title>
             <section
               className="search-pro"
               role="dialog"
@@ -303,6 +302,7 @@ export default function SearchModal() {
               onKeyDown={handleInputKeyDown}
               tabIndex={-1}
             >
+              <Dialog.Title className="sr-only">{lang === "ar" ? "البحث" : lang === "fr" ? "Recherche" : "Search"}</Dialog.Title>
               <header className="search-pro__header">
                 <div className="search-pro__title-wrap">
                   <span className="search-pro__mark" aria-hidden="true">
@@ -395,17 +395,18 @@ export default function SearchModal() {
                     className="search-pro__modes"
                     role="tablist"
                     aria-label={
-                      lang === "fr" ? "Mode de recherche" : "Search mode"
+                      lang === "ar" ? "وضع البحث" : lang === "fr" ? "Mode de recherche" : "Search mode"
                     }
                   >
                     {searchModeOptions.map((modeOption) => (
                       <button
                         key={modeOption.id}
+                        role="tab"
                         className={
                           searchMode === modeOption.id ? "is-active" : ""
                         }
                         onClick={() => setSearchMode(modeOption.id)}
-                        aria-pressed={searchMode === modeOption.id}
+                        aria-selected={searchMode === modeOption.id}
                       >
                         <i className={`fas ${modeOption.icon}`}></i>
                         <span>{modeOption.label}</span>
@@ -511,9 +512,11 @@ export default function SearchModal() {
                       id="search-results-list"
                       role="listbox"
                       aria-label={
-                        lang === "fr"
-                          ? "Résultats de recherche"
-                          : "Search results"
+                        lang === "ar"
+                          ? "نتائج البحث"
+                          : lang === "fr"
+                            ? "Résultats de recherche"
+                            : "Search results"
                       }
                     >
                       {filteredResults.map((result, index) => {

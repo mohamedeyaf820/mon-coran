@@ -14,11 +14,16 @@ const MAX_CSS_KB = Number(process.env.BUDGET_CSS_KB || 945);
 // +1 kB added (1181→1182): WCAG touch targets h-8/h-9→h-11 in AyahActions (×11) and AudioPlayer (×5).
 // +1 kB added (1182→1183): WCAG tablist keyboard nav in ContentSection + ErrorBoundary wrapping lazy modals + esbuild update.
 // +1 kB added (1183→1184): React.memo on AyahList/SurahMode/JuzMode/PageMode + mobile compact play bar in SurahReaderHeader.
-const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1184);
+// +9 kB added (1184→1193): Round 2 audit fixes — 56 findings: ARIA tablist/tab/aria-selected on 4
+// components, keyboard nav on progress slider, always-mounted aria-live region, TafsirSidebar lazy
+// init, i18n missing AR branches (AudioPlayer×3, Header, ContentSection×2, Sidebar), SW fetch timeout
+// with AbortController, recitation validation normalization, double-close guards in SearchModal/TafsirSidebar.
+const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1193);
 // +8 kB added (2050→2058): mobile UX fixes — navbar redesign CSS (home-audio-ux-refonte.css +5 kB)
 // and srh-identity hide rules (surah-reader-header.css +3 kB). Net CSS cost of fixing header
 // collapse, double-layer identity duplication, and audio player control clipping on ≤640px.
-const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2058);
+// +10 kB added (2058→2068): Round 2 audit JS fixes (see JS budget note above).
+const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2068);
 const MAX_SINGLE_CSS_KB = Number(process.env.BUDGET_SINGLE_CSS_KB || 780);
 const MAX_SINGLE_JS_KB = Number(process.env.BUDGET_SINGLE_JS_KB || 250);
 

@@ -53,7 +53,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
   }, [ayah, surah, text]);
   const displayWords = words.length > 0 ? words : fallbackWords;
 
-  if (loading) {
+  if (loading && fallbackWords.length === 0) {
     const skeletonCount = text ? text.trim().split(/\s+/).length : 5;
     return (
       <div className="wbw-display wbw-loading" dir="rtl" aria-busy="true" aria-label={lang === "ar" ? "جاري التحميل" : "Loading"}>

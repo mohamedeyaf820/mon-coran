@@ -232,7 +232,7 @@ export default function useQuranDisplayData({
     } catch (err) {
       INFLIGHT_REQUESTS.delete(cacheKey);
       if (err?.name === "AbortError" || requestSeqRef.current !== requestId) return;
-      console.error("Fetch error:", err);
+      if (import.meta.env.DEV) console.warn("Fetch error:", err);
       setError(err.message);
       dispatch({ type: "SET_ERROR", payload: err.message });
     } finally {

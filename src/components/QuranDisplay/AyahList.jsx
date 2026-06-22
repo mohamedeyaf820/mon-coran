@@ -63,13 +63,12 @@ function AyahList({
     ? `${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
     : "";
 
-  // Single aria-live region shared across both render branches — prevents
-  // double-announcements when useContinuousFlow transitions between true/false.
-  const ariaLiveRegion = currentPlayingAyah ? (
+  // Always-mounted live region — removing/adding it resets the AT announcement queue.
+  const ariaLiveRegion = (
     <div aria-live="polite" aria-atomic="true" className="sr-only">
       {playingAnnouncement}
     </div>
-  ) : null;
+  );
 
   if (useContinuousFlow) {
     return (

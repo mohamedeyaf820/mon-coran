@@ -49,6 +49,15 @@ export default function QCAudioBar({
     audioService.seek(ratio * audioService.duration);
   };
 
+  const handleProgressKeyDown = (e) => {
+    const dur = audioService.duration;
+    if (!dur) return;
+    if (e.key === "ArrowRight") { e.preventDefault(); audioService.seek(Math.min(dur, audioService.currentTime + 5)); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); audioService.seek(Math.max(0, audioService.currentTime - 5)); }
+    else if (e.key === "Home") { e.preventDefault(); audioService.seek(0); }
+    else if (e.key === "End") { e.preventDefault(); audioService.seek(dur); }
+  };
+
   const cycleSpeed = () => {
     const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
     const next = speeds[(speeds.indexOf(speed) + 1) % speeds.length];
@@ -77,8 +86,10 @@ export default function QCAudioBar({
       <div
         ref={progressRailRef}
         onClick={handleProgressClick}
+        onKeyDown={handleProgressKeyDown}
         className="relative h-1 w-full cursor-pointer bg-[var(--border)]"
         role="slider"
+        tabIndex={0}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(progress * 100)}

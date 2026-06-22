@@ -94,7 +94,7 @@ function detectLowPerformanceDevice() {
 const SUSPENSE_FALLBACK = (
   <div className="flex items-center justify-center min-h-[60vh]" role="status">
     <div className="w-10 h-10 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" aria-hidden="true" />
-    <span className="sr-only">Chargement en cours...</span>
+    <span className="sr-only" lang="fr">Chargement en cours…</span>
   </div>
 );
 
@@ -202,9 +202,8 @@ export default function App() {
       return lang === "ar" ? s.ar : lang === "fr" ? s.fr : s.en;
     };
 
-    // Pendant la lecture active → "🎵 Sourate · MushafPlus"
     if (isPlaying && currentPlayingAyah) {
-      document.title = `🎵 ${surahLabel(currentPlayingAyah.surah)} · ${APP_NAME}`;
+      document.title = `${surahLabel(currentPlayingAyah.surah)} · ${APP_NAME}`;
       return;
     }
 
@@ -635,7 +634,9 @@ export default function App() {
           <Header />
         </Suspense>
 
-        <div className="app-layout-shell relative flex min-h-0 flex-1">
+        <div
+          className={`app-layout-shell relative flex min-h-0 flex-1 ${sidebarOpen ? "z-[300]" : ""}`}
+        >
           <Suspense fallback={SUSPENSE_FALLBACK}>
             {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
           </Suspense>
@@ -674,7 +675,6 @@ export default function App() {
             style={{
               paddingBottom: 'calc(var(--player-h, 0px) + var(--mini-player-h, 0px))',
               height: "calc(100dvh - var(--header-h, 72px))",
-              maxHeight: "calc(100dvh - var(--header-h, 72px))",
             }}
           >
             <div
@@ -719,7 +719,7 @@ export default function App() {
 
         {toast && (
           <div
-            className="fixed left-1/2 top-4 z-9999 w-[min(90vw,400px)] -translate-x-1/2"
+            className="fixed left-1/2 top-4 z-[9999] w-[min(90vw,400px)] -translate-x-1/2"
             role="alert"
             aria-live="polite"
           >

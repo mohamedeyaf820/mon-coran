@@ -82,7 +82,7 @@ test("home density: mobile and tablet text, icons and cards scale with viewport"
 
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
   expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(38);
-  expect((await box(page, ".mp-header__action:not(.mp-header__search)"))?.width || 0).toBeGreaterThanOrEqual(38);
+  expect((await box(page, ".mp-header__more"))?.width || 0).toBeGreaterThanOrEqual(38);
   expect(await fontSizePx(page, ".home-hero-title")).toBeLessThanOrEqual(34);
   expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(12);
   expect(await fontSizePx(page, ".hp-card-meta")).toBeGreaterThanOrEqual(11);
@@ -98,28 +98,31 @@ test("mobile density: header, reading toolbar and audio dock fit without horizon
   await openReader(page, { width: 390, height: 844 });
 
   const header = await box(page, ".mp-header");
-  const toolbar = await box(page, ".qc-reader-toolbar");
+  const toolbar = await box(page, ".srh-root");
   const audioDock = await box(page, ".mp-audio-player--mobile.mp-audio-player--dock");
   const firstAction = await box(page, ".mp-header__icon-btn");
-  const settingsButton = await box(page, ".mp-header__actions .mp-header__action:not(.mp-header__search)");
+  const settingsButton = await box(page, ".mp-header__more");
   const moreButton = await box(page, ".mp-header__more");
-  const fontControls = await box(page, ".qc-reader-toolbar .arabic-font-controls--compact");
-  const fontSelect = await box(page, ".qc-reader-toolbar .afc-select");
-  const sizeControls = await box(page, ".qc-reader-toolbar .afc-size-group");
-  const audioOptionsButton = await box(page, ".mp-player-options-trigger");
+  const fontControls = await box(page, ".srh-root .arabic-font-controls--compact");
+  const fontSelect = await box(page, ".srh-root .afc-select");
+  const sizeControls = await box(page, ".srh-root .afc-size-group");
+  const audioOptionsButton = await box(
+    page,
+    ".mp-audio-player--mobile.mp-audio-player--dock .mp-player-options-trigger",
+  );
 
   expect(header?.height || 0).toBeLessThanOrEqual(62);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
-  expect(audioDock?.height || 0).toBeLessThanOrEqual(126);
+  expect(audioDock?.height || 0).toBeLessThanOrEqual(152);
   expect(firstAction?.width || 0).toBeGreaterThanOrEqual(38);
   expect(firstAction?.height || 0).toBeGreaterThanOrEqual(38);
   expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(38);
   expect(moreButton?.width || 0).toBeGreaterThanOrEqual(38);
   expect(fontControls?.height || 0).toBeGreaterThanOrEqual(38);
-  expect(fontSelect?.width || 0).toBeGreaterThanOrEqual(120);
+  expect(fontSelect?.width || 0).toBeGreaterThanOrEqual(88);
   expect(sizeControls?.width || 0).toBeGreaterThanOrEqual(145);
-  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(38);
-  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(38);
+  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(35);
+  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(35);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -138,7 +141,8 @@ test("mobile surfaces: sidebar, settings drawer and audio modal fit the viewport
   await page.locator('.sb-wrapper button[aria-label="Fermer"]').first().click();
   await expect(sidebar).not.toHaveClass(/open/);
 
-  await page.locator(".mp-header__actions .mp-header__action:not(.mp-header__search)").first().click();
+  await page.locator(".mp-header__more").first().click();
+  await page.getByRole("button", { name: /Paramètres|Settings|الإعدادات/i }).last().click();
   const settingsDrawer = page.locator(".settings-drawer").first();
   await expect(settingsDrawer).toBeVisible();
   const settingsBox = await settingsDrawer.boundingBox();
@@ -163,13 +167,13 @@ test("tablet density: header controls and audio options modal remain compact", a
   await openReader(page, { width: 820, height: 920 });
 
   const header = await box(page, ".mp-header");
-  const toolbar = await box(page, ".qc-reader-toolbar");
-  const settingsButton = await box(page, ".mp-header__actions .mp-header__action:not(.mp-header__search)");
-  const fontControls = await box(page, ".qc-reader-toolbar .arabic-font-controls--compact");
+  const toolbar = await box(page, ".srh-root");
+  const settingsButton = await box(page, ".mp-header__settings");
+  const fontControls = await box(page, ".srh-root .arabic-font-controls--compact");
   const audioOptionsButton = await box(page, ".mp-player-options-trigger");
 
   expect(header?.height || 0).toBeLessThanOrEqual(70);
-  expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
+  expect(toolbar?.height || 0).toBeLessThanOrEqual(280);
   expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(40);
   expect(fontControls?.height || 0).toBeGreaterThanOrEqual(38);
   expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(38);

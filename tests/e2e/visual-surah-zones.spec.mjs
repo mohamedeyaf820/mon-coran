@@ -58,16 +58,16 @@ for (const viewport of VIEWPORTS) {
         waitUntil: "domcontentloaded",
       });
 
-      await page.waitForSelector(".qc-reader-surah-header", { timeout: 30000 });
+      await page.waitForSelector(".srh-root", { timeout: 30000 });
       await page.waitForTimeout(1000);
 
       const prefix = `${viewport.id}-${theme}`;
 
-      await page.locator(".qc-reader-surah-header").first().screenshot({
+      await page.locator(".srh-root").first().screenshot({
         path: path.join(OUTPUT_DIR, `${prefix}-header.png`),
       });
 
-      await page.locator(".hdr-v7__search-btn").first().click();
+      await page.getByRole("button", { name: /Rechercher|Search|بحث/i }).first().click();
       const searchModal = page.locator(".search-modal-shell");
       await expect(searchModal).toBeVisible();
       await searchModal.screenshot({
@@ -76,7 +76,7 @@ for (const viewport of VIEWPORTS) {
       await page.keyboard.press("Escape");
       await expect(searchModal).toBeHidden();
 
-      await page.locator(".hdr-v7__menu-btn").first().click();
+      await page.getByRole("button", { name: /Menu/i }).first().click();
       const sidebar = page.locator(".sb-wrapper.open");
       await expect(sidebar).toBeVisible();
       await sidebar.screenshot({

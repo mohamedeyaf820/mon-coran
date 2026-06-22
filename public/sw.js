@@ -238,6 +238,17 @@ async function cacheQuranUrls(urls) {
 // ─── Stratégies de cache ──────────────────────────────────────────────────────
 
 /**
+ * Fetch with AbortController timeout (default 8s).
+ */
+function fetchWithTimeout(request, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(request, { signal: controller.signal }).finally(() =>
+    clearTimeout(timer),
+  );
+}
+
+/**
  * Cache-First : retourne la réponse en cache si disponible.
  * Sinon, fetch depuis le réseau et met en cache.
  */
@@ -247,7 +258,7 @@ async function cacheFirst(request, cacheName) {
   if (cached) return cached;
 
   try {
-    const response = await fetch(request);
+    const response = await fetchWithTimeout(request);
     if (response && response.status === 200) {
       cache.put(request, response.clone());
     }
@@ -265,7 +276,7 @@ async function staleWhileRevalidate(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
 
-  const networkPromise = fetch(request)
+  const networkPromise = fetchWithTimeout(request)
     .then((response) => {
       if (response && (response.status === 200 || response.type === "opaque")) {
         cache.put(request, response.clone());
@@ -284,7 +295,7 @@ async function staleWhileRevalidate(request, cacheName) {
  */
 async function networkFirstHtml(request) {
   try {
-    const networkResponse = await fetch(request);
+    const networkResponse = await fetchWithTimeout(request, 6000);
     const cache = await caches.open(CACHE_NAME);
     // Ne stocker que les réponses valides
     if (networkResponse.status === 200) {
@@ -311,7 +322,7 @@ async function networkFirstHtml(request) {
  */
 async function networkFirstWithFallback(request, cacheName) {
   try {
-    const response = await fetch(request);
+    const response = await fetchWithTimeout(request);
     if (response && response.status === 200) {
       const cache = await caches.open(cacheName);
       cache.put(request, response.clone());
@@ -332,7 +343,7 @@ function offlineFallbackHtml() {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MushafPlus – Hors ligne</title>
+  <title>MushafPlus – Offline</title>
   <style>
     :root { --green: #1b5e3a; --bg: #fefaf3; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -359,7 +370,7 @@ function offlineFallbackHtml() {
       opacity: 0.75;
       margin: 0.5rem 0;
     }
-    button {
+    .retry {
       margin-top: 0.5rem;
       padding: 0.75rem 1.75rem;
       background: var(--green);
@@ -369,19 +380,52 @@ function offlineFallbackHtml() {
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
+      text-decoration: none;
     }
-    button:hover { opacity: 0.88; }
+    .retry:hover { opacity: 0.88; }
+    .lang-block { display: none; }
+    :lang(ar) { direction: rtl; }
   </style>
+  <script>
+    (function() {
+      var lang = (navigator.language || 'fr').split('-')[0];
+      var blocks = document.querySelectorAll('.lang-block');
+      for (var i = 0; i < blocks.length; i++) {
+        blocks[i].style.display = blocks[i].lang === lang ? 'contents' : 'none';
+      }
+      if (lang === 'ar') {
+        document.documentElement.lang = 'ar';
+        document.documentElement.dir = 'rtl';
+      }
+    })();
+  </script>
 </head>
 <body>
   <div class="icon">📖</div>
   <div class="arabic">﷽</div>
-  <h1>MushafPlus – Hors ligne</h1>
-  <p>Vous n'êtes pas connecté à Internet. Reconnectez-vous pour accéder au Coran complet.</p>
-  <p style="margin-top:0.5rem;font-size:0.82rem;color:#9ca3af;">
-    Les sourates récemment consultées restent disponibles dans l'application.
-  </p>
-  <button onclick="window.location.reload()">Réessayer</button>
+  <div class="lang-block" lang="fr">
+    <h1>MushafPlus – Hors ligne</h1>
+    <p>Vous n'êtes pas connecté à Internet. Reconnectez-vous pour accéder au Coran complet.</p>
+    <p style="margin-top:0.5rem;font-size:0.82rem;color:#9ca3af;">Les sourates récemment consultées restent disponibles dans l'application.</p>
+    <a class="retry" href="/">Réessayer</a>
+  </div>
+  <div class="lang-block" lang="en">
+    <h1>MushafPlus – Offline</h1>
+    <p>You are not connected to the Internet. Reconnect to access the full Quran.</p>
+    <p style="margin-top:0.5rem;font-size:0.82rem;color:#9ca3af;">Recently visited surahs remain available in the app.</p>
+    <a class="retry" href="/">Retry</a>
+  </div>
+  <div class="lang-block" lang="ar">
+    <h1>مصحف بلس – غير متصل</h1>
+    <p>أنت غير متصل بالإنترنت. أعد الاتصال للوصول إلى القرآن الكريم كاملاً.</p>
+    <p style="margin-top:0.5rem;font-size:0.82rem;color:#9ca3af;">السور التي زرتها مؤخراً لا تزال متاحة في التطبيق.</p>
+    <a class="retry" href="/">إعادة المحاولة</a>
+  </div>
+  <noscript>
+    <h1>MushafPlus – Offline</h1>
+    <p>No internet connection. Reconnect to access the full Quran.</p>
+    <a class="retry" href="/">Retry</a>
+  </noscript>
 </body>
 </html>`;
 }

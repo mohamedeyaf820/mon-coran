@@ -534,8 +534,11 @@ export default function AudioPlayer() {
       setReciteText(transcript);
       if (e.results[0].isFinal) {
         const ayahText = audioService.currentAyah?.text || "";
-        const match =
-          ayahText && transcript && ayahText.includes(transcript.slice(0, 8));
+        const normalize = (s) => s.replace(/[ً-ٰٟ]/g, "").replace(/\s+/g, " ").trim();
+        const normAyah = normalize(ayahText);
+        const normTranscript = normalize(transcript);
+        const minLen = Math.min(normTranscript.length, 15);
+        const match = normAyah && normTranscript && normAyah.includes(normTranscript.slice(0, minLen));
         setReciteResult(match ? "ok" : "partial");
       }
     };
@@ -689,9 +692,8 @@ export default function AudioPlayer() {
   /* Reciter search */
   const [reciterSearch, setReciterSearch] = useState("");
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const essentialPlayerMode = true;
-  const showMemorizationControls = !essentialPlayerMode;
-  const showAdvancedControls = !essentialPlayerMode;
+  const showMemorizationControls = true;
+  const showAdvancedControls = true;
   const filteredReciters = React.useMemo(() => {
     const q = reciterSearch.trim().toLowerCase();
     if (!q) return currentReciters;
@@ -724,9 +726,12 @@ export default function AudioPlayer() {
     [set, syncKey, syncOffsetsMs],
   );
 
-  useEffect(() => {
-    set({ karaokeFollow: true });
-  }, [set]);
+  // Initialize karaokeFollow only if not yet persisted in state
+  const karaokeFollowInitRef = useRef(false);
+  if (!karaokeFollowInitRef.current) {
+    karaokeFollowInitRef.current = true;
+    if (state.karaokeFollow === undefined) set({ karaokeFollow: true });
+  }
 
   const handleReciterSelect = useCallback(
     async (nextReciterId) => {
@@ -786,9 +791,9 @@ export default function AudioPlayer() {
     ],
   );
 
-  const { currentSurah } = state;
+  const { currentSurah, karaokeFollow } = state;
   currentSurahRef.current = currentSurah;
-  karaokeFollowRef.current = true;
+  karaokeFollowRef.current = karaokeFollow ?? true;
   const surahMeta = getSurah(currentSurah);
   const currentSurahName = surahMeta ? surahName(currentSurah, lang) : "";
   const currentArabicName = surahMeta?.ar || "";
@@ -1207,7 +1212,7 @@ export default function AudioPlayer() {
               <div className="mp-player-minimized-title truncate text-[0.82rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-text)_94%,#ffffff_6%)]">
                 {titleLabel ||
                   (lang === "fr"
-                    ? "Pret a lire"
+                    ? "Prêt à lire"
                     : lang === "ar"
                       ? "جاهز"
                       : "Ready")}
@@ -1442,7 +1447,7 @@ export default function AudioPlayer() {
             <button
               className={cn(
                 mBarBtnSm(optionsModalOpen),
-                "mp-player-options-trigger justify-center rounded-full",
+                "mp-player-options-trigger shrink-0 justify-center rounded-full",
               )}
               onClick={toggleOptionsModal}
               aria-expanded={optionsModalOpen}
@@ -1929,7 +1934,7 @@ export default function AudioPlayer() {
     <>
       {/* Audio error banner */}
       {audioError && (
-        <div className="pointer-events-none fixed left-1/2 top-[72px] z-[400] flex max-w-[340px] -translate-x-1/2 items-center gap-2 rounded-xl bg-[rgba(180,30,30,0.93)] px-[18px] py-[10px] text-center text-[13px] text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)] animate-[slideDownFade_0.25s_var(--ease,ease)]">
+        <div className="pointer-events-none fixed left-1/2 z-[400] flex max-w-[340px] -translate-x-1/2 items-center gap-2 rounded-xl bg-[rgba(180,30,30,0.93)] px-[18px] py-[10px] text-center text-[13px] text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)] animate-[slideDownFade_0.25s_var(--ease,ease)]" style={{ top: "calc(var(--header-h, 72px) + 0.5rem)" }}>
           <i className="fas fa-exclamation-circle shrink-0" />
           <span>{audioError}</span>
         </div>
@@ -2000,7 +2005,7 @@ export default function AudioPlayer() {
                 >
                   {titleLabel ||
                     (lang === "fr"
-                      ? "Pret a lire"
+                      ? "Prêt à lire"
                       : lang === "ar"
                          ? "جاهز"
                         : "Ready")}
@@ -2162,7 +2167,7 @@ export default function AudioPlayer() {
                   >
                     {titleLabel ||
                       (lang === "fr"
-                        ? "Pret a lire"
+                        ? "Prêt à lire"
                         : lang === "ar"
                            ? "جاهز"
                           : "Ready")}
