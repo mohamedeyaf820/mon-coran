@@ -443,8 +443,8 @@
   }
 
   .mp-header__action {
-    width: 40px;
-    height: 40px;
+    width: var(--space-10);
+    height: var(--space-10);
     padding: 0;
     justify-content: center;
     /* keep 44px tap target */
@@ -457,7 +457,7 @@
   }
 
   .mp-header__kicker {
-    font-size: 0.55rem;
+    font-size: var(--ts-2xs);
     letter-spacing: 0.08em;
   }
 
@@ -471,10 +471,10 @@
     display: none;
   }
   .mp-header__riwaya-toggle {
-    width: 40px;
+    width: var(--space-10);
     padding: 0;
     justify-content: center;
-    font-size: 0.7rem;
+    font-size: var(--ts-xs);
     min-width: 44px;
     min-height: 44px;
   }
@@ -482,7 +482,7 @@
 
 @media (max-width: 420px) {
   .mp-header__bar {
-    height: 46px;
+    height: var(--header-h-mobile);
     padding-top: max(0px, env(safe-area-inset-top));
     gap: 0.2rem;
   }
@@ -496,13 +496,13 @@
   }
 
   .mp-header__logo {
-    width: 28px;
-    height: 28px;
+    width: var(--space-7);
+    height: var(--space-7);
   }
 
   /* Show riwaya text again at very small size */
   .mp-header__riwaya-toggle {
-    font-size: 0.62rem;
+    font-size: var(--ts-2xs);
     letter-spacing: 0.04em;
   }
 }

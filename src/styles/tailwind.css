@@ -2,6 +2,7 @@
 
 /* ── Type Scale — standardized responsive tokens ── */
 :root {
+  --ts-2xs: clamp(0.6rem, 0.55rem + 0.15vw, 0.65rem);     /* ~10px */
   --ts-xs: clamp(0.7rem, 0.65rem + 0.15vw, 0.75rem);      /* ~11-12px */
   --ts-sm: clamp(0.8rem, 0.75rem + 0.15vw, 0.875rem);     /* ~13-14px */
   --ts-base: clamp(0.875rem, 0.82rem + 0.18vw, 1rem);     /* ~14-16px */
@@ -336,8 +337,9 @@ html {
     --emerald-lit: #118247;
     --emerald-pale: #f0f7f3;
     --emerald-tint: rgba(16, 90, 48, 0.08);
+    --emerald-subtle: rgba(16, 90, 48, 0.1);
 
-    
+
     --gold: #b38600;
     --gold-bright: #d4a017;
     --gold-pale: #fffbeb;
@@ -388,6 +390,7 @@ html {
 
     
     --header-h: 68px;
+    --header-h-mobile: 46px;
     --player-h: 80px;
     --sidebar-w: 320px;
 
@@ -398,8 +401,10 @@ html {
     --space-4: 1rem;
     --space-5: 1.25rem;
     --space-6: 1.5rem;
+    --space-7: 1.75rem;
     --space-8: 2rem;
     --space-10: 2.5rem;
+    --space-11: 2.75rem;
     --space-12: 3rem;
 
     
@@ -788,6 +793,7 @@ html {
 }
 
 [data-theme="dark"] {
+    --emerald-subtle: rgba(196, 219, 208, 0.12);
     --reading-surface-soft: #151719;
     --reading-surface-elevated: #0c0d0e;
     --player-border: rgba(255, 255, 255, 0.06);
