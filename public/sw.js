@@ -416,9 +416,22 @@ function offlineFallbackHtml() {
   <script>
     (function() {
       var lang = (navigator.language || 'fr').split('-')[0];
+      var supported = ['fr', 'en', 'ar'];
+      var display = supported.indexOf(lang) !== -1 ? lang : 'en';
       var blocks = document.querySelectorAll('.lang-block');
+      var matched = false;
       for (var i = 0; i < blocks.length; i++) {
-        blocks[i].style.display = blocks[i].lang === lang ? 'contents' : 'none';
+        if (blocks[i].lang === display) {
+          blocks[i].style.display = 'block';
+          matched = true;
+        } else {
+          blocks[i].style.display = 'none';
+        }
+      }
+      if (!matched) {
+        for (var j = 0; j < blocks.length; j++) {
+          if (blocks[j].lang === 'en') { blocks[j].style.display = 'block'; break; }
+        }
       }
       if (lang === 'ar') {
         document.documentElement.lang = 'ar';

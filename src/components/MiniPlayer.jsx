@@ -13,20 +13,18 @@
  * desktop card / mobile dock; MiniPlayer is the global persistent bar.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Play, Pause, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { t } from '../i18n';
 import { getSurah, surahName } from '../data/surahs';
 import { reciterName } from '../data/reciters';
 import audioService from '../services/audioService';
-import { useAppSelector, shallowEqual, useAppActions } from '../context/AppContext';
+import { useAppSelector, shallowEqual } from '../context/AppContext';
 import { useMediaSession } from '../hooks/useMediaSession';
 import { useAutoScrollAyah } from '../hooks/useAutoScrollAyah';
 
 export default function MiniPlayer() {
-  const { set } = useAppActions();
-
   // Subscribe to the minimal state slice we need
   const { isPlaying, currentPlayingAyah, lang, reciter, currentSurah } =
     useAppSelector(
@@ -40,9 +38,10 @@ export default function MiniPlayer() {
       shallowEqual,
     );
 
-  // Local progress state — updated via audioService listener
-  const [progress, setProgress] = useState(0);
   const [dismissed, setDismissed] = useState(false);
+  // Ref to the inner progress-fill div — updated via direct DOM mutation to
+  // avoid triggering a React re-render on every timeupdate event (~4 Hz).
+  const progressFillRef = useRef(null);
 
   // Re-show whenever a new ayah starts playing
   useEffect(() => {
@@ -51,10 +50,14 @@ export default function MiniPlayer() {
     }
   }, [isPlaying, currentPlayingAyah]);
 
-  // Subscribe to time updates for the progress bar
+  // Subscribe to time updates and update the progress bar via direct DOM
+  // mutation instead of React state to avoid 4 Hz re-renders.
   useEffect(() => {
     const unsub = audioService.addTimeUpdateListener((ct, dur) => {
-      setProgress(dur ? ct / dur : 0);
+      if (progressFillRef.current) {
+        const pct = dur ? Math.round((ct / dur) * 100) : 0;
+        progressFillRef.current.style.width = `${pct}%`;
+      }
     });
     return unsub;
   }, []);
@@ -113,7 +116,9 @@ export default function MiniPlayer() {
   // ── Visibility guard ────────────────────────────────────────────────────
   const isVisible = !dismissed && (isPlaying || Boolean(currentPlayingAyah));
 
-  // Manage --mini-player-h CSS variable so the main content adds padding
+  // Manage --mini-player-h CSS variable so the main content adds padding.
+  // Cleanup only removes the variable on unmount (not between isVisible transitions)
+  // to avoid a one-frame layout shift when the parent re-renders.
   useEffect(() => {
     const root = document.documentElement;
     if (isVisible) {
@@ -121,8 +126,10 @@ export default function MiniPlayer() {
     } else {
       root.style.removeProperty('--mini-player-h');
     }
-    return () => root.style.removeProperty('--mini-player-h');
   }, [isVisible]);
+  useEffect(() => {
+    return () => document.documentElement.style.removeProperty('--mini-player-h');
+  }, []);
 
   if (!isVisible) return null;
 
@@ -156,14 +163,15 @@ export default function MiniPlayer() {
         bottom: 'var(--player-h, 0px)',
       }}
     >
-      {/* Progress bar — ultra-thin line at top */}
+      {/* Progress bar — ultra-thin line at top; width set via direct DOM ref */}
       <div
         className="h-[3px] w-full bg-[color-mix(in_srgb,var(--border)_60%,transparent)]"
         aria-hidden="true"
       >
         <div
+          ref={progressFillRef}
           className="h-full bg-[var(--primary)] transition-[width] duration-300 ease-linear"
-          style={{ width: `${Math.round(progress * 100)}%` }}
+          style={{ width: '0%' }}
         />
       </div>
 

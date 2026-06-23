@@ -159,7 +159,7 @@ const getInitialState = () => {
   })(),
 
   // Karaoke / suivi auto
-  karaokeFollow: true,
+  karaokeFollow: stored.karaokeFollow ?? true,
 
   // Auto night mode
   autoNightMode: stored.autoNightMode ?? false,
@@ -245,15 +245,19 @@ export function appReducer(state, action) {
       return { ...state, sidebarOpen: !state.sidebarOpen };
     case "TOGGLE_SEARCH":
       return { ...state, searchOpen: !state.searchOpen };
-    case "TOGGLE_MEM_MODE":
+    case "TOGGLE_MEM_MODE": {
+      const entering = !state.memMode;
       return {
         ...state,
-        showHome: false,
-        showDuas: false,
-        mushafLayout: "list",
-        showWordByWord: false,
-        memMode: !state.memMode,
+        memMode: entering,
+        ...(entering && {
+          showHome: false,
+          showDuas: false,
+          mushafLayout: "list",
+          showWordByWord: false,
+        }),
       };
+    }
     case "TOGGLE_SETTINGS":
       return { ...state, settingsOpen: !state.settingsOpen };
     case "TOGGLE_BOOKMARKS":
