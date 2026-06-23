@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   getJuz,
   getJuzTranslation,
@@ -20,6 +20,11 @@ export default function useQuranDisplayPrefetch({
   showTranslation,
   translationLangs,
 }) {
+  // Keep isPlaying in a ref so the guard stays fresh without restarting all prefetch
+  // timers on every play/pause event (would spam requests on rapid toggle).
+  const isPlayingRef = useRef(isPlaying);
+  useEffect(() => { isPlayingRef.current = isPlaying; }, [isPlaying]);
+
   useEffect(() => {
     if (loading) return;
 
@@ -30,8 +35,9 @@ export default function useQuranDisplayPrefetch({
       (connection?.downlink != null && connection.downlink < 1.5);
     if (constrained) return;
 
-    // Skip all prefetching during audio playback to avoid competing with streaming
-    if (isPlaying) return;
+    // Skip all prefetching during audio playback to avoid competing with streaming.
+    // Read from ref so this guard stays current even after play/pause without restarting timers.
+    if (isPlayingRef.current) return;
 
     const translationLang = translationLangs[0] || "fr";
     const prefetchText = (mode, value, targetRiwaya) => {
@@ -134,7 +140,6 @@ export default function useQuranDisplayPrefetch({
     currentPage,
     currentSurah,
     displayMode,
-    isPlaying,
     loading,
     riwaya,
     showTranslation,

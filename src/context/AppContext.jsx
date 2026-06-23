@@ -247,15 +247,23 @@ export function appReducer(state, action) {
       return { ...state, searchOpen: !state.searchOpen };
     case "TOGGLE_MEM_MODE": {
       const entering = !state.memMode;
-      return {
-        ...state,
-        memMode: entering,
-        ...(entering && {
+      if (entering) {
+        return {
+          ...state,
+          memMode: true,
           showHome: false,
           showDuas: false,
           mushafLayout: "list",
           showWordByWord: false,
-        }),
+          // Save current layout so we can restore it on exit
+          _prevMushafLayout: state.mushafLayout,
+        };
+      }
+      return {
+        ...state,
+        memMode: false,
+        mushafLayout: state._prevMushafLayout || state.mushafLayout,
+        _prevMushafLayout: undefined,
       };
     }
     case "TOGGLE_SETTINGS":

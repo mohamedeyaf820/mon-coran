@@ -41,7 +41,7 @@ export default function PWAUpdateBanner() {
         zIndex: 9999, background: 'var(--bg-card)', border: '1px solid var(--border)',
         borderRadius: 'var(--r-lg)', padding: 'var(--space-2) var(--space-4)', display: 'flex',
         alignItems: 'center', gap: 'var(--space-3)', boxShadow: 'var(--shadow-md)',
-        maxWidth: '92vw', fontFamily: 'var(--font-ui,sans-serif)', fontSize: '0.85rem',
+        maxWidth: '92vw', fontFamily: 'var(--font-ui,sans-serif)', fontSize: 'var(--ts-sm, 0.875rem)',
       }}
     >
       <span style={{ color: 'var(--text-primary)' }}>{t('pwa.updateAvailable', lang)}</span>
@@ -50,7 +50,7 @@ export default function PWAUpdateBanner() {
         style={{
           background: 'var(--primary)', color: '#fff', border: 'none',
           borderRadius: 'var(--r-sm)', padding: 'var(--space-1) var(--space-3)', fontWeight: 700,
-          cursor: 'pointer', fontSize: '0.8rem', whiteSpace: 'nowrap',
+          cursor: 'pointer', fontSize: 'var(--ts-xs, 0.75rem)', whiteSpace: 'nowrap',
         }}
       >
         {t('pwa.update', lang)}

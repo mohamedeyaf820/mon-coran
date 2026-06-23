@@ -288,7 +288,6 @@ export default function SearchModal() {
             aria-labelledby={titleId}
             onEscapeKeyDown={(e) => {
               e.preventDefault();
-              e.stopPropagation();
               close();
             }}
             onInteractOutside={(e) => { e.preventDefault(); close(); }}

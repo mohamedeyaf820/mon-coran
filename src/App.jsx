@@ -27,6 +27,7 @@ import { ensureFontLoaded } from "./services/fontLoader";
 import audioService from "./services/audioService";
 import { runWhenIdle } from "./utils/idleUtils";
 import { useUrlSync } from "./hooks/useUrlSync";
+import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
 import ProgressBar from "./components/ProgressBar";
 
 const HomePage = lazy(() => import("./components/HomePage"));
@@ -402,8 +403,10 @@ export default function App() {
     hasInteracted,
   ]);
 
-  const keyboardSnapshotRef = useRef({});
-  keyboardSnapshotRef.current = {
+  // Delegate most keyboard shortcuts to the shared hook.
+  // App.jsx retains only the shortcuts that are outside the hook's scope:
+  // `,` (settings), `b/B` (bookmarks), `h/H` (home), `/` (search), Alt+Up/Down.
+  useKeyboardNavigation({
     state,
     displayMode,
     currentSurah,
@@ -412,6 +415,18 @@ export default function App() {
     lang,
     sidebarOpen,
     showShortcuts,
+    setShowShortcuts,
+    dispatch,
+    set,
+  });
+
+  const appKeyboardSnapshotRef = useRef({});
+  appKeyboardSnapshotRef.current = {
+    state,
+    displayMode,
+    currentPage,
+    currentJuz,
+    lang,
   };
 
   const handleKeyboard = useCallback(
@@ -421,13 +436,10 @@ export default function App() {
       const {
         state,
         displayMode,
-        currentSurah,
         currentPage,
         currentJuz,
         lang,
-        sidebarOpen,
-        showShortcuts,
-      } = keyboardSnapshotRef.current;
+      } = appKeyboardSnapshotRef.current;
 
       const target = event.target;
       const isElementTarget = target instanceof Element;
@@ -441,73 +453,10 @@ export default function App() {
       }
 
       switch (event.key) {
-        case "ArrowLeft":
-          if (state.showDuas) return;
-          event.preventDefault();
-          set({ showHome: false, showDuas: false });
-          if (displayMode === "page") {
-            if (lang === "ar" ? currentPage > 1 : currentPage < 604) {
-              set({
-                currentPage: lang === "ar" ? currentPage - 1 : currentPage + 1,
-              });
-            }
-          } else if (displayMode === "juz") {
-            if (lang === "ar" ? currentJuz > 1 : currentJuz < 30) {
-              dispatch({
-                type: "NAVIGATE_JUZ",
-                payload: {
-                  juz: lang === "ar" ? currentJuz - 1 : currentJuz + 1,
-                },
-              });
-            }
-          } else if (lang === "ar" ? currentSurah > 1 : currentSurah < 114) {
-            dispatch({
-              type: "NAVIGATE_SURAH",
-              payload: {
-                surah: lang === "ar" ? currentSurah - 1 : currentSurah + 1,
-              },
-            });
-          }
-          break;
-        case "ArrowRight":
-          if (state.showDuas) return;
-          event.preventDefault();
-          set({ showHome: false, showDuas: false });
-          if (displayMode === "page") {
-            if (lang === "ar" ? currentPage < 604 : currentPage > 1) {
-              set({
-                currentPage: lang === "ar" ? currentPage + 1 : currentPage - 1,
-              });
-            }
-          } else if (displayMode === "juz") {
-            if (lang === "ar" ? currentJuz < 30 : currentJuz > 1) {
-              dispatch({
-                type: "NAVIGATE_JUZ",
-                payload: {
-                  juz: lang === "ar" ? currentJuz + 1 : currentJuz - 1,
-                },
-              });
-            }
-          } else if (lang === "ar" ? currentSurah < 114 : currentSurah > 1) {
-            dispatch({
-              type: "NAVIGATE_SURAH",
-              payload: {
-                surah: lang === "ar" ? currentSurah + 1 : currentSurah - 1,
-              },
-            });
-          }
-          break;
         case "/":
           if (state.showDuas) return;
           event.preventDefault();
           dispatch({ type: "TOGGLE_SEARCH" });
-          break;
-        case "k":
-        case "K":
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault();
-            dispatch({ type: "TOGGLE_SEARCH" });
-          }
           break;
         case ",":
           if (event.ctrlKey || event.metaKey) {
@@ -522,16 +471,9 @@ export default function App() {
             dispatch({ type: "TOGGLE_BOOKMARKS" });
           }
           break;
-        case "m":
-        case "M":
-          if (event.altKey) {
-            event.preventDefault();
-            dispatch({ type: "TOGGLE_MEM_MODE" });
-          }
-          break;
         case "h":
         case "H":
-          if (state.showDuas || !state.showHome) {
+          if (!event.ctrlKey && !event.metaKey && (state.showDuas || !state.showHome)) {
             event.preventDefault();
             set({ showHome: true, showDuas: false });
           }
@@ -556,33 +498,6 @@ export default function App() {
             }
           }
           break;
-        case "Escape":
-          if (state.searchOpen) dispatch({ type: "TOGGLE_SEARCH" });
-          else if (state.settingsOpen) dispatch({ type: "TOGGLE_SETTINGS" });
-          else if (state.bookmarksOpen) dispatch({ type: "TOGGLE_BOOKMARKS" });
-          else if (state.wirdOpen) set({ wirdOpen: false });
-          else if (state.historyOpen) set({ historyOpen: false });
-          else if (state.playlistOpen) set({ playlistOpen: false });
-          else if (state.audioMakerOpen) set({ audioMakerOpen: false });
-          else if (state.flashcardsOpen) set({ flashcardsOpen: false });
-          else if (state.tajweedQuizOpen) set({ tajweedQuizOpen: false });
-          else if (state.khatmaOpen) set({ khatmaOpen: false });
-          else if (state.comparatorOpen) set({ comparatorOpen: false });
-          else if (state.shareImageOpen) set({ shareImageOpen: false });
-          else if (state.weeklyStatsOpen) set({ weeklyStatsOpen: false });
-          else if (showShortcuts) setShowShortcuts(false);
-          else if (sidebarOpen) dispatch({ type: "TOGGLE_SIDEBAR" });
-          break;
-        case " ":
-          event.preventDefault();
-          getAudioServiceInstance()
-            .then((audioService) => audioService.toggle())
-            .catch(() => {});
-          break;
-        case "?":
-          event.preventDefault();
-          setShowShortcuts((prev) => !prev);
-          return;
         default:
           break;
       }

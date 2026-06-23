@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
-import { getAudioServiceInstance } from "../services/audioService";
+import audioService from "../services/audioService";
 
 function shouldIgnoreKeyboardEvent(event) {
   if (event.defaultPrevented) return true;
@@ -173,9 +173,7 @@ export function useKeyboardNavigation({
   }, [dispatch, set, setShowShortcuts]);
 
   const handlePlayPause = useCallback(() => {
-    getAudioServiceInstance()
-      .then((audioService) => audioService.toggle())
-      .catch(() => {});
+    audioService.toggle();
   }, []);
 
   const handleToggleShortcuts = useCallback(() => {
@@ -183,15 +181,18 @@ export function useKeyboardNavigation({
   }, [setShowShortcuts]);
 
   const handleToggleTranslation = useCallback(() => {
-    set((prev) => ({ showTranslation: !prev.showTranslation }));
+    const { state: s } = latestRef.current;
+    set({ showTranslation: !s.showTranslation });
   }, [set]);
 
   const handleToggleWordByWord = useCallback(() => {
-    set((prev) => ({ showWordByWord: !prev.showWordByWord, memMode: false }));
+    const { state: s } = latestRef.current;
+    set({ showWordByWord: !s.showWordByWord, memMode: false });
   }, [set]);
 
   const handleToggleTajweed = useCallback(() => {
-    set((prev) => ({ showTajwid: !prev.showTajwid }));
+    const { state: s } = latestRef.current;
+    set({ showTajwid: !s.showTajwid });
   }, [set]);
 
   const handleToggleMemorization = useCallback(() => {
