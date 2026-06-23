@@ -81,7 +81,7 @@ button,
   min-width: var(--space-11) !important;
   height: var(--space-11) !important;
   min-height: var(--space-11) !important;
-  border-radius: 14px !important;
+  border-radius: var(--r-md-lg) !important;
   border: 1px solid color-mix(in srgb, var(--theme-border, #d4d4d4) 68%, transparent) !important;
   background: color-mix(in srgb, var(--theme-panel-bg-strong, #fff) 82%, transparent) !important;
   color: color-mix(in srgb, var(--theme-text, #111827) 86%, var(--theme-text-muted, #64748b)) !important;
@@ -114,7 +114,7 @@ button,
 .app-root > .mp-header .mp-header__logo {
   width: 2.42rem !important;
   height: 2.42rem !important;
-  border-radius: 14px !important;
+  border-radius: var(--r-md-lg) !important;
   overflow: hidden !important;
   box-shadow: 0 8px 18px rgba(5, 18, 11, 0.14) !important;
 }
@@ -196,7 +196,7 @@ button,
 .app-root > .mp-header .mp-header__seg,
 .app-root > .mp-header .mp-header__riwaya-switch button {
   min-height: 2.08rem !important;
-  border-radius: 12px !important;
+  border-radius: var(--r-md) !important;
   letter-spacing: 0 !important;
 }
 
@@ -333,7 +333,7 @@ html.dark .home-info-card {
 
 .home-cta-primary,
 .home-cta-secondary {
-  border-radius: 14px !important;
+  border-radius: var(--r-md-lg) !important;
   min-height: 48px;
   letter-spacing: 0 !important;
   box-shadow: 0 12px 28px rgba(var(--theme-primary-rgb, 11, 98, 53), 0.16) !important;
@@ -1118,7 +1118,7 @@ html.dark .audio-player-modal__surface {
 
 .app-root .qc-reader-toolbar button,
 .app-root .qc-reader-toolbar select {
-  min-height: 40px !important;
+  min-height: var(--space-10) !important;
   white-space: nowrap !important;
 }
 
@@ -1419,8 +1419,8 @@ html.dark .audio-player-modal__surface {
 }
 
 .app-root .app-view-home .hp-card-play {
-  min-width: 40px !important;
-  min-height: 40px !important;
+  min-width: var(--space-10) !important;
+  min-height: var(--space-10) !important;
 }
 
 .mp-footer-v2__shell {
@@ -1510,7 +1510,7 @@ html.dark .mp-footer-v2__shell {
   }
 
   .mp-footer-v2__nav-btn {
-    min-height: 56px !important;
+    min-height: var(--space-14) !important;
     padding-inline: 0.15rem !important;
   }
 }
@@ -2445,8 +2445,8 @@ body > .audio-player-modal .audio-settings-icon-btn {
     display: inline-flex !important;
     visibility: visible !important;
     opacity: 1 !important;
-    min-width: 40px !important;
-    min-height: 40px !important;
+    min-width: var(--space-10) !important;
+    min-height: var(--space-10) !important;
   }
 
   html body .app-root > .mp-header .mp-header__riwaya-switch {
@@ -3201,10 +3201,10 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
   }
 
   html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
-    width: 2.75rem !important;
-    min-width: 2.75rem !important;
-    height: 2.75rem !important;
-    min-height: 2.75rem !important;
+    width: var(--space-11) !important;
+    min-width: var(--space-11) !important;
+    height: var(--space-11) !important;
+    min-height: var(--space-11) !important;
   }
 
   html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
@@ -3231,9 +3231,9 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
-    height: 56px !important;
-    min-height: 56px !important;
-    max-height: 56px !important;
+    height: var(--space-14) !important;
+    min-height: var(--space-14) !important;
+    max-height: var(--space-14) !important;
     padding: 0 0.5rem !important;
     padding-top: env(safe-area-inset-top, 0px) !important;
     gap: 0.25rem !important;
@@ -3251,11 +3251,11 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
   }
 
   html body .app-root > .mp-header .mp-header__icon-btn {
-    width: 40px !important;
-    height: 40px !important;
+    width: var(--space-10) !important;
+    height: var(--space-10) !important;
     min-width: 44px !important;
     min-height: 44px !important;
-    border-radius: 12px !important;
+    border-radius: var(--r-md) !important;
     flex-shrink: 0 !important;
   }
 
@@ -3263,7 +3263,7 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
     display: flex !important;
     align-items: center !important;
     padding: 0.2rem !important;
-    min-width: 40px !important;
+    min-width: var(--space-10) !important;
     min-height: 44px !important;
   }
 
@@ -3272,8 +3272,8 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
   }
 
   html body .app-root > .mp-header .mp-header__logo {
-    width: 34px !important;
-    height: 34px !important;
+    width: var(--space-9) !important;
+    height: var(--space-9) !important;
     flex-shrink: 0 !important;
   }
 
@@ -3292,7 +3292,7 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
     align-items: center !important;
     gap: 0.1rem !important;
     padding: 0.2rem 0.25rem !important;
-    border-radius: 14px !important;
+    border-radius: var(--r-md-lg) !important;
     /* fill the center area so the title can grow */
     width: 100% !important;
     max-width: 100% !important;
@@ -3304,8 +3304,8 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    width: 30px !important;
-    height: 30px !important;
+    width: var(--space-8) !important;
+    height: var(--space-8) !important;
     /* keep 44px tap target via padding trick */
     min-width: 36px !important;
     min-height: 44px !important;
@@ -3364,12 +3364,12 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
     display: flex !important;
     align-items: center !important;
     gap: 0.25rem !important;
-    height: 34px !important;
+    height: var(--space-9) !important;
     min-height: 44px !important;
     padding: 0 0.5rem !important;
     font-size: 0.68rem !important;
     font-weight: 800 !important;
-    border-radius: 10px !important;
+    border-radius: var(--r-base) !important;
     flex-shrink: 0 !important;
   }
 
@@ -3379,8 +3379,8 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
 
   /* More button */
   html body .app-root > .mp-header .mp-header__more {
-    width: 40px !important;
-    height: 40px !important;
+    width: var(--space-10) !important;
+    height: var(--space-10) !important;
     min-width: 44px !important;
     min-height: 44px !important;
     flex-shrink: 0 !important;
@@ -3399,8 +3399,8 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
   }
 
   html body .app-root > .mp-header .mp-header__logo {
-    width: 30px !important;
-    height: 30px !important;
+    width: var(--space-8) !important;
+    height: var(--space-8) !important;
   }
 
   html body .app-root > .mp-header .mp-header__title-btn {
@@ -3421,7 +3421,7 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
   }
 
   html body .app-root > .mp-header .mp-header__nav-arrow {
-    width: 28px !important;
-    height: 28px !important;
+    width: var(--space-7) !important;
+    height: var(--space-7) !important;
   }
 }

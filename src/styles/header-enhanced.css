@@ -34,7 +34,7 @@
   align-items: center;
   gap: 0.45rem;
   padding: 0.2rem 0.35rem;
-  border-radius: 10px;
+  border-radius: var(--r-base);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -70,7 +70,7 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: var(--r-md);
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-muted);
@@ -102,7 +102,7 @@
   gap: 0.25rem;
   padding: 0.2rem;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--r-md-lg);
   background: var(--bg-secondary);
   max-width: 100%;
 }
@@ -113,7 +113,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 10px;
+  border-radius: var(--r-base);
   border: none;
   background: transparent;
   color: var(--text-muted);
@@ -137,7 +137,7 @@
   flex-direction: column;
   align-items: center;
   padding: 0.15rem 0.6rem;
-  border-radius: 10px;
+  border-radius: var(--r-base);
   border: none;
   background: transparent;
   cursor: pointer;
@@ -191,7 +191,7 @@
   align-items: center;
   gap: 0.1rem;
   padding: 0.3rem 0.8rem;
-  border-radius: 12px;
+  border-radius: var(--r-md);
   border: 1px solid var(--border);
   background: var(--bg-secondary);
   cursor: pointer;
@@ -234,7 +234,7 @@
   gap: 0.3rem;
   height: 44px;
   padding: 0 0.75rem;
-  border-radius: 12px;
+  border-radius: var(--r-md);
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-muted);
@@ -258,7 +258,7 @@
   background: rgba(var(--primary-rgb), 0.08);
   border: 1px solid rgba(var(--primary-rgb), 0.2);
   color: var(--primary);
-  border-radius: 10px;
+  border-radius: var(--r-base);
   padding: 0 0.6rem;
 }
 .mp-header__riwaya-toggle:hover {
@@ -272,7 +272,7 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: var(--r-md);
   border: 1px solid transparent;
   background: transparent;
   color: var(--text-muted);
@@ -331,7 +331,7 @@
   gap: 0.75rem;
   width: 100%;
   padding: 0.55rem 0.75rem;
-  border-radius: 10px;
+  border-radius: var(--r-base);
   border: none;
   background: transparent;
   color: var(--text-primary);
@@ -365,7 +365,7 @@
 .mp-header-menu__riwaya {
   margin: 0.35rem 0.5rem 0.35rem;
   padding: 0.5rem 0.6rem;
-  border-radius: 12px;
+  border-radius: var(--r-md);
   background: var(--bg-secondary);
   border: 1px solid var(--border);
 }
@@ -540,6 +540,6 @@
 }
 
 .mp-header--compact .mp-header__logo {
-  width: 28px;
-  height: 28px;
+  width: var(--space-7);
+  height: var(--space-7);
 }
