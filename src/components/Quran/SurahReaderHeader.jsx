@@ -39,7 +39,7 @@ export default function SurahReaderHeader({
   onToggleWordByWord,
   onToggleMemorization,
 }) {
-  const { state, set } = useApp();
+  const { state, set, dispatch } = useApp();
   const {
     lang,
     memMode,
@@ -79,7 +79,7 @@ export default function SurahReaderHeader({
   const toggleTranslation = () => set({ showTranslation: !showTranslation });
   const toggleWordByWord = onToggleWordByWord || (() => set({ showWordByWord: !showWordByWord, memMode: false }));
   const toggleTajweed = () => set({ showTajwid: !showTajwid });
-  const toggleMemo = onToggleMemorization || (() => set({ memMode: !memMode, mushafLayout: "list", showWordByWord: false }));
+  const toggleMemo = onToggleMemorization || (() => dispatch({ type: "TOGGLE_MEM_MODE" }));
 
   const handlePlay = () => {
     if (isPlaying) { audioService.pause(); return; }

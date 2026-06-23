@@ -386,19 +386,6 @@ function offlineFallbackHtml() {
     .lang-block { display: none; }
     :lang(ar) { direction: rtl; }
   </style>
-  <script>
-    (function() {
-      var lang = (navigator.language || 'fr').split('-')[0];
-      var blocks = document.querySelectorAll('.lang-block');
-      for (var i = 0; i < blocks.length; i++) {
-        blocks[i].style.display = blocks[i].lang === lang ? 'contents' : 'none';
-      }
-      if (lang === 'ar') {
-        document.documentElement.lang = 'ar';
-        document.documentElement.dir = 'rtl';
-      }
-    })();
-  </script>
 </head>
 <body>
   <div class="icon">📖</div>
@@ -426,6 +413,19 @@ function offlineFallbackHtml() {
     <p>No internet connection. Reconnect to access the full Quran.</p>
     <a class="retry" href="/">Retry</a>
   </noscript>
+  <script>
+    (function() {
+      var lang = (navigator.language || 'fr').split('-')[0];
+      var blocks = document.querySelectorAll('.lang-block');
+      for (var i = 0; i < blocks.length; i++) {
+        blocks[i].style.display = blocks[i].lang === lang ? 'contents' : 'none';
+      }
+      if (lang === 'ar') {
+        document.documentElement.lang = 'ar';
+        document.documentElement.dir = 'rtl';
+      }
+    })();
+  </script>
 </body>
 </html>`;
 }

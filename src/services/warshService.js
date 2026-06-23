@@ -9,6 +9,7 @@ import { dbGet, dbSet, dbDelete } from './dbService';
 import { WARSH_DATA_BASE_URL, WARSH_LEGACY_JSON_URL } from '../constants/warshSource';
 import { getSurah } from '../data/surahs';
 import { fetchQuranComText } from './quranComAPI';
+import { fetchWithTimeout } from './fetchWithTimeout';
 
 const IDB_STORE = 'cache';
 const IDB_KEY_PREFIX = 'warsh-unicode-v5-s-';
@@ -19,26 +20,6 @@ const LEGACY_CACHE_KEY = 'warsh-unicode-v4-s-';
 const log = import.meta.env.DEV ? console.log : () => {};
 const logError = import.meta.env.DEV ? console.error : () => {};
 
-// Fetch avec timeout
-async function fetchWithTimeout(url, options = {}, timeout = 15000) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-  
-  try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-    return response;
-  } catch (error) {
-    clearTimeout(timeoutId);
-    if (error.name === 'AbortError') {
-      throw new Error(`Request timeout after ${timeout}ms`);
-    }
-    throw error;
-  }
-}
 
 // Clear old cache format once per browser, not on every module import.
 // Re-clearing the current Warsh JSON cache on startup makes Hafs/Warsh switches

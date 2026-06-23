@@ -636,7 +636,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       key: "play",
       className: "ayah-action-card ayah-action-card--play",
       icon: audioError ? "fa-triangle-exclamation" : "fa-play",
-      label: lang === "fr" ? "Ecouter" : lang === "ar" ? "استماع" : "Listen",
+      label: t("ayah.listen", lang),
       description:
         lang === "fr"
           ? "Lancer cette ayah"
@@ -1594,7 +1594,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                   playAyah();
                 }
               }}
-              title={isPlayingThisAyah ? (lang === "fr" ? "Pause" : "Pause") : (lang === "fr" ? "Ecouter" : lang === "ar" ? "استماع" : "Listen")}
+              title={isPlayingThisAyah ? "Pause" : t("ayah.listen", lang)}
               aria-label={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Play")}
             >
               <i className={`fas fa-${audioError ? "triangle-exclamation" : isPlayingThisAyah ? "pause" : "play"}`} />

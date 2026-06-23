@@ -17,6 +17,7 @@ import {
 } from "../utils/reciterRanking";
 import { cn, toast } from "../lib/utils";
 import { formatCooldownLabel } from "../utils/formatUtils";
+import { normalizeArabicSearchText } from "../utils/searchIntelligence";
 import AudioLoadingIndicator from "./AudioLoadingIndicator";
 import AudioOptionsModal from "./audioPlayer/AudioOptionsModal";
 import {
@@ -534,9 +535,8 @@ export default function AudioPlayer() {
       setReciteText(transcript);
       if (e.results[0].isFinal) {
         const ayahText = audioService.currentAyah?.text || "";
-        const normalize = (s) => s.replace(/[ً-ٰٟ]/g, "").replace(/\s+/g, " ").trim();
-        const normAyah = normalize(ayahText);
-        const normTranscript = normalize(transcript);
+        const normAyah = normalizeArabicSearchText(ayahText);
+        const normTranscript = normalizeArabicSearchText(transcript);
         const minLen = Math.min(normTranscript.length, 15);
         const match = normAyah && normTranscript && normAyah.includes(normTranscript.slice(0, minLen));
         setReciteResult(match ? "ok" : "partial");
@@ -726,12 +726,6 @@ export default function AudioPlayer() {
     [set, syncKey, syncOffsetsMs],
   );
 
-  // Initialize karaokeFollow only if not yet persisted in state
-  const karaokeFollowInitRef = useRef(false);
-  if (!karaokeFollowInitRef.current) {
-    karaokeFollowInitRef.current = true;
-    if (state.karaokeFollow === undefined) set({ karaokeFollow: true });
-  }
 
   const handleReciterSelect = useCallback(
     async (nextReciterId) => {
