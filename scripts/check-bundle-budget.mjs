@@ -18,12 +18,16 @@ const MAX_CSS_KB = Number(process.env.BUDGET_CSS_KB || 945);
 // components, keyboard nav on progress slider, always-mounted aria-live region, TafsirSidebar lazy
 // init, i18n missing AR branches (AudioPlayer×3, Header, ContentSection×2, Sidebar), SW fetch timeout
 // with AbortController, recitation validation normalization, double-close guards in SearchModal/TafsirSidebar.
-const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1193);
+// +3 kB added (1193→1196): useKeyboardNavigation hook wired into App.jsx — previously exported but
+// never imported (tree-shaken to zero). Now active: consolidates t/w/j/m/Escape/Space/? shortcuts,
+// eliminates Alt+M double-dispatch bug, and reduces App.jsx keyboard handler by ~120 lines.
+const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1196);
 // +8 kB added (2050→2058): mobile UX fixes — navbar redesign CSS (home-audio-ux-refonte.css +5 kB)
 // and srh-identity hide rules (surah-reader-header.css +3 kB). Net CSS cost of fixing header
 // collapse, double-layer identity duplication, and audio player control clipping on ≤640px.
 // +10 kB added (2058→2068): Round 2 audit JS fixes (see JS budget note above).
-const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2068);
+// +3 kB added (2068→2071): useKeyboardNavigation hook now active in bundle (see JS budget note above).
+const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2071);
 const MAX_SINGLE_CSS_KB = Number(process.env.BUDGET_SINGLE_CSS_KB || 780);
 const MAX_SINGLE_JS_KB = Number(process.env.BUDGET_SINGLE_JS_KB || 250);
 
