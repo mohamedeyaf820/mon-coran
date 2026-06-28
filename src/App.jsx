@@ -21,7 +21,6 @@ import {
   ensureReciterForRiwaya,
   isWarshVerifiedReciter,
 } from "./data/reciters";
-import { Toast } from "./components/ModernUIComponents";
 import { getSurah } from "./data/surahs";
 import { ensureFontLoaded } from "./services/fontLoader";
 import audioService from "./services/audioService";
@@ -98,6 +97,29 @@ const SUSPENSE_FALLBACK = (
     <span className="sr-only" lang="fr">Chargement en cours…</span>
   </div>
 );
+
+function Toast({ type = "info", message, onClose, autoClose = 5000 }) {
+  useEffect(() => {
+    if (!autoClose) return;
+    const t = setTimeout(onClose, autoClose);
+    return () => clearTimeout(t);
+  }, [autoClose, onClose]);
+  const styles = {
+    success: { bg: "bg-emerald-50 border-emerald-200", text: "text-emerald-800", bar: "border-l-4 border-l-emerald-500", icon: { cls: "fa-circle-check", color: "text-emerald-500" } },
+    error:   { bg: "bg-red-50 border-red-200",         text: "text-red-800",     bar: "border-l-4 border-l-red-500",     icon: { cls: "fa-circle-xmark", color: "text-red-500" } },
+    warning: { bg: "bg-orange-50 border-orange-200",   text: "text-orange-800",  bar: "border-l-4 border-l-orange-500",  icon: { cls: "fa-triangle-exclamation", color: "text-amber-500" } },
+    info:    { bg: "bg-blue-50 border-blue-200",        text: "text-blue-800",    bar: "border-l-4 border-l-blue-500",    icon: { cls: "fa-circle-info", color: "text-blue-500" } },
+  }[type] ?? {};
+  return (
+    <div className={`toast-notification ${styles.bg} ${styles.bar} ${styles.text} px-4 py-3 rounded-md flex items-center justify-between gap-2 animate-fadeInScale`}>
+      <div className="flex items-center gap-2 min-w-0">
+        {styles.icon && <i className={`fas ${styles.icon.cls} ${styles.icon.color} text-base shrink-0`} aria-hidden="true" />}
+        <span className="text-sm font-medium">{message}</span>
+      </div>
+      <button onClick={onClose} className="text-lg hover:opacity-70 transition-opacity shrink-0" aria-label="Fermer">×</button>
+    </div>
+  );
+}
 
 export default function App() {
   const { dispatch, set } = useAppActions();

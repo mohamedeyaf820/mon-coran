@@ -142,12 +142,3 @@ export function useKaraoke({ isFirstAyah, wordCount, calibration }) {
  *   tartil    → slightly more lead, words are longer (0.20–0.22 s)
  *   mujawwad  → maximum lead, very drawn-out syllables (0.28–0.32 s)
  */
-export function buildKaraokeCalibration({
-  reciterId,
-  riwaya,
-  isFirstAyah,
-  wordCount,
-}) {
-  void isFirstAyah;
-  return getKaraokeCalibration(reciterId, riwaya, wordCount);
-}
