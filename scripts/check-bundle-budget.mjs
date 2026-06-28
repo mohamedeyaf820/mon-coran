@@ -27,7 +27,9 @@ const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1196);
 // collapse, double-layer identity duplication, and audio player control clipping on ≤640px.
 // +10 kB added (2058→2068): Round 2 audit JS fixes (see JS budget note above).
 // +3 kB added (2068→2071): useKeyboardNavigation hook now active in bundle (see JS budget note above).
-const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2071);
+// +1 kB added (2071→2072): code-review fixes — RowActions i18n AR branches, ReciterDetailPage riwaya
+// badge restore, MiniPlayer safe-area calc(), AppContext reducer guard corrections.
+const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2072);
 const MAX_SINGLE_CSS_KB = Number(process.env.BUDGET_SINGLE_CSS_KB || 780);
 const MAX_SINGLE_JS_KB = Number(process.env.BUDGET_SINGLE_JS_KB || 250);
 
