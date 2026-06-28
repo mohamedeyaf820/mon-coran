@@ -116,20 +116,20 @@ export default function MiniPlayer() {
   // ── Visibility guard ────────────────────────────────────────────────────
   const isVisible = !dismissed && (isPlaying || Boolean(currentPlayingAyah));
 
-  // Manage --mini-player-h CSS variable so the main content adds padding.
-  // Cleanup only removes the variable on unmount (not between isVisible transitions)
-  // to avoid a one-frame layout shift when the parent re-renders.
+  // Manage --mini-player-h CSS variable so sibling elements add correct padding.
+  // Must include env(safe-area-inset-bottom) so content isn't obscured by the
+  // iOS home indicator (safe-area-inset-bottom ≈ 34px on notch devices).
   useEffect(() => {
     const root = document.documentElement;
     if (isVisible) {
-      root.style.setProperty('--mini-player-h', '56px');
+      root.style.setProperty(
+        '--mini-player-h',
+        'calc(56px + env(safe-area-inset-bottom, 0px))',
+      );
     } else {
       root.style.removeProperty('--mini-player-h');
     }
   }, [isVisible]);
-  useEffect(() => {
-    return () => document.documentElement.style.removeProperty('--mini-player-h');
-  }, []);
 
   if (!isVisible) return null;
 
@@ -146,9 +146,8 @@ export default function MiniPlayer() {
             : 'Mini audio player'
       }
       className={cn(
-        // Positioning — sits above the existing AudioPlayer (--player-h compensates)
+        // Positioning — bottom is set via inline style using --player-h
         'mini-player fixed inset-x-0 z-[300]',
-        'bottom-0',
         // Appearance
         'bg-[var(--bg-card)] border-t border-[var(--border)]',
         'shadow-[0_-4px_24px_rgba(0,0,0,0.12)]',

@@ -262,7 +262,7 @@ export function appReducer(state, action) {
       return {
         ...state,
         memMode: false,
-        mushafLayout: state._prevMushafLayout || state.mushafLayout,
+        mushafLayout: state._prevMushafLayout !== undefined ? state._prevMushafLayout : state.mushafLayout,
         _prevMushafLayout: undefined,
       };
     }
@@ -366,7 +366,7 @@ export function appReducer(state, action) {
       }
 
     case "SET_PLAYING": {
-      const raw = action.payload.ayah ?? state.currentPlayingAyah;
+      const raw = action.payload.ayah !== undefined ? action.payload.ayah : state.currentPlayingAyah;
       let ayah;
       if (raw === null || raw === undefined) {
         ayah = null;
