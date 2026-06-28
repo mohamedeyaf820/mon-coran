@@ -321,6 +321,12 @@ export default function Header() {
 
   const cleanQuickItems = [
     {
+      key: "search",
+      Icon: Search,
+      label: i18nT("nav.search", lang),
+      action: openSearch,
+    },
+    {
       key: "settings",
       Icon: Settings,
       label: i18nT("nav.settings", lang),
@@ -359,7 +365,15 @@ export default function Header() {
   ];
 
   return (
-    <header ref={headerRef} className={cn("mp-header", headerCompact && "mp-header--compact")} role="banner">
+    <header
+      ref={headerRef}
+      className={cn(
+        "mp-header",
+        headerCompact && "mp-header--compact",
+        sidebarOpen && "pointer-events-none",
+      )}
+      role="banner"
+    >
       <div className="mp-header__bar">
         {/* ── LEFT: hamburger + brand ─────────────────────── */}
         <div className="mp-header__brand-row">

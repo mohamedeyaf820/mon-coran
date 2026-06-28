@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getReciterBio } from "../../data/reciters";
 
 export default function ReciterBioCollapse({ lang, text, reciter }) {
@@ -9,11 +9,10 @@ export default function ReciterBioCollapse({ lang, text, reciter }) {
   const safeText =
     String(text || getReciterBio(reciter, lang) || "").trim() ||
     (lang === "fr"
-      ? "Récitation authentique et régulière."
+      ? "Recitation authentique et reguliere."
       : lang === "ar"
         ? "تلاوة موثوقة ومنتظمة."
         : "Authentic and regular recitation.");
-  const short = safeText.slice(0, 140);
   const shouldCollapse = safeText.length > 140;
 
   useEffect(() => {
@@ -27,17 +26,30 @@ export default function ReciterBioCollapse({ lang, text, reciter }) {
       <div
         ref={contentRef}
         className="overflow-hidden transition-[max-height] duration-300 ease-in-out"
-        style={{ maxHeight: open || !shouldCollapse ? `${contentHeight + 20}px` : "3.6em" }}
+        style={{
+          maxHeight:
+            open || !shouldCollapse ? `${contentHeight + 20}px` : "3.6em",
+        }}
       >
         <p>{safeText}</p>
       </div>
       {shouldCollapse && (
         <button
           type="button"
-          className="mt-2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] hover:bg-[rgba(var(--primary-rgb),0.15)] transition-all duration-200"
-          onClick={() => setOpen((v) => !v)}
+          className="mt-2 inline-flex items-center gap-1 rounded-full bg-[rgba(var(--primary-rgb),0.08)] px-3 py-1 text-xs font-semibold text-[var(--primary)] transition-all duration-200 hover:bg-[rgba(var(--primary-rgb),0.15)]"
+          onClick={() => setOpen((value) => !value)}
         >
-          {open ? (lang === "fr" ? "Voir moins" : "Show less") : (lang === "fr" ? "Voir plus" : "Show more")}
+          {open
+            ? lang === "fr"
+              ? "Voir moins"
+              : lang === "ar"
+                ? "عرض اقل"
+                : "Show less"
+            : lang === "fr"
+              ? "Voir plus"
+              : lang === "ar"
+                ? "عرض المزيد"
+                : "Show more"}
           <i className={`fas fa-chevron-${open ? "up" : "down"} text-[0.55rem]`} />
         </button>
       )}

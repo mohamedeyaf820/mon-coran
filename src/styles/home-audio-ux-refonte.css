@@ -491,9 +491,9 @@ html.dark [data-reciter-card="true"] {
 .quran-ayah-text,
 .mp-ayah,
 .qcm-word {
-  font-size: clamp(1.85rem, 1.18rem + 1.8vw, 3.05rem);
-  line-height: clamp(2.25, 2.2 + 0.2vw, 2.65);
-  word-spacing: clamp(0.08em, 0.5vw, 0.18em);
+  font-size: clamp(1.82rem, 6.8vw, 3.28rem);
+  line-height: 2.22;
+  word-spacing: clamp(0.045em, 0.42vw, 0.16em);
   text-wrap: pretty;
 }
 
@@ -808,9 +808,9 @@ html.dark .audio-player-modal__surface {
   .quran-ayah-text,
   .mp-ayah,
   .qcm-word {
-    font-size: clamp(1.58rem, 8vw, 2.28rem);
-    line-height: 2.35;
-    word-spacing: 0.08em;
+    font-size: clamp(1.42rem, 7.2vw, 2.18rem);
+    line-height: 2.04;
+    word-spacing: 0.055em;
   }
 
   .home-collection-heading__copy h2 {

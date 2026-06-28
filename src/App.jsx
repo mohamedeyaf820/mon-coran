@@ -549,9 +549,7 @@ export default function App() {
           <Header />
         </Suspense>
 
-        <div
-          className={`app-layout-shell relative flex min-h-0 flex-1 ${sidebarOpen ? "z-[300]" : ""}`}
-        >
+        <div className="app-layout-shell relative flex min-h-0 flex-1">
           <Suspense fallback={SUSPENSE_FALLBACK}>
             {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
           </Suspense>

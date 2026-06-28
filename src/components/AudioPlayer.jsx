@@ -1127,7 +1127,7 @@ export default function AudioPlayer() {
     }
 
     // Reserve enough space for the mobile dock so verses and controls are never hidden behind it.
-    const reservedHeight = minimized ? 56 : expanded ? 170 : 96;
+    const reservedHeight = minimized ? 82 : expanded ? 268 : 178;
     root.style.setProperty("--player-h", `${reservedHeight}px`);
     root.style.removeProperty("--desktop-player-reserved-h");
 
