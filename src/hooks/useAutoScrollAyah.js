@@ -101,13 +101,4 @@ export function useAutoScrollAyah({ currentAyah, currentSurah, isPlaying }) {
     };
   }, [currentAyah, currentSurah, isPlaying]);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      clearTimeout(debounceRef.current);
-      clearTimeout(resumeTimerRef.current);
-      observerRef.current?.disconnect();
-      observerRef.current = null;
-    };
-  }, []);
 }

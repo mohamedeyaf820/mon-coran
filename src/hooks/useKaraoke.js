@@ -121,24 +121,3 @@ export function useKaraoke({ isFirstAyah, wordCount, calibration }) {
 
   return { progress, seekCount };
 }
-
-/**
- * Helper to build a calibration profile for a given reciter/riwaya.
- *
- * This is the FALLBACK path used by SmartAyahRenderer when no calibration prop
- * is passed down from QuranDisplay (e.g. edge cases or future render paths).
- * The primary path goes through karaokeUtils.getKaraokeCalibration().
- *
- * Per-reciter fine-tuning:
- *   offsetSec > 0  → highlight appears BEFORE the word is spoken (anticipatory)
- *   offsetSec < 0  → highlight appears slightly AFTER (reactive/conservative)
- *
- * CDN groups:
- *   islamic.network  → generally faster buffering, lower base offset (~0.12–0.18 s)
- *   everyayah.com    → higher first-packet delay, base offset bumped ~+0.03 s (~0.15–0.17 s)
- *
- * Style groups:
- *   murattal  → moderate lead (0.12–0.18 s)
- *   tartil    → slightly more lead, words are longer (0.20–0.22 s)
- *   mujawwad  → maximum lead, very drawn-out syllables (0.28–0.32 s)
- */
