@@ -543,3 +543,20 @@
   width: var(--space-7);
   height: var(--space-7);
 }
+
+/* Stable quick menu for the header ellipsis */
+.mp-header-menu{width:min(20rem,calc(100vw - 1.25rem))!important;padding:.45rem!important;border:1px solid var(--border)!important;border-radius:16px!important;background:var(--bg-card)!important;color:var(--text-primary)!important;box-shadow:0 24px 70px rgba(15,23,42,.22)!important;overflow:hidden!important}
+.mp-header-menu .mp-header-menu__item{min-height:3rem!important}
+.mp-header-menu .mp-header-menu__header-text,.mp-header-menu .mp-header-menu__item span:last-child{min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+
+@media (min-width: 641px) and (max-width: 900px) {
+  html body .app-root > .mp-header {
+    min-height: 0 !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__bar {
+    height: 64px !important;
+    min-height: 0 !important;
+    padding-block: 0 !important;
+  }
+}

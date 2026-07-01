@@ -107,7 +107,7 @@ export function parseInitialRoute() {
     return { showHome: false, showDuas: true };
   }
 
-  const surahMatch = path.match(/^\/surah\/(\d+)(?:\/(\d+))?/);
+  const surahMatch = path.match(/^\/surah\/(\d+)(?:\/(\d+))?\/?$/);
   if (surahMatch) {
     const surah = Math.max(1, Math.min(114, Number(surahMatch[1]) || 1));
     const maxAyah = getSurahAyahCount(surah);
@@ -123,7 +123,7 @@ export function parseInitialRoute() {
     };
   }
 
-  const pageMatch = path.match(/^\/page\/(\d+)/);
+  const pageMatch = path.match(/^\/page\/(\d+)\/?$/);
   if (pageMatch) {
     const page = Math.max(1, Math.min(604, Number(pageMatch[1]) || 1));
     return {
@@ -134,7 +134,7 @@ export function parseInitialRoute() {
     };
   }
 
-  const juzMatch = path.match(/^\/juz\/(\d+)/);
+  const juzMatch = path.match(/^\/juz\/(\d+)\/?$/);
   if (juzMatch) {
     const juz = Math.max(1, Math.min(30, Number(juzMatch[1]) || 1));
     return {

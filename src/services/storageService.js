@@ -9,6 +9,7 @@ import {
   decryptDataWithMeta,
 } from "./cryptoUtil.js";
 import { ACCEPTED_FONT_IDS, DEFAULT_FONT_ID, normalizeFontId } from "../data/fonts.js";
+import { getSurahAyahCount } from "../data/surahs.js";
 import { bookmarkRecordSchema, noteRecordSchema } from "./storageValidation.js";
 
 function parseRecordOrNull(schema, value) {
@@ -90,6 +91,16 @@ const VALID_DISPLAY_MODES = ["surah", "page", "juz"];
 const VALID_AUDIO_PLAYER_SKINS = ["orbit", "classic"];
 const VALID_FONTS = ACCEPTED_FONT_IDS;
 
+function clampSurah(value) {
+  return Math.max(1, Math.min(114, Number(value) || 1));
+}
+
+function clampAyahForSurah(surahValue, ayahValue) {
+  const surah = clampSurah(surahValue);
+  const maxAyah = getSurahAyahCount(surah);
+  return Math.max(1, Math.min(maxAyah, Number(ayahValue) || 1));
+}
+
 function sanitizeFavoriteReciters(input) {
   if (!Array.isArray(input)) return [];
   return [...new Set(input)]
@@ -103,19 +114,22 @@ function sanitizePinnedAyahs(input) {
 
   const seen = new Set();
   return input
-    .map((item) => ({
-      surah: Math.max(1, Math.min(114, Number(item?.surah) || 1)),
-      ayah: Math.max(1, Math.min(286, Number(item?.ayah) || 1)),
-      number: Number.isFinite(Number(item?.number)) ? Number(item.number) : null,
-      text:
-        typeof item?.text === "string"
-          ? item.text.trim().slice(0, 1200)
-          : "",
-      surahName:
-        typeof item?.surahName === "string"
-          ? item.surahName.trim().slice(0, 120)
-          : "",
-    }))
+    .map((item) => {
+      const surah = clampSurah(item?.surah);
+      return {
+        surah,
+        ayah: clampAyahForSurah(surah, item?.ayah),
+        number: Number.isFinite(Number(item?.number)) ? Number(item.number) : null,
+        text:
+          typeof item?.text === "string"
+            ? item.text.trim().slice(0, 1200)
+            : "",
+        surahName:
+          typeof item?.surahName === "string"
+            ? item.surahName.trim().slice(0, 120)
+            : "",
+      };
+    })
     .filter((item) => {
       const key = `${item.surah}:${item.ayah}`;
       if (seen.has(key)) return false;
@@ -379,6 +393,7 @@ export function getSettings() {
 function sanitizeSettings(settings) {
   const safeInput = settings && typeof settings === "object" ? settings : {};
   const safeSyncOffsets = sanitizeSyncOffsetsMap(safeInput.syncOffsetsMs);
+  const lastSurah = clampSurah(safeInput.lastPosition?.surah);
 
   return {
     lang: VALID_LANGS.includes(safeInput.lang) ? safeInput.lang : "fr",
@@ -513,14 +528,8 @@ function sanitizeSettings(settings) {
         ? Boolean(safeInput.karaokeFollow)
         : true,
     lastPosition: {
-      surah: Math.max(
-        1,
-        Math.min(114, Number(safeInput.lastPosition?.surah) || 1),
-      ),
-      ayah: Math.max(
-        1,
-        Math.min(286, Number(safeInput.lastPosition?.ayah) || 1),
-      ),
+      surah: lastSurah,
+      ayah: clampAyahForSurah(lastSurah, safeInput.lastPosition?.ayah),
       page: Math.max(
         1,
         Math.min(604, Number(safeInput.lastPosition?.page) || 1),

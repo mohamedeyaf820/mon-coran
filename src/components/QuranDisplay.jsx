@@ -9,6 +9,7 @@ import {
 import { t } from "../i18n";
 import { clearCache } from "../services/quranAPI";
 import { clearWarshCache } from "../services/warshService";
+import { clearMushafRuntimeCaches } from "../services/runtimeCacheService";
 import { ensureReciterForRiwaya } from "../data/reciters";
 import { getKaraokeCalibration } from "../utils/karaokeUtils";
 import Footer from "./Footer";
@@ -248,16 +249,7 @@ export default function QuranDisplay() {
     try {
       await clearCache();
       await clearWarshCache(); // Also clear Warsh-specific cache
-      if ("serviceWorker" in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(
-          registrations.map((registration) => registration.unregister()),
-        );
-      }
-      if ("caches" in window) {
-        const keys = await caches.keys();
-        await Promise.all(keys.map((key) => caches.delete(key)));
-      }
+      await clearMushafRuntimeCaches();
       try {
         localStorage.removeItem("mushaf-plus-settings");
       } catch {}

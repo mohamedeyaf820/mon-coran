@@ -25,6 +25,7 @@ import {
   normalizeFontId,
 } from "../data/fonts";
 import { parseInitialRoute } from "../hooks/useUrlSync";
+import { getSurahAyahCount } from "../data/surahs";
 
 const clampQuranFontSize = (value, fallback = 25) => {
   const numeric = Number(value);
@@ -32,6 +33,12 @@ const clampQuranFontSize = (value, fallback = 25) => {
     ? Math.max(12, Math.min(96, numeric))
     : fallback;
 };
+
+const clampSurah = (value) => Math.max(1, Math.min(114, Number(value) || 1));
+const clampPage = (value) => Math.max(1, Math.min(604, Number(value) || 1));
+const clampJuz = (value) => Math.max(1, Math.min(30, Number(value) || 1));
+const clampAyah = (surah, value) =>
+  Math.max(1, Math.min(getSurahAyahCount(surah), Number(value) || 1));
 
 /* ── Initial State ──────────────────────────── */
 // Lazy initialization pour éviter les calculs au démarrage
@@ -238,6 +245,23 @@ export function appReducer(state, action) {
           [targetRiwaya]: normalizedFont,
         };
       }
+      if (Object.prototype.hasOwnProperty.call(payload, "currentSurah")) {
+        next.currentSurah = clampSurah(payload.currentSurah);
+        next.currentAyah = clampAyah(
+          next.currentSurah,
+          Object.prototype.hasOwnProperty.call(payload, "currentAyah")
+            ? payload.currentAyah
+            : state.currentAyah,
+        );
+      } else if (Object.prototype.hasOwnProperty.call(payload, "currentAyah")) {
+        next.currentAyah = clampAyah(clampSurah(state.currentSurah), payload.currentAyah);
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, "currentPage")) {
+        next.currentPage = clampPage(payload.currentPage);
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, "currentJuz")) {
+        next.currentJuz = clampJuz(payload.currentJuz);
+      }
       return next;
     }
 
@@ -277,21 +301,23 @@ export function appReducer(state, action) {
     case "TOGGLE_PLAYLIST":
       return { ...state, playlistOpen: !state.playlistOpen };
 
-    case "NAVIGATE_SURAH":
+    case "NAVIGATE_SURAH": {
+      const surah = clampSurah(action.payload?.surah);
       return {
         ...state,
-        currentSurah: action.payload.surah,
-        currentAyah: action.payload.ayah || 1,
+        currentSurah: surah,
+        currentAyah: clampAyah(surah, action.payload?.ayah),
         displayMode: "surah",
         showHome: false,
         showDuas: false,
         sidebarOpen: false,
       };
+    }
 
     case "NAVIGATE_PAGE":
       return {
         ...state,
-        currentPage: action.payload.page,
+        currentPage: clampPage(action.payload?.page),
         displayMode: "page",
         showHome: false,
         showDuas: false,
@@ -301,7 +327,7 @@ export function appReducer(state, action) {
     case "NAVIGATE_JUZ":
       return {
         ...state,
-        currentJuz: action.payload.juz,
+        currentJuz: clampJuz(action.payload?.juz),
         displayMode: "juz",
         showHome: false,
         showDuas: false,

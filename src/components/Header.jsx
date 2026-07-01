@@ -567,7 +567,7 @@ export default function Header() {
             <PopoverContent
               align="end"
               sideOffset={10}
-              className="z-[300] w-60 rounded-2xl border border-border bg-bg-primary p-1 shadow-2xl"
+              className="mp-header-menu z-[300]"
             >
               <div className="mp-header-menu__header">
                 <span className="mp-header-menu__header-icon">

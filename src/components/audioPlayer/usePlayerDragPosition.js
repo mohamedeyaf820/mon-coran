@@ -17,6 +17,14 @@ function applyCardPosition(card, pos) {
   card.style.setProperty("transform", "none", "important");
 }
 
+function getDefaultCardPos() {
+  if (typeof window === "undefined") return { x: 16, y: 88 };
+  return {
+    x: window.innerWidth - 280 - 16,
+    y: Math.max(88, window.innerHeight - 360 - 24),
+  };
+}
+
 export function usePlayerDragPosition({
   cardRef,
   expanded,
@@ -30,10 +38,7 @@ export function usePlayerDragPosition({
   const [cardPos, setCardPos] = useState(() => {
     const saved = loadCardPos();
     if (saved) return saved;
-    return {
-      x: window.innerWidth - 280 - 16,
-      y: Math.max(88, window.innerHeight - 360 - 24),
-    };
+    return getDefaultCardPos();
   });
   const cardPosRef = useRef(cardPos);
   const [manualDockPosition, setManualDockPosition] = useState(

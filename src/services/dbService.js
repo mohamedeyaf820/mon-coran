@@ -11,7 +11,7 @@ const DB_VERSION = 2;
 let dbPromise = null;
 
 function devWarn(...args) {
-    if (import.meta.env.DEV && typeof console !== 'undefined') {
+    if (import.meta.env?.DEV && typeof console !== 'undefined') {
         console.warn(...args);
     }
 }

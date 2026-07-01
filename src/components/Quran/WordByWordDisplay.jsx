@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { shallowEqual, useAppSelector } from "../../context/AppContext";
 import QuranWord from "./QuranWord";
+import AyahMarker from "./AyahMarker";
 import useWordByWordDisplay from "./useWordByWordDisplay";
 import WordByWordAnalysisOverlay from "./WordByWordAnalysisOverlay";
 
@@ -104,6 +105,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
             />
           );
         })}
+        <AyahMarker number={ayah} isPlaying={isPlaying} className="wbw-ayah-marker" />
         <WordByWordAnalysisOverlay
           lang={lang}
           onClose={() => setSelectedWord(null)}
@@ -139,6 +141,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
           />
         );
       })}
+      <AyahMarker number={ayah} isPlaying={isPlaying} className="wbw-ayah-marker" />
       <WordByWordAnalysisOverlay
         lang={lang}
         onClose={() => setSelectedWord(null)}

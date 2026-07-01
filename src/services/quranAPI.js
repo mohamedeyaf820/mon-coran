@@ -38,6 +38,7 @@ const TRANSLATION_EDITIONS = {
   tr: 'tr.diyanet',
   ur: 'ur.junagarhi',
 };
+const QURAN_COM_TRANSLATION_LANGS = new Set(['fr', 'en']);
 
 // In-memory cache with size limit
 const cache = new Map();
@@ -159,6 +160,10 @@ function pruneCache() {
 }
 
 async function fetchJSON(url, signal) {
+  if (signal?.aborted) {
+    throw new DOMException('Request aborted', 'AbortError');
+  }
+
   // 1. Check in-memory cache (instant, ~0ms)
   const cached = cache.get(url);
   if (cached) return cached;
@@ -187,11 +192,13 @@ async function fetchJSON(url, signal) {
   } catch { /* IDB read failure — continue to network */ }
 
   // Reuse prefetches for fast riwaya/page switches.
-  if (inflight.has(url)) {
-    return inflight.get(url).promise;
+  const existing = inflight.get(url);
+  if (existing && !existing.signal?.aborted) {
+    return existing.promise;
   }
 
   const entry = {
+    signal,
     promise: _fetchFromNetwork(url, idbKey, signal),
   };
   inflight.set(url, entry);
@@ -454,6 +461,24 @@ async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal) {
   throw lastError || new Error(`No edition available for riwaya: ${riwaya}`);
 }
 
+async function fetchTranslations(pathPrefix, langs = ['fr'], signal) {
+  const langArray = Array.isArray(langs) ? langs : [langs];
+  const canUseQuranCom = langArray.every((lang) => QURAN_COM_TRANSLATION_LANGS.has(lang));
+
+  if (canUseQuranCom) {
+    try {
+      return await fetchQuranComTranslations(pathPrefix, langArray, signal);
+    } catch (err) {
+      if (err.name === 'AbortError') throw err;
+      console.warn('Quran.com translation fallback to AlQuran.cloud:', err);
+    }
+  }
+
+  const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
+  const data = await fetchJSON(`${BASE}/${pathPrefix}/${editions}`, signal);
+  return Array.isArray(data) ? data : [data];
+}
+
 /* ── Surah Text ──────────────────────────────── */
 
 export async function getSurahText(surahNum, riwaya = 'hafs', signal) {
@@ -461,18 +486,7 @@ export async function getSurahText(surahNum, riwaya = 'hafs', signal) {
 }
 
 export async function getSurahTranslation(surahNum, langs = ['fr'], signal) {
-  try {
-    return await fetchQuranComTranslations(`surah/${surahNum}`, langs, signal);
-  } catch (err) {
-    if (err.name === 'AbortError') throw err;
-    console.warn('Quran.com translation fallback to AlQuran.cloud:', err);
-  }
-
-  const langArray = Array.isArray(langs) ? langs : [langs];
-  const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
-  const data = await fetchJSON(`${BASE}/surah/${surahNum}/${editions}`, signal);
-  // AlQuran Cloud returns an array if multiple editions are requested, otherwise a single object
-  return Array.isArray(data) ? data : [data];
+  return fetchTranslations(`surah/${surahNum}`, langs, signal);
 }
 
 /**
@@ -534,17 +548,7 @@ export async function getJuz(juzNum, riwaya = 'hafs', signal) {
 }
 
 export async function getJuzTranslation(juzNum, langs = ['fr'], signal) {
-  try {
-    return await fetchQuranComTranslations(`juz/${juzNum}`, langs, signal);
-  } catch (err) {
-    if (err.name === 'AbortError') throw err;
-    console.warn('Quran.com translation fallback to AlQuran.cloud:', err);
-  }
-
-  const langArray = Array.isArray(langs) ? langs : [langs];
-  const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
-  const data = await fetchJSON(`${BASE}/juz/${juzNum}/${editions}`, signal);
-  return Array.isArray(data) ? data : [data];
+  return fetchTranslations(`juz/${juzNum}`, langs, signal);
 }
 
 /* ── Page (Mushaf page 1-604) ────────────────── */
@@ -554,17 +558,7 @@ export async function getPage(pageNum, riwaya = 'hafs', signal) {
 }
 
 export async function getPageTranslation(pageNum, langs = ['fr'], signal) {
-  try {
-    return await fetchQuranComTranslations(`page/${pageNum}`, langs, signal);
-  } catch (err) {
-    if (err.name === 'AbortError') throw err;
-    console.warn('Quran.com translation fallback to AlQuran.cloud:', err);
-  }
-
-  const langArray = Array.isArray(langs) ? langs : [langs];
-  const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
-  const data = await fetchJSON(`${BASE}/page/${pageNum}/${editions}`, signal);
-  return Array.isArray(data) ? data : [data];
+  return fetchTranslations(`page/${pageNum}`, langs, signal);
 }
 
 export async function getPageFull(pageNum, riwaya = 'hafs', transLangs = ['fr'], signal) {

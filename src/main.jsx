@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { initErrorAnalytics } from "./services/errorAnalytics.js";
+import { clearMushafRuntimeCaches } from "./services/runtimeCacheService.js";
 
 import App from "./App";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -126,30 +127,7 @@ function tryRecoverFromChunkLoad(errorLike) {
   }
 
   if (!alreadyReloaded) {
-    Promise.all([
-      "serviceWorker" in navigator
-        ? navigator.serviceWorker
-            .getRegistrations()
-            .then((registrations) =>
-              Promise.all(
-                registrations.map((registration) => registration.unregister()),
-              ),
-            )
-            .catch(() => null)
-        : Promise.resolve(null),
-      "caches" in window
-        ? caches
-            .keys()
-            .then((keys) =>
-              Promise.all(
-                keys
-                  .filter((key) => key.startsWith("mushaf-plus"))
-                  .map((key) => caches.delete(key)),
-              ),
-            )
-            .catch(() => null)
-        : Promise.resolve(null),
-    ]).finally(() => {
+    clearMushafRuntimeCaches().finally(() => {
       window.location.reload();
     });
   }
@@ -225,25 +203,7 @@ if ("serviceWorker" in navigator) {
 
     // En développement: éviter les pages blanches causées par un SW obsolète
     try {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(
-        regs
-          .filter((r) => {
-            const scriptUrl = String(
-              r.active?.scriptURL || r.installing?.scriptURL || "",
-            );
-            return scriptUrl.includes("/sw.js") || scriptUrl.includes("mushaf");
-          })
-          .map((r) => r.unregister()),
-      );
-      if ("caches" in window) {
-        const keys = await caches.keys();
-        await Promise.all(
-          keys
-            .filter((k) => k.startsWith("mushaf-plus"))
-            .map((k) => caches.delete(k)),
-        );
-      }
+      await clearMushafRuntimeCaches();
       if (import.meta.env.DEV)
         console.log("SW désactivé/nettoyé en mode développement");
     } catch (err) {

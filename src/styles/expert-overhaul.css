@@ -788,8 +788,8 @@ button:active:not(:disabled),
     transition-duration: var(--dur-instant) !important;
 }
 
-/* Smooth appear for dropdowns */
-[data-radix-popper-content-wrapper] {
+/* Smooth appear for dropdowns without overriding Radix positioning. */
+[data-radix-popper-content-wrapper] > div {
     animation: popover-in var(--dur-normal) var(--ease-spring) !important;
 }
 

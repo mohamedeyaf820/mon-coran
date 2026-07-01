@@ -4,14 +4,12 @@ import useArabicFontPreferences, {
   ARABIC_FONT_SIZE_MAX,
   ARABIC_FONT_SIZE_MIN,
 } from "../hooks/useArabicFontPreferences";
+import {
+  getFontOptionsForRiwaya,
+  getNativeAyahMarker,
+  resolveFontFamily,
+} from "../data/fonts";
 import { cn } from "../lib/utils";
-
-const ARABIC_FONT_OPTIONS = [
-  { id: "qpc-hafs", label: "Quran.com Hafs", riwaya: "hafs" },
-  { id: "qpc-indopak", label: "Quran.com IndoPak", riwaya: "hafs" },
-  { id: "qpc-warsh", label: "QPC Warsh", riwaya: "warsh" },
-  { id: "kfgqpc-warsh", label: "KFGQPC Warsh", riwaya: "warsh" },
-];
 
 function labelFor(lang, fr, en, ar = en) {
   if (lang === "ar") return ar;
@@ -28,10 +26,12 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
   } = useArabicFontPreferences();
 
   const currentSize = Math.round(arabicFontSize);
-  const availableFonts = ARABIC_FONT_OPTIONS.filter((font) => font.riwaya === (riwaya || "hafs"));
+  const availableFonts = getFontOptionsForRiwaya(riwaya);
   const selectedFont = availableFonts.some((font) => font.id === arabicFontFamily)
     ? arabicFontFamily
     : availableFonts[0]?.id || "qpc-hafs";
+  const markerPreview = getNativeAyahMarker(1, selectedFont, riwaya);
+  const markerFontFamily = resolveFontFamily(selectedFont, riwaya);
 
   return (
     <div
@@ -43,6 +43,14 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
     >
       <div className="afc-font-group" role="group" aria-label={labelFor(lang, "Choisir la police arabe", "Choose Arabic font", "اختيار الخط العربي")}>
         <Type size={14} className="afc-leading-icon" aria-hidden="true" />
+        <span
+          className="afc-marker-preview native-ayah-marker"
+          dir="rtl"
+          aria-hidden="true"
+          style={{ fontFamily: markerFontFamily }}
+        >
+          {markerPreview}
+        </span>
         <select
           className="afc-select"
           value={selectedFont}

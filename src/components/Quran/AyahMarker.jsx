@@ -1,53 +1,58 @@
-﻿import React, { useId } from "react";
+import React from "react";
 import { cn } from "../../lib/utils";
+import { shallowEqual, useAppSelector } from "../../context/AppContext";
 import { toArabicNumeral } from "../../utils/arabicNumerals";
+import {
+  getNativeAyahMarker,
+  normalizeFontId,
+  resolveFontFamily,
+} from "../../data/fonts";
 
 /**
- * AyahMarker — Medallion de fin de verset style Quran.com
- *
- * Positionnement :
- *  - inline dans le flux RTL arabe
- *  - taille 1em x 1em (suit le font-size du contexte)
- *  - verticalAlign calibre pour la baseline arabe
- *
- * Apparence :
- *  - Etoile islamique 8 branches doree
- *  - Coeur vert emeraude + numero arabe
- *  - Glow anime si isPlaying
+ * AyahMarker - native mushaf ayah marker rendered by the active Quran font.
  */
 export const AyahMarker = React.memo(function AyahMarker({
   number,
   num,
   isPlaying = false,
   className = "",
+  fontFamily,
+  riwaya,
   size: _size = "md",
   onClick,
 }) {
-  const id = useId();
+  const current = useAppSelector(
+    (state) => ({
+      fontFamily: state.fontFamily,
+      riwaya: state.riwaya,
+    }),
+    shallowEqual,
+  );
   const markerNumber = number ?? num;
   if (markerNumber == null) return null;
 
-  const arabicNumber = toArabicNumeral(markerNumber);
-  const numStr = String(markerNumber);
-  const textSize =
-    numStr.length >= 3 ? 24
-    : numStr.length === 2 ? 29
-    : 34;
+  const activeRiwaya = riwaya || current.riwaya || "hafs";
+  const activeFontFamily = normalizeFontId(
+    fontFamily || current.fontFamily,
+    activeRiwaya,
+  );
+  const markerText = getNativeAyahMarker(markerNumber, activeFontFamily, activeRiwaya);
+  const resolvedFontFamily = resolveFontFamily(activeFontFamily, activeRiwaya);
 
   return (
     <span
-      dir="ltr"
+      dir="rtl"
       className={cn(
-        "ayah-marker-wrap ayat-marker qurancom-ayah-marker verse-end-marker",
+        "ayah-marker-wrap ayat-marker qurancom-ayah-marker verse-end-marker native-ayah-marker",
         "inline-block select-none",
-        "w-[1em] h-[1em] shrink-0",
         isPlaying && "is-playing",
         className,
       )}
       style={{
-        verticalAlign: "-0.15em",
-        marginRight: "0.22em",
-        marginLeft: "0.04em",
+        fontFamily: resolvedFontFamily,
+        fontFeatureSettings: '"liga" 1, "calt" 1, "mark" 1, "mkmk" 1',
+        verticalAlign: "-0.08em",
+        marginInline: "0.08em 0.12em",
         lineHeight: 1,
         cursor: onClick ? "pointer" : "default",
       }}
@@ -55,106 +60,20 @@ export const AyahMarker = React.memo(function AyahMarker({
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       aria-label={`Verset ${markerNumber}`}
+      data-marker-font={activeFontFamily}
       onClick={onClick}
       onKeyDown={
         onClick
-          ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(e); } }
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onClick(e);
+              }
+            }
           : undefined
       }
     >
-      <svg
-        className="ayat-marker__svg"
-        viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-        focusable="false"
-        style={{ width: "1em", height: "1em", display: "block", overflow: "visible" }}
-      >
-        <defs>
-          <linearGradient id={`g-gld-${id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%"   stopColor="rgba(218,175,40,0.96)" />
-            <stop offset="50%"  stopColor="rgba(182,136,14,0.92)" />
-            <stop offset="100%" stopColor="rgba(130,95,12,0.88)"  />
-          </linearGradient>
-          <radialGradient id={`g-grn-${id}`} cx="36%" cy="30%" r="70%">
-            <stop offset="0%"   stopColor="#1d8060" />
-            <stop offset="100%" stopColor="#0b3d28" />
-          </radialGradient>
-          <radialGradient id={`g-shi-${id}`} cx="34%" cy="28%" r="52%">
-            <stop offset="0%"   stopColor="rgba(255,255,255,0.22)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0)"    />
-          </radialGradient>
-          {isPlaying && (
-            <filter id={`g-glw-${id}`} x="-40%" y="-40%" width="180%" height="180%">
-              <feGaussianBlur stdDeviation="4" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          )}
-        </defs>
-
-        {/* Etoile 8 pointes (petites ellipses rotatives autour du cercle) */}
-        {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => {
-          const rad = (deg * Math.PI) / 180;
-          const cx = 50 + 43.5 * Math.cos(rad);
-          const cy = 50 + 43.5 * Math.sin(rad);
-          return (
-            <ellipse
-              key={deg}
-              cx={cx} cy={cy}
-              rx="5.6" ry="3.6"
-              transform={`rotate(${deg}, ${cx}, ${cy})`}
-              fill={`url(#g-gld-${id})`}
-              opacity="0.9"
-            />
-          );
-        })}
-
-        {/* Anneau externe dore */}
-        <circle cx="50" cy="50" r="42"
-          fill="none"
-          stroke={`url(#g-gld-${id})`}
-          strokeWidth="2.8"
-          opacity="0.95"
-        />
-
-        {/* Anneau interne pointille */}
-        <circle cx="50" cy="50" r="34.5"
-          fill="none"
-          stroke={`url(#g-gld-${id})`}
-          strokeWidth="1.3"
-          strokeDasharray="3.8 3"
-          opacity={isPlaying ? 1 : 0.62}
-        />
-
-        {/* Coeur vert */}
-        <circle cx="50" cy="50" r="30.5"
-          fill={`url(#g-grn-${id})`}
-          filter={isPlaying ? `url(#g-glw-${id})` : undefined}
-        />
-
-        {/* Shine */}
-        <circle cx="50" cy="50" r="30.5"
-          fill={`url(#g-shi-${id})`}
-        />
-
-        {/* Numero en chiffres arabes */}
-        <text
-          className="ayat-marker__number qurancom-ayah-marker__number"
-          x="50" y="50"
-          textAnchor="middle"
-          dominantBaseline="central"
-          fontSize={textSize}
-          fontFamily="Amiri, 'Scheherazade New', 'Noto Naskh Arabic', serif"
-          fill="#fdfbf0"
-          fontWeight="bold"
-          style={{ userSelect: "none" }}
-        >
-          {arabicNumber}
-        </text>
-      </svg>
+      {markerText}
     </span>
   );
 });

@@ -93,6 +93,43 @@ export default function useQuranDisplayData({
   const readingStartRef = useRef(Date.now());
   const requestSeqRef = useRef(0);
 
+  const persistReadingSideEffects = useCallback(
+    (allAyahs) =>
+      runWhenIdle(() => {
+        const firstAyah = allAyahs?.[0];
+        if (!firstAyah) return;
+
+        const firstSurah = firstAyah?.surah?.number || currentSurah;
+        const firstAyahNumber = firstAyah?.numberInSurah || 1;
+        const positionAyah =
+          displayMode === "surah" ? currentAyah || firstAyahNumber : firstAyahNumber;
+
+        if (displayMode === "page") {
+          savePosition(firstSurah, firstAyahNumber, currentPage);
+        } else {
+          savePosition(firstSurah, positionAyah, firstAyah.page || currentPage);
+        }
+
+        const lastAyah = allAyahs[allAyahs.length - 1];
+        const elapsed = Date.now() - readingStartRef.current;
+        readingStartRef.current = Date.now();
+        logSession({
+          surah: firstSurah,
+          ayahFrom: firstAyahNumber,
+          ayahTo: lastAyah.numberInSurah || firstAyahNumber,
+          page: displayMode === "page" ? currentPage : firstAyah.page || currentPage,
+          durationMs: elapsed,
+        }).catch(() => {});
+        logWirdProgress({
+          surah: firstSurah,
+          fromAyah: firstAyahNumber,
+          toAyah: lastAyah.numberInSurah || firstAyahNumber,
+          pagesCount: displayMode === "page" ? 1 : Math.ceil(allAyahs.length / 15),
+        }).catch(() => {});
+      }),
+    [currentAyah, currentPage, currentSurah, displayMode],
+  );
+
   useEffect(() => {
     if (showHome || !currentSurah || !currentAyah || displayMode !== "surah") return;
     return runWhenIdle(() => {
@@ -120,6 +157,7 @@ export default function useQuranDisplayData({
       setIsWarshFallback(Boolean(cachedData.isWarshFallback));
       dispatch({ type: "SET", payload: { loadedAyahCount: cachedData.ayahs.length } });
       dispatch({ type: "SET_LOADING", payload: false });
+      persistReadingSideEffects(cachedData.ayahs);
       return;
     }
 
@@ -134,6 +172,7 @@ export default function useQuranDisplayData({
         setIsWarshFallback(fallback);
         dispatch({ type: "SET", payload: { loadedAyahCount: fetchedAyahs.length } });
         dispatch({ type: "SET_LOADING", payload: false });
+        persistReadingSideEffects(fetchedAyahs);
         return;
       } catch {
         // fall through to fresh fetch
@@ -201,34 +240,7 @@ export default function useQuranDisplayData({
         });
       }
 
-      const allAyahs = arabicData.ayahs || [];
-      runWhenIdle(() => {
-        const firstAyah = allAyahs[0];
-        if (displayMode === "page") {
-          savePosition(firstAyah?.surah?.number || currentSurah, firstAyah?.numberInSurah || 1, currentPage);
-        } else if (firstAyah) {
-          savePosition(firstAyah.surah?.number || currentSurah, 1, firstAyah.page);
-        }
-
-        if (allAyahs.length > 0) {
-          const lastAyah = allAyahs[allAyahs.length - 1];
-          const elapsed = Date.now() - readingStartRef.current;
-          readingStartRef.current = Date.now();
-          logSession({
-            surah: firstAyah.surah?.number || currentSurah,
-            ayahFrom: firstAyah.numberInSurah || 1,
-            ayahTo: lastAyah.numberInSurah || firstAyah.numberInSurah || 1,
-            page: currentPage,
-            durationMs: elapsed,
-          }).catch(() => {});
-          logWirdProgress({
-            surah: firstAyah.surah?.number || currentSurah,
-            fromAyah: firstAyah.numberInSurah || 1,
-            toAyah: lastAyah.numberInSurah || firstAyah.numberInSurah || 1,
-            pagesCount: displayMode === "page" ? 1 : Math.ceil(allAyahs.length / 15),
-          }).catch(() => {});
-        }
-      });
+      persistReadingSideEffects(arabicData.ayahs || fetchedAyahs);
     } catch (err) {
       INFLIGHT_REQUESTS.delete(cacheKey);
       if (err?.name === "AbortError" || requestSeqRef.current !== requestId) return;
@@ -248,6 +260,7 @@ export default function useQuranDisplayData({
     dispatch,
     displayMode,
     lang,
+    persistReadingSideEffects,
     riwaya,
     showHome,
     warshStrictMode,

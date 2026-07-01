@@ -126,6 +126,10 @@ async function mapWithConcurrency(items, limit, fn) {
 }
 
 async function fetchJson(url, signal) {
+  if (signal?.aborted) {
+    throw new DOMException("Request aborted", "AbortError");
+  }
+
   const cacheKey = IDB_PREFIX + url;
 
   if (memCache.has(cacheKey)) return memCache.get(cacheKey);
@@ -146,9 +150,15 @@ async function fetchJson(url, signal) {
     // Network fetch below remains the source of truth.
   }
 
-  if (inflight.has(cacheKey)) return inflight.get(cacheKey);
+  const existing = inflight.get(cacheKey);
+  if (existing && !existing.signal?.aborted) return existing.promise;
 
-  const request = (async () => {
+  const entry = {
+    signal,
+    promise: null,
+  };
+
+  entry.promise = (async () => {
     const timed = createTimedSignal(signal);
     try {
       const response = await fetch(url, {
@@ -170,12 +180,14 @@ async function fetchJson(url, signal) {
       return json;
     } finally {
       timed.cleanup();
-      inflight.delete(cacheKey);
+      if (inflight.get(cacheKey) === entry) {
+        inflight.delete(cacheKey);
+      }
     }
   })();
 
-  inflight.set(cacheKey, request);
-  return request;
+  inflight.set(cacheKey, entry);
+  return entry.promise;
 }
 
 function buildVerseParams(extra = {}) {
@@ -458,8 +470,12 @@ async function fetchQuranComTranslationPath(path, resourceId, lang, meta, signal
 }
 
 export async function fetchQuranComTranslations(pathPrefix, langs = ["fr"], signal) {
-  const langArray = (Array.isArray(langs) ? langs : [langs])
-    .map((lang) => (TRANSLATION_RESOURCE_IDS[lang] ? lang : "fr"));
+  const langArray = (Array.isArray(langs) ? langs : [langs]).map((lang) => {
+    if (!TRANSLATION_RESOURCE_IDS[lang]) {
+      throw new Error(`Unsupported Quran.com translation language: ${lang}`);
+    }
+    return lang;
+  });
 
   let path = null;
   let meta = {};

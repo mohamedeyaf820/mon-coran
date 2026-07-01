@@ -3425,3 +3425,23 @@ html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-tra
     height: var(--space-7) !important;
   }
 }
+
+@media (min-width: 641px) and (max-width: 900px) {
+  html body .app-root > .mp-header {
+    padding-block: 0.2rem !important;
+    min-height: 0 !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__bar {
+    height: 60px !important;
+    min-height: 60px !important;
+    max-height: 60px !important;
+    padding-block: 0 !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title-btn,
+  html body .app-root > .mp-header .mp-header__home-summary {
+    min-height: 44px !important;
+    padding-block: 0.3rem !important;
+  }
+}

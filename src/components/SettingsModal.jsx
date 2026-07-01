@@ -1,32 +1,50 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
-  Palette,
   BookOpen,
-  Volume2,
-  X,
+  Download,
+  Info,
+  Palette,
   Search,
   Trash2,
-  Download,
   Upload,
-  Info,
+  Volume2,
+  X,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { getRecitersByRiwaya, getReciterVisual } from "../data/reciters";
 import { THEMES as UI_THEMES } from "../data/themes";
+import {
+  getFontOptionsForRiwaya,
+  getNativeAyahMarker,
+  resolveFontFamily,
+} from "../data/fonts";
 import { ensureFontLoaded } from "../services/fontLoader";
-import { getSettings, saveSettings } from "../services/storageService";
 import { downloadExport, importFromFile } from "../services/exportService";
 import { clearCache } from "../services/quranAPI";
 import { toast } from "../lib/utils";
 
-const RIWAYA_FONT_OPTIONS = [
-  { id: "qpc-hafs",     label: "Quran.com Hafs",   hintKey: "settings.qpcHafsHint",     riwaya: "hafs" },
-  { id: "qpc-indopak",  label: "Quran.com IndoPak", hintKey: "settings.qpcIndopakHint",  riwaya: "hafs" },
-  { id: "qpc-warsh",    label: "QPC Warsh",         hintKey: "settings.qpcWarshHint",    riwaya: "warsh" },
-  { id: "kfgqpc-warsh", label: "KFGQPC Warsh",      hintKey: "settings.kfgqpcWarshHint", riwaya: "warsh" },
+const TRANSLATION_LANGS = [
+  { id: "fr", label: "FR" },
+  { id: "en", label: "EN" },
+  { id: "es", label: "ES" },
+  { id: "de", label: "DE" },
+  { id: "tr", label: "TR" },
+  { id: "ur", label: "UR" },
 ];
+
+const TABS = [
+  { id: "general", icon: Palette, labelKey: "settings.general" },
+  { id: "reading", icon: BookOpen, labelKey: "settings.display" },
+  { id: "audio", icon: Volume2, labelKey: "settings.audio" },
+];
+
+function localText(lang, fr, en, ar) {
+  if (lang === "ar") return ar || en || fr;
+  if (lang === "en") return en || fr;
+  return fr;
+}
 
 function SettingsReciterAvatar({ reciter }) {
   const visual = getReciterVisual(reciter);
@@ -48,818 +66,597 @@ function SettingsReciterAvatar({ reciter }) {
   );
 }
 
+function Section({ title, children }) {
+  return (
+    <section className="settings-section">
+      <h3 className="settings-section__title">{title}</h3>
+      <div className="settings-section__body">{children}</div>
+    </section>
+  );
+}
+
+function SwitchRow({ checked, description, id, label, onChange }) {
+  return (
+    <label className="settings-control-row" htmlFor={id}>
+      <span className="settings-control-row__copy">
+        <span className="settings-control-row__label">{label}</span>
+        {description ? (
+          <span className="settings-control-row__description">{description}</span>
+        ) : null}
+      </span>
+      <span className="settings-switch" aria-hidden="true" data-state={checked ? "checked" : "unchecked"}>
+        <span />
+      </span>
+      <input
+        id={id}
+        type="checkbox"
+        checked={Boolean(checked)}
+        onChange={(event) => onChange(event.target.checked)}
+        className="settings-visually-hidden"
+      />
+    </label>
+  );
+}
+
+function SliderRow({ id, label, max, min, onChange, step = 1, suffix = "", value }) {
+  return (
+    <div className="settings-slider-row">
+      <div className="settings-slider-row__head">
+        <label htmlFor={id}>{label}</label>
+        <span>{value}{suffix}</span>
+      </div>
+      <input
+        id={id}
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+      />
+    </div>
+  );
+}
+
+function Segmented({ ariaLabel, options, value, onChange }) {
+  return (
+    <div className="settings-segmented" role="group" aria-label={ariaLabel}>
+      {options.map((option) => (
+        <button
+          type="button"
+          key={option.id}
+          className="settings-segmented__item"
+          data-active={value === option.id}
+          onClick={() => onChange(option.id)}
+        >
+          {option.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function SettingsModal() {
   const { state, dispatch, set } = useApp();
   const {
+    audioSpeed,
+    autoNightMode,
+    fontFamily,
     lang,
-    theme,
-    riwaya,
-    reciter,
+    nightEnd,
+    nightStart,
     quranFontSize,
     quranTranslationFontSize = 18,
-    showTranslation,
+    reciter,
+    riwaya,
     showTajwid,
-    showWordByWord,
+    showTranslation,
     showTransliteration,
+    showWordByWord,
     showWordTranslation,
-    fontFamily,
-    audioSpeed,
+    theme,
+    translationLangs = ["fr"],
     volume,
-    autoNightMode,
-    nightStart,
-    nightEnd,
   } = state;
 
-  const [activeTab, setActiveTab] = useState("apparence"); // 'apparence' | 'affichage' | 'audio'
+  const [activeTab, setActiveTab] = useState("general");
   const [reciterSearch, setReciterSearch] = useState("");
-  const panelRef = useRef(null);
-  const tabIds = ["apparence", "affichage", "audio"];
-
-  const handleTabKeyDown = (e) => {
-    const idx = tabIds.indexOf(activeTab);
-    let next = -1;
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-      next = (idx + 1) % tabIds.length;
-    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-      next = (idx - 1 + tabIds.length) % tabIds.length;
-    } else if (e.key === "Home") {
-      next = 0;
-    } else if (e.key === "End") {
-      next = tabIds.length - 1;
-    }
-    if (next >= 0) {
-      e.preventDefault();
-      setActiveTab(tabIds[next]);
-      document.getElementById(`tab-${tabIds[next]}`)?.focus();
-    }
-  };
+  const firstInputRef = useRef(null);
   const activeRiwaya = riwaya || "hafs";
-  const availableFontOptions = RIWAYA_FONT_OPTIONS.filter(
-    (font) => font.riwaya === activeRiwaya,
-  );
-  const selectedFontFamily = availableFontOptions.some(
-    (font) => font.id === fontFamily,
-  )
+
+  const availableFontOptions = getFontOptionsForRiwaya(activeRiwaya);
+  const selectedFontFamily = availableFontOptions.some((font) => font.id === fontFamily)
     ? fontFamily
     : availableFontOptions[0]?.id || "qpc-hafs";
+  const selectedMarkerPreview = getNativeAyahMarker(
+    1,
+    selectedFontFamily,
+    activeRiwaya,
+  );
+  const selectedMarkerFontFamily = resolveFontFamily(
+    selectedFontFamily,
+    activeRiwaya,
+  );
 
+  const recitersList = useMemo(
+    () => getRecitersByRiwaya(activeRiwaya),
+    [activeRiwaya],
+  );
+  const filteredReciters = useMemo(() => {
+    const query = reciterSearch.trim().toLowerCase();
+    if (!query) return recitersList;
+    return recitersList.filter((item) =>
+      [item.name, item.nameFr, item.nameEn, item.style]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(query)),
+    );
+  }, [reciterSearch, recitersList]);
+
+  const title = localText(lang, "Parametres", "Settings", "الاعدادات");
   const close = () => dispatch({ type: "TOGGLE_SETTINGS" });
 
-  // Ensure font loaded when font family changes
   useEffect(() => {
     ensureFontLoaded(selectedFontFamily).catch(() => {});
   }, [selectedFontFamily]);
 
-  // Reciters matching search query
-  const recitersList = getRecitersByRiwaya(activeRiwaya);
-  const filteredReciters = recitersList.filter((r) => {
-    const q = reciterSearch.toLowerCase();
-    return (
-      (r.name || "").toLowerCase().includes(q) ||
-      (r.nameFr || "").toLowerCase().includes(q) ||
-      (r.nameEn || "").toLowerCase().includes(q)
-    );
-  });
+  const handleTabKeyDown = (event) => {
+    const currentIndex = TABS.findIndex((tab) => tab.id === activeTab);
+    let nextIndex = -1;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      nextIndex = (currentIndex + 1) % TABS.length;
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      nextIndex = (currentIndex - 1 + TABS.length) % TABS.length;
+    } else if (event.key === "Home") {
+      nextIndex = 0;
+    } else if (event.key === "End") {
+      nextIndex = TABS.length - 1;
+    }
+    if (nextIndex >= 0) {
+      event.preventDefault();
+      const nextTab = TABS[nextIndex].id;
+      setActiveTab(nextTab);
+      document.getElementById(`settings-tab-${nextTab}`)?.focus();
+    }
+  };
+
+  const handleTranslationToggle = (translationLang) => {
+    const current = Array.isArray(translationLangs) ? translationLangs : ["fr"];
+    const next = current.includes(translationLang)
+      ? current.filter((item) => item !== translationLang)
+      : [...current, translationLang].slice(0, 3);
+    set({ translationLangs: next.length ? next : ["fr"] });
+  };
 
   const handleClearCache = async () => {
     try {
       await clearCache();
       toast(t("settings.cacheCleared", lang), "success");
-      setTimeout(() => window.location.reload(), 1500);
-    } catch (err) {
-      if (import.meta.env.DEV) console.warn("clearCache error:", err);
+      setTimeout(() => window.location.reload(), 1200);
+    } catch (error) {
+      if (import.meta.env.DEV) console.warn("clearCache error:", error);
       toast(t("errors.generic", lang), "error");
     }
   };
 
-  const handleExport = () => {
-    downloadExport();
-  };
-
-  const handleImport = async (e) => {
-    const file = e.target.files?.[0];
+  const handleImport = async (event) => {
+    const file = event.target.files?.[0];
     if (!file) return;
     try {
       const ok = await importFromFile(file);
-      if (ok) {
-        toast(t("settings.importSettingsSuccess", lang), "success");
-        setTimeout(() => window.location.reload(), 1500);
-      } else {
-        toast(t("settings.importSettingsFailed", lang), "error");
-      }
+      toast(
+        t(ok ? "settings.importSettingsSuccess" : "settings.importSettingsFailed", lang),
+        ok ? "success" : "error",
+      );
+      if (ok) setTimeout(() => window.location.reload(), 1200);
     } catch {
       toast(t("settings.importSettingsFailed", lang), "error");
+    } finally {
+      event.target.value = "";
     }
   };
 
-  return (
-    <Dialog.Root
-      open
-      onOpenChange={(o) => {
-        if (!o) close();
-      }}
-    >
-      <Dialog.Portal>
-        <Dialog.Overlay
-          className="settings-backdrop fixed inset-0 bg-black/35 backdrop-blur-md transition-opacity"
-          onClick={close}
+  const renderGeneralTab = () => (
+    <div className="settings-panel-stack">
+      <Section title={t("settings.appLanguage", lang)}>
+        <Segmented
+          ariaLabel={t("settings.appLanguage", lang)}
+          value={lang}
+          onChange={(nextLang) => set({ lang: nextLang })}
+          options={[
+            { id: "fr", label: "Francais" },
+            { id: "en", label: "English" },
+            { id: "ar", label: "العربية" },
+          ]}
         />
-        <Dialog.Content
-          asChild
-          aria-label={lang === "ar" ? "الإعدادات" : lang === "en" ? "Settings" : "Paramètres"}
-          onEscapeKeyDown={close}
-          onInteractOutside={close}
-        >
-          <div className="settings-overlay fixed inset-0 z-[500] flex justify-end pointer-events-none">
-            <Dialog.Title className="sr-only">{lang === "ar" ? "الإعدادات" : lang === "en" ? "Settings" : "Paramètres"}</Dialog.Title>
-            {/* Settings Drawer Panel */}
-            <div
-              ref={panelRef}
-              className="settings-drawer relative h-full w-full max-w-md bg-[var(--bg-card)] border-l border-[var(--border)] shadow-2xl flex flex-col z-10 transition-transform duration-300 transform translate-x-0 pointer-events-auto"
-              style={{
-                boxShadow: "-10px 0 40px -6px rgba(0, 0, 0, 0.15)",
-                color: "var(--text-primary)",
-              }}
-            >
-              {/* Header */}
-              <header className="settings-drawer__header flex items-center justify-between px-6 py-4.5 border-b border-[var(--border)]">
-                <div className="flex items-center gap-2.5">
-                  <span className="p-2 rounded-xl bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)] shadow-sm">
-                    <BookOpen size={18} />
-                  </span>
-                  <h2 className="text-md font-extrabold font-[var(--font-ui)] tracking-tight">
-                    {t("settings.readingSettings", lang)}
-                  </h2>
-                </div>
-                <button
-                  onClick={close}
-                  className="p-1.5 rounded-full hover:bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all cursor-pointer hover:scale-105 active:scale-95"
-                  aria-label={
-                    lang === "ar"
-                      ? "\u0625\u063a\u0644\u0627\u0642"
-                      : lang === "en"
-                        ? "Close settings"
-                        : "Fermer les paramètres"
-                  }
-                  title={
-                    lang === "ar"
-                      ? "\u0625\u063a\u0644\u0627\u0642"
-                      : lang === "en"
-                        ? "Close settings"
-                        : "Fermer les paramètres"
-                  }
-                >
-                  <X size={18} />
-                </button>
-              </header>
+      </Section>
 
-              {/* Tab Selection */}
-              <nav
-                className="settings-drawer__tabs flex gap-1 border-b border-[var(--border)] p-1.5 bg-[var(--bg-secondary)]"
-                aria-label={lang === "ar" ? "التبويبات" : lang === "en" ? "Settings tabs" : "Onglets des paramètres"}
-                role="tablist"
-                aria-orientation="horizontal"
-                onKeyDown={handleTabKeyDown}
+      <Section title={t("settings.visualTheme", lang)}>
+        <div className="settings-theme-grid" role="group" aria-label={t("settings.visualTheme", lang)}>
+          {UI_THEMES.map((item) => {
+            const label = localText(lang, item.fr, item.en, item.ar);
+            const isActive = theme === item.id;
+            return (
+              <button
+                type="button"
+                key={item.id}
+                className="settings-theme-tile"
+                data-active={isActive}
+                onClick={() => set({ theme: item.id })}
+                aria-pressed={isActive}
               >
-                <button
-                  id="tab-apparence"
-                  role="tab"
-                  aria-selected={activeTab === "apparence"}
-                  aria-controls="panel-apparence"
-                  tabIndex={activeTab === "apparence" ? 0 : -1}
-                  onClick={() => setActiveTab("apparence")}
-                  className={`flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 rounded-xl transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] ${
-                    activeTab === "apparence"
-                      ? "bg-[var(--primary)] text-white shadow-md shadow-[rgba(var(--primary-rgb),0.2)] font-extrabold"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[rgba(var(--primary-rgb),0.04)]"
-                  }`}
-                >
-                  <Palette size={14} />
-                  <span>{t("settings.general", lang)}</span>
-                </button>
-                <button
-                  id="tab-affichage"
-                  role="tab"
-                  aria-selected={activeTab === "affichage"}
-                  aria-controls="panel-affichage"
-                  tabIndex={activeTab === "affichage" ? 0 : -1}
-                  onClick={() => setActiveTab("affichage")}
-                  className={`flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 rounded-xl transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] ${
-                    activeTab === "affichage"
-                      ? "bg-[var(--primary)] text-white shadow-md shadow-[rgba(var(--primary-rgb),0.2)] font-extrabold"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[rgba(var(--primary-rgb),0.04)]"
-                  }`}
-                >
-                  <BookOpen size={14} />
-                  <span>{t("settings.display", lang)}</span>
-                </button>
-                <button
-                  id="tab-audio"
-                  role="tab"
-                  aria-selected={activeTab === "audio"}
-                  aria-controls="panel-audio"
-                  tabIndex={activeTab === "audio" ? 0 : -1}
-                  onClick={() => setActiveTab("audio")}
-                  className={`flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5 rounded-xl transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] ${
-                    activeTab === "audio"
-                      ? "bg-[var(--primary)] text-white shadow-md shadow-[rgba(var(--primary-rgb),0.2)] font-extrabold"
-                      : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[rgba(var(--primary-rgb),0.04)]"
-                  }`}
-                >
-                  <Volume2 size={14} />
-                  <span>{t("settings.audio", lang)}</span>
-                </button>
-              </nav>
+                <span
+                  className="settings-theme-tile__swatch"
+                  style={{
+                    "--theme-bg": item.palette?.bg || "var(--bg-primary)",
+                    "--theme-primary": item.palette?.primary || "var(--primary)",
+                    "--theme-text": item.palette?.text || "var(--text-primary)",
+                  }}
+                />
+                <span>{label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </Section>
 
-              {/* Panel Content (Scrollable) */}
-              <div className="settings-drawer__content flex-1 overflow-y-auto p-5 space-y-6">
-                {/* TAB 1: Apparence */}
-                {activeTab === "apparence" && (
-                  <div
-                    id="panel-apparence"
-                    role="tabpanel"
-                    aria-labelledby="tab-apparence"
-                    className="space-y-6 animate-fade-in"
+      <Section title={t("settings.autoNightMode", lang)}>
+        <SwitchRow
+          id="settings-auto-night"
+          checked={autoNightMode}
+          onChange={(checked) => set({ autoNightMode: checked })}
+          label={t("settings.autoNightMode", lang)}
+          description={t("settings.autoNightHint", lang)}
+        />
+        {autoNightMode ? (
+          <div className="settings-time-grid">
+            <label>
+              <span>{t("settings.start", lang)}</span>
+              <input
+                ref={firstInputRef}
+                type="time"
+                value={nightStart || "20:00"}
+                onChange={(event) => set({ nightStart: event.target.value })}
+              />
+            </label>
+            <label>
+              <span>{t("settings.end", lang)}</span>
+              <input
+                type="time"
+                value={nightEnd || "06:00"}
+                onChange={(event) => set({ nightEnd: event.target.value })}
+              />
+            </label>
+          </div>
+        ) : null}
+      </Section>
+
+      <Section title={t("settings.backupRestore", lang)}>
+        <div className="settings-action-grid">
+          <button type="button" className="settings-action-button" onClick={downloadExport}>
+            <Download size={16} />
+            <span>{t("export.export", lang)}</span>
+          </button>
+          <label className="settings-action-button" htmlFor="settings-import-file">
+            <Upload size={16} />
+            <span>{t("export.import", lang)}</span>
+            <input
+              id="settings-import-file"
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              className="settings-visually-hidden"
+            />
+          </label>
+        </div>
+      </Section>
+
+      <Section title={localText(lang, "Outils", "Tools", "الادوات")}>
+        <button
+          type="button"
+          className="settings-tool-link"
+          onClick={() => {
+            set({ toolsHubOpen: true });
+            close();
+          }}
+        >
+          <span>
+            {localText(lang, "Espace Outils", "Tools Hub", "مركز الادوات")}
+          </span>
+          <small>
+            {localText(
+              lang,
+              "Flashcards, statistiques, memorisation et plus",
+              "Flashcards, stats, memorization and more",
+              "البطاقات التعليمية والاحصائيات والحفظ",
+            )}
+          </small>
+        </button>
+      </Section>
+    </div>
+  );
+
+  const renderReadingTab = () => (
+    <div className="settings-panel-stack">
+      <Section title="Riwaya">
+        <Segmented
+          ariaLabel="Riwaya"
+          value={activeRiwaya}
+          onChange={(nextRiwaya) => set({ riwaya: nextRiwaya })}
+          options={[
+            { id: "hafs", label: "Hafs" },
+            { id: "warsh", label: "Warsh" },
+          ]}
+        />
+      </Section>
+
+      <Section title={t("settings.arabicFontFamily", lang)}>
+        <div className="settings-font-picker">
+          <span
+            className="settings-font-marker-preview native-ayah-marker"
+            dir="rtl"
+            aria-hidden="true"
+            style={{ fontFamily: selectedMarkerFontFamily }}
+          >
+            {selectedMarkerPreview}
+          </span>
+          <select
+            id="settings-font-family"
+            value={selectedFontFamily}
+            onChange={(event) => set({ fontFamily: event.target.value })}
+            className="settings-select"
+          >
+            {availableFontOptions.map((font) => (
+              <option key={font.id} value={font.id}>
+                {font.label} - {t(font.hintKey, lang)}
+              </option>
+            ))}
+          </select>
+        </div>
+      </Section>
+
+      <Section title={localText(lang, "Tailles de texte", "Text sizes", "حجم النص")}>
+        <SliderRow
+          id="settings-font-size-quran"
+          label={t("settings.arabicFontSize", lang)}
+          min={12}
+          max={96}
+          value={quranFontSize}
+          suffix="px"
+          onChange={(value) => set({ quranFontSize: value })}
+        />
+        <SliderRow
+          id="settings-font-size-translation"
+          label={t("settings.translationFontSize", lang)}
+          min={14}
+          max={28}
+          value={quranTranslationFontSize}
+          suffix="px"
+          onChange={(value) => set({ quranTranslationFontSize: value })}
+        />
+      </Section>
+
+      <Section title={t("settings.translationLang", lang)}>
+        <div className="settings-chip-grid" role="group" aria-label={t("settings.translationLang", lang)}>
+          {TRANSLATION_LANGS.map((item) => {
+            const isActive = translationLangs.includes(item.id);
+            return (
+              <button
+                type="button"
+                key={item.id}
+                className="settings-chip"
+                data-active={isActive}
+                onClick={() => handleTranslationToggle(item.id)}
+                aria-pressed={isActive}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+      </Section>
+
+      <Section title={t("settings.readingHelpers", lang)}>
+        <SwitchRow
+          id="settings-show-tajwid"
+          checked={showTajwid}
+          onChange={(checked) => set({ showTajwid: checked })}
+          label={t("settings.tajweedColors", lang)}
+          description={t("settings.tajweedDesc", lang)}
+        />
+        <SwitchRow
+          id="settings-show-translation"
+          checked={showTranslation}
+          onChange={(checked) => set({ showTranslation: checked })}
+          label={t("settings.showTranslationsDetail", lang)}
+          description={t("settings.showTranslationsDesc", lang)}
+        />
+        <SwitchRow
+          id="settings-show-transliteration"
+          checked={showTransliteration}
+          onChange={(checked) => set({ showTransliteration: checked })}
+          label={t("settings.showTransliteration", lang)}
+          description={t("settings.showTransliterationDesc", lang)}
+        />
+        <SwitchRow
+          id="settings-show-word-by-word"
+          checked={showWordByWord}
+          onChange={(checked) => set({ showWordByWord: checked })}
+          label={t("settings.wordByWordMode", lang)}
+          description={t("settings.wordByWordDesc", lang)}
+        />
+        <SwitchRow
+          id="settings-show-word-translation"
+          checked={showWordTranslation}
+          onChange={(checked) => set({ showWordTranslation: checked })}
+          label={localText(lang, "Traduction mot a mot", "Word translation", "ترجمة الكلمات")}
+          description={localText(lang, "Affiche le sens des mots quand le mode mot a mot est actif.", "Shows word meanings when word-by-word mode is active.", "يعرض معاني الكلمات عند تفعيل وضع كلمة بكلمة.")}
+        />
+      </Section>
+    </div>
+  );
+
+  const renderAudioTab = () => (
+    <div className="settings-panel-stack">
+      <Section title={t("settings.selectReciter", lang)}>
+        <div className="settings-search">
+          <Search size={16} aria-hidden="true" />
+          <input
+            id="settings-reciter-search"
+            type="search"
+            placeholder={t("settings.searchReciters", lang)}
+            value={reciterSearch}
+            onChange={(event) => setReciterSearch(event.target.value)}
+          />
+        </div>
+
+        <div className="settings-reciter-list">
+          {filteredReciters.length ? (
+            <div className="settings-reciter-grid">
+              {filteredReciters.map((item) => {
+                const isActive = item.id === reciter;
+                return (
+                  <button
+                    type="button"
+                    key={item.id}
+                    className="settings-reciter-option"
+                    data-active={isActive}
+                    onClick={() => set({ reciter: item.id })}
+                    aria-pressed={isActive}
                   >
-                    {/* App Language */}
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="settings-lang-select"
-                        className="text-xs font-extrabold uppercase tracking-wider text-[var(--text-muted)]"
-                      >
-                        {t("settings.appLanguage", lang)}
-                      </label>
-                      <select
-                        id="settings-lang-select"
-                        value={lang}
-                        onChange={(e) => set({ lang: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] font-medium text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all"
-                      >
-                        <option value="fr">Français</option>
-                        <option value="en">English</option>
-                        <option value="ar">العربية</option>
-                      </select>
-                    </div>
-
-                    {/* Theme Mode */}
-                    <div className="space-y-2.5">
-                      <span className="text-xs font-extrabold uppercase tracking-wider text-[var(--text-muted)] block">
-                        {t("settings.visualTheme", lang)}
+                    <SettingsReciterAvatar reciter={item} />
+                    <span className="settings-reciter-option__text">
+                      <span>
+                        {lang === "fr"
+                          ? item.nameFr || item.name
+                          : lang === "en"
+                            ? item.nameEn || item.name
+                            : item.name}
                       </span>
-                      <div
-                        className="grid grid-cols-2 gap-3"
-                        role="group"
-                        aria-label={t("settings.visualTheme", lang)}
-                      >
-                        {UI_THEMES.map((thm) => {
-                          const label =
-                            lang === "ar"
-                              ? thm.ar
-                              : lang === "fr"
-                                ? thm.fr
-                                : thm.en;
-                          const isActive = theme === thm.id;
-                          return (
-                            <button
-                              key={thm.id}
-                              type="button"
-                              onClick={() => set({ theme: thm.id })}
-                              className={`relative flex flex-col items-center justify-center p-4.5 rounded-2xl border text-center transition-all cursor-pointer ${
-                                isActive
-                                  ? "border-[var(--primary)] bg-[rgba(var(--primary-rgb),0.06)] shadow-md scale-[1.02]"
-                                  : "border-[var(--border)] hover:bg-[var(--bg-secondary)] hover:scale-[1.01]"
-                              }`}
-                              aria-pressed={isActive}
-                            >
-                              {/* Theme color preview swatch */}
-                              <div
-                                className="w-11 h-11 rounded-full border border-black/10 shadow-inner mb-2.5 flex items-center justify-center relative overflow-hidden shrink-0"
-                                style={{
-                                  background:
-                                    thm.palette?.bg || "var(--bg-primary)",
-                                }}
-                              >
-                                {/* Inner color details */}
-                                <div className="absolute inset-0 flex">
-                                  <div
-                                    className="w-1/2 h-full opacity-10"
-                                    style={{
-                                      backgroundColor:
-                                        thm.palette?.primary ||
-                                        "var(--primary)",
-                                    }}
-                                  />
-                                  <div
-                                    className="w-1/2 h-full opacity-20"
-                                    style={{
-                                      backgroundColor:
-                                        thm.palette?.text ||
-                                        "var(--text-primary)",
-                                    }}
-                                  />
-                                </div>
-                                {isActive && (
-                                  <i className="fas fa-check text-[0.62rem] text-[var(--primary)] bg-[var(--bg-card)] p-1 rounded-full shadow-sm z-10" />
-                                )}
-                              </div>
-                              <span
-                                className={`text-xs font-bold tracking-tight ${
-                                  isActive
-                                    ? "text-[var(--primary)] font-extrabold"
-                                    : "text-[var(--text-primary)]"
-                                }`}
-                              >
-                                {label}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
+                      <small>{item.style || "murattal"}</small>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="settings-empty">{t("settings.noReciterFound", lang)}</p>
+          )}
+        </div>
+      </Section>
 
-                    {/* Auto Night Mode */}
-                    <div className="p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border)] space-y-3">
-                      <div className="flex items-center justify-between">
-                        <label
-                          htmlFor="settings-auto-night"
-                          className="cursor-pointer"
-                        >
-                          <h3 className="text-sm font-semibold">
-                            {t("settings.autoNightMode", lang)}
-                          </h3>
-                          <p className="text-xs text-[var(--text-muted)]">
-                            {t("settings.autoNightHint", lang)}
-                          </p>
-                        </label>
-                        <input
-                          id="settings-auto-night"
-                          type="checkbox"
-                          checked={autoNightMode}
-                          onChange={(e) =>
-                            set({ autoNightMode: e.target.checked })
-                          }
-                          className="w-4 h-4 text-[var(--primary)] rounded focus:ring-[var(--primary)] cursor-pointer"
-                        />
-                      </div>
+      <Section title={localText(lang, "Lecture", "Playback", "التشغيل")}>
+        <SliderRow
+          id="settings-audio-speed"
+          label={t("settings.playbackSpeed", lang)}
+          min={0.5}
+          max={2}
+          step={0.1}
+          value={audioSpeed}
+          suffix="x"
+          onChange={(value) => set({ audioSpeed: value })}
+        />
+        <SliderRow
+          id="settings-audio-volume"
+          label="Volume"
+          min={0}
+          max={1}
+          step={0.05}
+          value={volume}
+          suffix=""
+          onChange={(value) => set({ volume: value })}
+        />
+      </Section>
 
-                      {autoNightMode && (
-                        <div className="flex items-center gap-4 pt-2 border-t border-[var(--border)]">
-                          <div className="flex-1 flex flex-col gap-1 text-xs text-[var(--text-muted)]">
-                            <label htmlFor="settings-night-start">
-                              {t("settings.start", lang)}
-                            </label>
-                            <input
-                              id="settings-night-start"
-                              type="time"
-                              value={nightStart || "20:00"}
-                              onChange={(e) =>
-                                set({ nightStart: e.target.value })
-                              }
-                              className="px-2 py-1 bg-[var(--bg-card)] rounded border border-[var(--border)] focus:outline-none"
-                            />
-                          </div>
-                          <div className="flex-1 flex flex-col gap-1 text-xs text-[var(--text-muted)]">
-                            <label htmlFor="settings-night-end">
-                              {t("settings.end", lang)}
-                            </label>
-                            <input
-                              id="settings-night-end"
-                              type="time"
-                              value={nightEnd || "06:00"}
-                              onChange={(e) =>
-                                set({ nightEnd: e.target.value })
-                              }
-                              className="px-2 py-1 bg-[var(--bg-card)] rounded border border-[var(--border)] focus:outline-none"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
+      <Section title={t("settings.clearCache", lang)}>
+        <div className="settings-cache-note">
+          <Info size={16} />
+          <span>{t("settings.cacheInfo", lang)}</span>
+        </div>
+        <button type="button" className="settings-danger-button" onClick={handleClearCache}>
+          <Trash2 size={16} />
+          <span>{t("settings.clearCache", lang)}</span>
+        </button>
+      </Section>
+    </div>
+  );
 
-                    {/* Import/Export simple parameters */}
-                    <div className="pt-4 border-t border-[var(--border)] space-y-3">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
-                        {t("settings.backupRestore", lang)}
-                      </span>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={handleExport}
-                          className="flex-1 py-2 px-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] text-sm font-semibold flex items-center justify-center gap-2"
-                        >
-                          <Download size={15} />
-                          <span>{t("export.export", lang)}</span>
-                        </button>
-                        <label
-                          htmlFor="settings-import-file"
-                          className="flex-1 py-2 px-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer"
-                        >
-                          <Upload size={15} />
-                          <span>{t("export.import", lang)}</span>
-                          <input
-                            id="settings-import-file"
-                            type="file"
-                            accept=".json"
-                            onChange={handleImport}
-                            className="hidden"
-                          />
-                        </label>
-                      </div>
-                    </div>
-
-                    {/* Espace Outils */}
-                    <div className="pt-4 border-t border-[var(--border)] space-y-3">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
-                        {lang === "ar"
-                          ? "الأدوات"
-                          : lang === "fr"
-                            ? "Outils"
-                            : "Tools"}
-                      </span>
-                      <button
-                        onClick={() => {
-                          set({ toolsHubOpen: true });
-                          close();
-                        }}
-                        className="w-full py-3 px-4 rounded-xl border border-[var(--primary)] bg-[rgba(var(--primary-rgb),0.05)] hover:bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)] text-sm font-semibold flex items-center justify-between transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-center gap-3">
-                          <i className="fas fa-shapes text-lg" />
-                          <div className="text-left">
-                            <p className="font-bold">
-                              {lang === "ar"
-                                ? "مركز الأدوات"
-                                : lang === "fr"
-                                  ? "Espace Outils"
-                                  : "Tools Hub"}
-                            </p>
-                            <p className="text-[0.71rem] text-[var(--text-muted)]">
-                              {lang === "ar"
-                                ? "البطاقات التعليمية، الإحصائيات، الحفظ والمزيد"
-                                : lang === "fr"
-                                  ? "Flashcards, statistiques, mémorisation et plus"
-                                  : "Flashcards, stats, memorization and more"}
-                            </p>
-                          </div>
-                        </div>
-                        <i className="fas fa-chevron-right text-xs opacity-60" />
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* TAB 2: Affichage & Coran */}
-                {activeTab === "affichage" && (
-                  <div
-                    id="panel-affichage"
-                    role="tabpanel"
-                    aria-labelledby="tab-affichage"
-                    className="space-y-6 animate-fade-in"
-                  >
-                    {/* Riwaya */}
-                    <div className="space-y-2">
-                      <span
-                        id="settings-riwaya-label"
-                        className="text-xs font-extrabold uppercase tracking-wider text-[var(--text-muted)] block"
-                      >
-                        Riwaya
-                      </span>
-                      <div
-                        className="relative p-1 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border)] flex gap-1"
-                        role="group"
-                        aria-labelledby="settings-riwaya-label"
-                      >
-                        <button
-                          onClick={() => set({ riwaya: "hafs" })}
-                          className={`flex-1 py-2 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
-                            riwaya === "hafs"
-                              ? "bg-[var(--bg-card)] text-[var(--primary)] shadow-sm"
-                              : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                          }`}
-                        >
-                          Hafs (حفص)
-                        </button>
-                        <button
-                          onClick={() => set({ riwaya: "warsh" })}
-                          className={`flex-1 py-2 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
-                            riwaya === "warsh"
-                              ? "bg-[var(--bg-card)] text-[var(--primary)] shadow-sm"
-                              : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                          }`}
-                        >
-                          Warsh (ورش)
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Font selection */}
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="settings-font-family"
-                        className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block"
-                      >
-                        {t("settings.arabicFontFamily", lang)}
-                      </label>
-                      <select
-                        id="settings-font-family"
-                        value={selectedFontFamily}
-                        onChange={(e) => set({ fontFamily: e.target.value })}
-                        className="w-full px-3 py-2 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] font-medium text-sm focus:outline-none focus:ring-2 focus:ring-[rgba(var(--primary-rgb),0.5)]"
-                      >
-                        {availableFontOptions.map((f) => (
-                          <option key={f.id} value={f.id}>
-                            {f.label} ({t(f.hintKey, lang)})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Font sizes sliders */}
-                    <div className="space-y-4 p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border)]">
-                      {/* Quran font size */}
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-xs font-bold uppercase text-[var(--text-muted)]">
-                          <label htmlFor="settings-font-size-quran">
-                            {t("settings.arabicFontSize", lang)}
-                          </label>
-                          <span>{quranFontSize}px</span>
-                        </div>
-                        <input
-                          id="settings-font-size-quran"
-                          type="range"
-                          min="12"
-                          max="96"
-                          step="1"
-                          value={quranFontSize}
-                          onChange={(e) =>
-                            set({ quranFontSize: Number(e.target.value) })
-                          }
-                          className="w-full accent-[var(--primary)] cursor-pointer"
-                        />
-                      </div>
-
-                      {/* Translation font size */}
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-xs font-bold uppercase text-[var(--text-muted)]">
-                          <label htmlFor="settings-font-size-translation">
-                            {t("settings.translationFontSize", lang)}
-                          </label>
-                          <span>{quranTranslationFontSize}px</span>
-                        </div>
-                        <input
-                          id="settings-font-size-translation"
-                          type="range"
-                          min="14"
-                          max="28"
-                          step="1"
-                          value={quranTranslationFontSize}
-                          onChange={(e) =>
-                            set({
-                              quranTranslationFontSize: Number(e.target.value),
-                            })
-                          }
-                          className="w-full accent-[var(--primary)] cursor-pointer"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Display checkboxes helpers */}
-                    <div className="space-y-3">
-                      <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block">
-                        {t("settings.readingHelpers", lang)}
-                      </span>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="settings-show-tajwid"
-                          className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] cursor-pointer select-none"
-                        >
-                          <input
-                            id="settings-show-tajwid"
-                            type="checkbox"
-                            checked={showTajwid}
-                            onChange={(e) =>
-                              set({ showTajwid: e.target.checked })
-                            }
-                            className="w-4 h-4 text-[var(--primary)] rounded focus:ring-[var(--primary)]"
-                          />
-                          <div className="text-left">
-                            <p className="text-sm font-semibold">
-                              {t("settings.tajweedColors", lang)}
-                            </p>
-                            <p className="text-xs text-[var(--text-muted)]">
-                              {t("settings.tajweedDesc", lang)}
-                            </p>
-                          </div>
-                        </label>
-
-                        <label
-                          htmlFor="settings-show-translation"
-                          className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] cursor-pointer select-none"
-                        >
-                          <input
-                            id="settings-show-translation"
-                            type="checkbox"
-                            checked={showTranslation}
-                            onChange={(e) =>
-                              set({ showTranslation: e.target.checked })
-                            }
-                            className="w-4 h-4 text-[var(--primary)] rounded focus:ring-[var(--primary)]"
-                          />
-                          <div className="text-left">
-                            <p className="text-sm font-semibold">
-                              {t("settings.showTranslationsDetail", lang)}
-                            </p>
-                            <p className="text-xs text-[var(--text-muted)]">
-                              {t("settings.showTranslationsDesc", lang)}
-                            </p>
-                          </div>
-                        </label>
-
-                        <label
-                          htmlFor="settings-show-transliteration"
-                          className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] cursor-pointer select-none"
-                        >
-                          <input
-                            id="settings-show-transliteration"
-                            type="checkbox"
-                            checked={showTransliteration}
-                            onChange={(e) =>
-                              set({ showTransliteration: e.target.checked })
-                            }
-                            className="w-4 h-4 text-[var(--primary)] rounded focus:ring-[var(--primary)]"
-                          />
-                          <div className="text-left">
-                            <p className="text-sm font-semibold">
-                              {t("settings.showTransliteration", lang)}
-                            </p>
-                            <p className="text-xs text-[var(--text-muted)]">
-                              {t("settings.showTransliterationDesc", lang)}
-                            </p>
-                          </div>
-                        </label>
-
-                        <label
-                          htmlFor="settings-show-word-by-word"
-                          className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] hover:bg-[var(--bg-secondary)] cursor-pointer select-none"
-                        >
-                          <input
-                            id="settings-show-word-by-word"
-                            type="checkbox"
-                            checked={showWordByWord}
-                            onChange={(e) =>
-                              set({ showWordByWord: e.target.checked })
-                            }
-                            className="w-4 h-4 text-[var(--primary)] rounded focus:ring-[var(--primary)]"
-                          />
-                          <div className="text-left">
-                            <p className="text-sm font-semibold">
-                              {t("settings.wordByWordMode", lang)}
-                            </p>
-                            <p className="text-xs text-[var(--text-muted)]">
-                              {t("settings.wordByWordDesc", lang)}
-                            </p>
-                          </div>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* TAB 3: Audio */}
-                {activeTab === "audio" && (
-                  <div
-                    id="panel-audio"
-                    role="tabpanel"
-                    aria-labelledby="tab-audio"
-                    className="space-y-6 animate-fade-in"
-                  >
-                    {/* Reciter searchable selector */}
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="settings-reciter-search"
-                        className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block"
-                      >
-                        {t("settings.selectReciter", lang)}
-                      </label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-2.5 text-[var(--text-muted)]">
-                          <Search size={16} />
-                        </span>
-                        <input
-                          id="settings-reciter-search"
-                          type="text"
-                          placeholder={t("settings.searchReciters", lang)}
-                          value={reciterSearch}
-                          onChange={(e) => setReciterSearch(e.target.value)}
-                          className="w-full pl-9 pr-4 py-2 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] text-sm focus:outline-none focus:ring-2 focus:ring-[rgba(var(--primary-rgb),0.5)]"
-                        />
-                      </div>
-
-                      <div className="settings-reciter-list border border-[var(--border)] rounded-2xl max-h-72 overflow-y-auto bg-[var(--bg-card)]">
-                        {filteredReciters.length > 0 ? (
-                          <div className="settings-reciter-grid p-2 grid grid-cols-1 min-[380px]:grid-cols-2 gap-2">
-                            {filteredReciters.map((r) => {
-                              const isActive = r.id === reciter;
-                              return (
-                                <button
-                                  key={r.id}
-                                  onClick={() => set({ reciter: r.id })}
-                                  className={`settings-reciter-option w-full px-3 py-2 rounded-xl text-left text-sm font-semibold transition-all border flex items-center justify-between gap-2.5 cursor-pointer ${
-                                    isActive
-                                      ? "border-[rgba(var(--primary-rgb),0.32)] bg-[rgba(var(--primary-rgb),0.06)] text-[var(--primary)] font-bold shadow-sm"
-                                      : "border-transparent hover:bg-[var(--bg-secondary)] text-[var(--text-primary)]"
-                                  }`}
-                                >
-                                  <span className="flex min-w-0 items-center gap-2.5">
-                                    <SettingsReciterAvatar reciter={r} />
-                                    <span className="min-w-0">
-                                      <span className="block truncate text-xs font-bold leading-tight">
-                                        {lang === "fr"
-                                          ? r.nameFr || r.name
-                                          : lang === "en"
-                                            ? r.nameEn || r.name
-                                            : r.name}
-                                      </span>
-                                      <span className="settings-reciter-option__meta block truncate text-[0.62rem] mt-0.5">
-                                        {r.style || "murattal"}
-                                      </span>
-                                    </span>
-                                  </span>
-                                  {isActive && (
-                                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] shrink-0" />
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        ) : (
-                          <div className="p-4 text-center text-xs text-[var(--text-muted)]">
-                            {t("settings.noReciterFound", lang)}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Playback speed */}
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-xs font-bold uppercase text-[var(--text-muted)]">
-                        <label htmlFor="settings-audio-speed">
-                          {t("settings.playbackSpeed", lang)}
-                        </label>
-                        <span>{audioSpeed}x</span>
-                      </div>
-                      <input
-                        id="settings-audio-speed"
-                        type="range"
-                        min="0.5"
-                        max="2.0"
-                        step="0.1"
-                        value={audioSpeed}
-                        onChange={(e) =>
-                          set({ audioSpeed: Number(e.target.value) })
-                        }
-                        className="w-full accent-[var(--primary)] cursor-pointer"
-                      />
-                    </div>
-
-                    {/* Volume */}
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-xs font-bold uppercase text-[var(--text-muted)]">
-                        <label htmlFor="settings-audio-volume">Volume</label>
-                        <span>{Math.round(volume * 100)}%</span>
-                      </div>
-                      <input
-                        id="settings-audio-volume"
-                        type="range"
-                        min="0"
-                        max="1.0"
-                        step="0.05"
-                        value={volume}
-                        onChange={(e) =>
-                          set({ volume: Number(e.target.value) })
-                        }
-                        className="w-full accent-[var(--primary)] cursor-pointer"
-                      />
-                    </div>
-
-                    {/* Clear cache & cleanup */}
-                    <div className="pt-4 border-t border-[var(--border)] space-y-3">
-                      <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
-                        <Info size={14} />
-                        <span>{t("settings.cacheInfo", lang)}</span>
-                      </div>
-                      <button
-                        onClick={handleClearCache}
-                        className="w-full py-2.5 px-4 rounded-xl border border-red-500/20 hover:bg-red-500/5 text-red-500 text-sm font-semibold flex items-center justify-center gap-2 transition-colors"
-                      >
-                        <Trash2 size={16} />
-                        <span>{t("settings.clearCache", lang)}</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
+  return (
+    <Dialog.Root open onOpenChange={(open) => !open && close()}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="settings-backdrop" />
+        <Dialog.Content
+          className="settings-drawer settings-qurancom"
+          aria-label={title}
+          onEscapeKeyDown={close}
+        >
+          <header className="settings-drawer__header">
+            <div className="settings-drawer__heading">
+              <span className="settings-drawer__icon">
+                <BookOpen size={18} />
+              </span>
+              <div>
+                <Dialog.Title className="settings-drawer__title">{title}</Dialog.Title>
+                <Dialog.Description className="settings-drawer__subtitle">
+                  {t("settings.readingSettings", lang)}
+                </Dialog.Description>
               </div>
             </div>
-          </div>
+            <Dialog.Close asChild>
+              <button
+                type="button"
+                className="settings-close-button"
+                aria-label={localText(
+                  lang,
+                  "Fermer les param\u00e8tres",
+                  "Close settings",
+                  "\u0625\u063a\u0644\u0627\u0642 \u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a",
+                )}
+              >
+                <X size={18} />
+              </button>
+            </Dialog.Close>
+          </header>
+
+          <nav
+            className="settings-drawer__tabs"
+            role="tablist"
+            aria-label={localText(lang, "Onglets des parametres", "Settings tabs", "تبويبات الاعدادات")}
+            onKeyDown={handleTabKeyDown}
+          >
+            {TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  type="button"
+                  key={tab.id}
+                  id={`settings-tab-${tab.id}`}
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls={`settings-panel-${tab.id}`}
+                  tabIndex={isActive ? 0 : -1}
+                  className="settings-tab-button"
+                  data-active={isActive}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  <Icon size={16} />
+                  <span>{t(tab.labelKey, lang)}</span>
+                </button>
+              );
+            })}
+          </nav>
+
+          <main className="settings-drawer__content">
+            <div
+              id={`settings-panel-${activeTab}`}
+              role="tabpanel"
+              aria-labelledby={`settings-tab-${activeTab}`}
+            >
+              {activeTab === "general" ? renderGeneralTab() : null}
+              {activeTab === "reading" ? renderReadingTab() : null}
+              {activeTab === "audio" ? renderAudioTab() : null}
+            </div>
+          </main>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

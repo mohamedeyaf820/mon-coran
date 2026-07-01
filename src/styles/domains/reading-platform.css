@@ -4540,3 +4540,49 @@ html body .app-root .quran-display--platform .qcm-edge {
     transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
+/* One shared ayah marker in the clean mushaf flow (Hafs + Warsh). */
+html body .app-root .quran-display--platform .mushaf-text-block .cpv-ayah-marker {
+    display: inline-flex !important;
+    width: 1.08em !important;
+    height: 1.08em !important;
+    margin-inline: 0.14em 0.2em !important;
+    vertical-align: -0.18em !important;
+    transform: none !important;
+}
+
+html body .app-root .quran-display--platform .mushaf-text-block .cpv-ayah-marker .ayat-marker__svg {
+    width: 1.08em !important;
+    height: 1.08em !important;
+}
+
+html body .app-root .native-ayah-marker,
+html body .app-root .quran-display--platform .mushaf-text-block .native-ayah-marker,
+html body .app-root .quran-display--platform .mushaf-container .native-ayah-marker {
+    display: inline-block !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    transform: none !important;
+    vertical-align: -0.08em !important;
+    line-height: 1 !important;
+}
+
+html body .app-root .native-ayah-marker::before,
+html body .app-root .native-ayah-marker::after {
+    display: none !important;
+    content: none !important;
+}
+
+.afc-marker-preview {
+    flex: 0 0 auto !important;
+    color: var(--text-primary) !important;
+    font-size: 1.15rem !important;
+    opacity: 0.88 !important;
+}

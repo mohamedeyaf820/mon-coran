@@ -1,25 +1,43 @@
-import React, { useMemo, useRef, useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useKaraoke } from "../../hooks/useKaraoke";
 import audioService from "../../services/audioService";
+import { NATIVE_AYAH_MARKER_RE } from "../../data/fonts";
 import TajweedText from "./TajweedText";
 
-const AYAH_MARKER_TOKEN_RE = /^[۝۞۩﴿﴾\d٠-٩۰-۹]+$/u;
+const AYAH_MARKER_TOKEN_RE = /^[\u06dd\u06de\u06e9\ufd3f\ufd3e\d\u0660-\u0669\u06f0-\u06f9]+$/u;
 
 function isAyahMarkerToken(word) {
   if (!word) return false;
   const compact = String(word).replace(/\s+/g, "");
   if (!compact) return false;
-  return AYAH_MARKER_TOKEN_RE.test(compact);
+  return AYAH_MARKER_TOKEN_RE.test(compact) || NATIVE_AYAH_MARKER_RE.test(compact);
+}
+
+function buildWordWeights(words) {
+  if (words.length === 0) return [];
+  const raw = words.map((word, index) => {
+    const base = word.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u06E1]/g, "");
+    let weight = Math.max(1, base.length);
+    weight += (word.match(/[\u0627\u0648\u064a\u0670\u0649]/g) || []).length * 0.8;
+    if (/[\u0627\u0648\u064a][\u0621\u0623\u0625\u0624\u0626]/.test(word)) weight += 1;
+    weight += (word.match(/\u0651/g) || []).length * 0.5;
+    if (/[\u064B\u064C\u064D]/.test(word)) weight += 0.4;
+    if (/\u0627\u0644\u0644\u0647/.test(word)) weight += 0.8;
+    if (index === 0) weight += 0.3;
+    if (index === words.length - 1) weight += 0.5;
+    return weight;
+  });
+  const total = raw.reduce((sum, value) => sum + value, 0);
+  let cumulative = 0;
+  return raw.map((value) => {
+    cumulative += value / total;
+    return cumulative;
+  });
 }
 
 /**
- * HafsKaraokeText – word-by-word karaoke for Hafs text.
- *
- * Improvements vs. old KaraokeAyahText:
- * • Uses the calibration passed from SmartAyahRenderer (no rebuild internally).
- * • Applies per-word tajweed colours when available.
- * • Prevents backward jumps with lastIdxRef (same as KaraokeWarshText).
- * • Ramps in lag at the beginning to avoid mis-highlighting the first word.
+ * Hafs karaoke text. Native ayah markers are rendered in the flow but are not
+ * counted as recitable words, so timings and highlight indexes stay aligned.
  */
 export const HafsKaraokeText = React.memo(function HafsKaraokeText({
   text,
@@ -29,56 +47,46 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
   const lastIdxRef = useRef(0);
   const [exactWordIdx, setExactWordIdx] = useState(-1);
 
-  const words = useMemo(() => {
+  const displayWords = useMemo(() => {
     if (!text) return [];
-    return text.split(/\s+/).filter((w) => w.length > 0);
+    return text.split(/\s+/).filter((word) => word.length > 0);
   }, [text]);
+  const recitableWords = useMemo(
+    () => displayWords.filter((word) => !isAyahMarkerToken(word)),
+    [displayWords],
+  );
+  const recitableIndexByDisplayIndex = useMemo(() => {
+    let nextIndex = -1;
+    return displayWords.map((word) => {
+      if (isAyahMarkerToken(word)) return -1;
+      nextIndex += 1;
+      return nextIndex;
+    });
+  }, [displayWords]);
 
-  // Reset highlighted word index when the ayah changes
   useEffect(() => {
     lastIdxRef.current = 0;
     setExactWordIdx(-1);
   }, [text]);
 
-  // Proportional word weights (identical algorithm used in KaraokeWarshText)
-  const wordWeights = useMemo(() => {
-    if (words.length === 0) return [];
-    const raw = words.map((w, idx) => {
-      const base = w.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u06E1]/g, "");
-      let weight = Math.max(1, base.length);
-      const maddCount = (w.match(/[اوي\u0670\u0649]/g) || []).length;
-      weight += maddCount * 0.8;
-      if (/[اوي][\u0621\u0623\u0625\u0624\u0626]/.test(w)) weight += 1.0;
-      const shaddaCount = (w.match(/\u0651/g) || []).length;
-      weight += shaddaCount * 0.5;
-      if (/[\u064B\u064C\u064D]/.test(w)) weight += 0.4;
-      if (/الله/.test(w)) weight += 0.8;
-      if (idx === 0) weight += 0.3;
-      if (idx === words.length - 1) weight += 0.5;
-      return weight;
-    });
-    const total = raw.reduce((s, v) => s + v, 0);
-    let cum = 0;
-    return raw.map((w) => {
-      cum += w / total;
-      return cum;
-    });
-  }, [words]);
+  const wordWeights = useMemo(
+    () => buildWordWeights(recitableWords),
+    [recitableWords],
+  );
 
   const { progress, seekCount } = useKaraoke({
     isFirstAyah,
-    wordCount: words.length,
+    wordCount: recitableWords.length,
     calibration,
   });
 
   const lagWords = useMemo(() => {
     if (!calibration) return 0;
-    return words.length >= 24
+    return recitableWords.length >= 24
       ? Number(calibration.lagWordsLong ?? 0)
       : Number(calibration.lagWordsBase ?? 0);
-  }, [calibration, words.length]);
+  }, [calibration, recitableWords.length]);
 
-  // Reset highlighted word index when user seeks in audio
   useEffect(() => {
     lastIdxRef.current = 0;
   }, [seekCount]);
@@ -117,7 +125,9 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
   }, [text]);
 
   const currentIdx = useMemo(() => {
-    if (exactWordIdx >= 0) return Math.min(words.length - 1, exactWordIdx);
+    if (exactWordIdx >= 0) {
+      return Math.min(recitableWords.length - 1, exactWordIdx);
+    }
     let idx = 0;
     for (let i = 0; i < wordWeights.length; i++) {
       if (progress < wordWeights[i]) {
@@ -127,31 +137,31 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
       idx = i;
     }
     const adjustedIdx = Math.max(0, idx - Math.max(0, lagWords));
-    const last = lastIdxRef.current;
-    const finalIdx = Math.max(last, adjustedIdx);
+    const finalIdx = Math.max(lastIdxRef.current, adjustedIdx);
     lastIdxRef.current = finalIdx;
     return finalIdx;
-  }, [exactWordIdx, progress, wordWeights, lagWords, words.length]);
+  }, [exactWordIdx, progress, wordWeights, lagWords, recitableWords.length]);
 
-  if (words.length === 0) return <span>{text}</span>;
+  if (displayWords.length === 0) return <span>{text}</span>;
 
   return (
     <span className="wbw-container hafs-karaoke">
-      {words.map((word, i) => {
-        const isRead = i < currentIdx;
-        const isCurrent = i === currentIdx;
+      {displayWords.map((word, index) => {
         const isMarkerToken = isAyahMarkerToken(word);
+        const recitableIndex = recitableIndexByDisplayIndex[index];
+        const isRead = !isMarkerToken && recitableIndex < currentIdx;
+        const isCurrent = !isMarkerToken && recitableIndex === currentIdx;
 
         let cls = "wbw-word";
         if (isRead) cls += " wbw-read";
         else if (isCurrent) cls += " wbw-current";
         else cls += " wbw-upcoming";
-        if (isMarkerToken) cls += " wbw-marker-token";
+        if (isMarkerToken) cls += " wbw-marker-token native-ayah-marker";
 
         return (
-          <React.Fragment key={i}>
+          <React.Fragment key={index}>
             <span className={cls}>{word}</span>
-            {i < words.length - 1 && " "}
+            {index < displayWords.length - 1 && " "}
           </React.Fragment>
         );
       })}
@@ -159,14 +169,8 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
   );
 });
 
-// Keep the old export name alive so any remaining import doesn't break
 export { HafsKaraokeText as KaraokeAyahText };
 
-/**
- * AyahTextRenderer – routes Hafs ayah rendering.
- * • isPlaying  → HafsKaraokeText (word-by-word highlight with timing calibration)
- * • !isPlaying → TajweedText     (coloured tajweed segments or plain text)
- */
 function AyahTextRendererComponent({
   text,
   tajweedText,

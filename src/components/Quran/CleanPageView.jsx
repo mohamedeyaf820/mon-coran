@@ -5,6 +5,7 @@ import WordByWordDisplay from "./WordByWordDisplay";
 import CleanPageTranslationPanel from "./CleanPageTranslationPanel";
 import { CleanPageSurahHeader } from "./CleanPageDecor";
 import Bismillah from "./Bismillah";
+import AyahMarker from "./AyahMarker";
 
 function CleanPageViewComponent({
   ayahs,
@@ -141,8 +142,16 @@ function CleanPageViewComponent({
                     surahNum={ayahSurahNum}
                     calibration={calibration}
                     riwaya={riwaya}
+                    appendNativeMarker={false}
                   />
                 )}
+                {!showWordByWord ? (
+                  <AyahMarker
+                    number={ayah.numberInSurah}
+                    isPlaying={isPlaying}
+                    className="cpv-ayah-marker"
+                  />
+                ) : null}
               </span>
             </span>,
           );

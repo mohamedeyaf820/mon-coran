@@ -19,6 +19,33 @@ export const WARSH_FONT_IDS = [
 export const QURAN_COM_FONT_IDS = [...HAFS_FONT_IDS, ...WARSH_FONT_IDS];
 export const INTERNAL_QURAN_FONT_IDS = ["qcf-v2", "qcf-v4-tajweed"];
 
+export const QURAN_FONT_OPTIONS = [
+  {
+    id: "qpc-hafs",
+    label: "Quran.com Hafs",
+    hintKey: "settings.qpcHafsHint",
+    riwaya: "hafs",
+  },
+  {
+    id: "qpc-indopak",
+    label: "Quran.com IndoPak",
+    hintKey: "settings.qpcIndopakHint",
+    riwaya: "hafs",
+  },
+  {
+    id: "qpc-warsh",
+    label: "QPC Warsh",
+    hintKey: "settings.qpcWarshHint",
+    riwaya: "warsh",
+  },
+  {
+    id: "kfgqpc-warsh",
+    label: "KFGQPC Warsh",
+    hintKey: "settings.kfgqpcWarshHint",
+    riwaya: "warsh",
+  },
+];
+
 export const FONT_MAP = {
   "qpc-hafs":
     "'QPC Hafs','KFGQPC Uthmanic Script HAFS','UthmanicHafs',serif",
@@ -36,6 +63,44 @@ export const FONT_MAP = {
 
 export const DEFAULT_FONT_ID = "qpc-hafs";
 export const DEFAULT_WARSH_FONT_ID = "qpc-warsh";
+
+const ARABIC_INDIC_DIGITS = [
+  "\u0660",
+  "\u0661",
+  "\u0662",
+  "\u0663",
+  "\u0664",
+  "\u0665",
+  "\u0666",
+  "\u0667",
+  "\u0668",
+  "\u0669",
+];
+
+const EXTENDED_ARABIC_INDIC_DIGITS = [
+  "\u06f0",
+  "\u06f1",
+  "\u06f2",
+  "\u06f3",
+  "\u06f4",
+  "\u06f5",
+  "\u06f6",
+  "\u06f7",
+  "\u06f8",
+  "\u06f9",
+];
+
+const AYAH_MARKER_BY_FONT = {
+  "qpc-hafs": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
+  "qpc-indopak": { marker: "\u06dd", digits: EXTENDED_ARABIC_INDIC_DIGITS },
+  "qpc-warsh": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
+  "kfgqpc-warsh": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
+  "qcf-v2": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
+  "qcf-v4-tajweed": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
+};
+
+export const NATIVE_AYAH_MARKER_RE = /[\u06dd\u06de][\u0660-\u0669\u06f0-\u06f9\d]*/u;
+const AYAH_MARKER_SUFFIX_RE = /(?:\s|&nbsp;)*(?:[\u06dd\u06de]?[\u0660-\u0669\u06f0-\u06f9\d]+)\s*$/u;
 
 const LEGACY_FONT_ALIASES = {
   "mushaf-kfgqpc": "qpc-hafs",
@@ -95,4 +160,38 @@ export function normalizeFontId(id, riwaya = "hafs") {
 export function resolveFontFamily(id, riwaya = "hafs") {
   const normalizedId = normalizeFontId(id, riwaya);
   return FONT_MAP[normalizedId] || FONT_MAP[DEFAULT_FONT_ID];
+}
+
+export function getFontOptionsForRiwaya(riwaya = "hafs") {
+  const targetRiwaya = riwaya === "warsh" ? "warsh" : "hafs";
+  return QURAN_FONT_OPTIONS.filter((font) => font.riwaya === targetRiwaya);
+}
+
+export function hasNativeAyahMarker(text) {
+  return NATIVE_AYAH_MARKER_RE.test(String(text || ""));
+}
+
+export function formatAyahMarkerNumber(value, fontId, riwaya = "hafs") {
+  const normalizedId = normalizeFontId(fontId, riwaya);
+  const config = AYAH_MARKER_BY_FONT[normalizedId] || AYAH_MARKER_BY_FONT[DEFAULT_FONT_ID];
+  return String(value ?? "")
+    .split("")
+    .map((digit) => config.digits[Number.parseInt(digit, 10)] ?? digit)
+    .join("");
+}
+
+export function getNativeAyahMarker(value, fontId, riwaya = "hafs") {
+  if (value == null) return "";
+  const normalizedId = normalizeFontId(fontId, riwaya);
+  const config = AYAH_MARKER_BY_FONT[normalizedId] || AYAH_MARKER_BY_FONT[DEFAULT_FONT_ID];
+  return `${config.marker}${formatAyahMarkerNumber(value, normalizedId, riwaya)}`;
+}
+
+export function appendNativeAyahMarker(text, ayahNumber, fontId, riwaya = "hafs") {
+  const value = String(text || "").trim();
+  if (!value) return value;
+  const marker = getNativeAyahMarker(ayahNumber, fontId, riwaya);
+  const cleanedValue = value.replace(AYAH_MARKER_SUFFIX_RE, "").trim();
+  if (!cleanedValue) return marker;
+  return `${cleanedValue} ${marker}`;
 }

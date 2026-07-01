@@ -51,6 +51,44 @@ function normalizeArabicText(text) {
 }
 
 function groupWarshPageLines(ayahs) {
+  const hasLineMetadata = ayahs.some((ayah) => Number(ayah?.lineStart) || Number(ayah?.lineEnd));
+  if (!hasLineMetadata) {
+    const tokens = [];
+    ayahs.forEach((ayah) => {
+      const surah = ayah.surah?.number;
+      const ayahNum = ayah.numberInSurah;
+      const rawText = normalizeArabicText(ayah.text || "");
+      const warshWords = Array.isArray(ayah.warshWords)
+        ? ayah.warshWords.map((word) => normalizeArabicText(word))
+        : rawText.split(/\s+/).filter(Boolean);
+
+      warshWords.forEach((text, index) => {
+        tokens.push({
+          charType: "word",
+          globalAyah: ayah.number,
+          surah,
+          ayah: ayahNum,
+          position: index + 1,
+          text,
+          isWarsh: true,
+        });
+      });
+      tokens.push({
+        charType: "end",
+        globalAyah: ayah.number,
+        surah,
+        ayah: ayahNum,
+        isWarsh: true,
+      });
+    });
+
+    const perLine = Math.max(1, Math.ceil(tokens.length / 15));
+    return Array.from({ length: 15 }, (_, index) => ({
+      lineNumber: index + 1,
+      words: tokens.slice(index * perLine, (index + 1) * perLine),
+    }));
+  }
+
   const lines = new Map();
 
   ayahs.forEach((ayah) => {
@@ -111,6 +149,7 @@ function groupWarshPageLines(ayahs) {
 
 function groupPageLines(ayahs) {
   const lines = new Map();
+  const seenEndMarkers = new Set();
 
   ayahs.forEach((ayah) => {
     const surah = ayah.surah?.number;
@@ -120,9 +159,16 @@ function groupPageLines(ayahs) {
     words.forEach((word) => {
       const lineNumber = getLineNumber(word);
       if (!lineNumber) return;
+      const charType = word.charType || word.charTypeName || word.char_type_name;
+      const endKey = `${surah}:${ayahNum}`;
+      if (charType === "end") {
+        if (seenEndMarkers.has(endKey)) return;
+        seenEndMarkers.add(endKey);
+      }
       if (!lines.has(lineNumber)) lines.set(lineNumber, []);
       lines.get(lineNumber).push({
         ...word,
+        charType,
         globalAyah: ayah.number,
         surah: word.surah || surah,
         ayah: word.ayah || ayahNum,
@@ -264,6 +310,7 @@ export default function QuranMushafPage({
             MozOsxFontSmoothing: 'grayscale',
             unicodeBidi: 'plaintext',
             whiteSpace: 'nowrap',
+            marginInlineEnd: '0.08em',
           }}
         >
           {normalizeArabicText(word.text)}

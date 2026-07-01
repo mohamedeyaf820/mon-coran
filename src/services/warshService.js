@@ -17,8 +17,8 @@ const WARSH_SOURCE_ID = 'warsh-unicode-v5';
 const LEGACY_CACHE_KEY = 'warsh-unicode-v4-s-';
 
 // Logger utilitaire - uniquement en dev
-const log = import.meta.env.DEV ? console.log : () => {};
-const logError = import.meta.env.DEV ? console.error : () => {};
+const log = import.meta.env?.DEV ? console.log : () => {};
+const logError = import.meta.env?.DEV ? console.error : () => {};
 
 
 // Clear old cache format once per browser, not on every module import.
@@ -359,11 +359,12 @@ export async function loadWarshSurah(surahNum) {
     // 2. Try IndexedDB cache
     try {
       const cached = await dbGet(IDB_STORE, idbKey);
-      if (cached && Array.isArray(cached) && cached.length > 0) {
+      const cachedRows = Array.isArray(cached) ? cached : cached?.data;
+      if (Array.isArray(cachedRows) && cachedRows.length > 0) {
         // Validate cached data
-        if (validateWarshRows(cached, n)) {
-          cachedSurahs.set(n, cached);
-          return cached;
+        if (validateWarshRows(cachedRows, n)) {
+          cachedSurahs.set(n, cachedRows);
+          return cachedRows;
         } else {
           logError(`[WarshService] Cached data for surah ${n} is invalid, clearing...`);
           await dbDelete(IDB_STORE, idbKey).catch(() => {});

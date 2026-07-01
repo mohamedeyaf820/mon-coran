@@ -2,6 +2,11 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { parseInitialRoute } from "../src/hooks/useUrlSync.js";
+import {
+  appendNativeAyahMarker,
+  getFontOptionsForRiwaya,
+  getNativeAyahMarker,
+} from "../src/data/fonts.js";
 import { getSettings, saveSettings } from "../src/services/storageService.js";
 
 function createMockStorage() {
@@ -84,6 +89,14 @@ test("navigation: clamps invalid route numbers", () => {
   assert.deepEqual(parseInitialRoute(), { showHome: true, showDuas: false });
 });
 
+test("navigation: rejects partial route matches", () => {
+  setPathname("/page/12abc");
+  assert.deepEqual(parseInitialRoute(), { showHome: true, showDuas: false });
+
+  setPathname("/surah/2/3/extra");
+  assert.deepEqual(parseInitialRoute(), { showHome: true, showDuas: false });
+});
+
 test("storage: settings round-trip encrypted and sanitized", () => {
   globalThis.localStorage = createMockStorage();
 
@@ -109,10 +122,30 @@ test("storage: settings round-trip encrypted and sanitized", () => {
   assert.equal(settings.volume, 1);
   assert.deepEqual(settings.lastPosition, {
     surah: 9,
-    ayah: 286,
+    ayah: 129,
     page: 604,
     juz: 30,
   });
+});
+
+test("storage: pinned ayahs clamp by exact surah ayah count", () => {
+  globalThis.localStorage = createMockStorage();
+
+  saveSettings({
+    pinnedAyahs: [
+      { surah: 1, ayah: 999, text: "x" },
+      { surah: 9, ayah: 999, text: "y" },
+    ],
+  });
+
+  const settings = getSettings();
+  assert.deepEqual(
+    settings.pinnedAyahs.map(({ surah, ayah }) => ({ surah, ayah })),
+    [
+      { surah: 1, ayah: 7 },
+      { surah: 9, ayah: 129 },
+    ],
+  );
 });
 
 test("storage: preserves per-riwaya Quran font choices", () => {
@@ -153,4 +186,35 @@ test("storage: migrates removed local-only Warsh font aliases", () => {
     hafs: "qpc-indopak",
     warsh: "kfgqpc-warsh",
   });
+});
+
+test("fonts: exposes riwaya-safe native ayah markers", () => {
+  assert.deepEqual(
+    getFontOptionsForRiwaya("hafs").map((font) => font.id),
+    ["qpc-hafs", "qpc-indopak"],
+  );
+  assert.deepEqual(
+    getFontOptionsForRiwaya("warsh").map((font) => font.id),
+    ["qpc-warsh", "kfgqpc-warsh"],
+  );
+
+  assert.equal(getNativeAyahMarker(1, "qpc-hafs", "hafs"), "\u06dd\u0661");
+  assert.equal(getNativeAyahMarker(1, "qpc-indopak", "hafs"), "\u06dd\u06f1");
+  assert.equal(getNativeAyahMarker(1, "qpc-warsh", "warsh"), "\u06dd\u0661");
+  assert.equal(getNativeAyahMarker(1, "kfgqpc-warsh", "warsh"), "\u06dd\u0661");
+});
+
+test("fonts: appends native ayah markers without duplicates", () => {
+  assert.equal(
+    appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f", 7, "qpc-hafs", "hafs"),
+    "\u0627\u0644\u062d\u0645\u062f \u06dd\u0667",
+  );
+  assert.equal(
+    appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u06dd\u0667", 7, "qpc-hafs", "hafs"),
+    "\u0627\u0644\u062d\u0645\u062f \u06dd\u0667",
+  );
+  assert.equal(
+    appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u0667", 7, "qpc-indopak", "hafs"),
+    "\u0627\u0644\u062d\u0645\u062f \u06dd\u06f7",
+  );
 });

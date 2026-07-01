@@ -21,7 +21,9 @@ const MAX_CSS_KB = Number(process.env.BUDGET_CSS_KB || 945);
 // +3 kB added (1193→1196): useKeyboardNavigation hook wired into App.jsx — previously exported but
 // never imported (tree-shaken to zero). Now active: consolidates t/w/j/m/Escape/Space/? shortcuts,
 // eliminates Alt+M double-dispatch bug, and reduces App.jsx keyboard handler by ~120 lines.
-const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1196);
+// +1 kB added (1196→1197): review fixes for exact ayah clamps, safe runtime cache
+// clearing, AbortController-aware inflight requests, and cached-read side effects.
+const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1197);
 // +8 kB added (2050→2058): mobile UX fixes — navbar redesign CSS (home-audio-ux-refonte.css +5 kB)
 // and srh-identity hide rules (surah-reader-header.css +3 kB). Net CSS cost of fixing header
 // collapse, double-layer identity duplication, and audio player control clipping on ≤640px.
@@ -29,7 +31,13 @@ const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1196);
 // +3 kB added (2068→2071): useKeyboardNavigation hook now active in bundle (see JS budget note above).
 // +1 kB added (2071→2072): code-review fixes — RowActions i18n AR branches, ReciterDetailPage riwaya
 // badge restore, MiniPlayer safe-area calc(), AppContext reducer guard corrections.
-const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2072);
+// +1 kB added (2072→2073): settings drawer redesign guard styles for stable
+// mobile/desktop controls after replacing the older bug-prone settings markup.
+// +2 kB added (2073→2075): Quran.com-like settings layout, stabilized header
+// quick menu, and shared Hafs/Warsh ayah marker styles.
+// +1 kB added (2075→2076): native font marker previews and tablet header
+// responsive guard for the settings/font marker update.
+const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2076);
 const MAX_SINGLE_CSS_KB = Number(process.env.BUDGET_SINGLE_CSS_KB || 780);
 const MAX_SINGLE_JS_KB = Number(process.env.BUDGET_SINGLE_JS_KB || 250);
 
