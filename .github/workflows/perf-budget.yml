@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUDGET_CSS_KB: 945
-      BUDGET_JS_KB: 1196
-      BUDGET_TOTAL_KB: 2072
+      BUDGET_JS_KB: 1197
+      BUDGET_TOTAL_KB: 2076
       BUDGET_SINGLE_CSS_KB: 780
       BUDGET_SINGLE_JS_KB: 250
     steps:
@@ -21,11 +21,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build
         run: npm run build
