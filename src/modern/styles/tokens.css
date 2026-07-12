@@ -1,0 +1,49 @@
+:root,
+[data-modern-theme="light"] {
+  color-scheme: light;
+  --modern-bg: #f4f0e6;
+  --modern-bg-deep: #e9e2d3;
+  --modern-surface: #fbf8f1;
+  --modern-surface-raised: #ffffff;
+  --modern-text: #17372e;
+  --modern-muted: #66736d;
+  --modern-border: #cec7b7;
+  --modern-accent: #b28b35;
+  --modern-accent-strong: #8b6720;
+  --modern-focus: #0f7a61;
+  --modern-danger: #a23c34;
+  --modern-shadow: 0 18px 55px rgba(39, 52, 46, 0.1);
+  --modern-tap-size: 44px;
+}
+
+[data-modern-theme="dark"] {
+  color-scheme: dark;
+  --modern-bg: #101714;
+  --modern-bg-deep: #0a100d;
+  --modern-surface: #17211d;
+  --modern-surface-raised: #1d2924;
+  --modern-text: #f1ecdf;
+  --modern-muted: #aab5ae;
+  --modern-border: #3a4942;
+  --modern-accent: #d3ae5b;
+  --modern-accent-strong: #ebc875;
+  --modern-focus: #62c9a7;
+  --modern-danger: #ef8d83;
+  --modern-shadow: 0 20px 65px rgba(0, 0, 0, 0.35);
+  --modern-tap-size: 44px;
+}
+
+:root {
+  --modern-radius-sm: 4px;
+  --modern-radius-md: 8px;
+  --modern-space-1: 0.25rem;
+  --modern-space-2: 0.5rem;
+  --modern-space-3: 0.75rem;
+  --modern-space-4: 1rem;
+  --modern-space-5: 1.5rem;
+  --modern-space-6: 2rem;
+  --modern-space-7: 3rem;
+  --modern-content: 78rem;
+  --modern-reading: 46rem;
+  --modern-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}

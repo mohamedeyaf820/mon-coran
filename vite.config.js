@@ -10,7 +10,11 @@ export default defineConfig(({ mode }) => ({
     {
       name: "inject-csp-policy",
       transformIndexHtml(html) {
-        return html.replace("__CSP_POLICY__", buildCspPolicy(mode));
+        const metaPolicy = buildCspPolicy(mode)
+          .split("; ")
+          .filter((directive) => !directive.startsWith("frame-ancestors"))
+          .join("; ");
+        return html.replace("__CSP_POLICY__", metaPolicy);
       },
     },
   ],

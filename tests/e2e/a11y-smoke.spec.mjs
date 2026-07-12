@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 async function openReader(page) {
-  await page.goto("/");
+  await page.goto("/legacy");
   const start = page.getByRole("button", {
     name: /Commencer la lecture|Reprendre la lecture|Continuer|Start reading|Continue|Resume reading/i,
   });
@@ -19,7 +19,7 @@ test("A11y smoke: landmarks, focus clavier et modal recherche", async ({ page })
   const ayahCount = await page.locator(".qc-ayah-text-ar").count();
   expect(ayahCount).toBeGreaterThan(0);
 
-  const menuButton = page.locator(".hdr-v7__menu-btn").first();
+  const menuButton = page.locator(".mp-header__icon-btn").first();
   await expect(menuButton).toBeVisible();
   await menuButton.focus();
   await page.keyboard.press("Tab");
@@ -27,7 +27,7 @@ test("A11y smoke: landmarks, focus clavier et modal recherche", async ({ page })
   const activeTag = await page.evaluate(() => document.activeElement?.tagName || "");
   expect(activeTag).not.toBe("BODY");
 
-  const searchButton = page.locator(".hdr-v7__search-btn").first();
+  const searchButton = page.locator(".mp-header__search").first();
   await expect(searchButton).toBeVisible();
   await searchButton.focus();
   await page.keyboard.press("Enter");

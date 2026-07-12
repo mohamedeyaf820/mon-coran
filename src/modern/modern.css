@@ -1,0 +1,6 @@
+@import "@fontsource-variable/literata/index.css";
+@import "./styles/tokens.css";
+@import "./styles/reset.css";
+@import "./styles/typography.css";
+@import "./styles/primitives.css";
+@import "./styles/shell.css";

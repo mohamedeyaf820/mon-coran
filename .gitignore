@@ -18,6 +18,7 @@ debug.log
 currentAyah_matches*.txt
 template_currentAyah*.txt
 scratch/
+.superpowers/
 
 # Backend cache
 server/.cache/

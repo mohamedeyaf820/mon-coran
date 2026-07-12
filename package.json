@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "perf:budget": "node scripts/check-bundle-budget.mjs",
     "audit:screen-budget": "node scripts/check-screen-budget.mjs",
-    "test:security": "node --test tests/*.test.mjs",
+    "test:security": "node --test tests/security-storage.test.mjs",
+    "test:unit": "node --test tests",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test tests/e2e/audio-fallback.spec.mjs tests/e2e/a11y-smoke.spec.mjs",
     "test:e2e:audio": "playwright test tests/e2e/audio-fallback.spec.mjs",
@@ -18,6 +19,7 @@
     "test:e2e:a11y": "playwright test tests/e2e/a11y-smoke.spec.mjs",
     "test:e2e:reading": "playwright test tests/e2e/reading-scroll.spec.mjs tests/e2e/reading-stability.spec.mjs",
     "test:e2e:responsive": "playwright test tests/e2e/responsive-density.spec.mjs",
+    "test:e2e:phase1": "playwright test tests/e2e/modern-shell.spec.mjs tests/e2e/legacy-surface.spec.mjs",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
@@ -29,6 +31,7 @@
     "audit:warsh:tajweed": "node scripts/verify-warsh-tajweed.mjs"
   },
   "dependencies": {
+    "@fontsource-variable/literata": "^5.2.8",
     "@fortawesome/fontawesome-free": "^6.5.1",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
