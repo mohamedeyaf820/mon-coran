@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 
 import { ModernHomePage } from "../home/ModernHomePage";
+import { ModernAudioPage } from "../audio/ModernAudioPage";
+import { ModernAudioPlayer } from "../audio/ModernAudioPlayer";
 import { ModernReaderPage } from "../reader/ModernReaderPage";
 import { parseReaderRoute } from "../reader/readerRoute";
 import { useModernTheme } from "../theme/ModernThemeProvider";
@@ -16,13 +18,14 @@ import { IconButton } from "../ui/IconButton";
 import { SkipLink } from "../ui/SkipLink";
 
 const navigation = [
-  { label: "Lire", icon: BookOpenText, active: true },
-  { label: "Ecouter", icon: Headphones },
-  { label: "Etudier", icon: Bookmark },
+  { label: "Lire", icon: BookOpenText, href: "/" },
+  { label: "Ecouter", icon: Headphones, href: "/audio" },
+  { label: "Etudier", icon: Bookmark, disabled: true },
 ];
 
 export function ModernShell() {
   const readerRoute = parseReaderRoute(window.location.pathname);
+  const isAudioPage = window.location.pathname === "/audio";
   const { theme, toggleTheme } = useModernTheme();
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   const focusHomeSearch = () => {
@@ -45,16 +48,16 @@ export function ModernShell() {
         </a>
 
         <nav className="modern-nav" aria-label="Navigation principale">
-          {navigation.map(({ label, icon: NavIcon, active }) => (
-            <button
-              className={active ? "modern-nav__item is-active" : "modern-nav__item"}
-              disabled={!active}
+          {navigation.map(({ label, icon: NavIcon, href, disabled }) => (
+            <a
+              aria-disabled={disabled || undefined}
+              className={((isAudioPage && href === "/audio") || (!isAudioPage && href === "/")) ? "modern-nav__item is-active" : "modern-nav__item"}
+              href={disabled ? undefined : href}
               key={label}
-              type="button"
             >
               <NavIcon aria-hidden="true" size={18} strokeWidth={1.7} />
               <span>{label}</span>
-            </button>
+            </a>
           ))}
         </nav>
 
@@ -71,12 +74,13 @@ export function ModernShell() {
         </div>
       </header>
 
-      {readerRoute ? <ModernReaderPage route={readerRoute} /> : <ModernHomePage />}
+      {isAudioPage ? <ModernAudioPage /> : readerRoute ? <ModernReaderPage route={readerRoute} /> : <ModernHomePage />}
 
       <footer className="modern-footer">
-        <span>Mon Coran · {readerRoute ? "Lecture" : "Accueil"}</span>
+        <span>Mon Coran · {isAudioPage ? "Ecoute" : readerRoute ? "Lecture" : "Accueil"}</span>
         <a href="/legacy">Ouvrir l'interface legacy</a>
       </footer>
+      <ModernAudioPlayer />
     </div>
   );
 }

@@ -75,6 +75,12 @@
   border-radius: var(--modern-radius-sm);
   background: transparent;
   color: var(--modern-muted);
+  text-decoration: none;
+}
+
+.modern-nav__item[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .modern-nav__item.is-active {

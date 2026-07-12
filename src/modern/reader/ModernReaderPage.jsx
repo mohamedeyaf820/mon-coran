@@ -5,6 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Copy,
+  Headphones,
   Languages,
   NotebookPen,
   Palette,
@@ -31,6 +32,7 @@ import {
 } from "../../services/storageService";
 import { buildReaderVerses, parseTajweedSegments } from "./readerModel";
 import { adjacentReaderHref, buildReaderHref } from "./readerRoute";
+import { useModernAudio } from "../audio/ModernAudioProvider";
 
 const MODES = [
   { id: "surah", label: "Sourate" },
@@ -57,7 +59,7 @@ function TajweedText({ text, fallback, enabled }) {
   ));
 }
 
-function VerseActions({ verse, bookmarked, onBookmark }) {
+function VerseActions({ verse, bookmarked, onBookmark, onPlay }) {
   const [copied, setCopied] = useState(false);
   const [editingNote, setEditingNote] = useState(false);
   const [note, setNote] = useState("");
@@ -78,6 +80,9 @@ function VerseActions({ verse, bookmarked, onBookmark }) {
 
   return (
     <div className="modern-verse-actions" aria-label={`Actions du verset ${verse.ayahNumber}`}>
+      <button aria-label="Ecouter le verset" onClick={onPlay} title="Ecouter" type="button">
+        <Headphones size={17} />
+      </button>
       <button aria-label="Copier le verset" onClick={copyVerse} title="Copier" type="button">
         {copied ? <Check size={17} /> : <Copy size={17} />}
       </button>
@@ -122,6 +127,7 @@ function VerseActions({ verse, bookmarked, onBookmark }) {
 }
 
 export function ModernReaderPage({ route }) {
+  const audio = useModernAudio();
   const settings = useMemo(() => getSettings(), []);
   const riwaya = settings.riwaya || "hafs";
   const [state, setState] = useState({ status: "loading", verses: [], error: null });
@@ -264,7 +270,12 @@ export function ModernReaderPage({ route }) {
                 >
                   <div className="modern-reader-verse__meta">
                     <a href={`/surah/${verse.surahNumber}/${verse.ayahNumber}`}>{verse.surahNumber}:{verse.ayahNumber}</a>
-                    <VerseActions bookmarked={bookmarks.has(verse.key)} onBookmark={() => toggleBookmark(verse)} verse={verse} />
+                    <VerseActions
+                      bookmarked={bookmarks.has(verse.key)}
+                      onBookmark={() => toggleBookmark(verse)}
+                      onPlay={() => audio.playQueue(state.verses, { surah: verse.surahNumber, ayah: verse.ayahNumber })}
+                      verse={verse}
+                    />
                   </div>
                   <p className="modern-reader-verse__arabic" dir="rtl" lang="ar">
                     <TajweedText enabled={showTajweed} fallback={verse.text} text={verse.tajweedText} />

@@ -20,11 +20,11 @@ test("home exposes resume, progress, recent and surah discovery surfaces", async
   assert.match(home, /Aucune sourate ne correspond/);
 });
 
-test("home only sends reading actions to valid legacy reader URLs", async () => {
+test("home sends reading actions to valid modern reader URLs", async () => {
   const home = await read("../src/modern/home/ModernHomePage.jsx");
   assert.match(home, /model\.resume\.href/);
   assert.match(home, /recent\.href/);
-  assert.match(home, /`\/legacy\/surah\/\$\{surah\.n\}`/);
+  assert.match(home, /`\/surah\/\$\{surah\.n\}`/);
 });
 
 test("keeps the application background visually quiet", async () => {

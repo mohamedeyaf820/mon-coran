@@ -118,8 +118,8 @@ test("audio: everyayah and mp3quran reciter URLs are built as mp3 URLs", async (
   const warsh = getReciter("warsh_muhammad_hifnawi", "warsh");
 
   assert.equal(
-    AudioService.buildUrl(alafasy.cdn, { surah: 1, ayah: 1 }, alafasy.cdnType),
-    "https://everyayah.com/data/Alafasy_128kbps/001001.mp3",
+    AudioService.buildUrl(alafasy.cdn, { surah: 1, ayah: 1, number: 1 }, alafasy.cdnType),
+    "https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3",
   );
 
   assert.equal(

@@ -747,7 +747,7 @@ export function getReciterAvatar(reciter) {
   const initials = label
     .split(/\s+/)
     .filter(Boolean)
-    .map((part) => part[0])
+    .map((part) => part.replace(/[^A-Za-z0-9]/g, "")[0] || "")
     .join("")
     .slice(0, 2)
     .toUpperCase();

@@ -1,0 +1,56 @@
+.modern-shell:has(.modern-audio-player) { padding-bottom: 6rem; }
+.modern-audio-page { width: min(100%, var(--modern-content)); margin-inline: auto; padding: 3rem 1.5rem 5rem; }
+.modern-audio-page__heading { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(17rem, .6fr); gap: 3rem; align-items: end; padding-bottom: 2.5rem; border-bottom: 1px solid var(--modern-border); }
+.modern-audio-page__heading h1 { max-width: 16ch; margin: 0; font-size: clamp(2.2rem, 5vw, 4.4rem); line-height: 1.08; font-weight: 550; }
+.modern-audio-page__heading > p { margin: 0; color: var(--modern-muted); line-height: 1.8; }
+.modern-audio-resume { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.25rem; margin-block: 2rem; padding: 1.35rem; border: 1px solid var(--modern-accent); background: var(--modern-surface); }
+.modern-audio-resume h2, .modern-audio-resume p { margin: 0; }
+.modern-audio-resume > button { display: inline-flex; min-height: var(--modern-tap-size); align-items: center; gap: .5rem; padding: .6rem 1rem; border: 0; border-radius: var(--modern-radius-sm); background: var(--modern-text); color: var(--modern-bg); font: inherit; font-weight: 700; cursor: pointer; }
+.modern-audio-library, .modern-audio-queue { padding-block: 2.5rem; }
+.modern-reciter-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--modern-border); border-left: 1px solid var(--modern-border); }
+.modern-reciter-list > button { display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; align-items: center; gap: .8rem; min-height: 5.25rem; padding: .8rem; border: 0; border-right: 1px solid var(--modern-border); border-bottom: 1px solid var(--modern-border); background: var(--modern-surface); color: var(--modern-text); font: inherit; text-align: left; cursor: pointer; }
+.modern-reciter-list > button:hover, .modern-reciter-list > button.is-selected { background: var(--modern-surface-raised); }
+.modern-reciter-list > button.is-selected { box-shadow: inset 3px 0 var(--modern-accent); }
+.modern-reciter-list img, .modern-reciter-list > button > span:first-child { display: grid; width: 3rem; height: 3rem; place-items: center; border-radius: 50%; object-fit: cover; color: #fff; font-size: .72rem; font-weight: 700; }
+.modern-reciter-list strong, .modern-reciter-list small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.modern-reciter-list strong { font-size: .82rem; }
+.modern-reciter-list small { margin-top: .2rem; color: var(--modern-muted); font-size: .68rem; }
+.modern-audio-queue { display: grid; grid-template-columns: minmax(12rem, .4fr) minmax(0, 1fr); gap: 2rem; border-top: 1px solid var(--modern-border); }
+.modern-audio-queue h2 { margin: 0; font-size: 1.8rem; }
+.modern-audio-queue ol { max-height: 23rem; margin: 0; padding: 0; overflow: auto; border: 1px solid var(--modern-border); list-style: none; }
+.modern-audio-queue li { display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto; align-items: center; gap: .75rem; padding: .8rem 1rem; border-bottom: 1px solid var(--modern-border); }
+.modern-audio-queue li.is-current { background: var(--modern-bg-deep); color: var(--modern-accent-strong); }
+.modern-audio-queue li > span:first-child, .modern-audio-queue small { color: var(--modern-muted); font-size: .68rem; }
+.modern-audio-queue strong, .modern-audio-queue small { display: block; }
+.modern-audio-queue__empty { display: grid; min-height: 12rem; place-items: center; align-content: center; gap: .5rem; border: 1px solid var(--modern-border); color: var(--modern-muted); text-align: center; }
+.modern-audio-queue__empty p { margin: 0; }
+.modern-audio-queue__empty a { color: var(--modern-text); font-weight: 700; }
+.modern-audio-player { position: fixed; z-index: 50; right: 1rem; bottom: 1rem; left: 1rem; display: grid; grid-template-columns: minmax(12rem, .8fr) auto minmax(12rem, 1fr) auto; align-items: center; gap: 1rem; width: min(calc(100% - 2rem), 72rem); min-height: 4.75rem; margin-inline: auto; padding: .75rem 1rem; border: 1px solid var(--modern-border); border-radius: var(--modern-radius-md); background: var(--modern-surface-raised); box-shadow: var(--modern-shadow); }
+.modern-audio-player__track { display: flex; min-width: 0; align-items: center; gap: .75rem; }
+.modern-audio-player__track > span { min-width: 0; }
+.modern-audio-player__track strong, .modern-audio-player__track small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.modern-audio-player__track small { color: var(--modern-muted); font-size: .67rem; }
+.modern-audio-player__controls { display: flex; align-items: center; gap: .25rem; }
+.modern-audio-player button, .modern-audio-player > a { display: grid; width: var(--modern-tap-size); height: var(--modern-tap-size); place-items: center; border: 0; border-radius: var(--modern-radius-sm); background: transparent; color: var(--modern-text); cursor: pointer; }
+.modern-audio-player button.is-primary { border-radius: 50%; background: var(--modern-text); color: var(--modern-bg); }
+.modern-audio-player__timeline { display: grid; grid-template-columns: minmax(5rem, 1fr) auto; align-items: center; gap: .75rem; }
+.modern-audio-player__timeline input { width: 100%; accent-color: var(--modern-accent-strong); }
+.modern-audio-player__timeline span { color: var(--modern-muted); font-size: .66rem; white-space: nowrap; }
+.modern-audio-player__network, .modern-audio-player__error { position: absolute; right: 1rem; bottom: 100%; padding: .35rem .6rem; background: var(--modern-text); color: var(--modern-bg); font-size: .67rem; }
+.modern-audio-player__error { color: var(--modern-danger); }
+@media (max-width: 900px) {
+  .modern-reciter-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .modern-audio-player { grid-template-columns: minmax(8rem, 1fr) auto auto; }
+  .modern-audio-player__timeline { grid-column: 1 / -1; grid-row: 2; }
+}
+@media (max-width: 620px) {
+  .modern-audio-page { padding: 2rem 1rem 7rem; }
+  .modern-audio-page__heading { grid-template-columns: 1fr; gap: 1rem; }
+  .modern-audio-resume { grid-template-columns: auto 1fr; }
+  .modern-audio-resume > button { grid-column: 1 / -1; justify-content: center; }
+  .modern-reciter-list { grid-template-columns: 1fr; }
+  .modern-audio-queue { grid-template-columns: 1fr; }
+  .modern-audio-player { right: .5rem; bottom: .5rem; left: .5rem; grid-template-columns: minmax(0, 1fr) auto auto; width: calc(100% - 1rem); gap: .35rem; padding: .6rem; }
+  .modern-audio-player__track small { max-width: 10rem; }
+  .modern-audio-player__controls button:not(.is-primary) { display: none; }
+}
