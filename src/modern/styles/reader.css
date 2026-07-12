@@ -22,11 +22,11 @@
 .modern-reader-heading p:not(.modern-eyebrow) { margin: .45rem 0 0; color: var(--modern-muted); }
 .modern-reader-heading__arabic { color: var(--modern-accent-strong) !important; font-family: "Scheherazade New", serif; font-size: clamp(2.25rem, 5vw, 4rem); line-height: 1.2; }
 .modern-reader-verses { background: var(--modern-surface); }
-.modern-reader-verse { display: grid; grid-template-columns: 6.25rem minmax(0, 1fr); gap: 1rem 2rem; padding: 2.5rem 2rem; border-bottom: 1px solid var(--modern-border); scroll-margin-block: 8rem; }
+.modern-reader-verse { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: 1rem 2rem; padding: 2.5rem 2rem; border-bottom: 1px solid var(--modern-border); scroll-margin-block: 8rem; }
 .modern-reader-verse.is-target { box-shadow: inset 3px 0 var(--modern-accent); background: color-mix(in srgb, var(--modern-accent) 7%, transparent); }
 .modern-reader-verse__meta { grid-row: 1 / span 2; display: flex; flex-direction: column; gap: .75rem; }
 .modern-reader-verse__meta > a { color: var(--modern-accent-strong); font-size: .8rem; font-weight: 700; text-decoration: none; }
-.modern-verse-actions { position: relative; display: flex; flex-wrap: wrap; gap: .15rem; }
+.modern-verse-actions { position: relative; display: flex; flex-wrap: nowrap; gap: .15rem; }
 .modern-verse-actions > button { display: grid; width: 2.35rem; min-height: 2.35rem; place-items: center; color: var(--modern-muted); }
 .modern-verse-actions > button:hover, .modern-verse-actions > button.is-active { background: var(--modern-bg-deep); color: var(--modern-accent-strong); }
 .modern-reader-verse__arabic { margin: 0; color: var(--modern-text); font-family: "Scheherazade New", serif; font-size: clamp(2.15rem, 4.5vw, 3.2rem); line-height: 2; text-align: right; }
@@ -47,6 +47,8 @@
 [data-tajwid="madd-normal"], [data-tajwid*="madd"] { color: #7c4bb3; }
 [data-tajwid="ikhfa"], [data-tajwid*="ikhfa"] { color: #b06b00; }
 [data-tajwid*="idgham"] { color: #087f5b; }
+[data-tajwid="ham-wasl"] { color: #69766f; }
+[data-tajwid="laam-shamsiyah"] { color: #b06b00; }
 @media (max-width: 900px) {
   .modern-reader-toolbar { grid-template-columns: 1fr 1fr; }
   .modern-reader-picker { grid-column: 1 / -1; grid-row: 1; }

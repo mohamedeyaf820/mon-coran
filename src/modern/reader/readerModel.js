@@ -19,15 +19,19 @@ export function buildReaderVerses({ arabic = {}, translations = [] } = {}) {
 }
 
 export function parseTajweedSegments(value = "") {
-  const source = String(value);
+  const source = String(value).replace(
+    /<span[^>]*class=(?:["']?end["']?)[^>]*>[\s\S]*?<\/span>/gi,
+    "",
+  );
   if (!source.includes("<")) return source ? [{ text: source, rule: null }] : [];
 
   const segments = [];
-  const pattern = /<tajweed[^>]*class=["']([^"']+)["'][^>]*>([\s\S]*?)<\/tajweed>|([^<]+)/gi;
+  const pattern = /<tajweed[^>]*class=(?:["']([^"']+)["']|([^\s>]+))[^>]*>([\s\S]*?)<\/tajweed>|([^<]+)/gi;
   let match;
   while ((match = pattern.exec(source))) {
-    const text = (match[2] || match[3] || "").replace(/<[^>]+>/g, "");
-    if (text) segments.push({ text, rule: match[1] || null });
+    const text = (match[3] || match[4] || "").replace(/<[^>]+>/g, "");
+    const rule = (match[1] || match[2] || "").replaceAll("_", "-") || null;
+    if (text) segments.push({ text, rule });
   }
   return segments.length ? segments : [{ text: source.replace(/<[^>]+>/g, ""), rule: null }];
 }

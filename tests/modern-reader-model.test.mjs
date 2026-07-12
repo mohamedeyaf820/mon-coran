@@ -26,3 +26,14 @@ test("extracts safe tajweed segments without preserving markup", () => {
   );
   assert.deepEqual(parseTajweedSegments("plain"), [{ text: "plain", rule: null }]);
 });
+
+test("parses Quran.com unquoted tajweed classes and removes its verse marker", () => {
+  assert.deepEqual(
+    parseTajweedSegments('بِسْمِ <tajweed class=ham_wasl>ٱ</tajweed>للَّهِ <span class=end>١</span>'),
+    [
+      { text: "بِسْمِ ", rule: null },
+      { text: "ٱ", rule: "ham-wasl" },
+      { text: "للَّهِ ", rule: null },
+    ],
+  );
+});

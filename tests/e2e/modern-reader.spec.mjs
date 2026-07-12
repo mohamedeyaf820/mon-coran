@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 const arabic = [
-  { id: 1, chapter_id: 1, verse_key: "1:1", verse_number: 1, page_number: 1, juz_number: 1, text_uthmani: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", text_uthmani_tajweed: '<tajweed class="ghunnah">بِسْمِ</tajweed> اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ' },
+  { id: 1, chapter_id: 1, verse_key: "1:1", verse_number: 1, page_number: 1, juz_number: 1, text_uthmani: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", text_uthmani_tajweed: 'بِسْمِ <tajweed class=ham_wasl>ٱ</tajweed>للَّهِ <tajweed class=ghunnah>الرَّحْمَٰنِ</tajweed> <span class=end>١</span>' },
   { id: 2, chapter_id: 1, verse_key: "1:2", verse_number: 2, page_number: 1, juz_number: 1, text_uthmani: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", text_uthmani_tajweed: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ" },
 ];
 
@@ -27,7 +27,13 @@ test("reads a surah with translation, tajwid and verse actions", async ({ page }
   await expect(page.getByText("Au nom d'Allah")).toBeVisible();
 
   await page.getByRole("button", { name: "Tajwid" }).click();
-  await expect(page.locator('[data-tajwid="ghunnah"]')).toBeVisible();
+  await expect(page.locator('[data-tajwid="ham-wasl"]')).toBeVisible();
+  await expect(page.locator(".modern-reader-verse__arabic").first()).not.toContainText("tajweed class");
+
+  const actionRows = await page.locator(".modern-verse-actions").first().getByRole("button").evaluateAll(
+    (buttons) => buttons.map((button) => Math.round(button.getBoundingClientRect().top)),
+  );
+  expect(new Set(actionRows).size).toBe(1);
 
   await page.getByRole("button", { name: "Ajouter aux favoris" }).first().click();
   await expect(page.getByRole("button", { name: "Retirer le favori" }).first()).toBeVisible();
