@@ -35,9 +35,9 @@ const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1197);
 // mobile/desktop controls after replacing the older bug-prone settings markup.
 // +2 kB added (2073→2075): Quran.com-like settings layout, stabilized header
 // quick menu, and shared Hafs/Warsh ayah marker styles.
-// +1 kB added (2075→2076): native font marker previews and tablet header
-// responsive guard for the settings/font marker update.
-const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2076);
+// +1 kB added (2076→2077): CSS token migration — var(--ts-*)/var(--r-*) names
+// longer than raw rem/px literals; tradeoff accepted for design system compliance.
+const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2077);
 const MAX_SINGLE_CSS_KB = Number(process.env.BUDGET_SINGLE_CSS_KB || 780);
 const MAX_SINGLE_JS_KB = Number(process.env.BUDGET_SINGLE_JS_KB || 250);
 
