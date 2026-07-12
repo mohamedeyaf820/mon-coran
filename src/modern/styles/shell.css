@@ -251,14 +251,22 @@
     grid-template-columns: 1fr auto;
   }
 
+  .modern-brand {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .modern-header__actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
   .modern-nav {
-    position: fixed;
-    z-index: 20;
-    right: 1rem;
-    bottom: 1rem;
-    left: 1rem;
+    position: static;
+    grid-column: 1 / -1;
+    grid-row: 2;
     justify-content: space-around;
-    box-shadow: var(--modern-shadow);
+    width: 100%;
   }
 
   .modern-nav__item {
@@ -269,7 +277,7 @@
   .modern-main {
     grid-template-columns: 1fr;
     padding-top: 2rem;
-    padding-bottom: 7rem;
+    padding-bottom: 4rem;
   }
 
   .modern-phase-note {

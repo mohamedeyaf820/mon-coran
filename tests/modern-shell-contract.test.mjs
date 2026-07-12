@@ -12,13 +12,14 @@ test("modern root mounts the theme provider and semantic shell", async () => {
 
 test("modern shell exposes its essential accessible landmarks", async () => {
   const shell = await read("../src/modern/shell/ModernShell.jsx");
+  const home = await read("../src/modern/home/ModernHomePage.jsx");
   assert.match(shell, /SkipLink/);
   assert.match(shell, /<header/);
   assert.match(shell, /<nav/);
-  assert.match(shell, /<main/);
+  assert.match(home, /<main/);
   assert.match(shell, /aria-label="Navigation principale"/);
   assert.match(shell, /Ouvrir l'interface legacy/);
-  assert.match(shell, /modern-arabic/);
+  assert.match(home, /modern-arabic/);
 });
 
 test("icon buttons require an accessible label", async () => {

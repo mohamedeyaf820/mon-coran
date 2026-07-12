@@ -20,6 +20,7 @@
     "test:e2e:reading": "playwright test tests/e2e/reading-scroll.spec.mjs tests/e2e/reading-stability.spec.mjs",
     "test:e2e:responsive": "playwright test tests/e2e/responsive-density.spec.mjs",
     "test:e2e:phase1": "playwright test tests/e2e/modern-shell.spec.mjs tests/e2e/legacy-surface.spec.mjs",
+    "test:e2e:phase2": "playwright test --workers=2 tests/e2e/modern-home.spec.mjs tests/e2e/modern-shell.spec.mjs tests/e2e/legacy-surface.spec.mjs",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",

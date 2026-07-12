@@ -8,7 +8,7 @@ import {
   Sun,
 } from "lucide-react";
 
-import { buildLegacyHref } from "../routing/legacyLink";
+import { ModernHomePage } from "../home/ModernHomePage";
 import { useModernTheme } from "../theme/ModernThemeProvider";
 import { IconButton } from "../ui/IconButton";
 import { SkipLink } from "../ui/SkipLink";
@@ -21,11 +21,10 @@ const navigation = [
 
 export function ModernShell() {
   const { theme, toggleTheme } = useModernTheme();
-  const legacyHref = buildLegacyHref(
-    window.location.pathname,
-    window.location.search,
-  );
   const ThemeIcon = theme === "dark" ? Sun : Moon;
+  const focusHomeSearch = () => {
+    document.getElementById("surah-search")?.focus();
+  };
 
   return (
     <div className="modern-shell">
@@ -56,7 +55,7 @@ export function ModernShell() {
         </nav>
 
         <div className="modern-header__actions">
-          <IconButton disabled label="Rechercher">
+          <IconButton label="Rechercher" onClick={focusHomeSearch}>
             <Search size={19} strokeWidth={1.7} />
           </IconButton>
           <IconButton label={theme === "dark" ? "Activer le theme clair" : "Activer le theme sombre"} onClick={toggleTheme}>
@@ -68,55 +67,11 @@ export function ModernShell() {
         </div>
       </header>
 
-      <main className="modern-main" id="modern-main">
-        <section className="modern-reading" aria-labelledby="modern-reading-title">
-          <div className="modern-reading__heading">
-            <div>
-              <p className="modern-eyebrow">Derniere lecture</p>
-              <h1 id="modern-reading-title">Al-Fatiha</h1>
-              <p>La sourate qui ouvre le Livre</p>
-            </div>
-            <span className="modern-reading__count">1 / 114</span>
-          </div>
-
-          <div className="modern-verse">
-            <p className="modern-arabic" lang="ar">
-              بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
-            </p>
-            <p className="modern-translation">
-              Au nom d'Allah, le Tout Misericordieux, le Tres Misericordieux.
-            </p>
-          </div>
-
-          <div className="modern-reading__footer">
-            <div>
-              <span>Progression</span>
-              <strong>Verset 1 sur 7</strong>
-            </div>
-            <div className="modern-progress" aria-label="Progression 14 pour cent">
-              <span style={{ width: "14%" }} />
-            </div>
-            <button className="modern-resume" type="button">
-              Reprendre la lecture
-              <span aria-hidden="true">&#8594;</span>
-            </button>
-          </div>
-        </section>
-
-        <aside className="modern-phase-note" aria-label="Etat de la refonte">
-          <p className="modern-eyebrow">Fondations</p>
-          <h2>Une interface recentree sur l'essentiel.</h2>
-          <p>
-            Les parcours seront reactives progressivement apres leur validation.
-            L'application actuelle reste disponible comme reference.
-          </p>
-          <a href={legacyHref}>Ouvrir l'interface legacy</a>
-        </aside>
-      </main>
+      <ModernHomePage />
 
       <footer className="modern-footer">
-        <span>Phase 1 · Fondations</span>
-        <span>Interface claire et sombre</span>
+        <span>Mon Coran · Accueil</span>
+        <a href="/legacy">Ouvrir l'interface legacy</a>
       </footer>
     </div>
   );

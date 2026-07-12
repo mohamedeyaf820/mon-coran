@@ -25,14 +25,14 @@ test("loads a clean modern shell and switches theme", async ({ page }) => {
   await expect(page.getByRole("banner")).toBeVisible();
   await expect(page.getByRole("navigation", { name: "Navigation principale" })).toBeVisible();
   await expect(page.getByRole("main")).toBeVisible();
-  await expect(page.getByText("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ")).toBeVisible();
+  await expect(page.locator(".modern-arabic").first()).toBeVisible();
 
   const themeButton = page.getByRole("button", { name: "Activer le theme sombre" });
   await themeButton.click();
   await expect(page.locator(".modern-app")).toHaveAttribute("data-modern-theme", "dark");
   await expect(page.getByRole("button", { name: "Activer le theme clair" })).toBeVisible();
 
-  const fonts = await page.locator(".modern-arabic").evaluate((element) => ({
+  const fonts = await page.locator(".modern-home__resume .modern-arabic").evaluate((element) => ({
     family: getComputedStyle(element).fontFamily,
     loaded: document.fonts.check(`40px ${JSON.stringify(getComputedStyle(element).fontFamily.split(",")[0])}`),
   }));
