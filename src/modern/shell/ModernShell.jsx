@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 
 import { ModernHomePage } from "../home/ModernHomePage";
+import { ModernReaderPage } from "../reader/ModernReaderPage";
+import { parseReaderRoute } from "../reader/readerRoute";
 import { useModernTheme } from "../theme/ModernThemeProvider";
 import { IconButton } from "../ui/IconButton";
 import { SkipLink } from "../ui/SkipLink";
@@ -20,10 +22,12 @@ const navigation = [
 ];
 
 export function ModernShell() {
+  const readerRoute = parseReaderRoute(window.location.pathname);
   const { theme, toggleTheme } = useModernTheme();
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   const focusHomeSearch = () => {
-    document.getElementById("surah-search")?.focus();
+    if (window.location.pathname !== "/") window.location.assign("/#surah-search");
+    else document.getElementById("surah-search")?.focus();
   };
 
   return (
@@ -67,10 +71,10 @@ export function ModernShell() {
         </div>
       </header>
 
-      <ModernHomePage />
+      {readerRoute ? <ModernReaderPage route={readerRoute} /> : <ModernHomePage />}
 
       <footer className="modern-footer">
-        <span>Mon Coran · Accueil</span>
+        <span>Mon Coran · {readerRoute ? "Lecture" : "Accueil"}</span>
         <a href="/legacy">Ouvrir l'interface legacy</a>
       </footer>
     </div>

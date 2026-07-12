@@ -22,7 +22,7 @@ test("builds a safe resume destination from saved settings", () => {
 
   assert.equal(model.resume.surah.n, 2);
   assert.equal(model.resume.ayah, 255);
-  assert.equal(model.resume.href, "/legacy/surah/2/255");
+  assert.equal(model.resume.href, "/surah/2/255");
   assert.equal(model.resume.progress, 89);
   assert.equal(model.riwaya, "HAFS");
 });
@@ -54,7 +54,7 @@ test("sanitizes and deduplicates recent visits", () => {
   });
 
   assert.deepEqual(model.recents.map((item) => item.surah.n), [36, 2]);
-  assert.equal(model.recents[0].href, "/legacy/surah/36/10");
+  assert.equal(model.recents[0].href, "/surah/36/10");
 });
 
 test("filters surahs by number, latin name, translation or Arabic", () => {

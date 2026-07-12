@@ -36,7 +36,7 @@ test("searches surahs and exposes a clear empty state", async ({ page }) => {
   expect(failures).toEqual([]);
 });
 
-test("loads more surahs and hands reading off to legacy", async ({ page }) => {
+test("loads more surahs and opens the modern reader", async ({ page }) => {
   await page.goto("/");
   const surahLinks = page.locator(".modern-home__surah-list a");
   await expect(surahLinks).toHaveCount(12);
@@ -44,10 +44,10 @@ test("loads more surahs and hands reading off to legacy", async ({ page }) => {
   await expect(surahLinks).toHaveCount(30);
 
   const resume = page.getByRole("link", { name: /Reprendre la lecture/ });
-  await expect(resume).toHaveAttribute("href", /\/legacy\/surah\/\d+/);
+  await expect(resume).toHaveAttribute("href", /\/surah\/\d+/);
   await resume.click();
-  await expect(page).toHaveURL(/\/legacy\/surah\/\d+/);
-  await expect(page.locator(".app-root")).toBeVisible();
+  await expect(page).toHaveURL(/\/surah\/\d+/);
+  await expect(page.locator(".modern-reader")).toBeVisible();
 });
 
 for (const width of widths) {

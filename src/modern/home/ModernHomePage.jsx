@@ -160,7 +160,7 @@ export function ModernHomePage() {
         {displayedSurahs.length ? (
           <div className="modern-home__surah-list">
             {displayedSurahs.map((surah) => (
-              <a href={`/legacy/surah/${surah.n}`} key={surah.n}>
+              <a href={`/surah/${surah.n}`} key={surah.n}>
                 <span className="modern-home__surah-number">
                   {String(surah.n).padStart(3, "0")}
                 </span>

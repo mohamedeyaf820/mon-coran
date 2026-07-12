@@ -6,8 +6,8 @@ function clamp(value, min, max, fallback = min) {
 
 function readingHref(surah, ayah = 1) {
   return ayah > 1
-    ? `/legacy/surah/${surah}/${ayah}`
-    : `/legacy/surah/${surah}`;
+    ? `/surah/${surah}/${ayah}`
+    : `/surah/${surah}`;
 }
 
 function normalizeSearch(value) {

@@ -1,0 +1,58 @@
+import { test, expect } from "@playwright/test";
+
+const arabic = [
+  { id: 1, chapter_id: 1, verse_key: "1:1", verse_number: 1, page_number: 1, juz_number: 1, text_uthmani: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", text_uthmani_tajweed: '<tajweed class="ghunnah">بِسْمِ</tajweed> اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ' },
+  { id: 2, chapter_id: 1, verse_key: "1:2", verse_number: 2, page_number: 1, juz_number: 1, text_uthmani: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", text_uthmani_tajweed: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ" },
+];
+
+const translated = arabic.map((verse) => ({
+  ...verse,
+  translations: [{ text: verse.verse_number === 1 ? "Au nom d'Allah, le Tout Misericordieux." : "Louange a Allah, Seigneur de l'univers.", resource_name: "Test FR" }],
+}));
+
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api.quran.com/api/v4/verses/**", async (route) => {
+    const url = new URL(route.request().url());
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ verses: url.searchParams.has("translations") ? translated : arabic, pagination: { total_pages: 1 } }),
+    });
+  });
+});
+
+test("reads a surah with translation, tajwid and verse actions", async ({ page }) => {
+  await page.goto("/surah/1");
+  await expect(page.getByRole("heading", { name: "Al-Fatiha" })).toBeVisible();
+  await expect(page.locator(".modern-reader-verse")).toHaveCount(2);
+  await expect(page.getByText("Au nom d'Allah")).toBeVisible();
+
+  await page.getByRole("button", { name: "Tajwid" }).click();
+  await expect(page.locator('[data-tajwid="ghunnah"]')).toBeVisible();
+
+  await page.getByRole("button", { name: "Ajouter aux favoris" }).first().click();
+  await expect(page.getByRole("button", { name: "Retirer le favori" }).first()).toBeVisible();
+
+  await page.getByRole("button", { name: "Ajouter une note" }).first().click();
+  await page.getByLabel("Note personnelle").fill("A relire attentivement");
+  await page.getByRole("button", { name: "Enregistrer" }).click();
+  await expect(page.getByLabel("Note personnelle")).toHaveCount(0);
+});
+
+test("switches between page and juz modes", async ({ page }) => {
+  await page.goto("/page/1");
+  await expect(page.getByRole("heading", { name: "Page 1" })).toBeVisible();
+  await expect(page.locator(".modern-reader-surah-break")).toContainText("Al-Fatiha");
+
+  await page.getByRole("button", { name: "Juz" }).click();
+  await expect(page).toHaveURL(/\/juz\/1$/);
+  await expect(page.getByRole("heading", { name: "Juz 1" })).toBeVisible();
+});
+
+test("keeps the reader usable on a narrow viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/surah/1/2");
+  await expect(page.locator("#ayah-1-2")).toHaveClass(/is-target/);
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  expect(overflow).toBe(false);
+  await expect(page.getByRole("button", { name: "Traduction" })).toBeVisible();
+});

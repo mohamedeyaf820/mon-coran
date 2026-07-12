@@ -1,0 +1,69 @@
+.modern-reader { width: min(100%, 66rem); margin-inline: auto; padding: 1.5rem 1.5rem 4rem; }
+.modern-reader-toolbar { position: sticky; z-index: 20; top: 0; display: grid; grid-template-columns: auto minmax(15rem, 1fr) auto; align-items: center; gap: 1rem; padding: .75rem; border: 1px solid var(--modern-border); background: color-mix(in srgb, var(--modern-bg) 94%, transparent); backdrop-filter: blur(12px); }
+.modern-segmented, .modern-reader-options, .modern-reader-picker { display: flex; align-items: center; }
+.modern-segmented { gap: .2rem; padding: .2rem; border: 1px solid var(--modern-border); border-radius: var(--modern-radius-sm); }
+.modern-segmented button, .modern-reader-options button, .modern-reader-picker a, .modern-reader-state button, .modern-verse-actions > button, .modern-note-editor button { min-height: var(--modern-tap-size); border: 0; border-radius: var(--modern-radius-sm); background: transparent; color: var(--modern-text); font: inherit; cursor: pointer; }
+.modern-segmented button { padding: .45rem .7rem; color: var(--modern-muted); }
+.modern-segmented button.is-active { background: var(--modern-text); color: var(--modern-bg); }
+.modern-reader-picker { justify-content: center; gap: .45rem; }
+.modern-reader-picker a { display: grid; width: var(--modern-tap-size); place-items: center; border: 1px solid transparent; }
+.modern-reader-picker a:hover { border-color: var(--modern-border); }
+.modern-reader-picker a.is-disabled { pointer-events: none; opacity: .35; }
+.modern-reader-picker select, .modern-reader-picker input { min-height: var(--modern-tap-size); border: 1px solid var(--modern-border); border-radius: var(--modern-radius-sm); background: var(--modern-surface); color: var(--modern-text); font: inherit; }
+.modern-reader-picker select { width: min(19rem, 30vw); padding-inline: .75rem; }
+.modern-reader-picker label { display: flex; align-items: center; gap: .5rem; color: var(--modern-muted); font-size: .78rem; }
+.modern-reader-picker input { width: 5.5rem; padding-inline: .65rem; }
+.modern-reader-options { justify-content: flex-end; gap: .35rem; }
+.modern-reader-options button { display: inline-flex; align-items: center; gap: .4rem; padding: .55rem .7rem; color: var(--modern-muted); }
+.modern-reader-options button.is-active { background: var(--modern-surface-raised); color: var(--modern-accent-strong); box-shadow: inset 0 0 0 1px var(--modern-border); }
+.modern-reader-options button:disabled { cursor: not-allowed; opacity: .4; }
+.modern-reader-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; padding: 3.5rem 0 2rem; border-bottom: 1px solid var(--modern-border); }
+.modern-reader-heading h1 { margin: 0; font-size: clamp(2rem, 5vw, 4rem); font-weight: 550; }
+.modern-reader-heading p:not(.modern-eyebrow) { margin: .45rem 0 0; color: var(--modern-muted); }
+.modern-reader-heading__arabic { color: var(--modern-accent-strong) !important; font-family: "Scheherazade New", serif; font-size: clamp(2.25rem, 5vw, 4rem); line-height: 1.2; }
+.modern-reader-verses { background: var(--modern-surface); }
+.modern-reader-verse { display: grid; grid-template-columns: 6.25rem minmax(0, 1fr); gap: 1rem 2rem; padding: 2.5rem 2rem; border-bottom: 1px solid var(--modern-border); scroll-margin-block: 8rem; }
+.modern-reader-verse.is-target { box-shadow: inset 3px 0 var(--modern-accent); background: color-mix(in srgb, var(--modern-accent) 7%, transparent); }
+.modern-reader-verse__meta { grid-row: 1 / span 2; display: flex; flex-direction: column; gap: .75rem; }
+.modern-reader-verse__meta > a { color: var(--modern-accent-strong); font-size: .8rem; font-weight: 700; text-decoration: none; }
+.modern-verse-actions { position: relative; display: flex; flex-wrap: wrap; gap: .15rem; }
+.modern-verse-actions > button { display: grid; width: 2.35rem; min-height: 2.35rem; place-items: center; color: var(--modern-muted); }
+.modern-verse-actions > button:hover, .modern-verse-actions > button.is-active { background: var(--modern-bg-deep); color: var(--modern-accent-strong); }
+.modern-reader-verse__arabic { margin: 0; color: var(--modern-text); font-family: "Scheherazade New", serif; font-size: clamp(2.15rem, 4.5vw, 3.2rem); line-height: 2; text-align: right; }
+.modern-ayah-mark { display: inline-grid; min-width: 2rem; min-height: 2rem; margin-inline-start: .5rem; place-items: center; border: 1px solid var(--modern-accent); border-radius: 50%; color: var(--modern-accent-strong); font-family: Literata, serif; font-size: .7rem; vertical-align: middle; }
+.modern-reader-verse__translation { max-width: 46rem; margin: 0; color: var(--modern-muted); font-size: .95rem; line-height: 1.8; }
+.modern-reader-surah-break { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 2rem; border-bottom: 1px solid var(--modern-accent); background: var(--modern-bg-deep); color: var(--modern-accent-strong); font-weight: 700; }
+.modern-reader-surah-break span:last-child { font-family: "Scheherazade New", serif; font-size: 1.6rem; }
+.modern-reader-state { display: grid; min-height: 18rem; place-items: center; padding: 3rem; background: var(--modern-surface); color: var(--modern-muted); text-align: center; }
+.modern-reader-state button { display: inline-flex; align-items: center; gap: .5rem; padding: .6rem .8rem; background: var(--modern-text); color: var(--modern-bg); }
+.modern-note-editor { position: absolute; z-index: 10; top: 2.75rem; left: 0; width: min(21rem, calc(100vw - 3rem)); padding: 1rem; border: 1px solid var(--modern-border); border-radius: var(--modern-radius-md); background: var(--modern-surface-raised); box-shadow: var(--modern-shadow); }
+.modern-note-editor label { display: block; margin-bottom: .5rem; font-size: .75rem; font-weight: 700; }
+.modern-note-editor textarea { width: 100%; resize: vertical; border: 1px solid var(--modern-border); border-radius: var(--modern-radius-sm); background: var(--modern-bg); color: var(--modern-text); font: inherit; line-height: 1.5; padding: .65rem; }
+.modern-note-editor > div { display: flex; justify-content: flex-end; gap: .5rem; margin-top: .5rem; }
+.modern-note-editor button { padding: .5rem .75rem; }
+.modern-note-editor button.is-primary { background: var(--modern-text); color: var(--modern-bg); }
+[data-tajwid="ghunnah"], [data-tajwid="ghunnah-noon-meem"] { color: #b23a48; }
+[data-tajwid="qalqalah"] { color: #1976a3; }
+[data-tajwid="madd-normal"], [data-tajwid*="madd"] { color: #7c4bb3; }
+[data-tajwid="ikhfa"], [data-tajwid*="ikhfa"] { color: #b06b00; }
+[data-tajwid*="idgham"] { color: #087f5b; }
+@media (max-width: 900px) {
+  .modern-reader-toolbar { grid-template-columns: 1fr 1fr; }
+  .modern-reader-picker { grid-column: 1 / -1; grid-row: 1; }
+  .modern-segmented { grid-column: 1; grid-row: 2; }
+  .modern-reader-options { grid-column: 2; grid-row: 2; }
+}
+@media (max-width: 620px) {
+  .modern-reader { padding: 1rem 0 3rem; }
+  .modern-reader-toolbar { position: static; margin-inline: 1rem; }
+  .modern-reader-picker select { width: min(15rem, 55vw); }
+  .modern-reader-heading { margin-inline: 1rem; padding-top: 2.25rem; }
+  .modern-reader-heading__arabic { display: none; }
+  .modern-reader-verse { grid-template-columns: 1fr; padding: 2rem 1rem; }
+  .modern-reader-verse__meta { grid-row: auto; flex-direction: row; align-items: center; justify-content: space-between; }
+  .modern-reader-verse__arabic { font-size: 2.1rem; line-height: 1.95; }
+  .modern-segmented button { padding-inline: .5rem; font-size: .75rem; }
+  .modern-reader-options button { font-size: 0; }
+  .modern-reader-options button svg { width: 18px; height: 18px; }
+  .modern-note-editor { right: 0; left: auto; }
+}
