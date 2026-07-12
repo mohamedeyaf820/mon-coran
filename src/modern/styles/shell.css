@@ -1,9 +1,6 @@
 .modern-app {
   min-height: 100vh;
-  background:
-    linear-gradient(var(--modern-border) 1px, transparent 1px),
-    var(--modern-bg);
-  background-size: 100% 4rem;
+  background: var(--modern-bg);
   color: var(--modern-text);
   transition: background-color 220ms var(--modern-ease), color 220ms var(--modern-ease);
 }

@@ -26,3 +26,10 @@ test("home only sends reading actions to valid legacy reader URLs", async () => 
   assert.match(home, /recent\.href/);
   assert.match(home, /`\/legacy\/surah\/\$\{surah\.n\}`/);
 });
+
+test("keeps the application background visually quiet", async () => {
+  const shellStyles = await read("../src/modern/styles/shell.css");
+  const appRule = shellStyles.match(/\.modern-app\s*\{[\s\S]*?\}/)?.[0] || "";
+  assert.doesNotMatch(appRule, /linear-gradient|background-size/);
+  assert.match(appRule, /background:\s*var\(--modern-bg\)/);
+});
