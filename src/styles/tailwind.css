@@ -7444,7 +7444,6 @@ input:focus-visible {
 .sidebar-content,
 .modal-body,
 .mfp-content-area {
-    -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
 }
 
@@ -16766,7 +16765,6 @@ body {
     margin: 0 auto;
     width: 100%;
     scroll-behavior: auto;
-    -webkit-overflow-scrolling: touch;
     --font-surah-display: var(
         --font-surah-name,
         var(
@@ -20249,7 +20247,6 @@ body {
     margin: 0 auto;
     width: 100%;
     scroll-behavior: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 768px) {

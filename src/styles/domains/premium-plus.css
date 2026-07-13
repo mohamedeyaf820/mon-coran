@@ -829,7 +829,6 @@
             .audio-player-modal__surface
             [data-scroll-panel="true"] {
             overscroll-behavior: contain;
-            -webkit-overflow-scrolling: touch;
         }
     }
 

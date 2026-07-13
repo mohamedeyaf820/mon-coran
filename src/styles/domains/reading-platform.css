@@ -1114,24 +1114,6 @@
     }
 }
 
-@font-face {
-    font-family: "QPC Hafs";
-    src: url("https://verses.quran.foundation/fonts/quran/hafs/uthmanic_hafs/UthmanicHafs1Ver18.woff2")
-        format("woff2");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "KFGQPC Warsh";
-    src: url("https://cdn.jsdelivr.net/gh/thetruetruth/quran-data-kfgqpc@main/warsh/font/warsh.10.woff2")
-        format("woff2");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
 :root {
     --font-arabic: var(--font-quran-hafs);
     --font-arabic-script: var(--font-quran-hafs);
@@ -3814,7 +3796,6 @@ html body .app-root .quran-display--platform .qcm-edge {
 
 @media (max-width: 768px) {
     .app-root .quran-display-scroll {
-        -webkit-overflow-scrolling: touch;
         scroll-behavior: smooth;
     }
     

@@ -1133,7 +1133,6 @@ html.dark .audio-player-modal__surface {
 
 .app-root .qc-reader-toolbar .scrollbar-none {
   scrollbar-width: none !important;
-  -webkit-overflow-scrolling: touch;
 }
 
 .app-root .qc-reader-toolbar .scrollbar-none::-webkit-scrollbar {
@@ -2887,7 +2886,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
 
   html body .app-root :is(.settings-drawer__tabs, .audio-player-modal__grid, .qcom-verse-card-footer, .home-content-toolbar) {
     scrollbar-width: none !important;
-    -webkit-overflow-scrolling: touch;
   }
 
   html body .app-root :is(.settings-drawer__tabs, .audio-player-modal__grid, .qcom-verse-card-footer, .home-content-toolbar)::-webkit-scrollbar {

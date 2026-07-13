@@ -608,7 +608,6 @@ html {
 
 .scroll-x-swipe {
     overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
     scrollbar-width: none !important;
 }
 .scroll-x-swipe::-webkit-scrollbar {
@@ -1126,7 +1125,6 @@ html body .app-root .quran-display--platform .qc-verse-card p {
         display: flex !important;
         flex-wrap: nowrap !important;
         overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch !important;
     }
 
     .reader-toolbar__navigator {
@@ -2338,7 +2336,6 @@ html[data-theme="dark"]
     overflow-x: auto !important;
     overflow-y: hidden !important;
     scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
 }
 
 html[data-theme="dark"]
@@ -2794,7 +2791,6 @@ html[data-theme="dark"]
         overflow-x: auto !important;
         overflow-y: hidden !important;
         scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
     }
 
     html

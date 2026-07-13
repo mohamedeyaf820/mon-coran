@@ -88,7 +88,6 @@
     .app-root .quran-display,
     .app-root .quran-display-scroll {
         overscroll-behavior-y: auto;
-        -webkit-overflow-scrolling: touch;
     }
 }
 
@@ -144,7 +143,6 @@
         border-inline-end: 0;
         border-bottom: 1px solid var(--border);
         scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
     }
 
     .settings-nav::-webkit-scrollbar {
@@ -312,7 +310,6 @@
         overflow-x: auto;
         padding-bottom: 0.12rem;
         scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
     }
 
     .app-root

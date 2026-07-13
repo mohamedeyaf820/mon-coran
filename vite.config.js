@@ -73,15 +73,10 @@ export default defineConfig(({ mode }) => ({
     esbuildOptions: {
       drop: mode === "production" ? ["console", "debugger"] : [],
       legalComments: "none",
-      minifyIdentifiers: true,
-      minifySyntax: true,
-      minifyWhitespace: true,
-      treeShaking: true,
     },
   },
   // Optimize dependencies
   optimizeDeps: {
     include: ["react", "react-dom", "idb", "zod"],
-    exclude: ["./src/services/audioService.js"],
   },
 }));

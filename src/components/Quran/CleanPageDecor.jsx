@@ -1,5 +1,4 @@
 import React from "react";
-import AyahMarker from "./AyahMarker";
 
 export function CleanPageSurahHeader({ lang, surahMeta }) {
   const title = lang === "en" ? surahMeta?.en : surahMeta?.fr || surahMeta?.en;
@@ -32,17 +31,6 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
         <div className="cpv-divider-line h-px flex-grow bg-gradient-to-l from-transparent via-[#c8a84b]/40 to-[#c8a84b]/70" />
       </div>
     </div>
-  );
-}
-
-export function VerseMedallion({ isPlaying = false, num }) {
-  return (
-    <AyahMarker
-      num={num}
-      isPlaying={isPlaying}
-      className="qcom-verse-stop verse-end-marker"
-      size="md"
-    />
   );
 }
 

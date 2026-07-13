@@ -1068,7 +1068,6 @@
     overflow-y: hidden !important;
     padding-bottom: 0.1rem !important;
     scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
   }
 
   .app-root .quran-display--platform .qcom-verse-card-footer::-webkit-scrollbar,

@@ -1010,7 +1010,6 @@ html[data-theme="oled"]
 .hp-stats {
     overflow-x: auto !important;
     scrollbar-width: none !important;
-    -webkit-overflow-scrolling: touch !important;
 }
 
 .home-stats-strip::-webkit-scrollbar,

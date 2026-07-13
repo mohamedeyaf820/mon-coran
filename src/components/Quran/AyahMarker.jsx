@@ -78,8 +78,6 @@ export const AyahMarker = React.memo(function AyahMarker({
   );
 });
 
-export const AyatMarker = AyahMarker;
-
 export function SajdaMarker() {
   return (
     <span className="sajda-marker inline-flex items-center align-middle mx-1" aria-label="Sajda" title="Sajda">

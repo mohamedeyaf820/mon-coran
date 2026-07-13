@@ -65,20 +65,6 @@ function getYesterdayString() {
 }
 
 /**
- * Check if two dates are consecutive days
- * @param {string} date1 - YYYY-MM-DD
- * @param {string} date2 - YYYY-MM-DD
- * @returns {boolean}
- */
-function areConsecutiveDays(date1, date2) {
-  const d1 = new Date(date1);
-  const d2 = new Date(date2);
-  const diffTime = Math.abs(d2 - d1);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays === 1;
-}
-
-/**
  * Log reading activity for today
  * @param {Object} metadata - Optional metadata (surah, ayah, time)
  * @returns {Object} Updated streak data
@@ -268,10 +254,3 @@ export function getMotivationalMessage(streak, lang = "fr") {
       : "Legendary! A full month!";
 }
 
-export default {
-  getStreakData,
-  logReadingActivity,
-  getReadingHistory,
-  getStreakMessage,
-  getMotivationalMessage,
-};
