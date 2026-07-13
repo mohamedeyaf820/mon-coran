@@ -6,6 +6,7 @@ import {
   Moon,
   Search,
   Settings,
+  Wrench,
   Sun,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -15,6 +16,7 @@ import { ModernAudioPage } from "../audio/ModernAudioPage";
 import { ModernAudioPlayer } from "../audio/ModernAudioPlayer";
 import { ModernLibraryPage } from "../library/ModernLibraryPage";
 import { ModernStudyPage } from "../study/ModernStudyPage";
+import { ModernToolsPage } from "../tools/ModernToolsPage";
 import { ModernPreferencesDialog } from "../preferences/ModernPreferencesDialog";
 import { ModernOnboarding } from "../onboarding/ModernOnboarding";
 import { ModernPWAUpdateBanner } from "../pwa/ModernPWAUpdateBanner";
@@ -30,6 +32,7 @@ const navigation = [
   { label: "Ecouter", icon: Headphones, href: "/audio" },
   { label: "Bibliotheque", icon: Bookmark, href: "/library" },
   { label: "Etudier", icon: GraduationCap, href: "/study" },
+  { label: "Outils", icon: Wrench, href: "/tools" },
 ];
 
 export function ModernShell() {
@@ -37,6 +40,7 @@ export function ModernShell() {
   const isAudioPage = window.location.pathname === "/audio";
   const isLibraryPage = window.location.pathname === "/library";
   const isStudyPage = window.location.pathname === "/study";
+  const isToolsPage = window.location.pathname === "/tools";
   const { theme, setTheme, toggleTheme } = useModernTheme();
   const [preferencesOpen, setPreferencesOpen] = useState(false);
   const [onboardingOpen, setOnboardingOpen] = useState(() => shouldShowOnboarding(localStorage, navigator.webdriver));
@@ -68,7 +72,7 @@ export function ModernShell() {
           {navigation.map(({ label, icon: NavIcon, href, disabled }) => (
             <a
               aria-disabled={disabled || undefined}
-              className={((isAudioPage && href === "/audio") || (isLibraryPage && href === "/library") || (isStudyPage && href === "/study") || (!isAudioPage && !isLibraryPage && !isStudyPage && href === "/")) ? "modern-nav__item is-active" : "modern-nav__item"}
+              className={((isAudioPage && href === "/audio") || (isLibraryPage && href === "/library") || (isStudyPage && href === "/study") || (isToolsPage && href === "/tools") || (!isAudioPage && !isLibraryPage && !isStudyPage && !isToolsPage && href === "/")) ? "modern-nav__item is-active" : "modern-nav__item"}
               href={disabled ? undefined : href}
               key={label}
             >
@@ -91,7 +95,7 @@ export function ModernShell() {
         </div>
       </header>
 
-      {isAudioPage ? <ModernAudioPage /> : isLibraryPage ? <ModernLibraryPage /> : isStudyPage ? <ModernStudyPage /> : readerRoute ? <ModernReaderPage route={readerRoute} /> : <ModernHomePage />}
+      {isAudioPage ? <ModernAudioPage /> : isLibraryPage ? <ModernLibraryPage /> : isStudyPage ? <ModernStudyPage /> : isToolsPage ? <ModernToolsPage /> : readerRoute ? <ModernReaderPage route={readerRoute} /> : <ModernHomePage />}
 
       <footer className="modern-footer">
         <span>Mon Coran · {isAudioPage ? "Ecoute" : isLibraryPage ? "Bibliotheque" : isStudyPage ? "Etude" : readerRoute ? "Lecture" : "Accueil"}</span>
