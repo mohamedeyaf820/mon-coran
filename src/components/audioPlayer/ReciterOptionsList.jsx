@@ -7,7 +7,7 @@ import {
   getLatencyForReciter,
   getReciterUnavailableRemainingMs,
 } from "../../utils/reciterRanking";
-import { ReciterAvatar } from "./AudioPlayerPrimitives";
+import { getReciterBio, getReciterPhoto, getReciterAvatar } from "../../data/reciters";
 
 function pick(lang, values) {
   return values[lang] || values.fr;
@@ -156,6 +156,10 @@ export default function ReciterOptionsList(props) {
               const isFavorite = (favoriteReciters || []).includes(r.id);
               const latency = getLatencyForReciter(r, reciterLatencyByKey);
 
+              const bio = getReciterBio(r, lang);
+              const photo = getReciterPhoto(r.id);
+              const avatar = !photo ? getReciterAvatar(r) : null;
+
               return (
                 <button
                   key={`modal-${r.id}`}
@@ -171,12 +175,34 @@ export default function ReciterOptionsList(props) {
                   aria-pressed={active}
                   disabled={isAnyReciterSwitching || (isUnavailable && !active)}
                 >
-                  <ReciterAvatar
-                    reciter={r}
-                    active={active}
-                    loading={isLoading}
-                  />
-                  <span className="flex min-w-0 flex-col">
+                  {/* Photo or avatar — larger for the modal grid */}
+                  <span className="audio-reciter-options__photo relative shrink-0 overflow-hidden rounded-xl border border-white/12 bg-white/[0.06]"
+                    style={{ width: 52, height: 52 }}
+                  >
+                    {photo ? (
+                      <img
+                        src={photo}
+                        alt=""
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <span
+                        className="flex h-full w-full items-center justify-center text-[0.72rem] font-black text-white"
+                        style={{ background: avatar?.gradient }}
+                        aria-hidden="true"
+                      >
+                        {avatar?.initials}
+                      </span>
+                    )}
+                    {/* playing indicator dot */}
+                    {active && !isLoading && (
+                      <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-[var(--theme-primary,#22c55e)] shadow-[0_0_5px_currentColor]" />
+                    )}
+                  </span>
+
+                  <span className="flex min-w-0 flex-col gap-1">
                     <span className="text-[0.76rem] font-bold leading-snug">
                       {lang === "ar"
                         ? r.name
@@ -184,7 +210,18 @@ export default function ReciterOptionsList(props) {
                           ? r.nameFr
                           : r.nameEn}
                     </span>
-                    <span className="mt-1 flex flex-wrap gap-1">
+
+                    {/* Bio — compact 2-line clamp */}
+                    {bio && (
+                      <span
+                        className="text-[0.58rem] leading-[1.45] text-[rgba(220,210,190,0.62)] line-clamp-2"
+                        title={bio}
+                      >
+                        {bio}
+                      </span>
+                    )}
+
+                    <span className="flex flex-wrap gap-1">
                       <span className="audio-reciter-options__badge inline-flex w-fit items-center rounded-full border border-white/12 bg-white/[0.06] px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-[rgba(225,214,194,0.72)]">
                         {r.cdnType === "everyayah"
                           ? "EveryAyah CDN"
