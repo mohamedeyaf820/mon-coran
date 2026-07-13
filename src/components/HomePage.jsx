@@ -38,6 +38,7 @@ import { buildAudioPlaylistForSurah } from "../utils/audioPlaylist";
 
 const ReciterDetailPage = lazy(() => import("./recitation/ReciterDetailPage"));
 
+import { Shapes, CalendarCheck, BookOpen, ListMusic, TrendingUp } from "lucide-react";
 import {
   HOME_INITIAL_SURAHS,
   HOME_INITIAL_SURAHS_LOW,
@@ -59,17 +60,17 @@ function ToolsQuickCard({ lang, set, t }) {
   const tr = (obj) => (lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en);
 
   const quickTools = [
-    { id: "wird", icon: "fa-calendar-check", label: tr({ fr: "Wird", en: "Wird", ar: "الورد" }), action: () => set({ wirdOpen: true }) },
-    { id: "khatma", icon: "fa-book-open", label: tr({ fr: "Khatma", en: "Khatma", ar: "الختمة" }), action: () => set({ khatmaOpen: true }) },
-    { id: "playlist", icon: "fa-list-music", label: tr({ fr: "Listes", en: "Playlists", ar: "القوائم" }), action: () => set({ playlistOpen: true }) },
-    { id: "stats", icon: "fa-chart-line", label: tr({ fr: "Stats", en: "Stats", ar: "الإحصائيات" }), action: () => set({ weeklyStatsOpen: true }) },
+    { id: "wird", Icon: CalendarCheck, label: tr({ fr: "Wird", en: "Wird", ar: "الورد" }), action: () => set({ wirdOpen: true }) },
+    { id: "khatma", Icon: BookOpen, label: tr({ fr: "Khatma", en: "Khatma", ar: "الختمة" }), action: () => set({ khatmaOpen: true }) },
+    { id: "playlist", Icon: ListMusic, label: tr({ fr: "Listes", en: "Playlists", ar: "القوائم" }), action: () => set({ playlistOpen: true }) },
+    { id: "stats", Icon: TrendingUp, label: tr({ fr: "Stats", en: "Stats", ar: "الإحصائيات" }), action: () => set({ weeklyStatsOpen: true }) },
   ];
 
   return (
     <div className="home-tools-quick-card bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
       <div className="flex items-center justify-between mb-3 select-none">
         <div className="flex items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] font-[var(--font-ui)] uppercase tracking-[0.06em]">
-          <i className="fas fa-shapes text-primary" />
+          <Shapes size={12} className="text-primary" />
           <span>{tr({ fr: "Outils Spirituels", en: "Spiritual Tools", ar: "الأدوات الروحية" })}</span>
         </div>
         <button
@@ -87,7 +88,7 @@ function ToolsQuickCard({ lang, set, t }) {
             onClick={tool.action}
             className="flex flex-col items-center justify-center p-2 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-light)] hover:border-primary/30 hover:bg-primary/5 transition-all text-center group cursor-pointer"
           >
-            <i className={`fas ${tool.icon} text-base text-text-secondary group-hover:text-primary transition-colors mb-1.5`} />
+            <tool.Icon size={16} className="text-text-secondary group-hover:text-primary transition-colors mb-1.5" />
             <span className="text-[0.62rem] text-text-secondary group-hover:text-primary transition-colors font-semibold truncate w-full">
               {tool.label}
             </span>

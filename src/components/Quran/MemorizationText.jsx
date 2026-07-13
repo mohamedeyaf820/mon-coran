@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { EyeOff, Eye, RotateCcw } from 'lucide-react';
 
 /**
  * Displays Quran ayah text in memorization mode.
@@ -99,15 +100,15 @@ export default function MemorizationText({ text, lang = 'fr', isPlaying = false,
       <div className="mem-toolbar">
         <span className="mem-counter">{revealedCount}/{words.length}</span>
         <button className="mem-btn" onClick={revealNext} disabled={allRevealed}>
-          <i className="fas fa-eye-slash" />
+          <EyeOff size={12} />
           {lbl.next}
         </button>
         <button className="mem-btn" onClick={revealAll} disabled={allRevealed}>
-          <i className="fas fa-eye" />
+          <Eye size={12} />
           {lbl.all}
         </button>
         <button className="mem-btn mem-btn--reset" onClick={reset} title={lbl.reset}>
-          <i className="fas fa-redo" />
+          <RotateCcw size={12} />
         </button>
       </div>
     </div>

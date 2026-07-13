@@ -1,4 +1,5 @@
 import React, { memo, useMemo } from "react";
+import { BookOpen, Star } from "lucide-react";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
 import { cn } from "../../lib/utils";
@@ -67,7 +68,7 @@ function JuzMode({
       <ReadingProgressBar />
       <div className="mb-4 flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-4 py-3">
         <div className="flex items-center gap-2">
-          <i className="fas fa-book-open text-sm text-[var(--primary)]" />
+          <BookOpen size={14} className="text-[var(--primary)]" />
           <span className="font-[var(--font-ui)] text-sm font-bold text-[var(--text-primary)]">
             {t("sidebar.juz", lang)} {lang === "ar" ? toAr(currentJuz) : currentJuz} / 30
           </span>
@@ -81,7 +82,7 @@ function JuzMode({
               : "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]",
           )}
         >
-          {showRiwayaStar && <i className="fas fa-star text-[0.55rem]" />}
+          {showRiwayaStar && <Star size={8} />}
           {riwaya === "warsh" ? "WARSH" : "HAFS"}
         </span>
       </div>

@@ -1,4 +1,5 @@
 import React from "react";
+import { X } from "lucide-react";
 import { getSurah, toAr } from "../../data/surahs";
 import { t } from "../../i18n";
 
@@ -24,7 +25,7 @@ export default function FullscreenMushafOverlay({
     >
       <div className="mfp-page-container" onClick={(event) => event.stopPropagation()}>
         <button className="mfp-close-btn" onClick={onClose} aria-label="Fermer">
-          <i className="fas fa-times" />
+          <X size={14} />
         </button>
         <div className="mfp-page-header">
           <div className="mfp-page-header__top">

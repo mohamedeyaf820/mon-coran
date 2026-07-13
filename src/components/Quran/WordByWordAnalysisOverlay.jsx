@@ -1,4 +1,5 @@
 import React from "react";
+import { Play } from "lucide-react";
 
 export default function WordByWordAnalysisOverlay({
   lang,
@@ -43,7 +44,7 @@ export default function WordByWordAnalysisOverlay({
         </div>
         <div className="wbw-analysis-footer">
           <button className="wbw-audio-btn" onClick={onReplay}>
-            <i className="fas fa-play"></i> {lang === "fr" ? "\u00c9couter" : "Listen"}
+            <Play size={12} /> {lang === "fr" ? "\u00c9couter" : "Listen"}
           </button>
         </div>
       </div>

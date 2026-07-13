@@ -6,6 +6,7 @@ import React, {
   useMemo,
   memo,
 } from "react";
+import { Bookmark } from "lucide-react";
 import { arabicToLatin } from "../../data/transliteration";
 import { cn } from "../../lib/utils";
 import MemorizationText from "../Quran/MemorizationText";
@@ -30,7 +31,7 @@ function PageSeparator({ page }) {
     >
       <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[rgba(var(--primary-rgb),0.15)]" />
       <div className="flex items-center gap-2 rounded-full border border-[rgba(var(--primary-rgb),0.12)] bg-[var(--bg-secondary)] px-3 py-1">
-        <i className="fas fa-bookmark text-[0.5rem] text-[var(--primary)]" />
+        <Bookmark size={8} className="text-[var(--primary)]" />
         <span className="font-[var(--font-ui)] text-[0.68rem] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
           Page {page}
         </span>

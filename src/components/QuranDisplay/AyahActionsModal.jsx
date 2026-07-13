@@ -1,4 +1,5 @@
 import React from "react";
+import { X } from "lucide-react";
 import AyahActions from "../AyahActions";
 import { cn } from "../../lib/utils";
 
@@ -44,7 +45,7 @@ export default function AyahActionsModal({
             className="w-8 h-8 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)] transition-colors"
             aria-label="Fermer"
           >
-            <i className="fas fa-times text-sm" />
+            <X size={14} />
           </button>
         </div>
 

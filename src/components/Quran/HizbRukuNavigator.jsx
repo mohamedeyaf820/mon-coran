@@ -1,4 +1,5 @@
 import React from "react";
+import { Bookmark, ArrowLeft, ArrowRight } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { getHizbForAyah, getHizbForPage, getNextSajdah, getPrevSajdah, SAJDAH_DATA } from "../../data/juz";
 
@@ -117,7 +118,7 @@ export function HizbRukuNavigator({
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 hover:bg-primary/10 text-primary font-medium transition-colors shrink-0 whitespace-nowrap"
         title="Aller au prochain Hizb"
       >
-        <i className="fas fa-bookmark text-[10px]" />
+        <Bookmark size={10} />
         <span>Hizb {currentHizb}/60</span>
       </button>
 
@@ -129,7 +130,7 @@ export function HizbRukuNavigator({
             className="p-1.5 rounded-full hover:bg-accent transition-colors shrink-0"
             title={`Sajdah précédent: S${prevSajdah.surah}:A${prevSajdah.ayah}`}
           >
-            <i className="fas fa-arrow-left text-[10px]" />
+            <ArrowLeft size={10} />
           </button>
         )}
 
@@ -146,7 +147,7 @@ export function HizbRukuNavigator({
             className="p-1.5 rounded-full hover:bg-accent transition-colors shrink-0"
             title={`Sajdah suivant: S${nextSajdah.surah}:A${nextSajdah.ayah}`}
           >
-            <i className="fas fa-arrow-right text-[10px]" />
+            <ArrowRight size={10} />
           </button>
         )}
       </div>

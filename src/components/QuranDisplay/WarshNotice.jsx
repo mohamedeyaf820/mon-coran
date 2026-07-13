@@ -1,4 +1,5 @@
 import React from "react";
+import { CheckCircle, AlertTriangle, ExternalLink } from "lucide-react";
 
 export default function WarshNotice({
   kind,
@@ -23,16 +24,14 @@ export default function WarshNotice({
     <div className={shellClass}>
       <div className="flex min-w-[200px] flex-1 flex-col gap-[0.3rem]">
         <div className={badgeClass}>
-          <i
-            className={`fas ${kind === "ok" ? "fa-check-circle" : "fa-exclamation-triangle"}`}
-          ></i>
+          {kind === "ok" ? <CheckCircle size={10} /> : <AlertTriangle size={10} />}
           <span>{badgeLabel}</span>
         </div>
         {body ? <p className="m-0 text-[0.71rem] opacity-[0.82]">{body}</p> : null}
       </div>
       {linkLabel && onLinkClick ? (
         <button type="button" onClick={onLinkClick} className={linkClassName}>
-          <i className="fas fa-external-link-alt"></i>
+          <ExternalLink size={10} />
           {linkLabel}
         </button>
       ) : null}

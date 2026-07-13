@@ -1,4 +1,5 @@
 import React from "react";
+import { Play, BookOpen, Download } from "lucide-react";
 import { openExternalUrl } from "../../lib/security";
 
 export default function RowActions({ lang, onPlay, onOpen, downloadUrl }) {
@@ -21,7 +22,7 @@ export default function RowActions({ lang, onPlay, onOpen, downloadUrl }) {
         }
         aria-label={lang === "fr" ? "Ecouter" : lang === "ar" ? "استمع" : "Listen"}
       >
-        <i className="fas fa-play text-[0.75rem]" />
+        <Play size={12} />
       </button>
       <button
         className={btnClass}
@@ -32,7 +33,7 @@ export default function RowActions({ lang, onPlay, onOpen, downloadUrl }) {
         }
         aria-label={lang === "fr" ? "Ouvrir" : lang === "ar" ? "فتح" : "Open"}
       >
-        <i className="fas fa-book-open text-[0.75rem]" />
+        <BookOpen size={12} />
       </button>
       <button
         className={`${btnClass} ${!downloadUrl ? "cursor-not-allowed opacity-40" : ""}`}
@@ -54,7 +55,7 @@ export default function RowActions({ lang, onPlay, onOpen, downloadUrl }) {
         }
         aria-label={lang === "fr" ? "Telecharger" : lang === "ar" ? "تحميل" : "Download"}
       >
-        <i className="fas fa-download text-[0.75rem]" />
+        <Download size={12} />
       </button>
     </div>
   );

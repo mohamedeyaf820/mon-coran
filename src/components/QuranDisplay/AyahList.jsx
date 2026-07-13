@@ -1,4 +1,5 @@
 import React, { memo } from "react";
+import { Bookmark } from "lucide-react";
 import { toAr } from "../../data/surahs";
 import { cn } from "../../lib/utils";
 import AyahBlock from "../Quran/AyahBlock";
@@ -15,7 +16,7 @@ function PageSeparator({ ayah, lang, theme }) {
 
       {/* Badge central */}
       <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-[rgba(var(--primary-rgb),0.15)] bg-[var(--bg-secondary)]">
-        <i className="fas fa-bookmark text-[var(--primary)] text-[0.5rem]" />
+        <Bookmark size={8} className="text-[var(--primary)]" />
         <span className="font-[var(--font-ui)] text-[0.72rem] font-semibold text-[var(--text-muted)] tracking-wide uppercase">
           {lang === "ar" ? "صفحة" : "Page"}{" "}
           {lang === "ar" ? toAr(ayah.page) : ayah.page}
