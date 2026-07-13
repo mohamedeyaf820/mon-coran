@@ -6,7 +6,7 @@ import {
   getRecitersByRiwaya,
 } from "../../data/reciters";
 import audioService from "../../services/audioService";
-import { getSavedAudioPosition, saveAudioPosition } from "../../services/audioResumeService";
+import { clearAudioPosition, getSavedAudioPosition, saveAudioPosition } from "../../services/audioResumeService";
 import { getSettings, updateSetting } from "../../services/storageService";
 import { getQueueState, setQueueState } from "../../stores/AudioQueueStore";
 import { buildAudioPlaylistForSurah, normalizeAyahsForAudioPlaylist } from "../../utils/audioPlaylist";
@@ -118,6 +118,22 @@ export function ModernAudioProvider({ children }) {
     setReciterId(safeId);
   }
 
+  function stop() {
+    audioService.stop();
+    clearAudioPosition();
+    setQueueState({ items: [], index: 0 });
+    setPlayer({
+      status: "idle",
+      current: null,
+      currentTime: 0,
+      duration: 0,
+      network: "idle",
+      error: null,
+      queue: [],
+      index: -1,
+    });
+  }
+
   const value = {
     ...player,
     reciter,
@@ -132,6 +148,7 @@ export function ModernAudioProvider({ children }) {
     toggle: () => audioService.playlist.length ? audioService.toggle() : resumeSaved(),
     next: () => audioService.next(),
     previous: () => audioService.prev(),
+    stop,
     seekPercent: (value) => audioService.seekPercent(value),
     setSpeed: (value) => { audioService.setSpeed(value); updateSetting("audioSpeed", value); },
   };

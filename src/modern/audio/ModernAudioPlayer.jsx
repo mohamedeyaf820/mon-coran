@@ -1,4 +1,4 @@
-import { Headphones, ListMusic, Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { Headphones, ListMusic, Pause, Play, SkipBack, SkipForward, Square } from "lucide-react";
 import { getSurah } from "../../data/surahs";
 import { formatAudioTime } from "./audioModel";
 import { useModernAudio } from "./ModernAudioProvider";
@@ -25,7 +25,10 @@ export function ModernAudioPlayer() {
         <input aria-label="Progression audio" max="100" min="0" onChange={(event) => audio.seekPercent(Number(event.target.value) / 100)} type="range" value={progress} />
         <span>{formatAudioTime(audio.currentTime)} / {formatAudioTime(audio.duration)}</span>
       </div>
-      <a aria-label="Ouvrir la file d'attente" href="/audio"><ListMusic size={19} /></a>
+      <div className="modern-audio-player__tools">
+        <a aria-label="Ouvrir la file d'attente" href="/audio"><ListMusic size={19} /></a>
+        <button aria-label="Arreter et fermer le lecteur" onClick={audio.stop} title="Arreter et fermer" type="button"><Square size={17} fill="currentColor" /></button>
+      </div>
       {(audio.network === "buffering" || audio.network === "loading") && <span className="modern-audio-player__network" role="status">Chargement...</span>}
       {audio.error && <span className="modern-audio-player__error" role="alert">{audio.error}</span>}
     </aside>

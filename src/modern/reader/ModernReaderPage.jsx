@@ -83,7 +83,7 @@ function ModernMushafPage({
           <div className="modern-mushaf-flow">
             {verses.map((verse, index) => {
               const previous = verses[index - 1];
-              const startsSurah = !previous || previous.surahNumber !== verse.surahNumber;
+              const startsSurah = verse.ayahNumber === 1 && (!previous || previous.surahNumber !== verse.surahNumber);
               const surah = getSurah(verse.surahNumber);
               return (
                 <span className="modern-mushaf-unit" key={verse.key}>

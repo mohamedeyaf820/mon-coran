@@ -9,6 +9,7 @@
 - File d'attente persistante et restauree apres navigation.
 - Reprise audio depuis la derniere position sauvegardee.
 - Etats de chargement, mise en tampon et erreur recuperable.
+- Bouton Stop fermant le lecteur et nettoyant la file et la reprise actives.
 - Avatars locaux de secours pour les photos distantes indisponibles.
 
 ## Verification automatisee

@@ -35,6 +35,8 @@
 - Les traductions restent dans un panneau separe pour ne pas modifier la composition arabe.
 - Les versets sont rendus dans un flux typographique `inline` continu, sans boite intermediaire.
 - Les choix Traduction, Tajwid et mode de lecture utilisent les preferences partagees et persistent entre sourate, page, juz et rechargement.
+- La basmala et l'en-tete ne sont affiches que lorsqu'un verset 1 commence reellement une sourate sur la page.
+- Apres la Fatiha, les versets d'une page sont empiles verticalement comme dans la vue legacy, avec leur texte interne continu.
 
 ## Risque residuel connu
 

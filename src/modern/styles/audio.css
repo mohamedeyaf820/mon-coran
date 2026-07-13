@@ -31,7 +31,8 @@
 .modern-audio-player__track strong, .modern-audio-player__track small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .modern-audio-player__track small { color: var(--modern-muted); font-size: .67rem; }
 .modern-audio-player__controls { display: flex; align-items: center; gap: .25rem; }
-.modern-audio-player button, .modern-audio-player > a { display: grid; width: var(--modern-tap-size); height: var(--modern-tap-size); place-items: center; border: 0; border-radius: var(--modern-radius-sm); background: transparent; color: var(--modern-text); cursor: pointer; }
+.modern-audio-player button, .modern-audio-player__tools > a { display: grid; width: var(--modern-tap-size); height: var(--modern-tap-size); place-items: center; border: 0; border-radius: var(--modern-radius-sm); background: transparent; color: var(--modern-text); cursor: pointer; }
+.modern-audio-player__tools { display: flex; align-items: center; gap: .15rem; }
 .modern-audio-player button.is-primary { border-radius: 50%; background: var(--modern-text); color: var(--modern-bg); }
 .modern-audio-player__timeline { display: grid; grid-template-columns: minmax(5rem, 1fr) auto; align-items: center; gap: .75rem; }
 .modern-audio-player__timeline input { width: 100%; accent-color: var(--modern-accent-strong); }

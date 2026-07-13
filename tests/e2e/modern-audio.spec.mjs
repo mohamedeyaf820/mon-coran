@@ -47,6 +47,10 @@ test("starts a verse queue and keeps all actions aligned", async ({ page }) => {
   await expect.poll(() => page.evaluate(() => window.__modernAudioPlayCalls || 0)).toBeGreaterThan(0);
   const queue = await page.evaluate(() => JSON.parse(localStorage.getItem("mushaf_recitation_queue_v1")));
   expect(queue.items).toHaveLength(2);
+  await page.getByRole("button", { name: "Arreter et fermer le lecteur" }).click();
+  await expect(page.getByRole("complementary", { name: "Lecteur audio" })).toHaveCount(0);
+  const stoppedQueue = await page.evaluate(() => JSON.parse(localStorage.getItem("mushaf_recitation_queue_v1")));
+  expect(stoppedQueue.items).toHaveLength(0);
 });
 
 test("audio surfaces do not overflow on mobile", async ({ page }) => {

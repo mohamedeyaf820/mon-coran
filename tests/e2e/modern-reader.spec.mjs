@@ -10,12 +10,23 @@ const translated = arabic.map((verse) => ({
   translations: [{ text: verse.verse_number === 1 ? "Au nom d'Allah, le Tout Misericordieux." : "Louange a Allah, Seigneur de l'univers.", resource_name: "Test FR" }],
 }));
 
+const pageThree = [
+  { id: 13, chapter_id: 2, verse_key: "2:6", verse_number: 6, page_number: 3, juz_number: 1, text_uthmani: "إِنَّ الَّذِينَ كَفَرُوا" },
+  { id: 14, chapter_id: 2, verse_key: "2:7", verse_number: 7, page_number: 3, juz_number: 1, text_uthmani: "خَتَمَ اللَّهُ عَلَىٰ قُلُوبِهِمْ" },
+];
+
 test.beforeEach(async ({ page }) => {
   await page.route("**/api.quran.com/api/v4/verses/**", async (route) => {
     const url = new URL(route.request().url());
+    const source = url.pathname.endsWith("/by_page/3") ? pageThree : arabic;
     await route.fulfill({
       contentType: "application/json",
-      body: JSON.stringify({ verses: url.searchParams.has("translations") ? translated : arabic, pagination: { total_pages: 1 } }),
+      body: JSON.stringify({
+        verses: url.searchParams.has("translations")
+          ? source.map((verse) => ({ ...verse, translations: [{ text: "Traduction", resource_name: "Test FR" }] }))
+          : source,
+        pagination: { total_pages: 1 },
+      }),
     });
   });
 });
@@ -80,6 +91,14 @@ test("keeps the mushaf page intact on mobile", async ({ page }) => {
   }));
   expect(metrics.width).toBeLessThanOrEqual(390);
   expect(metrics.overflow).toBe(false);
+});
+
+test("only shows basmala at a real surah start and stacks regular page verses", async ({ page }) => {
+  await page.goto("/page/3");
+  await expect(page.locator(".modern-mushaf-basmala")).toHaveCount(0);
+  await expect(page.locator(".modern-mushaf-surah")).toHaveCount(0);
+  const displays = await page.locator(".modern-mushaf-unit").evaluateAll((items) => items.map((item) => getComputedStyle(item).display));
+  expect(displays).toEqual(["block", "block"]);
 });
 
 test("persists display preferences across reader modes and reloads", async ({ page }) => {
