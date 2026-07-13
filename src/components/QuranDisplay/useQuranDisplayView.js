@@ -72,8 +72,10 @@ export default function useQuranDisplayView({
     const element = contentRef.current;
     if (!element) return;
 
-    const minSize = mushafLayout === "mushaf" ? (isCompactPhone ? 32 : 38) : (isCompactPhone ? 22 : 28);
-    const stableReadingSize = Math.max(minSize, readingFontSize);
+    const minSize = mushafLayout === "mushaf" ? (isCompactPhone ? 20 : 26) : (isCompactPhone ? 22 : 28);
+    // Cap mushaf font on compact phones: at 375px width, >26px causes word-per-line wrapping
+    const mushafMobileCap = mushafLayout === "mushaf" && isCompactPhone ? 26 : 96;
+    const stableReadingSize = Math.min(mushafMobileCap, Math.max(minSize, readingFontSize));
     const quranFontSizeCss = `${Math.round(stableReadingSize)}px`;
     const quranLineHeight =
       mushafLayout === "mushaf" ? "2.48" : displayMode === "page" ? "3.05" : "2.2";

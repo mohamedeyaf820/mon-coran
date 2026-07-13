@@ -1334,7 +1334,7 @@ html.dark .audio-player-modal__surface {
   .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
     max-width: 100% !important;
     padding-inline: 0.38rem !important;
-    font-size: clamp(34px, 8.8vw, var(--cpv-font-size, 42px)) !important;
+    font-size: var(--cpv-font-size, 42px) !important;
     line-height: 2.28 !important;
     word-spacing: 0.055em !important;
   }
@@ -1342,7 +1342,7 @@ html.dark .audio-player-modal__surface {
 
 @media (max-width: 380px) {
   .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
-    font-size: clamp(31px, 9vw, 38px) !important;
+    font-size: var(--cpv-font-size, clamp(18px, 7vw, 24px)) !important;
     line-height: 2.18 !important;
     word-spacing: 0.04em !important;
   }

@@ -31,7 +31,10 @@ function CleanPageViewComponent({
   const pageNumber = ayahs[0]?.page ?? null;
   const juzNumber = ayahs[0]?.juz ?? null;
   const headerSurahName = surahMeta?.name_arabic || surahMeta?.name || "";
-  const mushafFontSize = Math.max(38, Math.min(72, Number(fontSize) || 42));
+  const isMobileMushaf = typeof window !== "undefined" && window.innerWidth <= 520;
+  const mushafFontSize = isMobileMushaf
+    ? Math.max(18, Math.min(26, Number(fontSize) || 24))
+    : Math.max(34, Math.min(72, Number(fontSize) || 42));
   const mushafLineHeight = riwaya === "warsh" ? 2.5 : 2.42;
   const mushafWordSpacing = riwaya === "warsh" ? "0.07em" : "0.1em";
 

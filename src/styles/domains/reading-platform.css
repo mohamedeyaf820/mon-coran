@@ -3286,6 +3286,14 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     }
 }
 
+/* Mushaf mode mobile: respect JS-capped font-size, don't force 2rem floor */
+@media (max-width: 520px) {
+    html body .app-root .quran-display--platform .quran-mode-pane--mushaf .mushaf-text-block {
+        font-size: var(--quran-font-size, clamp(18px, 5.5vw, 26px)) !important;
+        line-height: 2.55 !important;
+    }
+}
+
 :root,
 [data-theme="light"] {
     --reader-page-bg: #f8f7f4;
