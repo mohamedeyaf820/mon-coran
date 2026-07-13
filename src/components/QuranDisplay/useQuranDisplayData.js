@@ -92,7 +92,7 @@ export default function useQuranDisplayData({
   );
   const readingStartRef = useRef(Date.now());
   const requestSeqRef = useRef(0);
-  const persistRef = useRef(persistReadingSideEffects);
+  const persistRef = useRef(null);
   useEffect(() => { persistRef.current = persistReadingSideEffects; }, [persistReadingSideEffects]);
 
   const persistReadingSideEffects = useCallback(

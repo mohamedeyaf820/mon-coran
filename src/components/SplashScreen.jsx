@@ -103,7 +103,6 @@ export default function SplashScreen({
     const t2 = setTimeout(() => dismiss(), 700);
 
     return () => {
-      dismissedRef.current = true;
       clearInterval(verseTick);
       clearTimeout(t1);
       clearTimeout(t2);
