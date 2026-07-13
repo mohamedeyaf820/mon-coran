@@ -1340,6 +1340,14 @@ html.dark .audio-player-modal__surface {
   }
 }
 
+@media (max-width: 640px) {
+  .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
+    font-size: var(--cpv-font-size, 38px) !important;
+    line-height: 2.22 !important;
+    word-spacing: 0.05em !important;
+  }
+}
+
 @media (max-width: 380px) {
   .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
     font-size: var(--cpv-font-size, clamp(18px, 7vw, 24px)) !important;
@@ -1605,7 +1613,7 @@ html.dark .mp-footer-v2__shell {
     inset: 0 !important;
     width: 100vw !important;
     height: 100dvh !important;
-    z-index: 9998 !important;
+    z-index: var(--z-modal, 600) !important;
   }
 
   .app-root .mp-audio-player .audio-player-modal__surface.audio-player-modal__surface--settings,
@@ -1725,7 +1733,7 @@ html.dark .mp-footer-v2__shell {
     width: 100vw !important;
     height: 100dvh !important;
     padding: var(--space-3) !important;
-    z-index: 9998 !important;
+    z-index: var(--z-modal, 600) !important;
     overflow: hidden !important;
   }
 

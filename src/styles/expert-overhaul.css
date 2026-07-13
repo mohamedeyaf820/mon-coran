@@ -890,7 +890,7 @@ button:active:not(:disabled),
     padding: 0.5rem 1rem !important;
     background: var(--primary) !important;
     color: white !important;
-    z-index: 9999 !important;
+    z-index: var(--z-skip, 700) !important;
     border-radius: 0 0 var(--radius-md) 0 !important;
     font-weight: 700 !important;
 }

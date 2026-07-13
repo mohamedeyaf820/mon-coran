@@ -3,8 +3,8 @@
   --qd-font-size: clamp(26px, 5.5vw, 42px);
   --quran-font-size: clamp(26px, 5.5vw, 42px);
   --quran-line-height: 2.16;
-  --font-quran-hafs: "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", serif;
-  --font-quran-warsh: "QPC Warsh", "KFGQPC Warsh", "KFGQPC Uthmanic Script WARSH", serif;
+  --font-quran-hafs: "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", "ME Quran", serif;
+  --font-quran-warsh: "QPC Warsh", "KFGQPC Warsh", "KFGQPC Uthmanic Script WARSH", "Amiri Quran", "Amiri", "Scheherazade New", serif;
   --font-quran-indopak: "IndoPak", "QPC IndoPak", "QPC Hafs", "KFGQPC Uthmanic Script HAFS", serif;
   --font-quran-nastaleeq: "KFGQPC Nastaleeq", "QPC Nastaleeq", "IndoPak", "QPC Hafs", serif;
   --font-quran-warsh-kfgqpc: "KFGQPC Warsh", "warsh10", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", serif;

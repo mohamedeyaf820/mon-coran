@@ -373,11 +373,6 @@ html {
     --font-ui:
         "Figtree", "Inter", "Outfit", "Cairo", system-ui, -apple-system,
         sans-serif;
-    --font-quran-hafs:
-        "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", serif;
-    --font-quran-warsh:
-        "QPC Warsh", "KFGQPC Warsh", "KFGQPC Uthmanic Script WARSH", serif;
-    --font-quran: var(--font-quran-hafs);
     --font-quran-tajweed: var(--font-quran);
     --font-surah-hafs:
         "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", serif;
@@ -393,6 +388,13 @@ html {
     --header-h-mobile: 46px;
     --player-h: 80px;
     --sidebar-w: 320px;
+
+    --z-progress: 200;
+    --z-player: 400;
+    --z-overlay: 499;
+    --z-sidebar: 500;
+    --z-modal: 600;
+    --z-skip: 700;
 
     
     --space-1: 0.25rem;

@@ -262,6 +262,22 @@
     }
 }
 
+@media (max-width: 768px) {
+    .app-root .quran-display--platform {
+        --qcom-ar-size: var(--quran-font-size, clamp(1.65rem, 1.1rem + 4.2vw, 2.65rem));
+        --qcom-ar-leading: 1.98;
+        --qcom-ar-word-spacing: 0.04em;
+    }
+}
+
+@media (max-width: 640px) {
+    .app-root .quran-display--platform {
+        --qcom-ar-size: var(--quran-font-size, clamp(1.56rem, 8.8vw, 2.32rem));
+        --qcom-ar-leading: 1.96;
+        --qcom-ar-word-spacing: 0.035em;
+    }
+}
+
 @media (max-width: 520px) {
     .app-root .quran-display--platform {
         --qcom-ar-size: var(--quran-font-size, clamp(1.48rem, 8.4vw, 2.14rem));
@@ -1117,29 +1133,8 @@
 }
 
 :root {
-    --font-quran-hafs:
-        "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs",
-        "ME Quran", serif;
-    --font-quran-warsh:
-        "QPC Warsh", "KFGQPC Warsh", "KFGQPC Uthmanic Script WARSH", "Amiri Quran",
-        "Amiri", "Scheherazade New", serif;
-    --font-quran: var(--font-quran-hafs);
-    --font-quran-tajweed: var(--font-quran-hafs);
-    --font-surah-hafs: var(--font-quran-hafs);
-    --font-surah-warsh: var(--font-quran-warsh);
-    --font-surah: var(--font-surah-hafs);
     --font-arabic: var(--font-quran-hafs);
     --font-arabic-script: var(--font-quran-hafs);
-}
-
-.app-root .quran-display--hafs {
-    --font-quran: var(--font-quran-hafs);
-    --font-quran-tajweed: var(--font-quran-hafs);
-}
-
-.app-root .quran-display--warsh {
-    --font-quran: var(--font-quran-warsh);
-    --font-quran-tajweed: var(--font-quran-warsh);
 }
 
 .app-root[data-riwaya="warsh"] {
@@ -1964,7 +1959,7 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
 .app-scroll-progress {
     position: fixed;
     inset: 0 0 auto 0;
-    z-index: 10000;
+    z-index: var(--z-progress, 200);
     height: 3px;
     pointer-events: none;
     background: transparent;
@@ -3683,7 +3678,7 @@ html body .app-root .quran-display--platform .qcm-edge {
     }
     
     .app-root .qc-reading-view .quran-text {
-        font-size: 1.35rem !important;
+        font-size: var(--quran-font-size, 1.35rem) !important;
     }
     
     
@@ -3791,7 +3786,7 @@ html body .app-root .quran-display--platform .qcm-edge {
     
     
     .app-root .mp-audio-player--mobile {
-        z-index: 9999 !important;
+        z-index: var(--z-player, 400) !important;
     }
     
     

@@ -215,6 +215,12 @@
   }
 }
 
+@media (max-width: 520px) {
+  .app-root[data-view="reading"] .quran-display.quran-display--platform {
+    --reader-arabic-size: clamp(1.58rem, var(--qd-reading-font-size, 29px), 3.2rem);
+  }
+}
+
 @media (max-width: 420px) {
   .app-root[data-view="reading"] .quran-display.quran-display--platform {
     --reader-arabic-size: clamp(1.55rem, var(--qd-reading-font-size, 28px), 3rem);
