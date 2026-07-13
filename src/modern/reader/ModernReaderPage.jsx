@@ -13,6 +13,7 @@ import {
   Palette,
   RotateCcw,
   Share2,
+  BookMarked,
 } from "lucide-react";
 
 import SURAHS, { getSurah } from "../../data/surahs";
@@ -37,6 +38,7 @@ import {
 import { buildReaderVerses, parseTajweedSegments } from "./readerModel";
 import { adjacentReaderHref, buildReaderHref } from "./readerRoute";
 import { useModernAudio } from "../audio/ModernAudioProvider";
+import { ModernVerseStudyPanel } from "./ModernVerseStudyPanel";
 
 const MODES = [
   { id: "surah", label: "Sourate" },
@@ -69,6 +71,7 @@ function ModernMushafPage({
   onPlay,
   onRead,
   onStart,
+  onStudy,
   pageNumber,
   showTajweed,
   showTranslation,
@@ -131,7 +134,7 @@ function ModernMushafPage({
       {selected && (
         <div className="modern-mushaf-selection" aria-label={`Verset selectionne ${selected.ayahNumber}`}>
           <span><strong>{getSurah(selected.surahNumber)?.en}</strong><small>Verset {selected.ayahNumber}</small></span>
-          <VerseActions bookmarked={bookmarks.has(selected.key)} onBookmark={() => onBookmark(selected)} onPlay={() => onPlay(selected)} onRead={() => onRead(selected)} onStart={() => onStart(selected)} verse={selected} />
+          <VerseActions bookmarked={bookmarks.has(selected.key)} onBookmark={() => onBookmark(selected)} onPlay={() => onPlay(selected)} onRead={() => onRead(selected)} onStart={() => onStart(selected)} onStudy={onStudy} verse={selected} />
         </div>
       )}
 
@@ -147,7 +150,7 @@ function ModernMushafPage({
   );
 }
 
-function VerseActions({ verse, bookmarked, onBookmark, onPlay, onRead, onStart }) {
+function VerseActions({ verse, bookmarked, onBookmark, onPlay, onRead, onStart, onStudy }) {
   const [copied, setCopied] = useState(false);
   const [editingNote, setEditingNote] = useState(false);
   const [note, setNote] = useState("");
@@ -183,6 +186,7 @@ function VerseActions({ verse, bookmarked, onBookmark, onPlay, onRead, onStart }
       <button aria-expanded={moreOpen} aria-label="Plus d'options" onClick={() => setMoreOpen((open) => !open)} title="Plus" type="button"><Ellipsis size={18} /></button>
       {moreOpen && <div className="modern-verse-more" role="menu">
         <button onClick={() => { onStart(); setMoreOpen(false); }} role="menuitem" type="button"><Flag size={16} />Commencer ici</button>
+        <button onClick={() => { onStudy(verse); setMoreOpen(false); }} role="menuitem" type="button"><BookMarked size={16} />Etudier ce verset</button>
         <button onClick={() => { copyVerse(); setMoreOpen(false); }} role="menuitem" type="button">{copied ? <Check size={16} /> : <Copy size={16} />}Copier</button>
         <button onClick={() => { onBookmark(); setMoreOpen(false); }} role="menuitem" type="button"><Bookmark fill={bookmarked ? "currentColor" : "none"} size={16} />{bookmarked ? "Retirer le favori" : "Ajouter aux favoris"}</button>
         <button onClick={() => { openNote(); setMoreOpen(false); }} role="menuitem" type="button"><NotebookPen size={16} />Ajouter une note</button>
@@ -229,6 +233,7 @@ export function ModernReaderPage({ route }) {
   const [readingStart, setReadingStartState] = useState(() => getReadingStart());
   const [readingFeedback, setReadingFeedback] = useState("");
   const [mobileOptionsOpen, setMobileOptionsOpen] = useState(false);
+  const [studyVerse, setStudyVerse] = useState(null);
 
   useEffect(() => {
     const applyPreferences = (event) => {
@@ -396,6 +401,7 @@ export function ModernReaderPage({ route }) {
           onPlay={(verse) => audio.playQueue(state.verses, { surah: verse.surahNumber, ayah: verse.ayahNumber })}
           onRead={finishReadingAt}
           onStart={startReadingAt}
+          onStudy={setStudyVerse}
           pageNumber={route.value}
           showTajweed={showTajweed}
           showTranslation={showTranslation}
@@ -428,6 +434,7 @@ export function ModernReaderPage({ route }) {
                       onPlay={() => audio.playQueue(state.verses, { surah: verse.surahNumber, ayah: verse.ayahNumber })}
                       onRead={() => finishReadingAt(verse)}
                       onStart={() => startReadingAt(verse)}
+                      onStudy={setStudyVerse}
                       verse={verse}
                     />
                   </div>
@@ -442,6 +449,7 @@ export function ModernReaderPage({ route }) {
           })}
         </section>
       )}
+      {studyVerse && <ModernVerseStudyPanel onClose={() => setStudyVerse(null)} verse={studyVerse} />}
     </main>
   );
 }
