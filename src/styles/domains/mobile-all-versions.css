@@ -1034,7 +1034,7 @@
 
 @media (max-width: 980px) {
     .app-root .app-view-shell {
-        padding: clamp(0.72rem, 1.8vw, 1rem);
+        padding-block: clamp(0.72rem, 1.8vw, 1rem);
     }
 
     .app-root .app-view-home .hp-wrapper,

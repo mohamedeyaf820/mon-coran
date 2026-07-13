@@ -127,7 +127,7 @@ export default function MiniPlayer() {
         'calc(56px + env(safe-area-inset-bottom, 0px))',
       );
     } else {
-      root.style.removeProperty('--mini-player-h');
+      root.style.setProperty('--mini-player-h', '0px');
     }
   }, [isVisible]);
 

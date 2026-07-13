@@ -1539,7 +1539,7 @@
     scrollbar-gutter: stable both-edges;
 }
 
-.app-root :is(.quran-display--platform, .hp-wrapper, .duas-page--platform) {
+.app-root :is(.quran-display--platform, .duas-page--platform) {
     padding-inline: var(--ui-page-pad) !important;
 }
 
@@ -1770,7 +1770,7 @@ html body .app-root .quran-display--platform .cpv-container {
         gap: 0.26rem !important;
     }
 
-    .app-root :is(.quran-display--platform, .hp-wrapper, .duas-page--platform) {
+    .app-root :is(.quran-display--platform, .duas-page--platform) {
         padding-inline: 0.42rem !important;
     }
 

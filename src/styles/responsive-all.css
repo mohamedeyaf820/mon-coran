@@ -2124,10 +2124,6 @@ body,
     padding-inline: clamp(0.65rem, 2vw, 1.25rem);
 }
 
-.app-root[data-view="reading"] .app-view-shell {
-    padding-inline: clamp(0.4rem, 1.5vw, 1rem);
-}
-
 .app-root .quran-display--platform {
     width: min(100%, 1120px);
     margin-inline: auto;
@@ -2182,12 +2178,8 @@ body,
 
 @media (max-width: 760px) {
     .app-root .app-main-shell {
-        height: calc(100dvh - var(--header-h, 58px)) !important;
-        max-height: calc(100dvh - var(--header-h, 58px)) !important;
-    }
-
-    .app-root .app-view-shell {
-        padding-inline: 0.55rem !important;
+        height: calc(100dvh - var(--header-h, 72px)) !important;
+        max-height: calc(100dvh - var(--header-h, 72px)) !important;
     }
 
     .app-root .mp-header__bar {

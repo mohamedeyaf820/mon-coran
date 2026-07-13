@@ -755,7 +755,7 @@ html.dark .audio-player-modal__surface {
   }
 
   .hp-wrapper {
-    width: min(100vw - 18px, var(--home-shell-max));
+    width: min(100%, var(--home-shell-max));
     padding-block: 0.75rem calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.25rem);
   }
 
