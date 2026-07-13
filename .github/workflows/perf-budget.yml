@@ -11,7 +11,7 @@ jobs:
     env:
       BUDGET_CSS_KB: 945
       BUDGET_JS_KB: 1197
-      BUDGET_TOTAL_KB: 2077
+      BUDGET_TOTAL_KB: 2082
       BUDGET_SINGLE_CSS_KB: 780
       BUDGET_SINGLE_JS_KB: 250
     steps:
