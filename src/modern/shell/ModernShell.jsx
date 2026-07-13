@@ -2,6 +2,7 @@ import {
   BookOpenText,
   Bookmark,
   Headphones,
+  GraduationCap,
   Moon,
   Search,
   Settings,
@@ -12,6 +13,7 @@ import { ModernHomePage } from "../home/ModernHomePage";
 import { ModernAudioPage } from "../audio/ModernAudioPage";
 import { ModernAudioPlayer } from "../audio/ModernAudioPlayer";
 import { ModernLibraryPage } from "../library/ModernLibraryPage";
+import { ModernStudyPage } from "../study/ModernStudyPage";
 import { ModernReaderPage } from "../reader/ModernReaderPage";
 import { parseReaderRoute } from "../reader/readerRoute";
 import { useModernTheme } from "../theme/ModernThemeProvider";
@@ -22,12 +24,14 @@ const navigation = [
   { label: "Lire", icon: BookOpenText, href: "/" },
   { label: "Ecouter", icon: Headphones, href: "/audio" },
   { label: "Bibliotheque", icon: Bookmark, href: "/library" },
+  { label: "Etudier", icon: GraduationCap, href: "/study" },
 ];
 
 export function ModernShell() {
   const readerRoute = parseReaderRoute(window.location.pathname);
   const isAudioPage = window.location.pathname === "/audio";
   const isLibraryPage = window.location.pathname === "/library";
+  const isStudyPage = window.location.pathname === "/study";
   const { theme, toggleTheme } = useModernTheme();
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   const focusHomeSearch = () => {
@@ -52,7 +56,7 @@ export function ModernShell() {
           {navigation.map(({ label, icon: NavIcon, href, disabled }) => (
             <a
               aria-disabled={disabled || undefined}
-              className={((isAudioPage && href === "/audio") || (isLibraryPage && href === "/library") || (!isAudioPage && !isLibraryPage && href === "/")) ? "modern-nav__item is-active" : "modern-nav__item"}
+              className={((isAudioPage && href === "/audio") || (isLibraryPage && href === "/library") || (isStudyPage && href === "/study") || (!isAudioPage && !isLibraryPage && !isStudyPage && href === "/")) ? "modern-nav__item is-active" : "modern-nav__item"}
               href={disabled ? undefined : href}
               key={label}
             >
@@ -75,10 +79,10 @@ export function ModernShell() {
         </div>
       </header>
 
-      {isAudioPage ? <ModernAudioPage /> : isLibraryPage ? <ModernLibraryPage /> : readerRoute ? <ModernReaderPage route={readerRoute} /> : <ModernHomePage />}
+      {isAudioPage ? <ModernAudioPage /> : isLibraryPage ? <ModernLibraryPage /> : isStudyPage ? <ModernStudyPage /> : readerRoute ? <ModernReaderPage route={readerRoute} /> : <ModernHomePage />}
 
       <footer className="modern-footer">
-        <span>Mon Coran · {isAudioPage ? "Ecoute" : isLibraryPage ? "Bibliotheque" : readerRoute ? "Lecture" : "Accueil"}</span>
+        <span>Mon Coran · {isAudioPage ? "Ecoute" : isLibraryPage ? "Bibliotheque" : isStudyPage ? "Etude" : readerRoute ? "Lecture" : "Accueil"}</span>
         <a href="/legacy">Ouvrir l'interface legacy</a>
       </footer>
       <ModernAudioPlayer />

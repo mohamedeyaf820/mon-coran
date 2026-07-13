@@ -24,6 +24,7 @@
     "test:e2e:phase3": "playwright test --workers=2 tests/e2e/modern-reader.spec.mjs tests/e2e/modern-home.spec.mjs tests/e2e/modern-shell.spec.mjs tests/e2e/legacy-surface.spec.mjs",
     "test:e2e:phase4": "playwright test --workers=2 tests/e2e/modern-audio.spec.mjs tests/e2e/modern-reader.spec.mjs tests/e2e/modern-home.spec.mjs tests/e2e/modern-shell.spec.mjs tests/e2e/legacy-surface.spec.mjs",
     "test:e2e:phase5": "playwright test --workers=2 tests/e2e/modern-library.spec.mjs tests/e2e/modern-audio.spec.mjs tests/e2e/modern-reader.spec.mjs tests/e2e/modern-home.spec.mjs tests/e2e/modern-shell.spec.mjs tests/e2e/legacy-surface.spec.mjs",
+    "test:e2e:phase6": "playwright test --workers=2 tests/e2e/modern-study.spec.mjs tests/e2e/modern-library.spec.mjs tests/e2e/modern-audio.spec.mjs tests/e2e/modern-reader.spec.mjs tests/e2e/modern-home.spec.mjs tests/e2e/modern-shell.spec.mjs tests/e2e/legacy-surface.spec.mjs",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
