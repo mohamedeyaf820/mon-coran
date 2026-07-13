@@ -10,10 +10,7 @@ function applyCardPosition(card, pos) {
   if (!card || !pos) return;
   card.style.setProperty("--player-left", `${pos.x}px`);
   card.style.setProperty("--player-top", `${pos.y}px`);
-  card.style.setProperty("left", `${pos.x}px`, "important");
-  card.style.setProperty("top", `${pos.y}px`, "important");
-  card.style.setProperty("right", "auto", "important");
-  card.style.setProperty("bottom", "auto", "important");
+  card.style.setProperty("inset", `${pos.y}px auto auto ${pos.x}px`, "important");
   card.style.setProperty("transform", "none", "important");
 }
 
@@ -94,6 +91,7 @@ export function usePlayerDragPosition({
     if (isMobile || !canFreePosition) {
       card.style.removeProperty("--player-left");
       card.style.removeProperty("--player-top");
+      card.style.removeProperty("inset");
       card.style.removeProperty("left");
       card.style.removeProperty("top");
       card.style.removeProperty("right");
