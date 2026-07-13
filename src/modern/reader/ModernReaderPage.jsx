@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bookmark,
   Check,
@@ -94,6 +94,29 @@ function ModernMushafPage({
 }) {
   const [selectedKey, setSelectedKey] = useState(null);
   const selected = verses.find((verse) => verse.key === selectedKey) || null;
+
+  useEffect(() => {
+    if (!selectedKey) return undefined;
+
+    function closeSelectionOnOutsidePointer(event) {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (
+        target.closest(".modern-mushaf-selection") ||
+        target.closest('.modern-mushaf-ayah[aria-pressed="true"]')
+      ) {
+        return;
+      }
+      setSelectedKey(null);
+    }
+
+    document.addEventListener("pointerdown", closeSelectionOnOutsidePointer);
+    return () =>
+      document.removeEventListener(
+        "pointerdown",
+        closeSelectionOnOutsidePointer,
+      );
+  }, [selectedKey]);
 
   return (
     <section
@@ -228,6 +251,19 @@ function VerseActions({
   const [editingNote, setEditingNote] = useState(false);
   const [note, setNote] = useState("");
   const [moreOpen, setMoreOpen] = useState(false);
+  const actionsRef = useRef(null);
+
+  useEffect(() => {
+    if (!moreOpen) return undefined;
+
+    function closeMenuOnOutsidePointer(event) {
+      if (!actionsRef.current?.contains(event.target)) setMoreOpen(false);
+    }
+
+    document.addEventListener("pointerdown", closeMenuOnOutsidePointer);
+    return () =>
+      document.removeEventListener("pointerdown", closeMenuOnOutsidePointer);
+  }, [moreOpen]);
 
   async function openNote() {
     const saved = await getNote(verse.surahNumber, verse.ayahNumber);
@@ -258,6 +294,7 @@ function VerseActions({
     <div
       className="modern-verse-actions"
       aria-label={`Actions du verset ${verse.ayahNumber}`}
+      ref={actionsRef}
     >
       <button
         aria-label="Ecouter le verset"

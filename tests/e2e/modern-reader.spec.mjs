@@ -81,6 +81,20 @@ test("switches between page and juz modes", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Juz 1" })).toBeVisible();
 });
 
+test("closes contextual verse actions when clicking outside", async ({ page }) => {
+  await page.goto("/surah/1");
+  await page.getByRole("button", { name: "Plus d'options" }).first().click();
+  await expect(page.getByRole("menu")).toBeVisible();
+  await page.locator(".modern-reader-heading").click();
+  await expect(page.getByRole("menu")).toHaveCount(0);
+
+  await page.goto("/page/1");
+  await page.getByRole("button", { name: "Verset 1" }).click();
+  await expect(page.getByLabel("Verset selectionne 1")).toBeVisible();
+  await page.locator(".modern-mushaf-page__meta").click();
+  await expect(page.getByLabel("Verset selectionne 1")).toHaveCount(0);
+});
+
 test("keeps the reader usable on a narrow viewport", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/surah/1/2");
