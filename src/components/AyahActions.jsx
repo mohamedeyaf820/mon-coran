@@ -689,7 +689,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       icon: "fa-star",
       label:
         lang === "fr"
-          ? "Memoriser"
+          ? "Mémoriser"
           : lang === "ar"
             ? "حفظ"
             : "Memorize",
@@ -699,7 +699,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           : lang === "ar"
             ? "ارفع مستوى الحفظ"
             : "Boost progress",
-      state: memoLevel > 0 ? `${memoLevel}/5` : lang === "fr" ? "Demarrer" : lang === "ar" ? "ابدأ" : "Start",
+      state: memoLevel > 0 ? `${memoLevel}/5` : lang === "fr" ? "Démarrer" : lang === "ar" ? "ابدأ" : "Start",
       active: memoLevel > 0,
       onClick: handleMemorizationBoost,
     },
@@ -709,7 +709,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       icon: "fa-repeat",
       label:
         lang === "fr"
-          ? "Repeter"
+          ? "Répéter"
           : lang === "ar"
             ? "تكرار"
             : "Repeat",
@@ -781,13 +781,13 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             : "Compare",
       description:
         lang === "fr"
-          ? "Epingler ce verset"
+          ? "Épingler ce verset"
           : lang === "ar"
             ? "Pin this verse"
             : "Pin this verse",
       state: isPinnedForCompare
         ? lang === "fr"
-          ? "Epingle"
+          ? "Épinglé"
           : "Pinned"
         : `${pinnedAyahs.length}/4`,
       active: isPinnedForCompare,
@@ -849,10 +849,10 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       key: "study",
       className: `ayah-action-card ayah-action-card--study${showStudy ? " is-active" : ""}`,
       icon: "fa-book-open",
-      label: lang === "fr" ? "Etude" : lang === "ar" ? "دراسة" : "Study",
+      label: lang === "fr" ? "Étude" : lang === "ar" ? "دراسة" : "Study",
       description:
         lang === "fr"
-          ? "Tafsir, lecons, notes"
+          ? "Tafsir, leçons, notes"
           : lang === "ar"
             ? "ترجمة وكلمة بكلمة"
             : "Tafsir, lessons, notes",
@@ -877,14 +877,14 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       {
         key: "lessons",
         icon: "fa-lightbulb",
-        label: lang === "fr" ? "Lecons" : lang === "ar" ? "فوائد" : "Lessons",
+        label: lang === "fr" ? "Leçons" : lang === "ar" ? "فوائد" : "Lessons",
       },
       {
         key: "reflections",
         icon: "fa-feather",
         label:
           lang === "fr"
-            ? "Reflexions"
+            ? "Réflexions"
             : lang === "ar"
               ? "تدبر"
               : "Reflections",
@@ -994,7 +994,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                   : "Tafsir is unavailable for now."}
             </p>
             <button type="button" onClick={retryTafsir}>
-              {lang === "fr" ? "Reessayer" : lang === "ar" ? "أعد المحاولة" : "Retry"}
+              {lang === "fr" ? "Réessayer" : lang === "ar" ? "أعد المحاولة" : "Retry"}
             </button>
           </div>
         );
@@ -1282,7 +1282,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             onClick={() => toggleStudyPanel("lessons")}
           >
             <Layers size={13} />
-            <span>{lang === "fr" ? "Lecons" : lang === "ar" ? "فوائد" : "Lessons"}</span>
+            <span>{lang === "fr" ? "Leçons" : lang === "ar" ? "فوائد" : "Lessons"}</span>
           </button>
           <span className="qcom-list-study-separator" aria-hidden="true" />
           <button
@@ -1291,7 +1291,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             onClick={() => toggleStudyPanel("reflections")}
           >
             <MessageCircle size={13} />
-            <span>{lang === "fr" ? "Reflexions" : lang === "ar" ? "تدبر" : "Reflections"}</span>
+            <span>{lang === "fr" ? "Réflexions" : lang === "ar" ? "تدبر" : "Reflections"}</span>
           </button>
         </div>
       ) : layout === "qcom-footer" ? (
@@ -1706,7 +1706,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 showStudy && inlineIconButtonActiveClass,
               )}
               onClick={() => toggleStudyPanel("tafsir")}
-              title={lang === "fr" ? "Etude" : lang === "ar" ? "دراسة" : "Study"}
+              title={lang === "fr" ? "Étude" : lang === "ar" ? "دراسة" : "Study"}
               aria-label={lang === "fr" ? "Ouvrir l'etude" : lang === "ar" ? "فتح الدراسة" : "Open study"}
             >
               <BookOpen size={13} />
@@ -1826,7 +1826,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               {copied ? <Check size={13} /> : <Copy size={13} />}
               {copied
                 ? lang === "fr"
-                  ? "Copie"
+                  ? "Copié"
                   : lang === "ar"
                     ? "تم النسخ"
                     : "Copied"
