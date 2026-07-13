@@ -57,7 +57,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
   if (loading && fallbackWords.length === 0) {
     const skeletonCount = text ? text.trim().split(/\s+/).length : 5;
     return (
-      <div className="wbw-display wbw-loading" dir="rtl" aria-busy="true" aria-label={lang === "ar" ? "جاري التحميل" : "Loading"}>
+      <div className="wbw-display wbw-loading" dir="rtl" aria-busy="true" aria-label={lang === "ar" ? "جاري التحميل" : lang === "fr" ? "Chargement des mots" : "Loading words"}>
         <div className="wbw-skeleton-row">
           {Array.from({ length: Math.min(skeletonCount, 12) }, (_, i) => (
             <div key={i} className="wbw-skeleton-word">
@@ -117,8 +117,22 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
   }
 
   return (
-    <div className="wbw-display" dir="rtl">
-        {displayWords.map((word, index) => {
+    <div
+      className="wbw-display wbw-study-grid"
+      dir="rtl"
+      role="group"
+      aria-label={
+        lang === "ar"
+          ? `الآية ${ayah} كلمة بكلمة`
+          : lang === "fr"
+            ? `Verset ${ayah}, lecture mot à mot`
+            : `Verse ${ayah}, word-by-word reading`
+      }
+      data-show-transliteration={showTransliteration ? "true" : "false"}
+      data-show-translation={showWordTranslation ? "true" : "false"}
+      data-translation-language={wordTranslationLang}
+    >
+      {displayWords.map((word, index) => {
         const wordId = word.id ?? `${surah}:${ayah}:${word.position ?? index}`;
         const isClickedWord = activeWordId === wordId;
 
@@ -141,7 +155,23 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
           />
         );
       })}
-      <AyahMarker number={ayah} isPlaying={isPlaying} className="wbw-ayah-marker" />
+      <span
+        className="wbw-verse-end"
+        aria-label={
+          lang === "fr"
+            ? `Fin du verset ${ayah}`
+            : lang === "ar"
+              ? `نهاية الآية ${ayah}`
+              : `End of verse ${ayah}`
+        }
+      >
+        <span aria-hidden="true">•</span>
+        {lang === "fr"
+          ? `Verset ${ayah}`
+          : lang === "ar"
+            ? `الآية ${ayah}`
+            : `Verse ${ayah}`}
+      </span>
       <WordByWordAnalysisOverlay
         lang={lang}
         onClose={() => setSelectedWord(null)}

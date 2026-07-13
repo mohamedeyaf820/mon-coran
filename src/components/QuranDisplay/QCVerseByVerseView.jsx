@@ -168,6 +168,7 @@ const QCVerseCard = memo(function QCVerseCard({
       data-ayah-global={ayah.number}
       className={cn(
         "qc-verse-card qc-list-card group relative transition-colors duration-200 outline-none",
+        showWordByWord && "qc-list-card--word-by-word",
         "px-4 sm:px-6 py-5 sm:py-6",
         "border-b border-[var(--border)]",
         isPlaying && "is-playing",

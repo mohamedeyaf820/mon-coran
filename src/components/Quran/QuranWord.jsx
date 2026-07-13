@@ -18,6 +18,22 @@ function QuranWordComponent({
   inline = false,
 }) {
   const hasAudio = Boolean(word?.audioUrl);
+  const wordText = word?.textQpcHafs || word?.text || "";
+  const translationDirection = /[\u0600-\u06ff]/.test(word?.translation || "")
+    ? "rtl"
+    : "ltr";
+  const actionLabel =
+    lang === "ar"
+      ? hasAudio
+        ? `تشغيل كلمة ${wordText}`
+        : `تشغيل الآية التي تحتوي على ${wordText}`
+      : lang === "en"
+        ? hasAudio
+          ? `Play the word ${wordText}`
+          : `Play the verse containing ${wordText}`
+        : hasAudio
+          ? `Lire le mot ${wordText}`
+          : `Lire le verset contenant ${wordText}`;
   const classes = [
     "wbw-word-block",
     inline ? "wbw-word-block--inline" : "",
@@ -36,16 +52,13 @@ function QuranWordComponent({
       data-word-position={word?.position}
       data-has-audio={hasAudio ? "true" : "false"}
       aria-describedby={`${wordId}-tooltip`}
-      aria-label={
-        hasAudio
-          ? `Lire le mot ${word?.text || ""}`
-          : `Lire le verset contenant ${word?.text || ""}`
-      }
+      aria-label={actionLabel}
       onClick={onSelect}
+      style={{ "--wbw-arabic-size": `${fontSize}px` }}
     >
-      <span className="wbw-arabic" style={{ fontSize: `${fontSize}px` }}>
+      <span className="wbw-arabic" dir="rtl" lang="ar">
         <TajweedText
-          text={word?.textQpcHafs || word?.text || ""}
+          text={wordText}
           enabled={showTajwid}
           riwaya={riwaya}
           tajweedColors={null}
@@ -57,9 +70,15 @@ function QuranWordComponent({
         </span>
       ) : null}
       {showWordTranslation && word?.translation ? (
-        <span className="wbw-translation">{word.translation}</span>
+        <span
+          className="wbw-translation"
+          dir={translationDirection}
+          lang={translationDirection === "rtl" ? "ar" : lang}
+        >
+          {word.translation}
+        </span>
       ) : null}
-      <span id={`${wordId}-tooltip`}>
+      <span className="wbw-tooltip-anchor" id={`${wordId}-tooltip`}>
         <WordTooltip lang={lang} word={word} />
       </span>
     </button>

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "../styles/domains/reader-consolidation.css";
 import "../styles/domains/reading-platform.css";
+import "../styles/word-by-word-refonte.css";
 import {
   shallowEqual,
   useAppActions,
@@ -423,7 +424,7 @@ export default function QuranDisplay() {
         />
       ) : null}
       <div
-        className={`quran-display quran-display--${riwaya} quran-display--platform`}
+        className={`quran-display quran-display--${riwaya} quran-display--platform${showWordByWord ? " quran-display--word-by-word" : ""}`}
         ref={view.contentRef}
         {...view.touchHandlers}
       >

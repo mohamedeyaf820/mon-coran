@@ -918,8 +918,9 @@ const ALL_AVAILABLE_RECITERS = [
 const QURAN_RECITER_IMAGE_BASE = "https://static.qurancdn.com/images/reciters/";
 const quranPhoto = (path) => `${QURAN_RECITER_IMAGE_BASE}${path}`;
 
+// Keep only URLs that respond successfully. Missing portraits intentionally
+// use the deterministic gradient avatar instead of generating browser 404s.
 export const RECITER_PHOTOS_MAP = {
-  "ar.alafasy": quranPhoto("6/mishary-al-afasy-profile.jpg"),
   "ar.abdulbasitmurattal": quranPhoto("1/abdelbasset-profile.jpeg"),
   "ar.abdulbasitmujawwad": quranPhoto("1/abdelbasset-profile.jpeg"),
   "ar.husary": quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
@@ -930,7 +931,6 @@ export const RECITER_PHOTOS_MAP = {
   ahmed_ibn_ali_al_ajamy_64: quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
   yasser_dossari_hafs: quranPhoto("20/yasser-profile.png"),
   ali_jabir: quranPhoto("23/Abdullah-Ali-Jabir-profile.png?v=1"),
-  "ar.saoodshuraym": quranPhoto("3/saud-ash-shuraym-profile.jpeg"),
   "ar.abdurrahmaansudais": quranPhoto("2/abdul-rahman-al-sudais-profile.jpeg"),
   ghamadi_40: quranPhoto("16/saad-al-ghamdi-profile.png?v=1"),
   "ar.muhammadjibreel": quranPhoto("10/muhammad-jebril-profile.jpeg"),
@@ -938,21 +938,6 @@ export const RECITER_PHOTOS_MAP = {
   khalefa_al_tunaiji: quranPhoto("11/khalifa-al-tunaiji-profile.jpeg?v=1"),
   warsh_abdulbasit: quranPhoto("1/abdelbasset-profile.jpeg"),
   warsh_hussary: quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
-  maher_almuaiqly: quranPhoto("7/maher-al-muaiqly-profile.jpeg"),
-  "ar.minshawi": quranPhoto("8/muhammad-siddiq-al-minshawi-profile.jpeg"),
-  "ar.minshawimujawwad": quranPhoto("8/muhammad-siddiq-al-minshawi-profile.jpeg"),
-  abdullaah_matrood: quranPhoto("13/abdullah-al-matrood-profile.jpeg"),
-  abdullaah_basfar: quranPhoto("14/abdullah-basfar-profile.jpeg"),
-  abdulsamad: quranPhoto("15/abdul-samad-profile.jpeg"),
-  muhammad_ayyoub: quranPhoto("9/muhammad-ayyoub-profile.jpeg"),
-  muhammad_tablawi: quranPhoto("17/muhammad-al-tablawi-profile.jpeg"),
-  fares_abbad: quranPhoto("18/fares-abbad-profile.jpeg"),
-  nasser_alqatami: quranPhoto("19/nasser-al-qatami-profile.jpeg"),
-  mustafa_ismail: quranPhoto("12/mustafa-ismail-profile.jpeg"),
-  salah_al_budair: quranPhoto("21/salah-al-budair-profile.jpeg"),
-  salaah_bukhatir: quranPhoto("24/salah-bukhatir-profile.jpeg"),
-  mahmoud_ali_al_banna: quranPhoto("25/mahmoud-ali-al-banna-profile.jpeg"),
-  hudhaify: quranPhoto("26/ali-al-hudhaify-profile.jpeg"),
 };
 
 const AVATAR_COLORS = [

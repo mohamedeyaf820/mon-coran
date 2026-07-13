@@ -69,8 +69,12 @@ export default {
     warshQcf4Badge: 'مصحف ورش أصلي',
     qpcHafsHint: 'خط حفص من مؤسسة Quran Foundation',
     qpcIndopakHint: 'خط إندوباك مع علامات الوقف',
+    scheherazadeHint: 'خط شهرزاد الجديد، أنيق لرواية حفص',
+    amiriQuranHint: 'خط أميري القرآن، أسلوب خطي كلاسيكي',
+    notoNaskhHint: 'Noto Naskh Arabic، واضح على جميع الشاشات',
     qpcWarshHint: 'خط رواية ورش',
     kfgqpcWarshHint: 'ورش Unicode KFGQPC، يُحمَّل عبر CDN',
+    scheherazadeWarshHint: 'شهرزاد الجديد، متوافق مع رواية ورش',
   },
   audio: {
     play: 'تشغيل', pause: 'إيقاف', next: 'الآية التالية', prev: 'الآية السابقة',

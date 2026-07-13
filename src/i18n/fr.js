@@ -69,8 +69,12 @@ export default {
     warshQcf4Badge: 'Mushaf Warsh Authentique',
     qpcHafsHint: 'Police Hafs depuis Quran Foundation',
     qpcIndopakHint: 'Police IndoPak avec marqueurs de waqf',
+    scheherazadeHint: 'Police Unicode élégante, idéale pour Hafs',
+    amiriQuranHint: 'Police Amiri Quran, style calligraphique classique',
+    notoNaskhHint: 'Noto Naskh Arabic, très lisible sur tous écrans',
     qpcWarshHint: 'Police riwaya Warsh',
     kfgqpcWarshHint: 'Warsh Unicode KFGQPC, chargé via CDN',
+    scheherazadeWarshHint: 'Scheherazade New, compatible riwaya Warsh',
   },
   audio: {
     play: 'Lecture', pause: 'Pause', next: 'Verset suivant', prev: 'Verset précédent',

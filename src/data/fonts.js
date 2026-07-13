@@ -9,11 +9,15 @@
 export const HAFS_FONT_IDS = [
   "qpc-hafs",
   "qpc-indopak",
+  "scheherazade-new",
+  "amiri-quran",
+  "noto-naskh-arabic",
 ];
 
 export const WARSH_FONT_IDS = [
   "qpc-warsh",
   "kfgqpc-warsh",
+  "scheherazade-new-warsh",
 ];
 
 export const QURAN_COM_FONT_IDS = [...HAFS_FONT_IDS, ...WARSH_FONT_IDS];
@@ -22,26 +26,50 @@ export const INTERNAL_QURAN_FONT_IDS = ["qcf-v2", "qcf-v4-tajweed"];
 export const QURAN_FONT_OPTIONS = [
   {
     id: "qpc-hafs",
-    label: "Quran.com Hafs",
+    label: "Uthmani Hafs (Madinah)",
     hintKey: "settings.qpcHafsHint",
     riwaya: "hafs",
   },
   {
     id: "qpc-indopak",
-    label: "Quran.com IndoPak",
+    label: "IndoPak Hafs",
     hintKey: "settings.qpcIndopakHint",
     riwaya: "hafs",
   },
   {
+    id: "scheherazade-new",
+    label: "Scheherazade New (Hafs)",
+    hintKey: "settings.scheherazadeHint",
+    riwaya: "hafs",
+  },
+  {
+    id: "amiri-quran",
+    label: "Amiri Quran (Hafs)",
+    hintKey: "settings.amiriQuranHint",
+    riwaya: "hafs",
+  },
+  {
+    id: "noto-naskh-arabic",
+    label: "Noto Naskh (Hafs)",
+    hintKey: "settings.notoNaskhHint",
+    riwaya: "hafs",
+  },
+  {
     id: "qpc-warsh",
-    label: "QPC Warsh",
+    label: "Uthmani Warsh (Madinah)",
     hintKey: "settings.qpcWarshHint",
     riwaya: "warsh",
   },
   {
     id: "kfgqpc-warsh",
-    label: "KFGQPC Warsh",
+    label: "KFGQPC Warsh 10",
     hintKey: "settings.kfgqpcWarshHint",
+    riwaya: "warsh",
+  },
+  {
+    id: "scheherazade-new-warsh",
+    label: "Scheherazade New (Warsh)",
+    hintKey: "settings.scheherazadeWarshHint",
     riwaya: "warsh",
   },
 ];
@@ -51,6 +79,12 @@ export const FONT_MAP = {
     "'QPC Hafs','KFGQPC Uthmanic Script HAFS','UthmanicHafs',serif",
   "qpc-indopak":
     "'IndoPak','QPC IndoPak','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
+  "scheherazade-new":
+    "'Scheherazade New','Scheherazade',serif",
+  "amiri-quran":
+    "'Amiri Quran','Amiri',serif",
+  "noto-naskh-arabic":
+    "'Noto Naskh Arabic','Noto Naskh','Amiri Quran',serif",
   "qcf-v2":
     "'QCF V2','QCF_V2','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
   "qcf-v4-tajweed":
@@ -59,6 +93,8 @@ export const FONT_MAP = {
     "'QPC Warsh','KFGQPC Uthmanic Script WARSH',serif",
   "kfgqpc-warsh":
     "'KFGQPC Warsh','warsh10','QPC Warsh','KFGQPC Uthmanic Script WARSH',serif",
+  "scheherazade-new-warsh":
+    "'Scheherazade New','Scheherazade','QPC Warsh',serif",
 };
 
 export const DEFAULT_FONT_ID = "qpc-hafs";
@@ -93,8 +129,12 @@ const EXTENDED_ARABIC_INDIC_DIGITS = [
 const AYAH_MARKER_BY_FONT = {
   "qpc-hafs": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
   "qpc-indopak": { marker: "\u06dd", digits: EXTENDED_ARABIC_INDIC_DIGITS },
+  "scheherazade-new": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
+  "amiri-quran": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
+  "noto-naskh-arabic": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
   "qpc-warsh": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
   "kfgqpc-warsh": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
+  "scheherazade-new-warsh": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
   "qcf-v2": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
   "qcf-v4-tajweed": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
 };
@@ -118,11 +158,9 @@ const LEGACY_FONT_ALIASES = {
   "kfgqpc-uthman-taha-naskh": "qcf-v2",
   "uthman-taha": "qcf-v2",
   "me-quran": "qpc-hafs",
-  "scheherazade": "qpc-hafs",
-  "scheherazade-new": "qpc-hafs",
-  "amiri": "qpc-hafs",
-  "amiri-quran": "qpc-hafs",
-  "noto-naskh": "qpc-hafs",
+  "scheherazade": "scheherazade-new",
+  "amiri": "amiri-quran",
+  "noto-naskh": "noto-naskh-arabic",
   "markazi-text": "qpc-hafs",
   "qalam-madinah": "qpc-hafs",
   "qalam-hanafi": "qpc-hafs",
@@ -150,6 +188,8 @@ export const ACCEPTED_FONT_IDS = [
 export function normalizeFontId(id, riwaya = "hafs") {
   const aliasedId = LEGACY_FONT_ALIASES[id] || id;
   if (riwaya === "warsh") {
+    // scheherazade-new used for Hafs maps to its Warsh variant when switching
+    if (aliasedId === "scheherazade-new") return "scheherazade-new-warsh";
     return WARSH_FONT_IDS.includes(aliasedId) ? aliasedId : DEFAULT_WARSH_FONT_ID;
   }
   if (HAFS_FONT_IDS.includes(aliasedId)) return aliasedId;

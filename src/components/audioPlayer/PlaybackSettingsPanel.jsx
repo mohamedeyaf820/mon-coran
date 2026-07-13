@@ -89,6 +89,7 @@ function makeLabels(lang) {
 export default function PlaybackSettingsPanel(props) {
   const {
     audioSpeed,
+    className,
     closeOptionsModal,
     cycleSpeed,
     handleVolumeChange,
@@ -121,7 +122,10 @@ export default function PlaybackSettingsPanel(props) {
 
   return (
     <section
-      className="audio-playback-settings min-h-0 overflow-y-auto pr-1"
+      className={cn(
+        "audio-playback-settings audio-player-modal__tab-panel min-h-0 overflow-y-auto pr-1",
+        className,
+      )}
       data-scroll-panel="true"
     >
       <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>

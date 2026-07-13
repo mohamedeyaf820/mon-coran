@@ -81,9 +81,8 @@ test("reciters: ids are unique and metadata is compatible with the player", () =
   }
 });
 
-test("reciters: verified Quran.com photos are wired for known public profiles", () => {
+test("reciters: reachable Quran.com photos are wired and stale profiles fall back", () => {
   const knownPhotoIds = [
-    "ar.alafasy",
     "ar.husary",
     "abu_bakr_ash_shaatree",
     "ahmed_ajmy",
@@ -97,6 +96,9 @@ test("reciters: verified Quran.com photos are wired for known public profiles", 
   for (const id of knownPhotoIds) {
     assert.match(getReciterPhoto(id), /^https:\/\/static\.qurancdn\.com\/images\/reciters\//);
   }
+
+  assert.equal(getReciterPhoto("ar.alafasy"), null);
+  assert.equal(getReciterVisual({ id: "ar.alafasy", nameEn: "Mishary Rashid Alafasy" }).type, "avatar");
 });
 
 test("reciters: Warsh additions are marked as verified Warsh", () => {

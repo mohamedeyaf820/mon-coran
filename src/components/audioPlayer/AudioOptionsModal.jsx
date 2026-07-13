@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { X } from "lucide-react";
 import { createPortal } from "react-dom";
 import { t } from "../../i18n";
@@ -54,12 +54,13 @@ export default function AudioOptionsModal(props) {
   } = props;
 
   const labels = getAudioPlayerLabels(lang);
+  const [activeMobileTab, setActiveMobileTab] = useState("reciters");
 
   if (!optionsModalOpen) return null;
 
   const modal = (
       <div
-        className="audio-player-modal fixed inset-0 z-[420] flex items-center justify-center p-2 sm:p-4"
+        className="audio-player-modal audio-player-modal--simple fixed inset-0 z-[420] flex items-center justify-center p-2 sm:p-4"
         data-no-drag="true"
       >
         <button
@@ -69,8 +70,7 @@ export default function AudioOptionsModal(props) {
           aria-label={labels.closeOptions}
         />
         <div
-          className="audio-player-modal__surface audio-player-modal__surface--settings relative z-[421] flex h-[min(92vh,860px)] w-[min(96vw,1180px)] min-w-0 flex-col overflow-hidden rounded-3xl border border-[color-mix(in_srgb,var(--theme-border-strong)_30%,transparent_70%)] bg-[linear-gradient(165deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_95%,var(--theme-primary)_5%),color-mix(in_srgb,var(--theme-panel-bg)_94%,var(--theme-bg)_6%))] shadow-[0_40px_90px_rgba(2,8,18,0.56)] backdrop-blur-2xl"
-          style={{ width: "min(94vw, 940px)", height: "min(88vh, 720px)" }}
+          className="audio-player-modal__surface audio-player-modal__surface--settings audio-player-modal__surface--simple relative z-[421] flex h-[min(92vh,860px)] w-[min(96vw,1180px)] min-w-0 flex-col overflow-hidden rounded-3xl border border-[color-mix(in_srgb,var(--theme-border-strong)_30%,transparent_70%)] bg-[linear-gradient(165deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_95%,var(--theme-primary)_5%),color-mix(in_srgb,var(--theme-panel-bg)_94%,var(--theme-bg)_6%))] shadow-[0_40px_90px_rgba(2,8,18,0.56)] backdrop-blur-2xl"
           role="dialog"
           aria-modal="true"
           aria-labelledby="audio-options-modal-title"
@@ -98,8 +98,32 @@ export default function AudioOptionsModal(props) {
             </button>
           </div>
 
+          <div
+            className="audio-player-modal__tabs"
+            role="tablist"
+            aria-label={lang === "fr" ? "Catégories des réglages audio" : lang === "ar" ? "فئات إعدادات الصوت" : "Audio settings categories"}
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeMobileTab === "reciters"}
+              onClick={() => setActiveMobileTab("reciters")}
+            >
+              {t("audio.reciter", lang)}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeMobileTab === "settings"}
+              onClick={() => setActiveMobileTab("settings")}
+            >
+              {lang === "fr" ? "Lecture" : lang === "ar" ? "التشغيل" : "Playback"}
+            </button>
+          </div>
+
           <div className="audio-player-modal__grid grid min-h-0 flex-1 gap-4 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
             <ReciterOptionsList
+              className={activeMobileTab === "reciters" ? "is-active" : ""}
               autoSelectFastestReciter={autoSelectFastestReciter}
               currentReciters={currentReciters}
               filteredReciters={filteredReciters}
@@ -122,6 +146,7 @@ export default function AudioOptionsModal(props) {
             />
 
             <PlaybackSettingsPanel
+              className={activeMobileTab === "settings" ? "is-active" : ""}
               audioSpeed={audioSpeed}
               closeOptionsModal={closeOptionsModal}
               cycleSpeed={cycleSpeed}

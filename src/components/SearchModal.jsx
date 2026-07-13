@@ -64,8 +64,6 @@ export default function SearchModal() {
 
   const searchRequestIdRef = useRef(0);
   const searchAbortRef = useRef(null);
-  const titleId = "search-modal-title";
-
   const runSearch = useCallback(
     async (rawQuery = query, preferredMode = searchMode) => {
       const sanitized = sanitizeSearchQuery(rawQuery);
@@ -295,24 +293,23 @@ export default function SearchModal() {
           onClick={close}
         >
           <Dialog.Content
-            asChild
-            aria-labelledby={titleId}
+            className="search-pro"
+            aria-modal="true"
             onEscapeKeyDown={(e) => {
               e.preventDefault();
               close();
             }}
             onInteractOutside={(e) => { e.preventDefault(); close(); }}
+            onClick={(event) => event.stopPropagation()}
+            onKeyDown={handleInputKeyDown}
           >
-            <section
-              className="search-pro"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={titleId}
-              onClick={(event) => event.stopPropagation()}
-              onKeyDown={handleInputKeyDown}
-              tabIndex={-1}
-            >
-              <Dialog.Title className="sr-only">{lang === "ar" ? "البحث" : lang === "fr" ? "Recherche" : "Search"}</Dialog.Title>
+              <Dialog.Description className="sr-only">
+                {lang === "fr"
+                  ? "Rechercher un verset par texte arabe, phonétique ou traduction."
+                  : lang === "ar"
+                    ? "ابحث عن آية بالنص العربي أو الكتابة الصوتية أو الترجمة."
+                    : "Search for a verse by Arabic text, phonetics, or translation."}
+              </Dialog.Description>
               <header className="search-pro__header">
                 <div className="search-pro__title-wrap">
                   <span className="search-pro__mark" aria-hidden="true">
@@ -326,7 +323,9 @@ export default function SearchModal() {
                           ? "البحث"
                           : "Search"}
                     </p>
-                    <h2 id={titleId}>{t("search.title", lang)}</h2>
+                    <Dialog.Title asChild>
+                      <h2>{t("search.title", lang)}</h2>
+                    </Dialog.Title>
                   </div>
                 </div>
                 <button
@@ -617,7 +616,6 @@ export default function SearchModal() {
                   </section>
                 </main>
               </div>
-            </section>
           </Dialog.Content>
         </div>
       </Dialog.Portal>

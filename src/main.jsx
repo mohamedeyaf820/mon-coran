@@ -75,18 +75,7 @@ if (typeof window !== "undefined") {
   // Defer non-critical feature CSS until idle — these are only needed after
   // the user navigates to reading/settings/recitation pages
   const loadDeferredStyles = () => {
-    import("./styles/responsive-all.css").catch(() => null);
-    import("./styles/domains/premium-platform.css").catch(() => null);
-    import("./styles/domains/premium-plus.css").catch(() => null);
-    import("./styles/reading-ux-refonte.css").catch(() => null);
-    import("./styles/expert-overhaul.css").catch(() => null);
-    import("./styles/surah-reader-header.css").catch(() => null);
-    import("./styles/sidebar-enhanced.css").catch(() => null);
-    import("./styles/settings-enhanced.css").catch(() => null);
-    import("./styles/surah-info-panel.css").catch(() => null);
-    import("./styles/reciter-enhanced.css").catch(() => null);
-    import("./styles/home-audio-ux-refonte.css").catch(() => null);
-    import("./styles/surah-banner.css").catch(() => null);
+    import("./styles/deferredStyles.js").catch(() => null);
   };
 
   if (typeof window.requestIdleCallback === "function") {

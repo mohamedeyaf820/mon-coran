@@ -631,9 +631,9 @@ export default function NotesPanel() {
         className={cn(
           "notes-fab",
           "fixed z-250 flex items-center justify-center",
-          "w-11 h-11 rounded-full cursor-pointer outline-none !border !border-amber-200/35 !bg-[radial-gradient(circle_at_30%_25%,rgba(212,168,32,0.28),rgba(212,168,32,0.16)_45%,rgba(7,17,35,0.92))] !text-white",
+          "w-11 h-11 !rounded-full cursor-pointer outline-none !border !border-[color-mix(in_srgb,var(--theme-primary)_48%,transparent_52%)] !bg-[var(--theme-primary)] !text-white",
           "transition-all duration-200",
-          "shadow-[0_4px_20px_rgba(212,168,32,0.35)]",
+          "shadow-[0_8px_22px_rgba(var(--theme-primary-rgb),0.24)]",
           isMobile ? "notes-fab--mobile" : "notes-fab--desktop",
           lang === "ar" ? "notes-fab--rtl" : "notes-fab--ltr",
           open ? "notes-fab--open" : "notes-fab--closed",

@@ -117,6 +117,7 @@ function AyahBlockComponent({
       className={cn(
         /* Base card */
         "rd-ayah qc-ayah-block group relative",
+        showWordByWord && "qc-ayah-block--word-by-word",
         "mx-auto mb-6 w-full max-w-[1080px]",
         "rounded-[1.5rem] border border-[color-mix(in_srgb,var(--border)_50%,transparent_50%)]",
         "bg-[var(--bg-card)]",

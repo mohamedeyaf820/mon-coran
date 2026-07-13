@@ -13,6 +13,27 @@ const FONT_SOURCES = {
     url: "https://verses.quran.foundation/fonts/quran/hafs/nastaleeq/indopak/indopak-nastaleeq-waqf-lazim-v4.2.1.woff2",
     format: "woff2",
   },
+  // Scheherazade New: served from local woff2 (preloaded in index.html)
+  "scheherazade-new": {
+    family: "Scheherazade New",
+    url: "/fonts/scheherazade-new-400.woff2",
+    format: "woff2",
+  },
+  // Same font file, used for Warsh riwaya rendering
+  "scheherazade-new-warsh": {
+    family: "Scheherazade New",
+    url: "/fonts/scheherazade-new-400.woff2",
+    format: "woff2",
+  },
+  // Google Fonts: loaded via <link> in index.html, mark as cssUrl so we wait for the stylesheet
+  "amiri-quran": {
+    family: "Amiri Quran",
+    cssUrl: "https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap",
+  },
+  "noto-naskh-arabic": {
+    family: "Noto Naskh Arabic",
+    cssUrl: "https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap",
+  },
   "qpc-warsh": {
     family: "QPC Warsh",
     url: "https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2",
@@ -83,7 +104,9 @@ async function loadFontFace(fontId, source) {
 
   if (source.cssUrl) {
     const linkId = `font-css-${fontId}`;
-    if (!document.getElementById(linkId)) {
+    const stylesheetAlreadyPresent = [...document.querySelectorAll('link[rel="stylesheet"], link[rel="preload"]')]
+      .some((link) => link.href === new URL(source.cssUrl, document.baseURI).href);
+    if (!document.getElementById(linkId) && !stylesheetAlreadyPresent) {
       const link = document.createElement("link");
       link.id = linkId;
       link.rel = "stylesheet";

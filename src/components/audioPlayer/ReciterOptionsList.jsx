@@ -8,6 +8,7 @@ import {
   getReciterUnavailableRemainingMs,
 } from "../../utils/reciterRanking";
 import { getReciterBio, getReciterPhoto, getReciterAvatar } from "../../data/reciters";
+import { ReciterPhoto } from "./AudioPlayerPrimitives";
 
 function pick(lang, values) {
   return values[lang] || values.fr;
@@ -16,6 +17,7 @@ function pick(lang, values) {
 export default function ReciterOptionsList(props) {
   const {
     autoSelectFastestReciter,
+    className,
     currentReciters,
     filteredReciters,
     favoriteReciters,
@@ -84,7 +86,8 @@ export default function ReciterOptionsList(props) {
   return (
     <section
       className={cn(
-        "audio-reciter-options flex min-h-0 flex-col p-3 sm:p-3.5",
+        "audio-reciter-options audio-player-modal__tab-panel flex min-h-0 flex-col p-3 sm:p-3.5",
+        className,
         playerSoftSurfaceClass,
       )}
     >
@@ -158,7 +161,7 @@ export default function ReciterOptionsList(props) {
 
               const bio = getReciterBio(r, lang);
               const photo = getReciterPhoto(r.id);
-              const avatar = !photo ? getReciterAvatar(r) : null;
+              const avatar = getReciterAvatar(r);
 
               return (
                 <button
@@ -179,23 +182,17 @@ export default function ReciterOptionsList(props) {
                   <span className="audio-reciter-options__photo relative shrink-0 overflow-hidden rounded-xl border border-white/12 bg-white/[0.06]"
                     style={{ width: 52, height: 52 }}
                   >
-                    {photo ? (
-                      <img
-                        src={photo}
-                        alt=""
-                        className="h-full w-full object-cover"
-                        loading="lazy"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <span
-                        className="flex h-full w-full items-center justify-center text-[0.72rem] font-black text-white"
-                        style={{ background: avatar?.gradient }}
-                        aria-hidden="true"
-                      >
-                        {avatar?.initials}
-                      </span>
-                    )}
+                    <span
+                      className="flex h-full w-full items-center justify-center text-[0.72rem] font-black text-white"
+                      style={{ background: avatar?.gradient }}
+                      aria-hidden="true"
+                    >
+                      {avatar?.initials}
+                    </span>
+                    <ReciterPhoto
+                      src={photo}
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
                     {/* playing indicator dot */}
                     {active && !isLoading && (
                       <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-[var(--theme-primary,#22c55e)] shadow-[0_0_5px_currentColor]" />
@@ -214,7 +211,7 @@ export default function ReciterOptionsList(props) {
                     {/* Bio — compact 2-line clamp */}
                     {bio && (
                       <span
-                        className="text-[0.58rem] leading-[1.45] text-[rgba(220,210,190,0.62)] line-clamp-2"
+                        className="audio-reciter-options__bio text-[0.58rem] leading-[1.45] line-clamp-2"
                         title={bio}
                       >
                         {bio}

@@ -28,6 +28,20 @@ test("Visual desktop: navbar + modal audio options", async ({ page }) => {
 
   const player = page.locator(".mp-audio-player--desktop").first();
   await expect(player).toBeVisible();
+  const reopenDesktop = player.locator(".mp-player-minimized-open").first();
+  if (await reopenDesktop.isVisible().catch(() => false)) {
+    await reopenDesktop.click();
+  }
+  await expect(player).not.toHaveClass(/is-minimized/);
+  const desktopHeaderActions = player.locator(".simple-player__header-actions");
+  const desktopHeaderButtons = desktopHeaderActions.locator("button");
+  await expect(desktopHeaderButtons).toHaveCount(3);
+  for (const button of await desktopHeaderButtons.all()) {
+    await expect(button).toBeVisible();
+  }
+  await player.screenshot({
+    path: path.join(OUTPUT_DIR, "desktop-audio-player.png"),
+  });
 
   const optionsTrigger = player.locator(".mp-player-options-trigger").first();
   await expect(optionsTrigger).toBeVisible();
@@ -62,6 +76,10 @@ test.describe("mobile", () => {
 
     const dock = page.locator(".mp-audio-player--mobile.mp-audio-player--dock").first();
     await expect(dock).toBeVisible();
+    await expect(dock.locator(".simple-player__header-actions button")).toHaveCount(2);
+    await dock.screenshot({
+      path: path.join(OUTPUT_DIR, "mobile-audio-player.png"),
+    });
 
     const optionsTrigger = dock.locator(".mp-player-options-trigger").first();
     await expect(optionsTrigger).toBeVisible();

@@ -6,6 +6,7 @@ import {
   appendNativeAyahMarker,
   getFontOptionsForRiwaya,
   getNativeAyahMarker,
+  normalizeFontId,
 } from "../src/data/fonts.js";
 import { getSettings, saveSettings } from "../src/services/storageService.js";
 
@@ -191,17 +192,27 @@ test("storage: migrates removed local-only Warsh font aliases", () => {
 test("fonts: exposes riwaya-safe native ayah markers", () => {
   assert.deepEqual(
     getFontOptionsForRiwaya("hafs").map((font) => font.id),
-    ["qpc-hafs", "qpc-indopak"],
+    [
+      "qpc-hafs",
+      "qpc-indopak",
+      "scheherazade-new",
+      "amiri-quran",
+      "noto-naskh-arabic",
+    ],
   );
   assert.deepEqual(
     getFontOptionsForRiwaya("warsh").map((font) => font.id),
-    ["qpc-warsh", "kfgqpc-warsh"],
+    ["qpc-warsh", "kfgqpc-warsh", "scheherazade-new-warsh"],
   );
 
   assert.equal(getNativeAyahMarker(1, "qpc-hafs", "hafs"), "\u06dd\u0661");
   assert.equal(getNativeAyahMarker(1, "qpc-indopak", "hafs"), "\u06dd\u06f1");
   assert.equal(getNativeAyahMarker(1, "qpc-warsh", "warsh"), "\u06dd\u0661");
   assert.equal(getNativeAyahMarker(1, "kfgqpc-warsh", "warsh"), "\u06dd\u0661");
+  assert.equal(getNativeAyahMarker(1, "scheherazade-new", "hafs"), "\u06dd\u0661");
+  assert.equal(getNativeAyahMarker(1, "scheherazade-new-warsh", "warsh"), "\u06dd\u0661");
+  assert.equal(normalizeFontId("scheherazade-new", "warsh"), "scheherazade-new-warsh");
+  assert.equal(normalizeFontId("amiri-quran", "warsh"), "qpc-warsh");
 });
 
 test("fonts: appends native ayah markers without duplicates", () => {

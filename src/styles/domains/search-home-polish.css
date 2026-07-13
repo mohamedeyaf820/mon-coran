@@ -504,7 +504,10 @@
 
 .search-pro__suggestions strong {
     margin-top: 0.18rem;
-    overflow-wrap: anywhere;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+    white-space: nowrap;
 }
 
 .search-pro__no-results {
@@ -858,6 +861,10 @@
     .search-pro__preset-grid,
     .search-pro__scope {
         grid-template-columns: 1fr 1fr;
+    }
+
+    .search-pro__suggestions button:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
     }
 
     .search-pro__empty,

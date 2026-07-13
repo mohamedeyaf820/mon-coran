@@ -70,8 +70,12 @@ export default {
     warshQcf4Badge: 'Authentic Warsh Mushaf',
     qpcHafsHint: 'Hafs font from Quran Foundation',
     qpcIndopakHint: 'IndoPak font with waqf markers',
+    scheherazadeHint: 'Elegant Unicode font, ideal for Hafs riwaya',
+    amiriQuranHint: 'Amiri Quran, classic calligraphic style',
+    notoNaskhHint: 'Noto Naskh Arabic, highly readable on all screens',
     qpcWarshHint: 'Warsh riwaya font',
     kfgqpcWarshHint: 'Warsh Unicode KFGQPC, loaded via CDN',
+    scheherazadeWarshHint: 'Scheherazade New, compatible with Warsh riwaya',
   },
   audio: {
     play: 'Play', pause: 'Pause', next: 'Next Ayah', prev: 'Previous Ayah',

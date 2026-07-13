@@ -87,6 +87,7 @@ export async function getWordByWord(surah, ayah, translationLang = 'en') {
       ].join(',');
       const params = new URLSearchParams({
         words: 'true',
+        language: translationLang,
         word_fields: wordFields,
         translation_fields: 'text',
         mushaf: '1',
