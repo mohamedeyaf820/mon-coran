@@ -65,7 +65,7 @@ test("switches between page and juz modes", async ({ page }) => {
   await expect(page.locator(".modern-mushaf-surah")).toContainText("Al-Fatiha");
   await page.getByRole("button", { name: "Verset 1" }).click();
   await expect(page.getByLabel("Verset selectionne 1")).toBeVisible();
-  await expect(page.getByLabel("Verset selectionne 1").getByRole("button")).toHaveCount(4);
+  await expect(page.getByLabel("Verset selectionne 1").getByRole("button")).toHaveCount(5);
 
   await page.getByRole("button", { name: "Juz" }).click();
   await expect(page).toHaveURL(/\/juz\/1$/);

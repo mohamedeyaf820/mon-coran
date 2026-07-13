@@ -10,6 +10,7 @@ import {
   NotebookPen,
   Palette,
   RotateCcw,
+  Share2,
 } from "lucide-react";
 
 import SURAHS, { getSurah } from "../../data/surahs";
@@ -161,6 +162,13 @@ function VerseActions({ verse, bookmarked, onBookmark, onPlay }) {
     window.setTimeout(() => setCopied(false), 1600);
   }
 
+  async function shareVerse() {
+    const url = `${window.location.origin}/surah/${verse.surahNumber}/${verse.ayahNumber}`;
+    const data = { title: `${verse.surahNumber}:${verse.ayahNumber} · Mon Coran`, text: `${verse.text}\n${verse.translation}`, url };
+    if (navigator.share) await navigator.share(data).catch(() => {});
+    else await navigator.clipboard.writeText(`${data.text}\n${url}`);
+  }
+
   return (
     <div className="modern-verse-actions" aria-label={`Actions du verset ${verse.ayahNumber}`}>
       <button aria-label="Ecouter le verset" onClick={onPlay} title="Ecouter" type="button">
@@ -180,6 +188,9 @@ function VerseActions({ verse, bookmarked, onBookmark, onPlay }) {
       </button>
       <button aria-label="Ajouter une note" onClick={openNote} title="Ajouter une note" type="button">
         <NotebookPen size={17} />
+      </button>
+      <button aria-label="Partager le verset" onClick={shareVerse} title="Partager" type="button">
+        <Share2 size={17} />
       </button>
       {editingNote && (
         <form

@@ -11,6 +11,7 @@ import {
 import { ModernHomePage } from "../home/ModernHomePage";
 import { ModernAudioPage } from "../audio/ModernAudioPage";
 import { ModernAudioPlayer } from "../audio/ModernAudioPlayer";
+import { ModernLibraryPage } from "../library/ModernLibraryPage";
 import { ModernReaderPage } from "../reader/ModernReaderPage";
 import { parseReaderRoute } from "../reader/readerRoute";
 import { useModernTheme } from "../theme/ModernThemeProvider";
@@ -20,17 +21,17 @@ import { SkipLink } from "../ui/SkipLink";
 const navigation = [
   { label: "Lire", icon: BookOpenText, href: "/" },
   { label: "Ecouter", icon: Headphones, href: "/audio" },
-  { label: "Etudier", icon: Bookmark, disabled: true },
+  { label: "Bibliotheque", icon: Bookmark, href: "/library" },
 ];
 
 export function ModernShell() {
   const readerRoute = parseReaderRoute(window.location.pathname);
   const isAudioPage = window.location.pathname === "/audio";
+  const isLibraryPage = window.location.pathname === "/library";
   const { theme, toggleTheme } = useModernTheme();
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   const focusHomeSearch = () => {
-    if (window.location.pathname !== "/") window.location.assign("/#surah-search");
-    else document.getElementById("surah-search")?.focus();
+    window.location.assign("/library?tab=search");
   };
 
   return (
@@ -51,7 +52,7 @@ export function ModernShell() {
           {navigation.map(({ label, icon: NavIcon, href, disabled }) => (
             <a
               aria-disabled={disabled || undefined}
-              className={((isAudioPage && href === "/audio") || (!isAudioPage && href === "/")) ? "modern-nav__item is-active" : "modern-nav__item"}
+              className={((isAudioPage && href === "/audio") || (isLibraryPage && href === "/library") || (!isAudioPage && !isLibraryPage && href === "/")) ? "modern-nav__item is-active" : "modern-nav__item"}
               href={disabled ? undefined : href}
               key={label}
             >
@@ -74,10 +75,10 @@ export function ModernShell() {
         </div>
       </header>
 
-      {isAudioPage ? <ModernAudioPage /> : readerRoute ? <ModernReaderPage route={readerRoute} /> : <ModernHomePage />}
+      {isAudioPage ? <ModernAudioPage /> : isLibraryPage ? <ModernLibraryPage /> : readerRoute ? <ModernReaderPage route={readerRoute} /> : <ModernHomePage />}
 
       <footer className="modern-footer">
-        <span>Mon Coran · {isAudioPage ? "Ecoute" : readerRoute ? "Lecture" : "Accueil"}</span>
+        <span>Mon Coran · {isAudioPage ? "Ecoute" : isLibraryPage ? "Bibliotheque" : readerRoute ? "Lecture" : "Accueil"}</span>
         <a href="/legacy">Ouvrir l'interface legacy</a>
       </footer>
       <ModernAudioPlayer />

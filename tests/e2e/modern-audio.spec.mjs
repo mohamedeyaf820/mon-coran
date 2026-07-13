@@ -39,7 +39,7 @@ test("opens the audio library and selects a reciter", async ({ page }) => {
 test("starts a verse queue and keeps all actions aligned", async ({ page }) => {
   await page.goto("/surah/1");
   const actions = page.locator(".modern-verse-actions").first();
-  await expect(actions.getByRole("button")).toHaveCount(4);
+  await expect(actions.getByRole("button")).toHaveCount(5);
   const tops = await actions.getByRole("button").evaluateAll((buttons) => buttons.map((button) => Math.round(button.getBoundingClientRect().top)));
   expect(new Set(tops).size).toBe(1);
   await page.getByRole("button", { name: "Ecouter le verset" }).first().click();

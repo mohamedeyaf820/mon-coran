@@ -266,6 +266,8 @@
 
   .modern-nav {
     position: static;
+    min-width: 0;
+    overflow: hidden;
     grid-column: 1 / -1;
     grid-row: 2;
     justify-content: space-around;
@@ -289,6 +291,13 @@
 }
 
 @media (max-width: 520px) {
+  .modern-header,
+  .modern-main,
+  .modern-footer {
+    box-sizing: border-box;
+    max-width: 100vw;
+  }
+
   .modern-header,
   .modern-main,
   .modern-footer {
@@ -318,9 +327,18 @@
 
   .modern-nav__item {
     flex-direction: column;
+    min-width: 0;
     gap: 0.15rem;
     padding: 0.35rem;
     font-size: 0.7rem;
+  }
+
+  .modern-nav__item span {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: 0.62rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .modern-footer {
