@@ -241,9 +241,9 @@ export default function ReadingHistoryPanel() {
                     <button
                       className="panel-icon-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
                       onClick={goMonthPrev}
-                      title={lang === "fr" ? "Mois precedent" : "Previous month"}
+                      title={lang === "fr" ? "Mois précédent" : "Previous month"}
                       aria-label={
-                        lang === "fr" ? "Mois precedent" : "Previous month"
+                        lang === "fr" ? "Mois précédent" : "Previous month"
                       }
                       type="button"
                     >

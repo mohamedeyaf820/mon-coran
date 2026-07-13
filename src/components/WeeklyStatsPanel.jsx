@@ -297,7 +297,7 @@ export default function WeeklyStatsPanel() {
                 type="button"
                 onClick={() => setWeekOffset((o) => o - 1)}
                 aria-label={
-                  lang === "fr" ? "Semaine precedente" : "Previous week"
+                  lang === "fr" ? "Semaine précédente" : "Previous week"
                 }
               >
                 <ChevronLeft size={16} />

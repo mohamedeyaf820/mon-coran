@@ -1042,7 +1042,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           >
             <Languages size={16} />
             {lang === "fr"
-              ? "Activer le mode etude"
+              ? "Activer le mode étude"
               : lang === "ar"
                 ? "تفعيل وضع الدراسة"
                 : "Enable study mode"}
@@ -1633,8 +1633,8 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               type="button"
               className={inlineIconButtonClass}
               onClick={repeatAyah}
-              title={lang === "fr" ? "Repeter le verset" : lang === "ar" ? "تكرار الآية" : "Repeat verse"}
-              aria-label={lang === "fr" ? "Repeter le verset" : lang === "ar" ? "تكرار الآية" : "Repeat verse"}
+              title={lang === "fr" ? "Répéter le verset" : lang === "ar" ? "تكرار الآية" : "Repeat verse"}
+              aria-label={lang === "fr" ? "Répéter le verset" : lang === "ar" ? "تكرار الآية" : "Repeat verse"}
             >
               <Repeat size={13} />
             </button>
@@ -1707,7 +1707,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               )}
               onClick={() => toggleStudyPanel("tafsir")}
               title={lang === "fr" ? "Étude" : lang === "ar" ? "دراسة" : "Study"}
-              aria-label={lang === "fr" ? "Ouvrir l'etude" : lang === "ar" ? "فتح الدراسة" : "Open study"}
+              aria-label={lang === "fr" ? "Ouvrir l'étude" : lang === "ar" ? "فتح الدراسة" : "Open study"}
             >
               <BookOpen size={13} />
             </button>
@@ -1855,7 +1855,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             <div>
               <div className="ayah-action-sheet__eyebrow">
                 {lang === "fr"
-                  ? "Etude du verset"
+                  ? "Étude du verset"
                   : lang === "ar"
                     ? "دراسة الآية"
                     : "Verse study"}

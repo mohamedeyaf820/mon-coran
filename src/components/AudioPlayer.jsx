@@ -1489,14 +1489,14 @@ export default function AudioPlayer() {
                   onClick={toggle}
                   title={
                     lang === "fr"
-                      ? "Reessayer"
+                      ? "Réessayer"
                       : lang === "ar"
                         ? "إعادة المحاولة"
                         : "Retry"
                   }
                 >
                   {lang === "fr"
-                    ? "Reessayer"
+                    ? "Réessayer"
                     : lang === "ar"
                        ? "إعادة"
                       : "Retry"}
@@ -2414,14 +2414,14 @@ export default function AudioPlayer() {
                         onClick={toggle}
                         title={
                           lang === "fr"
-                            ? "Reessayer"
+                            ? "Réessayer"
                             : lang === "ar"
                                ? "إعادة المحاولة"
                               : "Retry"
                         }
                       >
                         {lang === "fr"
-                          ? "Reessayer"
+                          ? "Réessayer"
                           : lang === "ar"
                              ? "إعادة"
                             : "Retry"}

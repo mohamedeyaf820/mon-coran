@@ -215,7 +215,7 @@ export default function SearchModal() {
     },
     {
       mode: "fr",
-      value: "misericorde",
+      value: "miséricorde",
       label:
         lang === "fr"
           ? "Traduction française"

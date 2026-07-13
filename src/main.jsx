@@ -166,7 +166,7 @@ if (!rootElement) {
 
   const message = document.createElement("p");
   message.textContent =
-    "L'application n'a pas pu demarrer. Veuillez recharger la page.";
+    "L'application n'a pas pu démarrer. Veuillez recharger la page.";
 
   const reloadButton = document.createElement("button");
   reloadButton.type = "button";

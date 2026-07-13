@@ -241,7 +241,7 @@ export default function ReciterComparatorPanel() {
                   onClick={() => setAyah((value) => Math.max(1, value - 1))}
                   disabled={ayah <= 1}
                   aria-label={
-                    lang === "fr" ? "Verset precedent" : "Previous verse"
+                    lang === "fr" ? "Verset précédent" : "Previous verse"
                   }
                 >
                   <Icon name="minus" size={16} />

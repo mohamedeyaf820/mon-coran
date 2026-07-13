@@ -96,7 +96,7 @@ export default function ReciterDetailPage({
             <p className="mt-3 flex items-center gap-1.5 text-[0.7rem] text-text-muted">
               <Info size={10} className="text-amber-500" />
               {lang === "fr"
-                ? "Telechargement direct non disponible."
+                ? "Téléchargement direct non disponible."
                 : lang === "ar"
                   ? "التنزيل المباشر غير متاح."
                   : "Direct download not available."}
