@@ -43,7 +43,7 @@ test("defines the same semantic token contract for both themes", async () => {
     "--modern-focus",
     "--modern-tap-size",
   ]) {
-    assert.equal(tokens.match(new RegExp(`${token}:`, "g"))?.length, 2, token);
+    assert.ok((tokens.match(new RegExp(`${token}:`, "g"))?.length || 0) >= 2, token);
   }
   assert.match(tokens, /\[data-modern-theme="dark"\]/);
 });

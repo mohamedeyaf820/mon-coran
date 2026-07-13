@@ -24,6 +24,8 @@ export function ModernThemeProvider({ children }) {
       Object.entries(getReaderCssVariables(settings)).forEach(([key, value]) => document.documentElement.style.setProperty(key, value));
       document.documentElement.style.setProperty("--modern-quran-font", resolveFontFamily(settings.fontFamily, settings.riwaya));
       document.documentElement.lang = settings.lang || "fr";
+      document.documentElement.dataset.modernPalette = settings.accentPalette || "emerald";
+      document.documentElement.dataset.mushafProfile = settings.mushafProfile || "medina";
     };
     applyReaderVariables(getSettings());
     const syncPreferences = (event) => applyReaderVariables(event.detail || getSettings());

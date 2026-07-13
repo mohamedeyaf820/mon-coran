@@ -69,3 +69,15 @@ test("restores a persisted queue after navigation", async ({ page }) => {
   await expect(page.getByRole("complementary", { name: "Lecteur audio" })).toContainText("An-Nas");
   await expect(page.locator(".modern-audio-queue li")).toHaveCount(1);
 });
+
+test("changes reciter from the bottom player without closing it", async ({ page }) => {
+  await page.goto("/surah/1");
+  await page.getByRole("button", { name: "Ecouter le verset" }).first().click();
+  const player = page.getByRole("complementary", { name: "Lecteur audio" });
+  const selector = player.getByRole("combobox", { name: "Changer de recitateur" });
+  await expect(selector).toBeVisible();
+  const options = await selector.locator("option").count();
+  expect(options).toBeGreaterThan(1);
+  await selector.selectOption({ index: 1 });
+  await expect(player).toBeVisible();
+});

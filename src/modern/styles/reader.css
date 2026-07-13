@@ -61,6 +61,15 @@
 .modern-mushaf-translations h2 { margin: 0 0 1rem; font-size: 1.1rem; }
 .modern-mushaf-translations p { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: .75rem; margin: 0; padding: .7rem 0; border-bottom: 1px solid var(--modern-border); color: var(--modern-muted); font-size: .84rem; line-height: 1.7; }
 .modern-mushaf-translations p span { color: var(--modern-accent-strong); font-weight: 700; }
+[data-mushaf-profile="clear"] .modern-mushaf-flow { font-size: calc(var(--modern-quran-size, 2.35rem) * 1.12); line-height: 2.25; }
+[data-mushaf-profile="indopak"] .modern-mushaf-flow { letter-spacing: 0; line-height: 2.15; }
+[data-mushaf-profile="maghrebi"] .modern-mushaf-page { border-width: 2px; } [data-mushaf-profile="maghrebi"] .modern-mushaf-flow { line-height: 2.2; }
+[data-mushaf-profile="study"] .modern-mushaf-page { box-shadow: none; }
+@media (min-width: 1100px) {
+  .modern-mushaf-wrap:has(.modern-mushaf-translations) { display: grid; width: min(100%, 76rem); grid-template-columns: minmax(0, 43rem) minmax(19rem, 1fr); align-items: start; gap: 1.5rem; }
+  .modern-mushaf-wrap:has(.modern-mushaf-translations) .modern-mushaf-selection { grid-column: 1; }
+  .modern-mushaf-wrap:has(.modern-mushaf-translations) .modern-mushaf-translations { position: sticky; top: 1rem; grid-column: 2; grid-row: 1 / span 2; max-height: calc(100vh - 8rem); margin: 0; overflow-y: auto; }
+}
 .modern-reader-state { display: grid; min-height: 18rem; place-items: center; padding: 3rem; background: var(--modern-surface); color: var(--modern-muted); text-align: center; }
 .modern-reader-state button { display: inline-flex; align-items: center; gap: .5rem; padding: .6rem .8rem; background: var(--modern-text); color: var(--modern-bg); }
 .modern-note-editor { position: absolute; z-index: 10; top: 2.75rem; left: 0; width: min(21rem, calc(100vw - 3rem)); padding: 1rem; border: 1px solid var(--modern-border); border-radius: var(--modern-radius-md); background: var(--modern-surface-raised); box-shadow: var(--modern-shadow); }

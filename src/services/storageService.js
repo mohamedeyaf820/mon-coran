@@ -274,6 +274,8 @@ const DEFAULT_SETTINGS = {
   focusReading: false,
   playerMinimized: false,
   audioPlayerSkin: "orbit",
+  mushafProfile: "medina",
+  accentPalette: "emerald",
   lastPosition: { surah: 1, ayah: 1, page: 1, juz: 1 },
 };
 
@@ -496,6 +498,10 @@ function sanitizeSettings(settings) {
         ? Boolean(safeInput.playerMinimized)
         : false,
     audioPlayerSkin: sanitizeAudioPlayerSkin(safeInput.audioPlayerSkin),
+    mushafProfile: ["medina", "maghrebi", "indopak", "clear", "study"].includes(safeInput.mushafProfile)
+      ? safeInput.mushafProfile : "medina",
+    accentPalette: ["emerald", "ink", "burgundy", "neutral"].includes(safeInput.accentPalette)
+      ? safeInput.accentPalette : "emerald",
     surahRepeatCount:
       Number.isFinite(Number(safeInput.surahRepeatCount))
         ? Math.max(0, Math.min(999, Math.floor(Number(safeInput.surahRepeatCount))))

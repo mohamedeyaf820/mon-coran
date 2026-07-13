@@ -14,6 +14,7 @@ export function ModernAudioPlayer() {
         <Headphones size={20} />
         <span><strong>{surah?.en || "Recitation"}</strong><small>{audio.current?.ayah ? `Verset ${audio.current.ayah}` : "Sourate complete"} · {audio.reciter?.nameFr}</small></span>
       </div>
+      <label className="modern-audio-player__reciter"><span>Recitateur</span><select aria-label="Changer de recitateur" onChange={(event) => audio.changeReciter(event.target.value)} value={audio.reciterId}>{audio.reciters.map((reciter) => <option key={reciter.id} value={reciter.id}>{reciter.nameFr || reciter.nameEn}</option>)}</select></label>
       <div className="modern-audio-player__controls">
         <button aria-label="Verset precedent" onClick={audio.previous} type="button"><SkipBack size={19} /></button>
         <button aria-label={audio.status === "playing" ? "Mettre en pause" : "Lire"} className="is-primary" onClick={audio.toggle} type="button">

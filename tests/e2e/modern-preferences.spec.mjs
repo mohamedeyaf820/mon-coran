@@ -27,3 +27,21 @@ test("preferences remain usable without horizontal overflow on mobile", async ({
   const width = await page.evaluate(() => [document.body.scrollWidth, innerWidth]);
   expect(width[0]).toBeLessThanOrEqual(width[1]);
 });
+
+test("persists a Mushaf profile and a controlled accent palette", async ({ page }) => {
+  await page.getByRole("button", { name: "Etude" }).click();
+  await page.getByRole("button", { name: /Apparence/ }).click();
+  await page.getByRole("button", { name: "Bordeaux" }).click();
+  await page.getByRole("button", { name: "Terminer" }).click();
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-mushaf-profile", "study");
+  await expect(page.locator("html")).toHaveAttribute("data-modern-palette", "burgundy");
+});
+
+test("places page translation beside the Mushaf on wide screens", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.getByRole("button", { name: "Terminer" }).click();
+  await page.goto("/page/3");
+  const positions = await page.locator(".modern-mushaf-page, .modern-mushaf-translations").evaluateAll((items) => items.map((item) => Math.round(item.getBoundingClientRect().top)));
+  expect(positions[0]).toBe(positions[1]);
+});
