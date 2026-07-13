@@ -39,6 +39,7 @@ import { buildAudioPlaylistForSurah } from "../utils/audioPlaylist";
 const ReciterDetailPage = lazy(() => import("./recitation/ReciterDetailPage"));
 
 import { Shapes, CalendarCheck, BookOpen, ListMusic, TrendingUp } from "lucide-react";
+import { t as i18nT } from "../i18n";
 import {
   HOME_INITIAL_SURAHS,
   HOME_INITIAL_SURAHS_LOW,
@@ -828,7 +829,7 @@ export default function HomePage({ lowPerfMode = false }) {
             set({ audioSpeed: speed });
             audioService.setSpeed(speed);
           }}
-          t={t}
+          t={(k) => i18nT(k, lang)}
         />
       </div>
 
