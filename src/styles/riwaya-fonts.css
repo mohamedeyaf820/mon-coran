@@ -1,7 +1,7 @@
 :root {
-  --qd-reading-font-size: 42px;
-  --qd-font-size: 42px;
-  --quran-font-size: 42px;
+  --qd-reading-font-size: clamp(26px, 5.5vw, 42px);
+  --qd-font-size: clamp(26px, 5.5vw, 42px);
+  --quran-font-size: clamp(26px, 5.5vw, 42px);
   --quran-line-height: 2.16;
   --font-quran-hafs: "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", serif;
   --font-quran-warsh: "QPC Warsh", "KFGQPC Warsh", "KFGQPC Uthmanic Script WARSH", serif;

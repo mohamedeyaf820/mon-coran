@@ -134,6 +134,22 @@
     background: rgba(255, 255, 255, 0.03) !important;
 }
 
+@media (max-width: 768px) {
+    .recitation-row__arabic {
+        font-size: clamp(1rem, 4vw, 1.25rem) !important;
+        line-height: 1.9 !important;
+    }
+
+    .reciter-hero__avatar {
+        width: 4.5rem !important;
+        height: 4.5rem !important;
+    }
+
+    .recitation-surah-list {
+        grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)) !important;
+    }
+}
+
 @media (max-width: 520px) {
     .reciter-detail {
         max-height: calc(100dvh - 0.5rem) !important;
@@ -147,5 +163,9 @@
     .reciter-card__media {
         width: 2.75rem !important;
         height: 2.75rem !important;
+    }
+
+    .recitation-row__arabic {
+        font-size: clamp(0.9rem, 3.5vw, 1.1rem) !important;
     }
 }
