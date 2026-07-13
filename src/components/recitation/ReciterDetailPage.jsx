@@ -28,7 +28,7 @@ export default function ReciterDetailPage({
   const audioModeLabel =
     reciter.audioMode === "surah"
       ? lang === "fr"
-        ? "Sourate complete"
+        ? "Sourate complète"
         : lang === "ar"
           ? "سورة كاملة"
           : "Full surah"

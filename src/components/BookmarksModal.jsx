@@ -56,7 +56,7 @@ export default function BookmarksModal() {
               <div className="modal-title-stack">
                 <div className="modal-kicker">
                   {lang === "fr"
-                    ? "Bibliotheque"
+                    ? "Bibliothèque"
                     : lang === "ar"
                       ? "المكتبة"
                       : "Library"}
@@ -67,7 +67,7 @@ export default function BookmarksModal() {
                 </h2>
                 <div className="modal-subtitle">
                   {lang === "fr"
-                    ? "Retrouvez rapidement vos versets enregistres."
+                    ? "Retrouvez rapidement vos versets enregistrés."
                     : lang === "ar"
                       ? "استرجع الآيات المحفوظة بسرعة."
                       : "Quick access to your saved verses."}
@@ -94,7 +94,7 @@ export default function BookmarksModal() {
                   </p>
                   <small style={{ opacity: 0.6, fontSize: "0.78rem" }}>
                     {lang === "fr"
-                      ? "Appuyez sur l'etoile d'un verset pour l'enregistrer ici."
+                      ? "Appuyez sur l'étoile d'un verset pour l'enregistrer ici."
                       : lang === "ar"
                         ? "اضغط على نجمة أي آية لحفظها هنا."
                         : "Press the star on any verse to save it here."}

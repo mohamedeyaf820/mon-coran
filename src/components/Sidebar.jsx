@@ -337,7 +337,7 @@ export default function Sidebar() {
                   onClick={submitPageJump}
                   aria-label={
                     lang === "fr"
-                      ? "Aller a la page"
+                      ? "Aller à la page"
                       : lang === "ar"
                         ? "الانتقال الى الصفحة"
                         : "Go to page"

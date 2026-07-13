@@ -851,7 +851,7 @@ export default function AudioPlayer() {
         ? lang === "ar"
           ? "اضغط للتشغيل"
           : lang === "fr"
-            ? "Appuyez sur Play pour ecouter"
+            ? "Appuyez sur Play pour écouter"
             : "Press Play to listen"
         : null
       : null;

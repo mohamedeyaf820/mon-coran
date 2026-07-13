@@ -18,9 +18,9 @@ export default function RowActions({ lang, onPlay, onOpen, downloadUrl }) {
         type="button"
         onClick={onPlay}
         title={
-          lang === "fr" ? "Ecouter la sourate" : lang === "ar" ? "استمع إلى السورة" : "Listen surah"
+          lang === "fr" ? "Écouter la sourate" : lang === "ar" ? "استمع إلى السورة" : "Listen surah"
         }
-        aria-label={lang === "fr" ? "Ecouter" : lang === "ar" ? "استمع" : "Listen"}
+        aria-label={lang === "fr" ? "Écouter" : lang === "ar" ? "استمع" : "Listen"}
       >
         <Play size={12} />
       </button>
@@ -43,17 +43,17 @@ export default function RowActions({ lang, onPlay, onOpen, downloadUrl }) {
         title={
           downloadUrl
             ? lang === "fr"
-              ? "Telecharger MP3"
+              ? "Télécharger MP3"
               : lang === "ar"
                 ? "تحميل MP3"
                 : "Download MP3"
             : lang === "fr"
-              ? "Telechargement indisponible"
+              ? "Téléchargement indisponible"
               : lang === "ar"
                 ? "التنزيل غير متاح"
                 : "Download unavailable"
         }
-        aria-label={lang === "fr" ? "Telecharger" : lang === "ar" ? "تحميل" : "Download"}
+        aria-label={lang === "fr" ? "Télécharger" : lang === "ar" ? "تحميل" : "Download"}
       >
         <Download size={12} />
       </button>

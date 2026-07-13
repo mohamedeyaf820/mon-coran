@@ -44,7 +44,7 @@ export const THEMES = [
   },
   {
     id: "dark",
-    fr: "Nuit de Medine",
+    fr: "Nuit de Médine",
     ar: "ليل المدينة",
     en: "Madinah Night",
     descriptionFr: "Nuit bleu carbone, texte clair et accents menthe.",

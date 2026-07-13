@@ -192,14 +192,14 @@ export default function ReciterComparatorPanel() {
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
               <div className="modal-title-stack">
                 <div className="modal-kicker">
-                  {lang === "fr" ? "Ecoute comparative" : "Comparative Listening"}
+                  {lang === "fr" ? "Écoute comparative" : "Comparative Listening"}
                 </div>
                 <h2 className="modal-title">
-                  {lang === "fr" ? "Comparateur de recitateurs" : "Reciter Comparator"}
+                  {lang === "fr" ? "Comparateur de récitateurs" : "Reciter Comparator"}
                 </h2>
                 <div className="modal-subtitle">
                   {lang === "fr"
-                    ? "Ecoutez le meme verset par plusieurs recitateurs cote a cote."
+                    ? "Écoutez le même verset par plusieurs récitateurs côte à côte."
                     : "Listen to the same verse by multiple reciters side by side."}
                 </div>
               </div>
@@ -264,7 +264,7 @@ export default function ReciterComparatorPanel() {
             <div className="rc-picker !space-y-2 !px-3 !pb-3 sm:!px-4">
               <div className="rc-picker__label">
                 {lang === "fr"
-                  ? `Recitateurs selectionnes (max 4) - ${selected.length}/4`
+                  ? `Récitateurs sélectionnés (max 4) - ${selected.length}/4`
                   : `Selected reciters (max 4) - ${selected.length}/4`}
               </div>
               <div className="rc-picker__grid !grid !grid-cols-2 !gap-2 md:!grid-cols-4">
@@ -299,7 +299,7 @@ export default function ReciterComparatorPanel() {
                   <Icon name="user-music" size={28} />
                   <div>
                     {lang === "fr"
-                      ? "Selectionnez au moins un recitateur."
+                      ? "Sélectionnez au moins un récitateur."
                       : "Select at least one reciter."}
                   </div>
                 </div>

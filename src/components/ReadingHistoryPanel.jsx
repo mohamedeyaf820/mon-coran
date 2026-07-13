@@ -287,7 +287,7 @@ export default function ReadingHistoryPanel() {
                   {sessions.length === 0 ? (
                     <p className="wird-empty">
                       {lang === "fr"
-                        ? "Aucune session enregistree."
+                        ? "Aucune session enregistrée."
                         : "No sessions recorded."}
                     </p>
                   ) : (

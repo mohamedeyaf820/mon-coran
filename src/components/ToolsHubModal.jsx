@@ -37,7 +37,7 @@ export default function ToolsHubModal() {
       color: "from-amber-500 to-orange-600",
       title: { fr: "Suivi Khatma", en: "Khatma Tracker", ar: "متابعة الختمة" },
       desc: {
-        fr: "Planifiez et suivez votre lecture complete du Coran.",
+        fr: "Planifiez et suivez votre lecture complète du Coran.",
         en: "Plan and track your complete reading of the Quran.",
         ar: "خطط وتابع ختمتك الكاملة للقرآن الكريم.",
       },
@@ -49,7 +49,7 @@ export default function ToolsHubModal() {
       color: "from-blue-500 to-indigo-600",
       title: { fr: "Historique", en: "Reading History", ar: "سجل القراءة" },
       desc: {
-        fr: "Consultez vos sessions recentes et les versets lus.",
+        fr: "Consultez vos sessions récentes et les versets lus.",
         en: "View your recent reading sessions and verses read.",
         ar: "اعرض جلسات القراءة الاخيرة والآيات التي قرأتها.",
       },
@@ -61,7 +61,7 @@ export default function ToolsHubModal() {
       color: "from-purple-500 to-fuchsia-600",
       title: { fr: "Playlists audio", en: "Audio Playlists", ar: "قوائم التشغيل" },
       desc: {
-        fr: "Creez et ecoutez vos compilations de versets preferes.",
+        fr: "Créez et écoutez vos compilations de versets préférés.",
         en: "Create and listen to your custom verse playlists.",
         ar: "انشئ واستمع الى قوائم تشغيل الآيات المفضلة لديك.",
       },
@@ -73,7 +73,7 @@ export default function ToolsHubModal() {
       color: "from-cyan-500 to-blue-600",
       title: { fr: "Statistiques", en: "Weekly Stats", ar: "الإحصائيات" },
       desc: {
-        fr: "Visualisez vos progres et temps d'ecoute hebdomadaires.",
+        fr: "Visualisez vos progrès et temps d'écoute hebdomadaires.",
         en: "Visualize your weekly reading progress and listening time.",
         ar: "شاهد تقدمك الاسبوعي ووقت الاستماع.",
       },
@@ -85,7 +85,7 @@ export default function ToolsHubModal() {
       color: "from-rose-500 to-red-600",
       title: { fr: "Quiz Tajweed", en: "Tajweed Quiz", ar: "اختبار التجويد" },
       desc: {
-        fr: "Testez vos connaissances des regles de recitation.",
+        fr: "Testez vos connaissances des règles de récitation.",
         en: "Test your knowledge on the rules of recitation.",
         ar: "اختبر معرفتك باحكام التجويد.",
       },
@@ -95,9 +95,9 @@ export default function ToolsHubModal() {
       id: "flashcards",
       icon: "brain",
       color: "from-pink-500 to-rose-600",
-      title: { fr: "Memorisation", en: "Flashcards", ar: "الحفظ والمراجعة" },
+      title: { fr: "Mémorisation", en: "Flashcards", ar: "الحفظ والمراجعة" },
       desc: {
-        fr: "Memorisez avec des cartes de rappel actif.",
+        fr: "Mémorisez avec des cartes de rappel actif.",
         en: "Memorize effectively using active recall flashcards.",
         ar: "احفظ الآيات بفعالية باستخدام بطاقات المراجعة.",
       },
@@ -109,7 +109,7 @@ export default function ToolsHubModal() {
       color: "from-teal-500 to-emerald-600",
       title: { fr: "Comparateur", en: "Reciter Compare", ar: "مقارنة القراء" },
       desc: {
-        fr: "Comparez les styles et rythmes de differents recitateurs.",
+        fr: "Comparez les styles et rythmes de différents récitateurs.",
         en: "Compare the styles and tempos of different reciters.",
         ar: "قارن بين اساليب وتلاوات القراء المختلفين.",
       },
@@ -119,9 +119,9 @@ export default function ToolsHubModal() {
       id: "audiomaker",
       icon: "sliders",
       color: "from-violet-500 to-purple-600",
-      title: { fr: "Createur audio", en: "Audio Maker", ar: "صانع الصوتيات" },
+      title: { fr: "Créateur audio", en: "Audio Maker", ar: "صانع الصوتيات" },
       desc: {
-        fr: "Generez des fichiers audio personnalises hors ligne.",
+        fr: "Générez des fichiers audio personnalisés hors ligne.",
         en: "Generate custom audio files for offline listening loops.",
         ar: "انشئ ملفات صوتية مخصصة للاستماع دون اتصال.",
       },
@@ -153,7 +153,7 @@ export default function ToolsHubModal() {
               <div className="modal-title-stack">
                 <div className="modal-kicker">
                   {tr({
-                    fr: "Fonctionnalites",
+                    fr: "Fonctionnalités",
                     en: "Features",
                     ar: "الخصائص والخدمات",
                   })}
@@ -171,7 +171,7 @@ export default function ToolsHubModal() {
                 </h2>
                 <div className="modal-subtitle">
                   {tr({
-                    fr: "Accedez a vos outils de suivi, memorisation et ecoute en un seul endroit.",
+                    fr: "Accédez à vos outils de suivi, mémorisation et écoute en un seul endroit.",
                     en: "Access all your tracking, memorization, and listening tools in one place.",
                     ar: "الوصول الى ادوات المتابعة والحفظ والاستماع في مكان واحد.",
                   })}

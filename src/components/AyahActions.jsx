@@ -805,13 +805,13 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             : "Playlist",
       description:
         lang === "fr"
-          ? "Ajouter a une serie"
+          ? "Ajouter à une série"
           : lang === "ar"
             ? "أضف إلى قائمة"
             : "Add to a list",
       state: playlistAdded
         ? lang === "fr"
-          ? "Ajoute"
+          ? "Ajouté"
           : lang === "ar"
             ? "تمت الإضافة"
             : "Added"
@@ -919,7 +919,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
         icon: "fa-headphones",
         title:
           lang === "fr"
-            ? "Ecouter puis relire"
+            ? "Écouter puis relire"
             : lang === "ar"
               ? "استمع ثم أعد القراءة"
               : "Listen then reread",
@@ -940,7 +940,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               : "Compare translation",
         text:
           lang === "fr"
-            ? "Garde la traduction ouverte pour verifier le sens avant de prendre une note."
+            ? "Garde la traduction ouverte pour vérifier le sens avant de prendre une note."
             : lang === "ar"
               ? "اترك الترجمة مفتوحة لفهم المعنى قبل تدوين ملاحظة."
               : "Keep translation open to check the meaning before writing a note.",
@@ -1938,7 +1938,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
 
           <p className="ayah-action-sheet__copy">
             {lang === "fr"
-              ? "Choisissez une sortie rapide: texte, reseau social, image classique ou carte calligraphique."
+              ? "Choisissez une sortie rapide : texte, réseau social, image classique ou carte calligraphique."
               : lang === "ar"
                 ? "اختر مخرجاً سريعاً: نص، شبكة اجتماعية، صورة كلاسيكية أو بطاقة خطية."
                 : "Choose a quick output: text, social app, classic image, or calligraphic card."}
@@ -2015,7 +2015,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               </div>
               <div className="ayah-action-sheet__title">
                 {lang === "fr"
-                  ? "Ajouter a une playlist"
+                  ? "Ajouter à une playlist"
                   : lang === "ar"
                     ? "أضف إلى قائمة"
                     : "Add to a playlist"}
@@ -2033,7 +2033,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           {playlists.length === 0 ? (
             <div className="ayah-action-sheet__empty">
               {lang === "fr"
-                ? "Aucune playlist encore. Creez-en une depuis le panneau Playlists."
+                ? "Aucune playlist encore. Créez-en une depuis le panneau Playlists."
                 : lang === "ar"
                   ? "لا توجد قوائم بعد. أنشئ قائمة من لوحة القوائم."
                   : "No playlist yet. Create one from the Playlists panel."}

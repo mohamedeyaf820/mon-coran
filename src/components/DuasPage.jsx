@@ -38,7 +38,7 @@ export default function DuasPage() {
       lang === "ar"
         ? "مجموعة واضحة للادعية القرآنية مع وصول مباشر للآيات"
         : lang === "fr"
-          ? "Une bibliotheque claire d'invocations coraniques, avec acces direct aux versets."
+          ? "Une bibliothèque claire d'invocations coraniques, avec accès direct aux versets."
           : "A clear library of Quranic supplications with direct access to each verse.",
     back: lang === "ar" ? "الرئيسية" : lang === "fr" ? "Accueil" : "Home",
     search:
@@ -51,13 +51,13 @@ export default function DuasPage() {
       lang === "ar"
         ? "Bibliotheque d'invocations"
         : lang === "fr"
-          ? "Bibliotheque d'invocations"
+          ? "Bibliothèque d'invocations"
           : "Supplication library",
     collectionCopy:
       lang === "ar"
         ? "قراءة مريحة: المرجع، الدعاء، الترجمة، ثم actions."
         : lang === "fr"
-          ? "Cartes simples: reference, categorie, arabe lisible, traduction, puis actions."
+          ? "Cartes simples: référence, catégorie, arabe lisible, traduction, puis actions."
           : "Simple cards: reference, category, readable Arabic, translation, then actions.",
     noResults: lang === "ar" ? "لا توجد نتائج مطابقة" : lang === "fr" ? "Aucune invocation trouvée" : "No results found",
   };
@@ -146,7 +146,7 @@ export default function DuasPage() {
             </div>
             <div className="duas-hero-stat">
               <span className="duas-hero-stat-label">
-                {lang === "ar" ? "الفئة" : lang === "fr" ? "Categorie" : "Category"}
+                {lang === "ar" ? "الفئة" : lang === "fr" ? "Catégorie" : "Category"}
               </span>
               <strong>{activeCategoryLabel}</strong>
             </div>
