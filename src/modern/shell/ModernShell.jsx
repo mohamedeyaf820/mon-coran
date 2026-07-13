@@ -9,31 +9,60 @@ import {
   Wrench,
   Sun,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { getSettings } from "../../services/storageService";
+import { translate } from "../i18n";
 
-import { ModernHomePage } from "../home/ModernHomePage";
-import { ModernAudioPage } from "../audio/ModernAudioPage";
 import { ModernAudioPlayer } from "../audio/ModernAudioPlayer";
-import { ModernLibraryPage } from "../library/ModernLibraryPage";
-import { ModernStudyPage } from "../study/ModernStudyPage";
-import { ModernToolsPage } from "../tools/ModernToolsPage";
 import { ModernPreferencesDialog } from "../preferences/ModernPreferencesDialog";
 import { ModernOnboarding } from "../onboarding/ModernOnboarding";
 import { ModernPWAUpdateBanner } from "../pwa/ModernPWAUpdateBanner";
-import { FORCE_ONBOARDING_KEY, shouldShowOnboarding } from "../onboarding/onboardingModel";
-import { ModernReaderPage } from "../reader/ModernReaderPage";
+import {
+  FORCE_ONBOARDING_KEY,
+  shouldShowOnboarding,
+} from "../onboarding/onboardingModel";
 import { parseReaderRoute } from "../reader/readerRoute";
 import { useModernTheme } from "../theme/ModernThemeProvider";
 import { IconButton } from "../ui/IconButton";
 import { SkipLink } from "../ui/SkipLink";
 
 const navigation = [
-  { label: "Lire", icon: BookOpenText, href: "/" },
-  { label: "Ecouter", icon: Headphones, href: "/audio" },
-  { label: "Bibliotheque", icon: Bookmark, href: "/library" },
-  { label: "Etudier", icon: GraduationCap, href: "/study" },
-  { label: "Outils", icon: Wrench, href: "/tools" },
+  { key: "read", icon: BookOpenText, href: "/" },
+  { key: "listen", icon: Headphones, href: "/audio" },
+  { key: "library", icon: Bookmark, href: "/library" },
+  { key: "study", icon: GraduationCap, href: "/study" },
+  { key: "tools", icon: Wrench, href: "/tools" },
 ];
+const ModernHomePage = lazy(() =>
+  import("../home/ModernHomePage").then((module) => ({
+    default: module.ModernHomePage,
+  })),
+);
+const ModernAudioPage = lazy(() =>
+  import("../audio/ModernAudioPage").then((module) => ({
+    default: module.ModernAudioPage,
+  })),
+);
+const ModernLibraryPage = lazy(() =>
+  import("../library/ModernLibraryPage").then((module) => ({
+    default: module.ModernLibraryPage,
+  })),
+);
+const ModernStudyPage = lazy(() =>
+  import("../study/ModernStudyPage").then((module) => ({
+    default: module.ModernStudyPage,
+  })),
+);
+const ModernToolsPage = lazy(() =>
+  import("../tools/ModernToolsPage").then((module) => ({
+    default: module.ModernToolsPage,
+  })),
+);
+const ModernReaderPage = lazy(() =>
+  import("../reader/ModernReaderPage").then((module) => ({
+    default: module.ModernReaderPage,
+  })),
+);
 
 export function ModernShell() {
   const readerRoute = parseReaderRoute(window.location.pathname);
@@ -43,12 +72,57 @@ export function ModernShell() {
   const isToolsPage = window.location.pathname === "/tools";
   const { theme, setTheme, toggleTheme } = useModernTheme();
   const [preferencesOpen, setPreferencesOpen] = useState(false);
-  const [onboardingOpen, setOnboardingOpen] = useState(() => shouldShowOnboarding(localStorage, navigator.webdriver));
+  const [onboardingOpen, setOnboardingOpen] = useState(() =>
+    shouldShowOnboarding(localStorage, navigator.webdriver),
+  );
+  const [lang, setLang] = useState(() => getSettings().lang || "fr");
   useEffect(() => {
-    const reopen = () => { localStorage.setItem(FORCE_ONBOARDING_KEY, "1"); setPreferencesOpen(false); setOnboardingOpen(true); };
+    const reopen = () => {
+      localStorage.setItem(FORCE_ONBOARDING_KEY, "1");
+      setPreferencesOpen(false);
+      setOnboardingOpen(true);
+    };
     window.addEventListener("modern-open-onboarding", reopen);
     return () => window.removeEventListener("modern-open-onboarding", reopen);
   }, []);
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    const sync = (event) =>
+      setLang(event.detail?.lang || getSettings().lang || "fr");
+    window.addEventListener("modern-preferences-change", sync);
+    return () => window.removeEventListener("modern-preferences-change", sync);
+  }, [lang]);
+  useEffect(() => {
+    const lowPower =
+      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+      (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
+      navigator.connection?.saveData;
+    document.documentElement.dataset.performance = lowPower
+      ? "limited"
+      : "standard";
+  }, []);
+  useEffect(() => {
+    if (!readerRoute) return undefined;
+    const navigate = (event) => {
+      if (
+        !["ArrowLeft", "ArrowRight"].includes(event.key) ||
+        event.target.closest?.(
+          "input,textarea,select,button,a,[contenteditable=true]",
+        )
+      )
+        return;
+      event.preventDefault();
+      const direction = event.key === "ArrowRight" ? "next" : "previous";
+      window.location.assign(
+        direction === "next"
+          ? document.querySelector('a[aria-label="Suivant"]')?.href
+          : document.querySelector('a[aria-label="Precedent"]')?.href,
+      );
+    };
+    window.addEventListener("keydown", navigate);
+    return () => window.removeEventListener("keydown", navigate);
+  }, [readerRoute?.mode, readerRoute?.value]);
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   const focusHomeSearch = () => {
     window.location.assign("/library?tab=search");
@@ -64,47 +138,114 @@ export function ModernShell() {
           </span>
           <span>
             <strong>Mon Coran</strong>
-            <small>Lecture et recitation</small>
+            <small>{translate(lang, "subtitle")}</small>
           </span>
         </a>
 
         <nav className="modern-nav" aria-label="Navigation principale">
-          {navigation.map(({ label, icon: NavIcon, href, disabled }) => (
+          {navigation.map(({ key, icon: NavIcon, href, disabled }) => (
             <a
               aria-disabled={disabled || undefined}
-              className={((isAudioPage && href === "/audio") || (isLibraryPage && href === "/library") || (isStudyPage && href === "/study") || (isToolsPage && href === "/tools") || (!isAudioPage && !isLibraryPage && !isStudyPage && !isToolsPage && href === "/")) ? "modern-nav__item is-active" : "modern-nav__item"}
+              className={
+                (isAudioPage && href === "/audio") ||
+                (isLibraryPage && href === "/library") ||
+                (isStudyPage && href === "/study") ||
+                (isToolsPage && href === "/tools") ||
+                (!isAudioPage &&
+                  !isLibraryPage &&
+                  !isStudyPage &&
+                  !isToolsPage &&
+                  href === "/")
+                  ? "modern-nav__item is-active"
+                  : "modern-nav__item"
+              }
               href={disabled ? undefined : href}
-              key={label}
+              key={key}
             >
               <NavIcon aria-hidden="true" size={18} strokeWidth={1.7} />
-              <span>{label}</span>
+              <span>{translate(lang, key)}</span>
             </a>
           ))}
         </nav>
 
         <div className="modern-header__actions">
-          <IconButton label="Rechercher" onClick={focusHomeSearch}>
+          <IconButton
+            label={translate(lang, "search")}
+            onClick={focusHomeSearch}
+          >
             <Search size={19} strokeWidth={1.7} />
           </IconButton>
-          <IconButton label={theme === "dark" ? "Activer le theme clair" : "Activer le theme sombre"} onClick={toggleTheme}>
+          <IconButton
+            label={
+              theme === "dark"
+                ? "Activer le theme clair"
+                : "Activer le theme sombre"
+            }
+            onClick={toggleTheme}
+          >
             <ThemeIcon size={19} strokeWidth={1.7} />
           </IconButton>
-          <IconButton label="Ouvrir les reglages" onClick={() => setPreferencesOpen(true)}>
+          <IconButton
+            label={translate(lang, "settings")}
+            onClick={() => setPreferencesOpen(true)}
+          >
             <Settings size={19} strokeWidth={1.7} />
           </IconButton>
         </div>
       </header>
 
-      {isAudioPage ? <ModernAudioPage /> : isLibraryPage ? <ModernLibraryPage /> : isStudyPage ? <ModernStudyPage /> : isToolsPage ? <ModernToolsPage /> : readerRoute ? <ModernReaderPage route={readerRoute} /> : <ModernHomePage />}
+      <Suspense
+        fallback={
+          <main className="modern-page-loading" id="modern-main" role="status">
+            <span />
+            Chargement...
+          </main>
+        }
+      >
+        {isAudioPage ? (
+          <ModernAudioPage />
+        ) : isLibraryPage ? (
+          <ModernLibraryPage />
+        ) : isStudyPage ? (
+          <ModernStudyPage />
+        ) : isToolsPage ? (
+          <ModernToolsPage />
+        ) : readerRoute ? (
+          <ModernReaderPage route={readerRoute} />
+        ) : (
+          <ModernHomePage />
+        )}
+      </Suspense>
 
       <footer className="modern-footer">
-        <span>Mon Coran · {isAudioPage ? "Ecoute" : isLibraryPage ? "Bibliotheque" : isStudyPage ? "Etude" : readerRoute ? "Lecture" : "Accueil"}</span>
+        <span>
+          Mon Coran ·{" "}
+          {isAudioPage
+            ? "Ecoute"
+            : isLibraryPage
+              ? "Bibliotheque"
+              : isStudyPage
+                ? "Etude"
+                : readerRoute
+                  ? "Lecture"
+                  : "Accueil"}
+        </span>
         <a href="/legacy">Ouvrir l'interface legacy</a>
       </footer>
       <ModernAudioPlayer />
       <ModernPWAUpdateBanner />
-      {preferencesOpen && <ModernPreferencesDialog onClose={() => setPreferencesOpen(false)} onThemeChange={setTheme} />}
-      {onboardingOpen && <ModernOnboarding onClose={() => setOnboardingOpen(false)} onThemeChange={setTheme} />}
+      {preferencesOpen && (
+        <ModernPreferencesDialog
+          onClose={() => setPreferencesOpen(false)}
+          onThemeChange={setTheme}
+        />
+      )}
+      {onboardingOpen && (
+        <ModernOnboarding
+          onClose={() => setOnboardingOpen(false)}
+          onThemeChange={setTheme}
+        />
+      )}
     </div>
   );
 }

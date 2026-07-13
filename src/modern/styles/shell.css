@@ -347,3 +347,4 @@
   .modern-shell { padding-bottom: 4.75rem; }
   .modern-nav { position: fixed; z-index: 40; right: .5rem; bottom: .5rem; left: .5rem; width: auto; background: var(--modern-surface-raised); box-shadow: var(--modern-shadow); }
 }
+.modern-page-loading{display:grid;min-height:60vh;place-items:center;align-content:center;gap:1rem;color:var(--modern-muted)}.modern-page-loading span{width:2.5rem;height:2.5rem;border:3px solid var(--modern-border);border-top-color:var(--modern-accent-strong);border-radius:50%;animation:modern-spin .8s linear infinite}@keyframes modern-spin{to{transform:rotate(360deg)}}
