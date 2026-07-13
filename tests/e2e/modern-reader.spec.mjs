@@ -93,12 +93,12 @@ test("keeps the mushaf page intact on mobile", async ({ page }) => {
   expect(metrics.overflow).toBe(false);
 });
 
-test("only shows basmala at a real surah start and stacks regular page verses", async ({ page }) => {
+test("only shows basmala at a real surah start and joins regular page verses", async ({ page }) => {
   await page.goto("/page/3");
   await expect(page.locator(".modern-mushaf-basmala")).toHaveCount(0);
   await expect(page.locator(".modern-mushaf-surah")).toHaveCount(0);
   const displays = await page.locator(".modern-mushaf-unit").evaluateAll((items) => items.map((item) => getComputedStyle(item).display));
-  expect(displays).toEqual(["block", "block"]);
+  expect(displays).toEqual(["inline", "inline"]);
 });
 
 test("persists display preferences across reader modes and reloads", async ({ page }) => {
