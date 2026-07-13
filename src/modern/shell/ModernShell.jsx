@@ -8,12 +8,14 @@ import {
   Settings,
   Sun,
 } from "lucide-react";
+import { useState } from "react";
 
 import { ModernHomePage } from "../home/ModernHomePage";
 import { ModernAudioPage } from "../audio/ModernAudioPage";
 import { ModernAudioPlayer } from "../audio/ModernAudioPlayer";
 import { ModernLibraryPage } from "../library/ModernLibraryPage";
 import { ModernStudyPage } from "../study/ModernStudyPage";
+import { ModernPreferencesDialog } from "../preferences/ModernPreferencesDialog";
 import { ModernReaderPage } from "../reader/ModernReaderPage";
 import { parseReaderRoute } from "../reader/readerRoute";
 import { useModernTheme } from "../theme/ModernThemeProvider";
@@ -32,7 +34,8 @@ export function ModernShell() {
   const isAudioPage = window.location.pathname === "/audio";
   const isLibraryPage = window.location.pathname === "/library";
   const isStudyPage = window.location.pathname === "/study";
-  const { theme, toggleTheme } = useModernTheme();
+  const { theme, setTheme, toggleTheme } = useModernTheme();
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   const focusHomeSearch = () => {
     window.location.assign("/library?tab=search");
@@ -73,7 +76,7 @@ export function ModernShell() {
           <IconButton label={theme === "dark" ? "Activer le theme clair" : "Activer le theme sombre"} onClick={toggleTheme}>
             <ThemeIcon size={19} strokeWidth={1.7} />
           </IconButton>
-          <IconButton disabled label="Ouvrir les reglages">
+          <IconButton label="Ouvrir les reglages" onClick={() => setPreferencesOpen(true)}>
             <Settings size={19} strokeWidth={1.7} />
           </IconButton>
         </div>
@@ -86,6 +89,7 @@ export function ModernShell() {
         <a href="/legacy">Ouvrir l'interface legacy</a>
       </footer>
       <ModernAudioPlayer />
+      {preferencesOpen && <ModernPreferencesDialog onClose={() => setPreferencesOpen(false)} onThemeChange={setTheme} />}
     </div>
   );
 }

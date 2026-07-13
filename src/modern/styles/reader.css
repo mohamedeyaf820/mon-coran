@@ -29,9 +29,9 @@
 .modern-verse-actions { position: relative; display: flex; flex-wrap: nowrap; gap: .15rem; }
 .modern-verse-actions > button { display: grid; width: 2.35rem; min-height: 2.35rem; place-items: center; color: var(--modern-muted); }
 .modern-verse-actions > button:hover, .modern-verse-actions > button.is-active { background: var(--modern-bg-deep); color: var(--modern-accent-strong); }
-.modern-reader-verse__arabic { margin: 0; color: var(--modern-text); font-family: "Scheherazade New", serif; font-size: clamp(2.15rem, 4.5vw, 3.2rem); line-height: 2; text-align: right; }
+.modern-reader-verse__arabic { margin: 0; color: var(--modern-text); font-family: var(--modern-quran-font, "Scheherazade New", serif); font-size: var(--modern-quran-size, 2.35rem); line-height: 2; text-align: right; }
 .modern-ayah-mark { display: inline-grid; min-width: 2rem; min-height: 2rem; margin-inline-start: .5rem; place-items: center; border: 1px solid var(--modern-accent); border-radius: 50%; color: var(--modern-accent-strong); font-family: Literata, serif; font-size: .7rem; vertical-align: middle; }
-.modern-reader-verse__translation { max-width: 46rem; margin: 0; color: var(--modern-muted); font-size: .95rem; line-height: 1.8; }
+.modern-reader-verse__translation { max-width: 46rem; margin: 0; color: var(--modern-muted); font-size: var(--modern-translation-size, .95rem); line-height: 1.8; }
 .modern-reader-surah-break { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 2rem; border-bottom: 1px solid var(--modern-accent); background: var(--modern-bg-deep); color: var(--modern-accent-strong); font-weight: 700; }
 .modern-reader-surah-break span:last-child { font-family: "Scheherazade New", serif; font-size: 1.6rem; }
 .modern-mushaf-wrap { width: min(100%, 48rem); margin: 2rem auto 0; }
@@ -90,7 +90,7 @@
   .modern-reader-heading__arabic { display: none; }
   .modern-reader-verse { grid-template-columns: 1fr; padding: 2rem 1rem; }
   .modern-reader-verse__meta { grid-row: auto; flex-direction: row; align-items: center; justify-content: space-between; }
-  .modern-reader-verse__arabic { font-size: 2.1rem; line-height: 1.95; }
+  .modern-reader-verse__arabic { line-height: 1.95; }
   .modern-segmented button { padding-inline: .5rem; font-size: .75rem; }
   .modern-reader-options button { font-size: 0; }
   .modern-reader-options button svg { width: 18px; height: 18px; }

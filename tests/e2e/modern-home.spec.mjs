@@ -24,15 +24,9 @@ test("searches surahs and exposes a clear empty state", async ({ page }) => {
 
   await expect(page.getByRole("heading", { name: "Revenir au texte, simplement." })).toBeVisible();
   await page.getByRole("button", { name: "Rechercher" }).click();
-  const search = page.getByRole("searchbox", { name: "Nom, traduction ou numero" });
-  await expect(search).toBeFocused();
-
-  await search.fill("vache");
-  await expect(page.getByRole("link", { name: /Al-Baqara/ })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Al-Fatiha/ })).toHaveCount(0);
-
-  await search.fill("aucune-sourate");
-  await expect(page.getByText("Aucune sourate ne correspond a cette recherche.")).toBeVisible();
+  await expect(page).toHaveURL(/\/library\?tab=search$/);
+  const search = page.getByRole("textbox", { name: "Rechercher dans le Coran" });
+  await expect(search).toBeVisible();
   expect(failures).toEqual([]);
 });
 

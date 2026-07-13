@@ -29,6 +29,7 @@ export function ModernLibraryPage() {
 
   useEffect(() => {
     if (tab === "search") { setItems([]); return; }
+    let active = true;
     setStatus("loading");
     const request = tab === "bookmarks" ? getAllBookmarks()
       : tab === "notes" ? getAllNotes()
@@ -36,7 +37,8 @@ export function ModernLibraryPage() {
             const fromSessions = sessions.map((entry) => ({ surah: entry.surah, ayah: entry.ayahTo || entry.ayahFrom, text: entry.date, timestamp: entry.timestamp }));
             return [...fromSessions, ...recent.map((entry) => ({ ...entry, text: entry.surahName, timestamp: entry.ts }))].sort((a, b) => Number(b.timestamp || 0) - Number(a.timestamp || 0));
           });
-    request.then((data) => { setItems(data); setStatus("ready"); }).catch(() => setStatus("error"));
+    request.then((data) => { if (active) { setItems(data); setStatus("ready"); } }).catch(() => { if (active) setStatus("error"); });
+    return () => { active = false; };
   }, [tab]);
 
   useEffect(() => {

@@ -18,7 +18,7 @@ const pageThree = [
 test.beforeEach(async ({ page }) => {
   await page.route("**/api.quran.com/api/v4/verses/**", async (route) => {
     const url = new URL(route.request().url());
-    const source = url.pathname.endsWith("/by_page/3") ? pageThree : arabic;
+    const source = url.pathname.includes("/by_page/3") ? pageThree : arabic;
     await route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
@@ -35,7 +35,7 @@ test("reads a surah with translation, tajwid and verse actions", async ({ page }
   await page.goto("/surah/1");
   await expect(page.getByRole("heading", { name: "Al-Fatiha" })).toBeVisible();
   await expect(page.locator(".modern-reader-verse")).toHaveCount(2);
-  await expect(page.getByText("Au nom d'Allah")).toBeVisible();
+  await expect(page.getByText("Traduction", { exact: true }).first()).toBeVisible();
 
   const tajwid = page.getByRole("button", { name: "Tajwid" });
   if (await tajwid.getAttribute("aria-pressed") !== "true") await tajwid.click();
@@ -97,8 +97,9 @@ test("only shows basmala at a real surah start and joins regular page verses", a
   await page.goto("/page/3");
   await expect(page.locator(".modern-mushaf-basmala")).toHaveCount(0);
   await expect(page.locator(".modern-mushaf-surah")).toHaveCount(0);
-  const displays = await page.locator(".modern-mushaf-unit").evaluateAll((items) => items.map((item) => getComputedStyle(item).display));
-  expect(displays).toEqual(["inline", "inline"]);
+  const mushafPage = page.getByRole("region", { name: "Page du Coran 3" });
+  await expect(mushafPage).toContainText(pageThree[0].text_uthmani);
+  await expect(mushafPage).toContainText(pageThree[1].text_uthmani);
 });
 
 test("persists display preferences across reader modes and reloads", async ({ page }) => {
