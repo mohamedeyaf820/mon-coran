@@ -273,12 +273,7 @@ export default function QuranDisplay() {
           fontFamily === "qcf-v1" ||
           fontFamily === "qcf-v2" ||
           fontFamily === "qcf-v4-tajweed";
-        const shouldBlockReader =
-          !isFontMarkedLoaded(fontFamily) ||
-          (isQcfPageFont &&
-            displayMode === "page" &&
-            !isFontMarkedLoaded(fontFamily));
-        if (shouldBlockReader) setFontLoading(true);
+        if (!isFontMarkedLoaded(fontFamily)) setFontLoading(true);
 
         if (isQcfPageFont && displayMode === "page") {
           const qcfVersion =
@@ -474,6 +469,7 @@ export default function QuranDisplay() {
             currentPage={currentPage}
             currentPlayingAyah={currentPlayingAyah}
             currentSurah={currentSurah}
+            fontFamily={fontFamily}
             getMushafLayoutButtonClass={classes.getMushafLayoutButtonClass}
             getTranslationForAyah={getTranslationForAyah}
             isQCF4={isQCF4}

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { getJuzForAyah } from "../../data/juz";
 import { toAr } from "../../data/surahs";
 import {
+  ensureFontLoaded,
   ensureQcfPageFontLoaded,
   getQcfPageFontFamily,
 } from "../../services/fontLoader";
@@ -215,6 +216,7 @@ export default function QuranMushafPage({
   ayahs,
   currentPage,
   currentPlayingAyah,
+  fontFamily,
   lang,
   onToggleActive,
   riwaya,
@@ -238,26 +240,35 @@ export default function QuranMushafPage({
   );
 
   useEffect(() => {
-    if (isWarsh) {
-      setFontLoaded(false);
-      setFontFailed(false);
-      return undefined;
-    }
-
     let cancelled = false;
     setFontLoaded(false);
     setFontFailed(false);
-    ensureQcfPageFontLoaded(currentPage, version).then((result) => {
-      if (!cancelled) {
-        const loaded = Boolean(result.loaded || result.cached);
-        setFontLoaded(loaded);
-        setFontFailed(!loaded);
-      }
-    });
+
+    if (isWarsh) {
+      // Load the Warsh font file so --font-quran resolves correctly.
+      // fontFamily defaults to "qpc-warsh" when not supplied.
+      const warshFontId = fontFamily || "qpc-warsh";
+      ensureFontLoaded(warshFontId).then((result) => {
+        if (!cancelled) {
+          const loaded = Boolean(result.loaded || result.cached);
+          setFontLoaded(loaded);
+          setFontFailed(!loaded);
+        }
+      });
+    } else {
+      ensureQcfPageFontLoaded(currentPage, version).then((result) => {
+        if (!cancelled) {
+          const loaded = Boolean(result.loaded || result.cached);
+          setFontLoaded(loaded);
+          setFontFailed(!loaded);
+        }
+      });
+    }
+
     return () => {
       cancelled = true;
     };
-  }, [currentPage, isWarsh, version]);
+  }, [currentPage, fontFamily, isWarsh, version]);
 
   const renderWord = (word, index) => {
     const verseKey = getVerseKey(word);

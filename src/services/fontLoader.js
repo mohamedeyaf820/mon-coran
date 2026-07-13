@@ -105,8 +105,15 @@ async function loadFontFace(fontId, source) {
     return { loaded: true, family: source.family, url: source.cssUrl };
   }
 
+  // Skip document.fonts.check() — it returns true for unknown fonts (browser
+  // uses fallback stack), causing a false positive that makes QCF glyph codes
+  // render as boxes when the actual font file hasn't been fetched yet.
+  // The loadedFontIds check in ensureFontLoaded already handles cached fonts.
   try {
-    if (document.fonts.check(`16px "${source.family}"`)) {
+    const existing = [...document.fonts].find(
+      (f) => (f.family === `"${source.family}"` || f.family === source.family) && f.status === "loaded"
+    );
+    if (existing) {
       loadedFontIds.add(fontId);
       failedFontIds.delete(fontId);
       return { loaded: true, cached: true, family: source.family };
@@ -125,7 +132,7 @@ async function loadFontFace(fontId, source) {
     },
   );
 
-  const FONT_LOAD_TIMEOUT_MS = 4000;
+  const FONT_LOAD_TIMEOUT_MS = 10000;
   const loadedFont = await Promise.race([
     fontFace.load(),
     new Promise((_, reject) =>
@@ -158,9 +165,16 @@ export async function ensureFontLoaded(fontId, options = {}) {
 
   if (inFlightLoads.has(loadKey)) return inFlightLoads.get(loadKey);
 
+  // Clear any previous failure so this attempt is a clean retry.
+  failedFontIds.delete(fontId);
+  failedFontIds.delete(loadKey);
+
   const request = loadFontFace(loadKey, source)
     .then((result) => {
-      if (result.loaded || result.cached) loadedFontIds.add(fontId);
+      if (result.loaded || result.cached) {
+        loadedFontIds.add(fontId);
+        loadedFontIds.add(loadKey);
+      }
       return result;
     })
     .catch((error) => {

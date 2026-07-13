@@ -19,6 +19,7 @@ function PageMode({
   currentPage,
   currentPlayingAyah,
   currentSurah,
+  fontFamily,
   getTranslationForAyah,
   isQCF4,
   lang,
@@ -125,6 +126,7 @@ function PageMode({
             ayahs={ayahs}
             currentPage={currentPage}
             currentPlayingAyah={currentPlayingAyah}
+            fontFamily={fontFamily}
             lang={lang}
             onToggleActive={onToggleActive}
             riwaya={riwaya}
