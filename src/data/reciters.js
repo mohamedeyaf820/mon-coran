@@ -716,7 +716,6 @@ export const RECITER_PHOTOS_MAP = {
   ahmed_ibn_ali_al_ajamy_64: quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
   yasser_dossari_hafs: quranPhoto("20/yasser-profile.png"),
   ali_jabir: quranPhoto("23/Abdullah-Ali-Jabir-profile.png?v=1"),
-  "ar.saoodshuraym": quranPhoto("3/saud-ash-shuraym-profile.jpeg"),
   "ar.abdurrahmaansudais": quranPhoto("2/abdul-rahman-al-sudais-profile.jpeg"),
   "ar.maaboralmeem": quranPhoto("16/saad-al-ghamdi-profile.png?v=1"),
   ghamadi_40: quranPhoto("16/saad-al-ghamdi-profile.png?v=1"),
