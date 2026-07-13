@@ -36,6 +36,36 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "./ui/dropdown-menu";
+import {
+  Play, Pause, Bookmark, BookmarkCheck, Copy, Check, Share2,
+  PenSquare, Ellipsis, List, Repeat, Pin, BookOpen, Languages,
+  Feather, X, Mail, Image, Wand2, Zap, Star, AlertTriangle,
+  MessageCircle, Layers, TriangleAlert, Music, Headphones,
+  Quote, Lightbulb,
+} from "lucide-react";
+
+function faIcon(key) {
+  const map = {
+    "fa-triangle-exclamation": TriangleAlert,
+    "fa-play": Play,
+    "fa-pause": Pause,
+    "fa-star": Star,
+    "fa-repeat": Repeat,
+    "fa-check": Check,
+    "fa-share-nodes": Share2,
+    "fa-thumbtack": Pin,
+    "fa-list": List,
+    "fa-language": Languages,
+    "fa-book-open": BookOpen,
+    "fa-lightbulb": Lightbulb,
+    "fa-feather": Feather,
+    "pen-line": PenSquare,
+    "fa-headphones": Headphones,
+    "fa-quote-right": Quote,
+  };
+  const Comp = map[key];
+  return Comp ? <Comp size={14} /> : null;
+}
 
 
 function emitToast(type, message) {
@@ -696,7 +726,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     {
       key: "note",
       className: `ayah-action-card${showNote ? " is-active" : ""}`,
-      icon: "fa-pen-line",
+      icon: "pen-line",
       label: lang === "fr" ? "Noter" : lang === "ar" ? "ملاحظة" : "Note",
       description:
         lang === "fr"
@@ -861,7 +891,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       },
       {
         key: "notes",
-        icon: "fa-pen-line",
+        icon: "pen-line",
         label: lang === "fr" ? "Notes" : lang === "ar" ? "ملاحظات" : "Notes",
       },
     ],
@@ -955,7 +985,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       if (tafsirState.status === "error") {
         return (
           <div className="ayah-study-empty">
-            <i className="fas fa-circle-exclamation" />
+            <AlertTriangle size={16} />
             <p>
               {lang === "fr"
                 ? "Tafsir indisponible pour le moment."
@@ -973,7 +1003,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       return (
         <div className="ayah-study-tafsir">
           <div className="ayah-study-source">
-            <i className="fas fa-book-open" />
+            <BookOpen size={13} />
             <span>{tafsirState.data?.source || "Tafsir Ibn Kathir"}</span>
           </div>
           <p>
@@ -998,7 +1028,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
         <div className="ayah-study-lessons">
           {studyLessons.map((lesson) => (
             <div className="ayah-study-card" key={lesson.title}>
-              <i className={`fas ${lesson.icon}`} />
+              {faIcon(lesson.icon)}
               <div>
                 <strong>{lesson.title}</strong>
                 <p>{lesson.text}</p>
@@ -1010,7 +1040,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             className="ayah-study-primary"
             onClick={handleStudyMode}
           >
-            <i className="fas fa-language" />
+            <Languages size={16} />
             {lang === "fr"
               ? "Activer le mode etude"
               : lang === "ar"
@@ -1036,7 +1066,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 setStudyTab("notes");
               }}
             >
-              <i className="fas fa-feather" />
+              <Feather size={16} />
               <span>{prompt}</span>
             </button>
           ))}
@@ -1096,7 +1126,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               isPlayingThisAyah
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1111,14 +1141,14 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen")}
             title={lang === "fr" ? "Écouter" : "Listen"}
           >
-            <i className={`fas ${audioError ? "fa-triangle-exclamation" : isPlayingThisAyah ? "fa-pause" : "fa-play"} text-[0.8rem]`} />
+            {audioError ? <TriangleAlert size={13} /> : isPlayingThisAyah ? <Pause size={13} /> : <Play size={13} />}
           </button>
 
           {/* Bookmark */}
           <button
             type="button"
             className={cn(
-              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               bookmarked
                 ? "text-[var(--primary)]"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1127,7 +1157,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
             title={lang === "fr" ? "Favori" : "Bookmark"}
           >
-            <i className={`${bookmarked ? "fas" : "far"} fa-bookmark text-[0.8rem]`} />
+            {bookmarked ? <BookmarkCheck size={13} /> : <Bookmark size={13} />}
           </button>
         </div>
       ) : layout === "qcom-header-right" ? (
@@ -1136,7 +1166,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               copied
                 ? "text-green-500"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1145,14 +1175,14 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={copied ? (lang === "fr" ? "Copié !" : lang === "ar" ? "تم النسخ!" : "Copied!") : (lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse")}
             title={lang === "fr" ? "Copier" : "Copy"}
           >
-            <i className={`fas ${copied ? "fa-check" : "fa-copy"} text-[0.8rem]`} />
+            {copied ? <Check size={13} /> : <Copy size={13} />}
           </button>
 
           {/* Share */}
           <button
             type="button"
             className={cn(
-              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               showShare
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1166,14 +1196,14 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={lang === "fr" ? "Partager ce verset" : lang === "ar" ? "مشاركة الآية" : "Share verse"}
             title={lang === "fr" ? "Partager" : "Share"}
           >
-            <i className="fas fa-share-nodes text-[0.8rem]" />
+            <Share2 size={13} />
           </button>
 
           {/* Note */}
           <button
             type="button"
             className={cn(
-              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               (showNote || noteText.trim())
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1187,7 +1217,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={lang === "fr" ? "Ajouter une note" : lang === "ar" ? "إضافة ملاحظة" : "Add note"}
             title={lang === "fr" ? "Note" : "Note"}
           >
-            <i className="fas fa-pen-to-square text-[0.8rem]" />
+            <PenSquare size={13} />
           </button>
 
           {/* Playlist / Options */}
@@ -1196,7 +1226,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               showPlaylistMenu
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1204,7 +1234,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={lang === "fr" ? "Options du verset" : lang === "ar" ? "خيارات الآية" : "Verse options"}
             title="Options"
           >
-            <i className="fas fa-ellipsis text-[0.8rem]" />
+            <Ellipsis size={13} />
           </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -1212,15 +1242,15 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 {lang === "fr" ? "Options du verset" : lang === "ar" ? "خيارات الآية" : "Verse options"}
               </DropdownMenuLabel>
               <DropdownMenuItem onClick={openPlaylistMenu}>
-                <i className="fas fa-list text-[var(--primary)]" />
+                <List size={13} className="text-[var(--primary)]" />
                 <span>{lang === "fr" ? "Playlists / Listes" : lang === "ar" ? "قوائم التشغيل" : "Playlists"}</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={repeatAyah}>
-                <i className="fas fa-repeat text-[var(--primary)]" />
+                <Repeat size={13} className="text-[var(--primary)]" />
                 <span>{lang === "fr" ? "Répéter le verset" : lang === "ar" ? "تكرار الآية" : "Repeat verse"}</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={toggleComparePin}>
-                <i className="fas fa-thumbtack text-[var(--primary)]" />
+                <Pin size={13} className="text-[var(--primary)]" />
                 <span>
                   {isPinnedForCompare
                     ? (lang === "fr" ? "Retirer de la comparaison" : lang === "ar" ? "إزالة من المقارنة" : "Remove compare")
@@ -1229,7 +1259,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => toggleStudyPanel("tafsir")}>
-                <i className="fas fa-book-open text-[var(--primary)]" />
+                <BookOpen size={13} className="text-[var(--primary)]" />
                 <span>Tafsir &amp; {lang === "fr" ? "Étude" : lang === "ar" ? "دراسة" : "Study"}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -1242,7 +1272,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             className={cn("qcom-list-study-link", showStudy && studyTab === "tafsir" && "is-active")}
             onClick={() => toggleStudyPanel("tafsir")}
           >
-            <i className="fas fa-book-open" />
+            <BookOpen size={13} />
             <span>{lang === "fr" ? "Tafsirs" : lang === "ar" ? "تفسير" : "Tafsirs"}</span>
           </button>
           <span className="qcom-list-study-separator" aria-hidden="true" />
@@ -1251,7 +1281,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             className={cn("qcom-list-study-link", showStudy && studyTab === "lessons" && "is-active")}
             onClick={() => toggleStudyPanel("lessons")}
           >
-            <i className="fas fa-layer-group" />
+            <Layers size={13} />
             <span>{lang === "fr" ? "Lecons" : lang === "ar" ? "فوائد" : "Lessons"}</span>
           </button>
           <span className="qcom-list-study-separator" aria-hidden="true" />
@@ -1260,7 +1290,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             className={cn("qcom-list-study-link", showStudy && studyTab === "reflections" && "is-active")}
             onClick={() => toggleStudyPanel("reflections")}
           >
-            <i className="far fa-comment" />
+            <MessageCircle size={13} />
             <span>{lang === "fr" ? "Reflexions" : lang === "ar" ? "تدبر" : "Reflections"}</span>
           </button>
         </div>
@@ -1282,7 +1312,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             }}
             title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
           >
-            <i className={`fas ${audioError ? "fa-triangle-exclamation" : isPlayingThisAyah ? "fa-pause" : "fa-play"} text-[0.72rem]`} />
+            {audioError ? <TriangleAlert size={12} /> : isPlayingThisAyah ? <Pause size={12} /> : <Play size={12} />}
             <span>{isPlayingThisAyah ? (lang === "fr" ? "Pause" : "Pause") : (lang === "fr" ? "Écouter" : "Play")}</span>
           </button>
 
@@ -1295,7 +1325,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             )}
             onClick={toggleTafsir}
           >
-            <i className="fas fa-book-open text-[0.72rem]" />
+            <BookOpen size={12} />
             <span>Tafsir</span>
           </button>
 
@@ -1308,7 +1338,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             )}
             onClick={toggleBookmark}
           >
-            <i className={`${bookmarked ? "fas" : "far"} fa-bookmark text-[0.72rem]`} />
+            {bookmarked ? <BookmarkCheck size={12} /> : <Bookmark size={12} />}
             <span>{bookmarked ? (lang === "fr" ? "Favori" : "Bookmarked") : (lang === "fr" ? "Favori" : "Bookmark")}</span>
           </button>
 
@@ -1321,7 +1351,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             )}
             onClick={copyText}
           >
-            <i className={`fas ${copied ? "fa-check" : "fa-copy"} text-[0.72rem]`} />
+            {copied ? <Check size={12} /> : <Copy size={12} />}
             <span>{copied ? (lang === "fr" ? "Copié" : "Copied") : (lang === "fr" ? "Copier" : "Copy")}</span>
           </button>
 
@@ -1339,7 +1369,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               setShowShare((value) => !value);
             }}
           >
-            <i className="fas fa-share-nodes text-[0.72rem]" />
+            <Share2 size={12} />
             <span>{lang === "fr" ? "Partager" : "Share"}</span>
           </button>
 
@@ -1357,7 +1387,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               setShowNote((value) => !value);
             }}
           >
-            <i className="fas fa-pen-to-square text-[0.72rem]" />
+            <PenSquare size={12} />
             <span>{noteText.trim() ? (lang === "fr" ? "Voir la note" : "View note") : "Note"}</span>
           </button>
 
@@ -1370,7 +1400,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             )}
             onClick={openPlaylistMenu}
           >
-            <i className="fas fa-list text-[0.72rem]" />
+            <List size={12} />
             <span>Playlists</span>
           </button>
 
@@ -1383,7 +1413,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             )}
             onClick={toggleComparePin}
           >
-            <i className="fas fa-thumbtack text-[0.72rem]" />
+            <Pin size={12} />
             <span>{isPinnedForCompare ? (lang === "fr" ? "Épinglé" : "Pinned") : (lang === "fr" ? "Comparer" : "Compare")}</span>
           </button>
         </div>
@@ -1408,7 +1438,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen")}
             title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
           >
-            <i className={`fas ${audioError ? "fa-triangle-exclamation" : isPlayingThisAyah ? "fa-pause" : "fa-play"} text-[0.72rem]`} />
+            {audioError ? <TriangleAlert size={12} /> : isPlayingThisAyah ? <Pause size={12} /> : <Play size={12} />}
           </button>
 
           {/* Tafsir */}
@@ -1424,7 +1454,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={lang === "fr" ? "Tafsir" : lang === "ar" ? "تفسير" : "Tafsir"}
             title="Tafsir"
           >
-            <i className="fas fa-book-open text-[0.72rem]" />
+            <BookOpen size={12} />
           </button>
 
           {/* Bookmark */}
@@ -1440,7 +1470,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
             title={lang === "fr" ? "Favori" : "Bookmark"}
           >
-            <i className={`${bookmarked ? "fas" : "far"} fa-bookmark text-[0.72rem]`} />
+            {bookmarked ? <BookmarkCheck size={12} /> : <Bookmark size={12} />}
           </button>
 
           {/* Copy */}
@@ -1456,7 +1486,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={copied ? (lang === "fr" ? "Copié !" : lang === "ar" ? "تم النسخ!" : "Copied!") : (lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse")}
             title={lang === "fr" ? "Copier" : "Copy"}
           >
-            <i className={`fas ${copied ? "fa-check" : "fa-copy"} text-[0.72rem]`} />
+            {copied ? <Check size={12} /> : <Copy size={12} />}
           </button>
 
           {/* Share */}
@@ -1472,7 +1502,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={lang === "fr" ? "Partager ce verset" : lang === "ar" ? "مشاركة الآية" : "Share verse"}
             title={lang === "fr" ? "Partager" : "Share"}
           >
-            <i className="fas fa-share-nodes text-[0.72rem]" />
+            <Share2 size={12} />
           </button>
         </div>
       ) : layout === "side" ? (
@@ -1481,7 +1511,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               isPlayingThisAyah
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1496,14 +1526,14 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen")}
             title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
           >
-            <i className={`fas ${audioError ? "fa-triangle-exclamation" : isPlayingThisAyah ? "fa-pause" : "fa-play"} text-[0.8rem]`} />
+            {audioError ? <TriangleAlert size={13} /> : isPlayingThisAyah ? <Pause size={13} /> : <Play size={13} />}
           </button>
 
           {/* Tafsir */}
           <button
             type="button"
             className={cn(
-              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               isTafsirActive
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1512,14 +1542,14 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={lang === "fr" ? "Tafsir" : lang === "ar" ? "تفسير" : "Tafsir"}
             title="Tafsir"
           >
-            <i className="fas fa-book-open text-[0.8rem]" />
+            <BookOpen size={13} />
           </button>
 
           {/* Bookmark */}
           <button
             type="button"
             className={cn(
-              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               bookmarked
                 ? "text-[var(--primary)]"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1528,14 +1558,14 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
             title={lang === "fr" ? "Favori" : "Bookmark"}
           >
-            <i className={`${bookmarked ? "fas" : "far"} fa-bookmark text-[0.8rem]`} />
+            {bookmarked ? <BookmarkCheck size={13} /> : <Bookmark size={13} />}
           </button>
 
           {/* Copy */}
           <button
             type="button"
             className={cn(
-              "h-11 w-11 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               copied
                 ? "text-green-500"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1544,7 +1574,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={copied ? (lang === "fr" ? "Copié !" : lang === "ar" ? "تم النسخ!" : "Copied!") : (lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse")}
             title={lang === "fr" ? "Copier" : "Copy"}
           >
-            <i className={`fas ${copied ? "fa-check" : "fa-copy"} text-[0.8rem]`} />
+            {copied ? <Check size={13} /> : <Copy size={13} />}
           </button>
 
           {/* Share */}
@@ -1560,7 +1590,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             aria-label={lang === "fr" ? "Partager ce verset" : lang === "ar" ? "مشاركة الآية" : "Share verse"}
             title={lang === "fr" ? "Partager" : "Share"}
           >
-            <i className="fas fa-share-nodes text-[0.8rem]" />
+            <Share2 size={13} />
           </button>
         </div>
       ) : compact ? (
@@ -1597,7 +1627,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               title={isPlayingThisAyah ? "Pause" : t("ayah.listen", lang)}
               aria-label={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Play")}
             >
-              <i className={`fas fa-${audioError ? "triangle-exclamation" : isPlayingThisAyah ? "pause" : "play"}`} />
+              {audioError ? <TriangleAlert size={13} /> : isPlayingThisAyah ? <Pause size={13} /> : <Play size={13} />}
             </button>
             <button
               type="button"
@@ -1606,7 +1636,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               title={lang === "fr" ? "Repeter le verset" : lang === "ar" ? "تكرار الآية" : "Repeat verse"}
               aria-label={lang === "fr" ? "Repeter le verset" : lang === "ar" ? "تكرار الآية" : "Repeat verse"}
             >
-              <i className="fas fa-repeat" />
+              <Repeat size={13} />
             </button>
             <button
               type="button"
@@ -1618,7 +1648,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               title={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
               aria-label={lang === "fr" ? "Favori" : lang === "ar" ? "مفضلة" : "Bookmark"}
             >
-              <i className="fas fa-bookmark" />
+              <Bookmark size={13} />
             </button>
             <button
               type="button"
@@ -1638,7 +1668,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               }
               aria-label={lang === "fr" ? "Comparer le verset" : "Compare verse"}
             >
-              <i className="fas fa-thumbtack" />
+              <Pin size={13} />
             </button>
             <button
               type="button"
@@ -1650,7 +1680,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               title={lang === "fr" ? "Copier" : lang === "ar" ? "نسخ" : "Copy"}
               aria-label={lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse"}
             >
-              <i className={`fas ${copied ? "fa-check" : "fa-copy"}`} />
+              {copied ? <Check size={13} /> : <Copy size={13} />}
             </button>
             <button
               type="button"
@@ -1667,7 +1697,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               title={lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Share"}
               aria-label={lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Share"}
             >
-              <i className="fas fa-share-nodes" />
+              <Share2 size={13} />
             </button>
             <button
               type="button"
@@ -1679,7 +1709,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               title={lang === "fr" ? "Etude" : lang === "ar" ? "دراسة" : "Study"}
               aria-label={lang === "fr" ? "Ouvrir l'etude" : lang === "ar" ? "فتح الدراسة" : "Open study"}
             >
-              <i className="fas fa-book-open" />
+              <BookOpen size={13} />
             </button>
             <button
               type="button"
@@ -1696,7 +1726,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               title={lang === "fr" ? "Noter" : lang === "ar" ? "ملاحظة" : "Note"}
               aria-label={lang === "fr" ? "Ajouter une note" : lang === "ar" ? "إضافة ملاحظة" : "Add note"}
             >
-              <i className="fas fa-pen-to-square" />
+              <PenSquare size={13} />
             </button>
             <button
               type="button"
@@ -1708,7 +1738,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               title={lang === "fr" ? "Playlist" : lang === "ar" ? "قائمة" : "Playlist"}
               aria-label={lang === "fr" ? "Ajouter a la playlist" : lang === "ar" ? "إضافة إلى القائمة" : "Add to playlist"}
             >
-              <i className="fas fa-list" />
+              <List size={13} />
             </button>
           </div>
 
@@ -1718,7 +1748,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <div className="ayah-actions__meta">
             <div>
               <span className="ayah-actions__kicker">
-                <i className="fas fa-bolt" />
+                <Zap size={13} />
                 {lang === "fr"
                   ? "Actions rapides"
                   : lang === "ar"
@@ -1742,7 +1772,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
 
             <div className="ayah-actions__badges">
               <span className={`ayah-actions__badge${bookmarked ? " is-on" : ""}`}>
-                <i className="fas fa-bookmark" />
+                <Bookmark size={13} />
                 {bookmarked
                   ? lang === "fr"
                     ? "favori"
@@ -1756,11 +1786,11 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                       : "not saved"}
               </span>
               <span className={`ayah-actions__badge${memoLevel > 0 ? " is-on" : ""}`}>
-                <i className="fas fa-star" />
+                <Star size={13} />
                 {memoLevel > 0 ? `${memoLevel}/5` : "0/5"}
               </span>
               <span className={`ayah-actions__badge${isPinnedForCompare ? " is-on" : ""}`}>
-                <i className="fas fa-thumbtack" />
+                <Pin size={13} />
                 {isPinnedForCompare ? "pin" : `${pinnedAyahs.length}/4`}
               </span>
             </div>
@@ -1773,7 +1803,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               onClick={toggleBookmark}
               title={t("bookmarks.add", lang)}
             >
-              <i className="fas fa-bookmark" />
+              <Bookmark size={13} />
               {bookmarked
                 ? lang === "fr"
                   ? "Retirer le favori"
@@ -1793,7 +1823,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               onClick={copyText}
               title={t("actions.copy", lang)}
             >
-              <i className={`fas ${copied ? "fa-check" : "fa-copy"}`} />
+              {copied ? <Check size={13} /> : <Copy size={13} />}
               {copied
                 ? lang === "fr"
                   ? "Copie"
@@ -1843,7 +1873,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               className="ayah-action-sheet__close"
               onClick={closePanels}
             >
-              <i className="fas fa-times" />
+              <X size={16} />
             </button>
           </div>
 
@@ -1868,7 +1898,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 className={`ayah-study-tab${studyTab === tab.key ? " is-active" : ""}`}
                 onClick={() => setStudyTab(tab.key)}
               >
-                <i className={`fas ${tab.icon}`} />
+                {faIcon(tab.icon)}
                 <span>{tab.label}</span>
               </button>
             ))}
@@ -1902,7 +1932,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               className="ayah-action-sheet__close"
               onClick={closePanels}
             >
-              <i className="fas fa-times" />
+              <X size={16} />
             </button>
           </div>
 
@@ -1928,17 +1958,17 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               <span className="share-btn__label">X / Twitter</span>
             </button>
             <button type="button" className="share-btn share-btn--email" onClick={shareEmail}>
-              <i className="fas fa-envelope" />
+              <Mail size={16} />
               <span className="share-btn__label">Email</span>
             </button>
             <button type="button" className="share-btn share-btn--copy" onClick={shareCopyText}>
-              <i className="fas fa-copy" />
+              <Copy size={16} />
               <span className="share-btn__label">
                 {lang === "fr" ? "Texte de partage" : lang === "ar" ? "نسخ النص" : "Copy share text"}
               </span>
             </button>
             <button type="button" className="share-btn share-btn--image" onClick={shareAsImage}>
-              <i className="fas fa-image" />
+              <Image size={16} />
               <span className="share-btn__label">
                 {lang === "fr" ? "Image sobre" : lang === "ar" ? "صورة" : "Simple image"}
               </span>
@@ -1951,7 +1981,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 closePanels();
               }}
             >
-              <i className="fas fa-wand-magic-sparkles" />
+              <Wand2 size={16} />
               <span className="share-btn__label">
                 {lang === "fr"
                   ? "Carte calligraphique"
@@ -1962,7 +1992,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             </button>
             {navigator.share && (
               <button type="button" className="share-btn share-btn--native" onClick={shareNative}>
-                <i className="fas fa-share-nodes" />
+                <Share2 size={13} />
                 <span className="share-btn__label">
                   {lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Native share"}
                 </span>
@@ -1996,7 +2026,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               className="ayah-action-sheet__close"
               onClick={closePanels}
             >
-              <i className="fas fa-times" />
+              <X size={16} />
             </button>
           </div>
 
@@ -2031,7 +2061,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                     window.setTimeout(() => setPlaylistAdded(false), 1800);
                   }}
                 >
-                  <i className="fas fa-music" />
+                  <Music size={13} />
                   <span>
                     {playlist.name} ({playlist.ayahs.length})
                   </span>
@@ -2066,7 +2096,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               className="ayah-action-sheet__close"
               onClick={closePanels}
             >
-              <i className="fas fa-times" />
+              <X size={16} />
             </button>
           </div>
 
