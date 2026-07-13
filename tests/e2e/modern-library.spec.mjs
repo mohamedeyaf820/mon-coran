@@ -17,8 +17,10 @@ test("finds verses and opens a stable reader link", async ({ page }) => {
 
 test("shows bookmarks and notes created from the reader", async ({ page }) => {
   await page.goto("/surah/1");
-  await page.getByRole("button", { name: "Ajouter aux favoris" }).click();
-  await page.getByRole("button", { name: "Ajouter une note" }).click();
+  await page.getByRole("button", { name: "Plus d'options" }).click();
+  await page.getByRole("menuitem", { name: "Ajouter aux favoris" }).click();
+  await page.getByRole("button", { name: "Plus d'options" }).click();
+  await page.getByRole("menuitem", { name: "Ajouter une note" }).click();
   await page.getByLabel("Note personnelle").fill("Ma note de lecture");
   await page.getByRole("button", { name: "Enregistrer" }).click();
 

@@ -32,6 +32,12 @@
 .modern-reader-verse__arabic { margin: 0; color: var(--modern-text); font-family: var(--modern-quran-font, "Scheherazade New", serif); font-size: var(--modern-quran-size, 2.35rem); line-height: 2; text-align: right; }
 .modern-ayah-mark { display: inline-grid; min-width: 2rem; min-height: 2rem; margin-inline-start: .5rem; place-items: center; border: 1px solid var(--modern-accent); border-radius: 50%; color: var(--modern-accent-strong); font-family: Literata, serif; font-size: .7rem; vertical-align: middle; }
 .modern-reader-verse__translation { max-width: 46rem; margin: 0; color: var(--modern-muted); font-size: var(--modern-translation-size, .95rem); line-height: 1.8; }
+.modern-reader-mobile-options { display: none; }
+.modern-reading-session { position: sticky; z-index: 15; top: .5rem; display: flex; width: min(calc(100% - 2rem), 42rem); align-items: center; justify-content: space-between; gap: 1rem; margin: 0 auto 1rem; padding: .65rem .8rem; border: 1px solid var(--modern-accent); background: var(--modern-surface-raised); box-shadow: var(--modern-shadow); font-size: .78rem; }
+.modern-reading-session button { min-height: var(--modern-tap-size); border: 0; background: transparent; color: var(--modern-danger); cursor: pointer; }
+.modern-verse-actions { position: relative; }
+.modern-verse-more { position: absolute; z-index: 30; top: calc(100% + .35rem); left: 0; display: grid; min-width: 12rem; padding: .35rem; border: 1px solid var(--modern-border); background: var(--modern-surface-raised); box-shadow: var(--modern-shadow); }
+.modern-verse-more button { display: flex; width: 100%; min-height: 2.5rem; align-items: center; justify-content: flex-start; gap: .55rem; padding: .45rem .6rem; white-space: nowrap; }
 [data-focus-reading="true"] .modern-reader-heading, [data-focus-reading="true"] .modern-footer { display: none; }
 [data-focus-reading="true"] .modern-reader-toolbar { position: sticky; top: 0; z-index: 20; }
 [data-translation-reading="true"] .modern-reader-verse__arabic { color: var(--modern-muted); font-size: calc(var(--modern-quran-size, 2.35rem) * .82); }
@@ -73,6 +79,15 @@
   .modern-mushaf-wrap:has(.modern-mushaf-translations) { display: grid; width: min(100%, 76rem); grid-template-columns: minmax(0, 43rem) minmax(19rem, 1fr); align-items: start; gap: 1.5rem; }
   .modern-mushaf-wrap:has(.modern-mushaf-translations) .modern-mushaf-selection { grid-column: 1; }
   .modern-mushaf-wrap:has(.modern-mushaf-translations) .modern-mushaf-translations { position: sticky; top: 1rem; grid-column: 2; grid-row: 1 / span 2; max-height: calc(100vh - 8rem); margin: 0; overflow-y: auto; }
+}
+@media (max-width: 620px) {
+  .modern-reader { padding-bottom: 9rem; }
+  .modern-reader-heading { display: none; }
+  .modern-reader-mobile-options { position: fixed; z-index: 45; right: 1rem; bottom: 5.4rem; display: inline-flex; min-height: var(--modern-tap-size); align-items: center; gap: .45rem; padding: .65rem .85rem; border: 1px solid var(--modern-border); border-radius: 2rem; background: var(--modern-text); color: var(--modern-bg); box-shadow: var(--modern-shadow); }
+  .modern-reader-toolbar { position: fixed; z-index: 44; right: .5rem; bottom: 4.5rem; left: .5rem; display: none; max-height: 65vh; overflow-y: auto; border: 1px solid var(--modern-border); background: var(--modern-surface-raised); box-shadow: var(--modern-shadow); }
+  .modern-reader-toolbar.is-mobile-open { display: grid; }
+  .modern-reader-verses, .modern-mushaf-wrap { margin-top: .5rem; }
+  .modern-verse-more { position: fixed; right: .75rem; bottom: 5rem; left: .75rem; top: auto; grid-template-columns: 1fr 1fr; }
 }
 .modern-reader-state { display: grid; min-height: 18rem; place-items: center; padding: 3rem; background: var(--modern-surface); color: var(--modern-muted); text-align: center; }
 .modern-reader-state button { display: inline-flex; align-items: center; gap: .5rem; padding: .6rem .8rem; background: var(--modern-text); color: var(--modern-bg); }
@@ -116,4 +131,10 @@
   .modern-mushaf-surah strong { font-size: 1.45rem; }
   .modern-mushaf-page__meta { font-size: .8rem; }
   .modern-mushaf-selection, .modern-mushaf-translations { width: calc(100% - 1rem); }
+}
+@media (max-width: 620px) {
+  .modern-reader { padding: .5rem 0 9rem; }
+  .modern-reader-heading { display: none; }
+  .modern-reader-toolbar { position: fixed; right: .5rem; bottom: 4.75rem; left: .5rem; display: none; margin: 0; }
+  .modern-reader-toolbar.is-mobile-open { display: grid; }
 }

@@ -5,6 +5,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Copy,
+  Ellipsis,
+  Flag,
   Headphones,
   Languages,
   NotebookPen,
@@ -21,7 +23,7 @@ import {
   getSurahFull,
 } from "../../services/quranAPI";
 import { addRecentVisit } from "../../services/recentHistoryService";
-import { markRead } from "../../services/readingProgressService";
+import { clearReadingStart, completeReadingAt, getReadingStart, setReadingStart } from "./readingSessionService";
 import {
   addBookmark,
   getAllBookmarks,
@@ -65,6 +67,8 @@ function ModernMushafPage({
   bookmarks,
   onBookmark,
   onPlay,
+  onRead,
+  onStart,
   pageNumber,
   showTajweed,
   showTranslation,
@@ -127,7 +131,7 @@ function ModernMushafPage({
       {selected && (
         <div className="modern-mushaf-selection" aria-label={`Verset selectionne ${selected.ayahNumber}`}>
           <span><strong>{getSurah(selected.surahNumber)?.en}</strong><small>Verset {selected.ayahNumber}</small></span>
-          <VerseActions bookmarked={bookmarks.has(selected.key)} onBookmark={() => onBookmark(selected)} onPlay={() => onPlay(selected)} verse={selected} />
+          <VerseActions bookmarked={bookmarks.has(selected.key)} onBookmark={() => onBookmark(selected)} onPlay={() => onPlay(selected)} onRead={() => onRead(selected)} onStart={() => onStart(selected)} verse={selected} />
         </div>
       )}
 
@@ -143,10 +147,11 @@ function ModernMushafPage({
   );
 }
 
-function VerseActions({ verse, bookmarked, onBookmark, onPlay }) {
+function VerseActions({ verse, bookmarked, onBookmark, onPlay, onRead, onStart }) {
   const [copied, setCopied] = useState(false);
   const [editingNote, setEditingNote] = useState(false);
   const [note, setNote] = useState("");
+  const [moreOpen, setMoreOpen] = useState(false);
 
   async function openNote() {
     const saved = await getNote(verse.surahNumber, verse.ayahNumber);
@@ -174,24 +179,15 @@ function VerseActions({ verse, bookmarked, onBookmark, onPlay }) {
       <button aria-label="Ecouter le verset" onClick={onPlay} title="Ecouter" type="button">
         <Headphones size={17} />
       </button>
-      <button aria-label="Copier le verset" onClick={copyVerse} title="Copier" type="button">
-        {copied ? <Check size={17} /> : <Copy size={17} />}
-      </button>
-      <button
-        aria-label={bookmarked ? "Retirer le favori" : "Ajouter aux favoris"}
-        className={bookmarked ? "is-active" : ""}
-        onClick={onBookmark}
-        title={bookmarked ? "Retirer le favori" : "Ajouter aux favoris"}
-        type="button"
-      >
-        <Bookmark fill={bookmarked ? "currentColor" : "none"} size={17} />
-      </button>
-      <button aria-label="Ajouter une note" onClick={openNote} title="Ajouter une note" type="button">
-        <NotebookPen size={17} />
-      </button>
-      <button aria-label="Partager le verset" onClick={shareVerse} title="Partager" type="button">
-        <Share2 size={17} />
-      </button>
+      <button aria-label="Lu jusqu'ici" onClick={onRead} title="Lu jusqu'ici" type="button"><Check size={17} /></button>
+      <button aria-expanded={moreOpen} aria-label="Plus d'options" onClick={() => setMoreOpen((open) => !open)} title="Plus" type="button"><Ellipsis size={18} /></button>
+      {moreOpen && <div className="modern-verse-more" role="menu">
+        <button onClick={() => { onStart(); setMoreOpen(false); }} role="menuitem" type="button"><Flag size={16} />Commencer ici</button>
+        <button onClick={() => { copyVerse(); setMoreOpen(false); }} role="menuitem" type="button">{copied ? <Check size={16} /> : <Copy size={16} />}Copier</button>
+        <button onClick={() => { onBookmark(); setMoreOpen(false); }} role="menuitem" type="button"><Bookmark fill={bookmarked ? "currentColor" : "none"} size={16} />{bookmarked ? "Retirer le favori" : "Ajouter aux favoris"}</button>
+        <button onClick={() => { openNote(); setMoreOpen(false); }} role="menuitem" type="button"><NotebookPen size={16} />Ajouter une note</button>
+        <button onClick={() => { shareVerse(); setMoreOpen(false); }} role="menuitem" type="button"><Share2 size={16} />Partager</button>
+      </div>}
       {editingNote && (
         <form
           className="modern-note-editor"
@@ -230,6 +226,9 @@ export function ModernReaderPage({ route }) {
   const [showTajweed, setShowTajweed] = useState(() => settings.showTajwid === true);
   const [bookmarks, setBookmarks] = useState(new Set());
   const [reloadKey, setReloadKey] = useState(0);
+  const [readingStart, setReadingStartState] = useState(() => getReadingStart());
+  const [readingFeedback, setReadingFeedback] = useState("");
+  const [mobileOptionsOpen, setMobileOptionsOpen] = useState(false);
 
   useEffect(() => {
     const applyPreferences = (event) => {
@@ -310,9 +309,26 @@ export function ModernReaderPage({ route }) {
     });
   }
 
+  function startReadingAt(verse) {
+    const start = setReadingStart(verse);
+    setReadingStartState(start);
+    setReadingFeedback(`Lecture commencee a ${start.surah}:${start.ayah}`);
+  }
+
+  async function finishReadingAt(verse) {
+    const interval = await completeReadingAt(verse, readingStart);
+    if (!interval) {
+      setReadingFeedback("Choisissez une fin apres le point de depart, dans la meme sourate.");
+      return;
+    }
+    setReadingStartState(null);
+    setReadingFeedback(`${interval.surah}:${interval.fromAyah} a ${interval.surah}:${interval.toAyah} enregistres`);
+  }
+
   return (
     <main className="modern-reader" id="modern-main">
-      <section className="modern-reader-toolbar" aria-label="Navigation de lecture">
+      <button aria-expanded={mobileOptionsOpen} className="modern-reader-mobile-options" onClick={() => setMobileOptionsOpen((open) => !open)} type="button"><Palette size={18} />Options</button>
+      <section className={mobileOptionsOpen ? "modern-reader-toolbar is-mobile-open" : "modern-reader-toolbar"} aria-label="Navigation de lecture">
         <div className="modern-segmented" aria-label="Mode de lecture">
           {MODES.map((mode) => (
             <button
@@ -362,6 +378,7 @@ export function ModernReaderPage({ route }) {
         </div>
         {route.mode === "surah" && <p className="modern-reader-heading__arabic" lang="ar" dir="rtl">{getSurah(route.value)?.ar}</p>}
       </header>
+      {(readingStart || readingFeedback) && <aside className="modern-reading-session" aria-live="polite"><span>{readingStart ? `Lecture depuis ${readingStart.surah}:${readingStart.ayah}` : readingFeedback}</span>{readingStart && <button onClick={() => { clearReadingStart(); setReadingStartState(null); setReadingFeedback(""); }} type="button">Annuler</button>}</aside>}
 
       {state.status === "loading" && <div className="modern-reader-state" role="status">Chargement du texte...</div>}
       {state.status === "error" && (
@@ -377,6 +394,8 @@ export function ModernReaderPage({ route }) {
           bookmarks={bookmarks}
           onBookmark={toggleBookmark}
           onPlay={(verse) => audio.playQueue(state.verses, { surah: verse.surahNumber, ayah: verse.ayahNumber })}
+          onRead={finishReadingAt}
+          onStart={startReadingAt}
           pageNumber={route.value}
           showTajweed={showTajweed}
           showTranslation={showTranslation}
@@ -400,7 +419,6 @@ export function ModernReaderPage({ route }) {
                 <article
                   className={route.ayah === verse.ayahNumber ? "modern-reader-verse is-target" : "modern-reader-verse"}
                   id={`ayah-${verse.surahNumber}-${verse.ayahNumber}`}
-                  onMouseEnter={() => markRead(verse.surahNumber, verse.ayahNumber)}
                 >
                   <div className="modern-reader-verse__meta">
                     <a href={`/surah/${verse.surahNumber}/${verse.ayahNumber}`}>{verse.surahNumber}:{verse.ayahNumber}</a>
@@ -408,6 +426,8 @@ export function ModernReaderPage({ route }) {
                       bookmarked={bookmarks.has(verse.key)}
                       onBookmark={() => toggleBookmark(verse)}
                       onPlay={() => audio.playQueue(state.verses, { surah: verse.surahNumber, ayah: verse.ayahNumber })}
+                      onRead={() => finishReadingAt(verse)}
+                      onStart={() => startReadingAt(verse)}
                       verse={verse}
                     />
                   </div>

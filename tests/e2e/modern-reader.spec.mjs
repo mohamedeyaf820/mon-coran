@@ -46,11 +46,13 @@ test("reads a surah with translation, tajwid and verse actions", async ({ page }
     (buttons) => buttons.map((button) => Math.round(button.getBoundingClientRect().top)),
   );
   expect(new Set(actionRows).size).toBe(1);
+  expect(actionRows).toHaveLength(3);
 
-  await page.getByRole("button", { name: "Ajouter aux favoris" }).first().click();
-  await expect(page.getByRole("button", { name: "Retirer le favori" }).first()).toBeVisible();
+  await page.getByRole("button", { name: "Plus d'options" }).first().click();
+  await page.getByRole("menuitem", { name: "Ajouter aux favoris" }).click();
 
-  await page.getByRole("button", { name: "Ajouter une note" }).first().click();
+  await page.getByRole("button", { name: "Plus d'options" }).first().click();
+  await page.getByRole("menuitem", { name: "Ajouter une note" }).click();
   await page.getByLabel("Note personnelle").fill("A relire attentivement");
   await page.getByRole("button", { name: "Enregistrer" }).click();
   await expect(page.getByLabel("Note personnelle")).toHaveCount(0);
@@ -65,7 +67,7 @@ test("switches between page and juz modes", async ({ page }) => {
   await expect(page.locator(".modern-mushaf-surah")).toContainText("Al-Fatiha");
   await page.getByRole("button", { name: "Verset 1" }).click();
   await expect(page.getByLabel("Verset selectionne 1")).toBeVisible();
-  await expect(page.getByLabel("Verset selectionne 1").getByRole("button")).toHaveCount(5);
+  await expect(page.getByLabel("Verset selectionne 1").getByRole("button")).toHaveCount(3);
 
   await page.getByRole("button", { name: "Juz" }).click();
   await expect(page).toHaveURL(/\/juz\/1$/);

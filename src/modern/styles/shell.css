@@ -344,4 +344,6 @@
   .modern-footer {
     display: none;
   }
+  .modern-shell { padding-bottom: 4.75rem; }
+  .modern-nav { position: fixed; z-index: 40; right: .5rem; bottom: .5rem; left: .5rem; width: auto; background: var(--modern-surface-raised); box-shadow: var(--modern-shadow); }
 }
