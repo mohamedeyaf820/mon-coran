@@ -924,8 +924,6 @@ export default function AudioPlayer() {
     lang === "ar" ? "\u0627\u0628\u062d\u062b..." : lang === "fr" ? "Rechercher..." : "Search...";
   const openPlayerLabel =
     lang === "ar" ? "\u0641\u062a\u062d \u0627\u0644\u0645\u0634\u063a\u0644" : lang === "fr" ? "Ouvrir le lecteur" : "Open player";
-  const audioBrandLabel =
-    lang === "ar" ? "\u0635\u0648\u062a" : lang === "fr" ? "Audio" : "Audio";
   const dragPlayerLabel =
     lang === "ar"
       ? "\u0627\u0633\u062d\u0628 \u0644\u062a\u062d\u0631\u064a\u0643 \u0627\u0644\u0645\u0634\u063a\u0644"
@@ -1199,8 +1197,8 @@ export default function AudioPlayer() {
           role="region"
           aria-label={minimizedAudioRegionLabel}
         >
-          <div className="h-1 bg-white/10">
-            <ProgressRail progress={progress} />
+          <div className="h-[3px] bg-white/10">
+            <ProgressRail progress={progress} showThumb />
           </div>
           <div className="mp-player-minimized-row flex items-center gap-2.5 px-3 py-2.5">
             <CoverArt isPlaying={isPlaying} size={40} reciter={reciterObj} />
@@ -1286,23 +1284,31 @@ export default function AudioPlayer() {
         role="region"
         aria-label={audioRegionLabel}
       >
-          <div className="mp-player-mobile-head flex items-center justify-between px-3.5 pb-1.5 pt-2">
+          <div className="mp-player-mobile-head flex items-center gap-2.5 px-3 pb-1.5 pt-2.5">
           <button
-            className={cn(mBarBtn, "h-11 w-11 rounded-full")}
+            className={cn(mBarBtn, "h-9 w-9 shrink-0 rounded-full")}
             onClick={toggleMinimized}
             title={minimizeLabel}
             aria-label={minimizeLabel}
           >
             <ChevronDown size={13} />
           </button>
-          <div className="mp-player-mobile-brand flex min-w-0 items-center gap-2 px-2">
-            <div className="h-1 w-9 rounded-full bg-[linear-gradient(90deg,rgba(var(--theme-primary-rgb),0.18),rgba(var(--theme-primary-rgb),0.95),rgba(var(--theme-primary-rgb),0.18))]" />
-            <span className="text-[0.62rem] uppercase tracking-[0.14em] text-[color-mix(in_srgb,var(--theme-text-muted)_92%,var(--theme-bg)_8%)] [font-family:var(--font-ui)]">
-              {audioBrandLabel}
-            </span>
+          {/* Cover art + track info */}
+          <div className="flex min-w-0 flex-1 items-center gap-2.5">
+            <CoverArt isPlaying={isPlaying} size={36} reciter={reciterObj} />
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-[0.79rem] font-bold leading-tight text-[color-mix(in_srgb,var(--theme-text)_94%,#ffffff_6%)]">
+                {titleLabel || (lang === "fr" ? "Prêt à lire" : lang === "ar" ? "جاهز" : "Ready")}
+              </div>
+              {reciterLabel && (
+                <div className="truncate text-[0.64rem] leading-none text-[color-mix(in_srgb,var(--theme-text-muted)_88%,var(--theme-bg)_12%)]">
+                  {reciterLabel}
+                </div>
+              )}
+            </div>
           </div>
           <button
-            className={cn(mBarBtn, "h-11 w-11 rounded-full")}
+            className={cn(mBarBtn, "h-9 w-9 shrink-0 rounded-full")}
             onClick={closePlayer}
             title={closeLabel}
             aria-label={closeLabel}
@@ -1347,7 +1353,7 @@ export default function AudioPlayer() {
         <div className="mp-player-controls-strip mp-player-mobile-controls flex min-h-[3.55rem] items-center gap-2 px-2.5 pb-1.5">
           {/* Left: info block */}
           <div
-            className="mp-player-mobile-meta flex w-[5.1rem] shrink-0 flex-col justify-center gap-[0.16rem] min-w-0"
+            className="mp-player-mobile-meta flex w-[5.8rem] shrink-0 flex-col justify-center gap-[0.15rem] min-w-0"
             aria-live="polite"
           >
             <span className="block overflow-hidden text-ellipsis whitespace-nowrap text-[0.7rem] font-semibold leading-tight text-[color-mix(in_srgb,var(--theme-text)_90%,#ffffff_10%)]">
@@ -1366,6 +1372,11 @@ export default function AudioPlayer() {
               <span className="opacity-50 mx-0.5">/</span>
               {formatTime(duration)}
             </span>
+            {reciterLabel && (
+              <span className="block overflow-hidden text-ellipsis whitespace-nowrap text-[0.58rem] leading-none text-[color-mix(in_srgb,var(--theme-text-muted)_74%,var(--theme-bg)_26%)]">
+                {reciterLabel}
+              </span>
+            )}
             <AudioLoadingIndicator
               state={audioIndicatorState}
               isPlaying={isPlaying}
@@ -2116,11 +2127,10 @@ export default function AudioPlayer() {
               >
                 <SlidersHorizontal size={12} />
               </button>
-              <div className="flex items-center gap-1.5">
-                <div className="h-1 w-8 rounded-full bg-[linear-gradient(90deg,rgba(var(--theme-primary-rgb),0.18),rgba(var(--theme-primary-rgb),0.95),rgba(var(--theme-primary-rgb),0.18))]" />
-                <span className="text-[0.62rem] uppercase tracking-[0.14em] text-[color-mix(in_srgb,var(--theme-text-muted)_92%,var(--theme-bg)_8%)] [font-family:var(--font-ui)]">
-                  DRAG
-                </span>
+              <div className="flex items-center gap-1" aria-hidden="true">
+                {[0, 1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="h-1 w-1 rounded-full bg-[color-mix(in_srgb,var(--theme-primary)_38%,transparent_62%)]" />
+                ))}
               </div>
               <button
                 onClick={closePlayer}

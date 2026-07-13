@@ -4,6 +4,7 @@ import { cn } from "../../lib/utils";
 import { Loader2, Check, Play } from "lucide-react";
 
 const COVER_SIZE_CLASSES = {
+  36: "w-9 h-9",
   40: "w-10 h-10",
   42: "w-[42px] h-[42px]",
   52: "w-[52px] h-[52px]",

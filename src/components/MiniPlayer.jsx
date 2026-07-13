@@ -68,6 +68,7 @@ export default function MiniPlayer() {
   const surahLabel  = surahMeta
     ? surahName(activeSurah, lang)
     : `${t('quran.surah', lang)} ${activeSurah}`;
+  const arabicSurahName = surahMeta?.ar ?? null;
   const ayahLabel   = currentPlayingAyah?.ayah
     ? `${t('quran.ayah', lang)} ${currentPlayingAyah.ayah}`
     : '';
@@ -184,20 +185,32 @@ export default function MiniPlayer() {
         {/* Track info */}
         <div
           className={cn(
-            'flex min-w-0 flex-1 flex-col',
+            'flex min-w-0 flex-1 flex-col gap-px',
             isRtl && 'items-end text-right',
           )}
         >
-          <span
-            className="truncate text-[0.78rem] font-semibold leading-tight text-[var(--text-primary)]"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            {surahLabel}
-            {ayahLabel ? ` · ${ayahLabel}` : ''}
-          </span>
+          <div className="flex min-w-0 items-baseline gap-1.5">
+            {lang !== 'ar' && arabicSurahName && (
+              <span
+                className="shrink-0 text-[0.82rem] font-bold leading-tight text-[var(--primary)]"
+                dir="rtl"
+                lang="ar"
+                aria-hidden="true"
+              >
+                {arabicSurahName}
+              </span>
+            )}
+            <span
+              className="truncate text-[0.74rem] font-semibold leading-tight text-[var(--text-primary)]"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {surahLabel}
+              {ayahLabel ? ` · ${ayahLabel}` : ''}
+            </span>
+          </div>
           {reciterLabel ? (
-            <span className="truncate text-[0.68rem] leading-tight text-[var(--text-muted)]">
+            <span className="truncate text-[0.64rem] leading-tight text-[var(--text-muted)]">
               {reciterLabel}
             </span>
           ) : null}
