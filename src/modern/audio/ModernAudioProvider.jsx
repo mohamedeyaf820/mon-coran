@@ -16,7 +16,7 @@ const ModernAudioContext = createContext(null);
 
 export function ModernAudioProvider({ children }) {
   const settings = useMemo(() => getSettings(), []);
-  const riwaya = settings.riwaya || "hafs";
+  const [riwaya, setRiwaya] = useState(() => settings.riwaya || "hafs");
   const [reciterId, setReciterId] = useState(() => ensureReciterForRiwaya(settings.reciter, riwaya));
   const initialQueue = useMemo(() => getQueueState(), []);
   const initialResume = useMemo(() => normalizeAudioResume(getSavedAudioPosition()), []);
@@ -35,6 +35,18 @@ export function ModernAudioProvider({ children }) {
   const lastSaveRef = useRef(0);
   const reciter = getReciter(reciterId, riwaya);
   const savedResume = normalizeAudioResume(getSavedAudioPosition());
+
+  useEffect(() => {
+    const applyPreferences = (event) => {
+      const next = event.detail || getSettings();
+      const nextRiwaya = next.riwaya || "hafs";
+      const nextReciter = ensureReciterForRiwaya(next.reciter, nextRiwaya);
+      setRiwaya(nextRiwaya);
+      setReciterId(nextReciter);
+    };
+    window.addEventListener("modern-preferences-change", applyPreferences);
+    return () => window.removeEventListener("modern-preferences-change", applyPreferences);
+  }, []);
 
   useEffect(() => {
     const previous = {

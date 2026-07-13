@@ -26,6 +26,8 @@ export function ModernThemeProvider({ children }) {
       document.documentElement.lang = settings.lang || "fr";
       document.documentElement.dataset.modernPalette = settings.accentPalette || "emerald";
       document.documentElement.dataset.mushafProfile = settings.mushafProfile || "medina";
+      document.documentElement.dataset.focusReading = settings.focusReading ? "true" : "false";
+      document.documentElement.dataset.translationReading = settings.translationReadingMode ? "true" : "false";
     };
     applyReaderVariables(getSettings());
     const syncPreferences = (event) => applyReaderVariables(event.detail || getSettings());

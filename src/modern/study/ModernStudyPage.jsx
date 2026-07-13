@@ -22,9 +22,10 @@ export function ModernStudyPage() {
   const [today, setToday] = useState(null); const [history, setHistory] = useState([]); const [readingDates, setReadingDates] = useState([]);
   const [memory, setMemory] = useState(() => getAllMemorized()); const [goal, setGoal] = useState(() => getKhatmaGoal());
   const [reference, setReference] = useState("2:255"); const [quizIndex, setQuizIndex] = useState(0); const [quizScore, setQuizScore] = useState(0); const [quizAnswer, setQuizAnswer] = useState(null);
-  const settings = useMemo(() => getSettings(), []); const quiz = useMemo(() => buildQuizQuestions(TAJWID_RULES, 5), []);
+  const [settings, setSettings] = useState(() => getSettings()); const quiz = useMemo(() => buildQuizQuestions(TAJWID_RULES, 5), []);
   const refreshWird = async () => { const [record, records, dates] = await Promise.all([getTodayWird(), getWirdHistory(7), getReadingDates(7)]); setToday(record); setHistory(records); setReadingDates(dates); };
   useEffect(() => { refreshWird().catch(() => setToday({ pagesRead: 0, ayahsRead: 0, completed: false })); }, []);
+  useEffect(() => { const sync = (event) => setSettings(event.detail || getSettings()); window.addEventListener("modern-preferences-change", sync); return () => window.removeEventListener("modern-preferences-change", sync); }, []);
   const wird = getWirdProgress(today || {}, settings.wirdGoalAmount); const week = summarizeStudyWeek(history, readingDates); const memorySummary = getMemorizationSummary(memory);
   const currentPage = Number(getPosition()?.page) || 1; const khatma = goal ? getKhatmaStats(currentPage) : null; const activeQuestion = quiz[quizIndex];
   const saveMemory = (event) => { event.preventDefault(); const [surah, ayah] = reference.split(":").map(Number); if (!(surah >= 1 && surah <= 114 && ayah >= 1 && ayah <= (getSurah(surah)?.ayahs || 0))) return; setMemorizationLevel(surah, ayah, 1); setMemory(getAllMemorized()); };

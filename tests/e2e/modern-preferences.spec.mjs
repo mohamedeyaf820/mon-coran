@@ -12,6 +12,28 @@ test("persists reading preferences across routes", async ({ page }) => {
   await expect(page.locator(".modern-reader-verse__arabic").first()).toHaveCSS("font-size", "42px");
 });
 
+test("applies reading preferences immediately on the open reader", async ({ page }) => {
+  const arabic = page.locator(".modern-reader-verse__arabic").first();
+  await expect(arabic).toBeVisible();
+  await page.getByRole("slider", { name: "Taille du texte arabe" }).fill("46");
+  await expect(arabic).toHaveCSS("font-size", "46px");
+  await page.getByText("Afficher la traduction").click();
+  await expect(page.locator(".modern-reader-verse__translation")).toHaveCount(0);
+  await page.getByRole("button", { name: "Lecture claire" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-mushaf-profile", "clear");
+});
+
+test("applies riwaya and comfort modes without reloading", async ({ page }) => {
+  await page.getByLabel("Riwaya").selectOption("warsh");
+  await expect(page.getByRole("button", { name: "Tajwid" })).toBeDisabled();
+  await expect(page.getByText("Lecture · WARSH")).toBeVisible();
+  await page.getByRole("button", { name: /Accessibilite/ }).click();
+  await page.getByText("Mode lecture concentree").click();
+  await expect(page.locator("html")).toHaveAttribute("data-focus-reading", "true");
+  await page.getByText("Lecture de traduction").click();
+  await expect(page.locator("html")).toHaveAttribute("data-translation-reading", "true");
+});
+
 test("changes theme immediately and closes with escape", async ({ page }) => {
   await page.getByRole("button", { name: /Apparence/ }).click();
   await page.getByRole("button", { name: /Sombre/ }).click();

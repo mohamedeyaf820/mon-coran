@@ -42,12 +42,12 @@ const MODES = [
   { id: "juz", label: "Juz" },
 ];
 
-async function loadReaderData(route, riwaya, signal) {
-  if (route.mode === "surah") return getSurahFull(route.value, riwaya, ["fr"], signal);
-  if (route.mode === "page") return getPageFull(route.value, riwaya, ["fr"], signal);
+async function loadReaderData(route, riwaya, translationLangs, signal) {
+  if (route.mode === "surah") return getSurahFull(route.value, riwaya, translationLangs, signal);
+  if (route.mode === "page") return getPageFull(route.value, riwaya, translationLangs, signal);
   const [arabic, translations] = await Promise.all([
     getJuz(route.value, riwaya, signal),
-    getJuzTranslation(route.value, ["fr"], signal).catch(() => []),
+    getJuzTranslation(route.value, translationLangs, signal).catch(() => []),
   ]);
   return { arabic, translations };
 }
@@ -223,12 +223,25 @@ function VerseActions({ verse, bookmarked, onBookmark, onPlay }) {
 export function ModernReaderPage({ route }) {
   const audio = useModernAudio();
   const settings = useMemo(() => getSettings(), []);
-  const riwaya = settings.riwaya || "hafs";
+  const [riwaya, setRiwaya] = useState(() => settings.riwaya || "hafs");
+  const [translationLangs, setTranslationLangs] = useState(() => settings.translationLangs || [settings.translationLang || "fr"]);
   const [state, setState] = useState({ status: "loading", verses: [], error: null });
   const [showTranslation, setShowTranslation] = useState(() => settings.showTranslation !== false);
   const [showTajweed, setShowTajweed] = useState(() => settings.showTajwid === true);
   const [bookmarks, setBookmarks] = useState(new Set());
   const [reloadKey, setReloadKey] = useState(0);
+
+  useEffect(() => {
+    const applyPreferences = (event) => {
+      const next = event.detail || getSettings();
+      setShowTranslation(next.showTranslation !== false);
+      setShowTajweed(next.showTajwid === true);
+      setRiwaya(next.riwaya || "hafs");
+      setTranslationLangs(next.translationLangs || [next.translationLang || "fr"]);
+    };
+    window.addEventListener("modern-preferences-change", applyPreferences);
+    return () => window.removeEventListener("modern-preferences-change", applyPreferences);
+  }, []);
 
   useEffect(() => {
     getAllBookmarks().then((items) => setBookmarks(new Set(items.map((item) => item.id))));
@@ -237,7 +250,7 @@ export function ModernReaderPage({ route }) {
   useEffect(() => {
     const controller = new AbortController();
     setState({ status: "loading", verses: [], error: null });
-    loadReaderData(route, riwaya, controller.signal)
+    loadReaderData(route, riwaya, translationLangs, controller.signal)
       .then((data) => {
         const verses = buildReaderVerses(data);
         setState({ status: "ready", verses, error: null });
@@ -251,7 +264,7 @@ export function ModernReaderPage({ route }) {
         if (error.name !== "AbortError") setState({ status: "error", verses: [], error });
       });
     return () => controller.abort();
-  }, [route.mode, route.value, route.ayah, riwaya, reloadKey]);
+  }, [route.mode, route.value, route.ayah, riwaya, translationLangs.join(","), reloadKey]);
 
   useEffect(() => {
     if (state.status !== "ready") return;
