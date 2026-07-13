@@ -93,7 +93,6 @@ export default function useQuranDisplayData({
   const readingStartRef = useRef(Date.now());
   const requestSeqRef = useRef(0);
   const persistRef = useRef(null);
-  useEffect(() => { persistRef.current = persistReadingSideEffects; }, [persistReadingSideEffects]);
 
   const persistReadingSideEffects = useCallback(
     (allAyahs) =>
@@ -131,6 +130,7 @@ export default function useQuranDisplayData({
       }),
     [currentAyah, currentPage, currentSurah, displayMode],
   );
+  useEffect(() => { persistRef.current = persistReadingSideEffects; }, [persistReadingSideEffects]);
 
   useEffect(() => {
     if (showHome || !currentSurah || !currentAyah || displayMode !== "surah") return;
