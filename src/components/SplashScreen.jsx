@@ -42,6 +42,7 @@ export default function SplashScreen({
   lowPerfMode = false,
 }) {
   const [fadeOut, setFadeOut] = useState(false);
+  const dismissedRef = React.useRef(false);
   const [verseIndex, setVerseIndex] = useState(0);
   const [verseVisible, setVerseVisible] = useState(true);
   const [showSkip, setShowSkip] = useState(false);
@@ -53,10 +54,9 @@ export default function SplashScreen({
   }, [lowPerfMode]);
 
   useEffect(() => {
-    let dismissed = false;
     const dismiss = () => {
-      if (dismissed) return;
-      dismissed = true;
+      if (dismissedRef.current) return;
+      dismissedRef.current = true;
       setFadeOut(true);
       setTimeout(onDone, 300);
     };
@@ -103,7 +103,7 @@ export default function SplashScreen({
     const t2 = setTimeout(() => dismiss(), 700);
 
     return () => {
-      dismissed = true;
+      dismissedRef.current = true;
       clearInterval(verseTick);
       clearTimeout(t1);
       clearTimeout(t2);
@@ -120,6 +120,8 @@ export default function SplashScreen({
         <button
           className="splash-skip"
           onClick={() => {
+            if (dismissedRef.current) return;
+            dismissedRef.current = true;
             setShowSkip(false);
             setFadeOut(true);
             setTimeout(onDone, 400);

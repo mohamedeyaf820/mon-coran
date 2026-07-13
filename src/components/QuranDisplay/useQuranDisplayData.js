@@ -92,6 +92,8 @@ export default function useQuranDisplayData({
   );
   const readingStartRef = useRef(Date.now());
   const requestSeqRef = useRef(0);
+  const persistRef = useRef(persistReadingSideEffects);
+  useEffect(() => { persistRef.current = persistReadingSideEffects; }, [persistReadingSideEffects]);
 
   const persistReadingSideEffects = useCallback(
     (allAyahs) =>
@@ -157,7 +159,7 @@ export default function useQuranDisplayData({
       setIsWarshFallback(Boolean(cachedData.isWarshFallback));
       dispatch({ type: "SET", payload: { loadedAyahCount: cachedData.ayahs.length } });
       dispatch({ type: "SET_LOADING", payload: false });
-      persistReadingSideEffects(cachedData.ayahs);
+      persistRef.current(cachedData.ayahs);
       return;
     }
 
@@ -166,13 +168,29 @@ export default function useQuranDisplayData({
     // Deduplicate: if same key already in-flight, attach to it
     if (INFLIGHT_REQUESTS.has(cacheKey)) {
       try {
-        const { ayahs: fetchedAyahs, isWarshFallback: fallback } = await INFLIGHT_REQUESTS.get(cacheKey);
+        const { ayahs: fetchedAyahs, isWarshFallback: fallback, hafsPromise: inflightHafs } = await INFLIGHT_REQUESTS.get(cacheKey);
         if (signal.aborted || requestSeqRef.current !== requestId) return;
         setAyahs(fetchedAyahs);
         setIsWarshFallback(fallback);
         dispatch({ type: "SET", payload: { loadedAyahCount: fetchedAyahs.length } });
         dispatch({ type: "SET_LOADING", payload: false });
-        persistReadingSideEffects(fetchedAyahs);
+        if (inflightHafs) {
+          inflightHafs.then((hafsData) => {
+            if (signal.aborted || requestSeqRef.current !== requestId || !hafsData) return;
+            const hafsMap = new Map(
+              (hafsData?.ayahs || []).map((ayah) => [
+                `${ayah.surah?.number}:${ayah.numberInSurah}`,
+                ayah,
+              ]),
+            );
+            setAyahs((previous) => {
+              const merged = mergeHafsSupport(previous, hafsMap);
+              rememberLimited(DISPLAY_DATA_CACHE, cacheKey, { ayahs: merged, isWarshFallback: fallback }, DISPLAY_DATA_CACHE_MAX);
+              return merged;
+            });
+          });
+        }
+        persistRef.current(fetchedAyahs);
         return;
       } catch {
         // fall through to fresh fetch
@@ -238,7 +256,7 @@ export default function useQuranDisplayData({
         });
       }
 
-      persistReadingSideEffects(arabicData.ayahs || fetchedAyahs);
+      persistRef.current(fetchedAyahs);
     } catch (err) {
       INFLIGHT_REQUESTS.delete(cacheKey);
       if (err?.name === "AbortError" || requestSeqRef.current !== requestId) return;
@@ -258,7 +276,6 @@ export default function useQuranDisplayData({
     dispatch,
     displayMode,
     lang,
-    persistReadingSideEffects,
     riwaya,
     showHome,
     warshStrictMode,

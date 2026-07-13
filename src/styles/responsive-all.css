@@ -40,25 +40,7 @@
     );
 }
 
-html {
-    text-size-adjust: 100%;
-    -webkit-text-size-adjust: 100%;
-    background: var(--theme-bg, var(--bg-primary, #f8fafc));
-}
-
-body {
-    min-width: 320px;
-    background: var(
-        --theme-app-bg,
-        var(--theme-bg, var(--bg-primary, #f8fafc))
-    );
-    color: var(--theme-text, var(--text-primary, #111827));
-}
-
-.app-root {
-    min-height: 100dvh;
-    overflow-x: clip;
-}
+/* html/body/.app-root base rules moved to tailwind.css (synchronous critical CSS) */
 
 .app-root :is(button, [role="button"], input, select, textarea) {
     font: inherit;

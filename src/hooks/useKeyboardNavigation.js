@@ -173,6 +173,11 @@ export function useKeyboardNavigation({
   }, [dispatch, set, setShowShortcuts]);
 
   const handlePlayPause = useCallback(() => {
+    const { state: s } = latestRef.current;
+    const modalOpen = s.searchOpen || s.settingsOpen || s.bookmarksOpen || s.wirdOpen ||
+      s.historyOpen || s.playlistOpen || s.audioMakerOpen || s.flashcardsOpen ||
+      s.tajweedQuizOpen || s.khatmaOpen || s.comparatorOpen || s.shareImageOpen || s.weeklyStatsOpen;
+    if (modalOpen) return;
     audioService.toggle();
   }, []);
 
@@ -240,9 +245,21 @@ export function useKeyboardNavigation({
           break;
         case "m":
         case "M":
-          if (!event.ctrlKey && !event.metaKey) {
+          if (event.altKey && !event.ctrlKey && !event.metaKey) {
             event.preventDefault();
             handleToggleMemorization();
+          }
+          break;
+        case "ArrowUp":
+          if (event.altKey) {
+            event.preventDefault();
+            handlePrevious();
+          }
+          break;
+        case "ArrowDown":
+          if (event.altKey) {
+            event.preventDefault();
+            handleNext();
           }
           break;
         case "Escape":

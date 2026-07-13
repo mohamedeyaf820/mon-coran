@@ -5,6 +5,7 @@ import { t } from "../../i18n";
 import { useAppSelector } from "../../context/AppContext";
 import { arabicToLatin } from "../../data/transliteration";
 import { cn } from "../../lib/utils";
+import { addBookmark } from "../../services/storageService";
 import MemorizationText from "./MemorizationText";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 import WordByWordDisplay from "./WordByWordDisplay";
@@ -91,6 +92,11 @@ function AyahBlockComponent({
       onToggleActive(toggleId ?? ayah.numberInSurah);
   }, [ayah.numberInSurah, onToggleActive, toggleId]);
 
+  const handleBookmark = useCallback((e) => {
+    e.stopPropagation();
+    addBookmark(surahNum, ayah.numberInSurah).catch(() => {});
+  }, [surahNum, ayah.numberInSurah]);
+
   return (
     <div
       id={ayahId}
@@ -156,9 +162,7 @@ function AyahBlockComponent({
         <button
           type="button"
           className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] opacity-40 hover:!opacity-100 hover:text-[var(--primary)] hover:bg-[rgba(var(--primary-rgb),0.08)] transition-all duration-300"
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
+          onClick={handleBookmark}
           aria-label={lang === "fr" ? "Marquer ce verset" : lang === "ar" ? "وضع إشارة مرجعية" : "Bookmark this verse"}
           title={lang === "fr" ? "Marquer ce verset" : lang === "ar" ? "وضع إشارة مرجعية" : "Bookmark this verse"}
         >

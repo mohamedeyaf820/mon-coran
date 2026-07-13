@@ -109,7 +109,7 @@
 [data-theme="dark"] .settings-drawer [class*="grid-cols-3"] button.bg-bg-primary,
 [data-theme="dark"] .settings-drawer [class*="grid-cols-2"] button.bg-bg-primary {
   background: rgba(20, 36, 30, 0.9) !important;
-  color: #2fd08e !important;
+  color: var(--primary) !important;
 }
 
 /* ── Section headings ── */
@@ -168,13 +168,13 @@
 
 [data-theme="dark"] .settings-reciter-card:hover,
 [data-theme="dark"] [class*="reciter-card"]:hover {
-  border-color: rgba(47, 208, 142, 0.32) !important;
+  border-color: color-mix(in srgb, var(--primary) 32%, transparent) !important;
 }
 
 [data-theme="dark"] .settings-reciter-card.is-active,
 [data-theme="dark"] [class*="reciter-card"].is-selected {
-  border-color: #2fd08e !important;
-  background: rgba(47, 208, 142, 0.08) !important;
+  border-color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 8%, transparent) !important;
 }
 
 /* ── Reciter avatar ── */
@@ -447,9 +447,9 @@
 }
 
 /* per-tab accent colors in inactive state */
-.settings-tab-button[data-id="general"] .settings-tab-button__icon { color: #8b5cf6; }
-.settings-tab-button[data-id="reading"] .settings-tab-button__icon { color: #3b82f6; }
-.settings-tab-button[data-id="audio"]   .settings-tab-button__icon { color: #f59e0b; }
+.settings-tab-button[data-id="general"] .settings-tab-button__icon { color: var(--c-general); }
+.settings-tab-button[data-id="reading"] .settings-tab-button__icon { color: var(--c-reading); }
+.settings-tab-button[data-id="audio"]   .settings-tab-button__icon { color: var(--c-audio-icon); }
 
 .settings-tab-button[data-active="true"][data-id="general"] .settings-tab-button__icon { color: var(--primary); }
 .settings-tab-button[data-active="true"][data-id="reading"] .settings-tab-button__icon { color: var(--primary); }
@@ -830,10 +830,10 @@
   align-items: center !important;
   justify-content: center !important;
   gap: 0.5rem !important;
-  border: 1px solid color-mix(in srgb, #ef4444 28%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--c-danger) 28%, transparent) !important;
   border-radius: 8px !important;
-  background: color-mix(in srgb, #ef4444 7%, var(--bg-card) 93%) !important;
-  color: #dc2626 !important;
+  background: color-mix(in srgb, var(--c-danger) 7%, var(--bg-card) 93%) !important;
+  color: var(--c-danger-hover) !important;
   font-weight: 800 !important;
 }
 

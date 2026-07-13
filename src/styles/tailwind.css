@@ -106,7 +106,34 @@ button:active:not(:disabled),
 }
 
 html {
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    background: var(--theme-bg, var(--bg-primary, #f8fafc));
     scrollbar-gutter: stable both-edges;
+}
+
+body {
+    min-width: 320px;
+    background: var(--theme-app-bg, var(--theme-bg, var(--bg-primary, #f8fafc)));
+    color: var(--theme-text, var(--text-primary, #111827));
+}
+
+.app-root {
+    min-height: 100dvh;
+    overflow-x: clip;
+}
+
+/* Feature accent colors — fixed per-feature, not theme-primary */
+:root {
+    --c-search: #3b82f6;
+    --c-duas: #f59e0b;
+    --c-theme-icon: #8b5cf6;
+    --c-tools: #06b6d4;
+    --c-general: #8b5cf6;
+    --c-reading: #3b82f6;
+    --c-audio-icon: #f59e0b;
+    --c-danger: #ef4444;
+    --c-danger-hover: #dc2626;
 }
 
 .fa-solid,
