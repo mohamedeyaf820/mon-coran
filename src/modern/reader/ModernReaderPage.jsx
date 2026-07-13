@@ -14,6 +14,8 @@ import {
   RotateCcw,
   Share2,
   BookMarked,
+  Brain,
+  Eye,
 } from "lucide-react";
 
 import SURAHS, { getSurah } from "../../data/surahs";
@@ -234,6 +236,8 @@ export function ModernReaderPage({ route }) {
   const [readingFeedback, setReadingFeedback] = useState("");
   const [mobileOptionsOpen, setMobileOptionsOpen] = useState(false);
   const [studyVerse, setStudyVerse] = useState(null);
+  const [memorizationMode, setMemorizationMode] = useState(false);
+  const [revealedVerses, setRevealedVerses] = useState(new Set());
 
   useEffect(() => {
     const applyPreferences = (event) => {
@@ -366,6 +370,7 @@ export function ModernReaderPage({ route }) {
           </a>
         </div>
         <div className="modern-reader-options">
+          <button aria-pressed={memorizationMode} className={memorizationMode ? "is-active" : ""} onClick={() => { setMemorizationMode((value) => !value); setRevealedVerses(new Set()); }} type="button"><Brain size={17} /> Memoriser</button>
           <button aria-pressed={showTranslation} className={showTranslation ? "is-active" : ""} onClick={toggleTranslation} type="button">
             <Languages size={17} /> Traduction
           </button>
@@ -423,7 +428,7 @@ export function ModernReaderPage({ route }) {
                   </header>
                 )}
                 <article
-                  className={route.ayah === verse.ayahNumber ? "modern-reader-verse is-target" : "modern-reader-verse"}
+                  className={`${route.ayah === verse.ayahNumber ? "modern-reader-verse is-target" : "modern-reader-verse"}${audio.current?.surah === verse.surahNumber && audio.current?.ayah === verse.ayahNumber ? " is-playing" : ""}`}
                   id={`ayah-${verse.surahNumber}-${verse.ayahNumber}`}
                 >
                   <div className="modern-reader-verse__meta">
@@ -438,10 +443,11 @@ export function ModernReaderPage({ route }) {
                       verse={verse}
                     />
                   </div>
-                  <p className="modern-reader-verse__arabic" dir="rtl" lang="ar">
+                  <p className={`modern-reader-verse__arabic${memorizationMode && !revealedVerses.has(verse.key) ? " is-masked" : ""}`} dir="rtl" lang="ar">
                     <TajweedText enabled={showTajweed} fallback={verse.text} text={verse.tajweedText} />
                     <span className="modern-ayah-mark" aria-hidden="true">{verse.ayahNumber}</span>
                   </p>
+                  {memorizationMode && <button className="modern-memory-reveal" onClick={() => setRevealedVerses((current) => { const next = new Set(current); if (next.has(verse.key)) next.delete(verse.key); else next.add(verse.key); return next; })} type="button"><Eye size={17} />{revealedVerses.has(verse.key) ? "Masquer" : "Reveler"}</button>}
                   {showTranslation && <p className="modern-reader-verse__translation" lang="fr">{verse.translation || "Traduction indisponible."}</p>}
                 </article>
               </div>

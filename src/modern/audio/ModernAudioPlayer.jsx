@@ -1,10 +1,13 @@
 import { Headphones, ListMusic, Pause, Play, SkipBack, SkipForward, Square } from "lucide-react";
+import { useState } from "react";
 import { getSurah } from "../../data/surahs";
 import { formatAudioTime } from "./audioModel";
 import { useModernAudio } from "./ModernAudioProvider";
 
 export function ModernAudioPlayer() {
   const audio = useModernAudio();
+  const [repeat, setRepeat] = useState(1);
+  const [pauseMs, setPauseMs] = useState(2000);
   if (!audio.current && audio.status === "idle") return null;
   const surah = getSurah(audio.current?.surah);
   const progress = audio.duration ? Math.min(100, (audio.currentTime / audio.duration) * 100) : 0;
@@ -27,6 +30,9 @@ export function ModernAudioPlayer() {
         <span>{formatAudioTime(audio.currentTime)} / {formatAudioTime(audio.duration)}</span>
       </div>
       <div className="modern-audio-player__tools">
+        <select aria-label="Vitesse de lecture" defaultValue="1" onChange={(event) => audio.setSpeed(Number(event.target.value))}><option value="0.75">0.75x</option><option value="1">1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option></select>
+        <select aria-label="Repetitions du verset" onChange={(event) => { const value = Number(event.target.value); setRepeat(value); audio.setMemorization(value, pauseMs); }} value={repeat}><option value="1">1 fois</option><option value="3">3 fois</option><option value="5">5 fois</option></select>
+        <select aria-label="Pause entre repetitions" onChange={(event) => { const value = Number(event.target.value); setPauseMs(value); audio.setMemorization(repeat, value); }} value={pauseMs}><option value="1000">1 s</option><option value="2000">2 s</option><option value="5000">5 s</option></select>
         <a aria-label="Ouvrir la file d'attente" href="/audio"><ListMusic size={19} /></a>
         <button aria-label="Arreter et fermer le lecteur" onClick={audio.stop} title="Arreter et fermer" type="button"><Square size={17} fill="currentColor" /></button>
       </div>

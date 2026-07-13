@@ -24,12 +24,15 @@
 .modern-reader-verses { background: var(--modern-surface); }
 .modern-reader-verse { display: grid; grid-template-columns: 12.5rem minmax(0, 1fr); gap: 1rem 2rem; padding: 2.5rem 2rem; border-bottom: 1px solid var(--modern-border); scroll-margin-block: 8rem; }
 .modern-reader-verse.is-target { box-shadow: inset 3px 0 var(--modern-accent); background: color-mix(in srgb, var(--modern-accent) 7%, transparent); }
+.modern-reader-verse.is-playing { box-shadow: inset 3px 0 var(--modern-accent); background: color-mix(in srgb, var(--modern-accent) 10%, transparent); }
 .modern-reader-verse__meta { grid-row: 1 / span 2; display: flex; flex-direction: column; gap: .75rem; }
 .modern-reader-verse__meta > a { color: var(--modern-accent-strong); font-size: .8rem; font-weight: 700; text-decoration: none; }
 .modern-verse-actions { position: relative; display: flex; flex-wrap: nowrap; gap: .15rem; }
 .modern-verse-actions > button { display: grid; width: 2.35rem; min-height: 2.35rem; place-items: center; color: var(--modern-muted); }
 .modern-verse-actions > button:hover, .modern-verse-actions > button.is-active { background: var(--modern-bg-deep); color: var(--modern-accent-strong); }
 .modern-reader-verse__arabic { margin: 0; color: var(--modern-text); font-family: var(--modern-quran-font, "Scheherazade New", serif); font-size: var(--modern-quran-size, 2.35rem); line-height: 2; text-align: right; }
+.modern-reader-verse__arabic.is-masked { color: transparent; text-shadow: 0 0 14px color-mix(in srgb,var(--modern-text) 28%,transparent); user-select:none; }
+.modern-memory-reveal { justify-self:end; display:inline-flex; min-height:var(--modern-tap-size); align-items:center; gap:.4rem; border:1px solid var(--modern-border); background:transparent; color:var(--modern-accent-strong); padding:.45rem .7rem; }
 .modern-ayah-mark { display: inline-grid; min-width: 2rem; min-height: 2rem; margin-inline-start: .5rem; place-items: center; border: 1px solid var(--modern-accent); border-radius: 50%; color: var(--modern-accent-strong); font-family: Literata, serif; font-size: .7rem; vertical-align: middle; }
 .modern-reader-verse__translation { max-width: 46rem; margin: 0; color: var(--modern-muted); font-size: var(--modern-translation-size, .95rem); line-height: 1.8; }
 .modern-reader-mobile-options { display: none; }

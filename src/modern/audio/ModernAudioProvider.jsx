@@ -163,6 +163,10 @@ export function ModernAudioProvider({ children }) {
     stop,
     seekPercent: (value) => audioService.seekPercent(value),
     setSpeed: (value) => { audioService.setSpeed(value); updateSetting("audioSpeed", value); },
+    setMemorization: (repeatCount, pauseMs) => {
+      if (Number(repeatCount) <= 1) audioService.disableMemorization();
+      else audioService.enableMemorization(Number(repeatCount), Number(pauseMs));
+    },
   };
 
   return <ModernAudioContext.Provider value={value}>{children}</ModernAudioContext.Provider>;

@@ -58,3 +58,4 @@
   .modern-audio-player__track small { max-width: 10rem; }
   .modern-audio-player__controls button:not(.is-primary) { display: none; }
 }
+.modern-audio-player__tools select { min-height:2.25rem; max-width:6rem; border:1px solid var(--modern-border); background:var(--modern-surface); color:var(--modern-text); }
