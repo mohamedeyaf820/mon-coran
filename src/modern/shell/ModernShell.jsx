@@ -8,7 +8,7 @@ import {
   Settings,
   Sun,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { ModernHomePage } from "../home/ModernHomePage";
 import { ModernAudioPage } from "../audio/ModernAudioPage";
@@ -16,6 +16,8 @@ import { ModernAudioPlayer } from "../audio/ModernAudioPlayer";
 import { ModernLibraryPage } from "../library/ModernLibraryPage";
 import { ModernStudyPage } from "../study/ModernStudyPage";
 import { ModernPreferencesDialog } from "../preferences/ModernPreferencesDialog";
+import { ModernOnboarding } from "../onboarding/ModernOnboarding";
+import { FORCE_ONBOARDING_KEY, shouldShowOnboarding } from "../onboarding/onboardingModel";
 import { ModernReaderPage } from "../reader/ModernReaderPage";
 import { parseReaderRoute } from "../reader/readerRoute";
 import { useModernTheme } from "../theme/ModernThemeProvider";
@@ -36,6 +38,12 @@ export function ModernShell() {
   const isStudyPage = window.location.pathname === "/study";
   const { theme, setTheme, toggleTheme } = useModernTheme();
   const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const [onboardingOpen, setOnboardingOpen] = useState(() => shouldShowOnboarding(localStorage, navigator.webdriver));
+  useEffect(() => {
+    const reopen = () => { localStorage.setItem(FORCE_ONBOARDING_KEY, "1"); setPreferencesOpen(false); setOnboardingOpen(true); };
+    window.addEventListener("modern-open-onboarding", reopen);
+    return () => window.removeEventListener("modern-open-onboarding", reopen);
+  }, []);
   const ThemeIcon = theme === "dark" ? Sun : Moon;
   const focusHomeSearch = () => {
     window.location.assign("/library?tab=search");
@@ -90,6 +98,7 @@ export function ModernShell() {
       </footer>
       <ModernAudioPlayer />
       {preferencesOpen && <ModernPreferencesDialog onClose={() => setPreferencesOpen(false)} onThemeChange={setTheme} />}
+      {onboardingOpen && <ModernOnboarding onClose={() => setOnboardingOpen(false)} onThemeChange={setTheme} />}
     </div>
   );
 }
