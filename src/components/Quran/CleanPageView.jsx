@@ -61,8 +61,8 @@ function CleanPageViewComponent({
         aria-hidden="true"
       />
       <div className="mushaf-page-header" aria-hidden="true">
-        <span>{juzLabel}</span>
-        <span>{surahLabel}</span>
+        <span dir="rtl">{juzLabel}</span>
+        <span dir="rtl">{surahLabel}</span>
       </div>
       <div
         className="mushaf-text-block mushaf-container"

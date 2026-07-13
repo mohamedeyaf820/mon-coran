@@ -193,7 +193,7 @@ export default function SettingsModal() {
     );
   }, [reciterSearch, recitersList]);
 
-  const title = localText(lang, "Parametres", "Settings", "الاعدادات");
+  const title = localText(lang, "Paramètres", "Settings", "الإعدادات");
   const close = () => dispatch({ type: "TOGGLE_SETTINGS" });
 
   useEffect(() => {
@@ -264,7 +264,7 @@ export default function SettingsModal() {
           value={lang}
           onChange={(nextLang) => set({ lang: nextLang })}
           options={[
-            { id: "fr", label: "Francais" },
+            { id: "fr", label: "Français" },
             { id: "en", label: "English" },
             { id: "ar", label: "العربية" },
           ]}
@@ -351,7 +351,7 @@ export default function SettingsModal() {
         </div>
       </Section>
 
-      <Section title={localText(lang, "Outils", "Tools", "الادوات")}>
+      <Section title={localText(lang, "Outils", "Tools", "الأدوات")}>
         <button
           type="button"
           className="settings-tool-link"
@@ -361,14 +361,14 @@ export default function SettingsModal() {
           }}
         >
           <span>
-            {localText(lang, "Espace Outils", "Tools Hub", "مركز الادوات")}
+            {localText(lang, "Espace Outils", "Tools Hub", "مركز الأدوات")}
           </span>
           <small>
             {localText(
               lang,
-              "Flashcards, statistiques, memorisation et plus",
+              "Flashcards, statistiques, mémorisation et plus",
               "Flashcards, stats, memorization and more",
-              "البطاقات التعليمية والاحصائيات والحفظ",
+              "البطاقات التعليمية والإحصائيات والحفظ",
             )}
           </small>
         </button>
@@ -489,8 +489,8 @@ export default function SettingsModal() {
           id="settings-show-word-translation"
           checked={showWordTranslation}
           onChange={(checked) => set({ showWordTranslation: checked })}
-          label={localText(lang, "Traduction mot a mot", "Word translation", "ترجمة الكلمات")}
-          description={localText(lang, "Affiche le sens des mots quand le mode mot a mot est actif.", "Shows word meanings when word-by-word mode is active.", "يعرض معاني الكلمات عند تفعيل وضع كلمة بكلمة.")}
+          label={localText(lang, "Traduction mot à mot", "Word translation", "ترجمة الكلمات")}
+          description={localText(lang, "Affiche le sens des mots quand le mode mot à mot est actif.", "Shows word meanings when word-by-word mode is active.", "يعرض معاني الكلمات عند تفعيل وضع كلمة بكلمة.")}
         />
       </Section>
     </div>
@@ -621,7 +621,7 @@ export default function SettingsModal() {
           <nav
             className="settings-drawer__tabs"
             role="tablist"
-            aria-label={localText(lang, "Onglets des parametres", "Settings tabs", "تبويبات الاعدادات")}
+            aria-label={localText(lang, "Onglets des paramètres", "Settings tabs", "تبويبات الإعدادات")}
             onKeyDown={handleTabKeyDown}
           >
             {TABS.map((tab) => {
