@@ -32,9 +32,16 @@ export function ModernAudioProvider({ children }) {
     queue: initialQueue.items,
     index: initialQueue.items.length ? Math.min(initialQueue.index, initialQueue.items.length - 1) : -1,
   });
+  const [volume, setVolumeState] = useState(() => Number(settings.audioVolume ?? audioService.getVolume?.() ?? 1));
+  const [speed, setSpeedState] = useState(() => Number(settings.audioSpeed || 1));
   const lastSaveRef = useRef(0);
   const reciter = getReciter(reciterId, riwaya);
   const savedResume = normalizeAudioResume(getSavedAudioPosition());
+
+  useEffect(() => {
+    audioService.setVolume(volume);
+    audioService.setSpeed(speed);
+  }, []);
 
   useEffect(() => {
     const applyPreferences = (event) => {
@@ -162,7 +169,10 @@ export function ModernAudioProvider({ children }) {
     previous: () => audioService.prev(),
     stop,
     seekPercent: (value) => audioService.seekPercent(value),
-    setSpeed: (value) => { audioService.setSpeed(value); updateSetting("audioSpeed", value); },
+    speed,
+    volume,
+    setSpeed: (value) => { audioService.setSpeed(value); setSpeedState(value); updateSetting("audioSpeed", value); },
+    setVolume: (value) => { audioService.setVolume(value); setVolumeState(value); updateSetting("audioVolume", value); },
     setMemorization: (repeatCount, pauseMs) => {
       if (Number(repeatCount) <= 1) audioService.disableMemorization();
       else audioService.enableMemorization(Number(repeatCount), Number(pauseMs));

@@ -17,6 +17,7 @@ import { ModernLibraryPage } from "../library/ModernLibraryPage";
 import { ModernStudyPage } from "../study/ModernStudyPage";
 import { ModernPreferencesDialog } from "../preferences/ModernPreferencesDialog";
 import { ModernOnboarding } from "../onboarding/ModernOnboarding";
+import { ModernPWAUpdateBanner } from "../pwa/ModernPWAUpdateBanner";
 import { FORCE_ONBOARDING_KEY, shouldShowOnboarding } from "../onboarding/onboardingModel";
 import { ModernReaderPage } from "../reader/ModernReaderPage";
 import { parseReaderRoute } from "../reader/readerRoute";
@@ -97,6 +98,7 @@ export function ModernShell() {
         <a href="/legacy">Ouvrir l'interface legacy</a>
       </footer>
       <ModernAudioPlayer />
+      <ModernPWAUpdateBanner />
       {preferencesOpen && <ModernPreferencesDialog onClose={() => setPreferencesOpen(false)} onThemeChange={setTheme} />}
       {onboardingOpen && <ModernOnboarding onClose={() => setOnboardingOpen(false)} onThemeChange={setTheme} />}
     </div>

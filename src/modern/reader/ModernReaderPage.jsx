@@ -280,6 +280,12 @@ export function ModernReaderPage({ route }) {
     target?.scrollIntoView({ block: "center" });
   }, [route.ayah, route.value, state.status]);
 
+  useEffect(() => {
+    if (!audio.current || audio.status !== "playing") return;
+    const target = document.getElementById(`ayah-${audio.current.surah}-${audio.current.ayah}`);
+    target?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+  }, [audio.current?.surah, audio.current?.ayah, audio.status]);
+
   const title = route.mode === "surah"
     ? getSurah(route.value)?.en
     : route.mode === "page" ? `Page ${route.value}` : `Juz ${route.value}`;
