@@ -36,14 +36,14 @@ export default function DuasPage() {
     title: lang === "ar" ? "أدعية من القرآن" : lang === "fr" ? "Invocations du Coran" : "Quranic Invocations",
     subtitle:
       lang === "ar"
-        ? "مجموعة واضحة للادعية القرآنية مع وصول مباشر للآيات"
+        ? "مجموعة واضحة للأدعية القرآنية مع وصول مباشر للآيات"
         : lang === "fr"
           ? "Une bibliothèque claire d'invocations coraniques, avec accès direct aux versets."
           : "A clear library of Quranic supplications with direct access to each verse.",
     back: lang === "ar" ? "الرئيسية" : lang === "fr" ? "Accueil" : "Home",
     search:
       lang === "ar"
-        ? "ابحث في الادعية..."
+        ? "ابحث في الأدعية..."
         : lang === "fr"
           ? "Rechercher une invocation..."
           : "Search supplications...",

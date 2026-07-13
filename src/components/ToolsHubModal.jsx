@@ -166,7 +166,7 @@ export default function ToolsHubModal() {
                   {tr({
                     fr: "Espace outils spirituels",
                     en: "Spiritual Tools Hub",
-                    ar: "مركز الادوات الروحية",
+                    ar: "مركز الأدوات الروحية",
                   })}
                 </h2>
                 <div className="modal-subtitle">
