@@ -1374,7 +1374,7 @@ html {
     --qcom-reader-muted: #98a39b !important;
     --qcom-reader-number-bg: #161d1a !important;
     --qcom-reader-number-border: rgba(214, 221, 214, 0.13) !important;
-    --qcom-ar-size: clamp(2.25rem, 3.55vw, 3.25rem) !important;
+    --qcom-ar-size: var(--quran-font-size, clamp(2.25rem, 3.55vw, 3.25rem)) !important;
 
     --tajwid-silent: #a9b0aa !important;
     --tajwid-lam-shamsiyya: #a9b0aa !important;
@@ -1668,7 +1668,7 @@ html {
 
 @media (max-width: 640px) {
     [data-theme="dark"] {
-        --qcom-ar-size: clamp(2rem, 8.9vw, 2.65rem) !important;
+        --qcom-ar-size: var(--quran-font-size, clamp(2rem, 8.9vw, 2.65rem)) !important;
     }
 
     [data-theme="dark"] .app-root .quran-display--platform .qc-ayah-text-ar,
@@ -1780,7 +1780,7 @@ html[data-theme="dark"]
     .app-root.app-root
     .quran-display--platform
     :is(.qc-ayah-text-ar, .rd-arabic, #mp-dark-arabic-size) {
-    font-size: clamp(36px, 3.55vw, 52px) !important;
+    font-size: var(--quran-font-size, clamp(36px, 3.55vw, 52px)) !important;
     line-height: 2.24 !important;
 }
 
@@ -1790,7 +1790,7 @@ html[data-theme="dark"]
         .app-root.app-root
         .quran-display--platform
         :is(.qc-ayah-text-ar, .rd-arabic, #mp-dark-arabic-size) {
-        font-size: clamp(32px, 8.9vw, 42px) !important;
+        font-size: var(--quran-font-size, clamp(32px, 8.9vw, 42px)) !important;
         line-height: 2.16 !important;
     }
 }
@@ -1847,7 +1847,7 @@ html[data-theme="dark"] {
     --qcom-reader-muted: #9ca69e !important;
     --qcom-reader-number-bg: #1b221e !important;
     --qcom-reader-number-border: rgba(238, 235, 225, 0.12) !important;
-    --qcom-ar-size: clamp(38px, 3.2vw, 52px) !important;
+    --qcom-ar-size: var(--quran-font-size, clamp(38px, 3.2vw, 52px)) !important;
 }
 
 html[data-theme="dark"],

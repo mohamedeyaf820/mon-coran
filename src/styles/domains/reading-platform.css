@@ -8,7 +8,7 @@
     --qcom-reader-soft: rgba(226, 232, 240, 0.08);
     --qcom-reader-number-bg: rgba(255, 255, 255, 0.04);
     --qcom-reader-number-border: rgba(148, 163, 184, 0.2);
-    --qcom-ar-size: clamp(2.25rem, 1.4rem + 2.5vw, 4.15rem);
+    --qcom-ar-size: var(--quran-font-size, clamp(2.25rem, 1.4rem + 2.5vw, 4.15rem));
     --qcom-ar-leading: 2.14;
     --qcom-ar-word-spacing: 0.08em;
 }
@@ -243,7 +243,7 @@
 
 @media (max-width: 820px) {
     .app-root .quran-display--platform {
-        --qcom-ar-size: clamp(1.75rem, 1.08rem + 4.6vw, 2.85rem);
+        --qcom-ar-size: var(--quran-font-size, clamp(1.75rem, 1.08rem + 4.6vw, 2.85rem));
         --qcom-ar-leading: 2;
         --qcom-ar-word-spacing: 0.045em;
     }
@@ -264,7 +264,7 @@
 
 @media (max-width: 520px) {
     .app-root .quran-display--platform {
-        --qcom-ar-size: clamp(1.48rem, 8.4vw, 2.14rem);
+        --qcom-ar-size: var(--quran-font-size, clamp(1.48rem, 8.4vw, 2.14rem));
         --qcom-ar-leading: 1.92;
         --qcom-ar-word-spacing: 0.025em;
     }
@@ -290,7 +290,7 @@
 /* Extra-small phones (≤380px) — compact Arabic + tighter spacing */
 @media (max-width: 380px) {
     .app-root .quran-display--platform {
-        --qcom-ar-size: clamp(1.3rem, 7.2vw, 1.8rem);
+        --qcom-ar-size: var(--quran-font-size, clamp(1.3rem, 7.2vw, 1.8rem));
         --qcom-ar-leading: 1.85;
         --qcom-ar-word-spacing: 0.015em;
     }
