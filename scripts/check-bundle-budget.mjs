@@ -37,7 +37,9 @@ const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1197);
 // quick menu, and shared Hafs/Warsh ayah marker styles.
 // +1 kB added (2076→2077): CSS token migration — var(--ts-*)/var(--r-*) names
 // longer than raw rem/px literals; tradeoff accepted for design system compliance.
-const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2077);
+// +8 kB added (2077→2085): reciter bios + real photos wired into audio modal,
+// surahnames font in SurahReaderHeader + CleanPageDecor, audio player UI polish.
+const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 2090);
 const MAX_SINGLE_CSS_KB = Number(process.env.BUDGET_SINGLE_CSS_KB || 780);
 const MAX_SINGLE_JS_KB = Number(process.env.BUDGET_SINGLE_JS_KB || 250);
 
