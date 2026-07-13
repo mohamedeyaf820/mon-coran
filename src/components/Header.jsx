@@ -578,22 +578,28 @@ export default function Header() {
                 </span>
               </div>
 
-              {cleanQuickItems.map((item) => (
-                <button
-                  key={item.key}
-                  className="mp-header-menu__item"
-                  type="button"
-                  onClick={() => {
-                    item.action();
-                    setQuickMenuOpen(false);
-                  }}
-                >
-                  <span className="mp-header-menu__item-icon">
-                    <item.Icon size={15} strokeWidth={2} />
-                  </span>
-                  <span>{item.label}</span>
-                </button>
-              ))}
+              <div className="mp-header-menu__section">
+                {cleanQuickItems.map((item) => (
+                  <button
+                    key={item.key}
+                    data-key={item.key}
+                    className="mp-header-menu__item"
+                    type="button"
+                    onClick={() => {
+                      item.action();
+                      setQuickMenuOpen(false);
+                    }}
+                  >
+                    <span className="mp-header-menu__item-icon">
+                      <item.Icon size={15} strokeWidth={2} />
+                    </span>
+                    <span>{item.label}</span>
+                    {item.key === "search" && (
+                      <kbd className="mp-header-menu__item-kbd">/</kbd>
+                    )}
+                  </button>
+                ))}
+              </div>
 
               <div className="mp-header-menu__riwaya">
                 <div className="mp-header-menu__riwaya-label">
@@ -605,6 +611,7 @@ export default function Header() {
                       key={id}
                       className={cn("mp-header__seg", riwaya === id && "is-active")}
                       type="button"
+                      aria-pressed={riwaya === id}
                       onClick={() => {
                         set({ riwaya: id });
                         setQuickMenuOpen(false);
