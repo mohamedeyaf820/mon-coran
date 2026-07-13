@@ -1,4 +1,22 @@
 import { useState } from "react";
+import {
+  AlignJustify,
+  BookOpen,
+  Mic2,
+  Radio,
+  Search,
+  X,
+  SortDesc,
+  SortAsc,
+  LayoutGrid,
+  List,
+  Star,
+  Play,
+  ChevronLeft,
+  ChevronRight,
+  CirclePlay,
+  ArrowDown,
+} from "lucide-react";
 import { cn } from "../../lib/utils";
 import { JUZ_DATA } from "../../data/juz";
 import { THEMATIC_STATIONS } from "../../services/StationService";
@@ -152,7 +170,7 @@ export default function ContentSection({
             onClick={() => onSelectTab("surah")}
             onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("juz"); if (e.key === "ArrowLeft") onSelectTab("radio"); }}
           >
-            <i className="fas fa-align-justify text-[0.85em] opacity-70" />
+            <AlignJustify size={13} className="opacity-70" />
             {t("home.surahs", lang)}
           </button>
           <button
@@ -166,7 +184,7 @@ export default function ContentSection({
             onClick={() => onSelectTab("juz")}
             onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("recitations"); if (e.key === "ArrowLeft") onSelectTab("surah"); }}
           >
-            <i className="fas fa-book-open text-[0.85em] opacity-70" />
+            <BookOpen size={13} className="opacity-70" />
             {t("home.juz", lang)}
           </button>
           <button
@@ -181,7 +199,7 @@ export default function ContentSection({
             onClick={() => onSelectTab("recitations")}
             onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("radio"); if (e.key === "ArrowLeft") onSelectTab("juz"); }}
           >
-            <i className="fas fa-microphone-lines text-[0.85em] opacity-70" />
+            <Mic2 size={13} className="opacity-70" />
             {t("home.recitations", lang)}
           </button>
           <button
@@ -195,7 +213,7 @@ export default function ContentSection({
             onClick={() => onSelectTab("radio")}
             onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("surah"); if (e.key === "ArrowLeft") onSelectTab("recitations"); }}
           >
-            <i className="fas fa-broadcast-tower text-[0.85em] opacity-70" />
+            <Radio size={13} className="opacity-70" />
             {t("home.radio", lang)}
           </button>
         </div>
@@ -203,7 +221,7 @@ export default function ContentSection({
         {/* Recherche */}
         {(activeTab === "surah" || activeTab === "recitations") && (
           <div className="relative flex flex-1 items-center w-full min-w-[200px]">
-            <i className="fas fa-magnifying-glass absolute left-3.5 text-[0.9rem] text-text-muted" />
+            <Search size={14} className="absolute left-3.5 text-text-muted" />
             <input
               className="h-11 w-full rounded-xl border border-border/70 bg-bg-secondary pl-10 pr-10 text-[0.85rem] sm:text-[0.9rem] text-text-primary outline-none transition-colors focus:border-primary focus:bg-bg-primary focus:ring-1 focus:ring-primary"
               placeholder={
@@ -222,7 +240,7 @@ export default function ContentSection({
                 onClick={() => onFilterChange("")}
                 aria-label={t("home.clearSearch", lang)}
               >
-                <i className="fas fa-xmark" />
+                <X size={13} />
               </button>
             )}
           </div>
@@ -242,9 +260,7 @@ export default function ContentSection({
                 title={sortDir === "asc" ? t("home.sortDesc", lang) : t("home.sortAsc", lang)}
                 aria-label={sortDir === "asc" ? t("home.sortDesc", lang) : t("home.sortAsc", lang)}
               >
-                <i
-                  className={`fas fa-sort-${sortDir === "asc" ? "down" : "up"} text-[1.1rem]`}
-                />
+                {sortDir === "asc" ? <SortDesc size={17} /> : <SortAsc size={17} />}
               </button>
             )}
             {(activeTab === "surah" || activeTab === "juz") && (
@@ -261,7 +277,7 @@ export default function ContentSection({
                   aria-label={t("home.grid", lang)}
                   aria-pressed={viewMode === "grid"}
                 >
-                  <i className="fas fa-grip" />
+                  <LayoutGrid size={14} />
                 </button>
                 <button
                   type="button"
@@ -275,7 +291,7 @@ export default function ContentSection({
                   aria-label={t("home.list", lang)}
                   aria-pressed={viewMode === "list"}
                 >
-                  <i className="fas fa-list" />
+                  <List size={14} />
                 </button>
               </div>
             )}
@@ -449,7 +465,7 @@ export default function ContentSection({
                         aria-label={isFavorite ? t("home.removeFavorite", lang) : t("home.addFavorite", lang)}
                         aria-pressed={isFavorite}
                       >
-                        <i className={`fas fa-star text-[0.6rem]`} />
+                        <Star size={10} />
                       </button>
                       {/* Écouter */}
                       <button
@@ -457,10 +473,10 @@ export default function ContentSection({
                         type="button"
                         onClick={() => playReciterRadio(reciter)}
                       >
-                        <i className="fas fa-play text-[0.6rem]" />
+                        <Play size={10} />
                         <span className="hidden sm:inline">{lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen"}</span>
                       </button>
-                      <i className={`fas fa-chevron-${lang === "ar" ? "left" : "right"} text-[0.65rem] text-text-muted`} />
+                      {lang === "ar" ? <ChevronLeft size={11} className="text-text-muted" /> : <ChevronRight size={11} className="text-text-muted" />}
                     </div>
                   </button>
                 );
@@ -510,7 +526,7 @@ export default function ContentSection({
                   </span>
                 </div>
                 <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-bg-primary border border-border text-text-muted transition-all hover:bg-primary hover:text-white hover:border-primary shrink-0">
-                  <i className="fas fa-circle-play text-[0.8rem] sm:text-[0.9rem] pl-[1px]" />
+                  <CirclePlay size={14} className="pl-[1px]" />
                 </div>
               </button>
             ))}
@@ -569,7 +585,7 @@ export default function ContentSection({
                     </span>
                   </div>
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-bg-primary text-text-muted transition-all hover:border-primary hover:bg-primary hover:text-white sm:h-10 sm:w-10">
-                    <i className="fas fa-circle-play pl-[1px] text-[0.9rem]" />
+                    <CirclePlay size={14} className="pl-[1px]" />
                   </div>
                 </button>
               );
@@ -615,7 +631,7 @@ export default function ContentSection({
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[0.8rem] font-semibold border border-border bg-bg-secondary text-text-primary transition-colors hover:bg-bg-tertiary"
             onClick={resumeListening}
           >
-            <i className="fas fa-play text-primary text-[0.65rem]" />
+            <Play size={11} className="text-primary" />
             {lang === "fr"
               ? "Reprendre l'écoute"
               : lang === "ar"
@@ -636,7 +652,7 @@ export default function ContentSection({
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-bg-secondary text-text-primary font-bold transition-all hover:-translate-y-0.5 hover:bg-bg-tertiary"
             onClick={loadMoreSurahs}
           >
-            <i className="fas fa-arrow-down text-[0.9rem]" />
+            <ArrowDown size={14} />
             <span className="text-[0.9rem]">
               {lang === "ar"
                 ? "تحميل المزيد من السور"

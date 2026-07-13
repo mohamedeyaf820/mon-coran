@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
+import { X, Search, ArrowLeft, ArrowRight } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import SURAHS, { toAr } from "../data/surahs";
@@ -113,7 +114,7 @@ export default function Sidebar() {
                   lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
                 }
               >
-                <i className="fas fa-times text-[0.7rem]" />
+                <X size={11} />
               </button>
               {activeSummary && (
                 <span className="truncate text-[0.72rem] font-semibold text-primary">
@@ -170,7 +171,7 @@ export default function Sidebar() {
                   className="absolute right-1.5 flex h-5 w-5 items-center justify-center rounded text-[0.65rem] text-text-muted hover:bg-bg-tertiary hover:text-text-primary"
                   onClick={() => setFilter("")}
                 >
-                  <i className="fas fa-times" />
+                  <X size={10} />
                 </button>
               )}
             </div>
@@ -182,7 +183,7 @@ export default function Sidebar() {
           {/* ── Section sourates ── */}
           {tab === "surah" && filter && filteredSurahs.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-text-muted opacity-60 gap-3">
-              <i className="fas fa-magnifying-glass text-2xl" />
+              <Search size={24} />
               <p className="text-[0.9rem] font-medium">
                 {lang === "fr"
                   ? "Aucune sourate trouvée"
@@ -342,7 +343,7 @@ export default function Sidebar() {
                         : "Go to page"
                   }
                 >
-                  <i className={`fas fa-arrow-${isRtl ? "left" : "right"}`} />
+                  {isRtl ? <ArrowLeft size={12} /> : <ArrowRight size={12} />}
                 </button>
               </div>
               <div className="flex items-center px-1 text-[0.65rem] font-bold text-text-muted uppercase tracking-wide">

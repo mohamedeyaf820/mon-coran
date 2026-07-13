@@ -11,24 +11,43 @@ export default function ProgressBar() {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const target = getScrollTarget();
-    if (!target) return undefined;
+    let target = getScrollTarget();
+    let cleanup = null;
 
-    const updateProgress = () => {
-      const scrollTop =
-        target === document.scrollingElement || target === document.documentElement
-          ? window.scrollY || target.scrollTop
-          : target.scrollTop;
-      const maxScroll = Math.max(1, target.scrollHeight - target.clientHeight);
-      setProgress(Math.min(100, Math.max(0, (scrollTop / maxScroll) * 100)));
+    function subscribe(t) {
+      if (cleanup) cleanup();
+      target = t;
+      const updateProgress = () => {
+        const scrollTop =
+          target === document.scrollingElement || target === document.documentElement
+            ? window.scrollY || target.scrollTop
+            : target.scrollTop;
+        const maxScroll = Math.max(1, target.scrollHeight - target.clientHeight);
+        setProgress(Math.min(100, Math.max(0, (scrollTop / maxScroll) * 100)));
+      };
+      updateProgress();
+      target.addEventListener("scroll", updateProgress, { passive: true });
+      window.addEventListener("resize", updateProgress, { passive: true });
+      cleanup = () => {
+        target.removeEventListener("scroll", updateProgress);
+        window.removeEventListener("resize", updateProgress);
+      };
+    }
+
+    if (target) subscribe(target);
+
+    const handleNav = () => {
+      const newTarget = getScrollTarget();
+      if (newTarget) subscribe(newTarget);
     };
 
-    updateProgress();
-    target.addEventListener("scroll", updateProgress, { passive: true });
-    window.addEventListener("resize", updateProgress, { passive: true });
+    window.addEventListener("hashchange", handleNav);
+    window.addEventListener("popstate", handleNav);
+
     return () => {
-      target.removeEventListener("scroll", updateProgress);
-      window.removeEventListener("resize", updateProgress);
+      if (cleanup) cleanup();
+      window.removeEventListener("hashchange", handleNav);
+      window.removeEventListener("popstate", handleNav);
     };
   }, []);
 

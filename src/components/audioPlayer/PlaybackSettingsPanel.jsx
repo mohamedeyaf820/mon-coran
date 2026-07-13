@@ -1,4 +1,5 @@
 import React from "react";
+import { Gauge, Volume2, VolumeX, Volume1, Square, VolumeOff } from "lucide-react";
 import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 
@@ -135,7 +136,7 @@ export default function PlaybackSettingsPanel(props) {
             aria-label={`${labels.speed} ${audioSpeed}x`}
           >
             <span className="flex items-center gap-2">
-              <i className="fas fa-gauge-high text-[0.62rem]" />
+              <Gauge size={10} />
               {labels.speed}
             </span>
             <span>{audioSpeed}x</span>
@@ -201,9 +202,7 @@ export default function PlaybackSettingsPanel(props) {
             className="audio-settings-icon-btn h-8 w-8 shrink-0 rounded-lg border border-white/12 bg-white/[0.06] text-[0.8rem] text-[rgba(132,205,228,0.9)] transition-colors duration-150 hover:bg-[rgba(110,204,233,0.14)]"
             aria-label={labels.mute}
           >
-            <i
-              className={`fas ${volume === 0 ? "fa-volume-xmark" : volume < 0.5 ? "fa-volume-low" : "fa-volume-high"}`}
-            />
+            {volume === 0 ? <VolumeOff size={13} /> : volume < 0.5 ? <Volume1 size={13} /> : <Volume2 size={13} />}
           </button>
           <input
             type="range"
@@ -298,7 +297,7 @@ export default function PlaybackSettingsPanel(props) {
           onClick={stop}
           className={cn(playerSurfaceButtonClass, "px-4 py-2 text-[0.68rem] font-semibold")}
         >
-          <i className="fas fa-stop mr-1" />
+          <Square size={10} className="mr-1" />
           {t("audio.stop", lang)}
         </button>
         <button

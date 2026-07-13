@@ -47,11 +47,12 @@ function localText(lang, fr, en, ar) {
 }
 
 function SettingsReciterAvatar({ reciter }) {
+  const [imgError, setImgError] = React.useState(false);
   const visual = getReciterVisual(reciter);
-  if (visual.type === "photo") {
+  if (visual.type === "photo" && !imgError) {
     return (
       <span className="settings-reciter-avatar settings-reciter-avatar--photo">
-        <img src={visual.photo} alt="" loading="lazy" />
+        <img src={visual.photo} alt="" loading="lazy" onError={() => setImgError(true)} />
       </span>
     );
   }

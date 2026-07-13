@@ -919,7 +919,7 @@ const QURAN_RECITER_IMAGE_BASE = "https://static.qurancdn.com/images/reciters/";
 const quranPhoto = (path) => `${QURAN_RECITER_IMAGE_BASE}${path}`;
 
 export const RECITER_PHOTOS_MAP = {
-  "ar.alafasy": quranPhoto("6/mishary-rashid-alafasy-profile.jpeg"),
+  "ar.alafasy": quranPhoto("6/mishary-al-afasy-profile.jpg"),
   "ar.abdulbasitmurattal": quranPhoto("1/abdelbasset-profile.jpeg"),
   "ar.abdulbasitmujawwad": quranPhoto("1/abdelbasset-profile.jpeg"),
   "ar.husary": quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),

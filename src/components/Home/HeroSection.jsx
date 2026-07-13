@@ -1,3 +1,4 @@
+import { Feather, CirclePlay, BookOpen, HandHeart, Bookmark, StickyNote, ChevronLeft, ChevronRight } from "lucide-react";
 import SURAHS from "../../data/surahs";
 import { cn } from "../../lib/utils";
 import PlatformLogo from "../PlatformLogo";
@@ -76,10 +77,7 @@ export default function HeroSection({
                 MushafPlus
               </h1>
               <span className="mt-1 inline-flex items-center gap-1.5 text-[0.75rem] font-semibold text-text-muted">
-                <i
-                  className="fas fa-feather-pointed text-primary text-[0.6rem]"
-                  aria-hidden="true"
-                />
+                <Feather size={10} className="text-primary" aria-hidden="true" />
                 {riwayaLabel}
               </span>
             </div>
@@ -96,10 +94,7 @@ export default function HeroSection({
               onClick={hasReadingHistory ? continueReading : () => goSurah(1)}
               type="button"
             >
-              <i
-                className={`fas ${hasReadingHistory ? "fa-circle-play" : "fa-book-open"} text-[0.95rem]`}
-                aria-hidden="true"
-              />
+              {hasReadingHistory ? <CirclePlay size={15} aria-hidden="true" /> : <BookOpen size={15} aria-hidden="true" />}
               <span className="truncate">
                 {hasReadingHistory ? t("continueReading") : startReadingLabel}
               </span>
@@ -110,10 +105,7 @@ export default function HeroSection({
               onClick={openDuas}
               type="button"
             >
-              <i
-                className="fas fa-hands-praying text-primary"
-                aria-hidden="true"
-              />
+              <HandHeart size={14} className="text-primary" aria-hidden="true" />
               <span>{t("duas")}</span>
             </button>
           </div>
@@ -165,7 +157,7 @@ export default function HeroSection({
                           type="button"
                         >
                           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-primary text-primary shadow-sm">
-                            <i className="fas fa-bookmark" aria-hidden="true" />
+                            <Bookmark size={14} aria-hidden="true" />
                           </span>
                           <div className="flex min-w-0 flex-1 flex-col">
                             <span
@@ -200,10 +192,7 @@ export default function HeroSection({
                           type="button"
                         >
                           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-primary text-gold shadow-sm">
-                            <i
-                              className="fas fa-note-sticky"
-                              aria-hidden="true"
-                            />
+                            <StickyNote size={14} aria-hidden="true" />
                           </span>
                           <div className="min-w-0 flex-1">
                             <span className="block truncate text-[0.82rem] font-semibold text-text-primary">
@@ -255,10 +244,7 @@ export default function HeroSection({
                             {s.ar}
                           </span>
                         </div>
-                        <i
-                          className={`fas fa-chevron-${isRtl ? "left" : "right"} text-[0.75rem] text-text-muted`}
-                          aria-hidden="true"
-                        />
+                        {isRtl ? <ChevronLeft size={12} className="text-text-muted" aria-hidden="true" /> : <ChevronRight size={12} className="text-text-muted" aria-hidden="true" />}
                       </button>
                     ))}
                   </>

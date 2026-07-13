@@ -16,6 +16,7 @@ import {
   buildAudioPlaylistForSurah,
   normalizeAyahsForAudioPlaylist,
 } from "../utils/audioPlaylist";
+import { List, X, Loader2, Plus, Music, Play, PenLine, Trash2, ArrowLeft, AudioWaveform, Volume2 } from "lucide-react";
 
 export default function PlaylistPanel() {
   const { state, dispatch, set } = useApp();
@@ -158,7 +159,7 @@ export default function PlaylistPanel() {
                       : "Listening"}
                 </div>
                 <h2 className="modal-title" id={titleId}>
-                  <i className="fas fa-list"></i>
+                  <List size={16} />
                   {t("playlist.title", lang)}
                 </h2>
                 <div className="modal-subtitle">
@@ -176,14 +177,14 @@ export default function PlaylistPanel() {
                   lang === "fr" ? "Fermer les playlists" : "Close playlists"
                 }
               >
-                <i className="fas fa-times"></i>
+                <X size={16} />
               </button>
             </div>
 
             <div className="modal-body modal-body--flush !max-h-[70vh] !overflow-auto !px-3 !pb-3 sm:!px-4 sm:!pb-4">
               {loading ? (
                 <div className="wird-loading">
-                  <i className="fas fa-spinner fa-spin"></i>
+                  <Loader2 size={16} className="animate-spin" />
                 </div>
               ) : !selectedId ? (
                 <div className="panel-scroll">
@@ -204,13 +205,13 @@ export default function PlaylistPanel() {
                         lang === "fr" ? "Créer la playlist" : "Create playlist"
                       }
                     >
-                      <i className="fas fa-plus"></i>
+                      <Plus size={16} />
                     </button>
                   </div>
 
                   {playlists.length === 0 ? (
                     <div className="modal-empty">
-                      <i className="fas fa-music"></i>
+                      <Music size={24} />
                       <div>
                         {t("playlist.empty", lang)}{" "}
                         {lang === "fr"
@@ -231,7 +232,7 @@ export default function PlaylistPanel() {
                           >
                             <div className="modal-item-shell">
                               <span className="modal-item-icon">
-                                <i className="fas fa-music"></i>
+                                <Music size={16} />
                               </span>
                               <div>
                                 {editing === pl.id ? (
@@ -274,7 +275,7 @@ export default function PlaylistPanel() {
                                     : "Play playlist"
                                 }
                               >
-                                <i className="fas fa-play"></i>
+                                <Play size={16} />
                               </button>
                             )}
                             <button
@@ -290,7 +291,7 @@ export default function PlaylistPanel() {
                                   : "Rename playlist"
                               }
                             >
-                              <i className="fas fa-pen"></i>
+                              <PenLine size={16} />
                             </button>
                             <button
                               className="modal-action-btn modal-delete-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-red-300/20 !bg-red-500/10 !text-red-100 hover:!bg-red-500/20"
@@ -302,7 +303,7 @@ export default function PlaylistPanel() {
                                   : "Delete playlist"
                               }
                             >
-                              <i className="fas fa-trash"></i>
+                              <Trash2 size={16} />
                             </button>
                           </div>
                         </div>
@@ -317,7 +318,7 @@ export default function PlaylistPanel() {
                     className="panel-back-link !inline-flex !items-center !gap-1.5 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3 !py-2 hover:!bg-white/[0.12]"
                     onClick={() => setSelectedId(null)}
                   >
-                    <i className="fas fa-arrow-left"></i>{" "}
+                    <ArrowLeft size={16} />{" "}
                     {lang === "fr" ? "Retour" : "Back"}
                   </button>
                   <h3 className="panel-section-title">{selected?.name}</h3>
@@ -327,7 +328,7 @@ export default function PlaylistPanel() {
                       className="panel-hero-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-emerald-300/20 !bg-emerald-500/10 !px-3.5 !py-2.5 !text-emerald-100 hover:!bg-emerald-500/20"
                       onClick={() => handlePlay(selected)}
                     >
-                      <i className="fas fa-play"></i>
+                      <Play size={16} />
                       {lang === "fr"
                         ? "Écouter tout en boucle"
                         : "Play all in loop"}
@@ -336,7 +337,7 @@ export default function PlaylistPanel() {
 
                   {!selected || selected.ayahs.length === 0 ? (
                     <div className="modal-empty">
-                      <i className="fas fa-wave-square"></i>
+                      <AudioWaveform size={24} />
                       <div>
                         {lang === "fr"
                           ? "Aucun verset dans cette playlist. Ajoutez des versets depuis le menu d'actions d'un verset."
@@ -391,12 +392,9 @@ export default function PlaylistPanel() {
                                 }
                               >
                                 {isActive && (
-                                  <i
-                                    className="fas fa-volume-up"
-                                    style={{
-                                      marginInlineEnd: "0.35em",
-                                      fontSize: "0.6em",
-                                    }}
+                                  <Volume2
+                                    size={10}
+                                    style={{ marginInlineEnd: "0.35em" }}
                                   />
                                 )}
                                 {lang === "fr"
@@ -425,7 +423,7 @@ export default function PlaylistPanel() {
                                     : "Remove verse"
                                 }
                               >
-                                <i className="fas fa-times"></i>
+                                <X size={16} />
                               </button>
                             </div>
                           </div>

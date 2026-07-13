@@ -32,6 +32,13 @@ import {
   getReciterCooldownMs,
 } from "./audioPlayer/audioPlayerUtils";
 import { usePlayerDragPosition } from "./audioPlayer/usePlayerDragPosition";
+import {
+  Play, Pause, SkipBack, SkipForward, Square, SlidersHorizontal,
+  Expand, X, ChevronDown, ChevronUp, MapPin, Minimize2,
+  Search, Star, Check, Disc3, AlertCircle,
+  Mic, AudioWaveform, Volume2, Volume1, VolumeOff,
+  Flag, Loader2,
+} from "lucide-react";
 
 /* Main component */
 export default function AudioPlayer() {
@@ -1222,7 +1229,7 @@ export default function AudioPlayer() {
               aria-label={playPauseLabel}
               aria-pressed={isPlaying}
             >
-              <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`} />
+              {isPlaying ? <Pause size={13} /> : <Play size={13} className="translate-x-px" />}
             </button>
             <button
               className={cn(
@@ -1235,7 +1242,7 @@ export default function AudioPlayer() {
               title={optionsLabel}
               aria-label={optionsLabel}
             >
-              <i className="fas fa-sliders" />
+              <SlidersHorizontal size={13} />
             </button>
             <button
               className={cn(
@@ -1246,7 +1253,7 @@ export default function AudioPlayer() {
               title={expandLabel}
               aria-label={expandLabel}
             >
-              <i className="fas fa-expand-alt" />
+              <Expand size={13} />
             </button>
             <button
               className={cn(
@@ -1257,7 +1264,7 @@ export default function AudioPlayer() {
               title={closeLabel}
               aria-label={closeLabel}
             >
-              <i className="fas fa-times" />
+              <X size={13} />
             </button>
           </div>
           {audioOptionsModal}
@@ -1286,7 +1293,7 @@ export default function AudioPlayer() {
             title={minimizeLabel}
             aria-label={minimizeLabel}
           >
-            <i className="fas fa-chevron-down" />
+            <ChevronDown size={13} />
           </button>
           <div className="mp-player-mobile-brand flex min-w-0 items-center gap-2 px-2">
             <div className="h-1 w-9 rounded-full bg-[linear-gradient(90deg,rgba(var(--theme-primary-rgb),0.18),rgba(var(--theme-primary-rgb),0.95),rgba(var(--theme-primary-rgb),0.18))]" />
@@ -1300,7 +1307,7 @@ export default function AudioPlayer() {
             title={closeLabel}
             aria-label={closeLabel}
           >
-            <i className="fas fa-times" />
+            <X size={13} />
           </button>
         </div>
 
@@ -1382,7 +1389,7 @@ export default function AudioPlayer() {
               title={t("audio.prev", lang)}
               aria-label={t("audio.prev", lang)}
             >
-              <i className="fas fa-step-backward" />
+              <SkipBack size={13} />
             </button>
 
             <button
@@ -1395,9 +1402,7 @@ export default function AudioPlayer() {
               aria-label={playPauseLabel}
               aria-pressed={isPlaying}
             >
-              <i
-                className={`fas ${isPlaying ? "fa-pause" : "fa-play"} ${isPlaying ? "" : "translate-x-px"}`}
-              />
+              {isPlaying ? <Pause size={13} /> : <Play size={13} className="translate-x-px" />}
             </button>
 
             <button
@@ -1409,7 +1414,7 @@ export default function AudioPlayer() {
               title={t("audio.next", lang)}
               aria-label={t("audio.next", lang)}
             >
-              <i className="fas fa-step-forward" />
+              <SkipForward size={13} />
             </button>
 
             <button
@@ -1421,7 +1426,7 @@ export default function AudioPlayer() {
               title={t("audio.stop", lang)}
               aria-label={t("audio.stop", lang)}
             >
-              <i className="fas fa-stop" />
+              <Square size={13} />
             </button>
           </div>
 
@@ -1461,7 +1466,7 @@ export default function AudioPlayer() {
                       : "More options"
               }
             >
-              <i className="fas fa-sliders" />
+              <SlidersHorizontal size={13} />
             </button>
           </div>
         </div>
@@ -1477,7 +1482,7 @@ export default function AudioPlayer() {
             {/* Inline audio error */}
             {audioError && (
               <div className="mb-3 flex items-center gap-2 rounded-xl border border-rose-300/30 bg-rose-500/10 px-3 py-2 text-[0.66rem] text-rose-100">
-                <i className="fas fa-exclamation-circle shrink-0" />
+                <AlertCircle size={14} className="shrink-0" />
                 <span className="truncate">{audioError}</span>
                 <button
                   className="ml-auto rounded-full border border-rose-200/35 bg-white/10 px-2 py-0.5 text-[0.6rem] font-semibold text-rose-50 transition-colors hover:bg-white/20"
@@ -1513,13 +1518,13 @@ export default function AudioPlayer() {
                 </span>
                 {warshStrictMode && (
                   <span className="inline-flex items-center gap-1 rounded-full border border-[rgba(212,168,32,0.3)] bg-[rgba(212,168,32,0.14)] px-2 py-[0.1875rem] text-[0.6rem] font-bold text-[#f5d785]">
-                    <i className="fas fa-check text-[0.48rem]" />
+                    <Check size={9} />
                     {warshVerifiedLabel}
                   </span>
                 )}
                 {isSurahStreamReciter && (
                   <span className="inline-flex items-center gap-1 rounded-full border border-fuchsia-300/30 bg-fuchsia-300/12 px-2 py-[0.1875rem] text-[0.6rem] font-bold text-fuchsia-100">
-                    <i className="fas fa-compact-disc text-[0.48rem]" />
+                    <Disc3 size={9} />
                     {lang === "fr"
                       ? "Lecture sourate complète"
                       : lang === "ar"
@@ -1550,7 +1555,7 @@ export default function AudioPlayer() {
               {/* Search box */}
               {currentReciters.length > 4 && (
                 <div className="relative mb-1.5">
-                  <i className="fas fa-search pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[0.5rem] text-[rgba(240,234,214,0.3)]" />
+                  <Search size={8} className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[rgba(240,234,214,0.3)]" />
                   <input
                     type="text"
                     value={reciterSearch}
@@ -1565,7 +1570,7 @@ export default function AudioPlayer() {
                       onClick={() => setReciterSearch("")}
                       className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[0.45rem] text-[rgba(240,234,214,0.35)]"
                     >
-                      <i className="fas fa-times" />
+                      <X size={13} />
                     </button>
                   )}
                 </div>
@@ -1683,9 +1688,7 @@ export default function AudioPlayer() {
                         : "Unmute"
                 }
               >
-                <i
-                  className={`fas ${volume === 0 ? "fa-volume-xmark" : volume < 0.5 ? "fa-volume-low" : "fa-volume-high"}`}
-                />
+                {volume === 0 ? <VolumeOff size={13} /> : volume < 0.5 ? <Volume1 size={13} /> : <Volume2 size={13} />}
               </button>
               <input
                 type="range"
@@ -1762,7 +1765,7 @@ export default function AudioPlayer() {
                 onClick={closePlayer}
                 title={lang === "fr" ? "Fermer le lecteur" : "Close player"}
               >
-                <i className="fas fa-times text-[0.6rem]" />
+                <X size={10} />
                 {lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
               </button>
             </div>
@@ -1781,16 +1784,14 @@ export default function AudioPlayer() {
                     )}
                   >
                     <span className="flex items-center gap-1">
-                      <i className="fas fa-sliders text-[0.48rem]" />
+                      <SlidersHorizontal size={9} />
                       {lang === "fr"
                         ? "Options"
                         : lang === "ar"
                           ? "خيارات"
                           : "Options"}
                     </span>
-                    <i
-                      className={`fas fa-chevron-${showAdvanced ? "up" : "down"} text-[0.48rem]`}
-                    />
+                    {showAdvanced ? <ChevronUp size={9} /> : <ChevronDown size={9} />}
                   </button>
                 </div>
                 {showAdvanced && (
@@ -1819,7 +1820,7 @@ export default function AudioPlayer() {
                             onClick={clearAb}
                             className={cn(mBarBtnSm(), "px-2 py-1")}
                           >
-                            <i className="fas fa-times" />
+                            <X size={13} />
                           </button>
                         )}
                       </div>
@@ -1877,7 +1878,7 @@ export default function AudioPlayer() {
                         )}
                         aria-pressed={tartilMode}
                       >
-                        <i className="fas fa-wave-square text-[0.6rem]" />
+                        <AudioWaveform size={10} />
                         {lang === "fr"
                           ? "Tartil"
                           : lang === "ar"
@@ -1893,9 +1894,7 @@ export default function AudioPlayer() {
                           "flex-1 gap-1 justify-center",
                         )}
                       >
-                        <i
-                          className={`fas ${reciteMode ? "fa-stop" : "fa-microphone"} text-[0.6rem]`}
-                        />
+                        {reciteMode ? <Square size={10} /> : <Mic size={10} />}
                         {lang === "fr"
                         ? "Réciter"
                           : lang === "ar"
@@ -1929,7 +1928,7 @@ export default function AudioPlayer() {
       {/* Audio error banner */}
       {audioError && (
         <div className="pointer-events-none fixed left-1/2 z-[400] flex max-w-[340px] -translate-x-1/2 items-center gap-2 rounded-xl bg-[rgba(180,30,30,0.93)] px-[18px] py-[10px] text-center text-[13px] text-white shadow-[0_4px_20px_rgba(0,0,0,0.4)] animate-[slideDownFade_0.25s_var(--ease,ease)]" style={{ top: "calc(var(--header-h, 72px) + 0.5rem)" }}>
-          <i className="fas fa-exclamation-circle shrink-0" />
+          <AlertCircle size={14} className="shrink-0" />
           <span>{audioError}</span>
         </div>
       )}
@@ -2030,7 +2029,7 @@ export default function AudioPlayer() {
                 aria-pressed={isPlaying}
                 className={cn(playerPrimaryBtnClass, "h-11 w-11")}
               >
-                <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`} />
+                {isPlaying ? <Pause size={13} /> : <Play size={13} className="translate-x-px" />}
               </button>
               <IconBtn
                 className="mp-player-options-trigger"
@@ -2044,7 +2043,7 @@ export default function AudioPlayer() {
                 }
                 size="sm"
               >
-                <i className="fas fa-sliders" />
+                <SlidersHorizontal size={13} />
               </IconBtn>
               <IconBtn
                 onClick={toggleMinimized}
@@ -2057,7 +2056,7 @@ export default function AudioPlayer() {
                 }
                 size="sm"
               >
-                <i className="fas fa-expand-alt" />
+                <Expand size={13} />
               </IconBtn>
               <IconBtn
                 onClick={closePlayer}
@@ -2066,7 +2065,7 @@ export default function AudioPlayer() {
                 }
                 size="sm"
               >
-                <i className="fas fa-times" />
+                <X size={13} />
               </IconBtn>
             </div>
             <div className="px-3.5 pb-3">
@@ -2105,7 +2104,7 @@ export default function AudioPlayer() {
                 title={minimizeLabel}
                 aria-label={minimizeLabel}
               >
-                <i className="fas fa-chevron-down text-xs" />
+                <ChevronDown size={12} />
               </button>
               <button
                 className={cn(playerUtilityClass, " h-6 w-6")}
@@ -2115,7 +2114,7 @@ export default function AudioPlayer() {
                 aria-controls="audio-options-modal-title"
                 aria-expanded={optionsModalOpen}
               >
-                <i className="fas fa-sliders text-xs" />
+                <SlidersHorizontal size={12} />
               </button>
               <div className="flex items-center gap-1.5">
                 <div className="h-1 w-8 rounded-full bg-[linear-gradient(90deg,rgba(var(--theme-primary-rgb),0.18),rgba(var(--theme-primary-rgb),0.95),rgba(var(--theme-primary-rgb),0.18))]" />
@@ -2129,7 +2128,7 @@ export default function AudioPlayer() {
                 title={closeLabel}
                 aria-label={closeLabel}
               >
-                <i className="fas fa-times text-xs" />
+                <X size={12} />
               </button>
             </div>
 
@@ -2231,7 +2230,7 @@ export default function AudioPlayer() {
                       }
                       size="sm"
                     >
-                      <i className="fas fa-map-pin" />
+                      <MapPin size={13} />
                     </IconBtn>
                   )}
                   <IconBtn
@@ -2245,7 +2244,7 @@ export default function AudioPlayer() {
                     }
                     size="sm"
                   >
-                    <i className="fas fa-window-minimize" />
+                    <Minimize2 size={13} />
                   </IconBtn>
                 </div>
               </div>
@@ -2307,7 +2306,7 @@ export default function AudioPlayer() {
                 </button>
 
                 <IconBtn onClick={prev} title={t("audio.prev", lang)}>
-                  <i className="fas fa-step-backward" />
+                  <SkipBack size={13} />
                 </IconBtn>
 
                 {/* Play / Pause */}
@@ -2327,15 +2326,15 @@ export default function AudioPlayer() {
                       : "shadow-[0_6px_16px_rgba(0,0,0,0.24)]",
                   )}
                 >
-                  <i className={`fas ${isPlaying ? "fa-pause" : "fa-play"}`} />
+                  {isPlaying ? <Pause size={13} /> : <Play size={13} className="translate-x-px" />}
                 </button>
 
                 <IconBtn onClick={next} title={t("audio.next", lang)}>
-                  <i className="fas fa-step-forward" />
+                  <SkipForward size={13} />
                 </IconBtn>
 
                 <IconBtn onClick={stop} title={t("audio.stop", lang)}>
-                  <i className="fas fa-stop" />
+                  <Square size={13} />
                 </IconBtn>
               </div>
 
@@ -2352,9 +2351,7 @@ export default function AudioPlayer() {
                   title={volumeLabel}
                   aria-label={volumeLabel}
                 >
-                  <i
-                    className={`fas ${volume === 0 ? "fa-volume-xmark" : volume < 0.5 ? "fa-volume-low" : "fa-volume-high"}`}
-                  />
+                  {volume === 0 ? <VolumeOff size={13} /> : volume < 0.5 ? <Volume1 size={13} /> : <Volume2 size={13} />}
                 </button>
                 <input
                   type="range"
@@ -2385,7 +2382,7 @@ export default function AudioPlayer() {
                 aria-expanded={optionsModalOpen}
                 className="mp-player-options-trigger flex w-full items-center justify-center gap-1.5 rounded-xl border border-white/12 bg-white/[0.05] py-1.5 text-[0.63rem] text-[rgba(230,219,198,0.62)] transition-all duration-150 [font-family:var(--font-ui)] hover:border-[rgba(110,204,233,0.38)] hover:bg-[rgba(110,204,233,0.1)] hover:text-[rgba(240,250,255,0.95)]"
               >
-                <i className="fas fa-sliders text-[0.55rem]" />
+                <SlidersHorizontal size={10} />
                 {optionsModalOpen
                   ? lang === "fr"
                     ? "Fermer les options"
@@ -2410,7 +2407,7 @@ export default function AudioPlayer() {
                   {/* Inline audio error */}
                   {audioError && (
                     <div className="mb-3 flex items-center gap-2 rounded-xl border border-rose-300/30 bg-rose-500/10 px-3 py-2 text-[0.66rem] text-rose-100">
-                      <i className="fas fa-exclamation-circle shrink-0" />
+                      <AlertCircle size={14} className="shrink-0" />
                       <span className="truncate">{audioError}</span>
                       <button
                         className="ml-auto rounded-full border border-rose-200/35 bg-white/10 px-2 py-0.5 text-[0.6rem] font-semibold text-rose-50 transition-colors hover:bg-white/20"
@@ -2451,7 +2448,7 @@ export default function AudioPlayer() {
                     {/* Search */}
                     {currentReciters.length > 4 && (
                       <div className="relative mb-1.5">
-                        <i className="fas fa-magnifying-glass pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[0.5rem] text-[rgba(240,234,214,0.3)]" />
+                        <Search size={8} className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-[rgba(240,234,214,0.3)]" />
                         <input
                           type="text"
                           value={reciterSearch}
@@ -2466,7 +2463,7 @@ export default function AudioPlayer() {
                             onClick={() => setReciterSearch("")}
                             className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[0.45rem] text-[rgba(240,234,214,0.35)]"
                           >
-                            <i className="fas fa-times" />
+                            <X size={13} />
                           </button>
                         )}
                       </div>
@@ -2630,16 +2627,14 @@ export default function AudioPlayer() {
                       )}
                     >
                       <span className="flex items-center gap-1.5">
-                        <i className="fas fa-sliders text-[0.5rem]" />
+                        <SlidersHorizontal size={9} />
                         {lang === "fr"
                           ? "Options"
                           : lang === "ar"
                              ? "خيارات"
                             : "Options"}
                       </span>
-                      <i
-                        className={`fas fa-chevron-${showAdvanced ? "up" : "down"} text-[0.5rem]`}
-                      />
+                      {showAdvanced ? <ChevronUp size={9} /> : <ChevronDown size={9} />}
                     </button>
                   )}
                   {showAdvancedControls && showAdvanced && (
@@ -2677,9 +2672,7 @@ export default function AudioPlayer() {
                               title={lang === "fr" ? titleFr : titleEn}
                               disabled={!hasAyahContext}
                             >
-                              <i
-                                className={`fas fa-flag${label === "A" ? "-checkered" : ""} mr-0.5 text-[0.5rem]`}
-                              />
+                              <Flag size={9} className="mr-0.5" />
                               {val
                                 ? `${label}: ${val.surah}:${val.ayah}`
                                 : label}
@@ -2690,7 +2683,7 @@ export default function AudioPlayer() {
                               onClick={clearAb}
                               className="rounded-lg border border-white/12 bg-white/[0.05] px-2 py-[0.1875rem] text-[0.65rem] text-[rgba(228,218,197,0.62)] transition-all hover:border-[rgba(110,204,233,0.4)] hover:bg-[rgba(110,204,233,0.1)]"
                             >
-                              <i className="fas fa-times" />
+                              <X size={13} />
                             </button>
                           )}
                         </div>
@@ -2759,7 +2752,7 @@ export default function AudioPlayer() {
                         aria-pressed={tartilMode}
                       >
                         <span className="flex items-center gap-2">
-                          <i className="fas fa-wave-square text-[0.6rem]" />
+                          <AudioWaveform size={10} />
                           {lang === "fr"
                             ? "Tartil progressif"
                             : lang === "ar"
@@ -2788,9 +2781,7 @@ export default function AudioPlayer() {
                         )}
                       >
                         <span className="flex items-center gap-2">
-                          <i
-                            className={`fas ${reciteMode ? "fa-stop" : "fa-microphone"} text-[0.6rem]`}
-                          />
+                          {reciteMode ? <Square size={10} /> : <Mic size={10} />}
                           {lang === "fr"
                             ? reciteMode
                               ? "Arrêter la récitation"
@@ -2835,7 +2826,7 @@ export default function AudioPlayer() {
                     )}
                     title={t("audio.stop", lang)}
                   >
-                    <i className="fas fa-stop text-[0.6rem]" />
+                    <Square size={10} />
                     {t("audio.stop", lang)}
                   </button>
                 </div>

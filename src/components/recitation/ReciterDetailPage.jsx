@@ -1,4 +1,5 @@
 import React from "react";
+import { X, List, Book, User, Info } from "lucide-react";
 import "../../styles/domains/recitation-polish.css";
 import ReciterHero from "./ReciterHero";
 import ReciterBioCollapse from "./ReciterBioCollapse";
@@ -59,7 +60,7 @@ export default function ReciterDetailPage({
             lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
           }
         >
-          <i className="fas fa-xmark text-sm" />
+          <X size={14} />
         </button>
 
         <ReciterHero reciter={reciter} lang={lang} />
@@ -67,11 +68,11 @@ export default function ReciterDetailPage({
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <ReciterRadioButton lang={lang} onClick={() => onPlayRadio(reciter)} />
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-bg-secondary/70 px-3 py-2 text-[0.72rem] font-semibold text-text-muted">
-            <i className="fas fa-list-ul text-[0.6rem]" />
+            <List size={10} />
             {audioModeLabel}
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-bg-secondary/70 px-3 py-2 text-[0.72rem] font-semibold text-text-muted">
-            <i className="fas fa-book text-[0.6rem]" />
+            <Book size={10} />
             {riwayaLabel}
           </span>
         </div>
@@ -80,7 +81,7 @@ export default function ReciterDetailPage({
       <div className="rd-scrollable-body px-5 pb-5 sm:px-6 sm:pb-6">
         <div className="reciter-detail__bio mb-5 rounded-xl border border-border bg-bg-secondary/50 p-4">
           <h4 className="mb-2 flex items-center gap-1.5 text-[0.7rem] font-semibold uppercase tracking-wide text-text-muted">
-            <i className="fas fa-user text-[0.58rem] text-primary" />
+            <User size={10} className="text-primary" />
             {lang === "fr"
               ? "Biographie"
               : lang === "ar"
@@ -93,7 +94,7 @@ export default function ReciterDetailPage({
 
           {!canDirectDownload && (
             <p className="mt-3 flex items-center gap-1.5 text-[0.7rem] text-text-muted">
-              <i className="fas fa-circle-info text-[0.6rem] text-amber-500" />
+              <Info size={10} className="text-amber-500" />
               {lang === "fr"
                 ? "Telechargement direct non disponible."
                 : lang === "ar"

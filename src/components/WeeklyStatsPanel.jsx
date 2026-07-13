@@ -7,6 +7,7 @@ import { useApp } from "../context/AppContext";
 import { getWirdHistory } from "../services/wirdService";
 import { getReadingDates } from "../services/historyService";
 import { getSurah } from "../data/surahs";
+import { X, ChevronLeft, ChevronRight, FileCode2, Loader2, ImageIcon } from "lucide-react";
 
 function padDate(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -285,7 +286,7 @@ export default function WeeklyStatsPanel() {
                 onClick={close}
                 aria-label={lang === "fr" ? "Fermer" : "Close"}
               >
-                <i className="fas fa-times"></i>
+                <X size={16} />
               </button>
             </div>
 
@@ -299,7 +300,7 @@ export default function WeeklyStatsPanel() {
                   lang === "fr" ? "Semaine precedente" : "Previous week"
                 }
               >
-                <i className="fas fa-chevron-left"></i>
+                <ChevronLeft size={16} />
               </button>
               <span className="wst-nav-label">{weekLabel}</span>
               <button
@@ -309,7 +310,7 @@ export default function WeeklyStatsPanel() {
                 disabled={weekOffset >= 0}
                 aria-label={lang === "fr" ? "Semaine suivante" : "Next week"}
               >
-                <i className="fas fa-chevron-right"></i>
+                <ChevronRight size={16} />
               </button>
             </div>
 
@@ -378,7 +379,7 @@ export default function WeeklyStatsPanel() {
                 className="wst-export-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3.5 !py-2 hover:!bg-white/[0.12]"
                 onClick={handleExportSVG}
               >
-                <i className="fas fa-file-code"></i>
+                <FileCode2 size={16} />
                 SVG
               </button>
               <button
@@ -387,9 +388,9 @@ export default function WeeklyStatsPanel() {
                 disabled={exporting}
               >
                 {exporting ? (
-                  <i className="fas fa-spinner fa-spin"></i>
+                  <Loader2 size={16} className="animate-spin" />
                 ) : (
-                  <i className="fas fa-image"></i>
+                  <ImageIcon size={16} />
                 )}
                 PNG
               </button>

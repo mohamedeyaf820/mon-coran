@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import { getReciterBio } from "../../data/reciters";
 
 export default function ReciterBioCollapse({ lang, text, reciter }) {
@@ -50,7 +51,7 @@ export default function ReciterBioCollapse({ lang, text, reciter }) {
               : lang === "ar"
                 ? "عرض المزيد"
                 : "Show more"}
-          <i className={`fas fa-chevron-${open ? "up" : "down"} text-[0.55rem]`} />
+          {open ? <ChevronUp size={9} /> : <ChevronDown size={9} />}
         </button>
       )}
     </div>

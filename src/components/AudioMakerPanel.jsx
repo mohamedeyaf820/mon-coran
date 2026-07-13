@@ -11,6 +11,7 @@ import audioService from "../services/audioService";
 import { ensureReciterForRiwaya, getReciter } from "../data/reciters";
 import { buildAudioPlaylistForSurahs } from "../utils/audioPlaylist";
 import { cn } from "../lib/utils";
+import { X, Search, Check, Trash2, Bookmark, Play, Loader2 } from "lucide-react";
 
 export default function AudioMakerPanel() {
   const { state, dispatch, set } = useApp();
@@ -164,7 +165,7 @@ export default function AudioMakerPanel() {
                 onClick={close}
                 aria-label="Close"
               >
-                <i className="fas fa-times" />
+                <X size={14} />
               </button>
             </div>
 
@@ -183,7 +184,7 @@ export default function AudioMakerPanel() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <i className="fas fa-search" />
+                <Search size={13} />
               </div>
 
               {/* Session name input */}
@@ -223,7 +224,7 @@ export default function AudioMakerPanel() {
                     >
                       <div className="audio-maker-item-checkbox">
                         {selectedSurahs.includes(surah.n) && (
-                          <i className="fas fa-check" />
+                          <Check size={11} />
                         )}
                       </div>
                       <div className="audio-maker-item-num">{surah.n}</div>
@@ -255,7 +256,7 @@ export default function AudioMakerPanel() {
                   setIsSaved(false);
                 }}
               >
-                <i className="fas fa-trash-alt" />{" "}
+                <Trash2 size={13} />{" "}
                 {lang === "fr" ? "Réinitialiser" : "Clear"}
               </button>
 
@@ -268,9 +269,7 @@ export default function AudioMakerPanel() {
                   onClick={handleSave}
                   disabled={selectedSurahs.length === 0}
                 >
-                  <i
-                    className={cn("fas", isSaved ? "fa-check" : "fa-bookmark")}
-                  />{" "}
+                  {isSaved ? <Check size={13} /> : <Bookmark size={13} />}{" "}
                   {isSaved
                     ? lang === "fr"
                       ? "Sauvegardé"
@@ -285,12 +284,7 @@ export default function AudioMakerPanel() {
                   onClick={handlePlay}
                   disabled={selectedSurahs.length === 0 || isCreating}
                 >
-                  <i
-                    className={cn(
-                      "fas",
-                      isCreating ? "fa-spinner fa-spin" : "fa-play",
-                    )}
-                  />{" "}
+                  {isCreating ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}{" "}
                   {isCreating
                     ? lang === "fr"
                       ? "Préparation..."

@@ -28,6 +28,7 @@ import { runWhenIdle } from "./utils/idleUtils";
 import { useUrlSync } from "./hooks/useUrlSync";
 import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
 import ProgressBar from "./components/ProgressBar";
+import { CheckCircle, XCircle, TriangleAlert, Info } from "lucide-react";
 
 const HomePage = lazy(() => import("./components/HomePage"));
 const Header = lazy(() => import("./components/Header"));
@@ -104,16 +105,18 @@ function Toast({ type = "info", message, onClose, autoClose = 5000 }) {
     const t = setTimeout(onClose, autoClose);
     return () => clearTimeout(t);
   }, [autoClose, onClose]);
+  const TOAST_ICONS = { success: CheckCircle, error: XCircle, warning: TriangleAlert, info: Info };
   const styles = {
-    success: { bg: "bg-emerald-50 border-emerald-200", text: "text-emerald-800", bar: "border-l-4 border-l-emerald-500", icon: { cls: "fa-circle-check", color: "text-emerald-500" } },
-    error:   { bg: "bg-red-50 border-red-200",         text: "text-red-800",     bar: "border-l-4 border-l-red-500",     icon: { cls: "fa-circle-xmark", color: "text-red-500" } },
-    warning: { bg: "bg-orange-50 border-orange-200",   text: "text-orange-800",  bar: "border-l-4 border-l-orange-500",  icon: { cls: "fa-triangle-exclamation", color: "text-amber-500" } },
-    info:    { bg: "bg-blue-50 border-blue-200",        text: "text-blue-800",    bar: "border-l-4 border-l-blue-500",    icon: { cls: "fa-circle-info", color: "text-blue-500" } },
+    success: { bg: "bg-emerald-50 border-emerald-200", text: "text-emerald-800", bar: "border-l-4 border-l-emerald-500", iconColor: "text-emerald-500" },
+    error:   { bg: "bg-red-50 border-red-200",         text: "text-red-800",     bar: "border-l-4 border-l-red-500",     iconColor: "text-red-500" },
+    warning: { bg: "bg-orange-50 border-orange-200",   text: "text-orange-800",  bar: "border-l-4 border-l-orange-500",  iconColor: "text-amber-500" },
+    info:    { bg: "bg-blue-50 border-blue-200",        text: "text-blue-800",    bar: "border-l-4 border-l-blue-500",    iconColor: "text-blue-500" },
   }[type] ?? {};
+  const ToastIcon = TOAST_ICONS[type];
   return (
     <div className={`toast-notification ${styles.bg} ${styles.bar} ${styles.text} px-4 py-3 rounded-md flex items-center justify-between gap-2 animate-fadeInScale`}>
       <div className="flex items-center gap-2 min-w-0">
-        {styles.icon && <i className={`fas ${styles.icon.cls} ${styles.icon.color} text-base shrink-0`} aria-hidden="true" />}
+        {ToastIcon && <ToastIcon size={16} className={`${styles.iconColor} shrink-0`} aria-hidden="true" />}
         <span className="text-sm font-medium">{message}</span>
       </div>
       <button onClick={onClose} className="text-lg hover:opacity-70 transition-opacity shrink-0" aria-label="Fermer">×</button>

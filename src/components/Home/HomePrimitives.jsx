@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { Play, Pause, Clock } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { toAr } from "../../data/surahs";
 import {
@@ -190,9 +191,7 @@ export const SurahCard = memo(function SurahCard({
           }}
           aria-label={playAriaLabel}
         >
-          <i
-            className={`fas fa-${isPlaying ? "pause" : "play"} text-[0.8rem]`}
-          />
+          {isPlaying ? <Pause size={13} /> : <Play size={13} className="pl-[1px]" />}
         </button>
       </div>
     );
@@ -262,9 +261,7 @@ export const SurahCard = memo(function SurahCard({
         }}
         aria-label={playAriaLabel}
       >
-        <i
-          className={`fas fa-${isPlaying ? "pause" : "play"} text-[0.8rem] sm:text-[0.9rem] pl-[1px]`}
-        />
+        {isPlaying ? <Pause size={13} /> : <Play size={13} className="pl-[1px]" />}
       </button>
     </div>
   );
@@ -359,8 +356,8 @@ export const BlogCard = memo(function BlogCard({ post, lang }) {
         <h3 className="hp-blog-title">{post.title}</h3>
         <div className="hp-blog-footer">
           <span>{post.date}</span>
-          <span>
-            <i className="far fa-clock mr-1" /> {post.readTime}
+          <span className="inline-flex items-center gap-1">
+            <Clock size={12} /> {post.readTime}
           </span>
         </div>
       </div>

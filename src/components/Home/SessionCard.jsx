@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Zap, CirclePlay, Building2, MapPin } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { PercentBar } from "./HomePrimitives";
 import {
@@ -136,7 +137,7 @@ export default function SessionCard({
         {/* ── En-tête ── */}
         <div className="flex items-center justify-between mb-[0.9rem]">
           <span className="flex items-center gap-[0.35rem] text-[0.62rem] font-[800] text-[var(--primary)] uppercase tracking-[0.1em] font-[var(--font-ui)]">
-            <i className="fas fa-bolt" />
+            <Zap size={12} />
             {lang === "fr" ? "Session" : lang === "ar" ? "الجلسة" : "Session"}
           </span>
           <span className="text-[0.62rem] font-[600] text-[var(--text-muted)] font-[var(--font-ui)] bg-[var(--bg-primary)] px-[0.55rem] py-[0.18rem] rounded-full border border-[var(--border)]">
@@ -211,7 +212,7 @@ export default function SessionCard({
           aria-label={primaryReadingCtaLabel}
           onClick={continueReading}
         >
-          <i className="fas fa-circle-play" />
+          <CirclePlay size={14} />
           {hasReadingHistory
             ? lang === "fr"
               ? "Continuer"
@@ -230,7 +231,7 @@ export default function SessionCard({
       <div className="home-prayer-card bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
         {/* En-tête prières */}
         <div className="flex items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] mb-[0.75rem] font-[var(--font-ui)] uppercase tracking-[0.06em]">
-          <i className="fas fa-mosque" />
+          <Building2 size={12} />
           <span>
             {lang === "fr" ? "Prières" : lang === "ar" ? "الصلوات" : "Prayers"}
           </span>
@@ -240,7 +241,7 @@ export default function SessionCard({
               className="ml-auto text-[0.58rem] opacity-40 normal-case tracking-normal font-[var(--font-ui)]"
               title={`Fajr ${prayerTimes.fajr} · Ishā ${prayerTimes.isha}`}
             >
-              <i className="fas fa-location-dot mr-0.5" />
+              <MapPin size={10} className="mr-0.5" />
               {lang === "ar" ? "دقيق" : lang === "fr" ? "précis" : "exact"}
             </span>
           )}

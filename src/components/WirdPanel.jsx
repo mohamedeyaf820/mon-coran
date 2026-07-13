@@ -7,6 +7,7 @@ import {
   getWirdHistory,
   resetTodayWird,
 } from "../services/wirdService";
+import { Flame, Target, X, CalendarDays, TrendingUp, SlidersHorizontal, BarChart2, CheckCircle2, Timer, Loader2, RotateCcw, Info } from "lucide-react";
 
 /* ── Sparkline: mini bar chart showing the last 7 days of reading ── */
 function Sparkline({ data, goalTarget, lang }) {
@@ -177,8 +178,8 @@ function StreakHeatmap({ history, goalTarget, wirdGoalType, lang }) {
     <div className="wird-streak">
       {/* Streak badge */}
       <div className="wird-streak__badge">
-        <i
-          className="fas fa-fire"
+        <Flame
+          size={16}
           style={{ color: streak > 0 ? "#f97316" : "rgba(255,255,255,0.3)" }}
         />
         <span>{streak}</span>
@@ -342,7 +343,7 @@ export default function WirdPanel() {
                       : "Routine"}
                 </div>
                 <h2 className="modal-title" id={titleId}>
-                  <i className="fas fa-bullseye" aria-hidden="true"></i>
+                  <Target size={16} aria-hidden="true" />
                   {t("wird.title", lang)}
                 </h2>
                 <div className="modal-subtitle">
@@ -361,7 +362,7 @@ export default function WirdPanel() {
                   lang === "fr" ? "Fermer" : lang === "ar" ? "اغلاق" : "Close"
                 }
               >
-                <i className="fas fa-times" aria-hidden="true"></i>
+                <X size={16} aria-hidden="true" />
               </button>
             </div>
 
@@ -374,48 +375,49 @@ export default function WirdPanel() {
                 className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "today" ? "active !bg-sky-500/25 !text-white" : ""}`}
                 onClick={() => setTab("today")}
               >
-                <i className="fas fa-calendar-day" aria-hidden="true"></i>{" "}
+                <CalendarDays size={14} aria-hidden="true" />{" "}
                 {t("wird.today", lang)}
               </button>
               <button
                 className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "history" ? "active !bg-sky-500/25 !text-white" : ""}`}
                 onClick={() => setTab("history")}
               >
-                <i className="fas fa-chart-line" aria-hidden="true"></i>{" "}
+                <TrendingUp size={14} aria-hidden="true" />{" "}
                 {t("wird.history", lang)}
               </button>
               <button
                 className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "streak" ? "active !bg-sky-500/25 !text-white" : ""}`}
                 onClick={() => setTab("streak")}
               >
-                <i className="fas fa-fire" aria-hidden="true"></i>{" "}
+                <Flame size={14} aria-hidden="true" />{" "}
                 {lang === "fr" ? "Série" : lang === "ar" ? "سلسلة" : "Streak"}
               </button>
               <button
                 className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "settings" ? "active !bg-sky-500/25 !text-white" : ""}`}
                 onClick={() => setTab("settings")}
               >
-                <i className="fas fa-sliders-h" aria-hidden="true"></i>{" "}
+                <SlidersHorizontal size={14} aria-hidden="true" />{" "}
                 {t("wird.goal", lang)}
               </button>
             </div>
 
             <div className="wird-summary-bar !mx-3 !mt-2 !flex !flex-wrap !gap-2 sm:!mx-4">
               <span className="wird-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
-                <i className="fas fa-bullseye" aria-hidden="true"></i>
+                <Target size={12} aria-hidden="true" />
                 {goalTarget} {goalLabel}
               </span>
               <span className="wird-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
-                <i className="fas fa-chart-simple" aria-hidden="true"></i>
+                <BarChart2 size={12} aria-hidden="true" />
                 {progressValue} / {goalTarget}
               </span>
               <span
                 className={`wird-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !px-2.5 !py-1 !text-xs ${isComplete ? "is-complete !border-emerald-300/30 !bg-emerald-500/15" : "!border-white/14 !bg-white/[0.05]"}`}
               >
-                <i
-                  className={`fas ${isComplete ? "fa-check-circle" : "fa-hourglass-half"}`}
-                  aria-hidden="true"
-                ></i>
+                {isComplete ? (
+                  <CheckCircle2 size={12} aria-hidden="true" />
+                ) : (
+                  <Timer size={12} aria-hidden="true" />
+                )}
                 {progressPct}%
               </span>
             </div>
@@ -423,7 +425,7 @@ export default function WirdPanel() {
             <div className="panel-scroll wird-body !max-h-[62vh] !overflow-auto !px-3 !pb-3 sm:!px-4 sm:!pb-4">
               {loading ? (
                 <div className="wird-loading">
-                  <i className="fas fa-spinner fa-spin" aria-hidden="true"></i>
+                  <Loader2 size={24} className="animate-spin" aria-hidden="true" />
                 </div>
               ) : tab === "today" ? (
                 <div className="wird-today !space-y-3">
@@ -493,7 +495,7 @@ export default function WirdPanel() {
 
                   {isComplete && (
                     <div className="wird-complete-badge">
-                      <i className="fas fa-check-circle" aria-hidden="true"></i>
+                      <CheckCircle2 size={16} aria-hidden="true" />
                       {lang === "fr"
                         ? "Objectif atteint ! Barak Allahu fik"
                         : lang === "ar"
@@ -540,7 +542,7 @@ export default function WirdPanel() {
                       className="wird-reset-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-red-300/20 !bg-red-500/10 !px-3.5 !py-2.5 !text-red-100 hover:!bg-red-500/20"
                       onClick={handleReset}
                     >
-                      <i className="fas fa-redo" aria-hidden="true"></i>{" "}
+                      <RotateCcw size={16} aria-hidden="true" />{" "}
                       {lang === "fr"
                         ? "Réinitialiser"
                         : lang === "ar"
@@ -682,7 +684,7 @@ export default function WirdPanel() {
                   </div>
 
                   <div className="wird-info settings-info-note">
-                    <i className="fas fa-info-circle" aria-hidden="true"></i>
+                    <Info size={14} aria-hidden="true" />
                     <p>
                       {lang === "fr"
                         ? "La progression se met à jour automatiquement quand vous lisez le Coran dans l'application."

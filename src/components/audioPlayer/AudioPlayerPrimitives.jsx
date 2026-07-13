@@ -1,6 +1,7 @@
 import React from "react";
 import { getReciterVisual } from "../../data/reciters";
 import { cn } from "../../lib/utils";
+import { Loader2, Check, Play } from "lucide-react";
 
 const COVER_SIZE_CLASSES = {
   40: "w-10 h-10",
@@ -169,12 +170,7 @@ export function ReciterAvatar({ reciter, active = false, loading = false }) {
           loading || active ? "opacity-100" : "opacity-0 group-hover:opacity-100",
         )}
       >
-        <i
-          className={cn(
-            "fas text-[0.5rem]",
-            loading ? "fa-spinner fa-spin" : active ? "fa-check" : "fa-play",
-          )}
-        />
+        {loading ? <Loader2 size={8} className="animate-spin" /> : active ? <Check size={8} /> : <Play size={8} />}
       </span>
     </span>
   );

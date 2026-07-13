@@ -5,6 +5,17 @@ import React, {
   useRef,
   useState,
 } from "react";
+import {
+  Search,
+  X,
+  Loader2,
+  ArrowRight,
+  Layers,
+  BookOpen,
+  Wand2,
+  Compass,
+  ExternalLink,
+} from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
@@ -305,7 +316,7 @@ export default function SearchModal() {
               <header className="search-pro__header">
                 <div className="search-pro__title-wrap">
                   <span className="search-pro__mark" aria-hidden="true">
-                    <i className="fas fa-magnifying-glass"></i>
+                    <Search size={16} />
                   </span>
                   <div>
                     <p className="search-pro__eyebrow">
@@ -329,7 +340,7 @@ export default function SearchModal() {
                         : "Close search"
                   }
                 >
-                  <i className="fas fa-times" aria-hidden="true"></i>
+                  <X size={14} aria-hidden="true" />
                 </button>
               </header>
 
@@ -343,7 +354,7 @@ export default function SearchModal() {
                   >
                     <label className="search-pro__input-shell">
                       <span aria-hidden="true">
-                        <i className="fas fa-search"></i>
+                        <Search size={16} />
                       </span>
                       <input
                         type="text"
@@ -375,9 +386,9 @@ export default function SearchModal() {
                         disabled={loading}
                       >
                         {loading ? (
-                          <i className="fas fa-spinner fa-spin"></i>
+                          <Loader2 size={14} className="animate-spin" />
                         ) : (
-                          <i className="fas fa-arrow-right"></i>
+                          <ArrowRight size={14} />
                         )}
                         <span>
                           {lang === "fr"
@@ -415,16 +426,16 @@ export default function SearchModal() {
 
                   <div className="search-pro__summary">
                     <span>
-                      <i className="fas fa-layer-group"></i>
+                      <Layers size={13} />
                       {resultCountLabel}
                     </span>
                     <span>
-                      <i className="fas fa-book-quran"></i>
+                      <BookOpen size={13} />
                       {riwaya === "warsh" ? "Warsh" : "Hafs"}
                     </span>
                     {resolvedQuery && (
                       <span className="search-pro__resolved">
-                        <i className="fas fa-wand-magic-sparkles"></i>
+                        <Wand2 size={13} />
                         {resolvedQuery}
                       </span>
                     )}
@@ -447,7 +458,7 @@ export default function SearchModal() {
                     {!query && !loading && (
                       <div className="search-pro__empty">
                         <span className="search-pro__empty-icon">
-                          <i className="fas fa-compass"></i>
+                          <Compass size={24} />
                         </span>
                         <div>
                           <h3>
@@ -482,7 +493,7 @@ export default function SearchModal() {
 
                     {filteredResults.length === 0 && !loading && query && (
                       <div className="search-pro__no-results">
-                        <i className="fas fa-search"></i>
+                        <Search size={16} />
                         <strong>{t("search.noResults", lang)}</strong>
                       </div>
                     )}
@@ -591,7 +602,7 @@ export default function SearchModal() {
                                 </span>
                               )}
                               <span className="search-pro__open">
-                                <i className="fas fa-arrow-up-right-from-square"></i>
+                                <ExternalLink size={12} />
                                 {lang === "fr"
                                   ? "Ouvrir dans la lecture"
                                   : lang === "ar"

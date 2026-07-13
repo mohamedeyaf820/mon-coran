@@ -4,6 +4,7 @@ import { useApp } from "../context/AppContext";
 import QURAN_DUAS from "../data/duas";
 import SURAHS from "../data/surahs";
 import Footer from "./Footer";
+import { Home, Search, BookOpen, Copy, ExternalLink, ArrowRight } from "lucide-react";
 
 const CATEGORIES = [
   { id: "all", fr: "Toutes", en: "All", ar: "الكل" },
@@ -119,14 +120,14 @@ export default function DuasPage() {
             onClick={() => set({ showDuas: false, showHome: true })}
             type="button"
           >
-            <i className="fas fa-house" aria-hidden="true" />
+            <Home size={16} aria-hidden="true" />
             {labels.back}
           </button>
         </div>
 
         <div className="duas-tools">
           <label className="duas-search-wrap">
-            <i className="fas fa-magnifying-glass" aria-hidden="true" />
+            <Search size={16} aria-hidden="true" />
             <input
               type="text"
               className="duas-search"
@@ -191,7 +192,7 @@ export default function DuasPage() {
         <div className="gallery-grid">
           {filteredDuas.length === 0 && (
             <div className="duas-empty">
-              <i className="fas fa-magnifying-glass-minus" />
+              <Search size={24} />
               <p>{labels.noResults}</p>
             </div>
           )}
@@ -215,7 +216,7 @@ export default function DuasPage() {
                   <div className="dua-card-head">
                     <div className="dua-head-main">
                       <div className="dua-ref-pill">
-                        <i className="fas fa-book-open" aria-hidden="true" />
+                        <BookOpen size={12} aria-hidden="true" />
                         <span>
                           {sTitle}
                           <span className="dua-ref-nums"> · {dua.surah}:{dua.ayah}</span>
@@ -235,7 +236,7 @@ export default function DuasPage() {
                         aria-label={lang === "fr" ? "Copier l'invocation" : lang === "ar" ? "نسخ الدعاء" : "Copy supplication"}
                         type="button"
                       >
-                        <i className="fas fa-copy" aria-hidden="true" />
+                        <Copy size={14} aria-hidden="true" />
                       </button>
                       <button
                         className="dua-open-btn-v5"
@@ -243,7 +244,7 @@ export default function DuasPage() {
                         title={lang === "fr" ? "Ouvrir dans le Coran" : lang === "ar" ? "فتح في المصحف" : "Open in Quran"}
                         type="button"
                       >
-                        <i className="fas fa-arrow-up-right-from-square" aria-hidden="true" />
+                        <ExternalLink size={14} aria-hidden="true" />
                       </button>
                     </div>
                   </div>
@@ -269,7 +270,7 @@ export default function DuasPage() {
                       onClick={() => goToVerse(dua.surah, dua.ayah)}
                       type="button"
                     >
-                      <i className="fas fa-arrow-right" aria-hidden="true" />
+                      <ArrowRight size={14} aria-hidden="true" />
                       <span>{lang === "fr" ? "Lire" : lang === "ar" ? "فتح" : "Open"}</span>
                     </button>
                   </div>

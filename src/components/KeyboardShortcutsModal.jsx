@@ -1,4 +1,5 @@
 import React from "react";
+import { Keyboard, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 
 const SHORTCUTS = [
@@ -128,7 +129,7 @@ export default function KeyboardShortcutsModal({ lang, onClose }) {
             {/* En-tête */}
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-base font-bold text-[var(--text)] font-[var(--font-ui)] flex items-center gap-2">
-                <i className="fas fa-keyboard text-[var(--primary)]" />
+                <Keyboard size={14} className="text-[var(--primary)]" />
                 {title}
               </h2>
               <button
@@ -139,7 +140,7 @@ export default function KeyboardShortcutsModal({ lang, onClose }) {
                   lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
                 }
               >
-                <i className="fas fa-times text-sm" />
+                <X size={14} />
               </button>
             </div>
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { X } from "lucide-react";
 import { createPortal } from "react-dom";
 import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
@@ -93,7 +94,7 @@ export default function AudioOptionsModal(props) {
               aria-label={labels.close}
               ref={optionsCloseButtonRef}
             >
-              <i className="fas fa-times" />
+              <X size={13} />
             </button>
           </div>
 

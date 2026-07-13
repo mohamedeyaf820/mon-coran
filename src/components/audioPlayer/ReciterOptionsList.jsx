@@ -1,4 +1,5 @@
 import React from "react";
+import { Search, X, Star } from "lucide-react";
 import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 import { formatCooldownLabel } from "../../utils/formatUtils";
@@ -105,7 +106,7 @@ export default function ReciterOptionsList(props) {
 
       {currentReciters.length > 4 && (
         <div className="audio-reciter-options__search relative mb-2">
-          <i className="fas fa-magnifying-glass pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[0.6rem] text-[rgba(241,230,209,0.35)]" />
+          <Search size={10} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[rgba(241,230,209,0.35)]" />
           <input
             type="text"
             value={reciterSearch}
@@ -121,7 +122,7 @@ export default function ReciterOptionsList(props) {
               className="absolute right-2 top-1/2 -translate-y-1/2 text-[0.58rem] text-[rgba(241,230,209,0.42)]"
               aria-label={labels.clearSearch}
             >
-              <i className="fas fa-times" />
+              <X size={13} />
             </button>
           )}
         </div>
@@ -198,7 +199,7 @@ export default function ReciterOptionsList(props) {
                       )}
                       {isFavorite && (
                         <span className="audio-reciter-options__badge inline-flex w-fit items-center rounded-full border border-amber-300/35 bg-amber-300/10 px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide text-amber-200">
-                          <i className="fas fa-star mr-1 text-[0.44rem]" />
+                          <Star size={8} className="mr-1" />
                           {labels.favorite}
                         </span>
                       )}

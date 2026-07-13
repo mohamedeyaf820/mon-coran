@@ -11,6 +11,7 @@ import {
   getKhatmaStats,
   KHATMA_PRESETS,
 } from "../services/khatmaService";
+import { BookOpenCheck, X, Play, Trash2, PenLine } from "lucide-react";
 
 export default function KhatmaPanel() {
   const { state, dispatch } = useApp();
@@ -62,7 +63,7 @@ export default function KhatmaPanel() {
             <Dialog.Title className="sr-only">Khatma</Dialog.Title>
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
               <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
-                <i className="fas fa-book-open-reader" />
+                <BookOpenCheck size={16} />
                 {L("Objectif Khatma", "هدف الختمة", "Khatma Goal")}
               </div>
               <button
@@ -71,7 +72,7 @@ export default function KhatmaPanel() {
                 onClick={close}
                 aria-label={L("Fermer", "اغلاق", "Close")}
               >
-                <i className="fas fa-xmark" />
+                <X size={16} />
               </button>
             </div>
 
@@ -134,7 +135,7 @@ export default function KhatmaPanel() {
                   className="khatma-start-btn !inline-flex !w-full !items-center !justify-center !gap-2 !rounded-xl !bg-sky-500/80 !px-4 !py-3 !font-semibold !text-white hover:!bg-sky-500"
                   onClick={handleStart}
                 >
-                  <i className="fas fa-play" />
+                  <Play size={16} />
                   {L("Commencer la Khatma", "ابدأ الختمة", "Start Khatma")}
                 </button>
               </div>
@@ -246,14 +247,14 @@ export default function KhatmaPanel() {
                     className="khatma-reset-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-red-300/20 !bg-red-500/10 !px-3.5 !py-2.5 !text-red-100 hover:!bg-red-500/20"
                     onClick={handleReset}
                   >
-                    <i className="fas fa-trash" />
+                    <Trash2 size={16} />
                     {L("Réinitialiser", "إعادة تعيين", "Reset")}
                   </button>
                   <button
                     className="khatma-edit-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3.5 !py-2.5 hover:!bg-white/[0.12]"
                     onClick={() => setTab("setup")}
                   >
-                    <i className="fas fa-pencil" />
+                    <PenLine size={16} />
                     {L("Modifier l'objectif", "تعديل الهدف", "Edit goal")}
                   </button>
                 </div>
