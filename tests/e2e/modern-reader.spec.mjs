@@ -37,6 +37,13 @@ test("reads a surah with translation, tajwid and verse actions", async ({ page }
   await expect(page.locator(".modern-reader-verse")).toHaveCount(2);
   await expect(page.getByText("Traduction", { exact: true }).first()).toBeVisible();
 
+  const readerStyle = await page.locator(".modern-reader-verse__arabic").first().evaluate((element) => ({
+    fontSize: Number.parseFloat(getComputedStyle(element).fontSize),
+    selectRadius: Number.parseFloat(getComputedStyle(document.querySelector(".modern-reader-picker select")).borderRadius),
+  }));
+  expect(readerStyle.fontSize).toBeGreaterThanOrEqual(36);
+  expect(readerStyle.selectRadius).toBeGreaterThanOrEqual(11);
+
   const tajwid = page.getByRole("button", { name: "Tajwid" });
   if (await tajwid.getAttribute("aria-pressed") !== "true") await tajwid.click();
   await expect(page.locator('[data-tajwid="ham-wasl"]')).toBeVisible();
@@ -80,6 +87,7 @@ test("keeps the reader usable on a narrow viewport", async ({ page }) => {
   await expect(page.locator("#ayah-1-2")).toHaveClass(/is-target/);
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
+  await page.getByRole("button", { name: "Options", exact: true }).click();
   await expect(page.getByRole("button", { name: "Traduction" })).toBeVisible();
 });
 

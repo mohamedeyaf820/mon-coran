@@ -23,6 +23,7 @@ const SAFELIST = {
     /^tajweed-/,
     /^verse-/,
     /^warsh-/,
+    /^modern-reader-verse__arabic/,
     /^data-/,
     /^aria-/,
     "animate-in",

@@ -129,6 +129,17 @@ test("storage: settings round-trip encrypted and sanitized", () => {
   });
 });
 
+test("storage: migrates the former default Quran size once", () => {
+  globalThis.localStorage = createMockStorage();
+
+  saveSettings({ quranFontSize: 25, fontSize: 25 });
+
+  const settings = getSettings();
+  assert.equal(settings.quranFontSize, 36);
+  assert.equal(settings.fontSize, 36);
+  assert.equal(localStorage.getItem("mushaf-plus-reader-size-v2"), "done");
+});
+
 test("storage: preserves per-riwaya Quran font choices", () => {
   globalThis.localStorage = createMockStorage();
 

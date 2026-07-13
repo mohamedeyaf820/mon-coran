@@ -17,3 +17,7 @@ test("maps reading preferences to stable CSS variables", () => {
     "--modern-translation-size": "19px",
   });
 });
+
+test("uses a readable Quran size when no preference exists", () => {
+  assert.equal(getReaderCssVariables({})["--modern-quran-size"], "36px");
+});

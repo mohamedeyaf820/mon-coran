@@ -226,13 +226,16 @@ function sanitizeReciterAvailabilityMap(input) {
   }, {});
 }
 
+const READER_SIZE_MIGRATION_KEY = "mushaf-plus-reader-size-v2";
+const DEFAULT_QURAN_FONT_SIZE = 36;
+
 const DEFAULT_SETTINGS = {
   lang: "fr",
   theme: "light",
   riwaya: "hafs",
   reciter: "ar.alafasy",
-  fontSize: 25,
-  quranFontSize: 25,
+  fontSize: DEFAULT_QURAN_FONT_SIZE,
+  quranFontSize: DEFAULT_QURAN_FONT_SIZE,
   quranTranslationFontSize: 18,
   fontFamily: DEFAULT_FONT_ID,
   fontFamilyByRiwaya: {
@@ -326,6 +329,18 @@ export function getSettings() {
     const normalizedRiwaya = VALID_RIWAYAS.includes(parsed?.riwaya)
       ? parsed.riwaya
       : DEFAULT_SETTINGS.riwaya;
+    const storedQuranFontSize = Number(
+      parsed?.quranFontSize ?? parsed?.fontSize,
+    );
+    const migrateReaderSize =
+      localStorage.getItem(READER_SIZE_MIGRATION_KEY) !== "done" &&
+      storedQuranFontSize === 25;
+    const normalizedQuranFontSize = migrateReaderSize
+      ? DEFAULT_QURAN_FONT_SIZE
+      : Math.max(
+          12,
+          Math.min(96, storedQuranFontSize || DEFAULT_QURAN_FONT_SIZE),
+        );
     const normalized = {
       ...cloneDefaultSettings(),
       ...parsed,
@@ -340,6 +355,8 @@ export function getSettings() {
         parsed?.translationLangs,
         parsed?.translationLang,
       ),
+      quranFontSize: normalizedQuranFontSize,
+      fontSize: normalizedQuranFontSize,
       quranTranslationFontSize: Math.max(
         12,
         Math.min(28, Number(parsed?.quranTranslationFontSize) || 18),
@@ -366,7 +383,11 @@ export function getSettings() {
           : DEFAULT_SETTINGS.surahRepeatCount,
     };
 
-    if (usedLegacy && isEncryptionUnlocked()) {
+    if (migrateReaderSize) {
+      localStorage.setItem(READER_SIZE_MIGRATION_KEY, "done");
+    }
+
+    if ((usedLegacy && isEncryptionUnlocked()) || migrateReaderSize) {
       saveSettings(normalized);
     }
 
@@ -393,11 +414,19 @@ function sanitizeSettings(settings) {
         : "ar.alafasy",
     quranFontSize: Math.max(
       12,
-      Math.min(96, Number(safeInput.quranFontSize ?? safeInput.fontSize) || 25),
+      Math.min(
+        96,
+        Number(safeInput.quranFontSize ?? safeInput.fontSize) ||
+          DEFAULT_QURAN_FONT_SIZE,
+      ),
     ),
     fontSize: Math.max(
       12,
-      Math.min(96, Number(safeInput.quranFontSize ?? safeInput.fontSize) || 25),
+      Math.min(
+        96,
+        Number(safeInput.quranFontSize ?? safeInput.fontSize) ||
+          DEFAULT_QURAN_FONT_SIZE,
+      ),
     ),
     quranTranslationFontSize: Math.max(
       12,

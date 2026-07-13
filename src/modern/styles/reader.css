@@ -9,8 +9,9 @@
 .modern-reader-picker a { display: grid; width: var(--modern-tap-size); place-items: center; border: 1px solid transparent; }
 .modern-reader-picker a:hover { border-color: var(--modern-border); }
 .modern-reader-picker a.is-disabled { pointer-events: none; opacity: .35; }
-.modern-reader-picker select, .modern-reader-picker input { min-height: var(--modern-tap-size); border: 1px solid var(--modern-border); border-radius: var(--modern-radius-sm); background: var(--modern-surface); color: var(--modern-text); font: inherit; }
-.modern-reader-picker select { width: min(19rem, 30vw); padding-inline: .75rem; }
+.modern-reader-picker select, .modern-reader-picker input { min-height: var(--modern-tap-size); border: 1px solid var(--modern-border); background: var(--modern-surface); color: var(--modern-text); font: inherit; }
+.modern-reader-picker select { width: min(19rem, 30vw); padding-inline: .9rem 2.25rem; border-radius: 11px; }
+.modern-reader-picker input { border-radius: 11px; }
 .modern-reader-picker label { display: flex; align-items: center; gap: .5rem; color: var(--modern-muted); font-size: .78rem; }
 .modern-reader-picker input { width: 5.5rem; padding-inline: .65rem; }
 .modern-reader-options { justify-content: flex-end; gap: .35rem; }
@@ -30,7 +31,7 @@
 .modern-verse-actions { position: relative; display: flex; flex-wrap: nowrap; gap: .15rem; }
 .modern-verse-actions > button { display: grid; width: 2.35rem; min-height: 2.35rem; place-items: center; color: var(--modern-muted); }
 .modern-verse-actions > button:hover, .modern-verse-actions > button.is-active { background: var(--modern-bg-deep); color: var(--modern-accent-strong); }
-.modern-reader-verse__arabic { margin: 0; color: var(--modern-text); font-family: var(--modern-quran-font, "Scheherazade New", serif); font-size: var(--modern-quran-size, 2.35rem); line-height: 2; text-align: right; }
+.modern-reader-verse__arabic { margin: 0; color: var(--modern-text); font-family: var(--modern-quran-font, "Scheherazade New", serif); font-size: var(--modern-quran-size, 36px); line-height: 2; text-align: right; }
 .modern-reader-verse__arabic.is-masked { color: transparent; text-shadow: 0 0 14px color-mix(in srgb,var(--modern-text) 28%,transparent); user-select:none; }
 .modern-memory-reveal { justify-self:end; display:inline-flex; min-height:var(--modern-tap-size); align-items:center; gap:.4rem; border:1px solid var(--modern-border); background:transparent; color:var(--modern-accent-strong); padding:.45rem .7rem; }
 .modern-ayah-mark { display: inline-grid; min-width: 2rem; min-height: 2rem; margin-inline-start: .5rem; place-items: center; border: 1px solid var(--modern-accent); border-radius: 50%; color: var(--modern-accent-strong); font-family: Literata, serif; font-size: .7rem; vertical-align: middle; }
@@ -43,7 +44,7 @@
 .modern-verse-more button { display: flex; width: 100%; min-height: 2.5rem; align-items: center; justify-content: flex-start; gap: .55rem; padding: .45rem .6rem; white-space: nowrap; }
 [data-focus-reading="true"] .modern-reader-heading, [data-focus-reading="true"] .modern-footer { display: none; }
 [data-focus-reading="true"] .modern-reader-toolbar { position: sticky; top: 0; z-index: 20; }
-[data-translation-reading="true"] .modern-reader-verse__arabic { color: var(--modern-muted); font-size: calc(var(--modern-quran-size, 2.35rem) * .82); }
+[data-translation-reading="true"] .modern-reader-verse__arabic { color: var(--modern-muted); font-size: var(--modern-quran-size, 36px); }
 [data-translation-reading="true"] .modern-reader-verse__translation { color: var(--modern-text); font-size: calc(var(--modern-translation-size, .95rem) * 1.12); }
 .modern-reader-surah-break { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 2rem; border-bottom: 1px solid var(--modern-accent); background: var(--modern-bg-deep); color: var(--modern-accent-strong); font-weight: 700; }
 .modern-reader-surah-break span:last-child { font-family: "Scheherazade New", serif; font-size: 1.6rem; }
@@ -52,7 +53,7 @@
 .modern-mushaf-page::before { position: absolute; inset: .45rem; border: 1px solid color-mix(in srgb, var(--modern-accent) 36%, transparent); content: ""; pointer-events: none; }
 .modern-mushaf-page__meta { position: relative; z-index: 1; display: flex; justify-content: space-between; padding: .1rem .75rem .65rem; border-bottom: 1px solid color-mix(in srgb, var(--modern-accent) 40%, var(--modern-border)); color: var(--modern-muted); font-family: "Scheherazade New", serif; font-size: 1rem; }
 .modern-mushaf-page__frame { position: relative; z-index: 1; display: grid; min-height: 52rem; align-items: center; padding: 1.4rem 1.8rem; }
-.modern-mushaf-flow { direction: rtl; color: var(--modern-text); font-family: "Scheherazade New", serif; font-size: clamp(2rem, 3.4vw, 2.65rem); line-height: 1.72; text-align: justify; text-align-last: center; word-spacing: .03em; }
+.modern-mushaf-flow { direction: rtl; color: var(--modern-text); font-family: "Scheherazade New", serif; font-size: clamp(2.2rem, calc(var(--modern-quran-size, 36px) * 1.05), 3rem); line-height: 1.72; text-align: justify; text-align-last: center; word-spacing: .03em; }
 .modern-mushaf-unit { display: inline; }
 .modern-mushaf-surah { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; margin: .75rem 0 1rem; padding: .4rem 1rem; border-block: 1px solid color-mix(in srgb, var(--modern-accent) 60%, var(--modern-border)); background: color-mix(in srgb, var(--modern-accent) 7%, transparent); font-family: Literata, serif; line-height: 1.2; text-align: center; }
 .modern-mushaf-surah::before, .modern-mushaf-surah::after { height: 1px; background: color-mix(in srgb, var(--modern-accent) 45%, transparent); content: ""; }
@@ -106,7 +107,7 @@
 .modern-study-panel h2,.modern-study-panel h3 { margin: 0; }.modern-study-panel > header button { min-width: var(--modern-tap-size); min-height: var(--modern-tap-size); border: 0; background: transparent; color: inherit; }
 .modern-study-panel__arabic { margin: 0; padding: 1.5rem; border-bottom: 1px solid var(--modern-border); font-family: var(--modern-quran-font); font-size: 1.8rem; line-height: 1.9; }
 .modern-study-panel > nav { display: grid; grid-template-columns: 1fr 1fr; gap: .25rem; padding: .5rem; border-bottom: 1px solid var(--modern-border); }.modern-study-panel > nav button { display: flex; min-height: var(--modern-tap-size); align-items: center; justify-content: center; gap: .45rem; border: 0; background: transparent; color: var(--modern-muted); }.modern-study-panel > nav button.is-active { background: var(--modern-bg-deep); color: var(--modern-accent-strong); }
-.modern-study-panel__body,.modern-study-panel__words { padding: 1.5rem; }.modern-study-panel__body label { display: grid; gap: .4rem; margin-bottom: 1.5rem; font-size: .8rem; font-weight: 700; }.modern-study-panel__body select { min-height: var(--modern-tap-size); border: 1px solid var(--modern-border); background: var(--modern-surface); color: inherit; }.modern-study-panel__body > p { line-height: 1.8; }.modern-study-panel__note { padding: .75rem; background: var(--modern-bg-deep); color: var(--modern-muted); font-size: .78rem; }
+.modern-study-panel__body,.modern-study-panel__words { padding: 1.5rem; }.modern-study-panel__body label { display: grid; gap: .4rem; margin-bottom: 1.5rem; font-size: .8rem; font-weight: 700; }.modern-study-panel__body select { min-height: var(--modern-tap-size); padding-inline: .9rem 2.25rem; border: 1px solid var(--modern-border); border-radius: 11px; background: var(--modern-surface); color: inherit; }.modern-study-panel__body > p { line-height: 1.8; }.modern-study-panel__note { padding: .75rem; background: var(--modern-bg-deep); color: var(--modern-muted); font-size: .78rem; }
 .modern-study-panel__words { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .6rem; }.modern-study-panel__words article { position: relative; display: grid; gap: .2rem; padding: .9rem 2.5rem .9rem .9rem; border: 1px solid var(--modern-border); }.modern-study-panel__words strong { font-family: var(--modern-quran-font); font-size: 1.45rem; }.modern-study-panel__words span { color: var(--modern-accent-strong); }.modern-study-panel__words small { color: var(--modern-muted); }.modern-study-panel__words button { position: absolute; top: .55rem; right: .45rem; min-width: 2rem; min-height: 2rem; border: 0; background: transparent; color: var(--modern-muted); }.modern-study-panel__state { display: grid; min-height: 16rem; place-items: center; gap: 1rem; padding: 2rem; color: var(--modern-muted); text-align: center; }.modern-study-panel__state button { display: flex; align-items: center; gap: .4rem; min-height: var(--modern-tap-size); border: 1px solid var(--modern-border); background: transparent; color: inherit; }
 @media(max-width:620px){.modern-study-panel{height:92dvh;margin-top:auto}.modern-study-panel-overlay{align-items:flex-end}.modern-study-panel__words{grid-template-columns:1fr}}
 [data-tajwid="ghunnah"], [data-tajwid="ghunnah-noon-meem"] { color: #b23a48; }
@@ -138,7 +139,7 @@
   .modern-mushaf-wrap { margin-top: 1rem; }
   .modern-mushaf-page { width: calc(100% - 1rem); min-height: 34rem; padding: .75rem; }
   .modern-mushaf-page__frame { min-height: 29rem; padding: .8rem .55rem; }
-  .modern-mushaf-flow { font-size: 1.55rem; line-height: 1.7; word-spacing: .01em; }
+  .modern-mushaf-flow { font-size: clamp(1.8rem, calc(var(--modern-quran-size, 36px) * .82), 2.5rem); line-height: 1.75; word-spacing: .01em; }
   .modern-mushaf-surah { margin-block: .4rem .6rem; }
   .modern-mushaf-surah strong { font-size: 1.45rem; }
   .modern-mushaf-page__meta { font-size: .8rem; }
