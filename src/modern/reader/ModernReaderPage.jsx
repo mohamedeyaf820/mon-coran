@@ -29,6 +29,7 @@ import {
   removeBookmark,
   saveNote,
   savePosition,
+  updateSetting,
 } from "../../services/storageService";
 import { buildReaderVerses, parseTajweedSegments } from "./readerModel";
 import { adjacentReaderHref, buildReaderHref } from "./readerRoute";
@@ -95,16 +96,23 @@ function ModernMushafPage({
                   {startsSurah && verse.surahNumber !== 1 && verse.surahNumber !== 9 && (
                     <span className="modern-mushaf-basmala">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>
                   )}
-                  <button
+                  <span
                     aria-label={`Verset ${verse.ayahNumber}`}
                     aria-pressed={selectedKey === verse.key}
                     className="modern-mushaf-ayah"
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        setSelectedKey((key) => key === verse.key ? null : verse.key);
+                      }
+                    }}
                     onClick={() => setSelectedKey((key) => key === verse.key ? null : verse.key)}
-                    type="button"
+                    role="button"
+                    tabIndex="0"
                   >
                     <TajweedText enabled={showTajweed} fallback={verse.text} text={verse.tajweedText} />
                     <span className="modern-mushaf-ayah__mark" aria-hidden="true">{verse.ayahNumber}</span>
-                  </button>{" "}
+                  </span>{" "}
                 </span>
               );
             })}
@@ -206,8 +214,8 @@ export function ModernReaderPage({ route }) {
   const settings = useMemo(() => getSettings(), []);
   const riwaya = settings.riwaya || "hafs";
   const [state, setState] = useState({ status: "loading", verses: [], error: null });
-  const [showTranslation, setShowTranslation] = useState(true);
-  const [showTajweed, setShowTajweed] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(() => settings.showTranslation !== false);
+  const [showTajweed, setShowTajweed] = useState(() => settings.showTajwid === true);
   const [bookmarks, setBookmarks] = useState(new Set());
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -249,7 +257,22 @@ export function ModernReaderPage({ route }) {
   const max = route.mode === "surah" ? 114 : route.mode === "page" ? 604 : 30;
 
   function navigate(mode, value) {
+    updateSetting("displayMode", mode);
     window.location.assign(buildReaderHref({ mode, value }));
+  }
+
+  function toggleTranslation() {
+    setShowTranslation((value) => {
+      updateSetting("showTranslation", !value);
+      return !value;
+    });
+  }
+
+  function toggleTajweed() {
+    setShowTajweed((value) => {
+      updateSetting("showTajwid", !value);
+      return !value;
+    });
   }
 
   async function toggleBookmark(verse) {
@@ -298,10 +321,10 @@ export function ModernReaderPage({ route }) {
           </a>
         </div>
         <div className="modern-reader-options">
-          <button aria-pressed={showTranslation} className={showTranslation ? "is-active" : ""} onClick={() => setShowTranslation((value) => !value)} type="button">
+          <button aria-pressed={showTranslation} className={showTranslation ? "is-active" : ""} onClick={toggleTranslation} type="button">
             <Languages size={17} /> Traduction
           </button>
-          <button aria-pressed={showTajweed} className={showTajweed ? "is-active" : ""} disabled={riwaya !== "hafs"} onClick={() => setShowTajweed((value) => !value)} type="button">
+          <button aria-pressed={showTajweed} className={showTajweed ? "is-active" : ""} disabled={riwaya !== "hafs"} onClick={toggleTajweed} type="button">
             <Palette size={17} /> Tajwid
           </button>
         </div>

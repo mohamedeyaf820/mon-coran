@@ -26,7 +26,8 @@ test("reads a surah with translation, tajwid and verse actions", async ({ page }
   await expect(page.locator(".modern-reader-verse")).toHaveCount(2);
   await expect(page.getByText("Au nom d'Allah")).toBeVisible();
 
-  await page.getByRole("button", { name: "Tajwid" }).click();
+  const tajwid = page.getByRole("button", { name: "Tajwid" });
+  if (await tajwid.getAttribute("aria-pressed") !== "true") await tajwid.click();
   await expect(page.locator('[data-tajwid="ham-wasl"]')).toBeVisible();
   await expect(page.locator(".modern-reader-verse__arabic").first()).not.toContainText("tajweed class");
 
@@ -79,4 +80,24 @@ test("keeps the mushaf page intact on mobile", async ({ page }) => {
   }));
   expect(metrics.width).toBeLessThanOrEqual(390);
   expect(metrics.overflow).toBe(false);
+});
+
+test("persists display preferences across reader modes and reloads", async ({ page }) => {
+  await page.goto("/surah/1");
+  const translation = page.getByRole("button", { name: "Traduction" });
+  await expect(translation).toHaveAttribute("aria-pressed", "true");
+  await translation.click();
+  await expect(page.locator(".modern-reader-verse__translation")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Page" }).click();
+  await expect(page).toHaveURL(/\/page\/1$/);
+  await expect(page.getByRole("button", { name: "Traduction" })).toHaveAttribute("aria-pressed", "false");
+  await expect(page.locator(".modern-mushaf-translations")).toHaveCount(0);
+
+  await page.reload();
+  await expect(page.getByRole("button", { name: "Traduction" })).toHaveAttribute("aria-pressed", "false");
+
+  await page.getByRole("button", { name: "Juz" }).click();
+  await expect(page.getByRole("button", { name: "Traduction" })).toHaveAttribute("aria-pressed", "false");
+  await expect(page.locator(".modern-reader-verse__translation")).toHaveCount(0);
 });

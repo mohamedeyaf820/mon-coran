@@ -39,7 +39,7 @@
 .modern-mushaf-page::before { position: absolute; inset: .45rem; border: 1px solid color-mix(in srgb, var(--modern-accent) 36%, transparent); content: ""; pointer-events: none; }
 .modern-mushaf-page__meta { position: relative; z-index: 1; display: flex; justify-content: space-between; padding: .1rem .75rem .65rem; border-bottom: 1px solid color-mix(in srgb, var(--modern-accent) 40%, var(--modern-border)); color: var(--modern-muted); font-family: "Scheherazade New", serif; font-size: 1rem; }
 .modern-mushaf-page__frame { position: relative; z-index: 1; display: grid; min-height: 52rem; align-items: center; padding: 1.4rem 1.8rem; }
-.modern-mushaf-flow { direction: rtl; color: var(--modern-text); font-family: "Scheherazade New", serif; font-size: clamp(2rem, 3.4vw, 2.65rem); line-height: 2.05; text-align: justify; text-align-last: center; word-spacing: .06em; }
+.modern-mushaf-flow { direction: rtl; color: var(--modern-text); font-family: "Scheherazade New", serif; font-size: clamp(2rem, 3.4vw, 2.65rem); line-height: 1.72; text-align: justify; text-align-last: center; word-spacing: .03em; }
 .modern-mushaf-unit { display: inline; }
 .modern-mushaf-surah { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%; margin: .75rem 0 1rem; padding: .4rem 1rem; border-block: 1px solid color-mix(in srgb, var(--modern-accent) 60%, var(--modern-border)); background: color-mix(in srgb, var(--modern-accent) 7%, transparent); font-family: Literata, serif; line-height: 1.2; text-align: center; }
 .modern-mushaf-surah::before, .modern-mushaf-surah::after { height: 1px; background: color-mix(in srgb, var(--modern-accent) 45%, transparent); content: ""; }
@@ -61,9 +61,6 @@
 .modern-mushaf-translations h2 { margin: 0 0 1rem; font-size: 1.1rem; }
 .modern-mushaf-translations p { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: .75rem; margin: 0; padding: .7rem 0; border-bottom: 1px solid var(--modern-border); color: var(--modern-muted); font-size: .84rem; line-height: 1.7; }
 .modern-mushaf-translations p span { color: var(--modern-accent-strong); font-weight: 700; }
-.modern-mushaf-page--1 .modern-mushaf-flow { text-align: center; text-align-last: center; }
-.modern-mushaf-page--1 .modern-mushaf-unit { display: block; }
-.modern-mushaf-page--1 .modern-mushaf-ayah { display: inline-block; }
 .modern-reader-state { display: grid; min-height: 18rem; place-items: center; padding: 3rem; background: var(--modern-surface); color: var(--modern-muted); text-align: center; }
 .modern-reader-state button { display: inline-flex; align-items: center; gap: .5rem; padding: .6rem .8rem; background: var(--modern-text); color: var(--modern-bg); }
 .modern-note-editor { position: absolute; z-index: 10; top: 2.75rem; left: 0; width: min(21rem, calc(100vw - 3rem)); padding: 1rem; border: 1px solid var(--modern-border); border-radius: var(--modern-radius-md); background: var(--modern-surface-raised); box-shadow: var(--modern-shadow); }
@@ -101,7 +98,7 @@
   .modern-mushaf-wrap { margin-top: 1rem; }
   .modern-mushaf-page { width: calc(100% - 1rem); min-height: 34rem; padding: .75rem; }
   .modern-mushaf-page__frame { min-height: 29rem; padding: .8rem .55rem; }
-  .modern-mushaf-flow { font-size: 1.55rem; line-height: 1.95; word-spacing: .02em; }
+  .modern-mushaf-flow { font-size: 1.55rem; line-height: 1.7; word-spacing: .01em; }
   .modern-mushaf-surah { margin-block: .4rem .6rem; }
   .modern-mushaf-surah strong { font-size: 1.45rem; }
   .modern-mushaf-page__meta { font-size: .8rem; }

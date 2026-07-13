@@ -33,6 +33,8 @@
 - La Fatiha est composee ligne par ligne; les autres pages utilisent un flux arabe continu.
 - Les en-tetes de sourate, basmala, reperes de versets et numero de page sont integres a la feuille.
 - Les traductions restent dans un panneau separe pour ne pas modifier la composition arabe.
+- Les versets sont rendus dans un flux typographique `inline` continu, sans boite intermediaire.
+- Les choix Traduction, Tajwid et mode de lecture utilisent les preferences partagees et persistent entre sourate, page, juz et rechargement.
 
 ## Risque residuel connu
 
