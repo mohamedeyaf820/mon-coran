@@ -638,10 +638,13 @@ export default function SettingsModal() {
                   tabIndex={isActive ? 0 : -1}
                   className="settings-tab-button"
                   data-active={isActive}
+                  data-id={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                 >
-                  <Icon size={16} />
-                  <span>{t(tab.labelKey, lang)}</span>
+                  <span className="settings-tab-button__icon">
+                    <Icon size={16} />
+                  </span>
+                  <span className="settings-tab-button__label">{t(tab.labelKey, lang)}</span>
                 </button>
               );
             })}

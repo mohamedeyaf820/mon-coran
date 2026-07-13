@@ -327,45 +327,46 @@
   align-items: center !important;
   justify-content: space-between !important;
   gap: 1rem !important;
-  padding: 1rem 1.1rem !important;
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 72%, transparent) !important;
-  background: color-mix(in srgb, var(--bg-card) 88%, var(--bg-secondary) 12%) !important;
+  padding: 1.1rem 1.25rem !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent) !important;
+  background: var(--bg-card) !important;
 }
 
 .settings-drawer__heading {
   display: flex !important;
   min-width: 0 !important;
   align-items: center !important;
-  gap: 0.75rem !important;
+  gap: 0.85rem !important;
 }
 
 .settings-drawer__icon,
 .settings-close-button {
   display: inline-flex !important;
-  width: 2.5rem !important;
-  height: 2.5rem !important;
+  width: 2.6rem !important;
+  height: 2.6rem !important;
   flex: 0 0 auto !important;
   align-items: center !important;
   justify-content: center !important;
-  border-radius: 12px !important;
+  border-radius: 14px !important;
 }
 
 .settings-drawer__icon {
   color: var(--primary) !important;
-  background: color-mix(in srgb, var(--primary) 12%, transparent) !important;
+  background: color-mix(in srgb, var(--primary) 14%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent) !important;
 }
 
 .settings-close-button {
   border: 1px solid var(--border) !important;
-  background: var(--bg-card) !important;
+  background: transparent !important;
   color: var(--text-muted) !important;
-  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease !important;
+  cursor: pointer !important;
+  transition: background 0.15s, color 0.15s !important;
 }
 
 .settings-close-button:hover {
   background: var(--bg-secondary) !important;
   color: var(--text-primary) !important;
-  transform: translateY(-1px) !important;
 }
 
 .settings-drawer__title {
@@ -373,48 +374,61 @@
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
-  font-size: 1rem !important;
-  font-weight: 850 !important;
-  letter-spacing: 0 !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
   color: var(--text-primary) !important;
 }
 
 .settings-drawer__subtitle {
-  margin: 0.12rem 0 0 !important;
+  margin: 0.1rem 0 0 !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
-  font-size: 0.78rem !important;
+  font-size: 0.76rem !important;
   color: var(--text-muted) !important;
 }
 
+/* ── Sidebar tabs (desktop: vertical column) ── */
 .settings-drawer__tabs {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 0.35rem !important;
-  padding: 0.55rem !important;
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 72%, transparent) !important;
-  background: var(--bg-secondary) !important;
+  gap: 0.3rem !important;
+  padding: 0.5rem !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent) !important;
+  background: color-mix(in srgb, var(--bg-secondary) 70%, transparent) !important;
 }
 
 .settings-tab-button {
   display: inline-flex !important;
   min-width: 0 !important;
-  min-height: 2.7rem !important;
+  min-height: 2.6rem !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 0.45rem !important;
+  gap: 0.5rem !important;
   border: 1px solid transparent !important;
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   background: transparent !important;
   color: var(--text-muted) !important;
   font-size: 0.82rem !important;
-  font-weight: 780 !important;
+  font-weight: 600 !important;
   letter-spacing: 0 !important;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
+  cursor: pointer !important;
+  transition: background 0.14s, color 0.14s, border-color 0.14s !important;
 }
 
-.settings-tab-button span {
+.settings-tab-button__icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 1.7rem !important;
+  height: 1.7rem !important;
+  border-radius: 8px !important;
+  flex-shrink: 0 !important;
+  transition: background 0.14s !important;
+}
+
+.settings-tab-button__label {
   min-width: 0 !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -422,11 +436,24 @@
 }
 
 .settings-tab-button[data-active="true"] {
-  border-color: color-mix(in srgb, var(--primary) 24%, transparent) !important;
+  border-color: color-mix(in srgb, var(--primary) 22%, transparent) !important;
   background: var(--bg-card) !important;
   color: var(--primary) !important;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.07) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
 }
+
+.settings-tab-button[data-active="true"] .settings-tab-button__icon {
+  background: color-mix(in srgb, var(--primary) 14%, transparent) !important;
+}
+
+/* per-tab accent colors in inactive state */
+.settings-tab-button[data-id="general"] .settings-tab-button__icon { color: #8b5cf6; }
+.settings-tab-button[data-id="reading"] .settings-tab-button__icon { color: #3b82f6; }
+.settings-tab-button[data-id="audio"]   .settings-tab-button__icon { color: #f59e0b; }
+
+.settings-tab-button[data-active="true"][data-id="general"] .settings-tab-button__icon { color: var(--primary); }
+.settings-tab-button[data-active="true"][data-id="reading"] .settings-tab-button__icon { color: var(--primary); }
+.settings-tab-button[data-active="true"][data-id="audio"]   .settings-tab-button__icon { color: var(--primary); }
 
 .settings-drawer__content {
   min-height: 0 !important;
@@ -442,26 +469,26 @@
 }
 
 .settings-section {
-  border: 1px solid color-mix(in srgb, var(--border) 78%, transparent) !important;
-  border-radius: 8px !important;
+  border: 1px solid color-mix(in srgb, var(--border) 65%, transparent) !important;
+  border-radius: 14px !important;
   background: var(--bg-card) !important;
   overflow: hidden !important;
 }
 
 .settings-section__title {
   margin: 0 !important;
-  padding: 0.75rem 0.85rem 0 !important;
-  font-size: 0.72rem !important;
-  font-weight: 850 !important;
-  letter-spacing: 0.05em !important;
+  padding: 0.9rem 1rem 0 !important;
+  font-size: 0.7rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.07em !important;
   text-transform: uppercase !important;
-  color: var(--text-muted) !important;
+  color: color-mix(in srgb, var(--text-muted) 80%, transparent) !important;
 }
 
 .settings-section__body {
   display: grid !important;
   gap: 0.65rem !important;
-  padding: 0.75rem 0.85rem 0.85rem !important;
+  padding: 0.75rem 1rem 1rem !important;
 }
 
 .settings-segmented,
@@ -474,67 +501,82 @@
 
 .settings-segmented {
   grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr)) !important;
-  padding: 0.25rem !important;
+  padding: 0.2rem !important;
   border: 1px solid var(--border) !important;
-  border-radius: 8px !important;
+  border-radius: 10px !important;
   background: var(--bg-secondary) !important;
 }
 
 .settings-segmented__item,
 .settings-chip,
 .settings-action-button {
-  min-height: 2.55rem !important;
+  min-height: 2.6rem !important;
   border: 1px solid transparent !important;
-  border-radius: 7px !important;
+  border-radius: 8px !important;
   background: transparent !important;
-  color: var(--text-primary) !important;
+  color: var(--text-muted) !important;
   font-size: 0.86rem !important;
-  font-weight: 760 !important;
+  font-weight: 600 !important;
   letter-spacing: 0 !important;
+  cursor: pointer !important;
+  transition: background 0.14s, color 0.14s, border-color 0.14s !important;
 }
 
 .settings-segmented__item[data-active="true"],
 .settings-chip[data-active="true"] {
-  border-color: color-mix(in srgb, var(--primary) 28%, transparent) !important;
-  background: color-mix(in srgb, var(--primary) 11%, var(--bg-card) 89%) !important;
+  border-color: color-mix(in srgb, var(--primary) 25%, transparent) !important;
+  background: var(--bg-card) !important;
   color: var(--primary) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08) !important;
 }
 
 .settings-theme-grid {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 0.55rem !important;
+  gap: 0.6rem !important;
 }
 
 .settings-theme-tile {
-  display: grid !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 0.6rem !important;
   min-width: 0 !important;
-  gap: 0.5rem !important;
-  justify-items: center !important;
-  min-height: 5.3rem !important;
-  padding: 0.75rem 0.45rem !important;
-  border: 1px solid var(--border) !important;
-  border-radius: 8px !important;
+  min-height: 5.8rem !important;
+  padding: 0.9rem 0.5rem 0.75rem !important;
+  border: 1.5px solid var(--border) !important;
+  border-radius: 14px !important;
   background: var(--bg-secondary) !important;
-  color: var(--text-primary) !important;
-  font-size: 0.78rem !important;
-  font-weight: 780 !important;
+  color: var(--text-secondary, var(--text-muted)) !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: border-color 0.18s, background 0.18s, color 0.18s, box-shadow 0.18s !important;
+}
+
+.settings-theme-tile:hover {
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent) !important;
+  background: color-mix(in srgb, var(--primary) 5%, var(--bg-secondary) 95%) !important;
 }
 
 .settings-theme-tile[data-active="true"] {
-  border-color: color-mix(in srgb, var(--primary) 42%, transparent) !important;
-  background: color-mix(in srgb, var(--primary) 9%, var(--bg-card) 91%) !important;
+  border-color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 10%, var(--bg-card) 90%) !important;
   color: var(--primary) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent) !important;
 }
 
 .settings-theme-tile__swatch {
-  width: 2.15rem !important;
-  height: 2.15rem !important;
-  border-radius: 999px !important;
-  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(0, 0, 0, 0.08) !important;
+  flex-shrink: 0 !important;
   background:
-    linear-gradient(90deg, var(--theme-primary) 0 34%, transparent 34%),
-    linear-gradient(180deg, var(--theme-bg) 0 60%, var(--theme-text) 60%) !important;
+    linear-gradient(135deg, var(--theme-primary) 0 40%, transparent 40%),
+    linear-gradient(180deg, var(--theme-bg) 0 55%, var(--theme-text) 55%) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
 }
 
 .settings-control-row {
@@ -858,23 +900,94 @@ html[data-theme="dark"] .settings-drawer {
   inset: 50% auto auto 50% !important;
   transform: translate(-50%, -50%) !important;
   display: grid !important;
-  grid-template: "head head" auto "tabs body" minmax(0,1fr) / 220px minmax(0,1fr) !important;
+  grid-template: "head head" auto "tabs body" minmax(0,1fr) / 200px minmax(0,1fr) !important;
   width: min(92vw, 820px) !important;
-  height: min(86vh, 720px) !important;
-  border-radius: 18px !important;
+  height: min(88vh, 700px) !important;
+  border-radius: 20px !important;
   background: var(--bg-card) !important;
-  box-shadow: 0 28px 90px rgba(15,23,42,.24) !important;
+  box-shadow: 0 32px 100px rgba(0,0,0,.32) !important;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent) !important;
 }
-.settings-qurancom .settings-drawer__header{grid-area:head!important;box-sizing:border-box!important;min-height:4.8rem!important;max-height:4.8rem!important;background:var(--bg-card)!important}
-.settings-qurancom .settings-drawer__tabs{grid-area:tabs!important;flex-direction:column!important;min-height:0!important;max-height:none!important;height:auto!important;border-bottom:0!important;border-inline-end:1px solid var(--border)!important;overflow-y:auto!important}
-.settings-qurancom .settings-tab-button{justify-content:flex-start!important;width:100%!important;height:2.85rem!important;min-height:2.85rem!important;max-height:2.85rem!important}
-.settings-qurancom .settings-tab-button[data-active="true"]{background:var(--bg-card)!important}
-.settings-qurancom .settings-drawer__content{grid-area:body!important;padding:1rem!important;background:var(--bg-primary)!important}
-@media (max-width:720px){
-  .settings-qurancom.settings-drawer{inset:auto 0 0!important;transform:none!important;grid-template:"head" auto "tabs" auto "body" minmax(0,1fr) / minmax(0,1fr)!important;width:100vw!important;height:min(92vh,760px)!important;border-radius:20px 20px 0 0!important}
-  .settings-qurancom .settings-drawer__header{min-height:4.35rem!important;max-height:4.35rem!important}
-  .settings-qurancom .settings-drawer__tabs{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;min-height:3.55rem!important;max-height:3.55rem!important;border-inline-end:0!important;border-bottom:1px solid var(--border)!important;overflow:hidden!important}
-  .settings-qurancom .settings-tab-button{justify-content:center!important;height:2.45rem!important;min-height:2.45rem!important;max-height:2.45rem!important}
+
+.settings-qurancom .settings-drawer__header {
+  grid-area: head !important;
+  box-sizing: border-box !important;
+  min-height: 4.6rem !important;
+  max-height: 4.6rem !important;
+  background: var(--bg-card) !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent) !important;
+}
+
+.settings-qurancom .settings-drawer__tabs {
+  grid-area: tabs !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.2rem !important;
+  padding: 0.75rem 0.6rem !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  height: auto !important;
+  border-bottom: 0 !important;
+  border-inline-end: 1px solid color-mix(in srgb, var(--border) 55%, transparent) !important;
+  background: color-mix(in srgb, var(--bg-secondary) 60%, transparent) !important;
+  overflow-y: auto !important;
+}
+
+.settings-qurancom .settings-tab-button {
+  justify-content: flex-start !important;
+  width: 100% !important;
+  height: 2.9rem !important;
+  min-height: 2.9rem !important;
+  max-height: 2.9rem !important;
+  border-radius: 10px !important;
+  padding: 0 0.65rem !important;
+  gap: 0.6rem !important;
+}
+
+.settings-qurancom .settings-tab-button[data-active="true"] {
+  background: color-mix(in srgb, var(--primary) 10%, var(--bg-card) 90%) !important;
+}
+
+.settings-qurancom .settings-drawer__content {
+  grid-area: body !important;
+  padding: 1.1rem !important;
+  background: color-mix(in srgb, var(--bg-primary) 60%, var(--bg-card) 40%) !important;
+}
+
+@media (max-width: 720px) {
+  .settings-qurancom.settings-drawer {
+    inset: auto 0 0 !important;
+    transform: none !important;
+    grid-template: "head" auto "tabs" auto "body" minmax(0,1fr) / minmax(0,1fr) !important;
+    width: 100vw !important;
+    height: min(92vh, 760px) !important;
+    border-radius: 20px 20px 0 0 !important;
+    border-inline: none !important;
+    border-bottom: none !important;
+  }
+  .settings-qurancom .settings-drawer__header {
+    min-height: 4.2rem !important;
+    max-height: 4.2rem !important;
+  }
+  .settings-qurancom .settings-drawer__tabs {
+    display: grid !important;
+    flex-direction: unset !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.3rem !important;
+    padding: 0.45rem !important;
+    min-height: 3.6rem !important;
+    max-height: 3.6rem !important;
+    border-inline-end: 0 !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent) !important;
+    overflow: hidden !important;
+  }
+  .settings-qurancom .settings-tab-button {
+    justify-content: center !important;
+    height: 2.5rem !important;
+    min-height: 2.5rem !important;
+    max-height: 2.5rem !important;
+    padding: 0 0.5rem !important;
+  }
 }
 
 .settings-font-picker {
