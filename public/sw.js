@@ -48,13 +48,11 @@ const API_ENDPOINTS_TO_PRECACHE = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    Promise.all([
-      // 1. Pré-cache de l'app shell (bloquant)
-      caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE)),
-
-      // 2. Pré-cache des données coraniques (non bloquant – best effort)
-      precacheQuranApi(),
-    ]).then(() => self.skipWaiting()),
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => cache.addAll(ASSETS_TO_CACHE))
+      .then(() => self.skipWaiting())
+      .then(() => precacheQuranApi()),
   );
 });
 

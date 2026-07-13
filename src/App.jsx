@@ -677,9 +677,11 @@ export default function App() {
         )}
 
         {/* ── Mini-player persistant (barre fixe au bas de chaque page) ────── */}
-        <Suspense fallback={null}>
-          <MiniPlayer />
-        </Suspense>
+        {shouldMountAudioPlayer && (
+          <Suspense fallback={null}>
+            <MiniPlayer />
+          </Suspense>
+        )}
 
         {/* ── Bouton raccourcis clavier (desktop uniquement) ───────────── */}
         {!showHome && !showDuas && (

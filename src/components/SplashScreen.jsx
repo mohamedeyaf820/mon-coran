@@ -122,7 +122,7 @@ export default function SplashScreen({
           onClick={() => {
             setShowSkip(false);
             setFadeOut(true);
-            setTimeout(onDone, 800);
+            setTimeout(onDone, 400);
           }}
         >
           {skipLabels[uiLang] ?? 'Passer'} ›

@@ -180,6 +180,10 @@ export default function useQuranDisplayData({
     }
 
     const fetchPromise = (async () => {
+      const hafsPromise = riwaya === "warsh"
+        ? loadHafsSupportData({ currentJuz, currentPage, currentSurah, displayMode, signal }).catch(() => null)
+        : Promise.resolve(null);
+
       const arabicData = await loadArabicData({
         currentJuz,
         currentPage,
@@ -190,12 +194,12 @@ export default function useQuranDisplayData({
       });
       const fetchedAyahs = ensureRequestedRiwaya(arabicData.ayahs || [], riwaya);
       const fallback = Boolean(arabicData?.isTextFallback);
-      return { arabicData, ayahs: fetchedAyahs, isWarshFallback: fallback };
+      return { arabicData, ayahs: fetchedAyahs, isWarshFallback: fallback, hafsPromise };
     })();
     INFLIGHT_REQUESTS.set(cacheKey, fetchPromise);
 
     try {
-      const { arabicData, ayahs: fetchedAyahs, isWarshFallback: fallback } = await fetchPromise;
+      const { arabicData, ayahs: fetchedAyahs, isWarshFallback: fallback, hafsPromise } = await fetchPromise;
       INFLIGHT_REQUESTS.delete(cacheKey);
 
       if (signal.aborted || requestSeqRef.current !== requestId) return;
@@ -212,31 +216,25 @@ export default function useQuranDisplayData({
       dispatch({ type: "SET", payload: { loadedAyahCount: fetchedAyahs.length } });
       dispatch({ type: "SET_LOADING", payload: false });
 
-      if (riwaya === "warsh") {
-        // Fetch Hafs support data immediately (microtask) instead of delaying 2.4s
-        Promise.resolve().then(() => {
-          if (signal.aborted || requestSeqRef.current !== requestId) return;
-          loadHafsSupportData({ currentJuz, currentPage, currentSurah, displayMode, signal })
-            .then((hafsData) => {
-              if (signal.aborted || requestSeqRef.current !== requestId) return;
-              const hafsMap = new Map(
-                (hafsData?.ayahs || []).map((ayah) => [
-                  `${ayah.surah?.number}:${ayah.numberInSurah}`,
-                  ayah,
-                ]),
-              );
-              setAyahs((previous) => {
-                const merged = mergeHafsSupport(previous, hafsMap);
-                rememberLimited(
-                  DISPLAY_DATA_CACHE,
-                  cacheKey,
-                  { ayahs: merged, isWarshFallback: fallback },
-                  DISPLAY_DATA_CACHE_MAX,
-                );
-                return merged;
-              });
-            })
-            .catch(() => {});
+      if (hafsPromise) {
+        hafsPromise.then((hafsData) => {
+          if (signal.aborted || requestSeqRef.current !== requestId || !hafsData) return;
+          const hafsMap = new Map(
+            (hafsData?.ayahs || []).map((ayah) => [
+              `${ayah.surah?.number}:${ayah.numberInSurah}`,
+              ayah,
+            ]),
+          );
+          setAyahs((previous) => {
+            const merged = mergeHafsSupport(previous, hafsMap);
+            rememberLimited(
+              DISPLAY_DATA_CACHE,
+              cacheKey,
+              { ayahs: merged, isWarshFallback: fallback },
+              DISPLAY_DATA_CACHE_MAX,
+            );
+            return merged;
+          });
         });
       }
 

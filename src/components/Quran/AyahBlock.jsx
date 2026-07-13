@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { Bookmark } from "lucide-react";
 import { toAr } from "../../data/surahs";
 import { t } from "../../i18n";
-import { useAppState, useApp } from "../../context/AppContext";
+import { useAppSelector } from "../../context/AppContext";
 import { arabicToLatin } from "../../data/transliteration";
 import { cn } from "../../lib/utils";
 import MemorizationText from "./MemorizationText";
@@ -32,7 +32,7 @@ function AyahBlockComponent({
   memMode,
 }) {
   const isRtl = lang === "ar";
-  const { translationReadingMode } = useAppState();
+  const translationReadingMode = useAppSelector((s) => s.translationReadingMode);
 
   const transliterationSource =
     riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text;

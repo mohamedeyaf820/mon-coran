@@ -9,7 +9,6 @@ import { AppProvider } from "./context/AppContext";
 // Critical CSS — must be available before first paint
 import "./styles/tailwind.css";
 import "./styles/domains/themes4.css";
-import "./styles/responsive-all.css";
 import "./styles/ui-polish.css";
 import "./styles/riwaya-fonts.css";
 import "./styles/dark-mode-refonte.css";
@@ -76,6 +75,7 @@ if (typeof window !== "undefined") {
   // Defer non-critical feature CSS until idle — these are only needed after
   // the user navigates to reading/settings/recitation pages
   const loadDeferredStyles = () => {
+    import("./styles/responsive-all.css").catch(() => null);
     import("./styles/domains/premium-platform.css").catch(() => null);
     import("./styles/domains/premium-plus.css").catch(() => null);
     import("./styles/reading-ux-refonte.css").catch(() => null);
