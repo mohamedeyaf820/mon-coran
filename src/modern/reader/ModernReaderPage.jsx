@@ -59,6 +59,81 @@ function TajweedText({ text, fallback, enabled }) {
   ));
 }
 
+function ModernMushafPage({
+  bookmarks,
+  onBookmark,
+  onPlay,
+  pageNumber,
+  showTajweed,
+  showTranslation,
+  verses,
+}) {
+  const [selectedKey, setSelectedKey] = useState(null);
+  const selected = verses.find((verse) => verse.key === selectedKey) || null;
+
+  return (
+    <section className="modern-mushaf-wrap" aria-label={`Page du Coran ${pageNumber}`}>
+      <article className={`modern-mushaf-page modern-mushaf-page--${pageNumber}`} dir="rtl" lang="ar">
+        <header className="modern-mushaf-page__meta" aria-hidden="true">
+          <span>القرآن الكريم</span>
+          <span>الجزء {verses[0]?.juz || 1}</span>
+        </header>
+        <div className="modern-mushaf-page__frame">
+          <div className="modern-mushaf-flow">
+            {verses.map((verse, index) => {
+              const previous = verses[index - 1];
+              const startsSurah = !previous || previous.surahNumber !== verse.surahNumber;
+              const surah = getSurah(verse.surahNumber);
+              return (
+                <span className="modern-mushaf-unit" key={verse.key}>
+                  {startsSurah && (
+                    <span className="modern-mushaf-surah">
+                      <span>{surah?.en}</span>
+                      <strong>{surah?.ar}</strong>
+                    </span>
+                  )}
+                  {startsSurah && verse.surahNumber !== 1 && verse.surahNumber !== 9 && (
+                    <span className="modern-mushaf-basmala">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>
+                  )}
+                  <button
+                    aria-label={`Verset ${verse.ayahNumber}`}
+                    aria-pressed={selectedKey === verse.key}
+                    className="modern-mushaf-ayah"
+                    onClick={() => setSelectedKey((key) => key === verse.key ? null : verse.key)}
+                    type="button"
+                  >
+                    <TajweedText enabled={showTajweed} fallback={verse.text} text={verse.tajweedText} />
+                    <span className="modern-mushaf-ayah__mark" aria-hidden="true">{verse.ayahNumber}</span>
+                  </button>{" "}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+        <footer className="modern-mushaf-page__number" aria-label={`Page ${pageNumber}`}>
+          <span>{pageNumber}</span>
+        </footer>
+      </article>
+
+      {selected && (
+        <div className="modern-mushaf-selection" aria-label={`Verset selectionne ${selected.ayahNumber}`}>
+          <span><strong>{getSurah(selected.surahNumber)?.en}</strong><small>Verset {selected.ayahNumber}</small></span>
+          <VerseActions bookmarked={bookmarks.has(selected.key)} onBookmark={() => onBookmark(selected)} onPlay={() => onPlay(selected)} verse={selected} />
+        </div>
+      )}
+
+      {showTranslation && (
+        <div className="modern-mushaf-translations" lang="fr">
+          <h2>Traduction de la page</h2>
+          {verses.map((verse) => (
+            <p key={`translation-${verse.key}`}><span>{verse.surahNumber}:{verse.ayahNumber}</span>{verse.translation || "Traduction indisponible."}</p>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function VerseActions({ verse, bookmarked, onBookmark, onPlay }) {
   const [copied, setCopied] = useState(false);
   const [editingNote, setEditingNote] = useState(false);
@@ -250,7 +325,19 @@ export function ModernReaderPage({ route }) {
       )}
       {state.status === "ready" && !state.verses.length && <div className="modern-reader-state">Aucun verset disponible.</div>}
 
-      {state.status === "ready" && state.verses.length > 0 && (
+      {state.status === "ready" && state.verses.length > 0 && route.mode === "page" && (
+        <ModernMushafPage
+          bookmarks={bookmarks}
+          onBookmark={toggleBookmark}
+          onPlay={(verse) => audio.playQueue(state.verses, { surah: verse.surahNumber, ayah: verse.ayahNumber })}
+          pageNumber={route.value}
+          showTajweed={showTajweed}
+          showTranslation={showTranslation}
+          verses={state.verses}
+        />
+      )}
+
+      {state.status === "ready" && state.verses.length > 0 && route.mode !== "page" && (
         <section className="modern-reader-verses" aria-label={title}>
           {state.verses.map((verse, index) => {
             const previous = state.verses[index - 1];

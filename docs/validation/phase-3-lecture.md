@@ -26,6 +26,14 @@
 - Barre de lecture stable sur bureau et reorganisee sur mobile.
 - Aucune erreur console applicative observee.
 
+## Correction de conformite du mode page
+
+- Le mode page utilise une feuille mushaf unique et non des cartes de versets.
+- La pagination 1 a 604 reste celle fournie par l'API coranique.
+- La Fatiha est composee ligne par ligne; les autres pages utilisent un flux arabe continu.
+- Les en-tetes de sourate, basmala, reperes de versets et numero de page sont integres a la feuille.
+- Les traductions restent dans un panneau separe pour ne pas modifier la composition arabe.
+
 ## Risque residuel connu
 
 - L'audio reste volontairement hors perimetre de cette phase et sera traite dans la phase suivante.

@@ -47,7 +47,13 @@ test("reads a surah with translation, tajwid and verse actions", async ({ page }
 test("switches between page and juz modes", async ({ page }) => {
   await page.goto("/page/1");
   await expect(page.getByRole("heading", { name: "Page 1" })).toBeVisible();
-  await expect(page.locator(".modern-reader-surah-break")).toContainText("Al-Fatiha");
+  await expect(page.locator(".modern-mushaf-page")).toBeVisible();
+  await expect(page.locator(".modern-reader-verse")).toHaveCount(0);
+  await expect(page.locator(".modern-mushaf-ayah")).toHaveCount(2);
+  await expect(page.locator(".modern-mushaf-surah")).toContainText("Al-Fatiha");
+  await page.getByRole("button", { name: "Verset 1" }).click();
+  await expect(page.getByLabel("Verset selectionne 1")).toBeVisible();
+  await expect(page.getByLabel("Verset selectionne 1").getByRole("button")).toHaveCount(4);
 
   await page.getByRole("button", { name: "Juz" }).click();
   await expect(page).toHaveURL(/\/juz\/1$/);
@@ -61,4 +67,16 @@ test("keeps the reader usable on a narrow viewport", async ({ page }) => {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
   await expect(page.getByRole("button", { name: "Traduction" })).toBeVisible();
+});
+
+test("keeps the mushaf page intact on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/page/1");
+  await expect(page.locator(".modern-mushaf-page")).toBeVisible();
+  const metrics = await page.locator(".modern-mushaf-page").evaluate((element) => ({
+    width: element.getBoundingClientRect().width,
+    overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+  }));
+  expect(metrics.width).toBeLessThanOrEqual(390);
+  expect(metrics.overflow).toBe(false);
 });
