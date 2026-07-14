@@ -25,8 +25,7 @@ import { SurahCard, JuzCard, EmptyState } from "./HomePrimitives";
 import { getReciterVisual } from "../../data/reciters";
 
 /**
- * ContentSection — onglets, barre de recherche/tri, grille de contenu,
- * mini-player audio du bas.
+ * ContentSection — onglets, barre de recherche/tri et grille de contenu.
  *
  * Props :
  *   lang                   {string}

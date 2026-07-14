@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { resolveFontFamily } from "../../data/fonts";
 
 export default function useQuranDisplayView({
+  contentReady,
   dispatch,
   displayMode,
   fontFamily,
@@ -112,6 +113,7 @@ export default function useQuranDisplayView({
         arabicElement.style.fontFamily = quranFontCss;
       });
   }, [
+    contentReady,
     displayMode,
     fullscreenFontSize,
     isCompactPhone,

@@ -36,7 +36,6 @@ const QuranDisplay = lazy(() => import("./components/QuranDisplay"));
 const NotesPanel = lazy(() => import("./components/NotesPanel"));
 const Sidebar = lazy(() => import("./components/Sidebar"));
 const AudioPlayer = lazy(() => import("./components/AudioPlayer"));
-const MiniPlayer = lazy(() => import("./components/MiniPlayer"));
 const SearchModal = lazy(() => import("./components/SearchModal"));
 const SettingsModal = lazy(() => import("./components/SettingsModal"));
 const BookmarksModal = lazy(() => import("./components/BookmarksModal"));
@@ -611,7 +610,7 @@ export default function App() {
             }
             className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
             style={{
-              paddingBottom: 'calc(var(--player-h, 0px) + var(--mini-player-h, 0px))',
+              paddingBottom: "var(--player-h, 0px)",
               height: "calc(100dvh - var(--header-h, 72px))",
             }}
           >
@@ -673,13 +672,6 @@ export default function App() {
         {shouldMountAudioPlayer && (
           <Suspense fallback={null}>
             <AudioPlayer />
-          </Suspense>
-        )}
-
-        {/* ── Mini-player persistant (barre fixe au bas de chaque page) ────── */}
-        {shouldMountAudioPlayer && (
-          <Suspense fallback={null}>
-            <MiniPlayer />
           </Suspense>
         )}
 

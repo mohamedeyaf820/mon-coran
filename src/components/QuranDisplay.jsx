@@ -131,6 +131,7 @@ export default function QuranDisplay() {
     fontFamily === "mushaf-tajweed" ||
     fontFamily === "qcf-v4";
   const view = useQuranDisplayView({
+    contentReady: ayahs.length > 0,
     dispatch,
     displayMode,
     fontFamily,

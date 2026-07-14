@@ -62,12 +62,12 @@
   bottom: 0 !important;
   left: 0 !important;
   width: 100% !important;
-  padding-bottom: max(.45rem, env(safe-area-inset-bottom)) !important;
+  padding-bottom: max(.28rem, env(safe-area-inset-bottom)) !important;
   border-right: 0 !important;
   border-bottom: 0 !important;
   border-left: 0 !important;
-  border-radius: 1.5rem 1.5rem 0 0 !important;
-  box-shadow: 0 -16px 45px rgba(4, 12, 20, .26) !important;
+  border-radius: 1.1rem 1.1rem 0 0 !important;
+  box-shadow: 0 -10px 32px rgba(4, 12, 20, .22) !important;
 }
 
 .app-root .audio-player-simple .simple-player__header {
@@ -412,27 +412,17 @@
   }
 
   .app-root .audio-player-simple.simple-player--mobile-open {
-    max-height: 9.25rem !important;
-    padding-bottom: max(.35rem, env(safe-area-inset-bottom)) !important;
-  }
-
-  .app-root .audio-player-simple.simple-player--mobile-open .simple-player__handle {
-    min-height: .9rem !important;
-    height: .9rem;
-  }
-
-  .app-root .audio-player-simple.simple-player--mobile-open .simple-player__handle span {
-    width: 2.2rem;
-    height: .2rem;
+    max-height: calc(7rem + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: max(.28rem, env(safe-area-inset-bottom)) !important;
   }
 
   .app-root .audio-player-simple .simple-player__mobile-summary {
     display: grid;
-    grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+    grid-template-columns: 2.25rem minmax(0, 1fr) auto;
     align-items: center;
-    gap: .62rem;
-    min-height: 2.75rem;
-    padding: 0 .72rem;
+    gap: .52rem;
+    min-height: 2.65rem;
+    padding: .22rem .6rem .15rem;
   }
 
   .app-root .audio-player-simple .simple-player__mobile-meta {
@@ -450,12 +440,12 @@
 
   .app-root .audio-player-simple .simple-player__mobile-meta > strong {
     color: var(--simple-player-ink);
-    font-size: .76rem;
+    font-size: .74rem;
     font-weight: 780;
   }
 
   .app-root .audio-player-simple .simple-player__mobile-meta > span:last-child {
-    margin-top: .15rem;
+    margin-top: .1rem;
     color: var(--simple-player-muted);
     font-size: .6rem;
   }
@@ -464,7 +454,7 @@
     display: flex !important;
     align-items: center;
     gap: .35rem;
-    margin-bottom: .14rem;
+    margin-bottom: .08rem;
     color: var(--theme-primary);
     font-size: .52rem;
     font-weight: 850;
@@ -485,46 +475,47 @@
   }
 
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__header-actions {
-    gap: .05rem;
+    gap: 0;
   }
 
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__icon-button,
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__speed {
-    min-width: 2.5rem !important;
-    min-height: 2.5rem !important;
-    width: 2.5rem !important;
-    height: 2.5rem !important;
-    border-radius: .75rem !important;
+    min-width: 2.25rem !important;
+    min-height: 2.25rem !important;
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+    border-radius: .68rem !important;
   }
 
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__timeline {
-    padding: .34rem .8rem .12rem;
+    padding: .08rem .72rem .06rem;
   }
 
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__progress {
-    height: .25rem !important;
-    min-height: .25rem !important;
+    height: .2rem !important;
+    min-height: .2rem !important;
   }
 
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__transport {
-    grid-template-columns: repeat(4, 2.5rem);
+    grid-template-columns: 2.25rem 2.25rem 2.6rem 2.25rem;
     justify-content: center;
-    gap: clamp(.65rem, 7vw, 1.7rem);
-    min-height: 2.75rem;
-    padding: .05rem .75rem .12rem;
+    gap: clamp(.55rem, 6vw, 1.4rem);
+    min-height: 2.55rem;
+    padding: .02rem .7rem .08rem;
   }
 
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__play {
-    width: 2.65rem !important;
-    height: 2.65rem !important;
-    min-width: 2.65rem !important;
-    min-height: 2.65rem !important;
+    width: 2.6rem !important;
+    height: 2.6rem !important;
+    min-width: 2.6rem !important;
+    min-height: 2.6rem !important;
+    box-shadow: 0 5px 14px rgba(var(--theme-primary-rgb), .24) !important;
   }
 
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__network {
     position: absolute;
     right: 6.4rem;
-    top: 1rem;
+    top: .55rem;
     max-width: 7rem;
     overflow: hidden;
     margin: 0;
@@ -540,6 +531,40 @@
     clip: rect(0 0 0 0);
     clip-path: inset(50%);
     white-space: nowrap;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1024px) {
+  .app-root .audio-player-simple.simple-player--mobile-open {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto .24rem;
+    align-items: center;
+    max-height: calc(4rem + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: max(.2rem, env(safe-area-inset-bottom)) !important;
+    border-radius: .9rem .9rem 0 0 !important;
+  }
+
+  .app-root .audio-player-simple.simple-player--mobile-open .simple-player__mobile-summary {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    min-height: 2.8rem;
+    padding: .2rem .35rem .16rem .7rem;
+  }
+
+  .app-root .audio-player-simple.simple-player--mobile-open .simple-player__timeline {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding: 0 .7rem .08rem;
+  }
+
+  .app-root .audio-player-simple.simple-player--mobile-open .simple-player__transport {
+    grid-column: 2;
+    grid-row: 1;
+    gap: .25rem;
+    min-height: 2.8rem;
+    padding: .12rem .65rem .08rem .25rem;
   }
 }
 

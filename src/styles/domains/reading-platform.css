@@ -105,13 +105,13 @@
 .app-root .quran-display--hafs .qc-ayah-text-ar {
     --qcom-ar-leading: 2.1;
     --qcom-ar-word-spacing: 0.085em;
-    font-family: var(--font-quran-hafs, "KFGQPC Uthmanic Script HAFS", var(--font-quran), serif) !important;
+    font-family: var(--qd-font-family, var(--font-quran-hafs, "KFGQPC Uthmanic Script HAFS", var(--font-quran), serif)) !important;
 }
 
 .app-root .quran-display--warsh .qc-ayah-text-ar {
     --qcom-ar-leading: 2.2;
     --qcom-ar-word-spacing: 0.055em;
-    font-family: var(--font-quran-warsh, "KFGQPC Uthmanic Script WARSH", var(--font-quran), serif) !important;
+    font-family: var(--qd-font-family, var(--font-quran-warsh, "KFGQPC Uthmanic Script WARSH", var(--font-quran), serif)) !important;
 }
 
 .app-root .quran-display--platform .qc-ayah-text-ar :is(.wbw-container, .hafs-karaoke) {
@@ -203,13 +203,13 @@
 
 .app-root .quran-display--hafs .cpv-flow,
 .app-root .quran-display--hafs .mp-ayahs-flow {
-    font-family: var(--font-quran-hafs, var(--font-quran), serif) !important;
+    font-family: var(--qd-font-family, var(--font-quran-hafs, var(--font-quran), serif)) !important;
     word-spacing: 0.085em !important;
 }
 
 .app-root .quran-display--warsh .cpv-flow,
 .app-root .quran-display--warsh .mp-ayahs-flow {
-    font-family: var(--font-quran-warsh, var(--font-quran), serif) !important;
+    font-family: var(--qd-font-family, var(--font-quran-warsh, var(--font-quran), serif)) !important;
     line-height: 2.18 !important;
     word-spacing: 0.055em !important;
 }
@@ -597,13 +597,13 @@
 }
 
 .app-root .quran-display--hafs :is(.cpv-flow, .qcom-continuous-list) {
-    font-family: var(--font-quran-hafs, "KFGQPC Uthmanic Script HAFS", var(--font-quran), serif) !important;
+    font-family: var(--qd-font-family, var(--font-quran-hafs, "KFGQPC Uthmanic Script HAFS", var(--font-quran), serif)) !important;
 }
 
 .app-root .quran-display--warsh :is(.cpv-flow, .qcom-continuous-list) {
     --qcom-reader-line-height: 2.16;
     --qcom-reader-word-spacing: 0.08em;
-    font-family: var(--font-quran-warsh, "KFGQPC Uthmanic Script WARSH", var(--font-quran), serif) !important;
+    font-family: var(--qd-font-family, var(--font-quran-warsh, "KFGQPC Uthmanic Script WARSH", var(--font-quran), serif)) !important;
 }
 
 .app-root .quran-display--platform .qcom-continuous-list {

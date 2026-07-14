@@ -19,6 +19,8 @@ import { cn, toast } from "../lib/utils";
 import { formatCooldownLabel } from "../utils/formatUtils";
 import AudioOptionsModal from "./audioPlayer/AudioOptionsModal";
 import SimpleAudioPlayerView from "./audioPlayer/SimpleAudioPlayerView";
+import { useAutoScrollAyah } from "../hooks/useAutoScrollAyah";
+import { useMediaSession } from "../hooks/useMediaSession";
 import {
   MOBILE_BREAKPOINT,
   getReciterCooldownMs,
@@ -708,6 +710,29 @@ export default function AudioPlayer() {
       : lang === "ar"
         ? currentArabicName
         : currentSurahName;
+
+  const mediaSessionTitle = hasAyahContext
+    ? `${currentSurahName || titleLabel} · ${t("quran.ayah", lang)} ${currentPlayingAyah.ayah}`
+    : titleLabel || currentSurahName;
+
+  useMediaSession({
+    title: mediaSessionTitle,
+    artist: reciterLabel,
+    album: "MushafPlus",
+    artwork: null,
+    isPlaying,
+    onPlay: () => audioService.resume(),
+    onPause: () => audioService.pause(),
+    onNext: next,
+    onPrev: prev,
+  });
+
+  useAutoScrollAyah({
+    currentAyah: currentPlayingAyah,
+    currentSurah,
+    isPlaying,
+  });
+
   const normalizeAyahText = (value) =>
     typeof value === "string" ? value.replace(/\s+/g, " ").trim() : "";
   const currentAyahText = (() => {
@@ -887,12 +912,20 @@ export default function AudioPlayer() {
       return;
     }
 
-    // Reserve enough space for the mobile dock so verses and controls are never hidden behind it.
-    const reservedHeight = minimized ? 82 : 140;
-    root.style.setProperty("--player-h", `${reservedHeight}px`);
+    // Match the reserved space to the responsive dock: one row on wide screens,
+    // two rows on narrow phones, and a compact row when minimized.
+    const updateReservedHeight = () => {
+      const usesWideDock =
+        window.innerWidth >= 600 && window.innerWidth <= MOBILE_BREAKPOINT;
+      const reservedHeight = minimized ? 88 : usesWideDock ? 64 : 108;
+      root.style.setProperty("--player-h", `${reservedHeight}px`);
+    };
+    updateReservedHeight();
+    window.addEventListener("resize", updateReservedHeight, { passive: true });
     root.style.removeProperty("--desktop-player-reserved-h");
 
     return () => {
+      window.removeEventListener("resize", updateReservedHeight);
       root.style.removeProperty("--player-h");
       root.style.removeProperty("--desktop-player-reserved-h");
     };

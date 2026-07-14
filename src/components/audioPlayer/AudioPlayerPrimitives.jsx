@@ -134,7 +134,7 @@ export function CoverArt({ isPlaying, size = 52, reciter }) {
         <span
           className={cn(
             "font-black tracking-normal",
-            size === 40 ? "text-sm" : "text-lg",
+            size <= 40 ? "text-sm" : "text-lg",
           )}
         >
           {visual.avatar.initials}

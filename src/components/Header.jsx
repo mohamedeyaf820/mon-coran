@@ -324,12 +324,22 @@ export default function Header() {
       key: "search",
       Icon: Search,
       label: i18nT("nav.search", lang),
+      description: tr({
+        fr: "Trouver une sourate ou un verset",
+        en: "Find a surah or verse",
+        ar: "\u0627\u0644\u0628\u062d\u062b \u0639\u0646 \u0633\u0648\u0631\u0629 \u0623\u0648 \u0622\u064a\u0629",
+      }),
       action: openSearch,
     },
     {
       key: "settings",
       Icon: Settings,
       label: i18nT("nav.settings", lang),
+      description: tr({
+        fr: "Lecture et affichage",
+        en: "Reading and display",
+        ar: "\u0627\u0644\u0642\u0631\u0627\u0621\u0629 \u0648\u0627\u0644\u0639\u0631\u0636",
+      }),
       action: openSettings,
     },
     {
@@ -339,6 +349,11 @@ export default function Header() {
         fr: "Douas / Invocations",
         en: "Duas / Supplications",
         ar: "\u0627\u0644\u0623\u062f\u0639\u064a\u0629 \u0648\u0627\u0644\u0623\u0630\u0643\u0627\u0631",
+      }),
+      description: tr({
+        fr: "Invocations et rappels",
+        en: "Supplications and reminders",
+        ar: "\u0623\u062f\u0639\u064a\u0629 \u0648\u0623\u0630\u0643\u0627\u0631",
       }),
       action: openDuas,
     },
@@ -350,6 +365,11 @@ export default function Header() {
         en: "Switch theme",
         ar: "\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0645\u0638\u0647\u0631",
       }),
+      description: tr({
+        fr: "Adapter les couleurs",
+        en: "Adjust the colors",
+        ar: "\u062a\u062e\u0635\u064a\u0635 \u0627\u0644\u0623\u0644\u0648\u0627\u0646",
+      }),
       action: cycleTheme,
     },
     {
@@ -359,6 +379,11 @@ export default function Header() {
         fr: "Espace outils",
         en: "Tools hub",
         ar: "\u0645\u0631\u0643\u0632 \u0627\u0644\u0623\u062f\u0648\u0627\u062a",
+      }),
+      description: tr({
+        fr: "Lecture et étude",
+        en: "Reading and study",
+        ar: "\u0627\u0644\u0642\u0631\u0627\u0621\u0629 \u0648\u0627\u0644\u062f\u0631\u0627\u0633\u0629",
       }),
       action: openToolsHub,
     },
@@ -571,11 +596,32 @@ export default function Header() {
             >
               <div className="mp-header-menu__header">
                 <span className="mp-header-menu__header-icon">
-                  <MoreHorizontal size={14} strokeWidth={2.2} />
+                  <Shapes size={17} strokeWidth={2.1} />
                 </span>
-                <span className="mp-header-menu__header-text">
-                  {tr({ fr: "Actions rapides", en: "Quick actions", ar: "إجراءات سريعة" })}
+                <span className="mp-header-menu__heading">
+                  <span className="mp-header-menu__header-text">
+                    {tr({ fr: "Actions rapides", en: "Quick actions", ar: "إجراءات سريعة" })}
+                  </span>
+                  <span className="mp-header-menu__header-subtitle">
+                    {tr({
+                      fr: "Navigation et préférences",
+                      en: "Navigation and preferences",
+                      ar: "التنقل والتفضيلات",
+                    })}
+                  </span>
                 </span>
+                <button
+                  className="mp-header-menu__close"
+                  type="button"
+                  onClick={() => setQuickMenuOpen(false)}
+                  aria-label={tr({
+                    fr: "Fermer les actions rapides",
+                    en: "Close quick actions",
+                    ar: "إغلاق الإجراءات السريعة",
+                  })}
+                >
+                  <X size={16} strokeWidth={2.2} />
+                </button>
               </div>
 
               <div className="mp-header-menu__section">
@@ -591,9 +637,14 @@ export default function Header() {
                     }}
                   >
                     <span className="mp-header-menu__item-icon">
-                      <item.Icon size={15} strokeWidth={2} />
+                      <item.Icon size={17} strokeWidth={2} />
                     </span>
-                    <span>{item.label}</span>
+                    <span className="mp-header-menu__item-copy">
+                      <span className="mp-header-menu__item-label">{item.label}</span>
+                      <span className="mp-header-menu__item-description">
+                        {item.description}
+                      </span>
+                    </span>
                     {item.key === "search" && (
                       <kbd className="mp-header-menu__item-kbd">/</kbd>
                     )}
@@ -602,10 +653,28 @@ export default function Header() {
               </div>
 
               <div className="mp-header-menu__riwaya">
-                <div className="mp-header-menu__riwaya-label">
-                  {tr({ fr: "Riwaya", en: "Riwaya", ar: "الرواية" })}
+                <div className="mp-header-menu__riwaya-heading">
+                  <span className="mp-header-menu__riwaya-icon" aria-hidden="true">
+                    <BookOpen size={15} strokeWidth={2.1} />
+                  </span>
+                  <span className="mp-header-menu__riwaya-copy">
+                    <span className="mp-header-menu__riwaya-label">
+                      {tr({ fr: "Riwaya", en: "Riwaya", ar: "الرواية" })}
+                    </span>
+                    <span className="mp-header-menu__riwaya-description">
+                      {tr({
+                        fr: "Choisir la lecture",
+                        en: "Choose the recitation",
+                        ar: "اختيار القراءة",
+                      })}
+                    </span>
+                  </span>
                 </div>
-                <div className="mp-header-menu__riwaya-btns">
+                <div
+                  className="mp-header-menu__riwaya-btns"
+                  role="group"
+                  aria-label={headerLabels.riwayaToggle}
+                >
                   {["hafs", "warsh"].map((id) => (
                     <button
                       key={id}

@@ -42,6 +42,7 @@ function PlayerProgress({
   progress,
   progressDragging,
   progressRef,
+  showThumb = true,
   showTimes = true,
 }) {
   return (
@@ -63,7 +64,7 @@ function PlayerProgress({
         aria-valuemin={0}
         aria-valuemax={100}
       >
-        <ProgressRail progress={progress} showThumb />
+        <ProgressRail progress={progress} showThumb={showThumb} />
       </div>
       {showTimes && (
         <div className="simple-player__time" aria-hidden="true">
@@ -235,17 +236,8 @@ function MobileOpenPlayer(props) {
       aria-label={regionLabel}
       data-testid="audio-player-open"
     >
-      <button
-        type="button"
-        className="simple-player__handle"
-        onClick={onMinimize}
-        aria-label={minimizeLabel}
-      >
-        <span />
-      </button>
-
       <header className="simple-player__mobile-summary">
-        <CoverArt isPlaying={isPlaying} size={40} reciter={reciter} />
+        <CoverArt isPlaying={isPlaying} size={36} reciter={reciter} />
         <div className="simple-player__mobile-meta">
           <span className="simple-player__mobile-kicker">
             {riwaya === "warsh" ? "Warsh" : "Hafs"}
@@ -257,6 +249,13 @@ function MobileOpenPlayer(props) {
           <span>{reciterLabel || "—"}</span>
         </div>
         <div className="simple-player__header-actions">
+          <IconButton
+            className="simple-player__minimize"
+            label={minimizeLabel}
+            onClick={onMinimize}
+          >
+            <ChevronDown size={16} />
+          </IconButton>
           <IconButton
             className="mp-player-options-trigger"
             label={optionsLabel}
@@ -283,6 +282,7 @@ function MobileOpenPlayer(props) {
         progress={progress}
         progressDragging={progressDragging}
         progressRef={progressRef}
+        showThumb={false}
         showTimes={false}
       />
 
@@ -294,11 +294,11 @@ function MobileOpenPlayer(props) {
           aria-label={`${speedLabel} ${audioSpeed}x`}
           title={speedLabel}
         >
-          <Gauge size={14} />
+          <Gauge size={13} />
           <span>{audioSpeed}x</span>
         </button>
         <IconButton label={previousLabel} onClick={onPrevious}>
-          <SkipBack size={19} />
+          <SkipBack size={17} />
         </IconButton>
         <IconButton
           className="mp-player-play-btn simple-player__play"
@@ -306,10 +306,10 @@ function MobileOpenPlayer(props) {
           onClick={onToggle}
           pressed={isPlaying}
         >
-          {isPlaying ? <Pause size={21} /> : <Play size={21} className="simple-player__play-glyph" />}
+          {isPlaying ? <Pause size={19} /> : <Play size={19} className="simple-player__play-glyph" />}
         </IconButton>
         <IconButton label={nextLabel} onClick={onNext}>
-          <SkipForward size={19} />
+          <SkipForward size={17} />
         </IconButton>
       </div>
 

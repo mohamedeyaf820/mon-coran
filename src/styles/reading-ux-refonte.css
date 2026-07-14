@@ -123,12 +123,12 @@
 }
 
 .app-root[data-view="reading"] .quran-display--hafs .qc-list-card .qc-ayah-text-ar {
-  font-family: var(--font-quran-hafs, var(--qd-font-family), var(--font-quran), serif) !important;
+  font-family: var(--qd-font-family, var(--font-quran-hafs, var(--font-quran), serif)) !important;
   word-spacing: 0.075em !important;
 }
 
 .app-root[data-view="reading"] .quran-display--warsh .qc-list-card .qc-ayah-text-ar {
-  font-family: var(--font-quran-warsh, var(--qd-font-family), var(--font-quran), serif) !important;
+  font-family: var(--qd-font-family, var(--font-quran-warsh, var(--font-quran), serif)) !important;
   line-height: 2.18 !important;
   word-spacing: 0.045em !important;
 }
