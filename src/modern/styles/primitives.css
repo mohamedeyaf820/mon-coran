@@ -1,0 +1,47 @@
+.modern-button,
+.modern-icon-button,
+.modern-nav__item,
+.modern-resume {
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.modern-icon-button {
+  display: inline-grid;
+  width: var(--modern-tap-size);
+  height: var(--modern-tap-size);
+  place-items: center;
+  border: 1px solid var(--modern-border);
+  border-radius: var(--modern-radius-sm);
+  background: transparent;
+  color: var(--modern-text);
+  transition: background 180ms var(--modern-ease), border-color 180ms var(--modern-ease);
+}
+
+.modern-icon-button:hover:not(:disabled) {
+  border-color: var(--modern-accent);
+  background: var(--modern-surface);
+}
+
+.modern-icon-button:disabled,
+.modern-nav__item:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.modern-skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 0.5rem;
+  left: 0.5rem;
+  padding: 0.7rem 1rem;
+  transform: translateY(-150%);
+  border-radius: var(--modern-radius-sm);
+  background: var(--modern-text);
+  color: var(--modern-bg);
+}
+
+.modern-skip-link:focus {
+  transform: translateY(0);
+}

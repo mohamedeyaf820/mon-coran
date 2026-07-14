@@ -1,0 +1,383 @@
+import { useEffect, useRef, useState } from "react";
+import {
+  Accessibility,
+  BookOpenText,
+  Check,
+  Moon,
+  Settings2,
+  Sun,
+  X,
+} from "lucide-react";
+import { HAFS_FONT_IDS, WARSH_FONT_IDS } from "../../data/fonts";
+import { getSettings, saveSettings } from "../../services/storageService";
+import { buildPreferencePatch } from "./preferencesModel";
+
+const tabs = [
+  { id: "reading", label: "Lecture", icon: BookOpenText },
+  { id: "appearance", label: "Apparence", icon: Settings2 },
+  { id: "accessibility", label: "Accessibilite", icon: Accessibility },
+];
+const fontLabels = {
+  "qpc-hafs": "Hafs classique",
+  "qpc-indopak": "IndoPak",
+  "qpc-warsh": "Warsh QPC",
+  "kfgqpc-warsh": "Warsh KFGQPC",
+  "scheherazade-local": "Scheherazade",
+};
+const mushafProfiles = [
+  { id: "medina", label: "Medine", hint: "Page Uthmani traditionnelle" },
+  { id: "maghrebi", label: "Maghrebin", hint: "Composition aeree pour Warsh" },
+  { id: "indopak", label: "IndoPak", hint: "Densite et rythme IndoPak" },
+  {
+    id: "clear",
+    label: "Lecture claire",
+    hint: "Grands caracteres et contraste",
+  },
+  { id: "study", label: "Etude", hint: "Traduction laterale prioritaire" },
+];
+const palettes = [
+  { id: "emerald", label: "Emeraude", color: "#0f7a61" },
+  { id: "ink", label: "Encre", color: "#315b72" },
+  { id: "burgundy", label: "Bordeaux", color: "#8a3f50" },
+  { id: "neutral", label: "Neutre", color: "#706d63" },
+];
+
+function Toggle({ checked, label, onChange, hint }) {
+  return (
+    <label className="modern-preference-toggle">
+      <span>
+        <strong>{label}</strong>
+        {hint && <small>{hint}</small>}
+      </span>
+      <input
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+        type="checkbox"
+      />
+      <span aria-hidden="true" className="modern-preference-switch" />
+    </label>
+  );
+}
+
+export function ModernPreferencesDialog({ onClose, onThemeChange }) {
+  const [tab, setTab] = useState("reading");
+  const [settings, setSettings] = useState(() => getSettings());
+  const closeRef = useRef(null);
+  useEffect(() => {
+    closeRef.current?.focus();
+    const keys = (event) => {
+      if (event.key === "Escape") onClose();
+      if (event.key === "Tab") {
+        const root = closeRef.current?.closest('[role="dialog"]');
+        const focusable = [
+          ...(root?.querySelectorAll(
+            "button:not([disabled]),a[href],input:not([disabled]),select:not([disabled])",
+          ) || []),
+        ];
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable.at(-1);
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", keys);
+    return () => document.removeEventListener("keydown", keys);
+  }, [onClose]);
+  const update = (patch) => {
+    const bounded = buildPreferencePatch(patch);
+    const next = { ...settings, ...patch, ...bounded };
+    if (patch.riwaya)
+      next.fontFamily =
+        patch.riwaya === "warsh"
+          ? next.fontFamilyByRiwaya?.warsh || "qpc-warsh"
+          : next.fontFamilyByRiwaya?.hafs || "qpc-hafs";
+    if (patch.fontFamily)
+      next.fontFamilyByRiwaya = {
+        ...next.fontFamilyByRiwaya,
+        [next.riwaya]: patch.fontFamily,
+      };
+    saveSettings(next);
+    setSettings(next);
+    window.dispatchEvent(
+      new CustomEvent("modern-preferences-change", { detail: next }),
+    );
+    if (patch.theme) onThemeChange(patch.theme);
+  };
+  const fonts = settings.riwaya === "warsh" ? WARSH_FONT_IDS : HAFS_FONT_IDS;
+
+  return (
+    <div
+      className="modern-preferences-overlay"
+      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+    >
+      <section
+        aria-label="Preferences"
+        aria-modal="true"
+        className="modern-preferences"
+        role="dialog"
+      >
+        <header>
+          <div>
+            <p className="modern-eyebrow">Personnaliser l'experience</p>
+            <h2>Preferences</h2>
+          </div>
+          <button
+            aria-label="Fermer les preferences"
+            onClick={onClose}
+            ref={closeRef}
+            type="button"
+          >
+            <X size={20} />
+          </button>
+        </header>
+        <nav aria-label="Categories de preferences">
+          {tabs.map(({ id, label, icon: Icon }) => (
+            <button
+              aria-pressed={tab === id}
+              className={tab === id ? "is-active" : ""}
+              key={id}
+              onClick={() => setTab(id)}
+              type="button"
+            >
+              <Icon size={17} />
+              {label}
+            </button>
+          ))}
+        </nav>
+        <div className="modern-preferences-body">
+          {tab === "reading" && (
+            <>
+              <div className="modern-preference-group">
+                <h3>Recitation et texte</h3>
+                <label>
+                  Riwaya
+                  <select
+                    onChange={(event) => update({ riwaya: event.target.value })}
+                    value={settings.riwaya}
+                  >
+                    <option value="hafs">Hafs</option>
+                    <option value="warsh">Warsh</option>
+                  </select>
+                </label>
+                <label>
+                  Police arabe
+                  <select
+                    onChange={(event) =>
+                      update({ fontFamily: event.target.value })
+                    }
+                    value={settings.fontFamily}
+                  >
+                    {fonts.map((font) => (
+                      <option key={font} value={font}>
+                        {fontLabels[font]}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <p className="modern-font-preview" dir="rtl" lang="ar">
+                  بِسْمِ ٱللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                </p>
+                <label>
+                  Taille du texte arabe{" "}
+                  <output>{settings.quranFontSize}px</output>
+                  <input
+                    aria-label="Taille du texte arabe"
+                    max="72"
+                    min="18"
+                    onChange={(event) =>
+                      update({ quranFontSize: event.target.value })
+                    }
+                    type="range"
+                    value={settings.quranFontSize}
+                  />
+                </label>
+                <label>
+                  Taille de la traduction{" "}
+                  <output>{settings.quranTranslationFontSize}px</output>
+                  <input
+                    aria-label="Taille de la traduction"
+                    max="28"
+                    min="12"
+                    onChange={(event) =>
+                      update({ quranTranslationFontSize: event.target.value })
+                    }
+                    type="range"
+                    value={settings.quranTranslationFontSize}
+                  />
+                </label>
+              </div>
+              <div className="modern-preference-group">
+                <h3>Style du Mushaf</h3>
+                <div className="modern-mushaf-profile-options">
+                  {mushafProfiles.map((profile) => (
+                    <button
+                      className={
+                        settings.mushafProfile === profile.id ? "is-active" : ""
+                      }
+                      key={profile.id}
+                      onClick={() => update({ mushafProfile: profile.id })}
+                      type="button"
+                    >
+                      <strong>{profile.label}</strong>
+                      <small>{profile.hint}</small>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="modern-preference-group">
+                <h3>Contenu</h3>
+                <Toggle
+                  checked={settings.showTranslation}
+                  label="Afficher la traduction"
+                  onChange={(value) => update({ showTranslation: value })}
+                />
+                <Toggle
+                  checked={settings.showTajwid}
+                  hint="Disponible en lecture Hafs"
+                  label="Regles de tajwid"
+                  onChange={(value) => update({ showTajwid: value })}
+                />
+                <label>
+                  Objectif quotidien{" "}
+                  <output>{settings.wirdGoalAmount} pages</output>
+                  <input
+                    aria-label="Objectif quotidien"
+                    max="30"
+                    min="1"
+                    onChange={(event) =>
+                      update({ wirdGoalAmount: event.target.value })
+                    }
+                    type="range"
+                    value={settings.wirdGoalAmount}
+                  />
+                </label>
+              </div>
+            </>
+          )}
+          {tab === "appearance" && (
+            <>
+              <div className="modern-preference-group">
+                <h3>Theme</h3>
+                <div className="modern-theme-options">
+                  <button
+                    className={settings.theme !== "dark" ? "is-active" : ""}
+                    onClick={() => update({ theme: "light" })}
+                    type="button"
+                  >
+                    <Sun size={20} />
+                    Clair{settings.theme !== "dark" && <Check size={16} />}
+                  </button>
+                  <button
+                    className={settings.theme === "dark" ? "is-active" : ""}
+                    onClick={() => update({ theme: "dark" })}
+                    type="button"
+                  >
+                    <Moon size={20} />
+                    Sombre{settings.theme === "dark" && <Check size={16} />}
+                  </button>
+                </div>
+              </div>
+              <div className="modern-preference-group">
+                <h3>Couleur d'accent</h3>
+                <div className="modern-palette-options">
+                  {palettes.map((palette) => (
+                    <button
+                      aria-pressed={settings.accentPalette === palette.id}
+                      key={palette.id}
+                      onClick={() => update({ accentPalette: palette.id })}
+                      type="button"
+                    >
+                      <span style={{ background: palette.color }} />
+                      {palette.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="modern-preference-group">
+                <h3>Langue</h3>
+                <label>
+                  Langue de traduction
+                  <select
+                    onChange={(event) =>
+                      update({
+                        translationLang: event.target.value,
+                        translationLangs: [event.target.value],
+                      })
+                    }
+                    value={settings.translationLang}
+                  >
+                    <option value="fr">Francais</option>
+                    <option value="en">English</option>
+                  </select>
+                </label>
+                <p className="modern-preference-help">
+                  L'interface moderne est disponible en francais.
+                </p>
+              </div>
+            </>
+          )}
+          {tab === "accessibility" && (
+            <>
+              <div className="modern-preference-group">
+                <h3>Langue de l'interface</h3>
+                <label>
+                  Interface
+                  <select
+                    onChange={(event) => update({ lang: event.target.value })}
+                    value={settings.lang}
+                  >
+                    <option value="fr">Francais</option>
+                    <option value="en">English</option>
+                    <option value="ar">العربية</option>
+                  </select>
+                </label>
+              </div>
+              <div className="modern-preference-group">
+                <h3>Confort de lecture</h3>
+                <Toggle
+                  checked={settings.focusReading}
+                  hint="Reduit les elements secondaires dans le lecteur"
+                  label="Mode lecture concentree"
+                  onChange={(value) => update({ focusReading: value })}
+                />
+                <Toggle
+                  checked={settings.translationReadingMode}
+                  hint="Privilegie la traduction dans la vue liste"
+                  label="Lecture de traduction"
+                  onChange={(value) =>
+                    update({ translationReadingMode: value })
+                  }
+                />
+                <p className="modern-preference-help">
+                  Les boutons conservent une zone tactile d'au moins 44 px. La
+                  navigation complete reste accessible au clavier.
+                </p>
+                <button
+                  className="modern-preference-onboarding"
+                  onClick={() =>
+                    window.dispatchEvent(new Event("modern-open-onboarding"))
+                  }
+                  type="button"
+                >
+                  Revoir le parcours de bienvenue
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+        <footer>
+          <span>Les changements sont enregistres automatiquement.</span>
+          <button onClick={onClose} type="button">
+            Terminer
+          </button>
+        </footer>
+      </section>
+    </div>
+  );
+}

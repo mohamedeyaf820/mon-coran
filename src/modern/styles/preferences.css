@@ -1,0 +1,33 @@
+.modern-preferences-overlay { position: fixed; z-index: 1000; inset: 0; display: flex; justify-content: flex-end; background: rgb(10 16 13 / .48); }
+.modern-preferences { display: grid; width: min(34rem, 100vw); height: 100%; grid-template-rows: auto auto 1fr auto; overflow: hidden; border-left: 1px solid var(--modern-border); background: var(--modern-bg); box-shadow: -20px 0 60px rgb(0 0 0 / .18); }
+.modern-preferences > header, .modern-preferences > footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--modern-border); }
+.modern-preferences h2 { margin: 0; font-size: 1.7rem; }
+.modern-preferences header > button { display: grid; width: var(--modern-tap-size); height: var(--modern-tap-size); place-items: center; border: 0; background: transparent; color: var(--modern-text); cursor: pointer; }
+.modern-preferences > nav { display: flex; gap: .25rem; padding: .6rem 1rem; border-bottom: 1px solid var(--modern-border); overflow-x: auto; }
+.modern-preferences > nav button { display: inline-flex; min-height: var(--modern-tap-size); flex: 1; align-items: center; justify-content: center; gap: .4rem; padding: .5rem; border: 0; border-radius: var(--modern-radius-sm); background: transparent; color: var(--modern-muted); font: inherit; font-size: .78rem; cursor: pointer; white-space: nowrap; }
+.modern-preferences > nav button.is-active { background: var(--modern-text); color: var(--modern-bg); }
+.modern-preferences-body { overflow-y: auto; padding: 0 1.5rem 2rem; }
+.modern-preference-group { padding-block: 1.5rem; border-bottom: 1px solid var(--modern-border); }
+.modern-preference-group h3 { margin: 0 0 1rem; font-size: 1rem; }
+.modern-preference-group > label:not(.modern-preference-toggle) { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: .5rem; margin-top: 1rem; font-size: .82rem; font-weight: 700; }
+.modern-preference-group select { grid-column: 1 / -1; width: 100%; min-height: var(--modern-tap-size); padding-inline: .7rem; border: 1px solid var(--modern-border); background: var(--modern-surface); color: var(--modern-text); font: inherit; }
+.modern-preference-group input[type="range"] { grid-column: 1 / -1; width: 100%; accent-color: var(--modern-focus); }
+.modern-preference-group output { color: var(--modern-accent-strong); }
+.modern-preference-toggle { position: relative; display: flex; min-height: 3.8rem; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--modern-border); cursor: pointer; }
+.modern-preference-toggle strong, .modern-preference-toggle small { display: block; }
+.modern-preference-toggle strong { font-size: .84rem; }.modern-preference-toggle small { margin-top: .2rem; color: var(--modern-muted); font-size: .68rem; }
+.modern-preference-toggle input { position: absolute; opacity: 0; }
+.modern-preference-switch { position: relative; width: 2.7rem; height: 1.5rem; flex: 0 0 auto; border: 1px solid var(--modern-border); border-radius: 1rem; background: var(--modern-bg-deep); }
+.modern-preference-switch::after { position: absolute; top: 3px; left: 3px; width: 1rem; height: 1rem; border-radius: 50%; background: var(--modern-muted); content: ""; transition: transform 180ms var(--modern-ease); }
+.modern-preference-toggle input:checked + .modern-preference-switch { background: var(--modern-focus); }.modern-preference-toggle input:checked + .modern-preference-switch::after { transform: translateX(1.15rem); background: white; }
+.modern-preference-toggle input:focus-visible + .modern-preference-switch { outline: 3px solid color-mix(in srgb, var(--modern-focus) 35%, transparent); outline-offset: 2px; }
+.modern-theme-options { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }.modern-theme-options button { display: grid; min-height: 6rem; place-items: center; gap: .25rem; border: 1px solid var(--modern-border); border-radius: var(--modern-radius-sm); background: var(--modern-surface); color: var(--modern-text); font: inherit; cursor: pointer; }.modern-theme-options button.is-active { border-color: var(--modern-focus); box-shadow: inset 0 0 0 1px var(--modern-focus); }
+.modern-preference-help { color: var(--modern-muted); font-size: .78rem; line-height: 1.7; }
+.modern-font-preview { margin: 1rem 0; padding: .85rem; border: 1px solid var(--modern-border); background: var(--modern-surface); font-family: var(--modern-quran-font); font-size: 2rem; text-align: center; }
+.modern-mushaf-profile-options { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.modern-mushaf-profile-options button { min-height: 4.5rem; padding: .65rem; border: 1px solid var(--modern-border); background: var(--modern-surface); color: var(--modern-text); text-align: left; cursor: pointer; }
+.modern-mushaf-profile-options button.is-active { border-color: var(--modern-focus); box-shadow: inset 3px 0 var(--modern-focus); }
+.modern-mushaf-profile-options strong, .modern-mushaf-profile-options small { display: block; }.modern-mushaf-profile-options small { margin-top: .25rem; color: var(--modern-muted); font-size: .65rem; }
+.modern-palette-options { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }.modern-palette-options button { display: flex; min-height: var(--modern-tap-size); align-items: center; gap: .6rem; padding: .5rem; border: 1px solid var(--modern-border); background: var(--modern-surface); color: var(--modern-text); cursor: pointer; }.modern-palette-options button[aria-pressed="true"] { border-color: var(--modern-focus); }.modern-palette-options button span { width: 1.4rem; height: 1.4rem; border-radius: 50%; }
+.modern-preferences > footer { border-top: 1px solid var(--modern-border); border-bottom: 0; color: var(--modern-muted); font-size: .72rem; }.modern-preferences > footer button { min-height: var(--modern-tap-size); padding-inline: 1rem; border: 0; border-radius: var(--modern-radius-sm); background: var(--modern-text); color: var(--modern-bg); font: inherit; cursor: pointer; }
+@media (max-width: 520px) { .modern-preferences > header, .modern-preferences > footer { padding: 1rem; } .modern-preferences-body { padding-inline: 1rem; } }

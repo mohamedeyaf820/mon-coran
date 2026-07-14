@@ -25,7 +25,7 @@ export const settingsSchema = z.object({
   riwaya: z.enum(["hafs", "warsh"]).default("hafs"),
   displayMode: z.enum(["surah", "page", "juz"]).default("surah"),
   mushafLayout: z.enum(["list", "mushaf"]).default("list"),
-  quranFontSize: z.number().min(20).max(200).default(48),
+  quranFontSize: z.number().min(20).max(200).default(36),
   fontFamily: z.string().default("qpc-hafs"),
   
   // Affichage

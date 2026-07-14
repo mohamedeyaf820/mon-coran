@@ -1,7 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { parseInitialRoute } from "../src/hooks/useUrlSync.js";
+import {
+  parseInitialRoute,
+  stripAppBasePath,
+  withAppBasePath,
+} from "../src/hooks/useUrlSync.js";
 import { getSettings, saveSettings } from "../src/services/storageService.js";
 
 function createMockStorage() {
@@ -84,6 +88,16 @@ test("navigation: clamps invalid route numbers", () => {
   assert.deepEqual(parseInitialRoute(), { showHome: true, showDuas: false });
 });
 
+test("navigation: preserves the legacy prefix while parsing its inner route", () => {
+  assert.equal(stripAppBasePath("/legacy/surah/2/255"), "/surah/2/255");
+  assert.equal(stripAppBasePath("/legacy"), "/");
+  assert.equal(withAppBasePath("/surah/2", "/legacy"), "/legacy/surah/2");
+  assert.equal(withAppBasePath("/", "/legacy"), "/legacy");
+
+  setPathname("/legacy/surah/2/255");
+  assert.equal(parseInitialRoute().currentAyah, 255);
+});
+
 test("storage: settings round-trip encrypted and sanitized", () => {
   globalThis.localStorage = createMockStorage();
 
@@ -113,6 +127,17 @@ test("storage: settings round-trip encrypted and sanitized", () => {
     page: 604,
     juz: 30,
   });
+});
+
+test("storage: migrates the former default Quran size once", () => {
+  globalThis.localStorage = createMockStorage();
+
+  saveSettings({ quranFontSize: 25, fontSize: 25 });
+
+  const settings = getSettings();
+  assert.equal(settings.quranFontSize, 36);
+  assert.equal(settings.fontSize, 36);
+  assert.equal(localStorage.getItem("mushaf-plus-reader-size-v2"), "done");
 });
 
 test("storage: preserves per-riwaya Quran font choices", () => {

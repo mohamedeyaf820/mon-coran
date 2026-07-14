@@ -53,7 +53,9 @@ export function useUrlSync({
   };
 
   useEffect(() => {
-    const { targetPath, routeKey } = buildRoute();
+    const { targetPath: routePath, routeKey } = buildRoute();
+    const basePath = getAppBasePath(window.location.pathname);
+    const targetPath = withAppBasePath(routePath, basePath);
 
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -101,7 +103,7 @@ export function useUrlSync({
 export function parseInitialRoute() {
   if (typeof window === "undefined") return {};
 
-  const path = window.location.pathname;
+  const path = stripAppBasePath(window.location.pathname);
 
   if (path === "/duas") {
     return { showHome: false, showDuas: true };
@@ -146,4 +148,22 @@ export function parseInitialRoute() {
   }
 
   return { showHome: true, showDuas: false };
+}
+
+export function getAppBasePath(pathname) {
+  return pathname === "/legacy" || pathname?.startsWith("/legacy/")
+    ? "/legacy"
+    : "";
+}
+
+export function stripAppBasePath(pathname) {
+  if (typeof pathname !== "string") return "/";
+  if (pathname === "/legacy") return "/";
+  if (pathname.startsWith("/legacy/")) return pathname.slice(7) || "/";
+  return pathname;
+}
+
+export function withAppBasePath(pathname, basePath = "") {
+  if (basePath !== "/legacy") return pathname;
+  return pathname === "/" ? "/legacy" : `/legacy${pathname}`;
 }

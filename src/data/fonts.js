@@ -9,11 +9,13 @@
 export const HAFS_FONT_IDS = [
   "qpc-hafs",
   "qpc-indopak",
+  "scheherazade-local",
 ];
 
 export const WARSH_FONT_IDS = [
   "qpc-warsh",
   "kfgqpc-warsh",
+  "scheherazade-local",
 ];
 
 export const QURAN_COM_FONT_IDS = [...HAFS_FONT_IDS, ...WARSH_FONT_IDS];
@@ -32,6 +34,8 @@ export const FONT_MAP = {
     "'QPC Warsh','KFGQPC Uthmanic Script WARSH',serif",
   "kfgqpc-warsh":
     "'KFGQPC Warsh','warsh10','QPC Warsh','KFGQPC Uthmanic Script WARSH',serif",
+  "scheherazade-local":
+    "'Scheherazade New','QPC Hafs','QPC Warsh',serif",
 };
 
 export const DEFAULT_FONT_ID = "qpc-hafs";

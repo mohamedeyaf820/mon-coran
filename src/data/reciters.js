@@ -716,7 +716,6 @@ export const RECITER_PHOTOS_MAP = {
   ahmed_ibn_ali_al_ajamy_64: quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
   yasser_dossari_hafs: quranPhoto("20/yasser-profile.png"),
   ali_jabir: quranPhoto("23/Abdullah-Ali-Jabir-profile.png?v=1"),
-  "ar.saoodshuraym": quranPhoto("3/saud-ash-shuraym-profile.jpeg"),
   "ar.abdurrahmaansudais": quranPhoto("2/abdul-rahman-al-sudais-profile.jpeg"),
   "ar.maaboralmeem": quranPhoto("16/saad-al-ghamdi-profile.png?v=1"),
   ghamadi_40: quranPhoto("16/saad-al-ghamdi-profile.png?v=1"),
@@ -747,7 +746,7 @@ export function getReciterAvatar(reciter) {
   const initials = label
     .split(/\s+/)
     .filter(Boolean)
-    .map((part) => part[0])
+    .map((part) => part.replace(/[^A-Za-z0-9]/g, "")[0] || "")
     .join("")
     .slice(0, 2)
     .toUpperCase();
