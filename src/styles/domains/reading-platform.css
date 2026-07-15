@@ -4570,3 +4570,345 @@ html body .app-root .native-ayah-marker::after {
     font-size: 1.15rem !important;
     opacity: 0.88 !important;
 }
+
+/* Editorial context for Page and Juz reading modes. */
+.quran-display--platform .reader-context-card {
+    --reader-context-progress: 0%;
+    position: relative;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.78rem;
+    width: min(100%, 980px);
+    min-height: 64px;
+    margin: 0 auto 0.68rem;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
+    border-radius: 17px;
+    background:
+        linear-gradient(105deg, rgba(var(--primary-rgb), 0.055), transparent 46%),
+        var(--bg-card);
+    padding: 0.62rem 0.76rem;
+    box-shadow: 0 8px 24px rgba(15, 48, 34, 0.055);
+}
+
+.quran-display--platform .reader-context-card__icon {
+    display: inline-flex;
+    width: 42px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(var(--primary-rgb), 0.14);
+    border-radius: 13px;
+    background: rgba(var(--primary-rgb), 0.09);
+    color: var(--primary);
+}
+
+.quran-display--platform .reader-context-card__copy {
+    min-width: 0;
+}
+
+.quran-display--platform .reader-context-card__eyebrow {
+    display: block;
+    margin-bottom: 0.12rem;
+    color: var(--text-muted);
+    font-size: 0.62rem;
+    font-weight: 780;
+    letter-spacing: 0.09em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.quran-display--platform .reader-context-card__title-row {
+    display: flex;
+    min-width: 0;
+    align-items: baseline;
+    gap: 0.6rem;
+}
+
+.quran-display--platform .reader-context-card h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 680;
+    line-height: 1.25;
+}
+
+.quran-display--platform .reader-context-card h2 strong {
+    color: var(--primary);
+    font-size: 1.04rem;
+    font-weight: 820;
+}
+
+.quran-display--platform .reader-context-card h2 span,
+.quran-display--platform .reader-context-card p {
+    color: var(--text-muted);
+}
+
+.quran-display--platform .reader-context-card p {
+    overflow: hidden;
+    margin: 0;
+    font-size: 0.7rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.quran-display--platform .reader-context-card__riwaya {
+    display: inline-flex;
+    min-height: 27px;
+    align-items: center;
+    gap: 0.24rem;
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
+    border-radius: 999px;
+    background: rgba(var(--primary-rgb), 0.07);
+    padding: 0.28rem 0.56rem;
+    color: var(--primary);
+    font-size: 0.61rem;
+    font-weight: 820;
+    letter-spacing: 0.06em;
+}
+
+.quran-display--platform .reader-context-card__riwaya--warsh {
+    border-color: rgba(190, 144, 35, 0.24);
+    background: rgba(190, 144, 35, 0.09);
+    color: #a67716;
+}
+
+.quran-display--platform .reader-context-card__progress {
+    position: absolute;
+    inset: auto auto 0 0;
+    width: var(--reader-context-progress);
+    height: 3px;
+    border-radius: 0 999px 999px 0;
+    background: linear-gradient(90deg, var(--primary), #2bbf83);
+    transition: width 220ms ease;
+}
+
+/* Stable navigation with explicit labels and independent touch targets. */
+.quran-display--platform .reader-mode-nav.quran-nav {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.55rem;
+    width: min(100%, 980px);
+    margin: 1rem auto 0;
+    padding: 0.48rem !important;
+    border-radius: 17px !important;
+    background: var(--bg-card) !important;
+}
+
+.quran-display--platform .reader-mode-nav__button {
+    display: inline-flex;
+    min-width: 0;
+    min-height: 44px;
+    align-items: center;
+    gap: 0.42rem;
+    border-radius: 12px;
+    padding: 0.5rem 0.72rem;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 740;
+    transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.quran-display--platform .reader-mode-nav__button--previous {
+    justify-content: flex-start;
+}
+
+.quran-display--platform .reader-mode-nav__button--next {
+    justify-content: flex-end;
+}
+
+.quran-display--platform .reader-mode-nav__button:hover:not(:disabled) {
+    background: rgba(var(--primary-rgb), 0.08);
+    color: var(--primary);
+    transform: translateY(-1px);
+}
+
+.quran-display--platform .reader-mode-nav__button:disabled {
+    cursor: not-allowed;
+    opacity: 0.36;
+}
+
+.quran-display--platform .reader-mode-nav__button span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.quran-display--platform .reader-mode-nav__current {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quran-display--platform .reader-mode-nav__indicator {
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(var(--primary-rgb), 0.15);
+    border-radius: 999px;
+    background: rgba(var(--primary-rgb), 0.065);
+    padding: 0.34rem 0.72rem;
+    color: var(--primary);
+    font-size: 0.7rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+/* Toolbar typography follows the same compact disclosure as the Surah header. */
+.reader-typography-trigger {
+    display: none;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.38rem;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    background: var(--bg-secondary);
+    padding: 0.42rem 0.7rem;
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 750;
+}
+
+.reader-typography-trigger--active {
+    border-color: rgba(var(--primary-rgb), 0.28);
+    background: rgba(var(--primary-rgb), 0.09);
+    color: var(--primary);
+}
+
+.reader-typography-panel {
+    min-width: 0;
+}
+
+@media (max-width: 767px) {
+    .quran-display--platform .reader-context-card {
+        grid-template-columns: 38px minmax(0, 1fr) auto;
+        min-height: 58px;
+        gap: 0.6rem;
+        margin-bottom: 0.55rem;
+        border-radius: 15px;
+        padding: 0.52rem 0.6rem;
+    }
+
+    .quran-display--platform .reader-context-card__icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+    }
+
+    .quran-display--platform .reader-context-card__eyebrow {
+        font-size: 0.56rem;
+    }
+
+    .quran-display--platform .reader-context-card h2 {
+        font-size: 0.8rem;
+    }
+
+    .quran-display--platform .reader-context-card h2 strong {
+        font-size: 0.94rem;
+    }
+
+    .quran-display--platform .reader-context-card p {
+        display: none;
+    }
+
+    .app-root .quran-display--platform .qc-reader-toolbar {
+        gap: 0.52rem;
+        margin-bottom: 0.75rem;
+        border-radius: 15px;
+        padding: 0.55rem;
+    }
+
+    .quran-display--platform .qc-reader-toolbar__utilities {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        gap: 0.45rem;
+        padding-top: 0.5rem;
+    }
+
+    .reader-typography-trigger {
+        display: inline-flex;
+    }
+
+    .reader-typography-panel {
+        display: none;
+        order: 3;
+        width: 100%;
+        padding-top: 0.45rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .reader-typography-panel--open {
+        display: block;
+    }
+
+    .reader-typography-panel .arabic-font-controls {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1.08fr) minmax(9rem, 0.92fr) !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .reader-typography-panel :is(.afc-font-group, .afc-size-group) {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .reader-typography-panel .afc-select {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        text-overflow: ellipsis;
+    }
+
+    .reader-typography-panel .afc-range {
+        width: min(5rem, 22vw);
+        min-width: 2.8rem;
+    }
+
+    .quran-display--platform .reader-mode-nav.quran-nav {
+        gap: 0.3rem;
+        margin-top: 0.7rem;
+        padding: 0.34rem !important;
+        border-radius: 14px !important;
+    }
+
+    .quran-display--platform .reader-mode-nav__button {
+        min-height: 42px;
+        gap: 0.25rem;
+        padding-inline: 0.42rem;
+        font-size: 0.68rem;
+    }
+
+    .quran-display--platform .reader-mode-nav__indicator {
+        min-height: 32px;
+        padding-inline: 0.55rem;
+        font-size: 0.64rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .reader-typography-panel .arabic-font-controls {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .reader-typography-panel .afc-range {
+        width: 100%;
+    }
+
+    .quran-display--platform .reader-mode-nav__button span {
+        max-width: 24vw;
+    }
+}
+
+[data-theme="dark"] .quran-display--platform .reader-context-card,
+[data-theme="dark"] .quran-display--platform .reader-mode-nav.quran-nav {
+    border-color: rgba(126, 179, 156, 0.14);
+    background:
+        linear-gradient(105deg, rgba(47, 208, 142, 0.04), transparent 48%),
+        var(--bg-card) !important;
+}

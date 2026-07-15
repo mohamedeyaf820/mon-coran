@@ -65,6 +65,14 @@ async function openHome(page, viewport) {
   await expect(page.locator(".app-view-home").first()).toBeVisible({ timeout: 30_000 });
 }
 
+async function openDuas(page, viewport) {
+  await openHome(page, viewport);
+  await page.locator(".mp-header__more").first().click();
+  await page.locator('.mp-header-menu__item[data-key="duas"]').click();
+  await expect(page.locator(".app-view-duas").first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(".duas-page").first()).toBeVisible({ timeout: 30_000 });
+}
+
 async function box(page, selector) {
   return page.locator(selector).first().boundingBox();
 }
@@ -103,9 +111,7 @@ test("mobile density: header, reading toolbar and audio dock fit without horizon
   const firstAction = await box(page, ".mp-header__icon-btn");
   const settingsButton = await box(page, ".mp-header__more");
   const moreButton = await box(page, ".mp-header__more");
-  const fontControls = await box(page, ".srh-root .arabic-font-controls--compact");
-  const fontSelect = await box(page, ".srh-root .afc-select");
-  const sizeControls = await box(page, ".srh-root .afc-size-group");
+  const typographyTrigger = await box(page, ".srh-typography-trigger");
   const audioOptionsButton = await box(
     page,
     ".mp-audio-player--mobile.mp-audio-player--dock .mp-player-options-trigger",
@@ -118,6 +124,14 @@ test("mobile density: header, reading toolbar and audio dock fit without horizon
   expect(firstAction?.height || 0).toBeGreaterThanOrEqual(38);
   expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(38);
   expect(moreButton?.width || 0).toBeGreaterThanOrEqual(38);
+  expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(38);
+  expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(36);
+  await expect(page.locator(".srh-typography-panel")).toBeHidden();
+  await page.locator(".srh-typography-trigger").click();
+  await expect(page.locator(".srh-typography-panel")).toBeVisible();
+  const fontControls = await box(page, ".srh-root .arabic-font-controls--compact");
+  const fontSelect = await box(page, ".srh-root .afc-select");
+  const sizeControls = await box(page, ".srh-root .afc-size-group");
   expect(fontControls?.height || 0).toBeGreaterThanOrEqual(38);
   expect(fontSelect?.width || 0).toBeGreaterThanOrEqual(88);
   expect(sizeControls?.width || 0).toBeGreaterThanOrEqual(145);
@@ -189,4 +203,127 @@ test("tablet density: header controls and audio options modal remain compact", a
     expect(modalBox?.width || 0).toBeLessThanOrEqual(820);
     expect(modalBox?.height || 0).toBeLessThanOrEqual(860);
   }
+});
+
+test("small phone: verse actions and search stay usable inside the viewport", async ({ page }) => {
+  const viewport = { width: 320, height: 568 };
+  await openReader(page, viewport);
+
+  const reference = await box(page, ".qc-list-card__reference");
+  expect(reference?.width || 0).toBeGreaterThanOrEqual(38);
+  expect(reference?.height || 0).toBeGreaterThanOrEqual(38);
+
+  const visibleActionSizes = await page
+    .locator(".qc-list-card__top .ayah-actions button")
+    .evaluateAll((buttons) =>
+      buttons
+        .filter((button) => button.getClientRects().length > 0)
+        .map((button) => {
+          const rect = button.getBoundingClientRect();
+          return { width: rect.width, height: rect.height };
+        }),
+    );
+  expect(visibleActionSizes.length).toBeGreaterThanOrEqual(3);
+  for (const action of visibleActionSizes) {
+    expect(action.width).toBeGreaterThanOrEqual(38);
+    expect(action.height).toBeGreaterThanOrEqual(38);
+  }
+
+  await page.locator(".mp-header__more").first().click();
+  await page.locator('.mp-header-menu__item[data-key="search"]').click();
+
+  const overlay = page.locator(".search-pro-overlay").first();
+  const searchSurface = page.locator(".search-pro").first();
+  await expect(searchSurface).toBeVisible();
+
+  const overlayPosition = await overlay.evaluate((node) => getComputedStyle(node).position);
+  const overlayBox = await overlay.boundingBox();
+  const searchBox = await searchSurface.boundingBox();
+  expect(overlayPosition).toBe("fixed");
+  expect(overlayBox?.x || 0).toBeGreaterThanOrEqual(0);
+  expect(overlayBox?.y || 0).toBeGreaterThanOrEqual(0);
+  expect((overlayBox?.x || 0) + (overlayBox?.width || 0)).toBeLessThanOrEqual(viewport.width + 1);
+  expect((overlayBox?.y || 0) + (overlayBox?.height || 0)).toBeLessThanOrEqual(viewport.height + 1);
+  expect(searchBox?.x || 0).toBeGreaterThanOrEqual(0);
+  expect(searchBox?.y || 0).toBeGreaterThanOrEqual(0);
+  expect((searchBox?.x || 0) + (searchBox?.width || 0)).toBeLessThanOrEqual(viewport.width + 1);
+  expect((searchBox?.y || 0) + (searchBox?.height || 0)).toBeLessThanOrEqual(viewport.height + 1);
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+});
+
+test("device typography: interface and Quran text scale progressively", async ({ page }) => {
+  const samples = [];
+  const viewports = [
+    { width: 320, height: 568 },
+    { width: 768, height: 900 },
+    { width: 1366, height: 900 },
+    { width: 1920, height: 1080 },
+  ];
+
+  for (const viewport of viewports) {
+    await openReader(page, viewport);
+    samples.push({
+      root: await fontSizePx(page, "html"),
+      quran: await fontSizePx(page, ".qc-ayah-text-ar"),
+    });
+    expect(await overflowX(page)).toBeLessThanOrEqual(2);
+  }
+
+  expect(samples[0].root).toBeGreaterThanOrEqual(15);
+  expect(samples.at(-1).root).toBeLessThanOrEqual(17.1);
+  expect(samples[0].quran).toBeGreaterThanOrEqual(24);
+  expect(samples.at(-1).quran).toBeGreaterThanOrEqual(34);
+
+  for (let index = 1; index < samples.length; index += 1) {
+    expect(samples[index].root).toBeGreaterThanOrEqual(samples[index - 1].root);
+    expect(samples[index].quran).toBeGreaterThanOrEqual(samples[index - 1].quran);
+  }
+});
+
+test("duas page: cards, Arabic text and controls adapt to phone and tablet", async ({ page }) => {
+  await openDuas(page, { width: 320, height: 568 });
+
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+  expect(await fontSizePx(page, ".duas-title")).toBeGreaterThanOrEqual(21);
+  expect(await fontSizePx(page, ".dua-arabic")).toBeGreaterThanOrEqual(22);
+  const phoneColumns = await page
+    .locator(".gallery-grid")
+    .first()
+    .evaluate((node) => getComputedStyle(node).gridTemplateColumns.split(" ").length);
+  expect(phoneColumns).toBe(1);
+
+  const visibleControls = await page.locator(".duas-page button").evaluateAll((buttons) =>
+    buttons
+      .filter((button) => button.getClientRects().length > 0)
+      .slice(0, 8)
+      .map((button) => button.getBoundingClientRect().height),
+  );
+  expect(visibleControls.length).toBeGreaterThan(0);
+  for (const height of visibleControls) {
+    expect(height).toBeGreaterThanOrEqual(38);
+  }
+
+  await openDuas(page, { width: 820, height: 920 });
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+  expect(await fontSizePx(page, ".dua-arabic")).toBeGreaterThanOrEqual(24);
+});
+
+test("short landscape: reader search remains fully reachable", async ({ page }) => {
+  const viewport = { width: 844, height: 390 };
+  await openReader(page, viewport);
+
+  await page.locator(".mp-header__more").first().click();
+  await page.locator('.mp-header-menu__item[data-key="search"]').click();
+  const overlay = page.locator(".search-pro-overlay").first();
+  const searchSurface = page.locator(".search-pro").first();
+  await expect(searchSurface).toBeVisible();
+
+  const overlayBox = await overlay.boundingBox();
+  const searchBox = await searchSurface.boundingBox();
+  expect(await overlay.evaluate((node) => getComputedStyle(node).position)).toBe("fixed");
+  expect((overlayBox?.width || 0)).toBeLessThanOrEqual(viewport.width);
+  expect((overlayBox?.height || 0)).toBeLessThanOrEqual(viewport.height);
+  expect(searchBox?.y || 0).toBeGreaterThanOrEqual(0);
+  expect((searchBox?.y || 0) + (searchBox?.height || 0)).toBeLessThanOrEqual(viewport.height + 1);
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });

@@ -1,25 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
 import {
   getJuzTranslation,
   getPageTranslation,
   getSurahTranslation,
 } from "../../services/quranAPI";
 import { getTranslationKeyForAyah } from "./displayHelpers";
-
-function scheduleIdle(callback) {
-  if (typeof window === "undefined") {
-    callback();
-    return () => {};
-  }
-
-  if ("requestIdleCallback" in window) {
-    const idleId = window.requestIdleCallback(callback, { timeout: 1800 });
-    return () => window.cancelIdleCallback?.(idleId);
-  }
-
-  const timeoutId = window.setTimeout(callback, 0);
-  return () => window.clearTimeout(timeoutId);
-}
 
 export default function useQuranTranslations({
   arabicReady = true,
@@ -40,8 +25,6 @@ export default function useQuranTranslations({
 
     const controller = new AbortController();
     const signal = controller.signal;
-    let cancelIdle = () => {};
-    let startTimer = null;
     setTranslations([]);
 
     const loadTranslations = async () => {
@@ -53,7 +36,7 @@ export default function useQuranTranslations({
               ? await getJuzTranslation(currentJuz, translationLangs, signal)
               : await getSurahTranslation(currentSurah, translationLangs, signal);
         if (!signal.aborted) {
-          cancelIdle = scheduleIdle(() => {
+          startTransition(() => {
             if (!signal.aborted) setTranslations(result || []);
           });
         }
@@ -62,11 +45,9 @@ export default function useQuranTranslations({
       }
     };
 
-    startTimer = window.setTimeout(loadTranslations, 180);
+    loadTranslations();
     return () => {
-      if (startTimer) window.clearTimeout(startTimer);
       controller.abort();
-      cancelIdle();
     };
   }, [
     arabicReady,

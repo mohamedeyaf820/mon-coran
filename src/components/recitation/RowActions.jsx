@@ -1,61 +1,68 @@
 import React from "react";
-import { Play, BookOpen, Download } from "lucide-react";
+import { BookOpen, Download, Play } from "lucide-react";
 import { openExternalUrl } from "../../lib/security";
 
+function labelsFor(lang) {
+  if (lang === "ar") {
+    return {
+      listen: "استمع",
+      open: "افتح في المصحف",
+      download: "تحميل MP3",
+      unavailable: "التحميل غير متاح",
+    };
+  }
+  if (lang === "fr") {
+    return {
+      listen: "Écouter",
+      open: "Ouvrir dans le lecteur",
+      download: "Télécharger MP3",
+      unavailable: "Téléchargement indisponible",
+    };
+  }
+  return {
+    listen: "Listen",
+    open: "Open in reader",
+    download: "Download MP3",
+    unavailable: "Download unavailable",
+  };
+}
+
 export default function RowActions({ lang, onPlay, onOpen, downloadUrl }) {
+  const labels = labelsFor(lang);
   const handleDownload = () => {
-    if (!downloadUrl) return;
-    openExternalUrl(downloadUrl);
+    if (downloadUrl) openExternalUrl(downloadUrl);
   };
 
-  const btnClass =
-    "recitation-action-btn flex h-9 w-9 items-center justify-center rounded-xl text-text-muted hover:text-primary active:scale-95";
-
   return (
-    <div className="recitation-row__actions flex items-center gap-1.5">
+    <div className="recitation-row__actions">
       <button
-        className={btnClass}
+        className="recitation-action-btn recitation-action-btn--primary"
         type="button"
         onClick={onPlay}
-        title={
-          lang === "fr" ? "Écouter la sourate" : lang === "ar" ? "استمع إلى السورة" : "Listen surah"
-        }
-        aria-label={lang === "fr" ? "Écouter" : lang === "ar" ? "استمع" : "Listen"}
+        title={labels.listen}
+        aria-label={labels.listen}
       >
-        <Play size={12} />
+        <Play size={15} fill="currentColor" aria-hidden="true" />
+        <span className="recitation-action-btn__label">{labels.listen}</span>
       </button>
       <button
-        className={btnClass}
+        className="recitation-action-btn"
         type="button"
         onClick={onOpen}
-        title={
-          lang === "fr" ? "Ouvrir dans le lecteur" : lang === "ar" ? "فتح في القارئ" : "Open in reader"
-        }
-        aria-label={lang === "fr" ? "Ouvrir" : lang === "ar" ? "فتح" : "Open"}
+        title={labels.open}
+        aria-label={labels.open}
       >
-        <BookOpen size={12} />
+        <BookOpen size={15} aria-hidden="true" />
       </button>
       <button
-        className={`${btnClass} ${!downloadUrl ? "cursor-not-allowed opacity-40" : ""}`}
+        className="recitation-action-btn"
         type="button"
         onClick={handleDownload}
         disabled={!downloadUrl}
-        title={
-          downloadUrl
-            ? lang === "fr"
-              ? "Télécharger MP3"
-              : lang === "ar"
-                ? "تحميل MP3"
-                : "Download MP3"
-            : lang === "fr"
-              ? "Téléchargement indisponible"
-              : lang === "ar"
-                ? "التنزيل غير متاح"
-                : "Download unavailable"
-        }
-        aria-label={lang === "fr" ? "Télécharger" : lang === "ar" ? "تحميل" : "Download"}
+        title={downloadUrl ? labels.download : labels.unavailable}
+        aria-label={downloadUrl ? labels.download : labels.unavailable}
       >
-        <Download size={12} />
+        <Download size={15} aria-hidden="true" />
       </button>
     </div>
   );

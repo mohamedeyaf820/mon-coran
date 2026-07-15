@@ -66,10 +66,14 @@ if (typeof window !== "undefined") {
     once: true,
   });
 
-  if (typeof window.requestIdleCallback === "function") {
-    window.requestIdleCallback(warmIconStyles, { timeout: 1200 });
-  } else {
-    window.setTimeout(warmIconStyles, 700);
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const constrainedConnection =
+    connection?.saveData || /(^|-)2g$|3g/.test(connection?.effectiveType || "");
+
+  if (!constrainedConnection && typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(warmIconStyles, { timeout: 5000 });
+  } else if (!constrainedConnection) {
+    window.setTimeout(warmIconStyles, 4000);
   }
 
   // Defer non-critical feature CSS until idle — these are only needed after

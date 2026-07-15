@@ -1,0 +1,297 @@
+/*
+ * Final device contract.
+ * Loaded last so every screen shares one fluid typography, spacing and touch
+ * model after its feature-specific styles.
+ */
+
+:root {
+  --mp-fluid-root: clamp(15px, calc(14.4px + 0.17vw), 17px);
+  --mp-fluid-gutter: clamp(0.5rem, 1.7vw, 1.5rem);
+  --mp-fluid-control: clamp(40px, 2.4rem + 0.2vw, 44px);
+  --mp-readable-line: min(100%, 72ch);
+  --mp-wide-surface: min(100%, 88rem);
+  --space-10: max(2.5rem, 40px);
+}
+
+html {
+  font-size: var(--mp-fluid-root) !important;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html,
+body,
+#root,
+.app-root {
+  width: 100%;
+  min-width: 0;
+}
+
+.app-root {
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+
+.app-root :is(.app-main, .app-main-shell, .app-view-shell) {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.app-root :is(h1, h2, h3, p, label, button, a, span) {
+  overflow-wrap: break-word;
+}
+
+.app-root :is(img, video, canvas) {
+  max-width: 100%;
+  height: auto;
+}
+
+.app-root :is(input, select, textarea) {
+  max-width: 100%;
+}
+
+@media (max-width: 1024px) {
+  html body .app-root.app-root {
+    --ux-card-action-size: max(2.5rem, 40px);
+    --ux-touch-target: max(2.5rem, 40px);
+  }
+
+  html body .app-root .mp-header
+    :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more) {
+    flex: 0 0 auto;
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+
+  html body .app-root .mp-player-options-trigger.mp-player-options-trigger {
+    min-width: 40px !important;
+    min-height: 40px !important;
+  }
+
+  html body .app-root.app-root
+    .audio-player-simple.audio-player-simple.simple-player--mobile-open
+    .simple-player__header-actions .simple-player__icon-button {
+    flex: 0 0 40px !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+}
+
+/* Reader density: keep the user's setting, then bound it for the device. */
+@media (max-width: 640px) {
+  .app-root[data-view="reading"] .app-view-shell {
+    padding-inline: max(0.25rem, env(safe-area-inset-left)) max(0.25rem, env(safe-area-inset-right)) !important;
+  }
+
+  html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
+    font-size: clamp(24px, var(--qd-reading-font-size, 28px), 42px) !important;
+    line-height: 1.95 !important;
+  }
+
+  html body .app-root[data-view="reading"] .quran-display--warsh .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
+    line-height: 2.08 !important;
+  }
+
+  html body .app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.mushaf-text-block, .mushaf-container, .verse-text) {
+    font-size: clamp(20px, var(--qd-reading-font-size, 26px), 36px) !important;
+  }
+
+  html body .app-root[data-view="reading"] .qc-list-card__top {
+    min-height: 40px;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  html body .app-root[data-view="reading"] .qc-list-card__start {
+    flex-wrap: nowrap !important;
+  }
+
+  html body .app-root[data-view="reading"] .qc-list-card__end {
+    flex: 0 0 auto !important;
+    max-width: none !important;
+    overflow: visible !important;
+  }
+
+  html body .app-root[data-view="reading"] .qc-list-card__top :is(.ayah-action--copy, .ayah-action--share, .ayah-action--note) {
+    display: none !important;
+  }
+
+  html body .app-root[data-view="reading"] .qc-list-card .qc-list-card__top .ayah-actions button,
+  html body .app-root[data-view="reading"] .qc-list-card__reference.qc-list-card__reference {
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+
+  html body .app-root.app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card .qc-list-card__reference.qc-list-card__reference {
+    flex: 0 0 40px !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 !important;
+  }
+
+  html body .app-root[data-view="reading"] .qc-list-card .qc-ayah-text-ar {
+    min-height: 0 !important;
+    margin-bottom: 0.55rem !important;
+    padding: 0.25rem 0.35rem !important;
+  }
+
+  html body .app-root[data-view="reading"] .qc-list-card__study {
+    margin-top: 0.5rem !important;
+    padding-top: 0.5rem !important;
+  }
+
+  html body .app-root[data-view="reading"] .qcom-list-study-link {
+    min-height: 38px !important;
+    padding-inline: 0.25rem !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
+    font-size: clamp(30px, var(--qd-reading-font-size, 32px), 54px) !important;
+    line-height: 2.02 !important;
+  }
+
+  html body .app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.mushaf-text-block, .mushaf-container, .verse-text) {
+    font-size: clamp(28px, var(--qd-reading-font-size, 32px), 48px) !important;
+  }
+
+  .app-root .app-view-home .hp-card-name {
+    font-size: clamp(0.9rem, 1.7vw, 1rem) !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
+    font-size: clamp(32px, var(--qd-reading-font-size, 34px), 68px) !important;
+    line-height: 2.06 !important;
+  }
+
+  html body .app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.mushaf-text-block, .mushaf-container, .verse-text) {
+    font-size: clamp(30px, var(--qd-reading-font-size, 34px), 64px) !important;
+  }
+
+  html body .app-root[data-view="reading"] .qc-list-card .qc-ayah-text-ar {
+    margin-bottom: clamp(0.7rem, 1.2vw, 1rem) !important;
+  }
+
+  html body .app-root[data-view="reading"] .qc-list-card__study {
+    margin-top: clamp(0.65rem, 1vw, 0.9rem) !important;
+    padding-top: 0.7rem !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
+    font-size: clamp(34px, var(--qd-reading-font-size, 36px), 72px) !important;
+  }
+}
+
+/* Feature pages share the same safe gutters and readable type scale. */
+@media (max-width: 640px) {
+  .app-root .duas-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0.65rem 0.35rem calc(var(--player-h, 96px) + 2rem) !important;
+    gap: 1rem !important;
+  }
+
+  .app-root .duas-hero {
+    padding: 1rem !important;
+    gap: 1rem !important;
+  }
+
+  .app-root .duas-title {
+    font-size: clamp(1.45rem, 7vw, 1.85rem) !important;
+  }
+
+  .app-root .duas-hero-stats,
+  .app-root .gallery-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  html body .app-root.app-root[data-view="duas"] .duas-page--platform .dua-arabic {
+    font-size: clamp(1.5rem, 7.6vw, 2rem) !important;
+    line-height: 1.9 !important;
+  }
+
+  .app-root .duas-search-wrap {
+    width: 100%;
+    max-width: none;
+  }
+
+  html body .app-root.app-root[data-view="duas"] .duas-page--platform
+    :is(.dua-open-btn-v5, .dua-card-footer-link, .duas-back-btn, .duas-cat-btn) {
+    min-height: 40px !important;
+  }
+
+  .app-root .settings-drawer,
+  .app-root .audio-player-modal__surface,
+  .app-root .reciter-detail {
+    max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+  }
+
+  .app-root .simple-player__icon-button,
+  .app-root .simple-player__speed,
+  .app-root .mp-player-options-trigger {
+    min-width: 38px !important;
+    min-height: 38px !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  html body .app-root.app-root[data-view="duas"] .duas-page--platform .dua-arabic {
+    font-size: clamp(1.6rem, 2.7vw, 1.95rem) !important;
+    line-height: 2 !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  html body .app-root.app-root[data-view="duas"] .duas-page--platform .dua-arabic {
+    font-size: clamp(1.7rem, 1.35rem + 0.55vw, 2.2rem) !important;
+    line-height: 2.05 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-root .app-main-shell {
+    padding-inline: max(0.2rem, env(safe-area-inset-left)) max(0.2rem, env(safe-area-inset-right)) !important;
+  }
+
+  .app-root .settings-drawer__content {
+    padding-inline: 0.75rem !important;
+  }
+}
+
+/* Short landscape screens: keep controls reachable without crushing content. */
+@media (max-height: 620px) and (orientation: landscape) {
+  .app-root :is(.settings-drawer, .audio-player-modal__surface, .reciter-detail) {
+    max-height: 100dvh !important;
+  }
+
+  .app-root .home-hero-shell,
+  .app-root .duas-hero {
+    padding-block: 0.75rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock {
+    max-height: min(30dvh, 7rem) !important;
+  }
+}
+
+@media (pointer: coarse) {
+  .app-root :is(.modal-close, .settings-close, .search-pro__close, .mp-header-menu__close) {
+    min-width: var(--mp-fluid-control) !important;
+    min-height: var(--mp-fluid-control) !important;
+  }
+}

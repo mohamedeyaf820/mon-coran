@@ -95,7 +95,14 @@ export default function QuranDisplay() {
   } = state;
 
   const syncKey = `${riwaya}:${ensureReciterForRiwaya(reciter, riwaya)}`;
-  const { ayahs, error, fetchData, isWarshFallback, setError } =
+  const {
+    ayahs,
+    dataTransitioning,
+    error,
+    fetchData,
+    isWarshFallback,
+    setError,
+  } =
     useQuranDisplayData({
       currentAyah,
       currentJuz,
@@ -302,7 +309,11 @@ export default function QuranDisplay() {
     };
   }, [fontFamily, currentPage, displayMode]);
 
-  if ((loading && ayahs.length === 0) || (fontLoading && ayahs.length === 0))
+  if (
+    dataTransitioning ||
+    (loading && ayahs.length === 0) ||
+    (fontLoading && ayahs.length === 0)
+  )
     return (
       <div className="quran-display--platform flex-1 overflow-y-auto px-4 py-4">
         <AyahSkeleton count={6} showTranslation={showTranslation} lang={lang} />
@@ -491,7 +502,6 @@ export default function QuranDisplay() {
             preparingSurah={preparingSurah}
             readingFontSize={view.readingFontSize}
             riwaya={riwaya}
-            showRiwayaStar={riwaya === "warsh"}
             showTajwid={showTajwid}
             showTranslation={showTranslation}
             showTransliteration={showTransliteration}
@@ -527,7 +537,6 @@ export default function QuranDisplay() {
             preparingSurah={preparingSurah}
             readingFontSize={view.readingFontSize}
             riwaya={riwaya}
-            showRiwayaStar={riwaya === "warsh"}
             showTajwid={showTajwid}
             showTranslation={showTranslation}
             showTransliteration={showTransliteration}

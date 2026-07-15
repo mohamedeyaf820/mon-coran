@@ -836,7 +836,7 @@ export default function HomePage({ lowPerfMode = false }) {
       {/* ── Modal détail récitateur ────────────────────────────────────── */}
       {selectedReciter && (
         <div
-          className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300"
+          className="reciter-detail-overlay fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300"
           onClick={() => setSelectedReciterId(null)}
         >
           <Suspense fallback={null}>

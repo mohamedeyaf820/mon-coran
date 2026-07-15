@@ -1,0 +1,67 @@
+import { test, expect } from "@playwright/test";
+
+test.use({ serviceWorkers: "block" });
+
+test("first launch keeps the critical network payload compact", async ({ page }) => {
+  const initialDocument = await page.request.get("/");
+  expect(initialDocument.ok()).toBe(true);
+  const initialHtml = await initialDocument.text();
+  const initialStylesheets = initialHtml.match(
+    /<link\b[^>]*\brel=["']stylesheet["'][^>]*>/gi,
+  ) || [];
+  const initialModulePreloads = initialHtml.match(
+    /<link\b[^>]*\brel=["']modulepreload["'][^>]*>/gi,
+  ) || [];
+
+  const requests = [];
+  page.on("request", (request) => requests.push(request.url()));
+
+  await page.route(
+    (url) => url.hostname === "api.quran.com",
+    (route) =>
+      route.fulfill({
+        json: {
+          verses: [
+            {
+              id: 1,
+              chapter_id: 1,
+              verse_key: "1:1",
+              verse_number: 1,
+              page_number: 1,
+              juz_number: 1,
+              text_uthmani: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+              text_qpc_hafs: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+              words: [],
+            },
+          ],
+          pagination: { total_pages: 1 },
+        },
+      }),
+  );
+
+  const logoResponsePromise = page.waitForResponse(
+    (response) => new URL(response.url()).pathname === "/logo-ui.webp",
+  );
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".splash-logo")).toBeVisible();
+
+  const logoResponse = await logoResponsePromise;
+  const logoBody = await logoResponse.body();
+  await page.waitForTimeout(1_000);
+
+  expect(initialStylesheets).toHaveLength(1);
+  expect(initialModulePreloads.length).toBeLessThanOrEqual(4);
+  expect(logoBody.byteLength).toBeLessThan(40 * 1024);
+
+  const parsedRequests = requests.map((url) => new URL(url));
+  expect(parsedRequests.filter((url) => url.pathname === "/logo.png")).toHaveLength(0);
+  expect(parsedRequests.filter((url) => url.hostname === "api.alquran.cloud")).toHaveLength(0);
+
+  const quranTextRequests = parsedRequests.filter(
+    (url) =>
+      url.hostname === "api.quran.com" &&
+      url.pathname.includes("/verses/by_chapter/"),
+  );
+  expect(quranTextRequests.length).toBeLessThanOrEqual(1);
+});

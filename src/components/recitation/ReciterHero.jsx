@@ -16,7 +16,7 @@ export default function ReciterHero({ reciter, lang }) {
 
   return (
     <div className="reciter-hero flex min-w-0 items-center gap-3.5">
-      <div className="relative shrink-0">
+      <div className="reciter-hero__portrait relative shrink-0">
         {showPhoto ? (
           <img
             src={visual.photo}

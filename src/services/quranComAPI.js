@@ -1,4 +1,4 @@
-import { dbGet, dbSet } from "./dbService";
+import { dbGet, dbSet } from "./dbService.js";
 
 const BASE_URL = "https://api.quran.com/api/v4";
 const CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
@@ -85,6 +85,40 @@ function createTimedSignal(signal, timeoutMs = FETCH_TIMEOUT) {
   };
 }
 
+function waitForSharedRequest(promise, signal) {
+  if (!signal) return promise;
+  if (signal.aborted) {
+    return Promise.reject(new DOMException("Request aborted", "AbortError"));
+  }
+
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const cleanup = () => signal.removeEventListener("abort", onAbort);
+    const onAbort = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new DOMException("Request aborted", "AbortError"));
+    };
+
+    signal.addEventListener("abort", onAbort, { once: true });
+    promise.then(
+      (value) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        resolve(value);
+      },
+      (error) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(error);
+      },
+    );
+  });
+}
+
 function refreshInBackground(url, cacheKey) {
   const timed = createTimedSignal(null, FETCH_TIMEOUT);
   fetch(url, {
@@ -150,16 +184,19 @@ async function fetchJson(url, signal) {
     // Network fetch below remains the source of truth.
   }
 
+  if (signal?.aborted) {
+    throw new DOMException("Request aborted", "AbortError");
+  }
+
   const existing = inflight.get(cacheKey);
-  if (existing && !existing.signal?.aborted) return existing.promise;
+  if (existing) return waitForSharedRequest(existing.promise, signal);
 
   const entry = {
-    signal,
     promise: null,
   };
 
   entry.promise = (async () => {
-    const timed = createTimedSignal(signal);
+    const timed = createTimedSignal(null);
     try {
       const response = await fetch(url, {
         signal: timed.signal,
@@ -187,7 +224,7 @@ async function fetchJson(url, signal) {
   })();
 
   inflight.set(cacheKey, entry);
-  return entry.promise;
+  return waitForSharedRequest(entry.promise, signal);
 }
 
 function buildVerseParams(extra = {}) {

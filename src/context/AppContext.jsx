@@ -11,9 +11,6 @@ import React, {
 } from "react";
 import { getSettings, saveSettings } from "../services/storageService";
 import { ensureReciterForRiwaya } from "../data/reciters";
-import audioService from "../services/audioService";
-import { fetchPrayerTimes } from "../services/prayerTimesService";
-import { getPreferredReciterId } from "../utils/reciterRanking";
 import {
   normalizeDayTheme,
   normalizeNightTheme,
@@ -613,18 +610,38 @@ export function AppProvider({ children }) {
   }, [state.theme]);
 
   useEffect(() => {
-    audioService.setLatencySnapshot(state.reciterLatencyByKey || {});
+    let active = true;
+    import("../services/audioService")
+      .then(({ default: audioService }) => {
+        if (active) {
+          audioService.setLatencySnapshot(state.reciterLatencyByKey || {});
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
   }, [state.reciterLatencyByKey]);
 
   useEffect(() => {
-    const unsubscribe = audioService.subscribeLatency((latencyMap) => {
-      dispatch({
-        type: "SET",
-        payload: { reciterLatencyByKey: latencyMap },
-      });
-    });
-    return unsubscribe;
-  }, []);
+    let active = true;
+    let unsubscribe = () => {};
+    import("../services/audioService")
+      .then(({ default: audioService }) => {
+        if (!active) return;
+        unsubscribe = audioService.subscribeLatency((latencyMap) => {
+          dispatch({
+            type: "SET",
+            payload: { reciterLatencyByKey: latencyMap },
+          });
+        });
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+      unsubscribe();
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     if (!state.autoSelectFastestReciter || state.isPlaying) return;
@@ -638,15 +655,24 @@ export function AppProvider({ children }) {
     if (!hasFavoriteSignals && !hasLatencySignals && !hasAvailabilitySignals) {
       return;
     }
-    const preferredReciter = getPreferredReciterId(state.riwaya, {
-      currentReciterId: state.reciter,
-      favoriteReciters: state.favoriteReciters,
-      latencyByKey: state.reciterLatencyByKey,
-      availabilityById: state.reciterAvailabilityById,
-    });
-    if (preferredReciter && preferredReciter !== state.reciter) {
-      dispatch({ type: "SET_RECITER", payload: preferredReciter });
-    }
+    let active = true;
+    import("../utils/reciterRanking")
+      .then(({ getPreferredReciterId }) => {
+        if (!active) return;
+        const preferredReciter = getPreferredReciterId(state.riwaya, {
+          currentReciterId: state.reciter,
+          favoriteReciters: state.favoriteReciters,
+          latencyByKey: state.reciterLatencyByKey,
+          availabilityById: state.reciterAvailabilityById,
+        });
+        if (preferredReciter && preferredReciter !== state.reciter) {
+          dispatch({ type: "SET_RECITER", payload: preferredReciter });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
   }, [
     state.autoSelectFastestReciter,
     state.favoriteReciters,
@@ -702,13 +728,18 @@ export function AppProvider({ children }) {
     // Delai pour ne pas bloquer le demarrage
     const timer = setTimeout(() => {
       if (cancelled) return;
-      fetchPrayerTimes((times) => {
-        if (cancelled || !times) return;
-        dispatch({
-          type: "SET",
-          payload: { nightEnd: times.fajr, nightStart: times.isha },
-        });
-      });
+      import("../services/prayerTimesService")
+        .then(({ fetchPrayerTimes }) => {
+          if (cancelled) return;
+          fetchPrayerTimes((times) => {
+            if (cancelled || !times) return;
+            dispatch({
+              type: "SET",
+              payload: { nightEnd: times.fajr, nightStart: times.isha },
+            });
+          });
+        })
+        .catch(() => {});
     }, 2000); // Attendre 2 secondes apres le chargement initial
     
     return () => {

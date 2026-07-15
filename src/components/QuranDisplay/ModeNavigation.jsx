@@ -1,4 +1,5 @@
 import React from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "../../lib/utils";
 
 export default function ModeNavigation({
@@ -13,55 +14,45 @@ export default function ModeNavigation({
   centerContent = null,
   lang,
 }) {
+  const isRtl = lang === "ar";
+  const PreviousIcon = isRtl ? ChevronRight : ChevronLeft;
+  const NextIcon = isRtl ? ChevronLeft : ChevronRight;
+
   return (
     <nav
-      className={cn(
-        "mode-nav flex items-center justify-between gap-4 mt-6 py-4 border-t border-[var(--border)]",
-        className,
-      )}
-      aria-label="Navigation"
+      className={cn("reader-mode-nav", className)}
+      aria-label={lang === "fr" ? "Navigation de lecture" : "Reading navigation"}
     >
       <button
+        type="button"
         onClick={onPrevious}
         disabled={previousDisabled}
         aria-label={previousLabel}
         className={cn(
-          "mode-nav-btn mode-nav-btn--previous flex items-center gap-2 px-5 py-2.5 rounded-full",
-          "font-[var(--font-ui)] text-sm font-semibold",
-          "border border-[rgba(var(--primary-rgb),0.25)] text-[var(--primary)]",
-          "transition-all duration-200",
-          "hover:bg-[var(--primary)] hover:text-white hover:shadow-[0_4px_12px_rgba(var(--primary-rgb),0.25)] hover:-translate-y-px",
-          "disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[var(--primary)] disabled:hover:shadow-none disabled:hover:translate-y-0",
+          "reader-mode-nav__button reader-mode-nav__button--previous",
           buttonClassName,
         )}
       >
-        <i
-          className={`fas fa-arrow-${lang === "ar" ? "right" : "left"} text-xs`}
-        />
-        <span className="hidden sm:inline">{previousLabel}</span>
+        <PreviousIcon size={18} aria-hidden="true" />
+        <span>{previousLabel}</span>
       </button>
 
-      {centerContent}
+      {centerContent ? (
+        <div className="reader-mode-nav__current">{centerContent}</div>
+      ) : null}
 
       <button
+        type="button"
         onClick={onNext}
         disabled={nextDisabled}
         aria-label={nextLabel}
         className={cn(
-          "mode-nav-btn mode-nav-btn--next flex items-center gap-2 px-5 py-2.5 rounded-full",
-          "font-[var(--font-ui)] text-sm font-semibold",
-          "bg-[var(--primary)] text-white",
-          "shadow-[0_3px_10px_rgba(var(--primary-rgb),0.3)]",
-          "transition-all duration-200",
-          "hover:shadow-[0_6px_18px_rgba(var(--primary-rgb),0.4)] hover:-translate-y-px",
-          "disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:translate-y-0",
+          "reader-mode-nav__button reader-mode-nav__button--next",
           buttonClassName,
         )}
       >
-        <span className="hidden sm:inline">{nextLabel}</span>
-        <i
-          className={`fas fa-arrow-${lang === "ar" ? "left" : "right"} text-xs`}
-        />
+        <span>{nextLabel}</span>
+        <NextIcon size={18} aria-hidden="true" />
       </button>
     </nav>
   );

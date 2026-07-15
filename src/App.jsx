@@ -16,14 +16,7 @@ import {
 import { t } from "./i18n";
 import SplashScreen from "./components/SplashScreen";
 import PWAUpdateBanner from "./components/PWAUpdateBanner";
-import {
-  getReciter,
-  ensureReciterForRiwaya,
-  isWarshVerifiedReciter,
-} from "./data/reciters";
 import { getSurah } from "./data/surahs";
-import { ensureFontLoaded } from "./services/fontLoader";
-import audioService from "./services/audioService";
 import { runWhenIdle } from "./utils/idleUtils";
 import { useUrlSync } from "./hooks/useUrlSync";
 import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
@@ -61,7 +54,8 @@ const TafsirSidebar = lazy(() => import("./components/TafsirSidebar"));
 const ToolsHubModal = lazy(() => import("./components/ToolsHubModal"));
 
 async function getAudioServiceInstance() {
-  return audioService;
+  const module = await import("./services/audioService");
+  return module.default;
 }
 
 function detectLowPerformanceDevice() {
@@ -367,37 +361,35 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    ensureFontLoaded(state.fontFamily).catch(() => {});
-  }, [state.fontFamily]);
-
-  useEffect(() => {
     if (!showHome || lowPerfMode || !deferNonCriticalUI || !hasInteracted) {
       return undefined;
     }
 
     let cancelled = false;
-    const {
-      riwaya,
-      reciter: reciterId,
-      currentSurah: surahNum,
-      warshStrictMode,
-    } = state;
-    const safeId = ensureReciterForRiwaya(reciterId, riwaya);
-    const reciter = getReciter(safeId, riwaya);
-
-    if (!reciter) return undefined;
-
-    if (
-      riwaya === "warsh" &&
-      warshStrictMode &&
-      !isWarshVerifiedReciter(reciter)
-    ) {
-      return undefined;
-    }
-
     const cancelIdle = runWhenIdle(async () => {
       try {
-        const { buildAudioPlaylistForSurah } = await import("./utils/audioPlaylist");
+        const [reciterModule, playlistModule] = await Promise.all([
+          import("./data/reciters"),
+          import("./utils/audioPlaylist"),
+        ]);
+        const {
+          riwaya,
+          reciter: reciterId,
+          currentSurah: surahNum,
+          warshStrictMode,
+        } = state;
+        const safeId = reciterModule.ensureReciterForRiwaya(reciterId, riwaya);
+        const reciter = reciterModule.getReciter(safeId, riwaya);
+        if (!reciter) return;
+        if (
+          riwaya === "warsh" &&
+          warshStrictMode &&
+          !reciterModule.isWarshVerifiedReciter(reciter)
+        ) {
+          return;
+        }
+
+        const { buildAudioPlaylistForSurah } = playlistModule;
         const items = await buildAudioPlaylistForSurah(surahNum, riwaya);
         if (cancelled || items.length === 0) return;
         const audioService = await getAudioServiceInstance();
@@ -534,18 +526,20 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKeyboard);
   }, [handleKeyboard]);
 
+  const handleSplashDone = useCallback(() => {
+    dispatch({ type: "SPLASH_DONE" });
+  }, [dispatch]);
+
+  const handleSplashPrefetch = useCallback(async () => {
+    const { prefetchInitialData } = await import("./services/quranAPI");
+    return prefetchInitialData(state.currentSurah, state.riwaya);
+  }, [state.currentSurah, state.riwaya]);
+
   if (!splashDone) {
     return (
       <SplashScreen
-        onDone={() => dispatch({ type: "SPLASH_DONE" })}
-        onPrefetch={async () => {
-          const { prefetchInitialData } = await import("./services/quranAPI");
-          return prefetchInitialData(
-            state.currentSurah,
-            state.riwaya,
-            state.translationLangs?.[0] || "fr",
-          );
-        }}
+        onDone={handleSplashDone}
+        onPrefetch={handleSplashPrefetch}
         lowPerfMode={lowPerfMode}
       />
     );

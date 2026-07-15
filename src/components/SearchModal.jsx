@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import "../styles/domains/search-home-polish.css";
 import {
   Search,
   X,

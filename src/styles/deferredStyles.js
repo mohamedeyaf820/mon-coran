@@ -12,3 +12,4 @@ import "./surah-info-panel.css";
 import "./reciter-enhanced.css";
 import "./home-audio-ux-refonte.css";
 import "./surah-banner.css";
+import "./device-responsive.css";

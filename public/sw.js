@@ -8,40 +8,16 @@
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v6";
+const CACHE_NAME = "mushaf-plus-v7";
 const API_CACHE_NAME = "mushaf-plus-api-v2";
 
 // Ressources de l'app shell à pré-cacher à l'installation
 const ASSETS_TO_CACHE = [
+  "/index.html",
   "/boot-recovery.js",
   "/manifest.json",
-  "/logo.png",
-  "/favicon.svg",
-  "/fonts/scheherazade-new-400.woff2",
-  "/fonts/scheherazade-new-700.woff2",
-];
-
-// Endpoints de l'API Coran à pré-cacher pour le support offline de base.
-// Ces appels sont effectués en arrière-plan lors de l'installation du SW.
-// En cas d'échec réseau, l'installation continue (pas bloquant).
-const QURAN_API_BASE = "https://api.alquran.cloud/v1";
-const API_ENDPOINTS_TO_PRECACHE = [
-  // Al-Fatiha – texte arabe (Hafs)
-  `${QURAN_API_BASE}/surah/1/quran-simple`,
-  // Al-Fatiha – traduction française
-  `${QURAN_API_BASE}/surah/1/fr.hamidullah`,
-  // Al-Fatiha – traduction anglaise
-  `${QURAN_API_BASE}/surah/1/en.sahih`,
-  // Al-Baqarah partielle (versets fréquemment lus) - surah complète
-  `${QURAN_API_BASE}/surah/2/quran-simple`,
-  // Al-Kahf – lecture courante du vendredi
-  `${QURAN_API_BASE}/surah/18/quran-simple`,
-  // Yā-Sīn – sourate très fréquente
-  `${QURAN_API_BASE}/surah/36/quran-simple`,
-  // Ar-Rahman – sourate très fréquente
-  `${QURAN_API_BASE}/surah/55/quran-simple`,
-  // Al-Mulk – récitée le soir
-  `${QURAN_API_BASE}/surah/67/quran-simple`,
+  "/logo-ui.webp",
+  "/favicon.png",
 ];
 
 // ─── Installation ─────────────────────────────────────────────────────────────
@@ -51,48 +27,9 @@ self.addEventListener("install", (event) => {
     caches
       .open(CACHE_NAME)
       .then((cache) => cache.addAll(ASSETS_TO_CACHE))
-      .then(() => self.skipWaiting())
-      .then(() => precacheQuranApi()),
+      .then(() => self.skipWaiting()),
   );
 });
-
-/**
- * Pré-cache les endpoints de l'API Coran de façon silencieuse.
- * Les erreurs réseau sont ignorées afin de ne pas bloquer l'installation du SW.
- */
-async function precacheQuranApi() {
-  let apiCache;
-  try {
-    apiCache = await caches.open(API_CACHE_NAME);
-  } catch {
-    return; // Impossible d'ouvrir le cache – on abandonne silencieusement
-  }
-
-  const results = await Promise.allSettled(
-    API_ENDPOINTS_TO_PRECACHE.map(async (url) => {
-      // Ne pas re-télécharger si déjà en cache
-      const existing = await apiCache.match(url);
-      if (existing) return;
-
-      const res = await fetch(url, {
-        cache: "no-cache",
-        headers: { Accept: "application/json" },
-      });
-      if (res.ok) {
-        await apiCache.put(url, res);
-      }
-    }),
-  );
-
-  // Log en dev uniquement (supprimé par esbuild en production)
-  const failed = results.filter((r) => r.status === "rejected").length;
-  if (failed > 0) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `[SW] ${failed}/${API_ENDPOINTS_TO_PRECACHE.length} endpoints API non mis en cache (réseau indisponible?)`,
-    );
-  }
-}
 
 // ─── Activation ───────────────────────────────────────────────────────────────
 

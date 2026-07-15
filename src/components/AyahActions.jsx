@@ -1126,7 +1126,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "ayah-action ayah-action--play h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               isPlayingThisAyah
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1148,7 +1148,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "ayah-action ayah-action--bookmark h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               bookmarked
                 ? "text-[var(--primary)]"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1166,7 +1166,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "ayah-action ayah-action--copy h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               copied
                 ? "text-green-500"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1182,7 +1182,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "ayah-action ayah-action--share h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               showShare
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1203,7 +1203,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "ayah-action ayah-action--note h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               (showNote || noteText.trim())
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1226,7 +1226,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "ayah-action ayah-action--options h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
               showPlaylistMenu
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1241,6 +1241,33 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               <DropdownMenuLabel>
                 {lang === "fr" ? "Options du verset" : lang === "ar" ? "خيارات الآية" : "Verse options"}
               </DropdownMenuLabel>
+              <DropdownMenuItem onClick={copyText}>
+                <Copy size={13} className="text-[var(--primary)]" />
+                <span>{lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse"}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setShowStudy(false);
+                  setShowPlaylistMenu(false);
+                  setShowNote(false);
+                  setShowShare(true);
+                }}
+              >
+                <Share2 size={13} className="text-[var(--primary)]" />
+                <span>{lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Share"}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setShowStudy(false);
+                  setShowPlaylistMenu(false);
+                  setShowShare(false);
+                  setShowNote(true);
+                }}
+              >
+                <PenSquare size={13} className="text-[var(--primary)]" />
+                <span>{lang === "fr" ? "Ajouter une note" : lang === "ar" ? "إضافة ملاحظة" : "Add note"}</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={openPlaylistMenu}>
                 <List size={13} className="text-[var(--primary)]" />
                 <span>{lang === "fr" ? "Playlists / Listes" : lang === "ar" ? "قوائم التشغيل" : "Playlists"}</span>

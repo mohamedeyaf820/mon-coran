@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-const PRIMARY_LOGO_SRC = "/logo.png";
-const FALLBACK_LOGO_SRC = "/favicon.svg";
+const PRIMARY_LOGO_SRC = "/logo-ui.webp";
+const FALLBACK_LOGO_SRC = "/favicon.png";
 
 export default function PlatformLogo({
   className = "",

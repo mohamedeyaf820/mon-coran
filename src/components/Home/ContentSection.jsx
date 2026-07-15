@@ -397,87 +397,78 @@ export default function ContentSection({
                 const isFavorite = (favoriteReciters || []).includes(reciter.id);
 
                 return (
-                  <button
+                  <article
                     key={reciter.id}
                     data-reciter-card="true"
-                    type="button"
-                    className="reciter-card group flex w-full items-center gap-3 rounded-xl border-b border-border/60 bg-transparent px-2 py-3 text-left transition-all duration-200 active:scale-[0.98]"
-                    onClick={() => setSelectedReciterId(reciter.id)}
+                    className="reciter-card group"
                   >
-                    {/* Avatar */}
-                    <div className="reciter-card__media relative h-12 w-12 shrink-0 overflow-hidden rounded-full shadow-sm">
-                      {visual.photo ? (
-                        <img
-                          src={visual.photo}
-                          alt={reciterLabel}
-                          className="h-full w-full object-cover"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div
-                          className="flex h-full w-full items-center justify-center text-sm font-black uppercase text-white"
-                          style={{ background: avatar.gradient }}
-                        >
-                          {avatar.initials}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Info */}
-                    <div className="min-w-0 flex-1">
-                      <span
-                        className="reciter-card__name block truncate text-[0.88rem] font-bold text-text-primary group-hover:text-primary transition-colors"
-                        dir={lang === "ar" ? "rtl" : "ltr"}
-                      >
-                        {reciterLabel}
-                      </span>
-                      <div className="mt-0.5 flex items-center gap-1.5">
-                        <span className="text-[0.7rem] text-text-muted">
-                          {reciter.style || "murattal"}
-                        </span>
-                        {reciter.country && (
-                          <>
-                            <span className="text-[0.5rem] text-text-muted/50">·</span>
-                            <span className="text-[0.7rem] text-text-muted">
-                              {reciter.country}
-                            </span>
-                          </>
+                    <button
+                      type="button"
+                      className="reciter-card__main"
+                      onClick={() => setSelectedReciterId(reciter.id)}
+                      aria-label={reciterLabel}
+                    >
+                      <div className="reciter-card__media">
+                        {visual.photo ? (
+                          <img
+                            src={visual.photo}
+                            alt=""
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div
+                            className="flex h-full w-full items-center justify-center text-sm font-black uppercase text-white"
+                            style={{ background: avatar.gradient }}
+                          >
+                            {avatar.initials}
+                          </div>
                         )}
                       </div>
-                    </div>
 
-                    {/* Actions */}
-                    <div
-                      className="flex shrink-0 items-center gap-1.5"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {/* Favori */}
+                      <div className="reciter-card__copy">
+                        <span
+                          className="reciter-card__name"
+                          dir={lang === "ar" ? "rtl" : "ltr"}
+                        >
+                          {reciterLabel}
+                        </span>
+                        <div className="reciter-card__meta">
+                          <span>{reciter.style || "murattal"}</span>
+                          {reciter.country ? <span>{reciter.country}</span> : null}
+                        </div>
+                      </div>
+
+                      {lang === "ar" ? (
+                        <ChevronLeft size={16} aria-hidden="true" />
+                      ) : (
+                        <ChevronRight size={16} aria-hidden="true" />
+                      )}
+                    </button>
+
+                    <div className="reciter-card__actions">
                       <button
                         type="button"
                         className={cn(
-                          "flex h-8 w-8 items-center justify-center rounded-lg border transition-all active:scale-95",
-                          isFavorite
-                            ? "border-amber-400/40 bg-amber-50 text-amber-500 dark:bg-amber-900/20"
-                            : "border-border bg-transparent text-text-muted hover:text-amber-400",
+                          "reciter-card__favorite",
+                          isFavorite && "reciter-card__favorite--active",
                         )}
                         onClick={() => onToggleFavoriteReciter(reciter.id)}
                         aria-label={isFavorite ? t("home.removeFavorite", lang) : t("home.addFavorite", lang)}
                         aria-pressed={isFavorite}
                       >
-                        <Star size={10} />
+                        <Star size={15} fill={isFavorite ? "currentColor" : "none"} />
                       </button>
-                      {/* Écouter */}
                       <button
-                        className="flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-[0.7rem] font-bold text-white transition-all hover:bg-primary-dark active:scale-95"
+                        className="reciter-card__listen"
                         type="button"
                         onClick={() => playReciterRadio(reciter)}
                       >
-                        <Play size={10} />
-                        <span className="hidden sm:inline">{lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen"}</span>
+                        <Play size={14} fill="currentColor" />
+                        <span>{lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen"}</span>
                       </button>
-                      {lang === "ar" ? <ChevronLeft size={11} className="text-text-muted" /> : <ChevronRight size={11} className="text-text-muted" />}
                     </div>
-                  </button>
+                  </article>
                 );
               })}
               {!showAllReciters && filteredReciters.length > 8 && (

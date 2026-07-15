@@ -5,7 +5,7 @@ export default function ReciterRadioButton({ lang, onClick }) {
   return (
     <button
       type="button"
-      className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-4 text-[0.78rem] font-semibold text-white shadow-sm transition-all hover:bg-primary-dark active:scale-[0.97]"
+      className="reciter-radio-button"
       onClick={onClick}
     >
       <Radio size={14} aria-hidden="true" />

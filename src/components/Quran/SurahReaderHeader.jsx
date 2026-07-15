@@ -51,6 +51,7 @@ export default function SurahReaderHeader({
   } = state;
 
   const [showInfo, setShowInfo] = useState(false);
+  const [showTypography, setShowTypography] = useState(false);
 
   const s = getSurah(surahNum);
   if (!s) return null;
@@ -267,6 +268,7 @@ export default function SurahReaderHeader({
               className={cn("srh-pill", pill.active && "srh-pill--active")}
               onClick={pill.onClick}
               aria-pressed={pill.active}
+              aria-label={pill.label}
             >
               {pill.icon}
               <span>{pill.label}</span>
@@ -287,6 +289,7 @@ export default function SurahReaderHeader({
                 className={cn("srh-toggle", tog.active && "srh-toggle--active")}
                 onClick={tog.onClick}
                 aria-pressed={tog.active}
+                aria-label={tog.label}
                 title={tog.label}
               >
                 {tog.icon}
@@ -302,8 +305,29 @@ export default function SurahReaderHeader({
 
       {/* ══ ROW 3 — Navigation & font ═══════════════════════════ */}
       <div className="srh-footer">
-        {/* Font controls */}
-        <ArabicFontControls lang={lang} compact />
+        <button
+          type="button"
+          className={cn(
+            "srh-typography-trigger",
+            showTypography && "srh-typography-trigger--active",
+          )}
+          onClick={() => setShowTypography((value) => !value)}
+          aria-expanded={showTypography}
+          aria-controls="srh-typography-panel"
+        >
+          <Type size={14} aria-hidden="true" />
+          <span>{lbl(lang, "Texte", "Text", "الخط")}</span>
+        </button>
+
+        <div
+          id="srh-typography-panel"
+          className={cn(
+            "srh-typography-panel",
+            showTypography && "srh-typography-panel--open",
+          )}
+        >
+          <ArabicFontControls lang={lang} compact />
+        </div>
 
         {/* Spacer */}
         <div className="srh-footer__spacer" />

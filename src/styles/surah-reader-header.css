@@ -667,3 +667,122 @@
 .srh-footer .arabic-font-controls.arabic-font-controls--compact .afc-select {
     max-width: clamp(6rem, 16vw, 9rem);
 }
+
+/* Compact typography disclosure: always available on large screens, opt-in on phones. */
+.srh-typography-trigger {
+    display: none;
+    min-height: 36px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.38rem;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    background: var(--bg-secondary);
+    padding: 0.42rem 0.68rem;
+    color: var(--text-secondary);
+    font-family: var(--font-ui, sans-serif);
+    font-size: 0.72rem;
+    font-weight: 750;
+}
+
+.srh-typography-trigger--active {
+    border-color: rgba(var(--primary-rgb), 0.28);
+    background: rgba(var(--primary-rgb), 0.09);
+    color: var(--primary);
+}
+
+.srh-typography-panel {
+    min-width: 0;
+}
+
+@media (max-width: 640px) {
+    .srh-root {
+        box-shadow: 0 6px 20px rgba(13, 48, 33, 0.065);
+    }
+
+    .srh-controls {
+        min-height: 46px;
+        padding-block: 0.34rem;
+    }
+
+    .srh-view-pills {
+        padding: 0.18rem;
+    }
+
+    .srh-pill,
+    .srh-toggle {
+        min-width: 38px;
+        min-height: 36px;
+        justify-content: center;
+        border-radius: 10px;
+    }
+
+    .srh-footer {
+        display: flex;
+        flex-wrap: wrap;
+        overflow: visible;
+        min-height: 48px;
+        padding-block: 0.36rem;
+    }
+
+    .srh-typography-trigger {
+        display: inline-flex;
+        flex: 0 0 auto;
+    }
+
+    .srh-typography-panel {
+        display: none;
+        order: 3;
+        width: 100%;
+        min-width: 0;
+        padding-top: 0.4rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .srh-typography-panel--open {
+        display: block;
+    }
+
+    .srh-typography-panel .arabic-font-controls {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1.08fr) minmax(9rem, 0.92fr) !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .srh-typography-panel :is(.afc-font-group, .afc-size-group) {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .srh-typography-panel .afc-select {
+        width: 100%;
+        min-width: 0;
+        max-width: none !important;
+        text-overflow: ellipsis;
+    }
+
+    .srh-typography-panel .afc-range {
+        width: min(5rem, 22vw);
+        min-width: 2.8rem;
+    }
+
+    .srh-footer__spacer {
+        flex: 1 1 auto;
+    }
+
+    .srh-hizb-nav {
+        flex: 0 1 auto;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 420px) {
+    .srh-typography-panel .arabic-font-controls {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .srh-typography-panel .afc-range {
+        width: 100%;
+    }
+}

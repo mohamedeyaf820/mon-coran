@@ -7,6 +7,7 @@
     min-width: 0;
 }
 
+
 .search-command-title__icon {
     width: 42px;
     height: 42px;
@@ -879,6 +880,18 @@
     .search-pro__result-tags {
         justify-content: flex-start;
     }
+}
+
+/* SearchModal applies `search-modal-shell` to the overlay itself. Keep this
+   layer pinned to the viewport even when legacy shell styles are loaded. */
+.modal-overlay.search-pro-overlay.search-modal-shell {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1000 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-width: none !important;
+  max-height: none !important;
 }
 
 .app-root .quran-display--platform .reader-toolbar__context {
@@ -3158,5 +3171,307 @@
     .app-root[data-view="home"] .reciter-card__media {
         width: 64px !important;
         height: 64px !important;
+    }
+}
+
+/* The search can be opened directly from the reader, including on short phones. */
+@media (max-width: 620px) {
+    .search-pro-overlay.search-modal-shell {
+        box-sizing: border-box !important;
+        align-items: flex-end !important;
+        overflow: hidden !important;
+        padding: max(6px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(6px, env(safe-area-inset-left)) !important;
+    }
+
+    .search-pro-overlay .search-pro {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        max-height: calc(100dvh - max(6px, env(safe-area-inset-top)) - env(safe-area-inset-bottom)) !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+        border-radius: 20px 20px 0 0 !important;
+    }
+
+    .search-pro-overlay .search-pro__header {
+        flex: 0 0 auto;
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        gap: 0.65rem !important;
+        padding: 0.72rem 0.78rem !important;
+    }
+
+    .search-pro-overlay .search-pro__body {
+        min-height: 0 !important;
+        display: block !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+    }
+
+    .search-pro-overlay .search-pro__main {
+        min-height: 0 !important;
+        display: flex !important;
+        padding: 0.72rem !important;
+        padding-bottom: calc(0.85rem + env(safe-area-inset-bottom)) !important;
+        overflow: visible !important;
+    }
+
+    .search-pro-overlay .search-pro__command,
+    .search-pro-overlay .search-pro__actions {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        width: 100%;
+    }
+
+    .search-pro-overlay .search-pro__input-shell {
+        min-height: 52px !important;
+    }
+
+    .search-pro-overlay .search-pro__submit {
+        width: 100%;
+        min-height: 44px !important;
+        justify-content: center;
+    }
+
+    .search-pro-overlay .search-pro__modes {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 0.45rem !important;
+    }
+
+    .search-pro-overlay .search-pro__modes button {
+        min-width: 0;
+        min-height: 42px;
+        padding-inline: 0.55rem;
+    }
+}
+
+/* Final collection cascade: keep reciters scannable without reverting to the legacy flat list. */
+.app-root .app-view-home .hp-grid.hp-grid--reciters,
+.app-root[data-view="home"] .hp-grid.hp-grid--reciters {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+}
+
+.app-root .app-view-home .reciter-card,
+.app-root[data-view="home"] .reciter-card {
+    position: relative;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+    min-height: 82px !important;
+    overflow: hidden;
+    border: 1px solid var(--border) !important;
+    border-radius: 18px !important;
+    background:
+        linear-gradient(145deg, rgba(var(--primary-rgb), 0.035), transparent 52%),
+        var(--bg-card) !important;
+    padding: 0.58rem;
+    box-shadow: 0 6px 18px rgba(15, 48, 34, 0.055) !important;
+    transition: transform 170ms ease, border-color 170ms ease, box-shadow 170ms ease !important;
+}
+
+.app-root .app-view-home .reciter-card::before,
+.app-root[data-view="home"] .reciter-card::before {
+    content: "";
+    position: absolute;
+    inset: 12px auto 12px 0;
+    width: 3px;
+    border-radius: 0 999px 999px 0;
+    background: var(--primary);
+    opacity: 0;
+    transition: opacity 170ms ease;
+}
+
+.app-root .app-view-home .reciter-card:hover,
+.app-root[data-view="home"] .reciter-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(var(--primary-rgb), 0.28) !important;
+    box-shadow: 0 12px 28px rgba(15, 48, 34, 0.1) !important;
+}
+
+.app-root .app-view-home .reciter-card:hover::before,
+.app-root[data-view="home"] .reciter-card:hover::before {
+    opacity: 1;
+}
+
+.app-root .app-view-home .reciter-card__main,
+.app-root[data-view="home"] .reciter-card__main {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr) 18px;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+    border-radius: 13px;
+    color: var(--text-muted);
+    text-align: start;
+}
+
+.app-root .app-view-home .reciter-card__main:focus-visible,
+.app-root[data-view="home"] .reciter-card__main:focus-visible {
+    outline: 2px solid rgba(var(--primary-rgb), 0.55);
+    outline-offset: 3px;
+}
+
+.app-root .app-view-home .reciter-card__media,
+.app-root[data-view="home"] .reciter-card__media {
+    position: relative;
+    width: 52px !important;
+    height: 52px !important;
+    overflow: hidden;
+    border: 2px solid color-mix(in srgb, var(--bg-card) 82%, var(--primary) 18%) !important;
+    border-radius: 50% !important;
+    background: var(--bg-secondary);
+    box-shadow: 0 6px 16px rgba(13, 48, 33, 0.12) !important;
+}
+
+.app-root .app-view-home .reciter-card__copy,
+.app-root[data-view="home"] .reciter-card__copy {
+    min-width: 0;
+}
+
+.app-root .app-view-home .reciter-card__name,
+.app-root[data-view="home"] .reciter-card__name {
+    display: block;
+    overflow: hidden;
+    color: var(--text-primary) !important;
+    font-size: 0.87rem !important;
+    font-weight: 780 !important;
+    line-height: 1.25 !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.app-root .app-view-home .reciter-card__meta,
+.app-root[data-view="home"] .reciter-card__meta {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.25rem;
+    color: var(--text-muted);
+    font-size: 0.67rem;
+}
+
+.app-root .app-view-home .reciter-card__meta span,
+.app-root[data-view="home"] .reciter-card__meta span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.app-root .app-view-home .reciter-card__meta span + span::before,
+.app-root[data-view="home"] .reciter-card__meta span + span::before {
+    content: "·";
+    margin-inline-end: 0.35rem;
+    opacity: 0.55;
+}
+
+.app-root .app-view-home .reciter-card__actions,
+.app-root[data-view="home"] .reciter-card__actions {
+    display: flex !important;
+    align-items: center;
+    gap: 0.38rem !important;
+}
+
+.app-root .app-view-home .reciter-card__actions button,
+.app-root[data-view="home"] .reciter-card__actions button {
+    min-height: 42px;
+    border-radius: 13px !important;
+}
+
+.app-root .app-view-home :is(.reciter-card__favorite, .reciter-card__listen),
+.app-root[data-view="home"] :is(.reciter-card__favorite, .reciter-card__listen) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.app-root .app-view-home .reciter-card__favorite,
+.app-root[data-view="home"] .reciter-card__favorite {
+    width: 42px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+}
+
+.app-root .app-view-home .reciter-card__favorite:hover,
+.app-root[data-view="home"] .reciter-card__favorite:hover,
+.app-root .app-view-home .reciter-card__favorite--active,
+.app-root[data-view="home"] .reciter-card__favorite--active {
+    border-color: rgba(190, 144, 35, 0.3);
+    background: rgba(190, 144, 35, 0.09);
+    color: #b5841d;
+}
+
+.app-root .app-view-home .reciter-card__listen,
+.app-root[data-view="home"] .reciter-card__listen {
+    gap: 0.38rem;
+    border: 1px solid var(--primary);
+    background: var(--primary);
+    padding-inline: 0.75rem;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 760;
+}
+
+.app-root .app-view-home :is(.reciter-card__favorite, .reciter-card__listen):hover,
+.app-root[data-view="home"] :is(.reciter-card__favorite, .reciter-card__listen):hover {
+    transform: translateY(-1px);
+}
+
+.app-root .app-view-home .hp-grid.hp-grid--reciters > button:last-child,
+.app-root[data-view="home"] .hp-grid.hp-grid--reciters > button:last-child {
+    grid-column: 1 / -1;
+}
+
+[data-theme="dark"] .app-root .app-view-home .reciter-card,
+[data-theme="dark"] .app-root[data-view="home"] .reciter-card {
+    border-color: rgba(126, 179, 156, 0.14) !important;
+    background:
+        linear-gradient(145deg, rgba(47, 208, 142, 0.045), transparent 54%),
+        rgba(255, 255, 255, 0.025) !important;
+}
+
+@media (max-width: 900px) {
+    .app-root .app-view-home .hp-grid.hp-grid--reciters,
+    .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+}
+
+@media (max-width: 520px) {
+    .app-root .app-view-home .reciter-card,
+    .app-root[data-view="home"] .reciter-card {
+        min-height: 74px !important;
+        padding: 0.45rem;
+    }
+
+    .app-root .app-view-home .reciter-card__main,
+    .app-root[data-view="home"] .reciter-card__main {
+        grid-template-columns: 46px minmax(0, 1fr) 14px;
+        gap: 0.55rem;
+    }
+
+    .app-root .app-view-home .reciter-card__media,
+    .app-root[data-view="home"] .reciter-card__media {
+        width: 46px !important;
+        height: 46px !important;
+    }
+
+    .app-root .app-view-home .reciter-card__listen,
+    .app-root[data-view="home"] .reciter-card__listen {
+        width: 42px;
+        padding: 0;
+    }
+
+    .app-root .app-view-home .reciter-card__listen span,
+    .app-root[data-view="home"] .reciter-card__listen span {
+        display: none;
     }
 }

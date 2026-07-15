@@ -8,6 +8,7 @@ import {
   Palette,
   Pause,
   Play,
+  SlidersHorizontal,
   Type,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
@@ -37,7 +38,6 @@ function toolbarLabelsFor(lang) {
 }
 
 export default function ReadingToolbar({
-  contextLabel,
   onPlay,
   onPlaySurah,
   playLabel,
@@ -63,6 +63,7 @@ export default function ReadingToolbar({
   } = state;
 
   const [scrolled, setScrolled] = useState(false);
+  const [showTypography, setShowTypography] = useState(false);
   useEffect(() => {
     const mainEl = document.querySelector("#main-content") || window;
     const getScroll = () => (mainEl === window ? window.scrollY : mainEl.scrollTop);
@@ -76,20 +77,7 @@ export default function ReadingToolbar({
   const mushafIsOn = mushafLayout === "mushaf";
   const isPlayingThisContext = isPlaying;
 
-  const labels = {
-    toolbar: labelFor(lang, "Outils de lecture", "Reading tools", "أدوات القراءة"),
-    mushaf: labelFor(lang, "Mushaf", "Mushaf", "المصحف"),
-    list: labelFor(lang, "Liste", "List", "قائمة"),
-    translation: labelFor(lang, "Traduction", "Translation", "الترجمة"),
-    wordByWord: labelFor(lang, "Mot à mot", "Word by word", "كلمة بكلمة"),
-    tajweed: labelFor(lang, "Tajweed", "Tajweed", "التجويد"),
-    memorization: labelFor(lang, "Mémorisation", "Memorization", "الحفظ"),
-    listen: labelFor(lang, "Écouter", "Listen", "استماع"),
-    pause: labelFor(lang, "Pause", "Pause", "إيقاف مؤقت"),
-    loading: labelFor(lang, "Chargement", "Loading", "جار التحميل"),
-  };
-
-  Object.assign(labels, toolbarLabelsFor(lang));
+  const labels = toolbarLabelsFor(lang);
 
   const setMushafLayout = () => {
     if (mushafIsOn) return;
@@ -153,11 +141,6 @@ export default function ReadingToolbar({
       aria-label={labels.toolbar}
     >
       <div className="flex w-full flex-wrap items-center justify-between gap-3 md:w-auto md:justify-start">
-        {contextLabel && (
-          <span className="shrink-0 rounded-xl bg-[rgba(var(--primary-rgb),0.06)] px-3 py-1.5 font-[var(--font-ui)] text-[0.72rem] font-bold tracking-wide text-[var(--primary)]">
-            {contextLabel}
-          </span>
-        )}
         <HizbRukuNavigator
           currentSurah={currentSurah}
           currentAyah={currentAyah || 1}
@@ -276,8 +259,30 @@ export default function ReadingToolbar({
         </div>
       </div>
 
-      <div className="flex w-full flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] pt-2.5 md:w-auto md:justify-end md:border-t-0 md:pt-0">
-        <ArabicFontControls lang={lang} compact />
+      <div className="qc-reader-toolbar__utilities flex w-full flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] pt-2.5 md:w-auto md:justify-end md:border-t-0 md:pt-0">
+        <button
+          type="button"
+          className={cn(
+            "reader-typography-trigger",
+            showTypography && "reader-typography-trigger--active",
+          )}
+          onClick={() => setShowTypography((value) => !value)}
+          aria-expanded={showTypography}
+          aria-controls="reader-toolbar-typography-panel"
+        >
+          <SlidersHorizontal size={14} aria-hidden="true" />
+          <span>{labelFor(lang, "Texte", "Text", "الخط")}</span>
+        </button>
+
+        <div
+          id="reader-toolbar-typography-panel"
+          className={cn(
+            "reader-typography-panel",
+            showTypography && "reader-typography-panel--open",
+          )}
+        >
+          <ArabicFontControls lang={lang} compact />
+        </div>
 
         {playHandler && (
           <button

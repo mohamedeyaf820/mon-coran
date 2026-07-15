@@ -4,7 +4,6 @@ import { logSession } from "../../services/historyService";
 import { logWirdProgress } from "../../services/wirdService";
 import { markRead } from "../../services/readingProgressService";
 import { savePosition } from "../../services/storageService";
-import { abortPendingRequests } from "../../services/quranAPI";
 import { getSurah } from "../../data/surahs";
 import {
   assertWarshStrict,
@@ -30,7 +29,6 @@ function runWhenIdle(callback, timeout = 1600) {
 
 const DISPLAY_DATA_CACHE = new Map();
 const DISPLAY_DATA_CACHE_MAX = 120;
-const INFLIGHT_REQUESTS = new Map();
 
 function displayCacheKey(displayMode, currentSurah, currentPage, currentJuz, riwaya, warshStrictMode) {
   const scope = displayMode === "page" ? `p:${currentPage}` : displayMode === "juz" ? `j:${currentJuz}` : `s:${currentSurah}`;
@@ -86,12 +84,19 @@ export default function useQuranDisplayData({
   );
   const initialCachedData = DISPLAY_DATA_CACHE.get(currentCacheKey);
   const [ayahs, setAyahs] = useState(() => initialCachedData?.ayahs || []);
+  const [resolvedCacheKey, setResolvedCacheKey] = useState(() =>
+    initialCachedData ? currentCacheKey : null,
+  );
+  const [settledCacheKey, setSettledCacheKey] = useState(() =>
+    initialCachedData ? currentCacheKey : null,
+  );
   const [error, setError] = useState(null);
   const [isWarshFallback, setIsWarshFallback] = useState(() =>
     Boolean(initialCachedData?.isWarshFallback),
   );
   const readingStartRef = useRef(Date.now());
   const requestSeqRef = useRef(0);
+  const requestAbortRef = useRef(null);
   const persistRef = useRef(null);
 
   const persistReadingSideEffects = useCallback(
@@ -143,19 +148,25 @@ export default function useQuranDisplayData({
 
   const fetchData = useCallback(async () => {
     if (showHome) {
+      requestAbortRef.current?.abort();
       dispatch({ type: "SET_LOADING", payload: false });
       return;
     }
 
     const requestId = requestSeqRef.current + 1;
     requestSeqRef.current = requestId;
-    const signal = abortPendingRequests();
+    requestAbortRef.current?.abort();
+    const controller = new AbortController();
+    requestAbortRef.current = controller;
+    const signal = controller.signal;
     const cacheKey = currentCacheKey;
     const cachedData = DISPLAY_DATA_CACHE.get(cacheKey);
 
     setError(null);
     if (cachedData) {
       setAyahs(cachedData.ayahs);
+      setResolvedCacheKey(cacheKey);
+      setSettledCacheKey(cacheKey);
       setIsWarshFallback(Boolean(cachedData.isWarshFallback));
       dispatch({ type: "SET", payload: { loadedAyahCount: cachedData.ayahs.length } });
       dispatch({ type: "SET_LOADING", payload: false });
@@ -164,38 +175,6 @@ export default function useQuranDisplayData({
     }
 
     dispatch({ type: "SET_LOADING", payload: true });
-
-    // Deduplicate: if same key already in-flight, attach to it
-    if (INFLIGHT_REQUESTS.has(cacheKey)) {
-      try {
-        const { ayahs: fetchedAyahs, isWarshFallback: fallback, hafsPromise: inflightHafs } = await INFLIGHT_REQUESTS.get(cacheKey);
-        if (signal.aborted || requestSeqRef.current !== requestId) return;
-        setAyahs(fetchedAyahs);
-        setIsWarshFallback(fallback);
-        dispatch({ type: "SET", payload: { loadedAyahCount: fetchedAyahs.length } });
-        dispatch({ type: "SET_LOADING", payload: false });
-        if (inflightHafs) {
-          inflightHafs.then((hafsData) => {
-            if (signal.aborted || requestSeqRef.current !== requestId || !hafsData) return;
-            const hafsMap = new Map(
-              (hafsData?.ayahs || []).map((ayah) => [
-                `${ayah.surah?.number}:${ayah.numberInSurah}`,
-                ayah,
-              ]),
-            );
-            setAyahs((previous) => {
-              const merged = mergeHafsSupport(previous, hafsMap);
-              rememberLimited(DISPLAY_DATA_CACHE, cacheKey, { ayahs: merged, isWarshFallback: fallback }, DISPLAY_DATA_CACHE_MAX);
-              return merged;
-            });
-          });
-        }
-        persistRef.current(fetchedAyahs);
-        return;
-      } catch {
-        // fall through to fresh fetch
-      }
-    }
 
     const fetchPromise = (async () => {
       const hafsPromise = riwaya === "warsh"
@@ -214,11 +193,9 @@ export default function useQuranDisplayData({
       const fallback = Boolean(arabicData?.isTextFallback);
       return { arabicData, ayahs: fetchedAyahs, isWarshFallback: fallback, hafsPromise };
     })();
-    INFLIGHT_REQUESTS.set(cacheKey, fetchPromise);
 
     try {
       const { arabicData, ayahs: fetchedAyahs, isWarshFallback: fallback, hafsPromise } = await fetchPromise;
-      INFLIGHT_REQUESTS.delete(cacheKey);
 
       if (signal.aborted || requestSeqRef.current !== requestId) return;
       assertWarshStrict({ arabicData, displayMode, lang, riwaya, warshStrictMode });
@@ -230,6 +207,8 @@ export default function useQuranDisplayData({
         DISPLAY_DATA_CACHE_MAX,
       );
       setAyahs(fetchedAyahs);
+      setResolvedCacheKey(cacheKey);
+      setSettledCacheKey(cacheKey);
       setIsWarshFallback(fallback);
       dispatch({ type: "SET", payload: { loadedAyahCount: fetchedAyahs.length } });
       dispatch({ type: "SET_LOADING", payload: false });
@@ -244,6 +223,7 @@ export default function useQuranDisplayData({
             ]),
           );
           setAyahs((previous) => {
+            if (requestSeqRef.current !== requestId) return previous;
             const merged = mergeHafsSupport(previous, hafsMap);
             rememberLimited(
               DISPLAY_DATA_CACHE,
@@ -258,9 +238,9 @@ export default function useQuranDisplayData({
 
       persistRef.current(fetchedAyahs);
     } catch (err) {
-      INFLIGHT_REQUESTS.delete(cacheKey);
       if (err?.name === "AbortError" || requestSeqRef.current !== requestId) return;
       if (import.meta.env.DEV) console.warn("Fetch error:", err);
+      setSettledCacheKey(cacheKey);
       setError(err.message);
       dispatch({ type: "SET_ERROR", payload: err.message });
     } finally {
@@ -284,10 +264,10 @@ export default function useQuranDisplayData({
   useEffect(() => {
     if (showHome) return;
     fetchData();
-    // Clear any in-flight requests for this key on unmount to avoid stale
-    // promise attachments surviving HMR module reloads in development.
-    return () => INFLIGHT_REQUESTS.delete(currentCacheKey);
-  }, [fetchData, showHome, currentCacheKey]);
+    return () => {
+      requestAbortRef.current?.abort();
+    };
+  }, [fetchData, showHome]);
 
   useEffect(
     () => () => {
@@ -305,5 +285,15 @@ export default function useQuranDisplayData({
     [],
   );
 
-  return { ayahs, error, fetchData, isWarshFallback, setError };
+  const dataTransitioning = !showHome && settledCacheKey !== currentCacheKey;
+  const visibleAyahs = resolvedCacheKey === currentCacheKey ? ayahs : [];
+
+  return {
+    ayahs: visibleAyahs,
+    dataTransitioning,
+    error,
+    fetchData,
+    isWarshFallback,
+    setError,
+  };
 }

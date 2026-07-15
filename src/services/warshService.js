@@ -468,21 +468,40 @@ function toWarshAyahWithHafsMeta(record, hafsAyah) {
 async function getWarshVersesByHafsScope(pathPrefix) {
   const hafsData = await fetchQuranComText(pathPrefix);
   const hafsAyahs = Array.isArray(hafsData?.ayahs) ? hafsData.ayahs : [];
+  const surahNumbers = [
+    ...new Set(
+      hafsAyahs
+        .map((ayah) => Number(ayah?.surah?.number))
+        .filter(Boolean),
+    ),
+  ];
   const groupedRecords = new Map();
-  const result = [];
+  let nextSurahIndex = 0;
+  const loadNextSurah = async () => {
+    while (nextSurahIndex < surahNumbers.length) {
+      const surahNumber = surahNumbers[nextSurahIndex];
+      nextSurahIndex += 1;
+      const records = await getWarshSurahVerses(surahNumber);
+      groupedRecords.set(
+        surahNumber,
+        new Map(records.map((record) => [Number(record.ayahNumber), record])),
+      );
+    }
+  };
+  await Promise.all(
+    Array.from(
+      { length: Math.min(5, surahNumbers.length) },
+      () => loadNextSurah(),
+    ),
+  );
 
+  const result = [];
   for (const hafsAyah of hafsAyahs) {
     const surahNumber = Number(hafsAyah?.surah?.number);
     const ayahNumber = Number(hafsAyah?.numberInSurah);
     if (!surahNumber || !ayahNumber) continue;
 
-    if (!groupedRecords.has(surahNumber)) {
-      groupedRecords.set(surahNumber, await getWarshSurahVerses(surahNumber));
-    }
-
-    const record = groupedRecords
-      .get(surahNumber)
-      .find((item) => Number(item.ayahNumber) === ayahNumber);
+    const record = groupedRecords.get(surahNumber)?.get(ayahNumber);
 
     if (record) result.push(toWarshAyahWithHafsMeta(record, hafsAyah));
   }
@@ -556,6 +575,14 @@ export async function getWarshJuzVerses(juzNum) {
   const cacheKey = Number(juzNum);
   if (cachedJuzPayloads.has(cacheKey)) return cachedJuzPayloads.get(cacheKey);
 
+  try {
+    const scoped = await getWarshVersesByHafsScope(`juz/${juzNum}`);
+    if (scoped?.ayahs?.length) {
+      cachedJuzPayloads.set(cacheKey, scoped);
+      return scoped;
+    }
+  } catch {}
+
   const indexed = getLegacyIndex(await loadLegacyWarshData());
   const rows = indexed?.byJuz?.get(cacheKey) || [];
   if (rows.length > 0) {
@@ -581,7 +608,7 @@ export async function getWarshJuzVerses(juzNum) {
     return payload;
   }
 
-  const payload = await getWarshVersesByHafsScope(`juz/${juzNum}`);
+  const payload = { ayahs: [], number: cacheKey };
   cachedJuzPayloads.set(cacheKey, payload);
   return payload;
 }
@@ -642,7 +669,7 @@ export async function getWarshPageVerses(pageNum) {
 }
 
 export function preloadWarshSurah(surahNum) {
-  loadWarshSurah(surahNum).catch(() => { });
+  return loadWarshSurah(surahNum).catch(() => null);
 }
 
 /**

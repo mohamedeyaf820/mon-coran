@@ -9,6 +9,7 @@ import AyahActionsModal from "./AyahActionsModal";
 import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
 import QuranMushafPage from "./QuranMushafPage";
+import ReaderContextCard from "./ReaderContextCard";
 import { modePaneShellClass } from "./displayClasses";
 
 function PageMode({
@@ -66,9 +67,7 @@ function PageMode({
     getJuzForAyah(ayahs[0]?.surah?.number, ayahs[0]?.numberInSurah);
   const pageLabel = lang === "ar" ? toAr(currentPage) : currentPage;
   const pageWord = lang === "fr" ? "Page" : lang === "ar" ? "صفحة" : "Page";
-  const contextLabel = `${pageWord} ${pageLabel} / 604 · ${t("sidebar.juz", lang)} ${
-    currentJuz || ""
-  } · ${riwaya.toUpperCase()}`;
+  const contextSecondary = `${t("sidebar.juz", lang)} ${currentJuz || "—"}`;
   // Disable exact 15-line QCF coordinate rendering in favor of clean normal Arabic text (Unicode)
   const canUseFifteenLinePage = false;
 
@@ -104,8 +103,17 @@ function PageMode({
       onTouchEnd={handleTouchEnd}
     >
       <ReadingProgressBar />
+      <ReaderContextCard
+        kind="page"
+        label={pageWord}
+        value={pageLabel}
+        numericValue={currentPage}
+        total={604}
+        secondary={contextSecondary}
+        riwaya={riwaya}
+        lang={lang}
+      />
       <ReadingToolbar
-        contextLabel={contextLabel}
         onPlay={onPlaySurah}
         playLabel={lang === "fr" ? "Écouter la page" : "Listen page"}
         preparingSurah={preparingSurah}

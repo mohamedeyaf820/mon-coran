@@ -44,7 +44,8 @@ const QURAN_COM_TRANSLATION_LANGS = new Set(['fr', 'en']);
 const cache = new Map();
 const CACHE_MAX_SIZE = 500;
 
-// Request deduplication: pending fetches by URL + abort signal identity.
+// Shared network fetches are keyed by URL. A screen may stop waiting without
+// cancelling a request that can still populate the cache for the next screen.
 const inflight = new Map();
 
 // Current AbortController for cancellable navigations
@@ -159,6 +160,40 @@ function pruneCache() {
   }
 }
 
+function waitForSharedRequest(promise, signal) {
+  if (!signal) return promise;
+  if (signal.aborted) {
+    return Promise.reject(new DOMException('Request aborted', 'AbortError'));
+  }
+
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const cleanup = () => signal.removeEventListener('abort', onAbort);
+    const onAbort = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new DOMException('Request aborted', 'AbortError'));
+    };
+
+    signal.addEventListener('abort', onAbort, { once: true });
+    promise.then(
+      (value) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        resolve(value);
+      },
+      (error) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(error);
+      },
+    );
+  });
+}
+
 async function fetchJSON(url, signal) {
   if (signal?.aborted) {
     throw new DOMException('Request aborted', 'AbortError');
@@ -191,24 +226,28 @@ async function fetchJSON(url, signal) {
     }
   } catch { /* IDB read failure — continue to network */ }
 
+  if (signal?.aborted) {
+    throw new DOMException('Request aborted', 'AbortError');
+  }
+
   // Reuse prefetches for fast riwaya/page switches.
   const existing = inflight.get(url);
-  if (existing && !existing.signal?.aborted) {
-    return existing.promise;
+  if (existing) {
+    return waitForSharedRequest(existing.promise, signal);
   }
 
   const entry = {
-    signal,
-    promise: _fetchFromNetwork(url, idbKey, signal),
+    promise: _fetchFromNetwork(url, idbKey, null),
   };
   inflight.set(url, entry);
-  entry.promise.finally(() => {
+  const cleanup = () => {
     const current = inflight.get(url);
     if (current === entry) {
       inflight.delete(url);
     }
-  });
-  return entry.promise;
+  };
+  entry.promise.then(cleanup, cleanup);
+  return waitForSharedRequest(entry.promise, signal);
 }
 
 async function _fetchFromNetwork(url, idbKey, signal) {
@@ -684,34 +723,25 @@ export function getAudioUrlFromAyah(ayahData) {
 }
 
 /**
- * Prefetch initial data during splash screen so it's cached when the app mounts.
- * Fire-and-forget — errors are silently ignored.
+ * Warm only the current Arabic text during the splash screen.
+ * Secondary text, translations and audio stay deferred until they are useful.
  */
-export function prefetchInitialData(surahNum, riwaya, translationLang = 'fr') {
+export function prefetchInitialData(surahNum, riwaya) {
   try {
-    const transEdition = TRANSLATION_EDITIONS[translationLang] || TRANSLATION_EDITIONS.fr;
-    const transUrl = `${BASE}/surah/${surahNum}/${transEdition}`;
+    const connection = typeof navigator !== 'undefined' ? navigator.connection : null;
+    const constrained =
+      connection?.saveData === true ||
+      /2g|3g/.test(connection?.effectiveType || '') ||
+      (connection?.downlink != null && connection.downlink < 1.5);
+    if (constrained) return Promise.resolve();
 
     if (riwaya === 'warsh') {
-      // Prefetch the Warsh dataset from the shared remote source + Hafs text (for karaoke) + translation
-      preloadWarshSurah(surahNum);
-      // Also warm the Hafs text cache for karaoke word weighting
-      const editions = EDITIONS.hafs;
-      fetchJSON(`${BASE}/surah/${surahNum}/${editions[0]}`).catch(() => { });
-      fetchJSON(transUrl).catch(() => { });
-    } else {
-      // Prefetch Hafs text + translation into the in-memory cache
-      const editions = EDITIONS[riwaya] || EDITIONS.hafs;
-      fetchJSON(`${BASE}/surah/${surahNum}/${editions[0]}`).catch(() => { });
-      fetchJSON(transUrl).catch(() => { });
-      // Also prefetch next surah for instant navigation
-      if (surahNum < 114) {
-        fetchJSON(`${BASE}/surah/${surahNum + 1}/${editions[0]}`).catch(() => { });
-        fetchJSON(`${BASE}/surah/${surahNum + 1}/${transEdition}`).catch(() => { });
-      }
+      return preloadWarshSurah(surahNum);
     }
+
+    return getSurahText(surahNum, riwaya).catch(() => null);
   } catch {
-    // Prefetch is best-effort
+    return Promise.resolve();
   }
 }
 
