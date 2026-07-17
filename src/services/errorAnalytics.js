@@ -21,7 +21,11 @@ export function logError(error, context) {
   } catch { }
 }
 
+let _initialized = false;
+
 export function initErrorAnalytics() {
+  if (_initialized) return;
+  _initialized = true;
   window.addEventListener('error', (e) => logError(e.error || new Error(e.message), 'window.error'));
   window.addEventListener('unhandledrejection', (e) => logError(e.reason, 'unhandledrejection'));
 }

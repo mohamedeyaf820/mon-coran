@@ -362,7 +362,7 @@ export default function PlaylistPanel() {
                           currentPlayingAyah.ayah === a.ayah;
                         return (
                           <div
-                            key={i}
+                            key={`${a.surah}:${a.ayah}`}
                             className={`modal-item-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-2.5${isActive ? " modal-item-card--playing" : ""}`}
                             style={
                               isActive

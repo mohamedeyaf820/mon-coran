@@ -49,7 +49,7 @@ export default function DuasPage() {
           : "Search supplications...",
     collection:
       lang === "ar"
-        ? "Bibliotheque d'invocations"
+        ? "مكتبة الأدعية"
         : lang === "fr"
           ? "Bibliothèque d'invocations"
           : "Supplication library",
@@ -68,7 +68,7 @@ export default function DuasPage() {
         new CustomEvent("quran-toast", {
           detail: {
             type: "success",
-            message: lang === "ar" ? "تم النسخ!" : "Copie !",
+            message: lang === "ar" ? "تم النسخ!" : lang === "fr" ? "Copie !" : "Copied!",
           },
         }),
       );

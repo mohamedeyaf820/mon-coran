@@ -41,9 +41,11 @@ export function useKaraoke({ isFirstAyah, wordCount, calibration }) {
 
       // ── Park the loop when audio is paused / stopped ──
       if (!audioService.isPlaying) {
-        rafRef.current = requestAnimationFrame(tick);
+        rafRef.current = requestAnimationFrame(tick); // re-arm so we resume on play
         return;
       }
+      // Note: the RAF keeps running while paused (avoids re-triggering user-gesture
+      // chain on mobile) but yields immediately, so CPU cost is negligible.
 
       const dur = audioService.duration || 0;
       const t = audioService.currentTime || 0;

@@ -70,34 +70,20 @@ export function useKeyboardNavigation({
 
     set({ showHome: false, showDuas: false });
 
+    // ArrowLeft = visually left on screen = forward in mushaf reading order (higher page/surah).
+    // This is correct for both LTR and RTL UI since the mushaf always reads right-to-left on screen.
     if (latest.displayMode === "page") {
-      const isRTL = latest.lang === "ar";
-      const canNavigate = isRTL ? latest.currentPage > 1 : latest.currentPage < 604;
-      if (canNavigate) {
-        set({ currentPage: isRTL ? latest.currentPage - 1 : latest.currentPage + 1 });
-      }
+      if (latest.currentPage < 604) set({ currentPage: latest.currentPage + 1 });
       return;
     }
 
     if (latest.displayMode === "juz") {
-      const isRTL = latest.lang === "ar";
-      const canNavigate = isRTL ? latest.currentJuz > 1 : latest.currentJuz < 30;
-      if (canNavigate) {
-        dispatch({
-          type: "NAVIGATE_JUZ",
-          payload: { juz: isRTL ? latest.currentJuz - 1 : latest.currentJuz + 1 },
-        });
-      }
+      if (latest.currentJuz < 30) dispatch({ type: "NAVIGATE_JUZ", payload: { juz: latest.currentJuz + 1 } });
       return;
     }
 
-    const isRTL = latest.lang === "ar";
-    const canNavigate = isRTL ? latest.currentSurah > 1 : latest.currentSurah < 114;
-    if (canNavigate) {
-      dispatch({
-        type: "NAVIGATE_SURAH",
-        payload: { surah: isRTL ? latest.currentSurah - 1 : latest.currentSurah + 1 },
-      });
+    if (latest.currentSurah < 114) {
+      dispatch({ type: "NAVIGATE_SURAH", payload: { surah: latest.currentSurah + 1 } });
     }
   }, [dispatch, set]);
 
@@ -107,34 +93,19 @@ export function useKeyboardNavigation({
 
     set({ showHome: false, showDuas: false });
 
+    // ArrowRight = visually right on screen = backward in mushaf reading order (lower page/surah).
     if (latest.displayMode === "page") {
-      const isRTL = latest.lang === "ar";
-      const canNavigate = isRTL ? latest.currentPage < 604 : latest.currentPage > 1;
-      if (canNavigate) {
-        set({ currentPage: isRTL ? latest.currentPage + 1 : latest.currentPage - 1 });
-      }
+      if (latest.currentPage > 1) set({ currentPage: latest.currentPage - 1 });
       return;
     }
 
     if (latest.displayMode === "juz") {
-      const isRTL = latest.lang === "ar";
-      const canNavigate = isRTL ? latest.currentJuz < 30 : latest.currentJuz > 1;
-      if (canNavigate) {
-        dispatch({
-          type: "NAVIGATE_JUZ",
-          payload: { juz: isRTL ? latest.currentJuz + 1 : latest.currentJuz - 1 },
-        });
-      }
+      if (latest.currentJuz > 1) dispatch({ type: "NAVIGATE_JUZ", payload: { juz: latest.currentJuz - 1 } });
       return;
     }
 
-    const isRTL = latest.lang === "ar";
-    const canNavigate = isRTL ? latest.currentSurah < 114 : latest.currentSurah > 1;
-    if (canNavigate) {
-      dispatch({
-        type: "NAVIGATE_SURAH",
-        payload: { surah: isRTL ? latest.currentSurah + 1 : latest.currentSurah - 1 },
-      });
+    if (latest.currentSurah > 1) {
+      dispatch({ type: "NAVIGATE_SURAH", payload: { surah: latest.currentSurah - 1 } });
     }
   }, [dispatch, set]);
 

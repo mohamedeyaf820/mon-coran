@@ -57,10 +57,11 @@ export function useAutoScrollAyah({ currentAyah, currentSurah, isPlaying }) {
     // Skip if same ayah as before (avoids double-scroll on re-renders)
     const ayahKey = `${surahNum}:${ayahNum}`;
     if (prevAyahRef.current === ayahKey) return;
-    prevAyahRef.current = ayahKey;
 
-    // Don't scroll if user recently scrolled manually
+    // Don't scroll if user recently scrolled manually — commit ref AFTER this check
+    // so that if we skip here, the next render can retry scroll for the same ayah
     if (userScrolledRef.current) return;
+    prevAyahRef.current = ayahKey;
 
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {

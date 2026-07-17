@@ -926,6 +926,10 @@
     50% { opacity: 0.85; }
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .wbw-skeleton-pulse { animation: none; opacity: 0.6; }
+}
+
 .app-root .quran-display--platform .wbw-word-block {
     min-width: 5.1rem;
     border-radius: 14px;
@@ -1555,11 +1559,11 @@ html body .app-root .quran-display--platform .cpv-container {
 }
 
 .app-root .audio-player-modal {
-    z-index: 760 !important;
+    z-index: var(--z-modal, 600) !important;
 }
 
 .app-root .audio-player-modal__surface {
-    z-index: 761 !important;
+    z-index: calc(var(--z-modal, 600) + 1) !important;
     border-radius: 22px !important;
 }
 
@@ -1568,7 +1572,7 @@ html body .app-root .quran-display--platform .cpv-container {
 }
 
 .app-root .mp-audio-player--mobile {
-    z-index: 650 !important;
+    z-index: var(--z-player, 400) !important;
 }
 
 .app-root .mp-audio-player--mobile:not(.mp-audio-player--mobile-full) {
@@ -2744,6 +2748,13 @@ html body .app-root .quran-display--platform .mushaf-container .cpv-verse--playi
     50% {
         background-color: rgba(var(--primary-rgb), 0.22);
         box-shadow: 0 0 0 1.5px rgba(var(--primary-rgb), 0.4);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-root .quran-display--platform .rd-ayah.playing {
+        animation: none !important;
+        background-color: rgba(var(--primary-rgb), 0.15) !important;
     }
 }
 

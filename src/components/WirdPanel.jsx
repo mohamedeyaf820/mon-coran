@@ -518,9 +518,9 @@ export default function WirdPanel() {
                       {todayWird.entries
                         .slice(-5)
                         .reverse()
-                        .map((e, i) => (
+                        .map((e) => (
                           <div
-                            key={i}
+                            key={e.timestamp}
                             className="wird-entry modal-item-card !rounded-xl !border !border-[var(--border)] !bg-white/[0.03] !px-3 !py-2"
                           >
                             <span className="wird-entry-surah">

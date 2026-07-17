@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import TajweedText from "./TajweedText";
 import WordTooltip from "./WordTooltip";
 
@@ -8,6 +8,7 @@ function QuranWordComponent({
   fontSize,
   lang,
   onSelect,
+  onWordClick,
   read,
   riwaya,
   showTajwid,
@@ -17,6 +18,14 @@ function QuranWordComponent({
   wordId,
   inline = false,
 }) {
+  // Stable handler when caller provides onWordClick(word, event) instead of a pre-bound onSelect.
+  // This avoids a new inline arrow at the call site defeating React.memo.
+  const handleClick = useCallback(
+    (event) => {
+      if (onWordClick) onWordClick(word, event);
+    },
+    [onWordClick, word],
+  );
   const hasAudio = Boolean(word?.audioUrl);
   const wordText = word?.textQpcHafs || word?.text || "";
   const translationDirection = /[\u0600-\u06ff]/.test(word?.translation || "")
@@ -53,7 +62,7 @@ function QuranWordComponent({
       data-has-audio={hasAudio ? "true" : "false"}
       aria-describedby={`${wordId}-tooltip`}
       aria-label={actionLabel}
-      onClick={onSelect}
+      onClick={onWordClick ? handleClick : onSelect}
       style={{ "--wbw-arabic-size": `${fontSize}px` }}
     >
       <span className="wbw-arabic" dir="rtl" lang="ar">
@@ -99,7 +108,8 @@ function areQuranWordEqual(prev, next) {
     prev.showTransliteration === next.showTransliteration &&
     prev.showWordTranslation === next.showWordTranslation &&
     prev.inline === next.inline &&
-    prev.onSelect === next.onSelect
+    prev.onSelect === next.onSelect &&
+    prev.onWordClick === next.onWordClick
   );
 }
 

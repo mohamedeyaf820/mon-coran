@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { shallowEqual, useAppSelector } from "../../context/AppContext";
 import QuranWord from "./QuranWord";
 import AyahMarker from "./AyahMarker";
@@ -39,6 +39,11 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
       surah,
       wordTranslationLang,
     });
+  // Stable callback avoids a new inline arrow per word defeating QuranWord's React.memo
+  const handleWordSelect = useCallback(
+    (word, event) => handleWordClick(word, setSelectedWord, event),
+    [handleWordClick],
+  );
   const fallbackWords = useMemo(() => {
     if (!text || typeof text !== "string") return [];
     return text
@@ -93,7 +98,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
               current={isPlaying && index === currentWordIdx}
               fontSize={fontSize}
               lang={lang}
-              onSelect={(event) => handleWordClick(word, setSelectedWord, event)}
+              onWordClick={handleWordSelect}
               read={isPlaying && index < currentWordIdx}
               riwaya={riwaya}
               showTajwid={showTajwid}

@@ -913,7 +913,7 @@ export const RECITER_PHOTOS_MAP = {
   husary_muallim: quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
   husary_mujawwad_hafs: quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
   "ar.minshawi": quranPhoto("7/mohamed-siddiq-el-minshawi-profile.jpeg"),
-  ar_minshawimujawwad: quranPhoto("7/mohamed-siddiq-el-minshawi-profile.jpeg"),
+  "ar.minshawimujawwad": quranPhoto("7/mohamed-siddiq-el-minshawi-profile.jpeg"),
   "ar.saoodshuraym": quranPhoto("8/saoud-shuraim-profile.jpeg"),
   abu_bakr_ash_shaatree: quranPhoto("3/abu-bakr-al-shatri-pofile.jpeg"),
   hani_rifai: quranPhoto("4/hani-ar-rifai-profile.jpeg"),

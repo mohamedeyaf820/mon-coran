@@ -629,6 +629,8 @@ class AudioService {
   disableMemorization() {
     this.memMode = false;
     this.memCurrentRepeat = 0;
+    clearTimeout(this.memTimer);
+    this.memTimer = null;
   }
 
   setSurahRepeatCount(count = 1) {
