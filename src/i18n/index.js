@@ -11,7 +11,29 @@ const LOCALES_MAP = { ar, fr, en };
  * @param {string} lang - The target language code ('ar', 'fr', 'en').
  * @returns {string} The translated string or the key itself if not found.
  */
-export function t(key, lang = 'fr') {
+/**
+ * Resolve Arabic plural form for a given count.
+ * Arabic has 6 grammatical numbers; we handle the 4 most common CLDR forms.
+ */
+function arPlural(count) {
+  const abs = Math.abs(count);
+  if (abs === 0) return 'zero';
+  if (abs === 1) return 'one';
+  if (abs === 2) return 'two';
+  if (abs % 100 >= 3 && abs % 100 <= 10) return 'few';
+  if (abs % 100 >= 11 && abs % 100 <= 99) return 'many';
+  return 'other';
+}
+
+function frPlural(count) {
+  return Math.abs(count) <= 1 ? 'one' : 'other';
+}
+
+function enPlural(count) {
+  return Math.abs(count) === 1 ? 'one' : 'other';
+}
+
+export function t(key, lang = 'fr', count) {
   if (key == null) return '';
   const safeLang = LOCALES_MAP[lang] ? lang : 'fr';
 
@@ -45,7 +67,14 @@ export function t(key, lang = 'fr') {
     val = val[k];
   }
 
-  if (val != null) return val;
+  if (val != null) {
+    // Pluralization: if the resolved value is an object with plural keys, pick the right form.
+    if (typeof val === 'object' && !Array.isArray(val) && count !== undefined) {
+      const form = safeLang === 'ar' ? arPlural(count) : safeLang === 'en' ? enPlural(count) : frPlural(count);
+      return (val[form] ?? val.other ?? val.one ?? Object.values(val)[0] ?? '').replace(/\{count\}/g, count);
+    }
+    return val;
+  }
 
   // Global fallback to French for missing keys in other languages.
   if (safeLang !== 'fr') {

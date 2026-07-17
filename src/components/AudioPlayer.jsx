@@ -1000,6 +1000,18 @@ export default function AudioPlayer() {
 
   return (
     <>
+      {/* Screen-reader live region: announces ayah changes during memorization mode */}
+      {memMode && (
+        <div
+          aria-live="polite"
+          aria-atomic="true"
+          className="sr-only"
+        >
+          {currentPlayingAyah?.ayah
+            ? `${t("quran.surah", lang)} ${currentPlayingAyah.surah} · ${t("quran.ayah", lang)} ${currentPlayingAyah.ayah}`
+            : ""}
+        </div>
+      )}
       {audioError && (
         <div
           className="pointer-events-none fixed left-1/2 z-[430] flex max-w-[min(90vw,360px)] -translate-x-1/2 items-center gap-2 rounded-xl border border-rose-200/20 bg-rose-700/95 px-4 py-2.5 text-center text-xs font-semibold text-white shadow-xl"

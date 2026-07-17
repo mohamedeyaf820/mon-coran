@@ -115,32 +115,33 @@ function Toast({ type = "info", message, onClose, autoClose = 5000, lang }) {
     const t = setTimeout(onClose, autoClose);
     return () => clearTimeout(t);
   }, [autoClose, onClose]);
-  const toastMarks = { success: "✓", error: "×", warning: "!", info: "i" };
-  const styles = {
-    success: { bg: "bg-emerald-50 border-emerald-200", text: "text-emerald-800", bar: "border-l-4 border-l-emerald-500", iconColor: "text-emerald-500" },
-    error:   { bg: "bg-red-50 border-red-200",         text: "text-red-800",     bar: "border-l-4 border-l-red-500",     iconColor: "text-red-500" },
-    warning: { bg: "bg-orange-50 border-orange-200",   text: "text-orange-800",  bar: "border-l-4 border-l-orange-500",  iconColor: "text-amber-500" },
-    info:    { bg: "bg-blue-50 border-blue-200",        text: "text-blue-800",    bar: "border-l-4 border-l-blue-500",    iconColor: "text-blue-500" },
-  }[type] ?? {};
-  const toastMark = toastMarks[type];
+  const TOAST_VARS = {
+    success: { bg: "var(--toast-success-bg, #ecfdf5)", border: "var(--toast-success-border, #a7f3d0)", text: "var(--toast-success-text, #065f46)", accent: "var(--toast-success-accent, #10b981)", mark: "✓" },
+    error:   { bg: "var(--toast-error-bg, #fef2f2)",   border: "var(--toast-error-border, #fecaca)",   text: "var(--toast-error-text, #991b1b)",   accent: "var(--toast-error-accent, #ef4444)",   mark: "×" },
+    warning: { bg: "var(--toast-warning-bg, #fff7ed)", border: "var(--toast-warning-border, #fed7aa)", text: "var(--toast-warning-text, #9a3412)",  accent: "var(--toast-warning-accent, #f97316)",  mark: "!" },
+    info:    { bg: "var(--toast-info-bg, #eff6ff)",    border: "var(--toast-info-border, #bfdbfe)",    text: "var(--toast-info-text, #1e40af)",    accent: "var(--toast-info-accent, #3b82f6)",    mark: "i" },
+  };
+  const tv = TOAST_VARS[type] ?? TOAST_VARS.info;
   return (
-    <div className={`toast-notification ${styles.bg} ${styles.bar} ${styles.text} px-4 py-3 rounded-md flex items-center justify-between gap-2 animate-fadeInScale`}>
+    <div
+      className="toast-notification px-4 py-3 rounded-md flex items-center justify-between gap-2 animate-fadeInScale border-l-4"
+      style={{ backgroundColor: tv.bg, borderColor: tv.border, borderLeftColor: tv.accent, color: tv.text }}
+    >
       <div className="flex items-center gap-2 min-w-0">
-        {toastMark && (
-          <span
-            className={`${styles.iconColor} grid h-4 w-4 shrink-0 place-items-center rounded-full border border-current text-[10px] font-black leading-none`}
-            aria-hidden="true"
-          >
-            {toastMark}
-          </span>
-        )}
+        <span
+          className="grid h-4 w-4 shrink-0 place-items-center rounded-full border border-current text-[10px] font-black leading-none"
+          style={{ color: tv.accent }}
+          aria-hidden="true"
+        >
+          {tv.mark}
+        </span>
         <span className="text-sm font-medium">{message}</span>
       </div>
       <button
         onClick={onClose}
         className="shrink-0 text-lg transition-opacity hover:opacity-70"
         aria-label={
-          lang === "ar" ? "\u0625\u063a\u0644\u0627\u0642" : lang === "en" ? "Close" : "Fermer"
+          lang === "ar" ? "إغلاق" : lang === "en" ? "Close" : "Fermer"
         }
       >
         ×

@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => ({
     sourcemap: false,
     target: "es2020",
     // Minification agressive + suppression console/debugger
-    minify: false,
+    minify: "esbuild",
     cssCodeSplit: true,
     cssMinify: "esbuild",
     // Enable compression
