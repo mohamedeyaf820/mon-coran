@@ -68,7 +68,7 @@ async function assertNoBlockingVeil(page) {
       ".audio-player-modal",
       ".sidebar-clickout-overlay",
       ".modal-overlay",
-      ".search-modal-shell",
+      ".search-pro-overlay",
     ];
 
     return selectors.flatMap((selector) =>

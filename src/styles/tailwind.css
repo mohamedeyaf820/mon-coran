@@ -49,7 +49,7 @@
     .hp2-btn,
     .modal-action-btn,
     .sidebar-tab-trigger {
-        min-height: 38px !important;
+        min-height: 44px !important;
         font-size: 0.92rem !important;
     }
     .modal-header {
@@ -118,6 +118,46 @@ body {
     color: var(--theme-text, var(--text-primary, #111827));
 }
 
+/* Keep the keyboard skip link out of layout regardless of later touch-target rules. */
+.app-root > .app-skip-link {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    z-index: 10000;
+    width: 1px;
+    min-width: 0;
+    height: 1px;
+    min-height: 0;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}
+
+.app-root > .app-skip-link:focus {
+    position: fixed;
+    inset-block-start: 0.75rem;
+    inset-inline-start: 0.75rem;
+    width: auto;
+    min-width: 44px;
+    height: auto;
+    min-height: 44px;
+    margin: 0;
+    padding: 0.65rem 0.9rem;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    border: 1px solid var(--theme-border, var(--border));
+    border-radius: var(--r-lg, 0.75rem);
+    background: var(--theme-panel-bg-strong, var(--bg-card));
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-weight: 700;
+    box-shadow: 0 10px 24px rgba(2, 8, 23, 0.18);
+}
+
 .app-root {
     min-height: 100dvh;
     overflow-x: clip;
@@ -134,39 +174,6 @@ body {
     --c-audio-icon: #f59e0b;
     --c-danger: #ef4444;
     --c-danger-hover: #dc2626;
-}
-
-.fa-solid,
-.fas,
-.fa-regular,
-.far,
-.fa-brands,
-.fab,
-.fa,
-[class^="fa-"],
-[class*=" fa-"] {
-    font-style: normal;
-}
-
-.fa-solid,
-.fas,
-.fa,
-[class*=" fa-"]::before,
-[class^="fa-"]::before {
-    font-family: "Font Awesome 7 Free", "Font Awesome 6 Free" !important;
-    font-weight: 900;
-}
-
-.fa-regular,
-.far {
-    font-family: "Font Awesome 7 Free", "Font Awesome 6 Free" !important;
-    font-weight: 400;
-}
-
-.fa-brands,
-.fab {
-    font-family: "Font Awesome 7 Brands", "Font Awesome 6 Brands" !important;
-    font-weight: 400;
 }
 
 @keyframes animate-in {
@@ -3759,7 +3766,7 @@ ol {
         text-align: center;
     }
 
-    .hp-empty i {
+    .hp-empty svg {
         font-size: 1.8rem;
         opacity: 0.25;
     }
@@ -4836,7 +4843,7 @@ input:focus-visible {
     text-align: center;
 }
 
-.hp-empty i {
+.hp-empty svg {
     font-size: 1.8rem;
     color: var(--text-muted);
     opacity: 0.25;
@@ -5170,11 +5177,26 @@ input:focus-visible {
 }
 
 .mem-word {
+    appearance: none;
+    border: 0;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    line-height: inherit;
     display: inline-block;
     margin: 0 0.12em;
     transition: all 0.3s ease;
     border-radius: 4px;
     padding: 0 0.08em;
+}
+
+.mem-word:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.mem-word:disabled {
+    opacity: 1;
 }
 
 .mem-word--hidden {
@@ -15520,13 +15542,13 @@ body {
 }
 
 .sb-search::before {
-    content: "\f002";
+    content: "⌕";
     position: absolute;
     top: 50%;
     left: 0.95rem;
     transform: translateY(-50%);
     color: rgba(var(--primary-rgb), 0.68);
-    font-family: "Font Awesome 7 Free", "Font Awesome 6 Free";
+    font-family: inherit;
     font-weight: 900;
     font-size: 0.78rem;
     pointer-events: none;
@@ -16460,7 +16482,7 @@ body {
     border: 1px dashed var(--border);
 }
 
-.hp-empty i {
+.hp-empty svg {
     font-size: 2.5rem;
     margin-bottom: 1rem;
     opacity: 0.5;
@@ -17496,8 +17518,8 @@ body {
 }
 
 .ayah-block.playing .ayah-number::after {
-    content: "\f028";
-    font-family: "Font Awesome 6 Free";
+    content: "♪";
+    font-family: inherit;
     font-weight: 900;
     display: block;
     color: var(--gold);
@@ -20875,8 +20897,8 @@ body {
 }
 
 .qc-ayah-block.is-playing .qc-ayah-content::after {
-    content: "\f028";
-    font-family: "Font Awesome 6 Free";
+    content: "♪";
+    font-family: inherit;
     font-weight: 900;
     display: block;
     font-size: 0.55rem;
@@ -21174,4 +21196,3 @@ body {
         transition: none;
     }
 }
-

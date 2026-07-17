@@ -59,15 +59,6 @@
    1b. REDUCED MOTION — Respect user preference
    ═══════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
-
     /* Keep opacity transitions for screen reader focus */
     .sr-only:focus,
     .sr-only:focus-within {
@@ -905,24 +896,24 @@ button:active:not(:disabled),
 
 /* Dark mode scrollbars */
 html[data-theme="dark"] ::-webkit-scrollbar-thumb {
-    background-color: rgba(180, 202, 191, 0.22) !important;
+    background-color: color-mix(in srgb, var(--theme-text-muted) 34%, transparent) !important;
 }
 
 html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(47, 208, 142, 0.38) !important;
+    background-color: rgba(var(--theme-primary-rgb), 0.42) !important;
 }
 
 html[data-theme="dark"] * {
-    scrollbar-color: rgba(180, 202, 191, 0.22) transparent !important;
+    scrollbar-color: color-mix(in srgb, var(--theme-text-muted) 34%, transparent) transparent !important;
 }
 
 /* Dark mode popover backgrounds */
 html[data-theme="dark"] [data-radix-popper-content-wrapper] > div,
 html[data-theme="dark"] .z-\[300\] {
-    border-color: rgba(196, 219, 208, 0.16) !important;
-    background: rgba(16, 29, 25, 0.97) !important;
+    border-color: var(--theme-border) !important;
+    background: color-mix(in srgb, var(--theme-panel-bg-strong) 97%, transparent) !important;
     backdrop-filter: blur(16px) !important;
-    color: var(--night-text, #f4f8f5) !important;
+    color: var(--theme-text) !important;
 }
 
 /* Dark mode: settings row text fix */

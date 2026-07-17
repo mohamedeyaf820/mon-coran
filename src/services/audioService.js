@@ -82,6 +82,7 @@ class AudioService {
     this.playlistIndex = -1;
     this.isPlaying = false;
     this._loadTimeout = null;
+    this._cancelPendingLoad = null;
     this._preloadAudio = null; // For preloading next track
     this._preloadPool = []; // [{ url, audio }]
     this._maxPreloadPool = 3;
@@ -90,6 +91,7 @@ class AudioService {
     this._currentCdnType = "islamic";
     this._activeReciterKey = "islamic:";
     this._playlistSignature = "";
+    this._playlistIndexByAyahKey = new Map();
     this._playRequestedAt = 0;
     this._hasCapturedLatency = false;
     this._reciterLatencyByKey = Object.create(null);
@@ -321,6 +323,13 @@ class AudioService {
           : [],
       };
     });
+    this._playlistIndexByAyahKey = new Map();
+    this.playlist.forEach((item, index) => {
+      const ayahKey = `${item.surah}:${item.ayah ?? "surah"}`;
+      if (!this._playlistIndexByAyahKey.has(ayahKey)) {
+        this._playlistIndexByAyahKey.set(ayahKey, index);
+      }
+    });
 
     // Preserve current position if the same ayah still exists in the new playlist
     const preservedIndex = previousCurrent
@@ -491,6 +500,7 @@ class AudioService {
   }
 
   stop() {
+    this._cancelPendingLoad?.();
     this._loadRequestId++;
     this._clearLoadTimeout();
     if (this.memTimer) {
@@ -510,6 +520,7 @@ class AudioService {
     this.playlist = [];
     this.playlistIndex = -1;
     this._playlistSignature = "";
+    this._playlistIndexByAyahKey.clear();
     this._playlistSourceAyahs = [];
     this.memCurrentRepeat = 0;
     this.surahCurrentCycle = 1;
@@ -534,11 +545,9 @@ class AudioService {
    * Jump to a specific ayah in the playlist
    */
   playAyah(surah, ayah) {
-    let idx = this.playlist.findIndex(
-      (p) => p.surah === surah && p.ayah === ayah,
-    );
+    let idx = this._playlistIndexByAyahKey.get(`${surah}:${ayah}`) ?? -1;
     if (idx < 0 && AudioService.isSurahStreamCdn(this._currentCdnType)) {
-      idx = this.playlist.findIndex((p) => p.surah === surah);
+      idx = this._playlistIndexByAyahKey.get(`${surah}:surah`) ?? -1;
     }
     if (idx >= 0) {
       this._loadAndPlay(idx);
@@ -563,6 +572,7 @@ class AudioService {
       this.onPlay?.({ url, ...meta });
       return true;
     } catch (err) {
+      if (err?.name === "AbortError") return false;
       this.onNetworkState?.("error");
       this.onError?.(err);
       return false;
@@ -701,6 +711,7 @@ class AudioService {
    * Waits for 'canplay' before calling play(). Retries on failure.
    */
   _loadUrlWithRetry(url, retries = MAX_RETRIES) {
+    this._cancelPendingLoad?.();
     return new Promise((resolve, reject) => {
       if (!isTrustedAudioUrl(url)) {
         reject(new Error("Untrusted audio URL"));
@@ -723,26 +734,63 @@ class AudioService {
 
       let settled = false;
       let cleanup = () => {};
+      let retryTimer = null;
 
-      const finishResolve = () => {
-        if (settled || requestId !== this._loadRequestId) return;
+      const clearRetryTimer = () => {
+        if (!retryTimer) return;
+        clearTimeout(retryTimer);
+        retryTimer = null;
+      };
+
+      const releasePendingLoad = (cancelPendingLoad) => {
+        if (this._cancelPendingLoad === cancelPendingLoad) {
+          this._cancelPendingLoad = null;
+        }
+      };
+
+      const cancelPendingLoad = () => {
+        if (settled) return;
         settled = true;
         cleanup();
+        clearRetryTimer();
         this._clearLoadTimeout();
+        releasePendingLoad(cancelPendingLoad);
+        reject(new DOMException("Audio load superseded", "AbortError"));
+      };
+      this._cancelPendingLoad = cancelPendingLoad;
+
+      const finishResolve = () => {
+        if (settled) return;
+        if (requestId !== this._loadRequestId) {
+          cancelPendingLoad();
+          return;
+        }
+        settled = true;
+        cleanup();
+        clearRetryTimer();
+        this._clearLoadTimeout();
+        releasePendingLoad(cancelPendingLoad);
         resolve();
       };
 
       const finishReject = (err) => {
-        if (settled || requestId !== this._loadRequestId) return;
+        if (settled) return;
+        if (requestId !== this._loadRequestId) {
+          cancelPendingLoad();
+          return;
+        }
         settled = true;
         cleanup();
+        clearRetryTimer();
         this._clearLoadTimeout();
+        releasePendingLoad(cancelPendingLoad);
         reject(err);
       };
 
       const attempt = (retriesLeft) => {
         if (settled || requestId !== this._loadRequestId) return;
 
+        clearRetryTimer();
         cleanup();
 
         const onCanPlay = () => {
@@ -756,7 +804,10 @@ class AudioService {
               if (e.name === "NotAllowedError") {
                 finishResolve(); // Not a real load error
               } else if (retriesLeft > 0) {
-                setTimeout(() => attempt(retriesLeft - 1), RETRY_DELAY);
+                retryTimer = setTimeout(
+                  () => attempt(retriesLeft - 1),
+                  RETRY_DELAY,
+                );
               } else {
                 finishReject(e);
               }
@@ -768,7 +819,10 @@ class AudioService {
           this._clearLoadTimeout();
           if (retriesLeft > 0) {
             devLog("warn", `Audio load error, retrying... (${retriesLeft} left)`);
-            setTimeout(() => attempt(retriesLeft - 1), RETRY_DELAY);
+            retryTimer = setTimeout(
+              () => attempt(retriesLeft - 1),
+              RETRY_DELAY,
+            );
           } else {
             finishReject(new Error("Audio load failed after retries"));
           }
@@ -813,7 +867,10 @@ class AudioService {
             } else if (retriesLeft > 0) {
               cleanup();
               this._clearLoadTimeout();
-              setTimeout(() => attempt(retriesLeft - 1), RETRY_DELAY);
+              retryTimer = setTimeout(
+                () => attempt(retriesLeft - 1),
+                RETRY_DELAY,
+              );
             } else {
               finishReject(e);
             }
@@ -894,6 +951,7 @@ class AudioService {
           loadedUrl = urlCandidate;
           break;
         } catch (err) {
+          if (err?.name === "AbortError") throw err;
           lastErr = err;
         }
       }
@@ -910,6 +968,7 @@ class AudioService {
       // Preload next tracks (3 ahead for smoother continuous playback)
       this._preloadAhead(index + 1, 3);
     } catch (err) {
+      if (err?.name === "AbortError") return;
       devLog("error", "Audio play error:", err);
       this.onNetworkState?.("error");
       this.onError?.(err);

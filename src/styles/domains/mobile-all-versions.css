@@ -1141,7 +1141,7 @@
         .app-view-home
         .hp-grid.hp-grid--surah
         .hp-card-name {
-        font-size: 0.88rem;
+        font-size: max(1rem, 14px);
         line-height: 1.2;
     }
 
@@ -1150,7 +1150,7 @@
         .app-view-home
         .hp-grid.hp-grid--surah
         .hp-card-meta {
-        font-size: 0.66rem;
+        font-size: max(0.79rem, 11px);
         line-height: 1.24;
     }
 
@@ -1268,7 +1268,7 @@
         .app-view-home
         .hp-grid.hp-grid--surah
         .hp-card-name {
-        font-size: 0.84rem;
+        font-size: max(0.86rem, 12px);
     }
 
     .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-meta,
@@ -1276,7 +1276,7 @@
         .app-view-home
         .hp-grid.hp-grid--surah
         .hp-card-meta {
-        font-size: 0.62rem;
+        font-size: max(0.79rem, 11px);
     }
 
     .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-ar,
@@ -1394,7 +1394,7 @@
         .app-view-home
         .hp-grid.hp-grid--surah
         .hp-card-name {
-        font-size: 0.8rem;
+        font-size: max(0.86rem, 12px);
     }
 
     .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-meta,
@@ -1402,7 +1402,7 @@
         .app-view-home
         .hp-grid.hp-grid--surah
         .hp-card-meta {
-        font-size: 0.6rem;
+        font-size: max(0.79rem, 11px);
     }
 
     .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-ar,

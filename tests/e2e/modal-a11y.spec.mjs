@@ -71,14 +71,6 @@ test.describe("Modal a11y — Focus trap & Escape", () => {
     // Ouvrir via Ctrl+B
     await page.keyboard.press("Control+b");
     const bookmarksModal = page.locator('[aria-labelledby="bookmarks-modal-title"]').first();
-
-    // Peut ne pas exister si raccourci non supporté, essayer autrement
-    const isVisible = await bookmarksModal.isVisible().catch(() => false);
-    if (!isVisible) {
-      test.skip();
-      return;
-    }
-
     await expect(bookmarksModal).toBeVisible({ timeout: 5000 });
 
     // Escape ferme

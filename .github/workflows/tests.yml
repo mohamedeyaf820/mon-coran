@@ -7,7 +7,7 @@ on:
     branches: [main, master]
 
 jobs:
-  test:
+  quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,15 +16,86 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
-      - run: npm run test:security
-      - name: Install Playwright
-        run: npx playwright install --with-deps chromium
-      - name: Run E2E tests
-        run: npm run test:e2e:smoke
+      - name: Lint structure and hooks
+        run: npm run lint
+      - name: Unit tests with coverage
+        run: npm run test:coverage
+      - name: Build, budgets, CSS and security headers
+        run: npm run build:ci
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+      - name: Verify Warsh text, Tajwid and audio sources
+        run: npm run audit:warsh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: production-dist
+          path: dist/
+          retention-days: 2
+
+  chromium:
+    needs: quality
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ["1/4", "2/4", "3/4", "4/4"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: production-dist
+          path: dist
+      - run: npx playwright install --with-deps chromium
+      - name: Chromium E2E shard ${{ matrix.shard }}
+        run: npx playwright test --project=chromium --shard=${{ matrix.shard }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
+          name: playwright-chromium-${{ strategy.job-index }}
           path: playwright-report/
           retention-days: 7
+
+  compatibility:
+    needs: quality
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: production-dist
+          path: dist
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Cross-browser smoke
+        run: npx playwright test --project=${{ matrix.browser }}
+
+  pwa:
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: production-dist
+          path: dist
+      - run: npx playwright install --with-deps chromium
+      - name: Offline shell and Quran data
+        run: npx playwright test --project=pwa-offline

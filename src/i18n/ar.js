@@ -31,9 +31,10 @@ export default {
     hint: 'اكتب للبحث في القرآن الكريم',
   },
   settings: {
-    title: 'الإعدادات', readingSettings: 'خيارات القراءة', general: 'عام', display: 'عرض', audio: 'صوت',
+    title: 'الإعدادات', readingSettings: 'خيارات القراءة', general: 'عام', display: 'عرض', audio: 'صوت', privacy: 'الخصوصية',
     appLanguage: 'لغة التطبيق', visualTheme: 'المظهر المرئي',
     backupRestore: 'النسخ الاحتياطي والاستعادة', autoNightMode: 'الوضع الليلي التلقائي', autoNightHint: 'التبديل التلقائي حسب الوقت',
+    prayerTimes: 'استخدام مواقيت الصلاة المحلية', prayerTimesHint: 'يسمح بتحديد الموقع لضبط الفجر والعشاء. لا يتم حفظ موقعك.',
     start: 'بداية', end: 'نهاية',
     clearCache: 'مسح ذاكرة التخزين المؤقت', cacheCleared: 'تم مسح ذاكرة التخزين المؤقت للتطبيق.',
     cacheInfo: 'امسح ذاكرة التخزين المؤقت إذا واجهت مشاكل في الصوت.',

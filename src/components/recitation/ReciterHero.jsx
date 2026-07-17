@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import ReciterTypeBadge from "./ReciterTypeBadge";
-import { getReciterVisual } from "../../data/reciters";
+import {
+  getReciterCountryLabel,
+  getReciterSourceInfo,
+  getReciterVisual,
+} from "../../data/reciters";
 
 function label(reciter, lang) {
   if (lang === "ar") return reciter.name;
@@ -13,6 +17,8 @@ export default function ReciterHero({ reciter, lang }) {
   const [imgError, setImgError] = useState(false);
   const showPhoto = visual.photo && !imgError;
   const avatar = visual.avatar;
+  const countryLabel = getReciterCountryLabel(reciter, lang);
+  const sourceInfo = getReciterSourceInfo(reciter);
 
   return (
     <div className="reciter-hero flex min-w-0 items-center gap-3.5">
@@ -20,7 +26,7 @@ export default function ReciterHero({ reciter, lang }) {
         {showPhoto ? (
           <img
             src={visual.photo}
-            alt={label(reciter, lang)}
+            alt=""
             className="reciter-hero__avatar h-16 w-16 rounded-full border-2 border-primary/20 object-cover sm:h-20 sm:w-20"
             onError={() => setImgError(true)}
             loading="lazy"
@@ -52,9 +58,14 @@ export default function ReciterHero({ reciter, lang }) {
               Warsh
             </span>
           )}
-          {reciter.country && (
+          {countryLabel && (
             <span className="inline-flex items-center rounded-full bg-bg-secondary px-2 py-0.5 text-[0.65rem] font-medium text-text-muted">
-              {reciter.country}
+              {countryLabel}
+            </span>
+          )}
+          {sourceInfo && (
+            <span className="reciter-hero__source inline-flex items-center rounded-full px-2 py-0.5 text-[0.65rem] font-bold">
+              {sourceInfo.label}
             </span>
           )}
         </div>

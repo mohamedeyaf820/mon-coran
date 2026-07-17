@@ -17,11 +17,11 @@ export default function Footer() {
 
   const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
   const openHome = () => {
-    set({ showHome: true, showDuas: false });
+    set({ legalPage: null, showHome: true, showDuas: false });
     scrollTop();
   };
   const openDuas = () => {
-    set({ showHome: false, showDuas: true });
+    set({ legalPage: null, showHome: false, showDuas: true });
     scrollTop();
   };
 
@@ -32,6 +32,11 @@ export default function Footer() {
     { key: "duas",      Icon: HandHeart, label: t("nav.duas", lang),       onClick: openDuas },
     { key: "settings",  Icon: Settings,  label: t("nav.settings", lang),   onClick: () => dispatch({ type: "TOGGLE_SETTINGS" }) },
   ];
+  const legalLabels = {
+    fr: { privacy: "Confidentialité", legal: "Mentions légales", sources: "Sources" },
+    en: { privacy: "Privacy", legal: "Legal notice", sources: "Sources" },
+    ar: { privacy: "الخصوصية", legal: "إشعار قانوني", sources: "المصادر" },
+  }[lang] || { privacy: "Confidentialité", legal: "Mentions légales", sources: "Sources" };
 
   return (
     <footer className="mp-footer-v2" role="contentinfo">
@@ -77,7 +82,18 @@ export default function Footer() {
           <span className="mp-footer-v2__credit">
             {t("footer.credit", lang)}
           </span>
-          <span className="mp-footer-v2__brand">Mushaf.plus</span>
+          <nav className="mp-footer-v2__legal" aria-label={legalLabels.legal}>
+            {Object.entries(legalLabels).map(([page, label]) => (
+              <button
+                key={page}
+                type="button"
+                onClick={() => set({ legalPage: page, showHome: false, showDuas: false })}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+          <span className="mp-footer-v2__brand">MushafPlus</span>
         </div>
       </div>
     </footer>

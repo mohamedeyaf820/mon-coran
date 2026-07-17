@@ -23,6 +23,11 @@ import {
 } from "../data/fonts";
 import { parseInitialRoute } from "../hooks/useUrlSync";
 import { getSurahAyahCount } from "../data/surahs";
+import { loadAudioService } from "../services/loadAudioService";
+import {
+  PRIVACY_BEFORE_LOCK_EVENT,
+  PRIVACY_BEFORE_ROTATION_EVENT,
+} from "../services/privacyEvents";
 
 const clampQuranFontSize = (value, fallback = 25) => {
   const numeric = Number(value);
@@ -94,7 +99,10 @@ const getInitialState = () => {
   weeklyStatsOpen: false,
   audioMakerOpen: false,
   toolsHubOpen: false,
-  splashDone: false,
+  futureHubOpen: null,
+  // Le splash n'est affiché qu'au premier lancement. Les installations
+  // existantes sans cette préférence le verront une dernière fois.
+  splashDone: stored.splashDone ?? false,
   tafsirSidebarOpen: false,
   tafsirSidebarVerse: null,
 
@@ -124,6 +132,7 @@ const getInitialState = () => {
     routeOverrides.showHome ??
     (stored.showHome !== undefined ? Boolean(stored.showHome) : true),
   showDuas: routeOverrides.showDuas ?? false,
+  legalPage: routeOverrides.legalPage ?? null,
   showTranslation: stored.showTranslation ?? true,
   showTajwid: stored.showTajwid ?? false,
   showWordByWord: stored.showWordByWord ?? false,
@@ -144,7 +153,7 @@ const getInitialState = () => {
   syncOffsetsMs: stored.syncOffsetsMs || {},
   warshStrictMode: stored.warshStrictMode ?? true,
   favoriteReciters: stored.favoriteReciters || [],
-  autoSelectFastestReciter: false,
+  autoSelectFastestReciter: stored.autoSelectFastestReciter ?? false,
   reciterLatencyByKey: stored.reciterLatencyByKey || {},
   reciterAvailabilityById: stored.reciterAvailabilityById || {},
   isPlaying: false,
@@ -195,6 +204,16 @@ export function appReducer(state, action) {
     case "SET": {
       const payload = action.payload || {};
       const next = { ...state, ...payload };
+      if (
+        !Object.prototype.hasOwnProperty.call(payload, "legalPage") &&
+        (payload.showHome === true ||
+          payload.showDuas === true ||
+          Object.prototype.hasOwnProperty.call(payload, "currentSurah") ||
+          Object.prototype.hasOwnProperty.call(payload, "currentPage") ||
+          Object.prototype.hasOwnProperty.call(payload, "currentJuz"))
+      ) {
+        next.legalPage = null;
+      }
       const hasRiwaya = Object.prototype.hasOwnProperty.call(payload, "riwaya");
       const hasFontFamily = Object.prototype.hasOwnProperty.call(payload, "fontFamily");
       const targetRiwaya = hasRiwaya
@@ -274,6 +293,7 @@ export function appReducer(state, action) {
           memMode: true,
           showHome: false,
           showDuas: false,
+          legalPage: null,
           mushafLayout: "list",
           showWordByWord: false,
           // Save current layout so we can restore it on exit
@@ -307,6 +327,7 @@ export function appReducer(state, action) {
         displayMode: "surah",
         showHome: false,
         showDuas: false,
+        legalPage: null,
         sidebarOpen: false,
       };
     }
@@ -318,6 +339,7 @@ export function appReducer(state, action) {
         displayMode: "page",
         showHome: false,
         showDuas: false,
+        legalPage: null,
         sidebarOpen: false,
       };
 
@@ -328,6 +350,7 @@ export function appReducer(state, action) {
         displayMode: "juz",
         showHome: false,
         showDuas: false,
+        legalPage: null,
         sidebarOpen: false,
       };
 
@@ -468,6 +491,7 @@ export function AppProvider({ children }) {
   const persistentSettings = useMemo(() => ({
     lang: state.lang,
     theme: state.theme,
+    splashDone: state.splashDone,
     riwaya: state.riwaya,
     reciter: state.reciter,
     quranFontSize: state.quranFontSize,
@@ -518,6 +542,7 @@ export function AppProvider({ children }) {
   }), [
     state.lang,
     state.theme,
+    state.splashDone,
     state.riwaya,
     state.reciter,
     state.quranFontSize,
@@ -592,14 +617,19 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     const handleBeforeUnload = () => flushSettings();
+    const handleBeforePrivacyLock = () => flushSettings();
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") flushSettings();
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener(PRIVACY_BEFORE_LOCK_EVENT, handleBeforePrivacyLock);
+    window.addEventListener(PRIVACY_BEFORE_ROTATION_EVENT, handleBeforePrivacyLock);
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener(PRIVACY_BEFORE_LOCK_EVENT, handleBeforePrivacyLock);
+      window.removeEventListener(PRIVACY_BEFORE_ROTATION_EVENT, handleBeforePrivacyLock);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [flushSettings]);
@@ -611,35 +641,44 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     let active = true;
-    import("../services/audioService")
-      .then(({ default: audioService }) => {
-        if (active) {
-          audioService.setLatencySnapshot(state.reciterLatencyByKey || {});
-        }
-      })
-      .catch(() => {});
-    return () => {
-      active = false;
-    };
-  }, [state.reciterLatencyByKey]);
-
-  useEffect(() => {
-    let active = true;
     let unsubscribe = () => {};
-    import("../services/audioService")
-      .then(({ default: audioService }) => {
-        if (!active) return;
-        unsubscribe = audioService.subscribeLatency((latencyMap) => {
-          dispatch({
-            type: "SET",
-            payload: { reciterLatencyByKey: latencyMap },
+    let started = false;
+
+    const initializeAudioMetrics = () => {
+      if (started) return;
+      started = true;
+      loadAudioService()
+        .then((audioService) => {
+          if (!active) return;
+          audioService.setLatencySnapshot(
+            stateRef.current.reciterLatencyByKey || {},
+          );
+          unsubscribe = audioService.subscribeLatency((latencyMap) => {
+            dispatch({
+              type: "SET",
+              payload: { reciterLatencyByKey: latencyMap },
+            });
           });
-        });
-      })
-      .catch(() => {});
+        })
+        .catch(() => {});
+    };
+
+    window.addEventListener("pointerdown", initializeAudioMetrics, {
+      passive: true,
+      once: true,
+    });
+    window.addEventListener("keydown", initializeAudioMetrics, { once: true });
+    window.addEventListener("touchstart", initializeAudioMetrics, {
+      passive: true,
+      once: true,
+    });
+
     return () => {
       active = false;
       unsubscribe();
+      window.removeEventListener("pointerdown", initializeAudioMetrics);
+      window.removeEventListener("keydown", initializeAudioMetrics);
+      window.removeEventListener("touchstart", initializeAudioMetrics);
     };
   }, [dispatch]);
 

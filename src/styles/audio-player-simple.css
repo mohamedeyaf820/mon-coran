@@ -173,6 +173,13 @@
   white-space: nowrap;
 }
 
+/* Le champ est partagé par les trois thèmes et respecte aussi le sens RTL. */
+.app-root .audio-reciter-options__search .audio-reciter-options__search-input,
+body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options__search-input {
+  padding-inline-start: 2.75rem !important;
+  padding-inline-end: 2.5rem !important;
+}
+
 .app-root .audio-player-simple .simple-player__title,
 .app-root .audio-player-simple .simple-player__reciter {
   display: block;
@@ -480,10 +487,10 @@
 
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__icon-button,
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__speed {
-    min-width: 2.25rem !important;
-    min-height: 2.25rem !important;
-    width: 2.25rem !important;
-    height: 2.25rem !important;
+    min-width: 2.75rem !important;
+    min-height: 2.75rem !important;
+    width: 2.75rem !important;
+    height: 2.75rem !important;
     border-radius: .68rem !important;
   }
 
@@ -497,7 +504,7 @@
   }
 
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__transport {
-    grid-template-columns: 2.25rem 2.25rem 2.6rem 2.25rem;
+    grid-template-columns: 2.75rem 2.75rem 3rem 2.75rem;
     justify-content: center;
     gap: clamp(.55rem, 6vw, 1.4rem);
     min-height: 2.55rem;
@@ -505,10 +512,10 @@
   }
 
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__play {
-    width: 2.6rem !important;
-    height: 2.6rem !important;
-    min-width: 2.6rem !important;
-    min-height: 2.6rem !important;
+    width: 3rem !important;
+    height: 3rem !important;
+    min-width: 3rem !important;
+    min-height: 3rem !important;
     box-shadow: 0 5px 14px rgba(var(--theme-primary-rgb), .24) !important;
   }
 
@@ -614,7 +621,7 @@ html body > .audio-player-modal.audio-player-modal--simple {
 }
 
 html body > .audio-player-modal--simple .audio-player-modal__backdrop {
-  background: color-mix(in srgb, var(--theme-bg) 72%, #06110d 28%) !important;
+  background: var(--bg-overlay) !important;
   backdrop-filter: blur(10px) !important;
 }
 
@@ -651,15 +658,21 @@ html body > .audio-player-modal--simple .audio-player-modal__title-wrap p {
 }
 
 html body > .audio-player-modal--simple .audio-player-modal__close {
-  width: 2.5rem !important;
-  height: 2.5rem !important;
-  min-width: 2.5rem !important;
-  min-height: 2.5rem !important;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
   border: 1px solid transparent !important;
   border-radius: .75rem !important;
   background: transparent !important;
   color: var(--theme-text-muted) !important;
   box-shadow: none !important;
+  padding: 0 !important;
+}
+
+html body > .audio-player-modal--simple .audio-player-modal__close svg {
+  width: 18px !important;
+  height: 18px !important;
 }
 
 html body > .audio-player-modal--simple .audio-player-modal__tabs {

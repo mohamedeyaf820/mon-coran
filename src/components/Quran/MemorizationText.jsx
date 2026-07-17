@@ -71,9 +71,9 @@ export default function MemorizationText({ text, lang = 'fr', isPlaying = false,
   }, [seqRevealed, clickRevealed]);
 
   const labels = {
-    fr: { next: 'Mot suivant', all: 'Tout révéler', reset: 'Réinitialiser' },
-    en: { next: 'Next word', all: 'Reveal all', reset: 'Reset' },
-    ar: { next: 'الكلمة التالية', all: 'كشف الكل', reset: 'إعادة' },
+    fr: { next: 'Mot suivant', all: 'Tout révéler', reset: 'Réinitialiser', reveal: 'Révéler le mot' },
+    en: { next: 'Next word', all: 'Reveal all', reset: 'Reset', reveal: 'Reveal word' },
+    ar: { next: 'الكلمة التالية', all: 'كشف الكل', reset: 'إعادة', reveal: 'إظهار الكلمة' },
   };
   const lbl = labels[lang] || labels.fr;
 
@@ -83,17 +83,20 @@ export default function MemorizationText({ text, lang = 'fr', isPlaying = false,
         {words.map((word, i) => {
           const revealed = isRevealed(i);
           return (
-            <span
+            <button
+              type="button"
               key={i}
               className={`mem-word ${revealed ? 'mem-word--shown' : 'mem-word--hidden'}`}
               onClick={() => handleWordClick(i)}
-              title={!revealed ? (lang === 'fr' ? 'Cliquer pour révéler' : 'Click to reveal') : undefined}
+              disabled={revealed}
+              aria-label={!revealed ? `${lbl.reveal} ${i + 1}` : undefined}
+              title={!revealed ? lbl.reveal : undefined}
             >
               {revealed
                 ? word
                 : <span className="mem-mask">▁▁▁</span>
               }
-            </span>
+            </button>
           );
         })}
       </div>

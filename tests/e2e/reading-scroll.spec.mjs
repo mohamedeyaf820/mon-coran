@@ -11,7 +11,7 @@ async function openReader(page) {
     try {
       await start.first().waitFor({ state: "visible", timeout: 8000 });
       await start.first().click();
-    } catch (e) {
+    } catch {
       // Ignore if not visible or already routed
     }
   }
@@ -71,6 +71,12 @@ async function resolveReadingScrollRoot(page) {
       .map((el) => {
         const delta = Math.max(0, (el.scrollHeight || 0) - (el.clientHeight || 0));
         if (delta <= 24) return null;
+
+        const isDocumentScroller = el === doc;
+        const overflowY = isDocumentScroller ? "auto" : getComputedStyle(el).overflowY;
+        const acceptsVerticalScroll =
+          isDocumentScroller || overflowY === "auto" || overflowY === "scroll" || overflowY === "overlay";
+        if (!acceptsVerticalScroll) return null;
 
         const isInsideQuran = !!(quran && (el === quran || quran.contains(el)));
         const isQuranScroll = el.matches?.(".quran-display-scroll") || false;
@@ -215,6 +221,11 @@ test("E2E: scroll lecture fonctionne et retour haut remet au debut", async ({ pa
     })
     .toBeGreaterThan(80);
 
+  await scrollReadingContainer(page, 0);
+  await expect
+    .poll(async () => (await getScrollMetrics(page))?.top ?? 9999)
+    .toBeLessThan(25);
+
   const before = await getScrollMetrics(page);
   expect(before).not.toBeNull();
   const beforeTop = before.top || 0;
@@ -254,6 +265,11 @@ test.describe("mobile", () => {
         return info?.delta || 0;
       })
       .toBeGreaterThan(80);
+
+    await scrollReadingContainer(page, 0);
+    await expect
+      .poll(async () => (await getScrollMetrics(page))?.top ?? 9999)
+      .toBeLessThan(25);
 
     const before = await getScrollMetrics(page);
     expect(before).not.toBeNull();

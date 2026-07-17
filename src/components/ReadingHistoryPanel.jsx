@@ -9,6 +9,7 @@ import {
 } from "../services/historyService";
 import { getSurah } from "../data/surahs";
 import { Icon } from "./ui/icon";
+import { confirmAction } from "../services/interactionService";
 
 export default function ReadingHistoryPanel() {
   const { dispatch, set } = useAppActions();
@@ -46,7 +47,7 @@ export default function ReadingHistoryPanel() {
   }, [loadData]);
 
   const handleClear = async () => {
-    if (!window.confirm(`${t("readingHistory.clear", lang)}?`)) return;
+    if (!(await confirmAction({ message: `${t("readingHistory.clear", lang)}?`, tone: "danger" }))) return;
     await clearHistory();
     loadData();
   };
@@ -150,7 +151,7 @@ export default function ReadingHistoryPanel() {
             }}
             onInteractOutside={close}
           >
-            <Dialog.Title className="sr-only">Historique de lecture</Dialog.Title>
+            <Dialog.Title className="sr-only">{t("readingHistory.title", lang)}</Dialog.Title>
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
               <div className="modal-title-stack">
                 <div className="modal-kicker">

@@ -329,7 +329,7 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     nameEn: "Idris Abkar",
     nameFr: "Idris Abkar",
     style: "murattal",
-    cdn: "idris_abkar",
+    cdn: "https://server6.mp3quran.net/abkr/",
     cdnType: "mp3quran-surah",
     audioMode: "surah",
     country: "KSA",
@@ -346,7 +346,7 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     nameEn: "Bandar Baleela",
     nameFr: "Bandar Baleela",
     style: "murattal",
-    cdn: "bandar_baleela",
+    cdn: "https://server6.mp3quran.net/balilah/",
     cdnType: "mp3quran-surah",
     audioMode: "surah",
     country: "KSA",
@@ -363,7 +363,7 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     nameEn: "Ahmad Al-Hawashi",
     nameFr: "Ahmad Al-Hawashi",
     style: "murattal",
-    cdn: "a_hawashi",
+    cdn: "https://server11.mp3quran.net/hawashi/",
     cdnType: "mp3quran-surah",
     audioMode: "surah",
     country: "KSA",
@@ -372,60 +372,6 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
       fr: "Ahmad Al-Hawashi est un récitateur saoudien reconnu pour sa voix douce et apaisante. Sa récitation est caractérisée par un rythme posé et une articulation claire qui facilite la méditation et la mémorisation du Coran.",
       en: "Ahmad Al-Hawashi is a Saudi reciter recognized for his soft and soothing voice. His recitation is characterized by a calm pace and clear articulation that facilitates meditation and Quran memorization.",
       ar: "أحمد الحواشي قارئ سعودي يُعرف بصوته الهادئ المريح. تتميز تلاوته بإيقاع متأنٍّ ونطق واضح يُسهّل التدبر وحفظ القرآن الكريم.",
-    },
-  },
-];
-
-const SUPPLEMENTAL_WARSH_RECITERS = [
-  {
-    id: "warsh_mahmoud_shuraym",
-    name: "محمود الشريم (ورش)",
-    nameEn: "Mahmoud Ash-Shuraym (Warsh)",
-    nameFr: "Mahmoud Ash-Shuraym (Warsh)",
-    style: "murattal",
-    cdn: "https://server7.mp3quran.net/shur/",
-    cdnType: "mp3quran-surah",
-    audioMode: "surah",
-    verifiedWarsh: true,
-    source: "mp3quran",
-    bio: {
-      fr: "Version Warsh de la récitation de Mahmoud Ash-Shuraym. Cette version propose le Coran selon la voie de lecture Warsh, offrant une perspective différente de la récitation habituelle en Hafs.",
-      en: "Warsh version of the recitation by Mahmoud Ash-Shuraym. This version presents the Quran according to the Warsh reading, offering a different perspective from the usual Hafs recitation.",
-      ar: "نسخة ورش من تلاوة محمود الشريم. تقدم هذه النسخة القرآن برواية ورش عن نافع، مما يوفر منظوراً مختلفاً عن التلاوة المعتادة برواية حفص.",
-    },
-  },
-  {
-    id: "warsh_kantaoui",
-    name: "محمد القنطاوي (ورش)",
-    nameEn: "Mohamed Al-Kantaoui (Warsh)",
-    nameFr: "Mohamed Al-Kantaoui (Warsh)",
-    style: "murattal",
-    cdn: "https://server11.mp3quran.net/qnt/",
-    cdnType: "mp3quran-surah",
-    audioMode: "surah",
-    verifiedWarsh: true,
-    source: "mp3quran",
-    bio: {
-      fr: "Mohamed Al-Kantaoui est un récitateur tunisien spécialisé dans la riwaya Warsh. Il est l'un des récitateurs maghrébins les plus écoutés, connu pour sa maîtrise parfaite des spécificités de la lecture Warsh et son style posé et mélodieux.",
-      en: "Mohamed Al-Kantaoui is a Tunisian reciter specialized in the Warsh riwaya. He is one of the most listened-to North African reciters, known for his perfect mastery of Warsh reading specifics and his calm, melodious style.",
-      ar: "محمد القنطاوي قارئ تونسي متخصص في رواية ورش عن نافع. من أكثر القراء المغاربة استماعاً، يُعرف بإتقانه التام لخصوصيات قراءة ورش وأسلوبه الهادئ العذب.",
-    },
-  },
-  {
-    id: "warsh_hussaini_azazi",
-    name: "الحسيني العزازي (ورش)",
-    nameEn: "Al-Hussaini Al-Azazi (Warsh)",
-    nameFr: "Al-Hussaini Al-Azazi (Warsh)",
-    style: "murattal",
-    cdn: "https://server6.mp3quran.net/azazi/",
-    cdnType: "mp3quran-surah",
-    audioMode: "surah",
-    verifiedWarsh: true,
-    source: "mp3quran",
-    bio: {
-      fr: "Al-Hussaini Al-Azazi est un récitateur égyptien réputé pour sa récitation en riwaya Warsh. Spécialiste des lectures coraniques (qira'at), il combine une voix puissante avec une précision remarquable dans l'application des règles de la lecture Warsh.",
-      en: "Al-Hussaini Al-Azazi is an Egyptian reciter renowned for his Warsh riwaya recitation. A specialist in Quranic readings (qira'at), he combines a powerful voice with remarkable precision in applying Warsh reading rules.",
-      ar: "الحسيني العزازي قارئ مصري مشهور بتلاوته برواية ورش عن نافع. متخصص في القراءات القرآنية، يجمع بين صوت قوي ودقة متناهية في تطبيق أحكام قراءة ورش.",
     },
   },
 ];
@@ -452,8 +398,8 @@ const RECITERS = {
       nameEn: "Abdul Basit (Murattal)",
       nameFr: "Abdul Basit (Murattal)",
       style: "murattal",
-      cdn: "ar.abdulbasitmurattal",
-      cdnType: "islamic",
+      cdn: "Abdul_Basit_Murattal_192kbps",
+      cdnType: "everyayah",
       bio: {
         fr: "Abdul Basit Abdul Samad (1927-1988), originaire du village de Armant dans le sud de l'Égypte, est considéré comme l'un des plus grands récitateurs de l'histoire de l'islam. Il a mémorisé le Coran à l'âge de 10 ans et fut le premier récitateur à enregistrer le Coran complet en murattal et en mujawwad. Il a remporté trois prix mondiaux de récitation et a été nommé récitateur officiel de la mosquée Al-Imam Al-Shafi'i au Caire. Ses enregistrements sont écoutés quotidiennement par des millions de personnes à travers le monde.",
         en: "Abdul Basit Abdul Samad (1927-1988), originally from the village of Armant in southern Egypt, is considered one of the greatest Quran reciters in Islamic history. He memorized the Quran by age 10 and became the first reciter to record the complete Quran in both murattal and mujawwad styles. He won three world prizes in Quranic recitation and was appointed official reciter at Al-Imam Al-Shafi'i Mosque in Cairo. His recordings are listened to daily by millions of people around the world.",
@@ -466,8 +412,8 @@ const RECITERS = {
       nameEn: "Abdul Basit (Mujawwad)",
       nameFr: "Abdul Basit (Mujawwad)",
       style: "mujawwad",
-      cdn: "ar.abdulbasitmujawwad",
-      cdnType: "islamic",
+      cdn: "Abdul_Basit_Mujawwad_128kbps",
+      cdnType: "everyayah",
       bio: {
         fr: "Version mujawwad (embellie) de la récitation d'Abdul Basit Abdul Samad (1927-1988). Ce style orné révèle toute l'étendue de son génie vocal avec des maqamat élaborés et une expressivité inégalée.",
         en: "Mujawwad (embellished) version of Abdul Basit Abdul Samad's (1927-1988) recitation. This ornate style reveals the full extent of his vocal genius with elaborate maqamat and unmatched expressiveness.",
@@ -508,8 +454,8 @@ const RECITERS = {
       nameEn: "Al-Minshawi (Mujawwad)",
       nameFr: "Al-Minshawi (Mujawwad)",
       style: "mujawwad",
-      cdn: "ar.minshawimujawwad",
-      cdnType: "islamic",
+      cdn: "Minshawy_Mujawwad_192kbps",
+      cdnType: "everyayah",
       bio: {
         fr: "Version mujawwad de Muhammad Siddiq al-Minshawi (1920-1969), où sa voix dorée atteint des sommets d'expressivité. Ces enregistrements en public sont considérés parmi les plus beaux de l'histoire de la récitation coranique.",
         en: "Mujawwad version of Muhammad Siddiq al-Minshawi (1920-1969), where his golden voice reaches heights of expressiveness. These live recordings are considered among the most beautiful in the history of Quranic recitation.",
@@ -522,8 +468,8 @@ const RECITERS = {
       nameEn: "Saud ash-Shuraym",
       nameFr: "Saud ash-Shuraym",
       style: "murattal",
-      cdn: "ar.saoodshuraym",
-      cdnType: "islamic",
+      cdn: "Saood_ash-Shuraym_128kbps",
+      cdnType: "everyayah",
       bio: {
         fr: "Saud ash-Shuraym, né en 1964 à Riyad, est imam au Masjid al-Haram à La Mecque depuis 1991 et professeur de jurisprudence islamique à l'Université Umm al-Qura. Titulaire d'un doctorat en fiqh, il combine érudition religieuse et talent de récitation. Sa voix grave et imposante, l'une des plus reconnaissables dans le monde islamique, confère une solennité particulière aux prières du Haram, notamment celles du Ramadan qu'il partage avec son partenaire As-Sudais.",
         en: "Saud ash-Shuraym, born in 1964 in Riyadh, has been imam at Masjid al-Haram in Mecca since 1991 and professor of Islamic jurisprudence at Umm al-Qura University. Holding a PhD in fiqh, he combines religious scholarship with recitation talent. His deep and imposing voice, one of the most recognizable in the Islamic world, brings a particular solemnity to Haram prayers, especially Ramadan prayers shared with his partner As-Sudais.",
@@ -578,8 +524,8 @@ const RECITERS = {
       nameEn: "Abdur-Rahman as-Sudais",
       nameFr: "Abdur-Rahman as-Sudais",
       style: "murattal",
-      cdn: "ar.abdurrahmaansudais",
-      cdnType: "islamic",
+      cdn: "Abdurrahmaan_As-Sudais_192kbps",
+      cdnType: "everyayah",
       bio: {
         fr: "Abdur-Rahman as-Sudais, né en 1960 à Riyad, est le président de la présidence des Deux Saintes Mosquées et imam principal au Masjid al-Haram à La Mecque. Il a mémorisé le Coran à 12 ans et obtenu un doctorat en charia islamique de l'Université Umm al-Qura. Nommé imam du Haram en 1984, il dirige les prières devant des millions de fidèles chaque année, notamment pendant le Ramadan et le Hajj. Sa voix émouvante et ses invocations passionnées qui font pleurer les fidèles en ont fait l'un des récitateurs les plus reconnus au monde.",
         en: "Abdur-Rahman as-Sudais, born in 1960 in Riyadh, is the president of the Presidency of the Two Holy Mosques and chief imam at Masjid al-Haram in Mecca. He memorized the Quran by age 12 and earned a PhD in Islamic Sharia from Umm al-Qura University. Appointed imam of the Haram in 1984, he leads prayers before millions of worshippers annually, especially during Ramadan and Hajj. His moving voice and passionate supplications that bring worshippers to tears have made him one of the most recognized reciters worldwide.",
@@ -901,13 +847,51 @@ const RECITERS = {
         ar: "رشيد بلعالية قارئ جزائري متخصص في رواية ورش عن نافع. يمثل التقليد الجزائري في التلاوة ويتميز بأسلوبه المحافظ على الأعراف المغاربية.",
       },
     },
-    ...SUPPLEMENTAL_WARSH_RECITERS,
   ],
 };
 
+export const RECITER_SOURCE_INFO = Object.freeze({
+  islamic: Object.freeze({
+    id: "islamic",
+    label: "Islamic Network",
+    audioMode: "ayah",
+    directDownload: false,
+  }),
+  everyayah: Object.freeze({
+    id: "everyayah",
+    label: "EveryAyah",
+    audioMode: "ayah",
+    directDownload: false,
+  }),
+  "mp3quran-surah": Object.freeze({
+    id: "mp3quran",
+    label: "MP3Quran",
+    audioMode: "surah",
+    directDownload: true,
+  }),
+});
+
+const TRUSTED_MP3QURAN_HOST = /^server\d+\.mp3quran\.net$/i;
+const SAFE_CDN_PATH = /^[a-z0-9._/-]+$/i;
+
+function normalizeReciterProfile(reciter, riwaya) {
+  const cdnType = reciter.cdnType || "islamic";
+  const sourceInfo = RECITER_SOURCE_INFO[cdnType] || RECITER_SOURCE_INFO.islamic;
+
+  return {
+    ...reciter,
+    cdnType,
+    audioMode: reciter.audioMode || sourceInfo.audioMode,
+    source: reciter.source || sourceInfo.id,
+    country: reciter.country || null,
+    riwaya,
+    verifiedWarsh: riwaya === "warsh" && reciter.verifiedWarsh === true,
+  };
+}
+
 const AVAILABLE_RECITERS = {
-  hafs: RECITERS.hafs,
-  warsh: RECITERS.warsh,
+  hafs: RECITERS.hafs.map((reciter) => normalizeReciterProfile(reciter, "hafs")),
+  warsh: RECITERS.warsh.map((reciter) => normalizeReciterProfile(reciter, "warsh")),
 };
 
 const ALL_AVAILABLE_RECITERS = [
@@ -951,6 +935,19 @@ const AVATAR_COLORS = [
   "#0369a1",
 ];
 
+const COUNTRY_LABELS = Object.freeze({
+  KSA: Object.freeze({
+    fr: "Arabie saoudite",
+    en: "Saudi Arabia",
+    ar: "السعودية",
+  }),
+  Egypt: Object.freeze({
+    fr: "Égypte",
+    en: "Egypt",
+    ar: "مصر",
+  }),
+});
+
 export function getReciterAvatar(reciter) {
   const id = String(reciter?.id || reciter?.nameEn || "reciter");
   const label = String(
@@ -990,7 +987,91 @@ export function getReciterVisual(reciter) {
     type: photo ? "photo" : "avatar",
     photo,
     avatar: getReciterAvatar(reciter),
+    attribution: photo
+      ? { provider: "Quran.com", label: "Portrait · Quran.com" }
+      : null,
   };
+}
+
+export function getReciterCountryLabel(reciterOrCountry, lang = "fr") {
+  const country =
+    typeof reciterOrCountry === "string"
+      ? reciterOrCountry
+      : reciterOrCountry?.country;
+  if (!country) return "";
+  return COUNTRY_LABELS[country]?.[lang] || COUNTRY_LABELS[country]?.fr || country;
+}
+
+export function getReciterSourceInfo(reciterOrId, riwaya = null) {
+  const reciter =
+    typeof reciterOrId === "string"
+      ? getReciter(reciterOrId, riwaya) || getReciter(reciterOrId)
+      : reciterOrId;
+  const cdnType = reciter?.cdnType || "islamic";
+  const sourceInfo = RECITER_SOURCE_INFO[cdnType] || null;
+  return sourceInfo ? { ...sourceInfo, cdnType } : null;
+}
+
+export function validateReciterAudioConfig(reciter) {
+  const errors = [];
+  const sourceInfo = getReciterSourceInfo(reciter);
+  const cdn = String(reciter?.cdn || "").trim();
+
+  if (!sourceInfo) {
+    errors.push("cdnType");
+    return { valid: false, errors };
+  }
+  if (reciter.audioMode !== sourceInfo.audioMode) errors.push("audioMode");
+  if (reciter.source !== sourceInfo.id) errors.push("source");
+
+  if (sourceInfo.cdnType === "mp3quran-surah") {
+    try {
+      const url = new URL(cdn);
+      if (
+        url.protocol !== "https:" ||
+        !TRUSTED_MP3QURAN_HOST.test(url.hostname) ||
+        !url.pathname.endsWith("/") ||
+        url.search ||
+        url.hash
+      ) {
+        errors.push("cdn");
+      }
+    } catch {
+      errors.push("cdn");
+    }
+  } else if (
+    !cdn ||
+    !SAFE_CDN_PATH.test(cdn) ||
+    cdn.startsWith("/") ||
+    cdn.includes("..") ||
+    cdn.includes("//")
+  ) {
+    errors.push("cdn");
+  }
+
+  return { valid: errors.length === 0, errors: [...new Set(errors)] };
+}
+
+export function validateReciterProfile(reciter) {
+  const errors = [];
+  const requiredTextFields = ["id", "name", "nameEn", "nameFr", "style", "riwaya"];
+
+  for (const field of requiredTextFields) {
+    if (!String(reciter?.[field] || "").trim()) errors.push(field);
+  }
+  if (!/^[a-z0-9_.-]+$/i.test(String(reciter?.id || ""))) errors.push("id");
+  if (!["murattal", "mujawwad", "tartil"].includes(reciter?.style)) errors.push("style");
+  if (!["hafs", "warsh"].includes(reciter?.riwaya)) errors.push("riwaya");
+  if (reciter?.riwaya === "warsh" && reciter?.verifiedWarsh !== true) {
+    errors.push("verifiedWarsh");
+  }
+  if (reciter?.country !== null && typeof reciter?.country !== "string") {
+    errors.push("country");
+  }
+  if (getReciterBio(reciter, "fr").length < 20) errors.push("bio");
+  errors.push(...validateReciterAudioConfig(reciter).errors);
+
+  return { valid: errors.length === 0, errors: [...new Set(errors)] };
 }
 
 export function getReciterBio(reciter, lang = "fr") {

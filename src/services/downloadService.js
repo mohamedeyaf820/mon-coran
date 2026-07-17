@@ -15,13 +15,19 @@ import {
 
 const CACHE_NAME = "mushafplus-audio-v2";
 const PROGRESS_KEY = "mushaf_offline_progress_v2";
+export const OFFLINE_DOWNLOADS_CHANGED_EVENT = "mushafplus-offline-downloads-changed";
+const activeDownloads = new Map();
 
 function loadProgress() {
   return readLocalStorageWithSchema(PROGRESS_KEY, downloadProgressMapSchema, {});
 }
 
 function saveProgress(progress) {
-  writeLocalStorageJson(PROGRESS_KEY, progress);
+  const saved = writeLocalStorageJson(PROGRESS_KEY, progress);
+  if (saved && typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(OFFLINE_DOWNLOADS_CHANGED_EVENT));
+  }
+  return saved;
 }
 
 function surahAyahCount(surahMeta) {
@@ -155,6 +161,17 @@ export function getOfflineAudioEntries() {
     .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
 }
 
+export function isOfflineDownloadActive(key) {
+  return activeDownloads.has(key);
+}
+
+export function cancelOfflineDownload(key) {
+  const controller = activeDownloads.get(key);
+  if (!controller) return false;
+  controller.abort();
+  return true;
+}
+
 export function getSurahDownloadStatus(surahNum, reciterId = null, riwaya = null) {
   const progress = loadProgress();
   if (reciterId && riwaya) {
@@ -176,6 +193,10 @@ export async function downloadSurahForReciter(
   }
 
   const normalized = normalizeDownloadOptions({ surahMeta, reciter, riwaya });
+  if (activeDownloads.has(normalized.key)) return "partial";
+
+  const controller = new AbortController();
+  activeDownloads.set(normalized.key, controller);
   let done = 0;
   let successCount = 0;
   let failedCount = 0;
@@ -186,6 +207,7 @@ export async function downloadSurahForReciter(
     const total = audioItems.length;
     if (total === 0) return "error";
     progress[normalized.key] = {
+      key: normalized.key,
       status: "partial",
       surahNum: normalized.surahNum,
       reciterId: normalized.reciterId,
@@ -202,6 +224,7 @@ export async function downloadSurahForReciter(
       : "cors";
 
     for (const item of audioItems) {
+      if (controller.signal.aborted) throw new Error("Download cancelled");
       const urlCandidates = getAudioUrlCandidates({ item, normalized });
       let existing = null;
       for (const url of urlCandidates) {
@@ -212,7 +235,10 @@ export async function downloadSurahForReciter(
       if (!existing) {
         for (const url of urlCandidates) {
           try {
-            const response = await fetch(url, { mode: requestMode });
+            const response = await fetch(url, {
+              mode: requestMode,
+              signal: controller.signal,
+            });
             if (response.ok || response.type === "opaque") {
               await cache.put(url, response.clone());
               downloaded = true;
@@ -225,7 +251,10 @@ export async function downloadSurahForReciter(
         if (!downloaded) {
           try {
             const fallbackUrl = urlCandidates[0];
-            const response = await fetch(fallbackUrl, { mode: "cors" });
+            const response = await fetch(fallbackUrl, {
+              mode: "cors",
+              signal: controller.signal,
+            });
             if (response.ok) {
               await cache.put(fallbackUrl, response.clone());
               downloaded = true;
@@ -239,7 +268,10 @@ export async function downloadSurahForReciter(
           const hasCandidate = await cache.match(url);
           if (!hasCandidate) {
             try {
-              const response = await fetch(url, { mode: requestMode });
+              const response = await fetch(url, {
+                mode: requestMode,
+                signal: controller.signal,
+              });
               if (response.ok || response.type === "opaque") {
                 await cache.put(url, response.clone());
               }
@@ -287,17 +319,23 @@ export async function downloadSurahForReciter(
     saveProgress(progress);
     return status;
   } catch (error) {
-    console.error("Download error:", error);
+    const cancelled = controller.signal.aborted;
+    if (!cancelled) console.error("Download error:", error);
     const total = progress[normalized.key]?.total || surahAyahCount(normalized.surahMeta);
     progress[normalized.key] = {
       ...progress[normalized.key],
-      status: "error",
+      key: normalized.key,
+      status: cancelled ? "cancelled" : "error",
       downloaded: successCount,
-      failedCount: Math.max(failedCount, total - successCount),
+      failedCount: cancelled
+        ? failedCount
+        : Math.max(failedCount, total - successCount),
       updatedAt: Date.now(),
     };
     saveProgress(progress);
-    return "error";
+    return cancelled ? "cancelled" : "error";
+  } finally {
+    activeDownloads.delete(normalized.key);
   }
 }
 
@@ -353,6 +391,26 @@ export async function removeSurahCacheForReciter({
   const progress = loadProgress();
   delete progress[normalized.key];
   saveProgress(progress);
+}
+
+export async function clearAllOfflineAudio() {
+  activeDownloads.forEach((controller) => controller.abort());
+  activeDownloads.clear();
+  if (typeof caches !== "undefined") {
+    try {
+      await caches.delete(CACHE_NAME);
+    } catch {
+      // The progress registry is still cleared when Cache API cleanup fails.
+    }
+  }
+  try {
+    localStorage.removeItem(PROGRESS_KEY);
+  } catch {
+    // Storage may be unavailable in a private browsing context.
+  }
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(OFFLINE_DOWNLOADS_CHANGED_EVENT));
+  }
 }
 
 export async function getCacheSize() {

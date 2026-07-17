@@ -8,17 +8,35 @@ export default function PWAUpdateBanner() {
 
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.getRegistration().then((reg) => {
-      if (!reg) return;
-      if (reg.waiting) { setWaiting(true); return; }
-      reg.addEventListener('updatefound', () => {
-        const sw = reg.installing;
-        if (!sw) return;
-        sw.addEventListener('statechange', () => {
-          if (sw.state === 'installed' && navigator.serviceWorker.controller) setWaiting(true);
-        });
+    let cancelled = false;
+    let registration;
+
+    const handleUpdateFound = () => {
+      const sw = registration?.installing;
+      if (!sw) return;
+      sw.addEventListener('statechange', () => {
+        if (!cancelled && sw.state === 'installed' && navigator.serviceWorker.controller) {
+          setWaiting(true);
+        }
       });
-    });
+    };
+
+    navigator.serviceWorker.getRegistration().then((existing) => (
+      existing || navigator.serviceWorker.ready
+    )).then((reg) => {
+      if (cancelled || !reg) return;
+      registration = reg;
+      if (reg.waiting) {
+        setWaiting(true);
+        return;
+      }
+      reg.addEventListener('updatefound', handleUpdateFound);
+    }).catch(() => {});
+
+    return () => {
+      cancelled = true;
+      registration?.removeEventListener('updatefound', handleUpdateFound);
+    };
   }, []);
 
   if (!waiting) return null;
@@ -46,6 +64,7 @@ export default function PWAUpdateBanner() {
     >
       <span style={{ color: 'var(--text-primary)' }}>{t('pwa.updateAvailable', lang)}</span>
       <button
+        type="button"
         onClick={reload}
         style={{
           background: 'var(--primary)', color: '#fff', border: 'none',
@@ -56,11 +75,13 @@ export default function PWAUpdateBanner() {
         {t('pwa.update', lang)}
       </button>
       <button
+        type="button"
         onClick={() => setWaiting(false)}
         aria-label={t('pwa.dismiss', lang)}
         style={{
           background: 'transparent', border: 'none', cursor: 'pointer',
           color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1, padding: '0 0.15rem',
+          minWidth: 44, minHeight: 44,
         }}
       >×</button>
     </div>

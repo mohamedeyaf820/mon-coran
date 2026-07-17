@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import "../styles/domains/audio-legacy.css";
 import "../styles/audio-player-simple.css";
-import { useApp } from "../context/AppContext";
+import {
+  shallowEqual,
+  useAppActions,
+  useAppSelector,
+} from "../context/AppContext";
 import { t } from "../i18n";
 import audioService from "../services/audioService";
 import {
@@ -29,7 +33,31 @@ import { AlertCircle } from "lucide-react";
 
 /* Main component */
 export default function AudioPlayer() {
-  const { state, dispatch, set } = useApp();
+  const { dispatch, set } = useAppActions();
+  const state = useAppSelector(
+    (current) => ({
+      lang: current.lang,
+      reciter: current.reciter,
+      isPlaying: current.isPlaying,
+      currentPlayingAyah: current.currentPlayingAyah,
+      riwaya: current.riwaya,
+      audioSpeed: current.audioSpeed,
+      memMode: current.memMode,
+      memRepeatCount: current.memRepeatCount,
+      memPause: current.memPause,
+      surahRepeatCount: current.surahRepeatCount,
+      volume: current.volume,
+      showHome: current.showHome,
+      showWordByWord: current.showWordByWord,
+      playerMinimized: current.playerMinimized,
+      syncOffsetsMs: current.syncOffsetsMs,
+      favoriteReciters: current.favoriteReciters,
+      autoSelectFastestReciter: current.autoSelectFastestReciter,
+      reciterLatencyByKey: current.reciterLatencyByKey,
+      reciterAvailabilityById: current.reciterAvailabilityById,
+    }),
+    shallowEqual,
+  );
   const {
     lang,
     reciter,
@@ -70,6 +98,7 @@ export default function AudioPlayer() {
   /* Fermeture / refs stables pour callbacks */
   const [closed, setClosed] = useState(false);
   const currentSurahRef = useRef(null);
+  const currentPlayingAyahRef = useRef(currentPlayingAyah);
 
   const optionsCloseButtonRef = useRef(null);
   const progressRef = useRef(null);
@@ -82,6 +111,10 @@ export default function AudioPlayer() {
   useEffect(() => {
     reciterAvailabilityRef.current = reciterAvailabilityById || {};
   }, [reciterAvailabilityById]);
+
+  useEffect(() => {
+    currentPlayingAyahRef.current = currentPlayingAyah;
+  }, [currentPlayingAyah]);
 
   const markReciterUnavailable = useCallback(
     (reciterId, errorLike = null) => {
@@ -222,9 +255,9 @@ export default function AudioPlayer() {
   }, [minimized, playerMinimized, set]);
 
   useEffect(() => {
-    if (isMobile || !showHome || isPlaying || currentPlayingAyah) return;
+    if (!showHome || isPlaying || currentPlayingAyah) return;
     setMinimized(true);
-  }, [currentPlayingAyah, isMobile, isPlaying, showHome]);
+  }, [currentPlayingAyah, isPlaying, showHome]);
 
   useEffect(() => {
     if (!optionsModalOpen) return;
@@ -252,19 +285,22 @@ export default function AudioPlayer() {
       setAudioError(null);
       markReciterAvailable(reciter);
       failedRecitersRef.current.clear();
+      const nextPlayingAyah = item
+        ? {
+            surah: item.surah,
+            ayah: item.ayah,
+            globalNumber: item.globalNumber,
+          }
+        : null;
+      currentPlayingAyahRef.current = nextPlayingAyah;
       set({
         isPlaying: true,
-        currentPlayingAyah: item
-          ? {
-              surah: item.surah,
-              ayah: item.ayah,
-              globalNumber: item.globalNumber,
-            }
-          : null,
+        currentPlayingAyah: nextPlayingAyah,
       });
     };
     audioService.onPause = () => set({ isPlaying: false });
     audioService.onEnd = () => {
+      currentPlayingAyahRef.current = null;
       set({ isPlaying: false, currentPlayingAyah: null });
       setCurTime(0);
       setDuration(0);
@@ -278,13 +314,21 @@ export default function AudioPlayer() {
           payload: { surah: item.surah, ayah: item.ayah || 1 },
         });
       }
-      set({
-        currentPlayingAyah: {
-          surah: item.surah,
-          ayah: item.ayah,
-          globalNumber: item.globalNumber,
-        },
-      });
+      const previous = currentPlayingAyahRef.current;
+      if (
+        previous?.surah === item.surah &&
+        previous?.ayah === item.ayah &&
+        previous?.globalNumber === item.globalNumber
+      ) {
+        return;
+      }
+      const nextPlayingAyah = {
+        surah: item.surah,
+        ayah: item.ayah,
+        globalNumber: item.globalNumber,
+      };
+      currentPlayingAyahRef.current = nextPlayingAyah;
+      set({ currentPlayingAyah: nextPlayingAyah });
     };
     audioService.onTimeUpdate = (ct, dur) => {
       setCurTime(ct);
@@ -786,7 +830,7 @@ export default function AudioPlayer() {
   const playerMutedTextClass =
     "text-[rgba(233,223,202,0.74)] [font-family:var(--font-ui)]";
   const playerSearchInputClass =
-    "w-full rounded-xl border border-white/12 bg-[rgba(6,13,24,0.78)] py-1.5 pl-7 pr-6 text-[0.64rem] text-[rgba(245,236,217,0.9)] outline-none [font-family:var(--font-ui)] focus:border-[rgba(122,188,210,0.4)] focus:ring-2 focus:ring-[rgba(122,188,210,0.18)]";
+    "audio-reciter-options__search-input w-full rounded-xl border border-white/12 bg-[rgba(6,13,24,0.78)] py-1.5 ps-11 pe-10 text-[0.64rem] text-[rgba(245,236,217,0.9)] outline-none [font-family:var(--font-ui)] focus:border-[rgba(122,188,210,0.4)] focus:ring-2 focus:ring-[rgba(122,188,210,0.18)]";
   const playerNumberInputClass =
     "w-12 rounded-xl border border-white/12 bg-[rgba(6,13,24,0.78)] px-1.5 py-1 text-center text-[0.72rem] text-[rgba(250,240,220,0.95)] outline-none [font-family:var(--font-ui)] focus:border-[rgba(122,188,210,0.42)] focus:ring-2 focus:ring-[rgba(122,188,210,0.18)]";
   const playerCardToggleClass = (active = false) =>

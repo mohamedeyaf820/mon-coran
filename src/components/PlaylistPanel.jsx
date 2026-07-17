@@ -17,6 +17,7 @@ import {
   normalizeAyahsForAudioPlaylist,
 } from "../utils/audioPlaylist";
 import { List, X, Loader2, Plus, Music, Play, PenLine, Trash2, ArrowLeft, AudioWaveform, Volume2 } from "lucide-react";
+import { confirmAction } from "../services/interactionService";
 
 export default function PlaylistPanel() {
   const { state, dispatch, set } = useApp();
@@ -56,12 +57,16 @@ export default function PlaylistPanel() {
   };
 
   const handleDelete = async (id) => {
-    if (
-      !window.confirm(
-        lang === "fr" ? "Supprimer cette playlist ?" : "Delete this playlist?",
-      )
-    )
-      return;
+    const approved = await confirmAction({
+      message:
+        lang === "ar"
+          ? "هل تريد حذف قائمة التشغيل هذه؟"
+          : lang === "fr"
+            ? "Supprimer cette playlist ?"
+            : "Delete this playlist?",
+      tone: "danger",
+    });
+    if (!approved) return;
     await deletePlaylist(id);
     if (selectedId === id) setSelectedId(null);
     loadPlaylists();
@@ -148,7 +153,9 @@ export default function PlaylistPanel() {
             onEscapeKeyDown={close}
             onInteractOutside={close}
           >
-            <Dialog.Title className="sr-only">Playlist</Dialog.Title>
+            <Dialog.Title className="sr-only">
+              {lang === "ar" ? "قائمة التشغيل" : lang === "en" ? "Playlist" : "Liste de lecture"}
+            </Dialog.Title>
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
               <div className="modal-title-stack">
                 <div className="modal-kicker">

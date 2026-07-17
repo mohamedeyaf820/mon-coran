@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
-import audioService from "../services/audioService";
+import { loadAudioService } from "../services/loadAudioService";
 
 function shouldIgnoreKeyboardEvent(event) {
   if (event.defaultPrevented) return true;
@@ -178,7 +178,9 @@ export function useKeyboardNavigation({
       s.historyOpen || s.playlistOpen || s.audioMakerOpen || s.flashcardsOpen ||
       s.tajweedQuizOpen || s.khatmaOpen || s.comparatorOpen || s.shareImageOpen || s.weeklyStatsOpen;
     if (modalOpen) return;
-    audioService.toggle();
+    loadAudioService()
+      .then((audioService) => audioService.toggle())
+      .catch(() => {});
   }, []);
 
   const handleToggleShortcuts = useCallback(() => {

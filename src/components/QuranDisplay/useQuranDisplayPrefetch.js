@@ -56,6 +56,7 @@ export default function useQuranDisplayPrefetch({
     };
 
     const runCurrentAlternatePrefetch = () => {
+      if (isPlayingRef.current) return;
       const alternateRiwaya = riwaya === "warsh" ? "hafs" : "warsh";
       prefetchText(
         displayMode,
@@ -65,6 +66,7 @@ export default function useQuranDisplayPrefetch({
     };
 
     const runNearbyPrefetch = () => {
+      if (isPlayingRef.current) return;
       if (displayMode === "surah") {
         [currentSurah - 1, currentSurah + 1].forEach((surah) => {
           if (surah < 1 || surah > 114) return;
@@ -88,7 +90,7 @@ export default function useQuranDisplayPrefetch({
     };
 
     const runSecondaryPrefetch = () => {
-      const alternateRiwaya = riwaya === "warsh" ? "hafs" : "warsh";
+      if (isPlayingRef.current) return;
 
       if (displayMode === "surah") {
         const next = currentSurah + 1;
@@ -113,23 +115,27 @@ export default function useQuranDisplayPrefetch({
     };
 
     let secondaryTimer = null;
-    // Delay alternate riwaya from 240ms → 2000ms (let current page render first)
-    const alternateTimer = window.setTimeout(runCurrentAlternatePrefetch, 2000);
+    let secondaryIdleId = null;
+    // Alternate riwaya is intentionally last so adjacent navigation wins.
+    const alternateTimer = window.setTimeout(runCurrentAlternatePrefetch, 4800);
     if (typeof window.requestIdleCallback === "function") {
-      // Delay nearby from idle/2400ms → 3000ms
-      const idleId = window.requestIdleCallback(runNearbyPrefetch, { timeout: 3000 });
+      // Warm the most likely previous/next navigation during the first idle slot.
+      const idleId = window.requestIdleCallback(runNearbyPrefetch, { timeout: 1200 });
       secondaryTimer = window.setTimeout(() => {
-        window.requestIdleCallback(runSecondaryPrefetch, { timeout: 4500 });
-      }, 4000);
+        secondaryIdleId = window.requestIdleCallback(runSecondaryPrefetch, {
+          timeout: 2600,
+        });
+      }, 1400);
       return () => {
         window.clearTimeout(alternateTimer);
         window.cancelIdleCallback?.(idleId);
+        if (secondaryIdleId) window.cancelIdleCallback?.(secondaryIdleId);
         if (secondaryTimer) window.clearTimeout(secondaryTimer);
       };
     }
 
-    const timer = window.setTimeout(runNearbyPrefetch, 3000);
-    secondaryTimer = window.setTimeout(runSecondaryPrefetch, 5000);
+    const timer = window.setTimeout(runNearbyPrefetch, 900);
+    secondaryTimer = window.setTimeout(runSecondaryPrefetch, 2200);
     return () => {
       window.clearTimeout(alternateTimer);
       window.clearTimeout(timer);

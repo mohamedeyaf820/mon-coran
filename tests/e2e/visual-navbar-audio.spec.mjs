@@ -3,6 +3,23 @@ import path from "node:path";
 import { test, expect } from "@playwright/test";
 
 const OUTPUT_DIR = path.join("test-results", "visual-navbar-audio");
+const SETTINGS_KEY = "mushaf-plus-settings";
+
+async function seedDarkTheme(page) {
+  await page.addInitScript((key) => {
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        splashDone: true,
+        showHome: true,
+        showDuas: false,
+        lang: "fr",
+        theme: "dark",
+        riwaya: "hafs",
+      }),
+    );
+  }, SETTINGS_KEY);
+}
 
 async function openReader(page) {
   await page.goto("/");
@@ -14,10 +31,11 @@ async function openReader(page) {
   await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible();
 }
 
-test("Visual desktop: navbar + modal audio options", async ({ page }) => {
+test("Visual desktop dark: navbar + modal audio options", async ({ page }) => {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
   await page.setViewportSize({ width: 1440, height: 900 });
+  await seedDarkTheme(page);
   await openReader(page);
 
   const header = page.locator(".mp-header").first();
@@ -57,9 +75,10 @@ test("Visual desktop: navbar + modal audio options", async ({ page }) => {
 test.describe("mobile", () => {
   test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
-  test("Visual mobile: navbar + modal audio options", async ({ page }) => {
+  test("Visual mobile dark: navbar + modal audio options", async ({ page }) => {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
+    await seedDarkTheme(page);
     await openReader(page);
 
     const header = page.locator(".mp-header").first();
@@ -76,7 +95,7 @@ test.describe("mobile", () => {
 
     const dock = page.locator(".mp-audio-player--mobile.mp-audio-player--dock").first();
     await expect(dock).toBeVisible();
-    await expect(dock.locator(".simple-player__header-actions button")).toHaveCount(2);
+    await expect(dock.locator(".simple-player__header-actions button")).toHaveCount(3);
     await dock.screenshot({
       path: path.join(OUTPUT_DIR, "mobile-audio-player.png"),
     });

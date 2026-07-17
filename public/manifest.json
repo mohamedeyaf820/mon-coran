@@ -58,6 +58,20 @@
       "icons": [{ "src": "/favicon.png", "sizes": "64x64", "type": "image/png" }]
     }
   ],
-  "screenshots": [],
+  "screenshots": [
+    {
+      "src": "/pwa-home-wide.png",
+      "sizes": "1440x900",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Accueil MushafPlus sur ordinateur"
+    },
+    {
+      "src": "/pwa-home-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "label": "Accueil MushafPlus sur mobile"
+    }
+  ],
   "prefer_related_applications": false
 }

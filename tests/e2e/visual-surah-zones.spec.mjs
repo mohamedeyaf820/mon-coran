@@ -68,7 +68,7 @@ for (const viewport of VIEWPORTS) {
       });
 
       await page.getByRole("button", { name: /Rechercher|Search|بحث/i }).first().click();
-      const searchModal = page.locator(".search-modal-shell");
+      const searchModal = page.locator(".search-pro-overlay");
       await expect(searchModal).toBeVisible();
       await searchModal.screenshot({
         path: path.join(OUTPUT_DIR, `${prefix}-search.png`),

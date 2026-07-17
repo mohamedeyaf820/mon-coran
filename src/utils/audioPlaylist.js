@@ -1,5 +1,4 @@
-import SURAHS from "../data/surahs";
-import { getWarshSurahVerses } from "../services/warshService";
+import SURAHS from "../data/surahs.js";
 
 const SURAH_STARTS = (() => {
   let offset = 0;
@@ -66,18 +65,17 @@ export async function buildAudioPlaylistForSurah(surahNum, riwaya = "hafs") {
     return [];
   }
 
-  if (riwaya === "warsh") {
-    const verses = await getWarshSurahVerses(numericSurah);
-    return normalizeAyahsForAudioPlaylist(verses, numericSurah);
-  }
-
+  // Audio URLs only need the canonical surah/ayah coordinates. Waiting for
+  // Warsh text here used to add an IndexedDB read (or a network request) before
+  // the first audio byte could be requested, even though verse counts are the
+  // same for both riwayat. Text enrichment stays in the reader data pipeline.
+  void riwaya;
   return buildSurahAudioPlaylist(numericSurah);
 }
 
 export async function buildAudioPlaylistForSurahs(surahNums = [], riwaya = "hafs") {
-  const playlists = [];
-  for (const surahNum of surahNums) {
-    playlists.push(...(await buildAudioPlaylistForSurah(surahNum, riwaya)));
-  }
-  return playlists;
+  void riwaya;
+  return (Array.isArray(surahNums) ? surahNums : []).flatMap((surahNum) =>
+    buildSurahAudioPlaylist(surahNum),
+  );
 }

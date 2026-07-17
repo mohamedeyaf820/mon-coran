@@ -89,8 +89,8 @@ test("home density: mobile and tablet text, icons and cards scale with viewport"
   await openHome(page, { width: 390, height: 844 });
 
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
-  expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(38);
-  expect((await box(page, ".mp-header__more"))?.width || 0).toBeGreaterThanOrEqual(38);
+  expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(44);
+  expect((await box(page, ".mp-header__more"))?.width || 0).toBeGreaterThanOrEqual(44);
   expect(await fontSizePx(page, ".home-hero-title")).toBeLessThanOrEqual(34);
   expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(12);
   expect(await fontSizePx(page, ".hp-card-meta")).toBeGreaterThanOrEqual(11);
@@ -98,7 +98,7 @@ test("home density: mobile and tablet text, icons and cards scale with viewport"
   await openHome(page, { width: 820, height: 920 });
 
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
-  expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(40);
+  expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(44);
   expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(14);
 });
 
@@ -120,12 +120,12 @@ test("mobile density: header, reading toolbar and audio dock fit without horizon
   expect(header?.height || 0).toBeLessThanOrEqual(62);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
   expect(audioDock?.height || 0).toBeLessThanOrEqual(152);
-  expect(firstAction?.width || 0).toBeGreaterThanOrEqual(38);
-  expect(firstAction?.height || 0).toBeGreaterThanOrEqual(38);
-  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(38);
-  expect(moreButton?.width || 0).toBeGreaterThanOrEqual(38);
-  expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(38);
-  expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(36);
+  expect(firstAction?.width || 0).toBeGreaterThanOrEqual(44);
+  expect(firstAction?.height || 0).toBeGreaterThanOrEqual(44);
+  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(44);
+  expect(moreButton?.width || 0).toBeGreaterThanOrEqual(44);
+  expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(44);
+  expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(44);
   await expect(page.locator(".srh-typography-panel")).toBeHidden();
   await page.locator(".srh-typography-trigger").click();
   await expect(page.locator(".srh-typography-panel")).toBeVisible();
@@ -135,8 +135,8 @@ test("mobile density: header, reading toolbar and audio dock fit without horizon
   expect(fontControls?.height || 0).toBeGreaterThanOrEqual(38);
   expect(fontSelect?.width || 0).toBeGreaterThanOrEqual(88);
   expect(sizeControls?.width || 0).toBeGreaterThanOrEqual(145);
-  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(35);
-  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(35);
+  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(44);
+  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(44);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -148,10 +148,13 @@ test("mobile surfaces: sidebar, settings drawer and audio modal fit the viewport
   await expect(sidebar).toBeVisible();
   const sidebarBox = await sidebar.boundingBox();
   const sidebarClose = await box(page, ".sb-wrapper button");
+  const sidebarCloseIcon = await box(page, ".sidebar-close-button svg");
   expect(sidebarBox?.width || 0).toBeLessThanOrEqual(390);
   expect(sidebarBox?.height || 0).toBeLessThanOrEqual(844);
-  expect(sidebarClose?.width || 0).toBeGreaterThanOrEqual(38);
-  expect(sidebarClose?.height || 0).toBeGreaterThanOrEqual(38);
+  expect(sidebarClose?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(sidebarClose?.height || 0).toBeGreaterThanOrEqual(43.9);
+  expect(sidebarCloseIcon?.width || 0).toBeGreaterThanOrEqual(17);
+  expect(sidebarCloseIcon?.height || 0).toBeGreaterThanOrEqual(17);
   await page.locator('.sb-wrapper button[aria-label="Fermer"]').first().click();
   await expect(sidebar).not.toHaveClass(/open/);
 
@@ -161,10 +164,13 @@ test("mobile surfaces: sidebar, settings drawer and audio modal fit the viewport
   await expect(settingsDrawer).toBeVisible();
   const settingsBox = await settingsDrawer.boundingBox();
   const settingsClose = await box(page, '.settings-drawer button[aria-label="Fermer les paramètres"]');
+  const settingsCloseIcon = await box(page, ".settings-close-button svg");
   expect(settingsBox?.width || 0).toBeLessThanOrEqual(390);
   expect(settingsBox?.height || 0).toBeLessThanOrEqual(844);
-  expect(settingsClose?.width || 0).toBeGreaterThanOrEqual(38);
-  expect(settingsClose?.height || 0).toBeGreaterThanOrEqual(38);
+  expect(settingsClose?.width || 0).toBeGreaterThanOrEqual(44);
+  expect(settingsClose?.height || 0).toBeGreaterThanOrEqual(44);
+  expect(settingsCloseIcon?.width || 0).toBeGreaterThanOrEqual(19);
+  expect(settingsCloseIcon?.height || 0).toBeGreaterThanOrEqual(19);
   await page.locator('.settings-drawer button[aria-label="Fermer les paramètres"]').first().click();
   await expect(settingsDrawer).toBeHidden();
 
@@ -172,8 +178,14 @@ test("mobile surfaces: sidebar, settings drawer and audio modal fit the viewport
   const audioModal = page.locator(".audio-player-modal__surface--settings").first();
   await expect(audioModal).toBeVisible();
   const audioModalBox = await audioModal.boundingBox();
+  const audioClose = await box(page, ".audio-player-modal__close");
+  const audioCloseIcon = await box(page, ".audio-player-modal__close svg");
   expect(audioModalBox?.width || 0).toBeLessThanOrEqual(390);
   expect(audioModalBox?.height || 0).toBeLessThanOrEqual(844);
+  expect(audioClose?.width || 0).toBeGreaterThanOrEqual(40);
+  expect(audioClose?.height || 0).toBeGreaterThanOrEqual(40);
+  expect(audioCloseIcon?.width || 0).toBeGreaterThanOrEqual(17);
+  expect(audioCloseIcon?.height || 0).toBeGreaterThanOrEqual(17);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -188,10 +200,10 @@ test("tablet density: header controls and audio options modal remain compact", a
 
   expect(header?.height || 0).toBeLessThanOrEqual(70);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(280);
-  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(40);
+  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(44);
   expect(fontControls?.height || 0).toBeGreaterThanOrEqual(38);
-  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(38);
-  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(38);
+  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(44);
+  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(44);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 
   const optionsTrigger = page.locator(".mp-player-options-trigger").first();
@@ -210,8 +222,8 @@ test("small phone: verse actions and search stay usable inside the viewport", as
   await openReader(page, viewport);
 
   const reference = await box(page, ".qc-list-card__reference");
-  expect(reference?.width || 0).toBeGreaterThanOrEqual(38);
-  expect(reference?.height || 0).toBeGreaterThanOrEqual(38);
+  expect(reference?.width || 0).toBeGreaterThanOrEqual(44);
+  expect(reference?.height || 0).toBeGreaterThanOrEqual(44);
 
   const visibleActionSizes = await page
     .locator(".qc-list-card__top .ayah-actions button")
@@ -225,8 +237,8 @@ test("small phone: verse actions and search stay usable inside the viewport", as
     );
   expect(visibleActionSizes.length).toBeGreaterThanOrEqual(3);
   for (const action of visibleActionSizes) {
-    expect(action.width).toBeGreaterThanOrEqual(38);
-    expect(action.height).toBeGreaterThanOrEqual(38);
+    expect(action.width).toBeGreaterThanOrEqual(44);
+    expect(action.height).toBeGreaterThanOrEqual(44);
   }
 
   await page.locator(".mp-header__more").first().click();

@@ -27,8 +27,10 @@ function labelsFor(lang) {
   };
 }
 
-export default function RowActions({ lang, onPlay, onOpen, downloadUrl }) {
+export default function RowActions({ lang, surahLabel, onPlay, onOpen, downloadUrl }) {
   const labels = labelsFor(lang);
+  const contextualLabel = (action) =>
+    surahLabel ? `${action} — ${surahLabel}` : action;
   const handleDownload = () => {
     if (downloadUrl) openExternalUrl(downloadUrl);
   };
@@ -39,8 +41,8 @@ export default function RowActions({ lang, onPlay, onOpen, downloadUrl }) {
         className="recitation-action-btn recitation-action-btn--primary"
         type="button"
         onClick={onPlay}
-        title={labels.listen}
-        aria-label={labels.listen}
+        title={contextualLabel(labels.listen)}
+        aria-label={contextualLabel(labels.listen)}
       >
         <Play size={15} fill="currentColor" aria-hidden="true" />
         <span className="recitation-action-btn__label">{labels.listen}</span>
@@ -49,8 +51,8 @@ export default function RowActions({ lang, onPlay, onOpen, downloadUrl }) {
         className="recitation-action-btn"
         type="button"
         onClick={onOpen}
-        title={labels.open}
-        aria-label={labels.open}
+        title={contextualLabel(labels.open)}
+        aria-label={contextualLabel(labels.open)}
       >
         <BookOpen size={15} aria-hidden="true" />
       </button>
@@ -59,8 +61,8 @@ export default function RowActions({ lang, onPlay, onOpen, downloadUrl }) {
         type="button"
         onClick={handleDownload}
         disabled={!downloadUrl}
-        title={downloadUrl ? labels.download : labels.unavailable}
-        aria-label={downloadUrl ? labels.download : labels.unavailable}
+        title={contextualLabel(downloadUrl ? labels.download : labels.unavailable)}
+        aria-label={contextualLabel(downloadUrl ? labels.download : labels.unavailable)}
       >
         <Download size={15} aria-hidden="true" />
       </button>

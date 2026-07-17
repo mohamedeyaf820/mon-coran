@@ -34,12 +34,12 @@ const VERSES = [
 ];
 
 const skipLabels = { ar: 'تخطي', fr: 'Passer', en: 'Skip' };
-const uiLang = (() => { try { return JSON.parse(localStorage.getItem('mushafplus_settings') || '{}').lang || 'fr'; } catch { return 'fr'; } })();
 
 export default function SplashScreen({
   onDone,
   onPrefetch,
   lowPerfMode = false,
+  lang = "fr",
 }) {
   const [fadeOut, setFadeOut] = useState(false);
   const dismissedRef = React.useRef(false);
@@ -126,7 +126,7 @@ export default function SplashScreen({
             setTimeout(onDone, 400);
           }}
         >
-          {skipLabels[uiLang] ?? 'Passer'} ›
+          {skipLabels[lang] ?? skipLabels.fr} ›
         </button>
       )}
       {/* Halo doré central */}
@@ -181,7 +181,7 @@ export default function SplashScreen({
           role="status"
           aria-live="polite"
         >
-          <span className="sr-only">{t("splash.loading")}</span>
+          <span className="sr-only">{t("splash.loading", lang)}</span>
           <div className="splash-loader-bar" />
         </div>
         <div className="splash-ornament" aria-hidden="true">

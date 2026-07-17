@@ -5,10 +5,14 @@ import {
   getReciter,
   getReciterAvatar,
   getReciterBio,
+  getReciterCountryLabel,
   getReciterPhoto,
+  getReciterSourceInfo,
   getReciterVisual,
   getRecitersByRiwaya,
   isWarshVerifiedReciter,
+  validateReciterAudioConfig,
+  validateReciterProfile,
 } from "../src/data/reciters.js";
 
 const EXPECTED_HAFS_IDS = [
@@ -34,7 +38,15 @@ const EXPECTED_HAFS_IDS = [
 ];
 
 const EXPECTED_WARSH_IDS = [
-  "warsh_mahmoud_shuraym",
+  "warsh_abdulbasit",
+  "warsh_ibrahim_aldosari",
+  "warsh_yassin",
+  "warsh_hussary",
+  "warsh_omar_al_qazabri",
+  "warsh_mohammad_saayed",
+  "warsh_al_qaria_yassen",
+  "warsh_aloyoon_al_koshi",
+  "warsh_rachid_belalya",
 ];
 
 function allReciters() {
@@ -50,7 +62,7 @@ test("reciters: supplemental Hafs and Warsh entries are available", () => {
   }
 
   assert.ok(getRecitersByRiwaya("hafs").length >= 34);
-  assert.ok(getRecitersByRiwaya("warsh").length >= 10);
+  assert.ok(getRecitersByRiwaya("warsh").length >= 9);
 });
 
 test("reciters: ids are unique and metadata is compatible with the player", () => {
@@ -67,6 +79,17 @@ test("reciters: ids are unique and metadata is compatible with the player", () =
     assert.ok(allowedCdnTypes.has(reciter.cdnType || "islamic"), reciter.id);
     assert.equal(typeof reciter.cdn, "string", reciter.id);
     assert.notEqual(reciter.cdn.trim(), "", reciter.id);
+    assert.ok(["hafs", "warsh"].includes(reciter.riwaya), reciter.id);
+    assert.ok(["ayah", "surah"].includes(reciter.audioMode), reciter.id);
+    assert.ok(["islamic", "everyayah", "mp3quran"].includes(reciter.source), reciter.id);
+    assert.ok(reciter.country === null || typeof reciter.country === "string", reciter.id);
+    assert.equal(typeof reciter.verifiedWarsh, "boolean", reciter.id);
+    assert.deepEqual(validateReciterAudioConfig(reciter), { valid: true, errors: [] }, reciter.id);
+    assert.deepEqual(validateReciterProfile(reciter), { valid: true, errors: [] }, reciter.id);
+
+    const sourceInfo = getReciterSourceInfo(reciter);
+    assert.ok(sourceInfo?.label, reciter.id);
+    assert.equal(sourceInfo?.audioMode, reciter.audioMode, reciter.id);
 
     const avatar = getReciterAvatar(reciter);
     assert.match(avatar.initials, /^[A-Z0-9]{1,2}$/);
@@ -76,6 +99,7 @@ test("reciters: ids are unique and metadata is compatible with the player", () =
     const visual = getReciterVisual(reciter);
     assert.ok(["photo", "avatar"].includes(visual.type), reciter.id);
     assert.ok(visual.photo || visual.avatar?.initials, reciter.id);
+    assert.equal(Boolean(visual.attribution), Boolean(visual.photo), reciter.id);
     const bio = getReciterBio(reciter, "fr");
     assert.ok(bio.length > 20, `bio too short for ${reciter.id}`);
   }
@@ -99,6 +123,9 @@ test("reciters: reachable Quran.com photos are wired and stale profiles fall bac
 
   assert.equal(getReciterPhoto("ar.alafasy"), null);
   assert.equal(getReciterVisual({ id: "ar.alafasy", nameEn: "Mishary Rashid Alafasy" }).type, "avatar");
+  assert.equal(getReciterVisual(getReciter("ar.husary")).attribution.provider, "Quran.com");
+  assert.equal(getReciterCountryLabel("KSA", "fr"), "Arabie saoudite");
+  assert.equal(getReciterCountryLabel("Egypt", "ar"), "مصر");
 });
 
 test("reciters: Warsh additions are marked as verified Warsh", () => {
@@ -118,7 +145,8 @@ test("audio: everyayah and mp3quran reciter URLs are built as mp3 URLs", async (
   const { AudioService } = await import("../src/services/audioService.js");
   const everyayah = getReciter("abu_bakr_ash_shaatree", "hafs");
   const alafasy = getReciter("ar.alafasy", "hafs");
-  const warsh = getReciter("warsh_muhammad_hifnawi", "warsh");
+  const warsh = getReciter("warsh_hussary", "warsh");
+  const idris = getReciter("idris_abkar", "hafs");
 
   // ar.alafasy uses Islamic Network CDN (global ayah number)
   assert.equal(
@@ -130,5 +158,12 @@ test("audio: everyayah and mp3quran reciter URLs are built as mp3 URLs", async (
     AudioService.buildUrl(everyayah.cdn, { surah: 2, ayah: 255 }, everyayah.cdnType),
     "https://everyayah.com/data/Abu_Bakr_Ash-Shaatree_128kbps/002255.mp3",
   );
-  assert.equal(warsh, null);
+  assert.equal(
+    AudioService.buildUrl(warsh.cdn, { surah: 1, ayah: 1 }, warsh.cdnType),
+    "https://server13.mp3quran.net/husr/Rewayat-Warsh-A-n-Nafi/001.mp3",
+  );
+  assert.equal(
+    AudioService.buildUrl(idris.cdn, { surah: 1 }, idris.cdnType),
+    "https://server6.mp3quran.net/abkr/001.mp3",
+  );
 });

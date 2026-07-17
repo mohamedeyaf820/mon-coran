@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Play, Pause, Clock } from "lucide-react";
+import { Play, Pause } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { toAr } from "../../data/surahs";
 import {
@@ -7,6 +7,7 @@ import {
   getSurahEnglishMeaning,
   TYPE_INFO,
 } from "./homeConstants";
+import Icon from "./HomeIcon";
 
 /* ─── FlowerBadge ────────────────────────────────────────────────────────── */
 export function FlowerBadge({ className = "" }) {
@@ -92,6 +93,12 @@ export const SurahCard = memo(function SurahCard({
         : `${surah.ayahs} ayahs`;
   const playAriaLabel =
     lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen";
+  const openAriaLabel =
+    lang === "fr"
+      ? `Ouvrir la sourate ${primaryLabel}`
+      : lang === "ar"
+        ? `فتح سورة ${surah.ar}`
+        : `Open Surah ${primaryLabel}`;
   const pageLabel =
     surah.page &&
     (lang === "ar"
@@ -123,22 +130,19 @@ export const SurahCard = memo(function SurahCard({
     return (
       <div
         className={cn(
-          "group flex items-center gap-3 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-bg-primary border border-border/50 hover:bg-bg-secondary hover:border-primary/30 transition-all cursor-pointer",
+          "group relative flex items-center gap-3 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-bg-primary border border-border/50 hover:bg-bg-secondary hover:border-primary/30 transition-all cursor-pointer",
           isActive && "bg-primary/5 border-primary/50",
           isPlaying && "bg-gold/5 border-gold/50",
         )}
         data-stype={surah.type?.toLowerCase()}
-        onClick={() => onClick(surah.n)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onClick(surah.n);
-          }
-        }}
-        role="button"
-        tabIndex={0}
         style={rowVisibilityStyle}
       >
+        <button
+          type="button"
+          className="absolute inset-0 z-[1] rounded-xl"
+          onClick={() => onClick(surah.n)}
+          aria-label={openAriaLabel}
+        />
         <span className="flex items-center justify-center w-8 h-8 shrink-0 rounded-full bg-bg-secondary text-[0.75rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
           {surah.n}
         </span>
@@ -182,7 +186,7 @@ export const SurahCard = memo(function SurahCard({
         </span>
         <button
           className={cn(
-            "flex items-center justify-center w-8 h-8 rounded-full bg-bg-secondary text-text-muted hover:bg-primary hover:text-white transition-colors ml-2 shrink-0",
+            "relative z-[2] flex items-center justify-center w-8 h-8 rounded-full bg-bg-secondary text-text-muted hover:bg-primary hover:text-white transition-colors ml-2 shrink-0",
             isPlaying && "bg-gold text-white hover:bg-gold-bright",
           )}
           onClick={(e) => {
@@ -211,17 +215,14 @@ export const SurahCard = memo(function SurahCard({
         isPlaying && "playing border-gold/60 bg-gold/5",
       )}
       data-stype={surah.type?.toLowerCase()}
-      onClick={() => onClick(surah.n)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onClick(surah.n);
-        }
-      }}
-      role="button"
-      tabIndex={0}
       style={cardVisibilityStyle}
     >
+      <button
+        type="button"
+        className="absolute inset-0 z-[1] rounded-2xl"
+        onClick={() => onClick(surah.n)}
+        aria-label={openAriaLabel}
+      />
       <div className="hp-card-accent absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-primary/80 to-primary/20 opacity-0 group-hover:opacity-40 transition-opacity" />
 
       <span className="hp-card-num flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full bg-bg-secondary text-[0.8rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
@@ -241,7 +242,7 @@ export const SurahCard = memo(function SurahCard({
       </div>
 
       <div
-        className="hp-card-ar shrink-0 font-surah-names text-[1.6rem] opacity-60 transition-opacity group-hover:opacity-100"
+        className="hp-card-ar shrink-0 font-surah-names text-[1.6rem] opacity-[0.82] transition-opacity group-hover:opacity-100"
         aria-label={surah.ar}
         dir="rtl"
         lang="ar"
@@ -251,7 +252,7 @@ export const SurahCard = memo(function SurahCard({
 
       <button
         className={cn(
-          "hp-card-play absolute right-2 sm:right-3 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-bg-primary border border-border text-text-muted opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all hover:bg-primary hover:text-white hover:border-primary",
+          "hp-card-play absolute z-[2] right-2 sm:right-3 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-bg-primary border border-border text-text-muted opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all hover:bg-primary hover:text-white hover:border-primary",
           isPlaying &&
             "opacity-100 translate-x-0 bg-gold border-gold text-white",
         )}
@@ -340,36 +341,11 @@ export const JuzCard = memo(function JuzCard({
 });
 
 /* ─── BlogCard ───────────────────────────────────────────────────────────── */
-export const BlogCard = memo(function BlogCard({ post, lang }) {
-  return (
-    <div className="hp-card hp-card--blog animate-fadeInScale">
-      <div className="hp-blog-img-wrap">
-        <img
-          src={post.img}
-          alt={post.title}
-          className="hp-blog-img"
-          loading="lazy"
-        />
-      </div>
-      <div className="hp-blog-content">
-        <span className="hp-blog-tag">{post.tag}</span>
-        <h3 className="hp-blog-title">{post.title}</h3>
-        <div className="hp-blog-footer">
-          <span>{post.date}</span>
-          <span className="inline-flex items-center gap-1">
-            <Clock size={12} /> {post.readTime}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-});
-
 /* ─── EmptyState ─────────────────────────────────────────────────────────── */
 export function EmptyState({ icon, text }) {
   return (
     <div className="hp-empty">
-      <i className={`fas ${icon}`} />
+      <Icon name={icon} size={28} aria-hidden="true" />
       <p>{text}</p>
     </div>
   );

@@ -116,7 +116,9 @@ export default function TajweedQuizPanel() {
             }}
             onInteractOutside={close}
           >
-            <Dialog.Title className="sr-only">Quiz Tajweed</Dialog.Title>
+            <Dialog.Title className="sr-only">
+              {lang === "ar" ? "اختبار التجويد" : lang === "en" ? "Tajweed quiz" : "Quiz de Tajwid"}
+            </Dialog.Title>
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
               <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
                 <Icon name="spell-check" size={18} />

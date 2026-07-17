@@ -7,10 +7,10 @@
 :root {
   --mp-fluid-root: clamp(15px, calc(14.4px + 0.17vw), 17px);
   --mp-fluid-gutter: clamp(0.5rem, 1.7vw, 1.5rem);
-  --mp-fluid-control: clamp(40px, 2.4rem + 0.2vw, 44px);
+  --mp-fluid-control: 44px;
   --mp-readable-line: min(100%, 72ch);
   --mp-wide-surface: min(100%, 88rem);
-  --space-10: max(2.5rem, 40px);
+  --space-10: max(2.75rem, 44px);
 }
 
 html {
@@ -53,30 +53,30 @@ body,
 
 @media (max-width: 1024px) {
   html body .app-root.app-root {
-    --ux-card-action-size: max(2.5rem, 40px);
-    --ux-touch-target: max(2.5rem, 40px);
+    --ux-card-action-size: max(2.75rem, 44px);
+    --ux-touch-target: max(2.75rem, 44px);
   }
 
   html body .app-root .mp-header
     :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more) {
     flex: 0 0 auto;
-    min-width: 40px !important;
-    min-height: 40px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
   }
 
   html body .app-root .mp-player-options-trigger.mp-player-options-trigger {
-    min-width: 40px !important;
-    min-height: 40px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
   }
 
   html body .app-root.app-root
     .audio-player-simple.audio-player-simple.simple-player--mobile-open
     .simple-player__header-actions .simple-player__icon-button {
-    flex: 0 0 40px !important;
-    width: 40px !important;
-    min-width: 40px !important;
-    height: 40px !important;
-    min-height: 40px !important;
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
   }
 }
 
@@ -100,7 +100,7 @@ body,
   }
 
   html body .app-root[data-view="reading"] .qc-list-card__top {
-    min-height: 40px;
+    min-height: 44px;
     flex-wrap: nowrap !important;
     align-items: center !important;
     gap: 0.4rem !important;
@@ -123,19 +123,19 @@ body,
 
   html body .app-root[data-view="reading"] .qc-list-card .qc-list-card__top .ayah-actions button,
   html body .app-root[data-view="reading"] .qc-list-card__reference.qc-list-card__reference {
-    width: 40px !important;
-    min-width: 40px !important;
-    height: 40px !important;
-    min-height: 40px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
   }
 
   html body .app-root.app-root[data-view="reading"] .quran-display--platform
     .qc-list-card .qc-list-card__reference.qc-list-card__reference {
-    flex: 0 0 40px !important;
-    width: 40px !important;
-    min-width: 40px !important;
-    height: 40px !important;
-    min-height: 40px !important;
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
     padding: 0 !important;
   }
 
@@ -151,7 +151,7 @@ body,
   }
 
   html body .app-root[data-view="reading"] .qcom-list-study-link {
-    min-height: 38px !important;
+    min-height: 44px !important;
     padding-inline: 0.25rem !important;
   }
 }
@@ -232,7 +232,7 @@ body,
 
   html body .app-root.app-root[data-view="duas"] .duas-page--platform
     :is(.dua-open-btn-v5, .dua-card-footer-link, .duas-back-btn, .duas-cat-btn) {
-    min-height: 40px !important;
+    min-height: 44px !important;
   }
 
   .app-root .settings-drawer,
@@ -244,8 +244,8 @@ body,
   .app-root .simple-player__icon-button,
   .app-root .simple-player__speed,
   .app-root .mp-player-options-trigger {
-    min-width: 38px !important;
-    min-height: 38px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
   }
 }
 
@@ -290,7 +290,7 @@ body,
 }
 
 @media (pointer: coarse) {
-  .app-root :is(.modal-close, .settings-close, .search-pro__close, .mp-header-menu__close) {
+  .app-root :is(.modal-close, .settings-close, .settings-close-button, .search-pro__close, .mp-header-menu__close) {
     min-width: var(--mp-fluid-control) !important;
     min-height: var(--mp-fluid-control) !important;
   }

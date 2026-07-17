@@ -17,6 +17,7 @@ import {
 // No backend proxy needed — the app is a pure static SPA.
 const BASE = 'https://api.alquran.cloud/v1';
 const FETCH_TIMEOUT = 8000; // 8s timeout for API requests
+const EDITION_FALLBACK_TIMEOUT = 3000;
 const USE_QURAN_COM_TEXT = true;
 
 const EDITIONS = {
@@ -51,7 +52,7 @@ const inflight = new Map();
 // Current AbortController for cancellable navigations
 let currentAbort = null;
 
-import { dbGet, dbSet, getDB } from './dbService';
+import { dbGet, dbPruneByPrefix, dbSet, getDB } from './dbService';
 import { normalizeArabicSearchText } from '../utils/searchIntelligence';
 
 const IDB_API_PREFIX = 'api:';
@@ -194,7 +195,7 @@ function waitForSharedRequest(promise, signal) {
   });
 }
 
-async function fetchJSON(url, signal) {
+async function fetchJSON(url, signal, timeoutMs = FETCH_TIMEOUT) {
   if (signal?.aborted) {
     throw new DOMException('Request aborted', 'AbortError');
   }
@@ -237,7 +238,7 @@ async function fetchJSON(url, signal) {
   }
 
   const entry = {
-    promise: _fetchFromNetwork(url, idbKey, null),
+    promise: _fetchFromNetwork(url, idbKey, null, timeoutMs),
   };
   inflight.set(url, entry);
   const cleanup = () => {
@@ -250,9 +251,9 @@ async function fetchJSON(url, signal) {
   return waitForSharedRequest(entry.promise, signal);
 }
 
-async function _fetchFromNetwork(url, idbKey, signal) {
+async function _fetchFromNetwork(url, idbKey, signal, timeoutMs = FETCH_TIMEOUT) {
   const timeoutCtrl = new AbortController();
-  const timeoutId = setTimeout(() => timeoutCtrl.abort(), FETCH_TIMEOUT);
+  const timeoutId = setTimeout(() => timeoutCtrl.abort(), timeoutMs);
 
   try {
     // Combine the navigation signal with the timeout signal
@@ -292,11 +293,25 @@ async function _fetchFromNetwork(url, idbKey, signal) {
       ts: now,
       kind: getCacheKindByUrl(url),
       expiryAt: now + getCacheTtlByUrl(url),
-    }).catch(() => { });
+    })
+      .then(() =>
+        dbPruneByPrefix(IDB_STORE, IDB_API_PREFIX, {
+          maxEntries: 900,
+          maxAgeMs: SEARCH_INDEX_TTL,
+        }),
+      )
+      .catch(() => { });
 
     return validatedData;
   } catch (err) {
     clearTimeout(timeoutId);
+    if (
+      err?.name === 'AbortError' &&
+      timeoutCtrl.signal.aborted &&
+      !signal?.aborted
+    ) {
+      throw new Error(`API request timed out after ${timeoutMs}ms: ${url}`);
+    }
     throw err;
   }
 }
@@ -482,7 +497,11 @@ async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal) {
 
   for (const edition of editions) {
     try {
-      const data = await fetchJSON(`${BASE}/${pathPrefix}/${edition}`, signal);
+      const data = await fetchJSON(
+        `${BASE}/${pathPrefix}/${edition}`,
+        signal,
+        EDITION_FALLBACK_TIMEOUT,
+      );
       const normalized = normalizeQuranPayload(data);
       return {
         ...normalized,

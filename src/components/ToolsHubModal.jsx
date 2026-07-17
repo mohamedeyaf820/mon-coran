@@ -17,8 +17,58 @@ export default function ToolsHubModal() {
   };
 
   const openTool = (key) => () => set({ toolsHubOpen: false, [key]: true });
+  const openFutureTool = (tab) => () =>
+    set({ toolsHubOpen: false, futureHubOpen: tab });
 
   const tools = [
+    {
+      id: "offline-library",
+      icon: "download",
+      color: "from-emerald-600 to-cyan-600",
+      title: { fr: "Bibliothèque offline", en: "Offline library", ar: "\u0645\u0643\u062a\u0628\u0629 \u0628\u062f\u0648\u0646 \u0627\u062a\u0635\u0627\u0644" },
+      desc: {
+        fr: "Téléchargez, suivez et supprimez les récitations disponibles hors connexion.",
+        en: "Download, track and remove recitations available offline.",
+        ar: "\u0646\u0632\u0651\u0644 \u0627\u0644\u062a\u0644\u0627\u0648\u0627\u062a \u0648\u062a\u0627\u0628\u0639\u0647\u0627 \u0648\u0623\u062f\u0631\u0647\u0627 \u062f\u0648\u0646 \u0627\u062a\u0635\u0627\u0644.",
+      },
+      action: openFutureTool("offline"),
+    },
+    {
+      id: "memorization-journey",
+      icon: "brain",
+      color: "from-amber-500 to-orange-600",
+      title: { fr: "Parcours de mémorisation", en: "Memorization journey", ar: "\u0645\u0633\u0627\u0631 \u0627\u0644\u062d\u0641\u0638" },
+      desc: {
+        fr: "Un périmètre, un objectif quotidien et une séance priorisée.",
+        en: "A defined scope, daily goal and prioritized session.",
+        ar: "\u0646\u0637\u0627\u0642 \u0645\u062d\u062f\u062f \u0648\u0647\u062f\u0641 \u064a\u0648\u0645\u064a \u0648\u062c\u0644\u0633\u0629 \u0645\u0631\u062a\u0628\u0629 \u062d\u0633\u0628 \u0627\u0644\u0623\u0648\u0644\u0648\u064a\u0629.",
+      },
+      action: openFutureTool("memorization"),
+    },
+    {
+      id: "thematic-index",
+      icon: "book-open",
+      color: "from-sky-600 to-indigo-600",
+      title: { fr: "Index thématique", en: "Thematic index", ar: "\u0627\u0644\u0641\u0647\u0631\u0633 \u0627\u0644\u0645\u0648\u0636\u0648\u0639\u064a" },
+      desc: {
+        fr: "Explorez des repères de lecture et ouvrez directement leurs versets.",
+        en: "Explore reading landmarks and open their verses directly.",
+        ar: "\u0627\u0633\u062a\u0643\u0634\u0641 \u0645\u0639\u0627\u0644\u0645 \u0627\u0644\u0642\u0631\u0627\u0621\u0629 \u0648\u0627\u0641\u062a\u062d \u0622\u064a\u0627\u062a\u0647\u0627 \u0645\u0628\u0627\u0634\u0631\u0629.",
+      },
+      action: openFutureTool("themes"),
+    },
+    {
+      id: "portable-data",
+      icon: "file",
+      color: "from-slate-600 to-teal-700",
+      title: { fr: "Données portables", en: "Portable data", ar: "\u0628\u064a\u0627\u0646\u0627\u062a \u0642\u0627\u0628\u0644\u0629 \u0644\u0644\u0646\u0642\u0644" },
+      desc: {
+        fr: "Exportez notes et favoris ou confiez-les manuellement à votre cloud.",
+        en: "Export notes and bookmarks or manually hand them to your cloud.",
+        ar: "\u0635\u062f\u0651\u0631 \u0627\u0644\u0645\u0644\u0627\u062d\u0638\u0627\u062a \u0648\u0627\u0644\u0645\u0641\u0636\u0644\u0629 \u0623\u0648 \u0627\u0646\u0642\u0644\u0647\u0627 \u064a\u062f\u0648\u064a\u064b\u0627 \u0625\u0644\u0649 \u0633\u062d\u0627\u0628\u062a\u0643.",
+      },
+      action: openFutureTool("export"),
+    },
     {
       id: "wird",
       icon: "calendar-check",
@@ -148,7 +198,9 @@ export default function ToolsHubModal() {
             }}
             onInteractOutside={close}
           >
-            <Dialog.Title className="sr-only">Outils</Dialog.Title>
+            <Dialog.Title className="sr-only">
+              {tr({ fr: "Outils", en: "Tools", ar: "الأدوات" })}
+            </Dialog.Title>
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)] flex items-center justify-between !py-4 !px-5">
               <div className="modal-title-stack">
                 <div className="modal-kicker">

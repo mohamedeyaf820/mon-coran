@@ -31,9 +31,10 @@ export default {
     hint: 'Type to search in the Quran',
   },
   settings: {
-    title: 'Settings', readingSettings: 'Reading Settings', general: 'General', display: 'Display', audio: 'Audio',
+    title: 'Settings', readingSettings: 'Reading Settings', general: 'General', display: 'Display', audio: 'Audio', privacy: 'Privacy',
     appLanguage: 'Application Language', visualTheme: 'Visual Theme',
     backupRestore: 'Backup & Restore', autoNightMode: 'Auto Night Mode', autoNightHint: 'Automatic switch based on time',
+    prayerTimes: 'Use local prayer times', prayerTimesHint: 'Allows geolocation to set Fajr and Isha. Your location is never stored.',
     start: 'Start', end: 'End',
     clearCache: 'Clear Application Cache', cacheCleared: 'App cache cleared.',
     cacheInfo: 'Clear cache if you experience audio issues.',

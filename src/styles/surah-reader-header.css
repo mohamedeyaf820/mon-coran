@@ -671,7 +671,7 @@
 /* Compact typography disclosure: always available on large screens, opt-in on phones. */
 .srh-typography-trigger {
     display: none;
-    min-height: 36px;
+    min-height: 44px;
     align-items: center;
     justify-content: center;
     gap: 0.38rem;
@@ -711,8 +711,8 @@
 
     .srh-pill,
     .srh-toggle {
-        min-width: 38px;
-        min-height: 36px;
+        min-width: 44px;
+        min-height: 44px;
         justify-content: center;
         border-radius: 10px;
     }

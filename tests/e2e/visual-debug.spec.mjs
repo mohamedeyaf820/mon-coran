@@ -20,7 +20,6 @@ test('visual debug - capture screenshots of Warsh mode', async ({ page }) => {
   
   // Look for and click WARSH button
   const warshButton = page.locator('text=WARSH').first();
-  const hafsButton = page.locator('text=HAFS').first();
   
   console.log('Looking for WARSH/HAFS buttons...');
   

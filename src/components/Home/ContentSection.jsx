@@ -22,7 +22,12 @@ import { JUZ_DATA } from "../../data/juz";
 import { THEMATIC_STATIONS } from "../../services/StationService";
 import audioService from "../../services/audioService";
 import { SurahCard, JuzCard, EmptyState } from "./HomePrimitives";
-import { getReciterVisual } from "../../data/reciters";
+import {
+  getReciterCountryLabel,
+  getReciterSourceInfo,
+  getReciterVisual,
+} from "../../data/reciters";
+import Icon from "./HomeIcon";
 
 /**
  * ContentSection — onglets, barre de recherche/tri et grille de contenu.
@@ -32,6 +37,7 @@ import { getReciterVisual } from "../../data/reciters";
  *   isRtl                  {boolean}
  *   activeTab              {string}    "surah" | "juz" | "recitations" | "radio" | "blog"
  *   onSelectTab            {function}
+ *   onRecitationsIntent    {function}
  *   filter                 {string}
  *   onFilterChange         {function}
  *   reciterStyleFilter     {string}    "all" | "murattal" | "mujawwad" | "muallim"
@@ -67,6 +73,7 @@ export default function ContentSection({
   isRtl,
   activeTab,
   onSelectTab,
+  onRecitationsIntent,
   filter,
   onFilterChange,
   reciterStyleFilter,
@@ -196,6 +203,8 @@ export default function ContentSection({
                 "bg-bg-primary text-primary shadow-sm",
             )}
             onClick={() => onSelectTab("recitations")}
+            onPointerEnter={onRecitationsIntent}
+            onFocus={onRecitationsIntent}
             onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("radio"); if (e.key === "ArrowLeft") onSelectTab("juz"); }}
           >
             <Mic2 size={13} className="opacity-70" />
@@ -394,7 +403,14 @@ export default function ContentSection({
                       : reciter.nameEn;
                 const visual = getReciterVisual(reciter);
                 const avatar = visual.avatar;
+                const sourceInfo = getReciterSourceInfo(reciter);
+                const countryLabel = getReciterCountryLabel(reciter, lang);
                 const isFavorite = (favoriteReciters || []).includes(reciter.id);
+                const favoriteLabel = isFavorite
+                  ? t("home.removeFavorite", lang)
+                  : t("home.addFavorite", lang);
+                const listenLabel =
+                  lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen";
 
                 return (
                   <article
@@ -409,21 +425,26 @@ export default function ContentSection({
                       aria-label={reciterLabel}
                     >
                       <div className="reciter-card__media">
+                        <span
+                          className="absolute inset-0 flex items-center justify-center text-sm font-black uppercase text-white"
+                          style={{ background: avatar.gradient }}
+                          aria-hidden="true"
+                        >
+                          {avatar.initials}
+                        </span>
                         {visual.photo ? (
                           <img
                             src={visual.photo}
                             alt=""
-                            className="h-full w-full object-cover"
+                            className="absolute inset-0 h-full w-full object-cover"
                             loading="lazy"
+                            decoding="async"
+                            referrerPolicy="no-referrer"
+                            onError={(event) => {
+                              event.currentTarget.hidden = true;
+                            }}
                           />
-                        ) : (
-                          <div
-                            className="flex h-full w-full items-center justify-center text-sm font-black uppercase text-white"
-                            style={{ background: avatar.gradient }}
-                          >
-                            {avatar.initials}
-                          </div>
-                        )}
+                        ) : null}
                       </div>
 
                       <div className="reciter-card__copy">
@@ -435,7 +456,10 @@ export default function ContentSection({
                         </span>
                         <div className="reciter-card__meta">
                           <span>{reciter.style || "murattal"}</span>
-                          {reciter.country ? <span>{reciter.country}</span> : null}
+                          {countryLabel ? <span>{countryLabel}</span> : null}
+                          {sourceInfo ? (
+                            <span className="reciter-card__source">{sourceInfo.label}</span>
+                          ) : null}
                         </div>
                       </div>
 
@@ -454,7 +478,7 @@ export default function ContentSection({
                           isFavorite && "reciter-card__favorite--active",
                         )}
                         onClick={() => onToggleFavoriteReciter(reciter.id)}
-                        aria-label={isFavorite ? t("home.removeFavorite", lang) : t("home.addFavorite", lang)}
+                        aria-label={`${favoriteLabel} — ${reciterLabel}`}
                         aria-pressed={isFavorite}
                       >
                         <Star size={15} fill={isFavorite ? "currentColor" : "none"} />
@@ -463,9 +487,10 @@ export default function ContentSection({
                         className="reciter-card__listen"
                         type="button"
                         onClick={() => playReciterRadio(reciter)}
+                        aria-label={`${listenLabel} — ${reciterLabel}`}
                       >
                         <Play size={14} fill="currentColor" />
-                        <span>{lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen"}</span>
+                        <span>{listenLabel}</span>
                       </button>
                     </div>
                   </article>
@@ -497,7 +522,7 @@ export default function ContentSection({
                 onClick={() => playStation(station)}
               >
                 <span className="flex items-center justify-center h-9 w-9 rounded-full bg-bg-secondary text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
-                  <i className={`fas ${station.icon}`} />
+                  <Icon name={station.icon} aria-hidden="true" />
                 </span>
                 <div className="flex flex-col flex-1 min-w-0">
                   <span
@@ -523,6 +548,7 @@ export default function ContentSection({
 
             {availableReciters.slice(0, 8).map((reciter) => {
               const visual = getReciterVisual(reciter);
+              const avatar = visual.avatar;
               const reciterLabel =
                 lang === "ar"
                   ? reciter.name
@@ -547,21 +573,26 @@ export default function ContentSection({
                   }
                 >
                   <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-bg-secondary text-sm font-black text-white shadow-sm transition-colors group-hover:border-primary/30 sm:h-12 sm:w-12">
+                    <span
+                      className="absolute inset-0 flex items-center justify-center"
+                      style={{ background: avatar.gradient }}
+                      aria-hidden="true"
+                    >
+                      {avatar.initials}
+                    </span>
                     {visual.photo ? (
                       <img
                         src={visual.photo}
-                        alt={reciterLabel}
-                        className="h-full w-full object-cover"
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-cover"
                         loading="lazy"
+                        decoding="async"
+                        referrerPolicy="no-referrer"
+                        onError={(event) => {
+                          event.currentTarget.hidden = true;
+                        }}
                       />
-                    ) : (
-                      <span
-                        className="flex h-full w-full items-center justify-center"
-                        style={{ backgroundColor: visual.avatar.color }}
-                      >
-                        {visual.avatar.initials}
-                      </span>
-                    )}
+                    ) : null}
                   </span>
                   <div className="flex min-w-0 flex-1 flex-col">
                     <span

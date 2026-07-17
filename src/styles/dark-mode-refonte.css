@@ -1,109 +1,11 @@
 /*
-  Dark mode refonte.
-  Imported last so the whole app shares one night palette and readable contrast.
+  Dark component refinements.
+  The global night palette belongs to themes4.css; this layer only styles
+  dark-theme surfaces and interactions that need component-level treatment.
 */
 
-html[data-theme="dark"],
-[data-theme="dark"] {
+html[data-theme="dark"] {
     color-scheme: dark;
-
-    --night-0: #050807;
-    --night-1: #08110f;
-    --night-2: #0d1916;
-    --night-3: #13231e;
-    --night-4: #1a2d27;
-    --night-5: #263b34;
-    --night-line: rgba(180, 202, 191, 0.18);
-    --night-line-strong: rgba(199, 220, 210, 0.3);
-    --night-text: #f4f8f5;
-    --night-text-soft: #d8e4de;
-    --night-text-muted: #a7b8af;
-    --night-text-faint: #7e9188;
-    --night-emerald: #2fd08e;
-    --night-emerald-deep: #119763;
-    --night-emerald-rgb: 47, 208, 142;
-    --night-gold: #d6b35c;
-    --night-gold-rgb: 214, 179, 92;
-    --night-blue: #6aa7d8;
-    --night-danger: #ff7a8a;
-
-    --theme-bg: var(--night-0) !important;
-    --theme-bg-alt: var(--night-1) !important;
-    --theme-app-bg:
-        radial-gradient(
-            circle at 16% -6%,
-            rgba(var(--night-emerald-rgb), 0.16),
-            transparent 30rem
-        ),
-        radial-gradient(
-            circle at 86% 4%,
-            rgba(106, 167, 216, 0.12),
-            transparent 28rem
-        ),
-        linear-gradient(180deg, #08110f 0%, #050807 55%, #030504 100%) !important;
-    --theme-panel-bg: var(--night-2) !important;
-    --theme-panel-bg-strong: var(--night-3) !important;
-    --theme-surface: var(--night-2) !important;
-    --theme-surface-soft: var(--night-3) !important;
-    --theme-surface-glass: rgba(13, 25, 22, 0.86) !important;
-    --theme-primary: var(--night-emerald) !important;
-    --theme-primary-rgb: var(--night-emerald-rgb) !important;
-    --theme-accent: var(--night-gold) !important;
-    --theme-text: var(--night-text) !important;
-    --theme-text-soft: var(--night-text-soft) !important;
-    --theme-text-muted: var(--night-text-muted) !important;
-    --theme-border: var(--night-line) !important;
-    --theme-border-strong: var(--night-line-strong) !important;
-
-    --primary: var(--night-emerald) !important;
-    --primary-dark: var(--night-emerald-deep) !important;
-    --primary-light: rgba(var(--night-emerald-rgb), 0.14) !important;
-    --primary-rgb: var(--night-emerald-rgb) !important;
-    --gold: var(--night-gold) !important;
-    --gold-rgb: var(--night-gold-rgb) !important;
-    --color-gold: var(--night-gold) !important;
-    --color-warning: var(--night-gold) !important;
-    --color-info: var(--night-blue) !important;
-    --color-error: var(--night-danger) !important;
-
-    --bg: var(--night-0) !important;
-    --bg-primary: var(--night-0) !important;
-    --bg-secondary: var(--night-1) !important;
-    --bg-tertiary: var(--night-2) !important;
-    --bg-card: var(--night-2) !important;
-    --surface: var(--night-2) !important;
-    --bg-overlay: rgba(0, 0, 0, 0.72) !important;
-    --sidebar-bg: rgba(8, 17, 15, 0.96) !important;
-
-    --border: var(--night-line) !important;
-    --border-light: rgba(180, 202, 191, 0.13) !important;
-    --border-subtle: rgba(180, 202, 191, 0.1) !important;
-    --border-strong: var(--night-line-strong) !important;
-    --divider: rgba(180, 202, 191, 0.14) !important;
-
-    --ink-1: var(--night-text) !important;
-    --ink-2: var(--night-text-soft) !important;
-    --ink-3: var(--night-text-muted) !important;
-    --ink-4: var(--night-text-faint) !important;
-    --text: var(--night-text) !important;
-    --text-primary: var(--night-text) !important;
-    --text-secondary: var(--night-text-soft) !important;
-    --text-tertiary: var(--night-text-muted) !important;
-    --text-muted: var(--night-text-muted) !important;
-    --text-quran: #f5f3ea !important;
-
-    --hover-bg: rgba(var(--night-emerald-rgb), 0.1) !important;
-    --active-bg: rgba(var(--night-emerald-rgb), 0.18) !important;
-    --highlight-bg: rgba(var(--night-gold-rgb), 0.12) !important;
-    --focus-ring: 0 0 0 3px rgba(var(--night-emerald-rgb), 0.3) !important;
-
-    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.42) !important;
-    --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
-    --shadow-md: 0 16px 38px rgba(0, 0, 0, 0.36) !important;
-    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.46) !important;
-    --shadow-xl: 0 34px 90px rgba(0, 0, 0, 0.55) !important;
-    --glass-bg: rgba(13, 25, 22, 0.82) !important;
-    --glass-border: rgba(210, 228, 219, 0.14) !important;
 }
 
 html[data-theme="dark"],
@@ -140,11 +42,11 @@ html[data-theme="dark"] .app-root::before {
 /* Header and navigation */
 html[data-theme="dark"]
     :is(.mp-header, .mp-header__bar, .app-header, header[role="banner"]) {
-    border-color: rgba(196, 219, 208, 0.15) !important;
+    border-color: var(--theme-border) !important;
     background: linear-gradient(
         180deg,
-        rgba(13, 25, 22, 0.93),
-        rgba(7, 14, 12, 0.88)
+        color-mix(in srgb, var(--theme-panel-bg-strong) 94%, transparent),
+        color-mix(in srgb, var(--theme-bg-alt) 92%, transparent)
     ) !important;
     box-shadow: 0 12px 36px rgba(0, 0, 0, 0.34) !important;
     backdrop-filter: blur(18px) saturate(135%) !important;
@@ -168,8 +70,8 @@ html[data-theme="dark"]
         .mp-header__nav-arrow,
         .mp-header__title-btn
     ) {
-    border-color: rgba(196, 219, 208, 0.16) !important;
-    background: rgba(16, 31, 27, 0.72) !important;
+    border-color: var(--theme-border) !important;
+    background: color-mix(in srgb, var(--theme-panel-bg-strong) 84%, transparent) !important;
     color: var(--night-text-soft) !important;
 }
 
@@ -210,11 +112,11 @@ html[data-theme="dark"]
         .recitation-row,
         .surah-info-card
     ) {
-    border-color: rgba(196, 219, 208, 0.15) !important;
+    border-color: var(--theme-border) !important;
     background: linear-gradient(
         180deg,
-        rgba(20, 35, 30, 0.9),
-        rgba(10, 18, 16, 0.92)
+        var(--theme-panel-bg-strong),
+        var(--theme-panel-bg)
     ) !important;
     color: var(--night-text) !important;
     box-shadow:
@@ -270,11 +172,11 @@ html[data-theme="dark"] .quran-display--platform {
 html[data-theme="dark"]
     .quran-display--platform
     :is(.surah-ayahs-list, .qcom-continuous-list, .cpv-container) {
-    border-color: rgba(196, 219, 208, 0.14) !important;
+    border-color: var(--reader-page-border) !important;
     background: linear-gradient(
         180deg,
-        rgba(12, 23, 20, 0.92),
-        rgba(6, 11, 10, 0.94)
+        var(--reader-page-paper),
+        var(--reader-page-bg)
     ) !important;
     box-shadow:
         0 26px 72px rgba(0, 0, 0, 0.36),
@@ -283,7 +185,7 @@ html[data-theme="dark"]
 
 html[data-theme="dark"] .quran-display--platform .rd-ayah.qc-ayah-block {
     background: transparent !important;
-    border-color: rgba(196, 219, 208, 0.1) !important;
+    border-color: var(--reader-page-rule) !important;
     box-shadow: none !important;
 }
 
@@ -316,11 +218,11 @@ html[data-theme="dark"]
         .chunk-nav-bar,
         .mushaf-layout-toggle-bar
     ) {
-    border-color: rgba(196, 219, 208, 0.15) !important;
+    border-color: var(--theme-border) !important;
     background: linear-gradient(
         180deg,
-        rgba(16, 29, 25, 0.82),
-        rgba(9, 17, 15, 0.82)
+        color-mix(in srgb, var(--theme-panel-bg-strong) 90%, transparent),
+        color-mix(in srgb, var(--theme-panel-bg) 90%, transparent)
     ) !important;
     color: var(--night-text) !important;
     box-shadow: 0 14px 42px rgba(0, 0, 0, 0.24) !important;
@@ -356,7 +258,7 @@ html[data-theme="dark"]
 /* Modals, settings, side panels */
 html[data-theme="dark"]
     :is(.modal-overlay, .settings-backdrop, .audio-player-modal) {
-    background: rgba(0, 0, 0, 0.68) !important;
+    background: var(--bg-overlay) !important;
     backdrop-filter: blur(12px) saturate(120%) !important;
 }
 
@@ -371,14 +273,14 @@ html[data-theme="dark"]
         .reciter-detail,
         .sidebar
     ) {
-    border-color: rgba(196, 219, 208, 0.17) !important;
+    border-color: var(--theme-border) !important;
     background:
         radial-gradient(
             circle at 18% 0%,
             rgba(var(--night-emerald-rgb), 0.14),
             transparent 22rem
         ),
-        linear-gradient(180deg, rgba(16, 29, 25, 0.98), rgba(6, 11, 10, 0.98)) !important;
+        linear-gradient(180deg, var(--theme-panel-bg-strong), var(--theme-panel-bg)) !important;
     color: var(--night-text) !important;
     box-shadow: 0 30px 90px rgba(0, 0, 0, 0.52) !important;
 }
@@ -389,13 +291,13 @@ html[data-theme="dark"]
         .modal-header,
         .audio-player-modal__surface > div:first-child
     ) {
-    border-color: rgba(196, 219, 208, 0.13) !important;
-    background: rgba(5, 10, 9, 0.18) !important;
+    border-color: var(--theme-border) !important;
+    background: color-mix(in srgb, var(--theme-bg) 36%, transparent) !important;
 }
 
 html[data-theme="dark"] .settings-drawer__tabs {
-    border-color: rgba(196, 219, 208, 0.14) !important;
-    background: rgba(5, 10, 9, 0.35) !important;
+    border-color: var(--theme-border) !important;
+    background: color-mix(in srgb, var(--theme-bg-alt) 72%, transparent) !important;
 }
 
 html[data-theme="dark"] .settings-drawer__tabs button[aria-selected="true"],
@@ -412,8 +314,8 @@ html[data-theme="dark"] .modal-segmented-btn.active {
 html[data-theme="dark"]
     .app-root
     :is(input, select, textarea, .modal-search-input, .modal-inline-input) {
-    border-color: rgba(196, 219, 208, 0.18) !important;
-    background: rgba(5, 10, 9, 0.5) !important;
+    border-color: var(--theme-border) !important;
+    background: var(--theme-bg-alt) !important;
     color: var(--night-text) !important;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025) !important;
 }
@@ -432,22 +334,22 @@ html[data-theme="dark"]
 
 /* Audio player */
 html[data-theme="dark"] .mp-audio-player {
-    --player-surface: rgba(13, 25, 22, 0.98);
-    --player-surface-soft: rgba(6, 11, 10, 0.96);
-    --player-line: rgba(196, 219, 208, 0.18);
+    --player-surface: var(--theme-panel-bg-strong);
+    --player-surface-soft: var(--theme-panel-bg);
+    --player-line: var(--theme-border);
     color: var(--night-text) !important;
 }
 
 html[data-theme="dark"]
     :is(.mp-audio-player--desktop, .mp-audio-player--mobile) {
-    border-color: rgba(196, 219, 208, 0.18) !important;
+    border-color: var(--theme-border) !important;
     background:
         radial-gradient(
             circle at 20% 0%,
             rgba(var(--night-emerald-rgb), 0.18),
             transparent 18rem
         ),
-        linear-gradient(180deg, rgba(16, 29, 25, 0.98), rgba(6, 11, 10, 0.98)) !important;
+        linear-gradient(180deg, var(--theme-panel-bg-strong), var(--theme-panel-bg)) !important;
     box-shadow:
         0 26px 74px rgba(0, 0, 0, 0.52),
         inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
@@ -455,8 +357,8 @@ html[data-theme="dark"]
 
 html[data-theme="dark"]
     :is(.audio-player-primary-btn, .btn-play-surah, .hp2-btn--primary) {
-    background: linear-gradient(135deg, #31d995, #109864) !important;
-    color: #02120d !important;
+    background: linear-gradient(135deg, var(--emerald-lit), var(--theme-primary)) !important;
+    color: var(--theme-text-inverse) !important;
     box-shadow: 0 12px 30px rgba(var(--night-emerald-rgb), 0.24) !important;
 }
 
@@ -571,8 +473,8 @@ html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
 /* Sidebar dark mode */
 html[data-theme="dark"] .sidebar,
 html[data-theme="dark"] .app-sidebar {
-    background: rgba(8, 17, 15, 0.97) !important;
-    border-color: rgba(196, 219, 208, 0.14) !important;
+    background: var(--theme-bg) !important;
+    border-color: var(--theme-border) !important;
     color: var(--night-text) !important;
 }
 
@@ -598,11 +500,11 @@ html[data-theme="dark"] .app-root .home-wrapper {
 html[data-theme="dark"] .app-root .hp-grid > *,
 html[data-theme="dark"] .app-root .surah-card,
 html[data-theme="dark"] .app-root .home-card {
-    border-color: rgba(196, 219, 208, 0.13) !important;
+    border-color: var(--theme-border) !important;
     background: linear-gradient(
         180deg,
-        rgba(18, 32, 27, 0.92),
-        rgba(9, 16, 14, 0.94)
+        var(--theme-panel-bg-strong),
+        var(--theme-panel-bg)
     ) !important;
 }
 
@@ -621,10 +523,10 @@ html[data-theme="dark"] .app-header,
 html[data-theme="dark"] header.mp-header {
     background: linear-gradient(
         180deg,
-        rgba(8, 15, 13, 0.97),
-        rgba(5, 10, 9, 0.97)
+        var(--theme-panel-bg-strong),
+        var(--theme-bg-alt)
     ) !important;
-    border-bottom-color: rgba(196, 219, 208, 0.13) !important;
+    border-bottom-color: var(--theme-border) !important;
 }
 
 /* Footer dark mode */
@@ -632,10 +534,10 @@ html[data-theme="dark"] footer,
 html[data-theme="dark"] .app-footer {
     background: linear-gradient(
         180deg,
-        rgba(10, 18, 16, 0.96),
-        rgba(5, 10, 9, 0.98)
+        var(--theme-panel-bg),
+        var(--theme-bg)
     ) !important;
-    border-top-color: rgba(196, 219, 208, 0.12) !important;
+    border-top-color: var(--theme-border) !important;
     color: var(--night-text-soft) !important;
 }
 
@@ -644,10 +546,10 @@ html[data-theme="dark"] .qc-reader-toolbar,
 html[data-theme="dark"] .reader-toolbar {
     background: linear-gradient(
         180deg,
-        rgba(16, 28, 24, 0.94),
-        rgba(9, 16, 14, 0.94)
+        var(--theme-panel-bg-strong),
+        var(--theme-panel-bg)
     ) !important;
-    border-color: rgba(196, 219, 208, 0.14) !important;
+    border-color: var(--theme-border) !important;
 }
 
 html[data-theme="dark"] .qc-reader-toolbar button,
@@ -668,10 +570,10 @@ html[data-theme="dark"] .reader-toolbar button.active {
 html[data-theme="dark"] .app-root .ayah-action-sheet {
     background: linear-gradient(
         160deg,
-        rgba(16, 29, 25, 0.99) 0%,
-        rgba(6, 12, 10, 0.99) 100%
+        var(--theme-panel-bg-strong) 0%,
+        var(--theme-panel-bg) 100%
     ) !important;
-    border-color: rgba(196, 219, 208, 0.17) !important;
+    border-color: var(--theme-border) !important;
     color: var(--night-text) !important;
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55) !important;
 }
@@ -704,8 +606,8 @@ html[data-theme="dark"] .app-root .ayah-study-tab.is-active {
 html[data-theme="dark"] [role="menu"],
 html[data-theme="dark"] .dropdown-content,
 html[data-theme="dark"] [data-radix-popper-content-wrapper] > div {
-    background: rgba(12, 22, 18, 0.98) !important;
-    border-color: rgba(196, 219, 208, 0.16) !important;
+    background: var(--theme-panel-bg-strong) !important;
+    border-color: var(--theme-border) !important;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.48) !important;
 }
 
@@ -734,15 +636,15 @@ html[data-theme="dark"] .search-modal,
 html[data-theme="dark"] .search-pro__container {
     background: linear-gradient(
         180deg,
-        rgba(14, 26, 22, 0.99),
-        rgba(6, 11, 10, 0.99)
+        var(--theme-panel-bg-strong),
+        var(--theme-panel-bg)
     ) !important;
-    border-color: rgba(196, 219, 208, 0.16) !important;
+    border-color: var(--theme-border) !important;
 }
 
-html[data-theme="dark"] .search-pro__input {
-    background: rgba(5, 10, 9, 0.7) !important;
-    border-color: rgba(196, 219, 208, 0.16) !important;
+html[data-theme="dark"] .search-pro__input-shell input {
+    background: var(--theme-bg-alt) !important;
+    border-color: var(--theme-border) !important;
     color: var(--night-text) !important;
 }
 

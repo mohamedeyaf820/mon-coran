@@ -532,6 +532,51 @@
   }
 }
 
+/*
+ * Keep the critical first-paint header identical to the deferred polish layer.
+ * Without this bridge, the idle-loaded styles changed the glass surface after
+ * the first interaction and made the header visibly jump between routes.
+ */
+.app-root > .mp-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 260 !important;
+  padding: 0.45rem clamp(0.55rem, 1.8vw, 1rem) !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-border, #d4d4d4) 70%, transparent) !important;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--theme-panel-bg-strong, #fff) 94%, transparent),
+    color-mix(in srgb, var(--theme-panel-bg, #fff) 88%, transparent)
+  ) !important;
+  box-shadow: 0 12px 34px rgba(8, 24, 16, 0.08) !important;
+  backdrop-filter: blur(18px) saturate(1.08) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.08) !important;
+}
+
+html[data-theme="dark"] .app-root > .mp-header,
+html.dark .app-root > .mp-header {
+  background: linear-gradient(
+    180deg,
+    rgba(13, 23, 20, 0.94),
+    rgba(8, 15, 13, 0.9)
+  ) !important;
+  border-color: rgba(134, 157, 143, 0.18) !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.34) !important;
+}
+
+@media (max-width: 1024px) {
+  .app-root > .mp-header :is(
+    .mp-header__icon-btn,
+    .mp-header__action,
+    .mp-header__more,
+    .mp-header__nav-arrow,
+    .mp-header__riwaya-mobile
+  ) {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+}
+
 @media (max-width: 420px) {
   .mp-header__bar {
     height: var(--header-h-mobile);

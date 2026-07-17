@@ -3,8 +3,8 @@ import { Search, X } from "lucide-react";
 import SURAHS from "../../data/surahs";
 import SurahRecitationRow from "./SurahRecitationRow";
 
-const INITIAL_VISIBLE_SURAHS = 36;
-const CHUNK_SIZE = 36;
+const INITIAL_VISIBLE_SURAHS = 24;
+const CHUNK_SIZE = 30;
 
 function scheduleIdle(callback) {
   if (typeof window === "undefined") {
@@ -114,7 +114,13 @@ export default function SurahRecitationList({
             <button
               type="button"
               onClick={() => setQuery("")}
-              aria-label={lang === "fr" ? "Effacer la recherche" : "Clear search"}
+              aria-label={
+                lang === "fr"
+                  ? "Effacer la recherche"
+                  : lang === "ar"
+                    ? "مسح البحث"
+                    : "Clear search"
+              }
             >
               <X size={14} aria-hidden="true" />
             </button>

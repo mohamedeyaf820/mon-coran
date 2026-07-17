@@ -60,7 +60,9 @@ export default function KhatmaPanel() {
             onEscapeKeyDown={close}
             onInteractOutside={close}
           >
-            <Dialog.Title className="sr-only">Khatma</Dialog.Title>
+            <Dialog.Title className="sr-only">
+              {lang === "ar" ? "خطة الختمة" : lang === "en" ? "Khatma plan" : "Plan de Khatma"}
+            </Dialog.Title>
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
               <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
                 <BookOpenCheck size={16} />

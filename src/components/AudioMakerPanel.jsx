@@ -10,7 +10,7 @@ import SURAHS from "../data/surahs";
 import audioService from "../services/audioService";
 import { ensureReciterForRiwaya, getReciter } from "../data/reciters";
 import { buildAudioPlaylistForSurahs } from "../utils/audioPlaylist";
-import { cn } from "../lib/utils";
+import { cn, toast } from "../lib/utils";
 import { X, Search, Check, Trash2, Bookmark, Play, Loader2 } from "lucide-react";
 
 export default function AudioMakerPanel() {
@@ -101,7 +101,14 @@ export default function AudioMakerPanel() {
   /* --- Save session to localStorage --- */
   const handleSave = () => {
     if (!sessionName.trim() || selectedSurahs.length === 0) {
-      alert(lang === "fr" ? "Remplissez le nom" : "Enter session name");
+      toast(
+        lang === "ar"
+          ? "أدخل اسم الجلسة واختر سورة واحدة على الأقل."
+          : lang === "en"
+            ? "Enter a session name and select at least one surah."
+            : "Saisissez un nom et sélectionnez au moins une sourate.",
+        "warning",
+      );
       return;
     }
 
@@ -154,7 +161,9 @@ export default function AudioMakerPanel() {
             onEscapeKeyDown={close}
             onInteractOutside={close}
           >
-            <Dialog.Title className="sr-only">Audio Maker</Dialog.Title>
+            <Dialog.Title className="sr-only">
+              {lang === "ar" ? "صانع المقاطع الصوتية" : lang === "en" ? "Audio maker" : "Créateur audio"}
+            </Dialog.Title>
             {/* Header */}
             <div className="audio-maker-header">
               <h2 className="audio-maker-title">

@@ -1,6 +1,7 @@
 /* Recitation library — editorial audio experience */
 
 .reciter-detail-overlay {
+    z-index: 1100 !important;
     padding: clamp(0.5rem, 2vw, 1.4rem) !important;
     background:
         radial-gradient(circle at 50% 10%, rgba(var(--primary-rgb), 0.12), transparent 38%),
@@ -25,6 +26,36 @@
         0 32px 90px rgba(5, 20, 14, 0.3),
         0 2px 10px rgba(5, 20, 14, 0.12),
         inset 0 1px rgba(255, 255, 255, 0.7) !important;
+}
+
+.reciter-detail--loading {
+    min-height: min(360px, calc(100dvh - 1rem));
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.reciter-detail__loading-spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 3px solid rgba(var(--primary-rgb), 0.16);
+    border-top-color: var(--primary);
+    border-radius: 999px;
+    animation: reciter-detail-spin 680ms linear infinite;
+}
+
+@keyframes reciter-detail-spin {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reciter-detail__loading-spinner {
+        animation-duration: 1.4s;
+    }
 }
 
 .reciter-detail__accent {
@@ -141,6 +172,12 @@
     gap: 0.42rem !important;
 }
 
+.reciter-hero__source {
+    border: 1px solid rgba(var(--primary-rgb), 0.18);
+    background: rgba(var(--primary-rgb), 0.075);
+    color: var(--primary);
+}
+
 .reciter-detail__quick-actions {
     display: flex;
     align-items: center;
@@ -227,6 +264,42 @@
     color: var(--text-secondary);
     font-size: 0.78rem;
     line-height: 1.65;
+}
+
+.reciter-detail__sources {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: color-mix(in srgb, var(--bg-secondary) 78%, transparent);
+    padding: 0.68rem 0.75rem;
+}
+
+.reciter-detail__source-row {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.42rem;
+    min-width: 0;
+    color: var(--text-muted);
+    font-size: 0.68rem;
+}
+
+.reciter-detail__source-row svg {
+    color: var(--primary);
+}
+
+.reciter-detail__source-row span,
+.reciter-detail__source-row strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.reciter-detail__source-row strong {
+    color: var(--text-secondary);
+    font-weight: 780;
 }
 
 .reciter-detail__notice {
@@ -531,6 +604,7 @@
 }
 
 [data-theme="dark"] .reciter-detail__bio,
+[data-theme="dark"] .reciter-detail__sources,
 [data-theme="dark"] .recitation-library__search,
 [data-theme="dark"] .recitation-surah-list {
     background: rgba(255, 255, 255, 0.035);

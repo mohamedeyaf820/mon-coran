@@ -30,11 +30,12 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist",
+    manifest: true,
     // Pas de sourcemap en production: empeche la reconstruction du code source.
     sourcemap: false,
     target: "es2020",
     // Minification agressive + suppression console/debugger
-    minify: "esbuild",
+    minify: false,
     cssCodeSplit: true,
     cssMinify: "esbuild",
     // Enable compression
@@ -46,6 +47,14 @@ export default defineConfig(({ mode }) => ({
         chunkFileNames: "assets/[hash].js",
         entryFileNames: "assets/[hash].js",
         assetFileNames: "assets/[hash].[ext]",
+        minify:
+          mode === "production"
+            ? {
+                compress: { dropConsole: true, dropDebugger: true },
+                mangle: true,
+                codegen: { legalComments: "none" },
+              }
+            : false,
         manualChunks(id) {
           if (id.includes("node_modules/react")) return "vendor-react";
           if (id.includes("node_modules/crypto-js")) return "vendor-crypto";
@@ -53,14 +62,11 @@ export default defineConfig(({ mode }) => ({
         },
       },
     },
-    // Supprimer console.*, debugger et commentaires.
-    esbuildOptions: {
-      drop: mode === "production" ? ["console", "debugger"] : [],
-      legalComments: "none",
-    },
   },
+  // La minification JavaScript est confiée à Rolldown/Oxc dans `output.minify`.
+  // Cela permet de supprimer les consoles de production sans double minification.
   // Optimize dependencies
   optimizeDeps: {
-    include: ["react", "react-dom", "idb", "zod"],
+    include: ["react", "react-dom", "idb"],
   },
 }));

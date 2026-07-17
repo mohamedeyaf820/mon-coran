@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { cn } from "../lib/utils";
+import { useAppLocale } from "../context/AppContext";
 
 // Derives a simplified quality tier from the Network Information API
 function deriveQuality(conn) {
@@ -15,9 +16,16 @@ function deriveQuality(conn) {
  * Affiche le statut du réseau avec icônes et couleurs modernes
  */
 export default function NetworkStatus() {
+  const { lang } = useAppLocale();
   const [connection, setConnection] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [connectionQuality, setConnectionQuality] = useState("unknown");
+  const labels =
+    lang === "ar"
+      ? { slow: "اتصال بطيء", offline: "غير متصل", online: "متصل", connection: "الاتصال" }
+      : lang === "en"
+        ? { slow: "Slow connection", offline: "Offline", online: "Online", connection: "Connection" }
+        : { slow: "Connexion lente", offline: "Hors ligne", online: "En ligne", connection: "Connexion" };
 
   useEffect(() => {
     // Détecter les changements de connexion
@@ -73,7 +81,7 @@ export default function NetworkStatus() {
     return (
       <div
         className="network-status slow-connection"
-        title="Connexion lente détectée"
+        title={labels.slow}
         role="status"
         aria-live="polite"
       >
@@ -135,7 +143,7 @@ export default function NetworkStatus() {
 
   if (!isOnline) {
     return (
-      <div className="network-status offline" title="Mode hors ligne">
+      <div className="network-status offline" title={labels.offline} role="status" aria-live="polite">
         <svg
           className="status-icon"
           width="16"
@@ -163,7 +171,7 @@ export default function NetworkStatus() {
             strokeWidth="2"
           />
         </svg>
-        <span className="status-label">Hors ligne</span>
+        <span className="status-label">{labels.offline}</span>
       </div>
     );
   }
@@ -208,14 +216,15 @@ export default function NetworkStatus() {
   };
 
   const getConnectionLabel = () => {
-    if (!connection) return "En ligne";
+    if (!connection) return labels.online;
     return connection.type.toUpperCase();
   };
 
   return (
     <div
       className={cn("network-status online", getConnectionColor())}
-      title={`Connexion: ${getConnectionLabel()}`}
+      title={`${labels.connection}: ${getConnectionLabel()}`}
+      role="status"
     >
       {getConnectionIcon()}
       <span className="status-label text-xs">{getConnectionLabel()}</span>

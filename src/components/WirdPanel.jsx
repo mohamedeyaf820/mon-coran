@@ -8,6 +8,7 @@ import {
   resetTodayWird,
 } from "../services/wirdService";
 import { Flame, Target, X, CalendarDays, TrendingUp, SlidersHorizontal, BarChart2, CheckCircle2, Timer, Loader2, RotateCcw, Info } from "lucide-react";
+import { confirmAction } from "../services/interactionService";
 
 /* ── Sparkline: mini bar chart showing the last 7 days of reading ── */
 function Sparkline({ data, goalTarget, lang }) {
@@ -304,7 +305,7 @@ export default function WirdPanel() {
         : lang === "fr"
           ? "Confirmer la réinitialisation du wird d'aujourd'hui ?"
           : "Reset today's wird progress? This cannot be undone.";
-    if (!window.confirm(confirmMsg)) return;
+    if (!(await confirmAction({ message: confirmMsg, tone: "danger" }))) return;
     await resetTodayWird();
     loadData();
   };

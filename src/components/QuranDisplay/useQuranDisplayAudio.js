@@ -7,8 +7,7 @@ import {
 import { t } from "../../i18n";
 import audioService from "../../services/audioService";
 import { getAudioTimingsForAyahs } from "../../services/quranComAudioTimingService";
-import { getSurahText } from "../../services/quranAPI";
-import { getWarshSurahFormatted } from "../../services/warshService";
+import { buildSurahAudioPlaylist } from "../../utils/audioPlaylist";
 
 function toPlaylistAyahs(ayahs, currentSurah, timingMap = new Map()) {
   return (Array.isArray(ayahs) ? ayahs : []).map((ayah) => ({
@@ -18,14 +17,6 @@ function toPlaylistAyahs(ayahs, currentSurah, timingMap = new Map()) {
     text: ayah.text,
     quranComAudioTiming: timingMap.get(`${ayah.surah?.number || currentSurah}:${ayah.numberInSurah}`) || null,
   }));
-}
-
-function extractAyahs(payload) {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.ayahs)) return payload.ayahs;
-  if (Array.isArray(payload?.data?.ayahs)) return payload.data.ayahs;
-  if (Array.isArray(payload?.data)) return payload.data;
-  return [];
 }
 
 export default function useQuranDisplayAudio({
@@ -161,21 +152,10 @@ export default function useQuranDisplayAudio({
     setError(null);
 
     try {
-      let surahData;
-      if (riwaya === "warsh") {
-        surahData = await getWarshSurahFormatted(surahNumber).catch(() =>
-          getSurahText(surahNumber, "hafs"),
-        );
-      } else {
-        surahData = await getSurahText(surahNumber, riwaya);
-      }
-
-      const sourceAyahs = extractAyahs(surahData);
-      const timingMap =
-        riwaya === "hafs"
-          ? await getAudioTimingsForAyahs(currentReciter.id || ensureReciterForRiwaya(reciter, riwaya), sourceAyahs)
-          : new Map();
-      const playlistAyahs = toPlaylistAyahs(sourceAyahs, surahNumber, timingMap);
+      // Starting a recitation only requires canonical verse coordinates. The
+      // previous path waited for Quran text and timing APIs before requesting
+      // audio, which was especially noticeable for Warsh and page/juz jumps.
+      const playlistAyahs = buildSurahAudioPlaylist(surahNumber);
       if (playlistAyahs.length === 0) {
         setError(
           lang === "fr"
@@ -190,7 +170,7 @@ export default function useQuranDisplayAudio({
         currentReciter.cdn,
         currentReciter.cdnType || "islamic",
       );
-      audioService.play();
+      await audioService.play();
     } catch {
       setError(
         lang === "fr"

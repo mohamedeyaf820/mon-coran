@@ -40,6 +40,7 @@ export default function Header() {
       loadedAyahCount: current.loadedAyahCount,
       showHome: current.showHome,
       showDuas: current.showDuas,
+      legalPage: current.legalPage,
       sidebarOpen: current.sidebarOpen,
       settingsOpen: current.settingsOpen,
     }),
@@ -56,6 +57,7 @@ export default function Header() {
     loadedAyahCount,
     showHome,
     showDuas,
+    legalPage,
     sidebarOpen,
     settingsOpen,
   } = state;
@@ -96,12 +98,12 @@ export default function Header() {
       window.removeEventListener("resize", updateHeaderHeight);
       ro?.disconnect();
     };
-  }, [showHome, showDuas, displayMode, lang, riwaya]);
+  }, [showHome, showDuas, legalPage, displayMode, lang, riwaya]);
 
   // Compact header on scroll (reading view only)
   const [headerCompact, setHeaderCompact] = useState(false);
   useEffect(() => {
-    if (showHome || showDuas) {
+    if (showHome || showDuas || legalPage) {
       setHeaderCompact(false);
       return;
     }
@@ -118,7 +120,7 @@ export default function Header() {
     };
     mainEl.addEventListener("scroll", onScroll, { passive: true });
     return () => mainEl.removeEventListener("scroll", onScroll);
-  }, [showHome, showDuas]);
+  }, [showHome, showDuas, legalPage]);
 
   useEffect(() => {
     if (!goToOpen) return;
@@ -128,8 +130,8 @@ export default function Header() {
 
   const cycleTheme = () =>
     dispatch({ type: "SET_THEME", payload: nextThemeId });
-  const goHome = () => set({ showHome: true, showDuas: false });
-  const openDuas = () => set({ showDuas: true, showHome: false });
+  const goHome = () => set({ legalPage: null, showHome: true, showDuas: false });
+  const openDuas = () => set({ legalPage: null, showDuas: true, showHome: false });
   const openSearch = () => dispatch({ type: "TOGGLE_SEARCH" });
   const openSettings = () => dispatch({ type: "TOGGLE_SETTINGS" });
   const openToolsHub = () => set({ toolsHubOpen: true });
@@ -397,6 +399,8 @@ export default function Header() {
         headerCompact && "mp-header--compact",
         sidebarOpen && "pointer-events-none",
       )}
+      aria-hidden={sidebarOpen ? "true" : undefined}
+      inert={sidebarOpen ? "" : undefined}
       role="banner"
     >
       <div className="mp-header__bar">
@@ -441,11 +445,11 @@ export default function Header() {
 
         {/* ── CENTER: surah nav ───────────────────────────── */}
         <div className="mp-header__center">
-          {showHome ? (
+          {showHome || legalPage ? (
             <button
               className="mp-header__home-summary"
               type="button"
-              onClick={() => set({ showHome: false, showDuas: false })}
+              onClick={() => set({ legalPage: null, showHome: false, showDuas: false })}
             >
               <strong className="mp-header__home-summary-clean">
                 {headerLabels.homeSummary}
@@ -506,11 +510,11 @@ export default function Header() {
                         value={goToValue}
                         onChange={(event) => setGoToValue(event.target.value)}
                         placeholder="#"
-                        className="h-10 flex-1 rounded-xl border border-border bg-bg-secondary px-3 text-center text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                        className="h-[44px] flex-1 rounded-xl border border-border bg-bg-secondary px-3 text-center text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary"
                       />
                       <button
                         type="submit"
-                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white transition-colors hover:bg-primary-dark"
+                        className="flex h-[44px] w-[44px] items-center justify-center rounded-xl bg-primary text-white transition-colors hover:bg-primary-dark"
                         aria-label={tr({
                           fr: "Aller",
                           en: "Go",

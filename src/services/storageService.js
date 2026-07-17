@@ -3,7 +3,13 @@
  * Stores: notes, bookmarks, reading-position, cached text, settings.
  */
 
-import { dbGet, dbSet, dbDelete, dbGetAll } from "./dbService.js";
+import {
+  dbGet,
+  dbSet,
+  dbDelete,
+  dbGetAll,
+  dbReplaceStores,
+} from "./dbService.js";
 import {
   encryptData,
   decryptDataWithMeta,
@@ -17,18 +23,76 @@ function parseRecordOrNull(schema, value) {
   return result.success ? result.data : null;
 }
 
+const PRIVATE_RECORD_FORMAT = "mushafplus-encrypted-record-v2";
+
+function encodePrivateRecord(record) {
+  return {
+    id: record.id,
+    format: PRIVATE_RECORD_FORMAT,
+    payload: encryptData(record),
+  };
+}
+
+function decodePrivateRecord(schema, value) {
+  if (value?.format === PRIVATE_RECORD_FORMAT && typeof value.payload === "string") {
+    const result = decryptDataWithMeta(value.payload);
+    return {
+      record: parseRecordOrNull(schema, result.data),
+      needsMigration: Boolean(result.needsMigration),
+    };
+  }
+  return {
+    record: parseRecordOrNull(schema, value),
+    needsMigration: Boolean(value),
+  };
+}
+
+async function writePrivateRecord(storeName, schema, value) {
+  const record = parseRecordOrNull(schema, value);
+  if (!record) return false;
+  const key = await dbSet(storeName, encodePrivateRecord(record));
+  return key !== undefined;
+}
+
+async function readPrivateRecord(storeName, schema, key) {
+  const raw = await dbGet(storeName, key);
+  const decoded = decodePrivateRecord(schema, raw);
+  if (decoded.record && decoded.needsMigration) {
+    await writePrivateRecord(storeName, schema, decoded.record);
+  }
+  return decoded.record;
+}
+
+async function readAllPrivateRecords(storeName, schema) {
+  const rawRecords = await dbGetAll(storeName);
+  const decoded = (Array.isArray(rawRecords) ? rawRecords : [])
+    .map((value) => decodePrivateRecord(schema, value))
+    .filter(({ record }) => Boolean(record));
+  await Promise.all(
+    decoded
+      .filter(({ needsMigration }) => needsMigration)
+      .map(({ record }) => writePrivateRecord(storeName, schema, record)),
+  );
+  return decoded.map(({ record }) => record);
+}
+
 /* ═══════════════════════════════════════════ */
 /*  NOTES                                     */
 /* ═══════════════════════════════════════════ */
 
 export async function saveNote(surah, ayah, text) {
   const id = `${surah}:${ayah}`;
-  await dbSet("notes", { id, surah, ayah, text, updatedAt: Date.now() });
+  return writePrivateRecord("notes", noteRecordSchema, {
+    id,
+    surah,
+    ayah,
+    text,
+    updatedAt: Date.now(),
+  });
 }
 
 export async function getNote(surah, ayah) {
-  const raw = await dbGet("notes", `${surah}:${ayah}`);
-  return parseRecordOrNull(noteRecordSchema, raw);
+  return readPrivateRecord("notes", noteRecordSchema, `${surah}:${ayah}`);
 }
 
 export async function deleteNote(surah, ayah) {
@@ -36,10 +100,11 @@ export async function deleteNote(surah, ayah) {
 }
 
 export async function getAllNotes() {
-  const raw = await dbGetAll("notes");
-  return (Array.isArray(raw) ? raw : [])
-    .map((entry) => parseRecordOrNull(noteRecordSchema, entry))
-    .filter(Boolean);
+  return readAllPrivateRecords("notes", noteRecordSchema);
+}
+
+export async function importNoteRecord(record) {
+  return writePrivateRecord("notes", noteRecordSchema, record);
 }
 
 /* ═══════════════════════════════════════════ */
@@ -48,7 +113,13 @@ export async function getAllNotes() {
 
 export async function addBookmark(surah, ayah, label = "") {
   const id = `${surah}:${ayah}`;
-  await dbSet("bookmarks", { id, surah, ayah, label, createdAt: Date.now() });
+  return writePrivateRecord("bookmarks", bookmarkRecordSchema, {
+    id,
+    surah,
+    ayah,
+    label,
+    createdAt: Date.now(),
+  });
 }
 
 export async function removeBookmark(surah, ayah) {
@@ -56,15 +127,17 @@ export async function removeBookmark(surah, ayah) {
 }
 
 export async function isBookmarked(surah, ayah) {
-  const val = await dbGet("bookmarks", `${surah}:${ayah}`);
-  return !!parseRecordOrNull(bookmarkRecordSchema, val);
+  return Boolean(
+    await readPrivateRecord("bookmarks", bookmarkRecordSchema, `${surah}:${ayah}`),
+  );
 }
 
 export async function getAllBookmarks() {
-  const raw = await dbGetAll("bookmarks");
-  return (Array.isArray(raw) ? raw : [])
-    .map((entry) => parseRecordOrNull(bookmarkRecordSchema, entry))
-    .filter(Boolean);
+  return readAllPrivateRecords("bookmarks", bookmarkRecordSchema);
+}
+
+export async function importBookmarkRecord(record) {
+  return writePrivateRecord("bookmarks", bookmarkRecordSchema, record);
 }
 
 /* ═══════════════════════════════════════════ */
@@ -329,8 +402,13 @@ export function getSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return cloneDefaultSettings();
-    const { data: decrypted, usedLegacy } = decryptDataWithMeta(raw);
-    const parsed = decrypted || JSON.parse(raw);
+    const {
+      data: decrypted,
+      needsMigration,
+      locked,
+    } = decryptDataWithMeta(raw);
+    if (locked) return cloneDefaultSettings();
+    const parsed = decrypted ?? JSON.parse(raw);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       return cloneDefaultSettings();
     }
@@ -377,7 +455,7 @@ export function getSettings() {
           : DEFAULT_SETTINGS.surahRepeatCount,
     };
 
-    if (usedLegacy) {
+    if (needsMigration) {
       // Toujours migrer depuis la clé legacy (publique) vers la clé appareil,
       // sans attendre le déverrouillage de la passphrase utilisateur.
       saveSettings(normalized);
@@ -543,8 +621,65 @@ export function saveSettings(settings) {
   const safe = sanitizeSettings(settings);
   try {
     localStorage.setItem(SETTINGS_KEY, encryptData(safe));
+    return true;
   } catch {
-    // Storage might be unavailable (private mode/quota exceeded)
+    // Never fall back to plaintext when encryption/storage is unavailable.
+    return false;
+  }
+}
+
+export async function readPrivateDataSnapshot() {
+  return {
+    settings: getSettings(),
+    notes: await getAllNotes(),
+    bookmarks: await getAllBookmarks(),
+  };
+}
+
+export async function readRawPrivateDataSnapshot() {
+  return {
+    settings: localStorage.getItem(SETTINGS_KEY),
+    notes: await dbGetAll("notes"),
+    bookmarks: await dbGetAll("bookmarks"),
+  };
+}
+
+export async function rewritePrivateDataSnapshot(snapshot) {
+  if (!snapshot) {
+    throw new Error("Unable to persist protected settings");
+  }
+  const notes = (snapshot.notes || []).map((value) => {
+    const record = parseRecordOrNull(noteRecordSchema, value);
+    if (!record) throw new Error("Unable to validate a protected note");
+    return encodePrivateRecord(record);
+  });
+  const bookmarks = (snapshot.bookmarks || []).map((value) => {
+    const record = parseRecordOrNull(bookmarkRecordSchema, value);
+    if (!record) throw new Error("Unable to validate a protected bookmark");
+    return encodePrivateRecord(record);
+  });
+  if (!saveSettings(snapshot.settings)) {
+    throw new Error("Unable to persist protected settings");
+  }
+  if (!(await dbReplaceStores({ notes, bookmarks }))) {
+    throw new Error("Unable to rotate private IndexedDB stores");
+  }
+  return true;
+}
+
+export async function restoreRawPrivateDataSnapshot(snapshot) {
+  try {
+    if (typeof snapshot?.settings === "string") {
+      localStorage.setItem(SETTINGS_KEY, snapshot.settings);
+    } else {
+      localStorage.removeItem(SETTINGS_KEY);
+    }
+    return dbReplaceStores({
+      notes: snapshot?.notes || [],
+      bookmarks: snapshot?.bookmarks || [],
+    });
+  } catch {
+    return false;
   }
 }
 

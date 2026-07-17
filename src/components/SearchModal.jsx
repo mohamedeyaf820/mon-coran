@@ -27,6 +27,7 @@ import {
   buildSearchCandidates,
   inferSearchMode,
 } from "../utils/searchIntelligence";
+import { Icon } from "./ui/icon";
 
 function formatSearchError(error, lang) {
   const message = String(error?.message || error || "").trim();
@@ -290,7 +291,7 @@ export default function SearchModal() {
     >
       <Dialog.Portal>
         <div
-          className="modal-overlay search-pro-overlay search-modal-shell"
+          className="modal-overlay search-pro-overlay"
           onClick={close}
         >
           <Dialog.Content
@@ -418,7 +419,7 @@ export default function SearchModal() {
                         onClick={() => setSearchMode(modeOption.id)}
                         aria-selected={searchMode === modeOption.id}
                       >
-                        <i className={`fas ${modeOption.icon}`}></i>
+                        <Icon name={modeOption.icon} aria-hidden="true" />
                         <span>{modeOption.label}</span>
                       </button>
                     ))}

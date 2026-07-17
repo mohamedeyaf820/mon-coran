@@ -37,7 +37,7 @@ function setPathname(pathname) {
   };
 }
 
-test("navigation: parses surah, page, juz and duas routes safely", () => {
+test("navigation: parses reading, duas and legal routes safely", () => {
   setPathname("/surah/2/255");
   assert.deepEqual(parseInitialRoute(), {
     showHome: false,
@@ -65,6 +65,13 @@ test("navigation: parses surah, page, juz and duas routes safely", () => {
 
   setPathname("/duas");
   assert.deepEqual(parseInitialRoute(), { showHome: false, showDuas: true });
+
+  setPathname("/privacy");
+  assert.deepEqual(parseInitialRoute(), {
+    legalPage: "privacy",
+    showHome: false,
+    showDuas: false,
+  });
 });
 
 test("navigation: clamps invalid route numbers", () => {

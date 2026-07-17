@@ -5,7 +5,7 @@ import {
   memorizationMapSchema,
   readLocalStorageWithSchema,
   writeLocalStorageJson,
-} from "./storageValidation";
+} from "./storageValidation.js";
 
 const KEY = 'mushafplus_memorization_v1';
 

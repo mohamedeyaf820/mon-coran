@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useApp } from "../context/AppContext";
+import {
+  shallowEqual,
+  useAppActions,
+  useAppSelector,
+} from "../context/AppContext";
 import { t } from "../i18n";
 import {
   addBookmark,
@@ -43,6 +47,7 @@ import {
   MessageCircle, Layers, TriangleAlert, Music, Headphones,
   Quote, Lightbulb,
 } from "lucide-react";
+import { Icon } from "./ui/icon";
 
 function faIcon(key) {
   const map = {
@@ -76,8 +81,42 @@ function emitToast(type, message) {
   );
 }
 
+const EMPTY_PINNED_AYAHS = Object.freeze([]);
+
 export default function AyahActions({ surah, ayah, ayahData, compact = false, layout = "horizontal" }) {
-  const { state, dispatch, set } = useApp();
+  const { dispatch, set } = useAppActions();
+  const preferences = useAppSelector(
+    (state) => ({
+      lang: state.lang,
+      reciter: state.reciter,
+      riwaya: state.riwaya,
+      warshStrictMode: state.warshStrictMode,
+      displayMode: state.displayMode,
+      memPause: state.memPause,
+      memRepeatCount: state.memRepeatCount,
+      showTranslation: state.showTranslation,
+    }),
+    shallowEqual,
+  );
+  const pinnedAyahs = useAppSelector((state) =>
+    Array.isArray(state.pinnedAyahs) ? state.pinnedAyahs : EMPTY_PINNED_AYAHS,
+  );
+  const isCurrentAyah = useAppSelector(
+    (state) =>
+      state.currentPlayingAyah?.surah === Number(surah) &&
+      state.currentPlayingAyah?.ayah === Number(ayah),
+  );
+  const isPlayingThisAyah = useAppSelector(
+    (state) => state.isPlaying &&
+      state.currentPlayingAyah?.surah === Number(surah) &&
+      state.currentPlayingAyah?.ayah === Number(ayah),
+  );
+  const isTafsirActive = useAppSelector(
+    (state) =>
+      state.tafsirSidebarOpen &&
+      state.tafsirSidebarVerse?.surah === Number(surah) &&
+      state.tafsirSidebarVerse?.ayah === Number(ayah),
+  );
 
   const renderPortal = (content) => {
     if (typeof document === "undefined") return null;
@@ -93,7 +132,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     memPause,
     memRepeatCount,
     showTranslation,
-  } = state;
+  } = preferences;
 
   const [bookmarked, setBookmarked] = useState(false);
   const [memoLevel, setMemoLevel] = useState(0);
@@ -127,9 +166,6 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
         : showNote
           ? "note"
           : null;
-  const pinnedAyahs = Array.isArray(state.pinnedAyahs)
-    ? state.pinnedAyahs
-    : [];
   const isPinnedForCompare = pinnedAyahs.some(
     (item) => Number(item.surah) === Number(surah) && Number(item.ayah) === Number(ayah),
   );
@@ -1103,10 +1139,6 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     );
   };
 
-  const isPlayingThisAyah = state.isPlaying && state.currentPlayingAyah?.surah === Number(surah) && state.currentPlayingAyah?.ayah === Number(ayah);
-  const isCurrentAyah = state.currentPlayingAyah?.surah === Number(surah) && state.currentPlayingAyah?.ayah === Number(ayah);
-  const isTafsirActive = state.tafsirSidebarOpen && state.tafsirSidebarVerse?.surah === Number(surah) && state.tafsirSidebarVerse?.ayah === Number(ayah);
-
   const toggleTafsir = () => {
     if (isTafsirActive) {
       set({ tafsirSidebarOpen: false });
@@ -1973,15 +2005,15 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
 
           <div className="ayah-actions__sheet-grid">
             <button type="button" className="share-btn share-btn--whatsapp" onClick={shareWhatsApp}>
-              <i className="fab fa-whatsapp" />
+              <Icon name="whatsapp" size={16} />
               <span className="share-btn__label">WhatsApp</span>
             </button>
             <button type="button" className="share-btn share-btn--telegram" onClick={shareTelegram}>
-              <i className="fab fa-telegram-plane" />
+              <Icon name="telegram-plane" size={16} />
               <span className="share-btn__label">Telegram</span>
             </button>
             <button type="button" className="share-btn share-btn--x" onClick={shareTwitter}>
-              <i className="fab fa-x-twitter" />
+              <Icon name="x-twitter" size={16} />
               <span className="share-btn__label">X / Twitter</span>
             </button>
             <button type="button" className="share-btn share-btn--email" onClick={shareEmail}>

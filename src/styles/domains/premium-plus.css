@@ -653,8 +653,8 @@
     font-size: 0.76rem;
 }
 
-.app-root.premium-plus .ayah-action-sheet .share-btn i,
-.app-root.premium-plus .ayah-action-sheet .ayah-actions__playlist-btn i {
+.app-root.premium-plus .ayah-action-sheet .share-btn svg,
+.app-root.premium-plus .ayah-action-sheet .ayah-actions__playlist-btn svg {
     width: 1.18rem;
     height: 1.18rem;
     font-size: 0.66rem;

@@ -761,8 +761,8 @@
     box-shadow: 0 10px 20px rgba(var(--theme-primary-rgb), 0.18);
 }
 
-.ayah-action-sheet .share-btn i,
-.ayah-action-sheet .ayah-actions__playlist-btn i {
+.ayah-action-sheet .share-btn svg,
+.ayah-action-sheet .ayah-actions__playlist-btn svg {
     width: 1.45rem;
     height: 1.45rem;
     border-radius: 0.44rem;
@@ -792,34 +792,34 @@
     word-break: normal;
 }
 
-.ayah-action-sheet--share .share-btn--whatsapp i {
+.ayah-action-sheet--share .share-btn--whatsapp svg {
     background: rgba(37, 211, 102, 0.18);
     color: #20b75f;
 }
 
-.ayah-action-sheet--share .share-btn--telegram i {
+.ayah-action-sheet--share .share-btn--telegram svg {
     background: rgba(39, 166, 229, 0.2);
     color: #1d8fc8;
 }
 
-.ayah-action-sheet--share .share-btn--x i {
+.ayah-action-sheet--share .share-btn--x svg {
     background: rgba(136, 146, 176, 0.2);
     color: color-mix(in srgb, var(--theme-text) 82%, #8f9dbf 18%);
 }
 
-.ayah-action-sheet--share .share-btn--email i {
+.ayah-action-sheet--share .share-btn--email svg {
     background: rgba(89, 126, 175, 0.2);
     color: #4f78aa;
 }
 
-.ayah-action-sheet--share .share-btn--copy i {
+.ayah-action-sheet--share .share-btn--copy svg {
     background: rgba(191, 152, 61, 0.2);
     color: #b3872a;
 }
 
-.ayah-action-sheet--share .share-btn--image i,
-.ayah-action-sheet--share .share-btn--card i,
-.ayah-action-sheet--share .share-btn--native i {
+.ayah-action-sheet--share .share-btn--image svg,
+.ayah-action-sheet--share .share-btn--card svg,
+.ayah-action-sheet--share .share-btn--native svg {
     background: rgba(var(--theme-primary-rgb), 0.16);
 }
 
@@ -1014,8 +1014,8 @@
         font-size: 0.78rem;
     }
 
-    .ayah-action-sheet .share-btn i,
-    .ayah-action-sheet .ayah-actions__playlist-btn i {
+    .ayah-action-sheet .share-btn svg,
+    .ayah-action-sheet .ayah-actions__playlist-btn svg {
         width: 1.34rem;
         height: 1.34rem;
         font-size: 0.74rem;

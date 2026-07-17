@@ -6,6 +6,7 @@ import { clearMushafRuntimeCaches } from "./services/runtimeCacheService.js";
 import App from "./App";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AppProvider } from "./context/AppContext";
+import PrivacyLockGate from "./components/PrivacyLockGate";
 // Critical CSS — must be available before first paint
 import "./styles/tailwind.css";
 import "./styles/domains/themes4.css";
@@ -15,72 +16,27 @@ import "./styles/dark-mode-refonte.css";
 import "./styles/domains/mobile-all-versions.css";
 import "./styles/header-enhanced.css";
 
-/**
- * FontAwesome is loaded lazily (~3 MB CSS when fetched) and used by 200+ legacy
- * icon instances across the app.
- *
- * Migration plan:
- *   - Use <Icon name="..." /> from src/components/ui/icon.jsx for all new icons.
- *   - Replace <i className="fas fa-*"/> with <Icon name="*"/> as components are
- *     refactored.
- *   - Once no files reference fa-* classes, remove @fortawesome/fontawesome-free
- *     dependency and delete this block.
- *
- * To disable FontAwesome globally during migration, set:
- *   window.__DISABLE_FONTAWESOME__ = true;
- * before this script runs.
- */
-
-let fontAwesomeStylesPromise = null;
-
-function loadFontAwesomeStyles() {
-  if (typeof window !== "undefined" && window.__DISABLE_FONTAWESOME__) {
-    return null;
-  }
-  if (!fontAwesomeStylesPromise) {
-    fontAwesomeStylesPromise =
-      import("@fortawesome/fontawesome-free/css/all.min.css").catch(() => null);
-  }
-  return fontAwesomeStylesPromise;
-}
-
 if (typeof window !== "undefined") {
-  const warmIconStyles = () => {
-    loadFontAwesomeStyles();
-  };
-
-  const onFirstInteraction = () => {
-    loadFontAwesomeStyles();
-    window.removeEventListener("pointerdown", onFirstInteraction);
-    window.removeEventListener("keydown", onFirstInteraction);
-    window.removeEventListener("touchstart", onFirstInteraction);
-  };
-
-  window.addEventListener("pointerdown", onFirstInteraction, {
-    passive: true,
-    once: true,
-  });
-  window.addEventListener("keydown", onFirstInteraction, { once: true });
-  window.addEventListener("touchstart", onFirstInteraction, {
-    passive: true,
-    once: true,
-  });
-
-  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  const constrainedConnection =
-    connection?.saveData || /(^|-)2g$|3g/.test(connection?.effectiveType || "");
-
-  if (!constrainedConnection && typeof window.requestIdleCallback === "function") {
-    window.requestIdleCallback(warmIconStyles, { timeout: 5000 });
-  } else if (!constrainedConnection) {
-    window.setTimeout(warmIconStyles, 4000);
-  }
-
   // Defer non-critical feature CSS until idle — these are only needed after
-  // the user navigates to reading/settings/recitation pages
+  // the user navigates to reading/settings/recitation pages. A first user
+  // interaction wins over the idle timer so route changes never flash unstyled.
+  let deferredStylesRequested = false;
+  const interactionEvents = ["pointerdown", "keydown", "touchstart"];
   const loadDeferredStyles = () => {
+    if (deferredStylesRequested) return;
+    deferredStylesRequested = true;
+    for (const eventName of interactionEvents) {
+      window.removeEventListener(eventName, loadDeferredStyles);
+    }
     import("./styles/deferredStyles.js").catch(() => null);
   };
+
+  for (const eventName of interactionEvents) {
+    window.addEventListener(eventName, loadDeferredStyles, {
+      passive: eventName !== "keydown",
+      once: true,
+    });
+  }
 
   if (typeof window.requestIdleCallback === "function") {
     window.requestIdleCallback(loadDeferredStyles, { timeout: 2000 });
@@ -175,9 +131,11 @@ if (!rootElement) {
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <ErrorBoundary>
-        <AppProvider>
-          <App />
-        </AppProvider>
+        <PrivacyLockGate>
+          <AppProvider>
+            <App />
+          </AppProvider>
+        </PrivacyLockGate>
       </ErrorBoundary>
     </React.StrictMode>,
   );

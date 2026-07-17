@@ -78,9 +78,11 @@ Lightweight system in `src/i18n/` — `t(key, lang)` function with fallback chai
 
 ### Bundle Strategy
 - Aggressive code splitting: all panels/modals are `React.lazy()` loaded
-- Manual chunks in Vite config: vendor-react, vendor-ui (Radix), vendor-icons (Lucide), vendor-validation (Zod), vendor-crypto, vendor-storage (idb)
-- FontAwesome loaded lazily on first interaction (migration to Lucide in progress)
-- Bundle budgets enforced: CSS < 945KB, JS < 1060KB, single chunk < 250KB
+- Manual chunks are limited to React, CryptoJS and idb; route and modal chunks remain lazy and content-driven
+- Lucide icons are tree-shaken; the home icon adapter avoids loading a global icon font
+- Production JavaScript is minified by Rolldown/Oxc with console and debugger removal
+- Bundle and source-screen budgets are enforced by `npm run build:ci`
+- Current default ceilings: CSS 890 KiB, JS 1275 KiB, initial payload 810 KiB and initial gzip 200 KiB
 
 ### CSP (Content Security Policy)
 Injected at build time via `scripts/cspPolicy.mjs` — template in `index.html` uses `__CSP_POLICY__` placeholder. Audio sources restricted to allowlisted CDN domains.
@@ -92,4 +94,4 @@ Injected at build time via `scripts/cspPolicy.mjs` — template in `index.html` 
 - Arabic text handling: RTL layout switches based on `lang === "ar"`, `dir` attribute on root
 - Riwaya-aware: many components branch on `riwaya === "warsh"` for font/data differences
 - Performance-sensitive: `detectLowPerformanceDevice()` gates animations and preloads; `runWhenIdle()` defers non-critical work
-- URL sync: `useUrlSync` hook syncs navigation state to URL hash for deep linking
+- URL sync: `useUrlSync` keeps semantic paths (`/surah`, `/page`, `/juz`, legal pages) synchronized for deep linking

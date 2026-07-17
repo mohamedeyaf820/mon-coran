@@ -34,6 +34,7 @@ const SurahRecitationRow = memo(function SurahRecitationRow({
 
       <RowActions
         lang={lang}
+        surahLabel={`${label} (${surah.n})`}
         onPlay={onPlay}
         onOpen={onOpen}
         downloadUrl={downloadUrl}

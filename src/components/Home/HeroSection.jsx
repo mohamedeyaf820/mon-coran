@@ -3,6 +3,7 @@ import SURAHS from "../../data/surahs";
 import { cn } from "../../lib/utils";
 import PlatformLogo from "../PlatformLogo";
 import { EmptyState } from "./HomePrimitives";
+import Icon from "./HomeIcon";
 
 export default function HeroSection({
   lang,
@@ -44,6 +45,12 @@ export default function HeroSection({
     uiLang === "ar"
       ? "\u0627\u0644\u0641\u0627\u062a\u062d\u0629"
       : "Al-Fatiha";
+  const headingLabel =
+    uiLang === "ar"
+      ? "القرآن الكريم مع MushafPlus"
+      : uiLang === "fr"
+        ? "Le Saint Coran avec MushafPlus"
+        : "The Holy Quran with MushafPlus";
 
   return (
     <section className="home-hero-compact home-hero-shell relative z-10 overflow-hidden rounded-xl border border-border/50 bg-bg-primary px-4 py-4 sm:px-5 sm:py-5">
@@ -53,7 +60,7 @@ export default function HeroSection({
         <div className="home-hero-main flex min-w-0 flex-col">
           <div className="home-hero-kicker-row mb-4 flex flex-wrap items-center gap-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-primary">
-              <i className={`fas ${currentPrayer.icon}`} aria-hidden="true" />
+              <Icon name={currentPrayer.icon} aria-hidden="true" />
               <span>
                 {greeting[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"]}
               </span>
@@ -74,7 +81,7 @@ export default function HeroSection({
             />
             <div className="min-w-0">
               <h1 className="home-hero-title text-[clamp(1.5rem,3.5vw,2rem)] font-black leading-none tracking-tight text-text-primary">
-                MushafPlus
+                {headingLabel}
               </h1>
               <span className="mt-1 inline-flex items-center gap-1.5 text-[0.75rem] font-semibold text-text-muted">
                 <Feather size={10} className="text-primary" aria-hidden="true" />
@@ -126,8 +133,9 @@ export default function HeroSection({
                     onClick={() => onSelectInfo(tab.id)}
                     type="button"
                   >
-                    <i
-                      className={`fas ${tab.icon} text-[0.9rem]`}
+                    <Icon
+                      name={tab.icon}
+                      className="text-[0.9rem]"
                       aria-hidden="true"
                     />
                     <span>{tab.label}</span>
@@ -210,8 +218,8 @@ export default function HeroSection({
                 {activeInfo === "suggest" && (
                   <>
                     <div className="home-suggestion-heading mb-2 flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-3 py-2 text-primary">
-                      <i
-                        className={`fas ${suggestionSet.icon}`}
+                      <Icon
+                        name={suggestionSet.icon}
                         aria-hidden="true"
                       />
                       <span className="text-[0.86rem] font-extrabold">

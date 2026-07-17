@@ -141,6 +141,12 @@ test("mobile word-by-word cards stay readable and never expose tooltip content",
   const cards = page.locator(".wbw-study-grid .wbw-word-block");
   expect(await cards.count()).toBeGreaterThanOrEqual(4);
 
+  await expect.poll(async () => {
+    const first = await cards.nth(0).boundingBox();
+    const second = await cards.nth(1).boundingBox();
+    return Math.abs((first?.y || 0) - (second?.y || 0));
+  }).toBeLessThanOrEqual(2);
+
   const firstBox = await cards.nth(0).boundingBox();
   const secondBox = await cards.nth(1).boundingBox();
   expect(firstBox?.width || 0).toBeGreaterThanOrEqual(130);

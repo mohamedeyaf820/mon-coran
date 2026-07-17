@@ -4,11 +4,17 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
 
-import { isAllowedExternalUrl, sanitizeSvgMarkup } from "../src/lib/security.js";
+import {
+  isAllowedExternalUrl,
+  sanitizeHtml,
+  sanitizeSvgMarkup,
+} from "../src/lib/security.js";
 import { buildCspPolicy } from "../scripts/cspPolicy.mjs";
+import { auditDeploymentSecurityHeaders } from "../scripts/check-security-headers.mjs";
 import {
   readLocalStorageWithSchema,
   writeLocalStorageJson,
+  downloadProgressMapSchema,
   memorizationMapSchema,
 } from "../src/services/storageValidation.js";
 
@@ -69,6 +75,10 @@ test("security: deployment CSP headers match the generated production policy", (
   assert.equal(vercel, generated);
 });
 
+test("security: all deployable root headers match the centralized policy", () => {
+  assert.deepEqual(auditDeploymentSecurityHeaders(), []);
+});
+
 test("security: SVG sanitizer strips active content and external references", () => {
   const previousWindow = globalThis.window;
   const previousDOMParser = globalThis.DOMParser;
@@ -100,6 +110,46 @@ test("security: SVG sanitizer strips active content and external references", ()
     assert.doesNotMatch(clean, /<use/i);
     assert.doesNotMatch(clean, /onload|onclick/i);
     assert.doesNotMatch(clean, /evil\.example\.com|javascript:/i);
+  } finally {
+    globalThis.window = previousWindow;
+    globalThis.DOMParser = previousDOMParser;
+    globalThis.XMLSerializer = previousXMLSerializer;
+  }
+});
+
+test("security: sanitizers reject encoded SVG URLs and dangerous HTML", () => {
+  const previousWindow = globalThis.window;
+  const previousDOMParser = globalThis.DOMParser;
+  const previousXMLSerializer = globalThis.XMLSerializer;
+
+  globalThis.window = {};
+  globalThis.DOMParser = DOMParser;
+  globalThis.XMLSerializer = XMLSerializer;
+
+  try {
+    const svg = sanitizeSvgMarkup(`
+      <svg xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="safe"><stop offset="1" /></linearGradient></defs>
+        <rect fill="url(#safe)" filter="url(https://evil.example/filter.svg#x)" />
+        <text style="fill:red" href="data:text/html;base64,PHNjcmlwdD4=">safe</text>
+      </svg>
+    `);
+    assert.match(svg, /url\(#safe\)/);
+    assert.doesNotMatch(svg, /evil\.example|data:text\/html|style=/i);
+
+    const html = sanitizeHtml(`
+      <span onclick="alert(1)" style="background:url(javascript:alert(1))">
+        <img src="x" onerror="alert(1)" />
+        <svg onload="alert(1)"><script>alert(1)</script></svg>
+        <strong title="allowed" formaction="javascript:alert(1)">safe</strong>
+      </span>
+    `);
+    assert.match(html, /safe/);
+    assert.match(html, /title="allowed"/);
+    assert.doesNotMatch(
+      html,
+      /onclick|onerror|style=|formaction|javascript:|<img|<svg|<script/i,
+    );
   } finally {
     globalThis.window = previousWindow;
     globalThis.DOMParser = previousDOMParser;
@@ -142,4 +192,53 @@ test("storage: validates schema and returns fallback on corruption", () => {
   );
 
   assert.deepEqual(value, fallback);
+});
+
+test("storage: keeps a valid offline download registry across reloads", () => {
+  globalThis.localStorage = createMockStorage();
+  const registry = {
+    "hafs:ar.alafasy:1": {
+      key: "hafs:ar.alafasy:1",
+      status: "done",
+      surahNum: 1,
+      reciterId: "ar.alafasy",
+      reciterName: "Mishary Alafasy",
+      riwaya: "hafs",
+      total: 7,
+      downloaded: 7,
+      failedCount: 0,
+      updatedAt: Date.now(),
+    },
+  };
+
+  assert.equal(
+    writeLocalStorageJson("mushaf_offline_progress_v2", registry),
+    true,
+  );
+  assert.deepEqual(
+    readLocalStorageWithSchema(
+      "mushaf_offline_progress_v2",
+      downloadProgressMapSchema,
+      {},
+    ),
+    registry,
+  );
+});
+
+test("storage: accepts an explicitly cancelled offline download", () => {
+  const result = downloadProgressMapSchema.safeParse({
+    "warsh:warsh-reader:114": {
+      key: "warsh:warsh-reader:114",
+      status: "cancelled",
+      surahNum: 114,
+      reciterId: "warsh-reader",
+      riwaya: "warsh",
+      total: 6,
+      downloaded: 2,
+      failedCount: 0,
+      updatedAt: Date.now(),
+    },
+  });
+
+  assert.equal(result.success, true);
 });

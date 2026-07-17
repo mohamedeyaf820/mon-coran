@@ -225,7 +225,9 @@ export default function TafsirSidebar() {
             ref={sidebarRef}
             className="fixed inset-y-0 right-0 z-[390] flex w-full max-w-[min(100vw,34rem)] flex-col border-l border-[color-mix(in_srgb,var(--theme-border)_70%,transparent_30%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_96%,#ffffff_4%)] text-[color-mix(in_srgb,var(--theme-text)_92%,#ffffff_8%)] shadow-[-28px_0_70px_rgba(3,10,18,0.34)] backdrop-blur-2xl"
           >
-            <Dialog.Title className="sr-only">Tafsir</Dialog.Title>
+            <Dialog.Title className="sr-only">
+              {lang === "ar" ? "التفسير" : lang === "en" ? "Tafsir" : "Tafsir"}
+            </Dialog.Title>
             {/* Header */}
             <div className="flex items-start justify-between gap-3 border-b border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] px-4 py-4 sm:px-5">
               <div className="min-w-0">

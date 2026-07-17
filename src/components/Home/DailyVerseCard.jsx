@@ -73,7 +73,7 @@ export default function DailyVerseCard({
           {t("verseOfDay")}
         </span>
 
-        <span className="text-[0.62rem] text-[var(--text-muted)] [font-family:var(--font-ui)]">
+        <span className="text-[0.62rem] text-[var(--text-secondary)] [font-family:var(--font-ui)]">
           {now.toLocaleDateString(
             lang === "ar" ? "ar-SA" : lang === "fr" ? "fr-FR" : "en-GB",
             { day: "numeric", month: "short" },

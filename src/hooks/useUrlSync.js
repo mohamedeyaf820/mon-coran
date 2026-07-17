@@ -11,6 +11,7 @@ import { getSurahAyahCount } from "../data/surahs.js";
 export function useUrlSync({
   showHome,
   showDuas,
+  legalPage,
   displayMode,
   currentSurah,
   currentAyah,
@@ -22,6 +23,9 @@ export function useUrlSync({
   const lastRouteKey = useRef(null);
 
   const buildRoute = () => {
+    if (["privacy", "legal", "sources"].includes(legalPage)) {
+      return { targetPath: `/${legalPage}`, routeKey: `legal:${legalPage}` };
+    }
     if (showHome) return { targetPath: "/", routeKey: "home" };
     if (showDuas) return { targetPath: "/duas", routeKey: "duas" };
 
@@ -74,6 +78,7 @@ export function useUrlSync({
   }, [
     showHome,
     showDuas,
+    legalPage,
     displayMode,
     currentSurah,
     currentAyah,
@@ -102,6 +107,15 @@ export function parseInitialRoute() {
   if (typeof window === "undefined") return {};
 
   const path = window.location.pathname;
+
+  const legalMatch = path.match(/^\/(privacy|legal|sources)\/?$/);
+  if (legalMatch) {
+    return {
+      legalPage: legalMatch[1],
+      showHome: false,
+      showDuas: false,
+    };
+  }
 
   if (path === "/duas") {
     return { showHome: false, showDuas: true };

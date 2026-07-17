@@ -375,6 +375,24 @@ export default function FlashcardsPanel() {
     }
   }, [score]);
 
+  const total = deck.length;
+  const card = deck[idx];
+  const answer = useCallback(
+    (correct) => {
+      setScore((s) => ({
+        ...s,
+        [correct ? "correct" : "wrong"]: s[correct ? "correct" : "wrong"] + 1,
+      }));
+      if (idx >= total - 1) {
+        setDone(true);
+      } else {
+        setIdx((i) => i + 1);
+        setFlipped(false);
+      }
+    },
+    [idx, total],
+  );
+
   // Guard: if deck is somehow empty, show a fallback
   if (deck.length === 0) {
     return (
@@ -395,7 +413,9 @@ export default function FlashcardsPanel() {
               }}
               onInteractOutside={close}
             >
-              <Dialog.Title className="sr-only">Flashcards - Editer</Dialog.Title>
+              <Dialog.Title className="sr-only">
+                {lang === "ar" ? "تعديل البطاقات التعليمية" : lang === "en" ? "Edit flashcards" : "Modifier les flashcards"}
+              </Dialog.Title>
               <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
                 <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
                   <Icon name="layer-group" size={18} />
@@ -430,25 +450,6 @@ export default function FlashcardsPanel() {
       </Dialog.Root>
     );
   }
-
-  const card = deck[idx];
-  const total = deck.length;
-
-  const answer = useCallback(
-    (correct) => {
-      setScore((s) => ({
-        ...s,
-        [correct ? "correct" : "wrong"]: s[correct ? "correct" : "wrong"] + 1,
-      }));
-      if (idx >= total - 1) {
-        setDone(true);
-      } else {
-        setIdx((i) => i + 1);
-        setFlipped(false);
-      }
-    },
-    [idx, total],
-  );
 
   const restart = () => {
     setDeck(shuffle(VOCAB));
@@ -485,7 +486,9 @@ export default function FlashcardsPanel() {
             }}
             onInteractOutside={close}
           >
-            <Dialog.Title className="sr-only">Flashcards</Dialog.Title>
+            <Dialog.Title className="sr-only">
+              {lang === "ar" ? "بطاقات تعليمية" : lang === "en" ? "Vocabulary flashcards" : "Flashcards de vocabulaire"}
+            </Dialog.Title>
             {/* Header */}
             <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
               <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
@@ -561,6 +564,22 @@ export default function FlashcardsPanel() {
                 <div
                   className="fc-card-wrap !px-4 !pt-2"
                   onClick={() => setFlipped((f) => !f)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setFlipped((value) => !value);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={flipped}
+                  aria-label={
+                    lang === "ar"
+                      ? "قلب بطاقة المفردات"
+                      : lang === "en"
+                        ? "Flip vocabulary card"
+                        : "Retourner la carte de vocabulaire"
+                  }
                 >
                   <div
                     className={`fc-card ${flipped ? "fc-card--flipped" : ""}`}

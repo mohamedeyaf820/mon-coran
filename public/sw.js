@@ -8,28 +8,85 @@
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v7";
-const API_CACHE_NAME = "mushaf-plus-api-v2";
+const CACHE_NAME = "mushaf-plus-v11";
+const API_CACHE_NAME = "mushaf-plus-api-v3";
+const CACHE_LIMITS = {
+  [CACHE_NAME]: 180,
+  [API_CACHE_NAME]: 160,
+};
+let claimClientsOnActivate = false;
 
 // Ressources de l'app shell à pré-cacher à l'installation
 const ASSETS_TO_CACHE = [
-  "/index.html",
   "/boot-recovery.js",
   "/manifest.json",
   "/logo-ui.webp",
   "/favicon.png",
+  "/pwa-home-wide.png",
+  "/pwa-home-mobile.png",
 ];
 
 // ─── Installation ─────────────────────────────────────────────────────────────
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS_TO_CACHE))
-      .then(() => self.skipWaiting()),
-  );
+  event.waitUntil(precacheAppShell());
 });
+
+async function precacheAppShell() {
+  const cache = await caches.open(CACHE_NAME);
+  await precacheUrls(cache, ASSETS_TO_CACHE);
+
+  const indexResponse = await fetch("/index.html", { cache: "reload" });
+  if (!indexResponse.ok) {
+    throw new Error(`Unable to precache app shell: ${indexResponse.status}`);
+  }
+
+  const html = await indexResponse.clone().text();
+  await cache.put("/index.html", indexResponse);
+
+  const indexAssetUrls = Array.from(
+    html.matchAll(/(?:src|href)=["'](\/assets\/[^"']+)["']/g),
+    (match) => match[1],
+  );
+  const shellManifestResponse = await fetch("/shell-assets.json", {
+    cache: "reload",
+  });
+  if (!shellManifestResponse.ok) {
+    throw new Error(
+      `Unable to load app-shell manifest: ${shellManifestResponse.status}`,
+    );
+  }
+
+  const shellAssetUrls = (await shellManifestResponse.clone().json()).filter(
+    (assetUrl) =>
+      typeof assetUrl === "string" && assetUrl.startsWith("/assets/"),
+  );
+  await cache.put("/shell-assets.json", shellManifestResponse);
+  await precacheUrls(
+    cache,
+    [...new Set([...indexAssetUrls, ...shellAssetUrls])],
+  );
+  await trimCache(cache, CACHE_LIMITS[CACHE_NAME]);
+}
+
+async function precacheUrls(cache, urls, concurrency = 4) {
+  let cursor = 0;
+  const workers = Array.from(
+    { length: Math.min(concurrency, urls.length) },
+    async () => {
+      while (cursor < urls.length) {
+        const url = urls[cursor];
+        cursor += 1;
+        const response = await fetch(url, { cache: "reload" });
+        if (!response.ok) {
+          throw new Error(`Unable to precache ${url}: ${response.status}`);
+        }
+        await cache.put(url, response);
+      }
+    },
+  );
+  await Promise.all(workers);
+}
 
 // ─── Activation ───────────────────────────────────────────────────────────────
 
@@ -48,7 +105,9 @@ self.addEventListener("activate", (event) => {
           )
           .map((key) => caches.delete(key)),
       );
-      await self.clients.claim();
+      if (claimClientsOnActivate) {
+        await self.clients.claim();
+      }
     })(),
   );
 });
@@ -79,13 +138,13 @@ self.addEventListener("fetch", (event) => {
     isSameOrigin &&
     /\.(png|jpe?g|webp|avif|svg|gif|ico)$/i.test(url.pathname)
   ) {
-    event.respondWith(staleWhileRevalidate(event.request, CACHE_NAME));
+    event.respondWith(staleWhileRevalidate(event.request, CACHE_NAME, event));
     return;
   }
 
   // ── 4. API Coran (alquran.cloud & quran.com) – Stale-While-Revalidate ──────
   if (url.hostname === "api.alquran.cloud" || url.hostname === "api.quran.com") {
-    event.respondWith(staleWhileRevalidate(event.request, API_CACHE_NAME));
+    event.respondWith(staleWhileRevalidate(event.request, API_CACHE_NAME, event));
     return;
   }
 
@@ -116,21 +175,24 @@ self.addEventListener("message", (event) => {
     // (ex : sourates récemment lues)
     case "CACHE_QURAN_URLS": {
       const urls = Array.isArray(event.data.urls) ? event.data.urls : [];
-      cacheQuranUrls(urls);
+      event.waitUntil(cacheQuranUrls(urls));
       break;
     }
 
     // L'app demande l'invalidation du cache API (ex : après un repair)
     case "CLEAR_API_CACHE": {
-      caches.delete(API_CACHE_NAME).then(() => {
-        event.source?.postMessage?.({ type: "API_CACHE_CLEARED" });
-      });
+      event.waitUntil(
+        caches.delete(API_CACHE_NAME).then(() => {
+          event.source?.postMessage?.({ type: "API_CACHE_CLEARED" });
+        }),
+      );
       break;
     }
 
     // L'app demande au SW de skipWaiting (mise à jour immédiate)
     case "SKIP_WAITING":
-      self.skipWaiting();
+      claimClientsOnActivate = true;
+      event.waitUntil(self.skipWaiting());
       break;
 
     default:
@@ -162,9 +224,10 @@ async function cacheQuranUrls(urls) {
           const res = await fetch(url, {
             headers: { Accept: "application/json" },
           });
-          if (res.ok) await apiCache.put(url, res);
+          if (res.ok) await putBounded(apiCache, url, res, API_CACHE_NAME);
         }),
     );
+    await trimCache(apiCache, CACHE_LIMITS[API_CACHE_NAME]);
   } catch {
     // Silencieux – le cache API n'est pas critique
   }
@@ -183,6 +246,19 @@ function fetchWithTimeout(request, timeoutMs = 8000) {
   );
 }
 
+async function trimCache(cache, maxEntries) {
+  if (!Number.isFinite(maxEntries) || maxEntries < 1) return;
+  const keys = await cache.keys();
+  const overflow = keys.length - maxEntries;
+  if (overflow <= 0) return;
+  await Promise.all(keys.slice(0, overflow).map((key) => cache.delete(key)));
+}
+
+async function putBounded(cache, request, response, cacheName) {
+  await cache.put(request, response);
+  await trimCache(cache, CACHE_LIMITS[cacheName]);
+}
+
 /**
  * Cache-First : retourne la réponse en cache si disponible.
  * Sinon, fetch depuis le réseau et met en cache.
@@ -195,7 +271,7 @@ async function cacheFirst(request, cacheName) {
   try {
     const response = await fetchWithTimeout(request);
     if (response && response.status === 200) {
-      cache.put(request, response.clone());
+      await putBounded(cache, request, response.clone(), cacheName);
     }
     return response;
   } catch {
@@ -207,21 +283,24 @@ async function cacheFirst(request, cacheName) {
  * Stale-While-Revalidate : retourne le cache immédiatement (si dispo)
  * et met à jour le cache en arrière-plan depuis le réseau.
  */
-async function staleWhileRevalidate(request, cacheName) {
+async function staleWhileRevalidate(request, cacheName, event) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
 
   const networkPromise = fetchWithTimeout(request)
-    .then((response) => {
+    .then(async (response) => {
       if (response && (response.status === 200 || response.type === "opaque")) {
-        cache.put(request, response.clone());
+        await putBounded(cache, request, response.clone(), cacheName);
       }
       return response;
     })
     .catch(() => null);
 
-  // Retourner le cache immédiatement, ou attendre le réseau si pas de cache
-  return cached || (await networkPromise) || Response.error();
+  if (cached) {
+    event?.waitUntil(networkPromise.then(() => undefined));
+    return cached;
+  }
+  return (await networkPromise) || Response.error();
 }
 
 /**
@@ -234,7 +313,7 @@ async function networkFirstHtml(request) {
     const cache = await caches.open(CACHE_NAME);
     // Ne stocker que les réponses valides
     if (networkResponse.status === 200) {
-      cache.put(request, networkResponse.clone());
+      await putBounded(cache, request, networkResponse.clone(), CACHE_NAME);
     }
     return networkResponse;
   } catch {
@@ -260,7 +339,7 @@ async function networkFirstWithFallback(request, cacheName) {
     const response = await fetchWithTimeout(request);
     if (response && response.status === 200) {
       const cache = await caches.open(cacheName);
-      cache.put(request, response.clone());
+      await putBounded(cache, request, response.clone(), cacheName);
     }
     return response;
   } catch {

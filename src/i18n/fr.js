@@ -30,9 +30,10 @@ export default {
     hint: 'Tapez pour rechercher dans le Coran',
   },
   settings: {
-    title: 'Paramètres', readingSettings: 'Paramètres de lecture', general: 'Général', display: 'Affichage', audio: 'Audio',
+    title: 'Paramètres', readingSettings: 'Paramètres de lecture', general: 'Général', display: 'Affichage', audio: 'Audio', privacy: 'Confidentialité',
     appLanguage: 'Langue de l\'application', visualTheme: 'Thème visuel',
     backupRestore: 'Sauvegarde & Restauration', autoNightMode: 'Mode nuit automatique', autoNightHint: 'Bascule automatique selon l\'heure',
+    prayerTimes: 'Utiliser les horaires de prière locaux', prayerTimesHint: 'Autorise la géolocalisation pour régler Fajr et Ishā. Aucune position n’est enregistrée.',
     start: 'Début', end: 'Fin',
     clearCache: 'Vider le cache de l\'application', cacheCleared: 'Le cache de l\'application a été vidé.',
     cacheInfo: 'Videz le cache si vous rencontrez des problèmes audio.',

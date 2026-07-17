@@ -48,6 +48,11 @@ test("mobile recitation collection and reciter library stay clear and valid", as
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
   await page.getByRole("tab", { name: "Récitations" }).click();
   await expect(page.locator('[data-reciter-card="true"]').first()).toBeVisible();
+  expect(
+    await page
+      .getByRole("button", { name: "Tous", exact: true })
+      .evaluate((node) => getComputedStyle(node).backgroundColor),
+  ).not.toBe("rgba(0, 0, 0, 0)");
 
   expect(
     await page.locator('[data-reciter-card="true"] button button').count(),
@@ -75,9 +80,20 @@ test("mobile recitation collection and reciter library stay clear and valid", as
 
   const modal = page.locator(".reciter-detail");
   await expect(modal).toBeVisible();
+  await expect(modal.locator(".reciter-detail__source-row").first()).toContainText(
+    "EveryAyah",
+  );
+  await expect(modal.locator(".reciter-detail__source-row").last()).toContainText(
+    "Quran.com",
+  );
   const modalBox = await modal.boundingBox();
   expect(modalBox?.x || 0).toBeGreaterThanOrEqual(0);
+  expect(modalBox?.y || 0).toBeGreaterThanOrEqual(0);
   expect((modalBox?.x || 0) + (modalBox?.width || 0)).toBeLessThanOrEqual(391);
+  expect((modalBox?.y || 0) + (modalBox?.height || 0)).toBeLessThanOrEqual(845);
+  const overlayBox = await page.locator(".reciter-detail-overlay").boundingBox();
+  expect(overlayBox?.y || 0).toBe(0);
+  expect(overlayBox?.height || 0).toBeLessThanOrEqual(845);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(2);
 
   const librarySearch = page.getByRole("textbox", {
@@ -86,6 +102,12 @@ test("mobile recitation collection and reciter library stay clear and valid", as
   await expect(librarySearch).toBeVisible();
   await librarySearch.fill("Fatiha");
   await expect(page.locator(".recitation-row")).toHaveCount(1);
+  await expect(
+    page.getByRole("button", { name: "Écouter — L'Ouverture (1)" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Ouvrir dans le lecteur — L'Ouverture (1)" }),
+  ).toBeVisible();
   await modal.screenshot({ path: path.join(OUTPUT_DIR, "mobile-reciter-library.png") });
 });
 
@@ -107,6 +129,13 @@ test("desktop reciter library keeps biography and surahs in a balanced layout", 
   await expect(modal).toBeVisible();
   await expect(modal).toHaveAttribute("role", "dialog");
   await expect(modal).toHaveAttribute("aria-modal", "true");
+  const bioToggle = modal.getByRole("button", { name: "Voir plus" });
+  await expect(bioToggle).toHaveAttribute("aria-expanded", "false");
+  await bioToggle.click();
+  await expect(modal.getByRole("button", { name: "Voir moins" })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
   const modalBox = await modal.boundingBox();
   const layoutColumns = await page
     .locator(".reciter-detail__layout")

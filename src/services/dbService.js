@@ -9,6 +9,7 @@ const DB_NAME = 'mushafplus';
 const DB_VERSION = 2;
 
 let dbPromise = null;
+const maintenanceLastRun = new Map();
 
 function devWarn(...args) {
     if (import.meta.env?.DEV && typeof console !== 'undefined') {
@@ -108,10 +109,92 @@ export async function dbGetAll(storeName) {
     }
 }
 
+/**
+ * Remove expired records and keep only the newest records for one cache prefix.
+ * Maintenance is throttled so navigation never pays this cost repeatedly.
+ */
+export async function dbPruneByPrefix(
+    storeName,
+    prefix,
+    { maxEntries = 900, maxAgeMs = 30 * 24 * 60 * 60 * 1000, throttleMs = 30 * 60 * 1000 } = {},
+) {
+    const maintenanceKey = `${storeName}:${prefix}`;
+    const now = Date.now();
+    if (now - (maintenanceLastRun.get(maintenanceKey) || 0) < throttleMs) return;
+    maintenanceLastRun.set(maintenanceKey, now);
+
+    try {
+        const db = await getDB();
+        const transaction = db.transaction(storeName, 'readwrite');
+        const store = transaction.objectStore(storeName);
+        const retained = [];
+        let cursor = await store.openCursor();
+        while (cursor) {
+            const key = String(cursor.key || '');
+            if (key.startsWith(prefix)) {
+                const timestamp = Number(cursor.value?.ts || 0);
+                const expiryAt = Number(cursor.value?.expiryAt || 0);
+                const expired =
+                    (expiryAt > 0 && expiryAt <= now) ||
+                    (timestamp > 0 && now - timestamp > maxAgeMs);
+                if (expired) await cursor.delete();
+                else retained.push({ key: cursor.key, timestamp });
+            }
+            cursor = await cursor.continue();
+        }
+
+        retained
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .slice(Math.max(0, maxEntries))
+            .forEach(({ key }) => store.delete(key));
+        await transaction.done;
+    } catch (err) {
+        maintenanceLastRun.delete(maintenanceKey);
+        devWarn(`DB cache maintenance error in ${storeName}:`, err);
+    }
+}
+
+/** Clear one store and report whether the operation really completed. */
+export async function dbClear(storeName) {
+    try {
+        const db = await getDB();
+        await db.clear(storeName);
+        return true;
+    } catch (err) {
+        devWarn(`DB clear error in ${storeName}:`, err);
+        return false;
+    }
+}
+
+/** Atomically replaces multiple stores in one IndexedDB transaction. */
+export async function dbReplaceStores(recordsByStore) {
+    const storeNames = Object.keys(recordsByStore || {});
+    if (!storeNames.length) return true;
+    try {
+        const db = await getDB();
+        const transaction = db.transaction(storeNames, 'readwrite');
+        for (const storeName of storeNames) {
+            const store = transaction.objectStore(storeName);
+            await store.clear();
+            for (const record of recordsByStore[storeName] || []) {
+                await store.put(record);
+            }
+        }
+        await transaction.done;
+        return true;
+    } catch (err) {
+        devWarn('DB atomic store replacement failed:', err);
+        return false;
+    }
+}
+
 export default {
     getDB,
     dbGet,
     dbSet,
+    dbPruneByPrefix,
     dbDelete,
     dbGetAll,
+    dbClear,
+    dbReplaceStores,
 };

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mon-coran.netlify.app/sitemap.xml

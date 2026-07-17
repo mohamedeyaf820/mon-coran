@@ -94,7 +94,7 @@ export default function AudioOptionsModal(props) {
               aria-label={labels.close}
               ref={optionsCloseButtonRef}
             >
-              <X size={13} />
+              <X size={18} strokeWidth={2.4} />
             </button>
           </div>
 

@@ -16,16 +16,17 @@ import {
 import { t } from "./i18n";
 import SplashScreen from "./components/SplashScreen";
 import PWAUpdateBanner from "./components/PWAUpdateBanner";
-import { getSurah } from "./data/surahs";
 import { runWhenIdle } from "./utils/idleUtils";
+import { loadAudioService } from "./services/loadAudioService";
 import { useUrlSync } from "./hooks/useUrlSync";
 import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
 import ProgressBar from "./components/ProgressBar";
-import { CheckCircle, XCircle, TriangleAlert, Info } from "lucide-react";
 
 const HomePage = lazy(() => import("./components/HomePage"));
 const Header = lazy(() => import("./components/Header"));
 const QuranDisplay = lazy(() => import("./components/QuranDisplay"));
+const LegalPage = lazy(() => import("./components/LegalPage"));
+const ConfirmDialogHost = lazy(() => import("./components/ConfirmDialogHost"));
 const NotesPanel = lazy(() => import("./components/NotesPanel"));
 const Sidebar = lazy(() => import("./components/Sidebar"));
 const AudioPlayer = lazy(() => import("./components/AudioPlayer"));
@@ -52,11 +53,9 @@ const KeyboardShortcutsModal = lazy(
 );
 const TafsirSidebar = lazy(() => import("./components/TafsirSidebar"));
 const ToolsHubModal = lazy(() => import("./components/ToolsHubModal"));
-
-async function getAudioServiceInstance() {
-  const module = await import("./services/audioService");
-  return module.default;
-}
+const FutureFeaturesModal = lazy(
+  () => import("./components/FutureFeaturesModal"),
+);
 
 function detectLowPerformanceDevice() {
   if (typeof window === "undefined" || typeof navigator === "undefined") {
@@ -85,34 +84,67 @@ function detectLowPerformanceDevice() {
   );
 }
 
-const SUSPENSE_FALLBACK = (
-  <div className="flex items-center justify-center min-h-[60vh]" role="status">
-    <div className="w-10 h-10 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" aria-hidden="true" />
-    <span className="sr-only" lang="fr">Chargement en cours…</span>
-  </div>
-);
+function AppLoadingFallback({ lang }) {
+  const label =
+    lang === "ar"
+      ? "\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0645\u064a\u0644…"
+      : lang === "en"
+        ? "Loading…"
+        : "Chargement en cours…";
 
-function Toast({ type = "info", message, onClose, autoClose = 5000 }) {
+  return (
+    <div
+      className="flex min-h-[60vh] items-center justify-center"
+      role="status"
+      aria-busy="true"
+    >
+      <div
+        className="h-10 w-10 animate-spin rounded-full border-4 border-[var(--primary)] border-t-transparent"
+        aria-hidden="true"
+      />
+      <span className="sr-only" lang={lang}>
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function Toast({ type = "info", message, onClose, autoClose = 5000, lang }) {
   useEffect(() => {
     if (!autoClose) return;
     const t = setTimeout(onClose, autoClose);
     return () => clearTimeout(t);
   }, [autoClose, onClose]);
-  const TOAST_ICONS = { success: CheckCircle, error: XCircle, warning: TriangleAlert, info: Info };
+  const toastMarks = { success: "✓", error: "×", warning: "!", info: "i" };
   const styles = {
     success: { bg: "bg-emerald-50 border-emerald-200", text: "text-emerald-800", bar: "border-l-4 border-l-emerald-500", iconColor: "text-emerald-500" },
     error:   { bg: "bg-red-50 border-red-200",         text: "text-red-800",     bar: "border-l-4 border-l-red-500",     iconColor: "text-red-500" },
     warning: { bg: "bg-orange-50 border-orange-200",   text: "text-orange-800",  bar: "border-l-4 border-l-orange-500",  iconColor: "text-amber-500" },
     info:    { bg: "bg-blue-50 border-blue-200",        text: "text-blue-800",    bar: "border-l-4 border-l-blue-500",    iconColor: "text-blue-500" },
   }[type] ?? {};
-  const ToastIcon = TOAST_ICONS[type];
+  const toastMark = toastMarks[type];
   return (
     <div className={`toast-notification ${styles.bg} ${styles.bar} ${styles.text} px-4 py-3 rounded-md flex items-center justify-between gap-2 animate-fadeInScale`}>
       <div className="flex items-center gap-2 min-w-0">
-        {ToastIcon && <ToastIcon size={16} className={`${styles.iconColor} shrink-0`} aria-hidden="true" />}
+        {toastMark && (
+          <span
+            className={`${styles.iconColor} grid h-4 w-4 shrink-0 place-items-center rounded-full border border-current text-[10px] font-black leading-none`}
+            aria-hidden="true"
+          >
+            {toastMark}
+          </span>
+        )}
         <span className="text-sm font-medium">{message}</span>
       </div>
-      <button onClick={onClose} className="text-lg hover:opacity-70 transition-opacity shrink-0" aria-label="Fermer">×</button>
+      <button
+        onClick={onClose}
+        className="shrink-0 text-lg transition-opacity hover:opacity-70"
+        aria-label={
+          lang === "ar" ? "\u0625\u063a\u0644\u0627\u0642" : lang === "en" ? "Close" : "Fermer"
+        }
+      >
+        ×
+      </button>
     </div>
   );
 }
@@ -131,6 +163,7 @@ export default function App() {
       currentJuz: current.currentJuz,
       showHome: current.showHome,
       showDuas: current.showDuas,
+      legalPage: current.legalPage,
       focusReading: current.focusReading,
       memMode: current.memMode,
       isPlaying: current.isPlaying,
@@ -143,6 +176,7 @@ export default function App() {
       searchOpen: current.searchOpen,
       settingsOpen: current.settingsOpen,
       toolsHubOpen: current.toolsHubOpen,
+      futureHubOpen: current.futureHubOpen,
       bookmarksOpen: current.bookmarksOpen,
       wirdOpen: current.wirdOpen,
       historyOpen: current.historyOpen,
@@ -168,13 +202,14 @@ export default function App() {
     currentJuz,
     showHome,
     showDuas,
+    legalPage,
     focusReading,
     memMode,
   } = state;
 
   const handleUrlRouteChange = useCallback(
     (route) => {
-      set(route);
+      set({ legalPage: null, ...route });
     },
     [set],
   );
@@ -183,6 +218,7 @@ export default function App() {
   useUrlSync({
     showHome,
     showDuas,
+    legalPage,
     displayMode,
     currentSurah,
     currentPage,
@@ -197,59 +233,14 @@ export default function App() {
 
   // ── Titre dynamique du navigateur (style Spotify) ────────────────────────
   useEffect(() => {
-    const APP_NAME = "MushafPlus";
-    const { isPlaying, currentPlayingAyah } = state;
-
-    if (showHome) {
-      document.title = APP_NAME;
-      return;
-    }
-    if (showDuas) {
-      document.title =
-        lang === "ar"
-          ? `الأدعية · ${APP_NAME}`
-          : lang === "fr"
-            ? `Douas · ${APP_NAME}`
-            : `Duas · ${APP_NAME}`;
-      return;
-    }
-
-    // Helper : nom de sourate selon la langue
-    const surahLabel = (surahNum) => {
-      const s = getSurah(surahNum);
-      if (!s) return `S${surahNum}`;
-      return lang === "ar" ? s.ar : lang === "fr" ? s.fr : s.en;
-    };
-
-    if (isPlaying && currentPlayingAyah) {
-      document.title = `${surahLabel(currentPlayingAyah.surah)} · ${APP_NAME}`;
-      return;
-    }
-
-    // En lecture sans audio actif — afficher la position
-    if (displayMode === "surah") {
-      document.title = `${surahLabel(currentSurah)} · ${APP_NAME}`;
-    } else if (displayMode === "page") {
-      document.title =
-        lang === "ar"
-          ? `صفحة ${currentPage} · ${APP_NAME}`
-          : lang === "fr"
-            ? `Page ${currentPage} · ${APP_NAME}`
-            : `Page ${currentPage} · ${APP_NAME}`;
-    } else if (displayMode === "juz") {
-      document.title =
-        lang === "ar"
-          ? `الجزء ${currentJuz} · ${APP_NAME}`
-          : lang === "fr"
-            ? `Juz ${currentJuz} · ${APP_NAME}`
-            : `Juz ${currentJuz} · ${APP_NAME}`;
-    } else {
-      document.title = APP_NAME;
-    }
-
+    let active = true;
+    import("./services/seoService")
+      .then(({ updateSeoMetadata }) => {
+        if (active) updateSeoMetadata(state);
+      })
+      .catch(() => {});
     return () => {
-      // Restaurer le titre par défaut si le composant se démonte
-      document.title = APP_NAME;
+      active = false;
     };
   }, [
     showHome,
@@ -259,11 +250,17 @@ export default function App() {
     currentPage,
     currentJuz,
     lang,
+    state.currentAyah,
     state.isPlaying,
     state.currentPlayingAyah,
+    state.legalPage,
   ]);
 
   const lowPerfMode = useMemo(() => detectLowPerformanceDevice(), []);
+  const suspenseFallback = useMemo(
+    () => <AppLoadingFallback lang={lang} />,
+    [lang],
+  );
   const [hasInteracted, setHasInteracted] = useState(false);
   const [immersiveHidden, setImmersiveHidden] = useState(false);
   const [toast, setToast] = useState(null);
@@ -271,7 +268,7 @@ export default function App() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const immersiveTimer = useRef(null);
 
-  const immersiveActive = focusReading && !showHome && !showDuas;
+  const immersiveActive = focusReading && !showHome && !showDuas && !legalPage;
   const sidebarShiftClass =
     !focusReading && sidebarOpen
       ? lang === "ar"
@@ -279,11 +276,28 @@ export default function App() {
         : "lg:ml-[23rem]"
       : "";
   const shouldMountAudioPlayer =
-    !showHome ||
-    deferNonCriticalUI ||
-    hasInteracted ||
+    (!showHome && !showDuas && !legalPage) ||
     state.isPlaying ||
     Boolean(state.currentPlayingAyah);
+  const blockingModalOpen = Boolean(
+    state.searchOpen ||
+      state.settingsOpen ||
+      state.toolsHubOpen ||
+      state.futureHubOpen ||
+      state.bookmarksOpen ||
+      state.wirdOpen ||
+      state.historyOpen ||
+      state.playlistOpen ||
+      state.audioMakerOpen ||
+      state.flashcardsOpen ||
+      state.tajweedQuizOpen ||
+      state.khatmaOpen ||
+      state.comparatorOpen ||
+      state.shareImageOpen ||
+      state.weeklyStatsOpen ||
+      state.tafsirSidebarOpen ||
+      showShortcuts,
+  );
 
   useEffect(() => {
     const handleToast = (event) => {
@@ -328,11 +342,25 @@ export default function App() {
   }, [lowPerfMode]);
 
   useEffect(() => {
-    const cancelIdle = runWhenIdle(
-      () => setDeferNonCriticalUI(true),
-      lowPerfMode ? 2800 : 1200,
-    );
-    return cancelIdle;
+    let cancelIdle = () => {};
+    const scheduleNonCriticalUI = () => {
+      cancelIdle();
+      cancelIdle = runWhenIdle(
+        () => setDeferNonCriticalUI(true),
+        lowPerfMode ? 2800 : 1200,
+      );
+    };
+
+    if (navigator.onLine) {
+      scheduleNonCriticalUI();
+    } else {
+      window.addEventListener("online", scheduleNonCriticalUI, { once: true });
+    }
+
+    return () => {
+      cancelIdle();
+      window.removeEventListener("online", scheduleNonCriticalUI);
+    };
   }, [lowPerfMode]);
 
   useEffect(() => {
@@ -392,7 +420,7 @@ export default function App() {
         const { buildAudioPlaylistForSurah } = playlistModule;
         const items = await buildAudioPlaylistForSurah(surahNum, riwaya);
         if (cancelled || items.length === 0) return;
-        const audioService = await getAudioServiceInstance();
+        const audioService = await loadAudioService();
         if (cancelled) return;
         audioService.loadPlaylist(
           items,
@@ -459,12 +487,11 @@ export default function App() {
 
       const target = event.target;
       const isElementTarget = target instanceof Element;
-      if (
-        isElementTarget &&
-        target.closest(
-          'input, textarea, select, button, [contenteditable="true"], [role="textbox"], [role="combobox"], [role="slider"]',
-        )
-      ) {
+      const editingTarget = isElementTarget && target.closest(
+        'input, textarea, select, [contenteditable="true"], [role="textbox"], [role="combobox"], [role="slider"]',
+      );
+      const buttonTarget = isElementTarget && target.closest('button, [role="button"]');
+      if (editingTarget || (buttonTarget && !event.ctrlKey && !event.metaKey)) {
         return;
       }
 
@@ -541,6 +568,7 @@ export default function App() {
         onDone={handleSplashDone}
         onPrefetch={handleSplashPrefetch}
         lowPerfMode={lowPerfMode}
+        lang={lang}
       />
     );
   }
@@ -548,27 +576,31 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div
-        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""}`}
+        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""} ${!showHome && !showDuas && !legalPage ? "view-reading" : ""}`}
         style={{ height: "100dvh", minHeight: "100dvh" }}
         dir={lang === "ar" ? "rtl" : "ltr"}
-        data-view={showHome ? "home" : showDuas ? "duas" : "reading"}
+        data-view={legalPage ? "legal" : showHome ? "home" : showDuas ? "duas" : "reading"}
         data-display-mode={displayMode}
         data-riwaya={state.riwaya}
+        inert={blockingModalOpen ? "" : undefined}
       >
         <ProgressBar />
+        <Suspense fallback={null}>
+          <ConfirmDialogHost />
+        </Suspense>
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[10000] focus:rounded-xl focus:bg-[var(--theme-panel-bg-strong,var(--bg-card))] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--text-primary)] focus:shadow-[0_10px_24px_rgba(2,8,23,0.18)]"
+          className="app-skip-link"
         >
           {t("app.skipToContent", lang)}
         </a>
 
-        <Suspense fallback={SUSPENSE_FALLBACK}>
+        <Suspense fallback={suspenseFallback}>
           <Header />
         </Suspense>
 
         <div className="app-layout-shell relative flex min-h-0 flex-1">
-          <Suspense fallback={SUSPENSE_FALLBACK}>
+          <Suspense fallback={suspenseFallback}>
             {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
           </Suspense>
 
@@ -583,8 +615,16 @@ export default function App() {
           <main
             id="main-content"
             tabIndex={-1}
+            aria-hidden={sidebarOpen ? "true" : undefined}
+            inert={sidebarOpen ? "" : undefined}
             aria-label={
-              showHome
+              legalPage
+                ? lang === "ar"
+                  ? "المحتوى الرئيسي - المعلومات القانونية"
+                  : lang === "en"
+                    ? "Main content - Legal information"
+                    : "Contenu principal - Informations légales"
+                : showHome
                 ? lang === "fr"
                   ? "Contenu principal - Accueil"
                   : lang === "ar"
@@ -609,23 +649,29 @@ export default function App() {
             }}
           >
             <div
-              className={`app-view-shell ${showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas ? `app-mode-${displayMode}` : ""}`}
+              className={`app-view-shell ${legalPage ? "app-view-legal" : showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas && !legalPage ? `app-mode-${displayMode}` : ""}`}
             >
-              {showHome ? (
+              {legalPage ? (
                 <ErrorBoundary>
-                  <Suspense fallback={SUSPENSE_FALLBACK}>
+                  <Suspense fallback={suspenseFallback}>
+                    <LegalPage page={legalPage} />
+                  </Suspense>
+                </ErrorBoundary>
+              ) : showHome ? (
+                <ErrorBoundary>
+                  <Suspense fallback={suspenseFallback}>
                     <HomePage lowPerfMode={lowPerfMode} />
                   </Suspense>
                 </ErrorBoundary>
               ) : showDuas ? (
                 <ErrorBoundary>
-                  <Suspense fallback={SUSPENSE_FALLBACK}>
+                  <Suspense fallback={suspenseFallback}>
                     <DuasPage />
                   </Suspense>
                 </ErrorBoundary>
               ) : (
                 <ErrorBoundary>
-                  <Suspense fallback={SUSPENSE_FALLBACK}>
+                  <Suspense fallback={suspenseFallback}>
                     <QuranDisplay
                       key={
                         displayMode === "juz"
@@ -642,7 +688,7 @@ export default function App() {
           </main>
 
           {showHome && !focusReading && deferNonCriticalUI && (
-            <Suspense fallback={SUSPENSE_FALLBACK}>
+            <Suspense fallback={suspenseFallback}>
               <NotesPanel />
             </Suspense>
           )}
@@ -659,6 +705,7 @@ export default function App() {
               message={toast.message}
               onClose={() => setToast(null)}
               autoClose={4500}
+              lang={lang}
             />
           </div>
         )}
@@ -670,7 +717,7 @@ export default function App() {
         )}
 
         {/* ── Bouton raccourcis clavier (desktop uniquement) ───────────── */}
-        {!showHome && !showDuas && (
+        {!showHome && !showDuas && !legalPage && (
           <button
             type="button"
             className="fixed bottom-6 right-6 z-[250] hidden md:flex w-9 h-9 items-center justify-center rounded-full bg-[var(--bg-card)] border border-[var(--border)] shadow-md text-[var(--text-muted)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-all duration-200 text-sm font-bold font-mono"
@@ -693,10 +740,11 @@ export default function App() {
         )}
 
         <ErrorBoundary>
-          <Suspense fallback={SUSPENSE_FALLBACK}>
+          <Suspense fallback={suspenseFallback}>
             {state.searchOpen && <SearchModal />}
             {state.settingsOpen && <SettingsModal />}
             {state.toolsHubOpen && <ToolsHubModal />}
+            {state.futureHubOpen && <FutureFeaturesModal />}
             {state.bookmarksOpen && <BookmarksModal />}
             {state.wirdOpen && <WirdPanel />}
             {state.historyOpen && <ReadingHistoryPanel />}

@@ -499,8 +499,9 @@
 }
 
 .search-pro__suggestions small {
-    color: var(--theme-text-muted, #94a3b8);
+    color: var(--text-secondary, var(--theme-text-muted, #64748b));
     font-size: 0.72rem;
+    font-weight: 600;
 }
 
 .search-pro__suggestions strong {
@@ -882,9 +883,9 @@
     }
 }
 
-/* SearchModal applies `search-modal-shell` to the overlay itself. Keep this
-   layer pinned to the viewport even when legacy shell styles are loaded. */
-.modal-overlay.search-pro-overlay.search-modal-shell {
+/* Keep the portaled search overlay pinned to the viewport. The legacy
+   `search-modal-shell` class belongs to panels, never to a backdrop. */
+.modal-overlay.search-pro-overlay {
   position: fixed !important;
   inset: 0 !important;
   z-index: 1000 !important;
@@ -892,6 +893,51 @@
   height: 100dvh !important;
   max-width: none !important;
   max-height: none !important;
+}
+
+html[data-theme="dark"]
+  :is(
+    .search-command-title__icon,
+    .search-pro__mark,
+    .search-pro__submit,
+    .search-pro__modes button.is-active,
+    .search-pro__scope button.is-active,
+    .search-pro__toggle.is-active,
+    .reader-toolbar-btn--primary
+  ) {
+  color: var(--theme-text-inverse) !important;
+}
+
+html[data-theme="dark"]
+  :is(
+    .search-pro__submit,
+    .search-pro__modes button.is-active,
+    .search-pro__scope button.is-active,
+    .search-pro__toggle.is-active,
+    .reader-toolbar-btn--primary
+  ) {
+  border-color: var(--theme-primary) !important;
+  background: var(--theme-primary) !important;
+}
+
+html[data-theme="dark"] .search-pro__modes button:not(.is-active) {
+  border-color: var(--theme-border) !important;
+  background: var(--theme-bg-alt) !important;
+  color: var(--theme-text-soft) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .search-pro__close {
+  border-color: var(--theme-border) !important;
+  background: var(--theme-panel-bg-strong) !important;
+  color: var(--theme-text-soft) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] .search-pro__close:hover {
+  border-color: var(--theme-border-strong) !important;
+  background: rgba(var(--theme-primary-rgb), 0.12) !important;
+  color: var(--emerald-lit) !important;
 }
 
 .app-root .quran-display--platform .reader-toolbar__context {
@@ -1354,6 +1400,65 @@
     border-color: rgba(94, 234, 212, 0.2);
     background: rgba(12, 23, 35, 0.92);
     color: rgba(226, 232, 240, 0.82);
+}
+
+[data-theme="dark"] .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card {
+    border-color: var(--theme-border);
+    background: linear-gradient(
+        145deg,
+        var(--theme-panel-bg-strong),
+        var(--theme-panel-bg)
+    );
+    color: var(--theme-text);
+    box-shadow:
+        0 14px 30px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+[data-theme="dark"] .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card:hover {
+    border-color: var(--theme-border-strong);
+    background: linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--theme-panel-bg-strong) 88%, var(--theme-primary) 12%),
+        var(--theme-panel-bg)
+    );
+}
+
+[data-theme="dark"] .app-root .app-view-home .hp-grid.hp-grid--surah :is(.hp-card.active, .hp-card.playing) {
+    border-color: var(--theme-border-strong);
+    background: linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--theme-panel-bg-strong) 82%, var(--theme-primary) 18%),
+        color-mix(in srgb, var(--theme-panel-bg) 92%, var(--theme-accent) 8%)
+    );
+}
+
+[data-theme="dark"] .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-num {
+    border-color: var(--theme-border);
+    background: var(--theme-bg-alt);
+    color: var(--theme-text-soft);
+}
+
+[data-theme="dark"] .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-name {
+    color: var(--theme-text);
+}
+
+[data-theme="dark"] .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-meta {
+    color: var(--theme-text-soft);
+}
+
+[data-theme="dark"] .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-meta--ayahs {
+    color: var(--theme-text-muted);
+}
+
+[data-theme="dark"] .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-ar {
+    color: var(--theme-arabic-muted);
+}
+
+[data-theme="dark"] .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-play {
+    border-color: var(--theme-border-strong);
+    background: color-mix(in srgb, var(--theme-panel-bg-strong) 86%, var(--theme-primary) 14%);
+    color: var(--emerald-lit);
 }
 
 [data-theme="light"] .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card {
@@ -2789,13 +2894,12 @@
 
 [data-theme="dark"] .app-root .app-view-home,
 [data-theme="dark"] .app-root[data-view="home"] {
-    background:
-        linear-gradient(180deg, #07110e 0%, #091712 48%, #07110e 100%) !important;
+    background: transparent !important;
 }
 
 [data-theme="dark"] .app-root .app-view-home .home-hero-shell,
 [data-theme="dark"] .app-root[data-view="home"] .home-hero-shell {
-    border-color: rgba(126, 179, 156, 0.12);
+    border-color: var(--theme-border);
     background: var(--bg-primary);
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
@@ -2806,31 +2910,31 @@
 [data-theme="dark"] .app-root[data-view="home"] :is(.home-daily-verse-card, .home-session-card, .home-prayer-card, .home-tools-quick-card),
 [data-theme="dark"] .app-root .app-view-home .home-content-zone > section > div:first-child,
 [data-theme="dark"] .app-root[data-view="home"] .home-content-zone > section > div:first-child {
-    border-color: rgba(126, 179, 156, 0.12) !important;
+    border-color: var(--theme-border) !important;
     background: var(--bg-secondary) !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
 [data-theme="dark"] .app-root .app-view-home .home-hero-title,
 [data-theme="dark"] .app-root[data-view="home"] .home-hero-title {
-    color: rgba(246, 250, 247, 0.96);
+    color: var(--theme-text);
 }
 
 [data-theme="dark"] .app-root .app-view-home .home-cta-primary,
 [data-theme="dark"] .app-root[data-view="home"] .home-cta-primary {
-    background: linear-gradient(135deg, #0b6b3b, #0f8f5a) !important;
-    color: #ffffff !important;
+    background: var(--theme-primary) !important;
+    color: var(--theme-text-inverse) !important;
 }
 
 [data-theme="dark"] .app-root .app-view-home .home-cta-secondary,
 [data-theme="dark"] .app-root[data-view="home"] .home-cta-secondary {
     background: rgba(255, 255, 255, 0.065) !important;
-    color: rgba(246, 250, 247, 0.94) !important;
+    color: var(--theme-text) !important;
 }
 
 [data-theme="dark"] .app-root .app-view-home .home-hero-copy,
 [data-theme="dark"] .app-root[data-view="home"] .home-hero-copy {
-    color: rgba(204, 222, 214, 0.82);
+    color: var(--theme-text-soft);
 }
 
 @media (max-width: 1180px) {
@@ -3027,6 +3131,20 @@
     font-weight: 700 !important;
 }
 
+.app-root .app-view-home .home-style-filter.bg-primary,
+.app-root[data-view="home"] .home-style-filter.bg-primary {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #ffffff;
+}
+
+.app-root .app-view-home .home-style-filter:not(.bg-primary),
+.app-root[data-view="home"] .home-style-filter:not(.bg-primary) {
+    border-color: var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
 .app-root .app-view-home .hp-grid.hp-grid--radio,
 .app-root[data-view="home"] .hp-grid.hp-grid--radio {
     display: grid;
@@ -3176,7 +3294,7 @@
 
 /* The search can be opened directly from the reader, including on short phones. */
 @media (max-width: 620px) {
-    .search-pro-overlay.search-modal-shell {
+    .search-pro-overlay {
         box-sizing: border-box !important;
         align-items: flex-end !important;
         overflow: hidden !important;
@@ -3363,6 +3481,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.app-root .app-view-home .reciter-card__meta .reciter-card__source,
+.app-root[data-view="home"] .reciter-card__meta .reciter-card__source {
+    color: var(--primary);
+    font-weight: 720;
 }
 
 .app-root .app-view-home .reciter-card__meta span + span::before,

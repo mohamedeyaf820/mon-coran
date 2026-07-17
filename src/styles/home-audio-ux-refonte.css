@@ -207,10 +207,6 @@ button,
   color: var(--theme-primary, #0b6235) !important;
 }
 
-.app-root > .mp-header .mp-header__more {
-  display: inline-flex !important;
-}
-
 .app-root > .mp-header .mp-header-menu__item {
   min-height: 2.7rem !important;
   border-radius: var(--r-md) !important;
@@ -2919,41 +2915,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
   html body .app-root .qc-reader-toolbar .afc-size-value {
     display: none !important;
   }
-}
-
-/* Dark theme final legibility patch. This file is imported last, so it catches
-   low-contrast leftovers from older component styles without changing markup. */
-html[data-theme="dark"] body .app-root {
-  --night-readable: #f7fbf8;
-  --night-readable-soft: #dce8e2;
-  --night-readable-muted: #b7c8bf;
-}
-
-html[data-theme="dark"] body .app-root :is(.mp-header, .mp-header__bar, .settings-drawer, .audio-player-modal__surface, .modal, .modal-panel, .modal-box, .reciter-detail, .sb-wrapper, .mp-footer-v2__shell) {
-  color: var(--night-readable) !important;
-}
-
-html[data-theme="dark"] body .app-root :is(.mp-header__action, .mp-header__more, .mp-header__icon-btn, .mp-header__nav-arrow, .settings-drawer button, .audio-player-modal button, .modal button, .sb-wrapper button, .mp-footer-v2__nav-btn) {
-  color: var(--night-readable-soft) !important;
-  border-color: rgba(220, 235, 228, 0.2) !important;
-}
-
-html[data-theme="dark"] body .app-root :is(.text-text-muted, .hp-card-meta, .settings-drawer label, .audio-player-modal p, .modal-subtitle, .reciter-detail__bio, .mp-footer-v2__copy) {
-  color: var(--night-readable-muted) !important;
-}
-
-html[data-theme="dark"] body .app-root :is(input, select, textarea) {
-  background: rgba(3, 7, 6, 0.72) !important;
-  color: var(--night-readable) !important;
-}
-
-html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-text-ar, .rd-arabic, .quran-arabic-text, .verse-text, .mushaf-container, .qcm-word) {
-  color: #fff8ea !important;
-  text-shadow: none !important;
-}
-
-html[data-theme="dark"] body .app-root .quran-display--platform :is(.qc-ayah-translation, .rd-trans-item, .translation-text) {
-  color: var(--night-readable-soft) !important;
 }
 
 .ayah-actions-modal--quiet {

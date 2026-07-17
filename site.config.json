@@ -1,0 +1,7 @@
+{
+  "brandName": "MushafPlus",
+  "siteUrl": "https://mon-coran.netlify.app",
+  "defaultLocale": "fr",
+  "supportedLocales": ["fr", "en", "ar"],
+  "repositoryUrl": "https://github.com/mohamedeyaf820/mon-coran"
+}

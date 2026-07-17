@@ -1,11 +1,22 @@
 import React from "react";
-import { BookOpen, Headphones, Info, ListMusic, UserRound, X } from "lucide-react";
+import {
+  BookOpen,
+  Headphones,
+  ImageIcon,
+  Info,
+  ListMusic,
+  RadioTower,
+  UserRound,
+  X,
+} from "lucide-react";
 import "../../styles/domains/recitation-polish.css";
+import "../../styles/reciter-enhanced.css";
 import ReciterHero from "./ReciterHero";
 import ReciterBioCollapse from "./ReciterBioCollapse";
 import ReciterRadioButton from "./ReciterRadioButton";
 import SurahRecitationList from "./SurahRecitationList";
 import { cn } from "../../lib/utils";
+import { getReciterSourceInfo, getReciterVisual } from "../../data/reciters";
 
 function labelFor(lang, fr, en, ar = en) {
   if (lang === "ar") return ar;
@@ -25,6 +36,8 @@ export default function ReciterDetailPage({
   closeBtnRef,
 }) {
   const isRtl = lang === "ar";
+  const sourceInfo = getReciterSourceInfo(reciter);
+  const visual = getReciterVisual(reciter);
   const riwayaLabel = reciter.verifiedWarsh ? "Warsh" : isRtl ? "حفص" : "Hafs";
   const audioModeLabel =
     reciter.audioMode === "surah"
@@ -83,6 +96,26 @@ export default function ReciterDetailPage({
             </h3>
             <ReciterBioCollapse lang={lang} reciter={reciter} />
           </div>
+
+          <section
+            className="reciter-detail__sources"
+            aria-label={labelFor(lang, "Sources", "Sources", "المصادر")}
+          >
+            {sourceInfo ? (
+              <div className="reciter-detail__source-row">
+                <RadioTower size={14} aria-hidden="true" />
+                <span>{labelFor(lang, "Source audio", "Audio source", "مصدر الصوت")}</span>
+                <strong>{sourceInfo.label}</strong>
+              </div>
+            ) : null}
+            {visual.attribution ? (
+              <div className="reciter-detail__source-row">
+                <ImageIcon size={14} aria-hidden="true" />
+                <span>{labelFor(lang, "Portrait", "Portrait", "الصورة")}</span>
+                <strong>{visual.attribution.provider}</strong>
+              </div>
+            ) : null}
+          </section>
 
           {!canDirectDownload ? (
             <p className="reciter-detail__notice">

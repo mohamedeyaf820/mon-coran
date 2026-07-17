@@ -29,10 +29,6 @@
     box-shadow: none !important;
 }
 
-.app-root .quran-display--platform .surah-ayahs-list::before {
-    display: none !important;
-}
-
 .app-root .quran-display--platform .rd-ayah {
     display: grid !important;
     grid-template-columns: 52px minmax(0, 1fr);
@@ -1471,24 +1467,8 @@
     }
 }
 
-:root,
 :root[data-theme="light"],
 [data-theme="light"] {
-    --bg-primary: #f7f9f8;
-    --bg-secondary: #eef4f0;
-    --bg-tertiary: #e6eee9;
-    --bg-card: #ffffff;
-    --surface: #ffffff;
-    --border: rgba(39, 72, 56, 0.18);
-    --border-subtle: rgba(39, 72, 56, 0.1);
-    --text-primary: #17211c;
-    --text-secondary: #35463d;
-    --text-tertiary: #5d6c64;
-    --text-muted: #687770;
-    --text-quran: #101a15;
-    --primary: #0b6235;
-    --primary-rgb: 11, 98, 53;
-    --primary-light: #e6f1eb;
     --qcom-page-bg: #fbfcfb;
     --qcom-page-ink: #101a15;
     --qcom-page-muted: #66736c;
@@ -1892,45 +1872,15 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
 
 :root[data-theme="dark"],
 [data-theme="dark"] {
-    --bg-primary: #0c0d0e;
-    --bg-secondary: #121315;
-    --bg-tertiary: #1e2023;
-    --bg-card: #151719;
-    --surface: #151719;
-    --border: rgba(177, 190, 205, 0.12);
-    --border-subtle: rgba(177, 190, 205, 0.07);
-    --text-primary: #f3f4f6;
-    --text-secondary: #d1d5db;
-    --text-tertiary: #9ca3af;
-    --text-muted: #6b7280;
-    --text-quran: #f3f4f6;
-    --primary: #10b981;
-    --primary-rgb: 16, 185, 129;
-    --primary-light: rgba(16, 185, 129, 0.14);
-    --qcom-page-bg: #0c0d0e;
-    --qcom-page-ink: #f3f4f6;
-    --qcom-page-muted: #9ca3af;
-    --qcom-page-line: rgba(177, 190, 205, 0.12);
-    --qcom-page-soft-hover: rgba(16, 185, 129, 0.1);
+    --qcom-page-bg: var(--theme-bg);
+    --qcom-page-ink: var(--theme-arabic);
+    --qcom-page-muted: var(--theme-text-muted);
+    --qcom-page-line: var(--theme-border);
+    --qcom-page-soft-hover: rgba(var(--theme-primary-rgb), 0.1);
 }
 
 :root[data-theme="sepia"],
 [data-theme="sepia"] {
-    --bg-primary: #f3e8cf;
-    --bg-secondary: #ead9b8;
-    --bg-tertiary: #ddc59a;
-    --bg-card: #fff6e3;
-    --surface: #fff6e3;
-    --border: rgba(110, 78, 36, 0.22);
-    --border-subtle: rgba(110, 78, 36, 0.13);
-    --text-primary: #241505;
-    --text-secondary: #463016;
-    --text-tertiary: #6b502a;
-    --text-muted: #765d37;
-    --text-quran: #1d1003;
-    --primary: #7c4a17;
-    --primary-rgb: 124, 74, 23;
-    --primary-light: #ead9b8;
     --qcom-page-bg: #f8edcf;
     --qcom-page-ink: #1d1003;
     --qcom-page-muted: #6b502a;
@@ -4760,7 +4710,7 @@ html body .app-root .native-ayah-marker::after {
 /* Toolbar typography follows the same compact disclosure as the Surah header. */
 .reader-typography-trigger {
     display: none;
-    min-height: 38px;
+    min-height: 44px;
     align-items: center;
     justify-content: center;
     gap: 0.38rem;
@@ -4878,7 +4828,7 @@ html body .app-root .native-ayah-marker::after {
     }
 
     .quran-display--platform .reader-mode-nav__button {
-        min-height: 42px;
+        min-height: 44px;
         gap: 0.25rem;
         padding-inline: 0.42rem;
         font-size: 0.68rem;

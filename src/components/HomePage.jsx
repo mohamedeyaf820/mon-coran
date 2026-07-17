@@ -10,8 +10,13 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import "../styles/domains/search-home-polish.css";
-import { useApp } from "../context/AppContext";
+import {
+  shallowEqual,
+  useAppActions,
+  useAppSelector,
+} from "../context/AppContext";
 import SURAHS, { toAr } from "../data/surahs";
 import { JUZ_DATA } from "../data/juz";
 import { getAllBookmarks, getAllNotes } from "../services/storageService";
@@ -20,6 +25,7 @@ import audioService from "../services/audioService";
 import {
   getReciter,
   ensureReciterForRiwaya,
+  getReciterSourceInfo,
   isWarshVerifiedReciter,
   getRecitersByRiwaya,
 } from "../data/reciters";
@@ -36,7 +42,39 @@ import { getResumeState, setResumeState } from "../stores/AudioQueueStore";
 import Footer from "./Footer";
 import { buildAudioPlaylistForSurah } from "../utils/audioPlaylist";
 
-const ReciterDetailPage = lazy(() => import("./recitation/ReciterDetailPage"));
+let reciterDetailModulePromise;
+function loadReciterDetailModule() {
+  if (!reciterDetailModulePromise) {
+    reciterDetailModulePromise = import("./recitation/ReciterDetailPage");
+  }
+  return reciterDetailModulePromise;
+}
+
+const ReciterDetailPage = lazy(loadReciterDetailModule);
+
+function ReciterDetailFallback({ lang }) {
+  const label =
+    lang === "ar"
+      ? "\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0645\u0643\u062a\u0628\u0629 \u0627\u0644\u062a\u0644\u0627\u0648\u0627\u062a"
+      : lang === "fr"
+        ? "Chargement de la bibliothèque de récitations"
+        : "Loading recitation library";
+
+  return (
+    <div
+      className="reciter-detail reciter-detail--loading flex min-h-[min(360px,calc(100dvh-1rem))] w-[min(920px,calc(100vw-1rem))] flex-col items-center justify-center gap-4 rounded-[26px] border border-border bg-bg-primary p-8 text-center text-text-secondary shadow-2xl"
+      role="status"
+      aria-live="polite"
+      aria-label={label}
+    >
+      <div
+        className="reciter-detail__loading-spinner h-10 w-10 animate-spin rounded-full border-[3px] border-[rgba(var(--primary-rgb),0.16)] border-t-[var(--primary)]"
+        aria-hidden="true"
+      />
+      <strong>{label}</strong>
+    </div>
+  );
+}
 
 import { Shapes, CalendarCheck, BookOpen, ListMusic, TrendingUp } from "lucide-react";
 import { t as i18nT } from "../i18n";
@@ -47,7 +85,6 @@ import {
   HOME_FOOTER_SECTION_STYLE,
   SURAH_SEARCH_INDEX,
   DAILY_VERSES,
-  MOCK_BLOG_POSTS,
   getDailyVerseIndex,
   getSuggestedSurahs,
 } from "./Home/homeConstants";
@@ -101,7 +138,25 @@ function ToolsQuickCard({ lang, set, t }) {
 }
 
 export default function HomePage({ lowPerfMode = false }) {
-  const { state, dispatch, set } = useApp();
+  const { dispatch, set } = useAppActions();
+  const state = useAppSelector(
+    (current) => ({
+      lang: current.lang,
+      currentSurah: current.currentSurah,
+      currentAyah: current.currentAyah,
+      currentJuz: current.currentJuz,
+      currentPage: current.currentPage,
+      displayMode: current.displayMode,
+      riwaya: current.riwaya,
+      reciter: current.reciter,
+      favoriteReciters: current.favoriteReciters,
+      warshStrictMode: current.warshStrictMode,
+      usePrayerTimes: current.usePrayerTimes,
+      isPlaying: current.isPlaying,
+      currentPlayingAyah: current.currentPlayingAyah,
+    }),
+    shallowEqual,
+  );
   const { lang, currentSurah, currentAyah, currentJuz, displayMode, riwaya } =
     state;
   const isRtl = lang === "ar";
@@ -133,6 +188,12 @@ export default function HomePage({ lowPerfMode = false }) {
   const reciterModalCloseBtnRef = useRef(null);
   const reciterModalTriggerRef = useRef(null);
 
+  const warmReciterDetail = useCallback(() => {
+    loadReciterDetailModule().catch(() => {
+      reciterDetailModulePromise = null;
+    });
+  }, []);
+
   /* ── Dérivations simples ─────────────────────────────────────────────── */
   const hasReadingHistory =
     currentSurah > 1 || (currentSurah === 1 && currentAyah > 1);
@@ -147,7 +208,7 @@ export default function HomePage({ lowPerfMode = false }) {
     [availableReciters, selectedReciterId],
   );
   const canDirectDownloadSelectedReciter =
-    selectedReciter?.cdnType === "mp3quran-surah";
+    getReciterSourceInfo(selectedReciter)?.directDownload === true;
 
   /* ── Effects ─────────────────────────────────────────────────────────── */
   useEffect(() => {
@@ -187,7 +248,13 @@ export default function HomePage({ lowPerfMode = false }) {
   }, []);
 
   useEffect(() => {
+    if (activeTab !== "recitations") return undefined;
+    return runWhenIdle(warmReciterDetail, 700);
+  }, [activeTab, warmReciterDetail]);
+
+  useEffect(() => {
     if (!selectedReciter) return;
+    let cancelled = false;
     const previousActiveElement = document.activeElement;
     reciterModalTriggerRef.current =
       previousActiveElement instanceof HTMLElement
@@ -198,6 +265,14 @@ export default function HomePage({ lowPerfMode = false }) {
     const rafId = window.requestAnimationFrame(() => {
       reciterModalCloseBtnRef.current?.focus();
     });
+    loadReciterDetailModule()
+      .then(() => {
+        if (cancelled) return;
+        window.requestAnimationFrame(() => {
+          reciterModalCloseBtnRef.current?.focus();
+        });
+      })
+      .catch(() => {});
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -224,6 +299,7 @@ export default function HomePage({ lowPerfMode = false }) {
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => {
+      cancelled = true;
       window.cancelAnimationFrame(rafId);
       document.body.style.overflow = previousBodyOverflow;
       document.removeEventListener("keydown", handleKeyDown);
@@ -404,7 +480,11 @@ export default function HomePage({ lowPerfMode = false }) {
     async (surahNum, targetReciter) => {
       if (!targetReciter) return;
       try {
-        const items = await buildSurahPlaylistForRiwaya(surahNum, riwaya);
+        const items = await buildSurahPlaylistForRiwaya(
+          surahNum,
+          riwaya,
+          targetReciter.cdnType || "islamic",
+        );
         if (!items.length) return;
         const played = playPlaylistWithReciter({
           items,
@@ -424,7 +504,11 @@ export default function HomePage({ lowPerfMode = false }) {
     async (targetReciter) => {
       if (!targetReciter) return;
       try {
-        const stationItems = await buildContinuousRadioPlaylist(1, riwaya);
+        const stationItems = await buildContinuousRadioPlaylist(
+          1,
+          riwaya,
+          targetReciter.cdnType || "islamic",
+        );
         if (!stationItems.length) return;
         const played = playPlaylistWithReciter({
           items: stationItems,
@@ -452,6 +536,7 @@ export default function HomePage({ lowPerfMode = false }) {
         const items = await buildStationPlaylistForRiwaya(
           station.surahs,
           riwaya,
+          stationReciter.cdnType || "islamic",
         );
         if (!items.length) return;
         const played = playPlaylistWithReciter({
@@ -501,10 +586,11 @@ export default function HomePage({ lowPerfMode = false }) {
   }, []);
 
   const selectContentTab = useCallback((tabId) => {
+    if (tabId === "recitations") warmReciterDetail();
     startTransition(() => {
       setActiveTab(tabId);
     });
-  }, []);
+  }, [warmReciterDetail]);
 
   const changeViewMode = useCallback((nextViewMode) => {
     startTransition(() => {
@@ -612,7 +698,6 @@ export default function HomePage({ lowPerfMode = false }) {
     radio: { fr: "Radio", en: "Radio", ar: "الراديو" },
     reciters: { fr: "Récitateurs", en: "Reciters", ar: "القراء" },
     radioStations: { fr: "Stations", en: "Stations", ar: "محطات" },
-    articles: { fr: "Articles", en: "Articles", ar: "مقالات" },
     search: {
       fr: "Rechercher une sourate...",
       en: "Search a surah...",
@@ -680,9 +765,7 @@ export default function HomePage({ lowPerfMode = false }) {
         ? JUZ_DATA.length
         : activeTab === "recitations"
           ? filteredReciters.length
-          : activeTab === "blog"
-            ? MOCK_BLOG_POSTS.length
-            : THEMATIC_STATIONS.length + Math.min(8, availableReciters.length);
+          : THEMATIC_STATIONS.length + Math.min(8, availableReciters.length);
 
   const activeCollectionLabel =
     activeTab === "surah"
@@ -691,9 +774,7 @@ export default function HomePage({ lowPerfMode = false }) {
         ? t("juz")
         : activeTab === "recitations"
           ? t("reciters")
-          : activeTab === "blog"
-            ? t("articles")
-            : t("radioStations");
+          : t("radioStations");
 
   const shouldReduceHomeFx = lowPerfMode;
 
@@ -779,6 +860,7 @@ export default function HomePage({ lowPerfMode = false }) {
           primaryReadingCtaLabel={primaryReadingCtaLabel}
           continueReading={continueReading}
           now={now}
+          usePrayerTimes={state.usePrayerTimes}
           t={t}
         />
         <ToolsQuickCard
@@ -797,6 +879,7 @@ export default function HomePage({ lowPerfMode = false }) {
           isRtl={isRtl}
           activeTab={activeTab}
           onSelectTab={selectContentTab}
+          onRecitationsIntent={warmReciterDetail}
           filter={filter}
           onFilterChange={setFilter}
           reciterStyleFilter={reciterStyleFilter}
@@ -834,34 +917,37 @@ export default function HomePage({ lowPerfMode = false }) {
       </div>
 
       {/* ── Modal détail récitateur ────────────────────────────────────── */}
-      {selectedReciter && (
-        <div
-          className="reciter-detail-overlay fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300"
-          onClick={() => setSelectedReciterId(null)}
-        >
-          <Suspense fallback={null}>
-            <ReciterDetailPage
-              lang={lang}
-              reciter={selectedReciter}
-              canDirectDownload={canDirectDownloadSelectedReciter}
-              onPlayRadio={playReciterRadio}
-              onClose={() => setSelectedReciterId(null)}
-              onPlaySurah={playSurahForReciter}
-              onOpenSurah={(surahNum, reciter) => {
-                setSelectedReciterId(null);
-                set({ reciter: reciter.id, showHome: false, showDuas: false });
-                dispatch({
-                  type: "NAVIGATE_SURAH",
-                  payload: { surah: surahNum, ayah: 1 },
-                });
-              }}
-              getDownloadUrl={reciterDownloadUrl}
-              dialogRef={reciterModalRef}
-              closeBtnRef={reciterModalCloseBtnRef}
-            />
-          </Suspense>
-        </div>
-      )}
+      {selectedReciter && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              className="reciter-detail-overlay fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300"
+              onClick={() => setSelectedReciterId(null)}
+            >
+              <Suspense fallback={<ReciterDetailFallback lang={lang} />}>
+                <ReciterDetailPage
+                  lang={lang}
+                  reciter={selectedReciter}
+                  canDirectDownload={canDirectDownloadSelectedReciter}
+                  onPlayRadio={playReciterRadio}
+                  onClose={() => setSelectedReciterId(null)}
+                  onPlaySurah={playSurahForReciter}
+                  onOpenSurah={(surahNum, reciter) => {
+                    setSelectedReciterId(null);
+                    set({ reciter: reciter.id, showHome: false, showDuas: false });
+                    dispatch({
+                      type: "NAVIGATE_SURAH",
+                      payload: { surah: surahNum, ayah: 1 },
+                    });
+                  }}
+                  getDownloadUrl={reciterDownloadUrl}
+                  dialogRef={reciterModalRef}
+                  closeBtnRef={reciterModalCloseBtnRef}
+                />
+              </Suspense>
+            </div>,
+            document.body,
+          )
+        : null}
 
       {/* ── Pied de page ──────────────────────────────────────────────── */}
       <div className="relative z-10" style={HOME_FOOTER_SECTION_STYLE}>

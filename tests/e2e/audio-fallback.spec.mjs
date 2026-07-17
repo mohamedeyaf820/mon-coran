@@ -1,23 +1,31 @@
 import { test, expect } from "@playwright/test";
 
 async function openReader(page) {
-  await page.goto("/");
-  const start = page.getByRole("button", {
-    name: /Commencer la lecture|Reprendre la lecture|Continuer|Start reading|Continue|Resume reading/i,
+  await page.goto("/surah/1");
+  await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible({
+    timeout: 30_000,
   });
-  await expect(start.first()).toBeVisible();
-  await start.first().click();
-  await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible();
 }
 
 async function patchAudioPlay(page) {
   await page.addInitScript(() => {
     try {
       localStorage.clear();
+      localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+        splashDone: true,
+        showHome: false,
+        showDuas: false,
+        sidebarOpen: false,
+        displayMode: "surah",
+        mushafLayout: "list",
+        lang: "fr",
+        riwaya: "hafs",
+        lastPosition: { surah: 1, ayah: 1, page: 1, juz: 1 },
+      }));
     } catch {}
     const originalPlay = HTMLMediaElement.prototype.play;
     window.__audioPlayCalls = 0;
-    HTMLMediaElement.prototype.play = function patchedPlay(...args) {
+    HTMLMediaElement.prototype.play = function patchedPlay() {
       window.__audioPlayCalls += 1;
       return Promise.reject(new DOMException("blocked", "NotAllowedError"));
     };
