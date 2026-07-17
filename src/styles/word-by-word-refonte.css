@@ -37,13 +37,18 @@
         0 16px 38px rgba(var(--primary-rgb), 0.12) !important;
 }
 
+@keyframes wbw-current-pulse {
+    0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 14%, transparent), 0 10px 24px rgba(var(--primary-rgb), 0.14); }
+    50%       { box-shadow: 0 0 0 5px color-mix(in srgb, var(--primary) 24%, transparent), 0 14px 32px rgba(var(--primary-rgb), 0.24); }
+}
+
 /* The non-inline version is a study grid. Mushaf inline rendering is untouched. */
 html body .app-root .quran-display--platform .wbw-display.wbw-study-grid {
     display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.75rem), 1fr)) !important;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 8.5rem), 1fr)) !important;
     align-items: stretch !important;
-    justify-content: initial !important;
-    gap: clamp(0.55rem, 1.4vw, 0.85rem) !important;
+    justify-content: start !important;
+    gap: clamp(0.5rem, 1.2vw, 0.75rem) !important;
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
@@ -57,57 +62,68 @@ html body .app-root .quran-display--platform .wbw-display.wbw-study-grid {
 
 html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block {
     display: grid !important;
-    grid-template-rows: minmax(4.4rem, auto) minmax(1.25rem, auto) minmax(2.1rem, 1fr) !important;
+    grid-template-rows: minmax(4rem, auto) minmax(1.1rem, auto) minmax(1.9rem, 1fr) !important;
     align-items: center !important;
     justify-items: stretch !important;
-    gap: 0.38rem !important;
+    gap: 0.3rem !important;
     width: 100% !important;
     min-width: 0 !important;
     max-width: none !important;
-    min-height: 9.4rem !important;
+    min-height: 8.75rem !important;
     margin: 0 !important;
-    padding: 0.78rem 0.72rem 0.7rem !important;
+    padding: 0.7rem 0.6rem 0.65rem !important;
     overflow: hidden !important;
     border: 1px solid var(--wbw-card-border, var(--border)) !important;
-    border-radius: 1rem !important;
+    border-radius: 0.875rem !important;
     background:
-        linear-gradient(180deg, var(--wbw-card-surface, var(--bg-card)), var(--wbw-card-surface-soft, var(--bg-secondary))) !important;
+        linear-gradient(160deg, var(--wbw-card-surface, var(--bg-card)) 60%, var(--wbw-card-surface-soft, var(--bg-secondary))) !important;
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.58),
-        0 5px 16px rgba(20, 45, 34, 0.055) !important;
+        inset 0 1px 0 rgba(255, 255, 255, 0.52),
+        0 3px 10px rgba(20, 45, 34, 0.045) !important;
     text-align: center !important;
     direction: rtl !important;
     unicode-bidi: isolate !important;
+    transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease !important;
     contain: layout paint;
 }
 
 html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block:hover,
 html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block:focus-visible {
     z-index: 2;
-    transform: translateY(-2px) !important;
-    border-color: color-mix(in srgb, var(--primary) 58%, var(--border)) !important;
+    transform: translateY(-2px) scale(1.02) !important;
+    border-color: color-mix(in srgb, var(--primary) 52%, var(--border)) !important;
     background:
-        linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 91%, var(--primary) 9%), color-mix(in srgb, var(--bg-secondary) 86%, var(--primary) 14%)) !important;
+        linear-gradient(160deg, color-mix(in srgb, var(--bg-card) 90%, var(--primary) 10%) 60%, color-mix(in srgb, var(--bg-secondary) 84%, var(--primary) 16%)) !important;
     box-shadow:
-        0 0 0 3px color-mix(in srgb, var(--primary) 10%, transparent),
-        0 14px 30px rgba(var(--primary-rgb), 0.14) !important;
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        0 0 0 2.5px color-mix(in srgb, var(--primary) 12%, transparent),
+        0 10px 22px rgba(var(--primary-rgb), 0.13) !important;
     outline: none !important;
 }
 
-html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block.wbw-current,
+html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block.wbw-current {
+    z-index: 3 !important;
+    transform: none !important;
+    border-color: color-mix(in srgb, var(--primary) 78%, var(--border)) !important;
+    background:
+        linear-gradient(160deg, color-mix(in srgb, var(--bg-card) 83%, var(--primary) 17%) 60%, color-mix(in srgb, var(--bg-secondary) 78%, var(--primary) 22%)) !important;
+    animation: wbw-current-pulse 1.8s ease-in-out infinite !important;
+}
+
 html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block--selected {
     transform: none !important;
-    border-color: color-mix(in srgb, var(--primary) 72%, var(--border)) !important;
+    border-color: color-mix(in srgb, var(--primary) 70%, var(--border)) !important;
     background:
-        linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 86%, var(--primary) 14%), color-mix(in srgb, var(--bg-secondary) 82%, var(--primary) 18%)) !important;
+        linear-gradient(160deg, color-mix(in srgb, var(--bg-card) 86%, var(--primary) 14%) 60%, color-mix(in srgb, var(--bg-secondary) 82%, var(--primary) 18%)) !important;
     box-shadow:
-        0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent),
-        0 12px 26px rgba(var(--primary-rgb), 0.14) !important;
+        inset 0 1px 0 rgba(255, 255, 255, 0.55),
+        0 0 0 3px color-mix(in srgb, var(--primary) 14%, transparent),
+        0 10px 22px rgba(var(--primary-rgb), 0.14) !important;
     animation: none !important;
 }
 
 html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block.wbw-read {
-    opacity: 0.68 !important;
+    opacity: 0.52 !important;
 }
 
 html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block > .wbw-arabic {
@@ -120,65 +136,68 @@ html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block >
     min-width: 0 !important;
     min-height: 0 !important;
     margin: 0 !important;
-    padding: 0.12rem 0 0.25rem !important;
+    padding: 0.1rem 0 0.18rem !important;
     color: var(--text-quran, var(--text-primary)) !important;
     font-family: var(--qd-font-family, var(--font-quran), serif) !important;
-    font-size: clamp(1.8rem, var(--wbw-arabic-size, 2.25rem), 3.4rem) !important;
+    font-size: clamp(1.65rem, var(--wbw-arabic-size, 2.1rem), 3.2rem) !important;
     font-weight: 400 !important;
-    line-height: 1.75 !important;
-    white-space: nowrap !important;
-    word-break: keep-all !important;
-    overflow-wrap: normal !important;
+    line-height: 1.8 !important;
+    /* wrap long Arabic words instead of overflowing the card */
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    overflow: hidden !important;
     text-align: center !important;
     text-shadow: none !important;
 }
 
 html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block > :is(.wbw-transliteration, .wbw-translation) {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
     align-self: stretch !important;
     width: 100% !important;
     max-width: none !important;
     min-width: 0 !important;
     min-height: 0 !important;
     margin: 0 !important;
-    overflow: visible !important;
-    color: inherit;
+    overflow: hidden !important;
     font-family: var(--font-ui, system-ui, sans-serif) !important;
     font-style: normal !important;
-    letter-spacing: 0 !important;
     text-align: center !important;
-    text-overflow: clip !important;
+    /* clamp to 2 lines — prevents card height explosion on long translations */
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
     white-space: normal !important;
     word-break: normal !important;
-    overflow-wrap: normal !important;
-    hyphens: none !important;
+    overflow-wrap: break-word !important;
+    hyphens: auto !important;
     unicode-bidi: isolate !important;
 }
 
 html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block > .wbw-transliteration {
     grid-row: 2;
-    color: var(--text-muted) !important;
-    font-size: clamp(0.72rem, 0.69rem + 0.15vw, 0.82rem) !important;
-    font-weight: 520 !important;
-    line-height: 1.35 !important;
+    color: var(--text-secondary, var(--text-muted)) !important;
+    font-size: clamp(0.72rem, 0.69rem + 0.18vw, 0.83rem) !important;
+    font-weight: 500 !important;
+    line-height: 1.3 !important;
+    letter-spacing: 0.022em !important;
+    font-style: italic !important;
 }
 
 html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block > .wbw-translation {
     grid-row: 3;
-    padding-top: 0.38rem !important;
-    border-top: 1px solid color-mix(in srgb, var(--border) 68%, transparent) !important;
+    padding-top: 0.3rem !important;
+    border-top: 1px solid color-mix(in srgb, var(--border) 55%, transparent) !important;
     color: var(--wbw-meaning, var(--primary)) !important;
-    font-size: clamp(0.78rem, 0.74rem + 0.17vw, 0.9rem) !important;
-    font-weight: 720 !important;
-    line-height: 1.32 !important;
+    font-size: clamp(0.75rem, 0.72rem + 0.18vw, 0.87rem) !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+    letter-spacing: 0.01em !important;
 }
 
 /* Keep empty rows from consuming space when one of the study aids is disabled. */
 html body .app-root .quran-display--platform .wbw-study-grid[data-show-transliteration="false"] > .wbw-word-block {
-    grid-template-rows: minmax(4.4rem, auto) minmax(2.1rem, 1fr) !important;
-    min-height: 7.7rem !important;
+    grid-template-rows: minmax(4rem, auto) minmax(1.9rem, 1fr) !important;
+    min-height: 7.25rem !important;
 }
 
 html body .app-root .quran-display--platform .wbw-study-grid[data-show-transliteration="false"] > .wbw-word-block > .wbw-translation {
@@ -186,13 +205,13 @@ html body .app-root .quran-display--platform .wbw-study-grid[data-show-translite
 }
 
 html body .app-root .quran-display--platform .wbw-study-grid[data-show-translation="false"] > .wbw-word-block {
-    grid-template-rows: minmax(4.4rem, auto) minmax(1.25rem, auto) !important;
-    min-height: 7.25rem !important;
+    grid-template-rows: minmax(4rem, auto) minmax(1.1rem, auto) !important;
+    min-height: 6.75rem !important;
 }
 
 html body .app-root .quran-display--platform .wbw-study-grid[data-show-transliteration="false"][data-show-translation="false"] > .wbw-word-block {
-    grid-template-rows: minmax(4.4rem, auto) !important;
-    min-height: 5.9rem !important;
+    grid-template-rows: minmax(4rem, auto) !important;
+    min-height: 5.5rem !important;
 }
 
 /* Accessible description only; full details open in the analysis sheet on tap. */
@@ -214,29 +233,31 @@ html body .app-root .quran-display--platform .wbw-study-grid > .wbw-verse-end {
     display: inline-flex;
     align-items: center;
     justify-self: center;
-    gap: .35rem;
-    min-height: 1.75rem;
-    margin-top: .08rem;
-    padding: .2rem .62rem;
-    border: 1px solid color-mix(in srgb, var(--border) 68%, transparent);
+    gap: .3rem;
+    min-height: 1.65rem;
+    margin-top: .25rem;
+    padding: .18rem .7rem;
+    border: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
     border-radius: 999px;
+    background: color-mix(in srgb, var(--bg-secondary) 70%, transparent);
     color: var(--text-muted);
     font-family: var(--font-ui, system-ui, sans-serif);
-    font-size: .65rem;
-    font-weight: 700;
-    letter-spacing: .025em;
+    font-size: .63rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
     line-height: 1;
 }
 
 html body .app-root .quran-display--platform .wbw-study-grid > .wbw-verse-end > span {
     color: var(--primary);
-    font-size: .78rem;
+    font-size: .75rem;
 }
 
 [data-theme="dark"] .app-root .quran-display--platform.quran-display--word-by-word {
-    --wbw-card-border: rgba(133, 169, 151, 0.22);
-    --wbw-card-surface: rgba(18, 29, 24, 0.96);
-    --wbw-card-surface-soft: rgba(13, 23, 18, 0.98);
+    --wbw-card-border: rgba(133, 169, 151, 0.2);
+    --wbw-card-surface: rgba(18, 29, 24, 0.97);
+    --wbw-card-surface-soft: rgba(13, 23, 18, 0.99);
     --wbw-meaning: #75d5a4;
 }
 
@@ -246,7 +267,7 @@ html body .app-root .quran-display--platform .wbw-study-grid > .wbw-verse-end > 
 }
 
 [data-theme="dark"] .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block {
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 3px 10px rgba(0, 0, 0, 0.18) !important;
 }
 
 @media (max-width: 640px) {
@@ -264,32 +285,44 @@ html body .app-root .quran-display--platform .wbw-study-grid > .wbw-verse-end > 
     }
 
     html body .app-root .quran-display--platform .wbw-display.wbw-study-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 0.55rem !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 0.45rem !important;
     }
 
     html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block {
         min-width: 0 !important;
-        min-height: 8.9rem !important;
-        padding: 0.66rem 0.5rem 0.62rem !important;
-        border-radius: 0.88rem !important;
+        min-height: 8rem !important;
+        padding: 0.58rem 0.42rem 0.52rem !important;
+        border-radius: 0.75rem !important;
     }
 
     html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block > .wbw-arabic {
-        font-size: clamp(1.7rem, calc(var(--wbw-arabic-size, 2.25rem) * 0.8), 2.35rem) !important;
-        line-height: 1.65 !important;
+        font-size: clamp(1.6rem, calc(var(--wbw-arabic-size, 2.1rem) * 0.82), 2.25rem) !important;
+        line-height: 1.72 !important;
     }
 
     html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block > .wbw-transliteration {
-        font-size: 0.73rem !important;
+        font-size: 0.68rem !important;
     }
 
     html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block > .wbw-translation {
-        font-size: 0.79rem !important;
+        font-size: 0.73rem !important;
     }
 }
 
-@media (max-width: 330px) {
+@media (max-width: 400px) {
+    html body .app-root .quran-display--platform .wbw-display.wbw-study-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 0.4rem !important;
+    }
+
+    html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block {
+        min-height: 7.5rem !important;
+        padding: 0.52rem 0.38rem 0.48rem !important;
+    }
+}
+
+@media (max-width: 280px) {
     html body .app-root .quran-display--platform .wbw-display.wbw-study-grid {
         grid-template-columns: 1fr !important;
     }
