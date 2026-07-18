@@ -147,6 +147,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     data: null,
     error: null,
   });
+  const tafsirFetchedKeyRef = useRef(null);
   const [playlists, setPlaylists] = useState([]);
   const [playlistAdded, setPlaylistAdded] = useState(false);
   const [noteText, setNoteText] = useState("");
@@ -225,48 +226,30 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     if (!showStudy || studyTab !== "tafsir") return undefined;
 
     const key = `${lang}:${surah}:${ayah}`;
-    if (
-      tafsirState.key === key &&
-      ["loading", "ready", "error"].includes(tafsirState.status)
-    ) {
-      return undefined;
-    }
+    if (tafsirFetchedKeyRef.current === key) return undefined;
+    tafsirFetchedKeyRef.current = key;
 
     const controller = new AbortController();
     let mounted = true;
 
-    setTafsirState({
-      key,
-      status: "loading",
-      data: null,
-      error: null,
-    });
+    setTafsirState({ key, status: "loading", data: null, error: null });
 
     getVerseTafsir({ surah, ayah, lang, signal: controller.signal })
       .then((data) => {
         if (!mounted) return;
-        setTafsirState({
-          key,
-          status: "ready",
-          data,
-          error: null,
-        });
+        setTafsirState({ key, status: "ready", data, error: null });
       })
       .catch((error) => {
         if (!mounted || error?.name === "AbortError") return;
-        setTafsirState({
-          key,
-          status: "error",
-          data: null,
-          error: error?.message || "Unable to load tafsir",
-        });
+        tafsirFetchedKeyRef.current = null;
+        setTafsirState({ key, status: "error", data: null, error: error?.message || "Unable to load tafsir" });
       });
 
     return () => {
       mounted = false;
       controller.abort();
     };
-  }, [ayah, lang, showStudy, studyTab, surah, tafsirState.key, tafsirState.status]);
+  }, [ayah, lang, showStudy, studyTab, surah]);
 
   const toastText = useCallback(
     (fr, ar, en) =>
@@ -630,12 +613,8 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
   };
 
   const retryTafsir = () => {
-    setTafsirState({
-      key: null,
-      status: "idle",
-      data: null,
-      error: null,
-    });
+    tafsirFetchedKeyRef.current = null;
+    setTafsirState({ key: null, status: "idle", data: null, error: null });
   };
 
   const handleStudyMode = () => {
