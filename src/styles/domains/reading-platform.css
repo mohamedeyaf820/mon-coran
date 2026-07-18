@@ -3245,6 +3245,20 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     --reader-page-shadow: 0 18px 48px rgba(28, 25, 23, 0.13);
 }
 
+[data-theme="dark"],
+[data-theme="night-blue"],
+[data-theme="oled"] {
+    --reader-page-bg: var(--theme-bg, #101412);
+    --reader-page-paper: var(--theme-bg-alt, #151a18);
+    --reader-page-ink: var(--theme-arabic, #fbf7ec);
+    --reader-page-muted: var(--theme-text-muted, #9ca69e);
+    --reader-page-rule: var(--theme-border, rgba(238, 235, 225, 0.1));
+    --reader-page-shadow: var(--theme-shadow-panel, 0 20px 48px rgba(0, 0, 0, 0.36));
+    --reader-card-bg: rgba(255, 255, 255, 0.04);
+    --reader-card-border: rgba(255, 255, 255, 0.08);
+    --reader-card-hover: rgba(var(--primary-rgb), 0.06);
+}
+
 [data-theme="sepia"],
 
 [data-theme="dark"],
