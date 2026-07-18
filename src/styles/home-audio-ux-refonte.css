@@ -127,15 +127,18 @@ button,
 
 .app-root > .mp-header .mp-header__home-summary,
 .app-root > .mp-header .mp-header__title-btn {
-  width: min(100%, 27rem) !important;
+  width: auto !important;
+  max-width: min(100%, 22rem) !important;
+  min-width: 10rem !important;
   min-height: 2.55rem !important;
   border-radius: var(--r-lg) !important;
   border: 1px solid color-mix(in srgb, var(--theme-border, #d4d4d4) 68%, transparent) !important;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--theme-panel-bg-strong, #fff) 90%, transparent), color-mix(in srgb, var(--theme-panel-bg, #fff) 78%, transparent)) !important;
-  padding: 0.38rem 0.9rem !important;
+  padding: 0.32rem 1rem !important;
   text-align: center !important;
-  box-shadow: 0 10px 24px rgba(8, 24, 16, 0.07) !important;
+  box-shadow: 0 4px 14px rgba(8, 24, 16, 0.06) !important;
+  gap: 0 !important;
 }
 
 .app-root > .mp-header .mp-header__home-summary > strong:not(.mp-header__home-summary-clean),
@@ -151,13 +154,27 @@ button,
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
   color: var(--theme-text, #111827) !important;
-  font-size: clamp(0.82rem, 0.76rem + 0.22vw, 0.98rem) !important;
-  line-height: 1.15 !important;
-  letter-spacing: 0 !important;
+  font-size: clamp(0.84rem, 0.78rem + 0.2vw, 0.97rem) !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.01em !important;
 }
 
 .app-root > .mp-header .mp-header__home-meta-clean,
-.app-root > .mp-header .mp-header__kicker,
+.app-root > .mp-header .mp-header__kicker {
+  display: block !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  color: var(--theme-primary, #0b6235) !important;
+  font-size: 0.6rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  line-height: 1.2 !important;
+}
+
 .app-root > .mp-header .mp-header__sub {
   display: block !important;
   max-width: 100% !important;
@@ -166,13 +183,21 @@ button,
   white-space: nowrap !important;
   color: var(--theme-text-muted, #64748b) !important;
   font-size: var(--ts-xs) !important;
+  font-weight: 500 !important;
   line-height: 1.1 !important;
-  letter-spacing: 0.04em !important;
+  letter-spacing: 0 !important;
 }
 
 .app-root > .mp-header .mp-header__nav {
   justify-content: center !important;
-  gap: 0.45rem !important;
+  gap: 0.3rem !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.app-root > .mp-header .mp-header__nav-arrow {
+  flex-shrink: 0 !important;
 }
 
 .app-root > .mp-header .mp-header__nav-arrow:disabled {
