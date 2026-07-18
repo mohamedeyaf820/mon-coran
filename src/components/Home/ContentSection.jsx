@@ -147,13 +147,17 @@ export default function ContentSection({
 
   return (
     <section className="home-content-section flex flex-col gap-6">
-      <div className="home-collection-heading">
+      <div className="home-collection-heading flex items-end justify-between gap-4">
         <div className="home-collection-heading__copy">
-          <span className="home-collection-heading__eyebrow">
+          <span className="home-collection-heading__eyebrow inline-flex items-center gap-1.5">
+            <span
+              className="inline-block w-1.5 h-1.5 rounded-full bg-primary"
+              aria-hidden="true"
+            />
             {activeCollectionCount} {activeCollectionLabel}
           </span>
-          <h2>{displayCollectionTitle}</h2>
-          <p>{displayCollectionSubtitle}</p>
+          <h2 className="mt-1">{displayCollectionTitle}</h2>
+          <p className="text-text-secondary text-[0.85rem] mt-0.5">{displayCollectionSubtitle}</p>
         </div>
       </div>
 
