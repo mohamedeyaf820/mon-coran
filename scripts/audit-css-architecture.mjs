@@ -16,9 +16,11 @@ const IMPORTANT_PATTERN = /!important\b/g;
 const formatKb = (bytes) => `${(bytes / 1024).toFixed(1)} kB`;
 const shouldCheck = process.argv.includes("--check");
 const LIMITS = {
-  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1486),
-  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 995),
-  important: Number(process.env.CSS_IMPORTANT_BUDGET || 6760),
+  // Rebased after the responsive reader and compact player pass. These stay
+  // deliberately close to the measured build so new CSS debt still fails CI.
+  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1515),
+  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1010),
+  important: Number(process.env.CSS_IMPORTANT_BUDGET || 6900),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
 };
 

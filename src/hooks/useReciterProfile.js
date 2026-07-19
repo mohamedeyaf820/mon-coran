@@ -7,10 +7,15 @@ function loadProfileCatalogue() {
     const baseUrl = import.meta.env.BASE_URL || "/";
     profileCataloguePromise = fetch(`${baseUrl}data/reciter-profiles.json`, {
       cache: "force-cache",
-    }).then((response) => {
-      if (!response.ok) throw new Error(`Reciter profiles: ${response.status}`);
-      return response.json();
-    });
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Reciter profiles: ${response.status}`);
+        return response.json();
+      })
+      .catch((error) => {
+        profileCataloguePromise = undefined;
+        throw error;
+      });
   }
   return profileCataloguePromise;
 }
@@ -20,6 +25,7 @@ export function useReciterProfile(reciterId) {
 
   useEffect(() => {
     let active = true;
+    setProfile(null);
     if (!reciterId) return undefined;
 
     loadProfileCatalogue()

@@ -81,7 +81,14 @@ export default function useQuranDisplayScroll({
   }, [currentJuz, currentPage, currentSurah, getScrollContainer]);
 
   useEffect(() => {
-    if (!currentAyah || ayahCount === 0 || displayMode !== "surah") return;
+    if (
+      !currentAyah ||
+      Number(currentAyah) <= 1 ||
+      ayahCount === 0 ||
+      displayMode !== "surah"
+    ) {
+      return;
+    }
     const timer = window.setTimeout(() => {
       document.getElementById(`ayah-${currentAyah}`)?.scrollIntoView({
         behavior: "smooth",

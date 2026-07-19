@@ -85,6 +85,17 @@ async function overflowX(page) {
   return page.evaluate(() => Math.max(0, document.documentElement.scrollWidth - window.innerWidth));
 }
 
+async function openAudioPlayer(page) {
+  const compactPlayer = page.getByTestId("audio-player-compact");
+  if (await compactPlayer.isVisible().catch(() => false)) {
+    await compactPlayer.locator(".mp-player-minimized-open").click();
+  }
+
+  const openPlayer = page.getByTestId("audio-player-open");
+  await expect(openPlayer).toBeVisible();
+  return openPlayer;
+}
+
 test("home density: mobile and tablet text, icons and cards scale with viewport", async ({ page }) => {
   await openHome(page, { width: 390, height: 844 });
 
@@ -102,20 +113,16 @@ test("home density: mobile and tablet text, icons and cards scale with viewport"
   expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(14);
 });
 
-test("mobile density: header, reading toolbar and audio dock fit without horizontal overflow", async ({ page }) => {
+test("mobile density: header, reading toolbar and audio player fit without horizontal overflow", async ({ page }) => {
   await openReader(page, { width: 390, height: 844 });
 
   const header = await box(page, ".mp-header");
   const toolbar = await box(page, ".srh-root");
-  const audioDock = await box(page, ".mp-audio-player--mobile.mp-audio-player--dock");
+  const audioDock = await box(page, ".mp-audio-player--mobile");
   const firstAction = await box(page, ".mp-header__icon-btn");
   const settingsButton = await box(page, ".mp-header__more");
   const moreButton = await box(page, ".mp-header__more");
   const typographyTrigger = await box(page, ".srh-typography-trigger");
-  const audioOptionsButton = await box(
-    page,
-    ".mp-audio-player--mobile.mp-audio-player--dock .mp-player-options-trigger",
-  );
 
   expect(header?.height || 0).toBeLessThanOrEqual(62);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
@@ -135,6 +142,8 @@ test("mobile density: header, reading toolbar and audio dock fit without horizon
   expect(fontControls?.height || 0).toBeGreaterThanOrEqual(38);
   expect(fontSelect?.width || 0).toBeGreaterThanOrEqual(88);
   expect(sizeControls?.width || 0).toBeGreaterThanOrEqual(145);
+  await openAudioPlayer(page);
+  const audioOptionsButton = await box(page, ".mp-player-options-trigger");
   expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(44);
   expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(44);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
@@ -174,6 +183,7 @@ test("mobile surfaces: sidebar, settings drawer and audio modal fit the viewport
   await page.locator('.settings-drawer button[aria-label="Fermer les paramètres"]').first().click();
   await expect(settingsDrawer).toBeHidden();
 
+  await openAudioPlayer(page);
   await page.locator(".mp-player-options-trigger").first().click();
   const audioModal = page.locator(".audio-player-modal__surface--settings").first();
   await expect(audioModal).toBeVisible();
@@ -194,8 +204,9 @@ test("tablet density: header controls and audio options modal remain compact", a
 
   const header = await box(page, ".mp-header");
   const toolbar = await box(page, ".srh-root");
-  const settingsButton = await box(page, ".mp-header__settings");
+  const settingsButton = await box(page, ".mp-header__more");
   const fontControls = await box(page, ".srh-root .arabic-font-controls--compact");
+  await openAudioPlayer(page);
   const audioOptionsButton = await box(page, ".mp-player-options-trigger");
 
   expect(header?.height || 0).toBeLessThanOrEqual(70);

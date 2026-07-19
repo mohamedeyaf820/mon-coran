@@ -7,7 +7,9 @@ const DIST_ASSETS_DIR = path.join(DIST_DIR, "assets");
 const MANIFEST_PATH = path.join(DIST_DIR, ".vite", "manifest.json");
 
 const LIMITS = {
-  css: Number(process.env.BUDGET_CSS_KB || 890),
+  // Responsive reader, reciter profiles and the compact player add route-only
+  // CSS. Keep a narrow baseline above the measured production bundle.
+  css: Number(process.env.BUDGET_CSS_KB || 910),
   // Phase 7 adds one deferred personal-library chunk for offline management,
   // portable exports, study journeys and a reference-only thematic index.
   // Legal/SEO/PWA features add deferred chunks, while the initial route keeps
@@ -21,7 +23,7 @@ const LIMITS = {
   initialTotal: Number(process.env.BUDGET_INITIAL_TOTAL_KB || 810),
   initialGzip: Number(process.env.BUDGET_INITIAL_GZIP_KB || 200),
   deferredCss: Number(process.env.BUDGET_DEFERRED_CSS_KB || 185),
-  homeCss: Number(process.env.BUDGET_HOME_CSS_KB || 55),
+  homeCss: Number(process.env.BUDGET_HOME_CSS_KB || 58),
   readerCss: Number(process.env.BUDGET_READER_CSS_KB || 180),
 };
 
