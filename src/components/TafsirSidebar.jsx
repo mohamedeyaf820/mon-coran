@@ -60,6 +60,36 @@ const TAFSIR_OPTIONS = [
     labelAr: "تفسير السعدي",
   },
   {
+    key: "ar-tabari",
+    id: 15,
+    name: "Al-Tabari",
+    lang: "ar",
+    langBadge: "AR",
+    labelFr: "Al-Tabari",
+    labelEn: "Al-Tabari",
+    labelAr: "\u0627\u0644\u0637\u0628\u0631\u064a",
+  },
+  {
+    key: "ar-qurtubi",
+    id: 90,
+    name: "Al-Qurtubi",
+    lang: "ar",
+    langBadge: "AR",
+    labelFr: "Al-Qurtubi",
+    labelEn: "Al-Qurtubi",
+    labelAr: "\u0627\u0644\u0642\u0631\u0637\u0628\u064a",
+  },
+  {
+    key: "ar-baghawi",
+    id: 94,
+    name: "Al-Baghawi",
+    lang: "ar",
+    langBadge: "AR",
+    labelFr: "Al-Baghawi",
+    labelEn: "Al-Baghawi",
+    labelAr: "\u0627\u0644\u0628\u063a\u0648\u064a",
+  },
+  {
     key: "en-maarif",
     id: 168,
     name: "Ma'arif al-Qur'an",
@@ -115,7 +145,10 @@ export default function TafsirSidebar() {
   const selectedOption =
     TAFSIR_OPTIONS.find((o) => o.key === selectedTafsirKey) ||
     TAFSIR_OPTIONS[0];
-  const isArabicTafsir = selectedOption.lang === "ar";
+  const displayedOption =
+    TAFSIR_OPTIONS.find((o) => o.key === tafsirState.data?.tafsirId) ||
+    selectedOption;
+  const isArabicTafsir = displayedOption.lang === "ar";
   const quranComUrl = getQuranComVerseUrl(surahNumber, ayahNumber);
 
   useEffect(() => {
@@ -263,7 +296,7 @@ export default function TafsirSidebar() {
 
             <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5">
               {/* Tafsir source selector */}
-              <section className="mb-4 rounded-2xl border border-[color-mix(in_srgb,var(--theme-border)_56%,transparent_44%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_78%,transparent_22%)] p-3">
+              <section className="mb-4 rounded-lg border border-[color-mix(in_srgb,var(--theme-border)_56%,transparent_44%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_78%,transparent_22%)] p-3">
                 <label
                   htmlFor="tafsir-source-select"
                   className="mb-2 block text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[color-mix(in_srgb,var(--theme-primary)_72%,var(--theme-text)_28%)]"
@@ -309,7 +342,7 @@ export default function TafsirSidebar() {
 
               {/* French/English translation of the verse (shown for fr/en users) */}
               {lang !== "ar" ? (
-                <section className="mb-4 rounded-2xl border border-[color-mix(in_srgb,var(--theme-border)_56%,transparent_44%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_72%,transparent_28%)] p-3">
+                <section className="mb-4 rounded-lg border border-[color-mix(in_srgb,var(--theme-border)_56%,transparent_44%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_72%,transparent_28%)] p-3">
                   <button
                     type="button"
                     onClick={() => setShowTranslation((v) => !v)}
@@ -356,7 +389,7 @@ export default function TafsirSidebar() {
               ) : null}
 
               {/* Tafsir content */}
-              <section className="rounded-3xl border border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_76%,transparent_24%)] p-4">
+              <section className="rounded-lg border border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_76%,transparent_24%)] p-4">
                 {tafsirState.status === "loading" ? (
                   <div className="flex min-h-[14rem] items-center justify-center">
                     <div className="flex items-center gap-3 text-sm font-semibold text-[color-mix(in_srgb,var(--theme-text-muted)_88%,var(--theme-bg)_12%)]">
@@ -389,7 +422,10 @@ export default function TafsirSidebar() {
                     {/* Language badge */}
                     <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-[color-mix(in_srgb,var(--theme-primary)_28%,transparent_72%)] bg-[rgba(var(--theme-primary-rgb),0.08)] px-2.5 py-1 text-[0.68rem] font-bold text-[color-mix(in_srgb,var(--theme-primary)_80%,var(--theme-text)_20%)]">
                       <BookOpen size={11} />
-                      {getTafsirLabel(selectedOption, lang)}
+                      {getTafsirLabel(displayedOption, lang)}
+                      {tafsirState.data.cached
+                        ? ` - ${label(lang, "hors connexion", "offline", "\u062f\u0648\u0646 \u0627\u062a\u0635\u0627\u0644")}`
+                        : ""}
                     </div>
                     <article
                       dir={isArabicTafsir ? "rtl" : "ltr"}
@@ -422,6 +458,9 @@ export default function TafsirSidebar() {
 
             {/* Footer */}
             <div className="border-t border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] px-4 py-3 sm:px-5">
+              <p className="mb-2 text-center text-[0.65rem] text-[color-mix(in_srgb,var(--theme-text-muted)_84%,var(--theme-bg)_16%)]">
+                Quran.com / Quran Foundation
+              </p>
               <a
                 href={quranComUrl}
                 target="_blank"

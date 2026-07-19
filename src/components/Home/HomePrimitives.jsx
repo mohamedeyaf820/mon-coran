@@ -223,7 +223,7 @@ export const SurahCard = memo(function SurahCard({
     >
       <button
         type="button"
-        className="absolute inset-0 z-[1] rounded-2xl"
+        className="hp-card-open absolute inset-0 z-[1]"
         onClick={() => onClick(surah.n)}
         aria-label={openAriaLabel}
       />
@@ -275,7 +275,7 @@ export const SurahCard = memo(function SurahCard({
 
       {/* Arabic name */}
       <div
-        className="hp-card-ar shrink-0 font-surah-names text-[1.55rem] sm:text-[1.7rem] text-text-primary opacity-75 group-hover:opacity-100 transition-opacity pr-7 sm:pr-8"
+        className="hp-card-ar shrink-0 text-text-primary"
         aria-label={surah.ar}
         dir="rtl"
         lang="ar"
@@ -297,7 +297,7 @@ export const SurahCard = memo(function SurahCard({
         }}
         aria-label={playAriaLabel}
       >
-        {isPlaying ? <Pause size={12} /> : <Play size={12} className="pl-[1px]" />}
+        {isPlaying ? <Pause size={16} /> : <Play size={16} className="pl-[1px]" />}
       </button>
     </div>
   );
@@ -323,20 +323,20 @@ export const JuzCard = memo(function JuzCard({
     return (
       <button
         className={cn(
-          "group flex items-center gap-3 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-bg-primary border border-border/50 hover:bg-bg-secondary hover:border-primary/30 transition-all text-left",
-          isActive && "bg-primary/5 border-primary/50",
+          "juz-card juz-card--list",
+          isActive && "juz-card--active",
         )}
         onClick={() => onClick(juz)}
         style={rowVisibilityStyle}
       >
-        <span className="flex items-center justify-center w-8 h-8 shrink-0 rounded-full bg-bg-secondary text-[0.75rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
+        <span className="juz-card__number">
           {juz}
         </span>
-        <div className="flex items-baseline truncate">
-          <span className="text-[0.95rem] font-bold text-text-primary">
+        <div className="juz-card__copy">
+          <span className="juz-card__title">
             Juz {juz}
           </span>
-          <span className="text-[0.8rem] text-text-secondary ml-2 truncate">
+          <span className="juz-card__arabic" dir="rtl" lang="ar">
             {name}
           </span>
         </div>
@@ -352,22 +352,21 @@ export const JuzCard = memo(function JuzCard({
   return (
     <button
       className={cn(
-        "group relative flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-border bg-bg-primary shadow-sm transition-all duration-200 hover:-translate-y-[2px] hover:border-primary/40 hover:bg-bg-secondary hover:shadow-md text-left overflow-hidden",
-        isActive && "border-primary/60 bg-primary/5",
+        "juz-card",
+        isActive && "juz-card--active",
       )}
       onClick={() => onClick(juz)}
       style={cardVisibilityStyle}
     >
-      <div className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-primary/80 to-primary/20 opacity-0 group-hover:opacity-40 transition-opacity" />
-
-      <span className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full bg-bg-secondary text-[0.8rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
+      <span className="juz-card__accent" aria-hidden="true" />
+      <span className="juz-card__number">
         {juz}
       </span>
-      <div className="flex flex-col flex-1 min-w-0">
-        <span className="text-[0.95rem] sm:text-[1.05rem] font-bold text-text-primary truncate">
+      <div className="juz-card__copy">
+        <span className="juz-card__title">
           Juz {juz}
         </span>
-        <span className="text-[0.75rem] text-text-secondary truncate mt-0.5">
+        <span className="juz-card__arabic" dir="rtl" lang="ar">
           {name}
         </span>
       </div>

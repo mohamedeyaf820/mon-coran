@@ -5,10 +5,9 @@ import {
   useAppSelector,
 } from "../context/AppContext";
 import { t as i18nT } from "../i18n";
-import { getSurah, surahName, toAr, getSurahForPage } from "../data/surahs";
+import { getSurah, toAr, getSurahForPage } from "../data/surahs";
 import { cn } from "../lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import NetworkStatus from "./NetworkStatus";
 import PlatformLogo from "./PlatformLogo";
 import { THEME_ORDER } from "../data/themes";
 import {
@@ -37,12 +36,10 @@ export default function Header() {
       currentPage: current.currentPage,
       currentJuz: current.currentJuz,
       riwaya: current.riwaya,
-      loadedAyahCount: current.loadedAyahCount,
       showHome: current.showHome,
       showDuas: current.showDuas,
       legalPage: current.legalPage,
       sidebarOpen: current.sidebarOpen,
-      settingsOpen: current.settingsOpen,
     }),
     shallowEqual,
   );
@@ -54,12 +51,10 @@ export default function Header() {
     currentPage,
     currentJuz,
     riwaya,
-    loadedAyahCount,
     showHome,
     showDuas,
     legalPage,
     sidebarOpen,
-    settingsOpen,
   } = state;
 
   const [goToValue, setGoToValue] = useState("");
@@ -218,14 +213,6 @@ export default function Header() {
   const activeSurahNum =
     displayMode === "page" ? getSurahForPage(currentPage) : currentSurah;
   const surahMeta = getSurah(activeSurahNum);
-  const ayahWord =
-    lang === "fr" ? "versets" : lang === "ar" ? "\u0622\u064a\u0629" : "ayahs";
-  const ayahCount = loadedAyahCount
-    ? `${lang === "ar" ? toAr(loadedAyahCount) : loadedAyahCount} ${ayahWord}`
-    : surahMeta
-      ? `${surahMeta.ayahs} ${ayahWord}`
-      : "";
-
   const centerTitle = showDuas
     ? tr({
         fr: "Douas",
@@ -236,41 +223,20 @@ export default function Header() {
       ? lang === "ar"
         ? `\u062c\u0632\u0621 ${toAr(currentJuz)}`
         : `Juz ${currentJuz}`
-      : lang === "ar"
-        ? surahMeta?.ar || ""
-        : surahName(activeSurahNum, lang);
-
-  const centerKicker = showDuas
-    ? tr({
-        fr: "Espace Douas",
-        en: "Duas",
-        ar: "\u0627\u0644\u0623\u062f\u0639\u064a\u0629",
-      })
-    : displayMode === "page"
-      ? tr({ fr: "Page", en: "Page", ar: "\u0635\u0641\u062d\u0629" })
-      : displayMode === "juz"
-        ? tr({ fr: "Juz", en: "Juz", ar: "\u062c\u0632\u0621" })
-        : tr({ fr: "Sourate", en: "Surah", ar: "\u0633\u0648\u0631\u0629" });
-
-  const centerSub = showDuas
-    ? tr({
-        fr: "Invocations coraniques",
-        en: "Quranic supplications",
-        ar: "\u0623\u062f\u0639\u064a\u0629 \u0642\u0631\u0622\u0646\u064a\u0629",
-      })
-    : displayMode === "page"
-      ? tr({
-          fr: `Page ${currentPage} / 604`,
-          en: `Page ${currentPage} / 604`,
-          ar: `\u0635\u0641\u062d\u0629 ${toAr(currentPage)} / ${toAr(604)}`,
-        })
-      : displayMode === "juz"
-        ? tr({
-            fr: `Juz ${currentJuz} / 30`,
-            en: `Juz ${currentJuz} / 30`,
-            ar: `\u062c\u0632\u0621 ${toAr(currentJuz)} / ${toAr(30)}`,
-          })
-        : ayahCount;
+      : surahMeta?.en || surahMeta?.fr || surahMeta?.ar || "";
+  const centerTitleAlt =
+    !showDuas && displayMode !== "juz" && surahMeta
+      ? lang === "ar"
+        ? surahMeta.ar
+        : lang === "fr"
+          ? surahMeta.fr
+          : ""
+      : "";
+  const hasRotatingTitle =
+    Boolean(centerTitleAlt) && centerTitleAlt !== centerTitle;
+  const centerTitleLabel = hasRotatingTitle
+    ? `${centerTitle} - ${centerTitleAlt}`
+    : centerTitle;
 
   const themeDotColors = {
     light: "#199b90",
@@ -437,7 +403,7 @@ export default function Header() {
                 height={38}
               />
             </span>
-            <span className="mp-header__brand-text hidden lg:inline">
+            <span className="mp-header__brand-text">
               Mushaf<span style={{ color: dotColor }}>.</span>plus
             </span>
           </button>
@@ -477,16 +443,29 @@ export default function Header() {
                   <button
                     className="mp-header__title-btn"
                     type="button"
-                    style={{
-                      width: "fit-content",
-                      maxWidth: "min(65vw, 300px)",
-                    }}
+                    aria-label={centerTitleLabel}
                   >
-                    <span className="mp-header__kicker">{centerKicker}</span>
-                    <span className="mp-header__title">{centerTitle}</span>
-                    {centerSub && (
-                      <span className="mp-header__sub">{centerSub}</span>
-                    )}
+                    <span
+                      className={cn(
+                        "mp-header__title-rotator",
+                        hasRotatingTitle && "mp-header__title-rotator--active",
+                      )}
+                      aria-hidden="true"
+                    >
+                      <span className="mp-header__title mp-header__title--primary">
+                        {centerTitle}
+                      </span>
+                      {hasRotatingTitle ? (
+                        <span
+                          className={cn(
+                            "mp-header__title mp-header__title--secondary",
+                            lang === "ar" && "mp-header__title--arabic",
+                          )}
+                        >
+                          {centerTitleAlt}
+                        </span>
+                      ) : null}
+                    </span>
                   </button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -549,11 +528,10 @@ export default function Header() {
             className="mp-header__action mp-header__riwaya-toggle"
             type="button"
             onClick={() => set({ riwaya: riwaya === "hafs" ? "warsh" : "hafs" })}
-            aria-label={headerLabels.riwayaToggle}
+            aria-label={`${headerLabels.riwayaToggle} — ${riwaya === "warsh" ? "Warsh" : "Hafs"}`}
             title={headerLabels.riwayaToggle}
           >
-            <BookOpen size={14} strokeWidth={2.2} />
-            <span>{riwaya.toUpperCase()}</span>
+            <span>{riwaya === "warsh" ? "Warsh" : "Hafs"}</span>
           </button>
 
           {/* Search */}
@@ -566,17 +544,6 @@ export default function Header() {
           >
             <Search size={16} strokeWidth={2.2} />
             <span>{i18nT("nav.search", lang)}</span>
-          </button>
-
-          {/* Settings */}
-          <button
-            className={cn("mp-header__action mp-header__settings", settingsOpen && "is-active")}
-            type="button"
-            onClick={openSettings}
-            aria-label={i18nT("nav.settings", lang)}
-            title={i18nT("nav.settings", lang)}
-          >
-            <Settings size={16} strokeWidth={2.2} />
           </button>
 
           {/* Theme cycle — moved to "More" menu for cleaner header */}
@@ -697,11 +664,6 @@ export default function Header() {
               </div>
             </PopoverContent>
           </Popover>
-
-          {/* Network status */}
-          <div className="mp-header__network">
-            <NetworkStatus />
-          </div>
         </div>
       </div>
     </header>

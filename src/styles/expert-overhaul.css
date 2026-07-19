@@ -1,16 +1,5 @@
-/*
- * expert-overhaul.css
- * Comprehensive UX/UI expert overhaul layer.
- * Imported last — highest specificity wins intentionally.
- * Covers: fluid typography, responsive sizing, animation polish,
- *         touch targets, accessibility, performance, visual coherence.
- */
-
-/* ═══════════════════════════════════════════════
-   1. DESIGN TOKENS — Extended system
-   ═══════════════════════════════════════════════ */
 :root {
-    /* Fluid spacing scale */
+
     --space-2xs: clamp(0.25rem, 0.5vw, 0.375rem);
     --space-xs: clamp(0.375rem, 0.75vw, 0.5rem);
     --space-sm: clamp(0.5rem, 1vw, 0.75rem);
@@ -18,17 +7,17 @@
     --space-lg: clamp(1rem, 2vw, 1.5rem);
     --space-xl: clamp(1.5rem, 3vw, 2.5rem);
 
-    /* Touch target minimum (WCAG 2.5.5) */
+
     --tap-min: 44px;
 
-    /* Elevation system */
+
     --elev-1: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
     --elev-2: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.05);
     --elev-3: 0 10px 24px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.05);
     --elev-4: 0 20px 48px rgba(0, 0, 0, 0.14), 0 8px 16px rgba(0, 0, 0, 0.07);
     --elev-5: 0 32px 72px rgba(0, 0, 0, 0.2), 0 12px 24px rgba(0, 0, 0, 0.09);
 
-    /* Animation system */
+
     --dur-instant: 80ms;
     --dur-fast: 150ms;
     --dur-normal: 250ms;
@@ -37,7 +26,7 @@
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
-    /* Z-index scale */
+
     --z-base: 1;
     --z-dropdown: 100;
     --z-sticky: 200;
@@ -46,7 +35,7 @@
     --z-toast: 500;
     --z-tooltip: 600;
 
-    /* Radius system */
+
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
@@ -55,45 +44,31 @@
     --radius-pill: 9999px;
 }
 
-/* ═══════════════════════════════════════════════
-   1b. REDUCED MOTION — Respect user preference
-   ═══════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
-    /* Keep opacity transitions for screen reader focus */
+
     .sr-only:focus,
     .sr-only:focus-within {
         transition: none !important;
     }
 }
 
-/* ═══════════════════════════════════════════════
-   2. PERFORMANCE — GPU layer optimization
-   ═══════════════════════════════════════════════ */
-
-/* Will-change only on elements that animate */
 .mp-audio-player,
 .mp-audio-player--desktop,
 .mp-audio-player--mobile {
     will-change: transform;
 }
 
-/* Force GPU compositing on animated overlays */
 .settings-overlay,
 .modal-overlay,
 .audio-player-modal {
     will-change: opacity;
 }
 
-/* Reduce repaints on frequently updated elements */
 .mp-player-progress,
 .audio-player-timeline {
     contain: layout style;
     will-change: width;
 }
-
-/* ═══════════════════════════════════════════════
-   3. GLOBAL TYPOGRAPHY — Fluid + Responsive
-   ═══════════════════════════════════════════════ */
 
 html {
     font-size: clamp(15px, 1.1vw + 10px, 17px);
@@ -111,11 +86,6 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* ═══════════════════════════════════════════════
-   4. HEADER — Precise responsive fixes
-   ═══════════════════════════════════════════════ */
-
-/* Mobile (< 480px): very compact, show only essentials */
 @media (max-width: 479px) {
     .app-root > .mp-header {
         padding: 0.3rem 0.4rem !important;
@@ -126,7 +96,7 @@ body {
         gap: 0.25rem !important;
     }
 
-    /* Hide settings button on very small screens - accessible via "more" menu */
+
     .app-root
         > .mp-header
         .mp-header__action:not(.mp-header__search):not(.mp-header__more) {
@@ -138,7 +108,6 @@ body {
     }
 }
 
-/* Mobile (480-767px): compact with riwaya toggle */
 @media (min-width: 480px) and (max-width: 767px) {
     .app-root > .mp-header {
         padding: 0.32rem 0.5rem !important;
@@ -155,14 +124,12 @@ body {
     }
 }
 
-/* Tablet (768-1023px): show full nav center */
 @media (min-width: 768px) and (max-width: 1023px) {
     .app-root > .mp-header .mp-header__bar {
         grid-template-columns: minmax(8rem, auto) 1fr auto !important;
     }
 }
 
-/* Header button active state */
 .app-root
     > .mp-header
     :is(.mp-header__action.is-active, .mp-header__icon-btn.is-active) {
@@ -171,11 +138,6 @@ body {
     color: var(--theme-primary, #0b6235) !important;
 }
 
-/* ═══════════════════════════════════════════════
-   5. SIDEBAR — Responsive improvements
-   ═══════════════════════════════════════════════ */
-
-/* On very small screens, sidebar takes full width */
 @media (max-width: 360px) {
     #sidebar.sb-wrapper {
         width: 100vw !important;
@@ -183,7 +145,6 @@ body {
     }
 }
 
-/* Sidebar list items — better touch targets */
 #sidebar button[type="button"].group {
     min-height: 3.25rem !important;
     padding: 0.6rem 0.65rem !important;
@@ -196,7 +157,6 @@ body {
     transform: scale(0.98) !important;
 }
 
-/* Sidebar number badges — consistent sizing */
 #sidebar .flex.h-9.w-9 {
     width: 2.25rem !important;
     height: 2.25rem !important;
@@ -205,24 +165,17 @@ body {
     transition: all var(--dur-fast) ease !important;
 }
 
-/* Sidebar tab bar — equal height tabs */
 #sidebar .grid.rounded-xl button {
     min-height: 2.35rem !important;
     font-size: 0.78rem !important;
     transition: all var(--dur-fast) ease !important;
 }
 
-/* Sidebar Arabic surah names — proper sizing */
 #sidebar .font-surah-names {
     font-size: clamp(1.4rem, 2.2vw, 1.8rem) !important;
     line-height: 1 !important;
 }
 
-/* ═══════════════════════════════════════════════
-   6. AUDIO PLAYER — Responsive & UX fixes
-   ═══════════════════════════════════════════════ */
-
-/* Mobile player: ensure proper bottom safe area */
 @media (max-width: 1024px) {
     .mp-audio-player--mobile.mp-audio-player--dock {
         padding-bottom: max(
@@ -232,7 +185,6 @@ body {
     }
 }
 
-/* Desktop player: smooth drag animation */
 .mp-audio-player--desktop {
     transition: box-shadow var(--dur-fast) ease !important;
 }
@@ -241,7 +193,6 @@ body {
     box-shadow: var(--elev-5) !important;
 }
 
-/* Player progress bar — improved visual */
 .mp-player-progress,
 input[type="range"].mp-progress-input {
     height: 5px !important;
@@ -262,7 +213,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     transform: scale(1.25) !important;
 }
 
-/* Player buttons — consistent sizes per device */
 @media (max-width: 640px) {
     .mp-audio-player--mobile .mp-player-play-btn {
         width: 2.65rem !important;
@@ -271,7 +221,7 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
         border-radius: 50% !important;
     }
 
-    /* Secondary controls (skip, repeat) */
+
     .mp-audio-player--mobile button:not(.mp-player-play-btn) {
         min-width: var(--tap-min) !important;
         min-height: var(--tap-min) !important;
@@ -286,17 +236,12 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     }
 }
 
-/* ═══════════════════════════════════════════════
-   7. MODALS & SETTINGS — Bottom sheet on mobile
-   ═══════════════════════════════════════════════ */
-
-/* Settings drawer animation */
 .settings-drawer {
     transition: transform var(--dur-slow) var(--ease-out) !important;
 }
 
 @media (max-width: 680px) {
-    /* Settings as bottom sheet */
+
     .settings-overlay {
         align-items: flex-end !important;
         justify-content: center !important;
@@ -308,7 +253,7 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
         max-height: 90dvh !important;
     }
 
-    /* Pull handle indicator */
+
     .settings-drawer__header::before {
         content: "";
         display: block;
@@ -321,7 +266,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     }
 }
 
-/* Settings tab bar — scrollable on mobile */
 @media (max-width: 680px) {
     .settings-drawer__tabs {
         display: flex !important;
@@ -345,14 +289,9 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     }
 }
 
-/* Settings content — proper spacing */
 .settings-drawer__content {
     padding: clamp(0.75rem, 2vw, 1.25rem) !important;
 }
-
-/* ═══════════════════════════════════════════════
-   8. RECITERS GRID — Enhanced 2-col layout
-   ═══════════════════════════════════════════════ */
 
 .settings-reciter-grid {
     display: grid !important;
@@ -361,14 +300,12 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     padding: 0.35rem !important;
 }
 
-/* Single column on very small screens */
 @media (max-width: 360px) {
     .settings-reciter-grid {
         grid-template-columns: 1fr !important;
     }
 }
 
-/* Reciter option card — improved layout */
 .settings-reciter-option {
     display: flex !important;
     align-items: center !important;
@@ -399,7 +336,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     background: rgba(var(--primary-rgb, 15, 118, 110), 0.1) !important;
 }
 
-/* Avatar — consistent sizing */
 .settings-reciter-avatar {
     width: 2.1rem !important;
     height: 2.1rem !important;
@@ -409,7 +345,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     border-radius: 50% !important;
 }
 
-/* Reciter name — clamp to 2 lines */
 .settings-reciter-option__name {
     font-size: 0.8rem !important;
     font-weight: 700 !important;
@@ -420,18 +355,12 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     overflow: hidden !important;
 }
 
-/* Reciter meta — smaller, muted */
 .settings-reciter-option__meta {
     font-size: 0.65rem !important;
     opacity: 0.72 !important;
     margin-top: 0.1rem !important;
 }
 
-/* ═══════════════════════════════════════════════
-   9. QURAN READER — Typography & Layout
-   ═══════════════════════════════════════════════ */
-
-/* Fluid Arabic text sizing */
 .qc-ayah-text-ar,
 .rd-arabic,
 .quran-arabic-text,
@@ -444,7 +373,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     word-spacing: clamp(0.08em, 0.4vw, 0.18em) !important;
 }
 
-/* Mobile-specific Quran text */
 @media (max-width: 479px) {
     .qc-ayah-text-ar,
     .rd-arabic {
@@ -453,7 +381,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     }
 }
 
-/* Translation text — responsive */
 .qc-ayah-translation,
 .rd-trans-item,
 .translation-text {
@@ -462,7 +389,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     color: var(--text-secondary, #475569) !important;
 }
 
-/* Verse number badges */
 .rd-ayah-head,
 .qc-ayah-number,
 .ayah-number-badge {
@@ -472,7 +398,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     flex: 0 0 clamp(1.8rem, 3vw, 2.15rem) !important;
 }
 
-/* Reader cards — consistent spacing */
 .qc-verse-card,
 .qc-ayah-block,
 .rd-ayah {
@@ -483,7 +408,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
         transform var(--dur-fast) ease !important;
 }
 
-/* Playing verse — smooth highlight animation */
 .qc-verse-card.is-playing,
 .rd-ayah.playing,
 .mp-ayah--playing {
@@ -500,11 +424,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     }
 }
 
-/* ═══════════════════════════════════════════════
-   10. HOME PAGE — Grid & Cards responsive
-   ═══════════════════════════════════════════════ */
-
-/* Hero section — better mobile stacking */
 @media (max-width: 639px) {
     .home-hero-shell {
         padding: 1rem !important;
@@ -534,7 +453,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     }
 }
 
-/* Surah grid — responsive columns */
 .hp-grid--surah {
     display: grid !important;
 }
@@ -567,7 +485,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     }
 }
 
-/* Reciter cards grid */
 .hp-grid {
     display: grid !important;
 }
@@ -600,7 +517,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     }
 }
 
-/* Reciter card — refined layout */
 .home-reciter-card,
 .reciter-card,
 [data-reciter-card="true"] {
@@ -621,11 +537,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     transform: scale(0.98) !important;
 }
 
-/* ═══════════════════════════════════════════════
-   11. TOUCH TARGETS — WCAG 2.5.5 compliance
-   ═══════════════════════════════════════════════ */
-
-/* All interactive elements must meet 44px minimum */
 @media (pointer: coarse) {
     button,
     [role="button"],
@@ -636,8 +547,7 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
         min-width: var(--tap-min);
     }
 
-    /* Exception: icon-only buttons that are visually smaller
-     use padding to extend the hit area instead */
+
     .mp-header__icon-btn,
     .mp-header__action,
     .mp-header__nav-arrow,
@@ -654,20 +564,13 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
         inset: -6px !important;
     }
 
-    /* Sidebar close button */
+
     #sidebar .h-8.w-8 {
         width: 2.55rem !important;
         height: 2.55rem !important;
     }
 }
 
-/* ═══════════════════════════════════════════════
-   12. ICON CONSISTENCY — Size system
-   ═══════════════════════════════════════════════ */
-
-/* FontAwesome icons — size scale by context */
-
-/* Header icons */
 .mp-header__icon-btn i,
 .mp-header__action i,
 .mp-header__more i,
@@ -675,7 +578,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     font-size: clamp(0.82rem, 1.1vw, 0.96rem) !important;
 }
 
-/* Sidebar icons */
 #sidebar i.fas,
 #sidebar i.far {
     font-size: 0.9rem !important;
@@ -683,23 +585,16 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     text-align: center !important;
 }
 
-/* Card/verse action icons */
 .qcom-verse-card-footer-btn i,
 .ayah-actions-inline__icon-btn i {
     font-size: 0.82rem !important;
 }
 
-/* Floating action buttons */
 .notes-fab i,
 [class*="fab"] i {
     font-size: 1rem !important;
 }
 
-/* ═══════════════════════════════════════════════
-   13. MODAL BASE — Consistent across all modals
-   ═══════════════════════════════════════════════ */
-
-/* All overlays */
 .modal-overlay,
 .settings-backdrop,
 .audio-player-modal {
@@ -707,7 +602,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     transition: opacity var(--dur-normal) ease !important;
 }
 
-/* Search modal — proper mobile layout */
 @media (max-width: 640px) {
     .search-pro-overlay {
         align-items: flex-end !important;
@@ -723,7 +617,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     }
 }
 
-/* Bookmarks, Notes, Playlist modals — consistent sizing */
 @media (max-width: 640px) {
     .modal-panel,
     .modal-box {
@@ -731,10 +624,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
         max-height: 88dvh !important;
     }
 }
-
-/* ═══════════════════════════════════════════════
-   14. FOOTER — Compact on mobile
-   ═══════════════════════════════════════════════ */
 
 @media (max-width: 479px) {
     .mp-footer-v2 {
@@ -756,11 +645,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     }
 }
 
-/* ═══════════════════════════════════════════════
-   15. ANIMATIONS — Micro-interactions
-   ═══════════════════════════════════════════════ */
-
-/* Sidebar item hover animation */
 @media (hover: hover) {
     #sidebar button[type="button"].group:hover .flex.shrink-0 {
         border-color: rgba(var(--primary-rgb, 15, 118, 110), 0.45) !important;
@@ -773,13 +657,11 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     }
 }
 
-/* Button press feedback */
 button:active:not(:disabled),
 [role="button"]:active:not([aria-disabled="true"]) {
     transition-duration: var(--dur-instant) !important;
 }
 
-/* Smooth appear for dropdowns without overriding Radix positioning. */
 [data-radix-popper-content-wrapper] > div {
     animation: popover-in var(--dur-normal) var(--ease-spring) !important;
 }
@@ -795,16 +677,10 @@ button:active:not(:disabled),
     }
 }
 
-/* Sidebar slide animation */
 .sb-wrapper {
     transition: transform 280ms var(--ease-out) !important;
 }
 
-/* ═══════════════════════════════════════════════
-   16. SCROLLBARS — Refined for light & dark
-   ═══════════════════════════════════════════════ */
-
-/* Light theme scrollbars */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -825,17 +701,11 @@ button:active:not(:disabled),
     background-color: rgba(100, 116, 139, 0.5);
 }
 
-/* Firefox */
 * {
     scrollbar-width: thin;
     scrollbar-color: rgba(100, 116, 139, 0.28) transparent;
 }
 
-/* ═══════════════════════════════════════════════
-   17. ACCESSIBILITY — Focus & Reduced motion
-   ═══════════════════════════════════════════════ */
-
-/* Disable animations for users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
@@ -851,14 +721,11 @@ button:active:not(:disabled),
     }
 }
 
-/* Focus visible — consistent across all themes */
-/* Ensure focus is always visible — WCAG 2.4.7 */
 :focus-visible {
     outline: 2px solid var(--primary, #0f766e);
     outline-offset: 3px;
 }
 
-/* Custom focus style for reading cards */
 .app-root .qc-ayah-block:focus-visible,
 .app-root .qc-verse-card:focus-visible {
     outline: 2px solid var(--primary);
@@ -866,14 +733,12 @@ button:active:not(:disabled),
     border-radius: 8px;
 }
 
-/* Full theme-aware override (higher specificity) */
 :focus-visible {
     outline: 2.5px solid rgba(var(--primary-rgb, 15, 118, 110), 0.85) !important;
     outline-offset: 2px !important;
     border-radius: var(--radius-sm) !important;
 }
 
-/* Skip links for keyboard navigation */
 .skip-link {
     position: absolute !important;
     top: -100% !important;
@@ -890,11 +755,6 @@ button:active:not(:disabled),
     top: 0 !important;
 }
 
-/* ═══════════════════════════════════════════════
-   18. DARK MODE — Specific fixes
-   ═══════════════════════════════════════════════ */
-
-/* Dark mode scrollbars */
 html[data-theme="dark"] ::-webkit-scrollbar-thumb {
     background-color: color-mix(in srgb, var(--theme-text-muted) 34%, transparent) !important;
 }
@@ -907,7 +767,6 @@ html[data-theme="dark"] * {
     scrollbar-color: color-mix(in srgb, var(--theme-text-muted) 34%, transparent) transparent !important;
 }
 
-/* Dark mode popover backgrounds */
 html[data-theme="dark"] [data-radix-popper-content-wrapper] > div,
 html[data-theme="dark"] .z-\[300\] {
     border-color: var(--theme-border) !important;
@@ -916,17 +775,11 @@ html[data-theme="dark"] .z-\[300\] {
     color: var(--theme-text) !important;
 }
 
-/* Dark mode: settings row text fix */
 html[data-theme="dark"] .settings-row label,
 html[data-theme="dark"] .settings-row span {
     color: inherit !important;
 }
 
-/* ═══════════════════════════════════════════════
-   19. THEME-SPECIFIC — Sepia & OLED
-   ═══════════════════════════════════════════════ */
-
-/* Sepia theme — warm scrollbars */
 html[data-theme="sepia"] ::-webkit-scrollbar-thumb {
     background-color: rgba(154, 104, 0, 0.28) !important;
 }
@@ -935,7 +788,6 @@ html[data-theme="sepia"] ::-webkit-scrollbar-thumb:hover {
     background-color: rgba(154, 104, 0, 0.48) !important;
 }
 
-/* OLED theme — true black */
 html[data-theme="oled"] {
     background: #000000 !important;
 }
@@ -950,10 +802,6 @@ html[data-theme="oled"]
     background: rgba(4, 8, 6, 0.98) !important;
     border-color: rgba(180, 202, 191, 0.12) !important;
 }
-
-/* ═══════════════════════════════════════════════
-   20. PRINT — Hide interactive elements
-   ═══════════════════════════════════════════════ */
 
 @media print {
     .mp-audio-player,
@@ -976,13 +824,9 @@ html[data-theme="oled"]
     }
 }
 
-/* ═══════════════════════════════════════════════
-   21. SEARCH MODAL — Enhanced mobile layout
-   ═══════════════════════════════════════════════ */
-
 @media (max-width: 768px) {
     .search-pro-input {
-        font-size: 1rem !important; /* Prevent iOS zoom on focus */
+        font-size: 1rem !important;
         height: 3rem !important;
     }
 
@@ -992,10 +836,6 @@ html[data-theme="oled"]
         overscroll-behavior: contain !important;
     }
 }
-
-/* ═══════════════════════════════════════════════
-   22. HOME STATS STRIP — Responsive
-   ═══════════════════════════════════════════════ */
 
 .home-stats-strip,
 .hp-stats {
@@ -1015,20 +855,11 @@ html[data-theme="oled"]
     }
 }
 
-/* ═══════════════════════════════════════════════
-   23. NETWORK STATUS — Better mobile display
-   ═══════════════════════════════════════════════ */
-
-/* Hide network text on mobile, show only icon */
 @media (max-width: 767px) {
     .network-status__text {
         display: none !important;
     }
 }
-
-/* ═══════════════════════════════════════════════
-   24. INPUT — Prevent iOS zoom
-   ═══════════════════════════════════════════════ */
 
 @media (max-width: 767px) {
     input[type="text"],
@@ -1037,13 +868,9 @@ html[data-theme="oled"]
     input[type="email"],
     textarea,
     select {
-        font-size: 1rem !important; /* 16px minimum prevents iOS auto-zoom */
+        font-size: 1rem !important;
     }
 }
-
-/* ═══════════════════════════════════════════════
-   25. LOGO — Consistent sizing across devices
-   ═══════════════════════════════════════════════ */
 
 .mp-header__logo {
     border-radius: var(--radius-md) !important;

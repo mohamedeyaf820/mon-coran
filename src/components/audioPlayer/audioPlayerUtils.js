@@ -1,5 +1,16 @@
 export const MOBILE_BREAKPOINT = 1024;
 
+export function isMobilePlayerViewport() {
+  if (typeof window === "undefined") return false;
+  if (window.innerWidth < 768) return true;
+  if (window.innerWidth >= MOBILE_BREAKPOINT) return false;
+
+  return (
+    window.matchMedia?.("(pointer: coarse)").matches ||
+    !window.matchMedia?.("(hover: hover)").matches
+  );
+}
+
 const CARD_STORAGE_KEY = "mushaf_player_card_pos_v6";
 const RECITER_COOLDOWN_STEPS_MS = [
   30 * 1000,

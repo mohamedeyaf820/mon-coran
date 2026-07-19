@@ -57,6 +57,7 @@ test("security: production CSP excludes dev-only and unused risky sources", () =
   assert.equal(csp.includes("'unsafe-eval'"), false);
   assert.equal(csp.includes("ia800304.us.archive.org"), false);
   assert.equal(csp.includes("ws://localhost"), false);
+  assert.match(csp, /img-src[^;]*https:\/\/www\.assabile\.com/);
 });
 
 test("security: deployment CSP headers match the generated production policy", () => {

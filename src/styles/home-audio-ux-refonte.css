@@ -3437,3 +3437,233 @@ body > .audio-player-modal .audio-settings-icon-btn {
     padding-block: 0.3rem !important;
   }
 }
+
+/* Reciters: compact directory cards that stay easy to scan and operate. */
+html body .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.75rem !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  min-height: 6.25rem !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  transform: none !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__main {
+  min-width: 0 !important;
+  padding: 0.8rem !important;
+  gap: 0.7rem !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__media {
+  inline-size: 3.25rem !important;
+  block-size: 3.25rem !important;
+  border-radius: 8px !important;
+  flex: 0 0 3.25rem !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__copy {
+  min-width: 0 !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__actions {
+  margin-top: 0 !important;
+  padding: 0.65rem !important;
+  border-inline-start: 1px solid color-mix(in srgb, var(--theme-border, #d4d4d4) 68%, transparent) !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__actions .reciter-card__listen {
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  border-color: var(--primary) !important;
+}
+
+@media (max-width: 700px) {
+  html body .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card {
+    min-height: 6.5rem !important;
+  }
+
+  html body .app-root[data-view="home"] .notes-fab--mobile {
+    display: none !important;
+  }
+}
+
+/* Home controls stay in the document flow instead of following the scroll. */
+html body .app-root[data-view="home"] .home-content-toolbar {
+  position: relative !important;
+  top: auto !important;
+  z-index: 1 !important;
+  border: 1px solid color-mix(in srgb, var(--theme-border, #d4d4d4) 78%, transparent) !important;
+  border-radius: 8px !important;
+  background: var(--theme-panel-bg-strong, var(--bg-card)) !important;
+  box-shadow: 0 5px 16px rgba(15, 48, 34, 0.06) !important;
+  backdrop-filter: none !important;
+}
+
+html body .app-root[data-view="home"] .home-content-toolbar [role="tablist"],
+html body .app-root[data-view="home"] .home-content-toolbar input {
+  border-radius: 8px !important;
+}
+
+html body .app-root[data-view="home"] .home-content-toolbar [role="tab"][aria-selected="true"] {
+  border-radius: 8px !important;
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+@media (min-width: 900px) {
+  html body .app-root[data-view="home"] .home-content-toolbar {
+    display: grid !important;
+    grid-template-columns: auto minmax(12rem, 1fr) auto !important;
+    align-items: center !important;
+    gap: 0.65rem !important;
+    padding: 0.65rem !important;
+  }
+
+  html body .app-root[data-view="home"] .home-content-toolbar > [role="tablist"] {
+    grid-column: 1 !important;
+    width: auto !important;
+  }
+
+  html body .app-root[data-view="home"] .home-content-toolbar > .relative {
+    grid-column: 2 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  html body .app-root[data-view="home"] .home-content-toolbar > .flex:last-child {
+    grid-column: 3 !important;
+    width: auto !important;
+  }
+}
+
+/* Surah cards: stable four-column rhythm and a Quranic Arabic face. */
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) auto 40px !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  min-height: 6rem !important;
+  padding: 0.8rem !important;
+  border-radius: 8px !important;
+  transform: none !important;
+  box-shadow: 0 3px 12px rgba(15, 48, 34, 0.055) !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah:hover {
+  transform: none !important;
+  border-color: color-mix(in srgb, var(--primary) 34%, var(--border) 66%) !important;
+  box-shadow: 0 7px 18px rgba(15, 48, 34, 0.09) !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-open {
+  position: absolute !important;
+  inset: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border-radius: 8px !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-num,
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-content,
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-ar,
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play {
+  grid-row: 1 !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-num {
+  grid-column: 1 !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-content {
+  grid-column: 2 !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-ar {
+  grid-column: 3 !important;
+  min-width: 5.4rem !important;
+  max-width: 7.2rem !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  color: color-mix(in srgb, var(--text-primary) 82%, var(--primary) 18%) !important;
+  font-family: "Amiri Quran", "Scheherazade New", serif !important;
+  font-size: 1.45rem !important;
+  font-weight: 400 !important;
+  line-height: 1.35 !important;
+  text-align: end !important;
+  opacity: 1 !important;
+  font-feature-settings: "liga" 1, "calt" 1, "rlig" 1 !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play {
+  grid-column: 4 !important;
+  position: relative !important;
+  inset: auto !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  padding: 0 !important;
+  gap: 0 !important;
+  border-color: var(--primary) !important;
+  border-radius: 50% !important;
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+  transform: none !important;
+  box-shadow: 0 5px 12px rgba(var(--primary-rgb, 11, 98, 53), 0.18) !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play:hover {
+  transform: none !important;
+  background: color-mix(in srgb, var(--primary) 88%, #000000 12%) !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play svg {
+  width: 16px !important;
+  height: 16px !important;
+  padding: 0 !important;
+  font-size: 16px !important;
+  flex: 0 0 16px !important;
+}
+
+@media (max-width: 520px) {
+  html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah {
+    grid-template-columns: auto minmax(0, 1fr) auto 38px !important;
+    gap: 0.55rem !important;
+    min-height: 5.5rem !important;
+    padding: 0.65rem !important;
+  }
+
+  html body .app-root[data-view="home"] .hp-grid--surah .hp-card-ar {
+    min-width: 4.1rem !important;
+    max-width: 5rem !important;
+    font-size: 1.2rem !important;
+  }
+
+  html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+  }
+}

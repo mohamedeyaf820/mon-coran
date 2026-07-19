@@ -34,6 +34,7 @@ function AyahBlockComponent({
 }) {
   const isRtl = lang === "ar";
   const translationReadingMode = useAppSelector((s) => s.translationReadingMode);
+  const memRepeatCount = useAppSelector((s) => s.memRepeatCount);
 
   const transliterationSource =
     riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text;
@@ -45,7 +46,14 @@ function AyahBlockComponent({
 
   const arabicContent = useMemo(() => {
     if (memMode)
-      return <MemorizationText text={ayah.hafsText || ayah.text} lang={lang} />;
+      return (
+        <MemorizationText
+          text={ayah.hafsText || ayah.text}
+          lang={lang}
+          isPlaying={isPlaying}
+          repeatCount={memRepeatCount}
+        />
+      );
     if (showWordByWord) {
       return (
         <WordByWordDisplay
@@ -78,6 +86,7 @@ function AyahBlockComponent({
     fontSize,
     isPlaying,
     lang,
+    memRepeatCount,
     memMode,
     riwaya,
     showTajwid,

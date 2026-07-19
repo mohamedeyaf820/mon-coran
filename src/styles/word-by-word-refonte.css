@@ -37,11 +37,6 @@
         0 16px 38px rgba(var(--primary-rgb), 0.12) !important;
 }
 
-@keyframes wbw-current-pulse {
-    0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 14%, transparent), 0 10px 24px rgba(var(--primary-rgb), 0.14); }
-    50%       { box-shadow: 0 0 0 5px color-mix(in srgb, var(--primary) 24%, transparent), 0 14px 32px rgba(var(--primary-rgb), 0.24); }
-}
-
 /* The non-inline version is a study grid. Mushaf inline rendering is untouched. */
 html body .app-root .quran-display--platform .wbw-display.wbw-study-grid {
     display: grid !important;
@@ -74,7 +69,7 @@ html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block {
     padding: 0.7rem 0.6rem 0.65rem !important;
     overflow: hidden !important;
     border: 1px solid var(--wbw-card-border, var(--border)) !important;
-    border-radius: 0.875rem !important;
+    border-radius: 8px !important;
     background:
         linear-gradient(160deg, var(--wbw-card-surface, var(--bg-card)) 60%, var(--wbw-card-surface-soft, var(--bg-secondary))) !important;
     box-shadow:
@@ -107,7 +102,8 @@ html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block.w
     border-color: color-mix(in srgb, var(--primary) 78%, var(--border)) !important;
     background:
         linear-gradient(160deg, color-mix(in srgb, var(--bg-card) 83%, var(--primary) 17%) 60%, color-mix(in srgb, var(--bg-secondary) 78%, var(--primary) 22%)) !important;
-    animation: wbw-current-pulse 1.8s ease-in-out infinite !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 16%, transparent), 0 10px 24px rgba(var(--primary-rgb), 0.14) !important;
+    animation: none !important;
 }
 
 html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block--selected {
@@ -285,7 +281,7 @@ html body .app-root .quran-display--platform .wbw-study-grid > .wbw-verse-end > 
     }
 
     html body .app-root .quran-display--platform .wbw-display.wbw-study-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
         gap: 0.45rem !important;
     }
 
@@ -293,7 +289,7 @@ html body .app-root .quran-display--platform .wbw-study-grid > .wbw-verse-end > 
         min-width: 0 !important;
         min-height: 8rem !important;
         padding: 0.58rem 0.42rem 0.52rem !important;
-        border-radius: 0.75rem !important;
+        border-radius: 8px !important;
     }
 
     html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block > .wbw-arabic {
@@ -332,5 +328,140 @@ html body .app-root .quran-display--platform .wbw-study-grid > .wbw-verse-end > 
     html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block {
         animation: none !important;
         transition: none !important;
+    }
+}
+
+/* Memorization mode: compact controls and a stable reading surface. */
+.app-root .quran-display--platform .mem-container {
+    display: grid;
+    gap: 0.8rem;
+    margin: 0 !important;
+}
+
+.app-root .quran-display--platform .mem-session {
+    display: grid;
+    grid-template-columns: auto minmax(5rem, 1fr) auto;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 2rem;
+    color: var(--text-muted);
+    font-family: var(--font-ui, system-ui, sans-serif);
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.app-root .quran-display--platform .mem-session__track {
+    height: 5px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--border) 68%, transparent);
+}
+
+.app-root .quran-display--platform .mem-session__track > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--primary);
+    transition: width 180ms ease;
+}
+
+.app-root .quran-display--platform .mem-words {
+    padding: clamp(0.75rem, 2vw, 1.1rem);
+    border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--bg-secondary) 94%, var(--primary) 6%);
+    color: var(--text-quran, var(--text-primary));
+    font-family: var(--qd-font-family, var(--font-quran), serif);
+    font-size: clamp(1.65rem, var(--reader-arabic-size, 2rem), 3rem);
+    line-height: 2.25;
+    text-align: center;
+}
+
+.app-root .quran-display--platform .mem-word {
+    margin-inline: 0.08em;
+    padding-inline: 0.08em;
+    border-radius: 4px;
+}
+
+.app-root .quran-display--platform .mem-mask {
+    min-width: 2.5em;
+    padding-inline: 0.32em;
+    border: 1px dashed color-mix(in srgb, var(--primary) 42%, var(--border));
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--bg-card) 82%, var(--primary) 18%);
+    color: var(--primary);
+    font-family: var(--font-ui, system-ui, sans-serif);
+    font-size: 0.45em;
+    letter-spacing: 0;
+}
+
+.app-root .quran-display--platform .mem-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.app-root .quran-display--platform :is(.mem-btn, .mem-counter) {
+    min-height: 2.2rem;
+    border-radius: 8px;
+    font-family: var(--font-ui, system-ui, sans-serif);
+    font-size: 0.69rem;
+}
+
+.app-root .quran-display--platform .mem-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.32rem;
+    padding: 0.38rem 0.62rem;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.app-root .quran-display--platform .mem-btn--reset {
+    width: 2.2rem;
+    padding: 0;
+}
+
+.app-root .quran-display--platform .mem-counter {
+    display: inline-flex;
+    min-width: 3rem;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 0.45rem;
+    background: color-mix(in srgb, var(--bg-secondary) 82%, var(--primary) 18%);
+    color: var(--primary);
+    font-weight: 800;
+}
+
+@media (max-width: 520px) {
+    .app-root .quran-display--platform .mem-session__label {
+        display: none;
+    }
+
+    .app-root .quran-display--platform .mem-session {
+        grid-template-columns: minmax(4rem, 1fr) auto;
+    }
+
+    .app-root .quran-display--platform .mem-words {
+        padding: 0.65rem 0.5rem;
+        font-size: clamp(1.55rem, 8vw, 2.05rem);
+        line-height: 2.15;
+    }
+
+    .app-root .quran-display--platform .mem-toolbar {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) 2.2rem;
+    }
+
+    .app-root .quran-display--platform .mem-btn {
+        min-width: 0;
+        padding-inline: 0.4rem;
     }
 }

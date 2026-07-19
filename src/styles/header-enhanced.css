@@ -1,6 +1,3 @@
-/* ── Enhanced Header ─────────────────────────────────────── */
-
-/* Base header */
 .mp-header {
   position: sticky;
   top: 0;
@@ -21,7 +18,6 @@
   box-shadow: 0 1px 12px rgba(0,0,0,0.05);
 }
 
-/* Brand */
 .mp-header__brand-row {
   display: flex;
   align-items: center;
@@ -59,11 +55,10 @@
   font-size: var(--ts-base);
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   white-space: nowrap;
 }
 
-/* Menu / icon buttons */
 .mp-header__icon-btn {
   display: flex;
   align-items: center;
@@ -86,7 +81,6 @@
   color: var(--primary);
 }
 
-/* Center nav */
 .mp-header__center {
   flex: 1;
   display: flex;
@@ -131,19 +125,18 @@
   cursor: not-allowed;
 }
 
-/* Title button — adapts to name length */
 .mp-header__title-btn {
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
   align-items: center;
-  padding: 0.15rem 0.6rem;
+  width: max-content;
+  max-width: min(42vw, 17rem);
+  padding: 0.3rem 0.55rem;
   border-radius: var(--r-base);
   border: none;
   background: transparent;
   cursor: pointer;
   transition: background 0.15s;
   min-width: 0;
-  max-width: min(65vw, 300px);
   text-align: center;
 }
 .mp-header__title-btn:hover {
@@ -175,6 +168,58 @@
   max-width: 100%;
 }
 
+.mp-header__title-rotator {
+  display: grid;
+  max-width: 100%;
+  height: 1.25em;
+  overflow: hidden;
+  place-items: center;
+}
+
+.mp-header__title-rotator > .mp-header__title {
+  grid-area: 1 / 1;
+}
+
+.mp-header__title--secondary {
+  transform: translateY(135%);
+}
+
+.mp-header__title--arabic {
+  font-family: var(--font-surah-name, var(--font-surah, var(--font-quran), serif));
+  font-size: 1.15rem;
+  font-weight: 400;
+}
+
+@keyframes mp-header-title-primary {
+  0%, 42% { opacity: 1; transform: translateY(0); }
+  49%, 92% { opacity: 0; transform: translateY(-135%); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes mp-header-title-secondary {
+  0%, 42% { opacity: 0; transform: translateY(135%); }
+  49%, 92% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(135%); }
+}
+
+.mp-header__title-rotator--active .mp-header__title--primary {
+  animation: mp-header-title-primary 7s ease-in-out infinite;
+}
+
+.mp-header__title-rotator--active .mp-header__title--secondary {
+  animation: mp-header-title-secondary 7s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mp-header__title-rotator--active .mp-header__title {
+    animation: none;
+  }
+
+  .mp-header__title-rotator--active .mp-header__title--secondary {
+    display: none;
+  }
+}
+
 .mp-header__sub {
   display: block;
   font-size: var(--ts-xs);
@@ -184,7 +229,6 @@
   white-space: nowrap;
 }
 
-/* Home summary */
 .mp-header__home-summary {
   display: flex;
   flex-direction: column;
@@ -219,7 +263,6 @@
   letter-spacing: 0.04em;
 }
 
-/* Right actions */
 .mp-header__actions {
   display: flex;
   align-items: center;
@@ -286,18 +329,15 @@
   color: var(--primary);
 }
 
-/* Riwaya toggle */
 .mp-header__riwaya-switch {
   height: 44px;
 }
 
-/* Network */
 .mp-header__network {
   display: flex;
   align-items: center;
 }
 
-/* ── Quick-menu popover ───────────────────────── */
 .mp-header-menu__header {
   display: flex;
   align-items: center;
@@ -324,7 +364,6 @@
   color: var(--text-muted);
 }
 
-/* section divider inside menu */
 .mp-header-menu__section {
   padding: 0 0.45rem;
   margin-bottom: 0.2rem;
@@ -373,7 +412,7 @@
   transition: opacity 0.14s, transform 0.14s;
   opacity: 0.92;
 }
-/* per-item icon accent colors */
+
 .mp-header-menu__item[data-key="search"] .mp-header-menu__item-icon {
   background: color-mix(in srgb, var(--c-search) 12%, transparent);
   color: var(--c-search);
@@ -410,7 +449,6 @@
   white-space: nowrap;
 }
 
-/* Riwaya segment at the bottom */
 .mp-header-menu__riwaya {
   margin: 0.4rem 0.45rem 0.3rem;
   padding: 0.65rem 0.75rem 0.6rem;
@@ -460,7 +498,6 @@
   box-shadow: 0 1px 6px color-mix(in srgb, var(--primary) 45%, transparent);
 }
 
-/* Dark mode overrides */
 [data-theme="dark"] .mp-header__bar {
   background: linear-gradient(180deg, rgba(8,15,13,0.94), rgba(5,10,9,0.92));
   border-bottom-color: rgba(196,219,208,0.13);
@@ -480,13 +517,12 @@
   background: rgba(20,36,30,0.7);
 }
 
-/* Mobile responsive */
 @media (max-width: 640px) {
   .mp-header__bar {
     padding: 0 0.5rem;
     gap: 0.3rem;
     height: clamp(48px, 7vh, 54px);
-    /* account for iOS status bar */
+
     padding-top: env(safe-area-inset-top, 0px);
   }
 
@@ -499,7 +535,7 @@
     height: var(--space-10);
     padding: 0;
     justify-content: center;
-    /* keep 44px tap target */
+
     min-width: 44px;
     min-height: 44px;
   }
@@ -513,7 +549,7 @@
     letter-spacing: 0.08em;
   }
 
-  /* On narrow phones hide search+settings — they're in the … menu */
+
   .mp-header__search,
   .mp-header__settings {
     display: none;
@@ -532,11 +568,6 @@
   }
 }
 
-/*
- * Keep the critical first-paint header identical to the deferred polish layer.
- * Without this bridge, the idle-loaded styles changed the glass surface after
- * the first interaction and made the header visibly jump between routes.
- */
 .app-root > .mp-header {
   position: sticky !important;
   top: 0 !important;
@@ -597,14 +628,13 @@ html.dark .app-root > .mp-header {
     height: var(--space-7);
   }
 
-  /* Show riwaya text again at very small size */
+
   .mp-header__riwaya-toggle {
     font-size: var(--ts-2xs);
     letter-spacing: 0.04em;
   }
 }
 
-/* ── Compact header on scroll (reading view only) ── */
 .mp-header--compact .mp-header__bar {
   height: 44px;
   padding: 0 0.5rem;
@@ -630,7 +660,7 @@ html.dark .app-root > .mp-header {
 .mp-header--compact .mp-header__more {
   width: var(--space-9);
   height: var(--space-9);
-  /* Maintain WCAG 2.5.5 44×44px touch target while keeping visual 38px size */
+
   min-width: 44px;
   min-height: 44px;
   overflow: visible;
@@ -641,7 +671,6 @@ html.dark .app-root > .mp-header {
   height: var(--space-7);
 }
 
-/* Stable quick menu for the header ellipsis */
 .mp-header-menu {
   width: min(22rem, calc(100vw - 1rem)) !important;
   max-height: min(34rem, calc(100dvh - var(--header-h, 4rem) - 0.75rem));

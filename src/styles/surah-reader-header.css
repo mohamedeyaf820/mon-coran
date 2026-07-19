@@ -56,7 +56,7 @@
 /* Arabic name — large calligraphic display */
 .srh-arabic {
     flex-shrink: 0;
-    font-family: "surahnames", serif;
+    font-family: var(--font-surah-name, var(--font-surah, var(--font-quran), serif));
     font-weight: normal;
     font-size: clamp(1.7rem, 4.5vw, 2.8rem);
     line-height: 1.35;
@@ -504,7 +504,7 @@
     }
 
     .srh-mobile-bar__name {
-        font-family: var(--font-quran, serif);
+        font-family: var(--font-surah-name, var(--font-surah, var(--font-quran), serif));
         font-size: var(--ts-lg);
         line-height: 1.3;
         color: var(--text-primary);

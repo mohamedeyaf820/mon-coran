@@ -339,6 +339,7 @@ export default function ContentSection({
             ? cn(
                 "hp-grid",
                 activeTab === "surah" && "hp-grid--surah",
+                activeTab === "juz" && "hp-grid--juz",
                 activeTab === "recitations" && "hp-grid--reciters",
                 activeTab === "radio" && "hp-grid--radio",
               )
@@ -521,16 +522,16 @@ export default function ContentSection({
             {THEMATIC_STATIONS.map((station) => (
               <button
                 key={station.id}
-                className="group relative flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-border bg-bg-primary shadow-sm cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:border-primary/40 hover:bg-bg-secondary hover:shadow-md animate-fadeInScale"
+                className="home-radio-card home-radio-card--theme"
                 type="button"
                 onClick={() => playStation(station)}
               >
-                <span className="flex items-center justify-center h-9 w-9 rounded-full bg-bg-secondary text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
+                <span className="home-radio-card__media">
                   <Icon name={station.icon} aria-hidden="true" />
                 </span>
-                <div className="flex flex-col flex-1 min-w-0">
+                <div className="home-radio-card__copy">
                   <span
-                    className="text-[0.95rem] sm:text-[1.05rem] font-bold text-text-primary text-left truncate"
+                    className="home-radio-card__title"
                     dir={lang === "ar" ? "rtl" : "ltr"}
                   >
                     {lang === "ar"
@@ -539,14 +540,14 @@ export default function ContentSection({
                         ? station.titleFr
                         : station.titleEn}
                   </span>
-                  <span className="text-[0.7rem] sm:text-[0.75rem] text-text-secondary text-left truncate mt-0.5">
+                  <span className="home-radio-card__meta">
                     {station.surahs.length}{" "}
                     {lang === "ar" ? "سورة" : lang === "fr" ? "sourates" : "surahs"}
                   </span>
                 </div>
-                <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-bg-primary border border-border text-text-muted transition-all hover:bg-primary hover:text-white hover:border-primary shrink-0">
+                <span className="home-radio-card__play" aria-hidden="true">
                   <CirclePlay size={14} className="pl-[1px]" />
-                </div>
+                </span>
               </button>
             ))}
 
@@ -562,7 +563,7 @@ export default function ContentSection({
               return (
                 <button
                   key={`r-${reciter.id}`}
-                        className="reciter-radio-card group relative flex min-w-0 items-center gap-3 rounded-xl border border-border bg-bg-primary p-3 shadow-sm transition-all duration-200 animate-fadeInScale hover:-translate-y-[2px] hover:border-primary/40 hover:bg-bg-secondary hover:shadow-md sm:gap-4 sm:p-4"
+                  className="home-radio-card home-radio-card--reciter"
                   type="button"
                   onClick={() =>
                     playStation({
@@ -576,7 +577,7 @@ export default function ContentSection({
                     })
                   }
                 >
-                  <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border/50 bg-bg-secondary text-sm font-black text-white shadow-sm transition-colors group-hover:border-primary/30 sm:h-12 sm:w-12">
+                  <span className="home-radio-card__media home-radio-card__media--photo">
                     <span
                       className="absolute inset-0 flex items-center justify-center"
                       style={{ background: avatar.gradient }}
@@ -598,20 +599,20 @@ export default function ContentSection({
                       />
                     ) : null}
                   </span>
-                  <div className="flex min-w-0 flex-1 flex-col">
+                  <div className="home-radio-card__copy">
                     <span
-                      className="text-left text-[0.95rem] font-bold leading-snug text-text-primary line-clamp-2 sm:text-[1.05rem]"
+                      className="home-radio-card__title"
                       dir={lang === "ar" ? "rtl" : "ltr"}
                     >
                       {reciterLabel}
                     </span>
-                    <span className="mt-0.5 truncate text-left text-[0.7rem] text-text-secondary sm:text-[0.75rem]">
+                    <span className="home-radio-card__meta">
                       {lang === "ar" ? "٤" : "4"} {lang === "ar" ? "سور" : lang === "fr" ? "sourates" : "surahs"} · {reciter.style || "murattal"}
                     </span>
                   </div>
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-bg-primary text-text-muted transition-all hover:border-primary hover:bg-primary hover:text-white sm:h-10 sm:w-10">
+                  <span className="home-radio-card__play" aria-hidden="true">
                     <CirclePlay size={14} className="pl-[1px]" />
-                  </div>
+                  </span>
                 </button>
               );
             })}

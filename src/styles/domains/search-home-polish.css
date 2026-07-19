@@ -3124,7 +3124,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 
 .app-root .app-view-home .home-style-filter,
 .app-root[data-view="home"] .home-style-filter {
-    min-height: 36px;
+    min-height: 44px;
     border-radius: 999px !important;
     letter-spacing: 0 !important;
     font-size: 0.86rem !important;
@@ -3597,5 +3597,258 @@ html[data-theme="dark"] .search-pro__close:hover {
     .app-root .app-view-home .reciter-card__listen span,
     .app-root[data-view="home"] .reciter-card__listen span {
         display: none;
+    }
+}
+
+html body .app-root[data-view="home"] .hp-grid--juz .juz-card,
+html body .app-root .app-view-home .hp-grid--juz .juz-card {
+    border-color: var(--border) !important;
+    background: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--juz .juz-card:is(:hover, :focus-visible),
+html body .app-root .app-view-home .hp-grid--juz .juz-card:is(:hover, :focus-visible),
+html body .app-root[data-view="home"] .hp-grid--juz .juz-card--active,
+html body .app-root .app-view-home .hp-grid--juz .juz-card--active {
+    border-color: color-mix(in srgb, var(--primary) 52%, var(--border)) !important;
+    background: color-mix(in srgb, var(--bg-card) 92%, var(--primary) 8%) !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--juz .juz-card__title,
+html body .app-root .app-view-home .hp-grid--juz .juz-card__title {
+    color: var(--text-primary) !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--juz .juz-card__arabic,
+html body .app-root .app-view-home .hp-grid--juz .juz-card__arabic {
+    color: var(--text-muted) !important;
+}
+
+/* Home directories: stable, readable surfaces across all themes. */
+.app-root[data-view="home"] :is(.hp-card-ar, .juz-card__arabic),
+.app-root .app-view-home :is(.hp-card-ar, .juz-card__arabic) {
+    font-family: var(--font-surah-name, var(--font-surah, var(--font-quran), serif)) !important;
+    font-weight: 400 !important;
+}
+
+.app-root[data-view="home"] .hp-card--surah,
+.app-root .app-view-home .hp-card--surah {
+    border-radius: 8px !important;
+    background: var(--bg-card) !important;
+    box-shadow: 0 5px 16px color-mix(in srgb, var(--text-primary) 7%, transparent) !important;
+}
+
+.app-root[data-view="home"] .hp-card--surah:is(:hover, :focus-within),
+.app-root .app-view-home .hp-card--surah:is(:hover, :focus-within) {
+    border-color: color-mix(in srgb, var(--primary) 48%, var(--border)) !important;
+    background: color-mix(in srgb, var(--bg-card) 94%, var(--primary) 6%) !important;
+}
+
+.app-root[data-view="home"] .hp-card--surah.border-primary\/60,
+.app-root .app-view-home .hp-card--surah.border-primary\/60 {
+    border-color: color-mix(in srgb, var(--primary) 56%, var(--border)) !important;
+    background: color-mix(in srgb, var(--bg-card) 90%, var(--primary) 10%) !important;
+}
+
+.app-root[data-view="home"] .hp-grid--juz,
+.app-root .app-view-home .hp-grid--juz {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.7rem !important;
+}
+
+.app-root[data-view="home"] .juz-card,
+.app-root .app-view-home .juz-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.35rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+    min-height: 78px;
+    overflow: hidden;
+    padding: 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    text-align: start;
+    box-shadow: 0 5px 16px color-mix(in srgb, var(--text-primary) 6%, transparent);
+    transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.app-root[data-view="home"] .juz-card:is(:hover, :focus-visible),
+.app-root .app-view-home .juz-card:is(:hover, :focus-visible),
+.app-root[data-view="home"] .juz-card--active,
+.app-root .app-view-home .juz-card--active {
+    border-color: color-mix(in srgb, var(--primary) 52%, var(--border));
+    background: color-mix(in srgb, var(--bg-card) 93%, var(--primary) 7%);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--primary) 12%, transparent);
+    outline: none;
+}
+
+.juz-card__accent {
+    position: absolute;
+    inset-block: 0.7rem;
+    inset-inline-start: 0;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: #c79a2d;
+}
+
+.juz-card__number {
+    display: inline-flex;
+    width: 2.35rem;
+    height: 2.35rem;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--bg-secondary) 90%, var(--primary) 10%);
+    color: var(--primary);
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.juz-card__copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.16rem;
+}
+
+.juz-card__title,
+.juz-card__arabic {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.juz-card__title {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.juz-card__arabic {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.app-root[data-view="home"] .home-radio-card,
+.app-root .app-view-home .home-radio-card {
+    display: grid;
+    grid-template-columns: 2.65rem minmax(0, 1fr) 2.2rem;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 0;
+    min-height: 76px;
+    padding: 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    text-align: start;
+    box-shadow: 0 5px 16px color-mix(in srgb, var(--text-primary) 6%, transparent);
+    transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.app-root[data-view="home"] .home-radio-card:is(:hover, :focus-visible),
+.app-root .app-view-home .home-radio-card:is(:hover, :focus-visible) {
+    border-color: color-mix(in srgb, var(--primary) 48%, var(--border));
+    background: color-mix(in srgb, var(--bg-card) 94%, var(--primary) 6%);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--primary) 12%, transparent);
+    outline: none;
+}
+
+.home-radio-card__media,
+.home-radio-card__play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.home-radio-card__media {
+    position: relative;
+    width: 2.65rem;
+    height: 2.65rem;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--bg-secondary) 88%, #c79a2d 12%);
+    color: color-mix(in srgb, var(--primary) 76%, #8a6415 24%);
+}
+
+.home-radio-card__media--photo {
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.home-radio-card__copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.18rem;
+}
+
+.home-radio-card__title,
+.home-radio-card__meta {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.home-radio-card__title {
+    color: var(--text-primary);
+    font-size: 0.88rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.home-radio-card__meta {
+    color: var(--text-muted);
+    font-size: 0.68rem;
+}
+
+.home-radio-card__play {
+    width: 2.2rem;
+    height: 2.2rem;
+    background: var(--bg-secondary);
+    color: var(--primary);
+}
+
+.home-radio-card:hover .home-radio-card__play {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--primary-fg, #fff);
+}
+
+[data-theme="dark"] .app-root :is(.hp-card--surah, .juz-card, .home-radio-card) {
+    border-color: color-mix(in srgb, var(--border) 86%, #ffffff 14%) !important;
+    background: color-mix(in srgb, var(--bg-card) 96%, #ffffff 4%) !important;
+}
+
+@media (max-width: 900px) {
+    .app-root[data-view="home"] .hp-grid--juz,
+    .app-root .app-view-home .hp-grid--juz {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 520px) {
+    .app-root[data-view="home"] .hp-grid--juz,
+    .app-root .app-view-home .hp-grid--juz {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .app-root[data-view="home"] :is(.juz-card, .home-radio-card),
+    .app-root .app-view-home :is(.juz-card, .home-radio-card) {
+        min-height: 68px;
+        padding: 0.62rem;
     }
 }

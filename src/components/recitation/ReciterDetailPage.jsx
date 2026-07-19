@@ -17,6 +17,7 @@ import ReciterRadioButton from "./ReciterRadioButton";
 import SurahRecitationList from "./SurahRecitationList";
 import { cn } from "../../lib/utils";
 import { getReciterSourceInfo, getReciterVisual } from "../../data/reciters";
+import { useReciterProfile } from "../../hooks/useReciterProfile";
 
 function labelFor(lang, fr, en, ar = en) {
   if (lang === "ar") return ar;
@@ -38,6 +39,8 @@ export default function ReciterDetailPage({
   const isRtl = lang === "ar";
   const sourceInfo = getReciterSourceInfo(reciter);
   const visual = getReciterVisual(reciter);
+  const researchedProfile = useReciterProfile(reciter?.id);
+  const biographySource = researchedProfile?.bioSource || null;
   const riwayaLabel = reciter.verifiedWarsh ? "Warsh" : isRtl ? "حفص" : "Hafs";
   const audioModeLabel =
     reciter.audioMode === "surah"
@@ -101,6 +104,19 @@ export default function ReciterDetailPage({
             className="reciter-detail__sources"
             aria-label={labelFor(lang, "Sources", "Sources", "المصادر")}
           >
+            {biographySource ? (
+              <div className="reciter-detail__source-row">
+                <BookOpen size={14} aria-hidden="true" />
+                <span>{labelFor(lang, "Biographie", "Biography", "السيرة")}</span>
+                <a
+                  href={biographySource.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {biographySource.provider}
+                </a>
+              </div>
+            ) : null}
             {sourceInfo ? (
               <div className="reciter-detail__source-row">
                 <RadioTower size={14} aria-hidden="true" />
@@ -112,7 +128,13 @@ export default function ReciterDetailPage({
               <div className="reciter-detail__source-row">
                 <ImageIcon size={14} aria-hidden="true" />
                 <span>{labelFor(lang, "Portrait", "Portrait", "الصورة")}</span>
-                <strong>{visual.attribution.provider}</strong>
+                <a
+                  href={visual.attribution.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {visual.attribution.provider}
+                </a>
               </div>
             ) : null}
           </section>

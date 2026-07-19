@@ -13,6 +13,93 @@
   --space-10: max(2.75rem, 44px);
 }
 
+/* Reading header title should hug its label on pointer-sized layouts. */
+html body .app-root > .mp-header .mp-header__title-btn {
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: min(42vw, 11rem) !important;
+  min-height: 2.25rem !important;
+  flex-direction: row !important;
+  padding: 0.25rem 0.55rem !important;
+}
+
+/* Keep desktop surah navigation as one compact, readable control group. */
+@media (min-width: 761px) {
+  html body .app-root > .mp-header .mp-header__center {
+    display: flex !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__nav {
+    display: inline-flex !important;
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: auto !important;
+    grid-template-columns: none !important;
+    flex: 0 0 auto !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.2rem !important;
+    padding: 0.2rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title-btn {
+    flex: 0 1 auto !important;
+  }
+}
+
+/* Verse actions must remain identifiable before hover in every theme. */
+html body .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card__top .ayah-actions button {
+  padding: 0 !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border) 76%) !important;
+  background: color-mix(in srgb, var(--bg-card) 88%, var(--primary) 12%) !important;
+  color: color-mix(in srgb, var(--text-primary) 84%, var(--primary) 16%) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card__top .ayah-actions button svg {
+  flex: 0 0 1rem !important;
+  width: 1rem !important;
+  min-width: 1rem !important;
+  height: 1rem !important;
+  color: currentColor !important;
+  stroke: currentColor !important;
+  opacity: 1 !important;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card__top .ayah-actions button:hover {
+  border-color: color-mix(in srgb, var(--primary) 58%, var(--border) 42%) !important;
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card:is(.is-playing, .is-active) .ayah-action--play,
+html body .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card__top .ayah-action--bookmark.text-\[var\(--primary\)\] {
+  border-color: var(--primary) !important;
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+
+@media (max-width: 760px) {
+  html body .app-root > .mp-header .mp-header__title-btn {
+    max-width: 46vw !important;
+  }
+}
+
+@media (min-width: 761px) {
+  html body .app-root > .mp-header.mp-header--compact .mp-header__brand-text {
+    display: inline !important;
+  }
+}
+
 html {
   font-size: var(--mp-fluid-root) !important;
   -webkit-text-size-adjust: 100%;
@@ -256,7 +343,22 @@ body,
   }
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 768px) {
+  html body .app-root > .mp-header .mp-header__riwaya-toggle {
+    min-width: 4.6rem !important;
+    justify-content: center !important;
+    padding-inline: 0.85rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__riwaya-toggle span {
+    display: inline !important;
+    color: currentColor !important;
+    font-size: 0.78rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+  }
+
   html body .app-root.app-root[data-view="duas"] .duas-page--platform .dua-arabic {
     font-size: clamp(1.7rem, 1.35rem + 0.55vw, 2.2rem) !important;
     line-height: 2.05 !important;
@@ -293,5 +395,131 @@ body,
   .app-root :is(.modal-close, .settings-close, .settings-close-button, .search-pro__close, .mp-header-menu__close) {
     min-width: var(--mp-fluid-control) !important;
     min-height: var(--mp-fluid-control) !important;
+  }
+}
+
+/* Final measured responsive pass: preserve labels, reading comfort and touch targets. */
+.app-root .juz-card__arabic {
+  font-size: clamp(1.15rem, 1.05rem + 0.45vw, 1.4rem) !important;
+  line-height: 1.75 !important;
+}
+
+.app-root .legal-page h1,
+html body .settings-drawer__title {
+  letter-spacing: 0 !important;
+}
+
+@media (max-width: 640px) {
+  html body .app-root[data-view="home"] .home-content-toolbar [role="tablist"] {
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+  }
+
+  html body .app-root[data-view="home"] .home-content-toolbar [role="tab"] {
+    flex: 0 0 auto !important;
+    min-width: max-content !important;
+    overflow: visible !important;
+    scroll-snap-align: start;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card {
+    grid-template-columns: minmax(0, 1fr) 3.25rem !important;
+    min-height: 6.25rem !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card__main {
+    grid-template-columns: 2.75rem minmax(0, 1fr) !important;
+    gap: 0.5rem !important;
+    min-width: 0 !important;
+    padding: 0.45rem !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card__main > svg {
+    display: none !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card__media {
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card__actions {
+    width: 3.25rem !important;
+    min-width: 3.25rem !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    gap: 0.3rem !important;
+    padding: 0.25rem !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card__actions :is(button, a) {
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card__text {
+    min-width: 0 !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card__name {
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    line-height: 1.2 !important;
+  }
+
+  html body #root .app-root .sb-wrapper .sidebar-tab-trigger,
+  html body .settings-qurancom.settings-qurancom .settings-tab-button {
+    min-height: 44px !important;
+  }
+
+  html body .app-root[data-view="reading"] .mem-toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) 44px !important;
+    min-height: 44px !important;
+  }
+
+  html body .app-root[data-view="reading"] .mem-btn {
+    min-height: 44px !important;
+  }
+
+  html body .app-root[data-view="reading"] .mem-btn--reset {
+    width: 44px !important;
+    min-width: 44px !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
+    .qc-list-card .qc-ayah-text-ar {
+    --reader-arabic-size: clamp(30px, var(--qd-reading-font-size, 32px), 54px) !important;
+    --qcom-ar-size: clamp(30px, var(--qd-reading-font-size, 32px), 54px) !important;
+    font-size: clamp(30px, var(--qd-reading-font-size, 32px), 54px) !important;
+    line-height: 2.02 !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  html body .app-root > .mp-header {
+    padding-block: 0.25rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__bar {
+    min-height: 3.5rem !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
+    .qc-list-card .qc-ayah-text-ar {
+    --reader-arabic-size: clamp(32px, var(--qd-reading-font-size, 34px), 68px) !important;
+    --qcom-ar-size: clamp(32px, var(--qd-reading-font-size, 34px), 68px) !important;
+    font-size: clamp(32px, var(--qd-reading-font-size, 34px), 68px) !important;
+    line-height: 2.06 !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
+    .qc-list-card .qc-ayah-text-ar {
+    --reader-arabic-size: clamp(34px, var(--qd-reading-font-size, 36px), 72px) !important;
+    --qcom-ar-size: clamp(34px, var(--qd-reading-font-size, 36px), 72px) !important;
+    font-size: clamp(34px, var(--qd-reading-font-size, 36px), 72px) !important;
   }
 }

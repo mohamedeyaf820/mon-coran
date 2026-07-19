@@ -4,6 +4,7 @@
  */
 
 const BASE_URL = "https://api.quran.com/api/v4";
+const TAFSIR_CACHE_PREFIX = "mushafplus:tafsir:v2:";
 
 export const TAFSIR_RESOURCES = {
   "ar-muyassar": {
@@ -92,6 +93,31 @@ function htmlToText(html) {
   return normalizeText(String(html).replace(/<[^>]+>/g, " "));
 }
 
+function readCachedTafsir(resourceId, verseKey) {
+  if (typeof localStorage === "undefined") return "";
+  try {
+    const raw = localStorage.getItem(
+      `${TAFSIR_CACHE_PREFIX}${resourceId}:${verseKey}`,
+    );
+    const cached = raw ? JSON.parse(raw) : null;
+    return typeof cached?.text === "string" ? cached.text : "";
+  } catch {
+    return "";
+  }
+}
+
+function cacheTafsir(resourceId, verseKey, text) {
+  if (typeof localStorage === "undefined" || !text) return;
+  try {
+    localStorage.setItem(
+      `${TAFSIR_CACHE_PREFIX}${resourceId}:${verseKey}`,
+      JSON.stringify({ text, savedAt: Date.now() }),
+    );
+  } catch {
+    // Storage can be disabled in private browsing; live loading still works.
+  }
+}
+
 export function getAvailableTafsirs() {
   return Object.entries(TAFSIR_RESOURCES).map(([key, data]) => ({
     ...data,
@@ -119,9 +145,10 @@ function resolveTafsirKey(value, lang = "en") {
 }
 
 async function fetchTafsirText(resource, verseKey, signal) {
+  const encodedVerseKey = encodeURIComponent(verseKey);
   const response = await fetch(
-    `${BASE_URL}/tafsirs/${resource.id}/by_ayah/${verseKey}`,
-    { signal },
+    `${BASE_URL}/tafsirs/${resource.id}/by_ayah/${encodedVerseKey}`,
+    { signal, headers: { Accept: "application/json" } },
   );
 
   if (!response.ok) {
@@ -136,6 +163,7 @@ async function fetchTafsirText(resource, verseKey, signal) {
     throw new Error("No tafsir text found");
   }
 
+  cacheTafsir(resource.id, verseKey, text);
   return text;
 }
 
@@ -158,9 +186,14 @@ export async function getVerseTafsir({
   ].filter((key, index, list) => key && list.indexOf(key) === index);
 
   let lastError = null;
+  let cachedFallback = null;
   for (const key of candidates) {
     const resource = TAFSIR_RESOURCES[key];
     if (!resource) continue;
+    const cachedText = readCachedTafsir(resource.id, verseKey);
+    if (cachedText && !cachedFallback) {
+      cachedFallback = { key, resource, text: cachedText };
+    }
     try {
       const text = await fetchTafsirText(resource, verseKey, signal);
       const langMismatch = resource.lang !== normalizedLang;
@@ -181,6 +214,21 @@ export async function getVerseTafsir({
       if (error?.name === "AbortError") throw error;
       lastError = error;
     }
+  }
+
+  if (cachedFallback) {
+    return {
+      source: cachedFallback.resource.name,
+      sourceFr: cachedFallback.resource.nameFr,
+      language: cachedFallback.resource.lang,
+      text: cachedFallback.text,
+      tafsirId: cachedFallback.key,
+      cached: true,
+      note:
+        normalizedLang === "fr" && cachedFallback.resource.lang !== "fr"
+          ? "Le commentaire conserv\u00e9 hors connexion est affich\u00e9 dans sa langue d'origine."
+          : null,
+    };
   }
 
   throw lastError || new Error("No tafsir text found");

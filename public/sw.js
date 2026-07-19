@@ -8,7 +8,7 @@
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v11";
+const CACHE_NAME = "mushaf-plus-v12";
 const API_CACHE_NAME = "mushaf-plus-api-v3";
 const CACHE_LIMITS = {
   [CACHE_NAME]: 180,
@@ -24,6 +24,7 @@ const ASSETS_TO_CACHE = [
   "/favicon.png",
   "/pwa-home-wide.png",
   "/pwa-home-mobile.png",
+  "/data/reciter-profiles.json",
 ];
 
 // ─── Installation ─────────────────────────────────────────────────────────────

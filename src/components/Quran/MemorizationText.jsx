@@ -1,19 +1,21 @@
-import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { EyeOff, Eye, RotateCcw } from 'lucide-react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Eye, RotateCcw } from "lucide-react";
 
 /**
- * Displays Quran ayah text in memorization mode.
- * Words are hidden by default and can be revealed sequentially or by click.
- * When `isPlaying` is true, words auto-reveal progressively over the repeat cycle.
+ * Hides Quran words until the learner reveals them manually or starts audio.
  */
-export default function MemorizationText({ text, lang = 'fr', isPlaying = false, repeatCount = 3 }) {
+export default function MemorizationText({
+  text,
+  lang = "fr",
+  isPlaying = false,
+  repeatCount = 3,
+}) {
   const words = useMemo(() => (text ? text.trim().split(/\s+/) : []), [text]);
   const [seqRevealed, setSeqRevealed] = useState(0);
   const [clickRevealed, setClickRevealed] = useState(new Set());
   const autoRevealTimer = useRef(null);
   const seqRevealedRef = useRef(0);
 
-  // Reset when the ayah changes
   useEffect(() => {
     seqRevealedRef.current = 0;
     setSeqRevealed(0);
@@ -24,24 +26,18 @@ export default function MemorizationText({ text, lang = 'fr', isPlaying = false,
     }
   }, [text]);
 
-  // Auto-reveal words when playing (memorization + audio sync)
   useEffect(() => {
     if (!isPlaying || words.length === 0) {
       if (autoRevealTimer.current) {
         clearInterval(autoRevealTimer.current);
         autoRevealTimer.current = null;
       }
-      return;
+      return undefined;
     }
 
-    // Reveal words progressively over the repeat duration.
-    // Each repeat reveals a chunk of words. With N repeats and W words,
-    // we reveal ceil(W/N) words per repeat, spaced evenly over ~2.5s per word.
-    const intervalMs = 1800; // Reveal a word every 1.8s when playing
-
+    const intervalMs = Math.max(1100, 2100 - Math.min(repeatCount, 10) * 60);
     autoRevealTimer.current = setInterval(() => {
       const next = seqRevealedRef.current + 1;
-      // Clear interval synchronously before state update to avoid extra ticks
       if (next >= words.length) {
         clearInterval(autoRevealTimer.current);
         autoRevealTimer.current = null;
@@ -56,64 +52,110 @@ export default function MemorizationText({ text, lang = 'fr', isPlaying = false,
         autoRevealTimer.current = null;
       }
     };
-  }, [isPlaying, words.length, repeatCount]);
+  }, [isPlaying, repeatCount, words.length]);
 
-  const isRevealed = (i) => i < seqRevealed || clickRevealed.has(i);
-  const revealedCount = words.filter((_, i) => isRevealed(i)).length;
+  const isRevealed = useCallback(
+    (index) => index < seqRevealed || clickRevealed.has(index),
+    [clickRevealed, seqRevealed],
+  );
+  const revealedCount = words.filter((_, index) => isRevealed(index)).length;
   const allRevealed = revealedCount === words.length;
+  const progress = words.length
+    ? Math.round((revealedCount / words.length) * 100)
+    : 0;
 
-  const revealNext = useCallback(() => setSeqRevealed(p => Math.min(p + 1, words.length)), [words.length]);
+  const revealNext = useCallback(
+    () => setSeqRevealed((value) => Math.min(value + 1, words.length)),
+    [words.length],
+  );
   const revealAll = useCallback(() => setSeqRevealed(words.length), [words.length]);
-  const reset = useCallback(() => { setSeqRevealed(0); setClickRevealed(new Set()); }, []);
-
-  const handleWordClick = useCallback((i) => {
-    if (!isRevealed(i)) setClickRevealed(p => new Set([...p, i]));
-  }, [seqRevealed, clickRevealed]);
+  const reset = useCallback(() => {
+    seqRevealedRef.current = 0;
+    setSeqRevealed(0);
+    setClickRevealed(new Set());
+  }, []);
 
   const labels = {
-    fr: { next: 'Mot suivant', all: 'Tout révéler', reset: 'Réinitialiser', reveal: 'Révéler le mot' },
-    en: { next: 'Next word', all: 'Reveal all', reset: 'Reset', reveal: 'Reveal word' },
-    ar: { next: 'الكلمة التالية', all: 'كشف الكل', reset: 'إعادة', reveal: 'إظهار الكلمة' },
+    fr: {
+      next: "Mot suivant",
+      all: "Tout r\u00e9v\u00e9ler",
+      reset: "R\u00e9initialiser",
+      reveal: "R\u00e9v\u00e9ler le mot",
+      progress: "Progression",
+    },
+    en: {
+      next: "Next word",
+      all: "Reveal all",
+      reset: "Reset",
+      reveal: "Reveal word",
+      progress: "Progress",
+    },
+    ar: {
+      next: "\u0627\u0644\u0643\u0644\u0645\u0629 \u0627\u0644\u062a\u0627\u0644\u064a\u0629",
+      all: "\u0643\u0634\u0641 \u0627\u0644\u0643\u0644",
+      reset: "\u0625\u0639\u0627\u062f\u0629",
+      reveal: "\u0625\u0638\u0647\u0627\u0631 \u0627\u0644\u0643\u0644\u0645\u0629",
+      progress: "\u0627\u0644\u062a\u0642\u062f\u0645",
+    },
   };
-  const lbl = labels[lang] || labels.fr;
+  const currentLabels = labels[lang] || labels.fr;
 
   return (
     <div className="mem-container">
+      <div className="mem-session" aria-label={currentLabels.progress}>
+        <span className="mem-session__label">{currentLabels.progress}</span>
+        <span className="mem-session__track" aria-hidden="true">
+          <span style={{ width: `${progress}%` }} />
+        </span>
+        <span className="mem-counter" aria-live="polite">
+          {revealedCount}/{words.length}
+        </span>
+      </div>
+
+      <div className="mem-toolbar">
+        <button className="mem-btn" onClick={revealNext} disabled={allRevealed}>
+          <Eye size={13} />
+          {currentLabels.next}
+        </button>
+        <button className="mem-btn" onClick={revealAll} disabled={allRevealed}>
+          <Eye size={13} />
+          {currentLabels.all}
+        </button>
+        <button
+          className="mem-btn mem-btn--reset"
+          onClick={reset}
+          title={currentLabels.reset}
+          aria-label={currentLabels.reset}
+        >
+          <RotateCcw size={13} />
+        </button>
+      </div>
+
       <div className="mem-words" dir="rtl">
-        {words.map((word, i) => {
-          const revealed = isRevealed(i);
+        {words.map((word, index) => {
+          const revealed = isRevealed(index);
           return (
             <button
               type="button"
-              key={i}
-              className={`mem-word ${revealed ? 'mem-word--shown' : 'mem-word--hidden'}`}
-              onClick={() => handleWordClick(i)}
+              key={`${word}-${index}`}
+              className={`mem-word ${revealed ? "mem-word--shown" : "mem-word--hidden"}`}
+              onClick={() => {
+                if (!revealed) {
+                  setClickRevealed((value) => new Set([...value, index]));
+                }
+              }}
               disabled={revealed}
-              aria-label={!revealed ? `${lbl.reveal} ${i + 1}` : undefined}
-              title={!revealed ? lbl.reveal : undefined}
-            >
-              {revealed
-                ? word
-                : <span className="mem-mask">▁▁▁</span>
+              aria-label={
+                revealed ? undefined : `${currentLabels.reveal} ${index + 1}`
               }
+              title={revealed ? undefined : currentLabels.reveal}
+            >
+              {revealed ? word : <span className="mem-mask">___</span>}
             </button>
           );
         })}
       </div>
-      <div className="mem-toolbar">
-        <span className="mem-counter">{revealedCount}/{words.length}</span>
-        <button className="mem-btn" onClick={revealNext} disabled={allRevealed}>
-          <EyeOff size={12} />
-          {lbl.next}
-        </button>
-        <button className="mem-btn" onClick={revealAll} disabled={allRevealed}>
-          <Eye size={12} />
-          {lbl.all}
-        </button>
-        <button className="mem-btn mem-btn--reset" onClick={reset} title={lbl.reset}>
-          <RotateCcw size={12} />
-        </button>
-      </div>
+
     </div>
   );
 }

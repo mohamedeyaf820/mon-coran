@@ -1,15 +1,19 @@
 import React, { useEffect, useId, useRef, useState } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { getReciterBio } from "../../data/reciters";
+import { useReciterProfile } from "../../hooks/useReciterProfile";
 
 export default function ReciterBioCollapse({ lang, text, reciter }) {
   const [open, setOpen] = useState(false);
   const contentRef = useRef(null);
   const [contentHeight, setContentHeight] = useState(0);
   const contentId = useId();
+  const profile = useReciterProfile(reciter?.id);
+  const researchedBio =
+    profile?.bio?.[lang] || profile?.bio?.fr || profile?.bio?.en || "";
 
   const safeText =
-    String(text || getReciterBio(reciter, lang) || "").trim() ||
+    String(text || researchedBio || getReciterBio(reciter, lang) || "").trim() ||
     (lang === "fr"
       ? "Profil de récitation disponible dans la bibliothèque audio."
       : lang === "ar"

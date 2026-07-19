@@ -26,8 +26,12 @@ import SimpleAudioPlayerView from "./audioPlayer/SimpleAudioPlayerView";
 import { useAutoScrollAyah } from "../hooks/useAutoScrollAyah";
 import { useMediaSession } from "../hooks/useMediaSession";
 import {
+  clampCardPosition,
+  isMobilePlayerViewport,
+  loadCardPos,
   MOBILE_BREAKPOINT,
   getReciterCooldownMs,
+  saveCardPos,
 } from "./audioPlayer/audioPlayerUtils";
 import { AlertCircle } from "lucide-react";
 
@@ -86,14 +90,16 @@ export default function AudioPlayer() {
   const [minimized, setMinimized] = useState(Boolean(playerMinimized));
   const [volume, setVolume] = useState(savedVolume ?? 1);
   const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window === "undefined") return false;
-    const isTouch = window.matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0;
-    return window.innerWidth < MOBILE_BREAKPOINT || isTouch;
+    return isMobilePlayerViewport();
   });
   const [audioError, setAudioError] = useState(null);
   const [networkState, setNetworkState] = useState("idle");
   const [optionsModalOpen, setOptionsModalOpen] = useState(false);
   const [reciterSwitchingId, setReciterSwitchingId] = useState(null);
+  const [playerPosition, setPlayerPosition] = useState(() =>
+    typeof window === "undefined" ? null : loadCardPos(),
+  );
+  const [playerDragging, setPlayerDragging] = useState(false);
 
   /* Fermeture / refs stables pour callbacks */
   const [closed, setClosed] = useState(false);
@@ -102,6 +108,8 @@ export default function AudioPlayer() {
 
   const optionsCloseButtonRef = useRef(null);
   const progressRef = useRef(null);
+  const playerRef = useRef(null);
+  const playerPositionRef = useRef(playerPosition);
   const audioErrorTimerRef = useRef(null);
   const autoFailoverBusyRef = useRef(false);
   const failedRecitersRef = useRef(new Set());
@@ -115,6 +123,10 @@ export default function AudioPlayer() {
   useEffect(() => {
     currentPlayingAyahRef.current = currentPlayingAyah;
   }, [currentPlayingAyah]);
+
+  useEffect(() => {
+    playerPositionRef.current = playerPosition;
+  }, [playerPosition]);
 
   const markReciterUnavailable = useCallback(
     (reciterId, errorLike = null) => {
@@ -238,12 +250,95 @@ export default function AudioPlayer() {
   /* Detect mobile */
   useEffect(() => {
     const onResize = () => {
-      const isTouch = window.matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0;
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT || isTouch);
+      setIsMobile(isMobilePlayerViewport());
     };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
+
+  const handlePlayerDragPointerDown = useCallback(
+    (event) => {
+      if (isMobile || (event.pointerType === "mouse" && event.button !== 0)) {
+        return;
+      }
+      if (event.target.closest?.("button, a, input, select, textarea, [role='slider']")) {
+        return;
+      }
+
+      const player = playerRef.current;
+      if (!player) return;
+
+      const rect = player.getBoundingClientRect();
+      const pointerId = event.pointerId;
+      const dragTarget = event.currentTarget;
+      const offsetX = event.clientX - rect.left;
+      const offsetY = event.clientY - rect.top;
+
+      event.preventDefault();
+      dragTarget.setPointerCapture?.(pointerId);
+      setPlayerDragging(true);
+
+      const onPointerMove = (moveEvent) => {
+        if (moveEvent.pointerId !== pointerId) return;
+        const nextPosition = clampCardPosition(
+          moveEvent.clientX - offsetX,
+          moveEvent.clientY - offsetY,
+          rect.width,
+          rect.height,
+        );
+        playerPositionRef.current = nextPosition;
+        setPlayerPosition(nextPosition);
+      };
+
+      const finishDrag = (endEvent) => {
+        if (endEvent?.pointerId !== undefined && endEvent.pointerId !== pointerId) {
+          return;
+        }
+        window.removeEventListener("pointermove", onPointerMove);
+        window.removeEventListener("pointerup", finishDrag);
+        window.removeEventListener("pointercancel", finishDrag);
+        dragTarget.releasePointerCapture?.(pointerId);
+        setPlayerDragging(false);
+        if (playerPositionRef.current) saveCardPos(playerPositionRef.current);
+      };
+
+      window.addEventListener("pointermove", onPointerMove);
+      window.addEventListener("pointerup", finishDrag);
+      window.addEventListener("pointercancel", finishDrag);
+    },
+    [isMobile],
+  );
+
+  useEffect(() => {
+    if (isMobile) return undefined;
+
+    let frameId;
+    const keepPlayerInViewport = () => {
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(() => {
+        const savedPosition = playerPositionRef.current;
+        const player = playerRef.current;
+        if (!savedPosition || !player) return;
+        const rect = player.getBoundingClientRect();
+        const nextPosition = clampCardPosition(
+          savedPosition.x,
+          savedPosition.y,
+          rect.width,
+          rect.height,
+        );
+        playerPositionRef.current = nextPosition;
+        setPlayerPosition(nextPosition);
+        saveCardPos(nextPosition);
+      });
+    };
+
+    keepPlayerInViewport();
+    window.addEventListener("resize", keepPlayerInViewport, { passive: true });
+    return () => {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener("resize", keepPlayerInViewport);
+    };
+  }, [isMobile, minimized]);
 
   useEffect(() => {
     setMinimized(Boolean(playerMinimized));
@@ -255,9 +350,9 @@ export default function AudioPlayer() {
   }, [minimized, playerMinimized, set]);
 
   useEffect(() => {
-    if (!showHome || isPlaying || currentPlayingAyah) return;
+    if (isPlaying) return;
     setMinimized(true);
-  }, [currentPlayingAyah, isPlaying, showHome]);
+  }, [isPlaying]);
 
   useEffect(() => {
     if (!optionsModalOpen) return;
@@ -1042,6 +1137,7 @@ export default function AudioPlayer() {
         nextLabel={t("audio.next", lang)}
         onClose={closePlayer}
         onCycleSpeed={cycleSpeed}
+        onDragPointerDown={handlePlayerDragPointerDown}
         onExpand={toggleMinimized}
         onMinimize={toggleMinimized}
         onNext={next}
@@ -1054,6 +1150,9 @@ export default function AudioPlayer() {
         optionsLabel={optionsLabel}
         optionsOpen={optionsModalOpen}
         playPauseLabel={playPauseLabel}
+        playerDragging={playerDragging}
+        playerPosition={playerPosition}
+        playerRef={playerRef}
         previousLabel={t("audio.prev", lang)}
         progress={progress}
         progressDragging={progressDragging}

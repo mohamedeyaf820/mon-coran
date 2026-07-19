@@ -377,29 +377,15 @@ const TajweedText = React.memo(function TajweedText({
 
                     const activeLang = lang === 'ar' || lang === 'en' || lang === 'fr' ? lang : 'fr';
                     const name = rule.name[activeLang] || rule.name['en'] || rule.name['fr'];
-                    const desc = rule.desc[activeLang] || rule.desc['en'] || rule.desc['fr'];
-
                     return (
-                        <Tooltip key={i}>
-                            <TooltipTrigger asChild>
-                                <span
-                                    style={{ color, cursor: 'help' }}
-                                    data-tajwid={seg.ruleId}
-                                    aria-label={name}
-                                    className="border-b border-dashed border-transparent hover:border-current transition-colors"
-                                >
-                                    {seg.text}
-                                </span>
-                            </TooltipTrigger>
-                            <TooltipContent 
-                                className="max-w-[260px] text-center p-3 rounded-2xl bg-[var(--bg-card)] border border-[rgba(var(--primary-rgb),0.25)] shadow-xl z-[9999]" 
-                                side="top" 
-                                sideOffset={6}
-                            >
-                                <div className="font-bold text-[var(--primary)] text-xs mb-1">{name}</div>
-                                <div className="text-[10px] text-[var(--theme-text)] leading-relaxed">{desc}</div>
-                            </TooltipContent>
-                        </Tooltip>
+                        <span
+                            key={i}
+                            style={{ color }}
+                            data-tajwid={seg.ruleId}
+                            aria-label={name}
+                        >
+                            {seg.text}
+                        </span>
                     );
                 })}
             </span>

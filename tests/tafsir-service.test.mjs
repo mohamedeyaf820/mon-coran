@@ -23,7 +23,7 @@ test("tafsir: exposes stable keys for selector values", () => {
 
 test("tafsir: accepts numeric resource ids and keeps selected source", async () => {
   const restore = mockTafsirFetch(async (url) => {
-    assert.match(url, /\/tafsirs\/14\/by_ayah\/2:255$/);
+    assert.match(url, /\/tafsirs\/14\/by_ayah\/2%3A255$/);
     return {
       ok: true,
       async json() {

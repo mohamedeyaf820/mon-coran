@@ -3,6 +3,7 @@ import {
   ChevronDown,
   ChevronUp,
   Gauge,
+  GripHorizontal,
   Loader2,
   Pause,
   Play,
@@ -16,6 +17,21 @@ import { cn } from "../../lib/utils";
 import AudioLoadingIndicator from "../AudioLoadingIndicator";
 import { CoverArt, ProgressRail } from "./AudioPlayerPrimitives";
 import { formatAudioTime } from "./audioPlayerUtils";
+
+function playerShellProps(props) {
+  const canPosition = !props.isMobile && props.playerPosition;
+  return {
+    ref: props.playerRef,
+    "data-dragging": props.playerDragging ? "true" : undefined,
+    "data-positioned": canPosition ? "true" : undefined,
+    style: canPosition
+      ? {
+          "--simple-player-x": `${props.playerPosition.x}px`,
+          "--simple-player-y": `${props.playerPosition.y}px`,
+        }
+      : undefined,
+  };
+}
 
 function IconButton({ className, label, onClick, pressed, children }) {
   return (
@@ -143,6 +159,7 @@ function CompactPlayer(props) {
 
   return (
     <section
+      {...playerShellProps(props)}
       className={cn(
         "mp-audio-player audio-player-simple simple-player simple-player--compact is-minimized",
         isMobile ? "mp-audio-player--mobile" : "mp-audio-player--desktop",
@@ -163,7 +180,11 @@ function CompactPlayer(props) {
         progressRef={progressRef}
         showTimes={false}
       />
-      <div className="mp-player-minimized-row simple-player__compact-row">
+      <div
+        className="mp-player-minimized-row simple-player__compact-row"
+        data-player-drag={!isMobile ? "true" : undefined}
+        onPointerDown={!isMobile ? props.onDragPointerDown : undefined}
+      >
         <CoverArt isPlaying={isPlaying} size={40} reciter={reciter} />
         <button
           type="button"
@@ -231,6 +252,7 @@ function MobileOpenPlayer(props) {
 
   return (
     <section
+      {...playerShellProps(props)}
       className="mp-audio-player audio-player-simple simple-player simple-player--open simple-player--mobile-open is-maximized mp-audio-player--mobile mp-audio-player--dock"
       role="region"
       aria-label={regionLabel}
@@ -341,6 +363,7 @@ function OpenPlayer(props) {
     nextLabel,
     onClose,
     onCycleSpeed,
+    onDragPointerDown,
     onMinimize,
     onNext,
     onOptions,
@@ -367,6 +390,7 @@ function OpenPlayer(props) {
 
   return (
     <section
+      {...playerShellProps(props)}
       className={cn(
         "mp-audio-player audio-player-simple simple-player simple-player--open is-maximized",
         isMobile
@@ -388,8 +412,15 @@ function OpenPlayer(props) {
         </button>
       )}
 
-      <header className="simple-player__header">
-        <span className="simple-player__header-label">{regionLabel}</span>
+      <header
+        className="simple-player__header"
+        data-player-drag={!isMobile ? "true" : undefined}
+        onPointerDown={!isMobile ? onDragPointerDown : undefined}
+      >
+        <span className="simple-player__drag-label">
+          {!isMobile && <GripHorizontal size={17} aria-hidden="true" />}
+          <span className="simple-player__header-label">{regionLabel}</span>
+        </span>
         <div className="simple-player__header-actions">
           <IconButton
             className="mp-player-options-trigger"

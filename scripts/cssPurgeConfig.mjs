@@ -1,4 +1,7 @@
-export const CSS_CONTENT_PATTERNS = ["dist/**/*.html", "dist/**/*.js"];
+// SEO route files are generated after the CSS purge and repeat the app shell.
+// Scanning the single shell plus built JS keeps purge/audit results identical
+// without re-reading thousands of generated HTML files for every CSS layer.
+export const CSS_CONTENT_PATTERNS = ["dist/index.html", "dist/assets/**/*.js"];
 
 export const CSS_SAFELIST = {
   standard: [

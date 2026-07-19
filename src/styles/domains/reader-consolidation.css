@@ -4132,3 +4132,27 @@ html[data-split-view="on"]
         grid-template-columns: 1fr;
     }
 }
+
+/* Keep the contextual reader title legible despite the global button clipping rule. */
+.view-reading .mp-header__title-btn,
+.app-root[data-view="reading"] .mp-header__title-btn {
+    min-height: 44px !important;
+    height: auto !important;
+    padding-block: 0.3rem !important;
+    overflow: visible !important;
+}
+
+.view-reading .mp-header__kicker,
+.app-root[data-view="reading"] .mp-header__kicker {
+    display: none !important;
+}
+
+.view-reading .mp-header__title,
+.view-reading .mp-header__sub,
+.app-root[data-view="reading"] .mp-header__title,
+.app-root[data-view="reading"] .mp-header__sub {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    line-height: 1.2 !important;
+}

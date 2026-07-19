@@ -29,6 +29,7 @@ function runWhenIdle(callback, timeout = 1600) {
 
 const DISPLAY_DATA_CACHE = new Map();
 const DISPLAY_DATA_CACHE_MAX = 120;
+const EMPTY_AYAHS = Object.freeze([]);
 
 function displayCacheKey(displayMode, currentSurah, currentPage, currentJuz, riwaya, warshStrictMode) {
   const scope = displayMode === "page" ? `p:${currentPage}` : displayMode === "juz" ? `j:${currentJuz}` : `s:${currentSurah}`;
@@ -286,7 +287,8 @@ export default function useQuranDisplayData({
   );
 
   const dataTransitioning = !showHome && settledCacheKey !== currentCacheKey;
-  const visibleAyahs = resolvedCacheKey === currentCacheKey ? ayahs : [];
+  const visibleAyahs =
+    resolvedCacheKey === currentCacheKey ? ayahs : EMPTY_AYAHS;
 
   return {
     ayahs: visibleAyahs,

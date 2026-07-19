@@ -104,7 +104,9 @@ export default function useQuranDisplayAudio({
     const safeReciterId = ensureReciterForRiwaya(reciter, riwaya);
 
     if (riwaya !== "hafs" || ayahs.length === 0) {
-      setAudioTimingMap(new Map());
+      setAudioTimingMap((current) =>
+        current.size === 0 ? current : new Map(),
+      );
       return () => {
         cancelled = true;
       };

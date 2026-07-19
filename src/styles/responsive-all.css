@@ -657,7 +657,6 @@ html {
         min-height: 3.5rem !important;
     }
 
-    .app-root .mp-header__brand-text,
     .app-root .mp-header__network {
         display: none !important;
     }
@@ -866,7 +865,7 @@ html {
     ) !important;
 }
 
-:root,
+:root:not([data-theme]),
 [data-theme="light"] {
     --tajwid-silent: #8892b0 !important;
     --tajwid-lam-shamsiyya: #8892b0 !important;
@@ -1949,6 +1948,10 @@ body,
 }
 
 @media (max-width: 760px) {
+    .app-root .mp-header__brand-text {
+        display: none !important;
+    }
+
     .app-root .app-main-shell {
         height: calc(100dvh - var(--header-h, 72px)) !important;
         max-height: calc(100dvh - var(--header-h, 72px)) !important;

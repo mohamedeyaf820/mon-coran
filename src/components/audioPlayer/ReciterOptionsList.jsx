@@ -304,6 +304,23 @@ export default function ReciterOptionsList(props) {
                       )}
                     </span>
                   </span>
+
+                  <span className="audio-reciter-options__status" aria-hidden="true">
+                    {isLoading ? (
+                      <span className="audio-reciter-options__check">
+                        <LoaderCircle size={14} className="animate-spin" />
+                      </span>
+                    ) : active ? (
+                      <span className="audio-reciter-options__check" title={labels.selected}>
+                        <Check size={14} strokeWidth={3} />
+                      </span>
+                    ) : null}
+                    {latency && !isUnavailable && (
+                      <span className="audio-reciter-options__latency">
+                        {Math.round(latency * 1000)} ms
+                      </span>
+                    )}
+                  </span>
                 </button>
               );
             })}

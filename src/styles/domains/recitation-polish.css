@@ -291,15 +291,28 @@
 }
 
 .reciter-detail__source-row span,
-.reciter-detail__source-row strong {
+.reciter-detail__source-row strong,
+.reciter-detail__source-row a {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.reciter-detail__source-row strong {
+.reciter-detail__source-row strong,
+.reciter-detail__source-row a {
     color: var(--text-secondary);
     font-weight: 780;
+}
+
+.reciter-detail__source-row a {
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--primary) 34%, transparent);
+    text-underline-offset: 0.18em;
+}
+
+.reciter-detail__source-row a:hover {
+    color: var(--primary);
+    text-decoration-color: currentColor;
 }
 
 .reciter-detail__notice {

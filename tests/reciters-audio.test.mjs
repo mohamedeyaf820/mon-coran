@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import {
   getReciter,
@@ -14,6 +15,10 @@ import {
   validateReciterAudioConfig,
   validateReciterProfile,
 } from "../src/data/reciters.js";
+
+const RESEARCHED_PROFILES = JSON.parse(
+  readFileSync(new URL("../public/data/reciter-profiles.json", import.meta.url), "utf8"),
+);
 
 const EXPECTED_HAFS_IDS = [
   "abu_bakr_ash_shaatree",
@@ -105,8 +110,9 @@ test("reciters: ids are unique and metadata is compatible with the player", () =
   }
 });
 
-test("reciters: reachable Quran.com photos are wired and stale profiles fall back", () => {
+test("reciters: attributed portraits and biography sources are wired", () => {
   const knownPhotoIds = [
+    "ar.alafasy",
     "ar.husary",
     "abu_bakr_ash_shaatree",
     "ahmed_ajmy",
@@ -121,11 +127,20 @@ test("reciters: reachable Quran.com photos are wired and stale profiles fall bac
     assert.match(getReciterPhoto(id), /^https:\/\/static\.qurancdn\.com\/images\/reciters\//);
   }
 
-  assert.equal(getReciterPhoto("ar.alafasy"), null);
-  assert.equal(getReciterVisual({ id: "ar.alafasy", nameEn: "Mishary Rashid Alafasy" }).type, "avatar");
+  for (const id of EXPECTED_WARSH_IDS) {
+    const reciter = getReciter(id, "warsh");
+    const researchedProfile = RESEARCHED_PROFILES[id];
+    assert.match(getReciterPhoto(id), /^https:\/\//, id);
+    assert.match(getReciterVisual(reciter).attribution.url, /^https:\/\//, id);
+    assert.match(researchedProfile.bioSource.url, /^https:\/\//, id);
+    assert.ok(researchedProfile.bio.fr.length > 180, id);
+  }
+
   assert.equal(getReciterVisual(getReciter("ar.husary")).attribution.provider, "Quran.com");
   assert.equal(getReciterCountryLabel("KSA", "fr"), "Arabie saoudite");
   assert.equal(getReciterCountryLabel("Egypt", "ar"), "مصر");
+  assert.equal(getReciterCountryLabel("Algeria", "fr"), "Algérie");
+  assert.equal(getReciterCountryLabel("Morocco", "ar"), "المغرب");
 });
 
 test("reciters: Warsh additions are marked as verified Warsh", () => {
