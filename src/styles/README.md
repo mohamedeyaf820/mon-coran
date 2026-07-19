@@ -24,10 +24,15 @@ The CSS is loaded in layers from broad foundations to final UI decisions:
 
 When changing a feature, prefer the closest domain file. Use `ui-polish.css` only for intentional final overrides that must win the cascade.
 
+Feature routes with several style sources use a small JavaScript entrypoint
+(`readerStyles.js`, `recitationStyles.js`) to make their cascade order explicit
+and to keep route-level imports consolidated.
+
 ## CSS guardrails
 
 Run `npm run audit:css` after changing a style layer. The audit reports retained
-source size, `!important` usage, removable selectors, and exact duplicate rules.
+source size, `!important` usage, removable selectors, and exact duplicate rules
+both within and across files.
 `npm run build:ci` enforces the current ceilings and rejects new exact duplicates.
 
 Prefer component or route imports for feature-only styles. Keep `tailwind.css`

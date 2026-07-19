@@ -107,6 +107,7 @@ function AyahList({
                 tabIndex={0}
                 className={cn(
                   "qcom-continuous-verse",
+                  "content-visibility-auto [contain-intrinsic-size:1px_76px]",
                   isActive && "qcom-continuous-verse--active",
                   isPlaying && "qcom-continuous-verse--playing",
                 )}

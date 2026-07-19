@@ -20,6 +20,10 @@ function loadProfileCatalogue() {
   return profileCataloguePromise;
 }
 
+export function preloadReciterProfiles() {
+  return loadProfileCatalogue().catch(() => null);
+}
+
 export function useReciterProfile(reciterId) {
   const [profile, setProfile] = useState(null);
 

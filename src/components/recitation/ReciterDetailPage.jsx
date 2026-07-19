@@ -9,8 +9,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import "../../styles/domains/recitation-polish.css";
-import "../../styles/reciter-enhanced.css";
+import "../../styles/recitationStyles.js";
 import ReciterHero from "./ReciterHero";
 import ReciterBioCollapse from "./ReciterBioCollapse";
 import ReciterRadioButton from "./ReciterRadioButton";

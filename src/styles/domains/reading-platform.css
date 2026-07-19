@@ -2395,10 +2395,6 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     color: var(--qcom-page-muted, var(--text-secondary)) !important;
 }
 
-.app-root .quran-display--platform .surah-ayahs-list::before {
-    display: none !important;
-}
-
 .app-root .quran-display--platform .qcom-continuous-list {
     padding: clamp(0.8rem, 2.2vw, 1.55rem) 0.2rem 2.4rem !important;
     text-align: right !important;

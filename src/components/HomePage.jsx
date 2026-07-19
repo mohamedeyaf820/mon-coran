@@ -189,7 +189,12 @@ export default function HomePage({ lowPerfMode = false }) {
   const reciterModalTriggerRef = useRef(null);
 
   const warmReciterDetail = useCallback(() => {
-    loadReciterDetailModule().catch(() => {
+    Promise.all([
+      loadReciterDetailModule(),
+      import("../hooks/useReciterProfile").then(({ preloadReciterProfiles }) =>
+        preloadReciterProfiles(),
+      ),
+    ]).catch(() => {
       reciterDetailModulePromise = null;
     });
   }, []);

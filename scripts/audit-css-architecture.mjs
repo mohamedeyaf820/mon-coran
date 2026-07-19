@@ -22,6 +22,9 @@ const LIMITS = {
   retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1010),
   important: Number(process.env.CSS_IMPORTANT_BUDGET || 6900),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
+  crossFileDuplicateRules: Number(
+    process.env.CSS_CROSS_FILE_DUPLICATE_BUDGET || 0,
+  ),
 };
 
 function findExactDuplicateRules(css) {
@@ -61,6 +64,42 @@ function findExactDuplicateRules(css) {
   return { count, bytes, selectors };
 }
 
+function findCrossFileExactDuplicateRules(files) {
+  const seen = new Map();
+  const duplicates = [];
+
+  for (const { file, css } of files) {
+    const root = postcss.parse(css);
+    root.walkRules((rule) => {
+      const contexts = [];
+      let parent = rule.parent;
+      while (parent && parent.type !== "root") {
+        if (parent.type === "atrule") {
+          contexts.unshift(`@${parent.name} ${parent.params}`);
+        }
+        parent = parent.parent;
+      }
+
+      const declarations = (rule.nodes || [])
+        .map((node) =>
+          node.type === "decl"
+            ? `${node.prop}:${node.value}${node.important ? "!important" : ""}`
+            : node.toString(),
+        )
+        .join(";");
+      const signature = `${contexts.join("|")}::${rule.selector}::${declarations}`;
+      const firstFile = seen.get(signature);
+      if (firstFile && firstFile !== file) {
+        duplicates.push({ firstFile, file, selector: rule.selector });
+      } else if (!firstFile) {
+        seen.set(signature, file);
+      }
+    });
+  }
+
+  return duplicates;
+}
+
 const [contentFiles, cssFiles] = await Promise.all([
   glob(CSS_CONTENT_PATTERNS, { absolute: true }),
   glob(SOURCE_PATTERN, { absolute: true }),
@@ -71,8 +110,11 @@ if (contentFiles.length === 0) {
 }
 
 const rows = [];
+const parsedCssFiles = [];
 for (const cssFile of cssFiles) {
   const raw = await readFile(cssFile, "utf8");
+  const relativeFile = path.relative(process.cwd(), cssFile);
+  parsedCssFiles.push({ file: relativeFile, css: raw });
   const duplicateRules = findExactDuplicateRules(raw);
   const [result] = await new PurgeCSS().purge({
     content: contentFiles,
@@ -83,7 +125,7 @@ for (const cssFile of cssFiles) {
   });
 
   rows.push({
-    file: path.relative(process.cwd(), cssFile),
+    file: relativeFile,
     sourceBytes: Buffer.byteLength(raw),
     retainedBytes: Buffer.byteLength(result?.css || ""),
     importantCount: raw.match(IMPORTANT_PATTERN)?.length || 0,
@@ -93,6 +135,8 @@ for (const cssFile of cssFiles) {
     duplicateSelectors: duplicateRules.selectors,
   });
 }
+
+const crossFileDuplicates = findCrossFileExactDuplicateRules(parsedCssFiles);
 
 rows.sort((left, right) => right.retainedBytes - left.retainedBytes);
 
@@ -134,6 +178,16 @@ console.log(`- Removable selectors: ${totals.rejectedCount}`);
 console.log(
   `- Exact duplicate rules: ${totals.duplicateCount} (${formatKb(totals.duplicateBytes)})`,
 );
+console.log(`- Cross-file exact duplicate rules: ${crossFileDuplicates.length}`);
+
+if (crossFileDuplicates.length > 0) {
+  console.log("[css-audit] Cross-file exact duplicates");
+  for (const duplicate of crossFileDuplicates.slice(0, 12)) {
+    console.log(
+      `- ${duplicate.firstFile} ↔ ${duplicate.file}: ${duplicate.selector}`,
+    );
+  }
+}
 
 const duplicateRows = rows
   .filter((row) => row.duplicateCount > 0)
@@ -162,6 +216,11 @@ if (shouldCheck) {
   }
   if (totals.duplicateCount > LIMITS.duplicateRules) {
     failures.push(`exact duplicate rules exceed ${LIMITS.duplicateRules}`);
+  }
+  if (crossFileDuplicates.length > LIMITS.crossFileDuplicateRules) {
+    failures.push(
+      `cross-file exact duplicate rules exceed ${LIMITS.crossFileDuplicateRules}`,
+    );
   }
   if (failures.length > 0) {
     console.error(`[css-audit] Budget failed: ${failures.join("; ")}`);

@@ -107,11 +107,6 @@ body,
   min-width: 0;
 }
 
-.app-root {
-  min-height: 100dvh;
-  overflow-x: clip;
-}
-
 .app-root :is(.app-main, .app-main-shell, .app-view-shell) {
   width: 100%;
   min-width: 0;

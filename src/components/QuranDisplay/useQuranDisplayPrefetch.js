@@ -117,7 +117,7 @@ export default function useQuranDisplayPrefetch({
     let secondaryTimer = null;
     let secondaryIdleId = null;
     // Alternate riwaya is intentionally last so adjacent navigation wins.
-    const alternateTimer = window.setTimeout(runCurrentAlternatePrefetch, 4800);
+    const alternateTimer = window.setTimeout(runCurrentAlternatePrefetch, 1800);
     if (typeof window.requestIdleCallback === "function") {
       // Warm the most likely previous/next navigation during the first idle slot.
       const idleId = window.requestIdleCallback(runNearbyPrefetch, { timeout: 1200 });

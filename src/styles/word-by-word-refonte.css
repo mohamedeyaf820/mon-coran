@@ -165,7 +165,7 @@ html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block >
     white-space: normal !important;
     word-break: normal !important;
     overflow-wrap: break-word !important;
-    hyphens: auto !important;
+    hyphens: none !important;
     unicode-bidi: isolate !important;
 }
 

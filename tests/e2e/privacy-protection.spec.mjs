@@ -3,6 +3,17 @@ import { test, expect } from "@playwright/test";
 const PASSPHRASE = "ma phrase secrete robuste 2026";
 const NEXT_PASSPHRASE = "ma nouvelle phrase robuste 2026";
 
+async function openSettings(page) {
+  const directButton = page.locator(".mp-header__settings").first();
+  if (await directButton.isVisible().catch(() => false)) {
+    await directButton.click();
+    return;
+  }
+
+  await page.locator(".mp-header__more").first().click();
+  await page.locator('.mp-header-menu__item[data-key="settings"]').click();
+}
+
 async function seedLegacyPrivateRecords(page) {
   await page.evaluate(async () => {
     const db = await new Promise((resolve, reject) => {
@@ -71,7 +82,7 @@ test("privacy: protected mode migrates records and locks after reload", async ({
   await expect(page.locator(".app-view-home")).toBeVisible();
   await seedLegacyPrivateRecords(page);
 
-  await page.locator(".mp-header__settings").first().click();
+  await openSettings(page);
   await expect(page.locator(".settings-drawer")).toBeVisible();
   await page.getByRole("tab", { name: "Confidentialit\u00e9" }).click();
   await page.locator("#settings-protection-new").fill(PASSPHRASE);
@@ -112,7 +123,7 @@ test("privacy: protected mode migrates records and locks after reload", async ({
   await page.getByRole("button", { name: "D\u00e9verrouiller" }).click();
   await expect(page.locator(".app-view-home")).toBeVisible();
 
-  await page.locator(".mp-header__settings").first().click();
+  await openSettings(page);
   await page.getByRole("tab", { name: "Confidentialit\u00e9" }).click();
   await page.locator("#settings-protection-current").fill(PASSPHRASE);
   await page.locator("#settings-protection-replacement").fill(NEXT_PASSPHRASE);
@@ -128,7 +139,7 @@ test("privacy: protected mode migrates records and locks after reload", async ({
   await page.getByRole("button", { name: "D\u00e9verrouiller" }).click();
   await expect(page.locator(".app-view-home")).toBeVisible();
 
-  await page.locator(".mp-header__settings").first().click();
+  await openSettings(page);
   await page.getByRole("tab", { name: "Confidentialit\u00e9" }).click();
   await page.locator("#settings-protection-disable").fill(NEXT_PASSPHRASE);
   await page.getByRole("button", { name: "D\u00e9sactiver le mode prot\u00e9g\u00e9" }).click();

@@ -16,7 +16,7 @@ function mockVerse(number) {
   };
 }
 
-async function prepareReader(page) {
+async function prepareReader(page, verseCount = 50) {
   await page.addInitScript(({ key }) => {
     localStorage.setItem(
       key,
@@ -52,7 +52,7 @@ async function prepareReader(page) {
     (route) =>
       route.fulfill({
         json: {
-          verses: Array.from({ length: 50 }, (_, index) => mockVerse(index + 1)),
+          verses: Array.from({ length: verseCount }, (_, index) => mockVerse(index + 1)),
           pagination: { total_pages: 1 },
         },
       }),
@@ -67,18 +67,16 @@ test("phase 8: rapid verse changes keep only the latest audio target", async ({
   await prepareReader(page);
   await page.goto("/surah/2");
 
-  const cards = page.locator(".qc-list-card");
-  await expect(cards.nth(1)).toBeVisible({ timeout: 30_000 });
-  const firstPlay = cards.nth(0).locator(".ayah-action--play").first();
-  const secondPlay = cards.nth(1).locator(".ayah-action--play").first();
+  await expect(page.locator("#ayah-2 .qc-list-card")).toBeVisible({ timeout: 30_000 });
+  const firstPlay = page.locator("#ayah-1 .ayah-action--play").first();
+  const secondPlay = page.locator("#ayah-2 .ayah-action--play").first();
   await expect(firstPlay).toBeVisible();
   await expect(secondPlay).toBeVisible();
 
   await page.evaluate(() => {
-    const cards = document.querySelectorAll(".qc-list-card");
     window.__phase8StartedAt = performance.now();
-    cards[0]?.querySelector(".ayah-action--play")?.click();
-    cards[1]?.querySelector(".ayah-action--play")?.click();
+    document.querySelector("#ayah-1 .ayah-action--play")?.click();
+    document.querySelector("#ayah-2 .ayah-action--play")?.click();
   });
   await expect(secondPlay).toHaveAttribute("aria-label", "Pause");
   const responseTime = await page.evaluate(
@@ -87,4 +85,36 @@ test("phase 8: rapid verse changes keep only the latest audio target", async ({
   expect(responseTime).toBeLessThan(1_500);
   await expect(firstPlay).not.toHaveAttribute("aria-label", "Pause");
   expect(runtimeErrors).toEqual([]);
+});
+
+test("phase 8: verse and sidebar windows release offscreen components", async ({
+  page,
+}) => {
+  await prepareReader(page, 160);
+  await page.goto("/surah/2");
+
+  const anchors = page.locator('.qc-verse-by-verse-view [role="listitem"][id^="ayah-"]');
+  await expect(anchors).toHaveCount(160);
+  await expect(page.locator("#ayah-1 .qc-list-card")).toBeVisible();
+  expect(await page.locator(".qc-list-card").count()).toBeLessThan(40);
+
+  const lastAnchor = page.locator("#ayah-160");
+  await lastAnchor.evaluate((element) =>
+    element.scrollIntoView({ block: "center", behavior: "auto" }),
+  );
+  await expect(lastAnchor.locator(".qc-list-card")).toBeVisible();
+  await expect(page.locator("#ayah-40 .qc-list-card")).toHaveCount(0);
+  expect(await page.locator(".qc-list-card").count()).toBeLessThan(50);
+
+  await page.locator(".mp-header__icon-btn").first().click();
+  const sidebarItems = page.locator(".sidebar-virtual-item");
+  await expect(sidebarItems).toHaveCount(114);
+  expect(await page.locator(".sidebar-virtual-item > button").count()).toBeLessThan(60);
+
+  const lastSidebarItem = sidebarItems.last();
+  await lastSidebarItem.evaluate((element) =>
+    element.scrollIntoView({ block: "center", behavior: "auto" }),
+  );
+  await expect(lastSidebarItem.locator("button")).toBeVisible();
+  expect(await page.locator(".sidebar-virtual-item > button").count()).toBeLessThan(60);
 });

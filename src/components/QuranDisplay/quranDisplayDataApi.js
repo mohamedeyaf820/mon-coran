@@ -105,6 +105,10 @@ export async function loadArabicData({
   }
 }
 
+export function preloadArabicData(options) {
+  return loadArabicData({ ...options, signal: undefined }).catch(() => null);
+}
+
 export function ensureRequestedRiwaya(ayahs, riwaya) {
   return [...ayahs]
     .map((ayah) => normalizeRiwayaText(ayah, riwaya))

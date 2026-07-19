@@ -6,6 +6,7 @@ import { t } from "../i18n";
 import SURAHS, { toAr } from "../data/surahs";
 import { JUZ_DATA, JUZ_PAGE_RANGES } from "../data/juz";
 import { cn } from "../lib/utils";
+import VirtualizedItem from "./ui/VirtualizedItem";
 
 export default function Sidebar() {
   const { state, dispatch, set } = useApp();
@@ -307,8 +308,17 @@ export default function Sidebar() {
               const isActive = s.n === currentSurah && displayMode === "surah";
               const surahCalligraphyId = String(s.n).padStart(3, "0");
               return (
-                <button
+                <VirtualizedItem
                   key={s.n}
+                  cacheKey={`sidebar:surah:${filter || "all"}:${s.n}`}
+                  eager={Boolean(filter) || s.n <= 16}
+                  estimatedHeight={52}
+                  pinned={isActive}
+                  rootMargin="420px 0px"
+                  className="sidebar-virtual-item"
+                >
+                  {() => (
+                <button
                   ref={isActive ? activeItemRef : null}
                   type="button"
                   className={cn(
@@ -362,6 +372,8 @@ export default function Sidebar() {
                     {surahCalligraphyId}
                   </div>
                 </button>
+                  )}
+                </VirtualizedItem>
               );
             })}
 

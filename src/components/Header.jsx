@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   shallowEqual,
   useAppActions,
@@ -130,6 +130,32 @@ export default function Header() {
   const openSearch = () => dispatch({ type: "TOGGLE_SEARCH" });
   const openSettings = () => dispatch({ type: "TOGGLE_SETTINGS" });
   const openToolsHub = () => set({ toolsHubOpen: true });
+  const warmRiwaya = useCallback(
+    (targetRiwaya) => {
+      if (showHome || showDuas || legalPage || targetRiwaya === riwaya) return;
+      import("./QuranDisplay/quranDisplayDataApi")
+        .then(({ preloadArabicData }) =>
+          preloadArabicData({
+            currentJuz,
+            currentPage,
+            currentSurah,
+            displayMode,
+            riwaya: targetRiwaya,
+          }),
+        )
+        .catch(() => {});
+    },
+    [
+      currentJuz,
+      currentPage,
+      currentSurah,
+      displayMode,
+      legalPage,
+      riwaya,
+      showDuas,
+      showHome,
+    ],
+  );
 
   const canGoPrev =
     displayMode === "page"
@@ -527,7 +553,13 @@ export default function Header() {
           <button
             className="mp-header__action mp-header__riwaya-toggle"
             type="button"
-            onClick={() => set({ riwaya: riwaya === "hafs" ? "warsh" : "hafs" })}
+            onPointerEnter={() => warmRiwaya(riwaya === "hafs" ? "warsh" : "hafs")}
+            onFocus={() => warmRiwaya(riwaya === "hafs" ? "warsh" : "hafs")}
+            onClick={() => {
+              const nextRiwaya = riwaya === "hafs" ? "warsh" : "hafs";
+              warmRiwaya(nextRiwaya);
+              set({ riwaya: nextRiwaya });
+            }}
             aria-label={`${headerLabels.riwayaToggle} — ${riwaya === "warsh" ? "Warsh" : "Hafs"}`}
             title={headerLabels.riwayaToggle}
           >
@@ -652,7 +684,10 @@ export default function Header() {
                       className={cn("mp-header__seg", riwaya === id && "is-active")}
                       type="button"
                       aria-pressed={riwaya === id}
+                      onPointerEnter={() => warmRiwaya(id)}
+                      onFocus={() => warmRiwaya(id)}
                       onClick={() => {
+                        warmRiwaya(id);
                         set({ riwaya: id });
                         setQuickMenuOpen(false);
                       }}

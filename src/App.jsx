@@ -27,9 +27,11 @@ import {
   isWarshVerifiedReciter,
 } from "./data/reciters";
 
-const HomePage = lazy(() => import("./components/HomePage"));
+const loadHomePage = () => import("./components/HomePage");
+const loadQuranDisplay = () => import("./components/QuranDisplay");
+const HomePage = lazy(loadHomePage);
 const Header = lazy(() => import("./components/Header"));
-const QuranDisplay = lazy(() => import("./components/QuranDisplay"));
+const QuranDisplay = lazy(loadQuranDisplay);
 const LegalPage = lazy(() => import("./components/LegalPage"));
 const ConfirmDialogHost = lazy(() => import("./components/ConfirmDialogHost"));
 const NotesPanel = lazy(() => import("./components/NotesPanel"));
@@ -449,6 +451,25 @@ export default function App() {
     deferNonCriticalUI,
     hasInteracted,
   ]);
+
+  useEffect(() => {
+    if (!splashDone || lowPerfMode || !deferNonCriticalUI) return undefined;
+
+    return runWhenIdle(async () => {
+      if (!showHome) {
+        await loadHomePage().catch(() => null);
+        return;
+      }
+
+      await Promise.allSettled([
+        loadQuranDisplay(),
+        import("./components/recitation/ReciterDetailPage"),
+        import("./hooks/useReciterProfile").then(({ preloadReciterProfiles }) =>
+          preloadReciterProfiles(),
+        ),
+      ]);
+    }, showHome ? 1100 : 1500);
+  }, [deferNonCriticalUI, lowPerfMode, showHome, splashDone]);
 
   // Delegate most keyboard shortcuts to the shared hook.
   // App.jsx retains only the shortcuts that are outside the hook's scope:

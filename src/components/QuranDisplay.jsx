@@ -1,11 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import "../styles/domains/reader-consolidation.css";
-import "../styles/domains/reading-platform.css";
-import "../styles/word-by-word-refonte.css";
-import "../styles/reading-ux-refonte.css";
-import "../styles/surah-reader-header.css";
-import "../styles/surah-info-panel.css";
-import "../styles/surah-banner.css";
+import "../styles/readerStyles.js";
 import {
   shallowEqual,
   useAppActions,
