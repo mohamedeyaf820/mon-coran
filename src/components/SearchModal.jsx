@@ -24,9 +24,11 @@ import { search, searchTranslation } from "../services/quranAPI";
 import { getSurah, toAr } from "../data/surahs";
 import { getJuzForAyah } from "../data/juz";
 import {
-  buildSearchCandidates,
-  inferSearchMode,
+  containsArabic,
+  sanitizeSearchQuery,
 } from "../utils/searchIntelligence";
+import { prepareSearchQuery } from "../services/searchWorkerService";
+import { startPerformanceTimer } from "../services/performanceMetrics";
 import { Icon } from "./ui/icon";
 
 function formatSearchError(error, lang) {
@@ -39,15 +41,6 @@ function formatSearchError(error, lang) {
         : "Remote search failed. Please check your internet connection.";
   }
   return message;
-}
-
-function sanitizeSearchQuery(input) {
-  return String(input || "")
-    .trim()
-    .slice(0, 200)
-    .replace(/[^\p{L}\p{N}\s\u0600-\u06FF'.,;:!?()\-]/gu, "")
-    .replace(/\s+/g, " ")
-    .trim();
 }
 
 export default function SearchModal() {
@@ -68,19 +61,22 @@ export default function SearchModal() {
   const searchAbortRef = useRef(null);
   const runSearch = useCallback(
     async (rawQuery = query, preferredMode = searchMode) => {
-      const sanitized = sanitizeSearchQuery(rawQuery);
-      const effectiveMode = inferSearchMode(sanitized, preferredMode);
-      const candidates = buildSearchCandidates(sanitized, effectiveMode);
+      const requestId = ++searchRequestIdRef.current;
+      const finishMetric = startPerformanceTimer("search_response_ms");
+      const { sanitized, effectiveMode, candidates } =
+        await prepareSearchQuery(rawQuery, preferredMode);
+
+      if (requestId !== searchRequestIdRef.current) return;
 
       if (candidates.length === 0) {
         startTransition(() => {
           setResults([]);
           setResolvedQuery("");
         });
+        finishMetric();
         return;
       }
 
-      const requestId = ++searchRequestIdRef.current;
       searchAbortRef.current?.abort?.();
       const ctrl = new AbortController();
       searchAbortRef.current = ctrl;
@@ -120,6 +116,7 @@ export default function SearchModal() {
           setResolvedQuery(bestQuery);
           setSearchMode(effectiveMode);
         });
+        finishMetric();
       } catch (err) {
         if (
           err?.name === "AbortError" ||
@@ -132,6 +129,7 @@ export default function SearchModal() {
           setResults([]);
           setResolvedQuery("");
         });
+        finishMetric();
       } finally {
         if (searchAbortRef.current === ctrl) {
           searchAbortRef.current = null;
@@ -297,6 +295,8 @@ export default function SearchModal() {
           <Dialog.Content
             className="search-pro"
             aria-modal="true"
+            lang={lang}
+            dir={lang === "ar" ? "rtl" : "ltr"}
             onEscapeKeyDown={(e) => {
               e.preventDefault();
               close();
@@ -359,6 +359,8 @@ export default function SearchModal() {
                       </span>
                       <input
                         type="text"
+                        lang={searchMode === "fr" ? "fr" : searchMode === "en" ? "en" : "ar"}
+                        dir={containsArabic(query) || searchMode === "arabic" ? "rtl" : "ltr"}
                         value={query}
                         onChange={(event) =>
                           setQuery(sanitizeSearchQuery(event.target.value))

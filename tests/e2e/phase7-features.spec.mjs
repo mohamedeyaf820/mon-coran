@@ -49,7 +49,7 @@ test("phase 7: le gestionnaire offline restaure et affiche son registre", async 
   await expect(dialog.getByRole("tab", { name: "Offline" })).toHaveAttribute("aria-selected", "true");
   await expect(dialog.getByRole("listitem").getByText("L'Ouverture", { exact: true })).toBeVisible();
   await expect(dialog.getByText("Prêt")).toBeVisible();
-  await expect(dialog.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100");
+  await expect(dialog.getByRole("listitem").getByRole("progressbar")).toHaveAttribute("aria-valuenow", "100");
 });
 
 test("phase 7: un parcours de mémorisation propose une séance et ouvre le lecteur", async ({ page }) => {

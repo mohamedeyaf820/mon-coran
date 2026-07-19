@@ -12,6 +12,12 @@ import {
   readLocalStorageWithSchema,
   writeLocalStorageJson,
 } from "./storageValidation";
+import {
+  ensureStorageCapacity,
+  estimateAudioDownloadBytes,
+  requestPersistentStorage,
+} from "./storageQuotaService.js";
+import { startPerformanceTimer } from "./performanceMetrics.js";
 
 const CACHE_NAME = "mushafplus-audio-v2";
 const PROGRESS_KEY = "mushaf_offline_progress_v2";
@@ -201,11 +207,25 @@ export async function downloadSurahForReciter(
   let successCount = 0;
   let failedCount = 0;
   const progress = loadProgress();
+  const finishMetric = startPerformanceTimer("offline_download_ms");
 
   try {
     const audioItems = await buildDownloadAudioItems(normalized);
     const total = audioItems.length;
     if (total === 0) return "error";
+    await requestPersistentStorage();
+    const alreadyDownloaded = Math.max(
+      0,
+      Number(progress[normalized.key]?.downloaded || 0),
+    );
+    const remainingItems = Math.max(1, total - alreadyDownloaded);
+    const capacity = await ensureStorageCapacity({
+      estimatedAdditionalBytes: estimateAudioDownloadBytes(
+        remainingItems,
+        AudioService.isSurahStreamCdn(normalized.cdnType),
+      ),
+    });
+    if (!capacity.allowed) return "storage-full";
     progress[normalized.key] = {
       key: normalized.key,
       status: "partial",
@@ -317,6 +337,7 @@ export async function downloadSurahForReciter(
       updatedAt: Date.now(),
     };
     saveProgress(progress);
+    finishMetric();
     return status;
   } catch (error) {
     const cancelled = controller.signal.aborted;
@@ -333,8 +354,10 @@ export async function downloadSurahForReciter(
       updatedAt: Date.now(),
     };
     saveProgress(progress);
+    finishMetric();
     return cancelled ? "cancelled" : "error";
   } finally {
+    finishMetric();
     activeDownloads.delete(normalized.key);
   }
 }

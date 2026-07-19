@@ -27,6 +27,7 @@ export default function Sidebar() {
   const [pageInput, setPageInput] = useState("");
   const [selectedJuzForPages, setSelectedJuzForPages] = useState(1);
   const sidebarRef = useRef(null);
+  const scrollRootRef = useRef(null);
   const closeButtonRef = useRef(null);
   const activeItemRef = useRef(null);
   const previouslyFocusedRef = useRef(null);
@@ -276,7 +277,7 @@ export default function Sidebar() {
         </div>
 
         {/* ── ZONE SCROLLABLE ── */}
-        <div className="flex-1 overflow-y-auto p-2 sm:p-2.5 space-y-0.5">
+        <div ref={scrollRootRef} className="flex-1 overflow-y-auto p-2 sm:p-2.5 space-y-0.5">
           {/* ── Section sourates ── */}
           {tab === "surah" && filter && filteredSurahs.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-text-muted opacity-60 gap-3">
@@ -314,6 +315,7 @@ export default function Sidebar() {
                   eager={Boolean(filter) || s.n <= 16}
                   estimatedHeight={52}
                   pinned={isActive}
+                  rootRef={scrollRootRef}
                   rootMargin="420px 0px"
                   className="sidebar-virtual-item"
                 >

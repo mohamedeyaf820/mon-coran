@@ -1,4 +1,4 @@
-import { latinToArabic } from "../data/transliteration";
+import { latinToArabic } from "../data/transliteration.js";
 
 const ARABIC_DIACRITICS_RE =
   /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]/g;
@@ -11,6 +11,15 @@ const LATIN_FILLERS_RE =
 
 export function containsArabic(text = "") {
   return ARABIC_ONLY_RE.test(text);
+}
+
+export function sanitizeSearchQuery(input) {
+  return String(input || "")
+    .trim()
+    .slice(0, 200)
+    .replace(/[^\p{L}\p{N}\s\u0600-\u06FF'.,;:!?()\-]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function normalizeArabicSearchText(text = "") {

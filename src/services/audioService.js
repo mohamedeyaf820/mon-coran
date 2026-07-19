@@ -3,6 +3,9 @@
  * Wraps HTML5 Audio API with retry logic, preloading, and timeout handling.
  */
 
+import { recordPerformanceMetric } from "./performanceMetrics.js";
+import { getAdaptiveAudioPreloadCount } from "../utils/networkPolicy.js";
+
 const AUDIO_LOAD_TIMEOUT = 12000; // 12s max to start loading
 const MAX_RETRIES = 2;
 const RETRY_DELAY = 800; // ms
@@ -85,7 +88,7 @@ class AudioService {
     this._cancelPendingLoad = null;
     this._preloadAudio = null; // For preloading next track
     this._preloadPool = []; // [{ url, audio }]
-    this._maxPreloadPool = 3;
+    this._maxPreloadPool = getAdaptiveAudioPreloadCount();
     this._loadRequestId = 0; // Used to ignore stale retry attempts
     this._currentReciterCdn = "";
     this._currentCdnType = "islamic";
@@ -676,6 +679,7 @@ class AudioService {
     const next =
       Number.isFinite(prev) ? prev * 0.75 + latencySec * 0.25 : latencySec;
     this._reciterLatencyByKey[key] = Number(next.toFixed(4));
+    recordPerformanceMetric("audio_start_ms", Math.max(0, latencySec * 1000));
     this._notifyLatencyListeners();
     this._hasCapturedLatency = true;
   }
@@ -914,7 +918,18 @@ class AudioService {
 
   _preloadAhead(startIndex, count = 2) {
     if (!Array.isArray(this.playlist) || this.playlist.length === 0) return;
-    for (let i = 0; i < count; i++) {
+    const adaptiveCount = Math.min(count, getAdaptiveAudioPreloadCount());
+    this._maxPreloadPool = adaptiveCount;
+    if (adaptiveCount === 0) {
+      for (const item of this._preloadPool) {
+        item.audio?.removeAttribute("src");
+        item.audio?.load?.();
+      }
+      this._preloadPool = [];
+      this._preloadAudio = null;
+      return;
+    }
+    for (let i = 0; i < adaptiveCount; i++) {
       const idx = startIndex + i;
       if (idx >= 0 && idx < this.playlist.length) {
         this._preloadTrack(this.playlist[idx].url);

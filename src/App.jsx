@@ -17,6 +17,7 @@ import { t } from "./i18n";
 import SplashScreen from "./components/SplashScreen";
 import PWAUpdateBanner from "./components/PWAUpdateBanner";
 import { runWhenIdle } from "./utils/idleUtils";
+import { isLowPerformanceDevice } from "./utils/networkPolicy";
 import { loadAudioService } from "./services/loadAudioService";
 import { useUrlSync } from "./hooks/useUrlSync";
 import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
@@ -63,33 +64,6 @@ const ToolsHubModal = lazy(() => import("./components/ToolsHubModal"));
 const FutureFeaturesModal = lazy(
   () => import("./components/FutureFeaturesModal"),
 );
-
-function detectLowPerformanceDevice() {
-  if (typeof window === "undefined" || typeof navigator === "undefined") {
-    return false;
-  }
-
-  const reducedMotion = window.matchMedia?.(
-    "(prefers-reduced-motion: reduce)",
-  )?.matches;
-  const lowMemory =
-    typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 4;
-  const lowCpu =
-    typeof navigator.hardwareConcurrency === "number" &&
-    navigator.hardwareConcurrency <= 4;
-  const slowNetwork =
-    navigator.connection?.saveData === true ||
-    /2g/.test(navigator.connection?.effectiveType || "");
-  const constrainedMobile =
-    window.matchMedia?.("(max-width: 820px)")?.matches &&
-    (lowMemory ||
-      lowCpu ||
-      /3g|2g/.test(navigator.connection?.effectiveType || ""));
-
-  return Boolean(
-    reducedMotion || lowMemory || lowCpu || slowNetwork || constrainedMobile,
-  );
-}
 
 function AppLoadingFallback({ lang }) {
   const label =
@@ -264,7 +238,7 @@ export default function App() {
     state.legalPage,
   ]);
 
-  const lowPerfMode = useMemo(() => detectLowPerformanceDevice(), []);
+  const lowPerfMode = useMemo(() => isLowPerformanceDevice(), []);
   const suspenseFallback = useMemo(
     () => <AppLoadingFallback lang={lang} />,
     [lang],

@@ -12,6 +12,9 @@ import {
   saveSettings,
 } from './storageService';
 import { getSurah } from '../data/surahs';
+import { getErrorReport } from './errorAnalytics.js';
+import { getPerformanceReport } from './performanceMetrics.js';
+import { getStorageSnapshot } from './storageQuotaService.js';
 
 const COLLECTION_FORMATS = new Set(['json', 'markdown', 'csv']);
 
@@ -166,6 +169,24 @@ export async function shareCollections(options = {}) {
 
   downloadBlob(exported.content, exported.mime, filename);
   return { shared: false, downloaded: true };
+}
+
+export async function downloadDiagnostics() {
+  const payload = {
+    app: 'MushafPlus',
+    version: 1,
+    type: 'local-diagnostics',
+    exportedAt: new Date().toISOString(),
+    performance: getPerformanceReport(),
+    errors: getErrorReport(),
+    storage: await getStorageSnapshot(),
+  };
+  downloadBlob(
+    JSON.stringify(payload, null, 2),
+    'application/json',
+    `mushafplus-diagnostic-${new Date().toISOString().slice(0, 10)}.json`,
+  );
+  return payload;
 }
 
 /**

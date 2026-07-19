@@ -28,6 +28,7 @@ import {
   removeSurahCacheForReciter,
 } from "../services/downloadService";
 import {
+  downloadDiagnostics,
   downloadCollections,
   importFromFile,
   shareCollections,
@@ -45,6 +46,7 @@ import {
 } from "../services/memorizationPlanService";
 import { toast } from "../lib/utils";
 import { confirmAction } from "../services/interactionService";
+import { getStorageSnapshot } from "../services/storageQuotaService";
 
 const TAB_IDS = ["offline", "export", "memorization", "themes", "cloud"];
 
@@ -60,17 +62,28 @@ function formatMegabytes(value, lang) {
   })} Mo`;
 }
 
+function formatStorageBytes(value, lang) {
+  if (!Number.isFinite(value)) return "—";
+  return formatMegabytes(value / 1_048_576, lang);
+}
+
 function OfflinePanel({ lang, currentSurah, reciterId, riwaya }) {
   const [entries, setEntries] = useState(() => getOfflineAudioEntries());
   const [selectedSurah, setSelectedSurah] = useState(currentSurah);
   const [cacheSize, setCacheSize] = useState(0);
+  const [storageSnapshot, setStorageSnapshot] = useState(null);
   const [progress, setProgress] = useState({});
   const [busyKey, setBusyKey] = useState("");
   const [online, setOnline] = useState(() => navigator.onLine !== false);
 
   const refresh = useCallback(async () => {
     setEntries(getOfflineAudioEntries());
-    setCacheSize(await getCacheSize());
+    const [nextCacheSize, nextStorageSnapshot] = await Promise.all([
+      getCacheSize(),
+      getStorageSnapshot(),
+    ]);
+    setCacheSize(nextCacheSize);
+    setStorageSnapshot(nextStorageSnapshot);
   }, []);
 
   useEffect(() => {
@@ -105,6 +118,8 @@ function OfflinePanel({ lang, currentSurah, reciterId, riwaya }) {
     await refresh();
     if (status === "done") {
       toast(localText(lang, "Sourate disponible hors connexion.", "Surah available offline.", "\u0627\u0644\u0633\u0648\u0631\u0629 \u0645\u062a\u0627\u062d\u0629 \u062f\u0648\u0646 \u0627\u062a\u0635\u0627\u0644."), "success");
+    } else if (status === "storage-full") {
+      toast(localText(lang, "Espace insuffisant. Supprimez un ancien téléchargement puis réessayez.", "Not enough storage. Remove an older download and try again.", "\u0644\u0627 \u062a\u0648\u062c\u062f \u0645\u0633\u0627\u062d\u0629 \u062a\u062e\u0632\u064a\u0646 \u0643\u0627\u0641\u064a\u0629. \u0627\u062d\u0630\u0641 \u062a\u0646\u0632\u064a\u0644\u064b\u0627 \u0642\u062f\u064a\u0645\u064b\u0627 \u062b\u0645 \u0623\u0639\u062f \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629."), "warning");
     } else if (status !== "cancelled") {
       toast(localText(lang, "Téléchargement incomplet. Vous pouvez le relancer.", "Download incomplete. You can retry it.", "\u0627\u0644\u062a\u0646\u0632\u064a\u0644 \u063a\u064a\u0631 \u0645\u0643\u062a\u0645\u0644. \u064a\u0645\u0643\u0646\u0643 \u0625\u0639\u0627\u062f\u062a\u0647."), "warning");
     }
@@ -194,6 +209,38 @@ function OfflinePanel({ lang, currentSurah, reciterId, riwaya }) {
         <div className="flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-[var(--text-primary)]" role="status">
           <WifiOff size={17} aria-hidden="true" />
           {localText(lang, "Vous êtes hors connexion. Les audios déjà prêts restent lisibles.", "You are offline. Previously downloaded audio remains available.", "\u0623\u0646\u062a \u063a\u064a\u0631 \u0645\u062a\u0635\u0644. \u0627\u0644\u062a\u0644\u0627\u0648\u0627\u062a \u0627\u0644\u0645\u0646\u0632\u0644\u0629 \u062a\u0628\u0642\u0649 \u0645\u062a\u0627\u062d\u0629.")}
+        </div>
+      ) : null}
+
+      {storageSnapshot?.supported && storageSnapshot.quota > 0 ? (
+        <div
+          className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3"
+          role="status"
+          aria-label={localText(lang, "Utilisation du stockage", "Storage usage", "\u0627\u0633\u062a\u062e\u062f\u0627\u0645 \u0627\u0644\u062a\u062e\u0632\u064a\u0646")}
+        >
+          <div className="flex items-center justify-between gap-3 text-xs">
+            <span className="inline-flex items-center gap-2 font-semibold text-[var(--text-secondary)]">
+              <ShieldCheck size={15} aria-hidden="true" />
+              {storageSnapshot.persisted
+                ? localText(lang, "Stockage protégé", "Persistent storage", "\u062a\u062e\u0632\u064a\u0646 \u062f\u0627\u0626\u0645")
+                : localText(lang, "Stockage géré par le navigateur", "Browser-managed storage", "\u062a\u062e\u0632\u064a\u0646 \u064a\u062f\u064a\u0631\u0647 \u0627\u0644\u0645\u062a\u0635\u0641\u062d")}
+            </span>
+            <span className="text-[var(--text-muted)]">
+              {formatStorageBytes(storageSnapshot.usage, lang)} / {formatStorageBytes(storageSnapshot.quota, lang)}
+            </span>
+          </div>
+          <div
+            className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--bg-secondary)]"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow={Math.round((storageSnapshot.usageRatio || 0) * 100)}
+          >
+            <div
+              className="h-full rounded-full bg-[var(--primary)]"
+              style={{ width: `${Math.min(100, (storageSnapshot.usageRatio || 0) * 100)}%` }}
+            />
+          </div>
         </div>
       ) : null}
 
@@ -308,6 +355,24 @@ function ExportPanel({ lang, cloud = false }) {
     }
   };
 
+  const handleDiagnostics = async () => {
+    setBusy(true);
+    try {
+      await downloadDiagnostics();
+      toast(
+        localText(
+          lang,
+          "Diagnostic local exporté.",
+          "Local diagnostics exported.",
+          "\u062a\u0645 \u062a\u0635\u062f\u064a\u0631 \u0627\u0644\u062a\u0634\u062e\u064a\u0635 \u0627\u0644\u0645\u062d\u0644\u064a.",
+        ),
+        "success",
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const handleImport = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -395,10 +460,16 @@ function ExportPanel({ lang, cloud = false }) {
           </div>
         </>
       ) : (
-        <button type="button" className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--primary)] px-4 text-sm font-bold text-white disabled:opacity-50" onClick={handleDownload} disabled={!enabled || busy}>
-          <FileDown size={17} aria-hidden="true" />
-          {localText(lang, "Créer l’export", "Create export", "\u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u062a\u0635\u062f\u064a\u0631")}
-        </button>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <button type="button" className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[var(--primary)] px-4 text-sm font-bold text-white disabled:opacity-50" onClick={handleDownload} disabled={!enabled || busy}>
+            <FileDown size={17} aria-hidden="true" />
+            {localText(lang, "Créer l’export", "Create export", "\u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u062a\u0635\u062f\u064a\u0631")}
+          </button>
+          <button type="button" className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-4 text-sm font-bold text-[var(--text-primary)] disabled:opacity-50" onClick={handleDiagnostics} disabled={busy}>
+            <ShieldCheck size={17} aria-hidden="true" />
+            {localText(lang, "Diagnostic local", "Local diagnostics", "\u062a\u0634\u062e\u064a\u0635 \u0645\u062d\u0644\u064a")}
+          </button>
+        </div>
       )}
     </div>
   );

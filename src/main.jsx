@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { initErrorAnalytics } from "./services/errorAnalytics.js";
+import { initPerformanceMetrics } from "./services/performanceMetrics.js";
 import { clearMushafRuntimeCaches } from "./services/runtimeCacheService.js";
 
 import App from "./App";
@@ -129,6 +130,7 @@ if (!rootElement) {
   document.body.replaceChildren(fallback);
 } else {
   initErrorAnalytics();
+  initPerformanceMetrics();
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <ErrorBoundary>

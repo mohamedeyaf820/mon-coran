@@ -8,6 +8,7 @@ import {
   getSurahTranslation,
 } from "../../services/quranAPI";
 import { getWarshJuzVerses, getWarshPageVerses, preloadWarshSurah } from "../../services/warshService";
+import { shouldAvoidBackgroundWork } from "../../utils/networkPolicy";
 
 export default function useQuranDisplayPrefetch({
   currentJuz,
@@ -28,12 +29,7 @@ export default function useQuranDisplayPrefetch({
   useEffect(() => {
     if (loading) return;
 
-    const connection = typeof navigator !== "undefined" ? navigator.connection : null;
-    const constrained =
-      connection?.saveData === true ||
-      /2g|3g/.test(connection?.effectiveType || "") ||
-      (connection?.downlink != null && connection.downlink < 1.5);
-    if (constrained) return;
+    if (shouldAvoidBackgroundWork()) return;
 
     // Skip all prefetching during audio playback to avoid competing with streaming.
     // Read from ref so this guard stays current even after play/pause without restarting timers.

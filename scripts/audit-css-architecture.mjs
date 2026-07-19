@@ -18,9 +18,9 @@ const shouldCheck = process.argv.includes("--check");
 const LIMITS = {
   // Rebased after the responsive reader and compact player pass. These stay
   // deliberately close to the measured build so new CSS debt still fails CI.
-  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1515),
-  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1010),
-  important: Number(process.env.CSS_IMPORTANT_BUDGET || 6900),
+  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1508),
+  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1005),
+  important: Number(process.env.CSS_IMPORTANT_BUDGET || 6860),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
   crossFileDuplicateRules: Number(
     process.env.CSS_CROSS_FILE_DUPLICATE_BUDGET || 0,

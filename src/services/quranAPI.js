@@ -6,6 +6,7 @@
 
 import { WARSH_DATA_BASE_URL } from '../constants/warshSource';
 import { preloadWarshSurah } from './warshService';
+import { shouldAvoidBackgroundWork } from '../utils/networkPolicy.js';
 import {
   canLoadFromQuranCom,
   fetchQuranComText,
@@ -747,12 +748,7 @@ export function getAudioUrlFromAyah(ayahData) {
  */
 export function prefetchInitialData(surahNum, riwaya) {
   try {
-    const connection = typeof navigator !== 'undefined' ? navigator.connection : null;
-    const constrained =
-      connection?.saveData === true ||
-      /2g|3g/.test(connection?.effectiveType || '') ||
-      (connection?.downlink != null && connection.downlink < 1.5);
-    if (constrained) return Promise.resolve();
+    if (shouldAvoidBackgroundWork()) return Promise.resolve();
 
     if (riwaya === 'warsh') {
       return preloadWarshSurah(surahNum);

@@ -4,6 +4,7 @@ import { cn } from "../../lib/utils";
 const heightCache = new Map();
 const HEIGHT_CACHE_LIMIT = 1200;
 const viewportObservers = new Map();
+const rootedObservers = new WeakMap();
 
 function rememberHeight(key, height) {
   if (!key || !Number.isFinite(height) || height < 1) return;
@@ -14,23 +15,34 @@ function rememberHeight(key, height) {
   }
 }
 
-function observeNearViewport(node, callback, rootMargin) {
+function getObserverRegistry(root) {
+  if (!root) return viewportObservers;
+  let registry = rootedObservers.get(root);
+  if (!registry) {
+    registry = new Map();
+    rootedObservers.set(root, registry);
+  }
+  return registry;
+}
+
+function observeNearViewport(node, callback, rootMargin, root) {
   if (typeof IntersectionObserver === "undefined") {
     callback(true);
     return () => {};
   }
 
-  let shared = viewportObservers.get(rootMargin);
+  const registry = getObserverRegistry(root);
+  let shared = registry.get(rootMargin);
   if (!shared) {
     const callbacks = new WeakMap();
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => callbacks.get(entry.target)?.(entry.isIntersecting));
       },
-      { root: null, rootMargin },
+      { root, rootMargin },
     );
     shared = { callbacks, observer };
-    viewportObservers.set(rootMargin, shared);
+    registry.set(rootMargin, shared);
   }
 
   shared.callbacks.set(node, callback);
@@ -54,6 +66,7 @@ export default function VirtualizedItem({
   eager = false,
   estimatedHeight = 72,
   pinned = false,
+  rootRef,
   rootMargin = "900px 0px",
   style,
   ...props
@@ -72,8 +85,13 @@ export default function VirtualizedItem({
   useLayoutEffect(() => {
     const node = nodeRef.current;
     if (!node) return undefined;
-    return observeNearViewport(node, setNearViewport, rootMargin);
-  }, [rootMargin]);
+    return observeNearViewport(
+      node,
+      setNearViewport,
+      rootMargin,
+      rootRef?.current || null,
+    );
+  }, [rootMargin, rootRef]);
 
   useLayoutEffect(() => {
     const node = nodeRef.current;

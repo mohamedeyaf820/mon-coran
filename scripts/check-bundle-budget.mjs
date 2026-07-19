@@ -9,7 +9,7 @@ const MANIFEST_PATH = path.join(DIST_DIR, ".vite", "manifest.json");
 const LIMITS = {
   // Responsive reader, reciter profiles and the compact player add route-only
   // CSS. Keep a narrow baseline above the measured production bundle.
-  css: Number(process.env.BUDGET_CSS_KB || 910),
+  css: Number(process.env.BUDGET_CSS_KB || 907),
   // Phase 7 adds one deferred personal-library chunk for offline management,
   // portable exports, study journeys and a reference-only thematic index.
   // Legal/SEO/PWA features add deferred chunks, while the initial route keeps

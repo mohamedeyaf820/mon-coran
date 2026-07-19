@@ -118,3 +118,28 @@ test("phase 8: verse and sidebar windows release offscreen components", async ({
   await expect(lastSidebarItem.locator("button")).toBeVisible();
   expect(await page.locator(".sidebar-virtual-item > button").count()).toBeLessThan(60);
 });
+
+test("phase 8: navigation performance stays aggregated on-device", async ({
+  page,
+}) => {
+  await prepareReader(page);
+  await page.goto("/surah/2");
+  await expect(page.locator("#ayah-1 .qc-list-card")).toBeVisible({
+    timeout: 30_000,
+  });
+
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const report = JSON.parse(
+          localStorage.getItem("mp_performance_metrics_v1") || "{}",
+        );
+        return {
+          ttfb: report.ttfb_ms?.count || 0,
+          interactive: report.dom_interactive_ms?.count || 0,
+          load: report.page_load_ms?.count || 0,
+        };
+      }),
+    )
+    .toEqual({ ttfb: 1, interactive: 1, load: 1 });
+});

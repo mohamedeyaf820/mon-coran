@@ -35,6 +35,11 @@ source size, `!important` usage, removable selectors, and exact duplicate rules
 both within and across files.
 `npm run build:ci` enforces the current ceilings and rejects new exact duplicates.
 
+The current guardrails are intentionally close to the measured build: 907 kB
+aggregate production CSS, 1508 kB source CSS, 1005 kB retained source CSS, and
+6860 `!important` declarations. Lower these ceilings whenever a cleanup lands;
+do not raise them to accommodate a feature without first splitting its route CSS.
+
 Prefer component or route imports for feature-only styles. Keep `tailwind.css`
 limited to tokens, shared primitives, utilities, and rules needed before the first
 route chunk is available.

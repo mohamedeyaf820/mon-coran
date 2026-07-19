@@ -2,9 +2,14 @@ name: Tests
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, perf/load-times-and-bug-fixes]
   pull_request:
     branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   quality:
@@ -63,6 +68,7 @@ jobs:
   compatibility:
     needs: quality
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -81,6 +87,14 @@ jobs:
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: Cross-browser smoke
         run: npx playwright test --project=${{ matrix.browser }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-compatibility-${{ matrix.browser }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
 
   pwa:
     needs: quality

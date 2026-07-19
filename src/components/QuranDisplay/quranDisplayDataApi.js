@@ -11,6 +11,7 @@ import {
   getWarshPageVerses,
   getWarshSurahFormatted,
 } from "../../services/warshService";
+import { startPerformanceTimer } from "../../services/performanceMetrics";
 
 function ayahSortKey(ayah) {
   const globalNumber = Number(ayah?.number);
@@ -106,7 +107,16 @@ export async function loadArabicData({
 }
 
 export function preloadArabicData(options) {
-  return loadArabicData({ ...options, signal: undefined }).catch(() => null);
+  const finishMetric = startPerformanceTimer("riwaya_preload_ms");
+  return loadArabicData({ ...options, signal: undefined })
+    .then((value) => {
+      finishMetric();
+      return value;
+    })
+    .catch(() => {
+      finishMetric();
+      return null;
+    });
 }
 
 export function ensureRequestedRiwaya(ayahs, riwaya) {
