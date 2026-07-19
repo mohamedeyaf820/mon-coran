@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - run: npm install
       - name: Lint structure and hooks
         run: npm run lint
       - name: Unit tests with coverage
@@ -50,7 +50,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - run: npm install
       - uses: actions/download-artifact@v4
         with:
           name: production-dist
@@ -79,7 +79,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - run: npm install
       - uses: actions/download-artifact@v4
         with:
           name: production-dist
@@ -105,7 +105,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - run: npm install
       - uses: actions/download-artifact@v4
         with:
           name: production-dist
