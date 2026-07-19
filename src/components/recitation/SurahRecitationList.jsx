@@ -4,22 +4,7 @@ import SURAHS from "../../data/surahs";
 import SurahRecitationRow from "./SurahRecitationRow";
 
 const INITIAL_VISIBLE_SURAHS = 24;
-const CHUNK_SIZE = 30;
-
-function scheduleIdle(callback) {
-  if (typeof window === "undefined") {
-    callback();
-    return () => {};
-  }
-
-  if ("requestIdleCallback" in window) {
-    const id = window.requestIdleCallback(callback, { timeout: 900 });
-    return () => window.cancelIdleCallback?.(id);
-  }
-
-  const timer = window.setTimeout(callback, 140);
-  return () => window.clearTimeout(timer);
-}
+const CHUNK_SIZE = 24;
 
 function normalize(value) {
   return String(value || "")
@@ -55,11 +40,6 @@ export default function SurahRecitationList({
 
   useEffect(() => {
     setVisibleCount(INITIAL_VISIBLE_SURAHS);
-    return scheduleIdle(() => {
-      setVisibleCount((current) =>
-        Math.min(filteredSurahs.length, current + CHUNK_SIZE),
-      );
-    });
   }, [filteredSurahs.length, normalizedQuery, reciter?.id]);
 
   const visibleSurahs = useMemo(

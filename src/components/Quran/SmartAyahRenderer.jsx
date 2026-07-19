@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { shallowEqual, useAppSelector } from "../../context/AppContext";
 import { stripBasmala } from "../../utils/quranUtils";
 import { withWordCountCalibrationBump } from "../../utils/karaokeUtils";
-import { appendNativeAyahMarker } from "../../data/fonts";
+import { appendNativeAyahMarker, getAyahTextForFont } from "../../data/fonts";
 import { AyahTextRenderer } from "./AyahTextRenderer";
 import KaraokeWarshText from "./KaraokeWarshText";
 
@@ -28,9 +28,18 @@ function SmartAyahRendererComponent({
   const isFirstAyah =
     ayah.numberInSurah === 1 && surahNum !== 1 && surahNum !== 9;
   const effectiveRiwaya = ayah.warshWords ? "warsh" : riwaya || "hafs";
+  const fontCompatibleText = useMemo(
+    () => getAyahTextForFont(ayah, fontFamily, effectiveRiwaya),
+    [ayah, effectiveRiwaya, fontFamily],
+  );
   const baseCleanText = useMemo(
-    () => stripBasmala(ayah.text, surahNum, ayah.numberInSurah).trim(),
-    [ayah.numberInSurah, ayah.text, surahNum],
+    () =>
+      stripBasmala(
+        fontCompatibleText,
+        surahNum,
+        ayah.numberInSurah,
+      ).trim(),
+    [ayah.numberInSurah, fontCompatibleText, surahNum],
   );
   const cleanFallbackText = useMemo(
     () =>

@@ -8,6 +8,7 @@ import {
   getReciterBio,
   getReciterCountryLabel,
   getReciterPhoto,
+  getReciterProfileSource,
   getReciterSourceInfo,
   getReciterVisual,
   getRecitersByRiwaya,
@@ -134,6 +135,39 @@ test("reciters: attributed portraits and biography sources are wired", () => {
     assert.match(getReciterVisual(reciter).attribution.url, /^https:\/\//, id);
     assert.match(researchedProfile.bioSource.url, /^https:\/\//, id);
     assert.ok(researchedProfile.bio.fr.length > 180, id);
+  }
+
+  const researchedHafsPortraitIds = [
+    "abdullaah_matrood",
+    "abdullaah_basfar",
+    "hudhaify",
+    "muhammad_ayyoub",
+    "muhammad_tablawi",
+    "fares_abbad",
+    "nasser_alqatami",
+    "sahl_yassin",
+    "ahmed_neana",
+    "akram_alalaqimy",
+    "khalid_abdullaah_qahtani_hafs",
+    "mustafa_ismail",
+    "nabil_rifai",
+    "salah_al_budair",
+    "mahmoud_ali_al_banna",
+    "karim_mansoori",
+    "muhsin_al_qasim",
+    "salaah_bukhatir",
+    "yaser_salamah",
+    "aziz_alili",
+    "abdullah_awwad_al_juhaynee",
+    "idris_abkar",
+    "ahmad_al_hawashi",
+  ];
+
+  for (const id of researchedHafsPortraitIds) {
+    const reciter = getReciter(id, "hafs");
+    assert.match(getReciterPhoto(id), /^https:\/\/www\.assabile\.com\/media\/person\//, id);
+    assert.equal(getReciterVisual(reciter).attribution.provider, "Assabile", id);
+    assert.match(getReciterProfileSource(id).url, /^https:\/\/www\.assabile\.com\//, id);
   }
 
   assert.equal(getReciterVisual(getReciter("ar.husary")).attribution.provider, "Quran.com");

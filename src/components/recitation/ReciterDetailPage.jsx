@@ -16,7 +16,11 @@ import ReciterBioCollapse from "./ReciterBioCollapse";
 import ReciterRadioButton from "./ReciterRadioButton";
 import SurahRecitationList from "./SurahRecitationList";
 import { cn } from "../../lib/utils";
-import { getReciterSourceInfo, getReciterVisual } from "../../data/reciters";
+import {
+  getReciterProfileSource,
+  getReciterSourceInfo,
+  getReciterVisual,
+} from "../../data/reciters";
 import { useReciterProfile } from "../../hooks/useReciterProfile";
 
 function labelFor(lang, fr, en, ar = en) {
@@ -40,7 +44,8 @@ export default function ReciterDetailPage({
   const sourceInfo = getReciterSourceInfo(reciter);
   const visual = getReciterVisual(reciter);
   const researchedProfile = useReciterProfile(reciter?.id);
-  const biographySource = researchedProfile?.bioSource || null;
+  const biographySource =
+    researchedProfile?.bioSource || getReciterProfileSource(reciter);
   const riwayaLabel = reciter.verifiedWarsh ? "Warsh" : isRtl ? "حفص" : "Hafs";
   const audioModeLabel =
     reciter.audioMode === "surah"

@@ -18,8 +18,9 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
   text,
   inline = false,
 }) {
-  const { lang, reciter, riwaya, wordTranslationLang } = useAppSelector(
+  const { fontFamily, lang, reciter, riwaya, wordTranslationLang } = useAppSelector(
     (state) => ({
+      fontFamily: state.fontFamily,
       lang: state.lang,
       reciter: state.reciter,
       riwaya: state.riwaya,
@@ -97,6 +98,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
               active={isClickedWord}
               current={isPlaying && index === currentWordIdx}
               fontSize={fontSize}
+              fontFamily={fontFamily}
               lang={lang}
               onWordClick={handleWordSelect}
               read={isPlaying && index < currentWordIdx}
@@ -147,6 +149,7 @@ const WordByWordDisplay = React.memo(function WordByWordDisplay({
             active={isClickedWord}
             current={isPlaying && index === currentWordIdx}
             fontSize={fontSize}
+            fontFamily={fontFamily}
             lang={lang}
             onSelect={(event) => handleWordClick(word, setSelectedWord, event)}
             read={isPlaying && index < currentWordIdx}

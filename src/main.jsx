@@ -15,6 +15,7 @@ import "./styles/riwaya-fonts.css";
 import "./styles/dark-mode-refonte.css";
 import "./styles/domains/mobile-all-versions.css";
 import "./styles/header-enhanced.css";
+import "./styles/device-root.css";
 
 if (typeof window !== "undefined") {
   // Defer non-critical feature CSS until idle — these are only needed after

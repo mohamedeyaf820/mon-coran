@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import { getQuranWordTextForFont } from "../../data/fonts";
 import TajweedText from "./TajweedText";
 import WordTooltip from "./WordTooltip";
 
@@ -6,6 +7,7 @@ function QuranWordComponent({
   active,
   current,
   fontSize,
+  fontFamily,
   lang,
   onSelect,
   onWordClick,
@@ -27,7 +29,7 @@ function QuranWordComponent({
     [onWordClick, word],
   );
   const hasAudio = Boolean(word?.audioUrl);
-  const wordText = word?.textQpcHafs || word?.text || "";
+  const wordText = getQuranWordTextForFont(word, fontFamily, riwaya);
   const translationDirection = /[\u0600-\u06ff]/.test(word?.translation || "")
     ? "rtl"
     : "ltr";
@@ -102,6 +104,7 @@ function areQuranWordEqual(prev, next) {
     prev.current === next.current &&
     prev.read === next.read &&
     prev.fontSize === next.fontSize &&
+    prev.fontFamily === next.fontFamily &&
     prev.lang === next.lang &&
     prev.riwaya === next.riwaya &&
     prev.showTajwid === next.showTajwid &&

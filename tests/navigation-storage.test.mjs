@@ -4,8 +4,10 @@ import assert from "node:assert/strict";
 import { parseInitialRoute } from "../src/hooks/useUrlSync.js";
 import {
   appendNativeAyahMarker,
+  getAyahTextForFont,
   getFontOptionsForRiwaya,
   getNativeAyahMarker,
+  getQuranWordTextForFont,
   normalizeFontId,
 } from "../src/data/fonts.js";
 import { getSettings, saveSettings } from "../src/services/storageService.js";
@@ -235,4 +237,26 @@ test("fonts: appends native ayah markers without duplicates", () => {
     appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u0667", 7, "qpc-indopak", "hafs"),
     "\u0627\u0644\u062d\u0645\u062f \u06dd\u06f7",
   );
+});
+
+test("fonts: selects Quran.com text compatible with the active Hafs font", () => {
+  const ayah = {
+    text: "fallback",
+    quranCom: {
+      textQpcHafs: "qpc hafs",
+      textIndopak: "indopak",
+      textUthmani: "uthmani",
+    },
+  };
+  const word = {
+    text: "fallback word",
+    textQpcHafs: "qpc word",
+    textIndopak: "indopak word",
+    textUthmani: "uthmani word",
+  };
+
+  assert.equal(getAyahTextForFont(ayah, "qpc-hafs", "hafs"), "qpc hafs");
+  assert.equal(getAyahTextForFont(ayah, "qpc-indopak", "hafs"), "indopak");
+  assert.equal(getAyahTextForFont(ayah, "amiri-quran", "hafs"), "uthmani");
+  assert.equal(getQuranWordTextForFont(word, "qpc-indopak", "hafs"), "indopak word");
 });

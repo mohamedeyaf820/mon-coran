@@ -26,13 +26,13 @@ export const INTERNAL_QURAN_FONT_IDS = ["qcf-v2", "qcf-v4-tajweed"];
 export const QURAN_FONT_OPTIONS = [
   {
     id: "qpc-hafs",
-    label: "Uthmani Hafs (Madinah)",
+    label: "QPC Uthmani Hafs",
     hintKey: "settings.qpcHafsHint",
     riwaya: "hafs",
   },
   {
     id: "qpc-indopak",
-    label: "IndoPak Hafs",
+    label: "IndoPak Nastaleeq (Hafs)",
     hintKey: "settings.qpcIndopakHint",
     riwaya: "hafs",
   },
@@ -205,6 +205,60 @@ export function resolveFontFamily(id, riwaya = "hafs") {
 export function getFontOptionsForRiwaya(riwaya = "hafs") {
   const targetRiwaya = riwaya === "warsh" ? "warsh" : "hafs";
   return QURAN_FONT_OPTIONS.filter((font) => font.riwaya === targetRiwaya);
+}
+
+function joinWordField(words, field) {
+  return (Array.isArray(words) ? words : [])
+    .filter((word) => !word?.charType || word.charType === "word")
+    .map((word) => word?.[field])
+    .filter(Boolean)
+    .join(" ");
+}
+
+export function getQuranWordTextForFont(word, fontId, riwaya = "hafs") {
+  if (!word) return "";
+  if (riwaya === "warsh") return word.text || word.textUthmani || "";
+
+  const normalizedId = normalizeFontId(fontId, riwaya);
+  if (normalizedId === "qpc-indopak") {
+    return word.textIndopak || word.textUthmani || word.textQpcHafs || word.text || "";
+  }
+  if (normalizedId === "qpc-hafs") {
+    return word.textQpcHafs || word.textUthmani || word.text || "";
+  }
+  return word.textUthmani || word.textQpcHafs || word.text || "";
+}
+
+export function getAyahTextForFont(ayah, fontId, riwaya = "hafs") {
+  if (!ayah) return "";
+  if (riwaya === "warsh") return String(ayah.text || "");
+
+  const normalizedId = normalizeFontId(fontId, riwaya);
+  const quranCom = ayah.quranCom || {};
+  if (normalizedId === "qpc-indopak") {
+    return (
+      quranCom.textIndopak ||
+      joinWordField(ayah.words, "textIndopak") ||
+      quranCom.textUthmani ||
+      ayah.text ||
+      ""
+    );
+  }
+  if (normalizedId === "qpc-hafs") {
+    return (
+      quranCom.textQpcHafs ||
+      joinWordField(ayah.words, "textQpcHafs") ||
+      quranCom.textUthmani ||
+      ayah.text ||
+      ""
+    );
+  }
+  return (
+    quranCom.textUthmani ||
+    joinWordField(ayah.words, "textUthmani") ||
+    ayah.text ||
+    ""
+  );
 }
 
 export function hasNativeAyahMarker(text) {

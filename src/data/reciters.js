@@ -640,6 +640,8 @@ const ALL_AVAILABLE_RECITERS = [
 
 const QURAN_RECITER_IMAGE_BASE = "https://static.qurancdn.com/images/reciters/";
 const quranPhoto = (path) => `${QURAN_RECITER_IMAGE_BASE}${path}`;
+const ASSABILE_IMAGE_BASE = "https://www.assabile.com/media/person/280x219/";
+const assabilePhoto = (path) => `${ASSABILE_IMAGE_BASE}${path}`;
 
 // Keep only URLs that respond successfully. Missing portraits intentionally
 // use the deterministic gradient avatar instead of generating browser 404s.
@@ -666,6 +668,29 @@ export const RECITER_PHOTOS_MAP = {
   ahmed_ajmy: quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
   ahmed_ibn_ali_al_ajamy_64: quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
   yasser_dossari_hafs: quranPhoto("20/yasser-profile.png"),
+  abdullaah_matrood: assabilePhoto("abdallah-matroud.png"),
+  abdullaah_basfar: assabilePhoto("abdullah-ibn-ali-basfar.png"),
+  hudhaify: assabilePhoto("ali-alhodaifi.png"),
+  muhammad_ayyoub: assabilePhoto("mohamed-ayoub.png"),
+  muhammad_tablawi: assabilePhoto("mohamed-tablawi.png"),
+  fares_abbad: assabilePhoto("fares-abbad.png"),
+  nasser_alqatami: assabilePhoto("nasser-al-qatami.png"),
+  sahl_yassin: assabilePhoto("sahl-yassin.png"),
+  ahmed_neana: assabilePhoto("ahmed-nuinaa.png"),
+  akram_alalaqimy: assabilePhoto("akram-al-aalakmi.png"),
+  khalid_abdullaah_qahtani_hafs: assabilePhoto("khaled-al-qahtani.png"),
+  mustafa_ismail: assabilePhoto("mustapha-ismail.png"),
+  nabil_rifai: assabilePhoto("nabil-ar-rifai.png"),
+  salah_al_budair: assabilePhoto("salah-al-budair.png"),
+  mahmoud_ali_al_banna: assabilePhoto("mahmud-ali-al-banna.png"),
+  karim_mansoori: assabilePhoto("karim-mansouri.jpg"),
+  muhsin_al_qasim: assabilePhoto("abdulmohsen-al-qasim.png"),
+  salaah_bukhatir: assabilePhoto("salah-bukhatir.png"),
+  yaser_salamah: assabilePhoto("yasser-salama.jpg"),
+  aziz_alili: assabilePhoto("aziz-alili.jpg"),
+  abdullah_awwad_al_juhaynee: assabilePhoto("abdullah-awad-al-juhani.png"),
+  idris_abkar: assabilePhoto("idriss-abkar.png"),
+  ahmad_al_hawashi: assabilePhoto("ahmad-al-hawashy.png"),
   warsh_abdulbasit: quranPhoto("1/abdelbasset-profile.jpeg"),
   warsh_ibrahim_aldosari:
     "https://www.assabile.com/media/person/200x256/ibrahim-al-dossari.png",
@@ -683,6 +708,35 @@ export const RECITER_PHOTOS_MAP = {
   warsh_rachid_belalya:
     "https://www.assabile.com/media/person/200x256/rachid-belalia.png",
 };
+
+const ASSABILE_PROFILE_BASE = "https://www.assabile.com";
+const assabileProfile = (path) => `${ASSABILE_PROFILE_BASE}${path}`;
+
+const RECITER_PROFILE_SOURCES = Object.freeze({
+  abdullaah_matrood: assabileProfile("/abdullah-matrood-5/abdullah-matrood.htm"),
+  abdullaah_basfar: assabileProfile("/abdullah-ibn-ali-basfar-6/abdullah-ibn-ali-basfar.htm"),
+  hudhaify: assabileProfile("/ali-al-huthaify-19/ali-al-huthaify.htm"),
+  muhammad_ayyoub: assabileProfile("/muhammad-ayyub-14/muhammad-ayyub.htm"),
+  muhammad_tablawi: assabileProfile("/mohamed-tablawi-31/mohamed-tablawi.htm"),
+  fares_abbad: assabileProfile("/fares-abbad-18/fares-abbad.htm"),
+  nasser_alqatami: assabileProfile("/nasser-al-qatami-61/nasser-al-qatami.htm"),
+  sahl_yassin: assabileProfile("/sahl-yasin-20/sahl-yasin.htm"),
+  ahmed_neana: assabileProfile("/ahmed-nuinaa-75/ahmed-nuinaa.htm"),
+  akram_alalaqimy: assabileProfile("/akram-al-aalakmi-80/akram-al-aalakmi.htm"),
+  khalid_abdullaah_qahtani_hafs: assabileProfile("/khaled-al-qahtani-46/khaled-al-qahtani.htm"),
+  mustafa_ismail: assabileProfile("/mustafa-ismail-48/mustafa-ismail.htm"),
+  nabil_rifai: assabileProfile("/nabil-ar-rifai-36/nabil-ar-rifai.htm"),
+  salah_al_budair: assabileProfile("/salah-al-budair-17/salah-al-budair.htm"),
+  mahmoud_ali_al_banna: assabileProfile("/mahmoud-ali-al-banna-25/mahmoud-ali-al-banna.htm"),
+  karim_mansoori: assabileProfile("/karim-mansouri-397/karim-mansouri.htm"),
+  muhsin_al_qasim: assabileProfile("/abdulmohsen-al-qasim-45/abdulmohsen-al-qasim.htm"),
+  salaah_bukhatir: assabileProfile("/salah-bukhatir-23/salah-bukhatir.htm"),
+  yaser_salamah: assabileProfile("/yasser-salama-314/yasser-salama.htm"),
+  aziz_alili: assabileProfile("/aziz-alili-507/aziz-alili.htm"),
+  abdullah_awwad_al_juhaynee: assabileProfile("/abdullah-awad-al-juhani-93/abdullah-awad-al-juhani.htm"),
+  idris_abkar: assabileProfile("/idriss-abkar-90/idriss-abkar.htm"),
+  ahmad_al_hawashi: assabileProfile("/ahmad-al-hawashy-71/ahmad-al-hawashy.htm"),
+});
 
 const RECITER_PHOTO_CREDITS = Object.freeze({
   warsh_ibrahim_aldosari: "Assabile",
@@ -768,7 +822,9 @@ export function getReciterPhoto(reciterOrId) {
 
 export function getReciterVisual(reciter) {
   const photo = getReciterPhoto(reciter);
-  const photoProvider = RECITER_PHOTO_CREDITS[reciter?.id] || "Quran.com";
+  const photoProvider =
+    RECITER_PHOTO_CREDITS[reciter?.id] ||
+    (photo?.includes("assabile.com") ? "Assabile" : "Quran.com");
   return {
     type: photo ? "photo" : "avatar",
     photo,
@@ -781,6 +837,15 @@ export function getReciterVisual(reciter) {
         }
       : null,
   };
+}
+
+export function getReciterProfileSource(reciterOrId) {
+  const id =
+    typeof reciterOrId === "string"
+      ? reciterOrId
+      : String(reciterOrId?.id || "");
+  const url = RECITER_PROFILE_SOURCES[id];
+  return url ? { provider: "Assabile", url } : null;
 }
 
 export function getReciterCountryLabel(reciterOrCountry, lang = "fr") {

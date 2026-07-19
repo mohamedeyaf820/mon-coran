@@ -21,6 +21,11 @@ import { loadAudioService } from "./services/loadAudioService";
 import { useUrlSync } from "./hooks/useUrlSync";
 import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
 import ProgressBar from "./components/ProgressBar";
+import {
+  ensureReciterForRiwaya,
+  getReciter,
+  isWarshVerifiedReciter,
+} from "./data/reciters";
 
 const HomePage = lazy(() => import("./components/HomePage"));
 const Header = lazy(() => import("./components/Header"));
@@ -397,23 +402,20 @@ export default function App() {
     let cancelled = false;
     const cancelIdle = runWhenIdle(async () => {
       try {
-        const [reciterModule, playlistModule] = await Promise.all([
-          import("./data/reciters"),
-          import("./utils/audioPlaylist"),
-        ]);
+        const playlistModule = await import("./utils/audioPlaylist");
         const {
           riwaya,
           reciter: reciterId,
           currentSurah: surahNum,
           warshStrictMode,
         } = state;
-        const safeId = reciterModule.ensureReciterForRiwaya(reciterId, riwaya);
-        const reciter = reciterModule.getReciter(safeId, riwaya);
+        const safeId = ensureReciterForRiwaya(reciterId, riwaya);
+        const reciter = getReciter(safeId, riwaya);
         if (!reciter) return;
         if (
           riwaya === "warsh" &&
           warshStrictMode &&
-          !reciterModule.isWarshVerifiedReciter(reciter)
+          !isWarshVerifiedReciter(reciter)
         ) {
           return;
         }

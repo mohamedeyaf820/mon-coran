@@ -8,6 +8,10 @@ import {
 } from "../../services/fontLoader";
 import AyahMarker from "../Quran/AyahMarker";
 import { sanitizeHtml } from "../../lib/security";
+import {
+  getQuranWordTextForFont,
+  resolveFontFamily,
+} from "../../data/fonts";
 
 function decodeHtmlEntity(str) {
   if (!str) return "";
@@ -225,7 +229,7 @@ export default function QuranMushafPage({
   const version = showTajwid ? "v4" : "v2";
   const fontLabel = version === "v4" ? "QCF V4 Tajweed" : "QCF V2";
   const pageFontFamily = getQcfPageFontFamily(currentPage, version);
-  const fallbackFontFamily = "var(--font-quran, 'QPC Hafs', serif)";
+  const fallbackFontFamily = resolveFontFamily(fontFamily, riwaya);
   const isWarsh = riwaya === "warsh";
   const [fontLoaded, setFontLoaded] = useState(false);
   const [fontFailed, setFontFailed] = useState(false);
@@ -354,7 +358,7 @@ export default function QuranMushafPage({
         {sanitizeHtml(decodeHtmlEntity(
           fontLoaded && glyph
             ? glyph
-            : (word.textQpcHafs || word.textUthmani || word.text || "")
+            : getQuranWordTextForFont(word, fontFamily, riwaya)
         ))}
       </span>
     );
