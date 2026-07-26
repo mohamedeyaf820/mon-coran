@@ -116,13 +116,8 @@ function ToolsQuickCard({ lang, set, t }) {
         <button
           onClick={() => set({ toolsHubOpen: true })}
           className="shrink-0 rounded-lg px-2 py-1 text-[0.68rem] text-primary hover:bg-primary/8 hover:underline font-bold font-[var(--font-ui)] cursor-pointer"
-          aria-label={tr({
-            fr: "Voir tous les outils spirituels",
-            en: "View all spiritual tools",
-            ar: "عرض جميع الأدوات الروحية",
-          })}
         >
-          {tr({ fr: "Tout", en: "All", ar: "الكل" })}
+          {tr({ fr: "Voir tout", en: "See all", ar: "عرض الكل" })}
         </button>
       </div>
 
