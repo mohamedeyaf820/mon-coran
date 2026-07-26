@@ -1,7 +1,7 @@
 import { cn } from "../../lib/utils";
 
 export const modePaneShellClass =
-  "rd-wrapper mx-auto flex max-w-[1040px] flex-col gap-[1.2rem] px-[0.9rem] pt-[1.15rem] pb-[calc(var(--player-h,88px)+2.4rem)] max-[640px]:gap-[0.9rem] max-[640px]:px-[0.56rem] max-[640px]:pt-[0.78rem] max-[640px]:pb-[calc(var(--player-h,88px)+1.6rem)] max-[560px]:landscape:gap-[0.66rem] max-[560px]:landscape:px-[0.62rem] max-[560px]:landscape:pt-[0.58rem] max-[560px]:landscape:pb-[calc(var(--player-h,88px)+1rem)]";
+  "rd-wrapper mx-auto flex max-w-[1040px] flex-col gap-[0.6rem] px-[0.9rem] pt-[0.72rem] pb-[calc(var(--player-h,88px)+2.4rem)] max-[640px]:gap-[0.48rem] max-[640px]:px-[0.56rem] max-[640px]:pt-[0.48rem] max-[640px]:pb-[calc(var(--player-h,88px)+1.9rem)] max-[560px]:landscape:gap-[0.42rem] max-[560px]:landscape:px-[0.62rem] max-[560px]:landscape:pt-[0.38rem] max-[560px]:landscape:pb-[calc(var(--player-h,88px)+1.25rem)]";
 
 export function createDisplayClasses({ focusReading, riwaya }) {
   const readingChromeFrameClass = cn(

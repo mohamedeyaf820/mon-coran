@@ -424,35 +424,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     }
 }
 
-@media (max-width: 639px) {
-    .home-hero-shell {
-        padding: 1rem !important;
-        border-radius: 1.25rem !important;
-    }
-
-    .home-hero-title {
-        font-size: clamp(1.35rem, 5vw, 1.75rem) !important;
-        line-height: 1.2 !important;
-    }
-
-    .home-hero-copy-clean {
-        font-size: 0.88rem !important;
-        line-height: 1.6 !important;
-    }
-}
-
-@media (min-width: 640px) and (max-width: 1024px) {
-    .home-hero-title {
-        font-size: clamp(1.75rem, 3.5vw, 2.5rem) !important;
-    }
-}
-
-@media (min-width: 1025px) {
-    .home-hero-title {
-        font-size: clamp(2.25rem, 3vw, 3rem) !important;
-    }
-}
-
 .hp-grid--surah {
     display: grid !important;
 }

@@ -338,56 +338,51 @@ const TajweedText = React.memo(function TajweedText({
     return (
         <TooltipProvider>
             <span>
-                {segments.map((seg, i) => {
-                    const color = seg.ruleId
-                        ? (tajweedColors && tajweedColors[seg.ruleId]) || `var(--tajwid-${seg.ruleId})`
-                        : 'inherit';
+                <span aria-hidden="true">
+                    {segments.map((seg, i) => {
+                        const color = seg.ruleId
+                            ? (tajweedColors && tajweedColors[seg.ruleId]) || `var(--tajwid-${seg.ruleId})`
+                            : 'inherit';
+                        const activeLang = lang === 'ar' || lang === 'en' || lang === 'fr' ? lang : 'fr';
+                        const ruleName = seg.ruleId
+                            ? TAJWEED_RULES_DESC[seg.ruleId]?.name?.[activeLang]
+                                || TAJWEED_RULES_DESC[seg.ruleId]?.name?.en
+                                || seg.ruleId
+                            : undefined;
 
-                    // Redesign: Waqf markers identification within segments
-                    if (waqfRegex.test(seg.text)) {
-                        const parts = seg.text.split(waqfRegex);
-                        return (
-                            <span key={i} style={{ color }} data-tajwid={seg.ruleId || 'none'}>
-                                {parts.map((p, j) => 
-                                    waqfRegex.test(p) 
-                                        ? <WaqfSign key={j} char={p} lang={lang} />
-                                        : p
-                                )}
-                            </span>
-                        );
-                    }
+                        // Redesign: Waqf markers identification within segments
+                        if (waqfRegex.test(seg.text)) {
+                            const parts = seg.text.split(waqfRegex);
+                            return (
+                                <span key={i} style={{ color }} data-tajwid={seg.ruleId || 'none'}>
+                                    {parts.map((p, j) =>
+                                        waqfRegex.test(p)
+                                            ? <WaqfSign key={j} char={p} lang={lang} />
+                                            : p
+                                    )}
+                                </span>
+                            );
+                        }
 
-                    if (!seg.ruleId) {
-                        return <React.Fragment key={i}>{seg.text}</React.Fragment>;
-                    }
+                        if (!seg.ruleId) {
+                            return <React.Fragment key={i}>{seg.text}</React.Fragment>;
+                        }
 
-                    const rule = TAJWEED_RULES_DESC[seg.ruleId];
-                    if (!rule) {
                         return (
                             <span
                                 key={i}
                                 style={{ color }}
                                 data-tajwid={seg.ruleId}
-                                aria-label={seg.ruleId}
+                                title={ruleName}
                             >
                                 {seg.text}
                             </span>
                         );
-                    }
-
-                    const activeLang = lang === 'ar' || lang === 'en' || lang === 'fr' ? lang : 'fr';
-                    const name = rule.name[activeLang] || rule.name['en'] || rule.name['fr'];
-                    return (
-                        <span
-                            key={i}
-                            style={{ color }}
-                            data-tajwid={seg.ruleId}
-                            aria-label={name}
-                        >
-                            {seg.text}
-                        </span>
-                    );
-                })}
+                    })}
+                </span>
+                <span className="sr-only">
+                    {segments.map((segment) => segment.text).join('')}
+                </span>
             </span>
         </TooltipProvider>
     );

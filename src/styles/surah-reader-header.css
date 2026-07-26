@@ -7,7 +7,7 @@
     display: flex;
     flex-direction: column;
     width: min(100%, 980px);
-    margin: 0 auto clamp(0.85rem, 1.6vw, 1.35rem);
+    margin: 0 auto 0.35rem;
     border: 1px solid var(--border);
     border-radius: var(--r-xl);
     background: var(--bg-card);
@@ -45,7 +45,7 @@
     display: flex;
     align-items: flex-start;
     gap: clamp(0.6rem, 2vw, 1.25rem);
-    padding: clamp(0.85rem, 2vw, 1.2rem) clamp(0.85rem, 2vw, 1.4rem);
+    padding: clamp(0.68rem, 1.45vw, 0.9rem) clamp(0.8rem, 1.8vw, 1.2rem);
 }
 
 /* Mobile-only compact row: surah name + play + info buttons */
@@ -58,7 +58,7 @@
     flex-shrink: 0;
     font-family: var(--font-surah-name, var(--font-surah, var(--font-quran), serif));
     font-weight: normal;
-    font-size: clamp(1.7rem, 4.5vw, 2.8rem);
+    font-size: clamp(1.55rem, 3.5vw, 2.25rem);
     line-height: 1.35;
     color: var(--text-primary);
     direction: rtl;
@@ -106,8 +106,11 @@
     margin: 0;
     font-size: clamp(0.7rem, 1.1vw, 0.8rem);
     color: var(--text-muted);
-    line-height: 1.5;
+    line-height: 1.4;
     max-width: 62ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Badges */
@@ -236,7 +239,7 @@
     display: flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.55rem clamp(0.85rem, 2vw, 1.4rem);
+    padding: 0.38rem clamp(0.8rem, 1.8vw, 1.2rem);
     overflow-x: auto;
     scrollbar-width: none;
     flex-wrap: nowrap;
@@ -346,7 +349,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    padding: var(--space-2) clamp(0.85rem, 2vw, 1.4rem);
+    padding: 0.32rem clamp(0.8rem, 1.8vw, 1.2rem);
     overflow-x: auto;
     scrollbar-width: none;
 }
@@ -499,7 +502,7 @@
         display: flex;
         align-items: center;
         gap: var(--space-2);
-        padding: var(--space-1) var(--space-3);
+        padding: 0.22rem 0.65rem;
         border-bottom: 1px solid var(--border-subtle, rgba(0,0,0,0.08));
     }
 
@@ -566,8 +569,18 @@
     }
 
     .srh-controls {
-        padding: 0.45rem 0.75rem;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        padding: 0.3rem 0.65rem;
         gap: var(--space-1);
+    }
+
+    .srh-vsep {
+        display: none;
+    }
+
+    .srh-study-toggles {
+        justify-content: space-between;
     }
 
     /* Hide text labels in toggles on mobile, show only icons */
@@ -588,7 +601,7 @@
     }
 
     .srh-footer {
-        padding: 0.42rem 0.75rem;
+        padding: 0.3rem 0.65rem;
         gap: 0.35rem;
     }
 }
@@ -650,7 +663,7 @@
 .app-root .quran-display--platform .qc-surah-header-wrap > .srh-root {
     width: 100% !important;
     max-width: 100% !important;
-    margin: 0 0 clamp(0.85rem, 1.6vw, 1.35rem) !important;
+    margin: 0 0 0.35rem !important;
 }
 
 /* Kill any old generic section constraining */

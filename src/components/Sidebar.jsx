@@ -368,7 +368,7 @@ export default function Sidebar() {
                     </span>
                   </div>
                   <div
-                    className="shrink-0 font-surah-names text-[1.3rem] opacity-50 transition-opacity group-hover:opacity-85"
+                    className="shrink-0 font-surah-names text-[1.3rem] opacity-70 transition-opacity group-hover:opacity-100"
                     aria-label={s.ar}
                   >
                     {surahCalligraphyId}

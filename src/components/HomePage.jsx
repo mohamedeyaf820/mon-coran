@@ -106,20 +106,27 @@ function ToolsQuickCard({ lang, set, t }) {
 
   return (
     <div className="home-tools-quick-card bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
-      <div className="flex items-center justify-between mb-3 select-none">
-        <div className="flex items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] font-[var(--font-ui)] uppercase tracking-[0.06em]">
+      <div className="mb-3 flex min-w-0 items-center gap-3 select-none">
+        <div className="flex min-w-0 flex-1 items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] font-[var(--font-ui)] uppercase tracking-[0.06em]">
           <Shapes size={12} className="text-primary" />
-          <span>{tr({ fr: "Outils Spirituels", en: "Spiritual Tools", ar: "الأدوات الروحية" })}</span>
+          <span className="line-clamp-2 min-w-0 leading-tight">
+            {tr({ fr: "Outils Spirituels", en: "Spiritual Tools", ar: "الأدوات الروحية" })}
+          </span>
         </div>
         <button
           onClick={() => set({ toolsHubOpen: true })}
-          className="text-[0.68rem] text-primary hover:underline font-bold font-[var(--font-ui)] cursor-pointer"
+          className="shrink-0 rounded-lg px-2 py-1 text-[0.68rem] text-primary hover:bg-primary/8 hover:underline font-bold font-[var(--font-ui)] cursor-pointer"
+          aria-label={tr({
+            fr: "Voir tous les outils spirituels",
+            en: "View all spiritual tools",
+            ar: "عرض جميع الأدوات الروحية",
+          })}
         >
-          {tr({ fr: "Voir tout", en: "View all", ar: "عرض الكل" })}
+          {tr({ fr: "Tout", en: "All", ar: "الكل" })}
         </button>
       </div>
 
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {quickTools.map((tool) => (
           <button
             key={tool.id}

@@ -174,7 +174,7 @@ html body .app-root .audio-player-simple.mp-audio-player--desktop[data-dragging=
 
 .app-root .audio-player-simple.mp-audio-player--mobile {
   right: .75rem !important;
-  bottom: max(.75rem, env(safe-area-inset-bottom)) !important;
+  bottom: max(.4rem, env(safe-area-inset-bottom)) !important;
   left: .75rem !important;
   top: auto !important;
   width: auto !important;
@@ -467,8 +467,8 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
   grid-template-columns: 2.5rem minmax(0, 1fr) 2.75rem 2.5rem;
   align-items: center;
   gap: .55rem;
-  min-height: 4.45rem;
-  padding: .55rem .6rem;
+  min-height: 3.9rem;
+  padding: .38rem .55rem;
 }
 
 .app-root .audio-player-simple .simple-player__compact-meta {

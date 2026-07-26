@@ -745,6 +745,14 @@ html.dark .app-root > .mp-header {
   margin-top: 0.18rem;
 }
 
+.mp-header-menu__item-description {
+  display: -webkit-box;
+  overflow: hidden;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 .mp-header-menu__close {
   display: inline-flex;
   width: 2rem;
@@ -776,7 +784,7 @@ html.dark .app-root > .mp-header {
 
 .mp-header-menu .mp-header-menu__item {
   min-width: 0;
-  min-height: 4.35rem !important;
+  min-height: 4.6rem !important;
   gap: 0.55rem;
   padding: 0.62rem !important;
   border: 1px solid color-mix(in srgb, var(--border) 86%, transparent) !important;

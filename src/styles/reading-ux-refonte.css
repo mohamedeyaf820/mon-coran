@@ -31,7 +31,7 @@
 }
 
 .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap {
-  margin-bottom: clamp(0.85rem, 1.4vw, 1.25rem) !important;
+  margin-bottom: 0.3rem !important;
 }
 
 .app-root[data-view="reading"] .quran-display--platform .reader-toolbar {
@@ -60,7 +60,7 @@
 .app-root[data-view="reading"] .quran-display--platform .qc-verse-by-verse-view {
   width: var(--reader-content-max) !important;
   max-width: var(--reader-content-max) !important;
-  padding: 0.35rem 0 clamp(2rem, 4vw, 3rem) !important;
+  padding: 0.1rem 0 clamp(2rem, 4vw, 3rem) !important;
 }
 
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {

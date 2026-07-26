@@ -328,6 +328,14 @@ html.dark .home-info-card {
   align-items: stretch;
 }
 
+.home-top-cards-grid {
+  grid-template-columns:
+    minmax(0, 1.15fr)
+    minmax(0, 1.15fr)
+    minmax(0, 0.85fr)
+    minmax(0, 0.85fr) !important;
+}
+
 .home-brand-ar {
   font-size: 0 !important;
   min-height: 1.5rem;
@@ -2864,8 +2872,17 @@ body > .audio-player-modal .audio-settings-icon-btn {
   }
 
   html body .app-root .app-view-home .home-hero-title {
-    font-size: clamp(1.78rem, 8.6vw, 2.22rem) !important;
-    line-height: 1.05 !important;
+    font-size: clamp(1.38rem, 6.7vw, 1.72rem) !important;
+    line-height: 1.08 !important;
+    text-wrap: pretty;
+  }
+
+  html body .app-root .app-view-home .home-hero-logo {
+    display: none !important;
+  }
+
+  html body .app-root .app-view-home .home-brand-row {
+    gap: 0 !important;
   }
 
   html body .app-root .app-view-home :is(.hp-card, .surah-card, .home-top-cards-grid > *) {

@@ -75,7 +75,7 @@ export default function HeroSection({
 
           <div className="home-brand-row flex items-center gap-3">
             <PlatformLogo
-              className="h-12 w-12 shrink-0 rounded-xl shadow-sm"
+              className="home-hero-logo h-12 w-12 shrink-0 rounded-xl shadow-sm"
               imgClassName="h-9 w-9 object-cover"
               decorative
             />

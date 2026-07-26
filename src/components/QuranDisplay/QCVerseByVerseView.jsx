@@ -216,6 +216,13 @@ const QCVerseCard = memo(function QCVerseCard({
           onClick={handleClick}
           role="button"
           tabIndex={0}
+          aria-label={`${
+            lang === "fr"
+              ? "Texte arabe du verset"
+              : lang === "ar"
+                ? "نص الآية"
+                : "Arabic text for verse"
+          } ${surahNum}:${ayah.numberInSurah}`}
           onKeyDown={(event) => {
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
