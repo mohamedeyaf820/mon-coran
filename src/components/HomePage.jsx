@@ -131,7 +131,7 @@ function ToolsQuickCard({ lang, set, t }) {
   ];
 
   return (
-    <div className="home-tools-quick-card hidden md:block bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+    <div className="home-tools-quick-card bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
       <div className="mb-3 flex min-w-0 items-center gap-3 select-none">
         <div className="flex min-w-0 flex-1 items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] font-[var(--font-ui)] uppercase tracking-[0.06em]">
           <Shapes size={12} className="text-primary" />
