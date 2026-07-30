@@ -18982,8 +18982,8 @@ body {
 .wbw-display {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start; 
-    align-items: flex-start; 
+    justify-content: flex-start;
+    align-items: flex-start;
     gap: 0.5rem 0.75rem;
     padding: 0.75rem 0 0.5rem;
     direction: rtl;
@@ -18992,6 +18992,20 @@ body {
     align-content: flex-start;
     unicode-bidi: plaintext;
     row-gap: 1rem;
+}
+
+/* Study grid: display as equal-width columns immediately (before lazy CSS loads). */
+.wbw-display.wbw-study-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 8.5rem), 1fr));
+    align-items: stretch;
+    gap: clamp(0.5rem, 1.2vw, 0.75rem);
+}
+
+.wbw-display.wbw-study-grid > .wbw-word-block {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
 }
 
 .wbw-word-block {
@@ -19127,6 +19141,8 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    word-break: normal;
+    hyphens: none;
     min-height: 1rem;
     display: flex;
     align-items: center;
@@ -19195,6 +19211,16 @@ body {
         gap: 0.35rem 0.5rem;
         padding: 0.35rem 0 0.15rem;
         row-gap: 0.75rem;
+    }
+
+    .wbw-display.wbw-study-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.45rem;
+    }
+
+    .wbw-display.wbw-study-grid > .wbw-word-block {
+        max-width: none;
+        width: 100%;
     }
 
     .wbw-word-block {
