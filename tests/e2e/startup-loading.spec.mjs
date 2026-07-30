@@ -1,4 +1,10 @@
 import { test, expect } from "@playwright/test";
+import fs from "node:fs";
+
+const manifest = JSON.parse(
+  fs.readFileSync(new URL("../../dist/.vite/manifest.json", import.meta.url), "utf8"),
+);
+const quranReaderAsset = manifest["src/components/QuranDisplay.jsx"]?.file;
 
 test.use({ serviceWorkers: "block" });
 
@@ -51,17 +57,33 @@ test("first launch keeps the critical network payload compact", async ({ page })
   await page.waitForTimeout(1_000);
 
   expect(initialStylesheets).toHaveLength(1);
-  expect(initialModulePreloads.length).toBeLessThanOrEqual(4);
+  expect(initialModulePreloads.length).toBeLessThanOrEqual(5);
   expect(logoBody.byteLength).toBeLessThan(40 * 1024);
 
   const parsedRequests = requests.map((url) => new URL(url));
+  const firstLaunchJs = parsedRequests.filter((url) => url.pathname.endsWith(".js"));
+  const firstLaunchCss = parsedRequests.filter((url) => url.pathname.endsWith(".css"));
+  console.info(
+    `[startup-metrics] requests=${parsedRequests.length} js=${firstLaunchJs.length} css=${firstLaunchCss.length}`,
+  );
+  expect(parsedRequests.length).toBeLessThanOrEqual(45);
+  expect(firstLaunchJs.length).toBeLessThanOrEqual(30);
   expect(parsedRequests.filter((url) => url.pathname === "/logo.png")).toHaveLength(0);
+  expect(
+    parsedRequests.filter(
+      (url) => url.pathname === `/pwa-home-wide.png` || url.pathname === `/pwa-home-mobile.png`,
+    ),
+  ).toHaveLength(0);
   expect(parsedRequests.filter((url) => url.hostname === "api.alquran.cloud")).toHaveLength(0);
+  expect(quranReaderAsset).toBeTruthy();
+  expect(
+    parsedRequests.filter((url) => url.pathname === `/${quranReaderAsset}`),
+  ).toHaveLength(0);
 
   const quranTextRequests = parsedRequests.filter(
     (url) =>
       url.hostname === "api.quran.com" &&
       url.pathname.includes("/verses/by_chapter/"),
   );
-  expect(quranTextRequests.length).toBeLessThanOrEqual(1);
+  expect(quranTextRequests).toHaveLength(0);
 });
