@@ -13,6 +13,11 @@
   --space-10: max(2.75rem, 44px);
 }
 
+html body .app-root {
+  --mp-device-touch: 44px;
+  --mp-device-icon: clamp(0.75rem, 0.72rem + 0.12vw, 0.88rem);
+}
+
 /* Reading header title should hug its label on pointer-sized layouts. */
 html body .app-root > .mp-header .mp-header__title-btn {
   width: fit-content !important;

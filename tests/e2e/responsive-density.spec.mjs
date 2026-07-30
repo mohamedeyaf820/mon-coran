@@ -133,13 +133,13 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(header?.height || 0).toBeLessThanOrEqual(56);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
   expect(audioDock?.height || 0).toBeLessThanOrEqual(160);
-  expect(firstAction?.width || 0).toBeGreaterThanOrEqual(40);
-  expect(firstAction?.height || 0).toBeGreaterThanOrEqual(40);
-  expect(firstAction?.width || 0).toBeLessThanOrEqual(40.1);
-  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(40);
-  expect(moreButton?.width || 0).toBeGreaterThanOrEqual(40);
-  expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(40);
-  expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(40);
+  expect(firstAction?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(firstAction?.height || 0).toBeGreaterThanOrEqual(43.9);
+  expect(firstAction?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(moreButton?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(43.9);
   await expect(page.locator(".srh-typography-panel")).toBeHidden();
   await page.locator(".srh-typography-trigger").click();
   await expect(page.locator(".srh-typography-panel")).toBeVisible();
@@ -151,9 +151,9 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(sizeControls?.width || 0).toBeGreaterThanOrEqual(145);
   await openAudioPlayer(page);
   const audioOptionsButton = await box(page, ".mp-player-options-trigger");
-  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(40);
-  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(40);
-  expect(audioOptionsButton?.width || 0).toBeLessThanOrEqual(40.1);
+  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(43.9);
+  expect(audioOptionsButton?.width || 0).toBeLessThanOrEqual(44.1);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 

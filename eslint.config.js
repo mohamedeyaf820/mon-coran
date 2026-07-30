@@ -11,6 +11,8 @@ export default [
       "playwright-report/**",
       "test-results/**",
       "coverage/**",
+      "design-audit/**",
+      "design-audit-2/**",
       "public/boot-recovery.js",
     ],
   },

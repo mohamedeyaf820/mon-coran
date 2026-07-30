@@ -34,3 +34,5 @@ Thumbs.db
 # Env
 .env
 .env.local
+design-audit/
+design-audit-2/
