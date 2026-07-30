@@ -660,7 +660,15 @@ export function AppProvider({ children }) {
             });
           });
         })
-        .catch(() => {});
+        .catch((error) => {
+          if (import.meta.env.DEV) {
+            console.warn("Audio service initialization failed:", error);
+          }
+          dispatch({
+            type: "SET",
+            payload: { audioServiceError: true },
+          });
+        });
     };
 
     window.addEventListener("pointerdown", initializeAudioMetrics, {

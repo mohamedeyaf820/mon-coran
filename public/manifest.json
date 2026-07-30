@@ -2,10 +2,12 @@
   "name": "MushafPlus - Le Saint Coran",
   "short_name": "MushafPlus",
   "description": "Une expérience de lecture du Coran premium, fluide et authentique.",
+  "id": "/",
+  "scope": "/",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FEFAF3",
-  "theme_color": "#1B5E3A",
+  "background_color": "#071A0F",
+  "theme_color": "#0D5C4A",
   "icons": [
     {
       "src": "/logo-192.png",
@@ -70,6 +72,7 @@
       "src": "/pwa-home-mobile.png",
       "sizes": "390x844",
       "type": "image/png",
+      "form_factor": "narrow",
       "label": "Accueil MushafPlus sur mobile"
     }
   ],

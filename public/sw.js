@@ -8,11 +8,11 @@
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v12";
+const CACHE_NAME = "mushaf-plus-v13";
 const API_CACHE_NAME = "mushaf-plus-api-v3";
 const CACHE_LIMITS = {
-  [CACHE_NAME]: 180,
-  [API_CACHE_NAME]: 160,
+  [CACHE_NAME]: 300,
+  [API_CACHE_NAME]: 200,
 };
 let claimClientsOnActivate = false;
 
@@ -22,8 +22,6 @@ const ASSETS_TO_CACHE = [
   "/manifest.json",
   "/logo-ui.webp",
   "/favicon.png",
-  "/pwa-home-wide.png",
-  "/pwa-home-mobile.png",
   "/data/reciter-profiles.json",
 ];
 
@@ -191,10 +189,13 @@ self.addEventListener("message", (event) => {
     }
 
     // L'app demande au SW de skipWaiting (mise à jour immédiate)
-    case "SKIP_WAITING":
+    case "SKIP_WAITING": {
+      const senderUrl = event.source?.url || "";
+      if (!senderUrl.startsWith(self.registration.scope)) break;
       claimClientsOnActivate = true;
       event.waitUntil(self.skipWaiting());
       break;
+    }
 
     default:
       break;
@@ -290,7 +291,7 @@ async function staleWhileRevalidate(request, cacheName, event) {
 
   const networkPromise = fetchWithTimeout(request)
     .then(async (response) => {
-      if (response && (response.status === 200 || response.type === "opaque")) {
+      if (response?.ok) {
         await putBounded(cache, request, response.clone(), cacheName);
       }
       return response;
