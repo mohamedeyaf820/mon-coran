@@ -2614,28 +2614,6 @@ html body .app-root .quran-display--platform .cpv-container.mushaf-page-wrapper:
     pointer-events: none !important;
 }
 
-html body .app-root .quran-display--platform .mushaf-page-wrapper .cpv-translation-panel {
-    background: rgba(var(--primary-rgb), 0.02) !important;
-    border: 1px dashed var(--reader-page-rule, rgba(200, 168, 75, 0.35)) !important;
-    color: var(--reader-page-ink) !important;
-    box-shadow: none !important;
-}
-html body .app-root .quran-display--platform .mushaf-page-wrapper .cpv-translation-panel .text-\[var\(--text-secondary\)\],
-html body .app-root .quran-display--platform .mushaf-page-wrapper .cpv-translation-panel span.flex-1 {
-    color: var(--reader-page-ink) !important;
-    opacity: 0.9 !important;
-}
-html body .app-root .quran-display--platform .mushaf-page-wrapper .cpv-translation-panel div.border-b {
-    border-color: var(--reader-page-rule, rgba(200, 168, 75, 0.2)) !important;
-}
-html body .app-root .quran-display--platform .mushaf-page-wrapper .cpv-translation-panel div.border-b:hover {
-    background: rgba(var(--primary-rgb), 0.04) !important;
-}
-html body .app-root .quran-display--platform .mushaf-page-wrapper .cpv-translation-panel .bg-\[rgba\(var\(--primary-rgb\)\,0\.05\)\] {
-    background: rgba(var(--primary-rgb), 0.12) !important;
-    border-color: rgba(var(--primary-rgb), 0.25) !important;
-}
-
 html body .app-root .quran-display--platform .mushaf-container.cpv-flow {
     display: block !important;
     direction: rtl !important;
@@ -2934,7 +2912,7 @@ html body .app-root .quran-display--platform .mushaf-wrapper {
     padding: 2rem !important;
     border: 0 !important;
     border-radius: 4px !important;
-    background: #faf7f2 !important;
+    background: var(--reader-page-bg, #faf7f2) !important;
     box-shadow: none !important;
     overflow: visible !important;
 }
@@ -2966,7 +2944,7 @@ html body .app-root .quran-display--platform .basmala-text {
     font-family: var(--quran-font-family) !important;
     font-size: var(--quran-font-size) !important;
     line-height: 2 !important;
-    color: #1a1a1a !important;
+    color: var(--text-primary, #1a1a1a) !important;
 }
 
 html body .app-root .quran-display--platform .mushaf-text-block {
@@ -2978,7 +2956,7 @@ html body .app-root .quran-display--platform .mushaf-text-block {
     font-family: var(--quran-font-family) !important;
     font-size: var(--quran-font-size) !important;
     line-height: 2.6 !important;
-    color: #1a1a1a !important;
+    color: var(--text-primary, #1a1a1a) !important;
     background: transparent !important;
     word-spacing: normal !important;
     letter-spacing: 0 !important;

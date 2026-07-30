@@ -3,6 +3,7 @@ import "../styles/settings-enhanced.css";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   BookOpen,
+  Check,
   Download,
   Info,
   Palette,
@@ -384,6 +385,12 @@ export default function SettingsModal() {
         <div className="settings-theme-grid" role="group" aria-label={t("settings.visualTheme", lang)}>
           {UI_THEMES.map((item) => {
             const label = localText(lang, item.fr, item.en, item.ar);
+            const description = localText(
+              lang,
+              item.descriptionFr,
+              item.descriptionEn,
+              item.descriptionAr,
+            );
             const isActive = theme === item.id;
             return (
               <button
@@ -402,7 +409,18 @@ export default function SettingsModal() {
                     "--theme-text": item.palette?.text || "var(--text-primary)",
                   }}
                 />
-                <span>{label}</span>
+                <span className="settings-theme-tile__copy">
+                  <strong>{label}</strong>
+                  <small>{description}</small>
+                </span>
+                {isActive ? (
+                  <span
+                    className="settings-theme-tile__check"
+                    aria-hidden="true"
+                  >
+                    <Check size={13} />
+                  </span>
+                ) : null}
               </button>
             );
           })}
@@ -920,7 +938,7 @@ export default function SettingsModal() {
             })}
           </nav>
 
-          <main className="settings-drawer__content">
+          <div className="settings-drawer__content">
             <div
               id={`settings-panel-${activeTab}`}
               role="tabpanel"
@@ -931,7 +949,7 @@ export default function SettingsModal() {
               {activeTab === "audio" ? renderAudioTab() : null}
               {activeTab === "privacy" ? renderPrivacyTab() : null}
             </div>
-          </main>
+          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

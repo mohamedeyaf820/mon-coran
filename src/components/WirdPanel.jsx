@@ -360,7 +360,7 @@ export default function WirdPanel() {
                 type="button"
                 onClick={close}
                 aria-label={
-                  lang === "fr" ? "Fermer" : lang === "ar" ? "اغلاق" : "Close"
+                  lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
                 }
               >
                 <X size={16} aria-hidden="true" />

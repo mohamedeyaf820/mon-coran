@@ -87,7 +87,9 @@ export default function AudioPlayer() {
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [minimized, setMinimized] = useState(Boolean(playerMinimized));
+  const [minimized, setMinimized] = useState(
+    () => Boolean(playerMinimized) || !currentPlayingAyah,
+  );
   const [volume, setVolume] = useState(savedVolume ?? 1);
   const [isMobile, setIsMobile] = useState(() => {
     return isMobilePlayerViewport();
@@ -105,6 +107,7 @@ export default function AudioPlayer() {
   const [closed, setClosed] = useState(false);
   const currentSurahRef = useRef(null);
   const currentPlayingAyahRef = useRef(currentPlayingAyah);
+  const skipInitialExpandedPreferenceRef = useRef(!currentPlayingAyah);
 
   const optionsCloseButtonRef = useRef(null);
   const progressRef = useRef(null);
@@ -341,6 +344,10 @@ export default function AudioPlayer() {
   }, [isMobile, minimized]);
 
   useEffect(() => {
+    if (skipInitialExpandedPreferenceRef.current) {
+      skipInitialExpandedPreferenceRef.current = false;
+      return;
+    }
     setMinimized(Boolean(playerMinimized));
   }, [playerMinimized]);
 
@@ -376,7 +383,7 @@ export default function AudioPlayer() {
   useEffect(() => {
     audioService.onPlay = (item) => {
       setClosed(false); // rouvre le lecteur s'il etait ferme
-      setMinimized(false);
+      setMinimized(true);
       setAudioError(null);
       markReciterAvailable(reciter);
       failedRecitersRef.current.clear();
@@ -431,6 +438,7 @@ export default function AudioPlayer() {
       setProgress(dur ? ct / dur : 0);
     };
     audioService.onError = async (error) => {
+      try {
       set({ isPlaying: false });
       setNetworkState("error");
       if (audioErrorTimerRef.current) {
@@ -471,6 +479,10 @@ export default function AudioPlayer() {
         setAudioError(null);
         audioErrorTimerRef.current = null;
       }, 5000);
+      } catch (e) {
+        autoFailoverBusyRef.current = false;
+        console.warn("onError handler threw:", e);
+      }
     };
     audioService.onNetworkState = (st) => {
       setNetworkState(st || "idle");
@@ -1056,7 +1068,7 @@ export default function AudioPlayer() {
     const updateReservedHeight = () => {
       const usesWideDock =
         window.innerWidth >= 600 && window.innerWidth <= MOBILE_BREAKPOINT;
-      const reservedHeight = minimized ? 76 : usesWideDock ? 64 : 108;
+      const reservedHeight = minimized ? 70 : usesWideDock ? 64 : 108;
       root.style.setProperty("--player-h", `${reservedHeight}px`);
     };
     updateReservedHeight();
@@ -1078,7 +1090,7 @@ export default function AudioPlayer() {
       return;
     }
 
-    const reservedHeight = minimized ? 108 : 360;
+    const reservedHeight = minimized ? 84 : 280;
     root.style.setProperty("--desktop-player-reserved-h", `${reservedHeight}px`);
 
     return () => {

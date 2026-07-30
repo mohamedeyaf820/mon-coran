@@ -157,6 +157,14 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
   const copiedTimerRef = useRef(null);
   const playlistTimerRef = useRef(null);
 
+  useEffect(() => {
+    return () => {
+      clearTimeout(audioErrTimerRef.current);
+      clearTimeout(copiedTimerRef.current);
+      clearTimeout(playlistTimerRef.current);
+    };
+  }, []);
+
   const surahInfo = useMemo(() => getSurah(surah), [surah]);
   const activeSheet = showStudy
     ? "study"
@@ -172,9 +180,11 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
   );
 
   useEffect(() => {
-    isBookmarked(surah, ayah).then(setBookmarked);
-    getNote(surah, ayah).then((note) => setNoteText(note?.text || ""));
+    let mounted = true;
+    isBookmarked(surah, ayah).then((v) => { if (mounted) setBookmarked(v); });
+    getNote(surah, ayah).then((note) => { if (mounted) setNoteText(note?.text || ""); });
     setMemoLevel(getMemorizationLevel(surah, ayah));
+    return () => { mounted = false; };
   }, [ayah, surah]);
 
   useEffect(() => {

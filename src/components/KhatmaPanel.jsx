@@ -72,7 +72,7 @@ export default function KhatmaPanel() {
                 className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
                 type="button"
                 onClick={close}
-                aria-label={L("Fermer", "اغلاق", "Close")}
+                aria-label={L("Fermer", "إغلاق", "Close")}
               >
                 <X size={16} />
               </button>

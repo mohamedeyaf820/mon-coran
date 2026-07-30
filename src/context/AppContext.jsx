@@ -429,7 +429,7 @@ export function appReducer(state, action) {
     }
 
     case "SET_LOADING":
-      return { ...state, loading: action.payload, error: null };
+      return { ...state, loading: action.payload, ...(action.payload ? { error: null } : {}) };
 
     case "SET_ERROR":
       return { ...state, loading: false, error: action.payload };

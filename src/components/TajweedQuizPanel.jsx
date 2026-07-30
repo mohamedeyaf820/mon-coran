@@ -133,7 +133,7 @@ export default function TajweedQuizPanel() {
                 type="button"
                 onClick={close}
                 aria-label={
-                  lang === "fr" ? "Fermer" : lang === "ar" ? "اغلاق" : "Close"
+                  lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
                 }
               >
                 <Icon name="xmark" size={18} />

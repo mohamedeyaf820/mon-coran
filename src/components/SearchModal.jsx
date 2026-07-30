@@ -346,7 +346,7 @@ export default function SearchModal() {
               </header>
 
               <div className="search-pro__body">
-                <main className="search-pro__main">
+                <div className="search-pro__main">
                   <section
                     className="search-pro__command"
                     aria-label={
@@ -618,7 +618,7 @@ export default function SearchModal() {
                       })}
                     </div>
                   </section>
-                </main>
+                </div>
               </div>
           </Dialog.Content>
         </div>
