@@ -1,10 +1,15 @@
 import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 
-const manifest = JSON.parse(
-  fs.readFileSync(new URL("../../dist/.vite/manifest.json", import.meta.url), "utf8"),
-);
-const quranReaderAsset = manifest["src/components/QuranDisplay.jsx"]?.file;
+let quranReaderAsset;
+try {
+  const manifest = JSON.parse(
+    fs.readFileSync(new URL("../../dist/.vite/manifest.json", import.meta.url), "utf8"),
+  );
+  quranReaderAsset = manifest["src/components/QuranDisplay.jsx"]?.file;
+} catch {
+  // manifest not available (e.g. hidden .vite/ dir excluded from artifact)
+}
 
 test.use({ serviceWorkers: "block" });
 

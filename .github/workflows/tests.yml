@@ -35,6 +35,7 @@ jobs:
         with:
           name: production-dist
           path: dist/
+          include-hidden-files: true
           retention-days: 2
 
   chromium:
