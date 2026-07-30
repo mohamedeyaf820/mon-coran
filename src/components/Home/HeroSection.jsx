@@ -1,4 +1,4 @@
-import { Feather, CirclePlay, BookOpen, HandHeart, Bookmark, StickyNote, ChevronLeft, ChevronRight } from "lucide-react";
+import { Feather, CirclePlay, BookOpen, HandHeart, Bookmark, ChevronLeft, ChevronRight } from "lucide-react";
 import SURAHS from "../../data/surahs";
 import { cn } from "../../lib/utils";
 import PlatformLogo from "../PlatformLogo";
@@ -17,13 +17,13 @@ export default function HeroSection({
   surahLabel,
   continueReading,
   goSurah,
+  onWarmSurah,
   openDuas,
   t,
   activeInfo,
   onSelectInfo,
   infoTabs,
   bookmarks,
-  notes,
   suggestionSet,
   goSurahAyah,
   children,
@@ -99,6 +99,10 @@ export default function HeroSection({
               className="home-cta-primary inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-[0.85rem] font-bold text-white shadow-md shadow-primary/20 transition-all duration-200 hover:bg-primary-dark active:scale-[0.97] max-[520px]:w-full max-[520px]:justify-center"
               aria-label={primaryReadingCtaLabel}
               onClick={hasReadingHistory ? continueReading : () => goSurah(1)}
+              onPointerEnter={() =>
+                onWarmSurah(hasReadingHistory ? undefined : 1)
+              }
+              onFocus={() => onWarmSurah(hasReadingHistory ? undefined : 1)}
               type="button"
             >
               {hasReadingHistory ? <CirclePlay size={15} aria-hidden="true" /> : <BookOpen size={15} aria-hidden="true" />}
@@ -121,7 +125,17 @@ export default function HeroSection({
         <div className="home-hero-side flex min-w-0 flex-col gap-4">
           <aside className="home-info-panel">
             <div className="home-info-card overflow-hidden rounded-2xl border border-border/50 bg-bg-secondary/40 backdrop-blur-md">
-              <div className="flex items-center overflow-x-auto border-b border-border/50 no-scrollbar">
+              <div
+                className="flex items-center overflow-x-auto border-b border-border/50 no-scrollbar"
+                role="tablist"
+                aria-label={
+                  uiLang === "fr"
+                    ? "Informations rapides"
+                    : uiLang === "ar"
+                      ? "\u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0633\u0631\u064a\u0639\u0629"
+                      : "Quick information"
+                }
+              >
                 {infoTabs.map((tab) => (
                   <button
                     key={tab.id}
@@ -132,6 +146,8 @@ export default function HeroSection({
                     )}
                     onClick={() => onSelectInfo(tab.id)}
                     type="button"
+                    role="tab"
+                    aria-selected={activeInfo === tab.id}
                   >
                     <Icon
                       name={tab.icon}
@@ -162,6 +178,8 @@ export default function HeroSection({
                           key={bk.id}
                           className="group flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-bg-tertiary"
                           onClick={() => goSurahAyah(bk.surah, bk.ayah)}
+                          onPointerEnter={() => onWarmSurah(bk.surah)}
+                          onFocus={() => onWarmSurah(bk.surah)}
                           type="button"
                         >
                           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-primary text-primary shadow-sm">
@@ -177,37 +195,6 @@ export default function HeroSection({
                             </span>
                             <span className="truncate text-[0.78rem] text-text-secondary">
                               {lang === "fr" ? s?.fr : s?.en} · v.{bk.ayah}
-                            </span>
-                          </div>
-                        </button>
-                      );
-                    })
-                  ))}
-
-                {activeInfo === "notes" &&
-                  (notes.length === 0 ? (
-                    <div className="py-5">
-                      <EmptyState icon="fa-note-sticky" text={t("noNotes")} />
-                    </div>
-                  ) : (
-                    notes.slice(0, 6).map((note) => {
-                      const s = SURAHS[note.surah - 1];
-                      return (
-                        <button
-                          key={note.id}
-                          className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-bg-tertiary"
-                          onClick={() => goSurahAyah(note.surah, note.ayah)}
-                          type="button"
-                        >
-                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-primary text-gold shadow-sm">
-                            <StickyNote size={14} aria-hidden="true" />
-                          </span>
-                          <div className="min-w-0 flex-1">
-                            <span className="block truncate text-[0.82rem] font-semibold text-text-primary">
-                              {lang === "fr" ? s?.fr : s?.en} · v.{note.ayah}
-                            </span>
-                            <span className="line-clamp-1 text-[0.74rem] text-text-secondary">
-                              {note.text}
                             </span>
                           </div>
                         </button>
@@ -235,6 +222,9 @@ export default function HeroSection({
                         key={s.n}
                         className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-bg-tertiary"
                         onClick={() => goSurah(s.n)}
+                        onPointerEnter={() => onWarmSurah(s.n)}
+                        onFocus={() => onWarmSurah(s.n)}
+                        onTouchStart={() => onWarmSurah(s.n)}
                         type="button"
                       >
                         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-primary text-primary shadow-sm">

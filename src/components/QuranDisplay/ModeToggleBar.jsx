@@ -14,6 +14,7 @@ export default function ModeToggleBar({
   lang,
   mushafLayout,
   memMode,
+  riwaya = "hafs",
   showWordByWord,
   onToggleWordByWord,
   onToggleMushaf,
@@ -21,15 +22,19 @@ export default function ModeToggleBar({
 }) {
   return (
     <div className={className}>
-      <button
-        className={getButtonClassName(showWordByWord)}
-        onClick={onToggleWordByWord}
-        title={getWordModeTitle(lang, showWordByWord)}
-      >
-        <Icon name={showWordByWord ? "language" : "list-ul"} size={14} />
-        <span>{getWordModeLabel(lang, showWordByWord)}</span>
-      </button>
-      <span className={separatorClassName} aria-hidden="true" />
+      {riwaya !== "warsh" ? (
+        <>
+          <button
+            className={getButtonClassName(showWordByWord)}
+            onClick={onToggleWordByWord}
+            title={getWordModeTitle(lang, showWordByWord)}
+          >
+            <Icon name={showWordByWord ? "language" : "list-ul"} size={14} />
+            <span>{getWordModeLabel(lang, showWordByWord)}</span>
+          </button>
+          <span className={separatorClassName} aria-hidden="true" />
+        </>
+      ) : null}
       <button
         className={getButtonClassName(mushafLayout === "mushaf")}
         onClick={onToggleMushaf}

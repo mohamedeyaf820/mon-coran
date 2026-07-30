@@ -114,9 +114,7 @@ export default function QCReadingView({
       observer.observe(currentSentinel);
     }
     return () => {
-      if (currentSentinel) {
-        observer.unobserve(currentSentinel);
-      }
+      observer.disconnect();
     };
   }, [items.length]);
 

@@ -47,6 +47,7 @@ export default function NotesPanel() {
   const { lang } = useAppLocale();
 
   const [notes, setNotes] = useState([]);
+  const [notesLoadError, setNotesLoadError] = useState(false);
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState(null);
@@ -136,8 +137,13 @@ export default function NotesPanel() {
 
   /* ── Notes CRUD ── */
   const loadNotes = useCallback(async () => {
-    const all = await getAllNotes();
-    setNotes(all.sort((a, b) => b.updatedAt - a.updatedAt));
+    try {
+      setNotesLoadError(false);
+      const all = await getAllNotes();
+      setNotes(all.sort((a, b) => b.updatedAt - a.updatedAt));
+    } catch {
+      setNotesLoadError(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -344,7 +350,24 @@ export default function NotesPanel() {
 
       {/* Notes list */}
       <div className="flex-1 overflow-y-auto overscroll-contain">
-        {notes.length === 0 ? (
+        {notesLoadError ? (
+          <div
+            className="flex flex-col items-center justify-center h-full px-5 text-center gap-3 py-10"
+            role="alert"
+          >
+            <TriangleAlert size={22} className="text-red-500" />
+            <p className="text-[0.78rem] text-(--text-muted) font-(--font-ui)">
+              {t("errors.loadError", lang)}
+            </p>
+            <button
+              type="button"
+              onClick={loadNotes}
+              className="rounded-lg border border-(--border) px-3 py-1.5 text-[0.72rem] font-semibold text-(--primary) hover:bg-(--bg-secondary)"
+            >
+              {t("errors.retry", lang)}
+            </button>
+          </div>
+        ) : notes.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full px-5 text-center gap-3 py-10">
             <div className="notes-empty-icon-shell w-14 h-14 rounded-2xl flex items-center justify-center">
               <StickyNote size={22} className="text-[var(--text-muted)]" />

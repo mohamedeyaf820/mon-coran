@@ -306,8 +306,7 @@ body {
 
 @font-face {
     font-family: "QPC Warsh";
-    src: url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2")
-        format("woff2");
+    src: url("/fonts/kfgqpc-warsh-10.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -336,8 +335,7 @@ body {
 
 @font-face {
     font-family: "KFGQPC Warsh";
-    src: url("https://cdn.jsdelivr.net/gh/thetruetruth/quran-data-kfgqpc@main/warsh/font/warsh.10.woff2")
-        format("woff2");
+    src: url("/fonts/kfgqpc-warsh-10.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -346,7 +344,7 @@ body {
 
 @font-face {
     font-family: "KFGQPC Uthmanic Script WARSH";
-    src: url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2") format("woff2");
+    src: url("/fonts/kfgqpc-warsh-10.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;

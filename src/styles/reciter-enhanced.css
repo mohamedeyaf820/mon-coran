@@ -1,35 +1,20 @@
-/* ══════════════════════════════════════════════════════
-   Reciter Detail Page — Enhanced Layout
-   ══════════════════════════════════════════════════════ */
-
-/* ── Dark mode modal background ── */
-[data-theme="dark"] .reciter-detail,
-[data-theme="dark"] [class*="reciter-detail"] {
-  background: linear-gradient(160deg, rgba(14,26,22,0.99), rgba(6,12,10,0.99)) !important;
-  border-color: rgba(196,219,208,0.15) !important;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.55) !important;
-}
-
-/* ── Sticky head ── */
-.rd-sticky-head {
-  flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: inherit;
-  border-bottom: 1px solid var(--border);
-}
-
-[data-theme="dark"] .rd-sticky-head {
-  border-bottom-color: rgba(196,219,208,0.12);
-  background: linear-gradient(160deg, rgba(14,26,22,0.99), rgba(8,15,13,0.99));
-}
-
-/* ── Scrollable body ── */
+/* The feature layer owns appearance; this file only keeps scroll behavior. */
 .rd-scrollable-body {
   flex: 1;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--primary) 30%, transparent 70%) transparent;
+}
+.reciter-bio-collapse {
+  position: relative;
+}
+
+.reciter-bio-collapse__content {
+  position: relative;
+}
+
+.reciter-bio-collapse:not(.is-open) .reciter-bio-collapse__content {
+  -webkit-mask-image: linear-gradient(to bottom, #000 65%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 65%, transparent 100%);
 }

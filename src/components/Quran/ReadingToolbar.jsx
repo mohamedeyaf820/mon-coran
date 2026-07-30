@@ -56,6 +56,7 @@ export default function ReadingToolbar({
     lang,
     memMode,
     mushafLayout,
+    riwaya,
     showTajwid,
     showTranslation,
     showWordByWord,
@@ -206,22 +207,24 @@ export default function ReadingToolbar({
             <span>{labels.translation}</span>
           </button>
 
-          <button
-            type="button"
-            className={cn(
-              "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
-              showWordByWord
-                ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
-                : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
-            )}
-            onClick={toggleWordByWord}
-            aria-pressed={showWordByWord}
-            aria-label={labels.wordByWord}
-            title={`${labels.wordByWord} (W)`}
-          >
-            <Type size={13} aria-hidden="true" />
-            <span>{labels.wordByWord}</span>
-          </button>
+          {riwaya !== "warsh" ? (
+            <button
+              type="button"
+              className={cn(
+                "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
+                showWordByWord
+                  ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
+                  : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
+              )}
+              onClick={toggleWordByWord}
+              aria-pressed={showWordByWord}
+              aria-label={labels.wordByWord}
+              title={`${labels.wordByWord} (W)`}
+            >
+              <Type size={13} aria-hidden="true" />
+              <span>{labels.wordByWord}</span>
+            </button>
+          ) : null}
 
           <button
             type="button"

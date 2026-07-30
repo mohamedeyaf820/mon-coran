@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import audioService from "../services/audioService";
-import { getKaraokeCalibration } from "../utils/karaokeUtils";
+import { createPausableAnimationLoop } from "../utils/pausableAnimationLoop";
 
 /**
  * Karaoke model — word-by-word highlighting synchronized with audio.
@@ -17,7 +17,6 @@ import { getKaraokeCalibration } from "../utils/karaokeUtils";
 export function useKaraoke({ isFirstAyah, wordCount, calibration }) {
   const [progress, setProgress] = useState(0);
   const [seekCount, setSeekCount] = useState(0);
-  const rafRef = useRef(null);
   const smoothedRef = useRef(0);
   const lastTimeRef = useRef(-1);
 
@@ -35,17 +34,16 @@ export function useKaraoke({ isFirstAyah, wordCount, calibration }) {
     lastTimeRef.current = -1;
     setProgress(0);
     let running = true;
+    let frameLoop = null;
 
     const tick = () => {
       if (!running) return;
 
       // ── Park the loop when audio is paused / stopped ──
       if (!audioService.isPlaying) {
-        rafRef.current = requestAnimationFrame(tick); // re-arm so we resume on play
+        frameLoop?.stop();
         return;
       }
-      // Note: the RAF keeps running while paused (avoids re-triggering user-gesture
-      // chain on mobile) but yields immediately, so CPU cost is negligible.
 
       const dur = audioService.duration || 0;
       const t = audioService.currentTime || 0;
@@ -102,14 +100,23 @@ export function useKaraoke({ isFirstAyah, wordCount, calibration }) {
       }
 
       lastTimeRef.current = t;
-      rafRef.current = requestAnimationFrame(tick);
     };
 
-    rafRef.current = requestAnimationFrame(tick);
+    frameLoop = createPausableAnimationLoop(tick);
+    const startLoop = () => frameLoop.start();
+    const stopLoop = () => frameLoop.stop();
+    const unsubscribePlay = audioService.addPlayListener(startLoop);
+    const unsubscribePause = audioService.addPauseListener(stopLoop);
+    const unsubscribeEnd = audioService.addEndListener(stopLoop);
+
+    if (audioService.isPlaying) startLoop();
 
     return () => {
       running = false;
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      unsubscribePlay();
+      unsubscribePause();
+      unsubscribeEnd();
+      frameLoop.stop();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [

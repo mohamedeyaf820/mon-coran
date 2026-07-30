@@ -80,8 +80,7 @@
 }
 
 .settings-drawer,
-.audio-player-modal__surface,
-.reciter-detail {
+.audio-player-modal__surface {
     max-height: calc(
         100dvh - max(1rem, env(safe-area-inset-top)) -
             max(1rem, env(safe-area-inset-bottom))
@@ -204,55 +203,6 @@
 
     .settings-drawer__content .grid {
         grid-template-columns: 1fr !important;
-    }
-}
-
-/* Reciter pages/cards: cleaner hierarchy and responsive scanability. */
-.reciter-detail {
-    width: min(100%, 62rem) !important;
-}
-
-.reciter-detail__header,
-.reciter-detail__stats,
-.reciter-detail__bio {
-    min-width: 0;
-}
-
-.reciter-detail__stat,
-.reciter-detail__bio,
-.reciter-detail [class*="rounded-xl"] {
-    border-color: var(--mp-surface-line) !important;
-}
-
-.reciter-detail__bio {
-    background:
-        linear-gradient(
-            145deg,
-            color-mix(
-                in srgb,
-                var(--theme-primary, var(--primary, #0f766e)) 7%,
-                transparent
-            ),
-            transparent
-        ),
-        color-mix(
-            in srgb,
-            var(--theme-panel-bg, var(--bg-card, #fff)) 92%,
-            transparent
-        ) !important;
-}
-
-@media (max-width: 640px) {
-    .reciter-detail {
-        padding: 1rem !important;
-    }
-
-    .reciter-detail__header {
-        gap: 0.9rem !important;
-    }
-
-    .reciter-detail__stats {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     }
 }
 
@@ -427,8 +377,7 @@
 [data-theme="dark"] .settings-drawer,
 [data-theme="dark"] .modal,
 [data-theme="dark"] .modal-panel--wide,
-[data-theme="dark"] .audio-player-modal__surface,
-[data-theme="dark"] .reciter-detail {
+[data-theme="dark"] .audio-player-modal__surface {
     border-color: rgba(148, 163, 184, 0.18) !important;
     background:
         radial-gradient(
@@ -867,18 +816,18 @@ html {
 
 :root:not([data-theme]),
 [data-theme="light"] {
-    --tajwid-silent: #8892b0 !important;
-    --tajwid-lam-shamsiyya: #8892b0 !important;
-    --tajwid-madd-normal: #b5179e !important;
-    --tajwid-madd: #b5179e !important;
-    --tajwid-madd-separated: #d97706 !important;
-    --tajwid-madd-connected: #db2777 !important;
-    --tajwid-madd-necessary: #dc2626 !important;
-    --tajwid-ghunna: #059669 !important;
-    --tajwid-idgham: #059669 !important;
-    --tajwid-ikhfa: #059669 !important;
-    --tajwid-qalqala: #0284c7 !important;
-    --tajwid-tafkhim: #4f46e5 !important;
+    --tajwid-silent: #596579 !important;
+    --tajwid-lam-shamsiyya: #596579 !important;
+    --tajwid-madd-normal: #8a2566 !important;
+    --tajwid-madd: #8a2566 !important;
+    --tajwid-madd-separated: #92400e !important;
+    --tajwid-madd-connected: #9d174d !important;
+    --tajwid-madd-necessary: #991b1b !important;
+    --tajwid-ghunna: #047857 !important;
+    --tajwid-idgham: #047857 !important;
+    --tajwid-ikhfa: #047857 !important;
+    --tajwid-qalqala: #0369a1 !important;
+    --tajwid-tafkhim: #4338ca !important;
 }
 
 [data-theme="sepia"] {
@@ -2054,10 +2003,6 @@ html[data-theme="dark"]
     .app-root.premium-plus
     :is(
         .mp-header__action,
-        .mp-header__more,
-        .mp-header__icon-btn,
-        .mp-header__nav-arrow,
-        .mp-header__title-btn,
         .reader-toolbar button,
         .quran-nav button,
         .page-header-bar button,

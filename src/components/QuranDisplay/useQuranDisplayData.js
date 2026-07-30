@@ -242,8 +242,8 @@ export default function useQuranDisplayData({
       if (err?.name === "AbortError" || requestSeqRef.current !== requestId) return;
       if (import.meta.env.DEV) console.warn("Fetch error:", err);
       setSettledCacheKey(cacheKey);
-      setError(err.message);
-      dispatch({ type: "SET_ERROR", payload: err.message });
+      setError("reader-load-failed");
+      dispatch({ type: "SET_ERROR", payload: "reader-load-failed" });
     } finally {
       if (!signal.aborted && requestSeqRef.current === requestId) {
         dispatch({ type: "SET_LOADING", payload: false });

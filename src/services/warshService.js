@@ -390,7 +390,7 @@ export async function loadWarshSurah(surahNum) {
         }
       } catch (fallbackErr) {
         logError(`[WarshService] Loading error for surah ${n}:`, fallbackErr);
-        throw new Error(`Failed to load warsh surah ${n}: ${fallbackErr.message || err.message}`);
+        throw new Error("WARSH_SOURCE_UNAVAILABLE");
       }
     }
 

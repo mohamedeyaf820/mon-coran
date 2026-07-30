@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import "../styles/domains/duas-page.css";
 import { useApp } from "../context/AppContext";
+import { t } from "../i18n";
 import QURAN_DUAS from "../data/duas";
 import SURAHS from "../data/surahs";
 import Footer from "./Footer";
@@ -164,7 +165,11 @@ export default function DuasPage() {
             </div>
           </div>
 
-          <div className="duas-categories scrollbar-hide" role="tablist" aria-label="Dua categories">
+          <div
+            className="duas-categories scrollbar-hide"
+            role="tablist"
+            aria-label={t("duas.categoriesLabel", lang)}
+          >
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.id}

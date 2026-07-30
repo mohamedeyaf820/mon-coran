@@ -8,7 +8,7 @@ export default function ReciterRadioButton({ lang, onClick }) {
       className="reciter-radio-button"
       onClick={onClick}
     >
-      <Radio size={14} aria-hidden="true" />
+      <Radio className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
       <span>
         {lang === "fr"
           ? "Radio continue"

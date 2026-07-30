@@ -127,13 +127,17 @@ const EXTENDED_ARABIC_INDIC_DIGITS = [
 ];
 
 const AYAH_MARKER_BY_FONT = {
-  "qpc-hafs": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
+  // UthmanicHafs1Ver18 shapes the complete digit sequence as one rosette.
+  // Prefixing U+06DD produces a second, empty rosette beside the number.
+  "qpc-hafs": { marker: "", digits: ARABIC_INDIC_DIGITS },
   "qpc-indopak": { marker: "\u06dd", digits: EXTENDED_ARABIC_INDIC_DIGITS },
   "scheherazade-new": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
   "amiri-quran": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
   "noto-naskh-arabic": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
-  "qpc-warsh": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
-  "kfgqpc-warsh": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
+  // The locally hosted Warsh 10 face shapes the digit sequence as a rosette.
+  "qpc-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
+  // Warsh 10 also turns the digit sequence itself into the complete rosette.
+  "kfgqpc-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
   "scheherazade-new-warsh": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
   "qcf-v2": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
   "qcf-v4-tajweed": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },

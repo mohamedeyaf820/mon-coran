@@ -223,8 +223,10 @@ export default function Sidebar() {
             {availableTabs.map((tabId) => (
               <button
                 key={tabId}
+                id={`sidebar-tab-${tabId}`}
                 role="tab"
                 aria-selected={tab === tabId}
+                aria-controls={`sidebar-panel-${tabId}`}
                 className={cn(
                   "sidebar-tab-trigger flex min-h-[44px] items-center justify-center rounded-md px-2 text-[0.72rem] font-bold text-text-secondary transition-all hover:text-text-primary",
                   tab === tabId && "bg-bg-primary text-primary shadow-sm",
@@ -277,7 +279,13 @@ export default function Sidebar() {
         </div>
 
         {/* ── ZONE SCROLLABLE ── */}
-        <div ref={scrollRootRef} className="flex-1 overflow-y-auto p-2 sm:p-2.5 space-y-0.5">
+        <div
+          ref={scrollRootRef}
+          id={`sidebar-panel-${tab}`}
+          role="tabpanel"
+          aria-labelledby={`sidebar-tab-${tab}`}
+          className="flex-1 overflow-y-auto p-2 sm:p-2.5 space-y-0.5"
+        >
           {/* ── Section sourates ── */}
           {tab === "surah" && filter && filteredSurahs.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12 text-text-muted opacity-60 gap-3">

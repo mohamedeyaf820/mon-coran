@@ -28,14 +28,18 @@ export default function ReciterBioCollapse({ lang, text, reciter }) {
   }, [safeText, open]);
 
   return (
-    <div className="text-sm leading-relaxed text-[var(--text-secondary)]">
+    <div
+      className={`reciter-bio-collapse text-sm leading-relaxed text-[var(--text-secondary)]${
+        open || !shouldCollapse ? " is-open" : ""
+      }`}
+    >
       <div
         ref={contentRef}
         id={contentId}
-        className="overflow-hidden transition-[max-height] duration-300 ease-in-out"
+        className="reciter-bio-collapse__content overflow-hidden transition-[max-height] duration-300 ease-in-out"
         style={{
           maxHeight:
-            open || !shouldCollapse ? `${contentHeight + 20}px` : "3.6em",
+            open || !shouldCollapse ? `${contentHeight + 20}px` : "4.8em",
         }}
       >
         <p>{safeText}</p>

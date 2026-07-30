@@ -503,11 +503,15 @@ export default function Header() {
                     onSubmit={handleGoTo}
                     className="flex flex-col gap-3 p-4"
                   >
-                    <label className="text-center text-[0.85rem] font-bold text-text-primary">
+                    <label
+                      htmlFor="header-goto-input"
+                      className="text-center text-[0.85rem] font-bold text-text-primary"
+                    >
                       {goToLabel}
                     </label>
                     <div className="flex items-center gap-2">
                       <input
+                        id="header-goto-input"
                         ref={inputRef}
                         type="number"
                         min={1}

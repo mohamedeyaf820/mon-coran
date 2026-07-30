@@ -59,6 +59,7 @@ export default function KaraokeWarshText({
   tajweedColors,
   fallbackText,
   ayahNumber,
+  appendNativeMarker = true,
 }) {
   const lastIdxRef = useRef(0);
   const allWords = useMemo(
@@ -115,7 +116,9 @@ export default function KaraokeWarshText({
         fallbackText={fallbackText}
         markerFlags={markerFlags}
       />
-      <AyahMarker number={ayahNumber} className="warsh-karaoke-ayah-marker" />
+      {appendNativeMarker ? (
+        <AyahMarker number={ayahNumber} className="warsh-karaoke-ayah-marker" />
+      ) : null}
     </>
   );
 }

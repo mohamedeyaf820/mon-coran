@@ -33,10 +33,30 @@ export default function Footer() {
     { key: "settings",  Icon: Settings,  label: t("nav.settings", lang),   onClick: () => dispatch({ type: "TOGGLE_SETTINGS" }) },
   ];
   const legalLabels = {
-    fr: { privacy: "Confidentialité", legal: "Mentions légales", sources: "Sources" },
-    en: { privacy: "Privacy", legal: "Legal notice", sources: "Sources" },
-    ar: { privacy: "الخصوصية", legal: "إشعار قانوني", sources: "المصادر" },
-  }[lang] || { privacy: "Confidentialité", legal: "Mentions légales", sources: "Sources" };
+    fr: {
+      surahs: "Liste des sourates",
+      privacy: "Confidentialité",
+      legal: "Mentions légales",
+      sources: "Sources",
+    },
+    en: {
+      surahs: "Surah list",
+      privacy: "Privacy",
+      legal: "Legal notice",
+      sources: "Sources",
+    },
+    ar: {
+      surahs: "قائمة السور",
+      privacy: "الخصوصية",
+      legal: "إشعار قانوني",
+      sources: "المصادر",
+    },
+  }[lang] || {
+    surahs: "Liste des sourates",
+    privacy: "Confidentialité",
+    legal: "Mentions légales",
+    sources: "Sources",
+  };
 
   return (
     <footer className="mp-footer-v2" role="contentinfo">
@@ -49,7 +69,7 @@ export default function Footer() {
             className="mp-footer-v2__verse-text"
             dir="rtl"
             lang="ar"
-            aria-label="Adh-Dhariyat 51:56"
+            aria-label={t("footer.verseRef", lang)}
           >
             {"وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ"}
           </p>
@@ -83,14 +103,24 @@ export default function Footer() {
             {t("footer.credit", lang)}
           </span>
           <nav className="mp-footer-v2__legal" aria-label={legalLabels.legal}>
-            {Object.entries(legalLabels).map(([page, label]) => (
-              <button
+            <a href="/surahs">{legalLabels.surahs}</a>
+            {Object.entries(legalLabels)
+              .filter(([page]) => page !== "surahs")
+              .map(([page, label]) => (
+              <a
                 key={page}
-                type="button"
-                onClick={() => set({ legalPage: page, showHome: false, showDuas: false })}
+                href={`/${page}`}
+                onClick={(event) => {
+                  event.preventDefault();
+                  set({
+                    legalPage: page,
+                    showHome: false,
+                    showDuas: false,
+                  });
+                }}
               >
                 {label}
-              </button>
+              </a>
             ))}
           </nav>
           <span className="mp-footer-v2__brand">MushafPlus</span>

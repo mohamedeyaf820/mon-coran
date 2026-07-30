@@ -172,7 +172,7 @@ export default function AudioMakerPanel() {
               <button
                 className="audio-maker-close"
                 onClick={close}
-                aria-label="Close"
+                aria-label={t("audio.close", lang)}
               >
                 <X size={14} />
               </button>

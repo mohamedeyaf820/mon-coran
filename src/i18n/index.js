@@ -1,7 +1,7 @@
 /* i18n - lightweight translation system */
-import ar from './ar';
-import fr from './fr';
-import en from './en';
+import ar from './ar.js';
+import fr from './fr.js';
+import en from './en.js';
 
 const LOCALES_MAP = { ar, fr, en };
 

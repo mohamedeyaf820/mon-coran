@@ -22,7 +22,13 @@
       "purpose": "any"
     },
     {
-      "src": "/logo-512.png",
+      "src": "/logo-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/logo-512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -43,21 +49,21 @@
       "short_name": "Al-Fatiha",
       "description": "Ouvrir la Sourate Al-Fatiha",
       "url": "/surah/1",
-      "icons": [{ "src": "/favicon.png", "sizes": "64x64", "type": "image/png" }]
+      "icons": [{ "src": "/shortcut-quran-96.png", "sizes": "96x96", "type": "image/png" }]
     },
     {
       "name": "Sourate Al-Mulk",
       "short_name": "Al-Mulk",
       "description": "Ouvrir la Sourate Al-Mulk",
       "url": "/surah/67",
-      "icons": [{ "src": "/favicon.png", "sizes": "64x64", "type": "image/png" }]
+      "icons": [{ "src": "/shortcut-quran-96.png", "sizes": "96x96", "type": "image/png" }]
     },
     {
       "name": "Sourate Al-Kahf",
       "short_name": "Al-Kahf",
       "description": "Ouvrir la Sourate Al-Kahf",
       "url": "/surah/18",
-      "icons": [{ "src": "/favicon.png", "sizes": "64x64", "type": "image/png" }]
+      "icons": [{ "src": "/shortcut-quran-96.png", "sizes": "96x96", "type": "image/png" }]
     }
   ],
   "screenshots": [

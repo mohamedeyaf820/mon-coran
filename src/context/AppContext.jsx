@@ -135,7 +135,8 @@ const getInitialState = () => {
   legalPage: routeOverrides.legalPage ?? null,
   showTranslation: stored.showTranslation ?? true,
   showTajwid: stored.showTajwid ?? false,
-  showWordByWord: stored.showWordByWord ?? false,
+  showWordByWord:
+    initialRiwaya === "warsh" ? false : (stored.showWordByWord ?? false),
   showTransliteration: stored.showTransliteration ?? true,
   showWordTranslation: stored.showWordTranslation ?? true,
   translationReadingMode: stored.translationReadingMode ?? false,
@@ -260,6 +261,11 @@ export function appReducer(state, action) {
           ...(next.fontFamilyByRiwaya || state.fontFamilyByRiwaya || {}),
           [targetRiwaya]: normalizedFont,
         };
+      }
+      // Word-by-word is supported for Hafs only. Enforce this centrally so
+      // persisted settings and keyboard shortcuts cannot reactivate it in Warsh.
+      if (next.riwaya === "warsh") {
+        next.showWordByWord = false;
       }
       if (Object.prototype.hasOwnProperty.call(payload, "currentSurah")) {
         next.currentSurah = clampSurah(payload.currentSurah);
@@ -623,11 +629,13 @@ export function AppProvider({ children }) {
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pagehide", handleBeforeUnload);
     window.addEventListener(PRIVACY_BEFORE_LOCK_EVENT, handleBeforePrivacyLock);
     window.addEventListener(PRIVACY_BEFORE_ROTATION_EVENT, handleBeforePrivacyLock);
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pagehide", handleBeforeUnload);
       window.removeEventListener(PRIVACY_BEFORE_LOCK_EVENT, handleBeforePrivacyLock);
       window.removeEventListener(PRIVACY_BEFORE_ROTATION_EVENT, handleBeforePrivacyLock);
       document.removeEventListener("visibilitychange", handleVisibilityChange);

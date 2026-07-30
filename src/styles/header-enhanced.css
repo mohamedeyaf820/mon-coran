@@ -980,7 +980,7 @@ html.dark .app-root > .mp-header {
   }
 
   .mp-header-menu .mp-header__seg {
-    min-height: 1.8rem;
+    min-height: 2.25rem;
     padding-inline: 0.3rem;
     font-size: 0.62rem;
   }

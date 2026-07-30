@@ -7,6 +7,7 @@ import {
   formatAudioTime,
   getReciterCooldownMs,
 } from "../src/components/audioPlayer/audioPlayerUtils.js";
+import { createPausableAnimationLoop } from "../src/utils/pausableAnimationLoop.js";
 
 test("audio utils: formats playback time safely", () => {
   assert.equal(formatAudioTime(undefined), "0:00");
@@ -58,4 +59,47 @@ test("audio labels: core controls are available in every UI language", () => {
       assert.ok(labels[key].length > 0, `${lang}.${key} should not be empty`);
     }
   }
+});
+
+test("karaoke frame loop cancels all animation work while paused", () => {
+  let nextFrameId = 0;
+  const frames = new Map();
+  const cancelled = [];
+  let tickCount = 0;
+  const loop = createPausableAnimationLoop(
+    () => {
+      tickCount += 1;
+    },
+    {
+      requestFrame(callback) {
+        const id = ++nextFrameId;
+        frames.set(id, callback);
+        return id;
+      },
+      cancelFrame(id) {
+        cancelled.push(id);
+        frames.delete(id);
+      },
+    },
+  );
+
+  loop.start();
+  loop.start();
+  assert.equal(frames.size, 1, "start should not create duplicate RAF callbacks");
+
+  const [firstFrameId, firstFrame] = frames.entries().next().value;
+  frames.delete(firstFrameId);
+  firstFrame(16);
+  assert.equal(tickCount, 1);
+  assert.equal(frames.size, 1, "an active loop should schedule its next frame");
+
+  const pendingFrameId = frames.keys().next().value;
+  loop.stop();
+  assert.equal(loop.active, false);
+  assert.equal(frames.size, 0, "pause should leave no RAF callback pending");
+  assert.deepEqual(cancelled, [pendingFrameId]);
+
+  loop.start();
+  assert.equal(frames.size, 1, "play should restart a stopped loop");
+  loop.stop();
 });

@@ -144,6 +144,33 @@ for (const [theme, expectedTokens] of Object.entries(CANONICAL_THEMES)) {
   });
 }
 
+test("sombre: les cartes de l'accueil restent sur la palette sombre", async ({ page }) => {
+  await seedState(page, "dark", true);
+  await page.goto("/");
+  await expect(page.locator(".home-session-card")).toBeVisible();
+
+  const surfaces = await page.locator(".home-session-card").evaluate((card) => {
+    const heading = card.querySelector("h2");
+    return {
+      background: getComputedStyle(card).backgroundColor,
+      heading: heading ? getComputedStyle(heading).color : "",
+    };
+  });
+
+  expect(surfaces.background).not.toBe("rgb(255, 255, 255)");
+  expect(contrastRatio(surfaces.heading, surfaces.background)).toBeGreaterThanOrEqual(4.5);
+});
+
+test("reprendre une lecture en mode page conserve la page", async ({ page }) => {
+  await seedState(page, "light", false);
+  await page.goto("/page/42");
+  await expect(page.locator(".mp-header")).toBeVisible();
+  await page.locator(".mp-header__brand").click();
+  await expect(page.locator(".app-view-home")).toBeVisible();
+  await page.locator(".home-session-card button").last().click();
+  await expect(page).toHaveURL(/\/page\/42$/);
+});
+
 test("clair: les onglets et la fermeture de la sidebar restent lisibles", async ({ page }) => {
   await seedState(page, "light", false);
   await page.goto("/surah/3");

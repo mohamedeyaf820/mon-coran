@@ -30,6 +30,7 @@ import {
   getRecitersByRiwaya,
 } from "../data/reciters";
 import { runWhenIdle } from "../utils/idleUtils";
+import { shouldAvoidBackgroundWork } from "../utils/networkPolicy";
 import { THEMATIC_STATIONS } from "../services/StationService";
 import {
   buildContinuousRadioPlaylist,
@@ -48,6 +49,24 @@ function loadReciterDetailModule() {
     reciterDetailModulePromise = import("./recitation/ReciterDetailPage");
   }
   return reciterDetailModulePromise;
+}
+
+let quranReaderModulePromise;
+function loadQuranReaderModule() {
+  if (!quranReaderModulePromise) {
+    quranReaderModulePromise = import("./QuranDisplay");
+  }
+  return quranReaderModulePromise;
+}
+
+let quranReaderDataModulePromise;
+function loadQuranReaderDataModule() {
+  if (!quranReaderDataModulePromise) {
+    quranReaderDataModulePromise = import(
+      "./QuranDisplay/quranDisplayDataApi"
+    );
+  }
+  return quranReaderDataModulePromise;
 }
 
 const ReciterDetailPage = lazy(loadReciterDetailModule);
@@ -76,7 +95,14 @@ function ReciterDetailFallback({ lang }) {
   );
 }
 
-import { Shapes, CalendarCheck, BookOpen, ListMusic, TrendingUp } from "lucide-react";
+import {
+  ArrowRight,
+  Shapes,
+  CalendarCheck,
+  BookOpen,
+  ListMusic,
+  TrendingUp,
+} from "lucide-react";
 import { t as i18nT } from "../i18n";
 import {
   HOME_INITIAL_SURAHS,
@@ -105,7 +131,7 @@ function ToolsQuickCard({ lang, set, t }) {
   ];
 
   return (
-    <div className="home-tools-quick-card bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+    <div className="home-tools-quick-card hidden md:block bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
       <div className="mb-3 flex min-w-0 items-center gap-3 select-none">
         <div className="flex min-w-0 flex-1 items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] font-[var(--font-ui)] uppercase tracking-[0.06em]">
           <Shapes size={12} className="text-primary" />
@@ -114,21 +140,29 @@ function ToolsQuickCard({ lang, set, t }) {
           </span>
         </div>
         <button
+          type="button"
           onClick={() => set({ toolsHubOpen: true })}
-          className="shrink-0 rounded-lg px-2 py-1 text-[0.68rem] text-primary hover:bg-primary/8 hover:underline font-bold font-[var(--font-ui)] cursor-pointer"
+          className="home-tools-quick-card__more inline-flex shrink-0 items-center gap-1 rounded-lg border border-[var(--border)] bg-transparent px-2 py-1 text-[0.68rem] text-primary hover:border-primary/30 hover:bg-primary/8 font-bold font-[var(--font-ui)] cursor-pointer"
         >
-          {tr({ fr: "Voir tout", en: "See all", ar: "عرض الكل" })}
+          <span>{tr({ fr: "Voir tout", en: "See all", ar: "عرض الكل" })}</span>
+          <ArrowRight aria-hidden="true" size={12} />
         </button>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
         {quickTools.map((tool) => (
           <button
+            type="button"
             key={tool.id}
             onClick={tool.action}
-            className="flex flex-col items-center justify-center p-2 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-light)] hover:border-primary/30 hover:bg-primary/5 transition-all text-center group cursor-pointer"
+            data-tool={tool.id}
+            className="home-tools-quick-card__tool flex flex-col items-center justify-center p-2 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-light)] hover:border-primary/30 hover:bg-primary/5 transition-all text-center group cursor-pointer"
           >
-            <tool.Icon size={16} className="text-text-secondary group-hover:text-primary transition-colors mb-1.5" />
+            <tool.Icon
+              aria-hidden="true"
+              size={16}
+              className="text-text-secondary group-hover:text-primary transition-colors mb-1.5"
+            />
             <span className="text-[0.62rem] text-text-secondary group-hover:text-primary transition-colors font-semibold truncate w-full">
               {tool.label}
             </span>
@@ -435,28 +469,70 @@ export default function HomePage({ lowPerfMode = false }) {
     [state.reciter, state.riwaya, state.warshStrictMode, set],
   );
 
+  const warmReadingTarget = useCallback(
+    (mode, value) => {
+      loadQuranReaderModule().catch(() => null);
+      if (lowPerfMode || shouldAvoidBackgroundWork()) return;
+
+      loadQuranReaderDataModule()
+        .then(({ preloadArabicData }) =>
+          preloadArabicData({
+            currentSurah:
+              mode === "surah" ? Number(value) || currentSurah : currentSurah,
+            currentPage:
+              mode === "page"
+                ? Number(value) || state.currentPage
+                : state.currentPage,
+            currentJuz:
+              mode === "juz" ? Number(value) || currentJuz : currentJuz,
+            displayMode: mode,
+            riwaya,
+          }),
+        )
+        .catch(() => null);
+    },
+    [
+      currentJuz,
+      currentSurah,
+      lowPerfMode,
+      riwaya,
+      state.currentPage,
+    ],
+  );
+
+  const warmSurah = useCallback(
+    (surah) => {
+      if (surah) warmReadingTarget("surah", surah);
+      else loadQuranReaderModule().catch(() => null);
+    },
+    [warmReadingTarget],
+  );
+
   const goSurah = useCallback(
     (n) => {
+      warmSurah(n);
       set({ displayMode: "surah", showHome: false, showDuas: false });
       dispatch({ type: "NAVIGATE_SURAH", payload: { surah: n, ayah: 1 } });
     },
-    [set, dispatch],
+    [set, dispatch, warmSurah],
   );
 
   const goSurahAyah = useCallback(
     (surah, ayah) => {
+      warmSurah(surah);
       set({ displayMode: "surah", showHome: false, showDuas: false });
       dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah: ayah || 1 } });
     },
-    [set, dispatch],
+    [set, dispatch, warmSurah],
   );
 
   const goJuz = useCallback(
     (juz) => {
+      warmReadingTarget("juz", juz);
       set({ showHome: false, showDuas: false });
       dispatch({ type: "NAVIGATE_JUZ", payload: { juz } });
     },
-    [set, dispatch],
+    [set, dispatch, warmReadingTarget],
   );
 
   const toggleFavoriteReciter = useCallback(
@@ -571,15 +647,37 @@ export default function HomePage({ lowPerfMode = false }) {
   }, [availableReciters, playSurahForReciter]);
 
   const continueReading = useCallback(() => {
+    warmReadingTarget(
+      displayMode,
+      displayMode === "juz"
+        ? currentJuz
+        : displayMode === "page"
+          ? state.currentPage
+          : currentSurah,
+    );
     set({ showHome: false, showDuas: false });
     if (displayMode === "juz")
       dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz } });
+    else if (displayMode === "page")
+      dispatch({
+        type: "NAVIGATE_PAGE",
+        payload: { page: state.currentPage },
+      });
     else
       dispatch({
         type: "NAVIGATE_SURAH",
         payload: { surah: currentSurah, ayah: currentAyah },
       });
-  }, [set, dispatch, displayMode, currentJuz, currentSurah, currentAyah]);
+  }, [
+    set,
+    dispatch,
+    displayMode,
+    currentJuz,
+    currentSurah,
+    currentAyah,
+    state.currentPage,
+    warmReadingTarget,
+  ]);
 
   const openDuas = useCallback(
     () => set({ showHome: false, showDuas: true }),
@@ -757,12 +855,6 @@ export default function HomePage({ lowPerfMode = false }) {
       label: t("bookmarks"),
       count: bookmarks.length,
     },
-    {
-      id: "notes",
-      icon: "fa-pen-line",
-      label: t("notes"),
-      count: notes.length,
-    },
   ];
 
   const activeCollectionCount =
@@ -823,13 +915,13 @@ export default function HomePage({ lowPerfMode = false }) {
         surahLabel={surahLabel}
         continueReading={continueReading}
         goSurah={goSurah}
+        onWarmSurah={warmSurah}
         openDuas={openDuas}
         t={t}
         activeInfo={activeInfo}
         onSelectInfo={selectInfoTab}
         infoTabs={infoTabs}
         bookmarks={bookmarks}
-        notes={notes}
         suggestionSet={suggestionSet}
         goSurahAyah={goSurahAyah}
       />
@@ -907,6 +999,7 @@ export default function HomePage({ lowPerfMode = false }) {
           favoriteReciters={state.favoriteReciters}
           state={state}
           goSurah={goSurah}
+          onSurahIntent={warmSurah}
           goJuz={goJuz}
           playFromHome={playFromHome}
           playReciterRadio={playReciterRadio}

@@ -162,7 +162,9 @@ function CompactPlayer(props) {
       {...playerShellProps(props)}
       className={cn(
         "mp-audio-player audio-player-simple simple-player simple-player--compact is-minimized",
-        isMobile ? "mp-audio-player--mobile" : "mp-audio-player--desktop",
+        isMobile
+          ? "mp-audio-player--mobile mp-audio-player--dock"
+          : "mp-audio-player--desktop",
       )}
       role="region"
       aria-label={props.regionLabel}

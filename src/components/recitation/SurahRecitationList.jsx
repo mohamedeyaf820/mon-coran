@@ -83,7 +83,7 @@ export default function SurahRecitationList({
     <div className="recitation-library">
       <div className="recitation-library__toolbar">
         <label className="recitation-library__search">
-          <Search size={15} aria-hidden="true" />
+          <Search className="recitation-icon recitation-icon--sm" size={15} aria-hidden="true" />
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -102,7 +102,7 @@ export default function SurahRecitationList({
                     : "Clear search"
               }
             >
-              <X size={14} aria-hidden="true" />
+              <X className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
             </button>
           ) : null}
         </label>
@@ -129,7 +129,7 @@ export default function SurahRecitationList({
 
         {visibleSurahs.length === 0 ? (
           <div className="recitation-library__empty" role="status">
-            <Search size={20} aria-hidden="true" />
+            <Search className="recitation-icon recitation-icon--lg" size={20} aria-hidden="true" />
             <span>
               {lang === "fr"
                 ? "Aucune sourate ne correspond à cette recherche."

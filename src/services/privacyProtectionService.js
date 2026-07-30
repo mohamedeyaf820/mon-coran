@@ -2,6 +2,7 @@ import {
   clearEncryptionSession,
   configureEncryptionPassphrase,
   hasEncryptionPassphraseConfigured,
+  removePersistedDeviceKey,
   removeEncryptionPassphrase,
   restoreEncryptionConfiguration,
   snapshotEncryptionConfiguration,
@@ -57,6 +58,9 @@ export async function enableProtectedMode(passphrase, uiLang = "fr") {
       return configured;
     }
     await rewritePrivateDataSnapshot(snapshot.logical);
+    if (!removePersistedDeviceKey()) {
+      throw new Error("Unable to remove the legacy device key");
+    }
     return { ok: true };
   } catch (error) {
     if (snapshot) {
@@ -96,6 +100,9 @@ export async function changeProtectedModePassphrase(
       return configured;
     }
     await rewritePrivateDataSnapshot(snapshot.logical);
+    if (!removePersistedDeviceKey()) {
+      throw new Error("Unable to remove the legacy device key");
+    }
     return { ok: true };
   } catch (error) {
     if (snapshot) {

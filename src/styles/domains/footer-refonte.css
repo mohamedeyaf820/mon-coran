@@ -205,6 +205,7 @@
     .mp-footer-v2__nav-btn {
         padding: 0.55rem 0.25rem;
         border-radius: 0.75rem;
+        min-height: 44px;
     }
     .mp-footer-v2__nav-icon {
         width: 1.75rem;
@@ -212,7 +213,8 @@
         font-size: 0.6rem;
     }
     .mp-footer-v2__nav-label {
-        font-size: 0.6rem;
+        font-size: 0.65rem;
+        line-height: 1.15;
     }
     .mp-footer-v2__verse {
         padding: 0.75rem 1rem;
@@ -257,7 +259,7 @@
         height: 1.5rem;
     }
     .mp-footer-v2__nav-label {
-        font-size: 0.54rem;
+        font-size: 0.62rem;
     }
     .mp-footer-v2__bottom {
         padding-top: 0.5rem;
@@ -277,10 +279,10 @@
   gap: .35rem .8rem;
 }
 
-.mp-footer-v2__legal button {
+.mp-footer-v2__legal :is(a, button) {
   color: var(--text-muted);
   font-size: .72rem;
   transition: color .2s ease;
 }
 
-.mp-footer-v2__legal button:hover { color: var(--primary); }
+.mp-footer-v2__legal :is(a, button):hover { color: var(--primary); }

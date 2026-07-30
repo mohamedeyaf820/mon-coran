@@ -39,6 +39,12 @@ async function openReader(page, viewport) {
   await expect(page.locator(".mp-header").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".quran-display--platform").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible({ timeout: 30_000 });
+  if (viewport.width <= 1024) {
+    const maxHeaderHeight = viewport.width <= 640 ? 56 : 60;
+    await expect
+      .poll(async () => (await box(page, ".mp-header__bar"))?.height || 0)
+      .toBeLessThanOrEqual(maxHeaderHeight);
+  }
 }
 
 async function openHome(page, viewport) {
@@ -100,8 +106,8 @@ test("home density: mobile and tablet text, icons and cards scale with viewport"
   await openHome(page, { width: 390, height: 844 });
 
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
-  expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(44);
-  expect((await box(page, ".mp-header__more"))?.width || 0).toBeGreaterThanOrEqual(44);
+  expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(40);
+  expect((await box(page, ".mp-header__more"))?.width || 0).toBeGreaterThanOrEqual(40);
   expect(await fontSizePx(page, ".home-hero-title")).toBeLessThanOrEqual(34);
   expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(12);
   expect(await fontSizePx(page, ".hp-card-meta")).toBeGreaterThanOrEqual(11);
@@ -109,14 +115,14 @@ test("home density: mobile and tablet text, icons and cards scale with viewport"
   await openHome(page, { width: 820, height: 920 });
 
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
-  expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(44);
+  expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(42);
   expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(14);
 });
 
 test("mobile density: header, reading toolbar and audio player fit without horizontal overflow", async ({ page }) => {
   await openReader(page, { width: 390, height: 844 });
 
-  const header = await box(page, ".mp-header");
+  const header = await box(page, ".mp-header__bar");
   const toolbar = await box(page, ".srh-root");
   const audioDock = await box(page, ".mp-audio-player--mobile");
   const firstAction = await box(page, ".mp-header__icon-btn");
@@ -124,15 +130,16 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   const moreButton = await box(page, ".mp-header__more");
   const typographyTrigger = await box(page, ".srh-typography-trigger");
 
-  expect(header?.height || 0).toBeLessThanOrEqual(62);
+  expect(header?.height || 0).toBeLessThanOrEqual(56);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
-  expect(audioDock?.height || 0).toBeLessThanOrEqual(152);
-  expect(firstAction?.width || 0).toBeGreaterThanOrEqual(44);
-  expect(firstAction?.height || 0).toBeGreaterThanOrEqual(44);
-  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(44);
-  expect(moreButton?.width || 0).toBeGreaterThanOrEqual(44);
-  expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(44);
-  expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(44);
+  expect(audioDock?.height || 0).toBeLessThanOrEqual(160);
+  expect(firstAction?.width || 0).toBeGreaterThanOrEqual(40);
+  expect(firstAction?.height || 0).toBeGreaterThanOrEqual(40);
+  expect(firstAction?.width || 0).toBeLessThanOrEqual(40.1);
+  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(40);
+  expect(moreButton?.width || 0).toBeGreaterThanOrEqual(40);
+  expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(40);
+  expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(40);
   await expect(page.locator(".srh-typography-panel")).toBeHidden();
   await page.locator(".srh-typography-trigger").click();
   await expect(page.locator(".srh-typography-panel")).toBeVisible();
@@ -144,8 +151,9 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(sizeControls?.width || 0).toBeGreaterThanOrEqual(145);
   await openAudioPlayer(page);
   const audioOptionsButton = await box(page, ".mp-player-options-trigger");
-  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(44);
-  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(44);
+  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(40);
+  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(40);
+  expect(audioOptionsButton?.width || 0).toBeLessThanOrEqual(40.1);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -160,10 +168,10 @@ test("mobile surfaces: sidebar, settings drawer and audio modal fit the viewport
   const sidebarCloseIcon = await box(page, ".sidebar-close-button svg");
   expect(sidebarBox?.width || 0).toBeLessThanOrEqual(390);
   expect(sidebarBox?.height || 0).toBeLessThanOrEqual(844);
-  expect(sidebarClose?.width || 0).toBeGreaterThanOrEqual(43.9);
-  expect(sidebarClose?.height || 0).toBeGreaterThanOrEqual(43.9);
-  expect(sidebarCloseIcon?.width || 0).toBeGreaterThanOrEqual(17);
-  expect(sidebarCloseIcon?.height || 0).toBeGreaterThanOrEqual(17);
+  expect(sidebarClose?.width || 0).toBeGreaterThanOrEqual(39.9);
+  expect(sidebarClose?.height || 0).toBeGreaterThanOrEqual(39.9);
+  expect(sidebarCloseIcon?.width || 0).toBeLessThanOrEqual(15);
+  expect(sidebarCloseIcon?.height || 0).toBeLessThanOrEqual(15);
   await page.locator('.sb-wrapper button[aria-label="Fermer"]').first().click();
   await expect(sidebar).not.toHaveClass(/open/);
 
@@ -176,10 +184,10 @@ test("mobile surfaces: sidebar, settings drawer and audio modal fit the viewport
   const settingsCloseIcon = await box(page, ".settings-close-button svg");
   expect(settingsBox?.width || 0).toBeLessThanOrEqual(390);
   expect(settingsBox?.height || 0).toBeLessThanOrEqual(844);
-  expect(settingsClose?.width || 0).toBeGreaterThanOrEqual(44);
-  expect(settingsClose?.height || 0).toBeGreaterThanOrEqual(44);
-  expect(settingsCloseIcon?.width || 0).toBeGreaterThanOrEqual(19);
-  expect(settingsCloseIcon?.height || 0).toBeGreaterThanOrEqual(19);
+  expect(settingsClose?.width || 0).toBeGreaterThanOrEqual(40);
+  expect(settingsClose?.height || 0).toBeGreaterThanOrEqual(40);
+  expect(settingsCloseIcon?.width || 0).toBeLessThanOrEqual(15);
+  expect(settingsCloseIcon?.height || 0).toBeLessThanOrEqual(15);
   await page.locator('.settings-drawer button[aria-label="Fermer les paramètres"]').first().click();
   await expect(settingsDrawer).toBeHidden();
 
@@ -194,27 +202,27 @@ test("mobile surfaces: sidebar, settings drawer and audio modal fit the viewport
   expect(audioModalBox?.height || 0).toBeLessThanOrEqual(844);
   expect(audioClose?.width || 0).toBeGreaterThanOrEqual(40);
   expect(audioClose?.height || 0).toBeGreaterThanOrEqual(40);
-  expect(audioCloseIcon?.width || 0).toBeGreaterThanOrEqual(17);
-  expect(audioCloseIcon?.height || 0).toBeGreaterThanOrEqual(17);
+  expect(audioCloseIcon?.width || 0).toBeLessThanOrEqual(15);
+  expect(audioCloseIcon?.height || 0).toBeLessThanOrEqual(15);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
 test("tablet density: header controls and audio options modal remain compact", async ({ page }) => {
   await openReader(page, { width: 820, height: 920 });
 
-  const header = await box(page, ".mp-header");
+  const header = await box(page, ".mp-header__bar");
   const toolbar = await box(page, ".srh-root");
   const settingsButton = await box(page, ".mp-header__more");
   const fontControls = await box(page, ".srh-root .arabic-font-controls--compact");
   await openAudioPlayer(page);
   const audioOptionsButton = await box(page, ".mp-player-options-trigger");
 
-  expect(header?.height || 0).toBeLessThanOrEqual(70);
+  expect(header?.height || 0).toBeLessThanOrEqual(60);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(280);
-  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(44);
+  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(42);
   expect(fontControls?.height || 0).toBeGreaterThanOrEqual(38);
-  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(44);
-  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(44);
+  expect(audioOptionsButton?.width || 0).toBeGreaterThanOrEqual(42);
+  expect(audioOptionsButton?.height || 0).toBeGreaterThanOrEqual(42);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 
   const optionsTrigger = page.locator(".mp-player-options-trigger").first();
@@ -248,8 +256,10 @@ test("small phone: verse actions and search stay usable inside the viewport", as
     );
   expect(visibleActionSizes.length).toBeGreaterThanOrEqual(3);
   for (const action of visibleActionSizes) {
-    expect(action.width).toBeGreaterThanOrEqual(44);
-    expect(action.height).toBeGreaterThanOrEqual(44);
+    expect(action.width).toBeGreaterThanOrEqual(43.9);
+    expect(action.height).toBeGreaterThanOrEqual(43.9);
+    expect(action.width).toBeLessThanOrEqual(44.1);
+    expect(action.height).toBeLessThanOrEqual(44.1);
   }
 
   await page.locator(".mp-header__more").first().click();
@@ -329,6 +339,11 @@ test("duas page: cards, Arabic text and controls adapt to phone and tablet", asy
   await openDuas(page, { width: 820, height: 920 });
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
   expect(await fontSizePx(page, ".dua-arabic")).toBeGreaterThanOrEqual(24);
+
+  await openDuas(page, { width: 1280, height: 900 });
+  const copyIcon = await box(page, '.dua-open-btn-v5[aria-label="Copier l\'invocation"] svg');
+  expect(copyIcon?.width || 0).toBeGreaterThanOrEqual(13);
+  expect(copyIcon?.height || 0).toBeGreaterThanOrEqual(13);
 });
 
 test("short landscape: reader search remains fully reachable", async ({ page }) => {

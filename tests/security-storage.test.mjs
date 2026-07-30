@@ -58,6 +58,35 @@ test("security: production CSP excludes dev-only and unused risky sources", () =
   assert.equal(csp.includes("ia800304.us.archive.org"), false);
   assert.equal(csp.includes("ws://localhost"), false);
   assert.match(csp, /img-src[^;]*https:\/\/www\.assabile\.com/);
+  assert.match(csp, /img-src[^;]*https:\/\/storage\.googleapis\.com/);
+  assert.match(csp, /img-src[^;]*https:\/\/media\.way2quran\.com/);
+  assert.match(csp, /img-src[^;]*https:\/\/static\.suratmp3\.com/);
+  assert.match(csp, /img-src[^;]*https:\/\/i\.pinimg\.com/);
+  assert.match(csp, /script-src-attr 'none'/);
+  assert.match(csp, /upgrade-insecure-requests/);
+  assert.doesNotMatch(csp, /https:\/\/\*\.quran\.com/);
+  assert.doesNotMatch(csp, /font-src[^;]*\bdata:/);
+  assert.doesNotMatch(csp, /fonts\.quranwbw\.com/);
+});
+
+test("fonts: the Warsh face is self-hosted as a valid WOFF2 asset", () => {
+  const font = readFileSync("public/fonts/kfgqpc-warsh-10.woff2");
+  const loader = readFileSync("src/services/fontLoader.js", "utf8");
+
+  assert.equal(font.subarray(0, 4).toString("ascii"), "wOF2");
+  assert.ok(font.length > 80_000);
+  assert.match(loader, /\/fonts\/kfgqpc-warsh-10\.woff2/);
+  assert.doesNotMatch(loader, /fonts\.quranwbw\.com/);
+});
+
+test("security: the HTML meta CSP stays compatible with local WebKit previews", () => {
+  const viteConfig = readFileSync(
+    new URL("../vite.config.js", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(viteConfig, /directive !== "upgrade-insecure-requests"/);
+  assert.match(viteConfig, /!directive\.startsWith\("frame-ancestors"\)/);
 });
 
 test("security: deployment CSP headers match the generated production policy", () => {
@@ -78,6 +107,29 @@ test("security: deployment CSP headers match the generated production policy", (
 
 test("security: all deployable root headers match the centralized policy", () => {
   assert.deepEqual(auditDeploymentSecurityHeaders(), []);
+});
+
+test("security: deployment assets use CORP and unused browser capabilities are denied", () => {
+  const netlify = readFileSync("netlify.toml", "utf8");
+  const vercel = readFileSync("vercel.json", "utf8");
+  for (const source of [netlify, vercel]) {
+    assert.match(source, /Cross-Origin-Resource-Policy/);
+    assert.match(source, /payment=\(\)/);
+    assert.match(source, /usb=\(\)/);
+    assert.match(source, /bluetooth=\(\)/);
+    assert.match(source, /screen-wake-lock=\(\)/);
+  }
+});
+
+test("security: reader failures do not expose raw provider errors to the UI", () => {
+  const readerData = readFileSync(
+    "src/components/QuranDisplay/useQuranDisplayData.js",
+    "utf8",
+  );
+  const warsh = readFileSync("src/services/warshService.js", "utf8");
+  assert.doesNotMatch(readerData, /setError\(err\.message\)/);
+  assert.doesNotMatch(readerData, /payload:\s*err\.message/);
+  assert.doesNotMatch(warsh, /fallbackErr\.message\s*\|\|\s*err\.message/);
 });
 
 test("security: SVG sanitizer strips active content and external references", () => {

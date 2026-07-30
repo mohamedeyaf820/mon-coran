@@ -8,21 +8,28 @@
             http-equiv="Content-Security-Policy"
             content="__CSP_POLICY__"
         />
-        <title>MushafPlus - Le Saint Coran</title>
+        <title>Coran en ligne — Lecture, écoute &amp; Tajwid | MushafPlus</title>
         <link rel="canonical" href="https://mon-coran.netlify.app/" />
-        <meta name="description" content="MushafPlus — Lisez, écoutez et mémorisez le Saint Coran. Riwaya Hafs et Warsh, traductions en français, anglais et arabe, Tajwid, mode page Mushaf." />
+        <meta name="description" content="Lisez, écoutez et mémorisez gratuitement le Saint Coran en ligne avec Tajwid, traductions et récitations Hafs et Warsh sur MushafPlus." />
+        <meta name="robots" content="index,follow" />
         <!-- Open Graph -->
-        <meta property="og:title" content="MushafPlus — Le Saint Coran" />
-        <meta property="og:description" content="Application Coran complète : lecture, écoute, mémorisation, Tajwid, Riwaya Hafs &amp; Warsh, traductions multilingues." />
+        <meta property="og:title" content="Coran en ligne — Lecture, écoute &amp; Tajwid | MushafPlus" />
+        <meta property="og:description" content="Lisez, écoutez et mémorisez gratuitement le Saint Coran en ligne avec Tajwid, traductions et récitations Hafs et Warsh." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://mon-coran.netlify.app/" />
-        <meta property="og:image" content="https://mon-coran.netlify.app/logo-512.png" />
-        <meta property="og:image:alt" content="Logo MushafPlus" />
+        <meta property="og:site_name" content="MushafPlus" />
+        <meta property="og:locale" content="fr_FR" />
+        <meta property="og:image" content="https://mon-coran.netlify.app/og-image.jpg" />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="MushafPlus — lecture du Saint Coran en ligne" />
         <!-- Twitter Card -->
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="MushafPlus — Le Saint Coran" />
-        <meta name="twitter:description" content="Lisez et mémorisez le Coran avec Tajwid, traductions et audio. Hafs &amp; Warsh." />
-        <meta name="twitter:image" content="https://mon-coran.netlify.app/logo-512.png" />
+        <meta name="twitter:title" content="Coran en ligne — Lecture, écoute &amp; Tajwid | MushafPlus" />
+        <meta name="twitter:description" content="Lisez et mémorisez gratuitement le Coran avec Tajwid, traductions et récitations Hafs et Warsh." />
+        <meta name="twitter:image" content="https://mon-coran.netlify.app/og-image.jpg" />
+        <meta name="twitter:image:alt" content="MushafPlus — lecture du Saint Coran en ligne" />
         <!-- Connexion anticipée uniquement vers l'API de texte primaire. -->
         <link rel="preconnect" href="https://api.quran.com" crossorigin />
         <!-- DNS prefetch : domaines secondaires (chargés à la demande) -->
@@ -30,7 +37,6 @@
         <link rel="dns-prefetch" href="https://cdn.islamic.network" />
         <link rel="dns-prefetch" href="https://audio.qurancdn.com" />
         <link rel="dns-prefetch" href="https://verses.quran.foundation" />
-        <link rel="dns-prefetch" href="https://fonts.quranwbw.com" />
         <link rel="dns-prefetch" href="https://everyayah.com" />
         <link rel="dns-prefetch" href="https://raw.githubusercontent.com" />
         <link rel="dns-prefetch" href="https://static.qurancdn.com" />
@@ -51,8 +57,19 @@
         />
         <meta name="apple-mobile-web-app-title" content="MushafPlus" />
         <link rel="apple-touch-icon" href="/logo-192.png" />
+        <link rel="apple-touch-startup-image" href="/splash/iphone-se-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+        <link rel="apple-touch-startup-image" href="/splash/iphone-8-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+        <link rel="apple-touch-startup-image" href="/splash/iphone-xr-828x1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+        <link rel="apple-touch-startup-image" href="/splash/iphone-x-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+        <link rel="apple-touch-startup-image" href="/splash/iphone-12-1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+        <link rel="apple-touch-startup-image" href="/splash/iphone-14-pro-1179x2556.png" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+        <link rel="apple-touch-startup-image" href="/splash/iphone-14-pro-max-1290x2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+        <link rel="apple-touch-startup-image" href="/splash/iphone-16-pro-max-1320x2868.png" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
+        <link rel="apple-touch-startup-image" href="/splash/ipad-mini-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+        <link rel="apple-touch-startup-image" href="/splash/ipad-pro-11-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
+        <link rel="apple-touch-startup-image" href="/splash/ipad-pro-12-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" />
         <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"MushafPlus","description":"Application de lecture du Coran avec récitation audio, tajweed, traductions et mémorisation","url":"https://mon-coran.netlify.app","applicationCategory":"EducationApplication","operatingSystem":"Any","inLanguage":["fr","ar","en"],"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}
+{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://mon-coran.netlify.app/#organization","name":"MushafPlus","url":"https://mon-coran.netlify.app/"},{"@type":"WebSite","@id":"https://mon-coran.netlify.app/#website","name":"MushafPlus","alternateName":"MushafPlus Quran","url":"https://mon-coran.netlify.app/","inLanguage":["fr","en","ar"],"publisher":{"@id":"https://mon-coran.netlify.app/#organization"}},{"@type":"SoftwareApplication","@id":"https://mon-coran.netlify.app/#app","name":"MushafPlus","url":"https://mon-coran.netlify.app/","applicationCategory":"EducationApplication","operatingSystem":"Any","isAccessibleForFree":true,"inLanguage":["fr","en","ar"],"description":"Application de lecture du Coran avec récitations audio, Tajwid, traductions et mémorisation.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}},{"@type":"WebPage","@id":"https://mon-coran.netlify.app/#webpage","name":"Coran en ligne — Lecture, écoute & Tajwid | MushafPlus","description":"Lisez, écoutez et mémorisez gratuitement le Saint Coran en ligne avec Tajwid, traductions et récitations Hafs et Warsh.","url":"https://mon-coran.netlify.app/","inLanguage":"fr","isPartOf":{"@id":"https://mon-coran.netlify.app/#website"},"about":{"@id":"https://mon-coran.netlify.app/#app"}}]}
         </script>
     </head>
 

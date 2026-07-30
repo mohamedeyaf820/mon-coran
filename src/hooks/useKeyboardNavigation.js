@@ -165,6 +165,7 @@ export function useKeyboardNavigation({
 
   const handleToggleWordByWord = useCallback(() => {
     const { state: s } = latestRef.current;
+    if (s.riwaya === "warsh") return;
     set({ showWordByWord: !s.showWordByWord, memMode: false });
   }, [set]);
 

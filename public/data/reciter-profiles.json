@@ -1,4 +1,76 @@
 {
+  "ibrahim_al_akhdar": {
+    "bio": {
+      "fr": "Ibrahim ibn Al-Akhdar Al-Qayyim est né à Médine en 1364 H (1945). Il étudia notamment à Dar Al-Hadith et apprit le Coran auprès de plusieurs maîtres, dont Omar Al-Haydari, Hassan Ibrahim Al-Shaer, Amir ibn Sayyid Othman et Ahmad ibn Abdulaziz Al-Zayyat. Il enseigna à l'école coranique Ubay ibn Ka'b, puis à la faculté du Saint Coran et à la faculté de la prédication de l'Université islamique de Médine.",
+      "en": "Ibrahim ibn Al-Akhdar Al-Qayyim was born in Medina in 1364 AH (1945). He studied at institutions including Dar Al-Hadith and learned the Quran from teachers such as Omar Al-Haydari, Hassan Ibrahim Al-Shaer, Amir ibn Sayyid Othman, and Ahmad ibn Abdulaziz Al-Zayyat. He taught at the Ubay ibn Ka'b Quran school and later at the Quran and Dawah faculties of the Islamic University of Medina.",
+      "ar": "إبراهيم بن الأخضر القيم، وُلد في المدينة المنورة سنة 1364هـ (1945م). درس في مؤسسات علمية منها دار الحديث، وتلقى القرآن على عدد من الشيوخ، منهم عمر الحيدري وحسن إبراهيم الشاعر وأمير بن سيد عثمان وأحمد بن عبد العزيز الزيات. عمل معلماً في مدرسة أُبي بن كعب لتحفيظ القرآن، ثم درّس في كلية القرآن الكريم وكلية الدعوة بالجامعة الإسلامية في المدينة المنورة."
+    },
+    "bioSource": {
+      "provider": "Assabile",
+      "url": "https://www.assabile.com/ibrahim-al-akhdar-16/ibrahim-al-akhdar.htm"
+    }
+  },
+  "mohamed_al_luhaidan": {
+    "bio": {
+      "fr": "Muhammad Al-Luhaidan est un juge, réciteur du Coran et imam saoudien. Il obtint une ijāza dans les lectures de Hafs et Shu'ba d'après Asim auprès du cheikh Bashir Ahmad Siddiq, puis poursuivit son apprentissage auprès d'autres spécialistes des lectures. Il officia notamment dans les mosquées Al-Quds, Al-Bawardi, Aal Al-Sheikh et Sheikh Nasser, et travailla comme juge au Diwan Al-Mazalim.",
+      "en": "Muhammad Al-Luhaidan is a Saudi judge, Quran reciter, and imam. He received an ijazah in the Hafs and Shu'ba transmissions from Asim under Sheikh Bashir Ahmad Siddiq and continued studying with other specialists in Quranic readings. He served at mosques including Al-Quds, Al-Bawardi, Aal Al-Sheikh, and Sheikh Nasser, and worked as a judge at the Board of Grievances.",
+      "ar": "محمد اللحيدان قاضٍ وقارئ للقرآن الكريم وإمام سعودي. حصل على إجازة في قراءتي حفص وشعبة عن عاصم على يد الشيخ بشير أحمد صديق، وواصل القراءة على عدد من المتخصصين في القراءات. أمّ المصلين في عدد من المساجد، منها مسجد القدس وجامع البواردي وجامع آل الشيخ وجامع الشيخ ناصر، وعمل قاضياً في ديوان المظالم."
+    },
+    "bioSource": {
+      "provider": "Assabile",
+      "url": "https://www.assabile.com/muhammad-al-luhaidan-95/muhammad-al-luhaidan.htm"
+    }
+  },
+  "khaled_al_jalil": {
+    "bio": {
+      "fr": "Khalid Al-Jalil est un imam et réciteur saoudien. Une annonce publiée en 2008 par le quotidien Al Riyadh documente sa nomination comme imam de la mosquée du roi Khalid à Riyad. Son catalogue public comprend plusieurs enregistrements complets et des récitations de tarawih selon Hafs d'après Asim. Les sources consultées ne publient pas de date de naissance ni de parcours académique suffisamment vérifiable.",
+      "en": "Khalid Al-Jalil is a Saudi imam and Quran reciter. A 2008 report by Al Riyadh documents his appointment as imam of King Khalid Mosque in Riyadh. His public catalogue includes complete recordings and tarawih recitations in Hafs from Asim. The reviewed sources do not publish a sufficiently verifiable birth date or academic background.",
+      "ar": "خالد الجليل إمام وقارئ قرآن سعودي. وثّقت جريدة الرياض سنة 2008 تعيينه إماماً لجامع الملك خالد في الرياض. ويضم فهرسه المنشور مصاحف مسجلة وتلاوات من صلاة التراويح برواية حفص عن عاصم. ولا تنشر المصادر التي تمت مراجعتها تاريخ ميلاد أو مساراً أكاديمياً موثقاً بما يكفي."
+    },
+    "bioSource": {
+      "provider": "Al Riyadh",
+      "url": "https://www.alriyadh.com/373059"
+    }
+  },
+  "warsh_abdelmoujib_benkirane": {
+    "bio": {
+      "fr": "Abdelmoujib Benkirane est un réciteur marocain dont le catalogue public contient un muṣḥaf murattal complet de 114 sourates selon Warsh d'après Nafi'. Les sources publiques consultées ne donnent pas de date de naissance, de formation ou de fonction religieuse vérifiable ; ces éléments ne sont donc pas affirmés dans cette fiche.",
+      "en": "Abdelmoujib Benkirane is a Moroccan Quran reciter whose public catalogue contains a complete 114-surah murattal mushaf in Warsh from Nafi'. The reviewed public sources do not provide a verifiable birth date, education, or religious position, so this profile does not claim those details.",
+      "ar": "عبد المجيب بن كيران قارئ قرآن مغربي، ويضم فهرسه المنشور مصحفاً مرتلاً كاملاً من 114 سورة برواية ورش عن نافع. ولا تنشر المصادر العامة التي تمت مراجعتها تاريخ ميلاده أو تكوينه أو وظيفة دينية موثقة، لذلك لا تنسب إليه هذه البطاقة معلومات غير مثبتة."
+    },
+    "bioSource": {
+      "provider": "Assajda",
+      "url": "https://www.assajda.com/fr/quran/morocco"
+    },
+    "verificationSources": [
+      {
+        "provider": "Quran Central",
+        "url": "https://qurancentral.com/audio/abdelmoujib-benkirane",
+        "confirms": ["name", "audio catalogue"]
+      },
+      {
+        "provider": "Assajda",
+        "url": "https://www.assajda.com/fr/quran/morocco",
+        "confirms": ["name", "country", "114 surahs"]
+      },
+      {
+        "provider": "SurahQuran",
+        "url": "https://surahquran.com/sheikh-qari-french-85.html",
+        "confirms": ["name", "country", "Warsh from Nafi", "114 surahs"]
+      },
+      {
+        "provider": "Internet Archive",
+        "url": "https://archive.org/details/nordarby_20150904_1334",
+        "confirms": ["name", "Warsh from Nafi", "archived audio"]
+      }
+    ],
+    "portraitStatus": "verified",
+    "portraitSource": {
+      "provider": "SuratMP3",
+      "url": "https://suratmp3.com/fr/quran/reciters/80",
+      "confirms": ["identity", "name", "Warsh from Nafi"]
+    }
+  },
   "warsh_abdulbasit": {
     "bio": {
       "fr": "Abdul Basit Muhammad Abdus Samad (1927–1988) est un qāriʾ égyptien né à Armant, en Haute-Égypte. Il acheva la mémorisation du Coran à dix ans, entra à la radio nationale égyptienne en 1951 et devint l’une des grandes voix de la récitation moderne. Cette fiche présente son enregistrement murattal selon Warsh ʿan Nāfiʿ.",
@@ -19,6 +91,12 @@
     "bioSource": {
       "provider": "Assabile",
       "url": "https://www.assabile.com/ibrahim-al-dossari-206/ibrahim-al-dossari.htm"
+    },
+    "portraitStatus": "verified",
+    "portraitSource": {
+      "provider": "Way2Quran",
+      "url": "https://way2quran.com/ar/reciters/ibrahim-al-dosari?recitationSlug=warsh-an-nafi",
+      "confirms": ["identity", "name", "Warsh from Nafi"]
     }
   },
   "warsh_yassin": {
@@ -96,6 +174,12 @@
     "bioSource": {
       "provider": "الجامع لعلوم القرآن",
       "url": "https://quran-uni.com/reciter/%D8%B1%D8%B4%D9%8A%D8%AF-%D8%A8%D9%84%D8%B9%D8%A7%D9%84%D9%8A%D8%A9/"
+    },
+    "portraitStatus": "verified",
+    "portraitSource": {
+      "provider": "SurahQuran",
+      "url": "https://surahquran.com/mp3/Rachid-Belachia/",
+      "confirms": ["identity", "name", "Warsh from Nafi"]
     }
   },
   "ar.alafasy": {
@@ -149,9 +233,19 @@
   },
   "abdullaah_matrood": {
     "bio": {
-      "fr": "Abdullah Al-Matrood est un récitateur saoudien imam à Riyad. Il est apprécié pour son style murattal clair et sa voix agréable qui facilite l'écoute prolongée du Coran.",
-      "en": "Abdullah Al-Matrood is a Saudi reciter and imam in Riyadh. He is appreciated for his clear murattal style and pleasant voice that facilitates extended Quran listening.",
-      "ar": "عبدالله المطرود قارئ سعودي وإمام في الرياض. يُقدَّر لأسلوبه الواضح في الترتيل وصوته المريح الذي يسهّل الاستماع المطوّل للقرآن."
+      "fr": "Abdullah Al-Matrood est un réciteur saoudien du Coran. Son catalogue public comprend un muṣḥaf complet de 114 sourates selon Hafs d'après Asim. Assabile indique que ses récitations sont régulièrement diffusées par des chaînes de télévision et des radios du monde arabe, et qu'il a participé à plusieurs rencontres consacrées notamment aux récits coraniques.",
+      "en": "Abdullah Al-Matrood is a Saudi Quran reciter. His public catalogue contains a complete 114-surah mushaf in Hafs from Asim. Assabile reports that his recitations are regularly broadcast by television channels and radio stations across the Arab world and that he has participated in events devoted to Quranic narratives.",
+      "ar": "عبدالله المطرود قارئ قرآن سعودي، ويضم فهرسه المنشور مصحفاً كاملاً من 114 سورة برواية حفص عن عاصم. ويذكر موقع السبيل أن تلاواته تُبث بانتظام عبر قنوات تلفزيونية وإذاعات في العالم العربي، وأنه شارك في لقاءات تناولت موضوعات وقصصاً قرآنية."
+    },
+    "bioSource": {
+      "provider": "Assabile",
+      "url": "https://www.assabile.com/abdullah-matrood-5/abdullah-matrood.htm"
+    },
+    "portraitStatus": "verified",
+    "portraitSource": {
+      "provider": "Way2Quran",
+      "url": "https://way2quran.com/ar/reciters/abdullah-al-matroud",
+      "confirms": ["identity", "name", "Hafs from Asim"]
     }
   },
   "abdullaah_basfar": {
@@ -170,9 +264,13 @@
   },
   "ar.abdurrahmaansudais": {
     "bio": {
-      "fr": "Abdur-Rahman as-Sudais, né le 23 novembre 1963 à Al-Bukayriyah dans la région de Qassim, est le président de la Présidence générale des affaires des Deux Saintes Mosquées et l'imam principal du Masjid al-Haram à La Mecque. Il mémorisa le Coran à l'âge de douze ans et obtint un doctorat en jurisprudence islamique de l'Université Umm al-Qura à La Mecque. Nommé imam du Haram en 1984, il dirige depuis lors les prières devant des millions de fidèles, en particulier pendant le Ramadan et le Hajj. Sa voix d'une profondeur et d'une émotion sans égales, ses invocations ferventes du qounout qui arrachent des larmes aux croyants, et son autorité de savant respecté en ont fait l'une des personnalités les plus influentes du monde islamique contemporain. Il a reçu de nombreuses distinctions internationales pour sa contribution à la diffusion des valeurs islamiques.",
-      "en": "Abdur-Rahman as-Sudais, born November 23, 1963 in Al-Bukayriyah in the Qassim region, is the president of the General Presidency for the Affairs of the Two Holy Mosques and chief imam of Masjid al-Haram in Mecca. He memorized the Quran at age twelve and earned a PhD in Islamic jurisprudence from Umm al-Qura University in Mecca. Appointed imam of the Haram in 1984, he has since led prayers before millions of worshippers, especially during Ramadan and Hajj. His voice of unparalleled depth and emotion, his fervent qounout supplications that move believers to tears, and his authority as a respected scholar have made him one of the most influential personalities in the contemporary Islamic world. He has received numerous international distinctions for his contribution to spreading Islamic values.",
-      "ar": "عبد الرحمن السديس، وُلد في 23 نوفمبر 1963 في البكيرية بمنطقة القصيم، رئيس الرئاسة العامة لشؤون المسجد الحرام والمسجد النبوي والإمام الرئيسي للمسجد الحرام بمكة المكرمة. حفظ القرآن في الثانية عشرة من عمره وحصل على الدكتوراه في الفقه الإسلامي من جامعة أم القرى بمكة. عُيّن إماماً للحرم عام 1984 وما زال يؤمّ ملايين المصلين منذ ذلك الحين، لا سيما في رمضان والحج. صوته الذي يتميز بالعمق والتأثير العميق، ودعاؤه الخاشع في القنوت الذي تذرف معه الدموع، وسلطته العلمية جعلته من أبرز الشخصيات الإسلامية المؤثرة في العالم المعاصر. حاز على تكريمات دولية عديدة لإسهامه في نشر القيم الإسلامية."
+      "fr": "Abdurrahman ibn Abdulaziz Al-Sudais est né à Riyad en 1962. Il mémorisa le Coran à douze ans, obtint un diplôme de la faculté de charia en 1983, puis un master et un doctorat en fondements de la jurisprudence. Il fut nommé imam et prédicateur de la Grande Mosquée de La Mecque en 1984. Depuis août 2023, il préside les Affaires religieuses de la Grande Mosquée et de la Mosquée du Prophète avec rang de ministre.",
+      "en": "Abdurrahman ibn Abdulaziz Al-Sudais was born in Riyadh in 1962. He memorized the Quran at age twelve, graduated from the College of Sharia in 1983, and later earned a master's degree and doctorate in the fundamentals of jurisprudence. He was appointed imam and khatib of the Grand Mosque in Mecca in 1984. Since August 2023, he has served as President of Religious Affairs at the Grand Mosque and the Prophet's Mosque with the rank of minister.",
+      "ar": "عبد الرحمن بن عبد العزيز السديس، وُلد في الرياض سنة 1962. حفظ القرآن في الثانية عشرة، وتخرج في كلية الشريعة سنة 1983، ثم حصل على الماجستير والدكتوراه في أصول الفقه. عُيّن إماماً وخطيباً للمسجد الحرام سنة 1984، ويتولى منذ أغسطس 2023 رئاسة الشؤون الدينية بالمسجد الحرام والمسجد النبوي بمرتبة وزير."
+    },
+    "bioSource": {
+      "provider": "Saudipedia",
+      "url": "https://saudipedia.com/en/abdulrahman-al-sudais"
     }
   },
   "ahmed_ajmy": {

@@ -87,13 +87,18 @@ test.describe("mobile", () => {
       path: path.join(OUTPUT_DIR, "mobile-navbar.png"),
     });
 
-    const minimized = page.locator(".mp-audio-player--mobile:not(.mp-audio-player--dock)").first();
+    const minimized = page
+      .locator(
+        '.mp-audio-player--mobile.is-minimized[data-testid="audio-player-compact"]',
+      )
+      .first();
     const reopenBtn = minimized.locator(".mp-player-minimized-open").first();
-    if (await reopenBtn.isVisible().catch(() => false)) {
-      await reopenBtn.click();
-    }
+    await expect(reopenBtn).toBeVisible();
+    await reopenBtn.click();
 
-    const dock = page.locator(".mp-audio-player--mobile.mp-audio-player--dock").first();
+    const dock = page
+      .locator(".mp-audio-player--mobile.simple-player--mobile-open")
+      .first();
     await expect(dock).toBeVisible();
     await expect(dock.locator(".simple-player__header-actions button")).toHaveCount(3);
     await dock.screenshot({

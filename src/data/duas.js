@@ -24,7 +24,7 @@
     surah: 2, ayah: 201,
     arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
     transliteration: "Rabbana atina fi al-dunya hasanatan wa fi al-akhirati hasanatan wa qina 'adhaba al-nar",
-    fr: "Seigneur, accorde-nous une belle part ici-bas et dans l'au- delà, et protège - nous du châtiment du Feu.",
+    fr: "Seigneur, accorde-nous une belle part ici-bas et dans l’au-delà, et protège-nous du châtiment du Feu.",
     en: 'Our Lord, grant us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.',
   },
 {
@@ -79,7 +79,7 @@
       surah: 3, ayah: 191,
         arabic: 'رَبَّنَا مَا خَلَقْتَ هَٰذَا بَاطِلًا سُبْحَانَكَ فَقِنَا عَذَابَ النَّارِ',
           transliteration: 'Rabbana ma khalaqta hadha batilan subhanaka faqina \'adhaba al-nar',
-            fr: "Seigneur, Tu n' as pas créé cela en vain.Gloire à Toi! Préserve - nous du châtiment du Feu.",
+            fr: "Seigneur, Tu n’as pas créé cela en vain. Gloire à Toi ! Préserve-nous du châtiment du Feu.",
   en: 'Our Lord, You did not create this in vain. Glory be to You! Protect us from the punishment of the Fire.',
   },
 {

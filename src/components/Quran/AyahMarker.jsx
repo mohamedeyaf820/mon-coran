@@ -1,6 +1,11 @@
 import React from "react";
 import { cn } from "../../lib/utils";
-import { shallowEqual, useAppSelector } from "../../context/AppContext";
+import {
+  shallowEqual,
+  useAppLocale,
+  useAppSelector,
+} from "../../context/AppContext";
+import { t } from "../../i18n";
 import { toArabicNumeral } from "../../utils/arabicNumerals";
 import {
   getNativeAyahMarker,
@@ -79,8 +84,15 @@ export const AyahMarker = React.memo(function AyahMarker({
 });
 
 export function SajdaMarker() {
+  const { lang } = useAppLocale();
+  const label = t("quran.sajda", lang);
+
   return (
-    <span className="sajda-marker inline-flex items-center align-middle mx-1" aria-label="Sajda" title="Sajda">
+    <span
+      className="sajda-marker inline-flex items-center align-middle mx-1"
+      aria-label={label}
+      title={label}
+    >
       <svg width="1.1em" height="1.1em" viewBox="0 0 100 100" aria-hidden="true" style={{ display: "block" }}>
         <ellipse cx="50" cy="50" rx="47" ry="30"
           fill="rgba(212,168,32,0.1)"

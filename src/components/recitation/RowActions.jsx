@@ -44,7 +44,7 @@ export default function RowActions({ lang, surahLabel, onPlay, onOpen, downloadU
         title={contextualLabel(labels.listen)}
         aria-label={contextualLabel(labels.listen)}
       >
-        <Play size={15} fill="currentColor" aria-hidden="true" />
+        <Play className="recitation-icon recitation-icon--sm" size={15} fill="currentColor" aria-hidden="true" />
         <span className="recitation-action-btn__label">{labels.listen}</span>
       </button>
       <button
@@ -54,7 +54,7 @@ export default function RowActions({ lang, surahLabel, onPlay, onOpen, downloadU
         title={contextualLabel(labels.open)}
         aria-label={contextualLabel(labels.open)}
       >
-        <BookOpen size={15} aria-hidden="true" />
+        <BookOpen className="recitation-icon recitation-icon--sm" size={15} aria-hidden="true" />
       </button>
       <button
         className="recitation-action-btn"
@@ -64,7 +64,7 @@ export default function RowActions({ lang, surahLabel, onPlay, onOpen, downloadU
         title={contextualLabel(downloadUrl ? labels.download : labels.unavailable)}
         aria-label={contextualLabel(downloadUrl ? labels.download : labels.unavailable)}
       >
-        <Download size={15} aria-hidden="true" />
+        <Download className="recitation-icon recitation-icon--sm" size={15} aria-hidden="true" />
       </button>
     </div>
   );

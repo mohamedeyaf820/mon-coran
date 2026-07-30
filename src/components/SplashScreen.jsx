@@ -49,7 +49,7 @@ export default function SplashScreen({
 
   useEffect(() => {
     if (lowPerfMode) return;
-    const t = setTimeout(() => setShowSkip(true), 400);
+    const t = setTimeout(() => setShowSkip(true), 250);
     return () => clearTimeout(t);
   }, [lowPerfMode]);
 
@@ -58,7 +58,7 @@ export default function SplashScreen({
       if (dismissedRef.current) return;
       dismissedRef.current = true;
       setFadeOut(true);
-      setTimeout(onDone, 300);
+      setTimeout(onDone, 180);
     };
 
     let prefetchDone = false;
@@ -79,8 +79,8 @@ export default function SplashScreen({
     }
 
     if (lowPerfMode) {
-      const t1 = setTimeout(() => setFadeOut(true), 300);
-      const t2 = setTimeout(() => onDone(), 500);
+      const t1 = setTimeout(() => setFadeOut(true), 120);
+      const t2 = setTimeout(() => onDone(), 280);
       return () => {
         clearTimeout(t1);
         clearTimeout(t2);
@@ -96,11 +96,11 @@ export default function SplashScreen({
       }, 350);
     }, 1600);
 
-    // Minimum display time: fade starts at 500ms, dismiss fires at 700ms.
+    // Keep the brand transition visible without delaying the first useful screen.
     // After t1, tryEarlyDismiss() handles early exit if prefetch already resolved.
     // t2 is the hard deadline — dismiss() is idempotent so no double-run risk.
-    const t1 = setTimeout(() => { setFadeOut(true); timerDone = true; tryEarlyDismiss(); }, 500);
-    const t2 = setTimeout(() => dismiss(), 700);
+    const t1 = setTimeout(() => { setFadeOut(true); timerDone = true; tryEarlyDismiss(); }, 220);
+    const t2 = setTimeout(() => dismiss(), 400);
 
     return () => {
       clearInterval(verseTick);
@@ -117,13 +117,14 @@ export default function SplashScreen({
     >
       {showSkip && !fadeOut && (
         <button
+          type="button"
           className="splash-skip"
           onClick={() => {
             if (dismissedRef.current) return;
             dismissedRef.current = true;
             setShowSkip(false);
             setFadeOut(true);
-            setTimeout(onDone, 400);
+            setTimeout(onDone, 180);
           }}
         >
           {skipLabels[lang] ?? skipLabels.fr} ›
@@ -165,14 +166,16 @@ export default function SplashScreen({
           height={160}
         />
         <h1 className="splash-title">MushafPlus</h1>
-        <p className="splash-subtitle">القرآن الكريم</p>
+        <p className="splash-subtitle" lang="ar" dir="rtl">
+          القرآن الكريم
+        </p>
 
         {/* Verset tournant */}
         <div
           className={`splash-verse-wrap ${verseVisible ? "verse-in" : "verse-out"}`}
         >
-          <p className="splash-verse">{v.ar}</p>
-          <p className="splash-verse-ref">{v.ref}</p>
+          <p className="splash-verse" lang="ar" dir="rtl">{v.ar}</p>
+          <p className="splash-verse-ref" lang="ar" dir="rtl">{v.ref}</p>
         </div>
 
         {/* Barre de progression */}
@@ -187,7 +190,9 @@ export default function SplashScreen({
         <div className="splash-ornament" aria-hidden="true">
           ✦ ✦ ✦
         </div>
-        <p className="splash-loading-text">بِسْمِ اللَّهِ</p>
+        <p className="splash-loading-text" lang="ar" dir="rtl">
+          بِسْمِ اللَّهِ
+        </p>
       </div>
 
       <style>{`
@@ -199,7 +204,7 @@ export default function SplashScreen({
           align-items: center;
           justify-content: center;
           background: linear-gradient(160deg, #071A0F 0%, #102A1A 35%, #1A3828 65%, #0B1F12 100%);
-          transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1);
+          transition: opacity 0.18s cubic-bezier(0.4,0,0.2,1);
           overflow: hidden;
         }
         .splash-screen.perf-low {
@@ -305,7 +310,7 @@ export default function SplashScreen({
         .splash-verse-ref {
           font-family: 'Amiri', serif;
           font-size: 0.75rem;
-          color: rgba(212,175,55,0.45);
+          color: rgba(245,215,133,0.82);
           margin: 0;
           letter-spacing: 1px;
         }
@@ -342,7 +347,7 @@ export default function SplashScreen({
         .splash-loading-text {
           font-family: 'Amiri Quran', serif;
           font-size: 0.78rem;
-          color: rgba(212,175,55,0.35);
+          color: rgba(245,215,133,0.78);
           margin: 0;
           letter-spacing: 3px;
           animation: blink 2s ease-in-out infinite;
@@ -391,12 +396,13 @@ export default function SplashScreen({
           position: absolute;
           bottom: 2rem;
           right: 2rem;
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          color: rgba(255, 255, 255, 0.5);
-          padding: 0.4rem 1rem;
+          min-height: 44px;
+          background: rgba(255, 255, 255, 0.15);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          color: rgba(255, 255, 255, 0.92);
+          padding: 0.65rem 1.2rem;
           border-radius: 99px;
-          font-size: 0.75rem;
+          font-size: 0.82rem;
           cursor: pointer;
           transition: all 0.2s ease;
           animation: fadeInUp 0.4s ease;
@@ -404,13 +410,37 @@ export default function SplashScreen({
           z-index: 10;
         }
         .splash-skip:hover {
-          background: rgba(255, 255, 255, 0.14);
-          color: rgba(255, 255, 255, 0.8);
-          border-color: rgba(255, 255, 255, 0.22);
+          background: rgba(255, 255, 255, 0.22);
+          color: #fff;
+          border-color: rgba(255, 255, 255, 0.48);
+        }
+        .splash-skip:focus-visible {
+          outline: 3px solid #f5d785;
+          outline-offset: 3px;
         }
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(10px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .splash-content,
+          .splash-logo-wrap,
+          .splash-halo,
+          .splash-arabesque,
+          .splash-particle,
+          .splash-loader-bar,
+          .splash-loading-text,
+          .splash-skip {
+            animation: none !important;
+            transition: none !important;
+          }
+          .splash-screen {
+            transition: opacity 0.01s linear !important;
+          }
+          .splash-verse-wrap {
+            transition: none !important;
+            transform: none !important;
+          }
         }
       `}</style>
     </div>

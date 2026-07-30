@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { parseTajwid } from '../../data/tajwidRules';
+import { parseTajwid, stabilizeTajwidSegments } from '../../data/tajwidRules';
 import { useAppLocale } from '../../context/AppContext';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../ui/tooltip';
 
@@ -77,7 +77,9 @@ function parseQuranComTajweedHtml(html) {
     };
 
     doc.body.childNodes.forEach((node) => walk(node, null));
-    return segments.filter((segment) => segment.text);
+    return stabilizeTajwidSegments(
+        segments.filter((segment) => segment.text)
+    );
 }
 
 

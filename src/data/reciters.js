@@ -264,6 +264,42 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     country: "KSA",
     source: "mp3quran",
   },
+  {
+    id: "ibrahim_al_akhdar",
+    name: "إبراهيم الأخضر",
+    nameEn: "Ibrahim Al-Akhdar",
+    nameFr: "Ibrahim Al-Akhdar",
+    style: "murattal",
+    cdn: "https://server6.mp3quran.net/akdr/",
+    cdnType: "mp3quran-surah",
+    audioMode: "surah",
+    country: "KSA",
+    source: "mp3quran",
+  },
+  {
+    id: "mohamed_al_luhaidan",
+    name: "محمد اللحيدان",
+    nameEn: "Mohamed Al-Luhaidan",
+    nameFr: "Mohamed Al-Luhaidan",
+    style: "murattal",
+    cdn: "https://server8.mp3quran.net/lhdan/",
+    cdnType: "mp3quran-surah",
+    audioMode: "surah",
+    country: "KSA",
+    source: "mp3quran",
+  },
+  {
+    id: "khaled_al_jalil",
+    name: "خالد الجليل",
+    nameEn: "Khaled Al-Jalil",
+    nameFr: "Khaled Al-Jalil",
+    style: "murattal",
+    cdn: "https://server10.mp3quran.net/jleel/",
+    cdnType: "mp3quran-surah",
+    audioMode: "surah",
+    country: "KSA",
+    source: "mp3quran",
+  },
 ];
 
 const RECITERS = {
@@ -484,9 +520,9 @@ const RECITERS = {
       nameEn: "Abdul Basit (Warsh)",
       nameFr: "Abdul Basit (Warsh)",
       style: "murattal",
-      cdn: "warsh/warsh_Abdul_Basit_128kbps",
-      cdnType: "everyayah",
-      audioMode: "ayah",
+      cdn: "https://server7.mp3quran.net/basit/Rewayat-Warsh-A-n-Nafi/",
+      cdnType: "mp3quran-surah",
+      audioMode: "surah",
       country: "Egypt",
       verifiedWarsh: true,
     },
@@ -496,10 +532,22 @@ const RECITERS = {
       nameEn: "Ibrahim Al-Dosari (Warsh)",
       nameFr: "Ibrahim Al-Dosari (Warsh)",
       style: "murattal",
-      cdn: "warsh/warsh_ibrahim_aldosary_128kbps",
-      cdnType: "everyayah",
-      audioMode: "ayah",
+      cdn: "https://server10.mp3quran.net/ibrahim_dosri/Rewayat-Warsh-A-n-Nafi/",
+      cdnType: "mp3quran-surah",
+      audioMode: "surah",
       country: "KSA",
+      verifiedWarsh: true,
+    },
+    {
+      id: "warsh_abdelmoujib_benkirane",
+      name: "عبد المجيب بن كيران (ورش)",
+      nameEn: "Abdelmoujib Benkirane (Warsh)",
+      nameFr: "Abdelmoujib Benkirane (Warsh)",
+      style: "murattal",
+      cdn: "https://server16.mp3quran.net/A-Benkirane/Rewayat-Warsh-A-n-Nafi/",
+      cdnType: "mp3quran-surah",
+      audioMode: "surah",
+      country: "Morocco",
       verifiedWarsh: true,
     },
     {
@@ -668,7 +716,8 @@ export const RECITER_PHOTOS_MAP = {
   ahmed_ajmy: quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
   ahmed_ibn_ali_al_ajamy_64: quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
   yasser_dossari_hafs: quranPhoto("20/yasser-profile.png"),
-  abdullaah_matrood: assabilePhoto("abdallah-matroud.png"),
+  abdullaah_matrood:
+    "https://media.way2quran.com/imgs/abdullah-al-matroud.jpg",
   abdullaah_basfar: assabilePhoto("abdullah-ibn-ali-basfar.png"),
   hudhaify: assabilePhoto("ali-alhodaifi.png"),
   muhammad_ayyoub: assabilePhoto("mohamed-ayoub.png"),
@@ -691,9 +740,14 @@ export const RECITER_PHOTOS_MAP = {
   abdullah_awwad_al_juhaynee: assabilePhoto("abdullah-awad-al-juhani.png"),
   idris_abkar: assabilePhoto("idriss-abkar.png"),
   ahmad_al_hawashi: assabilePhoto("ahmad-al-hawashy.png"),
+  ibrahim_al_akhdar: assabilePhoto("ibrahim-al-akhdar.png"),
+  mohamed_al_luhaidan: assabilePhoto("mohamed-al-haidan.png"),
+  khaled_al_jalil: assabilePhoto("khalid-al-jalil.jpg"),
   warsh_abdulbasit: quranPhoto("1/abdelbasset-profile.jpeg"),
   warsh_ibrahim_aldosari:
-    "https://www.assabile.com/media/person/200x256/ibrahim-al-dossari.png",
+    "https://storage.googleapis.com/way2quran_storage/imgs/ibrahim-al-dosari.png",
+  warsh_abdelmoujib_benkirane:
+    "https://static.suratmp3.com/pics/reciters/80.jpg",
   warsh_yassin:
     "https://www.assabile.com/media/person/200x256/al-qari-yassen.png",
   warsh_hussary: quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
@@ -706,7 +760,7 @@ export const RECITER_PHOTOS_MAP = {
   warsh_aloyoon_al_koshi:
     "https://www.assabile.com/media/person/200x256/laayoun-el-kouchi.png",
   warsh_rachid_belalya:
-    "https://www.assabile.com/media/person/200x256/rachid-belalia.png",
+    "https://i.pinimg.com/564x/e0/83/a2/e083a2650f5d21432991316710b9461c.jpg",
 };
 
 const ASSABILE_PROFILE_BASE = "https://www.assabile.com";
@@ -736,21 +790,33 @@ const RECITER_PROFILE_SOURCES = Object.freeze({
   abdullah_awwad_al_juhaynee: assabileProfile("/abdullah-awad-al-juhani-93/abdullah-awad-al-juhani.htm"),
   idris_abkar: assabileProfile("/idriss-abkar-90/idriss-abkar.htm"),
   ahmad_al_hawashi: assabileProfile("/ahmad-al-hawashy-71/ahmad-al-hawashy.htm"),
+  ibrahim_al_akhdar: assabileProfile("/ibrahim-al-akhdar-16/ibrahim-al-akhdar.htm"),
+  mohamed_al_luhaidan: assabileProfile(
+    "/muhammad-al-luhaidan-95/muhammad-al-luhaidan.htm",
+  ),
+  khaled_al_jalil: assabileProfile("/khalid-al-jalil-307/khalid-al-jalil.htm"),
+  warsh_abdelmoujib_benkirane: assabileProfile(
+    "/abdelmoujib-benkirane-310/abdelmoujib-benkirane.htm",
+  ),
 });
 
-const RECITER_PHOTO_CREDITS = Object.freeze({
-  warsh_ibrahim_aldosari: "Assabile",
-  warsh_yassin: "Assabile",
-  warsh_omar_al_qazabri: "Assabile",
-  warsh_mohammad_saayed: "Assabile",
-  warsh_al_qaria_yassen: "Assabile",
-  warsh_aloyoon_al_koshi: "Assabile",
-  warsh_rachid_belalya: "Assabile",
-});
-
-const PORTRAIT_PROVIDER_URLS = Object.freeze({
-  Assabile: "https://www.assabile.com/",
-  "Quran.com": "https://quran.com/reciters",
+const RECITER_PHOTO_SOURCES = Object.freeze({
+  abdullaah_matrood: Object.freeze({
+    provider: "Way2Quran",
+    url: "https://way2quran.com/ar/reciters/abdullah-al-matroud",
+  }),
+  warsh_ibrahim_aldosari: Object.freeze({
+    provider: "Way2Quran",
+    url: "https://way2quran.com/ar/reciters/ibrahim-al-dosari?recitationSlug=warsh-an-nafi",
+  }),
+  warsh_abdelmoujib_benkirane: Object.freeze({
+    provider: "SuratMP3",
+    url: "https://suratmp3.com/fr/quran/reciters/80",
+  }),
+  warsh_rachid_belalya: Object.freeze({
+    provider: "SurahQuran",
+    url: "https://surahquran.com/mp3/Rachid-Belachia/",
+  }),
 });
 
 const AVATAR_COLORS = [
@@ -822,18 +888,28 @@ export function getReciterPhoto(reciterOrId) {
 
 export function getReciterVisual(reciter) {
   const photo = getReciterPhoto(reciter);
-  const photoProvider =
-    RECITER_PHOTO_CREDITS[reciter?.id] ||
-    (photo?.includes("assabile.com") ? "Assabile" : "Quran.com");
+  const explicitSource = RECITER_PHOTO_SOURCES[reciter?.id];
+  const defaultSource = photo?.includes("assabile.com")
+    ? {
+        provider: "Assabile",
+        url:
+          RECITER_PROFILE_SOURCES[reciter?.id] ||
+          "https://www.assabile.com/",
+      }
+    : {
+        provider: "Quran.com",
+        url: "https://quran.com/reciters",
+      };
+  const attribution = explicitSource || defaultSource;
   return {
     type: photo ? "photo" : "avatar",
     photo,
     avatar: getReciterAvatar(reciter),
     attribution: photo
       ? {
-          provider: photoProvider,
-          label: `Portrait · ${photoProvider}`,
-          url: PORTRAIT_PROVIDER_URLS[photoProvider],
+          provider: attribution.provider,
+          label: `Portrait · ${attribution.provider}`,
+          url: attribution.url,
         }
       : null,
   };

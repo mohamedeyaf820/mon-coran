@@ -592,11 +592,6 @@
         padding-block: 0.85rem;
     }
 
-    .app-root .mp-player-minimized-row {
-        gap: 0.65rem;
-        padding: 0.72rem 0.85rem;
-    }
-
     .app-root .mp-player-minimized-title {
         font-size: 0.78rem;
     }
@@ -876,11 +871,6 @@
 
     .app-root .sb-page-grid--pages {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .app-root .mp-player-minimized-row {
-        gap: 0.5rem;
-        padding-inline: 0.75rem;
     }
 
     .app-root .mp-player-mobile-main-controls {
@@ -1299,11 +1289,6 @@
         bottom: calc(env(safe-area-inset-bottom, 0px) + 0.45rem);
     }
 
-    .app-root .mp-player-minimized-row {
-        gap: 0.5rem;
-        padding: 0.72rem 0.76rem;
-    }
-
     .app-root .mp-player-minimized-title {
         font-size: 0.78rem;
     }
@@ -1410,18 +1395,6 @@
         font-size: 1.02rem;
     }
 
-    .app-root .mp-player-minimized-row {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr) repeat(4, auto);
-        gap: 0.34rem;
-        padding: 0.68rem 0.72rem;
-    }
-
-    .app-root .mp-player-minimized-row button:not(.mp-player-minimized-open) {
-        width: 1.95rem;
-        height: 1.95rem;
-    }
-
     .app-root .mp-player-minimized-title {
         font-size: 0.74rem;
     }
@@ -1442,10 +1415,6 @@
         gap: 0.46rem;
     }
 
-    .app-root .mp-player-minimized-row button:not(.mp-player-minimized-open) {
-        width: 1.82rem;
-        height: 1.82rem;
-    }
 }
 
 @keyframes qdAyahActionsReveal {

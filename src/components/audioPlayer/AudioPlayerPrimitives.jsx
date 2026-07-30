@@ -63,7 +63,7 @@ export function ProgressRail({ progress, className = "", showThumb = false }) {
           width="100"
           height="4"
           rx="2"
-          className="fill-white/10"
+          className="simple-player__progress-track"
         />
         <rect
           x="0"

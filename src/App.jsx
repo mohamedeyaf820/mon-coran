@@ -30,10 +30,13 @@ import {
 
 const loadHomePage = () => import("./components/HomePage");
 const loadQuranDisplay = () => import("./components/QuranDisplay");
+const loadHeader = () => import("./components/Header");
+const loadLegalPage = () => import("./components/LegalPage");
+const loadDuasPage = () => import("./components/DuasPage");
 const HomePage = lazy(loadHomePage);
-const Header = lazy(() => import("./components/Header"));
+const Header = lazy(loadHeader);
 const QuranDisplay = lazy(loadQuranDisplay);
-const LegalPage = lazy(() => import("./components/LegalPage"));
+const LegalPage = lazy(loadLegalPage);
 const ConfirmDialogHost = lazy(() => import("./components/ConfirmDialogHost"));
 const NotesPanel = lazy(() => import("./components/NotesPanel"));
 const Sidebar = lazy(() => import("./components/Sidebar"));
@@ -46,7 +49,7 @@ const ReadingHistoryPanel = lazy(
   () => import("./components/ReadingHistoryPanel"),
 );
 const PlaylistPanel = lazy(() => import("./components/PlaylistPanel"));
-const DuasPage = lazy(() => import("./components/DuasPage"));
+const DuasPage = lazy(loadDuasPage);
 const FlashcardsPanel = lazy(() => import("./components/FlashcardsPanel"));
 const TajweedQuizPanel = lazy(() => import("./components/TajweedQuizPanel"));
 const KhatmaPanel = lazy(() => import("./components/KhatmaPanel"));
@@ -65,7 +68,7 @@ const FutureFeaturesModal = lazy(
   () => import("./components/FutureFeaturesModal"),
 );
 
-function AppLoadingFallback({ lang }) {
+function AppLoadingFallback({ lang, variant = "page" }) {
   const label =
     lang === "ar"
       ? "\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0645\u064a\u0644…"
@@ -73,19 +76,77 @@ function AppLoadingFallback({ lang }) {
         ? "Loading…"
         : "Chargement en cours…";
 
+  const isHeader = variant === "header";
+  const isOverlay = variant === "overlay";
+  const spinnerSize = isHeader ? 18 : 24;
+
   return (
     <div
-      className="flex min-h-[60vh] items-center justify-center"
+      className="app-loading-fallback"
       role="status"
       aria-busy="true"
+      style={{
+        position: isOverlay ? "fixed" : "relative",
+        inset: isOverlay ? 0 : undefined,
+        zIndex: isOverlay ? 9800 : undefined,
+        width: "100%",
+        minHeight: isHeader
+          ? "var(--header-h, 56px)"
+          : isOverlay
+            ? "100dvh"
+            : "min(42vh, 320px)",
+        display: "grid",
+        placeItems: "center",
+        padding: isHeader ? "0.4rem" : "clamp(0.8rem, 3vw, 1.5rem)",
+        background: isOverlay
+          ? "color-mix(in srgb, var(--bg-primary) 72%, transparent)"
+          : "transparent",
+        backdropFilter: isOverlay ? "blur(6px)" : undefined,
+      }}
     >
       <div
-        className="h-10 w-10 animate-spin rounded-full border-4 border-[var(--primary)] border-t-transparent"
-        aria-hidden="true"
-      />
-      <span className="sr-only" lang={lang}>
-        {label}
-      </span>
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "0.65rem",
+          borderRadius: "999px",
+          padding: isHeader ? 0 : "0.65rem 0.85rem",
+          color: "var(--text-secondary)",
+          background: isHeader
+            ? "transparent"
+            : "color-mix(in srgb, var(--bg-card) 92%, transparent)",
+          border: isHeader ? 0 : "1px solid var(--border)",
+          boxShadow: isHeader ? "none" : "var(--shadow-sm)",
+        }}
+      >
+        <span
+          className="animate-spin"
+          style={{
+            width: spinnerSize,
+            height: spinnerSize,
+            flex: `0 0 ${spinnerSize}px`,
+            borderRadius: "50%",
+            border: "2px solid color-mix(in srgb, var(--primary) 22%, transparent)",
+            borderTopColor: "var(--primary)",
+          }}
+          aria-hidden="true"
+        />
+        <span
+          className={isHeader ? "sr-only" : undefined}
+          lang={lang}
+          style={
+            isHeader
+              ? undefined
+              : {
+                  fontSize: "var(--mp-device-ui-sm, 0.78rem)",
+                  fontWeight: 650,
+                  lineHeight: 1.2,
+                }
+          }
+        >
+          {label}
+        </span>
+      </div>
     </div>
   );
 }
@@ -241,6 +302,14 @@ export default function App() {
   const lowPerfMode = useMemo(() => isLowPerformanceDevice(), []);
   const suspenseFallback = useMemo(
     () => <AppLoadingFallback lang={lang} />,
+    [lang],
+  );
+  const headerFallback = useMemo(
+    () => <AppLoadingFallback lang={lang} variant="header" />,
+    [lang],
+  );
+  const overlayFallback = useMemo(
+    () => <AppLoadingFallback lang={lang} variant="overlay" />,
     [lang],
   );
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -427,22 +496,34 @@ export default function App() {
   ]);
 
   useEffect(() => {
-    if (!splashDone || lowPerfMode || !deferNonCriticalUI) return undefined;
+    if (!splashDone || showHome) return undefined;
 
-    return runWhenIdle(async () => {
-      if (!showHome) {
-        await loadHomePage().catch(() => null);
-        return;
-      }
+    return runWhenIdle(
+      () => loadHomePage().catch(() => null),
+      lowPerfMode ? 1800 : 900,
+    );
+  }, [lowPerfMode, showHome, splashDone]);
 
-      await Promise.allSettled([
-        loadQuranDisplay(),
+  useEffect(() => {
+    if (
+      !splashDone ||
+      lowPerfMode ||
+      !deferNonCriticalUI ||
+      !showHome
+    ) {
+      return undefined;
+    }
+
+    return runWhenIdle(
+      () =>
+        Promise.allSettled([
         import("./components/recitation/ReciterDetailPage"),
         import("./hooks/useReciterProfile").then(({ preloadReciterProfiles }) =>
           preloadReciterProfiles(),
         ),
-      ]);
-    }, showHome ? 1100 : 1500);
+        ]),
+      900,
+    );
   }, [deferNonCriticalUI, lowPerfMode, showHome, splashDone]);
 
   // Delegate most keyboard shortcuts to the shared hook.
@@ -556,9 +637,31 @@ export default function App() {
   }, [dispatch]);
 
   const handleSplashPrefetch = useCallback(async () => {
-    const { prefetchInitialData } = await import("./services/quranAPI");
-    return prefetchInitialData(state.currentSurah, state.riwaya);
-  }, [state.currentSurah, state.riwaya]);
+    const screenPromise = state.legalPage
+      ? loadLegalPage()
+      : state.showHome
+        ? loadHomePage()
+        : state.showDuas
+          ? loadDuasPage()
+          : loadQuranDisplay();
+
+    const tasks = [loadHeader(), screenPromise];
+    if (!state.legalPage && !state.showHome && !state.showDuas) {
+      tasks.push(
+        import("./services/quranAPI").then(({ prefetchInitialData }) =>
+          prefetchInitialData(state.currentSurah, state.riwaya),
+        ),
+      );
+    }
+
+    return Promise.allSettled(tasks);
+  }, [
+    state.currentSurah,
+    state.legalPage,
+    state.riwaya,
+    state.showDuas,
+    state.showHome,
+  ]);
 
   if (!splashDone) {
     return (
@@ -593,12 +696,12 @@ export default function App() {
           {t("app.skipToContent", lang)}
         </a>
 
-        <Suspense fallback={suspenseFallback}>
+        <Suspense fallback={headerFallback}>
           <Header />
         </Suspense>
 
         <div className="app-layout-shell relative flex min-h-0 flex-1">
-          <Suspense fallback={suspenseFallback}>
+          <Suspense fallback={null}>
             {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
           </Suspense>
 
@@ -686,7 +789,7 @@ export default function App() {
           </main>
 
           {showHome && !focusReading && deferNonCriticalUI && (
-            <Suspense fallback={suspenseFallback}>
+            <Suspense fallback={null}>
               <NotesPanel />
             </Suspense>
           )}
@@ -738,7 +841,7 @@ export default function App() {
         )}
 
         <ErrorBoundary>
-          <Suspense fallback={suspenseFallback}>
+          <Suspense fallback={overlayFallback}>
             {state.searchOpen && <SearchModal />}
             {state.settingsOpen && <SettingsModal />}
             {state.toolsHubOpen && <ToolsHubModal />}

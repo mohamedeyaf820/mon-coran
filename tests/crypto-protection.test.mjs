@@ -9,6 +9,7 @@ import {
   hasEncryptionPassphraseConfigured,
   isProtectedStorageLocked,
   MIN_PASSPHRASE_LENGTH,
+  removePersistedDeviceKey,
   removeEncryptionPassphrase,
   unlockEncryptionWithPassphrase,
 } from "../src/services/cryptoUtil.js";
@@ -40,6 +41,13 @@ test("crypto: authenticated device envelopes reject tampering", () => {
   const last = ciphertext.at(-1);
   const tampered = `${ciphertext.slice(0, -1)}${last === "A" ? "B" : "A"}`;
   assert.equal(decryptDataWithMeta(tampered).data, null);
+});
+
+test("crypto: protected migrations can purge the persisted fallback device key", () => {
+  globalThis.localStorage = createMockStorage();
+  localStorage.setItem("mushafplus_device_key_v1", "a".repeat(64));
+  assert.equal(removePersistedDeviceKey(), true);
+  assert.equal(localStorage.getItem("mushafplus_device_key_v1"), null);
 });
 
 test("crypto: protected mode locks the key and validates the passphrase", async () => {

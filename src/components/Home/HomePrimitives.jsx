@@ -68,6 +68,7 @@ export function PercentBar({ value }) {
 export const SurahCard = memo(function SurahCard({
   surah,
   onClick,
+  onIntent,
   onPlay,
   isActive,
   lang,
@@ -141,6 +142,9 @@ export const SurahCard = memo(function SurahCard({
           type="button"
           className="absolute inset-0 z-[1] rounded-xl"
           onClick={() => onClick(surah.n)}
+          onPointerEnter={() => onIntent?.(surah.n)}
+          onFocus={() => onIntent?.(surah.n)}
+          onTouchStart={() => onIntent?.(surah.n)}
           aria-label={openAriaLabel}
         />
         <span className="flex items-center justify-center w-8 h-8 shrink-0 rounded-full bg-bg-secondary text-[0.75rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
@@ -160,7 +164,7 @@ export const SurahCard = memo(function SurahCard({
               className={cn(
                 "inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
                 surah.type === "Meccan"
-                  ? "bg-amber-400/10 text-amber-600 dark:text-amber-400"
+                  ? "bg-amber-400/10 text-amber-800 dark:text-amber-300"
                   : "bg-primary/10 text-primary",
               )}
             >
@@ -225,6 +229,9 @@ export const SurahCard = memo(function SurahCard({
         type="button"
         className="hp-card-open absolute inset-0 z-[1]"
         onClick={() => onClick(surah.n)}
+        onPointerEnter={() => onIntent?.(surah.n)}
+        onFocus={() => onIntent?.(surah.n)}
+        onTouchStart={() => onIntent?.(surah.n)}
         aria-label={openAriaLabel}
       />
 
@@ -261,7 +268,7 @@ export const SurahCard = memo(function SurahCard({
             className={cn(
               "inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
               isMeccan
-                ? "bg-amber-400/10 text-amber-600 dark:text-amber-400"
+                ? "bg-amber-400/10 text-amber-800 dark:text-amber-300"
                 : "bg-primary/10 text-primary",
             )}
           >

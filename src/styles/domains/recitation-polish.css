@@ -3,12 +3,15 @@
 .reciter-detail-overlay {
     z-index: 1100 !important;
     padding: clamp(0.5rem, 2vw, 1.4rem) !important;
-    background:
-        radial-gradient(circle at 50% 10%, rgba(var(--primary-rgb), 0.12), transparent 38%),
-        rgba(7, 17, 13, 0.68) !important;
+    background: color-mix(in srgb, var(--theme-text) 58%, transparent) !important;
+    backdrop-filter: blur(8px);
 }
 
 .reciter-detail {
+    --recitation-icon-xs: clamp(0.72rem, 0.67rem + 0.2vw, 0.82rem);
+    --recitation-icon-sm: clamp(0.8rem, 0.72rem + 0.28vw, 0.95rem);
+    --recitation-icon-md: clamp(0.9rem, 0.8rem + 0.38vw, 1.1rem);
+    --recitation-icon-lg: clamp(1.05rem, 0.93rem + 0.42vw, 1.25rem);
     isolation: isolate;
     position: relative;
     display: flex;
@@ -18,14 +21,35 @@
     min-height: min(680px, calc(100dvh - 1rem));
     flex-direction: column;
     overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
+    border: 1px solid var(--theme-border);
     border-radius: 26px !important;
-    background: var(--bg-card, #fff) !important;
+    background: var(--theme-surface) !important;
     color: var(--text-primary);
     box-shadow:
-        0 32px 90px rgba(5, 20, 14, 0.3),
-        0 2px 10px rgba(5, 20, 14, 0.12),
-        inset 0 1px rgba(255, 255, 255, 0.7) !important;
+        0 28px 76px color-mix(in srgb, var(--theme-text) 24%, transparent),
+        inset 0 1px color-mix(in srgb, var(--theme-text-inverse) 18%, transparent) !important;
+}
+
+.recitation-icon {
+    display: block;
+    flex: 0 0 auto;
+    width: var(--recitation-icon-sm);
+    height: var(--recitation-icon-sm);
+}
+
+.recitation-icon--xs {
+    width: var(--recitation-icon-xs);
+    height: var(--recitation-icon-xs);
+}
+
+.recitation-icon--md {
+    width: var(--recitation-icon-md);
+    height: var(--recitation-icon-md);
+}
+
+.recitation-icon--lg {
+    width: var(--recitation-icon-lg);
+    height: var(--recitation-icon-lg);
 }
 
 .reciter-detail--loading {
@@ -73,9 +97,7 @@
     flex: 0 0 auto;
     padding: 1.45rem 1.65rem 1.2rem;
     border-bottom: 1px solid var(--border);
-    background:
-        radial-gradient(circle at 82% -35%, rgba(var(--primary-rgb), 0.15), transparent 42%),
-        color-mix(in srgb, var(--bg-card) 96%, var(--primary) 4%);
+    background: var(--theme-surface);
 }
 
 .reciter-detail__close {
@@ -84,13 +106,13 @@
     top: 1rem;
     right: 1rem;
     display: inline-flex;
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     align-items: center;
     justify-content: center;
     border: 1px solid var(--border);
     border-radius: 14px;
-    background: color-mix(in srgb, var(--bg-card) 86%, transparent);
+    background: var(--theme-bg-alt);
     color: var(--text-muted);
     transition: border-color 160ms ease, color 160ms ease, background 160ms ease, transform 160ms ease;
 }
@@ -154,8 +176,8 @@
 }
 
 .reciter-hero__avatar {
-    width: 76px !important;
-    height: 76px !important;
+    width: clamp(3.25rem, 2.75rem + 1.7vw, 4.5rem) !important;
+    height: clamp(3.25rem, 2.75rem + 1.7vw, 4.5rem) !important;
     border: 0 !important;
     border-radius: 50% !important;
     box-shadow: 0 10px 26px rgba(10, 40, 28, 0.16);
@@ -244,9 +266,7 @@
 .reciter-detail__bio {
     border: 1px solid var(--border);
     border-radius: 18px !important;
-    background:
-        linear-gradient(145deg, rgba(var(--primary-rgb), 0.06), transparent 52%),
-        var(--bg-secondary);
+    background: var(--theme-bg-alt);
     padding: 1rem;
 }
 
@@ -272,7 +292,7 @@
     margin-top: 0.75rem;
     border: 1px solid var(--border);
     border-radius: 15px;
-    background: color-mix(in srgb, var(--bg-secondary) 78%, transparent);
+    background: var(--theme-bg-alt);
     padding: 0.68rem 0.75rem;
 }
 
@@ -395,7 +415,7 @@
     gap: 0.48rem;
     border: 1px solid var(--border);
     border-radius: 14px;
-    background: var(--bg-secondary);
+    background: var(--theme-bg-alt);
     padding: 0 0.65rem;
     color: var(--text-muted);
     transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
@@ -442,7 +462,7 @@
     overflow-y: auto;
     border: 1px solid var(--border);
     border-radius: 18px;
-    background: color-mix(in srgb, var(--bg-card) 94%, var(--primary) 6%);
+    background: var(--theme-surface);
     scrollbar-width: thin;
     scrollbar-color: rgba(var(--primary-rgb), 0.25) transparent;
 }
@@ -534,12 +554,13 @@
 .recitation-action-btn {
     display: inline-flex;
     min-width: 40px;
-    height: 40px;
+    min-height: 40px;
     align-items: center;
     justify-content: center;
     gap: 0.38rem;
-    border: 1px solid transparent;
+    border: 1px solid var(--theme-border);
     border-radius: 12px;
+    background: var(--theme-bg-alt);
     color: var(--text-muted);
     transition: border-color 150ms ease, background 150ms ease, color 150ms ease, transform 150ms ease;
 }
@@ -554,7 +575,7 @@
 .recitation-action-btn--primary {
     min-width: 88px;
     border-color: var(--primary);
-    background: var(--primary);
+    background: var(--theme-primary);
     color: #fff;
     font-size: 0.7rem;
     font-weight: 760;
@@ -604,31 +625,14 @@
     -webkit-line-clamp: 2;
 }
 
-[data-theme="dark"] .reciter-detail {
-    border-color: rgba(126, 179, 156, 0.16);
-    background: #18221f !important;
-    box-shadow: 0 32px 90px rgba(0, 0, 0, 0.55) !important;
-}
-
-[data-theme="dark"] .rd-sticky-head {
-    background:
-        radial-gradient(circle at 82% -35%, rgba(47, 208, 142, 0.12), transparent 42%),
-        #18221f;
-}
-
-[data-theme="dark"] .reciter-detail__bio,
-[data-theme="dark"] .reciter-detail__sources,
-[data-theme="dark"] .recitation-library__search,
-[data-theme="dark"] .recitation-surah-list {
-    background: rgba(255, 255, 255, 0.035);
-    border-color: rgba(126, 179, 156, 0.14);
-}
-
-[data-theme="dark"] .recitation-row:hover {
-    background: rgba(47, 208, 142, 0.07);
-}
-
 @media (max-width: 760px) {
+    .reciter-detail {
+        --recitation-icon-xs: 0.72rem;
+        --recitation-icon-sm: 0.82rem;
+        --recitation-icon-md: 0.92rem;
+        --recitation-icon-lg: 1.08rem;
+    }
+
     .reciter-detail-overlay {
         align-items: flex-end !important;
         padding: max(0.3rem, env(safe-area-inset-top)) 0 0 !important;
@@ -644,7 +648,7 @@
     }
 
     .rd-sticky-head {
-        padding: 1.05rem 1rem 0.9rem;
+        padding: 0.9rem 0.8rem 0.75rem;
     }
 
     .reciter-detail__eyebrow {
@@ -652,16 +656,11 @@
     }
 
     .reciter-hero {
-        padding-inline-end: 3rem;
+        padding-inline-end: 2.75rem;
     }
 
     [dir="rtl"] .reciter-hero {
-        padding-inline: 3rem 0;
-    }
-
-    .reciter-hero__avatar {
-        width: 62px !important;
-        height: 62px !important;
+        padding-inline: 2.75rem 0;
     }
 
     .reciter-hero__name {
@@ -682,7 +681,7 @@
     .reciter-detail__layout {
         display: block;
         overflow-y: auto;
-        padding: 0.85rem;
+        padding: 0.75rem;
     }
 
     .reciter-detail__aside {
@@ -710,24 +709,26 @@
     }
 
     .recitation-row {
-        grid-template-columns: 38px minmax(0, 1fr) auto;
-        min-height: 64px;
-        gap: 0.55rem;
-        padding-inline: 0.48rem;
+        grid-template-columns: 34px minmax(0, 1fr) auto;
+        min-height: 60px;
+        gap: 0.45rem;
+        padding-inline: 0.4rem;
     }
 
     .recitation-row__index {
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
     }
 
     .recitation-action-btn {
-        min-width: 38px;
-        height: 38px;
+        width: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        flex: 0 0 40px;
     }
 
     .recitation-action-btn--primary {
-        min-width: 38px;
+        min-width: 40px;
     }
 
     .recitation-action-btn__label {
@@ -743,7 +744,7 @@
     }
 
     .reciter-radio-button {
-        min-height: 36px;
+        min-height: 40px;
         padding-inline: 0.72rem;
         font-size: 0.69rem;
     }

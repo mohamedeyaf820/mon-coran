@@ -143,6 +143,7 @@ function Segmented({ ariaLabel, options, value, onChange }) {
           key={option.id}
           className="settings-segmented__item"
           data-active={value === option.id}
+          aria-pressed={value === option.id}
           onClick={() => onChange(option.id)}
         >
           {option.label}
@@ -528,6 +529,9 @@ export default function SettingsModal() {
 
       <Section title={t("settings.arabicFontFamily", lang)}>
         <div className="settings-font-picker">
+          <label className="sr-only" htmlFor="settings-font-family">
+            {t("settings.arabicFontFamily", lang)}
+          </label>
           <span
             className="settings-font-marker-preview native-ayah-marker"
             dir="rtl"
@@ -614,20 +618,24 @@ export default function SettingsModal() {
           label={t("settings.showTransliteration", lang)}
           description={t("settings.showTransliterationDesc", lang)}
         />
-        <SwitchRow
-          id="settings-show-word-by-word"
-          checked={showWordByWord}
-          onChange={(checked) => set({ showWordByWord: checked })}
-          label={t("settings.wordByWordMode", lang)}
-          description={t("settings.wordByWordDesc", lang)}
-        />
-        <SwitchRow
-          id="settings-show-word-translation"
-          checked={showWordTranslation}
-          onChange={(checked) => set({ showWordTranslation: checked })}
-          label={localText(lang, "Traduction mot à mot", "Word translation", "ترجمة الكلمات")}
-          description={localText(lang, "Affiche le sens des mots quand le mode mot à mot est actif.", "Shows word meanings when word-by-word mode is active.", "يعرض معاني الكلمات عند تفعيل وضع كلمة بكلمة.")}
-        />
+        {activeRiwaya !== "warsh" ? (
+          <>
+            <SwitchRow
+              id="settings-show-word-by-word"
+              checked={showWordByWord}
+              onChange={(checked) => set({ showWordByWord: checked })}
+              label={t("settings.wordByWordMode", lang)}
+              description={t("settings.wordByWordDesc", lang)}
+            />
+            <SwitchRow
+              id="settings-show-word-translation"
+              checked={showWordTranslation}
+              onChange={(checked) => set({ showWordTranslation: checked })}
+              label={localText(lang, "Traduction mot à mot", "Word translation", "ترجمة الكلمات")}
+              description={localText(lang, "Affiche le sens des mots quand le mode mot à mot est actif.", "Shows word meanings when word-by-word mode is active.", "يعرض معاني الكلمات عند تفعيل وضع كلمة بكلمة.")}
+            />
+          </>
+        ) : null}
       </Section>
     </div>
   );
@@ -636,6 +644,9 @@ export default function SettingsModal() {
     <div className="settings-panel-stack">
       <Section title={t("settings.selectReciter", lang)}>
         <div className="settings-search">
+          <label className="sr-only" htmlFor="settings-reciter-search">
+            {t("settings.searchReciters", lang)}
+          </label>
           <Search size={16} aria-hidden="true" />
           <input
             id="settings-reciter-search"

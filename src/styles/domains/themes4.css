@@ -62,26 +62,26 @@
         );
 
     
-    --tajwid-silent: #a5a5a5;
-    --tajwid-lam-shamsiyya: #a5a5a5;
-    --tajwid-ghunna: #09b000;
-    --tajwid-idgham: #a5a5a5;
-    --tajwid-ikhfa: #09b000;
-    --tajwid-iqlab: #2fadff;
-    --tajwid-qalqala: #2fadff;
-    --tajwid-tafkhim: #3f48e6;
-    --tajwid-madd-normal: #ce9e00;
-    --tajwid-madd: #ce9e00;
-    --tajwid-madd-separated: #ff7b00;
-    --tajwid-madd-connected: #f40000;
-    --tajwid-madd-necessary: #b50000;
-    --tajwid-madd-badal: #ff7b00;
-    --tajwid-naql: #ff7b00;
-    --tajwid-tashil: #09b000;
-    --tajwid-ibdal: #ff7b00;
-    --tajwid-sila-kubra: #ff7b00;
-    --tajwid-tarqiq-ra: #09b000;
-    --tajwid-idgham-warsh: #a5a5a5;
+    --tajwid-silent: #596579;
+    --tajwid-lam-shamsiyya: #596579;
+    --tajwid-ghunna: #047857;
+    --tajwid-idgham: #047857;
+    --tajwid-ikhfa: #047857;
+    --tajwid-iqlab: #0369a1;
+    --tajwid-qalqala: #0369a1;
+    --tajwid-tafkhim: #4338ca;
+    --tajwid-madd-normal: #8a2566;
+    --tajwid-madd: #8a2566;
+    --tajwid-madd-separated: #92400e;
+    --tajwid-madd-connected: #9d174d;
+    --tajwid-madd-necessary: #991b1b;
+    --tajwid-madd-badal: #92400e;
+    --tajwid-naql: #92400e;
+    --tajwid-tashil: #047857;
+    --tajwid-ibdal: #92400e;
+    --tajwid-sila-kubra: #92400e;
+    --tajwid-tarqiq-ra: #047857;
+    --tajwid-idgham-warsh: #596579;
 }
 
 :root[data-theme="sepia"],
@@ -1316,13 +1316,7 @@ html[data-theme="sepia"]
 }
 
 html[data-theme="sepia"]
-    :is(
-        .mp-header__action,
-        .mp-header__more,
-        .mp-header__icon-btn,
-        .mp-header__nav-arrow,
-        .mp-header__title-btn
-    ) {
+    .mp-header__action {
     border-color: rgba(139, 107, 62, 0.24);
     background: rgba(255, 250, 238, 0.82);
     color: #5a4528;
@@ -1361,7 +1355,6 @@ html[data-theme="sepia"]
         .tools-hub-card,
         .reciter-card,
         .reciter-radio-card,
-        .recitation-row,
         .surah-info-card
     ) {
     border-color: rgba(139, 107, 62, 0.18);
@@ -1491,7 +1484,6 @@ html[data-theme="sepia"]
         .modal-panel,
         .modal-panel--wide,
         .audio-player-modal__surface,
-        .reciter-detail,
         .sidebar
     ) {
     border-color: rgba(139, 107, 62, 0.2);
@@ -1582,12 +1574,6 @@ html[data-theme="sepia"] .reciter-card__chip {
     color: #7c4a17;
 }
 
-html[data-theme="sepia"] .recitation-action-btn {
-    border-color: rgba(139, 107, 62, 0.2);
-    background: rgba(255, 250, 238, 0.7);
-    color: #5a4528;
-}
-
 html[data-theme="sepia"] .mp-footer-v2__shell {
     border-color: rgba(139, 107, 62, 0.18);
     background:
@@ -1623,7 +1609,7 @@ html[data-theme="sepia"] .mp-footer-v2__nav-btn:hover {
 html[data-theme="sepia"]
     .app-root
     :is(button, a, input, select, textarea):focus-visible {
-    outline: 2px solid rgba(181, 125, 42, 0.7);
+    outline: 2px solid #8f5a13;
     outline-offset: 2px;
 }
 

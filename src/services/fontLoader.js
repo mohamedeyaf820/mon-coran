@@ -36,12 +36,12 @@ const FONT_SOURCES = {
   },
   "qpc-warsh": {
     family: "QPC Warsh",
-    url: "https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2",
+    url: "/fonts/kfgqpc-warsh-10.woff2",
     format: "woff2",
   },
   "kfgqpc-warsh": {
     family: "KFGQPC Warsh",
-    url: "https://cdn.jsdelivr.net/gh/thetruetruth/quran-data-kfgqpc@main/warsh/font/warsh.10.woff2",
+    url: "/fonts/kfgqpc-warsh-10.woff2",
     format: "woff2",
   },
 };

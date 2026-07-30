@@ -94,6 +94,7 @@ export default function ContentSection({
   favoriteReciters,
   state,
   goSurah,
+  onSurahIntent,
   goJuz,
   playFromHome,
   playReciterRadio,
@@ -358,6 +359,7 @@ export default function ContentSection({
                 lang={lang}
                 viewMode={viewMode}
                 onClick={goSurah}
+                onIntent={onSurahIntent}
                 onPlay={playFromHome}
                 isActive={
                   s.n === state.currentSurah && state.displayMode === "surah"
@@ -469,9 +471,9 @@ export default function ContentSection({
                       </div>
 
                       {lang === "ar" ? (
-                        <ChevronLeft size={16} aria-hidden="true" />
+                        <ChevronLeft className="reciter-card__icon reciter-card__icon--chevron" size={16} aria-hidden="true" />
                       ) : (
-                        <ChevronRight size={16} aria-hidden="true" />
+                        <ChevronRight className="reciter-card__icon reciter-card__icon--chevron" size={16} aria-hidden="true" />
                       )}
                     </button>
 
@@ -486,7 +488,7 @@ export default function ContentSection({
                         aria-label={`${favoriteLabel} — ${reciterLabel}`}
                         aria-pressed={isFavorite}
                       >
-                        <Star size={15} fill={isFavorite ? "currentColor" : "none"} />
+                        <Star className="reciter-card__icon" size={15} fill={isFavorite ? "currentColor" : "none"} />
                       </button>
                       <button
                         className="reciter-card__listen"
@@ -494,7 +496,7 @@ export default function ContentSection({
                         onClick={() => playReciterRadio(reciter)}
                         aria-label={`${listenLabel} — ${reciterLabel}`}
                       >
-                        <Play size={14} fill="currentColor" />
+                        <Play className="reciter-card__icon reciter-card__icon--play" size={14} fill="currentColor" />
                         <span>{listenLabel}</span>
                       </button>
                     </div>

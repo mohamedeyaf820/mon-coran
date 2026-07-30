@@ -183,6 +183,16 @@ export function clearEncryptionSession() {
   runtimeSecretKey = null;
 }
 
+export function removePersistedDeviceKey() {
+  try {
+    localStorage.removeItem(DEVICE_KEY_STORAGE_KEY);
+    ephemeralDeviceKey = null;
+    return localStorage.getItem(DEVICE_KEY_STORAGE_KEY) === null;
+  } catch {
+    return false;
+  }
+}
+
 export function snapshotEncryptionConfiguration() {
   try {
     return {

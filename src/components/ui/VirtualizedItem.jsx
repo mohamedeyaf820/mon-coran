@@ -35,21 +35,28 @@ function observeNearViewport(node, callback, rootMargin, root) {
   let shared = registry.get(rootMargin);
   if (!shared) {
     const callbacks = new WeakMap();
+    const nodes = new Set();
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => callbacks.get(entry.target)?.(entry.isIntersecting));
       },
       { root, rootMargin },
     );
-    shared = { callbacks, observer };
+    shared = { callbacks, nodes, observer };
     registry.set(rootMargin, shared);
   }
 
   shared.callbacks.set(node, callback);
+  shared.nodes.add(node);
   shared.observer.observe(node);
   return () => {
     shared.observer.unobserve(node);
     shared.callbacks.delete(node);
+    shared.nodes.delete(node);
+    if (shared.nodes.size === 0) {
+      shared.observer.disconnect();
+      registry.delete(rootMargin);
+    }
   };
 }
 

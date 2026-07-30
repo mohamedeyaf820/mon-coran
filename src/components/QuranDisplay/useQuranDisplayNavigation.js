@@ -5,6 +5,7 @@ export default function useQuranDisplayNavigation({
   currentPage,
   currentSurah,
   dispatch,
+  riwaya,
   set,
   showWordByWord,
 }) {
@@ -37,8 +38,9 @@ export default function useQuranDisplayNavigation({
   }, [currentJuz, dispatch]);
 
   const toggleWordByWordMode = useCallback(() => {
+    if (riwaya === "warsh") return;
     set({ mushafLayout: "list", showWordByWord: !showWordByWord, memMode: false });
-  }, [set, showWordByWord]);
+  }, [riwaya, set, showWordByWord]);
 
   return {
     goNextJuz,

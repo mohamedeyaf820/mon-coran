@@ -85,6 +85,63 @@ test("recitation performance: surah-stream radio keeps one item per surah", asyn
   assert.equal(playlist.at(-1).surah, 114);
 });
 
+test("audio sync: a full-surah stream exposes and advances the active ayah", async () => {
+  const service = new AudioService();
+  const changes = [];
+  service.onAyahChange = (item) => changes.push(item.ayah);
+  service.loadPlaylist(
+    [
+      { surah: 2, ayah: 1, number: 8, text: "الم" },
+      {
+        surah: 2,
+        ayah: 2,
+        number: 9,
+        text: "ذلك الكتاب لا ريب فيه هدى للمتقين",
+      },
+      {
+        surah: 2,
+        ayah: 3,
+        number: 10,
+        text: "الذين يؤمنون بالغيب ويقيمون الصلاة",
+      },
+    ],
+    "https://server13.mp3quran.net/warsh/",
+    "mp3quran-surah",
+  );
+
+  await service.loadAndPlay(0);
+  assert.equal(service.currentAyah.ayah, 1);
+  assert.equal(service.currentAyah.estimatedTiming, true);
+
+  service.audio.duration = 90;
+  service.audio.currentTime = 80;
+  service._boundTimeUpdate();
+  assert.equal(service.currentAyah.ayah, 3);
+  assert.deepEqual(changes, [1, 3]);
+  service.destroy();
+});
+
+test("audio sync: selecting an ayah seeks within a full-surah stream", async () => {
+  const service = new AudioService();
+  service.loadPlaylist(
+    [
+      { surah: 3, ayah: 1, number: 293, text: "الم" },
+      { surah: 3, ayah: 2, number: 294, text: "الله لا إله إلا هو الحي القيوم" },
+      { surah: 3, ayah: 3, number: 295, text: "نزل عليك الكتاب بالحق" },
+    ],
+    "https://server13.mp3quran.net/warsh/",
+    "mp3quran-surah",
+  );
+  service.audio.duration = 120;
+
+  service.playAyah(3, 3);
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.equal(service.currentAyah.ayah, 3);
+  assert.ok(service.audio.currentTime > 0);
+  service.destroy();
+});
+
 test("audio performance: a rapid verse change supersedes the stale load cleanly", async () => {
   const service = new AudioService();
   const errors = [];
@@ -105,5 +162,63 @@ test("audio performance: a rapid verse change supersedes the stale load cleanly"
   assert.deepEqual(played, ["1:2"]);
   assert.equal(service.currentAyah.ayah, 2);
   assert.match(service.audio.src, /001002\.mp3$/);
+  service.destroy();
+});
+
+test("audio performance: rapid reciter changes are serialized and latest wins", async () => {
+  const service = new AudioService();
+  const calls = [];
+  let releaseFirstSwitch;
+  const firstSwitchGate = new Promise((resolve) => {
+    releaseFirstSwitch = resolve;
+  });
+
+  service._switchReciterNow = async (reciterCdn) => {
+    calls.push(reciterCdn);
+    if (reciterCdn === "first") await firstSwitchGate;
+    return true;
+  };
+
+  const first = service.switchReciter("first");
+  await new Promise((resolve) => setImmediate(resolve));
+  const intermediate = service.switchReciter("intermediate");
+  const latest = service.switchReciter("latest");
+  releaseFirstSwitch();
+
+  assert.deepEqual(await Promise.all([first, intermediate, latest]), [
+    false,
+    false,
+    true,
+  ]);
+  assert.deepEqual(calls, ["first", "latest"]);
+  service.destroy();
+});
+
+test("audio lifecycle: play and pause subscribers drive pausable consumers", async () => {
+  const service = new AudioService();
+  const events = [];
+  service.playlist = [{ surah: 1, ayah: 1 }];
+  service.playlistIndex = 0;
+  service.currentAyah = service.playlist[0];
+  service.audio.src = "https://everyayah.com/data/test/001001.mp3";
+
+  const unsubscribePlay = service.addPlayListener((item) => {
+    events.push(`play:${item.surah}:${item.ayah}`);
+  });
+  const unsubscribePause = service.addPauseListener((item) => {
+    events.push(`pause:${item.surah}:${item.ayah}`);
+  });
+
+  service.resume();
+  await new Promise((resolve) => setImmediate(resolve));
+  service.pause();
+  assert.deepEqual(events, ["play:1:1", "pause:1:1"]);
+
+  unsubscribePlay();
+  unsubscribePause();
+  service.resume();
+  await new Promise((resolve) => setImmediate(resolve));
+  service.pause();
+  assert.deepEqual(events, ["play:1:1", "pause:1:1"]);
   service.destroy();
 });

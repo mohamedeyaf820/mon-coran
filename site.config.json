@@ -3,5 +3,6 @@
   "siteUrl": "https://mon-coran.netlify.app",
   "defaultLocale": "fr",
   "supportedLocales": ["fr", "en", "ar"],
+  "seoLastModified": "2026-07-30",
   "repositoryUrl": "https://github.com/mohamedeyaf820/mon-coran"
 }

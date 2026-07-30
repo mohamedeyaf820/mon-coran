@@ -37,7 +37,13 @@ export default defineConfig({
     {
       name: "firefox",
       testMatch: ["**/cross-browser-smoke.spec.mjs"],
-      use: { ...devices["Desktop Firefox"] },
+      use: {
+        ...devices["Desktop Firefox"],
+        launchOptions:
+          process.platform === "win32"
+            ? { env: { MOZ_DISABLE_CONTENT_SANDBOX: "1" } }
+            : undefined,
+      },
     },
     {
       name: "webkit",

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 import {
+  RECITER_PHOTOS_MAP,
   getReciter,
   getReciterAvatar,
   getReciterBio,
@@ -41,11 +42,15 @@ const EXPECTED_HAFS_IDS = [
   "khalefa_al_tunaiji",
   "ahmed_ibn_ali_al_ajamy_64",
   "abdullah_awwad_al_juhaynee",
+  "ibrahim_al_akhdar",
+  "mohamed_al_luhaidan",
+  "khaled_al_jalil",
 ];
 
 const EXPECTED_WARSH_IDS = [
   "warsh_abdulbasit",
   "warsh_ibrahim_aldosari",
+  "warsh_abdelmoujib_benkirane",
   "warsh_yassin",
   "warsh_hussary",
   "warsh_omar_al_qazabri",
@@ -68,7 +73,7 @@ test("reciters: supplemental Hafs and Warsh entries are available", () => {
   }
 
   assert.ok(getRecitersByRiwaya("hafs").length >= 34);
-  assert.ok(getRecitersByRiwaya("warsh").length >= 9);
+  assert.ok(getRecitersByRiwaya("warsh").length >= 10);
 });
 
 test("reciters: ids are unique and metadata is compatible with the player", () => {
@@ -111,6 +116,46 @@ test("reciters: ids are unique and metadata is compatible with the player", () =
   }
 });
 
+test("reciters: every catalogue entry has a visual and localized biography", () => {
+  for (const reciter of allReciters()) {
+    const profile = RESEARCHED_PROFILES[reciter.id];
+    const visual = getReciterVisual(reciter);
+    assert.ok(["photo", "avatar"].includes(visual.type), reciter.id);
+    assert.ok(visual.photo || visual.avatar?.initials, reciter.id);
+    assert.ok(profile, `missing researched profile: ${reciter.id}`);
+    assert.ok(profile.bio.fr.length > 40, `missing French biography: ${reciter.id}`);
+    assert.ok(profile.bio.en.length > 40, `missing English biography: ${reciter.id}`);
+    assert.ok(profile.bio.ar.length > 40, `missing Arabic biography: ${reciter.id}`);
+  }
+});
+
+test("reciters: all 58 catalogue entries use reachable portrait URLs, not known text thumbnails", () => {
+  const reciters = allReciters();
+  assert.equal(reciters.length, 58);
+  assert.equal(Object.keys(RECITER_PHOTOS_MAP).length, 58);
+
+  for (const reciter of reciters) {
+    assert.match(getReciterPhoto(reciter), /^https:\/\//, reciter.id);
+  }
+
+  const portraits = Object.values(RECITER_PHOTOS_MAP).join("\n");
+  assert.doesNotMatch(
+    portraits,
+    /\/200x256\/(?:ibrahim-al-dossari|rachid-belalia)\.(?:png|jpe?g)/,
+  );
+});
+
+test("reciters: Al-Matrood and Al-Sudais have verified biography sources", () => {
+  assert.equal(
+    RESEARCHED_PROFILES.abdullaah_matrood.bioSource.url,
+    "https://www.assabile.com/abdullah-matrood-5/abdullah-matrood.htm",
+  );
+  assert.equal(
+    RESEARCHED_PROFILES["ar.abdurrahmaansudais"].bioSource.url,
+    "https://saudipedia.com/en/abdulrahman-al-sudais",
+  );
+});
+
 test("reciters: attributed portraits and biography sources are wired", () => {
   const knownPhotoIds = [
     "ar.alafasy",
@@ -138,7 +183,6 @@ test("reciters: attributed portraits and biography sources are wired", () => {
   }
 
   const researchedHafsPortraitIds = [
-    "abdullaah_matrood",
     "abdullaah_basfar",
     "hudhaify",
     "muhammad_ayyoub",
@@ -161,6 +205,9 @@ test("reciters: attributed portraits and biography sources are wired", () => {
     "abdullah_awwad_al_juhaynee",
     "idris_abkar",
     "ahmad_al_hawashi",
+    "ibrahim_al_akhdar",
+    "mohamed_al_luhaidan",
+    "khaled_al_jalil",
   ];
 
   for (const id of researchedHafsPortraitIds) {
@@ -169,6 +216,58 @@ test("reciters: attributed portraits and biography sources are wired", () => {
     assert.equal(getReciterVisual(reciter).attribution.provider, "Assabile", id);
     assert.match(getReciterProfileSource(id).url, /^https:\/\/www\.assabile\.com\//, id);
   }
+
+  const matrood = getReciter("abdullaah_matrood", "hafs");
+  assert.match(getReciterPhoto(matrood), /^https:\/\/media\.way2quran\.com\//);
+  assert.equal(getReciterVisual(matrood).attribution.provider, "Way2Quran");
+  assert.equal(
+    RESEARCHED_PROFILES.abdullaah_matrood.portraitStatus,
+    "verified",
+  );
+
+  const benkirane = getReciter("warsh_abdelmoujib_benkirane", "warsh");
+  assert.match(
+    getReciterPhoto(benkirane),
+    /^https:\/\/static\.suratmp3\.com\/pics\/reciters\/80\.jpg$/,
+  );
+  assert.equal(getReciterVisual(benkirane).type, "photo");
+  assert.equal(getReciterVisual(benkirane).attribution.provider, "SuratMP3");
+  assert.equal(
+    getReciterVisual(benkirane).attribution.url,
+    "https://suratmp3.com/fr/quran/reciters/80",
+  );
+  assert.match(
+    getReciterProfileSource(benkirane).url,
+    /^https:\/\/www\.assabile\.com\//,
+  );
+  assert.equal(
+    RESEARCHED_PROFILES.warsh_abdelmoujib_benkirane.portraitStatus,
+    "verified",
+  );
+  assert.equal(
+    RESEARCHED_PROFILES.warsh_abdelmoujib_benkirane.portraitSource.provider,
+    "SuratMP3",
+  );
+  assert.equal(
+    RESEARCHED_PROFILES.warsh_abdelmoujib_benkirane.verificationSources.length,
+    4,
+  );
+
+  const ibrahim = getReciter("warsh_ibrahim_aldosari", "warsh");
+  assert.match(getReciterPhoto(ibrahim), /^https:\/\/storage\.googleapis\.com\//);
+  assert.equal(getReciterVisual(ibrahim).attribution.provider, "Way2Quran");
+  assert.equal(
+    RESEARCHED_PROFILES.warsh_ibrahim_aldosari.portraitStatus,
+    "verified",
+  );
+
+  const belachia = getReciter("warsh_rachid_belalya", "warsh");
+  assert.match(getReciterPhoto(belachia), /^https:\/\/i\.pinimg\.com\//);
+  assert.equal(getReciterVisual(belachia).attribution.provider, "SurahQuran");
+  assert.equal(
+    RESEARCHED_PROFILES.warsh_rachid_belalya.portraitStatus,
+    "verified",
+  );
 
   assert.equal(getReciterVisual(getReciter("ar.husary")).attribution.provider, "Quran.com");
   assert.equal(getReciterCountryLabel("KSA", "fr"), "Arabie saoudite");
@@ -195,6 +294,15 @@ test("audio: everyayah and mp3quran reciter URLs are built as mp3 URLs", async (
   const everyayah = getReciter("abu_bakr_ash_shaatree", "hafs");
   const alafasy = getReciter("ar.alafasy", "hafs");
   const warsh = getReciter("warsh_hussary", "warsh");
+  const warshAbdulBasit = getReciter("warsh_abdulbasit", "warsh");
+  const warshIbrahimAldosari = getReciter(
+    "warsh_ibrahim_aldosari",
+    "warsh",
+  );
+  const warshBenkirane = getReciter(
+    "warsh_abdelmoujib_benkirane",
+    "warsh",
+  );
   const idris = getReciter("idris_abkar", "hafs");
 
   // ar.alafasy uses Islamic Network CDN (global ayah number)
@@ -210,6 +318,30 @@ test("audio: everyayah and mp3quran reciter URLs are built as mp3 URLs", async (
   assert.equal(
     AudioService.buildUrl(warsh.cdn, { surah: 1, ayah: 1 }, warsh.cdnType),
     "https://server13.mp3quran.net/husr/Rewayat-Warsh-A-n-Nafi/001.mp3",
+  );
+  assert.equal(
+    AudioService.buildUrl(
+      warshAbdulBasit.cdn,
+      { surah: 3, ayah: 7 },
+      warshAbdulBasit.cdnType,
+    ),
+    "https://server7.mp3quran.net/basit/Rewayat-Warsh-A-n-Nafi/003.mp3",
+  );
+  assert.equal(
+    AudioService.buildUrl(
+      warshIbrahimAldosari.cdn,
+      { surah: 3, ayah: 7 },
+      warshIbrahimAldosari.cdnType,
+    ),
+    "https://server10.mp3quran.net/ibrahim_dosri/Rewayat-Warsh-A-n-Nafi/003.mp3",
+  );
+  assert.equal(
+    AudioService.buildUrl(
+      warshBenkirane.cdn,
+      { surah: 3, ayah: 7 },
+      warshBenkirane.cdnType,
+    ),
+    "https://server16.mp3quran.net/A-Benkirane/Rewayat-Warsh-A-n-Nafi/003.mp3",
   );
   assert.equal(
     AudioService.buildUrl(idris.cdn, { surah: 1 }, idris.cdnType),

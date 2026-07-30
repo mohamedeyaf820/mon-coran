@@ -71,11 +71,11 @@ export default function ReciterDetailPage({
           ref={closeBtnRef}
           aria-label={labelFor(lang, "Fermer", "Close", "إغلاق")}
         >
-          <X size={18} aria-hidden="true" />
+          <X className="recitation-icon recitation-icon--md" size={18} aria-hidden="true" />
         </button>
 
         <span className="reciter-detail__eyebrow">
-          <Headphones size={13} aria-hidden="true" />
+          <Headphones className="recitation-icon recitation-icon--xs" size={13} aria-hidden="true" />
           {labelFor(lang, "Bibliothèque audio", "Audio library", "المكتبة الصوتية")}
         </span>
 
@@ -84,11 +84,11 @@ export default function ReciterDetailPage({
         <div className="reciter-detail__quick-actions">
           <ReciterRadioButton lang={lang} onClick={() => onPlayRadio(reciter)} />
           <span className="reciter-detail__meta-pill">
-            <ListMusic size={13} aria-hidden="true" />
+            <ListMusic className="recitation-icon recitation-icon--xs" size={13} aria-hidden="true" />
             {audioModeLabel}
           </span>
           <span className="reciter-detail__meta-pill reciter-detail__meta-pill--riwaya">
-            <BookOpen size={13} aria-hidden="true" />
+            <BookOpen className="recitation-icon recitation-icon--xs" size={13} aria-hidden="true" />
             {riwayaLabel}
           </span>
         </div>
@@ -98,7 +98,7 @@ export default function ReciterDetailPage({
         <aside className="reciter-detail__aside">
           <div className="reciter-detail__bio">
             <h3>
-              <UserRound size={14} aria-hidden="true" />
+              <UserRound className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
               {labelFor(lang, "À propos du récitateur", "About the reciter", "عن القارئ")}
             </h3>
             <ReciterBioCollapse lang={lang} reciter={reciter} />
@@ -110,7 +110,7 @@ export default function ReciterDetailPage({
           >
             {biographySource ? (
               <div className="reciter-detail__source-row">
-                <BookOpen size={14} aria-hidden="true" />
+                <BookOpen className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
                 <span>{labelFor(lang, "Biographie", "Biography", "السيرة")}</span>
                 <a
                   href={biographySource.url}
@@ -123,14 +123,14 @@ export default function ReciterDetailPage({
             ) : null}
             {sourceInfo ? (
               <div className="reciter-detail__source-row">
-                <RadioTower size={14} aria-hidden="true" />
+                <RadioTower className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
                 <span>{labelFor(lang, "Source audio", "Audio source", "مصدر الصوت")}</span>
                 <strong>{sourceInfo.label}</strong>
               </div>
             ) : null}
             {visual.attribution ? (
               <div className="reciter-detail__source-row">
-                <ImageIcon size={14} aria-hidden="true" />
+                <ImageIcon className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
                 <span>{labelFor(lang, "Portrait", "Portrait", "الصورة")}</span>
                 <a
                   href={visual.attribution.url}
@@ -145,7 +145,7 @@ export default function ReciterDetailPage({
 
           {!canDirectDownload ? (
             <p className="reciter-detail__notice">
-              <Info size={14} aria-hidden="true" />
+              <Info className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
               {labelFor(
                 lang,
                 "Le téléchargement direct n’est pas disponible pour cette source.",
@@ -169,7 +169,7 @@ export default function ReciterDetailPage({
                 )}
               </h3>
             </div>
-            <ListMusic size={18} aria-hidden="true" />
+            <ListMusic className="recitation-icon recitation-icon--md" size={18} aria-hidden="true" />
           </div>
 
           <SurahRecitationList

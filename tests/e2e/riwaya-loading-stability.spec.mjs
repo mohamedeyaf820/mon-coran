@@ -103,6 +103,14 @@ test("a riwaya switch hides stale Arabic until the requested text is ready", asy
   releaseWarsh();
   await expect(page.locator(".quran-display--warsh")).toBeVisible();
   await expect(page.locator(".qc-ayah-text-ar").first()).toContainText("وَرْشٍ");
+
+  await page.keyboard.press("w");
+  await expect(page.locator(".quran-display--word-by-word")).toHaveCount(0);
+
+  await page.locator(".srh-study-more").click();
+  await expect(
+    page.getByRole("menuitemcheckbox", { name: "Mot à mot" }),
+  ).toHaveCount(0);
 });
 
 test("Warsh juz loading uses scoped surah files before the legacy full Quran", async ({ page }) => {

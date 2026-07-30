@@ -214,10 +214,14 @@ test("fonts: exposes riwaya-safe native ayah markers", () => {
     ["qpc-warsh", "kfgqpc-warsh", "scheherazade-new-warsh"],
   );
 
-  assert.equal(getNativeAyahMarker(1, "qpc-hafs", "hafs"), "\u06dd\u0661");
+  assert.equal(getNativeAyahMarker(1, "qpc-hafs", "hafs"), "\u0661");
+  assert.equal(getNativeAyahMarker(10, "qpc-hafs", "hafs"), "\u0661\u0660");
+  assert.equal(getNativeAyahMarker(100, "qpc-hafs", "hafs"), "\u0661\u0660\u0660");
   assert.equal(getNativeAyahMarker(1, "qpc-indopak", "hafs"), "\u06dd\u06f1");
-  assert.equal(getNativeAyahMarker(1, "qpc-warsh", "warsh"), "\u06dd\u0661");
-  assert.equal(getNativeAyahMarker(1, "kfgqpc-warsh", "warsh"), "\u06dd\u0661");
+  assert.equal(getNativeAyahMarker(1, "qpc-warsh", "warsh"), "\u0661");
+  assert.equal(getNativeAyahMarker(1, "kfgqpc-warsh", "warsh"), "\u0661");
+  assert.equal(getNativeAyahMarker(10, "kfgqpc-warsh", "warsh"), "\u0661\u0660");
+  assert.equal(getNativeAyahMarker(100, "kfgqpc-warsh", "warsh"), "\u0661\u0660\u0660");
   assert.equal(getNativeAyahMarker(1, "scheherazade-new", "hafs"), "\u06dd\u0661");
   assert.equal(getNativeAyahMarker(1, "scheherazade-new-warsh", "warsh"), "\u06dd\u0661");
   assert.equal(normalizeFontId("scheherazade-new", "warsh"), "scheherazade-new-warsh");
@@ -227,11 +231,11 @@ test("fonts: exposes riwaya-safe native ayah markers", () => {
 test("fonts: appends native ayah markers without duplicates", () => {
   assert.equal(
     appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f", 7, "qpc-hafs", "hafs"),
-    "\u0627\u0644\u062d\u0645\u062f \u06dd\u0667",
+    "\u0627\u0644\u062d\u0645\u062f \u0667",
   );
   assert.equal(
     appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u06dd\u0667", 7, "qpc-hafs", "hafs"),
-    "\u0627\u0644\u062d\u0645\u062f \u06dd\u0667",
+    "\u0627\u0644\u062d\u0645\u062f \u0667",
   );
   assert.equal(
     appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u0667", 7, "qpc-indopak", "hafs"),

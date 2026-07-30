@@ -244,21 +244,37 @@ const QCVerseCard = memo(function QCVerseCard({
         ) : null}
 
         {/* Translation block — clean, no card */}
-        {showTranslation && translations.length > 0 ? (
-          <div className="mt-1">
-            {translations.map((item, index) => (
-              <p
-                key={item.id || item.resourceId || index}
-                className={cn(
-                  "text-left leading-[1.85] text-[var(--text-secondary)]",
-                  index > 0 && "mt-2 pt-2 border-t border-[var(--border)]",
+        {showTranslation ? (
+          <div
+            className={cn(
+              "qc-list-card__translation-slot mt-1",
+              translations.length === 0 && "is-loading",
+            )}
+            aria-hidden={translations.length === 0 ? "true" : undefined}
+          >
+            {translations.length > 0
+              ? translations.map((item, index) => (
+                  <p
+                    key={item.id || item.resourceId || index}
+                    className={cn(
+                      "text-left leading-[1.85] text-[var(--text-secondary)]",
+                      index > 0 && "mt-2 pt-2 border-t border-[var(--border)]",
+                    )}
+                    style={{
+                      fontSize: "var(--qd-translation-font-size, 0.95rem)",
+                    }}
+                    dir="ltr"
+                  >
+                    {item.text}
+                  </p>
+                ))
+              : (
+                  <>
+                    <span />
+                    <span />
+                    <span />
+                  </>
                 )}
-                style={{ fontSize: "var(--qd-translation-font-size, 0.95rem)" }}
-                dir="ltr"
-              >
-                {item.text}
-              </p>
-            ))}
           </div>
         ) : null}
 
@@ -374,7 +390,7 @@ export default function QCVerseByVerseView({
             data-ayah-global={ayah.number || undefined}
             role="listitem"
             aria-current={isPlaying ? "true" : undefined}
-            aria-label={`${lang === "fr" ? "Verset" : lang === "ar" ? "Ø¢ÙŠØ©" : "Verse"} ${surahNum}:${ayah.numberInSurah}`}
+            aria-label={`${lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Verse"} ${surahNum}:${ayah.numberInSurah}`}
             aria-posinset={index + 1}
             aria-setsize={items.length}
           >

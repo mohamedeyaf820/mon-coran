@@ -16,6 +16,11 @@ import {
 } from "./cryptoUtil.js";
 import { ACCEPTED_FONT_IDS, DEFAULT_FONT_ID, normalizeFontId } from "../data/fonts.js";
 import { getSurahAyahCount } from "../data/surahs.js";
+import {
+  normalizeDayTheme,
+  normalizeNightTheme,
+  normalizeThemeId,
+} from "../data/themes.js";
 import { bookmarkRecordSchema, noteRecordSchema } from "./storageValidation.js";
 
 function parseRecordOrNull(schema, value) {
@@ -150,15 +155,6 @@ const SETTINGS_KEY = "mushaf-plus-settings";
 const VALID_LANGS = ["fr", "en", "ar"];
 const VALID_TRANSLATION_LANGS = ["fr", "en", "es", "de", "tr", "ur"];
 const VALID_WORD_TRANSLATION_LANGS = ["fr", "en"];
-const VALID_THEMES = ["light", "sepia", "dark"];
-const LEGACY_THEME_MAP = {
-  "premium-beige": "sepia",
-  ocean: "dark",
-  "night-blue": "dark",
-  "quran-night": "dark",
-  forest: "dark",
-  oled: "dark",
-};
 const VALID_RIWAYAS = ["hafs", "warsh"];
 const VALID_DISPLAY_MODES = ["surah", "page", "juz"];
 const VALID_AUDIO_PLAYER_SKINS = ["orbit", "classic"];
@@ -370,24 +366,6 @@ function cloneDefaultSettings() {
   return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 }
 
-function normalizeTheme(theme, fallback = "light") {
-  if (VALID_THEMES.includes(theme)) return theme;
-  if (typeof theme === "string" && LEGACY_THEME_MAP[theme]) {
-    return LEGACY_THEME_MAP[theme];
-  }
-  return fallback;
-}
-
-function normalizeDayTheme(theme) {
-  const normalized = normalizeTheme(theme, "light");
-  return ["light", "sepia"].includes(normalized) ? normalized : "light";
-}
-
-function normalizeNightTheme(theme) {
-  const normalized = normalizeTheme(theme, "dark");
-  return normalized === "dark" ? normalized : "dark";
-}
-
 function sanitizeFontFamilyByRiwaya(input, fallbackFont, fallbackRiwaya) {
   const source = input && typeof input === "object" && !Array.isArray(input)
     ? input
@@ -475,7 +453,7 @@ function sanitizeSettings(settings) {
 
   return {
     lang: VALID_LANGS.includes(safeInput.lang) ? safeInput.lang : "fr",
-    theme: normalizeTheme(safeInput.theme, "light"),
+    theme: normalizeThemeId(safeInput.theme, "light"),
     riwaya: VALID_RIWAYAS.includes(safeInput.riwaya)
       ? safeInput.riwaya
       : "hafs",

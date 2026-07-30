@@ -8,7 +8,7 @@
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v13";
+const CACHE_NAME = "mushaf-plus-v14";
 const API_CACHE_NAME = "mushaf-plus-api-v3";
 const CACHE_LIMITS = {
   [CACHE_NAME]: 300,
@@ -47,20 +47,22 @@ async function precacheAppShell() {
     html.matchAll(/(?:src|href)=["'](\/assets\/[^"']+)["']/g),
     (match) => match[1],
   );
-  const shellManifestResponse = await fetch("/shell-assets.json", {
-    cache: "reload",
-  });
-  if (!shellManifestResponse.ok) {
-    throw new Error(
-      `Unable to load app-shell manifest: ${shellManifestResponse.status}`,
-    );
+  let shellAssetUrls = [];
+  try {
+    const shellManifestResponse = await fetch("/shell-assets.json", {
+      cache: "reload",
+    });
+    if (shellManifestResponse.ok) {
+      const manifest = await shellManifestResponse.clone().json();
+      shellAssetUrls = (Array.isArray(manifest) ? manifest : []).filter(
+        (assetUrl) =>
+          typeof assetUrl === "string" && assetUrl.startsWith("/assets/"),
+      );
+      await cache.put("/shell-assets.json", shellManifestResponse);
+    }
+  } catch {
+    // The entry assets parsed from index.html still provide a usable shell.
   }
-
-  const shellAssetUrls = (await shellManifestResponse.clone().json()).filter(
-    (assetUrl) =>
-      typeof assetUrl === "string" && assetUrl.startsWith("/assets/"),
-  );
-  await cache.put("/shell-assets.json", shellManifestResponse);
   await precacheUrls(
     cache,
     [...new Set([...indexAssetUrls, ...shellAssetUrls])],
@@ -166,7 +168,23 @@ self.addEventListener("fetch", (event) => {
 
 // ─── Messages (communication avec l'app) ─────────────────────────────────────
 
+function isTrustedClientMessage(event) {
+  const senderUrl = event.source?.url;
+  if (!senderUrl) return false;
+  try {
+    const sender = new URL(senderUrl);
+    const scope = new URL(self.registration.scope);
+    return (
+      sender.origin === self.location.origin &&
+      sender.href.startsWith(scope.href)
+    );
+  } catch {
+    return false;
+  }
+}
+
 self.addEventListener("message", (event) => {
+  if (!isTrustedClientMessage(event)) return;
   if (!event.data || typeof event.data !== "object") return;
 
   switch (event.data.type) {
@@ -190,8 +208,6 @@ self.addEventListener("message", (event) => {
 
     // L'app demande au SW de skipWaiting (mise à jour immédiate)
     case "SKIP_WAITING": {
-      const senderUrl = event.source?.url || "";
-      if (!senderUrl.startsWith(self.registration.scope)) break;
       claimClientsOnActivate = true;
       event.waitUntil(self.skipWaiting());
       break;

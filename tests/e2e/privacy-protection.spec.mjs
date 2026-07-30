@@ -18,6 +18,15 @@ async function seedLegacyPrivateRecords(page) {
   await page.evaluate(async () => {
     const db = await new Promise((resolve, reject) => {
       const request = indexedDB.open("mushafplus", 2);
+      request.onupgradeneeded = () => {
+        const nextDb = request.result;
+        if (!nextDb.objectStoreNames.contains("notes")) {
+          nextDb.createObjectStore("notes", { keyPath: "id" });
+        }
+        if (!nextDb.objectStoreNames.contains("bookmarks")) {
+          nextDb.createObjectStore("bookmarks", { keyPath: "id" });
+        }
+      };
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve(request.result);
     });
@@ -93,8 +102,10 @@ test("privacy: protected mode migrates records and locks after reload", async ({
   const storageState = await page.evaluate(() => ({
     settings: localStorage.getItem("mushaf-plus-settings"),
     config: localStorage.getItem("mushafplus_crypto_config_v2"),
+    deviceKey: localStorage.getItem("mushafplus_device_key_v1"),
   }));
   expect(storageState.settings).toMatch(/^mpenc:v2:/);
+  expect(storageState.deviceKey).toBeNull();
   expect(JSON.parse(storageState.config)).toMatchObject({
     version: 2,
     kdf: "PBKDF2-HMAC-SHA256",

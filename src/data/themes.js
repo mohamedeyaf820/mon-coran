@@ -23,8 +23,8 @@ export const THEMES = [
     period: "day",
     palette: {
       bg: "#f7f9f8",
-      ink: "#17211c",
-      accent: "#0b6235",
+      text: "#17211c",
+      primary: "#0b6235",
     },
   },
   {
@@ -38,8 +38,8 @@ export const THEMES = [
     period: "day",
     palette: {
       bg: "#f3e8cf",
-      ink: "#241505",
-      accent: "#7c4a17",
+      text: "#241505",
+      primary: "#7c4a17",
     },
   },
   {
@@ -53,8 +53,8 @@ export const THEMES = [
     period: "night",
     palette: {
       bg: "#0d1117",
-      ink: "#f3f6f9",
-      accent: "#42d3b0",
+      text: "#f3f6f9",
+      primary: "#42d3b0",
     },
   },
 ];

@@ -107,8 +107,8 @@ test.describe("mobile", () => {
 
     const reciterPanel = optionsModal.locator(".audio-reciter-options");
     const reciterCards = reciterPanel.locator(".audio-reciter-options__item");
-    await expect(reciterPanel.locator(".audio-reciter-options__count")).toContainText("9 voix");
-    await expect(reciterCards).toHaveCount(9);
+    await expect(reciterPanel.locator(".audio-reciter-options__count")).toContainText("10 voix");
+    await expect(reciterCards).toHaveCount(10);
     await expect(reciterPanel.locator('[data-state="selected"]')).toHaveCount(1);
     await expect(reciterPanel.locator('[data-state="selected"] .audio-reciter-options__check')).toBeVisible();
     await expect(reciterCards.first().locator(".audio-reciter-options__meta")).toContainText("Warsh");
@@ -143,14 +143,20 @@ test.describe("mobile", () => {
     await expect(minimizeBtn).toBeVisible();
     await minimizeBtn.click();
 
-    const minimizedPlayer = page.locator(".mp-audio-player--mobile:not(.mp-audio-player--dock)").first();
+    const minimizedPlayer = page
+      .locator(
+        '.mp-audio-player--mobile.is-minimized[data-testid="audio-player-compact"]',
+      )
+      .first();
     await expect(minimizedPlayer).toBeVisible();
 
     const reopenBtn = minimizedPlayer.locator(".mp-player-minimized-open").first();
     await expect(reopenBtn).toBeVisible();
     await reopenBtn.click();
 
-    await expect(page.locator(".mp-audio-player--mobile.mp-audio-player--dock").first()).toBeVisible();
+    await expect(
+      page.locator(".mp-audio-player--mobile.simple-player--mobile-open").first(),
+    ).toBeVisible();
   });
 
   test("E2E mobile: une fiche Warsh charge la biographie sourcée et le portrait", async ({ page }) => {
@@ -184,12 +190,19 @@ test.describe("mobile", () => {
       '.reciter-detail__source-row a[href*="/ibrahim-al-dossari-206/"]',
     );
     await expect(biographyLink).toHaveText("Assabile");
+    const portraitSourceLink = detail.locator(
+      '.reciter-detail__source-row a[href*="way2quran.com/ar/reciters/ibrahim-al-dosari"]',
+    );
+    await expect(portraitSourceLink).toHaveText("Way2Quran");
 
     const portrait = detail.locator(".reciter-hero__avatar");
     await expect(portrait).toBeVisible();
     const portraitTag = await portrait.evaluate((element) => element.tagName);
     if (portraitTag === "IMG") {
-      await expect(portrait).toHaveAttribute("src", /assabile\.com/);
+      await expect(portrait).toHaveAttribute(
+        "src",
+        /storage\.googleapis\.com\/way2quran_storage\/imgs\/ibrahim-al-dosari\.png/,
+      );
     } else {
       await expect(portrait).toHaveClass(/reciter-hero__avatar--fallback/);
       await expect(portrait).toContainText("IA");

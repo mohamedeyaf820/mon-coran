@@ -63,13 +63,7 @@ html[data-theme="dark"]
 }
 
 html[data-theme="dark"]
-    :is(
-        .mp-header__action,
-        .mp-header__more,
-        .mp-header__icon-btn,
-        .mp-header__nav-arrow,
-        .mp-header__title-btn
-    ) {
+    .mp-header__action {
     border-color: var(--theme-border) !important;
     background: color-mix(in srgb, var(--theme-panel-bg-strong) 84%, transparent) !important;
     color: var(--night-text-soft) !important;
@@ -109,7 +103,6 @@ html[data-theme="dark"]
         .tools-hub-card,
         .reciter-card,
         .reciter-radio-card,
-        .recitation-row,
         .surah-info-card
     ) {
     border-color: var(--theme-border) !important;
@@ -270,7 +263,6 @@ html[data-theme="dark"]
         .modal-panel,
         .modal-panel--wide,
         .audio-player-modal__surface,
-        .reciter-detail,
         .sidebar
     ) {
     border-color: var(--theme-border) !important;
@@ -375,12 +367,6 @@ html[data-theme="dark"] .reciter-card__chip {
     color: #76e7b8 !important;
 }
 
-html[data-theme="dark"] .recitation-action-btn {
-    border-color: rgba(196, 219, 208, 0.16) !important;
-    background: rgba(5, 10, 9, 0.45) !important;
-    color: var(--night-text-soft) !important;
-}
-
 html[data-theme="dark"] .mp-footer-v2__shell {
     border-color: rgba(196, 219, 208, 0.15) !important;
     background:
@@ -442,7 +428,7 @@ html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
 
 @media (max-width: 700px) {
     html[data-theme="dark"]
-        :is(.settings-drawer, .audio-player-modal__surface, .reciter-detail) {
+        :is(.settings-drawer, .audio-player-modal__surface) {
         background:
             radial-gradient(
                 circle at 20% 0%,

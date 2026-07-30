@@ -84,8 +84,17 @@
 
 html body .app-root #sidebar .sidebar-close-button svg,
 html body .app-root .sb-wrapper .sidebar-close-button svg {
-  width: 18px !important;
-  height: 18px !important;
+  width: 1.05rem !important;
+  height: 1.05rem !important;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 640px) {
+  html body .app-root #sidebar .sidebar-close-button svg,
+  html body .app-root .sb-wrapper .sidebar-close-button svg {
+    width: 0.85rem !important;
+    height: 0.85rem !important;
+  }
 }
 
 /* ── Scrollable zone ── */

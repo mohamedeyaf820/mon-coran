@@ -74,11 +74,13 @@ test("E2E: clic mot sans audioUrl/lecture mot en echec fallback ayah", async ({
   if (await wbwToggle.isVisible()) {
     await wbwToggle.click();
   } else {
+    const studyMenu = page.locator(".srh-study-more").first();
+    await expect(studyMenu).toBeVisible();
+    await studyMenu.click();
     await page
-      .getByRole("button", {
+      .getByRole("menuitemcheckbox", {
         name: /Mot à mot|Word by Word|كلمة بكلمة/i,
       })
-      .first()
       .click();
   }
 
@@ -108,4 +110,53 @@ test("E2E: clic mot sans audioUrl/lecture mot en echec fallback ayah", async ({
   await page.evaluate(() => {
     window.__restorePlay?.();
   });
+});
+
+test("E2E: la lecture Warsh en vue Mushaf conserve un seul marqueur d'ayah", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.clear();
+    localStorage.setItem(
+      "mushaf-plus-settings",
+      JSON.stringify({
+        splashDone: true,
+        showHome: false,
+        showDuas: false,
+        sidebarOpen: false,
+        displayMode: "surah",
+        mushafLayout: "mushaf",
+        lang: "fr",
+        riwaya: "warsh",
+        fontFamily: "kfgqpc-warsh",
+        fontFamilyByRiwaya: {
+          hafs: "qpc-hafs",
+          warsh: "kfgqpc-warsh",
+        },
+        showTranslation: false,
+        showWordByWord: false,
+        lastPosition: { surah: 3, ayah: 5, page: 50, juz: 3 },
+      }),
+    );
+
+    HTMLMediaElement.prototype.play = function patchedPlay() {
+      this.dispatchEvent(new Event("play"));
+      return Promise.resolve();
+    };
+  });
+
+  await page.goto("/surah/3/5");
+  await expect(page.locator(".cpv-verse").first()).toBeVisible({
+    timeout: 30_000,
+  });
+
+  await page.locator(".mp-player-play-btn").click();
+
+  const playingVerse = page.locator(".cpv-verse--playing").first();
+  await expect(playingVerse).toBeVisible();
+  await expect(playingVerse.locator(".native-ayah-marker")).toHaveCount(1);
+  await expect(playingVerse.locator(".cpv-ayah-marker")).toHaveCount(1);
+  await expect(
+    playingVerse.locator(".warsh-karaoke-ayah-marker"),
+  ).toHaveCount(0);
 });
