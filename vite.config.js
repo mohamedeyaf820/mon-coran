@@ -59,8 +59,6 @@ export default defineConfig(({ mode }) => ({
           if (id.includes("node_modules/react")) return "vendor-react";
           if (id.includes("node_modules/crypto-js")) return "vendor-crypto";
           if (id.includes("node_modules/idb")) return "vendor-storage";
-          if (id.includes("node_modules/@radix-ui")) return "vendor-radix";
-          if (id.includes("node_modules/lucide-react")) return "vendor-icons";
         },
       },
     },
