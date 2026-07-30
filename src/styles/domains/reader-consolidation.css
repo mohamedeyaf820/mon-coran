@@ -328,10 +328,24 @@
     font-size: 0.78rem;
     font-weight: 700;
     line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
     transition:
         background-color 150ms ease,
         color 150ms ease,
         box-shadow 150ms ease;
+}
+
+.app-root .ayah-study-tab span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+    .app-root .ayah-study-tabs {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .app-root .ayah-study-tab i {
