@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import "../styles/domains/audio-legacy.css";
 import "../styles/audio-player-simple.css";
 import {
@@ -59,6 +59,7 @@ export default function AudioPlayer() {
       autoSelectFastestReciter: current.autoSelectFastestReciter,
       reciterLatencyByKey: current.reciterLatencyByKey,
       reciterAvailabilityById: current.reciterAvailabilityById,
+      currentSurah: current.currentSurah,
     }),
     shallowEqual,
   );
@@ -115,6 +116,7 @@ export default function AudioPlayer() {
   const playerPositionRef = useRef(playerPosition);
   const audioErrorTimerRef = useRef(null);
   const autoFailoverBusyRef = useRef(false);
+  const reciterSwitchingIdRef = useRef(null);
   const failedRecitersRef = useRef(new Set());
   const reciterAvailabilityRef = useRef(reciterAvailabilityById || {});
   const autoIdleMinimizeArmedRef = useRef(false);
@@ -170,7 +172,7 @@ export default function AudioPlayer() {
 
   const tryAutoReciterFailover = useCallback(async () => {
     if (!autoSelectFastestReciter) return false;
-    if (autoFailoverBusyRef.current || reciterSwitchingId) return false;
+    if (autoFailoverBusyRef.current || reciterSwitchingIdRef.current) return false;
 
     const rankedReciters = sortRecitersByPreference(
       getRecitersByRiwaya(riwaya),
@@ -209,12 +211,14 @@ export default function AudioPlayer() {
     try {
       for (const candidate of finalCandidates) {
         failedRecitersRef.current.add(candidate.id);
+        reciterSwitchingIdRef.current = candidate.id;
         setReciterSwitchingId(candidate.id);
         try {
-          await audioService.switchReciter(
+          const switched = await audioService.switchReciter(
             candidate.cdn,
             candidate.cdnType || "islamic",
           );
+          if (!switched) continue;
           markReciterAvailable(candidate.id);
           set({ reciter: candidate.id });
           toast(
@@ -230,7 +234,10 @@ export default function AudioPlayer() {
           markReciterUnavailable(candidate.id, error);
           console.warn("Auto reciter failover failed:", error);
         } finally {
-          setReciterSwitchingId(null);
+          if (reciterSwitchingIdRef.current === candidate.id) {
+            reciterSwitchingIdRef.current = null;
+            setReciterSwitchingId(null);
+          }
         }
       }
       return false;
@@ -245,7 +252,6 @@ export default function AudioPlayer() {
     markReciterUnavailable,
     reciter,
     reciterLatencyByKey,
-    reciterSwitchingId,
     riwaya,
     set,
   ]);
@@ -730,19 +736,26 @@ export default function AudioPlayer() {
     setClosed(true);
   }, [set]);
 
-  const currentReciters = sortRecitersByPreference(
-    getRecitersByRiwaya(riwaya),
-    {
-      currentReciterId: reciter,
+  const currentReciters = useMemo(
+    () =>
+      sortRecitersByPreference(getRecitersByRiwaya(riwaya), {
+        currentReciterId: reciter,
+        favoriteReciters,
+        latencyByKey: reciterLatencyByKey,
+        availabilityById: reciterAvailabilityById,
+      }),
+    [
       favoriteReciters,
-      latencyByKey: reciterLatencyByKey,
-      availabilityById: reciterAvailabilityById,
-    },
+      reciter,
+      reciterAvailabilityById,
+      reciterLatencyByKey,
+      riwaya,
+    ],
   );
   /* Reciter search */
   const [reciterSearch, setReciterSearch] = useState("");
   const showMemorizationControls = true;
-  const filteredReciters = React.useMemo(() => {
+  const filteredReciters = useMemo(() => {
     const q = reciterSearch.trim().toLowerCase();
     if (!q) return currentReciters;
     return currentReciters.filter(
@@ -777,7 +790,11 @@ export default function AudioPlayer() {
 
   const handleReciterSelect = useCallback(
     async (nextReciterId) => {
-      if (!nextReciterId || nextReciterId === reciter || reciterSwitchingId)
+      if (
+        !nextReciterId ||
+        nextReciterId === reciter ||
+        reciterSwitchingIdRef.current
+      )
         return;
       const target = currentReciters.find((r) => r.id === nextReciterId);
       if (!target) return;
@@ -799,12 +816,14 @@ export default function AudioPlayer() {
         return;
       }
 
+      reciterSwitchingIdRef.current = nextReciterId;
       setReciterSwitchingId(nextReciterId);
       try {
-        await audioService.switchReciter(
+        const switched = await audioService.switchReciter(
           target.cdn,
           target.cdnType || "islamic",
         );
+        if (!switched) return;
         markReciterAvailable(nextReciterId);
         set({ reciter: nextReciterId });
       } catch (error) {
@@ -819,7 +838,10 @@ export default function AudioPlayer() {
           "warning",
         );
       } finally {
-        setReciterSwitchingId(null);
+        if (reciterSwitchingIdRef.current === nextReciterId) {
+          reciterSwitchingIdRef.current = null;
+          setReciterSwitchingId(null);
+        }
       }
     },
     [
@@ -828,7 +850,6 @@ export default function AudioPlayer() {
       markReciterAvailable,
       markReciterUnavailable,
       reciter,
-      reciterSwitchingId,
       set,
     ],
   );
@@ -935,7 +956,7 @@ export default function AudioPlayer() {
   const playerSectionLabelClass =
     "mb-2 text-[0.56rem] font-bold uppercase tracking-[0.18em] text-[color-mix(in_srgb,var(--theme-primary)_68%,var(--theme-text)_32%)] [font-family:var(--font-ui)]";
   const playerMutedTextClass =
-    "text-[rgba(233,223,202,0.74)] [font-family:var(--font-ui)]";
+    "text-[rgba(233,223,202,0.9)] [font-family:var(--font-ui)]";
   const playerSearchInputClass =
     "audio-reciter-options__search-input w-full rounded-xl border border-white/12 bg-[rgba(6,13,24,0.78)] py-1.5 ps-11 pe-10 text-[0.64rem] text-[rgba(245,236,217,0.9)] outline-none [font-family:var(--font-ui)] focus:border-[rgba(122,188,210,0.4)] focus:ring-2 focus:ring-[rgba(122,188,210,0.18)]";
   const playerNumberInputClass =
@@ -957,7 +978,7 @@ export default function AudioPlayer() {
   const playerGoldMetaClass =
     "text-[color-mix(in_srgb,var(--theme-primary)_72%,var(--theme-text)_28%)] [font-family:var(--font-ui)]";
   const playerFadedTextClass =
-    "text-[rgba(195,186,167,0.56)] [font-family:var(--font-ui)]";
+    "text-[rgba(222,213,195,0.82)] [font-family:var(--font-ui)]";
   const playerSurfaceButtonClass =
     "rounded-2xl border border-white/12 bg-white/[0.045] text-[rgba(234,224,205,0.74)] transition-all duration-150 [font-family:var(--font-ui)] hover:border-[rgba(122,188,210,0.34)] hover:bg-[rgba(122,188,210,0.1)] hover:text-white";
   const playerReciterButtonClass = (
@@ -1107,25 +1128,24 @@ export default function AudioPlayer() {
 
   return (
     <>
-      {/* Screen-reader live region: announces ayah changes during memorization mode */}
-      {memMode && (
-        <div
-          aria-live="polite"
-          aria-atomic="true"
-          className="sr-only"
-        >
-          {currentPlayingAyah?.ayah
-            ? `${t("quran.surah", lang)} ${currentPlayingAyah.surah} · ${t("quran.ayah", lang)} ${currentPlayingAyah.ayah}`
-            : ""}
-        </div>
-      )}
+      {/* Screen-reader live region: announces the active ayah in every playback mode. */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {currentPlayingAyah?.ayah
+          ? `${currentSurahName || `${t("quran.surah", lang)} ${currentPlayingAyah.surah}`} · ${t("quran.ayah", lang)} ${currentPlayingAyah.ayah}`
+          : ""}
+      </div>
       {audioError && (
         <div
           className="pointer-events-none fixed left-1/2 z-[430] flex max-w-[min(90vw,360px)] -translate-x-1/2 items-center gap-2 rounded-xl border border-rose-200/20 bg-rose-700/95 px-4 py-2.5 text-center text-xs font-semibold text-white shadow-xl"
           style={{ top: "calc(var(--header-h, 72px) + 0.5rem)" }}
           role="alert"
         >
-          <AlertCircle size={15} className="shrink-0" />
+          <AlertCircle size={15} className="shrink-0" aria-hidden="true" />
           <span>{audioError}</span>
         </div>
       )}
