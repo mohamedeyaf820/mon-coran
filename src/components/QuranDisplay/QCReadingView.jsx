@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { cn } from "../../lib/utils";
 import { shouldShowStandaloneBasmala } from "../../utils/quranUtils";
 import SmartAyahRenderer from "../Quran/SmartAyahRenderer";
+import { t } from "../../i18n";
 
 const BASMALA = "\uFDFD";
 
@@ -150,7 +151,7 @@ export default function QCReadingView({
             className="text-center text-[2rem] leading-[2] font-[var(--font-quran,serif)] text-[var(--text-quran,var(--text-primary))] mb-6 pb-4"
             dir="rtl"
             lang="ar"
-            aria-label="Basmala"
+            aria-label={t("quran.bismillah", lang)}
           >
             {BASMALA}
           </div>

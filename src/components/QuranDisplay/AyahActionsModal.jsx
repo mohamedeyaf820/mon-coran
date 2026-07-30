@@ -2,6 +2,8 @@ import React from "react";
 import { X } from "lucide-react";
 import AyahActions from "../AyahActions";
 import { cn } from "../../lib/utils";
+import { useAppLocale } from "../../context/AppContext";
+import { t } from "../../i18n";
 
 export default function AyahActionsModal({
   activeAyah,
@@ -10,6 +12,7 @@ export default function AyahActionsModal({
   ayahData,
   quietBackdrop = false,
 }) {
+  const { lang } = useAppLocale();
   if (!activeAyah) return null;
 
   return (
@@ -43,7 +46,7 @@ export default function AyahActionsModal({
             type="button"
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)] transition-colors"
-            aria-label="Fermer"
+            aria-label={t("audio.close", lang)}
           >
             <X size={14} />
           </button>

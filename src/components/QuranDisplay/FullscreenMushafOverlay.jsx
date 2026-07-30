@@ -24,7 +24,7 @@ export default function FullscreenMushafOverlay({
       aria-label={lang === "fr" ? "Vue pleine page" : "Full page view"}
     >
       <div className="mfp-page-container" onClick={(event) => event.stopPropagation()}>
-        <button className="mfp-close-btn" onClick={onClose} aria-label="Fermer">
+        <button className="mfp-close-btn" onClick={onClose} aria-label={t("audio.close", lang)}>
           <X size={14} />
         </button>
         <div className="mfp-page-header">
