@@ -15,7 +15,14 @@ export default defineConfig(({ mode }) => ({
         // Netlify and Vercel still enforce the directive through their headers.
         const metaPolicy = buildCspPolicy(mode)
           .split("; ")
-          .filter((directive) => !directive.startsWith("frame-ancestors"))
+          .filter(
+            (directive) =>
+              !directive.startsWith("frame-ancestors") &&
+              // Deployment headers enforce HTTPS in production. Keeping this
+              // directive in the HTML meta policy makes WebKit upgrade local
+              // preview assets from http://127.0.0.1 to HTTPS and blank the app.
+              directive !== "upgrade-insecure-requests",
+          )
           .join("; ");
         return html.replace("__CSP_POLICY__", metaPolicy);
       },
@@ -41,6 +48,8 @@ export default defineConfig(({ mode }) => ({
     // Enable compression
     reportCompressedSize: true,
     chunkSizeWarningLimit: 500,
+    // Merge chunks smaller than 8 kB to reduce HTTP request count (target ≤15 chunks)
+    experimentalMinChunkSize: 8192,
     rollupOptions: {
       output: {
         // Noms de chunks haches, pas de noms lisibles.
@@ -55,10 +64,31 @@ export default defineConfig(({ mode }) => ({
                 codegen: { legalComments: "none" },
               }
             : false,
-        manualChunks(id) {
-          if (id.includes("node_modules/react")) return "vendor-react";
-          if (id.includes("node_modules/crypto-js")) return "vendor-crypto";
-          if (id.includes("node_modules/idb")) return "vendor-storage";
+        codeSplitting: {
+          groups: [
+            {
+              name: "vendor-react",
+              test: /node_modules[\\/](?:react|react-dom|scheduler)[\\/]/,
+              priority: 30,
+            },
+            {
+              name: "vendor-crypto",
+              test: /node_modules[\\/]crypto-js[\\/]/,
+              priority: 20,
+            },
+            {
+              name: "vendor-storage",
+              test: /node_modules[\\/]idb[\\/]/,
+              priority: 20,
+            },
+            {
+              name: "vendor-icons",
+              test: /node_modules[\\/]lucide-react[\\/]/,
+              minSize: 8 * 1024,
+              maxSize: 160 * 1024,
+              priority: 15,
+            },
+          ],
         },
       },
     },

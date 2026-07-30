@@ -12,6 +12,9 @@ export default {
     verseRef: 'Adh-Dhariyat · 51:56',
     credit: 'Read, listen, memorize',
   },
+  duas: {
+    categoriesLabel: 'Supplication categories',
+  },
   sidebar: {
     title: 'Surah Index', surahs: 'Surahs', juz: 'Juz',
     hizb: 'Hizb', bookmarks: 'Bookmarks', searchPlaceholder: 'Search surah…',
@@ -23,6 +26,7 @@ export default {
     page: 'Page', prevSurah: 'Previous surah', nextSurah: 'Next surah',
     prevPage: 'Previous page', nextPage: 'Next page',
     prevJuz: 'Previous Juz', nextJuz: 'Next Juz',
+    sajda: 'Prostration', fullPageView: 'Full page view',
     loadMore: 'Load more ayahs', loading: 'Loading verses…', loadingAria: 'Loading verses…',
   },
   search: {
@@ -64,8 +68,6 @@ export default {
     warshTextNote: 'Authentic Warsh text from the dedicated Unicode source. Text and audio follow Warsh an Nafi\' riwaya.',
     warshMushafLink: 'View Warsh Mushaf (PDF)',
     warshScriptLabel: 'Warsh Script · Unicode',
-    warshUnicodeBadge: 'Warsh Text · Unicode',
-    warshUnicodeText: 'Warsh text is loaded from the dedicated Warsh JSON and uses the same renderer as Hafs.',
     warshFallbackBadge: 'Hafs text (fallback)',
     warshFallbackText: 'Warsh text could not be loaded. Text is displayed in Hafs script, audio is Warsh.',
     warshQcf4Badge: 'Authentic Warsh Mushaf',

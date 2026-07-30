@@ -12,6 +12,9 @@ export default {
     verseRef: 'الذاريات · ٥١:٥٦',
     credit: 'اقرأ، استمع، احفظ',
   },
+  duas: {
+    categoriesLabel: 'فئات الأدعية',
+  },
   sidebar: {
     title: 'فهرس السور', surahs: 'السور', juz: 'الأجزاء',
     hizb: 'الأحزاب', bookmarks: 'المفضلة', searchPlaceholder: 'ابحث عن سورة...',
@@ -23,6 +26,7 @@ export default {
     page: 'صفحة', prevSurah: 'السورة السابقة', nextSurah: 'السورة التالية',
     prevPage: 'الصفحة السابقة', nextPage: 'الصفحة التالية',
     prevJuz: 'الجزء السابق', nextJuz: 'الجزء التالي',
+    sajda: 'سجدة', fullPageView: 'عرض الصفحة الكاملة',
     loadMore: 'تحميل المزيد من الآيات', loading: 'جاري تحميل الآيات…', loadingAria: 'جاري تحميل الآيات…',
   },
   search: {
@@ -63,8 +67,6 @@ export default {
     warshTextNote: 'نص ورش موثوق من مصدر يونيكود مخصص. النص والصوت يتبعان رواية ورش عن نافع.',
     warshMushafLink: 'عرض مصحف ورش (PDF)',
     warshScriptLabel: 'رسم ورش · يونيكود',
-    warshUnicodeBadge: 'نص ورش · يونيكود',
-    warshUnicodeText: 'يتم تحميل نص ورش من ملف JSON المخصص ويُعرض بنفس عارض حفص.',
     warshFallbackBadge: 'نص حفص (بديل)',
     warshFallbackText: 'لم يتم تحميل نص ورش. النص المعروض بخط حفص والصوت بقراءة ورش.',
     warshQcf4Badge: 'مصحف ورش أصلي',

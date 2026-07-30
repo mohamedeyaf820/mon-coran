@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { getSurah, toAr } from "../../data/surahs";
 import { t } from "../../i18n";
+
+const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 export default function FullscreenMushafOverlay({
   ayahs,
@@ -13,6 +15,30 @@ export default function FullscreenMushafOverlay({
   onClose,
   riwaya,
 }) {
+  const containerRef = useRef(null);
+  const titleId = "mfp-title";
+
+  useEffect(() => {
+    if (!fullPage) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const prev = document.activeElement;
+    el.querySelector(FOCUSABLE)?.focus();
+    const onKey = (e) => {
+      if (e.key === "Escape") { onClose(); return; }
+      if (e.key !== "Tab") return;
+      const all = [...el.querySelectorAll(FOCUSABLE)];
+      if (!all.length) return;
+      const first = all[0], last = all[all.length - 1];
+      if (e.shiftKey ? document.activeElement === first : document.activeElement === last) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => { document.removeEventListener("keydown", onKey); prev?.focus(); };
+  }, [fullPage, onClose]);
+
   if (!fullPage) return null;
 
   return (
@@ -21,9 +47,10 @@ export default function FullscreenMushafOverlay({
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label={lang === "fr" ? "Vue pleine page" : "Full page view"}
+      aria-labelledby={titleId}
     >
-      <div className="mfp-page-container" onClick={(event) => event.stopPropagation()}>
+      <div ref={containerRef} className="mfp-page-container" onClick={(event) => event.stopPropagation()}>
+        <span id={titleId} className="sr-only">{t("quran.fullPageView", lang)}</span>
         <button className="mfp-close-btn" onClick={onClose} aria-label={t("audio.close", lang)}>
           <X size={14} />
         </button>

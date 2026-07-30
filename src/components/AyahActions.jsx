@@ -69,9 +69,17 @@ function faIcon(key) {
     "fa-quote-right": Quote,
   };
   const Comp = map[key];
-  return Comp ? <Comp size={14} /> : null;
+  return Comp ? <Comp size={14} aria-hidden="true" /> : null;
 }
 
+const SHEET_FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "button:not([disabled])",
+  "textarea:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
 
 function emitToast(type, message) {
   window.dispatchEvent(
@@ -156,6 +164,8 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
   const audioErrTimerRef = useRef(null);
   const copiedTimerRef = useRef(null);
   const playlistTimerRef = useRef(null);
+  const sheetRef = useRef(null);
+  const sheetRestoreFocusRef = useRef(null);
 
   useEffect(() => {
     return () => {
@@ -175,6 +185,15 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
         : showNote
           ? "note"
           : null;
+  const sheetIdBase = `ayah-action-${surah}-${ayah}`;
+  const closeSheetLabel =
+    lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close";
+  const noteFieldLabel =
+    lang === "fr"
+      ? "Note personnelle sur ce verset"
+      : lang === "ar"
+        ? "ملاحظة شخصية حول هذه الآية"
+        : "Personal note about this ayah";
   const isPinnedForCompare = pinnedAyahs.some(
     (item) => Number(item.surah) === Number(surah) && Number(item.ayah) === Number(ayah),
   );
@@ -211,26 +230,66 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     };
   }, [activeSheet]);
 
-  useEffect(() => {
-    const handleEscape = (event) => {
-      if (event.key === "Escape") {
-        setShowStudy(false);
-        setShowNote(false);
-        setShowShare(false);
-        setShowPlaylistMenu(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, []);
-
   const closePanels = useCallback(() => {
     setShowStudy(false);
     setShowNote(false);
     setShowShare(false);
     setShowPlaylistMenu(false);
   }, []);
+
+  useEffect(() => {
+    if (!activeSheet || typeof document === "undefined") return undefined;
+
+    const sheet = sheetRef.current;
+    if (!sheet) return undefined;
+
+    sheetRestoreFocusRef.current = document.activeElement;
+    const focusFrame = window.requestAnimationFrame(() => {
+      const firstFocusable = sheet.querySelector(SHEET_FOCUSABLE_SELECTOR);
+      (firstFocusable || sheet).focus();
+    });
+
+    const handleSheetKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closePanels();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const focusable = Array.from(
+        sheet.querySelectorAll(SHEET_FOCUSABLE_SELECTOR),
+      ).filter(
+        (element) =>
+          !element.hasAttribute("hidden") &&
+          element.getAttribute("aria-hidden") !== "true",
+      );
+      if (!focusable.length) {
+        event.preventDefault();
+        sheet.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleSheetKeyDown);
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      document.removeEventListener("keydown", handleSheetKeyDown);
+      const restoreTarget = sheetRestoreFocusRef.current;
+      if (restoreTarget?.isConnected) restoreTarget.focus();
+      sheetRestoreFocusRef.current = null;
+    };
+  }, [activeSheet, closePanels]);
 
   useEffect(() => {
     if (!showStudy || studyTab !== "tafsir") return undefined;
@@ -628,11 +687,12 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
   };
 
   const handleStudyMode = () => {
+    const wordByWordAvailable = riwaya !== "warsh";
     set({
       memMode: false,
       showTranslation: true,
-      showWordByWord: true,
-      showWordTranslation: true,
+      showWordByWord: wordByWordAvailable,
+      ...(wordByWordAvailable ? { showWordTranslation: true } : {}),
       showTransliteration: false,
       focusReading: true,
     });
@@ -1051,7 +1111,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     if (studyTab === "lessons") {
       return (
         <div className="ayah-study-lessons">
-          {studyLessons.map((lesson) => (
+          {(riwaya === "warsh" ? studyLessons.slice(1) : studyLessons).map((lesson) => (
             <div className="ayah-study-card" key={lesson.title}>
               {faIcon(lesson.icon)}
               <div>
@@ -1101,7 +1161,14 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
 
     return (
       <div className="ayah-study-notes">
+        <label
+          className="sr-only"
+          htmlFor={`${sheetIdBase}-study-note`}
+        >
+          {noteFieldLabel}
+        </label>
         <textarea
+          id={`${sheetIdBase}-study-note`}
           value={noteText}
           onChange={(event) => setNoteText(event.target.value)}
           placeholder={t("notes.placeholder", lang)}
@@ -1159,7 +1226,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 playAyah();
               }
             }}
-            aria-label={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen")}
+            aria-label={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
             title={lang === "fr" ? "Écouter" : "Listen"}
           >
             {audioError ? <TriangleAlert size={13} /> : isPlayingThisAyah ? <Pause size={13} /> : <Play size={13} />}
@@ -1483,7 +1550,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 playAyah();
               }
             }}
-            aria-label={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen")}
+            aria-label={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
             title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
           >
             {audioError ? <TriangleAlert size={12} /> : isPlayingThisAyah ? <Pause size={12} /> : <Play size={12} />}
@@ -1571,7 +1638,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 playAyah();
               }
             }}
-            aria-label={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen")}
+            aria-label={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
             title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
           >
             {audioError ? <TriangleAlert size={13} /> : isPlayingThisAyah ? <Pause size={13} /> : <Play size={13} />}
@@ -1673,7 +1740,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 }
               }}
               title={isPlayingThisAyah ? "Pause" : t("actions.listen", lang)}
-              aria-label={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Play")}
+              aria-label={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
             >
               {audioError ? <TriangleAlert size={13} /> : isPlayingThisAyah ? <Pause size={13} /> : <Play size={13} />}
             </button>
@@ -1889,16 +1956,22 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       )}
 
       {activeSheet && renderPortal(
-        <button
-          type="button"
+        <div
           className="ayah-action-sheet-backdrop"
-          aria-label={lang === "fr" ? "Fermer le panneau" : "Close panel"}
+          aria-hidden="true"
           onClick={closePanels}
         />
       )}
 
       {showStudy && renderPortal(
-        <div className="ayah-action-sheet ayah-action-sheet--study">
+        <div
+          ref={sheetRef}
+          className="ayah-action-sheet ayah-action-sheet--study"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={`${sheetIdBase}-study-title`}
+          tabIndex={-1}
+        >
           <div className="ayah-action-sheet__header">
             <div>
               <div className="ayah-action-sheet__eyebrow">
@@ -1908,20 +1981,24 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                     ? "دراسة الآية"
                     : "Verse study"}
               </div>
-              <div className="ayah-action-sheet__title">
+              <h2
+                id={`${sheetIdBase}-study-title`}
+                className="ayah-action-sheet__title"
+              >
                 {lang === "fr"
                   ? "Comprendre cette ayah"
                   : lang === "ar"
                     ? "فهم هذه الآية"
                     : "Understand this ayah"}
-              </div>
+              </h2>
             </div>
             <button
               type="button"
               className="ayah-action-sheet__close"
               onClick={closePanels}
+              aria-label={closeSheetLabel}
             >
-              <X size={16} />
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
 
@@ -1936,13 +2013,25 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             </div>
           ) : null}
 
-          <div className="ayah-study-tabs" role="tablist">
+          <div
+            className="ayah-study-tabs"
+            role="tablist"
+            aria-label={
+              lang === "fr"
+                ? "Rubriques d’étude"
+                : lang === "ar"
+                  ? "أقسام الدراسة"
+                  : "Study sections"
+            }
+          >
             {studyTabs.map((tab) => (
               <button
                 key={tab.key}
+                id={`${sheetIdBase}-study-tab-${tab.key}`}
                 type="button"
                 role="tab"
                 aria-selected={studyTab === tab.key}
+                aria-controls={`${sheetIdBase}-study-panel`}
                 className={`ayah-study-tab${studyTab === tab.key ? " is-active" : ""}`}
                 onClick={() => setStudyTab(tab.key)}
               >
@@ -1952,12 +2041,27 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             ))}
           </div>
 
-          <div className="ayah-study-content">{renderStudyContent()}</div>
+          <div
+            id={`${sheetIdBase}-study-panel`}
+            className="ayah-study-content"
+            role="tabpanel"
+            aria-labelledby={`${sheetIdBase}-study-tab-${studyTab}`}
+            tabIndex={0}
+          >
+            {renderStudyContent()}
+          </div>
         </div>
       )}
 
       {showShare && renderPortal(
-        <div className="ayah-action-sheet ayah-action-sheet--share">
+        <div
+          ref={sheetRef}
+          className="ayah-action-sheet ayah-action-sheet--share"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={`${sheetIdBase}-share-title`}
+          tabIndex={-1}
+        >
           <div className="ayah-action-sheet__header">
             <div>
               <div className="ayah-action-sheet__eyebrow">
@@ -1967,20 +2071,24 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                     ? "مشاركة مميزة"
                     : "Premium sharing"}
               </div>
-              <div className="ayah-action-sheet__title">
+              <h2
+                id={`${sheetIdBase}-share-title`}
+                className="ayah-action-sheet__title"
+              >
                 {lang === "fr"
                   ? "Exporter cette ayah"
                   : lang === "ar"
                     ? "شارك هذه الآية"
                     : "Export this ayah"}
-              </div>
+              </h2>
             </div>
             <button
               type="button"
               className="ayah-action-sheet__close"
               onClick={closePanels}
+              aria-label={closeSheetLabel}
             >
-              <X size={16} />
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
 
@@ -2051,7 +2159,14 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       )}
 
       {showPlaylistMenu && renderPortal(
-        <div className="ayah-action-sheet ayah-action-sheet--playlist">
+        <div
+          ref={sheetRef}
+          className="ayah-action-sheet ayah-action-sheet--playlist"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={`${sheetIdBase}-playlist-title`}
+          tabIndex={-1}
+        >
           <div className="ayah-action-sheet__header">
             <div>
               <div className="ayah-action-sheet__eyebrow">
@@ -2061,20 +2176,24 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                     ? "مركز الصوت"
                     : "Audio hub"}
               </div>
-              <div className="ayah-action-sheet__title">
+              <h2
+                id={`${sheetIdBase}-playlist-title`}
+                className="ayah-action-sheet__title"
+              >
                 {lang === "fr"
                   ? "Ajouter à une playlist"
                   : lang === "ar"
                     ? "أضف إلى قائمة"
                     : "Add to a playlist"}
-              </div>
+              </h2>
             </div>
             <button
               type="button"
               className="ayah-action-sheet__close"
               onClick={closePanels}
+              aria-label={closeSheetLabel}
             >
-              <X size={16} />
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
 
@@ -2121,7 +2240,14 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       )}
 
       {showNote && renderPortal(
-        <div className="ayah-action-sheet ayah-action-sheet--note">
+        <div
+          ref={sheetRef}
+          className="ayah-action-sheet ayah-action-sheet--note"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={`${sheetIdBase}-note-title`}
+          tabIndex={-1}
+        >
           <div className="ayah-action-sheet__header">
             <div>
               <div className="ayah-action-sheet__eyebrow">
@@ -2131,20 +2257,24 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                     ? "ملاحظة تدبر"
                     : "Reflection note"}
               </div>
-              <div className="ayah-action-sheet__title">
+              <h2
+                id={`${sheetIdBase}-note-title`}
+                className="ayah-action-sheet__title"
+              >
                 {lang === "fr"
                   ? "Ecrire sur cette ayah"
                   : lang === "ar"
                     ? "اكتب حول cette الآية"
                     : "Write on this ayah"}
-              </div>
+              </h2>
             </div>
             <button
               type="button"
               className="ayah-action-sheet__close"
               onClick={closePanels}
+              aria-label={closeSheetLabel}
             >
-              <X size={16} />
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
 
@@ -2159,7 +2289,11 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             </div>
           ) : null}
 
+          <label className="sr-only" htmlFor={`${sheetIdBase}-note`}>
+            {noteFieldLabel}
+          </label>
           <textarea
+            id={`${sheetIdBase}-note`}
             value={noteText}
             onChange={(event) => setNoteText(event.target.value)}
             placeholder={t("notes.placeholder", lang)}

@@ -11,6 +11,9 @@ export default {
     verseRef: 'Adh-Dhariyat · 51:56',
     credit: 'Lis, écoute, mémorise',
   },
+  duas: {
+    categoriesLabel: 'Catégories d’invocations',
+  },
   sidebar: {
     title: 'Index des sourates', surahs: 'Sourates', juz: 'Juz',
     hizb: 'Hizb', bookmarks: 'Favoris', searchPlaceholder: 'Rechercher une sourate…',
@@ -22,6 +25,7 @@ export default {
     page: 'Page', prevSurah: 'Sourate précédente', nextSurah: 'Sourate suivante',
     prevPage: 'Page précédente', nextPage: 'Page suivante',
     prevJuz: 'Juz précédent', nextJuz: 'Juz suivant',
+    sajda: 'Prosternation', fullPageView: 'Vue pleine page',
     loadMore: 'Charger plus de versets', loading: 'Chargement des versets…', loadingAria: 'Chargement des versets en cours…',
   },
   search: {
@@ -63,8 +67,6 @@ export default {
     warshTextNote: 'Texte Warsh authentique depuis la source Unicode dédiée. Texte et audio suivent la riwaya Warsh an Nafi\'.',
     warshMushafLink: 'Consulter le Mushaf Warsh (PDF)',
     warshScriptLabel: 'Rasm Warsh · Unicode',
-    warshUnicodeBadge: 'Texte Warsh · Unicode',
-    warshUnicodeText: 'Affichage Warsh depuis le JSON Warsh dédié, avec le même rendu que Hafs.',
     warshFallbackBadge: 'Texte Hafs (fallback)',
     warshFallbackText: 'Le texte Warsh n\'a pas pu être chargé. Le texte affiché est en écriture Hafs, l\'audio est en Warsh.',
     warshQcf4Badge: 'Mushaf Warsh Authentique',
