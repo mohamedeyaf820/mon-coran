@@ -44,11 +44,34 @@ import Footer from "./Footer";
 import { buildAudioPlaylistForSurah } from "../utils/audioPlaylist";
 
 let reciterDetailModulePromise;
+let resolvedReciterDetailPage;
 function loadReciterDetailModule() {
   if (!reciterDetailModulePromise) {
-    reciterDetailModulePromise = import("./recitation/ReciterDetailPage");
+    reciterDetailModulePromise = import("./recitation/ReciterDetailPage").then(
+      (module) => {
+        resolvedReciterDetailPage = module.default;
+        return module;
+      },
+    );
   }
   return reciterDetailModulePromise;
+}
+
+let reciterLibraryWarmPromise;
+export function preloadReciterLibrary() {
+  if (!reciterLibraryWarmPromise) {
+    reciterLibraryWarmPromise = loadReciterDetailModule()
+      .then(async (module) => {
+        await module.preloadReciterDetailData?.();
+        return module;
+      })
+      .catch((error) => {
+        reciterDetailModulePromise = null;
+        reciterLibraryWarmPromise = null;
+        throw error;
+      });
+  }
+  return reciterLibraryWarmPromise;
 }
 
 let quranReaderModulePromise;
@@ -224,16 +247,10 @@ export default function HomePage({ lowPerfMode = false }) {
   const reciterModalCloseBtnRef = useRef(null);
   const reciterModalTriggerRef = useRef(null);
 
-  const warmReciterDetail = useCallback(() => {
-    Promise.all([
-      loadReciterDetailModule(),
-      import("../hooks/useReciterProfile").then(({ preloadReciterProfiles }) =>
-        preloadReciterProfiles(),
-      ),
-    ]).catch(() => {
-      reciterDetailModulePromise = null;
-    });
-  }, []);
+  const warmReciterDetail = useCallback(
+    () => preloadReciterLibrary().catch(() => null),
+    [],
+  );
 
   /* ── Dérivations simples ─────────────────────────────────────────────── */
   const hasReadingHistory =
@@ -250,6 +267,8 @@ export default function HomePage({ lowPerfMode = false }) {
   );
   const canDirectDownloadSelectedReciter =
     getReciterSourceInfo(selectedReciter)?.directDownload === true;
+  const ActiveReciterDetailPage =
+    resolvedReciterDetailPage || ReciterDetailPage;
 
   /* ── Effects ─────────────────────────────────────────────────────────── */
   useEffect(() => {
@@ -288,10 +307,10 @@ export default function HomePage({ lowPerfMode = false }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (activeTab !== "recitations") return undefined;
-    return runWhenIdle(warmReciterDetail, 700);
-  }, [activeTab, warmReciterDetail]);
+  useEffect(
+    () => runWhenIdle(warmReciterDetail, lowPerfMode ? 900 : 250),
+    [lowPerfMode, warmReciterDetail],
+  );
 
   useEffect(() => {
     if (!selectedReciter) return;
@@ -983,6 +1002,7 @@ export default function HomePage({ lowPerfMode = false }) {
           activeTab={activeTab}
           onSelectTab={selectContentTab}
           onRecitationsIntent={warmReciterDetail}
+          onReciterIntent={warmReciterDetail}
           filter={filter}
           onFilterChange={setFilter}
           reciterStyleFilter={reciterStyleFilter}
@@ -1028,7 +1048,7 @@ export default function HomePage({ lowPerfMode = false }) {
               onClick={() => setSelectedReciterId(null)}
             >
               <Suspense fallback={<ReciterDetailFallback lang={lang} />}>
-                <ReciterDetailPage
+                <ActiveReciterDetailPage
                   lang={lang}
                   reciter={selectedReciter}
                   canDirectDownload={canDirectDownloadSelectedReciter}

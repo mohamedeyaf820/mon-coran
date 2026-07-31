@@ -20,7 +20,14 @@ import {
   getReciterSourceInfo,
   getReciterVisual,
 } from "../../data/reciters";
-import { useReciterProfile } from "../../hooks/useReciterProfile";
+import {
+  preloadReciterProfiles,
+  useReciterProfile,
+} from "../../hooks/useReciterProfile";
+
+export function preloadReciterDetailData() {
+  return preloadReciterProfiles();
+}
 
 function labelFor(lang, fr, en, ar = en) {
   if (lang === "ar") return ar;

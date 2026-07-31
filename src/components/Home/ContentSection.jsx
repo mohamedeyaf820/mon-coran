@@ -38,6 +38,7 @@ import Icon from "./HomeIcon";
  *   activeTab              {string}    "surah" | "juz" | "recitations" | "radio" | "blog"
  *   onSelectTab            {function}
  *   onRecitationsIntent    {function}
+ *   onReciterIntent        {function}
  *   filter                 {string}
  *   onFilterChange         {function}
  *   reciterStyleFilter     {string}    "all" | "murattal" | "mujawwad" | "muallim"
@@ -74,6 +75,7 @@ export default function ContentSection({
   activeTab,
   onSelectTab,
   onRecitationsIntent,
+  onReciterIntent,
   filter,
   onFilterChange,
   reciterStyleFilter,
@@ -209,6 +211,7 @@ export default function ContentSection({
             )}
             onClick={() => onSelectTab("recitations")}
             onPointerEnter={onRecitationsIntent}
+            onPointerDown={onRecitationsIntent}
             onFocus={onRecitationsIntent}
             onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("radio"); if (e.key === "ArrowLeft") onSelectTab("juz"); }}
           >
@@ -429,6 +432,9 @@ export default function ContentSection({
                       type="button"
                       className="reciter-card__main"
                       onClick={() => setSelectedReciterId(reciter.id)}
+                      onPointerEnter={() => onReciterIntent?.(reciter)}
+                      onPointerDown={() => onReciterIntent?.(reciter)}
+                      onFocus={() => onReciterIntent?.(reciter)}
                       aria-label={reciterLabel}
                     >
                       <div className="reciter-card__media">

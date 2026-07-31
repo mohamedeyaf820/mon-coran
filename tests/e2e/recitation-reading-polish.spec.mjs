@@ -37,6 +37,56 @@ async function horizontalOverflow(page) {
   );
 }
 
+test("opening animation preloads the reciter library before the first click", async ({
+  page,
+}) => {
+  await seed(page, { showHome: true, skipSplashAnimation: false });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  await expect(page.locator(".splash-screen")).toBeVisible();
+  await expect(page.locator(".splash-screen")).toBeHidden({ timeout: 6_000 });
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        performance
+          .getEntriesByType("resource")
+          .some((entry) => entry.name.includes("/data/reciter-profiles.json")),
+      ),
+    )
+    .toBe(true);
+
+  await page.evaluate(() => {
+    window.__reciterFallbackSeen = false;
+    window.__reciterFallbackObserver = new MutationObserver(() => {
+      if (document.querySelector(".reciter-detail--loading")) {
+        window.__reciterFallbackSeen = true;
+      }
+    });
+    window.__reciterFallbackObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  });
+
+  const recitationsTab = page
+    .getByRole("tab")
+    .filter({ hasText: /citations/i })
+    .first();
+  await expect(recitationsTab).toBeVisible();
+  await recitationsTab.click();
+  const firstCard = page.locator('[data-reciter-card="true"]').first();
+  await expect(firstCard).toBeVisible();
+  await firstCard.locator(".reciter-card__main").click();
+  await expect(page.locator(".reciter-detail:not(.reciter-detail--loading)")).toBeVisible();
+
+  const fallbackSeen = await page.evaluate(() => {
+    window.__reciterFallbackObserver?.disconnect();
+    return window.__reciterFallbackSeen;
+  });
+  expect(fallbackSeen).toBe(false);
+});
+
 test("mobile recitation collection and reciter library stay clear and valid", async ({
   page,
 }) => {

@@ -23,25 +23,25 @@ export default function ReciterHero({ reciter, lang }) {
   return (
     <div className="reciter-hero flex min-w-0 items-center gap-3.5">
       <div className="reciter-hero__portrait relative shrink-0">
+        <div
+          className="reciter-hero__avatar reciter-hero__avatar--fallback flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-white sm:h-20 sm:w-20"
+          style={{ background: avatar.gradient }}
+          aria-hidden="true"
+        >
+          <span className="text-lg font-black sm:text-xl">{avatar.initials}</span>
+        </div>
         {showPhoto ? (
           <img
             src={visual.photo}
             alt=""
-            className="reciter-hero__avatar h-16 w-16 rounded-full border-2 border-primary/20 object-cover sm:h-20 sm:w-20"
+            className="reciter-hero__avatar absolute inset-0 h-16 w-16 rounded-full border-2 border-primary/20 object-cover sm:h-20 sm:w-20"
             onError={() => setImgError(true)}
-            loading="lazy"
+            loading="eager"
             decoding="async"
+            fetchPriority="high"
             referrerPolicy="no-referrer"
           />
-        ) : (
-          <div
-            className="reciter-hero__avatar reciter-hero__avatar--fallback flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-white sm:h-20 sm:w-20"
-            style={{ background: avatar.gradient }}
-            aria-hidden="true"
-          >
-            <span className="text-lg font-black sm:text-xl">{avatar.initials}</span>
-          </div>
-        )}
+        ) : null}
       </div>
 
       <div className="reciter-hero__copy min-w-0 flex-1">

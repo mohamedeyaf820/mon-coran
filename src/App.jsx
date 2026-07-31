@@ -504,28 +504,6 @@ export default function App() {
     );
   }, [lowPerfMode, showHome, splashDone]);
 
-  useEffect(() => {
-    if (
-      !splashDone ||
-      lowPerfMode ||
-      !deferNonCriticalUI ||
-      !showHome
-    ) {
-      return undefined;
-    }
-
-    return runWhenIdle(
-      () =>
-        Promise.allSettled([
-        import("./components/recitation/ReciterDetailPage"),
-        import("./hooks/useReciterProfile").then(({ preloadReciterProfiles }) =>
-          preloadReciterProfiles(),
-        ),
-        ]),
-      900,
-    );
-  }, [deferNonCriticalUI, lowPerfMode, showHome, splashDone]);
-
   // Delegate most keyboard shortcuts to the shared hook.
   // App.jsx retains only the shortcuts that are outside the hook's scope:
   // `,` (settings), `b/B` (bookmarks), `h/H` (home), `/` (search), Alt+Up/Down.
@@ -646,6 +624,13 @@ export default function App() {
           : loadQuranDisplay();
 
     const tasks = [loadHeader(), screenPromise];
+    if (state.showHome && !state.legalPage) {
+      tasks.push(
+        screenPromise.then(({ preloadReciterLibrary }) =>
+          preloadReciterLibrary?.(),
+        ),
+      );
+    }
     if (!state.legalPage && !state.showHome && !state.showDuas) {
       tasks.push(
         import("./services/quranAPI").then(({ prefetchInitialData }) =>
