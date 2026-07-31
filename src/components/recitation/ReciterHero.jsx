@@ -24,7 +24,7 @@ export default function ReciterHero({ reciter, lang }) {
     <div className="reciter-hero flex min-w-0 items-center gap-3.5">
       <div className="reciter-hero__portrait relative shrink-0">
         <div
-          className="reciter-hero__avatar reciter-hero__avatar--fallback flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-white sm:h-20 sm:w-20"
+          className={`reciter-hero__avatar--fallback flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-white sm:h-20 sm:w-20${showPhoto ? " reciter-hero__avatar--bg" : " reciter-hero__avatar"}`}
           style={{ background: avatar.gradient }}
           aria-hidden="true"
         >
