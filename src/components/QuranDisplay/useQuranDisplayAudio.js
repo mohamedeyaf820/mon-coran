@@ -31,6 +31,7 @@ export default function useQuranDisplayAudio({
   continuousPlay,
   displayMode,
   dispatch,
+  isPlaying,
   lang,
   reciter,
   riwaya,
@@ -159,6 +160,11 @@ export default function useQuranDisplayAudio({
       };
     }
 
+    // Segment timings are useful only once playback begins. Loading them while
+    // someone is simply reading previously added several paginated requests to
+    // every cold reader visit.
+    if (!isPlaying) return undefined;
+
     getAudioTimingsForAyahs(safeReciterId, ayahs)
       .then((map) => {
         if (!cancelled) setAudioTimingMap(map);
@@ -170,7 +176,7 @@ export default function useQuranDisplayAudio({
     return () => {
       cancelled = true;
     };
-  }, [audioPlaylistKey, ayahs, reciter, riwaya]);
+  }, [audioPlaylistKey, ayahs, isPlaying, reciter, riwaya]);
 
   const playSurah = useCallback(() => {
     const currentReciter = getReciter(ensureReciterForRiwaya(reciter, riwaya), riwaya);

@@ -7,6 +7,8 @@ export const CSS_SAFELIST = {
   standard: [
     /^app-mode-/,
     /^qcm-word--/,
+    /^qcom-list-study/,
+    /^qc-list-card__study$/,
     /^tajweed-/,
     /^verse-/,
     /^warsh-/,
@@ -27,7 +29,19 @@ export const CSS_SAFELIST = {
     "data-[state=open]",
     "data-[state=closed]",
   ],
-  deep: [/^data-/, /^aria-/],
+  deep: [
+    /^data-/,
+    /^aria-/,
+    /^qcom-list-study/,
+    /^qc-list-card__study$/,
+  ],
+  // PurgeCSS evaluates the complete selector for highly qualified rules
+  // (`html body .app-root ...`). Keep this small reader action family even
+  // when its lazy chunk has not been discovered while the CSS is purged.
+  greedy: [
+    /qcom-list-study/,
+    /qc-list-card__study/,
+  ],
 };
 
 export function extractCssSelectors(content) {

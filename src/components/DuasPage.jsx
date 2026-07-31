@@ -135,6 +135,7 @@ export default function DuasPage() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder={labels.search}
+              aria-label={labels.search}
             />
           </label>
 

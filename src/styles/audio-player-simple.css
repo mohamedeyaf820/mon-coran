@@ -306,7 +306,7 @@ html body .app-root .audio-player-simple .mp-player-options-trigger {
   border-radius: 999px;
   background: color-mix(in srgb, var(--theme-primary) 9%, transparent 91%);
   color: var(--theme-primary);
-  font-size: .57rem;
+  font-size: max(.6875rem, 11px);
   font-weight: 800;
   letter-spacing: .06em;
   text-transform: uppercase;

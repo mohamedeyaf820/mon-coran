@@ -524,18 +524,19 @@ async function fetchTranslations(pathPrefix, langs = ['fr'], signal) {
   const langArray = Array.isArray(langs) ? langs : [langs];
   const canUseQuranCom = langArray.every((lang) => QURAN_COM_TRANSLATION_LANGS.has(lang));
 
-  if (canUseQuranCom) {
-    try {
-      return await fetchQuranComTranslations(pathPrefix, langArray, signal);
-    } catch (err) {
-      if (err.name === 'AbortError') throw err;
-      console.warn('Quran.com translation fallback to AlQuran.cloud:', err);
-    }
-  }
-
   const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
-  const data = await fetchJSON(`${BASE}/${pathPrefix}/${editions}`, signal);
-  return Array.isArray(data) ? data : [data];
+  try {
+    // AlQuran Cloud returns a complete surah/juz/page and several editions in
+    // one response. Using it first avoids up to six paginated requests during
+    // the initial reader paint.
+    const data = await fetchJSON(`${BASE}/${pathPrefix}/${editions}`, signal);
+    return Array.isArray(data) ? data : [data];
+  } catch (err) {
+    if (err.name === 'AbortError') throw err;
+    if (!canUseQuranCom) throw err;
+    console.warn('AlQuran.cloud translation fallback to Quran.com:', err);
+    return fetchQuranComTranslations(pathPrefix, langArray, signal);
+  }
 }
 
 /* ── Surah Text ──────────────────────────────── */

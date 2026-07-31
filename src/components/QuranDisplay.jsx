@@ -173,6 +173,7 @@ export default function QuranDisplay() {
       continuousPlay: state.continuousPlay,
       displayMode,
       dispatch,
+      isPlaying,
       lang,
       reciter,
       riwaya,
@@ -211,8 +212,6 @@ export default function QuranDisplay() {
     isPlaying,
     loading,
     riwaya,
-    showTranslation,
-    translationLangs,
   });
 
   useEffect(() => {
@@ -440,6 +439,7 @@ export default function QuranDisplay() {
             ayahs={ayahs}
             calibration={karaokeCalibration}
             classes={classes}
+            currentAyah={currentAyah}
             currentPlayingAyah={currentPlayingAyah}
             currentSurah={currentSurah}
             getTranslationForAyah={getTranslationForAyah}

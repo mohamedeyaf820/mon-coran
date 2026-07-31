@@ -59,7 +59,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.62.0",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.0",
@@ -71,7 +71,7 @@
     "eslint-plugin-react-refresh": "^0.5.3",
     "glob": "^13.0.6",
     "globals": "^17.8.0",
-    "playwright": "^1.62.0",
+    "playwright": "^1.62.1",
     "postcss": "^8.5.25",
     "purgecss": "^8.0.0",
     "tailwindcss": "^4.3.3",

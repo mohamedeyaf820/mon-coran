@@ -38,7 +38,8 @@ test("production pages expose coherent crawl and social metadata", async ({
   );
 });
 
-test("surah pages are indexable while deep reading states are not", async ({
+test("surah pages are indexable while deep reading states use runtime noindex", async ({
+  page,
   request,
 }) => {
   const surahResponse = await request.get("/surah/2/index.html");
@@ -49,12 +50,14 @@ test("surah pages are indexable while deep reading states are not", async ({
   expect(surahHtml).toContain('href="/surah/1"');
   expect(surahHtml).toContain('href="/surah/3"');
 
-  const ayahResponse = await request.get("/surah/2/2/index.html");
-  expect(ayahResponse.ok()).toBe(true);
-  const ayahHtml = await ayahResponse.text();
-  expect(ayahHtml).toContain('<meta name="robots" content="noindex,follow"');
-  expect(ayahHtml).toContain(
-    '<link rel="canonical" href="https://mon-coran.netlify.app/surah/2/2"',
+  await page.goto("/surah/2/2", { waitUntil: "domcontentloaded" });
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+    "content",
+    "noindex,follow",
+  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://mon-coran.netlify.app/surah/2/2",
   );
 });
 

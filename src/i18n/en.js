@@ -77,7 +77,7 @@ export default {
     amiriQuranHint: 'Amiri Quran, classic calligraphic style',
     notoNaskhHint: 'Noto Naskh Arabic, highly readable on all screens',
     qpcWarshHint: 'Warsh riwaya font',
-    kfgqpcWarshHint: 'Warsh Unicode KFGQPC, loaded via CDN',
+    kfgqpcWarshHint: 'KFGQPC Warsh Unicode, available offline',
     scheherazadeWarshHint: 'Scheherazade New, compatible with Warsh riwaya',
   },
   audio: {

@@ -1,5 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const chromiumExecutablePath =
+  process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined;
+const jsonOutputFile = process.env.PLAYWRIGHT_JSON_OUTPUT_FILE || undefined;
+
 export default defineConfig({
   testDir: "tests/e2e",
   snapshotPathTemplate: "{testDir}/{testFilePath}-snapshots/{arg}-{projectName}{ext}",
@@ -32,7 +36,12 @@ export default defineConfig({
     {
       name: "chromium",
       testIgnore: ["**/*-debug.spec.mjs", "**/pwa-offline.spec.mjs"],
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: chromiumExecutablePath
+          ? { executablePath: chromiumExecutablePath }
+          : undefined,
+      },
     },
     {
       name: "firefox",
@@ -53,11 +62,18 @@ export default defineConfig({
     {
       name: "pwa-offline",
       testMatch: ["**/pwa-offline.spec.mjs"],
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: chromiumExecutablePath
+          ? { executablePath: chromiumExecutablePath }
+          : undefined,
+      },
     },
   ],
-  reporter: [
-    ["html", { open: "never" }],
-    ["list"]
-  ],
+  reporter: jsonOutputFile
+    ? [["json", { outputFile: jsonOutputFile }]]
+    : [
+        ["html", { open: "never" }],
+        ["list"],
+      ],
 });

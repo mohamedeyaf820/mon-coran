@@ -29,6 +29,7 @@
   color: var(--text-secondary);
   font-size: .84rem;
   font-weight: 650;
+  min-height: 44px;
 }
 .legal-page__back { margin-block-end: 2.5rem; }
 .legal-page__back:hover,
@@ -79,7 +80,7 @@
   display: inline-flex;
   align-items: center;
   gap: .5rem;
-  min-height: 2.65rem;
+  min-height: 44px;
   padding: .65rem 1rem;
   border: 1px solid var(--border);
   border-radius: 999px;

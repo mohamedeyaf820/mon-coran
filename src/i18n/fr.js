@@ -76,7 +76,7 @@ export default {
     amiriQuranHint: 'Police Amiri Quran, style calligraphique classique',
     notoNaskhHint: 'Noto Naskh Arabic, très lisible sur tous écrans',
     qpcWarshHint: 'Police riwaya Warsh',
-    kfgqpcWarshHint: 'Warsh Unicode KFGQPC, chargé via CDN',
+    kfgqpcWarshHint: 'Warsh Unicode KFGQPC, disponible hors ligne',
     scheherazadeWarshHint: 'Scheherazade New, compatible riwaya Warsh',
   },
   audio: {

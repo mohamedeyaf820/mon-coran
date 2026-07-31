@@ -149,3 +149,70 @@ test("reading page stays usable after riwaya refresh and browser history navigat
   await expect(page.locator(".quran-display--warsh").first()).toBeVisible();
   await assertNoBlockingVeil(page);
 });
+
+test("cold Hafs reading keeps study actions usable without speculative audio or Warsh requests", async ({
+  page,
+}) => {
+  await seedReader(page, {
+    showTranslation: false,
+    riwaya: "hafs",
+    mushafLayout: "list",
+    lastPosition: {
+      surah: 1,
+      ayah: 1,
+      page: 1,
+      juz: 1,
+    },
+  });
+  await page.addInitScript(() => {
+    window.__readerCumulativeLayoutShift = 0;
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (!entry.hadRecentInput) {
+          window.__readerCumulativeLayoutShift += entry.value;
+        }
+      }
+    }).observe({ type: "layout-shift", buffered: true });
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  const requests = [];
+  page.on("request", (request) => requests.push(request.url()));
+
+  await page.goto("/surah/1", { waitUntil: "domcontentloaded" });
+  await waitForReader(page);
+  await page.waitForTimeout(1_000);
+
+  const studyLinks = page.locator(".qcom-list-study-links").first();
+  await expect(studyLinks).toBeVisible();
+  await expect(studyLinks).toHaveCSS("display", "flex");
+  await expect(studyLinks.locator(".qcom-list-study-link")).toHaveCount(3);
+
+  const studyMetrics = await studyLinks.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return {
+      width: rect.width,
+      scrollWidth: element.scrollWidth,
+      overflowX: window.getComputedStyle(element).overflowX,
+    };
+  });
+  expect(studyMetrics.width).toBeGreaterThan(200);
+  expect(studyMetrics.scrollWidth).toBeLessThanOrEqual(studyMetrics.width + 2);
+  expect(["auto", "scroll"]).toContain(studyMetrics.overflowX);
+
+  const parsedRequests = requests.map((url) => new URL(url));
+  expect(
+    parsedRequests.filter((url) => url.pathname.includes("/recitations/")),
+  ).toHaveLength(0);
+  expect(
+    parsedRequests.filter(
+      (url) =>
+        url.pathname.includes("/warsh_text/") ||
+        url.pathname.endsWith("/warshData_v2-1.json"),
+    ),
+  ).toHaveLength(0);
+  expect(
+    await page.evaluate(() => window.__readerCumulativeLayoutShift || 0),
+  ).toBeLessThan(0.1);
+  await assertNoHorizontalOverflow(page);
+});

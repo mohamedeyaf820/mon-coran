@@ -74,39 +74,6 @@ for (const surah of SURAHS) {
     title: `Sourate ${surah.en} (${surah.ar}) — ${surah.fr} | MushafPlus`,
     description: baseDescription,
   });
-  for (let ayah = 2; ayah <= surah.ayahs; ayah += 1) {
-    routes.push({
-      pathname: `/surah/${surah.n}/${ayah}`,
-      kind: "ayah",
-      indexable: false,
-      surah,
-      ayah,
-      title: `Sourate ${surah.en} — verset ${ayah} | MushafPlus`,
-      description: `${baseDescription} Accès direct au verset ${ayah}.`,
-    });
-  }
-}
-
-for (let pageNumber = 1; pageNumber <= 604; pageNumber += 1) {
-  routes.push({
-    pathname: `/page/${pageNumber}`,
-    kind: "page",
-    indexable: false,
-    pageNumber,
-    title: `Page ${pageNumber} du Saint Coran | MushafPlus`,
-    description: `Page ${pageNumber} du Saint Coran : lecture, traduction, Tajwid et récitation audio.`,
-  });
-}
-
-for (let juzNumber = 1; juzNumber <= 30; juzNumber += 1) {
-  routes.push({
-    pathname: `/juz/${juzNumber}`,
-    kind: "juz",
-    indexable: false,
-    juzNumber,
-    title: `Juz ${juzNumber} du Saint Coran | MushafPlus`,
-    description: `Juz ${juzNumber} du Saint Coran : lecture, traduction, Tajwid et récitation audio.`,
-  });
 }
 
 function escapeHtml(value) {
@@ -375,6 +342,40 @@ for (const route of routes) {
   await writeFile(path.join(outputDir, "index.html"), renderPage(route), "utf8");
 }
 
+const notFoundCanonical = canonicalFor("/404");
+const notFoundHtml = template
+  .replace(
+    /<title>[\s\S]*?<\/title>/i,
+    "<title>Page introuvable | MushafPlus</title>",
+  )
+  .replace(
+    /<link rel="canonical"[^>]*>/i,
+    `<link rel="canonical" href="${notFoundCanonical}" />`,
+  )
+  .replace(
+    /<meta name="description"[^>]*>/i,
+    '<meta name="description" content="Cette page n’existe pas ou a été déplacée." />',
+  )
+  .replace(
+    /<meta name="robots"[^>]*>/i,
+    '<meta name="robots" content="noindex,nofollow" />',
+  )
+  .replace(
+    '<div id="root"></div>',
+    `<main style="max-width:42rem;margin:12vh auto;padding:2rem;font-family:system-ui,sans-serif;text-align:center;line-height:1.65;color:#173d2d">
+      <p style="font-weight:800;letter-spacing:.12em;color:#0d6b52">ERREUR 404</p>
+      <h1>Cette page est introuvable</h1>
+      <p>Le lien est peut-être incorrect ou la page a été déplacée.</p>
+      <p><a href="/">Retourner à l’accueil MushafPlus</a></p>
+    </main>`,
+  )
+  .replace(/\s*<script src="\/boot-recovery\.js"><\/script>/i, "")
+  .replace(
+    /\s*<script type="module"[^>]*src="[^"]+"[^>]*><\/script>/i,
+    "",
+  );
+await writeFile(path.join(distDir, "404.html"), notFoundHtml, "utf8");
+
 const indexableRoutes = routes.filter((route) => route.indexable);
 const sitemap = [
   '<?xml version="1.0" encoding="UTF-8"?>',
@@ -392,5 +393,5 @@ const sitemap = [
 await writeFile(path.join(distDir, "sitemap.xml"), sitemap, "utf8");
 
 console.log(
-  `[seo] ${routes.length} pages générées, ${indexableRoutes.length} URLs indexables dans le sitemap.`,
+  `[seo] ${routes.length} pages indexables + 404 générées, ${indexableRoutes.length} URLs dans le sitemap.`,
 );

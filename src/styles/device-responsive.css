@@ -100,7 +100,7 @@ html body .app-root[data-view="reading"] .quran-display--platform
 
 @media (max-width: 760px) {
   html body .app-root > .mp-header .mp-header__title-btn {
-    max-width: 46vw !important;
+    max-width: 52vw !important;
   }
 }
 
@@ -174,6 +174,20 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
 
 /* Reader density: keep the user's setting, then bound it for the device. */
 @media (max-width: 640px) {
+  html body .app-root > .mp-header .mp-header__title {
+    min-width: 0;
+    font-size: clamp(0.78rem, 3.5vw, 0.92rem) !important;
+    text-overflow: ellipsis;
+  }
+
+  html body .app-root > .mp-header
+    :is(.mp-header__nav-arrow, .mp-header__riwaya-mobile) {
+    width: var(--mp-device-touch) !important;
+    min-width: var(--mp-device-touch) !important;
+    height: var(--mp-device-touch) !important;
+    min-height: var(--mp-device-touch) !important;
+  }
+
   .app-root[data-view="reading"] .app-view-shell {
     padding-inline: max(0.25rem, env(safe-area-inset-left)) max(0.25rem, env(safe-area-inset-right)) !important;
   }
@@ -475,6 +489,7 @@ html body .settings-drawer__title {
   html body #root .app-root .sb-wrapper .sidebar-tab-trigger,
   html body .settings-qurancom.settings-qurancom .settings-tab-button {
     min-height: 44px !important;
+    font-size: max(0.75rem, 12px) !important;
   }
 
   html body .app-root[data-view="reading"] .mem-toolbar {

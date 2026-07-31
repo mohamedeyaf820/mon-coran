@@ -409,7 +409,7 @@
 .recitation-library__search {
     display: flex;
     min-width: 0;
-    min-height: 42px;
+    min-height: 44px;
     flex: 1 1 auto;
     align-items: center;
     gap: 0.48rem;
@@ -439,8 +439,8 @@
 
 .recitation-library__search button {
     display: inline-flex;
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
     flex: 0 0 auto;
     align-items: center;
     justify-content: center;

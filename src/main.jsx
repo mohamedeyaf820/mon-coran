@@ -19,32 +19,9 @@ import "./styles/header-enhanced.css";
 import "./styles/device-root.css";
 
 if (typeof window !== "undefined") {
-  // Defer non-critical feature CSS until idle — these are only needed after
-  // the user navigates to reading/settings/recitation pages. A first user
-  // interaction wins over the idle timer so route changes never flash unstyled.
-  let deferredStylesRequested = false;
-  const interactionEvents = ["pointerdown", "keydown", "touchstart"];
-  const loadDeferredStyles = () => {
-    if (deferredStylesRequested) return;
-    deferredStylesRequested = true;
-    for (const eventName of interactionEvents) {
-      window.removeEventListener(eventName, loadDeferredStyles);
-    }
-    import("./styles/deferredStyles.js").catch(() => null);
-  };
-
-  for (const eventName of interactionEvents) {
-    window.addEventListener(eventName, loadDeferredStyles, {
-      passive: eventName !== "keydown",
-      once: true,
-    });
-  }
-
-  if (typeof window.requestIdleCallback === "function") {
-    window.requestIdleCallback(loadDeferredStyles, { timeout: 2000 });
-  } else {
-    window.setTimeout(loadDeferredStyles, 500);
-  }
+  // Start the ordered polish layer in parallel with the application chunks.
+  // Loading it after an idle delay caused late restyling and large layout shifts.
+  import("./styles/deferredStyles.js").catch(() => null);
 }
 
 const CHUNK_RELOAD_KEY = "mushaf-plus:chunk-reload-once";

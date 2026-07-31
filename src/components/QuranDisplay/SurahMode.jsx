@@ -14,6 +14,7 @@ function SurahMode({
   ayahs,
   calibration,
   classes,
+  currentAyah,
   currentPlayingAyah,
   currentSurah,
   getTranslationForAyah,
@@ -104,6 +105,7 @@ function SurahMode({
       ) : (
         <QCVerseByVerseView
           ayahs={ayahs}
+          initialTargetAyah={currentAyah}
           currentPlayingAyah={currentPlayingAyah}
           activeAyah={activeAyah}
           lang={lang}

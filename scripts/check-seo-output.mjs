@@ -1,4 +1,4 @@
-import { readFile, stat } from "node:fs/promises";
+import { access, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -30,17 +30,27 @@ function structuredData(html) {
 
 const home = await readDist("index.html");
 const surah = await readDist(path.join("surah", "2", "index.html"));
-const ayah = await readDist(path.join("surah", "2", "2", "index.html"));
-const page = await readDist(path.join("page", "1", "index.html"));
-const juz = await readDist(path.join("juz", "1", "index.html"));
 const surahIndex = await readDist(path.join("surahs", "index.html"));
+const notFound = await readDist("404.html");
 const sitemap = await readDist("sitemap.xml");
 
 check(robotsContent(home) === "index,follow", "homepage must be indexable");
 check(robotsContent(surah) === "index,follow", "surah pages must be indexable");
-check(robotsContent(ayah) === "noindex,follow", "ayah deep links must be noindex");
-check(robotsContent(page) === "noindex,follow", "generic page routes must be noindex");
-check(robotsContent(juz) === "noindex,follow", "generic juz routes must be noindex");
+check(robotsContent(notFound) === "noindex,nofollow", "404 page must not be indexable");
+
+for (const relativePath of [
+  path.join("surah", "2", "2", "index.html"),
+  path.join("page", "1", "index.html"),
+  path.join("juz", "1", "index.html"),
+]) {
+  let exists = true;
+  try {
+    await access(path.join(distDir, relativePath));
+  } catch {
+    exists = false;
+  }
+  check(!exists, `${relativePath} must use the SPA fallback instead of generated HTML`);
+}
 
 check(
   home.includes('property="og:image" content="https://mon-coran.netlify.app/og-image.jpg"'),

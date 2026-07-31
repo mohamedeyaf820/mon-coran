@@ -297,6 +297,7 @@ export default function QCVerseByVerseView({
   surahGroups,
   lang,
   currentPlayingAyah,
+  initialTargetAyah,
   activeAyah,
   showTranslation,
   showTransliteration,
@@ -368,6 +369,9 @@ export default function QCVerseByVerseView({
           currentPlayingAyah?.ayah === ayah.numberInSurah &&
           currentPlayingAyah?.surah === surahNum;
         const isActive = activeAyah === toggleId;
+        const isInitialTarget =
+          displayMode === "surah" &&
+          Number(initialTargetAyah) === Number(ayah.numberInSurah);
         const showSeparator =
           showPageSeparators &&
           (index === 0 || items[index - 1].ayah.page !== ayah.page);
@@ -381,9 +385,9 @@ export default function QCVerseByVerseView({
           <VirtualizedItem
             key={itemKey}
             cacheKey={`${contentKey}:${renderingProfile}:${itemKey}`}
-            eager={index < 10}
+            eager={index < 10 || isInitialTarget}
             estimatedHeight={estimatedHeight + (showSeparator ? 70 : 0)}
-            pinned={isPlaying || isActive}
+            pinned={isPlaying || isActive || isInitialTarget}
             id={ayahId}
             data-surah-number={surahNum}
             data-ayah-number={ayah.numberInSurah}

@@ -76,7 +76,7 @@ export default {
     amiriQuranHint: 'خط أميري القرآن، أسلوب خطي كلاسيكي',
     notoNaskhHint: 'Noto Naskh Arabic، واضح على جميع الشاشات',
     qpcWarshHint: 'خط رواية ورش',
-    kfgqpcWarshHint: 'ورش Unicode KFGQPC، يُحمَّل عبر CDN',
+    kfgqpcWarshHint: 'خط ورش KFGQPC متاح دون اتصال',
     scheherazadeWarshHint: 'شهرزاد الجديد، متوافق مع رواية ورش',
   },
   audio: {
