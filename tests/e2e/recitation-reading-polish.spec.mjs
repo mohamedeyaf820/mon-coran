@@ -11,7 +11,7 @@ async function seed(page, overrides = {}) {
       localStorage.setItem(
         key,
         JSON.stringify({
-          splashDone: true,
+          skipSplashAnimation: true,
           showHome: false,
           showDuas: false,
           sidebarOpen: false,

@@ -16,7 +16,7 @@ test.beforeEach(async ({ page }) => {
     localStorage.setItem(
       "mushaf-plus-settings",
       JSON.stringify({
-        splashDone: true,
+        skipSplashAnimation: true,
         showHome: true,
         showDuas: false,
         lang: "fr",

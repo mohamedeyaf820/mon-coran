@@ -10,7 +10,7 @@ async function seedDarkTheme(page) {
     localStorage.setItem(
       key,
       JSON.stringify({
-        splashDone: true,
+        skipSplashAnimation: true,
         showHome: true,
         showDuas: false,
         lang: "fr",

@@ -13,7 +13,7 @@ async function patchAudioPlay(page) {
     try {
       localStorage.clear();
       localStorage.setItem("mushaf-plus-settings", JSON.stringify({
-        splashDone: true,
+        skipSplashAnimation: true,
         showHome: false,
         showDuas: false,
         sidebarOpen: false,
@@ -122,7 +122,7 @@ test("E2E: la lecture Warsh en vue Mushaf conserve un seul marqueur d'ayah", asy
     localStorage.setItem(
       "mushaf-plus-settings",
       JSON.stringify({
-        splashDone: true,
+        skipSplashAnimation: true,
         showHome: false,
         showDuas: false,
         sidebarOpen: false,

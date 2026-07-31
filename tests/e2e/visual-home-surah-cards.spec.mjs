@@ -20,7 +20,7 @@ function buildSeedSettings(theme) {
     displayMode: "surah",
     showHome: true,
     showDuas: false,
-    splashDone: true,
+    skipSplashAnimation: true,
     currentSurah: 1,
     currentAyah: 1,
     quranFontSize: 42,

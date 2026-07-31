@@ -182,7 +182,7 @@ async function seedReaderState(page) {
         key,
         JSON.stringify({
           ...current,
-          splashDone: true,
+          skipSplashAnimation: true,
           showHome: false,
           showDuas: false,
           sidebarOpen: false,

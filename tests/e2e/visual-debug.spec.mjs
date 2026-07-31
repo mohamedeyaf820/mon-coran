@@ -9,7 +9,7 @@ test('visual debug - capture screenshots of Warsh mode', async ({ page }) => {
   // Navigate to app
   await page.addInitScript(() => {
     try {
-      localStorage.setItem('mushaf-plus-settings', JSON.stringify({ splashDone: true }));
+      localStorage.setItem('mushaf-plus-settings', JSON.stringify({ skipSplashAnimation: true }));
     } catch {}
   });
   await page.goto('/surah/4');

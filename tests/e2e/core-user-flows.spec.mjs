@@ -10,7 +10,7 @@ async function seedFrenchState(page, overrides = {}) {
       localStorage.setItem(
         key,
         JSON.stringify({
-          splashDone: true,
+          skipSplashAnimation: true,
           showHome: true,
           showDuas: false,
           sidebarOpen: false,

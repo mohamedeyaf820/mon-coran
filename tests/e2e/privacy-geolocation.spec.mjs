@@ -5,7 +5,7 @@ const SETTINGS_KEY = "mushaf-plus-settings";
 async function seedHome(page, overrides = {}) {
   await page.addInitScript(({ key, settings }) => {
     localStorage.setItem(key, JSON.stringify({
-      splashDone: true,
+      skipSplashAnimation: true,
       showHome: true,
       showDuas: false,
       sidebarOpen: false,

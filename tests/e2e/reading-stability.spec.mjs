@@ -12,7 +12,7 @@ async function seedReader(page, overrides = {}) {
           key,
           JSON.stringify({
             ...previous,
-            splashDone: true,
+            skipSplashAnimation: true,
             showHome: false,
             showDuas: false,
             sidebarOpen: false,

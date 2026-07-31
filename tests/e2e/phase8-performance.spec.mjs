@@ -21,7 +21,7 @@ async function prepareReader(page, verseCount = 50) {
     localStorage.setItem(
       key,
       JSON.stringify({
-        splashDone: true,
+        skipSplashAnimation: true,
         showHome: false,
         showDuas: false,
         sidebarOpen: false,

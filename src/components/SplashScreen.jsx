@@ -34,6 +34,10 @@ const VERSES = [
 ];
 
 const skipLabels = { ar: 'تخطي', fr: 'Passer', en: 'Skip' };
+const SPLASH_MIN_VISIBLE_MS = 3000;
+const SPLASH_MAX_VISIBLE_MS = 4500;
+const SPLASH_FADE_MS = 240;
+const SPLASH_SKIP_DELAY_MS = 2200;
 
 export default function SplashScreen({
   onDone,
@@ -48,17 +52,19 @@ export default function SplashScreen({
   const [showSkip, setShowSkip] = useState(false);
 
   useEffect(() => {
-    if (lowPerfMode) return;
-    const t = setTimeout(() => setShowSkip(true), 250);
-    return () => clearTimeout(t);
-  }, [lowPerfMode]);
+    const timer = setTimeout(
+      () => setShowSkip(true),
+      SPLASH_SKIP_DELAY_MS,
+    );
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const dismiss = () => {
       if (dismissedRef.current) return;
       dismissedRef.current = true;
       setFadeOut(true);
-      setTimeout(onDone, 180);
+      setTimeout(onDone, SPLASH_FADE_MS);
     };
 
     let prefetchDone = false;
@@ -78,15 +84,6 @@ export default function SplashScreen({
       prefetchDone = true;
     }
 
-    if (lowPerfMode) {
-      const t1 = setTimeout(() => setFadeOut(true), 120);
-      const t2 = setTimeout(() => onDone(), 280);
-      return () => {
-        clearTimeout(t1);
-        clearTimeout(t2);
-      };
-    }
-
     // Rotation des versets toutes les ~1.4 s
     const verseTick = setInterval(() => {
       setVerseVisible(false);
@@ -96,16 +93,18 @@ export default function SplashScreen({
       }, 350);
     }, 1600);
 
-    // Keep the brand transition visible without delaying the first useful screen.
-    // After t1, tryEarlyDismiss() handles early exit if prefetch already resolved.
-    // t2 is the hard deadline — dismiss() is idempotent so no double-run risk.
-    const t1 = setTimeout(() => { setFadeOut(true); timerDone = true; tryEarlyDismiss(); }, 220);
-    const t2 = setTimeout(() => dismiss(), 400);
+    // Keep the branded opening visible for three seconds while the actual app
+    // renders behind it. Slow prefetches may extend it, but never beyond 4.5 s.
+    const minTimer = setTimeout(() => {
+      timerDone = true;
+      tryEarlyDismiss();
+    }, SPLASH_MIN_VISIBLE_MS);
+    const maxTimer = setTimeout(() => dismiss(), SPLASH_MAX_VISIBLE_MS);
 
     return () => {
       clearInterval(verseTick);
-      clearTimeout(t1);
-      clearTimeout(t2);
+      clearTimeout(minTimer);
+      clearTimeout(maxTimer);
     };
   }, [onDone, onPrefetch, lowPerfMode]);
 
@@ -124,7 +123,7 @@ export default function SplashScreen({
             dismissedRef.current = true;
             setShowSkip(false);
             setFadeOut(true);
-            setTimeout(onDone, 180);
+            setTimeout(onDone, SPLASH_FADE_MS);
           }}
         >
           {skipLabels[lang] ?? skipLabels.fr} ›
@@ -336,7 +335,7 @@ export default function SplashScreen({
                      shimmerBar 1.8s linear infinite;
         }
         .splash-screen.perf-low .splash-loader-bar {
-          animation: loadBar 0.35s linear forwards;
+          animation: loadBar 3s linear forwards;
         }
         .splash-ornament {
           color: rgba(212,175,55,0.25);

@@ -5,7 +5,7 @@ test.use({ serviceWorkers: "allow" });
 test("PWA: the visited app shell reloads while offline", async ({ page, context }) => {
   await page.addInitScript(() => {
     localStorage.setItem("mushaf-plus-settings", JSON.stringify({
-      splashDone: true,
+      skipSplashAnimation: true,
       showHome: true,
       showDuas: false,
       sidebarOpen: false,
@@ -46,7 +46,7 @@ test("PWA: the visited app shell reloads while offline", async ({ page, context 
 test("PWA: a visited surah keeps its Quran text offline", async ({ page, context }) => {
   await page.addInitScript(() => {
     localStorage.setItem("mushaf-plus-settings", JSON.stringify({
-      splashDone: true,
+      skipSplashAnimation: true,
       showHome: false,
       showDuas: false,
       displayMode: "surah",

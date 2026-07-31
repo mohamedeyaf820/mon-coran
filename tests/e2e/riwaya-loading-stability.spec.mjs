@@ -30,7 +30,7 @@ async function seedReader(page, overrides = {}) {
       localStorage.setItem(
         key,
         JSON.stringify({
-          splashDone: true,
+          skipSplashAnimation: true,
           showHome: false,
           showDuas: false,
           showTranslation: false,

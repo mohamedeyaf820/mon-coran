@@ -45,7 +45,7 @@ test("A11y: les notifications utilisent la langue de l'interface", async ({ page
         theme: "light",
         riwaya: "hafs",
         showHome: true,
-        splashDone: true,
+        skipSplashAnimation: true,
       }),
     );
   });
@@ -153,7 +153,7 @@ test("A11y: la recherche du lecteur garde un contraste lisible en thème sombre"
         displayMode: "surah",
         showHome: false,
         currentSurah: 4,
-        splashDone: true,
+        skipSplashAnimation: true,
       }),
     );
   });

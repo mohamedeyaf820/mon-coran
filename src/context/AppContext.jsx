@@ -100,9 +100,10 @@ const getInitialState = () => {
   audioMakerOpen: false,
   toolsHubOpen: false,
   futureHubOpen: null,
-  // Le splash n'est affiché qu'au premier lancement. Les installations
-  // existantes sans cette préférence le verront une dernière fois.
-  splashDone: stored.splashDone ?? false,
+  // Chaque nouvelle ouverture complète rejoue le splash. Les tests et les
+  // environnements d'intégration peuvent explicitement le désactiver.
+  skipSplashAnimation: Boolean(stored.skipSplashAnimation),
+  splashDone: Boolean(stored.skipSplashAnimation),
   tafsirSidebarOpen: false,
   tafsirSidebarVerse: null,
 
@@ -497,7 +498,7 @@ export function AppProvider({ children }) {
   const persistentSettings = useMemo(() => ({
     lang: state.lang,
     theme: state.theme,
-    splashDone: state.splashDone,
+    skipSplashAnimation: state.skipSplashAnimation,
     riwaya: state.riwaya,
     reciter: state.reciter,
     quranFontSize: state.quranFontSize,
@@ -548,7 +549,7 @@ export function AppProvider({ children }) {
   }), [
     state.lang,
     state.theme,
-    state.splashDone,
+    state.skipSplashAnimation,
     state.riwaya,
     state.reciter,
     state.quranFontSize,

@@ -97,17 +97,28 @@ test("first launch keeps the critical network payload compact", async ({ page })
   expect(quranTextRequests).toHaveLength(0);
 });
 
-test("the splash is persisted and does not block later refreshes", async ({ page }) => {
+test("the branded splash lasts three to five seconds on every app opening", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".splash-screen")).toBeVisible();
+  const firstVisibleAt = Date.now();
+
+  await page.waitForTimeout(2_700);
+  await expect(page.locator(".splash-screen")).toBeVisible();
   await expect(page.locator(".splash-screen")).toHaveCount(0, {
-    timeout: 1_500,
+    timeout: 2_800,
   });
+  const firstDuration = Date.now() - firstVisibleAt;
+  expect(firstDuration).toBeGreaterThanOrEqual(2_900);
+  expect(firstDuration).toBeLessThanOrEqual(5_200);
   await expect(page.locator(".hp-wrapper")).toBeVisible();
 
-  await page.waitForTimeout(700);
   await page.reload({ waitUntil: "domcontentloaded" });
 
-  await expect(page.locator(".splash-screen")).toHaveCount(0);
+  await expect(page.locator(".splash-screen")).toBeVisible();
+  await page.waitForTimeout(2_700);
+  await expect(page.locator(".splash-screen")).toBeVisible();
+  await expect(page.locator(".splash-screen")).toHaveCount(0, {
+    timeout: 2_800,
+  });
   await expect(page.locator(".hp-wrapper")).toBeVisible({ timeout: 5_000 });
 });

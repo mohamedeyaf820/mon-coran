@@ -9,7 +9,7 @@ async function seedReadingState(page) {
       localStorage.setItem(
         key,
         JSON.stringify({
-          splashDone: true,
+          skipSplashAnimation: true,
           showHome: false,
           showDuas: false,
           sidebarOpen: false,
@@ -55,7 +55,7 @@ async function openHome(page, viewport) {
       localStorage.setItem(
         key,
         JSON.stringify({
-          splashDone: true,
+          skipSplashAnimation: true,
           showHome: true,
           showDuas: false,
           sidebarOpen: false,

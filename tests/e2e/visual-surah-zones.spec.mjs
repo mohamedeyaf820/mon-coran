@@ -29,7 +29,7 @@ function buildSeedSettings(theme) {
     showWordByWord: false,
     showTransliteration: false,
     showWordTranslation: false,
-    splashDone: true,
+    skipSplashAnimation: true,
   };
 }
 
