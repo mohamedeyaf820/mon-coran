@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { test, expect } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 const OUTPUT_DIR = path.join("test-results", "visual-surah-zones");
@@ -43,6 +44,7 @@ for (const viewport of VIEWPORTS) {
         hasTouch: viewport.isMobile,
       });
       const page = await context.newPage();
+      await installQuranNetworkFixtures(page);
 
       await page.addInitScript(
         ({ key, payload }) => {

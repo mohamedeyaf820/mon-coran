@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
@@ -95,6 +96,7 @@ async function assertNoBlockingVeil(page) {
 }
 
 test("reading refresh keeps mushaf visible without stale blur overlay", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
   await seedReader(page, { mushafLayout: "mushaf" });
   await page.setViewportSize({ width: 390, height: 844 });
 
@@ -118,6 +120,7 @@ test("reading refresh keeps mushaf visible without stale blur overlay", async ({
 });
 
 test("reading page stays usable after riwaya refresh and browser history navigation", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
   await seedReader(page, {
     riwaya: "warsh",
     fontFamily: "qpc-warsh",
@@ -153,6 +156,7 @@ test("reading page stays usable after riwaya refresh and browser history navigat
 test("cold Hafs reading keeps study actions usable without speculative audio or Warsh requests", async ({
   page,
 }) => {
+  await installQuranNetworkFixtures(page);
   await seedReader(page, {
     showTranslation: false,
     riwaya: "hafs",

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
 async function openReader(page) {
   await page.goto("/surah/1");
@@ -115,6 +116,7 @@ test("E2E: clic mot sans audioUrl/lecture mot en echec fallback ayah", async ({
 test("E2E: la lecture Warsh en vue Mushaf conserve un seul marqueur d'ayah", async ({
   page,
 }) => {
+  await installQuranNetworkFixtures(page);
   await page.addInitScript(() => {
     localStorage.clear();
     localStorage.setItem(

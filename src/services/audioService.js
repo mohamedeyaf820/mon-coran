@@ -436,12 +436,19 @@ class AudioService {
 
     const sourceAyahs =
       Array.isArray(this._playlistSourceAyahs) && this._playlistSourceAyahs.length > 0
-        ? this._playlistSourceAyahs.map((ayah) => ({ ...ayah }))
+        ? this._playlistSourceAyahs.map((ayah) => ({
+            ...ayah,
+            // Quran.com timing URLs belong to the previously selected reciter.
+            // Reusing them here can briefly (or permanently, when the next
+            // reciter has no timing mapping) keep playing the old voice.
+            quranComAudioTiming: null,
+          }))
         : this.playlist.map((item) => ({
             surah: item.surah,
             ayah: item.ayah,
             number: item.globalNumber,
             text: item.text,
+            quranComAudioTiming: null,
           }));
 
     this.loadPlaylist(sourceAyahs, reciterCdn, cdnType);

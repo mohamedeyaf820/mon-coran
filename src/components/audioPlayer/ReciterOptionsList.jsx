@@ -226,6 +226,8 @@ export default function ReciterOptionsList(props) {
                   )}
                   aria-pressed={active}
                   aria-label={`${displayName}, ${riwayaLabel}, ${styleLabel}`}
+                  data-testid="reciter-option"
+                  data-reciter-id={r.id}
                   data-state={isLoading ? "loading" : active ? "selected" : "idle"}
                   disabled={isAnyReciterSwitching || (isUnavailable && !active)}
                 >

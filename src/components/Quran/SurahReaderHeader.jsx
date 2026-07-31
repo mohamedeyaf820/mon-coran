@@ -200,6 +200,7 @@ export default function SurahReaderHeader({
             onClick={handlePlay}
             disabled={isPreparing}
             aria-label={isPlaying ? lbl(lang, "Pause", "Pause", "إيقاف") : lbl(lang, "Écouter", "Listen", "استمع")}
+            data-testid="surah-play"
           >
             {isPreparing ? (
               <Loader2 size={14} className="animate-spin" />
@@ -241,6 +242,7 @@ export default function SurahReaderHeader({
             onClick={handlePlay}
             disabled={isPreparing}
             aria-label={isPlaying ? lbl(lang, "Pause", "Pause", "إيقاف") : lbl(lang, "Écouter", "Listen", "استمع")}
+            data-testid="surah-play"
           >
             {isPreparing ? (
               <Loader2 size={14} className="animate-spin" />

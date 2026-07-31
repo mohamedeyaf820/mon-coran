@@ -194,6 +194,71 @@ test("audio performance: rapid reciter changes are serialized and latest wins", 
   service.destroy();
 });
 
+test("audio correctness: switching reciter never reuses the previous reciter timing URL", async () => {
+  const service = new AudioService();
+  service.loadPlaylist(
+    [
+      {
+        surah: 1,
+        ayah: 1,
+        number: 1,
+        text: "Ø¨Ø³Ù… Ø§Ù„Ù„Ù‡",
+        quranComAudioTiming: {
+          url: "https://verses.quran.com/old-reciter/001001.mp3",
+          segments: [{ wordIndex: 0, startMs: 0, endMs: 500 }],
+        },
+      },
+    ],
+    "ar.alafasy",
+    "islamic",
+  );
+
+  assert.equal(
+    service.playlist[0].url,
+    "https://verses.quran.com/old-reciter/001001.mp3",
+  );
+  await service.switchReciter(
+    "Abu_Bakr_Ash-Shaatree_128kbps",
+    "everyayah",
+  );
+
+  assert.equal(
+    service.playlist[0].url,
+    "https://everyayah.com/data/Abu_Bakr_Ash-Shaatree_128kbps/001001.mp3",
+  );
+  assert.equal(service.playlist[0].quranComAudioTiming, null);
+  service.destroy();
+});
+
+test("audio resilience: EveryAyah primary failure falls back to its mirror", async () => {
+  const service = new AudioService();
+  const attempts = [];
+  service.loadPlaylist(
+    [{ surah: 1, ayah: 1, number: 1, text: "Ø¨Ø³Ù… Ø§Ù„Ù„Ù‡" }],
+    "Abu_Bakr_Ash-Shaatree_128kbps",
+    "everyayah",
+  );
+  service._loadUrlWithRetry = async (url) => {
+    attempts.push(url);
+    if (url.startsWith("https://everyayah.com/")) {
+      throw new Error("Simulated primary CDN outage");
+    }
+  };
+
+  await service.loadAndPlay(0);
+
+  assert.deepEqual(attempts, [
+    "https://everyayah.com/data/Abu_Bakr_Ash-Shaatree_128kbps/001001.mp3",
+    "https://www.everyayah.com/data/Abu_Bakr_Ash-Shaatree_128kbps/001001.mp3",
+  ]);
+  assert.equal(
+    service.currentAyah.url,
+    "https://www.everyayah.com/data/Abu_Bakr_Ash-Shaatree_128kbps/001001.mp3",
+  );
+  assert.equal(service.isPlaying, true);
+  service.destroy();
+});
+
 test("audio lifecycle: play and pause subscribers drive pausable consumers", async () => {
   const service = new AudioService();
   const events = [];

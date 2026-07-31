@@ -1,7 +1,9 @@
 import { test, expect } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
 async function openReader(page) {
-  await page.goto("/");
+  await installQuranNetworkFixtures(page);
+  await page.goto("/surah/2");
   const quranDisplay = page.locator(".quran-display, .quran-display--platform").first();
 
   if (!(await quranDisplay.isVisible().catch(() => false))) {
@@ -170,14 +172,6 @@ async function scrollReadingContainer(page, top) {
   }, top);
 }
 
-async function switchToLongerSurah(page) {
-  const nextSurah = page.locator(".quran-mode-pane--surah .quran-nav button").nth(1);
-  if (await nextSurah.isVisible().catch(() => false)) {
-    await nextSurah.click();
-    await page.waitForTimeout(500);
-  }
-}
-
 async function seedReaderState(page) {
   await page.addInitScript(() => {
     try {
@@ -193,6 +187,9 @@ async function seedReaderState(page) {
           showDuas: false,
           sidebarOpen: false,
           displayMode: "surah",
+          mushafLayout: "list",
+          riwaya: "hafs",
+          fontFamily: "qpc-hafs",
           lastPosition: {
             ...(current.lastPosition || {}),
             surah: 2,
@@ -212,7 +209,6 @@ async function seedReaderState(page) {
 test("E2E: scroll lecture fonctionne et retour haut remet au debut", async ({ page }) => {
   await seedReaderState(page);
   await openReader(page);
-  await switchToLongerSurah(page);
 
   await expect
     .poll(async () => {
@@ -257,7 +253,6 @@ test.describe("mobile", () => {
   test("E2E mobile: scroll lecture reste actif", async ({ page }) => {
     await seedReaderState(page);
     await openReader(page);
-    await switchToLongerSurah(page);
 
     await expect
       .poll(async () => {

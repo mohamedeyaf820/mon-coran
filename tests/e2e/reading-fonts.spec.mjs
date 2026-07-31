@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
 async function openReader(page) {
+  await installQuranNetworkFixtures(page);
   await page.goto("/surah/1/1");
   await expect(page.locator(".quran-display--platform")).toBeVisible({
     timeout: 30_000,

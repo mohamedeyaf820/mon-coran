@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
@@ -33,6 +34,7 @@ async function seedReadingState(page) {
 }
 
 async function openReader(page, viewport) {
+  await installQuranNetworkFixtures(page);
   await seedReadingState(page);
   await page.setViewportSize(viewport);
   await page.goto("/surah/3");

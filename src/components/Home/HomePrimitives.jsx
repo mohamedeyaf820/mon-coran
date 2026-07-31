@@ -223,6 +223,8 @@ export const SurahCard = memo(function SurahCard({
         isPlaying && "border-gold/60 bg-gold/5 hover:border-gold/70",
       )}
       data-stype={surah.type?.toLowerCase()}
+      data-testid="surah-card"
+      data-surah={surah.n}
       style={cardVisibilityStyle}
     >
       <button
@@ -233,6 +235,7 @@ export const SurahCard = memo(function SurahCard({
         onFocus={() => onIntent?.(surah.n)}
         onTouchStart={() => onIntent?.(surah.n)}
         aria-label={openAriaLabel}
+        data-testid="surah-card-open"
       />
 
       {/* Type indicator strip */}

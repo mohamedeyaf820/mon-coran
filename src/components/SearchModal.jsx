@@ -567,6 +567,9 @@ export default function SearchModal() {
                             id={`search-result-${index}`}
                             role="option"
                             aria-selected={activeResultIdx === index}
+                            data-testid="search-result"
+                            data-surah={surahNumber}
+                            data-ayah={ayahNumber}
                             className={`search-pro__result ${isTranslationMode ? "is-translation" : ""} ${activeResultIdx === index ? "is-keyboard-active" : ""}`}
                             onClick={() => goToAyah(surahNumber, ayahNumber)}
                           >

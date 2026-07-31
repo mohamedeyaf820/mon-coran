@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
 async function goToSurah(page, surahNum = 1) {
+  await installQuranNetworkFixtures(page);
   await page.goto("/");
   await page.waitForLoadState("networkidle");
 
