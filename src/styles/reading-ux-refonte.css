@@ -310,7 +310,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .mushaf-page-w
 
 @media (max-width: 760px) {
   .app-root[data-view="reading"] .quran-display.quran-display--platform {
-    --reader-arabic-size: clamp(1.72rem, var(--qd-reading-font-size, 32px), 3.5rem);
+    --reader-arabic-size: var(--qd-reading-font-size, 32px);
     padding-inline: 0.25rem !important;
     padding-bottom: calc(var(--player-h, 88px) + 4rem) !important;
   }
@@ -361,13 +361,13 @@ html body .app-root[data-view="reading"] .quran-display--platform .mushaf-page-w
 
 @media (max-width: 520px) {
   .app-root[data-view="reading"] .quran-display.quran-display--platform {
-    --reader-arabic-size: clamp(1.58rem, var(--qd-reading-font-size, 29px), 3.2rem);
+    --reader-arabic-size: var(--qd-reading-font-size, 29px);
   }
 }
 
 @media (max-width: 420px) {
   .app-root[data-view="reading"] .quran-display.quran-display--platform {
-    --reader-arabic-size: clamp(1.55rem, var(--qd-reading-font-size, 28px), 3rem);
+    --reader-arabic-size: var(--qd-reading-font-size, 28px);
     padding-inline: 0.15rem !important;
   }
 

@@ -193,7 +193,7 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
   }
 
   html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
-    font-size: clamp(24px, var(--qd-reading-font-size, 28px), 42px) !important;
+    font-size: var(--qd-reading-font-size, 24px) !important;
     line-height: 1.95 !important;
   }
 
@@ -207,7 +207,7 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
   }
 
   html body .app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.mushaf-text-block, .mushaf-container, .verse-text) {
-    font-size: clamp(20px, var(--qd-reading-font-size, 26px), 36px) !important;
+    font-size: var(--qd-reading-font-size, 22px) !important;
   }
 
   html body .app-root[data-view="reading"] .qc-list-card__top {
@@ -251,12 +251,12 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
 
 @media (min-width: 641px) and (max-width: 1024px) {
   html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
-    font-size: clamp(30px, var(--qd-reading-font-size, 32px), 54px) !important;
+    font-size: var(--qd-reading-font-size, 30px) !important;
     line-height: 2.02 !important;
   }
 
   html body .app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.mushaf-text-block, .mushaf-container, .verse-text) {
-    font-size: clamp(28px, var(--qd-reading-font-size, 32px), 48px) !important;
+    font-size: var(--qd-reading-font-size, 28px) !important;
   }
 
   .app-root .app-view-home .hp-card-name {
@@ -266,12 +266,12 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
 
 @media (min-width: 1025px) {
   html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
-    font-size: clamp(32px, var(--qd-reading-font-size, 34px), 68px) !important;
+    font-size: var(--qd-reading-font-size, 34px) !important;
     line-height: 2.06 !important;
   }
 
   html body .app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.mushaf-text-block, .mushaf-container, .verse-text) {
-    font-size: clamp(30px, var(--qd-reading-font-size, 34px), 64px) !important;
+    font-size: var(--qd-reading-font-size, 32px) !important;
   }
 
   html body .app-root[data-view="reading"] .qc-list-card .qc-ayah-text-ar {
@@ -286,7 +286,7 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
 
 @media (min-width: 1440px) {
   html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
-    font-size: clamp(34px, var(--qd-reading-font-size, 36px), 72px) !important;
+    font-size: var(--qd-reading-font-size, 36px) !important;
   }
 }
 
@@ -510,9 +510,9 @@ html body .settings-drawer__title {
 @media (min-width: 641px) and (max-width: 1024px) {
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
     .qc-list-card .qc-ayah-text-ar {
-    --reader-arabic-size: clamp(30px, var(--qd-reading-font-size, 32px), 54px) !important;
-    --qcom-ar-size: clamp(30px, var(--qd-reading-font-size, 32px), 54px) !important;
-    font-size: clamp(30px, var(--qd-reading-font-size, 32px), 54px) !important;
+    --reader-arabic-size: var(--qd-reading-font-size, 30px) !important;
+    --qcom-ar-size: var(--qd-reading-font-size, 30px) !important;
+    font-size: var(--qd-reading-font-size, 30px) !important;
     line-height: 2.02 !important;
   }
 }
@@ -528,9 +528,9 @@ html body .settings-drawer__title {
 
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
     .qc-list-card .qc-ayah-text-ar {
-    --reader-arabic-size: clamp(32px, var(--qd-reading-font-size, 34px), 68px) !important;
-    --qcom-ar-size: clamp(32px, var(--qd-reading-font-size, 34px), 68px) !important;
-    font-size: clamp(32px, var(--qd-reading-font-size, 34px), 68px) !important;
+    --reader-arabic-size: var(--qd-reading-font-size, 34px) !important;
+    --qcom-ar-size: var(--qd-reading-font-size, 34px) !important;
+    font-size: var(--qd-reading-font-size, 34px) !important;
     line-height: 2.06 !important;
   }
 }
@@ -538,8 +538,21 @@ html body .settings-drawer__title {
 @media (min-width: 1440px) {
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
     .qc-list-card .qc-ayah-text-ar {
-    --reader-arabic-size: clamp(34px, var(--qd-reading-font-size, 36px), 72px) !important;
-    --qcom-ar-size: clamp(34px, var(--qd-reading-font-size, 36px), 72px) !important;
-    font-size: clamp(34px, var(--qd-reading-font-size, 36px), 72px) !important;
+    --reader-arabic-size: var(--qd-reading-font-size, 36px) !important;
+    --qcom-ar-size: var(--qd-reading-font-size, 36px) !important;
+    font-size: var(--qd-reading-font-size, 36px) !important;
   }
+}
+
+/* Mushaf/continuous pages use the same resolved size as verse cards. */
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
+  --cpv-font-size: var(--qd-reading-font-size, 28px) !important;
+  font-size: var(--qd-reading-font-size, 28px) !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container
+  :is(.quran-verse-inline, .quran-arabic-text, .verse-text, .verse-text *) {
+  font-size: inherit !important;
 }

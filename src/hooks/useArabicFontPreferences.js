@@ -2,16 +2,15 @@ import { useCallback, useEffect } from "react";
 import { shallowEqual, useAppActions, useAppSelector } from "../context/AppContext";
 import { normalizeFontId } from "../data/fonts";
 import { ensureFontLoaded } from "../services/fontLoader";
+import {
+  ARABIC_FONT_SIZE_MAX,
+  ARABIC_FONT_SIZE_MIN,
+  clampArabicFontSize,
+} from "../utils/arabicTypography";
 
 const STORAGE_KEY = "mushaf-plus-arabic-font-preferences";
-export const ARABIC_FONT_SIZE_MIN = 12;
-export const ARABIC_FONT_SIZE_MAX = 96;
 
-function clampSize(value) {
-  const numeric = Number(value);
-  if (!Number.isFinite(numeric)) return 25;
-  return Math.max(ARABIC_FONT_SIZE_MIN, Math.min(ARABIC_FONT_SIZE_MAX, numeric));
-}
+export { ARABIC_FONT_SIZE_MAX, ARABIC_FONT_SIZE_MIN };
 
 export default function useArabicFontPreferences() {
   const { fontFamily, quranFontSize, riwaya } = useAppSelector(
@@ -60,7 +59,7 @@ export default function useArabicFontPreferences() {
     (nextSize) => {
       dispatch({
         type: "SET_QURAN_FONT_SIZE",
-        payload: clampSize(nextSize),
+        payload: clampArabicFontSize(nextSize),
       });
     },
     [dispatch],
@@ -68,7 +67,7 @@ export default function useArabicFontPreferences() {
 
   return {
     arabicFontFamily: normalizeFontId(fontFamily, riwaya),
-    arabicFontSize: clampSize(quranFontSize),
+    arabicFontSize: clampArabicFontSize(quranFontSize),
     riwaya,
     setArabicFontFamily,
     setArabicFontSize,

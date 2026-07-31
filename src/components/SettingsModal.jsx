@@ -38,6 +38,10 @@ import {
   enableProtectedMode,
   lockProtectedModeNow,
 } from "../services/privacyProtectionService";
+import {
+  ARABIC_FONT_SIZE_MAX,
+  ARABIC_FONT_SIZE_MIN,
+} from "../utils/arabicTypography";
 
 const TRANSLATION_LANGS = [
   { id: "fr", label: "FR" },
@@ -559,8 +563,8 @@ export default function SettingsModal() {
         <SliderRow
           id="settings-font-size-quran"
           label={t("settings.arabicFontSize", lang)}
-          min={12}
-          max={96}
+          min={ARABIC_FONT_SIZE_MIN}
+          max={ARABIC_FONT_SIZE_MAX}
           value={quranFontSize}
           suffix="px"
           onChange={(value) => set({ quranFontSize: value })}

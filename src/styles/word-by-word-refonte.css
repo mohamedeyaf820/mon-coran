@@ -135,7 +135,7 @@ html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block >
     padding: 0.1rem 0 0.18rem !important;
     color: var(--text-quran, var(--text-primary)) !important;
     font-family: var(--qd-font-family, var(--font-quran), serif) !important;
-    font-size: clamp(1.65rem, var(--wbw-arabic-size, 2.1rem), 3.2rem) !important;
+    font-size: var(--wbw-arabic-size, var(--qd-reading-font-size, 2.1rem)) !important;
     font-weight: 400 !important;
     line-height: 1.8 !important;
     /* wrap long Arabic words instead of overflowing the card */
@@ -293,7 +293,7 @@ html body .app-root .quran-display--platform .wbw-study-grid > .wbw-verse-end > 
     }
 
     html body .app-root .quran-display--platform .wbw-study-grid > .wbw-word-block > .wbw-arabic {
-        font-size: clamp(1.6rem, calc(var(--wbw-arabic-size, 2.1rem) * 0.82), 2.25rem) !important;
+        font-size: var(--wbw-arabic-size, var(--qd-reading-font-size, 2rem)) !important;
         line-height: 1.72 !important;
     }
 

@@ -3,8 +3,8 @@ import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mj
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
-async function seedReadingState(page) {
-  await page.addInitScript((key) => {
+async function seedReadingState(page, overrides = {}) {
+  await page.addInitScript(({ key, overrides }) => {
     try {
       localStorage.setItem(
         key,
@@ -25,17 +25,18 @@ async function seedReadingState(page) {
             page: 50,
             juz: 3,
           },
+          ...overrides,
         }),
       );
     } catch {
       // The visible assertions below will fail if the state cannot be seeded.
     }
-  }, SETTINGS_KEY);
+  }, { key: SETTINGS_KEY, overrides });
 }
 
-async function openReader(page, viewport) {
+async function openReader(page, viewport, overrides = {}) {
   await installQuranNetworkFixtures(page);
-  await seedReadingState(page);
+  await seedReadingState(page, overrides);
   await page.setViewportSize(viewport);
   await page.goto("/surah/3");
   await expect(page.locator(".mp-header").first()).toBeVisible({ timeout: 30_000 });
@@ -313,6 +314,39 @@ test("device typography: interface and Quran text scale progressively", async ({
     expect(samples[index].root).toBeGreaterThanOrEqual(samples[index - 1].root);
     expect(samples[index].quran).toBeGreaterThanOrEqual(samples[index - 1].quran);
   }
+});
+
+test("Arabic reading controls visibly reduce and enlarge device-aware text", async ({ page }) => {
+  await openReader(
+    page,
+    { width: 390, height: 844 },
+    { quranFontSize: 25 },
+  );
+
+  const arabicText = page.locator(".qc-ayah-text-ar").first();
+  const initialPhoneSize = await fontSizePx(page, ".qc-ayah-text-ar");
+  expect(initialPhoneSize).toBe(21);
+
+  await page.locator(".srh-typography-trigger").click();
+  await expect(page.locator(".srh-typography-panel")).toBeVisible();
+  await page.locator('button[title="A-"]').click();
+  await expect
+    .poll(() => arabicText.evaluate((node) => Number.parseFloat(getComputedStyle(node).fontSize)))
+    .toBeLessThan(initialPhoneSize);
+  await expect(page.locator(".afc-size-value")).toHaveText("23");
+
+  await page.locator('button[title="A+"]').click();
+  await expect
+    .poll(() => arabicText.evaluate((node) => Number.parseFloat(getComputedStyle(node).fontSize)))
+    .toBe(initialPhoneSize);
+  await expect(page.locator(".afc-size-value")).toHaveText("25");
+
+  await openReader(
+    page,
+    { width: 1440, height: 900 },
+    { quranFontSize: 25 },
+  );
+  expect(await fontSizePx(page, ".qc-ayah-text-ar")).toBe(34);
 });
 
 test("duas page: cards, Arabic text and controls adapt to phone and tablet", async ({ page }) => {

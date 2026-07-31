@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { resolveFontFamily } from "../../data/fonts";
+import {
+  clampArabicFontSize,
+  getResponsiveArabicFontSize,
+} from "../../utils/arabicTypography";
 
 export default function useQuranDisplayView({
   contentReady,
@@ -17,9 +21,9 @@ export default function useQuranDisplayView({
   const contentRef = useRef(null);
   const pinchRef = useRef({ startDist: null, startSize: null });
   const [fullPage, setFullPage] = useState(false);
-  const [isCompactPhone, setIsCompactPhone] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(max-width: 420px)").matches;
+  const [viewportWidth, setViewportWidth] = useState(() => {
+    if (typeof window === "undefined") return 1024;
+    return window.innerWidth;
   });
 
   const quranFontCss = resolveFontFamily(fontFamily, riwaya);
@@ -28,7 +32,16 @@ export default function useQuranDisplayView({
     Math.min(500, Number(syncOffsetsMs?.[syncKey] ?? 0)),
   );
   const readingFontSize = useMemo(
-    () => Math.min(Math.max(quranFontSize, 12), 96),
+    () =>
+      getResponsiveArabicFontSize({
+        preferredSize: clampArabicFontSize(quranFontSize),
+        viewportWidth,
+        mushafLayout,
+      }),
+    [mushafLayout, quranFontSize, viewportWidth],
+  );
+  const preferredReadingFontSize = useMemo(
+    () => clampArabicFontSize(quranFontSize),
     [quranFontSize],
   );
   const fullscreenFontSize = useMemo(
@@ -58,26 +71,26 @@ export default function useQuranDisplayView({
   }, [fullPage]);
 
   useEffect(() => {
-    const media = window.matchMedia("(max-width: 420px)");
-    const onChange = (event) => setIsCompactPhone(event.matches);
-    setIsCompactPhone(media.matches);
-    if (typeof media.addEventListener === "function") {
-      media.addEventListener("change", onChange);
-      return () => media.removeEventListener("change", onChange);
-    }
-    media.addListener(onChange);
-    return () => media.removeListener(onChange);
+    let frameId;
+    const updateWidth = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(() => {
+        setViewportWidth(window.innerWidth);
+      });
+    };
+    updateWidth();
+    window.addEventListener("resize", updateWidth, { passive: true });
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("resize", updateWidth);
+    };
   }, []);
 
   useLayoutEffect(() => {
     const element = contentRef.current;
     if (!element) return;
 
-    const minSize = mushafLayout === "mushaf" ? (isCompactPhone ? 20 : 26) : (isCompactPhone ? 22 : 28);
-    // Cap mushaf font on compact phones: at 375px width, >26px causes word-per-line wrapping
-    const mushafMobileCap = mushafLayout === "mushaf" && isCompactPhone ? 26 : 96;
-    const stableReadingSize = Math.min(mushafMobileCap, Math.max(minSize, readingFontSize));
-    const quranFontSizeCss = `${Math.round(stableReadingSize)}px`;
+    const quranFontSizeCss = `${Math.round(readingFontSize)}px`;
     const quranLineHeight =
       mushafLayout === "mushaf" ? "2.48" : displayMode === "page" ? "3.05" : "2.2";
     element.style.setProperty("--qd-reading-font-size", quranFontSizeCss);
@@ -116,7 +129,6 @@ export default function useQuranDisplayView({
     contentReady,
     displayMode,
     fullscreenFontSize,
-    isCompactPhone,
     isQCF4,
     quranFontCss,
     quranTranslationFontSize,
@@ -132,7 +144,7 @@ export default function useQuranDisplayView({
           event.touches[0].clientX - event.touches[1].clientX,
           event.touches[0].clientY - event.touches[1].clientY,
         ),
-        startSize: quranFontSize,
+        startSize: preferredReadingFontSize,
       };
     },
     onTouchMove: (event) => {
@@ -142,9 +154,11 @@ export default function useQuranDisplayView({
         event.touches[0].clientY - event.touches[1].clientY,
       );
       const nextSize = Math.round(
-        Math.max(12, Math.min(96, pinchRef.current.startSize * (distance / pinchRef.current.startDist))),
+        clampArabicFontSize(
+          pinchRef.current.startSize * (distance / pinchRef.current.startDist),
+        ),
       );
-      if (nextSize !== quranFontSize) {
+      if (nextSize !== preferredReadingFontSize) {
         dispatch({ type: "SET_QURAN_FONT_SIZE", payload: nextSize });
       }
     },
