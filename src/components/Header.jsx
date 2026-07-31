@@ -6,6 +6,7 @@ import {
 } from "../context/AppContext";
 import { t as i18nT } from "../i18n";
 import { getSurah, toAr, getSurahForPage } from "../data/surahs";
+import { normalizeFontId } from "../data/fonts";
 import { cn } from "../lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import PlatformLogo from "./PlatformLogo";
@@ -36,6 +37,9 @@ export default function Header() {
       currentPage: current.currentPage,
       currentJuz: current.currentJuz,
       riwaya: current.riwaya,
+      fontFamily: current.fontFamily,
+      fontFamilyByRiwaya: current.fontFamilyByRiwaya,
+      warshStrictMode: current.warshStrictMode,
       showHome: current.showHome,
       showDuas: current.showDuas,
       legalPage: current.legalPage,
@@ -62,6 +66,8 @@ export default function Header() {
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const inputRef = useRef(null);
   const headerRef = useRef(null);
+  const navigationRequestRef = useRef(0);
+  const riwayaRequestRef = useRef(0);
 
   const currentThemeIndex = THEME_ORDER.indexOf(theme);
   const nextThemeId =
@@ -130,31 +136,90 @@ export default function Header() {
   const openSearch = () => dispatch({ type: "TOGGLE_SEARCH" });
   const openSettings = () => dispatch({ type: "TOGGLE_SETTINGS" });
   const openToolsHub = () => set({ toolsHubOpen: true });
-  const warmRiwaya = useCallback(
-    (targetRiwaya) => {
-      if (showHome || showDuas || legalPage || targetRiwaya === riwaya) return;
-      import("./QuranDisplay/quranDisplayDataApi")
-        .then(({ preloadArabicData }) =>
-          preloadArabicData({
-            currentJuz,
-            currentPage,
-            currentSurah,
-            displayMode,
+  const warmReadingTarget = useCallback(
+    (mode, value, targetRiwaya = riwaya) => {
+      if (showHome || showDuas || legalPage) return Promise.resolve(null);
+      return import("./QuranDisplay/useQuranDisplayData")
+        .then(({ preloadQuranDisplayData }) =>
+          preloadQuranDisplayData({
+            currentSurah: mode === "surah" ? value : currentSurah,
+            currentPage: mode === "page" ? value : currentPage,
+            currentJuz: mode === "juz" ? value : currentJuz,
+            displayMode: mode,
+            lang,
             riwaya: targetRiwaya,
+            warshStrictMode: state.warshStrictMode,
           }),
         )
-        .catch(() => {});
+        .catch(() => null);
     },
     [
       currentJuz,
       currentPage,
       currentSurah,
-      displayMode,
+      lang,
       legalPage,
       riwaya,
+      state.warshStrictMode,
       showDuas,
       showHome,
     ],
+  );
+
+  const warmRiwaya = useCallback(
+    (targetRiwaya) => {
+      if (targetRiwaya === riwaya) return Promise.resolve(null);
+      const targetFont = normalizeFontId(
+        state.fontFamilyByRiwaya?.[targetRiwaya] || state.fontFamily,
+        targetRiwaya,
+      );
+      return Promise.allSettled([
+        warmReadingTarget(displayMode, displayMode === "page" ? currentPage : displayMode === "juz" ? currentJuz : currentSurah, targetRiwaya),
+        import("../services/fontLoader")
+          .then(({ ensureFontLoaded }) => ensureFontLoaded(targetFont))
+          .catch(() => null),
+      ]);
+    }, [
+      currentJuz,
+      currentPage,
+      currentSurah,
+      displayMode,
+      riwaya,
+      state.fontFamily,
+      state.fontFamilyByRiwaya,
+      warmReadingTarget,
+    ],
+  );
+
+  const selectRiwaya = useCallback(
+    async (targetRiwaya) => {
+      const normalized = targetRiwaya === "warsh" ? "warsh" : "hafs";
+      const requestId = riwayaRequestRef.current + 1;
+      riwayaRequestRef.current = requestId;
+      if (normalized === riwaya) return;
+      await warmRiwaya(normalized);
+      if (riwayaRequestRef.current !== requestId) return;
+      set({ riwaya: normalized });
+    },
+    [riwaya, set, warmRiwaya],
+  );
+
+  const navigateReadingTarget = useCallback(
+    async (mode, value) => {
+      const requestId = navigationRequestRef.current + 1;
+      navigationRequestRef.current = requestId;
+      await warmReadingTarget(mode, value);
+      if (navigationRequestRef.current !== requestId) return;
+      set({ showHome: false, showDuas: false });
+      if (mode === "page") {
+        dispatch({ type: "NAVIGATE_PAGE", payload: { page: value } });
+      } else if (mode === "juz") {
+        dispatch({ type: "NAVIGATE_JUZ", payload: { juz: value } });
+      } else {
+        dispatch({ type: "NAVIGATE_SURAH", payload: { surah: value, ayah: 1 } });
+      }
+    },
+    [dispatch, set, warmReadingTarget],
   );
 
   const canGoPrev =
@@ -171,31 +236,34 @@ export default function Header() {
         : currentSurah < 114;
 
   const handlePrev = () => {
-    set({ showHome: false, showDuas: false });
     if (displayMode === "page" && currentPage > 1) {
-      set({ currentPage: currentPage - 1 });
+      navigateReadingTarget("page", currentPage - 1);
     } else if (displayMode === "juz" && currentJuz > 1) {
-      dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz - 1 } });
+      navigateReadingTarget("juz", currentJuz - 1);
     } else if (currentSurah > 1) {
-      dispatch({
-        type: "NAVIGATE_SURAH",
-        payload: { surah: currentSurah - 1 },
-      });
+      navigateReadingTarget("surah", currentSurah - 1);
     }
   };
 
   const handleNext = () => {
-    set({ showHome: false, showDuas: false });
     if (displayMode === "page" && currentPage < 604) {
-      set({ currentPage: currentPage + 1 });
+      navigateReadingTarget("page", currentPage + 1);
     } else if (displayMode === "juz" && currentJuz < 30) {
-      dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz + 1 } });
+      navigateReadingTarget("juz", currentJuz + 1);
     } else if (currentSurah < 114) {
-      dispatch({
-        type: "NAVIGATE_SURAH",
-        payload: { surah: currentSurah + 1 },
-      });
+      navigateReadingTarget("surah", currentSurah + 1);
     }
+  };
+
+  const warmPrevious = () => {
+    if (displayMode === "page" && currentPage > 1) warmReadingTarget("page", currentPage - 1);
+    else if (displayMode === "juz" && currentJuz > 1) warmReadingTarget("juz", currentJuz - 1);
+    else if (currentSurah > 1) warmReadingTarget("surah", currentSurah - 1);
+  };
+  const warmNext = () => {
+    if (displayMode === "page" && currentPage < 604) warmReadingTarget("page", currentPage + 1);
+    else if (displayMode === "juz" && currentJuz < 30) warmReadingTarget("juz", currentJuz + 1);
+    else if (currentSurah < 114) warmReadingTarget("surah", currentSurah + 1);
   };
 
   const handleGoTo = (event) => {
@@ -203,13 +271,11 @@ export default function Header() {
     const num = Number.parseInt(goToValue, 10);
     if (Number.isNaN(num)) return;
     if (displayMode === "page" && num >= 1 && num <= 604) {
-      set({ currentPage: num, showHome: false, showDuas: false });
+      navigateReadingTarget("page", num);
     } else if (displayMode === "juz" && num >= 1 && num <= 30) {
-      set({ showHome: false, showDuas: false });
-      dispatch({ type: "NAVIGATE_JUZ", payload: { juz: num } });
+      navigateReadingTarget("juz", num);
     } else if (num >= 1 && num <= 114) {
-      set({ showHome: false, showDuas: false });
-      dispatch({ type: "NAVIGATE_SURAH", payload: { surah: num } });
+      navigateReadingTarget("surah", num);
     }
     setGoToOpen(false);
     setGoToValue("");
@@ -457,6 +523,9 @@ export default function Header() {
                 className="mp-header__nav-arrow"
                 type="button"
                 onClick={isRtl ? handleNext : handlePrev}
+                onPointerEnter={isRtl ? warmNext : warmPrevious}
+                onPointerDown={isRtl ? warmNext : warmPrevious}
+                onFocus={isRtl ? warmNext : warmPrevious}
                 disabled={isRtl ? !canGoNext : !canGoPrev}
                 aria-label={i18nT("quran.prevSurah", lang)}
               >
@@ -542,6 +611,9 @@ export default function Header() {
                 className="mp-header__nav-arrow"
                 type="button"
                 onClick={isRtl ? handlePrev : handleNext}
+                onPointerEnter={isRtl ? warmPrevious : warmNext}
+                onPointerDown={isRtl ? warmPrevious : warmNext}
+                onFocus={isRtl ? warmPrevious : warmNext}
                 disabled={isRtl ? !canGoPrev : !canGoNext}
                 aria-label={i18nT("quran.nextSurah", lang)}
               >
@@ -558,11 +630,11 @@ export default function Header() {
             className="mp-header__action mp-header__riwaya-toggle"
             type="button"
             onPointerEnter={() => warmRiwaya(riwaya === "hafs" ? "warsh" : "hafs")}
+            onPointerDown={() => warmRiwaya(riwaya === "hafs" ? "warsh" : "hafs")}
             onFocus={() => warmRiwaya(riwaya === "hafs" ? "warsh" : "hafs")}
             onClick={() => {
               const nextRiwaya = riwaya === "hafs" ? "warsh" : "hafs";
-              warmRiwaya(nextRiwaya);
-              set({ riwaya: nextRiwaya });
+              selectRiwaya(nextRiwaya);
             }}
             aria-label={`${headerLabels.riwayaToggle} — ${riwaya === "warsh" ? "Warsh" : "Hafs"}`}
             title={headerLabels.riwayaToggle}
@@ -689,10 +761,10 @@ export default function Header() {
                       type="button"
                       aria-pressed={riwaya === id}
                       onPointerEnter={() => warmRiwaya(id)}
+                      onPointerDown={() => warmRiwaya(id)}
                       onFocus={() => warmRiwaya(id)}
                       onClick={() => {
-                        warmRiwaya(id);
-                        set({ riwaya: id });
+                        selectRiwaya(id);
                         setQuickMenuOpen(false);
                       }}
                     >

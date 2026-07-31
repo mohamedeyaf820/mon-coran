@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import "../styles/sidebar-enhanced.css";
 import { X, Search, ArrowLeft, ArrowRight } from "lucide-react";
 import { useApp } from "../context/AppContext";
@@ -30,6 +30,7 @@ export default function Sidebar() {
   const scrollRootRef = useRef(null);
   const closeButtonRef = useRef(null);
   const activeItemRef = useRef(null);
+  const navigationRequestRef = useRef(0);
   const previouslyFocusedRef = useRef(null);
   const wasOpenRef = useRef(false);
   const currentSurahMeta = SURAHS[currentSurah - 1];
@@ -135,15 +136,51 @@ export default function Sidebar() {
     );
   }, [filter]);
 
-  const goSurah = (n) => {
-    set({ displayMode: "surah", showHome: false, showDuas: false });
-    dispatch({ type: "NAVIGATE_SURAH", payload: { surah: n, ayah: 1 } });
-  };
+  const warmTarget = useCallback(
+    (mode, value) =>
+      import("./QuranDisplay/useQuranDisplayData")
+        .then(({ preloadQuranDisplayData }) =>
+          preloadQuranDisplayData({
+            currentSurah: mode === "surah" ? value : state.currentSurah,
+            currentPage: mode === "page" ? value : state.currentPage,
+            currentJuz: mode === "juz" ? value : state.currentJuz,
+            displayMode: mode,
+            lang,
+            riwaya,
+            warshStrictMode: state.warshStrictMode,
+          }),
+        )
+        .catch(() => null),
+    [
+      lang,
+      riwaya,
+      state.currentJuz,
+      state.currentPage,
+      state.currentSurah,
+      state.warshStrictMode,
+    ],
+  );
 
-  const goPage = (p) => {
-    set({ displayMode: "page", showHome: false, showDuas: false });
-    dispatch({ type: "NAVIGATE_PAGE", payload: { page: p } });
-  };
+  const navigateTo = useCallback(
+    async (mode, value) => {
+      const requestId = navigationRequestRef.current + 1;
+      navigationRequestRef.current = requestId;
+      await warmTarget(mode, value);
+      if (navigationRequestRef.current !== requestId) return;
+      set({ displayMode: mode, showHome: false, showDuas: false });
+      if (mode === "page") {
+        dispatch({ type: "NAVIGATE_PAGE", payload: { page: value } });
+      } else if (mode === "juz") {
+        dispatch({ type: "NAVIGATE_JUZ", payload: { juz: value } });
+      } else {
+        dispatch({ type: "NAVIGATE_SURAH", payload: { surah: value, ayah: 1 } });
+      }
+    },
+    [dispatch, set, warmTarget],
+  );
+
+  const goSurah = (n) => navigateTo("surah", n);
+  const goPage = (p) => navigateTo("page", p);
 
   const submitPageJump = () => {
     const page = Number.parseInt(pageInput, 10);
@@ -151,10 +188,7 @@ export default function Sidebar() {
     goPage(Math.min(604, Math.max(1, page)));
   };
 
-  const goJuz = (juz) => {
-    set({ showHome: false, showDuas: false, displayMode: "juz" });
-    dispatch({ type: "NAVIGATE_JUZ", payload: { juz } });
-  };
+  const goJuz = (juz) => navigateTo("juz", juz);
 
   const isRtl = lang === "ar";
 
@@ -336,6 +370,9 @@ export default function Sidebar() {
                     isActive && "bg-primary/8",
                   )}
                   onClick={() => goSurah(s.n)}
+                  onPointerEnter={() => warmTarget("surah", s.n)}
+                  onPointerDown={() => warmTarget("surah", s.n)}
+                  onFocus={() => warmTarget("surah", s.n)}
                 >
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-border/40 bg-bg-secondary text-[0.68rem] font-bold text-text-muted group-hover:border-primary/30 group-hover:text-primary transition-colors">
                     {s.n}
@@ -401,6 +438,9 @@ export default function Sidebar() {
                     isActive && "bg-primary/8",
                   )}
                   onClick={() => goJuz(j.juz)}
+                  onPointerEnter={() => warmTarget("juz", j.juz)}
+                  onPointerDown={() => warmTarget("juz", j.juz)}
+                  onFocus={() => warmTarget("juz", j.juz)}
                 >
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-border/40 bg-bg-secondary text-[0.68rem] font-bold text-text-muted group-hover:border-primary/30 group-hover:text-primary transition-colors">
                     {lang === "ar" ? toAr(j.juz) : j.juz}
@@ -520,6 +560,9 @@ export default function Sidebar() {
                           : "border-border bg-transparent text-text-secondary hover:bg-primary/5 hover:text-primary",
                       )}
                       onClick={() => goPage(p)}
+                      onPointerEnter={() => warmTarget("page", p)}
+                      onPointerDown={() => warmTarget("page", p)}
+                      onFocus={() => warmTarget("page", p)}
                     >
                       {isRtl ? toAr(p) : p}
                     </button>

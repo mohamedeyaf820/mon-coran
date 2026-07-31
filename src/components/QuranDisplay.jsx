@@ -21,7 +21,9 @@ import VerseCompareTray from "./QuranDisplay/VerseCompareTray";
 import WarshNotice from "./QuranDisplay/WarshNotice";
 import { createDisplayClasses } from "./QuranDisplay/displayClasses";
 import useQuranDisplayAudio from "./QuranDisplay/useQuranDisplayAudio";
-import useQuranDisplayData from "./QuranDisplay/useQuranDisplayData";
+import useQuranDisplayData, {
+  preloadQuranDisplayData,
+} from "./QuranDisplay/useQuranDisplayData";
 import useQuranDisplayGroups from "./QuranDisplay/useQuranDisplayGroups";
 import useQuranDisplayNavigation from "./QuranDisplay/useQuranDisplayNavigation";
 import useQuranDisplayPrefetch from "./QuranDisplay/useQuranDisplayPrefetch";
@@ -194,11 +196,33 @@ export default function QuranDisplay() {
     getScrollContainer: view.getScrollContainer,
     mushafLayout,
   });
+  const prepareReadingTarget = useCallback(
+    (mode, value) =>
+      preloadQuranDisplayData({
+        currentJuz: mode === "juz" ? value : currentJuz,
+        currentPage: mode === "page" ? value : currentPage,
+        currentSurah: mode === "surah" ? value : currentSurah,
+        displayMode: mode,
+        lang,
+        riwaya,
+        warshStrictMode,
+      }).catch(() => null),
+    [
+      currentJuz,
+      currentPage,
+      currentSurah,
+      lang,
+      riwaya,
+      warshStrictMode,
+    ],
+  );
+
   const navigation = useQuranDisplayNavigation({
     currentJuz,
     currentPage,
     currentSurah,
     dispatch,
+    prepareTarget: prepareReadingTarget,
     riwaya,
     set,
     showWordByWord,

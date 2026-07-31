@@ -66,7 +66,7 @@ async function mockWarshSurah(page, surah, handler) {
   );
 }
 
-test("a riwaya switch hides stale Arabic until the requested text is ready", async ({ page }) => {
+test("a riwaya switch stays atomic until the requested text is ready", async ({ page }) => {
   const surah = 104;
   const ayahCount = 9;
   await seedReader(page, {
@@ -96,9 +96,9 @@ test("a riwaya switch hides stale Arabic until the requested text is ready", asy
   await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible();
 
   await page.getByRole("button", { name: "Changer de riwaya" }).click();
-  await expect(page.locator('.app-root[data-riwaya="warsh"]')).toBeVisible();
-  await expect(page.locator(".ayah-skeleton-list")).toBeVisible();
-  await expect(page.locator(".qc-ayah-text-ar")).toHaveCount(0);
+  await expect(page.locator('.app-root[data-riwaya="hafs"]')).toBeVisible();
+  await expect(page.locator(".ayah-skeleton-list")).toHaveCount(0);
+  await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible();
 
   releaseWarsh();
   await expect(page.locator(".quran-display--warsh")).toBeVisible();
@@ -111,6 +111,53 @@ test("a riwaya switch hides stale Arabic until the requested text is ready", asy
   await expect(
     page.getByRole("menuitemcheckbox", { name: "Mot à mot" }),
   ).toHaveCount(0);
+});
+
+test("surah arrows keep the current text visible until the neighbour is ready", async ({
+  page,
+}) => {
+  const currentSurah = 104;
+  const nextSurah = 105;
+  await seedReader(page, {
+    lastPosition: { surah: currentSurah, ayah: 1, page: 601, juz: 30 },
+  });
+  await page.setViewportSize({ width: 1280, height: 900 });
+
+  await mockQuranComScope(page, `by_chapter/${currentSurah}`, (route) =>
+    route.fulfill({
+      json: {
+        verses: quranComVerses(9, 30, currentSurah),
+        pagination: { total_pages: 1 },
+      },
+    }),
+  );
+
+  let releaseNextSurah;
+  const nextSurahGate = new Promise((resolve) => {
+    releaseNextSurah = resolve;
+  });
+  await mockQuranComScope(page, `by_chapter/${nextSurah}`, async (route) => {
+    await nextSurahGate;
+    await route.fulfill({
+      json: {
+        verses: quranComVerses(5, 30, nextSurah),
+        pagination: { total_pages: 1 },
+      },
+    });
+  });
+
+  await page.goto(`/surah/${currentSurah}/1`);
+  await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible();
+
+  await page.locator(".mp-header__nav-arrow").last().click();
+  await expect(page).toHaveURL(new RegExp(`/surah/${currentSurah}(?:/1)?$`));
+  await expect(page.locator(".ayah-skeleton-list")).toHaveCount(0);
+  await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible();
+
+  releaseNextSurah();
+  await expect(page).toHaveURL(new RegExp(`/surah/${nextSurah}$`));
+  await expect(page.locator('.quran-display[aria-busy="false"]')).toBeVisible();
+  await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible();
 });
 
 test("Warsh juz loading uses scoped surah files before the legacy full Quran", async ({ page }) => {

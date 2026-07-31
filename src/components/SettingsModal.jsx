@@ -22,6 +22,7 @@ import { THEMES as UI_THEMES } from "../data/themes";
 import {
   getFontOptionsForRiwaya,
   getNativeAyahMarker,
+  normalizeFontId,
   resolveFontFamily,
 } from "../data/fonts";
 import { ensureFontLoaded } from "../services/fontLoader";
@@ -163,6 +164,7 @@ export default function SettingsModal() {
     audioSpeed,
     autoNightMode,
     fontFamily,
+    fontFamilyByRiwaya,
     lang,
     nightEnd,
     nightStart,
@@ -170,6 +172,14 @@ export default function SettingsModal() {
     quranTranslationFontSize = 18,
     reciter,
     riwaya,
+    currentJuz,
+    currentPage,
+    currentSurah,
+    displayMode,
+    showHome,
+    showDuas,
+    legalPage,
+    warshStrictMode,
     showTajwid,
     showTranslation,
     showTransliteration,
@@ -227,6 +237,35 @@ export default function SettingsModal() {
 
   const title = localText(lang, "Paramètres", "Settings", "الإعدادات");
   const close = () => dispatch({ type: "TOGGLE_SETTINGS" });
+
+  const handleRiwayaChange = async (nextRiwaya) => {
+    const targetRiwaya = nextRiwaya === "warsh" ? "warsh" : "hafs";
+    if (targetRiwaya === activeRiwaya) return;
+    const targetFont = normalizeFontId(
+      fontFamilyByRiwaya?.[targetRiwaya] || fontFamily,
+      targetRiwaya,
+    );
+    const tasks = [ensureFontLoaded(targetFont).catch(() => null)];
+    if (!showHome && !showDuas && !legalPage) {
+      tasks.push(
+        import("./QuranDisplay/useQuranDisplayData")
+          .then(({ preloadQuranDisplayData }) =>
+            preloadQuranDisplayData({
+              currentJuz,
+              currentPage,
+              currentSurah,
+              displayMode,
+              lang,
+              riwaya: targetRiwaya,
+              warshStrictMode,
+            }),
+          )
+          .catch(() => null),
+      );
+    }
+    await Promise.allSettled(tasks);
+    set({ riwaya: targetRiwaya });
+  };
 
   useEffect(() => {
     ensureFontLoaded(selectedFontFamily).catch(() => {});
@@ -523,7 +562,7 @@ export default function SettingsModal() {
         <Segmented
           ariaLabel="Riwaya"
           value={activeRiwaya}
-          onChange={(nextRiwaya) => set({ riwaya: nextRiwaya })}
+          onChange={handleRiwayaChange}
           options={[
             { id: "hafs", label: "Hafs" },
             { id: "warsh", label: "Warsh" },

@@ -239,8 +239,23 @@ export default function useQuranDisplayData({
       if (hafsPromise) {
         hafsPromise.then((hafsData) => {
           if (signal.aborted || requestSeqRef.current !== requestId || !hafsData) return;
+          const hafsAyahs = ensureRequestedRiwaya(hafsData.ayahs || [], "hafs");
+          const hafsCacheKey = displayCacheKey(
+            displayMode,
+            currentSurah,
+            currentPage,
+            currentJuz,
+            "hafs",
+            false,
+          );
+          rememberLimited(
+            DISPLAY_DATA_CACHE,
+            hafsCacheKey,
+            { ayahs: hafsAyahs, isWarshFallback: false },
+            DISPLAY_DATA_CACHE_MAX,
+          );
           const hafsMap = new Map(
-            (hafsData?.ayahs || []).map((ayah) => [
+            hafsAyahs.map((ayah) => [
               `${ayah.surah?.number}:${ayah.numberInSurah}`,
               ayah,
             ]),
@@ -388,8 +403,23 @@ export function preloadQuranDisplayData({
       })
         .then((hafsData) => {
           if (!hafsData) return;
+          const hafsAyahs = ensureRequestedRiwaya(hafsData.ayahs || [], "hafs");
+          const hafsCacheKey = displayCacheKey(
+            displayMode,
+            currentSurah,
+            currentPage,
+            currentJuz,
+            "hafs",
+            false,
+          );
+          rememberLimited(
+            DISPLAY_DATA_CACHE,
+            hafsCacheKey,
+            { ayahs: hafsAyahs, isWarshFallback: false },
+            DISPLAY_DATA_CACHE_MAX,
+          );
           const hafsMap = new Map(
-            (hafsData.ayahs || []).map((ayah) => [
+            hafsAyahs.map((ayah) => [
               `${ayah.surah?.number}:${ayah.numberInSurah}`,
               ayah,
             ]),

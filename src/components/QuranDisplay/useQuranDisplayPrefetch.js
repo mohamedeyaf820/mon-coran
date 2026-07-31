@@ -2,13 +2,7 @@ import { useEffect, useRef } from "react";
 import { shouldAvoidBackgroundWork } from "../../utils/networkPolicy";
 import { preloadQuranDisplayData } from "./useQuranDisplayData";
 
-/**
- * Warm a single likely forward navigation after the reader is fully settled.
- *
- * Loading the alternate riwaya, both neighbours and their translations during
- * the first seconds produced dozens of requests and competed with audio. The
- * active screen remains the only priority during startup.
- */
+/** Warm the bounded set of destinations exposed by the reader controls. */
 export default function useQuranDisplayPrefetch({
   currentJuz,
   currentPage,
@@ -41,37 +35,53 @@ export default function useQuranDisplayPrefetch({
       }).catch(() => null);
     };
 
-    const runNextPrefetch = () => {
+    const canPrefetch = () => {
       if (
         isPlayingRef.current ||
         document.visibilityState !== "visible" ||
         shouldAvoidBackgroundWork()
       ) {
-        return;
+        return false;
       }
+      return true;
+    };
 
-      if (displayMode === "surah" && currentSurah < 114) {
-        prefetchText("surah", currentSurah + 1);
-      } else if (displayMode === "page" && currentPage < 604) {
-        prefetchText("page", currentPage + 1);
-      } else if (displayMode === "juz" && currentJuz < 30) {
-        prefetchText("juz", currentJuz + 1);
+    const runAlternateRiwayaPrefetch = () => {
+      if (!canPrefetch()) return;
+      preloadQuranDisplayData({
+        currentJuz,
+        currentPage,
+        currentSurah,
+        displayMode,
+        lang,
+        riwaya: riwaya === "hafs" ? "warsh" : "hafs",
+        warshStrictMode,
+      }).catch(() => null);
+    };
+
+    const runNeighbourPrefetch = () => {
+      if (!canPrefetch()) return;
+      if (displayMode === "surah") {
+        if (currentSurah < 114) prefetchText("surah", currentSurah + 1);
+        if (currentSurah > 1) prefetchText("surah", currentSurah - 1);
+      } else if (displayMode === "page") {
+        if (currentPage < 604) prefetchText("page", currentPage + 1);
+        if (currentPage > 1) prefetchText("page", currentPage - 1);
+      } else if (displayMode === "juz") {
+        if (currentJuz < 30) prefetchText("juz", currentJuz + 1);
+        if (currentJuz > 1) prefetchText("juz", currentJuz - 1);
       }
     };
 
-    let idleId = null;
-    const timer = window.setTimeout(() => {
-      if (isPlayingRef.current) return;
-      if (typeof window.requestIdleCallback === "function") {
-        idleId = window.requestIdleCallback(runNextPrefetch, { timeout: 3000 });
-      } else {
-        runNextPrefetch();
-      }
-    }, 900);
+    const neighbourTimer = window.setTimeout(runNeighbourPrefetch, 180);
+    const alternateRiwayaTimer = window.setTimeout(
+      runAlternateRiwayaPrefetch,
+      1600,
+    );
 
     return () => {
-      window.clearTimeout(timer);
-      if (idleId !== null) window.cancelIdleCallback?.(idleId);
+      window.clearTimeout(neighbourTimer);
+      window.clearTimeout(alternateRiwayaTimer);
     };
   }, [
     currentJuz,
