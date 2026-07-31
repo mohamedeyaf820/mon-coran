@@ -20,6 +20,7 @@ export default function SurahRecitationList({
   getDownloadUrl,
   onPlaySurah,
   onOpenSurah,
+  onOpenSurahIntent,
 }) {
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_SURAHS);
@@ -70,6 +71,10 @@ export default function SurahRecitationList({
   const handleOpen = useCallback(
     (surahN) => onOpenSurah(surahN, reciter),
     [onOpenSurah, reciter],
+  );
+  const handleOpenIntent = useCallback(
+    (surahN) => onOpenSurahIntent?.(surahN),
+    [onOpenSurahIntent],
   );
 
   const searchLabel =
@@ -124,6 +129,7 @@ export default function SurahRecitationList({
             downloadUrl={getDownloadUrl(reciter, surah.n)}
             onPlay={() => handlePlay(surah.n)}
             onOpen={() => handleOpen(surah.n)}
+            onOpenIntent={() => handleOpenIntent(surah.n)}
           />
         ))}
 

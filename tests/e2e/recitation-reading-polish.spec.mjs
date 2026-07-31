@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { test, expect } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 const OUTPUT_DIR = path.join("test-results", "recitation-reading-polish");
@@ -40,6 +41,7 @@ async function horizontalOverflow(page) {
 test("opening animation preloads the reciter library before the first click", async ({
   page,
 }) => {
+  await installQuranNetworkFixtures(page);
   await seed(page, { showHome: true, skipSplashAnimation: false });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
@@ -55,7 +57,6 @@ test("opening animation preloads the reciter library before the first click", as
       ),
     )
     .toBe(true);
-
   await page.evaluate(() => {
     window.__reciterFallbackSeen = false;
     window.__reciterFallbackObserver = new MutationObserver(() => {
@@ -85,6 +86,48 @@ test("opening animation preloads the reciter library before the first click", as
     return window.__reciterFallbackSeen;
   });
   expect(fallbackSeen).toBe(false);
+
+  await page.evaluate(() => {
+    window.__readerFallbackSeen = false;
+    window.__readerFallbackObserver = new MutationObserver(() => {
+      if (document.querySelector(".app-view-shell > .app-loading-fallback")) {
+        window.__readerFallbackSeen = true;
+      }
+    });
+    window.__readerFallbackObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+  });
+
+  const openReader = page
+    .locator(".recitation-row")
+    .first()
+    .locator(".recitation-action-btn")
+    .nth(1);
+  await openReader.hover();
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        performance
+          .getEntriesByType("resource")
+          .some((entry) => /verses\/by_chapter\/1/.test(entry.name)),
+      ),
+    )
+    .toBe(true);
+  await openReader.click();
+  await expect(page).toHaveURL(/\/surah\/1$/);
+  await expect(page.locator(".quran-display")).toBeVisible();
+  await expect(page.locator(".quran-display")).toHaveAttribute(
+    "aria-busy",
+    "false",
+  );
+
+  const readerFallbackSeen = await page.evaluate(() => {
+    window.__readerFallbackObserver?.disconnect();
+    return window.__readerFallbackSeen;
+  });
+  expect(readerFallbackSeen).toBe(false);
 });
 
 test("mobile recitation collection and reciter library stay clear and valid", async ({

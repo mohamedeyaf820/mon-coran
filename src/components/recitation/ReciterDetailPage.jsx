@@ -42,6 +42,7 @@ export default function ReciterDetailPage({
   onClose,
   onPlaySurah,
   onOpenSurah,
+  onOpenSurahIntent,
   getDownloadUrl,
   dialogRef,
   closeBtnRef,
@@ -185,6 +186,7 @@ export default function ReciterDetailPage({
             getDownloadUrl={getDownloadUrl}
             onPlaySurah={onPlaySurah}
             onOpenSurah={onOpenSurah}
+            onOpenSurahIntent={onOpenSurahIntent}
           />
         </main>
       </div>

@@ -27,7 +27,14 @@ function labelsFor(lang) {
   };
 }
 
-export default function RowActions({ lang, surahLabel, onPlay, onOpen, downloadUrl }) {
+export default function RowActions({
+  lang,
+  surahLabel,
+  onPlay,
+  onOpen,
+  onOpenIntent,
+  downloadUrl,
+}) {
   const labels = labelsFor(lang);
   const contextualLabel = (action) =>
     surahLabel ? `${action} — ${surahLabel}` : action;
@@ -51,6 +58,9 @@ export default function RowActions({ lang, surahLabel, onPlay, onOpen, downloadU
         className="recitation-action-btn"
         type="button"
         onClick={onOpen}
+        onPointerEnter={onOpenIntent}
+        onPointerDown={onOpenIntent}
+        onFocus={onOpenIntent}
         title={contextualLabel(labels.open)}
         aria-label={contextualLabel(labels.open)}
       >

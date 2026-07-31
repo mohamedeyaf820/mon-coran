@@ -29,7 +29,12 @@ import {
 } from "./data/reciters";
 
 const loadHomePage = () => import("./components/HomePage");
-const loadQuranDisplay = () => import("./components/QuranDisplay");
+let resolvedQuranDisplay;
+const loadQuranDisplay = () =>
+  import("./components/QuranDisplay").then((module) => {
+    resolvedQuranDisplay = module.default;
+    return module;
+  });
 const loadHeader = () => import("./components/Header");
 const loadLegalPage = () => import("./components/LegalPage");
 const loadDuasPage = () => import("./components/DuasPage");
@@ -314,6 +319,7 @@ export default function App() {
   );
   const [hasInteracted, setHasInteracted] = useState(false);
   const [immersiveHidden, setImmersiveHidden] = useState(false);
+  const ActiveQuranDisplay = resolvedQuranDisplay || QuranDisplay;
   const [toast, setToast] = useState(null);
   const [deferNonCriticalUI, setDeferNonCriticalUI] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -629,6 +635,10 @@ export default function App() {
         screenPromise.then(({ preloadReciterLibrary }) =>
           preloadReciterLibrary?.(),
         ),
+        // The branded splash is already visible for at least three seconds.
+        // Use that time to prepare the reader bundle so Home/Recitations can
+        // switch to a surah without showing the page-level Suspense loader.
+        loadQuranDisplay(),
       );
     }
     if (!state.legalPage && !state.showHome && !state.showDuas) {
@@ -755,7 +765,7 @@ export default function App() {
               ) : (
                 <ErrorBoundary>
                   <Suspense fallback={suspenseFallback}>
-                    <QuranDisplay />
+                    <ActiveQuranDisplay />
                   </Suspense>
                 </ErrorBoundary>
               )}

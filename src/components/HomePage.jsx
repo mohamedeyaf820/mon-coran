@@ -206,6 +206,7 @@ export default function HomePage({ lowPerfMode = false }) {
       currentJuz: current.currentJuz,
       currentPage: current.currentPage,
       displayMode: current.displayMode,
+      fontFamily: current.fontFamily,
       riwaya: current.riwaya,
       reciter: current.reciter,
       favoriteReciters: current.favoriteReciters,
@@ -249,6 +250,14 @@ export default function HomePage({ lowPerfMode = false }) {
 
   const warmReciterDetail = useCallback(
     () => preloadReciterLibrary().catch(() => null),
+    [],
+  );
+  const warmRecitationFlow = useCallback(
+    () =>
+      Promise.allSettled([
+        preloadReciterLibrary(),
+        loadQuranReaderModule(),
+      ]),
     [],
   );
 
@@ -333,6 +342,9 @@ export default function HomePage({ lowPerfMode = false }) {
         });
       })
       .catch(() => {});
+    // A user opening a reciter is very likely to continue into the reader.
+    // Start the large reader graph now, while the surah list is being browsed.
+    loadQuranReaderModule().catch(() => {});
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -490,10 +502,10 @@ export default function HomePage({ lowPerfMode = false }) {
 
   const warmReadingTarget = useCallback(
     (mode, value) => {
-      loadQuranReaderModule().catch(() => null);
-      if (lowPerfMode || shouldAvoidBackgroundWork()) return;
+      const modulePromise = loadQuranReaderModule().catch(() => null);
+      if (lowPerfMode || shouldAvoidBackgroundWork()) return modulePromise;
 
-      loadQuranReaderDataModule()
+      const dataPromise = loadQuranReaderDataModule()
         .then(({ preloadQuranDisplayData }) =>
           preloadQuranDisplayData({
             currentSurah:
@@ -511,6 +523,12 @@ export default function HomePage({ lowPerfMode = false }) {
           }),
         )
         .catch(() => null);
+
+      const fontPromise = import("../services/fontLoader")
+        .then(({ ensureFontLoaded }) => ensureFontLoaded(state.fontFamily))
+        .catch(() => null);
+
+      return Promise.allSettled([modulePromise, dataPromise, fontPromise]);
     },
     [
       currentJuz,
@@ -519,6 +537,7 @@ export default function HomePage({ lowPerfMode = false }) {
       lowPerfMode,
       riwaya,
       state.currentPage,
+      state.fontFamily,
       state.warshStrictMode,
     ],
   );
@@ -713,12 +732,15 @@ export default function HomePage({ lowPerfMode = false }) {
     });
   }, []);
 
-  const selectContentTab = useCallback((tabId) => {
-    if (tabId === "recitations") warmReciterDetail();
-    startTransition(() => {
-      setActiveTab(tabId);
-    });
-  }, [warmReciterDetail]);
+  const selectContentTab = useCallback(
+    (tabId) => {
+      if (tabId === "recitations") warmRecitationFlow();
+      startTransition(() => {
+        setActiveTab(tabId);
+      });
+    },
+    [warmRecitationFlow],
+  );
 
   const changeViewMode = useCallback((nextViewMode) => {
     startTransition(() => {
@@ -1001,8 +1023,8 @@ export default function HomePage({ lowPerfMode = false }) {
           isRtl={isRtl}
           activeTab={activeTab}
           onSelectTab={selectContentTab}
-          onRecitationsIntent={warmReciterDetail}
-          onReciterIntent={warmReciterDetail}
+          onRecitationsIntent={warmRecitationFlow}
+          onReciterIntent={warmRecitationFlow}
           filter={filter}
           onFilterChange={setFilter}
           reciterStyleFilter={reciterStyleFilter}
@@ -1055,9 +1077,16 @@ export default function HomePage({ lowPerfMode = false }) {
                   onPlayRadio={playReciterRadio}
                   onClose={() => setSelectedReciterId(null)}
                   onPlaySurah={playSurahForReciter}
+                  onOpenSurahIntent={warmSurah}
                   onOpenSurah={(surahNum, reciter) => {
+                    warmSurah(surahNum);
                     setSelectedReciterId(null);
-                    set({ reciter: reciter.id, showHome: false, showDuas: false });
+                    set({
+                      reciter: reciter.id,
+                      displayMode: "surah",
+                      showHome: false,
+                      showDuas: false,
+                    });
                     dispatch({
                       type: "NAVIGATE_SURAH",
                       payload: { surah: surahNum, ayah: 1 },
