@@ -63,7 +63,7 @@ let quranReaderDataModulePromise;
 function loadQuranReaderDataModule() {
   if (!quranReaderDataModulePromise) {
     quranReaderDataModulePromise = import(
-      "./QuranDisplay/quranDisplayDataApi"
+      "./QuranDisplay/useQuranDisplayData"
     );
   }
   return quranReaderDataModulePromise;
@@ -475,8 +475,8 @@ export default function HomePage({ lowPerfMode = false }) {
       if (lowPerfMode || shouldAvoidBackgroundWork()) return;
 
       loadQuranReaderDataModule()
-        .then(({ preloadArabicData }) =>
-          preloadArabicData({
+        .then(({ preloadQuranDisplayData }) =>
+          preloadQuranDisplayData({
             currentSurah:
               mode === "surah" ? Number(value) || currentSurah : currentSurah,
             currentPage:
@@ -486,7 +486,9 @@ export default function HomePage({ lowPerfMode = false }) {
             currentJuz:
               mode === "juz" ? Number(value) || currentJuz : currentJuz,
             displayMode: mode,
+            lang,
             riwaya,
+            warshStrictMode: state.warshStrictMode,
           }),
         )
         .catch(() => null);
@@ -494,9 +496,11 @@ export default function HomePage({ lowPerfMode = false }) {
     [
       currentJuz,
       currentSurah,
+      lang,
       lowPerfMode,
       riwaya,
       state.currentPage,
+      state.warshStrictMode,
     ],
   );
 

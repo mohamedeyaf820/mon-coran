@@ -56,13 +56,17 @@ test("first launch keeps the critical network payload compact", async ({ page })
 
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".splash-logo")).toBeVisible();
+  await expect(page.locator("#main-content")).toBeAttached();
+  await expect(page.locator(".hp-wrapper")).toBeAttached({ timeout: 5_000 });
 
   const logoResponse = await logoResponsePromise;
   const logoBody = await logoResponse.body();
   await page.waitForTimeout(1_000);
 
   expect(initialStylesheets).toHaveLength(1);
-  expect(initialModulePreloads.length).toBeLessThanOrEqual(5);
+  // The entry uses six tiny/shared runtime chunks; keep this bounded so a
+  // future feature cannot silently pull a page-level bundle into startup.
+  expect(initialModulePreloads.length).toBeLessThanOrEqual(6);
   expect(logoBody.byteLength).toBeLessThan(40 * 1024);
 
   const parsedRequests = requests.map((url) => new URL(url));
@@ -91,4 +95,19 @@ test("first launch keeps the critical network payload compact", async ({ page })
       url.pathname.includes("/verses/by_chapter/"),
   );
   expect(quranTextRequests).toHaveLength(0);
+});
+
+test("the splash is persisted and does not block later refreshes", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".splash-screen")).toBeVisible();
+  await expect(page.locator(".splash-screen")).toHaveCount(0, {
+    timeout: 1_500,
+  });
+  await expect(page.locator(".hp-wrapper")).toBeVisible();
+
+  await page.waitForTimeout(700);
+  await page.reload({ waitUntil: "domcontentloaded" });
+
+  await expect(page.locator(".splash-screen")).toHaveCount(0);
+  await expect(page.locator(".hp-wrapper")).toBeVisible({ timeout: 5_000 });
 });

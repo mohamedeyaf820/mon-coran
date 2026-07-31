@@ -210,8 +210,10 @@ export default function QuranDisplay() {
     currentSurah,
     displayMode,
     isPlaying,
+    lang,
     loading,
     riwaya,
+    warshStrictMode,
   });
 
   useEffect(() => {

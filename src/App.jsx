@@ -663,19 +663,16 @@ export default function App() {
     state.showHome,
   ]);
 
-  if (!splashDone) {
-    return (
-      <SplashScreen
-        onDone={handleSplashDone}
-        onPrefetch={handleSplashPrefetch}
-        lowPerfMode={lowPerfMode}
-        lang={lang}
-      />
-    );
-  }
-
   return (
     <ErrorBoundary>
+      {!splashDone ? (
+        <SplashScreen
+          onDone={handleSplashDone}
+          onPrefetch={handleSplashPrefetch}
+          lowPerfMode={lowPerfMode}
+          lang={lang}
+        />
+      ) : null}
       <div
         className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""} ${!showHome && !showDuas && !legalPage ? "view-reading" : ""}`}
         style={{ height: "100dvh", minHeight: "100dvh" }}
@@ -773,15 +770,7 @@ export default function App() {
               ) : (
                 <ErrorBoundary>
                   <Suspense fallback={suspenseFallback}>
-                    <QuranDisplay
-                      key={
-                        displayMode === "juz"
-                          ? `juz-${currentJuz}`
-                          : displayMode === "page"
-                            ? `page-${currentPage}`
-                            : `surah-${currentSurah}`
-                      }
-                    />
+                    <QuranDisplay />
                   </Suspense>
                 </ErrorBoundary>
               )}

@@ -3,6 +3,26 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+        <style>
+            html, body, #root { min-height: 100%; margin: 0; }
+            body { background: #f3f8f5; }
+            #root:empty {
+                min-height: 100dvh;
+                background:
+                    radial-gradient(circle at 18% 12%, rgba(13, 92, 74, 0.10), transparent 34%),
+                    radial-gradient(circle at 84% 86%, rgba(212, 175, 55, 0.08), transparent 32%),
+                    #f3f8f5;
+            }
+            @media (prefers-color-scheme: dark) {
+                body, #root:empty { background-color: #0f1f19; }
+                #root:empty {
+                    background:
+                        radial-gradient(circle at 18% 12%, rgba(53, 150, 112, 0.13), transparent 34%),
+                        radial-gradient(circle at 84% 86%, rgba(212, 175, 55, 0.08), transparent 32%),
+                        #0f1f19;
+                }
+            }
+        </style>
         <!-- Content Security Policy -->
         <meta
             http-equiv="Content-Security-Policy"

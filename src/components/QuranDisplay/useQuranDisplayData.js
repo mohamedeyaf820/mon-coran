@@ -29,6 +29,7 @@ function runWhenIdle(callback, timeout = 1600) {
 
 const DISPLAY_DATA_CACHE = new Map();
 const DISPLAY_DATA_CACHE_MAX = 120;
+const DISPLAY_DATA_PREFETCHES = new Map();
 const EMPTY_AYAHS = Object.freeze([]);
 
 function displayCacheKey(displayMode, currentSurah, currentPage, currentJuz, riwaya, warshStrictMode) {
@@ -177,6 +178,27 @@ export default function useQuranDisplayData({
 
     dispatch({ type: "SET_LOADING", payload: true });
 
+    const pendingPrefetch = DISPLAY_DATA_PREFETCHES.get(cacheKey);
+    if (pendingPrefetch) {
+      try {
+        const prefetchedData = await pendingPrefetch;
+        if (signal.aborted || requestSeqRef.current !== requestId) return;
+        setAyahs(prefetchedData.ayahs);
+        setResolvedCacheKey(cacheKey);
+        setSettledCacheKey(cacheKey);
+        setIsWarshFallback(Boolean(prefetchedData.isWarshFallback));
+        dispatch({
+          type: "SET",
+          payload: { loadedAyahCount: prefetchedData.ayahs.length },
+        });
+        dispatch({ type: "SET_LOADING", payload: false });
+        persistRef.current(prefetchedData.ayahs);
+        return;
+      } catch {
+        // A failed background warmup must not prevent the foreground retry.
+      }
+    }
+
     const fetchPromise = (async () => {
       const hafsPromise = riwaya === "warsh"
         ? loadHafsSupportData({ currentJuz, currentPage, currentSurah, displayMode, signal }).catch(() => null)
@@ -286,16 +308,108 @@ export default function useQuranDisplayData({
     [],
   );
 
-  const dataTransitioning = !showHome && settledCacheKey !== currentCacheKey;
+  const prefetchedCurrentData = DISPLAY_DATA_CACHE.get(currentCacheKey);
+  const dataTransitioning =
+    !showHome &&
+    !prefetchedCurrentData &&
+    settledCacheKey !== currentCacheKey;
   const visibleAyahs =
-    resolvedCacheKey === currentCacheKey ? ayahs : EMPTY_AYAHS;
+    resolvedCacheKey === currentCacheKey
+      ? ayahs
+      : prefetchedCurrentData?.ayahs || EMPTY_AYAHS;
+  const visibleWarshFallback =
+    resolvedCacheKey === currentCacheKey
+      ? isWarshFallback
+      : Boolean(prefetchedCurrentData?.isWarshFallback);
 
   return {
     ayahs: visibleAyahs,
     dataTransitioning,
     error,
     fetchData,
-    isWarshFallback,
+    isWarshFallback: visibleWarshFallback,
     setError,
   };
+}
+
+export function preloadQuranDisplayData({
+  currentJuz,
+  currentPage,
+  currentSurah,
+  displayMode,
+  lang = "fr",
+  riwaya,
+  warshStrictMode = true,
+}) {
+  const cacheKey = displayCacheKey(
+    displayMode,
+    currentSurah,
+    currentPage,
+    currentJuz,
+    riwaya,
+    warshStrictMode,
+  );
+  const cachedData = DISPLAY_DATA_CACHE.get(cacheKey);
+  if (cachedData) return Promise.resolve(cachedData);
+
+  const pending = DISPLAY_DATA_PREFETCHES.get(cacheKey);
+  if (pending) return pending;
+
+  const prefetch = (async () => {
+    const arabicData = await loadArabicData({
+      currentJuz,
+      currentPage,
+      currentSurah,
+      displayMode,
+      riwaya,
+      signal: undefined,
+    });
+    const fetchedAyahs = ensureRequestedRiwaya(arabicData.ayahs || [], riwaya);
+    assertWarshStrict({
+      arabicData,
+      displayMode,
+      lang,
+      riwaya,
+      warshStrictMode,
+    });
+    const value = {
+      ayahs: fetchedAyahs,
+      isWarshFallback: Boolean(arabicData?.isTextFallback),
+    };
+    rememberLimited(DISPLAY_DATA_CACHE, cacheKey, value, DISPLAY_DATA_CACHE_MAX);
+
+    if (riwaya === "warsh") {
+      loadHafsSupportData({
+        currentJuz,
+        currentPage,
+        currentSurah,
+        displayMode,
+        signal: undefined,
+      })
+        .then((hafsData) => {
+          if (!hafsData) return;
+          const hafsMap = new Map(
+            (hafsData.ayahs || []).map((ayah) => [
+              `${ayah.surah?.number}:${ayah.numberInSurah}`,
+              ayah,
+            ]),
+          );
+          const current = DISPLAY_DATA_CACHE.get(cacheKey) || value;
+          rememberLimited(
+            DISPLAY_DATA_CACHE,
+            cacheKey,
+            { ...current, ayahs: mergeHafsSupport(current.ayahs, hafsMap) },
+            DISPLAY_DATA_CACHE_MAX,
+          );
+        })
+        .catch(() => null);
+    }
+
+    return value;
+  })().finally(() => {
+    DISPLAY_DATA_PREFETCHES.delete(cacheKey);
+  });
+
+  DISPLAY_DATA_PREFETCHES.set(cacheKey, prefetch);
+  return prefetch;
 }

@@ -311,6 +311,7 @@ function sanitizeReciterAvailabilityMap(input) {
 const DEFAULT_SETTINGS = {
   lang: "fr",
   theme: "light",
+  splashDone: false,
   riwaya: "hafs",
   reciter: "ar.alafasy",
   fontSize: 25,
@@ -454,6 +455,7 @@ function sanitizeSettings(settings) {
   return {
     lang: VALID_LANGS.includes(safeInput.lang) ? safeInput.lang : "fr",
     theme: normalizeThemeId(safeInput.theme, "light"),
+    splashDone: Boolean(safeInput.splashDone),
     riwaya: VALID_RIWAYAS.includes(safeInput.riwaya)
       ? safeInput.riwaya
       : "hafs",

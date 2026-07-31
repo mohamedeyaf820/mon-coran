@@ -113,6 +113,7 @@ test("storage: settings round-trip encrypted and sanitized", () => {
   saveSettings({
     lang: "fr",
     theme: "dark",
+    splashDone: true,
     riwaya: "warsh",
     reciter: "ar.alafasy",
     quranFontSize: 200,
@@ -127,6 +128,7 @@ test("storage: settings round-trip encrypted and sanitized", () => {
   const settings = getSettings();
   assert.equal(settings.lang, "fr");
   assert.equal(settings.theme, "dark");
+  assert.equal(settings.splashDone, true);
   assert.equal(settings.riwaya, "warsh");
   assert.equal(settings.quranFontSize, 96);
   assert.equal(settings.volume, 1);

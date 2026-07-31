@@ -1,11 +1,6 @@
 import { useEffect, useRef } from "react";
-import { getJuz, getPage, getSurahText } from "../../services/quranAPI";
-import {
-  getWarshJuzVerses,
-  getWarshPageVerses,
-  preloadWarshSurah,
-} from "../../services/warshService";
 import { shouldAvoidBackgroundWork } from "../../utils/networkPolicy";
+import { preloadQuranDisplayData } from "./useQuranDisplayData";
 
 /**
  * Warm a single likely forward navigation after the reader is fully settled.
@@ -20,8 +15,10 @@ export default function useQuranDisplayPrefetch({
   currentSurah,
   displayMode,
   isPlaying,
+  lang,
   loading,
   riwaya,
+  warshStrictMode,
 }) {
   const isPlayingRef = useRef(isPlaying);
 
@@ -33,24 +30,15 @@ export default function useQuranDisplayPrefetch({
     if (loading || shouldAvoidBackgroundWork()) return undefined;
 
     const prefetchText = (mode, value) => {
-      if (mode === "surah") {
-        if (riwaya === "warsh") preloadWarshSurah(value);
-        else getSurahText(value, riwaya).catch(() => {});
-        return;
-      }
-      if (mode === "page") {
-        (riwaya === "warsh"
-          ? getWarshPageVerses(value)
-          : getPage(value, riwaya)
-        ).catch(() => {});
-        return;
-      }
-      if (mode === "juz") {
-        (riwaya === "warsh"
-          ? getWarshJuzVerses(value)
-          : getJuz(value, riwaya)
-        ).catch(() => {});
-      }
+      preloadQuranDisplayData({
+        currentJuz: mode === "juz" ? value : currentJuz,
+        currentPage: mode === "page" ? value : currentPage,
+        currentSurah: mode === "surah" ? value : currentSurah,
+        displayMode: mode,
+        lang,
+        riwaya,
+        warshStrictMode,
+      }).catch(() => null);
     };
 
     const runNextPrefetch = () => {
@@ -79,7 +67,7 @@ export default function useQuranDisplayPrefetch({
       } else {
         runNextPrefetch();
       }
-    }, 8000);
+    }, 900);
 
     return () => {
       window.clearTimeout(timer);
@@ -90,7 +78,9 @@ export default function useQuranDisplayPrefetch({
     currentPage,
     currentSurah,
     displayMode,
+    lang,
     loading,
     riwaya,
+    warshStrictMode,
   ]);
 }
