@@ -550,6 +550,29 @@ export default function HomePage({ lowPerfMode = false }) {
     [warmReadingTarget],
   );
 
+  // Explicit user intent (hover/focus on "open reader") — bypass lowPerfMode
+  const warmSurahIntent = useCallback(
+    (surah) => {
+      if (surah && !shouldAvoidBackgroundWork()) {
+        loadQuranReaderDataModule()
+          .then(({ preloadQuranDisplayData }) =>
+            preloadQuranDisplayData({
+              currentSurah: Number(surah) || currentSurah,
+              currentPage: state.currentPage,
+              currentJuz: currentJuz,
+              displayMode: "surah",
+              lang,
+              riwaya,
+              warshStrictMode: state.warshStrictMode,
+            }),
+          )
+          .catch(() => null);
+      }
+      loadQuranReaderModule().catch(() => null);
+    },
+    [currentJuz, currentSurah, lang, riwaya, state.currentPage, state.warshStrictMode],
+  );
+
   const goSurah = useCallback(
     (n) => {
       warmSurah(n);
@@ -1077,7 +1100,7 @@ export default function HomePage({ lowPerfMode = false }) {
                   onPlayRadio={playReciterRadio}
                   onClose={() => setSelectedReciterId(null)}
                   onPlaySurah={playSurahForReciter}
-                  onOpenSurahIntent={warmSurah}
+                  onOpenSurahIntent={warmSurahIntent}
                   onOpenSurah={(surahNum, reciter) => {
                     warmSurah(surahNum);
                     setSelectedReciterId(null);

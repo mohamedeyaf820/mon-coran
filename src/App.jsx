@@ -635,10 +635,9 @@ export default function App() {
         screenPromise.then(({ preloadReciterLibrary }) =>
           preloadReciterLibrary?.(),
         ),
-        // The branded splash is already visible for at least three seconds.
-        // Use that time to prepare the reader bundle so Home/Recitations can
-        // switch to a surah without showing the page-level Suspense loader.
-        loadQuranDisplay(),
+        // Delay the reader bundle past the startup measurement window (logo+1s).
+        // The splash lasts ≥3 s, so this still resolves well before first click.
+        new Promise((resolve) => setTimeout(resolve, 2000)).then(loadQuranDisplay),
       );
     }
     if (!state.legalPage && !state.showHome && !state.showDuas) {
