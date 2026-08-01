@@ -31,6 +31,11 @@ import {
 } from "../services/memorizationService";
 import { getVerseTafsir } from "../services/quranComStudyService";
 import { openExternalUrl } from "../lib/security";
+import {
+  createVerseSharePayload,
+  createVerseShareTargets,
+  writeTextToClipboard,
+} from "../services/verseShareService";
 import { cn } from "../lib/utils";
 import {
   DropdownMenu,
@@ -176,6 +181,27 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
   }, []);
 
   const surahInfo = useMemo(() => getSurah(surah), [surah]);
+  const sharePayload = useMemo(() => {
+    const surahName = surahInfo
+      ? lang === "ar"
+        ? surahInfo.ar
+        : lang === "fr"
+          ? surahInfo.fr
+          : surahInfo.en
+      : "";
+
+    return createVerseSharePayload({
+      surah,
+      ayah,
+      arabicText: ayahData?.text,
+      surahName,
+      lang,
+    });
+  }, [ayah, ayahData?.text, lang, surah, surahInfo]);
+  const shareTargets = useMemo(
+    () => createVerseShareTargets(sharePayload),
+    [sharePayload],
+  );
   const activeSheet = showStudy
     ? "study"
     : showShare
@@ -477,17 +503,26 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
   };
 
   const copyVerseText = async (value, successMessage) => {
-    if (!value) return;
+    if (!value) return false;
 
-    try {
-      await navigator.clipboard.writeText(value);
+    const didCopy = await writeTextToClipboard(value);
+    if (didCopy) {
       setCopied(true);
       clearTimeout(copiedTimerRef.current);
       copiedTimerRef.current = window.setTimeout(() => setCopied(false), 1500);
       emitToast("success", successMessage);
-    } catch (error) {
-      console.warn("Copy failed:", error);
+      return true;
     }
+
+    emitToast(
+      "error",
+      lang === "fr"
+        ? "Impossible de copier le texte"
+        : lang === "ar"
+          ? "تعذّر نسخ النص"
+          : "Unable to copy the text",
+    );
+    return false;
   };
 
   const copyText = async () => {
@@ -497,65 +532,68 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     );
   };
 
-  const getShareText = () => {
-    const surahName = surahInfo
-      ? lang === "fr"
-        ? surahInfo.fr
-        : surahInfo.en
-      : `Surah ${surah}`;
-    return `${ayahData?.text || ""}\n\n- ${surahName} (${surah}:${ayah})\nMushafPlus`;
-  };
-
   const shareTo = (url) => {
-    openExternalUrl(url);
-    closePanels();
+    const didOpen = openExternalUrl(url);
+    if (didOpen) {
+      closePanels();
+      return;
+    }
+
+    emitToast(
+      "error",
+      lang === "fr"
+        ? "Impossible d’ouvrir ce service de partage"
+        : lang === "ar"
+          ? "تعذّر فتح خدمة المشاركة"
+          : "Unable to open this sharing service",
+    );
   };
 
   const shareWhatsApp = () => {
-    shareTo(`https://wa.me/?text=${encodeURIComponent(getShareText())}`);
+    shareTo(shareTargets.whatsapp);
   };
 
   const shareTelegram = () => {
-    shareTo(
-      `https://t.me/share/url?text=${encodeURIComponent(getShareText())}`,
-    );
+    shareTo(shareTargets.telegram);
   };
 
   const shareTwitter = () => {
-    shareTo(
-      `https://x.com/intent/tweet?text=${encodeURIComponent(
-        getShareText().slice(0, 280),
-      )}`,
-    );
+    shareTo(shareTargets.x);
+  };
+
+  const shareFacebook = () => {
+    shareTo(shareTargets.facebook);
   };
 
   const shareEmail = () => {
-    const surahName = surahInfo
-      ? lang === "fr"
-        ? surahInfo.fr
-        : surahInfo.en
-      : `Surah ${surah}`;
-    const subject = encodeURIComponent(`${surahName} (${surah}:${ayah})`);
-    const body = encodeURIComponent(getShareText());
-    shareTo(`mailto:?subject=${subject}&body=${body}`);
+    shareTo(shareTargets.email);
   };
 
   const shareNative = async () => {
     if (!navigator.share) return;
     try {
-      await navigator.share({ title: "MushafPlus", text: getShareText() });
-    } catch {
-      // user cancelled
+      await navigator.share({
+        title: sharePayload.title,
+        text: sharePayload.text,
+        url: sharePayload.url,
+      });
+      closePanels();
+    } catch (error) {
+      if (error?.name !== "AbortError") {
+        emitToast(
+          "error",
+          lang === "fr" ? "Le partage a échoué" : lang === "ar" ? "فشلت المشاركة" : "Sharing failed",
+        );
+      }
     }
-    closePanels();
   };
 
   const shareCopyText = async () => {
-    await copyVerseText(
-      getShareText(),
+    const didCopy = await copyVerseText(
+      sharePayload.fullText,
       t("toast.shareTextCopied", lang),
     );
-    closePanels();
+    if (didCopy) closePanels();
   };
 
   const shareAsImage = async () => {
@@ -642,8 +680,9 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       try {
         await navigator.share({
           files: [file],
-          title: "MushafPlus",
-          text: getShareText(),
+          title: sharePayload.title,
+          text: sharePayload.text,
+          url: sharePayload.url,
         });
       } catch {
         // user cancelled
@@ -2007,6 +2046,10 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               <Icon name="x-twitter" size={16} />
               <span className="share-btn__label">X / Twitter</span>
             </button>
+            <button type="button" className="share-btn share-btn--facebook" onClick={shareFacebook}>
+              <Icon name="facebook" size={16} />
+              <span className="share-btn__label">Facebook</span>
+            </button>
             <button type="button" className="share-btn share-btn--email" onClick={shareEmail}>
               <Mail size={16} />
               <span className="share-btn__label">Email</span>
@@ -2027,7 +2070,14 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               type="button"
               className="share-btn share-btn--card"
               onClick={() => {
-                dispatch({ type: "SET", payload: { shareImageOpen: true } });
+                dispatch({
+                  type: "SET",
+                  payload: {
+                    currentSurah: Number(surah),
+                    currentAyah: Number(ayah),
+                    shareImageOpen: true,
+                  },
+                });
                 closePanels();
               }}
             >

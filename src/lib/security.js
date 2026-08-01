@@ -21,6 +21,8 @@ const ALLOWED_EXTERNAL_HOSTS = new Set([
   "t.me",
   "x.com",
   "twitter.com",
+  "facebook.com",
+  "www.facebook.com",
   "quran.com",
   "raw.githubusercontent.com",
   "alquran.cloud",

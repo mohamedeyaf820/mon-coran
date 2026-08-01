@@ -34,6 +34,7 @@ test("verse actions open as a compact, usable mobile sheet", async ({ page }) =>
   );
   await expect(dialog.getByRole("button", { name: /couter$/ })).toBeVisible();
   await expect(dialog.getByRole("button", { name: /tude$/ })).toBeVisible();
+  await expect(panel).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 0)");
 
   const panelBox = await panel.boundingBox();
   expect(panelBox?.y).toBeGreaterThanOrEqual(0);
@@ -53,4 +54,78 @@ test("verse actions open as a compact, usable mobile sheet", async ({ page }) =>
     path: "test-results/ayah-actions-modal-mobile.png",
     fullPage: false,
   });
+});
+
+test("verse sharing opens every network with the selected verse link", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript((settingsKey) => {
+    window.localStorage.setItem(
+      settingsKey,
+      JSON.stringify({
+        lang: "fr",
+        theme: "dark",
+        riwaya: "hafs",
+        reciter: "ar.alafasy",
+        showHome: false,
+        displayMode: "surah",
+        mushafLayout: "mushaf",
+      }),
+    );
+    window.__shareUrls = [];
+    window.__copiedVerse = "";
+    window.open = (url) => {
+      window.__shareUrls.push(String(url));
+      return null;
+    };
+    Object.defineProperty(navigator, "share", {
+      configurable: true,
+      value: undefined,
+    });
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: async (value) => {
+          window.__copiedVerse = String(value);
+        },
+      },
+    });
+  }, SETTINGS_KEY);
+
+  await page.goto("/surah/8");
+  await page.getByRole("button", { name: "Verset 1" }).first().click();
+
+  const actionsDialog = page.locator(".ayah-actions-modal[role='dialog']");
+  const shareSheet = page.locator(".ayah-action-sheet--share");
+  const openShareSheet = async () => {
+    await actionsDialog.getByRole("button", { name: "Partager", exact: true }).click();
+    await expect(shareSheet).toBeVisible();
+    const layers = await page.evaluate(() => ({
+      modal: Number.parseInt(getComputedStyle(document.querySelector(".ayah-actions-modal")).zIndex, 10),
+      sheet: Number.parseInt(getComputedStyle(document.querySelector(".ayah-action-sheet--share")).zIndex, 10),
+    }));
+    expect(layers.sheet).toBeGreaterThan(layers.modal);
+  };
+
+  const destinations = [
+    ["WhatsApp", "https://wa.me/"],
+    ["Telegram", "https://t.me/share/url"],
+    ["X / Twitter", "https://x.com/intent/tweet"],
+    ["Facebook", "https://www.facebook.com/sharer/sharer.php"],
+    ["Email", "mailto:?subject="],
+  ];
+
+  for (const [label, prefix] of destinations) {
+    await openShareSheet();
+    await shareSheet.getByRole("button", { name: label, exact: true }).click();
+    await expect(shareSheet).toBeHidden();
+    const opened = await page.evaluate(() => window.__shareUrls.at(-1));
+    expect(opened).toMatch(new RegExp(`^${prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
+    expect(decodeURIComponent(opened)).toContain("/surah/8/1");
+  }
+
+  await openShareSheet();
+  await shareSheet.getByRole("button", { name: "Texte de partage" }).click();
+  const copied = await page.evaluate(() => window.__copiedVerse);
+  expect(copied).toContain("https://mushafplus.netlify.app/surah/8/1");
+  expect(copied).toContain("8");
 });

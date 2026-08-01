@@ -47,6 +47,8 @@ function collectSourceFiles(dir) {
 test("security: allows only whitelisted https hosts", () => {
   assert.equal(isAllowedExternalUrl("https://wa.me/?text=ok"), true);
   assert.equal(isAllowedExternalUrl("https://twitter.com/test"), true);
+  assert.equal(isAllowedExternalUrl("https://www.facebook.com/sharer/sharer.php?u=test"), true);
+  assert.equal(isAllowedExternalUrl("https://www.facebook.com.evil.example/sharer"), false);
   assert.equal(isAllowedExternalUrl("https://evil.example.com"), false);
   assert.equal(isAllowedExternalUrl("https://ia800304.us.archive.org/audio/test.mp3"), false);
   assert.equal(isAllowedExternalUrl("javascript:alert(1)"), false);
