@@ -163,6 +163,7 @@ test("reciters: every biography exposes a reviewed HTTPS source", () => {
     assert.match(profile.bioSource?.url || "", /^https:\/\//, id);
     assert.ok(profile.bioSource?.provider, id);
     assert.equal(profile.reviewedAt, "2026-08-01", id);
+    assert.ok(profile.bio.fr.length <= 450, `${id}: concise French notice`);
   }
 
   assert.match(RESEARCHED_PROFILES.fares_abbad.bio.fr, /yéménite/);
