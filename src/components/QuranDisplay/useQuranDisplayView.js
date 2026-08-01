@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { resolveFontFamily } from "../../data/fonts";
 import {
   clampArabicFontSize,
+  getArabicReadingLineHeight,
   getResponsiveArabicFontSize,
 } from "../../utils/arabicTypography";
 
@@ -93,8 +94,14 @@ export default function useQuranDisplayView({
     const quranFontSizeCss = `${Math.round(readingFontSize)}px`;
     const listMetric = (factor, minimum, maximum) =>
       `${Math.max(minimum, Math.min(maximum, readingFontSize * factor)).toFixed(2)}px`;
-    const quranLineHeight =
-      mushafLayout === "mushaf" ? "2.48" : displayMode === "page" ? "3.05" : "2.2";
+    const quranLineHeight = String(
+      getArabicReadingLineHeight({
+        displayMode,
+        fontFamily,
+        mushafLayout,
+        riwaya,
+      }),
+    );
     element.style.setProperty("--qd-reading-font-size", quranFontSizeCss);
     element.style.setProperty("--qd-font-size", quranFontSizeCss);
     // Verse-list chrome follows the resolved, device-aware Arabic size. This
@@ -162,11 +169,13 @@ export default function useQuranDisplayView({
     contentReady,
     displayMode,
     fullscreenFontSize,
+    fontFamily,
     isQCF4,
     quranFontCss,
     quranTranslationFontSize,
     mushafLayout,
     readingFontSize,
+    riwaya,
   ]);
 
   const touchHandlers = {
