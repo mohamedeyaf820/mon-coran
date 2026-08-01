@@ -24,7 +24,6 @@ import audioService from "../../services/audioService";
 import { SurahCard, JuzCard, EmptyState } from "./HomePrimitives";
 import {
   getReciterCountryLabel,
-  getReciterSourceInfo,
   getReciterVisual,
 } from "../../data/reciters";
 import Icon from "./HomeIcon";
@@ -413,7 +412,6 @@ export default function ContentSection({
                       : reciter.nameEn;
                 const visual = getReciterVisual(reciter);
                 const avatar = visual.avatar;
-                const sourceInfo = getReciterSourceInfo(reciter);
                 const countryLabel = getReciterCountryLabel(reciter, lang);
                 const isFavorite = (favoriteReciters || []).includes(reciter.id);
                 const favoriteLabel = isFavorite
@@ -470,9 +468,6 @@ export default function ContentSection({
                         <div className="reciter-card__meta">
                           <span>{reciter.style || "murattal"}</span>
                           {countryLabel ? <span>{countryLabel}</span> : null}
-                          {sourceInfo ? (
-                            <span className="reciter-card__source">{sourceInfo.label}</span>
-                          ) : null}
                         </div>
                       </div>
 

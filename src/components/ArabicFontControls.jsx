@@ -81,7 +81,7 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
           type="range"
           min={ARABIC_FONT_SIZE_MIN}
           max={ARABIC_FONT_SIZE_MAX}
-          step="2"
+          step="1"
           value={currentSize}
           onChange={(event) => setArabicFontSize(event.target.value)}
           aria-label={labelFor(lang, "Taille de police arabe", "Arabic font size", "حجم الخط العربي")}
