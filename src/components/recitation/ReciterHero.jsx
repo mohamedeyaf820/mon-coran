@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import ReciterTypeBadge from "./ReciterTypeBadge";
 import {
   getReciterCountryLabel,
-  getReciterSourceInfo,
   getReciterVisual,
 } from "../../data/reciters";
 
@@ -18,7 +17,6 @@ export default function ReciterHero({ reciter, lang }) {
   const showPhoto = visual.photo && !imgError;
   const avatar = visual.avatar;
   const countryLabel = getReciterCountryLabel(reciter, lang);
-  const sourceInfo = getReciterSourceInfo(reciter);
 
   return (
     <div className="reciter-hero flex min-w-0 items-center gap-3.5">
@@ -38,7 +36,7 @@ export default function ReciterHero({ reciter, lang }) {
             onError={() => setImgError(true)}
             loading="eager"
             decoding="async"
-            fetchPriority="high"
+            fetchpriority="high"
             referrerPolicy="no-referrer"
           />
         ) : null}
@@ -61,11 +59,6 @@ export default function ReciterHero({ reciter, lang }) {
           {countryLabel && (
             <span className="inline-flex items-center rounded-full bg-bg-secondary px-2 py-0.5 text-[0.65rem] font-medium text-text-muted">
               {countryLabel}
-            </span>
-          )}
-          {sourceInfo && (
-            <span className="reciter-hero__source inline-flex items-center rounded-full px-2 py-0.5 text-[0.65rem] font-bold">
-              {sourceInfo.label}
             </span>
           )}
         </div>

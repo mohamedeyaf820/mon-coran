@@ -156,6 +156,20 @@ test("reciters: Al-Matrood and Al-Sudais have verified biography sources", () =>
   );
 });
 
+test("reciters: every biography exposes a reviewed HTTPS source", () => {
+  assert.equal(Object.keys(RESEARCHED_PROFILES).length, 58);
+
+  for (const [id, profile] of Object.entries(RESEARCHED_PROFILES)) {
+    assert.match(profile.bioSource?.url || "", /^https:\/\//, id);
+    assert.ok(profile.bioSource?.provider, id);
+    assert.equal(profile.reviewedAt, "2026-08-01", id);
+  }
+
+  assert.match(RESEARCHED_PROFILES.fares_abbad.bio.fr, /yéménite/);
+  assert.match(RESEARCHED_PROFILES.sahl_yassin.bio.fr, /saoudien/);
+  assert.match(RESEARCHED_PROFILES.akram_alalaqimy.bio.fr, /égyptien/);
+});
+
 test("reciters: attributed portraits and biography sources are wired", () => {
   const knownPhotoIds = [
     "ar.alafasy",

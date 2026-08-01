@@ -53,6 +53,11 @@ export default function ReciterDetailPage({
   const researchedProfile = useReciterProfile(reciter?.id);
   const biographySource =
     researchedProfile?.bioSource || getReciterProfileSource(reciter);
+  const profileSources = researchedProfile?.verificationSources?.length
+    ? researchedProfile.verificationSources
+    : biographySource
+      ? [biographySource]
+      : [];
   const riwayaLabel = reciter.verifiedWarsh ? "Warsh" : isRtl ? "حفص" : "Hafs";
   const audioModeLabel =
     reciter.audioMode === "surah"
@@ -116,19 +121,23 @@ export default function ReciterDetailPage({
             className="reciter-detail__sources"
             aria-label={labelFor(lang, "Sources", "Sources", "المصادر")}
           >
-            {biographySource ? (
-              <div className="reciter-detail__source-row">
-                <BookOpen className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
-                <span>{labelFor(lang, "Biographie", "Biography", "السيرة")}</span>
+            <h3>
+              <BookOpen className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
+              {labelFor(lang, "Sources vérifiées", "Verified sources", "المصادر المتحققة")}
+            </h3>
+            <div className="reciter-detail__source-links">
+              {profileSources.map((source) => (
                 <a
-                  href={biographySource.url}
+                  key={source.url}
+                  href={source.url}
                   target="_blank"
                   rel="noreferrer"
+                  title={source.url}
                 >
-                  {biographySource.provider}
+                  {source.provider}
                 </a>
-              </div>
-            ) : null}
+              ))}
+            </div>
             {sourceInfo ? (
               <div className="reciter-detail__source-row">
                 <RadioTower className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
