@@ -33,6 +33,17 @@ export default {
     title: 'Search the Quran', placeholder: 'Search the Holy Quran…',
     noResults: 'No results', results: 'result(s)', searching: 'Searching…',
     hint: 'Type to search in the Quran',
+    inputLabel: 'Text to search for in the Quran',
+    voiceStart: 'Search with your voice', voiceStop: 'Stop listening',
+    voiceStartShort: 'Dictate', voiceStopShort: 'Stop', voiceListening: 'Listening… Speak now.',
+    voiceErrors: {
+      unsupported: 'Voice search is not supported by this browser.',
+      permissionDenied: 'Allow microphone access to use voice search.',
+      noSpeech: 'No speech was detected. Tap the microphone to try again.',
+      microphoneUnavailable: 'No microphone is available on this device.',
+      network: 'Voice recognition needs an available connection.',
+      failed: 'Voice search could not start. Please try again.',
+    },
   },
   settings: {
     title: 'Settings', readingSettings: 'Reading Settings', general: 'General', display: 'Display', audio: 'Audio', privacy: 'Privacy',

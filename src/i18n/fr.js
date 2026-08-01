@@ -32,6 +32,17 @@ export default {
     title: 'Recherche dans le Coran', placeholder: 'Rechercher dans le Saint Coran…',
     noResults: 'Aucun résultat', results: 'résultat(s)', searching: 'Recherche en cours…',
     hint: 'Tapez pour rechercher dans le Coran',
+    inputLabel: 'Texte à rechercher dans le Coran',
+    voiceStart: 'Rechercher avec votre voix', voiceStop: 'Arrêter l’écoute',
+    voiceStartShort: 'Dicter', voiceStopShort: 'Arrêter', voiceListening: 'Je vous écoute… Parlez maintenant.',
+    voiceErrors: {
+      unsupported: 'La recherche vocale n’est pas prise en charge par ce navigateur.',
+      permissionDenied: 'Autorisez l’accès au microphone pour utiliser la recherche vocale.',
+      noSpeech: 'Aucune parole détectée. Appuyez sur le micro pour réessayer.',
+      microphoneUnavailable: 'Aucun microphone disponible sur cet appareil.',
+      network: 'La reconnaissance vocale nécessite une connexion disponible.',
+      failed: 'La recherche vocale n’a pas pu démarrer. Réessayez.',
+    },
   },
   settings: {
     title: 'Paramètres', readingSettings: 'Paramètres de lecture', general: 'Général', display: 'Affichage', audio: 'Audio', privacy: 'Confidentialité',

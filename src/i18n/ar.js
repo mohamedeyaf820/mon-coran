@@ -33,6 +33,17 @@ export default {
     title: 'البحث في القرآن', placeholder: 'ابحث في القرآن الكريم...',
     noResults: 'لا توجد نتائج', results: 'نتيجة', searching: 'جاري البحث...',
     hint: 'اكتب للبحث في القرآن الكريم',
+    inputLabel: 'النص المراد البحث عنه في القرآن',
+    voiceStart: 'البحث باستخدام صوتك', voiceStop: 'إيقاف الاستماع',
+    voiceStartShort: 'إملاء', voiceStopShort: 'إيقاف', voiceListening: 'أستمع إليك… تحدث الآن.',
+    voiceErrors: {
+      unsupported: 'البحث الصوتي غير مدعوم في هذا المتصفح.',
+      permissionDenied: 'اسمح بالوصول إلى الميكروفون لاستخدام البحث الصوتي.',
+      noSpeech: 'لم يتم اكتشاف كلام. اضغط على الميكروفون للمحاولة مجددًا.',
+      microphoneUnavailable: 'لا يوجد ميكروفون متاح على هذا الجهاز.',
+      network: 'يتطلب التعرف الصوتي اتصالًا متاحًا.',
+      failed: 'تعذر تشغيل البحث الصوتي. حاول مرة أخرى.',
+    },
   },
   settings: {
     title: 'الإعدادات', readingSettings: 'خيارات القراءة', general: 'عام', display: 'عرض', audio: 'صوت', privacy: 'الخصوصية',
