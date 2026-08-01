@@ -12163,20 +12163,6 @@ body {
     border-radius: 999px;
 }
 
-.app-root .mp-footer-v2__shell,
-.app-root .mp-footer-v2__verse,
-.app-root .mp-footer-v2__body {
-    border-radius: var(--ux-radius-lg);
-    border-color: var(--ux-panel-border);
-    background: color-mix(in srgb, var(--ux-panel) 90%, transparent 10%);
-    box-shadow: var(--ux-shadow-soft);
-}
-
-.app-root .mp-footer-v2__brand {
-    font-family: var(--ux-font-display);
-    letter-spacing: 0.01em;
-}
-
 @keyframes platformRiseIn {
     from {
         opacity: 0;
@@ -12301,11 +12287,6 @@ body {
 
 .app-root .mp-player-progress {
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.app-root .mp-footer-v2__verse-text {
-    font-family: var(--ux-font-ar);
-    line-height: 1.92;
 }
 
 .app-root .quran-display--platform .reader-toolbar {
@@ -12447,8 +12428,6 @@ body {
     color: var(--text-primary);
 }
 
-.app-root .mp-footer-v2__nav-btn,
-.app-root .mp-footer-v2__verse-ref,
 .app-root .mp-player-options-trigger,
 .app-root .mp-player-controls-strip button,
 .app-root .mp-player-minimized-row button {
@@ -12459,7 +12438,6 @@ body {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
-.app-root .mp-footer-v2__nav-btn:hover,
 .app-root .mp-player-controls-strip button:hover,
 .app-root .mp-player-minimized-row button:hover {
     border-color: rgba(var(--primary-rgb), 0.42);
@@ -12469,19 +12447,6 @@ body {
         rgba(var(--primary-rgb), 0.08)
     );
     box-shadow: 0 10px 20px rgba(var(--primary-rgb), 0.16);
-}
-
-.app-root .mp-footer-v2__nav-icon {
-    border-color: color-mix(
-        in srgb,
-        var(--ux-panel-border) 68%,
-        rgba(var(--primary-rgb), 0.32) 32%
-    );
-    background: color-mix(
-        in srgb,
-        var(--bg-secondary) 84%,
-        rgba(var(--primary-rgb), 0.16) 16%
-    );
 }
 
 .app-root .audio-player,
@@ -12738,19 +12703,6 @@ body {
         display: none;
     }
 
-    .app-root .mp-footer-v2__verse,
-    .app-root .mp-footer-v2__body {
-        padding-inline: 0.9rem;
-    }
-
-    .app-root .mp-footer-v2__nav {
-        gap: 0.4rem;
-    }
-
-    .app-root .mp-footer-v2__nav-btn {
-        border-radius: 0.88rem;
-        padding: 0.56rem 0.3rem;
-    }
 }
 
 @media (prefers-reduced-motion: reduce) {

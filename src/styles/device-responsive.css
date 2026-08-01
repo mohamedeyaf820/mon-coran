@@ -197,11 +197,6 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
     line-height: 1.95 !important;
   }
 
-  html body .app-root .mp-footer-v2__nav-label {
-    font-size: 0.72rem !important;
-    line-height: 1.15 !important;
-  }
-
   html body .app-root[data-view="reading"] .quran-display--warsh .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
     line-height: 2.08 !important;
   }

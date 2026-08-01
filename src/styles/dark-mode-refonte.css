@@ -367,38 +367,6 @@ html[data-theme="dark"] .reciter-card__chip {
     color: #76e7b8 !important;
 }
 
-html[data-theme="dark"] .mp-footer-v2__shell {
-    border-color: rgba(196, 219, 208, 0.15) !important;
-    background:
-        radial-gradient(
-            circle at 12% 0%,
-            rgba(var(--night-gold-rgb), 0.08),
-            transparent 18rem
-        ),
-        linear-gradient(180deg, rgba(16, 29, 25, 0.92), rgba(7, 13, 12, 0.95)) !important;
-    box-shadow: 0 24px 72px rgba(0, 0, 0, 0.38) !important;
-}
-
-html[data-theme="dark"] .mp-footer-v2__verse {
-    border-color: rgba(196, 219, 208, 0.12) !important;
-}
-
-html[data-theme="dark"] .mp-footer-v2__verse-text {
-    color: #f4efe2 !important;
-}
-
-html[data-theme="dark"] .mp-footer-v2__nav-btn {
-    border-color: rgba(196, 219, 208, 0.14) !important;
-    background: rgba(5, 10, 9, 0.42) !important;
-    color: var(--night-text-soft) !important;
-}
-
-html[data-theme="dark"] .mp-footer-v2__nav-btn:hover {
-    border-color: rgba(var(--night-emerald-rgb), 0.38) !important;
-    background: rgba(var(--night-emerald-rgb), 0.12) !important;
-    color: var(--night-text) !important;
-}
-
 /* Interactions and scrollbars */
 html[data-theme="dark"]
     .app-root
