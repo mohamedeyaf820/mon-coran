@@ -63,7 +63,7 @@ function CleanPageViewComponent({
 
   return (
     <div
-      className={`cpv-container mushaf-wrapper mushaf-page-wrapper${isQCF4 ? " cpv-qcf4" : ""}`}
+      className={`cpv-container mushaf-wrapper mushaf-page-wrapper ${isQCF4 ? "cpv-qcf4" : ""}`}
     >
       <div className="mushaf-corner mushaf-corner--tr" aria-hidden="true" />
       <div className="mushaf-corner mushaf-corner--tl" aria-hidden="true" />

@@ -52,3 +52,16 @@ test("verse action modal renders a responsive, scrollable action grid", () => {
   assert.match(styles, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
   assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?repeat\(2, minmax\(0, 1fr\)\)/);
 });
+
+test("Mushaf pages keep a compact, theme-aware reading hierarchy", () => {
+  const page = source("src/components/Quran/CleanPageView.jsx");
+  const readerStyles = source("src/styles/readerStyles.js");
+  const styles = source("src/styles/mushaf-page-polish.css");
+
+  assert.match(page, /mushaf-page-wrapper/);
+  assert.match(readerStyles, /mushaf-page-polish\.css/);
+  assert.match(styles, /--mushaf-paper/);
+  assert.match(styles, /font-size: var\(--cpv-font-size/);
+  assert.match(styles, /grid-template-columns: minmax\(1\.5rem, 1fr\) auto/);
+  assert.match(styles, /@media \(max-width: 640px\)/);
+});
