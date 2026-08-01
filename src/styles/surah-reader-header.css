@@ -702,11 +702,9 @@
     font-weight: 750;
 }
 
-.srh-typography-trigger::-webkit-details-marker { display: none; }
-.srh-typography-trigger::marker { content: ""; }
 .srh-typography-disclosure { display: contents; }
 
-.srh-typography-disclosure[open] .srh-typography-trigger {
+.srh-typography-disclosure.open .srh-typography-trigger {
     border-color: rgba(var(--primary-rgb), 0.28);
     background: rgba(var(--primary-rgb), 0.09);
     color: var(--primary);
@@ -760,7 +758,7 @@
         border-top: 1px solid var(--border);
     }
 
-    .srh-typography-disclosure[open] .srh-typography-panel {
+    .srh-typography-disclosure.open .srh-typography-panel {
         display: block;
     }
 
