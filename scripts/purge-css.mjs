@@ -73,6 +73,32 @@ async function purgeCSS() {
     }
   }
 
+  const purgedCss = cssFiles
+    .map((cssFile) => fs.readFileSync(path.join(cssPath, cssFile), "utf8"))
+    .join("\n");
+  const requiredReaderRules = [
+    {
+      label: "continuous Mushaf verse flow",
+      pattern:
+        /\.mushaf-text-block\s*>\s*\.quran-verse-inline[^{}]*\{[^{}]*display:\s*inline\s*!important/i,
+    },
+    {
+      label: "inline Mushaf verse content",
+      pattern:
+        /\.mushaf-container\s+\.mushaf-verse[^{}]*\{[^{}]*display:\s*inline\s*!important/i,
+    },
+  ];
+  const missingReaderRules = requiredReaderRules.filter(
+    ({ pattern }) => !pattern.test(purgedCss),
+  );
+  if (missingReaderRules.length > 0) {
+    throw new Error(
+      `Critical reader CSS removed by purge: ${missingReaderRules
+        .map(({ label }) => label)
+        .join(", ")}`,
+    );
+  }
+
   console.log("\n[purge-css] CSS purge complete.");
 }
 

@@ -124,7 +124,7 @@ export default function QuranDisplay() {
       riwaya,
       warshStrictMode,
     });
-  const { getTranslationForAyah, translationSource, translationState } = useQuranTranslations({
+  const { getTranslationForAyah, translationState } = useQuranTranslations({
     arabicReady: ayahs.length > 0,
     currentJuz,
     currentPage,
@@ -461,8 +461,6 @@ export default function QuranDisplay() {
       <ReaderSourceStatus
         dataSource={dataSource}
         lang={lang}
-        loading={readerBusy}
-        translationSource={translationSource}
         translationState={showTranslation ? translationState : "idle"}
       />
       <div
