@@ -82,3 +82,16 @@ test("continuous Mushaf text strips embedded markers before rendering its marker
   assert.match(renderer, /effectiveRiwaya,\s*appendNativeMarker/);
   assert.match(renderer, /return appendNativeAyahMarker\(/);
 });
+
+test("continuous Mushaf markers leave a readable gap before the next ayah", () => {
+  const css = source("src/styles/domains/reading-platform.css");
+  const purgeConfig = source("scripts/cssPurgeConfig.mjs");
+  const purgeScript = source("scripts/purge-css.mjs");
+  const markerRule = css.match(
+    /\.mushaf-text-block \.cpv-ayah-marker\s*\{([\s\S]*?)\}/,
+  )?.[1] || "";
+
+  assert.match(markerRule, /margin-inline:\s*0\.12em 0\.38em\s*!important/);
+  assert.match(purgeConfig, /\/cpv-ayah-marker\//);
+  assert.match(purgeScript, /continuous Mushaf marker spacing/);
+});
