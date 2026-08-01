@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   clampArabicFontSize,
+  getArabicReadingLineHeight,
   getResponsiveArabicFontSize,
 } from "../src/utils/arabicTypography.js";
 
@@ -69,4 +70,28 @@ test("Mushaf typography stays responsive without exceeding layout safety caps", 
     }),
     72,
   );
+});
+
+test("continuous Mushaf line height stays compact for every exposed Quran font", () => {
+  const fonts = [
+    ["qpc-hafs", "hafs"],
+    ["qpc-indopak", "hafs"],
+    ["scheherazade-new", "hafs"],
+    ["amiri-quran", "hafs"],
+    ["noto-naskh-arabic", "hafs"],
+    ["qpc-warsh", "warsh"],
+    ["kfgqpc-warsh", "warsh"],
+    ["scheherazade-new-warsh", "warsh"],
+  ];
+
+  for (const [fontFamily, riwaya] of fonts) {
+    const lineHeight = getArabicReadingLineHeight({
+      displayMode: "surah",
+      fontFamily,
+      mushafLayout: "mushaf",
+      riwaya,
+    });
+    assert.ok(lineHeight >= 1.85, `${fontFamily} must preserve Arabic marks`);
+    assert.ok(lineHeight <= 2.1, `${fontFamily} must keep Mushaf lines connected`);
+  }
 });
