@@ -330,15 +330,6 @@ export default function Header() {
     ? `${centerTitle} - ${centerTitleAlt}`
     : centerTitle;
 
-  const themeDotColors = {
-    light: "#199b90",
-    dark: "#2bb6c7",
-    sepia: "#b4883c",
-    "quran-night": "#3ca675",
-    oled: "#2db870",
-  };
-  const dotColor = themeDotColors[theme] || "var(--primary)";
-
   const headerLabels = {
     menu: tr({
       fr: "Menu",
@@ -483,7 +474,7 @@ export default function Header() {
             className="mp-header__brand"
             type="button"
             onClick={goHome}
-            aria-label={lang === "ar" ? "Mushaf.plus — الرئيسية" : lang === "en" ? "Mushaf.plus — Home" : "Mushaf.plus — Accueil"}
+            aria-label={lang === "ar" ? "MushafPlus — الرئيسية" : lang === "en" ? "MushafPlus — Home" : "MushafPlus — Accueil"}
           >
             <span className="mp-header__logo">
               <PlatformLogo
@@ -496,7 +487,7 @@ export default function Header() {
               />
             </span>
             <span className="mp-header__brand-text">
-              Mushaf<span style={{ color: dotColor }}>.</span>plus
+              Mushaf<span className="mp-header__brand-accent">Plus</span>
             </span>
           </button>
         </div>
