@@ -2,7 +2,7 @@
  * SurahReaderHeader — single unified block replacing SurahHeader + ReadingToolbar.
  * Quran.com–inspired, no redundancy, fully responsive.
  */
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   BookOpen,
   Brain,
@@ -60,6 +60,8 @@ export default function SurahReaderHeader({
   } = state;
 
   const [showInfo, setShowInfo] = useState(false);
+  const [typographyOpen, setTypographyOpen] = useState(false);
+  const toggleTypography = useCallback(() => setTypographyOpen((v) => !v), []);
 
   const s = getSurah(surahNum);
   if (!s) return null;
@@ -355,15 +357,20 @@ export default function SurahReaderHeader({
 
       {/* ══ ROW 3 — Navigation & font ═══════════════════════════ */}
       <div className="srh-footer">
-        <details className="srh-typography-disclosure">
-          <summary className="srh-typography-trigger">
+        <div className={cn("srh-typography-disclosure", typographyOpen && "open")}>
+          <button
+            type="button"
+            className="srh-typography-trigger"
+            onClick={toggleTypography}
+            aria-expanded={typographyOpen}
+          >
             <Type size={14} aria-hidden="true" />
             <span>{lbl(lang, "Texte", "Text", "الخط")}</span>
-          </summary>
+          </button>
           <div id="srh-typography-panel" className="srh-typography-panel">
             <ArabicFontControls lang={lang} compact />
           </div>
-        </details>
+        </div>
 
         {/* Spacer */}
         <div className="srh-footer__spacer" />
