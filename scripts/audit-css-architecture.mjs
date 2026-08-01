@@ -16,9 +16,10 @@ const IMPORTANT_PATTERN = /!important\b/g;
 const formatKb = (bytes) => `${(bytes / 1024).toFixed(1)} kB`;
 const shouldCheck = process.argv.includes("--check");
 const LIMITS = {
-  // Rebased after the responsive reader and compact player pass. These stay
-  // deliberately close to the measured build so new CSS debt still fails CI.
-  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1508),
+  // Source size is a maintenance guard; the retained and production bundle
+  // budgets remain the stricter deployment gates. Keep this close to the
+  // measured app while accounting for the transparency and reader-status UI.
+  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1575),
   retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1005),
   important: Number(process.env.CSS_IMPORTANT_BUDGET || 6860),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
