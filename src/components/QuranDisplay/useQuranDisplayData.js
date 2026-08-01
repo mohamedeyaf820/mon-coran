@@ -7,6 +7,7 @@ import { savePosition } from "../../services/storageService";
 import { getSurah } from "../../data/surahs";
 import {
   assertWarshStrict,
+  describeArabicDataSource,
   ensureRequestedRiwaya,
   loadArabicData,
   loadHafsSupportData,
@@ -96,6 +97,7 @@ export default function useQuranDisplayData({
   const [isWarshFallback, setIsWarshFallback] = useState(() =>
     Boolean(initialCachedData?.isWarshFallback),
   );
+  const [dataSource, setDataSource] = useState(() => initialCachedData?.dataSource || null);
   const readingStartRef = useRef(Date.now());
   const requestSeqRef = useRef(0);
   const requestAbortRef = useRef(null);
@@ -170,6 +172,7 @@ export default function useQuranDisplayData({
       setResolvedCacheKey(cacheKey);
       setSettledCacheKey(cacheKey);
       setIsWarshFallback(Boolean(cachedData.isWarshFallback));
+      setDataSource(cachedData.dataSource || null);
       dispatch({ type: "SET", payload: { loadedAyahCount: cachedData.ayahs.length } });
       dispatch({ type: "SET_LOADING", payload: false });
       persistRef.current(cachedData.ayahs);
@@ -187,6 +190,7 @@ export default function useQuranDisplayData({
         setResolvedCacheKey(cacheKey);
         setSettledCacheKey(cacheKey);
         setIsWarshFallback(Boolean(prefetchedData.isWarshFallback));
+        setDataSource(prefetchedData.dataSource || null);
         dispatch({
           type: "SET",
           payload: { loadedAyahCount: prefetchedData.ayahs.length },
@@ -214,11 +218,17 @@ export default function useQuranDisplayData({
       });
       const fetchedAyahs = ensureRequestedRiwaya(arabicData.ayahs || [], riwaya);
       const fallback = Boolean(arabicData?.isTextFallback);
-      return { arabicData, ayahs: fetchedAyahs, isWarshFallback: fallback, hafsPromise };
+      return {
+        arabicData,
+        ayahs: fetchedAyahs,
+        dataSource: describeArabicDataSource(arabicData, riwaya),
+        isWarshFallback: fallback,
+        hafsPromise,
+      };
     })();
 
     try {
-      const { arabicData, ayahs: fetchedAyahs, isWarshFallback: fallback, hafsPromise } = await fetchPromise;
+      const { arabicData, ayahs: fetchedAyahs, dataSource: resolvedSource, isWarshFallback: fallback, hafsPromise } = await fetchPromise;
 
       if (signal.aborted || requestSeqRef.current !== requestId) return;
       assertWarshStrict({ arabicData, displayMode, lang, riwaya, warshStrictMode });
@@ -226,13 +236,14 @@ export default function useQuranDisplayData({
       rememberLimited(
         DISPLAY_DATA_CACHE,
         cacheKey,
-        { ayahs: fetchedAyahs, isWarshFallback: fallback },
+        { ayahs: fetchedAyahs, dataSource: resolvedSource, isWarshFallback: fallback },
         DISPLAY_DATA_CACHE_MAX,
       );
       setAyahs(fetchedAyahs);
       setResolvedCacheKey(cacheKey);
       setSettledCacheKey(cacheKey);
       setIsWarshFallback(fallback);
+      setDataSource(resolvedSource);
       dispatch({ type: "SET", payload: { loadedAyahCount: fetchedAyahs.length } });
       dispatch({ type: "SET_LOADING", payload: false });
 
@@ -251,7 +262,7 @@ export default function useQuranDisplayData({
           rememberLimited(
             DISPLAY_DATA_CACHE,
             hafsCacheKey,
-            { ayahs: hafsAyahs, isWarshFallback: false },
+            { ayahs: hafsAyahs, dataSource: describeArabicDataSource(hafsData, "hafs"), isWarshFallback: false },
             DISPLAY_DATA_CACHE_MAX,
           );
           const hafsMap = new Map(
@@ -266,7 +277,7 @@ export default function useQuranDisplayData({
             rememberLimited(
               DISPLAY_DATA_CACHE,
               cacheKey,
-              { ayahs: merged, isWarshFallback: fallback },
+              { ayahs: merged, dataSource: resolvedSource, isWarshFallback: fallback },
               DISPLAY_DATA_CACHE_MAX,
             );
             return merged;
@@ -336,10 +347,15 @@ export default function useQuranDisplayData({
     resolvedCacheKey === currentCacheKey
       ? isWarshFallback
       : Boolean(prefetchedCurrentData?.isWarshFallback);
+  const visibleDataSource =
+    resolvedCacheKey === currentCacheKey
+      ? dataSource
+      : prefetchedCurrentData?.dataSource || null;
 
   return {
     ayahs: visibleAyahs,
     dataTransitioning,
+    dataSource: visibleDataSource,
     error,
     fetchData,
     isWarshFallback: visibleWarshFallback,
@@ -389,6 +405,7 @@ export function preloadQuranDisplayData({
     });
     const value = {
       ayahs: fetchedAyahs,
+      dataSource: describeArabicDataSource(arabicData, riwaya),
       isWarshFallback: Boolean(arabicData?.isTextFallback),
     };
     rememberLimited(DISPLAY_DATA_CACHE, cacheKey, value, DISPLAY_DATA_CACHE_MAX);
@@ -415,7 +432,7 @@ export function preloadQuranDisplayData({
           rememberLimited(
             DISPLAY_DATA_CACHE,
             hafsCacheKey,
-            { ayahs: hafsAyahs, isWarshFallback: false },
+            { ayahs: hafsAyahs, dataSource: describeArabicDataSource(hafsData, "hafs"), isWarshFallback: false },
             DISPLAY_DATA_CACHE_MAX,
           );
           const hafsMap = new Map(

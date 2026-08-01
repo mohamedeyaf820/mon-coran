@@ -339,6 +339,16 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
   white-space: nowrap;
 }
 
+.app-root .audio-player-simple .simple-player__source,
+.app-root .audio-player-simple .simple-player__mobile-meta small,
+.app-root .audio-player-simple .simple-player__compact-meta small {
+  display: block;
+  color: var(--text-muted);
+  font-size: .64rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
 .app-root .audio-player-simple .simple-player__title {
   color: var(--simple-player-ink);
   font-size: .9rem;

@@ -39,6 +39,14 @@ const routes = [
       "Découvrez une sélection de douas en arabe avec traduction française, références et accès rapide depuis MushafPlus.",
   },
   {
+    pathname: "/about",
+    kind: "legal",
+    indexable: true,
+    title: "À propos de MushafPlus | MushafPlus",
+    description:
+      "Responsable du projet, contact, version et politique de correction de MushafPlus.",
+  },
+  {
     pathname: "/privacy",
     kind: "legal",
     indexable: true,

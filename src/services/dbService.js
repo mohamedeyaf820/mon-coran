@@ -7,6 +7,7 @@ import { openDB } from 'idb';
 
 const DB_NAME = 'mushafplus';
 const DB_VERSION = 2;
+export const APP_DB_NAME = DB_NAME;
 
 let dbPromise = null;
 const maintenanceLastRun = new Map();
@@ -188,6 +189,18 @@ export async function dbReplaceStores(recordsByStore) {
     }
 }
 
+/** Close and forget the shared connection before deleting all local user data. */
+export async function closeAppDatabase() {
+    if (!dbPromise) return;
+    try {
+        const db = await dbPromise;
+        db.close();
+    } finally {
+        dbPromise = null;
+        maintenanceLastRun.clear();
+    }
+}
+
 export default {
     getDB,
     dbGet,
@@ -197,4 +210,5 @@ export default {
     dbGetAll,
     dbClear,
     dbReplaceStores,
+    closeAppDatabase,
 };

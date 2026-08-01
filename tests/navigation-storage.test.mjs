@@ -47,6 +47,7 @@ test("navigation: parses reading, duas and legal routes safely", () => {
     displayMode: "surah",
     currentSurah: 2,
     currentAyah: 255,
+    routeNotFound: false,
   });
 
   setPathname("/page/604");
@@ -55,6 +56,7 @@ test("navigation: parses reading, duas and legal routes safely", () => {
     showDuas: false,
     displayMode: "page",
     currentPage: 604,
+    routeNotFound: false,
   });
 
   setPathname("/juz/30");
@@ -63,6 +65,7 @@ test("navigation: parses reading, duas and legal routes safely", () => {
     showDuas: false,
     displayMode: "juz",
     currentJuz: 30,
+    routeNotFound: false,
   });
 
   setPathname("/duas");
@@ -76,35 +79,25 @@ test("navigation: parses reading, duas and legal routes safely", () => {
   });
 });
 
-test("navigation: clamps invalid route numbers", () => {
-  setPathname("/surah/999/999");
-  assert.deepEqual(parseInitialRoute(), {
-    showHome: false,
-    showDuas: false,
-    displayMode: "surah",
-    currentSurah: 114,
-    currentAyah: 6,
-  });
-
-  setPathname("/surah/2/999");
-  assert.equal(parseInitialRoute().currentAyah, 286);
-
-  setPathname("/surah/1/999");
-  assert.equal(parseInitialRoute().currentAyah, 7);
-
-  setPathname("/page/0");
-  assert.equal(parseInitialRoute().currentPage, 1);
-
-  setPathname("/juz/-2");
-  assert.deepEqual(parseInitialRoute(), { showHome: true, showDuas: false });
+test("navigation: rejects invalid route numbers", () => {
+  for (const pathname of [
+    "/surah/999/999",
+    "/surah/2/999",
+    "/surah/1/999",
+    "/page/0",
+    "/juz/-2",
+  ]) {
+    setPathname(pathname);
+    assert.equal(parseInitialRoute().routeNotFound, true, pathname);
+  }
 });
 
 test("navigation: rejects partial route matches", () => {
   setPathname("/page/12abc");
-  assert.deepEqual(parseInitialRoute(), { showHome: true, showDuas: false });
+  assert.equal(parseInitialRoute().routeNotFound, true);
 
   setPathname("/surah/2/3/extra");
-  assert.deepEqual(parseInitialRoute(), { showHome: true, showDuas: false });
+  assert.equal(parseInitialRoute().routeNotFound, true);
 });
 
 test("storage: settings round-trip encrypted and sanitized", () => {

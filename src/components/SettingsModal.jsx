@@ -28,6 +28,8 @@ import {
 import { ensureFontLoaded } from "../services/fontLoader";
 import { downloadExport, importFromFile } from "../services/exportService";
 import { clearCache } from "../services/quranAPI";
+import { clearAllLocalAppData } from "../services/localDataService";
+import { confirmAction } from "../services/interactionService";
 import { toast } from "../lib/utils";
 import {
   hasEncryptionPassphraseConfigured,
@@ -306,6 +308,33 @@ export default function SettingsModal() {
       setTimeout(() => window.location.reload(), 1200);
     } catch (error) {
       if (import.meta.env.DEV) console.warn("clearCache error:", error);
+      toast(t("errors.generic", lang), "error");
+    }
+  };
+
+  const handleDeleteLocalData = async () => {
+    const approved = await confirmAction({
+      title: localText(lang, "Supprimer toutes les données ?", "Delete all data?", "حذف جميع البيانات؟"),
+      message: localText(
+        lang,
+        "Cette action supprime définitivement les réglages, favoris, notes, historiques, téléchargements et caches conservés sur cet appareil.",
+        "This permanently removes settings, bookmarks, notes, history, downloads and caches stored on this device.",
+        "سيؤدي هذا نهائياً إلى حذف الإعدادات والعلامات والملاحظات والسجل والتنزيلات والذاكرة المؤقتة من هذا الجهاز.",
+      ),
+      confirmLabel: localText(lang, "Tout supprimer", "Delete everything", "حذف الكل"),
+      cancelLabel: localText(lang, "Annuler", "Cancel", "إلغاء"),
+      tone: "danger",
+    });
+    if (!approved) return;
+
+    setPrivacyBusy(true);
+    try {
+      await clearAllLocalAppData();
+      toast(localText(lang, "Données locales supprimées.", "Local data deleted.", "تم حذف البيانات المحلية."), "success");
+      window.setTimeout(() => window.location.replace("/"), 350);
+    } catch (error) {
+      if (import.meta.env.DEV) console.warn("delete local data error:", error);
+      setPrivacyBusy(false);
       toast(t("errors.generic", lang), "error");
     }
   };
@@ -919,6 +948,22 @@ export default function SettingsModal() {
           <Info size={16} aria-hidden="true" />
           <span>{localText(lang, "Cette protection r\u00e9duit l\u2019exposition des donn\u00e9es au repos, mais ne prot\u00e8ge pas un appareil compromis ni une page d\u00e9j\u00e0 d\u00e9verrouill\u00e9e. Il n\u2019existe aucune r\u00e9cup\u00e9ration de phrase secr\u00e8te.", "This reduces exposure of data at rest, but cannot protect a compromised device or an already unlocked page. Passphrases cannot be recovered.", "\u062a\u0642\u0644\u0644 \u0647\u0630\u0647 \u0627\u0644\u062d\u0645\u0627\u064a\u0629 \u0645\u0646 \u0643\u0634\u0641 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0645\u062e\u0632\u0646\u0629\u060c \u0644\u0643\u0646\u0647\u0627 \u0644\u0627 \u062a\u062d\u0645\u064a \u062c\u0647\u0627\u0632\u064b\u0627 \u0645\u062e\u062a\u0631\u0642\u064b\u0627 \u0623\u0648 \u0635\u0641\u062d\u0629 \u0645\u0641\u062a\u0648\u062d\u0629. \u0644\u0627 \u064a\u0645\u0643\u0646 \u0627\u0633\u062a\u0639\u0627\u062f\u0629 \u0639\u0628\u0627\u0631\u0629 \u0627\u0644\u0645\u0631\u0648\u0631.")}</span>
         </div>
+      </Section>
+      <Section title={localText(lang, "Suppression des données", "Data deletion", "حذف البيانات")}>
+        <div className="settings-cache-note">
+          <Info size={16} aria-hidden="true" />
+          <span>{localText(lang, "Supprime les données personnelles et les caches de ce navigateur. Cette action est irréversible.", "Removes personal data and caches from this browser. This cannot be undone.", "يحذف البيانات الشخصية والذاكرة المؤقتة من هذا المتصفح ولا يمكن التراجع عنه.")}</span>
+        </div>
+        <button
+          type="button"
+          className="settings-danger-button"
+          onClick={handleDeleteLocalData}
+          disabled={privacyBusy}
+          data-testid="delete-local-data"
+        >
+          <Trash2 size={16} aria-hidden="true" />
+          <span>{localText(lang, "Supprimer toutes mes données locales", "Delete all my local data", "حذف جميع بياناتي المحلية")}</span>
+        </button>
       </Section>
     </div>
   );

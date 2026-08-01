@@ -60,7 +60,6 @@ export default function SurahReaderHeader({
   } = state;
 
   const [showInfo, setShowInfo] = useState(false);
-  const [showTypography, setShowTypography] = useState(false);
 
   const s = getSurah(surahNum);
   if (!s) return null;
@@ -356,29 +355,15 @@ export default function SurahReaderHeader({
 
       {/* ══ ROW 3 — Navigation & font ═══════════════════════════ */}
       <div className="srh-footer">
-        <button
-          type="button"
-          className={cn(
-            "srh-typography-trigger",
-            showTypography && "srh-typography-trigger--active",
-          )}
-          onClick={() => setShowTypography((value) => !value)}
-          aria-expanded={showTypography}
-          aria-controls="srh-typography-panel"
-        >
-          <Type size={14} aria-hidden="true" />
-          <span>{lbl(lang, "Texte", "Text", "الخط")}</span>
-        </button>
-
-        <div
-          id="srh-typography-panel"
-          className={cn(
-            "srh-typography-panel",
-            showTypography && "srh-typography-panel--open",
-          )}
-        >
-          <ArabicFontControls lang={lang} compact />
-        </div>
+        <details className="srh-typography-disclosure">
+          <summary className="srh-typography-trigger">
+            <Type size={14} aria-hidden="true" />
+            <span>{lbl(lang, "Texte", "Text", "الخط")}</span>
+          </summary>
+          <div id="srh-typography-panel" className="srh-typography-panel">
+            <ArabicFontControls lang={lang} compact />
+          </div>
+        </details>
 
         {/* Spacer */}
         <div className="srh-footer__spacer" />

@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
 
+const SITE_URL = "https://frolicking-kleicha-76adae.netlify.app";
+
 test.use({ serviceWorkers: "block" });
 
 function schemaTypes(schema) {
@@ -18,11 +20,11 @@ test("production pages expose coherent crawl and social metadata", async ({
   );
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     "content",
-    "https://mon-coran.netlify.app/og-image.jpg",
+    `${SITE_URL}/og-image.jpg`,
   );
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
-    "https://mon-coran.netlify.app/",
+    `${SITE_URL}/`,
   );
 
   const homeSchema = JSON.parse(
@@ -57,7 +59,7 @@ test("surah pages are indexable while deep reading states use runtime noindex", 
   );
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
-    "https://mon-coran.netlify.app/surah/2/2",
+    `${SITE_URL}/surah/2/2`,
   );
 });
 
@@ -85,7 +87,7 @@ test("sitemap and social image stay within the SEO contract", async ({
   const sitemapResponse = await request.get("/sitemap.xml");
   expect(sitemapResponse.ok()).toBe(true);
   const sitemap = await sitemapResponse.text();
-  expect((sitemap.match(/<url>/g) || []).length).toBe(120);
+  expect((sitemap.match(/<url>/g) || []).length).toBe(121);
   expect(sitemap).not.toContain("/page/");
   expect(sitemap).not.toContain("/juz/");
   expect(sitemap).not.toMatch(/\/surah\/\d+\/\d+/);
@@ -94,4 +96,12 @@ test("sitemap and social image stay within the SEO contract", async ({
   expect(imageResponse.ok()).toBe(true);
   expect(imageResponse.headers()["content-type"]).toContain("image/jpeg");
   expect((await imageResponse.body()).byteLength).toBeLessThan(150 * 1024);
+});
+
+test("about page publishes project identity and correction policy", async ({ page }) => {
+  await page.goto("/about", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { level: 1, name: "À propos de MushafPlus" })).toBeVisible();
+  await expect(page.getByText("Mohamed Eyaf", { exact: false })).toBeVisible();
+  await expect(page.getByText("Version 1.1.0", { exact: false })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Signaler une correction" })).toHaveAttribute("href", /github\.com\/mohamedeyaf820\/mon-coran\/issues/);
 });

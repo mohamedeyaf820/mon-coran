@@ -105,9 +105,23 @@
 .legal-page__card h2 { margin: 1.45rem 0 .65rem; font-size: 1.05rem; }
 .legal-page__card p { margin: 0; color: var(--text-secondary); font-size: .92rem; line-height: 1.7; }
 .legal-page__repository { margin-block-start: 1.5rem; }
+.legal-page__links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.legal-page__attributions { margin-block-start: 2.5rem; }
+.legal-page__attributions-heading { margin-block-end: 1rem; }
+.legal-page__attributions-heading p { margin: 0 0 .35rem; color: var(--legal-accent); font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.legal-page__attributions-heading h2 { margin: 0; font-size: clamp(1.35rem, 3vw, 2rem); }
+.legal-page__attribution-list { display: grid; gap: .65rem; }
+.legal-page__attribution-item { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) 2.75rem; align-items: start; gap: 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--bg-card); }
+.legal-page__attribution-item > span { color: var(--legal-accent); font: 750 .68rem/1.4 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; }
+.legal-page__attribution-item h3 { margin: 0 0 .25rem; font-size: .95rem; }
+.legal-page__attribution-item p { margin: 0; color: var(--text-secondary); font-size: .84rem; line-height: 1.55; }
+.legal-page__attribution-item small { display: block; margin-block-start: .45rem; color: var(--text-muted); font-size: .76rem; line-height: 1.55; }
+.legal-page__attribution-item a { display: grid; place-items: center; min-width: 44px; min-height: 44px; border-radius: .75rem; color: var(--legal-accent); background: color-mix(in srgb, var(--legal-accent) 8%, transparent); }
 
 @media (max-width: 680px) {
   .legal-page { width: min(100% - 1.25rem, 72rem); padding-block-start: 1.5rem; }
   .legal-page__grid { grid-template-columns: 1fr; }
   .legal-page__card { min-height: 0; }
+  .legal-page__attribution-item { grid-template-columns: 1fr 2.75rem; }
+  .legal-page__attribution-item > span { grid-column: 1 / -1; }
 }

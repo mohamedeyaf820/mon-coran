@@ -16,16 +16,21 @@ export default function useQuranTranslations({
   translationLangs,
 }) {
   const [translations, setTranslations] = useState([]);
+  const [translationState, setTranslationState] = useState("idle");
+  const [translationSource, setTranslationSource] = useState(null);
 
   useEffect(() => {
     if (!showTranslation || !arabicReady) {
       setTranslations([]);
+      setTranslationState("idle");
+      setTranslationSource(null);
       return;
     }
 
     const controller = new AbortController();
     const signal = controller.signal;
     setTranslations([]);
+    setTranslationState("loading");
 
     const loadTranslations = async () => {
       try {
@@ -36,12 +41,23 @@ export default function useQuranTranslations({
               ? await getJuzTranslation(currentJuz, translationLangs, signal)
               : await getSurahTranslation(currentSurah, translationLangs, signal);
         if (!signal.aborted) {
+          const source = result?.some?.((edition) => edition?.source === "quran.com")
+            ? "Quran.com API"
+            : "AlQuran Cloud";
           startTransition(() => {
-            if (!signal.aborted) setTranslations(result || []);
+            if (!signal.aborted) {
+              setTranslations(result || []);
+              setTranslationSource(source);
+              setTranslationState(result?.length ? "ready" : "error");
+            }
           });
         }
       } catch (error) {
-        if (error?.name !== "AbortError") setTranslations([]);
+        if (error?.name !== "AbortError") {
+          setTranslations([]);
+          setTranslationSource("AlQuran Cloud / Quran.com API");
+          setTranslationState("error");
+        }
       }
     };
 
@@ -101,5 +117,5 @@ export default function useQuranTranslations({
     [currentSurah, translationMap],
   );
 
-  return { getTranslationForAyah, translations };
+  return { getTranslationForAyah, translations, translationSource, translationState };
 }

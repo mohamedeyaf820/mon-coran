@@ -19,6 +19,7 @@ const COPY = {
     surahs: "Sourates",
     home: "Accueil",
     legal: {
+      about: "À propos",
       privacy: "Confidentialité",
       legal: "Mentions légales",
       sources: "Sources",
@@ -37,6 +38,7 @@ const COPY = {
     surahs: "Surahs",
     home: "Home",
     legal: {
+      about: "About",
       privacy: "Privacy",
       legal: "Legal notice",
       sources: "Sources",
@@ -54,6 +56,7 @@ const COPY = {
     surahs: "السور",
     home: "الرئيسية",
     legal: {
+      about: "حول التطبيق",
       privacy: "الخصوصية",
       legal: "إشعار قانوني",
       sources: "المصادر",
@@ -74,6 +77,7 @@ function surahName(number, lang) {
 }
 
 function statePath(state) {
+  if (state.routeNotFound) return "/404";
   if (state.legalPage) return `/${state.legalPage}`;
   if (state.showHome) return "/";
   if (state.showDuas) return "/duas";
@@ -92,7 +96,11 @@ export function buildSeoMetadata(state = {}) {
   let description = copy.homeDescription;
   let kind = "home";
 
-  if (state.legalPage) {
+  if (state.routeNotFound) {
+    title = lang === "fr" ? `Page introuvable | ${suffix}` : lang === "ar" ? `الصفحة غير موجودة | ${suffix}` : `Page not found | ${suffix}`;
+    description = lang === "fr" ? "La page demandée n’existe pas." : lang === "ar" ? "الصفحة المطلوبة غير موجودة." : "The requested page does not exist.";
+    kind = "not-found";
+  } else if (state.legalPage) {
     const label = copy.legal[state.legalPage] || copy.legal.legal;
     title = `${label} | ${suffix}`;
     description = `${label} — ${suffix}`;
@@ -127,7 +135,7 @@ export function buildSeoMetadata(state = {}) {
 
   const path = statePath(state);
   const url = new URL(path, SITE_URL).href;
-  const indexable = !["ayah", "page", "juz"].includes(kind);
+  const indexable = !["ayah", "page", "juz", "not-found"].includes(kind);
   return {
     lang,
     title,

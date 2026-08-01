@@ -324,7 +324,11 @@ test("Arabic reading controls visibly reduce and enlarge device-aware text", asy
   );
 
   const arabicText = page.locator(".qc-ayah-text-ar").first();
+  const verseCard = page.locator(".qc-list-card").first();
   const initialPhoneSize = await fontSizePx(page, ".qc-ayah-text-ar");
+  const initialCardPadding = await verseCard.evaluate((node) =>
+    Number.parseFloat(getComputedStyle(node).paddingTop),
+  );
   expect(initialPhoneSize).toBe(21);
 
   await page.locator(".srh-typography-trigger").click();
@@ -333,12 +337,18 @@ test("Arabic reading controls visibly reduce and enlarge device-aware text", asy
   await expect
     .poll(() => arabicText.evaluate((node) => Number.parseFloat(getComputedStyle(node).fontSize)))
     .toBeLessThan(initialPhoneSize);
+  await expect
+    .poll(() => verseCard.evaluate((node) => Number.parseFloat(getComputedStyle(node).paddingTop)))
+    .toBeLessThan(initialCardPadding);
   await expect(page.locator(".afc-size-value")).toHaveText("23");
 
   await page.locator('button[title="A+"]').click();
   await expect
     .poll(() => arabicText.evaluate((node) => Number.parseFloat(getComputedStyle(node).fontSize)))
     .toBe(initialPhoneSize);
+  await expect
+    .poll(() => verseCard.evaluate((node) => Number.parseFloat(getComputedStyle(node).paddingTop)))
+    .toBe(initialCardPadding);
   await expect(page.locator(".afc-size-value")).toHaveText("25");
 
   await openReader(

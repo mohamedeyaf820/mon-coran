@@ -134,6 +134,7 @@ const getInitialState = () => {
     (stored.showHome !== undefined ? Boolean(stored.showHome) : true),
   showDuas: routeOverrides.showDuas ?? false,
   legalPage: routeOverrides.legalPage ?? null,
+  routeNotFound: routeOverrides.routeNotFound ?? false,
   showTranslation: stored.showTranslation ?? true,
   showTajwid: stored.showTajwid ?? false,
   showWordByWord:
@@ -215,6 +216,17 @@ export function appReducer(state, action) {
           Object.prototype.hasOwnProperty.call(payload, "currentJuz"))
       ) {
         next.legalPage = null;
+      }
+      if (
+        !Object.prototype.hasOwnProperty.call(payload, "routeNotFound") &&
+        (payload.showHome === true ||
+          payload.showDuas === true ||
+          payload.legalPage ||
+          Object.prototype.hasOwnProperty.call(payload, "currentSurah") ||
+          Object.prototype.hasOwnProperty.call(payload, "currentPage") ||
+          Object.prototype.hasOwnProperty.call(payload, "currentJuz"))
+      ) {
+        next.routeNotFound = false;
       }
       const hasRiwaya = Object.prototype.hasOwnProperty.call(payload, "riwaya");
       const hasFontFamily = Object.prototype.hasOwnProperty.call(payload, "fontFamily");

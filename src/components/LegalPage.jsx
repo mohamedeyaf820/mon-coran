@@ -1,14 +1,15 @@
 import React from "react";
-import { ArrowLeft, Database, ExternalLink, Scale, ShieldCheck } from "lucide-react";
+import { ArrowLeft, CircleUserRound, Database, ExternalLink, Scale, ShieldCheck } from "lucide-react";
 import { useAppActions, useAppLocale } from "../context/AppContext";
 import siteConfig from "../../site.config.json";
+import { CONTENT_ATTRIBUTIONS } from "../data/contentAttributions";
 import "../styles/domains/legal-page.css";
 
 const COPY = {
   fr: {
     eyebrow: "Transparence",
     back: "Retour à l’accueil",
-    tabs: { privacy: "Confidentialité", legal: "Mentions légales", sources: "Sources" },
+    tabs: { about: "À propos", privacy: "Confidentialité", legal: "Mentions légales", sources: "Sources" },
     privacy: {
       title: "Vos lectures restent d’abord sur votre appareil",
       intro:
@@ -19,6 +20,10 @@ const COPY = {
         ["Localisation", "La géolocalisation n’est demandée qu’après activation explicite des horaires de prière. La position sert au calcul et n’est pas enregistrée par MushafPlus."],
         ["Contrôle", "Vous pouvez effacer les données de l’application depuis les réglages ou les outils de stockage du navigateur. MushafPlus n’effectue pas de synchronisation cloud en arrière-plan."],
       ],
+    },
+    about: {
+      title: "À propos de MushafPlus",
+      intro: "Une application indépendante conçue pour rendre la lecture, l’écoute et l’étude du Coran simples, accessibles et transparentes.",
     },
     legal: {
       title: "Informations de publication",
@@ -46,7 +51,7 @@ const COPY = {
   en: {
     eyebrow: "Transparency",
     back: "Back to home",
-    tabs: { privacy: "Privacy", legal: "Legal notice", sources: "Sources" },
+    tabs: { about: "About", privacy: "Privacy", legal: "Legal notice", sources: "Sources" },
     privacy: {
       title: "Your reading data stays on your device first",
       intro: "MushafPlus works without an account. Preferences, progress and personal collections are stored locally in your browser.",
@@ -56,6 +61,10 @@ const COPY = {
         ["Location", "Geolocation is requested only after prayer times are explicitly enabled. It is used for calculation and is not stored by MushafPlus."],
         ["Your control", "You can clear application data from settings or browser storage tools. MushafPlus does not run background cloud synchronization."],
       ],
+    },
+    about: {
+      title: "About MushafPlus",
+      intro: "An independent application designed to make Quran reading, listening and study simple, accessible and transparent.",
     },
     legal: {
       title: "Publishing information",
@@ -81,7 +90,7 @@ const COPY = {
   ar: {
     eyebrow: "الشفافية",
     back: "العودة إلى الرئيسية",
-    tabs: { privacy: "الخصوصية", legal: "الإشعار القانوني", sources: "المصادر" },
+    tabs: { about: "حول التطبيق", privacy: "الخصوصية", legal: "الإشعار القانوني", sources: "المصادر" },
     privacy: {
       title: "تبقى بيانات قراءتك على جهازك أولاً",
       intro: "يعمل MushafPlus من دون حساب. تُحفظ التفضيلات والتقدم والمجموعات الشخصية محلياً في متصفحك.",
@@ -91,6 +100,10 @@ const COPY = {
         ["الموقع", "لا يُطلب الموقع إلا بعد تفعيل مواقيت الصلاة صراحة. يُستخدم للحساب ولا يخزنه MushafPlus."],
         ["التحكم", "يمكنك حذف بيانات التطبيق من الإعدادات أو أدوات المتصفح. لا ينفذ MushafPlus مزامنة سحابية في الخلفية."],
       ],
+    },
+    about: {
+      title: "حول MushafPlus",
+      intro: "تطبيق مستقل صُمم لجعل قراءة القرآن والاستماع إليه ودراسته بسيطة ومتاحة وشفافة.",
     },
     legal: {
       title: "معلومات النشر",
@@ -115,7 +128,32 @@ const COPY = {
   },
 };
 
-const ICONS = { privacy: ShieldCheck, legal: Scale, sources: Database };
+const ICONS = { about: CircleUserRound, privacy: ShieldCheck, legal: Scale, sources: Database };
+
+function aboutSections(lang) {
+  if (lang === "ar") {
+    return [
+      ["المسؤول عن المشروع", `${siteConfig.projectOwner} — مشروع ${siteConfig.brandName}.`],
+      ["التواصل والتصحيحات", "تُراجع بلاغات الأخطاء في النص أو الصوت أو الترجمة عبر صفحة Issues العامة. تُوثق التصحيحات وتُنشر مع إصدار لاحق."],
+      ["الإصدار", `الإصدار ${siteConfig.version} — آخر تحديث ${siteConfig.lastUpdated}.`],
+      ["النطاق الرسمي", new URL(siteConfig.siteUrl).hostname],
+    ];
+  }
+  if (lang === "en") {
+    return [
+      ["Project lead", `${siteConfig.projectOwner} — ${siteConfig.brandName} project.`],
+      ["Contact and corrections", "Text, audio or translation issues are reviewed through the public Issues page. Accepted corrections are documented and shipped in a later release."],
+      ["Version", `Version ${siteConfig.version} — last updated ${siteConfig.lastUpdated}.`],
+      ["Official domain", new URL(siteConfig.siteUrl).hostname],
+    ];
+  }
+  return [
+    ["Responsable du projet", `${siteConfig.projectOwner} — projet ${siteConfig.brandName}.`],
+    ["Contact et politique de correction", "Les erreurs de texte, d’audio ou de traduction sont examinées via la page publique Issues. Toute correction retenue est documentée puis publiée dans une version ultérieure."],
+    ["Version", `Version ${siteConfig.version} — dernière mise à jour le ${siteConfig.lastUpdated}.`],
+    ["Domaine officiel", new URL(siteConfig.siteUrl).hostname],
+  ];
+}
 
 export default function LegalPage({ page = "privacy" }) {
   const { lang } = useAppLocale();
@@ -123,6 +161,12 @@ export default function LegalPage({ page = "privacy" }) {
   const locale = COPY[lang] || COPY.fr;
   const activePage = Object.prototype.hasOwnProperty.call(locale.tabs, page) ? page : "privacy";
   const content = locale[activePage];
+  const sections = activePage === "about"
+    ? aboutSections(lang)
+    : content.sections.map(([title, body]) => [
+        title,
+        body.replaceAll("mon-coran.netlify.app", new URL(siteConfig.siteUrl).hostname),
+      ]);
   const ActiveIcon = ICONS[activePage];
 
   const navigate = (nextPage) => {
@@ -167,7 +211,7 @@ export default function LegalPage({ page = "privacy" }) {
       </nav>
 
       <div className="legal-page__grid">
-        {content.sections.map(([title, body], index) => (
+        {sections.map(([title, body], index) => (
           <section key={title} className="legal-page__card">
             <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
             <h2>{title}</h2>
@@ -176,10 +220,42 @@ export default function LegalPage({ page = "privacy" }) {
         ))}
       </div>
 
-      <a className="legal-page__repository" href={siteConfig.repositoryUrl} target="_blank" rel="noreferrer">
-        GitHub · {siteConfig.brandName}
-        <ExternalLink size={15} aria-hidden="true" />
-      </a>
+      {activePage === "sources" ? (
+        <section className="legal-page__attributions" aria-labelledby="attributions-title">
+          <div className="legal-page__attributions-heading">
+            <p>{lang === "ar" ? "السجل المنشور" : lang === "en" ? "Published register" : "Registre publié"}</p>
+            <h2 id="attributions-title">
+              {lang === "ar" ? "التراخيص ونسب المصادر" : lang === "en" ? "Licences and source attribution" : "Licences et attributions exactes"}
+            </h2>
+          </div>
+          <div className="legal-page__attribution-list">
+            {CONTENT_ATTRIBUTIONS.map((item) => (
+              <article key={item.id} className="legal-page__attribution-item">
+                <span>{item.category}</span>
+                <div>
+                  <h3>{item.name}</h3>
+                  <p>{item.usage}</p>
+                  <small>{item.rights}</small>
+                </div>
+                <a href={item.url} target="_blank" rel="noreferrer" aria-label={`${item.name} — source`}>
+                  <ExternalLink size={16} aria-hidden="true" />
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <div className="legal-page__links">
+        <a className="legal-page__repository" href={siteConfig.repositoryUrl} target="_blank" rel="noreferrer">
+          GitHub · {siteConfig.brandName}
+          <ExternalLink size={15} aria-hidden="true" />
+        </a>
+        <a className="legal-page__repository" href={siteConfig.contactUrl} target="_blank" rel="noreferrer">
+          {lang === "ar" ? "الإبلاغ عن تصحيح" : lang === "en" ? "Report a correction" : "Signaler une correction"}
+          <ExternalLink size={15} aria-hidden="true" />
+        </a>
+      </div>
     </article>
   );
 }

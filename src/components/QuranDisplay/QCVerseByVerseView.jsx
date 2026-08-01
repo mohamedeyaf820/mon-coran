@@ -355,6 +355,7 @@ export default function QCVerseByVerseView({
     showWordByWord ? 1 : 0,
     showWordTranslation ? 1 : 0,
     memMode ? 1 : 0,
+    Math.round(Number(fontSize) || 0),
   ].join("");
 
   return (

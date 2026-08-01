@@ -42,6 +42,7 @@ const HomePage = lazy(loadHomePage);
 const Header = lazy(loadHeader);
 const QuranDisplay = lazy(loadQuranDisplay);
 const LegalPage = lazy(loadLegalPage);
+const NotFoundPage = lazy(() => import("./components/NotFoundPage"));
 const ConfirmDialogHost = lazy(() => import("./components/ConfirmDialogHost"));
 const NotesPanel = lazy(() => import("./components/NotesPanel"));
 const Sidebar = lazy(() => import("./components/Sidebar"));
@@ -212,6 +213,7 @@ export default function App() {
       showHome: current.showHome,
       showDuas: current.showDuas,
       legalPage: current.legalPage,
+      routeNotFound: current.routeNotFound,
       focusReading: current.focusReading,
       memMode: current.memMode,
       isPlaying: current.isPlaying,
@@ -251,13 +253,14 @@ export default function App() {
     showHome,
     showDuas,
     legalPage,
+    routeNotFound,
     focusReading,
     memMode,
   } = state;
 
   const handleUrlRouteChange = useCallback(
     (route) => {
-      set({ legalPage: null, ...route });
+      set({ legalPage: null, routeNotFound: false, ...route });
     },
     [set],
   );
@@ -267,6 +270,7 @@ export default function App() {
     showHome,
     showDuas,
     legalPage,
+    routeNotFound,
     displayMode,
     currentSurah,
     currentPage,
@@ -302,6 +306,7 @@ export default function App() {
     state.isPlaying,
     state.currentPlayingAyah,
     state.legalPage,
+    state.routeNotFound,
   ]);
 
   const lowPerfMode = useMemo(() => isLowPerformanceDevice(), []);
@@ -325,7 +330,7 @@ export default function App() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const immersiveTimer = useRef(null);
 
-  const immersiveActive = focusReading && !showHome && !showDuas && !legalPage;
+  const immersiveActive = focusReading && !showHome && !showDuas && !legalPage && !routeNotFound;
   const sidebarShiftClass =
     !focusReading && sidebarOpen
       ? lang === "ar"
@@ -333,7 +338,7 @@ export default function App() {
         : "lg:ml-[23rem]"
       : "";
   const shouldMountAudioPlayer =
-    (!showHome && !showDuas && !legalPage) ||
+    (!showHome && !showDuas && !legalPage && !routeNotFound) ||
     state.isPlaying ||
     Boolean(state.currentPlayingAyah);
   const blockingModalOpen = Boolean(
@@ -621,16 +626,18 @@ export default function App() {
   }, [dispatch]);
 
   const handleSplashPrefetch = useCallback(async () => {
-    const screenPromise = state.legalPage
-      ? loadLegalPage()
-      : state.showHome
+    const screenPromise = state.routeNotFound
+      ? import("./components/NotFoundPage")
+      : state.legalPage
+        ? loadLegalPage()
+        : state.showHome
         ? loadHomePage()
         : state.showDuas
           ? loadDuasPage()
           : loadQuranDisplay();
 
     const tasks = [loadHeader(), screenPromise];
-    if (state.showHome && !state.legalPage) {
+    if (state.showHome && !state.legalPage && !state.routeNotFound) {
       tasks.push(
         screenPromise.then(({ preloadReciterLibrary }) =>
           preloadReciterLibrary?.(),
@@ -640,7 +647,7 @@ export default function App() {
         new Promise((resolve) => setTimeout(resolve, 2000)).then(loadQuranDisplay),
       );
     }
-    if (!state.legalPage && !state.showHome && !state.showDuas) {
+    if (!state.legalPage && !state.routeNotFound && !state.showHome && !state.showDuas) {
       tasks.push(
         import("./services/quranAPI").then(({ prefetchInitialData }) =>
           prefetchInitialData(state.currentSurah, state.riwaya),
@@ -652,6 +659,7 @@ export default function App() {
   }, [
     state.currentSurah,
     state.legalPage,
+    state.routeNotFound,
     state.riwaya,
     state.showDuas,
     state.showHome,
@@ -668,10 +676,10 @@ export default function App() {
         />
       ) : null}
       <div
-        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""} ${!showHome && !showDuas && !legalPage ? "view-reading" : ""}`}
+        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""} ${!showHome && !showDuas && !legalPage && !routeNotFound ? "view-reading" : ""}`}
         style={{ height: "100dvh", minHeight: "100dvh" }}
         dir={lang === "ar" ? "rtl" : "ltr"}
-        data-view={legalPage ? "legal" : showHome ? "home" : showDuas ? "duas" : "reading"}
+        data-view={routeNotFound ? "not-found" : legalPage ? "legal" : showHome ? "home" : showDuas ? "duas" : "reading"}
         data-display-mode={displayMode}
         data-riwaya={state.riwaya}
         inert={blockingModalOpen ? "" : undefined}
@@ -710,7 +718,13 @@ export default function App() {
             aria-hidden={sidebarOpen ? "true" : undefined}
             inert={sidebarOpen ? "" : undefined}
             aria-label={
-              legalPage
+              routeNotFound
+                ? lang === "fr"
+                  ? "Contenu principal - Page introuvable"
+                  : lang === "ar"
+                    ? "المحتوى الرئيسي - الصفحة غير موجودة"
+                    : "Main content - Page not found"
+                : legalPage
                 ? lang === "ar"
                   ? "المحتوى الرئيسي - المعلومات القانونية"
                   : lang === "en"
@@ -741,9 +755,15 @@ export default function App() {
             }}
           >
             <div
-              className={`app-view-shell ${legalPage ? "app-view-legal" : showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas && !legalPage ? `app-mode-${displayMode}` : ""}`}
+              className={`app-view-shell ${routeNotFound ? "app-view-not-found" : legalPage ? "app-view-legal" : showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas && !legalPage && !routeNotFound ? `app-mode-${displayMode}` : ""}`}
             >
-              {legalPage ? (
+              {routeNotFound ? (
+                <ErrorBoundary>
+                  <Suspense fallback={suspenseFallback}>
+                    <NotFoundPage />
+                  </Suspense>
+                </ErrorBoundary>
+              ) : legalPage ? (
                 <ErrorBoundary>
                   <Suspense fallback={suspenseFallback}>
                     <LegalPage page={legalPage} />
@@ -801,7 +821,7 @@ export default function App() {
         )}
 
         {/* ── Bouton raccourcis clavier (desktop uniquement) ───────────── */}
-        {!showHome && !showDuas && !legalPage && (
+        {!showHome && !showDuas && !legalPage && !routeNotFound && (
           <button
             type="button"
             className="fixed bottom-6 right-6 z-[250] hidden md:flex w-9 h-9 items-center justify-center rounded-full bg-[var(--bg-card)] border border-[var(--border)] shadow-md text-[var(--text-muted)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-all duration-200 text-sm font-bold font-mono"

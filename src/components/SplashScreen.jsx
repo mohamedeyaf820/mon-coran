@@ -164,7 +164,7 @@ export default function SplashScreen({
           width={160}
           height={160}
         />
-        <h1 className="splash-title">MushafPlus</h1>
+        <div className="splash-title" aria-label="MushafPlus">MushafPlus</div>
         <p className="splash-subtitle" lang="ar" dir="rtl">
           القرآن الكريم
         </p>

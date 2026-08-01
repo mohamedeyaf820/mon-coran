@@ -91,10 +91,43 @@ export default function useQuranDisplayView({
     if (!element) return;
 
     const quranFontSizeCss = `${Math.round(readingFontSize)}px`;
+    const listMetric = (factor, minimum, maximum) =>
+      `${Math.max(minimum, Math.min(maximum, readingFontSize * factor)).toFixed(2)}px`;
     const quranLineHeight =
       mushafLayout === "mushaf" ? "2.48" : displayMode === "page" ? "3.05" : "2.2";
     element.style.setProperty("--qd-reading-font-size", quranFontSizeCss);
     element.style.setProperty("--qd-font-size", quranFontSizeCss);
+    // Verse-list chrome follows the resolved, device-aware Arabic size. This
+    // keeps small text from sitting inside an unnecessarily tall card while
+    // preserving comfortable spacing when the reader enlarges it.
+    element.style.setProperty(
+      "--qd-list-card-padding-block",
+      listMetric(0.42, 6, 24),
+    );
+    element.style.setProperty(
+      "--qd-list-card-padding-inline",
+      listMetric(0.5, 8, 28),
+    );
+    element.style.setProperty(
+      "--qd-list-content-gap",
+      listMetric(0.22, 4, 14),
+    );
+    element.style.setProperty(
+      "--qd-list-section-gap",
+      listMetric(0.28, 5, 18),
+    );
+    element.style.setProperty(
+      "--qd-list-control-size",
+      listMetric(1.08, 32, 44),
+    );
+    element.style.setProperty(
+      "--qd-list-icon-size",
+      listMetric(0.4, 12, 15),
+    );
+    element.style.setProperty(
+      "--qd-list-loading-height",
+      listMetric(1.7, 42, 80),
+    );
     element.style.setProperty(
       "--qd-translation-font-size",
       `${Math.max(12, Math.min(28, Number(quranTranslationFontSize) || 18))}px`,

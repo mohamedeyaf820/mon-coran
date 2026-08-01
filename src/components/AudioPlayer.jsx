@@ -11,6 +11,7 @@ import audioService from "../services/audioService";
 import {
   ensureReciterForRiwaya,
   getReciter,
+  getReciterSourceInfo,
   getRecitersByRiwaya,
 } from "../data/reciters";
 import { getSurah, surahName } from "../data/surahs";
@@ -861,6 +862,8 @@ export default function AudioPlayer() {
   const currentArabicName = surahMeta?.ar || "";
 
   const reciterObj = currentReciters.find((r) => r.id === reciter);
+  const reciterSource = getReciterSourceInfo(reciterObj);
+  const audioSourceLabel = reciterSource?.label || "Audio CDN";
   const isSurahStreamReciter = reciterObj?.audioMode === "surah";
   const hasAyahContext = Boolean(currentPlayingAyah?.ayah);
   const isContextualDesktop = !isMobile && !showHome;
@@ -1154,6 +1157,7 @@ export default function AudioPlayer() {
         audioError={audioError}
         audioIndicatorState={audioIndicatorState}
         audioSpeed={audioSpeed}
+        audioSourceLabel={audioSourceLabel}
         closeLabel={closeLabel}
         currentArabicName={currentArabicName}
         currentAyahPreview={currentAyahPreview}

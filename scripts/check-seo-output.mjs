@@ -53,7 +53,7 @@ for (const relativePath of [
 }
 
 check(
-  home.includes('property="og:image" content="https://mon-coran.netlify.app/og-image.jpg"'),
+  home.includes(`property="og:image" content="${siteConfig.siteUrl}/og-image.jpg"`),
   "dedicated OG image missing",
 );
 check(home.includes('property="og:image:width" content="1200"'), "OG width missing");
@@ -77,12 +77,12 @@ check(
 );
 check(surah.includes('href="/surah/1"'), "previous-surah link missing");
 check(surah.includes('href="/surah/3"'), "next-surah link missing");
-check(surah.includes('href="https://mon-coran.netlify.app/surahs"'), "surah hub breadcrumb missing");
+check(surah.includes(`href="${siteConfig.siteUrl}/surahs"`), "surah hub breadcrumb missing");
 
 const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
   (match) => match[1],
 );
-check(sitemapLocations.length === 120, "sitemap must contain exactly 120 useful URLs");
+check(sitemapLocations.length === 121, "sitemap must contain exactly 121 useful URLs");
 check(
   !sitemapLocations.some((url) => /\/surah\/\d+\/\d+$/.test(url)),
   "ayah deep links must not be listed in sitemap",
@@ -92,7 +92,7 @@ check(
   "thin page and juz routes must not be listed in sitemap",
 );
 check(
-  sitemapLocations.includes("https://mon-coran.netlify.app/surahs"),
+  sitemapLocations.includes(`${siteConfig.siteUrl}/surahs`),
   "surah hub missing from sitemap",
 );
 const lastmods = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map(

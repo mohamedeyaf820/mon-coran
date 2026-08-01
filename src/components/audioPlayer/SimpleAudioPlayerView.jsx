@@ -107,6 +107,7 @@ function NetworkStatus({ networkBadge, networkState }) {
 }
 
 function TrackMeta({
+  audioSourceLabel,
   currentArabicName,
   currentAyahPreview,
   reciterLabel,
@@ -125,6 +126,7 @@ function TrackMeta({
       </div>
       <strong className="simple-player__title">{title}</strong>
       <span className="simple-player__reciter">{reciterLabel || "—"}</span>
+      <span className="simple-player__source">Source · {audioSourceLabel}</span>
       {currentAyahPreview && (
         <p className="simple-player__ayah" dir="rtl" lang="ar">
           {currentAyahPreview}
@@ -136,6 +138,7 @@ function TrackMeta({
 
 function CompactPlayer(props) {
   const {
+    audioSourceLabel,
     currentArabicName,
     currentTime,
     duration,
@@ -196,6 +199,7 @@ function CompactPlayer(props) {
         >
           <strong>{title}</strong>
           <span>{currentArabicName || reciterLabel || "—"}</span>
+          <small>Source · {audioSourceLabel}</small>
         </button>
         <IconButton
           className="mp-player-play-btn simple-player__play simple-player__play--compact"
@@ -215,6 +219,7 @@ function CompactPlayer(props) {
 
 function MobileOpenPlayer(props) {
   const {
+    audioSourceLabel,
     audioIndicatorState,
     audioSpeed,
     closeLabel,
@@ -271,6 +276,7 @@ function MobileOpenPlayer(props) {
           </span>
           <strong>{title}</strong>
           <span>{reciterLabel || "—"}</span>
+          <small>Source · {audioSourceLabel}</small>
         </div>
         <div className="simple-player__header-actions">
           <IconButton
@@ -350,6 +356,7 @@ function MobileOpenPlayer(props) {
 
 function OpenPlayer(props) {
   const {
+    audioSourceLabel,
     audioIndicatorState,
     audioSpeed,
     closeLabel,
@@ -446,6 +453,7 @@ function OpenPlayer(props) {
       <div className="simple-player__track">
         <CoverArt isPlaying={isPlaying} size={52} reciter={reciter} />
         <TrackMeta
+          audioSourceLabel={audioSourceLabel}
           currentArabicName={currentArabicName}
           currentAyahPreview={currentAyahPreview}
           reciterLabel={reciterLabel}

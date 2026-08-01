@@ -35,24 +35,28 @@ export default function Footer() {
   const legalLabels = {
     fr: {
       surahs: "Liste des sourates",
+      about: "À propos",
       privacy: "Confidentialité",
       legal: "Mentions légales",
       sources: "Sources",
     },
     en: {
       surahs: "Surah list",
+      about: "About",
       privacy: "Privacy",
       legal: "Legal notice",
       sources: "Sources",
     },
     ar: {
       surahs: "قائمة السور",
+      about: "حول التطبيق",
       privacy: "الخصوصية",
       legal: "إشعار قانوني",
       sources: "المصادر",
     },
   }[lang] || {
     surahs: "Liste des sourates",
+    about: "À propos",
     privacy: "Confidentialité",
     legal: "Mentions légales",
     sources: "Sources",

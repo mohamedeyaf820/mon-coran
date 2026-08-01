@@ -19,6 +19,7 @@ import Footer from "./Footer";
 import SurahMode from "./QuranDisplay/SurahMode";
 import VerseCompareTray from "./QuranDisplay/VerseCompareTray";
 import WarshNotice from "./QuranDisplay/WarshNotice";
+import ReaderSourceStatus from "./QuranDisplay/ReaderSourceStatus";
 import { createDisplayClasses } from "./QuranDisplay/displayClasses";
 import useQuranDisplayAudio from "./QuranDisplay/useQuranDisplayAudio";
 import useQuranDisplayData, {
@@ -105,6 +106,7 @@ export default function QuranDisplay() {
   const {
     ayahs,
     dataTransitioning,
+    dataSource,
     error,
     fetchData,
     isWarshFallback,
@@ -122,7 +124,7 @@ export default function QuranDisplay() {
       riwaya,
       warshStrictMode,
     });
-  const { getTranslationForAyah } = useQuranTranslations({
+  const { getTranslationForAyah, translationSource, translationState } = useQuranTranslations({
     arabicReady: ayahs.length > 0,
     currentJuz,
     currentPage,
@@ -383,6 +385,9 @@ export default function QuranDisplay() {
                 : "Back to home"}
           </button>
         </div>
+        <p className="reader-data-state__source">
+          {lang === "fr" ? "Source tentée" : lang === "ar" ? "المصدر المطلوب" : "Attempted source"}: {dataSource?.label || (riwaya === "warsh" ? "Warsh dataset" : "Quran.com / AlQuran Cloud")}
+        </p>
       </div>
     );
   if (!loading && ayahs.length === 0)
@@ -453,6 +458,13 @@ export default function QuranDisplay() {
           body={t("settings.warshFallbackText", lang)}
         />
       ) : null}
+      <ReaderSourceStatus
+        dataSource={dataSource}
+        lang={lang}
+        loading={readerBusy}
+        translationSource={translationSource}
+        translationState={showTranslation ? translationState : "idle"}
+      />
       <div
         className={`quran-display quran-display--${riwaya} quran-display--platform${showWordByWord ? " quran-display--word-by-word" : ""}`}
         ref={view.contentRef}
