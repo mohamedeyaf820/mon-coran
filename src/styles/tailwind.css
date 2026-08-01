@@ -18391,22 +18391,6 @@ body {
     opacity: 0.35;
 }
 
-[data-theme="dark"] .wbw-current,
-
-[data-theme="dark"] .wbw-read,
-
-[data-theme="dark"] .wbw-upcoming,
-
-[data-theme="dark"] .wbw-qcf4-current,
-
-[data-theme="dark"] .wbw-qcf4-marker.wbw-qcf4-current,
-[data-theme="dark"] .wbw-qcf4-marker.wbw-qcf4-read,
-[data-theme="dark"] .wbw-qcf4-marker.wbw-qcf4-upcoming,
-[data-theme="night-blue"] .wbw-qcf4-marker.wbw-qcf4-current,
-[data-theme="night-blue"] .wbw-qcf4-marker.wbw-qcf4-read,
-
-[data-theme="dark"] .wbw-qcf4-read,
-
 .hafs-karaoke .wbw-upcoming {
     opacity: 0.35;
     color: var(--text-quran);
@@ -18425,12 +18409,6 @@ body {
     color: var(--gold);
     opacity: 0.55;
 }
-
-[data-theme="dark"] .hafs-karaoke .wbw-current,
-
-[data-theme="dark"] .hafs-karaoke .wbw-upcoming,
-
-[data-theme="dark"] .hafs-karaoke .wbw-read,
 
 .wbw-analysis-overlay {
     position: fixed;

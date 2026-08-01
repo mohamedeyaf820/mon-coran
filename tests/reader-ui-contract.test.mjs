@@ -65,3 +65,13 @@ test("Mushaf pages keep a compact, theme-aware reading hierarchy", () => {
   assert.match(styles, /grid-template-columns: minmax\(1\.5rem, 1fr\) auto/);
   assert.match(styles, /@media \(max-width: 640px\)/);
 });
+
+test("dark karaoke words never inherit the fullscreen analysis overlay", () => {
+  const styles = source("src/styles/tailwind.css");
+
+  assert.match(styles, /\.wbw-analysis-overlay \{\s*position: fixed;/);
+  assert.doesNotMatch(
+    styles,
+    /\.wbw-(?:current|read|upcoming),\s*\.wbw-analysis-overlay\s*\{/,
+  );
+});
