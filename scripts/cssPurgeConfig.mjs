@@ -41,6 +41,11 @@ export const CSS_SAFELIST = {
   greedy: [
     /qcom-list-study/,
     /qc-list-card__study/,
+    // Mushaf verses use role="button" for keyboard interaction. If their
+    // ordered reader selectors are purged, the global button rule changes
+    // them from an inline Quran flow to full-line inline-flex blocks.
+    /quran-verse-inline/,
+    /mushaf-verse/,
   ],
 };
 
