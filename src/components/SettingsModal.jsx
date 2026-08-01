@@ -19,6 +19,7 @@ import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { getRecitersByRiwaya, getReciterVisual } from "../data/reciters";
 import { THEMES as UI_THEMES } from "../data/themes";
+import ThemePreview from "./settings/ThemePreview";
 import {
   getFontOptionsForRiwaya,
   getNativeAyahMarker,
@@ -465,6 +466,10 @@ export default function SettingsModal() {
               item.descriptionAr,
             );
             const isActive = theme === item.id;
+            const periodLabel =
+              item.period === "night"
+                ? localText(lang, "Nuit", "Night", "\u0644\u064a\u0644\u064a")
+                : localText(lang, "Jour", "Day", "\u0646\u0647\u0627\u0631\u064a");
             return (
               <button
                 type="button"
@@ -473,27 +478,33 @@ export default function SettingsModal() {
                 data-active={isActive}
                 onClick={() => set({ theme: item.id })}
                 aria-pressed={isActive}
+                aria-label={`${label}. ${description}`}
               >
                 <span
-                  className="settings-theme-tile__swatch"
+                  className="settings-theme-tile__visual"
                   style={{
                     "--theme-bg": item.palette?.bg || "var(--bg-primary)",
                     "--theme-primary": item.palette?.primary || "var(--primary)",
                     "--theme-text": item.palette?.text || "var(--text-primary)",
                   }}
-                />
+                >
+                  <ThemePreview themeId={item.id} />
+                  {isActive ? (
+                    <span
+                      className="settings-theme-tile__check"
+                      aria-hidden="true"
+                    >
+                      <Check size={13} />
+                    </span>
+                  ) : null}
+                </span>
                 <span className="settings-theme-tile__copy">
-                  <strong>{label}</strong>
+                  <span className="settings-theme-tile__heading">
+                    <strong>{label}</strong>
+                    <span className="settings-theme-tile__period">{periodLabel}</span>
+                  </span>
                   <small>{description}</small>
                 </span>
-                {isActive ? (
-                  <span
-                    className="settings-theme-tile__check"
-                    aria-hidden="true"
-                  >
-                    <Check size={13} />
-                  </span>
-                ) : null}
               </button>
             );
           })}

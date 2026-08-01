@@ -1,0 +1,179 @@
+.settings-theme-tile__visual {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.settings-theme-preview {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 8.8;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--theme-text) 14%, transparent);
+  border-radius: 11px;
+  background:
+    radial-gradient(circle at 78% 0%, color-mix(in srgb, var(--theme-primary) 22%, transparent), transparent 52%),
+    var(--theme-bg);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--theme-text) 13%, transparent);
+  isolation: isolate;
+}
+
+.settings-theme-preview::after {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
+  content: "";
+  pointer-events: none;
+}
+
+.settings-theme-preview__chrome {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  display: flex;
+  height: 1.05rem;
+  align-items: center;
+  gap: 0.2rem;
+  padding-inline: 0.42rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-text) 9%, transparent);
+  background: color-mix(in srgb, var(--theme-bg) 84%, var(--theme-primary) 16%);
+}
+
+.settings-theme-preview__chrome i {
+  display: block;
+  width: 0.22rem;
+  height: 0.22rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--theme-text) 28%, transparent);
+}
+
+.settings-theme-preview__page {
+  position: absolute;
+  inset: 1.45rem 0.65rem 0.48rem;
+  display: grid;
+  grid-template: "ornament arabic" auto "long long" auto "short short" auto / auto minmax(0, 1fr);
+  align-content: center;
+  align-items: center;
+  gap: 0.28rem 0.35rem;
+  overflow: hidden;
+  padding: 0.4rem 0.52rem;
+  border: 1px solid color-mix(in srgb, var(--theme-primary) 18%, transparent);
+  border-radius: 8px 8px 5px 5px;
+  background: color-mix(in srgb, var(--theme-bg) 92%, white 8%);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--theme-text) 9%, transparent);
+}
+
+.settings-theme-preview__ornament {
+  grid-area: ornament;
+  color: var(--theme-primary);
+  font-family: var(--font-quran, serif);
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
+.settings-theme-preview__arabic {
+  grid-area: arabic;
+  overflow: hidden;
+  color: var(--theme-text);
+  font-family: var(--font-quran, serif);
+  font-size: clamp(0.62rem, 1.15vw, 0.82rem);
+  font-weight: 650;
+  line-height: 1.25;
+  text-align: end;
+  white-space: nowrap;
+}
+
+.settings-theme-preview__line {
+  display: block;
+  height: 0.18rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-text) 20%, transparent);
+}
+
+.settings-theme-preview__line--long {
+  grid-area: long;
+  width: 92%;
+}
+
+.settings-theme-preview__line--short {
+  grid-area: short;
+  width: 67%;
+  background: color-mix(in srgb, var(--theme-primary) 38%, transparent);
+}
+
+.settings-theme-preview[data-theme-preview="sepia"] {
+  background:
+    radial-gradient(circle at 18% 28%, rgba(124, 74, 23, 0.09) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 78% 62%, rgba(124, 74, 23, 0.07) 0 1px, transparent 1.6px),
+    linear-gradient(145deg, #f8efd9, var(--theme-bg));
+  background-size: 13px 13px, 17px 17px, auto;
+}
+
+.settings-theme-preview[data-theme-preview="sepia"] .settings-theme-preview__page {
+  background: linear-gradient(155deg, #fff9e9, #ead7b3);
+}
+
+.settings-theme-preview[data-theme-preview="dark"] {
+  background:
+    radial-gradient(circle at 18% 24%, rgba(255,255,255,0.3) 0 1px, transparent 1.4px),
+    radial-gradient(circle at 82% 32%, rgba(66,211,176,0.38) 0 1px, transparent 1.4px),
+    radial-gradient(circle at 66% 78%, rgba(255,255,255,0.18) 0 1px, transparent 1.4px),
+    linear-gradient(145deg, #111b25, var(--theme-bg));
+}
+
+.settings-theme-preview[data-theme-preview="dark"] .settings-theme-preview__page {
+  background: color-mix(in srgb, var(--theme-bg) 86%, #1b2935 14%);
+}
+
+.settings-theme-tile__heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.settings-theme-tile__period {
+  flex: none;
+  padding: 0.16rem 0.38rem;
+  border: 1px solid color-mix(in srgb, var(--theme-primary) 18%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--theme-primary) 7%, var(--theme-bg) 93%);
+  color: var(--theme-primary);
+  font-size: 0.52rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+  .settings-theme-tile__visual {
+    grid-area: visual;
+  }
+
+  .settings-theme-preview {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (max-width: 420px) {
+  .settings-theme-preview__page {
+    inset: 1.28rem 0.42rem 0.38rem;
+    padding: 0.3rem 0.38rem;
+  }
+
+  .settings-theme-preview__arabic {
+    font-size: 0.58rem;
+  }
+
+  .settings-theme-tile__heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.18rem;
+  }
+}
