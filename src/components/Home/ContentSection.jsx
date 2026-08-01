@@ -447,7 +447,8 @@ export default function ContentSection({
                           <img
                             src={visual.photo}
                             alt=""
-                            className="absolute inset-0 h-full w-full object-cover"
+                            className="reciter-photo absolute inset-0 h-full w-full object-cover"
+                            style={{ objectPosition: visual.focalPoint }}
                             loading="lazy"
                             decoding="async"
                             referrerPolicy="no-referrer"
@@ -592,7 +593,8 @@ export default function ContentSection({
                       <img
                         src={visual.photo}
                         alt=""
-                        className="absolute inset-0 h-full w-full object-cover"
+                        className="reciter-photo absolute inset-0 h-full w-full object-cover"
+                        style={{ objectPosition: visual.focalPoint }}
                         loading="lazy"
                         decoding="async"
                         referrerPolicy="no-referrer"

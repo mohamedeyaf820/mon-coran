@@ -75,7 +75,14 @@ function SettingsReciterAvatar({ reciter }) {
   if (visual.type === "photo" && !imgError) {
     return (
       <span className="settings-reciter-avatar settings-reciter-avatar--photo">
-        <img src={visual.photo} alt="" loading="lazy" onError={() => setImgError(true)} />
+        <img
+          src={visual.photo}
+          alt=""
+          className="reciter-photo"
+          style={{ objectPosition: visual.focalPoint }}
+          loading="lazy"
+          onError={() => setImgError(true)}
+        />
       </span>
     );
   }

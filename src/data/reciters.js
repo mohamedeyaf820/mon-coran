@@ -886,6 +886,30 @@ export function getReciterPhoto(reciterOrId) {
   return RECITER_PHOTOS_MAP[id] || null;
 }
 
+const RECITER_PHOTO_FOCUS = Object.freeze({
+  "ar.husary": "50% 30%",
+  husary_muallim: "50% 30%",
+  husary_mujawwad_hafs: "50% 30%",
+  warsh_hussary: "50% 30%",
+  abdullaah_matrood: "50% 24%",
+  warsh_abdelmoujib_benkirane: "50% 22%",
+  warsh_rachid_belalya: "50% 24%",
+});
+
+export function getReciterPhotoFocus(reciterOrId, photo = null) {
+  const id =
+    typeof reciterOrId === "string"
+      ? reciterOrId
+      : String(reciterOrId?.id || "");
+  if (RECITER_PHOTO_FOCUS[id]) return RECITER_PHOTO_FOCUS[id];
+
+  const source = photo || getReciterPhoto(reciterOrId) || "";
+  if (source.includes("/200x256/")) return "50% 22%";
+  if (source.includes("/280x219/")) return "50% 28%";
+  if (source.includes("static.qurancdn.com")) return "50% 32%";
+  return "50% 28%";
+}
+
 export function getReciterVisual(reciter) {
   const photo = getReciterPhoto(reciter);
   const explicitSource = RECITER_PHOTO_SOURCES[reciter?.id];
@@ -904,6 +928,7 @@ export function getReciterVisual(reciter) {
   return {
     type: photo ? "photo" : "avatar",
     photo,
+    focalPoint: getReciterPhotoFocus(reciter, photo),
     avatar: getReciterAvatar(reciter),
     attribution: photo
       ? {

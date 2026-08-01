@@ -22,7 +22,7 @@ export default function ReciterHero({ reciter, lang }) {
     <div className="reciter-hero flex min-w-0 items-center gap-3.5">
       <div className="reciter-hero__portrait relative shrink-0">
         <div
-          className={`reciter-hero__avatar--fallback flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-white sm:h-20 sm:w-20${showPhoto ? " reciter-hero__avatar--bg" : " reciter-hero__avatar"}`}
+          className={`reciter-hero__avatar--fallback flex shrink-0 items-center justify-center rounded-full text-white${showPhoto ? " reciter-hero__avatar--bg" : " reciter-hero__avatar"}`}
           style={{ background: avatar.gradient }}
           aria-hidden="true"
         >
@@ -32,7 +32,8 @@ export default function ReciterHero({ reciter, lang }) {
           <img
             src={visual.photo}
             alt=""
-            className="reciter-hero__avatar absolute inset-0 h-16 w-16 rounded-full border-2 border-primary/20 object-cover sm:h-20 sm:w-20"
+            className="reciter-photo reciter-hero__avatar absolute inset-0 rounded-full border-2 border-primary/20 object-cover"
+            style={{ objectPosition: visual.focalPoint }}
             onError={() => setImgError(true)}
             loading="eager"
             decoding="async"

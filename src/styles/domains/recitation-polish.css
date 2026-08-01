@@ -150,8 +150,12 @@
 }
 
 .reciter-hero__portrait {
+    --reciter-portrait-size: clamp(4.25rem, 3.85rem + 1.35vw, 5.15rem);
     display: grid;
     place-items: center;
+    width: var(--reciter-portrait-size);
+    height: var(--reciter-portrait-size);
+    isolation: isolate;
 }
 
 .reciter-hero__portrait::before {
@@ -173,14 +177,28 @@
     border-radius: 50%;
     background: #1c9b63;
     box-shadow: 0 2px 8px rgba(28, 155, 99, 0.32);
+    z-index: 3;
 }
 
+.reciter-hero__avatar--fallback,
 .reciter-hero__avatar {
-    width: clamp(3.1rem, 2.8rem + 1vw, 3.8rem) !important;
-    height: clamp(3.1rem, 2.8rem + 1vw, 3.8rem) !important;
+    width: 100% !important;
+    height: 100% !important;
     border: 0 !important;
     border-radius: 50% !important;
     box-shadow: 0 10px 26px rgba(10, 40, 28, 0.16);
+}
+
+.reciter-hero__avatar--fallback {
+    overflow: hidden;
+}
+
+.reciter-photo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 28%;
 }
 
 .reciter-hero__name {
@@ -681,6 +699,10 @@
 
     .reciter-hero {
         padding-inline-end: 2.75rem;
+    }
+
+    .reciter-hero__portrait {
+        --reciter-portrait-size: clamp(3.65rem, 15vw, 4.35rem);
     }
 
     [dir="rtl"] .reciter-hero {

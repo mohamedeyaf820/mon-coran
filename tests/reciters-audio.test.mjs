@@ -9,6 +9,7 @@ import {
   getReciterBio,
   getReciterCountryLabel,
   getReciterPhoto,
+  getReciterPhotoFocus,
   getReciterProfileSource,
   getReciterSourceInfo,
   getReciterVisual,
@@ -111,6 +112,8 @@ test("reciters: ids are unique and metadata is compatible with the player", () =
     assert.ok(["photo", "avatar"].includes(visual.type), reciter.id);
     assert.ok(visual.photo || visual.avatar?.initials, reciter.id);
     assert.equal(Boolean(visual.attribution), Boolean(visual.photo), reciter.id);
+    assert.match(visual.focalPoint, /^\d+% \d+%$/, reciter.id);
+    assert.equal(visual.focalPoint, getReciterPhotoFocus(reciter, visual.photo), reciter.id);
     const bio = getReciterBio(reciter, "fr");
     assert.ok(bio.length > 20, `bio too short for ${reciter.id}`);
   }
