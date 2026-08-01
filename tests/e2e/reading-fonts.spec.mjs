@@ -25,9 +25,21 @@ async function switchToMushaf(page) {
   await expect(page.locator(".mushaf-container .verse-text").first()).toBeVisible();
 }
 
+async function openTypographyPanel(page) {
+  const select = page.locator(".afc-select");
+  if (await select.count() > 0) {
+    const visible = await select.isVisible().catch(() => false);
+    if (!visible) {
+      await page.locator(".srh-typography-trigger").click();
+      await expect(select).toBeVisible({ timeout: 5000 });
+    }
+  }
+}
+
 test("Hafs font selection applies to list and Mushaf layouts", async ({ page }) => {
   await openReader(page);
 
+  await openTypographyPanel(page);
   await page.locator(".afc-select").selectOption("amiri-quran");
   await expectFontFamily(page.locator(".qc-ayah-text-ar").first(), "Amiri Quran");
 
@@ -56,6 +68,7 @@ test("Warsh font selection applies to list and Mushaf layouts", async ({ page })
     timeout: 30_000,
   });
 
+  await openTypographyPanel(page);
   await page.locator(".afc-select").selectOption("scheherazade-new-warsh");
   await expectFontFamily(
     page.locator(".qc-ayah-text-ar").first(),
