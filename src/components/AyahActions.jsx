@@ -749,24 +749,21 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
   const quickActions = [
     {
       key: "play",
-      className: "ayah-action-card ayah-action-card--play",
-      icon: audioError ? "fa-triangle-exclamation" : "fa-play",
-      label: t("actions.listen", lang),
-      description:
-        lang === "fr"
-          ? "Lancer cette ayah"
-          : lang === "ar"
-            ? "تشغيل هذه الآية"
-            : "Play this ayah",
-      state: audioError
-        ? lang === "fr"
-          ? "Erreur audio"
-          : lang === "ar"
-            ? "خطأ صوتي"
-            : "Audio error"
-        : null,
-      active: Boolean(audioError),
-      onClick: playAyah,
+      className: `ayah-action-card ayah-action-card--play${isPlayingThisAyah ? " is-active" : ""}`,
+      icon: audioError
+        ? "fa-triangle-exclamation"
+        : isPlayingThisAyah
+          ? "fa-pause"
+          : "fa-play",
+      label: isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang),
+      active: isPlayingThisAyah,
+      onClick: () => {
+        if (isCurrentAyah) {
+          audioService.toggle();
+        } else {
+          playAyah();
+        }
+      },
     },
     {
       key: "memorize",
@@ -778,12 +775,6 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           : lang === "ar"
             ? "حفظ"
             : "Memorize",
-      description:
-        lang === "fr"
-          ? "Augmenter la progression"
-          : lang === "ar"
-            ? "ارفع مستوى الحفظ"
-            : "Boost progress",
       state: memoLevel > 0 ? `${memoLevel}/5` : lang === "fr" ? "Démarrer" : lang === "ar" ? "ابدأ" : "Start",
       active: memoLevel > 0,
       onClick: handleMemorizationBoost,
@@ -798,12 +789,6 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           : lang === "ar"
             ? "تكرار"
             : "Repeat",
-      description:
-        lang === "fr"
-          ? "Relire cette ayah"
-          : lang === "ar"
-            ? "إعادة هذه الآية"
-            : "Replay this ayah",
       state: `x${Math.max(2, Number(memRepeatCount) || 3)}`,
       active: false,
       onClick: repeatAyah,
@@ -813,12 +798,6 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       className: `ayah-action-card${showNote ? " is-active" : ""}`,
       icon: "pen-line",
       label: lang === "fr" ? "Noter" : lang === "ar" ? "ملاحظة" : "Note",
-      description:
-        lang === "fr"
-          ? "Ecrire une reflexion"
-          : lang === "ar"
-            ? "اكتب ملاحظة"
-            : "Write a reflection",
       state: noteText.trim()
         ? lang === "fr"
           ? "Note prete"
@@ -839,12 +818,6 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       className: `ayah-action-card${showShare ? " is-active" : ""}`,
       icon: "fa-share-nodes",
       label: lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Share",
-      description:
-        lang === "fr"
-          ? "Texte, image ou lien"
-          : lang === "ar"
-            ? "نص أو صورة أو رابط"
-            : "Text, image, or link",
       state: null,
       active: showShare,
       onClick: () => {
@@ -855,92 +828,10 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       },
     },
     {
-      key: "compare",
-      className: `ayah-action-card${isPinnedForCompare ? " is-active" : ""}`,
-      icon: "fa-thumbtack",
-      label:
-        lang === "fr"
-          ? "Comparer"
-          : lang === "ar"
-            ? "Pin"
-            : "Compare",
-      description:
-        lang === "fr"
-          ? "Épingler ce verset"
-          : lang === "ar"
-            ? "Pin this verse"
-            : "Pin this verse",
-      state: isPinnedForCompare
-        ? lang === "fr"
-          ? "Épinglé"
-          : "Pinned"
-        : `${pinnedAyahs.length}/4`,
-      active: isPinnedForCompare,
-      onClick: toggleComparePin,
-    },
-    {
-      key: "playlist",
-      className: `ayah-action-card${playlistAdded || showPlaylistMenu ? " is-complete" : ""}`,
-      icon: playlistAdded ? "fa-check" : "fa-list",
-      label:
-        lang === "fr"
-          ? "Playlist"
-          : lang === "ar"
-            ? "قائمة"
-            : "Playlist",
-      description:
-        lang === "fr"
-          ? "Ajouter à une série"
-          : lang === "ar"
-            ? "أضف إلى قائمة"
-            : "Add to a list",
-      state: playlistAdded
-        ? lang === "fr"
-          ? "Ajouté"
-          : lang === "ar"
-            ? "تمت الإضافة"
-            : "Added"
-        : null,
-      active: playlistAdded || showPlaylistMenu,
-      onClick: openPlaylistMenu,
-    },
-    {
-      key: "translation",
-      className: `ayah-action-card${showTranslation ? " is-active" : ""}`,
-      icon: "fa-language",
-      label:
-        lang === "fr"
-          ? "Traduction"
-          : lang === "ar"
-            ? "ترجمة"
-            : "Translation",
-      description:
-        lang === "fr"
-          ? "Afficher le sens"
-          : lang === "ar"
-            ? "إظهار المعنى"
-            : "Show meaning",
-      state: showTranslation
-        ? lang === "fr"
-          ? "Visible"
-          : lang === "ar"
-            ? "ظاهرة"
-            : "Visible"
-        : null,
-      active: showTranslation,
-      onClick: showTranslationForAyah,
-    },
-    {
       key: "study",
       className: `ayah-action-card ayah-action-card--study${showStudy ? " is-active" : ""}`,
       icon: "fa-book-open",
       label: lang === "fr" ? "Étude" : lang === "ar" ? "دراسة" : "Study",
-      description:
-        lang === "fr"
-          ? "Tafsir, leçons, notes"
-          : lang === "ar"
-            ? "ترجمة وكلمة بكلمة"
-            : "Tafsir, lessons, notes",
       state: null,
       active: showStudy,
       onClick: () => toggleStudyPanel("tafsir"),
@@ -1859,62 +1750,65 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
 
         </div>
       ) : (
-        <div className="ayah-actions__surface ayah-actions__surface--compact">
-          <div className="ayah-actions__meta">
-            <div>
-              <span className="ayah-actions__kicker">
-                <Zap size={13} />
-                {lang === "fr"
-                  ? "Actions rapides"
-                  : lang === "ar"
-                    ? "إجراءات سريعة"
-                    : "Quick actions"}
-              </span>
-              <div className="ayah-actions__verse">
-                <span>
-                  {lang === "fr"
-                    ? surahInfo?.fr || surahInfo?.en
-                    : lang === "ar"
-                      ? surahInfo?.ar
-                      : surahInfo?.en}
-                </span>
-                <span className="ayah-actions__verse-ar" dir="rtl">
-                  {surahInfo?.ar}
-                </span>
-                <span>({surah}:{ayah})</span>
-              </div>
-            </div>
+        <div className="ayah-actions__surface ayah-actions__surface--modal">
+          <div className="ayah-actions__summary">
+            <span className="ayah-actions__kicker">
+              <Zap size={13} aria-hidden="true" />
+              {lang === "fr"
+                ? "Choisir une action"
+                : lang === "ar"
+                  ? "اختر إجراءً"
+                  : "Choose an action"}
+            </span>
 
             <div className="ayah-actions__badges">
-              <span className={`ayah-actions__badge${bookmarked ? " is-on" : ""}`}>
-                <Bookmark size={13} />
+              <span className={cn("ayah-actions__badge", bookmarked && "is-on")}>
+                <Bookmark size={12} aria-hidden="true" />
                 {bookmarked
                   ? lang === "fr"
-                    ? "favori"
+                    ? "Favori"
                     : lang === "ar"
                       ? "مفضلة"
-                      : "saved"
+                      : "Saved"
                   : lang === "fr"
-                    ? "non epingle"
+                    ? "Non enregistré"
                     : lang === "ar"
                       ? "غير محفوظة"
-                      : "not saved"}
+                      : "Not saved"}
               </span>
-              <span className={`ayah-actions__badge${memoLevel > 0 ? " is-on" : ""}`}>
-                <Star size={13} />
-                {memoLevel > 0 ? `${memoLevel}/5` : "0/5"}
-              </span>
-              <span className={`ayah-actions__badge${isPinnedForCompare ? " is-on" : ""}`}>
-                <Pin size={13} />
-                {isPinnedForCompare ? "pin" : `${pinnedAyahs.length}/4`}
+              <span className={cn("ayah-actions__badge", memoLevel > 0 && "is-on")}>
+                <Star size={12} aria-hidden="true" />
+                {lang === "fr" ? "Mémo" : lang === "ar" ? "الحفظ" : "Memory"} {memoLevel}/5
               </span>
             </div>
+          </div>
+
+          <div className="ayah-actions__grid">
+            {quickActions.map((action) => (
+              <button
+                key={action.key}
+                type="button"
+                className={action.className}
+                onClick={action.onClick}
+                aria-pressed={action.active || undefined}
+              >
+                <span className="ayah-action-card__icon">
+                  {faIcon(action.icon)}
+                </span>
+                <span className="ayah-action-card__content">
+                  <span className="ayah-action-card__label">{action.label}</span>
+                </span>
+                {action.state ? (
+                  <span className="ayah-action-card__state">{action.state}</span>
+                ) : null}
+              </button>
+            ))}
           </div>
 
           <div className="ayah-actions__utility">
             <button
               type="button"
-              className={`ayah-actions__utility-btn${bookmarked ? " is-active" : ""}`}
+              className={cn("ayah-actions__utility-btn", bookmarked && "is-active")}
               onClick={toggleBookmark}
               title={t("bookmarks.add", lang)}
             >
@@ -1925,16 +1819,16 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                   : lang === "ar"
                     ? "إزالة المفضلة"
                     : "Remove bookmark"
-                : lang === "fr"
-                  ? "Ajouter aux favoris"
-                  : lang === "ar"
-                    ? "أضف إلى préférés"
-                    : "Add bookmark"}
+                  : lang === "fr"
+                    ? "Ajouter aux favoris"
+                    : lang === "ar"
+                      ? "أضف إلى المفضلة"
+                      : "Add bookmark"}
             </button>
 
             <button
               type="button"
-              className={`ayah-actions__utility-btn${copied ? " is-active" : ""}`}
+              className={cn("ayah-actions__utility-btn", copied && "is-active")}
               onClick={copyText}
               title={t("actions.copy", lang)}
             >

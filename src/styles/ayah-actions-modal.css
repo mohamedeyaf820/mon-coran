@@ -1,0 +1,479 @@
+.ayah-actions-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 620;
+  display: grid;
+  place-items: center;
+  padding: clamp(0.75rem, 3vw, 1.5rem);
+  background: rgba(5, 12, 10, 0.46);
+  backdrop-filter: blur(8px) saturate(108%);
+}
+
+.ayah-actions-modal--quiet {
+  background: color-mix(in srgb, var(--bg-primary) 18%, transparent 82%);
+}
+
+.ayah-actions-modal__panel {
+  position: relative;
+  width: min(94vw, 640px);
+  max-height: min(82dvh, 690px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, var(--primary) 30%);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--bg-card) 97%, var(--primary) 3%),
+      var(--bg-card)
+    );
+  color: var(--text-primary);
+  box-shadow:
+    0 28px 80px rgba(2, 12, 9, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: ayahActionsPanelIn 180ms ease-out both;
+}
+
+.ayah-actions-modal__handle {
+  display: none;
+}
+
+.ayah-actions-modal__header {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 76%, transparent 24%);
+  background: color-mix(in srgb, var(--bg-card) 94%, transparent 6%);
+}
+
+.ayah-actions-modal__heading {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.ayah-actions-modal__title {
+  min-width: 0;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.28rem 0.5rem;
+  color: var(--text-primary);
+  font-size: clamp(0.94rem, 0.88rem + 0.25vw, 1.08rem);
+  font-weight: 780;
+  line-height: 1.25;
+}
+
+.ayah-actions-modal__ref {
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-fg, #fff);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.ayah-actions-modal__close {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--border) 76%, transparent 24%);
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--bg-secondary) 78%, var(--bg-card) 22%);
+  color: var(--text-muted);
+  transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.ayah-actions-modal__close:hover {
+  border-color: rgba(var(--primary-rgb), 0.32);
+  background: rgba(var(--primary-rgb), 0.1);
+  color: var(--text-primary);
+}
+
+.ayah-actions-modal__close:focus-visible,
+.ayah-actions-modal .ayah-action-card:focus-visible,
+.ayah-actions-modal .ayah-actions__utility-btn:focus-visible {
+  outline: 3px solid rgba(var(--primary-rgb), 0.25);
+  outline-offset: 2px;
+}
+
+.ayah-actions-modal__body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.9rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--primary-rgb), 0.34) transparent;
+}
+
+.ayah-actions-modal .ayah-actions__surface--modal {
+  gap: 0.85rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.ayah-actions-modal .ayah-actions__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.8rem;
+}
+
+.ayah-actions-modal .ayah-actions__kicker {
+  min-height: 28px;
+  gap: 0.4rem;
+  color: color-mix(in srgb, var(--text-muted) 68%, var(--primary) 32%);
+  font-size: 0.65rem;
+  letter-spacing: 0.11em;
+}
+
+.ayah-actions-modal .ayah-actions__badges {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.ayah-actions-modal .ayah-actions__badge {
+  min-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.26rem 0.52rem;
+  border: 1px solid color-mix(in srgb, var(--border) 70%, transparent 30%);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-secondary) 72%, var(--bg-card) 28%);
+  color: var(--text-secondary);
+  font-size: 0.64rem;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.ayah-actions-modal .ayah-actions__badge.is-on {
+  border-color: rgba(var(--primary-rgb), 0.3);
+  background: rgba(var(--primary-rgb), 0.1);
+  color: var(--primary);
+}
+
+.ayah-actions-modal .ayah-actions__grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.5rem !important;
+}
+
+.ayah-actions-modal .ayah-action-card {
+  min-width: 0;
+  width: 100% !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 68px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  grid-template-rows: auto;
+  align-items: center;
+  align-content: center;
+  gap: 0.5rem;
+  padding: 0.62rem;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent 28%);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--bg-secondary) 66%, var(--bg-card) 34%);
+  color: var(--text-primary);
+  text-align: start;
+  box-shadow: none;
+}
+
+.ayah-actions-modal .ayah-action-card::before {
+  display: none;
+}
+
+.ayah-actions-modal .ayah-action-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(var(--primary-rgb), 0.32);
+  background: rgba(var(--primary-rgb), 0.08);
+}
+
+.ayah-actions-modal .ayah-action-card.is-active,
+.ayah-actions-modal .ayah-action-card.is-complete {
+  border-color: rgba(var(--primary-rgb), 0.38);
+  background: rgba(var(--primary-rgb), 0.1);
+  box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb), 0.06);
+}
+
+.ayah-actions-modal .ayah-action-card__icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(var(--primary-rgb), 0.1);
+  color: var(--primary);
+}
+
+.ayah-actions-modal .ayah-action-card__content {
+  min-width: 0;
+  display: grid;
+  gap: 0.18rem;
+}
+
+.ayah-actions-modal .ayah-action-card__label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1.15;
+}
+
+.ayah-actions-modal .ayah-action-card__state {
+  align-self: start;
+  padding: 0.18rem 0.32rem;
+  border-radius: 999px;
+  background: rgba(var(--primary-rgb), 0.1);
+  color: var(--primary);
+  font-size: 0.54rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.ayah-actions-modal .ayah-actions__utility {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding-top: 0.1rem;
+}
+
+.ayah-actions-modal .ayah-actions__utility-btn {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent 28%);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.ayah-actions-modal .ayah-actions__utility-btn:hover,
+.ayah-actions-modal .ayah-actions__utility-btn.is-active {
+  border-color: rgba(var(--primary-rgb), 0.3);
+  background: rgba(var(--primary-rgb), 0.08);
+  color: var(--primary);
+}
+
+@keyframes ayahActionsPanelIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 640px) {
+  .ayah-actions-modal {
+    place-items: end center;
+    padding: max(0.7rem, env(safe-area-inset-top)) 0 0;
+    backdrop-filter: blur(6px);
+  }
+
+  .ayah-actions-modal__panel {
+    width: 100%;
+    max-height: calc(100dvh - max(0.7rem, env(safe-area-inset-top)));
+    border-inline: 0;
+    border-bottom: 0;
+    border-radius: 1.35rem 1.35rem 0 0;
+    animation-name: ayahActionsSheetIn;
+  }
+
+  .ayah-actions-modal__handle {
+    width: 38px;
+    height: 4px;
+    display: block;
+    flex: 0 0 auto;
+    margin: 0.48rem auto 0;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--text-muted) 32%, transparent 68%);
+  }
+
+  .ayah-actions-modal__header {
+    min-height: 66px;
+    padding: 0.65rem 0.78rem 0.72rem;
+  }
+
+  .ayah-actions-modal__close {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  .ayah-actions-modal__body {
+    padding: 0.72rem 0.72rem calc(0.85rem + env(safe-area-inset-bottom));
+  }
+
+  .ayah-actions-modal .ayah-actions__summary {
+    align-items: flex-start;
+  }
+
+  .ayah-actions-modal .ayah-actions__badges {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.1rem;
+    scrollbar-width: none;
+  }
+
+  .ayah-actions-modal .ayah-actions__badges::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ayah-actions-modal .ayah-actions__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.42rem !important;
+  }
+
+  .ayah-actions-modal .ayah-action-card {
+    min-height: 58px;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 0.42rem;
+    padding: 0.5rem;
+    border-radius: 0.78rem;
+  }
+
+  .ayah-actions-modal .ayah-action-card__icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+
+  .ayah-actions-modal .ayah-action-card__state {
+    position: absolute;
+    inset-block-start: 0.32rem;
+    inset-inline-end: 0.34rem;
+    max-width: 54px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ayah-actions-modal .ayah-actions__utility-btn {
+    min-height: 44px;
+  }
+}
+
+@keyframes ayahActionsSheetIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 360px) {
+  .ayah-actions-modal .ayah-action-card__label {
+    font-size: 0.72rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ayah-actions-modal__panel {
+    animation: none;
+  }
+}
+
+/* The legacy reader density layer constrains every reading button to an icon
+   square. This modal is a labelled action grid, so restore card dimensions. */
+html body .app-root .ayah-actions-modal .ayah-action-card {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 68px !important;
+  display: grid !important;
+  grid-template-columns: 34px minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  padding: 0.62rem !important;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent 28%) !important;
+  border-radius: 0.9rem !important;
+  background: color-mix(in srgb, var(--bg-secondary) 66%, var(--bg-card) 34%) !important;
+  color: var(--text-primary) !important;
+}
+
+html body .app-root .ayah-actions-modal .ayah-action-card__content,
+html body .app-root .ayah-actions-modal .ayah-action-card__label {
+  width: auto !important;
+  min-width: 0 !important;
+  display: block !important;
+  writing-mode: horizontal-tb !important;
+  white-space: nowrap !important;
+}
+
+html body .app-root .ayah-actions-modal .ayah-action-card__state {
+  width: auto !important;
+  height: auto !important;
+  writing-mode: horizontal-tb !important;
+  background: rgba(var(--primary-rgb), 0.1) !important;
+  color: var(--primary) !important;
+}
+
+html body .app-root .ayah-actions-modal .ayah-actions__badge {
+  width: auto !important;
+  height: auto !important;
+  min-height: 28px !important;
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0.3rem !important;
+  padding: 0.26rem 0.52rem !important;
+  writing-mode: horizontal-tb !important;
+  white-space: nowrap !important;
+}
+
+html body .app-root .ayah-actions-modal .ayah-actions__badge svg {
+  width: 12px !important;
+  height: 12px !important;
+  flex: 0 0 12px !important;
+}
+
+html body .app-root .ayah-actions-modal .ayah-actions__utility-btn {
+  width: 100% !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 44px !important;
+  writing-mode: horizontal-tb !important;
+  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent 28%) !important;
+  background: color-mix(in srgb, var(--bg-secondary) 66%, var(--bg-card) 34%) !important;
+  color: var(--text-secondary) !important;
+  white-space: nowrap !important;
+}
+
+html body .app-root .ayah-actions-modal .ayah-actions__utility-btn.is-active {
+  border-color: rgba(var(--primary-rgb), 0.36) !important;
+  background: rgba(var(--primary-rgb), 0.12) !important;
+  color: var(--primary) !important;
+}
+
+@media (max-width: 640px) {
+  html body .app-root .ayah-actions-modal .ayah-action-card {
+    min-height: 58px !important;
+    grid-template-columns: 30px minmax(0, 1fr) !important;
+    padding: 0.5rem !important;
+    border-radius: 0.78rem !important;
+  }
+}

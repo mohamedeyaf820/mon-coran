@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import AyahActions from "../AyahActions";
 import { cn } from "../../lib/utils";
 import { useAppLocale } from "../../context/AppContext";
 import { t } from "../../i18n";
+import "../../styles/ayah-actions-modal.css";
 
 const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
@@ -17,6 +19,13 @@ export default function AyahActionsModal({
   const { lang } = useAppLocale();
   const dialogRef = useRef(null);
   const titleId = `aam-title-${activeAyah}`;
+  const verseNumber = ayahData?.numberInSurah ?? activeAyah;
+  const modalTitle =
+    lang === "fr"
+      ? "Actions du verset"
+      : lang === "ar"
+        ? "إجراءات الآية"
+        : "Verse actions";
 
   // Focus trap + Escape
   useEffect(() => {
@@ -50,13 +59,20 @@ export default function AyahActionsModal({
 
   if (!activeAyah) return null;
 
-  return (
+  const portalTarget =
+    typeof document === "undefined"
+      ? null
+      : document.querySelector(".app-root") || document.body;
+
+  if (!portalTarget) return null;
+
+  return createPortal(
     <div
       className={cn(
-        "ayah-actions-modal fixed inset-0 z-40 flex items-end justify-center p-3 sm:items-center sm:p-4",
+        "ayah-actions-modal",
         quietBackdrop
-          ? "ayah-actions-modal--quiet bg-transparent"
-          : "bg-black/40 backdrop-blur-sm",
+          ? "ayah-actions-modal--quiet"
+          : "ayah-actions-modal--dimmed",
       )}
       onClick={onClose}
       role="dialog"
@@ -65,42 +81,38 @@ export default function AyahActionsModal({
     >
       <div
         ref={dialogRef}
-        className={cn(
-          "w-full max-w-lg rounded-2xl",
-          "bg-[var(--bg-card)] border border-[var(--border)]",
-          quietBackdrop ? "shadow-xl" : "shadow-2xl",
-          "animate-in slide-in-from-bottom-2",
-          "max-h-[80vh] overflow-y-auto",
-        )}
+        className="ayah-actions-modal__panel"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* En-tête */}
-        <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
-          <span
-            id={titleId}
-            className="font-[var(--font-ui)] text-sm font-semibold text-[var(--text-secondary)]"
-          >
-            {surah}:{ayahData?.numberInSurah ?? activeAyah}
-          </span>
+        <span className="ayah-actions-modal__handle" aria-hidden="true" />
+        <div className="ayah-actions-modal__header">
+          <div className="ayah-actions-modal__heading">
+            <h2 id={titleId} className="ayah-actions-modal__title">
+              <span className="ayah-actions-modal__ref">
+                {surah}:{verseNumber}
+              </span>
+              <span>{modalTitle}</span>
+            </h2>
+          </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-11 h-11 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)] transition-colors"
+            className="ayah-actions-modal__close"
             aria-label={t("audio.close", lang)}
           >
-            <X size={16} />
+            <X size={15} aria-hidden="true" />
           </button>
         </div>
 
-        {/* Corps */}
-        <div className="p-4">
+        <div className="ayah-actions-modal__body">
           <AyahActions
             surah={surah}
-            ayah={ayahData?.numberInSurah ?? activeAyah}
+            ayah={verseNumber}
             ayahData={ayahData}
           />
         </div>
       </div>
-    </div>
+    </div>,
+    portalTarget,
   );
 }

@@ -38,3 +38,17 @@ test("reciter cards keep technical providers in the detail view", () => {
   assert.match(details, /getReciterSourceInfo/);
   assert.match(details, /reciter-detail__sources/);
 });
+
+test("verse action modal renders a responsive, scrollable action grid", () => {
+  const modal = source("src/components/QuranDisplay/AyahActionsModal.jsx");
+  const actions = source("src/components/AyahActions.jsx");
+  const styles = source("src/styles/ayah-actions-modal.css");
+
+  assert.match(modal, /ayah-actions-modal__body/);
+  assert.match(modal, /ayah-actions-modal__ref/);
+  assert.match(actions, /quickActions\.map/);
+  assert.match(actions, /ayah-actions__surface--modal/);
+  assert.match(styles, /\.ayah-actions-modal__body \{[\s\S]*?overflow-y: auto/);
+  assert.match(styles, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?repeat\(2, minmax\(0, 1fr\)\)/);
+});
