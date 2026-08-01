@@ -365,7 +365,7 @@ export default function SurahReaderHeader({
             aria-expanded={typographyOpen}
           >
             <Type size={14} aria-hidden="true" />
-            <span>{lbl(lang, "Texte", "Text", "الخط")}</span>
+            <span>{lbl(lang, "Texte et taille", "Text size", "حجم الخط")}</span>
           </button>
           <div id="srh-typography-panel" className="srh-typography-panel">
             <ArabicFontControls lang={lang} compact />
