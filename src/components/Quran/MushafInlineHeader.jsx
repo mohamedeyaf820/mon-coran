@@ -1,5 +1,6 @@
 import React from "react";
 import { toAr } from "../../data/surahs";
+import { t } from "../../i18n";
 
 export default function MushafInlineHeader({
   ayahCountLabel,
@@ -66,7 +67,7 @@ export default function MushafInlineHeader({
       </div>
       {showBasmala ? (
         <div className="mp-basmala-wrap">
-          <div className="mp-basmala" dir="rtl" aria-label="Basmala">
+          <div className="mp-basmala" dir="rtl" aria-label={t("quran.bismillah", lang)}>
             {isQCF4
               ? "\ufdfd"
               : "\u0628\u0650\u0633\u0652\u0645\u0650 \u0671\u0644\u0644\u0651\u064e\u0647\u0650 \u0671\u0644\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0670\u0646\u0650 \u0671\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650"}

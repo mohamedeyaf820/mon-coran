@@ -4,6 +4,18 @@
   var KEY = "mushaf-plus:boot-recovery-once";
   var ASSET_RE = /\/assets\/[^?#]+\.(?:js|css)(?:[?#]|$)/;
 
+  function activateDeferredStyles() {
+    var quranFonts = document.getElementById("quran-google-fonts");
+    if (!quranFonts) return;
+
+    var activate = function () {
+      quranFonts.media = "all";
+    };
+
+    quranFonts.addEventListener("load", activate, { once: true });
+    if (quranFonts.sheet) activate();
+  }
+
   function hasAlreadyRetried() {
     try {
       return sessionStorage.getItem(KEY) === "1";
@@ -99,4 +111,6 @@
       }
     }, 3500);
   });
+
+  activateDeferredStyles();
 })();

@@ -10,46 +10,15 @@ import fs from "fs";
 import path from "path";
 import { glob } from "glob";
 import { PurgeCSS } from "purgecss";
-
-const CONTENT_PATTERNS = [
-  "dist/**/*.html",
-  "dist/**/*.js",
-];
-
-const SAFELIST = {
-  standard: [
-    /^app-mode-/,
-    /^qcm-word--/,
-    /^tajweed-/,
-    /^verse-/,
-    /^warsh-/,
-    /^data-/,
-    /^aria-/,
-    "animate-in",
-    "animate-out",
-    "fade-in",
-    "fade-out",
-    "zoom-in",
-    "zoom-out",
-    "slide-in",
-    "slide-out",
-    "data-[side=bottom]",
-    "data-[side=top]",
-    "data-[side=left]",
-    "data-[side=right]",
-    "data-[state=open]",
-    "data-[state=closed]",
-  ],
-  deep: [/^data-/, /^aria-/],
-};
-
-function extractSelectors(content) {
-  return content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
-}
+import {
+  CSS_CONTENT_PATTERNS,
+  CSS_SAFELIST,
+  extractCssSelectors,
+} from "./cssPurgeConfig.mjs";
 
 async function expandContentFiles() {
   const files = [];
-  for (const pattern of CONTENT_PATTERNS) {
+  for (const pattern of CSS_CONTENT_PATTERNS) {
     files.push(...(await glob(pattern, { absolute: true })));
   }
   return [...new Set(files)];
@@ -80,8 +49,9 @@ async function purgeCSS() {
       const results = await new PurgeCSS().purge({
         content: contentFiles,
         css: [{ raw: cssRaw, name: cssFile }],
-        defaultExtractor: extractSelectors,
-        safelist: SAFELIST,
+        defaultExtractor: extractCssSelectors,
+        safelist: CSS_SAFELIST,
+        rejected: true,
       });
 
       const result = results?.[0];

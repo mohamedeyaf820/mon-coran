@@ -377,6 +377,48 @@ const _parseTajwidCache = new Map();
 const _PARSE_CACHE_MAX = 2000;
 const _perWordCache = new Map();
 const _PER_WORD_CACHE_MAX = 2000;
+const LEADING_ARABIC_MARKS =
+  /^([\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]+)/u;
+
+/**
+ * Keep Arabic combining marks attached to the preceding glyph.
+ *
+ * Quran.com tajwid markup can start a coloured segment with a harakah. DOM
+ * element boundaries prevent that mark from shaping with its base letter, so
+ * browsers render a coloured dotted circle instead. U+0672 is also used by
+ * that markup as a stand-in for the Quranic superscript alef; the Hafs font
+ * expects U+0670.
+ */
+export function stabilizeTajwidSegments(segments = []) {
+  const stabilized = [];
+
+  for (const segment of segments) {
+    let segmentText = String(segment?.text || "").replace(/\u0672/g, "\u0670");
+    if (!segmentText) continue;
+
+    const leadingMarks = segmentText.match(LEADING_ARABIC_MARKS)?.[0] || "";
+    if (leadingMarks && stabilized.length > 0) {
+      stabilized[stabilized.length - 1].text += leadingMarks;
+      segmentText = segmentText.slice(leadingMarks.length);
+    }
+
+    if (!segmentText) continue;
+
+    const normalizedSegment = {
+      text: segmentText,
+      ruleId: segment?.ruleId || null,
+    };
+    const previous = stabilized[stabilized.length - 1];
+
+    if (previous && previous.ruleId === normalizedSegment.ruleId) {
+      previous.text += normalizedSegment.text;
+    } else {
+      stabilized.push(normalizedSegment);
+    }
+  }
+
+  return stabilized;
+}
 
 function _cacheGet(cache, key) {
   return cache.get(key);
@@ -428,7 +470,7 @@ export function parseTajwid(text, riwaya = "hafs") {
   }
 
   if (matches.length === 0) {
-    const result = [{ text, ruleId: null }];
+    const result = stabilizeTajwidSegments([{ text, ruleId: null }]);
     _cacheSet(_parseTajwidCache, _PARSE_CACHE_MAX, cacheKey, result);
     return result;
   }
@@ -460,8 +502,9 @@ export function parseTajwid(text, riwaya = "hafs") {
     segments.push({ text: text.slice(pos), ruleId: null });
   }
 
-  _cacheSet(_parseTajwidCache, _PARSE_CACHE_MAX, cacheKey, segments);
-  return segments;
+  const stabilizedSegments = stabilizeTajwidSegments(segments);
+  _cacheSet(_parseTajwidCache, _PARSE_CACHE_MAX, cacheKey, stabilizedSegments);
+  return stabilizedSegments;
 }
 
 /**

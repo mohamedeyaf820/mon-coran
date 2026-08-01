@@ -2,11 +2,16 @@ import React, { useEffect, useMemo, useState } from "react";
 import { getJuzForAyah } from "../../data/juz";
 import { toAr } from "../../data/surahs";
 import {
+  ensureFontLoaded,
   ensureQcfPageFontLoaded,
   getQcfPageFontFamily,
 } from "../../services/fontLoader";
 import AyahMarker from "../Quran/AyahMarker";
 import { sanitizeHtml } from "../../lib/security";
+import {
+  getQuranWordTextForFont,
+  resolveFontFamily,
+} from "../../data/fonts";
 
 function decodeHtmlEntity(str) {
   if (!str) return "";
@@ -51,6 +56,44 @@ function normalizeArabicText(text) {
 }
 
 function groupWarshPageLines(ayahs) {
+  const hasLineMetadata = ayahs.some((ayah) => Number(ayah?.lineStart) || Number(ayah?.lineEnd));
+  if (!hasLineMetadata) {
+    const tokens = [];
+    ayahs.forEach((ayah) => {
+      const surah = ayah.surah?.number;
+      const ayahNum = ayah.numberInSurah;
+      const rawText = normalizeArabicText(ayah.text || "");
+      const warshWords = Array.isArray(ayah.warshWords)
+        ? ayah.warshWords.map((word) => normalizeArabicText(word))
+        : rawText.split(/\s+/).filter(Boolean);
+
+      warshWords.forEach((text, index) => {
+        tokens.push({
+          charType: "word",
+          globalAyah: ayah.number,
+          surah,
+          ayah: ayahNum,
+          position: index + 1,
+          text,
+          isWarsh: true,
+        });
+      });
+      tokens.push({
+        charType: "end",
+        globalAyah: ayah.number,
+        surah,
+        ayah: ayahNum,
+        isWarsh: true,
+      });
+    });
+
+    const perLine = Math.max(1, Math.ceil(tokens.length / 15));
+    return Array.from({ length: 15 }, (_, index) => ({
+      lineNumber: index + 1,
+      words: tokens.slice(index * perLine, (index + 1) * perLine),
+    }));
+  }
+
   const lines = new Map();
 
   ayahs.forEach((ayah) => {
@@ -111,6 +154,7 @@ function groupWarshPageLines(ayahs) {
 
 function groupPageLines(ayahs) {
   const lines = new Map();
+  const seenEndMarkers = new Set();
 
   ayahs.forEach((ayah) => {
     const surah = ayah.surah?.number;
@@ -120,9 +164,16 @@ function groupPageLines(ayahs) {
     words.forEach((word) => {
       const lineNumber = getLineNumber(word);
       if (!lineNumber) return;
+      const charType = word.charType || word.charTypeName || word.char_type_name;
+      const endKey = `${surah}:${ayahNum}`;
+      if (charType === "end") {
+        if (seenEndMarkers.has(endKey)) return;
+        seenEndMarkers.add(endKey);
+      }
       if (!lines.has(lineNumber)) lines.set(lineNumber, []);
       lines.get(lineNumber).push({
         ...word,
+        charType,
         globalAyah: ayah.number,
         surah: word.surah || surah,
         ayah: word.ayah || ayahNum,
@@ -169,6 +220,7 @@ export default function QuranMushafPage({
   ayahs,
   currentPage,
   currentPlayingAyah,
+  fontFamily,
   lang,
   onToggleActive,
   riwaya,
@@ -177,9 +229,10 @@ export default function QuranMushafPage({
   const version = showTajwid ? "v4" : "v2";
   const fontLabel = version === "v4" ? "QCF V4 Tajweed" : "QCF V2";
   const pageFontFamily = getQcfPageFontFamily(currentPage, version);
-  const fallbackFontFamily = "var(--font-quran, 'QPC Hafs', serif)";
+  const fallbackFontFamily = resolveFontFamily(fontFamily, riwaya);
   const isWarsh = riwaya === "warsh";
   const [fontLoaded, setFontLoaded] = useState(false);
+  const [fontFailed, setFontFailed] = useState(false);
 
   const lines = useMemo(
     () => (isWarsh ? groupWarshPageLines(ayahs) : groupPageLines(ayahs)),
@@ -191,20 +244,35 @@ export default function QuranMushafPage({
   );
 
   useEffect(() => {
-    if (isWarsh) {
-      setFontLoaded(false);
-      return undefined;
-    }
-
     let cancelled = false;
     setFontLoaded(false);
-    ensureQcfPageFontLoaded(currentPage, version).then((result) => {
-      if (!cancelled) setFontLoaded(Boolean(result.loaded || result.cached));
-    });
+    setFontFailed(false);
+
+    if (isWarsh) {
+      // Load the Warsh font file so --font-quran resolves correctly.
+      // fontFamily defaults to "qpc-warsh" when not supplied.
+      const warshFontId = fontFamily || "qpc-warsh";
+      ensureFontLoaded(warshFontId).then((result) => {
+        if (!cancelled) {
+          const loaded = Boolean(result.loaded || result.cached);
+          setFontLoaded(loaded);
+          setFontFailed(!loaded);
+        }
+      });
+    } else {
+      ensureQcfPageFontLoaded(currentPage, version).then((result) => {
+        if (!cancelled) {
+          const loaded = Boolean(result.loaded || result.cached);
+          setFontLoaded(loaded);
+          setFontFailed(!loaded);
+        }
+      });
+    }
+
     return () => {
       cancelled = true;
     };
-  }, [currentPage, isWarsh, version]);
+  }, [currentPage, fontFamily, isWarsh, version]);
 
   const renderWord = (word, index) => {
     const verseKey = getVerseKey(word);
@@ -257,6 +325,7 @@ export default function QuranMushafPage({
             MozOsxFontSmoothing: 'grayscale',
             unicodeBidi: 'plaintext',
             whiteSpace: 'nowrap',
+            marginInlineEnd: '0.08em',
           }}
         >
           {normalizeArabicText(word.text)}
@@ -289,7 +358,7 @@ export default function QuranMushafPage({
         {sanitizeHtml(decodeHtmlEntity(
           fontLoaded && glyph
             ? glyph
-            : (word.textQpcHafs || word.textUthmani || word.text || "")
+            : getQuranWordTextForFont(word, fontFamily, riwaya)
         ))}
       </span>
     );
@@ -297,6 +366,17 @@ export default function QuranMushafPage({
 
   return (
     <section className="qcm-page-shell" aria-label={`${lang === "ar" ? "صفحة" : "Page"} ${currentPage}`}>
+      {fontFailed && !isWarsh && (
+        <div className="qcm-font-warning" role="alert">
+          <span>
+            {lang === "ar"
+              ? "تعذّر تحميل الخط — يُعرض النص بخط بديل"
+              : lang === "fr"
+                ? "Police non chargée — affichage en mode texte"
+                : "Font failed to load — showing text fallback"}
+          </span>
+        </div>
+      )}
       <div className="qcm-edge qcm-edge--start">
         <span>{meta.sideA}</span>
         <span>{meta.sideB}</span>

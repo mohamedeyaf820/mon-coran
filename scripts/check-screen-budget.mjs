@@ -2,10 +2,16 @@ import { statSync } from "node:fs";
 import { resolve } from "node:path";
 
 const SCREEN_BUDGETS = [
-  { file: "src/components/HomePage.jsx", maxKB: 90 },
-  { file: "src/components/QuranDisplay.jsx", maxKB: 95 },
-  { file: "src/components/AudioPlayer.jsx", maxKB: 140 },
-  { file: "src/components/SettingsModal.jsx", maxKB: 160 },
+  { file: "src/components/HomePage.jsx", maxKB: 40 },
+  { file: "src/components/QuranDisplay.jsx", maxKB: 24 },
+  { file: "src/components/AudioPlayer.jsx", maxKB: 42 },
+  { file: "src/components/SettingsModal.jsx", maxKB: 44 },
+  { file: "src/components/FutureFeaturesModal.jsx", maxKB: 46 },
+  { file: "src/components/AyahActions.jsx", maxKB: 90 },
+  { file: "src/services/audioService.js", maxKB: 45 },
+  { file: "src/context/AppContext.jsx", maxKB: 34 },
+  { file: "src/services/quranAPI.js", maxKB: 29 },
+  { file: "src/services/quranComAPI.js", maxKB: 20 },
 ];
 
 let hasError = false;

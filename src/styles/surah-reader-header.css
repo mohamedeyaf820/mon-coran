@@ -7,9 +7,9 @@
     display: flex;
     flex-direction: column;
     width: min(100%, 980px);
-    margin: 0 auto clamp(0.85rem, 1.6vw, 1.35rem);
+    margin: 0 auto 0.35rem;
     border: 1px solid var(--border);
-    border-radius: 18px;
+    border-radius: var(--r-xl);
     background: var(--bg-card);
     box-shadow:
         0 4px 24px rgba(0, 0, 0, 0.05),
@@ -18,7 +18,7 @@
     transition: box-shadow 0.2s;
     /* Sticky within reading pane */
     position: sticky;
-    top: calc(var(--header-h, 56px) + 0.4rem);
+    top: 0;
     z-index: 85;
     backdrop-filter: blur(14px) saturate(130%);
     -webkit-backdrop-filter: blur(14px) saturate(130%);
@@ -45,14 +45,20 @@
     display: flex;
     align-items: flex-start;
     gap: clamp(0.6rem, 2vw, 1.25rem);
-    padding: clamp(0.85rem, 2vw, 1.2rem) clamp(0.85rem, 2vw, 1.4rem);
+    padding: clamp(0.68rem, 1.45vw, 0.9rem) clamp(0.8rem, 1.8vw, 1.2rem);
+}
+
+/* Mobile-only compact row: surah name + play + info buttons */
+.srh-mobile-bar {
+    display: none;
 }
 
 /* Arabic name — large calligraphic display */
 .srh-arabic {
     flex-shrink: 0;
-    font-family: var(--font-quran, serif);
-    font-size: clamp(1.7rem, 4.5vw, 2.8rem);
+    font-family: var(--font-surah-name, var(--font-surah, var(--font-quran), serif));
+    font-weight: normal;
+    font-size: clamp(1.55rem, 3.5vw, 2.25rem);
     line-height: 1.35;
     color: var(--text-primary);
     direction: rtl;
@@ -77,7 +83,7 @@
 .srh-title {
     margin: 0;
     font-size: clamp(1.08rem, 2.2vw, 1.4rem);
-    font-weight: 760;
+    font-weight: 700;
     color: var(--text-primary);
     line-height: 1.25;
     letter-spacing: -0.01em;
@@ -90,7 +96,7 @@
 
 .srh-sub {
     margin: 0 0 0.25rem;
-    font-size: 0.82rem;
+    font-size: var(--ts-sm);
     font-style: italic;
     color: var(--text-muted);
     line-height: 1.3;
@@ -100,8 +106,11 @@
     margin: 0;
     font-size: clamp(0.7rem, 1.1vw, 0.8rem);
     color: var(--text-muted);
-    line-height: 1.5;
+    line-height: 1.4;
     max-width: 62ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Badges */
@@ -117,13 +126,13 @@
     display: inline-flex;
     align-items: center;
     padding: 0.18rem 0.55rem;
-    border-radius: 999px;
+    border-radius: var(--r-pill);
     border: 1px solid var(--border);
     background: var(--bg-secondary);
     color: var(--text-muted);
     font-family: var(--font-ui, sans-serif);
-    font-size: 0.62rem;
-    font-weight: 750;
+    font-size: var(--ts-xs);
+    font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     white-space: nowrap;
@@ -140,7 +149,7 @@
         var(--color-gold, #c8a84b) 9%,
         transparent 91%
     );
-    color: var(--color-gold, #c8a84b);
+    color: #76520f;
 }
 
 .srh-badge--blue {
@@ -165,18 +174,18 @@
     gap: 0.38rem;
     padding: 0.42rem 0.9rem;
     border: none;
-    border-radius: 999px;
+    border-radius: var(--r-pill);
     background: var(--primary);
     color: #fff;
     font-family: var(--font-ui, sans-serif);
-    font-size: 0.78rem;
-    font-weight: 650;
+    font-size: var(--ts-sm);
+    font-weight: 700;
     cursor: pointer;
     transition:
         filter 0.15s,
         transform 0.1s;
     white-space: nowrap;
-    box-shadow: 0 3px 12px rgba(var(--primary-rgb, 0, 128, 60), 0.35);
+    box-shadow: 0 3px 12px color-mix(in srgb, var(--primary) 35%, transparent 65%);
 }
 
 .srh-play-btn:hover:not(:disabled) {
@@ -202,11 +211,11 @@
     gap: 0.3rem;
     padding: 0.4rem 0.75rem;
     border: 1px solid var(--border);
-    border-radius: 999px;
+    border-radius: var(--r-pill);
     background: var(--bg-secondary);
     color: var(--text-muted);
     font-family: var(--font-ui, sans-serif);
-    font-size: 0.78rem;
+    font-size: var(--ts-sm);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
@@ -230,7 +239,7 @@
     display: flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.55rem clamp(0.85rem, 2vw, 1.4rem);
+    padding: 0.38rem clamp(0.8rem, 1.8vw, 1.2rem);
     overflow-x: auto;
     scrollbar-width: none;
     flex-wrap: nowrap;
@@ -246,7 +255,7 @@
     align-items: center;
     gap: 0.18rem;
     padding: 0.2rem;
-    border-radius: 12px;
+    border-radius: var(--r-md);
     border: 1px solid var(--border);
     background: var(--bg-secondary);
     flex-shrink: 0;
@@ -257,12 +266,12 @@
     align-items: center;
     gap: 0.32rem;
     padding: 0.3rem 0.7rem;
-    border-radius: 9px;
+    border-radius: var(--r-sm);
     border: none;
     background: transparent;
     color: var(--text-muted);
     font-family: var(--font-ui, sans-serif);
-    font-size: 0.75rem;
+    font-size: var(--ts-sm);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
@@ -273,7 +282,7 @@
     background: var(--bg-card);
     color: var(--primary);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-    font-weight: 750;
+    font-weight: 700;
 }
 
 .srh-pill:not(.srh-pill--active):hover {
@@ -310,12 +319,12 @@
     align-items: center;
     gap: 0.32rem;
     padding: 0.3rem 0.65rem;
-    border-radius: 9px;
+    border-radius: var(--r-sm);
     border: 1px solid transparent;
     background: transparent;
     color: var(--text-muted);
     font-family: var(--font-ui, sans-serif);
-    font-size: 0.75rem;
+    font-size: var(--ts-sm);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
@@ -339,8 +348,8 @@
 .srh-footer {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem clamp(0.85rem, 2vw, 1.4rem);
+    gap: var(--space-2);
+    padding: 0.32rem clamp(0.8rem, 1.8vw, 1.2rem);
     overflow-x: auto;
     scrollbar-width: none;
 }
@@ -365,7 +374,7 @@
         rgba(16, 30, 26, 0.96) 0%,
         rgba(8, 15, 13, 0.97) 100%
     );
-    border-color: rgba(196, 219, 208, 0.14);
+    border-color: var(--emerald-subtle);
     box-shadow:
         0 8px 32px rgba(0, 0, 0, 0.28),
         0 2px 6px rgba(0, 0, 0, 0.18),
@@ -387,7 +396,7 @@
 }
 
 [data-theme="dark"] .srh-badge {
-    border-color: rgba(196, 219, 208, 0.14);
+    border-color: var(--emerald-subtle);
     background: rgba(13, 25, 22, 0.7);
     color: rgba(167, 184, 175, 0.85);
 }
@@ -411,7 +420,7 @@
 }
 
 [data-theme="dark"] .srh-info-btn {
-    border-color: rgba(196, 219, 208, 0.16);
+    border-color: var(--emerald-subtle);
     background: rgba(13, 25, 22, 0.55);
     color: rgba(167, 184, 175, 0.8);
 }
@@ -424,11 +433,11 @@
 }
 
 [data-theme="dark"] .srh-divider {
-    background: rgba(196, 219, 208, 0.1);
+    background: var(--emerald-subtle);
 }
 
 [data-theme="dark"] .srh-view-pills {
-    border-color: rgba(196, 219, 208, 0.12);
+    border-color: var(--emerald-subtle);
     background: rgba(8, 15, 13, 0.55);
 }
 
@@ -443,7 +452,11 @@
 }
 
 [data-theme="dark"] .srh-vsep {
-    background: rgba(196, 219, 208, 0.12);
+    background: var(--emerald-subtle);
+}
+
+[data-theme="dark"] .srh-mobile-bar {
+    border-bottom-color: var(--emerald-subtle);
 }
 
 [data-theme="dark"] .srh-toggle {
@@ -466,13 +479,55 @@
 /* ── Mobile ≤ 640px ── */
 @media (max-width: 640px) {
     .srh-root {
-        border-radius: 14px;
+        border-radius: var(--r-md);
         margin-inline: 0;
+        /* Remove sticky on mobile — header nav already shows title,
+           no need to lock 65px of identity above the quran text */
+        position: static;
+        top: unset;
     }
 
+    /* Identity row already visible in navbar → hide on mobile */
     .srh-identity {
-        padding: 0.75rem;
-        gap: 0.5rem;
+        display: none;
+    }
+
+    /* Also hide the divider right after identity */
+    .srh-identity + .srh-divider {
+        display: none;
+    }
+
+    /* Show compact mobile bar (hidden by default on desktop) */
+    .srh-mobile-bar {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: 0.12rem 0.55rem;
+        border-bottom: 1px solid var(--border-subtle, rgba(0,0,0,0.08));
+    }
+
+    .srh-mobile-bar__name {
+        font-family: var(--font-surah-name, var(--font-surah, var(--font-quran), serif));
+        font-size: var(--ts-lg);
+        line-height: 1.3;
+        color: var(--text-primary);
+        flex-shrink: 0;
+    }
+
+    .srh-mobile-bar__title {
+        font-size: var(--ts-sm);
+        color: var(--text-secondary);
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .srh-mobile-bar__actions {
+        display: flex;
+        gap: var(--space-1);
+        flex-shrink: 0;
     }
 
     .srh-arabic {
@@ -484,7 +539,7 @@
     }
 
     .srh-sub {
-        display: none; /* only show on larger screens */
+        display: none;
     }
 
     .srh-desc {
@@ -496,13 +551,13 @@
     }
 
     .srh-badge {
-        font-size: 0.58rem;
+        font-size: var(--ts-2xs);
         padding: 0.14rem 0.45rem;
     }
 
     .srh-play-btn {
         padding: 0.38rem 0.7rem;
-        font-size: 0.74rem;
+        font-size: var(--ts-xs);
     }
 
     .srh-info-btn {
@@ -514,13 +569,27 @@
     }
 
     .srh-controls {
-        padding: 0.45rem 0.75rem;
-        gap: 0.25rem;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        padding: 0.3rem 0.65rem;
+        gap: var(--space-1);
+    }
+
+    .srh-vsep {
+        display: none;
+    }
+
+    .srh-study-toggles {
+        justify-content: flex-end;
     }
 
     /* Hide text labels in toggles on mobile, show only icons */
     .srh-toggle__label {
         display: none;
+    }
+
+    .srh-study-toggles .srh-toggle__label {
+        display: inline;
     }
 
     .srh-toggle {
@@ -536,7 +605,7 @@
     }
 
     .srh-footer {
-        padding: 0.42rem 0.75rem;
+        padding: 0.3rem 0.65rem;
         gap: 0.35rem;
     }
 }
@@ -576,7 +645,7 @@
     }
 
     .srh-desc {
-        font-size: 0.76rem;
+        font-size: var(--ts-sm);
     }
 
     /* Show text labels in toggles on tablet */
@@ -598,13 +667,13 @@
 .app-root .quran-display--platform .qc-surah-header-wrap > .srh-root {
     width: 100% !important;
     max-width: 100% !important;
-    margin: 0 0 clamp(0.85rem, 1.6vw, 1.35rem) !important;
+    margin: 0 0 0.35rem !important;
 }
 
 /* Kill any old generic section constraining */
 .app-root .quran-display--platform .qc-surah-header-wrap > section.srh-root {
     padding: 0 !important;
-    border-radius: 18px !important;
+    border-radius: var(--r-xl) !important;
 }
 
 /* ══ ArabicFontControls compact inside footer ═══════════════ */
@@ -614,4 +683,127 @@
 
 .srh-footer .arabic-font-controls.arabic-font-controls--compact .afc-select {
     max-width: clamp(6rem, 16vw, 9rem);
+}
+
+/* Compact typography disclosure: always available on large screens, opt-in on phones. */
+.srh-typography-trigger {
+    display: none;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.38rem;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    background: var(--bg-secondary);
+    padding: 0.42rem 0.68rem;
+    color: var(--text-secondary);
+    font-family: var(--font-ui, sans-serif);
+    font-size: 0.72rem;
+    font-weight: 750;
+}
+
+.srh-typography-trigger::-webkit-details-marker { display: none; }
+.srh-typography-trigger::marker { content: ""; }
+.srh-typography-disclosure { display: contents; }
+
+.srh-typography-disclosure[open] .srh-typography-trigger {
+    border-color: rgba(var(--primary-rgb), 0.28);
+    background: rgba(var(--primary-rgb), 0.09);
+    color: var(--primary);
+}
+
+.srh-typography-panel {
+    min-width: 0;
+}
+
+@media (max-width: 640px) {
+    .srh-root {
+        box-shadow: 0 6px 20px rgba(13, 48, 33, 0.065);
+    }
+
+    .srh-controls {
+        min-height: 42px;
+        padding-block: 0.1rem;
+    }
+
+    .srh-view-pills {
+        padding: 0.08rem;
+    }
+
+    .srh-root button {
+        min-width: var(--mp-device-touch) !important;
+        min-height: var(--mp-device-touch) !important;
+        justify-content: center;
+        border-radius: 9px;
+        font-size: 0.68rem !important;
+    }
+
+    .srh-footer {
+        display: flex;
+        flex-wrap: wrap;
+        overflow: visible;
+        min-height: 44px;
+        padding-block: 0.2rem;
+    }
+
+    .srh-typography-trigger {
+        display: inline-flex;
+        flex: 0 0 auto;
+    }
+
+    .srh-typography-panel {
+        display: none;
+        order: 3;
+        width: 100%;
+        min-width: 0;
+        padding-top: 0.4rem;
+        border-top: 1px solid var(--border);
+    }
+
+    .srh-typography-disclosure[open] .srh-typography-panel {
+        display: block;
+    }
+
+    .srh-typography-panel .arabic-font-controls {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1.08fr) minmax(9rem, 0.92fr) !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .srh-typography-panel :is(.afc-font-group, .afc-size-group) {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .srh-typography-panel .afc-select {
+        width: 100%;
+        min-width: 0;
+        max-width: none !important;
+        text-overflow: ellipsis;
+    }
+
+    .srh-typography-panel .afc-range {
+        width: min(5rem, 22vw);
+        min-width: 2.8rem;
+    }
+
+    .srh-footer__spacer {
+        flex: 1 1 auto;
+    }
+
+    .srh-hizb-nav {
+        flex: 0 1 auto;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 420px) {
+    .srh-typography-panel .arabic-font-controls {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .srh-typography-panel .afc-range {
+        width: 100%;
+    }
 }

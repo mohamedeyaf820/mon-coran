@@ -1,16 +1,16 @@
-import React, { useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
-import { cn } from "../../lib/utils";
 import CleanPageView from "../Quran/CleanPageView";
 import ReadingToolbar from "../Quran/ReadingToolbar";
 import ReadingProgressBar from "../Quran/ReadingProgressBar";
 import AyahActionsModal from "./AyahActionsModal";
 import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
+import ReaderContextCard from "./ReaderContextCard";
 import { modePaneShellClass } from "./displayClasses";
 
-export default function JuzMode({
+function JuzMode({
   activeAyah,
   calibration,
   classes,
@@ -34,7 +34,6 @@ export default function JuzMode({
   preparingSurah,
   readingFontSize,
   riwaya,
-  showRiwayaStar,
   showTajwid,
   showTranslation,
   showTransliteration,
@@ -65,29 +64,24 @@ export default function JuzMode({
       } ${modePaneShellClass}`}
     >
       <ReadingProgressBar />
-      <div className="mb-4 flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-4 py-3">
-        <div className="flex items-center gap-2">
-          <i className="fas fa-book-open text-sm text-[var(--primary)]" />
-          <span className="font-[var(--font-ui)] text-sm font-bold text-[var(--text-primary)]">
-            {t("sidebar.juz", lang)} {lang === "ar" ? toAr(currentJuz) : currentJuz} / 30
-          </span>
-        </div>
-
-        <span
-          className={cn(
-            "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[0.65rem] font-bold tracking-wide",
-            riwaya === "warsh"
-              ? "border-[rgba(212,168,32,0.3)] bg-[rgba(212,168,32,0.12)] text-[var(--gold,#b8860b)]"
-              : "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]",
-          )}
-        >
-          {showRiwayaStar && <i className="fas fa-star text-[0.55rem]" />}
-          {riwaya === "warsh" ? "WARSH" : "HAFS"}
-        </span>
-      </div>
+      <ReaderContextCard
+        kind="juz"
+        label={t("sidebar.juz", lang)}
+        value={lang === "ar" ? toAr(currentJuz) : currentJuz}
+        numericValue={currentJuz}
+        total={30}
+        secondary={
+          lang === "fr"
+            ? "Lecture continue"
+            : lang === "ar"
+              ? "قراءة متواصلة"
+              : "Continuous reading"
+        }
+        riwaya={riwaya}
+        lang={lang}
+      />
 
       <ReadingToolbar
-        contextLabel={`${t("sidebar.juz", lang)} ${lang === "ar" ? toAr(currentJuz) : currentJuz} / 30`}
         onPlay={onPlayJuz || (() => firstSurah && onPlaySpecificSurah(firstSurah))}
         playLabel={lang === "fr" ? "Écouter le juz" : "Listen juz"}
         preparingSurah={preparingSurah}
@@ -172,3 +166,5 @@ export default function JuzMode({
     </div>
   );
 }
+
+export default memo(JuzMode);

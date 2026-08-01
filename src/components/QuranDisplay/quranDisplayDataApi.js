@@ -11,6 +11,24 @@ import {
   getWarshPageVerses,
   getWarshSurahFormatted,
 } from "../../services/warshService";
+import { startPerformanceTimer } from "../../services/performanceMetrics";
+
+export function describeArabicDataSource(arabicData, riwaya) {
+  if (arabicData?.isOfflineFallback || arabicData?.source === "offline-fallback") {
+    return { id: "offline", label: "Secours hors ligne", degraded: true };
+  }
+  if (riwaya === "warsh") {
+    return { id: "warsh-dataset", label: "Jeu de données Warsh dédié", degraded: Boolean(arabicData?.isTextFallback) };
+  }
+  if (arabicData?.source === "quran.com" || arabicData?.usedEdition === "quran.com-v4") {
+    return { id: "quran-com", label: "Quran.com API", degraded: false };
+  }
+  return {
+    id: "alquran-cloud",
+    label: arabicData?.usedEdition ? `AlQuran Cloud · ${arabicData.usedEdition}` : "AlQuran Cloud",
+    degraded: false,
+  };
+}
 
 function ayahSortKey(ayah) {
   const globalNumber = Number(ayah?.number);
@@ -103,6 +121,19 @@ export async function loadArabicData({
     }
     throw error;
   }
+}
+
+export function preloadArabicData(options) {
+  const finishMetric = startPerformanceTimer("riwaya_preload_ms");
+  return loadArabicData({ ...options, signal: undefined })
+    .then((value) => {
+      finishMetric();
+      return value;
+    })
+    .catch(() => {
+      finishMetric();
+      return null;
+    });
 }
 
 export function ensureRequestedRiwaya(ayahs, riwaya) {

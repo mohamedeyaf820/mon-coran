@@ -11,9 +11,6 @@ import React, {
 } from "react";
 import { getSettings, saveSettings } from "../services/storageService";
 import { ensureReciterForRiwaya } from "../data/reciters";
-import audioService from "../services/audioService";
-import { fetchPrayerTimes } from "../services/prayerTimesService";
-import { getPreferredReciterId } from "../utils/reciterRanking";
 import {
   normalizeDayTheme,
   normalizeNightTheme,
@@ -25,6 +22,12 @@ import {
   normalizeFontId,
 } from "../data/fonts";
 import { parseInitialRoute } from "../hooks/useUrlSync";
+import { getSurahAyahCount } from "../data/surahs";
+import { loadAudioService } from "../services/loadAudioService";
+import {
+  PRIVACY_BEFORE_LOCK_EVENT,
+  PRIVACY_BEFORE_ROTATION_EVENT,
+} from "../services/privacyEvents";
 
 const clampQuranFontSize = (value, fallback = 25) => {
   const numeric = Number(value);
@@ -32,6 +35,12 @@ const clampQuranFontSize = (value, fallback = 25) => {
     ? Math.max(12, Math.min(96, numeric))
     : fallback;
 };
+
+const clampSurah = (value) => Math.max(1, Math.min(114, Number(value) || 1));
+const clampPage = (value) => Math.max(1, Math.min(604, Number(value) || 1));
+const clampJuz = (value) => Math.max(1, Math.min(30, Number(value) || 1));
+const clampAyah = (surah, value) =>
+  Math.max(1, Math.min(getSurahAyahCount(surah), Number(value) || 1));
 
 /* ── Initial State ──────────────────────────── */
 // Lazy initialization pour éviter les calculs au démarrage
@@ -90,7 +99,11 @@ const getInitialState = () => {
   weeklyStatsOpen: false,
   audioMakerOpen: false,
   toolsHubOpen: false,
-  splashDone: false,
+  futureHubOpen: null,
+  // Chaque nouvelle ouverture complète rejoue le splash. Les tests et les
+  // environnements d'intégration peuvent explicitement le désactiver.
+  skipSplashAnimation: Boolean(stored.skipSplashAnimation),
+  splashDone: Boolean(stored.skipSplashAnimation),
   tafsirSidebarOpen: false,
   tafsirSidebarVerse: null,
 
@@ -120,9 +133,12 @@ const getInitialState = () => {
     routeOverrides.showHome ??
     (stored.showHome !== undefined ? Boolean(stored.showHome) : true),
   showDuas: routeOverrides.showDuas ?? false,
+  legalPage: routeOverrides.legalPage ?? null,
+  routeNotFound: routeOverrides.routeNotFound ?? false,
   showTranslation: stored.showTranslation ?? true,
   showTajwid: stored.showTajwid ?? false,
-  showWordByWord: stored.showWordByWord ?? false,
+  showWordByWord:
+    initialRiwaya === "warsh" ? false : (stored.showWordByWord ?? false),
   showTransliteration: stored.showTransliteration ?? true,
   showWordTranslation: stored.showWordTranslation ?? true,
   translationReadingMode: stored.translationReadingMode ?? false,
@@ -140,7 +156,7 @@ const getInitialState = () => {
   syncOffsetsMs: stored.syncOffsetsMs || {},
   warshStrictMode: stored.warshStrictMode ?? true,
   favoriteReciters: stored.favoriteReciters || [],
-  autoSelectFastestReciter: false,
+  autoSelectFastestReciter: stored.autoSelectFastestReciter ?? false,
   reciterLatencyByKey: stored.reciterLatencyByKey || {},
   reciterAvailabilityById: stored.reciterAvailabilityById || {},
   isPlaying: false,
@@ -159,7 +175,7 @@ const getInitialState = () => {
   })(),
 
   // Karaoke / suivi auto
-  karaokeFollow: true,
+  karaokeFollow: stored.karaokeFollow ?? true,
 
   // Auto night mode
   autoNightMode: stored.autoNightMode ?? false,
@@ -182,8 +198,7 @@ const getInitialState = () => {
   };
 };
 
-// Lazy initialization - ne calcule l'état initial qu'une fois au premier render
-const initialState = getInitialState();
+// initialState is computed lazily inside useReducer (third-argument form)
 
 /* ── Reducer ────────────────────────────────── */
 
@@ -192,6 +207,27 @@ export function appReducer(state, action) {
     case "SET": {
       const payload = action.payload || {};
       const next = { ...state, ...payload };
+      if (
+        !Object.prototype.hasOwnProperty.call(payload, "legalPage") &&
+        (payload.showHome === true ||
+          payload.showDuas === true ||
+          Object.prototype.hasOwnProperty.call(payload, "currentSurah") ||
+          Object.prototype.hasOwnProperty.call(payload, "currentPage") ||
+          Object.prototype.hasOwnProperty.call(payload, "currentJuz"))
+      ) {
+        next.legalPage = null;
+      }
+      if (
+        !Object.prototype.hasOwnProperty.call(payload, "routeNotFound") &&
+        (payload.showHome === true ||
+          payload.showDuas === true ||
+          payload.legalPage ||
+          Object.prototype.hasOwnProperty.call(payload, "currentSurah") ||
+          Object.prototype.hasOwnProperty.call(payload, "currentPage") ||
+          Object.prototype.hasOwnProperty.call(payload, "currentJuz"))
+      ) {
+        next.routeNotFound = false;
+      }
       const hasRiwaya = Object.prototype.hasOwnProperty.call(payload, "riwaya");
       const hasFontFamily = Object.prototype.hasOwnProperty.call(payload, "fontFamily");
       const targetRiwaya = hasRiwaya
@@ -239,6 +275,28 @@ export function appReducer(state, action) {
           [targetRiwaya]: normalizedFont,
         };
       }
+      // Word-by-word is supported for Hafs only. Enforce this centrally so
+      // persisted settings and keyboard shortcuts cannot reactivate it in Warsh.
+      if (next.riwaya === "warsh") {
+        next.showWordByWord = false;
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, "currentSurah")) {
+        next.currentSurah = clampSurah(payload.currentSurah);
+        next.currentAyah = clampAyah(
+          next.currentSurah,
+          Object.prototype.hasOwnProperty.call(payload, "currentAyah")
+            ? payload.currentAyah
+            : state.currentAyah,
+        );
+      } else if (Object.prototype.hasOwnProperty.call(payload, "currentAyah")) {
+        next.currentAyah = clampAyah(clampSurah(state.currentSurah), payload.currentAyah);
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, "currentPage")) {
+        next.currentPage = clampPage(payload.currentPage);
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, "currentJuz")) {
+        next.currentJuz = clampJuz(payload.currentJuz);
+      }
       return next;
     }
 
@@ -246,6 +304,28 @@ export function appReducer(state, action) {
       return { ...state, sidebarOpen: !state.sidebarOpen };
     case "TOGGLE_SEARCH":
       return { ...state, searchOpen: !state.searchOpen };
+    case "TOGGLE_MEM_MODE": {
+      const entering = !state.memMode;
+      if (entering) {
+        return {
+          ...state,
+          memMode: true,
+          showHome: false,
+          showDuas: false,
+          legalPage: null,
+          mushafLayout: "list",
+          showWordByWord: false,
+          // Save current layout so we can restore it on exit
+          _prevMushafLayout: state.mushafLayout,
+        };
+      }
+      return {
+        ...state,
+        memMode: false,
+        mushafLayout: state._prevMushafLayout !== undefined ? state._prevMushafLayout : state.mushafLayout,
+        _prevMushafLayout: undefined,
+      };
+    }
     case "TOGGLE_SETTINGS":
       return { ...state, settingsOpen: !state.settingsOpen };
     case "TOGGLE_BOOKMARKS":
@@ -257,34 +337,39 @@ export function appReducer(state, action) {
     case "TOGGLE_PLAYLIST":
       return { ...state, playlistOpen: !state.playlistOpen };
 
-    case "NAVIGATE_SURAH":
+    case "NAVIGATE_SURAH": {
+      const surah = clampSurah(action.payload?.surah);
       return {
         ...state,
-        currentSurah: action.payload.surah,
-        currentAyah: action.payload.ayah || 1,
+        currentSurah: surah,
+        currentAyah: clampAyah(surah, action.payload?.ayah),
         displayMode: "surah",
         showHome: false,
         showDuas: false,
+        legalPage: null,
         sidebarOpen: false,
       };
+    }
 
     case "NAVIGATE_PAGE":
       return {
         ...state,
-        currentPage: action.payload.page,
+        currentPage: clampPage(action.payload?.page),
         displayMode: "page",
         showHome: false,
         showDuas: false,
+        legalPage: null,
         sidebarOpen: false,
       };
 
     case "NAVIGATE_JUZ":
       return {
         ...state,
-        currentJuz: action.payload.juz,
+        currentJuz: clampJuz(action.payload?.juz),
         displayMode: "juz",
         showHome: false,
         showDuas: false,
+        legalPage: null,
         sidebarOpen: false,
       };
 
@@ -346,10 +431,14 @@ export function appReducer(state, action) {
       }
 
     case "SET_PLAYING": {
-      let ayah = action.payload.ayah ?? state.currentPlayingAyah;
-      // Normalize: ensure currentPlayingAyah is always an object or null
-      if (typeof ayah === "number") {
-        ayah = { surah: null, ayah: ayah, globalNumber: ayah };
+      const raw = action.payload.ayah !== undefined ? action.payload.ayah : state.currentPlayingAyah;
+      let ayah;
+      if (raw === null || raw === undefined) {
+        ayah = null;
+      } else if (typeof raw === "number") {
+        ayah = { surah: action.payload.surah ?? null, ayah: raw, globalNumber: raw };
+      } else {
+        ayah = raw;
       }
       return {
         ...state,
@@ -359,7 +448,7 @@ export function appReducer(state, action) {
     }
 
     case "SET_LOADING":
-      return { ...state, loading: action.payload, error: null };
+      return { ...state, loading: action.payload, ...(action.payload ? { error: null } : {}) };
 
     case "SET_ERROR":
       return { ...state, loading: false, error: action.payload };
@@ -392,12 +481,14 @@ export function shallowEqual(a, b) {
 }
 
 export function AppProvider({ children }) {
-  const [state, dispatch] = useReducer(appReducer, initialState);
+  const [state, dispatch] = useReducer(appReducer, undefined, getInitialState);
   const saveTimerRef = useRef(null);
   const persistentSettingsRef = useRef(null);
   const stateRef = useRef(state);
+  const themeRef = useRef(state.theme);
   const selectorListenersRef = useRef(new Set());
   stateRef.current = state;
+  themeRef.current = state.theme;
 
   const selectorStore = useMemo(
     () => ({
@@ -419,6 +510,7 @@ export function AppProvider({ children }) {
   const persistentSettings = useMemo(() => ({
     lang: state.lang,
     theme: state.theme,
+    skipSplashAnimation: state.skipSplashAnimation,
     riwaya: state.riwaya,
     reciter: state.reciter,
     quranFontSize: state.quranFontSize,
@@ -469,6 +561,7 @@ export function AppProvider({ children }) {
   }), [
     state.lang,
     state.theme,
+    state.skipSplashAnimation,
     state.riwaya,
     state.reciter,
     state.quranFontSize,
@@ -543,14 +636,21 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     const handleBeforeUnload = () => flushSettings();
+    const handleBeforePrivacyLock = () => flushSettings();
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") flushSettings();
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pagehide", handleBeforeUnload);
+    window.addEventListener(PRIVACY_BEFORE_LOCK_EVENT, handleBeforePrivacyLock);
+    window.addEventListener(PRIVACY_BEFORE_ROTATION_EVENT, handleBeforePrivacyLock);
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pagehide", handleBeforeUnload);
+      window.removeEventListener(PRIVACY_BEFORE_LOCK_EVENT, handleBeforePrivacyLock);
+      window.removeEventListener(PRIVACY_BEFORE_ROTATION_EVENT, handleBeforePrivacyLock);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [flushSettings]);
@@ -561,18 +661,55 @@ export function AppProvider({ children }) {
   }, [state.theme]);
 
   useEffect(() => {
-    audioService.setLatencySnapshot(state.reciterLatencyByKey || {});
-  }, [state.reciterLatencyByKey]);
+    let active = true;
+    let unsubscribe = () => {};
+    let started = false;
 
-  useEffect(() => {
-    const unsubscribe = audioService.subscribeLatency((latencyMap) => {
-      dispatch({
-        type: "SET",
-        payload: { reciterLatencyByKey: latencyMap },
-      });
+    const initializeAudioMetrics = () => {
+      if (started) return;
+      started = true;
+      loadAudioService()
+        .then((audioService) => {
+          if (!active) return;
+          audioService.setLatencySnapshot(
+            stateRef.current.reciterLatencyByKey || {},
+          );
+          unsubscribe = audioService.subscribeLatency((latencyMap) => {
+            dispatch({
+              type: "SET",
+              payload: { reciterLatencyByKey: latencyMap },
+            });
+          });
+        })
+        .catch((error) => {
+          if (import.meta.env.DEV) {
+            console.warn("Audio service initialization failed:", error);
+          }
+          dispatch({
+            type: "SET",
+            payload: { audioServiceError: true },
+          });
+        });
+    };
+
+    window.addEventListener("pointerdown", initializeAudioMetrics, {
+      passive: true,
+      once: true,
     });
-    return unsubscribe;
-  }, []);
+    window.addEventListener("keydown", initializeAudioMetrics, { once: true });
+    window.addEventListener("touchstart", initializeAudioMetrics, {
+      passive: true,
+      once: true,
+    });
+
+    return () => {
+      active = false;
+      unsubscribe();
+      window.removeEventListener("pointerdown", initializeAudioMetrics);
+      window.removeEventListener("keydown", initializeAudioMetrics);
+      window.removeEventListener("touchstart", initializeAudioMetrics);
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     if (!state.autoSelectFastestReciter || state.isPlaying) return;
@@ -586,15 +723,24 @@ export function AppProvider({ children }) {
     if (!hasFavoriteSignals && !hasLatencySignals && !hasAvailabilitySignals) {
       return;
     }
-    const preferredReciter = getPreferredReciterId(state.riwaya, {
-      currentReciterId: state.reciter,
-      favoriteReciters: state.favoriteReciters,
-      latencyByKey: state.reciterLatencyByKey,
-      availabilityById: state.reciterAvailabilityById,
-    });
-    if (preferredReciter && preferredReciter !== state.reciter) {
-      dispatch({ type: "SET_RECITER", payload: preferredReciter });
-    }
+    let active = true;
+    import("../utils/reciterRanking")
+      .then(({ getPreferredReciterId }) => {
+        if (!active) return;
+        const preferredReciter = getPreferredReciterId(state.riwaya, {
+          currentReciterId: state.reciter,
+          favoriteReciters: state.favoriteReciters,
+          latencyByKey: state.reciterLatencyByKey,
+          availabilityById: state.reciterAvailabilityById,
+        });
+        if (preferredReciter && preferredReciter !== state.reciter) {
+          dispatch({ type: "SET_RECITER", payload: preferredReciter });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
   }, [
     state.autoSelectFastestReciter,
     state.favoriteReciters,
@@ -624,7 +770,7 @@ export function AppProvider({ children }) {
       const target = isNight
         ? normalizeNightTheme(state.nightTheme)
         : normalizeDayTheme(state.dayTheme);
-      if (state.theme !== target) {
+      if (themeRef.current !== target) {
         dispatch({ type: "SET_THEME", payload: target });
       }
     };
@@ -637,7 +783,6 @@ export function AppProvider({ children }) {
     state.nightEnd,
     state.nightTheme,
     state.dayTheme,
-    state.theme,
     dispatch,
   ]);
 
@@ -651,13 +796,18 @@ export function AppProvider({ children }) {
     // Delai pour ne pas bloquer le demarrage
     const timer = setTimeout(() => {
       if (cancelled) return;
-      fetchPrayerTimes((times) => {
-        if (cancelled || !times) return;
-        dispatch({
-          type: "SET",
-          payload: { nightEnd: times.fajr, nightStart: times.isha },
-        });
-      });
+      import("../services/prayerTimesService")
+        .then(({ fetchPrayerTimes }) => {
+          if (cancelled) return;
+          fetchPrayerTimes((times) => {
+            if (cancelled || !times) return;
+            dispatch({
+              type: "SET",
+              payload: { nightEnd: times.fajr, nightStart: times.isha },
+            });
+          });
+        })
+        .catch(() => {});
     }, 2000); // Attendre 2 secondes apres le chargement initial
     
     return () => {
@@ -679,7 +829,9 @@ export function AppProvider({ children }) {
     };
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
-  }, []);
+  // dispatch is stable (guaranteed by React), but listing it satisfies exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch]);
 
   // Apply direction to <html>
   useEffect(() => {

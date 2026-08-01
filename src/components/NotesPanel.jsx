@@ -4,6 +4,7 @@ import { t } from "../i18n";
 import { getAllNotes, deleteNote, saveNote } from "../services/storageService";
 import { getSurah, toAr } from "../data/surahs";
 import { cn } from "../lib/utils";
+import { StickyNote, X, Search, PenLine, Trash2, Loader2, Clock, ArrowRight, TriangleAlert } from "lucide-react";
 
 /* ─────────────────────────────────────────────
    Drag position helpers
@@ -46,6 +47,7 @@ export default function NotesPanel() {
   const { lang } = useAppLocale();
 
   const [notes, setNotes] = useState([]);
+  const [notesLoadError, setNotesLoadError] = useState(false);
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState(null);
@@ -135,8 +137,13 @@ export default function NotesPanel() {
 
   /* ── Notes CRUD ── */
   const loadNotes = useCallback(async () => {
-    const all = await getAllNotes();
-    setNotes(all.sort((a, b) => b.updatedAt - a.updatedAt));
+    try {
+      setNotesLoadError(false);
+      const all = await getAllNotes();
+      setNotes(all.sort((a, b) => b.updatedAt - a.updatedAt));
+    } catch {
+      setNotesLoadError(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -269,7 +276,7 @@ export default function NotesPanel() {
             </div>
           )}
           <div className="notes-panel-brand w-7 h-7 rounded-lg flex items-center justify-center">
-            <i className="notes-panel-brand__icon fas fa-sticky-note text-[0.75rem]" />
+            <StickyNote size={12} className="notes-panel-brand__icon" />
           </div>
           <div>
             <h3 className="text-[0.84rem] font-bold text-(--text-primary) leading-tight">
@@ -299,7 +306,7 @@ export default function NotesPanel() {
             lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
           }
         >
-          <i className="fas fa-times text-[0.7rem]" />
+          <X size={11} />
         </button>
       </div>
 
@@ -307,7 +314,7 @@ export default function NotesPanel() {
       {notes.length > 0 && (
         <div className="shrink-0 px-3 py-2 border-b border-(--border-light)">
           <div className="relative">
-            <i className="fas fa-search absolute inset-s-3 top-1/2 -translate-y-1/2 text-[0.6rem] text-(--text-muted) pointer-events-none" />
+            <Search size={10} className="absolute inset-s-3 top-1/2 -translate-y-1/2 text-(--text-muted) pointer-events-none" />
             <input
               ref={searchRef}
               type="text"
@@ -334,7 +341,7 @@ export default function NotesPanel() {
                 onClick={() => setSearch("")}
                 className="absolute inset-e-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded text-(--text-muted) hover:text-(--text-primary) transition-colors cursor-pointer"
               >
-                <i className="fas fa-times text-[0.55rem]" />
+                <X size={9} />
               </button>
             )}
           </div>
@@ -343,10 +350,27 @@ export default function NotesPanel() {
 
       {/* Notes list */}
       <div className="flex-1 overflow-y-auto overscroll-contain">
-        {notes.length === 0 ? (
+        {notesLoadError ? (
+          <div
+            className="flex flex-col items-center justify-center h-full px-5 text-center gap-3 py-10"
+            role="alert"
+          >
+            <TriangleAlert size={22} className="text-red-500" />
+            <p className="text-[0.78rem] text-(--text-muted) font-(--font-ui)">
+              {t("errors.loadError", lang)}
+            </p>
+            <button
+              type="button"
+              onClick={loadNotes}
+              className="rounded-lg border border-(--border) px-3 py-1.5 text-[0.72rem] font-semibold text-(--primary) hover:bg-(--bg-secondary)"
+            >
+              {t("errors.retry", lang)}
+            </button>
+          </div>
+        ) : notes.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full px-5 text-center gap-3 py-10">
             <div className="notes-empty-icon-shell w-14 h-14 rounded-2xl flex items-center justify-center">
-              <i className="fas fa-sticky-note text-[1.4rem] text-[var(--text-muted)]" />
+              <StickyNote size={22} className="text-[var(--text-muted)]" />
             </div>
             <div>
               <p className="text-[0.84rem] font-semibold text-[var(--text-primary)] mb-1">
@@ -367,7 +391,7 @@ export default function NotesPanel() {
           </div>
         ) : filteredNotes.length === 0 ? (
           <div className="flex flex-col items-center justify-center px-5 py-10 text-center gap-2">
-            <i className="fas fa-search text-[1.2rem] text-(--text-muted)" />
+            <Search size={19} className="text-(--text-muted)" />
             <p className="text-[0.78rem] text-(--text-muted) font-(--font-ui)">
               {lang === "fr"
                 ? `Aucun résultat pour « ${search} »`
@@ -449,7 +473,7 @@ export default function NotesPanel() {
                                 : "Edit"
                           }
                         >
-                          <i className="fas fa-pen text-[0.58rem]" />
+                          <PenLine size={9} />
                         </button>
                       )}
                       <button
@@ -478,14 +502,7 @@ export default function NotesPanel() {
                                 : "Delete"
                         }
                       >
-                        <i
-                          className={cn(
-                            "text-[0.58rem]",
-                            isDeleting
-                              ? "fas fa-trash-can"
-                              : "fas fa-trash-alt",
-                          )}
-                        />
+                        <Trash2 size={9} />
                       </button>
                     </div>
                   </div>
@@ -538,7 +555,7 @@ export default function NotesPanel() {
                             )}
                           >
                             {saving ? (
-                              <i className="fas fa-spinner fa-spin text-[0.6rem]" />
+                              <Loader2 size={10} className="animate-spin" />
                             ) : lang === "fr" ? (
                               "Sauvegarder"
                             ) : lang === "ar" ? (
@@ -570,7 +587,7 @@ export default function NotesPanel() {
                   {!isEditing && (
                     <div className="notes-card-footer flex items-center justify-between px-2.5 pb-2">
                       <span className="text-[0.58rem] text-(--text-muted) font-(--font-ui) flex items-center gap-1">
-                        <i className="fas fa-clock text-[0.5rem]" />
+                        <Clock size={8} />
                         {formatDate(note.updatedAt)}
                       </span>
                       <button
@@ -582,7 +599,7 @@ export default function NotesPanel() {
                           : lang === "ar"
                             ? "الانتقال للآية"
                             : "Go to verse"}
-                        <i className="fas fa-arrow-right text-[0.5rem]" />
+                        <ArrowRight size={8} />
                       </button>
                     </div>
                   )}
@@ -590,7 +607,7 @@ export default function NotesPanel() {
                   {/* Delete hint */}
                   {isDeleting && (
                     <div className="px-2.5 pb-2 flex items-center gap-1.5">
-                      <i className="fas fa-triangle-exclamation text-red-500 text-[0.6rem]" />
+                      <TriangleAlert size={10} className="text-red-500" />
                       <span className="text-[0.65rem] text-red-500 font-(--font-ui)">
                         {lang === "fr"
                           ? "Cliquez à nouveau pour confirmer"
@@ -637,9 +654,9 @@ export default function NotesPanel() {
         className={cn(
           "notes-fab",
           "fixed z-250 flex items-center justify-center",
-          "w-11 h-11 rounded-full cursor-pointer outline-none !border !border-amber-200/35 !bg-[radial-gradient(circle_at_30%_25%,rgba(212,168,32,0.28),rgba(212,168,32,0.16)_45%,rgba(7,17,35,0.92))] !text-white",
+          "w-11 h-11 !rounded-full cursor-pointer outline-none !border !border-[color-mix(in_srgb,var(--theme-primary)_48%,transparent_52%)] !bg-[var(--theme-primary)] !text-white",
           "transition-all duration-200",
-          "shadow-[0_4px_20px_rgba(212,168,32,0.35)]",
+          "shadow-[0_8px_22px_rgba(var(--theme-primary-rgb),0.24)]",
           isMobile ? "notes-fab--mobile" : "notes-fab--desktop",
           lang === "ar" ? "notes-fab--rtl" : "notes-fab--ltr",
           open ? "notes-fab--open" : "notes-fab--closed",
@@ -647,12 +664,11 @@ export default function NotesPanel() {
           "focus-visible:ring-2 focus-visible:ring-(--gold)/50 focus-visible:ring-offset-2",
         )}
       >
-        <i
-          className={cn(
-            "text-[1rem] transition-transform duration-200",
-            open ? "fas fa-times" : "fas fa-sticky-note",
-          )}
-        />
+        {open ? (
+          <X size={16} className="transition-transform duration-200" />
+        ) : (
+          <StickyNote size={16} className="transition-transform duration-200" />
+        )}
         {!open && notes.length > 0 && (
           <span
             className={cn(

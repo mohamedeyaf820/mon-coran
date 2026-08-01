@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { Play, Pause } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { toAr } from "../../data/surahs";
 import {
@@ -6,6 +7,7 @@ import {
   getSurahEnglishMeaning,
   TYPE_INFO,
 } from "./homeConstants";
+import Icon from "./HomeIcon";
 
 /* ─── FlowerBadge ────────────────────────────────────────────────────────── */
 export function FlowerBadge({ className = "" }) {
@@ -66,6 +68,7 @@ export function PercentBar({ value }) {
 export const SurahCard = memo(function SurahCard({
   surah,
   onClick,
+  onIntent,
   onPlay,
   isActive,
   lang,
@@ -91,6 +94,12 @@ export const SurahCard = memo(function SurahCard({
         : `${surah.ayahs} ayahs`;
   const playAriaLabel =
     lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen";
+  const openAriaLabel =
+    lang === "fr"
+      ? `Ouvrir la sourate ${primaryLabel}`
+      : lang === "ar"
+        ? `فتح سورة ${surah.ar}`
+        : `Open Surah ${primaryLabel}`;
   const pageLabel =
     surah.page &&
     (lang === "ar"
@@ -122,22 +131,22 @@ export const SurahCard = memo(function SurahCard({
     return (
       <div
         className={cn(
-          "group flex items-center gap-3 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-bg-primary border border-border/50 hover:bg-bg-secondary hover:border-primary/30 transition-all cursor-pointer",
+          "group relative flex items-center gap-3 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-bg-primary border border-border/50 hover:bg-bg-secondary hover:border-primary/30 transition-all cursor-pointer",
           isActive && "bg-primary/5 border-primary/50",
           isPlaying && "bg-gold/5 border-gold/50",
         )}
         data-stype={surah.type?.toLowerCase()}
-        onClick={() => onClick(surah.n)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onClick(surah.n);
-          }
-        }}
-        role="button"
-        tabIndex={0}
         style={rowVisibilityStyle}
       >
+        <button
+          type="button"
+          className="absolute inset-0 z-[1] rounded-xl"
+          onClick={() => onClick(surah.n)}
+          onPointerEnter={() => onIntent?.(surah.n)}
+          onFocus={() => onIntent?.(surah.n)}
+          onTouchStart={() => onIntent?.(surah.n)}
+          aria-label={openAriaLabel}
+        />
         <span className="flex items-center justify-center w-8 h-8 shrink-0 rounded-full bg-bg-secondary text-[0.75rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
           {surah.n}
         </span>
@@ -150,16 +159,19 @@ export const SurahCard = memo(function SurahCard({
               {secondaryLabel}
             </span>
           </div>
-          <span className="flex items-center gap-1.5 text-[0.7rem] text-text-muted truncate mt-0.5">
+          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
             <span
               className={cn(
-                "w-1.5 h-1.5 rounded-full",
-                surah.type === "Meccan" ? "bg-gold" : "bg-primary",
+                "inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
+                surah.type === "Meccan"
+                  ? "bg-amber-400/10 text-amber-800 dark:text-amber-300"
+                  : "bg-primary/10 text-primary",
               )}
-            />
-            {typeLabel} · {ayahLabel}
-            {pageLabel ? ` · ${pageLabel}` : ""}
-          </span>
+            >
+              {typeLabel}
+            </span>
+            <span className="text-[0.7rem] text-text-muted">{ayahLabel}{pageLabel ? ` · ${pageLabel}` : ""}</span>
+          </div>
         </div>
         <span
           className="text-[1.2rem] sm:text-[1.4rem] font-quran text-text-primary opacity-80 group-hover:opacity-100 transition-opacity ml-2 shrink-0"
@@ -171,6 +183,7 @@ export const SurahCard = memo(function SurahCard({
             src={`https://static.quran.com/images/surah/symbols/sname_${surah.n}.svg`}
             alt={surah.ar}
             className="h-8 sm:h-10 invert dark:invert-0"
+            loading="lazy"
             onError={(e) => {
               e.target.style.display = "none";
               e.target.nextSibling.style.display = "block";
@@ -180,7 +193,7 @@ export const SurahCard = memo(function SurahCard({
         </span>
         <button
           className={cn(
-            "flex items-center justify-center w-8 h-8 rounded-full bg-bg-secondary text-text-muted hover:bg-primary hover:text-white transition-colors ml-2 shrink-0",
+            "relative z-[2] flex items-center justify-center w-8 h-8 rounded-full bg-bg-secondary text-text-muted hover:bg-primary hover:text-white transition-colors ml-2 shrink-0",
             isPlaying && "bg-gold text-white hover:bg-gold-bright",
           )}
           onClick={(e) => {
@@ -189,9 +202,7 @@ export const SurahCard = memo(function SurahCard({
           }}
           aria-label={playAriaLabel}
         >
-          <i
-            className={`fas fa-${isPlaying ? "pause" : "play"} text-[0.8rem]`}
-          />
+          {isPlaying ? <Pause size={13} /> : <Play size={13} className="pl-[1px]" />}
         </button>
       </div>
     );
@@ -202,46 +213,79 @@ export const SurahCard = memo(function SurahCard({
     contentVisibility: "auto",
     containIntrinsicSize: "112px",
   };
+  const isMeccan = surah.type === "Meccan";
 
   return (
     <div
       className={cn(
-        "hp-card hp-card--surah group relative flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-border bg-bg-primary shadow-sm cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:border-primary/40 hover:bg-bg-secondary hover:shadow-md overflow-hidden",
-        isActive && "active border-primary/60 bg-primary/5",
-        isPlaying && "playing border-gold/60 bg-gold/5",
+        "hp-card hp-card--surah group relative flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border bg-bg-primary shadow-sm cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:shadow-md overflow-hidden",
+        isActive ? "border-primary/60 bg-primary/5 hover:border-primary/70" : "border-border hover:border-primary/40 hover:bg-bg-secondary",
+        isPlaying && "border-gold/60 bg-gold/5 hover:border-gold/70",
       )}
       data-stype={surah.type?.toLowerCase()}
-      onClick={() => onClick(surah.n)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onClick(surah.n);
-        }
-      }}
-      role="button"
-      tabIndex={0}
+      data-testid="surah-card"
+      data-surah={surah.n}
       style={cardVisibilityStyle}
     >
-      <div className="hp-card-accent absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-primary/80 to-primary/20 opacity-0 group-hover:opacity-40 transition-opacity" />
+      <button
+        type="button"
+        className="hp-card-open absolute inset-0 z-[1]"
+        onClick={() => onClick(surah.n)}
+        onPointerEnter={() => onIntent?.(surah.n)}
+        onFocus={() => onIntent?.(surah.n)}
+        onTouchStart={() => onIntent?.(surah.n)}
+        aria-label={openAriaLabel}
+        data-testid="surah-card-open"
+      />
 
-      <span className="hp-card-num flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full bg-bg-secondary text-[0.8rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
+      {/* Type indicator strip */}
+      <div
+        className={cn(
+          "absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl",
+          isMeccan ? "bg-amber-400/70" : "bg-primary/70",
+        )}
+        aria-hidden="true"
+      />
+
+      {/* Surah number badge */}
+      <span
+        className={cn(
+          "hp-card-num flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full text-[0.8rem] font-bold border transition-colors",
+          isActive || isPlaying
+            ? "bg-primary/10 text-primary border-primary/30"
+            : "bg-bg-secondary text-text-secondary border-border/40 group-hover:text-primary group-hover:border-primary/30",
+        )}
+      >
         <span className="hp-card-num-inner">{surah.n}</span>
       </span>
 
       <div className="hp-card-content flex flex-col flex-1 min-w-0">
-        <span className="hp-card-name text-[0.95rem] sm:text-[1.05rem] font-bold text-text-primary truncate">
+        <span className="hp-card-name text-[0.95rem] sm:text-[1.05rem] font-bold text-text-primary truncate leading-tight">
           {primaryLabel}
         </span>
         <span className="hp-card-meta hp-card-meta--meaning text-[0.7rem] sm:text-[0.75rem] text-text-secondary truncate mt-0.5">
           {secondaryLabel}
         </span>
-        <span className="hp-card-meta hp-card-meta--ayahs text-[0.65rem] sm:text-[0.7rem] text-text-muted truncate">
-          {ayahLabel}
-        </span>
+        <div className="flex items-center gap-1.5 mt-1">
+          <span
+            className={cn(
+              "inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
+              isMeccan
+                ? "bg-amber-400/10 text-amber-800 dark:text-amber-300"
+                : "bg-primary/10 text-primary",
+            )}
+          >
+            {isMeccan
+              ? (lang === "ar" ? "مكية" : lang === "fr" ? "Mecquoise" : "Meccan")
+              : (lang === "ar" ? "مدنية" : lang === "fr" ? "Médinoise" : "Medinan")}
+          </span>
+          <span className="text-[0.62rem] text-text-muted">{ayahLabel}</span>
+        </div>
       </div>
 
+      {/* Arabic name */}
       <div
-        className="hp-card-ar shrink-0 font-surah-names text-[1.6rem] opacity-60 transition-opacity group-hover:opacity-100"
+        className="hp-card-ar shrink-0 text-text-primary"
         aria-label={surah.ar}
         dir="rtl"
         lang="ar"
@@ -249,11 +293,13 @@ export const SurahCard = memo(function SurahCard({
         {surah.ar}
       </div>
 
+      {/* Play button — always visible on touch, hover on desktop */}
       <button
         className={cn(
-          "hp-card-play absolute right-2 sm:right-3 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-bg-primary border border-border text-text-muted opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all hover:bg-primary hover:text-white hover:border-primary",
-          isPlaying &&
-            "opacity-100 translate-x-0 bg-gold border-gold text-white",
+          "hp-card-play absolute z-[2] right-1.5 sm:right-2 bottom-1.5 sm:bottom-2 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border transition-all",
+          isPlaying
+            ? "bg-amber-400 border-amber-400/60 text-white opacity-100"
+            : "bg-bg-primary border-border text-text-muted opacity-60 group-hover:opacity-100 group-hover:bg-primary group-hover:text-white group-hover:border-primary sm:opacity-0",
         )}
         onClick={(e) => {
           e.stopPropagation();
@@ -261,9 +307,7 @@ export const SurahCard = memo(function SurahCard({
         }}
         aria-label={playAriaLabel}
       >
-        <i
-          className={`fas fa-${isPlaying ? "pause" : "play"} text-[0.8rem] sm:text-[0.9rem] pl-[1px]`}
-        />
+        {isPlaying ? <Pause size={16} /> : <Play size={16} className="pl-[1px]" />}
       </button>
     </div>
   );
@@ -289,20 +333,20 @@ export const JuzCard = memo(function JuzCard({
     return (
       <button
         className={cn(
-          "group flex items-center gap-3 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-bg-primary border border-border/50 hover:bg-bg-secondary hover:border-primary/30 transition-all text-left",
-          isActive && "bg-primary/5 border-primary/50",
+          "juz-card juz-card--list",
+          isActive && "juz-card--active",
         )}
         onClick={() => onClick(juz)}
         style={rowVisibilityStyle}
       >
-        <span className="flex items-center justify-center w-8 h-8 shrink-0 rounded-full bg-bg-secondary text-[0.75rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
+        <span className="juz-card__number">
           {juz}
         </span>
-        <div className="flex items-baseline truncate">
-          <span className="text-[0.95rem] font-bold text-text-primary">
+        <div className="juz-card__copy">
+          <span className="juz-card__title">
             Juz {juz}
           </span>
-          <span className="text-[0.8rem] text-text-secondary ml-2 truncate">
+          <span className="juz-card__arabic" dir="rtl" lang="ar">
             {name}
           </span>
         </div>
@@ -318,22 +362,21 @@ export const JuzCard = memo(function JuzCard({
   return (
     <button
       className={cn(
-        "group relative flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-border bg-bg-primary shadow-sm transition-all duration-200 hover:-translate-y-[2px] hover:border-primary/40 hover:bg-bg-secondary hover:shadow-md text-left overflow-hidden",
-        isActive && "border-primary/60 bg-primary/5",
+        "juz-card",
+        isActive && "juz-card--active",
       )}
       onClick={() => onClick(juz)}
       style={cardVisibilityStyle}
     >
-      <div className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-gradient-to-b from-primary/80 to-primary/20 opacity-0 group-hover:opacity-40 transition-opacity" />
-
-      <span className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full bg-bg-secondary text-[0.8rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
+      <span className="juz-card__accent" aria-hidden="true" />
+      <span className="juz-card__number">
         {juz}
       </span>
-      <div className="flex flex-col flex-1 min-w-0">
-        <span className="text-[0.95rem] sm:text-[1.05rem] font-bold text-text-primary truncate">
+      <div className="juz-card__copy">
+        <span className="juz-card__title">
           Juz {juz}
         </span>
-        <span className="text-[0.75rem] text-text-secondary truncate mt-0.5">
+        <span className="juz-card__arabic" dir="rtl" lang="ar">
           {name}
         </span>
       </div>
@@ -342,36 +385,11 @@ export const JuzCard = memo(function JuzCard({
 });
 
 /* ─── BlogCard ───────────────────────────────────────────────────────────── */
-export const BlogCard = memo(function BlogCard({ post, lang }) {
-  return (
-    <div className="hp-card hp-card--blog animate-fadeInScale">
-      <div className="hp-blog-img-wrap">
-        <img
-          src={post.img}
-          alt={post.title}
-          className="hp-blog-img"
-          loading="lazy"
-        />
-      </div>
-      <div className="hp-blog-content">
-        <span className="hp-blog-tag">{post.tag}</span>
-        <h3 className="hp-blog-title">{post.title}</h3>
-        <div className="hp-blog-footer">
-          <span>{post.date}</span>
-          <span>
-            <i className="far fa-clock mr-1" /> {post.readTime}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-});
-
 /* ─── EmptyState ─────────────────────────────────────────────────────────── */
 export function EmptyState({ icon, text }) {
   return (
     <div className="hp-empty">
-      <i className={`fas ${icon}`} />
+      <Icon name={icon} size={28} aria-hidden="true" />
       <p>{text}</p>
     </div>
   );

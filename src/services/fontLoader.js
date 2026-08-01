@@ -13,14 +13,35 @@ const FONT_SOURCES = {
     url: "https://verses.quran.foundation/fonts/quran/hafs/nastaleeq/indopak/indopak-nastaleeq-waqf-lazim-v4.2.1.woff2",
     format: "woff2",
   },
+  // Scheherazade New: served from local woff2 (preloaded in index.html)
+  "scheherazade-new": {
+    family: "Scheherazade New",
+    url: "/fonts/scheherazade-new-400.woff2",
+    format: "woff2",
+  },
+  // Same font file, used for Warsh riwaya rendering
+  "scheherazade-new-warsh": {
+    family: "Scheherazade New",
+    url: "/fonts/scheherazade-new-400.woff2",
+    format: "woff2",
+  },
+  // Google Fonts: loaded via <link> in index.html, mark as cssUrl so we wait for the stylesheet
+  "amiri-quran": {
+    family: "Amiri Quran",
+    cssUrl: "https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap",
+  },
+  "noto-naskh-arabic": {
+    family: "Noto Naskh Arabic",
+    cssUrl: "https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap",
+  },
   "qpc-warsh": {
     family: "QPC Warsh",
-    url: "https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2",
+    url: "/fonts/kfgqpc-warsh-10.woff2",
     format: "woff2",
   },
   "kfgqpc-warsh": {
     family: "KFGQPC Warsh",
-    url: "https://cdn.jsdelivr.net/gh/thetruetruth/quran-data-kfgqpc@main/warsh/font/warsh.10.woff2",
+    url: "/fonts/kfgqpc-warsh-10.woff2",
     format: "woff2",
   },
 };
@@ -83,7 +104,9 @@ async function loadFontFace(fontId, source) {
 
   if (source.cssUrl) {
     const linkId = `font-css-${fontId}`;
-    if (!document.getElementById(linkId)) {
+    const stylesheetAlreadyPresent = [...document.querySelectorAll('link[rel="stylesheet"], link[rel="preload"]')]
+      .some((link) => link.href === new URL(source.cssUrl, document.baseURI).href);
+    if (!document.getElementById(linkId) && !stylesheetAlreadyPresent) {
       const link = document.createElement("link");
       link.id = linkId;
       link.rel = "stylesheet";
@@ -105,8 +128,15 @@ async function loadFontFace(fontId, source) {
     return { loaded: true, family: source.family, url: source.cssUrl };
   }
 
+  // Skip document.fonts.check() — it returns true for unknown fonts (browser
+  // uses fallback stack), causing a false positive that makes QCF glyph codes
+  // render as boxes when the actual font file hasn't been fetched yet.
+  // The loadedFontIds check in ensureFontLoaded already handles cached fonts.
   try {
-    if (document.fonts.check(`16px "${source.family}"`)) {
+    const existing = [...document.fonts].find(
+      (f) => (f.family === `"${source.family}"` || f.family === source.family) && f.status === "loaded"
+    );
+    if (existing) {
       loadedFontIds.add(fontId);
       failedFontIds.delete(fontId);
       return { loaded: true, cached: true, family: source.family };
@@ -125,7 +155,13 @@ async function loadFontFace(fontId, source) {
     },
   );
 
-  const loadedFont = await fontFace.load();
+  const FONT_LOAD_TIMEOUT_MS = 10000;
+  const loadedFont = await Promise.race([
+    fontFace.load(),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Font load timeout")), FONT_LOAD_TIMEOUT_MS)
+    ),
+  ]);
   document.fonts.add(loadedFont);
   loadedFontIds.add(fontId);
   failedFontIds.delete(fontId);
@@ -152,9 +188,16 @@ export async function ensureFontLoaded(fontId, options = {}) {
 
   if (inFlightLoads.has(loadKey)) return inFlightLoads.get(loadKey);
 
+  // Clear any previous failure so this attempt is a clean retry.
+  failedFontIds.delete(fontId);
+  failedFontIds.delete(loadKey);
+
   const request = loadFontFace(loadKey, source)
     .then((result) => {
-      if (result.loaded || result.cached) loadedFontIds.add(fontId);
+      if (result.loaded || result.cached) {
+        loadedFontIds.add(fontId);
+        loadedFontIds.add(loadKey);
+      }
       return result;
     })
     .catch((error) => {

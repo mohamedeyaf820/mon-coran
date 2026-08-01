@@ -1,4 +1,5 @@
 import React from "react";
+import { Pin, X, ExternalLink } from "lucide-react";
 import { getSurah } from "../../data/surahs";
 import { shallowEqual, useAppActions, useAppSelector } from "../../context/AppContext";
 import { openExternalUrl } from "../../lib/security";
@@ -33,7 +34,7 @@ export default function VerseCompareTray({ lang }) {
       <div className="verse-compare-tray__header">
         <div>
           <span className="verse-compare-tray__eyebrow">
-            <i className="fas fa-thumbtack" />
+            <Pin size={11} />
             {labelFor(lang, "Comparaison", "Compare")}
           </span>
           <h2>{labelFor(lang, "Versets epingles", "Pinned verses")}</h2>
@@ -69,7 +70,7 @@ export default function VerseCompareTray({ lang }) {
                   onClick={() => removePin(item.surah, item.ayah)}
                   aria-label={labelFor(lang, "Retirer", "Remove")}
                 >
-                  <i className="fas fa-xmark" />
+                  <X size={12} />
                 </button>
               </div>
               <p dir="rtl" lang="ar">
@@ -80,7 +81,7 @@ export default function VerseCompareTray({ lang }) {
                 className="verse-compare-card__link"
                 onClick={() => openExternalUrl(getQuranComVerseUrl(item.surah, item.ayah))}
               >
-                <i className="fas fa-arrow-up-right-from-square" />
+                <ExternalLink size={11} />
                 Quran.com
               </button>
             </article>

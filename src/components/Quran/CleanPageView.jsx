@@ -1,12 +1,13 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { getSurah, toAr } from "../../data/surahs";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 import WordByWordDisplay from "./WordByWordDisplay";
 import CleanPageTranslationPanel from "./CleanPageTranslationPanel";
 import { CleanPageSurahHeader } from "./CleanPageDecor";
 import Bismillah from "./Bismillah";
+import AyahMarker from "./AyahMarker";
 
-export default function CleanPageView({
+function CleanPageViewComponent({
   ayahs,
   lang,
   fontSize,
@@ -30,13 +31,30 @@ export default function CleanPageView({
   const pageNumber = ayahs[0]?.page ?? null;
   const juzNumber = ayahs[0]?.juz ?? null;
   const headerSurahName = surahMeta?.name_arabic || surahMeta?.name || "";
-  const mushafFontSize = Math.max(38, Math.min(72, Number(fontSize) || 42));
+  const [isMobileMushaf, setIsMobileMushaf] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 520px)").matches,
+  );
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 520px)");
+    const onChange = (e) => setIsMobileMushaf(e.matches);
+    if (typeof media.addEventListener === "function") {
+      media.addEventListener("change", onChange);
+      return () => media.removeEventListener("change", onChange);
+    }
+    media.addListener(onChange);
+    return () => media.removeListener(onChange);
+  }, []);
+  const mushafFontSize = isMobileMushaf
+    ? Math.max(18, Math.min(26, Number(fontSize) || 24))
+    : Math.max(34, Math.min(72, Number(fontSize) || 42));
   const mushafLineHeight = riwaya === "warsh" ? 2.5 : 2.42;
   const mushafWordSpacing = riwaya === "warsh" ? "0.07em" : "0.1em";
 
   const juzLabel = useMemo(() => {
     if (!juzNumber) return "";
-    return lang === "ar" ? `﴿ الجزء ${toAr(juzNumber)} ﴾` : `﴿ Juz ${juzNumber} ﴾`;
+    return lang === "ar"
+      ? `﴿ الجزء ${toAr(juzNumber)} ﴾`
+      : `﴿ Juz ${juzNumber} ﴾`;
   }, [juzNumber, lang]);
 
   const surahLabel = useMemo(() => {
@@ -45,16 +63,21 @@ export default function CleanPageView({
   }, [headerSurahName]);
 
   return (
-    <div className={`cpv-container mushaf-wrapper mushaf-page-wrapper${isQCF4 ? " cpv-qcf4" : ""}`}>
+    <div
+      className={`cpv-container mushaf-wrapper mushaf-page-wrapper${isQCF4 ? " cpv-qcf4" : ""}`}
+    >
       <div className="mushaf-corner mushaf-corner--tr" aria-hidden="true" />
       <div className="mushaf-corner mushaf-corner--tl" aria-hidden="true" />
       <div className="mushaf-corner mushaf-corner--br" aria-hidden="true" />
       <div className="mushaf-corner mushaf-corner--bl" aria-hidden="true" />
 
-      <div className="pointer-events-none mb-0 block h-[2px] bg-[linear-gradient(90deg,transparent,rgba(var(--primary-rgb),0.35)_25%,rgba(184,134,11,0.65)_50%,rgba(var(--primary-rgb),0.35)_75%,transparent)]" aria-hidden="true" />
+      <div
+        className="pointer-events-none mb-0 block h-[2px] bg-[linear-gradient(90deg,transparent,rgba(var(--primary-rgb),0.35)_25%,rgba(184,134,11,0.65)_50%,rgba(var(--primary-rgb),0.35)_75%,transparent)]"
+        aria-hidden="true"
+      />
       <div className="mushaf-page-header" aria-hidden="true">
-        <span>{juzLabel}</span>
-        <span>{surahLabel}</span>
+        <span dir="rtl">{juzLabel}</span>
+        <span dir="rtl">{surahLabel}</span>
       </div>
       <div
         className="mushaf-text-block mushaf-container"
@@ -79,7 +102,10 @@ export default function CleanPageView({
             const sMeta = getSurah(ayahSurahNum);
             if (sMeta) {
               elements.push(
-                <div key={`header-${ayahSurahNum}`} className="mushaf-surah-header-inline w-full my-6 block pointer-events-none select-none">
+                <div
+                  key={`header-${ayahSurahNum}`}
+                  className="mushaf-surah-header-inline w-full my-6 block pointer-events-none select-none"
+                >
                   <CleanPageSurahHeader surahMeta={sMeta} lang={lang} />
                   {ayahSurahNum !== 9 && ayahSurahNum !== 1 && <Bismillah />}
                 </div>,
@@ -131,8 +157,16 @@ export default function CleanPageView({
                     surahNum={ayahSurahNum}
                     calibration={calibration}
                     riwaya={riwaya}
+                    appendNativeMarker={false}
                   />
                 )}
+                {!showWordByWord ? (
+                  <AyahMarker
+                    number={ayah.numberInSurah}
+                    isPlaying={isPlaying}
+                    className="cpv-ayah-marker"
+                  />
+                ) : null}
               </span>
             </span>,
           );
@@ -143,7 +177,7 @@ export default function CleanPageView({
       <div className="mushaf-page-footer" aria-hidden="true">
         <span />
         <span className="mushaf-page-number-medallion">
-          {lang === "ar" && pageNumber ? toAr(pageNumber) : pageNumber ?? ""}
+          {lang === "ar" && pageNumber ? toAr(pageNumber) : (pageNumber ?? "")}
         </span>
         <span />
       </div>
@@ -159,3 +193,28 @@ export default function CleanPageView({
     </div>
   );
 }
+
+function areCleanPageViewEqual(prev, next) {
+  return (
+    prev.ayahs === next.ayahs &&
+    prev.lang === next.lang &&
+    prev.fontSize === next.fontSize &&
+    prev.isQCF4 === next.isQCF4 &&
+    prev.showTajwid === next.showTajwid &&
+    prev.currentPlayingAyah === next.currentPlayingAyah &&
+    prev.surahNum === next.surahNum &&
+    prev.calibration === next.calibration &&
+    prev.riwaya === next.riwaya &&
+    prev.showTranslation === next.showTranslation &&
+    prev.getTranslation === next.getTranslation &&
+    prev.showSurahHeader === next.showSurahHeader &&
+    prev.activeAyah === next.activeAyah &&
+    prev.getAyahToggleId === next.getAyahToggleId &&
+    prev.onAyahClick === next.onAyahClick &&
+    prev.showWordByWord === next.showWordByWord &&
+    prev.showWordTranslation === next.showWordTranslation &&
+    prev.showTransliteration === next.showTransliteration
+  );
+}
+
+export default React.memo(CleanPageViewComponent, areCleanPageViewEqual);

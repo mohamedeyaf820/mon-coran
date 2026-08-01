@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/* ── Type Scale — standardized responsive tokens ── */
+:root {
+  --ts-2xs: clamp(0.6rem, 0.55rem + 0.15vw, 0.65rem);     /* ~10px */
+  --ts-xs: clamp(0.7rem, 0.65rem + 0.15vw, 0.75rem);      /* ~11-12px */
+  --ts-sm: clamp(0.8rem, 0.75rem + 0.15vw, 0.875rem);     /* ~13-14px */
+  --ts-base: clamp(0.875rem, 0.82rem + 0.18vw, 1rem);     /* ~14-16px */
+  --ts-lg: clamp(1rem, 0.92rem + 0.25vw, 1.125rem);       /* ~16-18px */
+  --ts-xl: clamp(1.15rem, 1rem + 0.4vw, 1.35rem);         /* ~18-22px */
+  --ts-2xl: clamp(1.4rem, 1.2rem + 0.6vw, 1.75rem);       /* ~22-28px */
+  --ts-3xl: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);        /* ~28-36px */
+  --ts-4xl: clamp(2rem, 1.6rem + 1.2vw, 2.5rem);          /* ~32-40px */
+}
+
 @font-face {
     font-family: "surahnames";
     src: url("/fonts/sura_names.woff2") format("woff2");
@@ -36,7 +49,7 @@
     .hp2-btn,
     .modal-action-btn,
     .sidebar-tab-trigger {
-        min-height: 38px !important;
+        min-height: 44px !important;
         font-size: 0.92rem !important;
     }
     .modal-header {
@@ -93,40 +106,74 @@ button:active:not(:disabled),
 }
 
 html {
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    background: var(--theme-bg, var(--bg-primary, #f8fafc));
     scrollbar-gutter: stable both-edges;
 }
 
-.fa-solid,
-.fas,
-.fa-regular,
-.far,
-.fa-brands,
-.fab,
-.fa,
-[class^="fa-"],
-[class*=" fa-"] {
-    font-style: normal;
+body {
+    min-width: 320px;
+    background: var(--theme-app-bg, var(--theme-bg, var(--bg-primary, #f8fafc)));
+    color: var(--theme-text, var(--text-primary, #111827));
 }
 
-.fa-solid,
-.fas,
-.fa,
-[class*=" fa-"]::before,
-[class^="fa-"]::before {
-    font-family: "Font Awesome 7 Free", "Font Awesome 6 Free" !important;
-    font-weight: 900;
+/* Keep the keyboard skip link out of layout regardless of later touch-target rules. */
+.app-root > .app-skip-link {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    z-index: 10000;
+    width: 1px;
+    min-width: 0;
+    height: 1px;
+    min-height: 0;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
 }
 
-.fa-regular,
-.far {
-    font-family: "Font Awesome 7 Free", "Font Awesome 6 Free" !important;
-    font-weight: 400;
+.app-root > .app-skip-link:focus {
+    position: fixed;
+    inset-block-start: 0.75rem;
+    inset-inline-start: 0.75rem;
+    width: auto;
+    min-width: 44px;
+    height: auto;
+    min-height: 44px;
+    margin: 0;
+    padding: 0.65rem 0.9rem;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+    border: 1px solid var(--theme-border, var(--border));
+    border-radius: var(--r-lg, 0.75rem);
+    background: var(--theme-panel-bg-strong, var(--bg-card));
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-weight: 700;
+    box-shadow: 0 10px 24px rgba(2, 8, 23, 0.18);
 }
 
-.fa-brands,
-.fab {
-    font-family: "Font Awesome 7 Brands", "Font Awesome 6 Brands" !important;
-    font-weight: 400;
+.app-root {
+    min-height: 100dvh;
+    overflow-x: clip;
+}
+
+/* Feature accent colors — fixed per-feature, not theme-primary */
+:root {
+    --c-search: #3b82f6;
+    --c-duas: #f59e0b;
+    --c-theme-icon: #8b5cf6;
+    --c-tools: #06b6d4;
+    --c-general: #8b5cf6;
+    --c-reading: #3b82f6;
+    --c-audio-icon: #f59e0b;
+    --c-danger: #ef4444;
+    --c-danger-hover: #dc2626;
 }
 
 @keyframes animate-in {
@@ -259,8 +306,7 @@ html {
 
 @font-face {
     font-family: "QPC Warsh";
-    src: url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2")
-        format("woff2");
+    src: url("/fonts/kfgqpc-warsh-10.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -289,8 +335,7 @@ html {
 
 @font-face {
     font-family: "KFGQPC Warsh";
-    src: url("https://cdn.jsdelivr.net/gh/thetruetruth/quran-data-kfgqpc@main/warsh/font/warsh.10.woff2")
-        format("woff2");
+    src: url("/fonts/kfgqpc-warsh-10.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -299,7 +344,7 @@ html {
 
 @font-face {
     font-family: "KFGQPC Uthmanic Script WARSH";
-    src: url("https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2") format("woff2");
+    src: url("/fonts/kfgqpc-warsh-10.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -324,8 +369,9 @@ html {
     --emerald-lit: #118247;
     --emerald-pale: #f0f7f3;
     --emerald-tint: rgba(16, 90, 48, 0.08);
+    --emerald-subtle: rgba(16, 90, 48, 0.1);
 
-    
+
     --gold: #b38600;
     --gold-bright: #d4a017;
     --gold-pale: #fffbeb;
@@ -359,11 +405,6 @@ html {
     --font-ui:
         "Figtree", "Inter", "Outfit", "Cairo", system-ui, -apple-system,
         sans-serif;
-    --font-quran-hafs:
-        "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", serif;
-    --font-quran-warsh:
-        "QPC Warsh", "KFGQPC Warsh", "KFGQPC Uthmanic Script WARSH", serif;
-    --font-quran: var(--font-quran-hafs);
     --font-quran-tajweed: var(--font-quran);
     --font-surah-hafs:
         "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", serif;
@@ -376,8 +417,16 @@ html {
 
     
     --header-h: 68px;
+    --header-h-mobile: 46px;
     --player-h: 80px;
     --sidebar-w: 320px;
+
+    --z-progress: 200;
+    --z-player: 400;
+    --z-overlay: 499;
+    --z-sidebar: 500;
+    --z-modal: 600;
+    --z-skip: 700;
 
     
     --space-1: 0.25rem;
@@ -386,14 +435,20 @@ html {
     --space-4: 1rem;
     --space-5: 1.25rem;
     --space-6: 1.5rem;
-    --space-8: 2rem;
-    --space-10: 2.5rem;
-    --space-12: 3rem;
+    --space-7: 1.75rem;  /* ~28px */
+    --space-8: 2rem;     /* ~32px */
+    --space-9: 2.125rem; /* ~34px */
+    --space-10: 2.5rem;  /* ~40px */
+    --space-11: 2.75rem; /* ~44px */
+    --space-12: 3rem;    /* ~48px */
+    --space-14: 3.5rem;  /* ~56px */
 
-    
+
     --r-xs: 4px;
     --r-sm: 8px;
+    --r-base: 10px;
     --r-md: 12px;
+    --r-md-lg: 14px;
     --r-lg: 16px;
     --r-xl: 24px;
     --r-pill: 9999px;
@@ -776,6 +831,7 @@ html {
 }
 
 [data-theme="dark"] {
+    --emerald-subtle: rgba(196, 219, 208, 0.12);
     --reading-surface-soft: #151719;
     --reading-surface-elevated: #0c0d0e;
     --player-border: rgba(255, 255, 255, 0.06);
@@ -3708,7 +3764,7 @@ ol {
         text-align: center;
     }
 
-    .hp-empty i {
+    .hp-empty svg {
         font-size: 1.8rem;
         opacity: 0.25;
     }
@@ -4193,8 +4249,7 @@ button,
     user-select: none;
 }
 
-.btn-primary,
-button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(.btn-icon) {
+.btn-primary {
     background: linear-gradient(
         135deg,
         var(--emerald) 0%,
@@ -4205,18 +4260,12 @@ button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(.btn-icon) {
     font-weight: 600;
 }
 
-.btn-primary:hover,
-button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(
-        .btn-icon
-    ):hover {
+.btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(27, 94, 59, 0.3);
 }
 
-.btn-primary:active,
-button:not([type="button"]):not(.btn-secondary):not(.btn-ghost):not(
-        .btn-icon
-    ):active {
+.btn-primary:active {
     transform: translateY(0);
 }
 
@@ -4785,7 +4834,7 @@ input:focus-visible {
     text-align: center;
 }
 
-.hp-empty i {
+.hp-empty svg {
     font-size: 1.8rem;
     color: var(--text-muted);
     opacity: 0.25;
@@ -5111,18 +5160,34 @@ input:focus-visible {
 }
 
 .mem-words {
-    font-family: var(--font-quran, "Scheherazade New", serif);
+    font-family: var(--qd-font-family, var(--font-quran, "Scheherazade New", serif));
+    font-size: var(--reader-arabic-size, var(--qd-reading-font-size, 28px));
     line-height: 2.5;
     word-spacing: 0.2em;
     display: block;
 }
 
 .mem-word {
+    appearance: none;
+    border: 0;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    line-height: inherit;
     display: inline-block;
     margin: 0 0.12em;
     transition: all 0.3s ease;
     border-radius: 4px;
     padding: 0 0.08em;
+}
+
+.mem-word:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.mem-word:disabled {
+    opacity: 1;
 }
 
 .mem-word--hidden {
@@ -7392,7 +7457,6 @@ input:focus-visible {
 .sidebar-content,
 .modal-body,
 .mfp-content-area {
-    -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
 }
 
@@ -7533,19 +7597,9 @@ input:focus-visible {
     height: 2px;
     z-index: 200;
     width: calc(var(--reading-progress, 0) * 100%);
-    background: linear-gradient(
-        90deg,
-        var(--primary) 0%,
-        var(--gold, #d4a820) 40%,
-        color-mix(in srgb, var(--primary) 60%, white 40%) 60%,
-        var(--gold, #d4a820) 80%,
-        var(--primary) 100%
-    );
-    background-size: 200% auto;
-    animation: progressShimmer 2.4s linear infinite;
-    box-shadow:
-        0 0 6px rgba(var(--primary-rgb, 16, 109, 73), 0.55),
-        0 0 12px rgba(var(--primary-rgb, 16, 109, 73), 0.25);
+    background: var(--primary);
+    animation: none;
+    box-shadow: 0 1px 4px rgba(var(--primary-rgb, 16, 109, 73), 0.32);
     transition: width 0.3s ease;
     pointer-events: none;
     border-radius: 0 2px 2px 0;
@@ -14145,9 +14199,7 @@ body {
 @media (max-width: 639px) {
     .settings-modal,
     .settings-panel,
-    .settings-drawer,
-    [class*="settings-modal"],
-    [class*="settings-drawer"] {
+    .settings-drawer {
         width: 100vw !important;
         max-width: 100vw !important;
         min-width: 0 !important;
@@ -15469,13 +15521,13 @@ body {
 }
 
 .sb-search::before {
-    content: "\f002";
+    content: "⌕";
     position: absolute;
     top: 50%;
     left: 0.95rem;
     transform: translateY(-50%);
     color: rgba(var(--primary-rgb), 0.68);
-    font-family: "Font Awesome 7 Free", "Font Awesome 6 Free";
+    font-family: inherit;
     font-weight: 900;
     font-size: 0.78rem;
     pointer-events: none;
@@ -16409,7 +16461,7 @@ body {
     border: 1px dashed var(--border);
 }
 
-.hp-empty i {
+.hp-empty svg {
     font-size: 2.5rem;
     margin-bottom: 1rem;
     opacity: 0.5;
@@ -16714,7 +16766,6 @@ body {
     margin: 0 auto;
     width: 100%;
     scroll-behavior: auto;
-    -webkit-overflow-scrolling: touch;
     --font-surah-display: var(
         --font-surah-name,
         var(
@@ -17446,8 +17497,8 @@ body {
 }
 
 .ayah-block.playing .ayah-number::after {
-    content: "\f028";
-    font-family: "Font Awesome 6 Free";
+    content: "♪";
+    font-family: inherit;
     font-weight: 900;
     display: block;
     color: var(--gold);
@@ -18931,8 +18982,8 @@ body {
 .wbw-display {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start; 
-    align-items: flex-start; 
+    justify-content: flex-start;
+    align-items: flex-start;
     gap: 0.5rem 0.75rem;
     padding: 0.75rem 0 0.5rem;
     direction: rtl;
@@ -18941,6 +18992,20 @@ body {
     align-content: flex-start;
     unicode-bidi: plaintext;
     row-gap: 1rem;
+}
+
+/* Study grid: display as equal-width columns immediately (before lazy CSS loads). */
+.wbw-display.wbw-study-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 8.5rem), 1fr));
+    align-items: stretch;
+    gap: clamp(0.5rem, 1.2vw, 0.75rem);
+}
+
+.wbw-display.wbw-study-grid > .wbw-word-block {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
 }
 
 .wbw-word-block {
@@ -19076,6 +19141,8 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    word-break: normal;
+    hyphens: none;
     min-height: 1rem;
     display: flex;
     align-items: center;
@@ -19144,6 +19211,16 @@ body {
         gap: 0.35rem 0.5rem;
         padding: 0.35rem 0 0.15rem;
         row-gap: 0.75rem;
+    }
+
+    .wbw-display.wbw-study-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.45rem;
+    }
+
+    .wbw-display.wbw-study-grid > .wbw-word-block {
+        max-width: none;
+        width: 100%;
     }
 
     .wbw-word-block {
@@ -19533,10 +19610,10 @@ body {
 .app-root > .mp-header .mp-header__more,
 .app-root > .mp-header .mp-header__nav-arrow {
     flex: 0 0 auto;
-    width: 2.35rem;
-    min-width: 2.35rem;
-    height: 2.35rem;
-    min-height: 2.35rem;
+    width: 2.75rem;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    min-height: 2.75rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -19631,7 +19708,7 @@ body {
     white-space: nowrap;
     color: var(--text-muted);
     font-size: 0.68rem;
-    font-weight: 750;
+    font-weight: 700;
 }
 
 .app-root > .mp-header .mp-header__search {
@@ -19701,10 +19778,10 @@ body {
     .app-root > .mp-header .mp-header__icon-btn,
     .app-root > .mp-header .mp-header__action,
     .app-root > .mp-header .mp-header__more {
-        width: 2.25rem;
-        min-width: 2.25rem;
-        height: 2.25rem;
-        min-height: 2.25rem;
+        width: 2.75rem;
+        min-width: 2.75rem;
+        height: 2.75rem;
+        min-height: 2.75rem;
     }
 
     .app-root > .mp-header .mp-header__search {
@@ -20197,7 +20274,6 @@ body {
     margin: 0 auto;
     width: 100%;
     scroll-behavior: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 768px) {
@@ -20764,7 +20840,13 @@ body {
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-[data-theme="dark"],
+[data-theme="dark"] {
+    --cpv-bg: #1a1e23;
+    --cpv-border: rgba(255, 255, 255, 0.08);
+    --cpv-gold: #c9a84c;
+    --cpv-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
 [data-theme="sepia"] {
     --cpv-bg: #fdf6e3;
     --cpv-border: rgba(154, 110, 26, 0.28);
@@ -20826,8 +20908,8 @@ body {
 }
 
 .qc-ayah-block.is-playing .qc-ayah-content::after {
-    content: "\f028";
-    font-family: "Font Awesome 6 Free";
+    content: "♪";
+    font-family: inherit;
     font-weight: 900;
     display: block;
     font-size: 0.55rem;
@@ -21125,4 +21207,3 @@ body {
         transition: none;
     }
 }
-

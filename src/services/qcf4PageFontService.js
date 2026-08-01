@@ -78,8 +78,14 @@ export async function loadQcf4FontForMushafPage(riwaya, mushafPage) {
     return { family: fontFamily, index, loaded: true, cached: true };
   }
 
+  // Skip document.fonts.check() — returns true for unknown families (browser
+  // uses fallback stack), causing false positives where QCF glyphs render as
+  // boxes. Instead check the actual loaded FontFace objects.
   try {
-    if (document.fonts.check(`16px \"${fontFamily}\"`)) {
+    const existing = [...document.fonts].find(
+      (f) => (f.family === `"${fontFamily}"` || f.family === fontFamily) && f.status === "loaded"
+    );
+    if (existing) {
       loadedFamilies.add(fontFamily);
       failedFamilies.delete(fontFamily);
       return { family: fontFamily, index, loaded: true, cached: true };
@@ -93,6 +99,7 @@ export async function loadQcf4FontForMushafPage(riwaya, mushafPage) {
   }
 
   const fontUrl = getFontUrl(riwaya, index);
+  const FONT_LOAD_TIMEOUT_MS = 10000;
   const loadPromise = (async () => {
     try {
       const font = new FontFace(fontFamily, `url(${fontUrl})`, {
@@ -100,7 +107,12 @@ export async function loadQcf4FontForMushafPage(riwaya, mushafPage) {
         weight: "400",
         display: "swap",
       });
-      const loadedFont = await font.load();
+      const loadedFont = await Promise.race([
+        font.load(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Font load timeout")), FONT_LOAD_TIMEOUT_MS)
+        ),
+      ]);
       document.fonts.add(loadedFont);
       loadedFamilies.add(fontFamily);
       failedFamilies.delete(fontFamily);
@@ -111,6 +123,7 @@ export async function loadQcf4FontForMushafPage(riwaya, mushafPage) {
         family: fontFamily,
         index,
         loaded: false,
+        timedOut: error?.message === "Font load timeout",
         url: fontUrl,
         error,
       };

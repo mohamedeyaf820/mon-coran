@@ -55,7 +55,7 @@ export function getMemorizationLabel(lang) {
 
 export const TRANSLATION_LANGUAGE_META = {
   fr: {
-    fr: "Francais",
+    fr: "Français",
     ar: "\u0627\u0644\u0641\u0631\u0646\u0633\u064a\u0629",
     en: "French",
     icon: "fa-language",

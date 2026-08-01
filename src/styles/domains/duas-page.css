@@ -764,6 +764,7 @@
 .duas-page--platform .dua-open-btn-v5 {
     width: 2.45rem;
     height: 2.45rem;
+    padding: 0 !important;
     border-radius: 0.9rem;
     background: linear-gradient(
         180deg,
@@ -772,6 +773,10 @@
     );
     border: 1px solid rgba(var(--primary-rgb), 0.16);
     color: var(--primary);
+}
+
+.duas-page--platform .dua-open-btn-v5 svg {
+    flex: 0 0 auto;
 }
 
 .duas-page--platform .dua-open-btn-v5:hover {

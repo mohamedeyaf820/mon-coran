@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Brain,
   BookOpen,
@@ -8,6 +8,7 @@ import {
   Palette,
   Pause,
   Play,
+  SlidersHorizontal,
   Type,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
@@ -37,7 +38,6 @@ function toolbarLabelsFor(lang) {
 }
 
 export default function ReadingToolbar({
-  contextLabel,
   onPlay,
   onPlaySurah,
   playLabel,
@@ -56,31 +56,29 @@ export default function ReadingToolbar({
     lang,
     memMode,
     mushafLayout,
+    riwaya,
     showTajwid,
     showTranslation,
     showWordByWord,
     isPlaying,
   } = state;
 
+  const [scrolled, setScrolled] = useState(false);
+  const [showTypography, setShowTypography] = useState(false);
+  useEffect(() => {
+    const mainEl = document.querySelector("#main-content") || window;
+    const getScroll = () => (mainEl === window ? window.scrollY : mainEl.scrollTop);
+    const onScroll = () => setScrolled(getScroll() > 40);
+    mainEl.addEventListener("scroll", onScroll, { passive: true });
+    return () => mainEl.removeEventListener("scroll", onScroll);
+  }, []);
+
   const playHandler = onPlay || onPlaySurah;
   const isPreparing = Boolean(preparingSurah && preparingSurah === surahNum);
   const mushafIsOn = mushafLayout === "mushaf";
   const isPlayingThisContext = isPlaying;
 
-  const labels = {
-    toolbar: labelFor(lang, "Outils de lecture", "Reading tools", "أدوات القراءة"),
-    mushaf: labelFor(lang, "Mushaf", "Mushaf", "المصحف"),
-    list: labelFor(lang, "Liste", "List", "قائمة"),
-    translation: labelFor(lang, "Traduction", "Translation", "الترجمة"),
-    wordByWord: labelFor(lang, "Mot à mot", "Word by word", "كلمة بكلمة"),
-    tajweed: labelFor(lang, "Tajweed", "Tajweed", "التجويد"),
-    memorization: labelFor(lang, "Mémorisation", "Memorization", "الحفظ"),
-    listen: labelFor(lang, "Écouter", "Listen", "استماع"),
-    pause: labelFor(lang, "Pause", "Pause", "إيقاف مؤقت"),
-    loading: labelFor(lang, "Chargement", "Loading", "جار التحميل"),
-  };
-
-  Object.assign(labels, toolbarLabelsFor(lang));
+  const labels = toolbarLabelsFor(lang);
 
   const setMushafLayout = () => {
     if (mushafIsOn) return;
@@ -132,20 +130,18 @@ export default function ReadingToolbar({
 
   return (
     <div
-      className="qc-reader-toolbar mx-auto mb-6 flex w-full max-w-[980px] flex-col items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 shadow-[0_6px_24px_rgba(0,0,0,0.04)] backdrop-blur-md transition-all duration-300 md:flex-row"
+      className={cn(
+        "qc-reader-toolbar mx-auto mb-6 flex w-full max-w-[980px] flex-col items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 backdrop-blur-md transition-all duration-300 md:flex-row",
+        scrolled && "qc-reader-toolbar--sticky",
+      )}
       style={{
-        boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.08)",
+        boxShadow: scrolled ? "var(--shadow-lg)" : "var(--shadow-md)",
         color: "var(--text-primary)",
       }}
       role="toolbar"
       aria-label={labels.toolbar}
     >
       <div className="flex w-full flex-wrap items-center justify-between gap-3 md:w-auto md:justify-start">
-        {contextLabel && (
-          <span className="shrink-0 rounded-xl bg-[rgba(var(--primary-rgb),0.06)] px-3 py-1.5 font-[var(--font-ui)] text-[0.72rem] font-bold tracking-wide text-[var(--primary)]">
-            {contextLabel}
-          </span>
-        )}
         <HizbRukuNavigator
           currentSurah={currentSurah}
           currentAyah={currentAyah || 1}
@@ -205,28 +201,30 @@ export default function ReadingToolbar({
             onClick={() => set({ showTranslation: !showTranslation })}
             aria-pressed={showTranslation}
             aria-label={labels.translation}
-            title={labels.translation}
+            title={`${labels.translation} (T)`}
           >
             <Languages size={13} aria-hidden="true" />
             <span>{labels.translation}</span>
           </button>
 
-          <button
-            type="button"
-            className={cn(
-              "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
-              showWordByWord
-                ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
-                : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
-            )}
-            onClick={toggleWordByWord}
-            aria-pressed={showWordByWord}
-            aria-label={labels.wordByWord}
-            title={labels.wordByWord}
-          >
-            <Type size={13} aria-hidden="true" />
-            <span>{labels.wordByWord}</span>
-          </button>
+          {riwaya !== "warsh" ? (
+            <button
+              type="button"
+              className={cn(
+                "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
+                showWordByWord
+                  ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
+                  : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
+              )}
+              onClick={toggleWordByWord}
+              aria-pressed={showWordByWord}
+              aria-label={labels.wordByWord}
+              title={`${labels.wordByWord} (W)`}
+            >
+              <Type size={13} aria-hidden="true" />
+              <span>{labels.wordByWord}</span>
+            </button>
+          ) : null}
 
           <button
             type="button"
@@ -239,7 +237,7 @@ export default function ReadingToolbar({
             onClick={() => set({ showTajwid: !showTajwid })}
             aria-pressed={showTajwid}
             aria-label={labels.tajweed}
-            title={labels.tajweed}
+            title={`${labels.tajweed} (J)`}
           >
             <Palette size={13} aria-hidden="true" />
             <span>{labels.tajweed}</span>
@@ -256,7 +254,7 @@ export default function ReadingToolbar({
             onClick={toggleMemorization}
             aria-pressed={memMode}
             aria-label={labels.memorization}
-            title={labels.memorization}
+            title={`${labels.memorization} (M)`}
           >
             <Brain size={13} aria-hidden="true" />
             <span>{labels.memorization}</span>
@@ -264,8 +262,30 @@ export default function ReadingToolbar({
         </div>
       </div>
 
-      <div className="flex w-full flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] pt-2.5 md:w-auto md:justify-end md:border-t-0 md:pt-0">
-        <ArabicFontControls lang={lang} compact />
+      <div className="qc-reader-toolbar__utilities flex w-full flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] pt-2.5 md:w-auto md:justify-end md:border-t-0 md:pt-0">
+        <button
+          type="button"
+          className={cn(
+            "reader-typography-trigger",
+            showTypography && "reader-typography-trigger--active",
+          )}
+          onClick={() => setShowTypography((value) => !value)}
+          aria-expanded={showTypography}
+          aria-controls="reader-toolbar-typography-panel"
+        >
+          <SlidersHorizontal size={14} aria-hidden="true" />
+          <span>{labelFor(lang, "Texte", "Text", "الخط")}</span>
+        </button>
+
+        <div
+          id="reader-toolbar-typography-panel"
+          className={cn(
+            "reader-typography-panel",
+            showTypography && "reader-typography-panel--open",
+          )}
+        >
+          <ArabicFontControls lang={lang} compact />
+        </div>
 
         {playHandler && (
           <button
@@ -279,7 +299,7 @@ export default function ReadingToolbar({
                 : "bg-[var(--primary)] hover:bg-[var(--primary-dark,var(--primary))]",
             )}
             aria-label={isPlayingThisContext ? labels.pause : playLabel || labels.listen}
-            title={playLabel || labels.listen}
+            title={`${isPlayingThisContext ? labels.pause : labels.listen} (Space)`}
           >
             {isPreparing ? (
               <Loader2 size={13} className="animate-spin" aria-hidden="true" />

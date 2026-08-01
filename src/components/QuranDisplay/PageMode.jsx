@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { getJuzForAyah } from "../../data/juz";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
@@ -9,9 +9,10 @@ import AyahActionsModal from "./AyahActionsModal";
 import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
 import QuranMushafPage from "./QuranMushafPage";
+import ReaderContextCard from "./ReaderContextCard";
 import { modePaneShellClass } from "./displayClasses";
 
-export default function PageMode({
+function PageMode({
   activeAyah,
   ayahs,
   calibration,
@@ -19,6 +20,7 @@ export default function PageMode({
   currentPage,
   currentPlayingAyah,
   currentSurah,
+  fontFamily,
   getTranslationForAyah,
   isQCF4,
   lang,
@@ -45,6 +47,18 @@ export default function PageMode({
   surahGroups,
   theme,
 }) {
+  const prevPageRef = useRef(currentPage);
+  const [turnClass, setTurnClass] = useState("");
+
+  useEffect(() => {
+    if (prevPageRef.current === currentPage) return;
+    const direction = currentPage > prevPageRef.current ? "next" : "prev";
+    prevPageRef.current = currentPage;
+    setTurnClass(`page-turn--${direction}`);
+    const id = setTimeout(() => setTurnClass(""), 280);
+    return () => clearTimeout(id);
+  }, [currentPage]);
+
   const activeAyahData = ayahs.find(
     (ayah) => ayah.number === activeAyah || ayah.numberInSurah === activeAyah,
   );
@@ -53,11 +67,30 @@ export default function PageMode({
     getJuzForAyah(ayahs[0]?.surah?.number, ayahs[0]?.numberInSurah);
   const pageLabel = lang === "ar" ? toAr(currentPage) : currentPage;
   const pageWord = lang === "fr" ? "Page" : lang === "ar" ? "صفحة" : "Page";
-  const contextLabel = `${pageWord} ${pageLabel} / 604 · ${t("sidebar.juz", lang)} ${
-    currentJuz || ""
-  } · ${riwaya.toUpperCase()}`;
+  const contextSecondary = `${t("sidebar.juz", lang)} ${currentJuz || "—"}`;
   // Disable exact 15-line QCF coordinate rendering in favor of clean normal Arabic text (Unicode)
   const canUseFifteenLinePage = false;
+
+  const touchStartX = useRef(null);
+
+  const handleTouchStart = useCallback((e) => {
+    if (e.touches.length !== 1) return;
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback((e) => {
+    if (touchStartX.current === null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(delta) < 55) return;
+    const isRTL = document.documentElement.dir === 'rtl';
+    const goNext = isRTL ? delta > 0 : delta < 0;
+    if (goNext) {
+      if (currentPage < 604) onNextPage();
+    } else {
+      if (currentPage > 1) onPrevPage();
+    }
+  }, [currentPage, onNextPage, onPrevPage]);
 
   return (
     <div
@@ -66,10 +99,21 @@ export default function PageMode({
       } ${mushafLayout === "mushaf" ? "quran-mode-pane--mushaf" : ""} ${modePaneShellClass}`}
       role="region"
       aria-label={t("settings.pageMode", lang)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <ReadingProgressBar />
+      <ReaderContextCard
+        kind="page"
+        label={pageWord}
+        value={pageLabel}
+        numericValue={currentPage}
+        total={604}
+        secondary={contextSecondary}
+        riwaya={riwaya}
+        lang={lang}
+      />
       <ReadingToolbar
-        contextLabel={contextLabel}
         onPlay={onPlaySurah}
         playLabel={lang === "fr" ? "Écouter la page" : "Listen page"}
         preparingSurah={preparingSurah}
@@ -82,6 +126,7 @@ export default function PageMode({
         onToggleWordByWord={onToggleWordByWord}
       />
 
+      <div className={`page-turn-container ${turnClass}`}>
       {canUseFifteenLinePage ? (
         <>
           <QuranMushafPage
@@ -89,6 +134,7 @@ export default function PageMode({
             ayahs={ayahs}
             currentPage={currentPage}
             currentPlayingAyah={currentPlayingAyah}
+            fontFamily={fontFamily}
             lang={lang}
             onToggleActive={onToggleActive}
             riwaya={riwaya}
@@ -154,6 +200,7 @@ export default function PageMode({
           showPageSeparators
         />
       )}
+      </div>
 
       <ModeNavigation
         className={classes.quranNavClass}
@@ -174,3 +221,5 @@ export default function PageMode({
     </div>
   );
 }
+
+export default memo(PageMode);

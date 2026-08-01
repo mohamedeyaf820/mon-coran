@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { t } from "../../i18n";
 import { getSurah } from "../../data/surahs";
 import SurahReaderHeader from "../Quran/SurahReaderHeader";
@@ -9,11 +9,12 @@ import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
 import { modePaneShellClass } from "./displayClasses";
 
-export default function SurahMode({
+function SurahMode({
   activeAyah,
   ayahs,
   calibration,
   classes,
+  currentAyah,
   currentPlayingAyah,
   currentSurah,
   getTranslationForAyah,
@@ -104,6 +105,7 @@ export default function SurahMode({
       ) : (
         <QCVerseByVerseView
           ayahs={ayahs}
+          initialTargetAyah={currentAyah}
           currentPlayingAyah={currentPlayingAyah}
           activeAyah={activeAyah}
           lang={lang}
@@ -150,3 +152,5 @@ export default function SurahMode({
     </div>
   );
 }
+
+export default memo(SurahMode);

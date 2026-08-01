@@ -24,7 +24,7 @@ export const TAFSIR_SOURCES = Object.entries(TAFSIR_RESOURCES).reduce(
 );
 
 const DEFAULT_TAFSIR_KEY = {
-  fr: "en-kathir",
+  fr: "fr-mukhtasar",
   en: "en-kathir",
   ar: "ar-muyassar",
   wo: "en-kathir",
@@ -87,9 +87,13 @@ export async function fetchTafsirRange(surah, fromAyah, toAyah, tafsirId = null)
 }
 
 export function getAvailableTafsirs(lang = "fr") {
-  const normalizedLang = lang === "fr" || lang === "wo" ? "en" : lang;
+  const allowedLangs = lang === "fr"
+    ? ["fr", "en", "ar"]
+    : lang === "ar"
+      ? ["ar"]
+      : ["en", "ar"];
   return Object.values(TAFSIR_SOURCES)
-    .filter((source) => source.lang === normalizedLang || source.lang === "ar")
+    .filter((source) => allowedLangs.includes(source.lang))
     .map((source) => ({
       id: source.id,
       key: source.key,

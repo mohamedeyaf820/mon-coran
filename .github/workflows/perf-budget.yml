@@ -8,11 +8,6 @@ on:
 jobs:
   bundle-budget:
     runs-on: ubuntu-latest
-    env:
-      BUDGET_CSS_KB: 940
-      BUDGET_JS_KB: 1060
-      BUDGET_SINGLE_CSS_KB: 780
-      BUDGET_SINGLE_JS_KB: 250
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,10 +19,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Build
-        run: npm run build
-
-      - name: Check bundle budget
-        run: npm run perf:budget
+      - name: Build and enforce all budgets
+        run: npm run build:ci

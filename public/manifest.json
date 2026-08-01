@@ -1,45 +1,47 @@
 {
   "name": "MushafPlus - Le Saint Coran",
   "short_name": "MushafPlus",
-  "description": "Une expérience de lecture du Coran premium, fluide et authentique.",
+  "description": "Une expÃ©rience de lecture du Coran premium, fluide et authentique.",
+  "id": "/",
+  "scope": "/",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FEFAF3",
-  "theme_color": "#1B5E3A",
+  "background_color": "#071A0F",
+  "theme_color": "#0D5C4A",
   "icons": [
     {
-      "src": "/logo.png",
+      "src": "/logo-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/logo.png",
+      "src": "/logo-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/logo.png",
-      "sizes": "1024x1024",
+      "src": "/logo-192-maskable.png",
+      "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "maskable"
     },
     {
-      "src": "/logo.png",
+      "src": "/logo-512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
+      "src": "/favicon.png",
+      "sizes": "64x64",
+      "type": "image/png"
     }
   ],
   "orientation": "any",
   "dir": "auto",
-  "lang": "fr-FR",
+  "lang": "fr",
   "categories": ["books", "reference", "education"],
   "shortcuts": [
     {
@@ -47,23 +49,38 @@
       "short_name": "Al-Fatiha",
       "description": "Ouvrir la Sourate Al-Fatiha",
       "url": "/surah/1",
-      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+      "icons": [{ "src": "/shortcut-quran-96.png", "sizes": "96x96", "type": "image/png" }]
     },
     {
       "name": "Sourate Al-Mulk",
       "short_name": "Al-Mulk",
       "description": "Ouvrir la Sourate Al-Mulk",
       "url": "/surah/67",
-      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+      "icons": [{ "src": "/shortcut-quran-96.png", "sizes": "96x96", "type": "image/png" }]
     },
     {
       "name": "Sourate Al-Kahf",
       "short_name": "Al-Kahf",
       "description": "Ouvrir la Sourate Al-Kahf",
       "url": "/surah/18",
-      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+      "icons": [{ "src": "/shortcut-quran-96.png", "sizes": "96x96", "type": "image/png" }]
     }
   ],
-  "screenshots": [],
+  "screenshots": [
+    {
+      "src": "/pwa-home-wide.png",
+      "sizes": "1440x900",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Accueil MushafPlus sur ordinateur"
+    },
+    {
+      "src": "/pwa-home-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Accueil MushafPlus sur mobile"
+    }
+  ],
   "prefer_related_applications": false
 }

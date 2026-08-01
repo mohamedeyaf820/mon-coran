@@ -81,14 +81,44 @@ export default function useQuranDisplayScroll({
   }, [currentJuz, currentPage, currentSurah, getScrollContainer]);
 
   useEffect(() => {
-    if (!currentAyah || ayahCount === 0 || displayMode !== "surah") return;
-    const timer = window.setTimeout(() => {
-      document.getElementById(`ayah-${currentAyah}`)?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
+    if (
+      !currentAyah ||
+      Number(currentAyah) <= 1 ||
+      ayahCount === 0 ||
+      displayMode !== "surah"
+    ) {
+      return;
+    }
+    let cancelled = false;
+    let correctionTimer = null;
+    let frameId = null;
+
+    const alignTarget = () => {
+      if (cancelled) return;
+      frameId = window.requestAnimationFrame(() => {
+        const target = document.getElementById(`ayah-${currentAyah}`);
+        if (!target) return;
+        target.scrollIntoView({ behavior: "auto", block: "center" });
+        correctionTimer = window.setTimeout(() => {
+          if (!cancelled) {
+            target.scrollIntoView({ behavior: "auto", block: "center" });
+          }
+        }, 220);
       });
-    }, 120);
-    return () => window.clearTimeout(timer);
+    };
+
+    const fontReady = document.fonts?.ready;
+    if (fontReady && typeof fontReady.then === "function") {
+      fontReady.then(alignTarget, alignTarget);
+    } else {
+      alignTarget();
+    }
+
+    return () => {
+      cancelled = true;
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
+      if (correctionTimer !== null) window.clearTimeout(correctionTimer);
+    };
   }, [currentAyah, ayahCount, displayMode]);
 
   useEffect(() => {

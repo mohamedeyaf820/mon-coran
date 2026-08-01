@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://frolicking-kleicha-76adae.netlify.app/sitemap.xml

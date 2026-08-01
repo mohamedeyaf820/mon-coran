@@ -33,32 +33,55 @@ const VERSES = [
   },
 ];
 
+const skipLabels = { ar: 'تخطي', fr: 'Passer', en: 'Skip' };
+const SPLASH_MIN_VISIBLE_MS = 3000;
+const SPLASH_MAX_VISIBLE_MS = 4500;
+const SPLASH_FADE_MS = 240;
+const SPLASH_SKIP_DELAY_MS = 2200;
+
 export default function SplashScreen({
   onDone,
   onPrefetch,
   lowPerfMode = false,
+  lang = "fr",
 }) {
   const [fadeOut, setFadeOut] = useState(false);
+  const dismissedRef = React.useRef(false);
   const [verseIndex, setVerseIndex] = useState(0);
   const [verseVisible, setVerseVisible] = useState(true);
   const [showSkip, setShowSkip] = useState(false);
 
   useEffect(() => {
-    if (lowPerfMode) return;
-    const t = setTimeout(() => setShowSkip(true), 800);
-    return () => clearTimeout(t);
-  }, [lowPerfMode]);
+    const timer = setTimeout(
+      () => setShowSkip(true),
+      SPLASH_SKIP_DELAY_MS,
+    );
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
-    if (onPrefetch) onPrefetch();
+    const dismiss = () => {
+      if (dismissedRef.current) return;
+      dismissedRef.current = true;
+      setFadeOut(true);
+      setTimeout(onDone, SPLASH_FADE_MS);
+    };
 
-    if (lowPerfMode) {
-      const t1 = setTimeout(() => setFadeOut(true), 300);
-      const t2 = setTimeout(() => onDone(), 500);
-      return () => {
-        clearTimeout(t1);
-        clearTimeout(t2);
-      };
+    let prefetchDone = false;
+    let timerDone = false;
+    const tryEarlyDismiss = () => {
+      if (prefetchDone && timerDone) dismiss();
+    };
+
+    if (onPrefetch) {
+      const result = onPrefetch();
+      if (result && typeof result.then === "function") {
+        result.then(() => { prefetchDone = true; tryEarlyDismiss(); }).catch(() => { prefetchDone = true; tryEarlyDismiss(); });
+      } else {
+        prefetchDone = true;
+      }
+    } else {
+      prefetchDone = true;
     }
 
     // Rotation des versets toutes les ~1.4 s
@@ -70,14 +93,18 @@ export default function SplashScreen({
       }, 350);
     }, 1600);
 
-    // Keep the splash decorative, but do not let it feel like a loading wall.
-    const t1 = setTimeout(() => setFadeOut(true), 950);
-    const t2 = setTimeout(() => onDone(), 1250);
+    // Keep the branded opening visible for three seconds while the actual app
+    // renders behind it. Slow prefetches may extend it, but never beyond 4.5 s.
+    const minTimer = setTimeout(() => {
+      timerDone = true;
+      tryEarlyDismiss();
+    }, SPLASH_MIN_VISIBLE_MS);
+    const maxTimer = setTimeout(() => dismiss(), SPLASH_MAX_VISIBLE_MS);
 
     return () => {
       clearInterval(verseTick);
-      clearTimeout(t1);
-      clearTimeout(t2);
+      clearTimeout(minTimer);
+      clearTimeout(maxTimer);
     };
   }, [onDone, onPrefetch, lowPerfMode]);
 
@@ -89,14 +116,17 @@ export default function SplashScreen({
     >
       {showSkip && !fadeOut && (
         <button
+          type="button"
           className="splash-skip"
           onClick={() => {
+            if (dismissedRef.current) return;
+            dismissedRef.current = true;
             setShowSkip(false);
             setFadeOut(true);
-            setTimeout(onDone, 600);
+            setTimeout(onDone, SPLASH_FADE_MS);
           }}
         >
-          Skip ›
+          {skipLabels[lang] ?? skipLabels.fr} ›
         </button>
       )}
       {/* Halo doré central */}
@@ -134,29 +164,34 @@ export default function SplashScreen({
           width={160}
           height={160}
         />
-        <h1 className="splash-title">MushafPlus</h1>
-        <p className="splash-subtitle">القرآن الكريم</p>
+        <div className="splash-title" aria-label="MushafPlus">MushafPlus</div>
+        <p className="splash-subtitle" lang="ar" dir="rtl">
+          القرآن الكريم
+        </p>
 
         {/* Verset tournant */}
         <div
           className={`splash-verse-wrap ${verseVisible ? "verse-in" : "verse-out"}`}
         >
-          <p className="splash-verse">{v.ar}</p>
-          <p className="splash-verse-ref">{v.ref}</p>
+          <p className="splash-verse" lang="ar" dir="rtl">{v.ar}</p>
+          <p className="splash-verse-ref" lang="ar" dir="rtl">{v.ref}</p>
         </div>
 
         {/* Barre de progression */}
         <div
           className="splash-loader"
-          role="progressbar"
-          aria-label={t("splash.loading")}
+          role="status"
+          aria-live="polite"
         >
+          <span className="sr-only">{t("splash.loading", lang)}</span>
           <div className="splash-loader-bar" />
         </div>
         <div className="splash-ornament" aria-hidden="true">
           ✦ ✦ ✦
         </div>
-        <p className="splash-loading-text">بِسْمِ اللَّهِ</p>
+        <p className="splash-loading-text" lang="ar" dir="rtl">
+          بِسْمِ اللَّهِ
+        </p>
       </div>
 
       <style>{`
@@ -168,7 +203,7 @@ export default function SplashScreen({
           align-items: center;
           justify-content: center;
           background: linear-gradient(160deg, #071A0F 0%, #102A1A 35%, #1A3828 65%, #0B1F12 100%);
-          transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1);
+          transition: opacity 0.18s cubic-bezier(0.4,0,0.2,1);
           overflow: hidden;
         }
         .splash-screen.perf-low {
@@ -274,7 +309,7 @@ export default function SplashScreen({
         .splash-verse-ref {
           font-family: 'Amiri', serif;
           font-size: 0.75rem;
-          color: rgba(212,175,55,0.45);
+          color: rgba(245,215,133,0.82);
           margin: 0;
           letter-spacing: 1px;
         }
@@ -295,11 +330,12 @@ export default function SplashScreen({
           background: linear-gradient(90deg, #8B6914, #D4AF37, #F5D785, #D4AF37, #8B6914);
           background-size: 300% 100%;
           border-radius: 99px;
+          transform-origin: left center;
           animation: loadBar 3s cubic-bezier(0.4,0,0.6,1) forwards,
                      shimmerBar 1.8s linear infinite;
         }
         .splash-screen.perf-low .splash-loader-bar {
-          animation: loadBar 0.35s linear forwards;
+          animation: loadBar 3s linear forwards;
         }
         .splash-ornament {
           color: rgba(212,175,55,0.25);
@@ -310,7 +346,7 @@ export default function SplashScreen({
         .splash-loading-text {
           font-family: 'Amiri Quran', serif;
           font-size: 0.78rem;
-          color: rgba(212,175,55,0.35);
+          color: rgba(245,215,133,0.78);
           margin: 0;
           letter-spacing: 3px;
           animation: blink 2s ease-in-out infinite;
@@ -322,8 +358,8 @@ export default function SplashScreen({
           to   { opacity: 1; transform: translateY(0)   scale(1);    }
         }
         @keyframes logoPulse {
-          0%,100% { filter: drop-shadow(0 6px 24px rgba(212,175,55,0.28)); transform: scale(1);    }
-          50%     { filter: drop-shadow(0 8px 32px rgba(212,175,55,0.45)); transform: scale(1.03); }
+          0%,100% { opacity: 1;   transform: scale(1);    }
+          50%     { opacity: 0.8; transform: scale(1.03); }
         }
         @keyframes splashHalo {
           0%,100% { transform: translate(-50%,-50%) scale(1);    opacity: 1;   }
@@ -338,12 +374,12 @@ export default function SplashScreen({
           to   { transform: translateX(-50%); }
         }
         @keyframes loadBar {
-          0%   { width: 0%;    }
-          15%  { width: 18%;   }
-          40%  { width: 45%;   }
-          70%  { width: 72%;   }
-          90%  { width: 90%;   }
-          100% { width: 100%;  }
+          0%   { transform: scaleX(0);    transform-origin: left; }
+          15%  { transform: scaleX(0.18); transform-origin: left; }
+          40%  { transform: scaleX(0.45); transform-origin: left; }
+          70%  { transform: scaleX(0.72); transform-origin: left; }
+          90%  { transform: scaleX(0.90); transform-origin: left; }
+          100% { transform: scaleX(1);    transform-origin: left; }
         }
         @keyframes shimmerBar {
           0%   { background-position: 200% center; }
@@ -359,12 +395,13 @@ export default function SplashScreen({
           position: absolute;
           bottom: 2rem;
           right: 2rem;
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          color: rgba(255, 255, 255, 0.5);
-          padding: 0.4rem 1rem;
+          min-height: 44px;
+          background: rgba(255, 255, 255, 0.15);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          color: rgba(255, 255, 255, 0.92);
+          padding: 0.65rem 1.2rem;
           border-radius: 99px;
-          font-size: 0.75rem;
+          font-size: 0.82rem;
           cursor: pointer;
           transition: all 0.2s ease;
           animation: fadeInUp 0.4s ease;
@@ -372,13 +409,37 @@ export default function SplashScreen({
           z-index: 10;
         }
         .splash-skip:hover {
-          background: rgba(255, 255, 255, 0.14);
-          color: rgba(255, 255, 255, 0.8);
-          border-color: rgba(255, 255, 255, 0.22);
+          background: rgba(255, 255, 255, 0.22);
+          color: #fff;
+          border-color: rgba(255, 255, 255, 0.48);
+        }
+        .splash-skip:focus-visible {
+          outline: 3px solid #f5d785;
+          outline-offset: 3px;
         }
         @keyframes fadeInUp {
           from { opacity: 0; transform: translateY(10px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .splash-content,
+          .splash-logo-wrap,
+          .splash-halo,
+          .splash-arabesque,
+          .splash-particle,
+          .splash-loader-bar,
+          .splash-loading-text,
+          .splash-skip {
+            animation: none !important;
+            transition: none !important;
+          }
+          .splash-screen {
+            transition: opacity 0.01s linear !important;
+          }
+          .splash-verse-wrap {
+            transition: none !important;
+            transform: none !important;
+          }
         }
       `}</style>
     </div>

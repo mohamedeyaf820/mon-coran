@@ -1,3 +1,4 @@
+import { Star, BookOpen, ArrowLeft, ArrowRight } from "lucide-react";
 import { cn } from "../../lib/utils";
 
 /**
@@ -68,11 +69,11 @@ export default function DailyVerseCard({
             "px-[0.6rem] py-[0.25rem] rounded-full",
           )}
         >
-          <i className="fas fa-star-and-crescent" aria-hidden="true" />
+          <Star size={12} aria-hidden="true" />
           {t("verseOfDay")}
         </span>
 
-        <span className="text-[0.62rem] text-[var(--text-muted)] [font-family:var(--font-ui)]">
+        <span className="text-[0.62rem] text-[var(--text-secondary)] [font-family:var(--font-ui)]">
           {now.toLocaleDateString(
             lang === "ar" ? "ar-SA" : lang === "fr" ? "fr-FR" : "en-GB",
             { day: "numeric", month: "short" },
@@ -139,16 +140,13 @@ export default function DailyVerseCard({
           )}
           onClick={() => goSurah(vodSurahNum)}
         >
-          <i className="fas fa-book-open" aria-hidden="true" />
+          <BookOpen size={12} aria-hidden="true" />
           {lang === "fr"
             ? "Lire la sourate"
             : lang === "ar"
               ? "اقرأ السورة"
               : "Read surah"}
-          <i
-            className={`fas fa-arrow-${isRtl ? "left" : "right"}`}
-            aria-hidden="true"
-          />
+          {isRtl ? <ArrowLeft size={12} aria-hidden="true" /> : <ArrowRight size={12} aria-hidden="true" />}
         </button>
       )}
     </div>

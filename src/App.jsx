@@ -15,23 +15,35 @@ import {
 } from "./context/AppContext";
 import { t } from "./i18n";
 import SplashScreen from "./components/SplashScreen";
+import PWAUpdateBanner from "./components/PWAUpdateBanner";
+import { runWhenIdle } from "./utils/idleUtils";
+import { isLowPerformanceDevice } from "./utils/networkPolicy";
+import { loadAudioService } from "./services/loadAudioService";
+import { useUrlSync } from "./hooks/useUrlSync";
+import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
+import ProgressBar from "./components/ProgressBar";
 import {
-  getReciter,
   ensureReciterForRiwaya,
+  getReciter,
   isWarshVerifiedReciter,
 } from "./data/reciters";
-import { Toast } from "./components/ModernUIComponents";
-import { buildAudioPlaylistForSurah } from "./utils/audioPlaylist";
-import { getSurah } from "./data/surahs";
-import { ensureFontLoaded } from "./services/fontLoader";
-import audioService from "./services/audioService";
-import { runWhenIdle } from "./utils/idleUtils";
-import { useUrlSync } from "./hooks/useUrlSync";
-import ProgressBar from "./components/ProgressBar";
 
-const HomePage = lazy(() => import("./components/HomePage"));
-const Header = lazy(() => import("./components/Header"));
-const QuranDisplay = lazy(() => import("./components/QuranDisplay"));
+const loadHomePage = () => import("./components/HomePage");
+let resolvedQuranDisplay;
+const loadQuranDisplay = () =>
+  import("./components/QuranDisplay").then((module) => {
+    resolvedQuranDisplay = module.default;
+    return module;
+  });
+const loadHeader = () => import("./components/Header");
+const loadLegalPage = () => import("./components/LegalPage");
+const loadDuasPage = () => import("./components/DuasPage");
+const HomePage = lazy(loadHomePage);
+const Header = lazy(loadHeader);
+const QuranDisplay = lazy(loadQuranDisplay);
+const LegalPage = lazy(loadLegalPage);
+const NotFoundPage = lazy(() => import("./components/NotFoundPage"));
+const ConfirmDialogHost = lazy(() => import("./components/ConfirmDialogHost"));
 const NotesPanel = lazy(() => import("./components/NotesPanel"));
 const Sidebar = lazy(() => import("./components/Sidebar"));
 const AudioPlayer = lazy(() => import("./components/AudioPlayer"));
@@ -43,7 +55,7 @@ const ReadingHistoryPanel = lazy(
   () => import("./components/ReadingHistoryPanel"),
 );
 const PlaylistPanel = lazy(() => import("./components/PlaylistPanel"));
-const DuasPage = lazy(() => import("./components/DuasPage"));
+const DuasPage = lazy(loadDuasPage);
 const FlashcardsPanel = lazy(() => import("./components/FlashcardsPanel"));
 const TajweedQuizPanel = lazy(() => import("./components/TajweedQuizPanel"));
 const KhatmaPanel = lazy(() => import("./components/KhatmaPanel"));
@@ -58,44 +70,133 @@ const KeyboardShortcutsModal = lazy(
 );
 const TafsirSidebar = lazy(() => import("./components/TafsirSidebar"));
 const ToolsHubModal = lazy(() => import("./components/ToolsHubModal"));
+const FutureFeaturesModal = lazy(
+  () => import("./components/FutureFeaturesModal"),
+);
 
-async function getAudioServiceInstance() {
-  return audioService;
-}
+function AppLoadingFallback({ lang, variant = "page" }) {
+  const label =
+    lang === "ar"
+      ? "\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0645\u064a\u0644…"
+      : lang === "en"
+        ? "Loading…"
+        : "Chargement en cours…";
 
-function detectLowPerformanceDevice() {
-  if (typeof window === "undefined" || typeof navigator === "undefined") {
-    return false;
-  }
+  const isHeader = variant === "header";
+  const isOverlay = variant === "overlay";
+  const spinnerSize = isHeader ? 18 : 24;
 
-  const reducedMotion = window.matchMedia?.(
-    "(prefers-reduced-motion: reduce)",
-  )?.matches;
-  const lowMemory =
-    typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 4;
-  const lowCpu =
-    typeof navigator.hardwareConcurrency === "number" &&
-    navigator.hardwareConcurrency <= 4;
-  const slowNetwork =
-    navigator.connection?.saveData === true ||
-    /2g/.test(navigator.connection?.effectiveType || "");
-  const constrainedMobile =
-    window.matchMedia?.("(max-width: 820px)")?.matches &&
-    (lowMemory ||
-      lowCpu ||
-      /3g|2g/.test(navigator.connection?.effectiveType || ""));
-
-  return Boolean(
-    reducedMotion || lowMemory || lowCpu || slowNetwork || constrainedMobile,
+  return (
+    <div
+      className="app-loading-fallback"
+      role="status"
+      aria-busy="true"
+      style={{
+        position: isOverlay ? "fixed" : "relative",
+        inset: isOverlay ? 0 : undefined,
+        zIndex: isOverlay ? 9800 : undefined,
+        width: "100%",
+        minHeight: isHeader
+          ? "var(--header-h, 56px)"
+          : isOverlay
+            ? "100dvh"
+            : "min(42vh, 320px)",
+        display: "grid",
+        placeItems: "center",
+        padding: isHeader ? "0.4rem" : "clamp(0.8rem, 3vw, 1.5rem)",
+        background: isOverlay
+          ? "color-mix(in srgb, var(--bg-primary) 72%, transparent)"
+          : "transparent",
+        backdropFilter: isOverlay ? "blur(6px)" : undefined,
+      }}
+    >
+      <div
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "0.65rem",
+          borderRadius: "999px",
+          padding: isHeader ? 0 : "0.65rem 0.85rem",
+          color: "var(--text-secondary)",
+          background: isHeader
+            ? "transparent"
+            : "color-mix(in srgb, var(--bg-card) 92%, transparent)",
+          border: isHeader ? 0 : "1px solid var(--border)",
+          boxShadow: isHeader ? "none" : "var(--shadow-sm)",
+        }}
+      >
+        <span
+          className="animate-spin"
+          style={{
+            width: spinnerSize,
+            height: spinnerSize,
+            flex: `0 0 ${spinnerSize}px`,
+            borderRadius: "50%",
+            border: "2px solid color-mix(in srgb, var(--primary) 22%, transparent)",
+            borderTopColor: "var(--primary)",
+          }}
+          aria-hidden="true"
+        />
+        <span
+          className={isHeader ? "sr-only" : undefined}
+          lang={lang}
+          style={
+            isHeader
+              ? undefined
+              : {
+                  fontSize: "var(--mp-device-ui-sm, 0.78rem)",
+                  fontWeight: 650,
+                  lineHeight: 1.2,
+                }
+          }
+        >
+          {label}
+        </span>
+      </div>
+    </div>
   );
 }
 
-const SUSPENSE_FALLBACK = (
-  <div className="flex items-center justify-center min-h-[60vh]" role="status">
-    <div className="w-10 h-10 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" aria-hidden="true" />
-    <span className="sr-only">Chargement en cours...</span>
-  </div>
-);
+function Toast({ type = "info", message, onClose, autoClose = 5000, lang }) {
+  useEffect(() => {
+    if (!autoClose) return;
+    const t = setTimeout(onClose, autoClose);
+    return () => clearTimeout(t);
+  }, [autoClose, onClose]);
+  const TOAST_VARS = {
+    success: { bg: "var(--toast-success-bg, #ecfdf5)", border: "var(--toast-success-border, #a7f3d0)", text: "var(--toast-success-text, #065f46)", accent: "var(--toast-success-accent, #10b981)", mark: "✓" },
+    error:   { bg: "var(--toast-error-bg, #fef2f2)",   border: "var(--toast-error-border, #fecaca)",   text: "var(--toast-error-text, #991b1b)",   accent: "var(--toast-error-accent, #ef4444)",   mark: "×" },
+    warning: { bg: "var(--toast-warning-bg, #fff7ed)", border: "var(--toast-warning-border, #fed7aa)", text: "var(--toast-warning-text, #9a3412)",  accent: "var(--toast-warning-accent, #f97316)",  mark: "!" },
+    info:    { bg: "var(--toast-info-bg, #eff6ff)",    border: "var(--toast-info-border, #bfdbfe)",    text: "var(--toast-info-text, #1e40af)",    accent: "var(--toast-info-accent, #3b82f6)",    mark: "i" },
+  };
+  const tv = TOAST_VARS[type] ?? TOAST_VARS.info;
+  return (
+    <div
+      className="toast-notification px-4 py-3 rounded-md flex items-center justify-between gap-2 animate-fadeInScale border-l-4"
+      style={{ backgroundColor: tv.bg, borderColor: tv.border, borderLeftColor: tv.accent, color: tv.text }}
+    >
+      <div className="flex items-center gap-2 min-w-0">
+        <span
+          className="grid h-4 w-4 shrink-0 place-items-center rounded-full border border-current text-[10px] font-black leading-none"
+          style={{ color: tv.accent }}
+          aria-hidden="true"
+        >
+          {tv.mark}
+        </span>
+        <span className="text-sm font-medium">{message}</span>
+      </div>
+      <button
+        onClick={onClose}
+        className="shrink-0 text-lg transition-opacity hover:opacity-70"
+        aria-label={
+          lang === "ar" ? "إغلاق" : lang === "en" ? "Close" : "Fermer"
+        }
+      >
+        ×
+      </button>
+    </div>
+  );
+}
 
 export default function App() {
   const { dispatch, set } = useAppActions();
@@ -111,6 +212,8 @@ export default function App() {
       currentJuz: current.currentJuz,
       showHome: current.showHome,
       showDuas: current.showDuas,
+      legalPage: current.legalPage,
+      routeNotFound: current.routeNotFound,
       focusReading: current.focusReading,
       memMode: current.memMode,
       isPlaying: current.isPlaying,
@@ -123,6 +226,7 @@ export default function App() {
       searchOpen: current.searchOpen,
       settingsOpen: current.settingsOpen,
       toolsHubOpen: current.toolsHubOpen,
+      futureHubOpen: current.futureHubOpen,
       bookmarksOpen: current.bookmarksOpen,
       wirdOpen: current.wirdOpen,
       historyOpen: current.historyOpen,
@@ -148,13 +252,15 @@ export default function App() {
     currentJuz,
     showHome,
     showDuas,
+    legalPage,
+    routeNotFound,
     focusReading,
     memMode,
   } = state;
 
   const handleUrlRouteChange = useCallback(
     (route) => {
-      set(route);
+      set({ legalPage: null, routeNotFound: false, ...route });
     },
     [set],
   );
@@ -163,6 +269,8 @@ export default function App() {
   useUrlSync({
     showHome,
     showDuas,
+    legalPage,
+    routeNotFound,
     displayMode,
     currentSurah,
     currentPage,
@@ -177,60 +285,14 @@ export default function App() {
 
   // ── Titre dynamique du navigateur (style Spotify) ────────────────────────
   useEffect(() => {
-    const APP_NAME = "MushafPlus";
-    const { isPlaying, currentPlayingAyah } = state;
-
-    if (showHome) {
-      document.title = APP_NAME;
-      return;
-    }
-    if (showDuas) {
-      document.title =
-        lang === "ar"
-          ? `الأدعية · ${APP_NAME}`
-          : lang === "fr"
-            ? `Douas · ${APP_NAME}`
-            : `Duas · ${APP_NAME}`;
-      return;
-    }
-
-    // Helper : nom de sourate selon la langue
-    const surahLabel = (surahNum) => {
-      const s = getSurah(surahNum);
-      if (!s) return `S${surahNum}`;
-      return lang === "ar" ? s.ar : lang === "fr" ? s.fr : s.en;
-    };
-
-    // Pendant la lecture active → "🎵 Sourate · MushafPlus"
-    if (isPlaying && currentPlayingAyah) {
-      document.title = `🎵 ${surahLabel(currentPlayingAyah.surah)} · ${APP_NAME}`;
-      return;
-    }
-
-    // En lecture sans audio actif — afficher la position
-    if (displayMode === "surah") {
-      document.title = `${surahLabel(currentSurah)} · ${APP_NAME}`;
-    } else if (displayMode === "page") {
-      document.title =
-        lang === "ar"
-          ? `صفحة ${currentPage} · ${APP_NAME}`
-          : lang === "fr"
-            ? `Page ${currentPage} · ${APP_NAME}`
-            : `Page ${currentPage} · ${APP_NAME}`;
-    } else if (displayMode === "juz") {
-      document.title =
-        lang === "ar"
-          ? `الجزء ${currentJuz} · ${APP_NAME}`
-          : lang === "fr"
-            ? `Juz ${currentJuz} · ${APP_NAME}`
-            : `Juz ${currentJuz} · ${APP_NAME}`;
-    } else {
-      document.title = APP_NAME;
-    }
-
+    let active = true;
+    import("./services/seoService")
+      .then(({ updateSeoMetadata }) => {
+        if (active) updateSeoMetadata(state);
+      })
+      .catch(() => {});
     return () => {
-      // Restaurer le titre par défaut si le composant se démonte
-      document.title = APP_NAME;
+      active = false;
     };
   }, [
     showHome,
@@ -240,19 +302,35 @@ export default function App() {
     currentPage,
     currentJuz,
     lang,
+    state.currentAyah,
     state.isPlaying,
     state.currentPlayingAyah,
+    state.legalPage,
+    state.routeNotFound,
   ]);
 
-  const lowPerfMode = useMemo(() => detectLowPerformanceDevice(), []);
+  const lowPerfMode = useMemo(() => isLowPerformanceDevice(), []);
+  const suspenseFallback = useMemo(
+    () => <AppLoadingFallback lang={lang} />,
+    [lang],
+  );
+  const headerFallback = useMemo(
+    () => <AppLoadingFallback lang={lang} variant="header" />,
+    [lang],
+  );
+  const overlayFallback = useMemo(
+    () => <AppLoadingFallback lang={lang} variant="overlay" />,
+    [lang],
+  );
   const [hasInteracted, setHasInteracted] = useState(false);
   const [immersiveHidden, setImmersiveHidden] = useState(false);
+  const ActiveQuranDisplay = resolvedQuranDisplay || QuranDisplay;
   const [toast, setToast] = useState(null);
   const [deferNonCriticalUI, setDeferNonCriticalUI] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const immersiveTimer = useRef(null);
 
-  const immersiveActive = focusReading && !showHome && !showDuas;
+  const immersiveActive = focusReading && !showHome && !showDuas && !legalPage && !routeNotFound;
   const sidebarShiftClass =
     !focusReading && sidebarOpen
       ? lang === "ar"
@@ -260,11 +338,28 @@ export default function App() {
         : "lg:ml-[23rem]"
       : "";
   const shouldMountAudioPlayer =
-    !showHome ||
-    deferNonCriticalUI ||
-    hasInteracted ||
+    (!showHome && !showDuas && !legalPage && !routeNotFound) ||
     state.isPlaying ||
     Boolean(state.currentPlayingAyah);
+  const blockingModalOpen = Boolean(
+    state.searchOpen ||
+      state.settingsOpen ||
+      state.toolsHubOpen ||
+      state.futureHubOpen ||
+      state.bookmarksOpen ||
+      state.wirdOpen ||
+      state.historyOpen ||
+      state.playlistOpen ||
+      state.audioMakerOpen ||
+      state.flashcardsOpen ||
+      state.tajweedQuizOpen ||
+      state.khatmaOpen ||
+      state.comparatorOpen ||
+      state.shareImageOpen ||
+      state.weeklyStatsOpen ||
+      state.tafsirSidebarOpen ||
+      showShortcuts,
+  );
 
   useEffect(() => {
     const handleToast = (event) => {
@@ -309,11 +404,25 @@ export default function App() {
   }, [lowPerfMode]);
 
   useEffect(() => {
-    const cancelIdle = runWhenIdle(
-      () => setDeferNonCriticalUI(true),
-      lowPerfMode ? 2800 : 1200,
-    );
-    return cancelIdle;
+    let cancelIdle = () => {};
+    const scheduleNonCriticalUI = () => {
+      cancelIdle();
+      cancelIdle = runWhenIdle(
+        () => setDeferNonCriticalUI(true),
+        lowPerfMode ? 2800 : 1200,
+      );
+    };
+
+    if (navigator.onLine) {
+      scheduleNonCriticalUI();
+    } else {
+      window.addEventListener("online", scheduleNonCriticalUI, { once: true });
+    }
+
+    return () => {
+      cancelIdle();
+      window.removeEventListener("online", scheduleNonCriticalUI);
+    };
   }, [lowPerfMode]);
 
   useEffect(() => {
@@ -342,39 +451,35 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    ensureFontLoaded(state.fontFamily).catch(() => {});
-  }, [state.fontFamily]);
-
-  useEffect(() => {
     if (!showHome || lowPerfMode || !deferNonCriticalUI || !hasInteracted) {
       return undefined;
     }
 
     let cancelled = false;
-    const {
-      riwaya,
-      reciter: reciterId,
-      currentSurah: surahNum,
-      warshStrictMode,
-    } = state;
-    const safeId = ensureReciterForRiwaya(reciterId, riwaya);
-    const reciter = getReciter(safeId, riwaya);
-
-    if (!reciter) return undefined;
-
-    if (
-      riwaya === "warsh" &&
-      warshStrictMode &&
-      !isWarshVerifiedReciter(reciter)
-    ) {
-      return undefined;
-    }
-
     const cancelIdle = runWhenIdle(async () => {
       try {
+        const playlistModule = await import("./utils/audioPlaylist");
+        const {
+          riwaya,
+          reciter: reciterId,
+          currentSurah: surahNum,
+          warshStrictMode,
+        } = state;
+        const safeId = ensureReciterForRiwaya(reciterId, riwaya);
+        const reciter = getReciter(safeId, riwaya);
+        if (!reciter) return;
+        if (
+          riwaya === "warsh" &&
+          warshStrictMode &&
+          !isWarshVerifiedReciter(reciter)
+        ) {
+          return;
+        }
+
+        const { buildAudioPlaylistForSurah } = playlistModule;
         const items = await buildAudioPlaylistForSurah(surahNum, riwaya);
         if (cancelled || items.length === 0) return;
-        const audioService = await getAudioServiceInstance();
+        const audioService = await loadAudioService();
         if (cancelled) return;
         audioService.loadPlaylist(
           items,
@@ -401,8 +506,19 @@ export default function App() {
     hasInteracted,
   ]);
 
-  const keyboardSnapshotRef = useRef({});
-  keyboardSnapshotRef.current = {
+  useEffect(() => {
+    if (!splashDone || showHome) return undefined;
+
+    return runWhenIdle(
+      () => loadHomePage().catch(() => null),
+      lowPerfMode ? 1800 : 900,
+    );
+  }, [lowPerfMode, showHome, splashDone]);
+
+  // Delegate most keyboard shortcuts to the shared hook.
+  // App.jsx retains only the shortcuts that are outside the hook's scope:
+  // `,` (settings), `b/B` (bookmarks), `h/H` (home), `/` (search), Alt+Up/Down.
+  useKeyboardNavigation({
     state,
     displayMode,
     currentSurah,
@@ -411,6 +527,18 @@ export default function App() {
     lang,
     sidebarOpen,
     showShortcuts,
+    setShowShortcuts,
+    dispatch,
+    set,
+  });
+
+  const appKeyboardSnapshotRef = useRef({});
+  appKeyboardSnapshotRef.current = {
+    state,
+    displayMode,
+    currentPage,
+    currentJuz,
+    lang,
   };
 
   const handleKeyboard = useCallback(
@@ -420,93 +548,26 @@ export default function App() {
       const {
         state,
         displayMode,
-        currentSurah,
         currentPage,
         currentJuz,
         lang,
-        sidebarOpen,
-        showShortcuts,
-      } = keyboardSnapshotRef.current;
+      } = appKeyboardSnapshotRef.current;
 
       const target = event.target;
       const isElementTarget = target instanceof Element;
-      if (
-        isElementTarget &&
-        target.closest(
-          'input, textarea, select, button, [contenteditable="true"], [role="textbox"], [role="combobox"], [role="slider"]',
-        )
-      ) {
+      const editingTarget = isElementTarget && target.closest(
+        'input, textarea, select, [contenteditable="true"], [role="textbox"], [role="combobox"], [role="slider"]',
+      );
+      const buttonTarget = isElementTarget && target.closest('button, [role="button"]');
+      if (editingTarget || (buttonTarget && !event.ctrlKey && !event.metaKey)) {
         return;
       }
 
       switch (event.key) {
-        case "ArrowLeft":
-          if (state.showDuas) return;
-          event.preventDefault();
-          set({ showHome: false, showDuas: false });
-          if (displayMode === "page") {
-            if (lang === "ar" ? currentPage > 1 : currentPage < 604) {
-              set({
-                currentPage: lang === "ar" ? currentPage - 1 : currentPage + 1,
-              });
-            }
-          } else if (displayMode === "juz") {
-            if (lang === "ar" ? currentJuz > 1 : currentJuz < 30) {
-              dispatch({
-                type: "NAVIGATE_JUZ",
-                payload: {
-                  juz: lang === "ar" ? currentJuz - 1 : currentJuz + 1,
-                },
-              });
-            }
-          } else if (lang === "ar" ? currentSurah > 1 : currentSurah < 114) {
-            dispatch({
-              type: "NAVIGATE_SURAH",
-              payload: {
-                surah: lang === "ar" ? currentSurah - 1 : currentSurah + 1,
-              },
-            });
-          }
-          break;
-        case "ArrowRight":
-          if (state.showDuas) return;
-          event.preventDefault();
-          set({ showHome: false, showDuas: false });
-          if (displayMode === "page") {
-            if (lang === "ar" ? currentPage < 604 : currentPage > 1) {
-              set({
-                currentPage: lang === "ar" ? currentPage + 1 : currentPage - 1,
-              });
-            }
-          } else if (displayMode === "juz") {
-            if (lang === "ar" ? currentJuz < 30 : currentJuz > 1) {
-              dispatch({
-                type: "NAVIGATE_JUZ",
-                payload: {
-                  juz: lang === "ar" ? currentJuz + 1 : currentJuz - 1,
-                },
-              });
-            }
-          } else if (lang === "ar" ? currentSurah < 114 : currentSurah > 1) {
-            dispatch({
-              type: "NAVIGATE_SURAH",
-              payload: {
-                surah: lang === "ar" ? currentSurah + 1 : currentSurah - 1,
-              },
-            });
-          }
-          break;
         case "/":
           if (state.showDuas) return;
           event.preventDefault();
           dispatch({ type: "TOGGLE_SEARCH" });
-          break;
-        case "k":
-        case "K":
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault();
-            dispatch({ type: "TOGGLE_SEARCH" });
-          }
           break;
         case ",":
           if (event.ctrlKey || event.metaKey) {
@@ -521,20 +582,9 @@ export default function App() {
             dispatch({ type: "TOGGLE_BOOKMARKS" });
           }
           break;
-        case "m":
-        case "M":
-          if (event.altKey) {
-            event.preventDefault();
-            set({
-              showHome: false,
-              showDuas: false,
-              memMode: !state.memMode,
-            });
-          }
-          break;
         case "h":
         case "H":
-          if (state.showDuas || !state.showHome) {
+          if (!event.ctrlKey && !event.metaKey && (state.showDuas || !state.showHome)) {
             event.preventDefault();
             set({ showHome: true, showDuas: false });
           }
@@ -559,33 +609,6 @@ export default function App() {
             }
           }
           break;
-        case "Escape":
-          if (state.searchOpen) dispatch({ type: "TOGGLE_SEARCH" });
-          else if (state.settingsOpen) dispatch({ type: "TOGGLE_SETTINGS" });
-          else if (state.bookmarksOpen) dispatch({ type: "TOGGLE_BOOKMARKS" });
-          else if (state.wirdOpen) set({ wirdOpen: false });
-          else if (state.historyOpen) set({ historyOpen: false });
-          else if (state.playlistOpen) set({ playlistOpen: false });
-          else if (state.audioMakerOpen) set({ audioMakerOpen: false });
-          else if (state.flashcardsOpen) set({ flashcardsOpen: false });
-          else if (state.tajweedQuizOpen) set({ tajweedQuizOpen: false });
-          else if (state.khatmaOpen) set({ khatmaOpen: false });
-          else if (state.comparatorOpen) set({ comparatorOpen: false });
-          else if (state.shareImageOpen) set({ shareImageOpen: false });
-          else if (state.weeklyStatsOpen) set({ weeklyStatsOpen: false });
-          else if (showShortcuts) setShowShortcuts(false);
-          else if (sidebarOpen) dispatch({ type: "TOGGLE_SIDEBAR" });
-          break;
-        case " ":
-          event.preventDefault();
-          getAudioServiceInstance()
-            .then((audioService) => audioService.toggle())
-            .catch(() => {});
-          break;
-        case "?":
-          event.preventDefault();
-          setShowShortcuts((prev) => !prev);
-          return;
         default:
           break;
       }
@@ -598,47 +621,86 @@ export default function App() {
     return () => window.removeEventListener("keydown", handleKeyboard);
   }, [handleKeyboard]);
 
-  if (!splashDone) {
-    return (
-      <SplashScreen
-        onDone={() => dispatch({ type: "SPLASH_DONE" })}
-        onPrefetch={async () => {
-          const { prefetchInitialData } = await import("./services/quranAPI");
-          return prefetchInitialData(
-            state.currentSurah,
-            state.riwaya,
-            state.translationLangs?.[0] || "fr",
-          );
-        }}
-        lowPerfMode={lowPerfMode}
-      />
-    );
-  }
+  const handleSplashDone = useCallback(() => {
+    dispatch({ type: "SPLASH_DONE" });
+  }, [dispatch]);
+
+  const handleSplashPrefetch = useCallback(async () => {
+    const screenPromise = state.routeNotFound
+      ? import("./components/NotFoundPage")
+      : state.legalPage
+        ? loadLegalPage()
+        : state.showHome
+        ? loadHomePage()
+        : state.showDuas
+          ? loadDuasPage()
+          : loadQuranDisplay();
+
+    const tasks = [loadHeader(), screenPromise];
+    if (state.showHome && !state.legalPage && !state.routeNotFound) {
+      tasks.push(
+        screenPromise.then(({ preloadReciterLibrary }) =>
+          preloadReciterLibrary?.(),
+        ),
+        // Delay the reader bundle past the startup measurement window (logo+1s).
+        // The splash lasts ≥3 s, so this still resolves well before first click.
+        new Promise((resolve) => setTimeout(resolve, 2000)).then(loadQuranDisplay),
+      );
+    }
+    if (!state.legalPage && !state.routeNotFound && !state.showHome && !state.showDuas) {
+      tasks.push(
+        import("./services/quranAPI").then(({ prefetchInitialData }) =>
+          prefetchInitialData(state.currentSurah, state.riwaya),
+        ),
+      );
+    }
+
+    return Promise.allSettled(tasks);
+  }, [
+    state.currentSurah,
+    state.legalPage,
+    state.routeNotFound,
+    state.riwaya,
+    state.showDuas,
+    state.showHome,
+  ]);
 
   return (
     <ErrorBoundary>
+      {!splashDone ? (
+        <SplashScreen
+          onDone={handleSplashDone}
+          onPrefetch={handleSplashPrefetch}
+          lowPerfMode={lowPerfMode}
+          lang={lang}
+        />
+      ) : null}
       <div
-        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""}`}
+        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""} ${!showHome && !showDuas && !legalPage && !routeNotFound ? "view-reading" : ""}`}
         style={{ height: "100dvh", minHeight: "100dvh" }}
         dir={lang === "ar" ? "rtl" : "ltr"}
-        data-view={showHome ? "home" : showDuas ? "duas" : "reading"}
+        data-view={routeNotFound ? "not-found" : legalPage ? "legal" : showHome ? "home" : showDuas ? "duas" : "reading"}
         data-display-mode={displayMode}
         data-riwaya={state.riwaya}
+        inert={blockingModalOpen ? "" : undefined}
       >
         <ProgressBar />
+        <Suspense fallback={null}>
+          <ConfirmDialogHost />
+        </Suspense>
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[10000] focus:rounded-xl focus:bg-[var(--theme-panel-bg-strong,var(--bg-card))] focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--text-primary)] focus:shadow-[0_10px_24px_rgba(2,8,23,0.18)]"
+          className="app-skip-link"
         >
           {t("app.skipToContent", lang)}
         </a>
 
-        <Suspense fallback={SUSPENSE_FALLBACK}>
+        <Suspense fallback={headerFallback}>
           <Header />
         </Suspense>
 
         <div className="app-layout-shell relative flex min-h-0 flex-1">
-          <Suspense fallback={SUSPENSE_FALLBACK}>
+          <Suspense fallback={null}>
             {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
           </Suspense>
 
@@ -653,8 +715,22 @@ export default function App() {
           <main
             id="main-content"
             tabIndex={-1}
+            aria-hidden={sidebarOpen ? "true" : undefined}
+            inert={sidebarOpen ? "" : undefined}
             aria-label={
-              showHome
+              routeNotFound
+                ? lang === "fr"
+                  ? "Contenu principal - Page introuvable"
+                  : lang === "ar"
+                    ? "المحتوى الرئيسي - الصفحة غير موجودة"
+                    : "Main content - Page not found"
+                : legalPage
+                ? lang === "ar"
+                  ? "المحتوى الرئيسي - المعلومات القانونية"
+                  : lang === "en"
+                    ? "Main content - Legal information"
+                    : "Contenu principal - Informations légales"
+                : showHome
                 ? lang === "fr"
                   ? "Contenu principal - Accueil"
                   : lang === "ar"
@@ -672,39 +748,43 @@ export default function App() {
                       ? "المحتوى الرئيسي - القراءة"
                       : "Main content - Reading"
             }
-            className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto pb-(--player-h) transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
+            className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
             style={{
+              paddingBottom: "var(--player-h, 0px)",
               height: "calc(100dvh - var(--header-h, 72px))",
-              maxHeight: "calc(100dvh - var(--header-h, 72px))",
             }}
           >
             <div
-              className={`app-view-shell ${showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas ? `app-mode-${displayMode}` : ""}`}
+              className={`app-view-shell ${routeNotFound ? "app-view-not-found" : legalPage ? "app-view-legal" : showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas && !legalPage && !routeNotFound ? `app-mode-${displayMode}` : ""}`}
             >
-              {showHome ? (
+              {routeNotFound ? (
                 <ErrorBoundary>
-                  <Suspense fallback={SUSPENSE_FALLBACK}>
+                  <Suspense fallback={suspenseFallback}>
+                    <NotFoundPage />
+                  </Suspense>
+                </ErrorBoundary>
+              ) : legalPage ? (
+                <ErrorBoundary>
+                  <Suspense fallback={suspenseFallback}>
+                    <LegalPage page={legalPage} />
+                  </Suspense>
+                </ErrorBoundary>
+              ) : showHome ? (
+                <ErrorBoundary>
+                  <Suspense fallback={suspenseFallback}>
                     <HomePage lowPerfMode={lowPerfMode} />
                   </Suspense>
                 </ErrorBoundary>
               ) : showDuas ? (
                 <ErrorBoundary>
-                  <Suspense fallback={SUSPENSE_FALLBACK}>
+                  <Suspense fallback={suspenseFallback}>
                     <DuasPage />
                   </Suspense>
                 </ErrorBoundary>
               ) : (
                 <ErrorBoundary>
-                  <Suspense fallback={SUSPENSE_FALLBACK}>
-                    <QuranDisplay
-                      key={
-                        displayMode === "juz"
-                          ? `juz-${currentJuz}`
-                          : displayMode === "page"
-                            ? `page-${currentPage}`
-                            : `surah-${currentSurah}`
-                      }
-                    />
+                  <Suspense fallback={suspenseFallback}>
+                    <ActiveQuranDisplay />
                   </Suspense>
                 </ErrorBoundary>
               )}
@@ -712,7 +792,7 @@ export default function App() {
           </main>
 
           {showHome && !focusReading && deferNonCriticalUI && (
-            <Suspense fallback={SUSPENSE_FALLBACK}>
+            <Suspense fallback={null}>
               <NotesPanel />
             </Suspense>
           )}
@@ -720,7 +800,7 @@ export default function App() {
 
         {toast && (
           <div
-            className="fixed left-1/2 top-4 z-9999 w-[min(90vw,400px)] -translate-x-1/2"
+            className="fixed left-1/2 top-4 z-[9999] w-[min(90vw,400px)] -translate-x-1/2"
             role="alert"
             aria-live="polite"
           >
@@ -729,6 +809,7 @@ export default function App() {
               message={toast.message}
               onClose={() => setToast(null)}
               autoClose={4500}
+              lang={lang}
             />
           </div>
         )}
@@ -740,7 +821,7 @@ export default function App() {
         )}
 
         {/* ── Bouton raccourcis clavier (desktop uniquement) ───────────── */}
-        {!showHome && !showDuas && (
+        {!showHome && !showDuas && !legalPage && !routeNotFound && (
           <button
             type="button"
             className="fixed bottom-6 right-6 z-[250] hidden md:flex w-9 h-9 items-center justify-center rounded-full bg-[var(--bg-card)] border border-[var(--border)] shadow-md text-[var(--text-muted)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-all duration-200 text-sm font-bold font-mono"
@@ -762,24 +843,28 @@ export default function App() {
           </Suspense>
         )}
 
-        <Suspense fallback={SUSPENSE_FALLBACK}>
-          {state.searchOpen && <SearchModal />}
-          {state.settingsOpen && <SettingsModal />}
-          {state.toolsHubOpen && <ToolsHubModal />}
-          {state.bookmarksOpen && <BookmarksModal />}
-          {state.wirdOpen && <WirdPanel />}
-          {state.historyOpen && <ReadingHistoryPanel />}
-          {state.playlistOpen && <PlaylistPanel />}
-          {state.audioMakerOpen && <AudioMakerPanel />}
-          {state.flashcardsOpen && <FlashcardsPanel />}
-          {state.tajweedQuizOpen && <TajweedQuizPanel />}
-          {state.khatmaOpen && <KhatmaPanel />}
-          {state.comparatorOpen && <ReciterComparatorPanel />}
-          {state.shareImageOpen && <AyahSharePanel />}
-          {state.weeklyStatsOpen && <WeeklyStatsPanel />}
-          {state.tafsirSidebarOpen && <TafsirSidebar />}
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={overlayFallback}>
+            {state.searchOpen && <SearchModal />}
+            {state.settingsOpen && <SettingsModal />}
+            {state.toolsHubOpen && <ToolsHubModal />}
+            {state.futureHubOpen && <FutureFeaturesModal />}
+            {state.bookmarksOpen && <BookmarksModal />}
+            {state.wirdOpen && <WirdPanel />}
+            {state.historyOpen && <ReadingHistoryPanel />}
+            {state.playlistOpen && <PlaylistPanel />}
+            {state.audioMakerOpen && <AudioMakerPanel />}
+            {state.flashcardsOpen && <FlashcardsPanel />}
+            {state.tajweedQuizOpen && <TajweedQuizPanel />}
+            {state.khatmaOpen && <KhatmaPanel />}
+            {state.comparatorOpen && <ReciterComparatorPanel />}
+            {state.shareImageOpen && <AyahSharePanel />}
+            {state.weeklyStatsOpen && <WeeklyStatsPanel />}
+            {state.tafsirSidebarOpen && <TafsirSidebar />}
+          </Suspense>
+        </ErrorBoundary>
       </div>
+      <PWAUpdateBanner />
     </ErrorBoundary>
   );
 }

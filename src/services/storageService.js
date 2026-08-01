@@ -3,18 +3,82 @@
  * Stores: notes, bookmarks, reading-position, cached text, settings.
  */
 
-import { dbGet, dbSet, dbDelete, dbGetAll } from "./dbService.js";
+import {
+  dbGet,
+  dbSet,
+  dbDelete,
+  dbGetAll,
+  dbReplaceStores,
+} from "./dbService.js";
 import {
   encryptData,
   decryptDataWithMeta,
-  isEncryptionUnlocked,
 } from "./cryptoUtil.js";
 import { ACCEPTED_FONT_IDS, DEFAULT_FONT_ID, normalizeFontId } from "../data/fonts.js";
+import { getSurahAyahCount } from "../data/surahs.js";
+import {
+  normalizeDayTheme,
+  normalizeNightTheme,
+  normalizeThemeId,
+} from "../data/themes.js";
 import { bookmarkRecordSchema, noteRecordSchema } from "./storageValidation.js";
 
 function parseRecordOrNull(schema, value) {
   const result = schema.safeParse(value);
   return result.success ? result.data : null;
+}
+
+const PRIVATE_RECORD_FORMAT = "mushafplus-encrypted-record-v2";
+
+function encodePrivateRecord(record) {
+  return {
+    id: record.id,
+    format: PRIVATE_RECORD_FORMAT,
+    payload: encryptData(record),
+  };
+}
+
+function decodePrivateRecord(schema, value) {
+  if (value?.format === PRIVATE_RECORD_FORMAT && typeof value.payload === "string") {
+    const result = decryptDataWithMeta(value.payload);
+    return {
+      record: parseRecordOrNull(schema, result.data),
+      needsMigration: Boolean(result.needsMigration),
+    };
+  }
+  return {
+    record: parseRecordOrNull(schema, value),
+    needsMigration: Boolean(value),
+  };
+}
+
+async function writePrivateRecord(storeName, schema, value) {
+  const record = parseRecordOrNull(schema, value);
+  if (!record) return false;
+  const key = await dbSet(storeName, encodePrivateRecord(record));
+  return key !== undefined;
+}
+
+async function readPrivateRecord(storeName, schema, key) {
+  const raw = await dbGet(storeName, key);
+  const decoded = decodePrivateRecord(schema, raw);
+  if (decoded.record && decoded.needsMigration) {
+    await writePrivateRecord(storeName, schema, decoded.record);
+  }
+  return decoded.record;
+}
+
+async function readAllPrivateRecords(storeName, schema) {
+  const rawRecords = await dbGetAll(storeName);
+  const decoded = (Array.isArray(rawRecords) ? rawRecords : [])
+    .map((value) => decodePrivateRecord(schema, value))
+    .filter(({ record }) => Boolean(record));
+  await Promise.all(
+    decoded
+      .filter(({ needsMigration }) => needsMigration)
+      .map(({ record }) => writePrivateRecord(storeName, schema, record)),
+  );
+  return decoded.map(({ record }) => record);
 }
 
 /* ═══════════════════════════════════════════ */
@@ -23,12 +87,17 @@ function parseRecordOrNull(schema, value) {
 
 export async function saveNote(surah, ayah, text) {
   const id = `${surah}:${ayah}`;
-  await dbSet("notes", { id, surah, ayah, text, updatedAt: Date.now() });
+  return writePrivateRecord("notes", noteRecordSchema, {
+    id,
+    surah,
+    ayah,
+    text,
+    updatedAt: Date.now(),
+  });
 }
 
 export async function getNote(surah, ayah) {
-  const raw = await dbGet("notes", `${surah}:${ayah}`);
-  return parseRecordOrNull(noteRecordSchema, raw);
+  return readPrivateRecord("notes", noteRecordSchema, `${surah}:${ayah}`);
 }
 
 export async function deleteNote(surah, ayah) {
@@ -36,10 +105,11 @@ export async function deleteNote(surah, ayah) {
 }
 
 export async function getAllNotes() {
-  const raw = await dbGetAll("notes");
-  return (Array.isArray(raw) ? raw : [])
-    .map((entry) => parseRecordOrNull(noteRecordSchema, entry))
-    .filter(Boolean);
+  return readAllPrivateRecords("notes", noteRecordSchema);
+}
+
+export async function importNoteRecord(record) {
+  return writePrivateRecord("notes", noteRecordSchema, record);
 }
 
 /* ═══════════════════════════════════════════ */
@@ -48,7 +118,13 @@ export async function getAllNotes() {
 
 export async function addBookmark(surah, ayah, label = "") {
   const id = `${surah}:${ayah}`;
-  await dbSet("bookmarks", { id, surah, ayah, label, createdAt: Date.now() });
+  return writePrivateRecord("bookmarks", bookmarkRecordSchema, {
+    id,
+    surah,
+    ayah,
+    label,
+    createdAt: Date.now(),
+  });
 }
 
 export async function removeBookmark(surah, ayah) {
@@ -56,15 +132,17 @@ export async function removeBookmark(surah, ayah) {
 }
 
 export async function isBookmarked(surah, ayah) {
-  const val = await dbGet("bookmarks", `${surah}:${ayah}`);
-  return !!parseRecordOrNull(bookmarkRecordSchema, val);
+  return Boolean(
+    await readPrivateRecord("bookmarks", bookmarkRecordSchema, `${surah}:${ayah}`),
+  );
 }
 
 export async function getAllBookmarks() {
-  const raw = await dbGetAll("bookmarks");
-  return (Array.isArray(raw) ? raw : [])
-    .map((entry) => parseRecordOrNull(bookmarkRecordSchema, entry))
-    .filter(Boolean);
+  return readAllPrivateRecords("bookmarks", bookmarkRecordSchema);
+}
+
+export async function importBookmarkRecord(record) {
+  return writePrivateRecord("bookmarks", bookmarkRecordSchema, record);
 }
 
 /* ═══════════════════════════════════════════ */
@@ -77,19 +155,20 @@ const SETTINGS_KEY = "mushaf-plus-settings";
 const VALID_LANGS = ["fr", "en", "ar"];
 const VALID_TRANSLATION_LANGS = ["fr", "en", "es", "de", "tr", "ur"];
 const VALID_WORD_TRANSLATION_LANGS = ["fr", "en"];
-const VALID_THEMES = ["light", "sepia", "dark"];
-const LEGACY_THEME_MAP = {
-  "premium-beige": "sepia",
-  ocean: "dark",
-  "night-blue": "dark",
-  "quran-night": "dark",
-  forest: "dark",
-  oled: "dark",
-};
 const VALID_RIWAYAS = ["hafs", "warsh"];
 const VALID_DISPLAY_MODES = ["surah", "page", "juz"];
 const VALID_AUDIO_PLAYER_SKINS = ["orbit", "classic"];
 const VALID_FONTS = ACCEPTED_FONT_IDS;
+
+function clampSurah(value) {
+  return Math.max(1, Math.min(114, Number(value) || 1));
+}
+
+function clampAyahForSurah(surahValue, ayahValue) {
+  const surah = clampSurah(surahValue);
+  const maxAyah = getSurahAyahCount(surah);
+  return Math.max(1, Math.min(maxAyah, Number(ayahValue) || 1));
+}
 
 function sanitizeFavoriteReciters(input) {
   if (!Array.isArray(input)) return [];
@@ -104,19 +183,22 @@ function sanitizePinnedAyahs(input) {
 
   const seen = new Set();
   return input
-    .map((item) => ({
-      surah: Math.max(1, Math.min(114, Number(item?.surah) || 1)),
-      ayah: Math.max(1, Math.min(286, Number(item?.ayah) || 1)),
-      number: Number.isFinite(Number(item?.number)) ? Number(item.number) : null,
-      text:
-        typeof item?.text === "string"
-          ? item.text.trim().slice(0, 1200)
-          : "",
-      surahName:
-        typeof item?.surahName === "string"
-          ? item.surahName.trim().slice(0, 120)
-          : "",
-    }))
+    .map((item) => {
+      const surah = clampSurah(item?.surah);
+      return {
+        surah,
+        ayah: clampAyahForSurah(surah, item?.ayah),
+        number: Number.isFinite(Number(item?.number)) ? Number(item.number) : null,
+        text:
+          typeof item?.text === "string"
+            ? item.text.trim().slice(0, 1200)
+            : "",
+        surahName:
+          typeof item?.surahName === "string"
+            ? item.surahName.trim().slice(0, 120)
+            : "",
+      };
+    })
     .filter((item) => {
       const key = `${item.surah}:${item.ayah}`;
       if (seen.has(key)) return false;
@@ -229,6 +311,7 @@ function sanitizeReciterAvailabilityMap(input) {
 const DEFAULT_SETTINGS = {
   lang: "fr",
   theme: "light",
+  skipSplashAnimation: false,
   riwaya: "hafs",
   reciter: "ar.alafasy",
   fontSize: 25,
@@ -284,24 +367,6 @@ function cloneDefaultSettings() {
   return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 }
 
-function normalizeTheme(theme, fallback = "light") {
-  if (VALID_THEMES.includes(theme)) return theme;
-  if (typeof theme === "string" && LEGACY_THEME_MAP[theme]) {
-    return LEGACY_THEME_MAP[theme];
-  }
-  return fallback;
-}
-
-function normalizeDayTheme(theme) {
-  const normalized = normalizeTheme(theme, "light");
-  return ["light", "sepia"].includes(normalized) ? normalized : "light";
-}
-
-function normalizeNightTheme(theme) {
-  const normalized = normalizeTheme(theme, "dark");
-  return normalized === "dark" ? normalized : "dark";
-}
-
 function sanitizeFontFamilyByRiwaya(input, fallbackFont, fallbackRiwaya) {
   const source = input && typeof input === "object" && !Array.isArray(input)
     ? input
@@ -316,8 +381,13 @@ export function getSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return cloneDefaultSettings();
-    const { data: decrypted, usedLegacy } = decryptDataWithMeta(raw);
-    const parsed = decrypted || JSON.parse(raw);
+    const {
+      data: decrypted,
+      needsMigration,
+      locked,
+    } = decryptDataWithMeta(raw);
+    if (locked) return cloneDefaultSettings();
+    const parsed = decrypted ?? JSON.parse(raw);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       return cloneDefaultSettings();
     }
@@ -364,7 +434,9 @@ export function getSettings() {
           : DEFAULT_SETTINGS.surahRepeatCount,
     };
 
-    if (usedLegacy && isEncryptionUnlocked()) {
+    if (needsMigration) {
+      // Toujours migrer depuis la clé legacy (publique) vers la clé appareil,
+      // sans attendre le déverrouillage de la passphrase utilisateur.
       saveSettings(normalized);
     }
 
@@ -378,10 +450,12 @@ export function getSettings() {
 function sanitizeSettings(settings) {
   const safeInput = settings && typeof settings === "object" ? settings : {};
   const safeSyncOffsets = sanitizeSyncOffsetsMap(safeInput.syncOffsetsMs);
+  const lastSurah = clampSurah(safeInput.lastPosition?.surah);
 
   return {
     lang: VALID_LANGS.includes(safeInput.lang) ? safeInput.lang : "fr",
-    theme: normalizeTheme(safeInput.theme, "light"),
+    theme: normalizeThemeId(safeInput.theme, "light"),
+    skipSplashAnimation: Boolean(safeInput.skipSplashAnimation),
     riwaya: VALID_RIWAYAS.includes(safeInput.riwaya)
       ? safeInput.riwaya
       : "hafs",
@@ -512,14 +586,8 @@ function sanitizeSettings(settings) {
         ? Boolean(safeInput.karaokeFollow)
         : true,
     lastPosition: {
-      surah: Math.max(
-        1,
-        Math.min(114, Number(safeInput.lastPosition?.surah) || 1),
-      ),
-      ayah: Math.max(
-        1,
-        Math.min(286, Number(safeInput.lastPosition?.ayah) || 1),
-      ),
+      surah: lastSurah,
+      ayah: clampAyahForSurah(lastSurah, safeInput.lastPosition?.ayah),
       page: Math.max(
         1,
         Math.min(604, Number(safeInput.lastPosition?.page) || 1),
@@ -533,8 +601,65 @@ export function saveSettings(settings) {
   const safe = sanitizeSettings(settings);
   try {
     localStorage.setItem(SETTINGS_KEY, encryptData(safe));
+    return true;
   } catch {
-    // Storage might be unavailable (private mode/quota exceeded)
+    // Never fall back to plaintext when encryption/storage is unavailable.
+    return false;
+  }
+}
+
+export async function readPrivateDataSnapshot() {
+  return {
+    settings: getSettings(),
+    notes: await getAllNotes(),
+    bookmarks: await getAllBookmarks(),
+  };
+}
+
+export async function readRawPrivateDataSnapshot() {
+  return {
+    settings: localStorage.getItem(SETTINGS_KEY),
+    notes: await dbGetAll("notes"),
+    bookmarks: await dbGetAll("bookmarks"),
+  };
+}
+
+export async function rewritePrivateDataSnapshot(snapshot) {
+  if (!snapshot) {
+    throw new Error("Unable to persist protected settings");
+  }
+  const notes = (snapshot.notes || []).map((value) => {
+    const record = parseRecordOrNull(noteRecordSchema, value);
+    if (!record) throw new Error("Unable to validate a protected note");
+    return encodePrivateRecord(record);
+  });
+  const bookmarks = (snapshot.bookmarks || []).map((value) => {
+    const record = parseRecordOrNull(bookmarkRecordSchema, value);
+    if (!record) throw new Error("Unable to validate a protected bookmark");
+    return encodePrivateRecord(record);
+  });
+  if (!saveSettings(snapshot.settings)) {
+    throw new Error("Unable to persist protected settings");
+  }
+  if (!(await dbReplaceStores({ notes, bookmarks }))) {
+    throw new Error("Unable to rotate private IndexedDB stores");
+  }
+  return true;
+}
+
+export async function restoreRawPrivateDataSnapshot(snapshot) {
+  try {
+    if (typeof snapshot?.settings === "string") {
+      localStorage.setItem(SETTINGS_KEY, snapshot.settings);
+    } else {
+      localStorage.removeItem(SETTINGS_KEY);
+    }
+    return dbReplaceStores({
+      notes: snapshot?.notes || [],
+      bookmarks: snapshot?.bookmarks || [],
+    });
+  } catch {
+    return false;
   }
 }
 

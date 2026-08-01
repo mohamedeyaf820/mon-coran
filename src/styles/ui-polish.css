@@ -206,7 +206,7 @@
     width: 100vw !important;
     max-width: 100vw !important;
     height: min(92vh, 46rem) !important;
-    border-left: 0 !important;
+    border-inline-start: 0 !important;
     border-top: 1px solid var(--border) !important;
     border-radius: 1.4rem 1.4rem 0 0;
   }

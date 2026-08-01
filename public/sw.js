@@ -8,92 +8,85 @@
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v6";
-const API_CACHE_NAME = "mushaf-plus-api-v2";
+const CACHE_NAME = "mushaf-plus-v14";
+const API_CACHE_NAME = "mushaf-plus-api-v3";
+const CACHE_LIMITS = {
+  [CACHE_NAME]: 300,
+  [API_CACHE_NAME]: 200,
+};
+let claimClientsOnActivate = false;
 
 // Ressources de l'app shell à pré-cacher à l'installation
 const ASSETS_TO_CACHE = [
   "/boot-recovery.js",
   "/manifest.json",
-  "/logo.png",
-  "/favicon.svg",
-  "/fonts/scheherazade-new-400.woff2",
-  "/fonts/scheherazade-new-700.woff2",
-];
-
-// Endpoints de l'API Coran à pré-cacher pour le support offline de base.
-// Ces appels sont effectués en arrière-plan lors de l'installation du SW.
-// En cas d'échec réseau, l'installation continue (pas bloquant).
-const QURAN_API_BASE = "https://api.alquran.cloud/v1";
-const API_ENDPOINTS_TO_PRECACHE = [
-  // Al-Fatiha – texte arabe (Hafs)
-  `${QURAN_API_BASE}/surah/1/quran-simple`,
-  // Al-Fatiha – traduction française
-  `${QURAN_API_BASE}/surah/1/fr.hamidullah`,
-  // Al-Fatiha – traduction anglaise
-  `${QURAN_API_BASE}/surah/1/en.sahih`,
-  // Al-Baqarah partielle (versets fréquemment lus) - surah complète
-  `${QURAN_API_BASE}/surah/2/quran-simple`,
-  // Al-Kahf – lecture courante du vendredi
-  `${QURAN_API_BASE}/surah/18/quran-simple`,
-  // Yā-Sīn – sourate très fréquente
-  `${QURAN_API_BASE}/surah/36/quran-simple`,
-  // Ar-Rahman – sourate très fréquente
-  `${QURAN_API_BASE}/surah/55/quran-simple`,
-  // Al-Mulk – récitée le soir
-  `${QURAN_API_BASE}/surah/67/quran-simple`,
+  "/logo-ui.webp",
+  "/favicon.png",
+  "/data/reciter-profiles.json",
 ];
 
 // ─── Installation ─────────────────────────────────────────────────────────────
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    Promise.all([
-      // 1. Pré-cache de l'app shell (bloquant)
-      caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE)),
-
-      // 2. Pré-cache des données coraniques (non bloquant – best effort)
-      precacheQuranApi(),
-    ]).then(() => self.skipWaiting()),
-  );
+  event.waitUntil(precacheAppShell());
 });
 
-/**
- * Pré-cache les endpoints de l'API Coran de façon silencieuse.
- * Les erreurs réseau sont ignorées afin de ne pas bloquer l'installation du SW.
- */
-async function precacheQuranApi() {
-  let apiCache;
-  try {
-    apiCache = await caches.open(API_CACHE_NAME);
-  } catch {
-    return; // Impossible d'ouvrir le cache – on abandonne silencieusement
+async function precacheAppShell() {
+  const cache = await caches.open(CACHE_NAME);
+  await precacheUrls(cache, ASSETS_TO_CACHE);
+
+  const indexResponse = await fetch("/index.html", { cache: "reload" });
+  if (!indexResponse.ok) {
+    throw new Error(`Unable to precache app shell: ${indexResponse.status}`);
   }
 
-  const results = await Promise.allSettled(
-    API_ENDPOINTS_TO_PRECACHE.map(async (url) => {
-      // Ne pas re-télécharger si déjà en cache
-      const existing = await apiCache.match(url);
-      if (existing) return;
+  const html = await indexResponse.clone().text();
+  await cache.put("/index.html", indexResponse);
 
-      const res = await fetch(url, {
-        cache: "no-cache",
-        headers: { Accept: "application/json" },
-      });
-      if (res.ok) {
-        await apiCache.put(url, res);
-      }
-    }),
+  const indexAssetUrls = Array.from(
+    html.matchAll(/(?:src|href)=["'](\/assets\/[^"']+)["']/g),
+    (match) => match[1],
   );
-
-  // Log en dev uniquement (supprimé par esbuild en production)
-  const failed = results.filter((r) => r.status === "rejected").length;
-  if (failed > 0) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `[SW] ${failed}/${API_ENDPOINTS_TO_PRECACHE.length} endpoints API non mis en cache (réseau indisponible?)`,
-    );
+  let shellAssetUrls = [];
+  try {
+    const shellManifestResponse = await fetch("/shell-assets.json", {
+      cache: "reload",
+    });
+    if (shellManifestResponse.ok) {
+      const manifest = await shellManifestResponse.clone().json();
+      shellAssetUrls = (Array.isArray(manifest) ? manifest : []).filter(
+        (assetUrl) =>
+          typeof assetUrl === "string" && assetUrl.startsWith("/assets/"),
+      );
+      await cache.put("/shell-assets.json", shellManifestResponse);
+    }
+  } catch {
+    // The entry assets parsed from index.html still provide a usable shell.
   }
+  await precacheUrls(
+    cache,
+    [...new Set([...indexAssetUrls, ...shellAssetUrls])],
+  );
+  await trimCache(cache, CACHE_LIMITS[CACHE_NAME]);
+}
+
+async function precacheUrls(cache, urls, concurrency = 4) {
+  let cursor = 0;
+  const workers = Array.from(
+    { length: Math.min(concurrency, urls.length) },
+    async () => {
+      while (cursor < urls.length) {
+        const url = urls[cursor];
+        cursor += 1;
+        const response = await fetch(url, { cache: "reload" });
+        if (!response.ok) {
+          throw new Error(`Unable to precache ${url}: ${response.status}`);
+        }
+        await cache.put(url, response);
+      }
+    },
+  );
+  await Promise.all(workers);
 }
 
 // ─── Activation ───────────────────────────────────────────────────────────────
@@ -113,7 +106,9 @@ self.addEventListener("activate", (event) => {
           )
           .map((key) => caches.delete(key)),
       );
-      await self.clients.claim();
+      if (claimClientsOnActivate) {
+        await self.clients.claim();
+      }
     })(),
   );
 });
@@ -144,13 +139,13 @@ self.addEventListener("fetch", (event) => {
     isSameOrigin &&
     /\.(png|jpe?g|webp|avif|svg|gif|ico)$/i.test(url.pathname)
   ) {
-    event.respondWith(staleWhileRevalidate(event.request, CACHE_NAME));
+    event.respondWith(staleWhileRevalidate(event.request, CACHE_NAME, event));
     return;
   }
 
   // ── 4. API Coran (alquran.cloud & quran.com) – Stale-While-Revalidate ──────
   if (url.hostname === "api.alquran.cloud" || url.hostname === "api.quran.com") {
-    event.respondWith(staleWhileRevalidate(event.request, API_CACHE_NAME));
+    event.respondWith(staleWhileRevalidate(event.request, API_CACHE_NAME, event));
     return;
   }
 
@@ -173,7 +168,23 @@ self.addEventListener("fetch", (event) => {
 
 // ─── Messages (communication avec l'app) ─────────────────────────────────────
 
+function isTrustedClientMessage(event) {
+  const senderUrl = event.source?.url;
+  if (!senderUrl) return false;
+  try {
+    const sender = new URL(senderUrl);
+    const scope = new URL(self.registration.scope);
+    return (
+      sender.origin === self.location.origin &&
+      sender.href.startsWith(scope.href)
+    );
+  } catch {
+    return false;
+  }
+}
+
 self.addEventListener("message", (event) => {
+  if (!isTrustedClientMessage(event)) return;
   if (!event.data || typeof event.data !== "object") return;
 
   switch (event.data.type) {
@@ -181,22 +192,26 @@ self.addEventListener("message", (event) => {
     // (ex : sourates récemment lues)
     case "CACHE_QURAN_URLS": {
       const urls = Array.isArray(event.data.urls) ? event.data.urls : [];
-      cacheQuranUrls(urls);
+      event.waitUntil(cacheQuranUrls(urls));
       break;
     }
 
     // L'app demande l'invalidation du cache API (ex : après un repair)
     case "CLEAR_API_CACHE": {
-      caches.delete(API_CACHE_NAME).then(() => {
-        event.source?.postMessage?.({ type: "API_CACHE_CLEARED" });
-      });
+      event.waitUntil(
+        caches.delete(API_CACHE_NAME).then(() => {
+          event.source?.postMessage?.({ type: "API_CACHE_CLEARED" });
+        }),
+      );
       break;
     }
 
     // L'app demande au SW de skipWaiting (mise à jour immédiate)
-    case "SKIP_WAITING":
-      self.skipWaiting();
+    case "SKIP_WAITING": {
+      claimClientsOnActivate = true;
+      event.waitUntil(self.skipWaiting());
       break;
+    }
 
     default:
       break;
@@ -227,15 +242,40 @@ async function cacheQuranUrls(urls) {
           const res = await fetch(url, {
             headers: { Accept: "application/json" },
           });
-          if (res.ok) await apiCache.put(url, res);
+          if (res.ok) await putBounded(apiCache, url, res, API_CACHE_NAME);
         }),
     );
+    await trimCache(apiCache, CACHE_LIMITS[API_CACHE_NAME]);
   } catch {
     // Silencieux – le cache API n'est pas critique
   }
 }
 
 // ─── Stratégies de cache ──────────────────────────────────────────────────────
+
+/**
+ * Fetch with AbortController timeout (default 8s).
+ */
+function fetchWithTimeout(request, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(request, { signal: controller.signal }).finally(() =>
+    clearTimeout(timer),
+  );
+}
+
+async function trimCache(cache, maxEntries) {
+  if (!Number.isFinite(maxEntries) || maxEntries < 1) return;
+  const keys = await cache.keys();
+  const overflow = keys.length - maxEntries;
+  if (overflow <= 0) return;
+  await Promise.all(keys.slice(0, overflow).map((key) => cache.delete(key)));
+}
+
+async function putBounded(cache, request, response, cacheName) {
+  await cache.put(request, response);
+  await trimCache(cache, CACHE_LIMITS[cacheName]);
+}
 
 /**
  * Cache-First : retourne la réponse en cache si disponible.
@@ -247,9 +287,9 @@ async function cacheFirst(request, cacheName) {
   if (cached) return cached;
 
   try {
-    const response = await fetch(request);
+    const response = await fetchWithTimeout(request);
     if (response && response.status === 200) {
-      cache.put(request, response.clone());
+      await putBounded(cache, request, response.clone(), cacheName);
     }
     return response;
   } catch {
@@ -261,21 +301,24 @@ async function cacheFirst(request, cacheName) {
  * Stale-While-Revalidate : retourne le cache immédiatement (si dispo)
  * et met à jour le cache en arrière-plan depuis le réseau.
  */
-async function staleWhileRevalidate(request, cacheName) {
+async function staleWhileRevalidate(request, cacheName, event) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
 
-  const networkPromise = fetch(request)
-    .then((response) => {
-      if (response && (response.status === 200 || response.type === "opaque")) {
-        cache.put(request, response.clone());
+  const networkPromise = fetchWithTimeout(request)
+    .then(async (response) => {
+      if (response?.ok) {
+        await putBounded(cache, request, response.clone(), cacheName);
       }
       return response;
     })
     .catch(() => null);
 
-  // Retourner le cache immédiatement, ou attendre le réseau si pas de cache
-  return cached || (await networkPromise) || Response.error();
+  if (cached) {
+    event?.waitUntil(networkPromise.then(() => undefined));
+    return cached;
+  }
+  return (await networkPromise) || Response.error();
 }
 
 /**
@@ -284,11 +327,11 @@ async function staleWhileRevalidate(request, cacheName) {
  */
 async function networkFirstHtml(request) {
   try {
-    const networkResponse = await fetch(request);
+    const networkResponse = await fetchWithTimeout(request, 6000);
     const cache = await caches.open(CACHE_NAME);
     // Ne stocker que les réponses valides
     if (networkResponse.status === 200) {
-      cache.put(request, networkResponse.clone());
+      await putBounded(cache, request, networkResponse.clone(), CACHE_NAME);
     }
     return networkResponse;
   } catch {
@@ -311,10 +354,10 @@ async function networkFirstHtml(request) {
  */
 async function networkFirstWithFallback(request, cacheName) {
   try {
-    const response = await fetch(request);
+    const response = await fetchWithTimeout(request);
     if (response && response.status === 200) {
       const cache = await caches.open(cacheName);
-      cache.put(request, response.clone());
+      await putBounded(cache, request, response.clone(), cacheName);
     }
     return response;
   } catch {
@@ -332,7 +375,7 @@ function offlineFallbackHtml() {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MushafPlus – Hors ligne</title>
+  <title>MushafPlus – Offline</title>
   <style>
     :root { --green: #1b5e3a; --bg: #fefaf3; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -359,7 +402,7 @@ function offlineFallbackHtml() {
       opacity: 0.75;
       margin: 0.5rem 0;
     }
-    button {
+    .retry {
       margin-top: 0.5rem;
       padding: 0.75rem 1.75rem;
       background: var(--green);
@@ -369,19 +412,65 @@ function offlineFallbackHtml() {
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
+      text-decoration: none;
     }
-    button:hover { opacity: 0.88; }
+    .retry:hover { opacity: 0.88; }
+    .lang-block { display: none; }
+    :lang(ar) { direction: rtl; }
   </style>
 </head>
 <body>
   <div class="icon">📖</div>
   <div class="arabic">﷽</div>
-  <h1>MushafPlus – Hors ligne</h1>
-  <p>Vous n'êtes pas connecté à Internet. Reconnectez-vous pour accéder au Coran complet.</p>
-  <p style="margin-top:0.5rem;font-size:0.82rem;color:#9ca3af;">
-    Les sourates récemment consultées restent disponibles dans l'application.
-  </p>
-  <button onclick="window.location.reload()">Réessayer</button>
+  <div class="lang-block" lang="fr">
+    <h1>MushafPlus – Hors ligne</h1>
+    <p>Vous n'êtes pas connecté à Internet. Reconnectez-vous pour accéder au Coran complet.</p>
+    <p style="margin-top:0.5rem;font-size:0.82rem;color:#9ca3af;">Les sourates récemment consultées restent disponibles dans l'application.</p>
+    <a class="retry" href="/">Réessayer</a>
+  </div>
+  <div class="lang-block" lang="en">
+    <h1>MushafPlus – Offline</h1>
+    <p>You are not connected to the Internet. Reconnect to access the full Quran.</p>
+    <p style="margin-top:0.5rem;font-size:0.82rem;color:#9ca3af;">Recently visited surahs remain available in the app.</p>
+    <a class="retry" href="/">Retry</a>
+  </div>
+  <div class="lang-block" lang="ar">
+    <h1>مصحف بلس – غير متصل</h1>
+    <p>أنت غير متصل بالإنترنت. أعد الاتصال للوصول إلى القرآن الكريم كاملاً.</p>
+    <p style="margin-top:0.5rem;font-size:0.82rem;color:#9ca3af;">السور التي زرتها مؤخراً لا تزال متاحة في التطبيق.</p>
+    <a class="retry" href="/">إعادة المحاولة</a>
+  </div>
+  <noscript>
+    <h1>MushafPlus – Offline</h1>
+    <p>No internet connection. Reconnect to access the full Quran.</p>
+    <a class="retry" href="/">Retry</a>
+  </noscript>
+  <script>
+    (function() {
+      var lang = (navigator.language || 'fr').split('-')[0];
+      var supported = ['fr', 'en', 'ar'];
+      var display = supported.indexOf(lang) !== -1 ? lang : 'en';
+      var blocks = document.querySelectorAll('.lang-block');
+      var matched = false;
+      for (var i = 0; i < blocks.length; i++) {
+        if (blocks[i].lang === display) {
+          blocks[i].style.display = 'block';
+          matched = true;
+        } else {
+          blocks[i].style.display = 'none';
+        }
+      }
+      if (!matched) {
+        for (var j = 0; j < blocks.length; j++) {
+          if (blocks[j].lang === 'en') { blocks[j].style.display = 'block'; break; }
+        }
+      }
+      if (lang === 'ar') {
+        document.documentElement.lang = 'ar';
+        document.documentElement.dir = 'rtl';
+      }
+    })();
+  </script>
 </body>
 </html>`;
 }

@@ -23,7 +23,7 @@ export default function TafsirPanel({ surah, ayah, onClose }) {
   const [showSourcePicker, setShowSourcePicker] = useState(false);
 
   const availableTafsirs = getAvailableTafsirs(lang);
-  const defaultTafsirId = availableTafsirs[0]?.id || 169;
+  const defaultTafsirId = availableTafsirs[0]?.key || "en-kathir";
 
   useEffect(() => {
     if (!surah || !ayah) return;
@@ -78,17 +78,23 @@ export default function TafsirPanel({ surah, ayah, onClose }) {
             </button>
             
             {showSourcePicker && (
-              <div className="absolute top-full right-0 mt-1 w-48 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-lg z-10">
+              <div className="absolute top-full right-0 mt-1 w-56 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg shadow-lg z-10 overflow-hidden">
                 {availableTafsirs.map((t) => (
                   <button
-                    key={t.id}
-                    onClick={() => handleSourceChange(t.id)}
+                    key={t.key}
+                    onClick={() => handleSourceChange(t.key)}
                     className={cn(
-                      "w-full text-left px-3 py-2 text-sm hover:bg-[var(--hover-bg)] transition-colors",
-                      (selectedTafsir || defaultTafsirId) === t.id && "bg-[var(--active-bg)]"
+                      "w-full text-left px-3 py-2.5 text-sm hover:bg-[rgba(var(--primary-rgb),0.06)] transition-colors flex items-center justify-between gap-2",
+                      (selectedTafsir || defaultTafsirId) === t.key && "bg-[rgba(var(--primary-rgb),0.08)] font-semibold"
                     )}
                   >
-                    {t.name}
+                    <span className="truncate">{t.name}</span>
+                    <span className={cn(
+                      "shrink-0 text-[0.6rem] font-bold uppercase px-1.5 py-0.5 rounded",
+                      t.lang === "ar" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                    )}>
+                      {t.lang === "ar" ? "AR" : "EN"}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -127,7 +133,12 @@ export default function TafsirPanel({ surah, ayah, onClose }) {
         
         {!loading && !error && tafsirText && (
           <div className="prose prose-sm max-w-none">
-            <p className="text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap">
+            {lang === "fr" && (
+              <p className="mb-3 text-[0.7rem] text-[var(--text-muted)] italic border-b border-[var(--border)] pb-2">
+                Tafsir affiché en anglais/arabe — aucun tafsir français vérifié n'est disponible via l'API.
+              </p>
+            )}
+            <p className="text-[var(--text-primary)] text-[0.88rem] leading-[1.75] whitespace-pre-wrap">
               {tafsirText}
             </p>
           </div>

@@ -17,7 +17,7 @@
 /* ── Drawer panel ── */
 .settings-drawer {
   border-radius: 22px 0 0 22px !important;
-  border-left: 1px solid var(--border) !important;
+  border-inline-start: 1px solid var(--border) !important;
   overflow: hidden !important;
   box-shadow:
     -12px 0 48px rgba(0, 0, 0, 0.14),
@@ -103,13 +103,13 @@
   background: var(--bg-card) !important;
   color: var(--primary) !important;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1) !important;
-  font-weight: 750 !important;
+  font-weight: 700 !important;
 }
 
 [data-theme="dark"] .settings-drawer [class*="grid-cols-3"] button.bg-bg-primary,
 [data-theme="dark"] .settings-drawer [class*="grid-cols-2"] button.bg-bg-primary {
   background: rgba(20, 36, 30, 0.9) !important;
-  color: #2fd08e !important;
+  color: var(--primary) !important;
 }
 
 /* ── Section headings ── */
@@ -146,8 +146,6 @@
 [class*="reciter-card"]:hover {
   border-color: color-mix(in srgb, var(--primary) 40%, transparent 60%) !important;
   background: color-mix(in srgb, var(--primary) 5%, var(--bg-card) 95%) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
 }
 
 .settings-reciter-card.is-active,
@@ -170,13 +168,13 @@
 
 [data-theme="dark"] .settings-reciter-card:hover,
 [data-theme="dark"] [class*="reciter-card"]:hover {
-  border-color: rgba(47, 208, 142, 0.32) !important;
+  border-color: color-mix(in srgb, var(--primary) 32%, transparent) !important;
 }
 
 [data-theme="dark"] .settings-reciter-card.is-active,
 [data-theme="dark"] [class*="reciter-card"].is-selected {
-  border-color: #2fd08e !important;
-  background: rgba(47, 208, 142, 0.08) !important;
+  border-color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 8%, transparent) !important;
 }
 
 /* ── Reciter avatar ── */
@@ -200,21 +198,6 @@
   height: 100% !important;
   object-fit: cover !important;
   border-radius: 50% !important;
-}
-
-/* ── Theme swatches grid ── */
-.settings-theme-grid > *,
-.settings-drawer [class*="theme-grid"] > * {
-  border-radius: 14px !important;
-  overflow: hidden !important;
-  transition: transform 0.15s, box-shadow 0.15s !important;
-  cursor: pointer !important;
-}
-
-.settings-theme-grid > *:hover,
-.settings-drawer [class*="theme-grid"] > *:hover {
-  transform: scale(1.04) !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14) !important;
 }
 
 /* ── Sliders ── */
@@ -246,7 +229,7 @@
 
 .settings-drawer button[class*="destructive"]:hover,
 .settings-drawer button[class*="danger"]:hover {
-  transform: translateY(-1px) !important;
+  opacity: 0.9 !important;
 }
 
 /* ── Input fields inside settings ── */
@@ -268,4 +251,834 @@
 .settings-drawer input[type="number"]:focus {
   border-color: color-mix(in srgb, var(--primary) 50%, transparent 50%) !important;
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent 88%) !important;
+}
+
+/* ── Sepia theme ── */
+[data-theme="sepia"] .settings-drawer {
+  background: var(--bg-primary) !important;
+  border-left-color: rgba(180, 140, 80, 0.2) !important;
+}
+
+[data-theme="sepia"] .settings-drawer > div:first-child {
+  background: color-mix(in srgb, var(--bg-secondary) 80%, transparent 20%);
+  border-bottom-color: rgba(180, 140, 80, 0.15);
+}
+
+[data-theme="sepia"] .settings-drawer [class*="grid-cols-3"],
+[data-theme="sepia"] .settings-drawer [class*="grid-cols-2"] {
+  background: var(--bg-secondary) !important;
+  border-color: rgba(180, 140, 80, 0.12) !important;
+}
+
+[data-theme="sepia"] .settings-drawer [class*="grid-cols-3"] button.bg-bg-primary,
+[data-theme="sepia"] .settings-drawer [class*="grid-cols-2"] button.bg-bg-primary {
+  background: var(--bg-card) !important;
+  color: var(--primary) !important;
+}
+
+[data-theme="sepia"] .settings-reciter-card {
+  border-color: rgba(180, 140, 80, 0.15) !important;
+  background: var(--bg-card) !important;
+}
+
+/* Stable settings redesign */
+.settings-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 499 !important;
+  background: rgba(0, 0, 0, 0.42) !important;
+}
+
+.settings-drawer {
+  position: fixed !important;
+  inset-block: 0 !important;
+  inset-inline-end: 0 !important;
+  z-index: 500 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: min(100vw, 520px) !important;
+  max-width: 100vw !important;
+  border-radius: 0 !important;
+  border: 0 !important;
+  border-inline-start: 1px solid color-mix(in srgb, var(--border) 78%, transparent) !important;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-card) 96%, white 4%), var(--bg-card)) !important;
+  color: var(--text-primary) !important;
+  box-shadow: -24px 0 70px rgba(0, 0, 0, 0.2) !important;
+  overflow: hidden !important;
+}
+
+.settings-drawer__header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 1rem !important;
+  padding: 1.1rem 1.25rem !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent) !important;
+  background: var(--bg-card) !important;
+}
+
+.settings-drawer__heading {
+  display: flex !important;
+  min-width: 0 !important;
+  align-items: center !important;
+  gap: 0.85rem !important;
+}
+
+.settings-drawer__icon,
+.settings-close-button {
+  display: inline-flex !important;
+  width: var(--mp-device-touch, 44px) !important;
+  height: var(--mp-device-touch, 44px) !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 14px !important;
+}
+
+.settings-drawer__icon {
+  color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 14%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent) !important;
+}
+
+.settings-close-button {
+  border: 1px solid var(--border) !important;
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  transition: background 0.15s, color 0.15s !important;
+}
+
+.settings-close-button:hover {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+.settings-drawer__icon svg,
+.settings-close-button svg,
+.settings-tab-button__icon svg {
+  width: clamp(0.78rem, var(--mp-device-icon, 0.85rem), 0.95rem) !important;
+  height: clamp(0.78rem, var(--mp-device-icon, 0.85rem), 0.95rem) !important;
+}
+
+.settings-drawer__title {
+  margin: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  color: var(--text-primary) !important;
+}
+
+.settings-drawer__subtitle {
+  margin: 0.1rem 0 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  font-size: 0.76rem !important;
+  color: var(--text-muted) !important;
+}
+
+/* ── Sidebar tabs (desktop: vertical column) ── */
+.settings-drawer__tabs {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 0.3rem !important;
+  padding: 0.5rem !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent) !important;
+  background: color-mix(in srgb, var(--bg-secondary) 70%, transparent) !important;
+}
+
+.settings-tab-button {
+  display: inline-flex !important;
+  min-width: 0 !important;
+  min-height: 2.6rem !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  border: 1px solid transparent !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  cursor: pointer !important;
+  transition: background 0.14s, color 0.14s, border-color 0.14s !important;
+}
+
+.settings-tab-button__icon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: clamp(1.4rem, 1.25rem + 0.4vw, 1.55rem) !important;
+  height: clamp(1.4rem, 1.25rem + 0.4vw, 1.55rem) !important;
+  border-radius: 8px !important;
+  flex-shrink: 0 !important;
+  transition: background 0.14s !important;
+}
+
+.settings-tab-button__label {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.settings-tab-button[data-active="true"] {
+  border-color: color-mix(in srgb, var(--primary) 22%, transparent) !important;
+  background: var(--bg-card) !important;
+  color: var(--primary) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+.settings-tab-button[data-active="true"] .settings-tab-button__icon {
+  background: color-mix(in srgb, var(--primary) 14%, transparent) !important;
+}
+
+/* per-tab accent colors in inactive state */
+.settings-tab-button[data-id="general"] .settings-tab-button__icon { color: var(--c-general); }
+.settings-tab-button[data-id="reading"] .settings-tab-button__icon { color: var(--c-reading); }
+.settings-tab-button[data-id="audio"]   .settings-tab-button__icon { color: var(--c-audio-icon); }
+
+.settings-tab-button[data-active="true"][data-id="general"] .settings-tab-button__icon { color: var(--primary); }
+.settings-tab-button[data-active="true"][data-id="reading"] .settings-tab-button__icon { color: var(--primary); }
+.settings-tab-button[data-active="true"][data-id="audio"]   .settings-tab-button__icon { color: var(--primary); }
+
+.settings-drawer__content {
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  padding: 1rem !important;
+  background: color-mix(in srgb, var(--bg-primary) 55%, var(--bg-card) 45%) !important;
+}
+
+.settings-panel-stack {
+  display: grid !important;
+  gap: 0.85rem !important;
+}
+
+.settings-section {
+  border: 1px solid color-mix(in srgb, var(--border) 65%, transparent) !important;
+  border-radius: 14px !important;
+  background: var(--bg-card) !important;
+  overflow: hidden !important;
+}
+
+.settings-section__title {
+  margin: 0 !important;
+  padding: 0.9rem 1rem 0 !important;
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+  color: color-mix(in srgb, var(--text-secondary) 88%, var(--text-primary) 12%) !important;
+}
+
+.settings-section__body {
+  display: grid !important;
+  gap: 0.65rem !important;
+  padding: 0.75rem 1rem 1rem !important;
+}
+
+.settings-segmented,
+.settings-chip-grid,
+.settings-action-grid,
+.settings-time-grid {
+  display: grid !important;
+  gap: 0.5rem !important;
+}
+
+.settings-segmented {
+  grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr)) !important;
+  padding: 0.2rem !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  background: var(--bg-secondary) !important;
+}
+
+.settings-segmented__item,
+.settings-chip,
+.settings-action-button {
+  min-height: 2.6rem !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  font-size: 0.86rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  cursor: pointer !important;
+  transition: background 0.14s, color 0.14s, border-color 0.14s !important;
+}
+
+.settings-segmented__item[data-active="true"],
+.settings-chip[data-active="true"] {
+  border-color: color-mix(in srgb, var(--primary) 25%, transparent) !important;
+  background: var(--bg-card) !important;
+  color: var(--primary) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08) !important;
+}
+
+.settings-theme-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 0.6rem !important;
+}
+
+.settings-theme-tile {
+  position: relative !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  place-items: center !important;
+  gap: 0.55rem !important;
+  min-width: 0 !important;
+  min-height: 7.2rem !important;
+  overflow: hidden !important;
+  padding: 0.85rem 0.55rem 0.7rem !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 14px !important;
+  background: var(--bg-secondary) !important;
+  color: var(--text-secondary, var(--text-muted)) !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: border-color 0.18s, background 0.18s, color 0.18s, box-shadow 0.18s !important;
+}
+
+.settings-theme-tile:hover {
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent) !important;
+  background: color-mix(in srgb, var(--primary) 5%, var(--bg-secondary) 95%) !important;
+}
+
+.settings-theme-tile[data-active="true"] {
+  border-color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 7%, var(--bg-card) 93%) !important;
+  color: var(--primary) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 20%, transparent) !important;
+}
+
+.settings-theme-tile__swatch {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(0, 0, 0, 0.08) !important;
+  flex-shrink: 0 !important;
+  background:
+    linear-gradient(135deg, var(--theme-primary) 0 40%, transparent 40%),
+    linear-gradient(180deg, var(--theme-bg) 0 55%, var(--theme-text) 55%) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+}
+
+.settings-theme-tile__copy {
+  display: grid !important;
+  gap: 0.18rem !important;
+  min-width: 0 !important;
+  text-align: center !important;
+}
+
+.settings-theme-tile__copy strong {
+  color: var(--text-primary) !important;
+  font-size: 0.77rem !important;
+  line-height: 1.2 !important;
+}
+
+.settings-theme-tile__copy small {
+  color: var(--text-muted) !important;
+  font-size: 0.64rem !important;
+  font-weight: 500 !important;
+  line-height: 1.3 !important;
+}
+
+.settings-theme-tile__check {
+  position: absolute !important;
+  inset: 0.45rem 0.45rem auto auto !important;
+  display: grid !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+  place-items: center !important;
+  border-radius: 50% !important;
+  background: var(--primary) !important;
+  color: var(--text-inverse) !important;
+}
+
+.settings-control-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 0.9rem !important;
+  min-height: 3.7rem !important;
+  padding: 0.7rem 0 !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 65%, transparent) !important;
+  cursor: pointer !important;
+}
+
+.settings-control-row:last-child {
+  border-bottom: 0 !important;
+}
+
+.settings-control-row__copy {
+  display: grid !important;
+  gap: 0.15rem !important;
+  min-width: 0 !important;
+}
+
+.settings-control-row__label {
+  font-size: 0.9rem !important;
+  font-weight: 760 !important;
+  color: var(--text-primary) !important;
+}
+
+.settings-control-row__description {
+  font-size: 0.76rem !important;
+  line-height: 1.35 !important;
+  color: var(--text-muted) !important;
+}
+
+.settings-switch {
+  position: relative !important;
+  width: 2.7rem !important;
+  height: 1.55rem !important;
+  border-radius: 999px !important;
+  border: 1px solid var(--border) !important;
+  background: var(--bg-secondary) !important;
+  transition: background 0.15s ease, border-color 0.15s ease !important;
+}
+
+.settings-switch span {
+  position: absolute !important;
+  top: 0.18rem !important;
+  left: 0.2rem !important;
+  width: 1.05rem !important;
+  height: 1.05rem !important;
+  border-radius: 999px !important;
+  background: var(--text-muted) !important;
+  transition: transform 0.15s ease, background 0.15s ease !important;
+}
+
+.settings-switch[data-state="checked"] {
+  border-color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 18%, transparent) !important;
+}
+
+.settings-switch[data-state="checked"] span {
+  transform: translateX(1.16rem) !important;
+  background: var(--primary) !important;
+}
+
+.settings-slider-row {
+  display: grid !important;
+  gap: 0.55rem !important;
+  padding: 0.35rem 0 !important;
+}
+
+.settings-slider-row__head {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 1rem !important;
+  color: var(--text-muted) !important;
+  font-size: 0.78rem !important;
+  font-weight: 780 !important;
+}
+
+.settings-select,
+.settings-search input,
+.settings-time-grid input {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 2.75rem !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  padding: 0 0.8rem !important;
+  font-size: 0.88rem !important;
+  outline: none !important;
+}
+
+.settings-select:focus,
+.settings-search input:focus,
+.settings-time-grid input:focus,
+.settings-slider-row input:focus-visible,
+.settings-tab-button:focus-visible,
+.settings-segmented__item:focus-visible,
+.settings-chip:focus-visible,
+.settings-theme-tile:focus-visible,
+.settings-reciter-option:focus-visible,
+.settings-action-button:focus-visible,
+.settings-tool-link:focus-visible,
+.settings-danger-button:focus-visible,
+.settings-close-button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--primary) 55%, transparent) !important;
+  outline-offset: 2px !important;
+}
+
+.settings-time-grid,
+.settings-action-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.settings-time-grid label {
+  display: grid !important;
+  gap: 0.35rem !important;
+  color: var(--text-muted) !important;
+  font-size: 0.76rem !important;
+  font-weight: 760 !important;
+}
+
+.settings-chip-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+}
+
+.settings-action-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.45rem !important;
+  border-color: var(--border) !important;
+  background: var(--bg-secondary) !important;
+  cursor: pointer !important;
+}
+
+.settings-tool-link {
+  display: grid !important;
+  gap: 0.25rem !important;
+  width: 100% !important;
+  min-height: 4.2rem !important;
+  padding: 0.85rem !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 34%, var(--border)) !important;
+  border-radius: 8px !important;
+  background: color-mix(in srgb, var(--primary) 8%, var(--bg-card) 92%) !important;
+  color: var(--primary) !important;
+  text-align: start !important;
+}
+
+.settings-tool-link span {
+  font-weight: 820 !important;
+}
+
+.settings-tool-link small {
+  color: var(--text-muted) !important;
+  line-height: 1.35 !important;
+}
+
+.settings-search {
+  position: relative !important;
+}
+
+.settings-search svg {
+  position: absolute !important;
+  inset-inline-start: 0.9rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: var(--text-muted) !important;
+}
+
+.settings-search input {
+  padding-inline-start: 3rem !important;
+}
+
+.settings-reciter-list {
+  max-height: min(42vh, 22rem) !important;
+  overflow-y: auto !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  background: var(--bg-secondary) !important;
+}
+
+.settings-reciter-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.45rem !important;
+  padding: 0.45rem !important;
+}
+
+.settings-reciter-option {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 0.55rem !important;
+  min-height: 3.4rem !important;
+  padding: 0.45rem 0.55rem !important;
+  border: 1px solid transparent !important;
+  border-radius: 7px !important;
+  background: transparent !important;
+  color: var(--text-primary) !important;
+  text-align: start !important;
+}
+
+.settings-reciter-option[data-active="true"] {
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent) !important;
+  background: color-mix(in srgb, var(--primary) 10%, var(--bg-card) 90%) !important;
+  color: var(--primary) !important;
+}
+
+.settings-reciter-option__text {
+  display: grid !important;
+  min-width: 0 !important;
+  gap: 0.1rem !important;
+}
+
+.settings-reciter-option__text span,
+.settings-reciter-option__text small {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.settings-reciter-option__text span {
+  font-size: 0.8rem !important;
+  font-weight: 820 !important;
+}
+
+.settings-reciter-option__text small {
+  color: var(--text-muted) !important;
+  font-size: 0.68rem !important;
+}
+
+.settings-cache-note {
+  display: flex !important;
+  gap: 0.45rem !important;
+  align-items: flex-start !important;
+  color: var(--text-muted) !important;
+  font-size: 0.78rem !important;
+  line-height: 1.35 !important;
+}
+
+.settings-danger-button {
+  display: inline-flex !important;
+  width: 100% !important;
+  min-height: 2.8rem !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  border: 1px solid color-mix(in srgb, var(--c-danger) 28%, transparent) !important;
+  border-radius: 8px !important;
+  background: color-mix(in srgb, var(--c-danger) 7%, var(--bg-card) 93%) !important;
+  color: var(--c-danger-hover) !important;
+  font-weight: 800 !important;
+}
+
+.settings-empty {
+  margin: 0 !important;
+  padding: 1rem !important;
+  color: var(--text-muted) !important;
+  text-align: center !important;
+  font-size: 0.82rem !important;
+}
+
+.settings-visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+}
+
+html[data-theme="dark"] .settings-drawer {
+  background:
+    linear-gradient(180deg, rgba(14, 24, 21, 0.98), rgba(8, 13, 12, 0.98)) !important;
+}
+
+@media (max-width: 560px) {
+  .settings-drawer {
+    width: 100vw !important;
+  }
+
+  .settings-drawer__header {
+    padding: 0.8rem 0.85rem !important;
+  }
+
+  .settings-drawer__tabs {
+    padding: 0.45rem !important;
+  }
+
+  .settings-tab-button {
+    min-height: 2.55rem !important;
+    gap: 0.32rem !important;
+    font-size: 0.76rem !important;
+  }
+
+  .settings-drawer__content {
+    padding: 0.75rem !important;
+  }
+
+  .settings-theme-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .settings-theme-tile {
+    grid-template: "swatch copy check" auto / 2.35rem minmax(0, 1fr) 1.25rem !important;
+    min-height: 4.2rem !important;
+    justify-items: start !important;
+    padding: 0.65rem !important;
+  }
+
+  .settings-theme-tile__swatch {
+    grid-area: swatch !important;
+    width: 2.2rem !important;
+    height: 2.2rem !important;
+  }
+
+  .settings-theme-tile__copy {
+    grid-area: copy !important;
+    text-align: start !important;
+  }
+
+  .settings-theme-tile__check {
+    position: static !important;
+    grid-area: check !important;
+  }
+
+  .settings-chip-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .settings-reciter-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+/* Quran.com-like settings modal */
+.settings-qurancom.settings-drawer {
+  inset: 50% auto auto 50% !important;
+  transform: translate(-50%, -50%) !important;
+  display: grid !important;
+  grid-template: "head head" auto "tabs body" minmax(0,1fr) / 200px minmax(0,1fr) !important;
+  width: min(92vw, 820px) !important;
+  height: min(88vh, 700px) !important;
+  border-radius: 20px !important;
+  background: var(--bg-card) !important;
+  box-shadow: 0 32px 100px rgba(0,0,0,.32) !important;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent) !important;
+}
+
+.settings-qurancom .settings-drawer__header {
+  grid-area: head !important;
+  box-sizing: border-box !important;
+  min-height: 4.6rem !important;
+  max-height: 4.6rem !important;
+  background: var(--bg-card) !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent) !important;
+}
+
+.settings-qurancom .settings-drawer__tabs {
+  grid-area: tabs !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.2rem !important;
+  padding: 0.75rem 0.6rem !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  height: auto !important;
+  border-bottom: 0 !important;
+  border-inline-end: 1px solid color-mix(in srgb, var(--border) 55%, transparent) !important;
+  background: color-mix(in srgb, var(--bg-secondary) 60%, transparent) !important;
+  overflow-y: auto !important;
+}
+
+.settings-qurancom .settings-tab-button {
+  justify-content: flex-start !important;
+  width: 100% !important;
+  height: 2.9rem !important;
+  min-height: 2.9rem !important;
+  max-height: 2.9rem !important;
+  border-radius: 10px !important;
+  padding: 0 0.65rem !important;
+  gap: 0.6rem !important;
+}
+
+.settings-qurancom .settings-tab-button[data-active="true"] {
+  background: color-mix(in srgb, var(--primary) 10%, var(--bg-card) 90%) !important;
+}
+
+.settings-qurancom .settings-drawer__content {
+  grid-area: body !important;
+  padding: 1.1rem !important;
+  background: color-mix(in srgb, var(--bg-primary) 60%, var(--bg-card) 40%) !important;
+}
+
+@media (max-width: 720px) {
+  .settings-qurancom.settings-drawer {
+    inset: auto 0 0 !important;
+    transform: none !important;
+    grid-template: "head" auto "tabs" auto "body" minmax(0,1fr) / minmax(0,1fr) !important;
+    width: 100vw !important;
+    height: min(92vh, 760px) !important;
+    border-radius: 20px 20px 0 0 !important;
+    border-inline: none !important;
+    border-bottom: none !important;
+  }
+  .settings-qurancom .settings-drawer__header {
+    min-height: 4.2rem !important;
+    max-height: 4.2rem !important;
+  }
+  .settings-qurancom .settings-drawer__tabs {
+    display: grid !important;
+    flex-direction: unset !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 0.3rem !important;
+    padding: 0.45rem !important;
+    min-height: 4.15rem !important;
+    max-height: 4.15rem !important;
+    border-inline-end: 0 !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent) !important;
+    overflow: hidden !important;
+  }
+  .settings-qurancom .settings-drawer__content {
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+  .settings-qurancom .settings-tab-button {
+    justify-content: center !important;
+    height: 3.15rem !important;
+    min-height: 3.15rem !important;
+    max-height: 3.15rem !important;
+    flex-direction: column !important;
+    gap: 0.08rem !important;
+    padding: 0.2rem 0.18rem !important;
+  }
+
+  .settings-qurancom .settings-tab-button__icon {
+    width: 1.22rem !important;
+    height: 1.22rem !important;
+  }
+
+  .settings-qurancom .settings-tab-button__label {
+    display: block !important;
+    max-width: 100% !important;
+    color: inherit !important;
+    font-size: 0.58rem !important;
+    font-weight: 650 !important;
+    line-height: 1.1 !important;
+    text-align: center !important;
+  }
+}
+
+.settings-font-picker {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  gap: 0.7rem !important;
+  align-items: center !important;
+}
+
+.settings-font-marker-preview {
+  display: inline-flex !important;
+  min-width: 2.55rem !important;
+  min-height: 2.55rem !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  font-size: 1.35rem !important;
 }
