@@ -75,3 +75,10 @@ test("dark karaoke words never inherit the fullscreen analysis overlay", () => {
     /\.wbw-(?:current|read|upcoming),\s*\.wbw-analysis-overlay\s*\{/,
   );
 });
+
+test("continuous Mushaf text strips embedded markers before rendering its marker", () => {
+  const renderer = source("src/components/Quran/SmartAyahRenderer.jsx");
+
+  assert.match(renderer, /effectiveRiwaya,\s*appendNativeMarker/);
+  assert.match(renderer, /return appendNativeAyahMarker\(/);
+});

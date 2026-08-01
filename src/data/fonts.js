@@ -285,11 +285,18 @@ export function getNativeAyahMarker(value, fontId, riwaya = "hafs") {
   return `${config.marker}${formatAyahMarkerNumber(value, normalizedId, riwaya)}`;
 }
 
-export function appendNativeAyahMarker(text, ayahNumber, fontId, riwaya = "hafs") {
+export function appendNativeAyahMarker(
+  text,
+  ayahNumber,
+  fontId,
+  riwaya = "hafs",
+  includeMarker = true,
+) {
   const value = String(text || "").trim();
   if (!value) return value;
-  const marker = getNativeAyahMarker(ayahNumber, fontId, riwaya);
   const cleanedValue = value.replace(AYAH_MARKER_SUFFIX_RE, "").trim();
+  if (!includeMarker) return cleanedValue;
+  const marker = getNativeAyahMarker(ayahNumber, fontId, riwaya);
   if (!cleanedValue) return marker;
   return `${cleanedValue} ${marker}`;
 }
