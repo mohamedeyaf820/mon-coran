@@ -47,8 +47,7 @@ function CleanPageViewComponent({
   const mushafFontSize = isMobileMushaf
     ? Math.max(18, Math.min(26, Number(fontSize) || 24))
     : Math.max(34, Math.min(72, Number(fontSize) || 42));
-  const mushafLineHeight = riwaya === "warsh" ? 2.5 : 2.42;
-  const mushafWordSpacing = riwaya === "warsh" ? "0.07em" : "0.1em";
+  const mushafWordSpacing = riwaya === "warsh" ? "0.035em" : "0.045em";
 
   const juzLabel = useMemo(() => {
     if (!juzNumber) return "";
@@ -85,7 +84,7 @@ function CleanPageViewComponent({
         lang="ar"
         style={{
           "--cpv-font-size": `${Math.round(mushafFontSize)}px`,
-          "--cpv-line-height": String(mushafLineHeight),
+          "--cpv-line-height": "var(--quran-line-height, 1.94)",
           "--cpv-word-spacing": mushafWordSpacing,
         }}
       >
