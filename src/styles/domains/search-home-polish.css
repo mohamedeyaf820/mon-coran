@@ -1980,39 +1980,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     }
 }
 
-.home-top-cards-grid {
-    width: min(100%, 1200px);
-    margin-inline: auto;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: clamp(0.85rem, 1.4vw, 1.15rem);
-    align-items: stretch;
-}
-
-.home-top-cards-grid > * {
-    min-width: 0;
-    height: 100%;
-}
-
-.home-top-cards-grid .home-prayer-card {
-    max-height: 100%;
-}
-
-@media (max-width: 1180px) {
-    .home-top-cards-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
 @media (max-width: 640px) {
-    .home-top-cards-grid {
-        width: 100%;
-        max-width: calc(100vw - 0.85rem);
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-        margin-inline: auto;
-    }
-
     .home-hero-compact {
         padding: 1rem !important;
     }
@@ -2938,58 +2906,6 @@ html[data-theme="dark"] .search-pro__close:hover {
     background: color-mix(in srgb, var(--primary) 11%, transparent) !important;
     color: var(--primary) !important;
     box-shadow: inset 0 -2px var(--primary);
-}
-
-.app-root .app-view-home .home-top-cards-grid,
-.app-root[data-view="home"] .home-top-cards-grid {
-    width: min(100%, 1240px);
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: clamp(0.8rem, 1.3vw, 1rem);
-    align-items: stretch;
-}
-
-.app-root .app-view-home .home-top-cards-grid > *,
-.app-root[data-view="home"] .home-top-cards-grid > * {
-    min-width: 0;
-    height: 100%;
-    border-radius: 14px !important;
-}
-
-.app-root .app-view-home :is(.home-daily-verse-card, .home-session-card, .home-prayer-card, .home-tools-quick-card),
-.app-root[data-view="home"] :is(.home-daily-verse-card, .home-session-card, .home-prayer-card, .home-tools-quick-card) {
-    border-color: var(--border, #d6e4df) !important;
-    background: var(--bg-primary, #ffffff) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
-}
-
-.app-root[data-view="home"] .home-tools-quick-card__more {
-    display: inline-flex !important;
-    align-items: center;
-    gap: 0.25rem;
-    background: transparent !important;
-    color: var(--primary) !important;
-}
-
-.app-root[data-view="home"] .home-tools-quick-card__tool {
-    background: var(--bg-secondary) !important;
-    color: var(--text-secondary) !important;
-}
-
-.app-root[data-view="home"] .home-tools-quick-card__tool :is(svg, span) {
-    color: inherit !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-
-.app-root[data-view="home"] .home-tools-quick-card__tool svg {
-    width: var(--mp-device-icon) !important;
-    height: var(--mp-device-icon) !important;
-    stroke: currentColor !important;
-}
-
-.app-root[data-view="home"] .home-tools-quick-card__tool span {
-    font-size: var(--mp-device-ui-sm) !important;
 }
 
 .app-root .app-view-home .home-content-zone,

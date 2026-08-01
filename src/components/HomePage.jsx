@@ -143,7 +143,7 @@ import SessionCard from "./Home/SessionCard";
 import StatsStrip from "./Home/StatsStrip";
 import ContentSection from "./Home/ContentSection";
 
-function ToolsQuickCard({ lang, set, t }) {
+function ToolsQuickCard({ lang, set }) {
   const tr = (obj) => (lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en);
 
   const quickTools = [
@@ -155,8 +155,8 @@ function ToolsQuickCard({ lang, set, t }) {
 
   return (
     <div className="home-tools-quick-card bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
-      <div className="mb-3 flex min-w-0 items-center gap-3 select-none">
-        <div className="flex min-w-0 flex-1 items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] font-[var(--font-ui)] uppercase tracking-[0.06em]">
+      <div className="home-tools-quick-card__header mb-3 flex min-w-0 items-center gap-3 select-none">
+        <div className="home-tools-quick-card__title flex min-w-0 flex-1 items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] font-[var(--font-ui)] uppercase tracking-[0.06em]">
           <Shapes size={12} className="text-primary" />
           <span className="line-clamp-2 min-w-0 leading-tight">
             {tr({ fr: "Outils Spirituels", en: "Spiritual Tools", ar: "الأدوات الروحية" })}
@@ -172,7 +172,7 @@ function ToolsQuickCard({ lang, set, t }) {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="home-tools-quick-card__grid grid grid-cols-2 gap-2">
         {quickTools.map((tool) => (
           <button
             type="button"
@@ -221,7 +221,6 @@ export default function HomePage({ lowPerfMode = false }) {
     state;
   const isRtl = lang === "ar";
 
-  /* ── State local ─────────────────────────────────────────────────────── */
   const [activeTab, setActiveTab] = useState("surah");
   const [activeInfo, setActiveInfo] = useState("suggest");
   const [bookmarks, setBookmarks] = useState([]);
@@ -1033,7 +1032,6 @@ export default function HomePage({ lowPerfMode = false }) {
         <ToolsQuickCard
           lang={lang}
           set={set}
-          t={t}
         />
       </section>
 

@@ -232,7 +232,7 @@ export default function SessionCard({
       {/* ── Carte prières ─────────────────────────────────────────────── */}
       <div className="home-prayer-card bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
         {/* En-tête prières */}
-        <div className="flex items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] mb-[0.75rem] font-[var(--font-ui)] uppercase tracking-[0.06em]">
+        <div className="home-prayer-card__header flex items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] mb-[0.75rem] font-[var(--font-ui)] uppercase tracking-[0.06em]">
           <Building2 size={12} />
           <span>
             {lang === "fr" ? "Prières" : lang === "ar" ? "الصلوات" : "Prayers"}
@@ -257,6 +257,8 @@ export default function SessionCard({
             return (
               <div
                 key={p.key}
+                data-active={isActive ? "true" : "false"}
+                aria-current={isActive ? "time" : undefined}
                 className={cn(
                   "home-prayer-item flex min-w-0 items-center gap-2 px-2.5 py-2 rounded-xl transition-all duration-200 border border-transparent",
                   isActive &&
@@ -287,7 +289,7 @@ export default function SessionCard({
                 {isActive && (
                   <span className="text-[0.58rem] font-[800] text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] px-[0.5rem] py-[0.15rem] rounded-full uppercase tracking-[0.08em] font-[var(--font-ui)] animate-pulse">
                     {lang === "fr"
-                      ? "Maintenant"
+                      ? "En cours"
                       : lang === "ar"
                         ? "الآن"
                         : "Now"}
