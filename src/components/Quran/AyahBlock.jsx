@@ -2,16 +2,17 @@ import React, { useCallback, useMemo } from "react";
 import { Bookmark } from "lucide-react";
 import { toAr } from "../../data/surahs";
 import { t } from "../../i18n";
-import { useAppState, useApp } from "../../context/AppContext";
+import { useAppSelector } from "../../context/AppContext";
 import { arabicToLatin } from "../../data/transliteration";
 import { cn } from "../../lib/utils";
+import { addBookmark } from "../../services/storageService";
 import MemorizationText from "./MemorizationText";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 import WordByWordDisplay from "./WordByWordDisplay";
 import AyahBlockFooter from "./AyahBlockFooter";
 import AyahBlockSupplement from "./AyahBlockSupplement";
 
-const AyahBlock = React.memo(function AyahBlock({
+function AyahBlockComponent({
   ayah,
   isPlaying,
   isActive,
@@ -32,7 +33,8 @@ const AyahBlock = React.memo(function AyahBlock({
   memMode,
 }) {
   const isRtl = lang === "ar";
-  const { translationReadingMode } = useAppState();
+  const translationReadingMode = useAppSelector((s) => s.translationReadingMode);
+  const memRepeatCount = useAppSelector((s) => s.memRepeatCount);
 
   const transliterationSource =
     riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text;
@@ -44,7 +46,14 @@ const AyahBlock = React.memo(function AyahBlock({
 
   const arabicContent = useMemo(() => {
     if (memMode)
-      return <MemorizationText text={ayah.hafsText || ayah.text} lang={lang} />;
+      return (
+        <MemorizationText
+          text={ayah.hafsText || ayah.text}
+          lang={lang}
+          isPlaying={isPlaying}
+          repeatCount={memRepeatCount}
+        />
+      );
     if (showWordByWord) {
       return (
         <WordByWordDisplay
@@ -77,6 +86,7 @@ const AyahBlock = React.memo(function AyahBlock({
     fontSize,
     isPlaying,
     lang,
+    memRepeatCount,
     memMode,
     riwaya,
     showTajwid,
@@ -90,6 +100,11 @@ const AyahBlock = React.memo(function AyahBlock({
     if (typeof onToggleActive === "function")
       onToggleActive(toggleId ?? ayah.numberInSurah);
   }, [ayah.numberInSurah, onToggleActive, toggleId]);
+
+  const handleBookmark = useCallback((e) => {
+    e.stopPropagation();
+    addBookmark(surahNum, ayah.numberInSurah).catch(() => {});
+  }, [surahNum, ayah.numberInSurah]);
 
   return (
     <div
@@ -111,6 +126,7 @@ const AyahBlock = React.memo(function AyahBlock({
       className={cn(
         /* Base card */
         "rd-ayah qc-ayah-block group relative",
+        showWordByWord && "qc-ayah-block--word-by-word",
         "mx-auto mb-6 w-full max-w-[1080px]",
         "rounded-[1.5rem] border border-[color-mix(in_srgb,var(--border)_50%,transparent_50%)]",
         "bg-[var(--bg-card)]",
@@ -124,7 +140,8 @@ const AyahBlock = React.memo(function AyahBlock({
         "focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.3)]",
 
         /* Active */
-        isActive && "is-active bg-[color-mix(in_srgb,var(--bg-card)_94%,var(--primary)_6%)] border-[color-mix(in_srgb,var(--primary)_50%,transparent_50%)] shadow-[0_8px_32px_rgba(var(--primary-rgb),0.12)] scale-[1.005] z-10",
+        isActive &&
+          "is-active bg-[color-mix(in_srgb,var(--bg-card)_94%,var(--primary)_6%)] border-[color-mix(in_srgb,var(--primary)_50%,transparent_50%)] shadow-[0_8px_32px_rgba(var(--primary-rgb),0.12)] scale-[1.005] z-10",
         translationReadingMode && "is-translation-reading",
 
         /* Playing */
@@ -134,7 +151,7 @@ const AyahBlock = React.memo(function AyahBlock({
         ],
 
         /* Mobile */
-        "max-[640px]:px-5 max-[640px]:py-5 max-[640px]:rounded-[1.25rem] max-[640px]:mb-4"
+        "max-[640px]:px-5 max-[640px]:py-5 max-[640px]:rounded-[1.25rem] max-[640px]:mb-4",
       )}
     >
       {/* Top row: Minimalist Verse Badge */}
@@ -146,18 +163,18 @@ const AyahBlock = React.memo(function AyahBlock({
             "transition-colors duration-300",
             isPlaying
               ? "bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)]"
-              : "bg-transparent text-[var(--text-muted)] border border-[color-mix(in_srgb,var(--border)_50%,transparent_50%)]"
+              : "bg-transparent text-[var(--text-muted)] border border-[color-mix(in_srgb,var(--border)_50%,transparent_50%)]",
           )}
           aria-hidden="true"
         >
-          {lang === 'fr' ? 'Verset' : 'Verse'} {surahNum}:{ayah.numberInSurah}
+          {lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Verse"} {surahNum}:{ayah.numberInSurah}
         </div>
         <button
           type="button"
           className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] opacity-40 hover:!opacity-100 hover:text-[var(--primary)] hover:bg-[rgba(var(--primary-rgb),0.08)] transition-all duration-300"
-          onClick={(e) => { e.stopPropagation(); }}
-          aria-label="Bookmark"
-          title={lang === 'fr' ? 'Marquer ce verset' : 'Bookmark this verse'}
+          onClick={handleBookmark}
+          aria-label={lang === "fr" ? "Marquer ce verset" : lang === "ar" ? "وضع إشارة مرجعية" : "Bookmark this verse"}
+          title={lang === "fr" ? "Marquer ce verset" : lang === "ar" ? "وضع إشارة مرجعية" : "Bookmark this verse"}
         >
           <Bookmark size={16} strokeWidth={2.5} />
         </button>
@@ -166,7 +183,9 @@ const AyahBlock = React.memo(function AyahBlock({
       {/* Arabic text - Premium layout */}
       <div
         dir="rtl"
-        style={{ fontFamily: "var(--qd-font-family, var(--font-quran, serif))" }}
+        style={{
+          fontFamily: "var(--qd-font-family, var(--font-quran, serif))",
+        }}
         className={cn(
           "rd-arabic qc-ayah-text-ar",
           "!text-right mb-7 mt-1",
@@ -206,6 +225,29 @@ const AyahBlock = React.memo(function AyahBlock({
       <AyahBlockFooter ayah={ayah} isActive={isActive} surahNum={surahNum} />
     </div>
   );
-});
+}
 
-export default AyahBlock;
+function areAyahBlockEqual(prev, next) {
+  return (
+    prev.ayah === next.ayah &&
+    prev.isPlaying === next.isPlaying &&
+    prev.isActive === next.isActive &&
+    prev.trans === next.trans &&
+    prev.showTajwid === next.showTajwid &&
+    prev.showTranslation === next.showTranslation &&
+    prev.showWordByWord === next.showWordByWord &&
+    prev.showTransliteration === next.showTransliteration &&
+    prev.showWordTranslation === next.showWordTranslation &&
+    prev.surahNum === next.surahNum &&
+    prev.calibration === next.calibration &&
+    prev.riwaya === next.riwaya &&
+    prev.lang === next.lang &&
+    prev.onToggleActive === next.onToggleActive &&
+    prev.toggleId === next.toggleId &&
+    prev.ayahId === next.ayahId &&
+    prev.fontSize === next.fontSize &&
+    prev.memMode === next.memMode
+  );
+}
+
+export default React.memo(AyahBlockComponent, areAyahBlockEqual);

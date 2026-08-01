@@ -1,6 +1,8 @@
 import { useEffect, useRef, useCallback } from "react";
 import { X } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { useAppLocale } from "../../context/AppContext";
+import { t } from "../../i18n";
 
 export function Sheet({
   open,
@@ -12,6 +14,7 @@ export function Sheet({
   showCloseButton = true,
   className,
 }) {
+  const { lang } = useAppLocale();
   const sheetRef = useRef(null);
 
   const handleKeyDown = useCallback((e) => {
@@ -65,7 +68,7 @@ export function Sheet({
           <button
             onClick={onClose}
             className="absolute top-4 right-4 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] transition-all duration-150 hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] hover:rotate-90"
-            aria-label="Fermer"
+            aria-label={t("audio.close", lang)}
           >
             <X size={18} />
           </button>

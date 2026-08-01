@@ -88,7 +88,6 @@
     .app-root .quran-display,
     .app-root .quran-display-scroll {
         overscroll-behavior-y: auto;
-        -webkit-overflow-scrolling: touch;
     }
 }
 
@@ -144,7 +143,6 @@
         border-inline-end: 0;
         border-bottom: 1px solid var(--border);
         scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
     }
 
     .settings-nav::-webkit-scrollbar {
@@ -312,7 +310,6 @@
         overflow-x: auto;
         padding-bottom: 0.12rem;
         scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
     }
 
     .app-root
@@ -593,11 +590,6 @@
 
     .app-root .mp-footer__bottom {
         padding-block: 0.85rem;
-    }
-
-    .app-root .mp-player-minimized-row {
-        gap: 0.65rem;
-        padding: 0.72rem 0.85rem;
     }
 
     .app-root .mp-player-minimized-title {
@@ -881,11 +873,6 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .app-root .mp-player-minimized-row {
-        gap: 0.5rem;
-        padding-inline: 0.75rem;
-    }
-
     .app-root .mp-player-mobile-main-controls {
         padding-inline: 0.3rem;
     }
@@ -1034,7 +1021,7 @@
 
 @media (max-width: 980px) {
     .app-root .app-view-shell {
-        padding: clamp(0.72rem, 1.8vw, 1rem);
+        padding-block: clamp(0.72rem, 1.8vw, 1rem);
     }
 
     .app-root .app-view-home .hp-wrapper,
@@ -1144,7 +1131,7 @@
         .app-view-home
         .hp-grid.hp-grid--surah
         .hp-card-name {
-        font-size: 0.88rem;
+        font-size: max(1rem, 14px);
         line-height: 1.2;
     }
 
@@ -1153,7 +1140,7 @@
         .app-view-home
         .hp-grid.hp-grid--surah
         .hp-card-meta {
-        font-size: 0.66rem;
+        font-size: max(0.79rem, 11px);
         line-height: 1.24;
     }
 
@@ -1271,7 +1258,7 @@
         .app-view-home
         .hp-grid.hp-grid--surah
         .hp-card-name {
-        font-size: 0.84rem;
+        font-size: max(0.86rem, 12px);
     }
 
     .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-meta,
@@ -1279,7 +1266,7 @@
         .app-view-home
         .hp-grid.hp-grid--surah
         .hp-card-meta {
-        font-size: 0.62rem;
+        font-size: max(0.79rem, 11px);
     }
 
     .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-ar,
@@ -1300,11 +1287,6 @@
         left: calc(env(safe-area-inset-left, 0px) + 0.45rem);
         right: calc(env(safe-area-inset-right, 0px) + 0.45rem);
         bottom: calc(env(safe-area-inset-bottom, 0px) + 0.45rem);
-    }
-
-    .app-root .mp-player-minimized-row {
-        gap: 0.5rem;
-        padding: 0.72rem 0.76rem;
     }
 
     .app-root .mp-player-minimized-title {
@@ -1397,7 +1379,7 @@
         .app-view-home
         .hp-grid.hp-grid--surah
         .hp-card-name {
-        font-size: 0.8rem;
+        font-size: max(0.86rem, 12px);
     }
 
     .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-meta,
@@ -1405,24 +1387,12 @@
         .app-view-home
         .hp-grid.hp-grid--surah
         .hp-card-meta {
-        font-size: 0.6rem;
+        font-size: max(0.79rem, 11px);
     }
 
     .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-ar,
     .app-root.premium-plus .app-view-home .hp-grid.hp-grid--surah .hp-card-ar {
         font-size: 1.02rem;
-    }
-
-    .app-root .mp-player-minimized-row {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr) repeat(4, auto);
-        gap: 0.34rem;
-        padding: 0.68rem 0.72rem;
-    }
-
-    .app-root .mp-player-minimized-row button:not(.mp-player-minimized-open) {
-        width: 1.95rem;
-        height: 1.95rem;
     }
 
     .app-root .mp-player-minimized-title {
@@ -1445,10 +1415,6 @@
         gap: 0.46rem;
     }
 
-    .app-root .mp-player-minimized-row button:not(.mp-player-minimized-open) {
-        width: 1.82rem;
-        height: 1.82rem;
-    }
 }
 
 @keyframes qdAyahActionsReveal {

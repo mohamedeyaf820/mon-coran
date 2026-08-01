@@ -1,10 +1,38 @@
 import React from "react";
-import "../../styles/domains/recitation-polish.css";
+import {
+  BookOpen,
+  Headphones,
+  ImageIcon,
+  Info,
+  ListMusic,
+  RadioTower,
+  UserRound,
+  X,
+} from "lucide-react";
+import "../../styles/recitationStyles.js";
 import ReciterHero from "./ReciterHero";
 import ReciterBioCollapse from "./ReciterBioCollapse";
 import ReciterRadioButton from "./ReciterRadioButton";
 import SurahRecitationList from "./SurahRecitationList";
 import { cn } from "../../lib/utils";
+import {
+  getReciterProfileSource,
+  getReciterSourceInfo,
+  getReciterVisual,
+} from "../../data/reciters";
+import {
+  preloadReciterProfiles,
+  useReciterProfile,
+} from "../../hooks/useReciterProfile";
+
+export function preloadReciterDetailData() {
+  return preloadReciterProfiles();
+}
+
+function labelFor(lang, fr, en, ar = en) {
+  if (lang === "ar") return ar;
+  return lang === "fr" ? fr : en;
+}
 
 export default function ReciterDetailPage({
   lang,
@@ -14,149 +42,153 @@ export default function ReciterDetailPage({
   onClose,
   onPlaySurah,
   onOpenSurah,
+  onOpenSurahIntent,
   getDownloadUrl,
   dialogRef,
   closeBtnRef,
 }) {
   const isRtl = lang === "ar";
-  const sourceLabel =
-    reciter.source === "mp3quran"
-      ? "MP3Quran"
-      : reciter.source === "everyayah"
-        ? "EveryAyah"
-        : reciter.cdnType || "Audio";
+  const sourceInfo = getReciterSourceInfo(reciter);
+  const visual = getReciterVisual(reciter);
+  const researchedProfile = useReciterProfile(reciter?.id);
+  const biographySource =
+    researchedProfile?.bioSource || getReciterProfileSource(reciter);
+  const riwayaLabel = reciter.verifiedWarsh ? "Warsh" : isRtl ? "حفص" : "Hafs";
   const audioModeLabel =
     reciter.audioMode === "surah"
-      ? lang === "fr"
-        ? "Sourate complète"
-        : lang === "ar"
-          ? "سورة كاملة"
-          : "Full surah"
-      : lang === "fr"
-        ? "Verset par verset"
-        : lang === "ar"
-          ? "آية بآية"
-          : "Ayah by ayah";
-  const riwayaLabel = reciter.verifiedWarsh
-    ? "Warsh"
-    : lang === "ar"
-      ? "حفص"
-      : "Hafs";
+      ? labelFor(lang, "Sourate complète", "Full surah", "سورة كاملة")
+      : labelFor(lang, "Verset par verset", "Ayah by ayah", "آية بآية");
 
   return (
     <div
-      className="reciter-detail relative flex max-h-[90dvh] w-full max-w-5xl min-w-0 flex-col overflow-hidden rounded-2xl border border-border/80 bg-bg-card/90 shadow-[0_25px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl animate-fadeInScale"
+      className="reciter-detail"
       onClick={(event) => event.stopPropagation()}
       role="dialog"
       aria-modal="true"
       aria-labelledby="reciter-modal-title"
       ref={dialogRef}
+      dir={isRtl ? "rtl" : "ltr"}
     >
-      {/* ── Sticky head: hero + stats + radio — never scrolls away ── */}
-      <div className="rd-sticky-head relative">
-        {/* Decorative accent line */}
-        <div
-          className="reciter-detail__accent absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[var(--primary)] to-transparent opacity-60"
-          aria-hidden="true"
-        />
-        {/* Subtle top gradient wash */}
-        <div
-          className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[rgba(var(--primary-rgb),0.04)] to-transparent pointer-events-none rounded-t-3xl"
-          aria-hidden="true"
-        />
+      <div className="reciter-detail__accent" aria-hidden="true" />
 
-        {/* Close button — sits inside the sticky zone so it's always visible */}
+      <header className="rd-sticky-head">
         <button
-          className={cn(
-            "reciter-detail__close absolute top-4 z-20 flex items-center justify-center w-8 h-8 rounded-full border border-border bg-bg-card/85 text-text-muted hover:text-red-500 hover:border-red-200 active:scale-95 transition-all duration-200",
-            isRtl ? "left-4" : "right-4",
-          )}
+          className={cn("reciter-detail__close", isRtl ? "is-rtl" : "")}
           type="button"
           onClick={onClose}
           ref={closeBtnRef}
-          aria-label={
-            lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
-          }
+          aria-label={labelFor(lang, "Fermer", "Close", "إغلاق")}
         >
-          <i className="fas fa-xmark text-sm" />
+          <X className="recitation-icon recitation-icon--md" size={18} aria-hidden="true" />
         </button>
 
-        {/* Hero row: avatar + name + badges + radio button */}
-        <div className="reciter-detail__header flex min-w-0 flex-col gap-4 pb-3 sm:flex-row sm:items-center sm:justify-between">
-          <ReciterHero reciter={reciter} lang={lang} />
-          <div className="flex shrink-0 items-center self-start sm:self-center">
-            <ReciterRadioButton
-              lang={lang}
-              onClick={() => onPlayRadio(reciter)}
-            />
+        <span className="reciter-detail__eyebrow">
+          <Headphones className="recitation-icon recitation-icon--xs" size={13} aria-hidden="true" />
+          {labelFor(lang, "Bibliothèque audio", "Audio library", "المكتبة الصوتية")}
+        </span>
+
+        <ReciterHero reciter={reciter} lang={lang} />
+
+        <div className="reciter-detail__quick-actions">
+          <ReciterRadioButton lang={lang} onClick={() => onPlayRadio(reciter)} />
+          <span className="reciter-detail__meta-pill">
+            <ListMusic className="recitation-icon recitation-icon--xs" size={13} aria-hidden="true" />
+            {audioModeLabel}
+          </span>
+          <span className="reciter-detail__meta-pill reciter-detail__meta-pill--riwaya">
+            <BookOpen className="recitation-icon recitation-icon--xs" size={13} aria-hidden="true" />
+            {riwayaLabel}
+          </span>
+        </div>
+      </header>
+
+      <div className="rd-scrollable-body reciter-detail__layout">
+        <aside className="reciter-detail__aside">
+          <div className="reciter-detail__bio">
+            <h3>
+              <UserRound className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
+              {labelFor(lang, "À propos du récitateur", "About the reciter", "عن القارئ")}
+            </h3>
+            <ReciterBioCollapse lang={lang} reciter={reciter} />
           </div>
-        </div>
 
-        {/* Stats chips grid */}
-        <div className="reciter-detail__stats mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {[
-            { icon: "fa-wave-square", label: riwayaLabel },
-            { icon: "fa-music", label: reciter.style || "murattal" },
-            { icon: "fa-server", label: sourceLabel },
-            { icon: "fa-list-ul", label: audioModeLabel },
-          ].map((item) => (
-            <div
-              key={`${item.icon}-${item.label}`}
-              className="reciter-detail__stat flex min-w-0 flex-col items-center gap-1 rounded-xl border border-border bg-bg-secondary/60 px-3 py-2.5 text-center"
-            >
-              <div className="text-[0.68rem] text-text-muted">
-                <i className={`fas ${item.icon}`} />
+          <section
+            className="reciter-detail__sources"
+            aria-label={labelFor(lang, "Sources", "Sources", "المصادر")}
+          >
+            {biographySource ? (
+              <div className="reciter-detail__source-row">
+                <BookOpen className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
+                <span>{labelFor(lang, "Biographie", "Biography", "السيرة")}</span>
+                <a
+                  href={biographySource.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {biographySource.provider}
+                </a>
               </div>
-              <div className="truncate text-[0.78rem] font-extrabold text-text-primary">
-                {item.label}
+            ) : null}
+            {sourceInfo ? (
+              <div className="reciter-detail__source-row">
+                <RadioTower className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
+                <span>{labelFor(lang, "Source audio", "Audio source", "مصدر الصوت")}</span>
+                <strong>{sourceInfo.label}</strong>
               </div>
-            </div>
-          ))}
-        </div>
-      </div>
+            ) : null}
+            {visual.attribution ? (
+              <div className="reciter-detail__source-row">
+                <ImageIcon className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
+                <span>{labelFor(lang, "Portrait", "Portrait", "الصورة")}</span>
+                <a
+                  href={visual.attribution.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {visual.attribution.provider}
+                </a>
+              </div>
+            ) : null}
+          </section>
 
-      {/* ── Scrollable body: bio + surah list ── */}
-      <div className="rd-scrollable-body">
-        {/* Biography / download notice */}
-        <div className="reciter-detail__bio mb-4 min-w-0 rounded-xl border border-[rgba(var(--primary-rgb),0.08)] bg-[rgba(var(--primary-rgb),0.035)] p-3 text-text-secondary leading-relaxed sm:p-4">
-          <ReciterBioCollapse
-            lang={lang}
-            text={reciter?.bio}
-            reciter={reciter}
-          />
-
-          {!canDirectDownload && (
-            <p className="mt-2 flex items-center gap-1.5 text-[0.7rem] font-semibold text-text-muted opacity-75">
-              <i className="fas fa-circle-info text-amber-500" />
-              {lang === "fr"
-                ? "Téléchargement direct non disponible pour ce serveur."
-                : lang === "ar"
-                  ? "التنزيل المباشر غير متاح لهذا القارئ."
-                  : "Direct download is not supported for this reciter."}
+          {!canDirectDownload ? (
+            <p className="reciter-detail__notice">
+              <Info className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
+              {labelFor(
+                lang,
+                "Le téléchargement direct n’est pas disponible pour cette source.",
+                "Direct download is unavailable for this source.",
+                "التنزيل المباشر غير متاح لهذا المصدر.",
+              )}
             </p>
-          )}
-        </div>
+          ) : null}
+        </aside>
 
-        {/* Section heading */}
-        <div className="reciter-detail__section-title mb-3 flex items-center gap-2">
-          <i className="fas fa-music text-xs text-[var(--primary)]" />
-          <h4 className="font-[var(--font-ui)] text-xs font-bold uppercase tracking-wider text-text-muted">
-            {lang === "fr"
-              ? "Récitations par sourate"
-              : lang === "ar"
-                ? "تلاوات السور"
-                : "Surah recitations"}
-          </h4>
-        </div>
+        <main className="reciter-detail__library">
+          <div className="reciter-detail__section-heading">
+            <div>
+              <span>{labelFor(lang, "114 sourates", "114 surahs", "١١٤ سورة")}</span>
+              <h3>
+                {labelFor(
+                  lang,
+                  "Choisir une récitation",
+                  "Choose a recitation",
+                  "اختر تلاوة",
+                )}
+              </h3>
+            </div>
+            <ListMusic className="recitation-icon recitation-icon--md" size={18} aria-hidden="true" />
+          </div>
 
-        {/* Surah recitation list */}
-        <SurahRecitationList
-          lang={lang}
-          reciter={reciter}
-          getDownloadUrl={getDownloadUrl}
-          onPlaySurah={onPlaySurah}
-          onOpenSurah={onOpenSurah}
-        />
+          <SurahRecitationList
+            lang={lang}
+            reciter={reciter}
+            getDownloadUrl={getDownloadUrl}
+            onPlaySurah={onPlaySurah}
+            onOpenSurah={onOpenSurah}
+            onOpenSurahIntent={onOpenSurahIntent}
+          />
+        </main>
       </div>
     </div>
   );

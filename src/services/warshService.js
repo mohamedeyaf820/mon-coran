@@ -9,6 +9,7 @@ import { dbGet, dbSet, dbDelete } from './dbService';
 import { WARSH_DATA_BASE_URL, WARSH_LEGACY_JSON_URL } from '../constants/warshSource';
 import { getSurah } from '../data/surahs';
 import { fetchQuranComText } from './quranComAPI';
+import { fetchWithTimeout } from './fetchWithTimeout';
 
 const IDB_STORE = 'cache';
 const IDB_KEY_PREFIX = 'warsh-unicode-v5-s-';
@@ -16,29 +17,9 @@ const WARSH_SOURCE_ID = 'warsh-unicode-v5';
 const LEGACY_CACHE_KEY = 'warsh-unicode-v4-s-';
 
 // Logger utilitaire - uniquement en dev
-const log = import.meta.env.DEV ? console.log : () => {};
-const logError = import.meta.env.DEV ? console.error : () => {};
+const log = import.meta.env?.DEV ? console.log : () => {};
+const logError = import.meta.env?.DEV ? console.error : () => {};
 
-// Fetch avec timeout
-async function fetchWithTimeout(url, options = {}, timeout = 15000) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-  
-  try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-    return response;
-  } catch (error) {
-    clearTimeout(timeoutId);
-    if (error.name === 'AbortError') {
-      throw new Error(`Request timeout after ${timeout}ms`);
-    }
-    throw error;
-  }
-}
 
 // Clear old cache format once per browser, not on every module import.
 // Re-clearing the current Warsh JSON cache on startup makes Hafs/Warsh switches
@@ -378,11 +359,12 @@ export async function loadWarshSurah(surahNum) {
     // 2. Try IndexedDB cache
     try {
       const cached = await dbGet(IDB_STORE, idbKey);
-      if (cached && Array.isArray(cached) && cached.length > 0) {
+      const cachedRows = Array.isArray(cached) ? cached : cached?.data;
+      if (Array.isArray(cachedRows) && cachedRows.length > 0) {
         // Validate cached data
-        if (validateWarshRows(cached, n)) {
-          cachedSurahs.set(n, cached);
-          return cached;
+        if (validateWarshRows(cachedRows, n)) {
+          cachedSurahs.set(n, cachedRows);
+          return cachedRows;
         } else {
           logError(`[WarshService] Cached data for surah ${n} is invalid, clearing...`);
           await dbDelete(IDB_STORE, idbKey).catch(() => {});
@@ -408,7 +390,7 @@ export async function loadWarshSurah(surahNum) {
         }
       } catch (fallbackErr) {
         logError(`[WarshService] Loading error for surah ${n}:`, fallbackErr);
-        throw new Error(`Failed to load warsh surah ${n}: ${fallbackErr.message || err.message}`);
+        throw new Error("WARSH_SOURCE_UNAVAILABLE");
       }
     }
 
@@ -486,21 +468,40 @@ function toWarshAyahWithHafsMeta(record, hafsAyah) {
 async function getWarshVersesByHafsScope(pathPrefix) {
   const hafsData = await fetchQuranComText(pathPrefix);
   const hafsAyahs = Array.isArray(hafsData?.ayahs) ? hafsData.ayahs : [];
+  const surahNumbers = [
+    ...new Set(
+      hafsAyahs
+        .map((ayah) => Number(ayah?.surah?.number))
+        .filter(Boolean),
+    ),
+  ];
   const groupedRecords = new Map();
-  const result = [];
+  let nextSurahIndex = 0;
+  const loadNextSurah = async () => {
+    while (nextSurahIndex < surahNumbers.length) {
+      const surahNumber = surahNumbers[nextSurahIndex];
+      nextSurahIndex += 1;
+      const records = await getWarshSurahVerses(surahNumber);
+      groupedRecords.set(
+        surahNumber,
+        new Map(records.map((record) => [Number(record.ayahNumber), record])),
+      );
+    }
+  };
+  await Promise.all(
+    Array.from(
+      { length: Math.min(5, surahNumbers.length) },
+      () => loadNextSurah(),
+    ),
+  );
 
+  const result = [];
   for (const hafsAyah of hafsAyahs) {
     const surahNumber = Number(hafsAyah?.surah?.number);
     const ayahNumber = Number(hafsAyah?.numberInSurah);
     if (!surahNumber || !ayahNumber) continue;
 
-    if (!groupedRecords.has(surahNumber)) {
-      groupedRecords.set(surahNumber, await getWarshSurahVerses(surahNumber));
-    }
-
-    const record = groupedRecords
-      .get(surahNumber)
-      .find((item) => Number(item.ayahNumber) === ayahNumber);
+    const record = groupedRecords.get(surahNumber)?.get(ayahNumber);
 
     if (record) result.push(toWarshAyahWithHafsMeta(record, hafsAyah));
   }
@@ -574,6 +575,14 @@ export async function getWarshJuzVerses(juzNum) {
   const cacheKey = Number(juzNum);
   if (cachedJuzPayloads.has(cacheKey)) return cachedJuzPayloads.get(cacheKey);
 
+  try {
+    const scoped = await getWarshVersesByHafsScope(`juz/${juzNum}`);
+    if (scoped?.ayahs?.length) {
+      cachedJuzPayloads.set(cacheKey, scoped);
+      return scoped;
+    }
+  } catch {}
+
   const indexed = getLegacyIndex(await loadLegacyWarshData());
   const rows = indexed?.byJuz?.get(cacheKey) || [];
   if (rows.length > 0) {
@@ -599,7 +608,7 @@ export async function getWarshJuzVerses(juzNum) {
     return payload;
   }
 
-  const payload = await getWarshVersesByHafsScope(`juz/${juzNum}`);
+  const payload = { ayahs: [], number: cacheKey };
   cachedJuzPayloads.set(cacheKey, payload);
   return payload;
 }
@@ -660,7 +669,7 @@ export async function getWarshPageVerses(pageNum) {
 }
 
 export function preloadWarshSurah(surahNum) {
-  loadWarshSurah(surahNum).catch(() => { });
+  return loadWarshSurah(surahNum).catch(() => null);
 }
 
 /**

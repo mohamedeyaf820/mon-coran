@@ -73,7 +73,6 @@ export default function QCReaderHeader({
         "bg-[var(--bg-primary)]/95 backdrop-blur-xl",
         "shadow-[0_1px_8px_rgba(0,0,0,0.06)]",
       )}
-      role="banner"
     >
       {/* ── Left: Back home ── */}
       <button

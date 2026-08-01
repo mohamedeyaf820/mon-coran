@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { test, expect } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 const OUTPUT_DIR = path.join("test-results", "visual-surah-zones");
@@ -28,7 +29,7 @@ function buildSeedSettings(theme) {
     showWordByWord: false,
     showTransliteration: false,
     showWordTranslation: false,
-    splashDone: true,
+    skipSplashAnimation: true,
   };
 }
 
@@ -43,6 +44,7 @@ for (const viewport of VIEWPORTS) {
         hasTouch: viewport.isMobile,
       });
       const page = await context.newPage();
+      await installQuranNetworkFixtures(page);
 
       await page.addInitScript(
         ({ key, payload }) => {
@@ -58,17 +60,17 @@ for (const viewport of VIEWPORTS) {
         waitUntil: "domcontentloaded",
       });
 
-      await page.waitForSelector(".qc-reader-surah-header", { timeout: 30000 });
+      await page.waitForSelector(".srh-root", { timeout: 30000 });
       await page.waitForTimeout(1000);
 
       const prefix = `${viewport.id}-${theme}`;
 
-      await page.locator(".qc-reader-surah-header").first().screenshot({
+      await page.locator(".srh-root").first().screenshot({
         path: path.join(OUTPUT_DIR, `${prefix}-header.png`),
       });
 
-      await page.locator(".hdr-v7__search-btn").first().click();
-      const searchModal = page.locator(".search-modal-shell");
+      await page.getByRole("button", { name: /Rechercher|Search|بحث/i }).first().click();
+      const searchModal = page.locator(".search-pro-overlay");
       await expect(searchModal).toBeVisible();
       await searchModal.screenshot({
         path: path.join(OUTPUT_DIR, `${prefix}-search.png`),
@@ -76,7 +78,7 @@ for (const viewport of VIEWPORTS) {
       await page.keyboard.press("Escape");
       await expect(searchModal).toBeHidden();
 
-      await page.locator(".hdr-v7__menu-btn").first().click();
+      await page.getByRole("button", { name: /Menu/i }).first().click();
       const sidebar = page.locator(".sb-wrapper.open");
       await expect(sidebar).toBeVisible();
       await sidebar.screenshot({

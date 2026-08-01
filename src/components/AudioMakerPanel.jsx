@@ -3,13 +3,15 @@
    Permet de combiner surahs et créer des sessions de lecture
    ══════════════════════════════════════════════════════════════ */
 import React, { useState, useCallback, useMemo } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import SURAHS from "../data/surahs";
 import audioService from "../services/audioService";
 import { ensureReciterForRiwaya, getReciter } from "../data/reciters";
 import { buildAudioPlaylistForSurahs } from "../utils/audioPlaylist";
-import { cn } from "../lib/utils";
+import { cn, toast } from "../lib/utils";
+import { X, Search, Check, Trash2, Bookmark, Play, Loader2 } from "lucide-react";
 
 export default function AudioMakerPanel() {
   const { state, dispatch, set } = useApp();
@@ -57,7 +59,10 @@ export default function AudioMakerPanel() {
       const cdnType = reciterObj?.cdnType || "islamic";
 
       /* Build playlist for audioService — include ayah numbers */
-      const playlist = await buildAudioPlaylistForSurahs(selectedSurahs, riwaya);
+      const playlist = await buildAudioPlaylistForSurahs(
+        selectedSurahs,
+        riwaya,
+      );
 
       if (playlist.length === 0) {
         setIsCreating(false);
@@ -96,7 +101,14 @@ export default function AudioMakerPanel() {
   /* --- Save session to localStorage --- */
   const handleSave = () => {
     if (!sessionName.trim() || selectedSurahs.length === 0) {
-      alert(lang === "fr" ? "Remplissez le nom" : "Enter session name");
+      toast(
+        lang === "ar"
+          ? "أدخل اسم الجلسة واختر سورة واحدة على الأقل."
+          : lang === "en"
+            ? "Enter a session name and select at least one surah."
+            : "Saisissez un nom et sélectionnez au moins une sourate.",
+        "warning",
+      );
       return;
     }
 
@@ -120,9 +132,7 @@ export default function AudioMakerPanel() {
           detail: {
             type: "success",
             message:
-              lang === "fr"
-                ? "Session sauvegardée ✓"
-                : "Session saved ✓",
+              lang === "fr" ? "Session sauvegardée ✓" : "Session saved ✓",
           },
         }),
       );
@@ -137,163 +147,166 @@ export default function AudioMakerPanel() {
   const label = (key) => (lang === "fr" ? key.fr : key.en);
 
   return (
-    <div className="audio-maker-modal">
-      <div className="audio-maker-overlay" onClick={close} />
-
-      <div className="audio-maker-panel">
-        {/* Header */}
-        <div className="audio-maker-header">
-          <h2 className="audio-maker-title">
-            {lang === "fr" ? "🎙️ Audio Maker" : "🎙️ Audio Maker"}
-          </h2>
-          <button
-            className="audio-maker-close"
-            onClick={close}
-            aria-label="Close"
+    <Dialog.Root
+      open
+      onOpenChange={(o) => {
+        if (!o) close();
+      }}
+    >
+      <Dialog.Portal>
+        <div className="audio-maker-modal">
+          <div className="audio-maker-overlay" onClick={close} />
+          <Dialog.Content
+            className="audio-maker-panel"
+            onEscapeKeyDown={close}
+            onInteractOutside={close}
           >
-            <i className="fas fa-times" />
-          </button>
-        </div>
+            <Dialog.Title className="sr-only">
+              {lang === "ar" ? "صانع المقاطع الصوتية" : lang === "en" ? "Audio maker" : "Créateur audio"}
+            </Dialog.Title>
+            {/* Header */}
+            <div className="audio-maker-header">
+              <h2 className="audio-maker-title">
+                {lang === "fr" ? "🎙️ Audio Maker" : "🎙️ Audio Maker"}
+              </h2>
+              <button
+                className="audio-maker-close"
+                onClick={close}
+                aria-label={t("audio.close", lang)}
+              >
+                <X size={14} />
+              </button>
+            </div>
 
-        {/* Content */}
-        <div className="audio-maker-content">
-          {/* Search bar */}
-          <div className="audio-maker-search-wrap">
-            <input
-              type="text"
-              className="audio-maker-search"
-              placeholder={
-                lang === "fr" ? "Chercher une sourate..." : "Search surah..."
-              }
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <i className="fas fa-search" />
-          </div>
-
-          {/* Session name input */}
-          <div className="audio-maker-session">
-            <input
-              type="text"
-              className="audio-maker-session-input"
-              placeholder={
-                lang === "fr"
-                  ? "Nom de la session..."
-                  : "Session name..."
-              }
-              value={sessionName}
-              onChange={(e) => setSessionName(e.target.value)}
-            />
-            <span className="audio-maker-count">
-              {selectedSurahs.length}{" "}
-              {lang === "fr" ? "surahs" : "surahs"}
-            </span>
-          </div>
-
-          {/* Surahs list */}
-          <div className="audio-maker-list">
-            {filteredSurahs.length === 0 ? (
-              <div className="audio-maker-empty">
-                {lang === "fr" ? "Aucune sourate trouvée" : "No surahs found"}
+            {/* Content */}
+            <div className="audio-maker-content">
+              {/* Search bar */}
+              <div className="audio-maker-search-wrap">
+                <input
+                  type="text"
+                  className="audio-maker-search"
+                  placeholder={
+                    lang === "fr"
+                      ? "Chercher une sourate..."
+                      : "Search surah..."
+                  }
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <Search size={13} />
               </div>
-            ) : (
-              filteredSurahs.map((surah) => (
+
+              {/* Session name input */}
+              <div className="audio-maker-session">
+                <input
+                  type="text"
+                  className="audio-maker-session-input"
+                  placeholder={
+                    lang === "fr" ? "Nom de la session..." : "Session name..."
+                  }
+                  value={sessionName}
+                  onChange={(e) => setSessionName(e.target.value)}
+                />
+                <span className="audio-maker-count">
+                  {selectedSurahs.length} {lang === "fr" ? "surahs" : "surahs"}
+                </span>
+              </div>
+
+              {/* Surahs list */}
+              <div className="audio-maker-list">
+                {filteredSurahs.length === 0 ? (
+                  <div className="audio-maker-empty">
+                    {lang === "fr"
+                      ? "Aucune sourate trouvée"
+                      : "No surahs found"}
+                  </div>
+                ) : (
+                  filteredSurahs.map((surah) => (
+                    <button
+                      key={surah.n}
+                      className={cn(
+                        "audio-maker-item",
+                        selectedSurahs.includes(surah.n) &&
+                          "audio-maker-item--selected",
+                      )}
+                      onClick={() => toggleSurah(surah.n)}
+                    >
+                      <div className="audio-maker-item-checkbox">
+                        {selectedSurahs.includes(surah.n) && (
+                          <Check size={11} />
+                        )}
+                      </div>
+                      <div className="audio-maker-item-num">{surah.n}</div>
+                      <div className="audio-maker-item-content">
+                        <div className="audio-maker-item-name">{surah.en}</div>
+                        <div className="audio-maker-item-detail">
+                          <span>{lang === "fr" ? surah.fr : surah.en}</span>
+                          <span className="audio-maker-item-ayahs">
+                            {surah.ayahs} {lang === "fr" ? "ayat" : "ayahs"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="audio-maker-item-ar" dir="rtl">
+                        {surah.ar}
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Footer actions */}
+            <div className="audio-maker-footer">
+              <button
+                className="audio-maker-btn audio-maker-btn--secondary"
+                onClick={() => {
+                  setSelectedSurahs([]);
+                  setSessionName("");
+                  setIsSaved(false);
+                }}
+              >
+                <Trash2 size={13} />{" "}
+                {lang === "fr" ? "Réinitialiser" : "Clear"}
+              </button>
+
+              <div className="audio-maker-btn-group">
                 <button
-                  key={surah.n}
                   className={cn(
-                    "audio-maker-item",
-                    selectedSurahs.includes(surah.n) &&
-                      "audio-maker-item--selected",
+                    "audio-maker-btn audio-maker-btn--save",
+                    isSaved && "audio-maker-btn--saved",
                   )}
-                  onClick={() => toggleSurah(surah.n)}
+                  onClick={handleSave}
+                  disabled={selectedSurahs.length === 0}
                 >
-                  <div className="audio-maker-item-checkbox">
-                    {selectedSurahs.includes(surah.n) && (
-                      <i className="fas fa-check" />
-                    )}
-                  </div>
-                  <div className="audio-maker-item-num">{surah.n}</div>
-                  <div className="audio-maker-item-content">
-                    <div className="audio-maker-item-name">{surah.en}</div>
-                    <div className="audio-maker-item-detail">
-                      <span>{lang === "fr" ? surah.fr : surah.en}</span>
-                      <span className="audio-maker-item-ayahs">
-                        {surah.ayahs} {lang === "fr" ? "ayat" : "ayahs"}
-                      </span>
-                    </div>
-                  </div>
-                  <div
-                    className="audio-maker-item-ar"
-                    dir="rtl"
-                  >
-                    {surah.ar}
-                  </div>
+                  {isSaved ? <Check size={13} /> : <Bookmark size={13} />}{" "}
+                  {isSaved
+                    ? lang === "fr"
+                      ? "Sauvegardé"
+                      : "Saved"
+                    : lang === "fr"
+                      ? "Sauvegarder"
+                      : "Save"}
                 </button>
-              ))
-            )}
-          </div>
+
+                <button
+                  className="audio-maker-btn audio-maker-btn--primary"
+                  onClick={handlePlay}
+                  disabled={selectedSurahs.length === 0 || isCreating}
+                >
+                  {isCreating ? <Loader2 size={13} className="animate-spin" /> : <Play size={13} />}{" "}
+                  {isCreating
+                    ? lang === "fr"
+                      ? "Préparation..."
+                      : "Loading..."
+                    : lang === "fr"
+                      ? "Écouter"
+                      : "Play"}
+                </button>
+              </div>
+            </div>
+          </Dialog.Content>
         </div>
-
-        {/* Footer actions */}
-        <div className="audio-maker-footer">
-          <button
-            className="audio-maker-btn audio-maker-btn--secondary"
-            onClick={() => {
-              setSelectedSurahs([]);
-              setSessionName("");
-              setIsSaved(false);
-            }}
-          >
-            <i className="fas fa-trash-alt" />{" "}
-            {lang === "fr" ? "Réinitialiser" : "Clear"}
-          </button>
-
-          <div className="audio-maker-btn-group">
-            <button
-              className={cn(
-                "audio-maker-btn audio-maker-btn--save",
-                isSaved && "audio-maker-btn--saved",
-              )}
-              onClick={handleSave}
-              disabled={selectedSurahs.length === 0}
-            >
-              <i
-                className={cn(
-                  "fas",
-                  isSaved ? "fa-check" : "fa-bookmark",
-                )}
-              />{" "}
-              {isSaved
-                ? lang === "fr"
-                  ? "Sauvegardé"
-                  : "Saved"
-                : lang === "fr"
-                  ? "Sauvegarder"
-                  : "Save"}
-            </button>
-
-            <button
-              className="audio-maker-btn audio-maker-btn--primary"
-              onClick={handlePlay}
-              disabled={selectedSurahs.length === 0 || isCreating}
-            >
-              <i
-                className={cn(
-                  "fas",
-                  isCreating ? "fa-spinner fa-spin" : "fa-play",
-                )}
-              />{" "}
-              {isCreating
-                ? lang === "fr"
-                  ? "Préparation..."
-                  : "Loading..."
-                : lang === "fr"
-                  ? "Écouter"
-                  : "Play"}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

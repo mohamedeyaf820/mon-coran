@@ -1,0 +1,60 @@
+export const CONTENT_ATTRIBUTIONS = Object.freeze([
+  {
+    id: "tanzil",
+    category: "text",
+    name: "Tanzil Quran Text",
+    usage: "Texte coranique de référence et contrôle d’intégrité.",
+    rights: "Creative Commons Attribution 3.0 — attribution et avis de copyright requis; le texte ne doit pas être modifié.",
+    url: "https://tanzil.net/docs/Text_License",
+  },
+  {
+    id: "quran-foundation",
+    category: "api",
+    name: "Quran Foundation / Quran.com",
+    usage: "Versets Hafs, mots, métadonnées et certaines traductions.",
+    rights: "Accès API soumis aux conditions développeur; chaque traduction conserve les droits indiqués par sa ressource.",
+    url: "https://api-docs.quran.com/",
+  },
+  {
+    id: "alquran-cloud",
+    category: "api",
+    name: "AlQuran Cloud",
+    usage: "API de secours pour texte, structure, recherche et traductions.",
+    rights: "Aucune licence globale de redistribution n’est déclarée dans ce dépôt; attribution au fournisseur et aux éditions retournées par l’API.",
+    url: "https://alquran.cloud/api",
+  },
+  {
+    id: "warsh-text",
+    category: "text",
+    name: "Warsh Quran Audio — jeu de données Warsh",
+    usage: "Texte Unicode Warsh par sourate.",
+    rights: "Source attribuée au dépôt d’origine; aucune licence de redistribution distincte n’est déclarée dans ce dépôt MushafPlus.",
+    url: "https://github.com/Yousr-Allah-Allouani/warsh-quran-audio",
+  },
+  {
+    id: "recitations",
+    category: "audio",
+    name: "EveryAyah, MP3Quran et Islamic Network",
+    usage: "Récitations par verset ou par sourate selon le récitateur.",
+    rights: "Diffusion depuis les serveurs des fournisseurs. Aucun droit de réhébergement ou de redistribution des enregistrements n’est accordé par MushafPlus.",
+    url: "https://everyayah.com/",
+  },
+  {
+    id: "fonts",
+    category: "font",
+    name: "Quran Foundation, KFGQPC et Scheherazade New",
+    usage: "Rendu typographique Hafs, Warsh et IndoPak.",
+    rights: "Les polices distantes restent soumises à leur fournisseur. Les fichiers locaux sans notice de licence jointe sont signalés comme droits à vérifier avant redistribution.",
+    url: "https://verses.quran.foundation/",
+  },
+  {
+    id: "portraits",
+    category: "image",
+    name: "Portraits de récitateurs",
+    usage: "Photographies de profil, avec avatar initiales en cas d’échec.",
+    rights: "Attribution au fournisseur indiqué dans la fiche du récitateur; aucune licence générale de réutilisation n’est revendiquée.",
+    url: "https://www.assabile.com/",
+  },
+]);
+
+export default CONTENT_ATTRIBUTIONS;

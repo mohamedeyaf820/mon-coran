@@ -1,4 +1,5 @@
-import React from "react";
+import React, { memo } from "react";
+import { Bookmark } from "lucide-react";
 import { toAr } from "../../data/surahs";
 import { cn } from "../../lib/utils";
 import AyahBlock from "../Quran/AyahBlock";
@@ -15,7 +16,7 @@ function PageSeparator({ ayah, lang, theme }) {
 
       {/* Badge central */}
       <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-[rgba(var(--primary-rgb),0.15)] bg-[var(--bg-secondary)]">
-        <i className="fas fa-bookmark text-[var(--primary)] text-[0.5rem]" />
+        <Bookmark size={8} className="text-[var(--primary)]" />
         <span className="font-[var(--font-ui)] text-[0.72rem] font-semibold text-[var(--text-muted)] tracking-wide uppercase">
           {lang === "ar" ? "صفحة" : "Page"}{" "}
           {lang === "ar" ? toAr(ayah.page) : ayah.page}
@@ -28,7 +29,7 @@ function PageSeparator({ ayah, lang, theme }) {
   );
 }
 
-export default function AyahList({
+function AyahList({
   ayahs,
   className,
   currentPlayingAyah,
@@ -59,6 +60,17 @@ export default function AyahList({
     !showWordTranslation &&
     !memMode;
 
+  const playingAnnouncement = currentPlayingAyah
+    ? `${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
+    : "";
+
+  // Always-mounted live region — removing/adding it resets the AT announcement queue.
+  const ariaLiveRegion = (
+    <div aria-live="polite" aria-atomic="true" className="sr-only">
+      {playingAnnouncement}
+    </div>
+  );
+
   if (useContinuousFlow) {
     return (
       <div
@@ -67,6 +79,7 @@ export default function AyahList({
         dir="rtl"
         lang="ar"
       >
+        {ariaLiveRegion}
         {ayahs.map((ayah, index) => {
           const surahNumber = getSurahNumber(ayah);
           const toggleId = getToggleId(ayah);
@@ -94,6 +107,7 @@ export default function AyahList({
                 tabIndex={0}
                 className={cn(
                   "qcom-continuous-verse",
+                  "content-visibility-auto [contain-intrinsic-size:1px_76px]",
                   isActive && "qcom-continuous-verse--active",
                   isPlaying && "qcom-continuous-verse--playing",
                 )}
@@ -124,6 +138,7 @@ export default function AyahList({
 
   return (
     <div role="list" className={className}>
+      {ariaLiveRegion}
       {ayahs.map((ayah, index) => {
         const surahNumber = getSurahNumber(ayah);
         const toggleId = getToggleId(ayah);
@@ -167,3 +182,5 @@ export default function AyahList({
     </div>
   );
 }
+
+export default memo(AyahList);

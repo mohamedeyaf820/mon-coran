@@ -1,5 +1,4 @@
 import React from "react";
-import AyahMarker from "./AyahMarker";
 
 export function CleanPageSurahHeader({ lang, surahMeta }) {
   const title = lang === "en" ? surahMeta?.en : surahMeta?.fr || surahMeta?.en;
@@ -13,16 +12,20 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
         <div className="cpv-divider-diamond text-[#c8a84b] text-xs">❖</div>
 
         <div className="cpv-surah-title-box border rounded-lg px-8 py-3 shadow-lg flex flex-col items-center justify-center min-w-[220px]">
-          <span className="cpv-surah-name-ar text-lg font-bold leading-normal" dir="rtl">
-            <span className="cpv-surah-prefix">سورة</span>{" "}
-            {surahNum ? (
-              <span className="cpv-surah-name-ligature">
-                {String(surahNum).padStart(3, "0")}
-              </span>
-            ) : (
-              surahMeta?.ar
-            )}
-          </span>
+          {surahMeta?.ar ? (
+            <span
+              className="cpv-surah-name-ar font-surah-names text-[1.55rem] leading-tight"
+              dir="rtl"
+              lang="ar"
+            >
+              {surahMeta.ar}
+            </span>
+          ) : (
+            <span className="cpv-surah-name-ar text-lg font-bold leading-normal" dir="rtl">
+              <span className="cpv-surah-prefix">سورة</span>{" "}
+              {surahNum ? String(surahNum).padStart(3, "0") : ""}
+            </span>
+          )}
           <span className="cpv-surah-name-tr text-[9.5px] font-semibold tracking-[0.14em] uppercase mt-0.5">
             {displayName}
           </span>
@@ -32,17 +35,6 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
         <div className="cpv-divider-line h-px flex-grow bg-gradient-to-l from-transparent via-[#c8a84b]/40 to-[#c8a84b]/70" />
       </div>
     </div>
-  );
-}
-
-export function VerseMedallion({ isPlaying = false, num }) {
-  return (
-    <AyahMarker
-      num={num}
-      isPlaying={isPlaying}
-      className="qcom-verse-stop verse-end-marker"
-      size="md"
-    />
   );
 }
 

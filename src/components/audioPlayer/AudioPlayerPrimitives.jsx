@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { getReciterVisual } from "../../data/reciters";
 import { cn } from "../../lib/utils";
+import { Loader2, Check, Play } from "lucide-react";
 
 const COVER_SIZE_CLASSES = {
+  36: "w-9 h-9",
   40: "w-10 h-10",
   42: "w-[42px] h-[42px]",
   52: "w-[52px] h-[52px]",
@@ -24,6 +26,27 @@ const WAVE_HEIGHT_CLASSES = [
   "h-[77.38%]",
 ];
 
+export function ReciterPhoto({ src, className = "" }) {
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
+
+  if (!src || failed) return null;
+
+  return (
+    <img
+      src={src}
+      alt=""
+      className={className}
+      loading="lazy"
+      aria-hidden="true"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 export function ProgressRail({ progress, className = "", showThumb = false }) {
   const pct = Math.max(0, Math.min(100, progress * 100));
 
@@ -40,7 +63,7 @@ export function ProgressRail({ progress, className = "", showThumb = false }) {
           width="100"
           height="4"
           rx="2"
-          className="fill-white/10"
+          className="simple-player__progress-track"
         />
         <rect
           x="0"
@@ -50,9 +73,9 @@ export function ProgressRail({ progress, className = "", showThumb = false }) {
           rx="2"
           fill="var(--theme-primary, var(--gold))"
         />
-        {showThumb && (
+        {showThumb && pct > 0.5 && (
           <circle
-            cx={pct}
+            cx={Math.min(98.3, pct)}
             cy="2"
             r="1.7"
             fill="#fff7da"
@@ -103,30 +126,24 @@ export function CoverArt({ isPlaying, size = 52, reciter }) {
           : "shadow-[0_2px_8px_rgba(0,0,0,0.3)]",
       )}
     >
-      {visual.photo ? (
-        <img
-          src={visual.photo}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-          loading="lazy"
-          aria-hidden="true"
-        />
-      ) : (
-        <div
-          className="absolute inset-0 flex items-center justify-center text-white"
-          style={{ backgroundColor: visual.avatar.color }}
-          aria-hidden="true"
+      <div
+        className="absolute inset-0 flex items-center justify-center text-white"
+        style={{ background: visual.avatar.gradient }}
+        aria-hidden="true"
+      >
+        <span
+          className={cn(
+            "font-black tracking-normal",
+            size <= 40 ? "text-sm" : "text-lg",
+          )}
         >
-          <span
-            className={cn(
-              "font-black tracking-normal",
-              size === 40 ? "text-sm" : "text-lg",
-            )}
-          >
-            {visual.avatar.initials}
-          </span>
-        </div>
-      )}
+          {visual.avatar.initials}
+        </span>
+      </div>
+      <ReciterPhoto
+        src={visual.photo}
+        className="absolute inset-0 h-full w-full object-cover"
+      />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.02),rgba(0,0,0,0.38))]" />
       {isPlaying && (
         <div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-[var(--gold-bright)] shadow-[0_0_6px_var(--gold)] animate-pulse" />
@@ -146,35 +163,24 @@ export function ReciterAvatar({ reciter, active = false, loading = false }) {
           : "border-white/10 bg-white/[0.08] text-white",
       )}
     >
-      {visual.photo ? (
-        <img
-          src={visual.photo}
-          alt=""
-          className="h-full w-full object-cover"
-          loading="lazy"
-          aria-hidden="true"
-        />
-      ) : (
-        <span
-          className="flex h-full w-full items-center justify-center"
-          style={{ backgroundColor: visual.avatar.color }}
-          aria-hidden="true"
-        >
-          {visual.avatar.initials}
-        </span>
-      )}
+      <span
+        className="flex h-full w-full items-center justify-center"
+        style={{ background: visual.avatar.gradient }}
+        aria-hidden="true"
+      >
+        {visual.avatar.initials}
+      </span>
+      <ReciterPhoto
+        src={visual.photo}
+        className="absolute inset-0 h-full w-full object-cover"
+      />
       <span
         className={cn(
           "absolute inset-0 flex items-center justify-center bg-black/35 text-white transition-opacity",
           loading || active ? "opacity-100" : "opacity-0 group-hover:opacity-100",
         )}
       >
-        <i
-          className={cn(
-            "fas text-[0.5rem]",
-            loading ? "fa-spinner fa-spin" : active ? "fa-check" : "fa-play",
-          )}
-        />
+        {loading ? <Loader2 size={8} className="animate-spin" /> : active ? <Check size={8} /> : <Play size={8} />}
       </span>
     </span>
   );
@@ -190,10 +196,10 @@ export function IconBtn({
 }) {
   const base =
     size === "sm"
-      ? "w-7 h-7 text-[0.72rem]"
+      ? "w-9 h-9 text-[0.72rem]"
       : size === "lg"
         ? "w-12 h-12 text-base"
-        : "w-9 h-9 text-[0.82rem]";
+        : "w-10 h-10 text-[0.82rem]";
   return (
     <button
       type="button"

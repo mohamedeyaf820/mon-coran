@@ -39,7 +39,26 @@
 }
 
 .audio-player-primary-btn:hover {
-    transform: translateY(-1px);
+    opacity: 0.92;
+}
+
+/* Sepia theme */
+[data-theme="sepia"] .mp-audio-player {
+    --player-surface: rgba(60, 40, 20, 0.92);
+    --player-surface-soft: rgba(50, 30, 15, 0.9);
+    --player-line: rgba(180, 140, 80, 0.2);
+    color: rgba(255, 248, 235, 0.94);
+}
+
+[data-theme="sepia"] .mp-audio-player--desktop,
+[data-theme="sepia"] .mp-audio-player--mobile {
+    background:
+        linear-gradient(155deg, rgba(var(--theme-primary-rgb, 124, 74, 23), 0.15), transparent 42%),
+        linear-gradient(180deg, var(--player-surface), var(--player-surface-soft)) !important;
+}
+
+[data-theme="sepia"] .audio-cover-art {
+    border-color: rgba(180, 140, 80, 0.3);
 }
 
 .player-reciter-btn,
@@ -86,7 +105,8 @@
     }
 
     .mp-player-mobile-controls {
-        gap: 0.35rem !important;
+        gap: 0.25rem !important;
+        padding: 0.3rem 0.5rem !important;
     }
 
     .mp-audio-player {
@@ -106,6 +126,23 @@
     .mp-audio-player [data-player-drag="true"]::after {
         left: 10px;
         right: 10px;
+    }
+}
+
+/* Tablet: better spacing for expanded player */
+@media (min-width: 640px) and (max-width: 1024px) {
+    .mp-player-mobile-controls {
+        gap: 1rem;
+        padding: 0.6rem 1.5rem;
+    }
+
+    .mp-player-mobile-expanded {
+        max-height: 55vh;
+    }
+
+    .mp-player-minimized-row {
+        gap: 0.6rem;
+        padding: 0.4rem 0.75rem;
     }
 }
 
@@ -214,37 +251,6 @@
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-.mp-audio-player i.fas,
-.mp-audio-player i.fa-solid,
-.mp-audio-player i.fa {
-    font-family: "Font Awesome 6 Free" !important;
-    font-weight: 900;
-    font-style: normal;
-    line-height: 1;
-    display: inline-block;
-    color: inherit;
-}
-
-.mp-audio-player i.far,
-.mp-audio-player i.fa-regular {
-    font-family: "Font Awesome 6 Free" !important;
-    font-weight: 400;
-    font-style: normal;
-    line-height: 1;
-    display: inline-block;
-    color: inherit;
-}
-
-.mp-audio-player i.fab,
-.mp-audio-player i.fa-brands {
-    font-family: "Font Awesome 6 Brands" !important;
-    font-weight: 400;
-    font-style: normal;
-    line-height: 1;
-    display: inline-block;
-    color: inherit;
 }
 
 .mp-audio-player [data-player-drag="true"] {
@@ -454,7 +460,7 @@
 
 .app-root .mp-audio-player[data-dragging="true"] {
   transition: none !important;
-  will-change: left, top;
+  will-change: transform;
 }
 
 .app-root .mp-audio-player::before,
@@ -601,12 +607,15 @@
 }
 
 .app-root .mp-player-minimized-row {
-  min-height: 4.25rem;
+  min-height: 2.75rem;
+  padding-block: 0.15rem;
+  gap: 0.4rem;
 }
 
 .app-root .mp-player-minimized-title {
-  font-size: 0.86rem !important;
-  letter-spacing: 0 !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
 }
 
 .app-root .mp-player-minimized-reciter,
@@ -744,7 +753,7 @@
   }
 
   .app-root .mp-player-mobile-controls {
-    min-height: 4.05rem !important;
+    min-height: 3.2rem !important;
   }
 
   .app-root .mp-audio-player--mobile button {
@@ -753,8 +762,8 @@
   }
 
   .app-root .mp-player-mobile-main-controls {
-    border-radius: 18px !important;
-    min-height: 3.1rem !important;
+    border-radius: 14px !important;
+    min-height: 2.75rem !important;
   }
 
   .app-root .audio-player-modal__surface {
@@ -778,8 +787,8 @@
 
 @media (max-width: 420px) {
   .app-root .mp-player-mobile-controls {
-    min-height: 3.8rem !important;
-    padding-inline: 0.6rem !important;
+    min-height: 3rem !important;
+    padding-inline: 0.5rem !important;
   }
 
   .app-root .mp-player-mobile-meta {
@@ -966,10 +975,9 @@
 
 @media (max-width: 1024px) {
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
-    border-radius: 1.1rem 1.1rem 0 0 !important;
-    background:
-      linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.04)),
-      color-mix(in srgb, var(--theme-panel-bg-strong) 88%, transparent 12%) !important;
+    border-radius: 16px 16px 0 0 !important;
+    background: color-mix(in srgb, var(--theme-panel-bg-strong) 94%, transparent 6%) !important;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.12) !important;
   }
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed > .px-3.pb-1 {
@@ -978,8 +986,8 @@
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head {
     display: flex !important;
-    min-height: 3rem !important;
-    padding: 0.45rem 0.85rem 0.1rem !important;
+    min-height: 2.5rem !important;
+    padding: 0.3rem 0.75rem 0.1rem !important;
   }
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-brand {
@@ -987,31 +995,31 @@
   }
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-progress {
-    height: 0.24rem !important;
-    margin: 0.55rem 0.95rem 0 !important;
+    height: 0.2rem !important;
+    margin: 0.3rem 0.75rem 0 !important;
     border-radius: 999px !important;
   }
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
-    min-height: 3.35rem !important;
-    padding: 0.42rem 0.65rem 0.64rem !important;
-    gap: 0.46rem !important;
+    min-height: 2.75rem !important;
+    padding: 0.25rem 0.5rem 0.4rem !important;
+    gap: 0.35rem !important;
   }
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
-    width: min(7.4rem, 28vw) !important;
+    width: min(6rem, 24vw) !important;
   }
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
-    min-height: 2.75rem !important;
+    min-height: 2.5rem !important;
     border-radius: 999px !important;
   }
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
-    width: 2.75rem !important;
-    height: 2.75rem !important;
-    min-width: 2.75rem !important;
-    min-height: 2.75rem !important;
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    min-width: 2.5rem !important;
+    min-height: 2.5rem !important;
   }
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-expanded {
@@ -1029,7 +1037,6 @@
     overflow-y: hidden !important;
     padding-bottom: 0.1rem !important;
     scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
   }
 
   .app-root .quran-display--platform .qcom-verse-card-footer::-webkit-scrollbar,
@@ -1088,4 +1095,3 @@
     display: none !important;
   }
 }
-

@@ -51,10 +51,13 @@ export default function useWordByWordDisplay({
     const embeddedWords = Array.isArray(initialWords)
       ? initialWords.filter((word) => (word.charType || word.char_type_name) === "word")
       : [];
-    const embeddedWordsHaveTranslations =
-      wordTranslationLang === "ar" || embeddedWords.some((word) => word.translation);
+    // Embedded Quran.com words use the API default (English). Other languages
+    // must use the dedicated localized word request below.
+    const embeddedWordsMatchLanguage =
+      wordTranslationLang === "en" &&
+      embeddedWords.some((word) => word.translation);
 
-    if (embeddedWords.length > 0 && embeddedWordsHaveTranslations) {
+    if (embeddedWords.length > 0 && embeddedWordsMatchLanguage) {
       setWords(embeddedWords);
       setLoading(false);
       setError(null);

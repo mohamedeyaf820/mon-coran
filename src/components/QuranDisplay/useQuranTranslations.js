@@ -1,25 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { startTransition, useCallback, useEffect, useMemo, useState } from "react";
 import {
   getJuzTranslation,
   getPageTranslation,
   getSurahTranslation,
 } from "../../services/quranAPI";
 import { getTranslationKeyForAyah } from "./displayHelpers";
-
-function scheduleIdle(callback) {
-  if (typeof window === "undefined") {
-    callback();
-    return () => {};
-  }
-
-  if ("requestIdleCallback" in window) {
-    const idleId = window.requestIdleCallback(callback, { timeout: 1800 });
-    return () => window.cancelIdleCallback?.(idleId);
-  }
-
-  const timeoutId = window.setTimeout(callback, 0);
-  return () => window.clearTimeout(timeoutId);
-}
 
 export default function useQuranTranslations({
   arabicReady = true,
@@ -31,18 +16,21 @@ export default function useQuranTranslations({
   translationLangs,
 }) {
   const [translations, setTranslations] = useState([]);
+  const [translationState, setTranslationState] = useState("idle");
+  const [translationSource, setTranslationSource] = useState(null);
 
   useEffect(() => {
     if (!showTranslation || !arabicReady) {
       setTranslations([]);
+      setTranslationState("idle");
+      setTranslationSource(null);
       return;
     }
 
     const controller = new AbortController();
     const signal = controller.signal;
-    let cancelIdle = () => {};
-    let startTimer = null;
     setTranslations([]);
+    setTranslationState("loading");
 
     const loadTranslations = async () => {
       try {
@@ -53,20 +41,29 @@ export default function useQuranTranslations({
               ? await getJuzTranslation(currentJuz, translationLangs, signal)
               : await getSurahTranslation(currentSurah, translationLangs, signal);
         if (!signal.aborted) {
-          cancelIdle = scheduleIdle(() => {
-            if (!signal.aborted) setTranslations(result || []);
+          const source = result?.some?.((edition) => edition?.source === "quran.com")
+            ? "Quran.com API"
+            : "AlQuran Cloud";
+          startTransition(() => {
+            if (!signal.aborted) {
+              setTranslations(result || []);
+              setTranslationSource(source);
+              setTranslationState(result?.length ? "ready" : "error");
+            }
           });
         }
       } catch (error) {
-        if (error?.name !== "AbortError") setTranslations([]);
+        if (error?.name !== "AbortError") {
+          setTranslations([]);
+          setTranslationSource("AlQuran Cloud / Quran.com API");
+          setTranslationState("error");
+        }
       }
     };
 
-    startTimer = window.setTimeout(loadTranslations, 180);
+    loadTranslations();
     return () => {
-      if (startTimer) window.clearTimeout(startTimer);
       controller.abort();
-      cancelIdle();
     };
   }, [
     arabicReady,
@@ -84,7 +81,7 @@ export default function useQuranTranslations({
     translations.forEach((edition) => {
       const editionAyahs = edition.ayahs || [];
       const inferredSurah =
-        editionAyahs[0]?.surah?.number != null ? null : currentSurah;
+        editionAyahs[0]?.surah?.number ?? currentSurah;
 
       editionAyahs.forEach((translation) => {
         const surahNumber = translation.surah?.number ?? inferredSurah;
@@ -120,5 +117,5 @@ export default function useQuranTranslations({
     [currentSurah, translationMap],
   );
 
-  return { getTranslationForAyah, translations };
+  return { getTranslationForAyah, translations, translationSource, translationState };
 }

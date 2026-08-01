@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
+import { Zap, CirclePlay, Building2, MapPin } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { PercentBar } from "./HomePrimitives";
-import {
-  computePrayerTimes,
-  fetchPrayerTimes,
-} from "../../services/prayerTimesService";
+import { fetchPrayerTimes } from "../../services/prayerTimesService";
+import Icon from "./HomeIcon";
 
 /** Données statiques des prières (pas de plages hardcodées) */
 const PRAYERS_BASE = [
@@ -91,6 +90,7 @@ function getCurrentPrayerKey(now, prayerTimes) {
  *   primaryReadingCtaLabel {string}
  *   continueReading        {function}
  *   now                    {Date}
+ *   usePrayerTimes         {boolean} autorisation explicite de géolocalisation
  *   t                      {function} fonction de traduction
  */
 export default function SessionCard({
@@ -106,23 +106,26 @@ export default function SessionCard({
   primaryReadingCtaLabel,
   continueReading,
   now,
+  usePrayerTimes = false,
   t,
 }) {
   const [prayerTimes, setPrayerTimes] = useState(null);
 
   useEffect(() => {
-    // 1. Essayer la géolocalisation du navigateur
+    if (!usePrayerTimes) {
+      setPrayerTimes(null);
+      return undefined;
+    }
+
+    let cancelled = false;
     fetchPrayerTimes((result) => {
-      if (result) {
-        setPrayerTimes(result);
-      } else {
-        // 2. Fallback : calcul direct pour Paris si pas de géolocalisation
-        const parisResult = computePrayerTimes(48.8566, 2.3522);
-        if (parisResult) setPrayerTimes(parisResult);
-        // 3. Si null (nuit polaire…) → getCurrentPrayerKey utilisera FALLBACK_RANGES
-      }
+      if (!cancelled) setPrayerTimes(result || null);
     });
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [usePrayerTimes]);
 
   const currentPrayerKey = getCurrentPrayerKey(now, prayerTimes);
 
@@ -136,7 +139,7 @@ export default function SessionCard({
         {/* ── En-tête ── */}
         <div className="flex items-center justify-between mb-[0.9rem]">
           <span className="flex items-center gap-[0.35rem] text-[0.62rem] font-[800] text-[var(--primary)] uppercase tracking-[0.1em] font-[var(--font-ui)]">
-            <i className="fas fa-bolt" />
+            <Zap size={12} />
             {lang === "fr" ? "Session" : lang === "ar" ? "الجلسة" : "Session"}
           </span>
           <span className="text-[0.62rem] font-[600] text-[var(--text-muted)] font-[var(--font-ui)] bg-[var(--bg-primary)] px-[0.55rem] py-[0.18rem] rounded-full border border-[var(--border)]">
@@ -208,10 +211,10 @@ export default function SessionCard({
         {/* ── Bouton CTA ── */}
         <button
           className="flex items-center justify-center gap-2 w-full py-[0.8rem] rounded-[1rem] bg-[var(--primary)] text-white text-[0.86rem] font-[700] font-[var(--font-ui)] cursor-pointer border-none transition-all duration-200 shadow-[0_3px_12px_rgba(var(--primary-rgb),0.4),inset_0_1px_0_rgba(255,255,255,0.15)] tracking-[0.01em] hover:-translate-y-0.5 hover:shadow-[0_6px_22px_rgba(var(--primary-rgb),0.5)] hover:brightness-105"
-          aria-label={primaryReadingCtaLabel}
+          aria-label={`${primaryReadingCtaLabel}: ${readingTarget}`}
           onClick={continueReading}
         >
-          <i className="fas fa-circle-play" />
+          <CirclePlay size={14} />
           {hasReadingHistory
             ? lang === "fr"
               ? "Continuer"
@@ -230,7 +233,7 @@ export default function SessionCard({
       <div className="home-prayer-card bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
         {/* En-tête prières */}
         <div className="flex items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] mb-[0.75rem] font-[var(--font-ui)] uppercase tracking-[0.06em]">
-          <i className="fas fa-mosque" />
+          <Building2 size={12} />
           <span>
             {lang === "fr" ? "Prières" : lang === "ar" ? "الصلوات" : "Prayers"}
           </span>
@@ -240,7 +243,7 @@ export default function SessionCard({
               className="ml-auto text-[0.58rem] opacity-40 normal-case tracking-normal font-[var(--font-ui)]"
               title={`Fajr ${prayerTimes.fajr} · Ishā ${prayerTimes.isha}`}
             >
-              <i className="fas fa-location-dot mr-0.5" />
+              <MapPin size={10} className="mr-0.5" />
               {lang === "ar" ? "دقيق" : lang === "fr" ? "précis" : "exact"}
             </span>
           )}
@@ -261,9 +264,9 @@ export default function SessionCard({
                 )}
               >
                 {/* Icône */}
-                <i
+                <Icon
+                  name={p.icon}
                   className={cn(
-                    `fas ${p.icon}`,
                     "w-[1.6rem] h-[1.6rem] flex items-center justify-center rounded-[0.45rem] bg-[var(--bg-primary)] text-[var(--text-muted)] text-[0.68rem] flex-shrink-0 transition-all duration-200",
                     isActive &&
                       "bg-[rgba(var(--primary-rgb),0.15)] text-[var(--primary)]",

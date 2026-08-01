@@ -32,15 +32,3 @@ export const THEMATIC_STATIONS = [
     surahs: [67, 36, 55, 56],
   },
 ];
-
-export function buildReciterStations(reciters = []) {
-  return reciters.slice(0, 8).map((reciter) => ({
-    id: `r-${reciter.id}`,
-    icon: "fa-user-astronaut",
-    titleFr: reciter.nameFr,
-    titleEn: reciter.nameEn,
-    titleAr: reciter.name,
-    surahs: [1, 36, 55, 67],
-    reciterId: reciter.id,
-  }));
-}

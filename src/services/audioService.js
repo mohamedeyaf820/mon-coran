@@ -3,13 +3,20 @@
  * Wraps HTML5 Audio API with retry logic, preloading, and timeout handling.
  */
 
+import { recordPerformanceMetric } from "./performanceMetrics.js";
+import { getAdaptiveAudioPreloadCount } from "../utils/networkPolicy.js";
+import {
+  getSurahStreamProgressForAyah,
+  resolveSurahStreamAyah,
+} from "../utils/surahStreamSync.js";
+
 const AUDIO_LOAD_TIMEOUT = 12000; // 12s max to start loading
 const MAX_RETRIES = 2;
 const RETRY_DELAY = 800; // ms
 const TRUSTED_MP3QURAN_HOST = /^server\d+\.mp3quran\.net$/i;
 
 function devLog(method, ...args) {
-  if (import.meta.env.DEV && typeof console !== "undefined") {
+  if (import.meta.env?.DEV && typeof console !== "undefined") {
     console[method]?.(...args);
   }
 }
@@ -82,14 +89,19 @@ class AudioService {
     this.playlistIndex = -1;
     this.isPlaying = false;
     this._loadTimeout = null;
+    this._cancelPendingLoad = null;
     this._preloadAudio = null; // For preloading next track
     this._preloadPool = []; // [{ url, audio }]
-    this._maxPreloadPool = 3;
+    this._maxPreloadPool = getAdaptiveAudioPreloadCount();
     this._loadRequestId = 0; // Used to ignore stale retry attempts
+    this._reciterSwitchRequestId = 0;
+    this._reciterSwitchQueue = Promise.resolve();
     this._currentReciterCdn = "";
     this._currentCdnType = "islamic";
     this._activeReciterKey = "islamic:";
     this._playlistSignature = "";
+    this._playlistIndexByAyahKey = new Map();
+    this._pendingSurahStreamAyah = null;
     this._playRequestedAt = 0;
     this._hasCapturedLatency = false;
     this._reciterLatencyByKey = Object.create(null);
@@ -133,6 +145,7 @@ class AudioService {
     this.onNetworkState = null;
 
     // Extra listeners (for word-by-word tracking etc.)
+    this._playListeners = [];
     this._timeUpdateListeners = [];
     this._endListeners = [];
     this._pauseListeners = [];
@@ -141,6 +154,10 @@ class AudioService {
     // Wire up native events (store bound refs for cleanup)
     this._boundEnded = () => this._handleEnded();
     this._boundTimeUpdate = () => {
+      this._syncSurahStreamAyah(
+        this.audio.currentTime,
+        this.audio.duration,
+      );
       this.onTimeUpdate?.(this.audio.currentTime, this.audio.duration);
       this._captureLatencySample(this.audio.currentTime);
       // Notify extra listeners
@@ -321,6 +338,13 @@ class AudioService {
           : [],
       };
     });
+    this._playlistIndexByAyahKey = new Map();
+    this.playlist.forEach((item, index) => {
+      const ayahKey = `${item.surah}:${item.ayah ?? "surah"}`;
+      if (!this._playlistIndexByAyahKey.has(ayahKey)) {
+        this._playlistIndexByAyahKey.set(ayahKey, index);
+      }
+    });
 
     // Preserve current position if the same ayah still exists in the new playlist
     const preservedIndex = previousCurrent
@@ -380,10 +404,30 @@ class AudioService {
    * Instantly switch the active reciter for the current playlist while preserving
    * current ayah and playback position when possible.
    */
-  async switchReciter(reciterCdn, cdnType = "islamic") {
-    if (!reciterCdn || !Array.isArray(this.playlist) || this.playlist.length === 0) {
-      return;
+  switchReciter(reciterCdn, cdnType = "islamic") {
+    const requestId = ++this._reciterSwitchRequestId;
+    const runSwitch = async () => {
+      // Collapse queued intermediate selections: only the latest request should
+      // touch the shared playlist after the active switch completes.
+      if (requestId !== this._reciterSwitchRequestId) return false;
+      const switched = await this._switchReciterNow(reciterCdn, cdnType);
+      return requestId === this._reciterSwitchRequestId ? switched : false;
+    };
+
+    const queuedSwitch = this._reciterSwitchQueue.then(runSwitch, runSwitch);
+    // Keep the queue usable after a CDN failure while returning the real
+    // rejection to the caller that initiated this switch.
+    this._reciterSwitchQueue = queuedSwitch.catch(() => false);
+    return queuedSwitch;
+  }
+
+  async _switchReciterNow(reciterCdn, cdnType = "islamic") {
+    if (!reciterCdn) {
+      return false;
     }
+    // Selecting a voice before a playlist exists is still a valid UI action;
+    // the next playlist load will use the reciter stored in app state.
+    if (!Array.isArray(this.playlist) || this.playlist.length === 0) return true;
 
     const snapshotAyah = this.currentAyah;
     const snapshotTime = this.currentTime || 0;
@@ -392,12 +436,19 @@ class AudioService {
 
     const sourceAyahs =
       Array.isArray(this._playlistSourceAyahs) && this._playlistSourceAyahs.length > 0
-        ? this._playlistSourceAyahs.map((ayah) => ({ ...ayah }))
+        ? this._playlistSourceAyahs.map((ayah) => ({
+            ...ayah,
+            // Quran.com timing URLs belong to the previously selected reciter.
+            // Reusing them here can briefly (or permanently, when the next
+            // reciter has no timing mapping) keep playing the old voice.
+            quranComAudioTiming: null,
+          }))
         : this.playlist.map((item) => ({
             surah: item.surah,
             ayah: item.ayah,
             number: item.globalNumber,
             text: item.text,
+            quranComAudioTiming: null,
           }));
 
     this.loadPlaylist(sourceAyahs, reciterCdn, cdnType);
@@ -406,7 +457,7 @@ class AudioService {
       if (wasPlaying) {
         await this.play();
       }
-      return;
+      return true;
     }
 
     const targetIndex = this.playlist.findIndex(
@@ -421,13 +472,13 @@ class AudioService {
       if (wasPlaying) {
         await this.play();
       }
-      return;
+      return true;
     }
 
     this.playlistIndex = resolvedTargetIndex;
     this.currentAyah = this.playlist[resolvedTargetIndex];
 
-    if (!wasPlaying) return;
+    if (!wasPlaying) return true;
 
     await this._loadAndPlay(resolvedTargetIndex, { throwOnError: true });
     if (
@@ -439,6 +490,7 @@ class AudioService {
     ) {
       this.audio.currentTime = snapshotTime;
     }
+    return true;
   }
 
   /* ── Playback Controls ─────────────────────── */
@@ -456,20 +508,24 @@ class AudioService {
   pause() {
     this.audio.pause();
     this.isPlaying = false;
-    this.onPause?.();
-    for (const fn of this._pauseListeners) fn(this.currentAyah);
+    this._notifyPause(this.currentAyah);
   }
 
   resume() {
     if (this.audio.src && this.audio.src !== window.location.href) {
-      this.audio.play().catch((err) => {
-        if (err?.name !== "NotAllowedError") {
-          this.isPlaying = false;
-          this.onError?.(err);
-        }
-      });
-      this.isPlaying = true;
-      this.onPlay?.(this.playlist[this.playlistIndex]);
+      this.audio.play()
+        .then(() => {
+          this.isPlaying = true;
+          this._notifyPlay(
+            this.currentAyah || this.playlist[this.playlistIndex],
+          );
+        })
+        .catch((err) => {
+          if (err?.name !== "NotAllowedError") {
+            this.isPlaying = false;
+            this.onError?.(err);
+          }
+        });
     }
   }
 
@@ -488,6 +544,8 @@ class AudioService {
   }
 
   stop() {
+    const wasPlaying = this.isPlaying;
+    this._cancelPendingLoad?.();
     this._loadRequestId++;
     this._clearLoadTimeout();
     if (this.memTimer) {
@@ -507,9 +565,12 @@ class AudioService {
     this.playlist = [];
     this.playlistIndex = -1;
     this._playlistSignature = "";
+    this._playlistIndexByAyahKey.clear();
     this._playlistSourceAyahs = [];
+    this._pendingSurahStreamAyah = null;
     this.memCurrentRepeat = 0;
     this.surahCurrentCycle = 1;
+    if (wasPlaying) this._notifyPause(this.currentAyah);
     this.onEnd?.();
   }
 
@@ -531,11 +592,15 @@ class AudioService {
    * Jump to a specific ayah in the playlist
    */
   playAyah(surah, ayah) {
-    let idx = this.playlist.findIndex(
-      (p) => p.surah === surah && p.ayah === ayah,
-    );
+    let idx = this._playlistIndexByAyahKey.get(`${surah}:${ayah}`) ?? -1;
     if (idx < 0 && AudioService.isSurahStreamCdn(this._currentCdnType)) {
-      idx = this.playlist.findIndex((p) => p.surah === surah);
+      idx = this._playlistIndexByAyahKey.get(`${surah}:surah`) ?? -1;
+      if (idx >= 0) {
+        this._pendingSurahStreamAyah = {
+          surah: Number(surah),
+          ayah: Number(ayah),
+        };
+      }
     }
     if (idx >= 0) {
       this._loadAndPlay(idx);
@@ -557,9 +622,10 @@ class AudioService {
       }
       this.isPlaying = true;
       this.onNetworkState?.("playing");
-      this.onPlay?.({ url, ...meta });
+      this._notifyPlay({ url, ...meta });
       return true;
     } catch (err) {
+      if (err?.name === "AbortError") return false;
       this.onNetworkState?.("error");
       this.onError?.(err);
       return false;
@@ -616,6 +682,8 @@ class AudioService {
   disableMemorization() {
     this.memMode = false;
     this.memCurrentRepeat = 0;
+    clearTimeout(this.memTimer);
+    this.memTimer = null;
   }
 
   setSurahRepeatCount(count = 1) {
@@ -661,6 +729,7 @@ class AudioService {
     const next =
       Number.isFinite(prev) ? prev * 0.75 + latencySec * 0.25 : latencySec;
     this._reciterLatencyByKey[key] = Number(next.toFixed(4));
+    recordPerformanceMetric("audio_start_ms", Math.max(0, latencySec * 1000));
     this._notifyLatencyListeners();
     this._hasCapturedLatency = true;
   }
@@ -698,6 +767,7 @@ class AudioService {
    * Waits for 'canplay' before calling play(). Retries on failure.
    */
   _loadUrlWithRetry(url, retries = MAX_RETRIES) {
+    this._cancelPendingLoad?.();
     return new Promise((resolve, reject) => {
       if (!isTrustedAudioUrl(url)) {
         reject(new Error("Untrusted audio URL"));
@@ -720,26 +790,63 @@ class AudioService {
 
       let settled = false;
       let cleanup = () => {};
+      let retryTimer = null;
 
-      const finishResolve = () => {
-        if (settled || requestId !== this._loadRequestId) return;
+      const clearRetryTimer = () => {
+        if (!retryTimer) return;
+        clearTimeout(retryTimer);
+        retryTimer = null;
+      };
+
+      const releasePendingLoad = (cancelPendingLoad) => {
+        if (this._cancelPendingLoad === cancelPendingLoad) {
+          this._cancelPendingLoad = null;
+        }
+      };
+
+      const cancelPendingLoad = () => {
+        if (settled) return;
         settled = true;
         cleanup();
+        clearRetryTimer();
         this._clearLoadTimeout();
+        releasePendingLoad(cancelPendingLoad);
+        reject(new DOMException("Audio load superseded", "AbortError"));
+      };
+      this._cancelPendingLoad = cancelPendingLoad;
+
+      const finishResolve = () => {
+        if (settled) return;
+        if (requestId !== this._loadRequestId) {
+          cancelPendingLoad();
+          return;
+        }
+        settled = true;
+        cleanup();
+        clearRetryTimer();
+        this._clearLoadTimeout();
+        releasePendingLoad(cancelPendingLoad);
         resolve();
       };
 
       const finishReject = (err) => {
-        if (settled || requestId !== this._loadRequestId) return;
+        if (settled) return;
+        if (requestId !== this._loadRequestId) {
+          cancelPendingLoad();
+          return;
+        }
         settled = true;
         cleanup();
+        clearRetryTimer();
         this._clearLoadTimeout();
+        releasePendingLoad(cancelPendingLoad);
         reject(err);
       };
 
       const attempt = (retriesLeft) => {
         if (settled || requestId !== this._loadRequestId) return;
 
+        clearRetryTimer();
         cleanup();
 
         const onCanPlay = () => {
@@ -753,7 +860,10 @@ class AudioService {
               if (e.name === "NotAllowedError") {
                 finishResolve(); // Not a real load error
               } else if (retriesLeft > 0) {
-                setTimeout(() => attempt(retriesLeft - 1), RETRY_DELAY);
+                retryTimer = setTimeout(
+                  () => attempt(retriesLeft - 1),
+                  RETRY_DELAY,
+                );
               } else {
                 finishReject(e);
               }
@@ -765,7 +875,10 @@ class AudioService {
           this._clearLoadTimeout();
           if (retriesLeft > 0) {
             devLog("warn", `Audio load error, retrying... (${retriesLeft} left)`);
-            setTimeout(() => attempt(retriesLeft - 1), RETRY_DELAY);
+            retryTimer = setTimeout(
+              () => attempt(retriesLeft - 1),
+              RETRY_DELAY,
+            );
           } else {
             finishReject(new Error("Audio load failed after retries"));
           }
@@ -810,7 +923,10 @@ class AudioService {
             } else if (retriesLeft > 0) {
               cleanup();
               this._clearLoadTimeout();
-              setTimeout(() => attempt(retriesLeft - 1), RETRY_DELAY);
+              retryTimer = setTimeout(
+                () => attempt(retriesLeft - 1),
+                RETRY_DELAY,
+              );
             } else {
               finishReject(e);
             }
@@ -852,13 +968,26 @@ class AudioService {
 
   _preloadAhead(startIndex, count = 2) {
     if (!Array.isArray(this.playlist) || this.playlist.length === 0) return;
-    for (let i = 0; i < count; i++) {
+    const adaptiveCount = Math.min(count, getAdaptiveAudioPreloadCount());
+    this._maxPreloadPool = adaptiveCount;
+    if (adaptiveCount === 0) {
+      for (const item of this._preloadPool) {
+        item.audio?.removeAttribute("src");
+        item.audio?.load?.();
+      }
+      this._preloadPool = [];
+      this._preloadAudio = null;
+      return;
+    }
+    for (let i = 0; i < adaptiveCount; i++) {
       const idx = startIndex + i;
       if (idx >= 0 && idx < this.playlist.length) {
         this._preloadTrack(this.playlist[idx].url);
       }
     }
   }
+
+  loadAndPlay(index) { return this._loadAndPlay(index); }
 
   async _loadAndPlay(index, { throwOnError = false } = {}) {
     if (index < 0 || index >= this.playlist.length) return;
@@ -889,6 +1018,7 @@ class AudioService {
           loadedUrl = urlCandidate;
           break;
         } catch (err) {
+          if (err?.name === "AbortError") throw err;
           lastErr = err;
         }
       }
@@ -896,16 +1026,44 @@ class AudioService {
         throw lastErr || new Error("Audio load failed for all URL candidates");
       }
       item.url = loadedUrl;
+      let activeItem = item;
+      if (AudioService.isSurahStreamCdn(this._currentCdnType)) {
+        const pending =
+          this._pendingSurahStreamAyah?.surah === Number(item.surah)
+            ? this._pendingSurahStreamAyah
+            : null;
+        if (
+          pending &&
+          Number.isFinite(this.audio.duration) &&
+          this.audio.duration > 0
+        ) {
+          const progress = getSurahStreamProgressForAyah(
+            this._playlistSourceAyahs,
+            item.surah,
+            pending.ayah,
+          );
+          this.audio.currentTime = progress * this.audio.duration;
+        }
+        activeItem = resolveSurahStreamAyah(
+          this._playlistSourceAyahs,
+          item,
+          this.audio.currentTime,
+          this.audio.duration,
+          pending?.ayah,
+        );
+        this._pendingSurahStreamAyah = null;
+      }
+      this.currentAyah = activeItem;
       this.isPlaying = true;
       this.onNetworkState?.("playing");
-      this.onPlay?.(item);
-      this.onAyahChange?.(item);
-      for (const fn of this._ayahChangeListeners) fn(item);
+      this._notifyPlay(activeItem);
+      this._emitAyahChange(activeItem);
 
       // Preload next tracks (3 ahead for smoother continuous playback)
       this._preloadAhead(index + 1, 3);
     } catch (err) {
-      console.error("Audio play error:", err);
+      if (err?.name === "AbortError") return;
+      devLog("error", "Audio play error:", err);
       this.onNetworkState?.("error");
       this.onError?.(err);
       // Keep current ayah on error (don't skip ahead and desync highlighting)
@@ -929,6 +1087,8 @@ class AudioService {
     if (this.memMode) {
       this.memCurrentRepeat++;
       if (this.memCurrentRepeat < this.memRepeatCount) {
+        clearTimeout(this.memTimer);
+        this.memTimer = null;
         this.memTimer = setTimeout(() => {
           this.memTimer = null;
           if (
@@ -980,13 +1140,13 @@ class AudioService {
   /* ── Getters ───────────────────────────────── */
 
   get currentTime() {
-    return this.audio.currentTime;
+    return this.audio?.currentTime ?? 0;
   }
   get duration() {
-    return this.audio.duration || 0;
+    return this.audio?.duration || 0;
   }
   get playbackRate() {
-    return this.audio.playbackRate || 1;
+    return this.audio?.playbackRate || 1;
   }
   get progress() {
     return this.duration ? this.currentTime / this.duration : 0;
@@ -998,13 +1158,80 @@ class AudioService {
     return this.playlist.length;
   }
 
+  _notifyPlay(item) {
+    this.onPlay?.(item);
+    for (const fn of this._playListeners) {
+      try {
+        fn(item);
+      } catch (error) {
+        devLog("warn", "Play listener error:", error);
+      }
+    }
+  }
+
+  _emitAyahChange(item) {
+    this.onAyahChange?.(item);
+    for (const fn of this._ayahChangeListeners) {
+      try {
+        fn(item);
+      } catch (error) {
+        devLog("warn", "Ayah change listener error:", error);
+      }
+    }
+  }
+
+  _syncSurahStreamAyah(currentTime, duration) {
+    if (
+      !this.isPlaying ||
+      !AudioService.isSurahStreamCdn(this._currentCdnType) ||
+      this.playlistIndex < 0
+    ) {
+      return;
+    }
+    const streamItem = this.playlist[this.playlistIndex];
+    const activeItem = resolveSurahStreamAyah(
+      this._playlistSourceAyahs,
+      streamItem,
+      currentTime,
+      duration,
+    );
+    if (
+      !activeItem?.ayah ||
+      (this.currentAyah?.surah === activeItem.surah &&
+        this.currentAyah?.ayah === activeItem.ayah)
+    ) {
+      return;
+    }
+    this.currentAyah = activeItem;
+    this._emitAyahChange(activeItem);
+  }
+
+  _notifyPause(item) {
+    this.onPause?.();
+    for (const fn of this._pauseListeners) {
+      try {
+        fn(item);
+      } catch (error) {
+        devLog("warn", "Pause listener error:", error);
+      }
+    }
+  }
+
+  /** Subscribe to playback-start events without replacing the main UI callback. */
+  addPlayListener(fn) {
+    this._playListeners.push(fn);
+    return () => {
+      const i = this._playListeners.indexOf(fn);
+      if (i !== -1) this._playListeners.splice(i, 1);
+    };
+  }
+
   /** Subscribe an extra time-update listener. Returns unsubscribe fn. */
   addTimeUpdateListener(fn) {
     this._timeUpdateListeners.push(fn);
     return () => {
-      this._timeUpdateListeners = this._timeUpdateListeners.filter(
-        (f) => f !== fn,
-      );
+      const i = this._timeUpdateListeners.indexOf(fn);
+      if (i !== -1) this._timeUpdateListeners.splice(i, 1);
     };
   }
 
@@ -1012,7 +1239,8 @@ class AudioService {
   addEndListener(fn) {
     this._endListeners.push(fn);
     return () => {
-      this._endListeners = this._endListeners.filter((f) => f !== fn);
+      const i = this._endListeners.indexOf(fn);
+      if (i !== -1) this._endListeners.splice(i, 1);
     };
   }
 
@@ -1020,7 +1248,8 @@ class AudioService {
   addPauseListener(fn) {
     this._pauseListeners.push(fn);
     return () => {
-      this._pauseListeners = this._pauseListeners.filter((f) => f !== fn);
+      const i = this._pauseListeners.indexOf(fn);
+      if (i !== -1) this._pauseListeners.splice(i, 1);
     };
   }
 
@@ -1028,9 +1257,8 @@ class AudioService {
   addAyahChangeListener(fn) {
     this._ayahChangeListeners.push(fn);
     return () => {
-      this._ayahChangeListeners = this._ayahChangeListeners.filter(
-        (f) => f !== fn,
-      );
+      const i = this._ayahChangeListeners.indexOf(fn);
+      if (i !== -1) this._ayahChangeListeners.splice(i, 1);
     };
   }
 
@@ -1038,7 +1266,8 @@ class AudioService {
     if (typeof fn !== "function") return () => {};
     this._latencyListeners.push(fn);
     return () => {
-      this._latencyListeners = this._latencyListeners.filter((f) => f !== fn);
+      const i = this._latencyListeners.indexOf(fn);
+      if (i !== -1) this._latencyListeners.splice(i, 1);
     };
   }
 
@@ -1115,7 +1344,7 @@ class AudioService {
       this._eqConnected = true;
       this._applyEqGains();
     } catch (e) {
-      console.warn("EQ init failed:", e);
+      devLog("warn", "EQ init failed:", e);
     }
   }
   _applyEqGains() {

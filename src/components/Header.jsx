@@ -1,14 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   shallowEqual,
   useAppActions,
   useAppSelector,
 } from "../context/AppContext";
 import { t as i18nT } from "../i18n";
-import { getSurah, surahName, toAr, getSurahForPage } from "../data/surahs";
+import { getSurah, toAr, getSurahForPage } from "../data/surahs";
+import { normalizeFontId } from "../data/fonts";
 import { cn } from "../lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import NetworkStatus from "./NetworkStatus";
 import PlatformLogo from "./PlatformLogo";
 import { THEME_ORDER } from "../data/themes";
 import {
@@ -18,8 +18,12 @@ import {
   MoreHorizontal,
   ChevronLeft,
   ChevronRight,
+  HandHeart,
   Menu,
+  Palette,
+  Shapes,
   X,
+  BookOpen,
 } from "lucide-react";
 
 export default function Header() {
@@ -33,11 +37,13 @@ export default function Header() {
       currentPage: current.currentPage,
       currentJuz: current.currentJuz,
       riwaya: current.riwaya,
-      loadedAyahCount: current.loadedAyahCount,
+      fontFamily: current.fontFamily,
+      fontFamilyByRiwaya: current.fontFamilyByRiwaya,
+      warshStrictMode: current.warshStrictMode,
       showHome: current.showHome,
       showDuas: current.showDuas,
+      legalPage: current.legalPage,
       sidebarOpen: current.sidebarOpen,
-      settingsOpen: current.settingsOpen,
     }),
     shallowEqual,
   );
@@ -49,11 +55,10 @@ export default function Header() {
     currentPage,
     currentJuz,
     riwaya,
-    loadedAyahCount,
     showHome,
     showDuas,
+    legalPage,
     sidebarOpen,
-    settingsOpen,
   } = state;
 
   const [goToValue, setGoToValue] = useState("");
@@ -61,6 +66,8 @@ export default function Header() {
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const inputRef = useRef(null);
   const headerRef = useRef(null);
+  const navigationRequestRef = useRef(0);
+  const riwayaRequestRef = useRef(0);
 
   const currentThemeIndex = THEME_ORDER.indexOf(theme);
   const nextThemeId =
@@ -92,19 +99,128 @@ export default function Header() {
       window.removeEventListener("resize", updateHeaderHeight);
       ro?.disconnect();
     };
-  }, [showHome, showDuas, displayMode, lang, riwaya]);
+  }, [showHome, showDuas, legalPage, displayMode, lang, riwaya]);
+
+  // Compact header on scroll (reading view only)
+  const [headerCompact, setHeaderCompact] = useState(false);
+  useEffect(() => {
+    if (showHome || showDuas || legalPage) {
+      setHeaderCompact(false);
+      return;
+    }
+    const mainEl = document.querySelector("#main-content");
+    if (!mainEl) return;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        setHeaderCompact(mainEl.scrollTop > 100);
+        ticking = false;
+      });
+    };
+    mainEl.addEventListener("scroll", onScroll, { passive: true });
+    return () => mainEl.removeEventListener("scroll", onScroll);
+  }, [showHome, showDuas, legalPage]);
 
   useEffect(() => {
-    if (goToOpen) window.setTimeout(() => inputRef.current?.focus(), 50);
+    if (!goToOpen) return;
+    const id = window.setTimeout(() => inputRef.current?.focus(), 50);
+    return () => window.clearTimeout(id);
   }, [goToOpen]);
 
   const cycleTheme = () =>
     dispatch({ type: "SET_THEME", payload: nextThemeId });
-  const goHome = () => set({ showHome: true, showDuas: false });
-  const openDuas = () => set({ showDuas: true, showHome: false });
+  const goHome = () => set({ legalPage: null, showHome: true, showDuas: false });
+  const openDuas = () => set({ legalPage: null, showDuas: true, showHome: false });
   const openSearch = () => dispatch({ type: "TOGGLE_SEARCH" });
   const openSettings = () => dispatch({ type: "TOGGLE_SETTINGS" });
   const openToolsHub = () => set({ toolsHubOpen: true });
+  const warmReadingTarget = useCallback(
+    (mode, value, targetRiwaya = riwaya) => {
+      if (showHome || showDuas || legalPage) return Promise.resolve(null);
+      return import("./QuranDisplay/useQuranDisplayData")
+        .then(({ preloadQuranDisplayData }) =>
+          preloadQuranDisplayData({
+            currentSurah: mode === "surah" ? value : currentSurah,
+            currentPage: mode === "page" ? value : currentPage,
+            currentJuz: mode === "juz" ? value : currentJuz,
+            displayMode: mode,
+            lang,
+            riwaya: targetRiwaya,
+            warshStrictMode: state.warshStrictMode,
+          }),
+        )
+        .catch(() => null);
+    },
+    [
+      currentJuz,
+      currentPage,
+      currentSurah,
+      lang,
+      legalPage,
+      riwaya,
+      state.warshStrictMode,
+      showDuas,
+      showHome,
+    ],
+  );
+
+  const warmRiwaya = useCallback(
+    (targetRiwaya) => {
+      if (targetRiwaya === riwaya) return Promise.resolve(null);
+      const targetFont = normalizeFontId(
+        state.fontFamilyByRiwaya?.[targetRiwaya] || state.fontFamily,
+        targetRiwaya,
+      );
+      return Promise.allSettled([
+        warmReadingTarget(displayMode, displayMode === "page" ? currentPage : displayMode === "juz" ? currentJuz : currentSurah, targetRiwaya),
+        import("../services/fontLoader")
+          .then(({ ensureFontLoaded }) => ensureFontLoaded(targetFont))
+          .catch(() => null),
+      ]);
+    }, [
+      currentJuz,
+      currentPage,
+      currentSurah,
+      displayMode,
+      riwaya,
+      state.fontFamily,
+      state.fontFamilyByRiwaya,
+      warmReadingTarget,
+    ],
+  );
+
+  const selectRiwaya = useCallback(
+    async (targetRiwaya) => {
+      const normalized = targetRiwaya === "warsh" ? "warsh" : "hafs";
+      const requestId = riwayaRequestRef.current + 1;
+      riwayaRequestRef.current = requestId;
+      if (normalized === riwaya) return;
+      await warmRiwaya(normalized);
+      if (riwayaRequestRef.current !== requestId) return;
+      set({ riwaya: normalized });
+    },
+    [riwaya, set, warmRiwaya],
+  );
+
+  const navigateReadingTarget = useCallback(
+    async (mode, value) => {
+      const requestId = navigationRequestRef.current + 1;
+      navigationRequestRef.current = requestId;
+      await warmReadingTarget(mode, value);
+      if (navigationRequestRef.current !== requestId) return;
+      set({ showHome: false, showDuas: false });
+      if (mode === "page") {
+        dispatch({ type: "NAVIGATE_PAGE", payload: { page: value } });
+      } else if (mode === "juz") {
+        dispatch({ type: "NAVIGATE_JUZ", payload: { juz: value } });
+      } else {
+        dispatch({ type: "NAVIGATE_SURAH", payload: { surah: value, ayah: 1 } });
+      }
+    },
+    [dispatch, set, warmReadingTarget],
+  );
 
   const canGoPrev =
     displayMode === "page"
@@ -120,31 +236,34 @@ export default function Header() {
         : currentSurah < 114;
 
   const handlePrev = () => {
-    set({ showHome: false, showDuas: false });
     if (displayMode === "page" && currentPage > 1) {
-      set({ currentPage: currentPage - 1 });
+      navigateReadingTarget("page", currentPage - 1);
     } else if (displayMode === "juz" && currentJuz > 1) {
-      dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz - 1 } });
+      navigateReadingTarget("juz", currentJuz - 1);
     } else if (currentSurah > 1) {
-      dispatch({
-        type: "NAVIGATE_SURAH",
-        payload: { surah: currentSurah - 1 },
-      });
+      navigateReadingTarget("surah", currentSurah - 1);
     }
   };
 
   const handleNext = () => {
-    set({ showHome: false, showDuas: false });
     if (displayMode === "page" && currentPage < 604) {
-      set({ currentPage: currentPage + 1 });
+      navigateReadingTarget("page", currentPage + 1);
     } else if (displayMode === "juz" && currentJuz < 30) {
-      dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz + 1 } });
+      navigateReadingTarget("juz", currentJuz + 1);
     } else if (currentSurah < 114) {
-      dispatch({
-        type: "NAVIGATE_SURAH",
-        payload: { surah: currentSurah + 1 },
-      });
+      navigateReadingTarget("surah", currentSurah + 1);
     }
+  };
+
+  const warmPrevious = () => {
+    if (displayMode === "page" && currentPage > 1) warmReadingTarget("page", currentPage - 1);
+    else if (displayMode === "juz" && currentJuz > 1) warmReadingTarget("juz", currentJuz - 1);
+    else if (currentSurah > 1) warmReadingTarget("surah", currentSurah - 1);
+  };
+  const warmNext = () => {
+    if (displayMode === "page" && currentPage < 604) warmReadingTarget("page", currentPage + 1);
+    else if (displayMode === "juz" && currentJuz < 30) warmReadingTarget("juz", currentJuz + 1);
+    else if (currentSurah < 114) warmReadingTarget("surah", currentSurah + 1);
   };
 
   const handleGoTo = (event) => {
@@ -152,13 +271,11 @@ export default function Header() {
     const num = Number.parseInt(goToValue, 10);
     if (Number.isNaN(num)) return;
     if (displayMode === "page" && num >= 1 && num <= 604) {
-      set({ currentPage: num, showHome: false, showDuas: false });
+      navigateReadingTarget("page", num);
     } else if (displayMode === "juz" && num >= 1 && num <= 30) {
-      set({ showHome: false, showDuas: false });
-      dispatch({ type: "NAVIGATE_JUZ", payload: { juz: num } });
+      navigateReadingTarget("juz", num);
     } else if (num >= 1 && num <= 114) {
-      set({ showHome: false, showDuas: false });
-      dispatch({ type: "NAVIGATE_SURAH", payload: { surah: num } });
+      navigateReadingTarget("surah", num);
     }
     setGoToOpen(false);
     setGoToValue("");
@@ -188,14 +305,6 @@ export default function Header() {
   const activeSurahNum =
     displayMode === "page" ? getSurahForPage(currentPage) : currentSurah;
   const surahMeta = getSurah(activeSurahNum);
-  const ayahWord =
-    lang === "fr" ? "versets" : lang === "ar" ? "\u0622\u064a\u0629" : "ayahs";
-  const ayahCount = loadedAyahCount
-    ? `${lang === "ar" ? toAr(loadedAyahCount) : loadedAyahCount} ${ayahWord}`
-    : surahMeta
-      ? `${surahMeta.ayahs} ${ayahWord}`
-      : "";
-
   const centerTitle = showDuas
     ? tr({
         fr: "Douas",
@@ -206,41 +315,20 @@ export default function Header() {
       ? lang === "ar"
         ? `\u062c\u0632\u0621 ${toAr(currentJuz)}`
         : `Juz ${currentJuz}`
-      : lang === "ar"
-        ? surahMeta?.ar || ""
-        : surahName(activeSurahNum, lang);
-
-  const centerKicker = showDuas
-    ? tr({
-        fr: "Espace Douas",
-        en: "Duas",
-        ar: "\u0627\u0644\u0623\u062f\u0639\u064a\u0629",
-      })
-    : displayMode === "page"
-      ? tr({ fr: "Page", en: "Page", ar: "\u0635\u0641\u062d\u0629" })
-      : displayMode === "juz"
-        ? tr({ fr: "Juz", en: "Juz", ar: "\u062c\u0632\u0621" })
-        : tr({ fr: "Sourate", en: "Surah", ar: "\u0633\u0648\u0631\u0629" });
-
-  const centerSub = showDuas
-    ? tr({
-        fr: "Invocations coraniques",
-        en: "Quranic supplications",
-        ar: "\u0623\u062f\u0639\u064a\u0629 \u0642\u0631\u0622\u0646\u064a\u0629",
-      })
-    : displayMode === "page"
-      ? tr({
-          fr: `Page ${currentPage} / 604`,
-          en: `Page ${currentPage} / 604`,
-          ar: `\u0635\u0641\u062d\u0629 ${toAr(currentPage)} / ${toAr(604)}`,
-        })
-      : displayMode === "juz"
-        ? tr({
-            fr: `Juz ${currentJuz} / 30`,
-            en: `Juz ${currentJuz} / 30`,
-            ar: `\u062c\u0632\u0621 ${toAr(currentJuz)} / ${toAr(30)}`,
-          })
-        : ayahCount;
+      : surahMeta?.en || surahMeta?.fr || surahMeta?.ar || "";
+  const centerTitleAlt =
+    !showDuas && displayMode !== "juz" && surahMeta
+      ? lang === "ar"
+        ? surahMeta.ar
+        : lang === "fr"
+          ? surahMeta.fr
+          : ""
+      : "";
+  const hasRotatingTitle =
+    Boolean(centerTitleAlt) && centerTitleAlt !== centerTitle;
+  const centerTitleLabel = hasRotatingTitle
+    ? `${centerTitle} - ${centerTitleAlt}`
+    : centerTitle;
 
   const themeDotColors = {
     light: "#199b90",
@@ -273,7 +361,7 @@ export default function Header() {
         : lang === "ar"
           ? "\u0633\u0648\u0631\u0629"
           : "surahs"
-    } \u00b7 30 Juz`,
+    } \u00b7 ${lang === "ar" ? "\u0663\u0660 \u062c\u0632\u0621" : "30 Juz"}`,
     quranNav: tr({
       fr: "Navigation du Coran",
       en: "Quran navigation",
@@ -293,39 +381,86 @@ export default function Header() {
 
   const cleanQuickItems = [
     {
+      key: "search",
+      Icon: Search,
+      label: i18nT("nav.search", lang),
+      description: tr({
+        fr: "Trouver une sourate ou un verset",
+        en: "Find a surah or verse",
+        ar: "\u0627\u0644\u0628\u062d\u062b \u0639\u0646 \u0633\u0648\u0631\u0629 \u0623\u0648 \u0622\u064a\u0629",
+      }),
+      action: openSearch,
+    },
+    {
+      key: "settings",
+      Icon: Settings,
+      label: i18nT("nav.settings", lang),
+      description: tr({
+        fr: "Lecture et affichage",
+        en: "Reading and display",
+        ar: "\u0627\u0644\u0642\u0631\u0627\u0621\u0629 \u0648\u0627\u0644\u0639\u0631\u0636",
+      }),
+      action: openSettings,
+    },
+    {
       key: "duas",
-      icon: "fa-hands-praying",
+      Icon: HandHeart,
       label: tr({
         fr: "Douas / Invocations",
         en: "Duas / Supplications",
         ar: "\u0627\u0644\u0623\u062f\u0639\u064a\u0629 \u0648\u0627\u0644\u0623\u0630\u0643\u0627\u0631",
       }),
+      description: tr({
+        fr: "Invocations et rappels",
+        en: "Supplications and reminders",
+        ar: "\u0623\u062f\u0639\u064a\u0629 \u0648\u0623\u0630\u0643\u0627\u0631",
+      }),
       action: openDuas,
     },
     {
       key: "theme",
-      icon: "fa-palette",
+      Icon: Palette,
       label: tr({
         fr: "Changer de th\u00e8me",
         en: "Switch theme",
         ar: "\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0645\u0638\u0647\u0631",
       }),
+      description: tr({
+        fr: "Adapter les couleurs",
+        en: "Adjust the colors",
+        ar: "\u062a\u062e\u0635\u064a\u0635 \u0627\u0644\u0623\u0644\u0648\u0627\u0646",
+      }),
       action: cycleTheme,
     },
     {
       key: "tools",
-      icon: "fa-shapes",
+      Icon: Shapes,
       label: tr({
         fr: "Espace outils",
         en: "Tools hub",
         ar: "\u0645\u0631\u0643\u0632 \u0627\u0644\u0623\u062f\u0648\u0627\u062a",
+      }),
+      description: tr({
+        fr: "Lecture et étude",
+        en: "Reading and study",
+        ar: "\u0627\u0644\u0642\u0631\u0627\u0621\u0629 \u0648\u0627\u0644\u062f\u0631\u0627\u0633\u0629",
       }),
       action: openToolsHub,
     },
   ];
 
   return (
-    <header ref={headerRef} className="mp-header" role="banner">
+    <header
+      ref={headerRef}
+      className={cn(
+        "mp-header",
+        headerCompact && "mp-header--compact",
+        sidebarOpen && "pointer-events-none",
+      )}
+      aria-hidden={sidebarOpen ? "true" : undefined}
+      inert={sidebarOpen ? "" : undefined}
+      role="banner"
+    >
       <div className="mp-header__bar">
         {/* ── LEFT: hamburger + brand ─────────────────────── */}
         <div className="mp-header__brand-row">
@@ -348,7 +483,7 @@ export default function Header() {
             className="mp-header__brand"
             type="button"
             onClick={goHome}
-            aria-label="Mushaf.plus — Accueil"
+            aria-label={lang === "ar" ? "Mushaf.plus — الرئيسية" : lang === "en" ? "Mushaf.plus — Home" : "Mushaf.plus — Accueil"}
           >
             <span className="mp-header__logo">
               <PlatformLogo
@@ -360,7 +495,7 @@ export default function Header() {
                 height={38}
               />
             </span>
-            <span className="mp-header__brand-text hidden lg:inline">
+            <span className="mp-header__brand-text">
               Mushaf<span style={{ color: dotColor }}>.</span>plus
             </span>
           </button>
@@ -368,11 +503,11 @@ export default function Header() {
 
         {/* ── CENTER: surah nav ───────────────────────────── */}
         <div className="mp-header__center">
-          {showHome ? (
+          {showHome || legalPage ? (
             <button
               className="mp-header__home-summary"
               type="button"
-              onClick={() => set({ showHome: false, showDuas: false })}
+              onClick={() => set({ legalPage: null, showHome: false, showDuas: false })}
             >
               <strong className="mp-header__home-summary-clean">
                 {headerLabels.homeSummary}
@@ -388,6 +523,9 @@ export default function Header() {
                 className="mp-header__nav-arrow"
                 type="button"
                 onClick={isRtl ? handleNext : handlePrev}
+                onPointerEnter={isRtl ? warmNext : warmPrevious}
+                onPointerDown={isRtl ? warmNext : warmPrevious}
+                onFocus={isRtl ? warmNext : warmPrevious}
                 disabled={isRtl ? !canGoNext : !canGoPrev}
                 aria-label={i18nT("quran.prevSurah", lang)}
               >
@@ -400,16 +538,29 @@ export default function Header() {
                   <button
                     className="mp-header__title-btn"
                     type="button"
-                    style={{
-                      width: "max-content",
-                      maxWidth: "clamp(120px, 30vw, 280px)",
-                    }}
+                    aria-label={centerTitleLabel}
                   >
-                    <span className="mp-header__kicker">{centerKicker}</span>
-                    <span className="mp-header__title">{centerTitle}</span>
-                    {centerSub && (
-                      <span className="mp-header__sub">{centerSub}</span>
-                    )}
+                    <span
+                      className={cn(
+                        "mp-header__title-rotator",
+                        hasRotatingTitle && "mp-header__title-rotator--active",
+                      )}
+                      aria-hidden="true"
+                    >
+                      <span className="mp-header__title mp-header__title--primary">
+                        {centerTitle}
+                      </span>
+                      {hasRotatingTitle ? (
+                        <span
+                          className={cn(
+                            "mp-header__title mp-header__title--secondary",
+                            lang === "ar" && "mp-header__title--arabic",
+                          )}
+                        >
+                          {centerTitleAlt}
+                        </span>
+                      ) : null}
+                    </span>
                   </button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -421,11 +572,15 @@ export default function Header() {
                     onSubmit={handleGoTo}
                     className="flex flex-col gap-3 p-4"
                   >
-                    <label className="text-center text-[0.85rem] font-bold text-text-primary">
+                    <label
+                      htmlFor="header-goto-input"
+                      className="text-center text-[0.85rem] font-bold text-text-primary"
+                    >
                       {goToLabel}
                     </label>
                     <div className="flex items-center gap-2">
                       <input
+                        id="header-goto-input"
                         ref={inputRef}
                         type="number"
                         min={1}
@@ -433,11 +588,11 @@ export default function Header() {
                         value={goToValue}
                         onChange={(event) => setGoToValue(event.target.value)}
                         placeholder="#"
-                        className="h-10 flex-1 rounded-xl border border-border bg-bg-secondary px-3 text-center text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                        className="h-[44px] flex-1 rounded-xl border border-border bg-bg-secondary px-3 text-center text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary"
                       />
                       <button
                         type="submit"
-                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white transition-colors hover:bg-primary-dark"
+                        className="flex h-[44px] w-[44px] items-center justify-center rounded-xl bg-primary text-white transition-colors hover:bg-primary-dark"
                         aria-label={tr({
                           fr: "Aller",
                           en: "Go",
@@ -456,6 +611,9 @@ export default function Header() {
                 className="mp-header__nav-arrow"
                 type="button"
                 onClick={isRtl ? handlePrev : handleNext}
+                onPointerEnter={isRtl ? warmPrevious : warmNext}
+                onPointerDown={isRtl ? warmPrevious : warmNext}
+                onFocus={isRtl ? warmPrevious : warmNext}
                 disabled={isRtl ? !canGoPrev : !canGoNext}
                 aria-label={i18nT("quran.nextSurah", lang)}
               >
@@ -467,39 +625,21 @@ export default function Header() {
 
         {/* ── RIGHT: riwaya + search + settings + theme + more ── */}
         <div className="mp-header__actions">
-          {/* Riwaya pill — desktop */}
-          <div
-            className="mp-header__riwaya-switch hidden md:flex items-center gap-0.5 rounded-xl bg-[var(--bg-secondary)] p-1 border border-[var(--border)] shrink-0"
-            title={headerLabels.riwayaToggle}
-          >
-            {["hafs", "warsh"].map((id) => (
-              <button
-                key={id}
-                className={cn(
-                  "px-3 py-1 text-[0.7rem] font-bold rounded-lg transition-all cursor-pointer",
-                  riwaya === id
-                    ? "bg-[var(--bg-card)] text-[var(--primary)] shadow-sm font-extrabold"
-                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
-                )}
-                type="button"
-                onClick={() => set({ riwaya: id })}
-              >
-                {id.toUpperCase()}
-              </button>
-            ))}
-          </div>
-
-          {/* Riwaya tap — mobile */}
+          {/* Riwaya toggle — always visible */}
           <button
-            className="mp-header__riwaya-mobile md:hidden flex font-bold text-xs min-w-[54px] h-9 rounded-xl hover:bg-[var(--bg-secondary)] items-center justify-center border border-[var(--border)] text-[var(--text-primary)] cursor-pointer"
+            className="mp-header__action mp-header__riwaya-toggle"
             type="button"
-            onClick={() =>
-              set({ riwaya: riwaya === "hafs" ? "warsh" : "hafs" })
-            }
-            aria-label={headerLabels.riwayaToggle}
+            onPointerEnter={() => warmRiwaya(riwaya === "hafs" ? "warsh" : "hafs")}
+            onPointerDown={() => warmRiwaya(riwaya === "hafs" ? "warsh" : "hafs")}
+            onFocus={() => warmRiwaya(riwaya === "hafs" ? "warsh" : "hafs")}
+            onClick={() => {
+              const nextRiwaya = riwaya === "hafs" ? "warsh" : "hafs";
+              selectRiwaya(nextRiwaya);
+            }}
+            aria-label={`${headerLabels.riwayaToggle} — ${riwaya === "warsh" ? "Warsh" : "Hafs"}`}
             title={headerLabels.riwayaToggle}
           >
-            {riwaya.toUpperCase()}
+            <span>{riwaya === "warsh" ? "Warsh" : "Hafs"}</span>
           </button>
 
           {/* Search */}
@@ -514,27 +654,7 @@ export default function Header() {
             <span>{i18nT("nav.search", lang)}</span>
           </button>
 
-          {/* Settings */}
-          <button
-            className={cn("mp-header__action", settingsOpen && "is-active")}
-            type="button"
-            onClick={openSettings}
-            aria-label={i18nT("nav.settings", lang)}
-            title={i18nT("nav.settings", lang)}
-          >
-            <Settings size={16} strokeWidth={2.2} />
-          </button>
-
-          {/* Theme cycle */}
-          <button
-            className="mp-header__action hidden sm:flex"
-            type="button"
-            onClick={cycleTheme}
-            aria-label={headerLabels.cycleTheme}
-            title={headerLabels.cycleTheme}
-          >
-            <Moon size={16} strokeWidth={2.2} style={{ color: dotColor }} />
-          </button>
+          {/* Theme cycle — moved to "More" menu for cleaner header */}
 
           {/* More / ellipsis */}
           <Popover open={quickMenuOpen} onOpenChange={setQuickMenuOpen}>
@@ -551,47 +671,110 @@ export default function Header() {
             <PopoverContent
               align="end"
               sideOffset={10}
-              className="z-[300] w-64 rounded-2xl border border-border bg-bg-primary p-2 shadow-xl"
+              className="mp-header-menu z-[300]"
             >
-              {cleanQuickItems.map((item) => (
+              <div className="mp-header-menu__header">
+                <span className="mp-header-menu__header-icon">
+                  <Shapes size={17} strokeWidth={2.1} />
+                </span>
+                <span className="mp-header-menu__heading">
+                  <span className="mp-header-menu__header-text">
+                    {tr({ fr: "Actions rapides", en: "Quick actions", ar: "إجراءات سريعة" })}
+                  </span>
+                  <span className="mp-header-menu__header-subtitle">
+                    {tr({
+                      fr: "Navigation et préférences",
+                      en: "Navigation and preferences",
+                      ar: "التنقل والتفضيلات",
+                    })}
+                  </span>
+                </span>
                 <button
-                  key={item.key}
-                  className="mp-header-menu__item"
+                  className="mp-header-menu__close"
                   type="button"
-                  onClick={() => {
-                    item.action();
-                    setQuickMenuOpen(false);
-                  }}
+                  onClick={() => setQuickMenuOpen(false)}
+                  aria-label={tr({
+                    fr: "Fermer les actions rapides",
+                    en: "Close quick actions",
+                    ar: "إغلاق الإجراءات السريعة",
+                  })}
                 >
-                  <i className={`fas ${item.icon}`} />
-                  <span>{item.label}</span>
+                  <X size={16} strokeWidth={2.2} />
                 </button>
-              ))}
-              <div className="mp-header-menu__riwaya">
-                {["hafs", "warsh"].map((id) => (
+              </div>
+
+              <div className="mp-header-menu__section">
+                {cleanQuickItems.map((item) => (
                   <button
-                    key={id}
-                    className={cn(
-                      "mp-header__seg",
-                      riwaya === id && "is-active",
-                    )}
+                    key={item.key}
+                    data-key={item.key}
+                    className="mp-header-menu__item"
                     type="button"
                     onClick={() => {
-                      set({ riwaya: id });
+                      item.action();
                       setQuickMenuOpen(false);
                     }}
                   >
-                    {id.toUpperCase()}
+                    <span className="mp-header-menu__item-icon">
+                      <item.Icon size={17} strokeWidth={2} />
+                    </span>
+                    <span className="mp-header-menu__item-copy">
+                      <span className="mp-header-menu__item-label">{item.label}</span>
+                      <span className="mp-header-menu__item-description">
+                        {item.description}
+                      </span>
+                    </span>
+                    {item.key === "search" && (
+                      <kbd className="mp-header-menu__item-kbd">/</kbd>
+                    )}
                   </button>
                 ))}
               </div>
+
+              <div className="mp-header-menu__riwaya">
+                <div className="mp-header-menu__riwaya-heading">
+                  <span className="mp-header-menu__riwaya-icon" aria-hidden="true">
+                    <BookOpen size={15} strokeWidth={2.1} />
+                  </span>
+                  <span className="mp-header-menu__riwaya-copy">
+                    <span className="mp-header-menu__riwaya-label">
+                      {tr({ fr: "Riwaya", en: "Riwaya", ar: "الرواية" })}
+                    </span>
+                    <span className="mp-header-menu__riwaya-description">
+                      {tr({
+                        fr: "Choisir la lecture",
+                        en: "Choose the recitation",
+                        ar: "اختيار القراءة",
+                      })}
+                    </span>
+                  </span>
+                </div>
+                <div
+                  className="mp-header-menu__riwaya-btns"
+                  role="group"
+                  aria-label={headerLabels.riwayaToggle}
+                >
+                  {["hafs", "warsh"].map((id) => (
+                    <button
+                      key={id}
+                      className={cn("mp-header__seg", riwaya === id && "is-active")}
+                      type="button"
+                      aria-pressed={riwaya === id}
+                      onPointerEnter={() => warmRiwaya(id)}
+                      onPointerDown={() => warmRiwaya(id)}
+                      onFocus={() => warmRiwaya(id)}
+                      onClick={() => {
+                        selectRiwaya(id);
+                        setQuickMenuOpen(false);
+                      }}
+                    >
+                      {id.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </PopoverContent>
           </Popover>
-
-          {/* Network status */}
-          <div className="mp-header__network">
-            <NetworkStatus />
-          </div>
         </div>
       </div>
     </header>

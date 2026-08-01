@@ -61,7 +61,7 @@
 .qc-surah-banner__title {
     margin: 0 0 0.2rem;
     font-size: clamp(1.1rem, 2.2vw, 1.45rem);
-    font-weight: 750;
+    font-weight: 700;
     color: var(--text-primary);
     line-height: 1.25;
     letter-spacing: -0.01em;
@@ -259,7 +259,7 @@
     }
 
     .qc-surah-banner__btns {
-        margin-left: auto;
+        margin-inline-start: auto;
     }
 }
 

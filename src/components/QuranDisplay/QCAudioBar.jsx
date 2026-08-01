@@ -3,6 +3,7 @@ import { cn } from "../../lib/utils";
 import audioService from "../../services/audioService";
 import { getAudioPlayerLabels } from "../audioPlayer/audioPlayerLabels";
 import { formatAudioTime } from "../audioPlayer/audioPlayerUtils";
+import { Icon } from "../ui/icon";
 
 export default function QCAudioBar({
   lang,
@@ -32,13 +33,11 @@ export default function QCAudioBar({
     const unsubscribeTime = audioService.addTimeUpdateListener(syncSnapshot);
     const unsubscribeAyah = audioService.addAyahChangeListener(syncSnapshot);
     const unsubscribeEnd = audioService.addEndListener(syncSnapshot);
-    const interval = window.setInterval(syncSnapshot, 500);
 
     return () => {
       unsubscribeTime();
       unsubscribeAyah();
       unsubscribeEnd();
-      window.clearInterval(interval);
     };
   }, []);
 
@@ -48,6 +47,15 @@ export default function QCAudioBar({
     const rect = rail.getBoundingClientRect();
     const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
     audioService.seek(ratio * audioService.duration);
+  };
+
+  const handleProgressKeyDown = (e) => {
+    const dur = audioService.duration;
+    if (!dur) return;
+    if (e.key === "ArrowRight") { e.preventDefault(); audioService.seek(Math.min(dur, audioService.currentTime + 5)); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); audioService.seek(Math.max(0, audioService.currentTime - 5)); }
+    else if (e.key === "Home") { e.preventDefault(); audioService.seek(0); }
+    else if (e.key === "End") { e.preventDefault(); audioService.seek(dur); }
   };
 
   const cycleSpeed = () => {
@@ -78,8 +86,10 @@ export default function QCAudioBar({
       <div
         ref={progressRailRef}
         onClick={handleProgressClick}
+        onKeyDown={handleProgressKeyDown}
         className="relative h-1 w-full cursor-pointer bg-[var(--border)]"
         role="slider"
+        tabIndex={0}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(progress * 100)}
@@ -122,7 +132,7 @@ export default function QCAudioBar({
             className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-secondary)] transition-all hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)]"
             aria-label={labels.previous}
           >
-            <i className="fas fa-backward-step text-sm" />
+            <Icon name="backward-step" size={17} />
           </button>
 
           <button
@@ -143,7 +153,11 @@ export default function QCAudioBar({
             aria-label={playing ? labels.pause : labels.play}
             aria-pressed={playing}
           >
-            <i className={`fas ${playing ? "fa-pause" : "fa-play"} text-sm ${!playing ? "ml-0.5" : ""}`} />
+            <Icon
+              name={playing ? "pause" : "play"}
+              size={17}
+              className={!playing ? "ml-0.5" : undefined}
+            />
           </button>
 
           <button
@@ -152,7 +166,7 @@ export default function QCAudioBar({
             className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-secondary)] transition-all hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)]"
             aria-label={labels.next}
           >
-            <i className="fas fa-forward-step text-sm" />
+            <Icon name="forward-step" size={17} />
           </button>
 
           <button
@@ -161,7 +175,7 @@ export default function QCAudioBar({
             className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all hover:bg-rose-50 hover:text-rose-500 dark:hover:bg-rose-900/20"
             aria-label={labels.stop}
           >
-            <i className="fas fa-stop text-xs" />
+            <Icon name="stop" size={15} />
           </button>
         </div>
       </div>

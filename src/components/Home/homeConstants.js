@@ -194,33 +194,6 @@ export const TYPE_INFO = {
 };
 
 /* ─── Articles de blog (données de démonstration) ────────────────────────── */
-export const MOCK_BLOG_POSTS = [
-  {
-    id:       1,
-    tag:      "Reflections",
-    title:    "Les bienfaits spirituels de la lecture quotidienne du Coran",
-    date:     "30 Mars 2026",
-    readTime: "5 min",
-    img:      "/quran_reflection_blog_thumb_1774927526673.png",
-  },
-  {
-    id:       2,
-    tag:      "Apprentissage",
-    title:    "Guide pratique : Perfectionner son Tajwid en 5 étapes",
-    date:     "28 Mars 2026",
-    readTime: "8 min",
-    img:      "/tajweed_learning_blog_thumb_1774927566373.png",
-  },
-  {
-    id:       3,
-    tag:      "Conseils",
-    title:    "Mémoriser le Coran : Stratégies pour une rétention durable",
-    date:     "25 Mars 2026",
-    readTime: "6 min",
-    img:      "/hifz_tips_blog_thumb_1774927620229.png",
-  },
-];
-
 /* ─── Photos des récitateurs ─────────────────────────────────────────────── */
 export const RECITER_PHOTOS = {
   "ar.alafasy":            "https://static.quran.com/images/reciters/7/mishary-rashid-alafasy.png",

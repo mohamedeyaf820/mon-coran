@@ -1,4 +1,4 @@
-import { dbGet, dbSet } from "./dbService";
+import { dbGet, dbPruneByPrefix, dbSet } from "./dbService.js";
 
 const BASE_URL = "https://api.quran.com/api/v4";
 const CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
@@ -7,8 +7,36 @@ const IDB_STORE = "cache";
 const IDB_PREFIX = "qcom-api:";
 
 const memCache = new Map();
+const MEM_CACHE_MAX_SIZE = 240;
 const inflight = new Map();
 const WBW_AUDIO_BASE = "https://audio.qurancdn.com/";
+
+function setMemoryCache(key, value) {
+  if (memCache.has(key)) memCache.delete(key);
+  memCache.set(key, value);
+  while (memCache.size > MEM_CACHE_MAX_SIZE) {
+    memCache.delete(memCache.keys().next().value);
+  }
+}
+
+function getMemoryCache(key) {
+  if (!memCache.has(key)) return undefined;
+  const value = memCache.get(key);
+  memCache.delete(key);
+  memCache.set(key, value);
+  return value;
+}
+
+function persistCache(key, data) {
+  dbSet(IDB_STORE, { key, data, ts: Date.now() })
+    .then(() =>
+      dbPruneByPrefix(IDB_STORE, IDB_PREFIX, {
+        maxEntries: 360,
+        maxAgeMs: CACHE_TTL,
+      }),
+    )
+    .catch(() => {});
+}
 
 const VERSE_FIELDS = [
   "id",
@@ -85,6 +113,40 @@ function createTimedSignal(signal, timeoutMs = FETCH_TIMEOUT) {
   };
 }
 
+function waitForSharedRequest(promise, signal) {
+  if (!signal) return promise;
+  if (signal.aborted) {
+    return Promise.reject(new DOMException("Request aborted", "AbortError"));
+  }
+
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const cleanup = () => signal.removeEventListener("abort", onAbort);
+    const onAbort = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new DOMException("Request aborted", "AbortError"));
+    };
+
+    signal.addEventListener("abort", onAbort, { once: true });
+    promise.then(
+      (value) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        resolve(value);
+      },
+      (error) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(error);
+      },
+    );
+  });
+}
+
 function refreshInBackground(url, cacheKey) {
   const timed = createTimedSignal(null, FETCH_TIMEOUT);
   fetch(url, {
@@ -99,8 +161,8 @@ function refreshInBackground(url, cacheKey) {
     })
     .then((json) => {
       if (json && typeof json === "object") {
-        memCache.set(cacheKey, json);
-        dbSet(IDB_STORE, { key: cacheKey, data: json, ts: Date.now() }).catch(() => {});
+        setMemoryCache(cacheKey, json);
+        persistCache(cacheKey, json);
       }
     })
     .catch(()=>{})
@@ -126,14 +188,19 @@ async function mapWithConcurrency(items, limit, fn) {
 }
 
 async function fetchJson(url, signal) {
+  if (signal?.aborted) {
+    throw new DOMException("Request aborted", "AbortError");
+  }
+
   const cacheKey = IDB_PREFIX + url;
 
-  if (memCache.has(cacheKey)) return memCache.get(cacheKey);
+  const memoryHit = getMemoryCache(cacheKey);
+  if (memoryHit !== undefined) return memoryHit;
 
   try {
     const cached = await dbGet(IDB_STORE, cacheKey);
     if (cached?.data && cached?.ts) {
-      memCache.set(cacheKey, cached.data);
+      setMemoryCache(cacheKey, cached.data);
       const isFresh = Date.now() - cached.ts < CACHE_TTL;
       if (isFresh) {
         return cached.data;
@@ -146,10 +213,19 @@ async function fetchJson(url, signal) {
     // Network fetch below remains the source of truth.
   }
 
-  if (inflight.has(cacheKey)) return inflight.get(cacheKey);
+  if (signal?.aborted) {
+    throw new DOMException("Request aborted", "AbortError");
+  }
 
-  const request = (async () => {
-    const timed = createTimedSignal(signal);
+  const existing = inflight.get(cacheKey);
+  if (existing) return waitForSharedRequest(existing.promise, signal);
+
+  const entry = {
+    promise: null,
+  };
+
+  entry.promise = (async () => {
+    const timed = createTimedSignal(null);
     try {
       const response = await fetch(url, {
         signal: timed.signal,
@@ -165,17 +241,24 @@ async function fetchJson(url, signal) {
         throw new Error("Malformed Quran.com API response");
       }
 
-      memCache.set(cacheKey, json);
-      dbSet(IDB_STORE, { key: cacheKey, data: json, ts: Date.now() }).catch(() => {});
+      setMemoryCache(cacheKey, json);
+      persistCache(cacheKey, json);
       return json;
+    } catch (error) {
+      if (error?.name === "AbortError") {
+        throw new Error(`Quran.com API request timed out after ${FETCH_TIMEOUT}ms: ${url}`);
+      }
+      throw error;
     } finally {
       timed.cleanup();
-      inflight.delete(cacheKey);
+      if (inflight.get(cacheKey) === entry) {
+        inflight.delete(cacheKey);
+      }
     }
   })();
 
-  inflight.set(cacheKey, request);
-  return request;
+  inflight.set(cacheKey, entry);
+  return waitForSharedRequest(entry.promise, signal);
 }
 
 function buildVerseParams(extra = {}) {
@@ -458,8 +541,12 @@ async function fetchQuranComTranslationPath(path, resourceId, lang, meta, signal
 }
 
 export async function fetchQuranComTranslations(pathPrefix, langs = ["fr"], signal) {
-  const langArray = (Array.isArray(langs) ? langs : [langs])
-    .map((lang) => (TRANSLATION_RESOURCE_IDS[lang] ? lang : "fr"));
+  const langArray = (Array.isArray(langs) ? langs : [langs]).map((lang) => {
+    if (!TRANSLATION_RESOURCE_IDS[lang]) {
+      throw new Error(`Unsupported Quran.com translation language: ${lang}`);
+    }
+    return lang;
+  });
 
   let path = null;
   let meta = {};

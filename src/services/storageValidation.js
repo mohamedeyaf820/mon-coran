@@ -101,11 +101,18 @@ export const readProgressSchema = schema((value) => {
 export const downloadProgressEntrySchema = schema((value) => {
   if (!isPlainObject(value)) return null;
   if (!isText(value.key, 160) || value.key.length < 3) return null;
-  if (!["partial", "done", "error"].includes(value.status)) return null;
+  if (!["partial", "done", "error", "cancelled"].includes(value.status)) return null;
   if (!isIntBetween(value.surahNum, 1, 114)) return null;
   if (!isText(value.reciterId, 80) || value.reciterId.length < 1) return null;
+  if (value.reciterName !== undefined && !isText(value.reciterName, 160)) return null;
   if (!["hafs", "warsh"].includes(value.riwaya)) return null;
   if (!isIntBetween(value.updatedAt, 0, Number.MAX_SAFE_INTEGER)) return null;
+  if (
+    value.total !== undefined &&
+    !isIntBetween(value.total, 1, Number.MAX_SAFE_INTEGER)
+  ) {
+    return null;
+  }
   if (
     value.downloaded !== undefined &&
     !isIntBetween(value.downloaded, 0, Number.MAX_SAFE_INTEGER)

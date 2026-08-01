@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import {
@@ -6,6 +7,8 @@ import {
   getWirdHistory,
   resetTodayWird,
 } from "../services/wirdService";
+import { Flame, Target, X, CalendarDays, TrendingUp, SlidersHorizontal, BarChart2, CheckCircle2, Timer, Loader2, RotateCcw, Info } from "lucide-react";
+import { confirmAction } from "../services/interactionService";
 
 /* ── Sparkline: mini bar chart showing the last 7 days of reading ── */
 function Sparkline({ data, goalTarget, lang }) {
@@ -176,8 +179,8 @@ function StreakHeatmap({ history, goalTarget, wirdGoalType, lang }) {
     <div className="wird-streak">
       {/* Streak badge */}
       <div className="wird-streak__badge">
-        <i
-          className="fas fa-fire"
+        <Flame
+          size={16}
           style={{ color: streak > 0 ? "#f97316" : "rgba(255,255,255,0.3)" }}
         />
         <span>{streak}</span>
@@ -242,6 +245,7 @@ export default function WirdPanel() {
   const [loading, setLoading] = useState(true);
 
   const close = () => dispatch({ type: "TOGGLE_WIRD" });
+  const titleId = "wird-panel-title";
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -301,7 +305,7 @@ export default function WirdPanel() {
         : lang === "fr"
           ? "Confirmer la réinitialisation du wird d'aujourd'hui ?"
           : "Reset today's wird progress? This cannot be undone.";
-    if (!window.confirm(confirmMsg)) return;
+    if (!(await confirmAction({ message: confirmMsg, tone: "danger" }))) return;
     await resetTodayWird();
     loadData();
   };
@@ -316,355 +320,386 @@ export default function WirdPanel() {
   ];
 
   return (
-    <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
-      <div
-        className="modal modal-panel--wide modal-wird !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
-          <div className="modal-title-stack">
-            <div className="modal-kicker">
-              {lang === "fr"
-                ? "Discipline"
-                : lang === "ar"
-                  ? "الورد"
-                  : "Routine"}
-            </div>
-            <h2 className="modal-title">
-              <i className="fas fa-bullseye"></i>
-              {t("wird.title", lang)}
-            </h2>
-            <div className="modal-subtitle">
-              {lang === "fr"
-                ? "Suivi du wird quotidien, historique et réglage d’objectif."
-                : lang === "ar"
-                  ? "متابعة الورد اليومي وسجلّه وضبط هدفه."
-                  : "Daily wird tracking, history and goal settings."}
-            </div>
-          </div>
-          <button className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]" type="button" onClick={close} aria-label={lang === "fr" ? "Fermer" : lang === "ar" ? "اغلاق" : "Close"}>
-            <i className="fas fa-times"></i>
-          </button>
-        </div>
-
-        <div
-          className="modal-segmented !mx-3 !mt-3 !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-1 sm:!mx-4"
-          role="tablist"
-          aria-label={t("wird.title", lang)}
-        >
-          <button
-            className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "today" ? "active !bg-sky-500/25 !text-white" : ""}`}
-            onClick={() => setTab("today")}
+    <Dialog.Root
+      open
+      onOpenChange={(o) => {
+        if (!o) close();
+      }}
+    >
+      <Dialog.Portal>
+        <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
+          <Dialog.Content
+            className="modal modal-panel--wide modal-wird !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+            aria-labelledby={titleId}
+            onEscapeKeyDown={close}
+            onInteractOutside={close}
           >
-            <i className="fas fa-calendar-day"></i> {t("wird.today", lang)}
-          </button>
-          <button
-            className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "history" ? "active !bg-sky-500/25 !text-white" : ""}`}
-            onClick={() => setTab("history")}
-          >
-            <i className="fas fa-chart-line"></i> {t("wird.history", lang)}
-          </button>
-          <button
-            className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "streak" ? "active !bg-sky-500/25 !text-white" : ""}`}
-            onClick={() => setTab("streak")}
-          >
-            <i className="fas fa-fire"></i>{" "}
-            {lang === "fr" ? "Série" : lang === "ar" ? "سلسلة" : "Streak"}
-          </button>
-          <button
-            className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "settings" ? "active !bg-sky-500/25 !text-white" : ""}`}
-            onClick={() => setTab("settings")}
-          >
-            <i className="fas fa-sliders-h"></i> {t("wird.goal", lang)}
-          </button>
-        </div>
-
-        <div className="wird-summary-bar !mx-3 !mt-2 !flex !flex-wrap !gap-2 sm:!mx-4">
-          <span className="wird-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
-            <i className="fas fa-bullseye"></i>
-            {goalTarget} {goalLabel}
-          </span>
-          <span className="wird-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
-            <i className="fas fa-chart-simple"></i>
-            {progressValue} / {goalTarget}
-          </span>
-          <span
-            className={`wird-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !px-2.5 !py-1 !text-xs ${isComplete ? "is-complete !border-emerald-300/30 !bg-emerald-500/15" : "!border-white/14 !bg-white/[0.05]"}`}
-          >
-            <i
-              className={`fas ${isComplete ? "fa-check-circle" : "fa-hourglass-half"}`}
-            ></i>
-            {progressPct}%
-          </span>
-        </div>
-
-        <div className="panel-scroll wird-body !max-h-[62vh] !overflow-auto !px-3 !pb-3 sm:!px-4 sm:!pb-4">
-          {loading ? (
-            <div className="wird-loading">
-              <i className="fas fa-spinner fa-spin"></i>
-            </div>
-          ) : tab === "today" ? (
-            <div className="wird-today !space-y-3">
-              <div className="wird-progress-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-4">
-                <div className="wird-progress-wrapper">
-                  <svg viewBox="0 0 120 120" className="wird-progress-svg">
-                    <circle
-                      cx="60"
-                      cy="60"
-                      r="52"
-                      fill="none"
-                      stroke="var(--border)"
-                      strokeWidth="8"
-                    />
-                    <circle
-                      cx="60"
-                      cy="60"
-                      r="52"
-                      fill="none"
-                      stroke={isComplete ? "var(--primary)" : "var(--gold)"}
-                      strokeWidth="8"
-                      strokeLinecap="round"
-                      strokeDasharray={`${2 * Math.PI * 52}`}
-                      strokeDashoffset={`${2 * Math.PI * 52 * (1 - progressPct / 100)}`}
-                      transform="rotate(-90 60 60)"
-                      style={{ transition: "stroke-dashoffset 0.5s ease" }}
-                    />
-                  </svg>
-                  <div className="wird-progress-text">
-                    <span className="wird-pct">{progressPct}%</span>
-                    <span className="wird-detail">
-                      {progressValue} / {goalTarget} {goalLabel}
-                    </span>
-                  </div>
+            <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
+              <div className="modal-title-stack">
+                <div className="modal-kicker">
+                  {lang === "fr"
+                    ? "Discipline"
+                    : lang === "ar"
+                      ? "الورد"
+                      : "Routine"}
                 </div>
-
-                <div className="wird-progress-copy">
-                  <span className="wird-progress-kicker">
-                    {lang === "fr"
-                      ? "Lecture du jour"
-                      : lang === "ar"
-                        ? "ورد اليوم"
-                        : "Today"}
-                  </span>
-                  <h3 className="wird-progress-title">
-                    {isComplete
-                      ? lang === "fr"
-                        ? "Objectif atteint"
-                        : lang === "ar"
-                          ? "تم بلوغ الهدف"
-                          : "Goal reached"
-                      : lang === "fr"
-                        ? "Continuez votre wird"
-                        : lang === "ar"
-                          ? "واصل وردك"
-                          : "Keep your wird moving"}
-                  </h3>
-                  <p className="wird-progress-copytext">
-                    {lang === "fr"
-                      ? "Le suivi reste visible dans un format plus clair pour voir immédiatement votre cadence quotidienne."
-                      : lang === "ar"
-                        ? "تم تبسيط العرض حتى ترى تقدّمك اليومي بسرعة ووضوح."
-                        : "The layout highlights your daily pace more clearly so progress is readable at a glance."}
-                  </p>
+                <h2 className="modal-title" id={titleId}>
+                  <Target size={16} aria-hidden="true" />
+                  {t("wird.title", lang)}
+                </h2>
+                <div className="modal-subtitle">
+                  {lang === "fr"
+                    ? "Suivi du wird quotidien, historique et réglage d’objectif."
+                    : lang === "ar"
+                      ? "متابعة الورد اليومي وسجلّه وضبط هدفه."
+                      : "Daily wird tracking, history and goal settings."}
                 </div>
               </div>
+              <button
+                className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
+                type="button"
+                onClick={close}
+                aria-label={
+                  lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
+                }
+              >
+                <X size={16} aria-hidden="true" />
+              </button>
+            </div>
 
-              {isComplete && (
-                <div className="wird-complete-badge">
-                  <i className="fas fa-check-circle"></i>
-                  {lang === "fr"
-                    ? "Objectif atteint ! Barak Allahu fik"
-                    : lang === "ar"
-                      ? "تم بلوغ الهدف، بارك الله فيك"
-                      : "Goal achieved! Barak Allahu feek"}
+            <div
+              className="modal-segmented !mx-3 !mt-3 !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-1 sm:!mx-4"
+              role="tablist"
+              aria-label={t("wird.title", lang)}
+            >
+              <button
+                className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "today" ? "active !bg-sky-500/25 !text-white" : ""}`}
+                onClick={() => setTab("today")}
+              >
+                <CalendarDays size={14} aria-hidden="true" />{" "}
+                {t("wird.today", lang)}
+              </button>
+              <button
+                className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "history" ? "active !bg-sky-500/25 !text-white" : ""}`}
+                onClick={() => setTab("history")}
+              >
+                <TrendingUp size={14} aria-hidden="true" />{" "}
+                {t("wird.history", lang)}
+              </button>
+              <button
+                className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "streak" ? "active !bg-sky-500/25 !text-white" : ""}`}
+                onClick={() => setTab("streak")}
+              >
+                <Flame size={14} aria-hidden="true" />{" "}
+                {lang === "fr" ? "Série" : lang === "ar" ? "سلسلة" : "Streak"}
+              </button>
+              <button
+                className={`modal-segmented-btn !rounded-xl !px-3 !py-2 !text-sm !transition-all hover:!bg-white/[0.08] ${tab === "settings" ? "active !bg-sky-500/25 !text-white" : ""}`}
+                onClick={() => setTab("settings")}
+              >
+                <SlidersHorizontal size={14} aria-hidden="true" />{" "}
+                {t("wird.goal", lang)}
+              </button>
+            </div>
+
+            <div className="wird-summary-bar !mx-3 !mt-2 !flex !flex-wrap !gap-2 sm:!mx-4">
+              <span className="wird-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
+                <Target size={12} aria-hidden="true" />
+                {goalTarget} {goalLabel}
+              </span>
+              <span className="wird-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !border-white/14 !bg-white/[0.05] !px-2.5 !py-1 !text-xs">
+                <BarChart2 size={12} aria-hidden="true" />
+                {progressValue} / {goalTarget}
+              </span>
+              <span
+                className={`wird-summary-pill !inline-flex !items-center !gap-1.5 !rounded-full !border !px-2.5 !py-1 !text-xs ${isComplete ? "is-complete !border-emerald-300/30 !bg-emerald-500/15" : "!border-white/14 !bg-white/[0.05]"}`}
+              >
+                {isComplete ? (
+                  <CheckCircle2 size={12} aria-hidden="true" />
+                ) : (
+                  <Timer size={12} aria-hidden="true" />
+                )}
+                {progressPct}%
+              </span>
+            </div>
+
+            <div className="panel-scroll wird-body !max-h-[62vh] !overflow-auto !px-3 !pb-3 sm:!px-4 sm:!pb-4">
+              {loading ? (
+                <div className="wird-loading">
+                  <Loader2 size={24} className="animate-spin" aria-hidden="true" />
                 </div>
-              )}
-
-              {todayWird && todayWird.entries.length > 0 && (
-                <div className="wird-entries panel-stack-list !space-y-2">
-                  <h4 className="wird-entries-title">
-                    {lang === "fr"
-                      ? "Sessions d'aujourd'hui"
-                      : lang === "ar"
-                        ? "جلسات اليوم"
-                        : "Today's Sessions"}{" "}
-                    ({todayWird.entries.length})
-                  </h4>
-                  {todayWird.entries
-                    .slice(-5)
-                    .reverse()
-                    .map((e, i) => (
-                      <div key={i} className="wird-entry modal-item-card !rounded-xl !border !border-[var(--border)] !bg-white/[0.03] !px-3 !py-2">
-                        <span className="wird-entry-surah">
-                          {lang === "ar" ? "س." : "S."}
-                          {e.surah} : {e.fromAyah}-{e.toAyah}
-                        </span>
-                        <span className="wird-entry-time">
-                          {new Date(e.timestamp).toLocaleTimeString(lang, {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+              ) : tab === "today" ? (
+                <div className="wird-today !space-y-3">
+                  <div className="wird-progress-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-4">
+                    <div className="wird-progress-wrapper">
+                      <svg viewBox="0 0 120 120" className="wird-progress-svg">
+                        <circle
+                          cx="60"
+                          cy="60"
+                          r="52"
+                          fill="none"
+                          stroke="var(--border)"
+                          strokeWidth="8"
+                        />
+                        <circle
+                          cx="60"
+                          cy="60"
+                          r="52"
+                          fill="none"
+                          stroke={isComplete ? "var(--primary)" : "var(--gold)"}
+                          strokeWidth="8"
+                          strokeLinecap="round"
+                          strokeDasharray={`${2 * Math.PI * 52}`}
+                          strokeDashoffset={`${2 * Math.PI * 52 * (1 - progressPct / 100)}`}
+                          transform="rotate(-90 60 60)"
+                          style={{ transition: "stroke-dashoffset 0.5s ease" }}
+                        />
+                      </svg>
+                      <div className="wird-progress-text">
+                        <span className="wird-pct">{progressPct}%</span>
+                        <span className="wird-detail">
+                          {progressValue} / {goalTarget} {goalLabel}
                         </span>
                       </div>
-                    ))}
-                </div>
-              )}
+                    </div>
 
-              {todayWird && todayWird.entries.length > 0 && (
-                <button className="wird-reset-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-red-300/20 !bg-red-500/10 !px-3.5 !py-2.5 !text-red-100 hover:!bg-red-500/20" onClick={handleReset}>
-                  <i className="fas fa-redo"></i>{" "}
-                  {lang === "fr"
-                    ? "Réinitialiser"
-                    : lang === "ar"
-                      ? "إعادة الضبط"
-                      : "Reset"}
-                </button>
-              )}
-
-              {(!todayWird || todayWird.entries.length === 0) && (
-                <div className="modal-empty wird-empty">
-                  {lang === "fr"
-                    ? "Aucune lecture enregistrée aujourd'hui. Commencez à lire le Coran pour suivre votre progression !"
-                    : lang === "ar"
-                      ? "لا توجد قراءة مسجلة اليوم. ابدأ القراءة لتتبّع تقدّمك."
-                      : "No reading logged today. Start reading the Quran to track your progress!"}
-                </div>
-              )}
-            </div>
-          ) : tab === "history" ? (
-            <div className="wird-history">
-              {history.length === 0 ? (
-                <div className="modal-empty wird-empty">
-                  {lang === "fr"
-                    ? "Aucun historique de wird."
-                    : lang === "ar"
-                      ? "لا يوجد سجل للورد."
-                      : "No wird history."}
-                </div>
-              ) : (
-                <>
-                  <Sparkline
-                    data={history.map((d) => ({
-                      date: d.date,
-                      val: wirdGoalType === "pages" ? d.pagesRead : d.ayahsRead,
-                    }))}
-                    goalTarget={goalTarget}
-                    lang={lang}
-                  />
-                  <div className="wird-calendar">
-                    {history.map((day) => {
-                      const dayProgress =
-                        wirdGoalType === "pages"
-                          ? day.pagesRead
-                          : day.ayahsRead;
-                      const dayPct = Math.min(
-                        100,
-                        Math.round((dayProgress / goalTarget) * 100),
-                      );
-                      return (
-                        <div
-                          key={day.date}
-                          className={`wird-day modal-item-card ${dayPct >= 100 ? "complete" : dayPct > 0 ? "partial" : ""}`}
-                        >
-                          <span className="wird-day-date">
-                            {new Date(day.date + "T00:00").toLocaleDateString(
-                              lang,
-                              {
-                                weekday: "short",
-                                day: "numeric",
-                                month: "short",
-                              },
-                            )}
-                          </span>
-                          <div className="wird-day-bar">
-                            <div
-                              className="wird-day-fill"
-                              style={{ width: `${dayPct}%` }}
-                            ></div>
-                          </div>
-                          <span className="wird-day-stat">
-                            {dayProgress}/{goalTarget}
-                          </span>
-                        </div>
-                      );
-                    })}
+                    <div className="wird-progress-copy">
+                      <span className="wird-progress-kicker">
+                        {lang === "fr"
+                          ? "Lecture du jour"
+                          : lang === "ar"
+                            ? "ورد اليوم"
+                            : "Today"}
+                      </span>
+                      <h3 className="wird-progress-title">
+                        {isComplete
+                          ? lang === "fr"
+                            ? "Objectif atteint"
+                            : lang === "ar"
+                              ? "تم بلوغ الهدف"
+                              : "Goal reached"
+                          : lang === "fr"
+                            ? "Continuez votre wird"
+                            : lang === "ar"
+                              ? "واصل وردك"
+                              : "Keep your wird moving"}
+                      </h3>
+                      <p className="wird-progress-copytext">
+                        {lang === "fr"
+                          ? "Le suivi reste visible dans un format plus clair pour voir immédiatement votre cadence quotidienne."
+                          : lang === "ar"
+                            ? "تم تبسيط العرض حتى ترى تقدّمك اليومي بسرعة ووضوح."
+                            : "The layout highlights your daily pace more clearly so progress is readable at a glance."}
+                      </p>
+                    </div>
                   </div>
-                </>
+
+                  {isComplete && (
+                    <div className="wird-complete-badge">
+                      <CheckCircle2 size={16} aria-hidden="true" />
+                      {lang === "fr"
+                        ? "Objectif atteint ! Barak Allahu fik"
+                        : lang === "ar"
+                          ? "تم بلوغ الهدف، بارك الله فيك"
+                          : "Goal achieved! Barak Allahu feek"}
+                    </div>
+                  )}
+
+                  {todayWird && todayWird.entries.length > 0 && (
+                    <div className="wird-entries panel-stack-list !space-y-2">
+                      <h4 className="wird-entries-title">
+                        {lang === "fr"
+                          ? "Sessions d'aujourd'hui"
+                          : lang === "ar"
+                            ? "جلسات اليوم"
+                            : "Today's Sessions"}{" "}
+                        ({todayWird.entries.length})
+                      </h4>
+                      {todayWird.entries
+                        .slice(-5)
+                        .reverse()
+                        .map((e) => (
+                          <div
+                            key={e.timestamp}
+                            className="wird-entry modal-item-card !rounded-xl !border !border-[var(--border)] !bg-white/[0.03] !px-3 !py-2"
+                          >
+                            <span className="wird-entry-surah">
+                              {lang === "ar" ? "س." : "S."}
+                              {e.surah} : {e.fromAyah}-{e.toAyah}
+                            </span>
+                            <span className="wird-entry-time">
+                              {new Date(e.timestamp).toLocaleTimeString(lang, {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+
+                  {todayWird && todayWird.entries.length > 0 && (
+                    <button
+                      className="wird-reset-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-red-300/20 !bg-red-500/10 !px-3.5 !py-2.5 !text-red-100 hover:!bg-red-500/20"
+                      onClick={handleReset}
+                    >
+                      <RotateCcw size={16} aria-hidden="true" />{" "}
+                      {lang === "fr"
+                        ? "Réinitialiser"
+                        : lang === "ar"
+                          ? "إعادة الضبط"
+                          : "Reset"}
+                    </button>
+                  )}
+
+                  {(!todayWird || todayWird.entries.length === 0) && (
+                    <div className="modal-empty wird-empty">
+                      {lang === "fr"
+                        ? "Aucune lecture enregistrée aujourd'hui. Commencez à lire le Coran pour suivre votre progression !"
+                        : lang === "ar"
+                          ? "لا توجد قراءة مسجلة اليوم. ابدأ القراءة لتتبّع تقدّمك."
+                          : "No reading logged today. Start reading the Quran to track your progress!"}
+                    </div>
+                  )}
+                </div>
+              ) : tab === "history" ? (
+                <div className="wird-history">
+                  {history.length === 0 ? (
+                    <div className="modal-empty wird-empty">
+                      {lang === "fr"
+                        ? "Aucun historique de wird."
+                        : lang === "ar"
+                          ? "لا يوجد سجل للورد."
+                          : "No wird history."}
+                    </div>
+                  ) : (
+                    <>
+                      <Sparkline
+                        data={history.map((d) => ({
+                          date: d.date,
+                          val:
+                            wirdGoalType === "pages"
+                              ? d.pagesRead
+                              : d.ayahsRead,
+                        }))}
+                        goalTarget={goalTarget}
+                        lang={lang}
+                      />
+                      <div className="wird-calendar">
+                        {history.map((day) => {
+                          const dayProgress =
+                            wirdGoalType === "pages"
+                              ? day.pagesRead
+                              : day.ayahsRead;
+                          const dayPct = Math.min(
+                            100,
+                            Math.round((dayProgress / goalTarget) * 100),
+                          );
+                          return (
+                            <div
+                              key={day.date}
+                              className={`wird-day modal-item-card ${dayPct >= 100 ? "complete" : dayPct > 0 ? "partial" : ""}`}
+                            >
+                              <span className="wird-day-date">
+                                {new Date(
+                                  day.date + "T00:00",
+                                ).toLocaleDateString(lang, {
+                                  weekday: "short",
+                                  day: "numeric",
+                                  month: "short",
+                                })}
+                              </span>
+                              <div className="wird-day-bar">
+                                <div
+                                  className="wird-day-fill"
+                                  style={{ width: `${dayPct}%` }}
+                                ></div>
+                              </div>
+                              <span className="wird-day-stat">
+                                {dayProgress}/{goalTarget}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : tab === "streak" ? (
+                /* Streak tab — GitHub-style heatmap */
+                <StreakHeatmap
+                  history={history}
+                  goalTarget={goalTarget}
+                  wirdGoalType={wirdGoalType}
+                  lang={lang}
+                />
+              ) : (
+                /* Settings tab */
+                <div className="wird-settings !space-y-3">
+                  <div className="wird-setting-group settings-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-3">
+                    <label className="wird-setting-label">
+                      {lang === "fr"
+                        ? "Type d'objectif"
+                        : lang === "ar"
+                          ? "نوع الهدف"
+                          : "Goal type"}
+                    </label>
+                    <div className="wird-setting-options">
+                      {GOAL_TYPES.map((gt) => (
+                        <button
+                          key={gt.id}
+                          className={`chip ${wirdGoalType === gt.id ? "active" : ""}`}
+                          onClick={() => set({ wirdGoalType: gt.id })}
+                        >
+                          {gt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="wird-setting-group settings-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-3">
+                    <label className="wird-setting-label">
+                      {lang === "fr"
+                        ? "Quantité par jour"
+                        : lang === "ar"
+                          ? "الكمية اليومية"
+                          : "Amount per day"}
+                      : {wirdGoalAmount} {goalLabel}
+                    </label>
+                    <input
+                      type="range"
+                      min={1}
+                      max={
+                        wirdGoalType === "juz"
+                          ? 10
+                          : wirdGoalType === "hizb"
+                            ? 20
+                            : 30
+                      }
+                      value={wirdGoalAmount}
+                      onChange={(e) =>
+                        set({ wirdGoalAmount: parseInt(e.target.value) || 1 })
+                      }
+                      className="wird-range"
+                    />
+                  </div>
+
+                  <div className="wird-info settings-info-note">
+                    <Info size={14} aria-hidden="true" />
+                    <p>
+                      {lang === "fr"
+                        ? "La progression se met à jour automatiquement quand vous lisez le Coran dans l'application."
+                        : lang === "ar"
+                          ? "يتم تحديث التقدّم تلقائيًا أثناء القراءة داخل التطبيق."
+                          : "Progress updates automatically as you read the Quran in the app."}
+                    </p>
+                  </div>
+                </div>
               )}
             </div>
-          ) : tab === "streak" ? (
-            /* Streak tab — GitHub-style heatmap */
-            <StreakHeatmap
-              history={history}
-              goalTarget={goalTarget}
-              wirdGoalType={wirdGoalType}
-              lang={lang}
-            />
-          ) : (
-            /* Settings tab */
-            <div className="wird-settings !space-y-3">
-              <div className="wird-setting-group settings-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-3">
-                <label className="wird-setting-label">
-                  {lang === "fr"
-                    ? "Type d'objectif"
-                    : lang === "ar"
-                      ? "نوع الهدف"
-                      : "Goal type"}
-                </label>
-                <div className="wird-setting-options">
-                  {GOAL_TYPES.map((gt) => (
-                    <button
-                      key={gt.id}
-                      className={`chip ${wirdGoalType === gt.id ? "active" : ""}`}
-                      onClick={() => set({ wirdGoalType: gt.id })}
-                    >
-                      {gt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="wird-setting-group settings-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-3">
-                <label className="wird-setting-label">
-                  {lang === "fr"
-                    ? "Quantité par jour"
-                    : lang === "ar"
-                      ? "الكمية اليومية"
-                      : "Amount per day"}
-                  : {wirdGoalAmount} {goalLabel}
-                </label>
-                <input
-                  type="range"
-                  min={1}
-                  max={
-                    wirdGoalType === "juz"
-                      ? 10
-                      : wirdGoalType === "hizb"
-                        ? 20
-                        : 30
-                  }
-                  value={wirdGoalAmount}
-                  onChange={(e) =>
-                    set({ wirdGoalAmount: parseInt(e.target.value) || 1 })
-                  }
-                  className="wird-range"
-                />
-              </div>
-
-              <div className="wird-info settings-info-note">
-                <i className="fas fa-info-circle"></i>
-                <p>
-                  {lang === "fr"
-                    ? "La progression se met à jour automatiquement quand vous lisez le Coran dans l'application."
-                    : lang === "ar"
-                      ? "يتم تحديث التقدّم تلقائيًا أثناء القراءة داخل التطبيق."
-                      : "Progress updates automatically as you read the Quran in the app."}
-                </p>
-              </div>
-            </div>
-          )}
+          </Dialog.Content>
         </div>
-      </div>
-    </div>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

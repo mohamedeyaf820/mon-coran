@@ -1,3 +1,4 @@
+import { BookMarked, Layers, Star, Type } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { HOME_DEFERRED_SECTION_STYLE } from "./homeConstants";
 
@@ -9,34 +10,10 @@ import { HOME_DEFERRED_SECTION_STYLE } from "./homeConstants";
  */
 
 const STATS = [
-  {
-    num: "114",
-    icon: "fa-quran",
-    labelFr: "Sourates",
-    labelEn: "Surahs",
-    labelAr: "سور",
-  },
-  {
-    num: "30",
-    icon: "fa-layer-group",
-    labelFr: "Juz'",
-    labelEn: "Juz",
-    labelAr: "جزء",
-  },
-  {
-    num: "6 236",
-    icon: "fa-star",
-    labelFr: "Versets",
-    labelEn: "Ayahs",
-    labelAr: "آية",
-  },
-  {
-    num: "77 430",
-    icon: "fa-font",
-    labelFr: "Mots",
-    labelEn: "Words",
-    labelAr: "كلمة",
-  },
+  { num: "114", Icon: BookMarked, labelFr: "Sourates", labelEn: "Surahs", labelAr: "سور" },
+  { num: "30", Icon: Layers, labelFr: "Juz'", labelEn: "Juz", labelAr: "جزء" },
+  { num: "6 236", Icon: Star, labelFr: "Versets", labelEn: "Ayahs", labelAr: "آية" },
+  { num: "77 430", Icon: Type, labelFr: "Mots", labelEn: "Words", labelAr: "كلمة" },
 ];
 
 export default function StatsStrip({ lang }) {
@@ -77,7 +54,7 @@ export default function StatsStrip({ lang }) {
               "bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)]",
             )}
           >
-            <i className={`fas ${s.icon}`} aria-hidden="true" />
+            <s.Icon size={13} aria-hidden="true" />
           </span>
 
           {/* Nombre + libellé empilés */}

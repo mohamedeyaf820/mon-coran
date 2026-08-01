@@ -1,0 +1,12 @@
+{
+  "brandName": "MushafPlus",
+  "siteUrl": "https://frolicking-kleicha-76adae.netlify.app",
+  "defaultLocale": "fr",
+  "supportedLocales": ["fr", "en", "ar"],
+  "seoLastModified": "2026-08-01",
+  "repositoryUrl": "https://github.com/mohamedeyaf820/mon-coran",
+  "projectOwner": "Mohamed Eyaf",
+  "contactUrl": "https://github.com/mohamedeyaf820/mon-coran/issues",
+  "version": "1.1.0",
+  "lastUpdated": "2026-08-01"
+}

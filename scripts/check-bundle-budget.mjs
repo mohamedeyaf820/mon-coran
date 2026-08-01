@@ -1,96 +1,186 @@
-import { readdir, stat } from "node:fs/promises";
+import { readdir, readFile, stat } from "node:fs/promises";
+import { gzipSync } from "node:zlib";
 import path from "node:path";
 
-const DIST_ASSETS_DIR = path.resolve("dist/assets");
-const MAX_CSS_KB = Number(process.env.BUDGET_CSS_KB || 945);
-// This app deliberately ships many lazy feature chunks. Keep the aggregate JS
-// budget realistic while the stricter single-chunk and total CSS+JS budgets
-// continue to catch regressions that affect load cost.
-const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1060);
-const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 1885);
-const MAX_SINGLE_CSS_KB = Number(process.env.BUDGET_SINGLE_CSS_KB || 780);
-const MAX_SINGLE_JS_KB = Number(process.env.BUDGET_SINGLE_JS_KB || 250);
+const DIST_DIR = path.resolve("dist");
+const DIST_ASSETS_DIR = path.join(DIST_DIR, "assets");
+const MANIFEST_PATH = path.join(DIST_DIR, ".vite", "manifest.json");
+
+const LIMITS = {
+  // Responsive reader, reciter profiles and the compact player add route-only
+  // CSS. Keep a narrow baseline above the measured production bundle.
+  css: Number(process.env.BUDGET_CSS_KB || 907),
+  // Phase 7 adds one deferred personal-library chunk for offline management,
+  // portable exports, study journeys and a reference-only thematic index.
+  // Legal/SEO/PWA features add deferred chunks, while the initial route keeps
+  // its stricter ceiling below. Aggregate ceilings retain measurable headroom.
+  js: Number(process.env.BUDGET_JS_KB || 1275),
+  total: Number(process.env.BUDGET_TOTAL_KB || 2175),
+  singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
+  singleJs: Number(process.env.BUDGET_SINGLE_JS_KB || 225),
+  initialCss: Number(process.env.BUDGET_INITIAL_CSS_KB || 395),
+  initialJs: Number(process.env.BUDGET_INITIAL_JS_KB || 418),
+  initialTotal: Number(process.env.BUDGET_INITIAL_TOTAL_KB || 810),
+  initialGzip: Number(process.env.BUDGET_INITIAL_GZIP_KB || 200),
+  deferredCss: Number(process.env.BUDGET_DEFERRED_CSS_KB || 185),
+  homeCss: Number(process.env.BUDGET_HOME_CSS_KB || 58),
+  readerCss: Number(process.env.BUDGET_READER_CSS_KB || 180),
+};
+
+const kb = (bytes) => bytes / 1024;
+const formatKb = (bytes) => `${kb(bytes).toFixed(1)} kB`;
 
 async function listFiles(dir) {
   const entries = await readdir(dir);
   return entries.map((name) => path.join(dir, name));
 }
 
-async function sumByExtension(files, extension) {
-  let totalBytes = 0;
-  for (const file of files) {
-    if (!file.endsWith(extension)) continue;
-    const info = await stat(file);
-    totalBytes += info.size;
-  }
-  return totalBytes;
-}
+async function getAssetStats(files) {
+  let cssBytes = 0;
+  let jsBytes = 0;
+  let largestCss = null;
+  let largestJs = null;
 
-async function getLargestByExtension(files, extension) {
-  let largest = null;
   for (const file of files) {
-    if (!file.endsWith(extension)) continue;
+    if (!file.endsWith(".css") && !file.endsWith(".js")) continue;
     const info = await stat(file);
-    if (!largest || info.size > largest.size) {
-      largest = { file: path.basename(file), size: info.size };
+    const asset = { file: path.basename(file), size: info.size };
+    if (file.endsWith(".css")) {
+      cssBytes += info.size;
+      if (!largestCss || info.size > largestCss.size) largestCss = asset;
+    } else {
+      jsBytes += info.size;
+      if (!largestJs || info.size > largestJs.size) largestJs = asset;
     }
   }
-  return largest;
+
+  return { cssBytes, jsBytes, largestCss, largestJs };
 }
 
-let files = [];
+function collectStaticEntryFiles(manifest, entryKey) {
+  const visited = new Set();
+  const files = new Set();
+
+  function visit(key) {
+    if (visited.has(key)) return;
+    const entry = manifest[key];
+    if (!entry) return;
+    visited.add(key);
+    if (entry.file) files.add(entry.file);
+    for (const cssFile of entry.css || []) files.add(cssFile);
+    for (const importedKey of entry.imports || []) visit(importedKey);
+  }
+
+  visit(entryKey);
+  return files;
+}
+
+async function measureManifestFiles(relativeFiles) {
+  let cssBytes = 0;
+  let jsBytes = 0;
+  let gzipBytes = 0;
+
+  for (const relativeFile of relativeFiles) {
+    const content = await readFile(path.join(DIST_DIR, relativeFile));
+    if (relativeFile.endsWith(".css")) cssBytes += content.length;
+    if (relativeFile.endsWith(".js")) jsBytes += content.length;
+    if (relativeFile.endsWith(".css") || relativeFile.endsWith(".js")) {
+      gzipBytes += gzipSync(content).length;
+    }
+  }
+
+  return { cssBytes, jsBytes, gzipBytes, totalBytes: cssBytes + jsBytes };
+}
+
+async function measureEntryCss(manifest, entryKey) {
+  const entry = manifest[entryKey];
+  if (!entry) return null;
+  const cssFiles = new Set(entry.css || []);
+  if (entry.file?.endsWith(".css")) cssFiles.add(entry.file);
+  const measurement = await measureManifestFiles(cssFiles);
+  return measurement.cssBytes;
+}
+
+let files;
+let manifest;
 try {
-  files = await listFiles(DIST_ASSETS_DIR);
+  [files, manifest] = await Promise.all([
+    listFiles(DIST_ASSETS_DIR),
+    readFile(MANIFEST_PATH, "utf8").then(JSON.parse),
+  ]);
 } catch (error) {
-  console.error(`[budget] Unable to read ${DIST_ASSETS_DIR}. Run npm run build first.`);
+  console.error("[budget] Build assets or Vite manifest are missing. Run npm run build first.");
   console.error(`[budget] ${error?.message || error}`);
   process.exit(1);
 }
 
-const cssBytes = await sumByExtension(files, ".css");
-const jsBytes = await sumByExtension(files, ".js");
-const largestCss = await getLargestByExtension(files, ".css");
-const largestJs = await getLargestByExtension(files, ".js");
+const entryKey = manifest["index.html"]
+  ? "index.html"
+  : Object.keys(manifest).find((key) => manifest[key]?.isEntry);
+if (!entryKey) {
+  console.error("[budget] Unable to locate the application entry in the Vite manifest.");
+  process.exit(1);
+}
 
-const cssKb = cssBytes / 1024;
-const jsKb = jsBytes / 1024;
-const totalKb = cssKb + jsKb;
-const largestCssKb = (largestCss?.size || 0) / 1024;
-const largestJsKb = (largestJs?.size || 0) / 1024;
+const aggregate = await getAssetStats(files);
+const initial = await measureManifestFiles(
+  collectStaticEntryFiles(manifest, entryKey),
+);
+const routeCss = {
+  deferred: await measureEntryCss(manifest, "src/styles/deferredStyles.js"),
+  home: await measureEntryCss(manifest, "src/components/HomePage.jsx"),
+  reader: await measureEntryCss(manifest, "src/components/QuranDisplay.jsx"),
+};
 
-console.log(`[budget] CSS total: ${cssKb.toFixed(1)} kB (limit ${MAX_CSS_KB} kB)`);
-console.log(`[budget] JS total: ${jsKb.toFixed(1)} kB (limit ${MAX_JS_KB} kB)`);
-console.log(`[budget] CSS+JS total: ${totalKb.toFixed(1)} kB (limit ${MAX_TOTAL_KB} kB)`);
-if (largestCss) {
+const aggregateTotal = aggregate.cssBytes + aggregate.jsBytes;
+console.log(`[budget] Aggregate CSS: ${formatKb(aggregate.cssBytes)} (limit ${LIMITS.css} kB)`);
+console.log(`[budget] Aggregate JS: ${formatKb(aggregate.jsBytes)} (limit ${LIMITS.js} kB)`);
+console.log(`[budget] Aggregate CSS+JS: ${formatKb(aggregateTotal)} (limit ${LIMITS.total} kB)`);
+console.log(
+  `[budget] Initial entry: ${formatKb(initial.totalBytes)} ` +
+    `(JS ${formatKb(initial.jsBytes)}, CSS ${formatKb(initial.cssBytes)}, gzip ${formatKb(initial.gzipBytes)})`,
+);
+if (aggregate.largestCss) {
   console.log(
-    `[budget] Largest CSS asset: ${largestCss.file} (${largestCssKb.toFixed(1)} kB, limit ${MAX_SINGLE_CSS_KB} kB)`,
+    `[budget] Largest CSS: ${aggregate.largestCss.file} ` +
+      `(${formatKb(aggregate.largestCss.size)}, limit ${LIMITS.singleCss} kB)`,
   );
 }
-if (largestJs) {
+if (aggregate.largestJs) {
   console.log(
-    `[budget] Largest JS asset: ${largestJs.file} (${largestJsKb.toFixed(1)} kB, limit ${MAX_SINGLE_JS_KB} kB)`,
+    `[budget] Largest JS: ${aggregate.largestJs.file} ` +
+      `(${formatKb(aggregate.largestJs.size)}, limit ${LIMITS.singleJs} kB)`,
   );
+}
+for (const [name, bytes] of Object.entries(routeCss)) {
+  if (bytes === null) continue;
+  const limit = LIMITS[`${name}Css`];
+  console.log(`[budget] ${name} CSS: ${formatKb(bytes)} (limit ${limit} kB)`);
 }
 
 const failures = [];
-if (cssKb > MAX_CSS_KB) failures.push(`CSS budget exceeded by ${(cssKb - MAX_CSS_KB).toFixed(1)} kB`);
-if (jsKb > MAX_JS_KB) failures.push(`JS budget exceeded by ${(jsKb - MAX_JS_KB).toFixed(1)} kB`);
-if (totalKb > MAX_TOTAL_KB) failures.push(`CSS+JS budget exceeded by ${(totalKb - MAX_TOTAL_KB).toFixed(1)} kB`);
-if (largestCss && largestCssKb > MAX_SINGLE_CSS_KB) {
-  failures.push(
-    `Largest CSS asset (${largestCss.file}) exceeded by ${(largestCssKb - MAX_SINGLE_CSS_KB).toFixed(1)} kB`,
-  );
-}
-if (largestJs && largestJsKb > MAX_SINGLE_JS_KB) {
-  failures.push(
-    `Largest JS asset (${largestJs.file}) exceeded by ${(largestJsKb - MAX_SINGLE_JS_KB).toFixed(1)} kB`,
-  );
+function assertLimit(label, bytes, limitKb) {
+  const actualKb = kb(bytes);
+  if (actualKb > limitKb) {
+    failures.push(`${label} exceeded by ${(actualKb - limitKb).toFixed(1)} kB`);
+  }
 }
 
+assertLimit("Aggregate CSS", aggregate.cssBytes, LIMITS.css);
+assertLimit("Aggregate JS", aggregate.jsBytes, LIMITS.js);
+assertLimit("Aggregate CSS+JS", aggregateTotal, LIMITS.total);
+assertLimit("Largest CSS asset", aggregate.largestCss?.size || 0, LIMITS.singleCss);
+assertLimit("Largest JS asset", aggregate.largestJs?.size || 0, LIMITS.singleJs);
+assertLimit("Initial CSS", initial.cssBytes, LIMITS.initialCss);
+assertLimit("Initial JS", initial.jsBytes, LIMITS.initialJs);
+assertLimit("Initial CSS+JS", initial.totalBytes, LIMITS.initialTotal);
+assertLimit("Initial gzip", initial.gzipBytes, LIMITS.initialGzip);
+if (routeCss.deferred !== null) assertLimit("Deferred CSS", routeCss.deferred, LIMITS.deferredCss);
+if (routeCss.home !== null) assertLimit("Home CSS", routeCss.home, LIMITS.homeCss);
+if (routeCss.reader !== null) assertLimit("Reader CSS", routeCss.reader, LIMITS.readerCss);
+
 if (failures.length > 0) {
-  for (const failure of failures) {
-    console.error(`[budget] ${failure}`);
-  }
+  for (const failure of failures) console.error(`[budget] ${failure}`);
   process.exit(1);
 }
 

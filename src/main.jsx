@@ -1,87 +1,27 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { initErrorAnalytics } from "./services/errorAnalytics.js";
+import { initPerformanceMetrics } from "./services/performanceMetrics.js";
+import { clearMushafRuntimeCaches } from "./services/runtimeCacheService.js";
 
 import App from "./App";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AppProvider } from "./context/AppContext";
+import PrivacyLockGate from "./components/PrivacyLockGate";
+// Critical CSS — must be available before first paint
 import "./styles/tailwind.css";
 import "./styles/domains/themes4.css";
-import "./styles/domains/premium-platform.css";
-import "./styles/domains/premium-plus.css";
-import "./styles/domains/mobile-all-versions.css";
-import "./styles/responsive.css";
 import "./styles/ui-polish.css";
-import "./styles/responsive-experience.css";
 import "./styles/riwaya-fonts.css";
 import "./styles/dark-mode-refonte.css";
-import "./styles/reading-ux-refonte.css";
-import "./styles/home-audio-ux-refonte.css";
-import "./styles/expert-overhaul.css";
-import "./styles/responsive-polish.css";
-import "./styles/surah-banner.css";
-import "./styles/surah-reader-header.css";
-import "./styles/sidebar-enhanced.css";
-import "./styles/settings-enhanced.css";
+import "./styles/domains/mobile-all-versions.css";
 import "./styles/header-enhanced.css";
-import "./styles/surah-info-panel.css";
-import "./styles/reciter-enhanced.css";
-
-/**
- * FontAwesome is loaded lazily (~3 MB CSS when fetched) and used by 200+ legacy
- * icon instances across the app.
- *
- * Migration plan:
- *   - Use <Icon name="..." /> from src/components/ui/icon.jsx for all new icons.
- *   - Replace <i className="fas fa-*"/> with <Icon name="*"/> as components are
- *     refactored.
- *   - Once no files reference fa-* classes, remove @fortawesome/fontawesome-free
- *     dependency and delete this block.
- *
- * To disable FontAwesome globally during migration, set:
- *   window.__DISABLE_FONTAWESOME__ = true;
- * before this script runs.
- */
-
-let fontAwesomeStylesPromise = null;
-
-function loadFontAwesomeStyles() {
-  if (typeof window !== "undefined" && window.__DISABLE_FONTAWESOME__) {
-    return null;
-  }
-  if (!fontAwesomeStylesPromise) {
-    fontAwesomeStylesPromise =
-      import("@fortawesome/fontawesome-free/css/all.min.css").catch(() => null);
-  }
-  return fontAwesomeStylesPromise;
-}
+import "./styles/device-root.css";
 
 if (typeof window !== "undefined") {
-  const warmIconStyles = () => {
-    loadFontAwesomeStyles();
-  };
-
-  const onFirstInteraction = () => {
-    loadFontAwesomeStyles();
-    window.removeEventListener("pointerdown", onFirstInteraction);
-    window.removeEventListener("keydown", onFirstInteraction);
-    window.removeEventListener("touchstart", onFirstInteraction);
-  };
-
-  window.addEventListener("pointerdown", onFirstInteraction, {
-    passive: true,
-    once: true,
-  });
-  window.addEventListener("keydown", onFirstInteraction, { once: true });
-  window.addEventListener("touchstart", onFirstInteraction, {
-    passive: true,
-    once: true,
-  });
-
-  if (typeof window.requestIdleCallback === "function") {
-    window.requestIdleCallback(warmIconStyles, { timeout: 1200 });
-  } else {
-    window.setTimeout(warmIconStyles, 700);
-  }
+  // Start the ordered polish layer in parallel with the application chunks.
+  // Loading it after an idle delay caused late restyling and large layout shifts.
+  import("./styles/deferredStyles.js").catch(() => null);
 }
 
 const CHUNK_RELOAD_KEY = "mushaf-plus:chunk-reload-once";
@@ -115,30 +55,7 @@ function tryRecoverFromChunkLoad(errorLike) {
   }
 
   if (!alreadyReloaded) {
-    Promise.all([
-      "serviceWorker" in navigator
-        ? navigator.serviceWorker
-            .getRegistrations()
-            .then((registrations) =>
-              Promise.all(
-                registrations.map((registration) => registration.unregister()),
-              ),
-            )
-            .catch(() => null)
-        : Promise.resolve(null),
-      "caches" in window
-        ? caches
-            .keys()
-            .then((keys) =>
-              Promise.all(
-                keys
-                  .filter((key) => key.startsWith("mushaf-plus"))
-                  .map((key) => caches.delete(key)),
-              ),
-            )
-            .catch(() => null)
-        : Promise.resolve(null),
-    ]).finally(() => {
+    clearMushafRuntimeCaches().finally(() => {
       window.location.reload();
     });
   }
@@ -167,22 +84,38 @@ if (!rootElement) {
   console.error(
     "[Main] Root element not found - cannot mount React application",
   );
-  document.body.innerHTML = `
-    <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
-      <h1 style="color: #ef4444; margin-bottom: 1rem;">Erreur de chargement</h1>
-      <p>L'application n'a pas pu démarrer. Veuillez recharger la page.</p>
-      <button onclick="location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; cursor: pointer;">
-        Recharger
-      </button>
-    </div>
-  `;
+  const fallback = document.createElement("div");
+  fallback.style.cssText =
+    "padding:2rem;text-align:center;font-family:system-ui,sans-serif;";
+
+  const title = document.createElement("h1");
+  title.style.cssText = "color:#ef4444;margin-bottom:1rem;";
+  title.textContent = "Erreur de chargement";
+
+  const message = document.createElement("p");
+  message.textContent =
+    "L'application n'a pas pu démarrer. Veuillez recharger la page.";
+
+  const reloadButton = document.createElement("button");
+  reloadButton.type = "button";
+  reloadButton.style.cssText =
+    "margin-top:1rem;padding:0.5rem 1rem;cursor:pointer;";
+  reloadButton.textContent = "Recharger";
+  reloadButton.addEventListener("click", () => window.location.reload());
+
+  fallback.append(title, message, reloadButton);
+  document.body.replaceChildren(fallback);
 } else {
+  initErrorAnalytics();
+  initPerformanceMetrics();
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <ErrorBoundary>
-        <AppProvider>
-          <App />
-        </AppProvider>
+        <PrivacyLockGate>
+          <AppProvider>
+            <App />
+          </AppProvider>
+        </PrivacyLockGate>
       </ErrorBoundary>
     </React.StrictMode>,
   );
@@ -201,25 +134,7 @@ if ("serviceWorker" in navigator) {
 
     // En développement: éviter les pages blanches causées par un SW obsolète
     try {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(
-        regs
-          .filter((r) => {
-            const scriptUrl = String(
-              r.active?.scriptURL || r.installing?.scriptURL || "",
-            );
-            return scriptUrl.includes("/sw.js") || scriptUrl.includes("mushaf");
-          })
-          .map((r) => r.unregister()),
-      );
-      if ("caches" in window) {
-        const keys = await caches.keys();
-        await Promise.all(
-          keys
-            .filter((k) => k.startsWith("mushaf-plus"))
-            .map((k) => caches.delete(k)),
-        );
-      }
+      await clearMushafRuntimeCaches();
       if (import.meta.env.DEV)
         console.log("SW désactivé/nettoyé en mode développement");
     } catch (err) {

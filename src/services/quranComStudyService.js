@@ -4,6 +4,7 @@
  */
 
 const BASE_URL = "https://api.quran.com/api/v4";
+const TAFSIR_CACHE_PREFIX = "mushafplus:tafsir:v2:";
 
 export const TAFSIR_RESOURCES = {
   "ar-muyassar": {
@@ -66,6 +67,12 @@ export const TAFSIR_RESOURCES = {
     nameFr: "Tafsir Al-Saadi",
     lang: "ar",
   },
+  "fr-mukhtasar": {
+    id: 816,
+    name: "Al-Mukhtasar (French)",
+    nameFr: "Al-Mukhtasar (français)",
+    lang: "fr",
+  },
 };
 
 function normalizeText(text) {
@@ -86,6 +93,31 @@ function htmlToText(html) {
   return normalizeText(String(html).replace(/<[^>]+>/g, " "));
 }
 
+function readCachedTafsir(resourceId, verseKey) {
+  if (typeof localStorage === "undefined") return "";
+  try {
+    const raw = localStorage.getItem(
+      `${TAFSIR_CACHE_PREFIX}${resourceId}:${verseKey}`,
+    );
+    const cached = raw ? JSON.parse(raw) : null;
+    return typeof cached?.text === "string" ? cached.text : "";
+  } catch {
+    return "";
+  }
+}
+
+function cacheTafsir(resourceId, verseKey, text) {
+  if (typeof localStorage === "undefined" || !text) return;
+  try {
+    localStorage.setItem(
+      `${TAFSIR_CACHE_PREFIX}${resourceId}:${verseKey}`,
+      JSON.stringify({ text, savedAt: Date.now() }),
+    );
+  } catch {
+    // Storage can be disabled in private browsing; live loading still works.
+  }
+}
+
 export function getAvailableTafsirs() {
   return Object.entries(TAFSIR_RESOURCES).map(([key, data]) => ({
     ...data,
@@ -96,7 +128,7 @@ export function getAvailableTafsirs() {
 const FALLBACK_TAFSIRS_BY_LANG = {
   ar: ["ar-muyassar", "ar-kathir", "en-kathir"],
   en: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
-  fr: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
+  fr: ["fr-mukhtasar", "en-kathir", "en-maarif", "ar-muyassar"],
   wo: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
 };
 
@@ -113,9 +145,10 @@ function resolveTafsirKey(value, lang = "en") {
 }
 
 async function fetchTafsirText(resource, verseKey, signal) {
+  const encodedVerseKey = encodeURIComponent(verseKey);
   const response = await fetch(
-    `${BASE_URL}/tafsirs/${resource.id}/by_ayah/${verseKey}`,
-    { signal },
+    `${BASE_URL}/tafsirs/${resource.id}/by_ayah/${encodedVerseKey}`,
+    { signal, headers: { Accept: "application/json" } },
   );
 
   if (!response.ok) {
@@ -130,6 +163,7 @@ async function fetchTafsirText(resource, verseKey, signal) {
     throw new Error("No tafsir text found");
   }
 
+  cacheTafsir(resource.id, verseKey, text);
   return text;
 }
 
@@ -152,11 +186,17 @@ export async function getVerseTafsir({
   ].filter((key, index, list) => key && list.indexOf(key) === index);
 
   let lastError = null;
+  let cachedFallback = null;
   for (const key of candidates) {
     const resource = TAFSIR_RESOURCES[key];
     if (!resource) continue;
+    const cachedText = readCachedTafsir(resource.id, verseKey);
+    if (cachedText && !cachedFallback) {
+      cachedFallback = { key, resource, text: cachedText };
+    }
     try {
       const text = await fetchTafsirText(resource, verseKey, signal);
+      const langMismatch = resource.lang !== normalizedLang;
       return {
         source: resource.name,
         sourceFr: resource.nameFr,
@@ -164,9 +204,9 @@ export async function getVerseTafsir({
         text,
         tafsirId: key,
         note:
-          normalizedLang === "fr"
+          normalizedLang === "fr" && langMismatch
             ? "Aucun tafsir français vérifié n'est disponible dans Quran.com pour cette source. Le commentaire est affiché dans sa langue d'origine."
-            : normalizedLang === "wo"
+            : normalizedLang === "wo" && langMismatch
               ? "Aucun tafsir wolof vérifié n'est disponible dans Quran.com pour cette source. Le commentaire est affiché dans sa langue d'origine."
               : null,
       };
@@ -174,6 +214,21 @@ export async function getVerseTafsir({
       if (error?.name === "AbortError") throw error;
       lastError = error;
     }
+  }
+
+  if (cachedFallback) {
+    return {
+      source: cachedFallback.resource.name,
+      sourceFr: cachedFallback.resource.nameFr,
+      language: cachedFallback.resource.lang,
+      text: cachedFallback.text,
+      tafsirId: cachedFallback.key,
+      cached: true,
+      note:
+        normalizedLang === "fr" && cachedFallback.resource.lang !== "fr"
+          ? "Le commentaire conserv\u00e9 hors connexion est affich\u00e9 dans sa langue d'origine."
+          : null,
+    };
   }
 
   throw lastError || new Error("No tafsir text found");

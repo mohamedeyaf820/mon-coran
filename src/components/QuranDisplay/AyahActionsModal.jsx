@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { X } from "lucide-react";
 import AyahActions from "../AyahActions";
 import { cn } from "../../lib/utils";
+import { useAppLocale } from "../../context/AppContext";
+import { t } from "../../i18n";
+
+const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 export default function AyahActionsModal({
   activeAyah,
@@ -9,6 +14,40 @@ export default function AyahActionsModal({
   ayahData,
   quietBackdrop = false,
 }) {
+  const { lang } = useAppLocale();
+  const dialogRef = useRef(null);
+  const titleId = `aam-title-${activeAyah}`;
+
+  // Focus trap + Escape
+  useEffect(() => {
+    if (!activeAyah) return;
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const prevFocus = document.activeElement;
+    const firstFocusable = dialog.querySelector(FOCUSABLE);
+    firstFocusable?.focus();
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") { onClose(); return; }
+      if (e.key !== "Tab") return;
+      const focusables = [...dialog.querySelectorAll(FOCUSABLE)];
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey ? document.activeElement === first : document.activeElement === last) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      prevFocus?.focus();
+    };
+  }, [activeAyah, onClose]);
+
   if (!activeAyah) return null;
 
   return (
@@ -22,8 +61,10 @@ export default function AyahActionsModal({
       onClick={onClose}
       role="dialog"
       aria-modal="true"
+      aria-labelledby={titleId}
     >
       <div
+        ref={dialogRef}
         className={cn(
           "w-full max-w-lg rounded-2xl",
           "bg-[var(--bg-card)] border border-[var(--border)]",
@@ -35,16 +76,19 @@ export default function AyahActionsModal({
       >
         {/* En-tête */}
         <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
-          <span className="font-[var(--font-ui)] text-sm font-semibold text-[var(--text-secondary)]">
+          <span
+            id={titleId}
+            className="font-[var(--font-ui)] text-sm font-semibold text-[var(--text-secondary)]"
+          >
             {surah}:{ayahData?.numberInSurah ?? activeAyah}
           </span>
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)] transition-colors"
-            aria-label="Fermer"
+            className="w-11 h-11 flex items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)] transition-colors"
+            aria-label={t("audio.close", lang)}
           >
-            <i className="fas fa-times text-sm" />
+            <X size={16} />
           </button>
         </div>
 

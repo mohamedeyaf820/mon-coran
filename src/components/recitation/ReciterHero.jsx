@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import ReciterTypeBadge from "./ReciterTypeBadge";
-import { getReciterVisual } from "../../data/reciters";
+import {
+  getReciterCountryLabel,
+  getReciterSourceInfo,
+  getReciterVisual,
+} from "../../data/reciters";
 
 function label(reciter, lang) {
   if (lang === "ar") return reciter.name;
@@ -13,64 +17,55 @@ export default function ReciterHero({ reciter, lang }) {
   const [imgError, setImgError] = useState(false);
   const showPhoto = visual.photo && !imgError;
   const avatar = visual.avatar;
-  const sourceLabel =
-    reciter.source === "mp3quran"
-      ? "MP3Quran"
-      : reciter.source === "everyayah"
-        ? "EveryAyah"
-        : reciter.cdnType || "";
+  const countryLabel = getReciterCountryLabel(reciter, lang);
+  const sourceInfo = getReciterSourceInfo(reciter);
 
   return (
-    <div className="reciter-hero flex min-w-0 items-start gap-3 py-1 sm:items-center sm:gap-4">
-      <div className="relative shrink-0">
-        {/* Ambient glow behind avatar */}
-        <div className="absolute inset-0 rounded-full bg-[var(--primary)] opacity-[0.12] blur-xl scale-125 pointer-events-none" aria-hidden="true" />
-        
+    <div className="reciter-hero flex min-w-0 items-center gap-3.5">
+      <div className="reciter-hero__portrait relative shrink-0">
+        <div
+          className={`reciter-hero__avatar--fallback flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-white sm:h-20 sm:w-20${showPhoto ? " reciter-hero__avatar--bg" : " reciter-hero__avatar"}`}
+          style={{ background: avatar.gradient }}
+          aria-hidden="true"
+        >
+          <span className="text-lg font-black sm:text-xl">{avatar.initials}</span>
+        </div>
         {showPhoto ? (
           <img
             src={visual.photo}
-            alt={label(reciter, lang)}
-            className="reciter-hero__avatar relative h-14 w-14 rounded-full border-2 border-[var(--primary)] object-cover shadow-[0_4px_16px_rgba(var(--primary-rgb),0.2)] transition-transform duration-300 hover:scale-105 sm:h-[72px] sm:w-[72px]"
+            alt=""
+            className="reciter-hero__avatar absolute inset-0 h-16 w-16 rounded-full border-2 border-primary/20 object-cover sm:h-20 sm:w-20"
             onError={() => setImgError(true)}
-            loading="lazy"
+            loading="eager"
             decoding="async"
+            fetchPriority="high"
             referrerPolicy="no-referrer"
-            sizes="(max-width: 640px) 56px, 72px"
           />
-        ) : (
-          <div
-            className="reciter-hero__avatar reciter-hero__avatar--fallback relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-white border-2 border-white/50 shadow-[0_4px_16px_rgba(var(--primary-rgb),0.15)] sm:h-[72px] sm:w-[72px]"
-            style={{ backgroundColor: avatar.color }}
-            aria-hidden="true"
-          >
-            <span className="text-base font-black tracking-normal sm:text-lg">{avatar.initials}</span>
-          </div>
-        )}
+        ) : null}
       </div>
+
       <div className="reciter-hero__copy min-w-0 flex-1">
-        <h3 id="reciter-modal-title" className="reciter-hero__name text-base sm:text-xl font-bold text-text-primary leading-tight break-words">
+        <h3
+          id="reciter-modal-title"
+          className="reciter-hero__name text-lg font-bold text-text-primary leading-tight sm:text-xl"
+        >
           {label(reciter, lang)}
         </h3>
-        <div className="reciter-hero__meta mt-2 flex max-w-full flex-wrap items-center gap-1.5 sm:gap-2">
+        <div className="reciter-hero__meta mt-1.5 flex flex-wrap items-center gap-1.5">
           <ReciterTypeBadge style={reciter.style} />
-          {reciter.cdnType === "mp3quran-surah" && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 border border-amber-500/25 px-2.5 py-0.5 text-[0.68rem] font-bold text-amber-600 dark:text-amber-400">
-              <i className="fas fa-bolt text-[0.6rem]" />HD
-            </span>
-          )}
           {reciter.verifiedWarsh && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-0.5 text-[0.68rem] font-bold text-emerald-600 dark:text-emerald-400">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[0.65rem] font-bold text-emerald-600 dark:text-emerald-400">
               Warsh
             </span>
           )}
-          {reciter.country && (
-            <span className="inline-flex items-center rounded-full bg-[rgba(var(--primary-rgb),0.08)] border border-[rgba(var(--primary-rgb),0.14)] px-2.5 py-0.5 text-[0.68rem] font-bold text-[var(--text-muted)]">
-              {reciter.country}
+          {countryLabel && (
+            <span className="inline-flex items-center rounded-full bg-bg-secondary px-2 py-0.5 text-[0.65rem] font-medium text-text-muted">
+              {countryLabel}
             </span>
           )}
-          {sourceLabel && (
-            <span className="inline-flex items-center rounded-full bg-[rgba(var(--primary-rgb),0.05)] border border-border px-2.5 py-0.5 text-[0.68rem] font-bold text-[var(--text-muted)]">
-              {sourceLabel}
+          {sourceInfo && (
+            <span className="reciter-hero__source inline-flex items-center rounded-full px-2 py-0.5 text-[0.65rem] font-bold">
+              {sourceInfo.label}
             </span>
           )}
         </div>
