@@ -1,10 +1,11 @@
 import React from "react";
+import { getSurahLigature } from "../../data/surahs";
 
 export function CleanPageSurahHeader({ lang, surahMeta }) {
   const title = lang === "en" ? surahMeta?.en : surahMeta?.fr || surahMeta?.en;
   const displayName = title || surahMeta?.en || "";
   const surahNum = surahMeta?.n || surahMeta?.id || surahMeta?.number;
-  const surahLigature = surahNum ? String(surahNum).padStart(3, "0") : "";
+  const surahLigature = getSurahLigature(surahNum);
   const accessibleArabicTitle = surahMeta?.ar ? `سورة ${surahMeta.ar}` : "سورة";
 
   return (
@@ -15,24 +16,19 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
 
         <div className="cpv-surah-title-box border rounded-lg px-8 py-3 shadow-lg flex flex-col items-center justify-center min-w-[220px]">
           <span
-            className="cpv-surah-name-ar text-[1.55rem] leading-tight"
+            className="cpv-surah-name-ar"
             dir="rtl"
             lang="ar"
             aria-label={accessibleArabicTitle}
           >
-            <span className="cpv-surah-prefix" aria-hidden="true">سورة</span>{" "}
-            {surahLigature ? (
-              <span
-                className="cpv-surah-name-ligature"
-                dir="ltr"
-                lang="en"
-                aria-hidden="true"
-              >
-                {surahLigature}
-              </span>
-            ) : (
-              <span aria-hidden="true">{surahMeta?.ar}</span>
-            )}
+            <span
+              className={surahLigature ? "cpv-surah-name-ligature" : "cpv-surah-name-fallback"}
+              dir={surahLigature ? "ltr" : "rtl"}
+              lang={surahLigature ? "en" : "ar"}
+              aria-hidden="true"
+            >
+              {surahLigature || surahMeta?.ar}
+            </span>
           </span>
           <span className="cpv-surah-name-tr text-[9.5px] font-semibold tracking-[0.14em] uppercase mt-0.5">
             {displayName}

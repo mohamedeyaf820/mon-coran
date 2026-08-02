@@ -78,8 +78,12 @@ test("surah headings use the calligraphic name ligatures accessibly", () => {
   assert.match(header, /const surahLigature = String\(surahNum\)\.padStart\(3, "0"\)/);
   assert.match(header, /aria-label=\{s\.ar\}[\s\S]*?className="font-surah-names"[\s\S]*?dir="ltr" lang="en"/);
   assert.match(cleanHeader, /const accessibleArabicTitle =/);
-  assert.match(cleanHeader, /className="cpv-surah-name-ligature"[\s\S]*?dir="ltr"[\s\S]*?lang="en"/);
+  assert.match(cleanHeader, /getSurahLigature\(surahNum\)/);
+  assert.match(cleanHeader, /cpv-surah-name-ligature[\s\S]*?dir=\{surahLigature \? "ltr" : "rtl"\}[\s\S]*?lang=\{surahLigature \? "en" : "ar"\}/);
   assert.match(inlineHeader, /aria-label=\{`سورة \$\{surahNameAr\}`\}/);
+  assert.match(inlineHeader, /getSurahLigature\(surahNum\)/);
+  assert.doesNotMatch(cleanHeader, /cpv-surah-prefix/);
+  assert.doesNotMatch(inlineHeader, /mp-surah-prefix/);
   assert.match(appHeader, /getSurahLigature\(activeSurahNum\)/);
   assert.match(appHeader, /className="font-surah-names"[\s\S]*?aria-hidden="true"/);
   assert.match(session, /getSurahLigature\(surahLabel\?\.n\)/);

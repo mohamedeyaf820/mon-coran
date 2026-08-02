@@ -102,24 +102,51 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-surah-title-box {
   min-width: var(--mushaf-title-min);
-  padding: 0.62rem 1.25rem 0.58rem;
+  min-height: clamp(5.9rem, 12vw, 6.55rem);
+  padding: 0.72rem 1.35rem 0.62rem;
   border: 1px solid var(--mushaf-rule-strong) !important;
-  border-radius: 0.9rem;
-  background: color-mix(in srgb, var(--mushaf-accent-soft) 52%, var(--mushaf-paper)) !important;
+  border-radius: 1rem;
+  background:
+    radial-gradient(circle at 50% 18%, var(--mushaf-accent-soft), transparent 72%),
+    color-mix(in srgb, var(--mushaf-accent-soft) 42%, var(--mushaf-paper)) !important;
   box-shadow: none !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-surah-name-ar {
+  display: grid;
+  width: 100%;
+  min-height: 2.85rem;
+  place-items: center;
   color: var(--mushaf-ink) !important;
-  font-size: clamp(1.35rem, 1.1rem + 0.8vw, 1.75rem);
+  line-height: 1;
+}
+
+.app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.cpv-surah-name-ar > .cpv-surah-name-ligature, .mp-surah-name-ar > .mp-surah-name-ligature) {
+  display: block;
+  color: var(--mushaf-ink);
+  font-family: "surahnames", serif !important;
+  font-size: clamp(2.65rem, 2.15rem + 1.55vw, 3.45rem);
+  font-style: normal;
+  font-weight: 400;
+  font-variant-ligatures: common-ligatures;
+  font-feature-settings: "liga" 1;
+  letter-spacing: 0;
+  line-height: 0.88;
+  text-rendering: geometricPrecision;
+}
+
+.app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.cpv-surah-name-fallback, .mp-surah-name-fallback) {
+  font-family: var(--font-surah-display, "Amiri Quran", "Amiri", serif) !important;
+  font-size: clamp(1.65rem, 1.35rem + 0.8vw, 2.1rem);
+  font-weight: 400;
   line-height: 1.25;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-surah-name-tr {
-  margin-top: 0.18rem;
+  margin-top: 0.35rem;
   color: var(--mushaf-muted) !important;
   font-size: 0.58rem;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.17em;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .bismillah-container {
@@ -242,7 +269,12 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   }
 
   .app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-surah-title-box {
-    padding: 0.5rem 0.8rem 0.46rem;
+    min-height: 5.25rem;
+    padding: 0.58rem 0.8rem 0.5rem;
+  }
+
+  .app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.cpv-surah-name-ar > .cpv-surah-name-ligature, .mp-surah-name-ar > .mp-surah-name-ligature) {
+    font-size: clamp(2.25rem, 11vw, 2.8rem);
   }
 
   .app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-divider-diamond {
