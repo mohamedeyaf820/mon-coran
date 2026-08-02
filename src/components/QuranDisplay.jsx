@@ -465,6 +465,7 @@ export default function QuranDisplay() {
       />
       <div
         className={`quran-display quran-display--${riwaya} quran-display--platform${showWordByWord ? " quran-display--word-by-word" : ""}`}
+        data-quran-font={fontFamily}
         ref={view.contentRef}
         aria-busy={readerBusy}
         {...view.touchHandlers}

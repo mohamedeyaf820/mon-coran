@@ -51,3 +51,41 @@ export function getResponsiveArabicFontSize({
     Math.min(deviceMaximum, Math.round(baseSize * deviceScale * layoutScale)),
   );
 }
+
+/**
+ * Keep Quran lines visually connected without clipping tall Arabic marks.
+ * Nastaleeq and Warsh faces need a little more breathing room than Naskh
+ * faces, but none of the continuous-reader fonts need the legacy 2.48 ratio.
+ */
+export function getArabicReadingLineHeight({
+  displayMode = "surah",
+  fontFamily = "qpc-hafs",
+  mushafLayout = "list",
+  riwaya = "hafs",
+}) {
+  if (displayMode === "page") return 3.05;
+
+  const isContinuousMushaf = mushafLayout === "mushaf";
+  const normalizedFont = String(fontFamily || "").toLowerCase();
+
+  if (normalizedFont.includes("indopak")) {
+    return isContinuousMushaf ? 2.08 : 2.16;
+  }
+
+  if (riwaya === "warsh") {
+    return isContinuousMushaf ? 2.04 : 2.12;
+  }
+
+  if (normalizedFont.includes("scheherazade")) {
+    return isContinuousMushaf ? 1.98 : 2.08;
+  }
+
+  if (
+    normalizedFont.includes("amiri") ||
+    normalizedFont.includes("noto-naskh")
+  ) {
+    return isContinuousMushaf ? 1.88 : 2;
+  }
+
+  return isContinuousMushaf ? 1.94 : 2.04;
+}

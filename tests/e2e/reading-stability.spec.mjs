@@ -117,6 +117,24 @@ test("reading refresh keeps mushaf visible without stale blur overlay", async ({
   expect(reloadedSize).toBeGreaterThanOrEqual(24);
   expect(reloadedSize).toBeLessThanOrEqual(72);
   expect(Math.abs(reloadedSize - firstSize)).toBeLessThanOrEqual(8);
+
+  const mushafFlow = await page.locator(".mushaf-text-block").first().evaluate((element) => {
+    const blockStyle = window.getComputedStyle(element);
+    const verseStyle = window.getComputedStyle(
+      element.querySelector(".quran-verse-inline"),
+    );
+    return {
+      lineHeightRatio:
+        Number.parseFloat(blockStyle.lineHeight) /
+        Number.parseFloat(blockStyle.fontSize),
+      textAlignLast: blockStyle.textAlignLast,
+      verseDisplay: verseStyle.display,
+    };
+  });
+  expect(mushafFlow.verseDisplay).toBe("inline");
+  expect(mushafFlow.lineHeightRatio).toBeGreaterThanOrEqual(1.85);
+  expect(mushafFlow.lineHeightRatio).toBeLessThanOrEqual(2.1);
+  expect(mushafFlow.textAlignLast).not.toBe("center");
 });
 
 test("reading page stays usable after riwaya refresh and browser history navigation", async ({ page }) => {
