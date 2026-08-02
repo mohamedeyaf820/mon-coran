@@ -2306,17 +2306,6 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     color: var(--surah-box-text-ar) !important;
 }
 
-.cpv-surah-prefix {
-    font-family: var(--font-surah-display, "Amiri Quran", "Amiri", serif) !important;
-}
-
-.cpv-surah-name-ligature {
-    font-family: surahnames, serif !important;
-    font-size: 2.3rem;
-    line-height: 0.9;
-    vertical-align: middle;
-}
-
 .cpv-surah-name-tr {
     color: var(--surah-box-text-tr) !important;
 }

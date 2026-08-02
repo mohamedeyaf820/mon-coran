@@ -1,9 +1,12 @@
 import React from "react";
+import { getSurahLigature } from "../../data/surahs";
 
 export function CleanPageSurahHeader({ lang, surahMeta }) {
   const title = lang === "en" ? surahMeta?.en : surahMeta?.fr || surahMeta?.en;
   const displayName = title || surahMeta?.en || "";
   const surahNum = surahMeta?.n || surahMeta?.id || surahMeta?.number;
+  const surahLigature = getSurahLigature(surahNum);
+  const accessibleArabicTitle = surahMeta?.ar ? `سورة ${surahMeta.ar}` : "سورة";
 
   return (
     <div className="cpv-surah-header-container flex items-center justify-center w-full my-8 select-none pointer-events-none">
@@ -12,20 +15,21 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
         <div className="cpv-divider-diamond text-[#c8a84b] text-xs">❖</div>
 
         <div className="cpv-surah-title-box border rounded-lg px-8 py-3 shadow-lg flex flex-col items-center justify-center min-w-[220px]">
-          {surahMeta?.ar ? (
+          <span
+            className="cpv-surah-name-ar"
+            dir="rtl"
+            lang="ar"
+            aria-label={accessibleArabicTitle}
+          >
             <span
-              className="cpv-surah-name-ar font-surah-names text-[1.55rem] leading-tight"
-              dir="rtl"
-              lang="ar"
+              className={surahLigature ? "cpv-surah-name-ligature" : "cpv-surah-name-fallback"}
+              dir={surahLigature ? "ltr" : "rtl"}
+              lang={surahLigature ? "en" : "ar"}
+              aria-hidden="true"
             >
-              {surahMeta.ar}
+              {surahLigature || surahMeta?.ar}
             </span>
-          ) : (
-            <span className="cpv-surah-name-ar text-lg font-bold leading-normal" dir="rtl">
-              <span className="cpv-surah-prefix">سورة</span>{" "}
-              {surahNum ? String(surahNum).padStart(3, "0") : ""}
-            </span>
-          )}
+          </span>
           <span className="cpv-surah-name-tr text-[9.5px] font-semibold tracking-[0.14em] uppercase mt-0.5">
             {displayName}
           </span>
