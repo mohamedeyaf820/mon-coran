@@ -70,12 +70,21 @@ test("surah headings use the calligraphic name ligatures accessibly", () => {
   const header = source("src/components/Quran/SurahReaderHeader.jsx");
   const cleanHeader = source("src/components/Quran/CleanPageDecor.jsx");
   const inlineHeader = source("src/components/Quran/MushafInlineHeader.jsx");
+  const appHeader = source("src/components/Header.jsx");
+  const session = source("src/components/Home/SessionCard.jsx");
+  const surahCards = source("src/components/Home/HomePrimitives.jsx");
 
   assert.match(header, /const surahLigature = String\(surahNum\)\.padStart\(3, "0"\)/);
   assert.match(header, /aria-label=\{s\.ar\}[\s\S]*?className="font-surah-names"[\s\S]*?dir="ltr" lang="en"/);
   assert.match(cleanHeader, /const accessibleArabicTitle =/);
   assert.match(cleanHeader, /className="cpv-surah-name-ligature"[\s\S]*?dir="ltr"[\s\S]*?lang="en"/);
   assert.match(inlineHeader, /aria-label=\{`سورة \$\{surahNameAr\}`\}/);
+  assert.match(appHeader, /getSurahLigature\(activeSurahNum\)/);
+  assert.match(appHeader, /className="font-surah-names"[\s\S]*?aria-hidden="true"/);
+  assert.match(session, /getSurahLigature\(surahLabel\?\.n\)/);
+  assert.match(session, /home-session-card__surah-calligraphy font-surah-names/);
+  assert.match(surahCards, /getSurahLigature\(surah\.n\)/);
+  assert.match(surahCards, /hp-card-ar font-surah-names/);
 });
 
 test("dark karaoke words never inherit the fullscreen analysis overlay", () => {

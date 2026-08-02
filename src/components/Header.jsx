@@ -5,7 +5,12 @@ import {
   useAppSelector,
 } from "../context/AppContext";
 import { t as i18nT } from "../i18n";
-import { getSurah, toAr, getSurahForPage } from "../data/surahs";
+import {
+  getSurah,
+  getSurahForPage,
+  getSurahLigature,
+  toAr,
+} from "../data/surahs";
 import { normalizeFontId } from "../data/fonts";
 import { cn } from "../lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -326,6 +331,10 @@ export default function Header() {
         ? surahMeta.fr || surahMeta.en
         : surahMeta.ar
       : "";
+  const centerSurahLigature =
+    !showDuas && displayMode !== "juz"
+      ? getSurahLigature(activeSurahNum)
+      : "";
   const centerTitleLabel = centerSubtitle
     ? `${centerTitle} - ${centerSubtitle}`
     : centerTitle;
@@ -536,8 +545,22 @@ export default function Header() {
                         {centerTitle}
                       </span>
                       {centerSubtitle ? (
-                        <span className="mp-header__title-sub">
-                          {centerSubtitle}
+                        <span
+                          className="mp-header__title-sub"
+                          aria-label={centerSubtitle}
+                        >
+                          {lang !== "ar" && centerSurahLigature ? (
+                            <span
+                              className="font-surah-names"
+                              dir="ltr"
+                              lang="en"
+                              aria-hidden="true"
+                            >
+                              {centerSurahLigature}
+                            </span>
+                          ) : (
+                            centerSubtitle
+                          )}
                         </span>
                       ) : null}
                     </span>

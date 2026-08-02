@@ -3601,7 +3601,7 @@ html body .app-root[data-view="home"] .hp-grid--surah .hp-card-ar {
   padding: 0 !important;
   overflow: visible !important;
   color: color-mix(in srgb, var(--text-primary) 82%, var(--primary) 18%) !important;
-  font-family: "Amiri Quran", "Scheherazade New", serif !important;
+  font-family: "surahnames", serif !important;
   font-size: 1.45rem !important;
   font-weight: 400 !important;
   line-height: 1.35 !important;

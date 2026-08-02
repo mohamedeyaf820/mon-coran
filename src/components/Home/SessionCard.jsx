@@ -3,6 +3,7 @@ import { Zap, CirclePlay, Building2, MapPin } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { PercentBar } from "./HomePrimitives";
 import { fetchPrayerTimes } from "../../services/prayerTimesService";
+import { getSurahLigature } from "../../data/surahs";
 import Icon from "./HomeIcon";
 
 /** Données statiques des prières (pas de plages hardcodées) */
@@ -128,6 +129,7 @@ export default function SessionCard({
   }, [usePrayerTimes]);
 
   const currentPrayerKey = getCurrentPrayerKey(now, prayerTimes);
+  const surahLigature = getSurahLigature(surahLabel?.n);
 
   return (
     <>
@@ -154,10 +156,12 @@ export default function SessionCard({
           </h2>
           {surahLabel && displayMode !== "juz" && (
             <div
-              className="font-[var(--font-quran,'Scheherazade_New',serif)] text-[1.4rem] text-[var(--primary)] opacity-70 leading-[2] text-end mt-[0.2rem]"
-              dir="rtl"
+              className="home-session-card__surah-calligraphy font-surah-names text-[1.4rem] text-[var(--primary)] opacity-70 leading-[2] text-left mt-[0.2rem]"
+              aria-label={surahLabel.ar}
+              dir={surahLigature ? "ltr" : "rtl"}
+              lang={surahLigature ? "en" : "ar"}
             >
-              {surahLabel.ar}
+              <span aria-hidden="true">{surahLigature || surahLabel.ar}</span>
             </div>
           )}
         </div>
