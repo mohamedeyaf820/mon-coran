@@ -2893,49 +2893,6 @@ html body .app-root .quran-display--platform .mushaf-container .cpv-verse--playi
     filter: brightness(0.92) saturate(0.95);
 }
 
-html body .app-root .quran-display--platform .mushaf-wrapper {
-    position: relative !important;
-    width: min(100%, 680px) !important;
-    max-width: 680px !important;
-    margin: 0 auto !important;
-    padding: 2rem !important;
-    border: 0 !important;
-    border-radius: 4px !important;
-    background: var(--reader-page-bg, #faf7f2) !important;
-    box-shadow: none !important;
-    overflow: visible !important;
-}
-
-html body .app-root .quran-display--platform .mushaf-surah-header {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 0.75rem !important;
-    margin-bottom: 2rem !important;
-    padding: 1rem !important;
-    border-top: 2px solid #c8a84b !important;
-    border-bottom: 2px solid #c8a84b !important;
-    text-align: center !important;
-}
-
-html body .app-root .quran-display--platform .mushaf-surah-header .bismillah {
-    display: flex !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-}
-
-html body .app-root .quran-display--platform .mushaf-surah-header .bismillah span,
-html body .app-root .quran-display--platform .basmala-text {
-    display: block !important;
-    direction: rtl !important;
-    text-align: center !important;
-    font-family: var(--quran-font-family) !important;
-    font-size: var(--quran-font-size) !important;
-    line-height: 2 !important;
-    color: var(--text-primary, #1a1a1a) !important;
-}
-
 html body .app-root .quran-display--platform .mushaf-text-block {
     display: block !important;
     direction: rtl !important;
@@ -3086,72 +3043,6 @@ html body .app-root .quran-display--platform .rd-ayah .ayah-marker {
     margin-inline: 0.42em !important;
 }
 
-html body .app-root .quran-display--platform .mushaf-wrapper {
-    width: min(100%, 720px) !important;
-    max-width: 720px !important;
-    min-height: min(900px, calc(100vh - 8rem)) !important;
-    padding: clamp(2.35rem, 5vw, 3.5rem) clamp(1.35rem, 5.5vw, 3.75rem) !important;
-    border-radius: 6px !important;
-    background: var(--color-bg-mushaf) !important;
-    box-shadow:
-        0 2px 4px rgba(0, 0, 0, 0.08),
-        0 12px 34px rgba(28, 25, 23, 0.13),
-        inset 0 0 0 1px rgba(200, 168, 75, 0.18) !important;
-}
-
-html body .app-root .quran-display--platform .mushaf-wrapper::before {
-    content: "";
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 7px;
-    border-radius: 6px 0 0 6px;
-    background: linear-gradient(to right, rgba(200, 168, 75, 0.18), transparent);
-    pointer-events: none;
-}
-
-html body .app-root .quran-display--platform .mushaf-page-header,
-html body .app-root .quran-display--platform .mushaf-page-footer {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 1rem !important;
-    color: var(--reader-page-muted, #9ca3af) !important;
-    font-family: var(--font-ui, system-ui, sans-serif) !important;
-    font-size: 0.72rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.05em !important;
-}
-
-html body .app-root .quran-display--platform .mushaf-page-header {
-    margin-bottom: 1.65rem !important;
-}
-
-html body .app-root .quran-display--platform .mushaf-page-footer {
-    margin-top: 2.25rem !important;
-}
-
-html body .app-root .quran-display--platform .mushaf-page-footer span:first-child,
-html body .app-root .quran-display--platform .mushaf-page-footer span:last-child {
-    display: block !important;
-    height: 1px !important;
-    width: 4.25rem !important;
-    background: var(--reader-page-rule, rgba(156, 163, 175, 0.42)) !important;
-}
-
-html body .app-root .quran-display--platform .mushaf-surah-header {
-    margin-bottom: 2.2rem !important;
-    padding: 1.1rem 0.85rem !important;
-    border-color: rgba(200, 168, 75, 0.82) !important;
-}
-
-html body .app-root .quran-display--platform .mushaf-text-block {
-    font-size: var(--quran-font-size) !important;
-    line-height: var(--quran-line-height) !important;
-    word-spacing: 0.015em !important;
-    text-justify: inter-word !important;
-    flex: 1 1 auto !important;
-}
-
 html body .app-root .quran-display--platform .mushaf-text-block .ayat-marker,
 html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marker {
     margin: 0 0.26em !important;
@@ -3176,23 +3067,6 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
         line-height: 2.12 !important;
     }
 
-    html body .app-root .quran-display--platform .mushaf-wrapper {
-        min-height: auto !important;
-        padding: 1.65rem 1rem !important;
-    }
-
-    html body .app-root .quran-display--platform .mushaf-text-block {
-        font-size: max(2rem, calc(var(--quran-font-size) * 0.8)) !important;
-        line-height: 2.75 !important;
-    }
-}
-
-/* Mushaf mode mobile: respect JS-capped font-size, don't force 2rem floor */
-@media (max-width: 520px) {
-    html body .app-root .quran-display--platform .quran-mode-pane--mushaf .mushaf-text-block {
-        font-size: var(--quran-font-size, clamp(18px, 5.5vw, 26px)) !important;
-        line-height: 2.55 !important;
-    }
 }
 
 :root,
@@ -4467,7 +4341,9 @@ html body .app-root .quran-display--platform .mushaf-text-block .cpv-ayah-marker
     display: inline-flex !important;
     width: 1.08em !important;
     height: 1.08em !important;
-    margin-inline: 0.14em 0.2em !important;
+    /* RTL flow: keep the marker attached to the ayah it closes, while giving
+       the following ayah a clear visual boundary at every responsive size. */
+    margin-inline: 0.12em 0.72em !important;
     vertical-align: -0.18em !important;
     transform: none !important;
 }

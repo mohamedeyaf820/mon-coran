@@ -625,8 +625,8 @@ const RECITERS = {
     {
       id: "warsh_rachid_belalya",
       name: "رشيد بلعالية (ورش)",
-      nameEn: "Rachid Belalya (Warsh)",
-      nameFr: "Rachid Belalya (Warsh)",
+      nameEn: "Rachid Belalia (Warsh)",
+      nameFr: "Rachid Belalia (Warsh)",
       style: "murattal",
       cdn: "https://server6.mp3quran.net/bl3/Rewayat-Warsh-A-n-Nafi/",
       cdnType: "mp3quran-surah",
@@ -691,8 +691,8 @@ const quranPhoto = (path) => `${QURAN_RECITER_IMAGE_BASE}${path}`;
 const ASSABILE_IMAGE_BASE = "https://www.assabile.com/media/person/280x219/";
 const assabilePhoto = (path) => `${ASSABILE_IMAGE_BASE}${path}`;
 
-// Keep only URLs that respond successfully. Missing portraits intentionally
-// use the deterministic gradient avatar instead of generating browser 404s.
+// Curated portrait URLs must identify the same reciter as their attributed
+// profile. The UI keeps a deterministic initials avatar as a network fallback.
 export const RECITER_PHOTOS_MAP = {
   "ar.alafasy": quranPhoto("6/mishary-rashid-alafasy-profile.jpeg"),
   "ar.abdulbasitmurattal": quranPhoto("1/abdelbasset-profile.jpeg"),
@@ -717,7 +717,7 @@ export const RECITER_PHOTOS_MAP = {
   ahmed_ibn_ali_al_ajamy_64: quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
   yasser_dossari_hafs: quranPhoto("20/yasser-profile.png"),
   abdullaah_matrood:
-    "https://media.way2quran.com/imgs/abdullah-al-matroud.jpg",
+    "https://www.assabile.com/media/photo/full_size/abdallah-matroud-582.jpg",
   abdullaah_basfar: assabilePhoto("abdullah-ibn-ali-basfar.png"),
   hudhaify: assabilePhoto("ali-alhodaifi.png"),
   muhammad_ayyoub: assabilePhoto("mohamed-ayoub.png"),
@@ -760,7 +760,7 @@ export const RECITER_PHOTOS_MAP = {
   warsh_aloyoon_al_koshi:
     "https://www.assabile.com/media/person/200x256/laayoun-el-kouchi.png",
   warsh_rachid_belalya:
-    "https://i.pinimg.com/564x/e0/83/a2/e083a2650f5d21432991316710b9461c.jpg",
+    "https://surahquran.com/img/quraa/50.png",
 };
 
 const ASSABILE_PROFILE_BASE = "https://www.assabile.com";
@@ -802,8 +802,8 @@ const RECITER_PROFILE_SOURCES = Object.freeze({
 
 const RECITER_PHOTO_SOURCES = Object.freeze({
   abdullaah_matrood: Object.freeze({
-    provider: "Way2Quran",
-    url: "https://way2quran.com/ar/reciters/abdullah-al-matroud",
+    provider: "Assabile",
+    url: "https://www.assabile.com/abdullah-matrood-5/photos",
   }),
   warsh_ibrahim_aldosari: Object.freeze({
     provider: "Way2Quran",
@@ -815,7 +815,7 @@ const RECITER_PHOTO_SOURCES = Object.freeze({
   }),
   warsh_rachid_belalya: Object.freeze({
     provider: "SurahQuran",
-    url: "https://surahquran.com/mp3/Rachid-Belachia/",
+    url: "https://surahquran.com/mp3/Rachid-Belalia/",
   }),
 });
 
@@ -886,6 +886,30 @@ export function getReciterPhoto(reciterOrId) {
   return RECITER_PHOTOS_MAP[id] || null;
 }
 
+const RECITER_PHOTO_FOCUS = Object.freeze({
+  "ar.husary": "50% 30%",
+  husary_muallim: "50% 30%",
+  husary_mujawwad_hafs: "50% 30%",
+  warsh_hussary: "50% 30%",
+  abdullaah_matrood: "50% 24%",
+  warsh_abdelmoujib_benkirane: "50% 22%",
+  warsh_rachid_belalya: "50% 24%",
+});
+
+export function getReciterPhotoFocus(reciterOrId, photo = null) {
+  const id =
+    typeof reciterOrId === "string"
+      ? reciterOrId
+      : String(reciterOrId?.id || "");
+  if (RECITER_PHOTO_FOCUS[id]) return RECITER_PHOTO_FOCUS[id];
+
+  const source = photo || getReciterPhoto(reciterOrId) || "";
+  if (source.includes("/200x256/")) return "50% 22%";
+  if (source.includes("/280x219/")) return "50% 28%";
+  if (source.includes("static.qurancdn.com")) return "50% 32%";
+  return "50% 28%";
+}
+
 export function getReciterVisual(reciter) {
   const photo = getReciterPhoto(reciter);
   const explicitSource = RECITER_PHOTO_SOURCES[reciter?.id];
@@ -904,6 +928,7 @@ export function getReciterVisual(reciter) {
   return {
     type: photo ? "photo" : "avatar",
     photo,
+    focalPoint: getReciterPhotoFocus(reciter, photo),
     avatar: getReciterAvatar(reciter),
     attribution: photo
       ? {

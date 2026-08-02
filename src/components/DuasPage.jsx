@@ -248,6 +248,7 @@ export default function DuasPage() {
                         className="dua-open-btn-v5"
                         onClick={() => goToVerse(dua.surah, dua.ayah)}
                         title={lang === "fr" ? "Ouvrir dans le Coran" : lang === "ar" ? "فتح في المصحف" : "Open in Quran"}
+                        aria-label={lang === "fr" ? "Ouvrir dans le Coran" : lang === "ar" ? "فتح في المصحف" : "Open in Quran"}
                         type="button"
                       >
                         <ExternalLink size={14} aria-hidden="true" />

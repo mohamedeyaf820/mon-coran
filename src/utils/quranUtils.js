@@ -5,6 +5,13 @@
 const BASMALA_CACHE = new Map();
 const CACHE_MAX = 800;
 
+// Some QPC payloads use U+25CC as a positioning anchor for a following
+// Quranic combining mark. When the specialised face falls back, that internal
+// anchor becomes a large visible dotted circle (for example in أَنَا۠).
+export function normalizeQuranGlyphText(text) {
+    return String(text || '').replace(/\u25CC/g, '');
+}
+
 // Diacritics character class: covers all Arabic combining marks + tatweel
 const D = '[\\u0640\\u064B-\\u065F\\u0670\\u06D6-\\u06ED]*';
 

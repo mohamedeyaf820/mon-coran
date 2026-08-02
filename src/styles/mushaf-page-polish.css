@@ -205,15 +205,8 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   line-height: var(--mushaf-text-leading) !important;
   word-spacing: var(--cpv-word-spacing, 0.045em) !important;
   text-align: justify !important;
-  text-align-last: auto !important;
+  text-align-last: center !important;
   text-rendering: optimizeLegibility;
-}
-
-/* Keep the reading rhythm stable against the legacy platform selector, which
-   otherwise wins on specificity and compresses mobile lines to 1.65. */
-html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
-  line-height: clamp(1.85, var(--quran-line-height, 1.94), 2.1) !important;
-  text-align-last: auto !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse {

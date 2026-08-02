@@ -596,26 +596,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     }
 }
 
-@media (max-width: 479px) {
-    .mp-footer-v2 {
-        padding: 0 0.65rem calc(4.5rem + env(safe-area-inset-bottom)) !important;
-    }
-
-    .mp-footer-v2__nav-btn {
-        min-height: 3.65rem !important;
-        padding: 0.45rem 0.25rem !important;
-    }
-
-    .mp-footer-v2__nav-icon {
-        width: 1.5rem !important;
-        height: 1.5rem !important;
-    }
-
-    .mp-footer-v2__nav-label {
-        font-size: 0.52rem !important;
-    }
-}
-
 @media (hover: hover) {
     #sidebar button[type="button"].group:hover .flex.shrink-0 {
         border-color: rgba(var(--primary-rgb, 15, 118, 110), 0.45) !important;

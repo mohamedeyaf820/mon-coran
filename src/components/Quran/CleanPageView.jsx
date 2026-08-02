@@ -63,7 +63,7 @@ function CleanPageViewComponent({
 
   return (
     <div
-      className={`cpv-container mushaf-wrapper mushaf-page-wrapper${isQCF4 ? " cpv-qcf4" : ""}`}
+      className={`cpv-container mushaf-wrapper mushaf-page-wrapper ${isQCF4 ? "cpv-qcf4" : ""}`}
     >
       <div className="mushaf-corner mushaf-corner--tr" aria-hidden="true" />
       <div className="mushaf-corner mushaf-corner--tl" aria-hidden="true" />
@@ -84,8 +84,7 @@ function CleanPageViewComponent({
         lang="ar"
         style={{
           "--cpv-font-size": `${Math.round(mushafFontSize)}px`,
-          "--cpv-line-height":
-            "clamp(1.85, var(--quran-line-height, 1.94), 2.1)",
+          "--cpv-line-height": "var(--quran-line-height, 1.94)",
           "--cpv-word-spacing": mushafWordSpacing,
         }}
       >

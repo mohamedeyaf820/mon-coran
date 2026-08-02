@@ -1655,7 +1655,7 @@
 }
 
 .app-root .ayah-action-sheet-backdrop {
-    z-index: 240;
+    z-index: 630;
     background:
         linear-gradient(rgba(8, 13, 20, 0.38), rgba(8, 13, 20, 0.46)),
         color-mix(in srgb, var(--bg-primary) 14%, transparent 86%);
@@ -1664,7 +1664,7 @@
 
 .app-root .ayah-action-sheet {
     position: fixed;
-    z-index: 241;
+    z-index: 631;
     top: 50%;
     left: 50%;
     width: min(92vw, 440px);

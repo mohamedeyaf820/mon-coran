@@ -2,7 +2,7 @@
  * AyahSharePanel — génère et télécharge une belle image SVG d'un verset coranique.
  * Calligraphie arabe dorée sur fond islamique.
  */
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   X,
@@ -18,6 +18,11 @@ import { useApp } from "../context/AppContext";
 import { getSurah } from "../data/surahs";
 import { t } from "../i18n";
 import { openExternalUrl, sanitizeSvgMarkup } from "../lib/security";
+import {
+  createVerseSharePayload,
+  createVerseShareTargets,
+  writeTextToClipboard,
+} from "../services/verseShareService";
 
 const MAX_ARABIC_LENGTH = 600;
 const MAX_TRANSLATION_LENGTH = 500;
@@ -239,6 +244,26 @@ export default function AyahSharePanel() {
 
   const surahData = getSurah(currentSurah);
   const surahName = surahData?.ar || "";
+  const sharePayload = useMemo(
+    () => createVerseSharePayload({
+      surah: currentSurah,
+      ayah: currentAyah,
+      arabicText,
+      translationText: includeTranslation ? translationText : "",
+      surahName:
+        lang === "ar"
+          ? surahData?.ar
+          : lang === "fr"
+            ? surahData?.fr
+            : surahData?.en,
+      lang,
+    }),
+    [arabicText, currentAyah, currentSurah, includeTranslation, lang, surahData, translationText],
+  );
+  const shareTargets = useMemo(
+    () => createVerseShareTargets(sharePayload),
+    [sharePayload],
+  );
 
   const close = () =>
     dispatch({ type: "SET", payload: { shareImageOpen: false } });
@@ -287,38 +312,30 @@ export default function AyahSharePanel() {
     }
   };
 
-  const handleCopyLink = useCallback(() => {
-    const url = `https://quran.com/${currentSurah}/${currentAyah}`;
-    navigator.clipboard
-      ?.writeText(url)
-      .then(() => {
-        setCopyError(false);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      })
-      .catch(() => {
-        setCopyError(true);
-        setTimeout(() => setCopyError(false), 2200);
-      });
-  }, [currentSurah, currentAyah]);
+  const handleCopyLink = useCallback(async () => {
+    const didCopy = await writeTextToClipboard(sharePayload.url);
+    setCopyError(!didCopy);
+    setCopied(didCopy);
+    setTimeout(() => {
+      setCopied(false);
+      setCopyError(false);
+    }, didCopy ? 2000 : 2200);
+  }, [sharePayload.url]);
 
   const handleWebShare = useCallback(async () => {
     if (!navigator.share) return;
-    const surahFr = surahData?.fr || surahData?.en || "";
     await navigator
       .share({
-        title: `${surahFr} · verset ${currentAyah}`,
-        text: arabicText,
-        url: `https://quran.com/${currentSurah}/${currentAyah}`,
+        title: sharePayload.title,
+        text: sharePayload.text,
+        url: sharePayload.url,
       })
       .catch(() => {});
-  }, [arabicText, currentSurah, currentAyah, surahData]);
+  }, [sharePayload]);
 
   const handleWhatsAppShare = useCallback(() => {
-    const surahFr = surahData?.fr || surahData?.en || "";
-    const text = `${arabicText}\n\n— ${surahFr} · verset ${currentAyah}\nhttps://quran.com/${currentSurah}/${currentAyah}`;
-    openExternalUrl(`https://wa.me/?text=${encodeURIComponent(text)}`);
-  }, [arabicText, currentSurah, currentAyah, surahData]);
+    openExternalUrl(shareTargets.whatsapp);
+  }, [shareTargets.whatsapp]);
 
   return (
     <Dialog.Root

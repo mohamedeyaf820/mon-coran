@@ -44,7 +44,6 @@ const QuranDisplay = lazy(loadQuranDisplay);
 const LegalPage = lazy(loadLegalPage);
 const NotFoundPage = lazy(() => import("./components/NotFoundPage"));
 const ConfirmDialogHost = lazy(() => import("./components/ConfirmDialogHost"));
-const NotesPanel = lazy(() => import("./components/NotesPanel"));
 const Sidebar = lazy(() => import("./components/Sidebar"));
 const AudioPlayer = lazy(() => import("./components/AudioPlayer"));
 const SearchModal = lazy(() => import("./components/SearchModal"));
@@ -790,12 +789,6 @@ export default function App() {
               )}
             </div>
           </main>
-
-          {showHome && !focusReading && deferNonCriticalUI && (
-            <Suspense fallback={null}>
-              <NotesPanel />
-            </Suspense>
-          )}
         </div>
 
         {toast && (

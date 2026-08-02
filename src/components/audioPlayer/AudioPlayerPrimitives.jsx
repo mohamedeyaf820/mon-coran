@@ -26,7 +26,7 @@ const WAVE_HEIGHT_CLASSES = [
   "h-[77.38%]",
 ];
 
-export function ReciterPhoto({ src, className = "" }) {
+export function ReciterPhoto({ src, className = "", style }) {
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
@@ -40,7 +40,10 @@ export function ReciterPhoto({ src, className = "" }) {
       src={src}
       alt=""
       className={className}
+      style={style}
       loading="lazy"
+      decoding="async"
+      referrerPolicy="no-referrer"
       aria-hidden="true"
       onError={() => setFailed(true)}
     />
@@ -142,7 +145,8 @@ export function CoverArt({ isPlaying, size = 52, reciter }) {
       </div>
       <ReciterPhoto
         src={visual.photo}
-        className="absolute inset-0 h-full w-full object-cover"
+        className="reciter-photo absolute inset-0 h-full w-full object-cover"
+        style={{ objectPosition: visual.focalPoint }}
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.02),rgba(0,0,0,0.38))]" />
       {isPlaying && (
@@ -172,7 +176,8 @@ export function ReciterAvatar({ reciter, active = false, loading = false }) {
       </span>
       <ReciterPhoto
         src={visual.photo}
-        className="absolute inset-0 h-full w-full object-cover"
+        className="reciter-photo absolute inset-0 h-full w-full object-cover"
+        style={{ objectPosition: visual.focalPoint }}
       />
       <span
         className={cn(

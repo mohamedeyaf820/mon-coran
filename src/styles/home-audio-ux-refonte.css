@@ -276,7 +276,6 @@ html.dark .app-root > .mp-header :is(.mp-header__sub, .mp-header__kicker, .mp-he
 
 .home-hero-shell,
 .home-content-section,
-.home-top-cards-grid > *,
 .home-info-card {
   border-color: color-mix(in srgb, var(--theme-border, rgba(148, 163, 184, 0.28)) 70%, transparent) !important;
   background:
@@ -290,8 +289,6 @@ html[data-theme="dark"] .home-hero-shell,
 html.dark .home-hero-shell,
 html[data-theme="dark"] .home-content-section,
 html.dark .home-content-section,
-html[data-theme="dark"] .home-top-cards-grid > *,
-html.dark .home-top-cards-grid > *,
 html[data-theme="dark"] .home-info-card,
 html.dark .home-info-card {
   background:
@@ -324,14 +321,6 @@ html.dark .home-info-card {
 .home-hero-layout {
   grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.72fr);
   align-items: stretch;
-}
-
-.home-top-cards-grid {
-  grid-template-columns:
-    minmax(0, 1.15fr)
-    minmax(0, 1.15fr)
-    minmax(0, 0.85fr)
-    minmax(0, 0.85fr) !important;
 }
 
 .home-brand-ar {
@@ -659,6 +648,11 @@ html.dark [data-reciter-card="true"] {
 .home-content-section button,
 .home-hero-shell button {
   outline-offset: 3px;
+}
+
+.app-root .home-audio-speed-button[aria-pressed="true"] {
+  background: var(--primary, #0b6235) !important;
+  color: #fff !important;
 }
 
 .audio-player-modal button:focus-visible,
@@ -994,11 +988,6 @@ html.dark .audio-player-modal__surface {
   font-size: var(--ts-base) !important;
 }
 
-.home-top-cards-grid {
-  gap: clamp(0.9rem, 1.7vw, 1.2rem) !important;
-  margin-top: clamp(0.9rem, 1.8vw, 1.35rem) !important;
-}
-
 .home-content-section {
   padding: clamp(0.85rem, 1.7vw, 1.25rem) !important;
   border-radius: var(--r-xl) !important;
@@ -1040,11 +1029,6 @@ html.dark .audio-player-modal__surface {
 .hp-card-ar {
   font-size: clamp(1.38rem, 1.05rem + 1.15vw, 1.78rem) !important;
   max-width: 38% !important;
-}
-
-.home-daily-verse-card p[dir="rtl"] {
-  font-size: clamp(1.32rem, 1.02rem + 1.1vw, 1.8rem) !important;
-  line-height: 2 !important;
 }
 
 @media (max-width: 1180px) {
@@ -1107,10 +1091,6 @@ html.dark .audio-player-modal__surface {
   .home-hero-copy-clean {
     font-size: var(--ts-base) !important;
     line-height: 1.58 !important;
-  }
-
-  .home-top-cards-grid {
-    grid-template-columns: 1fr !important;
   }
 
   .home-content-section {
@@ -1457,29 +1437,6 @@ html.dark .audio-player-modal__surface {
   min-height: var(--space-10) !important;
 }
 
-.mp-footer-v2__shell {
-  background:
-    radial-gradient(circle at 12% 0%, rgba(var(--theme-primary-rgb, 11, 98, 53), 0.1), transparent 34%),
-    linear-gradient(145deg, var(--bg-card, #fff), color-mix(in srgb, var(--bg-secondary, #f8fafc) 76%, var(--bg-card, #fff))) !important;
-}
-
-.mp-footer-v2__nav {
-  padding: clamp(0.8rem, 1.8vw, 1.15rem) clamp(0.75rem, 2vw, 1.25rem) 0 !important;
-}
-
-.mp-footer-v2__bottom {
-  margin: 0 clamp(0.75rem, 2vw, 1.25rem) !important;
-  padding-block: 0.85rem 1rem !important;
-}
-
-html[data-theme="dark"] .mp-footer-v2__shell,
-html.dark .mp-footer-v2__shell {
-  background:
-    radial-gradient(circle at 12% 0%, rgba(var(--theme-primary-rgb, 11, 98, 53), 0.16), transparent 36%),
-    linear-gradient(145deg, rgba(14, 24, 21, 0.98), rgba(7, 13, 12, 0.98)) !important;
-  border-color: rgba(148, 163, 184, 0.18) !important;
-}
-
 @media (max-width: 920px) {
   .app-root > .mp-header .mp-header__bar {
     grid-template-columns: auto minmax(0, 1fr) auto !important;
@@ -1538,15 +1495,6 @@ html.dark .mp-footer-v2__shell {
     padding: 0.85rem !important;
   }
 
-  .mp-footer-v2__nav {
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-    padding-inline: 0.55rem !important;
-  }
-
-  .mp-footer-v2__nav-btn {
-    min-height: var(--space-14) !important;
-    padding-inline: 0.15rem !important;
-  }
 }
 
 @media (max-width: 1024px) {
@@ -1730,6 +1678,258 @@ html.dark .mp-footer-v2__shell {
   }
 
   .app-root .audio-reciter-options__badge:first-child {
+    display: none !important;
+  }
+}
+
+/* Home overview cards — canonical responsive composition. */
+html body .app-root[data-view="home"] .home-top-cards-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  gap: clamp(0.7rem, 1.2vw, 0.95rem) !important;
+  width: min(100%, 1240px) !important;
+  margin: clamp(0.85rem, 1.6vw, 1.15rem) auto 0 !important;
+}
+
+html body .app-root[data-view="home"] .home-top-cards-grid > * {
+  min-width: 0 !important;
+  height: 100% !important;
+  padding: clamp(0.9rem, 1.3vw, 1.1rem) !important;
+  overflow: hidden !important;
+  border: 1px solid color-mix(in srgb, var(--theme-border, var(--border)) 78%, transparent) !important;
+  border-radius: 1.1rem !important;
+  background: color-mix(in srgb, var(--theme-panel-bg-strong, var(--bg-primary)) 96%, var(--primary) 4%) !important;
+  box-shadow: 0 10px 28px rgba(12, 32, 24, 0.07) !important;
+}
+
+html body .app-root[data-view="home"] .home-daily-verse-card p[dir="rtl"] {
+  margin-block: 0.45rem !important;
+  font-size: clamp(1.25rem, 1rem + 0.65vw, 1.55rem) !important;
+  line-height: 1.75 !important;
+}
+
+html body .app-root[data-view="home"] .home-daily-verse-card {
+  display: flex;
+  flex-direction: column;
+}
+
+html body .app-root[data-view="home"] .home-daily-verse-card > button {
+  margin-top: auto !important;
+  align-self: flex-start;
+}
+
+html body .app-root[data-view="home"] .home-daily-verse-card button,
+html body .app-root[data-view="home"] .home-session-card > button {
+  min-height: 2.65rem !important;
+  border-radius: 0.8rem !important;
+}
+
+html body .app-root[data-view="home"] .home-session-card {
+  display: flex;
+  flex-direction: column;
+}
+
+html body .app-root[data-view="home"] .home-session-card > button {
+  margin-top: auto !important;
+}
+
+html body .app-root[data-view="home"] .home-prayer-card,
+html body .app-root[data-view="home"] .home-tools-quick-card {
+  display: flex;
+  flex-direction: column;
+}
+
+html body .app-root[data-view="home"] .home-prayer-card__header,
+html body .app-root[data-view="home"] .home-tools-quick-card__header {
+  min-height: 2rem !important;
+  margin-bottom: 0.6rem !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}
+
+html body .app-root[data-view="home"] .home-prayer-card__header > span,
+html body .app-root[data-view="home"] .home-tools-quick-card__title > span {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+html body .app-root[data-view="home"] .home-prayer-list {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  align-content: start !important;
+  gap: 0.2rem !important;
+}
+
+html body .app-root[data-view="home"] .home-prayer-item {
+  display: grid !important;
+  grid-template-columns: 1.75rem minmax(0, 1fr) auto !important;
+  min-width: 0 !important;
+  min-height: 2.55rem !important;
+  gap: 0.5rem !important;
+  padding: 0.35rem 0.45rem !important;
+  border-radius: 0.75rem !important;
+}
+
+html body .app-root[data-view="home"] .home-prayer-item > :first-child {
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+}
+
+html body .app-root[data-view="home"] .home-prayer-item > span {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] {
+  border-color: rgba(var(--primary-rgb, 11, 98, 53), 0.2) !important;
+  background: rgba(var(--primary-rgb, 11, 98, 53), 0.075) !important;
+}
+
+html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] > span:last-child {
+  flex: none !important;
+  padding: 0.2rem 0.42rem !important;
+  font-size: 0.54rem !important;
+  letter-spacing: 0.04em !important;
+  animation: none !important;
+}
+
+html body .app-root[data-view="home"] .home-tools-quick-card__title {
+  white-space: nowrap !important;
+}
+
+html body .app-root[data-view="home"] .home-tools-quick-card__more {
+  min-width: auto !important;
+  min-height: 2rem !important;
+  padding: 0.35rem 0.55rem !important;
+  border-color: rgba(var(--primary-rgb, 11, 98, 53), 0.16) !important;
+  border-radius: 0.65rem !important;
+  background: rgba(var(--primary-rgb, 11, 98, 53), 0.05) !important;
+  color: var(--theme-primary, var(--primary, #0b6235)) !important;
+  font-size: 0.64rem !important;
+}
+
+html body .app-root[data-view="home"] .home-tools-quick-card__grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.45rem !important;
+  margin-block: auto !important;
+}
+
+html body .app-root[data-view="home"] .home-tools-quick-card__tool {
+  display: flex !important;
+  min-width: 0 !important;
+  min-height: 3.35rem !important;
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+  gap: 0.5rem !important;
+  padding: 0.55rem 0.6rem !important;
+  border-color: rgba(var(--primary-rgb, 11, 98, 53), 0.12) !important;
+  border-radius: 0.8rem !important;
+  background: rgba(var(--primary-rgb, 11, 98, 53), 0.045) !important;
+  color: var(--text-secondary) !important;
+  box-shadow: none !important;
+}
+
+html body .app-root[data-view="home"] .home-tools-quick-card__tool svg {
+  width: 1rem !important;
+  height: 1rem !important;
+  margin: 0 !important;
+  flex: 0 0 1rem !important;
+}
+
+html body .app-root[data-view="home"] .home-tools-quick-card__tool span {
+  min-width: 0 !important;
+  width: auto !important;
+  overflow: hidden !important;
+  font-size: 0.68rem !important;
+  line-height: 1.15 !important;
+  text-align: start !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+@media (hover: hover) {
+  html body .app-root[data-view="home"] .home-top-cards-grid > *:hover {
+    border-color: rgba(var(--primary-rgb, 11, 98, 53), 0.22) !important;
+    box-shadow: 0 14px 34px rgba(12, 32, 24, 0.1) !important;
+    transform: translateY(-2px) !important;
+  }
+
+  html body .app-root[data-view="home"] .home-tools-quick-card__tool:hover {
+    border-color: rgba(var(--primary-rgb, 11, 98, 53), 0.24) !important;
+    background: rgba(var(--primary-rgb, 11, 98, 53), 0.09) !important;
+    color: var(--primary) !important;
+  }
+}
+
+html[data-theme="dark"] body .app-root[data-view="home"] .home-top-cards-grid > *,
+html.dark body .app-root[data-view="home"] .home-top-cards-grid > *,
+html[data-theme="quran-night"] body .app-root[data-view="home"] .home-top-cards-grid > *,
+html[data-theme="oled"] body .app-root[data-view="home"] .home-top-cards-grid > * {
+  border-color: rgba(176, 201, 187, 0.14) !important;
+  background: color-mix(in srgb, var(--theme-panel-bg-strong, var(--bg-secondary)) 95%, var(--primary) 5%) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24) !important;
+}
+
+html[data-theme="dark"] body .app-root[data-view="home"] .home-tools-quick-card__tool,
+html.dark body .app-root[data-view="home"] .home-tools-quick-card__tool,
+html[data-theme="quran-night"] body .app-root[data-view="home"] .home-tools-quick-card__tool,
+html[data-theme="oled"] body .app-root[data-view="home"] .home-tools-quick-card__tool {
+  border-color: rgba(176, 201, 187, 0.12) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+}
+
+html[data-theme="sepia"] body .app-root[data-view="home"] .home-top-cards-grid > * {
+  border-color: rgba(139, 107, 62, 0.17) !important;
+  background: color-mix(in srgb, var(--theme-panel-bg-strong, var(--bg-primary)) 95%, #b57d2a 5%) !important;
+  box-shadow: 0 12px 30px rgba(72, 55, 35, 0.08) !important;
+}
+
+@media (max-width: 1199px) {
+  html body .app-root[data-view="home"] .home-top-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  html body .app-root[data-view="home"] .home-prayer-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (max-width: 680px) {
+  html body .app-root[data-view="home"] .home-top-cards-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0.65rem !important;
+  }
+
+  html body .app-root[data-view="home"] .home-top-cards-grid > * {
+    padding: 0.85rem !important;
+    border-radius: 0.95rem !important;
+  }
+
+  html body .app-root[data-view="home"] .home-tools-quick-card__tool {
+    min-height: 3rem !important;
+  }
+}
+
+@media (max-width: 390px) {
+  html body .app-root[data-view="home"] .home-prayer-list {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] {
+    grid-column: auto !important;
+  }
+
+  html body .app-root[data-view="home"] .home-tools-quick-card__more span {
     display: none !important;
   }
 }
@@ -2761,7 +2961,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
     .ayah-actions-inline__icon-btn,
     .qcom-verse-card-footer-btn,
     .hp-card-play,
-    .mp-footer-v2__nav-btn,
     .sb-wrapper button
   ) {
     min-width: var(--mp-device-touch) !important;
@@ -2833,8 +3032,7 @@ body > .audio-player-modal .audio-settings-icon-btn {
     .home-top-cards-grid,
     .hp-grid,
     .hp-grid--surah,
-    .reciter-detail__stats,
-    .mp-footer-v2__nav
+    .reciter-detail__stats
   ) {
     gap: clamp(0.42rem, 1.35vw, 0.75rem) !important;
   }
@@ -3240,197 +3438,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
   }
 }
 
-/* ════════════════════════════════════════════════════════════
-   NAVBAR MOBILE REDESIGN — final override (wins over all above)
-   ════════════════════════════════════════════════════════════
-   Design goals:
-     • Left:   [≡] [logo]  — icon-only, never clipped
-     • Center: [‹] [SOURATE / Nom · sous-titre] [›]  — always fully visible
-     • Right:  [HAFS] [⋯]  — riwaya pill + more
-   Touch targets: 44×44px min (WCAG 2.5.5)
-   Height: 56px on phones, 60px on tablets
-   ════════════════════════════════════════════════════════════ */
-@media (max-width: 1024px) {
-  /* ── Bar layout ── */
-  html body .app-root > .mp-header .mp-header__bar {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    height: clamp(48px, 7vw, 56px) !important;
-    min-height: clamp(48px, 7vw, 56px) !important;
-    max-height: clamp(48px, 7vw, 56px) !important;
-    padding: 0 0.5rem !important;
-    padding-top: env(safe-area-inset-top, 0px) !important;
-    gap: var(--space-1) !important;
-    overflow: visible !important;
-    /* remove grid from all breakpoints */
-    grid-template-columns: none !important;
-  }
-
-  /* ── Brand row (left): hamburger + logo — must NOT grow, center gets all space ── */
-  html body .app-root > .mp-header .mp-header__brand-row {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.2rem !important;
-    flex: 0 0 auto !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__icon-btn {
-    width: var(--mp-device-touch) !important;
-    height: var(--mp-device-touch) !important;
-    min-width: var(--mp-device-touch) !important;
-    min-height: var(--mp-device-touch) !important;
-    border-radius: var(--r-md) !important;
-    flex-shrink: 0 !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__brand {
-    display: flex !important;
-    align-items: center !important;
-    padding: 0.2rem !important;
-    min-width: var(--mp-device-touch) !important;
-    min-height: var(--mp-device-touch) !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__brand-text {
-    display: none !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__logo {
-    width: clamp(1.75rem, 4.2vw, 2.25rem) !important;
-    height: clamp(1.75rem, 4.2vw, 2.25rem) !important;
-    flex-shrink: 0 !important;
-  }
-
-  /* ── Center: nav ── */
-  html body .app-root > .mp-header .mp-header__center {
-    flex: 1 1 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-width: 0 !important;
-    overflow: visible !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__nav {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.1rem !important;
-    padding: 0.2rem 0.25rem !important;
-    border-radius: var(--r-md-lg) !important;
-    /* fill the center area so the title can grow */
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    overflow: visible !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__nav-arrow {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 2rem !important;
-    height: var(--mp-device-touch) !important;
-    min-width: 2rem !important;
-    min-height: var(--mp-device-touch) !important;
-    flex-shrink: 0 !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__title-btn {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    /* fill all remaining width in nav */
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    padding: 0.1rem 0.3rem !important;
-  }
-
-  /* Kicker "SOURATE" hidden on mobile — title alone saves vertical space
-     and avoids pill being too tall to fit one clear text line */
-  html body .app-root > .mp-header .mp-header__kicker {
-    display: none !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__title {
-    font-size: clamp(0.82rem, 4vw, 1rem) !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    max-width: 100% !important;
-    font-weight: 700 !important;
-    color: var(--text-primary) !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__sub {
-    display: none !important;
-  }
-
-  /* ── Right actions ── */
-  html body .app-root > .mp-header .mp-header__actions {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.2rem !important;
-    flex-shrink: 0 !important;
-  }
-
-  /* Hide search + settings individually — they live in the ⋯ menu */
-  html body .app-root > .mp-header .mp-header__search,
-  html body .app-root > .mp-header .mp-header__settings {
-    display: none !important;
-  }
-
-  /* Riwaya pill — compact icon+label */
-  html body .app-root > .mp-header .mp-header__riwaya-toggle {
-    display: flex !important;
-    align-items: center !important;
-    gap: var(--space-1) !important;
-    height: var(--space-9) !important;
-    min-height: var(--mp-device-touch) !important;
-    padding: 0 0.5rem !important;
-    font-size: var(--ts-xs) !important;
-    font-weight: 800 !important;
-    border-radius: var(--r-base) !important;
-    flex-shrink: 0 !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__riwaya-toggle span {
-    display: inline !important;
-  }
-
-  /* More button */
-  html body .app-root > .mp-header .mp-header__more {
-    width: var(--mp-device-touch) !important;
-    height: var(--mp-device-touch) !important;
-    min-width: var(--mp-device-touch) !important;
-    min-height: var(--mp-device-touch) !important;
-    flex-shrink: 0 !important;
-  }
-}
-
-/* ── Extra-narrow (≤390px): tighten further ── */
-@media (min-width: 641px) and (max-width: 900px) {
-  html body .app-root > .mp-header {
-    padding-block: 0.1rem !important;
-    min-height: 0 !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__bar {
-    height: 54px !important;
-    min-height: 54px !important;
-    max-height: 54px !important;
-    padding-block: 0 !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__title-btn,
-  html body .app-root > .mp-header .mp-header__home-summary {
-    min-height: 40px !important;
-    padding-block: 0.2rem !important;
-  }
-}
 
 /* Reciters: compact directory cards that stay easy to scan and operate. */
 html body .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
@@ -3594,7 +3601,7 @@ html body .app-root[data-view="home"] .hp-grid--surah .hp-card-ar {
   padding: 0 !important;
   overflow: visible !important;
   color: color-mix(in srgb, var(--text-primary) 82%, var(--primary) 18%) !important;
-  font-family: "Amiri Quran", "Scheherazade New", serif !important;
+  font-family: "surahnames", serif !important;
   font-size: 1.45rem !important;
   font-weight: 400 !important;
   line-height: 1.35 !important;
