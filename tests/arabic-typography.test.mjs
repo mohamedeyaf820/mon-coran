@@ -6,6 +6,11 @@ import {
   getArabicReadingLineHeight,
   getResponsiveArabicFontSize,
 } from "../src/utils/arabicTypography.js";
+import {
+  appendNativeAyahMarker,
+  getAyahTextForFont,
+  getQuranWordTextForFont,
+} from "../src/data/fonts.js";
 
 test("Arabic typography clamps unsafe preferences", () => {
   assert.equal(clampArabicFontSize(-10), 12);
@@ -94,4 +99,37 @@ test("continuous Mushaf line height stays compact for every exposed Quran font",
     assert.ok(lineHeight >= 1.85, `${fontFamily} must preserve Arabic marks`);
     assert.ok(lineHeight <= 2.1, `${fontFamily} must keep Mushaf lines connected`);
   }
+});
+
+test("every exposed Hafs text path removes internal dotted-circle anchors", () => {
+  const anchoredWord = "\u0623\u064E\u0646\u064E\u0627\u25CC\u06E0";
+  const ayah = {
+    text: anchoredWord,
+    quranCom: {
+      textQpcHafs: anchoredWord,
+      textIndopak: anchoredWord,
+      textUthmani: anchoredWord,
+    },
+  };
+  const word = {
+    text: anchoredWord,
+    textQpcHafs: anchoredWord,
+    textIndopak: anchoredWord,
+    textUthmani: anchoredWord,
+  };
+
+  for (const fontFamily of [
+    "qpc-hafs",
+    "qpc-indopak",
+    "scheherazade-new",
+    "amiri-quran",
+    "noto-naskh-arabic",
+  ]) {
+    assert.equal(getAyahTextForFont(ayah, fontFamily, "hafs").includes("\u25CC"), false);
+    assert.equal(getQuranWordTextForFont(word, fontFamily, "hafs").includes("\u25CC"), false);
+  }
+
+  const withMarker = appendNativeAyahMarker(anchoredWord, 52, "qpc-hafs", "hafs");
+  assert.equal(withMarker.includes("\u25CC"), false);
+  assert.equal(withMarker.includes("\u06E0"), true);
 });

@@ -16,6 +16,8 @@
  */
 
 // Sukun in Uthmani can be U+0652 or U+06E1
+import { normalizeQuranGlyphText } from "../utils/quranUtils.js";
+
 const SK = "\\u0652\\u06E1";
 
 // ══════════════════════════════════════════════════════════════
@@ -393,7 +395,7 @@ export function stabilizeTajwidSegments(segments = []) {
   const stabilized = [];
 
   for (const segment of segments) {
-    let segmentText = String(segment?.text || "").replace(/\u0672/g, "\u0670");
+    let segmentText = normalizeQuranGlyphText(segment?.text).replace(/\u0672/g, "\u0670");
     if (!segmentText) continue;
 
     const leadingMarks = segmentText.match(LEADING_ARABIC_MARKS)?.[0] || "";

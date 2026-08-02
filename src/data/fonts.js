@@ -6,6 +6,8 @@
  * page/Mushaf rendering, so users cannot accidentally mix Hafs glyphs into Warsh.
  */
 
+import { normalizeQuranGlyphText } from "../utils/quranUtils.js";
+
 export const HAFS_FONT_IDS = [
   "qpc-hafs",
   "qpc-indopak",
@@ -221,47 +223,55 @@ function joinWordField(words, field) {
 
 export function getQuranWordTextForFont(word, fontId, riwaya = "hafs") {
   if (!word) return "";
-  if (riwaya === "warsh") return word.text || word.textUthmani || "";
+  if (riwaya === "warsh") {
+    return normalizeQuranGlyphText(word.text || word.textUthmani || "");
+  }
 
   const normalizedId = normalizeFontId(fontId, riwaya);
   if (normalizedId === "qpc-indopak") {
-    return word.textIndopak || word.textUthmani || word.textQpcHafs || word.text || "";
+    return normalizeQuranGlyphText(
+      word.textIndopak || word.textUthmani || word.textQpcHafs || word.text || "",
+    );
   }
   if (normalizedId === "qpc-hafs") {
-    return word.textQpcHafs || word.textUthmani || word.text || "";
+    return normalizeQuranGlyphText(
+      word.textQpcHafs || word.textUthmani || word.text || "",
+    );
   }
-  return word.textUthmani || word.textQpcHafs || word.text || "";
+  return normalizeQuranGlyphText(
+    word.textUthmani || word.textQpcHafs || word.text || "",
+  );
 }
 
 export function getAyahTextForFont(ayah, fontId, riwaya = "hafs") {
   if (!ayah) return "";
-  if (riwaya === "warsh") return String(ayah.text || "");
+  if (riwaya === "warsh") return normalizeQuranGlyphText(ayah.text);
 
   const normalizedId = normalizeFontId(fontId, riwaya);
   const quranCom = ayah.quranCom || {};
   if (normalizedId === "qpc-indopak") {
-    return (
+    return normalizeQuranGlyphText(
       quranCom.textIndopak ||
       joinWordField(ayah.words, "textIndopak") ||
       quranCom.textUthmani ||
       ayah.text ||
-      ""
+      "",
     );
   }
   if (normalizedId === "qpc-hafs") {
-    return (
+    return normalizeQuranGlyphText(
       quranCom.textQpcHafs ||
       joinWordField(ayah.words, "textQpcHafs") ||
       quranCom.textUthmani ||
       ayah.text ||
-      ""
+      "",
     );
   }
-  return (
+  return normalizeQuranGlyphText(
     quranCom.textUthmani ||
     joinWordField(ayah.words, "textUthmani") ||
     ayah.text ||
-    ""
+    "",
   );
 }
 
@@ -292,7 +302,7 @@ export function appendNativeAyahMarker(
   riwaya = "hafs",
   includeMarker = true,
 ) {
-  const value = String(text || "").trim();
+  const value = normalizeQuranGlyphText(text).trim();
   if (!value) return value;
   const cleanedValue = value.replace(AYAH_MARKER_SUFFIX_RE, "").trim();
   if (!includeMarker) return cleanedValue;

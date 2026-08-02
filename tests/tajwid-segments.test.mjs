@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { stabilizeTajwidSegments } from "../src/data/tajwidRules.js";
+import { normalizeQuranGlyphText } from "../src/utils/quranUtils.js";
 
 test("tajwid segments keep leading Arabic marks attached to their base glyph", () => {
   const segments = stabilizeTajwidSegments([
@@ -37,4 +38,21 @@ test("stand-in superscript alef is normalized without creating an isolated mark"
   assert.deepEqual(segments, [
     { text: "\u0648\u0670", ruleId: null },
   ]);
+});
+
+test("QPC dotted-circle anchors never leak into the rendered Quran text", () => {
+  const source = "\u0623\u064E\u0646\u064E\u0627\u25CC\u06E0 \u062E\u064E\u064A\u0652\u0631\u064C";
+
+  assert.equal(
+    normalizeQuranGlyphText(source),
+    "\u0623\u064E\u0646\u064E\u0627\u06E0 \u062E\u064E\u064A\u0652\u0631\u064C",
+  );
+
+  const segments = stabilizeTajwidSegments([
+    { text: "\u0623\u064E\u0646\u064E\u0627\u25CC", ruleId: "madd-normal" },
+    { text: "\u06E0 \u062E\u064E\u064A\u0652\u0631\u064C", ruleId: null },
+  ]);
+
+  assert.equal(segments.map((segment) => segment.text).join(""), normalizeQuranGlyphText(source));
+  assert.equal(segments.some((segment) => segment.text.includes("\u25CC")), false);
 });
