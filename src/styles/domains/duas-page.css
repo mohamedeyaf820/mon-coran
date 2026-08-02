@@ -469,6 +469,13 @@
     align-items: center;
 }
 
+.dua-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex: 0 0 auto;
+}
+
 .dua-ref-pill {
     display: inline-flex;
     align-items: center;
@@ -510,8 +517,8 @@
 }
 
 .dua-open-btn-v5 {
-    width: 30px;
-    height: 30px;
+    width: 2.35rem;
+    height: 2.35rem;
     border-radius: 0.5rem;
     background: var(--bg-secondary);
     border: 1px solid var(--border);
@@ -530,6 +537,26 @@
     color: #fff;
     border-color: var(--primary);
     transform: scale(1.1);
+}
+
+.dua-open-btn-v5 svg {
+    width: 0.875rem;
+    height: 0.875rem;
+    min-width: 0.875rem;
+    flex: 0 0 0.875rem;
+}
+
+html body .app-root.app-root[data-view="duas"] .duas-page--platform .dua-open-btn-v5 {
+    width: 2.35rem;
+    min-width: 2.35rem;
+    height: 2.35rem;
+    padding: 0 !important;
+}
+
+html body .app-root.app-root[data-view="duas"] .duas-page--platform .dua-open-btn-v5 svg {
+    width: 0.875rem;
+    min-width: 0.875rem;
+    height: 0.875rem;
 }
 
 .dua-content-area {
@@ -689,141 +716,121 @@
     }
 }
 
-.duas-page--platform {
-    gap: 1.5rem;
+/* Dark duas: quiet, warm and devotional instead of the reader's blue panels. */
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .app-view-duas::before {
+    opacity: 0.72;
+    background:
+        radial-gradient(circle at 8% 0%, rgba(44, 171, 113, 0.11), transparent 28%),
+        radial-gradient(circle at 92% 8%, rgba(202, 160, 63, 0.055), transparent 24%) !important;
 }
 
-.duas-page--platform .duas-results {
-    position: relative;
-    overflow: hidden;
-    padding: 1.3rem;
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] :is(.duas-hero, .duas-results) {
+    background: linear-gradient(145deg, #111d18, #0e1814) !important;
+    border-color: rgba(126, 178, 151, 0.17) !important;
+    box-shadow: 0 20px 46px rgba(0, 0, 0, 0.24) !important;
 }
 
-.duas-page--platform .duas-results-head {
-    align-items: flex-end;
-    gap: 1rem;
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .duas-hero {
+    border-top-color: rgba(202, 160, 63, 0.28) !important;
+    padding: clamp(1.15rem, 2vw, 1.55rem) !important;
 }
 
-.duas-page--platform .gallery-grid {
-    align-items: stretch;
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] :is(.duas-title, .duas-results-title) {
+    color: #f2f4ee !important;
+    font-weight: 750;
+    letter-spacing: -0.035em;
 }
 
-.duas-page--platform .dua-card-v5 {
-    min-height: 100%;
-    background: linear-gradient(
-        180deg,
-        color-mix(
-            in srgb,
-            var(--bg-card, #ffffff) 94%,
-            rgba(255, 255, 255, 0.25) 6%
-        ),
-        color-mix(
-            in srgb,
-            var(--bg-card, #ffffff) 90%,
-            rgba(var(--primary-rgb), 0.05) 10%
-        )
-    );
-    border: 1px solid
-        color-mix(
-            in srgb,
-            var(--border, rgba(184, 134, 11, 0.2)) 82%,
-            rgba(255, 255, 255, 0.16) 18%
-        );
-    box-shadow:
-        0 18px 36px rgba(15, 22, 19, 0.08),
-        0 1px 0 rgba(255, 255, 255, 0.18) inset;
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .duas-title::after {
+    width: 3.25rem;
+    height: 2px;
+    background: linear-gradient(90deg, #d1aa52, rgba(209, 170, 82, 0));
 }
 
-.duas-page--platform .dua-card-inner {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] :is(.duas-subtitle, .duas-results-copy) {
+    color: #abbab2 !important;
 }
 
-.duas-page--platform .dua-card-head {
-    align-items: flex-start;
-    gap: 0.9rem;
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .duas-back-btn {
+    border-color: rgba(96, 195, 145, 0.26);
+    background: #1d6c4b;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
 }
 
-.duas-page--platform .dua-head-main {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.55rem;
-    min-width: 0;
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] :is(.duas-search-wrap, .duas-hero-stat) {
+    background: rgba(5, 14, 10, 0.72) !important;
+    border-color: rgba(126, 178, 151, 0.14) !important;
 }
 
-.duas-page--platform .dua-head-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    flex-shrink: 0;
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .duas-search-wrap:focus-within {
+    border-color: rgba(74, 190, 132, 0.62) !important;
+    box-shadow: 0 0 0 3px rgba(74, 190, 132, 0.12);
 }
 
-.duas-page--platform .dua-open-btn-v5 {
-    width: 2.45rem;
-    height: 2.45rem;
-    padding: 0 !important;
-    border-radius: 0.9rem;
-    background: linear-gradient(
-        180deg,
-        rgba(var(--primary-rgb), 0.1),
-        rgba(212, 168, 32, 0.08)
-    );
-    border: 1px solid rgba(var(--primary-rgb), 0.16);
-    color: var(--primary);
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .duas-search {
+    min-height: 2.55rem;
+    padding: 0 0.2rem !important;
+    background: transparent !important;
+    color: #e4ebe6 !important;
 }
 
-.duas-page--platform .dua-open-btn-v5 svg {
-    flex: 0 0 auto;
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .duas-hero-stat-label {
+    color: #80958a !important;
+    letter-spacing: 0.08em;
 }
 
-.duas-page--platform .dua-open-btn-v5:hover {
-    transform: translateY(-1px);
-    border-color: rgba(212, 168, 32, 0.34);
-    color: var(--gold, #b8860b);
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .duas-hero-stat strong {
+    color: #e7ece8 !important;
+    font-weight: 680;
 }
 
-.duas-page--platform .dua-content-area {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: 0.95rem;
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .duas-cat-btn {
+    background: rgba(6, 15, 11, 0.62) !important;
+    border-color: rgba(126, 178, 151, 0.13) !important;
+    color: #b8c6be !important;
+    font-weight: 650;
 }
 
-.duas-page--platform .dua-arabic {
-    font-size: clamp(1.45rem, 1.1rem + 1vw, 1.95rem);
-    line-height: 2.18;
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .duas-cat-btn:is(:hover, .active) {
+    border-color: rgba(72, 194, 133, 0.54) !important;
+    background: rgba(37, 118, 80, 0.28) !important;
+    color: #6fdaa6 !important;
 }
 
-.duas-page--platform .dua-translit {
-    padding-inline-start: 0.9rem;
-    border-inline-start: 2px solid rgba(212, 168, 32, 0.2);
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .duas-results-badge {
+    border-color: rgba(72, 194, 133, 0.2);
+    background: rgba(37, 118, 80, 0.18);
+    color: #58cc93;
 }
 
-.duas-page--platform .dua-translation {
-    color: var(--text-secondary);
-    line-height: 1.82;
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .dua-card-v5 {
+    background: #101b17 !important;
+    border-color: rgba(126, 178, 151, 0.16) !important;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2) !important;
 }
 
-.duas-page--platform .dua-card-footer {
-    margin-top: auto;
-    padding-top: 0.95rem;
-    border-top: 1px solid rgba(var(--primary-rgb), 0.1);
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .dua-card-v5:hover {
+    border-color: rgba(72, 194, 133, 0.32) !important;
 }
 
-@media (max-width: 640px) {
-    .duas-page--platform .duas-results {
-        padding: 1rem;
-    }
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] :is(.dua-ref-pill, .dua-open-btn-v5, .dua-card-footer-link) {
+    background: #0a1410 !important;
+    border-color: rgba(126, 178, 151, 0.15) !important;
+    color: #bdc9c2 !important;
+}
 
-    .duas-page--platform .dua-card-head {
-        flex-direction: column;
-    }
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .dua-cat-pill {
+    background: rgba(43, 151, 99, 0.14) !important;
+    border-color: rgba(72, 194, 133, 0.24) !important;
+    color: #55c98f !important;
+}
 
-    .duas-page--platform .dua-head-actions {
-        width: 100%;
-        justify-content: flex-end;
-    }
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .dua-arabic {
+    background: rgba(39, 121, 82, 0.09) !important;
+    border-inline-end-color: #3eb77c !important;
+    color: #f3f0e7 !important;
+}
+
+html[data-theme="dark"] body .app-root.app-root[data-view="duas"] .dua-card-footer {
+    border-top-color: rgba(126, 178, 151, 0.12);
 }
