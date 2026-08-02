@@ -5,7 +5,12 @@ import {
   useAppSelector,
 } from "../context/AppContext";
 import { t as i18nT } from "../i18n";
-import { getSurah, toAr, getSurahForPage } from "../data/surahs";
+import {
+  getSurah,
+  getSurahForPage,
+  getSurahLigature,
+  toAr,
+} from "../data/surahs";
 import { normalizeFontId } from "../data/fonts";
 import { cn } from "../lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -315,29 +320,24 @@ export default function Header() {
       ? lang === "ar"
         ? `\u062c\u0632\u0621 ${toAr(currentJuz)}`
         : `Juz ${currentJuz}`
-      : surahMeta?.en || surahMeta?.fr || surahMeta?.ar || "";
-  const centerTitleAlt =
+      : lang === "ar"
+        ? surahMeta?.ar || surahMeta?.en || ""
+        : lang === "fr"
+          ? surahMeta?.fr || surahMeta?.en || ""
+          : surahMeta?.en || surahMeta?.fr || "";
+  const centerSubtitle =
     !showDuas && displayMode !== "juz" && surahMeta
       ? lang === "ar"
-        ? surahMeta.ar
-        : lang === "fr"
-          ? surahMeta.fr
-          : ""
+        ? surahMeta.fr || surahMeta.en
+        : surahMeta.ar
       : "";
-  const hasRotatingTitle =
-    Boolean(centerTitleAlt) && centerTitleAlt !== centerTitle;
-  const centerTitleLabel = hasRotatingTitle
-    ? `${centerTitle} - ${centerTitleAlt}`
+  const centerSurahLigature =
+    !showDuas && displayMode !== "juz"
+      ? getSurahLigature(activeSurahNum)
+      : "";
+  const centerTitleLabel = centerSubtitle
+    ? `${centerTitle} - ${centerSubtitle}`
     : centerTitle;
-
-  const themeDotColors = {
-    light: "#199b90",
-    dark: "#2bb6c7",
-    sepia: "#b4883c",
-    "quran-night": "#3ca675",
-    oled: "#2db870",
-  };
-  const dotColor = themeDotColors[theme] || "var(--primary)";
 
   const headerLabels = {
     menu: tr({
@@ -483,7 +483,7 @@ export default function Header() {
             className="mp-header__brand"
             type="button"
             onClick={goHome}
-            aria-label={lang === "ar" ? "Mushaf.plus — الرئيسية" : lang === "en" ? "Mushaf.plus — Home" : "Mushaf.plus — Accueil"}
+            aria-label={lang === "ar" ? "MushafPlus — الرئيسية" : lang === "en" ? "MushafPlus — Home" : "MushafPlus — Accueil"}
           >
             <span className="mp-header__logo">
               <PlatformLogo
@@ -496,7 +496,7 @@ export default function Header() {
               />
             </span>
             <span className="mp-header__brand-text">
-              Mushaf<span style={{ color: dotColor }}>.</span>plus
+              Mushaf<span className="mp-header__brand-accent">Plus</span>
             </span>
           </button>
         </div>
@@ -540,24 +540,27 @@ export default function Header() {
                     type="button"
                     aria-label={centerTitleLabel}
                   >
-                    <span
-                      className={cn(
-                        "mp-header__title-rotator",
-                        hasRotatingTitle && "mp-header__title-rotator--active",
-                      )}
-                      aria-hidden="true"
-                    >
-                      <span className="mp-header__title mp-header__title--primary">
+                    <span className="mp-header__title-stack" aria-hidden="true">
+                      <span className="mp-header__title">
                         {centerTitle}
                       </span>
-                      {hasRotatingTitle ? (
+                      {centerSubtitle ? (
                         <span
-                          className={cn(
-                            "mp-header__title mp-header__title--secondary",
-                            lang === "ar" && "mp-header__title--arabic",
-                          )}
+                          className="mp-header__title-sub"
+                          aria-label={centerSubtitle}
                         >
-                          {centerTitleAlt}
+                          {lang !== "ar" && centerSurahLigature ? (
+                            <span
+                              className="font-surah-names"
+                              dir="ltr"
+                              lang="en"
+                              aria-hidden="true"
+                            >
+                              {centerSurahLigature}
+                            </span>
+                          ) : (
+                            centerSubtitle
+                          )}
                         </span>
                       ) : null}
                     </span>

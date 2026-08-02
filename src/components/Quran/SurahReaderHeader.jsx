@@ -66,6 +66,8 @@ export default function SurahReaderHeader({
   const s = getSurah(surahNum);
   if (!s) return null;
 
+  const surahLigature = String(surahNum).padStart(3, "0");
+
   const isMeccan = s.type === "Meccan";
   const translatedName =
     lang === "ar" ? s.ar : lang === "fr" ? s.fr || s.en : s.en;
@@ -163,7 +165,9 @@ export default function SurahReaderHeader({
       <div className="srh-identity">
         {/* Arabic name */}
         <div className="srh-arabic" dir="rtl" lang="ar" aria-label={s.ar}>
-          {s.ar}
+          <span className="font-surah-names" dir="ltr" lang="en" aria-hidden="true">
+            {surahLigature}
+          </span>
         </div>
 
         {/* Text info */}
@@ -234,7 +238,11 @@ export default function SurahReaderHeader({
 
       {/* Mobile-only compact action row (identity hidden on ≤640px) */}
       <div className="srh-mobile-bar" aria-hidden={undefined}>
-        <span className="srh-mobile-bar__name" dir="rtl" lang="ar">{s.ar}</span>
+        <span className="srh-mobile-bar__name" dir="rtl" lang="ar" aria-label={s.ar}>
+          <span className="font-surah-names" dir="ltr" lang="en" aria-hidden="true">
+            {surahLigature}
+          </span>
+        </span>
         <span className="srh-mobile-bar__title">{surahNum}. {translatedName}</span>
         <div className="srh-mobile-bar__actions">
           <button

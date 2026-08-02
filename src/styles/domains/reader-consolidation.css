@@ -3106,9 +3106,6 @@ html[data-split-view="on"]
 [data-theme="dark"] .app-root .quran-display--platform .reader-toolbar,
 [data-theme="dark"] .app-root .quran-display--platform .surah-ayahs-list,
 [data-theme="dark"] .app-root .quran-display--platform .rd-ayah,
-[data-theme="dark"] .app-root[data-view="duas"] .duas-hero,
-[data-theme="dark"] .app-root[data-view="duas"] .duas-results,
-[data-theme="dark"] .app-root[data-view="duas"] .dua-card-v5,
 [data-theme="dark"] .app-root .modal-content,
 [data-theme="dark"] .app-root .panel {
     background: #202a34 !important;

@@ -16,6 +16,8 @@ import {
   Wand2,
   Compass,
   ExternalLink,
+  Mic,
+  Square,
 } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useApp } from "../context/AppContext";
@@ -30,6 +32,7 @@ import {
 import { prepareSearchQuery } from "../services/searchWorkerService";
 import { startPerformanceTimer } from "../services/performanceMetrics";
 import { Icon } from "./ui/icon";
+import useVoiceSearch from "../hooks/useVoiceSearch";
 
 function formatSearchError(error, lang) {
   const message = String(error?.message || error || "").trim();
@@ -54,6 +57,20 @@ export default function SearchModal() {
   const [searchMode, setSearchMode] = useState("arabic");
   const [resolvedQuery, setResolvedQuery] = useState("");
   const [activeResultIdx, setActiveResultIdx] = useState(-1);
+
+  const handleVoiceTranscript = useCallback((transcript) => {
+    const sanitized = sanitizeSearchQuery(transcript);
+    if (!sanitized) return;
+    setQuery(sanitized);
+    setActiveResultIdx(-1);
+    if (containsArabic(sanitized)) setSearchMode("arabic");
+  }, []);
+
+  const voiceSearch = useVoiceSearch({
+    interfaceLanguage: lang,
+    searchMode,
+    onTranscript: handleVoiceTranscript,
+  });
 
   const close = () => dispatch({ type: "SET", payload: { searchOpen: false } });
 
@@ -353,18 +370,23 @@ export default function SearchModal() {
                       lang === "fr" ? "Commande de recherche" : "Search command"
                     }
                   >
-                    <label className="search-pro__input-shell">
+                    <div className="search-pro__input-shell">
                       <span aria-hidden="true">
                         <Search size={16} />
                       </span>
+                      <label className="sr-only" htmlFor="quran-search-input">
+                        {t("search.inputLabel", lang)}
+                      </label>
                       <input
+                        id="quran-search-input"
                         type="text"
-                        lang={searchMode === "fr" ? "fr" : searchMode === "en" ? "en" : "ar"}
+                        lang={searchMode === "arabic" ? "ar" : searchMode === "en" ? "en" : "fr"}
                         dir={containsArabic(query) || searchMode === "arabic" ? "rtl" : "ltr"}
                         value={query}
-                        onChange={(event) =>
-                          setQuery(sanitizeSearchQuery(event.target.value))
-                        }
+                        onChange={(event) => {
+                          voiceSearch.clearError();
+                          setQuery(sanitizeSearchQuery(event.target.value));
+                        }}
                         onKeyDown={handleInputKeyDown}
                         placeholder={
                           searchMode === "phonetic"
@@ -381,7 +403,40 @@ export default function SearchModal() {
                             : undefined
                         }
                       />
-                    </label>
+                      <button
+                        type="button"
+                        className={`search-pro__voice-btn${voiceSearch.isListening ? " is-listening" : ""}`}
+                        onClick={voiceSearch.toggle}
+                        onKeyDown={(event) => event.stopPropagation()}
+                        aria-label={t(
+                          voiceSearch.isListening
+                            ? "search.voiceStop"
+                            : "search.voiceStart",
+                          lang,
+                        )}
+                        aria-pressed={voiceSearch.isListening}
+                        title={t(
+                          voiceSearch.isListening
+                            ? "search.voiceStop"
+                            : "search.voiceStart",
+                          lang,
+                        )}
+                      >
+                        {voiceSearch.isListening ? (
+                          <Square size={13} fill="currentColor" aria-hidden="true" />
+                        ) : (
+                          <Mic size={17} aria-hidden="true" />
+                        )}
+                        <span className="search-pro__voice-label">
+                          {t(
+                            voiceSearch.isListening
+                              ? "search.voiceStopShort"
+                              : "search.voiceStartShort",
+                            lang,
+                          )}
+                        </span>
+                      </button>
+                    </div>
                     <div className="search-pro__actions">
                       <button
                         className="search-pro__submit"
@@ -403,6 +458,23 @@ export default function SearchModal() {
                       </button>
                     </div>
                   </section>
+
+                  {(voiceSearch.isListening || voiceSearch.isStarting) && (
+                    <p
+                      className="search-pro__voice-status"
+                      role="status"
+                      aria-live="polite"
+                    >
+                      <span aria-hidden="true" />
+                      {t("search.voiceListening", lang)}
+                    </p>
+                  )}
+
+                  {voiceSearch.errorCode && (
+                    <p className="search-pro__voice-error" role="alert">
+                      {t(`search.voiceErrors.${voiceSearch.errorCode}`, lang)}
+                    </p>
+                  )}
 
                   <div
                     className="search-pro__modes"

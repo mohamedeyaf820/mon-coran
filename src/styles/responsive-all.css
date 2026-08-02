@@ -248,73 +248,6 @@
     }
 }
 
-/* Footer inspired by Quran apps: compact navigation, strong verse, no overflow. */
-.mp-footer-v2 {
-    margin-top: clamp(2.5rem, 5vw, 5rem);
-    padding-inline: var(--mp-safe-x);
-}
-
-.mp-footer-v2__shell {
-    width: min(100%, var(--mp-page-max));
-    margin-inline: auto;
-    border-color: var(--mp-surface-line) !important;
-    background:
-        linear-gradient(
-            145deg,
-            color-mix(
-                in srgb,
-                var(--theme-primary, var(--primary, #0f766e)) 7%,
-                transparent
-            ),
-            transparent
-        ),
-        color-mix(
-            in srgb,
-            var(--theme-panel-bg, var(--bg-card, #fff)) 92%,
-            transparent
-        ) !important;
-}
-
-.mp-footer-v2__verse-text {
-    line-height: 1.9;
-    text-wrap: balance;
-}
-
-.mp-footer-v2__nav {
-    display: grid !important;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 0.5rem;
-}
-
-.mp-footer-v2__nav-btn {
-    min-width: 0;
-    border-radius: 0.9rem !important;
-}
-
-.mp-footer-v2__nav-label {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-@media (max-width: 560px) {
-    .mp-footer-v2__shell {
-        border-radius: 1.1rem !important;
-    }
-
-    .mp-footer-v2__nav {
-        grid-template-columns: repeat(5, minmax(2.9rem, 1fr));
-    }
-
-    .mp-footer-v2__nav-btn {
-        padding-inline: 0.35rem !important;
-    }
-
-    .mp-footer-v2__nav-label {
-        font-size: 0.64rem;
-    }
-}
-
 /* General card polish for the main reading/home surfaces. */
 .home-hero-compact,
 .qcom-verse-card,
@@ -2679,16 +2612,6 @@ html[data-theme="dark"]
 }
 
 /* â•â•â• FOOTER responsive â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-@media (max-width: 640px) {
-    .mp-footer-v2__shell {
-        padding: 0.75rem 0.5rem !important;
-    }
-
-    .mp-footer-v2__surah-name {
-        font-size: 0.78rem !important;
-    }
-}
-
 /* ═══════════════════════════════════════════════
    SKELETON SCREENS
    ═══════════════════════════════════════════════ */

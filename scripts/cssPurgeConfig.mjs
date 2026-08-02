@@ -46,6 +46,7 @@ export const CSS_SAFELIST = {
     // them from an inline Quran flow to full-line inline-flex blocks.
     /quran-verse-inline/,
     /mushaf-verse/,
+    /cpv-ayah-marker/,
   ],
 };
 

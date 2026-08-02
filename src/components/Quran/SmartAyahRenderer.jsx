@@ -2,7 +2,10 @@ import React, { useMemo } from "react";
 import { shallowEqual, useAppSelector } from "../../context/AppContext";
 import { stripBasmala } from "../../utils/quranUtils";
 import { withWordCountCalibrationBump } from "../../utils/karaokeUtils";
-import { appendNativeAyahMarker, getAyahTextForFont } from "../../data/fonts";
+import {
+  appendNativeAyahMarker,
+  getAyahTextForFont,
+} from "../../data/fonts";
 import { AyahTextRenderer } from "./AyahTextRenderer";
 import KaraokeWarshText from "./KaraokeWarshText";
 
@@ -43,14 +46,13 @@ function SmartAyahRendererComponent({
   );
   const cleanFallbackText = useMemo(
     () =>
-      appendNativeMarker
-        ? appendNativeAyahMarker(
-            baseCleanText,
-            ayah.numberInSurah,
-            fontFamily,
-            effectiveRiwaya,
-          )
-        : baseCleanText,
+      appendNativeAyahMarker(
+        baseCleanText,
+        ayah.numberInSurah,
+        fontFamily,
+        effectiveRiwaya,
+        appendNativeMarker,
+      ),
     [appendNativeMarker, ayah.numberInSurah, baseCleanText, effectiveRiwaya, fontFamily],
   );
 
@@ -63,14 +65,13 @@ function SmartAyahRendererComponent({
         ?.map((word) => word.textTajweed || word.textUthmani || word.text)
         .filter(Boolean)
         .join(" ");
-    return appendNativeMarker
-      ? appendNativeAyahMarker(
-          value,
-          ayah.numberInSurah,
-          fontFamily,
-          effectiveRiwaya,
-        )
-      : String(value || "").trim();
+    return appendNativeAyahMarker(
+      value,
+      ayah.numberInSurah,
+      fontFamily,
+      effectiveRiwaya,
+      appendNativeMarker,
+    );
   }, [
     appendNativeMarker,
     ayah.numberInSurah,

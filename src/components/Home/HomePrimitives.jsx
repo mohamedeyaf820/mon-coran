@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { Play, Pause } from "lucide-react";
 import { cn } from "../../lib/utils";
-import { toAr } from "../../data/surahs";
+import { getSurahLigature, toAr } from "../../data/surahs";
 import {
   normalizeLatinSurahName,
   getSurahEnglishMeaning,
@@ -214,6 +214,7 @@ export const SurahCard = memo(function SurahCard({
     containIntrinsicSize: "112px",
   };
   const isMeccan = surah.type === "Meccan";
+  const surahLigature = getSurahLigature(surah.n);
 
   return (
     <div
@@ -285,12 +286,12 @@ export const SurahCard = memo(function SurahCard({
 
       {/* Arabic name */}
       <div
-        className="hp-card-ar shrink-0 text-text-primary"
+        className="hp-card-ar font-surah-names shrink-0 text-text-primary"
         aria-label={surah.ar}
-        dir="rtl"
-        lang="ar"
+        dir="ltr"
+        lang="en"
       >
-        {surah.ar}
+        <span aria-hidden="true">{surahLigature}</span>
       </div>
 
       {/* Play button — always visible on touch, hover on desktop */}

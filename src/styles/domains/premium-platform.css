@@ -636,14 +636,14 @@
 .ayah-action-sheet-backdrop {
     position: fixed;
     inset: 0;
-    z-index: 190;
+    z-index: 630;
     border: 0;
     background: rgba(6, 10, 18, 0.45);
 }
 
 .ayah-action-sheet {
     position: relative;
-    z-index: 191;
+    z-index: 631;
     display: grid;
     gap: 0.68rem;
     padding: 0.76rem;
@@ -805,6 +805,11 @@
 .ayah-action-sheet--share .share-btn--x svg {
     background: rgba(136, 146, 176, 0.2);
     color: color-mix(in srgb, var(--theme-text) 82%, #8f9dbf 18%);
+}
+
+.ayah-action-sheet--share .share-btn--facebook svg {
+    background: rgba(24, 119, 242, 0.18);
+    color: #1877f2;
 }
 
 .ayah-action-sheet--share .share-btn--email svg {

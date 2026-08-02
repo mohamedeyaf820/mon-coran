@@ -47,6 +47,8 @@ function collectSourceFiles(dir) {
 test("security: allows only whitelisted https hosts", () => {
   assert.equal(isAllowedExternalUrl("https://wa.me/?text=ok"), true);
   assert.equal(isAllowedExternalUrl("https://twitter.com/test"), true);
+  assert.equal(isAllowedExternalUrl("https://www.facebook.com/sharer/sharer.php?u=test"), true);
+  assert.equal(isAllowedExternalUrl("https://www.facebook.com.evil.example/sharer"), false);
   assert.equal(isAllowedExternalUrl("https://evil.example.com"), false);
   assert.equal(isAllowedExternalUrl("https://ia800304.us.archive.org/audio/test.mp3"), false);
   assert.equal(isAllowedExternalUrl("javascript:alert(1)"), false);
@@ -59,9 +61,9 @@ test("security: production CSP excludes dev-only and unused risky sources", () =
   assert.equal(csp.includes("ws://localhost"), false);
   assert.match(csp, /img-src[^;]*https:\/\/www\.assabile\.com/);
   assert.match(csp, /img-src[^;]*https:\/\/storage\.googleapis\.com/);
-  assert.match(csp, /img-src[^;]*https:\/\/media\.way2quran\.com/);
   assert.match(csp, /img-src[^;]*https:\/\/static\.suratmp3\.com/);
-  assert.match(csp, /img-src[^;]*https:\/\/i\.pinimg\.com/);
+  assert.match(csp, /img-src[^;]*https:\/\/surahquran\.com/);
+  assert.doesNotMatch(csp, /media\.way2quran\.com|i\.pinimg\.com/);
   assert.match(csp, /script-src-attr 'none'/);
   assert.match(csp, /upgrade-insecure-requests/);
   assert.doesNotMatch(csp, /https:\/\/\*\.quran\.com/);

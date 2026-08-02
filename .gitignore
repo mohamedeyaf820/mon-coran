@@ -10,6 +10,7 @@ playwright-report/
 coverage/
 
 # Local dev artifacts
+.claude/settings.local.json
 vite-dev*.log
 vite-preview*.log
 vite-preview*.err.log

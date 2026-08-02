@@ -46,11 +46,13 @@ test("service worker does not precache optional PWA gallery screenshots", () => 
   assert.doesNotMatch(precache, /pwa-home-(?:wide|mobile)\.png/);
 });
 
-test("deployment headers allow same-origin geolocation for explicit opt-in", () => {
+test("deployment headers allow same-origin device features for explicit opt-in", () => {
   const netlify = fs.readFileSync(new URL("../netlify.toml", import.meta.url), "utf8");
   const vercel = fs.readFileSync(new URL("../vercel.json", import.meta.url), "utf8");
   assert.match(netlify, /geolocation=\(self\)/);
   assert.match(vercel, /geolocation=\(self\)/);
+  assert.match(netlify, /microphone=\(self\)/);
+  assert.match(vercel, /microphone=\(self\)/);
 });
 
 test("PWA manifest exposes stable identity, coherent colors and dedicated install assets", () => {

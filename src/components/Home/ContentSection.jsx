@@ -447,7 +447,8 @@ export default function ContentSection({
                           <img
                             src={visual.photo}
                             alt=""
-                            className="absolute inset-0 h-full w-full object-cover"
+                            className="reciter-photo absolute inset-0 h-full w-full object-cover"
+                            style={{ objectPosition: visual.focalPoint }}
                             loading="lazy"
                             decoding="async"
                             referrerPolicy="no-referrer"
@@ -592,7 +593,8 @@ export default function ContentSection({
                       <img
                         src={visual.photo}
                         alt=""
-                        className="absolute inset-0 h-full w-full object-cover"
+                        className="reciter-photo absolute inset-0 h-full w-full object-cover"
+                        style={{ objectPosition: visual.focalPoint }}
                         loading="lazy"
                         decoding="async"
                         referrerPolicy="no-referrer"
@@ -623,53 +625,69 @@ export default function ContentSection({
         )}
       </div>
 
-      {/* ── Audio speed controls (recitations) ── */}
-      {activeTab === "recitations" && (
-        <div className="mt-3 flex items-center justify-center gap-2">
-          <span className="text-[0.72rem] text-text-muted">
-            {lang === "fr" ? "Vitesse" : lang === "ar" ? "السرعة" : "Speed"}
-          </span>
-          {[0.5, 0.75, 1, 1.25, 1.5, 2].map((speed) => {
-            const isActive = (state?.audioSpeed ?? 1) === speed;
-            return (
-              <button
-                key={speed}
-                type="button"
-                className={cn(
-                  "rounded-md px-2 py-1 text-[0.7rem] font-bold transition-all active:scale-95",
-                  isActive
-                    ? "bg-primary text-white shadow-sm"
-                    : "border border-border bg-transparent text-text-muted hover:border-primary/40 hover:text-text-primary",
-                )}
-                onClick={() => onSetAudioSpeed(speed)}
-                aria-pressed={isActive}
-                aria-label={`${speed}x`}
-              >
-                {speed}x
-              </button>
-            );
-          })}
-        </div>
-      )}
+      {/* ── Compact audio utilities ── */}
+      {(activeTab === "recitations" ||
+        (activeTab === "radio" && resumeState)) && (
+        <div className="flex flex-col items-stretch gap-2 rounded-2xl border border-primary/15 bg-bg-card/70 p-2.5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+          {activeTab === "recitations" && (
+            <div
+              className="flex min-w-0 flex-col items-stretch gap-1.5 sm:flex-row sm:items-center sm:gap-2"
+              role="group"
+              aria-label={
+                lang === "fr"
+                  ? "Vitesse de lecture"
+                  : lang === "ar"
+                    ? "سرعة التشغيل"
+                    : "Playback speed"
+              }
+            >
+              <span className="shrink-0 px-1 text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-text-muted">
+                {lang === "fr" ? "Vitesse" : lang === "ar" ? "السرعة" : "Speed"}
+              </span>
+              <div className="grid min-w-0 flex-1 grid-cols-6 gap-1 rounded-xl bg-bg-secondary/80 p-1">
+                {[0.5, 0.75, 1, 1.25, 1.5, 2].map((speed) => {
+                  const isActive = (state?.audioSpeed ?? 1) === speed;
+                  return (
+                    <button
+                      key={speed}
+                      type="button"
+                      className={cn(
+                        "home-audio-speed-button min-h-9 !min-w-0 rounded-lg px-1 text-[0.72rem] font-bold transition-[background-color,color,box-shadow,transform] active:scale-95",
+                        isActive
+                          ? "shadow-sm"
+                          : "text-text-secondary hover:bg-bg-card hover:text-primary",
+                      )}
+                      onClick={() => onSetAudioSpeed(speed)}
+                      aria-pressed={isActive}
+                      aria-label={`${speed}x`}
+                    >
+                      {speed}x
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
-      {/* ── Resume listening button (recitations + radio) ── */}
-      {(activeTab === "recitations" || activeTab === "radio") && resumeState && (
-        <div className="mt-3 flex justify-center">
-          <button
-            type="button"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[0.8rem] font-semibold border border-border bg-bg-secondary text-text-primary transition-colors hover:bg-bg-tertiary"
-            onClick={resumeListening}
-          >
-            <Play size={11} className="text-primary" />
-            {lang === "fr"
-              ? "Reprendre l'écoute"
-              : lang === "ar"
-                ? "استئناف الاستماع"
-                : "Resume listening"}
-            <span className="text-[0.7rem] text-text-muted">
-              S{resumeState.surah}
-            </span>
-          </button>
+          {resumeState && (
+            <button
+              type="button"
+              className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/8 px-3.5 text-[0.78rem] font-semibold text-primary transition-colors hover:bg-primary/14"
+              onClick={resumeListening}
+            >
+              <Play size={12} fill="currentColor" aria-hidden="true" />
+              <span>
+                {lang === "fr"
+                  ? "Reprendre l'écoute"
+                  : lang === "ar"
+                    ? "استئناف الاستماع"
+                    : "Resume listening"}
+              </span>
+              <span className="rounded-full bg-bg-card/80 px-1.5 py-0.5 text-[0.65rem] text-text-muted">
+                S{resumeState.surah}
+              </span>
+            </button>
+          )}
         </div>
       )}
 

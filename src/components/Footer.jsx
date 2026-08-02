@@ -93,6 +93,7 @@ export default function Footer() {
               className="mp-footer-v2__nav-btn"
               onClick={item.onClick}
               aria-label={item.label}
+              aria-current={item.key === "home" ? "page" : undefined}
             >
               <span className="mp-footer-v2__nav-icon" aria-hidden="true">
                 <item.Icon size={14} />

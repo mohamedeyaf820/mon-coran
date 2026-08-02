@@ -18,44 +18,6 @@ html body .app-root {
   --mp-device-icon: clamp(0.75rem, 0.72rem + 0.12vw, 0.88rem);
 }
 
-/* Reading header title should hug its label on pointer-sized layouts. */
-html body .app-root > .mp-header .mp-header__title-btn {
-  width: fit-content !important;
-  min-width: 0 !important;
-  max-width: min(42vw, 11rem) !important;
-  min-height: 2.25rem !important;
-  flex-direction: row !important;
-  padding: 0.25rem 0.55rem !important;
-  border-color: transparent !important;
-}
-
-/* Keep desktop surah navigation as one compact, readable control group. */
-@media (min-width: 761px) {
-  html body .app-root > .mp-header .mp-header__center {
-    display: flex !important;
-    min-width: 0 !important;
-    justify-content: center !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__nav {
-    display: inline-flex !important;
-    width: max-content !important;
-    min-width: 0 !important;
-    max-width: 100% !important;
-    height: auto !important;
-    grid-template-columns: none !important;
-    flex: 0 0 auto !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 0.2rem !important;
-    padding: 0.2rem !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__title-btn {
-    flex: 0 1 auto !important;
-  }
-}
-
 /* Verse actions must remain identifiable before hover in every theme. */
 html body .app-root[data-view="reading"] .quran-display--platform
   .qc-list-card__top .ayah-actions button {
@@ -98,18 +60,6 @@ html body .app-root[data-view="reading"] .quran-display--platform
   color: #fff !important;
 }
 
-@media (max-width: 760px) {
-  html body .app-root > .mp-header .mp-header__title-btn {
-    max-width: 52vw !important;
-  }
-}
-
-@media (min-width: 761px) {
-  html body .app-root > .mp-header.mp-header--compact .mp-header__brand-text {
-    display: inline !important;
-  }
-}
-
 html,
 body,
 #root,
@@ -149,13 +99,6 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
     --ux-touch-target: max(2.75rem, 44px);
   }
 
-  html body .app-root .mp-header
-    :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more) {
-    flex: 0 0 auto;
-    min-width: var(--mp-device-touch) !important;
-    min-height: var(--mp-device-touch) !important;
-  }
-
   html body .app-root .mp-player-options-trigger.mp-player-options-trigger {
     min-width: var(--mp-device-touch) !important;
     min-height: var(--mp-device-touch) !important;
@@ -174,20 +117,6 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
 
 /* Reader density: keep the user's setting, then bound it for the device. */
 @media (max-width: 640px) {
-  html body .app-root > .mp-header .mp-header__title {
-    min-width: 0;
-    font-size: clamp(0.78rem, 3.5vw, 0.92rem) !important;
-    text-overflow: ellipsis;
-  }
-
-  html body .app-root > .mp-header
-    :is(.mp-header__nav-arrow, .mp-header__riwaya-mobile) {
-    width: var(--mp-device-touch) !important;
-    min-width: var(--mp-device-touch) !important;
-    height: var(--mp-device-touch) !important;
-    min-height: var(--mp-device-touch) !important;
-  }
-
   .app-root[data-view="reading"] .app-view-shell {
     padding-inline: max(0.25rem, env(safe-area-inset-left)) max(0.25rem, env(safe-area-inset-right)) !important;
   }
@@ -195,11 +124,6 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
   html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
     font-size: var(--qd-reading-font-size, 24px) !important;
     line-height: 1.95 !important;
-  }
-
-  html body .app-root .mp-footer-v2__nav-label {
-    font-size: 0.72rem !important;
-    line-height: 1.15 !important;
   }
 
   html body .app-root[data-view="reading"] .quran-display--warsh .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
@@ -358,21 +282,6 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
 }
 
 @media (min-width: 768px) {
-  html body .app-root > .mp-header .mp-header__riwaya-toggle {
-    min-width: 4.6rem !important;
-    justify-content: center !important;
-    padding-inline: 0.85rem !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__riwaya-toggle span {
-    display: inline !important;
-    color: currentColor !important;
-    font-size: 0.78rem !important;
-    font-weight: 800 !important;
-    letter-spacing: 0 !important;
-    text-transform: none !important;
-  }
-
   html body .app-root.app-root[data-view="duas"] .duas-page--platform .dua-arabic {
     font-size: clamp(1.7rem, 1.35rem + 0.55vw, 2.2rem) !important;
     line-height: 2.05 !important;
@@ -518,14 +427,6 @@ html body .settings-drawer__title {
 }
 
 @media (min-width: 1025px) {
-  html body .app-root > .mp-header {
-    padding-block: 0.25rem !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__bar {
-    min-height: 3.5rem !important;
-  }
-
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
     .qc-list-card .qc-ayah-text-ar {
     --reader-arabic-size: var(--qd-reading-font-size, 34px) !important;
@@ -555,4 +456,300 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container
   :is(.quran-verse-inline, .quran-arabic-text, .verse-text, .verse-text *) {
   font-size: inherit !important;
+}
+
+/* Responsive reading header: one visual scale, one centered navigation axis. */
+html body .app-root > .mp-header {
+  padding: 0 !important;
+}
+
+html body .app-root > .mp-header .mp-header__bar {
+  --mp-header-control: 44px;
+  --mp-header-icon: 1rem;
+  --mp-header-gap: clamp(0.3rem, 0.75vw, 0.6rem);
+  min-height: 64px !important;
+  height: 64px !important;
+  padding-inline: max(clamp(0.65rem, 1.8vw, 1.5rem), env(safe-area-inset-left))
+    max(clamp(0.65rem, 1.8vw, 1.5rem), env(safe-area-inset-right)) !important;
+  gap: var(--mp-header-gap) !important;
+  background: color-mix(in srgb, var(--bg-primary) 94%, transparent) !important;
+  border-bottom-color: color-mix(in srgb, var(--border) 82%, transparent) !important;
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--text-primary) 4%, transparent),
+    0 8px 24px color-mix(in srgb, #000 5%, transparent) !important;
+}
+
+html body .app-root > .mp-header .mp-header__brand-row,
+html body .app-root > .mp-header .mp-header__actions {
+  min-width: 0 !important;
+  gap: 0.3rem !important;
+}
+
+html body .app-root > .mp-header .mp-header__brand {
+  gap: 0.55rem !important;
+  padding: 0.2rem 0.45rem !important;
+}
+
+html body .app-root > .mp-header .mp-header__logo {
+  width: 2.15rem !important;
+  height: 2.15rem !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--primary) 14%, transparent);
+}
+
+html body .app-root > .mp-header .mp-header__brand-text {
+  display: inline !important;
+  font-size: clamp(1rem, 0.92rem + 0.22vw, 1.16rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.035em !important;
+}
+
+html body .app-root > .mp-header .mp-header__brand-accent {
+  color: var(--primary);
+}
+
+html body .app-root > .mp-header
+  :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more) {
+  width: var(--mp-header-control) !important;
+  min-width: var(--mp-header-control) !important;
+  height: var(--mp-header-control) !important;
+  min-height: var(--mp-header-control) !important;
+  padding: 0 !important;
+  border-radius: 0.85rem !important;
+  border-color: color-mix(in srgb, var(--border) 88%, transparent) !important;
+  background: color-mix(in srgb, var(--bg-secondary) 72%, transparent) !important;
+}
+
+html body .app-root > .mp-header
+  :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__nav-arrow)
+  svg {
+  width: var(--mp-header-icon) !important;
+  height: var(--mp-header-icon) !important;
+  stroke-width: 2.15 !important;
+}
+
+html body .app-root > .mp-header .mp-header__riwaya-toggle {
+  display: inline-flex !important;
+  width: auto !important;
+  min-width: 4.25rem !important;
+  padding-inline: 0.8rem !important;
+  border-color: color-mix(in srgb, var(--primary) 20%, var(--border)) !important;
+  background: color-mix(in srgb, var(--primary) 7%, var(--bg-secondary)) !important;
+  color: var(--text-primary) !important;
+}
+
+html body .app-root > .mp-header .mp-header__riwaya-toggle span {
+  display: inline !important;
+  font-size: 0.76rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.01em !important;
+  text-transform: none !important;
+}
+
+html body .app-root > .mp-header .mp-header__nav {
+  display: grid !important;
+  grid-template-columns: 42px minmax(10rem, 15rem) 42px !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  gap: 0.2rem !important;
+  padding: 0.2rem !important;
+  border: 1px solid color-mix(in srgb, var(--border) 88%, transparent) !important;
+  border-radius: 1.05rem !important;
+  background: color-mix(in srgb, var(--bg-card) 88%, var(--bg-secondary)) !important;
+  box-shadow: 0 5px 18px color-mix(in srgb, #000 6%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 22%, transparent) !important;
+}
+
+html body .app-root > .mp-header .mp-header__nav-arrow {
+  width: 42px !important;
+  min-width: 42px !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  border-radius: 0.75rem !important;
+}
+
+html body .app-root > .mp-header .mp-header__title-btn {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  min-height: 42px !important;
+  justify-content: center !important;
+  padding: 0.2rem 0.55rem !important;
+  border-radius: 0.75rem !important;
+}
+
+html body .app-root > .mp-header .mp-header__title {
+  font-size: clamp(0.88rem, 0.82rem + 0.2vw, 1rem) !important;
+  font-weight: 760 !important;
+  letter-spacing: -0.018em !important;
+}
+
+html body .app-root > .mp-header .mp-header__title-sub {
+  margin-top: 0.08rem;
+  font-size: 0.68rem !important;
+}
+
+html body .app-root > .mp-header
+  :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__nav-arrow, .mp-header__title-btn):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--primary) 75%, #fff) !important;
+  outline-offset: 2px !important;
+}
+
+@media (min-width: 1025px) {
+  html body .app-root > .mp-header .mp-header__bar {
+    display: grid !important;
+    grid-template-columns: minmax(15rem, 1fr) auto minmax(15rem, 1fr) !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__brand-row {
+    justify-self: start;
+  }
+
+  html body .app-root > .mp-header .mp-header__center {
+    justify-self: center;
+    overflow: visible !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__actions {
+    justify-self: end;
+  }
+
+  html body .app-root > .mp-header .mp-header__search {
+    display: inline-flex !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__search span {
+    display: none !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  html body .app-root > .mp-header .mp-header__bar {
+    --mp-header-icon: 0.94rem;
+    min-height: 60px !important;
+    height: 60px !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__brand-text,
+  html body .app-root > .mp-header .mp-header__search {
+    display: none !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__nav {
+    grid-template-columns: 40px minmax(7rem, min(30vw, 13rem)) 40px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html body .app-root > .mp-header .mp-header__bar {
+    --mp-header-icon: 0.88rem;
+    min-height: 56px !important;
+    height: 56px !important;
+    max-height: 56px !important;
+    padding-inline: max(0.35rem, env(safe-area-inset-left))
+      max(0.35rem, env(safe-area-inset-right)) !important;
+    gap: 0.18rem !important;
+    display: grid !important;
+    grid-template-columns: 100px minmax(0, 1fr) 100px !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__brand-row,
+  html body .app-root > .mp-header .mp-header__actions {
+    gap: 0.1rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__brand-row {
+    justify-self: start;
+  }
+
+  html body .app-root > .mp-header .mp-header__actions {
+    justify-self: end;
+  }
+
+  html body .app-root.app-root > .mp-header
+    .mp-header__action.mp-header__riwaya-toggle {
+    display: inline-flex !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__brand-text,
+  html body .app-root > .mp-header .mp-header__search {
+    display: none !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__brand {
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0.3rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__logo {
+    width: 1.85rem !important;
+    height: 1.85rem !important;
+    border-radius: 0.65rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__center {
+    flex: 1 1 0 !important;
+    overflow: hidden !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__nav {
+    display: grid !important;
+    grid-template-columns: 30px minmax(0, 1fr) 30px !important;
+    width: 100% !important;
+    padding: 0.12rem !important;
+    border-radius: 0.82rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__nav-arrow {
+    width: 30px !important;
+    min-width: 30px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    border-radius: 0.65rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title-btn {
+    min-height: 40px !important;
+    padding-inline: 0.22rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title-sub {
+    display: none !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title {
+    font-size: clamp(0.76rem, 3.5vw, 0.9rem) !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__riwaya-toggle {
+    min-width: 3.25rem !important;
+    padding-inline: 0.48rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__riwaya-toggle span {
+    font-size: 0.7rem !important;
+  }
+}
+
+@media (max-width: 380px) {
+  html body .app-root > .mp-header .mp-header__brand {
+    display: none !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__riwaya-toggle {
+    min-width: 2.9rem !important;
+    padding-inline: 0.35rem !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__nav {
+    grid-template-columns: 26px minmax(0, 1fr) 26px !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__nav-arrow {
+    width: 26px !important;
+    min-width: 26px !important;
+  }
 }

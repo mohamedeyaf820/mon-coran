@@ -1,9 +1,63 @@
-import { Feather, CirclePlay, BookOpen, HandHeart, Bookmark, ChevronLeft, ChevronRight } from "lucide-react";
-import SURAHS from "../../data/surahs";
+import { Feather, CirclePlay, BookOpen, HandHeart, ChevronLeft, ChevronRight } from "lucide-react";
+import SURAHS, { getSurahLigature } from "../../data/surahs";
 import { cn } from "../../lib/utils";
 import PlatformLogo from "../PlatformLogo";
 import { EmptyState } from "./HomePrimitives";
 import Icon from "./HomeIcon";
+
+function QuickSurahRow({
+  arabicName,
+  isRtl,
+  label,
+  meta,
+  number,
+  onClick,
+  onIntent,
+}) {
+  const ligature = getSurahLigature(number);
+
+  return (
+    <button
+      className="home-quick-row group grid min-h-12 w-full grid-cols-[2.5rem_minmax(0,1fr)_4.75rem_1.25rem] items-center gap-2 rounded-xl px-2 py-1.5 text-left transition-colors hover:bg-bg-tertiary focus-visible:bg-bg-tertiary max-[420px]:grid-cols-[2.25rem_minmax(0,1fr)_4rem_1rem] max-[420px]:gap-1.5"
+      onClick={onClick}
+      onPointerEnter={onIntent}
+      onFocus={onIntent}
+      onTouchStart={onIntent}
+      type="button"
+      aria-label={`${label}${meta ? `, ${meta}` : ""}`}
+    >
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-bg-primary text-[0.78rem] font-extrabold tabular-nums text-primary shadow-sm max-[420px]:h-8 max-[420px]:w-8">
+        {number}
+      </span>
+      <span className="min-w-0">
+        <strong className="block truncate text-[0.82rem] font-extrabold leading-tight text-text-primary">
+          {label}
+        </strong>
+        {meta && (
+          <small className="mt-0.5 block truncate text-[0.68rem] font-medium leading-tight text-text-muted">
+            {meta}
+          </small>
+        )}
+      </span>
+      <span
+        className="font-surah-names block truncate text-center text-[1.3rem] leading-none text-text-secondary transition-colors group-hover:text-primary max-[420px]:text-[1.15rem]"
+        aria-hidden="true"
+        dir="ltr"
+        lang="en"
+        title={arabicName}
+      >
+        {ligature}
+      </span>
+      <span className="flex h-7 w-7 items-center justify-center rounded-full text-text-muted transition-colors group-hover:bg-primary/10 group-hover:text-primary max-[420px]:h-6 max-[420px]:w-6">
+        {isRtl ? (
+          <ChevronLeft size={13} aria-hidden="true" />
+        ) : (
+          <ChevronRight size={13} aria-hidden="true" />
+        )}
+      </span>
+    </button>
+  );
+}
 
 export default function HeroSection({
   lang,
@@ -126,7 +180,7 @@ export default function HeroSection({
           <aside className="home-info-panel">
             <div className="home-info-card overflow-hidden rounded-2xl border border-border/50 bg-bg-secondary/40 backdrop-blur-md">
               <div
-                className="flex items-center overflow-x-auto border-b border-border/50 no-scrollbar"
+                className="home-quick-tabs flex items-center overflow-x-auto border-b border-border/50 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                 role="tablist"
                 aria-label={
                   uiLang === "fr"
@@ -140,7 +194,7 @@ export default function HeroSection({
                   <button
                     key={tab.id}
                     className={cn(
-                      "flex items-center gap-2 whitespace-nowrap border-b-2 border-transparent px-4 py-3 text-[0.82rem] font-semibold text-text-secondary transition-colors hover:text-text-primary",
+                      "home-quick-tab flex flex-1 items-center justify-center gap-2 whitespace-nowrap border-b-2 border-transparent px-4 py-3 text-[0.8rem] font-semibold text-text-secondary transition-colors hover:text-text-primary sm:flex-none",
                       activeInfo === tab.id &&
                         "border-primary bg-primary/5 text-primary",
                     )}
@@ -164,7 +218,7 @@ export default function HeroSection({
                 ))}
               </div>
 
-              <div className="flex max-h-[188px] flex-col overflow-y-auto p-2 no-scrollbar">
+              <div className="home-quick-body flex max-h-[280px] flex-col overflow-y-auto p-2 [scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:color-mix(in_srgb,var(--primary)_28%,transparent)_transparent] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-primary/25">
                 {activeInfo === "bookmarks" &&
                   (bookmarks.length === 0 ? (
                     <div className="py-5">
@@ -174,42 +228,28 @@ export default function HeroSection({
                     bookmarks.slice(0, 6).map((bk) => {
                       const s = SURAHS[bk.surah - 1];
                       return (
-                        <button
+                        <QuickSurahRow
                           key={bk.id}
-                          className="group flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-bg-tertiary"
+                          number={bk.surah}
+                          label={lang === "fr" ? s?.fr : s?.en}
+                          meta={`v.${bk.ayah}`}
+                          arabicName={s?.ar}
+                          isRtl={isRtl}
                           onClick={() => goSurahAyah(bk.surah, bk.ayah)}
-                          onPointerEnter={() => onWarmSurah(bk.surah)}
-                          onFocus={() => onWarmSurah(bk.surah)}
-                          type="button"
-                        >
-                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-primary text-primary shadow-sm">
-                            <Bookmark size={14} aria-hidden="true" />
-                          </span>
-                          <div className="flex min-w-0 flex-1 flex-col">
-                            <span
-                              className="mb-0.5 text-right font-quran text-[1.05rem] text-text-primary"
-                              lang="ar"
-                              dir="rtl"
-                            >
-                              {s?.ar}
-                            </span>
-                            <span className="truncate text-[0.78rem] text-text-secondary">
-                              {lang === "fr" ? s?.fr : s?.en} · v.{bk.ayah}
-                            </span>
-                          </div>
-                        </button>
+                          onIntent={() => onWarmSurah(bk.surah)}
+                        />
                       );
                     })
                   ))}
 
                 {activeInfo === "suggest" && (
                   <>
-                    <div className="home-suggestion-heading mb-2 flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-3 py-2 text-primary">
+                    <div className="home-suggestion-heading mb-1 flex min-h-9 items-center gap-2 rounded-xl border border-primary/20 bg-primary/10 px-3 py-1.5 text-primary">
                       <Icon
                         name={suggestionSet.icon}
                         aria-hidden="true"
                       />
-                      <span className="text-[0.86rem] font-extrabold">
+                      <span className="truncate text-[0.78rem] font-extrabold">
                         {
                           suggestionSet.period[
                             lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"
@@ -218,32 +258,15 @@ export default function HeroSection({
                       </span>
                     </div>
                     {suggestionSet.surahs.map((s) => (
-                      <button
+                      <QuickSurahRow
                         key={s.n}
-                        className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-bg-tertiary"
+                        number={s.n}
+                        label={lang === "fr" ? s.fr : s.en}
+                        arabicName={s.ar}
+                        isRtl={isRtl}
                         onClick={() => goSurah(s.n)}
-                        onPointerEnter={() => onWarmSurah(s.n)}
-                        onFocus={() => onWarmSurah(s.n)}
-                        onTouchStart={() => onWarmSurah(s.n)}
-                        type="button"
-                      >
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-primary text-primary shadow-sm">
-                          {s.n}
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <span className="block truncate text-[0.85rem] font-bold text-text-primary">
-                            {lang === "fr" ? s.fr : s.en}
-                          </span>
-                          <span
-                            className="block text-right font-quran text-[1rem] text-text-secondary"
-                            lang="ar"
-                            dir="rtl"
-                          >
-                            {s.ar}
-                          </span>
-                        </div>
-                        {isRtl ? <ChevronLeft size={12} className="text-text-muted" aria-hidden="true" /> : <ChevronRight size={12} className="text-text-muted" aria-hidden="true" />}
-                      </button>
+                        onIntent={() => onWarmSurah(s.n)}
+                      />
                     ))}
                   </>
                 )}

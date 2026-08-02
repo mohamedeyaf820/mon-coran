@@ -94,6 +94,13 @@ async function overflowX(page) {
   return page.evaluate(() => Math.max(0, document.documentElement.scrollWidth - window.innerWidth));
 }
 
+async function headerCenterDelta(page) {
+  return page.locator(".mp-header__nav").evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return Math.abs(rect.left + rect.width / 2 - window.innerWidth / 2);
+  });
+}
+
 async function openAudioPlayer(page) {
   const compactPlayer = page.getByTestId("audio-player-compact");
   if (await compactPlayer.isVisible().catch(() => false)) {
@@ -120,6 +127,23 @@ test("home density: mobile and tablet text, icons and cards scale with viewport"
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
   expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(42);
   expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(14);
+});
+
+test("reader header stays stable and visually centered across breakpoints", async ({ page }) => {
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 820, height: 920 },
+    { width: 1280, height: 900 },
+  ]) {
+    await openReader(page, viewport);
+    expect(await headerCenterDelta(page)).toBeLessThanOrEqual(3);
+    expect(await overflowX(page)).toBeLessThanOrEqual(2);
+
+    const titleMotion = await page.locator(".mp-header__title").evaluate((node) =>
+      getComputedStyle(node).animationName,
+    );
+    expect(titleMotion).toBe("none");
+  }
 });
 
 test("mobile density: header, reading toolbar and audio player fit without horizontal overflow", async ({ page }) => {
@@ -387,6 +411,33 @@ test("duas page: cards, Arabic text and controls adapt to phone and tablet", asy
   expect(await fontSizePx(page, ".dua-arabic")).toBeGreaterThanOrEqual(24);
 
   await openDuas(page, { width: 1280, height: 900 });
+  const copyIcon = await box(page, '.dua-open-btn-v5[aria-label="Copier l\'invocation"] svg');
+  expect(copyIcon?.width || 0).toBeGreaterThanOrEqual(13);
+  expect(copyIcon?.height || 0).toBeGreaterThanOrEqual(13);
+});
+
+test("duas dark theme keeps its devotional palette on a direct load", async ({ page }) => {
+  await seedReadingState(page, { showDuas: true, theme: "dark" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/duas");
+  await expect(page.locator(".duas-page").first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+  const surfaces = await page.evaluate(() => {
+    const hero = getComputedStyle(document.querySelector(".duas-hero"));
+    const card = getComputedStyle(document.querySelector(".dua-card-v5"));
+    return {
+      heroImage: hero.backgroundImage,
+      heroBorder: hero.borderTopColor,
+      cardBackground: card.backgroundColor,
+    };
+  });
+
+  expect(surfaces.heroImage).toContain("rgb(17, 29, 24)");
+  expect(surfaces.heroBorder).toContain("202, 160, 63");
+  expect(surfaces.cardBackground).toBe("rgb(16, 27, 23)");
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+
   const copyIcon = await box(page, '.dua-open-btn-v5[aria-label="Copier l\'invocation"] svg');
   expect(copyIcon?.width || 0).toBeGreaterThanOrEqual(13);
   expect(copyIcon?.height || 0).toBeGreaterThanOrEqual(13);

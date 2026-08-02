@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const SITE_URL = "https://frolicking-kleicha-76adae.netlify.app";
+const SITE_URL = "https://mushafplus.netlify.app";
 
 test.use({ serviceWorkers: "block" });
 

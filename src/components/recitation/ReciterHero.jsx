@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import ReciterTypeBadge from "./ReciterTypeBadge";
 import {
   getReciterCountryLabel,
-  getReciterSourceInfo,
   getReciterVisual,
 } from "../../data/reciters";
 
@@ -18,13 +17,12 @@ export default function ReciterHero({ reciter, lang }) {
   const showPhoto = visual.photo && !imgError;
   const avatar = visual.avatar;
   const countryLabel = getReciterCountryLabel(reciter, lang);
-  const sourceInfo = getReciterSourceInfo(reciter);
 
   return (
     <div className="reciter-hero flex min-w-0 items-center gap-3.5">
       <div className="reciter-hero__portrait relative shrink-0">
         <div
-          className={`reciter-hero__avatar--fallback flex h-16 w-16 shrink-0 items-center justify-center rounded-full text-white sm:h-20 sm:w-20${showPhoto ? " reciter-hero__avatar--bg" : " reciter-hero__avatar"}`}
+          className={`reciter-hero__avatar--fallback flex shrink-0 items-center justify-center rounded-full text-white${showPhoto ? " reciter-hero__avatar--bg" : " reciter-hero__avatar"}`}
           style={{ background: avatar.gradient }}
           aria-hidden="true"
         >
@@ -34,11 +32,12 @@ export default function ReciterHero({ reciter, lang }) {
           <img
             src={visual.photo}
             alt=""
-            className="reciter-hero__avatar absolute inset-0 h-16 w-16 rounded-full border-2 border-primary/20 object-cover sm:h-20 sm:w-20"
+            className="reciter-photo reciter-hero__avatar absolute inset-0 rounded-full border-2 border-primary/20 object-cover"
+            style={{ objectPosition: visual.focalPoint }}
             onError={() => setImgError(true)}
             loading="eager"
             decoding="async"
-            fetchPriority="high"
+            fetchpriority="high"
             referrerPolicy="no-referrer"
           />
         ) : null}
@@ -61,11 +60,6 @@ export default function ReciterHero({ reciter, lang }) {
           {countryLabel && (
             <span className="inline-flex items-center rounded-full bg-bg-secondary px-2 py-0.5 text-[0.65rem] font-medium text-text-muted">
               {countryLabel}
-            </span>
-          )}
-          {sourceInfo && (
-            <span className="reciter-hero__source inline-flex items-center rounded-full px-2 py-0.5 text-[0.65rem] font-bold">
-              {sourceInfo.label}
             </span>
           )}
         </div>
