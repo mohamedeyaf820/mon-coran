@@ -94,6 +94,13 @@ async function overflowX(page) {
   return page.evaluate(() => Math.max(0, document.documentElement.scrollWidth - window.innerWidth));
 }
 
+async function headerCenterDelta(page) {
+  return page.locator(".mp-header__nav").evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    return Math.abs(rect.left + rect.width / 2 - window.innerWidth / 2);
+  });
+}
+
 async function openAudioPlayer(page) {
   const compactPlayer = page.getByTestId("audio-player-compact");
   if (await compactPlayer.isVisible().catch(() => false)) {
@@ -120,6 +127,23 @@ test("home density: mobile and tablet text, icons and cards scale with viewport"
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
   expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(42);
   expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(14);
+});
+
+test("reader header stays stable and visually centered across breakpoints", async ({ page }) => {
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 820, height: 920 },
+    { width: 1280, height: 900 },
+  ]) {
+    await openReader(page, viewport);
+    expect(await headerCenterDelta(page)).toBeLessThanOrEqual(3);
+    expect(await overflowX(page)).toBeLessThanOrEqual(2);
+
+    const titleMotion = await page.locator(".mp-header__title").evaluate((node) =>
+      getComputedStyle(node).animationName,
+    );
+    expect(titleMotion).toBe("none");
+  }
 });
 
 test("mobile density: header, reading toolbar and audio player fit without horizontal overflow", async ({ page }) => {

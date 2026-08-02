@@ -168,56 +168,24 @@
   max-width: 100%;
 }
 
-.mp-header__title-rotator {
-  display: grid;
+.mp-header__title-stack {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.mp-header__title-sub {
   max-width: 100%;
-  height: 1.25em;
   overflow: hidden;
-  place-items: center;
-}
-
-.mp-header__title-rotator > .mp-header__title {
-  grid-area: 1 / 1;
-}
-
-.mp-header__title--secondary {
-  transform: translateY(135%);
-}
-
-.mp-header__title--arabic {
+  color: var(--text-muted);
   font-family: var(--font-surah-name, var(--font-surah, var(--font-quran), serif));
-  font-size: 1.15rem;
-  font-weight: 400;
-}
-
-@keyframes mp-header-title-primary {
-  0%, 42% { opacity: 1; transform: translateY(0); }
-  49%, 92% { opacity: 0; transform: translateY(-135%); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes mp-header-title-secondary {
-  0%, 42% { opacity: 0; transform: translateY(135%); }
-  49%, 92% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(135%); }
-}
-
-.mp-header__title-rotator--active .mp-header__title--primary {
-  animation: mp-header-title-primary 7s ease-in-out infinite;
-}
-
-.mp-header__title-rotator--active .mp-header__title--secondary {
-  animation: mp-header-title-secondary 7s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mp-header__title-rotator--active .mp-header__title {
-    animation: none;
-  }
-
-  .mp-header__title-rotator--active .mp-header__title--secondary {
-    display: none;
-  }
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mp-header__sub {

@@ -91,7 +91,7 @@ test("continuous Mushaf markers leave a readable gap before the next ayah", () =
     /\.mushaf-text-block \.cpv-ayah-marker\s*\{([\s\S]*?)\}/,
   )?.[1] || "";
 
-  assert.match(markerRule, /margin-inline:\s*0\.12em 0\.38em\s*!important/);
+  assert.match(markerRule, /margin-inline:\s*0\.12em 0\.72em\s*!important/);
   assert.match(purgeConfig, /\/cpv-ayah-marker\//);
   assert.match(purgeScript, /continuous Mushaf marker spacing/);
 });

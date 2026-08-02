@@ -315,19 +315,19 @@ export default function Header() {
       ? lang === "ar"
         ? `\u062c\u0632\u0621 ${toAr(currentJuz)}`
         : `Juz ${currentJuz}`
-      : surahMeta?.en || surahMeta?.fr || surahMeta?.ar || "";
-  const centerTitleAlt =
+      : lang === "ar"
+        ? surahMeta?.ar || surahMeta?.en || ""
+        : lang === "fr"
+          ? surahMeta?.fr || surahMeta?.en || ""
+          : surahMeta?.en || surahMeta?.fr || "";
+  const centerSubtitle =
     !showDuas && displayMode !== "juz" && surahMeta
       ? lang === "ar"
-        ? surahMeta.ar
-        : lang === "fr"
-          ? surahMeta.fr
-          : ""
+        ? surahMeta.fr || surahMeta.en
+        : surahMeta.ar
       : "";
-  const hasRotatingTitle =
-    Boolean(centerTitleAlt) && centerTitleAlt !== centerTitle;
-  const centerTitleLabel = hasRotatingTitle
-    ? `${centerTitle} - ${centerTitleAlt}`
+  const centerTitleLabel = centerSubtitle
+    ? `${centerTitle} - ${centerSubtitle}`
     : centerTitle;
 
   const headerLabels = {
@@ -531,24 +531,13 @@ export default function Header() {
                     type="button"
                     aria-label={centerTitleLabel}
                   >
-                    <span
-                      className={cn(
-                        "mp-header__title-rotator",
-                        hasRotatingTitle && "mp-header__title-rotator--active",
-                      )}
-                      aria-hidden="true"
-                    >
-                      <span className="mp-header__title mp-header__title--primary">
+                    <span className="mp-header__title-stack" aria-hidden="true">
+                      <span className="mp-header__title">
                         {centerTitle}
                       </span>
-                      {hasRotatingTitle ? (
-                        <span
-                          className={cn(
-                            "mp-header__title mp-header__title--secondary",
-                            lang === "ar" && "mp-header__title--arabic",
-                          )}
-                        >
-                          {centerTitleAlt}
+                      {centerSubtitle ? (
+                        <span className="mp-header__title-sub">
+                          {centerSubtitle}
                         </span>
                       ) : null}
                     </span>

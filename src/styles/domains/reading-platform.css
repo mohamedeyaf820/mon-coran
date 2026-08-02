@@ -4354,7 +4354,7 @@ html body .app-root .quran-display--platform .mushaf-text-block .cpv-ayah-marker
     height: 1.08em !important;
     /* RTL flow: keep the marker attached to the ayah it closes, while giving
        the following ayah a clear visual boundary at every responsive size. */
-    margin-inline: 0.12em 0.38em !important;
+    margin-inline: 0.12em 0.72em !important;
     vertical-align: -0.18em !important;
     transform: none !important;
 }

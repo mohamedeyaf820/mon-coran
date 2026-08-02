@@ -137,6 +137,22 @@ test("reading refresh keeps mushaf visible without stale blur overlay", async ({
   expect(mushafFlow.textAlignLast).not.toBe("center");
 });
 
+test("continuous Mushaf markers preserve a clear gap before the following ayah", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
+  await seedReader(page, { mushafLayout: "mushaf" });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/surah/3");
+  await waitForReader(page);
+
+  const markers = page.locator(".cpv-ayah-marker");
+  expect(await markers.count()).toBeGreaterThan(1);
+  const markerSpacing = await markers.first().evaluate((element) => {
+    const style = window.getComputedStyle(element);
+    return Number.parseFloat(style.marginInlineEnd) / Number.parseFloat(style.fontSize);
+  });
+  expect(markerSpacing).toBeGreaterThanOrEqual(0.7);
+});
+
 test("reading page stays usable after riwaya refresh and browser history navigation", async ({ page }) => {
   await installQuranNetworkFixtures(page);
   await seedReader(page, {
