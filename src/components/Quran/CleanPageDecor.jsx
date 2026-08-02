@@ -4,6 +4,8 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
   const title = lang === "en" ? surahMeta?.en : surahMeta?.fr || surahMeta?.en;
   const displayName = title || surahMeta?.en || "";
   const surahNum = surahMeta?.n || surahMeta?.id || surahMeta?.number;
+  const surahLigature = surahNum ? String(surahNum).padStart(3, "0") : "";
+  const accessibleArabicTitle = surahMeta?.ar ? `سورة ${surahMeta.ar}` : "سورة";
 
   return (
     <div className="cpv-surah-header-container flex items-center justify-center w-full my-8 select-none pointer-events-none">
@@ -12,20 +14,26 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
         <div className="cpv-divider-diamond text-[#c8a84b] text-xs">❖</div>
 
         <div className="cpv-surah-title-box border rounded-lg px-8 py-3 shadow-lg flex flex-col items-center justify-center min-w-[220px]">
-          {surahMeta?.ar ? (
-            <span
-              className="cpv-surah-name-ar font-surah-names text-[1.55rem] leading-tight"
-              dir="rtl"
-              lang="ar"
-            >
-              {surahMeta.ar}
-            </span>
-          ) : (
-            <span className="cpv-surah-name-ar text-lg font-bold leading-normal" dir="rtl">
-              <span className="cpv-surah-prefix">سورة</span>{" "}
-              {surahNum ? String(surahNum).padStart(3, "0") : ""}
-            </span>
-          )}
+          <span
+            className="cpv-surah-name-ar text-[1.55rem] leading-tight"
+            dir="rtl"
+            lang="ar"
+            aria-label={accessibleArabicTitle}
+          >
+            <span className="cpv-surah-prefix" aria-hidden="true">سورة</span>{" "}
+            {surahLigature ? (
+              <span
+                className="cpv-surah-name-ligature"
+                dir="ltr"
+                lang="en"
+                aria-hidden="true"
+              >
+                {surahLigature}
+              </span>
+            ) : (
+              <span aria-hidden="true">{surahMeta?.ar}</span>
+            )}
+          </span>
           <span className="cpv-surah-name-tr text-[9.5px] font-semibold tracking-[0.14em] uppercase mt-0.5">
             {displayName}
           </span>

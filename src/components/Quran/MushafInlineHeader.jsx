@@ -37,10 +37,20 @@ export default function MushafInlineHeader({
             {"\ufd3e"}
           </span>
           <div className="mp-surah-title">
-            <span className="mp-surah-name-ar" dir="rtl">
-              <span className="mp-surah-prefix">{"\u0633\u064f\u0648\u0631\u064e\u0629\u064f"}</span>{" "}
+            <span
+              className="mp-surah-name-ar"
+              dir="rtl"
+              lang="ar"
+              aria-label={`سورة ${surahNameAr}`}
+            >
+              <span className="mp-surah-prefix" aria-hidden="true">سورة</span>{" "}
               {surahNum ? (
-                <span className="mp-surah-name-ligature">
+                <span
+                  className="mp-surah-name-ligature"
+                  dir="ltr"
+                  lang="en"
+                  aria-hidden="true"
+                >
                   {String(surahNum).padStart(3, "0")}
                 </span>
               ) : (

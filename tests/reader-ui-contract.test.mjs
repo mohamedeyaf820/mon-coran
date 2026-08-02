@@ -66,6 +66,18 @@ test("Mushaf pages keep a compact, theme-aware reading hierarchy", () => {
   assert.match(styles, /@media \(max-width: 640px\)/);
 });
 
+test("surah headings use the calligraphic name ligatures accessibly", () => {
+  const header = source("src/components/Quran/SurahReaderHeader.jsx");
+  const cleanHeader = source("src/components/Quran/CleanPageDecor.jsx");
+  const inlineHeader = source("src/components/Quran/MushafInlineHeader.jsx");
+
+  assert.match(header, /const surahLigature = String\(surahNum\)\.padStart\(3, "0"\)/);
+  assert.match(header, /aria-label=\{s\.ar\}[\s\S]*?className="font-surah-names"[\s\S]*?dir="ltr" lang="en"/);
+  assert.match(cleanHeader, /const accessibleArabicTitle =/);
+  assert.match(cleanHeader, /className="cpv-surah-name-ligature"[\s\S]*?dir="ltr"[\s\S]*?lang="en"/);
+  assert.match(inlineHeader, /aria-label=\{`سورة \$\{surahNameAr\}`\}/);
+});
+
 test("dark karaoke words never inherit the fullscreen analysis overlay", () => {
   const styles = source("src/styles/tailwind.css");
 
