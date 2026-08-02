@@ -16,6 +16,8 @@ export default function ToolsHubModal() {
     return copy.en;
   };
 
+  const openLabel = tr({ fr: "Ouvrir", en: "Open", ar: "\u0641\u062a\u062d" });
+
   const openTool = (key) => () => set({ toolsHubOpen: false, [key]: true });
   const openFutureTool = (tab) => () =>
     set({ toolsHubOpen: false, futureHubOpen: tab });
@@ -189,7 +191,7 @@ export default function ToolsHubModal() {
       <Dialog.Portal>
         <div className="modal-overlay !p-4 sm:!p-6" onClick={close}>
           <Dialog.Content
-            className="modal !w-full !max-w-4xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)] animate-fadeInScale"
+            className="tools-hub-modal modal !w-full !max-w-5xl !overflow-hidden !rounded-[1.75rem] !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_32px_84px_rgba(1,8,22,0.5)] animate-fadeInScale"
             aria-labelledby="tools-modal-title"
             onClick={(event) => event.stopPropagation()}
             onEscapeKeyDown={(event) => {
@@ -201,87 +203,83 @@ export default function ToolsHubModal() {
             <Dialog.Title className="sr-only">
               {tr({ fr: "Outils", en: "Tools", ar: "الأدوات" })}
             </Dialog.Title>
-            <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)] flex items-center justify-between !py-4 !px-5">
-              <div className="modal-title-stack">
-                <div className="modal-kicker">
-                  {tr({
-                    fr: "Fonctionnalités",
-                    en: "Features",
-                    ar: "الخصائص والخدمات",
-                  })}
-                </div>
-                <h2
-                  className="modal-title flex items-center gap-2"
-                  id="tools-modal-title"
-                >
-                  <Icon name="shapes" size={18} className="text-primary" />
-                  {tr({
-                    fr: "Espace outils spirituels",
-                    en: "Spiritual Tools Hub",
-                    ar: "مركز الأدوات الروحية",
-                  })}
-                </h2>
-                <div className="modal-subtitle">
-                  {tr({
-                    fr: "Accédez à vos outils de suivi, mémorisation et écoute en un seul endroit.",
-                    en: "Access all your tracking, memorization, and listening tools in one place.",
-                    ar: "الوصول الى ادوات المتابعة والحفظ والاستماع في مكان واحد.",
-                  })}
+            <div className="modal-header !flex !items-start !justify-between !gap-4 !border-b !border-[var(--border)] !bg-[linear-gradient(135deg,rgba(var(--primary-rgb),0.1),transparent_58%)] !px-4 !py-4 sm:!px-6 sm:!py-5">
+              <div className="flex min-w-0 items-start gap-3.5">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)] shadow-sm">
+                  <Icon name="shapes" size={19} aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <div className="modal-kicker">
+                    {tr({ fr: "Fonctionnalités", en: "Features", ar: "الخصائص والخدمات" })}
+                  </div>
+                  <h2 className="modal-title !mt-0.5 !text-[1.05rem] sm:!text-[1.18rem]" id="tools-modal-title">
+                    {tr({
+                      fr: "Espace outils spirituels",
+                      en: "Spiritual Tools Hub",
+                      ar: "مركز الأدوات الروحية",
+                    })}
+                  </h2>
+                  <div className="modal-subtitle !mt-1 !max-w-2xl !text-[0.75rem] sm:!text-[0.8rem]">
+                    {tr({
+                      fr: "Suivi, mémorisation et écoute réunis dans un espace simple.",
+                      en: "Tracking, memorization and listening in one calm space.",
+                      ar: "المتابعة والحفظ والاستماع في مساحة هادئة.",
+                    })}
+                  </div>
                 </div>
               </div>
               <button
-                className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.02] hover:!bg-white/[0.08] transition-colors"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-muted)] shadow-sm transition-colors hover:border-[rgba(var(--primary-rgb),0.35)] hover:text-[var(--primary)]"
                 onClick={close}
                 type="button"
                 aria-label={tr({ fr: "Fermer", en: "Close", ar: "إغلاق" })}
               >
-                <Icon name="xmark" size={18} />
+                <Icon name="xmark" size={15} />
               </button>
             </div>
 
-            <div className="modal-list !max-h-[75vh] !overflow-y-auto !p-5 sm:!p-6">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {tools.map((tool) => (
+            <div className="modal-list !max-h-[76vh] !overflow-y-auto !bg-[color-mix(in_srgb,var(--bg-secondary)_48%,var(--bg-card))] !p-3 sm:!p-4">
+              <div className="mb-3 flex items-center justify-between px-1 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                <span>{tr({ fr: "Choisir un outil", en: "Choose a tool", ar: "اختر أداة" })}</span>
+                <span className="rounded-full border border-[var(--border)] bg-[var(--bg-card)] px-2.5 py-1 tabular-nums">{tools.length}</span>
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {tools.map((tool, index) => (
                   <button
                     key={tool.id}
                     type="button"
                     onClick={tool.action}
                     className={cn(
-                      "group relative flex flex-col items-start text-left p-5 rounded-2xl border border-[var(--border)] bg-bg-primary hover:bg-bg-secondary hover:border-[rgba(var(--primary-rgb),0.3)] shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.55)] focus-visible:ring-offset-2",
+                      "group relative flex min-h-[9.5rem] flex-col items-start overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-4 text-left shadow-[0_8px_24px_rgba(4,18,12,0.035)] transition-[transform,border-color,box-shadow,background-color] duration-200 hover:-translate-y-0.5 hover:border-[rgba(var(--primary-rgb),0.34)] hover:bg-[color-mix(in_srgb,var(--bg-card)_92%,var(--primary)_8%)] hover:shadow-[0_14px_30px_rgba(4,18,12,0.09)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(var(--primary-rgb),0.5)] focus-visible:ring-offset-2",
                     )}
                     style={{
                       contentVisibility: "auto",
-                      containIntrinsicSize: "135px",
+                      containIntrinsicSize: "152px",
                     }}
                   >
-                    <div
-                      className="absolute -right-4 -bottom-4 opacity-[0.02] transition-opacity duration-300 pointer-events-none group-hover:opacity-[0.04]"
-                      aria-hidden="true"
-                    >
-                      <Icon name={tool.icon} size={96} />
+                    <span className={cn("absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r opacity-80", tool.color)} aria-hidden="true" />
+                    <div className="mb-3 flex w-full items-center justify-between">
+                      <span className={cn("grid h-10 w-10 place-items-center rounded-[0.9rem] bg-gradient-to-br text-white shadow-[0_7px_16px_rgba(3,18,12,0.14)] transition-transform duration-200 group-hover:scale-[1.04]", tool.color)}>
+                        <Icon name={tool.icon} size={17} aria-hidden="true" />
+                      </span>
+                      <span className="text-[0.65rem] font-extrabold tabular-nums tracking-[0.12em] text-[var(--text-muted)] opacity-65">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
                     </div>
 
-                    <div
-                      className={cn(
-                        "mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-sm transition-transform duration-300 group-hover:scale-110",
-                        tool.color,
-                      )}
-                    >
-                      <Icon name={tool.icon} size={21} />
-                    </div>
-
-                    <h3 className="mb-1.5 flex w-full items-center gap-1.5 text-[0.95rem] font-bold text-text-primary transition-colors group-hover:text-primary">
+                    <h3 className="mb-1.5 flex w-full items-center gap-1.5 text-[0.88rem] font-extrabold leading-tight text-text-primary transition-colors group-hover:text-primary">
                       <span className="truncate">{tr(tool.title)}</span>
-                      <Icon
-                        name="arrow-right"
-                        size={14}
-                        className="ml-auto -translate-x-1 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100 rtl:rotate-180"
-                      />
                     </h3>
 
-                    <p className="line-clamp-2 text-[0.78rem] leading-relaxed text-text-muted">
+                    <p className="line-clamp-2 text-[0.73rem] leading-[1.55] text-text-muted">
                       {tr(tool.desc)}
                     </p>
+                    <span className="mt-auto flex w-full items-center justify-between pt-3 text-[0.68rem] font-bold text-[var(--primary)]">
+                      {openLabel}
+                      <span className="grid h-7 w-7 place-items-center rounded-full border border-[rgba(var(--primary-rgb),0.16)] bg-[rgba(var(--primary-rgb),0.07)] transition-transform group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
+                        <Icon name="arrow-right" size={11} className="rtl:rotate-180" aria-hidden="true" />
+                      </span>
+                    </span>
                   </button>
                 ))}
               </div>

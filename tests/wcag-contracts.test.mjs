@@ -55,6 +55,35 @@ test("WCAG: forms, tabs and audio status keep programmatic names", () => {
   assert.match(audio, /<AlertCircle[^>]+aria-hidden="true"/);
 });
 
+test("WCAG: spiritual tool pages isolate dialog interactions", () => {
+  const toolPages = [
+    "FlashcardsPanel.jsx",
+    "KhatmaPanel.jsx",
+    "PlaylistPanel.jsx",
+    "ReadingHistoryPanel.jsx",
+    "TajweedQuizPanel.jsx",
+    "WeeklyStatsPanel.jsx",
+    "WirdPanel.jsx",
+  ];
+
+  for (const file of toolPages) {
+    const content = source(`src/components/${file}`);
+    assert.match(
+      content,
+      /onClick=\{\(event\) => event\.stopPropagation\(\)\}/,
+      `${file} must keep inner controls from triggering the modal overlay`,
+    );
+  }
+
+  const hub = source("src/components/ToolsHubModal.jsx");
+  const library = source("src/components/FutureFeaturesModal.jsx");
+  const libraryHeader = source("src/components/futureFeatures/FutureFeaturesHeader.jsx");
+  assert.match(hub, /tools-hub-modal/);
+  assert.match(hub, /Choisir un outil/);
+  assert.match(library, /const backToTools =/);
+  assert.match(libraryHeader, /aria-selected=\{selected\}/);
+});
+
 test("WCAG: splash respects language, reduced motion and target size", () => {
   const content = source("src/components/SplashScreen.jsx");
   assert.match(content, /className="splash-subtitle" lang="ar" dir="rtl"/);
