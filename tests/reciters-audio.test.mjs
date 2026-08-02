@@ -132,7 +132,7 @@ test("reciters: every catalogue entry has a visual and localized biography", () 
   }
 });
 
-test("reciters: all 58 catalogue entries use reachable portrait URLs, not known text thumbnails", () => {
+test("reciters: all 58 catalogue entries use curated portrait URLs, not known text thumbnails", () => {
   const reciters = allReciters();
   assert.equal(reciters.length, 58);
   assert.equal(Object.keys(RECITER_PHOTOS_MAP).length, 58);
@@ -146,6 +146,26 @@ test("reciters: all 58 catalogue entries use reachable portrait URLs, not known 
     portraits,
     /\/200x256\/(?:ibrahim-al-dossari|rachid-belalia)\.(?:png|jpe?g)/,
   );
+  assert.doesNotMatch(portraits, /media\.way2quran\.com|i\.pinimg\.com/);
+});
+
+test("reciters: portrait attribution matches the actual image host", () => {
+  const expectedHostByProvider = {
+    Assabile: "www.assabile.com",
+    "Quran.com": "static.qurancdn.com",
+    Way2Quran: "storage.googleapis.com",
+    SuratMP3: "static.suratmp3.com",
+    SurahQuran: "surahquran.com",
+  };
+
+  for (const reciter of allReciters()) {
+    const visual = getReciterVisual(reciter);
+    assert.equal(
+      new URL(visual.photo).hostname,
+      expectedHostByProvider[visual.attribution.provider],
+      `${reciter.id}: portrait source mismatch`,
+    );
+  }
 });
 
 test("reciters: Al-Matrood and Al-Sudais have verified biography sources", () => {
@@ -236,8 +256,11 @@ test("reciters: attributed portraits and biography sources are wired", () => {
   }
 
   const matrood = getReciter("abdullaah_matrood", "hafs");
-  assert.match(getReciterPhoto(matrood), /^https:\/\/media\.way2quran\.com\//);
-  assert.equal(getReciterVisual(matrood).attribution.provider, "Way2Quran");
+  assert.match(
+    getReciterPhoto(matrood),
+    /^https:\/\/www\.assabile\.com\/media\/photo\/full_size\/abdallah-matroud-582\.jpg$/,
+  );
+  assert.equal(getReciterVisual(matrood).attribution.provider, "Assabile");
   assert.equal(
     RESEARCHED_PROFILES.abdullaah_matrood.portraitStatus,
     "verified",
@@ -280,7 +303,7 @@ test("reciters: attributed portraits and biography sources are wired", () => {
   );
 
   const belachia = getReciter("warsh_rachid_belalya", "warsh");
-  assert.match(getReciterPhoto(belachia), /^https:\/\/i\.pinimg\.com\//);
+  assert.equal(getReciterPhoto(belachia), "https://surahquran.com/img/quraa/50.png");
   assert.equal(getReciterVisual(belachia).attribution.provider, "SurahQuran");
   assert.equal(
     RESEARCHED_PROFILES.warsh_rachid_belalya.portraitStatus,

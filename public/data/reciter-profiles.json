@@ -214,7 +214,7 @@
     "portraitStatus": "verified",
     "portraitSource": {
       "provider": "SurahQuran",
-      "url": "https://surahquran.com/mp3/Rachid-Belachia/",
+      "url": "https://surahquran.com/mp3/Rachid-Belalia/",
       "confirms": [
         "identity",
         "name",
@@ -319,8 +319,8 @@
     },
     "portraitStatus": "verified",
     "portraitSource": {
-      "provider": "Way2Quran",
-      "url": "https://way2quran.com/ar/reciters/abdullah-al-matroud",
+      "provider": "Assabile",
+      "url": "https://www.assabile.com/abdullah-matrood-5/photos",
       "confirms": [
         "identity",
         "name",

@@ -61,9 +61,9 @@ test("security: production CSP excludes dev-only and unused risky sources", () =
   assert.equal(csp.includes("ws://localhost"), false);
   assert.match(csp, /img-src[^;]*https:\/\/www\.assabile\.com/);
   assert.match(csp, /img-src[^;]*https:\/\/storage\.googleapis\.com/);
-  assert.match(csp, /img-src[^;]*https:\/\/media\.way2quran\.com/);
   assert.match(csp, /img-src[^;]*https:\/\/static\.suratmp3\.com/);
-  assert.match(csp, /img-src[^;]*https:\/\/i\.pinimg\.com/);
+  assert.match(csp, /img-src[^;]*https:\/\/surahquran\.com/);
+  assert.doesNotMatch(csp, /media\.way2quran\.com|i\.pinimg\.com/);
   assert.match(csp, /script-src-attr 'none'/);
   assert.match(csp, /upgrade-insecure-requests/);
   assert.doesNotMatch(csp, /https:\/\/\*\.quran\.com/);

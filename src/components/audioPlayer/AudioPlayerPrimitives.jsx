@@ -42,6 +42,8 @@ export function ReciterPhoto({ src, className = "", style }) {
       className={className}
       style={style}
       loading="lazy"
+      decoding="async"
+      referrerPolicy="no-referrer"
       aria-hidden="true"
       onError={() => setFailed(true)}
     />
