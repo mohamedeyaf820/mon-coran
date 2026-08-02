@@ -84,7 +84,8 @@ function CleanPageViewComponent({
         lang="ar"
         style={{
           "--cpv-font-size": `${Math.round(mushafFontSize)}px`,
-          "--cpv-line-height": "var(--quran-line-height, 1.94)",
+          "--cpv-line-height":
+            "clamp(1.85, var(--quran-line-height, 1.94), 2.1)",
           "--cpv-word-spacing": mushafWordSpacing,
         }}
       >

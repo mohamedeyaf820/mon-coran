@@ -244,7 +244,7 @@ export default function WirdPanel() {
   const [tab, setTab] = useState("today"); // 'today' | 'history' | 'streak' | 'settings'
   const [loading, setLoading] = useState(true);
 
-  const close = () => dispatch({ type: "TOGGLE_WIRD" });
+  const close = () => set({ wirdOpen: false });
   const titleId = "wird-panel-title";
 
   const loadData = useCallback(async () => {
@@ -331,6 +331,7 @@ export default function WirdPanel() {
           <Dialog.Content
             className="modal modal-panel--wide modal-wird !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
             aria-labelledby={titleId}
+            onClick={(event) => event.stopPropagation()}
             onEscapeKeyDown={close}
             onInteractOutside={close}
           >

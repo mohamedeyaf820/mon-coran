@@ -150,6 +150,7 @@ export default function PlaylistPanel() {
           <Dialog.Content
             className="modal modal-panel--wide !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
             aria-labelledby={titleId}
+            onClick={(event) => event.stopPropagation()}
             onEscapeKeyDown={close}
             onInteractOutside={close}
           >
