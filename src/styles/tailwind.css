@@ -19879,18 +19879,6 @@ body {
     text-rendering: optimizeLegibility;
 }
 
-.mp-surah-prefix {
-    font-family: var(--font-surah-display, "Amiri Quran", "Amiri", serif) !important;
-}
-
-.mp-surah-name-ligature {
-    font-family: surahnames, serif !important;
-    font-size: 2.3rem;
-    line-height: 0.9;
-    color: #8b621f;
-    vertical-align: middle;
-}
-
 .mp-surah-name-tr {
     font-family: var(--font-ui);
     font-size: 0.62rem;

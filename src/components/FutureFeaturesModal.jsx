@@ -12,7 +12,6 @@ import {
   Trash2,
   Upload,
   WifiOff,
-  X,
 } from "lucide-react";
 import { useAppActions, useAppSelector } from "../context/AppContext";
 import SURAHS, { getSurah, surahName } from "../data/surahs";
@@ -47,6 +46,7 @@ import {
 import { toast } from "../lib/utils";
 import { confirmAction } from "../services/interactionService";
 import { getStorageSnapshot } from "../services/storageQuotaService";
+import FutureFeaturesHeader from "./futureFeatures/FutureFeaturesHeader";
 
 const TAB_IDS = ["offline", "export", "memorization", "themes", "cloud"];
 
@@ -654,6 +654,7 @@ export default function FutureFeaturesModal() {
   const [activeTab, setActiveTab] = useState(TAB_IDS.includes(initialTab) ? initialTab : "offline");
 
   const close = () => set({ futureHubOpen: null });
+  const backToTools = () => set({ futureHubOpen: null, toolsHubOpen: true });
   const handleTabKeyDown = (event) => {
     const currentIndex = TAB_IDS.indexOf(activeTab);
     let nextIndex = null;
@@ -695,31 +696,18 @@ export default function FutureFeaturesModal() {
     <Dialog.Root open onOpenChange={(open) => { if (!open) close(); }}>
       <Dialog.Portal>
         <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
-          <Dialog.Content className="modal !flex !max-h-[92vh] !w-full !max-w-4xl !flex-col !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !shadow-[0_36px_90px_rgba(1,8,22,0.5)]" onClick={(event) => event.stopPropagation()} onEscapeKeyDown={(event) => { event.preventDefault(); close(); }} onInteractOutside={close} aria-describedby="future-features-description">
-            <div className="modal-header !flex !items-start !justify-between !gap-4 !border-b !border-[var(--border)] !bg-[var(--bg-secondary)] !px-5 !py-4">
-              <div>
-                <span className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[var(--primary)]">MushafPlus</span>
-                <Dialog.Title className="mt-1 text-lg font-bold text-[var(--text-primary)]">{localText(lang, "Bibliothèque personnelle", "Personal library", "\u0627\u0644\u0645\u0643\u062a\u0628\u0629 \u0627\u0644\u0634\u062e\u0635\u064a\u0629")}</Dialog.Title>
-                <Dialog.Description id="future-features-description" className="mt-1 text-xs text-[var(--text-muted)]">{localText(lang, "Hors connexion, données portables et parcours d’étude.", "Offline access, portable data and study journeys.", "\u0627\u0644\u0648\u0635\u0648\u0644 \u062f\u0648\u0646 \u0627\u062a\u0635\u0627\u0644\u060c \u0648\u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0642\u0627\u0628\u0644\u0629 \u0644\u0644\u0646\u0642\u0644\u060c \u0648\u0645\u0633\u0627\u0631\u0627\u062a \u0627\u0644\u062f\u0631\u0627\u0633\u0629.")}</Dialog.Description>
-              </div>
-              <button type="button" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--border)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)]" onClick={close} aria-label={localText(lang, "Fermer", "Close", "\u0625\u063a\u0644\u0627\u0642")}><X size={18} /></button>
-            </div>
+          <Dialog.Content className="modal !flex !max-h-[92vh] !w-full !max-w-4xl !flex-col !overflow-hidden !rounded-[1.75rem] !border !border-[var(--border)] !bg-[var(--bg-card)] !shadow-[0_32px_84px_rgba(1,8,22,0.5)]" onClick={(event) => event.stopPropagation()} onEscapeKeyDown={(event) => { event.preventDefault(); close(); }} onInteractOutside={close} aria-describedby="future-features-description">
+            <FutureFeaturesHeader
+              activeTab={activeTab}
+              lang={lang}
+              onBack={backToTools}
+              onClose={close}
+              onSelectTab={setActiveTab}
+              onTabKeyDown={handleTabKeyDown}
+              tabs={tabs}
+            />
 
-            <div className="shrink-0 overflow-x-auto border-b border-[var(--border)] bg-[var(--bg-card)] px-3 py-2" role="tablist" aria-label={localText(lang, "Sections", "Sections", "\u0627\u0644\u0623\u0642\u0633\u0627\u0645")}>
-              <div className="flex min-w-max gap-1">
-                {tabs.map((tab) => {
-                  const TabIcon = tab.icon;
-                  const selected = activeTab === tab.id;
-                  return (
-                    <button key={tab.id} type="button" role="tab" aria-selected={selected} aria-controls={`future-panel-${tab.id}`} id={`future-tab-${tab.id}`} tabIndex={selected ? 0 : -1} className="inline-flex min-h-10 items-center gap-2 rounded-xl px-3 text-xs font-bold text-[var(--text-muted)] transition-colors data-[active=true]:bg-[rgba(var(--primary-rgb),0.1)] data-[active=true]:text-[var(--primary)]" data-active={selected} onClick={() => setActiveTab(tab.id)} onKeyDown={handleTabKeyDown}>
-                      <TabIcon size={15} aria-hidden="true" />{tab.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6" role="tabpanel" id={`future-panel-${activeTab}`} aria-labelledby={`future-tab-${activeTab}`}>
+            <div className="min-h-0 flex-1 overflow-y-auto bg-[color-mix(in_srgb,var(--bg-secondary)_36%,var(--bg-card))] p-3 sm:p-5" role="tabpanel" id={`future-panel-${activeTab}`} aria-labelledby={`future-tab-${activeTab}`}>
               {activeTab === "offline" ? <OfflinePanel lang={lang} currentSurah={currentSurah} reciterId={reciter} riwaya={riwaya} /> : null}
               {activeTab === "export" ? <ExportPanel lang={lang} /> : null}
               {activeTab === "memorization" ? <MemorizationPanel lang={lang} onNavigate={navigateToVerse} /> : null}

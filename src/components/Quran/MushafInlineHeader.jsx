@@ -1,5 +1,5 @@
 import React from "react";
-import { toAr } from "../../data/surahs";
+import { getSurahLigature, toAr } from "../../data/surahs";
 import { t } from "../../i18n";
 
 export default function MushafInlineHeader({
@@ -17,6 +17,8 @@ export default function MushafInlineHeader({
   surahNameAr,
   surahNum,
 }) {
+  const surahLigature = getSurahLigature(surahNum);
+
   return (
     <>
       <div className="mp-header" dir="rtl">
@@ -37,14 +39,25 @@ export default function MushafInlineHeader({
             {"\ufd3e"}
           </span>
           <div className="mp-surah-title">
-            <span className="mp-surah-name-ar" dir="rtl">
-              <span className="mp-surah-prefix">{"\u0633\u064f\u0648\u0631\u064e\u0629\u064f"}</span>{" "}
-              {surahNum ? (
-                <span className="mp-surah-name-ligature">
-                  {String(surahNum).padStart(3, "0")}
+            <span
+              className="mp-surah-name-ar"
+              dir="rtl"
+              lang="ar"
+              aria-label={`سورة ${surahNameAr}`}
+            >
+              {surahLigature ? (
+                <span
+                  className="mp-surah-name-ligature"
+                  dir="ltr"
+                  lang="en"
+                  aria-hidden="true"
+                >
+                  {surahLigature}
                 </span>
               ) : (
-                surahNameAr
+                <span className="mp-surah-name-fallback" aria-hidden="true">
+                  {surahNameAr}
+                </span>
               )}
             </span>
             {lang !== "ar" && displayName !== surahNameAr ? (

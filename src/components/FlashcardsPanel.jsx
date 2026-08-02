@@ -75,6 +75,7 @@ export default function FlashcardsPanel() {
             <Dialog.Content
               className="modal-panel fc-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
               onClick={(event) => event.stopPropagation()}
+              onClick={(event) => event.stopPropagation()}
               onEscapeKeyDown={(event) => {
                 event.preventDefault();
                 close();
@@ -144,6 +145,7 @@ export default function FlashcardsPanel() {
         <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
           <Dialog.Content
             className="modal-panel fc-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+            onClick={(event) => event.stopPropagation()}
             aria-label={
               lang === "fr" ? "Flashcards vocabulaire" : "Vocabulary Flashcards"
             }

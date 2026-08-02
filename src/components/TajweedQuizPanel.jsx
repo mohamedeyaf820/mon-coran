@@ -110,6 +110,7 @@ export default function TajweedQuizPanel() {
             className="modal-panel tq-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
             aria-label={lang === "fr" ? "Quiz Tajweed" : "Tajweed Quiz"}
             onClick={(event) => event.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
             onEscapeKeyDown={(event) => {
               event.preventDefault();
               close();
