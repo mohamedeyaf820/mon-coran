@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { stabilizeTajwidSegments } from "../src/data/tajwidRules.js";
+import {
+  getRulesForRiwaya,
+  stabilizeTajwidSegments,
+} from "../src/data/tajwidRules.js";
 import { normalizeQuranGlyphText } from "../src/utils/quranUtils.js";
 
 test("tajwid segments keep leading Arabic marks attached to their base glyph", () => {
@@ -55,4 +58,27 @@ test("QPC dotted-circle anchors never leak into the rendered Quran text", () => 
 
   assert.equal(segments.map((segment) => segment.text).join(""), normalizeQuranGlyphText(source));
   assert.equal(segments.some((segment) => segment.text.includes("\u25CC")), false);
+});
+
+test("Hafs and Warsh use the shared Quran.com Tajweed color semantics", () => {
+  const expected = {
+    ghunna: "#26b55d",
+    qalqala: "#00deff",
+    "madd-normal": "#ffc1e0",
+    "madd-separated": "#ff8e3b",
+    "madd-connected": "#ff5e8e",
+    madd: "#e30000",
+    "lam-shamsiyya": "#999999",
+    tafkhim: "#3c84d5",
+  };
+
+  for (const riwaya of ["hafs", "warsh"]) {
+    const colors = Object.fromEntries(
+      getRulesForRiwaya(riwaya).map(({ id, color }) => [id, color]),
+    );
+
+    for (const [ruleId, color] of Object.entries(expected)) {
+      assert.equal(colors[ruleId], color, `${riwaya}:${ruleId}`);
+    }
+  }
 });

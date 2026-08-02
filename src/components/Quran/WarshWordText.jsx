@@ -1,13 +1,13 @@
 import React from 'react';
 
 const TAJWID_FALLBACK_COLORS = {
-    ghunna: '#09b000', idgham: '#ababab', ikhfa: '#09b000', iqlab: '#00b4e0',
-    qalqala: '#00b4e0', madd: '#c09725', 'madd-normal': '#c09725',
-    'madd-separated': '#e67b00', 'madd-connected': '#ff0000',
-    'lam-shamsiyya': '#ababab', tafkhim: '#134fe1', silent: '#ababab',
-    naql: '#e67b00', tashil: '#09b000', ibdal: '#e67b00',
-    'madd-badal': '#e67b00', 'sila-kubra': '#e67b00', 'tarqiq-ra': '#09b000',
-    'idgham-warsh': '#ababab',
+    ghunna: '#26b55d', idgham: '#26b55d', ikhfa: '#26b55d', iqlab: '#26b55d',
+    qalqala: '#00deff', madd: '#e30000', 'madd-normal': '#ffc1e0',
+    'madd-separated': '#ff8e3b', 'madd-connected': '#ff5e8e',
+    'lam-shamsiyya': '#999999', tafkhim: '#3c84d5', silent: '#999999',
+    naql: '#ff8e3b', tashil: '#26b55d', ibdal: '#ff8e3b',
+    'madd-badal': '#ff8e3b', 'sila-kubra': '#ff8e3b', 'tarqiq-ra': '#26b55d',
+    'idgham-warsh': '#999999',
 };
 
 const WAQF_MARKER_SPLIT_RE = /([\u06d6-\u06dc])/u;

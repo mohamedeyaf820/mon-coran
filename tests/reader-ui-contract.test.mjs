@@ -107,3 +107,39 @@ test("continuous Mushaf markers leave a readable gap before the next ayah", () =
   assert.match(purgeConfig, /\/cpv-ayah-marker\//);
   assert.match(purgeScript, /continuous Mushaf marker spacing/);
 });
+
+test("Tajweed legend and Quran.com markup share the same eight rule families", () => {
+  const display = source("src/components/QuranDisplay.jsx");
+  const legend = source("src/components/Quran/TajweedLegend.jsx");
+  const renderer = source("src/components/Quran/TajweedText.jsx");
+  const theme = source("src/styles/domains/themes4.css");
+
+  assert.match(display, /showTajwid \? <TajweedLegend lang=\{lang\} riwaya=\{riwaya\}/);
+  for (const ruleId of [
+    "silent",
+    "madd-normal",
+    "madd-separated",
+    "madd-connected",
+    "madd",
+    "ghunna",
+    "qalqala",
+    "tafkhim",
+  ]) {
+    assert.match(legend, new RegExp(`\\["${ruleId}",`));
+  }
+  assert.match(renderer, /idgham_ghunnah: 'ghunna'/);
+  assert.match(renderer, /idgham_without_ghunnah: 'silent'/);
+  assert.match(renderer, /iqlab: 'ghunna'/);
+  for (const color of [
+    "#999999",
+    "#ffc1e0",
+    "#ff8e3b",
+    "#ff5e8e",
+    "#e30000",
+    "#26b55d",
+    "#00deff",
+    "#3c84d5",
+  ]) {
+    assert.match(theme, new RegExp(color));
+  }
+});
