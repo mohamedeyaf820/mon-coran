@@ -71,6 +71,7 @@ test("surah headings use the calligraphic name ligatures accessibly", () => {
   const cleanHeader = source("src/components/Quran/CleanPageDecor.jsx");
   const inlineHeader = source("src/components/Quran/MushafInlineHeader.jsx");
   const appHeader = source("src/components/Header.jsx");
+  const hero = source("src/components/Home/HeroSection.jsx");
   const session = source("src/components/Home/SessionCard.jsx");
   const surahCards = source("src/components/Home/HomePrimitives.jsx");
 
@@ -85,6 +86,21 @@ test("surah headings use the calligraphic name ligatures accessibly", () => {
   assert.match(session, /home-session-card__surah-calligraphy font-surah-names/);
   assert.match(surahCards, /getSurahLigature\(surah\.n\)/);
   assert.match(surahCards, /hp-card-ar font-surah-names/);
+  assert.match(hero, /getSurahLigature\(number\)/);
+  assert.match(hero, /home-quick-row[\s\S]*?font-surah-names/);
+});
+
+test("home quick suggestions stay compact and available responsively", () => {
+  const hero = source("src/components/Home/HeroSection.jsx");
+  const styles = source("src/styles/domains/search-home-polish.css");
+
+  assert.match(hero, /home-quick-body flex max-h-\[280px\]/);
+  assert.match(hero, /grid-cols-\[2\.5rem_minmax\(0,1fr\)_4\.75rem_1\.25rem\]/);
+  assert.doesNotMatch(hero, /max-h-\[188px\]/);
+  assert.doesNotMatch(
+    styles,
+    /@media \(max-width: 979px\)[\s\S]{0,500}?home-info-panel[\s\S]{0,100}?display: none/,
+  );
 });
 
 test("dark karaoke words never inherit the fullscreen analysis overlay", () => {

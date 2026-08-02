@@ -2979,10 +2979,6 @@ html[data-theme="dark"] .search-pro__close:hover {
         min-height: 0;
     }
 
-    .app-root .app-view-home .home-info-panel,
-    .app-root[data-view="home"] .home-info-panel {
-        display: none;
-    }
 }
 
 @media (max-width: 640px) {
