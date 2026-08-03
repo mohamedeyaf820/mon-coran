@@ -297,7 +297,7 @@ body {
 
 @font-face {
     font-family: "QPC Hafs";
-    src: url("https://verses.quran.foundation/fonts/quran/hafs/uthmanic_hafs/UthmanicHafs1Ver18.woff2")
+    src: url("/fonts/uthmanic-hafs-v18.woff2")
         format("woff2");
     font-weight: 400;
     font-style: normal;

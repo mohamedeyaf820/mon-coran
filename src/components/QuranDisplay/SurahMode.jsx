@@ -54,20 +54,18 @@ function SurahMode({
       <ReadingProgressBar />
 
       {/* Unified surah identity + controls header */}
-      {!(isQCF4 && mushafLayout === "mushaf") && (
-        <div className="qc-surah-header-wrap animate-in">
-          <SurahReaderHeader
-            surahNum={currentSurah}
-            currentAyah={activeAyah || 1}
-            onPlaySurah={onPlaySurah}
-            preparingSurah={preparingSurah}
-            onNavigateToAyah={onNavigateToAyah}
-            onToggleMushaf={onToggleMushaf}
-            onToggleMemorization={onToggleMemorization}
-            onToggleWordByWord={onToggleWordByWord}
-          />
-        </div>
-      )}
+      <div className="qc-surah-header-wrap animate-in">
+        <SurahReaderHeader
+          surahNum={currentSurah}
+          currentAyah={activeAyah || 1}
+          onPlaySurah={onPlaySurah}
+          preparingSurah={preparingSurah}
+          onNavigateToAyah={onNavigateToAyah}
+          onToggleMushaf={onToggleMushaf}
+          onToggleMemorization={onToggleMemorization}
+          onToggleWordByWord={onToggleWordByWord}
+        />
+      </div>
 
       {mushafLayout === "mushaf" ? (
         <>
