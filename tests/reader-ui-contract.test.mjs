@@ -93,6 +93,19 @@ test("Tajweed legend groups rules without compressing their labels", () => {
   assert.match(styles, /tajwid-rule-tooltip[\s\S]*?background: var\(--bg-card\)/);
 });
 
+test("mobile reader shell follows the Tajweed card and keeps an explicit home logo", () => {
+  const header = source("src/components/Header.jsx");
+  const styles = source("src/styles/device-responsive.css");
+
+  assert.match(header, /data-testid="mobile-home-logo"/);
+  assert.match(header, /onClick=\{goHome\}/);
+  assert.match(header, /mp-header__home-badge/);
+  assert.match(styles, /quran-display\.quran-display--platform[\s\S]*?background: transparent !important/);
+  assert.match(styles, /quran-display\.quran-display--platform > \.tajweed-legend[\s\S]*?margin-top: 0 !important/);
+  assert.match(styles, /@media \(max-width: 380px\)[\s\S]*?grid-template-columns: 88px minmax\(0, 1fr\) 88px/);
+  assert.doesNotMatch(styles, /@media \(max-width: 380px\)\s*\{\s*html body \.app-root > \.mp-header \.mp-header__brand\s*\{\s*display: none/);
+});
+
 test("Mushaf pages keep a compact, theme-aware reading hierarchy", () => {
   const page = source("src/components/Quran/CleanPageView.jsx");
   const decor = source("src/components/Quran/CleanPageDecor.jsx");
