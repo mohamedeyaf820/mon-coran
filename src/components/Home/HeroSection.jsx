@@ -1,4 +1,12 @@
-import { Feather, CirclePlay, BookOpen, HandHeart, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Feather,
+  CirclePlay,
+  BookOpen,
+  HandHeart,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import SURAHS, { getSurahLigature } from "../../data/surahs";
 import { cn } from "../../lib/utils";
 import PlatformLogo from "../PlatformLogo";
@@ -82,6 +90,19 @@ export default function HeroSection({
   goSurahAyah,
   children,
 }) {
+  const [quickPanelOpen, setQuickPanelOpen] = useState(() =>
+    typeof window === "undefined"
+      ? true
+      : window.matchMedia("(min-width: 641px)").matches,
+  );
+
+  useEffect(() => {
+    const desktopQuery = window.matchMedia("(min-width: 641px)");
+    const syncQuickPanel = (event) => setQuickPanelOpen(event.matches);
+    desktopQuery.addEventListener("change", syncQuickPanel);
+    return () => desktopQuery.removeEventListener("change", syncQuickPanel);
+  }, []);
+
   const uiLang = lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en";
   const heroCopy =
     uiLang === "ar"
@@ -174,9 +195,26 @@ export default function HeroSection({
               <span>{t("duas")}</span>
             </button>
           </div>
+
         </div>
 
         <div className="home-hero-side flex min-w-0 flex-col gap-4">
+          <details
+            className="home-mobile-quick-disclosure group h-full"
+            open={quickPanelOpen}
+            onToggle={(event) => setQuickPanelOpen(event.currentTarget.open)}
+          >
+            <summary className="home-mobile-quick-toggle hidden min-h-11 w-full list-none items-center justify-between rounded-xl border border-border bg-bg-secondary px-3 text-xs font-bold text-text-primary max-[640px]:flex [&::-webkit-details-marker]:hidden">
+              <span className="inline-flex items-center gap-2">
+                <Icon name="fa-lightbulb" aria-hidden="true" />
+                {t("suggest")} · {t("bookmarks")}
+              </span>
+              <ChevronRight
+                className="transition-transform group-open:rotate-90"
+                size={15}
+                aria-hidden="true"
+              />
+            </summary>
           <aside className="home-info-panel">
             <div className="home-info-card overflow-hidden rounded-2xl border border-border/50 bg-bg-secondary/40 backdrop-blur-md">
               <div
@@ -273,6 +311,7 @@ export default function HeroSection({
               </div>
             </div>
           </aside>
+          </details>
 
           {children && (
             <div className="home-hero-compact__side flex flex-col gap-4">

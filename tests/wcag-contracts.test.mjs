@@ -90,6 +90,9 @@ test("WCAG: splash respects language, reduced motion and target size", () => {
   assert.match(content, /className="splash-verse" lang="ar" dir="rtl"/);
   assert.match(content, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(content, /\.splash-skip \{[\s\S]*?min-height: 44px/);
+  assert.match(content, /role="status"/);
+  assert.match(content, /className="sr-only">\{t\("splash\.loading", lang\)\}/);
+  assert.match(content, /className="splash-loading-text"/);
 });
 
 test("WCAG: reinforced reading colors meet AA contrast on light surfaces", () => {

@@ -7,11 +7,6 @@
    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 /* â”€â”€â”€ 1. RESPONSIVE-EXPERIENCE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-/*
-  Cross-app UX polish.
-  Imported last on purpose: this layer normalizes responsive behavior, dark-mode
-  contrast, modal ergonomics and card density without touching component logic.
-*/
 
 :root {
     --mp-safe-x: max(

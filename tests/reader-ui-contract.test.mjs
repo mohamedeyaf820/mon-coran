@@ -116,6 +116,21 @@ test("verse reference and primary actions keep one production-safe row", () => {
   assert.match(styles, /:is\(\.srh-pill, \.srh-toggle\) svg[\s\S]*?display: none !important/);
 });
 
+test("home mobile hierarchy progressively discloses secondary content", () => {
+  const hero = source("src/components/Home/HeroSection.jsx");
+  const styles = source("src/styles/device-responsive.css");
+  const constants = source("src/components/Home/homeConstants.js");
+  const session = source("src/components/Home/SessionCard.jsx");
+
+  assert.match(hero, /<details[\s\S]*?className="home-mobile-quick-disclosure/);
+  assert.match(hero, /<summary[\s\S]*?className="home-mobile-quick-toggle/);
+  assert.match(hero, /matchMedia\("\(min-width: 641px\)"\)/);
+  assert.match(styles, /home-mobile-quick-disclosure:not\(\[open\]\) > \.home-info-panel[\s\S]*?display: none/);
+  assert.match(session, /home-session-card[^"\n]*max-\[640px\]:order-1/);
+  assert.match(constants, /Sincérité pure/);
+  assert.match(constants, /Médinoise/);
+});
+
 test("Mushaf pages keep a compact, theme-aware reading hierarchy", () => {
   const page = source("src/components/Quran/CleanPageView.jsx");
   const decor = source("src/components/Quran/CleanPageDecor.jsx");

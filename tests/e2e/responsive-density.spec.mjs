@@ -133,6 +133,45 @@ test("home density: mobile and tablet text, icons and cards scale with viewport"
   expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(14);
 });
 
+test("home audit breakpoints preserve hierarchy without horizontal overflow", async ({ page }) => {
+  for (const width of [320, 360, 390, 412, 768, 1024]) {
+    await openHome(page, { width, height: width <= 412 ? 780 : 900 });
+    expect(await overflowX(page)).toBeLessThanOrEqual(2);
+
+    const quickToggle = page.locator(".home-mobile-quick-toggle");
+    const quickPanel = page.locator(".home-info-panel");
+    if (width <= 640) {
+      await expect(quickToggle).toBeVisible();
+      await expect(quickPanel).toBeHidden();
+
+      const session = await box(page, ".home-session-card");
+      const dailyVerse = await box(page, ".home-daily-verse-card");
+      expect(session?.y || 0).toBeLessThan(dailyVerse?.y || 0);
+
+      if (width === 390) {
+        await quickToggle.click();
+        await expect(page.locator(".home-mobile-quick-disclosure")).toHaveAttribute("open", "");
+        await expect(quickPanel).toBeVisible();
+        expect(await overflowX(page)).toBeLessThanOrEqual(2);
+      }
+    } else {
+      await expect(quickToggle).toBeHidden();
+      await expect(quickPanel).toBeVisible();
+    }
+  }
+
+  await openHome(page, { width: 320, height: 780 });
+  const firstCards = await page.locator(".hp-grid--surah .hp-card").evaluateAll((nodes) =>
+    nodes.slice(0, 2).map((node) => {
+      const rect = node.getBoundingClientRect();
+      return { x: rect.x, y: rect.y };
+    }),
+  );
+  expect(firstCards).toHaveLength(2);
+  expect(Math.abs(firstCards[0].x - firstCards[1].x)).toBeLessThanOrEqual(1);
+  expect(firstCards[1].y).toBeGreaterThan(firstCards[0].y);
+});
+
 test("reader header stays stable and visually centered across breakpoints", async ({ page }) => {
   for (const viewport of [
     { width: 390, height: 844 },

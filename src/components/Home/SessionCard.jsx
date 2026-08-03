@@ -134,7 +134,7 @@ export default function SessionCard({
   return (
     <>
       {/* ── Carte session active ──────────────────────────────────────── */}
-      <div className="home-session-card relative overflow-hidden rounded-2xl p-4 bg-[var(--bg-secondary)] border border-[var(--border)] shadow-[0_4px_20px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(var(--primary-rgb),0.12),0_2px_8px_rgba(0,0,0,0.06)]">
+      <div className="home-session-card relative overflow-hidden rounded-2xl p-4 bg-[var(--bg-secondary)] border border-[var(--border)] shadow-[0_4px_20px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_32px_rgba(var(--primary-rgb),0.12),0_2px_8px_rgba(0,0,0,0.06)] max-[640px]:order-1">
         {/* Barre gradient animée en haut (remplace le ::before pseudo-element) */}
         <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[var(--primary)] via-[#d4a820] to-[var(--primary)]" />
 
@@ -234,7 +234,7 @@ export default function SessionCard({
       </div>
 
       {/* ── Carte prières ─────────────────────────────────────────────── */}
-      <div className="home-prayer-card bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
+      <div className="home-prayer-card bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)] max-[640px]:order-3">
         {/* En-tête prières */}
         <div className="home-prayer-card__header flex items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] mb-[0.75rem] font-[var(--font-ui)] uppercase tracking-[0.06em]">
           <Building2 size={12} />
