@@ -224,7 +224,7 @@ export default function AudioPlayer() {
           set({ reciter: candidate.id });
           toast(
             lang === "fr"
-              ? `Recitateur indisponible, bascule vers ${candidate.nameFr || candidate.nameEn || candidate.name}.`
+              ? `Récitateur indisponible, bascule vers ${candidate.nameFr || candidate.nameEn || candidate.name}.`
               : lang === "ar"
                 ? `القارئ غير متاح، تم التبديل إلى ${candidate.name || candidate.nameEn || candidate.id}.`
                 : `Reciter unavailable, switched to ${candidate.nameEn || candidate.nameFr || candidate.name}.`,
