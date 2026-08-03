@@ -2101,10 +2101,6 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     vertical-align: -0.18em !important;
 }
 
-.app-root .quran-display--platform :is(.cpv-flow, .qcom-continuous-list) .qurancom-ayah-marker__number {
-    font-weight: 700 !important;
-}
-
 .app-root .quran-display--platform :is(.cpv-verse--active, .qcom-continuous-verse--active, .cpv-verse:hover, .qcom-continuous-verse:hover) {
     background: color-mix(in srgb, var(--primary) 8%, transparent) !important;
     box-shadow: none !important;
@@ -2405,13 +2401,6 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     line-height: 1 !important;
     vertical-align: -0.18em !important;
     transform: none !important;
-}
-
-.qurancom-ayah-marker__number,
-.app-root .quran-display--platform .qcom-verse-stop .qurancom-ayah-marker__number {
-    font-family: var(--font-quran), serif !important;
-    font-weight: 600 !important;
-    line-height: 1 !important;
 }
 
 .app-root .quran-display--platform .qcom-continuous-verse--active,
@@ -2867,30 +2856,6 @@ html body .app-root .quran-display--platform .mushaf-container .cpv-verse--playi
     white-space: nowrap !important;
     flex-shrink: 0 !important;
     cursor: default;
-}
-
-.ayat-marker svg,
-.ayat-marker__svg {
-    display: block !important;
-    overflow: visible !important;
-    flex: 0 0 auto !important;
-    width: 1em !important;
-    height: 1em !important;
-}
-
-.ayat-marker *,
-.ayat-marker text,
-.ayat-marker__number {
-    font-family: "Amiri", "Scheherazade New", serif !important;
-    line-height: 1 !important;
-}
-
-[data-theme="dark"] .ayat-marker svg {
-    filter: none;
-}
-
-[data-theme="light"] .ayat-marker svg {
-    filter: brightness(0.92) saturate(0.95);
 }
 
 html body .app-root .quran-display--platform .mushaf-text-block {
@@ -4346,11 +4311,6 @@ html body .app-root .quran-display--platform .mushaf-text-block .cpv-ayah-marker
     margin-inline: 0.12em 0.72em !important;
     vertical-align: -0.18em !important;
     transform: none !important;
-}
-
-html body .app-root .quran-display--platform .mushaf-text-block .cpv-ayah-marker .ayat-marker__svg {
-    width: 1.08em !important;
-    height: 1.08em !important;
 }
 
 html body .app-root .native-ayah-marker,

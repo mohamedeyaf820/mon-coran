@@ -65,7 +65,15 @@ test("Mushaf typography stays responsive without exceeding layout safety caps", 
       viewportWidth: 390,
       mushafLayout: "mushaf",
     }),
-    40,
+    30,
+  );
+  assert.equal(
+    getResponsiveArabicFontSize({
+      preferredSize: 96,
+      viewportWidth: 520,
+      mushafLayout: "mushaf",
+    }),
+    34,
   );
   assert.equal(
     getResponsiveArabicFontSize({
