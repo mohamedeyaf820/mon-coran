@@ -208,6 +208,15 @@ test("continuous Mushaf markers leave a readable gap before the next ayah", () =
   assert.match(purgeScript, /continuous Mushaf marker spacing/);
 });
 
+test("ayah numbers use one portable medallion instead of one font glyph per digit", () => {
+  const marker = source("src/components/Quran/AyahMarker.jsx");
+
+  assert.match(marker, /className="ayat-marker__medallion"/);
+  assert.match(marker, /toArabicNumeral\(markerNumber\)/);
+  assert.match(marker, /className="ayat-marker__number"[\s\S]*?\{markerText\}/);
+  assert.doesNotMatch(marker, /getNativeAyahMarker/);
+});
+
 test("Tajweed legend and Quran.com markup share the same eight rule families", () => {
   const display = source("src/components/QuranDisplay.jsx");
   const legend = source("src/components/Quran/TajweedLegend.jsx");

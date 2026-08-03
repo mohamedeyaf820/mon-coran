@@ -163,6 +163,11 @@ test("mobile QCF4 Mushaf mode keeps the complete reader command bar", async ({ p
   await expect(toolbar.locator(".srh-controls")).toBeVisible();
   await expect(toolbar.locator(".srh-footer")).toBeVisible();
   await expect(toolbar.locator(".srh-typography-trigger")).toBeVisible();
+
+  const verseElevenMarker = page.locator('#ayah-11 .cpv-ayah-marker');
+  await expect(verseElevenMarker).toHaveCount(1);
+  await expect(verseElevenMarker.locator('.ayat-marker__medallion')).toHaveCount(1);
+  await expect(verseElevenMarker.locator('.ayat-marker__number')).toHaveText('\u0661\u0661');
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
