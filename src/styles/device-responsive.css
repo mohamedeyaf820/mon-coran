@@ -4,6 +4,7 @@
   --mp-wide-surface: min(100%, 88rem);
   --mp-device-touch: 44px;
   --mp-device-icon: clamp(0.75rem, 0.72rem + 0.12vw, 0.88rem);
+  --mp-verse: clamp(34px, 4vw, 44px);
   --space-10: max(2.75rem, 44px);
 }
 
@@ -14,10 +15,10 @@ html body .app-root {
 
 html body .app-root[data-view="reading"] .quran-display--platform
   .qc-list-card__top .ayah-actions button {
-  width: var(--mp-device-touch) !important;
-  min-width: var(--mp-device-touch) !important;
-  height: var(--mp-device-touch) !important;
-  min-height: var(--mp-device-touch) !important;
+  width: var(--mp-verse) !important;
+  min-width: var(--mp-verse) !important;
+  height: var(--mp-verse) !important;
+  min-height: var(--mp-verse) !important;
   padding: 0 !important;
   border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border) 76%) !important;
   background: color-mix(in srgb, var(--bg-card) 88%, var(--primary) 12%) !important;
@@ -28,10 +29,10 @@ html body .app-root[data-view="reading"] .quran-display--platform
 
 html body .app-root[data-view="reading"] .quran-display--platform
   .qc-list-card__top .ayah-actions button svg {
-  flex: 0 0 var(--mp-device-icon) !important;
-  width: var(--mp-device-icon) !important;
-  min-width: var(--mp-device-icon) !important;
-  height: var(--mp-device-icon) !important;
+  flex: 0 0 0.75rem !important;
+  width: 0.75rem !important;
+  min-width: 0.75rem !important;
+  height: 0.75rem !important;
   color: currentColor !important;
   stroke: currentColor !important;
   opacity: 1 !important;
@@ -127,7 +128,7 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
   }
 
   html body .app-root[data-view="reading"] .qc-list-card__top {
-    min-height: 44px;
+    min-height: var(--mp-verse);
     flex-wrap: nowrap !important;
     align-items: center !important;
     gap: 0.4rem !important;
