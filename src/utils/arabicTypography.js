@@ -25,15 +25,15 @@ export function getResponsiveArabicFontSize({
     ? Number(viewportWidth)
     : 1024;
 
-  let deviceScale = 1.08;
-  let deviceMaximum = 64;
+  let deviceScale;
+  let deviceMaximum;
 
   if (width <= 420) {
     deviceScale = 0.84;
-    deviceMaximum = mushafLayout === "mushaf" ? 40 : 48;
+    deviceMaximum = mushafLayout === "mushaf" ? 30 : 42;
   } else if (width <= 640) {
     deviceScale = 0.92;
-    deviceMaximum = mushafLayout === "mushaf" ? 44 : 52;
+    deviceMaximum = mushafLayout === "mushaf" ? 34 : 46;
   } else if (width <= 1024) {
     deviceScale = 1.08;
     deviceMaximum = mushafLayout === "mushaf" ? 56 : 64;

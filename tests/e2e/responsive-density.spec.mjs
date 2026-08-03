@@ -171,6 +171,22 @@ test("mobile QCF4 Mushaf mode keeps the complete reader command bar", async ({ p
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
+test("mobile Mushaf keeps desktop proportions at the largest text preference", async ({ page }) => {
+  await openReader(
+    page,
+    { width: 390, height: 844 },
+    { mushafLayout: "mushaf", fontFamily: "qcf-v4-tajweed", quranFontSize: 96 },
+  );
+
+  expect(await fontSizePx(page, ".mushaf-text-block")).toBeLessThanOrEqual(30);
+
+  const medallion = await box(page, "#ayah-11 .ayat-marker__medallion");
+  expect(medallion?.width || 0).toBeLessThanOrEqual(32);
+  expect(medallion?.height || 0).toBeLessThanOrEqual(32);
+  expect(Math.abs((medallion?.width || 0) - (medallion?.height || 0))).toBeLessThanOrEqual(1);
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+});
+
 test("surah information dossier stays accessible and contained on mobile", async ({ page }) => {
   await openReader(page, { width: 390, height: 844 });
 
