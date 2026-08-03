@@ -302,6 +302,12 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(moreButton?.width || 0).toBeGreaterThanOrEqual(43.9);
   expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(43.9);
   expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(43.9);
+  expect(verseReference?.width || 0).toBeGreaterThanOrEqual(33.9);
+  expect(verseReference?.width || 0).toBeLessThanOrEqual(34.1);
+  expect(versePlay?.width || 0).toBeGreaterThanOrEqual(33.9);
+  expect(versePlay?.width || 0).toBeLessThanOrEqual(34.1);
+  expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(33.9);
+  expect(verseBookmark?.width || 0).toBeLessThanOrEqual(34.1);
   expect(Math.abs((verseReference?.y || 0) - (versePlay?.y || 0))).toBeLessThanOrEqual(1);
   expect(Math.abs((verseReference?.y || 0) - (verseBookmark?.y || 0))).toBeLessThanOrEqual(1);
   await expect(page.locator(".srh-typography-panel")).toBeHidden();
@@ -334,9 +340,12 @@ test("tiny mobile density keeps the reader usable at 280px", async ({ page }) =>
 
   expect(header?.height || 0).toBeLessThanOrEqual(56);
   expect(homeLogo?.width || 0).toBeGreaterThanOrEqual(43.9);
-  expect(verseReference?.width || 0).toBeGreaterThanOrEqual(43.9);
-  expect(versePlay?.width || 0).toBeGreaterThanOrEqual(43.9);
-  expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(verseReference?.width || 0).toBeGreaterThanOrEqual(33.9);
+  expect(verseReference?.width || 0).toBeLessThanOrEqual(34.1);
+  expect(versePlay?.width || 0).toBeGreaterThanOrEqual(33.9);
+  expect(versePlay?.width || 0).toBeLessThanOrEqual(34.1);
+  expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(33.9);
+  expect(verseBookmark?.width || 0).toBeLessThanOrEqual(34.1);
   expect(Math.abs((verseReference?.y || 0) - (versePlay?.y || 0))).toBeLessThanOrEqual(1);
   expect(Math.abs((verseReference?.y || 0) - (verseBookmark?.y || 0))).toBeLessThanOrEqual(1);
   expect(audioDock?.width || 0).toBeLessThanOrEqual(280);
@@ -427,8 +436,10 @@ test("small phone: verse actions and search stay usable inside the viewport", as
   await openReader(page, viewport);
 
   const reference = await box(page, ".qc-list-card__reference");
-  expect(reference?.width || 0).toBeGreaterThanOrEqual(44);
-  expect(reference?.height || 0).toBeGreaterThanOrEqual(43.9);
+  expect(reference?.width || 0).toBeGreaterThanOrEqual(33.9);
+  expect(reference?.width || 0).toBeLessThanOrEqual(34.1);
+  expect(reference?.height || 0).toBeGreaterThanOrEqual(33.9);
+  expect(reference?.height || 0).toBeLessThanOrEqual(34.1);
 
   const visibleActionSizes = await page
     .locator(".qc-list-card__top .ayah-actions button")
@@ -442,10 +453,10 @@ test("small phone: verse actions and search stay usable inside the viewport", as
     );
   expect(visibleActionSizes.length).toBeGreaterThanOrEqual(3);
   for (const action of visibleActionSizes) {
-    expect(action.width).toBeGreaterThanOrEqual(43.9);
-    expect(action.height).toBeGreaterThanOrEqual(43.9);
-    expect(action.width).toBeLessThanOrEqual(44.1);
-    expect(action.height).toBeLessThanOrEqual(44.1);
+    expect(action.width).toBeGreaterThanOrEqual(33.9);
+    expect(action.height).toBeGreaterThanOrEqual(33.9);
+    expect(action.width).toBeLessThanOrEqual(34.1);
+    expect(action.height).toBeLessThanOrEqual(34.1);
   }
 
   await page.locator(".mp-header__more").first().click();
