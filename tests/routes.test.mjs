@@ -22,7 +22,7 @@ test("invalid reading routes return a real not-found state", () => {
 });
 
 test("published transparency routes resolve explicitly", () => {
-  for (const page of ["about", "privacy", "legal", "sources"]) {
+  for (const page of ["surahs", "about", "privacy", "legal", "sources"]) {
     assert.deepEqual(parseRoutePath(`/${page}`), {
       legalPage: page,
       showHome: false,

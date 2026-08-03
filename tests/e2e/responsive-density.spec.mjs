@@ -87,7 +87,11 @@ async function box(page, selector) {
 }
 
 async function fontSizePx(page, selector) {
-  return page.locator(selector).first().evaluate((node) => Number.parseFloat(getComputedStyle(node).fontSize));
+  return page.locator(selector).evaluateAll((nodes, currentSelector) => {
+    const node = nodes.find((candidate) => candidate.getClientRects().length > 0);
+    if (!node) throw new Error(`No visible element found for ${currentSelector}`);
+    return Number.parseFloat(getComputedStyle(node).fontSize);
+  }, selector);
 }
 
 async function overflowX(page) {
@@ -146,6 +150,59 @@ test("reader header stays stable and visually centered across breakpoints", asyn
   }
 });
 
+test("surah information dossier stays accessible and contained on mobile", async ({ page }) => {
+  await openReader(page, { width: 390, height: 844 });
+
+  const trigger = page.locator(".srh-mobile-bar .srh-info-btn");
+  await expect(trigger).toBeVisible();
+  await trigger.click();
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+  const dialog = page.getByRole("dialog", { name: "Informations sur la sourate" });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText("Repères essentiels")).toBeVisible();
+  await expect(dialog.getByText("Editorial overview for surah 3.")).toBeVisible();
+  await dialog.getByRole("button", { name: /Dossier complet/ }).click();
+  await expect(dialog.getByText("Complete historical context for testing.")).toBeVisible();
+  await expect(dialog.getByText(/89e dans l’ordre de révélation/)).toBeVisible();
+
+  const modalBox = await dialog.locator(".surah-info-modal").boundingBox();
+  expect(modalBox?.x || 0).toBeGreaterThanOrEqual(0);
+  expect(modalBox?.y || 0).toBeGreaterThanOrEqual(0);
+  expect((modalBox?.x || 0) + (modalBox?.width || 0)).toBeLessThanOrEqual(391);
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+  await expect(page.locator(".surah-info-modal button[aria-label='Fermer']")).toBeFocused();
+
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+});
+
+test("Tajweed guide stays compact and explains coloured rules on hover", async ({ page }) => {
+  await openReader(
+    page,
+    { width: 1280, height: 800 },
+    { showTajwid: true },
+  );
+
+  const legend = page.getByTestId("tajweed-legend");
+  await expect(legend).toBeVisible();
+  const legendBox = await legend.boundingBox();
+  expect(legendBox?.width || 0).toBeLessThanOrEqual(1280);
+  expect(legendBox?.height || 0).toBeLessThanOrEqual(130);
+
+  const segment = page.locator(".tajwid-rule-segment").first();
+  await expect(segment).toBeVisible();
+  await expect(segment).not.toHaveAttribute("title", /.+/);
+  await segment.hover();
+
+  const tooltip = page.locator(".tajwid-rule-tooltip");
+  await expect(tooltip).toBeVisible();
+  await expect(tooltip.locator(".tajwid-rule-tooltip__head strong")).not.toBeEmpty();
+  await expect(tooltip.locator(".tajwid-rule-tooltip__description")).not.toBeEmpty();
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+});
+
 test("mobile density: header, reading toolbar and audio player fit without horizontal overflow", async ({ page }) => {
   await openReader(page, { width: 390, height: 844 });
 
@@ -169,6 +226,7 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(43.9);
   await expect(page.locator(".srh-typography-panel")).toBeHidden();
   await page.locator(".srh-typography-trigger").click();
+  await expect(page.locator(".srh-typography-trigger")).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator(".srh-typography-panel")).toBeVisible();
   const fontControls = await box(page, ".srh-root .arabic-font-controls--compact");
   const fontSelect = await box(page, ".srh-root .afc-select");
@@ -356,6 +414,7 @@ test("Arabic reading controls visibly reduce and enlarge device-aware text", asy
   expect(initialPhoneSize).toBe(21);
 
   await page.locator(".srh-typography-trigger").click();
+  await expect(page.locator(".srh-typography-trigger")).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator(".srh-typography-panel")).toBeVisible();
   await page.locator('button[title="A-"]').click();
   await expect

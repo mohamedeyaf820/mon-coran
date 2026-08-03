@@ -19,6 +19,7 @@ const COPY = {
     surahs: "Sourates",
     home: "Accueil",
     legal: {
+      surahs: "Liste des 114 sourates",
       about: "À propos",
       privacy: "Confidentialité",
       legal: "Mentions légales",
@@ -38,6 +39,7 @@ const COPY = {
     surahs: "Surahs",
     home: "Home",
     legal: {
+      surahs: "List of 114 surahs",
       about: "About",
       privacy: "Privacy",
       legal: "Legal notice",
@@ -56,6 +58,7 @@ const COPY = {
     surahs: "السور",
     home: "الرئيسية",
     legal: {
+      surahs: "قائمة السور المائة والأربع عشرة",
       about: "حول التطبيق",
       privacy: "الخصوصية",
       legal: "إشعار قانوني",
@@ -103,8 +106,14 @@ export function buildSeoMetadata(state = {}) {
   } else if (state.legalPage) {
     const label = copy.legal[state.legalPage] || copy.legal.legal;
     title = `${label} | ${suffix}`;
-    description = `${label} — ${suffix}`;
-    kind = "legal";
+    description = state.legalPage === "surahs"
+      ? lang === "ar"
+        ? `فهرس سور القرآن الكريم مع الأسماء وعدد الآيات على ${suffix}.`
+        : lang === "en"
+          ? `Browse all 114 Quran surahs with Arabic names, translations and verse counts on ${suffix}.`
+          : `Parcourez les 114 sourates avec leur nom arabe, leur traduction et leur nombre de versets sur ${suffix}.`
+      : `${label} — ${suffix}`;
+    kind = state.legalPage === "surahs" ? "surah-index" : "legal";
   } else if (state.showDuas) {
     title = `${copy.duasTitle} | ${suffix}`;
     description = copy.duasDescription;

@@ -26,6 +26,7 @@ test("compact mobile player uses the safe-area dock and a visible progress rail"
 
   assert.match(viewSource, /mp-audio-player--mobile mp-audio-player--dock/);
   assert.match(viewSource, /<PlayerProgress[\s\S]*showTimes=\{false\}/);
+  assert.match(viewSource, /simple-player__transport-options/);
   assert.match(primitivesSource, /simple-player__progress-track/);
 });
 
