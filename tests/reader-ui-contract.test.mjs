@@ -151,6 +151,7 @@ test("Mushaf pages keep a compact, theme-aware reading hierarchy", () => {
 
 test("surah headings use the calligraphic name ligatures accessibly", () => {
   const header = source("src/components/Quran/SurahReaderHeader.jsx");
+  const headerStyles = source("src/styles/surah-reader-header.css");
   const cleanHeader = source("src/components/Quran/CleanPageDecor.jsx");
   const inlineHeader = source("src/components/Quran/MushafInlineHeader.jsx");
   const appHeader = source("src/components/Header.jsx");
@@ -160,6 +161,8 @@ test("surah headings use the calligraphic name ligatures accessibly", () => {
 
   assert.match(header, /const surahLigature = String\(surahNum\)\.padStart\(3, "0"\)/);
   assert.match(header, /aria-label=\{s\.ar\}[\s\S]*?className="font-surah-names"[\s\S]*?dir="ltr" lang="en"/);
+  assert.doesNotMatch(headerStyles, /\.srh-arabic\s*\{[^}]*\b(?:border|background|box-shadow)\s*:/);
+  assert.doesNotMatch(headerStyles, /\.srh-mobile-bar__name\s*\{[^}]*\b(?:border|background|border-radius)\s*:/);
   assert.match(cleanHeader, /const accessibleArabicTitle =/);
   assert.match(cleanHeader, /getSurahLigature\(surahNum\)/);
   assert.match(cleanHeader, /cpv-surah-name-ligature[\s\S]*?dir=\{surahLigature \? "ltr" : "rtl"\}[\s\S]*?lang=\{surahLigature \? "en" : "ar"\}/);

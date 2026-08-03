@@ -45,7 +45,7 @@
 
 .srh-identity {
     display: grid;
-    grid-template-columns: clamp(3.7rem, 6vw, 4.7rem) minmax(0, 1fr) auto;
+    grid-template-columns: clamp(4rem, 6.5vw, 5.4rem) minmax(0, 1fr) auto;
     align-items: center;
     gap: clamp(0.8rem, 2vw, 1.3rem);
     min-height: 6.5rem;
@@ -53,30 +53,16 @@
 }
 
 .srh-arabic {
-    position: relative;
-    display: grid;
-    width: clamp(3.7rem, 6vw, 4.7rem);
-    aspect-ratio: 1;
-    place-items: center;
-    border: 1px solid color-mix(in srgb, var(--color-gold, #c5a04b) 32%, var(--srh-line));
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--bg-card) 78%, transparent);
-    box-shadow: 0 8px 22px color-mix(in srgb, var(--primary) 10%, transparent), inset 0 0 0 4px color-mix(in srgb, var(--color-gold, #c5a04b) 5%, transparent);
-    color: color-mix(in srgb, var(--text-primary) 82%, var(--primary));
+    display: flex;
+    width: clamp(4rem, 6.5vw, 5.4rem);
+    min-height: 3.4rem;
+    align-items: center;
+    justify-content: center;
+    color: color-mix(in srgb, var(--text-primary) 78%, var(--primary));
     font-family: var(--font-surah-name, var(--font-quran), serif);
-    font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+    font-size: clamp(2rem, 3.5vw, 2.65rem);
     line-height: 1;
-}
-
-.srh-arabic::after {
-    position: absolute;
-    inset: auto -0.15rem 0.25rem auto;
-    width: 0.58rem;
-    height: 0.58rem;
-    border: 2px solid var(--srh-surface);
-    border-radius: 50%;
-    background: var(--primary);
-    content: "";
+    filter: drop-shadow(0 3px 6px color-mix(in srgb, var(--primary) 10%, transparent));
 }
 
 .srh-meta {
@@ -402,10 +388,8 @@
 
 [data-theme="dark"] .srh-arabic,
 [data-theme="quran-night"] .srh-arabic {
-    border-color: color-mix(in srgb, var(--color-gold, #d4b468) 32%, var(--srh-line));
-    background: rgba(3, 14, 10, 0.42);
     color: #f1eadb;
-    box-shadow: 0 9px 24px rgba(0, 0, 0, 0.24), inset 0 0 0 4px rgba(212, 180, 104, 0.05);
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.3));
 }
 
 [data-theme="dark"] .srh-badge--gold,
@@ -425,15 +409,16 @@
     }
 
     .srh-identity {
-        grid-template-columns: 3.6rem minmax(0, 1fr) auto;
+        grid-template-columns: 4rem minmax(0, 1fr) auto;
         gap: 0.75rem;
         min-height: 5.8rem;
         padding: 0.75rem 0.9rem;
     }
 
     .srh-arabic {
-        width: 3.6rem;
-        font-size: 1.75rem;
+        width: 4rem;
+        min-height: 3rem;
+        font-size: 2rem;
     }
 
     .srh-desc {
@@ -472,7 +457,7 @@
 
     .srh-mobile-bar {
         display: grid;
-        grid-template-columns: 2.7rem minmax(0, 1fr) auto;
+        grid-template-columns: 3.2rem minmax(0, 1fr) auto;
         align-items: center;
         gap: 0.55rem;
         min-height: 3.65rem;
@@ -481,16 +466,14 @@
     }
 
     .srh-mobile-bar__name {
-        display: grid;
-        width: 2.7rem;
-        height: 2.7rem;
-        place-items: center;
-        border: 1px solid color-mix(in srgb, var(--color-gold, #c5a04b) 28%, var(--srh-line));
-        border-radius: 50%;
-        background: var(--bg-card);
-        color: var(--text-primary);
+        display: flex;
+        width: 3.2rem;
+        min-height: 2.7rem;
+        align-items: center;
+        justify-content: center;
+        color: color-mix(in srgb, var(--text-primary) 78%, var(--primary));
         font-family: var(--font-surah-name, var(--font-quran), serif);
-        font-size: 1.3rem;
+        font-size: 1.55rem;
         line-height: 1;
     }
 
@@ -604,15 +587,15 @@
 
 @media (max-width: 390px) {
     .srh-mobile-bar {
-        grid-template-columns: 2.45rem minmax(0, 1fr) auto;
+        grid-template-columns: 2.8rem minmax(0, 1fr) auto;
         gap: 0.42rem;
         padding-inline: 0.48rem;
     }
 
     .srh-mobile-bar__name {
-        width: 2.45rem;
-        height: 2.45rem;
-        font-size: 1.15rem;
+        width: 2.8rem;
+        min-height: 2.45rem;
+        font-size: 1.35rem;
     }
 
     .srh-mobile-bar :is(.srh-play-btn, .srh-info-btn) {
@@ -649,10 +632,6 @@
 [dir="rtl"] .srh-actions {
     margin-inline-start: auto;
     margin-inline-end: 0;
-}
-
-[dir="rtl"] .srh-arabic::after {
-    inset: auto auto 0.25rem -0.15rem;
 }
 
 .app-root .quran-display--platform .qc-surah-header-wrap {
