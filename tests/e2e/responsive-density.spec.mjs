@@ -166,8 +166,8 @@ test("mobile QCF4 Mushaf mode keeps the complete reader command bar", async ({ p
 
   const verseElevenMarker = page.locator('#ayah-11 .cpv-ayah-marker');
   await expect(verseElevenMarker).toHaveCount(1);
-  await expect(verseElevenMarker.locator('.ayat-marker__medallion')).toHaveCount(1);
-  await expect(verseElevenMarker.locator('.ayat-marker__number')).toHaveText('\u0661\u0661');
+  await expect(verseElevenMarker).toHaveAttribute('data-marker-font', 'qcf-v4-tajweed');
+  await expect(verseElevenMarker).toContainText('\u06dd\u0661\u0661');
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -180,10 +180,9 @@ test("mobile Mushaf keeps desktop proportions at the largest text preference", a
 
   expect(await fontSizePx(page, ".mushaf-text-block")).toBeLessThanOrEqual(30);
 
-  const medallion = await box(page, "#ayah-11 .ayat-marker__medallion");
-  expect(medallion?.width || 0).toBeLessThanOrEqual(32);
-  expect(medallion?.height || 0).toBeLessThanOrEqual(32);
-  expect(Math.abs((medallion?.width || 0) - (medallion?.height || 0))).toBeLessThanOrEqual(1);
+  const marker = page.locator("#ayah-11 .cpv-ayah-marker");
+  await expect(marker).toHaveAttribute("data-marker-font", "qcf-v4-tajweed");
+  await expect(marker).toContainText("\u06dd\u0661\u0661");
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
