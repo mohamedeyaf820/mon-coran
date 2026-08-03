@@ -29,6 +29,7 @@ import {
   Shapes,
   X,
   BookOpen,
+  Home,
 } from "lucide-react";
 
 export default function Header() {
@@ -481,6 +482,8 @@ export default function Header() {
             className="mp-header__brand"
             type="button"
             onClick={goHome}
+            title={lang === "ar" ? "العودة إلى الرئيسية" : lang === "en" ? "Back to home" : "Retour à l'accueil"}
+            data-testid="mobile-home-logo"
             aria-label={lang === "ar" ? "MushafPlus — الرئيسية" : lang === "en" ? "MushafPlus — Home" : "MushafPlus — Accueil"}
           >
             <span className="mp-header__logo">
@@ -492,6 +495,9 @@ export default function Header() {
                 width={38}
                 height={38}
               />
+            </span>
+            <span className="mp-header__home-badge" aria-hidden="true">
+              <Home size={9} strokeWidth={2.4} />
             </span>
             <span className="mp-header__brand-text">
               Mushaf<span className="mp-header__brand-accent">Plus</span>
