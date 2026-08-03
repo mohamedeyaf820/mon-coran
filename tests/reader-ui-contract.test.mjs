@@ -55,6 +55,7 @@ test("surah information opens as an accessible responsive dossier", () => {
   assert.match(panel, /revelationOrder/);
   assert.match(panel, /dossierBlocks\.map/);
   assert.match(panel, /<h4 key=\{block\}>/);
+  assert.doesNotMatch(styles, /\.sip-header__ornament\s*\{[^}]*\b(?:border|background|box-shadow|border-radius)\s*:/);
   assert.match(modal, /createPortal\(modalContent, document\.body\)/);
   assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?align-items: flex-end/);
   assert.match(styles, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
