@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { getSurah, toAr } from "../../data/surahs";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 import WordByWordDisplay from "./WordByWordDisplay";
@@ -24,29 +24,17 @@ function CleanPageViewComponent({
   getAyahToggleId = (ayah) => ayah.numberInSurah,
   onAyahClick,
   showWordByWord = false,
-  showWordTranslation = true,
-  showTransliteration = true,
+  showWordTranslation: _showWordTranslation = true,
+  showTransliteration: _showTransliteration = true,
 }) {
   const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
   const pageNumber = ayahs[0]?.page ?? null;
   const juzNumber = ayahs[0]?.juz ?? null;
   const headerSurahName = surahMeta?.name_arabic || surahMeta?.name || "";
-  const [isMobileMushaf, setIsMobileMushaf] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(max-width: 520px)").matches,
-  );
-  useEffect(() => {
-    const media = window.matchMedia("(max-width: 520px)");
-    const onChange = (e) => setIsMobileMushaf(e.matches);
-    if (typeof media.addEventListener === "function") {
-      media.addEventListener("change", onChange);
-      return () => media.removeEventListener("change", onChange);
-    }
-    media.addListener(onChange);
-    return () => media.removeListener(onChange);
-  }, []);
-  const mushafFontSize = isMobileMushaf
-    ? Math.max(18, Math.min(26, Number(fontSize) || 24))
-    : Math.max(34, Math.min(72, Number(fontSize) || 42));
+  // `fontSize` is already resolved for the current viewport by
+  // useQuranDisplayView. Keeping one source of truth prevents deferred mobile
+  // styles from enlarging the Mushaf after its first paint.
+  const mushafFontSize = Math.max(12, Math.min(72, Number(fontSize) || 34));
   const mushafWordSpacing = riwaya === "warsh" ? "0.035em" : "0.045em";
 
   const juzLabel = useMemo(() => {
