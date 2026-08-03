@@ -71,12 +71,16 @@ test("security: production CSP excludes dev-only and unused risky sources", () =
   assert.doesNotMatch(csp, /fonts\.quranwbw\.com/);
 });
 
-test("fonts: the Warsh face is self-hosted as a valid WOFF2 asset", () => {
-  const font = readFileSync("public/fonts/kfgqpc-warsh-10.woff2");
+test("fonts: the Hafs and Warsh faces are self-hosted as valid WOFF2 assets", () => {
+  const hafsFont = readFileSync("public/fonts/uthmanic-hafs-v18.woff2");
+  const warshFont = readFileSync("public/fonts/kfgqpc-warsh-10.woff2");
   const loader = readFileSync("src/services/fontLoader.js", "utf8");
 
-  assert.equal(font.subarray(0, 4).toString("ascii"), "wOF2");
-  assert.ok(font.length > 80_000);
+  assert.equal(hafsFont.subarray(0, 4).toString("ascii"), "wOF2");
+  assert.equal(warshFont.subarray(0, 4).toString("ascii"), "wOF2");
+  assert.ok(hafsFont.length > 80_000);
+  assert.ok(warshFont.length > 80_000);
+  assert.match(loader, /\/fonts\/uthmanic-hafs-v18\.woff2/);
   assert.match(loader, /\/fonts\/kfgqpc-warsh-10\.woff2/);
   assert.doesNotMatch(loader, /fonts\.quranwbw\.com/);
 });

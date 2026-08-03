@@ -150,6 +150,27 @@ test("reader header stays stable and visually centered across breakpoints", asyn
   }
 });
 
+test("mobile QCF4 Mushaf mode keeps the complete reader command bar", async ({ page }) => {
+  await openReader(
+    page,
+    { width: 390, height: 844 },
+    { mushafLayout: "mushaf", fontFamily: "qcf-v4-tajweed" },
+  );
+
+  const toolbar = page.locator(".srh-root");
+  await expect(toolbar).toBeVisible();
+  await expect(toolbar.locator(".srh-mobile-bar")).toBeVisible();
+  await expect(toolbar.locator(".srh-controls")).toBeVisible();
+  await expect(toolbar.locator(".srh-footer")).toBeVisible();
+  await expect(toolbar.locator(".srh-typography-trigger")).toBeVisible();
+
+  const verseElevenMarker = page.locator('#ayah-11 .cpv-ayah-marker');
+  await expect(verseElevenMarker).toHaveCount(1);
+  await expect(verseElevenMarker.locator('.ayat-marker__medallion')).toHaveCount(1);
+  await expect(verseElevenMarker.locator('.ayat-marker__number')).toHaveText('\u0661\u0661');
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+});
+
 test("surah information dossier stays accessible and contained on mobile", async ({ page }) => {
   await openReader(page, { width: 390, height: 844 });
 

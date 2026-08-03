@@ -60,6 +60,17 @@ test("QPC dotted-circle anchors never leak into the rendered Quran text", () => 
   assert.equal(segments.some((segment) => segment.text.includes("\u25CC")), false);
 });
 
+test("QPC filled fallback dots are normalized to the canonical Quranic sign", () => {
+  const segments = stabilizeTajwidSegments([
+    { text: "\u062A\u064E\u0623\u06E1\u0645\u064E\u06EC", ruleId: null },
+    { text: "\u0646\u0651\u064E\u0627", ruleId: "ghunna" },
+  ]);
+  const rendered = segments.map((segment) => segment.text).join("");
+
+  assert.equal(rendered.includes("\u06EC"), false);
+  assert.equal(rendered.includes("\u06EB"), true);
+});
+
 test("Hafs and Warsh use the shared Quran.com Tajweed color semantics", () => {
   const expected = {
     ghunna: "#26b55d",

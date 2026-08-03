@@ -247,6 +247,14 @@ test("fonts: strips source markers before a separate ayah marker is rendered", (
     appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u06dd\u06f7", 7, "qpc-indopak", "hafs", false),
     "\u0627\u0644\u062d\u0645\u062f",
   );
+  assert.equal(
+    appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u0661\u0661 \u0661\u0661", 11, "qpc-hafs", "hafs", false),
+    "\u0627\u0644\u062d\u0645\u062f",
+  );
+  assert.equal(
+    appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \ufd3e\u0661\u0661\ufd3f", 11, "qpc-hafs", "hafs", false),
+    "\u0627\u0644\u062d\u0645\u062f",
+  );
 });
 
 test("fonts: selects Quran.com text compatible with the active Hafs font", () => {

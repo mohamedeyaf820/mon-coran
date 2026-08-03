@@ -1,17 +1,8 @@
 import React from "react";
 import { cn } from "../../lib/utils";
-import {
-  shallowEqual,
-  useAppLocale,
-  useAppSelector,
-} from "../../context/AppContext";
+import { useAppLocale } from "../../context/AppContext";
 import { t } from "../../i18n";
 import { toArabicNumeral } from "../../utils/arabicNumerals";
-import {
-  getNativeAyahMarker,
-  normalizeFontId,
-  resolveFontFamily,
-} from "../../data/fonts";
 
 /**
  * AyahMarker - native mushaf ayah marker rendered by the active Quran font.
@@ -21,51 +12,28 @@ export const AyahMarker = React.memo(function AyahMarker({
   num,
   isPlaying = false,
   className = "",
-  fontFamily,
-  riwaya,
   size: _size = "md",
   onClick,
 }) {
-  const current = useAppSelector(
-    (state) => ({
-      fontFamily: state.fontFamily,
-      riwaya: state.riwaya,
-    }),
-    shallowEqual,
-  );
   const markerNumber = number ?? num;
   if (markerNumber == null) return null;
 
-  const activeRiwaya = riwaya || current.riwaya || "hafs";
-  const activeFontFamily = normalizeFontId(
-    fontFamily || current.fontFamily,
-    activeRiwaya,
-  );
-  const markerText = getNativeAyahMarker(markerNumber, activeFontFamily, activeRiwaya);
-  const resolvedFontFamily = resolveFontFamily(activeFontFamily, activeRiwaya);
+  const markerText = toArabicNumeral(markerNumber);
 
   return (
     <span
       dir="rtl"
       className={cn(
         "ayah-marker-wrap ayat-marker qurancom-ayah-marker verse-end-marker native-ayah-marker",
+        "ayah-marker--single",
         "inline-block select-none",
         isPlaying && "is-playing",
         className,
       )}
-      style={{
-        fontFamily: resolvedFontFamily,
-        fontFeatureSettings: '"liga" 1, "calt" 1, "mark" 1, "mkmk" 1',
-        verticalAlign: "-0.08em",
-        marginInline: "0.08em 0.12em",
-        lineHeight: 1,
-        cursor: onClick ? "pointer" : "default",
-      }}
       title={String(markerNumber)}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       aria-label={`Verset ${markerNumber}`}
-      data-marker-font={activeFontFamily}
       onClick={onClick}
       onKeyDown={
         onClick
@@ -78,7 +46,9 @@ export const AyahMarker = React.memo(function AyahMarker({
           : undefined
       }
     >
-      {markerText}
+      <span className="ayat-marker__medallion" aria-hidden="true">
+        <span className="ayat-marker__number" dir="ltr">{markerText}</span>
+      </span>
     </span>
   );
 });

@@ -35,6 +35,12 @@
   [headers.values]
     Cache-Control = "public, max-age=86400"
 
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Content-Type-Options = "nosniff"
+
 # ── HTML : pas de cache + headers de sécurité ──
 [[headers]]
   for = "/*"

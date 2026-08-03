@@ -146,7 +146,7 @@ const AYAH_MARKER_BY_FONT = {
 };
 
 export const NATIVE_AYAH_MARKER_RE = /[\u06dd\u06de][\u0660-\u0669\u06f0-\u06f9\d]*/u;
-const AYAH_MARKER_SUFFIX_RE = /(?:\s|&nbsp;)*(?:[\u06dd\u06de]?[\u0660-\u0669\u06f0-\u06f9\d]+)\s*$/u;
+const AYAH_MARKER_SUFFIX_RE = /(?:(?:\s|&nbsp;)*(?:[\u06dd\u06de\u06e9\ufd3e\ufd3f]?[\u0660-\u0669\u06f0-\u06f9\d]+[\ufd3e\ufd3f]?))+\s*$/u;
 
 const LEGACY_FONT_ALIASES = {
   "mushaf-kfgqpc": "qpc-hafs",
