@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useAppLocale } from "../../context/AppContext";
@@ -12,6 +13,7 @@ export function Modal({
   size = "md",
   position = "center",
   showCloseButton = true,
+  portal = false,
   className,
   overlayClassName,
 }) {
@@ -45,6 +47,11 @@ export function Modal({
       previousFocusRef.current = document.activeElement;
       document.addEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "hidden";
+      modalRef.current
+        ?.querySelector(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        )
+        ?.focus();
       return () => {
         document.removeEventListener("keydown", handleKeyDown);
         document.body.style.overflow = "";
@@ -69,7 +76,7 @@ export function Modal({
     bottom: "items-end justify-center pb-16",
   };
 
-  return (
+  const modalContent = (
     <div
       className={cn(
         "fixed inset-0 z-[var(--z-modal)] flex",
@@ -113,4 +120,8 @@ export function Modal({
       </div>
     </div>
   );
+
+  return portal && typeof document !== "undefined"
+    ? createPortal(modalContent, document.body)
+    : modalContent;
 }

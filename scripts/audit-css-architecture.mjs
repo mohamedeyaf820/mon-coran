@@ -18,10 +18,12 @@ const shouldCheck = process.argv.includes("--check");
 const LIMITS = {
   // Source size is a maintenance guard; the retained and production bundle
   // budgets remain the stricter deployment gates. Keep this close to the
-  // measured app while accounting for the transparency and reader-status UI.
-  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1575),
+  // measured app while accounting for the canonical responsive experience
+  // layer shared by home, reader, the Surah dossier, spiritual-tool panels and
+  // the responsive editorial/source directory. Runtime CSS budgets stay lower.
+  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1640),
   retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1005),
-  important: Number(process.env.CSS_IMPORTANT_BUDGET || 6860),
+  important: Number(process.env.CSS_IMPORTANT_BUDGET || 7240),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
   crossFileDuplicateRules: Number(
     process.env.CSS_CROSS_FILE_DUPLICATE_BUDGET || 0,

@@ -322,14 +322,12 @@ export default function Header() {
         : `Juz ${currentJuz}`
       : lang === "ar"
         ? surahMeta?.ar || surahMeta?.en || ""
-        : lang === "fr"
-          ? surahMeta?.fr || surahMeta?.en || ""
-          : surahMeta?.en || surahMeta?.fr || "";
+        : surahMeta?.en || surahMeta?.fr || "";
   const centerSubtitle =
     !showDuas && displayMode !== "juz" && surahMeta
       ? lang === "ar"
-        ? surahMeta.fr || surahMeta.en
-        : surahMeta.ar
+        ? surahMeta.en || surahMeta.fr
+        : surahMeta.fr || surahMeta.ar
       : "";
   const centerSurahLigature =
     !showDuas && displayMode !== "juz"
@@ -540,27 +538,35 @@ export default function Header() {
                     type="button"
                     aria-label={centerTitleLabel}
                   >
-                    <span className="mp-header__title-stack" aria-hidden="true">
+                    <span
+                      key={`${activeSurahNum}-${lang}-${displayMode}`}
+                      className="mp-header__title-stack"
+                      aria-hidden="true"
+                    >
                       <span className="mp-header__title">
                         {centerTitle}
                       </span>
                       {centerSubtitle ? (
-                        <span
-                          className="mp-header__title-sub"
-                          aria-label={centerSubtitle}
-                        >
-                          {lang !== "ar" && centerSurahLigature ? (
-                            <span
-                              className="font-surah-names"
-                              dir="ltr"
-                              lang="en"
-                              aria-hidden="true"
-                            >
-                              {centerSurahLigature}
+                        <span className="mp-header__title-sub-viewport">
+                          <span className="mp-header__title-sub-track">
+                            <span className="mp-header__title-sub">
+                              {centerSurahLigature ? (
+                                <span
+                                  className="font-surah-names"
+                                  dir="ltr"
+                                  lang="en"
+                                  aria-hidden="true"
+                                >
+                                  {centerSurahLigature}
+                                </span>
+                              ) : (
+                                surahMeta?.ar
+                              )}
                             </span>
-                          ) : (
-                            centerSubtitle
-                          )}
+                            <span className="mp-header__title-meaning">
+                              {centerSubtitle}
+                            </span>
+                          </span>
                         </span>
                       ) : null}
                     </span>

@@ -3506,19 +3506,19 @@ html body .app-root[data-view="home"] .home-content-toolbar {
   top: auto !important;
   z-index: 1 !important;
   border: 1px solid color-mix(in srgb, var(--theme-border, #d4d4d4) 78%, transparent) !important;
-  border-radius: 8px !important;
+  border-radius: 16px !important;
   background: var(--theme-panel-bg-strong, var(--bg-card)) !important;
-  box-shadow: 0 5px 16px rgba(15, 48, 34, 0.06) !important;
+  box-shadow: 0 8px 24px rgba(15, 48, 34, 0.07) !important;
   backdrop-filter: none !important;
 }
 
 html body .app-root[data-view="home"] .home-content-toolbar [role="tablist"],
 html body .app-root[data-view="home"] .home-content-toolbar input {
-  border-radius: 8px !important;
+  border-radius: 12px !important;
 }
 
 html body .app-root[data-view="home"] .home-content-toolbar [role="tab"][aria-selected="true"] {
-  border-radius: 8px !important;
+  border-radius: 10px !important;
   background: var(--primary) !important;
   color: #ffffff !important;
   box-shadow: none !important;
@@ -3615,10 +3615,6 @@ html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play {
   grid-column: 4 !important;
   position: relative !important;
   inset: auto !important;
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
   width: 40px !important;
   height: 40px !important;
   min-width: 40px !important;
@@ -3645,6 +3641,39 @@ html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play svg {
   padding: 0 !important;
   font-size: 16px !important;
   flex: 0 0 16px !important;
+}
+
+/* Lecture active : la carte, le statut et le contrôle évoluent ensemble. */
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah.playing {
+  border-color: color-mix(in srgb, var(--primary) 62%, var(--border) 38%) !important;
+  background: color-mix(in srgb, var(--bg-card) 88%, var(--primary) 12%) !important;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--primary) 18%, transparent) !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah.playing .hp-card-play {
+  isolation: isolate;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 18%, transparent), 0 6px 16px color-mix(in srgb, var(--primary) 30%, transparent) !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah.playing .hp-card-play::before {
+  position: absolute;
+  inset: -5px;
+  z-index: -1;
+  border: 1px solid color-mix(in srgb, var(--primary) 58%, transparent);
+  border-radius: inherit;
+  content: "";
+  animation: hp-audio-pulse 1.6s ease-out infinite;
+}
+
+@keyframes hp-audio-pulse {
+  0% { opacity: 0.75; transform: scale(0.82); }
+  75%, 100% { opacity: 0; transform: scale(1.28); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah.playing .hp-card-play::before {
+    animation: none;
+  }
 }
 
 @media (max-width: 520px) {

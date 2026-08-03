@@ -28,6 +28,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { Modal } from "../ui/modal";
 import HizbRukuNavigator from "./HizbRukuNavigator";
 import SurahInfoPanel from "../QuranDisplay/SurahInfoPanel";
 
@@ -62,6 +63,20 @@ export default function SurahReaderHeader({
   const [showInfo, setShowInfo] = useState(false);
   const [typographyOpen, setTypographyOpen] = useState(false);
   const toggleTypography = useCallback(() => setTypographyOpen((v) => !v), []);
+  const handleTypographyPointerUp = useCallback(
+    (event) => {
+      if (event.button === 0) toggleTypography();
+    },
+    [toggleTypography],
+  );
+  const handleTypographyClick = useCallback(
+    (event) => {
+      // Pointer activation is handled on pointerup so quick taps are not lost
+      // while the reader finishes settling. Keyboard/screen-reader clicks have detail 0.
+      if (event.detail === 0) toggleTypography();
+    },
+    [toggleTypography],
+  );
 
   const s = getSurah(surahNum);
   if (!s) return null;
@@ -228,6 +243,7 @@ export default function SurahReaderHeader({
             className={cn("srh-info-btn", showInfo && "srh-info-btn--active")}
             onClick={() => setShowInfo((v) => !v)}
             aria-expanded={showInfo}
+            aria-haspopup="dialog"
             aria-label={lbl(lang, "Informations sur la sourate", "Surah info", "معلومات السورة")}
           >
             <Info size={15} />
@@ -266,6 +282,7 @@ export default function SurahReaderHeader({
             className={cn("srh-info-btn", showInfo && "srh-info-btn--active")}
             onClick={() => setShowInfo((v) => !v)}
             aria-expanded={showInfo}
+            aria-haspopup="dialog"
             aria-label={lbl(lang, "Informations sur la sourate", "Surah info", "معلومات السورة")}
           >
             <Info size={15} />
@@ -273,12 +290,17 @@ export default function SurahReaderHeader({
         </div>
       </div>
 
-      {/* Info panel */}
-      {showInfo && (
-        <div className="srh-info-panel">
-          <SurahInfoPanel surahNum={surahNum} lang={lang} />
-        </div>
-      )}
+      <Modal
+        open={showInfo}
+        onClose={() => setShowInfo(false)}
+        title={lbl(lang, "Informations sur la sourate", "Surah information", "معلومات السورة")}
+        size="lg"
+        portal
+        className="surah-info-modal"
+        overlayClassName="surah-info-modal__overlay"
+      >
+        <SurahInfoPanel surahNum={surahNum} lang={lang} />
+      </Modal>
 
       {/* ══ DIVIDER ═══════════════════════════════════════════ */}
       <div className="srh-divider" aria-hidden="true" />
@@ -369,8 +391,10 @@ export default function SurahReaderHeader({
           <button
             type="button"
             className="srh-typography-trigger"
-            onClick={toggleTypography}
+            onPointerUp={handleTypographyPointerUp}
+            onClick={handleTypographyClick}
             aria-expanded={typographyOpen}
+            aria-controls="srh-typography-panel"
           >
             <Type size={14} aria-hidden="true" />
             <span>{lbl(lang, "Texte et taille", "Text size", "حجم الخط")}</span>

@@ -17,6 +17,7 @@ import "./styles/dark-mode-refonte.css";
 import "./styles/domains/mobile-all-versions.css";
 import "./styles/header-enhanced.css";
 import "./styles/device-root.css";
+import "./styles/experience-polish.css";
 
 if (typeof window !== "undefined") {
   // Start the ordered polish layer in parallel with the application chunks.

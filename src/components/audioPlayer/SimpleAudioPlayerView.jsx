@@ -266,7 +266,7 @@ function MobileOpenPlayer(props) {
       data-testid="audio-player-open"
     >
       <header className="simple-player__mobile-summary">
-        <CoverArt isPlaying={isPlaying} size={36} reciter={reciter} />
+        <CoverArt isPlaying={isPlaying} size={40} reciter={reciter} />
         <div className="simple-player__mobile-meta">
           <span className="simple-player__mobile-kicker">
             {riwaya === "warsh" ? "Warsh" : "Hafs"}
@@ -285,14 +285,6 @@ function MobileOpenPlayer(props) {
             onClick={onMinimize}
           >
             <ChevronDown size={16} />
-          </IconButton>
-          <IconButton
-            className="mp-player-options-trigger"
-            label={optionsLabel}
-            onClick={onOptions}
-            pressed={optionsOpen}
-          >
-            <Settings2 size={17} />
           </IconButton>
           <IconButton label={closeLabel} onClick={onClose}>
             <X size={17} />
@@ -340,6 +332,14 @@ function MobileOpenPlayer(props) {
         </IconButton>
         <IconButton label={nextLabel} onClick={onNext}>
           <SkipForward size={17} />
+        </IconButton>
+        <IconButton
+          className="mp-player-options-trigger simple-player__transport-options"
+          label={optionsLabel}
+          onClick={onOptions}
+          pressed={optionsOpen}
+        >
+          <Settings2 size={17} />
         </IconButton>
       </div>
 

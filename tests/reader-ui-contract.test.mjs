@@ -30,6 +30,29 @@ test("reader typography controls remain explicit and mobile-accessible", () => {
   assert.match(styles, /\.srh-typography-disclosure\.open \.srh-typography-panel/);
 });
 
+test("surah information opens as an accessible responsive dossier", () => {
+  const header = source("src/components/Quran/SurahReaderHeader.jsx");
+  const panel = source("src/components/QuranDisplay/SurahInfoPanel.jsx");
+  const modal = source("src/components/ui/modal.jsx");
+  const styles = source("src/styles/surah-info-panel.css");
+
+  assert.match(header, /aria-haspopup="dialog"/);
+  assert.match(header, /<Modal[\s\S]*?portal[\s\S]*?<SurahInfoPanel/);
+  assert.match(panel, /fetchQuranComSurahInfo/);
+  assert.match(panel, /Repères essentiels/);
+  assert.match(panel, /Dossier complet/);
+  assert.match(panel, /aria-expanded=\{expanded\}/);
+  assert.match(panel, /revelationOrder/);
+  assert.match(panel, /dossierBlocks\.map/);
+  assert.match(panel, /<h4 key=\{block\}>/);
+  assert.match(modal, /createPortal\(modalContent, document\.body\)/);
+  assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?align-items: flex-end/);
+  assert.match(styles, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.match(styles, /\.sip-dossier__copy h4/);
+  assert.match(styles, /\.surah-info-modal > div:last-child[\s\S]*?overflow-y: auto/);
+  assert.match(styles, /overscroll-behavior: contain/);
+});
+
 test("reciter cards keep technical providers in the detail view", () => {
   const cards = source("src/components/Home/ContentSection.jsx");
   const details = source("src/components/recitation/ReciterDetailPage.jsx");
@@ -51,6 +74,13 @@ test("verse action modal renders a responsive, scrollable action grid", () => {
   assert.match(styles, /\.ayah-actions-modal__body \{[\s\S]*?overflow-y: auto/);
   assert.match(styles, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
   assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?repeat\(2, minmax\(0, 1fr\)\)/);
+});
+
+test("Tajweed legend groups rules without compressing their labels", () => {
+  const styles = source("src/styles/experience-polish.css");
+  assert.match(styles, /tajweed-legend__rules[\s\S]*?repeat\(4, minmax\(0, 1fr\)\)/);
+  assert.match(styles, /grid-template-rows: repeat\(2, minmax\(2rem, auto\)\)/);
+  assert.match(styles, /tajwid-rule-tooltip[\s\S]*?background: var\(--bg-card\)/);
 });
 
 test("Mushaf pages keep a compact, theme-aware reading hierarchy", () => {
@@ -99,6 +129,19 @@ test("surah headings use the calligraphic name ligatures accessibly", () => {
   assert.match(hero, /home-quick-row[\s\S]*?font-surah-names/);
 });
 
+test("the active surah name keeps its meaning animated without harming accessibility", () => {
+  const header = source("src/components/Header.jsx");
+  const styles = source("src/styles/header-enhanced.css");
+
+  assert.match(header, /surahMeta\?\.en \|\| surahMeta\?\.fr/);
+  assert.match(header, /aria-label=\{centerTitleLabel\}/);
+  assert.match(header, /mp-header__title-sub-track/);
+  assert.match(header, /mp-header__title-meaning/);
+  assert.match(styles, /@keyframes mh-title-in/);
+  assert.match(styles, /@keyframes mh-meaning-cycle/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)[\s\S]*?mp-header__title-sub-track/);
+});
+
 test("home quick suggestions stay compact and available responsively", () => {
   const hero = source("src/components/Home/HeroSection.jsx");
   const styles = source("src/styles/domains/search-home-polish.css");
@@ -110,6 +153,19 @@ test("home quick suggestions stay compact and available responsively", () => {
     styles,
     /@media \(max-width: 979px\)[\s\S]{0,500}?home-info-panel[\s\S]{0,100}?display: none/,
   );
+});
+
+test("home surah play controls expose and toggle the real playback state", () => {
+  const home = source("src/components/HomePage.jsx");
+  const cards = source("src/components/Home/HomePrimitives.jsx");
+  const styles = source("src/styles/home-audio-ux-refonte.css");
+
+  assert.match(home, /audioService\.currentAyah\?\.surah === surahNum[\s\S]*?audioService\.pause\(\)/);
+  assert.match(home, /await audioService\.play\(\)[\s\S]*?isPlaying: true/);
+  assert.match(cards, /isPlaying && "playing/);
+  assert.match(cards, /aria-pressed=\{isPlaying\}/);
+  assert.match(styles, /\.hp-card--surah\.playing[\s\S]*?hp-audio-pulse/);
+  assert.match(styles, /prefers-reduced-motion: reduce[\s\S]*?animation: none/);
 });
 
 test("dark karaoke words never inherit the fullscreen analysis overlay", () => {

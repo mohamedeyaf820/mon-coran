@@ -46,29 +46,21 @@ import {
   ARABIC_FONT_SIZE_MAX,
   ARABIC_FONT_SIZE_MIN,
 } from "../utils/arabicTypography";
-
-const TRANSLATION_LANGS = [
-  { id: "fr", label: "FR" },
-  { id: "en", label: "EN" },
-  { id: "es", label: "ES" },
-  { id: "de", label: "DE" },
-  { id: "tr", label: "TR" },
-  { id: "ur", label: "UR" },
-];
-
+const TRANSLATION_LANGS = ["fr", "en", "es", "de", "tr", "ur"].map((id) => ({
+  id,
+  label: id.toUpperCase(),
+}));
 const TABS = [
   { id: "general", icon: Palette, labelKey: "settings.general" },
   { id: "reading", icon: BookOpen, labelKey: "settings.display" },
   { id: "audio", icon: Volume2, labelKey: "settings.audio" },
   { id: "privacy", icon: ShieldCheck, labelKey: "settings.privacy" },
 ];
-
 function localText(lang, fr, en, ar) {
   if (lang === "ar") return ar || en || fr;
   if (lang === "en") return en || fr;
   return fr;
 }
-
 function SettingsReciterAvatar({ reciter }) {
   const [imgError, setImgError] = React.useState(false);
   const visual = getReciterVisual(reciter);

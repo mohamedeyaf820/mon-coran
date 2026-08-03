@@ -2,10 +2,15 @@ import React from "react";
 import {
   BookOpenText,
   Bookmark,
+  CircleUserRound,
+  Database,
   HandHeart,
   Home,
+  ListOrdered,
   Search,
   Settings,
+  Scale,
+  ShieldCheck,
 } from "lucide-react";
 import { useAppActions, useAppLocale } from "../context/AppContext";
 import { t } from "../i18n";
@@ -15,7 +20,11 @@ export default function Footer() {
   const { dispatch, set } = useAppActions();
   const { lang } = useAppLocale();
 
-  const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const scrollTop = () => {
+    const main = document.querySelector("#main-content");
+    if (main) main.scrollTo({ top: 0, behavior: "smooth" });
+    else window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   const openHome = () => {
     set({ legalPage: null, showHome: true, showDuas: false });
     scrollTop();
@@ -62,6 +71,20 @@ export default function Footer() {
     sources: "Sources",
   };
 
+  const pageItems = [
+    { key: "surahs", Icon: ListOrdered },
+    { key: "about", Icon: CircleUserRound },
+    { key: "privacy", Icon: ShieldCheck },
+    { key: "legal", Icon: Scale },
+    { key: "sources", Icon: Database },
+  ];
+
+  const openPage = (event, page) => {
+    event.preventDefault();
+    set({ legalPage: page, showHome: false, showDuas: false });
+    scrollTop();
+  };
+
   return (
     <footer className="mp-footer-v2" role="contentinfo">
       <div className="mp-footer-v2__shell">
@@ -103,31 +126,27 @@ export default function Footer() {
           ))}
         </nav>
 
-        <div className="mp-footer-v2__bottom">
-          <span className="mp-footer-v2__credit">
-            {t("footer.credit", lang)}
-          </span>
+        <div className="mp-footer-v2__directory">
+          <div className="mp-footer-v2__directory-copy">
+            <span>{lang === "ar" ? "استكشف" : lang === "en" ? "Explore" : "Explorer"}</span>
+            <strong>{lang === "ar" ? "القراءة والمشروع" : lang === "en" ? "Reading & project" : "Lecture & projet"}</strong>
+          </div>
           <nav className="mp-footer-v2__legal" aria-label={legalLabels.legal}>
-            <a href="/surahs">{legalLabels.surahs}</a>
-            {Object.entries(legalLabels)
-              .filter(([page]) => page !== "surahs")
-              .map(([page, label]) => (
-              <a
-                key={page}
-                href={`/${page}`}
-                onClick={(event) => {
-                  event.preventDefault();
-                  set({
-                    legalPage: page,
-                    showHome: false,
-                    showDuas: false,
-                  });
-                }}
-              >
-                {label}
+            {pageItems.map(({ key, Icon }) => (
+              <a key={key} href={`/${key}`} onClick={(event) => openPage(event, key)}>
+                <Icon size={14} aria-hidden="true" />
+                <span>{legalLabels[key]}</span>
               </a>
             ))}
           </nav>
+        </div>
+
+        <div className="mp-footer-v2__bottom">
+          <span className="mp-footer-v2__credit">{t("footer.credit", lang)}</span>
+          <span className="mp-footer-v2__privacy">
+            <ShieldCheck size={13} aria-hidden="true" />
+            {lang === "ar" ? "قراءة خاصة، بلا حساب" : lang === "en" ? "Private reading, no account" : "Lecture privée, sans compte"}
+          </span>
           <span className="mp-footer-v2__brand">MushafPlus</span>
         </div>
       </div>
