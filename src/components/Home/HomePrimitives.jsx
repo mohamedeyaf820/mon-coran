@@ -288,7 +288,9 @@ export const SurahCard = memo(function SurahCard({
               ? (lang === "ar" ? "مكية" : lang === "fr" ? "Mecquoise" : "Meccan")
               : (lang === "ar" ? "مدنية" : lang === "fr" ? "Médinoise" : "Medinan")}
           </span>
-          <span className="text-[0.62rem] text-text-muted">{ayahLabel}</span>
+          <span className="hp-card-meta hp-card-meta--ayahs text-[0.62rem] text-text-muted">
+            {ayahLabel}
+          </span>
         </div>
       </div>
 

@@ -1446,7 +1446,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 }
 
 .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-meta--ayahs {
-    color: rgba(226, 232, 240, 0.52);
+    color: var(--text-muted);
 }
 
 .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-ar {
