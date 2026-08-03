@@ -796,3 +796,33 @@ html body .app-root > .mp-header
     min-width: 26px !important;
   }
 }
+
+@media (max-width: 320px) {
+  html body .app-root[data-view="reading"] .srh-controls {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr) !important;
+    gap: 0.25rem !important;
+    padding-inline: 0.25rem !important;
+  }
+
+  html body .app-root[data-view="reading"]
+    :is(.srh-pill, .srh-toggle) {
+    gap: 0.15rem !important;
+    padding-inline: 0.22rem !important;
+    font-size: 0.64rem !important;
+  }
+
+  html body .app-root[data-view="reading"]
+    :is(.srh-pill, .srh-toggle) svg {
+    display: none !important;
+  }
+
+  html body .app-root[data-view="reading"] .qc-list-card__top {
+    gap: 0.25rem !important;
+  }
+
+  html body .app-root[data-view="reading"] .qc-list-card__start,
+  html body .app-root[data-view="reading"]
+    .qc-list-card__start .ayah-actions > div {
+    gap: 0.2rem !important;
+  }
+}

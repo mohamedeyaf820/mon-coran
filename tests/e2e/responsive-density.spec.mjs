@@ -283,6 +283,27 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
+test("tiny mobile density keeps the reader usable at 280px", async ({ page }) => {
+  await openReader(page, { width: 280, height: 700 });
+
+  const header = await box(page, ".mp-header__bar");
+  const homeLogo = await box(page, "[data-testid=mobile-home-logo]");
+  const verseReference = await box(page, ".qc-list-card__reference");
+  const versePlay = await box(page, ".qc-list-card__start .ayah-action--play");
+  const verseBookmark = await box(page, ".qc-list-card__start .ayah-action--bookmark");
+  const audioDock = await box(page, ".mp-audio-player--mobile");
+
+  expect(header?.height || 0).toBeLessThanOrEqual(56);
+  expect(homeLogo?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(verseReference?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(versePlay?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(Math.abs((verseReference?.y || 0) - (versePlay?.y || 0))).toBeLessThanOrEqual(1);
+  expect(Math.abs((verseReference?.y || 0) - (verseBookmark?.y || 0))).toBeLessThanOrEqual(1);
+  expect(audioDock?.width || 0).toBeLessThanOrEqual(280);
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+});
+
 test("mobile surfaces: sidebar, settings drawer and audio modal fit the viewport", async ({ page }) => {
   await openReader(page, { width: 390, height: 844 });
 
