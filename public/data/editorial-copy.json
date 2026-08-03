@@ -1,0 +1,102 @@
+{
+  "en": {
+    "eyebrow": "Library & transparency",
+    "back": "Back to home",
+    "open": "Open",
+    "tabs": { "surahs": "Surah list", "about": "About", "privacy": "Privacy", "legal": "Legal notice", "sources": "Sources" },
+    "surahs": { "title": "All 114 surahs in one directory", "intro": "Search by number or name, then open a surah directly in the reader.", "search": "Search for a surah…", "all": "All", "meccan": "Meccan", "medinan": "Medinan", "count": "surahs", "ayahs": "verses", "empty": "No surah matches this search." },
+    "about": {
+      "title": "A calm, useful and verifiable reading companion",
+      "intro": "MushafPlus is an independent Quran app for reading, listening, study and memorization, with no required account.",
+      "sections": [
+        ["Purpose", "Bring Hafs and Warsh texts, translations, recitations, Tajweed, bookmarks, notes and personal goals into a calm reading environment."],
+        ["Principles", "Text integrity, clear attribution, local privacy, accessibility and continuous improvement guide the project."],
+        ["Project lead", "Mohamed Eyaf leads MushafPlus. Code, changes and reports are available in the public repository."],
+        ["Corrections and version", "Version 1.1.0, updated 2026-08-02. Reports are reviewed, documented and shipped in a later release."]
+      ]
+    },
+    "privacy": {
+      "title": "Your reading data stays on your device first",
+      "intro": "MushafPlus works without an account or public profile. Personal reading data is stored in your browser.",
+      "sections": [
+        ["Stored locally", "Preferences, last position, bookmarks, notes, history, memorization and goals use localStorage or IndexedDB."],
+        ["External services", "Text, translations and audio may be requested from third-party APIs or CDNs, which receive the network data needed to answer the request. Prayer times are computed locally."],
+        ["Permissions", "Location is requested only for prayer times; microphone access only starts with voice search. MushafPlus stores neither precise location nor recordings."],
+        ["Your control", "You can export or delete local data. MushafPlus performs no automatic cloud synchronization."]
+      ]
+    },
+    "legal": {
+      "title": "Publishing and usage information",
+      "intro": "Clear information about the project, its hosting and the limits of an educational service using third-party content.",
+      "sections": [
+        ["Publisher and contact", "MushafPlus is an independent project led by Mohamed Eyaf. Requests and corrections are handled through GitHub Issues."],
+        ["Hosting", "The official site is mushafplus.netlify.app, hosted by Netlify under its own terms and technical logging practices."],
+        ["Responsibility", "The app does not replace a certified Mushaf edition, a qualified teacher, or religious, medical or legal advice."],
+        ["Intellectual property", "Third-party texts, translations, fonts, photographs and recitations remain subject to their owners’ rights."]
+      ]
+    },
+    "sources": {
+      "title": "Named, accessible and attributed sources",
+      "intro": "Each content family is linked to its provider, with a compatible fallback when needed.",
+      "sections": [
+        ["Text and structure", "Quran Foundation / Quran.com, AlQuran Cloud and Tanzil support text, words, translations, metadata and integrity checks."],
+        ["Recitations", "EveryAyah, MP3Quran, QuranicAudio, Quran.com Audio and Islamic Network are used according to reciter and availability."],
+        ["Warsh", "Warsh text and audio catalogues are kept separate from Hafs and explicitly labelled."],
+        ["Fonts and portraits", "Quran fonts and portraits remain attributed; a neutral avatar is used when a photo is unavailable or unverified."]
+      ],
+      "register": "Third-party content register",
+      "registerIntro": "Application usage, known terms and a direct link to each source."
+    },
+    "actions": { "project": "View project on GitHub", "correction": "Report a correction", "home": "Back to home" }
+  },
+  "ar": {
+    "eyebrow": "المكتبة والشفافية",
+    "back": "العودة إلى الرئيسية",
+    "open": "فتح",
+    "tabs": { "surahs": "قائمة السور", "about": "حول التطبيق", "privacy": "الخصوصية", "legal": "الإشعار القانوني", "sources": "المصادر" },
+    "surahs": { "title": "السور المائة والأربع عشرة في فهرس واحد", "intro": "ابحث برقم السورة أو اسمها ثم افتحها مباشرة في صفحة القراءة.", "search": "ابحث عن سورة…", "all": "الكل", "meccan": "مكية", "medinan": "مدنية", "count": "سورة", "ayahs": "آيات", "empty": "لا توجد سورة مطابقة لهذا البحث." },
+    "about": {
+      "title": "رفيق قراءة هادئ ونافع وموثّق",
+      "intro": "MushafPlus تطبيق قرآني مستقل للقراءة والاستماع والدراسة والحفظ من دون اشتراط حساب.",
+      "sections": [
+        ["الغاية", "جمع نصي حفص وورش والترجمات والتلاوات وأحكام التجويد والعلامات والملاحظات في بيئة قراءة هادئة."],
+        ["المبادئ", "سلامة النص ووضوح المصادر والخصوصية المحلية وإتاحة الاستخدام والتحسين المستمر."],
+        ["مسؤول المشروع", "يدير Mohamed Eyaf مشروع MushafPlus، والكود والتغييرات والبلاغات منشورة في المستودع العام."],
+        ["التصحيحات والإصدار", "الإصدار 1.1.0، آخر تحديث 2026-08-02. تُراجع البلاغات وتوثق قبل نشرها."]
+      ]
+    },
+    "privacy": {
+      "title": "تبقى بيانات قراءتك على جهازك أولاً",
+      "intro": "يعمل MushafPlus بلا حساب أو ملف عام، وتُحفظ بيانات القراءة الشخصية في المتصفح.",
+      "sections": [
+        ["التخزين المحلي", "تُحفظ التفضيلات وآخر موضع والعلامات والملاحظات وسجل القراءة والحفظ محلياً."],
+        ["الخدمات الخارجية", "قد يُطلب النص والترجمات والصوت من واجهات أو شبكات خارجية تستقبل بيانات الاتصال اللازمة، أما مواقيت الصلاة فتحسب محلياً."],
+        ["الأذونات", "لا يُطلب الموقع إلا للمواقيت ولا يُطلب الميكروفون إلا عند تشغيل البحث الصوتي، ولا يحتفظ التطبيق بتسجيل صوتي."],
+        ["تحكمك", "يمكنك تصدير البيانات المحلية أو حذفها، ولا ينفذ التطبيق مزامنة سحابية تلقائية."]
+      ]
+    },
+    "legal": {
+      "title": "معلومات النشر وإطار الاستخدام",
+      "intro": "بيان واضح للمشروع والاستضافة وحدود الخدمة التعليمية التي تستخدم محتوى من جهات أخرى.",
+      "sections": [
+        ["النشر والتواصل", "MushafPlus مشروع مستقل يديره Mohamed Eyaf، وتُستقبل البلاغات عبر GitHub Issues."],
+        ["الاستضافة", "الموقع الرسمي mushafplus.netlify.app مستضاف لدى Netlify وفق شروطها وسجلاتها التقنية."],
+        ["المسؤولية", "لا يحل التطبيق محل مصحف معتمد أو معلّم مؤهل أو فتوى أو استشارة طبية أو قانونية."],
+        ["الحقوق", "تبقى النصوص والترجمات والخطوط والصور والتلاوات الخارجية خاضعة لحقوق أصحابها."]
+      ]
+    },
+    "sources": {
+      "title": "مصادر مسماة ومتاحة ومنسوبة",
+      "intro": "ترتبط كل فئة محتوى بمصدرها وقد يستخدم بديل متوافق عند تعذر المصدر الأساسي.",
+      "sections": [
+        ["النص والبنية", "تدعم Quran Foundation وAlQuran Cloud وTanzil النص والكلمات والترجمات والبيانات والتحقق."],
+        ["التلاوات", "تستخدم EveryAyah وMP3Quran وQuranicAudio وQuran.com Audio وIslamic Network بحسب القارئ."],
+        ["ورش", "يُفصل نص ورش وصوته عن حفص مع إظهار الرواية والمصدر."],
+        ["الخطوط والصور", "تبقى الخطوط والصور منسوبة إلى مزوديها ويستخدم رمز محايد عند غياب صورة موثقة."]
+      ],
+      "register": "سجل المحتوى الخارجي",
+      "registerIntro": "الاستخدام والشروط المعروفة والرابط المباشر لكل مصدر."
+    },
+    "actions": { "project": "المشروع على GitHub", "correction": "الإبلاغ عن تصحيح", "home": "العودة إلى الرئيسية" }
+  }
+}

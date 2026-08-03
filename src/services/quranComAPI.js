@@ -295,6 +295,7 @@ function normalizeWordAudioUrl(audioPath) {
 function htmlToPlainText(value) {
   return String(value || "")
     .replace(/<sup[^>]*>.*?<\/sup>/gi, "")
+    .replace(/<br\s*\/?>|<\/(?:p|h[1-6]|li|div)>/gi, "\n")
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/g, " ")
     .replace(/&amp;/g, "&")
@@ -302,7 +303,9 @@ function htmlToPlainText(value) {
     .replace(/&#39;/g, "'")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
-    .replace(/\s+/g, " ")
+    .replace(/[^\S\r\n]+/g, " ")
+    .replace(/ *\n+ */g, "\n\n")
+    .replace(/ +([.,;:!?])/g, "$1")
     .trim();
 }
 
@@ -480,6 +483,33 @@ async function fetchPaginated(path, meta, signal) {
 export function canLoadFromQuranCom(pathPrefix, riwaya = "hafs") {
   if (riwaya !== "hafs") return false;
   return /^(surah|page|juz)\/\d+$/.test(pathPrefix) || /^ayah\/\d+:\d+$/.test(pathPrefix);
+}
+
+export async function fetchQuranComSurahInfo(surahNum, signal) {
+  const chapter = Number(surahNum);
+  if (!Number.isInteger(chapter) || chapter < 1 || chapter > 114) {
+    throw new RangeError("Invalid surah number");
+  }
+
+  const [infoJson, chapterJson] = await Promise.all([
+    fetchJson(`${BASE_URL}/chapters/${chapter}/info?language=en`, signal),
+    fetchJson(`${BASE_URL}/chapters/${chapter}?language=en`, signal),
+  ]);
+  const info = infoJson?.chapter_info;
+  if (!info || typeof info !== "object") {
+    throw new Error("Missing Quran.com surah information");
+  }
+
+  const meta = chapterJson?.chapter || {};
+
+  return {
+    shortText: htmlToPlainText(info.short_text),
+    text: htmlToPlainText(info.text),
+    source: htmlToPlainText(info.source),
+    revelationOrder: Number(meta.revelation_order) || null,
+    revelationPlace: meta.revelation_place || null,
+    pages: Array.isArray(meta.pages) ? meta.pages.map(Number) : [],
+  };
 }
 
 export async function fetchQuranComText(pathPrefix, signal) {

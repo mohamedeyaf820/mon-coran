@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { parseTajwid, stabilizeTajwidSegments } from '../../data/tajwidRules';
+import { getRulesForRiwaya, parseTajwid, stabilizeTajwidSegments } from '../../data/tajwidRules';
 import { useAppLocale } from '../../context/AppContext';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../ui/tooltip';
 
@@ -290,6 +290,58 @@ const TAJWEED_RULES_DESC = {
     }
 };
 
+const TajweedRuleSegment = React.memo(function TajweedRuleSegment({
+    text,
+    ruleId,
+    color,
+    lang,
+    fallbackRule,
+}) {
+    const activeLang = lang === 'ar' || lang === 'en' || lang === 'fr' ? lang : 'fr';
+    const rule = TAJWEED_RULES_DESC[ruleId];
+    const fallbackNameKey = activeLang === 'ar' ? 'nameAr' : activeLang === 'en' ? 'nameEn' : 'nameFr';
+    const name = rule?.name?.[activeLang]
+        || rule?.name?.en
+        || fallbackRule?.[fallbackNameKey]
+        || fallbackRule?.nameEn
+        || ruleId;
+    const desc = rule?.desc?.[activeLang]
+        || rule?.desc?.en
+        || fallbackRule?.description
+        || '';
+
+    return (
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <span
+                    className="tajwid-rule-segment"
+                    style={{ color }}
+                    data-tajwid={ruleId}
+                >
+                    {text}
+                </span>
+            </TooltipTrigger>
+            <TooltipContent
+                className="tajwid-rule-tooltip"
+                side="top"
+                sideOffset={10}
+                collisionPadding={12}
+                dir={activeLang === 'ar' ? 'rtl' : 'ltr'}
+            >
+                <span className="tajwid-rule-tooltip__head">
+                    <span
+                        className="tajwid-rule-tooltip__swatch"
+                        style={{ backgroundColor: color }}
+                        aria-hidden="true"
+                    />
+                    <strong>{name}</strong>
+                </span>
+                {desc ? <span className="tajwid-rule-tooltip__description">{desc}</span> : null}
+            </TooltipContent>
+        </Tooltip>
+    );
+});
+
 /**
  * TajweedText — renders Arabic text with Tajweed colour-coding.
  * Plus custom 'Waqf' (Stop Signs) redesign for Expert UI/UX (Sakīna).
@@ -311,6 +363,10 @@ const TajweedText = React.memo(function TajweedText({
             return null;
         }
     }, [text, riwaya, enabled]);
+    const ruleMetadata = useMemo(
+        () => new Map(getRulesForRiwaya(riwaya).map((rule) => [rule.id, rule])),
+        [riwaya],
+    );
 
     // No /g flag: using with .test() on a stateful regex resets lastIndex and
     // causes alternating misses. split() with a capturing group works without /g.
@@ -338,31 +394,33 @@ const TajweedText = React.memo(function TajweedText({
     }
 
     return (
-        <TooltipProvider>
+        <TooltipProvider delayDuration={220} skipDelayDuration={80}>
             <span>
                 <span aria-hidden="true">
                     {segments.map((seg, i) => {
                         const color = seg.ruleId
                             ? (tajweedColors && tajweedColors[seg.ruleId]) || `var(--tajwid-${seg.ruleId})`
                             : 'inherit';
-                        const activeLang = lang === 'ar' || lang === 'en' || lang === 'fr' ? lang : 'fr';
-                        const ruleName = seg.ruleId
-                            ? TAJWEED_RULES_DESC[seg.ruleId]?.name?.[activeLang]
-                                || TAJWEED_RULES_DESC[seg.ruleId]?.name?.en
-                                || seg.ruleId
-                            : undefined;
-
                         // Redesign: Waqf markers identification within segments
                         if (waqfRegex.test(seg.text)) {
                             const parts = seg.text.split(waqfRegex);
                             return (
-                                <span key={i} style={{ color }} data-tajwid={seg.ruleId || 'none'}>
+                                <React.Fragment key={i}>
                                     {parts.map((p, j) =>
                                         waqfRegex.test(p)
                                             ? <WaqfSign key={j} char={p} lang={lang} />
-                                            : p
+                                            : seg.ruleId && p
+                                                ? <TajweedRuleSegment
+                                                    key={j}
+                                                    text={p}
+                                                    ruleId={seg.ruleId}
+                                                    color={color}
+                                                    lang={lang}
+                                                    fallbackRule={ruleMetadata.get(seg.ruleId)}
+                                                />
+                                                : p
                                     )}
-                                </span>
+                                </React.Fragment>
                             );
                         }
 
@@ -370,16 +428,14 @@ const TajweedText = React.memo(function TajweedText({
                             return <React.Fragment key={i}>{seg.text}</React.Fragment>;
                         }
 
-                        return (
-                            <span
-                                key={i}
-                                style={{ color }}
-                                data-tajwid={seg.ruleId}
-                                title={ruleName}
-                            >
-                                {seg.text}
-                            </span>
-                        );
+                        return <TajweedRuleSegment
+                            key={i}
+                            text={seg.text}
+                            ruleId={seg.ruleId}
+                            color={color}
+                            lang={lang}
+                            fallbackRule={ruleMetadata.get(seg.ruleId)}
+                        />;
                     })}
                 </span>
                 <span className="sr-only">

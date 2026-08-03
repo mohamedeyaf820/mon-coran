@@ -1092,7 +1092,7 @@ export default function AudioPlayer() {
     const updateReservedHeight = () => {
       const usesWideDock =
         window.innerWidth >= 600 && window.innerWidth <= MOBILE_BREAKPOINT;
-      const reservedHeight = minimized ? 70 : usesWideDock ? 64 : 108;
+      const reservedHeight = minimized ? 70 : usesWideDock ? 64 : 122;
       root.style.setProperty("--player-h", `${reservedHeight}px`);
     };
     updateReservedHeight();

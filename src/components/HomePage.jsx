@@ -1,4 +1,3 @@
-/* HomePage - orchestrateur ─ gère le state et délègue le rendu aux sous-composants Home/ */
 import React, {
   Suspense,
   lazy,
@@ -260,7 +259,6 @@ export default function HomePage({ lowPerfMode = false }) {
     [],
   );
 
-  /* ── Dérivations simples ─────────────────────────────────────────────── */
   const hasReadingHistory =
     currentSurah > 1 || (currentSurah === 1 && currentAyah > 1);
 
@@ -278,7 +276,6 @@ export default function HomePage({ lowPerfMode = false }) {
   const ActiveReciterDetailPage =
     resolvedReciterDetailPage || ReciterDetailPage;
 
-  /* ── Effects ─────────────────────────────────────────────────────────── */
   useEffect(() => {
     startTransition(() => {
       setActiveTab(displayMode === "juz" ? "juz" : "surah");
@@ -341,8 +338,6 @@ export default function HomePage({ lowPerfMode = false }) {
         });
       })
       .catch(() => {});
-    // A user opening a reciter is very likely to continue into the reader.
-    // Start the large reader graph now, while the surah list is being browsed.
     loadQuranReaderModule().catch(() => {});
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
@@ -379,7 +374,6 @@ export default function HomePage({ lowPerfMode = false }) {
     };
   }, [selectedReciter]);
 
-  /* ── Filtrage / tri ──────────────────────────────────────────────────── */
   const trimmedDeferredFilter = deferredFilter.trim();
   const normalizedDeferredFilter = trimmedDeferredFilter.toLowerCase();
   const hasSurahFilter = normalizedDeferredFilter.length > 0;
@@ -474,9 +468,15 @@ export default function HomePage({ lowPerfMode = false }) {
     return () => observer.disconnect();
   }, [hasMoreSurahs, loadMoreSurahs]);
 
-  /* ── Callbacks de navigation / lecture ──────────────────────────────── */
   const playFromHome = useCallback(
     async (surahNum) => {
+      if (
+        audioService.isPlaying &&
+        audioService.currentAyah?.surah === surahNum
+      ) {
+        audioService.pause();
+        return;
+      }
       const safeId = ensureReciterForRiwaya(state.reciter, state.riwaya);
       const rec = getReciter(safeId, state.riwaya);
       if (!rec) return;
@@ -489,14 +489,25 @@ export default function HomePage({ lowPerfMode = false }) {
       try {
         const items = await buildAudioPlaylistForSurah(surahNum, state.riwaya);
         if (items.length === 0) return;
-        set({ displayMode: "surah", currentSurah: surahNum, currentAyah: 1 });
         audioService.loadPlaylist(items, rec.cdn, rec.cdnType || "islamic");
-        audioService.play();
+        await audioService.play();
+        set({
+          displayMode: "surah",
+          currentSurah: surahNum,
+          currentAyah: 1,
+          isPlaying: true,
+          currentPlayingAyah: { surah: surahNum, ayah: 1 },
+        });
       } catch (error) {
         console.error("Home play error:", error);
       }
     },
-    [state.reciter, state.riwaya, state.warshStrictMode, set],
+    [
+      state.reciter,
+      state.riwaya,
+      state.warshStrictMode,
+      set,
+    ],
   );
 
   const warmReadingTarget = useCallback(
@@ -549,7 +560,6 @@ export default function HomePage({ lowPerfMode = false }) {
     [warmReadingTarget],
   );
 
-  // Explicit user intent (hover/focus on "open reader") — bypass lowPerfMode
   const warmSurahIntent = useCallback(
     (surah) => {
       if (surah && !shouldAvoidBackgroundWork()) {
@@ -776,7 +786,6 @@ export default function HomePage({ lowPerfMode = false }) {
     });
   }, []);
 
-  /* ── Données dérivées ────────────────────────────────────────────────── */
   const dailyVerse = useMemo(
     () => DAILY_VERSES[getDailyVerseIndex(now)],
     [now],
@@ -859,7 +868,6 @@ export default function HomePage({ lowPerfMode = false }) {
     return match ? parseInt(match[1], 10) : null;
   }, [dailyVerse]);
 
-  /* ── Traductions ─────────────────────────────────────────────────────── */
   const T = {
     continueReading: { fr: "Continuer", en: "Continue", ar: "متابعة القراءة" },
     startFatiha: { fr: "Al-Fatiha", en: "Al-Fatihah", ar: "البداية" },
@@ -908,7 +916,6 @@ export default function HomePage({ lowPerfMode = false }) {
   const t = (k) =>
     T[k]?.[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"] ?? k;
 
-  /* ── Compteurs / labels des collections ─────────────────────────────── */
   const infoTabs = [
     {
       id: "suggest",
@@ -944,7 +951,6 @@ export default function HomePage({ lowPerfMode = false }) {
 
   const shouldReduceHomeFx = lowPerfMode;
 
-  /* ── Rendu ───────────────────────────────────────────────────────────── */
   return (
     <div className="hp-wrapper">
       {/* Orbes de fond (hors hero) */}

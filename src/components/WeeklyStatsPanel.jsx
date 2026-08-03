@@ -264,12 +264,12 @@ export default function WeeklyStatsPanel() {
       <Dialog.Portal>
         <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
           <Dialog.Content
-            className="modal modal-panel--wide wst-panel !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+            className="modal modal-panel--wide wst-panel"
             onClick={(event) => event.stopPropagation()}
             onEscapeKeyDown={close}
             onInteractOutside={close}
           >
-            <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
+            <div className="modal-header">
               <div className="modal-title-stack">
                 <div className="modal-kicker">
                   {lang === "fr" ? "Rapport de lecture" : "Reading Report"}
@@ -282,7 +282,7 @@ export default function WeeklyStatsPanel() {
                 <div className="modal-subtitle">{weekLabel}</div>
               </div>
               <button
-                className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
+                className="modal-close"
                 type="button"
                 onClick={close}
                 aria-label={lang === "fr" ? "Fermer" : "Close"}
@@ -292,9 +292,9 @@ export default function WeeklyStatsPanel() {
             </div>
 
             {/* Week navigator */}
-            <div className="wst-nav !mx-3 !mt-3 !flex !items-center !justify-between !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !px-2.5 !py-2 sm:!mx-4">
+            <div className="wst-nav">
               <button
-                className="wst-nav-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]"
+                className="wst-nav-btn"
                 type="button"
                 onClick={() => setWeekOffset((o) => o - 1)}
                 aria-label={
@@ -305,7 +305,7 @@ export default function WeeklyStatsPanel() {
               </button>
               <span className="wst-nav-label">{weekLabel}</span>
               <button
-                className="wst-nav-btn !inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12] disabled:!opacity-40"
+                className="wst-nav-btn"
                 type="button"
                 onClick={() => setWeekOffset((o) => Math.min(0, o + 1))}
                 disabled={weekOffset >= 0}
@@ -316,26 +316,26 @@ export default function WeeklyStatsPanel() {
             </div>
 
             {/* Summary cards */}
-            <div className="wst-summary !grid !grid-cols-2 !gap-2 !px-3 !py-3 sm:!grid-cols-4 sm:!px-4">
-              <div className="wst-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.04] !p-3">
+            <div className="wst-summary">
+              <div className="wst-card">
                 <div className="wst-card__val">{totalPages}</div>
                 <div className="wst-card__label">
                   {lang === "fr" ? "pages lues" : "pages"}
                 </div>
               </div>
-              <div className="wst-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.04] !p-3">
+              <div className="wst-card">
                 <div className="wst-card__val green">{activeDays}</div>
                 <div className="wst-card__label">
                   {lang === "fr" ? "jours actifs" : "active days"} /7
                 </div>
               </div>
-              <div className="wst-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.04] !p-3">
+              <div className="wst-card">
                 <div className="wst-card__val">{completedDays}</div>
                 <div className="wst-card__label">
                   {lang === "fr" ? "objectifs ✓" : "goals ✓"}
                 </div>
               </div>
-              <div className="wst-card !rounded-2xl !border !border-[var(--border)] !bg-white/[0.04] !p-3">
+              <div className="wst-card">
                 <div className="wst-card__val">{totalAyahs}</div>
                 <div className="wst-card__label">
                   {lang === "fr" ? "versets" : "verses"}
@@ -344,7 +344,7 @@ export default function WeeklyStatsPanel() {
             </div>
 
             {/* Bar chart preview (inline) */}
-            <div className="wst-bars !grid !grid-cols-7 !gap-2 !px-3 sm:!px-4">
+            <div className="wst-bars">
               {days.map((date, i) => {
                 const pages = wirdMap[date]?.pagesRead || 0;
                 const completed = wirdMap[date]?.completed || false;
@@ -359,9 +359,9 @@ export default function WeeklyStatsPanel() {
                 return (
                   <div
                     key={date}
-                    className="wst-bar-col !rounded-xl !border !border-[var(--border)] !bg-white/[0.03] !p-2"
+                    className="wst-bar-col"
                   >
-                    <div className="wst-bar-wrap !relative !h-24 !overflow-hidden !rounded-md !bg-white/[0.06]">
+                    <div className="wst-bar-wrap">
                       <div
                         className={`wst-bar ${completed ? "completed" : pages > 0 ? "active" : ""}`}
                         style={{ height: `${Math.max(2, pct)}%` }}
@@ -375,16 +375,16 @@ export default function WeeklyStatsPanel() {
             </div>
 
             {/* Export actions */}
-            <div className="wst-actions !flex !items-center !justify-end !gap-2 !p-3 sm:!p-4">
+            <div className="wst-actions">
               <button
-                className="wst-export-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3.5 !py-2 hover:!bg-white/[0.12]"
+                className="wst-export-btn"
                 onClick={handleExportSVG}
               >
                 <FileCode2 size={16} />
                 SVG
               </button>
               <button
-                className="wst-export-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-sky-200/30 !bg-sky-500/20 !px-3.5 !py-2 !text-white hover:!bg-sky-500/30"
+                className="wst-export-btn wst-export-btn--primary"
                 onClick={handleExportPNG}
                 disabled={exporting}
               >

@@ -56,7 +56,7 @@ export default function KhatmaPanel() {
       <Dialog.Portal>
         <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
           <Dialog.Content
-            className="modal-panel khatma-panel !w-full !max-w-2xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+            className="modal-panel khatma-panel"
             onClick={(event) => event.stopPropagation()}
             onEscapeKeyDown={close}
             onInteractOutside={close}
@@ -64,13 +64,13 @@ export default function KhatmaPanel() {
             <Dialog.Title className="sr-only">
               {lang === "ar" ? "خطة الختمة" : lang === "en" ? "Khatma plan" : "Plan de Khatma"}
             </Dialog.Title>
-            <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
-              <div className="modal-title !inline-flex !items-center !gap-2 !text-white">
+            <div className="modal-header">
+              <div className="modal-title khatma-panel__title">
                 <BookOpenCheck size={16} />
                 {L("Objectif Khatma", "هدف الختمة", "Khatma Goal")}
               </div>
               <button
-                className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
+                className="modal-close"
                 type="button"
                 onClick={close}
                 aria-label={L("Fermer", "إغلاق", "Close")}
@@ -80,8 +80,8 @@ export default function KhatmaPanel() {
             </div>
 
             {tab === "setup" ? (
-              <div className="khatma-setup !space-y-4 !p-4 sm:!p-5">
-                <p className="khatma-lead !text-sm !text-white/85 sm:!text-base">
+              <div className="khatma-setup">
+                <p className="khatma-lead">
                   {L(
                     "Finir le Coran (604 pages) en combien de temps ?",
                     "كم تستغرق لختم القرآن الكريم (٦٠٤ صفحة) ؟",
@@ -89,11 +89,11 @@ export default function KhatmaPanel() {
                   )}
                 </p>
 
-                <div className="khatma-presets !grid !grid-cols-2 !gap-2 sm:!grid-cols-3">
+                <div className="khatma-presets">
                   {KHATMA_PRESETS.map((p) => (
                     <button
                       key={p.days}
-                      className={`khatma-preset !rounded-xl !border !px-3 !py-2 !text-left !transition-all hover:!border-sky-200/40 hover:!bg-white/[0.08] ${selectedDays === p.days ? "active !border-sky-200/40 !bg-sky-500/20 !text-white" : "!border-[var(--border)] !bg-white/[0.04]"}`}
+                      className={`khatma-preset ${selectedDays === p.days ? "active" : ""}`}
                       onClick={() => {
                         setSelectedDays(p.days);
                         setCustomDays("");
@@ -109,7 +109,7 @@ export default function KhatmaPanel() {
                   ))}
                 </div>
 
-                <div className="khatma-custom !rounded-2xl !border !border-[var(--border)] !bg-white/[0.03] !p-3">
+                <div className="khatma-custom">
                   <label>
                     {L(
                       "Ou personnaliser (jours) :",
@@ -118,7 +118,7 @@ export default function KhatmaPanel() {
                     )}
                   </label>
                   <input
-                    className="!mt-1.5 !min-h-11 !w-full !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3"
+                    className="khatma-custom__input"
                     type="number"
                     min="1"
                     max="3650"
@@ -127,7 +127,7 @@ export default function KhatmaPanel() {
                     placeholder={L("Ex: 120", "مثال: ١٢٠", "e.g. 120")}
                   />
                   {customDays && (
-                    <div className="khatma-custom__info !mt-1.5 !text-xs !text-white/70">
+                    <div className="khatma-custom__info">
                       ≈ {Math.ceil(604 / (parseInt(customDays) || 1))}{" "}
                       {L("pages/jour", "صفحة/يوم", "pages/day")}
                     </div>
@@ -135,7 +135,7 @@ export default function KhatmaPanel() {
                 </div>
 
                 <button
-                  className="khatma-start-btn !inline-flex !w-full !items-center !justify-center !gap-2 !rounded-xl !bg-sky-500/80 !px-4 !py-3 !font-semibold !text-white hover:!bg-sky-500"
+                  className="khatma-start-btn"
                   onClick={handleStart}
                 >
                   <Play size={16} />
@@ -143,7 +143,7 @@ export default function KhatmaPanel() {
                 </button>
               </div>
             ) : stats ? (
-              <div className="khatma-progress !space-y-4 !p-4 sm:!p-5">
+              <div className="khatma-progress">
                 {/* Big circle progress */}
                 <div className="khatma-ring-wrap">
                   <svg viewBox="0 0 100 100" className="khatma-ring">
@@ -208,7 +208,7 @@ export default function KhatmaPanel() {
                   ].map(({ label, val }) => (
                     <div
                       key={label}
-                      className="khatma-stat-card !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] !p-2.5"
+                      className="khatma-stat-card"
                     >
                       <div className="khatma-stat-val">{val}</div>
                       <div className="khatma-stat-label">{label}</div>
@@ -254,7 +254,7 @@ export default function KhatmaPanel() {
                     {L("Réinitialiser", "إعادة تعيين", "Reset")}
                   </button>
                   <button
-                    className="khatma-edit-btn !inline-flex !items-center !gap-2 !rounded-xl !border !border-white/14 !bg-white/[0.05] !px-3.5 !py-2.5 hover:!bg-white/[0.12]"
+                    className="khatma-edit-btn"
                     onClick={() => setTab("setup")}
                   >
                     <PenLine size={16} />
@@ -263,12 +263,12 @@ export default function KhatmaPanel() {
                 </div>
               </div>
             ) : (
-              <div className="khatma-setup !space-y-3 !p-4 sm:!p-5">
+              <div className="khatma-setup">
                 <p>
                   {L("Aucun objectif défini.", "لا يوجد هدف.", "No goal set.")}
                 </p>
                 <button
-                  className="khatma-start-btn !inline-flex !items-center !justify-center !rounded-xl !bg-sky-500/80 !px-4 !py-2.5 !font-semibold !text-white hover:!bg-sky-500"
+                  className="khatma-start-btn"
                   onClick={() => setTab("setup")}
                 >
                   {L("Définir un objectif", "تعيين هدف", "Set a goal")}

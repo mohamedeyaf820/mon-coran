@@ -2,126 +2,197 @@
   --legal-accent: var(--primary, #0d6b52);
   position: relative;
   isolation: isolate;
-  width: min(100% - 2rem, 72rem);
+  width: min(100% - 2rem, 76rem);
   margin-inline: auto;
-  padding: clamp(2rem, 5vw, 5rem) 0 6rem;
+  padding: clamp(1.5rem, 4vw, 4rem) 0 max(5rem, env(safe-area-inset-bottom));
   color: var(--text-primary);
 }
 
 .legal-page__halo {
   position: absolute;
   z-index: -1;
-  inset-block-start: -8rem;
-  inset-inline: 10%;
-  height: 24rem;
+  inset: -10rem 4% auto;
+  height: 30rem;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--primary-rgb), .16), transparent 68%);
-  filter: blur(42px);
+  background:
+    radial-gradient(circle at 25% 45%, rgba(var(--primary-rgb), .18), transparent 38%),
+    radial-gradient(circle at 78% 32%, color-mix(in srgb, var(--accent-gold, #c8a84e) 13%, transparent), transparent 34%);
+  filter: blur(46px);
   pointer-events: none;
 }
 
-.legal-page__hero { max-width: 52rem; margin-inline: auto; text-align: center; }
-.legal-page__back,
-.legal-page__repository {
+.legal-page__hero { max-width: 58rem; margin-inline: auto; text-align: center; }
+.legal-page__back {
   display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  color: var(--text-secondary);
-  font-size: .84rem;
-  font-weight: 650;
   min-height: 44px;
+  align-items: center;
+  gap: .45rem;
+  margin-block-end: clamp(1.2rem, 3vw, 2.5rem);
+  color: var(--text-secondary);
+  font-size: .78rem;
+  font-weight: 700;
 }
-.legal-page__back { margin-block-end: 2.5rem; }
-.legal-page__back:hover,
-.legal-page__repository:hover { color: var(--legal-accent); }
-.legal-page__icon {
+.legal-page__back:hover { color: var(--legal-accent); }
+.legal-page__back:focus-visible,
+.legal-page button:focus-visible,
+.legal-page a:focus-visible { outline: 2px solid var(--legal-accent); outline-offset: 3px; }
+
+.legal-page__hero-mark { display: flex; align-items: center; justify-content: center; gap: .8rem; margin-block-end: .9rem; }
+.legal-page__hero-mark::before,
+.legal-page__hero-mark::after { width: clamp(2rem, 7vw, 6rem); height: 1px; background: linear-gradient(90deg, transparent, rgba(var(--primary-rgb), .4)); content: ""; }
+.legal-page__hero-mark::after { transform: rotate(180deg); }
+.legal-page__hero-mark > span {
   display: grid;
+  width: 3.45rem;
+  height: 3.45rem;
   place-items: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  margin: 0 auto 1rem;
-  border: 1px solid rgba(var(--primary-rgb), .22);
-  border-radius: 1.15rem;
+  border: 1px solid rgba(var(--primary-rgb), .24);
+  border-radius: 1.05rem;
+  background: color-mix(in srgb, var(--bg-card) 86%, var(--legal-accent) 14%);
   color: var(--legal-accent);
-  background: rgba(var(--primary-rgb), .08);
-  box-shadow: 0 18px 50px rgba(var(--primary-rgb), .12);
+  box-shadow: 0 15px 38px rgba(var(--primary-rgb), .13);
 }
-.legal-page__eyebrow {
-  margin: 0 0 .55rem;
-  color: var(--legal-accent);
-  font-size: .72rem;
-  font-weight: 800;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-}
+.legal-page__hero-mark i { width: .35rem; height: .35rem; margin-inline-start: -1.05rem; border-radius: 50%; background: var(--accent-gold, #c8a84e); transform: rotate(45deg); }
+
+.legal-page__eyebrow { margin: 0 0 .55rem; color: var(--legal-accent); font-size: .68rem; font-weight: 850; letter-spacing: .17em; text-transform: uppercase; }
 .legal-page h1 {
-  margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.2rem, 6vw, 4.5rem);
-  font-weight: 500;
+  max-width: 55rem;
+  margin: 0 auto;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(2.1rem, 5.7vw, 4.5rem);
+  font-weight: 560;
   line-height: 1.02;
   letter-spacing: -.045em;
+  text-wrap: balance;
 }
-.legal-page__intro {
-  max-width: 43rem;
-  margin: 1.25rem auto 0;
-  color: var(--text-secondary);
-  font-size: clamp(1rem, 2vw, 1.15rem);
-  line-height: 1.75;
-}
+.legal-page__intro { max-width: 47rem; margin: 1.15rem auto 0; color: var(--text-secondary); font-size: clamp(.98rem, 2vw, 1.12rem); line-height: 1.72; text-wrap: balance; }
+.legal-page__trust { display: flex; flex-wrap: wrap; justify-content: center; gap: .45rem; margin-block-start: 1.25rem; }
+.legal-page__trust span { display: inline-flex; min-height: 2rem; align-items: center; gap: .35rem; padding: .35rem .65rem; border: 1px solid var(--border); border-radius: 999px; background: color-mix(in srgb, var(--bg-card) 82%, transparent); color: var(--text-muted); font-size: .66rem; font-weight: 700; }
+
 .legal-page__tabs {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: .45rem;
-  margin: 2.4rem 0 2rem;
-}
-.legal-page__tabs button {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  min-height: 44px;
-  padding: .65rem 1rem;
+  position: sticky;
+  z-index: 20;
+  top: .65rem;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: .35rem;
+  width: min(100%, 59rem);
+  margin: clamp(1.6rem, 4vw, 2.5rem) auto 1.4rem;
+  padding: .4rem;
   border: 1px solid var(--border);
-  border-radius: 999px;
-  color: var(--text-secondary);
-  background: var(--bg-card);
-  font-size: .85rem;
-  font-weight: 700;
-  transition: border-color .2s, color .2s, background .2s, transform .2s;
+  border-radius: 1.05rem;
+  background: color-mix(in srgb, var(--bg-primary) 84%, transparent);
+  box-shadow: 0 12px 38px rgba(15, 23, 42, .07);
+  backdrop-filter: blur(18px);
 }
-.legal-page__tabs button:hover { transform: translateY(-1px); border-color: rgba(var(--primary-rgb), .4); }
-.legal-page__tabs button.is-active { color: var(--legal-accent); border-color: rgba(var(--primary-rgb), .36); background: rgba(var(--primary-rgb), .1); }
-.legal-page__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
+.legal-page__tabs button { display: flex; min-width: 0; min-height: 44px; align-items: center; justify-content: center; gap: .42rem; padding: .55rem .65rem; border: 1px solid transparent; border-radius: .72rem; color: var(--text-secondary); font-size: .72rem; font-weight: 750; transition: transform .18s ease, color .18s ease, background-color .18s ease, border-color .18s ease; }
+.legal-page__tabs button:hover { transform: translateY(-1px); color: var(--legal-accent); }
+.legal-page__tabs button.is-active { border-color: rgba(var(--primary-rgb), .2); background: rgba(var(--primary-rgb), .1); color: var(--legal-accent); box-shadow: 0 6px 18px rgba(var(--primary-rgb), .08); }
+
+.legal-page__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .85rem; }
 .legal-page__card {
-  min-height: 13rem;
+  position: relative;
+  min-height: 13.5rem;
+  overflow: hidden;
   padding: clamp(1.25rem, 3vw, 2rem);
   border: 1px solid var(--border);
-  border-radius: 1.25rem;
-  background: color-mix(in srgb, var(--bg-card) 94%, var(--legal-accent) 6%);
-  box-shadow: 0 16px 44px rgba(0, 0, 0, .05);
+  border-radius: 1.2rem;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--bg-card) 97%, transparent), color-mix(in srgb, var(--legal-accent) 6%, var(--bg-card)));
+  box-shadow: 0 14px 42px rgba(15, 23, 42, .055);
 }
-.legal-page__card > span { color: var(--legal-accent); font: 700 .7rem/1 ui-monospace, monospace; letter-spacing: .1em; }
-.legal-page__card h2 { margin: 1.45rem 0 .65rem; font-size: 1.05rem; }
-.legal-page__card p { margin: 0; color: var(--text-secondary); font-size: .92rem; line-height: 1.7; }
-.legal-page__repository { margin-block-start: 1.5rem; }
-.legal-page__links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
-.legal-page__attributions { margin-block-start: 2.5rem; }
-.legal-page__attributions-heading { margin-block-end: 1rem; }
-.legal-page__attributions-heading p { margin: 0 0 .35rem; color: var(--legal-accent); font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-.legal-page__attributions-heading h2 { margin: 0; font-size: clamp(1.35rem, 3vw, 2rem); }
-.legal-page__attribution-list { display: grid; gap: .65rem; }
-.legal-page__attribution-item { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) 2.75rem; align-items: start; gap: 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--bg-card); }
-.legal-page__attribution-item > span { color: var(--legal-accent); font: 750 .68rem/1.4 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; }
-.legal-page__attribution-item h3 { margin: 0 0 .25rem; font-size: .95rem; }
-.legal-page__attribution-item p { margin: 0; color: var(--text-secondary); font-size: .84rem; line-height: 1.55; }
-.legal-page__attribution-item small { display: block; margin-block-start: .45rem; color: var(--text-muted); font-size: .76rem; line-height: 1.55; }
-.legal-page__attribution-item a { display: grid; place-items: center; min-width: 44px; min-height: 44px; border-radius: .75rem; color: var(--legal-accent); background: color-mix(in srgb, var(--legal-accent) 8%, transparent); }
+.legal-page__card::after { position: absolute; inset: auto -2rem -3rem auto; width: 8rem; height: 8rem; border: 1px solid rgba(var(--primary-rgb), .1); border-radius: 50%; content: ""; }
+.legal-page__card > span { color: var(--legal-accent); font: 750 .67rem/1 ui-monospace, monospace; letter-spacing: .12em; }
+.legal-page__card h2 { margin: 1.35rem 0 .62rem; font-size: 1.05rem; }
+.legal-page__card p { position: relative; z-index: 1; margin: 0; color: var(--text-secondary); font-size: .9rem; line-height: 1.72; }
+
+.surah-directory { padding: clamp(.7rem, 2vw, 1.2rem); border: 1px solid var(--border); border-radius: 1.35rem; background: color-mix(in srgb, var(--bg-card) 95%, var(--legal-accent) 5%); box-shadow: 0 18px 50px rgba(15, 23, 42, .06); }
+.surah-directory__toolbar { display: grid; grid-template-columns: auto minmax(15rem, 1fr) auto; align-items: end; gap: .75rem; padding: .25rem .25rem 1rem; }
+.surah-directory__toolbar > div:first-child p { margin: 0 0 .25rem; color: var(--legal-accent); font: 800 .67rem/1 ui-monospace, monospace; letter-spacing: .08em; }
+.surah-directory__toolbar h2 { margin: 0; font-size: 1.18rem; }
+.surah-directory__search { display: flex; min-height: 46px; align-items: center; gap: .55rem; padding: 0 .85rem; border: 1px solid var(--border); border-radius: .85rem; background: var(--bg-primary); color: var(--text-muted); }
+.surah-directory__search:focus-within { border-color: rgba(var(--primary-rgb), .5); box-shadow: 0 0 0 3px rgba(var(--primary-rgb), .09); }
+.surah-directory__search input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--text-primary); font-size: .84rem; }
+.surah-directory__filters { display: flex; gap: .25rem; padding: .25rem; border: 1px solid var(--border); border-radius: .85rem; background: var(--bg-primary); }
+.surah-directory__filters button { min-height: 36px; padding: .35rem .62rem; border-radius: .62rem; color: var(--text-muted); font-size: .69rem; font-weight: 750; }
+.surah-directory__filters button.is-active { background: var(--legal-accent); color: var(--on-primary, #fff); box-shadow: 0 5px 14px rgba(var(--primary-rgb), .18); }
+.surah-directory__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .55rem; margin: 0; padding: 0; list-style: none; }
+.surah-directory__grid a { position: relative; display: grid; grid-template-columns: 2.7rem minmax(0, 1fr) auto; grid-template-areas: "num names arabic" "num meta open"; align-items: center; gap: .2rem .7rem; min-height: 6.2rem; padding: .8rem; border: 1px solid var(--border); border-radius: .95rem; background: color-mix(in srgb, var(--bg-primary) 92%, transparent); transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background-color .18s ease; }
+.surah-directory__grid a:hover { z-index: 1; transform: translateY(-2px); border-color: rgba(var(--primary-rgb), .36); background: color-mix(in srgb, var(--bg-card) 91%, var(--legal-accent) 9%); box-shadow: 0 12px 28px rgba(15, 23, 42, .08); }
+.surah-directory__number { grid-area: num; display: grid; width: 2.7rem; height: 2.7rem; place-items: center; border: 1px solid rgba(var(--primary-rgb), .23); border-radius: .8rem; color: var(--legal-accent); font: 800 .68rem/1 ui-monospace, monospace; }
+.surah-directory__names { grid-area: names; min-width: 0; display: grid; }
+.surah-directory__names strong { overflow: hidden; color: var(--text-primary); font-size: .79rem; text-overflow: ellipsis; white-space: nowrap; }
+.surah-directory__names small { overflow: hidden; color: var(--text-muted); font-size: .63rem; text-overflow: ellipsis; white-space: nowrap; }
+.surah-directory__arabic { grid-area: arabic; color: var(--text-primary); font-family: var(--font-arabic-title, var(--font-quran)); font-size: 1.16rem; line-height: 1.5; }
+.surah-directory__meta { grid-area: meta; color: var(--text-muted); font-size: .6rem; }
+.surah-directory__open { grid-area: open; display: inline-flex; align-items: center; gap: .2rem; color: var(--legal-accent); font-size: .62rem; font-weight: 750; }
+.surah-directory__empty { display: grid; min-height: 15rem; place-items: center; align-content: center; gap: .6rem; color: var(--text-muted); text-align: center; }
+.surah-directory__empty p { margin: 0; }
+
+.legal-page__attributions { margin-block-start: 2rem; }
+.legal-page__attributions-heading { display: grid; grid-template-columns: minmax(0, .65fr) minmax(0, 1.35fr); align-items: end; gap: 1rem; margin-block-end: .85rem; }
+.legal-page__attributions-heading p { display: flex; align-items: center; gap: .4rem; margin: 0; color: var(--legal-accent); font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.legal-page__attributions-heading h2 { margin: 0; font-size: clamp(1.15rem, 2.5vw, 1.75rem); font-weight: 650; }
+.legal-page__attribution-list { display: grid; gap: .5rem; }
+.legal-page__attribution-item { display: grid; grid-template-columns: 5.4rem minmax(0, 1fr) 2.75rem; align-items: start; gap: .9rem; padding: .9rem; border: 1px solid var(--border); border-radius: .9rem; background: var(--bg-card); }
+.legal-page__attribution-item > span { color: var(--legal-accent); font: 750 .63rem/1.4 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; }
+.legal-page__attribution-item h3 { margin: 0 0 .2rem; font-size: .88rem; }
+.legal-page__attribution-item p { margin: 0; color: var(--text-secondary); font-size: .79rem; line-height: 1.5; }
+.legal-page__attribution-item small { display: block; margin-block-start: .35rem; color: var(--text-muted); font-size: .7rem; line-height: 1.5; }
+.legal-page__attribution-item a { display: grid; min-width: 44px; min-height: 44px; place-items: center; border-radius: .7rem; background: rgba(var(--primary-rgb), .08); color: var(--legal-accent); }
+
+.legal-page__actions { display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr); align-items: center; gap: 1rem; margin-block-start: 1.5rem; padding: 1rem; border: 1px solid var(--border); border-radius: 1rem; background: color-mix(in srgb, var(--bg-card) 94%, var(--legal-accent) 6%); }
+.legal-page__actions > div { display: flex; align-items: center; gap: .55rem; color: var(--legal-accent); }
+.legal-page__actions p { margin: 0; color: var(--text-secondary); font-size: .78rem; line-height: 1.45; }
+.legal-page__actions nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .4rem; }
+.legal-page__actions :is(a, button) { display: inline-flex; min-height: 42px; align-items: center; gap: .4rem; padding: .55rem .75rem; border: 1px solid var(--border); border-radius: .7rem; background: var(--bg-primary); color: var(--text-secondary); font-size: .69rem; font-weight: 750; }
+.legal-page__actions :is(a, button):hover { border-color: rgba(var(--primary-rgb), .35); color: var(--legal-accent); }
+
+html[data-theme="dark"] .legal-page__tabs,
+html[data-theme="quran-night"] .legal-page__tabs,
+html[data-theme="oled"] .legal-page__tabs { box-shadow: 0 16px 44px rgba(0, 0, 0, .28); }
+html[data-theme="dark"] .legal-page__card,
+html[data-theme="quran-night"] .legal-page__card,
+html[data-theme="oled"] .legal-page__card,
+html[data-theme="dark"] .surah-directory,
+html[data-theme="quran-night"] .surah-directory,
+html[data-theme="oled"] .surah-directory { box-shadow: 0 18px 48px rgba(0, 0, 0, .2); }
+
+[dir="rtl"] .legal-page__back svg { transform: rotate(180deg); }
+[dir="rtl"] .surah-directory__open svg { transform: rotate(180deg); }
+
+@media (max-width: 900px) {
+  .surah-directory__toolbar { grid-template-columns: 1fr 1fr; }
+  .surah-directory__search { grid-column: 1 / -1; grid-row: 2; }
+  .surah-directory__filters { justify-self: end; }
+  .surah-directory__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .legal-page__actions { grid-template-columns: 1fr; }
+  .legal-page__actions nav { justify-content: flex-start; }
+}
 
 @media (max-width: 680px) {
-  .legal-page { width: min(100% - 1.25rem, 72rem); padding-block-start: 1.5rem; }
+  .legal-page { width: min(100% - 1rem, 76rem); padding-block-start: 1.2rem; }
+  .legal-page h1 { font-size: clamp(2rem, 11vw, 3rem); }
+  .legal-page__tabs { top: .35rem; display: flex; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; }
+  .legal-page__tabs::-webkit-scrollbar { display: none; }
+  .legal-page__tabs button { flex: 0 0 auto; padding-inline: .8rem; }
   .legal-page__grid { grid-template-columns: 1fr; }
   .legal-page__card { min-height: 0; }
+  .surah-directory { padding: .55rem; border-radius: 1rem; }
+  .surah-directory__toolbar { grid-template-columns: 1fr; align-items: stretch; }
+  .surah-directory__search { grid-column: auto; grid-row: auto; }
+  .surah-directory__filters { justify-self: stretch; }
+  .surah-directory__filters button { flex: 1; }
+  .surah-directory__grid { grid-template-columns: 1fr; gap: .42rem; }
+  .surah-directory__grid a { min-height: 5.6rem; }
+  .legal-page__attributions-heading { grid-template-columns: 1fr; }
   .legal-page__attribution-item { grid-template-columns: 1fr 2.75rem; }
   .legal-page__attribution-item > span { grid-column: 1 / -1; }
+  .legal-page__actions nav { display: grid; grid-template-columns: 1fr; }
+  .legal-page__actions :is(a, button) { justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .legal-page * { scroll-behavior: auto !important; }
+  .legal-page__tabs button,
+  .surah-directory__grid a { transition: none; }
 }

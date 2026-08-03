@@ -174,18 +174,55 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  animation: mh-title-in 0.32s ease-out;
+}
+
+.mp-header__title-sub-viewport {
+  height: 0.78rem;
+  overflow: hidden;
+}
+
+.mp-header__title-sub-track {
+  display: flex;
+  flex-direction: column;
+  animation: mh-meaning-cycle 5.8s ease-in-out infinite;
+}
+
+.mp-header__title-sub,
+.mp-header__title-meaning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 0.78rem;
+  white-space: nowrap;
 }
 
 .mp-header__title-sub {
-  max-width: 100%;
-  overflow: hidden;
   color: var(--text-muted);
   font-family: var(--font-surah-name, var(--font-surah, var(--font-quran), serif));
   font-size: 0.68rem;
   font-weight: 500;
-  line-height: 1.05;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+.mp-header__title-meaning {
+  color: var(--primary);
+  font-size: 0.64rem;
+  font-weight: 700;
+}
+
+@keyframes mh-title-in {
+  from { opacity: 0; transform: translateY(0.35rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes mh-meaning-cycle {
+  0%, 40%, 100% { transform: translateY(0); }
+  52%, 88% { transform: translateY(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mp-header__title-stack,
+  .mp-header__title-sub-track { animation: none; }
 }
 
 .mp-header__sub {

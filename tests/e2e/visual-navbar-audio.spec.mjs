@@ -100,7 +100,8 @@ test.describe("mobile", () => {
       .locator(".mp-audio-player--mobile.simple-player--mobile-open")
       .first();
     await expect(dock).toBeVisible();
-    await expect(dock.locator(".simple-player__header-actions button")).toHaveCount(3);
+    await expect(dock.locator(".simple-player__header-actions button")).toHaveCount(2);
+    await expect(dock.locator(".simple-player__transport-options")).toBeVisible();
     await dock.screenshot({
       path: path.join(OUTPUT_DIR, "mobile-audio-player.png"),
     });

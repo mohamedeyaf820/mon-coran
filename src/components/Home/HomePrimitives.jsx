@@ -92,8 +92,15 @@ export const SurahCard = memo(function SurahCard({
       : lang === "fr"
         ? `${surah.ayahs} versets`
         : `${surah.ayahs} ayahs`;
-  const playAriaLabel =
-    lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen";
+  const playAriaLabel = isPlaying
+    ? lang === "ar"
+      ? "إيقاف مؤقت"
+      : "Pause"
+    : lang === "fr"
+      ? "Écouter"
+      : lang === "ar"
+        ? "استماع"
+        : "Listen";
   const openAriaLabel =
     lang === "fr"
       ? `Ouvrir la sourate ${primaryLabel}`
@@ -133,7 +140,7 @@ export const SurahCard = memo(function SurahCard({
         className={cn(
           "group relative flex items-center gap-3 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-bg-primary border border-border/50 hover:bg-bg-secondary hover:border-primary/30 transition-all cursor-pointer",
           isActive && "bg-primary/5 border-primary/50",
-          isPlaying && "bg-gold/5 border-gold/50",
+          isPlaying && "playing bg-gold/5 border-gold/50",
         )}
         data-stype={surah.type?.toLowerCase()}
         style={rowVisibilityStyle}
@@ -201,6 +208,7 @@ export const SurahCard = memo(function SurahCard({
             onPlay(surah.n);
           }}
           aria-label={playAriaLabel}
+          aria-pressed={isPlaying}
         >
           {isPlaying ? <Pause size={13} /> : <Play size={13} className="pl-[1px]" />}
         </button>
@@ -221,7 +229,7 @@ export const SurahCard = memo(function SurahCard({
       className={cn(
         "hp-card hp-card--surah group relative flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border bg-bg-primary shadow-sm cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:shadow-md overflow-hidden",
         isActive ? "border-primary/60 bg-primary/5 hover:border-primary/70" : "border-border hover:border-primary/40 hover:bg-bg-secondary",
-        isPlaying && "border-gold/60 bg-gold/5 hover:border-gold/70",
+        isPlaying && "playing",
       )}
       data-stype={surah.type?.toLowerCase()}
       data-testid="surah-card"
@@ -296,17 +304,13 @@ export const SurahCard = memo(function SurahCard({
 
       {/* Play button — always visible on touch, hover on desktop */}
       <button
-        className={cn(
-          "hp-card-play absolute z-[2] right-1.5 sm:right-2 bottom-1.5 sm:bottom-2 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border transition-all",
-          isPlaying
-            ? "bg-amber-400 border-amber-400/60 text-white opacity-100"
-            : "bg-bg-primary border-border text-text-muted opacity-60 group-hover:opacity-100 group-hover:bg-primary group-hover:text-white group-hover:border-primary sm:opacity-0",
-        )}
+        className="hp-card-play absolute z-[2] right-1.5 sm:right-2 bottom-1.5 sm:bottom-2 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border transition-all"
         onClick={(e) => {
           e.stopPropagation();
           onPlay(surah.n);
         }}
         aria-label={playAriaLabel}
+        aria-pressed={isPlaying}
       >
         {isPlaying ? <Pause size={16} /> : <Play size={16} className="pl-[1px]" />}
       </button>

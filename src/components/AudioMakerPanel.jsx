@@ -22,6 +22,8 @@ export default function AudioMakerPanel() {
   const [isCreating, setIsCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSaved, setIsSaved] = useState(false);
+  const studioTitle = lang === "ar" ? "استوديو الصوت" : lang === "en" ? "Audio studio" : "Studio audio";
+  const searchLabel = t("search.placeholder", lang);
 
   const close = () => set({ audioMakerOpen: false });
 
@@ -83,8 +85,7 @@ export default function AudioMakerPanel() {
       });
 
       close();
-    } catch (err) {
-      console.error("Play error:", err);
+    } catch {
       window.dispatchEvent(
         new CustomEvent("quran-toast", {
           detail: {
@@ -138,13 +139,10 @@ export default function AudioMakerPanel() {
       );
 
       setTimeout(() => setIsSaved(false), 2000);
-    } catch (err) {
-      console.error("Save error:", err);
+    } catch {
+      return;
     }
   };
-
-  /* --- UI text helper --- */
-  const label = (key) => (lang === "fr" ? key.fr : key.en);
 
   return (
     <Dialog.Root
@@ -162,12 +160,12 @@ export default function AudioMakerPanel() {
             onInteractOutside={close}
           >
             <Dialog.Title className="sr-only">
-              {lang === "ar" ? "صانع المقاطع الصوتية" : lang === "en" ? "Audio maker" : "Créateur audio"}
+              {studioTitle}
             </Dialog.Title>
             {/* Header */}
             <div className="audio-maker-header">
               <h2 className="audio-maker-title">
-                {lang === "fr" ? "🎙️ Audio Maker" : "🎙️ Audio Maker"}
+                {studioTitle}
               </h2>
               <button
                 className="audio-maker-close"
@@ -182,18 +180,15 @@ export default function AudioMakerPanel() {
             <div className="audio-maker-content">
               {/* Search bar */}
               <div className="audio-maker-search-wrap">
+                <Search size={16} aria-hidden="true" />
                 <input
-                  type="text"
+                  type="search"
                   className="audio-maker-search"
-                  placeholder={
-                    lang === "fr"
-                      ? "Chercher une sourate..."
-                      : "Search surah..."
-                  }
+                  placeholder={searchLabel}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label={searchLabel}
                 />
-                <Search size={13} />
               </div>
 
               {/* Session name input */}
@@ -208,7 +203,7 @@ export default function AudioMakerPanel() {
                   onChange={(e) => setSessionName(e.target.value)}
                 />
                 <span className="audio-maker-count">
-                  {selectedSurahs.length} {lang === "fr" ? "surahs" : "surahs"}
+                  {selectedSurahs.length} {lang === "fr" ? "sourates" : "surahs"}
                 </span>
               </div>
 
@@ -230,6 +225,7 @@ export default function AudioMakerPanel() {
                           "audio-maker-item--selected",
                       )}
                       onClick={() => toggleSurah(surah.n)}
+                      aria-pressed={selectedSurahs.includes(surah.n)}
                     >
                       <div className="audio-maker-item-checkbox">
                         {selectedSurahs.includes(surah.n) && (

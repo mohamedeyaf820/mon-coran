@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useApp } from "../context/AppContext";
-import { getReciter } from "../data/reciters";
+import { getReciter, getReciterVisual } from "../data/reciters";
 import SURAHS from "../data/surahs";
 import { Icon } from "./ui/icon";
 
@@ -98,19 +98,49 @@ function ReciterTrack({ reciter, surah, ayah, lang }) {
 
   const iconName =
     state === "playing" ? "pause" : state === "loading" ? "spinner" : "play";
+  const visual = getReciterVisual(reciter);
+  const displayName =
+    lang === "ar" ? reciter.name : lang === "fr" ? reciter.nameFr : reciter.nameEn;
 
   return (
-    <div
-      className={`rc-track ${state} rounded-2xl border border-[var(--border)] bg-white/[0.03] p-3 backdrop-blur-sm`}
-    >
+    <article className={`rc-track ${state}`}>
       <audio ref={audioRef} preload="none" />
-      <div className="rc-track__name" dir="rtl">
-        {reciter.name}
+      <div className="rc-track__header">
+        <div className="rc-track__avatar" aria-hidden="true">
+          <span style={{ background: visual.avatar.gradient }}>
+            {visual.avatar.initials}
+          </span>
+          {visual.photo ? (
+            <img
+              src={visual.photo}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              referrerPolicy="no-referrer"
+              style={{ objectPosition: visual.focalPoint }}
+              onError={(event) => {
+                event.currentTarget.hidden = true;
+              }}
+            />
+          ) : null}
+        </div>
+        <div className="rc-track__identity">
+          <div className="rc-track__name">{displayName}</div>
+          <div className="rc-track__name-ar" dir="rtl" lang="ar">
+            {reciter.name}
+          </div>
+        </div>
+        <span className={`rc-track__status rc-track__status--${state}`}>
+          {state === "playing"
+            ? lang === "fr" ? "En lecture" : "Playing"
+            : state === "loading"
+              ? lang === "fr" ? "Chargement" : "Loading"
+              : lang === "fr" ? "Prêt" : "Ready"}
+        </span>
       </div>
-      <div className="rc-track__name-en">{reciter.nameEn}</div>
-      <div className="rc-track__controls !mt-2 !flex !items-center !gap-2">
+      <div className="rc-track__controls">
         <button
-          className="rc-btn rc-btn--play !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-sky-500/20 hover:!bg-sky-500/30"
+          className="rc-btn rc-btn--play"
           onClick={toggle}
           title={state === "playing" ? "Pause" : "Play"}
           type="button"
@@ -118,27 +148,27 @@ function ReciterTrack({ reciter, surah, ayah, lang }) {
           <Icon name={iconName} size={17} spin={state === "loading"} />
         </button>
         <button
-          className="rc-btn rc-btn--restart !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]"
+          className="rc-btn rc-btn--restart"
           onClick={restart}
           title={lang === "fr" ? "Relire depuis le debut" : "Restart"}
           type="button"
         >
           <Icon name="rotate-left" size={17} />
         </button>
-      </div>
-      <div className="rc-progress !mt-2 !h-1.5 !overflow-hidden !rounded-full !bg-white/10">
-        <div
-          className="rc-progress__fill"
-          style={{ width: `${progress * 100}%` }}
-        />
+        <div className="rc-progress" aria-hidden="true">
+          <div
+            className="rc-progress__fill"
+            style={{ width: `${progress * 100}%` }}
+          />
+        </div>
       </div>
       {state === "error" ? (
-        <div className="rc-error !mt-2 !inline-flex !items-center !gap-1.5 !rounded-lg !border !border-red-300/25 !bg-red-500/10 !px-2.5 !py-1.5 !text-xs !text-red-100">
+        <div className="rc-error" role="status">
           <Icon name="exclamation-triangle" size={14} />
           {lang === "fr" ? "Audio indisponible" : "Audio unavailable"}
         </div>
       ) : null}
-    </div>
+    </article>
   );
 }
 
@@ -180,7 +210,7 @@ export default function ReciterComparatorPanel() {
       <Dialog.Portal>
         <div className="modal-overlay !p-3 sm:!p-5" onClick={close}>
           <Dialog.Content
-            className="modal modal-panel--wide rc-panel !w-full !max-w-5xl !overflow-hidden !rounded-3xl !border !border-[var(--border)] !bg-[var(--bg-card)] !backdrop-blur-xl !shadow-[0_36px_90px_rgba(1,8,22,0.64)]"
+            className="modal modal-panel--wide rc-panel"
             onClick={(event) => event.stopPropagation()}
             onEscapeKeyDown={(event) => {
               event.preventDefault();
@@ -191,7 +221,7 @@ export default function ReciterComparatorPanel() {
             <Dialog.Title className="sr-only">
               {lang === "ar" ? "مقارنة القراء" : lang === "en" ? "Reciter comparison" : "Comparateur de récitateurs"}
             </Dialog.Title>
-            <div className="modal-header !border-b !border-[var(--border)] !bg-[var(--bg-secondary)]">
+            <div className="modal-header">
               <div className="modal-title-stack">
                 <div className="modal-kicker">
                   {lang === "fr" ? "Écoute comparative" : "Comparative Listening"}
@@ -206,7 +236,7 @@ export default function ReciterComparatorPanel() {
                 </div>
               </div>
               <button
-                className="modal-close !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[var(--border)] !bg-white/[0.04] hover:!bg-white/[0.1]"
+                className="modal-close"
                 type="button"
                 onClick={close}
                 aria-label={lang === "fr" ? "Fermer" : "Close"}
@@ -215,12 +245,13 @@ export default function ReciterComparatorPanel() {
               </button>
             </div>
 
-            <div className="rc-ayah-selector !grid !grid-cols-1 !gap-2 !p-3 sm:!grid-cols-[auto,1fr,auto,auto] sm:!items-center sm:!p-4">
-              <label className="rc-selector-label">
+            <div className="rc-ayah-selector">
+              <label className="rc-selector-label" htmlFor="rc-surah-select">
                 {lang === "fr" ? "Sourate" : "Surah"}
               </label>
               <select
-                className="rc-select !min-h-11 !rounded-xl !border !border-white/15 !bg-white/[0.05] !px-3"
+                id="rc-surah-select"
+                className="rc-select"
                 value={surah}
                 onChange={(event) => {
                   setSurah(Number(event.target.value));
@@ -236,9 +267,9 @@ export default function ReciterComparatorPanel() {
               <label className="rc-selector-label">
                 {lang === "fr" ? "Verset" : "Verse"}
               </label>
-              <div className="rc-ayah-stepper !inline-flex !items-center !gap-2">
+              <div className="rc-ayah-stepper">
                 <button
-                  className="rc-step-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]"
+                  className="rc-step-btn"
                   type="button"
                   onClick={() => setAyah((value) => Math.max(1, value - 1))}
                   disabled={ayah <= 1}
@@ -248,11 +279,11 @@ export default function ReciterComparatorPanel() {
                 >
                   <Icon name="minus" size={16} />
                 </button>
-                <span className="rc-ayah-num !min-w-10 !text-center !font-semibold">
+                <span className="rc-ayah-num">
                   {ayah}
                 </span>
                 <button
-                  className="rc-step-btn !inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-white/14 !bg-white/[0.05] hover:!bg-white/[0.12]"
+                  className="rc-step-btn"
                   type="button"
                   onClick={() => setAyah((value) => Math.min(maxAyah, value + 1))}
                   disabled={ayah >= maxAyah}
@@ -263,19 +294,21 @@ export default function ReciterComparatorPanel() {
               </div>
             </div>
 
-            <div className="rc-picker !space-y-2 !px-3 !pb-3 sm:!px-4">
+            <div className="rc-picker">
               <div className="rc-picker__label">
                 {lang === "fr"
                   ? `Récitateurs sélectionnés (max 4) - ${selected.length}/4`
                   : `Selected reciters (max 4) - ${selected.length}/4`}
               </div>
-              <div className="rc-picker__grid !grid !grid-cols-2 !gap-2 md:!grid-cols-4">
+              <div className="rc-picker__grid">
                 {COMPARE_RECITERS.map((reciter) => (
                   <button
                     key={reciter.id}
-                    className={`rc-pick-btn !inline-flex !items-center !justify-between !rounded-xl !border !px-3 !py-2 !text-sm !transition-all hover:!border-sky-200/40 hover:!bg-white/[0.08] ${selected.includes(reciter.id) ? "!border-sky-200/40 !bg-sky-500/20 !text-white active" : "!border-white/14 !bg-white/[0.04]"} ${selected.length >= 4 && !selected.includes(reciter.id) ? "disabled !opacity-40" : ""}`}
+                    className={`rc-pick-btn ${selected.includes(reciter.id) ? "active" : ""}`}
                     onClick={() => toggleReciter(reciter.id)}
                     type="button"
+                    aria-pressed={selected.includes(reciter.id)}
+                    disabled={selected.length >= 4 && !selected.includes(reciter.id)}
                   >
                     <span dir="rtl">{reciter.name}</span>
                     {selected.includes(reciter.id) ? (
@@ -286,7 +319,7 @@ export default function ReciterComparatorPanel() {
               </div>
             </div>
 
-            <div className="rc-tracks !grid !grid-cols-1 !gap-2 !px-3 !pb-4 sm:!px-4 md:!grid-cols-2">
+            <div className="rc-tracks">
               {selectedReciters.map((reciter) => (
                 <ReciterTrack
                   key={`${reciter.id}-${surah}-${ayah}`}

@@ -1,177 +1,551 @@
-/* ── SurahInfoPanel ─────────────────────────────────────── */
+/* Surah information dossier */
+.surah-info-modal__overlay {
+  padding: clamp(0.75rem, 3vw, 1.5rem);
+}
+
+.surah-info-modal {
+  display: flex;
+  max-height: min(90dvh, 56rem);
+  width: min(100%, 52rem);
+  overflow: hidden;
+  flex-direction: column;
+  border-color: color-mix(in srgb, var(--primary) 30%, var(--border) 70%);
+  border-radius: 1.65rem;
+  background: color-mix(in srgb, var(--bg-card) 97%, var(--primary) 3%);
+  box-shadow: 0 28px 80px color-mix(in srgb, #071b13 38%, transparent), 0 1px 0 color-mix(in srgb, #fff 70%, transparent) inset;
+}
+
+.surah-info-modal > #modal-title {
+  position: relative;
+  z-index: 10;
+  flex: 0 0 auto;
+  padding: 1.15rem 4.2rem 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg-card) 90%, transparent);
+  backdrop-filter: blur(18px);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.surah-info-modal > button:first-of-type {
+  position: absolute;
+  top: 0.72rem;
+  right: 0.8rem;
+  border-color: color-mix(in srgb, var(--primary) 20%, var(--border));
+  background: var(--bg-card);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--text-primary) 10%, transparent);
+}
+
+.surah-info-modal > div:last-child {
+  min-height: 0;
+  padding-top: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: color-mix(in srgb, var(--primary) 38%, transparent) transparent;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.surah-info-modal > div:last-child::-webkit-scrollbar {
+  width: 0.42rem;
+}
+
+.surah-info-modal > div:last-child::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 34%, transparent);
+}
+
+.surah-info-modal > div:last-child::-webkit-scrollbar-track {
+  background: transparent;
+}
 
 .sip-root {
-  margin-top: 0.25rem;
-  padding: clamp(0.65rem, 1.5vw, 0.9rem) clamp(0.75rem, 2vw, 1.1rem);
-  border-top: 1px solid var(--border);
-  animation: sip-in 0.18s ease-out;
+  padding: clamp(1rem, 2.4vw, 1.5rem);
+  color: var(--text-primary);
 }
 
-@keyframes sip-in {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Header row */
 .sip-header {
-  display: flex;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
+  gap: clamp(0.75rem, 2vw, 1.1rem);
+  min-height: 8.2rem;
+  padding: clamp(1rem, 2.8vw, 1.5rem);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border) 80%);
+  border-radius: 1.4rem;
+  background:
+    linear-gradient(112deg, color-mix(in srgb, var(--primary) 10%, var(--bg-card)) 0 58%, transparent 58%),
+    color-mix(in srgb, var(--primary) 5%, var(--bg-secondary));
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--primary) 8%, transparent), inset 0 1px 0 color-mix(in srgb, #fff 65%, transparent);
 }
 
-.sip-header__icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--primary) 10%, transparent 90%);
-  color: var(--primary);
-  flex-shrink: 0;
+.sip-header::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(var(--primary), var(--color-gold, #c7a653));
+  content: "";
+}
+
+.sip-header::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: -2.5rem;
+  bottom: -4rem;
+  width: 9rem;
+  height: 9rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 11%, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.sip-header__ornament {
+  display: grid;
+  place-items: center;
+  width: clamp(3.25rem, 8vw, 4.2rem);
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--color-gold, #c7a653) 54%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bg-card) 82%, transparent);
+  color: var(--text-primary);
+  box-shadow: inset 0 0 0 5px color-mix(in srgb, var(--color-gold, #c7a653) 7%, transparent), 0 8px 20px color-mix(in srgb, var(--primary) 12%, transparent);
+  font-size: clamp(1.55rem, 4vw, 2.15rem);
 }
 
 .sip-header__text {
-  flex: 1;
   min-width: 0;
+}
+
+.sip-eyebrow,
+.sip-overview__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--primary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
 }
 
 .sip-header__name {
   display: block;
-  font-size: 0.9rem;
-  font-weight: 700;
+  margin-top: 0.28rem;
+  overflow: hidden;
   color: var(--text-primary);
-  line-height: 1.2;
+  font-size: clamp(1.25rem, 3.3vw, 1.85rem);
+  font-weight: 760;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sip-header__desc {
   display: block;
-  font-size: 0.72rem;
+  margin-top: 0.28rem;
   color: var(--text-muted);
-  line-height: 1.4;
-  margin-top: 0.1rem;
+  font-size: 0.8rem;
+  font-style: italic;
 }
 
 .sip-header__arabic {
-  font-family: var(--font-quran, serif);
-  font-size: clamp(1rem, 3vw, 1.5rem);
-  color: var(--text-primary);
-  direction: rtl;
-  flex-shrink: 0;
-  opacity: 0.7;
+  position: relative;
+  z-index: 1;
+  max-width: 12rem;
+  color: var(--primary);
+  font-family: var(--font-surah-name, var(--font-quran), serif);
+  font-size: clamp(2rem, 5vw, 3.1rem);
+  line-height: 1.35;
+  text-align: end;
 }
 
-/* Stats grid */
+.sip-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 1.15rem 0 0.65rem;
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sip-section-heading__line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
 .sip-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.45rem;
+  gap: 0.55rem;
 }
 
-/* Stat tile */
 .sip-tile {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.52rem 0.6rem;
-  border-radius: 10px;
+  min-width: 0;
+  gap: 0.55rem;
+  min-height: 4rem;
+  padding: 0.7rem 0.8rem;
   border: 1px solid var(--border);
-  background: var(--bg-secondary);
-  transition: border-color 0.15s;
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--bg-secondary) 78%, var(--bg-card));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 48%, transparent);
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.sip-tile:hover {
+  border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
+  transform: translateY(-1px);
 }
 
 .sip-tile--accent {
-  border-color: color-mix(in srgb, var(--primary) 30%, transparent 70%);
+  border-color: color-mix(in srgb, var(--primary) 28%, var(--border) 72%);
   background: color-mix(in srgb, var(--primary) 6%, var(--bg-secondary) 94%);
 }
 
 .sip-tile--gold {
-  border-color: color-mix(in srgb, var(--color-gold, #c8a84b) 35%, transparent 65%);
-  background: color-mix(in srgb, var(--color-gold, #c8a84b) 6%, var(--bg-secondary) 94%);
+  border-color: color-mix(in srgb, var(--color-gold, #c7a653) 34%, var(--border) 66%);
+  background: color-mix(in srgb, var(--color-gold, #c7a653) 7%, var(--bg-secondary) 93%);
 }
 
 .sip-tile__icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 7px;
-  background: color-mix(in srgb, var(--primary) 8%, transparent 92%);
+  display: grid;
+  place-items: center;
+  flex: 0 0 1.8rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 0.58rem;
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
   color: var(--primary);
-  flex-shrink: 0;
 }
 
 .sip-tile--gold .sip-tile__icon {
-  background: color-mix(in srgb, var(--color-gold, #c8a84b) 10%, transparent 90%);
-  color: var(--color-gold, #c8a84b);
+  background: color-mix(in srgb, var(--color-gold, #c7a653) 13%, transparent);
+  color: color-mix(in srgb, var(--color-gold, #c7a653) 82%, var(--text-primary));
 }
 
 .sip-tile__body {
   display: flex;
-  flex-direction: column;
   min-width: 0;
+  flex-direction: column;
 }
 
 .sip-tile__value {
-  font-size: 0.82rem;
-  font-weight: 700;
+  overflow: hidden;
   color: var(--text-primary);
-  line-height: 1.2;
+  font-size: 0.82rem;
+  font-weight: 750;
+  line-height: 1.25;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .sip-tile__label {
-  font-size: 0.62rem;
-  font-weight: 600;
+  margin-top: 0.08rem;
+  overflow: hidden;
   color: var(--text-muted);
-  line-height: 1.2;
-  letter-spacing: 0.02em;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  line-height: 1.3;
+  text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
 }
 
-/* Dark mode */
-[data-theme="dark"] .sip-tile {
-  background: rgba(13,25,22,0.7);
-  border-color: rgba(196,219,208,0.12);
+.sip-overview {
+  margin-top: 0.8rem;
+  padding: clamp(0.85rem, 2.4vw, 1.1rem);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background: color-mix(in srgb, var(--bg-secondary) 84%, var(--bg-card));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 45%, transparent);
 }
 
-[data-theme="dark"] .sip-tile--accent {
-  border-color: rgba(47,208,142,0.22);
-  background: rgba(47,208,142,0.06);
+.sip-overview__head,
+.sip-overview__footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
 }
 
-[data-theme="dark"] .sip-tile--gold {
-  border-color: rgba(214,179,92,0.25);
-  background: rgba(214,179,92,0.06);
+.sip-overview__head h3 {
+  margin: 0.2rem 0 0;
+  color: var(--text-primary);
+  font-size: 0.98rem;
+  font-weight: 750;
 }
 
-[data-theme="dark"] .sip-tile__icon {
-  background: rgba(47,208,142,0.1);
-  color: #2fd08e;
+.sip-language {
+  flex: 0 0 auto;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 0.62rem;
+  font-weight: 700;
 }
 
-[data-theme="dark"] .sip-tile--gold .sip-tile__icon {
-  background: rgba(214,179,92,0.1);
-  color: #d6b35c;
+.sip-language::before {
+  display: inline-block;
+  width: 0.38rem;
+  height: 0.38rem;
+  margin-inline-end: 0.35rem;
+  border-radius: 50%;
+  background: var(--primary);
+  content: "";
 }
 
-[data-theme="dark"] .sip-header__icon {
-  background: rgba(47,208,142,0.1);
-  color: #2fd08e;
+.sip-overview__text,
+.sip-overview__fallback {
+  margin: 0.75rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.7;
 }
 
-/* Responsive */
-@media (max-width: 480px) {
+.sip-overview__fallback {
+  padding-inline-start: 0.7rem;
+  border-inline-start: 2px solid color-mix(in srgb, var(--primary) 42%, transparent);
+}
+
+.sip-overview__loading {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.sip-skeleton {
+  display: block;
+  width: 72%;
+  height: 0.65rem;
+  border-radius: 999px;
+  background: var(--border);
+  animation: sip-shimmer 1.2s ease-in-out infinite alternate;
+}
+
+.sip-skeleton--long {
+  width: 96%;
+}
+
+@keyframes sip-shimmer {
+  to { opacity: 0.4; }
+}
+
+.sip-dossier {
+  margin-top: 0.9rem;
+}
+
+.sip-timeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding: 0.72rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 15%, var(--border));
+  border-radius: 0.8rem;
+  background: color-mix(in srgb, var(--primary) 4%, var(--bg-card));
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  scrollbar-width: none;
+}
+
+.sip-timeline > * {
+  flex: 0 0 auto;
+}
+
+.sip-timeline > * + *::before {
+  content: "";
+  display: inline-block;
+  width: 0.3rem;
+  height: 0.3rem;
+  margin: 0 0.55rem 0.08rem;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.sip-timeline strong {
+  color: var(--primary);
+}
+
+.sip-dossier__copy {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.85rem;
+}
+
+.sip-dossier__copy h4 {
+  position: relative;
+  margin: 0.35rem 0 -0.15rem;
+  padding-inline-start: 0.85rem;
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.015em;
+}
+
+.sip-dossier__copy h4::before {
+  position: absolute;
+  inset: 0.18rem auto 0.18rem 0;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(var(--primary), var(--color-gold, #c7a653));
+  content: "";
+}
+
+.sip-dossier__copy p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.82;
+}
+
+.sip-overview__footer {
+  align-items: center;
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.sip-source {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 0.63rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sip-source-link {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 0.3rem;
+  min-height: 2rem;
+  padding: 0.36rem 0.58rem;
+  border-radius: 0.65rem;
+  color: var(--primary);
+  font-size: 0.69rem;
+  font-weight: 750;
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+  background: color-mix(in srgb, var(--primary) 7%, transparent);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.sip-source-link:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.sip-source-link:hover {
+  background: color-mix(in srgb, var(--primary) 9%, transparent);
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .sip-header,
+[data-theme="dark"] .sip-tile,
+[data-theme="dark"] .sip-overview {
+  background-color: color-mix(in srgb, var(--bg-secondary) 90%, #08110e 10%);
+}
+
+@media (max-width: 640px) {
+  .surah-info-modal__overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .surah-info-modal {
+    width: 100%;
+    max-height: calc(100dvh - max(0.75rem, env(safe-area-inset-top)));
+    border-radius: 1.35rem 1.35rem 0 0;
+  }
+
+  .surah-info-modal > button:first-of-type {
+    top: 0.55rem;
+    right: 0.55rem;
+  }
+
+  .surah-info-modal > #modal-title {
+    padding: 1rem 3.7rem 0.8rem 1rem;
+  }
+
+  .sip-root {
+    padding: 0.85rem;
+  }
+
+  .sip-header {
+    grid-template-columns: auto minmax(0, 1fr);
+    min-height: 0;
+    border-radius: 1.1rem;
+  }
+
+  .sip-header__arabic {
+    grid-column: 1 / -1;
+    max-width: none;
+    padding-top: 0.25rem;
+    border-top: 1px solid color-mix(in srgb, var(--primary) 15%, transparent);
+    font-size: 1.65rem;
+    text-align: center;
+  }
+
   .sip-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.35rem;
+    gap: 0.42rem;
   }
 
   .sip-tile {
-    padding: 0.42rem 0.5rem;
+    padding: 0.56rem;
+    min-height: 3.6rem;
+  }
+
+  .sip-overview__head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .sip-language {
+    align-self: flex-start;
+  }
+
+  .sip-overview__footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .sip-source {
+    max-width: 100%;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 360px) {
+  .sip-tile__icon {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sip-skeleton,
+  .sip-source-link,
+  .sip-tile {
+    animation: none;
+    transition: none;
   }
 }

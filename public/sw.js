@@ -8,7 +8,7 @@
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v14";
+const CACHE_NAME = "mushaf-plus-v15";
 const API_CACHE_NAME = "mushaf-plus-api-v3";
 const CACHE_LIMITS = {
   [CACHE_NAME]: 300,
@@ -23,6 +23,7 @@ const ASSETS_TO_CACHE = [
   "/logo-ui.webp",
   "/favicon.png",
   "/data/reciter-profiles.json",
+  "/data/editorial-copy.json",
 ];
 
 // ─── Installation ─────────────────────────────────────────────────────────────

@@ -79,6 +79,38 @@ export async function installQuranNetworkFixtures(page) {
   await page.route(
     (url) =>
       url.hostname === "api.quran.com" &&
+      /\/api\/v4\/chapters\/\d+\/info$/.test(url.pathname),
+    async (route) => {
+      const match = new URL(route.request().url()).pathname.match(
+        /\/chapters\/(\d+)\/info$/,
+      );
+      const surah = Number(match?.[1] || 1);
+      await route.fulfill({
+        json: {
+          chapter_info: {
+            chapter_id: surah,
+            language_name: "english",
+            short_text: `Editorial overview for surah ${surah}.`,
+            text: `<p>Editorial overview for surah ${surah}.</p><p>Complete historical context for testing.</p>`,
+            source: "Quran.com test fixture",
+          },
+        },
+      });
+    },
+  );
+
+  await page.route(
+    (url) =>
+      url.hostname === "api.quran.com" &&
+      /\/api\/v4\/chapters\/\d+$/.test(url.pathname),
+    async (route) => {
+      await route.fulfill({ json: { chapter: { revelation_order: 89, revelation_place: "madinah", pages: [50, 76], translated_name: { name: "The Family of Imran" } } } });
+    },
+  );
+
+  await page.route(
+    (url) =>
+      url.hostname === "api.quran.com" &&
       url.pathname.includes("/api/v4/verses/"),
     async (route) => {
       const url = new URL(route.request().url());
