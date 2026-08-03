@@ -169,7 +169,10 @@ const QCVerseCard = memo(function QCVerseCard({
     >
       {/* Card Header: verse number + actions */}
       <div className="qc-list-card__top select-none">
-        <div className="qc-list-card__start">
+        <div
+          className="qc-list-card__start"
+          style={{ display: "flex", alignItems: "center", flexWrap: "nowrap" }}
+        >
           <button
             type="button"
             onClick={handleClick}
@@ -191,7 +194,10 @@ const QCVerseCard = memo(function QCVerseCard({
             layout="qcom-header-left"
           />
         </div>
-        <div className="qc-list-card__end">
+        <div
+          className="qc-list-card__end"
+          style={{ display: "flex", alignItems: "center", flexWrap: "nowrap" }}
+        >
           <QCVerseActions
             surah={surahNum}
             ayah={ayah.numberInSurah}

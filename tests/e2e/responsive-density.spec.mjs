@@ -249,6 +249,9 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   const settingsButton = await box(page, ".mp-header__more");
   const moreButton = await box(page, ".mp-header__more");
   const typographyTrigger = await box(page, ".srh-typography-trigger");
+  const verseReference = await box(page, ".qc-list-card__reference");
+  const versePlay = await box(page, ".qc-list-card__start .ayah-action--play");
+  const verseBookmark = await box(page, ".qc-list-card__start .ayah-action--bookmark");
 
   expect(header?.height || 0).toBeLessThanOrEqual(56);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
@@ -260,6 +263,8 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(moreButton?.width || 0).toBeGreaterThanOrEqual(43.9);
   expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(43.9);
   expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(43.9);
+  expect(Math.abs((verseReference?.y || 0) - (versePlay?.y || 0))).toBeLessThanOrEqual(1);
+  expect(Math.abs((verseReference?.y || 0) - (verseBookmark?.y || 0))).toBeLessThanOrEqual(1);
   await expect(page.locator(".srh-typography-panel")).toBeHidden();
   await page.locator(".srh-typography-trigger").click();
   await expect(page.locator(".srh-typography-trigger")).toHaveAttribute("aria-expanded", "true");

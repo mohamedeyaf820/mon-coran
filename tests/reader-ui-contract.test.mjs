@@ -106,6 +106,13 @@ test("mobile reader shell follows the Tajweed card and keeps an explicit home lo
   assert.doesNotMatch(styles, /@media \(max-width: 380px\)\s*\{\s*html body \.app-root > \.mp-header \.mp-header__brand\s*\{\s*display: none/);
 });
 
+test("verse reference and primary actions keep one production-safe row", () => {
+  const view = source("src/components/QuranDisplay/QCVerseByVerseView.jsx");
+
+  assert.match(view, /className="qc-list-card__start"[\s\S]*?display: "flex"[\s\S]*?flexWrap: "nowrap"/);
+  assert.match(view, /className="qc-list-card__end"[\s\S]*?display: "flex"[\s\S]*?flexWrap: "nowrap"/);
+});
+
 test("Mushaf pages keep a compact, theme-aware reading hierarchy", () => {
   const page = source("src/components/Quran/CleanPageView.jsx");
   const decor = source("src/components/Quran/CleanPageDecor.jsx");
