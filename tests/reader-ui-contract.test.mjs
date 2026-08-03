@@ -30,6 +30,16 @@ test("reader typography controls remain explicit and mobile-accessible", () => {
   assert.match(styles, /\.srh-typography-disclosure\.open \.srh-typography-panel/);
 });
 
+test("the unified reader header remains available in mobile QCF4 Mushaf mode", () => {
+  const surahMode = source("src/components/QuranDisplay/SurahMode.jsx");
+  const styles = source("src/styles/surah-reader-header.css");
+
+  assert.match(surahMode, /<div className="qc-surah-header-wrap animate-in">[\s\S]*?<SurahReaderHeader/);
+  assert.doesNotMatch(surahMode, /isQCF4\s*&&\s*mushafLayout\s*===\s*["']mushaf["']/);
+  assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?\.srh-mobile-bar\s*\{[\s\S]*?display: grid/);
+  assert.match(styles, /\.srh-mobile-bar :is\(\.srh-play-btn, \.srh-info-btn\)[\s\S]*?min-height: 44px/);
+});
+
 test("surah information opens as an accessible responsive dossier", () => {
   const header = source("src/components/Quran/SurahReaderHeader.jsx");
   const panel = source("src/components/QuranDisplay/SurahInfoPanel.jsx");

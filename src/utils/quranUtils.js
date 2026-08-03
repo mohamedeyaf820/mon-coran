@@ -5,11 +5,17 @@
 const BASMALA_CACHE = new Map();
 const CACHE_MAX = 800;
 
-// Some QPC payloads use U+25CC as a positioning anchor for a following
-// Quranic combining mark. When the specialised face falls back, that internal
-// anchor becomes a large visible dotted circle (for example in أَنَا۠).
+// Some QPC payloads use presentation-only code points which become conspicuous
+// fallback glyphs while the specialised face is loading on mobile:
+// - U+25CC is an internal positioning anchor (a large dotted circle in fallback)
+// - U+06EC is the QPC form of the pause/ishmam sign found as canonical U+06EB
+//   in Quran.com's Uthmani text (notably Yusuf 12:11). Normalising it preserves
+//   the Quranic sign while avoiding the solid black square/dot shown by fallback
+//   fonts on Android.
 export function normalizeQuranGlyphText(text) {
-    return String(text || '').replace(/\u25CC/g, '');
+    return String(text || '')
+        .replace(/\u25CC/g, '')
+        .replace(/\u06EC/g, '\u06EB');
 }
 
 // Diacritics character class: covers all Arabic combining marks + tatweel

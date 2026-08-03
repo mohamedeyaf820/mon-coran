@@ -5,7 +5,7 @@ const inFlightLoads = new Map();
 const FONT_SOURCES = {
   "qpc-hafs": {
     family: "QPC Hafs",
-    url: "https://verses.quran.foundation/fonts/quran/hafs/uthmanic_hafs/UthmanicHafs1Ver18.woff2",
+    url: "/fonts/uthmanic-hafs-v18.woff2",
     format: "woff2",
   },
   "qpc-indopak": {

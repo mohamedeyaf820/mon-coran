@@ -1,12 +1,4 @@
-/*
- * MushafPlus experience polish
- * A final, component-scoped layer for the home overview, recitation catalogue,
- * spiritual tools and list reader. It intentionally loads after legacy layers.
- */
-
-/* -------------------------------------------------------------------------- */
-/* Contextual suggestions                                                     */
-/* -------------------------------------------------------------------------- */
+/* MushafPlus experience polish. */
 
 html body .app-root[data-view="home"] .home-info-card {
   overflow: hidden !important;
@@ -119,9 +111,6 @@ html body .app-root[data-view="home"] .home-quick-row > span:last-child {
   color: var(--primary) !important;
 }
 
-/* -------------------------------------------------------------------------- */
-/* Home reading overview                                                      */
-/* -------------------------------------------------------------------------- */
 
 html body .app-root[data-view="home"] .home-top-cards-grid {
   container-type: inline-size;
@@ -216,9 +205,6 @@ html body .app-root[data-view="home"] .home-tools-quick-card__tool svg {
   color: var(--primary) !important;
 }
 
-/* -------------------------------------------------------------------------- */
-/* Reciter catalogue                                                          */
-/* -------------------------------------------------------------------------- */
 
 html body .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
   container-type: inline-size;
@@ -287,9 +273,6 @@ html body .app-root[data-view="home"] .reciter-card__listen {
   box-shadow: 0 7px 16px color-mix(in srgb, var(--primary) 19%, transparent) !important;
 }
 
-/* -------------------------------------------------------------------------- */
-/* Reciter comparator                                                         */
-/* -------------------------------------------------------------------------- */
 
 html body .rc-panel {
   display: flex;
@@ -638,9 +621,6 @@ html body .rc-error {
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* Tajwid guide and rule explanations                                         */
-/* -------------------------------------------------------------------------- */
 
 html body .app-root[data-view="reading"] .tajweed-legend {
   display: grid;
@@ -850,9 +830,6 @@ html body .tajwid-rule-tooltip__description {
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* Reading report and Khatma                                                  */
-/* -------------------------------------------------------------------------- */
 
 html body :is(.wst-panel, .khatma-panel) {
   width: min(calc(100vw - 1rem), 48rem) !important;
@@ -1128,9 +1105,6 @@ html body .khatma-panel .khatma-start-btn {
   box-shadow: 0 10px 22px color-mix(in srgb, var(--primary) 22%, transparent) !important;
 }
 
-/* -------------------------------------------------------------------------- */
-/* Verse-by-verse reader                                                      */
-/* -------------------------------------------------------------------------- */
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-verse-by-verse-view {
   max-width: 62rem !important;
@@ -1224,9 +1198,6 @@ html body .app-root[data-view="duas"] .duas-page--platform .dua-open-btn-v5 svg 
   transform: none !important;
 }
 
-/* -------------------------------------------------------------------------- */
-/* Theme and device adjustments                                               */
-/* -------------------------------------------------------------------------- */
 
 html[data-theme="dark"] body :is(.wst-panel, .khatma-panel),
 html[data-theme="quran-night"] body :is(.wst-panel, .khatma-panel),

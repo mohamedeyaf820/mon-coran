@@ -133,3 +133,20 @@ test("every exposed Hafs text path removes internal dotted-circle anchors", () =
   assert.equal(withMarker.includes("\u25CC"), false);
   assert.equal(withMarker.includes("\u06E0"), true);
 });
+
+test("Yusuf 12:11 keeps its Quranic sign without the mobile black-dot fallback glyph", () => {
+  const qpcWord = "\u062A\u064E\u0623\u06E1\u0645\u064E\u06EC\u0646\u0651\u064E\u0627";
+  const canonicalWord = "\u062A\u064E\u0623\u06E1\u0645\u064E\u06EB\u0646\u0651\u064E\u0627";
+  const ayah = {
+    text: qpcWord,
+    quranCom: {
+      textQpcHafs: qpcWord,
+      textUthmani: canonicalWord,
+    },
+  };
+
+  const rendered = getAyahTextForFont(ayah, "qpc-hafs", "hafs");
+  assert.equal(rendered, canonicalWord);
+  assert.equal(rendered.includes("\u06EC"), false);
+  assert.equal(rendered.includes("\u06EB"), true);
+});
