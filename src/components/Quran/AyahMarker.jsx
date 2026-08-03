@@ -1,6 +1,15 @@
 import React from "react";
 import { cn } from "../../lib/utils";
-import { useAppLocale } from "../../context/AppContext";
+import {
+  shallowEqual,
+  useAppLocale,
+  useAppSelector,
+} from "../../context/AppContext";
+import {
+  getNativeAyahMarker,
+  normalizeFontId,
+  resolveFontFamily,
+} from "../../data/fonts";
 import { t } from "../../i18n";
 import { toArabicNumeral } from "../../utils/arabicNumerals";
 
@@ -12,20 +21,31 @@ export const AyahMarker = React.memo(function AyahMarker({
   num,
   isPlaying = false,
   className = "",
+  fontFamily,
+  riwaya,
   size: _size = "md",
   onClick,
 }) {
+  const readingPreferences = useAppSelector(
+    (state) => ({ fontFamily: state.fontFamily, riwaya: state.riwaya }),
+    shallowEqual,
+  );
   const markerNumber = number ?? num;
   if (markerNumber == null) return null;
 
-  const markerText = toArabicNumeral(markerNumber);
+  const activeRiwaya = riwaya || readingPreferences.riwaya || "hafs";
+  const activeFont = normalizeFontId(
+    fontFamily || readingPreferences.fontFamily,
+    activeRiwaya,
+  );
+  const markerText = getNativeAyahMarker(markerNumber, activeFont, activeRiwaya);
+  const markerFontFamily = resolveFontFamily(activeFont, activeRiwaya);
 
   return (
     <span
       dir="rtl"
       className={cn(
         "ayah-marker-wrap ayat-marker qurancom-ayah-marker verse-end-marker native-ayah-marker",
-        "ayah-marker--single",
         "inline-block select-none",
         isPlaying && "is-playing",
         className,
@@ -34,6 +54,8 @@ export const AyahMarker = React.memo(function AyahMarker({
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       aria-label={`Verset ${markerNumber}`}
+      data-marker-font={activeFont}
+      style={{ fontFamily: markerFontFamily }}
       onClick={onClick}
       onKeyDown={
         onClick
@@ -46,9 +68,7 @@ export const AyahMarker = React.memo(function AyahMarker({
           : undefined
       }
     >
-      <span className="ayat-marker__medallion" aria-hidden="true">
-        <span className="ayat-marker__number" dir="ltr">{markerText}</span>
-      </span>
+      <span aria-hidden="true">{markerText}</span>
     </span>
   );
 });
