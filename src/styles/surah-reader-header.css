@@ -400,8 +400,8 @@
 
 @media (max-width: 640px) {
     .srh-root {
-        position: relative;
-        top: auto;
+        position: sticky;
+        top: 0;
         width: 100%;
         margin-bottom: 0.45rem;
         border-radius: 1rem;

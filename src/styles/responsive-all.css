@@ -435,9 +435,6 @@ html {
 }
 
 @supports (padding: env(safe-area-inset-bottom)) {
-    .app-main {
-        padding-bottom: env(safe-area-inset-bottom) !important;
-    }
     .app-header {
         padding-top: env(safe-area-inset-top) !important;
     }
