@@ -174,7 +174,7 @@ const WAQF_RULES = {
 const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
     const rule = WAQF_RULES[char];
     if (!rule) {
-        return <span className="waqf-marker">{getReadableWaqfGlyph(char)}</span>;
+        return <span className="waqf-marker">{char}</span>;
     }
 
     const activeLang = lang === 'ar' || lang === 'en' || lang === 'fr' ? lang : 'fr';
@@ -185,7 +185,7 @@ const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
         <Tooltip>
             <TooltipTrigger asChild>
                 <span className="waqf-marker" role="help" aria-label={`Règle de Waqf: ${name}`}>
-                    {getReadableWaqfGlyph(char)}
+                    {char}
                 </span>
             </TooltipTrigger>
             <TooltipContent 
