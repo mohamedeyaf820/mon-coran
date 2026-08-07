@@ -362,14 +362,15 @@ export default function SurahReaderHeader({
       {/* ══ ROW 2 — View controls ═══════════════════════════════ */}
       <div className="srh-controls">
         {/* Left cluster: view mode (Mushaf / Liste) */}
-        <div className="srh-view-pills" role="group" aria-label={lbl(lang, "Mode d'affichage", "Display mode", "وضع العرض")}>
+        <div className="srh-view-pills" role="radiogroup" aria-label={lbl(lang, "Mode d'affichage", "Display mode", "وضع العرض")}>
           {viewPills.map((pill) => (
             <button
               key={pill.key}
               type="button"
+              role="radio"
               className={cn("srh-pill", pill.active && "srh-pill--active")}
               onClick={pill.onClick}
-              aria-pressed={pill.active}
+              aria-checked={pill.active}
               aria-label={pill.label}
             >
               {pill.icon}

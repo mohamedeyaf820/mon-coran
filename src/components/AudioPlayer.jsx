@@ -409,7 +409,6 @@ export default function AudioPlayer() {
   const networkBadge = (() => {
     if (networkState === "loading" || networkState === "buffering") {
       return {
-        icon: "fa-spinner fa-spin",
         text:
           lang === "fr"
             ? "Chargement audio..."
@@ -420,7 +419,6 @@ export default function AudioPlayer() {
     }
     if (networkState === "stalled") {
       return {
-        icon: "fa-wifi",
         text:
           lang === "fr"
             ? "Connexion instable"

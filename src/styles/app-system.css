@@ -43,6 +43,7 @@ html body .app-root {
 .app-root .app-main {
   overscroll-behavior-y: contain;
   scrollbar-gutter: stable;
+  padding-bottom: var(--player-h, 0px);
 }
 
 .app-root .app-view-shell {
