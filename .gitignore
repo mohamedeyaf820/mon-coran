@@ -39,3 +39,4 @@ Thumbs.db
 .env.local
 design-audit/
 design-audit-2/
+.vercel
