@@ -67,15 +67,14 @@ test.describe("Modal a11y — Focus trap & Escape", () => {
     await page.keyboard.press("Escape");
   });
 
-  test("Bookmarks modal: ouvre, tab trap, ferme avec Escape", async ({ page }) => {
-    // Ouvrir via Ctrl+B
+  test("Bibliothèque: ouvre, tab trap, ferme avec Escape", async ({ page }) => {
     await page.keyboard.press("Control+b");
-    const bookmarksModal = page.locator('[aria-labelledby="bookmarks-modal-title"]').first();
-    await expect(bookmarksModal).toBeVisible({ timeout: 5000 });
+    const libraryModal = page.locator('[aria-labelledby="library-title"]').first();
+    await expect(libraryModal).toBeVisible({ timeout: 5000 });
 
     // Escape ferme
     await page.keyboard.press("Escape");
-    await expect(bookmarksModal).toBeHidden({ timeout: 3000 });
+    await expect(libraryModal).toBeHidden({ timeout: 3000 });
   });
 
   test("Tous les dialogs ont role=dialog et aria-modal=true", async ({ page }) => {

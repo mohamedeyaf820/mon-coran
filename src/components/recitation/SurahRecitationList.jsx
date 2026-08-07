@@ -17,7 +17,6 @@ function normalize(value) {
 export default function SurahRecitationList({
   lang,
   reciter,
-  getDownloadUrl,
   onPlaySurah,
   onOpenSurah,
   onOpenSurahIntent,
@@ -126,7 +125,8 @@ export default function SurahRecitationList({
             key={`${reciter.id}-${surah.n}`}
             surah={surah}
             lang={lang}
-            downloadUrl={getDownloadUrl(reciter, surah.n)}
+            reciter={reciter}
+            riwaya={reciter.verifiedWarsh ? "warsh" : "hafs"}
             onPlay={() => handlePlay(surah.n)}
             onOpen={() => handleOpen(surah.n)}
             onOpenIntent={() => handleOpenIntent(surah.n)}

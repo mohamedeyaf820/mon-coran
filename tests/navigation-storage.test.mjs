@@ -133,7 +133,7 @@ test("storage: settings round-trip encrypted and sanitized", () => {
   });
 });
 
-test("storage: pinned ayahs clamp by exact surah ayah count", () => {
+test("storage: retired comparison pins are discarded", () => {
   globalThis.localStorage = createMockStorage();
 
   saveSettings({
@@ -144,13 +144,7 @@ test("storage: pinned ayahs clamp by exact surah ayah count", () => {
   });
 
   const settings = getSettings();
-  assert.deepEqual(
-    settings.pinnedAyahs.map(({ surah, ayah }) => ({ surah, ayah })),
-    [
-      { surah: 1, ayah: 7 },
-      { surah: 9, ayah: 129 },
-    ],
-  );
+  assert.equal(Object.hasOwn(settings, "pinnedAyahs"), false);
 });
 
 test("storage: preserves per-riwaya Quran font choices", () => {

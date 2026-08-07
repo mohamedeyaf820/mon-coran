@@ -46,42 +46,21 @@ export default function useQuranDisplayPrefetch({
       return true;
     };
 
-    const runAlternateRiwayaPrefetch = () => {
-      if (!canPrefetch()) return;
-      preloadQuranDisplayData({
-        currentJuz,
-        currentPage,
-        currentSurah,
-        displayMode,
-        lang,
-        riwaya: riwaya === "hafs" ? "warsh" : "hafs",
-        warshStrictMode,
-      }).catch(() => null);
-    };
-
     const runNeighbourPrefetch = () => {
       if (!canPrefetch()) return;
       if (displayMode === "surah") {
-        if (currentSurah < 114) prefetchText("surah", currentSurah + 1);
-        if (currentSurah > 1) prefetchText("surah", currentSurah - 1);
+        prefetchText("surah", currentSurah < 114 ? currentSurah + 1 : currentSurah - 1);
       } else if (displayMode === "page") {
-        if (currentPage < 604) prefetchText("page", currentPage + 1);
-        if (currentPage > 1) prefetchText("page", currentPage - 1);
+        prefetchText("page", currentPage < 604 ? currentPage + 1 : currentPage - 1);
       } else if (displayMode === "juz") {
-        if (currentJuz < 30) prefetchText("juz", currentJuz + 1);
-        if (currentJuz > 1) prefetchText("juz", currentJuz - 1);
+        prefetchText("juz", currentJuz < 30 ? currentJuz + 1 : currentJuz - 1);
       }
     };
 
-    const neighbourTimer = window.setTimeout(runNeighbourPrefetch, 180);
-    const alternateRiwayaTimer = window.setTimeout(
-      runAlternateRiwayaPrefetch,
-      1600,
-    );
+    const neighbourTimer = window.setTimeout(runNeighbourPrefetch, 420);
 
     return () => {
       window.clearTimeout(neighbourTimer);
-      window.clearTimeout(alternateRiwayaTimer);
     };
   }, [
     currentJuz,

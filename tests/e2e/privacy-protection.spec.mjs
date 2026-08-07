@@ -14,10 +14,17 @@ async function openSettings(page) {
   await page.locator('.mp-header-menu__item[data-key="settings"]').click();
 }
 
+async function openAdvancedProtection(page) {
+  const disclosure = page.locator(".settings-advanced-disclosure").first();
+  if (!(await disclosure.evaluate((element) => element.open))) {
+    await disclosure.locator("summary").click();
+  }
+}
+
 async function seedLegacyPrivateRecords(page) {
   await page.evaluate(async () => {
     const db = await new Promise((resolve, reject) => {
-      const request = indexedDB.open("mushafplus", 2);
+      const request = indexedDB.open("mushafplus", 3);
       request.onupgradeneeded = () => {
         const nextDb = request.result;
         if (!nextDb.objectStoreNames.contains("notes")) {
@@ -57,7 +64,7 @@ async function seedLegacyPrivateRecords(page) {
 async function readRawPrivateRecords(page) {
   return page.evaluate(async () => {
     const db = await new Promise((resolve, reject) => {
-      const request = indexedDB.open("mushafplus", 2);
+      const request = indexedDB.open("mushafplus", 3);
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve(request.result);
     });
@@ -94,6 +101,7 @@ test("privacy: protected mode migrates records and locks after reload", async ({
   await openSettings(page);
   await expect(page.locator(".settings-drawer")).toBeVisible();
   await page.getByRole("tab", { name: "Confidentialit\u00e9" }).click();
+  await openAdvancedProtection(page);
   await page.locator("#settings-protection-new").fill(PASSPHRASE);
   await page.locator("#settings-protection-confirm").fill(PASSPHRASE);
   await page.getByRole("button", { name: "Activer le mode prot\u00e9g\u00e9" }).click();
@@ -136,6 +144,7 @@ test("privacy: protected mode migrates records and locks after reload", async ({
 
   await openSettings(page);
   await page.getByRole("tab", { name: "Confidentialit\u00e9" }).click();
+  await openAdvancedProtection(page);
   await page.locator("#settings-protection-current").fill(PASSPHRASE);
   await page.locator("#settings-protection-replacement").fill(NEXT_PASSPHRASE);
   await page.locator("#settings-protection-replacement-confirm").fill(NEXT_PASSPHRASE);
@@ -152,6 +161,7 @@ test("privacy: protected mode migrates records and locks after reload", async ({
 
   await openSettings(page);
   await page.getByRole("tab", { name: "Confidentialit\u00e9" }).click();
+  await openAdvancedProtection(page);
   await page.locator("#settings-protection-disable").fill(NEXT_PASSPHRASE);
   await page.getByRole("button", { name: "D\u00e9sactiver le mode prot\u00e9g\u00e9" }).click();
   await expect(page.getByRole("button", { name: "Activer le mode prot\u00e9g\u00e9", exact: true })).toBeVisible();

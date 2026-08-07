@@ -14,6 +14,7 @@ export default function AyahActionsModal({
   onClose,
   surah,
   ayahData,
+  translations = [],
   quietBackdrop = false,
 }) {
   const { lang } = useAppLocale();
@@ -109,6 +110,7 @@ export default function AyahActionsModal({
             surah={surah}
             ayah={verseNumber}
             ayahData={ayahData}
+            translations={translations}
           />
         </div>
       </div>

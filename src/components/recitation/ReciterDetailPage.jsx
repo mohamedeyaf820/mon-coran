@@ -3,7 +3,6 @@ import {
   BookOpen,
   Headphones,
   ImageIcon,
-  Info,
   ListMusic,
   RadioTower,
   UserRound,
@@ -37,13 +36,11 @@ function labelFor(lang, fr, en, ar = en) {
 export default function ReciterDetailPage({
   lang,
   reciter,
-  canDirectDownload,
   onPlayRadio,
   onClose,
   onPlaySurah,
   onOpenSurah,
   onOpenSurahIntent,
-  getDownloadUrl,
   dialogRef,
   closeBtnRef,
 }) {
@@ -160,17 +157,6 @@ export default function ReciterDetailPage({
             ) : null}
           </section>
 
-          {!canDirectDownload ? (
-            <p className="reciter-detail__notice">
-              <Info className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
-              {labelFor(
-                lang,
-                "Le téléchargement direct n’est pas disponible pour cette source.",
-                "Direct download is unavailable for this source.",
-                "التنزيل المباشر غير متاح لهذا المصدر.",
-              )}
-            </p>
-          ) : null}
         </aside>
 
         <main className="reciter-detail__library">
@@ -192,7 +178,6 @@ export default function ReciterDetailPage({
           <SurahRecitationList
             lang={lang}
             reciter={reciter}
-            getDownloadUrl={getDownloadUrl}
             onPlaySurah={onPlaySurah}
             onOpenSurah={onOpenSurah}
             onOpenSurahIntent={onOpenSurahIntent}

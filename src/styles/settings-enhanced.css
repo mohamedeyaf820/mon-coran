@@ -1,20 +1,18 @@
-/* ══════════════════════════════════════════════════════
-   Settings Modal Enhanced
-   ══════════════════════════════════════════════════════ */
 
-/* ── Overlay ── */
+
+
 .settings-overlay {
-  backdrop-filter: none; /* overlay is transparent; blur lives on backdrop */
+  backdrop-filter: none;
 }
 
-/* ── Backdrop ── */
+
 .settings-backdrop {
   backdrop-filter: blur(16px) saturate(120%) !important;
   -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
   transition: opacity 0.25s !important;
 }
 
-/* ── Drawer panel ── */
+
 .settings-drawer {
   border-radius: 22px 0 0 22px !important;
   border-inline-start: 1px solid var(--border) !important;
@@ -37,7 +35,7 @@
     -4px 0 20px rgba(0, 0, 0, 0.32) !important;
 }
 
-/* ── Scrollable content area ── */
+
 .settings-drawer .overflow-y-auto {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--primary) 28%, transparent 72%) transparent;
@@ -56,7 +54,7 @@
   border-radius: 999px;
 }
 
-/* ── Header / close row ── */
+
 .settings-drawer > div:first-child {
   flex-shrink: 0;
   border-bottom: 1px solid var(--border);
@@ -68,7 +66,7 @@
   border-bottom-color: rgba(196, 219, 208, 0.1);
 }
 
-/* ── Tab bar ── */
+
 .settings-drawer [class*="grid-cols-3"],
 .settings-drawer [class*="grid-cols-2"] {
   display: flex !important;
@@ -95,7 +93,7 @@
   white-space: nowrap !important;
 }
 
-/* Active tab — marked with bg-bg-primary or text-primary classes */
+
 .settings-drawer [class*="grid-cols-3"] button.bg-bg-primary,
 .settings-drawer [class*="grid-cols-3"] button[class*="text-primary"],
 .settings-drawer [class*="grid-cols-2"] button.bg-bg-primary,
@@ -112,7 +110,7 @@
   color: var(--primary) !important;
 }
 
-/* ── Section headings ── */
+
 .settings-drawer h3,
 .settings-drawer [class*="section"] > p,
 .settings-drawer [class*="label-heading"] {
@@ -124,13 +122,13 @@
   margin-bottom: 0.5rem !important;
 }
 
-/* ── Setting rows ── */
+
 .settings-drawer [class*="flex items-center justify-between"] {
   padding: 0.65rem 0 !important;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent 40%) !important;
 }
 
-/* ── Reciter grid cards ── */
+
 .settings-reciter-card,
 [class*="reciter-card"],
 .settings-drawer [class*="reciter"] button,
@@ -177,7 +175,7 @@
   background: color-mix(in srgb, var(--primary) 8%, transparent) !important;
 }
 
-/* ── Reciter avatar ── */
+
 .settings-reciter-avatar {
   display: inline-flex !important;
   align-items: center !important;
@@ -200,7 +198,7 @@
   border-radius: 50% !important;
 }
 
-/* ── Sliders ── */
+
 .settings-drawer input[type="range"] {
   accent-color: var(--primary) !important;
   border-radius: 999px !important;
@@ -208,7 +206,7 @@
   cursor: pointer !important;
 }
 
-/* ── Toggle / switch buttons ── */
+
 .settings-drawer [role="switch"],
 .settings-drawer button[aria-checked] {
   transition: background 0.2s, border-color 0.2s !important;
@@ -220,7 +218,7 @@
   border-color: var(--primary) !important;
 }
 
-/* ── Danger / action buttons ── */
+
 .settings-drawer button[class*="destructive"],
 .settings-drawer button[class*="danger"] {
   border-radius: 10px !important;
@@ -232,7 +230,7 @@
   opacity: 0.9 !important;
 }
 
-/* ── Input fields inside settings ── */
+
 .settings-drawer input[type="text"],
 .settings-drawer input[type="search"],
 .settings-drawer input[type="number"] {
@@ -253,7 +251,7 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent 88%) !important;
 }
 
-/* ── Sepia theme ── */
+
 [data-theme="sepia"] .settings-drawer {
   background: var(--bg-primary) !important;
   border-left-color: rgba(180, 140, 80, 0.2) !important;
@@ -281,7 +279,7 @@
   background: var(--bg-card) !important;
 }
 
-/* Stable settings redesign */
+
 .settings-backdrop {
   position: fixed !important;
   inset: 0 !important;
@@ -383,7 +381,7 @@
   color: var(--text-muted) !important;
 }
 
-/* ── Sidebar tabs (desktop: vertical column) ── */
+
 .settings-drawer__tabs {
   display: grid !important;
   grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
@@ -440,7 +438,7 @@
   background: color-mix(in srgb, var(--primary) 14%, transparent) !important;
 }
 
-/* per-tab accent colors in inactive state */
+
 .settings-tab-button[data-id="general"] .settings-tab-button__icon { color: var(--c-general); }
 .settings-tab-button[data-id="reading"] .settings-tab-button__icon { color: var(--c-reading); }
 .settings-tab-button[data-id="audio"]   .settings-tab-button__icon { color: var(--c-audio-icon); }
@@ -914,7 +912,7 @@ html[data-theme="dark"] .settings-drawer {
   }
 }
 
-/* Quran.com-like settings modal */
+
 .settings-qurancom.settings-drawer {
   inset: 50% auto auto 50% !important;
   transform: translate(-50%, -50%) !important;
@@ -1052,7 +1050,7 @@ html[data-theme="dark"] .settings-drawer {
   font-size: 1.35rem !important;
 }
 
-/* Responsive settings layout and visual theme previews. */
+
 @media (min-width: 721px) and (max-width: 900px) {
   .settings-qurancom.settings-drawer {
     grid-template-columns: 184px minmax(0, 1fr) !important;
@@ -1093,17 +1091,17 @@ html[data-theme="dark"] .settings-drawer {
 
 @media (max-width: 420px) {
   .settings-theme-tile {
-    grid-template-columns: 6.65rem minmax(0, 1fr) !important;
-    min-height: 5.75rem !important;
-    gap: 0.55rem !important;
+    grid-template-columns: 5.5rem minmax(0, 1fr) !important;
+    min-height: 4.75rem !important;
+    gap: 0.4rem !important;
   }
 
   .settings-theme-tile__copy strong {
-    font-size: 0.76rem !important;
+    font-size: 0.72rem !important;
   }
 
   .settings-theme-tile__copy small {
-    font-size: 0.61rem !important;
+    font-size: 0.58rem !important;
   }
 }
 

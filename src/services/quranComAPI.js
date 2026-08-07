@@ -471,7 +471,8 @@ async function fetchPaginated(path, meta, signal) {
     const remainingPages = Array.from({ length: totalPages - 1 }, (_, index) => index + 2);
     const chunks = await mapWithConcurrency(
       remainingPages,
-      4,
+      // One HTTP/2 wave avoids a second round trip on long surahs.
+      5,
       (page) => fetchJson(buildUrl(path, { page: String(page) }), signal)
     );
     chunks.forEach((chunk) => verses.push(...(chunk.verses || [])));

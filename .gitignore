@@ -11,6 +11,8 @@ coverage/
 
 # Local dev artifacts
 .claude/settings.local.json
+.codex-artifacts/
+.codex-*.log
 vite-dev*.log
 vite-preview*.log
 vite-preview*.err.log

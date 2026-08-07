@@ -1,4 +1,3 @@
-/* Surah reader header — compact editorial command bar */
 .srh-root {
     --srh-surface: color-mix(in srgb, var(--bg-card) 94%, var(--primary) 6%);
     --srh-surface-soft: color-mix(in srgb, var(--bg-secondary) 88%, var(--bg-card));
@@ -23,18 +22,6 @@
     isolation: isolate;
 }
 
-.srh-root::before {
-    position: absolute;
-    inset: 0.1rem 1.35rem auto;
-    z-index: 2;
-    height: 2px;
-    border-radius: 999px;
-    background: linear-gradient(90deg, transparent, var(--primary) 32%, var(--color-gold, #c5a04b) 68%, transparent);
-    opacity: 0.72;
-    content: "";
-    pointer-events: none;
-}
-
 .srh-divider {
     height: 1px;
     flex: 0 0 auto;
@@ -45,11 +32,36 @@
 
 .srh-identity {
     display: grid;
-    grid-template-columns: clamp(4rem, 6.5vw, 5.4rem) minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(0.55rem, 1.4vw, 0.9rem);
+    min-height: 6.15rem;
+    padding: clamp(0.85rem, 1.6vw, 1.15rem) clamp(1rem, 2.2vw, 1.55rem);
+}
+
+.srh-identity__disclosure {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: clamp(4rem, 6.5vw, 5.4rem) minmax(0, 1fr) 1.5rem;
     align-items: center;
     gap: clamp(0.8rem, 2vw, 1.3rem);
-    min-height: 6.5rem;
-    padding: clamp(0.85rem, 1.6vw, 1.15rem) clamp(1rem, 2.2vw, 1.55rem);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    text-align: start;
+}
+
+.srh-identity__chevron,
+.srh-mobile-bar__chevron {
+    color: var(--primary);
+    transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.srh-identity__disclosure[aria-expanded="true"] .srh-identity__chevron,
+.srh-mobile-bar__disclosure[aria-expanded="true"] .srh-mobile-bar__chevron {
+    transform: rotate(180deg);
 }
 
 .srh-arabic {
@@ -184,6 +196,11 @@
     white-space: nowrap;
 }
 
+.srh-root :is(.srh-play-btn, .srh-info-btn, .srh-pill, .srh-toggle, .srh-typography-trigger) > svg {
+    width: var(--mp-action-icon-max, 0.92rem);
+    height: var(--mp-action-icon-max, 0.92rem);
+}
+
 .srh-play-btn {
     border: 1px solid color-mix(in srgb, var(--primary) 82%, #fff 18%);
     background: linear-gradient(145deg, color-mix(in srgb, var(--primary) 88%, #fff 12%), var(--primary));
@@ -229,6 +246,29 @@
 
 .srh-mobile-bar {
     display: none;
+}
+
+.srh-reader-tools {
+    display: grid;
+    min-width: 0;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    transition: grid-template-rows 240ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 160ms ease, visibility 0s linear 240ms;
+}
+
+.srh-reader-tools__inner {
+    display: flex;
+    min-height: 0;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.srh-reader-tools--open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
 }
 
 .srh-controls,
@@ -320,10 +360,6 @@
     flex: 1;
 }
 
-.srh-hizb-nav {
-    flex: 0 0 auto;
-}
-
 .srh-footer .arabic-font-controls {
     min-width: 0;
     flex: 0 1 auto;
@@ -362,80 +398,6 @@
     min-width: 0;
 }
 
-/* Theme-specific surfaces */
-[data-theme="sepia"] .srh-root {
-    --srh-surface: color-mix(in srgb, var(--bg-card) 92%, #c99b45 8%);
-    --srh-surface-soft: color-mix(in srgb, var(--bg-secondary) 88%, #f2dfb6 12%);
-    --srh-line: color-mix(in srgb, #9a6a24 25%, var(--border));
-    --srh-shadow: 0 14px 34px rgba(89, 61, 20, 0.12);
-}
-
-[data-theme="sepia"] .srh-arabic {
-    color: #5b421d;
-}
-
-[data-theme="dark"] .srh-root,
-[data-theme="quran-night"] .srh-root {
-    --srh-surface: color-mix(in srgb, var(--bg-card) 92%, #07130f 8%);
-    --srh-surface-soft: color-mix(in srgb, var(--bg-secondary) 88%, #06100d 12%);
-    --srh-line: color-mix(in srgb, var(--primary) 24%, var(--border));
-    --srh-shadow: 0 18px 44px rgba(0, 0, 0, 0.32);
-    background:
-        radial-gradient(circle at 5% -20%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 40%),
-        color-mix(in srgb, var(--srh-surface) 96%, transparent);
-    box-shadow: var(--srh-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.045);
-}
-
-[data-theme="dark"] .srh-arabic,
-[data-theme="quran-night"] .srh-arabic {
-    color: #f1eadb;
-    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.3));
-}
-
-[data-theme="dark"] .srh-badge--gold,
-[data-theme="quran-night"] .srh-badge--gold {
-    color: #e1c476;
-}
-
-[data-theme="dark"] .srh-play-btn,
-[data-theme="quran-night"] .srh-play-btn {
-    color: #02130d;
-}
-
-/* Tablet */
-@media (min-width: 641px) and (max-width: 900px) {
-    .srh-root {
-        border-radius: 1.1rem;
-    }
-
-    .srh-identity {
-        grid-template-columns: 4rem minmax(0, 1fr) auto;
-        gap: 0.75rem;
-        min-height: 5.8rem;
-        padding: 0.75rem 0.9rem;
-    }
-
-    .srh-arabic {
-        width: 4rem;
-        min-height: 3rem;
-        font-size: 2rem;
-    }
-
-    .srh-desc {
-        max-width: 44ch;
-    }
-
-    .srh-actions :is(.srh-play-btn, .srh-info-btn) {
-        padding-inline: 0.7rem;
-    }
-
-    .srh-controls,
-    .srh-footer {
-        padding-inline: 0.85rem;
-    }
-}
-
-/* Phones */
 @media (max-width: 640px) {
     .srh-root {
         position: relative;
@@ -446,10 +408,6 @@
         backdrop-filter: none;
     }
 
-    .srh-root::before {
-        inset-inline: 0.85rem;
-    }
-
     .srh-identity,
     .srh-identity + .srh-divider {
         display: none;
@@ -457,34 +415,78 @@
 
     .srh-mobile-bar {
         display: grid;
-        grid-template-columns: 3.2rem minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
-        gap: 0.55rem;
-        min-height: 3.65rem;
-        padding: 0.5rem 0.65rem;
+        gap: 0.35rem;
+        min-height: 3.45rem;
+        padding: 0.38rem 0.48rem;
         background: color-mix(in srgb, var(--srh-surface) 90%, transparent);
+    }
+
+    .srh-mobile-bar__disclosure {
+        display: grid;
+        min-width: 0;
+        min-height: 44px;
+        grid-template-columns: 4.8rem minmax(0, 1fr) 1.25rem;
+        align-items: center;
+        gap: 0.48rem;
+        padding: 0.12rem 0.25rem;
+        border: 0;
+        border-radius: 0.75rem;
+        background: transparent;
+        color: var(--text-primary);
+        cursor: pointer;
+        text-align: start;
+        transition: background 160ms ease, color 160ms ease;
+    }
+
+    .srh-mobile-bar__disclosure:hover,
+    .srh-mobile-bar__disclosure[aria-expanded="true"] {
+        background: color-mix(in srgb, var(--primary) 7%, transparent);
     }
 
     .srh-mobile-bar__name {
         display: flex;
-        width: 3.2rem;
-        min-height: 2.7rem;
+        width: 4.8rem;
+        min-height: 2.65rem;
         align-items: center;
         justify-content: center;
         color: color-mix(in srgb, var(--text-primary) 78%, var(--primary));
         font-family: var(--font-surah-name, var(--font-quran), serif);
-        font-size: 1.55rem;
+        font-size: clamp(1.85rem, 8vw, 2.2rem);
         line-height: 1;
+        filter: drop-shadow(0 2px 5px color-mix(in srgb, var(--primary) 10%, transparent));
     }
 
     .srh-mobile-bar__title {
+        display: flex;
         min-width: 0;
         overflow: hidden;
+        flex-direction: column;
+        gap: 0.08rem;
+        padding-inline-start: 0.18rem;
         color: var(--text-primary);
-        font-size: clamp(0.82rem, 3.7vw, 0.96rem);
-        font-weight: 800;
+        text-overflow: ellipsis;
+    }
+
+    .srh-mobile-bar__title strong,
+    .srh-mobile-bar__title small {
+        overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+
+    .srh-mobile-bar__title strong {
+        font-size: clamp(0.82rem, 3.6vw, 0.95rem);
+        font-weight: 850;
+        line-height: 1.15;
+    }
+
+    .srh-mobile-bar__title small {
+        color: var(--text-muted);
+        font-size: clamp(0.59rem, 2.7vw, 0.68rem);
+        font-weight: 650;
+        line-height: 1.15;
     }
 
     .srh-mobile-bar__actions {
@@ -493,11 +495,16 @@
     }
 
     .srh-mobile-bar :is(.srh-play-btn, .srh-info-btn) {
-        width: 44px;
-        min-width: 44px;
+        width: 42px;
+        min-width: 42px;
         min-height: 44px;
         padding: 0;
         border-radius: 0.72rem;
+    }
+
+    .srh-mobile-bar :is(.srh-play-btn, .srh-info-btn) > svg {
+        width: 0.74rem;
+        height: 0.74rem;
     }
 
     .srh-controls {
@@ -532,7 +539,7 @@
 
     .srh-footer {
         display: grid;
-        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr);
         gap: 0.45rem;
         min-height: 3.25rem;
         padding: 0.38rem 0.55rem;
@@ -541,6 +548,7 @@
 
     .srh-typography-trigger {
         display: inline-flex;
+        width: 100%;
         min-height: 44px;
     }
 
@@ -578,46 +586,49 @@
     .srh-footer__spacer {
         display: none;
     }
-
-    .srh-hizb-nav {
-        min-width: 0;
-        justify-self: end;
-    }
 }
 
 @media (max-width: 390px) {
     .srh-mobile-bar {
-        grid-template-columns: 2.8rem minmax(0, 1fr) auto;
-        gap: 0.42rem;
-        padding-inline: 0.48rem;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.32rem;
+        min-height: 3.05rem;
+        padding: 0.28rem 0.34rem;
+    }
+
+    .srh-mobile-bar__disclosure {
+        min-height: 40px;
+        grid-template-columns: 4.6rem minmax(0, 1fr) 1rem;
+        gap: 0.32rem;
+        padding-inline: 0.12rem;
     }
 
     .srh-mobile-bar__name {
-        width: 2.8rem;
-        min-height: 2.45rem;
-        font-size: 1.35rem;
+        width: 4.6rem;
+        min-height: 2.35rem;
+        font-size: clamp(1.82rem, 8.5vw, 2rem);
     }
 
     .srh-mobile-bar :is(.srh-play-btn, .srh-info-btn) {
-        width: 44px;
-        min-width: 44px;
+        width: 38px;
+        min-width: 38px;
         min-height: 44px;
+        border-radius: 0.62rem;
     }
 
     .srh-controls,
     .srh-footer {
-        padding-inline: 0.42rem;
+        gap: 0.3rem;
+        min-height: 2.85rem;
+        padding: 0.28rem 0.34rem;
     }
 
     .srh-pill,
     .srh-toggle {
         gap: 0.25rem;
+        min-height: 40px;
         padding-inline: 0.3rem;
-        font-size: 0.64rem;
-    }
-
-    .srh-typography-trigger span {
-        display: none;
+        font-size: 0.62rem;
     }
 
     .srh-typography-panel .arabic-font-controls {

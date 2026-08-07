@@ -183,7 +183,7 @@ function schemaFor(route, canonical) {
       isAccessibleForFree: true,
       inLanguage: siteConfig.supportedLocales,
       description:
-        "Application de lecture du Coran avec récitations audio, Tajwid, traductions et mémorisation.",
+        "Application de lecture du Coran avec récitations audio, Tajwid, traductions, favoris et notes.",
       offers: {
         "@type": "Offer",
         price: "0",

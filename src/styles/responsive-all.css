@@ -1,12 +1,6 @@
-﻿/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   responsive-all.css
-   Consolidated from:
-     1. responsive-experience.css  (UX polish, modals, audio, footer)
-     2. responsive.css              (layout, dark-mode tokens, reading)
-     3. responsive-polish.css       (fine-grained responsive text/icons)
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+﻿
 
-/* â”€â”€â”€ 1. RESPONSIVE-EXPERIENCE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
 
 :root {
     --mp-safe-x: max(
@@ -35,7 +29,7 @@
     );
 }
 
-/* html/body/.app-root base rules moved to tailwind.css (synchronous critical CSS) */
+
 
 .app-root :is(button, [role="button"], input, select, textarea) {
     font: inherit;
@@ -64,9 +58,9 @@
     }
 }
 
-/* Dark mode vars are defined in dark-mode-refonte.css */
 
-/* Modals and drawers should fit the viewport on mobile and avoid hidden actions. */
+
+
 .settings-overlay,
 .audio-player-modal,
 .modal-overlay {
@@ -140,7 +134,7 @@
     }
 }
 
-/* Settings: denser but calmer controls, no crushed labels on phones. */
+
 .settings-drawer__tabs {
     scrollbar-width: none;
 }
@@ -201,7 +195,7 @@
     }
 }
 
-/* Audio player: stable sizing and touch behavior on every viewport. */
+
 .mp-audio-player {
     max-width: calc(100vw - 1rem);
 }
@@ -243,7 +237,7 @@
     }
 }
 
-/* General card polish for the main reading/home surfaces. */
+
 .home-hero-compact,
 .qcom-verse-card,
 .premium-card,
@@ -270,7 +264,7 @@
     }
 }
 
-/* Cross-surface consistency fixes: forms, drawers, modals and dark mode. */
+
 .app-root :is(input, select, textarea) {
     min-width: 0;
     color: var(--text-primary) !important;
@@ -377,7 +371,7 @@
     }
 }
 
-/* Wider, calmer Quran reading column. */
+
 .app-root[data-view="reading"] .quran-display.quran-display--platform {
     width: min(100%, 1280px) !important;
     max-width: min(100%, 1280px) !important;
@@ -407,35 +401,9 @@ html body .app-root .quran-display--platform .rd-ayah.qc-ayah-block {
     max-width: 1080px !important;
 }
 
-.app-root .quran-display--platform .qc-reader-surah-header,
+
 .app-root .quran-display--platform .qc-surah-header-wrap {
     width: min(100%, 1080px) !important;
-}
-
-.app-root .quran-display--platform .qc-reader-surah-header__arabic {
-    gap: 0.55rem !important;
-    max-width: min(100%, 420px) !important;
-    min-width: min(100%, 280px) !important;
-    padding: 0.95rem 1.75rem !important;
-    font-family: var(--font-surah, var(--font-quran), serif) !important;
-    font-size: clamp(1.35rem, 3.6vw, 2.25rem) !important;
-    line-height: 1.35 !important;
-    white-space: nowrap !important;
-}
-
-.qc-reader-surah-header__arabic-kicker {
-    color: color-mix(
-        in srgb,
-        var(--color-gold, #d8b75a) 78%,
-        var(--text-muted, #98a2b3) 22%
-    );
-    font-family: var(--font-ui) !important;
-    font-size: 0.62em;
-    font-weight: 800;
-}
-
-.qc-reader-surah-header__arabic-name {
-    font-family: var(--font-surah, var(--font-quran), serif) !important;
 }
 
 @media (max-width: 760px) {
@@ -452,17 +420,9 @@ html body .app-root .quran-display--platform .rd-ayah.qc-ayah-block {
         width: 100% !important;
         max-width: 100% !important;
     }
-
-    .app-root .quran-display--platform .qc-reader-surah-header__arabic {
-        min-width: 0 !important;
-        max-width: min(100%, 320px) !important;
-        padding-inline: 1.1rem !important;
-        font-size: clamp(1.15rem, 6vw, 1.7rem) !important;
-        white-space: normal !important;
-    }
 }
 
-/* â”€â”€â”€ 2. RESPONSIVE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
 
 html,
 body {
@@ -727,21 +687,6 @@ html {
     background: rgba(16, 185, 129, 0.15) !important;
 }
 
-[data-theme="dark"] .wbw-current {
-    color: #34d399 !important;
-    text-shadow:
-        0 0 12px rgba(52, 211, 153, 0.55),
-        0 0 28px rgba(52, 211, 153, 0.2) !important;
-}
-[data-theme="dark"] .wbw-current::after {
-    background: linear-gradient(
-        90deg,
-        transparent,
-        #34d399,
-        transparent
-    ) !important;
-}
-
 :root:not([data-theme]),
 [data-theme="light"] {
     --tajwid-silent: #596579 !important;
@@ -861,7 +806,10 @@ html body .app-root .quran-display--platform .qc-verse-card {
     border: 1px solid var(--border) !important;
     border-radius: 20px !important;
     background: var(--bg-card) !important;
-    padding: 1.5rem !important;
+    width: min(100%, var(--qc-verse-max-width, 1080px)) !important;
+    max-width: var(--qc-verse-max-width, 1080px) !important;
+    margin-inline: auto !important;
+    padding: var(--qc-verse-padding-y, 1.5rem) var(--qc-verse-padding-x, 1.5rem) !important;
     box-shadow:
         0 4px 18px -4px rgba(0, 0, 0, 0.03),
         0 2px 6px -1px rgba(0, 0, 0, 0.02) !important;
@@ -1261,34 +1209,6 @@ html {
     color: #68d49c !important;
 }
 
-[data-theme="dark"]
-    .app-root
-    .quran-display--platform
-    :is(
-        .qc-ayah-text-ar,
-        .rd-arabic,
-        .quran-arabic-text,
-        .mushaf-text-block,
-        .mushaf-container,
-        .cpv-flow,
-        .mp-ayahs-flow,
-        .qcm-word,
-        .wbw-arabic,
-        .wbw-text-fallback,
-        .qc-reader-surah-header__arabic,
-        .qc-surah-header__arabic,
-        .qcom-surah-title-card__arabic,
-        .bismillah-text,
-        .bismillah-text-clean,
-        .cpv-basmala
-    ) {
-    color: var(--theme-arabic) !important;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.28) !important;
-    -webkit-font-smoothing: antialiased !important;
-    text-rendering: optimizeLegibility !important;
-    font-synthesis: none !important;
-}
-
 [data-theme="dark"] .app-root .quran-display--platform .qc-ayah-text-ar,
 [data-theme="dark"]
     .app-root
@@ -1306,36 +1226,7 @@ html {
     --qcom-ar-word-spacing: 0.058em;
 }
 
-[data-theme="dark"]
-    .app-root
-    .quran-display--platform
-    .qc-ayah-text-ar
-    :is(.wbw-word, .warsh-qcf4-word, [data-tajwid]) {
-    text-shadow: none !important;
-}
 
-[data-theme="dark"]
-    .app-root
-    .quran-display--platform
-    :is(.wbw-word-block, .wbw-display) {
-    background: transparent !important;
-    border-color: rgba(214, 221, 214, 0.1) !important;
-}
-
-[data-theme="dark"]
-    .app-root
-    .quran-display--platform
-    :is(
-        .wbw-word-block:hover,
-        .wbw-word-block--selected,
-        .wbw-word-block.wbw-current
-    ) {
-    background: rgba(44, 166, 111, 0.13) !important;
-    border-color: rgba(44, 166, 111, 0.26) !important;
-}
-
-[data-theme="dark"] .app-root .quran-display--platform .wbw-current,
-[data-theme="dark"] .app-root .quran-display--platform .wbw-qcf4-current,
 [data-theme="dark"] .app-root .quran-display--platform .qcm-word--active,
 [data-theme="dark"] .app-root .quran-display--platform .qcm-word--playing {
     background: rgba(216, 180, 90, 0.18) !important;
@@ -1621,31 +1512,6 @@ html[data-theme="dark"]
         rgba(214, 180, 92, 0.035)
     ) !important;
     border-color: rgba(47, 159, 107, 0.24) !important;
-}
-
-html[data-theme="dark"]
-    body
-    .app-root.premium-plus
-    .quran-display--platform
-    :is(
-        .qc-ayah-text-ar,
-        .rd-arabic,
-        .quran-arabic-text,
-        .mushaf-container,
-        .mushaf-text-block,
-        .cpv-flow,
-        .qcm-word,
-        .wbw-arabic,
-        .wbw-text-fallback,
-        .bismillah-text,
-        .bismillah-text-clean,
-        .cpv-basmala,
-        .qc-reader-surah-header__arabic,
-        .qc-surah-header__arabic,
-        .qcom-surah-title-card__arabic
-    ) {
-    color: var(--theme-arabic) !important;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.24) !important;
 }
 
 html[data-theme="dark"]
@@ -2268,62 +2134,6 @@ html body .app-root .quran-display--platform .qc-list-card__study {
         ) !important;
 }
 
-html body .app-root .quran-display--platform .qcom-list-study-links {
-    display: flex !important;
-    align-items: center !important;
-    flex-wrap: wrap !important;
-    gap: 0.45rem !important;
-}
-
-html body .app-root .quran-display--platform .qcom-list-study-link {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.38rem !important;
-    flex-shrink: 0 !important;
-    min-width: max-content !important;
-    min-height: 2rem !important;
-    padding: 0 0.1rem !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    color: color-mix(
-        in srgb,
-        var(--theme-text-muted, var(--text-muted)) 82%,
-        var(--theme-text, var(--text-primary)) 18%
-    ) !important;
-    font-family: var(--font-ui) !important;
-    font-size: 0.84rem !important;
-    font-weight: 650 !important;
-    letter-spacing: 0 !important;
-    white-space: nowrap !important;
-}
-
-html body .app-root .quran-display--platform .qcom-list-study-link,
-html body .app-root .quran-display--platform .qcom-list-study-link * {
-    overflow: visible !important;
-}
-
-html body .app-root .quran-display--platform .qcom-list-study-link:hover,
-html body .app-root .quran-display--platform .qcom-list-study-link.is-active {
-    color: var(--theme-primary, var(--primary)) !important;
-}
-
-html body .app-root .quran-display--platform .qcom-list-study-link i {
-    width: 1rem !important;
-    text-align: center !important;
-    font-size: 0.9rem !important;
-}
-
-html body .app-root .quran-display--platform .qcom-list-study-separator {
-    width: 1px !important;
-    height: 1rem !important;
-    background: color-mix(
-        in srgb,
-        var(--theme-border, var(--border)) 82%,
-        transparent 18%
-    ) !important;
-}
-
 html[data-theme="dark"]
     body
     .app-root
@@ -2363,7 +2173,7 @@ html[data-theme="dark"]
     body
     .app-root
     .quran-display--platform
-    :is(.qc-list-card__reference, .qcom-list-study-link) {
+    .qc-list-card__reference {
     color: #aeb8b0 !important;
 }
 
@@ -2371,16 +2181,12 @@ html[data-theme="dark"]
     body
     .app-root
     .quran-display--platform
-    :is(.qc-list-card__reference, .qcom-list-study-link):hover,
+    .qc-list-card__reference:hover,
 html[data-theme="dark"]
     body
     .app-root
     .quran-display--platform
-    :is(
-        .qc-list-card__reference.is-active,
-        .qc-list-card__reference.is-playing,
-        .qcom-list-study-link.is-active
-    ) {
+    :is(.qc-list-card__reference.is-active, .qc-list-card__reference.is-playing) {
     color: #78d9a5 !important;
 }
 
@@ -2432,28 +2238,14 @@ html[data-theme="dark"]
         word-spacing: 0.045em !important;
     }
 
-    html body .app-root .quran-display--platform .qcom-list-study-links {
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        overflow-y: hidden !important;
-        scrollbar-width: none;
-    }
-
-    html
-        body
-        .app-root
-        .quran-display--platform
-        .qcom-list-study-links::-webkit-scrollbar {
-        display: none;
-    }
 }
 
-/* â”€â”€â”€ 3. RESPONSIVE-POLISH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
-/* â”€â”€ Responsive Polish â€” adapts text/icons/cards to device size â”€â”€ */
 
-/* â•â•â• MOBILE (phones â‰¤ 480px) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+
+
 @media (max-width: 480px) {
-    /* Smaller icon buttons in header */
+
     .app-root .mp-header__action,
     .app-root .mp-header__more,
     .app-root .mp-header__icon-btn {
@@ -2462,34 +2254,30 @@ html[data-theme="dark"]
         font-size: 0.78rem !important;
     }
 
-    /* Smaller sidebar */
+
     .sidebar {
         padding: 0.5rem 0.25rem !important;
     }
 
-    /* Reading cards padding smaller on phones */
+
     .app-root .quran-display--platform .qc-list-card.qc-list-card {
         padding: 0.72rem 0.6rem !important;
     }
 
-    /* Arabic text slightly smaller */
+
     .app-root .quran-display--platform .qc-ayah-text-ar {
         font-size: clamp(1.55rem, 8vw, 2.1rem) !important;
         line-height: 2.05 !important;
     }
 
-    /* Translation smaller */
+
     .app-root .quran-display--platform .qc-list-card p {
         font-size: 0.85rem !important;
         line-height: 1.7 !important;
     }
 
-    /* Study links smaller */
-    .app-root .quran-display--platform .qcom-list-study-link {
-        font-size: 0.75rem !important;
-    }
 
-    /* Toolbar compact */
+
     .reader-toolbar,
     .qc-reader-toolbar {
         padding: 0.5rem !important;
@@ -2497,9 +2285,9 @@ html[data-theme="dark"]
     }
 }
 
-/* â•â•â• TABLET (641pxâ€“1024px) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
 @media (min-width: 641px) and (max-width: 1024px) {
-    /* Moderate icon size */
+
     .app-root .mp-header__action,
     .app-root .mp-header__more,
     .app-root .mp-header__icon-btn {
@@ -2507,18 +2295,18 @@ html[data-theme="dark"]
         height: 2.35rem !important;
     }
 
-    /* Reading text comfortable on tablet */
+
     .app-root .quran-display--platform .qc-ayah-text-ar {
         font-size: clamp(2rem, 4vw, 2.7rem) !important;
         line-height: 2.1 !important;
     }
 
-    /* Card padding comfortable */
+
     .app-root .quran-display--platform .qc-list-card.qc-list-card {
         padding: 1.05rem 1.15rem !important;
     }
 
-    /* Surah cards grid */
+
     .hp-grid {
         grid-template-columns: repeat(
             auto-fill,
@@ -2527,9 +2315,9 @@ html[data-theme="dark"]
     }
 }
 
-/* â•â•â• DESKTOP (â‰¥ 1025px) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
 @media (min-width: 1025px) {
-    /* Header icon size optimal */
+
     .app-root .mp-header__action,
     .app-root .mp-header__more,
     .app-root .mp-header__icon-btn {
@@ -2537,18 +2325,18 @@ html[data-theme="dark"]
         height: 2.5rem !important;
     }
 
-    /* Reading text comfortable on desktop */
+
     .app-root .quran-display--platform .qc-ayah-text-ar {
         font-size: clamp(2.4rem, 3vw, 3.2rem) !important;
         line-height: 2.15 !important;
     }
 
-    /* Cards wider padding on large screens */
+
     .app-root .quran-display--platform .qc-list-card.qc-list-card {
         padding: 1.25rem 1.75rem !important;
     }
 
-    /* Surah grid 4 columns on large */
+
     .hp-grid {
         grid-template-columns: repeat(
             auto-fill,
@@ -2557,7 +2345,7 @@ html[data-theme="dark"]
     }
 }
 
-/* â•â•â• MUSHAF MODE responsive â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
 @media (max-width: 640px) {
     .app-root .quran-display--platform .cpv-container.mushaf-page-wrapper {
         padding: 0.5rem !important;
@@ -2577,7 +2365,7 @@ html[data-theme="dark"]
     }
 }
 
-/* â•â•â• AUDIO PLAYER responsive â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
 @media (max-width: 480px) {
     .mp-audio-player--mobile {
         padding: 0.5rem 0.35rem !important;
@@ -2593,7 +2381,7 @@ html[data-theme="dark"]
     }
 }
 
-/* â•â•â• CARDS GRID responsive â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
 @media (max-width: 480px) {
     .app-root .hp-grid--surah {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -2606,10 +2394,8 @@ html[data-theme="dark"]
     }
 }
 
-/* â•â•â• FOOTER responsive â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-/* ═══════════════════════════════════════════════
-   SKELETON SCREENS
-   ═══════════════════════════════════════════════ */
+
+
 @keyframes skeleton-pulse {
     0%,
     100% {
@@ -2628,7 +2414,7 @@ html[data-theme="dark"]
     animation: skeleton-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Stagger les cartes pour un effet cascade */
+
 .skeleton-card:nth-child(2) {
     animation-delay: 0.1s;
 }
@@ -2642,7 +2428,7 @@ html[data-theme="dark"]
     animation-delay: 0.4s;
 }
 
-/* Respect reduced motion */
+
 @media (prefers-reduced-motion: reduce) {
     .skeleton-line,
     .skeleton-card {

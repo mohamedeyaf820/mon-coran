@@ -10,10 +10,8 @@ const LIMITS = {
   // Responsive reader, reciter profiles and the compact player add route-only
   // CSS. Keep a narrow baseline above the measured production bundle.
   css: Number(process.env.BUDGET_CSS_KB || 907),
-  // Phase 7 adds one deferred personal-library chunk for offline management,
-  // portable exports, study journeys and a reference-only thematic index.
-  // Legal/SEO/PWA features add deferred chunks, while the initial route keeps
-  // its stricter ceiling below. Aggregate ceilings retain measurable headroom.
+  // Legal, PWA, audio and reader features remain route-split while the shared
+  // design tokens load with the initial shell to prevent a theme flash.
   js: Number(process.env.BUDGET_JS_KB || 1275),
   total: Number(process.env.BUDGET_TOTAL_KB || 2175),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),

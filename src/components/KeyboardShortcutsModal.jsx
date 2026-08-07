@@ -56,14 +56,6 @@ const SHORTCUTS = [
     desc: { fr: "Lecture / Pause", en: "Play / Pause", ar: "تشغيل / إيقاف" },
   },
   {
-    keys: ["Alt", "M"],
-    desc: {
-      fr: "Mode mémorisation",
-      en: "Memorization mode",
-      ar: "وضع الحفظ",
-    },
-  },
-  {
     keys: ["H"],
     desc: {
       fr: "Aller à l'accueil",

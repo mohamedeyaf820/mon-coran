@@ -148,9 +148,22 @@ test("continuous Mushaf markers preserve a clear gap before the following ayah",
   expect(await markers.count()).toBeGreaterThan(1);
   const markerSpacing = await markers.first().evaluate((element) => {
     const style = window.getComputedStyle(element);
-    return Number.parseFloat(style.marginInlineEnd) / Number.parseFloat(style.fontSize);
+    const parentStyle = window.getComputedStyle(element.parentElement);
+    const fontSize =
+      Number.parseFloat(style.fontSize) || Number.parseFloat(parentStyle.fontSize) || 1;
+    return {
+      inlineStart:
+        Number.parseFloat(style.getPropertyValue("margin-inline-start") || "0") /
+        fontSize,
+      inlineEnd:
+        Number.parseFloat(style.getPropertyValue("margin-inline-end") || "0") /
+        fontSize,
+    };
   });
-  expect(markerSpacing).toBeGreaterThanOrEqual(0.7);
+  const ownAyahGap = Math.min(markerSpacing.inlineStart, markerSpacing.inlineEnd);
+  const nextAyahGap = Math.max(markerSpacing.inlineStart, markerSpacing.inlineEnd);
+  expect(ownAyahGap).toBeLessThanOrEqual(0.2);
+  expect(nextAyahGap).toBeGreaterThanOrEqual(0.68);
 });
 
 test("reading page stays usable after riwaya refresh and browser history navigation", async ({ page }) => {
@@ -221,22 +234,11 @@ test("cold Hafs reading keeps study actions usable without speculative audio or 
   await waitForReader(page);
   await page.waitForTimeout(1_000);
 
-  const studyLinks = page.locator(".qcom-list-study-links").first();
-  await expect(studyLinks).toBeVisible();
-  await expect(studyLinks).toHaveCSS("display", "flex");
-  await expect(studyLinks.locator(".qcom-list-study-link")).toHaveCount(3);
-
-  const studyMetrics = await studyLinks.evaluate((element) => {
-    const rect = element.getBoundingClientRect();
-    return {
-      width: rect.width,
-      scrollWidth: element.scrollWidth,
-      overflowX: window.getComputedStyle(element).overflowX,
-    };
-  });
-  expect(studyMetrics.width).toBeGreaterThan(200);
-  expect(studyMetrics.scrollWidth).toBeLessThanOrEqual(studyMetrics.width + 2);
-  expect(["auto", "scroll"]).toContain(studyMetrics.overflowX);
+  const firstCard = page.locator(".qc-list-card").first();
+  await expect(firstCard.locator(".ayah-action--play")).toHaveCount(1);
+  await expect(firstCard.locator(".ayah-action--bookmark")).toHaveCount(1);
+  await expect(firstCard.locator(".ayah-action--options")).toHaveCount(1);
+  await expect(firstCard.locator(".qcom-list-study-links")).toHaveCount(0);
 
   const parsedRequests = requests.map((url) => new URL(url));
   expect(

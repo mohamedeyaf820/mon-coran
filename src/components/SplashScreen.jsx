@@ -9,10 +9,29 @@ const VERSE = {
 };
 
 const skipLabels = { ar: 'تخطي', fr: 'Passer', en: 'Skip' };
-const SPLASH_MIN_VISIBLE_MS = 3000;
-const SPLASH_MAX_VISIBLE_MS = 4500;
-const SPLASH_FADE_MS = 240;
-const SPLASH_SKIP_DELAY_MS = 2200;
+const SPLASH_FADE_MS = 150;
+const SPLASH_SESSION_KEY = "mushaf-plus:splash-seen";
+const SPLASH_TIMINGS = {
+  firstVisit: { min: 1050, skip: 650 },
+  repeatVisit: { min: 0, skip: 0 },
+  lowPerformance: { min: 800, skip: 500 },
+};
+
+function hasSeenSplashThisSession() {
+  try {
+    return window.sessionStorage.getItem(SPLASH_SESSION_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function rememberSplashForSession() {
+  try {
+    window.sessionStorage.setItem(SPLASH_SESSION_KEY, "1");
+  } catch {
+    // A blocked sessionStorage must never keep the user on the splash.
+  }
+}
 
 export default function SplashScreen({
   onDone,
@@ -23,53 +42,46 @@ export default function SplashScreen({
   const [fadeOut, setFadeOut] = useState(false);
   const dismissedRef = React.useRef(false);
   const [showSkip, setShowSkip] = useState(false);
+  const [timings] = useState(() => {
+    if (lowPerfMode) return SPLASH_TIMINGS.lowPerformance;
+    return hasSeenSplashThisSession()
+      ? SPLASH_TIMINGS.repeatVisit
+      : SPLASH_TIMINGS.firstVisit;
+  });
 
   useEffect(() => {
     const timer = setTimeout(
       () => setShowSkip(true),
-      SPLASH_SKIP_DELAY_MS,
+      timings.skip,
     );
     return () => clearTimeout(timer);
-  }, []);
+  }, [timings.skip]);
 
   useEffect(() => {
     const dismiss = () => {
       if (dismissedRef.current) return;
       dismissedRef.current = true;
+      rememberSplashForSession();
       setFadeOut(true);
       setTimeout(onDone, SPLASH_FADE_MS);
-    };
-
-    let prefetchDone = false;
-    let timerDone = false;
-    const tryEarlyDismiss = () => {
-      if (prefetchDone && timerDone) dismiss();
     };
 
     if (onPrefetch) {
       const result = onPrefetch();
       if (result && typeof result.then === "function") {
-        result.then(() => { prefetchDone = true; tryEarlyDismiss(); }).catch(() => { prefetchDone = true; tryEarlyDismiss(); });
-      } else {
-        prefetchDone = true;
+        result.catch(() => null);
       }
-    } else {
-      prefetchDone = true;
     }
 
-    // Keep the branded opening visible for three seconds while the actual app
-    // renders behind it. Slow prefetches may extend it, but never beyond 4.5 s.
-    const minTimer = setTimeout(() => {
-      timerDone = true;
-      tryEarlyDismiss();
-    }, SPLASH_MIN_VISIBLE_MS);
-    const maxTimer = setTimeout(() => dismiss(), SPLASH_MAX_VISIBLE_MS);
+    // Keep the branded opening long enough to be perceived on the first visit,
+    // then make reloads almost immediate. Loading continues behind the screen;
+    // a slow route chunk or API can never extend the perceived startup time.
+    const minTimer = setTimeout(dismiss, timings.min);
 
     return () => {
       clearTimeout(minTimer);
-      clearTimeout(maxTimer);
     };
-  }, [onDone, onPrefetch]);
+  }, [onDone, onPrefetch, timings.min]);
 
   return (
     <div
@@ -82,6 +94,7 @@ export default function SplashScreen({
           onClick={() => {
             if (dismissedRef.current) return;
             dismissedRef.current = true;
+            rememberSplashForSession();
             setShowSkip(false);
             setFadeOut(true);
             setTimeout(onDone, SPLASH_FADE_MS);

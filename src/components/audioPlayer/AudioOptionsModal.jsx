@@ -10,7 +10,6 @@ import ReciterOptionsList from "./ReciterOptionsList";
 export default function AudioOptionsModal(props) {
   const {
     audioSpeed,
-    autoSelectFastestReciter,
     closeOptionsModal,
     currentReciters,
     cycleSpeed,
@@ -18,11 +17,9 @@ export default function AudioOptionsModal(props) {
     favoriteReciters,
     handleReciterSelect,
     handleVolumeChange,
+    isMobile,
     isSurahStreamReciter,
     lang,
-    memMode,
-    memPause,
-    memRepeatCount,
     networkState,
     optionsCloseButtonRef,
     optionsModalOpen,
@@ -42,11 +39,9 @@ export default function AudioOptionsModal(props) {
     reciterLatencyByKey,
     reciterSearch,
     reciterSwitchingId,
-    set,
     setReciterSearch,
     setSurahRepeatSetting,
     setSyncOffsetMs,
-    showMemorizationControls,
     stop,
     surahRepeatCount,
     syncOffsetMs,
@@ -124,7 +119,6 @@ export default function AudioOptionsModal(props) {
           <div className="audio-player-modal__grid grid min-h-0 flex-1 gap-4 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
             <ReciterOptionsList
               className={activeMobileTab === "reciters" ? "is-active" : ""}
-              autoSelectFastestReciter={autoSelectFastestReciter}
               currentReciters={currentReciters}
               filteredReciters={filteredReciters}
               favoriteReciters={favoriteReciters}
@@ -151,11 +145,9 @@ export default function AudioOptionsModal(props) {
               closeOptionsModal={closeOptionsModal}
               cycleSpeed={cycleSpeed}
               handleVolumeChange={handleVolumeChange}
+              isMobile={isMobile}
               isSurahStreamReciter={isSurahStreamReciter}
               lang={lang}
-              memMode={memMode}
-              memPause={memPause}
-              memRepeatCount={memRepeatCount}
               playerCardToggleClass={playerCardToggleClass}
               playerFadedTextClass={playerFadedTextClass}
               playerGoldMetaClass={playerGoldMetaClass}
@@ -165,10 +157,8 @@ export default function AudioOptionsModal(props) {
               playerSectionLabelClass={playerSectionLabelClass}
               playerSoftSurfaceClass={playerSoftSurfaceClass}
               playerSurfaceButtonClass={playerSurfaceButtonClass}
-              set={set}
               setSurahRepeatSetting={setSurahRepeatSetting}
               setSyncOffsetMs={setSyncOffsetMs}
-              showMemorizationControls={showMemorizationControls}
               stop={stop}
               surahRepeatCount={surahRepeatCount}
               syncOffsetMs={syncOffsetMs}

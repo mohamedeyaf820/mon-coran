@@ -6,9 +6,7 @@ import { useAppSelector } from "../../context/AppContext";
 import { arabicToLatin } from "../../data/transliteration";
 import { cn } from "../../lib/utils";
 import { addBookmark } from "../../services/storageService";
-import MemorizationText from "./MemorizationText";
 import SmartAyahRenderer from "./SmartAyahRenderer";
-import WordByWordDisplay from "./WordByWordDisplay";
 import AyahBlockFooter from "./AyahBlockFooter";
 import AyahBlockSupplement from "./AyahBlockSupplement";
 
@@ -19,9 +17,7 @@ function AyahBlockComponent({
   trans,
   showTajwid,
   showTranslation,
-  showWordByWord,
   showTransliteration,
-  showWordTranslation,
   surahNum,
   calibration,
   riwaya,
@@ -30,47 +26,20 @@ function AyahBlockComponent({
   toggleId,
   ayahId,
   fontSize,
-  memMode,
 }) {
   const isRtl = lang === "ar";
   const translationReadingMode = useAppSelector((s) => s.translationReadingMode);
-  const memRepeatCount = useAppSelector((s) => s.memRepeatCount);
 
   const transliterationSource =
     riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text;
 
   const ayahTransliteration = useMemo(() => {
-    if (!showTransliteration || showWordByWord) return "";
+    if (!showTransliteration) return "";
     return arabicToLatin(transliterationSource, riwaya);
-  }, [riwaya, showTransliteration, showWordByWord, transliterationSource]);
+  }, [riwaya, showTransliteration, transliterationSource]);
 
-  const arabicContent = useMemo(() => {
-    if (memMode)
-      return (
-        <MemorizationText
-          text={ayah.hafsText || ayah.text}
-          lang={lang}
-          isPlaying={isPlaying}
-          repeatCount={memRepeatCount}
-        />
-      );
-    if (showWordByWord) {
-      return (
-        <WordByWordDisplay
-          surah={surahNum}
-          ayah={ayah.numberInSurah}
-          text={ayah.text}
-          isPlaying={isPlaying}
-          showTajwid={showTajwid}
-          showTransliteration={showTransliteration}
-          showWordTranslation={showWordTranslation}
-          fontSize={fontSize}
-          calibration={calibration}
-          warshWords={ayah.warshWords}
-        />
-      );
-    }
-    return (
+  const arabicContent = useMemo(
+    () => (
       <SmartAyahRenderer
         ayah={ayah}
         showTajwid={showTajwid}
@@ -79,22 +48,17 @@ function AyahBlockComponent({
         calibration={calibration}
         riwaya={riwaya}
       />
-    );
-  }, [
+    ),
+    [
     ayah,
     calibration,
     fontSize,
     isPlaying,
-    lang,
-    memRepeatCount,
-    memMode,
     riwaya,
     showTajwid,
-    showTransliteration,
-    showWordByWord,
-    showWordTranslation,
     surahNum,
-  ]);
+    ],
+  );
 
   const handleToggleActive = useCallback(() => {
     if (typeof onToggleActive === "function")
@@ -126,7 +90,6 @@ function AyahBlockComponent({
       className={cn(
         /* Base card */
         "rd-ayah qc-ayah-block group relative",
-        showWordByWord && "qc-ayah-block--word-by-word",
         "mx-auto mb-6 w-full max-w-[1080px]",
         "rounded-[1.5rem] border border-[color-mix(in_srgb,var(--border)_50%,transparent_50%)]",
         "bg-[var(--bg-card)]",
@@ -235,9 +198,7 @@ function areAyahBlockEqual(prev, next) {
     prev.trans === next.trans &&
     prev.showTajwid === next.showTajwid &&
     prev.showTranslation === next.showTranslation &&
-    prev.showWordByWord === next.showWordByWord &&
     prev.showTransliteration === next.showTransliteration &&
-    prev.showWordTranslation === next.showWordTranslation &&
     prev.surahNum === next.surahNum &&
     prev.calibration === next.calibration &&
     prev.riwaya === next.riwaya &&
@@ -245,8 +206,7 @@ function areAyahBlockEqual(prev, next) {
     prev.onToggleActive === next.onToggleActive &&
     prev.toggleId === next.toggleId &&
     prev.ayahId === next.ayahId &&
-    prev.fontSize === next.fontSize &&
-    prev.memMode === next.memMode
+    prev.fontSize === next.fontSize
   );
 }
 

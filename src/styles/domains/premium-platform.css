@@ -43,43 +43,6 @@
     position: relative;
 }
 
-.app-view-home::before,
-.app-view-reading::before,
-.app-view-duas::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    border-radius: calc(var(--app-radius-xl) + 0.6rem);
-    background:
-        radial-gradient(
-            circle at 10% 0%,
-            rgba(var(--theme-primary-rgb), 0.09),
-            transparent 28%
-        ),
-        radial-gradient(
-            circle at 92% 4%,
-            rgba(var(--theme-primary-rgb), 0.06),
-            transparent 24%
-        );
-    opacity: 0.84;
-}
-
-.app-view-reading::before {
-    background:
-        radial-gradient(
-            circle at 14% 0%,
-            color-mix(in srgb, var(--theme-surface) 92%, transparent 8%),
-            transparent 34%
-        ),
-        radial-gradient(
-            circle at 90% 3%,
-            color-mix(in srgb, var(--theme-panel-bg) 90%, transparent 10%),
-            transparent 30%
-        );
-    opacity: 0.52;
-}
-
 .app-view-home {
     display: grid;
     gap: 1rem;
@@ -569,11 +532,6 @@
         color-mix(in srgb, var(--theme-primary) 86%, #ffffff 14%),
         color-mix(in srgb, var(--theme-primary) 64%, var(--theme-text) 36%)
     );
-}
-
-.ayah-action-card--memorize .ayah-action-card__icon {
-    color: color-mix(in srgb, var(--theme-primary) 78%, #ffffff 22%);
-    background: rgba(var(--theme-primary-rgb), 0.16);
 }
 
 .ayah-action-card__label {

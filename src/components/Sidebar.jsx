@@ -88,6 +88,18 @@ export default function Sidebar() {
     return undefined;
   }, [sidebarOpen]);
 
+  useEffect(() => {
+    if (!sidebarOpen) return undefined;
+    const closeFromOutside = (event) => {
+      if (event.key !== "Escape") return;
+      if (sidebarRef.current?.contains(event.target)) return;
+      event.preventDefault();
+      dispatch({ type: "TOGGLE_SIDEBAR" });
+    };
+    document.addEventListener("keydown", closeFromOutside);
+    return () => document.removeEventListener("keydown", closeFromOutside);
+  }, [dispatch, sidebarOpen]);
+
   const handleSidebarKeyDown = (event) => {
     if (!sidebarOpen) return;
 
@@ -415,6 +427,7 @@ export default function Sidebar() {
                   <div
                     className="shrink-0 font-surah-names text-[1.3rem] opacity-70 transition-opacity group-hover:opacity-100"
                     aria-label={s.ar}
+                    role="img"
                   >
                     {surahCalligraphyId}
                   </div>
