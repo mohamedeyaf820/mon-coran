@@ -19,7 +19,7 @@ export default function AyahBlockSupplement({
     >
       {/* Refined Transliteration styling */}
       {ayahTransliteration ? (
-        <div className="text-[1.05rem] italic leading-[1.7] tracking-wide text-[var(--text-secondary)] opacity-80 max-w-[80ch] pb-4 border-b border-[color-mix(in_srgb,var(--border)_40%,transparent_60%)]">
+        <div className="ayah-transliteration" dir="ltr">
           {ayahTransliteration}
         </div>
       ) : null}

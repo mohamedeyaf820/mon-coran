@@ -62,6 +62,8 @@ async function openHome(page, viewport) {
           sidebarOpen: false,
           lang: "fr",
           riwaya: "hafs",
+          displayMode: "surah",
+          homeSection: "surah",
         }),
       );
     } catch {
@@ -72,6 +74,7 @@ async function openHome(page, viewport) {
   await page.goto("/");
   await expect(page.locator(".mp-header").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".app-view-home").first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(".hp-card").first()).toBeAttached({ timeout: 30_000 });
 }
 
 async function openDuas(page, viewport) {
@@ -86,12 +89,38 @@ async function box(page, selector) {
   return page.locator(selector).first().boundingBox();
 }
 
+async function revealReaderTools(page, viewportWidth) {
+  const trigger = page.locator(
+    viewportWidth <= 640
+      ? ".srh-mobile-bar__disclosure"
+      : ".srh-identity__disclosure",
+  );
+  await expect(trigger).toBeVisible();
+  if ((await trigger.getAttribute("aria-expanded")) !== "true") {
+    await trigger.focus();
+    await trigger.press("Enter");
+  }
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#srh-reader-tools")).not.toHaveAttribute("aria-hidden", "true");
+  return trigger;
+}
+
 async function fontSizePx(page, selector) {
   return page.locator(selector).evaluateAll((nodes, currentSelector) => {
     const node = nodes.find((candidate) => candidate.getClientRects().length > 0);
     if (!node) throw new Error(`No visible element found for ${currentSelector}`);
     return Number.parseFloat(getComputedStyle(node).fontSize);
   }, selector);
+}
+
+async function waitForFontSizePx(page, selector) {
+  const handle = await page.waitForFunction((currentSelector) => {
+    const node = document.querySelector(currentSelector);
+    if (!node) return false;
+    const size = Number.parseFloat(getComputedStyle(node).fontSize);
+    return Number.isFinite(size) && size > 0 ? size : false;
+  }, selector);
+  return handle.jsonValue();
 }
 
 async function overflowX(page) {
@@ -122,7 +151,7 @@ test("home density: mobile and tablet text, icons and cards scale with viewport"
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
   expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(40);
   expect((await box(page, ".mp-header__more"))?.width || 0).toBeGreaterThanOrEqual(40);
-  expect(await fontSizePx(page, ".home-hero-title")).toBeLessThanOrEqual(34);
+  expect(await fontSizePx(page, ".home-resume-panel h1")).toBeLessThanOrEqual(34);
   expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(12);
   expect(await fontSizePx(page, ".hp-card-meta")).toBeGreaterThanOrEqual(11);
 
@@ -133,35 +162,141 @@ test("home density: mobile and tablet text, icons and cards scale with viewport"
   expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(14);
 });
 
+test("mobile surah rows keep names, metadata, Arabic labels and play controls aligned", async ({ page }) => {
+  for (const viewport of [
+    { width: 280, height: 700 },
+    { width: 320, height: 780 },
+    { width: 390, height: 844 },
+  ]) {
+    await openHome(page, viewport);
+    const card = page.locator(".hp-card--surah.hp-card--list").first();
+    await expect(card).toBeVisible();
+    await card.scrollIntoViewIfNeeded();
+
+    const metrics = await card.evaluate((node) => {
+      const rect = (selector) => {
+        const target = node.querySelector(selector);
+        const bounds = target.getBoundingClientRect();
+        return {
+          x: bounds.x,
+          width: bounds.width,
+          height: bounds.height,
+          right: bounds.right,
+          bottom: bounds.bottom,
+        };
+      };
+      const bounds = node.getBoundingClientRect();
+      const name = node.querySelector(".hp-card-name");
+      const open = node.querySelector(".hp-card-open");
+      return {
+        card: {
+          width: bounds.width,
+          height: bounds.height,
+          right: bounds.right,
+          bottom: bounds.bottom,
+        },
+        content: rect(".hp-card-content"),
+        arabic: rect(".hp-card-ar"),
+        play: rect(".hp-card-play"),
+        open: rect(".hp-card-open"),
+        openPosition: getComputedStyle(open).position,
+        nameFits: name.scrollWidth <= name.clientWidth + 1,
+      };
+    });
+
+    expect(metrics.card.height).toBeLessThanOrEqual(112);
+    expect(metrics.nameFits).toBe(true);
+    expect(metrics.openPosition).toBe("absolute");
+    expect(metrics.open.width).toBeGreaterThanOrEqual(metrics.card.width - 3);
+    expect(metrics.open.height).toBeGreaterThanOrEqual(metrics.card.height - 3);
+    expect(metrics.content.right).toBeLessThanOrEqual(metrics.arabic.x + 1);
+    expect(metrics.content.right).toBeLessThanOrEqual(metrics.play.x + 1);
+    expect(metrics.play.width).toBeGreaterThanOrEqual(34);
+    expect(metrics.play.right).toBeLessThanOrEqual(metrics.card.right + 1);
+    expect(metrics.play.bottom).toBeLessThanOrEqual(metrics.card.bottom + 1);
+    expect(await overflowX(page)).toBeLessThanOrEqual(2);
+  }
+});
+
+test("tablet and desktop surah cards give Arabic names a clear visual column", async ({ page }) => {
+  for (const viewport of [
+    { width: 768, height: 900 },
+    { width: 834, height: 900 },
+    { width: 1024, height: 900 },
+    { width: 1440, height: 900 },
+  ]) {
+    await openHome(page, viewport);
+    const card = page.locator(".hp-grid--surah .hp-card--surah").first();
+    await expect(card).toBeVisible();
+    await card.scrollIntoViewIfNeeded();
+
+    const metrics = await card.evaluate((node) => {
+      const bounds = node.getBoundingClientRect();
+      const content = node.querySelector(".hp-card-content").getBoundingClientRect();
+      const arabicNode = node.querySelector(".hp-card-ar");
+      const arabic = arabicNode.getBoundingClientRect();
+      const play = node.querySelector(".hp-card-play").getBoundingClientRect();
+      return {
+        cardHeight: bounds.height,
+        contentRight: content.right,
+        arabicLeft: arabic.left,
+        arabicRight: arabic.right,
+        arabicFontSize: Number.parseFloat(getComputedStyle(arabicNode).fontSize),
+        playLeft: play.left,
+        playWidth: play.width,
+      };
+    });
+
+    expect(metrics.cardHeight).toBeGreaterThanOrEqual(88);
+    expect(metrics.cardHeight).toBeLessThanOrEqual(124);
+    expect(metrics.arabicFontSize).toBeGreaterThanOrEqual(26);
+    expect(metrics.contentRight).toBeLessThanOrEqual(metrics.arabicLeft + 1);
+    expect(metrics.arabicRight).toBeLessThanOrEqual(metrics.playLeft + 1);
+    expect(metrics.playWidth).toBeGreaterThanOrEqual(40);
+    expect(await overflowX(page)).toBeLessThanOrEqual(2);
+
+    if (viewport.width <= 834) {
+      const positions = await page.locator(".hp-grid--surah .hp-card--surah").evaluateAll((nodes) =>
+        nodes.slice(0, 2).map((node) => {
+          const rect = node.getBoundingClientRect();
+          return { x: rect.x, y: rect.y };
+        }),
+      );
+      expect(Math.abs(positions[0].x - positions[1].x)).toBeLessThanOrEqual(1);
+      expect(positions[1].y).toBeGreaterThan(positions[0].y);
+    }
+  }
+});
+
 test("home audit breakpoints preserve hierarchy without horizontal overflow", async ({ page }) => {
   for (const width of [320, 360, 390, 412, 768, 1024]) {
     await openHome(page, { width, height: width <= 412 ? 780 : 900 });
     expect(await overflowX(page)).toBeLessThanOrEqual(2);
 
-    const quickToggle = page.locator(".home-mobile-quick-toggle");
-    const quickPanel = page.locator(".home-info-panel");
-    if (width <= 640) {
-      await expect(quickToggle).toBeVisible();
-      await expect(quickPanel).toBeHidden();
-
-      const session = await box(page, ".home-session-card");
-      const dailyVerse = await box(page, ".home-daily-verse-card");
-      expect(session?.y || 0).toBeLessThan(dailyVerse?.y || 0);
-
-      if (width === 390) {
-        await quickToggle.click();
-        await expect(page.locator(".home-mobile-quick-disclosure")).toHaveAttribute("open", "");
-        await expect(quickPanel).toBeVisible();
-        expect(await overflowX(page)).toBeLessThanOrEqual(2);
-      }
-    } else {
-      await expect(quickToggle).toBeHidden();
-      await expect(quickPanel).toBeVisible();
+    await expect(page.locator(".home-resume-panel")).toBeVisible();
+    await expect(page.locator(".home-today-panel")).toBeVisible();
+    if (width <= 700) {
+      const resume = await box(page, ".home-resume-panel");
+      const today = await box(page, ".home-today-panel");
+      expect(resume?.y || 0).toBeLessThan(today?.y || 0);
+      await expect(page.locator(".home-today-suggestion:visible")).toHaveCount(3);
     }
   }
 
   await openHome(page, { width: 320, height: 780 });
-  const firstCards = await page.locator(".hp-grid--surah .hp-card").evaluateAll((nodes) =>
+  const mobileHero = await box(page, ".home-resume-panel");
+  const mobileHeaderCenter = await box(page, ".mp-header__center");
+  const mobileHeaderSummary = await box(page, ".mp-header__home-summary");
+  expect(mobileHero?.height || 0).toBeLessThanOrEqual(360);
+  expect(mobileHeaderSummary?.x || 0).toBeGreaterThanOrEqual(
+    (mobileHeaderCenter?.x || 0) - 1,
+  );
+  expect(
+    (mobileHeaderSummary?.x || 0) + (mobileHeaderSummary?.width || 0),
+  ).toBeLessThanOrEqual(
+    (mobileHeaderCenter?.x || 0) + (mobileHeaderCenter?.width || 0) + 1,
+  );
+  const firstCards = await page.locator(".hp-list .hp-card").evaluateAll((nodes) =>
     nodes.slice(0, 2).map((node) => {
       const rect = node.getBoundingClientRect();
       return { x: rect.x, y: rect.y };
@@ -174,6 +309,7 @@ test("home audit breakpoints preserve hierarchy without horizontal overflow", as
 
 test("reader header stays stable and visually centered across breakpoints", async ({ page }) => {
   for (const viewport of [
+    { width: 320, height: 780 },
     { width: 390, height: 844 },
     { width: 820, height: 920 },
     { width: 1280, height: 900 },
@@ -182,14 +318,126 @@ test("reader header stays stable and visually centered across breakpoints", asyn
     expect(await headerCenterDelta(page)).toBeLessThanOrEqual(3);
     expect(await overflowX(page)).toBeLessThanOrEqual(2);
 
+    const disclosure = await revealReaderTools(page, viewport.width);
+    await expect(page.locator(".srh-controls")).toBeVisible();
+    await disclosure.click();
+    await expect(disclosure).toHaveAttribute("aria-expanded", "false");
+
     const titleMotion = await page.locator(".mp-header__title").evaluate((node) =>
       getComputedStyle(node).animationName,
     );
     expect(titleMotion).toBe("none");
+
+    if (viewport.width <= 390) {
+      const maxLegendHeight = viewport.width <= 320 ? 120 : 140;
+      expect((await box(page, ".tajweed-legend"))?.height || 0).toBeLessThanOrEqual(maxLegendHeight);
+      expect((await box(page, ".srh-root"))?.height || 0).toBeLessThanOrEqual(170);
+    }
   }
 });
 
-test("mobile QCF4 Mushaf mode keeps the complete reader command bar", async ({ page }) => {
+test("reader header keeps the Arabic title and search affordance legible", async ({ page }) => {
+  await openReader(page, { width: 320, height: 780 });
+  const compactArabicTitleSize = await page.locator(".mp-header__title-sub").first().evaluate((node) =>
+    Number.parseFloat(getComputedStyle(node).fontSize),
+  );
+  expect(compactArabicTitleSize).toBeGreaterThanOrEqual(22);
+
+  await openReader(page, { width: 1280, height: 900 });
+  const desktopArabicTitleSize = await page.locator(".mp-header__title-sub").first().evaluate((node) =>
+    Number.parseFloat(getComputedStyle(node).fontSize),
+  );
+  expect(desktopArabicTitleSize).toBeGreaterThanOrEqual(24);
+
+  const searchButton = page.locator(".mp-header__search");
+  await expect(searchButton).toBeVisible();
+  const searchIcon = await box(page, ".mp-header__search svg");
+  expect(searchIcon?.width || 0).toBeGreaterThanOrEqual(18);
+  expect(searchIcon?.height || 0).toBeGreaterThanOrEqual(18);
+  const searchContrast = await searchButton.evaluate((node) => {
+    const style = getComputedStyle(node);
+    return { color: style.color, background: style.backgroundColor };
+  });
+  expect(searchContrast.color).not.toBe(searchContrast.background);
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+});
+
+test("reader chrome yields the screen while scrolling and remains easy to reveal", async ({ page }) => {
+  await openReader(page, { width: 390, height: 844 });
+
+  const root = page.locator(".app-root");
+  const main = page.locator(".app-main-shell");
+  const header = page.locator(".mp-header");
+  const player = page.locator(".mp-audio-player").first();
+  await expect(player).toBeAttached();
+
+  await main.evaluate((node) => node.scrollTo({ top: 720, behavior: "instant" }));
+  await expect(root).toHaveClass(/immersive-mode/);
+  await expect(header).toHaveAttribute("aria-hidden", "true");
+  await expect(player).toHaveCSS("opacity", "0");
+  await expect(page.locator(".immersive-reveal--top")).toBeVisible();
+  await expect(page.locator(".immersive-reveal--bottom")).toBeVisible();
+
+  await page.locator(".immersive-reveal--top").dispatchEvent("click");
+  await expect(root).not.toHaveClass(/immersive-mode/);
+  await expect(header).not.toHaveAttribute("aria-hidden", "true");
+  await expect(player).not.toHaveCSS("opacity", "0");
+});
+
+test("Mushaf mode mounts only the pages near the reading viewport", async ({ page }) => {
+  await openReader(
+    page,
+    { width: 390, height: 844 },
+    { mushafLayout: "mushaf", showTranslation: false },
+  );
+
+  const virtualPages = page.locator('[data-virtualized-page="true"]');
+  await expect(virtualPages.first()).toBeAttached();
+  const totalPages = await virtualPages.count();
+  const renderedPages = await page.locator('[data-virtualized-page="true"][data-rendered="true"]').count();
+
+  expect(totalPages).toBeGreaterThan(8);
+  expect(renderedPages).toBeGreaterThan(0);
+  expect(renderedPages).toBeLessThan(totalPages);
+  expect(renderedPages).toBeLessThanOrEqual(6);
+  expect(await page.locator("*").count()).toBeLessThan(1800);
+});
+
+test("reader typography and action glyphs follow the connected device scale", async ({ page }) => {
+  const samples = [];
+
+  for (const viewport of [
+    { width: 320, height: 780, maxArabic: 32, maxIcon: 13.2 },
+    { width: 820, height: 920, maxArabic: 40, maxIcon: 14.8 },
+    { width: 1280, height: 900, maxArabic: 52, maxIcon: 16.1 },
+  ]) {
+    await openReader(page, viewport, {
+      mushafLayout: "list",
+      quranFontSize: 42,
+      showTajwid: true,
+    });
+    await revealReaderTools(page, viewport.width);
+
+    const arabicSize = await fontSizePx(page, ".qc-ayah-text-ar");
+    const icon = await box(page, ".srh-toggle svg");
+    const touchTarget = await box(page, ".srh-toggle");
+
+    expect(arabicSize).toBeLessThanOrEqual(viewport.maxArabic + 0.1);
+    expect(icon?.width || 0).toBeLessThanOrEqual(viewport.maxIcon);
+    expect(icon?.height || 0).toBeLessThanOrEqual(viewport.maxIcon);
+    expect(touchTarget?.height || 0).toBeGreaterThanOrEqual(40);
+    expect(await overflowX(page)).toBeLessThanOrEqual(2);
+    samples.push(arabicSize);
+  }
+
+  expect(samples[1]).toBeGreaterThan(samples[0]);
+  expect(samples[2]).toBeGreaterThan(samples[1]);
+
+  await openReader(page, { width: 1128, height: 800 }, { showTajwid: true });
+  expect((await box(page, ".tajweed-legend"))?.height || 0).toBeLessThanOrEqual(115);
+});
+
+test("mobile QCF4 Mushaf mode reveals the complete reader command bar on demand", async ({ page }) => {
   await openReader(
     page,
     { width: 390, height: 844 },
@@ -199,14 +447,19 @@ test("mobile QCF4 Mushaf mode keeps the complete reader command bar", async ({ p
   const toolbar = page.locator(".srh-root");
   await expect(toolbar).toBeVisible();
   await expect(toolbar.locator(".srh-mobile-bar")).toBeVisible();
+  const disclosure = toolbar.locator(".srh-mobile-bar__disclosure");
+  await expect(disclosure).toHaveAttribute("aria-expanded", "false");
+  await expect(toolbar.locator("#srh-reader-tools")).toHaveAttribute("aria-hidden", "true");
+
+  await disclosure.click();
+  await expect(disclosure).toHaveAttribute("aria-expanded", "true");
   await expect(toolbar.locator(".srh-controls")).toBeVisible();
   await expect(toolbar.locator(".srh-footer")).toBeVisible();
   await expect(toolbar.locator(".srh-typography-trigger")).toBeVisible();
 
-  const verseElevenMarker = page.locator('#ayah-11 .cpv-ayah-marker');
-  await expect(verseElevenMarker).toHaveCount(1);
-  await expect(verseElevenMarker).toHaveAttribute('data-marker-font', 'qcf-v4-tajweed');
-  await expect(verseElevenMarker).toContainText('\u06dd\u0661\u0661');
+  await disclosure.click();
+  await expect(disclosure).toHaveAttribute("aria-expanded", "false");
+  await expect(toolbar.locator("#srh-reader-tools")).toHaveAttribute("aria-hidden", "true");
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -219,9 +472,9 @@ test("mobile Mushaf keeps desktop proportions at the largest text preference", a
 
   expect(await fontSizePx(page, ".mushaf-text-block")).toBeLessThanOrEqual(30);
 
-  const marker = page.locator("#ayah-11 .cpv-ayah-marker");
+  const marker = page.locator(".cpv-ayah-marker").first();
   await expect(marker).toHaveAttribute("data-marker-font", "qcf-v4-tajweed");
-  await expect(marker).toContainText("\u06dd\u0661\u0661");
+  await expect(marker).toContainText(/\u06dd[\u0660-\u0669]+/u);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -235,6 +488,7 @@ test("surah information dossier stays accessible and contained on mobile", async
 
   const dialog = page.getByRole("dialog", { name: "Informations sur la sourate" });
   await expect(dialog).toBeVisible();
+  await expect(page.locator(".surah-info-modal button[aria-label='Fermer']")).toBeFocused();
   await expect(dialog.getByText("Repères essentiels")).toBeVisible();
   await expect(dialog.getByText("Editorial overview for surah 3.")).toBeVisible();
   await dialog.getByRole("button", { name: /Dossier complet/ }).click();
@@ -246,7 +500,7 @@ test("surah information dossier stays accessible and contained on mobile", async
   expect(modalBox?.y || 0).toBeGreaterThanOrEqual(0);
   expect((modalBox?.x || 0) + (modalBox?.width || 0)).toBeLessThanOrEqual(391);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
-  await expect(page.locator(".surah-info-modal button[aria-label='Fermer']")).toBeFocused();
+  expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
 
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
@@ -262,9 +516,17 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
 
   const legend = page.getByTestId("tajweed-legend");
   await expect(legend).toBeVisible();
+  await expect(legend).not.toHaveAttribute("open", "");
+  await expect(legend.locator(".tajweed-legend__rules")).toBeHidden();
+  const collapsedLegendBox = await legend.boundingBox();
+  expect(collapsedLegendBox?.height || 0).toBeLessThanOrEqual(56);
+
+  await legend.locator("summary").click();
+  await expect(legend).toHaveAttribute("open", "");
+  await expect(legend.locator(".tajweed-legend__rules")).toBeVisible();
   const legendBox = await legend.boundingBox();
   expect(legendBox?.width || 0).toBeLessThanOrEqual(1280);
-  expect(legendBox?.height || 0).toBeLessThanOrEqual(130);
+  expect(legendBox?.height || 0).toBeLessThanOrEqual(150);
 
   const segment = page.locator(".tajwid-rule-segment").first();
   await expect(segment).toBeVisible();
@@ -295,13 +557,13 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(header?.height || 0).toBeLessThanOrEqual(56);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
   expect(audioDock?.height || 0).toBeLessThanOrEqual(160);
-  expect(firstAction?.width || 0).toBeGreaterThanOrEqual(43.9);
-  expect(firstAction?.height || 0).toBeGreaterThanOrEqual(43.9);
-  expect(firstAction?.width || 0).toBeLessThanOrEqual(44.1);
-  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(43.9);
-  expect(moreButton?.width || 0).toBeGreaterThanOrEqual(43.9);
-  expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(43.9);
-  expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(43.9);
+  expect(firstAction?.width || 0).toBeGreaterThanOrEqual(39.9);
+  expect(firstAction?.height || 0).toBeGreaterThanOrEqual(39.9);
+  expect(firstAction?.width || 0).toBeLessThanOrEqual(40.1);
+  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(39.9);
+  expect(moreButton?.width || 0).toBeGreaterThanOrEqual(39.9);
+  expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(39.9);
+  expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(39.9);
   expect(verseReference?.width || 0).toBeGreaterThanOrEqual(33.9);
   expect(verseReference?.width || 0).toBeLessThanOrEqual(34.1);
   expect(versePlay?.width || 0).toBeGreaterThanOrEqual(33.9);
@@ -310,6 +572,7 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(verseBookmark?.width || 0).toBeLessThanOrEqual(34.1);
   expect(Math.abs((verseReference?.y || 0) - (versePlay?.y || 0))).toBeLessThanOrEqual(1);
   expect(Math.abs((verseReference?.y || 0) - (verseBookmark?.y || 0))).toBeLessThanOrEqual(1);
+  await revealReaderTools(page, 390);
   await expect(page.locator(".srh-typography-panel")).toBeHidden();
   await page.locator(".srh-typography-trigger").click();
   await expect(page.locator(".srh-typography-trigger")).toHaveAttribute("aria-expanded", "true");
@@ -328,6 +591,42 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
+test("mobile reader header keeps Home visible and exposes only contextual quick actions", async ({ page }) => {
+  await openReader(page, { width: 390, height: 844 });
+
+  const homeLogo = page.getByTestId("mobile-home-logo");
+  await expect(homeLogo).toBeVisible();
+  await expect(page.locator(".mp-header__riwaya-toggle")).toBeHidden();
+
+  await page.locator(".mp-header__more").click();
+  const menu = page.locator(".mp-header-menu");
+  await expect(menu).toBeVisible();
+  const mobileSearch = menu.locator('.mp-header-menu__item[data-key="search"]');
+  await expect(mobileSearch).toBeVisible();
+  await expect(menu.locator('.mp-header-menu__item[data-key="theme"]')).toBeVisible();
+  await expect(menu.locator('.mp-header-menu__item[data-key="settings"]')).toBeVisible();
+  await expect(menu.locator('.mp-header-menu__item[data-key="duas"]')).toBeVisible();
+  await expect(menu.locator('[data-key="about"], [data-key="privacy"], [data-key="sources"], [data-key="help"]')).toHaveCount(0);
+
+  await expect(page.getByTestId("header-mobile-riwaya")).toBeVisible();
+  await expect(page.getByTestId("header-reader-layout-list")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("header-reader-font-increase")).toBeVisible();
+  await expect(menu.locator("output")).toHaveText("34px");
+  await page.getByTestId("header-reader-font-increase").click();
+  await expect(menu.locator("output")).toHaveText("36px");
+
+  await page.getByTestId("header-reader-layout-mushaf").click();
+  await expect(page.getByTestId("header-reader-layout-mushaf")).toHaveAttribute("aria-pressed", "true");
+  const mobileSearchIcon = await box(page, '.mp-header-menu__item[data-key="search"] .mp-header-menu__item-icon');
+  expect(mobileSearchIcon?.width || 0).toBeLessThanOrEqual(30);
+  await mobileSearch.click();
+  await expect(page.getByRole("dialog", { name: /Recherche|Search|بحث/i })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await homeLogo.click();
+  await expect(page.locator(".app-view-home")).toBeVisible();
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+});
+
 test("tiny mobile density keeps the reader usable at 280px", async ({ page }) => {
   await openReader(page, { width: 280, height: 700 });
 
@@ -339,7 +638,8 @@ test("tiny mobile density keeps the reader usable at 280px", async ({ page }) =>
   const audioDock = await box(page, ".mp-audio-player--mobile");
 
   expect(header?.height || 0).toBeLessThanOrEqual(56);
-  expect(homeLogo?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(homeLogo?.width || 0).toBeGreaterThanOrEqual(37.9);
+  expect(homeLogo?.height || 0).toBeGreaterThanOrEqual(37.9);
   expect(verseReference?.width || 0).toBeGreaterThanOrEqual(33.9);
   expect(verseReference?.width || 0).toBeLessThanOrEqual(34.1);
   expect(versePlay?.width || 0).toBeGreaterThanOrEqual(33.9);
@@ -459,8 +759,7 @@ test("small phone: verse actions and search stay usable inside the viewport", as
     expect(action.height).toBeLessThanOrEqual(34.1);
   }
 
-  await page.locator(".mp-header__more").first().click();
-  await page.locator('.mp-header-menu__item[data-key="search"]').click();
+  await page.getByRole("button", { name: "Rechercher", exact: true }).last().click();
 
   const overlay = page.locator(".search-pro-overlay").first();
   const searchSurface = page.locator(".search-pro").first();
@@ -494,7 +793,7 @@ test("device typography: interface and Quran text scale progressively", async ({
     await openReader(page, viewport);
     samples.push({
       root: await fontSizePx(page, "html"),
-      quran: await fontSizePx(page, ".qc-ayah-text-ar"),
+      quran: await waitForFontSizePx(page, ".qc-ayah-text-ar"),
     });
     expect(await overflowX(page)).toBeLessThanOrEqual(2);
   }
@@ -520,11 +819,15 @@ test("Arabic reading controls visibly reduce and enlarge device-aware text", asy
   const arabicText = page.locator(".qc-ayah-text-ar").first();
   const verseCard = page.locator(".qc-list-card").first();
   const initialPhoneSize = await fontSizePx(page, ".qc-ayah-text-ar");
+  await expect
+    .poll(() => verseCard.evaluate((node) => Number.parseFloat(getComputedStyle(node).paddingTop) || 0))
+    .toBeGreaterThan(0);
   const initialCardPadding = await verseCard.evaluate((node) =>
-    Number.parseFloat(getComputedStyle(node).paddingTop),
+    Number.parseFloat(getComputedStyle(node).paddingTop) || 0,
   );
-  expect(initialPhoneSize).toBe(21);
+  expect(initialPhoneSize).toBe(24);
 
+  await revealReaderTools(page, 390);
   await page.locator(".srh-typography-trigger").click();
   await expect(page.locator(".srh-typography-trigger")).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator(".srh-typography-panel")).toBeVisible();
@@ -618,8 +921,7 @@ test("short landscape: reader search remains fully reachable", async ({ page }) 
   const viewport = { width: 844, height: 390 };
   await openReader(page, viewport);
 
-  await page.locator(".mp-header__more").first().click();
-  await page.locator('.mp-header-menu__item[data-key="search"]').click();
+  await page.locator(".mp-header__search").first().click();
   const overlay = page.locator(".search-pro-overlay").first();
   const searchSurface = page.locator(".search-pro").first();
   await expect(searchSurface).toBeVisible();

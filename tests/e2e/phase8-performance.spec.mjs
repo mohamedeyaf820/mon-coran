@@ -99,13 +99,17 @@ test("phase 8: verse and sidebar windows release offscreen components", async ({
   expect(await page.locator(".qc-list-card").count()).toBeLessThan(40);
 
   const lastAnchor = page.locator("#ayah-160");
-  await lastAnchor.evaluate((element) =>
-    element.scrollIntoView({ block: "center", behavior: "auto" }),
-  );
+  await page.locator(".app-main-shell").evaluate((scroller) => {
+    scroller.scrollTop = scroller.scrollHeight;
+  });
   await expect(lastAnchor.locator(".qc-list-card")).toBeVisible();
   await expect(page.locator("#ayah-40 .qc-list-card")).toHaveCount(0);
   expect(await page.locator(".qc-list-card").count()).toBeLessThan(50);
 
+  const revealReaderChrome = page.locator(".immersive-reveal--top");
+  if (await revealReaderChrome.isVisible().catch(() => false)) {
+    await revealReaderChrome.dispatchEvent("click");
+  }
   await page.locator(".mp-header__icon-btn").first().click();
   const sidebarItems = page.locator(".sidebar-virtual-item");
   await expect(sidebarItems).toHaveCount(114);

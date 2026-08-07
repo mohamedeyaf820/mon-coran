@@ -6,9 +6,7 @@ import React, {
 import { Bookmark } from "lucide-react";
 import { arabicToLatin } from "../../data/transliteration";
 import { cn } from "../../lib/utils";
-import MemorizationText from "../Quran/MemorizationText";
 import SmartAyahRenderer from "../Quran/SmartAyahRenderer";
-import WordByWordDisplay from "../Quran/WordByWordDisplay";
 import QCVerseActions from "./QCVerseActions";
 import AyahSkeleton from "../Quran/AyahSkeleton";
 import VirtualizedItem from "../ui/VirtualizedItem";
@@ -71,14 +69,11 @@ const QCVerseCard = memo(function QCVerseCard({
   isActive,
   showTranslation,
   showTransliteration,
-  showWordByWord,
-  showWordTranslation,
   showTajwid,
   translation,
   calibration,
   riwaya,
   fontSize,
-  memMode,
   onToggleActive,
   toggleId,
 }) {
@@ -88,43 +83,17 @@ const QCVerseCard = memo(function QCVerseCard({
 
   const transliterationText = useMemo(
     () =>
-      showTransliteration && !showWordByWord
+      showTransliteration
         ? arabicToLatin(
             riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text,
             riwaya,
           )
         : "",
-    [showTransliteration, showWordByWord, ayah.text, ayah.hafsText, riwaya],
+    [showTransliteration, ayah.text, ayah.hafsText, riwaya],
   );
 
-  const arabicContent = useMemo(() => {
-    if (memMode) {
-      // For memorization, use the correct riwaya text
-      const memoText =
-        riwaya === "warsh" ? ayah.text : ayah.hafsText || ayah.text;
-      return (
-        <MemorizationText text={memoText} lang={lang} isPlaying={isPlaying} />
-      );
-    }
-    if (showWordByWord) {
-      return (
-        <WordByWordDisplay
-          surah={surahNum}
-          ayah={ayah.numberInSurah}
-          text={ayah.text}
-          isPlaying={isPlaying}
-          showTajwid={showTajwid}
-          showTransliteration={showTransliteration}
-          showWordTranslation={showWordTranslation}
-          fontSize={fontSize}
-          calibration={calibration}
-          initialWords={ayah.words}
-          warshWords={ayah.warshWords}
-        />
-      );
-    }
-
-    return (
+  const arabicContent = useMemo(
+    () => (
       <SmartAyahRenderer
         ayah={ayah}
         showTajwid={showTajwid}
@@ -133,29 +102,45 @@ const QCVerseCard = memo(function QCVerseCard({
         calibration={calibration}
         riwaya={riwaya}
       />
-    );
-  }, [
-    memMode,
-    showWordByWord,
+    ),
+    [
     ayah,
     surahNum,
     isPlaying,
     showTajwid,
-    showTransliteration,
-    showWordTranslation,
-    fontSize,
     calibration,
     riwaya,
-    lang,
-  ]);
+    ],
+  );
+
+  const verseText = useMemo(() => {
+    const source = riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text;
+    return (source || "").replace(/\s+/g, " ").trim();
+  }, [ayah.hafsText, ayah.text, riwaya]);
+
+  const verseSizeFactor = useMemo(() => {
+    if (!verseText) return 0;
+    const charScore = Math.min(1, verseText.length / 180);
+    const wordScore = Math.min(1, verseText.split(" ").filter(Boolean).length / 22);
+    return Math.max(charScore, wordScore);
+  }, [verseText]);
+
+  const verseCardStyle = useMemo(
+    () => ({
+      "--qc-verse-max-width": `${Math.round(520 + verseSizeFactor * 560)}px`,
+      "--qc-verse-padding-y": `${Math.round(14 + verseSizeFactor * 12)}px`,
+      "--qc-verse-padding-x": `${Math.round(14 + verseSizeFactor * 16)}px`,
+    }),
+    [verseSizeFactor],
+  );
 
   const translations = Array.isArray(translation) ? translation : [];
 
   return (
     <article
+      style={verseCardStyle}
       className={cn(
         "qc-verse-card qc-list-card group relative transition-colors duration-200 outline-none",
-        showWordByWord && "qc-list-card--word-by-word",
         "px-4 sm:px-6 py-5 sm:py-6",
         "border-b border-[var(--border)]",
         isPlaying && "is-playing",
@@ -190,6 +175,7 @@ const QCVerseCard = memo(function QCVerseCard({
             surah={surahNum}
             ayah={ayah.numberInSurah}
             ayahData={ayah}
+            translations={translations}
             lang={lang}
             layout="qcom-header-left"
           />
@@ -202,6 +188,7 @@ const QCVerseCard = memo(function QCVerseCard({
             surah={surahNum}
             ayah={ayah.numberInSurah}
             ayahData={ayah}
+            translations={translations}
             lang={lang}
             layout="qcom-header-right"
           />
@@ -242,7 +229,7 @@ const QCVerseCard = memo(function QCVerseCard({
         {/* Transliteration */}
         {transliterationText ? (
           <div
-            className="font-[var(--font-ui)] text-[0.8rem] italic leading-relaxed text-[var(--text-muted)] text-left border-l-2 border-[rgba(var(--primary-rgb),0.15)] pl-3"
+            className="qc-ayah-transliteration"
             dir="ltr"
           >
             {transliterationText}
@@ -284,15 +271,6 @@ const QCVerseCard = memo(function QCVerseCard({
           </div>
         ) : null}
 
-        <div className="qc-list-card__study">
-          <QCVerseActions
-            surah={surahNum}
-            ayah={ayah.numberInSurah}
-            ayahData={ayah}
-            lang={lang}
-            layout="qcom-list-study"
-          />
-        </div>
       </div>
     </article>
   );
@@ -307,14 +285,11 @@ export default function QCVerseByVerseView({
   activeAyah,
   showTranslation,
   showTransliteration,
-  showWordByWord,
-  showWordTranslation,
   showTajwid,
   getTranslationForAyah,
   calibration,
   riwaya,
   fontSize,
-  memMode,
   onToggleActive,
   displayMode,
   showPageSeparators,
@@ -350,17 +325,10 @@ export default function QCVerseByVerseView({
   if (items.length === 0)
     return <AyahSkeleton count={5} showTranslation={showTranslation} lang={lang} />;
 
-  const estimatedHeight = showWordByWord
-    ? 390
-    : showTranslation || showTransliteration
-      ? 350
-      : 250;
+  const estimatedHeight = showTranslation || showTransliteration ? 350 : 250;
   const renderingProfile = [
     showTranslation ? 1 : 0,
     showTransliteration ? 1 : 0,
-    showWordByWord ? 1 : 0,
-    showWordTranslation ? 1 : 0,
-    memMode ? 1 : 0,
     Math.round(Number(fontSize) || 0),
   ].join("");
 
@@ -416,16 +384,11 @@ export default function QCVerseByVerseView({
                   isActive={isActive}
                   showTranslation={showTranslation}
                   showTransliteration={showTransliteration}
-                  showWordByWord={showWordByWord}
-                  showWordTranslation={showWordTranslation}
                   showTajwid={showTajwid}
-                  translation={
-                    showTranslation ? getTranslationForAyah?.(ayah) : null
-                  }
+                  translation={getTranslationForAyah?.(ayah)}
                   calibration={calibration}
                   riwaya={riwaya}
                   fontSize={fontSize}
-                  memMode={memMode}
                   onToggleActive={onToggleActive}
                   toggleId={toggleId}
                 />

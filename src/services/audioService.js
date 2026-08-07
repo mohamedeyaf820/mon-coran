@@ -1,5 +1,5 @@
 /**
- * Audio service – manages playback, word-by-word, memorization.
+ * Audio service – manages Quran playback, playlists and resilient fallbacks.
  * Wraps HTML5 Audio API with retry logic, preloading, and timeout handling.
  */
 
@@ -81,6 +81,11 @@ class AudioService {
   constructor() {
     this.audio = new Audio();
     this.audio.preload = "metadata"; // Keep startup light while enabling faster first play
+    this.audio.playsInline = true;
+    if (typeof this.audio.setAttribute === "function") {
+      this.audio.setAttribute("playsinline", "");
+      this.audio.setAttribute("webkit-playsinline", "");
+    }
     // NOTE: Do NOT set crossOrigin — EveryAyah.com and some CDNs
     // don't support CORS, which causes audio to fail silently.
     this.currentAyah = null;
@@ -107,13 +112,6 @@ class AudioService {
     this._reciterLatencyByKey = Object.create(null);
     this._latencyListeners = [];
     this._oneShotMode = false;
-
-    // Memorization mode
-    this.memMode = false;
-    this.memRepeatCount = 3;
-    this.memCurrentRepeat = 0;
-    this.memPauseDuration = 2000; // ms between repeats
-    this.memTimer = null;
 
     // Surah/playlist repeat
     // 1 => no repeat, N => replay full playlist N times, 0 => infinite.
@@ -144,7 +142,7 @@ class AudioService {
     this.onError = null;
     this.onNetworkState = null;
 
-    // Extra listeners (for word-by-word tracking etc.)
+    // Extra listeners used by the player UI and verse synchronization.
     this._playListeners = [];
     this._timeUpdateListeners = [];
     this._endListeners = [];
@@ -632,14 +630,6 @@ class AudioService {
     }
   }
 
-  async playWordAudio(url, meta = {}) {
-    return this.playSingle(url, {
-      type: "word",
-      source: "word-by-word",
-      ...meta,
-    });
-  }
-
   /* ── Speed ─────────────────────────────────── */
 
   setSpeed(rate) {
@@ -670,21 +660,7 @@ class AudioService {
     }
   }
 
-  /* ── Memorization Mode ─────────────────────── */
-
-  enableMemorization(repeatCount = 3, pauseMs = 2000) {
-    this.memMode = true;
-    this.memRepeatCount = repeatCount;
-    this.memPauseDuration = pauseMs;
-    this.memCurrentRepeat = 0;
-  }
-
-  disableMemorization() {
-    this.memMode = false;
-    this.memCurrentRepeat = 0;
-    clearTimeout(this.memTimer);
-    this.memTimer = null;
-  }
+  /* ── Playlist repeat ───────────────────────── */
 
   setSurahRepeatCount(count = 1) {
     const parsed = Number(count);
@@ -1081,29 +1057,6 @@ class AudioService {
       this.onEnd?.();
       for (const fn of this._endListeners) fn();
       return;
-    }
-
-    // Memorization mode: repeat current ayah
-    if (this.memMode) {
-      this.memCurrentRepeat++;
-      if (this.memCurrentRepeat < this.memRepeatCount) {
-        clearTimeout(this.memTimer);
-        this.memTimer = null;
-        this.memTimer = setTimeout(() => {
-          this.memTimer = null;
-          if (
-            this.audio &&
-            this.audio.src &&
-            this.audio.src !== window.location.href
-          ) {
-            this.audio.currentTime = 0;
-            this.audio.play().catch(() => {});
-          }
-        }, this.memPauseDuration);
-        return;
-      }
-      // Done repeating, move to next
-      this.memCurrentRepeat = 0;
     }
 
     // A-B Repeat: if we've reached end point B, loop back to A

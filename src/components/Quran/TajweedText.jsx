@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { getRulesForRiwaya, parseTajwid, stabilizeTajwidSegments } from '../../data/tajwidRules';
 import { useAppLocale } from '../../context/AppContext';
+import { getReadableWaqfGlyph } from '../../utils/quranUtils';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../ui/tooltip';
 
 const QURAN_COM_CLASS_MAP = {
@@ -173,7 +174,7 @@ const WAQF_RULES = {
 const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
     const rule = WAQF_RULES[char];
     if (!rule) {
-        return <span className="waqf-marker">{char}</span>;
+        return <span className="waqf-marker">{getReadableWaqfGlyph(char)}</span>;
     }
 
     const activeLang = lang === 'ar' || lang === 'en' || lang === 'fr' ? lang : 'fr';
@@ -184,7 +185,7 @@ const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
         <Tooltip>
             <TooltipTrigger asChild>
                 <span className="waqf-marker" role="help" aria-label={`Règle de Waqf: ${name}`}>
-                    {char}
+                    {getReadableWaqfGlyph(char)}
                 </span>
             </TooltipTrigger>
             <TooltipContent 

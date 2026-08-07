@@ -163,8 +163,8 @@ function Segmented({ ariaLabel, options, value, onChange }) {
 export default function SettingsModal() {
   const { state, dispatch, set } = useApp();
   const {
-    audioSpeed,
     autoNightMode,
+    audioSpeed = 1,
     fontFamily,
     fontFamilyByRiwaya,
     lang,
@@ -185,12 +185,9 @@ export default function SettingsModal() {
     showTajwid,
     showTranslation,
     showTransliteration,
-    showWordByWord,
-    showWordTranslation,
     theme,
     translationLangs = ["fr"],
-    usePrayerTimes,
-    volume,
+    volume = 1,
   } = state;
 
   const [activeTab, setActiveTab] = useState("general");
@@ -317,9 +314,9 @@ export default function SettingsModal() {
       title: localText(lang, "Supprimer toutes les données ?", "Delete all data?", "حذف جميع البيانات؟"),
       message: localText(
         lang,
-        "Cette action supprime définitivement les réglages, favoris, notes, historiques, téléchargements et caches conservés sur cet appareil.",
-        "This permanently removes settings, bookmarks, notes, history, downloads and caches stored on this device.",
-        "سيؤدي هذا نهائياً إلى حذف الإعدادات والعلامات والملاحظات والسجل والتنزيلات والذاكرة المؤقتة من هذا الجهاز.",
+        "Cette action supprime définitivement les réglages, favoris, notes, position de lecture, téléchargements et caches conservés sur cet appareil.",
+        "This permanently removes settings, bookmarks, notes, reading position, downloads and caches stored on this device.",
+        "سيؤدي هذا نهائياً إلى حذف الإعدادات والعلامات والملاحظات وموضع القراءة والتنزيلات والذاكرة المؤقتة من هذا الجهاز.",
       ),
       confirmLabel: localText(lang, "Tout supprimer", "Delete everything", "حذف الكل"),
       cancelLabel: localText(lang, "Annuler", "Cancel", "إلغاء"),
@@ -520,13 +517,6 @@ export default function SettingsModal() {
         />
         {autoNightMode ? (
           <div className="settings-panel-stack">
-            <SwitchRow
-              id="settings-prayer-times"
-              checked={Boolean(usePrayerTimes)}
-              onChange={(checked) => set({ usePrayerTimes: checked })}
-              label={t("settings.prayerTimes", lang)}
-              description={t("settings.prayerTimesHint", lang)}
-            />
             <div className="settings-time-grid">
               <label>
                 <span>{t("settings.start", lang)}</span>
@@ -550,54 +540,12 @@ export default function SettingsModal() {
         ) : null}
       </Section>
 
-      <Section title={t("settings.backupRestore", lang)}>
-        <div className="settings-action-grid">
-          <button type="button" className="settings-action-button" onClick={downloadExport}>
-            <Download size={16} />
-            <span>{t("export.export", lang)}</span>
-          </button>
-          <label className="settings-action-button" htmlFor="settings-import-file">
-            <Upload size={16} />
-            <span>{t("export.import", lang)}</span>
-            <input
-              id="settings-import-file"
-              type="file"
-              accept=".json"
-              onChange={handleImport}
-              className="settings-visually-hidden"
-            />
-          </label>
-        </div>
-      </Section>
-
-      <Section title={localText(lang, "Outils", "Tools", "الأدوات")}>
-        <button
-          type="button"
-          className="settings-tool-link"
-          onClick={() => {
-            set({ toolsHubOpen: true });
-            close();
-          }}
-        >
-          <span>
-            {localText(lang, "Espace Outils", "Tools Hub", "مركز الأدوات")}
-          </span>
-          <small>
-            {localText(
-              lang,
-              "Flashcards, statistiques, mémorisation et plus",
-              "Flashcards, stats, memorization and more",
-              "البطاقات التعليمية والإحصائيات والحفظ",
-            )}
-          </small>
-        </button>
-      </Section>
     </div>
   );
 
   const renderReadingTab = () => (
     <div className="settings-panel-stack">
-      <Section title="Riwaya">
+      <Section title={localText(lang, "Riwaya par défaut", "Default riwaya", "الرواية الافتراضية")}>
         <Segmented
           ariaLabel="Riwaya"
           value={activeRiwaya}
@@ -700,30 +648,34 @@ export default function SettingsModal() {
           label={t("settings.showTransliteration", lang)}
           description={t("settings.showTransliterationDesc", lang)}
         />
-        {activeRiwaya !== "warsh" ? (
-          <>
-            <SwitchRow
-              id="settings-show-word-by-word"
-              checked={showWordByWord}
-              onChange={(checked) => set({ showWordByWord: checked })}
-              label={t("settings.wordByWordMode", lang)}
-              description={t("settings.wordByWordDesc", lang)}
-            />
-            <SwitchRow
-              id="settings-show-word-translation"
-              checked={showWordTranslation}
-              onChange={(checked) => set({ showWordTranslation: checked })}
-              label={localText(lang, "Traduction mot à mot", "Word translation", "ترجمة الكلمات")}
-              description={localText(lang, "Affiche le sens des mots quand le mode mot à mot est actif.", "Shows word meanings when word-by-word mode is active.", "يعرض معاني الكلمات عند تفعيل وضع كلمة بكلمة.")}
-            />
-          </>
-        ) : null}
       </Section>
     </div>
   );
 
   const renderAudioTab = () => (
     <div className="settings-panel-stack">
+      <Section title={localText(lang, "Lecture audio", "Audio playback", "تشغيل الصوت")}>
+        <SliderRow
+          id="settings-audio-speed"
+          label={localText(lang, "Vitesse", "Speed", "السرعة")}
+          min={0.5}
+          max={2}
+          step={0.25}
+          value={audioSpeed}
+          suffix="×"
+          onChange={(value) => set({ audioSpeed: value })}
+        />
+        <SliderRow
+          id="settings-audio-volume"
+          label={localText(lang, "Volume", "Volume", "مستوى الصوت")}
+          min={0}
+          max={100}
+          value={Math.round(volume * 100)}
+          suffix="%"
+          onChange={(value) => set({ volume: value / 100 })}
+        />
+      </Section>
+
       <Section title={t("settings.selectReciter", lang)}>
         <div className="settings-search">
           <label className="sr-only" htmlFor="settings-reciter-search">
@@ -774,44 +726,50 @@ export default function SettingsModal() {
         </div>
       </Section>
 
-      <Section title={localText(lang, "Lecture", "Playback", "التشغيل")}>
-        <SliderRow
-          id="settings-audio-speed"
-          label={t("settings.playbackSpeed", lang)}
-          min={0.5}
-          max={2}
-          step={0.1}
-          value={audioSpeed}
-          suffix="x"
-          onChange={(value) => set({ audioSpeed: value })}
-        />
-        <SliderRow
-          id="settings-audio-volume"
-          label="Volume"
-          min={0}
-          max={1}
-          step={0.05}
-          value={volume}
-          suffix=""
-          onChange={(value) => set({ volume: value })}
-        />
-      </Section>
-
-      <Section title={t("settings.clearCache", lang)}>
-        <div className="settings-cache-note">
-          <Info size={16} />
-          <span>{t("settings.cacheInfo", lang)}</span>
-        </div>
-        <button type="button" className="settings-danger-button" onClick={handleClearCache}>
-          <Trash2 size={16} />
-          <span>{t("settings.clearCache", lang)}</span>
-        </button>
-      </Section>
+      <details className="settings-advanced-disclosure">
+        <summary>{localText(lang, "Dépannage", "Troubleshooting", "استكشاف الأخطاء")}</summary>
+        <Section title={t("settings.clearCache", lang)}>
+          <div className="settings-cache-note">
+            <Info size={16} />
+            <span>{t("settings.cacheInfo", lang)}</span>
+          </div>
+          <button type="button" className="settings-danger-button" onClick={handleClearCache}>
+            <Trash2 size={16} />
+            <span>{t("settings.clearCache", lang)}</span>
+          </button>
+        </Section>
+      </details>
     </div>
   );
 
   const renderPrivacyTab = () => (
     <div className="settings-panel-stack">
+      <Section title={localText(lang, "Données et confidentialité", "Data and privacy", "البيانات والخصوصية")}>
+        <div className="settings-cache-note">
+          <Info size={16} aria-hidden="true" />
+          <span>{localText(lang, "Sauvegardez ou restaurez vos réglages, favoris, notes et listes d’écoute.", "Back up or restore settings, bookmarks, notes and listening lists.", "احفظ أو استعد الإعدادات والمفضلة والملاحظات وقوائم الاستماع.")}</span>
+        </div>
+        <div className="settings-action-grid">
+          <button type="button" className="settings-action-button" onClick={downloadExport}>
+            <Download size={16} aria-hidden="true" />
+            <span>{t("export.export", lang)}</span>
+          </button>
+          <label className="settings-action-button" htmlFor="settings-import-file">
+            <Upload size={16} aria-hidden="true" />
+            <span>{t("export.import", lang)}</span>
+            <input
+              id="settings-import-file"
+              type="file"
+              accept=".json"
+              onChange={handleImport}
+              className="settings-visually-hidden"
+            />
+          </label>
+        </div>
+      </Section>
+
+      <details className="settings-advanced-disclosure">
+        <summary>{localText(lang, "Protection locale avancée", "Advanced local protection", "الحماية المحلية المتقدمة")}</summary>
       <Section
         title={localText(
           lang,
@@ -959,6 +917,7 @@ export default function SettingsModal() {
           <span>{localText(lang, "Cette protection r\u00e9duit l\u2019exposition des donn\u00e9es au repos, mais ne prot\u00e8ge pas un appareil compromis ni une page d\u00e9j\u00e0 d\u00e9verrouill\u00e9e. Il n\u2019existe aucune r\u00e9cup\u00e9ration de phrase secr\u00e8te.", "This reduces exposure of data at rest, but cannot protect a compromised device or an already unlocked page. Passphrases cannot be recovered.", "\u062a\u0642\u0644\u0644 \u0647\u0630\u0647 \u0627\u0644\u062d\u0645\u0627\u064a\u0629 \u0645\u0646 \u0643\u0634\u0641 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0645\u062e\u0632\u0646\u0629\u060c \u0644\u0643\u0646\u0647\u0627 \u0644\u0627 \u062a\u062d\u0645\u064a \u062c\u0647\u0627\u0632\u064b\u0627 \u0645\u062e\u062a\u0631\u0642\u064b\u0627 \u0623\u0648 \u0635\u0641\u062d\u0629 \u0645\u0641\u062a\u0648\u062d\u0629. \u0644\u0627 \u064a\u0645\u0643\u0646 \u0627\u0633\u062a\u0639\u0627\u062f\u0629 \u0639\u0628\u0627\u0631\u0629 \u0627\u0644\u0645\u0631\u0648\u0631.")}</span>
         </div>
       </Section>
+      </details>
       <Section title={localText(lang, "Suppression des données", "Data deletion", "حذف البيانات")}>
         <div className="settings-cache-note">
           <Info size={16} aria-hidden="true" />

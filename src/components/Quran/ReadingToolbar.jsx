@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Brain,
   BookOpen,
   Languages,
   List,
@@ -9,13 +8,11 @@ import {
   Pause,
   Play,
   SlidersHorizontal,
-  Type,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 import { cn } from "../../lib/utils";
 import audioService from "../../services/audioService";
 import ArabicFontControls from "../ArabicFontControls";
-import HizbRukuNavigator from "./HizbRukuNavigator";
 
 function labelFor(lang, fr, en, ar = en) {
   if (lang === "ar") return ar;
@@ -28,9 +25,7 @@ function toolbarLabelsFor(lang) {
     mushaf: labelFor(lang, "Mushaf", "Mushaf", "\u0627\u0644\u0645\u0635\u062d\u0641"),
     list: labelFor(lang, "Liste", "List", "\u0642\u0627\u0626\u0645\u0629"),
     translation: labelFor(lang, "Traduction", "Translation", "\u0627\u0644\u062a\u0631\u062c\u0645\u0629"),
-    wordByWord: labelFor(lang, "Mot \u00e0 mot", "Word by word", "\u0643\u0644\u0645\u0629 \u0628\u0643\u0644\u0645\u0629"),
     tajweed: labelFor(lang, "Tajweed", "Tajweed", "\u0627\u0644\u062a\u062c\u0648\u064a\u062f"),
-    memorization: labelFor(lang, "M\u00e9morisation", "Memorization", "\u0627\u0644\u062d\u0641\u0638"),
     listen: labelFor(lang, "\u00c9couter", "Listen", "\u0627\u0633\u062a\u0645\u0627\u0639"),
     pause: labelFor(lang, "Pause", "Pause", "\u0625\u064a\u0642\u0627\u0641 \u0645\u0624\u0642\u062a"),
     loading: labelFor(lang, "Chargement", "Loading", "\u062c\u0627\u0631\u064a \u0627\u0644\u062a\u062d\u0645\u064a\u0644"),
@@ -43,28 +38,20 @@ export default function ReadingToolbar({
   playLabel,
   preparingSurah,
   surahNum,
-  currentAyah,
-  currentPage,
-  onNavigateToAyah,
   onToggleMushaf,
-  onToggleWordByWord,
-  onToggleMemorization,
 }) {
   const { state, set } = useApp();
   const {
-    currentSurah,
     lang,
-    memMode,
     mushafLayout,
-    riwaya,
     showTajwid,
     showTranslation,
-    showWordByWord,
     isPlaying,
+    readerTypographyOpen,
   } = state;
 
   const [scrolled, setScrolled] = useState(false);
-  const [showTypography, setShowTypography] = useState(false);
+  const showTypography = Boolean(readerTypographyOpen);
   useEffect(() => {
     const mainEl = document.querySelector("#main-content") || window;
     const getScroll = () => (mainEl === window ? window.scrollY : mainEl.scrollTop);
@@ -88,8 +75,6 @@ export default function ReadingToolbar({
     }
     set({
       mushafLayout: "mushaf",
-      memMode: false,
-      showWordByWord: false,
       showTajwid: true,
     });
   };
@@ -103,23 +88,6 @@ export default function ReadingToolbar({
     set({ mushafLayout: "list" });
   };
 
-  const toggleMemorization =
-    onToggleMemorization ||
-    (() =>
-      set({
-        memMode: !memMode,
-        mushafLayout: "list",
-        showWordByWord: false,
-      }));
-
-  const toggleWordByWord =
-    onToggleWordByWord ||
-    (() =>
-      set({
-        showWordByWord: !showWordByWord,
-        memMode: false,
-      }));
-
   const handlePrimaryPlay = () => {
     if (isPlayingThisContext) {
       audioService.pause();
@@ -131,7 +99,7 @@ export default function ReadingToolbar({
   return (
     <div
       className={cn(
-        "qc-reader-toolbar mx-auto mb-6 flex w-full max-w-[980px] flex-col items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 backdrop-blur-md transition-all duration-300 md:flex-row",
+        "reader-command-bar qc-reader-toolbar mx-auto mb-6 flex w-full max-w-[980px] flex-col items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 backdrop-blur-md transition-all duration-300 md:flex-row",
         scrolled && "qc-reader-toolbar--sticky",
       )}
       style={{
@@ -141,16 +109,6 @@ export default function ReadingToolbar({
       role="toolbar"
       aria-label={labels.toolbar}
     >
-      <div className="flex w-full flex-wrap items-center justify-between gap-3 md:w-auto md:justify-start">
-        <HizbRukuNavigator
-          currentSurah={currentSurah}
-          currentAyah={currentAyah || 1}
-          currentPage={currentPage}
-          onNavigate={onNavigateToAyah}
-          className="shrink-0"
-        />
-      </div>
-
       <div className="scrollbar-none flex w-full items-center justify-start gap-2 overflow-x-auto pb-1 md:w-auto md:justify-center md:pb-0">
         <div className="shrink-0 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-1">
           <div className="flex items-center gap-1" role="group" aria-label={labels.toolbar}>
@@ -193,7 +151,7 @@ export default function ReadingToolbar({
           <button
             type="button"
             className={cn(
-              "reader-toolbar-btn--word-by-word flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
+              "reader-toolbar-btn--translation flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
               showTranslation
                 ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
                 : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
@@ -206,25 +164,6 @@ export default function ReadingToolbar({
             <Languages size={13} aria-hidden="true" />
             <span>{labels.translation}</span>
           </button>
-
-          {riwaya !== "warsh" ? (
-            <button
-              type="button"
-              className={cn(
-                "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
-                showWordByWord
-                  ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
-                  : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
-              )}
-              onClick={toggleWordByWord}
-              aria-pressed={showWordByWord}
-              aria-label={labels.wordByWord}
-              title={`${labels.wordByWord} (W)`}
-            >
-              <Type size={13} aria-hidden="true" />
-              <span>{labels.wordByWord}</span>
-            </button>
-          ) : null}
 
           <button
             type="button"
@@ -243,22 +182,6 @@ export default function ReadingToolbar({
             <span>{labels.tajweed}</span>
           </button>
 
-          <button
-            type="button"
-            className={cn(
-              "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
-              memMode
-                ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
-                : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
-            )}
-            onClick={toggleMemorization}
-            aria-pressed={memMode}
-            aria-label={labels.memorization}
-            title={`${labels.memorization} (M)`}
-          >
-            <Brain size={13} aria-hidden="true" />
-            <span>{labels.memorization}</span>
-          </button>
         </div>
       </div>
 
@@ -269,7 +192,7 @@ export default function ReadingToolbar({
             "reader-typography-trigger",
             showTypography && "reader-typography-trigger--active",
           )}
-          onClick={() => setShowTypography((value) => !value)}
+          onClick={() => set({ readerTypographyOpen: !showTypography })}
           aria-expanded={showTypography}
           aria-controls="reader-toolbar-typography-panel"
         >

@@ -13,31 +13,37 @@ import {
 } from "../data/surahs";
 import { normalizeFontId } from "../data/fonts";
 import { cn } from "../lib/utils";
+import {
+  ARABIC_FONT_SIZE_MAX,
+  ARABIC_FONT_SIZE_MIN,
+  clampArabicFontSize,
+} from "../utils/arabicTypography";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import PlatformLogo from "./PlatformLogo";
-import { THEME_ORDER } from "../data/themes";
 import {
   Search,
   Settings,
-  Moon,
   MoreHorizontal,
   ChevronLeft,
   ChevronRight,
   HandHeart,
   Menu,
-  Palette,
   Shapes,
   X,
-  BookOpen,
   Home,
+  SunMoon,
+  Type,
+  Minus,
+  Plus,
+  BookOpen,
+  List,
 } from "lucide-react";
 
-export default function Header() {
+export default function Header({ immersiveHidden = false }) {
   const { dispatch, set } = useAppActions();
   const state = useAppSelector(
     (current) => ({
       lang: current.lang,
-      theme: current.theme,
       currentSurah: current.currentSurah,
       displayMode: current.displayMode,
       currentPage: current.currentPage,
@@ -50,12 +56,14 @@ export default function Header() {
       showDuas: current.showDuas,
       legalPage: current.legalPage,
       sidebarOpen: current.sidebarOpen,
+      theme: current.theme,
+      quranFontSize: current.quranFontSize,
+      mushafLayout: current.mushafLayout,
     }),
     shallowEqual,
   );
   const {
     lang,
-    theme,
     currentSurah,
     displayMode,
     currentPage,
@@ -65,6 +73,9 @@ export default function Header() {
     showDuas,
     legalPage,
     sidebarOpen,
+    theme,
+    quranFontSize,
+    mushafLayout,
   } = state;
 
   const [goToValue, setGoToValue] = useState("");
@@ -75,11 +86,6 @@ export default function Header() {
   const navigationRequestRef = useRef(0);
   const riwayaRequestRef = useRef(0);
 
-  const currentThemeIndex = THEME_ORDER.indexOf(theme);
-  const nextThemeId =
-    THEME_ORDER[
-      (currentThemeIndex + 1 + THEME_ORDER.length) % THEME_ORDER.length
-    ];
   const isRtl = lang === "ar";
   const tr = (obj) =>
     lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en;
@@ -135,13 +141,28 @@ export default function Header() {
     return () => window.clearTimeout(id);
   }, [goToOpen]);
 
-  const cycleTheme = () =>
-    dispatch({ type: "SET_THEME", payload: nextThemeId });
   const goHome = () => set({ legalPage: null, showHome: true, showDuas: false });
   const openDuas = () => set({ legalPage: null, showDuas: true, showHome: false });
   const openSearch = () => dispatch({ type: "TOGGLE_SEARCH" });
   const openSettings = () => dispatch({ type: "TOGGLE_SETTINGS" });
-  const openToolsHub = () => set({ toolsHubOpen: true });
+  const isReadingView = !showHome && !showDuas && !legalPage;
+  const changeArabicFontSize = (delta) => {
+    set({
+      quranFontSize: clampArabicFontSize(Number(quranFontSize) + delta),
+    });
+  };
+  const selectReadingLayout = (layout) => {
+    set(
+      layout === "mushaf"
+        ? { mushafLayout: "mushaf", showTajwid: true }
+        : { mushafLayout: "list" },
+    );
+  };
+  const cycleTheme = () => {
+    const themes = ["light", "sepia", "dark"];
+    const currentIndex = Math.max(0, themes.indexOf(theme));
+    set({ theme: themes[(currentIndex + 1) % themes.length] });
+  };
   const warmReadingTarget = useCallback(
     (mode, value, targetRiwaya = riwaya) => {
       if (showHome || showDuas || legalPage) return Promise.resolve(null);
@@ -334,8 +355,25 @@ export default function Header() {
     !showDuas && displayMode !== "juz"
       ? getSurahLigature(activeSurahNum)
       : "";
-  const centerTitleLabel = centerSubtitle
-    ? `${centerTitle} - ${centerSubtitle}`
+  const centerArabicTitle =
+    !showDuas && displayMode !== "juz"
+      ? centerSurahLigature || surahMeta?.ar || ""
+      : "";
+  const centerTransliteration =
+    !showDuas && displayMode !== "juz"
+      ? surahMeta?.en || surahMeta?.fr || centerTitle
+      : centerTitle;
+  const centerMeaning =
+    !showDuas && displayMode !== "juz"
+      ? surahMeta?.fr || centerSubtitle || centerTransliteration
+      : "";
+  const centerTitleVariants = [
+    centerArabicTitle,
+    centerTransliteration,
+    centerMeaning,
+  ].filter((value, index, values) => value && values.indexOf(value) === index);
+  const centerTitleLabel = centerTitleVariants.length
+    ? centerTitleVariants.join(" — ")
     : centerTitle;
 
   const headerLabels = {
@@ -371,80 +409,45 @@ export default function Header() {
       en: "Switch riwaya",
       ar: "\u062a\u0628\u062f\u064a\u0644 \u0627\u0644\u0631\u0648\u0627\u064a\u0629",
     }),
-    cycleTheme: tr({
-      fr: "Changer de th\u00e8me",
-      en: "Switch theme",
-      ar: "\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0645\u0638\u0647\u0631",
-    }),
   };
 
-  const cleanQuickItems = [
+  const quickItems = [
     {
       key: "search",
       Icon: Search,
       label: i18nT("nav.search", lang),
       description: tr({
-        fr: "Trouver une sourate ou un verset",
-        en: "Find a surah or verse",
-        ar: "\u0627\u0644\u0628\u062d\u062b \u0639\u0646 \u0633\u0648\u0631\u0629 \u0623\u0648 \u0622\u064a\u0629",
+        fr: "Sourate, verset ou mot-clé",
+        en: "Surah, verse or keyword",
+        ar: "سورة أو آية أو كلمة",
       }),
       action: openSearch,
+      mobileOnly: true,
+    },
+    {
+      key: "theme",
+      Icon: SunMoon,
+      label: tr({ fr: "Changer de thème", en: "Change theme", ar: "تغيير المظهر" }),
+      description: tr({
+        fr: theme === "dark" ? "Mode sombre actif" : theme === "sepia" ? "Mode sépia actif" : "Mode clair actif",
+        en: `${theme || "light"} theme active`,
+        ar: "التبديل بين الفاتح والسيبيا والداكن",
+      }),
+      action: cycleTheme,
     },
     {
       key: "settings",
       Icon: Settings,
       label: i18nT("nav.settings", lang),
-      description: tr({
-        fr: "Lecture et affichage",
-        en: "Reading and display",
-        ar: "\u0627\u0644\u0642\u0631\u0627\u0621\u0629 \u0648\u0627\u0644\u0639\u0631\u0636",
-      }),
+      description: tr({ fr: "Lecture, audio et apparence", en: "Reading, audio and appearance", ar: "القراءة والصوت والمظهر" }),
       action: openSettings,
     },
     {
       key: "duas",
       Icon: HandHeart,
-      label: tr({
-        fr: "Douas / Invocations",
-        en: "Duas / Supplications",
-        ar: "\u0627\u0644\u0623\u062f\u0639\u064a\u0629 \u0648\u0627\u0644\u0623\u0630\u0643\u0627\u0631",
-      }),
-      description: tr({
-        fr: "Invocations et rappels",
-        en: "Supplications and reminders",
-        ar: "\u0623\u062f\u0639\u064a\u0629 \u0648\u0623\u0630\u0643\u0627\u0631",
-      }),
+      label: tr({ fr: "Invocations", en: "Supplications", ar: "الأدعية" }),
+      description: tr({ fr: "Invocations coraniques", en: "Quranic supplications", ar: "أدعية قرآنية" }),
       action: openDuas,
-    },
-    {
-      key: "theme",
-      Icon: Palette,
-      label: tr({
-        fr: "Changer de th\u00e8me",
-        en: "Switch theme",
-        ar: "\u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0645\u0638\u0647\u0631",
-      }),
-      description: tr({
-        fr: "Adapter les couleurs",
-        en: "Adjust the colors",
-        ar: "\u062a\u062e\u0635\u064a\u0635 \u0627\u0644\u0623\u0644\u0648\u0627\u0646",
-      }),
-      action: cycleTheme,
-    },
-    {
-      key: "tools",
-      Icon: Shapes,
-      label: tr({
-        fr: "Espace outils",
-        en: "Tools hub",
-        ar: "\u0645\u0631\u0643\u0632 \u0627\u0644\u0623\u062f\u0648\u0627\u062a",
-      }),
-      description: tr({
-        fr: "Lecture et étude",
-        en: "Reading and study",
-        ar: "\u0627\u0644\u0642\u0631\u0627\u0621\u0629 \u0648\u0627\u0644\u062f\u0631\u0627\u0633\u0629",
-      }),
-      action: openToolsHub,
     },
   ];
 
@@ -454,10 +457,10 @@ export default function Header() {
       className={cn(
         "mp-header",
         headerCompact && "mp-header--compact",
-        sidebarOpen && "pointer-events-none",
+        (sidebarOpen || immersiveHidden) && "pointer-events-none",
       )}
-      aria-hidden={sidebarOpen ? "true" : undefined}
-      inert={sidebarOpen ? "" : undefined}
+      aria-hidden={sidebarOpen || immersiveHidden ? "true" : undefined}
+      inert={sidebarOpen || immersiveHidden ? "" : undefined}
       role="banner"
     >
       <div className="mp-header__bar">
@@ -549,13 +552,14 @@ export default function Header() {
                       className="mp-header__title-stack"
                       aria-hidden="true"
                     >
-                      <span className="mp-header__title">
-                        {centerTitle}
-                      </span>
-                      {centerSubtitle ? (
-                        <span className="mp-header__title-sub-viewport">
+                      {centerTitleVariants.length > 1 ? (
+                        <span className="mp-header__title mp-header__title-cycle-viewport">
                           <span className="mp-header__title-sub-track">
-                            <span className="mp-header__title-sub">
+                            <span
+                              className="mp-header__title-sub"
+                              dir="rtl"
+                              lang="ar"
+                            >
                               {centerSurahLigature ? (
                                 <span
                                   className="font-surah-names"
@@ -566,15 +570,38 @@ export default function Header() {
                                   {centerSurahLigature}
                                 </span>
                               ) : (
-                                surahMeta?.ar
+                                centerArabicTitle
                               )}
                             </span>
+                            <span className="mp-header__title-transliteration">
+                              {centerTransliteration}
+                            </span>
                             <span className="mp-header__title-meaning">
-                              {centerSubtitle}
+                              {centerMeaning}
+                            </span>
+                            <span
+                              className="mp-header__title-sub mp-header__title-cycle-copy"
+                              dir="rtl"
+                              lang="ar"
+                            >
+                              {centerSurahLigature ? (
+                                <span
+                                  className="font-surah-names"
+                                  dir="ltr"
+                                  lang="en"
+                                  aria-hidden="true"
+                                >
+                                  {centerSurahLigature}
+                                </span>
+                              ) : (
+                                centerArabicTitle
+                              )}
                             </span>
                           </span>
                         </span>
-                      ) : null}
+                      ) : (
+                        <span className="mp-header__title">{centerTitle}</span>
+                      )}
                     </span>
                   </button>
                 </PopoverTrigger>
@@ -665,7 +692,7 @@ export default function Header() {
             aria-label={i18nT("nav.search", lang)}
             title={i18nT("nav.search", lang)}
           >
-            <Search size={16} strokeWidth={2.2} />
+            <Search size={18} strokeWidth={2.4} />
             <span>{i18nT("nav.search", lang)}</span>
           </button>
 
@@ -690,7 +717,7 @@ export default function Header() {
             >
               <div className="mp-header-menu__header">
                 <span className="mp-header-menu__header-icon">
-                  <Shapes size={17} strokeWidth={2.1} />
+                  <Shapes size={15} strokeWidth={2.1} />
                 </span>
                 <span className="mp-header-menu__heading">
                   <span className="mp-header-menu__header-text">
@@ -698,9 +725,15 @@ export default function Header() {
                   </span>
                   <span className="mp-header-menu__header-subtitle">
                     {tr({
-                      fr: "Navigation et préférences",
-                      en: "Navigation and preferences",
-                      ar: "التنقل والتفضيلات",
+                      fr: isReadingView
+                        ? "Lecture et préférences"
+                        : "Navigation et préférences",
+                      en: isReadingView
+                        ? "Reading and preferences"
+                        : "Navigation and preferences",
+                      ar: isReadingView
+                        ? "القراءة والتفضيلات"
+                        : "التنقل والتفضيلات",
                     })}
                   </span>
                 </span>
@@ -714,16 +747,153 @@ export default function Header() {
                     ar: "إغلاق الإجراءات السريعة",
                   })}
                 >
-                  <X size={16} strokeWidth={2.2} />
+                  <X size={14} strokeWidth={2.2} />
                 </button>
               </div>
 
+              {isReadingView ? (
+                <section
+                  className="mp-header-menu__reader-tools"
+                  aria-labelledby="header-reader-tools-title"
+                >
+                  <div className="mp-header-menu__reader-heading">
+                    <Type size={13} strokeWidth={2.1} aria-hidden="true" />
+                    <span id="header-reader-tools-title">
+                      {tr({
+                        fr: "Affichage de lecture",
+                        en: "Reading display",
+                        ar: "عرض القراءة",
+                      })}
+                    </span>
+                  </div>
+
+                  <div className="mp-header-menu__reader-card">
+                    <span className="mp-header-menu__reader-label">
+                      {tr({
+                        fr: "Taille du texte arabe",
+                        en: "Arabic text size",
+                        ar: "حجم النص العربي",
+                      })}
+                    </span>
+                    <div className="mp-header-menu__font-controls">
+                      <button
+                        type="button"
+                        data-testid="header-reader-font-decrease"
+                        onClick={() => changeArabicFontSize(-2)}
+                        disabled={quranFontSize <= ARABIC_FONT_SIZE_MIN}
+                        aria-label={tr({
+                          fr: "Réduire le texte arabe",
+                          en: "Decrease Arabic text size",
+                          ar: "تصغير النص العربي",
+                        })}
+                      >
+                        <Minus size={13} strokeWidth={2.4} />
+                      </button>
+                      <output aria-live="polite">{quranFontSize}px</output>
+                      <button
+                        type="button"
+                        data-testid="header-reader-font-increase"
+                        onClick={() => changeArabicFontSize(2)}
+                        disabled={quranFontSize >= ARABIC_FONT_SIZE_MAX}
+                        aria-label={tr({
+                          fr: "Agrandir le texte arabe",
+                          en: "Increase Arabic text size",
+                          ar: "تكبير النص العربي",
+                        })}
+                      >
+                        <Plus size={13} strokeWidth={2.4} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div
+                    className="mp-header-menu__layout"
+                    role="group"
+                    aria-label={tr({
+                      fr: "Mode de lecture",
+                      en: "Reading mode",
+                      ar: "وضع القراءة",
+                    })}
+                  >
+                    <button
+                      type="button"
+                      data-testid="header-reader-layout-mushaf"
+                      className={mushafLayout === "mushaf" ? "is-active" : ""}
+                      aria-pressed={mushafLayout === "mushaf"}
+                      onClick={() => selectReadingLayout("mushaf")}
+                    >
+                      <BookOpen size={14} strokeWidth={2} />
+                      <span>Mushaf</span>
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="header-reader-layout-list"
+                      className={mushafLayout === "list" ? "is-active" : ""}
+                      aria-pressed={mushafLayout === "list"}
+                      onClick={() => selectReadingLayout("list")}
+                    >
+                      <List size={14} strokeWidth={2} />
+                      <span>{tr({ fr: "Liste", en: "List", ar: "قائمة" })}</span>
+                    </button>
+                  </div>
+
+                  <div
+                    className="mp-header-menu__mobile-riwaya mp-header-menu__riwaya"
+                    data-testid="header-mobile-riwaya"
+                  >
+                    <div className="mp-header-menu__riwaya-heading">
+                      <span className="mp-header-menu__riwaya-copy">
+                        <span className="mp-header-menu__riwaya-label">
+                          {tr({
+                            fr: "Riwaya",
+                            en: "Riwaya",
+                            ar: "الرواية",
+                          })}
+                        </span>
+                        <span className="mp-header-menu__riwaya-description">
+                          {tr({
+                            fr: "Choisir le texte et la récitation",
+                            en: "Choose text and recitation",
+                            ar: "اختيار النص والتلاوة",
+                          })}
+                        </span>
+                      </span>
+                    </div>
+                    <div
+                      className="mp-header-menu__riwaya-btns"
+                      role="group"
+                      aria-label={headerLabels.riwayaToggle}
+                    >
+                      {["hafs", "warsh"].map((option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          className={cn(
+                            "mp-header__seg",
+                            riwaya === option && "is-active",
+                          )}
+                          aria-pressed={riwaya === option}
+                          onPointerEnter={() => warmRiwaya(option)}
+                          onFocus={() => warmRiwaya(option)}
+                          onClick={() => selectRiwaya(option)}
+                        >
+                          {option === "hafs" ? "Hafs" : "Warsh"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              ) : null}
+
               <div className="mp-header-menu__section">
-                {cleanQuickItems.map((item) => (
+                {quickItems.map((item) => (
                   <button
                     key={item.key}
                     data-key={item.key}
-                    className="mp-header-menu__item"
+                    className={cn(
+                      "mp-header-menu__item",
+                      item.mobileOnly && "mp-header-menu__item--mobile-only",
+                    )}
                     type="button"
                     onClick={() => {
                       item.action();
@@ -731,7 +901,7 @@ export default function Header() {
                     }}
                   >
                     <span className="mp-header-menu__item-icon">
-                      <item.Icon size={17} strokeWidth={2} />
+                      <item.Icon size={15} strokeWidth={2.1} />
                     </span>
                     <span className="mp-header-menu__item-copy">
                       <span className="mp-header-menu__item-label">{item.label}</span>
@@ -746,48 +916,6 @@ export default function Header() {
                 ))}
               </div>
 
-              <div className="mp-header-menu__riwaya">
-                <div className="mp-header-menu__riwaya-heading">
-                  <span className="mp-header-menu__riwaya-icon" aria-hidden="true">
-                    <BookOpen size={15} strokeWidth={2.1} />
-                  </span>
-                  <span className="mp-header-menu__riwaya-copy">
-                    <span className="mp-header-menu__riwaya-label">
-                      {tr({ fr: "Riwaya", en: "Riwaya", ar: "الرواية" })}
-                    </span>
-                    <span className="mp-header-menu__riwaya-description">
-                      {tr({
-                        fr: "Choisir la lecture",
-                        en: "Choose the recitation",
-                        ar: "اختيار القراءة",
-                      })}
-                    </span>
-                  </span>
-                </div>
-                <div
-                  className="mp-header-menu__riwaya-btns"
-                  role="group"
-                  aria-label={headerLabels.riwayaToggle}
-                >
-                  {["hafs", "warsh"].map((id) => (
-                    <button
-                      key={id}
-                      className={cn("mp-header__seg", riwaya === id && "is-active")}
-                      type="button"
-                      aria-pressed={riwaya === id}
-                      onPointerEnter={() => warmRiwaya(id)}
-                      onPointerDown={() => warmRiwaya(id)}
-                      onFocus={() => warmRiwaya(id)}
-                      onClick={() => {
-                        selectRiwaya(id);
-                        setQuickMenuOpen(false);
-                      }}
-                    >
-                      {id.toUpperCase()}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </PopoverContent>
           </Popover>
         </div>

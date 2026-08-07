@@ -1,14 +1,14 @@
 import React from "react";
 import {
   BookOpenText,
-  Bookmark,
+  BookOpen,
   CircleUserRound,
   Database,
-  HandHeart,
+  Headphones,
   Home,
+  LibraryBig,
   ListOrdered,
   Search,
-  Settings,
   Scale,
   ShieldCheck,
 } from "lucide-react";
@@ -29,17 +29,23 @@ export default function Footer() {
     set({ legalPage: null, showHome: true, showDuas: false });
     scrollTop();
   };
-  const openDuas = () => {
-    set({ legalPage: null, showHome: false, showDuas: true });
+  const openReader = () => {
+    set({ legalPage: null, showHome: false, showDuas: false });
     scrollTop();
+  };
+  const openAudio = () => {
+    set({ legalPage: null, showHome: true, showDuas: false, homeSection: "audio" });
+    window.requestAnimationFrame(() => {
+      document.querySelector(".home-content-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   };
 
   const navItems = [
     { key: "home",      Icon: Home,      label: t("nav.home", lang),      onClick: openHome },
-    { key: "search",    Icon: Search,    label: t("nav.search", lang),     onClick: () => dispatch({ type: "TOGGLE_SEARCH" }) },
-    { key: "bookmarks", Icon: Bookmark,  label: t("nav.bookmarks", lang),  onClick: () => dispatch({ type: "TOGGLE_BOOKMARKS" }) },
-    { key: "duas",      Icon: HandHeart, label: t("nav.duas", lang),       onClick: openDuas },
-    { key: "settings",  Icon: Settings,  label: t("nav.settings", lang),   onClick: () => dispatch({ type: "TOGGLE_SETTINGS" }) },
+    { key: "read",      Icon: BookOpen,  label: lang === "fr" ? "Lire" : lang === "ar" ? "اقرأ" : "Read", onClick: openReader },
+    { key: "search",    Icon: Search,    label: t("nav.search", lang),     onClick: () => set({ searchOpen: true }) },
+    { key: "audio",     Icon: Headphones,label: lang === "fr" ? "Écouter" : lang === "ar" ? "استمع" : "Listen", onClick: openAudio },
+    { key: "library",   Icon: LibraryBig,label: lang === "fr" ? "Bibliothèque" : lang === "ar" ? "المكتبة" : "Library", onClick: () => dispatch({ type: "TOGGLE_LIBRARY" }) },
   ];
   const legalLabels = {
     fr: {

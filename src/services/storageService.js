@@ -178,36 +178,6 @@ function sanitizeFavoriteReciters(input) {
     .slice(0, 24);
 }
 
-function sanitizePinnedAyahs(input) {
-  if (!Array.isArray(input)) return [];
-
-  const seen = new Set();
-  return input
-    .map((item) => {
-      const surah = clampSurah(item?.surah);
-      return {
-        surah,
-        ayah: clampAyahForSurah(surah, item?.ayah),
-        number: Number.isFinite(Number(item?.number)) ? Number(item.number) : null,
-        text:
-          typeof item?.text === "string"
-            ? item.text.trim().slice(0, 1200)
-            : "",
-        surahName:
-          typeof item?.surahName === "string"
-            ? item.surahName.trim().slice(0, 120)
-            : "",
-      };
-    })
-    .filter((item) => {
-      const key = `${item.surah}:${item.ayah}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    })
-    .slice(0, 4);
-}
-
 function sanitizeTranslationLangs(input, fallback = "fr") {
   const values = Array.isArray(input) ? input : [fallback];
   const cleaned = [...new Set(values)]
@@ -327,11 +297,8 @@ const DEFAULT_SETTINGS = {
   wordTranslationLang: "fr",
   showTranslation: true,
   showTajwid: true,
-  showWordByWord: false,
   showTransliteration: true,
-  showWordTranslation: true,
   translationReadingMode: false,
-  pinnedAyahs: [],
   displayMode: "surah", // 'surah' | 'page' | 'juz'
   mushafLayout: "list", // 'list' | 'mushaf'
   audioSpeed: 1,
@@ -340,7 +307,7 @@ const DEFAULT_SETTINGS = {
   warshStrictMode: true,
   syncOffsetsMs: {},
   favoriteReciters: [],
-  autoSelectFastestReciter: false,
+  autoSelectFastestReciter: true,
   reciterLatencyByKey: {},
   reciterAvailabilityById: {},
   autoNightMode: false,
@@ -348,9 +315,6 @@ const DEFAULT_SETTINGS = {
   nightEnd: "06:00",
   nightTheme: "dark",
   dayTheme: "light",
-  usePrayerTimes: false,
-  wirdGoalType: "pages",
-  wirdGoalAmount: 5,
   surahRepeatCount: 1,
   showHome: true,
   showDuas: false,
@@ -414,20 +378,12 @@ export function getSettings() {
       ),
       syncOffsetsMs: sanitizeSyncOffsetsMap(parsed?.syncOffsetsMs),
       favoriteReciters: sanitizeFavoriteReciters(parsed?.favoriteReciters),
-      pinnedAyahs: sanitizePinnedAyahs(parsed?.pinnedAyahs),
-      autoSelectFastestReciter:
-        parsed?.autoSelectFastestReciter !== undefined
-          ? Boolean(parsed.autoSelectFastestReciter)
-          : DEFAULT_SETTINGS.autoSelectFastestReciter,
+      autoSelectFastestReciter: true,
       reciterLatencyByKey: sanitizeLatencyMap(parsed?.reciterLatencyByKey),
       reciterAvailabilityById: sanitizeReciterAvailabilityMap(
         parsed?.reciterAvailabilityById,
       ),
       audioPlayerSkin: sanitizeAudioPlayerSkin(parsed?.audioPlayerSkin),
-      usePrayerTimes:
-        parsed?.usePrayerTimes !== undefined
-          ? Boolean(parsed.usePrayerTimes)
-          : DEFAULT_SETTINGS.usePrayerTimes,
       surahRepeatCount:
         Number.isFinite(Number(parsed?.surahRepeatCount))
           ? Math.max(0, Math.min(999, Math.floor(Number(parsed.surahRepeatCount))))
@@ -515,10 +471,7 @@ function sanitizeSettings(settings) {
     warshStrictMode: Boolean(safeInput.warshStrictMode),
     syncOffsetsMs: safeSyncOffsets,
     favoriteReciters: sanitizeFavoriteReciters(safeInput.favoriteReciters),
-    autoSelectFastestReciter:
-      safeInput.autoSelectFastestReciter !== undefined
-        ? Boolean(safeInput.autoSelectFastestReciter)
-        : DEFAULT_SETTINGS.autoSelectFastestReciter,
+    autoSelectFastestReciter: true,
     reciterLatencyByKey: sanitizeLatencyMap(safeInput.reciterLatencyByKey),
     reciterAvailabilityById: sanitizeReciterAvailabilityMap(
       safeInput.reciterAvailabilityById,
@@ -532,31 +485,18 @@ function sanitizeSettings(settings) {
       : "06:00",
     nightTheme: normalizeNightTheme(safeInput.nightTheme),
     dayTheme: normalizeDayTheme(safeInput.dayTheme),
-    usePrayerTimes:
-      safeInput.usePrayerTimes !== undefined
-        ? Boolean(safeInput.usePrayerTimes)
-        : DEFAULT_SETTINGS.usePrayerTimes,
     volume:
       typeof safeInput.volume === "number"
         ? Math.max(0, Math.min(1, safeInput.volume))
         : 1,
-    showWordByWord:
-      safeInput.showWordByWord !== undefined
-        ? Boolean(safeInput.showWordByWord)
-        : false,
     showTransliteration:
       safeInput.showTransliteration !== undefined
         ? Boolean(safeInput.showTransliteration)
-        : true,
-    showWordTranslation:
-      safeInput.showWordTranslation !== undefined
-        ? Boolean(safeInput.showWordTranslation)
         : true,
     translationReadingMode:
       safeInput.translationReadingMode !== undefined
         ? Boolean(safeInput.translationReadingMode)
         : false,
-    pinnedAyahs: sanitizePinnedAyahs(safeInput.pinnedAyahs),
     showHome:
       safeInput.showHome !== undefined ? Boolean(safeInput.showHome) : true,
     showDuas:
@@ -574,13 +514,6 @@ function sanitizeSettings(settings) {
       Number.isFinite(Number(safeInput.surahRepeatCount))
         ? Math.max(0, Math.min(999, Math.floor(Number(safeInput.surahRepeatCount))))
         : DEFAULT_SETTINGS.surahRepeatCount,
-    wirdGoalType: ["pages", "hizb", "juz"].includes(safeInput.wirdGoalType)
-      ? safeInput.wirdGoalType
-      : "pages",
-    wirdGoalAmount: Math.max(
-      1,
-      Math.min(30, Number(safeInput.wirdGoalAmount) || 5),
-    ),
     karaokeFollow:
       safeInput.karaokeFollow !== undefined
         ? Boolean(safeInput.karaokeFollow)

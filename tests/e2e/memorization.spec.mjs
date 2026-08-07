@@ -49,47 +49,19 @@ async function goToSurah(page, surahNum = 1) {
   }
 }
 
-async function toggleMemMode(page) {
-  const headerMemoBtn = page
-    .locator("button.srh-toggle")
-    .filter({ hasText: /morisation|Memorization|حفظ/ })
-    .first();
-
-  if (await headerMemoBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
-    await headerMemoBtn.click();
-    return;
-  }
-
-  const memoBtn = page
-    .getByRole("button", {
-      name: /^M(?:é|Ã©)morisation$|^Memorization$|^الحفظ$|^حفظ$/i,
-    })
-    .first();
-
-  if (await memoBtn.isVisible({ timeout: 10000 }).catch(() => false)) {
-    await memoBtn.click();
-    return;
-  }
-
-  await page.evaluate(() => document.activeElement?.blur?.());
-  await page.keyboard.press("Alt+M");
-}
-
-test.describe("Mode memorisation", () => {
-  test("Mode memorisation Hafs: active le mode et cache le texte arabe", async ({
+test.describe("Lecteur sans mode mémorisation", () => {
+  test("aucune commande de mémorisation n’est exposée", async ({
     page,
   }) => {
     await goToSurah(page, 1);
 
-    const arabicText = page.locator(".qc-ayah-text-ar, .quran-text-ar").first();
-    await expect(arabicText).toBeVisible({ timeout: 10000 });
-
-    await toggleMemMode(page);
-
-    await expect(page.locator(".app-root")).toHaveClass(/is-memorizing/);
-    await expect(page.locator(".mem-container").first()).toBeVisible({
-      timeout: 10000,
-    });
+    await expect(
+      page.getByRole("button", {
+        name: /Mémorisation|Memorization|وضع الحفظ/i,
+      }),
+    ).toHaveCount(0);
+    await expect(page.locator(".mem-container")).toHaveCount(0);
+    await expect(page.locator(".app-root")).not.toHaveClass(/is-memorizing/);
   });
 
   test("Switch Hafs vers Warsh ne casse pas le rendu des ayahs", async ({
@@ -119,18 +91,4 @@ test.describe("Mode memorisation", () => {
     }
   });
 
-  test("Mode memorisation: desactivation restaure le texte normal", async ({
-    page,
-  }) => {
-    await goToSurah(page, 1);
-
-    await toggleMemMode(page);
-    await expect(page.locator(".app-root")).toHaveClass(/is-memorizing/);
-
-    await toggleMemMode(page);
-    await expect(page.locator(".app-root")).not.toHaveClass(/is-memorizing/);
-    await expect(page.locator(".qc-ayah-text-ar, .quran-text-ar").first()).toBeVisible({
-      timeout: 10000,
-    });
-  });
 });

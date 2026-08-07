@@ -29,20 +29,22 @@ export function getResponsiveArabicFontSize({
   let deviceMaximum;
 
   if (width <= 420) {
-    deviceScale = 0.84;
-    deviceMaximum = mushafLayout === "mushaf" ? 30 : 42;
+    // Keep the default mobile preference comfortably readable while still
+    // allowing A-/A+ to produce an immediate, visible change.
+    deviceScale = 0.96;
+    deviceMaximum = mushafLayout === "mushaf" ? 30 : 32;
   } else if (width <= 640) {
     deviceScale = 0.92;
-    deviceMaximum = mushafLayout === "mushaf" ? 34 : 46;
+    deviceMaximum = mushafLayout === "mushaf" ? 34 : 38;
   } else if (width <= 1024) {
     deviceScale = 1.08;
-    deviceMaximum = mushafLayout === "mushaf" ? 56 : 64;
+    deviceMaximum = mushafLayout === "mushaf" ? 38 : 40;
   } else if (width < 1440) {
     deviceScale = 1.24;
-    deviceMaximum = mushafLayout === "mushaf" ? 66 : 76;
+    deviceMaximum = mushafLayout === "mushaf" ? 48 : 52;
   } else {
     deviceScale = 1.34;
-    deviceMaximum = mushafLayout === "mushaf" ? 72 : 84;
+    deviceMaximum = mushafLayout === "mushaf" ? 52 : 56;
   }
 
   const layoutScale = mushafLayout === "mushaf" ? 0.94 : 1;

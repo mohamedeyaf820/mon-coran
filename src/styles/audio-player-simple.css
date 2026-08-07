@@ -756,8 +756,8 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 
 @media (max-width: 380px) {
   .app-root .audio-player-simple .simple-player__compact-row {
-    grid-template-columns: 2.5rem minmax(0, 1fr) 2.75rem;
-    gap: .45rem;
+    grid-template-columns: 2.2rem minmax(0, 1fr) 2.4rem;
+    gap: .3rem;
   }
 
   .app-root .audio-player-simple.simple-player--compact .simple-player__compact-row > .simple-player__icon-button:last-child {

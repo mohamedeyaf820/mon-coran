@@ -28,10 +28,6 @@
   ) {
     scroll-margin-bottom: calc(var(--desktop-player-reserved-h, 0px) + 2rem);
   }
-
-  .app-root .quran-display--platform :is(.wbw-word-block, .qc-verse-card, .qc-ayah-block, .cpv-verse) {
-    scroll-margin-bottom: calc(var(--desktop-player-reserved-h, 0px) + 2rem);
-  }
 }
 
 .app-root .mp-player-drag-zone,

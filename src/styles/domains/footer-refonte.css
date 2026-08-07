@@ -230,6 +230,19 @@ html[data-theme="sepia"] .mp-footer-v2__verse {
   background: rgba(255, 250, 238, 0.58);
 }
 
+/* The header already owns primary navigation on wide screens. Keep the
+   footer focused on the verse and project links there, while retaining the
+   large touch-friendly navigation on phones and tablets. */
+@media (min-width: 901px) {
+  .mp-footer-v2__nav {
+    display: none;
+  }
+
+  .mp-footer-v2__directory {
+    margin-top: 0.75rem;
+  }
+}
+
 @media (max-width: 720px) {
   .mp-footer-v2 {
     margin-top: 1.5rem;
