@@ -485,9 +485,9 @@ html body .settings-drawer__title {
 
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
     .qc-list-card .qc-ayah-text-ar {
-    --reader-arabic-size: clamp(18px, var(--qd-reading-font-size, 42px), 40px) !important;
-    --qcom-ar-size: clamp(18px, var(--qd-reading-font-size, 42px), 40px) !important;
-    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 40px) !important;
+    --reader-arabic-size: clamp(18px, var(--qd-reading-font-size, 42px), 48px) !important;
+    --qcom-ar-size: clamp(18px, var(--qd-reading-font-size, 42px), 48px) !important;
+    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 48px) !important;
     line-height: 2.02 !important;
   }
 }
@@ -499,9 +499,9 @@ html body .settings-drawer__title {
 
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
     .qc-list-card .qc-ayah-text-ar {
-    --reader-arabic-size: clamp(18px, var(--qd-reading-font-size, 42px), 52px) !important;
-    --qcom-ar-size: clamp(18px, var(--qd-reading-font-size, 42px), 52px) !important;
-    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 52px) !important;
+    --reader-arabic-size: clamp(18px, var(--qd-reading-font-size, 42px), 60px) !important;
+    --qcom-ar-size: clamp(18px, var(--qd-reading-font-size, 42px), 60px) !important;
+    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 60px) !important;
     line-height: 2.06 !important;
   }
 }
@@ -509,9 +509,9 @@ html body .settings-drawer__title {
 @media (min-width: 1440px) {
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
     .qc-list-card .qc-ayah-text-ar {
-    --reader-arabic-size: clamp(18px, var(--qd-reading-font-size, 42px), 56px) !important;
-    --qcom-ar-size: clamp(18px, var(--qd-reading-font-size, 42px), 56px) !important;
-    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 56px) !important;
+    --reader-arabic-size: clamp(18px, var(--qd-reading-font-size, 42px), 68px) !important;
+    --qcom-ar-size: clamp(18px, var(--qd-reading-font-size, 42px), 68px) !important;
+    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 68px) !important;
   }
 }
 
