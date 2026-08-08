@@ -128,7 +128,8 @@
   line-height: 1.95 !important;
   word-spacing: 0.04em !important;
   letter-spacing: 0 !important;
-  text-align: right !important;
+  text-align: justify !important;
+  text-justify: inter-word !important;
   text-align-last: right !important;
   text-shadow: none !important;
   filter: none !important;
