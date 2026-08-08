@@ -19247,16 +19247,20 @@ body {
     opacity: 0.88;
 }
 
+.qc-ayah-block.is-playing .qc-ayah-content {
+    position: relative;
+}
+
 .qc-ayah-block.is-playing .qc-ayah-content::after {
     content: "♪";
     font-family: inherit;
     font-weight: 900;
-    display: block;
+    position: absolute;
+    bottom: 0;
+    inset-inline-end: 0;
     font-size: 0.55rem;
     color: var(--gold, #c9a33d);
     opacity: 0.7;
-    margin-top: 0.3rem;
-    text-align: right;
     animation: pulse 2.5s ease infinite;
 }
 
