@@ -2165,6 +2165,11 @@ html body .app-root .quran-display--platform .cpv-container.mushaf-page-wrapper:
     pointer-events: none !important;
 }
 
+html body .app-root .quran-display--platform .mushaf-container.cpv-flow[data-large-font="true"] {
+    text-align: right !important;
+    text-align-last: unset !important;
+}
+
 html body .app-root .quran-display--platform .mushaf-container.cpv-flow {
     display: block !important;
     direction: rtl !important;
@@ -2364,6 +2369,11 @@ html body .app-root .quran-display--platform .mushaf-container .cpv-verse--playi
     white-space: nowrap !important;
     flex-shrink: 0 !important;
     cursor: default;
+}
+
+html body .app-root .quran-display--platform .mushaf-text-block[data-large-font="true"] {
+    text-align: right !important;
+    text-align-last: unset !important;
 }
 
 html body .app-root .quran-display--platform .mushaf-text-block {

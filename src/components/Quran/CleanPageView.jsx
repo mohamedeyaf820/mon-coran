@@ -67,6 +67,7 @@ function CleanPageViewComponent({
         className="mushaf-text-block mushaf-container"
         dir="rtl"
         lang="ar"
+        data-large-font={mushafFontSize >= 22 ? "true" : undefined}
         style={{
           "--cpv-font-size": `${Math.round(mushafFontSize)}px`,
           "--cpv-line-height": "var(--quran-line-height, 1.94)",
