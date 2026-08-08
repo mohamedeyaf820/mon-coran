@@ -1,9 +1,9 @@
 import SURAHS from "../../data/surahs";
 
 /* ─── Pagination / layout ─────────────────────────────────────────────────── */
-export const HOME_INITIAL_SURAHS     = 12;
-export const HOME_INITIAL_SURAHS_LOW = 8;
-export const HOME_SURAHS_BATCH       = 12;
+export const HOME_INITIAL_SURAHS     = 48;
+export const HOME_INITIAL_SURAHS_LOW = 24;
+export const HOME_SURAHS_BATCH       = 36;
 
 export const HOME_DEFERRED_SECTION_STYLE = {
   contentVisibility: "auto",
