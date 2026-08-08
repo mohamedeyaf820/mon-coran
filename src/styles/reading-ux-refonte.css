@@ -30,6 +30,18 @@
   margin-inline: auto !important;
 }
 
+.app-root[data-view="reading"] .quran-display--platform > .tajweed-legend {
+  margin-inline: clamp(0.72rem, 2vw, 1.6rem) !important;
+  width: auto !important;
+  max-width: none !important;
+}
+
+@media (max-width: 760px) {
+  .app-root[data-view="reading"] .quran-display--platform > .tajweed-legend {
+    margin-inline: 0.48rem !important;
+  }
+}
+
 .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap {
   margin-bottom: 0.3rem !important;
 }
