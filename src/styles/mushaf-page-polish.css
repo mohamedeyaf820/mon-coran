@@ -232,9 +232,7 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   font-size: var(--cpv-font-size, 2.25rem) !important;
   line-height: var(--mushaf-text-leading) !important;
   word-spacing: var(--cpv-word-spacing, 0.03em) !important;
-  text-align: justify !important;
-  text-justify: auto !important;
-  text-align-last: right !important;
+  text-align: right !important;
   text-rendering: optimizeLegibility;
 }
 

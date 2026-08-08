@@ -201,8 +201,8 @@ export const SurahCard = memo(function SurahCard({
         </div>
         <button
           className={cn(
-            "hp-card-play relative z-[2] flex items-center justify-center w-8 h-8 rounded-full bg-bg-secondary text-text-muted hover:bg-primary hover:text-white transition-colors ml-2 shrink-0",
-            isPlaying && "bg-gold text-white hover:bg-gold-bright",
+            "hp-card-play relative z-[2] flex items-center justify-center w-9 h-9 rounded-full bg-primary text-white transition-all ml-2 shrink-0 shadow-sm",
+            isPlaying && "bg-gold hover:bg-gold-bright",
           )}
           onClick={(e) => {
             e.stopPropagation();
@@ -211,7 +211,7 @@ export const SurahCard = memo(function SurahCard({
           aria-label={playAriaLabel}
           aria-pressed={isPlaying}
         >
-          {isPlaying ? <Pause size={13} /> : <Play size={13} className="pl-[1px]" />}
+          {isPlaying ? <Pause size={15} /> : <Play size={15} className="pl-[1px]" />}
         </button>
       </div>
     );
