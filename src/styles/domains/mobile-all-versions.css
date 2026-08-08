@@ -2019,7 +2019,7 @@
     .app-root .quran-display--platform .rd-arabic {
         max-width: 100%;
         text-align: justify;
-        text-justify: inter-word;
+        text-justify: auto;
         text-align-last: right;
     }
 
@@ -2029,7 +2029,7 @@
 
     .app-root .quran-display--platform .cpv-flow {
         text-align: justify;
-        text-justify: inter-word;
+        text-justify: auto;
         text-align-last: right;
     }
 }

@@ -96,7 +96,7 @@
     padding-inline: clamp(0.42rem, 1vw, 0.8rem);
     color: var(--text-quran, var(--text-primary));
     text-align: justify;
-    text-justify: inter-word;
+    text-justify: auto;
     text-align-last: right;
     line-height: 2.35;
 }
@@ -224,7 +224,7 @@
     box-shadow: none !important;
     color: var(--text-quran, var(--text-primary));
     text-align: justify;
-    text-justify: inter-word;
+    text-justify: auto;
     text-align-last: right;
 }
 

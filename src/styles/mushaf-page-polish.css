@@ -205,7 +205,7 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   line-height: var(--mushaf-text-leading) !important;
   word-spacing: var(--cpv-word-spacing, 0.045em) !important;
   text-align: justify !important;
-  text-justify: inter-word !important;
+  text-justify: auto !important;
   text-align-last: right !important;
   text-rendering: optimizeLegibility;
 }
