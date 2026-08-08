@@ -846,9 +846,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card 
 
 html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .mushaf-text-block {
   line-height: 2.08 !important;
-  text-align: justify !important;
-  text-justify: auto !important;
-  text-align-last: right !important;
+  text-align: right !important;
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__translation-slot {
@@ -1042,5 +1040,101 @@ html:not([data-audio-mode="surah"]) body .app-root :is(
   ).is-playing {
     animation: none !important;
     transform: scale(1.1) translateY(0.06em) !important;
+  }
+}
+
+/* ── Bouton play liste home ─────────────────────────────────── */
+
+/* Supprimer l'override de bg/color venu de home-audio-ux-refonte qui rendait le bouton gris */
+html body .app-root[data-view="home"] .hp-list .hp-card--list .hp-card-play {
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--primary) 28%, transparent) !important;
+  width: 2.4rem !important;
+  height: 2.4rem !important;
+  min-width: 2.4rem !important;
+  min-height: 2.4rem !important;
+}
+
+html body .app-root[data-view="home"] .hp-list .hp-card--list .hp-card-play:hover {
+  background: color-mix(in srgb, var(--primary) 88%, #000 12%) !important;
+  box-shadow: 0 5px 16px color-mix(in srgb, var(--primary) 36%, transparent) !important;
+  transform: translateY(-1px) scale(1.04) !important;
+}
+
+html body .app-root[data-view="home"] .hp-list .hp-card--list .hp-card-play svg {
+  width: 15px !important;
+  height: 15px !important;
+}
+
+/* ── Barre nav sourate (Sourate précédente / suivante) ──────── */
+
+html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav {
+  border: 1px solid color-mix(in srgb, var(--primary) 14%, var(--border) 86%) !important;
+  background: color-mix(in srgb, var(--bg-card) 96%, var(--primary) 4%) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .reader-mode-nav__button {
+  background: color-mix(in srgb, var(--primary) 6%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 14%, transparent) !important;
+  color: var(--text-secondary) !important;
+  border-radius: 11px !important;
+  min-width: 0 !important;
+  flex: 1 1 0 !important;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .reader-mode-nav__button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--primary) 12%, transparent) !important;
+  color: var(--primary) !important;
+  border-color: color-mix(in srgb, var(--primary) 30%, transparent) !important;
+  transform: translateY(-1px) !important;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .reader-mode-nav__button span {
+  overflow: visible !important;
+  text-overflow: unset !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  line-height: 1.25 !important;
+  max-width: none !important;
+}
+
+/* centre : nom sourate + verset count */
+html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .mode-nav-current {
+  padding: 0.5rem clamp(0.6rem, 2vw, 1rem) !important;
+  border-radius: 10px !important;
+  background: color-mix(in srgb, var(--primary) 9%, var(--bg-primary) 91%) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent) !important;
+  text-align: center !important;
+  white-space: normal !important;
+  min-width: clamp(7rem, 28vw, 14rem) !important;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .mode-nav-current strong {
+  font-size: clamp(0.88rem, 2.4vw, 1.05rem) !important;
+  color: var(--primary) !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .mode-nav-current span {
+  font-size: clamp(0.65rem, 1.6vw, 0.72rem) !important;
+  color: var(--text-muted) !important;
+  white-space: normal !important;
+}
+
+@media (max-width: 480px) {
+  html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .reader-mode-nav__button span {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 22vw !important;
+  }
+
+  html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .mode-nav-current {
+    min-width: 0 !important;
   }
 }
