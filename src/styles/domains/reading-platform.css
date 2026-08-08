@@ -2254,31 +2254,20 @@ html body .app-root .quran-display--platform .mushaf-container .cpv-verse {
 html body .app-root .quran-display--platform .mushaf-container .cpv-verse:hover,
 html body .app-root .quran-display--platform .mushaf-container .cpv-verse:focus-visible {
     background: var(--reader-card-hover, rgba(var(--primary-rgb), 0.08)) !important;
-    box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.04) !important;
+    box-shadow: none !important;
 }
 
 html body .app-root .quran-display--platform .mushaf-container .cpv-verse--active {
     background: rgba(var(--primary-rgb), 0.1) !important;
-    box-shadow: 0 0 0 1px rgba(var(--primary-rgb), 0.2) !important;
+    box-shadow: none !important;
 }
 
 html body .app-root .quran-display--platform .mushaf-container .cpv-verse--playing {
     background: rgba(var(--primary-rgb), 0.14) !important;
     color: var(--reader-page-ink, #1a1a1a) !important;
     text-shadow: none !important;
-    box-shadow: 0 0 0 1px rgba(var(--primary-rgb), 0.3) !important;
-    animation: playing-verse-glow 3s ease-in-out infinite !important;
-}
-
-@keyframes playing-verse-glow {
-    0%, 100% {
-        background-color: rgba(var(--primary-rgb), 0.12);
-        box-shadow: 0 0 0 1px rgba(var(--primary-rgb), 0.25);
-    }
-    50% {
-        background-color: rgba(var(--primary-rgb), 0.22);
-        box-shadow: 0 0 0 1.5px rgba(var(--primary-rgb), 0.4);
-    }
+    box-shadow: none !important;
+    animation: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

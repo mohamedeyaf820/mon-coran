@@ -219,7 +219,7 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse--active,
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse--playing {
   background: var(--mushaf-accent-soft) !important;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--mushaf-accent) 28%, transparent) !important;
+  box-shadow: none !important;
   color: var(--mushaf-ink) !important;
   outline: 0;
 }

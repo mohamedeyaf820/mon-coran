@@ -7323,7 +7323,7 @@ input:focus-visible {
 }
 
 :root {
-    --quran-font-clamp: clamp(1.3rem, calc(0.6rem + 3vw), 2.1rem);
+    --quran-font-clamp: var(--quran-font-size, clamp(1.3rem, calc(0.6rem + 3vw), 2.1rem));
 }
 
 .qc-ayah-text-ar {

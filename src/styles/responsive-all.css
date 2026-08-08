@@ -784,7 +784,7 @@ html
     .mushaf-container
     .cpv-verse--active {
     background: rgba(var(--primary-rgb), 0.12) !important;
-    box-shadow: 0 0 0 1.5px rgba(var(--primary-rgb), 0.3) !important;
+    box-shadow: none !important;
 }
 
 html
@@ -794,7 +794,7 @@ html
     .mushaf-container
     .cpv-verse--playing {
     background: rgba(var(--primary-rgb), 0.15) !important;
-    box-shadow: 0 0 0 2px var(--primary) !important;
+    box-shadow: none !important;
     color: var(--reader-page-ink) !important;
 }
 
