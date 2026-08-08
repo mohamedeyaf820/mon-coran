@@ -100,7 +100,7 @@ test("sitemap and social image stay within the SEO contract", async ({
 
 test("about page publishes project identity and correction policy", async ({ page }) => {
   await page.goto("/about", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { level: 1, name: "À propos de MushafPlus" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /compagnon de lecture/i })).toBeVisible();
   await expect(page.getByText("Mohamed Eyaf", { exact: false })).toBeVisible();
   await expect(page.getByText("Version 1.1.0", { exact: false })).toBeVisible();
   await expect(page.getByRole("link", { name: "Signaler une correction" })).toHaveAttribute("href", /github\.com\/mohamedeyaf820\/mon-coran\/issues/);

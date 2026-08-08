@@ -1,10 +1,6 @@
-/* ══════════════════════════════════════════════════════
-   Sidebar — Clean, focused navigation
-   Inspired by Quran.com's sidebar: compact items,
-   clear hierarchy, minimal decoration.
-   ══════════════════════════════════════════════════════ */
 
-/* ── Base panel ── */
+
+
 #sidebar,
 .sb-wrapper {
   display: flex;
@@ -28,7 +24,7 @@
   transform: translateX(0);
 }
 
-/* RTL support */
+
 #sidebar[dir="rtl"],
 .sb-wrapper[dir="rtl"] {
   left: auto;
@@ -44,7 +40,7 @@
   transform: translateX(0);
 }
 
-/* Dark mode */
+
 [data-theme="dark"] #sidebar,
 [data-theme="dark"] .sb-wrapper {
   background: var(--theme-bg);
@@ -52,7 +48,7 @@
   box-shadow: 4px 0 32px rgba(0, 0, 0, 0.3);
 }
 
-/* ── Header ── */
+
 #sidebar > div:first-child,
 .sb-wrapper > div:first-child {
   flex-shrink: 0;
@@ -97,7 +93,7 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   }
 }
 
-/* ── Scrollable zone ── */
+
 #sidebar .overflow-y-auto,
 .sb-wrapper .overflow-y-auto {
   scrollbar-width: thin;
@@ -120,7 +116,7 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   border-radius: 999px;
 }
 
-/* ── Tab bar ── */
+
 #sidebar .sidebar-tab-list,
 .sb-wrapper .sidebar-tab-list {
   gap: 0.2rem !important;
@@ -143,7 +139,7 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   min-height: 2.2rem !important;
 }
 
-/* Active tab */
+
 #sidebar .sidebar-tab-trigger[aria-selected="true"],
 .sb-wrapper .sidebar-tab-trigger[aria-selected="true"] {
   background: var(--bg-card) !important;
@@ -158,7 +154,7 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   color: var(--emerald-lit) !important;
 }
 
-/* ── Search input ── */
+
 #sidebar input[type="text"],
 #sidebar input[type="search"],
 .sb-wrapper input[type="text"],
@@ -181,7 +177,7 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 10%, transparent 90%) !important;
 }
 
-/* ── List items (Surah / Juz / Page) ── */
+
 #sidebar .overflow-y-auto button.w-full,
 .sb-wrapper .overflow-y-auto button.w-full {
   border-radius: 8px !important;
@@ -195,7 +191,7 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   background: color-mix(in srgb, var(--primary) 5%, var(--bg-secondary) 95%) !important;
 }
 
-/* Active list item */
+
 #sidebar .overflow-y-auto button.border-primary\/30,
 #sidebar .overflow-y-auto button[class*="bg-primary"],
 .sb-wrapper .overflow-y-auto button.border-primary\/30,
@@ -205,7 +201,7 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   color: var(--primary) !important;
 }
 
-/* ── Number circles (surah/juz badges) ── */
+
 #sidebar span.rounded-full.flex,
 #sidebar span[class*="rounded-full"][class*="flex"],
 .sb-wrapper span.rounded-full.flex,
@@ -217,7 +213,7 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   height: 1.5rem !important;
 }
 
-/* ── Surah name text ── */
+
 #sidebar span.font-semibold,
 #sidebar p.font-semibold,
 .sb-wrapper span.font-semibold,
@@ -225,14 +221,14 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   font-size: 0.82rem !important;
 }
 
-/* ── Arabic calligraphy glyph ── */
+
 #sidebar [class*="font-surah"],
 .sb-wrapper [class*="font-surah"] {
   font-size: 1.2rem !important;
   opacity: 0.55 !important;
 }
 
-/* ── Subtle entry animation ── */
+
 @media (prefers-reduced-motion: no-preference) {
   #sidebar .overflow-y-auto > *,
   .sb-wrapper .overflow-y-auto > * {
@@ -251,7 +247,7 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   }
 }
 
-/* ── Tablet: wider sidebar ── */
+
 @media (min-width: 640px) and (max-width: 1024px) {
   #sidebar,
   .sb-wrapper {
@@ -259,7 +255,7 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   }
 }
 
-/* ── Mobile compact ── */
+
 @media (max-width: 420px) {
   #sidebar,
   .sb-wrapper {
@@ -284,7 +280,7 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   }
 }
 
-/* ── Desktop large: sidebar can stay open alongside content ── */
+
 @media (min-width: 1280px) {
   #sidebar.open,
   .sb-wrapper.open {

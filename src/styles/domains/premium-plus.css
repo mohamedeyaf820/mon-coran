@@ -42,23 +42,6 @@
         );
 }
 
-.app-root.premium-plus .app-view-home::before,
-.app-root.premium-plus .app-view-reading::before,
-.app-root.premium-plus .app-view-duas::before {
-    opacity: 0.68;
-    background:
-        radial-gradient(
-            circle at 10% 0%,
-            rgba(var(--theme-primary-rgb), 0.08),
-            transparent 26%
-        ),
-        radial-gradient(
-            circle at 88% 4%,
-            rgba(var(--theme-primary-rgb), 0.06),
-            transparent 22%
-        );
-}
-
 .app-root.premium-plus .hp2-btn--soft {
     border-color: color-mix(
         in srgb,
@@ -376,30 +359,6 @@
     opacity: 1;
 }
 
-[data-theme="light"] .app-root.premium-plus .app-view-home::before,
-[data-theme="light"] .app-root.premium-plus .app-view-reading::before,
-[data-theme="light"] .app-root.premium-plus .app-view-duas::before {
-    opacity: 0.8;
-    background:
-        radial-gradient(
-            circle at 12% 0%,
-            rgba(31, 143, 125, 0.1),
-            transparent 24%
-        ),
-        radial-gradient(
-            circle at 90% 6%,
-            rgba(var(--theme-primary-rgb), 0.09),
-            transparent 24%
-        ),
-        linear-gradient(
-            120deg,
-            rgba(255, 255, 255, 0.18),
-            transparent 34%,
-            transparent 66%,
-            rgba(31, 143, 125, 0.05)
-        );
-}
-
 [data-theme="light"] .app-root.premium-plus .audio-player-primary-btn {
     border-color: color-mix(in srgb, var(--theme-primary) 62%, #ffffff 38%);
     background: linear-gradient(
@@ -479,6 +438,78 @@
         left: 0;
         right: 0;
         bottom: 0;
+    }
+}
+
+/* Contextual atmosphere: one light, semantic layer instead of decorative images. */
+.app-root.premium-plus {
+    --context-ink: rgba(var(--theme-primary-rgb), 0.055);
+    --context-gold: rgba(176, 132, 36, 0.055);
+    --context-glow: rgba(var(--theme-primary-rgb), 0.12);
+}
+
+[data-theme="sepia"] .app-root.premium-plus {
+    --context-ink: rgba(113, 82, 38, 0.065);
+    --context-gold: rgba(164, 118, 36, 0.085);
+    --context-glow: rgba(177, 132, 63, 0.13);
+}
+
+[data-theme="dark"] .app-root.premium-plus {
+    --context-ink: rgba(104, 205, 169, 0.05);
+    --context-gold: rgba(216, 172, 77, 0.045);
+    --context-glow: rgba(32, 151, 114, 0.11);
+}
+
+.app-root.premium-plus :is(.app-view-home, .app-view-reading, .app-view-duas)::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    border-radius: calc(var(--app-radius-xl) + 0.6rem);
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0 76%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0 76%, transparent 100%);
+    opacity: 0.9;
+}
+
+/* Courtyard lattice: geometric, open and welcoming. */
+.app-root.premium-plus[data-view="home"] .app-view-home::before {
+    background:
+        radial-gradient(circle at 8% 2%, var(--context-glow), transparent 27%),
+        radial-gradient(circle at 92% 8%, var(--context-gold), transparent 25%),
+        linear-gradient(45deg, transparent 48.7%, var(--context-ink) 49.5% 50.5%, transparent 51.3%) 0 0 / 92px 92px,
+        linear-gradient(-45deg, transparent 48.7%, var(--context-ink) 49.5% 50.5%, transparent 51.3%) 0 0 / 92px 92px;
+}
+
+/* Recitation room: soft concentric arches suggest voice and resonance. */
+.app-root.premium-plus[data-view="home"][data-home-section="audio"] .app-view-home::before {
+    background:
+        radial-gradient(ellipse 72% 34% at 50% -4%, transparent 57%, var(--context-gold) 57.5% 58%, transparent 58.5% 70%, var(--context-ink) 70.5% 71%, transparent 71.5%),
+        radial-gradient(circle at 18% 2%, var(--context-glow), transparent 28%),
+        linear-gradient(45deg, transparent 49%, var(--context-ink) 49.6% 50.4%, transparent 51%) 0 0 / 118px 118px,
+        linear-gradient(-45deg, transparent 49%, var(--context-ink) 49.6% 50.4%, transparent 51%) 0 0 / 118px 118px;
+}
+
+/* Mushaf folio: quiet illumination, an upper arch and fine page margins. */
+.app-root.premium-plus[data-view="reading"] .app-view-reading::before {
+    background:
+        radial-gradient(ellipse 58% 22% at 50% -5%, transparent 68%, var(--context-gold) 68.6% 69%, transparent 69.6%),
+        radial-gradient(circle at 50% 0%, var(--context-glow), transparent 32%),
+        linear-gradient(90deg, transparent 0 3.8%, var(--context-ink) 4% 4.15%, transparent 4.35% 95.65%, var(--context-ink) 95.85% 96%, transparent 96.2%);
+}
+
+/* Duas: a calm star field beneath a restrained mihrab-shaped glow. */
+.app-root.premium-plus[data-view="duas"] .app-view-duas::before {
+    background:
+        radial-gradient(ellipse 70% 34% at 50% -8%, transparent 61%, var(--context-gold) 61.5% 62%, transparent 62.5%),
+        radial-gradient(circle at 50% 0%, var(--context-glow), transparent 34%),
+        radial-gradient(circle, var(--context-ink) 0 1px, transparent 1.5px) 0 0 / 52px 52px;
+}
+
+@media (max-width: 640px) {
+    .app-root.premium-plus :is(.app-view-home, .app-view-reading, .app-view-duas)::before {
+        border-radius: 1.2rem;
+        opacity: 0.72;
     }
 }
 
@@ -1225,23 +1256,6 @@
         );
 }
 
-[data-theme="dark"] .app-root.premium-plus .app-view-home::before,
-[data-theme="dark"] .app-root.premium-plus .app-view-reading::before,
-[data-theme="dark"] .app-root.premium-plus .app-view-duas::before {
-    opacity: 0.62;
-    background:
-        radial-gradient(
-            circle at 12% 0%,
-            rgba(44, 182, 200, 0.08),
-            transparent 26%
-        ),
-        radial-gradient(
-            circle at 88% 6%,
-            rgba(95, 122, 160, 0.06),
-            transparent 24%
-        );
-}
-
 [data-theme="dark"] .app-root.premium-plus .audio-player-primary-btn {
     border-color: rgba(116, 215, 227, 0.34);
     background: linear-gradient(135deg, #1f8aa0 0%, #176f83 100%);
@@ -1297,30 +1311,6 @@
             transparent 42.8% 57%,
             rgba(112, 95, 56, 0.025) 57.4%,
             transparent 57.8% 100%
-        );
-}
-
-[data-theme="light"] .app-root.premium-plus .app-view-home::before,
-[data-theme="light"] .app-root.premium-plus .app-view-reading::before,
-[data-theme="light"] .app-root.premium-plus .app-view-duas::before {
-    opacity: 0.82;
-    background:
-        radial-gradient(
-            circle at 12% 0%,
-            rgba(185, 141, 45, 0.1),
-            transparent 24%
-        ),
-        radial-gradient(
-            circle at 90% 6%,
-            rgba(126, 107, 68, 0.08),
-            transparent 22%
-        ),
-        linear-gradient(
-            120deg,
-            rgba(255, 255, 255, 0.16),
-            transparent 34%,
-            transparent 66%,
-            rgba(185, 141, 45, 0.05)
         );
 }
 

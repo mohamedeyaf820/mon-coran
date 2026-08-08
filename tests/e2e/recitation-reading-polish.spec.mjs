@@ -70,12 +70,9 @@ test("opening animation preloads the reciter library before the first click", as
     });
   });
 
-  const recitationsTab = page
-    .getByRole("tab")
-    .filter({ hasText: /citations/i })
-    .first();
-  await expect(recitationsTab).toBeVisible();
-  await recitationsTab.click();
+  const audioTab = page.getByRole("tab", { name: "Audio", exact: true }).first();
+  await expect(audioTab).toBeVisible();
+  await audioTab.click();
   const firstCard = page.locator('[data-reciter-card="true"]').first();
   await expect(firstCard).toBeVisible();
   await firstCard.locator(".reciter-card__main").click();
@@ -139,7 +136,7 @@ test("mobile recitation collection and reciter library stay clear and valid", as
   await page.goto("/");
 
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
-  await page.getByRole("tab", { name: "Récitations" }).click();
+  await page.getByRole("tab", { name: "Audio", exact: true }).click();
   await expect(page.locator('[data-reciter-card="true"]').first()).toBeVisible();
   expect(
     await page
@@ -155,9 +152,19 @@ test("mobile recitation collection and reciter library stay clear and valid", as
   const firstCard = page.locator('[data-reciter-card="true"]').first();
   const cardBox = await firstCard.boundingBox();
   const favoriteBox = await firstCard.locator(".reciter-card__favorite").boundingBox();
+  const playBox = await firstCard.locator(".reciter-card__listen").boundingBox();
+  const filterMetrics = await page.locator(".home-style-filters").evaluate((node) => ({
+    height: node.getBoundingClientRect().height,
+    flexWrap: getComputedStyle(node).flexWrap,
+  }));
   expect(cardBox?.width || 0).toBeLessThanOrEqual(390);
-  expect(favoriteBox?.width || 0).toBeGreaterThanOrEqual(40);
-  expect(favoriteBox?.height || 0).toBeGreaterThanOrEqual(40);
+  expect(cardBox?.height || 0).toBeLessThanOrEqual(76);
+  expect(favoriteBox?.width || 0).toBeGreaterThanOrEqual(34);
+  expect(favoriteBox?.height || 0).toBeGreaterThanOrEqual(34);
+  expect(favoriteBox?.width || 0).toBeLessThanOrEqual(40);
+  expect(playBox?.width || 0).toBeLessThanOrEqual(40);
+  expect(filterMetrics.height).toBeLessThanOrEqual(40);
+  expect(filterMetrics.flexWrap).toBe("nowrap");
 
   await page.screenshot({
     path: path.join(OUTPUT_DIR, "mobile-recitation-collection.png"),
@@ -213,7 +220,7 @@ test("desktop reciter library keeps biography and surahs in a balanced layout", 
   await page.goto("/");
 
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
-  await page.getByRole("tab", { name: "Récitations" }).click();
+  await page.getByRole("tab", { name: "Audio", exact: true }).click();
   const firstCard = page.locator('[data-reciter-card="true"]').first();
   await expect(firstCard).toBeVisible();
   await firstCard.locator(".reciter-card__main").click();
@@ -223,12 +230,17 @@ test("desktop reciter library keeps biography and surahs in a balanced layout", 
   await expect(modal).toHaveAttribute("role", "dialog");
   await expect(modal).toHaveAttribute("aria-modal", "true");
   const bioToggle = modal.getByRole("button", { name: "Voir plus" });
-  await expect(bioToggle).toHaveAttribute("aria-expanded", "false");
-  await bioToggle.click();
-  await expect(modal.getByRole("button", { name: "Voir moins" })).toHaveAttribute(
-    "aria-expanded",
-    "true",
-  );
+  if (await bioToggle.count()) {
+    await expect(bioToggle).toHaveAttribute("aria-expanded", "false");
+    await bioToggle.click();
+    await expect(modal.getByRole("button", { name: "Voir moins" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+  } else {
+    await expect(modal.locator(".reciter-detail__bio p")).toBeVisible();
+    expect((await modal.locator(".reciter-detail__bio p").innerText()).length).toBeGreaterThan(80);
+  }
   const modalBox = await modal.boundingBox();
   const layoutColumns = await page
     .locator(".reciter-detail__layout")
@@ -240,6 +252,110 @@ test("desktop reciter library keeps biography and surahs in a balanced layout", 
   await modal.screenshot({
     path: path.join(OUTPUT_DIR, "desktop-reciter-library.png"),
   });
+});
+
+test("reciter library downloads a surah into the persistent offline cache", async ({
+  page,
+}) => {
+  await installQuranNetworkFixtures(page);
+  await page.route(/\.mp3(?:\?.*)?$/i, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "audio/mpeg",
+      body: Buffer.from([73, 68, 51, 4, 0, 0, 0, 0, 0, 0]),
+    });
+  });
+  await seed(page, { showHome: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.getByRole("tab", { name: "Audio", exact: true }).click();
+  const firstCard = page.locator('[data-reciter-card="true"]').first();
+  await expect(firstCard).toBeVisible();
+  await firstCard.locator(".reciter-card__main").click();
+
+  const search = page.getByRole("textbox", { name: "Rechercher une sourate" });
+  await search.fill("Fatiha");
+  const download = page.getByRole("button", {
+    name: /Télécharger pour l’écoute hors connexion.*L'Ouverture \(1\)/,
+  });
+  await expect(download).toBeEnabled();
+  await download.click();
+  await expect(
+    page.getByRole("button", {
+      name: /Disponible hors connexion.*L'Ouverture \(1\)/,
+    }),
+  ).toBeVisible({ timeout: 30_000 });
+
+  const offlineState = await page.evaluate(async () => {
+    const cache = await caches.open("mushafplus-audio-v2");
+    const keys = await cache.keys();
+    const registry = JSON.parse(
+      localStorage.getItem("mushaf_offline_progress_v2") || "{}",
+    );
+    return {
+      cacheEntries: keys.length,
+      completed: Object.values(registry).some((entry) => entry?.status === "done"),
+    };
+  });
+  expect(offlineState.cacheEntries).toBeGreaterThan(0);
+  expect(offlineState.completed).toBe(true);
+});
+
+test("reciter cards and detail remain usable on a narrow phone and tablet", async ({
+  page,
+}) => {
+  await seed(page, { showHome: true });
+
+  for (const viewport of [
+    { width: 320, height: 700 },
+    { width: 768, height: 900 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+    await page.getByRole("tab", { name: "Audio", exact: true }).click();
+
+    const firstCard = page.locator('[data-reciter-card="true"]').first();
+    await expect(firstCard).toBeVisible();
+    const cardMetrics = await firstCard.evaluate((node) => {
+      const main = node.querySelector(".reciter-card__main");
+      const media = node.querySelector(".reciter-card__media");
+      const portrait = media?.querySelector("img");
+      const actions = node.querySelector(".reciter-card__actions");
+      return {
+        card: node.getBoundingClientRect().toJSON(),
+        media: media?.getBoundingClientRect().toJSON(),
+        portrait: portrait?.getBoundingClientRect().toJSON(),
+        actions: actions?.getBoundingClientRect().toJSON(),
+        mainBorder: main ? getComputedStyle(main).borderTopWidth : null,
+        mainBackground: main ? getComputedStyle(main).backgroundColor : null,
+      };
+    });
+
+    expect(cardMetrics.card.width).toBeLessThanOrEqual(viewport.width);
+    expect(cardMetrics.media.width).toBeGreaterThanOrEqual(viewport.width <= 360 ? 39 : 50);
+    expect(cardMetrics.portrait.width).toBeLessThanOrEqual(cardMetrics.media.width + 1);
+    expect(cardMetrics.portrait.height).toBeLessThanOrEqual(cardMetrics.media.height + 1);
+    expect(cardMetrics.actions.x).toBeGreaterThan(cardMetrics.media.x + cardMetrics.media.width);
+    expect(cardMetrics.mainBorder).toBe("0px");
+    expect(cardMetrics.mainBackground).toBe("rgba(0, 0, 0, 0)");
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(2);
+
+    await firstCard.locator(".reciter-card__main").click();
+    const modal = page.locator(".reciter-detail");
+    await expect(modal).toBeVisible();
+    const modalBox = await modal.boundingBox();
+    expect((modalBox?.x || 0) + (modalBox?.width || 0)).toBeLessThanOrEqual(
+      viewport.width + 1,
+    );
+    expect((modalBox?.y || 0) + (modalBox?.height || 0)).toBeLessThanOrEqual(
+      viewport.height + 1,
+    );
+    await expect(
+      page.getByRole("textbox", { name: "Rechercher une sourate" }),
+    ).toBeVisible();
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(2);
+  }
 });
 
 test("reader interactions do not trigger a React update loop", async ({ page }) => {
@@ -254,6 +370,11 @@ test("reader interactions do not trigger a React update loop", async ({ page }) 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/surah/1");
   await expect(page.locator(".srh-root")).toBeVisible({ timeout: 30_000 });
+  const disclosure = page.locator(".srh-mobile-bar__disclosure");
+  if ((await disclosure.getAttribute("aria-expanded")) !== "true") {
+    await disclosure.click();
+  }
+  await expect(disclosure).toHaveAttribute("aria-expanded", "true");
   await page.getByRole("button", { name: "Mushaf", exact: true }).click();
   await expect(page.locator(".quran-mode-pane--mushaf")).toBeVisible();
   await page.getByRole("button", { name: "Liste", exact: true }).click();

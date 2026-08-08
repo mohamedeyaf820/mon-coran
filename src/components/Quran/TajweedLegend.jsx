@@ -31,16 +31,16 @@ function TajweedLegend({ lang = "fr", riwaya = "hafs" }) {
   const copy = LEGEND_COPY[lang] || LEGEND_COPY.fr;
 
   return (
-    <section
+    <details
       className="tajweed-legend"
       aria-label={t("tajwid.legend", lang)}
       data-riwaya={riwaya}
       data-testid="tajweed-legend"
     >
-      <header className="tajweed-legend__intro">
+      <summary className="tajweed-legend__intro">
         <span className="tajweed-legend__eyebrow">{copy.eyebrow}</span>
         <span className="tajweed-legend__helper">{copy.helper}</span>
-      </header>
+      </summary>
 
       <div className="tajweed-legend__rules" role="list">
         {LEGEND_RULES.map(([ruleId, labelKey]) => (
@@ -59,7 +59,7 @@ function TajweedLegend({ lang = "fr", riwaya = "hafs" }) {
           </span>
         ))}
       </div>
-    </section>
+    </details>
   );
 }
 

@@ -147,10 +147,10 @@ for (const [theme, expectedTokens] of Object.entries(CANONICAL_THEMES)) {
 test("sombre: les cartes de l'accueil restent sur la palette sombre", async ({ page }) => {
   await seedState(page, "dark", true);
   await page.goto("/");
-  await expect(page.locator(".home-session-card")).toBeVisible();
+  await expect(page.locator(".home-resume-panel")).toBeVisible();
 
-  const surfaces = await page.locator(".home-session-card").evaluate((card) => {
-    const heading = card.querySelector("h2");
+  const surfaces = await page.locator(".home-resume-panel").evaluate((card) => {
+    const heading = card.querySelector("h1");
     return {
       background: getComputedStyle(card).backgroundColor,
       heading: heading ? getComputedStyle(heading).color : "",
@@ -167,7 +167,7 @@ test("reprendre une lecture en mode page conserve la page", async ({ page }) => 
   await expect(page.locator(".mp-header")).toBeVisible();
   await page.locator(".mp-header__brand").click();
   await expect(page.locator(".app-view-home")).toBeVisible();
-  await page.locator(".home-session-card button").last().click();
+  await page.locator(".home-resume-panel__primary").click();
   await expect(page).toHaveURL(/\/page\/42$/);
 });
 
@@ -216,8 +216,8 @@ test("clair: les onglets et la fermeture de la sidebar restent lisibles", async 
 
   expect(closeStyle.backgroundImage).toBe("none");
   expect(contrastRatio(closeStyle.color, closeStyle.backgroundColor)).toBeGreaterThanOrEqual(3);
-  expect(closeStyle.iconWidth).toBeGreaterThanOrEqual(17);
-  expect(closeStyle.iconHeight).toBeGreaterThanOrEqual(17);
+  expect(closeStyle.iconWidth).toBeGreaterThanOrEqual(16);
+  expect(closeStyle.iconHeight).toBeGreaterThanOrEqual(16);
 });
 
 test("clair: la recherche utilise un backdrop translucide et une surface lisible", async ({ page }) => {

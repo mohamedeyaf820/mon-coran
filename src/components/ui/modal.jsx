@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useLayoutEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "../../lib/utils";
@@ -42,7 +42,7 @@ export function Modal({
     }
   }, [onClose]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (open) {
       previousFocusRef.current = document.activeElement;
       document.addEventListener("keydown", handleKeyDown);

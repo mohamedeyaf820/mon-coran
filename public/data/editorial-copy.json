@@ -7,9 +7,9 @@
     "surahs": { "title": "All 114 surahs in one directory", "intro": "Search by number or name, then open a surah directly in the reader.", "search": "Search for a surah…", "all": "All", "meccan": "Meccan", "medinan": "Medinan", "count": "surahs", "ayahs": "verses", "empty": "No surah matches this search." },
     "about": {
       "title": "A calm, useful and verifiable reading companion",
-      "intro": "MushafPlus is an independent Quran app for reading, listening, study and memorization, with no required account.",
+      "intro": "MushafPlus is an independent Quran app for reading, listening and studying the Quran, with no required account.",
       "sections": [
-        ["Purpose", "Bring Hafs and Warsh texts, translations, recitations, Tajweed, bookmarks, notes and personal goals into a calm reading environment."],
+        ["Purpose", "Bring Hafs and Warsh texts, translations, recitations, Tajweed, bookmarks and notes into a calm reading environment."],
         ["Principles", "Text integrity, clear attribution, local privacy, accessibility and continuous improvement guide the project."],
         ["Project lead", "Mohamed Eyaf leads MushafPlus. Code, changes and reports are available in the public repository."],
         ["Corrections and version", "Version 1.1.0, updated 2026-08-02. Reports are reviewed, documented and shipped in a later release."]
@@ -19,10 +19,10 @@
       "title": "Your reading data stays on your device first",
       "intro": "MushafPlus works without an account or public profile. Personal reading data is stored in your browser.",
       "sections": [
-        ["Stored locally", "Preferences, last position, bookmarks, notes, history, memorization and goals use localStorage or IndexedDB."],
-        ["External services", "Text, translations and audio may be requested from third-party APIs or CDNs, which receive the network data needed to answer the request. Prayer times are computed locally."],
-        ["Permissions", "Location is requested only for prayer times; microphone access only starts with voice search. MushafPlus stores neither precise location nor recordings."],
-        ["Your control", "You can export or delete local data. MushafPlus performs no automatic cloud synchronization."]
+        ["Stored locally", "Preferences, last position, bookmarks and notes use localStorage or IndexedDB."],
+        ["External services", "Text, translations and audio may be requested from third-party APIs or CDNs, which receive the network data needed to answer the request."],
+        ["Permissions", "Microphone access starts only when you intentionally launch voice search. MushafPlus stores no voice recordings."],
+        ["Your control", "You can manage or delete bookmarks, notes, audio lists and downloads from the Library and settings. MushafPlus performs no automatic cloud synchronization."]
       ]
     },
     "legal": {
@@ -39,7 +39,7 @@
       "title": "Named, accessible and attributed sources",
       "intro": "Each content family is linked to its provider, with a compatible fallback when needed.",
       "sections": [
-        ["Text and structure", "Quran Foundation / Quran.com, AlQuran Cloud and Tanzil support text, words, translations, metadata and integrity checks."],
+        ["Text and structure", "Quran Foundation / Quran.com, AlQuran Cloud and Tanzil support Quran text, translations, metadata and integrity checks."],
         ["Recitations", "EveryAyah, MP3Quran, QuranicAudio, Quran.com Audio and Islamic Network are used according to reciter and availability."],
         ["Warsh", "Warsh text and audio catalogues are kept separate from Hafs and explicitly labelled."],
         ["Fonts and portraits", "Quran fonts and portraits remain attributed; a neutral avatar is used when a photo is unavailable or unverified."]
@@ -57,7 +57,7 @@
     "surahs": { "title": "السور المائة والأربع عشرة في فهرس واحد", "intro": "ابحث برقم السورة أو اسمها ثم افتحها مباشرة في صفحة القراءة.", "search": "ابحث عن سورة…", "all": "الكل", "meccan": "مكية", "medinan": "مدنية", "count": "سورة", "ayahs": "آيات", "empty": "لا توجد سورة مطابقة لهذا البحث." },
     "about": {
       "title": "رفيق قراءة هادئ ونافع وموثّق",
-      "intro": "MushafPlus تطبيق قرآني مستقل للقراءة والاستماع والدراسة والحفظ من دون اشتراط حساب.",
+      "intro": "MushafPlus تطبيق قرآني مستقل لقراءة القرآن والاستماع إليه ودراسته من دون اشتراط حساب.",
       "sections": [
         ["الغاية", "جمع نصي حفص وورش والترجمات والتلاوات وأحكام التجويد والعلامات والملاحظات في بيئة قراءة هادئة."],
         ["المبادئ", "سلامة النص ووضوح المصادر والخصوصية المحلية وإتاحة الاستخدام والتحسين المستمر."],
@@ -69,9 +69,9 @@
       "title": "تبقى بيانات قراءتك على جهازك أولاً",
       "intro": "يعمل MushafPlus بلا حساب أو ملف عام، وتُحفظ بيانات القراءة الشخصية في المتصفح.",
       "sections": [
-        ["التخزين المحلي", "تُحفظ التفضيلات وآخر موضع والعلامات والملاحظات وسجل القراءة والحفظ محلياً."],
-        ["الخدمات الخارجية", "قد يُطلب النص والترجمات والصوت من واجهات أو شبكات خارجية تستقبل بيانات الاتصال اللازمة، أما مواقيت الصلاة فتحسب محلياً."],
-        ["الأذونات", "لا يُطلب الموقع إلا للمواقيت ولا يُطلب الميكروفون إلا عند تشغيل البحث الصوتي، ولا يحتفظ التطبيق بتسجيل صوتي."],
+        ["التخزين المحلي", "تُحفظ التفضيلات وآخر موضع والعلامات والملاحظات محلياً."],
+        ["الخدمات الخارجية", "قد يُطلب النص والترجمات والصوت من واجهات أو شبكات خارجية تستقبل بيانات الاتصال اللازمة."],
+        ["الأذونات", "لا يُطلب الميكروفون إلا عند تشغيل البحث الصوتي اختيارياً، ولا يحتفظ التطبيق بأي تسجيل صوتي."],
         ["تحكمك", "يمكنك تصدير البيانات المحلية أو حذفها، ولا ينفذ التطبيق مزامنة سحابية تلقائية."]
       ]
     },

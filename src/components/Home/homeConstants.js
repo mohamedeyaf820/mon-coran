@@ -1,9 +1,9 @@
 import SURAHS from "../../data/surahs";
 
 /* ─── Pagination / layout ─────────────────────────────────────────────────── */
-export const HOME_INITIAL_SURAHS     = 36;
-export const HOME_INITIAL_SURAHS_LOW = 18;
-export const HOME_SURAHS_BATCH       = 24;
+export const HOME_INITIAL_SURAHS     = 48;
+export const HOME_INITIAL_SURAHS_LOW = 24;
+export const HOME_SURAHS_BATCH       = 36;
 
 export const HOME_DEFERRED_SECTION_STYLE = {
   contentVisibility: "auto",
@@ -190,7 +190,7 @@ export const DAILY_VERSES = [
 /* ─── Type de sourate ─────────────────────────────────────────────────────── */
 export const TYPE_INFO = {
   Meccan:  { fr: "Mecquoise", en: "Meccan",  ar: "مكية"  },
-  Medinan: { fr: "Medinoise", en: "Medinan", ar: "مدنية" },
+  Medinan: { fr: "Médinoise", en: "Medinan", ar: "مدنية" },
 };
 
 /* ─── Articles de blog (données de démonstration) ────────────────────────── */
@@ -266,7 +266,7 @@ export function getSuggestedSurahs(date = new Date()) {
       icon:   "fa-sun",
       surahs: [
         { n: 1,   fr: "L'Ouverture",        en: "The Opening",      ar: "الفاتحة"      },
-        { n: 112, fr: "Sincerite pure",      en: "Pure Sincerity",   ar: "الإخلاص"     },
+        { n: 112, fr: "Sincérité pure",      en: "Pure Sincerity",   ar: "الإخلاص"     },
         { n: 113, fr: "Protection de l'aube", en: "Dawn Guard",      ar: "الفلق"       },
         { n: 114, fr: "Protection du mal",   en: "Against Evil",     ar: "الناس"        },
         { n: 36,  fr: "Coeur du Coran",      en: "Heart of Quran",   ar: "قلب القرآن"  },

@@ -2,19 +2,20 @@
 
 :root[data-theme="light"],
 [data-theme="light"] {
-    --brand-bg: #f7f9f8;
-    --brand-ink: #17211c;
-    --brand-accent: #0b6235;
-    --brand-accent-rgb: 11, 98, 53;
-    --theme-arabic-base: #000000;
+    --brand-bg: #f6f8f4;
+    --brand-ink: #19251f;
+    --brand-accent: #0f6a43;
+    --brand-accent-rgb: 15, 106, 67;
+    --brand-gold: #b48732;
+    --theme-arabic-base: #121914;
     --theme-scene-a: radial-gradient(
         circle at 12% -14%,
-        rgba(26, 143, 146, 0.12),
+        rgba(15, 106, 67, 0.1),
         transparent 38%
     );
     --theme-scene-b: radial-gradient(
         circle at 88% -12%,
-        rgba(110, 127, 145, 0.05),
+        rgba(180, 135, 50, 0.07),
         transparent 34%
     );
     --theme-pattern:
@@ -61,7 +62,7 @@
             transparent 30%
         );
 
-    
+
     --tajwid-silent: #999999;
     --tajwid-lam-shamsiyya: #999999;
     --tajwid-ghunna: #26b55d;
@@ -86,13 +87,14 @@
 
 :root[data-theme="sepia"],
 [data-theme="sepia"] {
-    --brand-bg: #f3e8cf;
-    --brand-ink: #241505;
-    --brand-accent: #7c4a17;
-    --brand-accent-rgb: 124, 74, 23;
-    --theme-arabic-base: #1a0f00;
+    --brand-bg: #f3ead8;
+    --brand-ink: #2b2117;
+    --brand-accent: #77552c;
+    --brand-accent-rgb: 119, 85, 44;
+    --brand-gold: #a9782f;
+    --theme-arabic-base: #21170e;
 
-    
+
     --emerald: #7c4a17;
     --emerald-lit: #9a6425;
     --emerald-pale: #ead9b8;
@@ -151,7 +153,7 @@
             transparent 28%
         );
 
-    
+
     --tajwid-silent: #999999;
     --tajwid-lam-shamsiyya: #999999;
     --tajwid-ghunna: #26b55d;
@@ -176,11 +178,12 @@
 
 :root[data-theme="dark"],
 [data-theme="dark"] {
-    --brand-bg: #101412;
-    --brand-ink: #eceae3;
-    --brand-accent: #2f9f6b;
-    --brand-accent-rgb: 47, 159, 107;
-    --theme-arabic-base: #fbf7ec;
+    --brand-bg: #0c1511;
+    --brand-ink: #f0eee6;
+    --brand-accent: #38a675;
+    --brand-accent-rgb: 56, 166, 117;
+    --brand-gold: #d0ad62;
+    --theme-arabic-base: #f5f0e5;
     --theme-scene-a: radial-gradient(
         circle at 12% -14%,
         rgba(47, 159, 107, 0.11),
@@ -235,7 +238,7 @@
             transparent 28%
         );
 
-    
+
     --tajwid-silent: #999999;
     --tajwid-lam-shamsiyya: #999999;
     --tajwid-ghunna: #26b55d;
@@ -264,18 +267,18 @@
     --theme-bg: var(--brand-bg);
     --theme-bg-alt: color-mix(
         in srgb,
-        var(--brand-bg) 92%,
-        var(--brand-ink) 8%
+        var(--brand-bg) 95%,
+        var(--brand-ink) 5%
     );
     --theme-surface: color-mix(
         in srgb,
-        var(--brand-bg) 90%,
-        var(--brand-ink) 10%
+        var(--brand-bg) 93%,
+        var(--brand-ink) 7%
     );
     --theme-surface-soft: color-mix(
         in srgb,
-        var(--brand-bg) 86%,
-        var(--brand-ink) 14%
+        var(--brand-bg) 89%,
+        var(--brand-ink) 11%
     );
     --theme-surface-glass: color-mix(
         in srgb,
@@ -290,8 +293,8 @@
     );
     --theme-text-muted: color-mix(
         in srgb,
-        var(--brand-ink) 56%,
-        var(--brand-bg) 44%
+        var(--brand-ink) 64%,
+        var(--brand-bg) 36%
     );
     --theme-text-inverse: color-mix(in srgb, #ffffff 88%, var(--brand-bg) 12%);
     --theme-primary: var(--brand-accent);
@@ -302,7 +305,7 @@
         var(--brand-accent) 80%,
         #ffffff 20%
     );
-    --theme-border: color-mix(in srgb, var(--brand-ink) 24%, transparent 76%);
+    --theme-border: color-mix(in srgb, var(--brand-ink) 20%, transparent 80%);
     --theme-border-strong: color-mix(
         in srgb,
         var(--brand-ink) 36%,
@@ -333,7 +336,7 @@
             var(--brand-bg) 100%
         );
 
-    
+
     --bg: var(--theme-bg);
     --bg-primary: var(--theme-bg);
     --bg-secondary: var(--theme-bg-alt);
@@ -371,8 +374,8 @@
         var(--theme-text) 28%
     );
     --accent: var(--theme-accent);
-    --gold: var(--theme-accent);
-    --gold-bright: var(--theme-accent-bright);
+    --gold: var(--brand-gold, var(--theme-accent));
+    --gold-bright: color-mix(in srgb, var(--brand-gold, var(--theme-accent)) 78%, #fff 22%);
     --border: var(--theme-border);
     --border-light: color-mix(
         in srgb,
@@ -721,8 +724,7 @@
 .app-view-reading .cpv-surah-header-name,
 .app-view-reading .bismillah-text,
 .app-view-reading .bismillah-text-clean,
-.app-view-reading .cpv-basmala,
-.app-view-reading .quran-word-arabic {
+.app-view-reading .cpv-basmala {
     color: var(--theme-arabic) !important;
 }
 
@@ -1335,40 +1337,6 @@ html[data-theme="sepia"]
     color: #3d2b10;
 }
 
-html[data-theme="sepia"]
-    .app-root
-    :is(
-        .home-hero-compact,
-        .home-session-card,
-        .content-card,
-        .premium-card,
-        .qcom-verse-card,
-        .qc-verse-card,
-        .qc-ayah-block,
-        .rd-ayah,
-        .surah-card,
-        .dua-card,
-        .duas-card,
-        .settings-card,
-        .modal-item-card,
-        .verse-compare-card,
-        .tools-hub-card,
-        .reciter-card,
-        .reciter-radio-card,
-        .surah-info-card
-    ) {
-    border-color: rgba(139, 107, 62, 0.18);
-    background: linear-gradient(
-        180deg,
-        rgba(255, 252, 244, 0.95),
-        rgba(248, 240, 220, 0.92)
-    );
-    color: var(--brand-ink);
-    box-shadow:
-        0 8px 24px rgba(72, 55, 35, 0.08),
-        inset 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-
 html[data-theme="sepia"] .quran-display--platform {
     background:
         radial-gradient(
@@ -1414,40 +1382,6 @@ html[data-theme="sepia"]
         .rd-trans-item
     ) {
     color: #4a3520;
-}
-
-html[data-theme="sepia"]
-    .quran-display--platform
-    :is(
-        .qc-reader-surah-header,
-        .reader-toolbar,
-        .qc-reader-toolbar,
-        .page-header-bar,
-        .quran-nav,
-        .chunk-nav-bar,
-        .mushaf-layout-toggle-bar
-    ) {
-    border-color: rgba(139, 107, 62, 0.2);
-    background: linear-gradient(
-        180deg,
-        rgba(253, 248, 235, 0.94),
-        rgba(245, 237, 215, 0.92)
-    );
-    color: var(--brand-ink);
-    box-shadow: 0 8px 24px rgba(72, 55, 35, 0.08);
-}
-
-html[data-theme="sepia"]
-    .quran-display--platform
-    .qc-reader-surah-header__arabic {
-    border-color: rgba(181, 125, 42, 0.3);
-    background: linear-gradient(
-        180deg,
-        rgba(255, 250, 235, 0.98),
-        rgba(248, 238, 210, 0.96)
-    );
-    color: #5c3d12;
-    box-shadow: 0 8px 24px rgba(72, 55, 35, 0.1);
 }
 
 html[data-theme="sepia"]

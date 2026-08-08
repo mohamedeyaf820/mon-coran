@@ -139,33 +139,6 @@ export default function DuasPage() {
             />
           </label>
 
-          <div className="duas-hero-stats">
-            <div className="duas-hero-stat">
-              <span className="duas-hero-stat-label">
-                {lang === "ar" ? "العرض" : lang === "fr" ? "Affichage" : "View"}
-              </span>
-              <strong>{resultCountLabel}</strong>
-            </div>
-            <div className="duas-hero-stat">
-              <span className="duas-hero-stat-label">
-                {lang === "ar" ? "الفئة" : lang === "fr" ? "Catégorie" : "Category"}
-              </span>
-              <strong>{activeCategoryLabel}</strong>
-            </div>
-            <div className="duas-hero-stat duas-hero-stat--hint">
-              <span className="duas-hero-stat-label">
-                {lang === "ar" ? "Usage" : lang === "fr" ? "Usage" : "Use"}
-              </span>
-              <strong>
-                {lang === "fr"
-                  ? "Copier ou ouvrir le verset"
-                  : lang === "ar"
-                    ? "انسخ الدعاء او افتح الآية"
-                    : "Copy or open the verse"}
-              </strong>
-            </div>
-          </div>
-
           <div
             className="duas-categories scrollbar-hide"
             role="tablist"
@@ -176,7 +149,8 @@ export default function DuasPage() {
                 key={cat.id}
                 className={`duas-cat-btn ${activeCategory === cat.id ? "active" : ""}`}
                 onClick={() => setActiveCategory(cat.id)}
-                aria-pressed={activeCategory === cat.id}
+                role="tab"
+                aria-selected={activeCategory === cat.id}
                 type="button"
               >
                 {lang === "ar" ? cat.ar : lang === "fr" ? cat.fr : cat.en}
@@ -192,7 +166,10 @@ export default function DuasPage() {
             <h2 className="duas-results-title">{labels.collection}</h2>
             <p className="duas-results-copy">{labels.collectionCopy}</p>
           </div>
-          <div className="duas-results-badge">{resultCountLabel}</div>
+          <div className="duas-results-badge" aria-live="polite">
+            <span>{activeCategoryLabel}</span>
+            <strong>{resultCountLabel}</strong>
+          </div>
         </div>
 
         <div className="gallery-grid">

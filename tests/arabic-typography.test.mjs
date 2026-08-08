@@ -29,7 +29,7 @@ test("Arabic typography scales progressively with the connected device", () => {
     }),
   );
 
-  assert.deepEqual(sizes, [21, 27, 31, 34]);
+  assert.deepEqual(sizes, [24, 27, 31, 34]);
   for (let index = 1; index < sizes.length; index += 1) {
     assert.ok(sizes[index] > sizes[index - 1]);
   }
@@ -81,7 +81,7 @@ test("Mushaf typography stays responsive without exceeding layout safety caps", 
       viewportWidth: 1440,
       mushafLayout: "mushaf",
     }),
-    72,
+    52,
   );
 });
 
@@ -157,4 +157,27 @@ test("Yusuf 12:11 keeps its Quranic sign without the mobile black-dot fallback g
   assert.equal(rendered, canonicalWord);
   assert.equal(rendered.includes("\u06EC"), false);
   assert.equal(rendered.includes("\u06EB"), true);
+});
+
+test("Al-Mulk pause signs stay attached to the preceding Uthmani glyph", () => {
+  const qpcText = "\u0639\u064E\u0645\u064E\u0644\u0627\u064B\u200C\u06DA \u0648\u064E\u0647\u064F\u0648\u064E";
+  const ayah = {
+    text: qpcText,
+    quranCom: {
+      textQpcHafs: qpcText,
+      textUthmani: qpcText,
+    },
+  };
+
+  for (const fontFamily of [
+    "qpc-hafs",
+    "qpc-indopak",
+    "scheherazade-new",
+    "amiri-quran",
+    "noto-naskh-arabic",
+  ]) {
+    const rendered = getAyahTextForFont(ayah, fontFamily, "hafs");
+    assert.equal(rendered.includes("\u200C\u06DA"), false, fontFamily);
+    assert.equal(rendered.includes("\u06DA"), true, fontFamily);
+  }
 });

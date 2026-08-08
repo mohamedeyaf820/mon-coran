@@ -42,7 +42,7 @@ test("voice search transcribes speech into the Quran search field", async ({
     .getByRole("button", { name: /Rechercher avec votre voix|Search with your voice|البحث باستخدام صوتك/i })
     .click();
 
-  await expect(dialog.getByRole("combobox")).toHaveValue("الرحمن");
+  await expect(dialog.getByRole("textbox").first()).toHaveValue("الرحمن");
   await expect(dialog.locator(".search-pro__voice-status")).toBeHidden();
 });
 

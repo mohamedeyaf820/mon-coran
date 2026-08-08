@@ -9,15 +9,14 @@ html {
   text-size-adjust: 100%;
 }
 
-/* Keep the primary verse target stable before deferred reading CSS arrives. */
 @media (max-width: 640px) {
   html body .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card .qc-list-card__reference.qc-list-card__reference {
-    flex: 0 0 44px !important;
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
+    flex: 0 0 34px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
     padding: 0 !important;
   }
 }

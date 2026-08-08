@@ -76,3 +76,48 @@ test("PWA: a visited surah keeps its Quran text offline", async ({ page, context
   await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".qc-ayah-text-ar").first()).toContainText(onlineText);
 });
+
+test("PWA: an explicitly downloaded recitation is served while offline", async ({
+  page,
+  context,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "mushaf-plus-settings",
+      JSON.stringify({ skipSplashAnimation: true, showHome: true, lang: "fr" }),
+    );
+  });
+  await page.goto("/");
+  await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload();
+  }
+  await expect
+    .poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)))
+    .toBe(true);
+
+  const audioUrl =
+    "https://cdn.islamic.network/quran/audio/128/offline-test/1.mp3";
+  await page.evaluate(async (url) => {
+    const cache = await caches.open("mushafplus-audio-v2");
+    await cache.put(
+      url,
+      new Response(new Uint8Array([73, 68, 51, 4, 0, 0, 0, 0, 0, 0]), {
+        status: 200,
+        headers: { "Content-Type": "audio/mpeg" },
+      }),
+    );
+  }, audioUrl);
+
+  await context.setOffline(true);
+  const cachedResponse = await page.evaluate(async (url) => {
+    const response = await fetch(url, { mode: "no-cors" });
+    return { ok: response.ok, status: response.status, type: response.type };
+  }, audioUrl);
+  expect(
+    cachedResponse.ok ||
+      cachedResponse.status === 200 ||
+      cachedResponse.type === "opaque",
+  ).toBe(true);
+});

@@ -3,14 +3,14 @@
   --mushaf-paper: #fffdf8;
   --mushaf-ink: #1b2823;
   --mushaf-muted: #69756f;
-  --mushaf-rule: rgba(118, 91, 41, 0.24);
-  --mushaf-rule-strong: rgba(174, 133, 45, 0.5);
+  --mushaf-rule: rgba(118, 91, 41, 0.22);
+  --mushaf-rule-strong: rgba(174, 133, 45, 0.48);
   --mushaf-accent: #0b704b;
-  --mushaf-accent-soft: rgba(11, 112, 75, 0.08);
-  --mushaf-page-pad: clamp(1.15rem, 2.8vw, 1.85rem) clamp(1rem, 5vw, 3.25rem) clamp(1.2rem, 3vw, 1.9rem);
+  --mushaf-accent-soft: rgba(11, 112, 75, 0.07);
+  --mushaf-page-pad: clamp(1.35rem, 3vw, 2rem) clamp(1.1rem, 5vw, 3.25rem) clamp(1.3rem, 3vw, 2rem);
   --mushaf-title-min: clamp(10.5rem, 32vw, 14rem);
   --mushaf-basmala-size: clamp(2rem, 1.65rem + 1.4vw, 2.7rem);
-  --mushaf-text-leading: clamp(2.05, var(--cpv-line-height, 2.28), 2.42);
+  --mushaf-text-leading: clamp(2.1, var(--cpv-line-height, 2.32), 2.46);
 }
 
 html[data-theme="dark"] .mushaf-page-wrapper {
@@ -42,9 +42,15 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   overflow: hidden !important;
   border: 1px solid var(--mushaf-rule) !important;
   border-radius: clamp(1rem, 2vw, 1.5rem) !important;
-  background: radial-gradient(circle at 50% -15%, var(--mushaf-accent-soft), transparent 38%), var(--mushaf-paper) !important;
+  background:
+    radial-gradient(ellipse 80% 35% at 50% -5%, color-mix(in srgb, var(--mushaf-accent) 6%, transparent), transparent),
+    var(--mushaf-paper) !important;
   color: var(--mushaf-ink) !important;
-  box-shadow: 0 22px 54px rgba(4, 14, 10, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  box-shadow:
+    0 2px 6px rgba(4, 14, 10, 0.04),
+    0 12px 40px rgba(4, 14, 10, 0.09),
+    0 28px 60px rgba(4, 14, 10, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper::before,
@@ -65,11 +71,13 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) auto !important;
   gap: 1rem !important;
-  margin: 0 0 clamp(0.6rem, 1.6vw, 1rem) !important;
-  padding: 0 0.15rem 0.6rem !important;
+  margin: 0 0 clamp(0.75rem, 1.8vw, 1.1rem) !important;
+  padding: 0 0.15rem 0.65rem !important;
   border-bottom: 1px solid var(--mushaf-rule) !important;
   color: var(--mushaf-muted) !important;
   font-size: clamp(0.6rem, 0.55rem + 0.15vw, 0.68rem) !important;
+  font-weight: 500;
+  letter-spacing: 0.04em;
   line-height: 1.25;
 }
 
@@ -77,6 +85,26 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Juz badge — pill style on the bare <span> inside mushaf-page-header */
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-juz-indicator,
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-juz-indicator,
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header > span:first-child {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.14rem 0.52rem 0.13rem !important;
+  border: 1px solid var(--mushaf-rule) !important;
+  border-radius: 99px !important;
+  background: color-mix(in srgb, var(--mushaf-accent) 7%, var(--mushaf-paper)) !important;
+  color: color-mix(in srgb, var(--mushaf-accent) 72%, var(--mushaf-ink)) !important;
+  font-size: 0.58rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-surah-header-inline,
@@ -203,32 +231,54 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   font-family: var(--qd-font-family, var(--font-quran), serif) !important;
   font-size: var(--cpv-font-size, 2.25rem) !important;
   line-height: var(--mushaf-text-leading) !important;
-  word-spacing: var(--cpv-word-spacing, 0.045em) !important;
+  word-spacing: 0 !important;
   text-align: justify !important;
-  text-align-last: center !important;
+  text-justify: auto !important;
+  text-align-last: right !important;
   text-rendering: optimizeLegibility;
 }
 
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse {
-  border-radius: 0.35em;
-  transition: background-color 140ms ease, box-shadow 140ms ease !important;
+/* Kill word-spacing overrides from other files on children */
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block :is(.quran-verse-inline, .verse-text, .quran-arabic-text) {
+  word-spacing: inherit !important;
 }
 
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse:hover,
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse:focus-visible,
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse--active,
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse--playing {
-  background: var(--mushaf-accent-soft) !important;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--mushaf-accent) 28%, transparent) !important;
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse {
+  border-radius: 0.3em;
+  transition: background-color 120ms ease, box-shadow 120ms ease !important;
+}
+
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse:hover {
+  background: color-mix(in srgb, var(--mushaf-accent) 6%, transparent) !important;
+  box-shadow: none !important;
   color: var(--mushaf-ink) !important;
   outline: 0;
+}
+
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse:focus-visible {
+  background: color-mix(in srgb, var(--mushaf-accent) 8%, transparent) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--mushaf-accent) 30%, transparent) !important;
+  outline: 0;
+}
+
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse--active {
+  background: color-mix(in srgb, var(--mushaf-accent) 9%, transparent) !important;
+  box-shadow: none !important;
+  color: var(--mushaf-ink) !important;
+}
+
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse--playing {
+  background: color-mix(in srgb, var(--mushaf-accent) 13%, transparent) !important;
+  box-shadow: inset 3px 0 0 var(--mushaf-accent) !important;
+  color: var(--mushaf-ink) !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-footer {
   display: grid !important;
   grid-template-columns: minmax(1.5rem, 1fr) auto minmax(1.5rem, 1fr) !important;
-  gap: clamp(0.65rem, 2.5vw, 1rem) !important;
-  margin: clamp(1rem, 2.5vw, 1.5rem) 0 0 !important;
+  gap: clamp(0.75rem, 2.5vw, 1.1rem) !important;
+  align-items: center !important;
+  margin: clamp(1.1rem, 2.8vw, 1.7rem) 0 0 !important;
   color: var(--mushaf-muted) !important;
 }
 
@@ -237,6 +287,7 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   width: 100% !important;
   height: 1px !important;
   background: linear-gradient(90deg, transparent, var(--mushaf-rule-strong)) !important;
+  align-self: center !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-footer > span:last-child {
@@ -244,17 +295,20 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-number-medallion {
-  width: 2.15rem !important;
-  min-width: 2.15rem !important;
-  height: 2.15rem !important;
+  width: 2.25rem !important;
+  min-width: 2.25rem !important;
+  height: 2.25rem !important;
   display: inline-grid !important;
   place-items: center;
   border: 1px solid var(--mushaf-rule-strong) !important;
   border-radius: 50% !important;
-  background: var(--mushaf-paper) !important;
-  color: var(--mushaf-ink) !important;
+  background: linear-gradient(145deg, var(--mushaf-paper), color-mix(in srgb, var(--mushaf-accent) 4%, var(--mushaf-paper))) !important;
+  color: color-mix(in srgb, var(--mushaf-accent) 65%, var(--mushaf-ink)) !important;
   font-size: 0.68rem !important;
-  box-shadow: 0 0 0 4px var(--mushaf-accent-soft) !important;
+  font-weight: 600 !important;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--mushaf-accent) 10%, transparent),
+    0 2px 6px rgba(4, 14, 10, 0.08) !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-number-medallion::after {

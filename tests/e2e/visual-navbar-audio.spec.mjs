@@ -5,8 +5,8 @@ import { test, expect } from "@playwright/test";
 const OUTPUT_DIR = path.join("test-results", "visual-navbar-audio");
 const SETTINGS_KEY = "mushaf-plus-settings";
 
-async function seedDarkTheme(page) {
-  await page.addInitScript((key) => {
+async function seedTheme(page, theme = "dark") {
+  await page.addInitScript(({ key, theme }) => {
     localStorage.setItem(
       key,
       JSON.stringify({
@@ -14,11 +14,11 @@ async function seedDarkTheme(page) {
         showHome: true,
         showDuas: false,
         lang: "fr",
-        theme: "dark",
+        theme,
         riwaya: "hafs",
       }),
     );
-  }, SETTINGS_KEY);
+  }, { key: SETTINGS_KEY, theme });
 }
 
 async function openReader(page) {
@@ -35,7 +35,7 @@ test("Visual desktop dark: navbar + modal audio options", async ({ page }) => {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
   await page.setViewportSize({ width: 1440, height: 900 });
-  await seedDarkTheme(page);
+  await seedTheme(page);
   await openReader(page);
 
   const header = page.locator(".mp-header").first();
@@ -53,7 +53,7 @@ test("Visual desktop dark: navbar + modal audio options", async ({ page }) => {
   await expect(player).not.toHaveClass(/is-minimized/);
   const desktopHeaderActions = player.locator(".simple-player__header-actions");
   const desktopHeaderButtons = desktopHeaderActions.locator("button");
-  await expect(desktopHeaderButtons).toHaveCount(3);
+  await expect(desktopHeaderButtons).toHaveCount(2);
   for (const button of await desktopHeaderButtons.all()) {
     await expect(button).toBeVisible();
   }
@@ -72,13 +72,28 @@ test("Visual desktop dark: navbar + modal audio options", async ({ page }) => {
   });
 });
 
+for (const theme of ["light", "sepia"]) {
+  test(`Visual desktop ${theme}: reader navbar`, async ({ page }) => {
+    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+    await page.setViewportSize({ width: 1128, height: 760 });
+    await seedTheme(page, theme);
+    await openReader(page);
+
+    const header = page.locator(".mp-header").first();
+    await expect(header).toBeVisible();
+    await header.screenshot({
+      path: path.join(OUTPUT_DIR, `${theme}-desktop-navbar.png`),
+    });
+  });
+}
+
 test.describe("mobile", () => {
   test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
   test("Visual mobile dark: navbar + modal audio options", async ({ page }) => {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-    await seedDarkTheme(page);
+    await seedTheme(page);
     await openReader(page);
 
     const header = page.locator(".mp-header").first();

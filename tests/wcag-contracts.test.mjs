@@ -30,11 +30,11 @@ function contrast(foreground, background) {
 
 test("WCAG: action sheets expose dialog semantics and focus management", () => {
   const content = source("src/components/AyahActions.jsx");
-  assert.equal((content.match(/role="dialog"/g) || []).length, 4);
-  assert.equal((content.match(/aria-modal="true"/g) || []).length, 4);
+  assert.equal((content.match(/role="dialog"/g) || []).length, 2);
+  assert.equal((content.match(/aria-modal="true"/g) || []).length, 2);
   assert.match(content, /SHEET_FOCUSABLE_SELECTOR/);
   assert.match(content, /sheetRestoreFocusRef/);
-  assert.match(content, /role="tabpanel"/);
+  assert.match(content, /tafsirSidebarOpen/);
   assert.match(content, /aria-label=\{closeSheetLabel\}/);
 });
 
@@ -55,33 +55,13 @@ test("WCAG: forms, tabs and audio status keep programmatic names", () => {
   assert.match(audio, /<AlertCircle[^>]+aria-hidden="true"/);
 });
 
-test("WCAG: spiritual tool pages isolate dialog interactions", () => {
-  const toolPages = [
-    "FlashcardsPanel.jsx",
-    "KhatmaPanel.jsx",
-    "PlaylistPanel.jsx",
-    "ReadingHistoryPanel.jsx",
-    "TajweedQuizPanel.jsx",
-    "WeeklyStatsPanel.jsx",
-    "WirdPanel.jsx",
-  ];
-
-  for (const file of toolPages) {
-    const content = source(`src/components/${file}`);
-    assert.match(
-      content,
-      /onClick=\{\(event\) => event\.stopPropagation\(\)\}/,
-      `${file} must keep inner controls from triggering the modal overlay`,
-    );
-  }
-
-  const hub = source("src/components/ToolsHubModal.jsx");
-  const library = source("src/components/FutureFeaturesModal.jsx");
-  const libraryHeader = source("src/components/futureFeatures/FutureFeaturesHeader.jsx");
-  assert.match(hub, /tools-hub-modal/);
-  assert.match(hub, /Choisir un outil/);
-  assert.match(library, /const backToTools =/);
-  assert.match(libraryHeader, /aria-selected=\{selected\}/);
+test("WCAG: the unified library dialog isolates its interactions", () => {
+  const content = source("src/components/LibraryModal.jsx");
+  assert.match(
+    content,
+    /onClick=\{\(event\) => event\.stopPropagation\(\)\}/,
+    "LibraryModal must keep inner controls from triggering the modal overlay",
+  );
 });
 
 test("WCAG: splash respects language, reduced motion and target size", () => {
@@ -90,6 +70,9 @@ test("WCAG: splash respects language, reduced motion and target size", () => {
   assert.match(content, /className="splash-verse" lang="ar" dir="rtl"/);
   assert.match(content, /@media \(prefers-reduced-motion: reduce\)/);
   assert.match(content, /\.splash-skip \{[\s\S]*?min-height: 44px/);
+  assert.match(content, /role="status"/);
+  assert.match(content, /className="sr-only">\{t\("splash\.loading", lang\)\}/);
+  assert.match(content, /className="splash-loading-text"/);
 });
 
 test("WCAG: reinforced reading colors meet AA contrast on light surfaces", () => {

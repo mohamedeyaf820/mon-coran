@@ -20,7 +20,7 @@ export default function useQuranTranslations({
   const [translationSource, setTranslationSource] = useState(null);
 
   useEffect(() => {
-    if (!showTranslation || !arabicReady) {
+    if (!showTranslation) {
       setTranslations([]);
       setTranslationState("idle");
       setTranslationSource(null);
@@ -66,7 +66,6 @@ export default function useQuranTranslations({
       controller.abort();
     };
   }, [
-    arabicReady,
     currentJuz,
     currentPage,
     currentSurah,

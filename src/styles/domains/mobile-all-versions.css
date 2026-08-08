@@ -1906,8 +1906,7 @@
 .app-root .quran-display--platform .rd-arabic {
     max-width: 34em;
     margin-inline: auto;
-    text-align: justify;
-    text-align-last: right;
+    text-align: right;
 }
 
 .app-root .quran-display--platform .rd-trans-item {
@@ -1954,8 +1953,7 @@
         color-mix(in srgb, var(--cpv-bg) 90%, transparent 10%)
     ) !important;
     color: var(--text-quran);
-    text-align: justify;
-    text-align-last: center;
+    text-align: right;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
@@ -1968,7 +1966,7 @@
 .app-root .quran-display--platform .cpv-verse:focus-visible,
 .app-root .quran-display--platform .cpv-verse--active {
     background: rgba(var(--primary-rgb), 0.1);
-    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.13);
+    box-shadow: none;
 }
 
 .app-root .quran-display--platform .cpv-surah-header-frame {
@@ -2021,7 +2019,6 @@
     .app-root .quran-display--platform .rd-arabic {
         max-width: 100%;
         text-align: right;
-        text-align-last: right;
     }
 
     .app-root .quran-display--platform .cpv-container {
@@ -2030,6 +2027,5 @@
 
     .app-root .quran-display--platform .cpv-flow {
         text-align: right;
-        text-align-last: right;
     }
 }

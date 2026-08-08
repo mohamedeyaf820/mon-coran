@@ -20,27 +20,36 @@ async function expectFontFamily(locator, family) {
     .toContain(family);
 }
 
+async function revealReaderTools(page) {
+  const trigger = page
+    .locator(".srh-identity__disclosure:visible, .srh-mobile-bar__disclosure:visible")
+    .first();
+  await expect(trigger).toBeVisible();
+  if ((await trigger.getAttribute("aria-expanded")) !== "true") {
+    await trigger.focus();
+    await trigger.press("Enter");
+  }
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+}
+
 async function switchToMushaf(page) {
+  await revealReaderTools(page);
   await page.getByRole("button", { name: "Mushaf", exact: true }).click();
   await expect(page.locator(".mushaf-container .verse-text").first()).toBeVisible();
 }
 
 async function openTypographyPanel(page) {
-  const select = page.locator(".afc-select");
-  if (await select.count() > 0) {
-    const visible = await select.isVisible().catch(() => false);
-    if (!visible) {
-      await page.locator(".srh-typography-trigger").click();
-      await expect(select).toBeVisible({ timeout: 5000 });
-    }
-  }
+  await revealReaderTools(page);
+  const select = page.locator(".srh-footer .afc-select").first();
+  await expect(select).toBeVisible({ timeout: 5000 });
+  return select;
 }
 
 test("Hafs font selection applies to list and Mushaf layouts", async ({ page }) => {
   await openReader(page);
 
-  await openTypographyPanel(page);
-  await page.locator(".afc-select").selectOption("amiri-quran");
+  const hafsFontSelect = await openTypographyPanel(page);
+  await hafsFontSelect.selectOption("amiri-quran");
   await expectFontFamily(page.locator(".qc-ayah-text-ar").first(), "Amiri Quran");
 
   await switchToMushaf(page);
@@ -53,6 +62,7 @@ test("Hafs font selection applies to list and Mushaf layouts", async ({ page }) 
   await expect(page.locator(".quran-display--platform")).toBeVisible({
     timeout: 30_000,
   });
+  await revealReaderTools(page);
   await page.getByRole("button", { name: "Liste", exact: true }).click();
   await expectFontFamily(page.locator(".qc-ayah-text-ar").first(), "Amiri Quran");
 });
@@ -68,8 +78,8 @@ test("Warsh font selection applies to list and Mushaf layouts", async ({ page })
     timeout: 30_000,
   });
 
-  await openTypographyPanel(page);
-  await page.locator(".afc-select").selectOption("scheherazade-new-warsh");
+  const warshFontSelect = await openTypographyPanel(page);
+  await warshFontSelect.selectOption("scheherazade-new-warsh");
   await expectFontFamily(
     page.locator(".qc-ayah-text-ar").first(),
     "Scheherazade New",

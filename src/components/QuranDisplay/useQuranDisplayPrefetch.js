@@ -46,19 +46,6 @@ export default function useQuranDisplayPrefetch({
       return true;
     };
 
-    const runAlternateRiwayaPrefetch = () => {
-      if (!canPrefetch()) return;
-      preloadQuranDisplayData({
-        currentJuz,
-        currentPage,
-        currentSurah,
-        displayMode,
-        lang,
-        riwaya: riwaya === "hafs" ? "warsh" : "hafs",
-        warshStrictMode,
-      }).catch(() => null);
-    };
-
     const runNeighbourPrefetch = () => {
       if (!canPrefetch()) return;
       if (displayMode === "surah") {
@@ -73,15 +60,10 @@ export default function useQuranDisplayPrefetch({
       }
     };
 
-    const neighbourTimer = window.setTimeout(runNeighbourPrefetch, 180);
-    const alternateRiwayaTimer = window.setTimeout(
-      runAlternateRiwayaPrefetch,
-      1600,
-    );
+    const neighbourTimer = window.setTimeout(runNeighbourPrefetch, 150);
 
     return () => {
       window.clearTimeout(neighbourTimer);
-      window.clearTimeout(alternateRiwayaTimer);
     };
   }, [
     currentJuz,

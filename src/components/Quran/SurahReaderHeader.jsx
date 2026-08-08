@@ -2,10 +2,10 @@
  * SurahReaderHeader — single unified block replacing SurahHeader + ReadingToolbar.
  * Quran.com–inspired, no redundancy, fully responsive.
  */
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   BookOpen,
-  Brain,
+  ChevronDown,
   Info,
   Languages,
   List,
@@ -13,7 +13,6 @@ import {
   Palette,
   Pause,
   Play,
-  SlidersHorizontal,
   Type,
 } from "lucide-react";
 import { getSurah } from "../../data/surahs";
@@ -21,16 +20,19 @@ import { cn } from "../../lib/utils";
 import { useApp } from "../../context/AppContext";
 import audioService from "../../services/audioService";
 import ArabicFontControls from "../ArabicFontControls";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import { Modal } from "../ui/modal";
-import HizbRukuNavigator from "./HizbRukuNavigator";
 import SurahInfoPanel from "../QuranDisplay/SurahInfoPanel";
+
+const READER_TOOLS_SESSION_KEY = "mushafplus-reader-tools-open";
+
+function readReaderToolsState() {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.sessionStorage.getItem(READER_TOOLS_SESSION_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
 
 function lbl(lang, fr, en, ar = en) {
   if (lang === "ar") return ar;
@@ -39,28 +41,43 @@ function lbl(lang, fr, en, ar = en) {
 
 export default function SurahReaderHeader({
   surahNum,
-  currentAyah = 1,
-  currentPage,
   onPlaySurah,
   preparingSurah,
-  onNavigateToAyah,
   onToggleMushaf,
-  onToggleWordByWord,
-  onToggleMemorization,
 }) {
-  const { state, set, dispatch } = useApp();
+  const { state, set } = useApp();
   const {
     lang,
-    memMode,
     mushafLayout,
-    riwaya,
     showTajwid,
     showTranslation,
-    showWordByWord,
     isPlaying,
   } = state;
 
   const [showInfo, setShowInfo] = useState(false);
+  const [readerToolsOpen, setReaderToolsOpen] = useState(readReaderToolsState);
+  const toggleReaderTools = useCallback(() => {
+    setReaderToolsOpen((open) => {
+      const next = !open;
+      try {
+        window.sessionStorage.setItem(READER_TOOLS_SESSION_KEY, String(next));
+      } catch {
+        // The control still works when session storage is unavailable.
+      }
+      return next;
+    });
+  }, []);
+  const infoTriggerRef = useRef(null);
+  const openInfo = useCallback((event) => {
+    infoTriggerRef.current = event.currentTarget;
+    setShowInfo(true);
+  }, []);
+  const closeInfo = useCallback(() => {
+    setShowInfo(false);
+    window.requestAnimationFrame(() => {
+      infoTriggerRef.current?.focus({ preventScroll: true });
+    });
+  }, []);
   const [typographyOpen, setTypographyOpen] = useState(false);
   const toggleTypography = useCallback(() => setTypographyOpen((v) => !v), []);
   const handleTypographyPointerUp = useCallback(
@@ -97,7 +114,7 @@ export default function SurahReaderHeader({
   const setMushafLayout = () => {
     if (mushafIsOn) return;
     if (onToggleMushaf) { onToggleMushaf(); return; }
-    set({ mushafLayout: "mushaf", memMode: false, showWordByWord: false, showTajwid: true });
+    set({ mushafLayout: "mushaf", showTajwid: true });
   };
   const setListLayout = () => {
     if (!mushafIsOn) return;
@@ -105,9 +122,7 @@ export default function SurahReaderHeader({
     set({ mushafLayout: "list" });
   };
   const toggleTranslation = () => set({ showTranslation: !showTranslation });
-  const toggleWordByWord = onToggleWordByWord || (() => set({ showWordByWord: !showWordByWord, memMode: false }));
   const toggleTajweed = () => set({ showTajwid: !showTajwid });
-  const toggleMemo = onToggleMemorization || (() => dispatch({ type: "TOGGLE_MEM_MODE" }));
 
   const handlePlay = () => {
     if (isPlaying) { audioService.pause(); return; }
@@ -143,14 +158,6 @@ export default function SurahReaderHeader({
       hidden: false,
     },
     {
-      key: "wbw",
-      icon: <Type size={13} />,
-      label: lbl(lang, "Mot à mot", "Word by word", "كلمة بكلمة"),
-      active: showWordByWord,
-      onClick: toggleWordByWord,
-      hidden: riwaya === "warsh",
-    },
-    {
       key: "tajweed",
       icon: <Palette size={13} />,
       label: lbl(lang, "Tajweed", "Tajweed", "تجويد"),
@@ -158,28 +165,35 @@ export default function SurahReaderHeader({
       onClick: toggleTajweed,
       hidden: false,
     },
-    {
-      key: "memo",
-      icon: <Brain size={13} />,
-      label: lbl(lang, "Mémorisation", "Memorization", "حفظ"),
-      active: memMode,
-      onClick: toggleMemo,
-      hidden: false,
-    },
   ];
-  const [translationToggle, ...secondaryStudyToggles] = studyToggles.filter(
-    (toggle) => !toggle.hidden,
-  );
-  const secondaryStudyIsActive = secondaryStudyToggles.some(
-    (toggle) => toggle.active,
-  );
+  const visibleToggles = studyToggles.filter((toggle) => !toggle.hidden);
 
   return (
-    <div className="srh-root" aria-label={lbl(lang, "En-tête de lecture", "Reading header", "رأس القراءة")}>
+    <div className="reader-command-bar srh-root" aria-label={lbl(lang, "En-tête de lecture", "Reading header", "رأس القراءة")}>
       {/* ══ ROW 1 — Identity ════════════════════════════════════ */}
       <div className="srh-identity">
+        <div
+          role="button"
+          tabIndex={0}
+          className="srh-identity__disclosure"
+          onClick={toggleReaderTools}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              toggleReaderTools();
+            }
+          }}
+          aria-expanded={readerToolsOpen}
+          aria-controls="srh-reader-tools"
+          aria-label={lbl(
+            lang,
+            readerToolsOpen ? "Masquer les réglages de lecture" : "Afficher les réglages de lecture",
+            readerToolsOpen ? "Hide reading controls" : "Show reading controls",
+            readerToolsOpen ? "إخفاء إعدادات القراءة" : "إظهار إعدادات القراءة",
+          )}
+        >
         {/* Arabic name */}
-        <div className="srh-arabic" dir="rtl" lang="ar" aria-label={s.ar}>
+        <div className="srh-arabic" dir="rtl" lang="ar" aria-label={s.ar} role="img">
           <span className="font-surah-names" dir="ltr" lang="en" aria-hidden="true">
             {surahLigature}
           </span>
@@ -211,6 +225,8 @@ export default function SurahReaderHeader({
             )}
           </p>
         </div>
+          <ChevronDown className="srh-identity__chevron" size={15} aria-hidden="true" />
+        </div>
 
         {/* Action buttons */}
         <div className="srh-actions">
@@ -241,7 +257,7 @@ export default function SurahReaderHeader({
           <button
             type="button"
             className={cn("srh-info-btn", showInfo && "srh-info-btn--active")}
-            onClick={() => setShowInfo((v) => !v)}
+            onClick={openInfo}
             aria-expanded={showInfo}
             aria-haspopup="dialog"
             aria-label={lbl(lang, "Informations sur la sourate", "Surah info", "معلومات السورة")}
@@ -253,13 +269,31 @@ export default function SurahReaderHeader({
       </div>
 
       {/* Mobile-only compact action row (identity hidden on ≤640px) */}
-      <div className="srh-mobile-bar" aria-hidden={undefined}>
-        <span className="srh-mobile-bar__name" dir="rtl" lang="ar" aria-label={s.ar}>
-          <span className="font-surah-names" dir="ltr" lang="en" aria-hidden="true">
-            {surahLigature}
+      <div className="srh-mobile-bar">
+        <button
+          type="button"
+          className="srh-mobile-bar__disclosure"
+          onClick={toggleReaderTools}
+          aria-expanded={readerToolsOpen}
+          aria-controls="srh-reader-tools"
+          aria-label={lbl(
+            lang,
+            readerToolsOpen ? "Masquer les réglages de lecture" : "Afficher les réglages de lecture",
+            readerToolsOpen ? "Hide reading controls" : "Show reading controls",
+            readerToolsOpen ? "إخفاء إعدادات القراءة" : "إظهار إعدادات القراءة",
+          )}
+        >
+          <span className="srh-mobile-bar__name" dir="rtl" lang="ar" aria-label={s.ar} role="img">
+            <span className="font-surah-names" dir="ltr" lang="en" aria-hidden="true">
+              {surahLigature}
+            </span>
           </span>
-        </span>
-        <span className="srh-mobile-bar__title">{surahNum}. {translatedName}</span>
+          <span className="srh-mobile-bar__title">
+            <strong>{translatedName}</strong>
+            <small>{surahNum} · {s.ayahs} {lbl(lang, "versets", "verses", "آيات")}</small>
+          </span>
+          <ChevronDown className="srh-mobile-bar__chevron" size={13} aria-hidden="true" />
+        </button>
         <div className="srh-mobile-bar__actions">
           <button
             type="button"
@@ -280,7 +314,7 @@ export default function SurahReaderHeader({
           <button
             type="button"
             className={cn("srh-info-btn", showInfo && "srh-info-btn--active")}
-            onClick={() => setShowInfo((v) => !v)}
+            onClick={openInfo}
             aria-expanded={showInfo}
             aria-haspopup="dialog"
             aria-label={lbl(lang, "Informations sur la sourate", "Surah info", "معلومات السورة")}
@@ -292,7 +326,7 @@ export default function SurahReaderHeader({
 
       <Modal
         open={showInfo}
-        onClose={() => setShowInfo(false)}
+        onClose={closeInfo}
         title={lbl(lang, "Informations sur la sourate", "Surah information", "معلومات السورة")}
         size="lg"
         portal
@@ -303,19 +337,27 @@ export default function SurahReaderHeader({
       </Modal>
 
       {/* ══ DIVIDER ═══════════════════════════════════════════ */}
+      <div
+        id="srh-reader-tools"
+        className={cn("srh-reader-tools", readerToolsOpen && "srh-reader-tools--open")}
+        aria-hidden={!readerToolsOpen ? "true" : undefined}
+        inert={!readerToolsOpen ? "" : undefined}
+      >
+        <div className="srh-reader-tools__inner">
       <div className="srh-divider" aria-hidden="true" />
 
       {/* ══ ROW 2 — View controls ═══════════════════════════════ */}
       <div className="srh-controls">
         {/* Left cluster: view mode (Mushaf / Liste) */}
-        <div className="srh-view-pills" role="group" aria-label={lbl(lang, "Mode d'affichage", "Display mode", "وضع العرض")}>
+        <div className="srh-view-pills" role="radiogroup" aria-label={lbl(lang, "Mode d'affichage", "Display mode", "وضع العرض")}>
           {viewPills.map((pill) => (
             <button
               key={pill.key}
               type="button"
+              role="radio"
               className={cn("srh-pill", pill.active && "srh-pill--active")}
               onClick={pill.onClick}
-              aria-pressed={pill.active}
+              aria-checked={pill.active}
               aria-label={pill.label}
             >
               {pill.icon}
@@ -329,56 +371,20 @@ export default function SurahReaderHeader({
 
         {/* Right cluster: study toggles */}
         <div className="srh-study-toggles" role="group" aria-label={lbl(lang, "Options d'étude", "Study options", "خيارات الدراسة")}>
-          <button
-            type="button"
-            className={cn(
-              "srh-toggle",
-              translationToggle.active && "srh-toggle--active",
-            )}
-            onClick={translationToggle.onClick}
-            aria-pressed={translationToggle.active}
-            aria-label={translationToggle.label}
-            title={translationToggle.label}
-          >
-            {translationToggle.icon}
-            <span className="srh-toggle__label">{translationToggle.label}</span>
-          </button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className={cn(
-                  "srh-toggle srh-study-more",
-                  secondaryStudyIsActive && "srh-toggle--active",
-                )}
-                aria-label={lbl(lang, "Plus d'options d'étude", "More study options", "المزيد من خيارات الدراسة")}
-                title={lbl(lang, "Options d'étude", "Study options", "خيارات الدراسة")}
-              >
-                <SlidersHorizontal size={13} />
-                <span className="srh-toggle__label">
-                  {lbl(lang, "Étude", "Study", "دراسة")}
-                </span>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align={lang === "ar" ? "start" : "end"}
-              className="min-w-[12rem]"
+          {visibleToggles.map((toggle) => (
+            <button
+              key={toggle.key}
+              type="button"
+              className={cn("srh-toggle", toggle.active && "srh-toggle--active")}
+              onClick={toggle.onClick}
+              aria-pressed={toggle.active}
+              aria-label={toggle.label}
+              title={toggle.label}
             >
-              <DropdownMenuLabel>
-                {lbl(lang, "Options d'étude", "Study options", "خيارات الدراسة")}
-              </DropdownMenuLabel>
-              {secondaryStudyToggles.map((toggle) => (
-                <DropdownMenuCheckboxItem
-                  key={toggle.key}
-                  checked={toggle.active}
-                  onCheckedChange={toggle.onClick}
-                >
-                  {toggle.label}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+              {toggle.icon}
+              <span className="srh-toggle__label">{toggle.label}</span>
+            </button>
+          ))}
         </div>
       </div>
 
@@ -404,17 +410,9 @@ export default function SurahReaderHeader({
           </div>
         </div>
 
-        {/* Spacer */}
         <div className="srh-footer__spacer" />
-
-        {/* Hizb / Sajdah navigator */}
-        <HizbRukuNavigator
-          currentSurah={surahNum}
-          currentAyah={currentAyah}
-          currentPage={currentPage}
-          onNavigate={onNavigateToAyah}
-          className="srh-hizb-nav"
-        />
+      </div>
+        </div>
       </div>
     </div>
   );

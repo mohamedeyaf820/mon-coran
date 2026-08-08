@@ -114,6 +114,7 @@ export const SurahCard = memo(function SurahCard({
       : lang === "fr"
         ? `Page ${surah.page}`
         : `Page ${surah.page}`);
+  const surahLigature = getSurahLigature(surah.n);
 
   /* ── LIST ROW ── */
   if (viewMode === "list") {
@@ -138,38 +139,40 @@ export const SurahCard = memo(function SurahCard({
     return (
       <div
         className={cn(
-          "group relative flex items-center gap-3 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-bg-primary border border-border/50 hover:bg-bg-secondary hover:border-primary/30 transition-all cursor-pointer",
+          "hp-card hp-card--surah hp-card--list group relative flex items-center gap-3 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-bg-primary border border-border/50 hover:bg-bg-secondary hover:border-primary/30 transition-all cursor-pointer",
           isActive && "bg-primary/5 border-primary/50",
           isPlaying && "playing bg-gold/5 border-gold/50",
         )}
         data-stype={surah.type?.toLowerCase()}
+        data-testid="surah-card"
+        data-surah={surah.n}
         style={rowVisibilityStyle}
       >
         <button
           type="button"
-          className="absolute inset-0 z-[1] rounded-xl"
+          className="hp-card-open absolute inset-0 z-[1] rounded-xl"
           onClick={() => onClick(surah.n)}
           onPointerEnter={() => onIntent?.(surah.n)}
           onFocus={() => onIntent?.(surah.n)}
           onTouchStart={() => onIntent?.(surah.n)}
           aria-label={openAriaLabel}
         />
-        <span className="flex items-center justify-center w-8 h-8 shrink-0 rounded-full bg-bg-secondary text-[0.75rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
+        <span className="hp-card-num flex items-center justify-center w-8 h-8 shrink-0 rounded-full bg-bg-secondary text-[0.75rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
           {surah.n}
         </span>
-        <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-baseline truncate">
-            <span className="text-[0.95rem] font-bold text-text-primary truncate">
+        <div className="hp-card-content flex flex-col flex-1 min-w-0">
+          <div className="hp-card-title-row flex items-baseline truncate">
+            <span className="hp-card-name text-[0.95rem] font-bold text-text-primary truncate">
               {primaryLabel}
             </span>
-            <span className="text-[0.75rem] text-text-secondary ml-2 truncate hidden sm:inline-block">
+            <span className="hp-card-meta hp-card-meta--meaning text-[0.75rem] text-text-secondary ml-2 truncate hidden sm:inline-block">
               {secondaryLabel}
             </span>
           </div>
-          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+          <div className="hp-card-facts flex items-center gap-1.5 mt-0.5 flex-wrap">
             <span
               className={cn(
-                "inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
+                "hp-card-type inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
                 surah.type === "Meccan"
                   ? "bg-amber-400/10 text-amber-800 dark:text-amber-300"
                   : "bg-primary/10 text-primary",
@@ -177,31 +180,29 @@ export const SurahCard = memo(function SurahCard({
             >
               {typeLabel}
             </span>
-            <span className="text-[0.7rem] text-text-muted">{ayahLabel}{pageLabel ? ` · ${pageLabel}` : ""}</span>
+            <span className="hp-card-meta hp-card-meta--ayahs text-[0.7rem] text-text-muted">
+              {ayahLabel}
+            </span>
+            {pageLabel ? (
+              <span className="hp-card-meta hp-card-meta--page text-[0.7rem] text-text-muted">
+                {pageLabel}
+              </span>
+            ) : null}
           </div>
         </div>
-        <span
-          className="text-[1.2rem] sm:text-[1.4rem] font-quran text-text-primary opacity-80 group-hover:opacity-100 transition-opacity ml-2 shrink-0"
-          dir="rtl"
-          lang="ar"
+        <div
+          className="hp-card-ar font-surah-names shrink-0 text-text-primary"
           aria-label={surah.ar}
+          role="img"
+          dir="ltr"
+          lang="en"
         >
-          <img
-            src={`https://static.quran.com/images/surah/symbols/sname_${surah.n}.svg`}
-            alt={surah.ar}
-            className="h-8 sm:h-10 invert dark:invert-0"
-            loading="lazy"
-            onError={(e) => {
-              e.target.style.display = "none";
-              e.target.nextSibling.style.display = "block";
-            }}
-          />
-          <span style={{ display: "none" }}>{surah.ar}</span>
-        </span>
+          <span aria-hidden="true">{surahLigature}</span>
+        </div>
         <button
           className={cn(
-            "relative z-[2] flex items-center justify-center w-8 h-8 rounded-full bg-bg-secondary text-text-muted hover:bg-primary hover:text-white transition-colors ml-2 shrink-0",
-            isPlaying && "bg-gold text-white hover:bg-gold-bright",
+            "hp-card-play relative z-[2] flex items-center justify-center w-9 h-9 rounded-full bg-primary text-white transition-all ml-2 shrink-0 shadow-sm",
+            isPlaying && "bg-gold hover:bg-gold-bright",
           )}
           onClick={(e) => {
             e.stopPropagation();
@@ -210,7 +211,7 @@ export const SurahCard = memo(function SurahCard({
           aria-label={playAriaLabel}
           aria-pressed={isPlaying}
         >
-          {isPlaying ? <Pause size={13} /> : <Play size={13} className="pl-[1px]" />}
+          {isPlaying ? <Pause size={15} /> : <Play size={15} className="pl-[1px]" />}
         </button>
       </div>
     );
@@ -222,7 +223,6 @@ export const SurahCard = memo(function SurahCard({
     containIntrinsicSize: "112px",
   };
   const isMeccan = surah.type === "Meccan";
-  const surahLigature = getSurahLigature(surah.n);
 
   return (
     <div
@@ -278,7 +278,7 @@ export const SurahCard = memo(function SurahCard({
         <div className="flex items-center gap-1.5 mt-1">
           <span
             className={cn(
-              "inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
+              "hp-card-type inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
               isMeccan
                 ? "bg-amber-400/10 text-amber-800 dark:text-amber-300"
                 : "bg-primary/10 text-primary",
@@ -288,7 +288,9 @@ export const SurahCard = memo(function SurahCard({
               ? (lang === "ar" ? "مكية" : lang === "fr" ? "Mecquoise" : "Meccan")
               : (lang === "ar" ? "مدنية" : lang === "fr" ? "Médinoise" : "Medinan")}
           </span>
-          <span className="text-[0.62rem] text-text-muted">{ayahLabel}</span>
+          <span className="hp-card-meta hp-card-meta--ayahs text-[0.62rem] text-text-muted">
+            {ayahLabel}
+          </span>
         </div>
       </div>
 
@@ -296,6 +298,7 @@ export const SurahCard = memo(function SurahCard({
       <div
         className="hp-card-ar font-surah-names shrink-0 text-text-primary"
         aria-label={surah.ar}
+        role="img"
         dir="ltr"
         lang="en"
       >

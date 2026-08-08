@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { getRulesForRiwaya, parseTajwid, stabilizeTajwidSegments } from '../../data/tajwidRules';
 import { useAppLocale } from '../../context/AppContext';
+import { getReadableWaqfGlyph } from '../../utils/quranUtils';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../ui/tooltip';
 
 const QURAN_COM_CLASS_MAP = {

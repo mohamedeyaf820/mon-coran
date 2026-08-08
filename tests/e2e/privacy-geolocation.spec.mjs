@@ -28,21 +28,12 @@ async function seedHome(page, overrides = {}) {
   }, { key: SETTINGS_KEY, settings: overrides });
 }
 
-test("privacy: geolocation is never requested before explicit opt-in", async ({ page }) => {
-  await seedHome(page, { usePrayerTimes: false });
+test("privacy: the removed prayer feature never requests geolocation", async ({ page }) => {
+  await seedHome(page, { usePrayerTimes: true });
   await page.goto("/");
   await expect(page.locator(".app-view-home")).toBeVisible();
   await page.waitForTimeout(2_500);
 
   expect(await page.evaluate(() => window.__geolocationCalls)).toBe(0);
   await expect(page.locator(".home-prayer-card [title^='Fajr']")).toHaveCount(0);
-});
-
-test("privacy: opt-in enables local prayer-time calculation", async ({ page }) => {
-  await seedHome(page, { usePrayerTimes: true });
-  await page.goto("/");
-  await expect(page.locator(".app-view-home")).toBeVisible();
-
-  await expect.poll(() => page.evaluate(() => window.__geolocationCalls)).toBeGreaterThan(0);
-  await expect(page.locator(".home-prayer-card [title^='Fajr']")).toBeVisible();
 });

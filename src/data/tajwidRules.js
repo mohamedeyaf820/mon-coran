@@ -400,6 +400,15 @@ export function stabilizeTajwidSegments(segments = []) {
 
     const leadingMarks = segmentText.match(LEADING_ARABIC_MARKS)?.[0] || "";
     if (leadingMarks && stabilized.length > 0) {
+      // Quran.com can place ZWNJ at the end of one segment and the waqf mark at
+      // the start of the next. Keeping that separator would still isolate the
+      // combining mark after segmentation and make Chromium draw a black
+      // dotted-circle fallback.
+      if (/^[\u06D6-\u06ED]/u.test(leadingMarks)) {
+        stabilized[stabilized.length - 1].text = stabilized[
+          stabilized.length - 1
+        ].text.replace(/\u200C$/u, "");
+      }
       stabilized[stabilized.length - 1].text += leadingMarks;
       segmentText = segmentText.slice(leadingMarks.length);
     }
