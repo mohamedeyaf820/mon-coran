@@ -91,7 +91,7 @@
     letter-spacing: 0 !important;
     word-spacing: var(--qcom-ar-word-spacing) !important;
     text-align: justify !important;
-    text-justify: inter-word !important;
+    text-justify: auto !important;
     text-align-last: right !important;
     text-wrap: pretty;
     overflow-wrap: anywhere;
@@ -176,7 +176,7 @@
     letter-spacing: 0 !important;
     word-spacing: var(--qcom-ar-word-spacing) !important;
     text-align: justify !important;
-    text-justify: inter-word !important;
+    text-justify: auto !important;
     text-align-last: right !important;
 }
 
@@ -569,7 +569,7 @@
     letter-spacing: 0 !important;
     word-spacing: var(--qcom-reader-word-spacing) !important;
     text-align: justify !important;
-    text-justify: inter-word !important;
+    text-justify: auto !important;
     text-align-last: right !important;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -1814,7 +1814,7 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     letter-spacing: 0 !important;
     word-spacing: var(--qcom-reader-word-spacing) !important;
     text-align: justify !important;
-    text-justify: inter-word !important;
+    text-justify: auto !important;
     text-align-last: right !important;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -1996,7 +1996,7 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
 .app-root .quran-display--platform .qcom-continuous-list {
     padding: clamp(0.8rem, 2.2vw, 1.55rem) 0.2rem 2.4rem !important;
     text-align: justify !important;
-    text-justify: inter-word !important;
+    text-justify: auto !important;
     text-align-last: right !important;
 }
 
@@ -2100,7 +2100,7 @@ html body .app-root .quran-display--platform .cpv-flow {
     font-size: var(--qcom-reader-font-size) !important;
     line-height: var(--qcom-reader-line-height) !important;
     text-align: justify !important;
-    text-justify: inter-word !important;
+    text-justify: auto !important;
     text-align-last: right !important;
 }
 
@@ -2181,7 +2181,7 @@ html body .app-root .quran-display--platform .mushaf-container.cpv-flow {
     display: block !important;
     direction: rtl !important;
     text-align: justify !important;
-    text-justify: inter-word !important;
+    text-justify: auto !important;
     text-align-last: right !important;
     font-family:
         var(--qd-font-family),
@@ -2384,7 +2384,7 @@ html body .app-root .quran-display--platform .mushaf-text-block {
     direction: rtl !important;
     unicode-bidi: normal !important;
     text-align: justify !important;
-    text-justify: inter-word !important;
+    text-justify: auto !important;
     text-align-last: right !important;
     font-family: var(--quran-font-family) !important;
     font-size: var(--quran-font-size) !important;

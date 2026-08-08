@@ -1305,7 +1305,7 @@ html.dark .audio-player-modal__surface {
   word-spacing: var(--cpv-word-spacing, 0.1em) !important;
   letter-spacing: 0 !important;
   text-align: justify !important;
-  text-justify: inter-word !important;
+  text-justify: auto !important;
   text-align-last: right !important;
   filter: none !important;
   opacity: 1 !important;
