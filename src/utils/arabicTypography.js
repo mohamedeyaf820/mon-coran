@@ -32,17 +32,23 @@ export function getResponsiveArabicFontSize({
     deviceScale = 0.76;
     deviceMaximum = mushafLayout === "mushaf" ? 36 : 56;
   } else if (width <= 640) {
-    deviceScale = 0.76;
+    deviceScale = 0.80;
     deviceMaximum = mushafLayout === "mushaf" ? 40 : 64;
+  } else if (mushafLayout === "mushaf") {
+    // Mushaf container is capped at 760px on all desktop/tablet widths.
+    // Scaling up the font would only reduce words-per-line and create justify
+    // gaps. Keep scale at 1.0 so the user's preference maps 1-to-1.
+    deviceScale = 1.0;
+    deviceMaximum = 52;
   } else if (width <= 1024) {
     deviceScale = 1.08;
-    deviceMaximum = mushafLayout === "mushaf" ? 60 : 76;
+    deviceMaximum = 76;
   } else if (width < 1440) {
     deviceScale = 1.24;
-    deviceMaximum = mushafLayout === "mushaf" ? 72 : 88;
+    deviceMaximum = 88;
   } else {
     deviceScale = 1.34;
-    deviceMaximum = mushafLayout === "mushaf" ? 80 : 96;
+    deviceMaximum = 96;
   }
 
   const layoutScale = mushafLayout === "mushaf" ? 0.94 : 1;

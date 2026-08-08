@@ -266,10 +266,25 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   text-rendering: optimizeLegibility;
 }
 
-/* Large-font mode: switch to right-align to avoid justify gaps */
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block[data-large-font="true"] {
-  text-align: right !important;
-  text-align-last: unset !important;
+/* Large-font mode: right-align to avoid justify gaps (mobile only — container too narrow) */
+@media (max-width: 640px) {
+  .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block[data-large-font="true"] {
+    text-align: right !important;
+    text-align-last: unset !important;
+  }
+}
+
+/* Desktop: mushaf container is 760px fixed — justify stays clean up to ~48px.
+   Only switch to right-align at truly extreme zoom where words-per-line < 3. */
+@media (min-width: 641px) {
+  .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block {
+    text-align: justify !important;
+    text-align-last: right !important;
+  }
+  .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block[data-large-font="true"] {
+    text-align: justify !important;
+    text-align-last: right !important;
+  }
 }
 
 /* Kill word-spacing overrides from other files on children */
