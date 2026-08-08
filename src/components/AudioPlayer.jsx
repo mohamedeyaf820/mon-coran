@@ -1068,6 +1068,7 @@ export default function AudioPlayer() {
         reciterLabel={reciterLabel}
         regionLabel={minimized ? minimizedAudioRegionLabel : audioRegionLabel}
         riwaya={riwaya}
+        surahNum={currentSurah}
         speedLabel={speedLabel}
         title={titleLabel || readyLabel}
       />
