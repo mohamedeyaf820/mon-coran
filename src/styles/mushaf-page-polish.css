@@ -68,9 +68,10 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  gap: 1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.6rem !important;
   margin: 0 0 clamp(0.75rem, 1.8vw, 1.1rem) !important;
   padding: 0 0.15rem 0.65rem !important;
   border-bottom: 1px solid var(--mushaf-rule) !important;
@@ -81,30 +82,37 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   line-height: 1.25;
 }
 
+/* Juz + Surah meta — both pills centered */
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header > span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Juz badge — pill style on the bare <span> inside mushaf-page-header */
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-juz-indicator,
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-juz-indicator,
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header > span:first-child {
   display: inline-flex !important;
   align-items: center !important;
-  padding: 0.14rem 0.52rem 0.13rem !important;
+  padding: 0.17rem 0.6rem 0.14rem !important;
   border: 1px solid var(--mushaf-rule) !important;
   border-radius: 99px !important;
-  background: color-mix(in srgb, var(--mushaf-accent) 7%, var(--mushaf-paper)) !important;
-  color: color-mix(in srgb, var(--mushaf-accent) 72%, var(--mushaf-ink)) !important;
-  font-size: 0.58rem !important;
+  background: color-mix(in srgb, var(--mushaf-accent) 5%, var(--mushaf-paper)) !important;
+  color: color-mix(in srgb, var(--mushaf-accent) 65%, var(--mushaf-ink)) !important;
+  font-size: 0.6rem !important;
   font-weight: 600 !important;
-  letter-spacing: 0.06em !important;
+  letter-spacing: 0.05em !important;
   text-transform: uppercase !important;
   white-space: nowrap !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Dot separator injected as a plain JSX span */
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header .mushaf-header-sep {
+  display: inline-block !important;
+  border: none !important;
+  background: none !important;
+  padding: 0 !important;
+  color: var(--mushaf-rule-strong) !important;
+  font-size: 0.75rem !important;
+  line-height: 1 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-weight: 400 !important;
+  opacity: 0.8 !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-surah-header-inline,
