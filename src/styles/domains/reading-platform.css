@@ -2168,7 +2168,9 @@ html body .app-root .quran-display--platform .cpv-container.mushaf-page-wrapper:
 html body .app-root .quran-display--platform .mushaf-container.cpv-flow {
     display: block !important;
     direction: rtl !important;
-    text-align: right !important;
+    text-align: justify !important;
+    text-justify: auto !important;
+    text-align-last: right !important;
     font-family:
         var(--qd-font-family),
         "KFGQPC Uthmanic Script HAFS",
@@ -2369,7 +2371,9 @@ html body .app-root .quran-display--platform .mushaf-text-block {
     display: block !important;
     direction: rtl !important;
     unicode-bidi: normal !important;
-    text-align: right !important;
+    text-align: justify !important;
+    text-justify: auto !important;
+    text-align-last: right !important;
     font-family: var(--quran-font-family) !important;
     font-size: var(--quran-font-size) !important;
     line-height: 2.6 !important;
