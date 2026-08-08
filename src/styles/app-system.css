@@ -80,6 +80,15 @@ html body .app-root {
   max-height: var(--mp-action-icon-max);
 }
 
+/* Standalone decorative icons (not inside buttons) scale with viewport */
+@media (max-width: 640px) {
+  .app-root :where(.hp-empty, .tafsir-error, .qd-empty-state, .search-empty) > svg,
+  .app-root :where(.hp-empty, .tafsir-error, .qd-empty-state, .search-empty) svg {
+    max-width: 20px;
+    max-height: 20px;
+  }
+}
+
 .app-root :where(button, a, [role="button"]):focus-visible {
   outline: 2px solid color-mix(in srgb, var(--primary) 78%, #fff);
   outline-offset: 2px;
