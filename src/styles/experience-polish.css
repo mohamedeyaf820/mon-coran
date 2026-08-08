@@ -573,7 +573,7 @@ html body .rc-error {
 html body .app-root[data-view="reading"] .tajweed-legend {
   display: block;
   width: 100%;
-  margin: 0.45rem 0 0.9rem;
+  margin: 0 0 0.35rem;
   padding: 0.38rem 0.48rem;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--border) 72%, var(--primary) 28%);
