@@ -1896,7 +1896,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 }
 
 .app-root .quran-display--platform .mp-ayahs-flow {
-    color: var(--reader-flow-ink-dark);
+    color: var(--reader-flow-ink-dark, var(--mp-text, #1b2823));
     font-size: clamp(2.15rem, 1.34rem + 2.45vw, 4.05rem) !important;
     line-height: 2.08 !important;
     word-spacing: 0.09em !important;

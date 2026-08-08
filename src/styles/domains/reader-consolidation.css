@@ -222,8 +222,7 @@
     background: transparent !important;
     box-shadow: none !important;
     color: var(--text-quran, var(--text-primary));
-    text-align: justify;
-    text-align-last: center;
+    text-align: right;
 }
 
 .app-root .quran-display--platform .cpv-verse {

@@ -1906,8 +1906,7 @@
 .app-root .quran-display--platform .rd-arabic {
     max-width: 34em;
     margin-inline: auto;
-    text-align: justify;
-    text-align-last: right;
+    text-align: right;
 }
 
 .app-root .quran-display--platform .rd-trans-item {
@@ -1954,8 +1953,7 @@
         color-mix(in srgb, var(--cpv-bg) 90%, transparent 10%)
     ) !important;
     color: var(--text-quran);
-    text-align: justify;
-    text-align-last: center;
+    text-align: right;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
