@@ -1430,6 +1430,26 @@ html.dark .audio-player-modal__surface {
   white-space: nowrap !important;
 }
 
+/* List card — calligraphie ligature (même que grid card) */
+.app-root .app-view-home .hp-card--list .hp-card-ar {
+  font-family: "surahnames", serif !important;
+  font-size: clamp(1.72rem, 1.2rem + 0.85vw, 2.1rem) !important;
+  line-height: 1 !important;
+  opacity: 0.82;
+  transition: opacity 160ms ease;
+}
+
+.app-root .app-view-home .hp-card--list:hover .hp-card-ar {
+  opacity: 1;
+}
+
+/* Override the small-device rule that crushes hp-card-ar to 0.76rem */
+html body .app-root .app-view-home .hp-card--list .hp-card-ar {
+  font-family: "surahnames", serif !important;
+  font-size: clamp(1.55rem, 6vw, 2rem) !important;
+  line-height: 1 !important;
+}
+
 .app-root .app-view-home .hp-card-play {
   min-width: var(--space-10) !important;
   min-height: var(--space-10) !important;
@@ -2986,6 +3006,13 @@ body > .audio-player-modal .audio-settings-icon-btn {
     height: var(--mp-device-touch) !important;
     min-width: var(--mp-device-touch) !important;
     min-height: var(--mp-device-touch) !important;
+  }
+
+  /* List card Arabic — restaurer taille calligraphique après le reset global */
+  html body .app-root .app-view-home .hp-card--list .hp-card-ar {
+    font-family: "surahnames", serif !important;
+    font-size: clamp(1.55rem, 6vw, 2rem) !important;
+    line-height: 1 !important;
   }
 }
 

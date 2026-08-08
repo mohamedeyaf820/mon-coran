@@ -190,14 +190,15 @@ export const SurahCard = memo(function SurahCard({
             ) : null}
           </div>
         </div>
-        <span
-          className="hp-card-ar font-quran text-text-primary opacity-80 group-hover:opacity-100 transition-opacity ml-2 shrink-0"
-          dir="rtl"
-          lang="ar"
-          aria-hidden="true"
+        <div
+          className="hp-card-ar font-surah-names shrink-0 text-text-primary"
+          aria-label={surah.ar}
+          role="img"
+          dir="ltr"
+          lang="en"
         >
-          {surah.ar}
-        </span>
+          <span aria-hidden="true">{surahLigature}</span>
+        </div>
         <button
           className={cn(
             "hp-card-play relative z-[2] flex items-center justify-center w-8 h-8 rounded-full bg-bg-secondary text-text-muted hover:bg-primary hover:text-white transition-colors ml-2 shrink-0",
