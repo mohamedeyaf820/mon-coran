@@ -847,7 +847,8 @@ html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card 
 html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .mushaf-text-block {
   line-height: 2.08 !important;
   word-spacing: 0 !important;
-  text-align: right !important;
+  text-align: justify !important;
+  text-align-last: right !important;
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__translation-slot {
