@@ -1788,7 +1788,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 .app-root .quran-display--platform .cpv-verse--active {
     background: rgba(var(--primary-rgb), 0.12);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.16);
+    box-shadow: none;
 }
 
 .app-root .quran-display--platform .cpv-verse--playing {

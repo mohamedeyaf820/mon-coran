@@ -234,8 +234,7 @@
 .app-root .quran-display--platform .cpv-verse:focus-visible,
 .app-root .quran-display--platform .cpv-verse--active {
     background: color-mix(in srgb, var(--primary) 12%, transparent 88%);
-    box-shadow: 0 0 0 1px
-        color-mix(in srgb, var(--primary) 24%, transparent 76%);
+    box-shadow: none;
 }
 
 .app-root .quran-display--platform .cpv-surah-header {
