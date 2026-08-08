@@ -758,12 +758,12 @@ html
 
 html body .app-root .quran-display--platform .mushaf-container {
     text-align: right !important;
-    word-spacing: 0.16em !important;
+    word-spacing: var(--cpv-word-spacing, 0.045em) !important;
     line-height: 2.8 !important;
 }
 
 html body .app-root .quran-display--platform .mushaf-container .cpv-verse {
-    padding: 0.12rem 0.22rem !important;
+    padding: 0 0.1rem !important;
     border-radius: 6px !important;
 }
 
