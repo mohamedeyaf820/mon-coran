@@ -95,9 +95,7 @@
     max-width: 100%;
     padding-inline: clamp(0.42rem, 1vw, 0.8rem);
     color: var(--text-quran, var(--text-primary));
-    text-align: justify;
-    text-justify: auto;
-    text-align-last: right;
+    text-align: right;
     line-height: 2.35;
 }
 
@@ -223,9 +221,7 @@
     background: transparent !important;
     box-shadow: none !important;
     color: var(--text-quran, var(--text-primary));
-    text-align: justify;
-    text-justify: auto;
-    text-align-last: right;
+    text-align: right;
 }
 
 .app-root .quran-display--platform .cpv-verse {
@@ -295,7 +291,6 @@
 
     .app-root .quran-display--platform .cpv-flow {
         padding: 0.35rem !important;
-        text-align-last: right;
     }
 }
 

@@ -1758,9 +1758,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     line-height: 2.05 !important;
     letter-spacing: 0 !important;
     word-spacing: 0.1em !important;
-    text-align: justify !important;
-    text-justify: auto !important;
-    text-align-last: right !important;
+    text-align: right !important;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
 }
@@ -1868,9 +1866,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     line-height: 2.02 !important;
     letter-spacing: 0 !important;
     word-spacing: 0.095em !important;
-    text-align: justify !important;
-    text-justify: auto !important;
-    text-align-last: right !important;
+    text-align: right !important;
     text-shadow: none !important;
 }
 
@@ -1903,9 +1899,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     font-size: clamp(2.15rem, 1.34rem + 2.45vw, 4.05rem) !important;
     line-height: 2.08 !important;
     word-spacing: 0.09em !important;
-    text-align: justify !important;
-    text-justify: auto !important;
-    text-align-last: right !important;
+    text-align: right !important;
 }
 
 .app-root .quran-display--platform .mp-ayah {

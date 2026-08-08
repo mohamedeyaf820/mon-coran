@@ -13,7 +13,6 @@ import {
   Palette,
   Pause,
   Play,
-  SlidersHorizontal,
   Type,
 } from "lucide-react";
 import { getSurah } from "../../data/surahs";
@@ -21,13 +20,6 @@ import { cn } from "../../lib/utils";
 import { useApp } from "../../context/AppContext";
 import audioService from "../../services/audioService";
 import ArabicFontControls from "../ArabicFontControls";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 import { Modal } from "../ui/modal";
 import SurahInfoPanel from "../QuranDisplay/SurahInfoPanel";
 
@@ -174,12 +166,7 @@ export default function SurahReaderHeader({
       hidden: false,
     },
   ];
-  const [translationToggle, ...secondaryStudyToggles] = studyToggles.filter(
-    (toggle) => !toggle.hidden,
-  );
-  const secondaryStudyIsActive = secondaryStudyToggles.some(
-    (toggle) => toggle.active,
-  );
+  const visibleToggles = studyToggles.filter((toggle) => !toggle.hidden);
 
   return (
     <div className="reader-command-bar srh-root" aria-label={lbl(lang, "En-tête de lecture", "Reading header", "رأس القراءة")}>
@@ -384,56 +371,20 @@ export default function SurahReaderHeader({
 
         {/* Right cluster: study toggles */}
         <div className="srh-study-toggles" role="group" aria-label={lbl(lang, "Options d'étude", "Study options", "خيارات الدراسة")}>
-          <button
-            type="button"
-            className={cn(
-              "srh-toggle",
-              translationToggle.active && "srh-toggle--active",
-            )}
-            onClick={translationToggle.onClick}
-            aria-pressed={translationToggle.active}
-            aria-label={translationToggle.label}
-            title={translationToggle.label}
-          >
-            {translationToggle.icon}
-            <span className="srh-toggle__label">{translationToggle.label}</span>
-          </button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                className={cn(
-                  "srh-toggle srh-study-more",
-                  secondaryStudyIsActive && "srh-toggle--active",
-                )}
-                aria-label={lbl(lang, "Plus d'options d'étude", "More study options", "المزيد من خيارات الدراسة")}
-                title={lbl(lang, "Options d'étude", "Study options", "خيارات الدراسة")}
-              >
-                <SlidersHorizontal size={13} />
-                <span className="srh-toggle__label">
-                  {lbl(lang, "Options", "Options", "خيارات")}
-                </span>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align={lang === "ar" ? "start" : "end"}
-              className="min-w-[12rem]"
+          {visibleToggles.map((toggle) => (
+            <button
+              key={toggle.key}
+              type="button"
+              className={cn("srh-toggle", toggle.active && "srh-toggle--active")}
+              onClick={toggle.onClick}
+              aria-pressed={toggle.active}
+              aria-label={toggle.label}
+              title={toggle.label}
             >
-              <DropdownMenuLabel>
-                {lbl(lang, "Options d'étude", "Study options", "خيارات الدراسة")}
-              </DropdownMenuLabel>
-              {secondaryStudyToggles.map((toggle) => (
-                <DropdownMenuCheckboxItem
-                  key={toggle.key}
-                  checked={toggle.active}
-                  onCheckedChange={toggle.onClick}
-                >
-                  {toggle.label}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+              {toggle.icon}
+              <span className="srh-toggle__label">{toggle.label}</span>
+            </button>
+          ))}
         </div>
       </div>
 

@@ -2788,9 +2788,7 @@ ol {
 
 .qc-ayah-text-ar {
     width: 100%;
-    text-align: justify;
-    text-justify: auto;
-    text-align-last: right;
+    text-align: right;
     font-family: var(--font-quran);
     line-height: 2.35;
     color: var(--text-quran);
@@ -16482,9 +16480,7 @@ body {
 
 .ayah-text-ar {
     direction: rtl;
-    text-align: justify;
-    text-justify: auto;
-    text-align-last: right;
+    text-align: right;
     font-family: var(--font-quran-tajweed, var(--font-quran));
     color: var(--text-quran);
 
@@ -16643,9 +16639,7 @@ body {
 
 .mushaf-page {
     direction: rtl;
-    text-align: justify;
-    text-justify: auto;
-    text-align-last: right;
+    text-align: right;
     padding: 2.8rem 3rem;
     min-height: 480px;
     word-spacing: 0.08em;
@@ -18290,9 +18284,7 @@ body {
 .mp-body {
     padding: 1.5rem 2.2rem 1rem;
     direction: rtl;
-    text-align: justify;
-    text-justify: auto;
-    text-align-last: right;
+    text-align: right;
     font-family: var(--font-quran);
     font-size: var(--mp-fs, 28px);
     line-height: calc(var(--arabic-reading-line-height, 2.46) + 0.2);
