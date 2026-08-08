@@ -1003,8 +1003,8 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
   100% { transform: scale(1.06) translateY(0.06em); filter: drop-shadow(0 0 0px color-mix(in srgb, var(--primary) 0%, transparent)); }
 }
 
-/* Reader list mode (qc-list-card) */
-html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-playing {
+/* Reader list mode (qc-list-card) — off for surah-stream reciters (position is approximate) */
+html:not([data-audio-mode="surah"]) body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-playing {
   animation: ayah-reading-pulse 2.2s ease-in-out infinite !important;
 }
 
@@ -1013,8 +1013,8 @@ html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.
   box-shadow: inset 3px 0 0 color-mix(in srgb, var(--primary) 60%, transparent) !important;
 }
 
-/* Ayat marker pendant la lecture */
-html body .app-root :is(
+/* Ayat marker pendant la lecture — off for surah-stream reciters */
+html:not([data-audio-mode="surah"]) body .app-root :is(
   .qurancom-ayah-marker,
   .verse-end-marker,
   .ayat-marker,
@@ -1023,16 +1023,16 @@ html body .app-root :is(
   .cpv-medallion
 ).is-playing {
   animation: ayah-marker-playing 1.8s ease-in-out infinite !important;
-  transform: none !important; /* annule le scale statique existant, animation prend le relai */
+  transform: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-playing {
+  html:not([data-audio-mode="surah"]) body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-playing {
     animation: none !important;
     box-shadow: inset 3px 0 0 var(--primary) !important;
   }
 
-  html body .app-root :is(
+  html:not([data-audio-mode="surah"]) body .app-root :is(
     .qurancom-ayah-marker,
     .verse-end-marker,
     .ayat-marker,

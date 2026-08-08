@@ -955,6 +955,16 @@ export default function AudioPlayer() {
 
   useEffect(() => {
     const root = document.documentElement;
+    if (isSurahStreamReciter && (isPlaying || currentPlayingAyah)) {
+      root.setAttribute("data-audio-mode", "surah");
+    } else {
+      root.removeAttribute("data-audio-mode");
+    }
+    return () => root.removeAttribute("data-audio-mode");
+  }, [isSurahStreamReciter, isPlaying, currentPlayingAyah]);
+
+  useEffect(() => {
+    const root = document.documentElement;
 
     if (!isMobile || closed) {
       root.style.removeProperty("--player-h");

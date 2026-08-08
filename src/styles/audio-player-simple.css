@@ -520,6 +520,21 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
   font-size: clamp(.6rem, 1.8vw, .68rem);
 }
 
+.app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-ar-name {
+  font-family: var(--font-quran, serif);
+  font-size: clamp(.76rem, 2.1vw, .86rem) !important;
+  color: color-mix(in srgb, var(--simple-player-ink) 85%, var(--theme-primary));
+  line-height: 1.3;
+  letter-spacing: 0;
+  direction: rtl;
+}
+
+.app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-reciter {
+  font-size: clamp(.58rem, 1.6vw, .64rem) !important;
+  color: var(--simple-player-muted);
+  opacity: .88;
+}
+
 .app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-ar-ligature {
   display: block;
   flex: 0 0 auto;
