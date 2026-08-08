@@ -1304,8 +1304,7 @@ html.dark .audio-player-modal__surface {
   line-height: var(--cpv-line-height, 2.42) !important;
   word-spacing: var(--cpv-word-spacing, 0.1em) !important;
   letter-spacing: 0 !important;
-  text-align: justify !important;
-  text-align-last: auto !important;
+  text-align: right !important;
   filter: none !important;
   opacity: 1 !important;
   transform: none !important;
