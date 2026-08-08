@@ -142,8 +142,11 @@ function CompactPlayer(props) {
     progressRef,
     reciter,
     reciterLabel,
+    surahNum,
     title,
   } = props;
+
+  const surahLigature = surahNum ? String(surahNum).padStart(3, "0") : null;
 
   return (
     <section
@@ -178,8 +181,15 @@ function CompactPlayer(props) {
           onClick={onExpand}
           aria-label={expandLabel}
         >
-          <strong>{title}</strong>
-          <span>{currentArabicName || reciterLabel || "—"}</span>
+          {surahLigature && (
+            <span className="simple-player__compact-ar-ligature font-surah-names" dir="ltr" lang="en" aria-hidden="true">
+              {surahLigature}
+            </span>
+          )}
+          <span className="simple-player__compact-meta-text">
+            <strong>{title}</strong>
+            <span>{currentArabicName || reciterLabel || "—"}</span>
+          </span>
         </button>
         <IconButton
           className="mp-player-play-btn simple-player__play simple-player__play--compact"
