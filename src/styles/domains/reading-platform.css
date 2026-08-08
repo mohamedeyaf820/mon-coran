@@ -90,9 +90,7 @@
     line-height: var(--qcom-ar-leading) !important;
     letter-spacing: 0 !important;
     word-spacing: var(--qcom-ar-word-spacing) !important;
-    text-align: justify !important;
-    text-justify: auto !important;
-    text-align-last: right !important;
+    text-align: right !important;
     text-wrap: pretty;
     overflow-wrap: anywhere;
     text-shadow: none !important;
@@ -175,9 +173,7 @@
     line-height: 2.12 !important;
     letter-spacing: 0 !important;
     word-spacing: var(--qcom-ar-word-spacing) !important;
-    text-align: justify !important;
-    text-justify: auto !important;
-    text-align-last: right !important;
+    text-align: right !important;
 }
 
 .app-root .quran-display--hafs .cpv-flow,
@@ -568,9 +564,7 @@
     line-height: var(--qcom-reader-line-height) !important;
     letter-spacing: 0 !important;
     word-spacing: var(--qcom-reader-word-spacing) !important;
-    text-align: justify !important;
-    text-justify: auto !important;
-    text-align-last: right !important;
+    text-align: right !important;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "liga" 1, "calt" 1, "kern" 1, "mark" 1, "mkmk" 1, "ccmp" 1;
@@ -1813,9 +1807,7 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     line-height: var(--qcom-reader-line-height) !important;
     letter-spacing: 0 !important;
     word-spacing: var(--qcom-reader-word-spacing) !important;
-    text-align: justify !important;
-    text-justify: auto !important;
-    text-align-last: right !important;
+    text-align: right !important;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     font-kerning: normal;
@@ -1995,9 +1987,7 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
 
 .app-root .quran-display--platform .qcom-continuous-list {
     padding: clamp(0.8rem, 2.2vw, 1.55rem) 0.2rem 2.4rem !important;
-    text-align: justify !important;
-    text-justify: auto !important;
-    text-align-last: right !important;
+    text-align: right !important;
 }
 
 .app-root .quran-display--platform .qcom-continuous-verse {
@@ -2099,9 +2089,7 @@ html body .app-root .quran-display--platform .cpv-flow {
     color: var(--qcom-page-ink, var(--text-quran)) !important;
     font-size: var(--qcom-reader-font-size) !important;
     line-height: var(--qcom-reader-line-height) !important;
-    text-align: justify !important;
-    text-justify: auto !important;
-    text-align-last: right !important;
+    text-align: right !important;
 }
 
 html body .app-root .quran-display--platform .cpv-container::before,
@@ -2180,9 +2168,7 @@ html body .app-root .quran-display--platform .cpv-container.mushaf-page-wrapper:
 html body .app-root .quran-display--platform .mushaf-container.cpv-flow {
     display: block !important;
     direction: rtl !important;
-    text-align: justify !important;
-    text-justify: auto !important;
-    text-align-last: right !important;
+    text-align: right !important;
     font-family:
         var(--qd-font-family),
         "KFGQPC Uthmanic Script HAFS",
@@ -2384,9 +2370,7 @@ html body .app-root .quran-display--platform .mushaf-text-block {
     direction: rtl !important;
     unicode-bidi: normal !important;
     word-spacing: 0 !important;
-    text-align: justify !important;
-    text-justify: auto !important;
-    text-align-last: right !important;
+    text-align: right !important;
     font-family: var(--quran-font-family) !important;
     font-size: var(--quran-font-size) !important;
     line-height: 2.6 !important;
