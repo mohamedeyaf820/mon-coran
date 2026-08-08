@@ -517,8 +517,8 @@ html body .settings-drawer__title {
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
-  --cpv-font-size: var(--mp-effective-mushaf-size, clamp(18px, var(--qd-reading-font-size, 42px), 30px)) !important;
-  font-size: var(--mp-effective-mushaf-size, clamp(18px, var(--qd-reading-font-size, 42px), 30px)) !important;
+  --cpv-font-size: var(--mp-effective-mushaf-size, var(--qd-reading-font-size, 42px)) !important;
+  font-size: var(--mp-effective-mushaf-size, var(--qd-reading-font-size, 42px)) !important;
 }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform

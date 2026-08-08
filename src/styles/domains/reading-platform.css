@@ -606,7 +606,7 @@
 .app-root .quran-display--platform :is(.cpv-verse, .qcom-continuous-verse):hover,
 .app-root .quran-display--platform :is(.cpv-verse--active, .qcom-continuous-verse--active) {
     background: var(--qcom-page-soft-hover) !important;
-    box-shadow: 0 0 0 0.04em rgba(var(--primary-rgb), 0.12) !important;
+    box-shadow: none !important;
 }
 
 .app-root .quran-display--platform :is(.cpv-verse--playing, .qcom-continuous-verse--playing) {
@@ -2246,9 +2246,9 @@ html body .app-root .quran-display--platform .mushaf-page-wrapper .bismillah spa
 }
 
 html body .app-root .quran-display--platform .mushaf-container .cpv-verse {
-    padding: 0.15rem 0.25rem !important;
-    border-radius: 6px !important;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    padding: 0 0.1rem !important;
+    border-radius: 4px !important;
+    transition: background-color 160ms ease !important;
 }
 
 html body .app-root .quran-display--platform .mushaf-container .cpv-verse:hover,
