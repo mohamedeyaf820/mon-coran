@@ -29,11 +29,11 @@ export function getResponsiveArabicFontSize({
   let deviceMaximum;
 
   if (width <= 420) {
-    deviceScale = 0.56;
-    deviceMaximum = mushafLayout === "mushaf" ? 20 : 56;
+    deviceScale = 0.76;
+    deviceMaximum = mushafLayout === "mushaf" ? 36 : 56;
   } else if (width <= 640) {
-    deviceScale = 0.64;
-    deviceMaximum = mushafLayout === "mushaf" ? 24 : 64;
+    deviceScale = 0.76;
+    deviceMaximum = mushafLayout === "mushaf" ? 40 : 64;
   } else if (width <= 1024) {
     deviceScale = 1.08;
     deviceMaximum = mushafLayout === "mushaf" ? 60 : 76;

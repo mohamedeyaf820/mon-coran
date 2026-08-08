@@ -851,6 +851,11 @@ html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pa
   text-align-last: right !important;
 }
 
+html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .mushaf-text-block[data-large-font="true"] {
+  text-align: right !important;
+  text-align-last: unset !important;
+}
+
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__translation-slot {
   margin-top: 0.75rem !important;
   padding-top: 0.8rem !important;

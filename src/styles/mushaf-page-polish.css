@@ -258,6 +258,12 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   text-rendering: optimizeLegibility;
 }
 
+/* Large-font mode: switch to right-align to avoid justify gaps */
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block[data-large-font="true"] {
+  text-align: right !important;
+  text-align-last: unset !important;
+}
+
 /* Kill word-spacing overrides from other files on children */
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block :is(.quran-verse-inline, .verse-text, .quran-arabic-text) {
   word-spacing: inherit !important;
