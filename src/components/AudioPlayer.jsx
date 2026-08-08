@@ -740,7 +740,7 @@ export default function AudioPlayer() {
   const currentSurahName = surahMeta ? surahName(currentSurah, lang) : "";
   const currentArabicName = surahMeta?.ar || "";
 
-  const reciterObj = currentReciters.find((r) => r.id === reciter);
+  const reciterObj = currentReciters.find((r) => r.id === reciter) ?? getReciter(reciter);
   const isSurahStreamReciter = reciterObj?.audioMode === "surah";
   const hasAyahContext = Boolean(currentPlayingAyah?.ayah);
   const isContextualDesktop = !isMobile && !showHome;
