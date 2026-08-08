@@ -61,7 +61,9 @@ export default function useQuranDisplayData({
 }) {
   const needsHafsSupport =
     riwaya === "warsh" &&
-    (displayMode === "page" || (mushafLayout !== "mushaf" && showTransliteration));
+    (displayMode === "page" ||
+      (displayMode === "surah" && mushafLayout === "mushaf") ||
+      (mushafLayout !== "mushaf" && showTransliteration));
   const currentCacheKey = displayCacheKey(
     displayMode,
     currentSurah,
