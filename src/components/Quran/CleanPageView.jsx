@@ -27,7 +27,7 @@ function CleanPageViewComponent({
   const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
   const pageNumber = ayahs[0]?.page ?? null;
   const juzNumber = ayahs[0]?.juz ?? null;
-  const headerSurahName = surahMeta?.name_arabic || surahMeta?.name || "";
+  const headerSurahName = surahMeta?.ar || surahMeta?.name_arabic || surahMeta?.name || "";
   // `fontSize` is already resolved for the current viewport by
   // useQuranDisplayView. Keeping one source of truth prevents deferred mobile
   // styles from enlarging the Mushaf after its first paint.
@@ -60,14 +60,15 @@ function CleanPageViewComponent({
         aria-hidden="true"
       />
       <div className="mushaf-page-header" aria-hidden="true">
-        <span dir="rtl">{juzLabel}</span>
-        <span dir="rtl">{surahLabel}</span>
+        {juzLabel && <span dir="rtl">{juzLabel}</span>}
+        {juzLabel && surahLabel && <span className="mushaf-header-sep" aria-hidden="true">·</span>}
+        {surahLabel && <span dir="rtl">{surahLabel}</span>}
       </div>
       <div
         className="mushaf-text-block mushaf-container"
         dir="rtl"
         lang="ar"
-        data-large-font={mushafFontSize >= 22 ? "true" : undefined}
+        data-large-font={mushafFontSize >= 28 ? "true" : undefined}
         style={{
           "--cpv-font-size": `${Math.round(mushafFontSize)}px`,
           "--cpv-line-height": "var(--quran-line-height, 1.94)",
