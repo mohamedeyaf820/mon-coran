@@ -1131,8 +1131,9 @@ html body .app-root[data-view="reading"]
     overflow: visible !important;
     text-overflow: clip !important;
     justify-self: end !important;
-    font-family: var(--font-quran, serif) !important;
-    font-size: 1.22rem !important;
+    font-family: "surahnames", serif !important;
+    font-size: clamp(1.6rem, 5.5vw, 2rem) !important;
+    line-height: 1 !important;
     white-space: nowrap !important;
   }
 

@@ -988,3 +988,59 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
     transform: none !important;
   }
 }
+
+/* ── Verset en cours de lecture — animation subtile ─────────── */
+
+@keyframes ayah-reading-pulse {
+  0%   { box-shadow: inset 3px 0 0 var(--primary), 0 0 0 0 color-mix(in srgb, var(--primary) 18%, transparent); }
+  55%  { box-shadow: inset 3px 0 0 var(--primary), 0 0 0 5px color-mix(in srgb, var(--primary) 0%, transparent); }
+  100% { box-shadow: inset 3px 0 0 var(--primary), 0 0 0 0 color-mix(in srgb, var(--primary) 0%, transparent); }
+}
+
+@keyframes ayah-marker-playing {
+  0%   { transform: scale(1.06) translateY(0.06em); filter: drop-shadow(0 0 0px color-mix(in srgb, var(--primary) 0%, transparent)); }
+  50%  { transform: scale(1.16) translateY(0.04em); filter: drop-shadow(0 0 4px color-mix(in srgb, var(--primary) 55%, transparent)); }
+  100% { transform: scale(1.06) translateY(0.06em); filter: drop-shadow(0 0 0px color-mix(in srgb, var(--primary) 0%, transparent)); }
+}
+
+/* Reader list mode (qc-list-card) */
+html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-playing {
+  animation: ayah-reading-pulse 2.2s ease-in-out infinite !important;
+}
+
+/* Verset actif (is-active = navigué, pas forcément lu) — liseré statique */
+html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-active {
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--primary) 60%, transparent) !important;
+}
+
+/* Ayat marker pendant la lecture */
+html body .app-root :is(
+  .qurancom-ayah-marker,
+  .verse-end-marker,
+  .ayat-marker,
+  .mp-ayah-marker,
+  .verse-stop-medallion,
+  .cpv-medallion
+).is-playing {
+  animation: ayah-marker-playing 1.8s ease-in-out infinite !important;
+  transform: none !important; /* annule le scale statique existant, animation prend le relai */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-playing {
+    animation: none !important;
+    box-shadow: inset 3px 0 0 var(--primary) !important;
+  }
+
+  html body .app-root :is(
+    .qurancom-ayah-marker,
+    .verse-end-marker,
+    .ayat-marker,
+    .mp-ayah-marker,
+    .verse-stop-medallion,
+    .cpv-medallion
+  ).is-playing {
+    animation: none !important;
+    transform: scale(1.1) translateY(0.06em) !important;
+  }
+}
