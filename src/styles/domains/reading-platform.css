@@ -1810,8 +1810,7 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     line-height: var(--qcom-reader-line-height) !important;
     letter-spacing: 0 !important;
     word-spacing: var(--qcom-reader-word-spacing) !important;
-    text-align: justify !important;
-    text-align-last: right !important;
+    text-align: right !important;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     font-kerning: normal;
