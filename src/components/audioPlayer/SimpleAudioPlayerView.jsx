@@ -188,7 +188,8 @@ function CompactPlayer(props) {
           )}
           <span className="simple-player__compact-meta-text">
             <strong>{title}</strong>
-            <span>{currentArabicName || reciterLabel || "—"}</span>
+            <span className="simple-player__compact-ar-name" dir="rtl" lang="ar">{currentArabicName}</span>
+            <span className="simple-player__compact-reciter">{reciterLabel || "—"}</span>
           </span>
         </button>
         <IconButton
