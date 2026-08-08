@@ -3031,8 +3031,8 @@ html body .app-root .quran-display--platform .qcm-edge {
     }
 
 
-    .app-root .quran-display--platform > *:last-child,
-    .app-root .qc-reading-view > *:last-child {
+    .app-root .quran-display--platform > *:last-child:not(.mp-footer-v2),
+    .app-root .qc-reading-view > *:last-child:not(.mp-footer-v2) {
         margin-bottom: 100px;
         padding-bottom: 2rem;
     }

@@ -24,6 +24,10 @@
   margin-inline: auto !important;
 }
 
+html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.quran-mode-pane {
+  padding-top: 0 !important;
+}
+
 .app-root[data-view="reading"] .quran-display--platform :is(.qc-surah-header-wrap, .reader-toolbar, .mode-nav, .warsh-notice) {
   width: var(--reader-content-max) !important;
   max-width: var(--reader-content-max) !important;

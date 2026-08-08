@@ -2765,7 +2765,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     width: min(100%, 1240px);
     max-width: calc(100vw - clamp(1rem, 3vw, 2.5rem));
     margin-inline: auto;
-    padding: clamp(1rem, 2.2vw, 1.6rem) 0 clamp(5.5rem, 8vw, 7rem);
+    padding: clamp(1rem, 2.2vw, 1.6rem) 0 clamp(1.5rem, 3vw, 2.5rem);
     gap: clamp(0.9rem, 1.6vw, 1.25rem);
 }
 
