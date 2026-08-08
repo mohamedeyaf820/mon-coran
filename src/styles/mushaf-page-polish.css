@@ -184,22 +184,29 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .bismillah-container {
-  margin: clamp(0.7rem, 2vw, 1.1rem) 0 clamp(0.85rem, 2.2vw, 1.25rem) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 0 !important;
+  margin: clamp(0.5rem, 1.5vw, 0.85rem) 0 clamp(0.9rem, 2.4vw, 1.35rem) !important;
+  padding: 0 !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper .bismillah {
   width: 100%;
   margin: 0 !important;
-  padding: 0.2rem 0 0.35rem !important;
+  padding: 0 !important;
   border: 0 !important;
-  gap: clamp(0.6rem, 2.5vw, 1.2rem);
+  gap: clamp(0.5rem, 2vw, 0.9rem);
+  justify-content: center !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper .bismillah::before,
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper .bismillah::after {
-  max-width: 4.5rem !important;
-  height: 1px;
+  max-width: 3.5rem !important;
+  height: 1px !important;
   background: linear-gradient(90deg, transparent, var(--mushaf-rule-strong)) !important;
+  opacity: 0.6 !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper .bismillah::after {
@@ -209,19 +216,33 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper .bismillah > span {
   color: var(--mushaf-ink) !important;
   font-size: var(--mushaf-basmala-size) !important;
-  line-height: 1.85 !important;
+  line-height: 1.6 !important;
   text-shadow: none !important;
+  letter-spacing: 0 !important;
+}
+
+/* Separator line between Arabic and translation */
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .bismillah-container::after {
+  content: "" !important;
+  display: block !important;
+  width: clamp(3rem, 18%, 6rem) !important;
+  height: 1px !important;
+  margin: 0.45rem auto 0.35rem !important;
+  background: linear-gradient(90deg, transparent, var(--mushaf-rule-strong), transparent) !important;
+  opacity: 0.55 !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .bismillah-translation {
-  max-width: 42rem;
-  margin-top: 0.15rem;
+  max-width: 28ch;
+  margin: 0 !important;
   color: var(--mushaf-muted) !important;
-  font-family: var(--font-ui, system-ui, sans-serif);
-  font-size: clamp(0.72rem, 0.66rem + 0.18vw, 0.8rem);
-  font-style: normal;
-  line-height: 1.55;
-  opacity: 1;
+  font-family: var(--font-ui, system-ui, sans-serif) !important;
+  font-size: clamp(0.65rem, 0.6rem + 0.15vw, 0.72rem) !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  line-height: 1.45 !important;
+  text-align: center !important;
+  opacity: 0.82 !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
@@ -233,7 +254,6 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   line-height: var(--mushaf-text-leading) !important;
   word-spacing: 0 !important;
   text-align: right !important;
-  text-align-last: unset !important;
   text-rendering: optimizeLegibility;
 }
 
@@ -339,6 +359,15 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   .app-root[data-view="reading"] .quran-mode-pane--mushaf .bismillah-translation {
     max-width: 31ch;
     font-size: 0.68rem;
+  }
+}
+
+/* Justify only on wider screens (>760px) where enough words fill each line without big gaps */
+@media (min-width: 761px) {
+  html body .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
+    text-align: justify !important;
+    text-justify: auto !important;
+    text-align-last: right !important;
   }
 }
 
