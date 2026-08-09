@@ -401,7 +401,7 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
 .qc-verse-card,
 .qc-ayah-block,
 .rd-ayah {
-    padding: clamp(0.75rem, 2vw, 1.25rem) clamp(0.75rem, 2.5vw, 1.5rem) !important;
+    padding: var(--qc-verse-padding-y, clamp(0.75rem, 2vw, 1.25rem)) var(--qc-verse-padding-x, clamp(0.75rem, 2.5vw, 1.5rem)) !important;
     transition:
         background-color var(--dur-normal) ease,
         border-color var(--dur-normal) ease,

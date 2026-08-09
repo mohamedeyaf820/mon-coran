@@ -955,8 +955,7 @@
     }
 }
 
-/* Keep the portaled search overlay pinned to the viewport. The legacy
-   `search-modal-shell` class belongs to panels, never to a backdrop. */
+
 .modal-overlay.search-pro-overlay {
   position: fixed !important;
   inset: 0 !important;
@@ -1446,8 +1445,9 @@ html[data-theme="dark"] .search-pro__close:hover {
 }
 
 .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-meta--ayahs {
-    color: rgba(226, 232, 240, 0.52);
+    color: var(--text-muted);
 }
+
 
 .app-root .app-view-home .hp-grid.hp-grid--surah .hp-card-ar {
     min-width: clamp(4rem, 5.6vw, 6rem);
@@ -1759,7 +1759,6 @@ html[data-theme="dark"] .search-pro__close:hover {
     letter-spacing: 0 !important;
     word-spacing: 0.1em !important;
     text-align: right !important;
-    text-align-last: right !important;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
 }
@@ -1788,7 +1787,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 .app-root .quran-display--platform .cpv-verse--active {
     background: rgba(var(--primary-rgb), 0.12);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.16);
+    box-shadow: none;
 }
 
 .app-root .quran-display--platform .cpv-verse--playing {
@@ -1896,12 +1895,11 @@ html[data-theme="dark"] .search-pro__close:hover {
 }
 
 .app-root .quran-display--platform .mp-ayahs-flow {
-    color: var(--reader-flow-ink-dark);
+    color: var(--reader-flow-ink-dark, var(--mp-text, #1b2823));
     font-size: clamp(2.15rem, 1.34rem + 2.45vw, 4.05rem) !important;
     line-height: 2.08 !important;
     word-spacing: 0.09em !important;
     text-align: right !important;
-    text-align-last: right !important;
 }
 
 .app-root .quran-display--platform .mp-ayah {
@@ -1997,7 +1995,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     }
 }
 
-/* Search modal shell styles - moved from src\styles\tailwind.css */
+
 .search-modal-shell {
     position: relative;
     isolation: isolate;
@@ -2761,13 +2759,13 @@ html[data-theme="dark"] .search-pro__close:hover {
     }
 }
 
-/* Home page system refresh: calm hierarchy, stable cards, responsive first view. */
+
 .app-root .app-view-home .hp-wrapper,
 .app-root[data-view="home"] .hp-wrapper {
     width: min(100%, 1240px);
     max-width: calc(100vw - clamp(1rem, 3vw, 2.5rem));
     margin-inline: auto;
-    padding: clamp(1rem, 2.2vw, 1.6rem) 0 clamp(5.5rem, 8vw, 7rem);
+    padding: clamp(1rem, 2.2vw, 1.6rem) 0 clamp(1.5rem, 3vw, 2.5rem);
     gap: clamp(0.9rem, 1.6vw, 1.25rem);
 }
 
@@ -2935,8 +2933,6 @@ html[data-theme="dark"] .search-pro__close:hover {
 
 [data-theme="dark"] .app-root .app-view-home .home-info-card,
 [data-theme="dark"] .app-root[data-view="home"] .home-info-card,
-[data-theme="dark"] .app-root .app-view-home :is(.home-daily-verse-card, .home-session-card, .home-prayer-card, .home-tools-quick-card),
-[data-theme="dark"] .app-root[data-view="home"] :is(.home-daily-verse-card, .home-session-card, .home-prayer-card, .home-tools-quick-card),
 [data-theme="dark"] .app-root .app-view-home .home-content-zone > section > div:first-child,
 [data-theme="dark"] .app-root[data-view="home"] .home-content-zone > section > div:first-child {
     border-color: var(--theme-border) !important;
@@ -2985,37 +2981,73 @@ html[data-theme="dark"] .search-pro__close:hover {
     .app-root .app-view-home .hp-wrapper,
     .app-root[data-view="home"] .hp-wrapper {
         max-width: calc(100vw - 0.9rem);
-        padding-top: 0.7rem;
-        gap: 0.75rem;
+        padding-top: 0.45rem;
+        gap: 0.6rem;
     }
 
     .app-root .app-view-home .home-hero-shell,
     .app-root[data-view="home"] .home-hero-shell {
         border-radius: 14px;
-        padding: 0.875rem !important;
+        padding: 0.6rem !important;
     }
 
     .app-root .app-view-home .home-brand-row,
     .app-root[data-view="home"] .home-brand-row {
         align-items: center;
+        gap: 0.55rem;
+    }
+
+    .app-root .app-view-home .home-hero-logo,
+    .app-root[data-view="home"] .home-hero-logo {
+        width: 2.35rem;
+        height: 2.35rem;
+        border-radius: 0.7rem;
+    }
+
+    .app-root .app-view-home .home-hero-kicker-row,
+    .app-root[data-view="home"] .home-hero-kicker-row {
+        gap: 0.4rem;
+        margin-bottom: 0.55rem;
+    }
+
+    .app-root .app-view-home .home-hero-kicker-row > *,
+    .app-root[data-view="home"] .home-hero-kicker-row > * {
+        padding: 0.3rem 0.55rem;
+        font-size: 0.62rem;
     }
 
     .app-root .app-view-home .home-hero-title,
     .app-root[data-view="home"] .home-hero-title {
-        font-size: 1.4rem !important;
+        font-size: 1.2rem !important;
+        line-height: 1.08 !important;
     }
 
     .app-root .app-view-home .home-hero-copy,
     .app-root[data-view="home"] .home-hero-copy {
-        font-size: 0.82rem !important;
-        line-height: 1.5 !important;
+        margin-top: 0.65rem;
+        font-size: 0.76rem !important;
+        line-height: 1.45 !important;
     }
 
     .app-root .app-view-home .home-hero-actions,
     .app-root[data-view="home"] .home-hero-actions {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 0.55rem;
+        gap: 0.4rem;
+        margin-top: 0.7rem;
+    }
+
+    .app-root .app-view-home :is(.home-cta-primary, .home-cta-secondary),
+    .app-root[data-view="home"] :is(.home-cta-primary, .home-cta-secondary) {
+        height: 2.25rem;
+        min-height: 2.25rem;
+        padding-inline: 0.85rem;
+        font-size: 0.76rem;
+    }
+
+    .app-root .app-view-home .home-mobile-quick-toggle,
+    .app-root[data-view="home"] .home-mobile-quick-toggle {
+        min-height: 2.25rem;
     }
 
     .app-root .app-view-home .home-top-cards-grid,
@@ -3031,7 +3063,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     }
 }
 
-/* Home typography and recitation catalogue refinement. */
+
 .app-root .app-view-home .home-hero-shell,
 .app-root .app-view-home .home-content-section,
 .app-root[data-view="home"] .home-hero-shell,
@@ -3143,16 +3175,23 @@ html[data-theme="dark"] .search-pro__close:hover {
 
 .app-root .app-view-home .home-style-filters,
 .app-root[data-view="home"] .home-style-filters {
-    gap: 0.55rem !important;
+    gap: 0.4rem !important;
     margin-top: -0.2rem;
+    padding-bottom: 0.15rem;
+    scrollbar-width: none;
+}
+
+.app-root .app-view-home .home-style-filters::-webkit-scrollbar,
+.app-root[data-view="home"] .home-style-filters::-webkit-scrollbar {
+    display: none;
 }
 
 .app-root .app-view-home .home-style-filter,
 .app-root[data-view="home"] .home-style-filter {
-    min-height: 44px;
+    min-height: 36px;
     border-radius: 999px !important;
     letter-spacing: 0 !important;
-    font-size: 0.86rem !important;
+    font-size: 0.76rem !important;
     font-weight: 700 !important;
 }
 
@@ -3177,7 +3216,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     gap: clamp(0.75rem, 1.1vw, 1rem);
 }
 
-/* Reciter cards — flat list style */
+
 .app-root .app-view-home .reciter-card,
 .app-root[data-view="home"] .reciter-card {
     min-height: 0;
@@ -3317,7 +3356,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     }
 }
 
-/* The search can be opened directly from the reader, including on short phones. */
+
 @media (max-width: 620px) {
     .search-pro-overlay {
         box-sizing: border-box !important;
@@ -3408,90 +3447,6 @@ html[data-theme="dark"] .search-pro__close:hover {
     }
 }
 
-/* Final collection cascade: keep reciters scannable without reverting to the legacy flat list. */
-.app-root .app-view-home .hp-grid.hp-grid--reciters,
-.app-root[data-view="home"] .hp-grid.hp-grid--reciters {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 0.75rem !important;
-}
-
-.app-root .app-view-home .reciter-card,
-.app-root[data-view="home"] .reciter-card {
-    position: relative;
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 0.55rem;
-    min-width: 0;
-    min-height: 82px !important;
-    overflow: hidden;
-    border: 1px solid var(--border) !important;
-    border-radius: 18px !important;
-    background: var(--theme-surface) !important;
-    padding: 0.58rem;
-    box-shadow: 0 6px 18px rgba(15, 48, 34, 0.055) !important;
-    transition: transform 170ms ease, border-color 170ms ease, box-shadow 170ms ease !important;
-}
-
-.app-root .app-view-home .reciter-card::before,
-.app-root[data-view="home"] .reciter-card::before {
-    content: "";
-    position: absolute;
-    inset: 12px auto 12px 0;
-    width: 3px;
-    border-radius: 0 999px 999px 0;
-    background: var(--primary);
-    opacity: 0;
-    transition: opacity 170ms ease;
-}
-
-.app-root .app-view-home .reciter-card:hover,
-.app-root[data-view="home"] .reciter-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(var(--primary-rgb), 0.28) !important;
-    box-shadow: 0 12px 28px rgba(15, 48, 34, 0.1) !important;
-}
-
-.app-root .app-view-home .reciter-card:hover::before,
-.app-root[data-view="home"] .reciter-card:hover::before {
-    opacity: 1;
-}
-
-.app-root .app-view-home .reciter-card__main,
-.app-root[data-view="home"] .reciter-card__main {
-    display: grid;
-    grid-template-columns: 52px minmax(0, 1fr) 18px;
-    align-items: center;
-    gap: 0.7rem;
-    min-width: 0;
-    border-radius: 13px;
-    color: var(--text-muted);
-    text-align: start;
-}
-
-.app-root .app-view-home .reciter-card__main:focus-visible,
-.app-root[data-view="home"] .reciter-card__main:focus-visible {
-    outline: 2px solid rgba(var(--primary-rgb), 0.55);
-    outline-offset: 3px;
-}
-
-.app-root .app-view-home .reciter-card__media,
-.app-root[data-view="home"] .reciter-card__media {
-    position: relative;
-    width: 52px !important;
-    height: 52px !important;
-    overflow: hidden;
-    border: 2px solid color-mix(in srgb, var(--bg-card) 82%, var(--primary) 18%) !important;
-    border-radius: 50% !important;
-    background: var(--bg-secondary);
-    box-shadow: 0 6px 16px rgba(13, 48, 33, 0.12) !important;
-}
-
-.app-root .app-view-home .reciter-card__copy,
-.app-root[data-view="home"] .reciter-card__copy {
-    min-width: 0;
-}
 
 .app-root .app-view-home .reciter-card__name,
 .app-root[data-view="home"] .reciter-card__name {
@@ -3536,108 +3491,6 @@ html[data-theme="dark"] .search-pro__close:hover {
     opacity: 0.55;
 }
 
-.app-root .app-view-home .reciter-card__actions,
-.app-root[data-view="home"] .reciter-card__actions {
-    display: flex !important;
-    align-items: center;
-    gap: 0.38rem !important;
-}
-
-.app-root .app-view-home .reciter-card__actions button,
-.app-root[data-view="home"] .reciter-card__actions button {
-    min-height: var(--mp-device-touch, 44px);
-    border-radius: 13px !important;
-}
-
-.app-root .app-view-home :is(.reciter-card__favorite, .reciter-card__listen),
-.app-root[data-view="home"] :is(.reciter-card__favorite, .reciter-card__listen) {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, color 150ms ease;
-}
-
-.app-root .app-view-home .reciter-card__favorite,
-.app-root[data-view="home"] .reciter-card__favorite {
-    width: var(--mp-device-touch, 44px);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-}
-
-.app-root .app-view-home .reciter-card__favorite:hover,
-.app-root[data-view="home"] .reciter-card__favorite:hover,
-.app-root .app-view-home .reciter-card__favorite--active,
-.app-root[data-view="home"] .reciter-card__favorite--active {
-    border-color: rgba(190, 144, 35, 0.3);
-    background: rgba(190, 144, 35, 0.09);
-    color: #b5841d;
-}
-
-.app-root .app-view-home .reciter-card__listen,
-.app-root[data-view="home"] .reciter-card__listen {
-    gap: 0.38rem;
-    border: 1px solid var(--primary);
-    background: var(--primary);
-    padding-inline: 0.75rem;
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 760;
-}
-
-.app-root .app-view-home :is(.reciter-card__favorite, .reciter-card__listen):hover,
-.app-root[data-view="home"] :is(.reciter-card__favorite, .reciter-card__listen):hover {
-    transform: translateY(-1px);
-}
-
-.app-root .app-view-home .hp-grid.hp-grid--reciters > button:last-child,
-.app-root[data-view="home"] .hp-grid.hp-grid--reciters > button:last-child {
-    grid-column: 1 / -1;
-}
-
-[data-theme="dark"] .app-root .app-view-home .reciter-card,
-[data-theme="dark"] .app-root[data-view="home"] .reciter-card {
-    border-color: var(--theme-border) !important;
-    background: var(--theme-surface) !important;
-}
-
-@media (max-width: 900px) {
-    .app-root .app-view-home .hp-grid.hp-grid--reciters,
-    .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
-        grid-template-columns: minmax(0, 1fr) !important;
-    }
-}
-
-@media (max-width: 520px) {
-    .app-root .app-view-home .reciter-card,
-    .app-root[data-view="home"] .reciter-card {
-        min-height: 74px !important;
-        padding: 0.45rem;
-    }
-
-    .app-root .app-view-home .reciter-card__main,
-    .app-root[data-view="home"] .reciter-card__main {
-        grid-template-columns: 46px minmax(0, 1fr) 14px;
-        gap: 0.55rem;
-    }
-
-    .app-root .app-view-home .reciter-card__media,
-    .app-root[data-view="home"] .reciter-card__media {
-        width: 42px !important;
-        height: 42px !important;
-    }
-
-    .app-root .app-view-home .reciter-card__listen,
-    .app-root[data-view="home"] .reciter-card__listen {
-        width: var(--mp-device-touch, 44px);
-        padding: 0;
-    }
-
-    .app-root .app-view-home .reciter-card__listen span,
-    .app-root[data-view="home"] .reciter-card__listen span {
-        display: none;
-    }
-}
-
 html body .app-root[data-view="home"] .hp-grid--juz .juz-card,
 html body .app-root .app-view-home .hp-grid--juz .juz-card {
     border-color: var(--border) !important;
@@ -3663,7 +3516,7 @@ html body .app-root .app-view-home .hp-grid--juz .juz-card__arabic {
     color: var(--text-muted) !important;
 }
 
-/* Home directories: stable, readable surfaces across all themes. */
+
 .app-root[data-view="home"] :is(.hp-card-ar, .juz-card__arabic),
 .app-root .app-view-home :is(.hp-card-ar, .juz-card__arabic) {
     font-family: var(--font-surah-name, var(--font-surah, var(--font-quran), serif)) !important;

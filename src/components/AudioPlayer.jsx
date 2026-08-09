@@ -11,7 +11,6 @@ import audioService from "../services/audioService";
 import {
   ensureReciterForRiwaya,
   getReciter,
-  getReciterSourceInfo,
   getRecitersByRiwaya,
 } from "../data/reciters";
 import { getSurah, surahName } from "../data/surahs";
@@ -27,12 +26,9 @@ import SimpleAudioPlayerView from "./audioPlayer/SimpleAudioPlayerView";
 import { useAutoScrollAyah } from "../hooks/useAutoScrollAyah";
 import { useMediaSession } from "../hooks/useMediaSession";
 import {
-  clampCardPosition,
   isMobilePlayerViewport,
-  loadCardPos,
   MOBILE_BREAKPOINT,
   getReciterCooldownMs,
-  saveCardPos,
 } from "./audioPlayer/audioPlayerUtils";
 import { AlertCircle } from "lucide-react";
 
@@ -47,13 +43,9 @@ export default function AudioPlayer() {
       currentPlayingAyah: current.currentPlayingAyah,
       riwaya: current.riwaya,
       audioSpeed: current.audioSpeed,
-      memMode: current.memMode,
-      memRepeatCount: current.memRepeatCount,
-      memPause: current.memPause,
       surahRepeatCount: current.surahRepeatCount,
       volume: current.volume,
       showHome: current.showHome,
-      showWordByWord: current.showWordByWord,
       playerMinimized: current.playerMinimized,
       syncOffsetsMs: current.syncOffsetsMs,
       favoriteReciters: current.favoriteReciters,
@@ -71,13 +63,9 @@ export default function AudioPlayer() {
     currentPlayingAyah,
     riwaya,
     audioSpeed,
-    memMode,
-    memRepeatCount,
-    memPause,
     surahRepeatCount,
     volume: savedVolume,
     showHome,
-    showWordByWord,
     playerMinimized,
     syncOffsetsMs,
     favoriteReciters,
@@ -100,10 +88,6 @@ export default function AudioPlayer() {
   const [networkState, setNetworkState] = useState("idle");
   const [optionsModalOpen, setOptionsModalOpen] = useState(false);
   const [reciterSwitchingId, setReciterSwitchingId] = useState(null);
-  const [playerPosition, setPlayerPosition] = useState(() =>
-    typeof window === "undefined" ? null : loadCardPos(),
-  );
-  const [playerDragging, setPlayerDragging] = useState(false);
 
   /* Fermeture / refs stables pour callbacks */
   const [closed, setClosed] = useState(false);
@@ -113,8 +97,6 @@ export default function AudioPlayer() {
 
   const optionsCloseButtonRef = useRef(null);
   const progressRef = useRef(null);
-  const playerRef = useRef(null);
-  const playerPositionRef = useRef(playerPosition);
   const audioErrorTimerRef = useRef(null);
   const autoFailoverBusyRef = useRef(false);
   const reciterSwitchingIdRef = useRef(null);
@@ -129,10 +111,6 @@ export default function AudioPlayer() {
   useEffect(() => {
     currentPlayingAyahRef.current = currentPlayingAyah;
   }, [currentPlayingAyah]);
-
-  useEffect(() => {
-    playerPositionRef.current = playerPosition;
-  }, [playerPosition]);
 
   const markReciterUnavailable = useCallback(
     (reciterId, errorLike = null) => {
@@ -224,7 +202,7 @@ export default function AudioPlayer() {
           set({ reciter: candidate.id });
           toast(
             lang === "fr"
-              ? `Recitateur indisponible, bascule vers ${candidate.nameFr || candidate.nameEn || candidate.name}.`
+              ? `Récitateur indisponible, bascule vers ${candidate.nameFr || candidate.nameEn || candidate.name}.`
               : lang === "ar"
                 ? `القارئ غير متاح، تم التبديل إلى ${candidate.name || candidate.nameEn || candidate.id}.`
                 : `Reciter unavailable, switched to ${candidate.nameEn || candidate.nameFr || candidate.name}.`,
@@ -266,90 +244,6 @@ export default function AudioPlayer() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const handlePlayerDragPointerDown = useCallback(
-    (event) => {
-      if (isMobile || (event.pointerType === "mouse" && event.button !== 0)) {
-        return;
-      }
-      if (event.target.closest?.("button, a, input, select, textarea, [role='slider']")) {
-        return;
-      }
-
-      const player = playerRef.current;
-      if (!player) return;
-
-      const rect = player.getBoundingClientRect();
-      const pointerId = event.pointerId;
-      const dragTarget = event.currentTarget;
-      const offsetX = event.clientX - rect.left;
-      const offsetY = event.clientY - rect.top;
-
-      event.preventDefault();
-      dragTarget.setPointerCapture?.(pointerId);
-      setPlayerDragging(true);
-
-      const onPointerMove = (moveEvent) => {
-        if (moveEvent.pointerId !== pointerId) return;
-        const nextPosition = clampCardPosition(
-          moveEvent.clientX - offsetX,
-          moveEvent.clientY - offsetY,
-          rect.width,
-          rect.height,
-        );
-        playerPositionRef.current = nextPosition;
-        setPlayerPosition(nextPosition);
-      };
-
-      const finishDrag = (endEvent) => {
-        if (endEvent?.pointerId !== undefined && endEvent.pointerId !== pointerId) {
-          return;
-        }
-        window.removeEventListener("pointermove", onPointerMove);
-        window.removeEventListener("pointerup", finishDrag);
-        window.removeEventListener("pointercancel", finishDrag);
-        dragTarget.releasePointerCapture?.(pointerId);
-        setPlayerDragging(false);
-        if (playerPositionRef.current) saveCardPos(playerPositionRef.current);
-      };
-
-      window.addEventListener("pointermove", onPointerMove);
-      window.addEventListener("pointerup", finishDrag);
-      window.addEventListener("pointercancel", finishDrag);
-    },
-    [isMobile],
-  );
-
-  useEffect(() => {
-    if (isMobile) return undefined;
-
-    let frameId;
-    const keepPlayerInViewport = () => {
-      cancelAnimationFrame(frameId);
-      frameId = requestAnimationFrame(() => {
-        const savedPosition = playerPositionRef.current;
-        const player = playerRef.current;
-        if (!savedPosition || !player) return;
-        const rect = player.getBoundingClientRect();
-        const nextPosition = clampCardPosition(
-          savedPosition.x,
-          savedPosition.y,
-          rect.width,
-          rect.height,
-        );
-        playerPositionRef.current = nextPosition;
-        setPlayerPosition(nextPosition);
-        saveCardPos(nextPosition);
-      });
-    };
-
-    keepPlayerInViewport();
-    window.addEventListener("resize", keepPlayerInViewport, { passive: true });
-    return () => {
-      cancelAnimationFrame(frameId);
-      window.removeEventListener("resize", keepPlayerInViewport);
-    };
-  }, [isMobile, minimized]);
-
   useEffect(() => {
     if (skipInitialExpandedPreferenceRef.current) {
       skipInitialExpandedPreferenceRef.current = false;
@@ -362,11 +256,6 @@ export default function AudioPlayer() {
     if (Boolean(playerMinimized) === minimized) return;
     set({ playerMinimized: minimized });
   }, [minimized, playerMinimized, set]);
-
-  useEffect(() => {
-    if (isPlaying) return;
-    setMinimized(true);
-  }, [isPlaying]);
 
   useEffect(() => {
     if (!optionsModalOpen) return;
@@ -390,7 +279,6 @@ export default function AudioPlayer() {
   useEffect(() => {
     audioService.onPlay = (item) => {
       setClosed(false); // rouvre le lecteur s'il etait ferme
-      setMinimized(true);
       setAudioError(null);
       markReciterAvailable(reciter);
       failedRecitersRef.current.clear();
@@ -521,7 +409,6 @@ export default function AudioPlayer() {
   const networkBadge = (() => {
     if (networkState === "loading" || networkState === "buffering") {
       return {
-        icon: "fa-spinner fa-spin",
         text:
           lang === "fr"
             ? "Chargement audio..."
@@ -532,7 +419,6 @@ export default function AudioPlayer() {
     }
     if (networkState === "stalled") {
       return {
-        icon: "fa-wifi",
         text:
           lang === "fr"
             ? "Connexion instable"
@@ -591,12 +477,6 @@ export default function AudioPlayer() {
   useEffect(() => {
     failedRecitersRef.current.clear();
   }, [reciter, riwaya]);
-
-  useEffect(() => {
-    if (memMode)
-      audioService.enableMemorization(memRepeatCount, memPause * 1000);
-    else audioService.disableMemorization();
-  }, [memMode, memRepeatCount, memPause]);
 
   useEffect(() => {
     audioService.setSurahRepeatCount(surahRepeatCount);
@@ -755,7 +635,6 @@ export default function AudioPlayer() {
   );
   /* Reciter search */
   const [reciterSearch, setReciterSearch] = useState("");
-  const showMemorizationControls = true;
   const filteredReciters = useMemo(() => {
     const q = reciterSearch.trim().toLowerCase();
     if (!q) return currentReciters;
@@ -861,9 +740,7 @@ export default function AudioPlayer() {
   const currentSurahName = surahMeta ? surahName(currentSurah, lang) : "";
   const currentArabicName = surahMeta?.ar || "";
 
-  const reciterObj = currentReciters.find((r) => r.id === reciter);
-  const reciterSource = getReciterSourceInfo(reciterObj);
-  const audioSourceLabel = reciterSource?.label || "Audio CDN";
+  const reciterObj = currentReciters.find((r) => r.id === reciter) ?? getReciter(reciter);
   const isSurahStreamReciter = reciterObj?.audioMode === "surah";
   const hasAyahContext = Boolean(currentPlayingAyah?.ayah);
   const isContextualDesktop = !isMobile && !showHome;
@@ -894,12 +771,29 @@ export default function AudioPlayer() {
     title: mediaSessionTitle,
     artist: reciterLabel,
     album: "MushafPlus",
-    artwork: null,
+    artwork: "/logo-512.png",
     isPlaying,
     onPlay: () => audioService.resume(),
     onPause: () => audioService.pause(),
     onNext: next,
     onPrev: prev,
+    onStop: () => audioService.stop(),
+    onSeekTo: (time, fastSeek) => {
+      if (fastSeek && typeof audioService.audio?.fastSeek === "function") {
+        audioService.audio.fastSeek(time);
+        return;
+      }
+      audioService.seek(time);
+    },
+    onSeekBackward: (offset) =>
+      audioService.seek(Math.max(0, audioService.currentTime - offset)),
+    onSeekForward: (offset) =>
+      audioService.seek(
+        Math.min(audioService.duration || Infinity, audioService.currentTime + offset),
+      ),
+    currentTime,
+    duration,
+    playbackRate: audioSpeed,
   });
 
   useAutoScrollAyah({
@@ -1002,7 +896,6 @@ export default function AudioPlayer() {
   const audioOptionsModal = (
     <AudioOptionsModal
       audioSpeed={audioSpeed}
-      autoSelectFastestReciter={autoSelectFastestReciter}
       closeOptionsModal={closeOptionsModal}
       currentReciters={currentReciters}
       cycleSpeed={cycleSpeed}
@@ -1010,11 +903,9 @@ export default function AudioPlayer() {
       favoriteReciters={favoriteReciters}
       handleReciterSelect={handleReciterSelect}
       handleVolumeChange={handleVolumeChange}
+      isMobile={isMobile}
       isSurahStreamReciter={isSurahStreamReciter}
       lang={lang}
-      memMode={memMode}
-      memPause={memPause}
-      memRepeatCount={memRepeatCount}
       networkState={networkState}
       optionsCloseButtonRef={optionsCloseButtonRef}
       optionsModalOpen={optionsModalOpen}
@@ -1034,11 +925,9 @@ export default function AudioPlayer() {
       reciterLatencyByKey={reciterLatencyByKey}
       reciterSearch={reciterSearch}
       reciterSwitchingId={reciterSwitchingId}
-      set={set}
       setReciterSearch={setReciterSearch}
       setSurahRepeatSetting={setSurahRepeatSetting}
       setSyncOffsetMs={setSyncOffsetMs}
-      showMemorizationControls={showMemorizationControls}
       stop={stop}
       surahRepeatCount={surahRepeatCount}
       syncOffsetMs={syncOffsetMs}
@@ -1065,18 +954,14 @@ export default function AudioPlayer() {
   ]);
 
   useEffect(() => {
-    if (!showWordByWord) return;
-    if (!isContextualDesktop || isMobile || minimized) {
-      return;
+    const root = document.documentElement;
+    if (isSurahStreamReciter && (isPlaying || currentPlayingAyah)) {
+      root.setAttribute("data-audio-mode", "surah");
+    } else {
+      root.removeAttribute("data-audio-mode");
     }
-    setOptionsModalOpen(false);
-    setMinimized(true);
-  }, [
-    isContextualDesktop,
-    isMobile,
-    minimized,
-    showWordByWord,
-  ]);
+    return () => root.removeAttribute("data-audio-mode");
+  }, [isSurahStreamReciter, isPlaying, currentPlayingAyah]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -1157,7 +1042,6 @@ export default function AudioPlayer() {
         audioError={audioError}
         audioIndicatorState={audioIndicatorState}
         audioSpeed={audioSpeed}
-        audioSourceLabel={audioSourceLabel}
         closeLabel={closeLabel}
         currentArabicName={currentArabicName}
         currentAyahPreview={currentAyahPreview}
@@ -1173,7 +1057,6 @@ export default function AudioPlayer() {
         nextLabel={t("audio.next", lang)}
         onClose={closePlayer}
         onCycleSpeed={cycleSpeed}
-        onDragPointerDown={handlePlayerDragPointerDown}
         onExpand={toggleMinimized}
         onMinimize={toggleMinimized}
         onNext={next}
@@ -1186,9 +1069,6 @@ export default function AudioPlayer() {
         optionsLabel={optionsLabel}
         optionsOpen={optionsModalOpen}
         playPauseLabel={playPauseLabel}
-        playerDragging={playerDragging}
-        playerPosition={playerPosition}
-        playerRef={playerRef}
         previousLabel={t("audio.prev", lang)}
         progress={progress}
         progressDragging={progressDragging}
@@ -1198,6 +1078,7 @@ export default function AudioPlayer() {
         reciterLabel={reciterLabel}
         regionLabel={minimized ? minimizedAudioRegionLabel : audioRegionLabel}
         riwaya={riwaya}
+        surahNum={currentSurah}
         speedLabel={speedLabel}
         title={titleLabel || readyLabel}
       />

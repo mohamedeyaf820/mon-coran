@@ -2,6 +2,7 @@ import React, {
   useState,
   useRef,
   useEffect,
+  useLayoutEffect,
   useCallback,
   useMemo,
   lazy,
@@ -27,7 +28,6 @@ import {
   getReciter,
   isWarshVerifiedReciter,
 } from "./data/reciters";
-
 const loadHomePage = () => import("./components/HomePage");
 let resolvedQuranDisplay;
 const loadQuranDisplay = () =>
@@ -35,6 +35,9 @@ const loadQuranDisplay = () =>
     resolvedQuranDisplay = module.default;
     return module;
   });
+if (typeof globalThis !== "undefined") {
+  globalThis.__mushafPlusLoadQuranDisplay = loadQuranDisplay;
+}
 const loadHeader = () => import("./components/Header");
 const loadLegalPage = () => import("./components/LegalPage");
 const loadDuasPage = () => import("./components/DuasPage");
@@ -48,30 +51,13 @@ const Sidebar = lazy(() => import("./components/Sidebar"));
 const AudioPlayer = lazy(() => import("./components/AudioPlayer"));
 const SearchModal = lazy(() => import("./components/SearchModal"));
 const SettingsModal = lazy(() => import("./components/SettingsModal"));
-const BookmarksModal = lazy(() => import("./components/BookmarksModal"));
-const WirdPanel = lazy(() => import("./components/WirdPanel"));
-const ReadingHistoryPanel = lazy(
-  () => import("./components/ReadingHistoryPanel"),
-);
-const PlaylistPanel = lazy(() => import("./components/PlaylistPanel"));
+const LibraryModal = lazy(() => import("./components/LibraryModal"));
 const DuasPage = lazy(loadDuasPage);
-const FlashcardsPanel = lazy(() => import("./components/FlashcardsPanel"));
-const TajweedQuizPanel = lazy(() => import("./components/TajweedQuizPanel"));
-const KhatmaPanel = lazy(() => import("./components/KhatmaPanel"));
-const ReciterComparatorPanel = lazy(
-  () => import("./components/ReciterComparatorPanel"),
-);
 const AyahSharePanel = lazy(() => import("./components/AyahSharePanel"));
-const WeeklyStatsPanel = lazy(() => import("./components/WeeklyStatsPanel"));
-const AudioMakerPanel = lazy(() => import("./components/AudioMakerPanel"));
 const KeyboardShortcutsModal = lazy(
   () => import("./components/KeyboardShortcutsModal"),
 );
 const TafsirSidebar = lazy(() => import("./components/TafsirSidebar"));
-const ToolsHubModal = lazy(() => import("./components/ToolsHubModal"));
-const FutureFeaturesModal = lazy(
-  () => import("./components/FutureFeaturesModal"),
-);
 
 function AppLoadingFallback({ lang, variant = "page" }) {
   const label =
@@ -209,12 +195,12 @@ export default function App() {
       currentAyah: current.currentAyah,
       currentPage: current.currentPage,
       currentJuz: current.currentJuz,
+      homeSection: current.homeSection,
       showHome: current.showHome,
       showDuas: current.showDuas,
       legalPage: current.legalPage,
       routeNotFound: current.routeNotFound,
       focusReading: current.focusReading,
-      memMode: current.memMode,
       isPlaying: current.isPlaying,
       currentPlayingAyah: current.currentPlayingAyah,
       fontFamily: current.fontFamily,
@@ -224,19 +210,8 @@ export default function App() {
       translationLangs: current.translationLangs,
       searchOpen: current.searchOpen,
       settingsOpen: current.settingsOpen,
-      toolsHubOpen: current.toolsHubOpen,
-      futureHubOpen: current.futureHubOpen,
-      bookmarksOpen: current.bookmarksOpen,
-      wirdOpen: current.wirdOpen,
-      historyOpen: current.historyOpen,
-      playlistOpen: current.playlistOpen,
-      audioMakerOpen: current.audioMakerOpen,
-      flashcardsOpen: current.flashcardsOpen,
-      tajweedQuizOpen: current.tajweedQuizOpen,
-      khatmaOpen: current.khatmaOpen,
-      comparatorOpen: current.comparatorOpen,
+      libraryOpen: current.libraryOpen,
       shareImageOpen: current.shareImageOpen,
-      weeklyStatsOpen: current.weeklyStatsOpen,
       tafsirSidebarOpen: current.tafsirSidebarOpen,
     }),
     shallowEqual,
@@ -254,7 +229,6 @@ export default function App() {
     legalPage,
     routeNotFound,
     focusReading,
-    memMode,
   } = state;
 
   const handleUrlRouteChange = useCallback(
@@ -328,8 +302,17 @@ export default function App() {
   const [deferNonCriticalUI, setDeferNonCriticalUI] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const immersiveTimer = useRef(null);
+  const immersiveScrollTop = useRef(0);
+  const immersiveRevealUntil = useRef(0);
+  const mainScrollRef = useRef(null);
 
-  const immersiveActive = focusReading && !showHome && !showDuas && !legalPage && !routeNotFound;
+  useEffect(() => {
+    const openShortcuts = () => setShowShortcuts(true);
+    window.addEventListener("mushafplus-open-shortcuts", openShortcuts);
+    return () => window.removeEventListener("mushafplus-open-shortcuts", openShortcuts);
+  }, []);
+
+  const immersiveActive = !showHome && !showDuas && !legalPage && !routeNotFound;
   const sidebarShiftClass =
     !focusReading && sidebarOpen
       ? lang === "ar"
@@ -343,19 +326,8 @@ export default function App() {
   const blockingModalOpen = Boolean(
     state.searchOpen ||
       state.settingsOpen ||
-      state.toolsHubOpen ||
-      state.futureHubOpen ||
-      state.bookmarksOpen ||
-      state.wirdOpen ||
-      state.historyOpen ||
-      state.playlistOpen ||
-      state.audioMakerOpen ||
-      state.flashcardsOpen ||
-      state.tajweedQuizOpen ||
-      state.khatmaOpen ||
-      state.comparatorOpen ||
+      state.libraryOpen ||
       state.shareImageOpen ||
-      state.weeklyStatsOpen ||
       state.tafsirSidebarOpen ||
       showShortcuts,
   );
@@ -372,31 +344,93 @@ export default function App() {
     return () => window.removeEventListener("quran-toast", handleToast);
   }, []);
 
+  const revealImmersiveChrome = useCallback(() => {
+    clearTimeout(immersiveTimer.current);
+    setImmersiveHidden(false);
+  }, []);
+
   useEffect(() => {
-    if (!immersiveActive) {
+    if (!immersiveActive || !state.isPlaying) return;
+    immersiveRevealUntil.current = Date.now() + 1800;
+    revealImmersiveChrome();
+  }, [immersiveActive, revealImmersiveChrome, state.isPlaying]);
+
+  useEffect(() => {
+    if (!immersiveActive || blockingModalOpen || sidebarOpen) {
       setImmersiveHidden(false);
       clearTimeout(immersiveTimer.current);
       return;
     }
 
-    const showChrome = () => {
-      setImmersiveHidden(false);
+    const scrollContainer = mainScrollRef.current;
+    if (!scrollContainer) return undefined;
+    immersiveScrollTop.current = scrollContainer.scrollTop;
+
+    const scheduleHide = () => {
       clearTimeout(immersiveTimer.current);
-      immersiveTimer.current = setTimeout(() => setImmersiveHidden(true), 3000);
+      if (scrollContainer.scrollTop < 88) return;
+      immersiveTimer.current = setTimeout(() => setImmersiveHidden(true), 2800);
     };
 
-    showChrome();
-    window.addEventListener("mousemove", showChrome, { passive: true });
-    window.addEventListener("touchstart", showChrome, { passive: true });
-    window.addEventListener("scroll", showChrome, { passive: true });
+    const showChrome = () => {
+      setImmersiveHidden(false);
+      scheduleHide();
+    };
+
+    const handleScroll = () => {
+      const nextTop = scrollContainer.scrollTop;
+      const delta = nextTop - immersiveScrollTop.current;
+      immersiveScrollTop.current = nextTop;
+
+      if (Date.now() < immersiveRevealUntil.current) {
+        setImmersiveHidden(false);
+        return;
+      }
+
+      if (nextTop < 40 || delta < -8) {
+        showChrome();
+      } else if (delta > 8 && nextTop > 88) {
+        clearTimeout(immersiveTimer.current);
+        setImmersiveHidden(true);
+      }
+    };
+
+    const handlePointerMove = (event) => {
+      if (event.clientY <= 64 || event.clientY >= window.innerHeight - 88) {
+        showChrome();
+      }
+    };
+
+    const handleKeyboard = (event) => {
+      if (["Tab", "Escape", "Home", "PageUp", "ArrowUp"].includes(event.key)) {
+        showChrome();
+      }
+    };
+
+    scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    window.addEventListener("keydown", handleKeyboard);
 
     return () => {
       clearTimeout(immersiveTimer.current);
-      window.removeEventListener("mousemove", showChrome);
-      window.removeEventListener("touchstart", showChrome);
-      window.removeEventListener("scroll", showChrome);
+      scrollContainer.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("keydown", handleKeyboard);
     };
-  }, [immersiveActive]);
+  }, [blockingModalOpen, immersiveActive, sidebarOpen]);
+
+  useLayoutEffect(() => {
+    if (!immersiveActive) return;
+    const scrollContainer = mainScrollRef.current;
+    const preservedTop = immersiveScrollTop.current;
+    if (
+      scrollContainer &&
+      preservedTop > 0 &&
+      Math.abs(scrollContainer.scrollTop - preservedTop) > 2
+    ) {
+      scrollContainer.scrollTop = preservedTop;
+    }
+  }, [immersiveActive, immersiveHidden]);
 
   useEffect(() => {
     document.documentElement.dataset.perf = lowPerfMode ? "low" : "normal";
@@ -578,7 +612,7 @@ export default function App() {
         case "B":
           if (event.ctrlKey || event.metaKey) {
             event.preventDefault();
-            dispatch({ type: "TOGGLE_BOOKMARKS" });
+            dispatch({ type: "TOGGLE_LIBRARY" });
           }
           break;
         case "h":
@@ -635,26 +669,18 @@ export default function App() {
           ? loadDuasPage()
           : loadQuranDisplay();
 
-    const tasks = [loadHeader(), screenPromise];
-    if (state.showHome && !state.legalPage && !state.routeNotFound) {
-      tasks.push(
-        screenPromise.then(({ preloadReciterLibrary }) =>
-          preloadReciterLibrary?.(),
-        ),
-        // Delay the reader bundle past the startup measurement window (logo+1s).
-        // The splash lasts ≥3 s, so this still resolves well before first click.
-        new Promise((resolve) => setTimeout(resolve, 2000)).then(loadQuranDisplay),
-      );
-    }
+    const criticalTasks = [loadHeader(), screenPromise];
     if (!state.legalPage && !state.routeNotFound && !state.showHome && !state.showDuas) {
-      tasks.push(
-        import("./services/quranAPI").then(({ prefetchInitialData }) =>
+      // Start the Quran request early, but let the reader shell render instead
+      // of keeping the user behind the splash until the network settles.
+      import("./services/quranAPI")
+        .then(({ prefetchInitialData }) =>
           prefetchInitialData(state.currentSurah, state.riwaya),
-        ),
-      );
+        )
+        .catch(() => null);
     }
 
-    return Promise.allSettled(tasks);
+    return Promise.allSettled(criticalTasks);
   }, [
     state.currentSurah,
     state.legalPage,
@@ -675,15 +701,16 @@ export default function App() {
         />
       ) : null}
       <div
-        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${memMode ? "is-memorizing" : ""} ${!showHome && !showDuas && !legalPage && !routeNotFound ? "view-reading" : ""}`}
+        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${!showHome && !showDuas && !legalPage && !routeNotFound ? "view-reading" : ""}`}
         style={{ height: "100dvh", minHeight: "100dvh" }}
         dir={lang === "ar" ? "rtl" : "ltr"}
         data-view={routeNotFound ? "not-found" : legalPage ? "legal" : showHome ? "home" : showDuas ? "duas" : "reading"}
+        data-home-section={showHome ? state.homeSection || "surah" : undefined}
         data-display-mode={displayMode}
         data-riwaya={state.riwaya}
         inert={blockingModalOpen ? "" : undefined}
       >
-        <ProgressBar />
+        {!showHome && !showDuas && !legalPage && !routeNotFound ? <ProgressBar /> : null}
         <Suspense fallback={null}>
           <ConfirmDialogHost />
         </Suspense>
@@ -695,7 +722,7 @@ export default function App() {
         </a>
 
         <Suspense fallback={headerFallback}>
-          <Header />
+          <Header immersiveHidden={immersiveHidden} />
         </Suspense>
 
         <div className="app-layout-shell relative flex min-h-0 flex-1">
@@ -712,6 +739,7 @@ export default function App() {
           )}
 
           <main
+            ref={mainScrollRef}
             id="main-content"
             tabIndex={-1}
             aria-hidden={sidebarOpen ? "true" : undefined}
@@ -755,8 +783,12 @@ export default function App() {
             }
             className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
             style={{
-              paddingBottom: "var(--player-h, 0px)",
-              height: "calc(100dvh - var(--header-h, 72px))",
+              paddingBottom: immersiveHidden
+                ? "env(safe-area-inset-bottom, 0px)"
+                : "var(--player-h, 0px)",
+              height: immersiveHidden
+                ? "100dvh"
+                : "calc(100dvh - var(--header-h, 72px))",
             }}
           >
             <div
@@ -813,23 +845,61 @@ export default function App() {
           </div>
         )}
 
-        {shouldMountAudioPlayer && (
-          <Suspense fallback={null}>
-            <AudioPlayer />
-          </Suspense>
-        )}
+        {immersiveActive && immersiveHidden ? (
+          <div className="immersive-reveal-controls">
+            {["top", "bottom"].map((edge) => (
+              <button
+                key={edge}
+                type="button"
+                className={`immersive-reveal immersive-reveal--${edge}`}
+                onClick={revealImmersiveChrome}
+                style={{
+                  position: "fixed",
+                  left: "50%",
+                  [edge]: edge === "bottom"
+                    ? "env(safe-area-inset-bottom, 0px)"
+                    : 0,
+                  zIndex: 240,
+                  width: 80,
+                  height: 44,
+                  display: "grid",
+                  placeItems: "center",
+                  padding: 0,
+                  transform: "translateX(-50%)",
+                  border: 0,
+                  background: "transparent",
+                  color: "var(--primary)",
+                  cursor: "pointer",
+                }}
+                aria-label={
+                  lang === "ar"
+                    ? "Ø¥Ø¸Ù‡Ø§Ø± Ø£Ø¯ÙˆØ§Øª Ø§Ù„Ù‚Ø±Ø§Ø¡Ø©"
+                    : lang === "en"
+                      ? "Show reading controls"
+                      : "Afficher les commandes de lecture"
+                }
+              >
+                <span
+                  aria-hidden="true"
+                  style={{
+                    width: 34,
+                    height: 4,
+                    borderRadius: 999,
+                    background: "currentColor",
+                    boxShadow: "0 0 0 4px color-mix(in srgb, var(--bg-card) 78%, transparent)",
+                  }}
+                />
+              </button>
+            ))}
+          </div>
+        ) : null}
 
-        {/* ── Bouton raccourcis clavier (desktop uniquement) ───────────── */}
-        {!showHome && !showDuas && !legalPage && !routeNotFound && (
-          <button
-            type="button"
-            className="fixed bottom-6 right-6 z-[250] hidden md:flex w-9 h-9 items-center justify-center rounded-full bg-[var(--bg-card)] border border-[var(--border)] shadow-md text-[var(--text-muted)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-all duration-200 text-sm font-bold font-mono"
-            onClick={() => setShowShortcuts(true)}
-            title={t("app.keyboardShortcutsHint", lang)}
-            aria-label={t("app.keyboardShortcuts", lang)}
-          >
-            ?
-          </button>
+        {shouldMountAudioPlayer && (
+          <div aria-hidden={immersiveHidden ? "true" : undefined} inert={immersiveHidden ? "" : undefined}>
+            <Suspense fallback={null}>
+              <AudioPlayer />
+            </Suspense>
+          </div>
         )}
 
         {/* ── Modal raccourcis clavier ─────────────────────────────────── */}
@@ -846,19 +916,8 @@ export default function App() {
           <Suspense fallback={overlayFallback}>
             {state.searchOpen && <SearchModal />}
             {state.settingsOpen && <SettingsModal />}
-            {state.toolsHubOpen && <ToolsHubModal />}
-            {state.futureHubOpen && <FutureFeaturesModal />}
-            {state.bookmarksOpen && <BookmarksModal />}
-            {state.wirdOpen && <WirdPanel />}
-            {state.historyOpen && <ReadingHistoryPanel />}
-            {state.playlistOpen && <PlaylistPanel />}
-            {state.audioMakerOpen && <AudioMakerPanel />}
-            {state.flashcardsOpen && <FlashcardsPanel />}
-            {state.tajweedQuizOpen && <TajweedQuizPanel />}
-            {state.khatmaOpen && <KhatmaPanel />}
-            {state.comparatorOpen && <ReciterComparatorPanel />}
+            {state.libraryOpen && <LibraryModal />}
             {state.shareImageOpen && <AyahSharePanel />}
-            {state.weeklyStatsOpen && <WeeklyStatsPanel />}
             {state.tafsirSidebarOpen && <TafsirSidebar />}
           </Suspense>
         </ErrorBoundary>

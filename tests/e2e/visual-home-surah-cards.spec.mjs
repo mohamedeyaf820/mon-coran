@@ -57,18 +57,18 @@ for (const viewport of VIEWPORTS) {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector(".hp-grid.hp-grid--surah .hp-card", { timeout: 30000 });
+    await page.waitForSelector(".hp-card--surah", { timeout: 30000 });
     await page.waitForTimeout(1000);
 
     const prefix = `${viewport.id}-${theme}`;
-    const cardsGrid = page.locator(".hp-grid.hp-grid--surah").first();
+    const cardsGrid = page.locator(".hp-grid.hp-grid--surah, .hp-list").first();
     await expect(cardsGrid).toBeVisible();
 
     await cardsGrid.screenshot({
       path: path.join(OUTPUT_DIR, `${prefix}-surah-grid.png`),
     });
 
-    const firstCard = page.locator(".hp-grid.hp-grid--surah .hp-card").first();
+    const firstCard = page.locator(".hp-card--surah").first();
     await expect(firstCard).toBeVisible();
 
     await firstCard.screenshot({

@@ -3,7 +3,6 @@ import {
   ChevronDown,
   ChevronUp,
   Gauge,
-  GripHorizontal,
   Loader2,
   Pause,
   Play,
@@ -19,18 +18,7 @@ import { CoverArt, ProgressRail } from "./AudioPlayerPrimitives";
 import { formatAudioTime } from "./audioPlayerUtils";
 
 function playerShellProps(props) {
-  const canPosition = !props.isMobile && props.playerPosition;
-  return {
-    ref: props.playerRef,
-    "data-dragging": props.playerDragging ? "true" : undefined,
-    "data-positioned": canPosition ? "true" : undefined,
-    style: canPosition
-      ? {
-          "--simple-player-x": `${props.playerPosition.x}px`,
-          "--simple-player-y": `${props.playerPosition.y}px`,
-        }
-      : undefined,
-  };
+  return { "data-player-state": props.minimized ? "compact" : "expanded" };
 }
 
 function IconButton({ className, label, onClick, pressed, children }) {
@@ -107,7 +95,6 @@ function NetworkStatus({ networkBadge, networkState }) {
 }
 
 function TrackMeta({
-  audioSourceLabel,
   currentArabicName,
   currentAyahPreview,
   reciterLabel,
@@ -126,7 +113,6 @@ function TrackMeta({
       </div>
       <strong className="simple-player__title">{title}</strong>
       <span className="simple-player__reciter">{reciterLabel || "—"}</span>
-      <span className="simple-player__source">Source · {audioSourceLabel}</span>
       {currentAyahPreview && (
         <p className="simple-player__ayah" dir="rtl" lang="ar">
           {currentAyahPreview}
@@ -138,7 +124,6 @@ function TrackMeta({
 
 function CompactPlayer(props) {
   const {
-    audioSourceLabel,
     currentArabicName,
     currentTime,
     duration,
@@ -157,8 +142,11 @@ function CompactPlayer(props) {
     progressRef,
     reciter,
     reciterLabel,
+    surahNum,
     title,
   } = props;
+
+  const surahLigature = surahNum ? String(surahNum).padStart(3, "0") : null;
 
   return (
     <section
@@ -185,11 +173,7 @@ function CompactPlayer(props) {
         progressRef={progressRef}
         showTimes={false}
       />
-      <div
-        className="mp-player-minimized-row simple-player__compact-row"
-        data-player-drag={!isMobile ? "true" : undefined}
-        onPointerDown={!isMobile ? props.onDragPointerDown : undefined}
-      >
+      <div className="mp-player-minimized-row simple-player__compact-row">
         <CoverArt isPlaying={isPlaying} size={40} reciter={reciter} />
         <button
           type="button"
@@ -197,9 +181,16 @@ function CompactPlayer(props) {
           onClick={onExpand}
           aria-label={expandLabel}
         >
-          <strong>{title}</strong>
-          <span>{currentArabicName || reciterLabel || "—"}</span>
-          <small>Source · {audioSourceLabel}</small>
+          {surahLigature && (
+            <span className="simple-player__compact-ar-ligature font-surah-names" dir="ltr" lang="en" aria-hidden="true">
+              {surahLigature}
+            </span>
+          )}
+          <span className="simple-player__compact-meta-text">
+            <strong>{title}</strong>
+            <span className="simple-player__compact-ar-name" dir="rtl" lang="ar">{currentArabicName}</span>
+            <span className="simple-player__compact-reciter">{reciterLabel || "—"}</span>
+          </span>
         </button>
         <IconButton
           className="mp-player-play-btn simple-player__play simple-player__play--compact"
@@ -219,7 +210,6 @@ function CompactPlayer(props) {
 
 function MobileOpenPlayer(props) {
   const {
-    audioSourceLabel,
     audioIndicatorState,
     audioSpeed,
     closeLabel,
@@ -276,7 +266,6 @@ function MobileOpenPlayer(props) {
           </span>
           <strong>{title}</strong>
           <span>{reciterLabel || "—"}</span>
-          <small>Source · {audioSourceLabel}</small>
         </div>
         <div className="simple-player__header-actions">
           <IconButton
@@ -304,7 +293,6 @@ function MobileOpenPlayer(props) {
         progress={progress}
         progressDragging={progressDragging}
         progressRef={progressRef}
-        showThumb={false}
         showTimes={false}
       />
 
@@ -356,7 +344,6 @@ function MobileOpenPlayer(props) {
 
 function OpenPlayer(props) {
   const {
-    audioSourceLabel,
     audioIndicatorState,
     audioSpeed,
     closeLabel,
@@ -372,7 +359,6 @@ function OpenPlayer(props) {
     nextLabel,
     onClose,
     onCycleSpeed,
-    onDragPointerDown,
     onMinimize,
     onNext,
     onOptions,
@@ -421,24 +407,11 @@ function OpenPlayer(props) {
         </button>
       )}
 
-      <header
-        className="simple-player__header"
-        data-player-drag={!isMobile ? "true" : undefined}
-        onPointerDown={!isMobile ? onDragPointerDown : undefined}
-      >
+      <header className="simple-player__header">
         <span className="simple-player__drag-label">
-          {!isMobile && <GripHorizontal size={17} aria-hidden="true" />}
           <span className="simple-player__header-label">{regionLabel}</span>
         </span>
         <div className="simple-player__header-actions">
-          <IconButton
-            className="mp-player-options-trigger"
-            label={optionsLabel}
-            onClick={onOptions}
-            pressed={optionsOpen}
-          >
-            <Settings2 size={16} />
-          </IconButton>
           {!isMobile && (
             <IconButton label={minimizeLabel} onClick={onMinimize}>
               <ChevronDown size={17} />
@@ -453,7 +426,6 @@ function OpenPlayer(props) {
       <div className="simple-player__track">
         <CoverArt isPlaying={isPlaying} size={52} reciter={reciter} />
         <TrackMeta
-          audioSourceLabel={audioSourceLabel}
           currentArabicName={currentArabicName}
           currentAyahPreview={currentAyahPreview}
           reciterLabel={reciterLabel}
@@ -502,7 +474,7 @@ function OpenPlayer(props) {
           <SkipForward size={20} />
         </IconButton>
         <IconButton
-          className="simple-player__settings-secondary"
+          className="mp-player-options-trigger simple-player__settings-secondary"
           label={optionsLabel}
           onClick={onOptions}
           pressed={optionsOpen}

@@ -479,16 +479,19 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 
 .app-root .audio-player-simple .simple-player__compact-row {
   display: grid;
-  grid-template-columns: 2.5rem minmax(0, 1fr) var(--mp-device-touch) 2.5rem;
+  grid-template-columns: 2.75rem minmax(0, 1fr) var(--mp-device-touch) 2.75rem;
   align-items: center;
-  gap: .55rem;
-  min-height: 3.5rem;
-  padding: .3rem .55rem;
+  gap: clamp(.4rem, 1.6vw, .65rem);
+  min-height: 4rem;
+  padding: .4rem clamp(.6rem, 2vw, 1rem);
 }
 
 .app-root .audio-player-simple .simple-player__compact-meta {
+  display: flex;
   min-width: 0;
-  padding: .25rem 0;
+  align-items: center;
+  gap: .6rem;
+  padding: .2rem 0;
   border: 0;
   background: transparent;
   color: inherit;
@@ -506,14 +509,57 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 
 .app-root .audio-player-simple .simple-player__compact-meta strong {
   color: var(--simple-player-ink);
-  font-size: .8rem;
-  font-weight: 760;
+  font-size: clamp(.8rem, 2.3vw, .9rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -.01em;
 }
 
 .app-root .audio-player-simple .simple-player__compact-meta span {
-  margin-top: .12rem;
+  margin-top: .08rem;
   color: var(--simple-player-muted);
-  font-size: .63rem;
+  font-size: clamp(.62rem, 1.8vw, .7rem);
+}
+
+.app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-ar-name {
+  font-family: var(--font-quran, serif);
+  font-size: clamp(.82rem, 2.2vw, .92rem) !important;
+  color: color-mix(in srgb, var(--theme-primary) 72%, var(--simple-player-ink));
+  line-height: 1.4;
+  letter-spacing: 0;
+  direction: rtl;
+  margin-top: .06rem !important;
+}
+
+.app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-reciter {
+  font-size: clamp(.6rem, 1.6vw, .66rem) !important;
+  color: var(--simple-player-muted);
+  opacity: .82;
+  margin-top: .12rem !important;
+}
+
+.app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-ar-ligature {
+  display: block;
+  flex: 0 0 auto;
+  align-self: center;
+  overflow: visible;
+  margin-top: 0;
+  color: var(--theme-primary);
+  font-family: "surahnames", serif;
+  font-size: clamp(1.65rem, 5.2vw, 2.2rem);
+  line-height: 1;
+  text-overflow: clip;
+  white-space: nowrap;
+  filter: drop-shadow(0 1px 4px color-mix(in srgb, var(--theme-primary) 22%, transparent));
+  opacity: .92;
+}
+
+/* text info block (title + ar-name + reciter stacked) */
+.app-root .audio-player-simple .simple-player__compact-meta-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .app-root .audio-player-simple .simple-player__play--compact {
@@ -756,8 +802,8 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 
 @media (max-width: 380px) {
   .app-root .audio-player-simple .simple-player__compact-row {
-    grid-template-columns: 2.5rem minmax(0, 1fr) 2.75rem;
-    gap: .45rem;
+    grid-template-columns: 2.2rem minmax(0, 1fr) 2.4rem;
+    gap: .3rem;
   }
 
   .app-root .audio-player-simple.simple-player--compact .simple-player__compact-row > .simple-player__icon-button:last-child {

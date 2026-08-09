@@ -6,7 +6,7 @@
 import { openDB } from 'idb';
 
 const DB_NAME = 'mushafplus';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 export const APP_DB_NAME = DB_NAME;
 
 let dbPromise = null;
@@ -39,16 +39,14 @@ export function getDB() {
                 }
                 // v2: specialized stores
                 if (oldVersion < 2) {
-                    if (!db.objectStoreNames.contains('wird')) {
-                        db.createObjectStore('wird', { keyPath: 'date' });
-                    }
-                    if (!db.objectStoreNames.contains('history')) {
-                        const hStore = db.createObjectStore('history', { keyPath: 'id', autoIncrement: true });
-                        hStore.createIndex('date', 'date', { unique: false });
-                    }
                     if (!db.objectStoreNames.contains('playlists')) {
                         db.createObjectStore('playlists', { keyPath: 'id' });
                     }
+                }
+                // v3: remove stores belonging to retired product features.
+                if (oldVersion < 3) {
+                    if (db.objectStoreNames.contains('wird')) db.deleteObjectStore('wird');
+                    if (db.objectStoreNames.contains('history')) db.deleteObjectStore('history');
                 }
             },
         });

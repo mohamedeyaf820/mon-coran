@@ -1,4 +1,4 @@
-/* Final UX layer: home, recitation cards, reading pages and audio player. */
+
 
 :root {
   --home-shell-max: 1380px;
@@ -30,7 +30,7 @@ button,
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Header / navigation polish */
+
 .app-root > .mp-header {
   position: sticky !important;
   top: 0 !important;
@@ -206,7 +206,7 @@ button,
 
 .app-root > .mp-header .mp-header__search {
   width: auto !important;
-  min-width: 7.5rem !important;
+  min-width: 8.1rem !important;
   padding-inline: var(--space-3) !important;
   gap: 0.48rem !important;
 }
@@ -334,7 +334,7 @@ html.dark .home-info-card {
   line-height: 1;
 }
 
-/* Hero copy is now always visible — handled in HeroSection.jsx */
+
 
 .home-hero-title {
   letter-spacing: 0 !important;
@@ -345,7 +345,7 @@ html.dark .home-info-card {
   color: color-mix(in srgb, var(--theme-text, #111827) 70%, var(--theme-text-muted, #64748b)) !important;
 }
 
-/* CTA label is now handled directly in HeroSection.jsx — no hiding */
+
 
 .home-cta-primary,
 .home-cta-secondary {
@@ -423,7 +423,6 @@ html.dark .home-content-toolbar {
   border-radius: var(--r-xl) !important;
 }
 
-.hp-card-name,
 .reciter-card__name,
 .home-collection-heading__copy h2 {
   text-wrap: balance;
@@ -694,8 +693,8 @@ html.dark .audio-player-modal__surface {
   }
 
   .app-root > .mp-header .mp-header__search {
-    min-width: 2.55rem !important;
-    width: 2.55rem !important;
+    min-width: 2.8rem !important;
+    width: 2.8rem !important;
     padding-inline: 0 !important;
   }
 
@@ -733,8 +732,8 @@ html.dark .audio-player-modal__surface {
 
   .app-root > .mp-header .mp-header__brand {
     display: inline-flex !important;
-    width: 2.55rem !important;
-    height: 2.55rem !important;
+    width: 44px !important;
+    height: 44px !important;
     padding: 0 !important;
   }
 
@@ -878,7 +877,7 @@ html.dark .audio-player-modal__surface {
   }
 }
 
-/* Header refinement pass: typography, duplicate controls, and tighter responsiveness. */
+
 .app-root > .mp-header .mp-header__riwaya-mobile {
   display: none !important;
 }
@@ -956,7 +955,7 @@ html.dark .audio-player-modal__surface {
   display: inline-flex !important;
 }
 
-/* Home refinement pass: calmer typography and richer, better balanced cards. */
+
 .home-hero-shell {
   padding: clamp(1.05rem, 2.2vw, 1.85rem) !important;
 }
@@ -1107,7 +1106,7 @@ html.dark .audio-player-modal__surface {
   }
 }
 
-/* Reading toolbar stability pass */
+
 .app-root .qc-reader-toolbar {
   position: static !important;
   inset: auto !important;
@@ -1221,7 +1220,7 @@ html.dark .audio-player-modal__surface {
   }
 }
 
-/* Reading list final pass: wider Arabic surface, no refresh veil/blur. */
+
 .app-root[data-view="reading"] .quran-display.quran-display--platform {
   --reader-page-max: min(100%, 1360px) !important;
   --reader-content-max: min(100%, 1180px) !important;
@@ -1267,7 +1266,7 @@ html.dark .audio-player-modal__surface {
   }
 }
 
-/* Mushaf refresh stability: no initial veil, wider Arabic page, stable font size. */
+
 .app-root[data-view="reading"] .quran-mode-pane--mushaf {
   width: 100% !important;
   max-width: min(100%, 1320px) !important;
@@ -1305,8 +1304,7 @@ html.dark .audio-player-modal__surface {
   line-height: var(--cpv-line-height, 2.42) !important;
   word-spacing: var(--cpv-word-spacing, 0.1em) !important;
   letter-spacing: 0 !important;
-  text-align: justify !important;
-  text-align-last: auto !important;
+  text-align: right !important;
   filter: none !important;
   opacity: 1 !important;
   transform: none !important;
@@ -1362,7 +1360,7 @@ html.dark .audio-player-modal__surface {
   }
 }
 
-/* Production polish pass: smoother navigation, home lists, footer and movable player. */
+
 .app-root > .mp-header .mp-header__bar {
   grid-template-columns: minmax(7.5rem, 0.72fr) minmax(11rem, 1fr) minmax(11rem, 0.8fr) !important;
 }
@@ -1412,7 +1410,7 @@ html.dark .audio-player-modal__surface {
 }
 
 .app-root .app-view-home .hp-grid.hp-grid--surah {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr)) !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)) !important;
 }
 
 .app-root .app-view-home .hp-list .hp-card--surah,
@@ -1430,6 +1428,26 @@ html.dark .audio-player-modal__surface {
   font-size: clamp(1.35rem, 1rem + 1.25vw, 2.25rem) !important;
   line-height: 1.15 !important;
   white-space: nowrap !important;
+}
+
+/* List card — calligraphie ligature (même que grid card) */
+.app-root .app-view-home .hp-card--list .hp-card-ar {
+  font-family: "surahnames", serif !important;
+  font-size: clamp(1.72rem, 1.2rem + 0.85vw, 2.1rem) !important;
+  line-height: 1 !important;
+  opacity: 0.82;
+  transition: opacity 160ms ease;
+}
+
+.app-root .app-view-home .hp-card--list:hover .hp-card-ar {
+  opacity: 1;
+}
+
+/* Override the small-device rule that crushes hp-card-ar to 0.76rem */
+html body .app-root .app-view-home .hp-card--list .hp-card-ar {
+  font-family: "surahnames", serif !important;
+  font-size: clamp(1.55rem, 6vw, 2rem) !important;
+  line-height: 1 !important;
 }
 
 .app-root .app-view-home .hp-card-play {
@@ -1515,7 +1533,7 @@ html.dark .audio-player-modal__surface {
   }
 }
 
-/* Audio player compact pass: keep mobile/tablet controls reachable without covering the reader. */
+
 @media (max-width: 1024px) {
   .app-root .mp-audio-player--mobile.mp-audio-player--dock {
     left: max(0.55rem, env(safe-area-inset-left)) !important;
@@ -1682,7 +1700,7 @@ html.dark .audio-player-modal__surface {
   }
 }
 
-/* Home overview cards — canonical responsive composition. */
+
 html body .app-root[data-view="home"] .home-top-cards-grid {
   display: grid !important;
   grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
@@ -1701,59 +1719,6 @@ html body .app-root[data-view="home"] .home-top-cards-grid > * {
   border-radius: 1.1rem !important;
   background: color-mix(in srgb, var(--theme-panel-bg-strong, var(--bg-primary)) 96%, var(--primary) 4%) !important;
   box-shadow: 0 10px 28px rgba(12, 32, 24, 0.07) !important;
-}
-
-html body .app-root[data-view="home"] .home-daily-verse-card p[dir="rtl"] {
-  margin-block: 0.45rem !important;
-  font-size: clamp(1.25rem, 1rem + 0.65vw, 1.55rem) !important;
-  line-height: 1.75 !important;
-}
-
-html body .app-root[data-view="home"] .home-daily-verse-card {
-  display: flex;
-  flex-direction: column;
-}
-
-html body .app-root[data-view="home"] .home-daily-verse-card > button {
-  margin-top: auto !important;
-  align-self: flex-start;
-}
-
-html body .app-root[data-view="home"] .home-daily-verse-card button,
-html body .app-root[data-view="home"] .home-session-card > button {
-  min-height: 2.65rem !important;
-  border-radius: 0.8rem !important;
-}
-
-html body .app-root[data-view="home"] .home-session-card {
-  display: flex;
-  flex-direction: column;
-}
-
-html body .app-root[data-view="home"] .home-session-card > button {
-  margin-top: auto !important;
-}
-
-html body .app-root[data-view="home"] .home-prayer-card,
-html body .app-root[data-view="home"] .home-tools-quick-card {
-  display: flex;
-  flex-direction: column;
-}
-
-html body .app-root[data-view="home"] .home-prayer-card__header,
-html body .app-root[data-view="home"] .home-tools-quick-card__header {
-  min-height: 2rem !important;
-  margin-bottom: 0.6rem !important;
-  overflow: hidden !important;
-  white-space: nowrap !important;
-}
-
-html body .app-root[data-view="home"] .home-prayer-card__header > span,
-html body .app-root[data-view="home"] .home-tools-quick-card__title > span {
-  min-width: 0 !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
 }
 
 html body .app-root[data-view="home"] .home-prayer-list {
@@ -1798,72 +1763,11 @@ html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] > sp
   animation: none !important;
 }
 
-html body .app-root[data-view="home"] .home-tools-quick-card__title {
-  white-space: nowrap !important;
-}
-
-html body .app-root[data-view="home"] .home-tools-quick-card__more {
-  min-width: auto !important;
-  min-height: 2rem !important;
-  padding: 0.35rem 0.55rem !important;
-  border-color: rgba(var(--primary-rgb, 11, 98, 53), 0.16) !important;
-  border-radius: 0.65rem !important;
-  background: rgba(var(--primary-rgb, 11, 98, 53), 0.05) !important;
-  color: var(--theme-primary, var(--primary, #0b6235)) !important;
-  font-size: 0.64rem !important;
-}
-
-html body .app-root[data-view="home"] .home-tools-quick-card__grid {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 0.45rem !important;
-  margin-block: auto !important;
-}
-
-html body .app-root[data-view="home"] .home-tools-quick-card__tool {
-  display: flex !important;
-  min-width: 0 !important;
-  min-height: 3.35rem !important;
-  flex-direction: row !important;
-  justify-content: flex-start !important;
-  gap: 0.5rem !important;
-  padding: 0.55rem 0.6rem !important;
-  border-color: rgba(var(--primary-rgb, 11, 98, 53), 0.12) !important;
-  border-radius: 0.8rem !important;
-  background: rgba(var(--primary-rgb, 11, 98, 53), 0.045) !important;
-  color: var(--text-secondary) !important;
-  box-shadow: none !important;
-}
-
-html body .app-root[data-view="home"] .home-tools-quick-card__tool svg {
-  width: 1rem !important;
-  height: 1rem !important;
-  margin: 0 !important;
-  flex: 0 0 1rem !important;
-}
-
-html body .app-root[data-view="home"] .home-tools-quick-card__tool span {
-  min-width: 0 !important;
-  width: auto !important;
-  overflow: hidden !important;
-  font-size: 0.68rem !important;
-  line-height: 1.15 !important;
-  text-align: start !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
-
 @media (hover: hover) {
   html body .app-root[data-view="home"] .home-top-cards-grid > *:hover {
     border-color: rgba(var(--primary-rgb, 11, 98, 53), 0.22) !important;
     box-shadow: 0 14px 34px rgba(12, 32, 24, 0.1) !important;
     transform: translateY(-2px) !important;
-  }
-
-  html body .app-root[data-view="home"] .home-tools-quick-card__tool:hover {
-    border-color: rgba(var(--primary-rgb, 11, 98, 53), 0.24) !important;
-    background: rgba(var(--primary-rgb, 11, 98, 53), 0.09) !important;
-    color: var(--primary) !important;
   }
 }
 
@@ -1874,14 +1778,6 @@ html[data-theme="oled"] body .app-root[data-view="home"] .home-top-cards-grid > 
   border-color: rgba(176, 201, 187, 0.14) !important;
   background: color-mix(in srgb, var(--theme-panel-bg-strong, var(--bg-secondary)) 95%, var(--primary) 5%) !important;
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24) !important;
-}
-
-html[data-theme="dark"] body .app-root[data-view="home"] .home-tools-quick-card__tool,
-html.dark body .app-root[data-view="home"] .home-tools-quick-card__tool,
-html[data-theme="quran-night"] body .app-root[data-view="home"] .home-tools-quick-card__tool,
-html[data-theme="oled"] body .app-root[data-view="home"] .home-tools-quick-card__tool {
-  border-color: rgba(176, 201, 187, 0.12) !important;
-  background: rgba(255, 255, 255, 0.035) !important;
 }
 
 html[data-theme="sepia"] body .app-root[data-view="home"] .home-top-cards-grid > * {
@@ -1907,30 +1803,22 @@ html[data-theme="sepia"] body .app-root[data-view="home"] .home-top-cards-grid >
 @media (max-width: 680px) {
   html body .app-root[data-view="home"] .home-top-cards-grid {
     grid-template-columns: minmax(0, 1fr) !important;
-    gap: 0.65rem !important;
+    gap: 0.45rem !important;
   }
 
   html body .app-root[data-view="home"] .home-top-cards-grid > * {
-    padding: 0.85rem !important;
-    border-radius: 0.95rem !important;
-  }
-
-  html body .app-root[data-view="home"] .home-tools-quick-card__tool {
-    min-height: 3rem !important;
+    padding: 0.62rem !important;
+    border-radius: 0.78rem !important;
   }
 }
 
 @media (max-width: 390px) {
   html body .app-root[data-view="home"] .home-prayer-list {
-    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 
   html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] {
     grid-column: auto !important;
-  }
-
-  html body .app-root[data-view="home"] .home-tools-quick-card__more span {
-    display: none !important;
   }
 }
 
@@ -1947,8 +1835,7 @@ html[data-theme="sepia"] body .app-root[data-view="home"] .home-top-cards-grid >
   }
 }
 
-/* Audio options modal is portaled to body so it is no longer trapped by the
-   draggable player dock on mobile/tablet. Keep these rules unscoped. */
+
 @media (max-width: 1024px) {
   body > .audio-player-modal {
     position: fixed !important;
@@ -2093,7 +1980,7 @@ html[data-theme="sepia"] body .app-root[data-view="home"] .home-top-cards-grid >
   }
 }
 
-/* Final responsive polish: audio modal, navbar and reading controls. */
+
 body > .audio-player-modal .audio-player-modal__surface--settings {
   background:
     linear-gradient(
@@ -2391,7 +2278,7 @@ body > .audio-player-modal .audio-settings-icon-btn {
   }
 }
 
-/* Header/audio density pass requested after visual QA. */
+
 @media (max-width: 1024px) {
   .app-root > .mp-header .mp-header__bar {
     min-height: 3.35rem !important;
@@ -2654,7 +2541,7 @@ body > .audio-player-modal .audio-settings-icon-btn {
   }
 }
 
-/* Mobile/tablet repair pass: keep essential actions visible and player readable. */
+
 @media (max-width: 900px) {
   html body .app-root > .mp-header .mp-header__bar {
     grid-template-columns: auto minmax(5.5rem, 1fr) max-content !important;
@@ -2930,7 +2817,7 @@ body > .audio-player-modal .audio-settings-icon-btn {
   }
 }
 
-/* Device density contract: consistent text, icon and tap sizing across phones/tablets. */
+
 :root {
   --mp-device-ui: clamp(0.9rem, 0.84rem + 0.18vw, 1rem);
   --mp-device-ui-sm: clamp(0.76rem, 0.72rem + 0.14vw, 0.84rem);
@@ -2965,33 +2852,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
   ) {
     min-width: var(--mp-device-touch) !important;
     min-height: var(--mp-device-touch) !important;
-  }
-
-  html body .app-root :is(
-    .mp-header__icon-btn,
-    .mp-header__action,
-    .mp-header__more,
-    .mp-header__nav-arrow,
-    .mp-header__riwaya-mobile,
-    .qc-reader-toolbar button,
-    .settings-drawer button,
-    .sb-wrapper button,
-    .audio-player-modal button,
-    .modal button,
-    .home-content-toolbar button,
-    .home-hero-shell button,
-    .duas-page button,
-    .legal-page button,
-    .recitation-library button,
-    .search-pro-overlay button,
-    .tools-hub button,
-    .future-features button,
-    .hp-card,
-    .surah-card,
-    .qcom-verse-card-footer-btn
-  ) {
-    font-size: var(--mp-device-ui-sm) !important;
-    letter-spacing: 0 !important;
   }
 
   html body .app-root :is(button, [role="button"]) :is(svg, i),
@@ -3034,11 +2894,11 @@ body > .audio-player-modal .audio-settings-icon-btn {
     .hp-grid--surah,
     .reciter-detail__stats
   ) {
-    gap: clamp(0.42rem, 1.35vw, 0.75rem) !important;
+    gap: clamp(0.32rem, 0.9vw, 0.55rem) !important;
   }
 
   html body .app-root :is(.home-content-section, .home-hero-shell, .hp-card, .home-info-card, .surah-card, .qcom-verse-card) {
-    border-radius: clamp(0.86rem, 2.2vw, 1.15rem) !important;
+    border-radius: clamp(0.68rem, 1.8vw, 0.9rem) !important;
   }
 
   body > .audio-player-modal .audio-reciter-options__item,
@@ -3055,9 +2915,9 @@ body > .audio-player-modal .audio-settings-icon-btn {
 
   html body .app-root {
     --mp-device-touch: 40px;
-    --mp-device-ui: 0.875rem;
+    --mp-device-ui: 0.8125rem;
     --mp-device-ui-sm: 0.75rem;
-    --mp-device-icon: 0.72rem;
+    --mp-device-icon: 0.66rem;
   }
 
   html body .app-root :is(.mp-header__brand-text, .mp-header__sub, .mp-header__kicker) {
@@ -3078,11 +2938,11 @@ body > .audio-player-modal .audio-settings-icon-btn {
   }
 
   html body .app-root :is(.home-hero-shell, .home-content-section) {
-    padding: clamp(0.82rem, 3.8vw, 1.05rem) !important;
+    padding: clamp(0.58rem, 2.5vw, 0.78rem) !important;
   }
 
   html body .app-root .app-view-home .home-hero-title {
-    font-size: clamp(1.38rem, 6.7vw, 1.72rem) !important;
+    font-size: clamp(1.12rem, 5vw, 1.38rem) !important;
     line-height: 1.08 !important;
     text-wrap: pretty;
   }
@@ -3124,7 +2984,7 @@ body > .audio-player-modal .audio-settings-icon-btn {
 
   html body .app-root :is(.hp-card, .home-top-cards-grid > *, .surah-card) {
     min-height: 0 !important;
-    padding: clamp(0.72rem, 3vw, 0.95rem) !important;
+    padding: clamp(0.5rem, 2vw, 0.68rem) !important;
   }
 
   html body .app-root .quran-display--platform .qc-ayah-text-ar {
@@ -3140,12 +3000,19 @@ body > .audio-player-modal .audio-settings-icon-btn {
     display: none !important;
   }
 
-  /* AyahActions: compact controls follow the phone density token. */
+
   html body .app-root .ayah-actions button {
     width: var(--mp-device-touch) !important;
     height: var(--mp-device-touch) !important;
     min-width: var(--mp-device-touch) !important;
     min-height: var(--mp-device-touch) !important;
+  }
+
+  /* List card Arabic — restaurer taille calligraphique après le reset global */
+  html body .app-root .app-view-home .hp-card--list .hp-card-ar {
+    font-family: "surahnames", serif !important;
+    font-size: clamp(1.55rem, 6vw, 2rem) !important;
+    line-height: 1 !important;
   }
 }
 
@@ -3157,7 +3024,7 @@ body > .audio-player-modal .audio-settings-icon-btn {
   html body .app-root {
     --mp-device-touch: 38px;
     --mp-device-ui-sm: 0.72rem;
-    --mp-device-icon: 0.68rem;
+    --mp-device-icon: 0.62rem;
   }
 
   html body .app-root > .mp-header .mp-header__bar {
@@ -3174,12 +3041,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
 }
 
 .ayah-actions-modal--quiet {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-.app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.cpv-container, .mushaf-container, .cpv-verse, .quran-arabic-text, .verse-text, .wbw-word-block, .wbw-word) {
-  filter: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
@@ -3226,18 +3087,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
   margin-bottom: clamp(0.42rem, 1.1vw, 0.65rem) !important;
 }
 
-.app-root .quran-display--platform .qc-reader-surah-header {
-  padding: clamp(0.75rem, 1.5vw, 1rem) clamp(0.85rem, 2vw, 1.15rem) !important;
-  gap: clamp(0.65rem, 1.5vw, 1rem) !important;
-}
-
-.app-root .quran-display--platform .qc-surah-header-wrap > section:not(.qc-reader-surah-header) > div.relative > div:nth-child(2) {
-  width: fit-content !important;
-  max-width: min(100%, 18rem) !important;
-  margin-bottom: 0.55rem !important;
-  padding: 0.58rem 1rem !important;
-}
-
 @media (max-width: 720px) {
   .app-root > .mp-header .mp-header__title-btn,
   .app-root > .mp-header .mp-header__home-summary {
@@ -3254,9 +3103,10 @@ body > .audio-player-modal .audio-settings-icon-btn {
 
   .app-root > .mp-header .mp-header__title-btn,
   .app-root > .mp-header .mp-header__home-summary {
-    min-width: min(10.8rem, 54vw) !important;
-    max-width: 56vw !important;
-    padding-inline: var(--space-2) !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding-inline: 0.28rem !important;
   }
 
   .app-root > .mp-header .mp-header__nav-arrow {
@@ -3289,14 +3139,9 @@ body > .audio-player-modal .audio-settings-icon-btn {
   }
 }
 
-/* ── Audio Player mobile/tablet definitive layout ─────────────────────────
-   Overrides the conflicting grid/flex rules above for all ≤1024px screens.
-   Two layouts:
-     • ≤640px  → 2-row grid: [meta | secondary] / [controls full-width]
-     • 641–1024px → single-row flex: meta | controls | secondary
-   ──────────────────────────────────────────────────────────────────────── */
 
-/* Tablet (641–1024px): single-row flex, full controls visible */
+
+
 @media (min-width: 641px) and (max-width: 1024px) {
   html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
     min-height: 5.2rem !important;
@@ -3361,7 +3206,7 @@ body > .audio-player-modal .audio-settings-icon-btn {
   }
 }
 
-/* Mobile (≤640px): 2-row grid so controls fill full width */
+
 @media (max-width: 640px) {
   html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
     min-height: auto !important;
@@ -3415,7 +3260,7 @@ body > .audio-player-modal .audio-settings-icon-btn {
     flex-shrink: 0 !important;
   }
 
-  /* Controls buttons sizing */
+
   html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn) {
     width: 2.35rem !important;
     min-width: 2.35rem !important;
@@ -3439,60 +3284,113 @@ body > .audio-player-modal .audio-settings-icon-btn {
 }
 
 
-/* Reciters: compact directory cards that stay easy to scan and operate. */
+
 html body .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  gap: 0.75rem !important;
+  gap: 0.7rem !important;
 }
 
 html body .app-root[data-view="home"] .reciter-card {
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) auto !important;
-  min-height: 6.25rem !important;
-  border-radius: 8px !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  min-height: 5.5rem !important;
+  padding: 0.65rem !important;
+  border: 1px solid var(--theme-border, var(--border)) !important;
+  border-radius: 16px !important;
+  background: color-mix(in srgb, var(--theme-surface, var(--bg-card)) 96%, var(--primary) 4%) !important;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--theme-text, #173128) 7%, transparent) !important;
   overflow: hidden !important;
   transform: none !important;
 }
 
 html body .app-root[data-view="home"] .reciter-card__main {
+  display: grid !important;
+  grid-template-columns: 3.45rem minmax(0, 1fr) 1rem !important;
+  align-items: center !important;
   min-width: 0 !important;
-  padding: 0.8rem !important;
-  gap: 0.7rem !important;
+  gap: 0.72rem !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 html body .app-root[data-view="home"] .reciter-card__media {
-  inline-size: 3.25rem !important;
-  block-size: 3.25rem !important;
-  border-radius: 8px !important;
-  flex: 0 0 3.25rem !important;
+  inline-size: 3.45rem !important;
+  block-size: 3.45rem !important;
+  border-radius: 13px !important;
+  flex: 0 0 3.45rem !important;
 }
 
-html body .app-root[data-view="home"] .reciter-card__copy {
+html body .app-root[data-view="home"] :is(.reciter-card__copy, .reciter-card__name, .reciter-card__meta) {
   min-width: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__name {
+  display: -webkit-box !important;
+  overflow: hidden !important;
+  font-size: 0.9rem !important;
+  line-height: 1.22 !important;
+  white-space: normal !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+html body .app-root[data-view="home"] .reciter-card__meta {
+  margin-top: 0.28rem !important;
+  font-size: 0.68rem !important;
 }
 
 html body .app-root[data-view="home"] .reciter-card__actions {
   margin-top: 0 !important;
-  padding: 0.65rem !important;
+  gap: 0.42rem !important;
+  padding: 0 0 0 0.65rem !important;
   border-inline-start: 1px solid color-mix(in srgb, var(--theme-border, #d4d4d4) 68%, transparent) !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body .app-root[data-view="home"] :is(.reciter-card__favorite, .reciter-card__listen) {
+  display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
 }
 
+html body .app-root[data-view="home"] .reciter-card__favorite {
+  width: 2.65rem !important;
+  min-width: 2.65rem !important;
+  min-height: 2.65rem !important;
+  border: 1px solid var(--theme-border, var(--border)) !important;
+  border-radius: 12px !important;
+  color: var(--text-muted) !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__favorite--active {
+  border-color: color-mix(in srgb, #b5841d 35%, var(--border)) !important;
+  background: color-mix(in srgb, #b5841d 10%, transparent) !important;
+  color: #a87816 !important;
+}
+
 html body .app-root[data-view="home"] .reciter-card__actions .reciter-card__listen {
+  min-height: 2.65rem !important;
+  border-radius: 12px !important;
   background: var(--primary) !important;
   color: #ffffff !important;
   border-color: var(--primary) !important;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   html body .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
     grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  html body .app-root[data-view="home"] .reciter-card {
-    min-height: 6.5rem !important;
   }
 
   html body .app-root[data-view="home"] .notes-fab--mobile {
@@ -3500,7 +3398,7 @@ html body .app-root[data-view="home"] .reciter-card__actions .reciter-card__list
   }
 }
 
-/* Home controls stay in the document flow instead of following the scroll. */
+
 html body .app-root[data-view="home"] .home-content-toolbar {
   position: relative !important;
   top: auto !important;
@@ -3550,21 +3448,21 @@ html body .app-root[data-view="home"] .home-content-toolbar [role="tab"][aria-se
   }
 }
 
-/* Surah cards: stable four-column rhythm and a Quranic Arabic face. */
+
 html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah {
   display: grid !important;
-  grid-template-columns: auto minmax(0, 1fr) auto 40px !important;
+  grid-template-columns: auto minmax(0, 1fr) minmax(6rem, 7.5rem) 42px !important;
   align-items: center !important;
-  gap: 0.75rem !important;
-  min-height: 6rem !important;
-  padding: 0.8rem !important;
-  border-radius: 8px !important;
+  gap: 0.8rem !important;
+  min-height: 6.1rem !important;
+  padding: 0.8rem 0.9rem !important;
+  border-radius: 16px !important;
   transform: none !important;
-  box-shadow: 0 3px 12px rgba(15, 48, 34, 0.055) !important;
+  box-shadow: 0 4px 16px rgba(15, 48, 34, 0.06) !important;
 }
 
 html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah:hover {
-  transform: none !important;
+  transform: translateY(-1px) !important;
   border-color: color-mix(in srgb, var(--primary) 34%, var(--border) 66%) !important;
   box-shadow: 0 7px 18px rgba(15, 48, 34, 0.09) !important;
 }
@@ -3596,29 +3494,26 @@ html body .app-root[data-view="home"] .hp-grid--surah .hp-card-content {
 
 html body .app-root[data-view="home"] .hp-grid--surah .hp-card-ar {
   grid-column: 3 !important;
-  min-width: 5.4rem !important;
-  max-width: 7.2rem !important;
-  padding: 0 !important;
+  min-width: 6rem !important;
+  max-width: 7.5rem !important;
+  padding: 0.2rem 0 0.2rem 0.8rem !important;
   overflow: visible !important;
+  border-inline-start: 1px solid color-mix(in srgb, var(--primary) 14%, var(--border)) !important;
   color: color-mix(in srgb, var(--text-primary) 82%, var(--primary) 18%) !important;
   font-family: "surahnames", serif !important;
-  font-size: 1.45rem !important;
-  font-weight: 400 !important;
-  line-height: 1.35 !important;
+  font-size: clamp(1.72rem, 1.25rem + 0.72vw, 2.08rem) !important;
+  line-height: 1.1 !important;
   text-align: end !important;
-  opacity: 1 !important;
-  font-feature-settings: "liga" 1, "calt" 1, "rlig" 1 !important;
-  text-rendering: optimizeLegibility !important;
 }
 
 html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play {
   grid-column: 4 !important;
   position: relative !important;
   inset: auto !important;
-  width: 40px !important;
-  height: 40px !important;
-  min-width: 40px !important;
-  min-height: 40px !important;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
   padding: 0 !important;
   gap: 0 !important;
   border-color: var(--primary) !important;
@@ -3643,7 +3538,7 @@ html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play svg {
   flex: 0 0 16px !important;
 }
 
-/* Lecture active : la carte, le statut et le contrôle évoluent ensemble. */
+
 html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah.playing {
   border-color: color-mix(in srgb, var(--primary) 62%, var(--border) 38%) !important;
   background: color-mix(in srgb, var(--bg-card) 88%, var(--primary) 12%) !important;
@@ -3687,7 +3582,9 @@ html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah.playing .h
   html body .app-root[data-view="home"] .hp-grid--surah .hp-card-ar {
     min-width: 4.1rem !important;
     max-width: 5rem !important;
-    font-size: 1.2rem !important;
+    padding-inline-start: 0 !important;
+    border-inline-start: 0 !important;
+    font-size: 1.38rem !important;
   }
 
   html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play {

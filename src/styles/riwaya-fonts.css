@@ -15,12 +15,12 @@
 }
 
 :root {
-  --qd-reading-font-size: clamp(26px, 5.5vw, 42px);
-  --qd-font-size: clamp(26px, 5.5vw, 42px);
-  --quran-font-size: clamp(26px, 5.5vw, 42px);
+  --qd-reading-font-size: clamp(28px, 5.8vw, 48px);
+  --qd-font-size: clamp(28px, 5.8vw, 48px);
+  --quran-font-size: clamp(28px, 5.8vw, 48px);
   --quran-line-height: 2.16;
   --font-quran-hafs: "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", "ME Quran", serif;
-  --font-quran-warsh: "QPC Warsh", "KFGQPC Warsh", "KFGQPC Uthmanic Script WARSH", "Amiri Quran", "Amiri", "Scheherazade New", serif;
+  --font-quran-warsh: "KFGQPC Warsh", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Scheherazade New", "Amiri Quran", serif;
   --font-quran-indopak: "IndoPak", "QPC IndoPak", "QPC Hafs", "KFGQPC Uthmanic Script HAFS", serif;
   --font-quran-nastaleeq: "KFGQPC Nastaleeq", "QPC Nastaleeq", "IndoPak", "QPC Hafs", serif;
   --font-quran-warsh-kfgqpc: "KFGQPC Warsh", "warsh10", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", serif;
@@ -52,6 +52,8 @@
 ) {
   font-family: var(--qd-font-family, var(--font-quran-hafs)) !important;
   font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+  font-kerning: normal;
+  font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
 
@@ -70,57 +72,11 @@
 ) {
   font-family: var(--qd-font-family, var(--font-quran-warsh)) !important;
   font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+  font-kerning: normal;
+  font-synthesis: none;
   text-rendering: optimizeLegibility;
-}
-
-.app-root .quran-display--warsh :is(
-  .waqf-marker,
-  .wbw-marker-token,
-  .wbw-qcf4-marker,
-  .warsh-waqf-marker
-) {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.04em;
-  height: 1.04em;
-  margin-inline: 0.07em;
-  color: color-mix(in srgb, var(--text-muted, #667085) 82%, var(--primary, #0b6235) 18%);
-  font-family: var(--qd-font-family, var(--font-quran-warsh)) !important;
-  font-size: 0.74em;
-  font-weight: 500;
-  line-height: 1;
-  opacity: 0.98;
-  vertical-align: 0.07em;
 }
 
 .app-root .quran-display--warsh .warsh-waqf-marker {
   transform: translateY(-0.03em);
-}
-
-.app-root .quran-display--warsh :is(
-  .wbw-marker-token.wbw-current,
-  .wbw-marker-token.wbw-read,
-  .wbw-marker-token.wbw-upcoming,
-  .warsh-waqf-marker.wbw-current,
-  .warsh-waqf-marker.wbw-read,
-  .warsh-waqf-marker.wbw-upcoming
-) {
-  background: transparent !important;
-  box-shadow: none !important;
-  color: color-mix(in srgb, var(--text-muted, #667085) 72%, var(--primary, #0b6235) 28%) !important;
-}
-
-@media (max-width: 640px) {
-  .app-root .quran-display--warsh :is(
-    .waqf-marker,
-    .wbw-marker-token,
-    .wbw-qcf4-marker,
-    .warsh-waqf-marker
-  ) {
-    min-width: 1em;
-    height: 1em;
-    margin-inline: 0.045em;
-    font-size: 0.7em;
-  }
 }

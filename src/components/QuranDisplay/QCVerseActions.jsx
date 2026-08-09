@@ -6,12 +6,13 @@ import AyahActions from "../AyahActions";
  * compact=true → icon-only row (shown on hover in card header)
  * compact=false → full expanded row (shown when verse is active/selected)
  */
-export default function QCVerseActions({ surah, ayah, ayahData, lang, compact = false, layout = "horizontal" }) {
+export default function QCVerseActions({ surah, ayah, ayahData, translations, compact = false, layout = "horizontal" }) {
   return (
     <AyahActions
       surah={surah}
       ayah={ayah}
       ayahData={ayahData}
+      translations={translations}
       compact={compact}
       layout={layout}
     />

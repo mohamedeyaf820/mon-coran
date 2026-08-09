@@ -2,42 +2,36 @@ import React, { useEffect, useState } from "react";
 import PlatformLogo from "./PlatformLogo";
 import { t } from "../i18n";
 
-/* 8 particules dorées flottantes générées statiquement */
-const PARTICLES = [
-  { size: 3, top: "15%", left: "12%", dur: 6, del: 0 },
-  { size: 2, top: "22%", left: "82%", dur: 8, del: 0.8 },
-  { size: 4, top: "70%", left: "8%", dur: 7, del: 1.4 },
-  { size: 2, top: "80%", left: "88%", dur: 9, del: 0.3 },
-  { size: 3, top: "45%", left: "92%", dur: 6, del: 2 },
-  { size: 2, top: "60%", left: "5%", dur: 10, del: 1 },
-  { size: 3, top: "10%", left: "55%", dur: 7, del: 1.7 },
-  { size: 2, top: "88%", left: "45%", dur: 8, del: 0.5 },
-];
-
-/* Versets qui défilent pendant le chargement */
-const VERSES = [
-  {
-    ar: "﴿ إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ ﴾",
-    ref: "الحجر — 9",
-  },
-  { ar: "﴿ وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ ﴾", ref: "القمر — 17" },
-  {
-    ar: "﴿ إِنَّ هَٰذَا الْقُرْآنَ يَهْدِي لِلَّتِي هِيَ أَقْوَمُ ﴾",
-    ref: "الإسراء — 9",
-  },
-  { ar: "﴿ فَاقْرَءُوا مَا تَيَسَّرَ مِنَ الْقُرْآنِ ﴾", ref: "المزمل — 20" },
-  { ar: "﴿ وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا ﴾", ref: "المزمل — 4" },
-  {
-    ar: "﴿ خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ ﴾",
-    ref: "البخاري",
-  },
-];
+/* Un seul verset stabilise le premier rendu et garde le splash apaisé. */
+const VERSE = {
+  ar: "﴿ إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ ﴾",
+  ref: "الحجر — 9",
+};
 
 const skipLabels = { ar: 'تخطي', fr: 'Passer', en: 'Skip' };
-const SPLASH_MIN_VISIBLE_MS = 3000;
-const SPLASH_MAX_VISIBLE_MS = 4500;
-const SPLASH_FADE_MS = 240;
-const SPLASH_SKIP_DELAY_MS = 2200;
+const SPLASH_FADE_MS = 150;
+const SPLASH_SESSION_KEY = "mushaf-plus:splash-seen";
+const SPLASH_TIMINGS = {
+  firstVisit: { min: 1050, skip: 650 },
+  repeatVisit: { min: 0, skip: 0 },
+  lowPerformance: { min: 800, skip: 500 },
+};
+
+function hasSeenSplashThisSession() {
+  try {
+    return window.sessionStorage.getItem(SPLASH_SESSION_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function rememberSplashForSession() {
+  try {
+    window.sessionStorage.setItem(SPLASH_SESSION_KEY, "1");
+  } catch {
+    // A blocked sessionStorage must never keep the user on the splash.
+  }
+}
 
 export default function SplashScreen({
   onDone,
@@ -47,68 +41,47 @@ export default function SplashScreen({
 }) {
   const [fadeOut, setFadeOut] = useState(false);
   const dismissedRef = React.useRef(false);
-  const [verseIndex, setVerseIndex] = useState(0);
-  const [verseVisible, setVerseVisible] = useState(true);
   const [showSkip, setShowSkip] = useState(false);
+  const [timings] = useState(() => {
+    if (lowPerfMode) return SPLASH_TIMINGS.lowPerformance;
+    return hasSeenSplashThisSession()
+      ? SPLASH_TIMINGS.repeatVisit
+      : SPLASH_TIMINGS.firstVisit;
+  });
 
   useEffect(() => {
     const timer = setTimeout(
       () => setShowSkip(true),
-      SPLASH_SKIP_DELAY_MS,
+      timings.skip,
     );
     return () => clearTimeout(timer);
-  }, []);
+  }, [timings.skip]);
 
   useEffect(() => {
     const dismiss = () => {
       if (dismissedRef.current) return;
       dismissedRef.current = true;
+      rememberSplashForSession();
       setFadeOut(true);
       setTimeout(onDone, SPLASH_FADE_MS);
-    };
-
-    let prefetchDone = false;
-    let timerDone = false;
-    const tryEarlyDismiss = () => {
-      if (prefetchDone && timerDone) dismiss();
     };
 
     if (onPrefetch) {
       const result = onPrefetch();
       if (result && typeof result.then === "function") {
-        result.then(() => { prefetchDone = true; tryEarlyDismiss(); }).catch(() => { prefetchDone = true; tryEarlyDismiss(); });
-      } else {
-        prefetchDone = true;
+        result.catch(() => null);
       }
-    } else {
-      prefetchDone = true;
     }
 
-    // Rotation des versets toutes les ~1.4 s
-    const verseTick = setInterval(() => {
-      setVerseVisible(false);
-      setTimeout(() => {
-        setVerseIndex((i) => (i + 1) % VERSES.length);
-        setVerseVisible(true);
-      }, 350);
-    }, 1600);
-
-    // Keep the branded opening visible for three seconds while the actual app
-    // renders behind it. Slow prefetches may extend it, but never beyond 4.5 s.
-    const minTimer = setTimeout(() => {
-      timerDone = true;
-      tryEarlyDismiss();
-    }, SPLASH_MIN_VISIBLE_MS);
-    const maxTimer = setTimeout(() => dismiss(), SPLASH_MAX_VISIBLE_MS);
+    // Keep the branded opening long enough to be perceived on the first visit,
+    // then make reloads almost immediate. Loading continues behind the screen;
+    // a slow route chunk or API can never extend the perceived startup time.
+    const minTimer = setTimeout(dismiss, timings.min);
 
     return () => {
-      clearInterval(verseTick);
       clearTimeout(minTimer);
-      clearTimeout(maxTimer);
     };
-  }, [onDone, onPrefetch, lowPerfMode]);
-
-  const v = VERSES[verseIndex];
+  }, [onDone, onPrefetch, timings.min]);
 
   return (
     <div
@@ -121,6 +94,7 @@ export default function SplashScreen({
           onClick={() => {
             if (dismissedRef.current) return;
             dismissedRef.current = true;
+            rememberSplashForSession();
             setShowSkip(false);
             setFadeOut(true);
             setTimeout(onDone, SPLASH_FADE_MS);
@@ -131,24 +105,6 @@ export default function SplashScreen({
       )}
       {/* Halo doré central */}
       <div className="splash-halo" aria-hidden="true" />
-
-      {/* Étoiles / particules flottantes */}
-      {!lowPerfMode &&
-        PARTICLES.map((p, i) => (
-          <span
-            key={i}
-            aria-hidden="true"
-            className="splash-particle"
-            style={{
-              width: p.size,
-              height: p.size,
-              top: p.top,
-              left: p.left,
-              animationDuration: `${p.dur}s`,
-              animationDelay: `${p.del}s`,
-            }}
-          />
-        ))}
 
       {/* Motif arabesque discret en fond */}
       <div className="splash-arabesque" aria-hidden="true">
@@ -169,12 +125,10 @@ export default function SplashScreen({
           القرآن الكريم
         </p>
 
-        {/* Verset tournant */}
-        <div
-          className={`splash-verse-wrap ${verseVisible ? "verse-in" : "verse-out"}`}
-        >
-          <p className="splash-verse" lang="ar" dir="rtl">{v.ar}</p>
-          <p className="splash-verse-ref" lang="ar" dir="rtl">{v.ref}</p>
+        {/* Verset d'ouverture */}
+        <div className="splash-verse-wrap verse-in">
+          <p className="splash-verse" lang="ar" dir="rtl">{VERSE.ar}</p>
+          <p className="splash-verse-ref" lang="ar" dir="rtl">{VERSE.ref}</p>
         </div>
 
         {/* Barre de progression */}
@@ -189,8 +143,12 @@ export default function SplashScreen({
         <div className="splash-ornament" aria-hidden="true">
           ✦ ✦ ✦
         </div>
-        <p className="splash-loading-text" lang="ar" dir="rtl">
-          بِسْمِ اللَّهِ
+        <p
+          className="splash-loading-text"
+          lang={lang}
+          dir={lang === "ar" ? "rtl" : "ltr"}
+        >
+          {t("splash.loading", lang)}…
         </p>
       </div>
 
@@ -241,17 +199,6 @@ export default function SplashScreen({
           user-select: none;
         }
         .splash-screen.perf-low .splash-arabesque { display: none; }
-
-        /* ── Particules ── */
-        .splash-particle {
-          position: absolute;
-          border-radius: 50%;
-          background: rgba(212,175,55,0.55);
-          box-shadow: 0 0 6px rgba(212,175,55,0.4);
-          animation: floatParticle var(--dur, 7s) ease-in-out infinite;
-          animation-delay: var(--del, 0s);
-          pointer-events: none;
-        }
 
         /* ── Content ── */
         .splash-content {
@@ -320,7 +267,7 @@ export default function SplashScreen({
           height: 3px;
           background: rgba(255,255,255,0.1);
           border-radius: 99px;
-          margin: 0 auto 0.9rem;
+          margin: 0 auto 0.45rem;
           overflow: hidden;
           position: relative;
         }
@@ -364,10 +311,6 @@ export default function SplashScreen({
         @keyframes splashHalo {
           0%,100% { transform: translate(-50%,-50%) scale(1);    opacity: 1;   }
           50%     { transform: translate(-50%,-50%) scale(1.08); opacity: 0.7; }
-        }
-        @keyframes floatParticle {
-          0%,100% { transform: translateY(0); opacity: 0.6; }
-          50%     { transform: translateY(-18px); opacity: 1; }
         }
         @keyframes arFlow {
           from { transform: translateX(0); }
@@ -426,7 +369,6 @@ export default function SplashScreen({
           .splash-logo-wrap,
           .splash-halo,
           .splash-arabesque,
-          .splash-particle,
           .splash-loader-bar,
           .splash-loading-text,
           .splash-skip {
@@ -439,6 +381,32 @@ export default function SplashScreen({
           .splash-verse-wrap {
             transition: none !important;
             transform: none !important;
+          }
+        }
+        @media (max-width: 640px) {
+          .splash-content {
+            width: min(88vw, 340px);
+          }
+          .splash-logo-wrap {
+            margin-bottom: 0.85rem;
+          }
+          .splash-logo {
+            width: min(132px, 36vw);
+          }
+          .splash-title {
+            font-size: clamp(2rem, 11vw, 2.55rem);
+            letter-spacing: 2px;
+          }
+          .splash-subtitle {
+            margin-bottom: 1rem;
+          }
+          .splash-verse-wrap {
+            min-height: 64px;
+            margin-bottom: 1.1rem;
+          }
+          .splash-skip {
+            right: max(0.8rem, env(safe-area-inset-right));
+            bottom: max(0.8rem, env(safe-area-inset-bottom));
           }
         }
       `}</style>

@@ -12,10 +12,35 @@ const CACHE_MAX = 800;
 //   in Quran.com's Uthmani text (notably Yusuf 12:11). Normalising it preserves
 //   the Quranic sign while avoiding the solid black square/dot shown by fallback
 //   fonts on Android.
+// - U+200C is sometimes inserted immediately before a Quranic annotation mark
+//   (for example Al-Mulk 67:2: tanwin + ZWNJ + U+06DA). That separator detaches
+//   the combining mark from its base letter, so browsers draw a dotted-circle
+//   fallback. Remove only this unsafe sequence; ordinary ZWNJ usage is preserved.
 export function normalizeQuranGlyphText(text) {
     return String(text || '')
         .replace(/\u25CC/g, '')
-        .replace(/\u06EC/g, '\u06EB');
+        .replace(/\u06EC/g, '\u06EB')
+        .replace(/\u200C(?=[\u06D6-\u06ED])/g, '');
+}
+
+const WAQF_DISPLAY_GLYPHS = Object.freeze({
+    '\u06D6': '\u0635\u0644\u0649',
+    '\u06D7': '\u0642\u0644\u0649',
+    '\u06D8': '\u0645',
+    '\u06D9': '\u0644\u0627',
+    '\u06DA': '\u062C',
+    '\u06DB': '\u2234',
+    '\u06DC': '\u0633',
+});
+
+/**
+ * Quranic stop signs U+06D6..U+06DC are combining marks. When an interactive
+ * tooltip puts one inside its own element, browser shaping has no base glyph
+ * and displays a dotted circle. These readable abbreviations preserve the
+ * printed meaning and remain safe inside an isolated UI element.
+ */
+export function getReadableWaqfGlyph(char) {
+    return WAQF_DISPLAY_GLYPHS[char] || char;
 }
 
 // Diacritics character class: covers all Arabic combining marks + tatweel

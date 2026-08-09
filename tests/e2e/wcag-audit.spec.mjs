@@ -49,29 +49,26 @@ async function expectAccessibleDialog(page, name) {
 test("les panneaux d’actions ont un nom, piègent le focus et le restaurent", async ({
   page,
 }) => {
-  const studyTrigger = page.locator(".qcom-list-study-link").first();
-  await studyTrigger.focus();
-  await studyTrigger.click();
+  const optionsTrigger = page.locator(".ayah-action--options").first();
+  await optionsTrigger.focus();
+  await optionsTrigger.click();
+  await page.getByRole("menuitem", { name: "Tafsir" }).click();
 
-  const studyDialog = await expectAccessibleDialog(
-    page,
-    "Comprendre cette ayah",
-  );
-  await expect(studyDialog.getByRole("tablist")).toHaveAccessibleName(
-    "Rubriques d’étude",
-  );
+  const studyDialog = page.getByRole("dialog", { name: /L'Ouverture 1:1/ });
+  await expect(studyDialog).toBeVisible();
+  await expect(studyDialog.getByRole("button", { name: "Fermer" })).toBeFocused();
 
   for (let index = 0; index < 12; index += 1) {
     await page.keyboard.press("Tab");
     expect(
       await page.evaluate(() =>
-        Boolean(document.activeElement?.closest(".ayah-action-sheet")),
+        Boolean(document.activeElement?.closest("[role='dialog']")),
       ),
     ).toBe(true);
   }
 
   const axeResults = await new AxeBuilder({ page })
-    .include(".ayah-action-sheet")
+    .include("[role='dialog']")
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();
   expect(
@@ -83,18 +80,32 @@ test("les panneaux d’actions ont un nom, piègent le focus et le restaurent", 
 
   await page.keyboard.press("Escape");
   await expect(studyDialog).toBeHidden();
-  await expect(studyTrigger).toBeFocused();
+  await expect(optionsTrigger).toBeFocused();
 });
 
 test("partage, playlist et note exposent des dialogues correctement étiquetés", async ({
   page,
 }) => {
-  await page.locator(".ayah-action--share").first().click();
-  await expectAccessibleDialog(page, "Exporter cette ayah");
+  const openOption = async (name) => {
+    await page.locator(".ayah-action--options").first().click();
+    await page.getByRole("menuitem", { name }).click();
+  };
+
+  await openOption("Partager");
+  const shareDialog = page.getByRole("dialog", {
+    name: "Partager le verset en image",
+  });
+  await expect(shareDialog).toBeVisible();
+  await expect(
+    shareDialog.getByRole("button", { name: "Fermer" }),
+  ).toHaveAccessibleName("Fermer");
+  await expect(shareDialog.locator(".share-studio__preview-frame img")).toHaveAttribute(
+    "alt",
+    "Aperçu de la carte du verset",
+  );
   await page.keyboard.press("Escape");
 
-  const noteTrigger = page.locator(".ayah-action--note").first();
-  await noteTrigger.click();
+  await openOption("Ajouter une note");
   const noteDialog = await expectAccessibleDialog(page, "Ecrire sur cette ayah");
   await expect(
     noteDialog.getByRole("textbox", {
@@ -103,8 +114,7 @@ test("partage, playlist et note exposent des dialogues correctement étiquetés"
   ).toBeVisible();
   await page.keyboard.press("Escape");
 
-  await page.locator(".ayah-action--options").first().click();
-  await page.getByRole("menuitem", { name: /Playlists/ }).click();
+  await openOption(/Playlists/);
   await expectAccessibleDialog(page, "Ajouter à une playlist");
   await page.keyboard.press("Escape");
 });

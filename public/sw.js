@@ -4,12 +4,13 @@
 //   • /assets/       → Cache-First  (hachés à la compilation)
 //   • images locales → Stale-While-Revalidate
 //   • HTML           → Network-First  (évite les pages blanches avec SW obsolète)
-//   • api.alquran.cloud & api.quran.com → Stale-While-Revalidate  (texte coranique offline)
+//   • api.alquran.cloud & api.quran.com → Cache-First (texte immuable, navigation instantanée)
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v15";
-const API_CACHE_NAME = "mushaf-plus-api-v3";
+const CACHE_NAME = "mushaf-plus-v16";
+const API_CACHE_NAME = "mushaf-plus-api-v4";
+const AUDIO_CACHE_NAME = "mushafplus-audio-v2";
 const CACHE_LIMITS = {
   [CACHE_NAME]: 300,
   [API_CACHE_NAME]: 200,
@@ -123,6 +124,13 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   const isSameOrigin = url.origin === self.location.origin;
 
+  // Explicitly downloaded recitations live in Cache Storage. Serving them
+  // here lets the native audio element keep the same URL online and offline.
+  if (isTrustedAudioRequest(event.request, url)) {
+    event.respondWith(audioCacheFirst(event.request));
+    return;
+  }
+
   // ── 1. Polices – Cache-First ────────────────────────────────────────────────
   if (isSameOrigin && url.pathname.startsWith("/fonts/")) {
     event.respondWith(cacheFirst(event.request, CACHE_NAME));
@@ -144,9 +152,13 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // ── 4. API Coran (alquran.cloud & quran.com) – Stale-While-Revalidate ──────
+  // ── 4. API Coran – Cache-First ─────────────────────────────────────────────
+  // Quran verses and translations are immutable. Revalidating every cached
+  // response doubled the network traffic during surah/page changes and could
+  // compete with the foreground request on phones. The app-level IndexedDB
+  // cache still handles expiry and explicit repair/invalidation.
   if (url.hostname === "api.alquran.cloud" || url.hostname === "api.quran.com") {
-    event.respondWith(staleWhileRevalidate(event.request, API_CACHE_NAME, event));
+    event.respondWith(cacheFirst(event.request, API_CACHE_NAME));
     return;
   }
 
@@ -168,6 +180,36 @@ self.addEventListener("fetch", (event) => {
 });
 
 // ─── Messages (communication avec l'app) ─────────────────────────────────────
+
+function isTrustedAudioRequest(request, url) {
+  if (request.destination && request.destination !== "audio") return false;
+  if (!/\.mp3$/i.test(url.pathname)) return false;
+  const host = url.hostname.toLowerCase();
+  return (
+    host === "cdn.islamic.network" ||
+    host === "everyayah.com" ||
+    host === "www.everyayah.com" ||
+    host === "download.quranicaudio.com" ||
+    host === "audio.qurancdn.com" ||
+    host === "verses.quran.com" ||
+    /^server\d+\.mp3quran\.net$/i.test(host)
+  );
+}
+
+async function audioCacheFirst(request) {
+  const cache = await caches.open(AUDIO_CACHE_NAME);
+  const cached =
+    (await cache.match(request, { ignoreVary: true })) ||
+    (await cache.match(request.url, { ignoreVary: true }));
+  if (cached) return cached;
+
+  try {
+    // Streaming stays network-only until the user explicitly downloads it.
+    return await fetch(request);
+  } catch {
+    return Response.error();
+  }
+}
 
 function isTrustedClientMessage(event) {
   const senderUrl = event.source?.url;

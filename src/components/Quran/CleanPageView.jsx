@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { getSurah, toAr } from "../../data/surahs";
 import SmartAyahRenderer from "./SmartAyahRenderer";
-import WordByWordDisplay from "./WordByWordDisplay";
 import CleanPageTranslationPanel from "./CleanPageTranslationPanel";
 import { CleanPageSurahHeader } from "./CleanPageDecor";
 import Bismillah from "./Bismillah";
@@ -23,19 +22,17 @@ function CleanPageViewComponent({
   activeAyah = null,
   getAyahToggleId = (ayah) => ayah.numberInSurah,
   onAyahClick,
-  showWordByWord = false,
-  showWordTranslation: _showWordTranslation = true,
   showTransliteration: _showTransliteration = true,
 }) {
   const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
   const pageNumber = ayahs[0]?.page ?? null;
   const juzNumber = ayahs[0]?.juz ?? null;
-  const headerSurahName = surahMeta?.name_arabic || surahMeta?.name || "";
+  const headerSurahName = surahMeta?.ar || surahMeta?.name_arabic || surahMeta?.name || "";
   // `fontSize` is already resolved for the current viewport by
   // useQuranDisplayView. Keeping one source of truth prevents deferred mobile
   // styles from enlarging the Mushaf after its first paint.
-  const mushafFontSize = Math.max(12, Math.min(72, Number(fontSize) || 34));
-  const mushafWordSpacing = riwaya === "warsh" ? "0.035em" : "0.045em";
+  const mushafFontSize = Math.max(12, Math.min(96, Number(fontSize) || 34));
+  const mushafWordSpacing = "0";
 
   const juzLabel = useMemo(() => {
     if (!juzNumber) return "";
@@ -63,17 +60,20 @@ function CleanPageViewComponent({
         aria-hidden="true"
       />
       <div className="mushaf-page-header" aria-hidden="true">
-        <span dir="rtl">{juzLabel}</span>
-        <span dir="rtl">{surahLabel}</span>
+        {juzLabel && <span dir="rtl">{juzLabel}</span>}
+        {juzLabel && surahLabel && <span className="mushaf-header-sep" aria-hidden="true">·</span>}
+        {surahLabel && <span dir="rtl">{surahLabel}</span>}
       </div>
       <div
         className="mushaf-text-block mushaf-container"
         dir="rtl"
         lang="ar"
         style={{
+          fontSize: `${Math.round(mushafFontSize)}px`,
           "--cpv-font-size": `${Math.round(mushafFontSize)}px`,
-          "--cpv-line-height": "var(--quran-line-height, 1.94)",
+          "--cpv-line-height": "var(--quran-line-height, 2.2)",
           "--cpv-word-spacing": mushafWordSpacing,
+          wordSpacing: "0",
         }}
       >
         {ayahs.flatMap((ayah) => {
@@ -121,39 +121,20 @@ function CleanPageViewComponent({
               aria-current={isPlaying ? "true" : undefined}
             >
               <span className="qc-ayah-text-ar quran-arabic-text verse-text">
-                {showWordByWord ? (
-                  <WordByWordDisplay
-                    surah={ayahSurahNum}
-                    ayah={ayah.numberInSurah}
-                    text={ayah.text}
-                    isPlaying={isPlaying}
-                    showTajwid={showTajwid}
-                    showTransliteration={false}
-                    showWordTranslation={false}
-                    fontSize={fontSize}
-                    calibration={calibration}
-                    initialWords={ayah.words}
-                    warshWords={ayah.warshWords}
-                    inline={true}
-                  />
-                ) : (
-                  <SmartAyahRenderer
-                    ayah={ayah}
-                    showTajwid={showTajwid}
-                    isPlaying={isPlaying}
-                    surahNum={ayahSurahNum}
-                    calibration={calibration}
-                    riwaya={riwaya}
-                    appendNativeMarker={false}
-                  />
-                )}
-                {!showWordByWord ? (
-                  <AyahMarker
-                    number={ayah.numberInSurah}
-                    isPlaying={isPlaying}
-                    className="cpv-ayah-marker"
-                  />
-                ) : null}
+                <SmartAyahRenderer
+                  ayah={ayah}
+                  showTajwid={showTajwid}
+                  isPlaying={isPlaying}
+                  surahNum={ayahSurahNum}
+                  calibration={calibration}
+                  riwaya={riwaya}
+                  appendNativeMarker={false}
+                />
+                <AyahMarker
+                  number={ayah.numberInSurah}
+                  isPlaying={isPlaying}
+                  className="cpv-ayah-marker"
+                />
               </span>
             </span>,
           );
@@ -198,8 +179,6 @@ function areCleanPageViewEqual(prev, next) {
     prev.activeAyah === next.activeAyah &&
     prev.getAyahToggleId === next.getAyahToggleId &&
     prev.onAyahClick === next.onAyahClick &&
-    prev.showWordByWord === next.showWordByWord &&
-    prev.showWordTranslation === next.showWordTranslation &&
     prev.showTransliteration === next.showTransliteration
   );
 }

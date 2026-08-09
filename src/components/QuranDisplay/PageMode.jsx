@@ -24,16 +24,12 @@ function PageMode({
   getTranslationForAyah,
   isQCF4,
   lang,
-  memMode,
   mushafLayout,
-  onNavigateToAyah,
   onNextPage,
   onPlaySurah,
   onPrevPage,
   onToggleActive,
-  onToggleMemorization,
   onToggleMushaf,
-  onToggleWordByWord,
   pageGroups = [],
   pageTopSurah,
   preparingSurah,
@@ -42,8 +38,6 @@ function PageMode({
   showTajwid,
   showTranslation,
   showTransliteration,
-  showWordByWord,
-  showWordTranslation,
   surahGroups,
   theme,
 }) {
@@ -118,12 +112,7 @@ function PageMode({
         playLabel={lang === "fr" ? "Écouter la page" : "Listen page"}
         preparingSurah={preparingSurah}
         surahNum={pageTopSurah || currentSurah}
-        currentAyah={activeAyah || 1}
-        currentPage={currentPage}
-        onNavigateToAyah={onNavigateToAyah}
         onToggleMushaf={onToggleMushaf}
-        onToggleMemorization={onToggleMemorization}
-        onToggleWordByWord={onToggleWordByWord}
       />
 
       <div className={`page-turn-container ${turnClass}`}>
@@ -145,6 +134,7 @@ function PageMode({
             onClose={() => onToggleActive(null)}
             surah={activeAyahData?.surah?.number || currentSurah}
             ayahData={activeAyahData}
+            translations={activeAyahData ? getTranslationForAyah?.(activeAyahData) : []}
           />
         </>
       ) : mushafLayout === "mushaf" ? (
@@ -167,8 +157,6 @@ function PageMode({
               activeAyah={activeAyah}
               getAyahToggleId={(ayah) => ayah.number}
               showSurahHeader={true}
-              showWordByWord={showWordByWord}
-              showWordTranslation={showWordTranslation}
               showTransliteration={showTransliteration}
             />
           ))}
@@ -177,6 +165,7 @@ function PageMode({
             onClose={() => onToggleActive(null)}
             surah={activeAyahData?.surah?.number || currentSurah}
             ayahData={activeAyahData}
+            translations={activeAyahData ? getTranslationForAyah?.(activeAyahData) : []}
           />
         </>
       ) : (
@@ -188,13 +177,10 @@ function PageMode({
           getTranslationForAyah={getTranslationForAyah}
           showTajwid={showTajwid}
           showTranslation={showTranslation}
-          showWordByWord={showWordByWord}
           showTransliteration={showTransliteration}
-          showWordTranslation={showWordTranslation}
           calibration={calibration}
           riwaya={riwaya}
           fontSize={readingFontSize}
-          memMode={memMode}
           onToggleActive={onToggleActive}
           displayMode="page"
           showPageSeparators

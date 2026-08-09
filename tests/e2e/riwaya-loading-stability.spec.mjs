@@ -107,6 +107,12 @@ test("a riwaya switch stays atomic until the requested text is ready", async ({ 
   await page.keyboard.press("w");
   await expect(page.locator(".quran-display--word-by-word")).toHaveCount(0);
 
+  const readerTools = page.locator(".srh-identity__disclosure:visible").first();
+  await expect(readerTools).toBeVisible();
+  if ((await readerTools.getAttribute("aria-expanded")) !== "true") {
+    await readerTools.focus();
+    await readerTools.press("Enter");
+  }
   await page.locator(".srh-study-more").click();
   await expect(
     page.getByRole("menuitemcheckbox", { name: "Mot à mot" }),

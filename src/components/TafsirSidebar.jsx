@@ -274,7 +274,7 @@ export default function TafsirSidebar() {
                 >
                   {surahDisplayName} {surahNumber}:{ayahNumber}
                 </h2>
-                <p className="mt-1 text-sm text-[color-mix(in_srgb,var(--theme-text-muted)_88%,var(--theme-bg)_12%)]">
+                <p className="mt-1 text-sm text-[var(--text-secondary)]">
                   {label(
                     lang,
                     "Explication du verset",
@@ -367,7 +367,7 @@ export default function TafsirSidebar() {
                           {label(lang, "Chargement...", "Loading...")}
                         </span>
                       ) : translationState.status === "error" ? (
-                        <span className="text-rose-300">
+                        <span className="tafsir-error-text">
                           {translationState.error ||
                             label(
                               lang,
@@ -392,7 +392,7 @@ export default function TafsirSidebar() {
               <section className="rounded-lg border border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_76%,transparent_24%)] p-4">
                 {tafsirState.status === "loading" ? (
                   <div className="flex min-h-[14rem] items-center justify-center">
-                    <div className="flex items-center gap-3 text-sm font-semibold text-[color-mix(in_srgb,var(--theme-text-muted)_88%,var(--theme-bg)_12%)]">
+                    <div className="flex items-center gap-3 text-sm font-semibold text-[var(--text-secondary)]">
                       <RefreshCw size={17} className="animate-spin" />
                       {label(
                         lang,
@@ -404,7 +404,7 @@ export default function TafsirSidebar() {
                   </div>
                 ) : tafsirState.status === "error" ? (
                   <div className="flex min-h-[14rem] flex-col items-center justify-center gap-3 text-center">
-                    <AlertCircle className="text-rose-300" size={28} />
+                    <AlertCircle className="tafsir-error-text" size={28} />
                     <p className="text-sm text-[color-mix(in_srgb,var(--theme-text)_86%,var(--theme-bg)_14%)]">
                       {tafsirState.error}
                     </p>
@@ -444,7 +444,7 @@ export default function TafsirSidebar() {
                     </article>
                   </>
                 ) : (
-                  <div className="flex min-h-[14rem] items-center justify-center text-sm text-[color-mix(in_srgb,var(--theme-text-muted)_88%,var(--theme-bg)_12%)]">
+                  <div className="flex min-h-[14rem] items-center justify-center text-sm text-[var(--text-secondary)]">
                     {label(
                       lang,
                       "Aucune donnée disponible.",
@@ -458,7 +458,7 @@ export default function TafsirSidebar() {
 
             {/* Footer */}
             <div className="border-t border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] px-4 py-3 sm:px-5">
-              <p className="mb-2 text-center text-[0.65rem] text-[color-mix(in_srgb,var(--theme-text-muted)_84%,var(--theme-bg)_16%)]">
+              <p className="mb-2 text-center text-[0.7rem] font-medium text-[var(--text-secondary)]">
                 Quran.com / Quran Foundation
               </p>
               <a

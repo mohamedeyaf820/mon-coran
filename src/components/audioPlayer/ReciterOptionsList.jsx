@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, LoaderCircle, Search, Star, X } from "lucide-react";
+import { Check, ChevronDown, LoaderCircle, Search, Server, Star, X } from "lucide-react";
 import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 import { formatCooldownLabel } from "../../utils/formatUtils";
@@ -52,7 +52,6 @@ function getStyleLabel(reciter, lang) {
 
 export default function ReciterOptionsList(props) {
   const {
-    autoSelectFastestReciter,
     className,
     currentReciters,
     filteredReciters,
@@ -128,6 +127,15 @@ export default function ReciterOptionsList(props) {
   };
 
   const isAnyReciterSwitching = Boolean(reciterSwitchingId);
+  const activeReciter = currentReciters.find((item) => item.id === reciter);
+  const activeLatency = activeReciter
+    ? getLatencyForReciter(activeReciter, reciterLatencyByKey)
+    : null;
+  const activeSource = activeReciter?.cdnType === "everyayah"
+    ? "EveryAyah CDN"
+    : activeReciter?.cdnType === "mp3quran-surah"
+      ? "MP3Quran"
+      : "Islamic Network";
 
   return (
     <section
@@ -203,8 +211,6 @@ export default function ReciterOptionsList(props) {
               );
               const isUnavailable = unavailableMs > 0;
               const isFavorite = (favoriteReciters || []).includes(r.id);
-              const latency = getLatencyForReciter(r, reciterLatencyByKey);
-
               const bio = getReciterBio(r, lang);
               const photo = getReciterPhoto(r.id);
               const avatar = getReciterAvatar(r);
@@ -285,26 +291,13 @@ export default function ReciterOptionsList(props) {
                       </span>
                     )}
 
-                    <span className="audio-reciter-options__badges flex flex-wrap gap-1">
-                      <span className="audio-reciter-options__badge audio-reciter-options__source inline-flex w-fit items-center rounded-full border px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide">
-                        {r.cdnType === "everyayah"
-                          ? "EveryAyah CDN"
-                          : r.cdnType === "mp3quran-surah"
-                            ? "MP3Quran"
-                            : "Islamic CDN"}
-                      </span>
-                      {autoSelectFastestReciter &&
-                        filteredReciters[0]?.id === r.id && (
-                          <span className="audio-reciter-options__badge audio-reciter-options__badge--fast inline-flex w-fit items-center rounded-full border px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide">
-                            {labels.fast}
+                    {isUnavailable && (
+                      <span className="audio-reciter-options__badges flex flex-wrap gap-1">
+                          <span className="audio-reciter-options__badge audio-reciter-options__badge--unavailable inline-flex w-fit items-center rounded-full border px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide">
+                            {`${labels.unavailable} ${formatCooldownLabel(unavailableMs, lang)}`}
                           </span>
-                        )}
-                      {isUnavailable && (
-                        <span className="audio-reciter-options__badge audio-reciter-options__badge--unavailable inline-flex w-fit items-center rounded-full border px-1.5 py-0.5 text-[0.52rem] font-semibold tracking-wide">
-                          {`${labels.unavailable} ${formatCooldownLabel(unavailableMs, lang)}`}
-                        </span>
-                      )}
-                    </span>
+                      </span>
+                    )}
                   </span>
 
                   <span className="audio-reciter-options__status" aria-hidden="true">
@@ -317,11 +310,6 @@ export default function ReciterOptionsList(props) {
                         <Check size={14} strokeWidth={3} />
                       </span>
                     ) : null}
-                    {latency && !isUnavailable && (
-                      <span className="audio-reciter-options__latency">
-                        {Math.round(latency * 1000)} ms
-                      </span>
-                    )}
                   </span>
                 </button>
               );
@@ -329,6 +317,33 @@ export default function ReciterOptionsList(props) {
           </div>
         )}
       </div>
+      {activeReciter && (
+        <details className="audio-reciter-options__technical">
+          <summary>
+            <span>
+              <Server size={13} aria-hidden="true" />
+              {pick(lang, {
+                fr: "Informations techniques",
+                en: "Technical information",
+                ar: "معلومات تقنية",
+              })}
+            </span>
+            <ChevronDown size={13} aria-hidden="true" />
+          </summary>
+          <div>
+            <span>{pick(lang, { fr: "Source active", en: "Active source", ar: "المصدر النشط" })}</span>
+            <strong>{activeSource}</strong>
+            <span>{pick(lang, { fr: "Disponibilité", en: "Availability", ar: "التوفر" })}</span>
+            <strong>{networkState === "error" ? labels.unavailable : pick(lang, { fr: "Opérationnelle", en: "Operational", ar: "متاح" })}</strong>
+            {activeLatency && (
+              <>
+                <span>{pick(lang, { fr: "Latence mesurée", en: "Measured latency", ar: "زمن الاستجابة" })}</span>
+                <strong>{Math.round(activeLatency * 1000)} ms</strong>
+              </>
+            )}
+          </div>
+        </details>
+      )}
     </section>
   );
 }

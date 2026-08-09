@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { getRulesForRiwaya, parseTajwid, stabilizeTajwidSegments } from '../../data/tajwidRules';
 import { useAppLocale } from '../../context/AppContext';
+import { getReadableWaqfGlyph } from '../../utils/quranUtils';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../ui/tooltip';
 
 const QURAN_COM_CLASS_MAP = {
@@ -65,7 +66,8 @@ function parseQuranComTajweedHtml(html) {
 
     const walk = (node, inheritedRule = null) => {
         if (node.nodeType === Node.TEXT_NODE) {
-            if (node.textContent) segments.push({ text: node.textContent, ruleId: inheritedRule });
+            const t = node.textContent?.replace(/[<>]/g, '');
+            if (t) segments.push({ text: t, ruleId: inheritedRule });
             return;
         }
 

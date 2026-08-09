@@ -19,7 +19,7 @@ export default function ReciterBioCollapse({ lang, text, reciter }) {
       : lang === "ar"
         ? "ملف تلاوة متاح في المكتبة الصوتية."
         : "Recitation profile available in the audio library.");
-  const shouldCollapse = safeText.length > 320;
+  const shouldCollapse = safeText.length > 180;
 
   useEffect(() => {
     if (contentRef.current) {
@@ -39,7 +39,7 @@ export default function ReciterBioCollapse({ lang, text, reciter }) {
         className="reciter-bio-collapse__content overflow-hidden transition-[max-height] duration-300 ease-in-out"
         style={{
           maxHeight:
-            open || !shouldCollapse ? `${contentHeight + 20}px` : "8.2em",
+            open || !shouldCollapse ? `${contentHeight + 20}px` : "3.7em",
         }}
       >
         <p>{safeText}</p>

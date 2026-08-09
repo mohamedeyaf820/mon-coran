@@ -18,6 +18,8 @@ import "./styles/domains/mobile-all-versions.css";
 import "./styles/header-enhanced.css";
 import "./styles/device-root.css";
 import "./styles/experience-polish.css";
+// Core tokens and shared responsive surfaces must be available before paint.
+import "./styles/app-system.css";
 
 if (typeof window !== "undefined") {
   // Start the ordered polish layer in parallel with the application chunks.

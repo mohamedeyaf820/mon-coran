@@ -56,13 +56,11 @@ export default function SearchModal() {
   const [error, setError] = useState(null);
   const [searchMode, setSearchMode] = useState("arabic");
   const [resolvedQuery, setResolvedQuery] = useState("");
-  const [activeResultIdx, setActiveResultIdx] = useState(-1);
 
   const handleVoiceTranscript = useCallback((transcript) => {
     const sanitized = sanitizeSearchQuery(transcript);
     if (!sanitized) return;
     setQuery(sanitized);
-    setActiveResultIdx(-1);
     if (containsArabic(sanitized)) setSearchMode("arabic");
   }, []);
 
@@ -164,11 +162,9 @@ export default function SearchModal() {
     setResults([]);
     setError(null);
     setResolvedQuery("");
-    setActiveResultIdx(-1);
   }, [query]);
 
   useEffect(() => {
-    setActiveResultIdx(-1);
   }, [results]);
 
   useEffect(() => {
@@ -248,26 +244,8 @@ export default function SearchModal() {
 
   const handleInputKeyDown = (event) => {
     if (event.key === "Enter") {
-      if (activeResultIdx >= 0 && activeResultIdx < filteredResults.length) {
-        const r = filteredResults[activeResultIdx];
-        const surahNumber = r?.surah?.number || r?.surah || 1;
-        const ayahNumber = r?.numberInSurah || r?.number || 1;
-        goToAyah(surahNumber, ayahNumber);
-      } else {
-        handleSearch();
-      }
-      return;
-    }
-    if (event.key === "ArrowDown") {
       event.preventDefault();
-      setActiveResultIdx((prev) =>
-        prev < filteredResults.length - 1 ? prev + 1 : 0,
-      );
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      setActiveResultIdx((prev) =>
-        prev > 0 ? prev - 1 : filteredResults.length - 1,
-      );
+      handleSearch();
     }
   };
 
@@ -394,14 +372,7 @@ export default function SearchModal() {
                             : t("search.placeholder", lang)
                         }
                         autoFocus
-                        role="combobox"
-                        aria-expanded={filteredResults.length > 0}
                         aria-controls="search-results-list"
-                        aria-activedescendant={
-                          activeResultIdx >= 0
-                            ? `search-result-${activeResultIdx}`
-                            : undefined
-                        }
                       />
                       <button
                         type="button"
@@ -636,13 +607,10 @@ export default function SearchModal() {
                         return (
                           <button
                             key={`${surahNumber}-${ayahNumber}-${index}`}
-                            id={`search-result-${index}`}
-                            role="option"
-                            aria-selected={activeResultIdx === index}
                             data-testid="search-result"
                             data-surah={surahNumber}
                             data-ayah={ayahNumber}
-                            className={`search-pro__result ${isTranslationMode ? "is-translation" : ""} ${activeResultIdx === index ? "is-keyboard-active" : ""}`}
+                            className={`search-pro__result ${isTranslationMode ? "is-translation" : ""}`}
                             onClick={() => goToAyah(surahNumber, ayahNumber)}
                           >
                             <span className="search-pro__result-number">

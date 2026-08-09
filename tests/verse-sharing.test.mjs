@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
 
 import {
   cleanShareText,
@@ -71,4 +72,25 @@ test("verse sharing: provides valid destinations for every supported network", (
 
 test("verse sharing: strips markup and normalizes whitespace", () => {
   assert.equal(cleanShareText("  <p>Une&nbsp;ligne</p>  "), "Une ligne");
+});
+
+test("verse sharing: the product flow is image-first", () => {
+  const panel = fs.readFileSync(
+    new URL("../src/components/AyahSharePanel.jsx", import.meta.url),
+    "utf8",
+  );
+  const actions = fs.readFileSync(
+    new URL("../src/components/AyahActions.jsx", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(panel, /VERSE_CARD_FORMATS[\s\S]*?square[\s\S]*?portrait[\s\S]*?story/);
+  assert.match(panel, /VERSE_CARD_PRESETS[\s\S]*?fajr[\s\S]*?mushaf[\s\S]*?madinah/);
+  assert.match(panel, /navigator\.share\(\{ files: \[file\], title:/);
+  assert.match(panel, /ClipboardItem\(\{ "image\/png": blob \}\)/);
+  assert.match(panel, /share-studio__quick-setting/);
+  assert.doesNotMatch(panel, /share-editor|share-textarea/);
+  assert.match(panel, /LE CORAN · SIMPLEMENT/);
+  assert.match(actions, /openShareStudio[\s\S]*?shareImageOpen: true/);
+  assert.doesNotMatch(actions, /createVerseShareTargets|shareWhatsApp|shareTelegram/);
 });

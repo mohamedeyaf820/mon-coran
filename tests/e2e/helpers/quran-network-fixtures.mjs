@@ -44,7 +44,7 @@ function quranComVersesForUrl(url) {
   if (chapterMatch) {
     const surah = Number(chapterMatch[1]);
     return Array.from({ length: verseCount(surah) }, (_, index) =>
-      mockQuranComVerse(surah, index + 1),
+      mockQuranComVerse(surah, index + 1, 1 + Math.floor(index / 8), 1),
     );
   }
 

@@ -25,10 +25,26 @@ export function useMediaSession({
   onPause,
   onNext,
   onPrev,
+  onStop,
+  onSeekTo,
+  onSeekBackward,
+  onSeekForward,
+  currentTime = 0,
+  duration = 0,
+  playbackRate = 1,
 }) {
   // Keep handlers in a ref so we never need to re-register listeners
   const handlersRef = useRef({});
-  handlersRef.current = { onPlay, onPause, onNext, onPrev };
+  handlersRef.current = {
+    onPlay,
+    onPause,
+    onNext,
+    onPrev,
+    onStop,
+    onSeekTo,
+    onSeekBackward,
+    onSeekForward,
+  };
 
   // Update metadata whenever track identity changes
   useEffect(() => {
@@ -38,9 +54,7 @@ export function useMediaSession({
         title: title || '',
         artist: artist || '',
         album: album || 'MushafPlus',
-        artwork: artwork
-          ? [{ src: artwork, sizes: '512x512', type: 'image/png' }]
-          : [],
+        artwork: artwork ? [{ src: artwork }] : [],
       });
     } catch {
       // MediaMetadata may not be supported in some browsers
@@ -57,6 +71,30 @@ export function useMediaSession({
     }
   }, [isPlaying]);
 
+  // Keep the lock-screen progress bar synchronized with the real media
+  // element. Invalid/unknown durations are intentionally skipped because
+  // setPositionState throws until metadata is available.
+  useEffect(() => {
+    if (!('mediaSession' in navigator)) return;
+    const safeDuration = Number(duration);
+    const safePosition = Number(currentTime);
+    const safeRate = Number(playbackRate);
+    if (!Number.isFinite(safeDuration) || safeDuration <= 0) return;
+    try {
+      navigator.mediaSession.setPositionState({
+        duration: safeDuration,
+        playbackRate:
+          Number.isFinite(safeRate) && safeRate > 0 ? safeRate : 1,
+        position: Math.min(
+          safeDuration,
+          Math.max(0, Number.isFinite(safePosition) ? safePosition : 0),
+        ),
+      });
+    } catch {
+      // Position state is optional and unavailable in older Safari versions.
+    }
+  }, [currentTime, duration, playbackRate]);
+
   // Register action handlers once, use ref to keep them fresh
   useEffect(() => {
     if (!('mediaSession' in navigator)) return;
@@ -66,6 +104,18 @@ export function useMediaSession({
       ['pause',         () => handlersRef.current.onPause?.()],
       ['nexttrack',     () => handlersRef.current.onNext?.()],
       ['previoustrack', () => handlersRef.current.onPrev?.()],
+      ['stop',          () => handlersRef.current.onStop?.()],
+      ['seekto',        (details) => {
+        if (Number.isFinite(details?.seekTime)) {
+          handlersRef.current.onSeekTo?.(details.seekTime, details.fastSeek);
+        }
+      }],
+      ['seekbackward',  (details) => {
+        handlersRef.current.onSeekBackward?.(details?.seekOffset || 10);
+      }],
+      ['seekforward',   (details) => {
+        handlersRef.current.onSeekForward?.(details?.seekOffset || 10);
+      }],
     ];
 
     for (const [action, handler] of actions) {

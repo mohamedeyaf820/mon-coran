@@ -20,35 +20,36 @@ export function getResponsiveArabicFontSize({
   viewportWidth,
   mushafLayout = "list",
 }) {
-  const baseSize = clampArabicFontSize(preferredSize);
+  const baseUserPreference = clampArabicFontSize(preferredSize);
+  const offset = baseUserPreference - 25; // Delta relative to neutral 25px default
   const width = Number.isFinite(Number(viewportWidth))
     ? Number(viewportWidth)
     : 1024;
 
-  let deviceScale;
+  let deviceBaseline;
   let deviceMaximum;
+  const isMushaf = mushafLayout === "mushaf";
 
-  if (width <= 420) {
-    deviceScale = 0.84;
-    deviceMaximum = mushafLayout === "mushaf" ? 30 : 42;
-  } else if (width <= 640) {
-    deviceScale = 0.92;
-    deviceMaximum = mushafLayout === "mushaf" ? 34 : 46;
+  if (width <= 480) {
+    deviceBaseline = isMushaf ? 22 : 24;
+    deviceMaximum = isMushaf ? 34 : 72;
+  } else if (width <= 768) {
+    deviceBaseline = isMushaf ? 26 : 28;
+    deviceMaximum = isMushaf ? 40 : 80;
   } else if (width <= 1024) {
-    deviceScale = 1.08;
-    deviceMaximum = mushafLayout === "mushaf" ? 56 : 64;
-  } else if (width < 1440) {
-    deviceScale = 1.24;
-    deviceMaximum = mushafLayout === "mushaf" ? 66 : 76;
+    deviceBaseline = isMushaf ? 30 : 34;
+    deviceMaximum = isMushaf ? 46 : 88;
   } else {
-    deviceScale = 1.34;
-    deviceMaximum = mushafLayout === "mushaf" ? 72 : 84;
+    deviceBaseline = isMushaf ? 34 : 42;
+    deviceMaximum = isMushaf ? 52 : 96;
   }
 
   const layoutScale = mushafLayout === "mushaf" ? 0.94 : 1;
+  const targetSize = Math.round((deviceBaseline + offset) * layoutScale);
+
   return Math.max(
     ARABIC_FONT_SIZE_MIN,
-    Math.min(deviceMaximum, Math.round(baseSize * deviceScale * layoutScale)),
+    Math.min(deviceMaximum, targetSize),
   );
 }
 
@@ -69,23 +70,23 @@ export function getArabicReadingLineHeight({
   const normalizedFont = String(fontFamily || "").toLowerCase();
 
   if (normalizedFont.includes("indopak")) {
-    return isContinuousMushaf ? 2.08 : 2.16;
+    return isContinuousMushaf ? 1.85 : 2.16;
   }
 
   if (riwaya === "warsh") {
-    return isContinuousMushaf ? 2.04 : 2.12;
+    return isContinuousMushaf ? 1.82 : 2.12;
   }
 
   if (normalizedFont.includes("scheherazade")) {
-    return isContinuousMushaf ? 1.98 : 2.08;
+    return isContinuousMushaf ? 1.78 : 2.08;
   }
 
   if (
     normalizedFont.includes("amiri") ||
     normalizedFont.includes("noto-naskh")
   ) {
-    return isContinuousMushaf ? 1.88 : 2;
+    return isContinuousMushaf ? 1.75 : 2;
   }
 
-  return isContinuousMushaf ? 1.94 : 2.04;
+  return isContinuousMushaf ? 1.78 : 2.04;
 }

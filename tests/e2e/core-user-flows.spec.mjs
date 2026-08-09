@@ -56,7 +56,8 @@ async function patchDeterministicAudio(page) {
 async function openAudioOptions(page) {
   const openPlayer = page.getByTestId("audio-player-open");
   const compactPlayer = page.getByTestId("audio-player-compact");
-  if (await compactPlayer.isVisible().catch(() => false)) {
+  await expect(openPlayer.or(compactPlayer).first()).toBeVisible();
+  if (await compactPlayer.isVisible()) {
     await compactPlayer.locator(".mp-player-minimized-open").click();
   }
   await expect(openPlayer).toBeVisible();
@@ -99,6 +100,87 @@ test("theme selection through settings is immediate and persists after reload", 
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "sepia");
   await expect(page.locator(".app-view-home")).toBeVisible();
+});
+
+test("settings keep essential controls visible and advanced tools contextual", async ({
+  page,
+}) => {
+  await seedFrenchState(page, { autoNightMode: false });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await openSettings(page);
+
+  await expect(page.getByRole("button", { name: "Français" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "English" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "العربية" })).toBeVisible();
+  await expect(page.locator(".settings-theme-tile")).toHaveCount(3);
+  await expect(page.locator('input[type="time"]')).toHaveCount(0);
+
+  await page.locator("#settings-auto-night").check({ force: true });
+  await expect(page.locator('input[type="time"]')).toHaveCount(2);
+
+  await page.getByRole("tab", { name: "Affichage" }).click();
+  await expect(page.getByRole("heading", { name: "Riwaya par défaut" })).toBeVisible();
+  await expect(page.locator("#settings-font-family")).toBeVisible();
+  await expect(page.locator("#settings-font-size-quran")).toBeVisible();
+  await expect(page.locator("#settings-font-size-translation")).toBeVisible();
+  await expect(page.locator("#settings-show-tajwid")).toBeAttached();
+  await expect(page.locator("#settings-show-translation")).toBeAttached();
+  await expect(page.locator("#settings-show-transliteration")).toBeAttached();
+
+  await page.getByRole("tab", { name: "Audio" }).click();
+  await expect(page.locator("#settings-audio-speed")).toBeVisible();
+  await expect(page.locator("#settings-audio-volume")).toBeVisible();
+  await expect(page.locator("#settings-reciter-search")).toBeVisible();
+  const troubleshooting = page.locator(".settings-advanced-disclosure");
+  await expect(troubleshooting).not.toHaveAttribute("open", "");
+  await troubleshooting.locator("summary").click();
+  await expect(page.getByRole("button", { name: /Vider le cache/i })).toBeVisible();
+
+  await page.getByRole("tab", { name: "Confidentialité" }).click();
+  await expect(page.getByRole("heading", { name: "Données et confidentialité" })).toBeVisible();
+  await expect(page.getByText("Protection locale avancée", { exact: true })).toBeVisible();
+  await expect(page.getByTestId("delete-local-data")).toBeVisible();
+
+  const drawerBox = await page.locator(".settings-drawer").boundingBox();
+  expect(drawerBox?.width || 0).toBeLessThanOrEqual(390);
+  expect(drawerBox?.height || 0).toBeLessThanOrEqual(844);
+});
+
+test("home presents one reading journey and one unified audio library", async ({
+  page,
+}) => {
+  await seedFrenchState(page, {
+    currentSurah: 3,
+    currentAyah: 7,
+    favoriteReciters: ["ar.alafasy"],
+  });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/");
+
+  await expect(page.locator(".home-resume-panel")).toHaveCount(1);
+  await expect(page.locator(".home-today-panel")).toHaveCount(1);
+  await expect(page.locator(".home-session-card, .home-daily-verse-card")).toHaveCount(0);
+  await expect(page.locator(".home-today-suggestion")).toHaveCount(5);
+  await expect(page.getByLabel("Rechercher dans le Saint Coran…")).toBeVisible();
+  await expect(page.getByLabel("Trier les sourates")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Grille" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Liste" })).toBeVisible();
+
+  await page.getByRole("tab", { name: "Audio", exact: true }).click();
+  await expect(page.getByRole("tab", { name: /Récitations/ })).toBeVisible();
+  await expect(page.getByRole("tab", { name: /Radio/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Murattal", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Mujawwad", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Muallim", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Favoris", exact: true })).toBeVisible();
+  await expect(page.getByText(/Murattal : posé/)).toBeVisible();
+  await expect(page.locator(".home-content-section input[type='range']")).toHaveCount(0);
+
+  await expect(page.locator(".mp-footer-v2__nav")).toBeHidden();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator(".mp-footer-v2__nav")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Bibliothèque" })).toBeVisible();
 });
 
 test("bookmarking a verse survives a page reload", async ({ page }) => {
@@ -181,7 +263,7 @@ test("searching a translation result navigates to the matching ayah", async ({
   await expect(page.locator(".app-view-home")).toBeVisible();
   await page.locator(".mp-header__search").first().click();
 
-  const searchInput = page.getByRole("combobox");
+  const searchInput = page.locator(".search-pro").getByRole("textbox").first();
   await searchInput.fill("miséricorde");
   await page.getByRole("tab", { name: "FR" }).click();
 
