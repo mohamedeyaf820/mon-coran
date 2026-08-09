@@ -31,8 +31,8 @@ function CleanPageViewComponent({
   // `fontSize` is already resolved for the current viewport by
   // useQuranDisplayView. Keeping one source of truth prevents deferred mobile
   // styles from enlarging the Mushaf after its first paint.
-  const mushafFontSize = Math.max(12, Math.min(72, Number(fontSize) || 34));
-  const mushafWordSpacing = riwaya === "warsh" ? "0.035em" : "0.045em";
+  const mushafFontSize = Math.max(12, Math.min(96, Number(fontSize) || 34));
+  const mushafWordSpacing = "0";
 
   const juzLabel = useMemo(() => {
     if (!juzNumber) return "";
@@ -69,9 +69,11 @@ function CleanPageViewComponent({
         dir="rtl"
         lang="ar"
         style={{
+          fontSize: `${Math.round(mushafFontSize)}px`,
           "--cpv-font-size": `${Math.round(mushafFontSize)}px`,
-          "--cpv-line-height": "var(--quran-line-height, 1.94)",
+          "--cpv-line-height": "var(--quran-line-height, 2.2)",
           "--cpv-word-spacing": mushafWordSpacing,
+          wordSpacing: "0",
         }}
       >
         {ayahs.flatMap((ayah) => {

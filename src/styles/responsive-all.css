@@ -1,4 +1,4 @@
-﻿
+
 
 
 
@@ -1410,7 +1410,7 @@ html[data-theme="dark"]
     .app-root.app-root
     .quran-display--platform
     :is(.qc-ayah-text-ar, .rd-arabic, #mp-dark-arabic-size) {
-    font-size: var(--quran-font-size, clamp(36px, 3.55vw, 52px)) !important;
+    font-size: var(--qd-reading-font-size, var(--quran-font-size, 32px)) !important;
     line-height: 2.24 !important;
 }
 
@@ -1420,7 +1420,7 @@ html[data-theme="dark"]
         .app-root.app-root
         .quran-display--platform
         :is(.qc-ayah-text-ar, .rd-arabic, #mp-dark-arabic-size) {
-        font-size: var(--quran-font-size, clamp(34px, 8.5vw, 44px)) !important;
+        font-size: var(--qd-reading-font-size, var(--quran-font-size, 26px)) !important;
         line-height: 2.2 !important;
     }
 }
@@ -1431,7 +1431,7 @@ html[data-theme="dark"]
         .app-root.app-root
         .quran-display--platform
         :is(.qc-ayah-text-ar, .rd-arabic, #mp-dark-arabic-size) {
-        font-size: var(--quran-font-size, clamp(32px, 8.9vw, 42px)) !important;
+        font-size: var(--qd-reading-font-size, var(--quran-font-size, 22px)) !important;
         line-height: 2.16 !important;
     }
 }
@@ -1442,7 +1442,7 @@ html[data-theme="dark"]
         .app-root.app-root
         .quran-display--platform
         :is(.qc-ayah-text-ar, .rd-arabic, #mp-dark-arabic-size) {
-        font-size: var(--quran-font-size, clamp(28px, 8.2vw, 36px)) !important;
+        font-size: var(--qd-reading-font-size, var(--quran-font-size, 20px)) !important;
         line-height: 2.1 !important;
     }
 }

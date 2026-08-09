@@ -19,8 +19,8 @@ test("Arabic typography clamps unsafe preferences", () => {
   assert.equal(clampArabicFontSize("invalid"), 25);
 });
 
-test("Arabic typography scales progressively with the connected device", () => {
-  const widths = [390, 820, 1280, 1440];
+test("Arabic typography scales progressively with the connected device (Phone, Tablet, Desktop)", () => {
+  const widths = [390, 820, 1280];
   const sizes = widths.map((viewportWidth) =>
     getResponsiveArabicFontSize({
       preferredSize: 25,
@@ -29,7 +29,7 @@ test("Arabic typography scales progressively with the connected device", () => {
     }),
   );
 
-  assert.deepEqual(sizes, [24, 27, 31, 34]);
+  assert.deepEqual(sizes, [24, 34, 42]);
   for (let index = 1; index < sizes.length; index += 1) {
     assert.ok(sizes[index] > sizes[index - 1]);
   }
@@ -38,7 +38,7 @@ test("Arabic typography scales progressively with the connected device", () => {
 test("Arabic typography preserves user reductions and increases on every device", () => {
   for (const viewportWidth of [390, 820, 1440]) {
     const small = getResponsiveArabicFontSize({
-      preferredSize: 20,
+      preferredSize: 18,
       viewportWidth,
       mushafLayout: "list",
     });
@@ -48,7 +48,7 @@ test("Arabic typography preserves user reductions and increases on every device"
       mushafLayout: "list",
     });
     const large = getResponsiveArabicFontSize({
-      preferredSize: 40,
+      preferredSize: 45,
       viewportWidth,
       mushafLayout: "list",
     });
@@ -65,7 +65,7 @@ test("Mushaf typography stays responsive without exceeding layout safety caps", 
       viewportWidth: 390,
       mushafLayout: "mushaf",
     }),
-    30,
+    72,
   );
   assert.equal(
     getResponsiveArabicFontSize({
@@ -73,7 +73,7 @@ test("Mushaf typography stays responsive without exceeding layout safety caps", 
       viewportWidth: 520,
       mushafLayout: "mushaf",
     }),
-    34,
+    80,
   );
   assert.equal(
     getResponsiveArabicFontSize({
@@ -81,7 +81,7 @@ test("Mushaf typography stays responsive without exceeding layout safety caps", 
       viewportWidth: 1440,
       mushafLayout: "mushaf",
     }),
-    52,
+    96,
   );
 });
 

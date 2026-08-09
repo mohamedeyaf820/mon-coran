@@ -20,41 +20,39 @@ export function getResponsiveArabicFontSize({
   viewportWidth,
   mushafLayout = "list",
 }) {
-  const baseSize = clampArabicFontSize(preferredSize);
+  const baseUserPreference = clampArabicFontSize(preferredSize);
+  const offset = baseUserPreference - 25; // Delta relative to neutral 25px default
   const width = Number.isFinite(Number(viewportWidth))
     ? Number(viewportWidth)
     : 1024;
 
-  let deviceScale;
+  let deviceBaseline;
   let deviceMaximum;
 
-  if (width <= 420) {
-    deviceScale = 0.76;
-    deviceMaximum = mushafLayout === "mushaf" ? 36 : 56;
-  } else if (width <= 640) {
-    deviceScale = 0.80;
-    deviceMaximum = mushafLayout === "mushaf" ? 40 : 64;
-  } else if (mushafLayout === "mushaf") {
-    // Mushaf container is capped at 760px on all desktop/tablet widths.
-    // Scaling up the font would only reduce words-per-line and create justify
-    // gaps. Keep scale at 1.0 so the user's preference maps 1-to-1.
-    deviceScale = 1.0;
-    deviceMaximum = 52;
+  if (width <= 480) {
+    // Phone tier: compact 24px baseline
+    deviceBaseline = 24;
+    deviceMaximum = 72;
+  } else if (width <= 768) {
+    // Mobile landscape / Mini tablet tier: 28px baseline
+    deviceBaseline = 28;
+    deviceMaximum = 80;
   } else if (width <= 1024) {
-    deviceScale = 1.08;
-    deviceMaximum = 76;
-  } else if (width < 1440) {
-    deviceScale = 1.24;
+    // Tablet tier: 34px baseline
+    deviceBaseline = 34;
     deviceMaximum = 88;
   } else {
-    deviceScale = 1.34;
+    // Desktop tier: large 42px baseline (style Quran.com)
+    deviceBaseline = 42;
     deviceMaximum = 96;
   }
 
   const layoutScale = mushafLayout === "mushaf" ? 0.94 : 1;
+  const targetSize = Math.round((deviceBaseline + offset) * layoutScale);
+
   return Math.max(
     ARABIC_FONT_SIZE_MIN,
-    Math.min(deviceMaximum, Math.round(baseSize * deviceScale * layoutScale)),
+    Math.min(deviceMaximum, targetSize),
   );
 }
 
