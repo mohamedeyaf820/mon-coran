@@ -39,7 +39,7 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   min-height: 0 !important;
   margin-inline: auto !important;
   padding: var(--mushaf-page-pad) !important;
-  overflow: visible !important;
+  overflow: hidden !important;
   border: 1px solid var(--mushaf-rule) !important;
   border-radius: clamp(1rem, 2vw, 1.5rem) !important;
   background:
@@ -344,7 +344,7 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
 
 @media (max-width: 640px) {
   .mushaf-page-wrapper {
-    --mushaf-page-pad: 0.9rem 0.78rem 1.05rem;
+    --mushaf-page-pad: 1rem 1.5rem 1.1rem;
     --mushaf-title-min: min(58vw, 11.5rem);
     --mushaf-basmala-size: clamp(1.65rem, 8vw, 2.1rem);
     --mushaf-text-leading: 2.18;
