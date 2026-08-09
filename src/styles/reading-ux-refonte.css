@@ -28,15 +28,15 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
   padding-top: 0 !important;
 }
 
-.app-root[data-view="reading"] .quran-display--platform :is(.qc-surah-header-wrap, .reader-toolbar, .mode-nav, .warsh-notice) {
-  width: var(--reader-content-max) !important;
-  max-width: var(--reader-content-max) !important;
+html body .app-root[data-view="reading"] .quran-display--platform :is(.qc-surah-header-wrap, .reader-toolbar, .mode-nav, .warsh-notice) {
+  width: min(100%, 62rem) !important;
+  max-width: min(100%, 62rem) !important;
   margin-inline: auto !important;
 }
 
-.app-root[data-view="reading"] .quran-display--platform > .tajweed-legend {
-  width: min(100%, 1120px) !important;
-  max-width: min(100%, 1120px) !important;
+html body .app-root[data-view="reading"] .quran-display--platform > .tajweed-legend {
+  width: min(100%, 62rem) !important;
+  max-width: min(100%, 62rem) !important;
   margin-inline: auto !important;
 }
 
