@@ -550,148 +550,6 @@ body {
     --transition-slow: var(--t-slow);
 
 
-    --mushaf-frame-outer: rgba(184, 134, 11, 0.15);
-    --mushaf-frame-inner: rgba(184, 134, 11, 0.08);
-    --mushaf-pattern: none;
-    --ink-3: #887d6e;
-    --ink-4: #574f44;
-    --parchment-1: #111009;
-    --parchment-2: #1a1710;
-    --parchment-3: #242018;
-    --parchment-4: #302c22;
-
-    --emerald: #105a30;
-    --emerald-mid: #0d4a28;
-    --emerald-lit: #15733f;
-    --emerald-pale: #f0f7f3;
-    --emerald-tint: rgba(42, 158, 94, 0.1);
-
-
-    --gold: #c8980e;
-    --gold-bright: #e0b424;
-    --gold-pale: #1c1804;
-    --gold-tint: rgba(200, 152, 14, 0.12);
-
-    --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.4);
-    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.55), 0 2px 4px rgba(0, 0, 0, 0.35);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.4);
-    --shadow-xl:
-        0 16px 48px rgba(0, 0, 0, 0.65), 0 8px 16px rgba(0, 0, 0, 0.45);
-    --shadow-gold: 0 4px 16px rgba(200, 152, 14, 0.22);
-    --shadow-emerald: 0 4px 16px rgba(42, 158, 94, 0.2);
-
-    --header-bg: linear-gradient(160deg, #090e09 0%, #0e1f12 55%, #0a1a0e 100%);
-    --header-glass: linear-gradient(
-        135deg,
-        rgba(9, 14, 9, 0.96) 0%,
-        rgba(14, 31, 18, 0.94) 50%,
-        rgba(10, 26, 14, 0.96) 100%
-    );
-    --header-border: rgba(200, 152, 14, 0.3);
-    --sidebar-bg: var(--parchment-2);
-    --player-bg: linear-gradient(160deg, #090e09 0%, #0e1f12 100%);
-    --player-glass: linear-gradient(
-        120deg,
-        #090e09 0%,
-        #0e1f12 50%,
-        #060d09 100%
-    );
-
-    --text-quran: #ede8db;
-    --mushaf-bg: #1a1710;
-    --mushaf-border: #3e3828;
-    --ayah-hover: rgba(42, 158, 94, 0.07);
-    --ayah-playing-bg: rgba(200, 152, 14, 0.09);
-    --bismillah-color: var(--gold);
-    --surah-header-bg: linear-gradient(
-        135deg,
-        #090e09 0%,
-        #0e2016 60%,
-        #0a1a0e 100%
-    );
-
-    --scrollbar-thumb: rgba(42, 158, 94, 0.3);
-
-    --primary: var(--emerald);
-    --primary-dark: #090e09;
-    --primary-light: var(--emerald-pale);
-    --primary-rgb: 42, 158, 94;
-
-    --accent: var(--emerald);
-    --accent-light: var(--emerald-pale);
-    --accent-dark: #090e09;
-
-    --color-emerald: var(--emerald);
-    --color-emerald-light: var(--emerald-pale);
-    --color-emerald-dark: #090e09;
-    --color-gold: var(--gold);
-    --color-gold-light: var(--gold-pale);
-    --color-gold-dark: #a07808;
-    --color-amber: var(--gold);
-
-    --gold-alpha: rgba(200, 152, 14, 0.12);
-    --gold-strong: rgba(200, 152, 14, 0.24);
-    --gold-border: rgba(200, 152, 14, 0.3);
-    --gold-light: rgba(200, 152, 14, 0.06);
-
-    --glass-bg: rgba(17, 16, 9, 0.9);
-    --glass-border: rgba(255, 255, 255, 0.07);
-
-    --bg: var(--parchment-1);
-    --bg-primary: #121212;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #242424;
-    --bg-card: #1a1710;
-    --bg-overlay: rgba(0, 0, 0, 0.75);
-    --surface: #1a1710;
-
-    --border: #2d2d2d;
-    --border-subtle: #242424;
-    --border-light: rgba(62, 56, 40, 0.35);
-    --border-strong: rgba(62, 56, 40, 0.9);
-    --divider: rgba(62, 56, 40, 0.4);
-
-    --text-primary: var(--ink-1);
-    --text-secondary: var(--ink-2);
-    --text-tertiary: var(--ink-3);
-    --text-muted: #9ca3af;
-    --text-inverse: #080804;
-    --text: #f3f4f6;
-
-    --primary-on: rgba(255, 255, 255, 1);
-    --primary-on-muted: rgba(255, 255, 255, 0.7);
-    --primary-on-alpha: rgba(255, 255, 255, 0.06);
-
-    --hover-bg: rgba(42, 158, 94, 0.08);
-    --active-bg: rgba(42, 158, 94, 0.15);
-    --highlight-bg: rgba(200, 152, 14, 0.09);
-    --focus-ring: 0 0 0 3px rgba(42, 158, 94, 0.3);
-
-    --mushaf-frame-outer: rgba(200, 152, 14, 0.12);
-    --mushaf-frame-inner: rgba(200, 152, 14, 0.06);
-
-
-    --tajwid-silent: #999999;
-    --tajwid-lam-shamsiyya: #999999;
-    --tajwid-madd-normal: #ffc1e0;
-    --tajwid-madd: #e30000;
-    --tajwid-madd-separated: #ff8e3b;
-    --tajwid-madd-connected: #ff5e8e;
-    --tajwid-madd-necessary: #e30000;
-    --tajwid-madd-badal: #ff8e3b;
-    --tajwid-ghunna: #26b55d;
-    --tajwid-idgham: #26b55d;
-    --tajwid-ikhfa: #26b55d;
-    --tajwid-iqlab: #26b55d;
-    --tajwid-qalqala: #00deff;
-    --tajwid-tafkhim: #3c84d5;
-    --tajwid-naql: #ff8e3b;
-    --tajwid-tashil: #26b55d;
-    --tajwid-ibdal: #ff8e3b;
-    --tajwid-sila-kubra: #ff8e3b;
-    --tajwid-tarqiq-ra: #26b55d;
-    --tajwid-idgham-warsh: #999999;
 }
 
 [data-theme="sepia"] {
@@ -831,6 +689,146 @@ body {
 }
 
 [data-theme="dark"] {
+    --mushaf-frame-outer: rgba(184, 134, 11, 0.15);
+    --mushaf-frame-inner: rgba(184, 134, 11, 0.08);
+    --mushaf-pattern: none;
+    --ink-3: #887d6e;
+    --ink-4: #574f44;
+    --parchment-1: #111009;
+    --parchment-2: #1a1710;
+    --parchment-3: #242018;
+    --parchment-4: #302c22;
+
+    --emerald: #105a30;
+    --emerald-mid: #0d4a28;
+    --emerald-lit: #15733f;
+    --emerald-pale: #f0f7f3;
+    --emerald-tint: rgba(42, 158, 94, 0.1);
+
+    --gold: #c8980e;
+    --gold-bright: #e0b424;
+    --gold-pale: #1c1804;
+    --gold-tint: rgba(200, 152, 14, 0.12);
+
+    --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.55), 0 2px 4px rgba(0, 0, 0, 0.35);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6), 0 4px 8px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.65), 0 8px 16px rgba(0, 0, 0, 0.45);
+    --shadow-gold: 0 4px 16px rgba(200, 152, 14, 0.22);
+    --shadow-emerald: 0 4px 16px rgba(42, 158, 94, 0.2);
+
+    --header-bg: linear-gradient(160deg, #090e09 0%, #0e1f12 55%, #0a1a0e 100%);
+    --header-glass: linear-gradient(
+        135deg,
+        rgba(9, 14, 9, 0.96) 0%,
+        rgba(14, 31, 18, 0.94) 50%,
+        rgba(10, 26, 14, 0.96) 100%
+    );
+    --header-border: rgba(200, 152, 14, 0.3);
+    --sidebar-bg: var(--parchment-2);
+    --player-bg: linear-gradient(160deg, #090e09 0%, #0e1f12 100%);
+    --player-glass: linear-gradient(
+        120deg,
+        #090e09 0%,
+        #0e1f12 50%,
+        #060d09 100%
+    );
+
+    --text-quran: #ede8db;
+    --mushaf-bg: #1a1710;
+    --mushaf-border: #3e3828;
+    --ayah-hover: rgba(42, 158, 94, 0.07);
+    --ayah-playing-bg: rgba(200, 152, 14, 0.09);
+    --bismillah-color: var(--gold);
+    --surah-header-bg: linear-gradient(
+        135deg,
+        #090e09 0%,
+        #0e2016 60%,
+        #0a1a0e 100%
+    );
+
+    --scrollbar-thumb: rgba(42, 158, 94, 0.3);
+
+    --primary: var(--emerald);
+    --primary-dark: #090e09;
+    --primary-light: var(--emerald-pale);
+    --primary-rgb: 42, 158, 94;
+
+    --accent: var(--emerald);
+    --accent-light: var(--emerald-pale);
+    --accent-dark: #090e09;
+
+    --color-emerald: var(--emerald);
+    --color-emerald-light: var(--emerald-pale);
+    --color-emerald-dark: #090e09;
+    --color-gold: var(--gold);
+    --color-gold-light: var(--gold-pale);
+    --color-gold-dark: #a07808;
+    --color-amber: var(--gold);
+
+    --gold-alpha: rgba(200, 152, 14, 0.12);
+    --gold-strong: rgba(200, 152, 14, 0.24);
+    --gold-border: rgba(200, 152, 14, 0.3);
+    --gold-light: rgba(200, 152, 14, 0.06);
+
+    --glass-bg: rgba(17, 16, 9, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.07);
+
+    --bg: var(--parchment-1);
+    --bg-primary: #121212;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #242424;
+    --bg-card: #1a1710;
+    --bg-overlay: rgba(0, 0, 0, 0.75);
+    --surface: #1a1710;
+
+    --border: #2d2d2d;
+    --border-subtle: #242424;
+    --border-light: rgba(62, 56, 40, 0.35);
+    --border-strong: rgba(62, 56, 40, 0.9);
+    --divider: rgba(62, 56, 40, 0.4);
+
+    --text-primary: var(--ink-1);
+    --text-secondary: var(--ink-2);
+    --text-tertiary: var(--ink-3);
+    --text-muted: #9ca3af;
+    --text-inverse: #080804;
+    --text: #f3f4f6;
+
+    --primary-on: rgba(255, 255, 255, 1);
+    --primary-on-muted: rgba(255, 255, 255, 0.7);
+    --primary-on-alpha: rgba(255, 255, 255, 0.06);
+
+    --hover-bg: rgba(42, 158, 94, 0.08);
+    --active-bg: rgba(42, 158, 94, 0.15);
+    --highlight-bg: rgba(200, 152, 14, 0.09);
+    --focus-ring: 0 0 0 3px rgba(42, 158, 94, 0.3);
+
+    --mushaf-frame-outer: rgba(200, 152, 14, 0.12);
+    --mushaf-frame-inner: rgba(200, 152, 14, 0.06);
+
+    --tajwid-silent: #999999;
+    --tajwid-lam-shamsiyya: #999999;
+    --tajwid-madd-normal: #ffc1e0;
+    --tajwid-madd: #e30000;
+    --tajwid-madd-separated: #ff8e3b;
+    --tajwid-madd-connected: #ff5e8e;
+    --tajwid-madd-necessary: #e30000;
+    --tajwid-madd-badal: #ff8e3b;
+    --tajwid-ghunna: #26b55d;
+    --tajwid-idgham: #26b55d;
+    --tajwid-ikhfa: #26b55d;
+    --tajwid-iqlab: #26b55d;
+    --tajwid-qalqala: #00deff;
+    --tajwid-tafkhim: #3c84d5;
+    --tajwid-naql: #ff8e3b;
+    --tajwid-tashil: #26b55d;
+    --tajwid-ibdal: #ff8e3b;
+    --tajwid-sila-kubra: #ff8e3b;
+    --tajwid-tarqiq-ra: #26b55d;
+    --tajwid-idgham-warsh: #999999;
+
     --emerald-subtle: rgba(196, 219, 208, 0.12);
     --reading-surface-soft: #151719;
     --reading-surface-elevated: #0c0d0e;
