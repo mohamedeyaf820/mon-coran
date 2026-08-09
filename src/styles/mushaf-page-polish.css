@@ -10,7 +10,7 @@
   --mushaf-page-pad: clamp(1.35rem, 3vw, 2rem) clamp(1.1rem, 5vw, 3.25rem) clamp(1.3rem, 3vw, 2rem);
   --mushaf-title-min: clamp(10.5rem, 32vw, 14rem);
   --mushaf-basmala-size: clamp(2rem, 1.65rem + 1.4vw, 2.7rem);
-  --mushaf-text-leading: clamp(2.1, var(--cpv-line-height, 2.32), 2.46);
+  --mushaf-text-leading: var(--cpv-line-height, 1.65);
 }
 
 html[data-theme="dark"] .mushaf-page-wrapper {
@@ -259,7 +259,7 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   color: var(--mushaf-ink) !important;
   font-family: var(--qd-font-family, var(--font-quran), serif) !important;
   font-size: var(--qd-reading-font-size, 34px) !important;
-  line-height: var(--mushaf-text-leading) !important;
+  line-height: var(--cpv-line-height, 1.65) !important;
   word-spacing: 0 !important;
   text-align: right !important;
   text-rendering: optimizeLegibility;
@@ -377,7 +377,7 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
 }
 @media (max-width: 640px) {
   .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
-    line-height: 2.1 !important;
+    line-height: var(--mushaf-text-leading, 1.65) !important;
   }
 
   .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block

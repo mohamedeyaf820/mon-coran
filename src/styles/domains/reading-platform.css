@@ -2382,7 +2382,7 @@ html body .app-root .quran-display--platform .mushaf-text-block {
     text-align: right !important;
     font-family: var(--quran-font-family) !important;
     font-size: var(--quran-font-size) !important;
-    line-height: 2.6 !important;
+    line-height: var(--mushaf-text-leading, 1.65) !important;
     color: var(--text-primary, #1a1a1a) !important;
     background: transparent !important;
     letter-spacing: 0 !important;
