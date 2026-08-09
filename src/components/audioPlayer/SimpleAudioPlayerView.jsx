@@ -99,17 +99,23 @@ function TrackMeta({
   currentAyahPreview,
   reciterLabel,
   riwaya,
+  surahNum,
   title,
 }) {
+  const surahLigature = surahNum ? String(surahNum).padStart(3, "0") : null;
   return (
     <div className="simple-player__meta">
       <div className="simple-player__eyebrow">
         <span className="simple-player__riwaya">{riwaya === "warsh" ? "Warsh" : "Hafs"}</span>
-        {currentArabicName && (
+        {surahLigature ? (
+          <span className="simple-player__surah-ar font-surah-names" dir="ltr" lang="en" aria-hidden="true">
+            {surahLigature}
+          </span>
+        ) : currentArabicName ? (
           <span className="simple-player__surah-ar" dir="rtl" lang="ar">
             {currentArabicName}
           </span>
-        )}
+        ) : null}
       </div>
       <strong className="simple-player__title">{title}</strong>
       <span className="simple-player__reciter">{reciterLabel || "—"}</span>
@@ -188,7 +194,11 @@ function CompactPlayer(props) {
           )}
           <span className="simple-player__compact-meta-text">
             <strong>{title}</strong>
-            <span className="simple-player__compact-ar-name" dir="rtl" lang="ar">{currentArabicName}</span>
+            {surahLigature ? (
+              <span className="simple-player__compact-ar-name font-surah-names" dir="ltr" lang="en" aria-hidden="true">{surahLigature}</span>
+            ) : currentArabicName ? (
+              <span className="simple-player__compact-ar-name" dir="rtl" lang="ar">{currentArabicName}</span>
+            ) : null}
             <span className="simple-player__compact-reciter">{reciterLabel || "—"}</span>
           </span>
         </button>
@@ -260,9 +270,13 @@ function MobileOpenPlayer(props) {
         <div className="simple-player__mobile-meta">
           <span className="simple-player__mobile-kicker">
             {riwaya === "warsh" ? "Warsh" : "Hafs"}
-            {currentArabicName && (
+            {props.surahNum ? (
+              <b className="font-surah-names simple-player__mobile-surah-glyph" dir="ltr" lang="en" aria-hidden="true">
+                {String(props.surahNum).padStart(3, "0")}
+              </b>
+            ) : currentArabicName ? (
               <b dir="rtl" lang="ar">{currentArabicName}</b>
-            )}
+            ) : null}
           </span>
           <strong>{title}</strong>
           <span>{reciterLabel || "—"}</span>
@@ -380,6 +394,7 @@ function OpenPlayer(props) {
     regionLabel,
     riwaya,
     speedLabel,
+    surahNum,
     title,
   } = props;
 
@@ -430,6 +445,7 @@ function OpenPlayer(props) {
           currentAyahPreview={currentAyahPreview}
           reciterLabel={reciterLabel}
           riwaya={riwaya}
+          surahNum={surahNum}
           title={title}
         />
       </div>
