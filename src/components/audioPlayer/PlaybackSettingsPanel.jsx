@@ -1,5 +1,5 @@
 import React from "react";
-import { Gauge, Volume2, VolumeX, Volume1, Square, VolumeOff } from "lucide-react";
+import { Gauge, SlidersHorizontal, Volume2, Volume1, Square, VolumeOff } from "lucide-react";
 import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 
@@ -70,7 +70,7 @@ function makeLabels(lang) {
         ? "Ce r\u00e9citateur lit la sourate compl\u00e8te, donc la synchro mot \u00e0 mot n'est pas utilis\u00e9e."
         : lang === "ar"
           ? "\u0647\u0630\u0627 \u0627\u0644\u0642\u0627\u0631\u0626 \u064a\u0634\u063a\u0644 \u0627\u0644\u0633\u0648\u0631\u0629 \u0643\u0627\u0645\u0644\u0629\u060c \u0644\u0630\u0644\u0643 \u0644\u0627 \u062a\u0633\u062a\u062e\u062f\u0645 \u0645\u0632\u0627\u0645\u0646\u0629 \u0643\u0644\u0645\u0629 \u0628\u0643\u0644\u0645\u0629."
-          : "This reciter plays the full surah, so word-by-word sync is not used.",
+          : "This reciter plays the full surah, so precise verse synchronization is unavailable.",
     syncHint:
       lang === "fr"
         ? "Le suivi des versets est automatique. La calibration est m\u00e9moris\u00e9e par r\u00e9citateur."
@@ -93,11 +93,9 @@ export default function PlaybackSettingsPanel(props) {
     closeOptionsModal,
     cycleSpeed,
     handleVolumeChange,
+    isMobile,
     isSurahStreamReciter,
     lang,
-    memMode,
-    memPause,
-    memRepeatCount,
     playerCardToggleClass,
     playerFadedTextClass,
     playerGoldMetaClass,
@@ -107,10 +105,8 @@ export default function PlaybackSettingsPanel(props) {
     playerSectionLabelClass,
     playerSoftSurfaceClass,
     playerSurfaceButtonClass,
-    set,
     setSurahRepeatSetting,
     setSyncOffsetMs,
-    showMemorizationControls,
     stop,
     surahRepeatCount,
     syncOffsetMs,
@@ -128,6 +124,28 @@ export default function PlaybackSettingsPanel(props) {
       )}
       data-scroll-panel="true"
     >
+      <div className="audio-settings-intro">
+        <span className="audio-settings-intro__icon" aria-hidden="true">
+          <SlidersHorizontal size={15} />
+        </span>
+        <span>
+          <strong>
+            {lang === "fr"
+              ? "Réglages audio avancés"
+              : lang === "ar"
+                ? "إعدادات الصوت المتقدمة"
+                : "Advanced audio settings"}
+          </strong>
+          <small>
+            {lang === "fr"
+              ? "Ajustez la lecture sans quitter votre verset."
+              : lang === "ar"
+                ? "اضبط التشغيل دون مغادرة الآية."
+                : "Tune playback without leaving your verse."}
+          </small>
+        </span>
+      </div>
+
       <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -192,34 +210,36 @@ export default function PlaybackSettingsPanel(props) {
         </p>
       </div>
 
-      <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <span className={playerSectionLabelClass}>{labels.volume}</span>
-          <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums")}>
-            {Math.round(volume * 100)}%
-          </span>
+      {!isMobile && (
+        <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <span className={playerSectionLabelClass}>{labels.volume}</span>
+            <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums")}>
+              {Math.round(volume * 100)}%
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => handleVolumeChange(volume > 0 ? 0 : 1)}
+              className="audio-settings-icon-btn h-8 w-8 shrink-0 rounded-lg border border-white/12 bg-white/[0.06] text-[0.8rem] text-[rgba(132,205,228,0.9)] transition-colors duration-150 hover:bg-[rgba(110,204,233,0.14)]"
+              aria-label={labels.mute}
+            >
+              {volume === 0 ? <VolumeOff size={13} /> : volume < 0.5 ? <Volume1 size={13} /> : <Volume2 size={13} />}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={volume}
+              onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+              className="h-1.5 flex-1 cursor-pointer rounded-full accent-[rgb(110,204,233)]"
+              aria-label={labels.volume}
+            />
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => handleVolumeChange(volume > 0 ? 0 : 1)}
-            className="audio-settings-icon-btn h-8 w-8 shrink-0 rounded-lg border border-white/12 bg-white/[0.06] text-[0.8rem] text-[rgba(132,205,228,0.9)] transition-colors duration-150 hover:bg-[rgba(110,204,233,0.14)]"
-            aria-label={labels.mute}
-          >
-            {volume === 0 ? <VolumeOff size={13} /> : volume < 0.5 ? <Volume1 size={13} /> : <Volume2 size={13} />}
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={volume}
-            onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-            className="h-1.5 flex-1 cursor-pointer rounded-full accent-[rgb(110,204,233)]"
-            aria-label={labels.volume}
-          />
-        </div>
-      </div>
+      )}
 
       <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
         <div className="mb-2 flex items-center justify-between gap-2">
@@ -254,46 +274,6 @@ export default function PlaybackSettingsPanel(props) {
           {isSurahStreamReciter ? labels.syncDisabled : labels.syncHint}
         </p>
       </div>
-
-      {showMemorizationControls && memMode && (
-        <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
-          <div className={playerSectionLabelClass}>
-            {t("audio.memorization", lang)}
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <label className="flex items-center gap-1.5">
-              <span className={cn(playerMutedTextClass, "text-[0.68rem]")}>
-                {t("audio.repeat", lang)}
-              </span>
-              <input
-                type="number"
-                min={1}
-                max={100}
-                value={memRepeatCount}
-                onChange={(e) =>
-                  set({ memRepeatCount: parseInt(e.target.value, 10) || 1 })
-                }
-                className={playerNumberInputClass}
-              />
-            </label>
-            <label className="flex items-center gap-1.5">
-              <span className={cn(playerMutedTextClass, "text-[0.68rem]")}>
-                {`${t("audio.pause", lang)} (s)`}
-              </span>
-              <input
-                type="number"
-                min={0}
-                max={60}
-                value={memPause}
-                onChange={(e) =>
-                  set({ memPause: parseInt(e.target.value, 10) || 0 })
-                }
-                className={playerNumberInputClass}
-              />
-            </label>
-          </div>
-        </div>
-      )}
 
       <div className="audio-settings-actions flex flex-wrap items-center gap-2 pb-1">
         <button

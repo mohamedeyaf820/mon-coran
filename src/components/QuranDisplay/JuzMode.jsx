@@ -1,13 +1,13 @@
 import React, { memo, useMemo } from "react";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
-import CleanPageView from "../Quran/CleanPageView";
 import ReadingToolbar from "../Quran/ReadingToolbar";
 import ReadingProgressBar from "../Quran/ReadingProgressBar";
 import AyahActionsModal from "./AyahActionsModal";
 import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
 import ReaderContextCard from "./ReaderContextCard";
+import VirtualizedMushafPages from "./VirtualizedMushafPages";
 import { modePaneShellClass } from "./displayClasses";
 
 function JuzMode({
@@ -19,17 +19,13 @@ function JuzMode({
   getTranslationForAyah,
   isQCF4,
   lang,
-  memMode,
   mushafLayout,
-  onNavigateToAyah,
   onNextJuz,
   onPlayJuz,
   onPlaySpecificSurah,
   onPrevJuz,
   onToggleActive,
-  onToggleMemorization,
   onToggleMushaf,
-  onToggleWordByWord,
   pageGroups = [],
   preparingSurah,
   readingFontSize,
@@ -37,8 +33,6 @@ function JuzMode({
   showTajwid,
   showTranslation,
   showTransliteration,
-  showWordByWord,
-  showWordTranslation,
   surahGroups,
 }) {
   const activeAyahEntry = useMemo(() =>
@@ -86,43 +80,34 @@ function JuzMode({
         playLabel={lang === "fr" ? "Écouter le juz" : "Listen juz"}
         preparingSurah={preparingSurah}
         surahNum={firstSurah}
-        currentAyah={activeAyah || 1}
-        onNavigateToAyah={onNavigateToAyah}
         onToggleMushaf={onToggleMushaf}
-        onToggleMemorization={onToggleMemorization}
-        onToggleWordByWord={onToggleWordByWord}
       />
 
       {mushafLayout === "mushaf" ? (
         <>
-          {pageGroups.map((group, index) => (
-            <CleanPageView
-              key={`cpv-jz-pg-${group.page}-${index}`}
-              ayahs={group.ayahs}
-              lang={lang}
-              fontSize={readingFontSize}
-              isQCF4={isQCF4}
-              showTajwid={showTajwid}
-              currentPlayingAyah={currentPlayingAyah}
-              surahNum={group.ayahs[0]?.surah?.number || group.ayahs[0]?.surah || firstSurah}
-              calibration={calibration}
-              riwaya={riwaya}
-              showTranslation={showTranslation}
-              getTranslation={getTranslationForAyah}
-              onAyahClick={onToggleActive}
-              activeAyah={activeAyah}
-              getAyahToggleId={(ayah) => ayah.number}
-              showSurahHeader={true}
-              showWordByWord={showWordByWord}
-              showWordTranslation={showWordTranslation}
-              showTransliteration={showTransliteration}
-            />
-          ))}
+          <VirtualizedMushafPages
+            activeAyah={activeAyah}
+            calibration={calibration}
+            currentPlayingAyah={currentPlayingAyah}
+            fallbackSurah={firstSurah}
+            getTranslation={getTranslationForAyah}
+            isQCF4={isQCF4}
+            lang={lang}
+            mode="juz"
+            onAyahClick={onToggleActive}
+            pageGroups={pageGroups}
+            readingFontSize={readingFontSize}
+            riwaya={riwaya}
+            showTajwid={showTajwid}
+            showTranslation={showTranslation}
+            showTransliteration={showTransliteration}
+          />
           <AyahActionsModal
             activeAyah={activeAyah}
             onClose={() => onToggleActive(null)}
             surah={activeAyahData?.surah?.number || activeAyahEntry?.surah}
             ayahData={activeAyahData}
+            translations={activeAyahData ? getTranslationForAyah?.(activeAyahData) : []}
           />
         </>
       ) : (
@@ -134,13 +119,10 @@ function JuzMode({
           getTranslationForAyah={getTranslationForAyah}
           showTajwid={showTajwid}
           showTranslation={showTranslation}
-          showWordByWord={showWordByWord}
           showTransliteration={showTransliteration}
-          showWordTranslation={showWordTranslation}
           calibration={calibration}
           riwaya={riwaya}
           fontSize={readingFontSize}
-          memMode={memMode}
           onToggleActive={onToggleActive}
           displayMode="juz"
           showPageSeparators

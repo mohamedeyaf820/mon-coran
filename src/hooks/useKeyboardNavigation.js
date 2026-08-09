@@ -124,17 +124,8 @@ export function useKeyboardNavigation({
     const closeActions = [
       { condition: latest.state.searchOpen, action: () => dispatch({ type: "TOGGLE_SEARCH" }) },
       { condition: latest.state.settingsOpen, action: () => dispatch({ type: "TOGGLE_SETTINGS" }) },
-      { condition: latest.state.bookmarksOpen, action: () => dispatch({ type: "TOGGLE_BOOKMARKS" }) },
-      { condition: latest.state.wirdOpen, action: () => set({ wirdOpen: false }) },
-      { condition: latest.state.historyOpen, action: () => set({ historyOpen: false }) },
-      { condition: latest.state.playlistOpen, action: () => set({ playlistOpen: false }) },
-      { condition: latest.state.audioMakerOpen, action: () => set({ audioMakerOpen: false }) },
-      { condition: latest.state.flashcardsOpen, action: () => set({ flashcardsOpen: false }) },
-      { condition: latest.state.tajweedQuizOpen, action: () => set({ tajweedQuizOpen: false }) },
-      { condition: latest.state.khatmaOpen, action: () => set({ khatmaOpen: false }) },
-      { condition: latest.state.comparatorOpen, action: () => set({ comparatorOpen: false }) },
+      { condition: latest.state.libraryOpen, action: () => dispatch({ type: "TOGGLE_LIBRARY" }) },
       { condition: latest.state.shareImageOpen, action: () => set({ shareImageOpen: false }) },
-      { condition: latest.state.weeklyStatsOpen, action: () => set({ weeklyStatsOpen: false }) },
       { condition: latest.showShortcuts, action: () => setShowShortcuts(false) },
       { condition: latest.sidebarOpen, action: () => dispatch({ type: "TOGGLE_SIDEBAR" }) },
     ];
@@ -145,9 +136,7 @@ export function useKeyboardNavigation({
 
   const handlePlayPause = useCallback(() => {
     const { state: s } = latestRef.current;
-    const modalOpen = s.searchOpen || s.settingsOpen || s.bookmarksOpen || s.wirdOpen ||
-      s.historyOpen || s.playlistOpen || s.audioMakerOpen || s.flashcardsOpen ||
-      s.tajweedQuizOpen || s.khatmaOpen || s.comparatorOpen || s.shareImageOpen || s.weeklyStatsOpen;
+    const modalOpen = s.searchOpen || s.settingsOpen || s.libraryOpen || s.shareImageOpen;
     if (modalOpen) return;
     loadAudioService()
       .then((audioService) => audioService.toggle())
@@ -163,21 +152,10 @@ export function useKeyboardNavigation({
     set({ showTranslation: !s.showTranslation });
   }, [set]);
 
-  const handleToggleWordByWord = useCallback(() => {
-    const { state: s } = latestRef.current;
-    if (s.riwaya === "warsh") return;
-    set({ showWordByWord: !s.showWordByWord, memMode: false });
-  }, [set]);
-
   const handleToggleTajweed = useCallback(() => {
     const { state: s } = latestRef.current;
     set({ showTajwid: !s.showTajwid });
   }, [set]);
-
-  const handleToggleMemorization = useCallback(() => {
-    // Use the dedicated reducer to ensure showHome/showDuas are also reset
-    dispatch({ type: "TOGGLE_MEM_MODE" });
-  }, [dispatch]);
 
   const handleKeyboard = useCallback(
     (event) => {
@@ -203,25 +181,11 @@ export function useKeyboardNavigation({
             handleToggleTranslation();
           }
           break;
-        case "w":
-        case "W":
-          if (!event.ctrlKey && !event.metaKey) {
-            event.preventDefault();
-            handleToggleWordByWord();
-          }
-          break;
         case "j":
         case "J":
           if (!event.ctrlKey && !event.metaKey) {
             event.preventDefault();
             handleToggleTajweed();
-          }
-          break;
-        case "m":
-        case "M":
-          if (event.altKey && !event.ctrlKey && !event.metaKey) {
-            event.preventDefault();
-            handleToggleMemorization();
           }
           break;
         case "ArrowUp":
@@ -251,7 +215,7 @@ export function useKeyboardNavigation({
           break;
       }
     },
-    [handlePrevious, handleNext, handleSearch, handleEscape, handlePlayPause, handleToggleShortcuts, handleToggleTranslation, handleToggleWordByWord, handleToggleTajweed, handleToggleMemorization],
+    [handlePrevious, handleNext, handleSearch, handleEscape, handlePlayPause, handleToggleShortcuts, handleToggleTranslation, handleToggleTajweed],
   );
 
   useEffect(() => {

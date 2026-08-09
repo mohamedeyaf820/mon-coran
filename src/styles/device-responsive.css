@@ -1,15 +1,10 @@
-/*
- * Final device contract.
- * Loaded last so every screen shares one fluid typography, spacing and touch
- * model after its feature-specific styles.
- */
-
 :root {
   --mp-fluid-gutter: clamp(0.5rem, 1.7vw, 1.5rem);
   --mp-readable-line: min(100%, 72ch);
   --mp-wide-surface: min(100%, 88rem);
   --mp-device-touch: 44px;
   --mp-device-icon: clamp(0.75rem, 0.72rem + 0.12vw, 0.88rem);
+  --mp-verse: clamp(34px, 4vw, 44px);
   --space-10: max(2.75rem, 44px);
 }
 
@@ -18,13 +13,23 @@ html body .app-root {
   --mp-device-icon: clamp(0.75rem, 0.72rem + 0.12vw, 0.88rem);
 }
 
-/* Verse actions must remain identifiable before hover in every theme. */
+html body .app-root :is(
+  .hp-card-ar,
+  .juz-card__arabic,
+  .recitation-row__arabic,
+  .surah-directory__arabic,
+  .home-today-suggestion__arabic
+) {
+  font-size: var(--mp-arabic-ui-size) !important;
+  line-height: 1.45 !important;
+}
+
 html body .app-root[data-view="reading"] .quran-display--platform
   .qc-list-card__top .ayah-actions button {
-  width: var(--mp-device-touch) !important;
-  min-width: var(--mp-device-touch) !important;
-  height: var(--mp-device-touch) !important;
-  min-height: var(--mp-device-touch) !important;
+  width: var(--mp-verse) !important;
+  min-width: var(--mp-verse) !important;
+  height: var(--mp-verse) !important;
+  min-height: var(--mp-verse) !important;
   padding: 0 !important;
   border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border) 76%) !important;
   background: color-mix(in srgb, var(--bg-card) 88%, var(--primary) 12%) !important;
@@ -35,10 +40,10 @@ html body .app-root[data-view="reading"] .quran-display--platform
 
 html body .app-root[data-view="reading"] .quran-display--platform
   .qc-list-card__top .ayah-actions button svg {
-  flex: 0 0 var(--mp-device-icon) !important;
-  width: var(--mp-device-icon) !important;
-  min-width: var(--mp-device-icon) !important;
-  height: var(--mp-device-icon) !important;
+  flex: 0 0 0.75rem !important;
+  width: 0.75rem !important;
+  min-width: 0.75rem !important;
+  height: 0.75rem !important;
   color: currentColor !important;
   stroke: currentColor !important;
   opacity: 1 !important;
@@ -93,6 +98,51 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
   box-shadow: var(--theme-shadow-soft) !important;
 }
 
+/* Reciter portraits are fixed square media, never full-card backgrounds. The
+   global responsive image rule uses height:auto, so this explicit containment
+   prevents large source portraits from covering the reciter identity. */
+html body .app-root[data-view="home"] .reciter-card__media {
+  position: relative !important;
+  overflow: hidden !important;
+  aspect-ratio: 1 !important;
+  isolation: isolate;
+  flex: 0 0 auto !important;
+  background: color-mix(in srgb, var(--theme-surface-muted, var(--bg-secondary)) 86%, var(--primary) 14%) !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__media > :is(img, span) {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+  border-radius: inherit !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__media > img {
+  object-fit: cover !important;
+  transform: scale(1.01);
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+html body .app-root[data-view="home"] .reciter-card__copy {
+  position: relative;
+  z-index: 1;
+  min-width: 0 !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .app-root[data-view="home"] .reciter-card:hover .reciter-card__media > img {
+    transform: scale(1.055);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .app-root[data-view="home"] .reciter-card__media > img {
+    transition: none;
+  }
+}
+
 @media (max-width: 1024px) {
   html body .app-root.app-root {
     --ux-card-action-size: max(2.75rem, 44px);
@@ -115,14 +165,13 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
   }
 }
 
-/* Reader density: keep the user's setting, then bound it for the device. */
 @media (max-width: 640px) {
   .app-root[data-view="reading"] .app-view-shell {
     padding-inline: max(0.25rem, env(safe-area-inset-left)) max(0.25rem, env(safe-area-inset-right)) !important;
   }
 
   html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
-    font-size: var(--qd-reading-font-size, 24px) !important;
+    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 32px) !important;
     line-height: 1.95 !important;
   }
 
@@ -131,11 +180,11 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
   }
 
   html body .app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.mushaf-text-block, .mushaf-container, .verse-text) {
-    font-size: var(--qd-reading-font-size, 22px) !important;
+    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 30px) !important;
   }
 
   html body .app-root[data-view="reading"] .qc-list-card__top {
-    min-height: 44px;
+    min-height: var(--mp-verse);
     flex-wrap: nowrap !important;
     align-items: center !important;
     gap: 0.4rem !important;
@@ -162,25 +211,26 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
     padding: 0.25rem 0.35rem !important;
   }
 
+  html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {
+    padding: var(--qd-list-card-padding-block, 0.65rem)
+      var(--qd-list-card-padding-inline, 0.72rem) !important;
+  }
+
   html body .app-root[data-view="reading"] .qc-list-card__study {
     margin-top: 0.5rem !important;
     padding-top: 0.5rem !important;
   }
 
-  html body .app-root[data-view="reading"] .qcom-list-study-link {
-    min-height: 36px !important;
-    padding-inline: 0.25rem !important;
-  }
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
   html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
-    font-size: var(--qd-reading-font-size, 30px) !important;
+    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 40px) !important;
     line-height: 2.02 !important;
   }
 
   html body .app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.mushaf-text-block, .mushaf-container, .verse-text) {
-    font-size: var(--qd-reading-font-size, 28px) !important;
+    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 38px) !important;
   }
 
   .app-root .app-view-home .hp-card-name {
@@ -190,12 +240,12 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
 
 @media (min-width: 1025px) {
   html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
-    font-size: var(--qd-reading-font-size, 34px) !important;
+    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 52px) !important;
     line-height: 2.06 !important;
   }
 
   html body .app-root[data-view="reading"] .quran-mode-pane--mushaf :is(.mushaf-text-block, .mushaf-container, .verse-text) {
-    font-size: var(--qd-reading-font-size, 32px) !important;
+    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 48px) !important;
   }
 
   html body .app-root[data-view="reading"] .qc-list-card .qc-ayah-text-ar {
@@ -210,11 +260,10 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
 
 @media (min-width: 1440px) {
   html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
-    font-size: var(--qd-reading-font-size, 36px) !important;
+    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 56px) !important;
   }
 }
 
-/* Feature pages share the same safe gutters and readable type scale. */
 @media (max-width: 640px) {
   .app-root .duas-page {
     width: 100% !important;
@@ -298,7 +347,6 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
   }
 }
 
-/* Short landscape screens: keep controls reachable without crushing content. */
 @media (max-height: 620px) and (orientation: landscape) {
   .app-root :is(.settings-drawer, .audio-player-modal__surface, .reciter-detail) {
     max-height: 100dvh !important;
@@ -321,7 +369,6 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
   }
 }
 
-/* Final measured responsive pass: preserve labels, reading comfort and touch targets. */
 .app-root .juz-card__arabic {
   font-size: clamp(1.15rem, 1.05rem + 0.45vw, 1.4rem) !important;
   line-height: 1.75 !important;
@@ -347,14 +394,17 @@ html body .settings-drawer__title {
 
   html body .app-root[data-view="home"] .reciter-card {
     grid-template-columns: minmax(0, 1fr) auto !important;
-    min-height: 4.75rem !important;
+    gap: 0.42rem !important;
+    min-height: 4.65rem !important;
+    padding: 0.42rem !important;
+    border-radius: 13px !important;
   }
 
   html body .app-root[data-view="home"] .reciter-card__main {
-    grid-template-columns: 2.5rem minmax(0, 1fr) !important;
+    grid-template-columns: 2.65rem minmax(0, 1fr) !important;
     gap: 0.5rem !important;
     min-width: 0 !important;
-    padding: 0.45rem !important;
+    padding: 0 !important;
   }
 
   html body .app-root[data-view="home"] .reciter-card__main > svg {
@@ -362,8 +412,9 @@ html body .settings-drawer__title {
   }
 
   html body .app-root[data-view="home"] .reciter-card__media {
-    width: 2.5rem !important;
-    height: 2.5rem !important;
+    width: 2.65rem !important;
+    height: 2.65rem !important;
+    border-radius: 10px !important;
   }
 
   html body .app-root[data-view="home"] .reciter-card__actions {
@@ -371,18 +422,20 @@ html body .settings-drawer__title {
     min-width: 0 !important;
     flex-direction: row !important;
     justify-content: center !important;
-    gap: 0.3rem !important;
-    padding: 0.25rem !important;
+    gap: 0.25rem !important;
+    padding: 0 0 0 0.42rem !important;
   }
 
   html body .app-root[data-view="home"] .reciter-card__actions :is(button, a) {
-    min-width: var(--mp-device-touch) !important;
-    min-height: var(--mp-device-touch) !important;
+    width: 2.4rem !important;
+    min-width: 2.4rem !important;
+    min-height: 2.4rem !important;
+    padding: 0 !important;
   }
 
   html body .app-root[data-view="home"] .reciter-card__icon {
-    width: 0.78rem !important;
-    height: 0.78rem !important;
+    width: 0.65rem !important;
+    height: 0.65rem !important;
   }
 
   html body .app-root[data-view="home"] .reciter-card__text {
@@ -390,9 +443,18 @@ html body .settings-drawer__title {
   }
 
   html body .app-root[data-view="home"] .reciter-card__name {
-    white-space: normal !important;
+    font-size: 0.79rem !important;
     overflow-wrap: anywhere;
-    line-height: 1.2 !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card__meta {
+    gap: 0.24rem !important;
+    margin-top: 0.2rem !important;
+    font-size: 0.6rem !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card__listen span {
+    display: none !important;
   }
 
   html body #root .app-root .sb-wrapper .sidebar-tab-trigger,
@@ -417,21 +479,29 @@ html body .settings-drawer__title {
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
+  html body .app-root[data-view="reading"] {
+    --mp-effective-mushaf-size: var(--qd-reading-font-size, 34px);
+  }
+
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
     .qc-list-card .qc-ayah-text-ar {
-    --reader-arabic-size: var(--qd-reading-font-size, 30px) !important;
-    --qcom-ar-size: var(--qd-reading-font-size, 30px) !important;
-    font-size: var(--qd-reading-font-size, 30px) !important;
+    --reader-arabic-size: clamp(18px, var(--qd-reading-font-size, 42px), 48px) !important;
+    --qcom-ar-size: clamp(18px, var(--qd-reading-font-size, 42px), 48px) !important;
+    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 48px) !important;
     line-height: 2.02 !important;
   }
 }
 
 @media (min-width: 1025px) {
+  html body .app-root[data-view="reading"] {
+    --mp-effective-mushaf-size: var(--qd-reading-font-size, 42px);
+  }
+
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
     .qc-list-card .qc-ayah-text-ar {
-    --reader-arabic-size: var(--qd-reading-font-size, 34px) !important;
-    --qcom-ar-size: var(--qd-reading-font-size, 34px) !important;
-    font-size: var(--qd-reading-font-size, 34px) !important;
+    --reader-arabic-size: clamp(18px, var(--qd-reading-font-size, 42px), 60px) !important;
+    --qcom-ar-size: clamp(18px, var(--qd-reading-font-size, 42px), 60px) !important;
+    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 60px) !important;
     line-height: 2.06 !important;
   }
 }
@@ -439,26 +509,25 @@ html body .settings-drawer__title {
 @media (min-width: 1440px) {
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
     .qc-list-card .qc-ayah-text-ar {
-    --reader-arabic-size: var(--qd-reading-font-size, 36px) !important;
-    --qcom-ar-size: var(--qd-reading-font-size, 36px) !important;
-    font-size: var(--qd-reading-font-size, 36px) !important;
+    --reader-arabic-size: clamp(18px, var(--qd-reading-font-size, 42px), 68px) !important;
+    --qcom-ar-size: clamp(18px, var(--qd-reading-font-size, 42px), 68px) !important;
+    font-size: clamp(18px, var(--qd-reading-font-size, 42px), 68px) !important;
   }
 }
 
-/* Mushaf/continuous pages use the same resolved size as verse cards. */
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
-  --cpv-font-size: var(--qd-reading-font-size, 28px) !important;
-  font-size: var(--qd-reading-font-size, 28px) !important;
+  --cpv-font-size: var(--qd-reading-font-size, 34px) !important;
+  font-size: var(--qd-reading-font-size, 34px) !important;
 }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container
   :is(.quran-verse-inline, .quran-arabic-text, .verse-text, .verse-text *) {
   font-size: inherit !important;
+  word-spacing: 0 !important;
 }
 
-/* Responsive reading header: one visual scale, one centered navigation axis. */
 html body .app-root > .mp-header {
   padding: 0 !important;
 }
@@ -476,6 +545,7 @@ html body .app-root > .mp-header .mp-header__bar {
   border-bottom-color: color-mix(in srgb, var(--border) 82%, transparent) !important;
   box-shadow: 0 1px 0 color-mix(in srgb, var(--text-primary) 4%, transparent),
     0 8px 24px color-mix(in srgb, #000 5%, transparent) !important;
+  backdrop-filter: blur(20px) saturate(1.12) !important;
 }
 
 html body .app-root > .mp-header .mp-header__brand-row,
@@ -485,8 +555,13 @@ html body .app-root > .mp-header .mp-header__actions {
 }
 
 html body .app-root > .mp-header .mp-header__brand {
+  position: relative;
   gap: 0.55rem !important;
   padding: 0.2rem 0.45rem !important;
+}
+
+html body .app-root > .mp-header .mp-header__home-badge {
+  display: none;
 }
 
 html body .app-root > .mp-header .mp-header__logo {
@@ -515,8 +590,8 @@ html body .app-root > .mp-header
   min-height: var(--mp-header-control) !important;
   padding: 0 !important;
   border-radius: 0.85rem !important;
-  border-color: color-mix(in srgb, var(--border) 88%, transparent) !important;
-  background: color-mix(in srgb, var(--bg-secondary) 72%, transparent) !important;
+  border-color: color-mix(in srgb, var(--primary) 14%, var(--border)) !important;
+  background: color-mix(in srgb, var(--bg-card) 88%, var(--primary) 5%) !important;
 }
 
 html body .app-root > .mp-header
@@ -527,14 +602,40 @@ html body .app-root > .mp-header
   stroke-width: 2.15 !important;
 }
 
+/* Search stays visually distinct without competing with the primary reading action. */
+html body .app-root[data-view="reading"] > .mp-header .mp-header__search {
+  --mp-header-icon: 18px;
+  --mp-device-icon: 18px;
+  --mp-action-icon-max: 18px;
+  border: 1px solid color-mix(in srgb, var(--primary) 34%, var(--border)) !important;
+  background: color-mix(in srgb, var(--bg-card) 86%, var(--primary) 14%) !important;
+  color: var(--primary) !important;
+  box-shadow:
+    0 5px 14px color-mix(in srgb, var(--primary) 10%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 34%, transparent) !important;
+}
+
+html body .app-root[data-view="reading"] > .mp-header .mp-header__search:hover {
+  border-color: color-mix(in srgb, var(--primary) 56%, var(--border)) !important;
+  background: color-mix(in srgb, var(--bg-card) 76%, var(--primary) 24%) !important;
+  color: var(--primary-dark, var(--primary)) !important;
+  transform: translateY(-1px);
+}
+
+html body .app-root[data-view="reading"] > .mp-header .mp-header__search svg {
+  width: 18px !important;
+  height: 18px !important;
+  stroke-width: 2.35 !important;
+}
+
 html body .app-root > .mp-header .mp-header__riwaya-toggle {
   display: inline-flex !important;
   width: auto !important;
   min-width: 4.25rem !important;
   padding-inline: 0.8rem !important;
-  border-color: color-mix(in srgb, var(--primary) 20%, var(--border)) !important;
-  background: color-mix(in srgb, var(--primary) 7%, var(--bg-secondary)) !important;
-  color: var(--text-primary) !important;
+  border-color: color-mix(in srgb, var(--primary) 34%, var(--border)) !important;
+  background: color-mix(in srgb, var(--primary) 10%, var(--bg-card)) !important;
+  color: var(--primary) !important;
 }
 
 html body .app-root > .mp-header .mp-header__riwaya-toggle span {
@@ -547,17 +648,16 @@ html body .app-root > .mp-header .mp-header__riwaya-toggle span {
 
 html body .app-root > .mp-header .mp-header__nav {
   display: grid !important;
-  grid-template-columns: 42px minmax(10rem, 15rem) 42px !important;
+  grid-template-columns: 42px minmax(9rem, 11.5rem) 42px !important;
   width: max-content !important;
   max-width: 100% !important;
   min-width: 0 !important;
-  gap: 0.2rem !important;
-  padding: 0.2rem !important;
-  border: 1px solid color-mix(in srgb, var(--border) 88%, transparent) !important;
-  border-radius: 1.05rem !important;
-  background: color-mix(in srgb, var(--bg-card) 88%, var(--bg-secondary)) !important;
-  box-shadow: 0 5px 18px color-mix(in srgb, #000 6%, transparent),
-    inset 0 1px 0 color-mix(in srgb, #fff 22%, transparent) !important;
+  gap: 0.28rem !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 html body .app-root > .mp-header .mp-header__nav-arrow {
@@ -565,28 +665,51 @@ html body .app-root > .mp-header .mp-header__nav-arrow {
   min-width: 42px !important;
   height: 42px !important;
   min-height: 42px !important;
-  border-radius: 0.75rem !important;
+  border-radius: 0.8rem !important;
+  background: transparent !important;
 }
 
 html body .app-root > .mp-header .mp-header__title-btn {
   width: 100% !important;
   max-width: none !important;
   min-width: 0 !important;
+  height: 42px !important;
+  max-height: 42px !important;
   min-height: 42px !important;
   justify-content: center !important;
-  padding: 0.2rem 0.55rem !important;
-  border-radius: 0.75rem !important;
+  padding: 0.2rem 0.5rem !important;
+  border-radius: 0.9rem !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border)) !important;
+  background: color-mix(in srgb, var(--bg-card) 95%, var(--primary) 5%) !important;
+  box-shadow: 0 4px 14px color-mix(in srgb, #000 6%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 24%, transparent) !important;
+  overflow: hidden !important;
 }
 
 html body .app-root > .mp-header .mp-header__title {
   font-size: clamp(0.88rem, 0.82rem + 0.2vw, 1rem) !important;
-  font-weight: 760 !important;
+  font-weight: 820 !important;
   letter-spacing: -0.018em !important;
 }
 
+html body .app-root > .mp-header .mp-header__title-stack,
+html body .app-root > .mp-header .mp-header__title-cycle-viewport {
+  width: 100% !important;
+  height: 26px !important;
+  max-height: 26px !important;
+  line-height: 26px !important;
+  overflow: hidden !important;
+}
+
+html body .app-root > .mp-header .mp-header__title-sub-track {
+  width: 100% !important;
+  min-height: 104px !important;
+}
+
 html body .app-root > .mp-header .mp-header__title-sub {
-  margin-top: 0.08rem;
-  font-size: 0.68rem !important;
+  margin-top: 0;
+  font-size: clamp(24px, calc(1.36rem + 0.34vw), 28px) !important;
+  line-height: 26px !important;
 }
 
 html body .app-root > .mp-header
@@ -628,6 +751,8 @@ html body .app-root > .mp-header
     --mp-header-icon: 0.94rem;
     min-height: 60px !important;
     height: 60px !important;
+    display: grid !important;
+    grid-template-columns: minmax(7rem, 1fr) auto minmax(7rem, 1fr) !important;
   }
 
   html body .app-root > .mp-header .mp-header__brand-text,
@@ -635,22 +760,50 @@ html body .app-root > .mp-header
     display: none !important;
   }
 
+  html body .app-root > .mp-header .mp-header__brand-row {
+    justify-self: start;
+  }
+
+  html body .app-root > .mp-header .mp-header__actions {
+    justify-self: end;
+  }
+
   html body .app-root > .mp-header .mp-header__nav {
-    grid-template-columns: 40px minmax(7rem, min(30vw, 13rem)) 40px !important;
+    grid-template-columns: 40px minmax(7rem, min(26vw, 10.5rem)) 40px !important;
   }
 }
 
 @media (max-width: 640px) {
+  html body #root .app-root.app-root[data-view="reading"] .app-view-reading.app-view-reading {
+    padding-top: 0.25rem !important;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"]
+    .quran-display.quran-display--platform {
+    padding-top: 0 !important;
+    border-top: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"]
+    .quran-display.quran-display--platform > .tajweed-legend {
+    margin-top: 0 !important;
+    border-radius: 0.8rem !important;
+  }
+
   html body .app-root > .mp-header .mp-header__bar {
-    --mp-header-icon: 0.88rem;
-    min-height: 56px !important;
-    height: 56px !important;
-    max-height: 56px !important;
+    --mp-header-control: 40px;
+    --mp-header-icon: 0.78rem;
+    min-height: 52px !important;
+    height: 52px !important;
+    max-height: 52px !important;
     padding-inline: max(0.35rem, env(safe-area-inset-left))
       max(0.35rem, env(safe-area-inset-right)) !important;
     gap: 0.18rem !important;
     display: grid !important;
-    grid-template-columns: 100px minmax(0, 1fr) 100px !important;
+    grid-template-columns: 80px minmax(0, 1fr) 80px !important;
   }
 
   html body .app-root > .mp-header .mp-header__brand-row,
@@ -660,6 +813,10 @@ html body .app-root > .mp-header
 
   html body .app-root > .mp-header .mp-header__brand-row {
     justify-self: start;
+  }
+
+  html body .app-root > .mp-header .mp-header__brand {
+    display: none !important;
   }
 
   html body .app-root > .mp-header .mp-header__actions {
@@ -676,17 +833,27 @@ html body .app-root > .mp-header
     display: none !important;
   }
 
-  html body .app-root > .mp-header .mp-header__brand {
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
-    padding: 0.3rem !important;
+  html body .app-root > .mp-header .mp-header__home-badge {
+    position: absolute;
+    right: 0.08rem;
+    bottom: 0.08rem;
+    z-index: 2;
+    display: inline-flex;
+    width: 0.9rem;
+    height: 0.9rem;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--bg-primary);
+    border-radius: 999px;
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 2px 6px color-mix(in srgb, #000 18%, transparent);
+    pointer-events: none;
   }
 
   html body .app-root > .mp-header .mp-header__logo {
-    width: 1.85rem !important;
-    height: 1.85rem !important;
+    width: 1.62rem !important;
+    height: 1.62rem !important;
     border-radius: 0.65rem !important;
   }
 
@@ -697,31 +864,51 @@ html body .app-root > .mp-header
 
   html body .app-root > .mp-header .mp-header__nav {
     display: grid !important;
-    grid-template-columns: 30px minmax(0, 1fr) 30px !important;
-    width: 100% !important;
-    padding: 0.12rem !important;
-    border-radius: 0.82rem !important;
+    grid-template-columns: 34px minmax(0, 1fr) 34px !important;
+    width: min(100%, 12.75rem) !important;
+    gap: 0.2rem !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
   }
 
   html body .app-root > .mp-header .mp-header__nav-arrow {
-    width: 30px !important;
-    min-width: 30px !important;
+    width: 34px !important;
+    min-width: 34px !important;
     height: 40px !important;
     min-height: 40px !important;
     border-radius: 0.65rem !important;
+    border: 1px solid color-mix(in srgb, var(--primary) 13%, var(--border)) !important;
+    background: color-mix(in srgb, var(--bg-card) 96%, transparent) !important;
   }
 
   html body .app-root > .mp-header .mp-header__title-btn {
+    height: 40px !important;
     min-height: 40px !important;
-    padding-inline: 0.22rem !important;
+    max-height: 40px !important;
+    padding-inline: 0.35rem !important;
   }
 
   html body .app-root > .mp-header .mp-header__title-sub {
-    display: none !important;
+    display: flex !important;
+  }
+
+  html body .app-root > .mp-header
+    .mp-header__title-cycle-viewport .mp-header__title-sub {
+    font-size: clamp(22px, 6.5vw, 26px) !important;
+  }
+
+  html body .app-root > .mp-header
+    .mp-header__title-cycle-viewport .mp-header__title-transliteration {
+    font-size: clamp(0.74rem, 3.1vw, 0.84rem) !important;
+  }
+
+  html body .app-root > .mp-header
+    .mp-header__title-cycle-viewport .mp-header__title-meaning {
+    font-size: clamp(0.67rem, 2.8vw, 0.76rem) !important;
   }
 
   html body .app-root > .mp-header .mp-header__title {
-    font-size: clamp(0.76rem, 3.5vw, 0.9rem) !important;
+    font-size: clamp(0.72rem, 3.25vw, 0.86rem) !important;
   }
 
   html body .app-root > .mp-header .mp-header__riwaya-toggle {
@@ -735,21 +922,252 @@ html body .app-root > .mp-header
 }
 
 @media (max-width: 380px) {
-  html body .app-root > .mp-header .mp-header__brand {
-    display: none !important;
+  html body .app-root > .mp-header .mp-header__bar {
+    --mp-header-control: 38px;
+    --mp-header-icon: 0.72rem;
+    grid-template-columns: 76px minmax(0, 1fr) 76px !important;
   }
 
   html body .app-root > .mp-header .mp-header__riwaya-toggle {
-    min-width: 2.9rem !important;
+    min-width: 2.7rem !important;
     padding-inline: 0.35rem !important;
   }
 
   html body .app-root > .mp-header .mp-header__nav {
-    grid-template-columns: 26px minmax(0, 1fr) 26px !important;
+    grid-template-columns: 32px minmax(0, 1fr) 32px !important;
   }
 
   html body .app-root > .mp-header .mp-header__nav-arrow {
-    width: 26px !important;
-    min-width: 26px !important;
+    width: 32px !important;
+    min-width: 32px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  html body .app-root > .mp-header .mp-header__bar {
+    grid-template-columns: minmax(10rem, 1fr) auto minmax(10rem, 1fr) !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__search {
+    display: inline-flex !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__search span {
+    display: none !important;
+  }
+}
+
+@media (max-width: 320px) {
+  html body .app-root[data-view="reading"] .srh-controls {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr) !important;
+    gap: 0.25rem !important;
+    padding-inline: 0.25rem !important;
+  }
+
+  html body .app-root[data-view="reading"]
+    :is(.srh-pill, .srh-toggle) {
+    gap: 0.15rem !important;
+    padding-inline: 0.22rem !important;
+    font-size: 0.64rem !important;
+  }
+
+  html body .app-root[data-view="reading"]
+    :is(.srh-pill, .srh-toggle) svg {
+    display: none !important;
+  }
+
+  html body .app-root[data-view="reading"] .qc-list-card__top {
+    gap: 0.25rem !important;
+  }
+
+  html body .app-root[data-view="reading"] .qc-list-card__start,
+  html body .app-root[data-view="reading"]
+    .qc-list-card__start .ayah-actions > div {
+    gap: 0.2rem !important;
+  }
+}
+
+.app-root[data-view="home"] .hp-wrapper {
+  --text-secondary: color-mix(in srgb,var(--text-primary) 78%,var(--bg-primary));
+  --text-muted: color-mix(in srgb,var(--text-primary) 68%,var(--bg-primary));
+}
+.home-mobile-quick-disclosure > .home-info-panel { display: block; }
+@media (max-width: 640px) {
+  .home-mobile-quick-disclosure:not([open]) > .home-info-panel { display: none; }
+  .home-mobile-quick-disclosure[open] > .home-info-panel { margin-top:.55rem; }
+}
+
+/* Keep the marker close to its own ayah while preserving a clear stop before
+   the following ayah in every RTL engine. */
+html body .app-root[data-view="reading"]
+  .quran-display--platform
+  .mushaf-text-block
+  .cpv-ayah-marker.cpv-ayah-marker {
+  margin-inline-start: 0.14em !important;
+  margin-inline-end: 0.72em !important;
+  margin-right: 0.14em !important;
+  margin-left: 0.72em !important;
+}
+
+/* Mobile reader header: preserve a clear path back home. */
+@media (max-width: 640px) {
+  html body .app-root[data-view="reading"] > .mp-header .mp-header__brand {
+    display: inline-flex !important;
+    width: var(--mp-header-control) !important;
+    min-width: var(--mp-header-control) !important;
+    height: var(--mp-header-control) !important;
+    min-height: var(--mp-header-control) !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0.2rem !important;
+    border: 1px solid color-mix(in srgb, var(--border) 88%, transparent) !important;
+    border-radius: 0.85rem !important;
+    background: color-mix(in srgb, var(--bg-secondary) 72%, transparent) !important;
+  }
+
+  html body .app-root[data-view="reading"] > .mp-header .mp-header__brand-text {
+    display: none !important;
+  }
+}
+
+/* On narrow phones, move riwaya into the contextual More menu. */
+@media (max-width: 420px) {
+  html body .app-root[data-view="reading"] > .mp-header .mp-header__bar {
+    grid-template-columns: 80px minmax(0, 1fr) 80px !important;
+  }
+
+  html body .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__action.mp-header__riwaya-toggle {
+    display: none !important;
+  }
+}
+
+@media (max-width: 380px) {
+  html body .app-root[data-view="reading"] > .mp-header .mp-header__bar {
+    grid-template-columns: 76px minmax(0, 1fr) 76px !important;
+  }
+}
+
+/* Home surah library — mobile editorial rows. */
+@media (max-width: 700px) {
+  html[data-theme="dark"] .hp-card--list[data-stype="meccan"] .hp-card-type {
+    color: #f3d98f !important;
+  }
+
+  .app-root[data-view="home"] .hp-list {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.55rem !important;
+  }
+
+  .app-root[data-view="home"] .hp-card--list {
+    display: grid !important;
+    grid-template: minmax(1.9rem, auto) minmax(2.45rem, auto) / 2.35rem minmax(0, 1fr) 3.35rem !important;
+    gap: 0.16rem 0.68rem !important;
+    min-height: 5.65rem !important;
+    padding: 0.65rem 0.72rem !important;
+    border-radius: 1rem !important;
+    background: var(--bg-card) !important;
+    overflow: hidden !important;
+  }
+
+  .app-root[data-view="home"] .hp-card--list .hp-card-open {
+    position: absolute !important;
+    inset: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .app-root[data-view="home"] .hp-card--list .hp-card-num {
+    grid-area: 1 / 1 / 3 / 2 !important;
+    width: 2.35rem !important;
+    height: 2.35rem !important;
+    color: var(--primary) !important;
+    transform: none !important;
+  }
+
+  .app-root[data-view="home"] .hp-card--list .hp-card-num-inner {
+    transform: none !important;
+  }
+
+  .app-root[data-view="home"] .hp-card--list .hp-card-content {
+    grid-area: 1 / 2 / 3 / 3 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .app-root[data-view="home"] .hp-card--list .hp-card-title-row {
+    display: grid !important;
+  }
+
+  .app-root[data-view="home"] .hp-card--list .hp-card-name {
+    max-width: none !important;
+    font-size: 0.9rem !important;
+  }
+
+  .app-root[data-view="home"] .hp-card--list .hp-card-meta--meaning {
+    display: block !important;
+    margin: 0 !important;
+    font-size: 0.74rem !important;
+    font-style: italic;
+  }
+
+  .app-root[data-view="home"] .hp-card--list .hp-card-facts {
+    gap: 0.2rem 0.4rem !important;
+    flex-wrap: wrap !important;
+  }
+
+  .app-root[data-view="home"] .hp-card--list .hp-card-facts > span {
+    margin: 0 !important;
+    font-size: 0.72rem !important;
+    white-space: nowrap !important;
+  }
+
+  body .app-root[data-view="home"] .hp-card--list .hp-card-ar {
+    grid-area: 1 / 3 !important;
+    margin: 0 !important;
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    justify-self: end !important;
+    font-family: "surahnames", serif !important;
+    font-size: clamp(1.6rem, 5.5vw, 2rem) !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .app-root[data-view="home"] .hp-card--list .hp-card-play {
+    position: relative !important;
+    inset: auto !important;
+    grid-area: 2 / 3 !important;
+    width: 2.55rem !important;
+    min-width: 2.55rem !important;
+    height: 2.55rem !important;
+    min-height: 2.55rem !important;
+    margin: 0 !important;
+    justify-self: end !important;
+    background: var(--primary) !important;
+    color: #fff !important;
+  }
+}
+
+@media (max-width: 340px) {
+  .app-root[data-view="home"] .hp-card--list {
+    grid-template-columns: 2.1rem minmax(0, 1fr) 2.75rem !important;
+    gap: 0.12rem 0.48rem !important;
+    padding: 0.58rem !important;
+  }
+
+  .app-root[data-view="home"] .hp-card--list .hp-card-meta--page {
+    display: none !important;
+  }
+
+  .app-root[data-view="home"] .hp-card--list .hp-card-play {
+    width: 2.3rem !important;
+    min-width: 2.3rem !important;
+    height: 2.3rem !important;
+    min-height: 2.3rem !important;
   }
 }

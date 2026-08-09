@@ -11,23 +11,22 @@ async function openReader(page) {
 }
 
 async function ensureWarsh(page) {
-  const toggle = page.locator(".mp-header__riwaya-toggle").first();
-  const label = toggle.locator("span");
+  await page.locator(".mp-header").waitFor({ state: "visible" });
+  const toggle = page.locator(".mp-header__riwaya-toggle:visible").first();
+  const hasVisibleToggle = await toggle
+    .waitFor({ state: "visible", timeout: 5_000 })
+    .then(() => true)
+    .catch(() => false);
 
-  if (await toggle.isVisible().catch(() => false)) {
-    if ((await label.textContent())?.trim().toUpperCase() !== "WARSH") {
+  if (hasVisibleToggle) {
+    if (!/WARSH/i.test((await toggle.textContent()) || "")) {
       await toggle.click();
     }
   } else {
-    const more = page.locator(".mp-header__more").first();
-    await expect(more).toBeVisible();
-    await more.click();
-
-    const warshChoice = page
-      .locator(".mp-header-menu__riwaya-btns .mp-header__seg")
-      .filter({ hasText: /^WARSH$/i });
-    await expect(warshChoice).toBeVisible();
-    await warshChoice.click();
+    await page.locator(".mp-header__more").first().click();
+    const mobileRiwaya = page.getByTestId("header-mobile-riwaya");
+    await expect(mobileRiwaya).toBeVisible();
+    await mobileRiwaya.getByRole("button", { name: "Warsh", exact: true }).click();
   }
 
   await expect(page.locator(".app-root")).toHaveAttribute("data-riwaya", "warsh");
@@ -186,14 +185,18 @@ test.describe("mobile", () => {
     await expect(detail.locator(".reciter-detail__bio p")).toContainText(/Riyad/i);
     await expect(detail.locator(".reciter-detail__bio p")).toContainText(/doctorat/i);
 
-    const biographyLink = detail.locator(
-      '.reciter-detail__source-row a[href*="/ibrahim-al-dossari-206/"]',
-    );
+    const biographyLink = detail.getByRole("link", { name: "Assabile" });
     await expect(biographyLink).toHaveText("Assabile");
-    const portraitSourceLink = detail.locator(
-      '.reciter-detail__source-row a[href*="way2quran.com/ar/reciters/ibrahim-al-dosari"]',
+    await expect(biographyLink).toHaveAttribute(
+      "href",
+      /\/ibrahim-al-dossari-206\//,
     );
+    const portraitSourceLink = detail.getByRole("link", { name: "Way2Quran" });
     await expect(portraitSourceLink).toHaveText("Way2Quran");
+    await expect(portraitSourceLink).toHaveAttribute(
+      "href",
+      /way2quran\.com\/ar\/reciters\/ibrahim-al-dosari/,
+    );
 
     const portrait = detail.locator(".reciter-hero__avatar");
     await expect(portrait).toBeVisible();

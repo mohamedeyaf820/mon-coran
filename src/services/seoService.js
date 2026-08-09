@@ -226,7 +226,7 @@ function buildSchemaGraph(metadata, state) {
       isAccessibleForFree: true,
       inLanguage: siteConfig.supportedLocales,
       description:
-        "Application de lecture du Coran avec récitations audio, Tajwid, traductions et mémorisation.",
+        "Application de lecture du Coran avec récitations audio, Tajwid et traductions.",
       offers: {
         "@type": "Offer",
         price: "0",

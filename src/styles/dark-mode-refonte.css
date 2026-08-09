@@ -1,8 +1,4 @@
-/*
-  Dark component refinements.
-  The global night palette belongs to themes4.css; this layer only styles
-  dark-theme surfaces and interactions that need component-level treatment.
-*/
+
 
 html[data-theme="dark"] {
     color-scheme: dark;
@@ -39,7 +35,7 @@ html[data-theme="dark"] .app-root::before {
     mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent 70%);
 }
 
-/* Header and navigation */
+
 html[data-theme="dark"]
     :is(.mp-header, .mp-header__bar, .app-header, header[role="banner"]) {
     border-color: var(--theme-border) !important;
@@ -82,41 +78,6 @@ html[data-theme="dark"]
     color: var(--night-text) !important;
 }
 
-/* Universal surfaces */
-html[data-theme="dark"]
-    .app-root
-    :is(
-        .home-hero-compact,
-        .home-session-card,
-        .content-card,
-        .premium-card,
-        .qcom-verse-card,
-        .qc-verse-card,
-        .qc-ayah-block,
-        .rd-ayah,
-        .surah-card,
-        .dua-card,
-        .duas-card,
-        .settings-card,
-        .modal-item-card,
-        .verse-compare-card,
-        .tools-hub-card,
-        .reciter-card,
-        .reciter-radio-card,
-        .surah-info-card
-    ) {
-    border-color: var(--theme-border) !important;
-    background: linear-gradient(
-        180deg,
-        var(--theme-panel-bg-strong),
-        var(--theme-panel-bg)
-    ) !important;
-    color: var(--night-text) !important;
-    box-shadow:
-        0 16px 42px rgba(0, 0, 0, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
-}
-
 html[data-theme="dark"]
     .app-root
     :is(
@@ -151,7 +112,7 @@ html[data-theme="dark"]
     color: var(--night-text-muted) !important;
 }
 
-/* Reader */
+
 html[data-theme="dark"] .quran-display--platform {
     background:
         radial-gradient(
@@ -202,40 +163,6 @@ html[data-theme="dark"]
 
 html[data-theme="dark"]
     .quran-display--platform
-    :is(
-        .qc-reader-surah-header,
-        .reader-toolbar,
-        .qc-reader-toolbar,
-        .page-header-bar,
-        .quran-nav,
-        .chunk-nav-bar,
-        .mushaf-layout-toggle-bar
-    ) {
-    border-color: var(--theme-border) !important;
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--theme-panel-bg-strong) 90%, transparent),
-        color-mix(in srgb, var(--theme-panel-bg) 90%, transparent)
-    ) !important;
-    color: var(--night-text) !important;
-    box-shadow: 0 14px 42px rgba(0, 0, 0, 0.24) !important;
-}
-
-html[data-theme="dark"]
-    .quran-display--platform
-    .qc-reader-surah-header__arabic {
-    border-color: rgba(var(--night-gold-rgb), 0.34) !important;
-    background: linear-gradient(
-        180deg,
-        rgba(18, 31, 27, 0.96),
-        rgba(8, 15, 13, 0.96)
-    ) !important;
-    color: #f0d892 !important;
-    box-shadow: 0 16px 42px rgba(0, 0, 0, 0.35) !important;
-}
-
-html[data-theme="dark"]
-    .quran-display--platform
     :is(.rd-ayah-head, .qc-ayah-number, .ayah-number) {
     border-color: rgba(var(--night-gold-rgb), 0.32) !important;
     background: rgba(var(--night-gold-rgb), 0.09) !important;
@@ -248,7 +175,7 @@ html[data-theme="dark"]
     background: rgba(var(--night-emerald-rgb), 0.055) !important;
 }
 
-/* Modals, settings, side panels */
+
 html[data-theme="dark"]
     :is(.modal-overlay, .settings-backdrop, .audio-player-modal) {
     background: var(--bg-overlay) !important;
@@ -324,7 +251,7 @@ html[data-theme="dark"]
     color: var(--night-text-faint) !important;
 }
 
-/* Audio player */
+
 html[data-theme="dark"] .mp-audio-player {
     --player-surface: var(--theme-panel-bg-strong);
     --player-surface-soft: var(--theme-panel-bg);
@@ -354,7 +281,7 @@ html[data-theme="dark"]
     box-shadow: 0 12px 30px rgba(var(--night-emerald-rgb), 0.24) !important;
 }
 
-/* Recitations and footer */
+
 html[data-theme="dark"]
     :is(.reciter-card__media, .reciter-hero__avatar, .settings-reciter-avatar) {
     border-color: rgba(196, 219, 208, 0.18) !important;
@@ -367,7 +294,7 @@ html[data-theme="dark"] .reciter-card__chip {
     color: #76e7b8 !important;
 }
 
-/* Interactions and scrollbars */
+
 html[data-theme="dark"]
     .app-root
     :is(button, a, input, select, textarea):focus-visible {
@@ -422,9 +349,9 @@ html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
     }
 }
 
-/* ── Additional dark mode fixes (2025 update) ──────────────────── */
 
-/* Sidebar dark mode */
+
+
 html[data-theme="dark"] .sidebar,
 html[data-theme="dark"] .app-sidebar {
     background: var(--theme-bg) !important;
@@ -445,7 +372,7 @@ html[data-theme="dark"] .sidebar-link:hover {
     color: var(--night-text) !important;
 }
 
-/* Homepage dark mode */
+
 html[data-theme="dark"] .app-root .hp-wrapper,
 html[data-theme="dark"] .app-root .home-wrapper {
     background: transparent !important;
@@ -472,7 +399,7 @@ html[data-theme="dark"] .app-root .home-card:hover {
     ) !important;
 }
 
-/* Navbar (Header) dark mode consistency */
+
 html[data-theme="dark"] .app-header,
 html[data-theme="dark"] header.mp-header {
     background: linear-gradient(
@@ -483,7 +410,7 @@ html[data-theme="dark"] header.mp-header {
     border-bottom-color: var(--theme-border) !important;
 }
 
-/* Footer dark mode */
+
 html[data-theme="dark"] footer,
 html[data-theme="dark"] .app-footer {
     background: linear-gradient(
@@ -495,7 +422,7 @@ html[data-theme="dark"] .app-footer {
     color: var(--night-text-soft) !important;
 }
 
-/* Reading toolbar dark mode */
+
 html[data-theme="dark"] .qc-reader-toolbar,
 html[data-theme="dark"] .reader-toolbar {
     background: linear-gradient(
@@ -520,7 +447,7 @@ html[data-theme="dark"] .reader-toolbar button.active {
     border-color: rgba(var(--night-emerald-rgb), 0.3) !important;
 }
 
-/* AyahActions study panel dark mode */
+
 html[data-theme="dark"] .app-root .ayah-action-sheet {
     background: linear-gradient(
         160deg,
@@ -556,7 +483,7 @@ html[data-theme="dark"] .app-root .ayah-study-tab.is-active {
     border-color: rgba(var(--night-emerald-rgb), 0.28) !important;
 }
 
-/* Dropdown menus dark mode */
+
 html[data-theme="dark"] [role="menu"],
 html[data-theme="dark"] .dropdown-content,
 html[data-theme="dark"] [data-radix-popper-content-wrapper] > div {
@@ -571,7 +498,7 @@ html[data-theme="dark"] [data-highlighted] {
     color: var(--night-text) !important;
 }
 
-/* Badges/chips dark mode */
+
 html[data-theme="dark"] .app-root .qc-surah-banner {
     background: linear-gradient(
         180deg,
@@ -585,7 +512,7 @@ html[data-theme="dark"] .app-root .qc-surah-banner__arabic {
     color: #f0ebd8 !important;
 }
 
-/* Search modal dark mode */
+
 html[data-theme="dark"] .search-modal,
 html[data-theme="dark"] .search-pro__container {
     background: linear-gradient(
@@ -602,13 +529,13 @@ html[data-theme="dark"] .search-pro__input-shell input {
     color: var(--night-text) !important;
 }
 
-/* Bismillah dark */
+
 html[data-theme="dark"] .bismillah-text,
 html[data-theme="dark"] .cpv-bismillah {
     color: #f0e8d4 !important;
 }
 
-/* Tafsir sidebar dark mode */
+
 html[data-theme="dark"] .app-root aside[role="dialog"] {
     background: linear-gradient(
         180deg,

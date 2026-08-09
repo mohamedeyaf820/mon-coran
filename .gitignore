@@ -11,6 +11,8 @@ coverage/
 
 # Local dev artifacts
 .claude/settings.local.json
+.codex-artifacts/
+.codex-*.log
 vite-dev*.log
 vite-preview*.log
 vite-preview*.err.log
@@ -37,3 +39,4 @@ Thumbs.db
 .env.local
 design-audit/
 design-audit-2/
+.vercel

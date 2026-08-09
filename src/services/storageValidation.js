@@ -1,8 +1,7 @@
 const SAFE_LOCAL_STORAGE_KEY = /^[a-z0-9:_-]{1,64}$/i;
-const MEMO_KEY = /^\d{1,3}:\d{1,3}$/;
+const AYAH_KEY = /^\d{1,3}:\d{1,3}$/;
 const SURAH_KEY = /^\d{1,3}$/;
 const DOWNLOAD_KEY = /^(hafs|warsh):.{1,80}:\d{1,3}$/;
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 function schema(validate) {
   const api = {
@@ -70,26 +69,6 @@ export function writeLocalStorageJson(key, data) {
   }
 }
 
-export const memorizationMapSchema = schema((value) => {
-  if (!isPlainObject(value)) return null;
-  for (const [key, rating] of Object.entries(value)) {
-    if (!MEMO_KEY.test(key) || !isIntBetween(rating, 0, 5)) return null;
-  }
-  return value;
-});
-
-export const khatmaGoalSchema = schema((value) => {
-  if (!isPlainObject(value)) return null;
-  if (!ISO_DATE.test(value.startDate)) return null;
-  if (!isIntBetween(value.targetDays, 1, 3650)) return null;
-  if (!isIntBetween(value.startPage, 1, 604)) return null;
-  return {
-    startDate: value.startDate,
-    targetDays: value.targetDays,
-    startPage: value.startPage,
-  };
-});
-
 export const readProgressSchema = schema((value) => {
   if (!isPlainObject(value)) return null;
   for (const [key, progress] of Object.entries(value)) {
@@ -142,7 +121,7 @@ export const downloadProgressMapSchema = schema((value) => {
 
 export const noteRecordSchema = schema((value) => {
   if (!isPlainObject(value)) return null;
-  if (!MEMO_KEY.test(value.id)) return null;
+  if (!AYAH_KEY.test(value.id)) return null;
   if (!isIntBetween(value.surah, 1, 114)) return null;
   if (!isIntBetween(value.ayah, 1, 286)) return null;
   if (!isText(value.text, 8000)) return null;
@@ -158,7 +137,7 @@ export const noteRecordSchema = schema((value) => {
 
 export const bookmarkRecordSchema = schema((value) => {
   if (!isPlainObject(value)) return null;
-  if (!MEMO_KEY.test(value.id)) return null;
+  if (!AYAH_KEY.test(value.id)) return null;
   if (!isIntBetween(value.surah, 1, 114)) return null;
   if (!isIntBetween(value.ayah, 1, 286)) return null;
   if (!isText(value.label, 200)) return null;

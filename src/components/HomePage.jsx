@@ -19,12 +19,10 @@ import {
 import SURAHS, { toAr } from "../data/surahs";
 import { JUZ_DATA } from "../data/juz";
 import { getAllBookmarks, getAllNotes } from "../services/storageService";
-import { getRecentVisits } from "../services/recentHistoryService";
 import audioService from "../services/audioService";
 import {
   getReciter,
   ensureReciterForRiwaya,
-  getReciterSourceInfo,
   isWarshVerifiedReciter,
   getRecitersByRiwaya,
 } from "../data/reciters";
@@ -36,7 +34,6 @@ import {
   buildStationPlaylistForRiwaya,
   buildSurahPlaylistForRiwaya,
   playPlaylistWithReciter,
-  reciterDownloadUrl,
 } from "../services/RecitationService";
 import { getResumeState, setResumeState } from "../stores/AudioQueueStore";
 import Footer from "./Footer";
@@ -73,12 +70,8 @@ export function preloadReciterLibrary() {
   return reciterLibraryWarmPromise;
 }
 
-let quranReaderModulePromise;
 function loadQuranReaderModule() {
-  if (!quranReaderModulePromise) {
-    quranReaderModulePromise = import("./QuranDisplay");
-  }
-  return quranReaderModulePromise;
+  return globalThis.__mushafPlusLoadQuranDisplay();
 }
 
 let quranReaderDataModulePromise;
@@ -117,14 +110,6 @@ function ReciterDetailFallback({ lang }) {
   );
 }
 
-import {
-  ArrowRight,
-  Shapes,
-  CalendarCheck,
-  BookOpen,
-  ListMusic,
-  TrendingUp,
-} from "lucide-react";
 import { t as i18nT } from "../i18n";
 import {
   HOME_INITIAL_SURAHS,
@@ -137,63 +122,7 @@ import {
   getSuggestedSurahs,
 } from "./Home/homeConstants";
 import HeroSection from "./Home/HeroSection";
-import DailyVerseCard from "./Home/DailyVerseCard";
-import SessionCard from "./Home/SessionCard";
-import StatsStrip from "./Home/StatsStrip";
 import ContentSection from "./Home/ContentSection";
-
-function ToolsQuickCard({ lang, set }) {
-  const tr = (obj) => (lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en);
-
-  const quickTools = [
-    { id: "wird", Icon: CalendarCheck, label: tr({ fr: "Wird", en: "Wird", ar: "الورد" }), action: () => set({ wirdOpen: true }) },
-    { id: "khatma", Icon: BookOpen, label: tr({ fr: "Khatma", en: "Khatma", ar: "الختمة" }), action: () => set({ khatmaOpen: true }) },
-    { id: "playlist", Icon: ListMusic, label: tr({ fr: "Listes", en: "Playlists", ar: "القوائم" }), action: () => set({ playlistOpen: true }) },
-    { id: "stats", Icon: TrendingUp, label: tr({ fr: "Stats", en: "Stats", ar: "الإحصائيات" }), action: () => set({ weeklyStatsOpen: true }) },
-  ];
-
-  return (
-    <div className="home-tools-quick-card bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
-      <div className="home-tools-quick-card__header mb-3 flex min-w-0 items-center gap-3 select-none">
-        <div className="home-tools-quick-card__title flex min-w-0 flex-1 items-center gap-[0.45rem] text-[0.7rem] font-[800] text-[var(--text)] font-[var(--font-ui)] uppercase tracking-[0.06em]">
-          <Shapes size={12} className="text-primary" />
-          <span className="line-clamp-2 min-w-0 leading-tight">
-            {tr({ fr: "Outils Spirituels", en: "Spiritual Tools", ar: "الأدوات الروحية" })}
-          </span>
-        </div>
-        <button
-          type="button"
-          onClick={() => set({ toolsHubOpen: true })}
-          className="home-tools-quick-card__more inline-flex shrink-0 items-center gap-1 rounded-lg border border-[var(--border)] bg-transparent px-2 py-1 text-[0.68rem] text-primary hover:border-primary/30 hover:bg-primary/8 font-bold font-[var(--font-ui)] cursor-pointer"
-        >
-          <span>{tr({ fr: "Voir tout", en: "See all", ar: "عرض الكل" })}</span>
-          <ArrowRight aria-hidden="true" size={12} />
-        </button>
-      </div>
-
-      <div className="home-tools-quick-card__grid grid grid-cols-2 gap-2">
-        {quickTools.map((tool) => (
-          <button
-            type="button"
-            key={tool.id}
-            onClick={tool.action}
-            data-tool={tool.id}
-            className="home-tools-quick-card__tool flex flex-col items-center justify-center p-2 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-light)] hover:border-primary/30 hover:bg-primary/5 transition-all text-center group cursor-pointer"
-          >
-            <tool.Icon
-              aria-hidden="true"
-              size={16}
-              className="text-text-secondary group-hover:text-primary transition-colors mb-1.5"
-            />
-            <span className="text-[0.62rem] text-text-secondary group-hover:text-primary transition-colors font-semibold truncate w-full">
-              {tool.label}
-            </span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export default function HomePage({ lowPerfMode = false }) {
   const { dispatch, set } = useAppActions();
@@ -210,9 +139,9 @@ export default function HomePage({ lowPerfMode = false }) {
       reciter: current.reciter,
       favoriteReciters: current.favoriteReciters,
       warshStrictMode: current.warshStrictMode,
-      usePrayerTimes: current.usePrayerTimes,
       isPlaying: current.isPlaying,
       currentPlayingAyah: current.currentPlayingAyah,
+      homeSection: current.homeSection,
     }),
     shallowEqual,
   );
@@ -221,17 +150,20 @@ export default function HomePage({ lowPerfMode = false }) {
   const isRtl = lang === "ar";
 
   const [activeTab, setActiveTab] = useState("surah");
-  const [activeInfo, setActiveInfo] = useState("suggest");
   const [bookmarks, setBookmarks] = useState([]);
   const [notes, setNotes] = useState([]);
   const [filter, setFilter] = useState("");
   const [reciterStyleFilter, setReciterStyleFilter] = useState("all");
   const [sortDir, setSortDir] = useState("asc");
   const [viewMode, setViewMode] = useState("grid");
+  const [compactHomeLayout, setCompactHomeLayout] = useState(() =>
+    typeof window === "undefined"
+      ? false
+      : window.matchMedia("(max-width: 700px)").matches,
+  );
   const [selectedReciterId, setSelectedReciterId] = useState(null);
   const [resumeState, setResumeLocalState] = useState(() => getResumeState());
   const [now, setNow] = useState(() => new Date());
-  const [recentVisits, setRecentVisits] = useState([]);
 
   const homeInitialSurahCount = lowPerfMode
     ? HOME_INITIAL_SURAHS_LOW
@@ -260,7 +192,10 @@ export default function HomePage({ lowPerfMode = false }) {
   );
 
   const hasReadingHistory =
-    currentSurah > 1 || (currentSurah === 1 && currentAyah > 1);
+    displayMode === "page" ||
+    displayMode === "juz" ||
+    currentSurah > 1 ||
+    (currentSurah === 1 && currentAyah > 1);
 
   const availableReciters = useMemo(
     () => getRecitersByRiwaya(riwaya),
@@ -271,16 +206,20 @@ export default function HomePage({ lowPerfMode = false }) {
     () => availableReciters.find((r) => r.id === selectedReciterId) || null,
     [availableReciters, selectedReciterId],
   );
-  const canDirectDownloadSelectedReciter =
-    getReciterSourceInfo(selectedReciter)?.directDownload === true;
   const ActiveReciterDetailPage =
     resolvedReciterDetailPage || ReciterDetailPage;
 
   useEffect(() => {
     startTransition(() => {
-      setActiveTab(displayMode === "juz" ? "juz" : "surah");
+      setActiveTab(
+        state.homeSection === "audio"
+          ? "audio"
+          : displayMode === "juz"
+            ? "juz"
+            : "surah",
+      );
     });
-  }, [displayMode]);
+  }, [displayMode, state.homeSection]);
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(new Date()), 60000);
@@ -288,22 +227,24 @@ export default function HomePage({ lowPerfMode = false }) {
   }, []);
 
   useEffect(() => {
+    const query = window.matchMedia("(max-width: 700px)");
+    const syncLayout = (event) => setCompactHomeLayout(event.matches);
+    query.addEventListener("change", syncLayout);
+    return () => query.removeEventListener("change", syncLayout);
+  }, []);
+
+  useEffect(() => {
     let cancelled = false;
     const cancelIdleLoad = runWhenIdle(async () => {
-      const nextRecentVisits = getRecentVisits();
       try {
         const [bks, ns] = await Promise.all([getAllBookmarks(), getAllNotes()]);
         if (cancelled) return;
         startTransition(() => {
-          setRecentVisits(nextRecentVisits);
           setBookmarks((bks || []).sort((a, b) => b.createdAt - a.createdAt));
           setNotes((ns || []).sort((a, b) => b.updatedAt - a.updatedAt));
         });
       } catch {
-        if (cancelled) return;
-        startTransition(() => {
-          setRecentVisits(nextRecentVisits);
-        });
+        // Favorites and notes remain optional when local storage is unavailable.
       }
     });
     return () => {
@@ -313,7 +254,9 @@ export default function HomePage({ lowPerfMode = false }) {
   }, []);
 
   useEffect(
-    () => runWhenIdle(warmReciterDetail, lowPerfMode ? 900 : 250),
+    // Profiles are useful, but must not compete with the home LCP or an
+    // immediate tap on the resume-reading action on constrained phones.
+    () => runWhenIdle(warmReciterDetail, lowPerfMode ? 2800 : 1600),
     [lowPerfMode, warmReciterDetail],
   );
 
@@ -398,6 +341,7 @@ export default function HomePage({ lowPerfMode = false }) {
     const list = availableReciters.filter((reciter) => {
       const styleMatch =
         reciterStyleFilter === "all" ||
+        (reciterStyleFilter === "favorites" && favorites.has(reciter.id)) ||
         String(reciter.style || "").toLowerCase() === reciterStyleFilter;
       if (!styleMatch) return false;
       if (!normalizedDeferredFilter) return true;
@@ -591,15 +535,6 @@ export default function HomePage({ lowPerfMode = false }) {
     [set, dispatch, warmSurah],
   );
 
-  const goSurahAyah = useCallback(
-    (surah, ayah) => {
-      warmSurah(surah);
-      set({ displayMode: "surah", showHome: false, showDuas: false });
-      dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah: ayah || 1 } });
-    },
-    [set, dispatch, warmSurah],
-  );
-
   const goJuz = useCallback(
     (juz) => {
       warmReadingTarget("juz", juz);
@@ -758,20 +693,16 @@ export default function HomePage({ lowPerfMode = false }) {
     [set],
   );
 
-  const selectInfoTab = useCallback((tabId) => {
-    startTransition(() => {
-      setActiveInfo(tabId);
-    });
-  }, []);
-
   const selectContentTab = useCallback(
     (tabId) => {
-      if (tabId === "recitations") warmRecitationFlow();
+      if (tabId === "audio") warmRecitationFlow();
+      set({ homeSection: tabId });
       startTransition(() => {
+        setFilter("");
         setActiveTab(tabId);
       });
     },
-    [warmRecitationFlow],
+    [set, warmRecitationFlow],
   );
 
   const changeViewMode = useCallback((nextViewMode) => {
@@ -780,9 +711,9 @@ export default function HomePage({ lowPerfMode = false }) {
     });
   }, []);
 
-  const toggleSortDirection = useCallback(() => {
+  const changeSortDirection = useCallback((nextSortDirection) => {
     startTransition(() => {
-      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+      setSortDir(nextSortDirection === "desc" ? "desc" : "asc");
     });
   }, []);
 
@@ -792,17 +723,16 @@ export default function HomePage({ lowPerfMode = false }) {
   );
   const suggestionSet = useMemo(() => getSuggestedSurahs(now), [now]);
   const surahLabel = SURAHS[currentSurah - 1];
-  const progressPct = Math.round((Math.max(1, Math.min(114, currentSurah)) / 114) * 100);
 
   const riwayaLabel =
     riwaya === "warsh"
       ? lang === "fr"
-        ? "Riwaya Warsh"
+        ? "Warsh"
         : lang === "ar"
           ? "رواية ورش"
           : "Warsh"
       : lang === "fr"
-        ? "Riwaya Hafs"
+        ? "Hafs"
         : lang === "ar"
           ? "رواية حفص"
           : "Hafs";
@@ -841,26 +771,6 @@ export default function HomePage({ lowPerfMode = false }) {
     if (h >= 17 && h < 22)
       return { fr: "Bonsoir", en: "Good evening", ar: "مساء الخير" };
     return { fr: "Bonne nuit", en: "Good night", ar: "ليلة طيبة" };
-  }, [now]);
-
-  const currentPrayer = useMemo(() => {
-    const h = now.getHours();
-    if (h >= 4 && h < 7)
-      return { icon: "fa-star", fr: "Fajr", ar: "الفجر", en: "Fajr" };
-    if (h >= 7 && h < 12)
-      return { icon: "fa-sun", fr: "Duha", ar: "الضحى", en: "Duha" };
-    if (h >= 12 && h < 15)
-      return { icon: "fa-sun", fr: "Dhuhr", ar: "الظهر", en: "Dhuhr" };
-    if (h >= 15 && h < 18)
-      return { icon: "fa-cloud-sun", fr: "Asr", ar: "العصر", en: "Asr" };
-    if (h >= 18 && h < 20)
-      return {
-        icon: "fa-cloud-moon",
-        fr: "Maghrib",
-        ar: "المغرب",
-        en: "Maghrib",
-      };
-    return { icon: "fa-moon", fr: "Isha", ar: "العشاء", en: "Isha" };
   }, [now]);
 
   const vodSurahNum = useMemo(() => {
@@ -916,38 +826,23 @@ export default function HomePage({ lowPerfMode = false }) {
   const t = (k) =>
     T[k]?.[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"] ?? k;
 
-  const infoTabs = [
-    {
-      id: "suggest",
-      icon: "fa-lightbulb",
-      label: t("suggest"),
-      count: suggestionSet.surahs.length,
-    },
-    {
-      id: "bookmarks",
-      icon: "fa-bookmark",
-      label: t("bookmarks"),
-      count: bookmarks.length,
-    },
-  ];
-
   const activeCollectionCount =
     activeTab === "surah"
       ? filteredSurahs.length
       : activeTab === "juz"
         ? JUZ_DATA.length
-        : activeTab === "recitations"
-          ? filteredReciters.length
-          : THEMATIC_STATIONS.length + Math.min(8, availableReciters.length);
+        : filteredReciters.length + THEMATIC_STATIONS.length;
 
   const activeCollectionLabel =
     activeTab === "surah"
       ? t("surahs")
       : activeTab === "juz"
         ? t("juz")
-        : activeTab === "recitations"
-          ? t("reciters")
-          : t("radioStations");
+        : lang === "ar"
+          ? "صوتيات"
+          : lang === "en"
+            ? "audio items"
+            : "contenus audio";
 
   const shouldReduceHomeFx = lowPerfMode;
 
@@ -980,71 +875,25 @@ export default function HomePage({ lowPerfMode = false }) {
         isRtl={isRtl}
         now={now}
         riwayaLabel={riwayaLabel}
-        currentPrayer={currentPrayer}
         greeting={greeting}
         shouldReduceHomeFx={shouldReduceHomeFx}
         hasReadingHistory={hasReadingHistory}
         primaryReadingCtaLabel={primaryReadingCtaLabel}
         surahLabel={surahLabel}
+        readingTarget={readingTarget}
+        bookmarks={bookmarks}
+        notes={notes}
         continueReading={continueReading}
         goSurah={goSurah}
         onWarmSurah={warmSurah}
         openDuas={openDuas}
-        t={t}
-        activeInfo={activeInfo}
-        onSelectInfo={selectInfoTab}
-        infoTabs={infoTabs}
-        bookmarks={bookmarks}
         suggestionSet={suggestionSet}
-        goSurahAyah={goSurahAyah}
+        dailyVerse={dailyVerse}
+        vodSurahNum={vodSurahNum}
       />
-
-      <section
-        className="home-top-cards-grid relative z-10"
-        aria-label={
-          lang === "fr"
-            ? "Aperçu de lecture"
-            : lang === "ar"
-              ? "ملخص القراءة"
-              : "Reading overview"
-        }
-      >
-        <DailyVerseCard
-          lang={lang}
-          isRtl={isRtl}
-          now={now}
-          dailyVerse={dailyVerse}
-          vodSurahNum={vodSurahNum}
-          goSurah={goSurah}
-          shouldReduceHomeFx={shouldReduceHomeFx}
-          t={t}
-        />
-        <SessionCard
-          lang={lang}
-          riwayaLabel={riwayaLabel}
-          readingTarget={readingTarget}
-          surahLabel={surahLabel}
-          displayMode={displayMode}
-          bookmarks={bookmarks}
-          notes={notes}
-          progressPct={progressPct}
-          hasReadingHistory={hasReadingHistory}
-          primaryReadingCtaLabel={primaryReadingCtaLabel}
-          continueReading={continueReading}
-          now={now}
-          usePrayerTimes={state.usePrayerTimes}
-          t={t}
-        />
-        <ToolsQuickCard
-          lang={lang}
-          set={set}
-        />
-      </section>
 
       {/* ── Layout principal (stats + grille) ─────────────────────────── */}
       <div className="home-content-zone !relative !z-10">
-        {/* <StatsStrip lang={lang} /> */}
-
         <ContentSection
           lang={lang}
           isRtl={isRtl}
@@ -1057,8 +906,9 @@ export default function HomePage({ lowPerfMode = false }) {
           reciterStyleFilter={reciterStyleFilter}
           onStyleFilterChange={setReciterStyleFilter}
           sortDir={sortDir}
-          onToggleSort={toggleSortDirection}
-          viewMode={viewMode}
+          onChangeSort={changeSortDirection}
+          viewMode={compactHomeLayout ? "list" : viewMode}
+          isCompactLayout={compactHomeLayout}
           onChangeViewMode={changeViewMode}
           activeCollectionCount={activeCollectionCount}
           activeCollectionLabel={activeCollectionLabel}
@@ -1078,13 +928,8 @@ export default function HomePage({ lowPerfMode = false }) {
           playReciterRadio={playReciterRadio}
           playStation={playStation}
           setSelectedReciterId={setSelectedReciterId}
-          availableReciters={availableReciters}
           resumeState={resumeState}
           resumeListening={resumeListening}
-          onSetAudioSpeed={(speed) => {
-            set({ audioSpeed: speed });
-            audioService.setSpeed(speed);
-          }}
           t={(k) => i18nT(k, lang)}
         />
       </div>
@@ -1100,7 +945,6 @@ export default function HomePage({ lowPerfMode = false }) {
                 <ActiveReciterDetailPage
                   lang={lang}
                   reciter={selectedReciter}
-                  canDirectDownload={canDirectDownloadSelectedReciter}
                   onPlayRadio={playReciterRadio}
                   onClose={() => setSelectedReciterId(null)}
                   onPlaySurah={playSurahForReciter}
@@ -1119,7 +963,6 @@ export default function HomePage({ lowPerfMode = false }) {
                       payload: { surah: surahNum, ayah: 1 },
                     });
                   }}
-                  getDownloadUrl={reciterDownloadUrl}
                   dialogRef={reciterModalRef}
                   closeBtnRef={reciterModalCloseBtnRef}
                 />

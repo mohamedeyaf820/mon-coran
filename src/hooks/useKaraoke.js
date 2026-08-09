@@ -5,7 +5,7 @@ import audioService from "../services/audioService";
 import { createPausableAnimationLoop } from "../utils/pausableAnimationLoop";
 
 /**
- * Karaoke model — word-by-word highlighting synchronized with audio.
+ * Karaoke model — verse text highlighting synchronized with audio.
  *
  * Key improvements:
  * - RAF loop parks automatically when audio is paused (no ghost highlights)

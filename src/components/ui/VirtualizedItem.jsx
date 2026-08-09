@@ -92,11 +92,12 @@ export default function VirtualizedItem({
   useLayoutEffect(() => {
     const node = nodeRef.current;
     if (!node) return undefined;
+    const observerRoot = rootRef?.current || node.closest(".app-main-shell") || null;
     return observeNearViewport(
       node,
       setNearViewport,
       rootMargin,
-      rootRef?.current || null,
+      observerRoot,
     );
   }, [rootMargin, rootRef]);
 

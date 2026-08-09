@@ -87,25 +87,23 @@ const getInitialState = () => {
   sidebarOpen: false,
   searchOpen: false,
   settingsOpen: false,
-  bookmarksOpen: false,
-  wirdOpen: false,
-  historyOpen: false,
-  playlistOpen: false,
-  flashcardsOpen: false,
-  tajweedQuizOpen: false,
-  khatmaOpen: false,
-  comparatorOpen: false,
+  libraryOpen: false,
   shareImageOpen: false,
-  weeklyStatsOpen: false,
-  audioMakerOpen: false,
-  toolsHubOpen: false,
-  futureHubOpen: null,
-  // Chaque nouvelle ouverture complète rejoue le splash. Les tests et les
-  // environnements d'intégration peuvent explicitement le désactiver.
+  // Le lancement de marque ne bloque que la première ouverture. Les
+  // ouvertures suivantes de la session affichent directement l'application.
   skipSplashAnimation: Boolean(stored.skipSplashAnimation),
-  splashDone: Boolean(stored.skipSplashAnimation),
+  splashDone:
+    Boolean(stored.skipSplashAnimation) ||
+    (() => {
+      try {
+        return window.sessionStorage.getItem("mushaf-plus:splash-seen") === "1";
+      } catch {
+        return false;
+      }
+    })(),
   tafsirSidebarOpen: false,
   tafsirSidebarVerse: null,
+  readerTypographyOpen: false,
 
   // Quran
   riwaya: initialRiwaya,
@@ -132,17 +130,14 @@ const getInitialState = () => {
   showHome:
     routeOverrides.showHome ??
     (stored.showHome !== undefined ? Boolean(stored.showHome) : true),
+  homeSection: "surah",
   showDuas: routeOverrides.showDuas ?? false,
   legalPage: routeOverrides.legalPage ?? null,
   routeNotFound: routeOverrides.routeNotFound ?? false,
   showTranslation: stored.showTranslation ?? true,
   showTajwid: stored.showTajwid ?? false,
-  showWordByWord:
-    initialRiwaya === "warsh" ? false : (stored.showWordByWord ?? false),
   showTransliteration: stored.showTransliteration ?? true,
-  showWordTranslation: stored.showWordTranslation ?? true,
   translationReadingMode: stored.translationReadingMode ?? false,
-  pinnedAyahs: stored.pinnedAyahs || [],
   translationLangs: stored.translationLangs || [stored.translationLang || "fr"],
   wordTranslationLang:
     stored.wordTranslationLang || stored.translationLang || "fr",
@@ -156,17 +151,15 @@ const getInitialState = () => {
   syncOffsetsMs: stored.syncOffsetsMs || {},
   warshStrictMode: stored.warshStrictMode ?? true,
   favoriteReciters: stored.favoriteReciters || [],
-  autoSelectFastestReciter: stored.autoSelectFastestReciter ?? false,
+  // Le meilleur serveur est choisi automatiquement. Ce choix technique reste
+  // volontairement invisible pour ne pas surcharger l'expérience de lecture.
+  autoSelectFastestReciter: true,
   reciterLatencyByKey: stored.reciterLatencyByKey || {},
   reciterAvailabilityById: stored.reciterAvailabilityById || {},
   isPlaying: false,
   currentPlayingAyah: null,
   playerMinimized: stored.playerMinimized ?? false,
 
-  // Memorization
-  memMode: false,
-  memRepeatCount: 3,
-  memPause: 2,
   surahRepeatCount: (() => {
     const value = Number(stored.surahRepeatCount);
     if (!Number.isFinite(value)) return 1;
@@ -183,11 +176,6 @@ const getInitialState = () => {
   nightEnd: stored.nightEnd || "06:00",
   nightTheme: normalizeNightTheme(stored.nightTheme || "dark"),
   dayTheme: normalizeDayTheme(stored.dayTheme || "light"),
-  usePrayerTimes: stored.usePrayerTimes ?? false,
-
-  // Wird goals
-  wirdGoalType: stored.wirdGoalType || "pages",
-  wirdGoalAmount: stored.wirdGoalAmount || 5,
 
   // Loading
   loading: true,
@@ -275,11 +263,6 @@ export function appReducer(state, action) {
           [targetRiwaya]: normalizedFont,
         };
       }
-      // Word-by-word is supported for Hafs only. Enforce this centrally so
-      // persisted settings and keyboard shortcuts cannot reactivate it in Warsh.
-      if (next.riwaya === "warsh") {
-        next.showWordByWord = false;
-      }
       if (Object.prototype.hasOwnProperty.call(payload, "currentSurah")) {
         next.currentSurah = clampSurah(payload.currentSurah);
         next.currentAyah = clampAyah(
@@ -304,38 +287,10 @@ export function appReducer(state, action) {
       return { ...state, sidebarOpen: !state.sidebarOpen };
     case "TOGGLE_SEARCH":
       return { ...state, searchOpen: !state.searchOpen };
-    case "TOGGLE_MEM_MODE": {
-      const entering = !state.memMode;
-      if (entering) {
-        return {
-          ...state,
-          memMode: true,
-          showHome: false,
-          showDuas: false,
-          legalPage: null,
-          mushafLayout: "list",
-          showWordByWord: false,
-          // Save current layout so we can restore it on exit
-          _prevMushafLayout: state.mushafLayout,
-        };
-      }
-      return {
-        ...state,
-        memMode: false,
-        mushafLayout: state._prevMushafLayout !== undefined ? state._prevMushafLayout : state.mushafLayout,
-        _prevMushafLayout: undefined,
-      };
-    }
     case "TOGGLE_SETTINGS":
       return { ...state, settingsOpen: !state.settingsOpen };
-    case "TOGGLE_BOOKMARKS":
-      return { ...state, bookmarksOpen: !state.bookmarksOpen };
-    case "TOGGLE_WIRD":
-      return { ...state, wirdOpen: !state.wirdOpen };
-    case "TOGGLE_HISTORY":
-      return { ...state, historyOpen: !state.historyOpen };
-    case "TOGGLE_PLAYLIST":
-      return { ...state, playlistOpen: !state.playlistOpen };
+    case "TOGGLE_LIBRARY":
+      return { ...state, libraryOpen: !state.libraryOpen };
 
     case "NAVIGATE_SURAH": {
       const surah = clampSurah(action.payload?.surah);
@@ -454,7 +409,7 @@ export function appReducer(state, action) {
       return { ...state, loading: false, error: action.payload };
 
     case "SPLASH_DONE":
-      return { ...state, splashDone: true };
+      return { ...state, splashDone: true, skipSplashAnimation: true };
 
     default:
       return state;
@@ -522,11 +477,8 @@ export function AppProvider({ children }) {
     wordTranslationLang: state.wordTranslationLang,
     showTranslation: state.showTranslation,
     showTajwid: state.showTajwid,
-    showWordByWord: state.showWordByWord,
     showTransliteration: state.showTransliteration,
-    showWordTranslation: state.showWordTranslation,
     translationReadingMode: state.translationReadingMode,
-    pinnedAyahs: state.pinnedAyahs,
     showHome: state.showHome,
     showDuas: state.showDuas,
     displayMode: state.displayMode,
@@ -547,11 +499,8 @@ export function AppProvider({ children }) {
     nightEnd: state.nightEnd,
     nightTheme: state.nightTheme,
     dayTheme: state.dayTheme,
-    usePrayerTimes: state.usePrayerTimes,
     karaokeFollow: state.karaokeFollow,
     surahRepeatCount: state.surahRepeatCount,
-    wirdGoalType: state.wirdGoalType,
-    wirdGoalAmount: state.wirdGoalAmount,
     lastPosition: {
       surah: state.currentSurah,
       ayah: state.currentAyah,
@@ -572,11 +521,8 @@ export function AppProvider({ children }) {
     state.wordTranslationLang,
     state.showTranslation,
     state.showTajwid,
-    state.showWordByWord,
     state.showTransliteration,
-    state.showWordTranslation,
     state.translationReadingMode,
-    state.pinnedAyahs,
     state.showHome,
     state.showDuas,
     state.displayMode,
@@ -597,11 +543,8 @@ export function AppProvider({ children }) {
     state.nightEnd,
     state.nightTheme,
     state.dayTheme,
-    state.usePrayerTimes,
     state.karaokeFollow,
     state.surahRepeatCount,
-    state.wirdGoalType,
-    state.wirdGoalAmount,
     state.currentSurah,
     state.currentAyah,
     state.currentPage,
@@ -785,36 +728,6 @@ export function AppProvider({ children }) {
     state.dayTheme,
     dispatch,
   ]);
-
-  // Prayer-time based auto-night: compute Fajr/Isha from geolocation
-  // Delay the geolocation request so startup stays responsive.
-  useEffect(() => {
-    if (!state.autoNightMode || !state.usePrayerTimes) return;
-    
-    let cancelled = false;
-    
-    // Delai pour ne pas bloquer le demarrage
-    const timer = setTimeout(() => {
-      if (cancelled) return;
-      import("../services/prayerTimesService")
-        .then(({ fetchPrayerTimes }) => {
-          if (cancelled) return;
-          fetchPrayerTimes((times) => {
-            if (cancelled || !times) return;
-            dispatch({
-              type: "SET",
-              payload: { nightEnd: times.fajr, nightStart: times.isha },
-            });
-          });
-        })
-        .catch(() => {});
-    }, 2000); // Attendre 2 secondes apres le chargement initial
-    
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [state.autoNightMode, state.usePrayerTimes]);
 
   // Listen for system dark-mode changes (auto-apply if user hasn't manually overridden)
   useEffect(() => {

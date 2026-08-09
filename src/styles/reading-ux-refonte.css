@@ -10,7 +10,7 @@
   --reader-card-bg: var(--bg-card, #ffffff);
   --reader-card-border: color-mix(in srgb, var(--border, rgba(148, 163, 184, 0.18)) 60%, transparent 40%);
   --reader-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  --reader-arabic-size: var(--qd-reading-font-size, 42px);
+  --reader-arabic-size: var(--qd-reading-font-size, 48px);
   width: var(--reader-page-max) !important;
   max-width: var(--reader-page-max) !important;
   margin-inline: auto !important;
@@ -24,10 +24,26 @@
   margin-inline: auto !important;
 }
 
+html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.quran-mode-pane {
+  padding-top: 0 !important;
+}
+
 .app-root[data-view="reading"] .quran-display--platform :is(.qc-surah-header-wrap, .reader-toolbar, .mode-nav, .warsh-notice) {
   width: var(--reader-content-max) !important;
   max-width: var(--reader-content-max) !important;
   margin-inline: auto !important;
+}
+
+.app-root[data-view="reading"] .quran-display--platform > .tajweed-legend {
+  margin-inline: clamp(0.72rem, 2vw, 1.6rem) !important;
+  width: auto !important;
+  max-width: none !important;
+}
+
+@media (max-width: 760px) {
+  .app-root[data-view="reading"] .quran-display--platform > .tajweed-legend {
+    margin-inline: 0.48rem !important;
+  }
 }
 
 .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap {
@@ -84,6 +100,7 @@
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-playing {
   background: rgba(var(--primary-rgb), 0.06) !important;
   border-inline-start: 3px solid var(--primary) !important;
+  padding-inline-start: calc(clamp(0.65rem, 1.4vw, 1rem) - 3px) !important;
 }
 
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top {
@@ -116,7 +133,6 @@
   word-spacing: 0.04em !important;
   letter-spacing: 0 !important;
   text-align: right !important;
-  text-align-last: right !important;
   text-shadow: none !important;
   filter: none !important;
   opacity: 1 !important;
@@ -301,10 +317,22 @@ html body .app-root[data-view="reading"] .quran-display--platform .mushaf-page-w
   color: rgba(226, 232, 240, 0.8) !important;
 }
 
-[data-theme="sepia"] .app-root[data-view="reading"] .quran-display--platform
+.app-root[data-view="reading"] .quran-display--platform
   :is(.qc-ayah-transliteration, .transliteration-text, .ayah-transliteration) {
-  color: #5b4938 !important;
-  font-size: clamp(0.78rem, 0.74rem + 0.18vw, 0.92rem) !important;
+  max-width: 72ch;
+  margin: 0.55rem 0 0.25rem !important;
+  padding: 0.08rem 0.2rem 0.08rem 0.8rem !important;
+  border: 0 !important;
+  border-left: 2px solid color-mix(in srgb, var(--primary) 28%, var(--border)) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: color-mix(in srgb, var(--text-secondary) 88%, var(--primary) 12%) !important;
+  font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif !important;
+  font-size: clamp(0.8rem, 0.76rem + 0.18vw, 0.94rem) !important;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.012em;
+  line-height: 1.72 !important;
   opacity: 1 !important;
 }
 
@@ -384,101 +412,10 @@ html body .app-root[data-view="reading"] .quran-display--platform .mushaf-page-w
 
 /* The list layout breathes with the Arabic text-size preference. Keep this
  * after the device overrides so reducing A- compacts the complete verse card,
- * not only its glyphs. Word-by-word has its own denser grid contract. */
-.app-root[data-view="reading"]
-  .quran-display--platform:not(.quran-display--word-by-word)
-  .quran-mode-pane:not(.quran-mode-pane--mushaf)
-  .qc-list-card.qc-list-card {
-  padding: var(--qd-list-card-padding-block, 0.75rem)
-    var(--qd-list-card-padding-inline, 1rem) !important;
-}
-
-.app-root[data-view="reading"]
-  .quran-display--platform:not(.quran-display--word-by-word)
-  .quran-mode-pane:not(.quran-mode-pane--mushaf)
-  .qc-list-card__top {
-  gap: var(--qd-list-content-gap, 0.5rem) !important;
-  margin-bottom: var(--qd-list-section-gap, 0.65rem) !important;
-}
-
-.app-root[data-view="reading"]
-  .quran-display--platform:not(.quran-display--word-by-word)
-  .quran-mode-pane:not(.quran-mode-pane--mushaf)
-  .qc-list-card > .flex-1 {
-  gap: var(--qd-list-content-gap, 0.5rem) !important;
-}
-
-.app-root[data-view="reading"]
-  .quran-display--platform:not(.quran-display--word-by-word)
-  .quran-mode-pane:not(.quran-mode-pane--mushaf)
-  .qc-list-card .qc-ayah-text-ar {
-  margin-bottom: 0 !important;
-  padding-block: 0 !important;
-}
-
-.app-root[data-view="reading"]
-  .quran-display--platform:not(.quran-display--word-by-word)
-  .quran-mode-pane:not(.quran-mode-pane--mushaf)
-  .qc-list-card__translation-slot:not(.is-loading) {
-  min-height: 0 !important;
-}
-
-.app-root[data-view="reading"]
-  .quran-display--platform:not(.quran-display--word-by-word)
-  .quran-mode-pane:not(.quran-mode-pane--mushaf)
-  .qc-list-card__translation-slot.is-loading {
-  min-height: var(--qd-list-loading-height, 3.5rem) !important;
-}
-
-.app-root[data-view="reading"]
-  .quran-display--platform:not(.quran-display--word-by-word)
-  .quran-mode-pane:not(.quran-mode-pane--mushaf)
-  .qc-list-card__study {
-  margin-top: 0 !important;
-  padding-top: var(--qd-list-section-gap, 0.65rem) !important;
-}
-
-.app-root[data-view="reading"]
-  .quran-display--platform:not(.quran-display--word-by-word)
-  .quran-mode-pane:not(.quran-mode-pane--mushaf)
-  .qcom-list-study-links {
-  gap: var(--qd-list-content-gap, 0.5rem) !important;
-}
+ * not only its glyphs. */
 
 /* Pointer devices can visually scale the controls with the text. Phones and
  * tablets retain the 44px touch contract declared below. */
-@media (pointer: fine) and (min-width: 761px) {
-  .app-root[data-view="reading"]
-    .quran-display--platform:not(.quran-display--word-by-word)
-    .quran-mode-pane:not(.quran-mode-pane--mushaf)
-    .qc-list-card__top .ayah-actions button {
-    width: var(--qd-list-control-size, 2.5rem) !important;
-    min-width: var(--qd-list-control-size, 2.5rem) !important;
-    height: var(--qd-list-control-size, 2.5rem) !important;
-    min-height: var(--qd-list-control-size, 2.5rem) !important;
-  }
-
-  .app-root[data-view="reading"]
-    .quran-display--platform:not(.quran-display--word-by-word)
-    .quran-mode-pane:not(.quran-mode-pane--mushaf)
-    .qc-list-card__top .ayah-actions button svg {
-    width: var(--qd-list-icon-size, 0.82rem) !important;
-    min-width: var(--qd-list-icon-size, 0.82rem) !important;
-    height: var(--qd-list-icon-size, 0.82rem) !important;
-  }
-}
-
-@media (pointer: coarse) {
-  .app-root[data-view="reading"]
-    .quran-display--platform:not(.quran-display--word-by-word)
-    .quran-mode-pane:not(.quran-mode-pane--mushaf)
-    :is(.qc-list-card__reference, .qc-list-card__top .ayah-actions button) {
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
-  }
-}
 .reader-source-status {
   display: flex;
   flex-wrap: wrap;

@@ -5,7 +5,10 @@ import {
   getRulesForRiwaya,
   stabilizeTajwidSegments,
 } from "../src/data/tajwidRules.js";
-import { normalizeQuranGlyphText } from "../src/utils/quranUtils.js";
+import {
+  getReadableWaqfGlyph,
+  normalizeQuranGlyphText,
+} from "../src/utils/quranUtils.js";
 
 test("tajwid segments keep leading Arabic marks attached to their base glyph", () => {
   const segments = stabilizeTajwidSegments([
@@ -69,6 +72,27 @@ test("QPC filled fallback dots are normalized to the canonical Quranic sign", ()
 
   assert.equal(rendered.includes("\u06EC"), false);
   assert.equal(rendered.includes("\u06EB"), true);
+});
+
+test("Al-Mulk waqf marks cannot be isolated by a zero-width separator", () => {
+  const source = "\u0639\u064E\u0645\u064E\u0644\u0627\u064B\u200C\u06DA \u0648\u064E\u0647\u064F\u0648\u064E";
+  const normalized = normalizeQuranGlyphText(source);
+  const segments = stabilizeTajwidSegments([
+    { text: "\u0639\u064E\u0645\u064E\u0644\u0627\u064B\u200C", ruleId: null },
+    { text: "\u06DA \u0648\u064E\u0647\u064F\u0648\u064E", ruleId: null },
+  ]);
+  const rendered = segments.map((segment) => segment.text).join("");
+
+  assert.equal(normalized, "\u0639\u064E\u0645\u064E\u0644\u0627\u064B\u06DA \u0648\u064E\u0647\u064F\u0648\u064E");
+  assert.equal(rendered.includes("\u200C\u06DA"), false);
+  assert.equal(rendered.includes("\u06DA"), true);
+});
+
+test("interactive waqf signs use readable glyphs instead of dotted-circle combining marks", () => {
+  assert.equal(getReadableWaqfGlyph("\u06D6"), "\u0635\u0644\u0649");
+  assert.equal(getReadableWaqfGlyph("\u06DA"), "\u062C");
+  assert.equal(getReadableWaqfGlyph("\u06DB"), "\u2234");
+  assert.equal(getReadableWaqfGlyph("\u06DC"), "\u0633");
 });
 
 test("Hafs and Warsh use the shared Quran.com Tajweed color semantics", () => {

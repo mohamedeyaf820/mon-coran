@@ -1,13 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { existsSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
 import { getAudioPlayerLabels } from "../src/components/audioPlayer/audioPlayerLabels.js";
 import {
-  clampCardPosition,
   formatAudioTime,
   getReciterCooldownMs,
 } from "../src/components/audioPlayer/audioPlayerUtils.js";
 import { createPausableAnimationLoop } from "../src/utils/pausableAnimationLoop.js";
+
+const source = (relativePath) =>
+  readFileSync(new URL(`../${relativePath}`, import.meta.url), "utf8");
 
 test("audio utils: formats playback time safely", () => {
   assert.equal(formatAudioTime(undefined), "0:00");
@@ -24,21 +28,6 @@ test("audio utils: reciter cooldown grows within defined bounds", () => {
   assert.equal(getReciterCooldownMs(1), 30_000);
   assert.equal(getReciterCooldownMs(2), 8 * 60 * 1000);
   assert.equal(getReciterCooldownMs(99), 4 * 60 * 60 * 1000);
-});
-
-test("audio utils: clamps draggable player inside viewport", () => {
-  assert.deepEqual(
-    clampCardPosition(-40, -20, 320, 220, 12, { width: 1024, height: 768 }),
-    { x: 12, y: 12 },
-  );
-  assert.deepEqual(
-    clampCardPosition(980, 760, 320, 220, 12, { width: 1024, height: 768 }),
-    { x: 692, y: 536 },
-  );
-  assert.deepEqual(
-    clampCardPosition(300, 240, 420, 520, 12, { width: 360, height: 420 }),
-    { x: 12, y: 12 },
-  );
 });
 
 test("audio labels: core controls are available in every UI language", () => {
@@ -59,6 +48,40 @@ test("audio labels: core controls are available in every UI language", () => {
       assert.ok(labels[key].length > 0, `${lang}.${key} should not be empty`);
     }
   }
+});
+
+test("audio player exposes only compact and expanded positions", () => {
+  const player = source("src/components/AudioPlayer.jsx");
+  const view = source("src/components/audioPlayer/SimpleAudioPlayerView.jsx");
+  assert.doesNotMatch(player, /playerPosition|handlePlayerDrag|saveCardPos/);
+  assert.doesNotMatch(view, /data-player-drag|onDragPointerDown/);
+  assert.match(view, /data-player-state/);
+  assert.match(view, /CompactPlayer/);
+  assert.match(view, /OpenPlayer/);
+});
+
+test("audio defaults stay in settings while advanced controls adapt inside the player", () => {
+  const settings = source("src/components/SettingsModal.jsx");
+  const playback = source("src/components/audioPlayer/PlaybackSettingsPanel.jsx");
+  const storage = source("src/services/storageService.js");
+  assert.match(settings, /settings-audio-speed/);
+  assert.match(settings, /settings-audio-volume/);
+  assert.match(playback, /Réglages audio avancés/);
+  assert.match(playback, /!isMobile/);
+  assert.match(playback, /setSurahRepeatSetting\(10\)/);
+  assert.match(storage, /autoSelectFastestReciter: true/);
+});
+
+test("retired audio maker and reciter comparator components are deleted", () => {
+  const root = new URL("../", import.meta.url);
+  assert.equal(
+    existsSync(fileURLToPath(new URL("src/components/AudioMakerPanel.jsx", root))),
+    false,
+  );
+  assert.equal(
+    existsSync(fileURLToPath(new URL("src/components/ReciterComparatorPanel.jsx", root))),
+    false,
+  );
 });
 
 test("karaoke frame loop cancels all animation work while paused", () => {

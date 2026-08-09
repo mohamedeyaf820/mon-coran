@@ -17,7 +17,6 @@ import { ensureReciterForRiwaya } from "../data/reciters";
 import { getKaraokeCalibration } from "../utils/karaokeUtils";
 import Footer from "./Footer";
 import SurahMode from "./QuranDisplay/SurahMode";
-import VerseCompareTray from "./QuranDisplay/VerseCompareTray";
 import WarshNotice from "./QuranDisplay/WarshNotice";
 import ReaderSourceStatus from "./QuranDisplay/ReaderSourceStatus";
 import { createDisplayClasses } from "./QuranDisplay/displayClasses";
@@ -56,7 +55,6 @@ export default function QuranDisplay() {
       isPlaying: current.isPlaying,
       lang: current.lang,
       loading: current.loading,
-      memMode: current.memMode,
       mushafLayout: current.mushafLayout,
       quranFontSize: current.quranFontSize,
       quranTranslationFontSize: current.quranTranslationFontSize,
@@ -66,8 +64,6 @@ export default function QuranDisplay() {
       showTajwid: current.showTajwid,
       showTranslation: current.showTranslation,
       showTransliteration: current.showTransliteration,
-      showWordByWord: current.showWordByWord,
-      showWordTranslation: current.showWordTranslation,
       syncOffsetsMs: current.syncOffsetsMs,
       translationLangs: current.translationLangs,
       warshStrictMode: current.warshStrictMode,
@@ -87,7 +83,6 @@ export default function QuranDisplay() {
     isPlaying,
     lang,
     loading,
-    memMode,
     mushafLayout,
     quranFontSize,
     quranTranslationFontSize,
@@ -96,8 +91,6 @@ export default function QuranDisplay() {
     showTajwid,
     showTranslation,
     showTransliteration,
-    showWordByWord,
-    showWordTranslation,
     syncOffsetsMs,
     translationLangs,
     warshStrictMode,
@@ -123,6 +116,8 @@ export default function QuranDisplay() {
       lang,
       showHome: state.showHome,
       riwaya,
+      mushafLayout,
+      showTransliteration,
       warshStrictMode,
     });
   const { getTranslationForAyah, translationState } = useQuranTranslations({
@@ -226,9 +221,6 @@ export default function QuranDisplay() {
     currentSurah,
     dispatch,
     prepareTarget: prepareReadingTarget,
-    riwaya,
-    set,
-    showWordByWord,
   });
 
   useQuranDisplayPrefetch({
@@ -251,43 +243,12 @@ export default function QuranDisplay() {
     (id) => setActiveAyah((current) => (current === id ? null : id)),
     [],
   );
-  const handleNavigateToAyah = useCallback(
-    ({ surah, ayah }) => {
-      const match = ayahs.find(
-        (a) =>
-          Number(a.numberInSurah) === Number(ayah) &&
-          Number(a.surah?.number || a.surah) === Number(surah),
-      );
-      if (match) {
-        setActiveAyah(displayMode === "surah" ? ayah : match.number);
-        const elementId =
-          displayMode === "surah" ? `ayah-${ayah}` : `ayah-${match.number}`;
-        document.getElementById(elementId)?.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-      } else {
-        dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah } });
-        setActiveAyah(ayah);
-      }
-    },
-    [ayahs, displayMode, dispatch],
-  );
   const toggleMushaf = useCallback(() => {
     set({
       mushafLayout: mushafLayout === "mushaf" ? "list" : "mushaf",
-      showWordByWord: false,
-      memMode: false,
       showTajwid: true,
     });
   }, [mushafLayout, set]);
-  const toggleMemorization = useCallback(() => {
-    dispatch({ type: "TOGGLE_MEM_MODE" });
-  }, [dispatch]);
-
-  const exitMemorization = useCallback(() => {
-    set({ memMode: false, mushafLayout: "list", showWordByWord: false });
-  }, [set]);
   const openHome = useCallback(() => {
     set({
       focusReading: false,
@@ -423,36 +384,6 @@ export default function QuranDisplay() {
     <>
       <div className="reading-progress-bar" aria-hidden="true" />
 
-      {/* Memorization exit action, only visible while memMode is active. */}
-      {memMode && (
-        <button
-          onClick={exitMemorization}
-          className="fixed bottom-[calc(var(--player-h,72px)+1.25rem)] left-1/2 -translate-x-1/2 z-[350] flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-bold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-          style={{
-            background:
-              "linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 70%, #d4a820 30%))",
-            boxShadow:
-              "0 4px 18px rgba(var(--primary-rgb), 0.45), 0 1px 4px rgba(0,0,0,0.15)",
-          }}
-          aria-label={
-            lang === "fr"
-              ? "Quitter le mode mémorisation"
-              : lang === "ar"
-                ? "الخروج من وضع الحفظ"
-                : "Exit memorization mode"
-          }
-        >
-          <Icon name="brain" size={14} />
-          <span>
-            {lang === "fr"
-              ? "Quitter mémorisation"
-              : lang === "ar"
-                ? "خروج من الحفظ"
-                : "Exit memorization"}
-          </span>
-          <Icon name="xmark" size={14} className="opacity-80" />
-        </button>
-      )}
       {riwaya === "warsh" && isWarshFallback ? (
         <WarshNotice
           badgeLabel={t("settings.warshFallbackBadge", lang)}
@@ -465,7 +396,7 @@ export default function QuranDisplay() {
         translationState={showTranslation ? translationState : "idle"}
       />
       <div
-        className={`quran-display quran-display--${riwaya} quran-display--platform${showWordByWord ? " quran-display--word-by-word" : ""}`}
+        className={`quran-display quran-display--${riwaya} quran-display--platform`}
         data-quran-font={fontFamily}
         ref={view.contentRef}
         aria-busy={readerBusy}
@@ -484,16 +415,12 @@ export default function QuranDisplay() {
             getTranslationForAyah={getTranslationForAyah}
             isQCF4={isQCF4}
             lang={lang}
-            memMode={memMode}
             mushafLayout={mushafLayout}
-            onNavigateToAyah={handleNavigateToAyah}
             onNextSurah={navigation.goNextSurah}
             onPlaySurah={playSurah}
             onPrevSurah={navigation.goPrevSurah}
             onToggleActive={toggleAyah}
-            onToggleMemorization={toggleMemorization}
             onToggleMushaf={toggleMushaf}
-            onToggleWordByWord={navigation.toggleWordByWordMode}
             pageGroups={pageGroups}
             preparingSurah={preparingSurah}
             readingFontSize={view.readingFontSize}
@@ -501,8 +428,6 @@ export default function QuranDisplay() {
             showTajwid={showTajwid}
             showTranslation={showTranslation}
             showTransliteration={showTransliteration}
-            showWordByWord={showWordByWord}
-            showWordTranslation={showWordTranslation}
             theme={state.theme}
           />
         ) : null}
@@ -529,16 +454,12 @@ export default function QuranDisplay() {
               getTranslationForAyah={getTranslationForAyah}
               isQCF4={isQCF4}
               lang={lang}
-              memMode={memMode}
               mushafLayout={mushafLayout}
-              onNavigateToAyah={handleNavigateToAyah}
               onNextPage={navigation.goNextPage}
               onPlaySurah={playSurah}
               onPrevPage={navigation.goPrevPage}
               onToggleActive={toggleAyah}
-              onToggleMemorization={toggleMemorization}
               onToggleMushaf={toggleMushaf}
-              onToggleWordByWord={navigation.toggleWordByWordMode}
               pageGroups={pageGroups}
               pageTopSurah={pageTopSurah}
               preparingSurah={preparingSurah}
@@ -547,8 +468,6 @@ export default function QuranDisplay() {
               showTajwid={showTajwid}
               showTranslation={showTranslation}
               showTransliteration={showTransliteration}
-              showWordByWord={showWordByWord}
-              showWordTranslation={showWordTranslation}
               surahGroups={surahGroups}
               theme={state.theme}
             />
@@ -574,17 +493,13 @@ export default function QuranDisplay() {
               getTranslationForAyah={getTranslationForAyah}
               isQCF4={isQCF4}
               lang={lang}
-              memMode={memMode}
               mushafLayout={mushafLayout}
-              onNavigateToAyah={handleNavigateToAyah}
               onNextJuz={navigation.goNextJuz}
               onPlayJuz={playSurah}
               onPlaySpecificSurah={playSpecificSurah}
               onPrevJuz={navigation.goPrevJuz}
               onToggleActive={toggleAyah}
-              onToggleMemorization={toggleMemorization}
               onToggleMushaf={toggleMushaf}
-              onToggleWordByWord={navigation.toggleWordByWordMode}
               pageGroups={pageGroups}
               preparingSurah={preparingSurah}
               readingFontSize={view.readingFontSize}
@@ -592,8 +507,6 @@ export default function QuranDisplay() {
               showTajwid={showTajwid}
               showTranslation={showTranslation}
               showTransliteration={showTransliteration}
-              showWordByWord={showWordByWord}
-              showWordTranslation={showWordTranslation}
               surahGroups={surahGroups}
               theme={state.theme}
             />
@@ -618,7 +531,6 @@ export default function QuranDisplay() {
             <Icon name="chevron-up" size={20} />
           </button>
         ) : null}
-        <VerseCompareTray lang={lang} />
         <Footer
           goSurah={(surah) => {
             set({ displayMode: "surah", showHome: false, showDuas: false });

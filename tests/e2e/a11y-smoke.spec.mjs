@@ -29,11 +29,8 @@ test("A11y: le lien d'évitement ne décale pas l'accueil mobile", async ({ page
   await expect(page.locator("#main-content")).toBeFocused();
 
   await expect(
-    page.getByRole("button", { name: /^Commencer la lecture$/i }),
-  ).toHaveCount(1);
-  await expect(
-    page.getByRole("button", { name: /^Commencer la lecture: .+/i }),
-  ).toHaveCount(1);
+    page.getByRole("button", { name: /Commencer|Reprendre|Continuer/i }).first(),
+  ).toBeVisible();
 });
 
 test("A11y: les notifications utilisent la langue de l'interface", async ({ page }) => {

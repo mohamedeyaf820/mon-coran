@@ -41,13 +41,10 @@ function AyahList({
   showPageSeparators = false,
   showTajwid,
   showTranslation,
-  showWordByWord,
   showTransliteration,
-  showWordTranslation,
   calibration,
   riwaya,
   fontSize,
-  memMode,
   onToggleActive,
   getToggleId,
   getAyahId,
@@ -55,10 +52,7 @@ function AyahList({
 }) {
   const useContinuousFlow =
     !showTranslation &&
-    !showWordByWord &&
-    !showTransliteration &&
-    !showWordTranslation &&
-    !memMode;
+    !showTransliteration;
 
   const playingAnnouncement = currentPlayingAyah
     ? `${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
@@ -164,15 +158,12 @@ function AyahList({
               trans={trans}
               showTajwid={showTajwid}
               showTranslation={showTranslation}
-              showWordByWord={showWordByWord}
               showTransliteration={showTransliteration}
-              showWordTranslation={showWordTranslation}
               surahNum={surahNumber || currentSurah}
               calibration={calibration}
               riwaya={riwaya}
               lang={lang}
               fontSize={fontSize}
-              memMode={memMode}
               toggleId={toggleId}
               onToggleActive={onToggleActive}
             />

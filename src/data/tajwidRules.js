@@ -400,6 +400,15 @@ export function stabilizeTajwidSegments(segments = []) {
 
     const leadingMarks = segmentText.match(LEADING_ARABIC_MARKS)?.[0] || "";
     if (leadingMarks && stabilized.length > 0) {
+      // Quran.com can place ZWNJ at the end of one segment and the waqf mark at
+      // the start of the next. Keeping that separator would still isolate the
+      // combining mark after segmentation and make Chromium draw a black
+      // dotted-circle fallback.
+      if (/^[\u06D6-\u06ED]/u.test(leadingMarks)) {
+        stabilized[stabilized.length - 1].text = stabilized[
+          stabilized.length - 1
+        ].text.replace(/\u200C$/u, "");
+      }
       stabilized[stabilized.length - 1].text += leadingMarks;
       segmentText = segmentText.slice(leadingMarks.length);
     }
@@ -447,7 +456,8 @@ function _cacheSet(cache, maxSize, key, value) {
 export function parseTajwid(text, riwaya = "hafs") {
   if (!text) return [{ text: "", ruleId: null }];
 
-  const cacheKey = `${riwaya}:${text}`;
+  const clean = String(text).replace(/[<>]/g, '');
+  const cacheKey = `${riwaya}:${clean}`;
   const cached = _cacheGet(_parseTajwidCache, cacheKey);
   if (cached) return cached;
 
@@ -460,7 +470,7 @@ export function parseTajwid(text, riwaya = "hafs") {
       // Reset regex state
       const re = new RegExp(pattern.source, pattern.flags);
       let m;
-      while ((m = re.exec(text)) !== null) {
+      while ((m = re.exec(clean)) !== null) {
         matches.push({
           start: m.index,
           end: m.index + m[0].length,
@@ -472,7 +482,7 @@ export function parseTajwid(text, riwaya = "hafs") {
   }
 
   if (matches.length === 0) {
-    const result = stabilizeTajwidSegments([{ text, ruleId: null }]);
+    const result = stabilizeTajwidSegments([{ text: clean, ruleId: null }]);
     _cacheSet(_parseTajwidCache, _PARSE_CACHE_MAX, cacheKey, result);
     return result;
   }
@@ -495,13 +505,13 @@ export function parseTajwid(text, riwaya = "hafs") {
   let pos = 0;
   for (const m of cleaned) {
     if (m.start > pos) {
-      segments.push({ text: text.slice(pos, m.start), ruleId: null });
+      segments.push({ text: clean.slice(pos, m.start), ruleId: null });
     }
     segments.push({ text: m.text, ruleId: m.ruleId });
     pos = m.end;
   }
-  if (pos < text.length) {
-    segments.push({ text: text.slice(pos), ruleId: null });
+  if (pos < clean.length) {
+    segments.push({ text: clean.slice(pos), ruleId: null });
   }
 
   const stabilizedSegments = stabilizeTajwidSegments(segments);

@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
 test("verse actions open as a compact, usable mobile sheet", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript((settingsKey) => {
     window.localStorage.setItem(
@@ -27,13 +29,14 @@ test("verse actions open as a compact, usable mobile sheet", async ({ page }) =>
   const dialog = page.locator(".ayah-actions-modal[role='dialog']");
   const panel = dialog.locator(".ayah-actions-modal__panel");
   await expect(dialog).toBeVisible();
-  await expect(dialog.locator(".ayah-action-card")).toHaveCount(6);
+  await expect(dialog.locator(".ayah-action-card")).toHaveCount(3);
   await expect(dialog.locator(".ayah-actions__grid")).toHaveCSS(
     "grid-template-columns",
     /^\d+(?:\.\d+)?px \d+(?:\.\d+)?px$/,
   );
   await expect(dialog.getByRole("button", { name: /couter$/ })).toBeVisible();
-  await expect(dialog.getByRole("button", { name: /tude$/ })).toBeVisible();
+  await expect(dialog.getByRole("button", { name: /Favori/ })).toBeVisible();
+  await expect(dialog.getByRole("button", { name: /Plus d.actions/ })).toBeVisible();
   await expect(panel).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 0)");
 
   const panelBox = await panel.boundingBox();
@@ -44,11 +47,10 @@ test("verse actions open as a compact, usable mobile sheet", async ({ page }) =>
   await expect(badges.first()).toHaveCSS("display", "flex");
   await expect(badges.first()).toHaveCSS("white-space", "nowrap");
   const firstBadgeBox = await badges.nth(0).boundingBox();
-  const secondBadgeBox = await badges.nth(1).boundingBox();
-  expect(Math.abs((firstBadgeBox?.y || 0) - (secondBadgeBox?.y || 0))).toBeLessThan(3);
+  expect(firstBadgeBox?.height || 0).toBeGreaterThan(20);
 
-  await dialog.getByRole("button", { name: "Ajouter aux favoris" }).click();
-  await expect(dialog.getByRole("button", { name: "Retirer le favori" })).toBeVisible();
+  await dialog.getByRole("button", { name: "Favori" }).click();
+  await expect(dialog.getByRole("button", { name: "Favori" })).toHaveAttribute("aria-pressed", "true");
 
   await page.screenshot({
     path: "test-results/ayah-actions-modal-mobile.png",
@@ -56,7 +58,8 @@ test("verse actions open as a compact, usable mobile sheet", async ({ page }) =>
   });
 });
 
-test("verse sharing opens every network with the selected verse link", async ({ page }) => {
+test("verse sharing creates and shares a real PNG card", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript((settingsKey) => {
     window.localStorage.setItem(
@@ -71,23 +74,24 @@ test("verse sharing opens every network with the selected verse link", async ({ 
         mushafLayout: "mushaf",
       }),
     );
-    window.__shareUrls = [];
-    window.__copiedVerse = "";
-    window.open = (url) => {
-      window.__shareUrls.push(String(url));
-      return null;
-    };
+    window.__sharedImage = null;
     Object.defineProperty(navigator, "share", {
       configurable: true,
-      value: undefined,
-    });
-    Object.defineProperty(navigator, "clipboard", {
-      configurable: true,
-      value: {
-        writeText: async (value) => {
-          window.__copiedVerse = String(value);
-        },
+      value: async (payload) => {
+        const file = payload.files?.[0];
+        const bytes = file ? new Uint8Array(await file.arrayBuffer()) : [];
+        window.__sharedImage = {
+          type: file?.type,
+          name: file?.name,
+          size: file?.size,
+          signature: Array.from(bytes.slice(0, 4)),
+          includesText: Boolean(payload.text),
+        };
       },
+    });
+    Object.defineProperty(navigator, "canShare", {
+      configurable: true,
+      value: (payload) => payload.files?.[0]?.type === "image/png",
     });
   }, SETTINGS_KEY);
 
@@ -95,37 +99,49 @@ test("verse sharing opens every network with the selected verse link", async ({ 
   await page.getByRole("button", { name: "Verset 1" }).first().click();
 
   const actionsDialog = page.locator(".ayah-actions-modal[role='dialog']");
-  const shareSheet = page.locator(".ayah-action-sheet--share");
-  const openShareSheet = async () => {
-    await actionsDialog.getByRole("button", { name: "Partager", exact: true }).click();
-    await expect(shareSheet).toBeVisible();
-    const layers = await page.evaluate(() => ({
-      modal: Number.parseInt(getComputedStyle(document.querySelector(".ayah-actions-modal")).zIndex, 10),
-      sheet: Number.parseInt(getComputedStyle(document.querySelector(".ayah-action-sheet--share")).zIndex, 10),
-    }));
-    expect(layers.sheet).toBeGreaterThan(layers.modal);
-  };
+  await actionsDialog.getByRole("button", { name: /Plus d.actions/ }).click();
+  await page.getByRole("menuitem", { name: "Partager en image" }).click();
 
-  const destinations = [
-    ["WhatsApp", "https://wa.me/"],
-    ["Telegram", "https://t.me/share/url"],
-    ["X / Twitter", "https://x.com/intent/tweet"],
-    ["Facebook", "https://www.facebook.com/sharer/sharer.php"],
-    ["Email", "mailto:?subject="],
-  ];
+  const studio = page.getByRole("dialog", { name: "Partager le verset en image" });
+  await expect(studio).toBeVisible();
+  await expect(studio.locator(".share-studio__preview-frame img")).toBeVisible();
+  await expect(studio.locator(".share-format-picker button")).toHaveCount(3);
+  await expect(studio.locator(".share-theme-picker button")).toHaveCount(3);
+  await expect(studio.locator(".share-studio__quick-setting")).toBeVisible();
+  await expect(studio.locator("textarea, .share-editor")).toHaveCount(0);
+  await page.screenshot({
+    path: "test-results/verse-share-studio-mobile.png",
+    fullPage: false,
+  });
 
-  for (const [label, prefix] of destinations) {
-    await openShareSheet();
-    await shareSheet.getByRole("button", { name: label, exact: true }).click();
-    await expect(shareSheet).toBeHidden();
-    const opened = await page.evaluate(() => window.__shareUrls.at(-1));
-    expect(opened).toMatch(new RegExp(`^${prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`));
-    expect(decodeURIComponent(opened)).toContain("/surah/8/1");
-  }
+  await page.setViewportSize({ width: 768, height: 900 });
+  await expect(studio.locator(".share-studio__workspace")).toHaveCSS(
+    "grid-template-columns",
+    /^\d+(?:\.\d+)?px$/,
+  );
+  await page.screenshot({
+    path: "test-results/verse-share-studio-tablet.png",
+    fullPage: false,
+  });
 
-  await openShareSheet();
-  await shareSheet.getByRole("button", { name: "Texte de partage" }).click();
-  const copied = await page.evaluate(() => window.__copiedVerse);
-  expect(copied).toContain("https://mushafplus.netlify.app/surah/8/1");
-  expect(copied).toContain("8");
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await expect(studio.locator(".share-studio__workspace")).toHaveCSS(
+    "grid-template-columns",
+    /^\d+(?:\.\d+)?px \d+(?:\.\d+)?px$/,
+  );
+  const studioBox = await studio.boundingBox();
+  expect(studioBox?.width || 0).toBeLessThanOrEqual(880);
+  await page.screenshot({
+    path: "test-results/verse-share-studio-desktop.png",
+    fullPage: false,
+  });
+
+  await studio.getByRole("button", { name: "Partager l’image" }).click();
+  await expect.poll(() => page.evaluate(() => window.__sharedImage)).not.toBeNull();
+  const shared = await page.evaluate(() => window.__sharedImage);
+  expect(shared.type).toBe("image/png");
+  expect(shared.name).toMatch(/^mushafplus-8-1-square\.png$/);
+  expect(shared.size).toBeGreaterThan(10_000);
+  expect(shared.signature).toEqual([137, 80, 78, 71]);
+  expect(shared.includesText).toBe(false);
 });

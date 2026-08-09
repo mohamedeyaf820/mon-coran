@@ -15,7 +15,7 @@ import {
   readLocalStorageWithSchema,
   writeLocalStorageJson,
   downloadProgressMapSchema,
-  memorizationMapSchema,
+  noteRecordSchema,
 } from "../src/services/storageValidation.js";
 
 function createMockStorage() {
@@ -239,14 +239,14 @@ test("storage: rejects invalid localStorage key format", () => {
   assert.equal(ok, false);
 });
 
-test("storage: validates schema and returns fallback on corruption", () => {
+test("storage: validates a saved note and returns fallback on corruption", () => {
   globalThis.localStorage = createMockStorage();
-  localStorage.setItem("mushafplus_memorization_v1", JSON.stringify({ "x:y": 99 }));
+  localStorage.setItem("mushafplus_note_test", JSON.stringify({ id: "x:y", text: 99 }));
 
   const fallback = {};
   const value = readLocalStorageWithSchema(
-    "mushafplus_memorization_v1",
-    memorizationMapSchema,
+    "mushafplus_note_test",
+    noteRecordSchema,
     fallback,
   );
 

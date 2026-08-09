@@ -1,5 +1,3 @@
-/* Recitation library — editorial audio experience */
-
 .reciter-detail-overlay {
     z-index: 1100 !important;
     padding: clamp(0.5rem, 2vw, 1.4rem) !important;
@@ -15,14 +13,14 @@
     isolation: isolate;
     position: relative;
     display: flex;
-    width: min(1040px, calc(100vw - 1rem));
-    max-width: 1040px !important;
+    width: min(920px, calc(100vw - 1rem));
+    max-width: 920px !important;
     max-height: min(92dvh, 820px);
     min-height: min(640px, calc(100dvh - 1rem));
     flex-direction: column;
     overflow: hidden;
     border: 1px solid var(--theme-border);
-    border-radius: 26px !important;
+    border-radius: 22px !important;
     background: var(--theme-surface) !important;
     color: var(--text-primary);
     box-shadow:
@@ -95,9 +93,11 @@
 .rd-sticky-head {
     position: relative;
     flex: 0 0 auto;
-    padding: 1rem 1.25rem 0.9rem;
+    padding: 1rem 1.25rem;
     border-bottom: 1px solid var(--border);
-    background: var(--theme-surface);
+    background:
+        radial-gradient(circle at 8% 16%, rgba(var(--primary-rgb), 0.1), transparent 30%),
+        var(--theme-surface);
 }
 
 .reciter-detail__close {
@@ -217,7 +217,7 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 0.55rem;
-    margin-top: 0.7rem;
+    margin-top: 0.8rem;
 }
 
 .reciter-radio-button,
@@ -262,11 +262,11 @@
     display: grid;
     grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
     align-items: start;
-    gap: 1rem;
+    gap: 1.15rem;
     min-height: 0;
     flex: 1 1 auto;
     overflow-y: auto;
-    padding: 1rem 1.15rem 1.2rem;
+    padding: 1.05rem 1.2rem 1.25rem;
     scrollbar-width: thin;
 }
 
@@ -277,7 +277,7 @@
 
 .reciter-detail__bio {
     border: 1px solid var(--border);
-    border-radius: 18px !important;
+    border-radius: 16px !important;
     background: color-mix(in srgb, var(--theme-bg-alt) 72%, var(--theme-surface));
     padding: 0.9rem;
 }
@@ -401,7 +401,7 @@
     min-height: 30rem;
     flex-direction: column;
     border-inline-start: 1px solid var(--border);
-    padding-inline-start: 1.35rem;
+    padding-inline-start: 1.25rem;
 }
 
 .reciter-detail__section-heading {
@@ -633,6 +633,33 @@
     opacity: 0.34;
 }
 
+.recitation-action-btn--download {
+    position: relative;
+}
+
+.recitation-action-btn--download.is-offline {
+    border-color: rgba(var(--primary-rgb), 0.28);
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+}
+
+.recitation-action-btn--download.is-downloading {
+    min-width: 58px;
+    gap: 0.24rem;
+    border-color: rgba(var(--primary-rgb), 0.28);
+    color: var(--primary);
+}
+
+.recitation-download-progress {
+    font-size: 0.56rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.recitation-download-spinner {
+    animation: reciter-detail-spin 850ms linear infinite;
+}
+
 .recitation-row--load-more {
     width: 100%;
     min-height: 44px;
@@ -685,37 +712,42 @@
         max-width: 100% !important;
         min-height: 0;
         max-height: calc(100dvh - max(0.3rem, env(safe-area-inset-top)));
-        border-radius: 24px 24px 0 0 !important;
+        border-radius: 20px 20px 0 0 !important;
         border-bottom: 0;
     }
 
     .rd-sticky-head {
-        padding: 0.9rem 0.8rem 0.75rem;
+        padding: 0.68rem 0.7rem 0.62rem;
     }
 
     .reciter-detail__eyebrow {
-        margin-bottom: 0.6rem;
+        gap: 0.3rem;
+        margin-bottom: 0.35rem;
+        font-size: 0.6rem;
     }
 
     .reciter-hero {
-        padding-inline-end: 2.75rem;
+        padding-inline-end: 2.35rem;
     }
 
     .reciter-hero__portrait {
-        --reciter-portrait-size: clamp(3.65rem, 15vw, 4.35rem);
+        --reciter-portrait-size: clamp(3rem, 9vw, 4.1rem);
     }
 
     [dir="rtl"] .reciter-hero {
-        padding-inline: 2.75rem 0;
+        padding-inline: 2.35rem 0;
     }
 
     .reciter-hero__name {
-        font-size: 1.05rem !important;
+        font-size: 0.96rem !important;
+        line-height: 1.15;
     }
 
     .reciter-detail__quick-actions {
         overflow-x: auto;
         flex-wrap: nowrap;
+        gap: 0.32rem;
+        margin-top: 0.45rem;
         padding-bottom: 0.1rem;
         scrollbar-width: none;
     }
@@ -727,7 +759,7 @@
     .reciter-detail__layout {
         display: block;
         overflow-y: auto;
-        padding: 0.75rem;
+        padding: 0.62rem;
     }
 
     .reciter-detail__aside {
@@ -736,18 +768,30 @@
     }
 
     .reciter-detail__bio {
-        padding: 0.85rem;
+        border-radius: 14px !important;
+        padding: 0.7rem;
+    }
+
+    .reciter-detail__bio p {
+        font-size: 0.72rem;
+        line-height: 1.55;
     }
 
     .reciter-detail__notice {
-        margin-bottom: 0.85rem;
+        margin-bottom: 0.6rem;
+        padding: 0.55rem 0.65rem;
+        font-size: 0.68rem;
     }
 
     .reciter-detail__library {
         overflow: visible;
         border-inline-start: 0;
         padding-inline-start: 0;
-        padding-top: 1rem;
+        padding-top: 0.8rem;
+    }
+
+    .recitation-library__search {
+        min-height: 40px;
     }
 
     .recitation-surah-list {
@@ -755,44 +799,110 @@
     }
 
     .recitation-row {
-        grid-template-columns: 34px minmax(0, 1fr) auto;
-        min-height: 60px;
-        gap: 0.45rem;
-        padding-inline: 0.4rem;
+        grid-template-columns: 31px minmax(0, 1fr) auto;
+        min-height: 54px;
+        gap: 0.35rem;
+        padding-inline: 0.3rem;
     }
 
     .recitation-row__index {
-        width: 32px;
-        height: 32px;
+        width: 30px;
+        height: 30px;
+        font-size: 0.67rem;
     }
 
-    .recitation-action-btn {
-        width: 40px;
-        min-width: 40px;
-        min-height: 40px;
-        flex: 0 0 40px;
+    .recitation-row__title {
+        font-size: 0.78rem;
     }
 
+    .recitation-row__meta {
+        font-size: 0.62rem;
+    }
+
+    .recitation-action-btn,
     .recitation-action-btn--primary {
-        min-width: 40px;
+        width: 36px;
+        min-width: 36px;
+        min-height: 36px;
+        flex-basis: 36px;
     }
 
     .recitation-action-btn__label {
         display: none;
     }
+
+    .recitation-action-btn--download.is-downloading {
+        width: 36px;
+        min-width: 36px;
+    }
+
+    .recitation-download-progress {
+        display: none;
+    }
 }
 
 @media (max-width: 430px) {
+    .reciter-detail__close {
+        top: 0.62rem;
+        right: 0.62rem;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+    }
+
+    .reciter-detail__close.is-rtl {
+        right: auto;
+        left: 0.62rem;
+    }
+
     .reciter-detail__meta-pill {
-        min-height: 36px;
-        padding-inline: 0.65rem;
-        font-size: 0.68rem;
+        min-height: 32px;
+        padding: 0.35rem 0.55rem;
+        font-size: 0.62rem;
     }
 
     .reciter-radio-button {
-        min-height: 40px;
-        padding-inline: 0.72rem;
-        font-size: 0.69rem;
+        min-height: 36px;
+        padding: 0.38rem 0.62rem;
+        font-size: 0.64rem;
+    }
+
+    .reciter-detail__sources {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.3rem 0.45rem;
+        margin-top: 0.55rem;
+        padding: 0.55rem;
+    }
+
+    .reciter-detail__sources h3 {
+        min-width: 0;
+        font-size: 0.64rem;
+    }
+
+    .reciter-detail__source-links {
+        justify-content: flex-end;
+    }
+
+    .reciter-detail__source-links a {
+        min-height: 0;
+        padding: 0.18rem 0.36rem;
+        font-size: 0.58rem;
+    }
+
+    .reciter-detail__source-row {
+        grid-column: 1 / -1;
+        grid-template-columns: 14px minmax(0, 1fr);
+        gap: 0.32rem;
+        font-size: 0.62rem;
+    }
+
+    .reciter-detail__source-row > span {
+        display: none;
+    }
+
+    .reciter-detail__source-row > :is(strong, a) {
+        min-height: 0;
+        text-align: end;
     }
 
     .recitation-library__count {

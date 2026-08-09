@@ -6,7 +6,6 @@ import {
   Radio,
   Search,
   X,
-  SortDesc,
   SortAsc,
   LayoutGrid,
   List,
@@ -20,7 +19,6 @@ import {
 import { cn } from "../../lib/utils";
 import { JUZ_DATA } from "../../data/juz";
 import { THEMATIC_STATIONS } from "../../services/StationService";
-import audioService from "../../services/audioService";
 import { SurahCard, JuzCard, EmptyState } from "./HomePrimitives";
 import {
   getReciterCountryLabel,
@@ -34,7 +32,7 @@ import Icon from "./HomeIcon";
  * Props :
  *   lang                   {string}
  *   isRtl                  {boolean}
- *   activeTab              {string}    "surah" | "juz" | "recitations" | "radio" | "blog"
+ *   activeTab              {string}    "surah" | "juz" | "audio"
  *   onSelectTab            {function}
  *   onRecitationsIntent    {function}
  *   onReciterIntent        {function}
@@ -43,7 +41,7 @@ import Icon from "./HomeIcon";
  *   reciterStyleFilter     {string}    "all" | "murattal" | "mujawwad" | "muallim"
  *   onStyleFilterChange    {function}
  *   sortDir                {string}    "asc" | "desc"
- *   onToggleSort           {function}
+ *   onChangeSort           {function}
  *   viewMode               {string}    "grid" | "list"
  *   onChangeViewMode       {function}
  *   activeCollectionCount  {number}
@@ -63,7 +61,6 @@ import Icon from "./HomeIcon";
  *   playReciterRadio       {function}
  *   playStation            {function}
  *   setSelectedReciterId   {function}
- *   availableReciters      {Array}
  *   resumeState            {object|null}
  *   resumeListening        {function}
  *   t                      {function}  fonction de traduction
@@ -80,8 +77,9 @@ export default function ContentSection({
   reciterStyleFilter,
   onStyleFilterChange,
   sortDir,
-  onToggleSort,
+  onChangeSort,
   viewMode,
+  isCompactLayout,
   onChangeViewMode,
   activeCollectionCount,
   activeCollectionLabel,
@@ -101,10 +99,8 @@ export default function ContentSection({
   playReciterRadio,
   playStation,
   setSelectedReciterId,
-  availableReciters,
   resumeState,
   resumeListening,
-  onSetAudioSpeed,
   t,
 }) {
   const STYLE_FILTERS = [
@@ -112,9 +108,10 @@ export default function ContentSection({
     { id: "murattal", label: { fr: "Murattal", en: "Murattal", ar: "\u0645\u0631\u062a\u0644" } },
     { id: "mujawwad", label: { fr: "Mujawwad", en: "Mujawwad", ar: "\u0645\u062c\u0648\u062f" } },
     { id: "muallim", label: { fr: "Muallim", en: "Muallim", ar: "\u0645\u0639\u0644\u0645" } },
+    { id: "favorites", label: { fr: "Favoris", en: "Favorites", ar: "\u0627\u0644\u0645\u0641\u0636\u0644\u0629" } },
   ];
 
-  // Pagination des récitateurs
+  const [audioView, setAudioView] = useState("reciters");
   const [showAllReciters, setShowAllReciters] = useState(false);
   const displayedReciters = showAllReciters
     ? filteredReciters
@@ -127,19 +124,14 @@ export default function ContentSection({
       ar: ["استكشاف السور", "قائمة واضحة وسريعة مع البحث والترتيب."],
     },
     juz: {
-      fr: ["Lecture par Juz", "Avance par sections régulières, pratique pour suivre une khatma."],
-      en: ["Read by Juz", "Move through regular sections, useful for khatma tracking."],
+      fr: ["Lecture par Juz", "Avance par sections régulières pour retrouver facilement ton parcours."],
+      en: ["Read by Juz", "Move through regular sections and easily resume your reading."],
       ar: ["القراءة حسب الجزء", "تصفح الاجزاء بسهولة لمتابعة الختمة."],
     },
-    recitations: {
-      fr: ["Choisir une récitation", "Photos, styles et modes audio sont regroupés pour choisir une voix rapidement."],
-      en: ["Choose a recitation", "Photos, styles and audio modes are grouped so you can choose a voice quickly."],
-      ar: ["اختر التلاوة", "الصور والانماط واوضاع الصوت مجمعة لاختيار القارئ بسرعة."],
-    },
-    radio: {
-      fr: ["Stations audio", "Lance une station thématique ou une voix favorite en un geste."],
-      en: ["Audio stations", "Start a themed station or a favorite voice in one step."],
-      ar: ["محطات الاستماع", "شغل محطة موضوعية او صوتا مفضلا بسرعة."],
+    audio: {
+      fr: ["Bibliothèque audio", "Choisissez une voix ou lancez une station thématique, sans quitter le même espace."],
+      en: ["Audio library", "Choose a voice or start a themed station without leaving the same space."],
+      ar: ["المكتبة الصوتية", "اختر قارئًا أو شغّل محطة موضوعية من مكان واحد."],
     },
   };
   const [displayCollectionTitle, displayCollectionSubtitle] =
@@ -150,7 +142,11 @@ export default function ContentSection({
   return (
     <section className="home-content-section flex flex-col gap-6">
       <div className="home-collection-heading flex items-end justify-between gap-4">
-        <div className="home-collection-heading__copy">
+        <div className="home-collection-heading__copy flex w-full flex-wrap items-end justify-between gap-x-5 gap-y-2">
+          <div className="home-collection-heading__text min-w-0">
+            <h2>{displayCollectionTitle}</h2>
+            <p className="text-text-secondary text-[0.85rem] mt-0.5">{displayCollectionSubtitle}</p>
+          </div>
           <span className="home-collection-heading__eyebrow inline-flex items-center gap-1.5">
             <span
               className="inline-block w-1.5 h-1.5 rounded-full bg-primary"
@@ -158,8 +154,6 @@ export default function ContentSection({
             />
             {activeCollectionCount} {activeCollectionLabel}
           </span>
-          <h2 className="mt-1">{displayCollectionTitle}</h2>
-          <p className="text-text-secondary text-[0.85rem] mt-0.5">{displayCollectionSubtitle}</p>
         </div>
       </div>
 
@@ -180,7 +174,7 @@ export default function ContentSection({
               activeTab === "surah" && "bg-bg-primary text-primary shadow-sm",
             )}
             onClick={() => onSelectTab("surah")}
-            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("juz"); if (e.key === "ArrowLeft") onSelectTab("radio"); }}
+            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("juz"); if (e.key === "ArrowLeft") onSelectTab("audio"); }}
           >
             <AlignJustify size={13} className="opacity-70" />
             {t("home.surahs", lang)}
@@ -194,7 +188,7 @@ export default function ContentSection({
               activeTab === "juz" && "bg-bg-primary text-primary shadow-sm",
             )}
             onClick={() => onSelectTab("juz")}
-            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("recitations"); if (e.key === "ArrowLeft") onSelectTab("surah"); }}
+            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("audio"); if (e.key === "ArrowLeft") onSelectTab("surah"); }}
           >
             <BookOpen size={13} className="opacity-70" />
             {t("home.juz", lang)}
@@ -202,39 +196,25 @@ export default function ContentSection({
           <button
             type="button"
             role="tab"
-            aria-selected={activeTab === "recitations"}
+            aria-selected={activeTab === "audio"}
             className={cn(
               "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-all hover:text-text-primary",
-              activeTab === "recitations" &&
+              activeTab === "audio" &&
                 "bg-bg-primary text-primary shadow-sm",
             )}
-            onClick={() => onSelectTab("recitations")}
+            onClick={() => onSelectTab("audio")}
             onPointerEnter={onRecitationsIntent}
             onPointerDown={onRecitationsIntent}
             onFocus={onRecitationsIntent}
-            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("radio"); if (e.key === "ArrowLeft") onSelectTab("juz"); }}
-          >
-            <Mic2 size={13} className="opacity-70" />
-            {t("home.recitations", lang)}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activeTab === "radio"}
-            className={cn(
-              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-all hover:text-text-primary",
-              activeTab === "radio" && "bg-bg-primary text-primary shadow-sm",
-            )}
-            onClick={() => onSelectTab("radio")}
-            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("surah"); if (e.key === "ArrowLeft") onSelectTab("recitations"); }}
+            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("surah"); if (e.key === "ArrowLeft") onSelectTab("juz"); }}
           >
             <Radio size={13} className="opacity-70" />
-            {t("home.radio", lang)}
+            {lang === "ar" ? "الصوتيات" : lang === "en" ? "Audio" : "Audio"}
           </button>
         </div>
 
         {/* Recherche */}
-        {(activeTab === "surah" || activeTab === "recitations") && (
+        {(activeTab === "surah" || (activeTab === "audio" && audioView === "reciters")) && (
           <div className="relative flex flex-1 items-center w-full min-w-[200px]">
             <Search size={14} className="absolute left-3.5 text-text-muted" />
             <input
@@ -263,22 +243,22 @@ export default function ContentSection({
 
         {/* Tri + vue */}
         <div className="flex items-center justify-between gap-3 w-full md:w-auto">
-          <span className="text-[0.75rem] font-bold text-text-muted uppercase tracking-wider hidden sm:inline-block">
-            {activeCollectionCount} {activeCollectionLabel}
-          </span>
           <div className="flex items-center gap-1.5 ml-auto">
             {activeTab === "surah" && (
-              <button
-                type="button"
-                className="flex items-center justify-center h-11 w-11 rounded-xl bg-bg-secondary border border-border/50 text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
-                onClick={onToggleSort}
-                title={sortDir === "asc" ? t("home.sortDesc", lang) : t("home.sortAsc", lang)}
-                aria-label={sortDir === "asc" ? t("home.sortDesc", lang) : t("home.sortAsc", lang)}
-              >
-                {sortDir === "asc" ? <SortDesc size={17} /> : <SortAsc size={17} />}
-              </button>
+              <label className="home-sort-menu">
+                <SortAsc size={14} aria-hidden="true" />
+                <span className="sr-only">{lang === "ar" ? "ترتيب السور" : lang === "en" ? "Sort surahs" : "Trier les sourates"}</span>
+                <select
+                  value={sortDir}
+                  onChange={(event) => onChangeSort(event.target.value)}
+                  aria-label={lang === "ar" ? "ترتيب السور" : lang === "en" ? "Sort surahs" : "Trier les sourates"}
+                >
+                  <option value="asc">{lang === "ar" ? "١ ← ١١٤" : "1 → 114"}</option>
+                  <option value="desc">{lang === "ar" ? "١١٤ ← ١" : "114 → 1"}</option>
+                </select>
+              </label>
             )}
-            {(activeTab === "surah" || activeTab === "juz") && (
+            {!isCompactLayout && (activeTab === "surah" || activeTab === "juz") && (
               <div className="flex items-center gap-1 p-1 rounded-xl bg-bg-secondary border border-border/50 shadow-sm">
                 <button
                   type="button"
@@ -314,24 +294,56 @@ export default function ContentSection({
         </div>
       </div>
 
-      {/* Filtre de style récitateur */}
-      {activeTab === "recitations" && (
-        <div className="home-style-filters flex flex-wrap items-center gap-2">
-          {STYLE_FILTERS.map((item) => (
+      {activeTab === "audio" && (
+        <div className="home-audio-browser">
+          <div className="home-audio-browser__tabs" role="tablist" aria-label={lang === "ar" ? "أقسام الصوتيات" : lang === "en" ? "Audio sections" : "Sections audio"}>
             <button
-              key={item.id}
               type="button"
-              className={cn(
-                "home-style-filter px-3.5 py-1.5 rounded-full text-[0.8rem] font-bold border transition-colors",
-                reciterStyleFilter === item.id
-                  ? "bg-primary text-white border-primary"
-                  : "bg-bg-secondary text-text-secondary border-border hover:bg-bg-tertiary hover:text-text-primary",
-              )}
-              onClick={() => onStyleFilterChange(item.id)}
+              role="tab"
+              aria-selected={audioView === "reciters"}
+              onClick={() => setAudioView("reciters")}
             >
-              {item.label[lang] || item.label.fr}
+              <Mic2 size={14} aria-hidden="true" />
+              <span>{t("home.recitations", lang)}</span>
+              <small>{filteredReciters.length}</small>
             </button>
-          ))}
+            <button
+              type="button"
+              role="tab"
+              aria-selected={audioView === "stations"}
+              onClick={() => setAudioView("stations")}
+            >
+              <Radio size={14} aria-hidden="true" />
+              <span>{t("home.radio", lang)}</span>
+              <small>{THEMATIC_STATIONS.length}</small>
+            </button>
+          </div>
+
+          {audioView === "reciters" && (
+            <div className="home-audio-browser__filters">
+              <div className="home-style-filters" role="group" aria-label={lang === "ar" ? "نمط التلاوة" : lang === "en" ? "Recitation style" : "Style de récitation"}>
+                {STYLE_FILTERS.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={cn("home-style-filter", reciterStyleFilter === item.id && "is-active")}
+                    onClick={() => onStyleFilterChange(item.id)}
+                    aria-pressed={reciterStyleFilter === item.id}
+                  >
+                    {item.id === "favorites" ? <Star size={12} fill={reciterStyleFilter === item.id ? "currentColor" : "none"} aria-hidden="true" /> : null}
+                    {item.label[lang] || item.label.fr}
+                  </button>
+                ))}
+              </div>
+              <p className="home-audio-browser__hint">
+                {lang === "ar"
+                  ? "مرتل: قراءة هادئة · مجود: أداء مزخرف · معلم: للتعلّم"
+                  : lang === "en"
+                    ? "Murattal: measured · Mujawwad: ornamented · Muallim: learning"
+                    : "Murattal : posé · Mujawwad : orné · Muallim : apprentissage"}
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -343,8 +355,8 @@ export default function ContentSection({
                 "hp-grid",
                 activeTab === "surah" && "hp-grid--surah",
                 activeTab === "juz" && "hp-grid--juz",
-                activeTab === "recitations" && "hp-grid--reciters",
-                activeTab === "radio" && "hp-grid--radio",
+                activeTab === "audio" && audioView === "reciters" && "hp-grid--reciters",
+                activeTab === "audio" && audioView === "stations" && "hp-grid--radio",
               )
             : "hp-list",
         )}
@@ -389,7 +401,7 @@ export default function ContentSection({
             />
           ))
         ) : /* RÉCITATEURS */
-        activeTab === "recitations" ? (
+        activeTab === "audio" && audioView === "reciters" ? (
           filteredReciters.length === 0 ? (
             <EmptyState
               icon="fa-microphone-lines"
@@ -521,7 +533,7 @@ export default function ContentSection({
             </>
           )
         ) : (
-          /* RADIO */
+          /* STATIONS */
           <>
             {THEMATIC_STATIONS.map((station) => (
               <button
@@ -555,139 +567,30 @@ export default function ContentSection({
               </button>
             ))}
 
-            {availableReciters.slice(0, 8).map((reciter) => {
-              const visual = getReciterVisual(reciter);
-              const avatar = visual.avatar;
-              const reciterLabel =
-                lang === "ar"
-                  ? reciter.name
-                  : lang === "fr"
-                    ? reciter.nameFr
-                    : reciter.nameEn;
-              return (
-                <button
-                  key={`r-${reciter.id}`}
-                  className="home-radio-card home-radio-card--reciter"
-                  type="button"
-                  onClick={() =>
-                    playStation({
-                      id: `r-${reciter.id}`,
-                      icon: "fa-user-astronaut",
-                      titleFr: reciter.nameFr,
-                      titleEn: reciter.nameEn,
-                      titleAr: reciter.name,
-                      surahs: [1, 36, 55, 67],
-                      reciterId: reciter.id,
-                    })
-                  }
-                >
-                  <span className="home-radio-card__media home-radio-card__media--photo">
-                    <span
-                      className="absolute inset-0 flex items-center justify-center"
-                      style={{ background: avatar.gradient }}
-                      aria-hidden="true"
-                    >
-                      {avatar.initials}
-                    </span>
-                    {visual.photo ? (
-                      <img
-                        src={visual.photo}
-                        alt=""
-                        className="reciter-photo absolute inset-0 h-full w-full object-cover"
-                        style={{ objectPosition: visual.focalPoint }}
-                        loading="lazy"
-                        decoding="async"
-                        referrerPolicy="no-referrer"
-                        onError={(event) => {
-                          event.currentTarget.hidden = true;
-                        }}
-                      />
-                    ) : null}
-                  </span>
-                  <div className="home-radio-card__copy">
-                    <span
-                      className="home-radio-card__title"
-                      dir={lang === "ar" ? "rtl" : "ltr"}
-                    >
-                      {reciterLabel}
-                    </span>
-                    <span className="home-radio-card__meta">
-                      {lang === "ar" ? "٤" : "4"} {lang === "ar" ? "سور" : lang === "fr" ? "sourates" : "surahs"} · {reciter.style || "murattal"}
-                    </span>
-                  </div>
-                  <span className="home-radio-card__play" aria-hidden="true">
-                    <CirclePlay size={14} className="pl-[1px]" />
-                  </span>
-                </button>
-              );
-            })}
           </>
         )}
       </div>
 
       {/* ── Compact audio utilities ── */}
-      {(activeTab === "recitations" ||
-        (activeTab === "radio" && resumeState)) && (
+      {activeTab === "audio" && resumeState && (
         <div className="flex flex-col items-stretch gap-2 rounded-2xl border border-primary/15 bg-bg-card/70 p-2.5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-          {activeTab === "recitations" && (
-            <div
-              className="flex min-w-0 flex-col items-stretch gap-1.5 sm:flex-row sm:items-center sm:gap-2"
-              role="group"
-              aria-label={
-                lang === "fr"
-                  ? "Vitesse de lecture"
-                  : lang === "ar"
-                    ? "سرعة التشغيل"
-                    : "Playback speed"
-              }
-            >
-              <span className="shrink-0 px-1 text-[0.68rem] font-semibold uppercase tracking-[0.08em] text-text-muted">
-                {lang === "fr" ? "Vitesse" : lang === "ar" ? "السرعة" : "Speed"}
-              </span>
-              <div className="grid min-w-0 flex-1 grid-cols-6 gap-1 rounded-xl bg-bg-secondary/80 p-1">
-                {[0.5, 0.75, 1, 1.25, 1.5, 2].map((speed) => {
-                  const isActive = (state?.audioSpeed ?? 1) === speed;
-                  return (
-                    <button
-                      key={speed}
-                      type="button"
-                      className={cn(
-                        "home-audio-speed-button min-h-9 !min-w-0 rounded-lg px-1 text-[0.72rem] font-bold transition-[background-color,color,box-shadow,transform] active:scale-95",
-                        isActive
-                          ? "shadow-sm"
-                          : "text-text-secondary hover:bg-bg-card hover:text-primary",
-                      )}
-                      onClick={() => onSetAudioSpeed(speed)}
-                      aria-pressed={isActive}
-                      aria-label={`${speed}x`}
-                    >
-                      {speed}x
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {resumeState && (
-            <button
-              type="button"
-              className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/8 px-3.5 text-[0.78rem] font-semibold text-primary transition-colors hover:bg-primary/14"
-              onClick={resumeListening}
-            >
-              <Play size={12} fill="currentColor" aria-hidden="true" />
-              <span>
-                {lang === "fr"
-                  ? "Reprendre l'écoute"
-                  : lang === "ar"
-                    ? "استئناف الاستماع"
-                    : "Resume listening"}
-              </span>
-              <span className="rounded-full bg-bg-card/80 px-1.5 py-0.5 text-[0.65rem] text-text-muted">
-                S{resumeState.surah}
-              </span>
-            </button>
-          )}
+          <button
+            type="button"
+            className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/8 px-3.5 text-[0.78rem] font-semibold text-primary transition-colors hover:bg-primary/14"
+            onClick={resumeListening}
+          >
+            <Play size={12} fill="currentColor" aria-hidden="true" />
+            <span>
+              {lang === "fr"
+                ? "Reprendre l'écoute"
+                : lang === "ar"
+                  ? "استئناف الاستماع"
+                  : "Resume listening"}
+            </span>
+            <span className="rounded-full bg-bg-card/80 px-1.5 py-0.5 text-[0.65rem] text-text-muted">
+              S{resumeState.surah}
+            </span>
+          </button>
         </div>
       )}
 

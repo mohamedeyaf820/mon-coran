@@ -8,7 +8,8 @@ const SurahRecitationRow = memo(function SurahRecitationRow({
   onPlay,
   onOpen,
   onOpenIntent,
-  downloadUrl,
+  reciter,
+  riwaya,
 }) {
   const label = lang === "ar" ? surah.ar : lang === "fr" ? surah.fr : surah.en;
   const ayahLabel =
@@ -39,7 +40,9 @@ const SurahRecitationRow = memo(function SurahRecitationRow({
         onPlay={onPlay}
         onOpen={onOpen}
         onOpenIntent={onOpenIntent}
-        downloadUrl={downloadUrl}
+        surah={surah}
+        reciter={reciter}
+        riwaya={riwaya}
       />
     </div>
   );
