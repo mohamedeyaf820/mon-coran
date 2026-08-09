@@ -1699,7 +1699,8 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     align-items: center;
     justify-content: center;
     border-radius: 9px;
-    color: var(--text-secondary);
+    color: var(--primary);
+    font-weight: 700;
 }
 
 .afc-size-btn:hover:not(:disabled) {
