@@ -10,7 +10,7 @@
     --qcom-reader-number-border: rgba(148, 163, 184, 0.2);
     --qcom-ar-size: var(--quran-font-size, clamp(2.25rem, 1.4rem + 2.5vw, 4.15rem));
     --qcom-ar-leading: 2.14;
-    --qcom-ar-word-spacing: 0.08em;
+    --qcom-ar-word-spacing: 0 !important;
 }
 
 .app-root .quran-display--platform :is(.quran-mode-pane--surah, .quran-mode-pane--page, .quran-mode-pane--juz) {
@@ -1835,36 +1835,42 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     vertical-align: -0.18em !important;
 }
 
-.app-root .quran-display--platform :is(.cpv-verse--active, .qcom-continuous-verse--active, .cpv-verse:hover, .qcom-continuous-verse:hover) {
-    background: color-mix(in srgb, var(--primary) 8%, transparent) !important;
-    box-shadow: none !important;
+.app-root .quran-display--platform :is(.cpv-flow, .qcom-continuous-list, .mushaf-container) :is(.cpv-verse, .qcom-continuous-verse) {
+    display: inline !important;
+    white-space: normal !important;
+    break-inside: auto !important;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    background: transparent !important;
+    padding: 0 !important;
 }
 
-.app-root .quran-display--platform .cpv-verse--playing,
-.app-root .quran-display--platform .qcom-continuous-verse--playing {
-    background: color-mix(in srgb, var(--primary) 12%, transparent) !important;
-    color: var(--qcom-page-ink, var(--text-quran)) !important;
-    text-shadow: none !important;
+.app-root .quran-display--platform :is(.cpv-verse--active, .qcom-continuous-verse--active, .cpv-verse:hover, .qcom-continuous-verse:hover) {
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: 0 0 12px rgba(var(--primary-rgb, 16, 185, 129), 0.3);
+}
+
+.app-root .quran-display--platform :is(.cpv-verse--playing, .qcom-continuous-verse--playing) {
+    background: transparent !important;
+    color: var(--primary, #10b981) !important;
+    text-shadow: 0 0 16px rgba(var(--primary-rgb, 16, 185, 129), 0.4);
     box-shadow: none !important;
     animation: none !important;
 }
 
+.app-root .quran-display--platform {
+    --qcom-reader-font-size: var(--qd-reading-font-size, var(--quran-font-size, 32px));
+    --qcom-ar-size: var(--qd-reading-font-size, var(--quran-font-size, 32px));
+}
+
 @media (max-width: 640px) {
     .app-root .quran-display--platform {
-        --qcom-reader-font-size: clamp(1.72rem, calc(var(--qd-reading-font-size, 38px) * 0.68), 2.65rem);
-        --qcom-reader-line-height: 2.08;
+        --qcom-reader-font-size: var(--qd-reading-font-size, var(--quran-font-size, 24px));
+        --qcom-ar-size: var(--qd-reading-font-size, var(--quran-font-size, 24px));
+        --qcom-reader-line-height: 2.2;
         --qcom-reader-word-spacing: 0.08em;
     }
-}
-
-.app-root[data-view="reading"] .app-main {
-    background: var(--qcom-page-bg, var(--bg-primary)) !important;
-}
-
-.app-root .quran-display--platform {
-    --qcom-reader-font-size: clamp(2rem, calc(var(--qd-reading-font-size, 42px) * 0.88), 4rem);
-    --qcom-reader-line-height: 2.18;
-    --qcom-reader-word-spacing: 0.05em;
 }
 
 .app-root .quran-display--platform .quran-mode-pane {
@@ -2179,7 +2185,7 @@ html body .app-root .quran-display--platform .mushaf-container.cpv-flow {
     font-weight: 400 !important;
     line-height: 2.8 !important;
     color: var(--reader-page-ink, #1a1a1a) !important;
-    word-spacing: 0.05em !important;
+    word-spacing: 0 !important;
     letter-spacing: 0 !important;
     padding: 0 !important;
     border: 0 !important;
@@ -2240,26 +2246,29 @@ html body .app-root .quran-display--platform .mushaf-page-wrapper .bismillah spa
 }
 
 html body .app-root .quran-display--platform .mushaf-container .cpv-verse {
-    padding: 0 0.1rem !important;
-    border-radius: 4px !important;
-    transition: background-color 160ms ease !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    transition: color 160ms ease, text-shadow 160ms ease !important;
 }
 
 html body .app-root .quran-display--platform .mushaf-container .cpv-verse:hover,
 html body .app-root .quran-display--platform .mushaf-container .cpv-verse:focus-visible {
-    background: var(--reader-card-hover, rgba(var(--primary-rgb), 0.08)) !important;
+    background: transparent !important;
     box-shadow: none !important;
+    text-shadow: 0 0 10px rgba(var(--primary-rgb, 16, 185, 129), 0.25);
 }
 
 html body .app-root .quran-display--platform .mushaf-container .cpv-verse--active {
-    background: rgba(var(--primary-rgb), 0.1) !important;
+    background: transparent !important;
     box-shadow: none !important;
+    text-shadow: 0 0 12px rgba(var(--primary-rgb, 16, 185, 129), 0.35);
 }
 
 html body .app-root .quran-display--platform .mushaf-container .cpv-verse--playing {
-    background: rgba(var(--primary-rgb), 0.14) !important;
-    color: var(--reader-page-ink, #1a1a1a) !important;
-    text-shadow: none !important;
+    background: transparent !important;
+    color: var(--primary, #10b981) !important;
+    text-shadow: 0 0 16px rgba(var(--primary-rgb, 16, 185, 129), 0.45);
     box-shadow: none !important;
     animation: none !important;
 }
@@ -2376,7 +2385,6 @@ html body .app-root .quran-display--platform .mushaf-text-block {
     line-height: 2.6 !important;
     color: var(--text-primary, #1a1a1a) !important;
     background: transparent !important;
-    word-spacing: normal !important;
     letter-spacing: 0 !important;
     white-space: normal !important;
 }

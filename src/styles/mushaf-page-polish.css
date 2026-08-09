@@ -258,7 +258,7 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   padding: 0 !important;
   color: var(--mushaf-ink) !important;
   font-family: var(--qd-font-family, var(--font-quran), serif) !important;
-  font-size: var(--cpv-font-size, 2.25rem) !important;
+  font-size: var(--qd-reading-font-size, 34px) !important;
   line-height: var(--mushaf-text-leading) !important;
   word-spacing: 0 !important;
   text-align: right !important;

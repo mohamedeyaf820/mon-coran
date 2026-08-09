@@ -480,7 +480,7 @@ html body .settings-drawer__title {
 
 @media (min-width: 641px) and (max-width: 1024px) {
   html body .app-root[data-view="reading"] {
-    --mp-effective-mushaf-size: clamp(18px, var(--qd-reading-font-size, 42px), 38px);
+    --mp-effective-mushaf-size: var(--qd-reading-font-size, 34px);
   }
 
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
@@ -494,7 +494,7 @@ html body .settings-drawer__title {
 
 @media (min-width: 1025px) {
   html body .app-root[data-view="reading"] {
-    --mp-effective-mushaf-size: clamp(18px, var(--qd-reading-font-size, 42px), 48px);
+    --mp-effective-mushaf-size: var(--qd-reading-font-size, 42px);
   }
 
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
@@ -517,14 +517,15 @@ html body .settings-drawer__title {
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
-  --cpv-font-size: var(--mp-effective-mushaf-size, var(--qd-reading-font-size, 42px)) !important;
-  font-size: var(--mp-effective-mushaf-size, var(--qd-reading-font-size, 42px)) !important;
+  --cpv-font-size: var(--qd-reading-font-size, 34px) !important;
+  font-size: var(--qd-reading-font-size, 34px) !important;
 }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container
   :is(.quran-verse-inline, .quran-arabic-text, .verse-text, .verse-text *) {
   font-size: inherit !important;
+  word-spacing: 0 !important;
 }
 
 html body .app-root > .mp-header {

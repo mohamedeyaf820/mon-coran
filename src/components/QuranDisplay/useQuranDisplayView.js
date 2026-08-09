@@ -140,30 +140,37 @@ export default function useQuranDisplayView({
       `${Math.max(12, Math.min(28, Number(quranTranslationFontSize) || 18))}px`,
     );
     element.style.setProperty("--qd-fullscreen-font-size", `${fullscreenFontSize}px`);
+    document.documentElement.style.setProperty("--qcom-reader-font-size", quranFontSizeCss);
+    document.documentElement.style.setProperty("--qcom-ar-size", quranFontSizeCss);
     document.documentElement.style.setProperty("--quran-font-size", quranFontSizeCss);
-    document.documentElement.style.setProperty("--quran-line-height", quranLineHeight);
-    if (isQCF4) {
-      // QCF4 page fonts are loaded per-page by fontLoader — do NOT overwrite
-      // --font-quran or --quran-font-family here, they must stay as set by fontLoader
-      element.style.removeProperty("--qd-font-family");
-      element.dataset.qcf4Font = "true";
-      return;
-    }
-
-    document.documentElement.style.setProperty("--quran-font-family", quranFontCss);
-    document.documentElement.style.setProperty("--font-quran", quranFontCss);
-    document.documentElement.style.setProperty("--font-quran-tajweed", quranFontCss);
-    element.style.setProperty("--qd-font-family", quranFontCss);
+    document.documentElement.style.setProperty("--qd-reading-font-size", quranFontSizeCss);
     element.style.setProperty("--qd-font-size", quranFontSizeCss);
-    element.style.setProperty("--quran-font-family", quranFontCss);
+    element.style.setProperty("--qd-reading-font-size", quranFontSizeCss);
+    element.style.setProperty("--qcom-reader-font-size", quranFontSizeCss);
+    element.style.setProperty("--qcom-ar-size", quranFontSizeCss);
     element.style.setProperty("--quran-font-size", quranFontSizeCss);
     element.style.setProperty("--quran-line-height", quranLineHeight);
-    element.dataset.qcf4Font = "false";
+    element.style.setProperty("--cpv-font-size", quranFontSizeCss);
+
+    if (isQCF4) {
+      element.style.removeProperty("--qd-font-family");
+      element.dataset.qcf4Font = "true";
+    } else {
+      document.documentElement.style.setProperty("--quran-font-family", quranFontCss);
+      document.documentElement.style.setProperty("--font-quran", quranFontCss);
+      document.documentElement.style.setProperty("--font-quran-tajweed", quranFontCss);
+      element.style.setProperty("--qd-font-family", quranFontCss);
+      element.style.setProperty("--quran-font-family", quranFontCss);
+      element.dataset.qcf4Font = "false";
+    }
 
     element
-      .querySelectorAll(".verse-text, .mushaf-container, .quran-text, [lang='ar']")
+      .querySelectorAll(".verse-text, .mushaf-container, .quran-text, .qc-ayah-text-ar, .rd-arabic, .mushaf-verse, .cpv-verse, [lang='ar']")
       .forEach((arabicElement) => {
-        arabicElement.style.fontFamily = quranFontCss;
+        if (!isQCF4) {
+          arabicElement.style.fontFamily = quranFontCss;
+        }
+        arabicElement.style.fontSize = quranFontSizeCss;
       });
   }, [
     contentReady,
