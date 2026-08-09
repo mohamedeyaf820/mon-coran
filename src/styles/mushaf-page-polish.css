@@ -47,6 +47,19 @@
     0 16px 48px rgba(var(--mushaf-shadow-rgb), 0.14) !important;
 }
 
+/* Aligner le header sourate + guide tajwid sur la largeur de la carte mushaf (760px) */
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .qc-surah-header-wrap {
+  width: min(100%, 760px) !important;
+  max-width: 760px !important;
+  margin-inline: auto !important;
+}
+
+.app-root[data-view="reading"] .quran-display--platform:has(.quran-mode-pane--mushaf) > .tajweed-legend {
+  width: min(100%, 760px) !important;
+  max-width: 760px !important;
+  margin-inline: auto !important;
+}
+
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper::before,
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper::after,
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-corner {

@@ -355,11 +355,11 @@ export default function QuranMushafPage({
           fontFamily: fontLoaded ? pageFontFamily : fallbackFontFamily,
         }}
       >
-        {sanitizeHtml(decodeHtmlEntity(
+        {decodeHtmlEntity(
           fontLoaded && glyph
             ? glyph
             : getQuranWordTextForFont(word, fontFamily, riwaya)
-        ))}
+        )}
       </span>
     );
   };
