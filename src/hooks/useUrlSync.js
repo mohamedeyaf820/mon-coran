@@ -28,7 +28,7 @@ export function useUrlSync({
       const targetPath = typeof window === "undefined" ? "/404" : window.location.pathname;
       return { targetPath, routeKey: `not-found:${targetPath}` };
     }
-    if (["surahs", "about", "privacy", "legal", "sources"].includes(legalPage)) {
+    if (["about", "privacy", "legal", "sources"].includes(legalPage)) {
       return { targetPath: `/${legalPage}`, routeKey: `legal:${legalPage}` };
     }
     if (showHome) return { targetPath: "/", routeKey: "home" };
@@ -112,7 +112,7 @@ export function useUrlSync({
 export function parseRoutePath(pathname = "/") {
   const path = String(pathname || "/").split(/[?#]/, 1)[0];
 
-  const legalMatch = path.match(/^\/(surahs|about|privacy|legal|sources)\/?$/);
+  const legalMatch = path.match(/^\/(about|privacy|legal|sources)\/?$/);
   if (legalMatch) {
     return {
       legalPage: legalMatch[1],
