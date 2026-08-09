@@ -6,6 +6,8 @@
         <style>
             html, body, #root { min-height: 100%; margin: 0; }
             body { background: #f3f8f5; }
+            /* Hide pre-rendered SEO shell until React mounts — crawlers still read it */
+            #root > :not(.app-root) { visibility: hidden; }
             #root:empty {
                 min-height: 100dvh;
                 background:
