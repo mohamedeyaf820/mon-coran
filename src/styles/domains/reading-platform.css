@@ -2379,7 +2379,8 @@ html body .app-root .quran-display--platform .mushaf-text-block {
     direction: rtl !important;
     unicode-bidi: normal !important;
     word-spacing: 0 !important;
-    text-align: right !important;
+    text-align: justify !important;
+    text-align-last: right !important;
     font-family: var(--quran-font-family) !important;
     font-size: var(--quran-font-size) !important;
     line-height: var(--mushaf-text-leading, 1.65) !important;

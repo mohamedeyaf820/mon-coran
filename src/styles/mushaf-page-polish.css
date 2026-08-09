@@ -1,26 +1,26 @@
 /* Refined, component-scoped Mushaf page. Variables keep mobile overrides small. */
 .mushaf-page-wrapper {
-  --mushaf-paper: #fffdf8;
-  --mushaf-ink: #1b2823;
-  --mushaf-muted: #69756f;
-  --mushaf-rule: rgba(118, 91, 41, 0.22);
-  --mushaf-rule-strong: rgba(174, 133, 45, 0.48);
-  --mushaf-accent: #0b704b;
-  --mushaf-accent-soft: rgba(11, 112, 75, 0.07);
-  --mushaf-page-pad: clamp(1.35rem, 3vw, 2rem) clamp(1.1rem, 5vw, 3.25rem) clamp(1.3rem, 3vw, 2rem);
+  --mushaf-paper: #daeef8;
+  --mushaf-ink: #0c0e1a;
+  --mushaf-muted: #45697c;
+  --mushaf-rule: rgba(40, 110, 160, 0.38);
+  --mushaf-rule-strong: #2474a4;
+  --mushaf-accent: #1a6a9c;
+  --mushaf-accent-soft: rgba(26, 106, 156, 0.1);
+  --mushaf-page-pad: clamp(1.5rem, 3vw, 2.2rem) clamp(1.8rem, 5vw, 3.25rem) clamp(1.4rem, 3vw, 2rem);
   --mushaf-title-min: clamp(10.5rem, 32vw, 14rem);
   --mushaf-basmala-size: clamp(2rem, 1.65rem + 1.4vw, 2.7rem);
   --mushaf-text-leading: var(--cpv-line-height, 1.78);
 }
 
 html[data-theme="dark"] .mushaf-page-wrapper {
-  --mushaf-paper: #171e1c;
-  --mushaf-ink: #f3f0e8;
-  --mushaf-muted: #b9b7ae;
-  --mushaf-rule: rgba(184, 153, 82, 0.19);
-  --mushaf-rule-strong: rgba(201, 166, 76, 0.45);
-  --mushaf-accent: #4bc18d;
-  --mushaf-accent-soft: rgba(75, 193, 141, 0.1);
+  --mushaf-paper: #0e1d28;
+  --mushaf-ink: #e8f4fa;
+  --mushaf-muted: #7eb4cc;
+  --mushaf-rule: rgba(100, 170, 210, 0.3);
+  --mushaf-rule-strong: #4a9fc0;
+  --mushaf-accent: #5ab8d8;
+  --mushaf-accent-soft: rgba(90, 184, 216, 0.1);
 }
 
 html[data-theme="sepia"] .mushaf-page-wrapper {
@@ -40,17 +40,17 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   margin-inline: auto !important;
   padding: var(--mushaf-page-pad) !important;
   overflow: hidden !important;
-  border: 1px solid var(--mushaf-rule) !important;
-  border-radius: clamp(1rem, 2vw, 1.5rem) !important;
-  background:
-    radial-gradient(ellipse 80% 35% at 50% -5%, color-mix(in srgb, var(--mushaf-accent) 6%, transparent), transparent),
-    var(--mushaf-paper) !important;
+  /* Double cadre style mushaf traditionnel */
+  border: 3px solid var(--mushaf-rule-strong) !important;
+  outline: 6px solid color-mix(in srgb, var(--mushaf-rule-strong) 35%, transparent) !important;
+  outline-offset: -9px !important;
+  border-radius: 0.5rem !important;
+  background: var(--mushaf-paper) !important;
   color: var(--mushaf-ink) !important;
   box-shadow:
-    0 2px 6px rgba(4, 14, 10, 0.04),
-    0 12px 40px rgba(4, 14, 10, 0.09),
-    0 28px 60px rgba(4, 14, 10, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+    0 4px 12px rgba(12, 60, 100, 0.18),
+    0 16px 48px rgba(12, 60, 100, 0.14),
+    inset 0 0 0 12px color-mix(in srgb, var(--mushaf-rule-strong) 12%, transparent) !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper::before,
@@ -60,59 +60,50 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper > .pointer-events-none.mb-0 {
-  width: min(42%, 15rem);
-  height: 1px;
-  margin: 0 auto 0.65rem;
-  background: linear-gradient(90deg, transparent, var(--mushaf-rule-strong), transparent);
-  opacity: 0.72;
+  display: none !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header {
   display: flex !important;
   align-items: center !important;
-  justify-content: center !important;
-  gap: 0.6rem !important;
-  margin: 0 0 clamp(0.75rem, 1.8vw, 1.1rem) !important;
-  padding: 0 0.15rem 0.65rem !important;
-  border-bottom: 1px solid var(--mushaf-rule) !important;
-  color: var(--mushaf-muted) !important;
-  font-size: clamp(0.6rem, 0.55rem + 0.15vw, 0.68rem) !important;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  line-height: 1.25;
+  justify-content: space-between !important;
+  gap: 0.4rem !important;
+  margin: 0 0 clamp(0.65rem, 1.5vw, 0.9rem) !important;
+  padding: 0.4rem 0.6rem 0.45rem !important;
+  border: 1px solid var(--mushaf-rule) !important;
+  border-radius: 0.2rem !important;
+  background: color-mix(in srgb, var(--mushaf-rule-strong) 12%, var(--mushaf-paper)) !important;
+  color: var(--mushaf-ink) !important;
+  font-size: clamp(0.72rem, 0.65rem + 0.2vw, 0.82rem) !important;
+  font-family: var(--font-quran, serif) !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  /* ltr pour que juz (1er enfant JSX) = gauche visuel, sourate = droite visuel */
+  direction: ltr !important;
+  flex-direction: row-reverse !important;
 }
 
-/* Juz + Surah meta — both pills centered */
+/* Juz + Surah — plain text labels, no pills */
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header > span {
   display: inline-flex !important;
   align-items: center !important;
-  padding: 0.17rem 0.6rem 0.14rem !important;
-  border: 1px solid var(--mushaf-rule) !important;
-  border-radius: 99px !important;
-  background: color-mix(in srgb, var(--mushaf-accent) 5%, var(--mushaf-paper)) !important;
-  color: color-mix(in srgb, var(--mushaf-accent) 65%, var(--mushaf-ink)) !important;
-  font-size: 0.6rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.05em !important;
-  text-transform: uppercase !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: none !important;
+  color: var(--mushaf-ink) !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
   white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
 }
 
-/* Dot separator injected as a plain JSX span */
+/* Dot separator — hidden, space-between handles layout */
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header .mushaf-header-sep {
-  display: inline-block !important;
-  border: none !important;
-  background: none !important;
-  padding: 0 !important;
-  color: var(--mushaf-rule-strong) !important;
-  font-size: 0.75rem !important;
-  line-height: 1 !important;
-  text-transform: none !important;
-  letter-spacing: 0 !important;
-  font-weight: 400 !important;
-  opacity: 0.8 !important;
+  display: none !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-surah-header-inline,
@@ -261,7 +252,8 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   font-size: var(--qd-reading-font-size, 34px) !important;
   line-height: var(--cpv-line-height, 1.78) !important;
   word-spacing: 0 !important;
-  text-align: right !important;
+  text-align: justify !important;
+  text-align-last: right !important;
   text-rendering: optimizeLegibility;
 }
 
