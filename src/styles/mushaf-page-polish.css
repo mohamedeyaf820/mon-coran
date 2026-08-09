@@ -1,5 +1,6 @@
 /* Refined, component-scoped Mushaf page. Variables keep mobile overrides small. */
 .mushaf-page-wrapper {
+  /* Thème clair — bleu traditionnel */
   --mushaf-paper: #daeef8;
   --mushaf-ink: #0c0e1a;
   --mushaf-muted: #45697c;
@@ -7,6 +8,7 @@
   --mushaf-rule-strong: #2474a4;
   --mushaf-accent: #1a6a9c;
   --mushaf-accent-soft: rgba(26, 106, 156, 0.1);
+  --mushaf-shadow-rgb: 12, 60, 100;
   --mushaf-page-pad: clamp(1.5rem, 3vw, 2.2rem) clamp(1.8rem, 5vw, 3.25rem) clamp(1.4rem, 3vw, 2rem);
   --mushaf-title-min: clamp(10.5rem, 32vw, 14rem);
   --mushaf-basmala-size: clamp(2rem, 1.65rem + 1.4vw, 2.7rem);
@@ -14,23 +16,27 @@
 }
 
 html[data-theme="dark"] .mushaf-page-wrapper {
-  --mushaf-paper: #0e1d28;
-  --mushaf-ink: #e8f4fa;
-  --mushaf-muted: #7eb4cc;
-  --mushaf-rule: rgba(100, 170, 210, 0.3);
-  --mushaf-rule-strong: #4a9fc0;
-  --mushaf-accent: #5ab8d8;
-  --mushaf-accent-soft: rgba(90, 184, 216, 0.1);
+  /* Thème sombre — bleu nuit profond */
+  --mushaf-paper: #0a1520;
+  --mushaf-ink: #d8eef8;
+  --mushaf-muted: #6aa8c4;
+  --mushaf-rule: rgba(80, 150, 195, 0.28);
+  --mushaf-rule-strong: #3a88b0;
+  --mushaf-accent: #4aaed0;
+  --mushaf-accent-soft: rgba(74, 174, 208, 0.1);
+  --mushaf-shadow-rgb: 0, 10, 25;
 }
 
 html[data-theme="sepia"] .mushaf-page-wrapper {
-  --mushaf-paper: #f6ecd8;
-  --mushaf-ink: #392b1b;
-  --mushaf-muted: #786851;
-  --mushaf-rule: rgba(120, 86, 39, 0.24);
-  --mushaf-rule-strong: rgba(137, 97, 39, 0.48);
-  --mushaf-accent: #256846;
-  --mushaf-accent-soft: rgba(37, 104, 70, 0.09);
+  /* Thème sépia — parchemin doré chaud */
+  --mushaf-paper: #f0e0b8;
+  --mushaf-ink: #1e1008;
+  --mushaf-muted: #7a5e38;
+  --mushaf-rule: rgba(140, 95, 30, 0.35);
+  --mushaf-rule-strong: #8c6428;
+  --mushaf-accent: #7a5020;
+  --mushaf-accent-soft: rgba(122, 80, 32, 0.1);
+  --mushaf-shadow-rgb: 80, 40, 10;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-container.mushaf-page-wrapper {
@@ -48,8 +54,8 @@ html[data-theme="sepia"] .mushaf-page-wrapper {
   background: var(--mushaf-paper) !important;
   color: var(--mushaf-ink) !important;
   box-shadow:
-    0 4px 12px rgba(12, 60, 100, 0.18),
-    0 16px 48px rgba(12, 60, 100, 0.14),
+    0 4px 12px rgba(var(--mushaf-shadow-rgb), 0.18),
+    0 16px 48px rgba(var(--mushaf-shadow-rgb), 0.14),
     inset 0 0 0 12px color-mix(in srgb, var(--mushaf-rule-strong) 12%, transparent) !important;
 }
 
