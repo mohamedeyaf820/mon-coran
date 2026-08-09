@@ -28,23 +28,20 @@ export function getResponsiveArabicFontSize({
 
   let deviceBaseline;
   let deviceMaximum;
+  const isMushaf = mushafLayout === "mushaf";
 
   if (width <= 480) {
-    // Phone tier: compact 24px baseline
-    deviceBaseline = 24;
-    deviceMaximum = 72;
+    deviceBaseline = isMushaf ? 22 : 24;
+    deviceMaximum = isMushaf ? 34 : 72;
   } else if (width <= 768) {
-    // Mobile landscape / Mini tablet tier: 28px baseline
-    deviceBaseline = 28;
-    deviceMaximum = 80;
+    deviceBaseline = isMushaf ? 26 : 28;
+    deviceMaximum = isMushaf ? 40 : 80;
   } else if (width <= 1024) {
-    // Tablet tier: 34px baseline
-    deviceBaseline = 34;
-    deviceMaximum = 88;
+    deviceBaseline = isMushaf ? 30 : 34;
+    deviceMaximum = isMushaf ? 46 : 88;
   } else {
-    // Desktop tier: large 42px baseline (style Quran.com)
-    deviceBaseline = 42;
-    deviceMaximum = 96;
+    deviceBaseline = isMushaf ? 34 : 42;
+    deviceMaximum = isMushaf ? 52 : 96;
   }
 
   const layoutScale = mushafLayout === "mushaf" ? 0.94 : 1;
