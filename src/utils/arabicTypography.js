@@ -73,23 +73,23 @@ export function getArabicReadingLineHeight({
   const normalizedFont = String(fontFamily || "").toLowerCase();
 
   if (normalizedFont.includes("indopak")) {
-    return isContinuousMushaf ? 1.72 : 2.16;
+    return isContinuousMushaf ? 1.85 : 2.16;
   }
 
   if (riwaya === "warsh") {
-    return isContinuousMushaf ? 1.68 : 2.12;
+    return isContinuousMushaf ? 1.82 : 2.12;
   }
 
   if (normalizedFont.includes("scheherazade")) {
-    return isContinuousMushaf ? 1.65 : 2.08;
+    return isContinuousMushaf ? 1.78 : 2.08;
   }
 
   if (
     normalizedFont.includes("amiri") ||
     normalizedFont.includes("noto-naskh")
   ) {
-    return isContinuousMushaf ? 1.62 : 2;
+    return isContinuousMushaf ? 1.75 : 2;
   }
 
-  return isContinuousMushaf ? 1.65 : 2.04;
+  return isContinuousMushaf ? 1.78 : 2.04;
 }
