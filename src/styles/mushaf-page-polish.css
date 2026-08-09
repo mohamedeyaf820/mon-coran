@@ -16,23 +16,35 @@
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-container.mushaf-page-wrapper {
+  --_fw: clamp(14px, 2vw, 22px);
+  --_stripe-a: color-mix(in srgb, var(--mushaf-accent) 32%, var(--mushaf-paper));
+  --_stripe-b: color-mix(in srgb, var(--mushaf-accent) 8%, var(--mushaf-paper));
   width: min(100%, 760px) !important;
   max-width: 760px !important;
   min-height: 0 !important;
   margin-inline: auto !important;
   padding: var(--mushaf-page-pad) !important;
   overflow: hidden !important;
-  /* Double cadre style mushaf traditionnel */
-  border: 3px solid var(--mushaf-rule-strong) !important;
-  outline: 6px solid color-mix(in srgb, var(--mushaf-rule-strong) 35%, transparent) !important;
-  outline-offset: -9px !important;
-  border-radius: 0.5rem !important;
-  background: var(--mushaf-paper) !important;
+  border-radius: 0.4rem !important;
+  /* Cadre ornemental traditionnel mushaf : rayures diagonales + double filet */
+  border: var(--_fw) solid transparent !important;
+  outline: none !important;
+  background:
+    linear-gradient(var(--mushaf-paper), var(--mushaf-paper)) padding-box,
+    repeating-linear-gradient(
+      -45deg,
+      var(--_stripe-a) 0px,
+      var(--_stripe-a) 2px,
+      var(--_stripe-b) 2px,
+      var(--_stripe-b) 8px
+    ) border-box !important;
   color: var(--mushaf-ink) !important;
+  /* Double filet intérieur : line fine accentuée + line plus large subtile */
   box-shadow:
+    inset 0 0 0 1.5px var(--mushaf-rule-strong),
+    inset 0 0 0 3.5px color-mix(in srgb, var(--mushaf-rule-strong) 25%, transparent),
     0 4px 12px rgba(var(--mushaf-shadow-rgb), 0.18),
-    0 16px 48px rgba(var(--mushaf-shadow-rgb), 0.14),
-    inset 0 0 0 12px color-mix(in srgb, var(--mushaf-rule-strong) 12%, transparent) !important;
+    0 16px 48px rgba(var(--mushaf-shadow-rgb), 0.14) !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper::before,
