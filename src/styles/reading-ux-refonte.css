@@ -35,8 +35,8 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
 }
 
 .app-root[data-view="reading"] .quran-display--platform > .tajweed-legend {
-  width: var(--reader-content-max) !important;
-  max-width: var(--reader-content-max) !important;
+  width: min(100%, 1120px) !important;
+  max-width: min(100%, 1120px) !important;
   margin-inline: auto !important;
 }
 
