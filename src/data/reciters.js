@@ -147,6 +147,7 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     cdn: "Karim_Mansoori_40kbps",
     cdnType: "everyayah",
     audioMode: "ayah",
+    country: "Iran",
     source: "everyayah",
   },
   {
@@ -170,6 +171,7 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     cdn: "Salaah_AbdulRahman_Bukhatir_128kbps",
     cdnType: "everyayah",
     audioMode: "ayah",
+    country: "UAE",
     source: "everyayah",
   },
   {
@@ -181,6 +183,7 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     cdn: "Yaser_Salamah_128kbps",
     cdnType: "everyayah",
     audioMode: "ayah",
+    country: "Jordan",
     source: "everyayah",
   },
   {
@@ -192,6 +195,7 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     cdn: "aziz_alili_128kbps",
     cdnType: "everyayah",
     audioMode: "ayah",
+    country: "Algeria",
     source: "everyayah",
   },
   {
@@ -203,6 +207,7 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     cdn: "khalefa_al_tunaiji_64kbps",
     cdnType: "everyayah",
     audioMode: "ayah",
+    country: "UAE",
     source: "everyayah",
   },
   {
@@ -323,6 +328,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Abdul_Basit_Murattal_192kbps",
       cdnType: "everyayah",
+      country: "Egypt",
     },
     {
       id: "ar.abdulbasitmujawwad",
@@ -332,6 +338,7 @@ const RECITERS = {
       style: "mujawwad",
       cdn: "Abdul_Basit_Mujawwad_128kbps",
       cdnType: "everyayah",
+      country: "Egypt",
     },
     {
       id: "ar.husary",
@@ -351,6 +358,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "ar.minshawi",
       cdnType: "islamic",
+      country: "Egypt",
     },
     {
       id: "ar.minshawimujawwad",
@@ -360,6 +368,7 @@ const RECITERS = {
       style: "mujawwad",
       cdn: "Minshawy_Mujawwad_192kbps",
       cdnType: "everyayah",
+      country: "Egypt",
     },
     {
       id: "ar.saoodshuraym",
@@ -379,6 +388,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Abdullah_Matroud_128kbps",
       cdnType: "everyayah",
+      country: "KSA",
     },
     {
       id: "abdullaah_basfar",
@@ -388,6 +398,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Abdullah_Basfar_192kbps",
       cdnType: "everyayah",
+      country: "KSA",
     },
     {
       id: "abdulsamad",
@@ -417,6 +428,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net",
       cdnType: "everyayah",
+      country: "KSA",
     },
     {
       id: "maher_almuaiqly",
@@ -436,6 +448,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Ali_Jaber_64kbps",
       cdnType: "everyayah",
+      country: "KSA",
     },
     {
       id: "hudhaify",
@@ -445,6 +458,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Hudhaify_128kbps",
       cdnType: "everyayah",
+      country: "KSA",
     },
     {
       id: "ar.muhammadjibreel",
@@ -464,6 +478,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Muhammad_Ayyoub_128kbps",
       cdnType: "everyayah",
+      country: "KSA",
     },
     {
       id: "muhammad_tablawi",
@@ -473,6 +488,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Mohammad_al_Tablaway_128kbps",
       cdnType: "everyayah",
+      country: "Egypt",
     },
     {
       id: "hani_rifai",
@@ -482,6 +498,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Hani_Rifai_192kbps",
       cdnType: "everyayah",
+      country: "KSA",
     },
     {
       id: "fares_abbad",
@@ -491,6 +508,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Fares_Abbad_64kbps",
       cdnType: "everyayah",
+      country: "Algeria",
     },
     {
       id: "yasser_dossari_hafs",
@@ -510,6 +528,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Nasser_Alqatami_128kbps",
       cdnType: "everyayah",
+      country: "Kuwait",
     },
     {
       id: "sahl_yassin",
@@ -519,6 +538,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Sahl_Yassin_128kbps",
       cdnType: "everyayah",
+      country: "KSA",
     },
     ...SUPPLEMENTAL_HAFS_RECITERS,
   ],
@@ -869,6 +889,21 @@ const COUNTRY_LABELS = Object.freeze({
     fr: "Syrie",
     en: "Syria",
     ar: "سوريا",
+  }),
+  Iran: Object.freeze({
+    fr: "Iran",
+    en: "Iran",
+    ar: "إيران",
+  }),
+  UAE: Object.freeze({
+    fr: "Émirats arabes unis",
+    en: "UAE",
+    ar: "الإمارات",
+  }),
+  Jordan: Object.freeze({
+    fr: "Jordanie",
+    en: "Jordan",
+    ar: "الأردن",
   }),
 });
 

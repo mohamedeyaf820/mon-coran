@@ -1178,6 +1178,23 @@ html.dark .app-root > .mp-header {
   }
 }
 
+[data-theme="dark"] .mp-header-menu__font-controls {
+  background: color-mix(in srgb, var(--bg-secondary) 90%, var(--primary) 10%);
+  border-color: color-mix(in srgb, var(--primary) 22%, var(--border));
+}
+
+[data-theme="dark"] .mp-header-menu__font-controls button {
+  color: var(--primary);
+}
+
+[data-theme="dark"] .mp-header-menu__font-controls button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+[data-theme="dark"] .mp-header-menu__font-controls output {
+  color: var(--text-primary);
+}
+
 @media (min-width: 641px) and (max-width: 900px) {
   html body .app-root > .mp-header {
     min-height: 0 !important;
