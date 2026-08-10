@@ -787,7 +787,7 @@ export default function Header({ immersiveHidden = false }) {
                       >
                         <span aria-hidden="true">−</span>
                       </button>
-                      <output aria-live="polite">{quranFontSize}</output>
+                      <output aria-live="polite">{quranFontSize}px</output>
                       <button
                         type="button"
                         data-testid="header-reader-font-increase"

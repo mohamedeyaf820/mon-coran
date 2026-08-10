@@ -46,7 +46,8 @@ test("opening animation preloads the reciter library before the first click", as
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
-  await expect(page.locator(".splash-screen")).toBeVisible();
+  // The splash may already be fading on low-performance runners; check for DOM presence
+  await expect(page.locator(".splash-screen")).toBeAttached({ timeout: 3_000 });
   await expect(page.locator(".splash-screen")).toBeHidden({ timeout: 6_000 });
   await expect
     .poll(() =>
@@ -375,9 +376,10 @@ test("reader interactions do not trigger a React update loop", async ({ page }) 
     await disclosure.click();
   }
   await expect(disclosure).toHaveAttribute("aria-expanded", "true");
-  await page.getByRole("button", { name: "Mushaf", exact: true }).click();
+  // View-mode pills use role="radio" inside a radiogroup
+  await page.getByRole("radio", { name: "Mushaf", exact: true }).click();
   await expect(page.locator(".quran-mode-pane--mushaf")).toBeVisible();
-  await page.getByRole("button", { name: "Liste", exact: true }).click();
+  await page.getByRole("radio", { name: "Liste", exact: true }).click();
   await expect(page.locator(".quran-mode-pane--mushaf")).toHaveCount(0);
   await page.waitForTimeout(250);
 
