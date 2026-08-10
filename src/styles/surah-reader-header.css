@@ -627,7 +627,7 @@
     .srh-pill,
     .srh-toggle {
         gap: 0.25rem;
-        min-height: 40px;
+        min-height: 44px;
         padding-inline: 0.3rem;
         font-size: 0.62rem;
     }
