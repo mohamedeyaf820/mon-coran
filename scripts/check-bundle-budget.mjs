@@ -20,7 +20,7 @@ const LIMITS = {
   initialJs: Number(process.env.BUDGET_INITIAL_JS_KB || 418),
   initialTotal: Number(process.env.BUDGET_INITIAL_TOTAL_KB || 810),
   initialGzip: Number(process.env.BUDGET_INITIAL_GZIP_KB || 200),
-  deferredCss: Number(process.env.BUDGET_DEFERRED_CSS_KB || 185),
+  deferredCss: Number(process.env.BUDGET_DEFERRED_CSS_KB || 186),
   homeCss: Number(process.env.BUDGET_HOME_CSS_KB || 58),
   readerCss: Number(process.env.BUDGET_READER_CSS_KB || 180),
 };

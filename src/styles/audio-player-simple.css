@@ -183,7 +183,7 @@ html body .app-root .audio-player-simple.mp-audio-player--desktop[data-dragging=
   border-radius: 1.15rem !important;
 }
 
-.app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock {
+html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock {
   right: 0 !important;
   bottom: 0 !important;
   left: 0 !important;
@@ -192,8 +192,9 @@ html body .app-root .audio-player-simple.mp-audio-player--desktop[data-dragging=
   border-right: 0 !important;
   border-bottom: 0 !important;
   border-left: 0 !important;
-  border-radius: 1.1rem 1.1rem 0 0 !important;
-  box-shadow: 0 -10px 32px rgba(4, 12, 20, .22) !important;
+  border-top: 1px solid color-mix(in srgb, var(--theme-primary) 22%, transparent) !important;
+  border-radius: 1.4rem 1.4rem 0 0 !important;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, .28), 0 -1px 0 color-mix(in srgb, var(--theme-primary) 18%, transparent) !important;
 }
 
 .app-root .audio-player-simple .simple-player__header {
@@ -315,13 +316,20 @@ html body .app-root .audio-player-simple .mp-player-options-trigger {
 .app-root .audio-player-simple .simple-player__surah-ar {
   min-width: 0;
   overflow: hidden;
-  color: color-mix(in srgb, var(--theme-primary) 78%, var(--simple-player-ink) 22%);
+  color: color-mix(in srgb, var(--theme-primary) 82%, var(--simple-player-ink) 18%);
+  font-size: 1.45rem;
+  font-weight: 400;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* fallback quand pas de glyph surahnames (font-surah-names override) */
+.app-root .audio-player-simple .simple-player__surah-ar:not(.font-surah-names) {
   font-family: var(--font-quran, "Scheherazade New", serif);
   font-size: .95rem;
   font-weight: 700;
   line-height: 1.15;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 /* Le champ est partagé par les trois thèmes et respecte aussi le sens RTL. */
@@ -343,7 +351,7 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 .app-root .audio-player-simple .simple-player__mobile-meta small,
 .app-root .audio-player-simple .simple-player__compact-meta small {
   display: block;
-  color: var(--text-muted);
+  color: var(--simple-player-muted);
   font-size: .64rem;
   font-weight: 650;
   line-height: 1.25;
@@ -351,15 +359,29 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 
 .app-root .audio-player-simple .simple-player__title {
   color: var(--simple-player-ink);
-  font-size: .9rem;
-  font-weight: 760;
-  letter-spacing: -.015em;
+  font-size: .96rem;
+  font-weight: 780;
+  letter-spacing: -.018em;
 }
 
 .app-root .audio-player-simple .simple-player__reciter {
-  margin-top: .18rem;
+  display: flex !important;
+  align-items: center;
+  gap: .28rem;
+  margin-top: .22rem;
   color: var(--simple-player-muted);
-  font-size: .69rem;
+  font-size: .7rem;
+  font-weight: 500;
+}
+
+.app-root .audio-player-simple .simple-player__reciter::before {
+  content: "";
+  display: inline-block;
+  width: .28rem;
+  height: .28rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--theme-primary) 56%, transparent);
+  flex: 0 0 auto;
 }
 
 .app-root .audio-player-simple .simple-player__ayah {
@@ -380,7 +402,7 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
   align-items: center;
   gap: .35rem;
   margin: 0 1rem .55rem;
-  color: #d9922e;
+  color: var(--color-warning, #d9922e);
   font-size: .65rem;
   font-weight: 700;
 }
@@ -479,19 +501,19 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 
 .app-root .audio-player-simple .simple-player__compact-row {
   display: grid;
-  grid-template-columns: 2.75rem minmax(0, 1fr) var(--mp-device-touch) 2.75rem;
+  grid-template-columns: 2.6rem minmax(0, 1fr) 2.75rem 2.75rem;
   align-items: center;
-  gap: clamp(.4rem, 1.6vw, .65rem);
-  min-height: 4rem;
-  padding: .4rem clamp(.6rem, 2vw, 1rem);
+  gap: clamp(.45rem, 1.8vw, .7rem);
+  min-height: 4.25rem;
+  padding: .5rem clamp(.75rem, 2.5vw, 1.1rem);
 }
 
 .app-root .audio-player-simple .simple-player__compact-meta {
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: .6rem;
-  padding: .2rem 0;
+  gap: .55rem;
+  padding: .18rem 0;
   border: 0;
   background: transparent;
   color: inherit;
@@ -509,49 +531,36 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 
 .app-root .audio-player-simple .simple-player__compact-meta strong {
   color: var(--simple-player-ink);
-  font-size: clamp(.8rem, 2.3vw, .9rem);
+  font-size: clamp(.82rem, 2.4vw, .94rem);
   font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -.01em;
+  line-height: 1.2;
+  letter-spacing: -.015em;
 }
 
 .app-root .audio-player-simple .simple-player__compact-meta span {
-  margin-top: .08rem;
+  margin-top: .07rem;
   color: var(--simple-player-muted);
-  font-size: clamp(.62rem, 1.8vw, .7rem);
+  font-size: clamp(.62rem, 1.8vw, .68rem);
 }
 
 .app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-ar-name {
-  font-family: var(--font-quran, serif);
-  font-size: clamp(.82rem, 2.2vw, .92rem) !important;
-  color: color-mix(in srgb, var(--theme-primary) 72%, var(--simple-player-ink));
-  line-height: 1.4;
+  color: color-mix(in srgb, var(--theme-primary) 86%, var(--simple-player-ink));
+  font-size: clamp(1.2rem, 3.2vw, 1.45rem) !important;
+  font-weight: 400;
+  line-height: 1;
   letter-spacing: 0;
-  direction: rtl;
-  margin-top: .06rem !important;
+  margin-top: .04rem !important;
+}
+
+.app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-ar-name:not(.font-surah-names) {
+  font-family: var(--font-quran, "Scheherazade New"), serif;
 }
 
 .app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-reciter {
-  font-size: clamp(.6rem, 1.6vw, .66rem) !important;
+  font-size: clamp(.58rem, 1.6vw, .64rem) !important;
   color: var(--simple-player-muted);
   opacity: .82;
   margin-top: .12rem !important;
-}
-
-.app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-ar-ligature {
-  display: block;
-  flex: 0 0 auto;
-  align-self: center;
-  overflow: visible;
-  margin-top: 0;
-  color: var(--theme-primary);
-  font-family: "surahnames", serif;
-  font-size: clamp(1.65rem, 5.2vw, 2.2rem);
-  line-height: 1;
-  text-overflow: clip;
-  white-space: nowrap;
-  filter: drop-shadow(0 1px 4px color-mix(in srgb, var(--theme-primary) 22%, transparent));
-  opacity: .92;
 }
 
 /* text info block (title + ar-name + reciter stacked) */
@@ -574,9 +583,10 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 }
 
 .app-root .audio-player-simple.simple-player--compact .simple-player__progress {
-  height: .2rem !important;
-  min-height: .2rem !important;
+  height: .22rem !important;
+  min-height: .22rem !important;
   border-radius: 0 !important;
+  opacity: .9;
 }
 
 .app-root .audio-player-simple .simple-player__handle {
@@ -704,6 +714,13 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
     text-overflow: ellipsis;
     text-transform: none;
     white-space: nowrap;
+  }
+
+  .app-root .audio-player-simple .simple-player__mobile-kicker .simple-player__mobile-surah-glyph {
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--theme-primary);
   }
 
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__header-actions {

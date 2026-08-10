@@ -42,14 +42,11 @@ export default defineConfig(({ mode }) => ({
     sourcemap: false,
     target: "es2020",
     // Minification agressive + suppression console/debugger
-    minify: "esbuild",
     cssCodeSplit: true,
     cssMinify: "esbuild",
     // Enable compression
     reportCompressedSize: true,
     chunkSizeWarningLimit: 500,
-    // Merge chunks smaller than 8 kB to reduce HTTP request count (target ≤15 chunks)
-    experimentalMinChunkSize: 8192,
     rollupOptions: {
       output: {
         // Noms de chunks haches, pas de noms lisibles.

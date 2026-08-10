@@ -1698,8 +1698,10 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     height: 1.75rem;
     align-items: center;
     justify-content: center;
+    border: 0;
     border-radius: 9px;
-    color: var(--text-secondary);
+    color: var(--primary);
+    font-weight: 700;
 }
 
 .afc-size-btn:hover:not(:disabled) {
@@ -1905,8 +1907,8 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
 }
 
 .cpv-surah-title-box {
-    background-color: var(--surah-box-bg) !important;
-    border-color: var(--surah-box-border) !important;
+    background-color: var(--surah-box-bg, #0d2522) !important;
+    border-color: var(--surah-box-border, #16342f) !important;
 }
 
 .cpv-surah-name-ar {

@@ -503,6 +503,9 @@ body {
     --bg-card: #ffffff;
     --bg-overlay: rgba(28, 25, 23, 0.55);
     --surface: #ffffff;
+    --bg-primary-72: rgba(253, 250, 244, 0.72);
+    --bg-card-92: rgba(255, 255, 255, 0.92);
+    --primary-22: rgba(11, 98, 53, 0.22);
 
     --border: rgba(201, 186, 148, 0.45);
     --border-light: rgba(201, 186, 148, 0.25);
@@ -782,6 +785,9 @@ body {
     --bg-card: #1a1710;
     --bg-overlay: rgba(0, 0, 0, 0.75);
     --surface: #1a1710;
+    --bg-primary-72: rgba(18, 18, 18, 0.72);
+    --bg-card-92: rgba(26, 23, 16, 0.92);
+    --primary-22: rgba(16, 90, 48, 0.22);
 
     --border: #2d2d2d;
     --border-subtle: #242424;

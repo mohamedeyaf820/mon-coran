@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
-  ArrowRight,
   BookOpenText,
   CircleUserRound,
   Database,
@@ -9,21 +8,17 @@ import {
   FileCheck2,
   Github,
   Globe2,
-  ListOrdered,
-  Search,
   Scale,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import { useAppActions, useAppLocale } from "../context/AppContext";
-import SURAHS from "../data/surahs";
 import siteConfig from "../../site.config.json";
 import { CONTENT_ATTRIBUTIONS } from "../data/contentAttributions";
 import "../styles/domains/legal-page.css";
 
-const PAGE_KEYS = ["surahs", "about", "privacy", "legal", "sources"];
+const PAGE_KEYS = ["about", "privacy", "legal", "sources"];
 const PAGE_ICONS = {
-  surahs: ListOrdered,
   about: CircleUserRound,
   privacy: ShieldCheck,
   legal: Scale,
@@ -36,22 +31,10 @@ const COPY = {
     back: "Retour à l’accueil",
     open: "Ouvrir",
     tabs: {
-      surahs: "Liste des sourates",
       about: "À propos",
       privacy: "Confidentialité",
       legal: "Mentions légales",
       sources: "Sources",
-    },
-    surahs: {
-      title: "Les 114 sourates, réunies en un seul répertoire",
-      intro: "Recherchez une sourate par son numéro ou son nom, puis ouvrez directement sa lecture en Hafs ou en Warsh.",
-      search: "Rechercher une sourate…",
-      all: "Toutes",
-      meccan: "Mecquoises",
-      medinan: "Médinoises",
-      count: "sourates",
-      ayahs: "versets",
-      empty: "Aucune sourate ne correspond à cette recherche.",
     },
     about: {
       title: "Un compagnon de lecture sobre, utile et vérifiable",
@@ -130,8 +113,6 @@ const COPY = {
   */
 };
 
-const normalize = (value) => String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-
 export default function LegalPage({ page = "privacy" }) {
   const { lang } = useAppLocale();
   const { set } = useAppActions();
@@ -140,8 +121,6 @@ export default function LegalPage({ page = "privacy" }) {
   const activePage = PAGE_KEYS.includes(page) ? page : "privacy";
   const content = locale[activePage];
   const ActiveIcon = PAGE_ICONS[activePage];
-  const [query, setQuery] = useState("");
-  const [revelation, setRevelation] = useState("all");
 
   useEffect(() => {
     if (lang === "fr") {
@@ -158,16 +137,6 @@ export default function LegalPage({ page = "privacy" }) {
     return () => { cancelled = true; };
   }, [lang]);
 
-  const filteredSurahs = useMemo(() => {
-    if (activePage !== "surahs") return [];
-    const needle = normalize(query);
-    return SURAHS.filter((surah) => {
-      const matchesType = revelation === "all" || surah.type.toLowerCase() === revelation;
-      const haystack = normalize(`${surah.n} ${surah.ar} ${surah.en} ${surah.fr}`);
-      return matchesType && (!needle || haystack.includes(needle));
-    });
-  }, [activePage, query, revelation]);
-
   const scrollMainTop = () => {
     const main = document.querySelector("#main-content");
     if (main) main.scrollTo({ top: 0, behavior: "smooth" });
@@ -181,19 +150,6 @@ export default function LegalPage({ page = "privacy" }) {
 
   const goHome = () => {
     set({ legalPage: null, showHome: true, showDuas: false });
-    scrollMainTop();
-  };
-
-  const openSurah = (event, number) => {
-    event.preventDefault();
-    set({
-      legalPage: null,
-      showHome: false,
-      showDuas: false,
-      displayMode: "surah",
-      currentSurah: number,
-      currentAyah: 1,
-    });
     scrollMainTop();
   };
 
@@ -213,7 +169,7 @@ export default function LegalPage({ page = "privacy" }) {
         <h1>{content.title}</h1>
         <p className="legal-page__intro">{content.intro}</p>
         <div className="legal-page__trust" aria-label={locale.eyebrow}>
-          <span><BookOpenText size={14} /> 114 {locale.surahs.count}</span>
+          <span><BookOpenText size={14} /> 114 {lang === "ar" ? "سورة" : lang === "en" ? "surahs" : "sourates"}</span>
           <span><ShieldCheck size={14} /> {lang === "ar" ? "بيانات محلية" : lang === "en" ? "Local-first data" : "Données locales"}</span>
           <span><FileCheck2 size={14} /> v{siteConfig.version}</span>
         </div>
@@ -231,61 +187,15 @@ export default function LegalPage({ page = "privacy" }) {
         })}
       </nav>
 
-      {activePage === "surahs" ? (
-        <section className="surah-directory" aria-labelledby="surah-directory-title">
-          <div className="surah-directory__toolbar">
-            <div>
-              <p>{filteredSurahs.length} / 114</p>
-              <h2 id="surah-directory-title">{locale.tabs.surahs}</h2>
-            </div>
-            <label className="surah-directory__search">
-              <Search size={17} aria-hidden="true" />
-              <span className="sr-only">{content.search}</span>
-              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={content.search} type="search" />
-            </label>
-            <div className="surah-directory__filters" role="group" aria-label={content.count}>
-              {[
-                ["all", content.all],
-                ["meccan", content.meccan],
-                ["medinan", content.medinan],
-              ].map(([value, label]) => (
-                <button key={value} type="button" className={revelation === value ? "is-active" : ""} aria-pressed={revelation === value} onClick={() => setRevelation(value)}>{label}</button>
-              ))}
-            </div>
-          </div>
-
-          {filteredSurahs.length ? (
-            <ol className="surah-directory__grid">
-              {filteredSurahs.map((surah) => (
-                <li key={surah.n}>
-                  <a href={`/surah/${surah.n}`} onClick={(event) => openSurah(event, surah.n)}>
-                    <span className="surah-directory__number">{String(surah.n).padStart(3, "0")}</span>
-                    <span className="surah-directory__names">
-                      <strong>{lang === "en" ? surah.en : surah.fr}</strong>
-                      <small>{surah.en}</small>
-                    </span>
-                    <span className="surah-directory__arabic" lang="ar" dir="rtl">{surah.ar}</span>
-                    <span className="surah-directory__meta">{surah.type === "Meccan" ? content.meccan : content.medinan} · {surah.ayahs} {content.ayahs}</span>
-                    <span className="surah-directory__open">{locale.open}<ArrowRight size={14} aria-hidden="true" /></span>
-                  </a>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <div className="surah-directory__empty"><Search size={22} aria-hidden="true" /><p>{content.empty}</p></div>
-          )}
-        </section>
-      ) : (
-        <div className="legal-page__grid">
-          {content.sections.map(([title, body], index) => (
-            <section key={title} className="legal-page__card">
-              <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-              <h2>{title}</h2>
-              <p>{body}</p>
-            </section>
-          ))}
-        </div>
-      )}
+      <div className="legal-page__grid">
+        {content.sections.map(([title, body], index) => (
+          <section key={title} className="legal-page__card">
+            <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+            <h2>{title}</h2>
+            <p>{body}</p>
+          </section>
+        ))}
+      </div>
 
       {activePage === "sources" ? (
         <section className="legal-page__attributions" aria-labelledby="attributions-title">

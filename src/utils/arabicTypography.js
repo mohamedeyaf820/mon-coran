@@ -30,18 +30,18 @@ export function getResponsiveArabicFontSize({
   let deviceMaximum;
   const isMushaf = mushafLayout === "mushaf";
 
-  if (width <= 480) {
+  if (width <= 640) {
     deviceBaseline = isMushaf ? 22 : 24;
-    deviceMaximum = isMushaf ? 34 : 72;
-  } else if (width <= 768) {
-    deviceBaseline = isMushaf ? 26 : 28;
-    deviceMaximum = isMushaf ? 40 : 80;
+    deviceMaximum = isMushaf ? 30 : 32;
   } else if (width <= 1024) {
+    deviceBaseline = isMushaf ? 26 : 28;
+    deviceMaximum = isMushaf ? 38 : 40;
+  } else if (width <= 1280) {
     deviceBaseline = isMushaf ? 30 : 34;
-    deviceMaximum = isMushaf ? 46 : 88;
+    deviceMaximum = isMushaf ? 48 : 52;
   } else {
-    deviceBaseline = isMushaf ? 34 : 42;
-    deviceMaximum = isMushaf ? 52 : 96;
+    deviceBaseline = isMushaf ? 34 : 34;
+    deviceMaximum = isMushaf ? 48 : 56;
   }
 
   const layoutScale = mushafLayout === "mushaf" ? 0.94 : 1;
@@ -74,19 +74,19 @@ export function getArabicReadingLineHeight({
   }
 
   if (riwaya === "warsh") {
-    return isContinuousMushaf ? 1.82 : 2.12;
+    return isContinuousMushaf ? 1.9 : 2.12;
   }
 
   if (normalizedFont.includes("scheherazade")) {
-    return isContinuousMushaf ? 1.78 : 2.08;
+    return isContinuousMushaf ? 1.9 : 2.08;
   }
 
   if (
     normalizedFont.includes("amiri") ||
     normalizedFont.includes("noto-naskh")
   ) {
-    return isContinuousMushaf ? 1.75 : 2;
+    return isContinuousMushaf ? 1.88 : 2;
   }
 
-  return isContinuousMushaf ? 1.78 : 2.04;
+  return isContinuousMushaf ? 1.9 : 2.04;
 }

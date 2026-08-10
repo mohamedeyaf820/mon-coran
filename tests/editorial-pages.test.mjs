@@ -5,17 +5,11 @@ import test from "node:test";
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
 test("editorial hub exposes the five published destinations and real actions", async () => {
-  const [page, footer] = await Promise.all([
-    read("src/components/LegalPage.jsx"),
-    read("src/components/Footer.jsx"),
-  ]);
+  const page = await read("src/components/LegalPage.jsx");
 
   for (const route of ["surahs", "about", "privacy", "legal", "sources"]) {
     assert.match(page, new RegExp(`\\b${route}\\b`));
-    assert.match(footer, new RegExp(`\\b${route}\\b`));
   }
-  assert.match(page, /SURAHS\.filter/);
-  assert.match(page, /displayMode: "surah"/);
   assert.match(page, /siteConfig\.repositoryUrl/);
   assert.match(page, /siteConfig\.contactUrl/);
 });

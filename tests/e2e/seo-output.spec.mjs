@@ -63,31 +63,13 @@ test("surah pages are indexable while deep reading states use runtime noindex", 
   );
 });
 
-test("the static surah hub exposes all 114 crawlable links", async ({
-  page,
-  request,
-}) => {
-  const response = await request.get("/surahs/index.html");
-  expect(response.ok()).toBe(true);
-  const html = await response.text();
-  expect(html).not.toContain('<script type="module"');
-
-  await page.goto("/surahs/index.html", { waitUntil: "domcontentloaded" });
-  await expect(page).toHaveTitle(/Liste des 114 sourates/);
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
-    "content",
-    "index,follow",
-  );
-  await expect(page.locator('main a[href^="/surah/"]')).toHaveCount(114);
-});
-
 test("sitemap and social image stay within the SEO contract", async ({
   request,
 }) => {
   const sitemapResponse = await request.get("/sitemap.xml");
   expect(sitemapResponse.ok()).toBe(true);
   const sitemap = await sitemapResponse.text();
-  expect((sitemap.match(/<url>/g) || []).length).toBe(121);
+  expect((sitemap.match(/<url>/g) || []).length).toBe(120);
   expect(sitemap).not.toContain("/page/");
   expect(sitemap).not.toContain("/juz/");
   expect(sitemap).not.toMatch(/\/surah\/\d+\/\d+/);

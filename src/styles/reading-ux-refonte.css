@@ -28,22 +28,16 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
   padding-top: 0 !important;
 }
 
-.app-root[data-view="reading"] .quran-display--platform :is(.qc-surah-header-wrap, .reader-toolbar, .mode-nav, .warsh-notice) {
-  width: var(--reader-content-max) !important;
-  max-width: var(--reader-content-max) !important;
+html body .app-root[data-view="reading"] .quran-display--platform :is(.qc-surah-header-wrap, .reader-toolbar, .mode-nav, .warsh-notice) {
+  width: min(100%, 1180px) !important;
+  max-width: min(100%, 1180px) !important;
   margin-inline: auto !important;
 }
 
-.app-root[data-view="reading"] .quran-display--platform > .tajweed-legend {
-  margin-inline: clamp(0.72rem, 2vw, 1.6rem) !important;
-  width: auto !important;
-  max-width: none !important;
-}
-
-@media (max-width: 760px) {
-  .app-root[data-view="reading"] .quran-display--platform > .tajweed-legend {
-    margin-inline: 0.48rem !important;
-  }
+html body .app-root[data-view="reading"] .quran-display--platform > .tajweed-legend {
+  width: min(100%, 1180px) !important;
+  max-width: min(100%, 1180px) !important;
+  margin-inline: auto !important;
 }
 
 .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap {

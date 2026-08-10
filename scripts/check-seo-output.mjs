@@ -30,7 +30,6 @@ function structuredData(html) {
 
 const home = await readDist("index.html");
 const surah = await readDist(path.join("surah", "2", "index.html"));
-const surahIndex = await readDist(path.join("surahs", "index.html"));
 const notFound = await readDist("404.html");
 const sitemap = await readDist("sitemap.xml");
 
@@ -77,12 +76,10 @@ check(
 );
 check(surah.includes('href="/surah/1"'), "previous-surah link missing");
 check(surah.includes('href="/surah/3"'), "next-surah link missing");
-check(surah.includes(`href="${siteConfig.siteUrl}/surahs"`), "surah hub breadcrumb missing");
-
 const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
   (match) => match[1],
 );
-check(sitemapLocations.length === 121, "sitemap must contain exactly 121 useful URLs");
+check(sitemapLocations.length === 120, "sitemap must contain exactly 120 useful URLs");
 check(
   !sitemapLocations.some((url) => /\/surah\/\d+\/\d+$/.test(url)),
   "ayah deep links must not be listed in sitemap",
@@ -90,10 +87,6 @@ check(
 check(
   !sitemapLocations.some((url) => /\/(?:page|juz)\/\d+$/.test(url)),
   "thin page and juz routes must not be listed in sitemap",
-);
-check(
-  sitemapLocations.includes(`${siteConfig.siteUrl}/surahs`),
-  "surah hub missing from sitemap",
 );
 const lastmods = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map(
   (match) => match[1],
@@ -104,18 +97,9 @@ check(
   "sitemap lastmod must match the verified content date",
 );
 
-const surahLinks = new Set(
-  [...surahIndex.matchAll(/href="\/surah\/(\d+)"/g)].map((match) => match[1]),
-);
-check(surahLinks.size === 114, "static surah hub must link all 114 surahs");
-check(
-  !/<script type="module"/i.test(surahIndex),
-  "static surah hub must remain readable without SPA replacement",
-);
-
 const socialImage = await stat(path.join(distDir, "og-image.jpg"));
 check(socialImage.size < 150 * 1024, "OG image must stay below 150 kB");
 
 console.log(
-  `[seo-check] OK — ${sitemapLocations.length} indexable URLs, 114 surah links, OG image ${(socialImage.size / 1024).toFixed(1)} kB.`,
+  `[seo-check] OK — ${sitemapLocations.length} indexable URLs, OG image ${(socialImage.size / 1024).toFixed(1)} kB.`,
 );

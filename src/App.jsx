@@ -89,9 +89,7 @@ function AppLoadingFallback({ lang, variant = "page" }) {
         display: "grid",
         placeItems: "center",
         padding: isHeader ? "0.4rem" : "clamp(0.8rem, 3vw, 1.5rem)",
-        background: isOverlay
-          ? "color-mix(in srgb, var(--bg-primary) 72%, transparent)"
-          : "transparent",
+        background: isOverlay ? "var(--bg-primary-72, rgba(0,0,0,0.72))" : "transparent",
         backdropFilter: isOverlay ? "blur(6px)" : undefined,
       }}
     >
@@ -103,9 +101,7 @@ function AppLoadingFallback({ lang, variant = "page" }) {
           borderRadius: "999px",
           padding: isHeader ? 0 : "0.65rem 0.85rem",
           color: "var(--text-secondary)",
-          background: isHeader
-            ? "transparent"
-            : "color-mix(in srgb, var(--bg-card) 92%, transparent)",
+          background: isHeader ? "transparent" : "var(--bg-card-92, rgba(255,255,255,0.92))",
           border: isHeader ? 0 : "1px solid var(--border)",
           boxShadow: isHeader ? "none" : "var(--shadow-sm)",
         }}
@@ -117,7 +113,7 @@ function AppLoadingFallback({ lang, variant = "page" }) {
             height: spinnerSize,
             flex: `0 0 ${spinnerSize}px`,
             borderRadius: "50%",
-            border: "2px solid color-mix(in srgb, var(--primary) 22%, transparent)",
+            border: "2px solid var(--primary-22, rgba(0,128,128,0.22))",
             borderTopColor: "var(--primary)",
           }}
           aria-hidden="true"
@@ -855,41 +851,24 @@ export default function App() {
                 onClick={revealImmersiveChrome}
                 style={{
                   position: "fixed",
-                  left: "50%",
-                  [edge]: edge === "bottom"
-                    ? "env(safe-area-inset-bottom, 0px)"
-                    : 0,
+                  left: 0,
+                  [edge]: 0,
                   zIndex: 240,
-                  width: 80,
+                  width: "100%",
                   height: 44,
-                  display: "grid",
-                  placeItems: "center",
                   padding: 0,
-                  transform: "translateX(-50%)",
                   border: 0,
                   background: "transparent",
-                  color: "var(--primary)",
                   cursor: "pointer",
                 }}
                 aria-label={
                   lang === "ar"
-                    ? "Ø¥Ø¸Ù‡Ø§Ø± Ø£Ø¯ÙˆØ§Øª Ø§Ù„Ù‚Ø±Ø§Ø¡Ø©"
+                    ? "إظهار أدوات القراءة"
                     : lang === "en"
                       ? "Show reading controls"
                       : "Afficher les commandes de lecture"
                 }
-              >
-                <span
-                  aria-hidden="true"
-                  style={{
-                    width: 34,
-                    height: 4,
-                    borderRadius: 999,
-                    background: "currentColor",
-                    boxShadow: "0 0 0 4px color-mix(in srgb, var(--bg-card) 78%, transparent)",
-                  }}
-                />
-              </button>
+              />
             ))}
           </div>
         ) : null}
