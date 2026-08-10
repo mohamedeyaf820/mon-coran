@@ -39,8 +39,11 @@ export function getResponsiveArabicFontSize({
   } else if (width <= 1024) {
     deviceBaseline = isMushaf ? 30 : 34;
     deviceMaximum = isMushaf ? 88 : 88;
-  } else {
+  } else if (width <= 1280) {
     deviceBaseline = isMushaf ? 34 : 42;
+    deviceMaximum = isMushaf ? 96 : 96;
+  } else {
+    deviceBaseline = isMushaf ? 34 : 34;
     deviceMaximum = isMushaf ? 96 : 96;
   }
 
