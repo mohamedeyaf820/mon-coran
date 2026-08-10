@@ -37,6 +37,9 @@ async function seedReadingState(page, overrides = {}) {
 async function openReader(page, viewport, overrides = {}) {
   await installQuranNetworkFixtures(page);
   await seedReadingState(page, overrides);
+  await page.addInitScript(() => {
+    try { sessionStorage.removeItem("mushafplus-reader-tools-open"); } catch {}
+  });
   await page.setViewportSize(viewport);
   await page.goto("/surah/3");
   await expect(page.locator(".mp-header").first()).toBeVisible({ timeout: 30_000 });
@@ -97,7 +100,7 @@ async function revealReaderTools(page, viewportWidth) {
   );
   await expect(trigger).toBeVisible();
   if ((await trigger.getAttribute("aria-expanded")) !== "true") {
-    await trigger.click();
+    await trigger.evaluate((el) => el.click());
   }
   await expect(trigger).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#srh-reader-tools")).not.toHaveAttribute("aria-hidden", "true");
