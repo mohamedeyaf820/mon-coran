@@ -205,7 +205,7 @@ function CompactPlayer(props) {
         >
           {isPlaying ? <Pause size={18} /> : <Play size={18} className="simple-player__play-glyph" />}
         </IconButton>
-        <IconButton label={expandLabel} onClick={onExpand}>
+        <IconButton label={expandLabel} onClick={onExpand} aria-hidden="true" tabIndex={-1}>
           <ChevronUp size={18} />
         </IconButton>
       </div>
