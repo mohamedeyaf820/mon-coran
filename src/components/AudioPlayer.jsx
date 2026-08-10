@@ -90,7 +90,7 @@ export default function AudioPlayer() {
   const [reciterSwitchingId, setReciterSwitchingId] = useState(null);
 
   /* Fermeture / refs stables pour callbacks */
-  const [closed, setClosed] = useState(() => !currentPlayingAyah && !isPlaying);
+  const [closed, setClosed] = useState(false);
   const currentSurahRef = useRef(null);
   const currentPlayingAyahRef = useRef(currentPlayingAyah);
   const skipInitialExpandedPreferenceRef = useRef(!currentPlayingAyah);
