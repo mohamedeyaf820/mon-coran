@@ -80,7 +80,7 @@ export default function PrivacyLockGate({ children }) {
 
   return (
     <main
-      className="privacy-lock grid min-h-screen place-items-center bg-[var(--bg-primary)] p-5 text-[var(--text-primary)]"
+      className="app-root privacy-lock grid min-h-screen place-items-center bg-[var(--bg-primary)] p-5 text-[var(--text-primary)]"
       lang={lang}
       dir={lang === "ar" ? "rtl" : "ltr"}
     >

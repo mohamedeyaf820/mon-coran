@@ -16,10 +16,8 @@ const COPY = {
     page: "Page",
     juz: "Juz",
     ayah: "verset",
-    surahs: "Sourates",
     home: "Accueil",
     legal: {
-      surahs: "Liste des 114 sourates",
       about: "À propos",
       privacy: "Confidentialité",
       legal: "Mentions légales",
@@ -36,10 +34,8 @@ const COPY = {
     page: "Page",
     juz: "Juz",
     ayah: "verse",
-    surahs: "Surahs",
     home: "Home",
     legal: {
-      surahs: "List of 114 surahs",
       about: "About",
       privacy: "Privacy",
       legal: "Legal notice",
@@ -55,10 +51,8 @@ const COPY = {
     page: "صفحة",
     juz: "الجزء",
     ayah: "الآية",
-    surahs: "السور",
     home: "الرئيسية",
     legal: {
-      surahs: "قائمة السور المائة والأربع عشرة",
       about: "حول التطبيق",
       privacy: "الخصوصية",
       legal: "إشعار قانوني",
@@ -106,14 +100,8 @@ export function buildSeoMetadata(state = {}) {
   } else if (state.legalPage) {
     const label = copy.legal[state.legalPage] || copy.legal.legal;
     title = `${label} | ${suffix}`;
-    description = state.legalPage === "surahs"
-      ? lang === "ar"
-        ? `فهرس سور القرآن الكريم مع الأسماء وعدد الآيات على ${suffix}.`
-        : lang === "en"
-          ? `Browse all 114 Quran surahs with Arabic names, translations and verse counts on ${suffix}.`
-          : `Parcourez les 114 sourates avec leur nom arabe, leur traduction et leur nombre de versets sur ${suffix}.`
-      : `${label} — ${suffix}`;
-    kind = state.legalPage === "surahs" ? "surah-index" : "legal";
+    description = `${label} — ${suffix}`;
+    kind = "legal";
   } else if (state.showDuas) {
     title = `${copy.duasTitle} | ${suffix}`;
     description = copy.duasDescription;
@@ -159,7 +147,6 @@ export function buildSeoMetadata(state = {}) {
 function breadcrumbItems(metadata, state, copy) {
   const items = [{ name: copy.home, item: SITE_URL }];
   if (metadata.kind === "surah" || metadata.kind === "ayah") {
-    items.push({ name: copy.surahs, item: new URL("/surahs", SITE_URL).href });
     items.push({
       name: surahName(state.currentSurah || 1, metadata.lang),
       item: new URL(`/surah/${state.currentSurah || 1}`, SITE_URL).href,

@@ -37,7 +37,9 @@ test("verse actions open as a compact, usable mobile sheet", async ({ page }) =>
   await expect(dialog.getByRole("button", { name: /couter$/ })).toBeVisible();
   await expect(dialog.getByRole("button", { name: /Favori/ })).toBeVisible();
   await expect(dialog.getByRole("button", { name: /Plus d.actions/ })).toBeVisible();
-  await expect(panel).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 0)");
+  // Browsers may report either the identity matrix or "none" — both mean no translation.
+  const panelTransform = await panel.evaluate((el) => getComputedStyle(el).transform);
+  expect(["none", "matrix(1, 0, 0, 1, 0, 0)"]).toContain(panelTransform);
 
   const panelBox = await panel.boundingBox();
   expect(panelBox?.y).toBeGreaterThanOrEqual(0);

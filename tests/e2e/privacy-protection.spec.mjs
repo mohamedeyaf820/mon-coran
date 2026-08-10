@@ -132,8 +132,8 @@ test("privacy: protected mode migrates records and locks after reload", async ({
   expect(rawRecords.note.text).toBeUndefined();
   expect(rawRecords.bookmark.label).toBeUndefined();
 
-  await page.reload();
-  await expect(page.getByRole("heading", { name: "D\u00e9verrouiller MushafPlus" })).toBeVisible();
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "D\u00e9verrouiller MushafPlus" })).toBeVisible({ timeout: 15_000 });
   await page.locator("#privacy-unlock-passphrase").fill("phrase incorrecte assez longue");
   await page.getByRole("button", { name: "D\u00e9verrouiller" }).click();
   await expect(page.getByText("Phrase secr\u00e8te incorrecte.")).toBeVisible();

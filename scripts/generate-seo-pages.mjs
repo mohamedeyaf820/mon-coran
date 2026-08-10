@@ -22,15 +22,6 @@ const routes = [
       "Lisez, écoutez et mémorisez gratuitement le Saint Coran en ligne avec Tajwid, traductions et récitations Hafs et Warsh sur MushafPlus.",
   },
   {
-    pathname: "/surahs",
-    kind: "surah-index",
-    indexable: true,
-    staticOnly: true,
-    title: "Liste des 114 sourates du Saint Coran | MushafPlus",
-    description:
-      "Consultez la liste complète des 114 sourates du Saint Coran avec leurs noms arabes, traductions et nombre de versets.",
-  },
-  {
     pathname: "/duas",
     kind: "duas",
     indexable: true,
@@ -112,10 +103,7 @@ function breadcrumbItems(route) {
     },
   ];
 
-  if (route.kind === "surah-index") {
-    items.push({ name: "Liste des sourates", url: canonicalFor("/surahs") });
-  } else if (route.surah) {
-    items.push({ name: "Sourates", url: canonicalFor("/surahs") });
+  if (route.surah) {
     items.push({
       name: `Sourate ${route.surah.en}`,
       url: canonicalFor(`/surah/${route.surah.n}`),
@@ -246,26 +234,7 @@ function adjacentSurahLinks(route) {
   }</nav>`;
 }
 
-function surahIndexBody() {
-  const list = SURAHS.map(
-    (surah) =>
-      `<li><a href="/surah/${surah.n}"><span class="n">${String(surah.n).padStart(3, "0")}</span><span class="names"><strong>${escapeHtml(
-        surah.fr,
-      )}</strong><small>${escapeHtml(surah.en)} · ${surah.ayahs} versets</small></span><span class="ar" lang="ar" dir="rtl">${escapeHtml(
-        surah.ar,
-      )}</span><span class="open">Lire →</span></a></li>`,
-  ).join("");
-  return `<style>
-    :root{color-scheme:light dark}*{box-sizing:border-box}body{margin:0;background:#f3f8f5;color:#17271f;font-family:ui-sans-serif,system-ui,sans-serif}.hub{width:min(100% - 2rem,76rem);margin:auto;padding:2rem 0 4rem}.hero{text-align:center;padding:2rem 1rem}.eyebrow{color:#0d6b52;font-size:.72rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase}.hero h1{max-width:48rem;margin:.5rem auto;font:500 clamp(2.2rem,6vw,4.5rem)/1.03 Georgia,serif;letter-spacing:-.04em}.hero p{max-width:42rem;margin:1rem auto;color:#5d6d64;line-height:1.7}.actions{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap}.actions a{padding:.65rem .85rem;border:1px solid #bdd1c6;border-radius:.75rem;color:#0d6b52;text-decoration:none;font-size:.78rem;font-weight:750}.panel{padding:1rem;border:1px solid #cbd9d1;border-radius:1.4rem;background:#fff;box-shadow:0 18px 50px #183d2920}.panel-head{display:flex;align-items:end;justify-content:space-between;gap:1rem;padding:.3rem .3rem 1rem}.panel-head p{margin:0;color:#0d6b52;font-size:.7rem;font-weight:800}.panel-head h2{margin:.2rem 0 0;font-size:1.2rem}.legend{color:#6a786f;font-size:.72rem}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem;margin:0;padding:0;list-style:none}.grid a{display:grid;grid-template-columns:2.7rem minmax(0,1fr) auto;grid-template-areas:'n names ar' 'n names open';align-items:center;gap:.2rem .7rem;min-height:5.8rem;padding:.8rem;border:1px solid #d8e2dc;border-radius:.95rem;color:inherit;text-decoration:none}.grid a:hover{border-color:#4b9a73;background:#eef7f1;box-shadow:0 10px 24px #173d2d16}.n{grid-area:n;display:grid;width:2.7rem;height:2.7rem;place-items:center;border:1px solid #a8cbb8;border-radius:.8rem;color:#0d6b52;font:800 .68rem ui-monospace,monospace}.names{grid-area:names;display:grid;min-width:0}.names strong,.names small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.names strong{font-size:.8rem}.names small{color:#69786f;font-size:.63rem}.ar{grid-area:ar;font:1.15rem/1.5 'Scheherazade New',serif}.open{grid-area:open;justify-self:end;color:#0d6b52;font-size:.62rem;font-weight:750}.foot{display:flex;justify-content:space-between;gap:1rem;margin-top:1rem;padding:.8rem;color:#68776e;font-size:.7rem}.foot a{color:#0d6b52;font-weight:750;text-decoration:none}@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.hub{width:min(100% - 1rem,76rem);padding-top:.5rem}.hero{padding-inline:.2rem}.grid{grid-template-columns:1fr}.panel{padding:.55rem;border-radius:1rem}.legend{display:none}.foot{flex-direction:column}}@media(prefers-color-scheme:dark){body{background:#0d1712;color:#edf5f0}.hero p,.legend,.names small,.foot{color:#aabbb1}.panel{border-color:#2b4537;background:#13231a}.grid a{border-color:#2c4939;background:#16271e}.grid a:hover{border-color:#4f9c75;background:#193126}.actions a{border-color:#335742;color:#72c997}}
-  </style><main class="hub">
-    <header class="hero"><p class="eyebrow">Bibliothèque coranique</p><h1>Les 114 sourates, réunies en un seul répertoire</h1><p>Accédez à chaque sourate avec son nom arabe, sa traduction française, son texte, le Tajwid et les récitations Hafs et Warsh.</p><nav class="actions" aria-label="Navigation"><a href="/">Accueil</a><a href="/about">À propos</a><a href="/sources">Sources</a></nav></header>
-    <section class="panel"><div class="panel-head"><div><p>114 / 114</p><h2>Liste des sourates</h2></div><span class="legend">Nom français · translittération · nombre de versets</span></div><ol class="grid">${list}</ol></section>
-    <footer class="foot"><span>Lecture privée, sans compte</span><a href="/">MushafPlus</a></footer>
-  </main>`;
-}
-
 function staticBody(route, title, description) {
-  if (route.kind === "surah-index") return surahIndexBody();
   return `<main style="max-width:48rem;margin:4rem auto;padding:1.5rem;font-family:system-ui,sans-serif;line-height:1.65;color:#173d2d">
     ${breadcrumbHtml(route)}
     <h1>${title}</h1>
@@ -326,15 +295,6 @@ function renderPage(route) {
       '<div id="root"></div>',
       `<div id="root">${staticBody(route, title, description)}</div>`,
     );
-  }
-
-  if (route.staticOnly) {
-    html = html
-      .replace(/\s*<script src="\/boot-recovery\.js"><\/script>/i, "")
-      .replace(
-        /\s*<script type="module"[^>]*src="[^"]+"[^>]*><\/script>/i,
-        "",
-      );
   }
 
   return html;

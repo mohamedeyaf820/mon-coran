@@ -99,17 +99,21 @@ export default function AudioOptionsModal(props) {
             aria-label={lang === "fr" ? "Catégories des réglages audio" : lang === "ar" ? "فئات إعدادات الصوت" : "Audio settings categories"}
           >
             <button
+              id="tab-reciters"
               type="button"
               role="tab"
               aria-selected={activeMobileTab === "reciters"}
+              aria-controls="tabpanel-reciters"
               onClick={() => setActiveMobileTab("reciters")}
             >
               {t("audio.reciter", lang)}
             </button>
             <button
+              id="tab-settings"
               type="button"
               role="tab"
               aria-selected={activeMobileTab === "settings"}
+              aria-controls="tabpanel-settings"
               onClick={() => setActiveMobileTab("settings")}
             >
               {lang === "fr" ? "Lecture" : lang === "ar" ? "التشغيل" : "Playback"}
@@ -118,6 +122,9 @@ export default function AudioOptionsModal(props) {
 
           <div className="audio-player-modal__grid grid min-h-0 flex-1 gap-4 overflow-hidden p-3 sm:p-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
             <ReciterOptionsList
+              id="tabpanel-reciters"
+              role="tabpanel"
+              aria-labelledby="tab-reciters"
               className={activeMobileTab === "reciters" ? "is-active" : ""}
               currentReciters={currentReciters}
               filteredReciters={filteredReciters}
@@ -140,6 +147,9 @@ export default function AudioOptionsModal(props) {
             />
 
             <PlaybackSettingsPanel
+              id="tabpanel-settings"
+              role="tabpanel"
+              aria-labelledby="tab-settings"
               className={activeMobileTab === "settings" ? "is-active" : ""}
               audioSpeed={audioSpeed}
               closeOptionsModal={closeOptionsModal}

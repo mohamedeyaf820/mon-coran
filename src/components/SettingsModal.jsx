@@ -592,7 +592,6 @@ export default function SettingsModal() {
           min={ARABIC_FONT_SIZE_MIN}
           max={ARABIC_FONT_SIZE_MAX}
           value={quranFontSize}
-          suffix="px"
           onChange={(value) => set({ quranFontSize: value })}
         />
         <SliderRow
