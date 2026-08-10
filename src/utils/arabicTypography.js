@@ -30,21 +30,18 @@ export function getResponsiveArabicFontSize({
   let deviceMaximum;
   const isMushaf = mushafLayout === "mushaf";
 
-  if (width <= 480) {
+  if (width <= 640) {
     deviceBaseline = isMushaf ? 22 : 24;
-    deviceMaximum = isMushaf ? 72 : 72;
-  } else if (width <= 768) {
-    deviceBaseline = isMushaf ? 26 : 28;
-    deviceMaximum = isMushaf ? 80 : 80;
+    deviceMaximum = isMushaf ? 30 : 32;
   } else if (width <= 1024) {
-    deviceBaseline = isMushaf ? 30 : 34;
-    deviceMaximum = isMushaf ? 88 : 88;
+    deviceBaseline = isMushaf ? 26 : 28;
+    deviceMaximum = isMushaf ? 38 : 40;
   } else if (width <= 1280) {
-    deviceBaseline = isMushaf ? 34 : 42;
-    deviceMaximum = isMushaf ? 96 : 96;
+    deviceBaseline = isMushaf ? 30 : 34;
+    deviceMaximum = isMushaf ? 48 : 52;
   } else {
     deviceBaseline = isMushaf ? 34 : 34;
-    deviceMaximum = isMushaf ? 96 : 96;
+    deviceMaximum = isMushaf ? 48 : 56;
   }
 
   const layoutScale = mushafLayout === "mushaf" ? 0.94 : 1;
