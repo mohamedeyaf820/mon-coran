@@ -112,6 +112,7 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     cdnType: "everyayah",
     audioMode: "ayah",
     source: "everyayah",
+    country: "Syria",
   },
   {
     id: "salah_al_budair",
@@ -312,6 +313,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "ar.alafasy",
       cdnType: "islamic",
+      country: "Kuwait",
     },
     {
       id: "ar.abdulbasitmurattal",
@@ -339,6 +341,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "ar.husary",
       cdnType: "islamic",
+      country: "Egypt",
     },
     {
       id: "ar.minshawi",
@@ -366,6 +369,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Saood_ash-Shuraym_128kbps",
       cdnType: "everyayah",
+      country: "KSA",
     },
     {
       id: "abdullaah_matrood",
@@ -387,12 +391,13 @@ const RECITERS = {
     },
     {
       id: "abdulsamad",
-      name: "عبدالصمد",
-      nameEn: "Abdul Samad",
-      nameFr: "Abdul Samad",
+      name: "عبد الباسط عبد الصمد (رواية بديلة)",
+      nameEn: "Abdul Basit (Alt. Recording)",
+      nameFr: "Abdul Basit (Enregistrement alternatif)",
       style: "murattal",
       cdn: "AbdulSamad_64kbps_QuranExplorer.Com",
       cdnType: "everyayah",
+      country: "Egypt",
     },
     {
       id: "ar.abdurrahmaansudais",
@@ -402,6 +407,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Abdurrahmaan_As-Sudais_192kbps",
       cdnType: "everyayah",
+      country: "KSA",
     },
     {
       id: "ahmed_ajmy",
@@ -420,6 +426,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "MaherAlMuaiqly128kbps",
       cdnType: "everyayah",
+      country: "KSA",
     },
     {
       id: "ali_jabir",
@@ -447,6 +454,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Muhammad_Jibreel_128kbps",
       cdnType: "everyayah",
+      country: "Egypt",
     },
     {
       id: "muhammad_ayyoub",
@@ -492,6 +500,7 @@ const RECITERS = {
       style: "murattal",
       cdn: "Yasser_Ad-Dussary_128kbps",
       cdnType: "everyayah",
+      country: "KSA",
     },
     {
       id: "nasser_alqatami",
