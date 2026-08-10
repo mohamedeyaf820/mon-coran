@@ -860,6 +860,16 @@ const COUNTRY_LABELS = Object.freeze({
     en: "Morocco",
     ar: "المغرب",
   }),
+  Kuwait: Object.freeze({
+    fr: "Koweït",
+    en: "Kuwait",
+    ar: "الكويت",
+  }),
+  Syria: Object.freeze({
+    fr: "Syrie",
+    en: "Syria",
+    ar: "سوريا",
+  }),
 });
 
 export function getReciterAvatar(reciter) {

@@ -33,8 +33,6 @@ import {
   Home,
   SunMoon,
   Type,
-  Minus,
-  Plus,
   BookOpen,
   List,
 } from "lucide-react";

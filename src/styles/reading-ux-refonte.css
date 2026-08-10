@@ -29,14 +29,14 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform :is(.qc-surah-header-wrap, .reader-toolbar, .mode-nav, .warsh-notice) {
-  width: min(100%, 62rem) !important;
-  max-width: min(100%, 62rem) !important;
+  width: min(100%, 1180px) !important;
+  max-width: min(100%, 1180px) !important;
   margin-inline: auto !important;
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform > .tajweed-legend {
-  width: min(100%, 62rem) !important;
-  max-width: min(100%, 62rem) !important;
+  width: min(100%, 1180px) !important;
+  max-width: min(100%, 1180px) !important;
   margin-inline: auto !important;
 }
 

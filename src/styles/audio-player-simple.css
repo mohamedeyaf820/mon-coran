@@ -552,15 +552,15 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
   margin-top: .04rem !important;
 }
 
+.app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-ar-name:not(.font-surah-names) {
+  font-family: var(--font-quran, "Scheherazade New"), serif;
+}
+
 .app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-reciter {
   font-size: clamp(.58rem, 1.6vw, .64rem) !important;
   color: var(--simple-player-muted);
   opacity: .82;
   margin-top: .12rem !important;
-}
-
-.app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-ar-ligature {
-  display: none;
 }
 
 /* text info block (title + ar-name + reciter stacked) */
