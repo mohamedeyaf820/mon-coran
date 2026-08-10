@@ -205,9 +205,9 @@ export default function SplashScreen({
           text-align: center;
           position: relative;
           z-index: 1;
-          animation: splashIn 1s cubic-bezier(0.22,1,0.36,1);
+          animation: splashIn 1s cubic-bezier(0.22,1,0.36,1) both;
         }
-        .splash-screen.perf-low .splash-content { animation: none; }
+        .splash-screen.perf-low .splash-content { animation: none; opacity: 1; }
 
         .splash-logo-wrap {
           display: flex;
