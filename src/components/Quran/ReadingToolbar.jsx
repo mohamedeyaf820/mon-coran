@@ -4,6 +4,7 @@ import {
   Languages,
   List,
   Loader2,
+  Maximize2,
   Palette,
   Pause,
   Play,
@@ -29,6 +30,7 @@ function toolbarLabelsFor(lang) {
     listen: labelFor(lang, "\u00c9couter", "Listen", "\u0627\u0633\u062a\u0645\u0627\u0639"),
     pause: labelFor(lang, "Pause", "Pause", "\u0625\u064a\u0642\u0627\u0641 \u0645\u0624\u0642\u062a"),
     loading: labelFor(lang, "Chargement", "Loading", "\u062c\u0627\u0631\u064a \u0627\u0644\u062a\u062d\u0645\u064a\u0644"),
+    fullscreen: labelFor(lang, "Plein écran", "Full screen", "\u0645\u0644\u0621 \u0627\u0644\u0634\u0627\u0634\u0629"),
   };
 }
 
@@ -39,6 +41,7 @@ export default function ReadingToolbar({
   preparingSurah,
   surahNum,
   onToggleMushaf,
+  onOpenFullscreen,
 }) {
   const { state, set } = useApp();
   const {
@@ -186,6 +189,19 @@ export default function ReadingToolbar({
       </div>
 
       <div className="qc-reader-toolbar__utilities flex w-full flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] pt-2.5 md:w-auto md:justify-end md:border-t-0 md:pt-0">
+        {mushafIsOn && onOpenFullscreen ? (
+          <button
+            type="button"
+            className="reader-fullscreen-trigger"
+            onClick={onOpenFullscreen}
+            aria-label={labels.fullscreen}
+            title={labels.fullscreen}
+          >
+            <Maximize2 size={14} aria-hidden="true" />
+            <span>{labels.fullscreen}</span>
+          </button>
+        ) : null}
+
         <button
           type="button"
           className={cn(

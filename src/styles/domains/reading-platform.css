@@ -4190,3 +4190,458 @@ html body .app-root .native-ayah-marker::after {
         linear-gradient(105deg, rgba(47, 208, 142, 0.04), transparent 48%),
         var(--bg-card) !important;
 }
+
+/* Full-screen Mushaf: one calm reading surface on phones and tablets. */
+.reader-fullscreen-trigger {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.38rem;
+    border: 1px solid rgba(var(--primary-rgb), 0.24);
+    border-radius: 11px;
+    padding: 0.42rem 0.72rem;
+    color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.075);
+    font-size: 0.72rem;
+    font-weight: 780;
+}
+
+.reader-fullscreen-trigger:hover,
+.reader-fullscreen-trigger:focus-visible {
+    border-color: rgba(var(--primary-rgb), 0.42);
+    background: rgba(var(--primary-rgb), 0.13);
+}
+
+/* Immersive Mushaf viewport: reflow-free page zoom, native panning and calm UI. */
+.quran-display--platform .mfp-overlay {
+    z-index: 3000;
+    padding: clamp(0.4rem, 1.5vw, 1rem);
+    background: color-mix(in srgb, var(--bg-primary) 76%, #000 24%);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+}
+
+.quran-display--platform .mfp-page-container {
+    position: relative;
+    display: block;
+    isolation: isolate;
+    width: min(860px, calc(100vw - 1rem));
+    height: min(92dvh, 920px);
+    max-height: none;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+}
+
+.quran-display--platform .mfp-reader-bar,
+.quran-display--platform .mfp-navigation {
+    position: absolute;
+    inset-inline: 0;
+    z-index: 8;
+    transition: opacity 180ms ease, transform 220ms ease;
+}
+
+.quran-display--platform .mfp-reader-bar {
+    top: 0;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 0.65rem;
+    min-height: 64px;
+    padding: 0.55rem 0.7rem;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg-card) 88%, transparent);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+}
+
+.quran-display--platform :is(
+    .mfp-icon-btn,
+    .mfp-navigation > button,
+    .mfp-flow-switch button,
+    .mfp-zoom-controls button
+) {
+    display: inline-flex;
+    min-width: 38px;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 11px;
+    color: var(--text-secondary);
+    background: transparent;
+}
+
+.quran-display--platform :is(.mfp-icon-btn, .mfp-navigation > button) {
+    min-width: 44px;
+    min-height: 44px;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+}
+
+.quran-display--platform .mfp-reader-bar__identity {
+    display: grid;
+    min-width: 0;
+    justify-items: center;
+    gap: 0.08rem;
+    text-align: center;
+}
+
+.quran-display--platform .mfp-reader-bar__identity strong {
+    overflow: hidden;
+    max-width: 100%;
+    color: var(--text-quran, var(--text-primary));
+    font-family: var(--font-surah-display, var(--font-quran, serif));
+    font-size: 1.16rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.quran-display--platform .mfp-reader-bar__identity span {
+    color: var(--text-muted);
+    font-size: 0.62rem;
+    font-weight: 700;
+}
+
+.quran-display--platform :is(.mfp-flow-switch, .mfp-zoom-controls) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.18rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg-secondary);
+}
+
+.quran-display--platform :is(.mfp-flow-switch, .mfp-zoom-controls) button {
+    gap: 0.3rem;
+    padding-inline: 0.5rem;
+    font-size: 0.65rem;
+    font-weight: 760;
+}
+
+.quran-display--platform .mfp-flow-switch button[aria-pressed="true"] {
+    color: var(--primary);
+    background: var(--bg-card);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.quran-display--platform .mfp-zoom-controls > span {
+    min-width: 2.3rem;
+    color: var(--text-secondary);
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-align: center;
+}
+
+.quran-display--platform .mfp-reader-bar__folio {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    font-size: 0.66rem;
+    font-weight: 800;
+}
+
+.quran-display--platform .mfp-navigation {
+    bottom: 0;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    min-height: 64px;
+    padding-bottom: max(0.45rem, env(safe-area-inset-bottom));
+    background: color-mix(in srgb, var(--bg-card) 88%, transparent);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+}
+
+.quran-display--platform .mfp-navigation > button:last-child {
+    justify-self: end;
+}
+
+.quran-display--platform .mfp-navigation__center {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+}
+
+.quran-display--platform .mfp-navigation button:disabled,
+.quran-display--platform .mfp-zoom-controls button:disabled {
+    cursor: default;
+    opacity: 0.34;
+}
+
+.quran-display--platform .mfp-viewport {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+}
+
+.quran-display--platform .mfp-viewport::-webkit-scrollbar {
+    display: none;
+}
+
+.quran-display--platform .mfp-pages {
+    width: min(100%, 760px);
+    min-height: 100%;
+    margin-inline: auto;
+}
+
+.quran-display--platform .mfp-pages--vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.quran-display--platform .mfp-page-surface {
+    position: relative;
+    flex: 0 0 auto;
+    min-height: 100%;
+    overflow: visible;
+}
+
+.quran-display--platform .mfp-page-sheet {
+    position: relative;
+    min-height: min(100dvh, 920px);
+    transform-origin: top left;
+    color: var(--reader-page-ink, var(--text-quran, var(--text-primary)));
+    background:
+        radial-gradient(circle at 50% 0%, rgba(var(--primary-rgb), 0.045), transparent 36%),
+        var(--reader-page-paper, var(--bg-primary));
+    font-family: var(--qd-font-family, var(--font-quran, serif));
+    font-synthesis: none;
+}
+
+.quran-display--platform .mfp-page-meta,
+.quran-display--platform .mfp-page-folio {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding-inline: clamp(0.8rem, 4vw, 2.4rem);
+    color: var(--reader-page-muted, var(--text-muted));
+    font-family: var(--font-ui, sans-serif);
+    font-size: 0.62rem;
+    font-weight: 750;
+    letter-spacing: 0.04em;
+}
+
+.quran-display--platform .mfp-page-meta {
+    justify-content: space-between;
+    min-height: 2.5rem;
+    padding-top: 0.35rem;
+}
+
+.quran-display--platform .mfp-page-meta span:first-child {
+    color: var(--reader-page-ink, var(--text-quran));
+    font-family: var(--font-surah-display, var(--font-quran, serif));
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.quran-display--platform .mfp-quran-flow {
+    padding: clamp(3.8rem, 8vh, 5.4rem) clamp(0.8rem, 5vw, 3.2rem) clamp(4.4rem, 10vh, 6.2rem);
+    color: inherit;
+    font-size: var(--qd-fullscreen-font-size, 44px);
+    line-height: 2.28;
+    text-align: justify;
+    text-rendering: optimizeLegibility;
+    word-spacing: 0.015em;
+}
+
+.quran-display--platform .mfp-ayah {
+    display: inline;
+    border-radius: 0.18em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+.quran-display--platform .mfp-ayah--playing {
+    color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.11);
+    box-shadow: 0 0 0 0.08em rgba(var(--primary-rgb), 0.08);
+}
+
+.quran-display--platform .mfp-ayah-marker {
+    margin-inline: 0.08em 0.12em !important;
+    vertical-align: -0.03em;
+}
+
+.quran-display--platform .mfp-surah-break {
+    display: block;
+    width: 100%;
+    margin-block: 0.7em 0.45em;
+    text-align: center;
+}
+
+.quran-display--platform .mfp-surah-break .clean-surah-header,
+.quran-display--platform .mfp-surah-break .mushaf-surah-header {
+    max-width: min(92%, 31rem);
+    margin-inline: auto;
+}
+
+.quran-display--platform .mfp-page-folio {
+    justify-content: center;
+    padding-bottom: 1rem;
+}
+
+.quran-display--platform .mfp-page-folio span {
+    width: min(18vw, 6rem);
+    height: 1px;
+    background: var(--reader-page-rule, var(--border));
+}
+
+.quran-display--platform .mfp-page-folio strong {
+    display: grid;
+    min-width: 2rem;
+    min-height: 2rem;
+    place-items: center;
+    border: 1px solid var(--reader-page-rule, var(--border));
+    border-radius: 999px;
+}
+
+.quran-display--platform .mfp-page-container--immersive .mfp-reader-bar {
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-105%);
+}
+
+.quran-display--platform .mfp-page-container--immersive .mfp-navigation {
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(105%);
+}
+
+.quran-display--platform .mfp-immersive-hint {
+    position: absolute;
+    top: max(0.32rem, env(safe-area-inset-top));
+    left: 50%;
+    z-index: 9;
+    display: grid;
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 18px !important;
+    min-height: 18px !important;
+    place-items: center;
+    border: 0;
+    padding: 0;
+    border-radius: 999px;
+    opacity: 0;
+    transform: translate(-50%, -150%);
+    background: color-mix(in srgb, var(--bg-card) 72%, transparent);
+    transition: opacity 180ms ease, transform 220ms ease;
+}
+
+.quran-display--platform .mfp-immersive-hint span {
+    width: 18px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--text-muted);
+}
+
+.quran-display--platform .mfp-page-container--immersive .mfp-immersive-hint {
+    opacity: 0.64;
+    transform: translate(-50%, 0);
+}
+
+.quran-display--platform[data-theme="dark"] .mfp-page-sheet {
+    --reader-page-ink: #f3f0e8;
+    --reader-page-muted: #b5ad9d;
+    --reader-page-rule: rgba(211, 176, 83, 0.24);
+    background: #050706;
+}
+
+@media (max-width: 1024px) {
+    .quran-display--platform .mfp-overlay {
+        padding: 0;
+        background: var(--bg-primary);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    .quran-display--platform .mfp-page-container {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        min-height: 100svh;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .quran-display--platform .mfp-pages {
+        width: 100%;
+    }
+
+    .quran-display--platform .mfp-page-sheet {
+        min-height: 100dvh;
+    }
+}
+
+@media (max-width: 700px) {
+    .quran-display--platform .mfp-reader-bar {
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
+    }
+
+    .quran-display--platform .mfp-navigation {
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
+        min-height: 58px;
+    }
+
+    .quran-display--platform .mfp-navigation > button,
+    .quran-display--platform .mfp-icon-btn {
+        min-width: 40px;
+        min-height: 40px;
+    }
+
+    .quran-display--platform .mfp-flow-switch button,
+    .quran-display--platform .mfp-zoom-controls button {
+        min-width: 34px;
+        min-height: 34px;
+    }
+
+    .quran-display--platform .mfp-quran-flow {
+        padding-inline: clamp(0.55rem, 3.5vw, 1rem);
+        font-size: var(--qd-fullscreen-font-size, 36px);
+        line-height: 2.18;
+    }
+}
+
+@media (max-width: 390px) {
+    .quran-display--platform .mfp-reader-bar__identity span,
+    .quran-display--platform .mfp-flow-switch span,
+    .quran-display--platform .mfp-zoom-controls > span {
+        display: none;
+    }
+
+    .quran-display--platform .mfp-navigation__center {
+        gap: 0.25rem;
+    }
+
+    .quran-display--platform .mfp-flow-switch,
+    .quran-display--platform .mfp-zoom-controls {
+        gap: 0.1rem;
+        padding: 0.12rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .quran-display--platform .mfp-reader-bar,
+    .quran-display--platform .mfp-navigation,
+    .quran-display--platform .mfp-immersive-hint {
+        transition: none;
+    }
+}

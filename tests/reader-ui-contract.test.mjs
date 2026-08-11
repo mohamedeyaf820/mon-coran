@@ -174,6 +174,36 @@ test("Mushaf pages keep a compact, theme-aware reading hierarchy", () => {
   assert.match(styles, /@media \(max-width: 640px\)/);
 });
 
+test("immersive Mushaf keeps a three-page window and separates zoom from page swipes", () => {
+  const display = source("src/components/QuranDisplay.jsx");
+  const overlay = source("src/components/QuranDisplay/FullscreenMushafOverlay.jsx");
+  const prefetch = source("src/components/QuranDisplay/useQuranDisplayPrefetch.js");
+  const storage = source("src/services/storageService.js");
+
+  assert.match(display, /openImmersiveMushaf/);
+  assert.match(display, /await prepareReadingTarget\("page", targetPage\)/);
+  assert.match(overlay, /\[currentPage - 1, currentPage, currentPage \+ 1\]/);
+  assert.match(overlay, /preloadQuranDisplayData/);
+  assert.match(overlay, /const MAX_ZOOM = 3\.2/);
+  assert.match(overlay, /zoom > 1\.01 \|\| !event\.changedTouches\[0\]/);
+  assert.match(overlay, /mfp-page-container--immersive/);
+  assert.match(prefetch, /currentPage \+ 1/);
+  assert.match(prefetch, /currentPage - 1/);
+  assert.match(storage, /mushafPageFlow: "vertical"/);
+});
+
+test("immersive Mushaf is edge-to-edge on mobile and theme-aware on desktop", () => {
+  const styles = source("src/styles/domains/reading-platform.css");
+
+  assert.match(styles, /@media \(max-width: 1024px\)[\s\S]*?width: 100vw;[\s\S]*?height: 100dvh/);
+  assert.match(styles, /\.mfp-viewport[\s\S]*?overflow: auto/);
+  assert.match(styles, /touch-action: pan-x pan-y/);
+  assert.match(styles, /\.mfp-page-container--immersive \.mfp-reader-bar/);
+  assert.match(styles, /data-theme="dark"\] \.mfp-page-sheet/);
+  assert.match(styles, /env\(safe-area-inset-bottom\)/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+});
+
 test("surah headings use the calligraphic name ligatures accessibly", () => {
   const header = source("src/components/Quran/SurahReaderHeader.jsx");
   const headerStyles = source("src/styles/surah-reader-header.css");

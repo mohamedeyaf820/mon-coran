@@ -835,22 +835,47 @@ html body .app-root {
 }
 
 .app-root[data-view="home"] .home-resume-panel__library {
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.45rem;
   margin-top: 1rem;
 }
 
-.app-root[data-view="home"] .home-resume-panel__library > span {
+.app-root[data-view="home"] .home-resume-panel__library > button {
   display: inline-flex;
+  min-width: 0;
+  min-height: 2.35rem;
   align-items: center;
   gap: 0.35rem;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-  padding: 0.35rem 0.6rem;
-  color: rgba(255, 255, 255, 0.72);
-  background: rgba(0, 0, 0, 0.08);
+  border-radius: 0.72rem;
+  padding: 0.42rem 0.52rem;
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(0, 0, 0, 0.12);
   font-size: 0.66rem;
-  font-weight: 650;
+  font-weight: 680;
+  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.app-root[data-view="home"] .home-resume-panel__library > button:hover,
+.app-root[data-view="home"] .home-resume-panel__library > button:focus-visible {
+  border-color: rgba(246, 226, 160, 0.48);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.11);
+  transform: translateY(-1px);
+}
+
+.app-root[data-view="home"] .home-resume-panel__library > button > span {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-root[data-view="home"] .home-resume-panel__library strong {
+  color: #f4dda0;
+  font-size: 0.74rem;
 }
 
 .app-root[data-view="home"] .home-resume-panel__actions {

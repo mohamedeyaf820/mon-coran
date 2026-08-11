@@ -98,7 +98,10 @@ export default function LibraryModal() {
   const { state, dispatch, set } = useApp();
   const { lang, reciter, riwaya } = state;
   const copy = COPY[lang] || COPY.fr;
-  const [tab, setTab] = useState("favorites");
+  const requestedTab = ["favorites", "notes", "playlists"].includes(state.libraryTab)
+    ? state.libraryTab
+    : "favorites";
+  const [tab, setTab] = useState(requestedTab);
   const [bookmarks, setBookmarks] = useState([]);
   const [notes, setNotes] = useState([]);
   const [playlists, setPlaylists] = useState([]);
@@ -109,6 +112,10 @@ export default function LibraryModal() {
   const [editingPlaylistId, setEditingPlaylistId] = useState(null);
   const [editingPlaylistName, setEditingPlaylistName] = useState("");
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTab(requestedTab);
+  }, [requestedTab]);
 
   const close = () => set({ libraryOpen: false });
   const load = useCallback(async () => {

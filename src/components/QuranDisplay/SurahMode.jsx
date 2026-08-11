@@ -22,6 +22,7 @@ function SurahMode({
   lang,
   mushafLayout,
   onNextSurah,
+  onOpenFullscreen,
   onPlaySurah,
   onPrevSurah,
   onToggleActive,
@@ -57,6 +58,7 @@ function SurahMode({
           onPlaySurah={onPlaySurah}
           preparingSurah={preparingSurah}
           onToggleMushaf={onToggleMushaf}
+          onOpenFullscreen={onOpenFullscreen}
         />
       </div>
 

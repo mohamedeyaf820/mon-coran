@@ -215,6 +215,32 @@ export default function QuranDisplay() {
     ],
   );
 
+  const openImmersiveMushaf = useCallback(async () => {
+    const currentAyahData = ayahs.find(
+      (ayah) => Number(ayah.numberInSurah) === Number(currentAyah),
+    );
+    const targetPage = Number(
+      displayMode === "page"
+        ? currentPage
+        : currentAyahData?.page || pageGroups[0]?.page || currentPage,
+    );
+
+    if (displayMode !== "page") {
+      await prepareReadingTarget("page", targetPage);
+      dispatch({ type: "NAVIGATE_PAGE", payload: { page: targetPage } });
+    }
+    view.setFullPage(true);
+  }, [
+    ayahs,
+    currentAyah,
+    currentPage,
+    dispatch,
+    displayMode,
+    pageGroups,
+    prepareReadingTarget,
+    view,
+  ]);
+
   const navigation = useQuranDisplayNavigation({
     currentJuz,
     currentPage,
@@ -419,6 +445,7 @@ export default function QuranDisplay() {
             onNextSurah={navigation.goNextSurah}
             onPlaySurah={playSurah}
             onPrevSurah={navigation.goPrevSurah}
+            onOpenFullscreen={openImmersiveMushaf}
             onToggleActive={toggleAyah}
             onToggleMushaf={toggleMushaf}
             pageGroups={pageGroups}
@@ -456,6 +483,7 @@ export default function QuranDisplay() {
               lang={lang}
               mushafLayout={mushafLayout}
               onNextPage={navigation.goNextPage}
+              onOpenFullscreen={openImmersiveMushaf}
               onPlaySurah={playSurah}
               onPrevPage={navigation.goPrevPage}
               onToggleActive={toggleAyah}
@@ -496,6 +524,7 @@ export default function QuranDisplay() {
               mushafLayout={mushafLayout}
               onNextJuz={navigation.goNextJuz}
               onPlayJuz={playSurah}
+              onOpenFullscreen={openImmersiveMushaf}
               onPlaySpecificSurah={playSpecificSurah}
               onPrevJuz={navigation.goPrevJuz}
               onToggleActive={toggleAyah}
@@ -547,6 +576,8 @@ export default function QuranDisplay() {
               fullPage
               lang={lang}
               onClose={() => view.setFullPage(false)}
+              onNextPage={navigation.goNextPage}
+              onPrevPage={navigation.goPrevPage}
               riwaya={riwaya}
             />
           </Suspense>

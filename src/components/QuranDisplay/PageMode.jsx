@@ -26,6 +26,7 @@ function PageMode({
   lang,
   mushafLayout,
   onNextPage,
+  onOpenFullscreen,
   onPlaySurah,
   onPrevPage,
   onToggleActive,
@@ -39,7 +40,7 @@ function PageMode({
   showTranslation,
   showTransliteration,
   surahGroups,
-  theme,
+  theme: _theme,
 }) {
   const prevPageRef = useRef(currentPage);
   const [turnClass, setTurnClass] = useState("");
@@ -113,6 +114,7 @@ function PageMode({
         preparingSurah={preparingSurah}
         surahNum={pageTopSurah || currentSurah}
         onToggleMushaf={onToggleMushaf}
+        onOpenFullscreen={onOpenFullscreen}
       />
 
       <div className={`page-turn-container ${turnClass}`}>

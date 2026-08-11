@@ -3,9 +3,11 @@ import {
   ArrowRight,
   BookOpen,
   Bookmark,
+  ChevronRight,
   CirclePlay,
   Feather,
   HandHeart,
+  ListMusic,
   Sparkles,
   StickyNote,
 } from "lucide-react";
@@ -66,9 +68,11 @@ export default function HeroSection({
   readingTarget,
   bookmarks,
   notes,
+  playlists,
   continueReading,
   goSurah,
   onWarmSurah,
+  openLibrary,
   openDuas,
   suggestionSet,
   dailyVerse,
@@ -133,10 +137,26 @@ export default function HeroSection({
             ) : null}
           </div>
 
-          <div className="home-resume-panel__library" aria-label={localText(lang, "Bibliothèque personnelle", "Personal library", "المكتبة الشخصية")}>
-            <span><Bookmark size={12} aria-hidden="true" />{bookmarks.length} {localText(lang, "favoris", "saved", "محفوظ")}</span>
-            <span><StickyNote size={12} aria-hidden="true" />{notes.length} {localText(lang, "notes", "notes", "ملاحظات")}</span>
-          </div>
+          <nav
+            className="home-resume-panel__library"
+            aria-label={localText(lang, "Bibliothèque personnelle", "Personal library", "المكتبة الشخصية")}
+          >
+            <button type="button" onClick={() => openLibrary("favorites")}>
+              <Bookmark size={13} aria-hidden="true" />
+              <span><strong>{bookmarks.length}</strong> {localText(lang, "Favoris", "Saved", "محفوظ")}</span>
+              <ChevronRight size={12} aria-hidden="true" />
+            </button>
+            <button type="button" onClick={() => openLibrary("notes")}>
+              <StickyNote size={13} aria-hidden="true" />
+              <span><strong>{notes.length}</strong> {localText(lang, "Notes", "Notes", "ملاحظات")}</span>
+              <ChevronRight size={12} aria-hidden="true" />
+            </button>
+            <button type="button" onClick={() => openLibrary("playlists")}>
+              <ListMusic size={13} aria-hidden="true" />
+              <span><strong>{playlists.length}</strong> {localText(lang, "Listes", "Lists", "قوائم")}</span>
+              <ChevronRight size={12} aria-hidden="true" />
+            </button>
+          </nav>
         </div>
 
         <footer className="home-resume-panel__actions">

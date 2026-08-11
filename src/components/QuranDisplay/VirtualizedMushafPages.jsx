@@ -70,6 +70,10 @@ function VirtualizedMushafPages({
 
   useEffect(() => {
     if (!pageGroups.length) return undefined;
+    if (typeof IntersectionObserver !== "function") {
+      setVisibleIndexes(new Set(pageGroups.map((_, index) => index)));
+      return undefined;
+    }
     const nodes = [...nodeRefs.current.values()];
     const root = nodes[0]?.closest(".app-main-shell") || null;
 
@@ -94,25 +98,28 @@ function VirtualizedMushafPages({
       { root, rootMargin: "1200px 0px", threshold: 0.01 },
     );
 
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const index = Number(entry.target.dataset.virtualPageIndex);
-        if (entry.contentRect.height > 120) {
-          measuredHeights.current.set(index, entry.contentRect.height);
-        }
-      }
-    });
+    const resizeObserver =
+      typeof ResizeObserver === "function"
+        ? new ResizeObserver((entries) => {
+            for (const entry of entries) {
+              const index = Number(entry.target.dataset.virtualPageIndex);
+              if (entry.contentRect.height > 120) {
+                measuredHeights.current.set(index, entry.contentRect.height);
+              }
+            }
+          })
+        : null;
 
     nodes.forEach((node) => {
       observer.observe(node);
-      resizeObserver.observe(node);
+      resizeObserver?.observe(node);
     });
 
     return () => {
       observer.disconnect();
-      resizeObserver.disconnect();
+      resizeObserver?.disconnect();
     };
-  }, [pageGroups.length, signature]);
+  }, [pageGroups, pageGroups.length, signature]);
 
   return pageGroups.map((group, index) => {
     const rendered = visibleIndexes.has(index);

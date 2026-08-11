@@ -88,6 +88,7 @@ const getInitialState = () => {
   searchOpen: false,
   settingsOpen: false,
   libraryOpen: false,
+  libraryTab: "favorites",
   shareImageOpen: false,
   // Le lancement de marque ne bloque que la première ouverture. Les
   // ouvertures suivantes de la session affichent directement l'application.
@@ -109,6 +110,7 @@ const getInitialState = () => {
   riwaya: initialRiwaya,
   displayMode: routeOverrides.displayMode ?? (stored.displayMode || "surah"), // 'surah' | 'page' | 'juz'
   mushafLayout: stored.mushafLayout || "list", // 'list' | 'mushaf'
+  mushafPageFlow: stored.mushafPageFlow === "horizontal" ? "horizontal" : "vertical",
   currentSurah:
     routeOverrides.currentSurah ?? (stored.lastPosition?.surah || 1),
   currentAyah: routeOverrides.currentAyah ?? (stored.lastPosition?.ayah || 1),
@@ -483,6 +485,7 @@ export function AppProvider({ children }) {
     showDuas: state.showDuas,
     displayMode: state.displayMode,
     mushafLayout: state.mushafLayout,
+    mushafPageFlow: state.mushafPageFlow,
     audioSpeed: state.audioSpeed,
     volume: state.volume,
     continuousPlay: state.continuousPlay,
@@ -527,6 +530,7 @@ export function AppProvider({ children }) {
     state.showDuas,
     state.displayMode,
     state.mushafLayout,
+    state.mushafPageFlow,
     state.audioSpeed,
     state.volume,
     state.continuousPlay,
