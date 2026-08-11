@@ -21,6 +21,7 @@ function JuzMode({
   lang,
   mushafLayout,
   onNextJuz,
+  onOpenFullscreen,
   onPlayJuz,
   onPlaySpecificSurah,
   onPrevJuz,
@@ -81,6 +82,7 @@ function JuzMode({
         preparingSurah={preparingSurah}
         surahNum={firstSurah}
         onToggleMushaf={onToggleMushaf}
+        onOpenFullscreen={onOpenFullscreen}
       />
 
       {mushafLayout === "mushaf" ? (

@@ -20,7 +20,9 @@ export default function useQuranDisplayView({
   mushafLayout,
 }) {
   const contentRef = useRef(null);
-  const pinchRef = useRef({ startDist: null, startSize: null });
+  const pinchRef = useRef({ startDist: null, startSize: null, lastSize: null });
+  const pinchFrameRef = useRef(null);
+  const pendingPinchSizeRef = useRef(null);
   const [fullPage, setFullPage] = useState(false);
   const [viewportWidth, setViewportWidth] = useState(() => {
     if (typeof window === "undefined") return 1024;
@@ -86,6 +88,15 @@ export default function useQuranDisplayView({
       window.removeEventListener("resize", updateWidth);
     };
   }, []);
+
+  useEffect(
+    () => () => {
+      if (pinchFrameRef.current) {
+        window.cancelAnimationFrame(pinchFrameRef.current);
+      }
+    },
+    [],
+  );
 
   useLayoutEffect(() => {
     const element = contentRef.current;
@@ -165,7 +176,7 @@ export default function useQuranDisplayView({
     }
 
     element
-      .querySelectorAll(".verse-text, .mushaf-container, .quran-text, .qc-ayah-text-ar, .rd-arabic, .mushaf-verse, .cpv-verse, [lang='ar']")
+      .querySelectorAll(".verse-text, .mushaf-container, .quran-text, .qc-ayah-text-ar, .rd-arabic, .mushaf-verse, .cpv-verse, [lang='ar']:not(.mfp-content-area)")
       .forEach((arabicElement) => {
         if (!isQCF4) {
           arabicElement.style.fontFamily = quranFontCss;
@@ -194,6 +205,7 @@ export default function useQuranDisplayView({
           event.touches[0].clientY - event.touches[1].clientY,
         ),
         startSize: preferredReadingFontSize,
+        lastSize: preferredReadingFontSize,
       };
     },
     onTouchMove: (event) => {
@@ -207,12 +219,21 @@ export default function useQuranDisplayView({
           pinchRef.current.startSize * (distance / pinchRef.current.startDist),
         ),
       );
-      if (nextSize !== preferredReadingFontSize) {
-        dispatch({ type: "SET_QURAN_FONT_SIZE", payload: nextSize });
-      }
+      if (nextSize === pinchRef.current.lastSize) return;
+      pinchRef.current.lastSize = nextSize;
+      pendingPinchSizeRef.current = nextSize;
+      if (pinchFrameRef.current) return;
+      pinchFrameRef.current = window.requestAnimationFrame(() => {
+        pinchFrameRef.current = null;
+        const size = pendingPinchSizeRef.current;
+        pendingPinchSizeRef.current = null;
+        if (size != null) {
+          dispatch({ type: "SET_QURAN_FONT_SIZE", payload: size });
+        }
+      });
     },
     onTouchEnd: () => {
-      pinchRef.current = { startDist: null, startSize: null };
+      pinchRef.current = { startDist: null, startSize: null, lastSize: null };
     },
   };
 

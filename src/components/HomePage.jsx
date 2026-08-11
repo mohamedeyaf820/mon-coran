@@ -19,6 +19,7 @@ import {
 import SURAHS, { toAr } from "../data/surahs";
 import { JUZ_DATA } from "../data/juz";
 import { getAllBookmarks, getAllNotes } from "../services/storageService";
+import { getAllPlaylists } from "../services/playlistService";
 import audioService from "../services/audioService";
 import {
   getReciter,
@@ -152,6 +153,7 @@ export default function HomePage({ lowPerfMode = false }) {
   const [activeTab, setActiveTab] = useState("surah");
   const [bookmarks, setBookmarks] = useState([]);
   const [notes, setNotes] = useState([]);
+  const [playlists, setPlaylists] = useState([]);
   const [filter, setFilter] = useState("");
   const [reciterStyleFilter, setReciterStyleFilter] = useState("all");
   const [sortDir, setSortDir] = useState("asc");
@@ -237,11 +239,16 @@ export default function HomePage({ lowPerfMode = false }) {
     let cancelled = false;
     const cancelIdleLoad = runWhenIdle(async () => {
       try {
-        const [bks, ns] = await Promise.all([getAllBookmarks(), getAllNotes()]);
+        const [bks, ns, lists] = await Promise.all([
+          getAllBookmarks(),
+          getAllNotes(),
+          getAllPlaylists(),
+        ]);
         if (cancelled) return;
         startTransition(() => {
           setBookmarks((bks || []).sort((a, b) => b.createdAt - a.createdAt));
           setNotes((ns || []).sort((a, b) => b.updatedAt - a.updatedAt));
+          setPlaylists(lists || []);
         });
       } catch {
         // Favorites and notes remain optional when local storage is unavailable.
@@ -542,6 +549,18 @@ export default function HomePage({ lowPerfMode = false }) {
       dispatch({ type: "NAVIGATE_JUZ", payload: { juz } });
     },
     [set, dispatch, warmReadingTarget],
+  );
+
+  const openLibrary = useCallback(
+    (tab = "favorites") => {
+      set({
+        libraryOpen: true,
+        libraryTab: ["favorites", "notes", "playlists"].includes(tab)
+          ? tab
+          : "favorites",
+      });
+    },
+    [set],
   );
 
   const toggleFavoriteReciter = useCallback(
@@ -883,9 +902,11 @@ export default function HomePage({ lowPerfMode = false }) {
         readingTarget={readingTarget}
         bookmarks={bookmarks}
         notes={notes}
+        playlists={playlists}
         continueReading={continueReading}
         goSurah={goSurah}
         onWarmSurah={warmSurah}
+        openLibrary={openLibrary}
         openDuas={openDuas}
         suggestionSet={suggestionSet}
         dailyVerse={dailyVerse}
