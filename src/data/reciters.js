@@ -300,6 +300,20 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     country: "KSA",
     source: "mp3quran",
   },
+  {
+    id: "adel_al_kalbani",
+    name: "عادل الكلباني",
+    nameEn: "Adel Al-Kalbani",
+    nameFr: "Adel Al-Kalbani",
+    searchAliases: ["Adil Al-Kalbani", "Kalbani", "Kelbani", "الكلباني"],
+    cataloguePriority: 14,
+    style: "murattal",
+    cdn: "https://server8.mp3quran.net/a_klb/",
+    cdnType: "mp3quran-surah",
+    audioMode: "surah",
+    country: "KSA",
+    source: "mp3quran",
+  },
 ];
 
 const RECITERS = {
@@ -346,6 +360,8 @@ const RECITERS = {
       nameEn: "Muhammad Siddiq al-Minshawi",
       nameFr: "Muhammad Siddiq al-Minshawi",
       style: "murattal",
+      searchAliases: ["Minshawi", "Manshawi", "Menchaoui", "المنشاوي"],
+      cataloguePriority: 10,
       cdn: "ar.minshawi",
       cdnType: "islamic",
     },
@@ -355,6 +371,8 @@ const RECITERS = {
       nameEn: "Al-Minshawi (Mujawwad)",
       nameFr: "Al-Minshawi (Mujawwad)",
       style: "mujawwad",
+      searchAliases: ["Minshawi", "Manshawi", "Menchaoui", "المنشاوي"],
+      cataloguePriority: 11,
       cdn: "Minshawy_Mujawwad_192kbps",
       cdnType: "everyayah",
     },
@@ -436,6 +454,8 @@ const RECITERS = {
       nameEn: "Ali Al-Hudhaify",
       nameFr: "Ali Al-Hudhaify",
       style: "murattal",
+      searchAliases: ["Hudhaifi", "Huthaify", "Houzaifi", "Houdeifi", "الحذيفي"],
+      cataloguePriority: 12,
       cdn: "Hudhaify_128kbps",
       cdnType: "everyayah",
     },
@@ -454,6 +474,8 @@ const RECITERS = {
       nameEn: "Muhammad Ayyoub",
       nameFr: "Muhammad Ayyoub",
       style: "murattal",
+      searchAliases: ["Muhammad Ayoub", "Mohamed Ayoub", "Ayyub", "Ayoub", "محمد أيوب"],
+      cataloguePriority: 13,
       cdn: "Muhammad_Ayyoub_128kbps",
       cdnType: "everyayah",
     },
@@ -743,6 +765,8 @@ export const RECITER_PHOTOS_MAP = {
   ibrahim_al_akhdar: assabilePhoto("ibrahim-al-akhdar.png"),
   mohamed_al_luhaidan: assabilePhoto("mohamed-al-haidan.png"),
   khaled_al_jalil: assabilePhoto("khalid-al-jalil.jpg"),
+  adel_al_kalbani:
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Kalbani.jpg/250px-Kalbani.jpg",
   warsh_abdulbasit: quranPhoto("1/abdelbasset-profile.jpeg"),
   warsh_ibrahim_aldosari:
     "https://storage.googleapis.com/way2quran_storage/imgs/ibrahim-al-dosari.png",
@@ -795,6 +819,7 @@ const RECITER_PROFILE_SOURCES = Object.freeze({
     "/muhammad-al-luhaidan-95/muhammad-al-luhaidan.htm",
   ),
   khaled_al_jalil: assabileProfile("/khalid-al-jalil-307/khalid-al-jalil.htm"),
+  adel_al_kalbani: assabileProfile("/adel-al-kalbani-44/adel-al-kalbani.htm"),
   warsh_abdelmoujib_benkirane: assabileProfile(
     "/abdelmoujib-benkirane-310/abdelmoujib-benkirane.htm",
   ),
@@ -816,6 +841,10 @@ const RECITER_PHOTO_SOURCES = Object.freeze({
   warsh_rachid_belalya: Object.freeze({
     provider: "SurahQuran",
     url: "https://surahquran.com/mp3/Rachid-Belalia/",
+  }),
+  adel_al_kalbani: Object.freeze({
+    provider: "Wikimedia Commons",
+    url: "https://commons.wikimedia.org/wiki/File:Kalbani.jpg",
   }),
 });
 
@@ -894,6 +923,7 @@ const RECITER_PHOTO_FOCUS = Object.freeze({
   abdullaah_matrood: "50% 24%",
   warsh_abdelmoujib_benkirane: "50% 22%",
   warsh_rachid_belalya: "50% 24%",
+  adel_al_kalbani: "50% 28%",
 });
 
 export function getReciterPhotoFocus(reciterOrId, photo = null) {

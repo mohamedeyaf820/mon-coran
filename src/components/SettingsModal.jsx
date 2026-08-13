@@ -228,7 +228,7 @@ export default function SettingsModal() {
     const query = reciterSearch.trim().toLowerCase();
     if (!query) return recitersList;
     return recitersList.filter((item) =>
-      [item.name, item.nameFr, item.nameEn, item.style]
+      [item.name, item.nameFr, item.nameEn, item.style, ...(item.searchAliases || [])]
         .filter(Boolean)
         .some((value) => String(value).toLowerCase().includes(query)),
     );

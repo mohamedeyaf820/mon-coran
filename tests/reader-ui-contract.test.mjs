@@ -174,22 +174,88 @@ test("Mushaf pages keep a compact, theme-aware reading hierarchy", () => {
   assert.match(styles, /@media \(max-width: 640px\)/);
 });
 
-test("immersive Mushaf keeps a three-page window and separates zoom from page swipes", () => {
+test("reciter details expose a resumable complete Quran offline download", () => {
+  const details = source("src/components/recitation/ReciterDetailPage.jsx");
+  const card = source("src/components/recitation/FullQuranDownloadCard.jsx");
+  const downloads = source("src/services/downloadService.js");
+  const worker = source("public/sw.js");
+
+  assert.match(details, /<FullQuranDownloadCard/);
+  assert.match(card, /Télécharger le Coran complet/);
+  assert.match(card, /downloadFullQuranForReciter/);
+  assert.match(card, /cancelFullQuranDownload/);
+  assert.match(card, /removeFullQuranCacheForReciter/);
+  assert.match(card, /<progress max="100"/);
+  assert.match(downloads, /const workerCount = [\s\S]*?\? 1[\s\S]*?: 2/);
+  assert.match(downloads, /estimatedRemainingBytes/);
+  assert.match(downloads, /pendingSurahs = SURAHS\.filter/);
+  assert.match(downloads, /saveProgressEntry\(normalized\.key, completedEntry\)/);
+  assert.match(worker, /const AUDIO_CACHE_NAME = "mushafplus-audio-v2"/);
+  assert.match(worker, /audioCacheFirst\(event\.request\)/);
+});
+
+test("immersive Mushaf keeps a rolling reading window and separates zoom from page swipes", () => {
   const display = source("src/components/QuranDisplay.jsx");
   const overlay = source("src/components/QuranDisplay/FullscreenMushafOverlay.jsx");
+  const pageMode = source("src/components/QuranDisplay/PageMode.jsx");
+  const virtualizedPages = source("src/components/QuranDisplay/VirtualizedMushafPages.jsx");
+  const audio = source("src/components/QuranDisplay/useQuranDisplayAudio.js");
   const prefetch = source("src/components/QuranDisplay/useQuranDisplayPrefetch.js");
   const storage = source("src/services/storageService.js");
 
   assert.match(display, /openImmersiveMushaf/);
   assert.match(display, /await prepareReadingTarget\("page", targetPage\)/);
-  assert.match(overlay, /\[currentPage - 1, currentPage, currentPage \+ 1\]/);
+  assert.match(overlay, /const PAGE_WINDOW_RADIUS = 4/);
+  assert.match(overlay, /const PAGE_CACHE_RADIUS = 6/);
+  assert.match(overlay, /currentPage \+ index - PAGE_WINDOW_RADIUS/);
+  assert.match(overlay, /pageCache\.has\(target\)/);
+  assert.match(overlay, /onScroll=\{handleViewportScroll\}/);
+  assert.match(overlay, /onPlayAyah=\{onPlayAyah\}/);
+  assert.match(audio, /const playAyah = useCallback/);
+  assert.match(audio, /audioService\.loadAndPlay\(index\)/);
   assert.match(overlay, /preloadQuranDisplayData/);
-  assert.match(overlay, /const MAX_ZOOM = 3\.2/);
-  assert.match(overlay, /zoom > 1\.01 \|\| !event\.changedTouches\[0\]/);
+  assert.match(overlay, /const MAX_ZOOM = 1\.85/);
+  assert.match(overlay, /--mfp-page-font-size/);
+  assert.match(overlay, /fullscreenBaseFontSize \* zoom/);
+  assert.doesNotMatch(overlay, /transform: `scale\(/);
+  assert.match(overlay, /const pageFlow = "vertical"/);
+  assert.match(overlay, /onDoubleClick=\{\(event\) => \{[\s\S]*?resetZoom\(\)/);
+  assert.doesNotMatch(overlay, /mfp-navigation/);
+  assert.doesNotMatch(overlay, /mfp-reader-bar/);
+  assert.match(pageMode, /onDoubleClick=\{handleMushafDoubleClick\}/);
+  assert.match(virtualizedPages, /onDoubleClick=\{handlePageDoubleClick\}/);
   assert.match(overlay, /mfp-page-container--immersive/);
   assert.match(prefetch, /currentPage \+ 1/);
   assert.match(prefetch, /currentPage - 1/);
   assert.match(storage, /mushafPageFlow: "vertical"/);
+});
+
+test("immersive Mushaf reveals navigation and audio only when context requires them", () => {
+  const display = source("src/components/QuranDisplay.jsx");
+  const overlay = source("src/components/QuranDisplay/FullscreenMushafOverlay.jsx");
+  const app = source("src/App.jsx");
+  const styles = source("src/styles/domains/reading-platform.css");
+
+  assert.match(overlay, /const hasActiveAudio = Boolean\(state\.isPlaying && state\.currentPlayingAyah\)/);
+  assert.match(overlay, /const hasAudioSession = hasActiveAudio \|\| Boolean\(state\.currentPlayingAyah\)/);
+  assert.match(overlay, /mfp-context-hotzone--top/);
+  assert.match(overlay, /mfp-context-hotzone--bottom/);
+  assert.match(overlay, /mfp-context-navigation/);
+  assert.match(overlay, /mfp-context-player/);
+  assert.match(overlay, /mfp-context-navigation__close/);
+  assert.match(overlay, /mfp-zoom-status/);
+  assert.match(overlay, /const resetZoom/);
+  assert.match(overlay, /SCROLL_SETTLE_MS/);
+  assert.match(overlay, /audioService\.toggle\(\)/);
+  assert.match(display, /onOpenPlayer=\{openImmersiveAudioPlayer\}/);
+  assert.match(display, /mushafplus-open-audio-options/);
+  assert.match(overlay, /onOpenAyahActions\?\.\(ayah\)/);
+  assert.match(overlay, /<AyahActionsModal/);
+  assert.match(app, /mushafplus-reveal-reading-chrome/);
+  assert.match(styles, /\.mfp-context-navigation\s*\{/);
+  assert.match(styles, /\.mfp-context-player\s*\{/);
+  assert.match(styles, /\.mfp-zoom-status\s*\{/);
+  assert.match(styles, /env\(safe-area-inset-bottom\)/);
 });
 
 test("immersive Mushaf is edge-to-edge on mobile and theme-aware on desktop", () => {
@@ -204,7 +270,7 @@ test("immersive Mushaf is edge-to-edge on mobile and theme-aware on desktop", ()
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
 });
 
-test("surah headings use the calligraphic name ligatures accessibly", () => {
+test("surah headings keep an accessible Arabic title while calligraphic selectors stay hidden from assistive tech", () => {
   const header = source("src/components/Quran/SurahReaderHeader.jsx");
   const headerStyles = source("src/styles/surah-reader-header.css");
   const cleanHeader = source("src/components/Quran/CleanPageDecor.jsx");
@@ -219,7 +285,8 @@ test("surah headings use the calligraphic name ligatures accessibly", () => {
   assert.doesNotMatch(headerStyles, /\.srh-mobile-bar__name\s*\{[^}]*\b(?:border|background|border-radius)\s*:/);
   assert.match(cleanHeader, /const accessibleArabicTitle =/);
   assert.match(cleanHeader, /getSurahLigature\(surahNum\)/);
-  assert.match(cleanHeader, /cpv-surah-name-ligature[\s\S]*?dir=\{surahLigature \? "ltr" : "rtl"\}[\s\S]*?lang=\{surahLigature \? "en" : "ar"\}/);
+  assert.match(cleanHeader, /className="cpv-surah-name-ligature font-surah-names"[\s\S]*?dir="ltr"[\s\S]*?aria-hidden="true"/);
+  assert.doesNotMatch(cleanHeader, /document\.fonts/);
   assert.match(inlineHeader, /aria-label=\{`سورة \$\{surahNameAr\}`\}/);
   assert.match(inlineHeader, /getSurahLigature\(surahNum\)/);
   assert.doesNotMatch(cleanHeader, /cpv-surah-prefix/);

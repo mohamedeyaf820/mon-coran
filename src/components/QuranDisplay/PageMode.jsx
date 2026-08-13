@@ -4,7 +4,6 @@ import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
 import CleanPageView from "../Quran/CleanPageView";
 import ReadingToolbar from "../Quran/ReadingToolbar";
-import ReadingProgressBar from "../Quran/ReadingProgressBar";
 import AyahActionsModal from "./AyahActionsModal";
 import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
@@ -87,6 +86,16 @@ function PageMode({
     }
   }, [currentPage, onNextPage, onPrevPage]);
 
+  const handleMushafDoubleClick = useCallback(
+    (event) => {
+      if (mushafLayout !== "mushaf") return;
+      if (!event.target.closest(".mushaf-page-wrapper")) return;
+      if (event.target.closest("button, a, input, select, textarea, [role='button']")) return;
+      onOpenFullscreen?.();
+    },
+    [mushafLayout, onOpenFullscreen],
+  );
+
   return (
     <div
       className={`quran-mode-pane quran-mode-pane--page ${
@@ -97,27 +106,34 @@ function PageMode({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <ReadingProgressBar />
-      <ReaderContextCard
-        kind="page"
-        label={pageWord}
-        value={pageLabel}
-        numericValue={currentPage}
-        total={604}
-        secondary={contextSecondary}
-        riwaya={riwaya}
-        lang={lang}
-      />
-      <ReadingToolbar
-        onPlay={onPlaySurah}
-        playLabel={lang === "fr" ? "Écouter la page" : "Listen page"}
-        preparingSurah={preparingSurah}
-        surahNum={pageTopSurah || currentSurah}
-        onToggleMushaf={onToggleMushaf}
-        onOpenFullscreen={onOpenFullscreen}
-      />
+      <section
+        className="reader-control-deck"
+        aria-label={lang === "fr" ? "Commandes de lecture" : lang === "ar" ? "أدوات القراءة" : "Reading controls"}
+      >
+        <ReaderContextCard
+          kind="page"
+          label={pageWord}
+          value={pageLabel}
+          numericValue={currentPage}
+          total={604}
+          secondary={contextSecondary}
+          riwaya={riwaya}
+          lang={lang}
+        />
+        <ReadingToolbar
+          onPlay={onPlaySurah}
+          playLabel={lang === "fr" ? "Écouter la page" : "Listen page"}
+          preparingSurah={preparingSurah}
+          surahNum={pageTopSurah || currentSurah}
+          onToggleMushaf={onToggleMushaf}
+          onOpenFullscreen={onOpenFullscreen}
+        />
+      </section>
 
-      <div className={`page-turn-container ${turnClass}`}>
+      <div
+        className={`page-turn-container ${turnClass}`}
+        onDoubleClick={handleMushafDoubleClick}
+      >
       {canUseFifteenLinePage ? (
         <>
           <QuranMushafPage

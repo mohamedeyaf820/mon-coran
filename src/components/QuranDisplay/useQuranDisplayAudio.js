@@ -204,6 +204,50 @@ export default function useQuranDisplayAudio({
     warshStrictMode,
   ]);
 
+  const playAyah = useCallback(async (targetAyah, sourceAyahs = ayahs) => {
+    const currentReciter = getReciter(ensureReciterForRiwaya(reciter, riwaya), riwaya);
+    if (!currentReciter || !targetAyah) return;
+    if (riwaya === "warsh" && warshStrictMode && !isWarshVerifiedReciter(currentReciter)) {
+      setError(t("errors.warshStrict", lang));
+      return;
+    }
+
+    const playlist = toPlaylistAyahs(sourceAyahs, currentSurah, audioTimingMap);
+    const ayahSurah = Number(targetAyah?.surah?.number || targetAyah?.surah || currentSurah);
+    const index = playlist.findIndex(
+      (entry) =>
+        Number(entry.surah) === ayahSurah &&
+        Number(entry.numberInSurah) === Number(targetAyah.numberInSurah),
+    );
+    if (index < 0) return;
+
+    audioService.loadPlaylist(
+      playlist,
+      currentReciter.cdn,
+      currentReciter.cdnType || "islamic",
+    );
+    activePlaylistScopeRef.current = readingScopeKey;
+    try {
+      await audioService.loadAndPlay(index);
+    } catch {
+      setError(
+        lang === "fr"
+          ? "Impossible de lancer la récitation de ce verset."
+          : "Unable to play this verse.",
+      );
+    }
+  }, [
+    audioTimingMap,
+    ayahs,
+    currentSurah,
+    lang,
+    readingScopeKey,
+    reciter,
+    riwaya,
+    setError,
+    warshStrictMode,
+  ]);
+
   const playSpecificSurah = useCallback(async (surahNumber) => {
     if (!surahNumber || preparingSurah === surahNumber) return;
 
@@ -268,5 +312,5 @@ export default function useQuranDisplayAudio({
     return () => window.removeEventListener("mushaf:play-surah", handler);
   }, [playSurah]);
 
-  return { playSpecificSurah, playSurah, preparingSurah };
+  return { playAyah, playSpecificSurah, playSurah, preparingSurah };
 }

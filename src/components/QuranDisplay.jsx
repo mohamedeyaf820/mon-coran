@@ -164,7 +164,7 @@ export default function QuranDisplay() {
       (displayMode === "surah" ? 0 : -0.02);
     return { ...base, offsetSec: Math.max(-0.8, Math.min(0.95, offsetSec)) };
   }, [displayMode, reciter, riwaya, view.userSyncOffsetMs]);
-  const { playSpecificSurah, playSurah, preparingSurah } = useQuranDisplayAudio(
+  const { playAyah, playSpecificSurah, playSurah, preparingSurah } = useQuranDisplayAudio(
     {
       ayahs,
       currentJuz,
@@ -240,6 +240,13 @@ export default function QuranDisplay() {
     prepareReadingTarget,
     view,
   ]);
+
+  const openImmersiveAudioPlayer = useCallback(() => {
+    // Keep the Mushaf open while the shared reciter/playback sheet appears
+    // above it. Closing the sheet returns directly to the immersive page.
+    set({ playerMinimized: false });
+    window.dispatchEvent(new Event("mushafplus-open-audio-options"));
+  }, [set]);
 
   const navigation = useQuranDisplayNavigation({
     currentJuz,
@@ -574,9 +581,12 @@ export default function QuranDisplay() {
               currentPlayingAyah={currentPlayingAyah}
               currentSurah={currentSurah}
               fullPage
+              getTranslationForAyah={getTranslationForAyah}
               lang={lang}
               onClose={() => view.setFullPage(false)}
+              onOpenPlayer={openImmersiveAudioPlayer}
               onNextPage={navigation.goNextPage}
+              onPlayAyah={playAyah}
               onPrevPage={navigation.goPrevPage}
               riwaya={riwaya}
             />

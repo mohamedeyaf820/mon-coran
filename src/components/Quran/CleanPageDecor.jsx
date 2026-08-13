@@ -3,19 +3,11 @@ import { getSurahLigature } from "../../data/surahs";
 
 function TitleFlourish({ mirrored = false }) {
   return (
-    <svg
+    <span
       className="cpv-divider-diamond"
-      viewBox="0 0 58 28"
-      fill="none"
       aria-hidden="true"
       style={mirrored ? { transform: "scaleX(-1)" } : undefined}
-    >
-      <path d="M56 14H38C31 14 29 5 22 5c-5 0-7 5-4 8 3 4 10 2 10-3" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" />
-      <path d="M56 14H34c-7 0-9 9-16 9-5 0-7-5-4-8 3-4 10-2 10 3" stroke="currentColor" strokeWidth="1.35" strokeLinecap="round" />
-      <path d="m36 8 6 6-6 6-6-6 6-6Z" fill="currentColor" />
-      <path d="m11 10 4 4-4 4-4-4 4-4Z" fill="currentColor" opacity=".72" />
-      <circle cx="3" cy="14" r="2" fill="currentColor" opacity=".55" />
-    </svg>
+    />
   );
 }
 
@@ -38,14 +30,15 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
             dir="rtl"
             lang="ar"
             aria-label={accessibleArabicTitle}
+            role="img"
           >
             <span
-              className={surahLigature ? "cpv-surah-name-ligature" : "cpv-surah-name-fallback"}
-              dir={surahLigature ? "ltr" : "rtl"}
-              lang={surahLigature ? "en" : "ar"}
+              className="cpv-surah-name-ligature font-surah-names"
+              dir="ltr"
+              lang="en"
               aria-hidden="true"
             >
-              {surahLigature || surahMeta?.ar}
+              {surahLigature}
             </span>
           </span>
           <span className="cpv-surah-name-tr text-[9.5px] font-semibold tracking-[0.14em] uppercase mt-0.5">

@@ -46,6 +46,7 @@ const EXPECTED_HAFS_IDS = [
   "ibrahim_al_akhdar",
   "mohamed_al_luhaidan",
   "khaled_al_jalil",
+  "adel_al_kalbani",
 ];
 
 const EXPECTED_WARSH_IDS = [
@@ -132,10 +133,10 @@ test("reciters: every catalogue entry has a visual and localized biography", () 
   }
 });
 
-test("reciters: all 58 catalogue entries use curated portrait URLs, not known text thumbnails", () => {
+test("reciters: all 59 catalogue entries use curated portrait URLs, not known text thumbnails", () => {
   const reciters = allReciters();
-  assert.equal(reciters.length, 58);
-  assert.equal(Object.keys(RECITER_PHOTOS_MAP).length, 58);
+  assert.equal(reciters.length, 59);
+  assert.equal(Object.keys(RECITER_PHOTOS_MAP).length, 59);
 
   for (const reciter of reciters) {
     assert.match(getReciterPhoto(reciter), /^https:\/\//, reciter.id);
@@ -156,6 +157,7 @@ test("reciters: portrait attribution matches the actual image host", () => {
     Way2Quran: "storage.googleapis.com",
     SuratMP3: "static.suratmp3.com",
     SurahQuran: "surahquran.com",
+    "Wikimedia Commons": "upload.wikimedia.org",
   };
 
   for (const reciter of allReciters()) {
@@ -179,13 +181,41 @@ test("reciters: Al-Matrood and Al-Sudais have verified biography sources", () =>
   );
 });
 
+test("reciters: requested voices are discoverable through common spellings", () => {
+  const requested = Object.fromEntries(
+    allReciters()
+      .filter((reciter) =>
+        [
+          "ar.minshawi",
+          "ar.minshawimujawwad",
+          "hudhaify",
+          "muhammad_ayyoub",
+          "adel_al_kalbani",
+        ].includes(reciter.id),
+      )
+      .map((reciter) => [reciter.id, reciter]),
+  );
+
+  assert.deepEqual(Object.keys(requested).sort(), [
+    "adel_al_kalbani",
+    "ar.minshawi",
+    "ar.minshawimujawwad",
+    "hudhaify",
+    "muhammad_ayyoub",
+  ]);
+  assert.ok(requested.hudhaify.searchAliases.includes("Houzaifi"));
+  assert.ok(requested.muhammad_ayyoub.searchAliases.includes("Mohamed Ayoub"));
+  assert.ok(requested.adel_al_kalbani.searchAliases.includes("Kalbani"));
+  assert.ok(requested["ar.minshawi"].searchAliases.includes("Menchaoui"));
+});
+
 test("reciters: every biography exposes a reviewed HTTPS source", () => {
-  assert.equal(Object.keys(RESEARCHED_PROFILES).length, 58);
+  assert.equal(Object.keys(RESEARCHED_PROFILES).length, 59);
 
   for (const [id, profile] of Object.entries(RESEARCHED_PROFILES)) {
     assert.match(profile.bioSource?.url || "", /^https:\/\//, id);
     assert.ok(profile.bioSource?.provider, id);
-    assert.equal(profile.reviewedAt, "2026-08-01", id);
+    assert.match(profile.reviewedAt, /^2026-08-(?:01|13)$/, id);
     assert.ok(profile.bio.fr.length <= 450, `${id}: concise French notice`);
   }
 

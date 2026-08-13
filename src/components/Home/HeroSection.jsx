@@ -94,27 +94,28 @@ export default function HeroSection({
         </div>
 
         <header className="home-resume-panel__header">
-          <span className="home-resume-panel__greeting">
-            <Sparkles size={12} aria-hidden="true" />
-            {greetingLabel}
-          </span>
-          <time dateTime={now.toISOString()}>
-            {now.toLocaleDateString(locale, {
-              weekday: "short",
-              day: "numeric",
-              month: "short",
-            })}
-          </time>
+          <div className="home-resume-panel__brand" aria-label="MushafPlus">
+            <PlatformLogo
+              className="home-resume-panel__logo"
+              imgClassName="h-full w-full object-cover"
+              decorative
+            />
+            <span>MushafPlus</span>
+          </div>
+          <div className="home-resume-panel__meta">
+            <span className="home-resume-panel__greeting">
+              <Sparkles size={12} aria-hidden="true" />
+              {greetingLabel}
+            </span>
+            <time dateTime={now.toISOString()}>
+              {now.toLocaleDateString(locale, {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+              })}
+            </time>
+          </div>
         </header>
-
-        <div className="home-resume-panel__brand" aria-hidden="true">
-          <PlatformLogo
-            className="home-resume-panel__logo"
-            imgClassName="h-full w-full object-cover"
-            decorative
-          />
-          <span>MushafPlus</span>
-        </div>
 
         <div className="home-resume-panel__body">
           <span className="home-resume-panel__eyebrow">

@@ -350,6 +350,15 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    window.addEventListener("mushafplus-reveal-reading-chrome", revealImmersiveChrome);
+    return () =>
+      window.removeEventListener(
+        "mushafplus-reveal-reading-chrome",
+        revealImmersiveChrome,
+      );
+  }, [revealImmersiveChrome]);
+
+  useEffect(() => {
     if (!immersiveActive || !state.isPlaying) return;
     immersiveRevealUntil.current = Date.now() + 1800;
     revealImmersiveChrome();
