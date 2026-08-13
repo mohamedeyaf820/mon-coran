@@ -18,6 +18,7 @@ function VirtualizedMushafPages({
   lang,
   mode = "surah",
   onAyahClick,
+  onOpenFullscreen,
   pageGroups = [],
   readingFontSize,
   riwaya,
@@ -33,6 +34,14 @@ function VirtualizedMushafPages({
   const getToggleId = useCallback(
     (ayah) => (mode === "surah" ? ayah.numberInSurah : ayah.number),
     [mode],
+  );
+
+  const handlePageDoubleClick = useCallback(
+    (event) => {
+      if (event.target.closest("button, a, input, select, textarea, [role='button']")) return;
+      onOpenFullscreen?.();
+    },
+    [onOpenFullscreen],
   );
 
   const pinnedIndexes = useMemo(() => {
@@ -60,8 +69,25 @@ function VirtualizedMushafPages({
 
   useEffect(() => {
     pinnedIndexesRef.current = pinnedIndexes;
-    setVisibleIndexes(new Set(pinnedIndexes));
-  }, [pinnedIndexes, pinnedKey, signature]);
+    setVisibleIndexes((previous) => {
+      const next = new Set(previous);
+      let changed = false;
+      pinnedIndexes.forEach((index) => {
+        if (!next.has(index)) {
+          next.add(index);
+          changed = true;
+        }
+      });
+      return changed ? next : previous;
+    });
+  }, [pinnedIndexes, pinnedKey]);
+
+  // Reset only when the loaded page collection changes. While scrolling or
+  // listening, rendered pages remain mounted and keep their exact height.
+  useEffect(() => {
+    measuredHeights.current.clear();
+    setVisibleIndexes(new Set([0, ...pinnedIndexesRef.current]));
+  }, [signature]);
 
   const registerPage = useCallback((index, node) => {
     if (node) nodeRefs.current.set(index, node);
@@ -75,7 +101,10 @@ function VirtualizedMushafPages({
       return undefined;
     }
     const nodes = [...nodeRefs.current.values()];
-    const root = nodes[0]?.closest(".app-main-shell") || null;
+    const root =
+      nodes[0]?.closest(".app-main") ||
+      nodes[0]?.closest(".app-main-shell") ||
+      null;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -88,14 +117,12 @@ function VirtualizedMushafPages({
             if (shouldRender && !next.has(index)) {
               next.add(index);
               changed = true;
-            } else if (!shouldRender && next.delete(index)) {
-              changed = true;
             }
           }
           return changed ? next : previous;
         });
       },
-      { root, rootMargin: "1200px 0px", threshold: 0.01 },
+      { root, rootMargin: "1800px 0px", threshold: 0.01 },
     );
 
     const resizeObserver =
@@ -136,6 +163,7 @@ function VirtualizedMushafPages({
         data-virtualized-page="true"
         aria-hidden={rendered ? undefined : "true"}
         style={rendered ? undefined : { minHeight: measuredHeight || DEFAULT_PAGE_HEIGHT }}
+        onDoubleClick={handlePageDoubleClick}
       >
         {rendered ? (
           <CleanPageView

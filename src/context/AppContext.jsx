@@ -42,6 +42,11 @@ const clampJuz = (value) => Math.max(1, Math.min(30, Number(value) || 1));
 const clampAyah = (surah, value) =>
   Math.max(1, Math.min(getSurahAyahCount(surah), Number(value) || 1));
 
+const shouldSkipSplashForAutomation = (stored) =>
+  Boolean(stored?.skipSplashAnimation) &&
+  typeof navigator !== "undefined" &&
+  navigator.webdriver === true;
+
 /* ── Initial State ──────────────────────────── */
 // Lazy initialization pour éviter les calculs au démarrage
 const getInitialState = () => {
@@ -90,18 +95,10 @@ const getInitialState = () => {
   libraryOpen: false,
   libraryTab: "favorites",
   shareImageOpen: false,
-  // Le lancement de marque ne bloque que la première ouverture. Les
-  // ouvertures suivantes de la session affichent directement l'application.
-  skipSplashAnimation: Boolean(stored.skipSplashAnimation),
-  splashDone:
-    Boolean(stored.skipSplashAnimation) ||
-    (() => {
-      try {
-        return window.sessionStorage.getItem("mushaf-plus:splash-seen") === "1";
-      } catch {
-        return false;
-      }
-    })(),
+  // The branded opening returns on each real app launch. A persisted legacy
+  // setting can only bypass it in automated browser tests.
+  skipSplashAnimation: shouldSkipSplashForAutomation(stored),
+  splashDone: shouldSkipSplashForAutomation(stored),
   tafsirSidebarOpen: false,
   tafsirSidebarVerse: null,
   readerTypographyOpen: false,
@@ -411,7 +408,7 @@ export function appReducer(state, action) {
       return { ...state, loading: false, error: action.payload };
 
     case "SPLASH_DONE":
-      return { ...state, splashDone: true, skipSplashAnimation: true };
+      return { ...state, splashDone: true, skipSplashAnimation: false };
 
     default:
       return state;

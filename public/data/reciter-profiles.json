@@ -772,5 +772,34 @@
       "url": "https://www.assabile.com/ahmad-al-hawashy-71/ahmad-al-hawashy.htm"
     },
     "reviewedAt": "2026-08-01"
+  },
+  "adel_al_kalbani": {
+    "bio": {
+      "fr": "Adel ibn Salem Al-Kalbani, né à Riyad en 1378 H, est un imam et récitateur saoudien. Il a étudié auprès de plusieurs enseignants, dont Abdullah ibn Jibrin, et a dirigé pendant de nombreuses années la prière à la mosquée du roi Khalid à Riyad. En Ramadan 1429 H (2008), il fut invité à diriger les prières de tarawih à la Mosquée sacrée de La Mecque. Cette fiche propose son muṣḥaf murattal complet selon Hafs d’après Asim.",
+      "en": "Adel ibn Salem Al-Kalbani, born in Riyadh in 1378 AH, is a Saudi imam and Quran reciter. He studied with several teachers, including Abdullah ibn Jibrin, and led prayers for many years at King Khalid Mosque in Riyadh. In Ramadan 1429 AH (2008), he was invited to lead the tarawih prayers at the Grand Mosque in Makkah. This profile presents his complete murattal mushaf in Hafs from Asim.",
+      "ar": "عادل بن سالم الكلباني إمام وقارئ سعودي وُلد في الرياض سنة 1378هـ. درس على عدد من أهل العلم، منهم الشيخ عبد الله بن جبرين، وأمّ المصلين سنوات طويلة في جامع الملك خالد بالرياض. وفي رمضان سنة 1429هـ (2008م) كُلّف بإمامة صلاة التراويح في المسجد الحرام بمكة. تعرض هذه الصفحة مصحفه المرتل الكامل برواية حفص عن عاصم."
+    },
+    "bioSource": {
+      "provider": "Assabile",
+      "url": "https://www.assabile.com/adel-al-kalbani-44/adel-al-kalbani.htm"
+    },
+    "portraitStatus": "verified",
+    "portraitSource": {
+      "provider": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/wiki/File:Kalbani.jpg",
+      "license": "CC BY-SA 3.0",
+      "author": "I3bdulghani"
+    },
+    "verificationSources": [
+      {
+        "provider": "MP3Quran",
+        "url": "https://www.mp3quran.net/ar/a_klb/downloads"
+      },
+      {
+        "provider": "Assabile",
+        "url": "https://www.assabile.com/adel-al-kalbani-44/adel-al-kalbani.htm"
+      }
+    ],
+    "reviewedAt": "2026-08-13"
   }
 }

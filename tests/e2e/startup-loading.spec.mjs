@@ -97,23 +97,26 @@ test("first launch keeps the critical network payload compact", async ({ page })
   expect(quranTextRequests).toHaveLength(0);
 });
 
-test("the branded splash runs once and subsequent loads open directly", async ({ page }) => {
+test("the branded splash is shown again on each app launch", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".splash-screen")).toBeVisible();
   const firstVisibleAt = Date.now();
 
   await expect(page.locator(".splash-screen")).toHaveCount(0, {
-    timeout: 3_400,
+    timeout: 4_200,
   });
   const firstDuration = Date.now() - firstVisibleAt;
-  expect(firstDuration).toBeGreaterThanOrEqual(700);
-  expect(firstDuration).toBeLessThanOrEqual(1_600);
+  expect(firstDuration).toBeGreaterThanOrEqual(2_900);
+  expect(firstDuration).toBeLessThanOrEqual(3_900);
   await expect(page.locator(".hp-wrapper")).toBeVisible();
 
   const reloadStartedAt = Date.now();
   await page.reload({ waitUntil: "domcontentloaded" });
 
-  await expect(page.locator(".splash-screen")).toHaveCount(0);
-  expect(Date.now() - reloadStartedAt).toBeLessThan(1_400);
+  await expect(page.locator(".splash-screen")).toBeVisible();
+  await expect(page.locator(".splash-screen")).toHaveCount(0, {
+    timeout: 4_200,
+  });
+  expect(Date.now() - reloadStartedAt).toBeGreaterThanOrEqual(2_900);
   await expect(page.locator(".hp-wrapper")).toBeVisible({ timeout: 5_000 });
 });

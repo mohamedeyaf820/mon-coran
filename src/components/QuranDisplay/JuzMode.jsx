@@ -2,7 +2,6 @@ import React, { memo, useMemo } from "react";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
 import ReadingToolbar from "../Quran/ReadingToolbar";
-import ReadingProgressBar from "../Quran/ReadingProgressBar";
 import AyahActionsModal from "./AyahActionsModal";
 import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
@@ -58,32 +57,36 @@ function JuzMode({
         mushafLayout === "mushaf" ? "quran-mode-pane--mushaf" : ""
       } ${modePaneShellClass}`}
     >
-      <ReadingProgressBar />
-      <ReaderContextCard
-        kind="juz"
-        label={t("sidebar.juz", lang)}
-        value={lang === "ar" ? toAr(currentJuz) : currentJuz}
-        numericValue={currentJuz}
-        total={30}
-        secondary={
-          lang === "fr"
-            ? "Lecture continue"
-            : lang === "ar"
-              ? "قراءة متواصلة"
-              : "Continuous reading"
-        }
-        riwaya={riwaya}
-        lang={lang}
-      />
+      <section
+        className="reader-control-deck"
+        aria-label={lang === "fr" ? "Commandes de lecture" : lang === "ar" ? "أدوات القراءة" : "Reading controls"}
+      >
+        <ReaderContextCard
+          kind="juz"
+          label={t("sidebar.juz", lang)}
+          value={lang === "ar" ? toAr(currentJuz) : currentJuz}
+          numericValue={currentJuz}
+          total={30}
+          secondary={
+            lang === "fr"
+              ? "Lecture continue"
+              : lang === "ar"
+                ? "قراءة متواصلة"
+                : "Continuous reading"
+          }
+          riwaya={riwaya}
+          lang={lang}
+        />
 
-      <ReadingToolbar
-        onPlay={onPlayJuz || (() => firstSurah && onPlaySpecificSurah(firstSurah))}
-        playLabel={lang === "fr" ? "Écouter le juz" : "Listen juz"}
-        preparingSurah={preparingSurah}
-        surahNum={firstSurah}
-        onToggleMushaf={onToggleMushaf}
-        onOpenFullscreen={onOpenFullscreen}
-      />
+        <ReadingToolbar
+          onPlay={onPlayJuz || (() => firstSurah && onPlaySpecificSurah(firstSurah))}
+          playLabel={lang === "fr" ? "Écouter le juz" : "Listen juz"}
+          preparingSurah={preparingSurah}
+          surahNum={firstSurah}
+          onToggleMushaf={onToggleMushaf}
+          onOpenFullscreen={onOpenFullscreen}
+        />
+      </section>
 
       {mushafLayout === "mushaf" ? (
         <>
@@ -97,6 +100,7 @@ function JuzMode({
             lang={lang}
             mode="juz"
             onAyahClick={onToggleActive}
+            onOpenFullscreen={onOpenFullscreen}
             pageGroups={pageGroups}
             readingFontSize={readingFontSize}
             riwaya={riwaya}

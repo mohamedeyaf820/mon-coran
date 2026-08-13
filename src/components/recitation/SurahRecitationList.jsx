@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
 import SURAHS from "../../data/surahs";
 import SurahRecitationRow from "./SurahRecitationRow";
 
-const INITIAL_VISIBLE_SURAHS = 24;
-const CHUNK_SIZE = 24;
+const INITIAL_VISIBLE_SURAHS = 18;
+const CHUNK_SIZE = 18;
 
 function normalize(value) {
   return String(value || "")
@@ -23,7 +23,8 @@ export default function SurahRecitationList({
 }) {
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_SURAHS);
-  const normalizedQuery = normalize(query);
+  const deferredQuery = useDeferredValue(query);
+  const normalizedQuery = normalize(deferredQuery);
 
   useEffect(() => {
     setQuery("");

@@ -2,7 +2,6 @@ import React, { memo } from "react";
 import { t } from "../../i18n";
 import { getSurah } from "../../data/surahs";
 import SurahReaderHeader from "../Quran/SurahReaderHeader";
-import ReadingProgressBar from "../Quran/ReadingProgressBar";
 import AyahActionsModal from "./AyahActionsModal";
 import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
@@ -49,8 +48,6 @@ function SurahMode({
         mushafLayout === "mushaf" ? "quran-mode-pane--mushaf" : ""
       } ${modePaneShellClass}`}
     >
-      <ReadingProgressBar />
-
       {/* Unified surah identity + controls header */}
       <div className="qc-surah-header-wrap animate-in">
         <SurahReaderHeader
@@ -75,6 +72,7 @@ function SurahMode({
             lang={lang}
             mode="surah"
             onAyahClick={onToggleActive}
+            onOpenFullscreen={onOpenFullscreen}
             pageGroups={pageGroups}
             readingFontSize={readingFontSize}
             riwaya={riwaya}

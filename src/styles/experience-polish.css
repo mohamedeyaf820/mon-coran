@@ -572,22 +572,30 @@ html body .rc-error {
 
 html body .app-root[data-view="reading"] .tajweed-legend {
   display: block;
-  width: 100%;
-  margin: 0 0 0.35rem;
-  padding: 0.38rem 0.48rem;
+  width: max-content !important;
+  max-width: min(100%, 980px);
+  margin: 0 auto 0.5rem;
+  padding: 0.18rem 0.42rem;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--border) 72%, var(--primary) 28%);
-  border-radius: 1rem;
+  border-radius: 999px;
   background: var(--bg-card);
   color: var(--text-secondary);
+  box-shadow: inset 2px 0 var(--primary);
+}
+
+html body .app-root[data-view="reading"] .tajweed-legend[open] {
+  width: 100% !important;
+  border-radius: 1rem;
+  padding: 0.38rem 0.48rem;
   box-shadow: inset 3px 0 var(--primary), 0 8px 26px color-mix(in srgb, #081c15 7%, transparent);
 }
 
 html body .app-root[data-view="reading"] .tajweed-legend__intro {
   display: list-item;
   min-width: 0;
-  min-height: 2.15rem;
-  padding: 0.48rem 0.45rem;
+  min-height: 1.85rem;
+  padding: 0.34rem 0.4rem;
   cursor: pointer;
 }
 
@@ -727,7 +735,7 @@ html body .tajwid-rule-tooltip__description {
 
 @media (max-width: 640px) {
   html body .app-root[data-view="reading"] .tajweed-legend {
-    margin: 0.3rem 0 0.4rem;
+    margin: 0.3rem auto 0.4rem;
     padding: 0.3rem 0.38rem;
     border-radius: 0.8rem;
   }

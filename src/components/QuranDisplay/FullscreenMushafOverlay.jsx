@@ -9,33 +9,34 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 import {
-  ArrowLeft,
-  ArrowRight,
-  Columns3,
-  Minus,
-  Plus,
-  Rows3,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Headphones,
+  Pause,
+  Play,
+  SlidersHorizontal,
   X,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
-import { getSurah, toAr } from "../../data/surahs";
+import SURAHS, { getSurah, toAr } from "../../data/surahs";
+import { getReciter } from "../../data/reciters";
 import { t } from "../../i18n";
+import audioService from "../../services/audioService";
 import AyahMarker from "../Quran/AyahMarker";
 import Bismillah from "../Quran/Bismillah";
 import { CleanPageSurahHeader } from "../Quran/CleanPageDecor";
 import SmartAyahRenderer from "../Quran/SmartAyahRenderer";
+import AyahActionsModal from "./AyahActionsModal";
 import { preloadQuranDisplayData } from "./useQuranDisplayData";
 
-const FOCUSABLE =
-  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 const MIN_ZOOM = 1;
-const MAX_ZOOM = 3.2;
-const ZOOM_STEP = 0.25;
-
-function labelFor(lang, fr, en, ar) {
-  if (lang === "ar") return ar;
-  return lang === "en" ? en : fr;
-}
+const MAX_ZOOM = 1.85;
+const ZOOM_STEP = 0.15;
+const PAGE_WINDOW_RADIUS = 4;
+const PAGE_CACHE_RADIUS = 6;
+const CONTEXT_CHROME_IDLE_MS = 2800;
+const SCROLL_SETTLE_MS = 220;
 
 function clampZoom(value) {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
@@ -52,31 +53,22 @@ const ImmersiveMushafPage = memo(function ImmersiveMushafPage({
   lang,
   page,
   riwaya,
-  scale,
+  fontSize,
+  selectedAyah,
   showTajwid,
+  onOpenAyahActions,
+  onPlayAyah,
 }) {
-  const contentRef = useRef(null);
-  const [baseHeight, setBaseHeight] = useState(0);
+  const clickTimerRef = useRef(null);
+  const lastTouchRef = useRef({ key: "", time: 0 });
+  const suppressClickRef = useRef(false);
 
-  useLayoutEffect(() => {
-    const node = contentRef.current;
-    if (!node) return undefined;
-
-    const measure = () => {
-      const nextHeight = Math.ceil(node.scrollHeight);
-      setBaseHeight((current) => (Math.abs(current - nextHeight) > 1 ? nextHeight : current));
-    };
-    measure();
-
-    if (typeof ResizeObserver !== "function") {
-      window.addEventListener("resize", measure, { passive: true });
-      return () => window.removeEventListener("resize", measure);
-    }
-
-    const observer = new ResizeObserver(measure);
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [ayahs]);
+  useEffect(
+    () => () => {
+      if (clickTimerRef.current) window.clearTimeout(clickTimerRef.current);
+    },
+    [],
+  );
 
   const firstSurah = getAyahSurah(ayahs[0], fallbackSurah);
   const surah = getSurah(firstSurah);
@@ -88,19 +80,13 @@ const ImmersiveMushafPage = memo(function ImmersiveMushafPage({
       data-mfp-page={page}
       aria-label={`${t("quran.page", lang)} ${pageLabel}`}
       style={{
-        height: baseHeight ? `${Math.ceil(baseHeight * scale)}px` : undefined,
-        width: `${scale * 100}%`,
+        "--mfp-page-font-size": `${fontSize}px`,
       }}
     >
       <article
-        ref={contentRef}
         className="mfp-page-sheet"
         dir="rtl"
         lang="ar"
-        style={{
-          transform: `scale(${scale})`,
-          width: `${100 / scale}%`,
-        }}
       >
         <div className="mfp-page-meta" aria-hidden="true">
           <span>{surah?.ar}</span>
@@ -134,10 +120,59 @@ const ImmersiveMushafPage = memo(function ImmersiveMushafPage({
             blocks.push(
               <span
                 key={ayah.number || `${ayahSurah}:${ayah.numberInSurah}`}
-                className={`mfp-ayah${isPlaying ? " mfp-ayah--playing" : ""}`}
+                className={`mfp-ayah${isPlaying ? " mfp-ayah--playing" : ""}${
+                  Number(selectedAyah?.surah) === ayahSurah &&
+                  Number(selectedAyah?.ayah) === Number(ayah.numberInSurah)
+                    ? " mfp-ayah--selected"
+                    : ""
+                }`}
                 data-surah-number={ayahSurah}
                 data-ayah-number={ayah.numberInSurah}
                 aria-current={isPlaying ? "true" : undefined}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  if (suppressClickRef.current) {
+                    suppressClickRef.current = false;
+                    return;
+                  }
+                  if (event.detail > 1) {
+                    if (clickTimerRef.current) window.clearTimeout(clickTimerRef.current);
+                    clickTimerRef.current = null;
+                    onOpenAyahActions?.(ayah);
+                    return;
+                  }
+                  if (clickTimerRef.current) window.clearTimeout(clickTimerRef.current);
+                  clickTimerRef.current = window.setTimeout(() => {
+                    onPlayAyah?.(ayah, ayahs, page);
+                    clickTimerRef.current = null;
+                  }, 230);
+                }}
+                onPointerUp={(event) => {
+                  if (event.pointerType !== "touch") return;
+                  const key = `${ayahSurah}:${ayah.numberInSurah}`;
+                  const now = performance.now();
+                  if (
+                    lastTouchRef.current.key === key &&
+                    now - lastTouchRef.current.time < 360
+                  ) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (clickTimerRef.current) window.clearTimeout(clickTimerRef.current);
+                    clickTimerRef.current = null;
+                    suppressClickRef.current = true;
+                    lastTouchRef.current = { key: "", time: 0 };
+                    onOpenAyahActions?.(ayah);
+                    return;
+                  }
+                  lastTouchRef.current = { key, time: now };
+                }}
+                onDoubleClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (clickTimerRef.current) window.clearTimeout(clickTimerRef.current);
+                  clickTimerRef.current = null;
+                  onOpenAyahActions?.(ayah);
+                }}
               >
                 <SmartAyahRenderer
                   ayah={ayah}
@@ -177,14 +212,16 @@ export default function FullscreenMushafOverlay({
   fullPage,
   lang,
   onClose,
+  onOpenPlayer,
   onNextPage,
+  onPlayAyah,
   onPrevPage,
+  getTranslationForAyah,
   riwaya,
 }) {
-  const { state, set } = useApp();
+  const { state, dispatch } = useApp();
   const containerRef = useRef(null);
   const viewportRef = useRef(null);
-  const hideTimerRef = useRef(null);
   const pinchRef = useRef(null);
   const pinchFrameRef = useRef(null);
   const pendingZoomRef = useRef(null);
@@ -192,33 +229,108 @@ export default function FullscreenMushafOverlay({
   const requestedPageRef = useRef(null);
   const scrollDrivenRef = useRef(false);
   const alignedRef = useRef(false);
-  const [controlsVisible, setControlsVisible] = useState(true);
+  const chromeTimerRef = useRef(null);
+  const scrollSettleTimerRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [pageCache, setPageCache] = useState(() => new Map([[currentPage, ayahs]]));
+  const [navigationOpen, setNavigationOpen] = useState(false);
+  const [playerOpen, setPlayerOpen] = useState(false);
+  const [selectedAyah, setSelectedAyah] = useState(null);
+  const [zoomNotice, setZoomNotice] = useState(false);
+  const [targetSurah, setTargetSurah] = useState(String(currentSurah || 1));
   const titleId = "mfp-title";
-  const pageFlow = state.mushafPageFlow === "horizontal" ? "horizontal" : "vertical";
+  // Vertical reading is always available; horizontal swiping is an additional
+  // gesture, not a competing navigation mode.
+  const pageFlow = "vertical";
   const showTajwid = Boolean(state.showTajwid);
+  const hasActiveAudio = Boolean(state.isPlaying && state.currentPlayingAyah);
+  const hasAudioSession = hasActiveAudio || Boolean(state.currentPlayingAyah);
+  const currentPageAyahs = pageCache.get(currentPage) || ayahs;
+  const openingAyah = currentPageAyahs.find(
+    (ayah) => Number(ayah?.numberInSurah) === 1,
+  );
+  const visibleSurah = getAyahSurah(
+    openingAyah || currentPageAyahs?.[0],
+    currentSurah,
+  );
+  const activeSurah = getSurah(visibleSurah);
+  const activeSurahName = activeSurah
+    ? lang === "ar"
+      ? activeSurah.ar
+      : lang === "en"
+        ? activeSurah.en
+        : activeSurah.fr
+    : "";
+  const activeReciter = getReciter(state.reciter, riwaya);
+  const reciterLabel =
+    lang === "ar"
+      ? activeReciter?.name
+      : lang === "en"
+        ? activeReciter?.nameEn
+        : activeReciter?.nameFr || activeReciter?.nameEn;
+  const chromeLabels =
+    lang === "ar"
+      ? {
+          go: "انتقال",
+          reader: "المشغل والقرّاء",
+          reciter: "القارئ",
+          surah: "السورة",
+        }
+      : lang === "en"
+        ? {
+            go: "Go",
+            reader: "Player and reciters",
+            reciter: "Reciter",
+            surah: "Surah",
+          }
+        : {
+            go: "Aller",
+            reader: "Lecteur et récitateur",
+            reciter: "Récitateur",
+            surah: "Sourate",
+          };
 
-  const shouldAutoHide = useCallback(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(max-width: 1024px)").matches;
+  const clearChromeTimer = useCallback(() => {
+    if (chromeTimerRef.current) clearTimeout(chromeTimerRef.current);
+    chromeTimerRef.current = null;
   }, []);
 
-  const scheduleControlsHide = useCallback(() => {
-    window.clearTimeout(hideTimerRef.current);
-    if (!shouldAutoHide()) return;
-    hideTimerRef.current = window.setTimeout(() => setControlsVisible(false), 3200);
-  }, [shouldAutoHide]);
+  const hideChrome = useCallback(() => {
+    setNavigationOpen(false);
+    setPlayerOpen(false);
+  }, []);
 
-  const revealControls = useCallback(() => {
-    setControlsVisible(true);
-    scheduleControlsHide();
-  }, [scheduleControlsHide]);
+  const scheduleChromeHide = useCallback(() => {
+    clearChromeTimer();
+    chromeTimerRef.current = window.setTimeout(hideChrome, CONTEXT_CHROME_IDLE_MS);
+  }, [clearChromeTimer, hideChrome]);
+
+  const revealNavigation = useCallback(() => {
+    setNavigationOpen(true);
+    scheduleChromeHide();
+  }, [scheduleChromeHide]);
+
+  const revealPlayer = useCallback(() => {
+    if (!hasAudioSession) return;
+    setPlayerOpen(true);
+    scheduleChromeHide();
+  }, [hasAudioSession, scheduleChromeHide]);
+
+  const revealContextChrome = useCallback(() => {
+    setNavigationOpen(true);
+    if (hasAudioSession) setPlayerOpen(true);
+    scheduleChromeHide();
+  }, [hasAudioSession, scheduleChromeHide]);
 
   const updateZoom = useCallback((nextZoom) => {
     setZoom(clampZoom(nextZoom));
-    revealControls();
-  }, [revealControls]);
+    setZoomNotice(true);
+  }, []);
+
+  const resetZoom = useCallback(() => {
+    setZoom(1);
+    setZoomNotice(true);
+  }, []);
 
   const changePage = useCallback(
     (direction, fromScroll = false) => {
@@ -226,10 +338,15 @@ export default function FullscreenMushafOverlay({
       if (target < 1 || target > 604 || requestedPageRef.current === target) return;
       requestedPageRef.current = target;
       scrollDrivenRef.current = fromScroll;
-      if (direction === "next") onNextPage?.();
+      // A page warmed by the rolling window can become active immediately.
+      // This removes the network wait that previously made scrolling stop at
+      // the visible edge. The outer reader will reuse the same prefetch cache.
+      if (pageCache.has(target)) {
+        dispatch({ type: "NAVIGATE_PAGE", payload: { page: target } });
+      } else if (direction === "next") onNextPage?.();
       else onPrevPage?.();
     },
-    [currentPage, onNextPage, onPrevPage],
+    [currentPage, dispatch, onNextPage, onPrevPage, pageCache],
   );
 
   useEffect(() => {
@@ -237,7 +354,7 @@ export default function FullscreenMushafOverlay({
       const next = new Map(current);
       next.set(currentPage, ayahs);
       for (const page of next.keys()) {
-        if (Math.abs(page - currentPage) > 1) next.delete(page);
+        if (Math.abs(page - currentPage) > PAGE_CACHE_RADIUS) next.delete(page);
       }
       return next;
     });
@@ -245,11 +362,24 @@ export default function FullscreenMushafOverlay({
   }, [ayahs, currentPage]);
 
   useEffect(() => {
+    setTargetSurah(String(visibleSurah || currentSurah || 1));
+  }, [currentSurah, visibleSurah]);
+
+  useEffect(() => {
+    if (hasAudioSession) {
+      revealPlayer();
+      return;
+    }
+    setPlayerOpen(false);
+  }, [hasAudioSession, revealPlayer]);
+
+  useEffect(() => {
     if (!fullPage) return undefined;
     let cancelled = false;
-    const neighbours = [currentPage - 1, currentPage + 1].filter(
-      (page) => page >= 1 && page <= 604 && !pageCache.has(page),
-    );
+    const neighbours = Array.from(
+      { length: PAGE_WINDOW_RADIUS * 2 + 1 },
+      (_, index) => currentPage + index - PAGE_WINDOW_RADIUS,
+    ).filter((page) => page >= 1 && page <= 604 && !pageCache.has(page));
 
     Promise.all(
       neighbours.map(async (page) => {
@@ -290,11 +420,24 @@ export default function FullscreenMushafOverlay({
   ]);
 
   const visiblePages = useMemo(() => {
-    if (pageFlow === "horizontal") return [[currentPage, ayahs]];
-    return [currentPage - 1, currentPage, currentPage + 1]
+    return Array.from(
+      { length: PAGE_WINDOW_RADIUS * 2 + 1 },
+      (_, index) => currentPage + index - PAGE_WINDOW_RADIUS,
+    )
       .filter((page) => page >= 1 && page <= 604 && pageCache.has(page))
       .map((page) => [page, pageCache.get(page)]);
-  }, [ayahs, currentPage, pageCache, pageFlow]);
+  }, [currentPage, pageCache]);
+
+  const selectedAyahReference = useMemo(
+    () =>
+      selectedAyah
+        ? {
+            surah: getAyahSurah(selectedAyah, visibleSurah),
+            ayah: selectedAyah.numberInSurah,
+          }
+        : null,
+    [selectedAyah, visibleSurah],
+  );
 
   useLayoutEffect(() => {
     if (!fullPage || pageFlow !== "vertical") return;
@@ -315,7 +458,7 @@ export default function FullscreenMushafOverlay({
   }, [currentPage, fullPage, pageFlow]);
 
   useEffect(() => {
-    if (!fullPage || pageFlow !== "vertical" || zoom > 1.01) return undefined;
+    if (!fullPage || pageFlow !== "vertical") return undefined;
     const viewport = viewportRef.current;
     if (!viewport || typeof IntersectionObserver !== "function") return undefined;
 
@@ -334,7 +477,7 @@ export default function FullscreenMushafOverlay({
 
     viewport.querySelectorAll("[data-mfp-page]").forEach((page) => observer.observe(page));
     return () => observer.disconnect();
-  }, [changePage, currentPage, fullPage, pageFlow, visiblePages, zoom]);
+  }, [changePage, currentPage, fullPage, pageFlow, visiblePages]);
 
   useEffect(() => {
     if (!fullPage) return undefined;
@@ -346,11 +489,18 @@ export default function FullscreenMushafOverlay({
     const previousOverscroll = document.body.style.overscrollBehavior;
     document.body.style.overflow = "hidden";
     document.body.style.overscrollBehavior = "none";
-    el.querySelector(FOCUSABLE)?.focus();
-    revealControls();
+    document.body.classList.add("mfp-open");
+    el.focus();
 
     const onKey = (event) => {
       if (event.key === "Escape") {
+        if (
+          document.querySelector(
+            ".ayah-actions-modal--fullscreen, .audio-player-modal--simple",
+          )
+        ) {
+          return;
+        }
         onClose();
         return;
       }
@@ -370,41 +520,33 @@ export default function FullscreenMushafOverlay({
         updateZoom(zoom - ZOOM_STEP);
         return;
       }
-      if (event.key !== "Tab") return;
-      const all = [...el.querySelectorAll(FOCUSABLE)].filter(
-        (node) => !node.closest('[aria-hidden="true"]'),
-      );
-      if (!all.length) return;
-      const first = all[0];
-      const last = all[all.length - 1];
-      if (
-        event.shiftKey
-          ? document.activeElement === first
-          : document.activeElement === last
-      ) {
-        event.preventDefault();
-        (event.shiftKey ? last : first).focus();
-      }
     };
 
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("keydown", onKey);
-      window.clearTimeout(hideTimerRef.current);
       if (pinchFrameRef.current) cancelAnimationFrame(pinchFrameRef.current);
+      clearChromeTimer();
+      if (scrollSettleTimerRef.current) clearTimeout(scrollSettleTimerRef.current);
       document.body.style.overflow = previousOverflow;
       document.body.style.overscrollBehavior = previousOverscroll;
+      document.body.classList.remove("mfp-open");
       previousFocus?.focus?.();
     };
-  }, [changePage, fullPage, onClose, revealControls, updateZoom, zoom]);
+  }, [changePage, clearChromeTimer, fullPage, onClose, updateZoom, zoom]);
 
   useEffect(() => {
     setZoom(1);
     alignedRef.current = false;
-  }, [pageFlow]);
+  }, [fullPage]);
+
+  useEffect(() => {
+    if (!zoomNotice) return undefined;
+    const timer = window.setTimeout(() => setZoomNotice(false), 1150);
+    return () => window.clearTimeout(timer);
+  }, [zoomNotice]);
 
   const handleTouchStart = (event) => {
-    revealControls();
     if (event.touches.length === 2) {
       const [first, second] = event.touches;
       pinchRef.current = {
@@ -414,7 +556,7 @@ export default function FullscreenMushafOverlay({
       swipeRef.current = null;
       return;
     }
-    if (event.touches.length === 1 && zoom <= 1.01 && pageFlow === "horizontal") {
+    if (event.touches.length === 1) {
       swipeRef.current = {
         x: event.touches[0].clientX,
         y: event.touches[0].clientY,
@@ -447,7 +589,7 @@ export default function FullscreenMushafOverlay({
     }
     const start = swipeRef.current;
     swipeRef.current = null;
-    if (!start || zoom > 1.01 || !event.changedTouches[0]) return;
+    if (!start || !event.changedTouches[0]) return;
     const deltaX = event.changedTouches[0].clientX - start.x;
     const deltaY = event.changedTouches[0].clientY - start.y;
     const elapsed = performance.now() - start.time;
@@ -455,22 +597,62 @@ export default function FullscreenMushafOverlay({
     changePage(deltaX > 0 ? "next" : "previous");
   };
 
-  const handleReaderTap = (event) => {
-    if (event.target.closest("button, a, [role='button']")) return;
-    setControlsVisible((visible) => {
-      const next = !visible;
-      if (next) scheduleControlsHide();
-      else window.clearTimeout(hideTimerRef.current);
-      return next;
-    });
+  const handleViewportScroll = useCallback(
+    (event) => {
+      if (scrollSettleTimerRef.current) clearTimeout(scrollSettleTimerRef.current);
+      if (hasAudioSession) {
+        scrollSettleTimerRef.current = window.setTimeout(
+          revealPlayer,
+          SCROLL_SETTLE_MS,
+        );
+      }
+      if (requestedPageRef.current != null) return;
+      const viewport = event.currentTarget;
+      const activePage = viewport.querySelector(`[data-mfp-page="${currentPage}"]`);
+      if (!activePage) return;
+
+      const pageTop = activePage.offsetTop - viewport.scrollTop;
+      const pageBottom = pageTop + activePage.offsetHeight;
+      const triggerLine = viewport.clientHeight * 0.34;
+      if (pageBottom < triggerLine && currentPage < 604) {
+        changePage("next", true);
+      } else if (pageTop > viewport.clientHeight - triggerLine && currentPage > 1) {
+        changePage("previous", true);
+      }
+    },
+    [changePage, currentPage, hasAudioSession, revealPlayer],
+  );
+
+  const goToSurahNumber = useCallback((value) => {
+    const nextSurah = Math.max(1, Math.min(114, Number(value) || visibleSurah));
+    const target = getSurah(nextSurah);
+    if (!target?.page) return;
+    setTargetSurah(String(nextSurah));
+    dispatch({ type: "NAVIGATE_PAGE", payload: { page: target.page } });
+    revealNavigation();
+  }, [dispatch, revealNavigation, visibleSurah]);
+
+  const openFullPlayer = () => {
+    hideChrome();
+    onOpenPlayer?.();
   };
+
+  const handleViewportClick = useCallback(
+    (event) => {
+      if (event.target.closest(".mfp-ayah, button, select, input, a")) return;
+      revealContextChrome();
+    },
+    [revealContextChrome],
+  );
 
   if (!fullPage || typeof document === "undefined") return null;
 
-  const resolvedSurahNumber = getAyahSurah(ayahs[0], currentSurah);
-  const surah = getSurah(resolvedSurahNumber);
   const pageLabel = lang === "ar" ? toAr(currentPage) : currentPage;
-  const zoomLabel = `${Math.round(zoom * 100)}%`;
+  const fullscreenBaseFontSize = Math.min(
+    64,
+    Math.max(27, Number(state.quranFontSize || 34) + 4),
+  );
+  const zoomedFontSize = Math.min(78, fullscreenBaseFontSize * zoom);
 
   return createPortal(
     <div
@@ -480,47 +662,128 @@ export default function FullscreenMushafOverlay({
       data-riwaya={riwaya}
       style={{
         "--qd-font-family": "var(--quran-font-family, var(--font-quran, serif))",
-        "--qd-fullscreen-font-size": `${Math.min(74, Math.max(28, Number(state.quranFontSize || 34) + 6))}px`,
+        "--qd-fullscreen-font-size": `${fullscreenBaseFontSize}px`,
       }}
     >
       <div className="mfp-overlay" role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <div
           ref={containerRef}
-          className={`mfp-page-container mfp-page-container--${pageFlow}${controlsVisible ? "" : " mfp-page-container--immersive"}`}
+          className={`mfp-page-container mfp-page-container--${pageFlow} mfp-page-container--immersive`}
           data-page-flow={pageFlow}
           data-zoomed={zoom > 1.01 ? "true" : "false"}
+          tabIndex={-1}
         >
           <span id={titleId} className="sr-only">
             {t("quran.fullPageView", lang)} — {t("quran.page", lang)} {pageLabel}
           </span>
 
-          <header className="mfp-reader-bar" aria-hidden={!controlsVisible}>
-            <button
-              className="mfp-icon-btn"
-              type="button"
-              onClick={onClose}
-              aria-label={t("audio.close", lang)}
+          <button type="button" className="sr-only" onClick={onClose}>
+            {t("audio.close", lang)}
+          </button>
+
+          <button
+            type="button"
+            className="mfp-context-hotzone mfp-context-hotzone--top"
+            onClick={revealContextChrome}
+            aria-label={lang === "ar" ? "إظهار التنقل" : lang === "en" ? "Show navigation" : "Afficher la navigation"}
+          />
+
+          {navigationOpen ? (
+            <section
+              className="mfp-context-navigation"
+              dir={lang === "ar" ? "rtl" : "ltr"}
+              aria-label={lang === "ar" ? "التنقل في السور" : lang === "en" ? "Surah navigation" : "Navigation des sourates"}
+              onPointerEnter={clearChromeTimer}
+              onPointerLeave={scheduleChromeHide}
+              onFocusCapture={clearChromeTimer}
+              onBlurCapture={scheduleChromeHide}
             >
-              <X size={17} aria-hidden="true" />
-            </button>
-
-            <div className="mfp-reader-bar__identity">
-              <strong>{surah?.ar}</strong>
-              <span>{t("quran.page", lang)} {pageLabel} · {riwaya === "warsh" ? "Warsh" : "Hafs"}</span>
-            </div>
-
-            <span className="mfp-reader-bar__folio" aria-hidden="true">{pageLabel}</span>
-          </header>
+              <button
+                type="button"
+                className="mfp-context-navigation__close"
+                onClick={onClose}
+                aria-label={t("audio.close", lang)}
+              >
+                <X size={16} aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                className="mfp-context-navigation__step"
+                onClick={() => {
+                  goToSurahNumber(visibleSurah - 1);
+                }}
+                aria-label={lang === "ar" ? "السورة السابقة" : lang === "en" ? "Previous surah" : "Sourate précédente"}
+                disabled={visibleSurah <= 1}
+              >
+                {lang === "ar" ? (
+                  <ChevronRight size={17} aria-hidden="true" />
+                ) : (
+                  <ChevronLeft size={17} aria-hidden="true" />
+                )}
+              </button>
+              <label className="mfp-context-navigation__target">
+                <select
+                  value={targetSurah}
+                  onChange={(event) => goToSurahNumber(event.target.value)}
+                  aria-label={chromeLabels.surah}
+                >
+                  {SURAHS.map((surah) => (
+                    <option key={surah.n} value={surah.n}>
+                      {surah.n}. {lang === "ar" ? surah.ar : lang === "en" ? surah.en : surah.fr}
+                    </option>
+                  ))}
+                </select>
+                <span
+                  key={`mfp-surah-identity-${visibleSurah}`}
+                  className="mfp-context-navigation__identity"
+                  aria-hidden="true"
+                >
+                  <span className="mfp-context-navigation__arabic" lang="ar" dir="rtl">
+                    {activeSurah?.ar}
+                  </span>
+                  <span className="mfp-context-navigation__copy">
+                    <strong>{visibleSurah}. {activeSurahName}</strong>
+                    <small>{t("quran.page", lang)} {pageLabel}</small>
+                  </span>
+                  <ChevronDown
+                    className="mfp-context-navigation__chevron"
+                    size={14}
+                    aria-hidden="true"
+                  />
+                </span>
+              </label>
+              <button
+                type="button"
+                className="mfp-context-navigation__step"
+                onClick={() => {
+                  goToSurahNumber(visibleSurah + 1);
+                }}
+                aria-label={lang === "ar" ? "السورة التالية" : lang === "en" ? "Next surah" : "Sourate suivante"}
+                disabled={visibleSurah >= 114}
+              >
+                {lang === "ar" ? (
+                  <ChevronLeft size={17} aria-hidden="true" />
+                ) : (
+                  <ChevronRight size={17} aria-hidden="true" />
+                )}
+              </button>
+            </section>
+          ) : null}
 
           <main
             ref={viewportRef}
             className={`mfp-viewport mfp-viewport--${pageFlow}`}
             data-zoomed={zoom > 1.01 ? "true" : "false"}
-            onClick={handleReaderTap}
-            onDoubleClick={() => updateZoom(zoom > 1.01 ? 1 : 1.75)}
+            onDoubleClick={(event) => {
+              if (event.target.closest(".mfp-ayah")) return;
+              event.preventDefault();
+              resetZoom();
+            }}
+            onClick={handleViewportClick}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
+            onScroll={handleViewportScroll}
           >
             <div className={`mfp-pages mfp-pages--${pageFlow}`}>
               {visiblePages.map(([page, pageAyahs]) => (
@@ -532,85 +795,81 @@ export default function FullscreenMushafOverlay({
                   lang={lang}
                   page={page}
                   riwaya={riwaya}
-                  scale={zoom}
+                  fontSize={zoomedFontSize}
+                  selectedAyah={selectedAyahReference}
                   showTajwid={showTajwid}
+                  onOpenAyahActions={setSelectedAyah}
+                  onPlayAyah={onPlayAyah}
                 />
               ))}
             </div>
           </main>
 
-          <footer className="mfp-navigation" aria-hidden={!controlsVisible}>
+          {zoomNotice ? (
+            <output className="mfp-zoom-status" aria-live="polite">
+              {Math.round(zoom * 100)} %
+            </output>
+          ) : null}
+
+          {hasAudioSession ? (
             <button
               type="button"
-              onClick={() => changePage("previous")}
-              disabled={currentPage <= 1 || zoom > 1.01}
-              aria-label={labelFor(lang, "Page précédente", "Previous page", "الصفحة السابقة")}
+              className="mfp-context-hotzone mfp-context-hotzone--bottom"
+              onClick={revealPlayer}
+              aria-label={lang === "ar" ? "إظهار مشغل الصوت" : lang === "en" ? "Show audio player" : "Afficher le lecteur audio"}
+            />
+          ) : null}
+
+          {playerOpen && hasAudioSession ? (
+            <section
+              className="mfp-context-player"
+              aria-label={lang === "ar" ? "مشغل الصوت" : lang === "en" ? "Audio player" : "Lecteur audio"}
+              onPointerEnter={clearChromeTimer}
+              onPointerLeave={scheduleChromeHide}
             >
-              <ArrowLeft size={17} aria-hidden="true" />
-            </button>
+              <button
+                type="button"
+                className="mfp-context-player__track"
+                onClick={openFullPlayer}
+                aria-label={chromeLabels.reader}
+              >
+                <span className="mfp-context-player__pulse" aria-hidden="true"><Headphones size={15} /></span>
+                <span>
+                  <strong>{activeSurah?.fr || activeSurah?.en || chromeLabels.surah}</strong>
+                  <small>{reciterLabel || chromeLabels.reciter}</small>
+                </span>
+              </button>
+              <button
+                type="button"
+                className="mfp-context-player__toggle"
+                onClick={() => audioService.toggle()}
+                aria-label={state.isPlaying ? t("audio.pause", lang) : t("audio.play", lang)}
+                aria-pressed={state.isPlaying}
+              >
+                {state.isPlaying ? <Pause size={19} aria-hidden="true" /> : <Play size={19} aria-hidden="true" />}
+              </button>
+              <button
+                type="button"
+                className="mfp-context-player__options"
+                onClick={openFullPlayer}
+                aria-label={chromeLabels.reader}
+              >
+                <SlidersHorizontal size={17} aria-hidden="true" />
+              </button>
+            </section>
+          ) : null}
 
-            <div className="mfp-navigation__center">
-              <div className="mfp-flow-switch" role="group" aria-label={labelFor(lang, "Navigation des pages", "Page navigation", "طريقة التنقل") }>
-                <button
-                  type="button"
-                  aria-pressed={pageFlow === "vertical"}
-                  onClick={() => set({ mushafPageFlow: "vertical" })}
-                  title={labelFor(lang, "Défilement vertical", "Vertical scroll", "تمرير عمودي")}
-                >
-                  <Rows3 size={15} aria-hidden="true" />
-                  <span>{labelFor(lang, "Vertical", "Vertical", "عمودي")}</span>
-                </button>
-                <button
-                  type="button"
-                  aria-pressed={pageFlow === "horizontal"}
-                  onClick={() => set({ mushafPageFlow: "horizontal" })}
-                  title={labelFor(lang, "Balayage horizontal", "Horizontal swipe", "سحب أفقي")}
-                >
-                  <Columns3 size={15} aria-hidden="true" />
-                  <span>{labelFor(lang, "Balayage", "Swipe", "سحب")}</span>
-                </button>
-              </div>
+          <AyahActionsModal
+            activeAyah={selectedAyah?.numberInSurah || null}
+            className="ayah-actions-modal--fullscreen"
+            onClose={() => setSelectedAyah(null)}
+            quietBackdrop
+            portalToBody
+            surah={getAyahSurah(selectedAyah, visibleSurah)}
+            ayahData={selectedAyah}
+            translations={selectedAyah ? getTranslationForAyah?.(selectedAyah) || [] : []}
+          />
 
-              <div className="mfp-zoom-controls" role="group" aria-label={labelFor(lang, "Zoom de la page", "Page zoom", "تكبير الصفحة") }>
-                <button
-                  type="button"
-                  onClick={() => updateZoom(zoom - ZOOM_STEP)}
-                  disabled={zoom <= MIN_ZOOM}
-                  aria-label={labelFor(lang, "Dézoomer", "Zoom out", "تصغير")}
-                >
-                  <Minus size={15} aria-hidden="true" />
-                </button>
-                <span aria-live="polite">{zoomLabel}</span>
-                <button
-                  type="button"
-                  onClick={() => updateZoom(zoom + ZOOM_STEP)}
-                  disabled={zoom >= MAX_ZOOM}
-                  aria-label={labelFor(lang, "Zoomer", "Zoom in", "تكبير")}
-                >
-                  <Plus size={15} aria-hidden="true" />
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => changePage("next")}
-              disabled={currentPage >= 604 || zoom > 1.01}
-              aria-label={labelFor(lang, "Page suivante", "Next page", "الصفحة التالية")}
-            >
-              <ArrowRight size={17} aria-hidden="true" />
-            </button>
-          </footer>
-
-          <button
-            type="button"
-            className="mfp-immersive-hint"
-            onClick={revealControls}
-            aria-label={labelFor(lang, "Afficher les contrôles", "Show controls", "إظهار عناصر التحكم")}
-            tabIndex={controlsVisible ? -1 : 0}
-          >
-            <span />
-          </button>
         </div>
       </div>
     </div>,

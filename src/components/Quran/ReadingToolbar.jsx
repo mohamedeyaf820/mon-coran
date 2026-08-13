@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   BookOpen,
   Languages,
@@ -53,15 +53,7 @@ export default function ReadingToolbar({
     readerTypographyOpen,
   } = state;
 
-  const [scrolled, setScrolled] = useState(false);
   const showTypography = Boolean(readerTypographyOpen);
-  useEffect(() => {
-    const mainEl = document.querySelector("#main-content") || window;
-    const getScroll = () => (mainEl === window ? window.scrollY : mainEl.scrollTop);
-    const onScroll = () => setScrolled(getScroll() > 40);
-    mainEl.addEventListener("scroll", onScroll, { passive: true });
-    return () => mainEl.removeEventListener("scroll", onScroll);
-  }, []);
 
   const playHandler = onPlay || onPlaySurah;
   const isPreparing = Boolean(preparingSurah && preparingSurah === surahNum);
@@ -103,16 +95,15 @@ export default function ReadingToolbar({
     <div
       className={cn(
         "reader-command-bar qc-reader-toolbar mx-auto mb-6 flex w-full max-w-[980px] flex-col items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 backdrop-blur-md transition-all duration-300 md:flex-row",
-        scrolled && "qc-reader-toolbar--sticky",
       )}
       style={{
-        boxShadow: scrolled ? "var(--shadow-lg)" : "var(--shadow-md)",
+        boxShadow: "var(--shadow-md)",
         color: "var(--text-primary)",
       }}
       role="toolbar"
       aria-label={labels.toolbar}
     >
-      <div className="scrollbar-none flex w-full items-center justify-start gap-2 overflow-x-auto pb-1 md:w-auto md:justify-center md:pb-0">
+      <div className="qc-reader-toolbar__modes scrollbar-none flex w-full items-center justify-start gap-2 overflow-x-auto pb-1 md:w-auto md:justify-center md:pb-0">
         <div className="shrink-0 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-1">
           <div className="flex items-center gap-1" role="group" aria-label={labels.toolbar}>
             <button
@@ -171,7 +162,7 @@ export default function ReadingToolbar({
           <button
             type="button"
             className={cn(
-              "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
+              "reader-toolbar-btn--tajweed flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
               showTajwid
                 ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
                 : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",

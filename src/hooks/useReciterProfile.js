@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 
 let profileCataloguePromise;
+const PROFILE_CATALOGUE_VERSION = "2026-08-13";
 
 function loadProfileCatalogue() {
   if (!profileCataloguePromise) {
     const baseUrl = import.meta.env.BASE_URL || "/";
-    profileCataloguePromise = fetch(`${baseUrl}data/reciter-profiles.json`, {
+    profileCataloguePromise = fetch(`${baseUrl}data/reciter-profiles.json?v=${PROFILE_CATALOGUE_VERSION}`, {
       cache: "force-cache",
     })
       .then((response) => {

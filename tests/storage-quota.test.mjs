@@ -66,5 +66,6 @@ test("storage quota blocks a download that would consume the reserve", async () 
 
 test("audio estimates account for stream and verse downloads", () => {
   assert.equal(estimateAudioDownloadBytes(1, true), 24 * 1024 * 1024);
+  assert.equal(estimateAudioDownloadBytes(114, true), 114 * 24 * 1024 * 1024);
   assert.equal(estimateAudioDownloadBytes(10, false), 10 * 384 * 1024);
 });

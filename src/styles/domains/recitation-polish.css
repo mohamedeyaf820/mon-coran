@@ -2,7 +2,7 @@
     z-index: 1100 !important;
     padding: clamp(0.5rem, 2vw, 1.4rem) !important;
     background: color-mix(in srgb, var(--theme-text) 58%, transparent) !important;
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(3px);
 }
 
 .reciter-detail {
@@ -434,6 +434,213 @@
     color: var(--primary);
 }
 
+.full-quran-download {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.8rem;
+    overflow: hidden;
+    margin-bottom: 0.85rem;
+    border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border));
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 92% -20%, rgba(var(--primary-rgb), 0.14), transparent 44%),
+        var(--theme-bg-alt);
+    padding: 0.78rem;
+}
+
+.full-quran-download__icon {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
+    border-radius: 13px;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+}
+
+.full-quran-download__content {
+    min-width: 0;
+}
+
+.full-quran-download__eyebrow {
+    display: block;
+    margin-bottom: 0.12rem;
+    color: var(--primary);
+    font-size: 0.57rem;
+    font-weight: 850;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.full-quran-download h4 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 0.86rem;
+    font-weight: 790;
+    letter-spacing: -0.01em;
+}
+
+.full-quran-download__content > p {
+    margin: 0.16rem 0 0;
+    color: var(--text-muted);
+    font-size: 0.67rem;
+    line-height: 1.45;
+}
+
+.full-quran-download__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.28rem 0.65rem;
+    margin-top: 0.35rem;
+    color: var(--text-muted);
+    font-size: 0.57rem;
+    line-height: 1.35;
+}
+
+.full-quran-download__meta span:first-child {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--text-secondary);
+    font-weight: 720;
+}
+
+.full-quran-download__progress {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.48rem;
+}
+
+.full-quran-download__progress progress {
+    width: 100%;
+    height: 5px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 999px;
+    appearance: none;
+    background: rgba(var(--primary-rgb), 0.11);
+}
+
+.full-quran-download__progress progress::-webkit-progress-bar {
+    border-radius: inherit;
+    background: rgba(var(--primary-rgb), 0.11);
+}
+
+.full-quran-download__progress progress::-webkit-progress-value,
+.full-quran-download__progress progress::-moz-progress-bar {
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--primary), var(--color-gold, #b78b2a));
+}
+
+.full-quran-download__progress strong {
+    color: var(--primary);
+    font-size: 0.62rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.full-quran-download__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.38rem;
+}
+
+.full-quran-download__primary,
+.full-quran-download__remove {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.38rem;
+    border-radius: 12px;
+    font-size: 0.66rem;
+    font-weight: 780;
+}
+
+.full-quran-download__primary {
+    border: 1px solid var(--primary);
+    background: var(--primary);
+    padding-inline: 0.72rem;
+    color: var(--primary-contrast, #fff);
+    white-space: nowrap;
+}
+
+.full-quran-download__primary.is-cancel {
+    border-color: var(--border);
+    background: var(--theme-surface);
+    color: var(--text-primary);
+}
+
+.full-quran-download__primary:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+}
+
+.full-quran-download__remove {
+    width: 38px;
+    flex: 0 0 38px;
+    border: 1px solid var(--border);
+    background: var(--theme-surface);
+    color: var(--text-muted);
+}
+
+.full-quran-download__confirm {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.65rem;
+    margin: 0.1rem -0.15rem -0.15rem;
+    border-top: 1px solid var(--border);
+    padding: 0.65rem 0.15rem 0.05rem;
+    color: var(--color-gold, #9d7624);
+}
+
+.full-quran-download__confirm strong {
+    display: block;
+    color: var(--text-primary);
+    font-size: 0.7rem;
+}
+
+.full-quran-download__confirm p {
+    margin: 0.14rem 0 0;
+    color: var(--text-muted);
+    font-size: 0.61rem;
+    line-height: 1.42;
+}
+
+.full-quran-download__confirm-actions {
+    display: flex;
+    gap: 0.38rem;
+}
+
+.full-quran-download__confirm-actions button {
+    min-height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--theme-surface);
+    padding-inline: 0.6rem;
+    color: var(--text-secondary);
+    font-size: 0.62rem;
+    font-weight: 750;
+}
+
+.full-quran-download__confirm-actions button.is-confirm {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--primary-contrast, #fff);
+}
+
+.full-quran-download .is-spinning {
+    animation: recitation-download-spin 850ms linear infinite;
+}
+
 .recitation-library {
     display: block;
 }
@@ -705,6 +912,7 @@
     .reciter-detail-overlay {
         align-items: flex-end !important;
         padding: max(0.3rem, env(safe-area-inset-top)) 0 0 !important;
+        backdrop-filter: none;
     }
 
     .reciter-detail {
@@ -907,6 +1115,47 @@
 
     .recitation-library__count {
         display: none;
+    }
+
+    .full-quran-download {
+        grid-template-columns: 34px minmax(0, 1fr);
+        gap: 0.55rem;
+        border-radius: 15px;
+        padding: 0.65rem;
+    }
+
+    .full-quran-download__icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 11px;
+    }
+
+    .full-quran-download h4 {
+        font-size: 0.77rem;
+    }
+
+    .full-quran-download__meta span:last-child {
+        display: none;
+    }
+
+    .full-quran-download__actions {
+        grid-column: 1 / -1;
+    }
+
+    .full-quran-download__primary {
+        flex: 1 1 auto;
+    }
+
+    .full-quran-download__confirm {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .full-quran-download__confirm-actions {
+        grid-column: 1 / -1;
+    }
+
+    .full-quran-download__confirm-actions button {
+        flex: 1 1 0;
     }
 
     .recitation-row__meta > span:last-child {

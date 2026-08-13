@@ -13,6 +13,7 @@ import ReciterHero from "./ReciterHero";
 import ReciterBioCollapse from "./ReciterBioCollapse";
 import ReciterRadioButton from "./ReciterRadioButton";
 import SurahRecitationList from "./SurahRecitationList";
+import FullQuranDownloadCard from "./FullQuranDownloadCard";
 import { cn } from "../../lib/utils";
 import {
   getReciterProfileSource,
@@ -174,6 +175,12 @@ export default function ReciterDetailPage({
             </div>
             <ListMusic className="recitation-icon recitation-icon--md" size={18} aria-hidden="true" />
           </div>
+
+          <FullQuranDownloadCard
+            lang={lang}
+            reciter={reciter}
+            riwaya={reciter.verifiedWarsh ? "warsh" : "hafs"}
+          />
 
           <SurahRecitationList
             lang={lang}

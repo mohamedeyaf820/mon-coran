@@ -414,7 +414,7 @@ html body .settings-drawer__title {
   html body .app-root[data-view="home"] .reciter-card__media {
     width: 2.65rem !important;
     height: 2.65rem !important;
-    border-radius: 10px !important;
+    border-radius: 50% !important;
   }
 
   html body .app-root[data-view="home"] .reciter-card__actions {
@@ -455,6 +455,12 @@ html body .settings-drawer__title {
 
   html body .app-root[data-view="home"] .reciter-card__listen span {
     display: none !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card__playing {
+    width: 0.88rem !important;
+    height: 0.88rem !important;
+    padding: 0.15rem !important;
   }
 
   html body #root .app-root .sb-wrapper .sidebar-tab-trigger,

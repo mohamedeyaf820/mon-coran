@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { createPortal } from "react-dom";
-import { t } from "../../i18n";
-import { cn } from "../../lib/utils";
 import { getAudioPlayerLabels } from "./audioPlayerLabels";
 import PlaybackSettingsPanel from "./PlaybackSettingsPanel";
 import ReciterOptionsList from "./ReciterOptionsList";
@@ -104,7 +102,7 @@ export default function AudioOptionsModal(props) {
               aria-selected={activeMobileTab === "reciters"}
               onClick={() => setActiveMobileTab("reciters")}
             >
-              {t("audio.reciter", lang)}
+              {labels.reciters}
             </button>
             <button
               type="button"

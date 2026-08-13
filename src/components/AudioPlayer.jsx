@@ -269,6 +269,20 @@ export default function AudioPlayer() {
   }, [optionsModalOpen]);
 
   useEffect(() => {
+    const openImmersiveOptions = () => {
+      setClosed(false);
+      setMinimized(true);
+      setOptionsModalOpen(true);
+    };
+    window.addEventListener("mushafplus-open-audio-options", openImmersiveOptions);
+    return () =>
+      window.removeEventListener(
+        "mushafplus-open-audio-options",
+        openImmersiveOptions,
+      );
+  }, []);
+
+  useEffect(() => {
     if (!optionsModalOpen) return;
     window.requestAnimationFrame(() => {
       optionsCloseButtonRef.current?.focus();
@@ -642,7 +656,10 @@ export default function AudioPlayer() {
       (r) =>
         r.name.toLowerCase().includes(q) ||
         r.nameEn.toLowerCase().includes(q) ||
-        r.nameFr.toLowerCase().includes(q),
+        r.nameFr.toLowerCase().includes(q) ||
+        (r.searchAliases || []).some((alias) =>
+          String(alias).toLowerCase().includes(q),
+        ),
     );
   }, [currentReciters, reciterSearch]);
 

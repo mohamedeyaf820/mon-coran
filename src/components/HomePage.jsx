@@ -355,16 +355,23 @@ export default function HomePage({ lowPerfMode = false }) {
       const fr = String(reciter.nameFr || "").toLowerCase();
       const en = String(reciter.nameEn || "").toLowerCase();
       const ar = String(reciter.name || "");
+      const aliases = (reciter.searchAliases || [])
+        .map((alias) => String(alias).toLowerCase())
+        .join(" ");
       return (
         fr.includes(normalizedDeferredFilter) ||
         en.includes(normalizedDeferredFilter) ||
-        ar.includes(trimmedDeferredFilter)
+        ar.includes(trimmedDeferredFilter) ||
+        aliases.includes(normalizedDeferredFilter)
       );
     });
     return list.sort((a, b) => {
       const aFav = favorites.has(a.id) ? 1 : 0;
       const bFav = favorites.has(b.id) ? 1 : 0;
       if (aFav !== bFav) return bFav - aFav;
+      const aPriority = Number(a.cataloguePriority || 0);
+      const bPriority = Number(b.cataloguePriority || 0);
+      if (aPriority !== bPriority) return bPriority - aPriority;
       return String(a.nameFr || a.nameEn || a.name).localeCompare(
         String(b.nameFr || b.nameEn || b.name),
       );
@@ -842,8 +849,9 @@ export default function HomePage({ lowPerfMode = false }) {
     notes: { fr: "Notes", en: "Notes", ar: "ملاحظات" },
     suggest: { fr: "Suggestions", en: "Suggest", ar: "اقتراحات" },
   };
-  const t = (k) =>
-    T[k]?.[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"] ?? k;
+  const t = (key) =>
+    T[key]?.[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"] ?? key;
+  const translate = useCallback((key) => i18nT(key, lang), [lang]);
 
   const activeCollectionCount =
     activeTab === "surah"
@@ -863,31 +871,8 @@ export default function HomePage({ lowPerfMode = false }) {
             ? "audio items"
             : "contenus audio";
 
-  const shouldReduceHomeFx = lowPerfMode;
-
   return (
     <div className="hp-wrapper">
-      {/* Orbes de fond (hors hero) */}
-      {!shouldReduceHomeFx && (
-        <div
-          className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
-          aria-hidden="true"
-        >
-          <div
-            className="absolute -top-28 left-[6%] h-72 w-72 rounded-full blur-[110px] motion-safe:animate-pulse [animation-duration:8s]"
-            style={{ background: "radial-gradient(circle, rgba(var(--primary-rgb,11,98,53),0.30) 0%, transparent 70%)" }}
-          />
-          <div
-            className="absolute top-[18%] -right-28 h-80 w-80 rounded-full blur-[120px] motion-safe:animate-pulse [animation-duration:11s]"
-            style={{ background: "radial-gradient(circle, rgba(var(--primary-rgb,11,98,53),0.16) 0%, transparent 70%)" }}
-          />
-          <div
-            className="absolute -bottom-32 left-[30%] h-96 w-96 rounded-full blur-[130px] motion-safe:animate-pulse [animation-duration:9s]"
-            style={{ background: "radial-gradient(circle, rgba(var(--primary-rgb,11,98,53),0.22) 0%, transparent 70%)" }}
-          />
-        </div>
-      )}
-
       {/* ── Section héro ──────────────────────────────────────────────── */}
       <HeroSection
         lang={lang}
@@ -895,7 +880,6 @@ export default function HomePage({ lowPerfMode = false }) {
         now={now}
         riwayaLabel={riwayaLabel}
         greeting={greeting}
-        shouldReduceHomeFx={shouldReduceHomeFx}
         hasReadingHistory={hasReadingHistory}
         primaryReadingCtaLabel={primaryReadingCtaLabel}
         surahLabel={surahLabel}
@@ -951,7 +935,7 @@ export default function HomePage({ lowPerfMode = false }) {
           setSelectedReciterId={setSelectedReciterId}
           resumeState={resumeState}
           resumeListening={resumeListening}
-          t={(k) => i18nT(k, lang)}
+          t={translate}
         />
       </div>
 
@@ -959,7 +943,7 @@ export default function HomePage({ lowPerfMode = false }) {
       {selectedReciter && typeof document !== "undefined"
         ? createPortal(
             <div
-              className="reciter-detail-overlay fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-in fade-in duration-300"
+              className="reciter-detail-overlay fixed inset-0 z-40 flex items-center justify-center p-4"
               onClick={() => setSelectedReciterId(null)}
             >
               <Suspense fallback={<ReciterDetailFallback lang={lang} />}>
