@@ -47,14 +47,20 @@
     0 16px 48px rgba(var(--mushaf-shadow-rgb), 0.14) !important;
 }
 
-/* Aligner le header sourate + guide tajwid sur la largeur de la carte mushaf (760px) */
+/* Aligner les contrôles du reader sur la largeur de la carte mushaf (760px) — tous appareils */
 .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .qc-surah-header-wrap,
-.app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .reader-toolbar,
-.app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .mode-nav,
+.app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .reader-context-card,
+.app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .reader-control-deck,
+.app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .reader-mode-nav,
 .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .warsh-notice {
   width: min(100%, 760px) !important;
   max-width: 760px !important;
   margin-inline: auto !important;
+}
+/* reader-command-bar est enfant de reader-control-deck — forcer aussi sa largeur max */
+.app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .reader-control-deck .reader-command-bar {
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 .app-root[data-view="reading"] .quran-display--platform:has(.quran-mode-pane--mushaf) > .tajweed-legend {
