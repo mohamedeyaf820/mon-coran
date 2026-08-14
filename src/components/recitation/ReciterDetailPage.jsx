@@ -74,7 +74,11 @@ export default function ReciterDetailPage({
     >
       <div className="reciter-detail__accent" aria-hidden="true" />
 
-      <header className="rd-sticky-head">
+      <header
+        className="rd-sticky-head"
+        style={{ "--reciter-avatar-gradient": visual.avatar?.gradient }}
+      >
+        <div className="rd-hero-bg" aria-hidden="true" />
         <button
           className={cn("reciter-detail__close", isRtl ? "is-rtl" : "")}
           type="button"
