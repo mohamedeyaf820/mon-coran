@@ -1,0 +1,431 @@
+/*
+ * reader-premium.css
+ * Premium UI/UX redesign for all reading modes.
+ * Inspired by Quran.com, Tarteel, Muslim Pro, iQuran.
+ * Loaded last in readerStyles.js — overrides previous layers.
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   1. SURAH HEADER CARD (srh-root)
+   ─ Deeper glass, richer gradient, premium badges
+   ═══════════════════════════════════════════════════════════════ */
+
+.srh-root {
+    --srh-shadow:
+        0 20px 48px color-mix(in srgb, var(--text-primary) 10%, transparent),
+        0 4px 12px color-mix(in srgb, var(--primary) 8%, transparent),
+        inset 0 1px 0 color-mix(in srgb, #fff 45%, transparent) !important;
+    border-color: color-mix(in srgb, var(--primary) 22%, var(--border)) !important;
+    background:
+        radial-gradient(ellipse at 8% -30%, color-mix(in srgb, var(--primary) 14%, transparent) 0%, transparent 52%),
+        radial-gradient(ellipse at 92% 110%, color-mix(in srgb, var(--primary) 7%, transparent) 0%, transparent 45%),
+        color-mix(in srgb, var(--srh-surface, var(--bg-card)) 96%, transparent) !important;
+    backdrop-filter: blur(24px) saturate(135%) !important;
+}
+
+/* Arabic surah name: slightly larger, richer filter */
+.srh-arabic {
+    font-size: clamp(2.1rem, 3.8vw, 2.85rem) !important;
+    filter: drop-shadow(0 4px 10px color-mix(in srgb, var(--primary) 18%, transparent)) !important;
+}
+
+/* Title: tighter tracking */
+.srh-title {
+    font-size: clamp(1.22rem, 2.2vw, 1.6rem) !important;
+    letter-spacing: -0.03em !important;
+}
+
+/* Badges: slightly more rounded, subtler */
+.srh-badge {
+    border-radius: 999px !important;
+    font-size: 0.6rem !important;
+    letter-spacing: 0.085em !important;
+    padding: 0.2rem 0.6rem !important;
+}
+
+/* Play button: richer gradient, stronger shadow */
+.srh-play-btn {
+    background: linear-gradient(148deg,
+        color-mix(in srgb, var(--primary) 92%, #34d399 8%),
+        var(--primary)) !important;
+    box-shadow:
+        0 8px 20px color-mix(in srgb, var(--primary) 32%, transparent),
+        0 2px 6px color-mix(in srgb, var(--primary) 20%, transparent) !important;
+}
+.srh-play-btn:hover:not(:disabled) {
+    box-shadow:
+        0 12px 28px color-mix(in srgb, var(--primary) 40%, transparent),
+        0 4px 8px color-mix(in srgb, var(--primary) 22%, transparent) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Info btn: more visible border */
+.srh-info-btn {
+    border-color: color-mix(in srgb, var(--primary) 30%, var(--border)) !important;
+}
+
+/* Mode pills: more prominent active state */
+.srh-pill--active {
+    background: var(--bg-card) !important;
+    box-shadow:
+        0 4px 12px color-mix(in srgb, var(--text-primary) 9%, transparent),
+        0 1px 3px rgba(0,0,0,0.08) !important;
+    color: var(--primary) !important;
+    font-weight: 800 !important;
+}
+
+/* Fullscreen trigger: show with a little more style */
+.srh-root .srh-info-btn--fullscreen {
+    gap: 0.36rem !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2. LIST MODE — AYAH CARDS (qc-list-card)
+   ─ Cleaner separation, more readable, Quran.com-inspired
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Container: wrap in a rounded card shell */
+.app-root[data-view="reading"] .quran-display--platform .qc-reading-view > div {
+    border-radius: 18px !important;
+    border: 1px solid color-mix(in srgb, var(--border) 55%, transparent) !important;
+    box-shadow:
+        0 4px 24px rgba(0,0,0,0.05),
+        0 1px 4px rgba(0,0,0,0.03) !important;
+    overflow: hidden !important;
+}
+
+/* Each ayah row: more vertical breathing room */
+.app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {
+    padding: clamp(0.9rem, 1.5vw, 1.25rem) clamp(1rem, 2vw, 1.5rem) !important;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 45%, transparent) !important;
+    transition: background 180ms ease !important;
+}
+
+.app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card:last-child {
+    border-bottom: none !important;
+}
+
+/* Hover: very subtle tint */
+.app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card:hover {
+    background: rgba(var(--primary-rgb), 0.025) !important;
+}
+
+/* Playing state: left gold/primary accent bar + warm wash */
+.app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-playing,
+.app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-active {
+    background: rgba(var(--primary-rgb), 0.05) !important;
+    border-inline-start: 3px solid var(--primary) !important;
+    padding-inline-start: calc(clamp(1rem, 2vw, 1.5rem) - 3px) !important;
+    box-shadow: inset 4px 0 12px rgba(var(--primary-rgb), 0.08) !important;
+}
+
+/* Verse number badge: circular, premium */
+.app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference.qc-list-card__reference {
+    width: 2.6rem !important;
+    min-width: 2.6rem !important;
+    height: 2.6rem !important;
+    min-height: 2.6rem !important;
+    border-radius: 50% !important;
+    border: 1.5px solid var(--border) !important;
+    background: var(--bg-secondary) !important;
+    color: var(--text-muted) !important;
+    font-size: 0.68rem !important;
+    font-weight: 750 !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
+    transition: all 200ms ease !important;
+}
+
+.app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference:is(.is-active, .is-playing) {
+    border-color: var(--primary) !important;
+    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 80%, #22c55e)) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3) !important;
+    transform: scale(1.06) !important;
+}
+
+/* Arabic text: richer line height */
+.app-root[data-view="reading"] .quran-display--platform .qc-list-card .qc-ayah-text-ar {
+    line-height: 2.15 !important;
+    word-spacing: 0.05em !important;
+}
+
+/* Transliteration: refined italic serif */
+.app-root[data-view="reading"] .quran-display--platform
+  :is(.qc-ayah-transliteration, .transliteration-text, .ayah-transliteration) {
+    border-left: 2px solid rgba(var(--primary-rgb), 0.3) !important;
+    color: color-mix(in srgb, var(--text-secondary) 80%, var(--primary) 20%) !important;
+    margin: 0.55rem 0 0.35rem !important;
+    padding: 0.1rem 0.2rem 0.1rem 0.85rem !important;
+}
+
+/* Translation paragraph: slightly warmer, better line height */
+.app-root[data-view="reading"] .quran-display--platform .qc-list-card p {
+    font-size: clamp(0.95rem, 0.9rem + 0.22vw, 1.06rem) !important;
+    line-height: 1.88 !important;
+    color: var(--text-secondary) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3. MUSHAF PAGE (page view)
+   ─ Deeper shadow, warm playing highlight, premium medallion
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Page wrapper: deeper, more premium shadow */
+.app-root[data-view="reading"] .mushaf-page-wrapper {
+    box-shadow:
+        0 24px 72px rgba(0, 0, 0, 0.14),
+        0 6px 20px rgba(0, 0, 0, 0.08),
+        0 1px 4px rgba(0, 0, 0, 0.06) !important;
+    border-radius: 8px !important;
+}
+
+/* Playing verse: warm amber highlight (like a real mushaf marker) */
+.app-root[data-view="reading"] .cpv-verse--playing,
+.app-root[data-view="reading"] .quran-display--platform .cpv-verse--playing {
+    background: rgba(var(--color-gold-rgb, 197, 160, 75), 0.13) !important;
+    border-radius: 3px !important;
+    padding: 0.05em 0.1em !important;
+    color: color-mix(in srgb, var(--text-primary) 55%, var(--primary) 45%) !important;
+    text-shadow: 0 0 16px rgba(var(--primary-rgb), 0.25) !important;
+}
+
+/* Active verse (selected, not playing): softer tint */
+.app-root[data-view="reading"] .cpv-verse--active,
+.app-root[data-view="reading"] .quran-display--platform .cpv-verse--active {
+    background: rgba(var(--primary-rgb), 0.07) !important;
+    border-radius: 3px !important;
+    padding: 0.05em 0.08em !important;
+}
+
+/* Page number medallion: richer glow */
+.app-root[data-view="reading"] .mushaf-page-number-medallion {
+    box-shadow:
+        0 0 0 3px rgba(var(--primary-rgb), 0.12),
+        0 0 0 6px rgba(var(--primary-rgb), 0.05),
+        0 4px 14px rgba(0, 0, 0, 0.1) !important;
+    font-weight: 700 !important;
+}
+
+/* Translation panel below mushaf page: cleaner */
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-translation-row.is-playing {
+    background: color-mix(in srgb, var(--primary) 7%, transparent) !important;
+    border-radius: 6px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   4. PAGE DIVIDER (PAGE N chip)
+   ─ More polished separator between pages in list mode
+   ═══════════════════════════════════════════════════════════════ */
+
+.app-root[data-view="reading"] [class*="page-divider"],
+.app-root[data-view="reading"] [class*="page-chip"],
+.app-root[data-view="reading"] .verse-page-chip,
+.app-root[data-view="reading"] .surah-page-divider {
+    border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border)) !important;
+    border-radius: 999px !important;
+    background: color-mix(in srgb, var(--primary) 6%, var(--bg-card)) !important;
+    color: var(--primary) !important;
+    font-weight: 750 !important;
+    font-size: 0.67rem !important;
+    letter-spacing: 0.08em !important;
+    padding: 0.28rem 0.85rem !important;
+    box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.1) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   5. NAVIGATION BAR (prev / current / next)
+   ─ More polished, stronger visual identity
+   ═══════════════════════════════════════════════════════════════ */
+
+.quran-display--platform .reader-mode-nav.quran-nav {
+    border-radius: 18px !important;
+    border: 1px solid color-mix(in srgb, var(--border) 65%, var(--primary) 35%) !important;
+    box-shadow:
+        0 6px 24px rgba(0,0,0,0.06),
+        0 1px 4px rgba(0,0,0,0.04) !important;
+    padding: 0.42rem !important;
+    background:
+        linear-gradient(120deg, rgba(var(--primary-rgb), 0.03) 0%, transparent 60%),
+        var(--bg-card) !important;
+}
+
+.quran-display--platform .reader-mode-nav__button {
+    border-radius: 13px !important;
+    font-weight: 720 !important;
+    padding: 0.55rem 0.8rem !important;
+    gap: 0.5rem !important;
+}
+
+.quran-display--platform .reader-mode-nav__button:hover:not(:disabled) {
+    background: rgba(var(--primary-rgb), 0.09) !important;
+    color: var(--primary) !important;
+    transform: none !important;
+}
+
+.quran-display--platform .reader-mode-nav__indicator {
+    border-radius: 12px !important;
+    background: rgba(var(--primary-rgb), 0.08) !important;
+    border-color: rgba(var(--primary-rgb), 0.2) !important;
+    font-weight: 750 !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.01em !important;
+    padding: 0.42rem 1.1rem !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   6. READER SOURCE STATUS PILLS
+   ─ Cleaner, more premium data-source indicators
+   ═══════════════════════════════════════════════════════════════ */
+
+.reader-source-status > span {
+    border-radius: 999px !important;
+    background: color-mix(in srgb, var(--bg-card) 88%, var(--primary) 5%) !important;
+    border-color: color-mix(in srgb, var(--border) 60%, transparent) !important;
+    font-size: 0.65rem !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   7. AYAH STUDY PANEL (tabs: Tafsir, Notes, Compare…)
+   ─ Premium tabs with smooth active state
+   ═══════════════════════════════════════════════════════════════ */
+
+.ayah-study-tabs {
+    gap: 0.2rem !important;
+    padding: 0.22rem !important;
+    border-radius: 12px !important;
+    background: var(--bg-secondary) !important;
+    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent) !important;
+}
+
+.ayah-study-tab {
+    border-radius: 9px !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    transition: all 160ms ease !important;
+}
+
+.ayah-study-tab[aria-selected="true"] {
+    background: var(--bg-card) !important;
+    color: var(--primary) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+}
+
+.ayah-study-content {
+    border-radius: 0 0 14px 14px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   8. FULLSCREEN MUSHAF OVERLAY
+   ─ More immersive, darker veil, page shadow
+   ═══════════════════════════════════════════════════════════════ */
+
+.fullscreen-mushaf-overlay,
+[class*="fullscreen-overlay"],
+[class*="fullscreen-mushaf"] {
+    background: rgba(8, 12, 20, 0.96) !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+.fullscreen-mushaf-overlay .mushaf-page-wrapper,
+[class*="fullscreen-mushaf"] .mushaf-page-wrapper {
+    box-shadow:
+        0 40px 100px rgba(0, 0, 0, 0.5),
+        0 8px 28px rgba(0, 0, 0, 0.3) !important;
+    border-radius: 8px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   9. WAQF / VERSE-STOP MEDALLION
+   ─ Richer gold ring
+   ═══════════════════════════════════════════════════════════════ */
+
+.verse-stop-medallion {
+    filter: drop-shadow(0 1px 3px rgba(197, 160, 75, 0.35)) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   10. DARK MODE OVERRIDES
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .app-root[data-view="reading"] .qc-reading-view > div {
+    border-color: rgba(148, 163, 184, 0.08) !important;
+    box-shadow: none !important;
+    background: rgba(255,255,255,0.02) !important;
+}
+
+[data-theme="dark"] .app-root[data-view="reading"] .mushaf-page-wrapper {
+    box-shadow:
+        0 24px 72px rgba(0, 0, 0, 0.45),
+        0 6px 20px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="dark"] .app-root[data-view="reading"] .cpv-verse--playing {
+    background: rgba(var(--primary-rgb), 0.15) !important;
+    color: color-mix(in srgb, #fbf7ec 60%, var(--primary) 40%) !important;
+}
+
+[data-theme="dark"] .app-root[data-view="reading"] .qc-list-card.qc-list-card.is-playing {
+    background: rgba(var(--primary-rgb), 0.08) !important;
+}
+
+[data-theme="dark"] .srh-root {
+    background:
+        radial-gradient(ellipse at 8% -30%, color-mix(in srgb, var(--primary) 18%, transparent) 0%, transparent 52%),
+        radial-gradient(ellipse at 92% 110%, color-mix(in srgb, var(--primary) 9%, transparent) 0%, transparent 45%),
+        color-mix(in srgb, var(--bg-card) 94%, transparent) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   11. MOBILE REFINEMENTS (≤ 760px)
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 760px) {
+    .app-root[data-view="reading"] .quran-display--platform .qc-reading-view > div {
+        border-radius: 14px !important;
+    }
+
+    .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {
+        padding: 0.75rem 0.85rem !important;
+    }
+
+    .app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference.qc-list-card__reference {
+        width: 2.25rem !important;
+        min-width: 2.25rem !important;
+        height: 2.25rem !important;
+        min-height: 2.25rem !important;
+        font-size: 0.65rem !important;
+    }
+
+    .quran-display--platform .reader-mode-nav.quran-nav {
+        border-radius: 14px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .srh-arabic {
+        font-size: clamp(1.9rem, 9vw, 2.2rem) !important;
+    }
+
+    .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {
+        padding: 0.6rem 0.7rem !important;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   12. SMOOTH TRANSITIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.qc-list-card__reference,
+.srh-play-btn,
+.srh-info-btn,
+.srh-pill,
+.srh-toggle,
+.reader-mode-nav__button,
+.reader-mode-nav__indicator {
+    transition:
+        background 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease !important;
+}
