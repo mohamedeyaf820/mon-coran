@@ -334,9 +334,10 @@
 }
 
 .reciter-detail__sources {
+    grid-column: 1 / -1;
     display: grid;
     gap: 0.4rem;
-    margin-top: 0.75rem;
+    margin-top: 1.25rem;
     border: 1px solid var(--border);
     border-radius: 15px;
     background: var(--theme-bg-alt);
