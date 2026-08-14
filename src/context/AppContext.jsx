@@ -460,7 +460,9 @@ export function AppProvider({ children }) {
     selectorListenersRef.current.forEach((listener) => listener());
   }, [state]);
 
-  // Create persistent settings object - memoized to avoid unnecessary recalculations
+  // Persistent settings split in two: stable settings (user preferences) and
+  // lastPosition (updated on every ayah scroll). Separating them prevents the
+  // debounced save from re-scheduling on every scroll.
   const persistentSettings = useMemo(() => ({
     lang: state.lang,
     theme: state.theme,
@@ -501,12 +503,6 @@ export function AppProvider({ children }) {
     dayTheme: state.dayTheme,
     karaokeFollow: state.karaokeFollow,
     surahRepeatCount: state.surahRepeatCount,
-    lastPosition: {
-      surah: state.currentSurah,
-      ayah: state.currentAyah,
-      page: state.currentPage,
-      juz: state.currentJuz,
-    },
   }), [
     state.lang,
     state.theme,
@@ -546,16 +542,20 @@ export function AppProvider({ children }) {
     state.dayTheme,
     state.karaokeFollow,
     state.surahRepeatCount,
-    state.currentSurah,
-    state.currentAyah,
-    state.currentPage,
-    state.currentJuz,
   ]);
 
   // Persist settings to localStorage on change (debounced — 500ms)
   useEffect(() => {
-    persistentSettingsRef.current = persistentSettings;
-  }, [persistentSettings]);
+    persistentSettingsRef.current = {
+      ...persistentSettings,
+      lastPosition: {
+        surah: state.currentSurah,
+        ayah: state.currentAyah,
+        page: state.currentPage,
+        juz: state.currentJuz,
+      },
+    };
+  });
 
   const flushSettings = useCallback(() => {
     if (saveTimerRef.current) {
@@ -570,7 +570,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      saveSettings(persistentSettings);
+      saveSettings(persistentSettingsRef.current);
       saveTimerRef.current = null;
     }, 500);
     return () => {
