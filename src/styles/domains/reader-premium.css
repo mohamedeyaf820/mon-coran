@@ -412,11 +412,13 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   12. PERFORMANCE: remove GPU-heavy effects that run on every scroll frame
+   12. PERFORMANCE: remove GPU-heavy backdrop-filter from scroll elements
    ─ backdrop-filter on sticky/scroll-adjacent elements is the #1 cause
      of scroll jank on mid-range devices. Replace with solid semi-opaque bg.
-   ─ filter:drop-shadow on per-ayah medallions forces N composite layers.
-   ─ text-shadow on Arabic text forces expensive ligature re-rasterisation.
+   ─ NOTE: filter:drop-shadow on verse medallions is intentionally KEPT —
+     removing it breaks the radial-gradient ring compositing (black dots).
+   ─ NOTE: text-shadow on Arabic text is intentionally KEPT — the QPC Hafs
+     font uses text rendering properties for correct glyph display.
    ═══════════════════════════════════════════════════════════════ */
 
 /* Sticky reader toolbar: solid bg, no backdrop-filter */
@@ -434,18 +436,6 @@
 .quran-display--platform .warsh-notice {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-}
-
-/* Verse-stop medallion: drop-shadow → plain box-shadow on the ring, no filter */
-.app-root .verse-stop-medallion::before,
-.app-root .ayah-marker-wrap.verse-stop-medallion::before,
-.app-root .mp-ayah-marker::before {
-    filter: none !important;
-}
-
-/* Arabic text: remove text-shadow (forces ligature re-raster per glyph) */
-.quran-display--platform .qc-ayah-text-ar {
-    text-shadow: none !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
