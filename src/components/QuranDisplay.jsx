@@ -71,6 +71,11 @@ export default function QuranDisplay() {
     shallowEqual,
   );
   const [activeAyah, setActiveAyah] = useState(null);
+
+  // Preload fullscreen bundle in background so first open is instant
+  useEffect(() => {
+    import("./QuranDisplay/FullscreenMushafOverlay");
+  }, []);
   const {
     currentAyah,
     currentJuz,
@@ -225,11 +230,13 @@ export default function QuranDisplay() {
         : currentAyahData?.page || pageGroups[0]?.page || currentPage,
     );
 
+    // Open overlay immediately — don't block on data fetch
+    view.setFullPage(true);
+
     if (displayMode !== "page") {
       await prepareReadingTarget("page", targetPage);
       dispatch({ type: "NAVIGATE_PAGE", payload: { page: targetPage } });
     }
-    view.setFullPage(true);
   }, [
     ayahs,
     currentAyah,

@@ -5,7 +5,7 @@ export const modePaneShellClass =
 
 export function createDisplayClasses({ focusReading, riwaya }) {
   const readingChromeFrameClass = cn(
-    "w-full max-w-full rounded-[1.35rem] border shadow-[var(--quran-platform-shadow)] backdrop-blur-[18px] [backdrop-filter:blur(18px)_saturate(135%)] max-[640px]:rounded-[1.05rem]",
+    "w-full max-w-full rounded-[1.35rem] border shadow-[var(--quran-platform-shadow)] max-[640px]:rounded-[1.05rem]",
     focusReading && "min-[901px]:mx-auto min-[901px]:max-w-[960px]",
   );
   const readingChromeSurfaceClass = cn(

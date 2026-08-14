@@ -412,7 +412,44 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   12. SMOOTH TRANSITIONS
+   12. PERFORMANCE: remove GPU-heavy effects that run on every scroll frame
+   ─ backdrop-filter on sticky/scroll-adjacent elements is the #1 cause
+     of scroll jank on mid-range devices. Replace with solid semi-opaque bg.
+   ─ filter:drop-shadow on per-ayah medallions forces N composite layers.
+   ─ text-shadow on Arabic text forces expensive ligature re-rasterisation.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Sticky reader toolbar: solid bg, no backdrop-filter */
+.app-root .quran-display--platform .reader-toolbar {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: color-mix(in srgb, var(--reader-surface, var(--bg-card)) 97%, transparent) !important;
+}
+
+/* Nav chrome (quran-nav, page-header-bar, etc.): no backdrop-filter */
+.quran-display--platform .quran-nav,
+.quran-display--platform .page-header-bar,
+.quran-display--platform .chunk-nav-bar,
+.quran-display--platform .mushaf-layout-toggle-bar,
+.quran-display--platform .warsh-notice {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Verse-stop medallion: drop-shadow → plain box-shadow on the ring, no filter */
+.app-root .verse-stop-medallion::before,
+.app-root .ayah-marker-wrap.verse-stop-medallion::before,
+.app-root .mp-ayah-marker::before {
+    filter: none !important;
+}
+
+/* Arabic text: remove text-shadow (forces ligature re-raster per glyph) */
+.quran-display--platform .qc-ayah-text-ar {
+    text-shadow: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   14. SMOOTH TRANSITIONS
    ═══════════════════════════════════════════════════════════════ */
 
 .qc-list-card__reference,
