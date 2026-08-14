@@ -148,20 +148,25 @@ class AudioService {
     this._endListeners = [];
     this._pauseListeners = [];
     this._ayahChangeListeners = [];
+    this._rafId = null; // RAF guard — caps UI updates at display refresh rate
 
     // Wire up native events (store bound refs for cleanup)
     this._boundEnded = () => this._handleEnded();
     this._boundTimeUpdate = () => {
-      this._syncSurahStreamAyah(
-        this.audio.currentTime,
-        this.audio.duration,
-      );
-      this.onTimeUpdate?.(this.audio.currentTime, this.audio.duration);
-      this._captureLatencySample(this.audio.currentTime);
-      // Notify extra listeners
-      for (const fn of this._timeUpdateListeners) {
-        fn(this.audio.currentTime, this.audio.duration);
-      }
+      // timeupdate fires 4-17×/sec; cap React re-renders at ~60fps with RAF
+      if (this._rafId) return;
+      this._rafId = requestAnimationFrame(() => {
+        this._rafId = null;
+        this._syncSurahStreamAyah(
+          this.audio.currentTime,
+          this.audio.duration,
+        );
+        this.onTimeUpdate?.(this.audio.currentTime, this.audio.duration);
+        this._captureLatencySample(this.audio.currentTime);
+        for (const fn of this._timeUpdateListeners) {
+          fn(this.audio.currentTime, this.audio.duration);
+        }
+      });
     };
     this._boundError = (e) => {
       // Ignore errors from clearing src
@@ -1321,6 +1326,10 @@ class AudioService {
   }
 
   destroy() {
+    if (this._rafId) {
+      cancelAnimationFrame(this._rafId);
+      this._rafId = null;
+    }
     this._clearLoadTimeout();
     this.stop();
     if (this._preloadAudio) {

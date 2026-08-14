@@ -1,3 +1,14 @@
+/* Primary Hafs font — mirrors the JS FontFace registration so the
+   preloaded bytes in index.html are usable by the CSS cascade immediately,
+   without waiting for fontLoader.js to execute. */
+@font-face {
+  font-family: "QPC Hafs";
+  src: url("/fonts/uthmanic-hafs-v18.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 @font-face {
   font-family: "Scheherazade New";
   src: url("/fonts/scheherazade-new-400.woff2") format("woff2");

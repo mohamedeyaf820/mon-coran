@@ -35,9 +35,8 @@ export default function ReciterHero({ reciter, lang }) {
             className="reciter-photo reciter-hero__avatar absolute inset-0 rounded-full border-2 border-primary/20 object-cover"
             style={{ objectPosition: visual.focalPoint }}
             onError={() => setImgError(true)}
-            loading="eager"
+            loading="lazy"
             decoding="async"
-            fetchpriority="high"
             referrerPolicy="no-referrer"
           />
         ) : null}

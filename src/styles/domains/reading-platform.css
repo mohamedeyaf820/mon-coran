@@ -5307,6 +5307,46 @@ html body .app-root[data-view="reading"] .quran-display--platform .tajweed-legen
     }
 }
 
+/* 414px — iPhone XR / 11 / XS Max / 14 Plus / Pro Max */
+@media (max-width: 414px) {
+    .quran-display--platform .mfp-reader-bar__identity span,
+    .quran-display--platform .mfp-flow-switch span,
+    .quran-display--platform .mfp-zoom-controls > span {
+        display: none;
+    }
+
+    .quran-display--platform .mfp-navigation__center {
+        gap: 0.28rem;
+    }
+
+    .quran-display--platform .mfp-flow-switch,
+    .quran-display--platform .mfp-zoom-controls {
+        gap: 0.12rem;
+        padding: 0.14rem;
+    }
+
+    .quran-display--platform .mfp-quran-flow {
+        padding-inline: 0.6rem;
+        line-height: 2.05;
+    }
+
+    .quran-display--platform .mfp-context-navigation__arabic {
+        display: none;
+    }
+
+    .quran-display--platform .mfp-context-navigation__target {
+        padding-inline: 0.45rem 0.36rem;
+    }
+
+    .quran-display--platform .mfp-context-navigation__copy strong {
+        font-size: 0.67rem;
+    }
+
+    .quran-display--platform .mfp-context-navigation__chevron {
+        width: 0.74rem;
+    }
+}
+
 body.mfp-open > .ayah-actions-modal--fullscreen,
 body.mfp-open > .audio-player-modal--simple {
     z-index: 3400 !important;
