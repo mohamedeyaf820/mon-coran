@@ -334,6 +334,53 @@
     border-radius: 8px !important;
 }
 
+/* ─── Verse marker size fix for the fullscreen portal ───────────
+   .mfp-portal-root is created via createPortal() directly on <body>,
+   OUTSIDE .app-root. The global rule ".ayat-marker { width:1em; height:1em;
+   display:inline-flex }" applies unchallenged. The corrective override
+   "html body .app-root .native-ayah-marker { width:auto }" requires an
+   .app-root ancestor and never matches inside the portal.
+   For fonts that emit U+06DD + multiple digit chars (Scheherazade New,
+   Amiri Quran, QCF V2/V4, IndoPak), this clips all characters into a
+   1em×1em box, producing the "..." artefact the user sees in fullscreen.
+   QPC Hafs / QPC Warsh are unaffected because their OpenType ligatures
+   collapse the full digit sequence into one monolithic rosette glyph.
+   Fix: mirror the .app-root override for .mfp-portal-root. */
+.mfp-portal-root .native-ayah-marker {
+    display: inline-block !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    transform: none !important;
+    vertical-align: -0.08em !important;
+    line-height: 1 !important;
+}
+
+.mfp-portal-root .native-ayah-marker::before,
+.mfp-portal-root .native-ayah-marker::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Ensure Arabic OpenType features (ligatures, contextual alternates, marks)
+   are active in the portal. riwaya-fonts.css sets font-feature-settings only
+   on .app-root descendants; since the portal is outside .app-root these must
+   be declared here so rosette ligatures and diacritic placement work. */
+.mfp-portal-root .mfp-quran-flow,
+.mfp-portal-root .mfp-ayahs-flow {
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1 !important;
+    font-kerning: normal !important;
+    text-rendering: optimizeLegibility !important;
+    font-synthesis: none !important;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    9. WAQF / VERSE-STOP MEDALLION
    ─ Richer gold ring
