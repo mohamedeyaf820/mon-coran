@@ -118,7 +118,7 @@
     z-index: 0;
 }
 
-.rd-sticky-head > *:not(.rd-hero-bg) {
+.rd-sticky-head > *:not(.rd-hero-bg, .reciter-detail__close) {
     position: relative;
     z-index: 1;
 }
