@@ -118,50 +118,6 @@ export default function ReciterDetailPage({
             </h3>
             <ReciterBioCollapse lang={lang} reciter={reciter} />
           </div>
-
-          <section
-            className="reciter-detail__sources"
-            aria-label={labelFor(lang, "Sources", "Sources", "المصادر")}
-          >
-            <h3>
-              <BookOpen className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
-              {labelFor(lang, "Sources vérifiées", "Verified sources", "المصادر المتحققة")}
-            </h3>
-            <div className="reciter-detail__source-links">
-              {profileSources.map((source) => (
-                <a
-                  key={source.url}
-                  href={source.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  title={source.url}
-                >
-                  {source.provider}
-                </a>
-              ))}
-            </div>
-            {sourceInfo ? (
-              <div className="reciter-detail__source-row">
-                <RadioTower className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
-                <span>{labelFor(lang, "Source audio", "Audio source", "مصدر الصوت")}</span>
-                <strong>{sourceInfo.label}</strong>
-              </div>
-            ) : null}
-            {visual.attribution ? (
-              <div className="reciter-detail__source-row">
-                <ImageIcon className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
-                <span>{labelFor(lang, "Portrait", "Portrait", "الصورة")}</span>
-                <a
-                  href={visual.attribution.url}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {visual.attribution.provider}
-                </a>
-              </div>
-            ) : null}
-          </section>
-
         </aside>
 
         <main className="reciter-detail__library">
@@ -194,6 +150,49 @@ export default function ReciterDetailPage({
             onOpenSurahIntent={onOpenSurahIntent}
           />
         </main>
+
+        <section
+          className="reciter-detail__sources"
+          aria-label={labelFor(lang, "Sources", "Sources", "المصادر")}
+        >
+          <h3>
+            <BookOpen className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
+            {labelFor(lang, "Sources vérifiées", "Verified sources", "المصادر المتحققة")}
+          </h3>
+          <div className="reciter-detail__source-links">
+            {profileSources.map((source) => (
+              <a
+                key={source.url}
+                href={source.url}
+                target="_blank"
+                rel="noreferrer"
+                title={source.url}
+              >
+                {source.provider}
+              </a>
+            ))}
+          </div>
+          {sourceInfo ? (
+            <div className="reciter-detail__source-row">
+              <RadioTower className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
+              <span>{labelFor(lang, "Source audio", "Audio source", "مصدر الصوت")}</span>
+              <strong>{sourceInfo.label}</strong>
+            </div>
+          ) : null}
+          {visual.attribution ? (
+            <div className="reciter-detail__source-row">
+              <ImageIcon className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
+              <span>{labelFor(lang, "Portrait", "Portrait", "الصورة")}</span>
+              <a
+                href={visual.attribution.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {visual.attribution.provider}
+              </a>
+            </div>
+          ) : null}
+        </section>
       </div>
     </div>
   );
