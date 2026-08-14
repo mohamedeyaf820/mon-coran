@@ -10,7 +10,11 @@ import {
   Play,
   SlidersHorizontal,
 } from "lucide-react";
-import { useApp } from "../../context/AppContext";
+import {
+  shallowEqual,
+  useAppActions,
+  useAppSelector,
+} from "../../context/AppContext";
 import { cn } from "../../lib/utils";
 import audioService from "../../services/audioService";
 import ArabicFontControls from "../ArabicFontControls";
@@ -43,7 +47,7 @@ export default function ReadingToolbar({
   onToggleMushaf,
   onOpenFullscreen,
 }) {
-  const { state, set } = useApp();
+  const { set } = useAppActions();
   const {
     lang,
     mushafLayout,
@@ -51,7 +55,17 @@ export default function ReadingToolbar({
     showTranslation,
     isPlaying,
     readerTypographyOpen,
-  } = state;
+  } = useAppSelector(
+    (s) => ({
+      lang: s.lang,
+      mushafLayout: s.mushafLayout,
+      showTajwid: s.showTajwid,
+      showTranslation: s.showTranslation,
+      isPlaying: s.isPlaying,
+      readerTypographyOpen: s.readerTypographyOpen,
+    }),
+    shallowEqual,
+  );
 
   const showTypography = Boolean(readerTypographyOpen);
 

@@ -44,6 +44,18 @@ html body .app-root {
   overscroll-behavior-y: contain;
   scrollbar-gutter: stable;
   padding-bottom: var(--player-h, 0px);
+  /* Scroll perf: isolate layout/paint from the rest of the tree */
+  contain: layout style;
+}
+
+/* Touch scroll zones: prevent default pan-x gesture stealing on list areas */
+.app-root :is(.hp-wrapper, .duas-page, .quran-display--platform) {
+  touch-action: pan-y;
+}
+
+/* Smooth scroll on the main content anchor */
+#main-content {
+  scroll-behavior: smooth;
 }
 
 .app-root .app-view-shell {
