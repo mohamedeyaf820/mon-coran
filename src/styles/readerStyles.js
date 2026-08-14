@@ -7,3 +7,4 @@ import "./reading-ux-refonte.css";
 import "./surah-reader-header.css";
 import "./surah-info-panel.css";
 import "./surah-banner.css";
+import "./domains/reader-premium.css";
