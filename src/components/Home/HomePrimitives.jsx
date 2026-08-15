@@ -74,7 +74,6 @@ export const SurahCard = memo(function SurahCard({
   lang,
   isPlaying,
   viewMode,
-  animIndex = 0,
 }) {
   const primaryLabel = normalizeLatinSurahName(
     surah.en || surah.fr || surah.ar || "",
@@ -139,7 +138,7 @@ export const SurahCard = memo(function SurahCard({
     return (
       <div
         className={cn(
-          "hp-card hp-card--surah hp-card--list group relative flex items-center gap-3 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-bg-primary border border-border/50 hover:bg-bg-secondary hover:border-primary/30 transition-all cursor-pointer",
+          "hp-card hp-card--surah hp-card--list group relative flex items-center gap-3 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl bg-bg-primary border border-border/50 hover:bg-bg-secondary hover:border-primary/30 transition-[background-color,border-color] cursor-pointer",
           isActive && "bg-primary/5 border-primary/50",
           isPlaying && "playing bg-gold/5 border-gold/50",
         )}
@@ -157,7 +156,7 @@ export const SurahCard = memo(function SurahCard({
           onTouchStart={() => onIntent?.(surah.n)}
           aria-label={openAriaLabel}
         />
-        <span className="hp-card-num flex items-center justify-center w-8 h-8 shrink-0 rounded-full bg-bg-secondary text-[0.75rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-colors">
+        <span className="hp-card-num flex items-center justify-center w-8 h-8 shrink-0 rounded-full bg-bg-secondary text-[0.75rem] font-bold text-text-secondary border border-border/40 group-hover:text-primary group-hover:border-primary/30 transition-[color,border-color]">
           {surah.n}
         </span>
         <div className="hp-card-content flex flex-col flex-1 min-w-0">
@@ -174,7 +173,7 @@ export const SurahCard = memo(function SurahCard({
               className={cn(
                 "hp-card-type inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
                 surah.type === "Meccan"
-                  ? "bg-amber-400/10 text-amber-800 dark:text-amber-300"
+                  ? "bg-gold/10 text-gold"
                   : "bg-primary/10 text-primary",
               )}
             >
@@ -201,7 +200,7 @@ export const SurahCard = memo(function SurahCard({
         </div>
         <button
           className={cn(
-            "hp-card-play relative z-[2] flex items-center justify-center w-9 h-9 rounded-full bg-primary text-white transition-all ml-2 shrink-0 shadow-sm",
+            "hp-card-play relative z-[2] flex items-center justify-center w-9 h-9 rounded-full bg-primary text-white transition-[background-color] ml-2 shrink-0 shadow-sm",
             isPlaying && "bg-gold hover:bg-gold-bright",
           )}
           onClick={(e) => {
@@ -227,7 +226,7 @@ export const SurahCard = memo(function SurahCard({
   return (
     <div
       className={cn(
-        "hp-card hp-card--surah group relative flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border bg-bg-primary shadow-sm cursor-pointer transition-all duration-200 hover:-translate-y-[2px] hover:shadow-md overflow-hidden",
+        "hp-card hp-card--surah group relative flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl border bg-bg-primary shadow-sm cursor-pointer transition-[transform,box-shadow,border-color,background-color] duration-200 hover:-translate-y-[2px] hover:shadow-md overflow-hidden",
         isActive ? "border-primary/60 bg-primary/5 hover:border-primary/70" : "border-border hover:border-primary/40 hover:bg-bg-secondary",
         isPlaying && "playing",
       )}
@@ -280,7 +279,7 @@ export const SurahCard = memo(function SurahCard({
             className={cn(
               "hp-card-type inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
               isMeccan
-                ? "bg-amber-400/10 text-amber-800 dark:text-amber-300"
+                ? "bg-gold/10 text-gold"
                 : "bg-primary/10 text-primary",
             )}
           >
@@ -307,7 +306,7 @@ export const SurahCard = memo(function SurahCard({
 
       {/* Play button — always visible on touch, hover on desktop */}
       <button
-        className="hp-card-play absolute z-[2] right-1.5 sm:right-2 bottom-1.5 sm:bottom-2 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border transition-all"
+        className="hp-card-play absolute z-[2] right-1.5 sm:right-2 bottom-1.5 sm:bottom-2 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border transition-[background-color,border-color,color]"
         onClick={(e) => {
           e.stopPropagation();
           onPlay(surah.n);
@@ -328,7 +327,6 @@ export const JuzCard = memo(function JuzCard({
   isActive,
   lang,
   viewMode,
-  animIndex = 0,
 }) {
   const { juz, name } = juzData;
 
