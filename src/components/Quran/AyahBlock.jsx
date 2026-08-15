@@ -94,7 +94,7 @@ function AyahBlockComponent({
         "rounded-[1.5rem] border border-[color-mix(in_srgb,var(--border)_50%,transparent_50%)]",
         "bg-[var(--bg-card)]",
         "px-7 py-6",
-        "transition-all duration-300 ease-out outline-none",
+        "transition-[background-color,border-color,box-shadow,transform] duration-200 ease-out outline-none",
         "content-visibility-auto [contain-intrinsic-size:1px_200px]",
         "shadow-[0_4px_20px_rgba(0,0,0,0.02)]",
 

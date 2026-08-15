@@ -607,18 +607,22 @@ export default function FullscreenMushafOverlay({
         );
       }
       if (requestedPageRef.current != null) return;
+      // Capture viewport before the handler returns (currentTarget is nullified after dispatch)
       const viewport = event.currentTarget;
-      const activePage = viewport.querySelector(`[data-mfp-page="${currentPage}"]`);
-      if (!activePage) return;
-
-      const pageTop = activePage.offsetTop - viewport.scrollTop;
-      const pageBottom = pageTop + activePage.offsetHeight;
-      const triggerLine = viewport.clientHeight * 0.34;
-      if (pageBottom < triggerLine && currentPage < 604) {
-        changePage("next", true);
-      } else if (pageTop > viewport.clientHeight - triggerLine && currentPage > 1) {
-        changePage("previous", true);
-      }
+      // Defer layout reads to RAF so they don't block the scroll compositor thread
+      requestAnimationFrame(() => {
+        if (!viewport) return;
+        const activePage = viewport.querySelector(`[data-mfp-page="${currentPage}"]`);
+        if (!activePage) return;
+        const pageTop = activePage.offsetTop - viewport.scrollTop;
+        const pageBottom = pageTop + activePage.offsetHeight;
+        const triggerLine = viewport.clientHeight * 0.34;
+        if (pageBottom < triggerLine && currentPage < 604) {
+          changePage("next", true);
+        } else if (pageTop > viewport.clientHeight - triggerLine && currentPage > 1) {
+          changePage("previous", true);
+        }
+      });
     },
     [changePage, currentPage, hasAudioSession, revealPlayer],
   );

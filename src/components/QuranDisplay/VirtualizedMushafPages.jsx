@@ -122,7 +122,7 @@ function VirtualizedMushafPages({
           return changed ? next : previous;
         });
       },
-      { root, rootMargin: "1800px 0px", threshold: 0.01 },
+      { root, rootMargin: "600px 0px", threshold: 0.01 },
     );
 
     const resizeObserver =
