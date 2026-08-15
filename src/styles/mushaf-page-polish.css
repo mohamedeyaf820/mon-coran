@@ -63,6 +63,12 @@
   max-width: 100% !important;
 }
 
+/* Fix: modes section w-full (Tailwind) overrides flex-basis auto and pushes utilities off-screen.
+   Setting width:auto lets the flex algorithm shrink modes correctly so utilities stay visible. */
+.app-root[data-view="reading"] .quran-display--platform .reader-control-deck .qc-reader-toolbar__modes {
+  width: auto !important;
+}
+
 .app-root[data-view="reading"] .quran-display--platform:has(.quran-mode-pane--mushaf) > .tajweed-legend {
   width: min(100%, 760px) !important;
   max-width: 760px !important;
@@ -99,19 +105,18 @@
   flex-direction: row-reverse !important;
 }
 
-/* Juz + Surah — plain text labels, no pills */
+/* Juz + Surah — subtle badge labels */
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header > span {
   display: inline-flex !important;
   align-items: center !important;
-  padding: 0 !important;
-  border: none !important;
-  border-radius: 0 !important;
-  background: none !important;
-  color: var(--mushaf-ink) !important;
+  padding: 0.1rem 0.5rem !important;
+  border: 1px solid color-mix(in srgb, var(--mushaf-rule-strong) 28%, transparent) !important;
+  border-radius: 0.25rem !important;
+  background: color-mix(in srgb, var(--mushaf-accent) 6%, var(--mushaf-paper)) !important;
+  color: color-mix(in srgb, var(--mushaf-accent) 72%, var(--mushaf-ink)) !important;
   font-size: inherit !important;
-  font-weight: inherit !important;
-  letter-spacing: 0 !important;
-  text-transform: none !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
   white-space: nowrap !important;
   overflow: visible !important;
   text-overflow: clip !important;

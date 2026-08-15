@@ -36,14 +36,12 @@ function CleanPageViewComponent({
 
   const juzLabel = useMemo(() => {
     if (!juzNumber) return "";
-    return lang === "ar"
-      ? `﴿ الجزء ${toAr(juzNumber)} ﴾`
-      : `﴿ Juz ${juzNumber} ﴾`;
+    return lang === "ar" ? `الجزء ${toAr(juzNumber)}` : `Juz ${juzNumber}`;
   }, [juzNumber, lang]);
 
   const surahLabel = useMemo(() => {
     if (!headerSurahName) return "";
-    return `﴿ ${headerSurahName} ﴾`;
+    return headerSurahName;
   }, [headerSurahName]);
 
   return (
