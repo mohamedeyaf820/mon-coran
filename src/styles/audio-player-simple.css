@@ -15,8 +15,8 @@
   box-shadow: 0 10px 28px rgba(4, 12, 20, 0.18) !important;
   font-family: var(--font-ui) !important;
   isolation: isolate;
-  backdrop-filter: blur(22px) saturate(1.08);
-  -webkit-backdrop-filter: blur(22px) saturate(1.08);
+  /* backdrop-blur removed — audio player background is already 96% opaque;
+     blur(22px) on a full-width fixed element re-composited on every scroll frame */
   animation: simple-player-enter 220ms cubic-bezier(.22,.82,.3,1);
 }
 

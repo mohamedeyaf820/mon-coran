@@ -57,9 +57,13 @@ export default function SurahRecitationList({
   const handleScroll = useCallback(
     (event) => {
       const node = event.currentTarget;
-      if (node.scrollHeight - node.scrollTop - node.clientHeight < 320) {
-        revealMore();
-      }
+      // RAF-defer layout reads so they don't block the scroll compositor
+      requestAnimationFrame(() => {
+        if (!node) return;
+        if (node.scrollHeight - node.scrollTop - node.clientHeight < 320) {
+          revealMore();
+        }
+      });
     },
     [revealMore],
   );

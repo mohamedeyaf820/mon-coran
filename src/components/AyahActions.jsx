@@ -442,7 +442,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "ayah-action ayah-action--play h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "ayah-action ayah-action--play h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               isPlayingThisAyah
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -464,7 +464,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "ayah-action ayah-action--bookmark h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "ayah-action ayah-action--bookmark h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               bookmarked
                 ? "text-[var(--primary)]"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -485,7 +485,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             ref={optionsTriggerRef}
             type="button"
             className={cn(
-              "ayah-action ayah-action--options h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "ayah-action ayah-action--options h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               showPlaylistMenu
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -537,7 +537,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer",
               isPlayingThisAyah && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
             )}
             onClick={() => {
@@ -557,7 +557,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer",
               isTafsirActive && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
             )}
             onClick={toggleTafsir}
@@ -570,7 +570,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer",
               bookmarked && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
             )}
             onClick={toggleBookmark}
@@ -583,7 +583,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer",
               copied && "text-green-500 bg-green-500/10 font-semibold"
             )}
             onClick={copyText}
@@ -595,7 +595,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           {/* Share */}
           <button
             type="button"
-            className="qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer"
+            className="qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer"
             onClick={openShareStudio}
           >
             <Share2 size={12} />
@@ -606,7 +606,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer",
               (showNote || noteText.trim()) && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
             )}
             onClick={() => {
@@ -622,7 +622,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer",
               showPlaylistMenu && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
             )}
             onClick={openPlaylistMenu}
@@ -638,7 +638,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "w-7.5 h-7.5 rounded-full flex items-center justify-center transition-[background-color,color] cursor-pointer",
               isPlayingThisAyah
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -660,7 +660,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "w-7.5 h-7.5 rounded-full flex items-center justify-center transition-[background-color,color] cursor-pointer",
               isTafsirActive
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -676,7 +676,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "w-7.5 h-7.5 rounded-full flex items-center justify-center transition-[background-color,color] cursor-pointer",
               bookmarked
                 ? "text-[var(--primary)]"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -692,7 +692,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "w-7.5 h-7.5 rounded-full flex items-center justify-center transition-[background-color,color] cursor-pointer",
               copied
                 ? "text-green-500"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -707,7 +707,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           {/* Share */}
           <button
             type="button"
-            className="w-7.5 h-7.5 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)] transition-all cursor-pointer"
+            className="w-7.5 h-7.5 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)] transition-[background-color,color] cursor-pointer"
             onClick={openShareStudio}
             aria-label={lang === "fr" ? "Partager ce verset" : lang === "ar" ? "مشاركة الآية" : "Share verse"}
             title={lang === "fr" ? "Partager" : "Share"}
@@ -721,7 +721,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               isPlayingThisAyah
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -743,7 +743,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               isTafsirActive
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -759,7 +759,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               bookmarked
                 ? "text-[var(--primary)]"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -775,7 +775,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <button
             type="button"
             className={cn(
-              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               copied
                 ? "text-green-500"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -790,7 +790,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           {/* Share */}
           <button
             type="button"
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)] transition-all cursor-pointer"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)] transition-[background-color,color] cursor-pointer"
             onClick={openShareStudio}
             aria-label={lang === "fr" ? "Partager ce verset" : lang === "ar" ? "مشاركة الآية" : "Share verse"}
             title={lang === "fr" ? "Partager" : "Share"}

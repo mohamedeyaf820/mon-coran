@@ -76,7 +76,7 @@ export default function QCAudioBar({
       className={cn(
         "qc-audio-bar fixed bottom-0 left-0 right-0 z-[300]",
         "border-t border-[var(--border)]",
-        "bg-[var(--bg-primary)]/95 backdrop-blur-xl",
+        "bg-[var(--bg-primary)]/98",
         "flex flex-col",
         "shadow-[0_-4px_24px_rgba(0,0,0,0.12)]",
       )}
