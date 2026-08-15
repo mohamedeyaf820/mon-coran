@@ -130,11 +130,6 @@ export const SurahCard = memo(function SurahCard({
             ? "Médinoise"
             : "Medinan";
 
-    const rowVisibilityStyle = {
-      contentVisibility: "auto",
-      containIntrinsicSize: "82px",
-    };
-
     return (
       <div
         className={cn(
@@ -145,7 +140,6 @@ export const SurahCard = memo(function SurahCard({
         data-stype={surah.type?.toLowerCase()}
         data-testid="surah-card"
         data-surah={surah.n}
-        style={rowVisibilityStyle}
       >
         <button
           type="button"
@@ -217,10 +211,6 @@ export const SurahCard = memo(function SurahCard({
   }
 
   /* ── GRID CARD ── */
-  const cardVisibilityStyle = {
-    contentVisibility: "auto",
-    containIntrinsicSize: "112px",
-  };
   const isMeccan = surah.type === "Meccan";
 
   return (
@@ -233,7 +223,6 @@ export const SurahCard = memo(function SurahCard({
       data-stype={surah.type?.toLowerCase()}
       data-testid="surah-card"
       data-surah={surah.n}
-      style={cardVisibilityStyle}
     >
       <button
         type="button"
@@ -331,11 +320,6 @@ export const JuzCard = memo(function JuzCard({
   const { juz, name } = juzData;
 
   if (viewMode === "list") {
-    const rowVisibilityStyle = {
-      contentVisibility: "auto",
-      containIntrinsicSize: "80px",
-    };
-
     return (
       <button
         className={cn(
@@ -343,7 +327,6 @@ export const JuzCard = memo(function JuzCard({
           isActive && "juz-card--active",
         )}
         onClick={() => onClick(juz)}
-        style={rowVisibilityStyle}
       >
         <span className="juz-card__number">
           {juz}
@@ -360,11 +343,6 @@ export const JuzCard = memo(function JuzCard({
     );
   }
 
-  const cardVisibilityStyle = {
-    contentVisibility: "auto",
-    containIntrinsicSize: "120px",
-  };
-
   return (
     <button
       className={cn(
@@ -372,7 +350,6 @@ export const JuzCard = memo(function JuzCard({
         isActive && "juz-card--active",
       )}
       onClick={() => onClick(juz)}
-      style={cardVisibilityStyle}
     >
       <span className="juz-card__accent" aria-hidden="true" />
       <span className="juz-card__number">

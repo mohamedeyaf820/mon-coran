@@ -15064,8 +15064,6 @@ body {
         box-shadow 0.2s ease,
         background 0.2s ease;
     overflow: hidden;
-    content-visibility: auto;
-    contain-intrinsic-size: 1px 98px;
 }
 
 .hp-card::before {
@@ -15283,8 +15281,6 @@ body {
     background: transparent;
     cursor: pointer;
     transition: all 0.2s;
-    content-visibility: auto;
-    contain-intrinsic-size: 1px 66px;
 }
 
 .hp-row:last-child {
