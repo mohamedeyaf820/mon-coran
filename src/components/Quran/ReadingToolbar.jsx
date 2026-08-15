@@ -108,7 +108,7 @@ export default function ReadingToolbar({
   return (
     <div
       className={cn(
-        "reader-command-bar qc-reader-toolbar mx-auto mb-6 flex w-full max-w-[980px] flex-col items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 backdrop-blur-md transition-all duration-300 md:flex-row",
+        "reader-command-bar qc-reader-toolbar mx-auto mb-6 flex w-full max-w-[980px] flex-col items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 backdrop-blur-md transition-[box-shadow,border-color] duration-300 md:flex-row",
       )}
       style={{
         boxShadow: "var(--shadow-md)",
@@ -123,7 +123,7 @@ export default function ReadingToolbar({
             <button
               type="button"
               className={cn(
-                "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all",
+                "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-[background-color,color,box-shadow]",
                 mushafIsOn
                   ? "bg-[var(--bg-card)] font-bold text-[var(--primary)] shadow-sm"
                   : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
@@ -159,7 +159,7 @@ export default function ReadingToolbar({
           <button
             type="button"
             className={cn(
-              "reader-toolbar-btn--translation flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
+              "reader-toolbar-btn--translation flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-[background-color,color,border-color]",
               showTranslation
                 ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
                 : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
@@ -176,7 +176,7 @@ export default function ReadingToolbar({
           <button
             type="button"
             className={cn(
-              "reader-toolbar-btn--tajweed flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
+              "reader-toolbar-btn--tajweed flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-[background-color,color,border-color]",
               showTajwid
                 ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
                 : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
@@ -237,7 +237,7 @@ export default function ReadingToolbar({
             onClick={handlePrimaryPlay}
             disabled={isPreparing}
             className={cn(
-              "reader-toolbar-btn--primary btn-play-surah flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-4 text-xs font-bold text-white shadow-sm transition-all disabled:cursor-not-allowed disabled:opacity-50",
+              "reader-toolbar-btn--primary btn-play-surah flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-4 text-xs font-bold text-white shadow-sm transition-[background-color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50",
               isPlayingThisContext
                 ? "bg-amber-600 hover:bg-amber-700"
                 : "bg-[var(--primary)] hover:bg-[var(--primary-dark,var(--primary))]",
