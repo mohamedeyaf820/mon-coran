@@ -978,9 +978,6 @@ html.dark .app-root > .mp-header {
   border-radius: 0.5rem;
   background: transparent;
   color: var(--primary);
-  font-size: 1.2rem;
-  font-weight: 700;
-  line-height: 1;
   cursor: pointer;
 }
 

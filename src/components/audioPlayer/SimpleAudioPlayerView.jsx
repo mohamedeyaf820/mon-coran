@@ -187,13 +187,14 @@ function CompactPlayer(props) {
           onClick={onExpand}
           aria-label={expandLabel}
         >
+          {surahLigature && (
+            <span className="simple-player__compact-ar-ligature font-surah-names" dir="ltr" lang="en" aria-hidden="true">
+              {surahLigature}
+            </span>
+          )}
           <span className="simple-player__compact-meta-text">
             <strong>{title}</strong>
-            {surahLigature ? (
-              <span className="simple-player__compact-ar-name font-surah-names" dir="ltr" lang="en" aria-hidden="true">{surahLigature}</span>
-            ) : currentArabicName ? (
-              <span className="simple-player__compact-ar-name" dir="rtl" lang="ar">{currentArabicName}</span>
-            ) : null}
+            <span className="simple-player__compact-ar-name" dir="rtl" lang="ar">{currentArabicName}</span>
             <span className="simple-player__compact-reciter">{reciterLabel || "—"}</span>
           </span>
         </button>

@@ -29,7 +29,7 @@ test("Arabic typography scales progressively with the connected device (Phone, T
     }),
   );
 
-  assert.deepEqual(sizes, [24, 28, 34]);
+  assert.deepEqual(sizes, [24, 34, 42]);
   for (let index = 1; index < sizes.length; index += 1) {
     assert.ok(sizes[index] > sizes[index - 1]);
   }
@@ -65,7 +65,7 @@ test("Mushaf typography stays responsive without exceeding layout safety caps", 
       viewportWidth: 390,
       mushafLayout: "mushaf",
     }),
-    30,
+    72,
   );
   assert.equal(
     getResponsiveArabicFontSize({
@@ -73,7 +73,7 @@ test("Mushaf typography stays responsive without exceeding layout safety caps", 
       viewportWidth: 820,
       mushafLayout: "mushaf",
     }),
-    38,
+    80,
   );
   assert.equal(
     getResponsiveArabicFontSize({
@@ -81,7 +81,7 @@ test("Mushaf typography stays responsive without exceeding layout safety caps", 
       viewportWidth: 1440,
       mushafLayout: "mushaf",
     }),
-    48,
+    96,
   );
 });
 

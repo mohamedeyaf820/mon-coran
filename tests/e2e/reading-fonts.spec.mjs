@@ -34,8 +34,7 @@ async function revealReaderTools(page) {
 
 async function switchToMushaf(page) {
   await revealReaderTools(page);
-  // The view-mode pills use role="radio" inside a radiogroup
-  await page.getByRole("radio", { name: "Mushaf", exact: true }).click();
+  await page.getByRole("button", { name: "Mushaf", exact: true }).click();
   await expect(page.locator(".mushaf-container .verse-text").first()).toBeVisible();
 }
 
@@ -64,7 +63,7 @@ test("Hafs font selection applies to list and Mushaf layouts", async ({ page }) 
     timeout: 30_000,
   });
   await revealReaderTools(page);
-  await page.getByRole("radio", { name: "Liste", exact: true }).click();
+  await page.getByRole("button", { name: "Liste", exact: true }).click();
   await expectFontFamily(page.locator(".qc-ayah-text-ar").first(), "Amiri Quran");
 });
 

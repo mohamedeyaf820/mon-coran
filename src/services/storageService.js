@@ -301,6 +301,7 @@ const DEFAULT_SETTINGS = {
   translationReadingMode: false,
   displayMode: "surah", // 'surah' | 'page' | 'juz'
   mushafLayout: "list", // 'list' | 'mushaf'
+  mushafPageFlow: "vertical", // 'vertical' | 'horizontal'
   audioSpeed: 1,
   volume: 1,
   continuousPlay: true,
@@ -464,6 +465,9 @@ function sanitizeSettings(settings) {
     mushafLayout: ["list", "mushaf"].includes(safeInput.mushafLayout)
       ? safeInput.mushafLayout
       : "list",
+    mushafPageFlow: ["vertical", "horizontal"].includes(safeInput.mushafPageFlow)
+      ? safeInput.mushafPageFlow
+      : "vertical",
     audioSpeed: [0.5, 0.75, 1, 1.25, 1.5, 2].includes(safeInput.audioSpeed)
       ? safeInput.audioSpeed
       : 1,

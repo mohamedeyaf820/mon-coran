@@ -100,7 +100,8 @@ async function revealReaderTools(page, viewportWidth) {
   );
   await expect(trigger).toBeVisible();
   if ((await trigger.getAttribute("aria-expanded")) !== "true") {
-    await trigger.evaluate((el) => el.click());
+    await trigger.focus();
+    await trigger.press("Enter");
   }
   await expect(trigger).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator("#srh-reader-tools")).not.toHaveAttribute("aria-hidden", "true");

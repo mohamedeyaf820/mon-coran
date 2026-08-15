@@ -33,6 +33,8 @@ import {
   Home,
   SunMoon,
   Type,
+  Minus,
+  Plus,
   BookOpen,
   List,
 } from "lucide-react";
@@ -785,7 +787,7 @@ export default function Header({ immersiveHidden = false }) {
                           ar: "تصغير النص العربي",
                         })}
                       >
-                        <span aria-hidden="true">−</span>
+                        <Minus size={13} strokeWidth={2.4} />
                       </button>
                       <output aria-live="polite">{quranFontSize}px</output>
                       <button
@@ -799,7 +801,7 @@ export default function Header({ immersiveHidden = false }) {
                           ar: "تكبير النص العربي",
                         })}
                       >
-                        <span aria-hidden="true">+</span>
+                        <Plus size={13} strokeWidth={2.4} />
                       </button>
                     </div>
                   </div>

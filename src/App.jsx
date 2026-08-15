@@ -346,6 +346,15 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    window.addEventListener("mushafplus-reveal-reading-chrome", revealImmersiveChrome);
+    return () =>
+      window.removeEventListener(
+        "mushafplus-reveal-reading-chrome",
+        revealImmersiveChrome,
+      );
+  }, [revealImmersiveChrome]);
+
+  useEffect(() => {
     if (!immersiveActive || !state.isPlaying) return;
     immersiveRevealUntil.current = Date.now() + 1800;
     revealImmersiveChrome();
@@ -851,24 +860,41 @@ export default function App() {
                 onClick={revealImmersiveChrome}
                 style={{
                   position: "fixed",
-                  left: 0,
-                  [edge]: 0,
+                  left: "50%",
+                  [edge]: edge === "bottom"
+                    ? "env(safe-area-inset-bottom, 0px)"
+                    : 0,
                   zIndex: 240,
-                  width: "100%",
+                  width: 80,
                   height: 44,
+                  display: "grid",
+                  placeItems: "center",
                   padding: 0,
+                  transform: "translateX(-50%)",
                   border: 0,
                   background: "transparent",
+                  color: "var(--primary)",
                   cursor: "pointer",
                 }}
                 aria-label={
                   lang === "ar"
-                    ? "إظهار أدوات القراءة"
+                    ? "Ø¥Ø¸Ù‡Ø§Ø± Ø£Ø¯ÙˆØ§Øª Ø§Ù„Ù‚Ø±Ø§Ø¡Ø©"
                     : lang === "en"
                       ? "Show reading controls"
                       : "Afficher les commandes de lecture"
                 }
-              />
+              >
+                <span
+                  aria-hidden="true"
+                  style={{
+                    width: 34,
+                    height: 4,
+                    borderRadius: 999,
+                    background: "currentColor",
+                    boxShadow: "0 0 0 4px color-mix(in srgb, var(--bg-card) 78%, transparent)",
+                  }}
+                />
+              </button>
             ))}
           </div>
         ) : null}

@@ -376,8 +376,7 @@ test("reader interactions do not trigger a React update loop", async ({ page }) 
     await disclosure.click();
   }
   await expect(disclosure).toHaveAttribute("aria-expanded", "true");
-  // View-mode pills use role="radio" inside a radiogroup
-  await page.getByRole("radio", { name: "Mushaf", exact: true }).click();
+  await page.getByRole("button", { name: "Mushaf", exact: true }).click();
   await expect(page.locator(".quran-mode-pane--mushaf")).toBeVisible();
   await page.getByRole("radio", { name: "Liste", exact: true }).click();
   await expect(page.locator(".quran-mode-pane--mushaf")).toHaveCount(0);

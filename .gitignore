@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+.npm-cache/
 
 # Build output
 dist/
@@ -40,3 +41,6 @@ Thumbs.db
 design-audit/
 design-audit-2/
 .vercel
+
+# Local Netlify folder
+.netlify

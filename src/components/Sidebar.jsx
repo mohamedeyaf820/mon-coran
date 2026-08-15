@@ -378,7 +378,7 @@ export default function Sidebar() {
                   ref={isActive ? activeItemRef : null}
                   type="button"
                   className={cn(
-                    "group flex min-h-[44px] w-full cursor-pointer items-center gap-2.5 rounded-lg p-2 transition-all hover:bg-bg-secondary text-left",
+                    "group flex min-h-[44px] w-full cursor-pointer items-center gap-2.5 rounded-lg p-2 transition-[background-color] hover:bg-bg-secondary text-left",
                     isActive && "bg-primary/8",
                   )}
                   onClick={() => goSurah(s.n)}
@@ -447,7 +447,7 @@ export default function Sidebar() {
                   ref={isActive ? activeItemRef : null}
                   type="button"
                   className={cn(
-                    "group flex min-h-[44px] w-full cursor-pointer items-center gap-2.5 rounded-lg p-2 transition-all hover:bg-bg-secondary text-left",
+                    "group flex min-h-[44px] w-full cursor-pointer items-center gap-2.5 rounded-lg p-2 transition-[background-color] hover:bg-bg-secondary text-left",
                     isActive && "bg-primary/8",
                   )}
                   onClick={() => goJuz(j.juz)}

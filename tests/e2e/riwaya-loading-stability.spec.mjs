@@ -113,8 +113,10 @@ test("a riwaya switch stays atomic until the requested text is ready", async ({ 
     await readerTools.focus();
     await readerTools.press("Enter");
   }
-  // Word-by-word toggle is not accessible via .srh-study-more (removed); keyboard shortcut verified above
-  await expect(page.locator(".quran-display--word-by-word")).toHaveCount(0);
+  await page.locator(".srh-study-more").click();
+  await expect(
+    page.getByRole("menuitemcheckbox", { name: "Mot à mot" }),
+  ).toHaveCount(0);
 });
 
 test("surah arrows keep the current text visible until the neighbour is ready", async ({

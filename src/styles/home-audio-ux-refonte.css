@@ -3296,19 +3296,32 @@ html body .app-root[data-view="home"] .reciter-card {
   grid-template-columns: minmax(0, 1fr) auto !important;
   align-items: center !important;
   gap: 0.65rem !important;
-  min-height: 5.5rem !important;
-  padding: 0.65rem !important;
+  min-height: 5.25rem !important;
+  padding: 0.62rem !important;
   border: 1px solid var(--theme-border, var(--border)) !important;
   border-radius: 16px !important;
-  background: color-mix(in srgb, var(--theme-surface, var(--bg-card)) 96%, var(--primary) 4%) !important;
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--theme-text, #173128) 7%, transparent) !important;
+  background: var(--theme-surface, var(--bg-card)) !important;
+  box-shadow: 0 5px 16px color-mix(in srgb, var(--theme-text, #173128) 6%, transparent) !important;
   overflow: hidden !important;
   transform: none !important;
+  contain: layout paint style;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card:hover {
+  border-color: color-mix(in srgb, var(--primary) 36%, var(--theme-border, var(--border))) !important;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--theme-text, #173128) 9%, transparent) !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card[data-playing="true"] {
+  border-color: color-mix(in srgb, var(--primary) 58%, var(--theme-border, var(--border))) !important;
+  background: color-mix(in srgb, var(--theme-surface, var(--bg-card)) 93%, var(--primary) 7%) !important;
+  box-shadow: inset 3px 0 var(--primary), 0 8px 22px color-mix(in srgb, var(--primary) 12%, transparent) !important;
 }
 
 html body .app-root[data-view="home"] .reciter-card__main {
   display: grid !important;
-  grid-template-columns: 3.45rem minmax(0, 1fr) 1rem !important;
+  grid-template-columns: 3.25rem minmax(0, 1fr) 0.9rem !important;
   align-items: center !important;
   min-width: 0 !important;
   gap: 0.72rem !important;
@@ -3320,10 +3333,28 @@ html body .app-root[data-view="home"] .reciter-card__main {
 }
 
 html body .app-root[data-view="home"] .reciter-card__media {
-  inline-size: 3.45rem !important;
-  block-size: 3.45rem !important;
-  border-radius: 13px !important;
-  flex: 0 0 3.45rem !important;
+  position: relative !important;
+  isolation: isolate;
+  inline-size: 3.25rem !important;
+  block-size: 3.25rem !important;
+  border-radius: 50% !important;
+  flex: 0 0 3.25rem !important;
+  overflow: hidden !important;
+  background: var(--theme-bg-alt, var(--bg-secondary)) !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__media > :is(img, span) {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: inherit !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__media > img {
+  z-index: 1 !important;
+  display: block !important;
+  object-fit: cover !important;
 }
 
 html body .app-root[data-view="home"] :is(.reciter-card__copy, .reciter-card__name, .reciter-card__meta) {
@@ -3386,6 +3417,64 @@ html body .app-root[data-view="home"] .reciter-card__actions .reciter-card__list
   background: var(--primary) !important;
   color: #ffffff !important;
   border-color: var(--primary) !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__playing {
+  z-index: 3 !important;
+  inset: auto 0.18rem 0.18rem auto !important;
+  display: inline-flex !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  gap: 1px !important;
+  border: 2px solid var(--theme-surface, var(--bg-card)) !important;
+  border-radius: 50% !important;
+  padding: 0.18rem !important;
+  background: var(--primary) !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__playing i {
+  width: 1px;
+  border-radius: 2px;
+  background: #fff;
+  animation: reciterPlayingBar 720ms ease-in-out infinite alternate;
+}
+
+html body .app-root[data-view="home"] .reciter-card__playing i:nth-child(1) { height: 45%; }
+html body .app-root[data-view="home"] .reciter-card__playing i:nth-child(2) { height: 85%; animation-delay: -240ms; }
+html body .app-root[data-view="home"] .reciter-card__playing i:nth-child(3) { height: 62%; animation-delay: -480ms; }
+
+@keyframes reciterPlayingBar {
+  to { height: 100%; }
+}
+
+html body .app-root[data-view="home"] .home-reciter-load-more {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  min-height: 2.8rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed color-mix(in srgb, var(--primary) 36%, var(--theme-border, var(--border)));
+  border-radius: 14px;
+  padding: 0.65rem 1rem;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--theme-surface, var(--bg-card)) 95%, var(--primary) 5%);
+  font-size: 0.76rem;
+  font-weight: 760;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+html body .app-root[data-view="home"] .home-reciter-load-more:hover {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--primary) 64%, var(--theme-border, var(--border)));
+  background: color-mix(in srgb, var(--theme-surface, var(--bg-card)) 89%, var(--primary) 11%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .app-root[data-view="home"] .reciter-card__playing i {
+    animation: none;
+  }
 }
 
 @media (max-width: 900px) {
