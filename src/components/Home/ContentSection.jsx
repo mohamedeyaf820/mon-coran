@@ -293,7 +293,7 @@ export default function ContentSection({
             role="tab"
             aria-selected={activeTab === "surah"}
             className={cn(
-              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-all hover:text-text-primary",
+              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-[background-color,color,box-shadow] hover:text-text-primary",
               activeTab === "surah" && "bg-bg-primary text-primary shadow-sm",
             )}
             onClick={() => onSelectTab("surah")}
@@ -307,7 +307,7 @@ export default function ContentSection({
             role="tab"
             aria-selected={activeTab === "juz"}
             className={cn(
-              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-all hover:text-text-primary",
+              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-[background-color,color,box-shadow] hover:text-text-primary",
               activeTab === "juz" && "bg-bg-primary text-primary shadow-sm",
             )}
             onClick={() => onSelectTab("juz")}
@@ -321,7 +321,7 @@ export default function ContentSection({
             role="tab"
             aria-selected={activeTab === "audio"}
             className={cn(
-              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-all hover:text-text-primary",
+              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-[background-color,color,box-shadow] hover:text-text-primary",
               activeTab === "audio" &&
                 "bg-bg-primary text-primary shadow-sm",
             )}
@@ -489,7 +489,7 @@ export default function ContentSection({
           filteredSurahs.length === 0 ? (
             <EmptyState icon="fa-magnifying-glass" text={t("search.noResults", lang)} />
           ) : (
-            renderedSurahs.map((s, idx) => (
+            renderedSurahs.map((s) => (
               <SurahCard
                 key={s.n}
                 surah={s}
@@ -504,13 +504,12 @@ export default function ContentSection({
                 isPlaying={
                   state.isPlaying && state.currentPlayingAyah?.surah === s.n
                 }
-                animIndex={idx}
               />
             ))
           )
         ) : /* JUZ */
         activeTab === "juz" ? (
-          JUZ_DATA.map((j, idx) => (
+          JUZ_DATA.map((j) => (
             <JuzCard
               key={j.juz}
               juzData={j}
@@ -520,7 +519,6 @@ export default function ContentSection({
               isActive={
                 j.juz === state.currentJuz && state.displayMode === "juz"
               }
-              animIndex={idx}
             />
           ))
         ) : /* RÉCITATEURS */
@@ -638,7 +636,7 @@ export default function ContentSection({
         <div className="mt-6 flex justify-center">
           <button
             ref={loadMoreRef}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-bg-secondary text-text-primary font-bold transition-all hover:-translate-y-0.5 hover:bg-bg-tertiary"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-bg-secondary text-text-primary font-bold transition-[transform,background-color] hover:-translate-y-0.5 hover:bg-bg-tertiary"
             onClick={loadMoreSurahs}
           >
             <ArrowDown size={14} />

@@ -89,7 +89,7 @@ export default function VirtualizedItem({
     if (pinned || eager) setNearViewport(true);
   }, [eager, pinned]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const node = nodeRef.current;
     if (!node) return undefined;
     const observerRoot = rootRef?.current || node.closest(".app-main-shell") || null;
