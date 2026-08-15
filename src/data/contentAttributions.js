@@ -55,6 +55,14 @@ export const CONTENT_ATTRIBUTIONS = Object.freeze([
     rights: "Attribution au fournisseur indiqué dans la fiche du récitateur; aucune licence générale de réutilisation n’est revendiquée.",
     url: "https://www.assabile.com/",
   },
+  {
+    id: "portrait-adel-al-kalbani",
+    category: "image",
+    name: "Portrait d’Adel Al-Kalbani — Wikimedia Commons",
+    usage: "Photographie du profil d’Adel Al-Kalbani.",
+    rights: "Photo par I3bdulghani, sous licence Creative Commons Attribution-ShareAlike 3.0 (CC BY-SA 3.0).",
+    url: "https://commons.wikimedia.org/wiki/File:Kalbani.jpg",
+  },
 ]);
 
 export default CONTENT_ATTRIBUTIONS;

@@ -71,6 +71,11 @@ export default function QuranDisplay() {
     shallowEqual,
   );
   const [activeAyah, setActiveAyah] = useState(null);
+
+  // Preload fullscreen bundle in background so first open is instant
+  useEffect(() => {
+    import("./QuranDisplay/FullscreenMushafOverlay");
+  }, []);
   const {
     currentAyah,
     currentJuz,
@@ -164,7 +169,7 @@ export default function QuranDisplay() {
       (displayMode === "surah" ? 0 : -0.02);
     return { ...base, offsetSec: Math.max(-0.8, Math.min(0.95, offsetSec)) };
   }, [displayMode, reciter, riwaya, view.userSyncOffsetMs]);
-  const { playSpecificSurah, playSurah, preparingSurah } = useQuranDisplayAudio(
+  const { playAyah, playSpecificSurah, playSurah, preparingSurah } = useQuranDisplayAudio(
     {
       ayahs,
       currentJuz,
@@ -214,6 +219,41 @@ export default function QuranDisplay() {
       warshStrictMode,
     ],
   );
+
+  const openImmersiveMushaf = useCallback(async () => {
+    const currentAyahData = ayahs.find(
+      (ayah) => Number(ayah.numberInSurah) === Number(currentAyah),
+    );
+    const targetPage = Number(
+      displayMode === "page"
+        ? currentPage
+        : currentAyahData?.page || pageGroups[0]?.page || currentPage,
+    );
+
+    // Open overlay immediately — don't block on data fetch
+    view.setFullPage(true);
+
+    if (displayMode !== "page") {
+      await prepareReadingTarget("page", targetPage);
+      dispatch({ type: "NAVIGATE_PAGE", payload: { page: targetPage } });
+    }
+  }, [
+    ayahs,
+    currentAyah,
+    currentPage,
+    dispatch,
+    displayMode,
+    pageGroups,
+    prepareReadingTarget,
+    view,
+  ]);
+
+  const openImmersiveAudioPlayer = useCallback(() => {
+    // Keep the Mushaf open while the shared reciter/playback sheet appears
+    // above it. Closing the sheet returns directly to the immersive page.
+    set({ playerMinimized: false });
+    window.dispatchEvent(new Event("mushafplus-open-audio-options"));
+  }, [set]);
 
   const navigation = useQuranDisplayNavigation({
     currentJuz,
@@ -419,6 +459,7 @@ export default function QuranDisplay() {
             onNextSurah={navigation.goNextSurah}
             onPlaySurah={playSurah}
             onPrevSurah={navigation.goPrevSurah}
+            onOpenFullscreen={openImmersiveMushaf}
             onToggleActive={toggleAyah}
             onToggleMushaf={toggleMushaf}
             pageGroups={pageGroups}
@@ -456,6 +497,7 @@ export default function QuranDisplay() {
               lang={lang}
               mushafLayout={mushafLayout}
               onNextPage={navigation.goNextPage}
+              onOpenFullscreen={openImmersiveMushaf}
               onPlaySurah={playSurah}
               onPrevPage={navigation.goPrevPage}
               onToggleActive={toggleAyah}
@@ -496,6 +538,7 @@ export default function QuranDisplay() {
               mushafLayout={mushafLayout}
               onNextJuz={navigation.goNextJuz}
               onPlayJuz={playSurah}
+              onOpenFullscreen={openImmersiveMushaf}
               onPlaySpecificSurah={playSpecificSurah}
               onPrevJuz={navigation.goPrevJuz}
               onToggleActive={toggleAyah}
@@ -545,8 +588,13 @@ export default function QuranDisplay() {
               currentPlayingAyah={currentPlayingAyah}
               currentSurah={currentSurah}
               fullPage
+              getTranslationForAyah={getTranslationForAyah}
               lang={lang}
               onClose={() => view.setFullPage(false)}
+              onOpenPlayer={openImmersiveAudioPlayer}
+              onNextPage={navigation.goNextPage}
+              onPlayAyah={playAyah}
+              onPrevPage={navigation.goPrevPage}
               riwaya={riwaya}
             />
           </Suspense>

@@ -7,6 +7,7 @@ import {
   Headphones,
   Home,
   LibraryBig,
+  ListOrdered,
   Search,
   Scale,
   ShieldCheck,

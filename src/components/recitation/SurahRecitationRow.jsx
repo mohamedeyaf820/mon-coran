@@ -14,6 +14,10 @@ const SurahRecitationRow = memo(function SurahRecitationRow({
   const label = lang === "ar" ? surah.ar : lang === "fr" ? surah.fr : surah.en;
   const ayahLabel =
     lang === "fr" ? "versets" : lang === "ar" ? "آيات" : "verses";
+  const isMeccan = surah.type === "Meccan";
+  const typeLabel = isMeccan
+    ? (lang === "ar" ? "مكية" : lang === "fr" ? "Mak." : "Mak.")
+    : (lang === "ar" ? "مدنية" : lang === "fr" ? "Méd." : "Med.");
 
   return (
     <div className="recitation-row group" role="listitem">
@@ -24,6 +28,12 @@ const SurahRecitationRow = memo(function SurahRecitationRow({
       <div className="recitation-row__copy">
         <div className="recitation-row__title">
           {label}
+          <span
+            className={`recitation-row__type${isMeccan ? " recitation-row__type--meccan" : " recitation-row__type--medinan"}`}
+            aria-label={isMeccan ? (lang === "ar" ? "مكية" : "Meccan") : (lang === "ar" ? "مدنية" : "Medinan")}
+          >
+            {typeLabel}
+          </span>
         </div>
         <div className="recitation-row__meta">
           <span className="recitation-row__arabic" dir="rtl" lang="ar">

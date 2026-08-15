@@ -79,14 +79,17 @@ export const QURAN_FONT_OPTIONS = [
 export const FONT_MAP = {
   "qpc-hafs":
     "'QPC Hafs','KFGQPC Uthmanic Script HAFS','UthmanicHafs',serif",
+  // IndoPak lacks U+0660-U+0669 (standard Arabic-Indic digits); QPC Hafs provides the rosette fallback.
   "qpc-indopak":
     "'IndoPak','QPC IndoPak','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
+  // QPC Hafs added as fallback so its rosette ligatures render Arabic-Indic verse markers
+  // for fonts that do not have those digits or lack the OpenType rosette feature.
   "scheherazade-new":
-    "'Scheherazade New','Scheherazade',serif",
+    "'Scheherazade New','Scheherazade','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
   "amiri-quran":
-    "'Amiri Quran','Amiri',serif",
+    "'Amiri Quran','Amiri','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
   "noto-naskh-arabic":
-    "'Noto Naskh Arabic','Noto Naskh','Amiri Quran',serif",
+    "'Noto Naskh Arabic','Noto Naskh','Amiri Quran','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
   "qcf-v2":
     "'QCF V2','QCF_V2','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
   "qcf-v4-tajweed":
@@ -129,20 +132,27 @@ const EXTENDED_ARABIC_INDIC_DIGITS = [
 ];
 
 const AYAH_MARKER_BY_FONT = {
-  // UthmanicHafs1Ver18 shapes the complete digit sequence as one rosette.
-  // Prefixing U+06DD produces a second, empty rosette beside the number.
+  // UthmanicHafs1Ver18 shapes the complete digit sequence as one rosette via OpenType calt.
+  // Prefixing U+06DD produces a SECOND empty rosette beside the number \u2014 must NOT add it.
   "qpc-hafs": { marker: "", digits: ARABIC_INDIC_DIGITS },
-  "qpc-indopak": { marker: "\u06dd", digits: EXTENDED_ARABIC_INDIC_DIGITS },
-  "scheherazade-new": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
-  "amiri-quran": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
-  "noto-naskh-arabic": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
+  // IndoPak Extended digits (U+06F0-U+06F9) are overlay glyphs designed to sit inside U+06DD;
+  // rendered inline they appear as tiny dots. Use standard Arabic-Indic instead: IndoPak lacks
+  // U+0660-U+0669 so QPC Hafs (next in font stack) handles them as rosette glyphs.
+  "qpc-indopak": { marker: "", digits: ARABIC_INDIC_DIGITS },
+  // For all fonts below: U+06DD prefix produces a plain End-of-Ayah circle with digits outside.
+  // Removing the prefix lets QPC Hafs (in the fallback stack) render the full rosette instead.
+  "scheherazade-new": { marker: "", digits: ARABIC_INDIC_DIGITS },
+  "amiri-quran": { marker: "", digits: ARABIC_INDIC_DIGITS },
+  "noto-naskh-arabic": { marker: "", digits: ARABIC_INDIC_DIGITS },
   // The locally hosted Warsh 10 face shapes the digit sequence as a rosette.
   "qpc-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
   // Warsh 10 also turns the digit sequence itself into the complete rosette.
   "kfgqpc-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
-  "scheherazade-new-warsh": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
-  "qcf-v2": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
-  "qcf-v4-tajweed": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
+  // QPC Warsh is the fallback in this stack \u2014 rosette if Scheherazade lacks U+0660-U+0669.
+  "scheherazade-new-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
+  // QCF page fonts: QPC Hafs is in the fallback stack and renders Arabic-Indic as rosettes.
+  "qcf-v2": { marker: "", digits: ARABIC_INDIC_DIGITS },
+  "qcf-v4-tajweed": { marker: "", digits: ARABIC_INDIC_DIGITS },
 };
 
 export const NATIVE_AYAH_MARKER_RE = /[\u06dd\u06de][\u0660-\u0669\u06f0-\u06f9\d]*/u;

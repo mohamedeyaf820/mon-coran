@@ -15,6 +15,8 @@ export default function useQuranDisplayScroll({
   const [showScrollTop, setShowScrollTop] = useState(false);
   const followRetryTimerRef = useRef(null);
   const lastFollowKeyRef = useRef("");
+  const showScrollTopRef = useRef(false);
+  const userScrollUntilRef = useRef(0);
 
   const clearFollowRetryTimer = useCallback(() => {
     if (!followRetryTimerRef.current) return;
@@ -58,23 +60,41 @@ export default function useQuranDisplayScroll({
     const element = getScrollContainer();
     if (!element) return;
 
-    let ticking = false;
+    let frameId = null;
+    const progressBar = contentRef.current?.querySelector(".reading-progress-bar");
+    const markManualScroll = () => {
+      userScrollUntilRef.current = Date.now() + 2200;
+    };
     const handleScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        setShowScrollTop(element.scrollTop > 500);
-        const total = element.scrollHeight - element.clientHeight;
-        if (total > 0) {
-          document.documentElement.style.setProperty("--reading-progress", String(element.scrollTop / total));
+      if (frameId !== null) return;
+      frameId = requestAnimationFrame(() => {
+        const shouldShowScrollTop = element.scrollTop > 500;
+        if (shouldShowScrollTop !== showScrollTopRef.current) {
+          showScrollTopRef.current = shouldShowScrollTop;
+          setShowScrollTop(shouldShowScrollTop);
         }
-        ticking = false;
+        const total = element.scrollHeight - element.clientHeight;
+        if (progressBar) {
+          const progress = total > 0 ? Math.min(1, Math.max(0, element.scrollTop / total)) : 0;
+          progressBar.style.transform = `scaleX(${progress})`;
+        }
+        frameId = null;
       });
     };
 
     element.addEventListener("scroll", handleScroll, { passive: true });
-    return () => element.removeEventListener("scroll", handleScroll);
-  }, [ayahCount, displayMode, getScrollContainer]);
+    element.addEventListener("touchstart", markManualScroll, { passive: true });
+    element.addEventListener("wheel", markManualScroll, { passive: true });
+    element.addEventListener("pointerdown", markManualScroll, { passive: true });
+    handleScroll();
+    return () => {
+      element.removeEventListener("scroll", handleScroll);
+      element.removeEventListener("touchstart", markManualScroll);
+      element.removeEventListener("wheel", markManualScroll);
+      element.removeEventListener("pointerdown", markManualScroll);
+      if (frameId !== null) cancelAnimationFrame(frameId);
+    };
+  }, [ayahCount, contentRef, displayMode, getScrollContainer]);
 
   useEffect(() => {
     getScrollContainer()?.scrollTo({ top: 0, behavior: "auto" });
@@ -133,6 +153,10 @@ export default function useQuranDisplayScroll({
 
     const follow = () => {
       if (stopped) return;
+      if (Date.now() < userScrollUntilRef.current) {
+        clearFollowRetryTimer();
+        return;
+      }
       const target = resolvePlayingAyahElement(currentPlayingAyah);
       if (target) {
         const container = getScrollContainer();

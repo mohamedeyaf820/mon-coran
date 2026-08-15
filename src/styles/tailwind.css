@@ -18,7 +18,9 @@
     src: url("/fonts/sura_names.woff2") format("woff2");
     font-weight: normal;
     font-style: normal;
-    font-display: swap;
+    /* The source characters are numeric selectors. Avoid flashing those digits
+       while the local calligraphic ligature font is being decoded. */
+    font-display: block;
 }
 
 @media (max-width: 390px) {
@@ -7299,11 +7301,13 @@ input:focus-visible {
     right: 0;
     height: 2px;
     z-index: 200;
-    width: calc(var(--reading-progress, 0) * 100%);
+    width: 100%;
     background: var(--primary);
     animation: none;
     box-shadow: 0 1px 4px rgba(var(--primary-rgb, 16, 109, 73), 0.32);
-    transition: width 0.3s ease;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: none;
     pointer-events: none;
     border-radius: 0 2px 2px 0;
 }

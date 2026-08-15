@@ -18,6 +18,7 @@ function VirtualizedMushafPages({
   lang,
   mode = "surah",
   onAyahClick,
+  onOpenFullscreen,
   pageGroups = [],
   readingFontSize,
   riwaya,
@@ -33,6 +34,14 @@ function VirtualizedMushafPages({
   const getToggleId = useCallback(
     (ayah) => (mode === "surah" ? ayah.numberInSurah : ayah.number),
     [mode],
+  );
+
+  const handlePageDoubleClick = useCallback(
+    (event) => {
+      if (event.target.closest("button, a, input, select, textarea, [role='button']")) return;
+      onOpenFullscreen?.();
+    },
+    [onOpenFullscreen],
   );
 
   const pinnedIndexes = useMemo(() => {
@@ -60,8 +69,25 @@ function VirtualizedMushafPages({
 
   useEffect(() => {
     pinnedIndexesRef.current = pinnedIndexes;
-    setVisibleIndexes(new Set(pinnedIndexes));
-  }, [pinnedIndexes, pinnedKey, signature]);
+    setVisibleIndexes((previous) => {
+      const next = new Set(previous);
+      let changed = false;
+      pinnedIndexes.forEach((index) => {
+        if (!next.has(index)) {
+          next.add(index);
+          changed = true;
+        }
+      });
+      return changed ? next : previous;
+    });
+  }, [pinnedIndexes, pinnedKey]);
+
+  // Reset only when the loaded page collection changes. While scrolling or
+  // listening, rendered pages remain mounted and keep their exact height.
+  useEffect(() => {
+    measuredHeights.current.clear();
+    setVisibleIndexes(new Set([0, ...pinnedIndexesRef.current]));
+  }, [signature]);
 
   const registerPage = useCallback((index, node) => {
     if (node) nodeRefs.current.set(index, node);
@@ -70,8 +96,15 @@ function VirtualizedMushafPages({
 
   useEffect(() => {
     if (!pageGroups.length) return undefined;
+    if (typeof IntersectionObserver !== "function") {
+      setVisibleIndexes(new Set(pageGroups.map((_, index) => index)));
+      return undefined;
+    }
     const nodes = [...nodeRefs.current.values()];
-    const root = nodes[0]?.closest(".app-main-shell") || null;
+    const root =
+      nodes[0]?.closest(".app-main") ||
+      nodes[0]?.closest(".app-main-shell") ||
+      null;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -84,35 +117,36 @@ function VirtualizedMushafPages({
             if (shouldRender && !next.has(index)) {
               next.add(index);
               changed = true;
-            } else if (!shouldRender && next.delete(index)) {
-              changed = true;
             }
           }
           return changed ? next : previous;
         });
       },
-      { root, rootMargin: "1200px 0px", threshold: 0.01 },
+      { root, rootMargin: "1800px 0px", threshold: 0.01 },
     );
 
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const index = Number(entry.target.dataset.virtualPageIndex);
-        if (entry.contentRect.height > 120) {
-          measuredHeights.current.set(index, entry.contentRect.height);
-        }
-      }
-    });
+    const resizeObserver =
+      typeof ResizeObserver === "function"
+        ? new ResizeObserver((entries) => {
+            for (const entry of entries) {
+              const index = Number(entry.target.dataset.virtualPageIndex);
+              if (entry.contentRect.height > 120) {
+                measuredHeights.current.set(index, entry.contentRect.height);
+              }
+            }
+          })
+        : null;
 
     nodes.forEach((node) => {
       observer.observe(node);
-      resizeObserver.observe(node);
+      resizeObserver?.observe(node);
     });
 
     return () => {
       observer.disconnect();
-      resizeObserver.disconnect();
+      resizeObserver?.disconnect();
     };
-  }, [pageGroups.length, signature]);
+  }, [pageGroups, pageGroups.length, signature]);
 
   return pageGroups.map((group, index) => {
     const rendered = visibleIndexes.has(index);
@@ -129,6 +163,7 @@ function VirtualizedMushafPages({
         data-virtualized-page="true"
         aria-hidden={rendered ? undefined : "true"}
         style={rendered ? undefined : { minHeight: measuredHeight || DEFAULT_PAGE_HEIGHT }}
+        onDoubleClick={handlePageDoubleClick}
       >
         {rendered ? (
           <CleanPageView

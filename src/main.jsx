@@ -22,9 +22,14 @@ import "./styles/experience-polish.css";
 import "./styles/app-system.css";
 
 if (typeof window !== "undefined") {
-  // Start the ordered polish layer in parallel with the application chunks.
-  // Loading it after an idle delay caused late restyling and large layout shifts.
-  import("./styles/deferredStyles.js").catch(() => null);
+  // Load non-critical polish CSS after the browser is idle so it never
+  // delays first paint or TTI. Falls back to 200ms on browsers without rIC.
+  const loadDeferred = () => import("./styles/deferredStyles.js").catch(() => null);
+  if (typeof requestIdleCallback !== "undefined") {
+    requestIdleCallback(loadDeferred, { timeout: 2500 });
+  } else {
+    setTimeout(loadDeferred, 200);
+  }
 }
 
 const CHUNK_RELOAD_KEY = "mushaf-plus:chunk-reload-once";

@@ -75,6 +75,6 @@ export async function ensureStorageCapacity({
 }
 
 export function estimateAudioDownloadBytes(itemCount, isSurahStream = false) {
-  if (isSurahStream) return 24 * MIB;
+  if (isSurahStream) return Math.max(1, Number(itemCount) || 1) * 24 * MIB;
   return Math.max(1, Number(itemCount) || 1) * 384 * 1024;
 }

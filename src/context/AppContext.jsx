@@ -42,6 +42,11 @@ const clampJuz = (value) => Math.max(1, Math.min(30, Number(value) || 1));
 const clampAyah = (surah, value) =>
   Math.max(1, Math.min(getSurahAyahCount(surah), Number(value) || 1));
 
+const shouldSkipSplashForAutomation = (stored) =>
+  Boolean(stored?.skipSplashAnimation) &&
+  typeof navigator !== "undefined" &&
+  navigator.webdriver === true;
+
 /* ── Initial State ──────────────────────────── */
 // Lazy initialization pour éviter les calculs au démarrage
 const getInitialState = () => {
@@ -88,19 +93,12 @@ const getInitialState = () => {
   searchOpen: false,
   settingsOpen: false,
   libraryOpen: false,
+  libraryTab: "favorites",
   shareImageOpen: false,
-  // Le lancement de marque ne bloque que la première ouverture. Les
-  // ouvertures suivantes de la session affichent directement l'application.
-  skipSplashAnimation: Boolean(stored.skipSplashAnimation),
-  splashDone:
-    Boolean(stored.skipSplashAnimation) ||
-    (() => {
-      try {
-        return window.sessionStorage.getItem("mushaf-plus:splash-seen") === "1";
-      } catch {
-        return false;
-      }
-    })(),
+  // The branded opening returns on each real app launch. A persisted legacy
+  // setting can only bypass it in automated browser tests.
+  skipSplashAnimation: shouldSkipSplashForAutomation(stored),
+  splashDone: shouldSkipSplashForAutomation(stored),
   tafsirSidebarOpen: false,
   tafsirSidebarVerse: null,
   readerTypographyOpen: false,
@@ -109,6 +107,7 @@ const getInitialState = () => {
   riwaya: initialRiwaya,
   displayMode: routeOverrides.displayMode ?? (stored.displayMode || "surah"), // 'surah' | 'page' | 'juz'
   mushafLayout: stored.mushafLayout || "list", // 'list' | 'mushaf'
+  mushafPageFlow: stored.mushafPageFlow === "horizontal" ? "horizontal" : "vertical",
   currentSurah:
     routeOverrides.currentSurah ?? (stored.lastPosition?.surah || 1),
   currentAyah: routeOverrides.currentAyah ?? (stored.lastPosition?.ayah || 1),
@@ -409,7 +408,7 @@ export function appReducer(state, action) {
       return { ...state, loading: false, error: action.payload };
 
     case "SPLASH_DONE":
-      return { ...state, splashDone: true, skipSplashAnimation: true };
+      return { ...state, splashDone: true, skipSplashAnimation: false };
 
     default:
       return state;
@@ -461,7 +460,9 @@ export function AppProvider({ children }) {
     selectorListenersRef.current.forEach((listener) => listener());
   }, [state]);
 
-  // Create persistent settings object - memoized to avoid unnecessary recalculations
+  // Persistent settings split in two: stable settings (user preferences) and
+  // lastPosition (updated on every ayah scroll). Separating them prevents the
+  // debounced save from re-scheduling on every scroll.
   const persistentSettings = useMemo(() => ({
     lang: state.lang,
     theme: state.theme,
@@ -483,6 +484,7 @@ export function AppProvider({ children }) {
     showDuas: state.showDuas,
     displayMode: state.displayMode,
     mushafLayout: state.mushafLayout,
+    mushafPageFlow: state.mushafPageFlow,
     audioSpeed: state.audioSpeed,
     volume: state.volume,
     continuousPlay: state.continuousPlay,
@@ -501,12 +503,6 @@ export function AppProvider({ children }) {
     dayTheme: state.dayTheme,
     karaokeFollow: state.karaokeFollow,
     surahRepeatCount: state.surahRepeatCount,
-    lastPosition: {
-      surah: state.currentSurah,
-      ayah: state.currentAyah,
-      page: state.currentPage,
-      juz: state.currentJuz,
-    },
   }), [
     state.lang,
     state.theme,
@@ -527,6 +523,7 @@ export function AppProvider({ children }) {
     state.showDuas,
     state.displayMode,
     state.mushafLayout,
+    state.mushafPageFlow,
     state.audioSpeed,
     state.volume,
     state.continuousPlay,
@@ -545,16 +542,20 @@ export function AppProvider({ children }) {
     state.dayTheme,
     state.karaokeFollow,
     state.surahRepeatCount,
-    state.currentSurah,
-    state.currentAyah,
-    state.currentPage,
-    state.currentJuz,
   ]);
 
   // Persist settings to localStorage on change (debounced — 500ms)
   useEffect(() => {
-    persistentSettingsRef.current = persistentSettings;
-  }, [persistentSettings]);
+    persistentSettingsRef.current = {
+      ...persistentSettings,
+      lastPosition: {
+        surah: state.currentSurah,
+        ayah: state.currentAyah,
+        page: state.currentPage,
+        juz: state.currentJuz,
+      },
+    };
+  });
 
   const flushSettings = useCallback(() => {
     if (saveTimerRef.current) {
@@ -569,7 +570,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      saveSettings(persistentSettings);
+      saveSettings(persistentSettingsRef.current);
       saveTimerRef.current = null;
     }, 500);
     return () => {

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { shouldAvoidBackgroundWork } from "../../utils/networkPolicy";
 import { preloadQuranDisplayData } from "./useQuranDisplayData";
 
@@ -8,18 +8,11 @@ export default function useQuranDisplayPrefetch({
   currentPage,
   currentSurah,
   displayMode,
-  isPlaying,
   lang,
   loading,
   riwaya,
   warshStrictMode,
 }) {
-  const isPlayingRef = useRef(isPlaying);
-
-  useEffect(() => {
-    isPlayingRef.current = isPlaying;
-  }, [isPlaying]);
-
   useEffect(() => {
     if (loading || shouldAvoidBackgroundWork()) return undefined;
 
@@ -37,7 +30,6 @@ export default function useQuranDisplayPrefetch({
 
     const canPrefetch = () => {
       if (
-        isPlayingRef.current ||
         document.visibilityState !== "visible" ||
         shouldAvoidBackgroundWork()
       ) {

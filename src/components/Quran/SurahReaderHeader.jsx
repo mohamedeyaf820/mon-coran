@@ -10,6 +10,7 @@ import {
   Languages,
   List,
   Loader2,
+  Maximize2,
   Palette,
   Pause,
   Play,
@@ -44,6 +45,7 @@ export default function SurahReaderHeader({
   onPlaySurah,
   preparingSurah,
   onToggleMushaf,
+  onOpenFullscreen,
 }) {
   const { state, set } = useApp();
   const {
@@ -230,6 +232,18 @@ export default function SurahReaderHeader({
 
         {/* Action buttons */}
         <div className="srh-actions">
+          {mushafIsOn && onOpenFullscreen ? (
+            <button
+              type="button"
+              className="srh-info-btn srh-fullscreen-btn"
+              onClick={onOpenFullscreen}
+              aria-label={lbl(lang, "Lecture immersive", "Immersive reading", "قراءة بملء الشاشة")}
+              title={lbl(lang, "Lecture immersive", "Immersive reading", "قراءة بملء الشاشة")}
+            >
+              <Maximize2 size={15} aria-hidden="true" />
+              <span className="srh-info-btn__label">{lbl(lang, "Plein écran", "Full screen", "ملء الشاشة")}</span>
+            </button>
+          ) : null}
           <button
             type="button"
             className={cn("srh-play-btn", isPlaying && "srh-play-btn--playing")}
@@ -295,6 +309,16 @@ export default function SurahReaderHeader({
           <ChevronDown className="srh-mobile-bar__chevron" size={13} aria-hidden="true" />
         </button>
         <div className="srh-mobile-bar__actions">
+          {mushafIsOn && onOpenFullscreen ? (
+            <button
+              type="button"
+              className="srh-info-btn srh-fullscreen-btn"
+              onClick={onOpenFullscreen}
+              aria-label={lbl(lang, "Lecture immersive", "Immersive reading", "قراءة بملء الشاشة")}
+            >
+              <Maximize2 size={15} aria-hidden="true" />
+            </button>
+          ) : null}
           <button
             type="button"
             className={cn("srh-play-btn", isPlaying && "srh-play-btn--playing")}

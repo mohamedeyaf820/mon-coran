@@ -1,11 +1,6 @@
 import React from "react";
 import { BookOpen, Layers3, Star } from "lucide-react";
 
-function labelFor(lang, fr, en, ar = en) {
-  if (lang === "ar") return ar;
-  return lang === "fr" ? fr : en;
-}
-
 export default function ReaderContextCard({
   kind = "page",
   label,
@@ -14,7 +9,6 @@ export default function ReaderContextCard({
   total,
   secondary,
   riwaya,
-  lang = "fr",
 }) {
   const Icon = kind === "juz" ? Layers3 : BookOpen;
   const progress = Math.max(
@@ -34,15 +28,16 @@ export default function ReaderContextCard({
       </div>
 
       <div className="reader-context-card__copy">
-        <span className="reader-context-card__eyebrow">
-          {labelFor(lang, "Mode de lecture", "Reading mode", "وضع القراءة")}
-        </span>
         <div className="reader-context-card__title-row">
           <h2>
             {label} <strong>{value}</strong>
             <span> / {total}</span>
           </h2>
-          {secondary ? <p>{secondary}</p> : null}
+          {secondary ? (
+            <p>
+              <span aria-hidden="true">·</span> {secondary}
+            </p>
+          ) : null}
         </div>
       </div>
 

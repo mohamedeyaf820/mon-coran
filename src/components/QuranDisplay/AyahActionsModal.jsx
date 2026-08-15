@@ -11,11 +11,13 @@ const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabi
 
 export default function AyahActionsModal({
   activeAyah,
+  className,
   onClose,
   surah,
   ayahData,
   translations = [],
   quietBackdrop = false,
+  portalToBody = false,
 }) {
   const { lang } = useAppLocale();
   const dialogRef = useRef(null);
@@ -63,7 +65,9 @@ export default function AyahActionsModal({
   const portalTarget =
     typeof document === "undefined"
       ? null
-      : document.querySelector(".app-root") || document.body;
+      : portalToBody
+        ? document.body
+        : document.querySelector(".app-root") || document.body;
 
   if (!portalTarget) return null;
 
@@ -74,6 +78,7 @@ export default function AyahActionsModal({
         quietBackdrop
           ? "ayah-actions-modal--quiet"
           : "ayah-actions-modal--dimmed",
+        className,
       )}
       onClick={onClose}
       role="dialog"

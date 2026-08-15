@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   BookOpen,
   Languages,
   List,
   Loader2,
+  Maximize2,
   Palette,
   Pause,
   Play,
   SlidersHorizontal,
 } from "lucide-react";
-import { useApp } from "../../context/AppContext";
+import {
+  shallowEqual,
+  useAppActions,
+  useAppSelector,
+} from "../../context/AppContext";
 import { cn } from "../../lib/utils";
 import audioService from "../../services/audioService";
 import ArabicFontControls from "../ArabicFontControls";
@@ -29,6 +34,7 @@ function toolbarLabelsFor(lang) {
     listen: labelFor(lang, "\u00c9couter", "Listen", "\u0627\u0633\u062a\u0645\u0627\u0639"),
     pause: labelFor(lang, "Pause", "Pause", "\u0625\u064a\u0642\u0627\u0641 \u0645\u0624\u0642\u062a"),
     loading: labelFor(lang, "Chargement", "Loading", "\u062c\u0627\u0631\u064a \u0627\u0644\u062a\u062d\u0645\u064a\u0644"),
+    fullscreen: labelFor(lang, "Plein écran", "Full screen", "\u0645\u0644\u0621 \u0627\u0644\u0634\u0627\u0634\u0629"),
   };
 }
 
@@ -39,8 +45,9 @@ export default function ReadingToolbar({
   preparingSurah,
   surahNum,
   onToggleMushaf,
+  onOpenFullscreen,
 }) {
-  const { state, set } = useApp();
+  const { set } = useAppActions();
   const {
     lang,
     mushafLayout,
@@ -48,17 +55,19 @@ export default function ReadingToolbar({
     showTranslation,
     isPlaying,
     readerTypographyOpen,
-  } = state;
+  } = useAppSelector(
+    (s) => ({
+      lang: s.lang,
+      mushafLayout: s.mushafLayout,
+      showTajwid: s.showTajwid,
+      showTranslation: s.showTranslation,
+      isPlaying: s.isPlaying,
+      readerTypographyOpen: s.readerTypographyOpen,
+    }),
+    shallowEqual,
+  );
 
-  const [scrolled, setScrolled] = useState(false);
   const showTypography = Boolean(readerTypographyOpen);
-  useEffect(() => {
-    const mainEl = document.querySelector("#main-content") || window;
-    const getScroll = () => (mainEl === window ? window.scrollY : mainEl.scrollTop);
-    const onScroll = () => setScrolled(getScroll() > 40);
-    mainEl.addEventListener("scroll", onScroll, { passive: true });
-    return () => mainEl.removeEventListener("scroll", onScroll);
-  }, []);
 
   const playHandler = onPlay || onPlaySurah;
   const isPreparing = Boolean(preparingSurah && preparingSurah === surahNum);
@@ -100,16 +109,15 @@ export default function ReadingToolbar({
     <div
       className={cn(
         "reader-command-bar qc-reader-toolbar mx-auto mb-6 flex w-full max-w-[980px] flex-col items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 backdrop-blur-md transition-all duration-300 md:flex-row",
-        scrolled && "qc-reader-toolbar--sticky",
       )}
       style={{
-        boxShadow: scrolled ? "var(--shadow-lg)" : "var(--shadow-md)",
+        boxShadow: "var(--shadow-md)",
         color: "var(--text-primary)",
       }}
       role="toolbar"
       aria-label={labels.toolbar}
     >
-      <div className="scrollbar-none flex w-full items-center justify-start gap-2 overflow-x-auto pb-1 md:w-auto md:justify-center md:pb-0">
+      <div className="qc-reader-toolbar__modes scrollbar-none flex w-full items-center justify-start gap-2 overflow-x-auto pb-1 md:w-auto md:justify-center md:pb-0">
         <div className="shrink-0 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-1">
           <div className="flex items-center gap-1" role="group" aria-label={labels.toolbar}>
             <button
@@ -168,7 +176,7 @@ export default function ReadingToolbar({
           <button
             type="button"
             className={cn(
-              "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
+              "reader-toolbar-btn--tajweed flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all",
               showTajwid
                 ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
                 : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
@@ -186,6 +194,19 @@ export default function ReadingToolbar({
       </div>
 
       <div className="qc-reader-toolbar__utilities flex w-full flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] pt-2.5 md:w-auto md:justify-end md:border-t-0 md:pt-0">
+        {mushafIsOn && onOpenFullscreen ? (
+          <button
+            type="button"
+            className="reader-fullscreen-trigger"
+            onClick={onOpenFullscreen}
+            aria-label={labels.fullscreen}
+            title={labels.fullscreen}
+          >
+            <Maximize2 size={14} aria-hidden="true" />
+            <span>{labels.fullscreen}</span>
+          </button>
+        ) : null}
+
         <button
           type="button"
           className={cn(

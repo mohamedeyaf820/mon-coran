@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useEffect, useState } from "react";
 import {
   AlignJustify,
   BookOpen,
@@ -25,6 +25,127 @@ import {
   getReciterVisual,
 } from "../../data/reciters";
 import Icon from "./HomeIcon";
+
+const INITIAL_RECITER_COUNT = 8;
+const RECITER_BATCH_SIZE = 8;
+
+const ReciterCard = memo(function ReciterCard({
+  favoriteReciters,
+  isPlaying,
+  lang,
+  onIntent,
+  onOpen,
+  onPlay,
+  onToggleFavorite,
+  reciter,
+  t,
+}) {
+  const reciterLabel =
+    lang === "ar"
+      ? reciter.name
+      : lang === "fr"
+        ? reciter.nameFr
+        : reciter.nameEn;
+  const visual = getReciterVisual(reciter);
+  const avatar = visual.avatar;
+  const countryLabel = getReciterCountryLabel(reciter, lang);
+  const isFavorite = (favoriteReciters || []).includes(reciter.id);
+  const favoriteLabel = isFavorite
+    ? t("home.removeFavorite", lang)
+    : t("home.addFavorite", lang);
+  const listenLabel = lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen";
+
+  return (
+    <article
+      data-reciter-card="true"
+      data-playing={isPlaying ? "true" : "false"}
+      className="reciter-card group"
+      style={{ contentVisibility: "auto", containIntrinsicSize: "88px" }}
+    >
+      <button
+        type="button"
+        className="reciter-card__main"
+        onClick={() => onOpen(reciter.id)}
+        onPointerEnter={() => onIntent?.(reciter)}
+        onFocus={() => onIntent?.(reciter)}
+        aria-label={reciterLabel}
+      >
+        <div className="reciter-card__media">
+          <span
+            className="absolute inset-0 flex items-center justify-center text-sm font-black uppercase text-white"
+            style={{ background: avatar.gradient }}
+            aria-hidden="true"
+          >
+            {avatar.initials}
+          </span>
+          {visual.photo ? (
+            <img
+              src={visual.photo}
+              alt=""
+              className="reciter-photo absolute inset-0 h-full w-full object-cover"
+              style={{ objectPosition: visual.focalPoint }}
+              loading="lazy"
+              decoding="async"
+              fetchpriority="low"
+              referrerPolicy="no-referrer"
+              onError={(event) => {
+                event.currentTarget.hidden = true;
+              }}
+            />
+          ) : null}
+          {isPlaying ? (
+            <span className="reciter-card__playing" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+          ) : null}
+        </div>
+
+        <div className="reciter-card__copy">
+          <span className="reciter-card__name" dir={lang === "ar" ? "rtl" : "ltr"}>
+            {reciterLabel}
+          </span>
+          <div className="reciter-card__meta">
+            <span>{reciter.style || "murattal"}</span>
+            {countryLabel ? <span>{countryLabel}</span> : null}
+          </div>
+        </div>
+
+        {lang === "ar" ? (
+          <ChevronLeft className="reciter-card__icon reciter-card__icon--chevron" size={16} aria-hidden="true" />
+        ) : (
+          <ChevronRight className="reciter-card__icon reciter-card__icon--chevron" size={16} aria-hidden="true" />
+        )}
+      </button>
+
+      <div className="reciter-card__actions">
+        <button
+          type="button"
+          className={cn(
+            "reciter-card__favorite",
+            isFavorite && "reciter-card__favorite--active",
+          )}
+          onClick={() => onToggleFavorite(reciter.id)}
+          aria-label={`${favoriteLabel} — ${reciterLabel}`}
+          aria-pressed={isFavorite}
+        >
+          <Star className="reciter-card__icon" size={15} fill={isFavorite ? "currentColor" : "none"} />
+        </button>
+        <button
+          className="reciter-card__listen"
+          type="button"
+          onClick={() => onPlay(reciter)}
+          aria-label={`${listenLabel} — ${reciterLabel}`}
+          aria-pressed={isPlaying}
+        >
+          <Play className="reciter-card__icon reciter-card__icon--play" size={14} fill="currentColor" />
+          <span>{isPlaying ? (lang === "fr" ? "En cours" : lang === "ar" ? "يعمل" : "Playing") : listenLabel}</span>
+        </button>
+      </div>
+    </article>
+  );
+});
 
 /**
  * ContentSection — onglets, barre de recherche/tri et grille de contenu.
@@ -112,10 +233,12 @@ export default function ContentSection({
   ];
 
   const [audioView, setAudioView] = useState("reciters");
-  const [showAllReciters, setShowAllReciters] = useState(false);
-  const displayedReciters = showAllReciters
-    ? filteredReciters
-    : filteredReciters.slice(0, 8);
+  const [visibleReciterCount, setVisibleReciterCount] = useState(INITIAL_RECITER_COUNT);
+  const displayedReciters = filteredReciters.slice(0, visibleReciterCount);
+
+  useEffect(() => {
+    setVisibleReciterCount(INITIAL_RECITER_COUNT);
+  }, [audioView, filter, reciterStyleFilter]);
 
   const refinedCollectionCopy = {
     surah: {
@@ -170,7 +293,7 @@ export default function ContentSection({
             role="tab"
             aria-selected={activeTab === "surah"}
             className={cn(
-              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-all hover:text-text-primary",
+              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-[background-color,color,box-shadow] hover:text-text-primary",
               activeTab === "surah" && "bg-bg-primary text-primary shadow-sm",
             )}
             onClick={() => onSelectTab("surah")}
@@ -184,7 +307,7 @@ export default function ContentSection({
             role="tab"
             aria-selected={activeTab === "juz"}
             className={cn(
-              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-all hover:text-text-primary",
+              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-[background-color,color,box-shadow] hover:text-text-primary",
               activeTab === "juz" && "bg-bg-primary text-primary shadow-sm",
             )}
             onClick={() => onSelectTab("juz")}
@@ -198,7 +321,7 @@ export default function ContentSection({
             role="tab"
             aria-selected={activeTab === "audio"}
             className={cn(
-              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-all hover:text-text-primary",
+              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-[background-color,color,box-shadow] hover:text-text-primary",
               activeTab === "audio" &&
                 "bg-bg-primary text-primary shadow-sm",
             )}
@@ -366,7 +489,7 @@ export default function ContentSection({
           filteredSurahs.length === 0 ? (
             <EmptyState icon="fa-magnifying-glass" text={t("search.noResults", lang)} />
           ) : (
-            renderedSurahs.map((s, idx) => (
+            renderedSurahs.map((s) => (
               <SurahCard
                 key={s.n}
                 surah={s}
@@ -381,13 +504,12 @@ export default function ContentSection({
                 isPlaying={
                   state.isPlaying && state.currentPlayingAyah?.surah === s.n
                 }
-                animIndex={idx}
               />
             ))
           )
         ) : /* JUZ */
         activeTab === "juz" ? (
-          JUZ_DATA.map((j, idx) => (
+          JUZ_DATA.map((j) => (
             <JuzCard
               key={j.juz}
               juzData={j}
@@ -397,7 +519,6 @@ export default function ContentSection({
               isActive={
                 j.juz === state.currentJuz && state.displayMode === "juz"
               }
-              animIndex={idx}
             />
           ))
         ) : /* RÉCITATEURS */
@@ -415,119 +536,35 @@ export default function ContentSection({
             />
           ) : (
             <>
-              {displayedReciters.map((reciter) => {
-                const reciterLabel =
-                  lang === "ar"
-                    ? reciter.name
-                    : lang === "fr"
-                      ? reciter.nameFr
-                      : reciter.nameEn;
-                const visual = getReciterVisual(reciter);
-                const avatar = visual.avatar;
-                const countryLabel = getReciterCountryLabel(reciter, lang);
-                const isFavorite = (favoriteReciters || []).includes(reciter.id);
-                const favoriteLabel = isFavorite
-                  ? t("home.removeFavorite", lang)
-                  : t("home.addFavorite", lang);
-                const listenLabel =
-                  lang === "fr" ? "Écouter" : lang === "ar" ? "استماع" : "Listen";
-
-                return (
-                  <article
-                    key={reciter.id}
-                    data-reciter-card="true"
-                    className="reciter-card group"
-                  >
-                    <button
-                      type="button"
-                      className="reciter-card__main"
-                      onClick={() => setSelectedReciterId(reciter.id)}
-                      onPointerEnter={() => onReciterIntent?.(reciter)}
-                      onPointerDown={() => onReciterIntent?.(reciter)}
-                      onFocus={() => onReciterIntent?.(reciter)}
-                      aria-label={reciterLabel}
-                    >
-                      <div className="reciter-card__media">
-                        <span
-                          className="absolute inset-0 flex items-center justify-center text-sm font-black uppercase text-white"
-                          style={{ background: avatar.gradient }}
-                          aria-hidden="true"
-                        >
-                          {avatar.initials}
-                        </span>
-                        {visual.photo ? (
-                          <img
-                            src={visual.photo}
-                            alt=""
-                            className="reciter-photo absolute inset-0 h-full w-full object-cover"
-                            style={{ objectPosition: visual.focalPoint }}
-                            loading="lazy"
-                            decoding="async"
-                            referrerPolicy="no-referrer"
-                            onError={(event) => {
-                              event.currentTarget.hidden = true;
-                            }}
-                          />
-                        ) : null}
-                      </div>
-
-                      <div className="reciter-card__copy">
-                        <span
-                          className="reciter-card__name"
-                          dir={lang === "ar" ? "rtl" : "ltr"}
-                        >
-                          {reciterLabel}
-                        </span>
-                        <div className="reciter-card__meta">
-                          <span>{reciter.style || "murattal"}</span>
-                          {countryLabel ? <span>{countryLabel}</span> : null}
-                        </div>
-                      </div>
-
-                      {lang === "ar" ? (
-                        <ChevronLeft className="reciter-card__icon reciter-card__icon--chevron" size={16} aria-hidden="true" />
-                      ) : (
-                        <ChevronRight className="reciter-card__icon reciter-card__icon--chevron" size={16} aria-hidden="true" />
-                      )}
-                    </button>
-
-                    <div className="reciter-card__actions">
-                      <button
-                        type="button"
-                        className={cn(
-                          "reciter-card__favorite",
-                          isFavorite && "reciter-card__favorite--active",
-                        )}
-                        onClick={() => onToggleFavoriteReciter(reciter.id)}
-                        aria-label={`${favoriteLabel} — ${reciterLabel}`}
-                        aria-pressed={isFavorite}
-                      >
-                        <Star className="reciter-card__icon" size={15} fill={isFavorite ? "currentColor" : "none"} />
-                      </button>
-                      <button
-                        className="reciter-card__listen"
-                        type="button"
-                        onClick={() => playReciterRadio(reciter)}
-                        aria-label={`${listenLabel} — ${reciterLabel}`}
-                      >
-                        <Play className="reciter-card__icon reciter-card__icon--play" size={14} fill="currentColor" />
-                        <span>{listenLabel}</span>
-                      </button>
-                    </div>
-                  </article>
-                );
-              })}
-              {!showAllReciters && filteredReciters.length > 8 && (
+              {displayedReciters.map((reciter) => (
+                <ReciterCard
+                  key={reciter.id}
+                  favoriteReciters={favoriteReciters}
+                  isPlaying={Boolean(state.isPlaying && state.reciter === reciter.id)}
+                  lang={lang}
+                  onIntent={onReciterIntent}
+                  onOpen={setSelectedReciterId}
+                  onPlay={playReciterRadio}
+                  onToggleFavorite={onToggleFavoriteReciter}
+                  reciter={reciter}
+                  t={t}
+                />
+              ))}
+              {visibleReciterCount < filteredReciters.length && (
                 <button
                   type="button"
-                  className="w-full mt-2 py-2.5 text-sm font-semibold text-[var(--primary)] border border-[rgba(var(--primary-rgb),0.3)] rounded-xl hover:bg-[rgba(var(--primary-rgb),0.06)] transition-colors"
-                  onClick={() => setShowAllReciters(true)}
+                  className="home-reciter-load-more"
+                  onClick={() =>
+                    setVisibleReciterCount((current) =>
+                      Math.min(filteredReciters.length, current + RECITER_BATCH_SIZE),
+                    )
+                  }
                 >
                   {lang === "fr"
-                    ? `Voir tous les récitateurs (${filteredReciters.length})`
+                    ? `Afficher plus de récitateurs (${filteredReciters.length - visibleReciterCount})`
                     : lang === "ar"
-                      ? `عرض جميع القراء (${filteredReciters.length})`
-                      : `View all reciters (${filteredReciters.length})`}
+                      ? `عرض المزيد من القراء (${filteredReciters.length - visibleReciterCount})`
+                      : `Show more reciters (${filteredReciters.length - visibleReciterCount})`}
                 </button>
               )}
             </>
@@ -599,7 +636,7 @@ export default function ContentSection({
         <div className="mt-6 flex justify-center">
           <button
             ref={loadMoreRef}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-bg-secondary text-text-primary font-bold transition-all hover:-translate-y-0.5 hover:bg-bg-tertiary"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-bg-secondary text-text-primary font-bold transition-[transform,background-color] hover:-translate-y-0.5 hover:bg-bg-tertiary"
             onClick={loadMoreSurahs}
           >
             <ArrowDown size={14} />

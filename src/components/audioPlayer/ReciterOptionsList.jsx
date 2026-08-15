@@ -1,6 +1,5 @@
 import React from "react";
 import { Check, ChevronDown, LoaderCircle, Search, Server, Star, X } from "lucide-react";
-import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 import { formatCooldownLabel } from "../../utils/formatUtils";
 import {
@@ -74,6 +73,11 @@ export default function ReciterOptionsList(props) {
   } = props;
 
   const labels = {
+    reciters: pick(lang, {
+      fr: "R\u00e9citateurs",
+      en: "Reciters",
+      ar: "\u0627\u0644\u0642\u0631\u0627\u0621",
+    }),
     search: pick(lang, {
       fr: "Rechercher un r\u00e9citateur",
       en: "Search reciter",
@@ -147,7 +151,7 @@ export default function ReciterOptionsList(props) {
     >
       <div className="audio-reciter-options__heading mb-2 flex items-center justify-between gap-2">
         <h4 className={playerSectionLabelClass}>
-          {t("audio.reciter", lang)}
+          {labels.reciters}
         </h4>
         <span
           className={cn(
