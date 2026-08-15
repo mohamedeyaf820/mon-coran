@@ -281,7 +281,7 @@ export default function ContentSection({
       </div>
 
       {/* ── Barre d'actions sticky ──────────────────────────────────────── */}
-      <div className="home-content-toolbar z-20 flex flex-col md:flex-row items-center gap-3 p-3 rounded-[1.18rem] bg-bg-card/90 border border-border/50 shadow-lg backdrop-blur-xl">
+      <div className="home-content-toolbar z-20 flex flex-col md:flex-row items-center gap-3 p-3 rounded-[1.18rem] bg-bg-card/90 border border-border/50 shadow-lg">
         {/* Onglets */}
         <div
           role="tablist"

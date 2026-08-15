@@ -39,7 +39,7 @@ button,
   border-bottom: 1px solid color-mix(in srgb, var(--theme-border, #d4d4d4) 70%, transparent) !important;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--theme-panel-bg-strong, #fff) 94%, transparent), color-mix(in srgb, var(--theme-panel-bg, #fff) 88%, transparent)) !important;
-  backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(6px) saturate(1.04);
   box-shadow: 0 12px 34px rgba(8, 24, 16, 0.08) !important;
 }
 
@@ -382,7 +382,7 @@ html.dark .home-info-card {
   border-radius: var(--r-xl) !important;
   background: color-mix(in srgb, var(--theme-panel-bg-strong, #fff) 92%, transparent) !important;
   box-shadow: 0 14px 36px rgba(10, 24, 18, 0.1) !important;
-  backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(4px) saturate(1.02);
 }
 
 html[data-theme="dark"] .home-content-toolbar,
