@@ -582,13 +582,23 @@ class AudioService {
     if (this.playlistIndex < this.playlist.length - 1) {
       this._loadAndPlay(this.playlistIndex + 1);
     } else {
-      this.stop();
+      const repeatInfinitely = this.surahRepeatCount === 0;
+      const hasMoreCycles = repeatInfinitely || this.surahCurrentCycle < this.surahRepeatCount;
+      if (this.playlist.length > 0 && hasMoreCycles) {
+        if (!repeatInfinitely) this.surahCurrentCycle += 1;
+        this._loadAndPlay(0);
+      } else {
+        this.surahCurrentCycle = 1;
+        this.stop();
+      }
     }
   }
 
   prev() {
     if (this.playlistIndex > 0) {
       this._loadAndPlay(this.playlistIndex - 1);
+    } else if (this.playlist.length > 0) {
+      this._loadAndPlay(0);
     }
   }
 

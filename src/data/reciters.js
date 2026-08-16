@@ -40,6 +40,7 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     cdn: "Akram_AlAlaqimy_128kbps",
     cdnType: "everyayah",
     audioMode: "ayah",
+    country: "Yemen",
     source: "everyayah",
   },
   {
@@ -59,7 +60,7 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     name: "الحصري المعلم",
     nameEn: "Al-Husary Muallim",
     nameFr: "Al-Housri Muallim",
-    style: "murattal",
+    style: "muallim",
     cdn: "Husary_Muallim_128kbps",
     cdnType: "everyayah",
     audioMode: "ayah",

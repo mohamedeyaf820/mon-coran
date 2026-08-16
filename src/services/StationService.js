@@ -2,7 +2,7 @@ export const THEMATIC_STATIONS = [
   {
     id: "popular",
     icon: "fa-fire",
-    titleFr: "Recitations populaires",
+    titleFr: "Récitations populaires",
     titleEn: "Popular recitations",
     titleAr: "تلاوات شائعة",
     surahs: [1, 36, 55, 67, 18],
@@ -26,7 +26,7 @@ export const THEMATIC_STATIONS = [
   {
     id: "night-soft",
     icon: "fa-moon",
-    titleFr: "Recitation du soir",
+    titleFr: "Récitation du soir",
     titleEn: "Night recitation",
     titleAr: "ورد المساء",
     surahs: [67, 36, 55, 56],

@@ -1143,16 +1143,11 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
 
     .recitation-action-btn,
     .recitation-action-btn--primary {
-        width: 38px;
-        min-width: 38px;
-        min-height: 38px;
-        flex-basis: 38px;
+        width: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        flex-basis: 44px;
         border-radius: 11px;
-    }
-
-    .recitation-action-btn,
-    .recitation-action-btn--primary {
-        min-width: 38px;
     }
 
     .recitation-action-btn__label {
@@ -1173,8 +1168,10 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
     .reciter-detail__close {
         top: 0.62rem;
         right: 0.62rem;
-        width: 34px;
-        height: 34px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
         border-radius: 10px;
     }
 
