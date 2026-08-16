@@ -547,11 +547,9 @@ html body .app-root > .mp-header .mp-header__bar {
   padding-inline: max(clamp(0.65rem, 1.8vw, 1.5rem), env(safe-area-inset-left))
     max(clamp(0.65rem, 1.8vw, 1.5rem), env(safe-area-inset-right)) !important;
   gap: var(--mp-header-gap) !important;
-  background: color-mix(in srgb, var(--bg-primary) 94%, transparent) !important;
   border-bottom-color: color-mix(in srgb, var(--border) 82%, transparent) !important;
   box-shadow: 0 1px 0 color-mix(in srgb, var(--text-primary) 4%, transparent),
     0 8px 24px color-mix(in srgb, #000 5%, transparent) !important;
-  backdrop-filter: blur(20px) saturate(1.12) !important;
 }
 
 html body .app-root > .mp-header .mp-header__brand-row,

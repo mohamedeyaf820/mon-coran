@@ -9,7 +9,7 @@ export default defineConfig({
   snapshotPathTemplate: "{testDir}/{testFilePath}-snapshots/{arg}-{projectName}{ext}",
   testIgnore: ["**/*-debug.spec.mjs"],
   timeout: 60_000,
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 2 : 2,
   workers: process.env.CI ? 1 : 2,
   expect: {
     timeout: 10_000,

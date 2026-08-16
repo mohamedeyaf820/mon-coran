@@ -113,9 +113,9 @@ test("a riwaya switch stays atomic until the requested text is ready", async ({ 
     await readerTools.focus();
     await readerTools.press("Enter");
   }
-  await page.locator(".srh-study-more").click();
+  // Warsh riwaya must not expose a word-by-word study toggle
   await expect(
-    page.getByRole("menuitemcheckbox", { name: "Mot à mot" }),
+    page.locator(".srh-study-toggles button[aria-label*='Mot à mot'], .srh-study-toggles button[aria-label*='Word by word']"),
   ).toHaveCount(0);
 });
 

@@ -102,6 +102,9 @@ test("phase 8: verse and sidebar windows release offscreen components", async ({
   await page.locator(".app-main-shell").evaluate((scroller) => {
     scroller.scrollTop = scroller.scrollHeight;
   });
+  // scrollIntoView ensures IntersectionObserver fires for the target node,
+  // even when programmatic scrollTop doesn't synchronously trigger it.
+  await lastAnchor.evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
   await expect(lastAnchor.locator(".qc-list-card")).toBeVisible();
   await expect(page.locator("#ayah-40 .qc-list-card")).toHaveCount(0);
   expect(await page.locator(".qc-list-card").count()).toBeLessThan(50);

@@ -182,10 +182,10 @@ test("mobile recitation collection and reciter library stay clear and valid", as
   const modal = page.locator(".reciter-detail");
   await expect(modal).toBeVisible();
   await expect(modal.locator(".reciter-detail__source-row").first()).toContainText(
-    "EveryAyah",
+    "MP3Quran",
   );
   await expect(modal.locator(".reciter-detail__source-row").last()).toContainText(
-    "Quran.com",
+    "Wikimedia",
   );
   const modalBox = await modal.boundingBox();
   expect(modalBox?.x || 0).toBeGreaterThanOrEqual(0);
@@ -376,7 +376,7 @@ test("reader interactions do not trigger a React update loop", async ({ page }) 
     await disclosure.click();
   }
   await expect(disclosure).toHaveAttribute("aria-expanded", "true");
-  await page.getByRole("button", { name: "Mushaf", exact: true }).click();
+  await page.getByRole("radio", { name: "Mushaf", exact: true }).click();
   await expect(page.locator(".quran-mode-pane--mushaf")).toBeVisible();
   await page.getByRole("radio", { name: "Liste", exact: true }).click();
   await expect(page.locator(".quran-mode-pane--mushaf")).toHaveCount(0);
