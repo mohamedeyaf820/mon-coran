@@ -197,7 +197,7 @@ export default function HeroSection({
             <strong id="home-today-title">{localText(lang, "Aujourd’hui", "Today", "اليوم")}</strong>
           </span>
           <small>
-            {suggestionSet.period[lang === "ar" ? "ar" : lang === "en" ? "en" : "fr"]}
+            {suggestionSet.period?.[lang === "ar" ? "ar" : lang === "en" ? "en" : "fr"]}
           </small>
         </header>
 

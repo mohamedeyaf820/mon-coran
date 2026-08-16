@@ -310,7 +310,7 @@ export default function ContentSection({
               activeTab === "surah" && "bg-bg-primary text-primary shadow-sm",
             )}
             onClick={() => onSelectTab("surah")}
-            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("juz"); if (e.key === "ArrowLeft") onSelectTab("audio"); }}
+            onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); onSelectTab("juz"); } if (e.key === "ArrowLeft") { e.preventDefault(); onSelectTab("audio"); } }}
           >
             <AlignJustify size={13} className="opacity-70" />
             {t("home.surahs", lang)}
@@ -324,7 +324,7 @@ export default function ContentSection({
               activeTab === "juz" && "bg-bg-primary text-primary shadow-sm",
             )}
             onClick={() => onSelectTab("juz")}
-            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("audio"); if (e.key === "ArrowLeft") onSelectTab("surah"); }}
+            onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); onSelectTab("audio"); } if (e.key === "ArrowLeft") { e.preventDefault(); onSelectTab("surah"); } }}
           >
             <BookOpen size={13} className="opacity-70" />
             {t("home.juz", lang)}
@@ -348,7 +348,7 @@ export default function ContentSection({
             onPointerEnter={onRecitationsIntent}
             onPointerDown={onRecitationsIntent}
             onFocus={onRecitationsIntent}
-            onKeyDown={(e) => { if (e.key === "ArrowRight") onSelectTab("surah"); if (e.key === "ArrowLeft") onSelectTab("juz"); }}
+            onKeyDown={(e) => { if (e.key === "ArrowRight") { e.preventDefault(); onSelectTab("surah"); } if (e.key === "ArrowLeft") { e.preventDefault(); onSelectTab("juz"); } }}
           >
             <Radio size={13} className="opacity-70" />
             {lang === "ar" ? "الصوتيات" : lang === "en" ? "Audio" : "Audio"}
@@ -674,7 +674,7 @@ export default function ContentSection({
             {lang === "fr" ? "Récemment écouté" : lang === "ar" ? "المستمع مؤخراً" : "Recently played"}
           </span>
           {listeningHistory.map((entry, idx) => {
-            const reciter = AVAILABLE_RECITERS.find((r) => r.id === entry.reciterId);
+            const reciter = Object.values(AVAILABLE_RECITERS).flat().find((r) => r.id === entry.reciterId);
             if (!reciter) return null;
             const reciterLabel = lang === "ar" ? reciter.nameAr || reciter.name : reciter.name;
             return (
@@ -683,7 +683,7 @@ export default function ContentSection({
                 type="button"
                 className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-bg-card/60 px-2.5 py-1 text-[0.67rem] font-semibold text-text-secondary transition-colors hover:border-primary/30 hover:bg-primary/8 hover:text-primary"
                 onClick={() => {
-                  const found = AVAILABLE_RECITERS.find((r) => r.id === entry.reciterId);
+                  const found = Object.values(AVAILABLE_RECITERS).flat().find((r) => r.id === entry.reciterId);
                   if (found && typeof playReciterRadio === "function") playReciterRadio(found);
                 }}
               >
