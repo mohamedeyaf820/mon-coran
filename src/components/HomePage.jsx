@@ -978,7 +978,7 @@ export default function HomePage({ lowPerfMode = false }) {
         : null}
 
       {/* ── Pied de page ──────────────────────────────────────────────── */}
-      <div className="relative z-10" style={HOME_FOOTER_SECTION_STYLE}>
+      <div className="relative z-10">
         <Footer goSurah={goSurah} />
       </div>
     </div>

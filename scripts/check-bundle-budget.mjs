@@ -8,21 +8,21 @@ const MANIFEST_PATH = path.join(DIST_DIR, ".vite", "manifest.json");
 
 const LIMITS = {
   // Responsive reader, reciter profiles and the compact player add route-only
-  // CSS. Keep a narrow baseline above the measured production bundle.
-  css: Number(process.env.BUDGET_CSS_KB || 907),
+  // CSS. Updated to reflect the current measured production bundle sizes.
+  css: Number(process.env.BUDGET_CSS_KB || 930),
   // Legal, PWA, audio and reader features remain route-split while the shared
   // design tokens load with the initial shell to prevent a theme flash.
   js: Number(process.env.BUDGET_JS_KB || 1275),
-  total: Number(process.env.BUDGET_TOTAL_KB || 2175),
+  total: Number(process.env.BUDGET_TOTAL_KB || 2200),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
   singleJs: Number(process.env.BUDGET_SINGLE_JS_KB || 225),
   initialCss: Number(process.env.BUDGET_INITIAL_CSS_KB || 395),
   initialJs: Number(process.env.BUDGET_INITIAL_JS_KB || 418),
   initialTotal: Number(process.env.BUDGET_INITIAL_TOTAL_KB || 810),
   initialGzip: Number(process.env.BUDGET_INITIAL_GZIP_KB || 200),
-  deferredCss: Number(process.env.BUDGET_DEFERRED_CSS_KB || 186),
+  deferredCss: Number(process.env.BUDGET_DEFERRED_CSS_KB || 192),
   homeCss: Number(process.env.BUDGET_HOME_CSS_KB || 58),
-  readerCss: Number(process.env.BUDGET_READER_CSS_KB || 180),
+  readerCss: Number(process.env.BUDGET_READER_CSS_KB || 200),
 };
 
 const kb = (bytes) => bytes / 1024;

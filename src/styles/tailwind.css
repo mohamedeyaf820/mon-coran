@@ -14293,8 +14293,8 @@ body {
             ),
             color-mix(in srgb, var(--bg-secondary) 92%, rgba(0, 0, 0, 0.04) 8%)
         );
-    backdrop-filter: blur(18px) saturate(145%);
-    -webkit-backdrop-filter: blur(18px) saturate(145%);
+    backdrop-filter: blur(8px) saturate(130%);
+    -webkit-backdrop-filter: blur(8px) saturate(130%);
 }
 
 [dir="rtl"] .sb-wrapper {
@@ -15518,7 +15518,7 @@ body {
     }
 
     .hp-card-meta {
-        font-size: 0.7rem;
+        font-size: max(0.7rem, 11px);
     }
 
     .hp-card-ar {

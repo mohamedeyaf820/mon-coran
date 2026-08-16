@@ -179,7 +179,7 @@ html[data-theme="dark"]
 html[data-theme="dark"]
     :is(.modal-overlay, .settings-backdrop, .audio-player-modal) {
     background: var(--bg-overlay) !important;
-    backdrop-filter: blur(12px) saturate(120%) !important;
+    backdrop-filter: blur(8px) saturate(120%) !important;
 }
 
 html[data-theme="dark"]

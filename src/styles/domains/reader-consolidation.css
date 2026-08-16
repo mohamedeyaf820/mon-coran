@@ -2194,7 +2194,7 @@ html[data-split-view="on"]
 }
 
 .view-reading .mp-header__bar {
-    grid-template-columns: minmax(15rem, 0.82fr) minmax(17rem, 1fr) minmax(20rem, 0.92fr) !important;
+    grid-template-columns: minmax(15rem, 1fr) auto minmax(15rem, 1fr) !important;
     align-items: center !important;
     gap: clamp(0.55rem, 1vw, 1rem) !important;
     width: min(100%, 1380px) !important;
@@ -2596,7 +2596,7 @@ html[data-split-view="on"]
 }
 
 .view-reading .mp-header__bar {
-    grid-template-columns: minmax(13rem, 0.95fr) minmax(13rem, 1fr) minmax(16rem, 0.95fr);
+    grid-template-columns: minmax(13rem, 1fr) auto minmax(13rem, 1fr);
     min-height: 3.75rem !important;
     padding: 0.42rem clamp(0.72rem, 1.5vw, 1.25rem) !important;
     gap: clamp(0.48rem, 1vw, 0.86rem) !important;

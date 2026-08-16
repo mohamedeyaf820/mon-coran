@@ -1150,10 +1150,6 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
         border-radius: 11px;
     }
 
-    .recitation-row__meta {
-        font-size: 0.62rem;
-    }
-
     .recitation-action-btn,
     .recitation-action-btn--primary {
         min-width: 38px;

@@ -40,15 +40,7 @@ export const AyahMarker = React.memo(function AyahMarker({
   );
   const markerFontFamily = resolveFontFamily(activeFont, activeRiwaya);
 
-  // Always use QPC Hafs for the rosette glyph regardless of the selected reading font.
-  // Other fonts (IndoPak, Scheherazade, Amiri, QCF…) have either tiny overlay digit
-  // glyphs or plain numerals — only QPC Hafs has the OpenType rosette ligature.
-  const rosetteFont =
-    activeRiwaya === "warsh"
-      ? "'QPC Warsh','KFGQPC Uthmanic Script WARSH','QPC Hafs',serif"
-      : "'QPC Hafs','KFGQPC Uthmanic Script HAFS','UthmanicHafs',serif";
-  const rosetteBaseFont = activeRiwaya === "warsh" ? "qpc-warsh" : "qpc-hafs";
-  const markerText = getNativeAyahMarker(markerNumber, rosetteBaseFont, activeRiwaya);
+  const markerText = getNativeAyahMarker(markerNumber, activeFont, activeRiwaya);
 
   return (
     <span
@@ -77,7 +69,7 @@ export const AyahMarker = React.memo(function AyahMarker({
           : undefined
       }
     >
-      <span aria-hidden="true" style={{ fontFamily: rosetteFont }}>{markerText}</span>
+      <span aria-hidden="true">{markerText}</span>
     </span>
   );
 });

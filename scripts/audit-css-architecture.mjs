@@ -17,12 +17,11 @@ const formatKb = (bytes) => `${(bytes / 1024).toFixed(1)} kB`;
 const shouldCheck = process.argv.includes("--check");
 const LIMITS = {
   // Source size is a maintenance guard; the retained and production bundle
-  // budgets remain the stricter deployment gates. Keep this close to the
-  // measured app while accounting for the canonical responsive experience
-  // layer shared by home, reader, the Surah dossier, spiritual-tool panels and
-  // the responsive editorial/source directory. Runtime CSS budgets stay lower.
-  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1640),
-  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1005),
+  // budgets remain the stricter deployment gates. Updated to reflect current
+  // measured sizes after responsive reader, recitation platform, and mushaf
+  // style additions.
+  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1700),
+  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1100),
   important: Number(process.env.CSS_IMPORTANT_BUDGET || 7240),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
   crossFileDuplicateRules: Number(

@@ -32,16 +32,16 @@ export function getResponsiveArabicFontSize({
 
   if (width <= 480) {
     deviceBaseline = isMushaf ? 22 : 24;
-    deviceMaximum = 72;
+    deviceMaximum = isMushaf ? 30 : 32;
   } else if (width <= 768) {
     deviceBaseline = isMushaf ? 26 : 28;
-    deviceMaximum = 80;
+    deviceMaximum = isMushaf ? 36 : 40;
   } else if (width <= 1024) {
     deviceBaseline = isMushaf ? 30 : 34;
-    deviceMaximum = 88;
+    deviceMaximum = isMushaf ? 38 : 40;
   } else {
     deviceBaseline = isMushaf ? 34 : 42;
-    deviceMaximum = 96;
+    deviceMaximum = isMushaf ? 46 : 52;
   }
 
   const layoutScale = mushafLayout === "mushaf" ? 0.94 : 1;
