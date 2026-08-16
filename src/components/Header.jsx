@@ -267,7 +267,7 @@ export default function Header({ immersiveHidden = false }) {
       navigateReadingTarget("page", currentPage - 1);
     } else if (displayMode === "juz" && currentJuz > 1) {
       navigateReadingTarget("juz", currentJuz - 1);
-    } else if (currentSurah > 1) {
+    } else if (displayMode === "surah" && currentSurah > 1) {
       navigateReadingTarget("surah", currentSurah - 1);
     }
   };
@@ -277,7 +277,7 @@ export default function Header({ immersiveHidden = false }) {
       navigateReadingTarget("page", currentPage + 1);
     } else if (displayMode === "juz" && currentJuz < 30) {
       navigateReadingTarget("juz", currentJuz + 1);
-    } else if (currentSurah < 114) {
+    } else if (displayMode === "surah" && currentSurah < 114) {
       navigateReadingTarget("surah", currentSurah + 1);
     }
   };
@@ -301,7 +301,7 @@ export default function Header({ immersiveHidden = false }) {
       navigateReadingTarget("page", num);
     } else if (displayMode === "juz" && num >= 1 && num <= 30) {
       navigateReadingTarget("juz", num);
-    } else if (num >= 1 && num <= 114) {
+    } else if (displayMode === "surah" && num >= 1 && num <= 114) {
       navigateReadingTarget("surah", num);
     }
     setGoToOpen(false);

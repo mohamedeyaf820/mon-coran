@@ -1067,6 +1067,7 @@ class AudioService {
   }
 
   _handleEnded() {
+    if (this.playlist.length === 0) return;
     if (this._oneShotMode) {
       this._oneShotMode = false;
       this.isPlaying = false;

@@ -872,6 +872,7 @@ export default function AudioPlayer() {
   const normalizeAyahText = (value) =>
     typeof value === "string" ? value.replace(/\s+/g, " ").trim() : "";
   const currentAyahText = (() => {
+    if (!currentPlayingAyah) return "";
     const liveText = audioService.currentAyah?.text;
     const normalizedLiveText = normalizeAyahText(liveText);
     if (normalizedLiveText) {
