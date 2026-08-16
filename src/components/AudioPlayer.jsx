@@ -261,17 +261,6 @@ export default function AudioPlayer() {
   }, [minimized, playerMinimized, set]);
 
   useEffect(() => {
-    if (!optionsModalOpen) return;
-    const onEscape = (event) => {
-      if (event.key === "Escape") {
-        setOptionsModalOpen(false);
-      }
-    };
-    window.addEventListener("keydown", onEscape);
-    return () => window.removeEventListener("keydown", onEscape);
-  }, [optionsModalOpen]);
-
-  useEffect(() => {
     const openImmersiveOptions = () => {
       setClosed(false);
       setMinimized(true);
@@ -626,7 +615,24 @@ export default function AudioPlayer() {
 
   const closeOptionsModal = useCallback(() => {
     setOptionsModalOpen(false);
+    setReciterSearch("");
   }, []);
+
+  useEffect(() => {
+    const root = document.querySelector(".app-root");
+    if (!root) return;
+    if (optionsModalOpen) {
+      root.setAttribute("inert", "");
+      root.setAttribute("aria-hidden", "true");
+    } else {
+      root.removeAttribute("inert");
+      root.removeAttribute("aria-hidden");
+    }
+    return () => {
+      root.removeAttribute("inert");
+      root.removeAttribute("aria-hidden");
+    };
+  }, [optionsModalOpen]);
 
   useEffect(() => {
     if (!optionsModalOpen) return;
@@ -727,12 +733,9 @@ export default function AudioPlayer() {
 
   const handleReciterSelect = useCallback(
     async (nextReciterId) => {
-      if (
-        !nextReciterId ||
-        nextReciterId === reciter ||
-        reciterSwitchingIdRef.current
-      )
-        return;
+      if (!nextReciterId || nextReciterId === reciter) return;
+      // Block user switches during auto-failover
+      if (autoFailoverBusyRef.current) return;
       const target = currentReciters.find((r) => r.id === nextReciterId);
       if (!target) return;
 
@@ -760,7 +763,10 @@ export default function AudioPlayer() {
           target.cdn,
           target.cdnType || "islamic",
         );
-        if (!switched) return;
+        if (!switched) {
+          // Superseded by a newer click — that call handles cleanup.
+          return;
+        }
         markReciterAvailable(nextReciterId);
         set({ reciter: nextReciterId });
       } catch (error) {
