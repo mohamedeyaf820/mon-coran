@@ -63,7 +63,7 @@ console.log('open attr 250ms after click:', attr250);
 try {
   await expect(legend).toHaveAttribute("open", "", { timeout: 3000 });
   console.log('SUCCESS: open attr found');
-} catch(e) {
+} catch(_e) {
   console.log('FAILED: open attr not found within 3s');
   const attrFinal = await legend.getAttribute('open');
   console.log('Final open attr:', attrFinal);
