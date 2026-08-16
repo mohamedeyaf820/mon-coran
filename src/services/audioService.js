@@ -155,7 +155,8 @@ class AudioService {
     this._boundTimeUpdate = () => {
       // timeupdate fires 4-17×/sec; cap React re-renders at ~60fps with RAF
       if (this._rafId) return;
-      this._rafId = requestAnimationFrame(() => {
+      const raf = typeof requestAnimationFrame !== "undefined" ? requestAnimationFrame : (fn) => (fn(), 0);
+      this._rafId = raf(() => {
         this._rafId = null;
         this._syncSurahStreamAyah(
           this.audio.currentTime,

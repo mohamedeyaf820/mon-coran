@@ -1401,13 +1401,13 @@ html[data-theme="sepia"]
 html[data-theme="light"]
     :is(.modal-overlay, .settings-backdrop, .audio-player-modal) {
     background: rgba(23, 33, 28, 0.28);
-    backdrop-filter: blur(10px) saturate(110%);
+    backdrop-filter: blur(8px) saturate(110%);
 }
 
 html[data-theme="sepia"]
     :is(.modal-overlay, .settings-backdrop, .audio-player-modal) {
     background: rgba(36, 21, 5, 0.32);
-    backdrop-filter: blur(10px) saturate(110%);
+    backdrop-filter: blur(8px) saturate(110%);
 }
 
 html[data-theme="sepia"]

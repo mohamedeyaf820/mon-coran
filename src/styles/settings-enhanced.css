@@ -7,8 +7,8 @@
 
 
 .settings-backdrop {
-  backdrop-filter: blur(16px) saturate(120%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(120%) !important;
+  backdrop-filter: blur(8px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(120%) !important;
   transition: opacity 0.25s !important;
 }
 

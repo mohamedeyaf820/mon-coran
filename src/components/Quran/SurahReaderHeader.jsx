@@ -288,6 +288,12 @@ export default function SurahReaderHeader({
           type="button"
           className="srh-mobile-bar__disclosure"
           onClick={toggleReaderTools}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              toggleReaderTools();
+            }
+          }}
           aria-expanded={readerToolsOpen}
           aria-controls="srh-reader-tools"
           aria-label={lbl(

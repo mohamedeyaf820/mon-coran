@@ -165,7 +165,7 @@ test("home presents one reading journey and one unified audio library", async ({
   await expect(page.getByLabel("Rechercher dans le Saint Coran…")).toBeVisible();
   await expect(page.getByLabel("Trier les sourates")).toBeVisible();
   await expect(page.getByRole("button", { name: "Grille" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Liste" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Liste", exact: true })).toBeVisible();
 
   await page.getByRole("tab", { name: "Audio", exact: true }).click();
   await expect(page.getByRole("tab", { name: /Récitations/ })).toBeVisible();

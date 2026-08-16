@@ -103,6 +103,7 @@ test("the branded splash is shown again on each app launch", async ({ page }) =>
   // its presence in the DOM rather than requiring it to be fully visible.
   const splash = page.locator(".splash-screen");
   await expect(splash).toBeAttached({ timeout: 3_000 });
+  const firstVisibleAt = Date.now();
 
   await expect(page.locator(".splash-screen")).toHaveCount(0, {
     timeout: 4_200,
@@ -115,7 +116,7 @@ test("the branded splash is shown again on each app launch", async ({ page }) =>
   const reloadStartedAt = Date.now();
   await page.reload({ waitUntil: "domcontentloaded" });
 
-  await expect(page.locator(".splash-screen")).toBeVisible();
+  await expect(page.locator(".splash-screen")).toBeAttached({ timeout: 3_000 });
   await expect(page.locator(".splash-screen")).toHaveCount(0, {
     timeout: 4_200,
   });
