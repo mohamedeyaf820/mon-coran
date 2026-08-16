@@ -285,35 +285,6 @@ export default function AudioPlayer() {
       );
   }, []);
 
-  useEffect(() => {
-    if (!optionsModalOpen) return;
-    let rafId = window.requestAnimationFrame(() => {
-      optionsCloseButtonRef.current?.focus();
-    });
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") { closeOptionsModal(); return; }
-      if (e.key !== "Tab") return;
-      const modalEl = optionsCloseButtonRef.current?.closest('[role="dialog"]');
-      if (!modalEl) return;
-      const focusable = modalEl.querySelectorAll(
-        'button:not([disabled]), a[href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])',
-      );
-      if (!focusable.length) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault(); last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault(); first.focus();
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.cancelAnimationFrame(rafId);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [optionsModalOpen, closeOptionsModal]);
-
   /* Wire audio callbacks */
   useEffect(() => {
     audioService.onPlay = (item) => {
@@ -656,6 +627,35 @@ export default function AudioPlayer() {
   const closeOptionsModal = useCallback(() => {
     setOptionsModalOpen(false);
   }, []);
+
+  useEffect(() => {
+    if (!optionsModalOpen) return;
+    const rafId = window.requestAnimationFrame(() => {
+      optionsCloseButtonRef.current?.focus();
+    });
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") { setOptionsModalOpen(false); return; }
+      if (e.key !== "Tab") return;
+      const modalEl = optionsCloseButtonRef.current?.closest('[role="dialog"]');
+      if (!modalEl) return;
+      const focusable = modalEl.querySelectorAll(
+        'button:not([disabled]), a[href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [optionsModalOpen]);
 
   const toggleOptionsModal = useCallback(() => {
     setOptionsModalOpen((prev) => !prev);
