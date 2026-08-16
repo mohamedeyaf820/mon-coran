@@ -603,6 +603,10 @@ export default function AudioPlayer() {
     audioService.setTartilMode(enabled, audioSpeed);
   }, [audioSpeed]);
 
+  useEffect(() => {
+    return () => { audioService.setTartilMode(false, 1); };
+  }, []);
+
   const handleClearAbRepeat = useCallback(() => {
     audioService.clearAbRepeat();
     setAbRepeatActive(false);

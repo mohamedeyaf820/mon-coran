@@ -66,6 +66,7 @@ export default function QuranDisplay() {
       showTransliteration: current.showTransliteration,
       syncOffsetsMs: current.syncOffsetsMs,
       translationLangs: current.translationLangs,
+      continuousPlay: current.continuousPlay,
       warshStrictMode: current.warshStrictMode,
     }),
     shallowEqual,
@@ -555,7 +556,7 @@ export default function QuranDisplay() {
             />
           </Suspense>
         ) : null}
-        {readerBusy && mushafLayout === "mushaf" ? (
+        {readerBusy ? (
           <div className="reader-loading-content">
             <AyahSkeleton
               count={5}
