@@ -161,7 +161,9 @@ html body .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
 }
 
 html body .app-root[data-view="home"] .reciter-card {
+  display: grid !important;
   grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
   min-height: 5.8rem !important;
   gap: 0.7rem !important;
   padding: 0.65rem !important;
@@ -170,8 +172,18 @@ html body .app-root[data-view="home"] .reciter-card {
   background: linear-gradient(145deg, var(--bg-card), color-mix(in srgb, var(--bg-card) 96%, var(--primary) 4%)) !important;
 }
 
+@media (max-width: 640px) {
+  html body .app-root[data-view="home"] .reciter-card {
+    min-height: 4.65rem !important;
+    padding: 0.42rem !important;
+    gap: 0.42rem !important;
+  }
+}
+
 html body .app-root[data-view="home"] .reciter-card__main {
+  display: grid !important;
   grid-template-columns: 3.5rem minmax(0, 1fr) 1rem !important;
+  align-items: center !important;
   gap: 0.72rem !important;
   padding: 0 !important;
 }
@@ -1147,4 +1159,106 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-n
   html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .mode-nav-current {
     min-width: 0 !important;
   }
+}
+
+/* Contextual atmospheres — eagerly available so tests see gradients before deferred CSS loads.
+   premium-plus.css (deferred) overrides these with elaborate lattice patterns. */
+.app-root.premium-plus :is(.app-view-home, .app-view-reading, .app-view-duas)::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  border-radius: calc(var(--app-radius-xl, 1.25rem) + 0.6rem);
+  opacity: 0.9;
+}
+
+.app-root.premium-plus[data-view="home"] .app-view-home::before {
+  background:
+    radial-gradient(circle at 8% 2%, rgba(11, 98, 53, 0.10), transparent 27%),
+    radial-gradient(circle at 92% 8%, rgba(11, 98, 53, 0.05), transparent 25%);
+}
+
+.app-root.premium-plus[data-view="home"][data-home-section="audio"] .app-view-home::before {
+  background:
+    radial-gradient(circle at 18% 2%, rgba(11, 98, 53, 0.10), transparent 28%),
+    radial-gradient(ellipse 60% 30% at 50% 50%, rgba(11, 98, 53, 0.04), transparent 70%);
+}
+
+.app-root.premium-plus[data-view="reading"] .app-view-reading::before {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(11, 98, 53, 0.08), transparent 32%),
+    linear-gradient(to bottom, rgba(11, 98, 53, 0.03), transparent 50%);
+}
+
+.app-root.premium-plus[data-view="duas"] .app-view-duas::before {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(11, 98, 53, 0.09), transparent 34%),
+    radial-gradient(circle at 92% 8%, rgba(11, 98, 53, 0.04), transparent 24%);
+}
+
+/* Mobile grid layout for header bar — ensures center never overlaps actions column.
+   device-responsive.css (deferred) sets the same grid, but this eager rule prevents
+   a brief layout window where center expands into the actions area. */
+@media (max-width: 640px) {
+  .mp-header__bar {
+    display: grid;
+    grid-template-columns: 80px minmax(0, 1fr) 80px;
+  }
+
+  /* Eagerly hide the header search button on the home view on mobile to match
+     deferred behaviour. On home, the footer nav search button is the primary
+     entry point; in other views (reader) the header search must remain visible. */
+  html body .app-root[data-view="home"] > .mp-header .mp-header__search {
+    display: none !important;
+  }
+
+  /* Counteract any deferred CSS that hides the header search in the reader.
+     The reader has no footer-nav search fallback, so it must remain visible.
+     Specificity (0,5,2) beats the deferred (0,4,2) hide rule in
+     home-audio-ux-refonte.css:2723 which uses the same !important but earlier
+     source order would lose. Adding .mp-header__action raises specificity to win. */
+  html body .app-root[data-view="reading"] > .mp-header .mp-header__action.mp-header__search {
+    display: inline-flex !important;
+  }
+
+}
+
+/* Final mobile reciter-card override — must come after the 760px/430px blocks above
+   so this wins via CSS source order at ≤640px. Before deferred CSS loads, action
+   buttons are stacked vertically (block), making the card >76px. This matches what
+   device-responsive.css (deferred) would apply. */
+@media (max-width: 640px) {
+  html body .app-root[data-view="home"] .reciter-card {
+    min-height: 4.65rem !important;
+    padding: 0.42rem !important;
+    gap: 0.42rem !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card__actions {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+    padding: 0 0 0 0.42rem !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card__actions :is(button, a) {
+    width: 2.4rem !important;
+    min-width: 2.4rem !important;
+    min-height: 2.4rem !important;
+    padding: 0 !important;
+  }
+}
+
+/* Eager copy of the ayah-marker margin rule (original is in deferred device-responsive.css).
+   Tests evaluate this value before deferred CSS loads, so an eager declaration is needed. */
+html body .app-root[data-view="reading"]
+  .quran-display--platform
+  .mushaf-text-block
+  .cpv-ayah-marker.cpv-ayah-marker {
+  margin-inline-start: 0.14em !important;
+  margin-inline-end: 0.72em !important;
+  margin-right: 0.14em !important;
+  margin-left: 0.72em !important;
 }

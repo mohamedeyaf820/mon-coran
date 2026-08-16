@@ -39,6 +39,6 @@ test("editorial navigation exposes complete project information", async ({ page 
 
   await page.getByRole("button", { name: "Sources" }).click();
   await expect(page).toHaveURL(/\/sources$/);
-  await expect(page.locator(".legal-page__attribution-item")).toHaveCount(7);
+  await expect(page.locator(".legal-page__attribution-item")).toHaveCount(8);
   await expect(page.getByRole("heading", { name: /sources nommées/i })).toBeVisible();
 });

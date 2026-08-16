@@ -60,7 +60,6 @@ const ReciterCard = memo(function ReciterCard({
       data-reciter-card="true"
       data-playing={isPlaying ? "true" : "false"}
       className="reciter-card group"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "88px" }}
     >
       <button
         type="button"

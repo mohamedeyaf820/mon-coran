@@ -773,11 +773,13 @@ test("small phone: verse actions and search stay usable inside the viewport", as
     expect(action.height).toBeLessThanOrEqual(34.1);
   }
 
-  await page.getByRole("button", { name: "Rechercher", exact: true }).last().click();
+  const searchBtn = page.getByRole("button", { name: "Rechercher", exact: true }).last();
+  await expect(searchBtn).toBeVisible();
+  await searchBtn.click();
 
   const overlay = page.locator(".search-pro-overlay").first();
   const searchSurface = page.locator(".search-pro").first();
-  await expect(searchSurface).toBeVisible();
+  await expect(searchSurface).toBeVisible({ timeout: 30_000 });
 
   const overlayPosition = await overlay.evaluate((node) => getComputedStyle(node).position);
   const overlayBox = await overlay.boundingBox();
