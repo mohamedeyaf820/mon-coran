@@ -7,6 +7,7 @@ import {
   CirclePlay,
   Feather,
   HandHeart,
+  Headphones,
   ListMusic,
   Sparkles,
   StickyNote,
@@ -74,6 +75,8 @@ export default function HeroSection({
   onWarmSurah,
   openLibrary,
   openDuas,
+  resumeListening,
+  resumeState,
   suggestionSet,
   dailyVerse,
   vodSurahNum,
@@ -173,10 +176,17 @@ export default function HeroSection({
             <span>{primaryReadingCtaLabel}</span>
             {isRtl ? <ArrowLeft size={14} aria-hidden="true" /> : <ArrowRight size={14} aria-hidden="true" />}
           </button>
-          <button type="button" className="home-resume-panel__secondary" onClick={openDuas}>
-            <HandHeart size={15} aria-hidden="true" />
-            <span>{localText(lang, "Invocations", "Supplications", "الأدعية")}</span>
-          </button>
+          {resumeState && resumeListening ? (
+            <button type="button" className="home-resume-panel__secondary" onClick={resumeListening}>
+              <Headphones size={15} aria-hidden="true" />
+              <span>{localText(lang, "Reprendre l'écoute", "Resume listening", "استئناف الاستماع")}</span>
+            </button>
+          ) : (
+            <button type="button" className="home-resume-panel__secondary" onClick={openDuas}>
+              <HandHeart size={15} aria-hidden="true" />
+              <span>{localText(lang, "Invocations", "Supplications", "الأدعية")}</span>
+            </button>
+          )}
         </footer>
       </article>
 

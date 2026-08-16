@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { BookOpen, Check, Download, LoaderCircle, Play, X } from "lucide-react";
+import { BookOpen, Check, Download, LoaderCircle, Play, Share2, X } from "lucide-react";
 import { toast } from "../../lib/utils";
 import {
   OFFLINE_DOWNLOADS_CHANGED_EVENT,
@@ -13,6 +13,8 @@ function labelsFor(lang) {
     return {
       listen: "استمع",
       open: "افتح في المصحف",
+      share: "مشاركة التلاوة",
+      shareCopied: "تم النسخ!",
       download: "تنزيل للاستماع دون اتصال",
       downloading: "جارٍ التنزيل",
       cancel: "إلغاء التنزيل",
@@ -28,6 +30,8 @@ function labelsFor(lang) {
     return {
       listen: "Écouter",
       open: "Ouvrir dans le lecteur",
+      share: "Partager la récitation",
+      shareCopied: "Lien copié !",
       download: "Télécharger pour l’écoute hors connexion",
       downloading: "Téléchargement en cours",
       cancel: "Annuler le téléchargement",
@@ -42,6 +46,8 @@ function labelsFor(lang) {
   return {
     listen: "Listen",
     open: "Open in reader",
+    share: "Share recitation",
+    shareCopied: "Link copied!",
     download: "Download for offline listening",
     downloading: "Downloading",
     cancel: "Cancel download",
@@ -107,6 +113,19 @@ export default function RowActions({
     return labels.download;
   }, [canDownload, isDownloading, isOffline, labels, liveProgress]);
 
+  const handleShare = useCallback(async () => {
+    const origin = typeof window !== "undefined" ? (window.location.origin || "") : "";
+    const base = origin && !origin.includes("localhost") && !origin.includes("127.0.0.1") ? origin : "https://mushafplus.netlify.app";
+    const url = `${base}/?reciter=${encodeURIComponent(reciter?.id || "")}&surah=${surah?.n || 1}&play=1`;
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try { await navigator.share({ url, title: `${contextualLabel(labels.listen)} — MushafPlus` }); return; } catch {}
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast(labels.shareCopied, "success");
+    } catch {}
+  }, [reciter?.id, surah?.n, labels, contextualLabel]);
+
   const handleDownload = async () => {
     if (!canDownload || isOffline) return;
     if (isDownloading) {
@@ -158,6 +177,15 @@ export default function RowActions({
         <BookOpen className="recitation-icon recitation-icon--sm" size={15} aria-hidden="true" />
       </button>
       <button
+        className="recitation-action-btn"
+        type="button"
+        onClick={handleShare}
+        title={contextualLabel(labels.share)}
+        aria-label={contextualLabel(labels.share)}
+      >
+        <Share2 className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
+      </button>
+      <button
         className={`recitation-action-btn recitation-action-btn--download${isOffline ? " is-offline" : ""}${isDownloading ? " is-downloading" : ""}`}
         type="button"
         onClick={handleDownload}
@@ -181,6 +209,11 @@ export default function RowActions({
         {isDownloading ? (
           <LoaderCircle className="recitation-download-spinner" size={10} aria-hidden="true" />
         ) : null}
+        {!isDownloading && (
+          <span className="recitation-action-btn__label">
+            {isOffline ? labels.offline : labels.download}
+          </span>
+        )}
       </button>
     </div>
   );

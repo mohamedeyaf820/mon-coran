@@ -83,15 +83,70 @@ function makeLabels(lang) {
         : lang === "ar"
           ? "\u062a\u0645"
           : "Done",
+    eq:
+      lang === "fr"
+        ? "\u00c9galiseur"
+        : lang === "ar"
+          ? "\u0627\u0644\u0645\u0639\u0627\u062f\u0644 \u0627\u0644\u0635\u0648\u062a\u064a"
+          : "Equalizer",
+    eqFlat:
+      lang === "fr" ? "Plat" : lang === "ar" ? "\u0645\u062d\u0627\u064a\u062f" : "Flat",
+    eqBass:
+      lang === "fr" ? "Basses" : lang === "ar" ? "\u062c\u0647\u064a\u0631" : "Bass",
+    eqTreble:
+      lang === "fr" ? "Aigus" : lang === "ar" ? "\u062d\u0627\u062f" : "Treble",
+    eqNear:
+      lang === "fr" ? "Proche" : lang === "ar" ? "\u0642\u0631\u064a\u0628" : "Near",
+    eqHall:
+      lang === "fr" ? "Salle" : lang === "ar" ? "\u0642\u0627\u0639\u0629" : "Hall",
+    eqVocals:
+      lang === "fr" ? "Voix" : lang === "ar" ? "\u0635\u0648\u062a" : "Vocals",
+    tartil:
+      lang === "fr"
+        ? "Mode Tartil (lecture lente)"
+        : lang === "ar"
+          ? "\u0648\u0636\u0639 \u0627\u0644\u062a\u0631\u062a\u064a\u0644"
+          : "Tartil mode (slow recitation)",
+    tartilHint:
+      lang === "fr"
+        ? "Ralentit la vitesse \u00e0 0.75\u00d7 pour une \u00e9coute m\u00e9ticuleuse."
+        : lang === "ar"
+          ? "\u064a\u0628\u0637\u0626 \u0627\u0644\u0633\u0631\u0639\u0629 \u0625\u0644\u0649 0.75\u00d7 \u0644\u0644\u0627\u0633\u062a\u0645\u0627\u0639 \u0627\u0644\u062f\u0642\u064a\u0642."
+          : "Slows speed to 0.75\u00d7 for careful listening.",
+    abRepeat:
+      lang === "fr"
+        ? "R\u00e9p\u00e9tition A-B"
+        : lang === "ar"
+          ? "\u062a\u0643\u0631\u0627\u0631 \u0623-\u0628"
+          : "A-B Repeat",
+    abRepeatActive:
+      lang === "fr"
+        ? "Actif \u2014 r\u00e9p\u00e9tition d'une plage de versets"
+        : lang === "ar"
+          ? "\u0646\u0634\u0637 \u2014 \u062a\u0643\u0631\u0627\u0631 \u0646\u0637\u0627\u0642 \u0627\u0644\u0622\u064a\u0627\u062a"
+          : "Active \u2014 repeating a verse range",
+    abRepeatInactive:
+      lang === "fr"
+        ? "Inactif \u2014 d\u00e9finissez la plage depuis le lecteur"
+        : lang === "ar"
+          ? "\u063a\u064a\u0631 \u0646\u0634\u0637 \u2014 \u062d\u062f\u062f \u0627\u0644\u0646\u0637\u0627\u0642 \u0645\u0646 \u0627\u0644\u0642\u0627\u0631\u0626"
+          : "Inactive \u2014 set range from the reader",
+    abRepeatClear:
+      lang === "fr" ? "Effacer A-B" : lang === "ar" ? "\u0645\u0633\u062d \u0623-\u0628" : "Clear A-B",
   };
 }
 
 export default function PlaybackSettingsPanel(props) {
   const {
+    abRepeatActive,
     audioSpeed,
     className,
     closeOptionsModal,
     cycleSpeed,
+    eqPreset,
+    handleApplyEqPreset,
+    handleClearAbRepeat,
+    handleSetTartilMode,
     handleVolumeChange,
     isMobile,
     isSurahStreamReciter,
@@ -110,6 +165,7 @@ export default function PlaybackSettingsPanel(props) {
     stop,
     surahRepeatCount,
     syncOffsetMs,
+    tartilMode,
     volume,
   } = props;
 
@@ -152,7 +208,7 @@ export default function PlaybackSettingsPanel(props) {
             type="button"
             onClick={cycleSpeed}
             className={cn(
-              playerCardToggleClass(false),
+              playerCardToggleClass(audioSpeed !== 1),
               "audio-settings-speed min-w-[7.5rem]",
             )}
             aria-label={`${labels.speed} ${audioSpeed}x`}
@@ -210,8 +266,7 @@ export default function PlaybackSettingsPanel(props) {
         </p>
       </div>
 
-      {!isMobile && (
-        <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
+      <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
           <div className="mb-2 flex items-center justify-between gap-2">
             <span className={playerSectionLabelClass}>{labels.volume}</span>
             <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums")}>
@@ -239,7 +294,6 @@ export default function PlaybackSettingsPanel(props) {
             />
           </div>
         </div>
-      )}
 
       <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
         <div className="mb-2 flex items-center justify-between gap-2">
@@ -272,6 +326,71 @@ export default function PlaybackSettingsPanel(props) {
         </div>
         <p className={cn(playerFadedTextClass, "mt-2 text-[0.62rem] leading-relaxed")}>
           {isSurahStreamReciter ? labels.syncDisabled : labels.syncHint}
+        </p>
+      </div>
+
+      <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <span className={playerSectionLabelClass}>{labels.eq}</span>
+          <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums uppercase")}>
+            {eqPreset}
+          </span>
+        </div>
+        <div className="audio-settings-pills flex flex-wrap items-center gap-2">
+          {[
+            { id: "flat", label: labels.eqFlat },
+            { id: "bass", label: labels.eqBass },
+            { id: "treble", label: labels.eqTreble },
+            { id: "near", label: labels.eqNear },
+            { id: "hall", label: labels.eqHall },
+            { id: "vocals", label: labels.eqVocals },
+          ].map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => handleApplyEqPreset(id)}
+              className={playerOptionPillClass(eqPreset === id)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
+        <div className="flex items-center justify-between gap-2">
+          <span className={playerSectionLabelClass}>{labels.tartil}</span>
+          <button
+            type="button"
+            onClick={() => handleSetTartilMode(!tartilMode)}
+            className={cn(playerCardToggleClass(tartilMode), "min-w-[5rem] text-[0.65rem]")}
+            aria-pressed={tartilMode}
+          >
+            {tartilMode
+              ? (lang === "fr" ? "Activé" : lang === "ar" ? "مفعّل" : "On")
+              : (lang === "fr" ? "Désactivé" : lang === "ar" ? "معطّل" : "Off")}
+          </button>
+        </div>
+        <p className={cn(playerFadedTextClass, "mt-2 text-[0.62rem] leading-relaxed")}>
+          {labels.tartilHint}
+        </p>
+      </div>
+
+      <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
+        <div className="flex items-center justify-between gap-2">
+          <span className={playerSectionLabelClass}>{labels.abRepeat}</span>
+          {abRepeatActive && (
+            <button
+              type="button"
+              onClick={handleClearAbRepeat}
+              className={cn(playerOptionPillClass(false), "text-[0.65rem]")}
+            >
+              {labels.abRepeatClear}
+            </button>
+          )}
+        </div>
+        <p className={cn(playerFadedTextClass, "mt-1 text-[0.62rem] leading-relaxed")}>
+          {abRepeatActive ? labels.abRepeatActive : labels.abRepeatInactive}
         </p>
       </div>
 

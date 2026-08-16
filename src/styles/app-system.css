@@ -1226,6 +1226,26 @@ html body .app-root {
   background: var(--primary);
 }
 
+.app-root[data-view="home"] .home-style-filter__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.1rem;
+  height: 1.1rem;
+  padding-inline: 0.22rem;
+  border-radius: 999px;
+  background: rgba(var(--primary-rgb, 11, 98, 53), 0.14);
+  color: var(--primary);
+  font-size: 0.56rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-root[data-view="home"] .home-style-filter.is-active .home-style-filter__count {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
 .app-root[data-view="home"] .home-audio-browser__hint {
   margin: 0.35rem 0 0;
   color: var(--text-muted);
@@ -1353,6 +1373,16 @@ html body .app-root {
 
   .app-root[data-view="home"] .home-audio-browser__hint {
     display: none;
+  }
+
+  .app-root[data-view="home"] .home-style-filters {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding-block: 0.35rem;
+    margin-inline: -0.25rem;
+    padding-inline: 0.25rem;
+    background: var(--mp-surface-soft);
   }
 }
 

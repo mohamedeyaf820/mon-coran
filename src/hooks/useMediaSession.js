@@ -54,7 +54,7 @@ export function useMediaSession({
         title: title || '',
         artist: artist || '',
         album: album || 'MushafPlus',
-        artwork: artwork ? [{ src: artwork }] : [],
+        artwork: artwork ? [{ src: artwork, sizes: '512x512', type: 'image/png' }] : [],
       });
     } catch {
       // MediaMetadata may not be supported in some browsers

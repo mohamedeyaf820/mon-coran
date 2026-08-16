@@ -36,7 +36,7 @@ import {
   buildSurahPlaylistForRiwaya,
   playPlaylistWithReciter,
 } from "../services/RecitationService";
-import { getResumeState, setResumeState } from "../stores/AudioQueueStore";
+import { addListeningHistory, getListeningHistory, getResumeState, setResumeState } from "../stores/AudioQueueStore";
 import Footer from "./Footer";
 import { buildAudioPlaylistForSurah } from "../utils/audioPlaylist";
 
@@ -165,6 +165,7 @@ export default function HomePage({ lowPerfMode = false }) {
   );
   const [selectedReciterId, setSelectedReciterId] = useState(null);
   const [resumeState, setResumeLocalState] = useState(() => getResumeState());
+  const [listeningHistory, setListeningHistory] = useState(() => getListeningHistory());
   const [now, setNow] = useState(() => new Date());
 
   const homeInitialSurahCount = lowPerfMode
@@ -426,6 +427,19 @@ export default function HomePage({ lowPerfMode = false }) {
     return () => observer.disconnect();
   }, [hasMoreSurahs, loadMoreSurahs]);
 
+  useEffect(() => {
+    if (typeof window === "undefined" || !availableReciters.length) return;
+    const params = new URLSearchParams(window.location.search);
+    const reciterId = params.get("reciter");
+    const shouldPlay = params.get("play") === "1";
+    const surahParam = Number(params.get("surah")) || 1;
+    if (!reciterId || !shouldPlay) return;
+    const found = availableReciters.find((r) => r.id === reciterId);
+    if (!found) return;
+    window.history.replaceState(null, "", window.location.pathname);
+    playSurahForReciter(surahParam, found);
+  }, [availableReciters, playSurahForReciter]);
+
   const playFromHome = useCallback(
     async (surahNum) => {
       if (
@@ -611,6 +625,8 @@ export default function HomePage({ lowPerfMode = false }) {
         });
         if (!played) return;
         persistQueueAndResume(items, targetReciter, "reciter-surah");
+        addListeningHistory({ reciterId: targetReciter.id, surah: surahNum });
+        setListeningHistory(getListeningHistory());
       } catch (error) {
         console.error("Reciter surah play error:", error);
       }
@@ -872,7 +888,11 @@ export default function HomePage({ lowPerfMode = false }) {
             : "contenus audio";
 
   return (
-    <div className="hp-wrapper">
+    <div
+      className="hp-wrapper"
+      aria-hidden={selectedReciter ? "true" : undefined}
+      inert={selectedReciter ? "" : undefined}
+    >
       {/* ── Section héro ──────────────────────────────────────────────── */}
       <HeroSection
         lang={lang}
@@ -892,6 +912,8 @@ export default function HomePage({ lowPerfMode = false }) {
         onWarmSurah={warmSurah}
         openLibrary={openLibrary}
         openDuas={openDuas}
+        resumeListening={resumeListening}
+        resumeState={resumeState}
         suggestionSet={suggestionSet}
         dailyVerse={dailyVerse}
         vodSurahNum={vodSurahNum}
@@ -933,6 +955,7 @@ export default function HomePage({ lowPerfMode = false }) {
           playReciterRadio={playReciterRadio}
           playStation={playStation}
           setSelectedReciterId={setSelectedReciterId}
+          listeningHistory={listeningHistory}
           resumeState={resumeState}
           resumeListening={resumeListening}
           t={translate}
@@ -944,6 +967,9 @@ export default function HomePage({ lowPerfMode = false }) {
         ? createPortal(
             <div
               className="reciter-detail-overlay fixed inset-0 z-40 flex items-center justify-center p-4"
+              role="dialog"
+              aria-modal="true"
+              aria-label={lang === "fr" ? "Détail récitateur" : lang === "ar" ? "تفاصيل القارئ" : "Reciter detail"}
               onClick={() => setSelectedReciterId(null)}
             >
               <Suspense fallback={<ReciterDetailFallback lang={lang} />}>

@@ -19,8 +19,9 @@ import {
 import { cn } from "../../lib/utils";
 import { JUZ_DATA } from "../../data/juz";
 import { THEMATIC_STATIONS } from "../../services/StationService";
+import { surahName } from "../../data/surahs";
 import { SurahCard, JuzCard, EmptyState } from "./HomePrimitives";
-import {
+import AVAILABLE_RECITERS, {
   getReciterCountryLabel,
   getReciterVisual,
 } from "../../data/reciters";
@@ -221,8 +222,16 @@ export default function ContentSection({
   setSelectedReciterId,
   resumeState,
   resumeListening,
+  listeningHistory,
   t,
 }) {
+  const reciterStyleCounts = {
+    all: AVAILABLE_RECITERS.length,
+    murattal: AVAILABLE_RECITERS.filter(r => r.style === "murattal").length,
+    mujawwad: AVAILABLE_RECITERS.filter(r => r.style === "mujawwad").length,
+    muallim: AVAILABLE_RECITERS.filter(r => r.style === "muallim").length,
+    favorites: (favoriteReciters || []).length,
+  };
   const STYLE_FILTERS = [
     { id: "all", label: { fr: "Tous", en: "All", ar: "\u0627\u0644\u0643\u0644" } },
     { id: "murattal", label: { fr: "Murattal", en: "Murattal", ar: "\u0645\u0631\u062a\u0644" } },
@@ -233,6 +242,10 @@ export default function ContentSection({
 
   const [audioView, setAudioView] = useState("reciters");
   const [visibleReciterCount, setVisibleReciterCount] = useState(INITIAL_RECITER_COUNT);
+  const [showAudioDiscovery, setShowAudioDiscovery] = useState(() => {
+    try { return !localStorage.getItem("mushaf_audio_discovery_seen"); }
+    catch { return false; }
+  });
   const displayedReciters = filteredReciters.slice(0, visibleReciterCount);
 
   useEffect(() => {
@@ -320,11 +333,17 @@ export default function ContentSection({
             role="tab"
             aria-selected={activeTab === "audio"}
             className={cn(
-              "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-[background-color,color,box-shadow] hover:text-text-primary",
+              "relative flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-[0.8rem] sm:text-[0.85rem] font-bold text-text-secondary whitespace-nowrap transition-[background-color,color,box-shadow] hover:text-text-primary",
               activeTab === "audio" &&
                 "bg-bg-primary text-primary shadow-sm",
             )}
-            onClick={() => onSelectTab("audio")}
+            onClick={() => {
+              onSelectTab("audio");
+              if (showAudioDiscovery) {
+                setShowAudioDiscovery(false);
+                try { localStorage.setItem("mushaf_audio_discovery_seen", "1"); } catch {}
+              }
+            }}
             onPointerEnter={onRecitationsIntent}
             onPointerDown={onRecitationsIntent}
             onFocus={onRecitationsIntent}
@@ -332,6 +351,14 @@ export default function ContentSection({
           >
             <Radio size={13} className="opacity-70" />
             {lang === "ar" ? "الصوتيات" : lang === "en" ? "Audio" : "Audio"}
+            {showAudioDiscovery && activeTab !== "audio" && (
+              <span
+                className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-primary"
+                aria-hidden="true"
+              >
+                <span className="absolute inset-0 animate-ping rounded-full bg-primary opacity-75" />
+              </span>
+            )}
           </button>
         </div>
 
@@ -454,6 +481,9 @@ export default function ContentSection({
                   >
                     {item.id === "favorites" ? <Star size={12} fill={reciterStyleFilter === item.id ? "currentColor" : "none"} aria-hidden="true" /> : null}
                     {item.label[lang] || item.label.fr}
+                    {reciterStyleCounts[item.id] > 0 && (
+                      <span className="home-style-filter__count">{reciterStyleCounts[item.id]}</span>
+                    )}
                   </button>
                 ))}
               </div>
@@ -524,13 +554,19 @@ export default function ContentSection({
         activeTab === "audio" && audioView === "reciters" ? (
           filteredReciters.length === 0 ? (
             <EmptyState
-              icon="fa-microphone-lines"
+              icon={reciterStyleFilter === "favorites" ? "fa-star" : "fa-microphone-lines"}
               text={
-                lang === "fr"
-                  ? "Aucun récitateur trouvé"
-                  : lang === "ar"
-                    ? "لا يوجد قارئ مطابق"
-                    : "No reciter found"
+                reciterStyleFilter === "favorites"
+                  ? lang === "fr"
+                    ? "Aucun favori — appuyez sur l'étoile d'un récitateur pour le retrouver ici"
+                    : lang === "ar"
+                      ? "لا توجد مفضلة — اضغط على النجمة لحفظ قارئ"
+                      : "No favourites yet — tap the star on any reciter to save them here"
+                  : lang === "fr"
+                    ? "Aucun récitateur trouvé"
+                    : lang === "ar"
+                      ? "لا يوجد قارئ مطابق"
+                      : "No reciter found"
               }
             />
           ) : (
@@ -624,9 +660,40 @@ export default function ContentSection({
                   : "Resume listening"}
             </span>
             <span className="rounded-full bg-bg-card/80 px-1.5 py-0.5 text-[0.65rem] text-text-muted">
-              S{resumeState.surah}
+              {surahName(resumeState.surah, lang)}
             </span>
           </button>
+        </div>
+      )}
+
+      {/* ── Historique d'écoute récent ─────────────────────────────────── */}
+      {activeTab === "audio" && listeningHistory && listeningHistory.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2 px-0.5">
+          <span className="text-[0.62rem] font-semibold uppercase tracking-wide text-text-muted/60">
+            {lang === "fr" ? "Récemment écouté" : lang === "ar" ? "المستمع مؤخراً" : "Recently played"}
+          </span>
+          {listeningHistory.map((entry, idx) => {
+            const reciter = AVAILABLE_RECITERS.find((r) => r.id === entry.reciterId);
+            if (!reciter) return null;
+            const reciterLabel = lang === "ar" ? reciter.nameAr || reciter.name : reciter.name;
+            return (
+              <button
+                key={`${entry.reciterId}-${entry.surah}-${idx}`}
+                type="button"
+                className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-bg-card/60 px-2.5 py-1 text-[0.67rem] font-semibold text-text-secondary transition-colors hover:border-primary/30 hover:bg-primary/8 hover:text-primary"
+                onClick={() => {
+                  const found = AVAILABLE_RECITERS.find((r) => r.id === entry.reciterId);
+                  if (found && typeof playReciterRadio === "function") playReciterRadio(found);
+                }}
+              >
+                <Play size={9} fill="currentColor" aria-hidden="true" />
+                {reciterLabel}
+                <span className="rounded-full bg-primary/10 px-1 text-[0.6rem] text-primary/70">
+                  {surahName(entry.surah, lang)}
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
 

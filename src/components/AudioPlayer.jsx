@@ -88,6 +88,9 @@ export default function AudioPlayer() {
   const [networkState, setNetworkState] = useState("idle");
   const [optionsModalOpen, setOptionsModalOpen] = useState(false);
   const [reciterSwitchingId, setReciterSwitchingId] = useState(null);
+  const [eqPreset, setEqPreset] = useState("flat");
+  const [tartilMode, setTartilMode] = useState(false);
+  const [abRepeatActive, setAbRepeatActive] = useState(false);
 
   /* Fermeture / refs stables pour callbacks */
   const [closed, setClosed] = useState(false);
@@ -284,10 +287,32 @@ export default function AudioPlayer() {
 
   useEffect(() => {
     if (!optionsModalOpen) return;
-    window.requestAnimationFrame(() => {
+    let rafId = window.requestAnimationFrame(() => {
       optionsCloseButtonRef.current?.focus();
     });
-  }, [optionsModalOpen]);
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") { closeOptionsModal(); return; }
+      if (e.key !== "Tab") return;
+      const modalEl = optionsCloseButtonRef.current?.closest('[role="dialog"]');
+      if (!modalEl) return;
+      const focusable = modalEl.querySelectorAll(
+        'button:not([disabled]), a[href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault(); last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [optionsModalOpen, closeOptionsModal]);
 
   /* Wire audio callbacks */
   useEffect(() => {
@@ -608,6 +633,21 @@ export default function AudioPlayer() {
     set({ audioSpeed: speeds[(idx + 1) % speeds.length] });
   };
 
+  const handleApplyEqPreset = useCallback((preset) => {
+    setEqPreset(preset);
+    audioService.applyEqPreset(preset);
+  }, []);
+
+  const handleSetTartilMode = useCallback((enabled) => {
+    setTartilMode(enabled);
+    audioService.setTartilMode(enabled, audioSpeed);
+  }, [audioSpeed]);
+
+  const handleClearAbRepeat = useCallback(() => {
+    audioService.clearAbRepeat();
+    setAbRepeatActive(false);
+  }, []);
+
   const toggleMinimized = useCallback(() => {
     setOptionsModalOpen(false);
     setMinimized((prev) => !prev);
@@ -912,10 +952,16 @@ export default function AudioPlayer() {
     );
   const audioOptionsModal = (
     <AudioOptionsModal
+      abRepeatActive={abRepeatActive}
       audioSpeed={audioSpeed}
       closeOptionsModal={closeOptionsModal}
       currentReciters={currentReciters}
       cycleSpeed={cycleSpeed}
+      eqPreset={eqPreset}
+      handleApplyEqPreset={handleApplyEqPreset}
+      handleClearAbRepeat={handleClearAbRepeat}
+      handleSetTartilMode={handleSetTartilMode}
+      tartilMode={tartilMode}
       filteredReciters={filteredReciters}
       favoriteReciters={favoriteReciters}
       handleReciterSelect={handleReciterSelect}

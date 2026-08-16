@@ -7,12 +7,17 @@ import ReciterOptionsList from "./ReciterOptionsList";
 
 export default function AudioOptionsModal(props) {
   const {
+    abRepeatActive,
     audioSpeed,
     closeOptionsModal,
     currentReciters,
     cycleSpeed,
+    eqPreset,
     filteredReciters,
     favoriteReciters,
+    handleApplyEqPreset,
+    handleClearAbRepeat,
+    handleSetTartilMode,
     handleReciterSelect,
     handleVolumeChange,
     isMobile,
@@ -43,6 +48,7 @@ export default function AudioOptionsModal(props) {
     stop,
     surahRepeatCount,
     syncOffsetMs,
+    tartilMode,
     volume,
   } = props;
 
@@ -149,9 +155,15 @@ export default function AudioOptionsModal(props) {
               role="tabpanel"
               aria-labelledby="tab-settings"
               className={activeMobileTab === "settings" ? "is-active" : ""}
+              abRepeatActive={abRepeatActive}
               audioSpeed={audioSpeed}
               closeOptionsModal={closeOptionsModal}
               cycleSpeed={cycleSpeed}
+              eqPreset={eqPreset}
+              handleApplyEqPreset={handleApplyEqPreset}
+              handleClearAbRepeat={handleClearAbRepeat}
+              handleSetTartilMode={handleSetTartilMode}
+              tartilMode={tartilMode}
               handleVolumeChange={handleVolumeChange}
               isMobile={isMobile}
               isSurahStreamReciter={isSurahStreamReciter}
