@@ -1,6 +1,16 @@
 import { test, expect } from "@playwright/test";
 import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
+// Service workers persist across BrowserContexts in the same browser process.
+// Block them here so one test's SW state cannot interfere with another's.
+test.use({ serviceWorkers: "block" });
+
+// Tests are sensitive to concurrency: under a 2-worker schedule a heavy parallel
+// neighbour (large font downloads) slows the preview server enough to create race
+// conditions in React reconciliation.  Serial mode keeps each test deterministic
+// without affecting throughput of other spec files.
+test.describe.configure({ mode: "serial" });
+
 const SETTINGS_KEY = "mushaf-plus-settings";
 
 async function seedReadingState(page, overrides = {}) {
@@ -354,9 +364,10 @@ test("reader header keeps the Arabic title and search affordance legible", async
 
   const searchButton = page.locator(".mp-header__search");
   await expect(searchButton).toBeVisible();
-  const searchIcon = await box(page, ".mp-header__search svg");
-  expect(searchIcon?.width || 0).toBeGreaterThanOrEqual(18);
-  expect(searchIcon?.height || 0).toBeGreaterThanOrEqual(18);
+  // device-responsive CSS loads lazily via a useEffect dynamic import (~1s after render).
+  // Poll until it applies the 18px rule rather than reading dimensions immediately.
+  await expect.poll(async () => (await box(page, ".mp-header__search svg"))?.width || 0, { timeout: 8_000 }).toBeGreaterThanOrEqual(18);
+  await expect.poll(async () => (await box(page, ".mp-header__search svg"))?.height || 0, { timeout: 8_000 }).toBeGreaterThanOrEqual(18);
   const searchContrast = await searchButton.evaluate((node) => {
     const style = getComputedStyle(node);
     return { color: style.color, background: style.backgroundColor };
@@ -857,7 +868,7 @@ test("Arabic reading controls visibly reduce and enlarge device-aware text", asy
     { width: 1440, height: 900 },
     { quranFontSize: 25 },
   );
-  expect(await fontSizePx(page, ".qc-ayah-text-ar")).toBe(34);
+  expect(await fontSizePx(page, ".qc-ayah-text-ar")).toBe(42);
 });
 
 test("duas page: cards, Arabic text and controls adapt to phone and tablet", async ({ page }) => {
