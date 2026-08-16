@@ -225,11 +225,12 @@ export default function ContentSection({
   listeningHistory,
   t,
 }) {
+  const _allReciters = Object.values(AVAILABLE_RECITERS).flat();
   const reciterStyleCounts = {
-    all: AVAILABLE_RECITERS.length,
-    murattal: AVAILABLE_RECITERS.filter(r => r.style === "murattal").length,
-    mujawwad: AVAILABLE_RECITERS.filter(r => r.style === "mujawwad").length,
-    muallim: AVAILABLE_RECITERS.filter(r => r.style === "muallim").length,
+    all: _allReciters.length,
+    murattal: _allReciters.filter(r => r.style === "murattal").length,
+    mujawwad: _allReciters.filter(r => r.style === "mujawwad").length,
+    muallim: _allReciters.filter(r => r.style === "muallim").length,
     favorites: (favoriteReciters || []).length,
   };
   const STYLE_FILTERS = [

@@ -427,19 +427,6 @@ export default function HomePage({ lowPerfMode = false }) {
     return () => observer.disconnect();
   }, [hasMoreSurahs, loadMoreSurahs]);
 
-  useEffect(() => {
-    if (typeof window === "undefined" || !availableReciters.length) return;
-    const params = new URLSearchParams(window.location.search);
-    const reciterId = params.get("reciter");
-    const shouldPlay = params.get("play") === "1";
-    const surahParam = Number(params.get("surah")) || 1;
-    if (!reciterId || !shouldPlay) return;
-    const found = availableReciters.find((r) => r.id === reciterId);
-    if (!found) return;
-    window.history.replaceState(null, "", window.location.pathname);
-    playSurahForReciter(surahParam, found);
-  }, [availableReciters, playSurahForReciter]);
-
   const playFromHome = useCallback(
     async (surahNum) => {
       if (
@@ -633,6 +620,19 @@ export default function HomePage({ lowPerfMode = false }) {
     },
     [persistQueueAndResume, riwaya, set],
   );
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !availableReciters.length) return;
+    const params = new URLSearchParams(window.location.search);
+    const reciterId = params.get("reciter");
+    const shouldPlay = params.get("play") === "1";
+    const surahParam = Number(params.get("surah")) || 1;
+    if (!reciterId || !shouldPlay) return;
+    const found = availableReciters.find((r) => r.id === reciterId);
+    if (!found) return;
+    window.history.replaceState(null, "", window.location.pathname);
+    playSurahForReciter(surahParam, found);
+  }, [availableReciters, playSurahForReciter]);
 
   const playReciterRadio = useCallback(
     async (targetReciter) => {
