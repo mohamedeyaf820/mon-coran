@@ -219,8 +219,8 @@
         var(--theme-primary) 34%,
         transparent 66%
     );
-    backdrop-filter: blur(24px) saturate(1.25);
-    -webkit-backdrop-filter: blur(24px) saturate(1.25);
+    backdrop-filter: blur(8px) saturate(1.12);
+    -webkit-backdrop-filter: blur(8px) saturate(1.12);
 }
 
 .mp-audio-player--desktop {
