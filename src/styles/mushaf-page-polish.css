@@ -302,15 +302,17 @@
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse--active {
-  background: color-mix(in srgb, var(--mushaf-accent) 9%, transparent) !important;
+  background: transparent !important;
   box-shadow: none !important;
-  color: var(--mushaf-ink) !important;
+  color: color-mix(in srgb, var(--mushaf-accent) 62%, var(--mushaf-ink)) !important;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--mushaf-accent) 28%, transparent) !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse--playing {
-  background: color-mix(in srgb, var(--mushaf-accent) 13%, transparent) !important;
-  box-shadow: inset 3px 0 0 var(--mushaf-accent) !important;
-  color: var(--mushaf-ink) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--mushaf-accent) !important;
+  text-shadow: 0 0 15px color-mix(in srgb, var(--mushaf-accent) 38%, transparent) !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-footer {
