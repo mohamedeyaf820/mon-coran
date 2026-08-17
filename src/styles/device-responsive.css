@@ -426,13 +426,6 @@ html body .settings-drawer__title {
     padding: 0 0 0 0.42rem !important;
   }
 
-  html body .app-root[data-view="home"] .reciter-card__actions :is(button, a) {
-    width: 2.4rem !important;
-    min-width: 2.4rem !important;
-    min-height: 2.4rem !important;
-    padding: 0 !important;
-  }
-
   html body .app-root[data-view="home"] .reciter-card__icon {
     width: 0.65rem !important;
     height: 0.65rem !important;
@@ -999,18 +992,6 @@ html body .app-root > .mp-header
 @media (max-width: 640px) {
   .home-mobile-quick-disclosure:not([open]) > .home-info-panel { display: none; }
   .home-mobile-quick-disclosure[open] > .home-info-panel { margin-top:.55rem; }
-}
-
-/* Keep the marker close to its own ayah while preserving a clear stop before
-   the following ayah in every RTL engine. */
-html body .app-root[data-view="reading"]
-  .quran-display--platform
-  .mushaf-text-block
-  .cpv-ayah-marker.cpv-ayah-marker {
-  margin-inline-start: 0.14em !important;
-  margin-inline-end: 0.72em !important;
-  margin-right: 0.14em !important;
-  margin-left: 0.72em !important;
 }
 
 /* Mobile reader header: preserve a clear path back home. */

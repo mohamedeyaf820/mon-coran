@@ -1229,12 +1229,6 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-n
    buttons are stacked vertically (block), making the card >76px. This matches what
    device-responsive.css (deferred) would apply. */
 @media (max-width: 640px) {
-  html body .app-root[data-view="home"] .reciter-card {
-    min-height: 4.65rem !important;
-    padding: 0.42rem !important;
-    gap: 0.42rem !important;
-  }
-
   html body .app-root[data-view="home"] .reciter-card__actions {
     display: flex !important;
     flex-direction: row !important;
