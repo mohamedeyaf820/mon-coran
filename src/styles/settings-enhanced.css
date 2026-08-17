@@ -492,7 +492,7 @@
 }
 
 .settings-segmented {
-  grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr)) !important;
+  grid-template-columns: repeat(auto-fit, minmax(4rem, 1fr)) !important;
   padding: 0.2rem !important;
   border: 1px solid var(--border) !important;
   border-radius: 10px !important;
