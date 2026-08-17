@@ -389,10 +389,9 @@ test("reader chrome yields the screen while scrolling and remains easy to reveal
   await expect(root).toHaveClass(/immersive-mode/);
   await expect(header).toHaveAttribute("aria-hidden", "true");
   await expect(player).toHaveCSS("opacity", "0");
-  await expect(page.locator(".immersive-reveal--top")).toBeVisible();
-  await expect(page.locator(".immersive-reveal--bottom")).toBeVisible();
 
-  await page.locator(".immersive-reveal--top").dispatchEvent("click");
+  // Reveal chrome via keyboard Escape (replaces removed pill buttons)
+  await page.keyboard.press("Escape");
   await expect(root).not.toHaveClass(/immersive-mode/);
   await expect(header).not.toHaveAttribute("aria-hidden", "true");
   await expect(player).not.toHaveCSS("opacity", "0");
