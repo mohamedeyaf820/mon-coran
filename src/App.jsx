@@ -406,6 +406,14 @@ export default function App() {
       }
     };
 
+    const handleTouch = (event) => {
+      const t = event.touches[0];
+      if (!t) return;
+      if (t.clientY <= 80 || t.clientY >= window.innerHeight - 100) {
+        showChrome();
+      }
+    };
+
     const handleKeyboard = (event) => {
       if (["Tab", "Escape", "Home", "PageUp", "ArrowUp"].includes(event.key)) {
         showChrome();
@@ -413,12 +421,14 @@ export default function App() {
     };
 
     scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
+    scrollContainer.addEventListener("touchstart", handleTouch, { passive: true });
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
     window.addEventListener("keydown", handleKeyboard);
 
     return () => {
       clearTimeout(immersiveTimer.current);
       scrollContainer.removeEventListener("scroll", handleScroll);
+      scrollContainer.removeEventListener("touchstart", handleTouch);
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("keydown", handleKeyboard);
     };
@@ -850,54 +860,6 @@ export default function App() {
           </div>
         )}
 
-        {immersiveActive && immersiveHidden ? (
-          <div className="immersive-reveal-controls">
-            {["top", "bottom"].map((edge) => (
-              <button
-                key={edge}
-                type="button"
-                className={`immersive-reveal immersive-reveal--${edge}`}
-                onClick={revealImmersiveChrome}
-                style={{
-                  position: "fixed",
-                  left: "50%",
-                  [edge]: edge === "bottom"
-                    ? "env(safe-area-inset-bottom, 0px)"
-                    : 0,
-                  zIndex: 240,
-                  width: 80,
-                  height: 44,
-                  display: "grid",
-                  placeItems: "center",
-                  padding: 0,
-                  transform: "translateX(-50%)",
-                  border: 0,
-                  background: "transparent",
-                  color: "var(--primary)",
-                  cursor: "pointer",
-                }}
-                aria-label={
-                  lang === "ar"
-                    ? "Ø¥Ø¸Ù‡Ø§Ø± Ø£Ø¯ÙˆØ§Øª Ø§Ù„Ù‚Ø±Ø§Ø¡Ø©"
-                    : lang === "en"
-                      ? "Show reading controls"
-                      : "Afficher les commandes de lecture"
-                }
-              >
-                <span
-                  aria-hidden="true"
-                  style={{
-                    width: 34,
-                    height: 4,
-                    borderRadius: 999,
-                    background: "currentColor",
-                    boxShadow: "0 0 0 4px color-mix(in srgb, var(--bg-card) 78%, transparent)",
-                  }}
-                />
-              </button>
-            ))}
-          </div>
-        ) : null}
 
         {shouldMountAudioPlayer && (
           <div aria-hidden={immersiveHidden ? "true" : undefined} inert={immersiveHidden ? "" : undefined}>
