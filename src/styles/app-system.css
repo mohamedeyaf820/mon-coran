@@ -1379,7 +1379,7 @@ html body .app-root {
     position: sticky;
     top: 0;
     z-index: 10;
-    padding-block: 0.35rem;
+    padding-block: 0.1rem;
     margin-inline: -0.25rem;
     padding-inline: 0.25rem;
     background: var(--mp-surface-soft);

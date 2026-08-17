@@ -479,11 +479,12 @@ export default function ContentSection({
                     className={cn("home-style-filter", reciterStyleFilter === item.id && "is-active")}
                     onClick={() => onStyleFilterChange(item.id)}
                     aria-pressed={reciterStyleFilter === item.id}
+                    aria-label={item.label[lang] || item.label.fr}
                   >
                     {item.id === "favorites" ? <Star size={12} fill={reciterStyleFilter === item.id ? "currentColor" : "none"} aria-hidden="true" /> : null}
-                    {item.label[lang] || item.label.fr}
+                    <span aria-hidden="true">{item.label[lang] || item.label.fr}</span>
                     {reciterStyleCounts[item.id] > 0 && (
-                      <span className="home-style-filter__count">{reciterStyleCounts[item.id]}</span>
+                      <span className="home-style-filter__count" aria-hidden="true">{reciterStyleCounts[item.id]}</span>
                     )}
                   </button>
                 ))}
