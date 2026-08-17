@@ -288,6 +288,11 @@
   transition: background-color 120ms ease, box-shadow 120ms ease !important;
 }
 
+/* Verse-end markers: accent color instead of dark ink so they never appear as a black dot */
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-ayah-marker {
+  color: color-mix(in srgb, var(--mushaf-accent) 72%, var(--mushaf-ink)) !important;
+}
+
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse:hover {
   background: color-mix(in srgb, var(--mushaf-accent) 6%, transparent) !important;
   box-shadow: none !important;
