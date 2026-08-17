@@ -67,7 +67,6 @@
 .mp-player-progress,
 .audio-player-timeline {
     contain: layout style;
-    will-change: width;
 }
 
 html {
