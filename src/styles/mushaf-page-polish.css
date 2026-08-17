@@ -272,10 +272,9 @@
   font-family: var(--qd-font-family, var(--font-quran), serif) !important;
   font-size: var(--cpv-font-size, var(--qd-reading-font-size, 34px)) !important;
   line-height: var(--cpv-line-height, 1.78) !important;
-  word-spacing: normal !important;
+  word-spacing: 0 !important;
   text-align: justify !important;
   text-align-last: right !important;
-  text-justify: inter-word !important;
   text-rendering: optimizeLegibility;
 }
 
