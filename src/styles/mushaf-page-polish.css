@@ -69,10 +69,13 @@
   width: auto !important;
 }
 
-.app-root[data-view="reading"] .quran-display--platform:has(.quran-mode-pane--mushaf) > .tajweed-legend {
+/* reading-platform.css (0,5,2) uses !important on width:max-content — add html+body+state to beat it → (0,6,2) */
+html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mode-pane--mushaf) > .tajweed-legend:not([open]),
+html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mode-pane--mushaf) > .tajweed-legend[open] {
   width: min(100%, 760px) !important;
   max-width: 760px !important;
   margin-inline: auto !important;
+  border-radius: 1.2rem !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper::before,
