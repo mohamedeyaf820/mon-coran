@@ -13,7 +13,7 @@ import {
   useAppSelector,
 } from "../context/AppContext";
 import { t } from "../i18n";
-import { ensureReciterForRiwaya } from "../data/reciters";
+import { ensureReciterForRiwaya, isSurahOnlyReciter } from "../data/reciters";
 import { getKaraokeCalibration } from "../utils/karaokeUtils";
 import Footer from "./Footer";
 import SurahMode from "./QuranDisplay/SurahMode";
@@ -161,15 +161,16 @@ export default function QuranDisplay() {
     syncOffsetsMs,
     mushafLayout,
   });
+  const reciterId = ensureReciterForRiwaya(reciter, riwaya);
+  const isSurahStream = isSurahOnlyReciter(reciterId);
   const karaokeCalibration = useMemo(() => {
-    const reciterId = ensureReciterForRiwaya(reciter, riwaya);
     const base = getKaraokeCalibration(reciterId, riwaya);
     const offsetSec =
       (base.offsetSec ?? 0.15) +
       (view.userSyncOffsetMs ?? 0) / 1000 +
       (displayMode === "surah" ? 0 : -0.02);
     return { ...base, offsetSec: Math.max(-0.8, Math.min(0.95, offsetSec)) };
-  }, [displayMode, reciter, riwaya, view.userSyncOffsetMs]);
+  }, [displayMode, reciterId, riwaya, view.userSyncOffsetMs]);
   const { playAyah, playSpecificSurah, playSurah, preparingSurah } = useQuranDisplayAudio(
     {
       ayahs,
@@ -451,7 +452,7 @@ export default function QuranDisplay() {
             calibration={karaokeCalibration}
             classes={classes}
             currentAyah={currentAyah}
-            currentPlayingAyah={currentPlayingAyah}
+            currentPlayingAyah={isSurahStream ? null : currentPlayingAyah}
             currentSurah={currentSurah}
             getTranslationForAyah={getTranslationForAyah}
             isQCF4={isQCF4}
@@ -489,7 +490,7 @@ export default function QuranDisplay() {
               calibration={karaokeCalibration}
               classes={classes}
               currentPage={currentPage}
-              currentPlayingAyah={currentPlayingAyah}
+              currentPlayingAyah={isSurahStream ? null : currentPlayingAyah}
               currentSurah={currentSurah}
               fontFamily={fontFamily}
               getMushafLayoutButtonClass={classes.getMushafLayoutButtonClass}
@@ -531,7 +532,7 @@ export default function QuranDisplay() {
               calibration={karaokeCalibration}
               classes={classes}
               currentJuz={currentJuz}
-              currentPlayingAyah={currentPlayingAyah}
+              currentPlayingAyah={isSurahStream ? null : currentPlayingAyah}
               getMushafLayoutButtonClass={classes.getMushafLayoutButtonClass}
               getTranslationForAyah={getTranslationForAyah}
               isQCF4={isQCF4}
@@ -586,7 +587,7 @@ export default function QuranDisplay() {
             <FullscreenMushafOverlay
               ayahs={ayahs}
               currentPage={currentPage}
-              currentPlayingAyah={currentPlayingAyah}
+              currentPlayingAyah={isSurahStream ? null : currentPlayingAyah}
               currentSurah={currentSurah}
               fullPage
               getTranslationForAyah={getTranslationForAyah}
