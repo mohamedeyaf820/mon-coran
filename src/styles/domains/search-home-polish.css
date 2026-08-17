@@ -265,8 +265,8 @@
 }
 
 .search-pro__voice-btn {
-    min-width: 42px;
-    min-height: 42px;
+    min-width: 44px;
+    min-height: 44px;
     flex: 0 0 auto;
     border: 1px solid color-mix(in srgb, var(--theme-border, #64748b) 28%, transparent);
     border-radius: 13px;
@@ -3185,8 +3185,8 @@ html[data-theme="dark"] .search-pro__close:hover {
     }
 
     .search-pro-overlay .search-pro__voice-btn {
-        min-width: 36px;
-        min-height: 36px;
+        min-width: 44px;
+        min-height: 44px;
         padding: 0;
         border-radius: 11px;
     }
