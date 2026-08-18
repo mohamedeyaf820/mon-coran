@@ -463,7 +463,7 @@ function normalizeVerseCollection(verses, meta = {}) {
 }
 
 async function fetchPaginated(path, meta, signal) {
-  const first = await fetchJson(buildUrl(path, { page: "1" }), signal);
+  const first = await fetchJson(buildUrl(path, { page: "1", words: true }), signal);
   const verses = [...(first.verses || [])];
   const totalPages = Number(first.pagination?.total_pages || 1);
 
@@ -473,7 +473,7 @@ async function fetchPaginated(path, meta, signal) {
       remainingPages,
       // One HTTP/2 wave avoids a second round trip on long surahs.
       5,
-      (page) => fetchJson(buildUrl(path, { page: String(page) }), signal)
+      (page) => fetchJson(buildUrl(path, { page: String(page), words: true }), signal)
     );
     chunks.forEach((chunk) => verses.push(...(chunk.verses || [])));
   }
@@ -535,7 +535,7 @@ export async function fetchQuranComText(pathPrefix, signal) {
   match = /^ayah\/(\d+):(\d+)$/.exec(pathPrefix);
   if (match) {
     const verseKey = `${Number(match[1])}:${Number(match[2])}`;
-    const json = await fetchJson(buildUrl(`/verses/by_key/${verseKey}`), signal);
+    const json = await fetchJson(buildUrl(`/verses/by_key/${verseKey}`, { words: true }), signal);
     return normalizeVerse(json.verse || {});
   }
 
