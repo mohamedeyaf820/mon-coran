@@ -169,9 +169,21 @@ const WAQF_RULES = {
             en: "Subtle pause. A brief pause without taking a breath.",
             ar: "سكتة لطيفة دون تنفس."
         }
+    },
+    '۞': {
+        name: {
+            fr: "Rab' al-Hizb (۞)",
+            en: "Rab' al-Hizb (۞)",
+            ar: "ربع الحزب"
+        },
+        desc: {
+            fr: "Marque le quart de Hizb : une des 240 divisions du Coran.",
+            en: "Marks the quarter Hizb: one of 240 divisions of the Quran.",
+            ar: "يشير إلى بداية ربع الحزب من أجزاء القرآن الكريم."
+        }
     }
-};
-
+};
+
 const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
     const rule = WAQF_RULES[char];
     if (!rule) {
@@ -372,7 +384,7 @@ const TajweedText = React.memo(function TajweedText({
 
     // No /g flag: using with .test() on a stateful regex resets lastIndex and
     // causes alternating misses. split() with a capturing group works without /g.
-    const waqfRegex = /([\u06D6-\u06DC])/;
+    const waqfRegex = /([\u06D6-\u06DC\u06DE])/;
 
     if (!text) return null;
 
