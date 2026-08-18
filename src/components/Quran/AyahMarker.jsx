@@ -6,9 +6,7 @@ import {
   useAppSelector,
 } from "../../context/AppContext";
 import {
-  getNativeAyahMarker,
   normalizeFontId,
-  resolveFontFamily,
 } from "../../data/fonts";
 import { t } from "../../i18n";
 import { toArabicNumeral } from "../../utils/arabicNumerals";
@@ -38,9 +36,6 @@ export const AyahMarker = React.memo(function AyahMarker({
     fontFamily || readingPreferences.fontFamily,
     activeRiwaya,
   );
-  const markerFontFamily = resolveFontFamily(activeFont, activeRiwaya);
-
-  const markerText = getNativeAyahMarker(markerNumber, activeFont, activeRiwaya);
 
   return (
     <span
@@ -56,7 +51,6 @@ export const AyahMarker = React.memo(function AyahMarker({
       tabIndex={onClick ? 0 : undefined}
       aria-label={`Verset ${markerNumber}`}
       data-marker-font={activeFont}
-      style={{ fontFamily: markerFontFamily }}
       onClick={onClick}
       onKeyDown={
         onClick
@@ -69,7 +63,7 @@ export const AyahMarker = React.memo(function AyahMarker({
           : undefined
       }
     >
-      <span aria-hidden="true">{markerText}</span>
+      <span aria-hidden="true">{toArabicNumeral(markerNumber)}</span>
     </span>
   );
 });
