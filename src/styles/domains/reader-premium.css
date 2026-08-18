@@ -399,15 +399,17 @@
    the verse-end marker glyph must always come from QPC Hafs.
    Specificity (C=6, D=3) beats the highest competing rule
    ".mushaf-text-block .verse-text span" at (C=4, D=3). */
-html body .app-root .quran-display--platform .mushaf-text-block .verse-text .ayat-marker > span[aria-hidden="true"],
-html body .app-root .quran-display--platform .mushaf-text-block .verse-text .verse-end-marker > span[aria-hidden="true"],
-html body .app-root .quran-display--platform .mushaf-text-block .verse-text .native-ayah-marker > span[aria-hidden="true"] {
+html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .ayat-marker > span[aria-hidden="true"],
+html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .verse-end-marker > span[aria-hidden="true"],
+html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .native-ayah-marker > span[aria-hidden="true"] {
     font-family: 'QPC Hafs', 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', serif !important;
+    font-size: 0.65em !important;
 }
 /* Same override for the fullscreen portal (outside .app-root) and non-mushaf reading modes. */
-.mfp-portal-root .native-ayah-marker > span[aria-hidden="true"],
-html body .app-root .native-ayah-marker > span[aria-hidden="true"] {
+html body #root .mfp-portal-root .native-ayah-marker > span[aria-hidden="true"],
+html body #root .app-root .native-ayah-marker > span[aria-hidden="true"] {
     font-family: 'QPC Hafs', 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', serif !important;
+    font-size: 0.65em !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
