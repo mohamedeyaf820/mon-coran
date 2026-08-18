@@ -427,7 +427,7 @@ export default function Header({ immersiveHidden = false }) {
     {
       key: "theme",
       Icon: SunMoon,
-      label: tr({ fr: "Changer de thème", en: "Change theme", ar: "تغيير المظهر" }),
+      label: tr({ fr: "Thème", en: "Theme", ar: "المظهر" }),
       description: tr({
         fr: theme === "dark" ? "Mode sombre actif" : theme === "sepia" ? "Mode sépia actif" : "Mode clair actif",
         en: `${theme || "light"} theme active`,
@@ -716,35 +716,17 @@ export default function Header({ immersiveHidden = false }) {
               className="mp-header-menu z-[300]"
             >
               <div className="mp-header-menu__header">
-                <span className="mp-header-menu__header-icon">
-                  <Shapes size={15} strokeWidth={2.1} />
-                </span>
-                <span className="mp-header-menu__heading">
-                  <span className="mp-header-menu__header-text">
-                    {tr({ fr: "Actions rapides", en: "Quick actions", ar: "إجراءات سريعة" })}
-                  </span>
-                  <span className="mp-header-menu__header-subtitle">
-                    {tr({
-                      fr: isReadingView
-                        ? "Lecture et préférences"
-                        : "Navigation et préférences",
-                      en: isReadingView
-                        ? "Reading and preferences"
-                        : "Navigation and preferences",
-                      ar: isReadingView
-                        ? "القراءة والتفضيلات"
-                        : "التنقل والتفضيلات",
-                    })}
-                  </span>
+                <span className="mp-header-menu__header-text">
+                  {tr({ fr: "Actions rapides", en: "Quick actions", ar: "إجراءات سريعة" })}
                 </span>
                 <button
                   className="mp-header-menu__close"
                   type="button"
                   onClick={() => setQuickMenuOpen(false)}
                   aria-label={tr({
-                    fr: "Fermer les actions rapides",
-                    en: "Close quick actions",
-                    ar: "إغلاق الإجراءات السريعة",
+                    fr: "Fermer",
+                    en: "Close",
+                    ar: "إغلاق",
                   })}
                 >
                   <X size={14} strokeWidth={2.2} />
@@ -754,27 +736,10 @@ export default function Header({ immersiveHidden = false }) {
               {isReadingView ? (
                 <section
                   className="mp-header-menu__reader-tools"
-                  aria-labelledby="header-reader-tools-title"
+                  aria-label={tr({ fr: "Affichage de lecture", en: "Reading display", ar: "عرض القراءة" })}
                 >
-                  <div className="mp-header-menu__reader-heading">
-                    <Type size={13} strokeWidth={2.1} aria-hidden="true" />
-                    <span id="header-reader-tools-title">
-                      {tr({
-                        fr: "Affichage de lecture",
-                        en: "Reading display",
-                        ar: "عرض القراءة",
-                      })}
-                    </span>
-                  </div>
-
-                  <div className="mp-header-menu__reader-card">
-                    <span className="mp-header-menu__reader-label">
-                      {tr({
-                        fr: "Taille du texte arabe",
-                        en: "Arabic text size",
-                        ar: "حجم النص العربي",
-                      })}
-                    </span>
+                  {/* Font size + layout toggle — compact inline row */}
+                  <div className="mp-header-menu__controls-row">
                     <div className="mp-header-menu__font-controls">
                       <button
                         type="button"
@@ -787,7 +752,7 @@ export default function Header({ immersiveHidden = false }) {
                           ar: "تصغير النص العربي",
                         })}
                       >
-                        <Minus size={13} strokeWidth={2.4} />
+                        <Minus size={12} strokeWidth={2.4} />
                       </button>
                       <output aria-live="polite">{quranFontSize}px</output>
                       <button
@@ -801,64 +766,43 @@ export default function Header({ immersiveHidden = false }) {
                           ar: "تكبير النص العربي",
                         })}
                       >
-                        <Plus size={13} strokeWidth={2.4} />
+                        <Plus size={12} strokeWidth={2.4} />
+                      </button>
+                    </div>
+
+                    <div
+                      className="mp-header-menu__layout"
+                      role="group"
+                      aria-label={tr({ fr: "Mode de lecture", en: "Reading mode", ar: "وضع القراءة" })}
+                    >
+                      <button
+                        type="button"
+                        data-testid="header-reader-layout-mushaf"
+                        className={mushafLayout === "mushaf" ? "is-active" : ""}
+                        aria-pressed={mushafLayout === "mushaf"}
+                        onClick={() => selectReadingLayout("mushaf")}
+                      >
+                        <BookOpen size={13} strokeWidth={2} />
+                        <span>Mushaf</span>
+                      </button>
+                      <button
+                        type="button"
+                        data-testid="header-reader-layout-list"
+                        className={mushafLayout === "list" ? "is-active" : ""}
+                        aria-pressed={mushafLayout === "list"}
+                        onClick={() => selectReadingLayout("list")}
+                      >
+                        <List size={13} strokeWidth={2} />
+                        <span>{tr({ fr: "Liste", en: "List", ar: "قائمة" })}</span>
                       </button>
                     </div>
                   </div>
 
-                  <div
-                    className="mp-header-menu__layout"
-                    role="group"
-                    aria-label={tr({
-                      fr: "Mode de lecture",
-                      en: "Reading mode",
-                      ar: "وضع القراءة",
-                    })}
-                  >
-                    <button
-                      type="button"
-                      data-testid="header-reader-layout-mushaf"
-                      className={mushafLayout === "mushaf" ? "is-active" : ""}
-                      aria-pressed={mushafLayout === "mushaf"}
-                      onClick={() => selectReadingLayout("mushaf")}
-                    >
-                      <BookOpen size={14} strokeWidth={2} />
-                      <span>Mushaf</span>
-                    </button>
-                    <button
-                      type="button"
-                      data-testid="header-reader-layout-list"
-                      className={mushafLayout === "list" ? "is-active" : ""}
-                      aria-pressed={mushafLayout === "list"}
-                      onClick={() => selectReadingLayout("list")}
-                    >
-                      <List size={14} strokeWidth={2} />
-                      <span>{tr({ fr: "Liste", en: "List", ar: "قائمة" })}</span>
-                    </button>
-                  </div>
-
+                  {/* Riwaya — pills only, no heading, mobile only */}
                   <div
                     className="mp-header-menu__mobile-riwaya mp-header-menu__riwaya"
                     data-testid="header-mobile-riwaya"
                   >
-                    <div className="mp-header-menu__riwaya-heading">
-                      <span className="mp-header-menu__riwaya-copy">
-                        <span className="mp-header-menu__riwaya-label">
-                          {tr({
-                            fr: "Riwaya",
-                            en: "Riwaya",
-                            ar: "الرواية",
-                          })}
-                        </span>
-                        <span className="mp-header-menu__riwaya-description">
-                          {tr({
-                            fr: "Choisir le texte et la récitation",
-                            en: "Choose text and recitation",
-                            ar: "اختيار النص والتلاوة",
-                          })}
-                        </span>
-                      </span>
-                    </div>
                     <div
                       className="mp-header-menu__riwaya-btns"
                       role="group"
@@ -905,9 +849,11 @@ export default function Header({ immersiveHidden = false }) {
                     </span>
                     <span className="mp-header-menu__item-copy">
                       <span className="mp-header-menu__item-label">{item.label}</span>
-                      <span className="mp-header-menu__item-description">
-                        {item.description}
-                      </span>
+                      {item.key === "search" && (
+                        <span className="mp-header-menu__item-description">
+                          {item.description}
+                        </span>
+                      )}
                     </span>
                     {item.key === "search" && (
                       <kbd className="mp-header-menu__item-kbd">/</kbd>
