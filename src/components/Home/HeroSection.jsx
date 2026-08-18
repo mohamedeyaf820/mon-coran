@@ -80,6 +80,7 @@ export default function HeroSection({
   suggestionSet,
   dailyVerse,
   vodSurahNum,
+  vodAyahNum,
 }) {
   const locale = lang === "ar" ? "ar-SA" : lang === "en" ? "en-GB" : "fr-FR";
   const greetingLabel = greeting[lang === "ar" ? "ar" : lang === "en" ? "en" : "fr"];
@@ -204,7 +205,7 @@ export default function HeroSection({
         <button
           type="button"
           className="home-today-verse"
-          onClick={() => vodSurahNum && goSurah(vodSurahNum)}
+          onClick={() => vodSurahNum && goSurah(vodSurahNum, vodAyahNum)}
           disabled={!vodSurahNum}
         >
           <span className="home-today-verse__label">
@@ -215,6 +216,8 @@ export default function HeroSection({
           </span>
           {lang === "fr" && dailyVerse.trans_fr ? (
             <span className="home-today-verse__translation">{dailyVerse.trans_fr}</span>
+          ) : lang === "en" && dailyVerse.trans_en ? (
+            <span className="home-today-verse__translation">{dailyVerse.trans_en}</span>
           ) : null}
           <span className="home-today-verse__reference">
             {dailyVerse.ref}

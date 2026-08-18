@@ -542,10 +542,10 @@ export default function HomePage({ lowPerfMode = false }) {
   );
 
   const goSurah = useCallback(
-    (n) => {
+    (n, ayah = 1) => {
       warmSurah(n);
       set({ displayMode: "surah", showHome: false, showDuas: false });
-      dispatch({ type: "NAVIGATE_SURAH", payload: { surah: n, ayah: 1 } });
+      dispatch({ type: "NAVIGATE_SURAH", payload: { surah: n, ayah } });
     },
     [set, dispatch, warmSurah],
   );
@@ -820,6 +820,8 @@ export default function HomePage({ lowPerfMode = false }) {
     return match ? parseInt(match[1], 10) : null;
   }, [dailyVerse]);
 
+  const vodAyahNum = dailyVerse.ayah ?? 1;
+
   const T = {
     continueReading: { fr: "Continuer", en: "Continue", ar: "متابعة القراءة" },
     startFatiha: { fr: "Al-Fatiha", en: "Al-Fatihah", ar: "البداية" },
@@ -917,6 +919,7 @@ export default function HomePage({ lowPerfMode = false }) {
         suggestionSet={suggestionSet}
         dailyVerse={dailyVerse}
         vodSurahNum={vodSurahNum}
+        vodAyahNum={vodAyahNum}
       />
 
       {/* ── Layout principal (stats + grille) ─────────────────────────── */}
