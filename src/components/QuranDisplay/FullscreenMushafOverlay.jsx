@@ -235,19 +235,19 @@ export default function FullscreenMushafOverlay({
   const scrollSettleTimerRef = useRef(null);
   const scrollRafRef = useRef(null);
   const currentPageRef = useRef(currentPage);
-  const pageCacheRef = useRef(pageCache);
+  const pageCacheRef = useRef(null);
   const onNextPageRef = useRef(onNextPage);
   const onPrevPageRef = useRef(onPrevPage);
-  currentPageRef.current = currentPage;
-  pageCacheRef.current = pageCache;
-  onNextPageRef.current = onNextPage;
-  onPrevPageRef.current = onPrevPage;
   const [zoom, setZoom] = useState(1);
   const [pageCache, setPageCache] = useState(() => new Map([[currentPage, ayahs]]));
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [playerOpen, setPlayerOpen] = useState(false);
   const [selectedAyah, setSelectedAyah] = useState(null);
   const [zoomNotice, setZoomNotice] = useState(false);
+  currentPageRef.current = currentPage;
+  pageCacheRef.current = pageCache;
+  onNextPageRef.current = onNextPage;
+  onPrevPageRef.current = onPrevPage;
   const [targetSurah, setTargetSurah] = useState(String(currentSurah || 1));
   const titleId = "mfp-title";
   // Vertical reading is always available; horizontal swiping is an additional
