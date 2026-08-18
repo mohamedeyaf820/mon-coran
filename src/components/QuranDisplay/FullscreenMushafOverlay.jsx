@@ -22,7 +22,7 @@ import { useApp } from "../../context/AppContext";
 import SURAHS, { getSurah, toAr } from "../../data/surahs";
 import { getReciter } from "../../data/reciters";
 import { t } from "../../i18n";
-import audioService from "../../services/audioService";
+import audioService, { AudioService } from "../../services/audioService";
 import AyahMarker from "../Quran/AyahMarker";
 import Bismillah from "../Quran/Bismillah";
 import { CleanPageSurahHeader } from "../Quran/CleanPageDecor";
@@ -58,6 +58,7 @@ const ImmersiveMushafPage = memo(function ImmersiveMushafPage({
   showTajwid,
   onOpenAyahActions,
   onPlayAyah,
+  onPointerDownAyah,
 }) {
   const clickTimerRef = useRef(null);
   const lastTouchRef = useRef({ key: "", time: 0 });
@@ -129,6 +130,7 @@ const ImmersiveMushafPage = memo(function ImmersiveMushafPage({
                 data-surah-number={ayahSurah}
                 data-ayah-number={ayah.numberInSurah}
                 aria-current={isPlaying ? "true" : undefined}
+                onPointerDown={() => onPointerDownAyah?.(ayah)}
                 onClick={(event) => {
                   event.stopPropagation();
                   if (suppressClickRef.current) {
@@ -262,6 +264,9 @@ export default function FullscreenMushafOverlay({
         : activeSurah.fr
     : "";
   const activeReciter = getReciter(state.reciter, riwaya);
+  const activeReciterRef = useRef(activeReciter);
+  activeReciterRef.current = activeReciter;
+
   const reciterLabel =
     lang === "ar"
       ? activeReciter?.name
@@ -289,6 +294,13 @@ export default function FullscreenMushafOverlay({
             reciter: "Récitateur",
             surah: "Sourate",
           };
+
+  const handlePointerDownAyah = useCallback((ayah) => {
+    const reciter = activeReciterRef.current;
+    if (!reciter?.cdn) return;
+    const url = AudioService.buildUrl(reciter.cdn, ayah, reciter.cdnType || "islamic");
+    audioService._preloadTrack(url);
+  }, []);
 
   const clearChromeTimer = useCallback(() => {
     if (chromeTimerRef.current) clearTimeout(chromeTimerRef.current);
@@ -450,7 +462,7 @@ export default function FullscreenMushafOverlay({
     }
     alignedRef.current = true;
     scrollDrivenRef.current = false;
-  }, [currentPage, fullPage, pageFlow, visiblePages.length]);
+  }, [currentPage, fullPage, pageFlow]);
 
   useLayoutEffect(() => {
     if (!fullPage || pageFlow !== "horizontal") return;
@@ -804,6 +816,7 @@ export default function FullscreenMushafOverlay({
                   showTajwid={showTajwid}
                   onOpenAyahActions={setSelectedAyah}
                   onPlayAyah={onPlayAyah}
+                  onPointerDownAyah={handlePointerDownAyah}
                 />
               ))}
             </div>
