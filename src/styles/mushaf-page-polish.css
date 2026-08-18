@@ -275,13 +275,10 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   align-items: center !important;
   gap: 0 !important;
   margin: clamp(0.5rem, 1.5vw, 0.85rem) 0 clamp(0.9rem, 2.4vw, 1.35rem) !important;
-  padding: 0.65rem clamp(0.8rem, 5vw, 2rem) 0.55rem !important;
-  /* Ornamental golden panel */
-  border: 1px solid rgba(200, 168, 75, 0.32) !important;
-  border-radius: 0.4rem !important;
-  background: linear-gradient(180deg, rgba(200,168,75,0.04) 0%, rgba(200,168,75,0.02) 100%) !important;
-  /* Subtle inner glow ring */
-  box-shadow: inset 0 0 0 1px rgba(200, 168, 75, 0.08) !important;
+  padding: 0 !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper .bismillah {
@@ -313,29 +310,29 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   letter-spacing: 0 !important;
 }
 
-/* Separator line between Arabic and translation */
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .bismillah-container::after {
-  content: "" !important;
-  display: block !important;
-  width: clamp(4rem, 28%, 9rem) !important;
-  height: 1px !important;
-  margin: 0.45rem auto 0.35rem !important;
-  background: linear-gradient(90deg, transparent, rgba(200, 168, 75, 0.4), transparent) !important;
-  opacity: 1 !important;
-}
+/* no separator line */
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .bismillah-translation {
-  max-width: 32ch;
-  margin: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0.3rem 0 0 !important;
   color: color-mix(in srgb, var(--mushaf-muted) 90%, #c8a84b) !important;
   font-family: var(--font-ui, system-ui, sans-serif) !important;
-  font-size: clamp(0.62rem, 0.58rem + 0.12vw, 0.68rem) !important;
+  font-size: clamp(0.7rem, 1.5vw, 0.82rem) !important;
   font-style: italic !important;
   font-weight: 400 !important;
-  line-height: 1.5 !important;
+  line-height: 1.4 !important;
   text-align: center !important;
-  opacity: 0.78 !important;
+  white-space: nowrap !important;
+  opacity: 0.82 !important;
   letter-spacing: 0.01em !important;
+}
+
+@media (max-width: 480px) {
+  .app-root[data-view="reading"] .quran-mode-pane--mushaf .bismillah-translation {
+    white-space: normal !important;
+    font-size: clamp(0.65rem, 2.5vw, 0.75rem) !important;
+  }
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
