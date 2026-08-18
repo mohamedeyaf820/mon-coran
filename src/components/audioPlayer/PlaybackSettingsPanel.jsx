@@ -329,6 +329,7 @@ export default function PlaybackSettingsPanel(props) {
         </p>
       </div>
 
+      {!isMobile && (
       <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
         <div className="mb-2 flex items-center justify-between gap-2">
           <span className={playerSectionLabelClass}>{labels.eq}</span>
@@ -356,6 +357,7 @@ export default function PlaybackSettingsPanel(props) {
           ))}
         </div>
       </div>
+      )}
 
       <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
         <div className="flex items-center justify-between gap-2">
