@@ -152,29 +152,45 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
 
 /* Decorative separator — line ◆ line */
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header .mushaf-header-sep {
-  display: flex !important;
+  position: relative !important;
   flex: 1 !important;
-  align-items: center !important;
-  gap: 0.3rem !important;
-  font-size: 0.45rem !important;
-  color: rgba(200, 168, 75, 0.65) !important;
-  letter-spacing: 0 !important;
+  display: block !important;
+  height: 1.2em !important;
+  font-size: 0 !important;
 }
 
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header .mushaf-header-sep::before,
+/* Horizontal rule through the center */
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header .mushaf-header-sep::after {
   content: "" !important;
-  flex: 1 !important;
+  position: absolute !important;
+  top: 50% !important;
+  inset-inline: 0 !important;
   height: 1px !important;
-  display: block !important;
+  transform: translateY(-50%) !important;
+  background: linear-gradient(
+    to right,
+    rgba(200, 168, 75, 0.06) 0%,
+    rgba(200, 168, 75, 0.48) 30%,
+    transparent 48%,
+    transparent 52%,
+    rgba(200, 168, 75, 0.48) 70%,
+    rgba(200, 168, 75, 0.06) 100%
+  ) !important;
 }
 
+/* Central diamond ornament */
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header .mushaf-header-sep::before {
-  background: linear-gradient(to right, rgba(200,168,75,0.08), rgba(200,168,75,0.45)) !important;
-}
-
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header .mushaf-header-sep::after {
-  background: linear-gradient(to left, rgba(200,168,75,0.08), rgba(200,168,75,0.45)) !important;
+  content: "◆" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  font-size: 0.38rem !important;
+  line-height: 1 !important;
+  color: #c8a84b !important;
+  z-index: 1 !important;
+  padding-inline: 0.22rem !important;
+  background: linear-gradient(90deg, rgba(200,168,75,0.04), rgba(200,168,75,0.09) 50%, rgba(200,168,75,0.04)) !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-surah-header-inline,
@@ -259,7 +275,13 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   align-items: center !important;
   gap: 0 !important;
   margin: clamp(0.5rem, 1.5vw, 0.85rem) 0 clamp(0.9rem, 2.4vw, 1.35rem) !important;
-  padding: 0 !important;
+  padding: 0.65rem clamp(0.8rem, 5vw, 2rem) 0.55rem !important;
+  /* Ornamental golden panel */
+  border: 1px solid rgba(200, 168, 75, 0.32) !important;
+  border-radius: 0.4rem !important;
+  background: linear-gradient(180deg, rgba(200,168,75,0.04) 0%, rgba(200,168,75,0.02) 100%) !important;
+  /* Subtle inner glow ring */
+  box-shadow: inset 0 0 0 1px rgba(200, 168, 75, 0.08) !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper .bismillah {
@@ -273,14 +295,14 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper .bismillah::before,
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper .bismillah::after {
-  max-width: 3.5rem !important;
+  max-width: 5rem !important;
   height: 1px !important;
-  background: linear-gradient(90deg, transparent, var(--mushaf-rule-strong)) !important;
-  opacity: 0.6 !important;
+  background: linear-gradient(90deg, transparent, rgba(200, 168, 75, 0.55)) !important;
+  opacity: 1 !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper .bismillah::after {
-  background: linear-gradient(90deg, var(--mushaf-rule-strong), transparent) !important;
+  background: linear-gradient(90deg, rgba(200, 168, 75, 0.55), transparent) !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper .bismillah > span {
@@ -295,24 +317,25 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .bismillah-container::after {
   content: "" !important;
   display: block !important;
-  width: clamp(3rem, 18%, 6rem) !important;
+  width: clamp(4rem, 28%, 9rem) !important;
   height: 1px !important;
   margin: 0.45rem auto 0.35rem !important;
-  background: linear-gradient(90deg, transparent, var(--mushaf-rule-strong), transparent) !important;
-  opacity: 0.55 !important;
+  background: linear-gradient(90deg, transparent, rgba(200, 168, 75, 0.4), transparent) !important;
+  opacity: 1 !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .bismillah-translation {
-  max-width: 28ch;
+  max-width: 32ch;
   margin: 0 !important;
-  color: var(--mushaf-muted) !important;
+  color: color-mix(in srgb, var(--mushaf-muted) 90%, #c8a84b) !important;
   font-family: var(--font-ui, system-ui, sans-serif) !important;
-  font-size: clamp(0.65rem, 0.6rem + 0.15vw, 0.72rem) !important;
+  font-size: clamp(0.62rem, 0.58rem + 0.12vw, 0.68rem) !important;
   font-style: italic !important;
   font-weight: 400 !important;
-  line-height: 1.45 !important;
+  line-height: 1.5 !important;
   text-align: center !important;
-  opacity: 0.82 !important;
+  opacity: 0.78 !important;
+  letter-spacing: 0.01em !important;
 }
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
