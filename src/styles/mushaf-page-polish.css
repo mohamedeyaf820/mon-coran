@@ -610,3 +610,97 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
     font-size: inherit !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MODE PLEIN ÉCRAN — ImmersiveMushafPage (mfp-*)
+   Esthétique mushaf réel: cadre doré, en-tête en bandeau, médaillon.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Modal card: golden outer border */
+.quran-display--platform .mfp-page-container {
+  border-color: rgba(200, 168, 75, 0.52) !important;
+}
+
+/* Page paper: clean warm parchment */
+.quran-display--platform .mfp-page-sheet {
+  background: var(--reader-page-paper, var(--parchment-1, #fdfaf4)) !important;
+}
+
+/* Top golden rule per page */
+.quran-display--platform .mfp-page-sheet::before {
+  content: "" !important;
+  display: block !important;
+  height: 1.5px !important;
+  margin-inline: clamp(0.9rem, 5.5vw, 3.5rem) !important;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(200, 168, 75, 0.52) 22%,
+    rgba(200, 168, 75, 0.52) 78%,
+    transparent
+  ) !important;
+}
+
+/* ─── Page meta: golden header band ──────────────────────────── */
+.quran-display--platform .mfp-page-meta {
+  border-bottom: 1px solid rgba(200, 168, 75, 0.3) !important;
+  background: linear-gradient(
+    90deg,
+    rgba(200, 168, 75, 0.03),
+    rgba(200, 168, 75, 0.08) 50%,
+    rgba(200, 168, 75, 0.03)
+  ) !important;
+}
+
+/* Both info badges */
+.quran-display--platform .mfp-page-meta > span {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0.07rem 0.44rem !important;
+  border: 1px solid rgba(200, 168, 75, 0.48) !important;
+  border-radius: 0.2rem !important;
+  background: rgba(200, 168, 75, 0.07) !important;
+  color: color-mix(in srgb, #c8a84b 62%, var(--reader-page-ink, var(--text-primary))) !important;
+  font-weight: 700 !important;
+}
+
+/* Surah name badge */
+.quran-display--platform .mfp-page-meta > span:first-child {
+  font-family: var(--font-quran, serif) !important;
+  font-size: clamp(0.72rem, 0.64rem + 0.2vw, 0.88rem) !important;
+}
+
+/* Page label badge */
+.quran-display--platform .mfp-page-meta > span:last-child {
+  font-family: var(--font-ui, sans-serif) !important;
+  font-size: clamp(0.6rem, 0.55rem + 0.1vw, 0.7rem) !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* ─── Folio: golden double-ring medallion ─────────────────────── */
+
+/* Flanking lines: golden gradient */
+.quran-display--platform .mfp-page-folio > span {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(200, 168, 75, 0.5),
+    transparent
+  ) !important;
+  opacity: 1 !important;
+}
+
+/* Page number medallion */
+.quran-display--platform .mfp-page-folio > strong {
+  min-width: 2.4rem !important;
+  min-height: 2.4rem !important;
+  border: 1.5px solid #c8a84b !important;
+  background: var(--reader-page-paper, #fdfaf4) !important;
+  color: color-mix(in srgb, #c8a84b 72%, var(--reader-page-ink, var(--text-primary))) !important;
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  box-shadow:
+    inset 0 0 0 3.5px var(--reader-page-paper, #fdfaf4),
+    inset 0 0 0 5px rgba(200, 168, 75, 0.32),
+    0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
