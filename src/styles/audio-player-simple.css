@@ -188,6 +188,7 @@ html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player
   bottom: 0 !important;
   left: 0 !important;
   width: 100% !important;
+  max-height: 160px !important;
   padding-bottom: max(.28rem, env(safe-area-inset-bottom)) !important;
   border-right: 0 !important;
   border-bottom: 0 !important;

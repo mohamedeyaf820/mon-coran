@@ -60,7 +60,7 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     name: "الحصري المعلم",
     nameEn: "Al-Husary Muallim",
     nameFr: "Al-Housri Muallim",
-    style: "muallim",
+    style: "murattal",
     cdn: "Husary_Muallim_128kbps",
     cdnType: "everyayah",
     audioMode: "ayah",

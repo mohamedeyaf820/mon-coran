@@ -9,7 +9,7 @@ const VERSE = {
 };
 
 const SKIP_LABELS = { ar: "تخطّي", fr: "Passer", en: "Skip" };
-const SPLASH_DURATION_MS = 3600;
+const SPLASH_DURATION_MS = 3200;
 const SPLASH_FADE_MS = 400;
 const SKIP_DELAY_MS = 1400;
 
@@ -51,7 +51,7 @@ export default function SplashScreen({
 
   return ReactDOM.createPortal(
     <div
-      className={`sp-root${fadeOut ? " sp-root--out" : ""}${lowPerfMode ? " sp-root--perf-low" : ""}`}
+      className={`splash-screen sp-root${fadeOut ? " sp-root--out" : ""}${lowPerfMode ? " sp-root--perf-low" : ""}`}
       aria-label={t("splash.loading", lang)}
       aria-live="polite"
     >
@@ -79,7 +79,7 @@ export default function SplashScreen({
 
       {/* Skip button */}
       {showSkip && !fadeOut && (
-        <button type="button" className="sp-skip" onClick={dismiss}>
+        <button type="button" className="splash-skip" onClick={dismiss}>
           {SKIP_LABELS[lang] ?? SKIP_LABELS.fr}
           <span aria-hidden="true">›</span>
         </button>
@@ -102,7 +102,7 @@ export default function SplashScreen({
             <div className="sp-frame__shimmer" />
             <PlatformLogo
               className="sp-logo-wrap"
-              imgClassName="sp-logo"
+              imgClassName="splash-logo sp-logo"
               decorative
               priority
               width={144}
@@ -114,7 +114,7 @@ export default function SplashScreen({
         {/* Wordmark */}
         <div className="sp-wordmark">
           <h1 className="sp-wordmark__app">MushafPlus</h1>
-          <p className="sp-wordmark__ar" lang="ar" dir="rtl">القرآن الكريم</p>
+          <p className="splash-subtitle" lang="ar" dir="rtl">القرآن الكريم</p>
         </div>
 
         {/* Ornamental divider */}
@@ -125,7 +125,7 @@ export default function SplashScreen({
         </div>
 
         {/* Quran verse */}
-        <blockquote className="sp-verse" lang="ar" dir="rtl">
+        <blockquote className="splash-verse" lang="ar" dir="rtl">
           <p className="sp-verse__text">{VERSE.ar}</p>
           <cite className="sp-verse__ref">{VERSE.ref}</cite>
         </blockquote>
@@ -137,7 +137,7 @@ export default function SplashScreen({
             <span className="sp-progress__fill" />
             <span className="sp-progress__spark" />
           </span>
-          <span className="sp-progress__label" lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
+          <span className="splash-loading-text" lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
             {t("splash.loading", lang)}
           </span>
         </div>
@@ -352,7 +352,7 @@ export default function SplashScreen({
           -webkit-text-fill-color: transparent;
           filter: drop-shadow(0 2px 12px rgba(212,168,67,.28));
         }
-        .sp-wordmark__ar {
+        .splash-subtitle {
           margin: 0.3rem 0 0;
           font-family: "Amiri Quran", "Amiri", serif;
           font-size: clamp(1.05rem, 3.8vw, 1.3rem);
@@ -375,7 +375,7 @@ export default function SplashScreen({
         .sp-divider__gem { width: 0.34rem; aspect-ratio: 1; background: currentColor; transform: rotate(45deg); flex-shrink: 0; }
 
         /* ─── verse ─────────────────────────────────────────────── */
-        .sp-verse {
+        .splash-verse {
           max-width: 22rem;
           margin: 0;
           font-style: normal;
@@ -436,7 +436,7 @@ export default function SplashScreen({
           transform: translate(-50%, -50%);
           animation: spSpark ${SPLASH_DURATION_MS - 400}ms 900ms cubic-bezier(.18,.78,.22,1) forwards;
         }
-        .sp-progress__label {
+        .splash-loading-text {
           font-family: "Cairo", system-ui, sans-serif;
           font-size: 0.62rem;
           font-weight: 700;
@@ -446,7 +446,7 @@ export default function SplashScreen({
         }
 
         /* ─── skip button ───────────────────────────────────────── */
-        .sp-skip {
+        .splash-skip {
           position: absolute;
           z-index: 10;
           inset-inline-end: max(1.2rem, env(safe-area-inset-right));
@@ -467,8 +467,8 @@ export default function SplashScreen({
           -webkit-backdrop-filter: blur(6px);
           animation: spSlideUp 300ms ease-out both;
         }
-        .sp-skip:hover { border-color: rgba(212,168,67,.5); color: #fff; background: rgba(255,255,255,.09); }
-        .sp-skip:focus-visible { outline: 2px solid var(--sp-gold-soft); outline-offset: 3px; }
+        .splash-skip:hover { border-color: rgba(212,168,67,.5); color: #fff; background: rgba(255,255,255,.09); }
+        .splash-skip:focus-visible { outline: 2px solid var(--sp-gold-soft); outline-offset: 3px; }
 
 
         /* ─── keyframes ─────────────────────────────────────────── */
@@ -505,7 +505,7 @@ export default function SplashScreen({
             animation-delay: 0ms !important;
             transition-duration: 0.01ms !important;
           }
-          .sp-emblem, .sp-wordmark, .sp-divider, .sp-verse,
+          .sp-emblem, .sp-wordmark, .sp-divider, .splash-verse,
           .sp-progress, .sp-geo { opacity: 1; transform: none; clip-path: none; }
           .sp-progress__fill { transform: scaleX(1); }
           .sp-progress__spark { left: 100%; }

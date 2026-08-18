@@ -363,7 +363,8 @@ export default function FullscreenMushafOverlay({
       // A page warmed by the rolling window can become active immediately.
       // This removes the network wait that previously made scrolling stop at
       // the visible edge. The outer reader will reuse the same prefetch cache.
-      if (pageCacheRef.current.has(target)) {
+      const pageCache = pageCacheRef.current;
+      if (pageCache.has(target)) {
         dispatch({ type: "NAVIGATE_PAGE", payload: { page: target } });
       } else if (direction === "next") onNextPageRef.current?.();
       else onPrevPageRef.current?.();
