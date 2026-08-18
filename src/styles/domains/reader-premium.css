@@ -403,13 +403,13 @@ html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-
 html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .verse-end-marker > span[aria-hidden="true"],
 html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .native-ayah-marker > span[aria-hidden="true"] {
     font-family: 'QPC Hafs', 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', serif !important;
-    font-size: 0.65em !important;
+    font-size: 0.82em !important;
 }
 /* Same override for the fullscreen portal (outside .app-root) and non-mushaf reading modes. */
 html body #root .mfp-portal-root .native-ayah-marker > span[aria-hidden="true"],
 html body #root .app-root .native-ayah-marker > span[aria-hidden="true"] {
     font-family: 'QPC Hafs', 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', serif !important;
-    font-size: 0.65em !important;
+    font-size: 0.82em !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
