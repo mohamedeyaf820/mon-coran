@@ -41,6 +41,7 @@ export default function useQuranDisplayAudio({
 }) {
   const [preparingSurah, setPreparingSurah] = useState(null);
   const [audioTimingMap, setAudioTimingMap] = useState(new Map());
+  const timingReciterRef = useRef(null);
   const continuousAutoPlayRef = useRef(false);
   const playbackNavigationRef = useRef(null);
   const activePlaylistScopeRef = useRef(null);
@@ -122,8 +123,10 @@ export default function useQuranDisplayAudio({
       return;
     }
 
+    const safeTimingMap =
+      timingReciterRef.current === safeReciterId ? audioTimingMap : new Map();
     audioService.loadPlaylist(
-      toPlaylistAyahs(ayahs, currentSurah, audioTimingMap),
+      toPlaylistAyahs(ayahs, currentSurah, safeTimingMap),
       currentReciter.cdn,
       currentReciter.cdnType || "islamic",
     );
@@ -167,7 +170,10 @@ export default function useQuranDisplayAudio({
 
     getAudioTimingsForAyahs(safeReciterId, ayahs)
       .then((map) => {
-        if (!cancelled) setAudioTimingMap(map);
+        if (!cancelled) {
+          timingReciterRef.current = safeReciterId;
+          setAudioTimingMap(map);
+        }
       })
       .catch(() => {
         if (!cancelled) setAudioTimingMap(new Map());

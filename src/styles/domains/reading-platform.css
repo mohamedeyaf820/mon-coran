@@ -4666,7 +4666,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .tajweed-legen
     position: absolute;
     inset: 0;
     z-index: 1;
-    overflow: auto;
+    overflow: scroll;
     overscroll-behavior: contain;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
@@ -4751,7 +4751,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .tajweed-legen
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
     cursor: pointer;
-    transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+    transition: color 150ms ease, background-color 150ms ease;
 }
 
 .quran-display--platform .mfp-ayah--playing {
@@ -5103,12 +5103,16 @@ html body .app-root[data-view="reading"] .quran-display--platform .tajweed-legen
     pointer-events: none;
     opacity: 0;
     transform: translateY(-105%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 .quran-display--platform .mfp-page-container--immersive .mfp-navigation {
     pointer-events: none;
     opacity: 0;
     transform: translateY(105%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
 }
 
 .quran-display--platform .mfp-immersive-hint {
