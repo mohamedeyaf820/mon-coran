@@ -233,6 +233,15 @@ export default function FullscreenMushafOverlay({
   const alignedRef = useRef(false);
   const chromeTimerRef = useRef(null);
   const scrollSettleTimerRef = useRef(null);
+  const scrollRafRef = useRef(null);
+  const currentPageRef = useRef(currentPage);
+  const pageCacheRef = useRef(pageCache);
+  const onNextPageRef = useRef(onNextPage);
+  const onPrevPageRef = useRef(onPrevPage);
+  currentPageRef.current = currentPage;
+  pageCacheRef.current = pageCache;
+  onNextPageRef.current = onNextPage;
+  onPrevPageRef.current = onPrevPage;
   const [zoom, setZoom] = useState(1);
   const [pageCache, setPageCache] = useState(() => new Map([[currentPage, ayahs]]));
   const [navigationOpen, setNavigationOpen] = useState(false);
@@ -346,19 +355,20 @@ export default function FullscreenMushafOverlay({
 
   const changePage = useCallback(
     (direction, fromScroll = false) => {
-      const target = direction === "next" ? currentPage + 1 : currentPage - 1;
+      const page = currentPageRef.current;
+      const target = direction === "next" ? page + 1 : page - 1;
       if (target < 1 || target > 604 || requestedPageRef.current === target) return;
       requestedPageRef.current = target;
       scrollDrivenRef.current = fromScroll;
       // A page warmed by the rolling window can become active immediately.
       // This removes the network wait that previously made scrolling stop at
       // the visible edge. The outer reader will reuse the same prefetch cache.
-      if (pageCache.has(target)) {
+      if (pageCacheRef.current.has(target)) {
         dispatch({ type: "NAVIGATE_PAGE", payload: { page: target } });
-      } else if (direction === "next") onNextPage?.();
-      else onPrevPage?.();
+      } else if (direction === "next") onNextPageRef.current?.();
+      else onPrevPageRef.current?.();
     },
-    [currentPage, dispatch, onNextPage, onPrevPage, pageCache],
+    [dispatch],
   );
 
   useEffect(() => {
@@ -489,7 +499,7 @@ export default function FullscreenMushafOverlay({
 
     viewport.querySelectorAll("[data-mfp-page]").forEach((page) => observer.observe(page));
     return () => observer.disconnect();
-  }, [changePage, currentPage, fullPage, pageFlow, visiblePages]);
+  }, [changePage, currentPage, fullPage, pageFlow]);
 
   useEffect(() => {
     if (!fullPage) return undefined;
@@ -619,24 +629,27 @@ export default function FullscreenMushafOverlay({
         );
       }
       if (requestedPageRef.current != null) return;
+      if (scrollRafRef.current) return;
       // Capture viewport before the handler returns (currentTarget is nullified after dispatch)
       const viewport = event.currentTarget;
       // Defer layout reads to RAF so they don't block the scroll compositor thread
-      requestAnimationFrame(() => {
+      scrollRafRef.current = requestAnimationFrame(() => {
+        scrollRafRef.current = null;
         if (!viewport) return;
-        const activePage = viewport.querySelector(`[data-mfp-page="${currentPage}"]`);
+        const page = currentPageRef.current;
+        const activePage = viewport.querySelector(`[data-mfp-page="${page}"]`);
         if (!activePage) return;
         const pageTop = activePage.offsetTop - viewport.scrollTop;
         const pageBottom = pageTop + activePage.offsetHeight;
         const triggerLine = viewport.clientHeight * 0.34;
-        if (pageBottom < triggerLine && currentPage < 604) {
+        if (pageBottom < triggerLine && page < 604) {
           changePage("next", true);
-        } else if (pageTop > viewport.clientHeight - triggerLine && currentPage > 1) {
+        } else if (pageTop > viewport.clientHeight - triggerLine && page > 1) {
           changePage("previous", true);
         }
       });
     },
-    [changePage, currentPage, hasAudioSession, revealPlayer],
+    [changePage, hasAudioSession, revealPlayer],
   );
 
   const goToSurahNumber = useCallback((value) => {
