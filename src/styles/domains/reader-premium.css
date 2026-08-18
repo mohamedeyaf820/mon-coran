@@ -390,40 +390,24 @@
     filter: drop-shadow(0 1px 3px rgba(197, 160, 75, 0.35)) !important;
 }
 
-/* ─── Verse-end marker: Quran.com-style compact dark circle ─────
-   Renders the Arabic-Indic verse number inside a small CSS circle.
-   High-specificity selectors mirror the original QPC Hafs rule so they
-   beat html body .app-root … .quran-arabic-text * { !important } (C=3,D=2). */
-html body .app-root .quran-display--platform .mushaf-text-block .verse-text .native-ayah-marker > span[aria-hidden="true"],
+/* ─── Verse-end marker: force QPC Hafs rosette glyph ────────────
+   reading-platform.css sets:
+     .quran-arabic-text * { font-family: var(--quran-font-family) !important }
+   This overrides any inline fontFamily set on the inner marker <span>.
+   For fonts like IndoPak, Scheherazade, Amiri, QCF whose Arabic-Indic
+   digits are either tiny overlays or plain numerals (no rosette ligature),
+   the verse-end marker glyph must always come from QPC Hafs.
+   Specificity (C=6, D=3) beats the highest competing rule
+   ".mushaf-text-block .verse-text span" at (C=4, D=3). */
 html body .app-root .quran-display--platform .mushaf-text-block .verse-text .ayat-marker > span[aria-hidden="true"],
 html body .app-root .quran-display--platform .mushaf-text-block .verse-text .verse-end-marker > span[aria-hidden="true"],
-html body .app-root .native-ayah-marker > span[aria-hidden="true"],
-html body .mfp-portal-root .native-ayah-marker > span[aria-hidden="true"] {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-width: 1.35em !important;
-    height: 1.35em !important;
-    border-radius: 1em !important;
-    background: rgba(18, 18, 18, 0.78) !important;
-    color: rgba(255, 255, 255, 0.97) !important;
-    font-family: 'Amiri', 'Scheherazade New', 'Noto Naskh Arabic', sans-serif !important;
-    font-size: 0.55em !important;
-    font-feature-settings: normal !important;
-    line-height: 1 !important;
-    padding: 0.05em 0.22em !important;
-    box-sizing: border-box !important;
-    vertical-align: -0.08em !important;
+html body .app-root .quran-display--platform .mushaf-text-block .verse-text .native-ayah-marker > span[aria-hidden="true"] {
+    font-family: 'QPC Hafs', 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', serif !important;
 }
-
-html[data-theme="dark"] body .app-root .quran-display--platform .mushaf-text-block .verse-text .native-ayah-marker > span[aria-hidden="true"],
-html[data-theme="dark"] body .app-root .quran-display--platform .mushaf-text-block .verse-text .ayat-marker > span[aria-hidden="true"],
-html[data-theme="dark"] body .app-root .quran-display--platform .mushaf-text-block .verse-text .verse-end-marker > span[aria-hidden="true"],
-html[data-theme="dark"] body .app-root .native-ayah-marker > span[aria-hidden="true"],
-html[data-theme="dark"] body .mfp-portal-root .native-ayah-marker > span[aria-hidden="true"] {
-    background: rgba(44, 34, 8, 0.8) !important;
-    color: rgba(228, 188, 60, 0.97) !important;
-    border: 1px solid rgba(195, 152, 18, 0.38) !important;
+/* Same override for the fullscreen portal (outside .app-root) and non-mushaf reading modes. */
+.mfp-portal-root .native-ayah-marker > span[aria-hidden="true"],
+html body .app-root .native-ayah-marker > span[aria-hidden="true"] {
+    font-family: 'QPC Hafs', 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', serif !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════
