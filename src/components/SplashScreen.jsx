@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
 import PlatformLogo from "./PlatformLogo";
 import { t } from "../i18n";
 
@@ -8,9 +9,9 @@ const VERSE = {
 };
 
 const SKIP_LABELS = { ar: "تخطّي", fr: "Passer", en: "Skip" };
-const SPLASH_DURATION_MS = 3200;
-const SPLASH_FADE_MS = 280;
-const SKIP_DELAY_MS = 1300;
+const SPLASH_DURATION_MS = 3600;
+const SPLASH_FADE_MS = 400;
+const SKIP_DELAY_MS = 1400;
 
 export default function SplashScreen({
   onDone,
@@ -21,6 +22,10 @@ export default function SplashScreen({
   const [fadeOut, setFadeOut] = useState(false);
   const [showSkip, setShowSkip] = useState(false);
   const dismissedRef = useRef(false);
+  const onPrefetchRef = useRef(onPrefetch);
+
+  // Keep ref current without it becoming an effect dep
+  useEffect(() => { onPrefetchRef.current = onPrefetch; });
 
   const dismiss = React.useCallback(() => {
     if (dismissedRef.current) return;
@@ -34,41 +39,70 @@ export default function SplashScreen({
     const skipTimer = window.setTimeout(() => setShowSkip(true), SKIP_DELAY_MS);
     const closeTimer = window.setTimeout(dismiss, SPLASH_DURATION_MS);
 
-    const prefetchResult = onPrefetch?.();
-    if (prefetchResult && typeof prefetchResult.then === "function") {
-      prefetchResult.catch(() => null);
-    }
+    // onPrefetch called via ref — not in deps, so timer never resets on state changes
+    const result = onPrefetchRef.current?.();
+    if (result?.catch) result.catch(() => null);
 
     return () => {
       window.clearTimeout(skipTimer);
       window.clearTimeout(closeTimer);
     };
-  }, [dismiss, onPrefetch]);
+  }, [dismiss]);
 
-  return (
+  return ReactDOM.createPortal(
     <div
-      className={`splash-screen ${fadeOut ? "fade-out" : ""} ${lowPerfMode ? "perf-low" : ""}`}
+      className={`sp-root${fadeOut ? " sp-root--out" : ""}${lowPerfMode ? " sp-root--perf-low" : ""}`}
       aria-label={t("splash.loading", lang)}
+      aria-live="polite"
     >
-      <div className="splash-pattern" aria-hidden="true" />
-      <div className="splash-aura" aria-hidden="true" />
+      {/* Geometric background pattern */}
+      <div className="sp-geo" aria-hidden="true" />
 
-      {showSkip && !fadeOut ? (
-        <button type="button" className="splash-skip" onClick={dismiss}>
+      {/* Radial glow layers */}
+      <div className="sp-glow sp-glow--gold" aria-hidden="true" />
+      <div className="sp-glow sp-glow--green" aria-hidden="true" />
+
+      {/* Outer decorative ring */}
+      <div className="sp-halo" aria-hidden="true">
+        <span className="sp-halo__ring sp-halo__ring--1" />
+        <span className="sp-halo__ring sp-halo__ring--2" />
+        {/* 8-point cardinal diamonds */}
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+          <span
+            key={deg}
+            className="sp-halo__dot"
+            style={{ "--deg": `${deg}deg` }}
+            aria-hidden="true"
+          />
+        ))}
+      </div>
+
+      {/* Skip button */}
+      {showSkip && !fadeOut && (
+        <button type="button" className="sp-skip" onClick={dismiss}>
           {SKIP_LABELS[lang] ?? SKIP_LABELS.fr}
           <span aria-hidden="true">›</span>
         </button>
-      ) : null}
+      )}
 
-      <main className="splash-stage">
-        <div className="splash-emblem" aria-hidden="true">
-          <span className="splash-emblem__orbit" />
-          <span className="splash-emblem__diamond splash-emblem__diamond--start" />
-          <span className="splash-emblem__diamond splash-emblem__diamond--end" />
-          <div className="splash-logo-frame">
+      {/* Main content column */}
+      <main className="sp-stage">
+
+        {/* Logo emblem */}
+        <div className="sp-emblem" aria-hidden="true">
+          {/* Rotating outer orbit */}
+          <span className="sp-emblem__spin" />
+          {/* Static inner ring */}
+          <span className="sp-emblem__ring" />
+          {/* Diamond accent at 3 and 9 o'clock */}
+          <span className="sp-emblem__gem sp-emblem__gem--l" />
+          <span className="sp-emblem__gem sp-emblem__gem--r" />
+          {/* Logo frame */}
+          <div className="sp-frame">
+            <div className="sp-frame__shimmer" />
             <PlatformLogo
-              className="splash-logo-wrap"
-              imgClassName="splash-logo"
+              className="sp-logo-wrap"
+              imgClassName="sp-logo"
               decorative
               priority
               width={144}
@@ -77,309 +111,407 @@ export default function SplashScreen({
           </div>
         </div>
 
-        <div className="splash-wordmark">
-          <h1>MushafPlus</h1>
-          <p className="splash-subtitle" lang="ar" dir="rtl">القرآن الكريم</p>
+        {/* Wordmark */}
+        <div className="sp-wordmark">
+          <h1 className="sp-wordmark__app">MushafPlus</h1>
+          <p className="sp-wordmark__ar" lang="ar" dir="rtl">القرآن الكريم</p>
         </div>
 
-        <div className="splash-divider" aria-hidden="true">
-          <span />
+        {/* Ornamental divider */}
+        <div className="sp-divider" aria-hidden="true">
+          <span className="sp-divider__line" />
+          <span className="sp-divider__gem" />
+          <span className="sp-divider__line" />
         </div>
 
-        <blockquote className="splash-verse" lang="ar" dir="rtl">
-          <p>{VERSE.ar}</p>
-          <cite>{VERSE.ref}</cite>
+        {/* Quran verse */}
+        <blockquote className="sp-verse" lang="ar" dir="rtl">
+          <p className="sp-verse__text">{VERSE.ar}</p>
+          <cite className="sp-verse__ref">{VERSE.ref}</cite>
         </blockquote>
 
-        <div className="splash-progress" role="status" aria-live="polite">
+        {/* Loading progress */}
+        <div className="sp-progress" role="status">
           <span className="sr-only">{t("splash.loading", lang)}</span>
-          <span className="splash-progress__track" aria-hidden="true">
-            <span className="splash-progress__value" />
-            <span className="splash-progress__spark" />
+          <span className="sp-progress__track" aria-hidden="true">
+            <span className="sp-progress__fill" />
+            <span className="sp-progress__spark" />
           </span>
-          <span className="splash-loading-text" lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
+          <span className="sp-progress__label" lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
             {t("splash.loading", lang)}
           </span>
         </div>
+
       </main>
 
       <style>{`
-        .splash-screen {
-          --splash-gold: #d9ba65;
-          --splash-gold-soft: #f1dda0;
+        /* ─── tokens ────────────────────────────────────────────── */
+        .sp-root {
+          --sp-gold:        #d4a843;
+          --sp-gold-soft:   #f0d17a;
+          --sp-gold-dim:    rgba(212,168,67,.18);
+          --sp-ink:         #eef4f0;
+          --sp-muted:       rgba(238,244,240,.54);
+          --sp-bg-deep:     #030e08;
+          --sp-fade: ${SPLASH_FADE_MS}ms;
+        }
+
+        /* ─── root ──────────────────────────────────────────────── */
+        .sp-root {
           position: fixed;
           inset: 0;
           z-index: 9999;
           display: grid;
           place-items: center;
           overflow: hidden;
-          color: #f8fbf9;
-          background:
-            radial-gradient(circle at 50% 42%, rgba(217, 186, 101, 0.12), transparent 28rem),
-            linear-gradient(155deg, #07170f 0%, #0c2618 48%, #102f20 100%);
-          opacity: 1;
-          transition: opacity ${SPLASH_FADE_MS}ms ease-out;
-          contain: strict;
-        }
-
-        .splash-screen.fade-out { opacity: 0; pointer-events: none; }
-
-        .splash-pattern {
-          position: absolute;
-          inset: -12%;
-          opacity: 0.18;
+          color: var(--sp-ink);
+          background-color: #071b10;
           background-image:
-            linear-gradient(30deg, transparent 47.5%, rgba(217, 186, 101, 0.16) 48%, rgba(217, 186, 101, 0.16) 49%, transparent 49.5%),
-            linear-gradient(-30deg, transparent 47.5%, rgba(217, 186, 101, 0.12) 48%, rgba(217, 186, 101, 0.12) 49%, transparent 49.5%);
-          background-size: 72px 124px;
-          -webkit-mask-image: radial-gradient(circle at center, #000 0 22%, transparent 68%);
-          mask-image: radial-gradient(circle at center, #000 0 22%, transparent 68%);
-          transform: scale(1.03);
-          animation: splashPatternIn 900ms ease-out both;
+            radial-gradient(ellipse 70% 60% at 50% 44%, rgba(195,152,48,.11) 0%, transparent 68%),
+            linear-gradient(160deg, #030f09 0%, #071b10 40%, #0d2519 65%, #071b10 100%);
+          opacity: 1;
+          transition: opacity var(--sp-fade) cubic-bezier(.4,0,.2,1);
         }
+        .sp-root--out { opacity: 0; pointer-events: none; }
 
-        .splash-aura {
+        /* ─── geometric background ──────────────────────────────── */
+        .sp-geo {
           position: absolute;
-          width: min(35rem, 120vw);
-          aspect-ratio: 1;
-          border: 1px solid rgba(217, 186, 101, 0.11);
-          border-radius: 50%;
-          box-shadow:
-            0 0 0 4rem rgba(217, 186, 101, 0.018),
-            0 0 0 8rem rgba(217, 186, 101, 0.012);
-          animation: splashAuraIn 900ms cubic-bezier(.22, 1, .36, 1) both;
+          inset: -10%;
+          opacity: 0;
+          background-image:
+            linear-gradient(60deg, transparent 47%, rgba(212,168,67,.055) 47.8%, rgba(212,168,67,.055) 52.2%, transparent 53%),
+            linear-gradient(-60deg, transparent 47%, rgba(212,168,67,.042) 47.8%, rgba(212,168,67,.042) 52.2%, transparent 53%),
+            linear-gradient(0deg, transparent 47%, rgba(212,168,67,.035) 47.8%, rgba(212,168,67,.035) 52.2%, transparent 53%);
+          background-size: 60px 60px;
+          -webkit-mask-image: radial-gradient(circle at 50% 46%, black 0 18%, transparent 62%);
+          mask-image: radial-gradient(circle at 50% 46%, black 0 18%, transparent 62%);
+          animation: spGeoIn 1.1s 80ms ease-out forwards;
         }
+        .sp-root--perf-low .sp-geo { display: none; }
 
-        .splash-stage {
+        /* ─── glow layers ───────────────────────────────────────── */
+        .sp-glow {
+          position: absolute;
+          border-radius: 50%;
+          pointer-events: none;
+        }
+        .sp-glow--gold {
+          width: min(34rem, 115vw);
+          aspect-ratio: 1;
+          background: radial-gradient(circle, rgba(195,152,48,.13) 0%, transparent 68%);
+          top: 50%; left: 50%;
+          transform: translate(-50%, -52%);
+          animation: spPulse 3.6s 400ms ease-in-out infinite;
+        }
+        .sp-glow--green {
+          width: min(55rem, 160vw);
+          aspect-ratio: 1;
+          background: radial-gradient(circle, rgba(14,80,43,.16) 0%, transparent 60%);
+          top: 50%; left: 50%;
+          transform: translate(-50%, -48%);
+          opacity: 0;
+          animation: spGlowGreenIn 1.4s 200ms ease-out forwards;
+        }
+        .sp-root--perf-low .sp-glow { display: none; }
+
+        /* ─── halo rings ────────────────────────────────────────── */
+        .sp-halo {
+          position: absolute;
+          top: 50%; left: 50%;
+          transform: translate(-50%, -52%);
+          width: min(30rem, 108vw);
+          aspect-ratio: 1;
+          opacity: 0;
+          animation: spHaloIn 1s 160ms cubic-bezier(.22,1,.36,1) forwards;
+        }
+        .sp-halo__ring {
+          position: absolute;
+          inset: 0;
+          border-radius: 50%;
+          border: 1px solid rgba(212,168,67,.13);
+        }
+        .sp-halo__ring--2 { inset: 8%; border-color: rgba(212,168,67,.07); }
+        .sp-halo__dot {
+          position: absolute;
+          top: 50%; left: 50%;
+          width: 0.38rem;
+          aspect-ratio: 1;
+          background: var(--sp-gold);
+          opacity: 0.45;
+          transform:
+            translate(-50%, -50%)
+            rotate(var(--deg))
+            translateY(calc(min(15rem, 54vw) * -1))
+            rotate(45deg);
+        }
+        .sp-root--perf-low .sp-halo { display: none; }
+
+        /* ─── stage ─────────────────────────────────────────────── */
+        .sp-stage {
           position: relative;
           z-index: 1;
           display: flex;
-          width: min(90vw, 27rem);
           flex-direction: column;
           align-items: center;
           text-align: center;
+          width: min(90vw, 28rem);
+          gap: 0;
         }
 
-        .splash-emblem {
+        /* ─── emblem ────────────────────────────────────────────── */
+        .sp-emblem {
           position: relative;
           display: grid;
-          width: clamp(6.6rem, 22vw, 8.4rem);
-          aspect-ratio: 1;
           place-items: center;
+          width: clamp(6.8rem, 22vw, 8.8rem);
+          aspect-ratio: 1;
           opacity: 0;
-          transform: translateY(0.8rem) scale(0.92);
-          animation: splashEmblemIn 620ms 90ms cubic-bezier(.22, 1, .36, 1) forwards;
+          transform: translateY(1rem) scale(0.88);
+          animation: spEmblemIn 700ms 100ms cubic-bezier(.22,1,.36,1) forwards;
         }
+        .sp-emblem__spin {
+          position: absolute;
+          inset: -2%;
+          border-radius: 50%;
+          border: 1px dashed rgba(212,168,67,.32);
+          animation: spSpin 18s linear infinite;
+        }
+        .sp-emblem__ring {
+          position: absolute;
+          inset: 3%;
+          border-radius: 50%;
+          border: 1px solid rgba(212,168,67,.42);
+        }
+        .sp-emblem__gem {
+          position: absolute;
+          top: 50%;
+          z-index: 3;
+          width: 0.45rem;
+          aspect-ratio: 1;
+          background: var(--sp-gold);
+          transform: translateY(-50%) rotate(45deg);
+          box-shadow: 0 0 8px rgba(212,168,67,.5);
+        }
+        .sp-emblem__gem--l { left: -0.12rem; }
+        .sp-emblem__gem--r { right: -0.12rem; }
+        .sp-root--perf-low .sp-emblem__spin,
+        .sp-root--perf-low .sp-emblem__gem { display: none; }
 
-        .splash-logo-frame {
+        /* ─── logo frame ────────────────────────────────────────── */
+        .sp-frame {
           position: relative;
           z-index: 2;
           display: grid;
-          width: 72%;
-          aspect-ratio: 1;
           place-items: center;
-          overflow: hidden;
-          border: 1px solid rgba(241, 221, 160, 0.3);
-          border-radius: 29%;
-          background: rgba(5, 26, 16, 0.78);
-          box-shadow: 0 16px 42px rgba(0, 0, 0, 0.28), inset 0 1px rgba(255,255,255,.1);
-        }
-
-        .splash-logo-wrap { display: grid; width: 100%; height: 100%; place-items: center; }
-        .splash-logo { width: 78%; height: 78%; object-fit: contain; }
-
-        .splash-emblem__orbit {
-          position: absolute;
-          inset: 2%;
-          border: 1px solid rgba(217, 186, 101, 0.38);
-          border-radius: 50%;
-        }
-
-        .splash-emblem__orbit::before,
-        .splash-emblem__orbit::after {
-          content: "";
-          position: absolute;
-          inset: 11%;
-          border: 1px solid rgba(217, 186, 101, 0.12);
-          border-radius: 50%;
-        }
-
-        .splash-emblem__orbit::after { inset: -5%; border-style: dashed; opacity: 0.45; }
-
-        .splash-emblem__diamond {
-          position: absolute;
-          z-index: 3;
-          top: 50%;
-          width: 0.42rem;
+          width: 70%;
           aspect-ratio: 1;
-          background: var(--splash-gold);
-          transform: translateY(-50%) rotate(45deg);
-          box-shadow: 0 0 0 4px rgba(217, 186, 101, 0.08);
+          overflow: hidden;
+          border-radius: 28%;
+          border: 1px solid rgba(212,168,67,.36);
+          background: rgba(3,14,8,.8);
+          box-shadow:
+            0 0 0 3px rgba(3,14,8,.6),
+            0 20px 50px rgba(0,0,0,.35),
+            inset 0 1px rgba(255,255,255,.08),
+            0 0 28px rgba(195,152,48,.12);
         }
-        .splash-emblem__diamond--start { left: -0.1rem; }
-        .splash-emblem__diamond--end { right: -0.1rem; }
+        .sp-frame__shimmer {
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background: linear-gradient(
+            135deg,
+            rgba(255,255,255,.0) 0%,
+            rgba(255,255,255,.06) 40%,
+            rgba(255,255,255,.0) 60%
+          );
+          background-size: 200% 200%;
+          animation: spShimmer 2.8s 300ms ease-in-out infinite;
+        }
+        .sp-logo-wrap { display: grid; width: 100%; height: 100%; place-items: center; }
+        .sp-logo { width: 76%; height: 76%; object-fit: contain; }
 
-        .splash-wordmark { margin-top: 0.7rem; opacity: 0; animation: splashCopyIn 480ms 500ms ease-out forwards; }
-        .splash-wordmark h1 {
-          margin: 0;
-          color: #fff;
-          font-family: "Cairo", system-ui, sans-serif;
-          font-size: clamp(2rem, 7vw, 2.75rem);
-          font-weight: 820;
-          letter-spacing: -0.055em;
-          line-height: 1.05;
+        /* ─── wordmark ──────────────────────────────────────────── */
+        .sp-wordmark {
+          margin-top: 1rem;
+          opacity: 0;
+          transform: translateY(0.6rem);
+          animation: spSlideUp 520ms 480ms cubic-bezier(.22,1,.36,1) forwards;
         }
-        .splash-wordmark p {
-          margin: 0.32rem 0 0;
-          color: rgba(241, 221, 160, 0.88);
+        .sp-wordmark__app {
+          margin: 0;
+          font-family: "Cairo", system-ui, sans-serif;
+          font-size: clamp(2.1rem, 7.2vw, 2.9rem);
+          font-weight: 850;
+          letter-spacing: -0.045em;
+          line-height: 1;
+          background: linear-gradient(160deg, #fff 0%, rgba(240,209,122,.92) 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          filter: drop-shadow(0 2px 12px rgba(212,168,67,.28));
+        }
+        .sp-wordmark__ar {
+          margin: 0.3rem 0 0;
           font-family: "Amiri Quran", "Amiri", serif;
-          font-size: clamp(1.05rem, 4vw, 1.32rem);
+          font-size: clamp(1.05rem, 3.8vw, 1.3rem);
+          color: rgba(240,209,122,.82);
           line-height: 1.4;
         }
 
-        .splash-divider {
+        /* ─── divider ───────────────────────────────────────────── */
+        .sp-divider {
           display: flex;
-          width: min(10rem, 42vw);
           align-items: center;
-          gap: 0.6rem;
-          margin: 1rem 0 0.78rem;
-          color: rgba(217, 186, 101, 0.58);
+          gap: 0.55rem;
+          width: min(9rem, 40vw);
+          margin: 1.1rem 0 0.9rem;
+          color: rgba(212,168,67,.5);
           opacity: 0;
-          animation: splashCopyIn 420ms 650ms ease-out forwards;
+          animation: spSlideUp 420ms 660ms ease-out forwards;
         }
-        .splash-divider::before,
-        .splash-divider::after { content: ""; height: 1px; flex: 1; background: linear-gradient(90deg, transparent, currentColor); }
-        .splash-divider::after { transform: scaleX(-1); }
-        .splash-divider span { width: 0.36rem; aspect-ratio: 1; background: currentColor; transform: rotate(45deg); }
+        .sp-divider__line { flex: 1; height: 1px; background: currentColor; }
+        .sp-divider__gem { width: 0.34rem; aspect-ratio: 1; background: currentColor; transform: rotate(45deg); flex-shrink: 0; }
 
-        .splash-verse {
-          max-width: 23rem;
-          min-height: 4rem;
+        /* ─── verse ─────────────────────────────────────────────── */
+        .sp-verse {
+          max-width: 22rem;
           margin: 0;
-          color: rgba(250, 246, 231, 0.87);
           font-style: normal;
           opacity: 0;
-          transform: translateY(0.5rem);
-          animation: splashCopyIn 480ms 760ms ease-out forwards;
+          clip-path: inset(0 0 100% 0);
+          animation: spReveal 600ms 780ms cubic-bezier(.22,1,.36,1) forwards;
         }
-        .splash-verse p { margin: 0; font-family: "Amiri Quran", "Amiri", serif; font-size: clamp(0.92rem, 3.1vw, 1.08rem); line-height: 1.9; }
-        .splash-verse cite { display: block; margin-top: 0.12rem; color: rgba(217, 186, 101, 0.76); font-family: "Amiri", serif; font-size: 0.72rem; font-style: normal; }
+        .sp-verse__text {
+          margin: 0;
+          font-family: "Amiri Quran", "Amiri", serif;
+          font-size: clamp(0.9rem, 3vw, 1.06rem);
+          color: rgba(238,244,240,.86);
+          line-height: 2;
+        }
+        .sp-verse__ref {
+          display: block;
+          margin-top: 0.18rem;
+          font-family: "Amiri", serif;
+          font-size: 0.7rem;
+          font-style: normal;
+          color: rgba(212,168,67,.72);
+        }
 
-        .splash-progress {
+        /* ─── progress ──────────────────────────────────────────── */
+        .sp-progress {
           display: grid;
-          width: min(11.5rem, 52vw);
-          gap: 0.55rem;
-          margin-top: 1rem;
+          gap: 0.52rem;
+          width: min(12rem, 54vw);
+          margin-top: 1.15rem;
           opacity: 0;
-          animation: splashCopyIn 380ms 900ms ease-out forwards;
+          animation: spSlideUp 360ms 960ms ease-out forwards;
         }
-        .splash-progress__track { position: relative; height: 2px; overflow: visible; border-radius: 99px; background: rgba(255,255,255,.11); }
-        .splash-progress__value { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, #8f6e1b, var(--splash-gold-soft)); transform: scaleX(0); transform-origin: left; animation: splashProgress 2.25s 800ms cubic-bezier(.2,.72,.25,1) forwards; }
-        .splash-progress__spark { position: absolute; top: 50%; left: 0; width: 0.42rem; aspect-ratio: 1; border-radius: 50%; background: #fff4c8; box-shadow: 0 0 12px rgba(241,221,160,.82); transform: translate(-50%, -50%); animation: splashSpark 2.25s 800ms cubic-bezier(.2,.72,.25,1) forwards; }
-        .splash-loading-text { color: rgba(248,251,249,.58); font-family: "Cairo", system-ui, sans-serif; font-size: 0.65rem; font-weight: 650; letter-spacing: 0.08em; }
-
-        .splash-skip {
+        .sp-progress__track {
+          position: relative;
+          height: 2px;
+          border-radius: 99px;
+          background: rgba(255,255,255,.1);
+          overflow: visible;
+        }
+        .sp-progress__fill {
           position: absolute;
-          z-index: 4;
-          inset-inline-end: max(1rem, env(safe-area-inset-right));
-          bottom: max(1rem, env(safe-area-inset-bottom));
+          inset: 0;
+          border-radius: inherit;
+          background: linear-gradient(90deg, rgba(139,107,27,.7), var(--sp-gold-soft));
+          transform: scaleX(0);
+          transform-origin: left;
+          animation: spBar ${SPLASH_DURATION_MS - 400}ms 900ms cubic-bezier(.18,.78,.22,1) forwards;
+        }
+        .sp-progress__spark {
+          position: absolute;
+          top: 50%;
+          left: 0;
+          width: 0.45rem;
+          aspect-ratio: 1;
+          border-radius: 50%;
+          background: #fff8d6;
+          box-shadow: 0 0 10px rgba(240,209,122,.9), 0 0 22px rgba(240,209,122,.5);
+          transform: translate(-50%, -50%);
+          animation: spSpark ${SPLASH_DURATION_MS - 400}ms 900ms cubic-bezier(.18,.78,.22,1) forwards;
+        }
+        .sp-progress__label {
+          font-family: "Cairo", system-ui, sans-serif;
+          font-size: 0.62rem;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          color: var(--sp-muted);
+          text-transform: uppercase;
+        }
+
+        /* ─── skip button ───────────────────────────────────────── */
+        .sp-skip {
+          position: absolute;
+          z-index: 10;
+          inset-inline-end: max(1.2rem, env(safe-area-inset-right));
+          bottom: max(1.2rem, env(safe-area-inset-bottom));
           display: inline-flex;
           min-height: 44px;
           align-items: center;
-          gap: 0.45rem;
-          border: 1px solid rgba(255,255,255,.18);
+          gap: 0.4rem;
+          padding: 0.42rem 0.9rem;
+          border: 1px solid rgba(255,255,255,.16);
           border-radius: 999px;
-          padding: 0.45rem 0.82rem;
-          color: rgba(255,255,255,.78);
-          background: rgba(5, 26, 16, 0.74);
+          background: rgba(3,14,8,.7);
+          color: rgba(255,255,255,.72);
+          font-family: "Cairo", system-ui, sans-serif;
           font-size: 0.72rem;
           font-weight: 750;
-          animation: splashCopyIn 260ms ease-out both;
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
+          animation: spSlideUp 300ms ease-out both;
         }
-        .splash-skip:hover { border-color: rgba(241,221,160,.48); color: #fff; background: rgba(255,255,255,.08); }
-        .splash-skip:focus-visible { outline: 3px solid var(--splash-gold-soft); outline-offset: 3px; }
+        .sp-skip:hover { border-color: rgba(212,168,67,.5); color: #fff; background: rgba(255,255,255,.09); }
+        .sp-skip:focus-visible { outline: 2px solid var(--sp-gold-soft); outline-offset: 3px; }
 
-        html[data-theme="light"] .splash-screen {
-          color: #173527;
-          background: radial-gradient(circle at 50% 40%, rgba(185,145,49,.14), transparent 28rem), linear-gradient(155deg, #f8faf5, #e7f0e7);
+
+        /* ─── keyframes ─────────────────────────────────────────── */
+        @keyframes spGeoIn    { to { opacity: 1; } }
+        @keyframes spGlowGreenIn { to { opacity: 1; } }
+        @keyframes spHaloIn   { to { opacity: 1; } }
+        @keyframes spEmblemIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes spSlideUp  { to { opacity: 1; transform: translateY(0); } }
+        @keyframes spReveal   { to { opacity: 1; clip-path: inset(0 0 0% 0); } }
+        @keyframes spBar      { to { transform: scaleX(1); } }
+        @keyframes spSpark    { to { left: 100%; } }
+        @keyframes spSpin     { to { transform: rotate(360deg); } }
+        @keyframes spPulse {
+          0%, 100% { opacity: .9; transform: translate(-50%,-52%) scale(1); }
+          50%      { opacity: .6; transform: translate(-50%,-52%) scale(1.06); }
         }
-        html[data-theme="sepia"] .splash-screen {
-          color: #49331b;
-          background: radial-gradient(circle at 50% 40%, rgba(143,94,30,.14), transparent 28rem), linear-gradient(155deg, #f5ecda, #e4d3b6);
+        @keyframes spShimmer {
+          0%   { background-position: 200% 200%; }
+          100% { background-position: -200% -200%; }
         }
-        html[data-theme="light"] .splash-logo-frame,
-        html[data-theme="sepia"] .splash-logo-frame { background: rgba(255,255,255,.66); box-shadow: 0 16px 42px rgba(39,69,48,.13), inset 0 1px #fff; }
-        html[data-theme="light"] .splash-wordmark h1,
-        html[data-theme="sepia"] .splash-wordmark h1 { color: #173527; }
-        html[data-theme="light"] .splash-wordmark p,
-        html[data-theme="light"] .splash-verse cite,
-        html[data-theme="sepia"] .splash-wordmark p,
-        html[data-theme="sepia"] .splash-verse cite { color: #8b681c; }
-        html[data-theme="light"] .splash-verse,
-        html[data-theme="sepia"] .splash-verse { color: #365343; }
-        html[data-theme="light"] .splash-progress__track,
-        html[data-theme="sepia"] .splash-progress__track { background: rgba(22,68,44,.13); }
-        html[data-theme="light"] .splash-loading-text,
-        html[data-theme="sepia"] .splash-loading-text { color: rgba(34,69,49,.68); }
-        html[data-theme="light"] .splash-skip,
-        html[data-theme="sepia"] .splash-skip { border-color: rgba(25,82,52,.18); color: #24553a; background: rgba(255,255,255,.62); }
 
-        .splash-screen.perf-low .splash-pattern,
-        .splash-screen.perf-low .splash-aura,
-        .splash-screen.perf-low .splash-emblem__orbit::after { display: none; }
-
-        @keyframes splashPatternIn { from { opacity: 0; } to { opacity: .18; } }
-        @keyframes splashAuraIn { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: scale(1); } }
-        @keyframes splashEmblemIn { to { opacity: 1; transform: translateY(0) scale(1); } }
-        @keyframes splashCopyIn { to { opacity: 1; transform: translateY(0); } }
-        @keyframes splashProgress { to { transform: scaleX(1); } }
-        @keyframes splashSpark { to { left: 100%; } }
-
+        /* ─── mobile ────────────────────────────────────────────── */
         @media (max-width: 480px) {
-          .splash-stage { width: min(88vw, 22rem); }
-          .splash-emblem { width: 6.8rem; }
-          .splash-wordmark { margin-top: 0.45rem; }
-          .splash-divider { margin-top: 0.78rem; }
-          .splash-verse { min-height: 3.65rem; }
+          .sp-stage    { width: min(88vw, 23rem); }
+          .sp-emblem   { width: 7rem; }
+          .sp-wordmark { margin-top: 0.75rem; }
+          .sp-divider  { margin-top: 0.85rem; margin-bottom: 0.7rem; }
         }
 
+        /* ─── reduced motion ────────────────────────────────────── */
         @media (prefers-reduced-motion: reduce) {
-          .splash-screen *, .splash-screen *::before, .splash-screen *::after {
+          .sp-root *, .sp-root *::before, .sp-root *::after {
             animation-duration: 0.01ms !important;
             animation-delay: 0ms !important;
             transition-duration: 0.01ms !important;
           }
-          .splash-emblem, .splash-wordmark, .splash-divider, .splash-verse, .splash-progress { opacity: 1; transform: none; }
-          .splash-progress__value { transform: scaleX(1); }
-          .splash-progress__spark { left: 100%; }
-        }
-        @media (max-width: 640px) {
-          .splash-content {
-            width: min(88vw, 340px);
-          }
-          .splash-logo-wrap {
-            margin-bottom: 0.85rem;
-          }
-          .splash-logo {
-            width: min(132px, 36vw);
-          }
-          .splash-title {
-            font-size: clamp(2rem, 11vw, 2.55rem);
-            letter-spacing: 2px;
-          }
-          .splash-subtitle {
-            margin-bottom: 1rem;
-          }
-          .splash-verse-wrap {
-            min-height: 64px;
-            margin-bottom: 1.1rem;
-          }
-          .splash-skip {
-            right: max(0.8rem, env(safe-area-inset-right));
-            bottom: max(0.8rem, env(safe-area-inset-bottom));
-          }
+          .sp-emblem, .sp-wordmark, .sp-divider, .sp-verse,
+          .sp-progress, .sp-geo { opacity: 1; transform: none; clip-path: none; }
+          .sp-progress__fill { transform: scaleX(1); }
+          .sp-progress__spark { left: 100%; }
         }
       `}</style>
-    </div>
+    </div>,
+    document.body
   );
 }
