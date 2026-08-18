@@ -245,6 +245,11 @@ export function getQuranWordTextForFont(word, fontId, riwaya = "hafs") {
       word.textQpcHafs || word.textUthmani || word.text || "",
     );
   }
+  if (normalizedId === "qcf-v4-tajweed") {
+    return normalizeQuranGlyphText(
+      word.codeV2 || word.textUthmani || word.text || "",
+    );
+  }
   return normalizeQuranGlyphText(
     word.textUthmani || word.textQpcHafs || word.text || "",
   );

@@ -5384,3 +5384,18 @@ body.mfp-open > .ayah-actions-modal--fullscreen {
         animation: none;
     }
 }
+
+/* ─── Word audio click ──────────────────────────────────────────── */
+.wbw-word--clickable {
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background-color 0.12s ease, opacity 0.12s ease;
+}
+.wbw-word--clickable:hover {
+    background-color: rgba(var(--primary-rgb, 180, 134, 11), 0.12);
+    opacity: 0.85;
+}
+.wbw-word--clickable:active {
+    background-color: rgba(var(--primary-rgb, 180, 134, 11), 0.22);
+    opacity: 0.7;
+}

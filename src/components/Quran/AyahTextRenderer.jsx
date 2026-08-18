@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useKaraoke } from "../../hooks/useKaraoke";
 import audioService from "../../services/audioService";
-import { NATIVE_AYAH_MARKER_RE } from "../../data/fonts";
+import { NATIVE_AYAH_MARKER_RE, getQuranWordTextForFont, getNativeAyahMarker, normalizeFontId, resolveFontFamily } from "../../data/fonts";
 import TajweedText from "./TajweedText";
+import { playWordAudio } from "../../utils/wordAudio";
 
 const AYAH_MARKER_TOKEN_RE = /^[\u06dd\u06de\u06e9\ufd3f\ufd3e\d\u0660-\u0669\u06f0-\u06f9]+$/u;
 
@@ -43,6 +44,7 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
   text,
   isFirstAyah,
   calibration,
+  words,
 }) {
   const lastIdxRef = useRef(0);
   const [exactWordIdx, setExactWordIdx] = useState(-1);
@@ -63,6 +65,11 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
       return nextIndex;
     });
   }, [displayWords]);
+
+  const dataWords = useMemo(
+    () => words?.filter((w) => w.charType !== "end") ?? [],
+    [words],
+  );
 
   useEffect(() => {
     lastIdxRef.current = 0;
@@ -158,9 +165,16 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
         else cls += " wbw-upcoming";
         if (isMarkerToken) cls += " wbw-marker-token native-ayah-marker";
 
+        const wordAudioUrl = !isMarkerToken ? dataWords[recitableIndex]?.audioUrl : null;
         return (
           <React.Fragment key={index}>
-            <span className={cls}>{word}</span>
+            <span
+              className={cls}
+              onClick={wordAudioUrl ? () => playWordAudio(wordAudioUrl) : undefined}
+              role={wordAudioUrl ? "button" : undefined}
+            >
+              {word}
+            </span>
             {index < displayWords.length - 1 && " "}
           </React.Fragment>
         );
@@ -180,6 +194,8 @@ function AyahTextRendererComponent({
   calibration,
   riwaya,
   tajweedColors,
+  words,
+  fontFamily,
 }) {
   if (!text) return null;
 
@@ -189,7 +205,49 @@ function AyahTextRendererComponent({
         text={text}
         isFirstAyah={isFirstAyah}
         calibration={calibration}
+        words={words}
       />
+    );
+  }
+
+  const clickableWords = words?.filter((w) => w.charType !== "end" && w.charType !== "separator");
+  const endMarkerWord = words?.find((w) => w.charType === "end");
+  const textHasEndMarker = NATIVE_AYAH_MARKER_RE.test(text);
+
+  if (clickableWords?.length > 0) {
+    const activeFont = normalizeFontId(fontFamily, riwaya);
+    return (
+      <span className="wbw-container">
+        {clickableWords.map((word, i) => {
+          const hasAudio = !!word.audioUrl;
+          const wordText = getQuranWordTextForFont(word, fontFamily, riwaya);
+          return (
+            <React.Fragment key={i}>
+              <span
+                className={`wbw-word${hasAudio ? " wbw-word--clickable" : ""}`}
+                onClick={hasAudio ? () => playWordAudio(word.audioUrl) : undefined}
+                role={hasAudio ? "button" : undefined}
+              >
+                {showTajwid && word.textTajweed
+                  ? <TajweedText text={word.textTajweed} enabled riwaya={riwaya} tajweedColors={tajweedColors} />
+                  : wordText}
+              </span>
+              {" "}
+            </React.Fragment>
+          );
+        })}
+        {textHasEndMarker && endMarkerWord && (
+          <span
+            dir="rtl"
+            className="ayah-marker-wrap ayat-marker qurancom-ayah-marker verse-end-marker native-ayah-marker inline-block select-none"
+            aria-label={`Verset ${endMarkerWord.ayah}`}
+            data-marker-font={activeFont}
+            style={{ fontFamily: resolveFontFamily(activeFont, riwaya) }}
+          >
+            <span aria-hidden="true">{getNativeAyahMarker(endMarkerWord.ayah, activeFont, riwaya)}</span>
+          </span>
+        )}
+      </span>
     );
   }
 
@@ -212,7 +270,9 @@ function areAyahTextRendererEqual(prev, next) {
     prev.isFirstAyah === next.isFirstAyah &&
     prev.calibration === next.calibration &&
     prev.riwaya === next.riwaya &&
-    prev.tajweedColors === next.tajweedColors
+    prev.tajweedColors === next.tajweedColors &&
+    prev.words === next.words &&
+    prev.fontFamily === next.fontFamily
   );
 }
 

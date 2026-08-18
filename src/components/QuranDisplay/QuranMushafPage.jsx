@@ -7,6 +7,7 @@ import {
   getQcfPageFontFamily,
 } from "../../services/fontLoader";
 import AyahMarker from "../Quran/AyahMarker";
+import { playWordAudio } from "../../utils/wordAudio";
 import { sanitizeHtml } from "../../lib/security";
 import {
   getQuranWordTextForFont,
@@ -305,14 +306,15 @@ export default function QuranMushafPage({
           data-word-position={word.position}
           role="button"
           tabIndex={0}
-          onClick={() => onToggleActive?.(word.globalAyah)}
+          onClick={() => { if (word.audioUrl) playWordAudio(word.audioUrl); onToggleActive?.(word.globalAyah); }}
           onKeyDown={(event) => {
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
+              if (word.audioUrl) playWordAudio(word.audioUrl);
               onToggleActive?.(word.globalAyah);
             }
           }}
-          style={{ 
+          style={{
             fontFamily: 'var(--font-quran)',
             fontSize: 'var(--qd-font-size, 28px)',
             lineHeight: 'var(--line-height-quran)',
@@ -344,10 +346,11 @@ export default function QuranMushafPage({
         data-word-position={word.position}
         role="button"
         tabIndex={0}
-        onClick={() => onToggleActive?.(word.globalAyah)}
+        onClick={() => { if (word.audioUrl) playWordAudio(word.audioUrl); onToggleActive?.(word.globalAyah); }}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
+            if (word.audioUrl) playWordAudio(word.audioUrl);
             onToggleActive?.(word.globalAyah);
           }
         }}

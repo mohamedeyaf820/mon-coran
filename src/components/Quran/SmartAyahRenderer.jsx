@@ -110,6 +110,8 @@ function SmartAyahRendererComponent({
         calibration={effectiveCalibration}
         riwaya={effectiveRiwaya}
         tajweedColors={null}
+        words={ayah.words}
+        fontFamily={fontFamily}
       />
     );
   }
@@ -132,6 +134,8 @@ function SmartAyahRendererComponent({
       calibration={effectiveCalibration}
       riwaya={effectiveRiwaya}
       tajweedColors={null}
+      words={ayah.words}
+      fontFamily={fontFamily}
     />
   );
 }
