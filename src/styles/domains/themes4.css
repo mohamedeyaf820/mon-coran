@@ -1571,7 +1571,7 @@ html[data-theme="sepia"] header.mp-header {
     border-bottom-color: rgba(139, 107, 62, 0.16);
 }
 
-html[data-theme="sepia"] footer,
+html[data-theme="sepia"] footer:not(.home-resume-panel__actions),
 html[data-theme="sepia"] .app-footer {
     background: linear-gradient(
         180deg,
