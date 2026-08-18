@@ -930,6 +930,7 @@ html body .app-root {
 }
 
 .app-root[data-view="home"] .home-resume-panel__primary {
+  flex-grow: 1;
   min-width: min(100%, 13.5rem);
   border: 1px solid #f6e2a0;
   color: #153323;
