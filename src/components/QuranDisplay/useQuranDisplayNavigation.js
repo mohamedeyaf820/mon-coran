@@ -9,10 +9,12 @@ export default function useQuranDisplayNavigation({
 }) {
   const requestRef = useRef(0);
   const navigate = useCallback(
-    async (mode, value, action) => {
+    (mode, value, action) => {
       const requestId = requestRef.current + 1;
       requestRef.current = requestId;
-      await prepareTarget(mode, value);
+      // Kick off the prefetch synchronously so DISPLAY_DATA_PREFETCHES is populated
+      // before useQuranDisplayData re-renders. The dispatch is immediate — no freeze.
+      prepareTarget(mode, value).catch(() => {});
       if (requestRef.current !== requestId) return;
       action();
     },
