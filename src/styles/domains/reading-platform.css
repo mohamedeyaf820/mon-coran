@@ -4666,7 +4666,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .tajweed-legen
     position: absolute;
     inset: 0;
     z-index: 1;
-    overflow: scroll;
+    overflow: auto;
     overscroll-behavior: contain;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
