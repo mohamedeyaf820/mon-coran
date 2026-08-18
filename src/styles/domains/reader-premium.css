@@ -20,7 +20,7 @@
         radial-gradient(ellipse at 8% -30%, color-mix(in srgb, var(--primary) 14%, transparent) 0%, transparent 52%),
         radial-gradient(ellipse at 92% 110%, color-mix(in srgb, var(--primary) 7%, transparent) 0%, transparent 45%),
         color-mix(in srgb, var(--srh-surface, var(--bg-card)) 96%, transparent) !important;
-    backdrop-filter: blur(24px) saturate(135%) !important;
+    backdrop-filter: blur(6px) saturate(120%) !important;
 }
 
 /* Arabic surah name: slightly larger, richer filter */
