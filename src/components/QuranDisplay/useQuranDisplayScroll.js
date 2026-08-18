@@ -113,11 +113,18 @@ export default function useQuranDisplayScroll({
     let correctionTimer = null;
     let frameId = null;
 
-    const alignTarget = () => {
+    const alignTarget = (attempt = 0) => {
       if (cancelled) return;
       frameId = window.requestAnimationFrame(() => {
+        frameId = null;
         const target = document.getElementById(`ayah-${currentAyah}`);
-        if (!target) return;
+        if (!target) {
+          // VirtualizedItem renders lazily; retry until the DOM element appears
+          if (attempt < 12) {
+            correctionTimer = window.setTimeout(() => alignTarget(attempt + 1), 95);
+          }
+          return;
+        }
         target.scrollIntoView({ behavior: "auto", block: "center" });
         correctionTimer = window.setTimeout(() => {
           if (!cancelled) {

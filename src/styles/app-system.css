@@ -725,6 +725,17 @@ html body .app-root {
   background: linear-gradient(145deg, #5d3516, #2c2117 72%);
 }
 
+[data-theme="sepia"] .app-root[data-view="home"] .home-resume-panel__secondary {
+  border-color: rgba(210, 160, 75, 0.5);
+  color: rgba(255, 230, 175, 0.95);
+  background: rgba(80, 40, 8, 0.38);
+}
+
+[data-theme="sepia"] .app-root[data-view="home"] .home-resume-panel__secondary:hover {
+  border-color: rgba(215, 165, 80, 0.72);
+  background: rgba(80, 40, 8, 0.55);
+}
+
 [data-theme="dark"] .app-root[data-view="home"] .home-resume-panel {
   border-color: color-mix(in srgb, var(--primary) 28%, var(--theme-border));
   background: linear-gradient(145deg, #102d22, #0a1812 76%);
