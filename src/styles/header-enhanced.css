@@ -762,18 +762,23 @@ html.dark .app-root > .mp-header {
   justify-content: center !important;
   border: 1px solid color-mix(in srgb, var(--border) 75%, transparent) !important;
   border-radius: 50% !important;
-  background: color-mix(in srgb, var(--text-primary) 6%, transparent) !important;
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent) !important;
   color: var(--text-primary) !important;
   cursor: pointer !important;
+  padding: 0 !important;
   transition: all 180ms ease !important;
 }
 
+.mp-header-menu__close-icon,
 .mp-header-menu__close svg {
   display: block !important;
-  width: 14px !important;
-  height: 14px !important;
+  width: 15px !important;
+  height: 15px !important;
+  min-width: 15px !important;
+  min-height: 15px !important;
   stroke: currentColor !important;
   stroke-width: 2.4 !important;
+  color: var(--text-primary) !important;
 }
 
 .mp-header-menu__close:hover,

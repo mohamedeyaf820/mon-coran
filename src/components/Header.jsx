@@ -773,7 +773,7 @@ export default function Header({ immersiveHidden = false }) {
                     ar: "إغلاق",
                   })}
                 >
-                  <X size={14} strokeWidth={2.2} />
+                  <X size={15} strokeWidth={2.4} className="mp-header-menu__close-icon" aria-hidden="true" />
                 </button>
               </div>
 
