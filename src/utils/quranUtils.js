@@ -23,24 +23,17 @@ export function normalizeQuranGlyphText(text) {
         .replace(/\u200C(?=[\u06D6-\u06ED])/g, '');
 }
 
-const WAQF_DISPLAY_GLYPHS = Object.freeze({
-    '\u06D6': '\u0635\u0644\u0649',
-    '\u06D7': '\u0642\u0644\u0649',
-    '\u06D8': '\u0645',
-    '\u06D9': '\u0644\u0627',
-    '\u06DA': '\u062C',
-    '\u06DB': '\u2234',
-    '\u06DC': '\u0633',
-});
+const WAQF_COMBINING_MARK_RE = /^[\u06D6-\u06DC]$/u;
 
 /**
- * Quranic stop signs U+06D6..U+06DC are combining marks. When an interactive
- * tooltip puts one inside its own element, browser shaping has no base glyph
- * and displays a dotted circle. These readable abbreviations preserve the
- * printed meaning and remain safe inside an isolated UI element.
+ * Quranic stop signs U+06D6..U+06DC are combining marks. Keep the canonical
+ * Quran character instead of replacing it with ordinary Arabic letters: the
+ * latter changes the printed form of صلى / قلى / ج and varies between fonts.
+ * A non-breaking-space anchor gives WebKit and fallback fonts a harmless base
+ * on which to position the small-high glyph without drawing a dotted circle.
  */
 export function getReadableWaqfGlyph(char) {
-    return WAQF_DISPLAY_GLYPHS[char] || char;
+    return WAQF_COMBINING_MARK_RE.test(char) ? `\u00A0${char}` : char;
 }
 
 // Diacritics character class: covers all Arabic combining marks + tatweel

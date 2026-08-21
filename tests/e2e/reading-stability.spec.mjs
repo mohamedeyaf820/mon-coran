@@ -132,8 +132,8 @@ test("reading refresh keeps mushaf visible without stale blur overlay", async ({
     };
   });
   expect(mushafFlow.verseDisplay).toBe("inline");
-  expect(mushafFlow.lineHeightRatio).toBeGreaterThanOrEqual(1.85);
-  expect(mushafFlow.lineHeightRatio).toBeLessThanOrEqual(2.1);
+  expect(mushafFlow.lineHeightRatio).toBeGreaterThanOrEqual(1.64);
+  expect(mushafFlow.lineHeightRatio).toBeLessThanOrEqual(1.78);
   expect(mushafFlow.textAlignLast).not.toBe("center");
 });
 
@@ -146,7 +146,7 @@ test("continuous Mushaf markers preserve a clear gap before the following ayah",
 
   const markers = page.locator(".cpv-ayah-marker");
   expect(await markers.count()).toBeGreaterThan(1);
-  const markerSpacing = await markers.first().evaluate((element) => {
+  const readMarkerSpacing = () => markers.first().evaluate((element) => {
     const style = window.getComputedStyle(element);
     const parentStyle = window.getComputedStyle(element.parentElement);
     const fontSize =
@@ -160,6 +160,13 @@ test("continuous Mushaf markers preserve a clear gap before the following ayah",
         fontSize,
     };
   });
+  await expect
+    .poll(async () => {
+      const spacing = await readMarkerSpacing();
+      return Math.max(spacing.inlineStart, spacing.inlineEnd);
+    })
+    .toBeGreaterThanOrEqual(0.68);
+  const markerSpacing = await readMarkerSpacing();
   const ownAyahGap = Math.min(markerSpacing.inlineStart, markerSpacing.inlineEnd);
   const nextAyahGap = Math.max(markerSpacing.inlineStart, markerSpacing.inlineEnd);
   expect(ownAyahGap).toBeLessThanOrEqual(0.2);

@@ -298,7 +298,7 @@ test("sombre: sidebar, recherche et états actifs gardent des contrastes cohére
       return { color: style.color, backgroundColor: getComputedStyle(element).backgroundColor };
     };
     const input = node.querySelector(".search-pro__input-shell input");
-    const activeMode = node.querySelector(".search-pro__modes button.is-active");
+    const submit = node.querySelector(".search-pro__submit");
     const header = node.querySelector(".search-pro__header");
     const title = node.querySelector("h2");
     return {
@@ -311,7 +311,7 @@ test("sombre: sidebar, recherche et états actifs gardent des contrastes cohére
         color: getComputedStyle(input, "::placeholder").color,
         backgroundColor: getComputedStyle(input).backgroundColor,
       },
-      activeMode: sample(activeMode),
+      submit: sample(submit),
     };
   });
 

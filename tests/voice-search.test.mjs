@@ -39,4 +39,6 @@ test("search modal exposes an accessible voice control and live feedback", () =>
   assert.match(source, /aria-pressed=\{voiceSearch\.isListening\}/);
   assert.match(source, /role="status"/);
   assert.match(source, /role="alert"/);
+  assert.doesNotMatch(source, /search-pro__modes/);
+  assert.doesNotMatch(source, /Recherche contextuelle/);
 });

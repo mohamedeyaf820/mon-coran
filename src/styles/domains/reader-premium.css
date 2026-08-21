@@ -143,10 +143,11 @@
     transform: scale(1.06) !important;
 }
 
-/* Arabic text: richer line height */
+/* Arabic text: use the selected Quran face's own natural rhythm. */
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card .qc-ayah-text-ar {
-    line-height: 2.15 !important;
-    word-spacing: 0.05em !important;
+    line-height: var(--quran-line-height, 1.76) !important;
+    word-spacing: 0 !important;
+    letter-spacing: 0 !important;
 }
 
 /* Transliteration: refined italic serif */
@@ -402,13 +403,13 @@
 html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .ayat-marker > span[aria-hidden="true"],
 html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .verse-end-marker > span[aria-hidden="true"],
 html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .native-ayah-marker > span[aria-hidden="true"] {
-    font-family: 'QPC Hafs', 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', serif !important;
+    font-family: 'QPC Hafs', 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', 'Amiri Quran', 'Scheherazade New', 'Geeza Pro', serif !important;
     font-size: 0.82em !important;
 }
 /* Same override for the fullscreen portal (outside .app-root) and non-mushaf reading modes. */
 html body #root .mfp-portal-root .native-ayah-marker > span[aria-hidden="true"],
 html body #root .app-root .native-ayah-marker > span[aria-hidden="true"] {
-    font-family: 'QPC Hafs', 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', serif !important;
+    font-family: 'QPC Hafs', 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', 'Amiri Quran', 'Scheherazade New', 'Geeza Pro', serif !important;
     font-size: 0.82em !important;
 }
 
@@ -524,4 +525,75 @@ html body #root .app-root .native-ayah-marker > span[aria-hidden="true"] {
         color 160ms ease,
         box-shadow 160ms ease,
         transform 160ms ease !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   15. CANONICAL QURAN TYPOGRAPHY
+   This is the final reader cascade layer. Keep Unicode Quran text in one
+   natural RTL shaping run across Liste and Mushaf. Valid waqf signs remain
+   in the source; only spacing introduced by legacy UI layers is neutralised.
+   ═══════════════════════════════════════════════════════════════ */
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card .qc-ayah-text-ar,
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container,
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .quran-mode-pane--mushaf .mushaf-text-block .verse-text {
+    direction: rtl !important;
+    letter-spacing: 0 !important;
+    word-spacing: 0 !important;
+    font-kerning: normal;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card .qc-ayah-text-ar {
+    line-height: var(--quran-line-height, 1.76) !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
+    line-height: var(--quran-line-height, 1.64) !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  :is(.qc-list-card .qc-ayah-text-ar, .quran-mode-pane--mushaf .mushaf-text-block)
+  :is(.canonical-quran-text, .quran-tajwid-text, .tajweed-text, .verse-text, .quran-arabic-text) {
+    letter-spacing: inherit !important;
+    word-spacing: inherit !important;
+    line-height: inherit !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  :is(.qc-list-card .qc-ayah-text-ar, .quran-mode-pane--mushaf .mushaf-text-block)
+  .waqf-marker {
+    margin-inline: 0.012em !important;
+    padding-inline: 0 !important;
+    font-family: var(--waqf-font-family, var(--font-quran, "QPC Hafs", serif)) !important;
+    font-size: 0.72em !important;
+    font-weight: 400 !important;
+    line-height: 1 !important;
+    vertical-align: 0.08em !important;
+    color: var(--text-quran, var(--theme-text)) !important;
+    opacity: 0.72 !important;
+    transform: none !important;
+    white-space: nowrap !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse {
+    margin-inline: 0 !important;
+    padding-inline: 0 !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .quran-mode-pane--mushaf .mushaf-text-block
+  :is(.cpv-ayah-marker, .ayah-marker, .ayat-marker) {
+    margin-inline-start: 0.12em !important;
+    margin-inline-end: 0.7em !important;
+    padding-inline: 0 !important;
 }

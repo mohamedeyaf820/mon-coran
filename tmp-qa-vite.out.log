@@ -1,0 +1,489 @@
+
+> mushafplus@1.1.0 dev
+> vite --host 127.0.0.1 --port 3010
+
+12:40:57 [vite] (client) Re-optimizing dependencies because vite config has changed
+
+  VITE v8.2.0  ready in 2761 ms
+
+  ➜  Local:   http://127.0.0.1:3010/
+  ➜  press h + enter to show help
+12:40:59 [vite] (client) [optimizer] scanning dependencies...
+12:41:01 [vite] (client) [optimizer] bundling dependencies...
+12:57:41 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+13:05:13 [vite] (client) hmr update /src/styles/tailwind.css
+13:06:36 [vite] (client) hmr update /src/styles/tailwind.css
+13:06:39 [vite] (client) hmr update /src/styles/tailwind.css
+13:12:22 [vite] (client) page reload playwright-report/index.html
+13:12:23 [vite] (client) page reload playwright-report/index.html
+13:12:23 [vite] (client) page reload playwright-report/index.html
+13:12:23 [vite] (client) page reload playwright-report/trace/index.html
+13:12:23 [vite] (client) page reload playwright-report/trace/snapshot.html
+13:12:23 [vite] (client) page reload playwright-report/trace/uiMode.html
+13:26:36 [vite] (client) hmr update /src/styles/tailwind.css
+13:26:39 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+13:27:53 [vite] (client) page reload playwright-report/index.html
+13:27:53 [vite] (client) page reload playwright-report/trace/index.html
+13:27:53 [vite] (client) page reload playwright-report/trace/snapshot.html
+13:27:53 [vite] (client) page reload playwright-report/trace/uiMode.html
+13:27:53 [vite] (client) page reload playwright-report/index.html
+13:27:53 [vite] (client) page reload playwright-report/index.html
+13:27:53 [vite] (client) page reload playwright-report/trace/index.html
+13:27:53 [vite] (client) page reload playwright-report/trace/snapshot.html
+13:27:53 [vite] (client) page reload playwright-report/trace/uiMode.html
+13:32:30 [vite] (client) hmr update /src/styles/tailwind.css
+13:34:52 [vite] (client) page reload playwright-report/index.html
+13:34:52 [vite] (client) page reload playwright-report/trace/index.html
+13:34:52 [vite] (client) page reload playwright-report/trace/snapshot.html
+13:34:52 [vite] (client) page reload playwright-report/trace/uiMode.html
+14:23:35 [vite] (client) hmr update /src/styles/tailwind.css, /src/components/Quran/WarshWordText.jsx
+14:27:28 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/surah-reader-header.css
+14:28:21 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+14:35:01 [vite] (client) hmr update /src/styles/tailwind.css
+14:36:37 [vite] (client) hmr update /src/styles/tailwind.css
+14:40:45 [vite] (client) page reload playwright-report/index.html
+14:40:46 [vite] (client) page reload playwright-report/index.html
+14:40:46 [vite] (client) page reload playwright-report/index.html
+14:40:46 [vite] (client) page reload playwright-report/trace/index.html
+14:40:46 [vite] (client) page reload playwright-report/trace/snapshot.html
+14:40:46 [vite] (client) page reload playwright-report/trace/uiMode.html
+14:49:08 [vite] (client) hmr update /src/styles/tailwind.css, /src/components/Quran/AyahTextRenderer.jsx
+14:51:03 [vite] (client) page reload playwright-report/index.html
+14:51:03 [vite] (client) page reload playwright-report/trace/index.html
+14:51:03 [vite] (client) page reload playwright-report/trace/snapshot.html
+14:51:03 [vite] (client) page reload playwright-report/trace/uiMode.html
+14:51:03 [vite] (client) page reload playwright-report/index.html
+14:53:42 [vite] (client) hmr update /src/styles/tailwind.css
+14:54:47 [vite] (client) page reload playwright-report/index.html
+14:58:35 [vite] (client) page reload playwright-report/index.html
+15:23:27 [vite] (client) hmr update /src/components/Header.jsx, /src/styles/tailwind.css
+15:23:29 [vite] (client) hmr update /src/styles/header-enhanced.css, /src/styles/tailwind.css
+15:23:31 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/audio-player-simple.css
+15:26:17 [vite] (client) page reload playwright-report/index.html
+15:26:17 [vite] (client) page reload playwright-report/index.html
+15:26:17 [vite] (client) page reload playwright-report/index.html
+15:26:17 [vite] (client) page reload playwright-report/trace/index.html
+15:26:17 [vite] (client) page reload playwright-report/trace/snapshot.html
+15:26:17 [vite] (client) page reload playwright-report/trace/uiMode.html
+15:37:51 [vite] (client) hmr update /src/styles/tailwind.css
+15:40:24 [vite] (client) page reload playwright-report/index.html
+15:40:24 [vite] (client) page reload playwright-report/trace/index.html
+15:40:24 [vite] (client) page reload playwright-report/trace/snapshot.html
+15:40:24 [vite] (client) page reload playwright-report/trace/uiMode.html
+15:40:24 [vite] (client) page reload playwright-report/index.html
+15:40:24 [vite] (client) page reload playwright-report/trace/index.html
+15:40:24 [vite] (client) page reload playwright-report/trace/snapshot.html
+15:40:24 [vite] (client) page reload playwright-report/trace/uiMode.html
+15:40:24 [vite] (client) page reload playwright-report/index.html
+15:49:25 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+15:54:54 [vite] (client) page reload playwright-report/index.html
+15:54:54 [vite] (client) page reload playwright-report/trace/index.html
+15:54:54 [vite] (client) page reload playwright-report/trace/snapshot.html
+15:54:54 [vite] (client) page reload playwright-report/trace/uiMode.html
+15:54:55 [vite] (client) page reload playwright-report/index.html
+15:54:55 [vite] (client) page reload playwright-report/trace/index.html
+15:54:55 [vite] (client) page reload playwright-report/trace/snapshot.html
+15:54:55 [vite] (client) page reload playwright-report/trace/uiMode.html
+15:55:54 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+15:56:33 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/audio-player-simple.css
+15:59:07 [vite] (client) page reload playwright-report/index.html
+15:59:07 [vite] (client) page reload playwright-report/trace/index.html
+15:59:07 [vite] (client) page reload playwright-report/trace/snapshot.html
+15:59:07 [vite] (client) page reload playwright-report/trace/uiMode.html
+15:59:07 [vite] (client) page reload playwright-report/index.html
+15:59:07 [vite] (client) page reload playwright-report/index.html
+15:59:07 [vite] (client) page reload playwright-report/trace/index.html
+15:59:07 [vite] (client) page reload playwright-report/trace/snapshot.html
+15:59:07 [vite] (client) page reload playwright-report/trace/uiMode.html
+16:04:15 [vite] (client) page reload playwright-report/index.html
+16:04:15 [vite] (client) page reload playwright-report/trace/index.html
+16:04:15 [vite] (client) page reload playwright-report/trace/snapshot.html
+16:04:15 [vite] (client) page reload playwright-report/trace/uiMode.html
+16:04:15 [vite] (client) page reload playwright-report/index.html
+16:04:15 [vite] (client) page reload playwright-report/index.html
+16:04:15 [vite] (client) page reload playwright-report/trace/index.html
+16:04:15 [vite] (client) page reload playwright-report/trace/snapshot.html
+16:04:15 [vite] (client) page reload playwright-report/trace/uiMode.html
+16:09:51 [vite] (client) hmr update /src/styles/header-enhanced.css, /src/styles/tailwind.css
+16:09:54 [vite] (client) hmr update /src/styles/tailwind.css
+16:09:57 [vite] (client) hmr update /src/styles/tailwind.css
+16:13:25 [vite] (client) page reload playwright-report/index.html
+16:13:25 [vite] (client) page reload playwright-report/trace/index.html
+16:13:25 [vite] (client) page reload playwright-report/trace/snapshot.html
+16:13:25 [vite] (client) page reload playwright-report/trace/uiMode.html
+16:13:57 [vite] (client) page reload playwright-report/index.html
+16:16:29 [vite] (client) hmr update /src/styles/tailwind.css
+16:17:27 [vite] (client) page reload playwright-report/index.html
+16:17:27 [vite] (client) page reload playwright-report/index.html
+16:17:28 [vite] (client) page reload playwright-report/trace/index.html
+16:17:28 [vite] (client) page reload playwright-report/trace/snapshot.html
+16:17:28 [vite] (client) page reload playwright-report/index.html
+16:17:28 [vite] (client) page reload playwright-report/trace/uiMode.html
+16:20:22 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/audio-player-simple.css
+16:20:25 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+16:29:17 [vite] (client) page reload playwright-report/trace/index.html
+16:29:17 [vite] (client) page reload playwright-report/trace/snapshot.html
+16:29:17 [vite] (client) page reload playwright-report/trace/uiMode.html
+16:29:17 [vite] (client) page reload playwright-report/index.html
+16:29:17 [vite] (client) page reload playwright-report/index.html
+16:29:17 [vite] (client) page reload playwright-report/trace/index.html
+16:29:17 [vite] (client) page reload playwright-report/trace/snapshot.html
+16:29:17 [vite] (client) page reload playwright-report/index.html
+16:29:17 [vite] (client) page reload playwright-report/trace/uiMode.html
+16:31:21 [vite] (client) hmr update /src/styles/tailwind.css
+16:32:49 [vite] (client) page reload playwright-report/index.html
+16:32:49 [vite] (client) page reload playwright-report/trace/index.html
+16:32:49 [vite] (client) page reload playwright-report/trace/snapshot.html
+16:32:49 [vite] (client) page reload playwright-report/trace/uiMode.html
+16:32:49 [vite] (client) page reload playwright-report/index.html
+16:32:49 [vite] (client) page reload playwright-report/index.html
+16:32:49 [vite] (client) page reload playwright-report/trace/index.html
+16:32:49 [vite] (client) page reload playwright-report/trace/snapshot.html
+16:32:49 [vite] (client) page reload playwright-report/trace/uiMode.html
+16:35:31 [vite] (client) hmr update /src/styles/tailwind.css
+16:36:48 [vite] (client) page reload playwright-report/index.html
+16:36:48 [vite] (client) page reload playwright-report/trace/index.html
+16:36:48 [vite] (client) page reload playwright-report/trace/snapshot.html
+16:36:48 [vite] (client) page reload playwright-report/trace/uiMode.html
+16:36:48 [vite] (client) page reload playwright-report/index.html
+16:37:43 [vite] (client) page reload playwright-report/index.html
+16:53:06 [vite] (client) hmr update /src/styles/tailwind.css, /src/components/QuranDisplay/SurahInfoPanel.jsx
+16:53:09 [vite] (client) hmr update /src/styles/tailwind.css, /src/components/ui/modal.jsx
+16:53:11 [vite] (client) hmr update /src/styles/tailwind.css
+16:53:14 [vite] (client) hmr update /src/styles/tailwind.css
+16:55:51 [vite] (client) hmr update /src/styles/tailwind.css, /src/components/QuranDisplay/SurahInfoPanel.jsx
+16:55:53 [vite] (client) hmr update /src/styles/tailwind.css
+16:55:55 [vite] (client) hmr update /src/styles/tailwind.css
+16:57:37 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/surah-info-panel.css
+17:04:11 [vite] (client) hmr update /src/styles/tailwind.css
+17:09:21 [vite] (client) page reload playwright-report/index.html
+17:09:21 [vite] (client) page reload playwright-report/trace/index.html
+17:09:21 [vite] (client) page reload playwright-report/trace/snapshot.html
+17:09:21 [vite] (client) page reload playwright-report/trace/uiMode.html
+17:12:52 [vite] (client) page reload playwright-report/index.html
+17:12:52 [vite] (client) page reload playwright-report/trace/index.html
+17:12:52 [vite] (client) page reload playwright-report/trace/snapshot.html
+17:12:52 [vite] (client) page reload playwright-report/trace/uiMode.html
+17:32:10 [vite] (client) hmr update /src/styles/header-enhanced.css, /src/styles/tailwind.css
+17:32:51 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+17:35:55 [vite] (client) hmr update /src/styles/tailwind.css
+17:38:53 [vite] (client) page reload playwright-report/index.html
+17:38:54 [vite] (client) page reload playwright-report/index.html
+17:38:54 [vite] (client) page reload playwright-report/trace/index.html
+17:38:54 [vite] (client) page reload playwright-report/trace/snapshot.html
+17:38:54 [vite] (client) page reload playwright-report/trace/uiMode.html
+17:38:54 [vite] (client) page reload playwright-report/index.html
+17:44:18 [vite] (client) hmr update /src/styles/tailwind.css
+17:45:07 [vite] (client) page reload playwright-report/index.html
+17:45:07 [vite] (client) page reload playwright-report/trace/index.html
+17:45:07 [vite] (client) page reload playwright-report/trace/snapshot.html
+17:45:07 [vite] (client) page reload playwright-report/trace/uiMode.html
+17:45:07 [vite] (client) page reload playwright-report/index.html
+17:45:07 [vite] (client) page reload playwright-report/index.html
+17:51:51 [vite] (client) page reload playwright-report/index.html
+17:51:52 [vite] (client) page reload playwright-report/index.html
+17:51:52 [vite] (client) page reload playwright-report/index.html
+17:51:52 [vite] (client) page reload playwright-report/trace/index.html
+17:51:52 [vite] (client) page reload playwright-report/trace/snapshot.html
+17:51:52 [vite] (client) page reload playwright-report/trace/uiMode.html
+17:53:33 [vite] (client) page reload playwright-report/index.html
+17:53:33 [vite] (client) page reload playwright-report/trace/index.html
+17:53:33 [vite] (client) page reload playwright-report/trace/snapshot.html
+17:53:33 [vite] (client) page reload playwright-report/trace/uiMode.html
+18:05:47 [vite] (client) hmr update /src/styles/tailwind.css
+18:09:15 [vite] (client) hmr update /src/styles/tailwind.css
+18:13:23 [vite] (client) hmr update /src/styles/tailwind.css
+18:16:30 [vite] (client) hmr update /src/styles/tailwind.css
+18:17:49 [vite] (client) page reload playwright-report/index.html
+18:17:49 [vite] (client) page reload playwright-report/index.html
+18:17:49 [vite] (client) page reload playwright-report/index.html
+18:17:49 [vite] (client) page reload playwright-report/trace/index.html
+18:17:49 [vite] (client) page reload playwright-report/trace/snapshot.html
+18:17:49 [vite] (client) page reload playwright-report/trace/uiMode.html
+18:19:16 [vite] (client) hmr update /src/styles/app-system.css, /src/styles/tailwind.css
+18:22:07 [vite] (client) page reload playwright-report/index.html
+18:22:07 [vite] (client) page reload playwright-report/trace/index.html
+18:22:07 [vite] (client) page reload playwright-report/trace/snapshot.html
+18:22:07 [vite] (client) page reload playwright-report/trace/uiMode.html
+18:22:07 [vite] (client) page reload playwright-report/index.html
+18:22:07 [vite] (client) page reload playwright-report/index.html
+18:22:07 [vite] (client) page reload playwright-report/trace/index.html
+18:22:07 [vite] (client) page reload playwright-report/trace/snapshot.html
+18:22:07 [vite] (client) page reload playwright-report/trace/uiMode.html
+18:28:40 [vite] (client) page reload playwright-report/index.html
+18:28:40 [vite] (client) page reload playwright-report/trace/index.html
+18:28:40 [vite] (client) page reload playwright-report/trace/snapshot.html
+18:28:40 [vite] (client) page reload playwright-report/trace/uiMode.html
+18:36:04 [vite] (client) hmr update /src/styles/tailwind.css
+18:36:08 [vite] (client) hmr update /src/styles/tailwind.css
+18:36:12 [vite] (client) hmr update /src/styles/tailwind.css, /src/App.jsx
+18:42:03 [vite] (client) page reload playwright-report/index.html
+18:43:27 [vite] (client) page reload playwright-report/index.html
+18:43:27 [vite] (client) page reload playwright-report/index.html
+19:06:36 [vite] (client) hmr update /src/components/QuranDisplay.jsx, /src/styles/tailwind.css
+19:06:41 [vite] (client) hmr update /src/styles/tailwind.css, /src/components/QuranDisplay/SurahMode.jsx
+19:06:46 [vite] (client) hmr update /src/styles/tailwind.css
+19:15:07 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/surah-reader-header.css
+19:15:11 [vite] (client) hmr update /src/styles/tailwind.css
+19:15:17 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/domains/reader-consolidation.css
+19:49:03 [vite] (client) hmr update /src/styles/tailwind.css
+19:51:17 [vite] (client) page reload playwright-report/index.html
+19:51:17 [vite] (client) page reload playwright-report/index.html
+19:51:17 [vite] (client) page reload playwright-report/index.html
+19:51:17 [vite] (client) page reload playwright-report/trace/index.html
+19:51:17 [vite] (client) page reload playwright-report/trace/snapshot.html
+19:51:17 [vite] (client) page reload playwright-report/trace/uiMode.html
+19:52:10 [vite] (client) hmr update /src/styles/tailwind.css
+19:55:16 [vite] (client) page reload playwright-report/index.html
+19:55:16 [vite] (client) page reload playwright-report/trace/index.html
+19:55:16 [vite] (client) page reload playwright-report/trace/snapshot.html
+19:55:16 [vite] (client) page reload playwright-report/trace/uiMode.html
+19:55:16 [vite] (client) page reload playwright-report/index.html
+19:57:03 [vite] (client) page reload playwright-report/index.html
+19:57:03 [vite] (client) page reload playwright-report/index.html
+19:57:03 [vite] (client) page reload playwright-report/trace/index.html
+19:57:03 [vite] (client) page reload playwright-report/trace/snapshot.html
+19:57:03 [vite] (client) page reload playwright-report/trace/uiMode.html
+19:57:03 [vite] (client) page reload playwright-report/index.html
+20:03:56 [vite] (client) hmr update /src/styles/tailwind.css
+20:07:27 [vite] (client) page reload playwright-report/index.html
+20:07:27 [vite] (client) page reload playwright-report/trace/index.html
+20:07:27 [vite] (client) page reload playwright-report/trace/snapshot.html
+20:07:27 [vite] (client) page reload playwright-report/trace/uiMode.html
+20:07:27 [vite] (client) page reload playwright-report/index.html
+20:07:27 [vite] (client) page reload playwright-report/trace/index.html
+20:07:27 [vite] (client) page reload playwright-report/trace/snapshot.html
+20:07:27 [vite] (client) page reload playwright-report/trace/uiMode.html
+20:07:27 [vite] (client) page reload playwright-report/index.html
+20:14:39 [vite] (client) hmr update /src/styles/tailwind.css
+20:15:29 [vite] (client) page reload playwright-report/index.html
+20:15:29 [vite] (client) page reload playwright-report/trace/snapshot.html
+20:15:29 [vite] (client) page reload playwright-report/trace/index.html
+20:15:29 [vite] (client) page reload playwright-report/trace/uiMode.html
+20:53:29 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+21:10:07 [vite] (client) hmr update /src/styles/tailwind.css
+21:20:26 [vite] (client) hmr update /src/styles/tailwind.css
+21:29:16 [vite] (client) hmr update /src/styles/tailwind.css
+22:50:02 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+23:25:01 [vite] (client) hmr update /src/context/AppContext.jsx, /src/components/Header.jsx, /src/components/QuranDisplay.jsx, /src/components/Sidebar.jsx, /src/components/HomePage.jsx, /src/components/AyahActions.jsx, /src/components/ArabicFontControls.jsx, /src/components/Quran/SmartAyahRenderer.jsx, /src/components/Quran/AyahTextRenderer.jsx, /src/components/Quran/AyahMarker.jsx, /src/styles/tailwind.css
+23:25:06 [vite] (client) hmr update /src/styles/tailwind.css, /src/components/Quran/AyahMarker.jsx
+23:25:13 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+23:26:04 [vite] (client) hmr update /src/styles/tailwind.css, /src/components/Quran/AyahMarker.jsx
+23:30:38 [vite] (client) hmr update /src/styles/tailwind.css, /src/components/Quran/AyahMarker.jsx
+23:30:42 [vite] (client) hmr update /src/styles/tailwind.css
+23:30:45 [vite] (client) hmr update /src/styles/tailwind.css
+23:39:44 [vite] (client) hmr update /src/styles/tailwind.css
+23:39:48 [vite] (client) hmr update /src/styles/tailwind.css
+23:46:28 [vite] (client) hmr update /src/styles/tailwind.css
+23:58:19 [vite] (client) hmr update /src/styles/tailwind.css
+23:59:37 [vite] (client) hmr update /src/context/AppContext.jsx, /src/components/Header.jsx, /src/components/QuranDisplay.jsx, /src/components/Sidebar.jsx, /src/components/HomePage.jsx, /src/components/AyahActions.jsx, /src/components/ArabicFontControls.jsx, /src/components/Quran/SmartAyahRenderer.jsx, /src/components/Quran/AyahTextRenderer.jsx, /src/components/Quran/AyahMarker.jsx, /src/styles/tailwind.css
+00:00:19 [vite] (client) hmr update /src/styles/tailwind.css
+00:25:26 [vite] (client) hmr update /src/styles/tailwind.css
+00:29:01 [vite] (client) hmr update /src/styles/tailwind.css
+00:32:06 [vite] (client) hmr update /src/styles/tailwind.css
+00:32:48 [vite] (client) hmr update /src/styles/tailwind.css
+00:34:36 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/domains/search-home-polish.css
+00:35:21 [vite] (client) hmr update /src/styles/tailwind.css
+00:35:25 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/domains/search-home-polish.css
+00:46:12 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/domains/search-home-polish.css
+00:46:15 [vite] (client) hmr update /src/styles/tailwind.css
+00:46:19 [vite] (client) hmr update /src/styles/tailwind.css
+00:46:23 [vite] (client) hmr update /src/styles/tailwind.css
+00:59:09 [vite] (client) page reload playwright-report/index.html
+00:59:10 [vite] (client) page reload playwright-report/index.html
+00:59:10 [vite] (client) page reload playwright-report/index.html
+00:59:10 [vite] (client) page reload playwright-report/trace/index.html
+00:59:10 [vite] (client) page reload playwright-report/trace/snapshot.html
+00:59:10 [vite] (client) page reload playwright-report/trace/uiMode.html
+01:10:10 [vite] (client) hmr update /src/styles/tailwind.css
+06:07:58 [vite] (client) hmr update /src/styles/tailwind.css
+06:23:57 [vite] (client) hmr update /src/styles/tailwind.css
+06:25:07 [vite] (client) page reload playwright-report/index.html
+06:25:07 [vite] (client) page reload playwright-report/trace/index.html
+06:25:07 [vite] (client) page reload playwright-report/trace/snapshot.html
+06:25:07 [vite] (client) page reload playwright-report/trace/uiMode.html
+06:27:16 [vite] (client) page reload playwright-report/index.html
+06:29:32 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/domains/search-home-polish.css
+06:31:33 [vite] (client) page reload playwright-report/index.html
+06:31:33 [vite] (client) page reload playwright-report/index.html
+06:34:42 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/domains/search-home-polish.css
+06:34:47 [vite] (client) hmr update /src/styles/tailwind.css
+06:38:07 [vite] (client) page reload playwright-report/index.html
+06:46:31 [vite] (client) hmr update /src/styles/tailwind.css
+06:46:34 [vite] (client) hmr update /src/styles/tailwind.css
+06:50:27 [vite] (client) page reload playwright-report/index.html
+06:54:37 [vite] (client) page reload playwright-report/index.html
+06:59:13 [vite] (client) page reload playwright-report/index.html
+07:34:25 [vite] (client) hmr update /src/styles/tailwind.css, /src/components/Header.jsx, /src/components/QuranDisplay.jsx, /src/components/ArabicFontControls.jsx
+07:34:28 [vite] (client) hmr update /src/styles/tailwind.css
+07:34:31 [vite] (client) hmr update /src/styles/tailwind.css
+07:34:34 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+07:36:59 [vite] (client) hmr update /src/styles/tailwind.css
+07:39:17 [vite] (client) page reload playwright-report/index.html
+07:39:17 [vite] (client) page reload playwright-report/index.html
+07:39:17 [vite] (client) page reload playwright-report/index.html
+07:39:17 [vite] (client) page reload playwright-report/trace/index.html
+07:39:17 [vite] (client) page reload playwright-report/trace/snapshot.html
+07:39:17 [vite] (client) page reload playwright-report/trace/uiMode.html
+07:41:38 [vite] (client) hmr update /src/styles/tailwind.css
+07:42:39 [vite] (client) page reload playwright-report/index.html
+07:42:39 [vite] (client) page reload playwright-report/trace/index.html
+07:42:39 [vite] (client) page reload playwright-report/trace/snapshot.html
+07:42:39 [vite] (client) page reload playwright-report/trace/uiMode.html
+07:42:39 [vite] (client) page reload playwright-report/index.html
+07:42:39 [vite] (client) page reload playwright-report/index.html
+07:42:39 [vite] (client) page reload playwright-report/trace/index.html
+07:42:39 [vite] (client) page reload playwright-report/trace/snapshot.html
+07:42:39 [vite] (client) page reload playwright-report/trace/uiMode.html
+07:42:39 [vite] (client) page reload playwright-report/index.html
+07:51:17 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/domains/reader-premium.css
+07:51:20 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+07:52:30 [vite] (client) page reload playwright-report/index.html
+07:52:30 [vite] (client) page reload playwright-report/trace/snapshot.html
+07:52:30 [vite] (client) page reload playwright-report/trace/index.html
+07:52:30 [vite] (client) page reload playwright-report/trace/uiMode.html
+07:52:30 [vite] (client) page reload playwright-report/index.html
+07:52:30 [vite] (client) page reload playwright-report/index.html
+07:52:30 [vite] (client) page reload playwright-report/trace/index.html
+07:52:30 [vite] (client) page reload playwright-report/trace/snapshot.html
+07:52:30 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:03:28 [vite] (client) page reload playwright-report/index.html
+08:03:28 [vite] (client) page reload playwright-report/trace/index.html
+08:03:28 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:03:28 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:03:28 [vite] (client) page reload playwright-report/index.html
+08:03:28 [vite] (client) page reload playwright-report/trace/index.html
+08:03:28 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:03:28 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:03:28 [vite] (client) page reload playwright-report/index.html
+08:05:22 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+08:13:03 [vite] (client) page reload playwright-report/index.html
+08:13:03 [vite] (client) page reload playwright-report/trace/index.html
+08:13:03 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:13:03 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:13:03 [vite] (client) page reload playwright-report/index.html
+08:13:03 [vite] (client) page reload playwright-report/index.html
+08:13:03 [vite] (client) page reload playwright-report/trace/index.html
+08:13:03 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:13:03 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:14:51 [vite] (client) hmr update /src/styles/tailwind.css
+08:16:08 [vite] (client) page reload playwright-report/index.html
+08:16:08 [vite] (client) page reload playwright-report/trace/index.html
+08:16:08 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:16:08 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:16:08 [vite] (client) page reload playwright-report/index.html
+08:16:08 [vite] (client) page reload playwright-report/index.html
+08:16:08 [vite] (client) page reload playwright-report/trace/index.html
+08:16:08 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:16:08 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:16:08 [vite] (client) page reload playwright-report/index.html
+08:18:51 [vite] (client) hmr update /src/styles/tailwind.css
+08:21:10 [vite] (client) page reload playwright-report/index.html
+08:21:10 [vite] (client) page reload playwright-report/trace/index.html
+08:21:10 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:21:10 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:21:10 [vite] (client) page reload playwright-report/index.html
+08:21:10 [vite] (client) page reload playwright-report/index.html
+08:21:10 [vite] (client) page reload playwright-report/trace/index.html
+08:21:10 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:21:10 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:25:13 [vite] (client) hmr update /src/styles/tailwind.css
+08:27:57 [vite] (client) page reload playwright-report/index.html
+08:27:57 [vite] (client) page reload playwright-report/trace/index.html
+08:27:57 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:27:57 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:27:57 [vite] (client) page reload playwright-report/index.html
+08:27:57 [vite] (client) page reload playwright-report/trace/index.html
+08:27:57 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:27:57 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:27:57 [vite] (client) page reload playwright-report/index.html
+08:32:25 [vite] (client) hmr update /src/styles/tailwind.css
+08:35:45 [vite] (client) page reload playwright-report/index.html
+08:35:45 [vite] (client) page reload playwright-report/trace/index.html
+08:35:45 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:35:45 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:35:45 [vite] (client) page reload playwright-report/index.html
+08:35:45 [vite] (client) page reload playwright-report/trace/index.html
+08:35:45 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:35:45 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:37:58 [vite] (client) hmr update /src/styles/tailwind.css
+08:38:54 [vite] (client) page reload playwright-report/index.html
+08:38:54 [vite] (client) page reload playwright-report/trace/index.html
+08:38:54 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:38:54 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:46:37 [vite] (client) page reload playwright-report/index.html
+08:53:34 [vite] (client) page reload playwright-report/index.html
+08:56:04 [vite] (client) page reload playwright-report/index.html
+08:56:24 [vite] (client) page reload playwright-report/index.html
+08:56:24 [vite] (client) page reload playwright-report/index.html
+08:56:24 [vite] (client) page reload playwright-report/index.html
+08:56:24 [vite] (client) page reload playwright-report/trace/index.html
+08:56:24 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:56:24 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:56:24 [vite] (client) page reload playwright-report/index.html
+08:56:44 [vite] (client) page reload playwright-report/index.html
+08:56:44 [vite] (client) page reload playwright-report/trace/snapshot.html
+08:56:44 [vite] (client) page reload playwright-report/trace/uiMode.html
+08:56:44 [vite] (client) page reload playwright-report/trace/index.html
+08:58:43 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/domains/reader-premium.css
+08:58:46 [vite] (client) hmr update /src/styles/tailwind.css
+09:01:18 [vite] (client) page reload playwright-report/index.html
+09:01:18 [vite] (client) page reload playwright-report/index.html
+09:01:18 [vite] (client) page reload playwright-report/trace/index.html
+09:01:18 [vite] (client) page reload playwright-report/trace/snapshot.html
+09:01:18 [vite] (client) page reload playwright-report/trace/uiMode.html
+09:02:18 [vite] (client) hmr update /src/styles/tailwind.css
+09:03:00 [vite] (client) page reload playwright-report/index.html
+09:03:00 [vite] (client) page reload playwright-report/trace/index.html
+09:03:00 [vite] (client) page reload playwright-report/trace/snapshot.html
+09:03:00 [vite] (client) page reload playwright-report/trace/uiMode.html
+09:08:29 [vite] (client) hmr update /src/styles/tailwind.css
+09:10:28 [vite] (client) page reload playwright-report/index.html
+09:10:28 [vite] (client) page reload playwright-report/index.html
+09:40:44 [vite] (client) hmr update /src/styles/tailwind.css, /src/context/AppContext.jsx, /src/components/Header.jsx, /src/components/QuranDisplay.jsx, /src/components/Sidebar.jsx, /src/components/HomePage.jsx, /src/components/AyahActions.jsx, /src/components/ArabicFontControls.jsx, /src/components/Quran/SmartAyahRenderer.jsx, /src/components/Quran/AyahTextRenderer.jsx, /src/components/Quran/AyahMarker.jsx, /src/components/Quran/TajweedText.jsx
+09:40:50 [vite] (client) hmr update /src/styles/riwaya-fonts.css, /src/styles/tailwind.css
+09:41:03 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/device-responsive.css
+09:41:17 [vite] (client) hmr update /src/styles/tailwind.css, /src/styles/domains/reader-premium.css
+09:41:28 [vite] (client) hmr update /src/styles/tailwind.css
+09:41:38 [vite] (client) hmr update /src/styles/tailwind.css
+10:04:22 [vite] (client) page reload playwright-report/index.html
+10:04:22 [vite] (client) page reload playwright-report/index.html
+10:04:22 [vite] (client) page reload playwright-report/trace/index.html
+10:04:22 [vite] (client) page reload playwright-report/trace/snapshot.html
+10:04:23 [vite] (client) page reload playwright-report/trace/uiMode.html
+10:04:23 [vite] (client) page reload playwright-report/index.html
+10:12:25 [vite] (client) page reload playwright-report/index.html
+10:12:25 [vite] (client) page reload playwright-report/trace/index.html
+10:12:25 [vite] (client) page reload playwright-report/trace/snapshot.html
+10:12:25 [vite] (client) page reload playwright-report/trace/uiMode.html
+10:15:43 [vite] (client) page reload playwright-report/index.html
+10:21:46 [vite] (client) page reload playwright-report/index.html
+10:21:46 [vite] (client) page reload playwright-report/index.html
+10:24:49 [vite] (client) hmr update /src/styles/tailwind.css
+10:32:30 [vite] (client) page reload playwright-report/index.html
+10:32:31 [vite] (client) page reload playwright-report/index.html
+10:32:31 [vite] (client) page reload playwright-report/trace/index.html
+10:32:31 [vite] (client) page reload playwright-report/trace/snapshot.html
+10:32:31 [vite] (client) page reload playwright-report/trace/uiMode.html
+10:32:31 [vite] (client) page reload playwright-report/index.html
+10:36:37 [vite] (client) hmr update /src/styles/tailwind.css
+10:41:51 [vite] (client) page reload playwright-report/index.html
+10:41:51 [vite] (client) page reload playwright-report/trace/index.html
+10:41:51 [vite] (client) page reload playwright-report/trace/snapshot.html
+10:41:51 [vite] (client) page reload playwright-report/trace/uiMode.html
+10:41:51 [vite] (client) page reload playwright-report/index.html
+10:41:51 [vite] (client) page reload playwright-report/trace/index.html
+10:41:51 [vite] (client) page reload playwright-report/index.html
+10:41:51 [vite] (client) page reload playwright-report/trace/snapshot.html
+10:41:51 [vite] (client) page reload playwright-report/trace/uiMode.html
+10:45:13 [vite] (client) hmr update /src/styles/tailwind.css
+10:47:01 [vite] (client) page reload playwright-report/index.html
+10:47:01 [vite] (client) page reload playwright-report/trace/index.html
+10:47:01 [vite] (client) page reload playwright-report/trace/snapshot.html
+10:47:01 [vite] (client) page reload playwright-report/trace/uiMode.html
+10:47:01 [vite] (client) page reload playwright-report/index.html
+10:52:08 [vite] (client) page reload playwright-report/index.html
+10:52:08 [vite] (client) page reload playwright-report/index.html
+10:52:08 [vite] (client) page reload playwright-report/index.html
+11:00:21 [vite] (client) page reload playwright-report/index.html
+11:00:21 [vite] (client) page reload playwright-report/index.html

@@ -113,32 +113,10 @@ const QCVerseCard = memo(function QCVerseCard({
     ],
   );
 
-  const verseText = useMemo(() => {
-    const source = riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text;
-    return (source || "").replace(/\s+/g, " ").trim();
-  }, [ayah.hafsText, ayah.text, riwaya]);
-
-  const verseSizeFactor = useMemo(() => {
-    if (!verseText) return 0;
-    const charScore = Math.min(1, verseText.length / 180);
-    const wordScore = Math.min(1, verseText.split(" ").filter(Boolean).length / 22);
-    return Math.max(charScore, wordScore);
-  }, [verseText]);
-
-  const verseCardStyle = useMemo(
-    () => ({
-      "--qc-verse-max-width": `${Math.round(520 + verseSizeFactor * 560)}px`,
-      "--qc-verse-padding-y": `${Math.round(14 + verseSizeFactor * 12)}px`,
-      "--qc-verse-padding-x": `${Math.round(14 + verseSizeFactor * 16)}px`,
-    }),
-    [verseSizeFactor],
-  );
-
   const translations = Array.isArray(translation) ? translation : [];
 
   return (
     <article
-      style={verseCardStyle}
       className={cn(
         "qc-verse-card qc-list-card group relative transition-colors duration-200 outline-none",
         "px-4 sm:px-6 py-5 sm:py-6",

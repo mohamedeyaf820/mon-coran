@@ -1,4 +1,5 @@
 import React from 'react';
+import { getReadableWaqfGlyph } from '../../utils/quranUtils';
 
 const TAJWID_FALLBACK_COLORS = {
     ghunna: '#26b55d', idgham: '#26b55d', ikhfa: '#26b55d', iqlab: '#26b55d',
@@ -26,7 +27,7 @@ const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, t
     if (!words || words.length === 0) return null;
 
     return (
-        <span className="warsh-unicode-text inline" dir="rtl">
+        <span className="warsh-unicode-text inline" dir="rtl" lang="ar">
             {words.map((word, i) => {
                 const isMarkerToken = Boolean(markerFlags?.[i]);
                 let cls = 'warsh-unicode-word';
@@ -48,15 +49,16 @@ const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, t
 
                 return (
                     <React.Fragment key={i}>
-                        <span className={cls} style={wordStyle}>
+                        <span className={`${cls} quran-word-unit`} dir="rtl" style={wordStyle}>
                             {parts.map((part, partIdx) => (
                                 WAQF_MARKER_CHAR_RE.test(part) ? (
                                     <span
                                         key={`${i}-${partIdx}`}
-                                        className="warsh-waqf-marker"
+                                        className="warsh-waqf-marker waqf-marker"
+                                        data-waqf={part.codePointAt(0)?.toString(16).toUpperCase()}
                                         aria-hidden="true"
                                     >
-                                        {part}
+                                        {getReadableWaqfGlyph(part)}
                                     </span>
                                 ) : (
                                     <React.Fragment key={`${i}-${partIdx}`}>{part}</React.Fragment>

@@ -54,6 +54,18 @@ function isTrustedAudioUrl(url) {
   }
 }
 
+const ISLAMIC_FALLBACK_MAP = {
+  "ar.husary": "Husary_128kbps",
+  "ar.alafasy": "Alafasy_128kbps",
+  "ar.abdulbasitmurattal": "Abdul_Basit_Murattal_192kbps",
+  "ar.minshawi": "Minshawy_Murattal_128kbps",
+  "ar.shaatree": "Abu_Bakr_Ash-Shaatree_128kbps",
+  "ar.hudhaify": "Hudhaify_128kbps",
+  "ar.ajamy": "Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net",
+  "ar.ghamadi": "Ghamadi_40kbps",
+  "ar.muaiqly": "MaherAlMuaiqly128kbps",
+};
+
 class AudioService {
   static isSurahStreamCdn(cdnType = "islamic") {
     return cdnType === "mp3quran-surah";
@@ -219,6 +231,18 @@ class AudioService {
         ? primary.replace("://everyayah.com/", "://www.everyayah.com/")
         : primary.replace("://www.everyayah.com/", "://everyayah.com/");
       return [...new Set([primary, mirror])];
+    }
+    if (cdnType === "islamic") {
+      const candidates = [primary];
+      const fallbackFolder = ISLAMIC_FALLBACK_MAP[reciterCdn];
+      const surah = typeof ayah === "object" ? ayah.surah || ayah.surahNumber : null;
+      const ayahNum = typeof ayah === "object" ? ayah.numberInSurah || ayah.ayahNumber : null;
+      if (fallbackFolder && surah && ayahNum) {
+        const s = String(surah).padStart(3, "0");
+        const a = String(ayahNum).padStart(3, "0");
+        candidates.push(`https://everyayah.com/data/${fallbackFolder}/${s}${a}.mp3`);
+      }
+      return candidates;
     }
     if (!AudioService.isSurahStreamCdn(cdnType)) return [primary];
 

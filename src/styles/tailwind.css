@@ -299,8 +299,15 @@ body {
 
 @font-face {
     font-family: "QPC Hafs";
-    src: url("/fonts/uthmanic-hafs-v18.woff2")
-        format("woff2");
+    src: url("/fonts/uthmanic-hafs-v18.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "KFGQPC Uthmanic Script HAFS";
+    src: url("/fonts/uthmanic-hafs-v18.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -312,27 +319,22 @@ body {
     font-weight: 400;
     font-style: normal;
     font-display: swap;
-    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 @font-face {
     font-family: "IndoPak";
-    src: url("https://verses.quran.foundation/fonts/quran/hafs/nastaleeq/indopak/indopak-nastaleeq-waqf-lazim-v4.2.1.woff2")
-        format("woff2");
+    src: url("https://verses.quran.foundation/fonts/quran/hafs/nastaleeq/indopak/indopak-nastaleeq-waqf-lazim-v4.2.1.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
-    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 @font-face {
     font-family: "KFGQPC Nastaleeq";
-    src: url("https://static-cdn.tarteel.ai/qul/fonts/nastaleeq/KFGQPCNastaleeq-Regular.ttf")
-        format("truetype");
+    src: url("https://static-cdn.tarteel.ai/qul/fonts/nastaleeq/KFGQPCNastaleeq-Regular.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
-    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 @font-face {
@@ -341,7 +343,6 @@ body {
     font-weight: 400;
     font-style: normal;
     font-display: swap;
-    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 @font-face {
@@ -350,7 +351,6 @@ body {
     font-weight: 400;
     font-style: normal;
     font-display: swap;
-    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 :root {

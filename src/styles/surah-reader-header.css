@@ -77,6 +77,13 @@
     filter: drop-shadow(0 3px 6px color-mix(in srgb, var(--primary) 10%, transparent));
 }
 
+/* Surah-name ligatures are interface identity, not Quran body copy. Keep
+   their scale independent from the user-controlled Quran reading size. */
+.app-root[data-view="reading"] :is(.srh-arabic, .srh-mobile-bar__name) > .font-surah-names {
+    font-size: 1em !important;
+    line-height: 1 !important;
+}
+
 .srh-meta {
     min-width: 0;
 }
@@ -641,6 +648,201 @@
     }
 }
 
+/* Extra-small phones: keep the reading command bar useful without making the
+   Quran compete with labels. The controls retain a comfortable vertical touch
+   target while their visual footprint and glyphs become quieter. */
+@media (max-width: 360px) {
+    .srh-root {
+        margin-bottom: 0.3rem;
+        border-radius: 0.82rem;
+        box-shadow: 0 0.45rem 1rem color-mix(in srgb, #000 7%, transparent);
+    }
+
+    .srh-mobile-bar {
+        gap: 0.22rem;
+        min-height: 3rem;
+        padding: 0.22rem 0.28rem;
+    }
+
+    .srh-mobile-bar__disclosure {
+        min-height: 44px;
+        grid-template-columns: minmax(3.8rem, 1fr) 0.8rem;
+        gap: 0.12rem;
+        padding: 0 0.16rem;
+    }
+
+    .srh-mobile-bar__name {
+        width: 100%;
+        min-width: 0;
+        min-height: 2.2rem;
+        justify-content: flex-start;
+        font-size: clamp(1.72rem, 9vw, 1.95rem);
+        filter: none;
+    }
+
+    .srh-mobile-bar__title {
+        display: none;
+    }
+
+    .srh-mobile-bar__chevron {
+        width: 0.68rem;
+        height: 0.68rem;
+    }
+
+    .srh-mobile-bar__actions {
+        gap: 0.2rem;
+    }
+
+    .srh-mobile-bar :is(.srh-play-btn, .srh-info-btn) {
+        width: 38px;
+        min-width: 38px;
+        min-height: 44px;
+        border-radius: 0.58rem;
+        box-shadow: none;
+    }
+
+    .srh-mobile-bar :is(.srh-play-btn, .srh-info-btn) > svg {
+        width: 0.7rem;
+        height: 0.7rem;
+    }
+
+    .srh-controls {
+        gap: 0.22rem;
+        min-height: 2.7rem;
+        padding: 0.22rem 0.28rem;
+    }
+
+    .srh-view-pills {
+        padding: 0.12rem;
+    }
+
+    .srh-pill,
+    .srh-toggle {
+        min-height: 40px;
+        gap: 0.12rem;
+        padding-inline: 0.2rem;
+        border-radius: 0.58rem;
+        font-size: 0.58rem;
+    }
+
+    .srh-pill > svg,
+    .srh-toggle > svg {
+        display: none;
+    }
+
+    .srh-footer {
+        gap: 0.25rem;
+        min-height: 2.7rem;
+        padding: 0.22rem 0.28rem;
+    }
+
+    .srh-typography-trigger {
+        min-height: 40px;
+        padding-block: 0.3rem;
+        font-size: 0.65rem;
+    }
+
+    .srh-typography-panel {
+        padding-top: 0.28rem;
+    }
+
+    .srh-typography-panel .arabic-font-controls {
+        gap: 0.28rem;
+    }
+
+    .srh-typography-panel :is(.afc-font-group, .afc-size-group) {
+        min-height: 42px !important;
+        height: 42px;
+        padding: 0.2rem 0.32rem !important;
+        border-radius: 0.65rem !important;
+    }
+
+    .srh-typography-panel .afc-select {
+        min-height: 34px !important;
+        height: 34px;
+        padding-inline: 0.42rem !important;
+        font-size: 0.68rem !important;
+    }
+
+    .srh-typography-panel :is(.afc-leading-icon, .afc-marker-preview) {
+        width: 0.78rem !important;
+        min-width: 0.78rem !important;
+        font-size: 0.72rem !important;
+    }
+
+    .srh-typography-panel :is(.afc-size-btn, .afc-size-value) {
+        width: 30px !important;
+        min-width: 30px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        font-size: 0.68rem !important;
+    }
+}
+
+/* Compact tablets and split-screen iPads keep the desktop information
+   hierarchy, but without desktop-sized identity and action controls. */
+@media (min-width: 641px) and (max-width: 720px) {
+    .srh-identity {
+        gap: 0.45rem;
+        min-height: 5.15rem;
+        padding: 0.62rem 0.72rem;
+    }
+
+    .srh-identity__disclosure {
+        grid-template-columns: 3.55rem minmax(0, 1fr) 0.9rem;
+        gap: 0.55rem;
+    }
+
+    .srh-arabic {
+        width: 3.55rem;
+        min-height: 2.8rem;
+        font-size: clamp(1.7rem, 4.6vw, 2rem) !important;
+        filter: none;
+    }
+
+    .srh-title {
+        font-size: clamp(1rem, 2.7vw, 1.2rem);
+    }
+
+    .srh-meta__top {
+        gap: 0.28rem 0.42rem;
+    }
+
+    .srh-badges {
+        gap: 0.22rem;
+    }
+
+    .srh-badge {
+        min-height: 1.38rem;
+        padding: 0.14rem 0.42rem;
+        font-size: 0.56rem;
+    }
+
+    .srh-sub {
+        margin-top: 0.14rem;
+        font-size: 0.7rem;
+    }
+
+    .srh-desc {
+        display: none;
+    }
+
+    .srh-actions {
+        gap: 0.32rem;
+    }
+
+    .srh-actions :is(.srh-play-btn, .srh-info-btn) {
+        min-height: 40px;
+        padding: 0.42rem 0.62rem;
+        border-radius: 0.68rem;
+        font-size: 0.69rem;
+    }
+
+    .srh-actions .srh-fullscreen-btn .srh-info-btn__label {
+        display: none;
+    }
+}
+
 [dir="rtl"] .srh-actions {
     margin-inline-start: auto;
     margin-inline-end: 0;
@@ -661,6 +863,94 @@
 
 .app-root .quran-display--platform .qc-surah-header-wrap > section.srh-root {
     padding: 0;
+}
+
+/* One coherent reader surface: the Tajwid guide belongs to the surah header. */
+html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified {
+    --reader-header-line: color-mix(in srgb, var(--primary) 19%, var(--border));
+    width: min(100%, 1040px) !important;
+    max-width: 1040px !important;
+    margin: 0 auto 0.65rem !important;
+    padding: 0 !important;
+    overflow: hidden;
+    border: 1px solid var(--reader-header-line);
+    border-radius: 1.35rem;
+    background:
+        radial-gradient(circle at 7% -32%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 42%),
+        color-mix(in srgb, var(--bg-card) 96%, transparent);
+    box-shadow: 0 14px 36px color-mix(in srgb, var(--text-primary) 8%, transparent),
+        inset 0 1px 0 color-mix(in srgb, #fff 48%, transparent);
+    backdrop-filter: blur(18px) saturate(120%);
+    -webkit-backdrop-filter: blur(18px) saturate(120%);
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend {
+    order: 0;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0.28rem 0.75rem !important;
+    overflow: hidden;
+    border: 0 !important;
+    border-bottom: 1px solid var(--reader-header-line) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend[open] {
+    padding: 0.38rem 0.75rem 0.62rem !important;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend .tajweed-legend__intro {
+    min-height: 2rem;
+    padding: 0.3rem 0.25rem;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .srh-root {
+    position: relative;
+    top: auto;
+    order: 1;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified {
+    border-color: color-mix(in srgb, var(--gold, #b9954b) 34%, var(--border));
+    background:
+        radial-gradient(circle at 7% -32%, color-mix(in srgb, var(--gold, #b9954b) 10%, transparent), transparent 42%),
+        color-mix(in srgb, var(--bg-card) 97%, transparent);
+}
+
+@media (max-width: 640px) {
+    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified {
+        width: 100% !important;
+        margin-bottom: 0.45rem !important;
+        border-radius: 0.95rem;
+        box-shadow: 0 8px 22px color-mix(in srgb, var(--text-primary) 7%, transparent);
+    }
+
+    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend,
+    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend[open] {
+        padding: 0.18rem 0.45rem !important;
+    }
+
+    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend .tajweed-legend__intro {
+        min-height: 1.85rem;
+        padding: 0.24rem 0.18rem;
+    }
+
+    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend .tajweed-legend__eyebrow {
+        font-size: 0.6rem;
+        letter-spacing: 0.075em;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

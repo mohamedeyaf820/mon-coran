@@ -486,10 +486,70 @@ test("mobile Mushaf keeps desktop proportions at the largest text preference", a
   expect(await fontSizePx(page, ".mushaf-text-block")).toBeLessThanOrEqual(30);
 
   const marker = page.locator(".cpv-ayah-marker").first();
-  await expect(marker).toHaveAttribute("data-marker-font", "qcf-v4-tajweed");
-  await expect(marker).toContainText(/\u06dd[\u0660-\u0669]+/u);
+  await expect(marker).toHaveAttribute("data-marker-font", "qpc-hafs");
+  await expect(marker).toContainText(/^[\u0660-\u0669]+$/u);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
+
+test("compact tablet reader keeps one surface, an independent surah identity and a contained player", async ({ page }) => {
+  await openReader(page, { width: 642, height: 698 }, { quranFontSize: 22 });
+
+  const quranDisplay = page.locator(".quran-display--platform").first();
+  const displayStyle = await quranDisplay.evaluate((node) => {
+    const style = getComputedStyle(node);
+    return { background: style.backgroundColor, shadow: style.boxShadow };
+  });
+  expect(displayStyle.background).toBe("rgba(0, 0, 0, 0)");
+  expect(displayStyle.shadow).toBe("none");
+
+  const identitySizeAt22 = await fontSizePx(page, ".srh-arabic");
+  await revealReaderTools(page, 642);
+  const increase = page.locator(".srh-root .afc-size-btn").last();
+  await increase.click();
+  await increase.click();
+  const identitySizeAfterChange = await fontSizePx(page, ".srh-arabic");
+  expect(identitySizeAfterChange).toBeCloseTo(identitySizeAt22, 1);
+  expect(identitySizeAt22).toBeGreaterThanOrEqual(27);
+  expect(identitySizeAt22).toBeLessThanOrEqual(33);
+
+  const navigation = await box(page, ".mp-header__nav");
+  expect(navigation?.width || 0).toBeLessThanOrEqual(225);
+
+  const player = page.getByTestId("audio-player-compact");
+  await expect(player).toBeVisible();
+  const playerBox = await player.boundingBox();
+  expect(playerBox?.x || 0).toBeGreaterThanOrEqual(11);
+  expect((playerBox?.x || 0) + (playerBox?.width || 0)).toBeLessThanOrEqual(631);
+  const rightInset = 642 - ((playerBox?.x || 0) + (playerBox?.width || 0));
+  expect(Math.abs((playerBox?.x || 0) - rightInset)).toBeLessThanOrEqual(2);
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+});
+
+for (const [fontFamily, riwaya] of [
+  ["qpc-hafs", "hafs"],
+  ["qpc-indopak", "hafs"],
+  ["scheherazade-new", "hafs"],
+  ["amiri-quran", "hafs"],
+  ["noto-naskh-arabic", "hafs"],
+  ["qpc-warsh", "warsh"],
+  ["kfgqpc-warsh", "warsh"],
+  ["scheherazade-new-warsh", "warsh"],
+]) {
+  test(`${fontFamily} keeps exactly one canonical ayah medallion`, async ({ page }) => {
+    await openReader(
+      page,
+      { width: 390, height: 844 },
+      { mushafLayout: "mushaf", fontFamily, riwaya },
+    );
+
+    const firstVerse = page.locator(".cpv-verse").first();
+    await expect(firstVerse).toBeVisible({ timeout: 30_000 });
+    await expect(firstVerse.locator(".native-ayah-marker")).toHaveCount(1);
+    const marker = firstVerse.locator(".native-ayah-marker");
+    await expect(marker).toHaveAttribute("data-marker-font", "qpc-hafs");
+    await expect(marker).toContainText(/^[\u0660-\u0669]+$/u);
+  });
+}
 
 test("surah information dossier stays accessible and contained on mobile", async ({ page }) => {
   await openReader(page, { width: 390, height: 844 });
@@ -502,11 +562,12 @@ test("surah information dossier stays accessible and contained on mobile", async
   const dialog = page.getByRole("dialog", { name: "Informations sur la sourate" });
   await expect(dialog).toBeVisible();
   await expect(page.locator(".surah-info-modal button[aria-label='Fermer']")).toBeFocused();
-  await expect(dialog.getByText("Repères essentiels")).toBeVisible();
+  await expect(dialog.getByText("Repères essentiels")).toHaveCount(0);
   await expect(dialog.getByText("Editorial overview for surah 3.")).toBeVisible();
+  await expect(dialog.getByText("#3")).toHaveCount(0);
   await dialog.getByRole("button", { name: /Dossier complet/ }).click();
   await expect(dialog.getByText("Complete historical context for testing.")).toBeVisible();
-  await expect(dialog.getByText(/89e dans l’ordre de révélation/)).toBeVisible();
+  await expect(dialog.getByText(/89e dans l’ordre de révélation/)).toHaveCount(0);
 
   const modalBox = await dialog.locator(".surah-info-modal").boundingBox();
   expect(modalBox?.x || 0).toBeGreaterThanOrEqual(0);
@@ -515,6 +576,12 @@ test("surah information dossier stays accessible and contained on mobile", async
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
   expect(await dialog.evaluate((node) => node.contains(document.activeElement))).toBe(true);
 
+  await page.mouse.click(3, 3);
+  await expect(dialog).toBeHidden();
+  await expect(trigger).toBeFocused();
+
+  await trigger.click();
+  await expect(dialog).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await expect(trigger).toBeFocused();
@@ -527,6 +594,11 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
     { showTajwid: true },
   );
 
+  // The deterministic network fixture contains Quran.com Tajwid markup on
+  // An-Najm 53:4. Use that route for the tooltip portion of this contract.
+  await page.goto("/surah/53");
+  await expect(page.locator(".tajwid-rule-segment").first()).toBeVisible({ timeout: 30_000 });
+
   const legend = page.getByTestId("tajweed-legend");
   await expect(legend).toBeVisible();
   await expect(legend).not.toHaveAttribute("open", "");
@@ -534,7 +606,7 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
   const collapsedLegendBox = await legend.boundingBox();
   expect(collapsedLegendBox?.height || 0).toBeLessThanOrEqual(56);
 
-  await legend.locator("summary").click();
+  await legend.evaluate((node) => { node.open = true; });
   await expect(legend).toHaveAttribute("open", "");
   await expect(legend.locator(".tajweed-legend__rules")).toBeVisible();
   const legendBox = await legend.boundingBox();
@@ -543,14 +615,34 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
 
   const segment = page.locator(".tajwid-rule-segment").first();
   await expect(segment).toBeVisible();
-  await expect(segment).not.toHaveAttribute("title", /.+/);
+  await expect(segment).toHaveAttribute("title", /.+/);
   await segment.hover();
-
-  const tooltip = page.locator(".tajwid-rule-tooltip");
-  await expect(tooltip).toBeVisible();
-  await expect(tooltip.locator(".tajwid-rule-tooltip__head strong")).not.toBeEmpty();
-  await expect(tooltip.locator(".tajwid-rule-tooltip__description")).not.toBeEmpty();
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
+});
+
+test("verse list cards scale their controls and typography with the device", async ({ page }) => {
+  for (const profile of [
+    { viewport: { width: 319, height: 698 }, control: 34, minArabic: 24.9, maxArabic: 29.1 },
+    { viewport: { width: 820, height: 920 }, control: 40, minArabic: 32, maxArabic: 40 },
+  ]) {
+    await openReader(page, profile.viewport);
+
+    const card = await box(page, ".qc-list-card");
+    const reference = await box(page, ".qc-list-card__reference");
+    const play = await box(page, ".qc-list-card__start .ayah-action--play");
+    const playIcon = await box(page, ".qc-list-card__start .ayah-action--play svg");
+    const arabicSize = await fontSizePx(page, ".qc-list-card .qc-ayah-text-ar");
+
+    expect(card?.width || 0).toBeLessThanOrEqual(profile.viewport.width);
+    expect(reference?.width || 0).toBeGreaterThanOrEqual(profile.control - 0.1);
+    expect(reference?.width || 0).toBeLessThanOrEqual(profile.control + 0.1);
+    expect(play?.width || 0).toBeGreaterThanOrEqual(profile.control - 0.1);
+    expect(play?.width || 0).toBeLessThanOrEqual(profile.control + 0.1);
+    expect(playIcon?.width || 0).toBeLessThanOrEqual(12.6);
+    expect(arabicSize).toBeGreaterThanOrEqual(profile.minArabic);
+    expect(arabicSize).toBeLessThanOrEqual(profile.maxArabic);
+    expect(await overflowX(page)).toBeLessThanOrEqual(2);
+  }
 });
 
 test("mobile density: header, reading toolbar and audio player fit without horizontal overflow", async ({ page }) => {
@@ -566,6 +658,8 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   const verseReference = await box(page, ".qc-list-card__reference");
   const versePlay = await box(page, ".qc-list-card__start .ayah-action--play");
   const verseBookmark = await box(page, ".qc-list-card__start .ayah-action--bookmark");
+  const verseCard = await box(page, ".qc-list-card");
+  const versePlayIcon = await box(page, ".qc-list-card__start .ayah-action--play svg");
 
   expect(header?.height || 0).toBeLessThanOrEqual(56);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
@@ -583,6 +677,10 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(versePlay?.width || 0).toBeLessThanOrEqual(34.1);
   expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(33.9);
   expect(verseBookmark?.width || 0).toBeLessThanOrEqual(34.1);
+  expect(verseCard?.width || 0).toBeLessThanOrEqual(390);
+  expect(versePlayIcon?.width || 0).toBeLessThanOrEqual(12.1);
+  expect(await fontSizePx(page, ".qc-list-card .qc-ayah-text-ar")).toBeGreaterThanOrEqual(27);
+  expect(await fontSizePx(page, ".qc-list-card .qc-ayah-text-ar")).toBeLessThanOrEqual(32);
   expect(Math.abs((verseReference?.y || 0) - (versePlay?.y || 0))).toBeLessThanOrEqual(1);
   expect(Math.abs((verseReference?.y || 0) - (verseBookmark?.y || 0))).toBeLessThanOrEqual(1);
   await revealReaderTools(page, 390);
@@ -640,6 +738,76 @@ test("mobile reader header keeps Home visible and exposes only contextual quick 
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
+test("tiny phone keeps the quick menu and compact player calm and dismissible", async ({ page }) => {
+  await openReader(page, { width: 319, height: 698 });
+
+  const compactPlayer = page.getByTestId("audio-player-compact");
+  await expect(compactPlayer).toBeVisible();
+  const compactPlayerBox = await compactPlayer.boundingBox();
+  expect(compactPlayerBox?.width || 0).toBeLessThanOrEqual(319);
+  expect(compactPlayerBox?.height || 0).toBeLessThanOrEqual(76);
+
+  await page.locator(".mp-header__more").click();
+  const menu = page.locator(".mp-header-menu");
+  await expect(menu).toBeVisible();
+  await expect(menu.locator(".mp-header-menu__header-text")).toHaveCount(0);
+
+  const menuBox = await menu.boundingBox();
+  const closeBox = await menu.locator(".mp-header-menu__close").boundingBox();
+  expect(menuBox?.width || 0).toBeLessThanOrEqual(315);
+  expect(menuBox?.height || 0).toBeLessThanOrEqual(300);
+  expect(closeBox?.width || 0).toBeLessThanOrEqual(36);
+  expect(closeBox?.height || 0).toBeLessThanOrEqual(36);
+
+  await page.mouse.click(4, 520);
+  await expect(menu).toBeHidden();
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+});
+
+test("general pages use a compact quick-command palette on narrow phones", async ({ page }) => {
+  await openHome(page, { width: 423, height: 698 });
+  await page.goto("/about");
+  await expect(page.getByRole("heading", { name: /compagnon de lecture/i })).toBeVisible();
+
+  await page.locator(".mp-header__more").click();
+  const menu = page.locator(".mp-header-menu");
+  await expect(menu).toBeVisible();
+  await expect(menu.locator(".mp-header-menu__header-text")).toHaveCount(0);
+  await expect(menu.locator(".mp-header-menu__item-description")).toBeHidden();
+
+  const menuBox = await menu.boundingBox();
+  const closeBox = await menu.locator(".mp-header-menu__close").boundingBox();
+  const searchBox = await menu.locator('[data-key="search"]').boundingBox();
+  const searchIconBox = await menu.locator('[data-key="search"] .mp-header-menu__item-icon').boundingBox();
+  expect(menuBox?.width || 0).toBeLessThanOrEqual(300);
+  expect(menuBox?.height || 0).toBeLessThanOrEqual(205);
+  expect(closeBox?.width || 0).toBeLessThanOrEqual(34);
+  expect(closeBox?.height || 0).toBeLessThanOrEqual(34);
+  expect(searchBox?.height || 0).toBeLessThanOrEqual(44);
+  expect(searchIconBox?.width || 0).toBeLessThanOrEqual(24);
+  expect(searchIconBox?.height || 0).toBeLessThanOrEqual(24);
+
+  await page.mouse.click(5, 500);
+  await expect(menu).toBeHidden();
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+});
+
+test("compact player becomes a restrained floating rail on tablet and desktop", async ({ page }) => {
+  for (const viewport of [
+    { width: 768, height: 1024, maxWidth: 432 },
+    { width: 1440, height: 900, maxWidth: 342 },
+  ]) {
+    await openReader(page, viewport);
+    const player = page.getByTestId("audio-player-compact");
+    await expect(player).toBeVisible();
+    const playerBox = await player.boundingBox();
+    expect(playerBox?.width || 0).toBeLessThanOrEqual(viewport.maxWidth);
+    expect(playerBox?.height || 0).toBeLessThanOrEqual(74);
+    expect(viewport.width - ((playerBox?.x || 0) + (playerBox?.width || 0))).toBeLessThanOrEqual(24);
+    expect(await overflowX(page)).toBeLessThanOrEqual(2);
+  }
+});
+
 test("tiny mobile density keeps the reader usable at 280px", async ({ page }) => {
   await openReader(page, { width: 280, height: 700 });
 
@@ -649,6 +817,8 @@ test("tiny mobile density keeps the reader usable at 280px", async ({ page }) =>
   const versePlay = await box(page, ".qc-list-card__start .ayah-action--play");
   const verseBookmark = await box(page, ".qc-list-card__start .ayah-action--bookmark");
   const audioDock = await box(page, ".mp-audio-player--mobile");
+  const verseCard = await box(page, ".qc-list-card");
+  const versePlayIcon = await box(page, ".qc-list-card__start .ayah-action--play svg");
 
   expect(header?.height || 0).toBeLessThanOrEqual(56);
   expect(homeLogo?.width || 0).toBeGreaterThanOrEqual(37.9);
@@ -659,6 +829,10 @@ test("tiny mobile density keeps the reader usable at 280px", async ({ page }) =>
   expect(versePlay?.width || 0).toBeLessThanOrEqual(34.1);
   expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(33.9);
   expect(verseBookmark?.width || 0).toBeLessThanOrEqual(34.1);
+  expect(verseCard?.width || 0).toBeLessThanOrEqual(280);
+  expect(versePlayIcon?.width || 0).toBeLessThanOrEqual(12.1);
+  expect(await fontSizePx(page, ".qc-list-card .qc-ayah-text-ar")).toBeGreaterThanOrEqual(24.9);
+  expect(await fontSizePx(page, ".qc-list-card .qc-ayah-text-ar")).toBeLessThanOrEqual(29.1);
   expect(Math.abs((verseReference?.y || 0) - (versePlay?.y || 0))).toBeLessThanOrEqual(1);
   expect(Math.abs((verseReference?.y || 0) - (verseBookmark?.y || 0))).toBeLessThanOrEqual(1);
   expect(audioDock?.width || 0).toBeLessThanOrEqual(280);

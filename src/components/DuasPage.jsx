@@ -242,20 +242,14 @@ export default function DuasPage() {
                   </div>
 
                   <div className="dua-card-footer">
-                    <span className="dua-card-footer-copy">
-                      {lang === "fr"
-                        ? "Source coranique accessible directement"
-                        : lang === "ar"
-                          ? "انتقال مباشر الى موضع الآية"
-                          : "Direct access to the verse location"}
-                    </span>
                     <button
                       className="dua-card-footer-link"
                       onClick={() => goToVerse(dua.surah, dua.ayah)}
                       type="button"
+                      aria-label={lang === "fr" ? "Lire le verset dans le Coran" : lang === "ar" ? "فتح الآية في المصحف" : "Read verse in Quran"}
                     >
-                      <ArrowRight size={14} aria-hidden="true" />
-                      <span>{lang === "fr" ? "Lire" : lang === "ar" ? "فتح" : "Open"}</span>
+                      <ArrowRight size={16} aria-hidden="true" />
+                      <span>{lang === "fr" ? "Lire" : lang === "ar" ? "فتح" : "Read"}</span>
                     </button>
                   </div>
                 </div>

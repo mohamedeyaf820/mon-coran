@@ -1,14 +1,10 @@
 import React from "react";
 import { cn } from "../../lib/utils";
+import { useAppLocale } from "../../context/AppContext";
 import {
-  shallowEqual,
-  useAppLocale,
-  useAppSelector,
-} from "../../context/AppContext";
-import {
-  getNativeAyahMarker,
-  normalizeFontId,
+  getUiAyahMarker,
   resolveFontFamily,
+  UI_AYAH_MARKER_FONT_ID,
 } from "../../data/fonts";
 import { t } from "../../i18n";
 import { toArabicNumeral } from "../../utils/arabicNumerals";
@@ -21,26 +17,17 @@ export const AyahMarker = React.memo(function AyahMarker({
   num,
   isPlaying = false,
   className = "",
-  fontFamily,
-  riwaya,
   size: _size = "md",
   onClick,
 }) {
-  const readingPreferences = useAppSelector(
-    (state) => ({ fontFamily: state.fontFamily, riwaya: state.riwaya }),
-    shallowEqual,
-  );
   const markerNumber = number ?? num;
   if (markerNumber == null) return null;
 
-  const activeRiwaya = riwaya || readingPreferences.riwaya || "hafs";
-  const activeFont = normalizeFontId(
-    fontFamily || readingPreferences.fontFamily,
-    activeRiwaya,
-  );
-  const markerFontFamily = resolveFontFamily(activeFont, activeRiwaya);
-
-  const markerText = getNativeAyahMarker(markerNumber, activeFont, activeRiwaya);
+  // The standalone marker is always shaped with the same font that supplies
+  // its glyph. Mixing a Scheherazade/Amiri U+06DD prefix with the QPC font
+  // forced by the visual layer renders two medallions for one ayah.
+  const markerFontFamily = resolveFontFamily(UI_AYAH_MARKER_FONT_ID, "hafs");
+  const markerText = getUiAyahMarker(markerNumber);
 
   return (
     <span
@@ -55,7 +42,7 @@ export const AyahMarker = React.memo(function AyahMarker({
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       aria-label={`Verset ${markerNumber}`}
-      data-marker-font={activeFont}
+      data-marker-font={UI_AYAH_MARKER_FONT_ID}
       style={{ fontFamily: markerFontFamily }}
       onClick={onClick}
       onKeyDown={

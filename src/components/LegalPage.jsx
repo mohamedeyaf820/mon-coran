@@ -9,10 +9,12 @@ import {
   Github,
   Globe2,
   Scale,
+  Send,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import { useAppActions, useAppLocale } from "../context/AppContext";
+import { Modal } from "./ui/modal";
 import siteConfig from "../../site.config.json";
 import { CONTENT_ATTRIBUTIONS } from "../data/contentAttributions";
 import "../styles/domains/legal-page.css";
@@ -23,6 +25,48 @@ const PAGE_ICONS = {
   privacy: ShieldCheck,
   legal: Scale,
   sources: Database,
+};
+
+const REPORT_COPY = {
+  fr: {
+    title: "Signaler une correction",
+    intro: "Décrivez précisément le problème. Un ticket prérempli s’ouvrira sur le dépôt officiel afin que le signalement puisse être suivi et corrigé.",
+    category: "Type de problème",
+    categories: ["Texte coranique", "Traduction", "Audio", "Affichage", "Accessibilité", "Autre"],
+    location: "Page ou référence concernée",
+    locationPlaceholder: "Ex. Sourate 3, verset 7 — mode Mushaf",
+    details: "Description",
+    detailsPlaceholder: "Décrivez ce qui est incorrect et le résultat attendu…",
+    privacy: "Aucune donnée n’est envoyée automatiquement. Vous pourrez relire le rapport avant de le publier sur GitHub.",
+    cancel: "Annuler",
+    submit: "Continuer sur GitHub",
+  },
+  en: {
+    title: "Report a correction",
+    intro: "Describe the issue precisely. A pre-filled ticket will open in the official repository so it can be tracked and corrected.",
+    category: "Issue type",
+    categories: ["Quran text", "Translation", "Audio", "Display", "Accessibility", "Other"],
+    location: "Affected page or reference",
+    locationPlaceholder: "E.g. Surah 3, verse 7 — Mushaf mode",
+    details: "Description",
+    detailsPlaceholder: "Describe what is wrong and what you expected…",
+    privacy: "Nothing is sent automatically. You can review the report before publishing it on GitHub.",
+    cancel: "Cancel",
+    submit: "Continue on GitHub",
+  },
+  ar: {
+    title: "الإبلاغ عن تصحيح",
+    intro: "صِف المشكلة بدقة. سيُفتح بلاغ مُعبأ مسبقاً في المستودع الرسمي لمتابعته وتصحيحه.",
+    category: "نوع المشكلة",
+    categories: ["النص القرآني", "الترجمة", "الصوت", "العرض", "إتاحة الاستخدام", "أخرى"],
+    location: "الصفحة أو المرجع",
+    locationPlaceholder: "مثال: سورة 3، الآية 7 — وضع المصحف",
+    details: "الوصف",
+    detailsPlaceholder: "اشرح الخطأ والنتيجة الصحيحة المتوقعة…",
+    privacy: "لا تُرسل أي بيانات تلقائياً. يمكنك مراجعة البلاغ قبل نشره على GitHub.",
+    cancel: "إلغاء",
+    submit: "المتابعة على GitHub",
+  },
 };
 
 const COPY = {
@@ -61,7 +105,7 @@ const COPY = {
       intro: "Cette page identifie clairement le projet, son hébergement et les limites d’un service éducatif qui agrège des contenus tiers.",
       sections: [
         ["Éditeur et contact", `${siteConfig.brandName} est un projet indépendant porté par ${siteConfig.projectOwner}. Les demandes, corrections et signalements sont reçus publiquement via GitHub Issues.`],
-        ["Hébergement", `Le site officiel est ${new URL(siteConfig.siteUrl).hostname} et est hébergé par Netlify. L’hébergeur applique ses propres conditions et journaux techniques.`],
+        ["Hébergement et disponibilité", `L’adresse canonique configurée est ${new URL(siteConfig.siteUrl).hostname}. Les versions de production et d’aperçu sont distribuées sur une infrastructure Vercel ; l’hébergeur traite les journaux techniques nécessaires à la sécurité et à la disponibilité du service.`],
         ["Responsabilité", "L’application fournit des outils de lecture et d’étude. Elle ne remplace pas une édition certifiée du Mushaf, l’accompagnement d’un enseignant qualifié ni un avis religieux, médical ou juridique."],
         ["Propriété intellectuelle", "Les textes, traductions, polices, photographies et récitations tiers restent soumis aux droits de leurs auteurs et fournisseurs. MushafPlus ne revendique aucun droit sur ces contenus."],
       ],
@@ -117,7 +161,10 @@ export default function LegalPage({ page = "privacy" }) {
   const { lang } = useAppLocale();
   const { set } = useAppActions();
   const [translatedCopy, setTranslatedCopy] = useState(null);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [report, setReport] = useState({ category: "", location: "", details: "" });
   const locale = lang === "fr" ? COPY.fr : translatedCopy || COPY.fr;
+  const reportCopy = REPORT_COPY[lang] || REPORT_COPY.fr;
   const activePage = PAGE_KEYS.includes(page) ? page : "privacy";
   const content = locale[activePage];
   const ActiveIcon = PAGE_ICONS[activePage];
@@ -153,6 +200,40 @@ export default function LegalPage({ page = "privacy" }) {
     scrollMainTop();
   };
 
+  const openReport = () => {
+    setReport((current) => ({
+      category: current.category || reportCopy.categories[0],
+      location: current.location || (typeof window !== "undefined" ? window.location.pathname : ""),
+      details: current.details,
+    }));
+    setReportOpen(true);
+  };
+
+  const submitReport = (event) => {
+    event.preventDefault();
+    const repository = siteConfig.repositoryUrl.replace(/\/$/, "");
+    const issueUrl = new URL(`${repository}/issues/new`);
+    const location = report.location.trim() || (typeof window !== "undefined" ? window.location.pathname : "MushafPlus");
+    const body = [
+      "## Signalement",
+      "",
+      `- **Catégorie :** ${report.category}`,
+      `- **Page / référence :** ${location}`,
+      `- **Version :** ${siteConfig.version}`,
+      "",
+      "## Description",
+      "",
+      report.details.trim(),
+      "",
+      "---",
+      "Rapport préparé depuis MushafPlus.",
+    ].join("\n");
+    issueUrl.searchParams.set("title", `[Correction] ${report.category} — ${location}`);
+    issueUrl.searchParams.set("body", body);
+    window.open(issueUrl.toString(), "_blank", "noopener,noreferrer");
+    setReportOpen(false);
+  };
+
   return (
     <article className="legal-page" data-page={activePage}>
       <div className="legal-page__halo" aria-hidden="true" />
@@ -161,17 +242,23 @@ export default function LegalPage({ page = "privacy" }) {
           <ArrowLeft size={16} aria-hidden="true" />
           {locale.back}
         </button>
-        <div className="legal-page__hero-mark" aria-hidden="true">
-          <span><ActiveIcon size={25} /></span>
-          <i />
-        </div>
-        <p className="legal-page__eyebrow">{locale.eyebrow}</p>
-        <h1>{content.title}</h1>
-        <p className="legal-page__intro">{content.intro}</p>
-        <div className="legal-page__trust" aria-label={locale.eyebrow}>
-          <span><BookOpenText size={14} /> 114 {lang === "ar" ? "سورة" : lang === "en" ? "surahs" : "sourates"}</span>
-          <span><ShieldCheck size={14} /> {lang === "ar" ? "بيانات محلية" : lang === "en" ? "Local-first data" : "Données locales"}</span>
-          <span><FileCheck2 size={14} /> v{siteConfig.version}</span>
+        <div className="legal-page__hero-layout">
+          <div className="legal-page__hero-heading">
+            <div className="legal-page__hero-mark" aria-hidden="true">
+              <span><ActiveIcon size={22} /></span>
+              <i />
+            </div>
+            <p className="legal-page__eyebrow">{locale.eyebrow}</p>
+            <h1>{content.title}</h1>
+          </div>
+          <div className="legal-page__hero-summary">
+            <p className="legal-page__intro">{content.intro}</p>
+            <div className="legal-page__trust" aria-label={locale.eyebrow}>
+              <span><BookOpenText size={14} /> 114 {lang === "ar" ? "سورة" : lang === "en" ? "surahs" : "sourates"}</span>
+              <span><ShieldCheck size={14} /> {lang === "ar" ? "بيانات محلية" : lang === "en" ? "Local-first data" : "Données locales"}</span>
+              <span><FileCheck2 size={14} /> v{siteConfig.version}</span>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -190,9 +277,11 @@ export default function LegalPage({ page = "privacy" }) {
       <div className="legal-page__grid">
         {content.sections.map(([title, body], index) => (
           <section key={title} className="legal-page__card">
-            <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-            <h2>{title}</h2>
-            <p>{body}</p>
+            <span className="legal-page__card-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+            <div>
+              <h2>{title}</h2>
+              <p>{body}</p>
+            </div>
           </section>
         ))}
       </div>
@@ -221,11 +310,44 @@ export default function LegalPage({ page = "privacy" }) {
           <p>{lang === "ar" ? "هل وجدت خطأ أو نقصاً؟ ساعدنا على تحسين المشروع." : lang === "en" ? "Found an error or missing information? Help improve the project." : "Une erreur ou une information manque ? Aidez-nous à améliorer le projet."}</p>
         </div>
         <nav aria-label={locale.eyebrow}>
-          <a href={siteConfig.repositoryUrl} target="_blank" rel="noreferrer"><Github size={16} />{locale.actions.project}</a>
-          <a href={siteConfig.contactUrl} target="_blank" rel="noreferrer"><FileCheck2 size={16} />{locale.actions.correction}</a>
+          <a href={siteConfig.repositoryUrl} target="_blank" rel="noopener noreferrer"><Github size={16} />{locale.actions.project}</a>
+          <button type="button" className="is-primary" onClick={openReport}><FileCheck2 size={16} />{locale.actions.correction}</button>
           <button type="button" onClick={goHome}><Globe2 size={16} />{locale.actions.home}</button>
         </nav>
       </footer>
+
+      <Modal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        title={reportCopy.title}
+        size="md"
+        portal
+        className="legal-report-modal"
+        overlayClassName="legal-report-overlay"
+      >
+        <form className="legal-report" onSubmit={submitReport}>
+          <p className="legal-report__intro">{reportCopy.intro}</p>
+          <label>
+            <span>{reportCopy.category}</span>
+            <select value={report.category} onChange={(event) => setReport((current) => ({ ...current, category: event.target.value }))}>
+              {reportCopy.categories.map((category) => <option key={category} value={category}>{category}</option>)}
+            </select>
+          </label>
+          <label>
+            <span>{reportCopy.location}</span>
+            <input value={report.location} onChange={(event) => setReport((current) => ({ ...current, location: event.target.value }))} placeholder={reportCopy.locationPlaceholder} required />
+          </label>
+          <label>
+            <span>{reportCopy.details}</span>
+            <textarea value={report.details} onChange={(event) => setReport((current) => ({ ...current, details: event.target.value }))} placeholder={reportCopy.detailsPlaceholder} rows={5} required minLength={12} />
+          </label>
+          <p className="legal-report__privacy"><ShieldCheck size={14} aria-hidden="true" />{reportCopy.privacy}</p>
+          <div className="legal-report__actions">
+            <button type="button" onClick={() => setReportOpen(false)}>{reportCopy.cancel}</button>
+            <button type="submit" className="is-primary"><Send size={16} aria-hidden="true" />{reportCopy.submit}</button>
+          </div>
+        </form>
+      </Modal>
     </article>
   );
 }

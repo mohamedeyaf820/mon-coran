@@ -35,8 +35,10 @@ test("the unified reader header remains available in mobile QCF4 Mushaf mode", (
   const surahMode = source("src/components/QuranDisplay/SurahMode.jsx");
   const styles = source("src/styles/surah-reader-header.css");
 
-  assert.match(surahMode, /<div className="qc-surah-header-wrap animate-in">[\s\S]*?<SurahReaderHeader/);
+  assert.match(surahMode, /qc-surah-header-wrap--unified[\s\S]*?<TajweedLegend[\s\S]*?<SurahReaderHeader/);
   assert.doesNotMatch(surahMode, /isQCF4\s*&&\s*mushafLayout\s*===\s*["']mushaf["']/);
+  assert.match(styles, /qc-surah-header-wrap--unified > \.tajweed-legend[\s\S]*?background: transparent !important/);
+  assert.match(styles, /qc-surah-header-wrap--unified > \.srh-root[\s\S]*?border: 0 !important/);
   assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?\.srh-mobile-bar\s*\{[\s\S]*?display: grid/);
   assert.match(styles, /\.srh-mobile-bar :is\(\.srh-play-btn, \.srh-info-btn\)[\s\S]*?min-height: 44px/);
   assert.match(header, /aria-controls="srh-reader-tools"/);
@@ -45,6 +47,16 @@ test("the unified reader header remains available in mobile QCF4 Mushaf mode", (
   assert.match(header, /className="srh-identity__disclosure"/);
   assert.match(styles, /\.srh-reader-tools\s*\{[\s\S]*?grid-template-rows: 0fr/);
   assert.match(styles, /\.srh-reader-tools--open\s*\{[\s\S]*?grid-template-rows: 1fr/);
+});
+
+test("dua cards keep a single compact reader action", () => {
+  const page = source("src/components/DuasPage.jsx");
+  const styles = source("src/styles/domains/duas-page.css");
+
+  assert.doesNotMatch(page, /dua-card-footer-copy/);
+  assert.doesNotMatch(page, /Source coranique accessible directement/);
+  assert.match(page, /className="dua-card-footer"[\s\S]*?className="dua-card-footer-link"/);
+  assert.match(styles, /\.dua-card-footer\s*\{[\s\S]*?justify-content: flex-end/);
 });
 
 test("surah information opens as an accessible responsive dossier", () => {
@@ -56,16 +68,17 @@ test("surah information opens as an accessible responsive dossier", () => {
   assert.match(header, /aria-haspopup="dialog"/);
   assert.match(header, /<Modal[\s\S]*?portal[\s\S]*?<SurahInfoPanel/);
   assert.match(panel, /fetchQuranComSurahInfo/);
-  assert.match(panel, /Repères essentiels/);
+  assert.doesNotMatch(panel, /Repères essentiels/);
+  assert.doesNotMatch(panel, /sip-grid/);
   assert.match(panel, /Dossier complet/);
   assert.match(panel, /aria-expanded=\{expanded\}/);
-  assert.match(panel, /revelationOrder/);
+  assert.doesNotMatch(panel, /sip-timeline/);
   assert.match(panel, /dossierBlocks\.map/);
   assert.match(panel, /<h4 key=\{block\}>/);
-  assert.doesNotMatch(styles, /\.sip-header__ornament\s*\{[^}]*\b(?:border|background|box-shadow|border-radius)\s*:/);
+  assert.doesNotMatch(panel, /sip-header__ornament/);
   assert.match(modal, /createPortal\(modalContent, document\.body\)/);
+  assert.match(modal, /aria-hidden="true"[\s\S]*?onClick=\{onClose\}/);
   assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?align-items: flex-end/);
-  assert.match(styles, /grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
   assert.match(styles, /\.sip-dossier__copy h4/);
   assert.match(styles, /\.surah-info-modal > div:last-child[\s\S]*?overflow-y: auto/);
   assert.match(styles, /overscroll-behavior: contain/);
@@ -126,8 +139,8 @@ test("mobile reader shell follows the Tajweed card and keeps an explicit home lo
   assert.match(header, /data-testid="mobile-home-logo"/);
   assert.match(header, /onClick=\{goHome\}/);
   assert.match(header, /mp-header__home-badge/);
-  assert.match(styles, /quran-display\.quran-display--platform[\s\S]*?padding-top: 0 !important/);
-  assert.match(styles, /quran-display\.quran-display--platform > \.tajweed-legend[\s\S]*?margin-top: 0 !important/);
+  assert.match(styles, /quran-display\.quran-display--platform[\s\S]*?padding-top: 0(?:\s*!important)?/);
+  assert.match(styles, /quran-display\.quran-display--platform > \.tajweed-legend[\s\S]*?margin-top: 0(?:\s*!important)?/);
   assert.match(styles, /@media \(max-width: 380px\)[\s\S]*?--mp-header-control: 40px/);
   assert.doesNotMatch(styles, /@media \(max-width: 380px\)\s*\{\s*html body \.app-root > \.mp-header \.mp-header__brand\s*\{\s*display: none/);
 });
@@ -358,27 +371,27 @@ test("continuous Mushaf markers leave a readable gap before the next ayah", () =
     /\.mushaf-text-block \.cpv-ayah-marker\s*\{([\s\S]*?)\}/,
   )?.[1] || "";
 
-  assert.match(markerRule, /margin-inline:\s*0\.12em 0\.72em\s*!important/);
+  assert.match(markerRule, /margin-inline:\s*0\.12em 0\.72em(?:\s*!important)?/);
   assert.match(purgeConfig, /\/cpv-ayah-marker\//);
   assert.match(purgeScript, /continuous Mushaf marker spacing/);
 });
 
-test("ayah numbers use the marker supplied by the active Quran font", () => {
+test("ayah numbers keep one canonical glyph regardless of the reading font", () => {
   const marker = source("src/components/Quran/AyahMarker.jsx");
 
-  assert.match(marker, /getNativeAyahMarker\(markerNumber, activeFont, activeRiwaya\)/);
-  assert.match(marker, /resolveFontFamily\(activeFont, activeRiwaya\)/);
-  assert.match(marker, /data-marker-font=\{activeFont\}/);
+  assert.match(marker, /getUiAyahMarker\(markerNumber\)/);
+  assert.match(marker, /resolveFontFamily\(UI_AYAH_MARKER_FONT_ID, "hafs"\)/);
+  assert.match(marker, /data-marker-font=\{UI_AYAH_MARKER_FONT_ID\}/);
   assert.doesNotMatch(marker, /ayat-marker__medallion/);
 });
 
 test("Tajweed legend and Quran.com markup share the same eight rule families", () => {
-  const display = source("src/components/QuranDisplay.jsx");
+  const surahMode = source("src/components/QuranDisplay/SurahMode.jsx");
   const legend = source("src/components/Quran/TajweedLegend.jsx");
   const renderer = source("src/components/Quran/TajweedText.jsx");
   const theme = source("src/styles/domains/themes4.css");
 
-  assert.match(display, /showTajwid \? <TajweedLegend lang=\{lang\} riwaya=\{riwaya\}/);
+  assert.match(surahMode, /showTajwid \? <TajweedLegend lang=\{lang\} riwaya=\{riwaya\}/);
   for (const ruleId of [
     "silent",
     "madd-normal",
@@ -413,6 +426,7 @@ test("the visual system separates brand, gold, Warsh and transliteration roles",
   const fonts = source("src/styles/riwaya-fonts.css");
   const reader = source("src/styles/domains/reading-platform.css");
   const readingPolish = source("src/styles/reading-ux-refonte.css");
+  const mushafPage = source("src/components/QuranDisplay/QuranMushafPage.jsx");
   const verseView = source("src/components/QuranDisplay/QCVerseByVerseView.jsx");
   const supplement = source("src/components/Quran/AyahBlockSupplement.jsx");
 
@@ -421,6 +435,10 @@ test("the visual system separates brand, gold, Warsh and transliteration roles",
   assert.match(fonts, /--font-quran-warsh: "KFGQPC Warsh"/);
   assert.match(fonts, /font-synthesis: none/);
   assert.match(reader, /\.qcm-word--warsh \{[\s\S]*?font-size: 1em !important;[\s\S]*?line-height: inherit !important;/);
+  assert.match(mushafPage, /wordSpacing: 0/);
+  assert.match(mushafPage, /unicodeBidi: 'isolate'/);
+  assert.match(mushafPage, /marginInlineEnd: '0\.035em'/);
+  assert.doesNotMatch(mushafPage, /wordSpacing: '0\.05em'/);
   assert.match(readingPolish, /"Iowan Old Style", "Palatino Linotype", Georgia, serif/);
   assert.match(verseView, /className="qc-ayah-transliteration"/);
   assert.match(supplement, /className="ayah-transliteration" dir="ltr"/);

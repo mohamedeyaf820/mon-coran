@@ -599,32 +599,33 @@ html body .app-root.app-root[data-view="duas"] .duas-page--platform .dua-open-bt
 .dua-card-footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 0.85rem;
     padding-top: 0.1rem;
-}
-
-.dua-card-footer-copy {
-    font-size: 0.76rem;
-    line-height: 1.5;
-    color: var(--text-muted);
 }
 
 .dua-card-footer-link {
     display: inline-flex;
     align-items: center;
     gap: 0.42rem;
-    border: none;
-    background: transparent;
+    min-height: 2.35rem;
+    padding: 0.48rem 0.78rem;
+    border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, var(--primary) 9%, var(--bg-card));
     color: var(--primary);
     font-size: 0.8rem;
     font-weight: 800;
     cursor: pointer;
     white-space: nowrap;
+    transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease, color 160ms ease;
 }
 
 .dua-card-footer-link:hover {
-    color: color-mix(in srgb, var(--primary) 82%, var(--gold) 18%);
+    transform: translateY(-1px);
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
 }
 
 .scrollbar-hide {
@@ -704,8 +705,9 @@ html body .app-root.app-root[data-view="duas"] .duas-page--platform .dua-open-bt
     }
 
     .dua-card-footer {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
     }
 }
 

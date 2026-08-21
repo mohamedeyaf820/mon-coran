@@ -451,6 +451,37 @@ export default function Header({ immersiveHidden = false }) {
     },
   ];
 
+  const renderQuickItem = (item) => (
+    <button
+      key={item.key}
+      data-key={item.key}
+      className={cn(
+        "mp-header-menu__item",
+        item.mobileOnly && "mp-header-menu__item--mobile-only",
+      )}
+      type="button"
+      onClick={() => {
+        item.action();
+        setQuickMenuOpen(false);
+      }}
+    >
+      <span className="mp-header-menu__item-icon">
+        <item.Icon size={15} strokeWidth={2.1} />
+      </span>
+      <span className="mp-header-menu__item-copy">
+        <span className="mp-header-menu__item-label">{item.label}</span>
+        {item.key === "search" && (
+          <span className="mp-header-menu__item-description">
+            {item.description}
+          </span>
+        )}
+      </span>
+      {item.key === "search" && (
+        <kbd className="mp-header-menu__item-kbd">/</kbd>
+      )}
+    </button>
+  );
+
   return (
     <header
       ref={headerRef}
@@ -713,11 +744,24 @@ export default function Header({ immersiveHidden = false }) {
             <PopoverContent
               align="end"
               sideOffset={10}
-              className="mp-header-menu z-[300]"
+              aria-label={tr({
+                fr: isReadingView ? "Menu de lecture" : "Menu principal",
+                en: isReadingView ? "Reading menu" : "Main menu",
+                ar: isReadingView ? "قائمة القراءة" : "القائمة الرئيسية",
+              })}
+              className={cn(
+                "mp-header-menu z-[300]",
+                isReadingView && "mp-header-menu--reader",
+              )}
             >
               <div className="mp-header-menu__header">
-                <span className="mp-header-menu__header-text">
-                  {tr({ fr: "Actions rapides", en: "Quick actions", ar: "إجراءات سريعة" })}
+                <span className="mp-header-menu__panel-title">
+                  {isReadingView ? <Type size={13} strokeWidth={2.2} /> : <Shapes size={13} strokeWidth={2.2} />}
+                  {tr({
+                    fr: isReadingView ? "Lecture" : "Menu",
+                    en: isReadingView ? "Reading" : "Menu",
+                    ar: isReadingView ? "القراءة" : "القائمة",
+                  })}
                 </span>
                 <button
                   className="mp-header-menu__close"
@@ -731,6 +775,10 @@ export default function Header({ immersiveHidden = false }) {
                 >
                   <X size={14} strokeWidth={2.2} />
                 </button>
+              </div>
+
+              <div className="mp-header-menu__primary-command">
+                {quickItems.filter((item) => item.key === "search").map(renderQuickItem)}
               </div>
 
               {isReadingView ? (
@@ -830,36 +878,7 @@ export default function Header({ immersiveHidden = false }) {
               ) : null}
 
               <div className="mp-header-menu__section">
-                {quickItems.map((item) => (
-                  <button
-                    key={item.key}
-                    data-key={item.key}
-                    className={cn(
-                      "mp-header-menu__item",
-                      item.mobileOnly && "mp-header-menu__item--mobile-only",
-                    )}
-                    type="button"
-                    onClick={() => {
-                      item.action();
-                      setQuickMenuOpen(false);
-                    }}
-                  >
-                    <span className="mp-header-menu__item-icon">
-                      <item.Icon size={15} strokeWidth={2.1} />
-                    </span>
-                    <span className="mp-header-menu__item-copy">
-                      <span className="mp-header-menu__item-label">{item.label}</span>
-                      {item.key === "search" && (
-                        <span className="mp-header-menu__item-description">
-                          {item.description}
-                        </span>
-                      )}
-                    </span>
-                    {item.key === "search" && (
-                      <kbd className="mp-header-menu__item-kbd">/</kbd>
-                    )}
-                  </button>
-                ))}
+                {quickItems.filter((item) => item.key !== "search").map(renderQuickItem)}
               </div>
 
             </PopoverContent>

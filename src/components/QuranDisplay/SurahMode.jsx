@@ -2,6 +2,7 @@ import React, { memo } from "react";
 import { t } from "../../i18n";
 import { getSurah } from "../../data/surahs";
 import SurahReaderHeader from "../Quran/SurahReaderHeader";
+import TajweedLegend from "../Quran/TajweedLegend";
 import AyahActionsModal from "./AyahActionsModal";
 import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
@@ -49,7 +50,8 @@ function SurahMode({
       } ${modePaneShellClass}`}
     >
       {/* Unified surah identity + controls header */}
-      <div className="qc-surah-header-wrap animate-in">
+      <div className={`qc-surah-header-wrap qc-surah-header-wrap--unified animate-in${showTajwid ? " has-tajwid-guide" : ""}`}>
+        {showTajwid ? <TajweedLegend lang={lang} riwaya={riwaya} /> : null}
         <SurahReaderHeader
           surahNum={currentSurah}
           onPlaySurah={onPlaySurah}

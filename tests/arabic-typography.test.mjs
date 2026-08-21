@@ -10,6 +10,8 @@ import {
   appendNativeAyahMarker,
   getAyahTextForFont,
   getQuranWordTextForFont,
+  getUiAyahMarker,
+  stripEmbeddedAyahMarkers,
 } from "../src/data/fonts.js";
 
 test("Arabic typography clamps unsafe preferences", () => {
@@ -104,9 +106,27 @@ test("continuous Mushaf line height stays compact for every exposed Quran font",
       mushafLayout: "mushaf",
       riwaya,
     });
-    assert.ok(lineHeight >= 1.85, `${fontFamily} must preserve Arabic marks`);
-    assert.ok(lineHeight <= 2.1, `${fontFamily} must keep Mushaf lines connected`);
+    assert.ok(lineHeight >= 1.64, `${fontFamily} must preserve Arabic marks`);
+    assert.ok(lineHeight <= 1.76, `${fontFamily} must keep Mushaf lines connected`);
   }
+});
+
+test("page routes keep the same compact leading as continuous Mushaf routes", () => {
+  const pageLineHeight = getArabicReadingLineHeight({
+    displayMode: "page",
+    fontFamily: "qpc-hafs",
+    mushafLayout: "mushaf",
+    riwaya: "hafs",
+  });
+  const surahLineHeight = getArabicReadingLineHeight({
+    displayMode: "surah",
+    fontFamily: "qpc-hafs",
+    mushafLayout: "mushaf",
+    riwaya: "hafs",
+  });
+
+  assert.equal(pageLineHeight, surahLineHeight);
+  assert.ok(pageLineHeight < 1.8);
 });
 
 test("every exposed Hafs text path removes internal dotted-circle anchors", () => {
@@ -180,4 +200,46 @@ test("Al-Mulk pause signs stay attached to the preceding Uthmani glyph", () => {
     assert.equal(rendered.includes("\u200C\u06DA"), false, fontFamily);
     assert.equal(rendered.includes("\u06DA"), true, fontFamily);
   }
+});
+
+test("all supported embedded ayah marker forms collapse to one generated marker", () => {
+  const verse = "اَ۫لْحَيُّ اُ۫لْقَيُّومُ";
+  const payloads = [
+    `${verse} ۝١`,
+    `${verse} ۝١ ۝١`,
+    `${verse} ١`,
+    `${verse} ۱`,
+    `${verse} ﴿١﴾`,
+    `${verse} ۝\u200f`,
+  ];
+
+  const fontMarkers = [
+    ["qpc-hafs", "hafs", "١"],
+    ["qpc-indopak", "hafs", "۝۱"],
+    ["scheherazade-new", "hafs", "۝١"],
+    ["amiri-quran", "hafs", "۝١"],
+    ["noto-naskh-arabic", "hafs", "۝١"],
+    ["qpc-warsh", "warsh", "١"],
+    ["kfgqpc-warsh", "warsh", "١"],
+    ["scheherazade-new-warsh", "warsh", "۝١"],
+  ];
+
+  for (const payload of payloads) {
+    assert.equal(stripEmbeddedAyahMarkers(payload), verse);
+    for (const [fontFamily, riwaya, expectedMarker] of fontMarkers) {
+      const rendered = appendNativeAyahMarker(payload, 1, fontFamily, riwaya);
+      assert.equal(rendered, `${verse} ${expectedMarker}`, fontFamily);
+    }
+  }
+
+  assert.equal(appendNativeAyahMarker("", 1, "qpc-hafs", "hafs"), "");
+});
+
+test("waqf signs remain Quran content while the standalone medallion stays canonical", () => {
+  const verseWithWaqf = "اَ۫لْحَيُّ اُ۫لْقَيُّومُۖ";
+
+  assert.equal(stripEmbeddedAyahMarkers(verseWithWaqf), verseWithWaqf);
+  assert.equal(getUiAyahMarker(1), "١");
+  assert.equal(getUiAyahMarker(128), "١٢٨");
+  assert.equal(getUiAyahMarker(1).includes("۝"), false);
 });

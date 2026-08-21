@@ -5,12 +5,12 @@
 
 .surah-info-modal {
   display: flex;
-  max-height: min(90dvh, 56rem);
-  width: min(100%, 52rem);
+  max-height: min(88dvh, 48rem);
+  width: min(100%, 46rem);
   overflow: hidden;
   flex-direction: column;
   border-color: color-mix(in srgb, var(--primary) 30%, var(--border) 70%);
-  border-radius: 1.65rem;
+  border-radius: 1.4rem;
   background: color-mix(in srgb, var(--bg-card) 97%, var(--primary) 3%);
   box-shadow: 0 28px 80px color-mix(in srgb, #071b13 38%, transparent), 0 1px 0 color-mix(in srgb, #fff 70%, transparent) inset;
 }
@@ -19,7 +19,8 @@
   position: relative;
   z-index: 10;
   flex: 0 0 auto;
-  padding: 1.15rem 4.2rem 1rem 1.5rem;
+  min-height: 3.5rem;
+  padding: 1.05rem 4rem 0.9rem 1.35rem;
   border-bottom: 1px solid var(--border);
   background: color-mix(in srgb, var(--bg-card) 90%, transparent);
   backdrop-filter: blur(18px);
@@ -37,6 +38,11 @@
   border-color: color-mix(in srgb, var(--primary) 20%, var(--border));
   background: var(--bg-card);
   box-shadow: 0 6px 18px color-mix(in srgb, var(--text-primary) 10%, transparent);
+}
+
+.surah-info-modal > button:first-of-type:hover {
+  border-color: color-mix(in srgb, var(--primary) 42%, var(--border));
+  background: color-mix(in srgb, var(--primary) 8%, var(--bg-card));
 }
 
 .surah-info-modal > div:last-child {
@@ -64,21 +70,21 @@
 }
 
 .sip-root {
-  padding: clamp(1rem, 2.4vw, 1.5rem);
+  padding: clamp(0.9rem, 2.2vw, 1.3rem);
   color: var(--text-primary);
 }
 
 .sip-header {
   position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: clamp(0.75rem, 2vw, 1.1rem);
-  min-height: 8.2rem;
-  padding: clamp(1rem, 2.8vw, 1.5rem);
+  min-height: 7.25rem;
+  padding: clamp(1rem, 2.6vw, 1.35rem);
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border) 80%);
-  border-radius: 1.4rem;
+  border-radius: 1.2rem;
   background:
     linear-gradient(112deg, color-mix(in srgb, var(--primary) 10%, var(--bg-card)) 0 58%, transparent 58%),
     color-mix(in srgb, var(--primary) 5%, var(--bg-secondary));
@@ -105,18 +111,6 @@
   pointer-events: none;
 }
 
-.sip-header__ornament {
-  display: flex;
-  width: clamp(3.75rem, 8vw, 5rem);
-  min-height: 3.5rem;
-  align-items: center;
-  justify-content: center;
-  color: color-mix(in srgb, var(--text-primary) 78%, var(--primary));
-  font-size: clamp(2rem, 4vw, 2.7rem);
-  line-height: 1;
-  filter: drop-shadow(0 3px 7px color-mix(in srgb, var(--primary) 11%, transparent));
-}
-
 .sip-header__text {
   min-width: 0;
 }
@@ -131,6 +125,19 @@
   font-weight: 800;
   letter-spacing: 0.09em;
   text-transform: uppercase;
+}
+
+.sip-eyebrow__number {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2.35rem;
+  min-height: 1.45rem;
+  padding-inline: 0.42rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
 }
 
 .sip-header__name {
@@ -157,117 +164,19 @@
 .sip-header__arabic {
   position: relative;
   z-index: 1;
-  max-width: 12rem;
+  max-width: 11rem;
   color: var(--primary);
   font-family: var(--font-surah-name, var(--font-quran), serif);
-  font-size: clamp(2rem, 5vw, 3.1rem);
+  font-size: clamp(2rem, 4.8vw, 2.8rem);
   line-height: 1.35;
   text-align: end;
 }
 
-.sip-section-heading {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  margin: 1.15rem 0 0.65rem;
-  color: var(--text-muted);
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.sip-section-heading__line {
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-.sip-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.55rem;
-}
-
-.sip-tile {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  gap: 0.55rem;
-  min-height: 4rem;
-  padding: 0.7rem 0.8rem;
-  border: 1px solid var(--border);
-  border-radius: 0.9rem;
-  background: color-mix(in srgb, var(--bg-secondary) 78%, var(--bg-card));
-  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 48%, transparent);
-  transition: border-color 160ms ease, transform 160ms ease;
-}
-
-.sip-tile:hover {
-  border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
-  transform: translateY(-1px);
-}
-
-.sip-tile--accent {
-  border-color: color-mix(in srgb, var(--primary) 28%, var(--border) 72%);
-  background: color-mix(in srgb, var(--primary) 6%, var(--bg-secondary) 94%);
-}
-
-.sip-tile--gold {
-  border-color: color-mix(in srgb, var(--color-gold, #c7a653) 34%, var(--border) 66%);
-  background: color-mix(in srgb, var(--color-gold, #c7a653) 7%, var(--bg-secondary) 93%);
-}
-
-.sip-tile__icon {
-  display: grid;
-  place-items: center;
-  flex: 0 0 1.8rem;
-  width: 1.8rem;
-  height: 1.8rem;
-  border-radius: 0.58rem;
-  background: color-mix(in srgb, var(--primary) 10%, transparent);
-  color: var(--primary);
-}
-
-.sip-tile--gold .sip-tile__icon {
-  background: color-mix(in srgb, var(--color-gold, #c7a653) 13%, transparent);
-  color: color-mix(in srgb, var(--color-gold, #c7a653) 82%, var(--text-primary));
-}
-
-.sip-tile__body {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-}
-
-.sip-tile__value {
-  overflow: hidden;
-  color: var(--text-primary);
-  font-size: 0.82rem;
-  font-weight: 750;
-  line-height: 1.25;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.sip-tile__label {
-  margin-top: 0.08rem;
-  overflow: hidden;
-  color: var(--text-muted);
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.035em;
-  line-height: 1.3;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
 .sip-overview {
-  margin-top: 0.8rem;
+  margin-top: 0.7rem;
   padding: clamp(0.85rem, 2.4vw, 1.1rem);
   border: 1px solid var(--border);
-  border-radius: 1.25rem;
+  border-radius: 1.1rem;
   background: color-mix(in srgb, var(--bg-secondary) 84%, var(--bg-card));
   box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 45%, transparent);
 }
@@ -345,38 +254,6 @@
 
 .sip-dossier {
   margin-top: 0.9rem;
-}
-
-.sip-timeline {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  overflow-x: auto;
-  padding: 0.72rem 0.8rem;
-  border: 1px solid color-mix(in srgb, var(--primary) 15%, var(--border));
-  border-radius: 0.8rem;
-  background: color-mix(in srgb, var(--primary) 4%, var(--bg-card));
-  color: var(--text-muted);
-  font-size: 0.68rem;
-  scrollbar-width: none;
-}
-
-.sip-timeline > * {
-  flex: 0 0 auto;
-}
-
-.sip-timeline > * + *::before {
-  content: "";
-  display: inline-block;
-  width: 0.3rem;
-  height: 0.3rem;
-  margin: 0 0.55rem 0.08rem;
-  border-radius: 50%;
-  background: var(--primary);
-}
-
-.sip-timeline strong {
-  color: var(--primary);
 }
 
 .sip-dossier__copy {
@@ -457,7 +334,6 @@
 }
 
 [data-theme="dark"] .sip-header,
-[data-theme="dark"] .sip-tile,
 [data-theme="dark"] .sip-overview {
   background-color: color-mix(in srgb, var(--bg-secondary) 90%, #08110e 10%);
 }
@@ -470,7 +346,7 @@
 
   .surah-info-modal {
     width: 100%;
-    max-height: calc(100dvh - max(0.75rem, env(safe-area-inset-top)));
+    max-height: calc(100dvh - max(0.7rem, env(safe-area-inset-top)));
     border-radius: 1.35rem 1.35rem 0 0;
   }
 
@@ -484,38 +360,23 @@
   }
 
   .sip-root {
-    padding: 0.85rem;
+    padding: 0.72rem;
   }
 
   .sip-header {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.7rem;
     min-height: 0;
+    padding: 0.9rem;
     border-radius: 1.1rem;
   }
 
-  .sip-header__ornament {
-    width: 3.25rem;
-    min-height: 2.8rem;
-    font-size: 1.8rem;
-  }
-
   .sip-header__arabic {
-    grid-column: 1 / -1;
-    max-width: none;
-    padding-top: 0.25rem;
-    border-top: 1px solid color-mix(in srgb, var(--primary) 15%, transparent);
-    font-size: 1.65rem;
-    text-align: center;
-  }
-
-  .sip-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.42rem;
-  }
-
-  .sip-tile {
-    padding: 0.56rem;
-    min-height: 3.6rem;
+    max-width: 7.5rem;
+    padding: 0;
+    border: 0;
+    font-size: clamp(1.55rem, 8vw, 2.1rem);
+    text-align: end;
   }
 
   .sip-overview__head {
@@ -540,16 +401,102 @@
   }
 }
 
-@media (max-width: 360px) {
-  .sip-tile__icon {
-    display: none;
+@media (max-width: 420px) {
+  .surah-info-modal > #modal-title {
+    min-height: 3.15rem;
+    padding: 0.88rem 3.45rem 0.72rem 0.9rem;
+    font-size: 0.66rem;
+  }
+
+  .surah-info-modal > button:first-of-type {
+    top: 0.42rem;
+    right: 0.42rem;
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .sip-root {
+    padding: 0.55rem;
+  }
+
+  .sip-header {
+    gap: 0.5rem;
+    padding: 0.78rem;
+    border-radius: 0.95rem;
+  }
+
+  .sip-eyebrow {
+    gap: 0.28rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.065em;
+  }
+
+  .sip-eyebrow__number {
+    min-width: 1.95rem;
+    min-height: 1.25rem;
+    padding-inline: 0.28rem;
+    font-size: 0.57rem;
+  }
+
+  .sip-header__name {
+    margin-top: 0.2rem;
+    font-size: 1.05rem;
+  }
+
+  .sip-header__desc {
+    margin-top: 0.18rem;
+    font-size: 0.68rem;
+  }
+
+  .sip-header__arabic {
+    max-width: 5.8rem;
+    font-size: 1.55rem;
+  }
+
+  .sip-overview {
+    margin-top: 0.5rem;
+    padding: 0.78rem;
+    border-radius: 0.95rem;
+  }
+
+  .sip-overview__head {
+    gap: 0.32rem;
+  }
+
+  .sip-overview__head h3 {
+    font-size: 0.88rem;
+  }
+
+  .sip-overview__kicker {
+    font-size: 0.6rem;
+  }
+
+  .sip-language {
+    padding: 0.24rem 0.42rem;
+    font-size: 0.56rem;
+  }
+
+  .sip-overview__text,
+  .sip-overview__fallback,
+  .sip-dossier__copy p {
+    font-size: 0.76rem;
+    line-height: 1.65;
+  }
+
+  .sip-overview__footer {
+    margin-top: 0.72rem;
+    padding-top: 0.62rem;
+  }
+
+  .sip-source-link {
+    min-height: 1.85rem;
+    font-size: 0.63rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .sip-skeleton,
-  .sip-source-link,
-  .sip-tile {
+  .sip-source-link {
     animation: none;
     transition: none;
   }

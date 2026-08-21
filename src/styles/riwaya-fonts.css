@@ -19,11 +19,11 @@
   --qd-font-size: clamp(28px, 5.8vw, 48px);
   --quran-font-size: clamp(28px, 5.8vw, 48px);
   --quran-line-height: 2.16;
-  --font-quran-hafs: "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", "ME Quran", serif;
-  --font-quran-warsh: "KFGQPC Warsh", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Scheherazade New", "Amiri Quran", serif;
-  --font-quran-indopak: "IndoPak", "QPC IndoPak", "QPC Hafs", "KFGQPC Uthmanic Script HAFS", serif;
-  --font-quran-nastaleeq: "KFGQPC Nastaleeq", "QPC Nastaleeq", "IndoPak", "QPC Hafs", serif;
-  --font-quran-warsh-kfgqpc: "KFGQPC Warsh", "warsh10", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", serif;
+  --font-quran-hafs: "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", "Geeza Pro", serif;
+  --font-quran-warsh: "KFGQPC Warsh", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Scheherazade New", "Amiri Quran", "Noto Naskh Arabic", "Geeza Pro", serif;
+  --font-quran-indopak: "IndoPak", "QPC IndoPak", "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "Amiri Quran", serif;
+  --font-quran-nastaleeq: "KFGQPC Nastaleeq", "QPC Nastaleeq", "IndoPak", "QPC Hafs", "Amiri Quran", serif;
+  --font-quran-warsh-kfgqpc: "KFGQPC Warsh", "warsh10", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Scheherazade New", "Amiri Quran", serif;
   --font-surah-hafs: var(--font-quran-hafs);
   --font-surah-warsh: var(--font-quran-warsh);
 }
@@ -32,12 +32,14 @@
   --font-quran: var(--qd-font-family, var(--font-quran-hafs));
   --font-surah: var(--font-surah-hafs);
   --font-quran-tajweed: var(--qd-font-family, var(--font-quran-hafs));
+  --waqf-font-family: "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Scheherazade New", serif;
 }
 
 .app-root .quran-display--warsh {
   --font-quran: var(--qd-font-family, var(--font-quran-warsh));
   --font-surah: var(--font-surah-warsh);
   --font-quran-tajweed: var(--qd-font-family, var(--font-quran-warsh));
+  --waqf-font-family: "KFGQPC Warsh", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Scheherazade New", serif;
 }
 
 .app-root .quran-display--hafs :is(
@@ -54,7 +56,14 @@
   font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
   font-kerning: normal;
   font-synthesis: none;
+  -webkit-font-synthesis: none;
   text-rendering: optimizeLegibility;
+  -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  direction: rtl;
+  unicode-bidi: isolate;
 }
 
 .app-root .quran-display--warsh :is(
@@ -74,7 +83,14 @@
   font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
   font-kerning: normal;
   font-synthesis: none;
+  -webkit-font-synthesis: none;
   text-rendering: optimizeLegibility;
+  -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  direction: rtl;
+  unicode-bidi: isolate;
 }
 
 .app-root .quran-display--warsh .warsh-waqf-marker {

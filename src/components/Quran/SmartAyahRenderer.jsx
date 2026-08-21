@@ -112,6 +112,8 @@ function SmartAyahRendererComponent({
         tajweedColors={null}
         words={ayah.words}
         fontFamily={fontFamily}
+        surahNum={surahNum}
+        ayahNumber={ayah.numberInSurah}
       />
     );
   }
@@ -136,6 +138,8 @@ function SmartAyahRendererComponent({
       tajweedColors={null}
       words={ayah.words}
       fontFamily={fontFamily}
+      surahNum={surahNum}
+      ayahNumber={ayah.numberInSurah}
     />
   );
 }

@@ -84,7 +84,6 @@ function parseQuranComTajweedHtml(html) {
     );
 }
 
-
 const WAQF_RULES = {
     '\u06D6': {
         name: {
@@ -182,12 +181,20 @@ const WAQF_RULES = {
             ar: "يشير إلى بداية ربع الحزب من أجزاء القرآن الكريم."
         }
     }
-};
-
+};
+
+
+
 const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
     const rule = WAQF_RULES[char];
+    const displayGlyph = getReadableWaqfGlyph(char);
+    const codePoint = char.codePointAt(0)?.toString(16).toUpperCase();
     if (!rule) {
-        return <span className="waqf-marker">{char}</span>;
+        return (
+            <span className="waqf-marker" data-waqf={codePoint} aria-label={char}>
+                {displayGlyph}
+            </span>
+        );
     }
 
     const activeLang = lang === 'ar' || lang === 'en' || lang === 'fr' ? lang : 'fr';
@@ -197,8 +204,13 @@ const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
     return (
         <Tooltip>
             <TooltipTrigger asChild>
-                <span className="waqf-marker" role="help" aria-label={`Règle de Waqf: ${name}`}>
-                    {char}
+                <span
+                    className="waqf-marker"
+                    data-waqf={codePoint}
+                    role="help"
+                    aria-label={`Règle de Waqf: ${name}`}
+                >
+                    {displayGlyph}
                 </span>
             </TooltipTrigger>
             <TooltipContent 
@@ -325,34 +337,14 @@ const TajweedRuleSegment = React.memo(function TajweedRuleSegment({
         || '';
 
     return (
-        <Tooltip>
-            <TooltipTrigger asChild>
-                <span
-                    className="tajwid-rule-segment"
-                    style={{ color }}
-                    data-tajwid={ruleId}
-                >
-                    {text}
-                </span>
-            </TooltipTrigger>
-            <TooltipContent
-                className="tajwid-rule-tooltip"
-                side="top"
-                sideOffset={10}
-                collisionPadding={12}
-                dir={activeLang === 'ar' ? 'rtl' : 'ltr'}
-            >
-                <span className="tajwid-rule-tooltip__head">
-                    <span
-                        className="tajwid-rule-tooltip__swatch"
-                        style={{ backgroundColor: color }}
-                        aria-hidden="true"
-                    />
-                    <strong>{name}</strong>
-                </span>
-                {desc ? <span className="tajwid-rule-tooltip__description">{desc}</span> : null}
-            </TooltipContent>
-        </Tooltip>
+        <span
+            className="tajwid-rule-segment"
+            style={{ color }}
+            data-tajwid={ruleId}
+            title={name ? `${name}${desc ? ` - ${desc}` : ''}` : undefined}
+        >
+            {text}
+        </span>
     );
 });
 
@@ -381,7 +373,6 @@ const TajweedText = React.memo(function TajweedText({
         () => new Map(getRulesForRiwaya(riwaya).map((rule) => [rule.id, rule])),
         [riwaya],
     );
-
     // No /g flag: using with .test() on a stateful regex resets lastIndex and
     // causes alternating misses. split() with a capturing group works without /g.
     const waqfRegex = /([\u06D6-\u06DC\u06DE])/;
@@ -407,50 +398,49 @@ const TajweedText = React.memo(function TajweedText({
         return <span>{text}</span>;
     }
 
-    return (
-        <TooltipProvider delayDuration={220} skipDelayDuration={80}>
-            <span>
-                <span aria-hidden="true">
-                    {segments.map((seg, i) => {
-                        const color = seg.ruleId
-                            ? (tajweedColors && tajweedColors[seg.ruleId]) || `var(--tajwid-${seg.ruleId})`
-                            : 'inherit';
-                        // Redesign: Waqf markers identification within segments
-                        if (waqfRegex.test(seg.text)) {
-                            const parts = seg.text.split(waqfRegex);
-                            return (
-                                <React.Fragment key={i}>
-                                    {parts.map((p, j) =>
-                                        waqfRegex.test(p)
-                                            ? <WaqfSign key={j} char={p} lang={lang} />
-                                            : seg.ruleId && p
-                                                ? <TajweedRuleSegment
-                                                    key={j}
-                                                    text={p}
-                                                    ruleId={seg.ruleId}
-                                                    color={color}
-                                                    lang={lang}
-                                                    fallbackRule={ruleMetadata.get(seg.ruleId)}
-                                                />
-                                                : p
-                                    )}
-                                </React.Fragment>
-                            );
-                        }
+    const renderSegment = (seg, key) => {
+        const color = seg.ruleId
+            ? (tajweedColors && tajweedColors[seg.ruleId]) || `var(--tajwid-${seg.ruleId})`
+            : 'inherit';
 
-                        if (!seg.ruleId) {
-                            return <React.Fragment key={i}>{seg.text}</React.Fragment>;
-                        }
-
-                        return <TajweedRuleSegment
-                            key={i}
-                            text={seg.text}
+        if (waqfRegex.test(seg.text)) {
+            return seg.text.split(waqfRegex).map((part, index) =>
+                waqfRegex.test(part)
+                    ? <WaqfSign key={`${key}-${index}`} char={part} lang={lang} />
+                    : seg.ruleId && part
+                        ? <TajweedRuleSegment
+                            key={`${key}-${index}`}
+                            text={part}
                             ruleId={seg.ruleId}
                             color={color}
                             lang={lang}
                             fallbackRule={ruleMetadata.get(seg.ruleId)}
-                        />;
-                    })}
+                        />
+                        : <React.Fragment key={`${key}-${index}`}>{part}</React.Fragment>
+            );
+        }
+
+        if (!seg.ruleId) {
+            return <React.Fragment key={key}>{seg.text}</React.Fragment>;
+        }
+
+        return <TajweedRuleSegment
+            key={key}
+            text={seg.text}
+            ruleId={seg.ruleId}
+            color={color}
+            lang={lang}
+            fallbackRule={ruleMetadata.get(seg.ruleId)}
+        />;
+    };
+
+    return (
+        <TooltipProvider delayDuration={220} skipDelayDuration={80}>
+            <span className="quran-tajwid-text" dir="rtl" lang="ar">
+                <span aria-hidden="true">
+                    {segments.map((segment, segmentIndex) =>
+                        renderSegment(segment, `segment-${segmentIndex}`)
+                    )}
                 </span>
                 <span className="sr-only">
                     {segments.map((segment) => segment.text).join('')}

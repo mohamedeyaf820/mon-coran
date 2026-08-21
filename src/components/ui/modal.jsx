@@ -90,7 +90,11 @@ export function Modal({
         if (e.target === e.currentTarget) onClose?.();
       }}
     >
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" />
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        aria-hidden="true"
+        onClick={onClose}
+      />
       <div
         ref={modalRef}
         className={cn(

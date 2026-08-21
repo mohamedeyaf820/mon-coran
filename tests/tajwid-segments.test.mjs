@@ -88,11 +88,11 @@ test("Al-Mulk waqf marks cannot be isolated by a zero-width separator", () => {
   assert.equal(rendered.includes("\u06DA"), true);
 });
 
-test("interactive waqf signs use readable glyphs instead of dotted-circle combining marks", () => {
-  assert.equal(getReadableWaqfGlyph("\u06D6"), "\u0635\u0644\u0649");
-  assert.equal(getReadableWaqfGlyph("\u06DA"), "\u062C");
-  assert.equal(getReadableWaqfGlyph("\u06DB"), "\u2234");
-  assert.equal(getReadableWaqfGlyph("\u06DC"), "\u0633");
+test("interactive waqf signs preserve their canonical Quran code point on a safe anchor", () => {
+  assert.equal(getReadableWaqfGlyph("\u06D6"), "\u00A0\u06D6");
+  assert.equal(getReadableWaqfGlyph("\u06DA"), "\u00A0\u06DA");
+  assert.equal(getReadableWaqfGlyph("\u06DB"), "\u00A0\u06DB");
+  assert.equal(getReadableWaqfGlyph("\u06DC"), "\u00A0\u06DC");
 });
 
 test("Hafs and Warsh use the shared Quran.com Tajweed color semantics", () => {

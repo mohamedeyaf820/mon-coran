@@ -12,10 +12,6 @@ import {
   X,
   Loader2,
   ArrowRight,
-  Layers,
-  BookOpen,
-  Wand2,
-  Compass,
   ExternalLink,
   Mic,
   Square,
@@ -34,7 +30,6 @@ import {
 } from "../utils/searchIntelligence";
 import { prepareSearchQuery } from "../services/searchWorkerService";
 import { startPerformanceTimer } from "../services/performanceMetrics";
-import { Icon } from "./ui/icon";
 import useVoiceSearch from "../hooks/useVoiceSearch";
 
 function formatSearchError(error, lang) {
@@ -57,28 +52,31 @@ export default function SearchModal() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [searchMode, setSearchMode] = useState("arabic");
-  const [resolvedQuery, setResolvedQuery] = useState("");
+  const [resultMode, setResultMode] = useState("arabic");
 
   const duaResults = useMemo(() => {
-    if (searchMode !== "dua") return [];
     const q = query.trim().toLowerCase();
-    if (!q) return QURAN_DUAS;
+    if (q.length < 2) return [];
     return QURAN_DUAS.filter((dua) =>
       `${dua.arabic} ${dua.transliteration} ${dua.fr} ${dua.en}`.toLowerCase().includes(q),
     );
-  }, [searchMode, query]);
+  }, [query]);
 
   const handleVoiceTranscript = useCallback((transcript) => {
     const sanitized = sanitizeSearchQuery(transcript);
     if (!sanitized) return;
     setQuery(sanitized);
-    if (containsArabic(sanitized)) setSearchMode("arabic");
   }, []);
 
   const voiceSearch = useVoiceSearch({
     interfaceLanguage: lang,
-    searchMode,
+    searchMode: containsArabic(query)
+      ? "arabic"
+      : lang === "en"
+        ? "en"
+        : lang === "fr"
+          ? "fr"
+          : "arabic",
     onTranscript: handleVoiceTranscript,
   });
 
@@ -87,19 +85,16 @@ export default function SearchModal() {
   const searchRequestIdRef = useRef(0);
   const searchAbortRef = useRef(null);
   const runSearch = useCallback(
-    async (rawQuery = query, preferredMode = searchMode) => {
+    async (rawQuery) => {
       const requestId = ++searchRequestIdRef.current;
-      if (preferredMode === "dua") return;
       const finishMetric = startPerformanceTimer("search_response_ms");
-      const { sanitized, effectiveMode, candidates } =
-        await prepareSearchQuery(rawQuery, preferredMode);
+      const sanitized = sanitizeSearchQuery(rawQuery);
 
       if (requestId !== searchRequestIdRef.current) return;
 
-      if (candidates.length === 0) {
+      if (!sanitized) {
         startTransition(() => {
           setResults([]);
-          setResolvedQuery("");
         });
         finishMetric();
         return;
@@ -114,26 +109,59 @@ export default function SearchModal() {
 
       try {
         let bestMatches = [];
-        let bestQuery = candidates[0];
+        let bestMode = containsArabic(sanitized) ? "arabic" : "phonetic";
+        const isArabicQuery = containsArabic(sanitized);
+        const primary = await prepareSearchQuery(
+          sanitized,
+          isArabicQuery ? "arabic" : "phonetic",
+        );
 
-        for (const candidate of candidates) {
-          const data =
-            effectiveMode === "fr" || effectiveMode === "en"
-              ? await searchTranslation(
+        const runCandidates = async (candidates, fetcher) => {
+          for (const candidate of candidates) {
+            const data = await fetcher(candidate);
+            const matches = Array.isArray(data?.matches) ? data.matches : [];
+            if (matches.length > 0) return matches;
+          }
+          return [];
+        };
+
+        if (isArabicQuery) {
+          bestMatches = await runCandidates(primary.candidates, (candidate) =>
+            search(candidate, riwaya, null, ctrl.signal),
+          );
+        } else {
+          const translationLanguages = lang === "en" ? ["en", "fr"] : ["fr", "en"];
+          const translationPlans = await Promise.all(
+            translationLanguages.map((translationLanguage) =>
+              prepareSearchQuery(sanitized, translationLanguage),
+            ),
+          );
+          const attempts = await Promise.allSettled([
+            runCandidates(primary.candidates, (candidate) =>
+              search(candidate, riwaya, null, ctrl.signal),
+            ),
+            ...translationPlans.map((plan, index) =>
+              runCandidates(plan.candidates, (candidate) =>
+                searchTranslation(
                   candidate,
-                  effectiveMode,
+                  translationLanguages[index],
                   null,
                   ctrl.signal,
-                )
-              : await search(candidate, riwaya, null, ctrl.signal);
-
-          if (requestId !== searchRequestIdRef.current) return;
-
-          const matches = Array.isArray(data?.matches) ? data.matches : [];
-          if (matches.length > 0) {
-            bestMatches = matches;
-            bestQuery = candidate;
-            break;
+                ),
+              ),
+            ),
+          ]);
+          const successfulAttempt = attempts.find(
+            (attempt) => attempt.status === "fulfilled" && attempt.value.length > 0,
+          );
+          if (successfulAttempt?.status === "fulfilled") {
+            bestMatches = successfulAttempt.value;
+            const attemptIndex = attempts.indexOf(successfulAttempt);
+            bestMode = attemptIndex === 0
+              ? "phonetic"
+              : translationLanguages[attemptIndex - 1];
+          } else if (attempts.every((attempt) => attempt.status === "rejected")) {
+            throw attempts[0].reason;
           }
         }
 
@@ -141,8 +169,7 @@ export default function SearchModal() {
 
         startTransition(() => {
           setResults(bestMatches);
-          setResolvedQuery(bestQuery);
-          setSearchMode(effectiveMode);
+          setResultMode(bestMode);
         });
         finishMetric();
       } catch (err) {
@@ -155,7 +182,6 @@ export default function SearchModal() {
         setError(formatSearchError(err, lang));
         startTransition(() => {
           setResults([]);
-          setResolvedQuery("");
         });
         finishMetric();
       } finally {
@@ -167,29 +193,25 @@ export default function SearchModal() {
         }
       }
     },
-    [lang, query, riwaya, searchMode],
+    [lang, riwaya],
   );
 
   useEffect(() => {
     if (query.trim()) return;
     setResults([]);
     setError(null);
-    setResolvedQuery("");
   }, [query]);
-
-  useEffect(() => {
-  }, [results]);
 
   useEffect(() => {
     const sanitized = sanitizeSearchQuery(query);
     if (!sanitized) return;
 
     const timeoutId = window.setTimeout(() => {
-      void runSearch(sanitized, searchMode);
+      void runSearch(sanitized);
     }, 280);
 
     return () => window.clearTimeout(timeoutId);
-  }, [query, runSearch, searchMode]);
+  }, [query, runSearch]);
 
   useEffect(() => {
     return () => {
@@ -199,8 +221,8 @@ export default function SearchModal() {
   }, []);
 
   const handleSearch = useCallback(async () => {
-    await runSearch();
-  }, [runSearch]);
+    await runSearch(query);
+  }, [query, runSearch]);
 
   const goToAyah = (surah, ayah) => {
     set({ displayMode: "surah", showHome: false, showDuas: false });
@@ -208,52 +230,21 @@ export default function SearchModal() {
     close();
   };
 
-  const searchModeLabels = {
-    arabic: lang === "fr" ? "Arabe" : lang === "ar" ? "العربية" : "Arabic",
-    phonetic:
-      lang === "fr" ? "Phonétique" : lang === "ar" ? "صوتي" : "Phonetic",
-    fr: "Traduction FR",
-    en: "Translation EN",
-    dua: lang === "fr" ? "Douas" : lang === "ar" ? "الأدعية" : "Duas",
-  };
-
   const suggestionItems = [
     {
-      mode: "arabic",
       value: "الرحمن",
-      label:
-        lang === "fr"
-          ? "Texte arabe"
-          : lang === "ar"
-            ? "نص عربي"
-            : "Arabic text",
     },
     {
-      mode: "phonetic",
       value: "bismillah",
-      label:
-        lang === "fr"
-          ? "Début de verset"
-          : lang === "ar"
-            ? "بداية آية"
-            : "Verse opening",
     },
     {
-      mode: "fr",
       value: "miséricorde",
-      label:
-        lang === "fr"
-          ? "Traduction française"
-          : lang === "ar"
-            ? "ترجمة فرنسية"
-            : "French translation",
     },
   ];
 
   const applySuggestion = (suggestion) => {
-    setSearchMode(suggestion.mode);
     setQuery(suggestion.value);
-    void runSearch(suggestion.value, suggestion.mode);
+    void runSearch(suggestion.value);
   };
 
   const handleInputKeyDown = (event) => {
@@ -263,34 +254,17 @@ export default function SearchModal() {
     }
   };
 
-  const isDuaMode = searchMode === "dua";
-  const isTranslationMode = searchMode === "fr" || searchMode === "en";
+  const isTranslationMode = resultMode === "fr" || resultMode === "en";
   const filteredResults = results;
-  const activeResults = isDuaMode ? duaResults : filteredResults;
-
-  const searchModeOptions = [
-    { id: "arabic", icon: "fa-font", label: searchModeLabels.arabic },
-    {
-      id: "phonetic",
-      icon: "fa-wave-square",
-      label: searchModeLabels.phonetic,
-    },
-    { id: "fr", icon: "fa-language", label: "FR" },
-    { id: "en", icon: "fa-language", label: "EN" },
-    { id: "dua", icon: null, label: searchModeLabels.dua },
-  ];
-
-  const resultCountLabel = (isDuaMode || query)
-    ? lang === "fr"
-      ? `${activeResults.length} résultat${activeResults.length > 1 ? "s" : ""}`
-      : lang === "ar"
-        ? `${activeResults.length} نتيجة`
-        : `${activeResults.length} result${activeResults.length > 1 ? "s" : ""}`
-    : lang === "fr"
-      ? "Recherche contextuelle"
-      : lang === "ar"
-        ? "بحث سياقي"
-        : "Context search";
+  const visibleDuaResults = useMemo(() => {
+    const quranRefs = new Set(
+      filteredResults.map((result) =>
+        `${result?.surah?.number || result?.surah || 1}:${result?.numberInSurah || result?.number || 1}`,
+      ),
+    );
+    return duaResults.filter((dua) => !quranRefs.has(`${dua.surah}:${dua.ayah}`));
+  }, [duaResults, filteredResults]);
+  const activeResultCount = filteredResults.length + visibleDuaResults.length;
 
   return (
     <Dialog.Root
@@ -301,11 +275,11 @@ export default function SearchModal() {
     >
       <Dialog.Portal>
         <div
-          className="modal-overlay search-pro-overlay"
+          className="modal-overlay search-pro-overlay search-pro-overlay--simple"
           onClick={close}
         >
           <Dialog.Content
-            className="search-pro"
+            className="search-pro search-pro--simple"
             aria-modal="true"
             lang={lang}
             dir={lang === "ar" ? "rtl" : "ltr"}
@@ -315,7 +289,6 @@ export default function SearchModal() {
             }}
             onInteractOutside={(e) => { e.preventDefault(); close(); }}
             onClick={(event) => event.stopPropagation()}
-            onKeyDown={handleInputKeyDown}
           >
               <Dialog.Description className="sr-only">
                 {lang === "fr"
@@ -329,18 +302,15 @@ export default function SearchModal() {
                   <span className="search-pro__mark" aria-hidden="true">
                     <Search size={16} />
                   </span>
-                  <div>
-                    <p className="search-pro__eyebrow">
+                  <Dialog.Title asChild>
+                    <h2>
                       {lang === "fr"
-                        ? "Recherche"
+                        ? "Rechercher"
                         : lang === "ar"
                           ? "البحث"
                           : "Search"}
-                    </p>
-                    <Dialog.Title asChild>
-                      <h2>{t("search.title", lang)}</h2>
-                    </Dialog.Title>
-                  </div>
+                    </h2>
+                  </Dialog.Title>
                 </div>
                 <button
                   className="search-pro__close"
@@ -375,8 +345,8 @@ export default function SearchModal() {
                       <input
                         id="quran-search-input"
                         type="text"
-                        lang={searchMode === "arabic" ? "ar" : searchMode === "en" ? "en" : "fr"}
-                        dir={containsArabic(query) || searchMode === "arabic" ? "rtl" : "ltr"}
+                        lang={containsArabic(query) ? "ar" : lang}
+                        dir={containsArabic(query) ? "rtl" : lang === "ar" ? "rtl" : "ltr"}
                         value={query}
                         onChange={(event) => {
                           voiceSearch.clearError();
@@ -384,9 +354,11 @@ export default function SearchModal() {
                         }}
                         onKeyDown={handleInputKeyDown}
                         placeholder={
-                          searchMode === "phonetic"
-                            ? "Ex: bismillah rahmani rahim..."
-                            : t("search.placeholder", lang)
+                          lang === "fr"
+                            ? "Mot, verset ou traduction…"
+                            : lang === "ar"
+                              ? "كلمة أو آية أو ترجمة…"
+                              : "Word, verse or translation…"
                         }
                         autoFocus
                         aria-controls="search-results-list"
@@ -424,12 +396,17 @@ export default function SearchModal() {
                           )}
                         </span>
                       </button>
-                    </div>
-                    <div className="search-pro__actions">
                       <button
                         className="search-pro__submit"
                         onClick={handleSearch}
                         disabled={loading}
+                        aria-label={
+                          lang === "fr"
+                            ? "Lancer la recherche"
+                            : lang === "ar"
+                              ? "بدء البحث"
+                              : "Start search"
+                        }
                       >
                         {loading ? (
                           <Loader2 size={14} className="animate-spin" />
@@ -442,7 +419,7 @@ export default function SearchModal() {
                             : lang === "ar"
                               ? "بحث"
                               : "Search"}
-                        </span>
+                          </span>
                       </button>
                     </div>
                   </section>
@@ -464,49 +441,6 @@ export default function SearchModal() {
                     </p>
                   )}
 
-                  <div
-                    className="search-pro__modes"
-                    role="tablist"
-                    aria-label={
-                      lang === "ar" ? "وضع البحث" : lang === "fr" ? "Mode de recherche" : "Search mode"
-                    }
-                  >
-                    {searchModeOptions.map((modeOption) => (
-                      <button
-                        key={modeOption.id}
-                        role="tab"
-                        className={
-                          searchMode === modeOption.id ? "is-active" : ""
-                        }
-                        onClick={() => setSearchMode(modeOption.id)}
-                        aria-selected={searchMode === modeOption.id}
-                      >
-                        {modeOption.id === "dua"
-                          ? <Heart size={13} aria-hidden="true" />
-                          : <Icon name={modeOption.icon} aria-hidden="true" />
-                        }
-                        <span>{modeOption.label}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="search-pro__summary">
-                    <span>
-                      <Layers size={13} />
-                      {resultCountLabel}
-                    </span>
-                    <span>
-                      <BookOpen size={13} />
-                      {riwaya === "warsh" ? "Warsh" : "Hafs"}
-                    </span>
-                    {resolvedQuery && (
-                      <span className="search-pro__resolved">
-                        <Wand2 size={13} />
-                        {resolvedQuery}
-                      </span>
-                    )}
-                  </div>
-
                   {error && <p className="search-pro__error">{error}</p>}
 
                   <section
@@ -521,34 +455,23 @@ export default function SearchModal() {
                           : "Search results"
                     }
                   >
-                    {!isDuaMode && !query && !loading && (
+                    {!query && !loading && (
                       <div className="search-pro__empty">
-                        <span className="search-pro__empty-icon">
-                          <Compass size={24} />
-                        </span>
                         <div>
-                          <h3>
-                            {lang === "fr"
-                              ? "Retrouver rapidement un verset"
-                              : lang === "ar"
-                                ? "اعثر على الآية بسرعة"
-                                : "Find a verse quickly"}
-                          </h3>
                           <p>
                             {lang === "fr"
-                              ? "Essaie un mot arabe, une transcription phonétique, une traduction ou le début d'un verset."
+                              ? "Écrivez un mot, un verset ou utilisez le micro."
                               : lang === "ar"
-                                ? "جرّب كلمة عربية أو كتابة صوتية أو ترجمة."
-                                : "Try an Arabic word, phonetic spelling, or translation."}
+                                ? "اكتب كلمة أو آية أو استخدم الميكروفون."
+                                : "Type a word, a verse, or use the microphone."}
                           </p>
                           <div className="search-pro__suggestions">
                             {suggestionItems.map((suggestion) => (
                               <button
-                                key={`${suggestion.mode}-${suggestion.value}`}
+                                key={suggestion.value}
                                 type="button"
                                 onClick={() => applySuggestion(suggestion)}
                               >
-                                <small>{suggestion.label}</small>
                                 <strong>{suggestion.value}</strong>
                               </button>
                             ))}
@@ -557,55 +480,22 @@ export default function SearchModal() {
                       </div>
                     )}
 
-                    {!isDuaMode && filteredResults.length === 0 && !loading && query && (
+                    {activeResultCount === 0 && !loading && query && (
                       <div className="search-pro__no-results">
                         <Search size={16} />
                         <strong>{t("search.noResults", lang)}</strong>
                       </div>
                     )}
 
-                    {isDuaMode && duaResults.length === 0 && query && (
-                      <div className="search-pro__no-results">
-                        <Search size={16} />
-                        <strong>{t("search.noResults", lang)}</strong>
-                      </div>
-                    )}
-
-                    {!isDuaMode && filteredResults.length > 0 && (
+                    {activeResultCount > 0 && (
                       <div className="search-pro__results-head">
                         <strong>
                           {lang === "fr"
-                            ? "Résultats les plus proches"
+                            ? `${activeResultCount} résultat${activeResultCount > 1 ? "s" : ""}`
                             : lang === "ar"
-                              ? "أقرب النتائج"
-                              : "Closest matches"}
+                              ? `${activeResultCount} نتيجة`
+                              : `${activeResultCount} result${activeResultCount > 1 ? "s" : ""}`}
                         </strong>
-                        <span>
-                          {lang === "fr"
-                            ? "Ouvrir pour continuer la lecture"
-                            : lang === "ar"
-                              ? "افتح لمتابعة القراءة"
-                              : "Open to continue reading"}
-                        </span>
-                      </div>
-                    )}
-
-                    {isDuaMode && duaResults.length > 0 && (
-                      <div className="search-pro__results-head">
-                        <strong>
-                          {lang === "fr"
-                            ? "Invocations coraniques"
-                            : lang === "ar"
-                              ? "الأدعية القرآنية"
-                              : "Quranic supplications"}
-                        </strong>
-                        <span>
-                          {lang === "fr"
-                            ? "Ouvrir le verset correspondant"
-                            : lang === "ar"
-                              ? "افتح الآية المقابلة"
-                              : "Open the corresponding verse"}
-                        </span>
                       </div>
                     )}
 
@@ -621,62 +511,7 @@ export default function SearchModal() {
                             : "Search results"
                       }
                     >
-                      {isDuaMode
-                        ? duaResults.map((dua) => {
-                            const surahMeta = getSurah(dua.surah);
-                            const translatedName =
-                              lang === "ar"
-                                ? surahMeta?.ar
-                                : lang === "fr"
-                                  ? surahMeta?.fr || surahMeta?.en
-                                  : surahMeta?.en;
-                            const translation =
-                              lang === "ar"
-                                ? dua.ar || dua.fr
-                                : lang === "en"
-                                  ? dua.en
-                                  : dua.fr;
-                            return (
-                              <button
-                                key={dua.id}
-                                data-testid="search-result"
-                                data-surah={dua.surah}
-                                data-ayah={dua.ayah}
-                                className="search-pro__result search-pro__result--dua"
-                                onClick={() => goToAyah(dua.surah, dua.ayah)}
-                              >
-                                <span className="search-pro__result-number">
-                                  <Heart size={13} aria-hidden="true" />
-                                </span>
-                                <span className="search-pro__result-body">
-                                  <span className="search-pro__result-top">
-                                    <span className="search-pro__result-ref">
-                                      <strong>{surahMeta?.ar}</strong>
-                                      <span>{translatedName}</span>
-                                      <b>:{lang === "ar" ? toAr(dua.ayah) : dua.ayah}</b>
-                                    </span>
-                                  </span>
-                                  <span className="search-pro__arabic" dir="rtl">
-                                    {dua.arabic}
-                                  </span>
-                                  {translation && (
-                                    <span className="search-pro__translation">
-                                      {translation}
-                                    </span>
-                                  )}
-                                  <span className="search-pro__open">
-                                    <ExternalLink size={12} />
-                                    {lang === "fr"
-                                      ? "Ouvrir dans la lecture"
-                                      : lang === "ar"
-                                        ? "فتح في القراءة"
-                                        : "Open in reading"}
-                                  </span>
-                                </span>
-                              </button>
-                            );
-                          })
-                        : filteredResults.map((result, index) => {
+                      {filteredResults.map((result, index) => {
                         const surahNumber =
                           result?.surah?.number || result?.surah || 1;
                         const ayahNumber =
@@ -732,10 +567,7 @@ export default function SearchModal() {
                                 <span className="search-pro__result-tags">
                                   <small>{revelationLabel}</small>
                                   <small>
-                                    Juz{" "}
-                                    {lang === "ar"
-                                      ? toAr(resultJuz)
-                                      : resultJuz}
+                                    Juz {lang === "ar" ? toAr(resultJuz) : resultJuz}
                                   </small>
                                 </span>
                               </span>
@@ -760,6 +592,60 @@ export default function SearchModal() {
                           </button>
                         );
                       })}
+                      {visibleDuaResults.map((dua) => {
+                            const surahMeta = getSurah(dua.surah);
+                            const translatedName =
+                              lang === "ar"
+                                ? surahMeta?.ar
+                                : lang === "fr"
+                                  ? surahMeta?.fr || surahMeta?.en
+                                  : surahMeta?.en;
+                            const translation =
+                              lang === "ar"
+                                ? dua.ar || dua.fr
+                                : lang === "en"
+                                  ? dua.en
+                                  : dua.fr;
+                            return (
+                              <button
+                                key={dua.id}
+                                data-testid="search-result"
+                                data-surah={dua.surah}
+                                data-ayah={dua.ayah}
+                                className="search-pro__result search-pro__result--dua"
+                                onClick={() => goToAyah(dua.surah, dua.ayah)}
+                              >
+                                <span className="search-pro__result-number">
+                                  <Heart size={13} aria-hidden="true" />
+                                </span>
+                                <span className="search-pro__result-body">
+                                  <span className="search-pro__result-top">
+                                    <span className="search-pro__result-ref">
+                                      <strong>{surahMeta?.ar}</strong>
+                                      <span>{translatedName}</span>
+                                      <b>:{lang === "ar" ? toAr(dua.ayah) : dua.ayah}</b>
+                                    </span>
+                                  </span>
+                                  <span className="search-pro__arabic" dir="rtl">
+                                    {dua.arabic}
+                                  </span>
+                                  {translation && (
+                                    <span className="search-pro__translation">
+                                      {translation}
+                                    </span>
+                                  )}
+                                  <span className="search-pro__open">
+                                    <ExternalLink size={12} />
+                                    {lang === "fr"
+                                      ? "Ouvrir dans la lecture"
+                                      : lang === "ar"
+                                        ? "فتح في القراءة"
+                                        : "Open in reading"}
+                                  </span>
+                                </span>
+                              </button>
+                            );
+                          })}
                     </div>
                   </section>
                 </div>

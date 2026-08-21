@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   BookOpenText,
   BookOpen,
@@ -6,8 +6,6 @@ import {
   Database,
   Headphones,
   Home,
-  LibraryBig,
-  ListOrdered,
   Search,
   Scale,
   ShieldCheck,
@@ -17,8 +15,16 @@ import { t } from "../i18n";
 import "../styles/domains/footer-refonte.css";
 
 export default function Footer() {
-  const { dispatch, set } = useAppActions();
+  const { set } = useAppActions();
   const { lang } = useAppLocale();
+  const [verseIndex, setVerseIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setVerseIndex((current) => (current + 1) % FOOTER_VERSES.length);
+    }, 30_000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const scrollTop = () => {
     const main = document.querySelector("#main-content");
@@ -45,7 +51,6 @@ export default function Footer() {
     { key: "read",      Icon: BookOpen,  label: lang === "fr" ? "Lire" : lang === "ar" ? "اقرأ" : "Read", onClick: openReader },
     { key: "search",    Icon: Search,    label: t("nav.search", lang),     onClick: () => set({ searchOpen: true }) },
     { key: "audio",     Icon: Headphones,label: lang === "fr" ? "Écouter" : lang === "ar" ? "استمع" : "Listen", onClick: openAudio },
-    { key: "library",   Icon: LibraryBig,label: lang === "fr" ? "Bibliothèque" : lang === "ar" ? "المكتبة" : "Library", onClick: () => dispatch({ type: "TOGGLE_LIBRARY" }) },
   ];
   const legalLabels = {
     fr: {
@@ -85,25 +90,28 @@ export default function Footer() {
     set({ legalPage: page, showHome: false, showDuas: false });
     scrollTop();
   };
+  const currentVerse = FOOTER_VERSES[verseIndex];
+  const verseTranslation = lang === "en" ? currentVerse.en : currentVerse.fr;
+  const verseReference = lang === "ar"
+    ? `${currentVerse.surahAr} · ${currentVerse.refAr}`
+    : `${lang === "en" ? currentVerse.surahEn : currentVerse.surahFr} · ${currentVerse.ref}`;
 
   return (
     <footer className="mp-footer-v2" role="contentinfo">
       <div className="mp-footer-v2__shell">
-        <div className="mp-footer-v2__verse">
+        <div className="mp-footer-v2__verse" aria-label={verseReference}>
           <span className="mp-footer-v2__verse-icon" aria-hidden="true">
             <BookOpenText size={14} />
           </span>
-          <p
-            className="mp-footer-v2__verse-text"
-            dir="rtl"
-            lang="ar"
-            aria-label={t("footer.verseRef", lang)}
-          >
-            {"وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ"}
-          </p>
-          <span className="mp-footer-v2__verse-ref">
-            {t("footer.verseRef", lang)}
-          </span>
+          <div className="mp-footer-v2__verse-copy" key={currentVerse.ref}>
+            <p className="mp-footer-v2__verse-text" dir="rtl" lang="ar">
+              {currentVerse.ar}
+            </p>
+            {lang !== "ar" ? (
+              <p className="mp-footer-v2__verse-translation">{verseTranslation}</p>
+            ) : null}
+          </div>
+          <span className="mp-footer-v2__verse-ref">{verseReference}</span>
         </div>
 
         <nav
@@ -129,8 +137,8 @@ export default function Footer() {
 
         <div className="mp-footer-v2__directory">
           <div className="mp-footer-v2__directory-copy">
-            <span>{lang === "ar" ? "استكشف" : lang === "en" ? "Explore" : "Explorer"}</span>
-            <strong>{lang === "ar" ? "القراءة والمشروع" : lang === "en" ? "Reading & project" : "Lecture & projet"}</strong>
+            <span>MushafPlus</span>
+            <strong>{lang === "ar" ? "اقرأ، استمع وتدبّر" : lang === "en" ? "Read, listen, reflect" : "Lire, écouter, comprendre"}</strong>
           </div>
           <nav className="mp-footer-v2__legal" aria-label={legalLabels.legal}>
             {pageItems.map(({ key, Icon }) => (
@@ -154,3 +162,46 @@ export default function Footer() {
     </footer>
   );
 }
+
+const FOOTER_VERSES = [
+  {
+    ref: "51:56",
+    refAr: "٥١:٥٦",
+    surahFr: "Adh-Dhariyat",
+    surahEn: "Adh-Dhariyat",
+    surahAr: "الذاريات",
+    ar: "وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ",
+    fr: "Je n’ai créé les djinns et les hommes que pour qu’ils M’adorent.",
+    en: "I did not create jinn and humans except to worship Me.",
+  },
+  {
+    ref: "94:5",
+    refAr: "٩٤:٥",
+    surahFr: "Ash-Sharh",
+    surahEn: "Ash-Sharh",
+    surahAr: "الشرح",
+    ar: "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا",
+    fr: "À côté de la difficulté est, certes, une facilité.",
+    en: "Surely with hardship comes ease.",
+  },
+  {
+    ref: "13:28",
+    refAr: "١٣:٢٨",
+    surahFr: "Ar-Ra‘d",
+    surahEn: "Ar-Ra'd",
+    surahAr: "الرعد",
+    ar: "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ",
+    fr: "C’est par l’évocation d’Allah que les cœurs se tranquillisent.",
+    en: "Surely in the remembrance of Allah do hearts find comfort.",
+  },
+  {
+    ref: "2:286",
+    refAr: "٢:٢٨٦",
+    surahFr: "Al-Baqara",
+    surahEn: "Al-Baqarah",
+    surahAr: "البقرة",
+    ar: "لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا",
+    fr: "Allah n’impose à aucune âme une charge supérieure à sa capacité.",
+    en: "Allah does not burden any soul with more than it can bear.",
+  },
+];

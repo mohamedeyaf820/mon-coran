@@ -64,29 +64,32 @@ export function getArabicReadingLineHeight({
   mushafLayout = "list",
   riwaya = "hafs",
 }) {
-  if (displayMode === "page") return 3.05;
-
   const isContinuousMushaf = mushafLayout === "mushaf";
   const normalizedFont = String(fontFamily || "").toLowerCase();
 
+  // Page, Juz and Surah routes all use the same live Unicode renderer. Keep
+  // the metric attached to the selected face instead of the route: a route
+  // specific value makes the same ayah jump when the reader changes mode.
+  void displayMode;
+
   if (normalizedFont.includes("indopak")) {
-    return isContinuousMushaf ? 1.85 : 2.16;
+    return isContinuousMushaf ? 1.76 : 1.9;
   }
 
   if (riwaya === "warsh") {
-    return isContinuousMushaf ? 1.88 : 2.12;
+    return isContinuousMushaf ? 1.72 : 1.82;
   }
 
   if (normalizedFont.includes("scheherazade")) {
-    return isContinuousMushaf ? 1.88 : 2.08;
+    return isContinuousMushaf ? 1.72 : 1.84;
   }
 
   if (
     normalizedFont.includes("amiri") ||
     normalizedFont.includes("noto-naskh")
   ) {
-    return isContinuousMushaf ? 1.85 : 2;
+    return isContinuousMushaf ? 1.68 : 1.78;
   }
 
-  return isContinuousMushaf ? 1.86 : 2.04;
+  return isContinuousMushaf ? 1.64 : 1.76;
 }

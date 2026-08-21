@@ -31,7 +31,6 @@ import useQuranDisplayScroll from "./QuranDisplay/useQuranDisplayScroll";
 import useQuranDisplayView from "./QuranDisplay/useQuranDisplayView";
 import useQuranTranslations from "./QuranDisplay/useQuranTranslations";
 import AyahSkeleton from "./Quran/AyahSkeleton";
-import TajweedLegend from "./Quran/TajweedLegend";
 import { Icon } from "./ui/icon";
 
 const FullscreenMushafOverlay = lazy(
@@ -444,7 +443,6 @@ export default function QuranDisplay() {
         aria-busy={readerBusy}
         {...view.touchHandlers}
       >
-        {showTajwid ? <TajweedLegend lang={lang} riwaya={riwaya} /> : null}
         {displayMode === "surah" ? (
           <SurahMode
             activeAyah={activeAyah}

@@ -8,6 +8,89 @@
   --space-10: max(2.75rem, 44px);
 }
 
+/* iOS/WebKit Quran shaping guard.
+   All browsers on iPhone/iPad use WebKit, including Chrome and Brave. Keep
+   the complete ayah in one RTL shaping context and let it wrap naturally. */
+html body #root .app-root[data-view="reading"]
+  .quran-display--platform .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
+  /* Ayahs are keyboard-accessible through role="button". The generic button
+     reset makes every role=button an inline-flex container, which blockifies
+     the Tajwid span and lets WebKit rearrange Arabic fragments. Keep the
+     interactive semantics, but restore a normal typographic formatting
+     context so the Uthmani text shapes and wraps as one RTL sentence. */
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  justify-content: normal !important;
+  align-items: normal !important;
+  align-content: normal !important;
+  flex-flow: initial !important;
+  direction: rtl !important;
+  unicode-bidi: isolate !important;
+  text-align: right !important;
+  text-align-last: auto !important;
+  white-space: normal !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  line-break: auto !important;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  font-synthesis: none !important;
+  font-variant-ligatures: common-ligatures contextual !important;
+}
+
+html body #root .app-root[data-view="reading"]
+  .quran-display--platform .quran-mode-pane:not(.quran-mode-pane--mushaf)
+  :is(.qc-ayah-text-ar, .verse-text, .quran-text, .quran-arabic-text, .rd-arabic, .mushaf-container)
+  :is(.quran-canonical-text, .quran-tajwid-text, .wbw-container, .tajwid-rule-segment, [data-tajwid]) {
+  display: inline !important;
+  direction: rtl !important;
+  unicode-bidi: isolate !important;
+  white-space: normal !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  border-radius: 0;
+  box-shadow: none;
+  transition: none;
+  background: transparent !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  letter-spacing: normal;
+  word-spacing: normal;
+  font-synthesis: none !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+html body #root .app-root[data-view="reading"]
+  .quran-display--platform .qc-ayah-text-ar
+  :is(.wbw-word, .warsh-unicode-word) {
+  display: inline-block !important;
+  width: auto !important;
+  max-width: none !important;
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+  line-break: auto !important;
+  direction: rtl !important;
+  unicode-bidi: isolate !important;
+  font: inherit !important;
+  letter-spacing: inherit;
+}
+
+/* content-visibility still clips complex Arabic glyph bounds on some iOS
+   WebKit releases. The reader is already windowed, so disabling it only on
+   touch-sized WebKit screens keeps correctness without rendering 286 cards. */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 1024px) {
+    html body #root .app-root[data-view="reading"]
+      .quran-display--platform :is(.qc-list-card, .rd-ayah) {
+      content-visibility: visible;
+      contain: none;
+    }
+  }
+}
+
 html body .app-root {
   --mp-device-touch: 44px;
   --mp-device-icon: clamp(0.75rem, 0.72rem + 0.12vw, 0.88rem);
@@ -30,12 +113,12 @@ html body .app-root[data-view="reading"] .quran-display--platform
   min-width: var(--mp-verse) !important;
   height: var(--mp-verse) !important;
   min-height: var(--mp-verse) !important;
-  padding: 0 !important;
-  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border) 76%) !important;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border) 76%);
   background: color-mix(in srgb, var(--bg-card) 88%, var(--primary) 12%) !important;
   color: color-mix(in srgb, var(--text-primary) 84%, var(--primary) 16%) !important;
-  opacity: 1 !important;
-  visibility: visible !important;
+  opacity: 1;
+  visibility: visible;
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform
@@ -46,12 +129,12 @@ html body .app-root[data-view="reading"] .quran-display--platform
   height: 0.75rem !important;
   color: currentColor !important;
   stroke: currentColor !important;
-  opacity: 1 !important;
+  opacity: 1;
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform
   .qc-list-card__top .ayah-actions button:hover {
-  border-color: color-mix(in srgb, var(--primary) 58%, var(--border) 42%) !important;
+  border-color: color-mix(in srgb, var(--primary) 58%, var(--border) 42%);
   background: var(--primary) !important;
   color: #fff !important;
 }
@@ -60,7 +143,7 @@ html body .app-root[data-view="reading"] .quran-display--platform
   .qc-list-card:is(.is-playing, .is-active) .ayah-action--play,
 html body .app-root[data-view="reading"] .quran-display--platform
   .qc-list-card__top .ayah-action--bookmark.text-\[var\(--primary\)\] {
-  border-color: var(--primary) !important;
+  border-color: var(--primary);
   background: var(--primary) !important;
   color: #fff !important;
 }
@@ -93,9 +176,9 @@ body,
 }
 
 html[data-theme] body .app-root[data-view="home"] .reciter-card {
-  border-color: var(--theme-border) !important;
+  border-color: var(--theme-border);
   background: var(--theme-surface) !important;
-  box-shadow: var(--theme-shadow-soft) !important;
+  box-shadow: var(--theme-shadow-soft);
 }
 
 /* Reciter portraits are fixed square media, never full-card backgrounds. The
@@ -103,8 +186,8 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
    prevents large source portraits from covering the reciter identity. */
 html body .app-root[data-view="home"] .reciter-card__media {
   position: relative !important;
-  overflow: hidden !important;
-  aspect-ratio: 1 !important;
+  overflow: hidden;
+  aspect-ratio: 1;
   isolation: isolate;
   flex: 0 0 auto !important;
   background: color-mix(in srgb, var(--theme-surface-muted, var(--bg-secondary)) 86%, var(--primary) 14%) !important;
@@ -116,11 +199,11 @@ html body .app-root[data-view="home"] .reciter-card__media > :is(img, span) {
   width: 100% !important;
   max-width: none !important;
   height: 100% !important;
-  border-radius: inherit !important;
+  border-radius: inherit;
 }
 
 html body .app-root[data-view="home"] .reciter-card__media > img {
-  object-fit: cover !important;
+  object-fit: cover;
   transform: scale(1.01);
   transition: transform 180ms ease, opacity 180ms ease;
 }
@@ -150,7 +233,11 @@ html body .app-root[data-view="home"] .reciter-card__copy {
   }
 
   html body .app-root .mp-player-options-trigger.mp-player-options-trigger {
+    flex: 0 0 var(--mp-device-touch) !important;
+    width: var(--mp-device-touch) !important;
     min-width: var(--mp-device-touch) !important;
+    max-width: var(--mp-device-touch) !important;
+    height: var(--mp-device-touch) !important;
     min-height: var(--mp-device-touch) !important;
   }
 
@@ -166,8 +253,12 @@ html body .app-root[data-view="home"] .reciter-card__copy {
 }
 
 @media (max-width: 640px) {
+  html body .app-root[data-view="reading"] {
+    --mp-effective-mushaf-size: clamp(18px, var(--qd-reading-font-size, 42px), 30px);
+  }
+
   .app-root[data-view="reading"] .app-view-shell {
-    padding-inline: max(0.25rem, env(safe-area-inset-left)) max(0.25rem, env(safe-area-inset-right)) !important;
+    padding-inline: max(0.25rem, env(safe-area-inset-left)) max(0.25rem, env(safe-area-inset-right));
   }
 
   html body .app-root[data-view="reading"] .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
@@ -187,8 +278,8 @@ html body .app-root[data-view="home"] .reciter-card__copy {
     min-height: var(--mp-verse);
     flex-wrap: nowrap !important;
     align-items: center !important;
-    gap: 0.4rem !important;
-    margin-bottom: 0.25rem !important;
+    gap: 0.4rem;
+    margin-bottom: 0.25rem;
   }
 
   html body .app-root[data-view="reading"] .qc-list-card__start {
@@ -198,7 +289,7 @@ html body .app-root[data-view="home"] .reciter-card__copy {
   html body .app-root[data-view="reading"] .qc-list-card__end {
     flex: 0 0 auto !important;
     max-width: none !important;
-    overflow: visible !important;
+    overflow: visible;
   }
 
   html body .app-root[data-view="reading"] .qc-list-card__top :is(.ayah-action--copy, .ayah-action--share, .ayah-action--note) {
@@ -207,18 +298,18 @@ html body .app-root[data-view="home"] .reciter-card__copy {
 
   html body .app-root[data-view="reading"] .qc-list-card .qc-ayah-text-ar {
     min-height: 0 !important;
-    margin-bottom: 0.55rem !important;
-    padding: 0.25rem 0.35rem !important;
+    margin-bottom: 0.55rem;
+    padding: 0.25rem 0.35rem;
   }
 
   html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {
     padding: var(--qd-list-card-padding-block, 0.65rem)
-      var(--qd-list-card-padding-inline, 0.72rem) !important;
+      var(--qd-list-card-padding-inline, 0.72rem);
   }
 
   html body .app-root[data-view="reading"] .qc-list-card__study {
-    margin-top: 0.5rem !important;
-    padding-top: 0.5rem !important;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
   }
 
 }
@@ -249,12 +340,12 @@ html body .app-root[data-view="home"] .reciter-card__copy {
   }
 
   html body .app-root[data-view="reading"] .qc-list-card .qc-ayah-text-ar {
-    margin-bottom: clamp(0.7rem, 1.2vw, 1rem) !important;
+    margin-bottom: clamp(0.7rem, 1.2vw, 1rem);
   }
 
   html body .app-root[data-view="reading"] .qc-list-card__study {
-    margin-top: clamp(0.65rem, 1vw, 0.9rem) !important;
-    padding-top: 0.7rem !important;
+    margin-top: clamp(0.65rem, 1vw, 0.9rem);
+    padding-top: 0.7rem;
   }
 }
 
@@ -268,13 +359,13 @@ html body .app-root[data-view="home"] .reciter-card__copy {
   .app-root .duas-page {
     width: 100% !important;
     max-width: 100% !important;
-    padding: 0.65rem 0.35rem calc(var(--player-h, 96px) + 2rem) !important;
-    gap: 1rem !important;
+    padding: 0.65rem 0.35rem calc(var(--player-h, 96px) + 2rem);
+    gap: 1rem;
   }
 
   .app-root .duas-hero {
-    padding: 1rem !important;
-    gap: 1rem !important;
+    padding: 1rem;
+    gap: 1rem;
   }
 
   .app-root .duas-title {
@@ -339,11 +430,11 @@ html body .app-root[data-view="home"] .reciter-card__copy {
 
 @media (max-width: 380px) {
   .app-root .app-main-shell {
-    padding-inline: max(0.2rem, env(safe-area-inset-left)) max(0.2rem, env(safe-area-inset-right)) !important;
+    padding-inline: max(0.2rem, env(safe-area-inset-left)) max(0.2rem, env(safe-area-inset-right));
   }
 
   .app-root .settings-drawer__content {
-    padding-inline: 0.75rem !important;
+    padding-inline: 0.75rem;
   }
 }
 
@@ -354,7 +445,7 @@ html body .app-root[data-view="home"] .reciter-card__copy {
 
   .app-root .home-hero-shell,
   .app-root .duas-hero {
-    padding-block: 0.75rem !important;
+    padding-block: 0.75rem;
   }
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock {
@@ -376,7 +467,7 @@ html body .app-root[data-view="home"] .reciter-card__copy {
 
 .app-root .legal-page h1,
 html body .settings-drawer__title {
-  letter-spacing: 0 !important;
+  letter-spacing: 0;
 }
 
 @media (max-width: 640px) {
@@ -388,23 +479,23 @@ html body .settings-drawer__title {
   html body .app-root[data-view="home"] .home-content-toolbar [role="tab"] {
     flex: 0 0 auto !important;
     min-width: max-content !important;
-    overflow: visible !important;
+    overflow: visible;
     scroll-snap-align: start;
   }
 
   html body .app-root[data-view="home"] .reciter-card {
     grid-template-columns: minmax(0, 1fr) auto !important;
-    gap: 0.42rem !important;
+    gap: 0.42rem;
     min-height: 4.65rem !important;
-    padding: 0.42rem !important;
-    border-radius: 13px !important;
+    padding: 0.42rem;
+    border-radius: 13px;
   }
 
   html body .app-root[data-view="home"] .reciter-card__main {
     grid-template-columns: 2.65rem minmax(0, 1fr) !important;
-    gap: 0.5rem !important;
+    gap: 0.5rem;
     min-width: 0 !important;
-    padding: 0 !important;
+    padding: 0;
   }
 
   html body .app-root[data-view="home"] .reciter-card__main > svg {
@@ -414,7 +505,7 @@ html body .settings-drawer__title {
   html body .app-root[data-view="home"] .reciter-card__media {
     width: 2.65rem !important;
     height: 2.65rem !important;
-    border-radius: 50% !important;
+    border-radius: 50%;
   }
 
   html body .app-root[data-view="home"] .reciter-card__actions {
@@ -422,8 +513,8 @@ html body .settings-drawer__title {
     min-width: 0 !important;
     flex-direction: row !important;
     justify-content: center !important;
-    gap: 0.25rem !important;
-    padding: 0 0 0 0.42rem !important;
+    gap: 0.25rem;
+    padding: 0 0 0 0.42rem;
   }
 
   html body .app-root[data-view="home"] .reciter-card__icon {
@@ -441,8 +532,8 @@ html body .settings-drawer__title {
   }
 
   html body .app-root[data-view="home"] .reciter-card__meta {
-    gap: 0.24rem !important;
-    margin-top: 0.2rem !important;
+    gap: 0.24rem;
+    margin-top: 0.2rem;
     font-size: 0.6rem !important;
   }
 
@@ -453,7 +544,7 @@ html body .settings-drawer__title {
   html body .app-root[data-view="home"] .reciter-card__playing {
     width: 0.88rem !important;
     height: 0.88rem !important;
-    padding: 0.15rem !important;
+    padding: 0.15rem;
   }
 
   html body #root .app-root .sb-wrapper .sidebar-tab-trigger,
@@ -479,7 +570,7 @@ html body .settings-drawer__title {
 
 @media (min-width: 641px) and (max-width: 1024px) {
   html body .app-root[data-view="reading"] {
-    --mp-effective-mushaf-size: var(--qd-reading-font-size, 34px);
+    --mp-effective-mushaf-size: clamp(18px, var(--qd-reading-font-size, 42px), 38px);
   }
 
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
@@ -493,7 +584,7 @@ html body .settings-drawer__title {
 
 @media (min-width: 1025px) {
   html body .app-root[data-view="reading"] {
-    --mp-effective-mushaf-size: var(--qd-reading-font-size, 42px);
+    --mp-effective-mushaf-size: clamp(18px, var(--qd-reading-font-size, 42px), 48px);
   }
 
   html body #root .app-root[data-view="reading"] .quran-display--platform:not(.quran-display--mushaf)
@@ -516,19 +607,65 @@ html body .settings-drawer__title {
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
-  --cpv-font-size: var(--qd-reading-font-size, 34px) !important;
-  font-size: var(--qd-reading-font-size, 34px) !important;
+  --cpv-font-size: var(--mp-effective-mushaf-size, var(--qd-reading-font-size, 34px)) !important;
+  font-size: var(--mp-effective-mushaf-size, var(--qd-reading-font-size, 34px)) !important;
 }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container
-  :is(.quran-verse-inline, .quran-arabic-text, .verse-text, .verse-text *) {
+  :is(.quran-verse-inline, .quran-arabic-text, .verse-text, .quran-canonical-text, .quran-tajwid-text, .tajwid-rule-segment) {
   font-size: inherit !important;
-  word-spacing: 0 !important;
+  word-spacing: 0;
+}
+
+/* A Mushaf page is one continuous Arabic paragraph.  Do not reuse the
+   WebKit list-card guard above here: making each ayah a full-width block
+   introduces a paragraph break, separates its marker and destroys the
+   traditional Mushaf rhythm. */
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
+  display: block !important;
+  direction: rtl !important;
+  unicode-bidi: isolate !important;
+  text-align: justify !important;
+  text-align-last: right !important;
+  line-height: var(--quran-line-height, 1.86) !important;
+  white-space: normal !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container
+  :is(.quran-verse-inline, .qc-ayah-text-ar, .quran-arabic-text, .verse-text) {
+  display: inline !important;
+  width: auto !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  direction: rtl !important;
+  unicode-bidi: normal !important;
+  text-align: inherit !important;
+  text-align-last: inherit !important;
+  line-height: inherit !important;
+  white-space: normal !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container
+  :is(.quran-canonical-text, .quran-tajwid-text, .tajwid-rule-segment, [data-tajwid]) {
+  display: inline !important;
+  direction: rtl !important;
+  unicode-bidi: normal !important;
+  font: inherit !important;
+  white-space: normal !important;
 }
 
 html body .app-root > .mp-header {
-  padding: 0 !important;
+  padding: 0;
 }
 
 html body .app-root > .mp-header .mp-header__bar {
@@ -538,23 +675,23 @@ html body .app-root > .mp-header .mp-header__bar {
   min-height: 64px !important;
   height: 64px !important;
   padding-inline: max(clamp(0.65rem, 1.8vw, 1.5rem), env(safe-area-inset-left))
-    max(clamp(0.65rem, 1.8vw, 1.5rem), env(safe-area-inset-right)) !important;
-  gap: var(--mp-header-gap) !important;
+    max(clamp(0.65rem, 1.8vw, 1.5rem), env(safe-area-inset-right));
+  gap: var(--mp-header-gap);
   border-bottom-color: color-mix(in srgb, var(--border) 82%, transparent) !important;
   box-shadow: 0 1px 0 color-mix(in srgb, var(--text-primary) 4%, transparent),
-    0 8px 24px color-mix(in srgb, #000 5%, transparent) !important;
+    0 8px 24px color-mix(in srgb, #000 5%, transparent);
 }
 
 html body .app-root > .mp-header .mp-header__brand-row,
 html body .app-root > .mp-header .mp-header__actions {
   min-width: 0 !important;
-  gap: 0.3rem !important;
+  gap: 0.3rem;
 }
 
 html body .app-root > .mp-header .mp-header__brand {
   position: relative;
-  gap: 0.55rem !important;
-  padding: 0.2rem 0.45rem !important;
+  gap: 0.55rem;
+  padding: 0.2rem 0.45rem;
 }
 
 html body .app-root > .mp-header .mp-header__home-badge {
@@ -564,7 +701,7 @@ html body .app-root > .mp-header .mp-header__home-badge {
 html body .app-root > .mp-header .mp-header__logo {
   width: 2.15rem !important;
   height: 2.15rem !important;
-  border-radius: 0.75rem !important;
+  border-radius: 0.75rem;
   box-shadow: 0 4px 14px color-mix(in srgb, var(--primary) 14%, transparent);
 }
 
@@ -572,7 +709,7 @@ html body .app-root > .mp-header .mp-header__brand-text {
   display: inline !important;
   font-size: clamp(1rem, 0.92rem + 0.22vw, 1.16rem) !important;
   font-weight: 800 !important;
-  letter-spacing: -0.035em !important;
+  letter-spacing: -0.035em;
 }
 
 html body .app-root > .mp-header .mp-header__brand-accent {
@@ -585,9 +722,9 @@ html body .app-root > .mp-header
   min-width: var(--mp-header-control) !important;
   height: var(--mp-header-control) !important;
   min-height: var(--mp-header-control) !important;
-  padding: 0 !important;
-  border-radius: 0.85rem !important;
-  border-color: color-mix(in srgb, var(--primary) 14%, var(--border)) !important;
+  padding: 0;
+  border-radius: 0.85rem;
+  border-color: color-mix(in srgb, var(--primary) 14%, var(--border));
   background: color-mix(in srgb, var(--bg-card) 88%, var(--primary) 5%) !important;
 }
 
@@ -604,16 +741,15 @@ html body .app-root[data-view="reading"] > .mp-header .mp-header__search {
   --mp-header-icon: 18px;
   --mp-device-icon: 18px;
   --mp-action-icon-max: 18px;
-  border: 1px solid color-mix(in srgb, var(--primary) 34%, var(--border)) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 34%, var(--border));
   background: color-mix(in srgb, var(--bg-card) 86%, var(--primary) 14%) !important;
   color: var(--primary) !important;
-  box-shadow:
-    0 5px 14px color-mix(in srgb, var(--primary) 10%, transparent),
-    inset 0 1px 0 color-mix(in srgb, #fff 34%, transparent) !important;
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--primary) 10%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 34%, transparent);
 }
 
 html body .app-root[data-view="reading"] > .mp-header .mp-header__search:hover {
-  border-color: color-mix(in srgb, var(--primary) 56%, var(--border)) !important;
+  border-color: color-mix(in srgb, var(--primary) 56%, var(--border));
   background: color-mix(in srgb, var(--bg-card) 76%, var(--primary) 24%) !important;
   color: var(--primary-dark, var(--primary)) !important;
   transform: translateY(-1px);
@@ -629,8 +765,8 @@ html body .app-root > .mp-header .mp-header__riwaya-toggle {
   display: inline-flex !important;
   width: auto !important;
   min-width: 4.25rem !important;
-  padding-inline: 0.8rem !important;
-  border-color: color-mix(in srgb, var(--primary) 34%, var(--border)) !important;
+  padding-inline: 0.8rem;
+  border-color: color-mix(in srgb, var(--primary) 34%, var(--border));
   background: color-mix(in srgb, var(--primary) 10%, var(--bg-card)) !important;
   color: var(--primary) !important;
 }
@@ -639,8 +775,8 @@ html body .app-root > .mp-header .mp-header__riwaya-toggle span {
   display: inline !important;
   font-size: 0.76rem !important;
   font-weight: 800 !important;
-  letter-spacing: 0.01em !important;
-  text-transform: none !important;
+  letter-spacing: 0.01em;
+  text-transform: none;
 }
 
 html body .app-root > .mp-header .mp-header__nav {
@@ -649,12 +785,12 @@ html body .app-root > .mp-header .mp-header__nav {
   width: max-content !important;
   max-width: 100% !important;
   min-width: 0 !important;
-  gap: 0.28rem !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
+  gap: 0.28rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   background: transparent !important;
-  box-shadow: none !important;
+  box-shadow: none;
 }
 
 html body .app-root > .mp-header .mp-header__nav-arrow {
@@ -662,7 +798,7 @@ html body .app-root > .mp-header .mp-header__nav-arrow {
   min-width: 42px !important;
   height: 42px !important;
   min-height: 42px !important;
-  border-radius: 0.8rem !important;
+  border-radius: 0.8rem;
   background: transparent !important;
 }
 
@@ -674,19 +810,19 @@ html body .app-root > .mp-header .mp-header__title-btn {
   max-height: 42px !important;
   min-height: 42px !important;
   justify-content: center !important;
-  padding: 0.2rem 0.5rem !important;
-  border-radius: 0.9rem !important;
-  border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border)) !important;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border));
   background: color-mix(in srgb, var(--bg-card) 95%, var(--primary) 5%) !important;
   box-shadow: 0 4px 14px color-mix(in srgb, #000 6%, transparent),
-    inset 0 1px 0 color-mix(in srgb, #fff 24%, transparent) !important;
-  overflow: hidden !important;
+    inset 0 1px 0 color-mix(in srgb, #fff 24%, transparent);
+  overflow: hidden;
 }
 
 html body .app-root > .mp-header .mp-header__title {
   font-size: clamp(0.88rem, 0.82rem + 0.2vw, 1rem) !important;
   font-weight: 820 !important;
-  letter-spacing: -0.018em !important;
+  letter-spacing: -0.018em;
 }
 
 html body .app-root > .mp-header .mp-header__title-stack,
@@ -695,7 +831,7 @@ html body .app-root > .mp-header .mp-header__title-cycle-viewport {
   height: 26px !important;
   max-height: 26px !important;
   line-height: 26px !important;
-  overflow: hidden !important;
+  overflow: hidden;
 }
 
 html body .app-root > .mp-header .mp-header__title-sub-track {
@@ -711,8 +847,8 @@ html body .app-root > .mp-header .mp-header__title-sub {
 
 html body .app-root > .mp-header
   :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__nav-arrow, .mp-header__title-btn):focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--primary) 75%, #fff) !important;
-  outline-offset: 2px !important;
+  outline: 2px solid color-mix(in srgb, var(--primary) 75%, #fff);
+  outline-offset: 2px;
 }
 
 @media (min-width: 1025px) {
@@ -727,7 +863,7 @@ html body .app-root > .mp-header
 
   html body .app-root > .mp-header .mp-header__center {
     justify-self: center;
-    overflow: visible !important;
+    overflow: visible;
   }
 
   html body .app-root > .mp-header .mp-header__actions {
@@ -770,9 +906,43 @@ html body .app-root > .mp-header
   }
 }
 
-@media (max-width: 640px) {
+/* Compact tablets and split-screen iPads still need phone-like density. */
+@media (min-width: 641px) and (max-width: 720px) {
+  html body .app-root > .mp-header .mp-header__bar {
+    --mp-header-control: 38px;
+    --mp-header-icon: 0.78rem;
+    min-height: 54px !important;
+    height: 54px !important;
+    max-height: 54px !important;
+    grid-template-columns: minmax(5.5rem, 1fr) auto minmax(5.5rem, 1fr) !important;
+    gap: 0.22rem;
+    padding-inline: max(0.55rem, env(safe-area-inset-left))
+      max(0.55rem, env(safe-area-inset-right));
+  }
+
+  html body .app-root > .mp-header .mp-header__nav {
+    grid-template-columns: 34px minmax(7rem, min(22vw, 9rem)) 34px !important;
+    width: auto !important;
+    gap: 0.16rem;
+  }
+
+  html body .app-root > .mp-header .mp-header__nav-arrow {
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    border-radius: 0.65rem;
+  }
+
+  html body .app-root > .mp-header .mp-header__title-btn {
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    padding-inline: 0.35rem;
+  }
+
   html body #root .app-root.app-root[data-view="reading"] .app-view-reading.app-view-reading {
-    padding-top: 0.25rem !important;
+    padding-top: 0.25rem;
   }
 
   html body #root .app-root.app-root[data-view="reading"]
@@ -783,11 +953,26 @@ html body .app-root > .mp-header
     background: transparent !important;
     box-shadow: none !important;
   }
+}
+
+@media (max-width: 640px) {
+  html body #root .app-root.app-root[data-view="reading"] .app-view-reading.app-view-reading {
+    padding-top: 0.25rem;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"]
+    .quran-display.quran-display--platform {
+    padding-top: 0;
+    border-top: 0;
+    border-radius: 0;
+    background: transparent !important;
+    box-shadow: none;
+  }
 
   html body #root .app-root.app-root[data-view="reading"]
     .quran-display.quran-display--platform > .tajweed-legend {
-    margin-top: 0 !important;
-    border-radius: 0.8rem !important;
+    margin-top: 0;
+    border-radius: 0.8rem;
   }
 
   html body .app-root > .mp-header .mp-header__bar {
@@ -797,15 +982,15 @@ html body .app-root > .mp-header
     height: 52px !important;
     max-height: 52px !important;
     padding-inline: max(0.35rem, env(safe-area-inset-left))
-      max(0.35rem, env(safe-area-inset-right)) !important;
-    gap: 0.18rem !important;
+      max(0.35rem, env(safe-area-inset-right));
+    gap: 0.18rem;
     display: grid !important;
     grid-template-columns: 80px minmax(0, 1fr) 80px !important;
   }
 
   html body .app-root > .mp-header .mp-header__brand-row,
   html body .app-root > .mp-header .mp-header__actions {
-    gap: 0.1rem !important;
+    gap: 0.1rem;
   }
 
   html body .app-root > .mp-header .mp-header__brand-row {
@@ -851,21 +1036,21 @@ html body .app-root > .mp-header
   html body .app-root > .mp-header .mp-header__logo {
     width: 1.62rem !important;
     height: 1.62rem !important;
-    border-radius: 0.65rem !important;
+    border-radius: 0.65rem;
   }
 
   html body .app-root > .mp-header .mp-header__center {
     flex: 1 1 0 !important;
-    overflow: hidden !important;
+    overflow: hidden;
   }
 
   html body .app-root > .mp-header .mp-header__nav {
     display: grid !important;
     grid-template-columns: 34px minmax(0, 1fr) 34px !important;
     width: min(100%, 12.75rem) !important;
-    gap: 0.2rem !important;
-    padding: 0 !important;
-    border-radius: 0 !important;
+    gap: 0.2rem;
+    padding: 0;
+    border-radius: 0;
   }
 
   html body .app-root > .mp-header .mp-header__nav-arrow {
@@ -873,8 +1058,8 @@ html body .app-root > .mp-header
     min-width: 34px !important;
     height: 40px !important;
     min-height: 40px !important;
-    border-radius: 0.65rem !important;
-    border: 1px solid color-mix(in srgb, var(--primary) 13%, var(--border)) !important;
+    border-radius: 0.65rem;
+    border: 1px solid color-mix(in srgb, var(--primary) 13%, var(--border));
     background: color-mix(in srgb, var(--bg-card) 96%, transparent) !important;
   }
 
@@ -882,7 +1067,7 @@ html body .app-root > .mp-header
     height: 40px !important;
     min-height: 40px !important;
     max-height: 40px !important;
-    padding-inline: 0.35rem !important;
+    padding-inline: 0.35rem;
   }
 
   html body .app-root > .mp-header .mp-header__title-sub {
@@ -910,7 +1095,7 @@ html body .app-root > .mp-header
 
   html body .app-root > .mp-header .mp-header__riwaya-toggle {
     min-width: 3.25rem !important;
-    padding-inline: 0.48rem !important;
+    padding-inline: 0.48rem;
   }
 
   html body .app-root > .mp-header .mp-header__riwaya-toggle span {
@@ -927,7 +1112,7 @@ html body .app-root > .mp-header
 
   html body .app-root > .mp-header .mp-header__riwaya-toggle {
     min-width: 2.7rem !important;
-    padding-inline: 0.35rem !important;
+    padding-inline: 0.35rem;
   }
 
   html body .app-root > .mp-header .mp-header__nav {
@@ -957,14 +1142,14 @@ html body .app-root > .mp-header
 @media (max-width: 320px) {
   html body .app-root[data-view="reading"] .srh-controls {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr) !important;
-    gap: 0.25rem !important;
-    padding-inline: 0.25rem !important;
+    gap: 0.25rem;
+    padding-inline: 0.25rem;
   }
 
   html body .app-root[data-view="reading"]
     :is(.srh-pill, .srh-toggle) {
-    gap: 0.15rem !important;
-    padding-inline: 0.22rem !important;
+    gap: 0.15rem;
+    padding-inline: 0.22rem;
     font-size: 0.64rem !important;
   }
 
@@ -974,19 +1159,184 @@ html body .app-root > .mp-header
   }
 
   html body .app-root[data-view="reading"] .qc-list-card__top {
-    gap: 0.25rem !important;
+    gap: 0.25rem;
   }
 
   html body .app-root[data-view="reading"] .qc-list-card__start,
   html body .app-root[data-view="reading"]
     .qc-list-card__start .ayah-actions > div {
-    gap: 0.2rem !important;
+    gap: 0.2rem;
   }
 }
 
 .app-root[data-view="home"] .hp-wrapper {
   --text-secondary: color-mix(in srgb,var(--text-primary) 78%,var(--bg-primary));
   --text-muted: color-mix(in srgb,var(--text-primary) 68%,var(--bg-primary));
+}
+
+/* Canonical reader finish: calm list rows and non-disruptive Quranic waqf.
+   Keep this at the end of the deferred responsive sheet so legacy reader
+   variants cannot turn the stop signs or ayah rows back into large cards. */
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .qc-verse-by-verse-view {
+  width: min(100%, 64rem) !important;
+  max-width: 64rem !important;
+  padding: 0 0 calc(var(--player-h, 0px) + 2rem) !important;
+  border: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+  box-shadow: 0 12px 32px color-mix(in srgb, #000 6%, transparent);
+  overflow: clip;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card.qc-list-card {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: clamp(0.72rem, 1.45vw, 1rem) clamp(0.78rem, 2vw, 1.35rem) !important;
+  border: 0 !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 82%, transparent) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card.qc-list-card:last-child {
+  border-bottom: 0 !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card__top {
+  min-height: 44px;
+  margin-bottom: clamp(0.35rem, 0.8vw, 0.65rem) !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card__reference.qc-list-card__reference,
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card__top .ayah-actions button {
+  width: 44px !important;
+  min-width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  border-radius: 0.72rem !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card__top .ayah-actions button svg {
+  width: 0.82rem !important;
+  height: 0.82rem !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card .qc-ayah-text-ar {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: clamp(0.25rem, 0.7vw, 0.5rem) 0 !important;
+  color: var(--text-quran, var(--text-primary)) !important;
+  line-height: 1.9 !important;
+  text-align: right !important;
+  text-wrap: pretty;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card__translation-slot {
+  min-height: 0 !important;
+  margin-top: 0.6rem !important;
+  padding-top: 0.7rem;
+  border-top: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card__translation-slot.is-loading {
+  min-height: 3.2rem !important;
+  gap: 0.45rem;
+}
+
+/* Waqf is Quran content, not a separate word. Render the canonical Unicode
+   small-high signs on an invisible NBSP anchor. This matches printed mushaf
+   notation and remains stable in Safari without dotted-circle fallbacks. */
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .waqf-marker.waqf-marker {
+  display: inline-block !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin-inline: 0.012em !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  filter: none !important;
+  font-family: var(--waqf-font-family, var(--font-quran, "QPC Hafs", serif)) !important;
+  font-size: 0.72em !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+  vertical-align: 0.08em !important;
+  color: var(--text-quran, var(--theme-text)) !important;
+  opacity: 0.72 !important;
+  transform: none !important;
+  white-space: nowrap !important;
+  direction: rtl !important;
+  unicode-bidi: isolate !important;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1 !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .waqf-marker.waqf-marker:hover {
+  color: var(--text-quran, var(--theme-text)) !important;
+  opacity: 0.92 !important;
+  transform: none !important;
+}
+
+@media (max-width: 640px) {
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-verse-by-verse-view {
+    width: 100% !important;
+    border-inline: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card.qc-list-card {
+    padding-inline: max(0.72rem, env(safe-area-inset-left)) max(0.72rem, env(safe-area-inset-right)) !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card .qc-ayah-text-ar {
+    font-size: clamp(25px, 8.4vw, 34px) !important;
+    line-height: 1.86 !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card__translation-slot.is-loading span:nth-child(3) {
+    display: none;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .quran-mode-pane--mushaf .cpv-container.mushaf-page-wrapper {
+    width: calc(100% - 0.5rem) !important;
+    max-width: none !important;
+    margin-inline: 0.25rem !important;
+    padding-inline: clamp(0.72rem, 4vw, 1rem) !important;
+    border-radius: 0.85rem !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
+    width: 100% !important;
+    max-width: none !important;
+    padding-inline: 0 !important;
+  }
 }
 .home-mobile-quick-disclosure > .home-info-panel { display: block; }
 @media (max-width: 640px) {
@@ -1004,9 +1354,9 @@ html body .app-root > .mp-header
     min-height: var(--mp-header-control) !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 0.2rem !important;
-    border: 1px solid color-mix(in srgb, var(--border) 88%, transparent) !important;
-    border-radius: 0.85rem !important;
+    padding: 0.2rem;
+    border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+    border-radius: 0.85rem;
     background: color-mix(in srgb, var(--bg-secondary) 72%, transparent) !important;
   }
 
@@ -1042,18 +1392,18 @@ html body .app-root > .mp-header
   .app-root[data-view="home"] .hp-list {
     display: grid !important;
     grid-template-columns: 1fr !important;
-    gap: 0.55rem !important;
+    gap: 0.55rem;
   }
 
   .app-root[data-view="home"] .hp-card--list {
     display: grid !important;
     grid-template: minmax(1.9rem, auto) minmax(2.45rem, auto) / 2.35rem minmax(0, 1fr) 3.35rem !important;
-    gap: 0.16rem 0.68rem !important;
+    gap: 0.16rem 0.68rem;
     min-height: 5.65rem !important;
-    padding: 0.65rem 0.72rem !important;
-    border-radius: 1rem !important;
+    padding: 0.65rem 0.72rem;
+    border-radius: 1rem;
     background: var(--bg-card) !important;
-    overflow: hidden !important;
+    overflow: hidden;
   }
 
   .app-root[data-view="home"] .hp-card--list .hp-card-open {
@@ -1070,17 +1420,17 @@ html body .app-root > .mp-header
     width: 2.35rem !important;
     height: 2.35rem !important;
     color: var(--primary) !important;
-    transform: none !important;
+    transform: none;
   }
 
   .app-root[data-view="home"] .hp-card--list .hp-card-num-inner {
-    transform: none !important;
+    transform: none;
   }
 
   .app-root[data-view="home"] .hp-card--list .hp-card-content {
     grid-area: 1 / 2 / 3 / 3 !important;
     min-width: 0 !important;
-    overflow: hidden !important;
+    overflow: hidden;
   }
 
   .app-root[data-view="home"] .hp-card--list .hp-card-title-row {
@@ -1094,28 +1444,28 @@ html body .app-root > .mp-header
 
   .app-root[data-view="home"] .hp-card--list .hp-card-meta--meaning {
     display: block !important;
-    margin: 0 !important;
+    margin: 0;
     font-size: 0.74rem !important;
     font-style: italic;
   }
 
   .app-root[data-view="home"] .hp-card--list .hp-card-facts {
-    gap: 0.2rem 0.4rem !important;
+    gap: 0.2rem 0.4rem;
     flex-wrap: wrap !important;
   }
 
   .app-root[data-view="home"] .hp-card--list .hp-card-facts > span {
-    margin: 0 !important;
+    margin: 0;
     font-size: 0.72rem !important;
     white-space: nowrap !important;
   }
 
   body .app-root[data-view="home"] .hp-card--list .hp-card-ar {
     grid-area: 1 / 3 !important;
-    margin: 0 !important;
+    margin: 0;
     max-width: none !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
+    overflow: visible;
+    text-overflow: clip;
     justify-self: end !important;
     font-family: "surahnames", serif !important;
     font-size: clamp(1.6rem, 5.5vw, 2rem) !important;
@@ -1131,7 +1481,7 @@ html body .app-root > .mp-header
     min-width: 2.55rem !important;
     height: 2.55rem !important;
     min-height: 2.55rem !important;
-    margin: 0 !important;
+    margin: 0;
     justify-self: end !important;
     background: var(--primary) !important;
     color: #fff !important;
@@ -1141,8 +1491,8 @@ html body .app-root > .mp-header
 @media (max-width: 340px) {
   .app-root[data-view="home"] .hp-card--list {
     grid-template-columns: 2.1rem minmax(0, 1fr) 2.75rem !important;
-    gap: 0.12rem 0.48rem !important;
-    padding: 0.58rem !important;
+    gap: 0.12rem 0.48rem;
+    padding: 0.58rem;
   }
 
   .app-root[data-view="home"] .hp-card--list .hp-card-meta--page {
@@ -1154,5 +1504,295 @@ html body .app-root > .mp-header
     min-width: 2.3rem !important;
     height: 2.3rem !important;
     min-height: 2.3rem !important;
+  }
+}
+
+/* Reading shell — final viewport contract.
+   A 319px phone keeps only the two navigation essentials on the right: the
+   contextual More menu (which contains Search and Riwaya) and no duplicated
+   search control. Larger phones, tablets and desktops progressively reveal the
+   richer controls already defined above. */
+@media (max-width: 420px) {
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__action.mp-header__search {
+    display: none !important;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__bar {
+    grid-template-columns: 80px minmax(0, 1fr) 80px !important;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__actions {
+    width: 40px;
+    min-width: 40px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__bar {
+    --mp-header-control: 38px;
+    --mp-header-icon: 0.7rem;
+    grid-template-columns: 78px minmax(0, 1fr) 78px !important;
+    min-height: 50px !important;
+    height: 50px !important;
+    max-height: 50px !important;
+    padding-inline: max(0.24rem, env(safe-area-inset-left))
+      max(0.24rem, env(safe-area-inset-right));
+    gap: 0.12rem;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    :is(.mp-header__icon-btn, .mp-header__more, .mp-header__brand) {
+    border-radius: 0.68rem;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__actions {
+    width: 38px;
+    min-width: 38px !important;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__nav {
+    grid-template-columns: 29px minmax(0, 1fr) 29px !important;
+    width: min(100%, 10.4rem) !important;
+    gap: 0.12rem;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__nav-arrow {
+    width: 29px !important;
+    min-width: 29px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    border-radius: 0.55rem;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__title-btn {
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    padding-inline: 0.2rem;
+    border-radius: 0.68rem;
+    box-shadow: none;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__title-cycle-viewport .mp-header__title-sub {
+    font-size: clamp(19px, 6.4vw, 22px) !important;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__title-cycle-viewport .mp-header__title-transliteration,
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__title-cycle-viewport .mp-header__title-meaning {
+    font-size: 0.66rem !important;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    :is(.mp-header__icon-btn, .mp-header__more, .mp-header__nav-arrow) svg {
+    width: 0.7rem !important;
+    height: 0.7rem !important;
+  }
+}
+
+/* Final responsive contract for persistent reader overlays. */
+@media (max-width: 599px) {
+  html body .mp-header-menu.mp-header-menu {
+    width: min(18.5rem, calc(100vw - 0.5rem)) !important;
+    padding: 2.05rem 0.3rem 0.3rem !important;
+  }
+
+  html body .mp-header-menu .mp-header-menu__close {
+    width: 1.78rem !important;
+    height: 1.78rem !important;
+    min-width: 1.78rem !important;
+    min-height: 1.78rem !important;
+  }
+
+  html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--dock {
+    min-height: 0 !important;
+    padding-bottom: max(0.22rem, env(safe-area-inset-bottom)) !important;
+  }
+}
+
+@media (max-width: 380px) {
+  html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--dock {
+    box-sizing: border-box !important;
+    height: calc(4rem + env(safe-area-inset-bottom, 0px)) !important;
+    max-height: calc(4rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  html body .app-root .audio-player-simple.simple-player--compact .simple-player__compact-row {
+    min-height: 3.35rem !important;
+    padding: 0.18rem 0.55rem 0.24rem !important;
+  }
+}
+
+@media (min-width: 381px) and (max-width: 599px) {
+  html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--dock {
+    height: calc(4.85rem + env(safe-area-inset-bottom, 0px)) !important;
+    max-height: calc(4.85rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 1024px) {
+  html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--dock,
+  html body .app-root .audio-player-simple.simple-player--mobile-open.mp-audio-player--dock {
+    right: 0 !important;
+    bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
+    left: 0 !important;
+    width: min(40rem, calc(100vw - 1.5rem)) !important;
+    max-width: calc(100vw - 1.5rem) !important;
+    margin-inline: auto !important;
+    box-sizing: border-box !important;
+    padding-bottom: 0 !important;
+    border: 1px solid var(--simple-player-line) !important;
+    border-radius: 1rem !important;
+  }
+
+  html body .app-root:not(.immersive-mode)
+    .audio-player-simple.simple-player--compact.mp-audio-player--dock,
+  html body .app-root:not(.immersive-mode)
+    .audio-player-simple.simple-player--mobile-open.mp-audio-player--dock {
+    transform: none !important;
+  }
+
+  html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--dock {
+    height: 4.25rem !important;
+    max-height: 4.25rem !important;
+  }
+}
+
+/* Verse list density -------------------------------------------------------
+   The verse toolbar must scale independently from the Quran text. A 44px
+   control is comfortable on a tablet, but it consumes almost half of a 319px
+   row once the reference, play, bookmark and overflow actions are present.
+   Keep the icon itself quiet and progressively grow the hit target with the
+   viewport. */
+@media (max-width: 640px) {
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-verse-by-verse-view {
+    border-radius: 0 !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card.qc-list-card {
+    padding: 0.68rem max(0.7rem, env(safe-area-inset-right)) 0.78rem
+      max(0.7rem, env(safe-area-inset-left)) !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card__top {
+    min-height: 34px !important;
+    gap: 0.35rem !important;
+    margin-bottom: 0.38rem !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    :is(.qc-list-card__start, .qc-list-card__end),
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card :is(.qc-list-card__start, .qc-list-card__end)
+    .ayah-actions > div {
+    gap: 0.28rem !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card__reference.qc-list-card__reference,
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card__top .ayah-actions button {
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 !important;
+    border-radius: 0.62rem !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card__reference.qc-list-card__reference {
+    font-size: 0.67rem !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card__top .ayah-actions button svg {
+    width: 0.72rem !important;
+    height: 0.72rem !important;
+    stroke-width: 1.8;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card > .flex-1 {
+    gap: 0.48rem !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card .qc-ayah-text-ar {
+    padding-block: 0.18rem !important;
+    font-size: clamp(27px, 8.6vw, 32px) !important;
+    line-height: var(--quran-line-height, 1.76) !important;
+    word-spacing: 0 !important;
+    letter-spacing: 0 !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card .qc-ayah-transliteration {
+    margin-block: 0.05rem !important;
+    padding-inline-start: 0.62rem !important;
+    font-size: clamp(0.72rem, 3.25vw, 0.8rem) !important;
+    line-height: 1.55 !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card__translation-slot {
+    margin-top: 0.32rem !important;
+    padding-top: 0.52rem !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card__translation-slot p {
+    font-size: clamp(0.84rem, 3.7vw, 0.94rem) !important;
+    line-height: 1.62 !important;
+  }
+}
+
+@media (max-width: 340px) {
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card.qc-list-card {
+    padding-inline: max(0.58rem, env(safe-area-inset-left))
+      max(0.58rem, env(safe-area-inset-right)) !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card__top {
+    gap: 0.22rem !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card .qc-ayah-text-ar {
+    font-size: clamp(25px, 8.55vw, 29px) !important;
+    line-height: var(--quran-line-height, 1.76) !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card__reference.qc-list-card__reference,
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card__top .ayah-actions button {
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform
+    .qc-list-card__top .ayah-actions button svg {
+    width: 0.78rem !important;
+    height: 0.78rem !important;
   }
 }

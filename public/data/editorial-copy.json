@@ -30,7 +30,7 @@
       "intro": "Clear information about the project, its hosting and the limits of an educational service using third-party content.",
       "sections": [
         ["Publisher and contact", "MushafPlus is an independent project led by Mohamed Eyaf. Requests and corrections are handled through GitHub Issues."],
-        ["Hosting", "The official site is mushafplus.netlify.app, hosted by Netlify under its own terms and technical logging practices."],
+        ["Hosting and availability", "The configured canonical address is mushafplus.netlify.app. Production and preview builds are distributed on Vercel infrastructure, which processes the technical logs required for security and service availability."],
         ["Responsibility", "The app does not replace a certified Mushaf edition, a qualified teacher, or religious, medical or legal advice."],
         ["Intellectual property", "Third-party texts, translations, fonts, photographs and recitations remain subject to their owners’ rights."]
       ]
@@ -80,7 +80,7 @@
       "intro": "بيان واضح للمشروع والاستضافة وحدود الخدمة التعليمية التي تستخدم محتوى من جهات أخرى.",
       "sections": [
         ["النشر والتواصل", "MushafPlus مشروع مستقل يديره Mohamed Eyaf، وتُستقبل البلاغات عبر GitHub Issues."],
-        ["الاستضافة", "الموقع الرسمي mushafplus.netlify.app مستضاف لدى Netlify وفق شروطها وسجلاتها التقنية."],
+        ["الاستضافة والتوفر", "العنوان الأساسي المضبوط هو mushafplus.netlify.app، وتُنشر نسخ الإنتاج والمعاينة على بنية Vercel التي تعالج السجلات التقنية اللازمة للأمان وتوفر الخدمة."],
         ["المسؤولية", "لا يحل التطبيق محل مصحف معتمد أو معلّم مؤهل أو فتوى أو استشارة طبية أو قانونية."],
         ["الحقوق", "تبقى النصوص والترجمات والخطوط والصور والتلاوات الخارجية خاضعة لحقوق أصحابها."]
       ]

@@ -143,7 +143,7 @@ html body .app-root {
     --mp-arabic-ui-size: clamp(1.06rem, 2.6vw, 1.3rem);
   }
 
-  .app-root :is(.home-top-cards-grid, .legal-page__grid, .rc-tracks) {
+  .app-root :is(.home-top-cards-grid, .rc-tracks) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -813,15 +813,22 @@ html body .app-root {
 }
 
 .app-root[data-view="home"] .home-resume-panel__body {
-  display: flex;
+  display: grid;
   flex: 1;
-  flex-direction: column;
-  justify-content: center;
-  max-width: 39rem;
+  grid-template-columns: minmax(0, 1fr) minmax(10rem, 0.62fr);
+  grid-template-areas:
+    "eyebrow target"
+    "title target"
+    "library library";
+  align-content: center;
+  align-items: end;
+  column-gap: clamp(1rem, 2.4vw, 1.75rem);
+  max-width: none;
   padding-block: clamp(0.8rem, 1.5vw, 1.25rem);
 }
 
 .app-root[data-view="home"] .home-resume-panel__eyebrow {
+  grid-area: eyebrow;
   width: fit-content;
   gap: 0.4rem;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -836,6 +843,7 @@ html body .app-root {
 }
 
 .app-root[data-view="home"] .home-resume-panel h1 {
+  grid-area: title;
   max-width: 16ch;
   margin: 0.65rem 0 0;
   color: #fff;
@@ -847,24 +855,52 @@ html body .app-root {
 }
 
 .app-root[data-view="home"] .home-resume-panel__target {
+  grid-area: target;
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 0.65rem;
+  min-width: 0;
+  align-items: flex-end;
+  align-self: center;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+  padding-inline-start: clamp(0.75rem, 1.8vw, 1.25rem);
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.17);
   color: rgba(255, 255, 255, 0.78);
+  text-align: end;
 }
 
-.app-root[data-view="home"] .home-resume-panel__target > strong {
-  font-size: clamp(0.86rem, 1.2vw, 1rem);
+.app-root[data-view="home"] .home-resume-panel__target-label {
+  color: rgba(255, 255, 255, 0.56);
+  font-size: 0.56rem;
+  font-weight: 760;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
 }
 
-.app-root[data-view="home"] .home-resume-panel__target > span {
+.app-root[data-view="home"] .home-resume-panel__target-line {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.app-root[data-view="home"] .home-resume-panel__target-line > strong {
+  color: #fff;
+  font-size: clamp(0.95rem, 1.45vw, 1.18rem);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.app-root[data-view="home"] .home-resume-panel__target-arabic {
   color: #f0d786;
-  font-size: clamp(1.45rem, 2.4vw, 1.85rem);
+  font-size: clamp(1.65rem, 2.7vw, 2.1rem);
   line-height: 1;
 }
 
 .app-root[data-view="home"] .home-resume-panel__library {
+  grid-area: library;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.45rem;
@@ -1398,6 +1434,44 @@ html body .app-root {
   }
 }
 
+@media (max-width: 520px) {
+  .app-root[data-view="home"] .home-resume-panel__body {
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel h1 {
+    max-width: 18ch;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel__target {
+    align-items: flex-start;
+    align-self: stretch;
+    gap: 0.2rem;
+    margin-top: 0.5rem;
+    padding: 0;
+    border-inline-start: 0;
+    text-align: start;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel__target-line {
+    justify-content: flex-start;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel__target-label {
+    display: none;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel__target-line > strong {
+    font-size: 0.84rem;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel__target-arabic {
+    font-size: 1.48rem;
+  }
+}
+
 @media (max-width: 390px) {
   .app-root[data-view="home"] .home-resume-panel__header time {
     max-width: 7rem;
@@ -1429,6 +1503,12 @@ html body .app-root {
   .app-root[data-view="home"] .home-resume-panel__watermark {
     max-width: 42%;
     font-size: 6.5rem;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel h1 {
+    max-width: 20ch;
+    font-size: clamp(1.15rem, 6.2vw, 1.45rem);
+    line-height: 1.08;
   }
 
   .app-root[data-view="home"] .home-today-suggestion {

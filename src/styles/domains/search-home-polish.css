@@ -71,7 +71,7 @@
 }
 
 .search-pro-overlay {
-    padding: 14px !important;
+    padding: 14px;
     align-items: center;
     justify-content: center;
 }
@@ -782,14 +782,14 @@
 [data-theme="light"] .app-root .search-pro,
 [data-theme="light"] .search-pro {
     background: linear-gradient(155deg, #ffffff, #f3faf7) !important;
-    border-color: rgba(47, 70, 82, 0.18) !important;
+    border-color: rgba(47, 70, 82, 0.18);
     box-shadow: 0 30px 76px rgba(30, 41, 59, 0.18);
 }
 
 [data-theme="sepia"] .app-root .search-pro,
 [data-theme="sepia"] .search-pro {
     background: linear-gradient(155deg, #fff8eb, #f3e5c8) !important;
-    border-color: rgba(122, 88, 42, 0.22) !important;
+    border-color: rgba(122, 88, 42, 0.22);
 }
 
 [data-theme="light"] .search-pro__header,
@@ -820,7 +820,7 @@
 [data-theme="light"] .search-pro__toggle,
 [data-theme="light"] .search-pro__select {
     background: #f4faf8 !important;
-    border-color: rgba(47, 70, 82, 0.18) !important;
+    border-color: rgba(47, 70, 82, 0.18);
     color: #20303a !important;
 }
 
@@ -832,7 +832,7 @@
 [data-theme="sepia"] .search-pro__toggle,
 [data-theme="sepia"] .search-pro__select {
     background: #fff1d8 !important;
-    border-color: rgba(122, 88, 42, 0.22) !important;
+    border-color: rgba(122, 88, 42, 0.22);
     color: #3f2f1d !important;
 }
 
@@ -889,7 +889,7 @@
 
 @media (max-width: 620px) {
     .search-pro-overlay {
-        padding: 6px !important;
+        padding: 6px;
     }
 
     .search-pro {
@@ -987,26 +987,26 @@ html[data-theme="dark"]
     .search-pro__toggle.is-active,
     .reader-toolbar-btn--primary
   ) {
-  border-color: var(--theme-primary) !important;
+  border-color: var(--theme-primary);
   background: var(--theme-primary) !important;
 }
 
 html[data-theme="dark"] .search-pro__modes button:not(.is-active) {
-  border-color: var(--theme-border) !important;
+  border-color: var(--theme-border);
   background: var(--theme-bg-alt) !important;
   color: var(--theme-text-soft) !important;
-  box-shadow: none !important;
+  box-shadow: none;
 }
 
 html[data-theme="dark"] .search-pro__close {
-  border-color: var(--theme-border) !important;
+  border-color: var(--theme-border);
   background: var(--theme-panel-bg-strong) !important;
   color: var(--theme-text-soft) !important;
-  box-shadow: none !important;
+  box-shadow: none;
 }
 
 html[data-theme="dark"] .search-pro__close:hover {
-  border-color: var(--theme-border-strong) !important;
+  border-color: var(--theme-border-strong);
   background: rgba(var(--theme-primary-rgb), 0.12) !important;
   color: var(--emerald-lit) !important;
 }
@@ -1084,27 +1084,27 @@ html[data-theme="dark"] .search-pro__close:hover {
     min-height: 0 !important;
     width: auto !important;
     height: auto !important;
-    margin-inline: 0.08em !important;
-    padding: 0 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
+    margin-inline: 0.08em;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
     background: transparent !important;
-    box-shadow: none !important;
+    box-shadow: none;
     color: #c8a84b !important;
     font-family: var(--font-quran, "QPC Hafs", serif) !important;
     font-size: 0.56em !important;
     font-weight: 400 !important;
     line-height: 1 !important;
-    vertical-align: super !important;
-    opacity: 0.95 !important;
-    cursor: help !important;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease !important;
-    transform: translateY(-0.06em) !important;
+    vertical-align: super;
+    opacity: 0.95;
+    cursor: help;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+    transform: translateY(-0.06em);
 }
 
 .app-root .waqf-marker:hover {
     color: #e5c158 !important;
-    transform: translateY(-0.06em) scale(1.25) !important;
+    transform: translateY(-0.06em) scale(1.25);
 }
 
 [data-theme="dark"] .app-root .waqf-marker {
@@ -1160,7 +1160,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 .app-root .quran-display--platform .reader-toolbar-btn--primary {
     min-width: clamp(11rem, 17vw, 14rem);
     background: var(--primary) !important;
-    border-color: color-mix(in srgb, var(--primary) 92%, #000 8%) !important;
+    border-color: color-mix(in srgb, var(--primary) 92%, #000 8%);
     color: #fff !important;
     box-shadow: 0 10px 22px rgba(var(--primary-rgb), 0.2);
 }
@@ -1521,16 +1521,16 @@ html[data-theme="dark"] .search-pro__close:hover {
 }
 
 .app-root .quran-display--platform .cpv-flow {
-    border: 0 !important;
-    border-radius: 0 !important;
+    border: 0;
+    border-radius: 0;
     background: transparent !important;
-    padding: clamp(0.45rem, 1.2vw, 1rem) 0 !important;
+    padding: clamp(0.45rem, 1.2vw, 1rem) 0;
     color: var(--reader-flow-ink-dark) !important;
     font-family: var(--font-quran, "Amiri Quran", serif) !important;
     font-size: clamp(2.15rem, 1.34rem + 2.45vw, 4.05rem) !important;
     line-height: 2.05 !important;
-    letter-spacing: 0 !important;
-    word-spacing: 0.1em !important;
+    letter-spacing: 0;
+    word-spacing: 0.1em;
     text-align: right !important;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -1539,13 +1539,13 @@ html[data-theme="dark"] .search-pro__close:hover {
 .app-root .quran-display--hafs .cpv-flow {
     font-family: var(--font-quran-hafs, var(--font-quran, "Amiri Quran", serif)) !important;
     line-height: 2.02 !important;
-    word-spacing: 0.105em !important;
+    word-spacing: 0.105em;
 }
 
 .app-root .quran-display--warsh .cpv-flow {
     font-family: var(--font-quran-warsh, var(--font-quran, "Amiri Quran", serif)) !important;
     line-height: 2.12 !important;
-    word-spacing: 0.075em !important;
+    word-spacing: 0.075em;
 }
 
 .app-root .quran-display--platform .cpv-verse {
@@ -1623,13 +1623,13 @@ html[data-theme="dark"] .search-pro__close:hover {
 
 .app-root .quran-display--platform .rd-ayah {
     background: transparent !important;
-    border-color: rgba(148, 163, 184, 0.08) !important;
-    box-shadow: none !important;
+    border-color: rgba(148, 163, 184, 0.08);
+    box-shadow: none;
 }
 
 .app-root .quran-display--platform .rd-ayah-head {
     background: rgba(255, 255, 255, 0.045) !important;
-    border-color: rgba(148, 163, 184, 0.14) !important;
+    border-color: rgba(148, 163, 184, 0.14);
     color: rgba(248, 250, 252, 0.68) !important;
 }
 
@@ -1637,8 +1637,8 @@ html[data-theme="dark"] .search-pro__close:hover {
     color: var(--reader-flow-ink-dark) !important;
     font-size: clamp(2rem, 1.28rem + 2.15vw, 3.65rem) !important;
     line-height: 2.02 !important;
-    letter-spacing: 0 !important;
-    word-spacing: 0.095em !important;
+    letter-spacing: 0;
+    word-spacing: 0.095em;
     text-align: right !important;
     text-shadow: none !important;
 }
@@ -1650,7 +1650,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 .app-root .quran-display--warsh .qc-ayah-text-ar {
     font-family: var(--font-quran-warsh, var(--font-quran, "Amiri Quran", serif)) !important;
     line-height: 2.1 !important;
-    word-spacing: 0.07em !important;
+    word-spacing: 0.07em;
 }
 
 .app-root .quran-display--platform .mp-frame {
@@ -1658,20 +1658,20 @@ html[data-theme="dark"] .search-pro__close:hover {
     margin-inline: auto;
     border-radius: 18px;
     background: var(--reader-flow-bg-dark) !important;
-    border-color: rgba(148, 163, 184, 0.14) !important;
+    border-color: rgba(148, 163, 184, 0.14);
 }
 
 .app-root .quran-display--platform .mp-inner-border,
 .app-root .quran-display--platform .mp-ayahs-flow {
     background: transparent !important;
-    border-color: transparent !important;
+    border-color: transparent;
 }
 
 .app-root .quran-display--platform .mp-ayahs-flow {
     color: var(--reader-flow-ink-dark, var(--mp-text, #1b2823));
     font-size: clamp(2.15rem, 1.34rem + 2.45vw, 4.05rem) !important;
     line-height: 2.08 !important;
-    word-spacing: 0.09em !important;
+    word-spacing: 0.09em;
     text-align: right !important;
 }
 
@@ -1715,13 +1715,13 @@ html[data-theme="dark"] .search-pro__close:hover {
     .app-root .quran-display--platform .mp-ayahs-flow {
         font-size: clamp(1.72rem, 1.08rem + 4.4vw, 2.85rem) !important;
         line-height: 2.02 !important;
-        word-spacing: 0.055em !important;
+        word-spacing: 0.055em;
     }
 
     .app-root .quran-display--platform .qc-ayah-text-ar {
         font-size: clamp(1.58rem, 1.03rem + 4vw, 2.55rem) !important;
         line-height: 1.95 !important;
-        word-spacing: 0.05em !important;
+        word-spacing: 0.05em;
     }
 }
 
@@ -1735,7 +1735,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     .app-root .quran-display--platform .mp-ayahs-flow {
         font-size: clamp(1.42rem, 8vw, 2.05rem) !important;
         line-height: 1.9 !important;
-        word-spacing: 0.035em !important;
+        word-spacing: 0.035em;
     }
 
     .app-root .quran-display--platform .qc-ayah-text-ar {
@@ -1753,7 +1753,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 
 @media (max-width: 640px) {
     .home-hero-compact {
-        padding: 1rem !important;
+        padding: 1rem;
     }
 
     .home-hero-compact h1 {
@@ -2584,7 +2584,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     font-size: clamp(1.5rem, 3.5vw, 2rem) !important;
     line-height: 1 !important;
     color: var(--text-primary, #14231d);
-    letter-spacing: -0.01em !important;
+    letter-spacing: -0.01em;
 }
 
 .app-root .app-view-home .home-brand-ar,
@@ -2621,7 +2621,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 .app-root[data-view="home"] .home-cta-primary {
     background: var(--primary, #0b6235) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(var(--primary-rgb, 11, 98, 53), 0.15) !important;
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb, 11, 98, 53), 0.15);
 }
 
 .app-root .app-view-home .home-cta-secondary,
@@ -2647,14 +2647,14 @@ html[data-theme="dark"] .search-pro__close:hover {
     height: 100%;
     min-height: 240px;
     border-radius: 14px;
-    border-color: var(--border, #d6e4df) !important;
+    border-color: var(--border, #d6e4df);
     background: var(--bg-secondary, #f5faf7);
     box-shadow: none;
 }
 
 .app-root .app-view-home .home-info-card > div:first-child,
 .app-root[data-view="home"] .home-info-card > div:first-child {
-    border-color: color-mix(in srgb, var(--border, #d6e4df) 70%, transparent) !important;
+    border-color: color-mix(in srgb, var(--border, #d6e4df) 70%, transparent);
 }
 
 .app-root .app-view-home .home-info-card > div:first-child button,
@@ -2668,7 +2668,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 }
 
 .app-root[data-view="home"] .home-info-card [role="tab"] {
-    padding: 0.55rem 0.7rem !important;
+    padding: 0.55rem 0.7rem;
     color: var(--text-secondary) !important;
     font-size: 0.78rem !important;
 }
@@ -2686,10 +2686,10 @@ html[data-theme="dark"] .search-pro__close:hover {
 
 .app-root .app-view-home .home-content-zone > section > div:first-child,
 .app-root[data-view="home"] .home-content-zone > section > div:first-child {
-    border-radius: 14px !important;
-    border-color: var(--border, #d6e4df) !important;
+    border-radius: 14px;
+    border-color: var(--border, #d6e4df);
     background: var(--bg-primary, #ffffff) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 [data-theme="dark"] .app-root .app-view-home,
@@ -2708,9 +2708,9 @@ html[data-theme="dark"] .search-pro__close:hover {
 [data-theme="dark"] .app-root[data-view="home"] .home-info-card,
 [data-theme="dark"] .app-root .app-view-home .home-content-zone > section > div:first-child,
 [data-theme="dark"] .app-root[data-view="home"] .home-content-zone > section > div:first-child {
-    border-color: var(--theme-border) !important;
+    border-color: var(--theme-border);
     background: var(--bg-secondary) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 [data-theme="dark"] .app-root .app-view-home .home-hero-title,
@@ -2761,7 +2761,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     .app-root .app-view-home .home-hero-shell,
     .app-root[data-view="home"] .home-hero-shell {
         border-radius: 14px;
-        padding: 0.6rem !important;
+        padding: 0.6rem;
     }
 
     .app-root .app-view-home .home-brand-row,
@@ -2832,7 +2832,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 
     .app-root .app-view-home .home-content-zone > section > div:first-child,
     .app-root[data-view="home"] .home-content-zone > section > div:first-child {
-        padding: 0.65rem !important;
+        padding: 0.65rem;
     }
 }
 
@@ -2853,8 +2853,8 @@ html[data-theme="dark"] .search-pro__close:hover {
 .app-root .app-view-home .home-brand-row span,
 .app-root[data-view="home"] .home-hero-kicker-row > *,
 .app-root[data-view="home"] .home-brand-row span {
-    letter-spacing: 0 !important;
-    text-transform: none !important;
+    letter-spacing: 0;
+    text-transform: none;
 }
 
 .app-root .app-view-home .home-collection-heading,
@@ -2905,17 +2905,17 @@ html[data-theme="dark"] .search-pro__close:hover {
 
 .app-root .app-view-home .home-content-toolbar,
 .app-root[data-view="home"] .home-content-toolbar {
-    border-radius: 14px !important;
-    border: 1px solid var(--border, #d6e4df) !important;
-    padding: 0.6rem !important;
+    border-radius: 14px;
+    border: 1px solid var(--border, #d6e4df);
+    padding: 0.6rem;
     background: var(--bg-primary, #ffffff) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .app-root .app-view-home .home-content-toolbar > div:first-child,
 .app-root[data-view="home"] .home-content-toolbar > div:first-child {
-    border: 1px solid var(--border, #d6e4df) !important;
-    border-radius: 10px !important;
+    border: 1px solid var(--border, #d6e4df);
+    border-radius: 10px;
     background: var(--bg-secondary, #f5faf7) !important;
 }
 
@@ -2927,13 +2927,13 @@ html[data-theme="dark"] .search-pro__close:hover {
 
 .app-root .app-view-home .home-content-toolbar button,
 .app-root[data-view="home"] .home-content-toolbar button {
-    letter-spacing: 0 !important;
+    letter-spacing: 0;
 }
 
 .app-root .app-view-home .home-content-toolbar input,
 .app-root[data-view="home"] .home-content-toolbar input {
     min-height: 40px;
-    border-radius: 10px !important;
+    border-radius: 10px;
     font-size: 0.88rem !important;
     font-weight: 500;
 }
@@ -2942,13 +2942,13 @@ html[data-theme="dark"] .search-pro__close:hover {
 .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
     display: flex !important;
     flex-direction: column !important;
-    gap: 0 !important;
+    gap: 0;
     grid-template-columns: none !important;
 }
 
 .app-root .app-view-home .home-style-filters,
 .app-root[data-view="home"] .home-style-filters {
-    gap: 0.4rem !important;
+    gap: 0.4rem;
     margin-top: -0.2rem;
     padding-bottom: 0.15rem;
     scrollbar-width: none;
@@ -2962,8 +2962,8 @@ html[data-theme="dark"] .search-pro__close:hover {
 .app-root .app-view-home .home-style-filter,
 .app-root[data-view="home"] .home-style-filter {
     min-height: 36px;
-    border-radius: 999px !important;
-    letter-spacing: 0 !important;
+    border-radius: 999px;
+    letter-spacing: 0;
     font-size: 0.76rem !important;
     font-weight: 700 !important;
 }
@@ -2993,19 +2993,19 @@ html[data-theme="dark"] .search-pro__close:hover {
 .app-root .app-view-home .reciter-card,
 .app-root[data-view="home"] .reciter-card {
     min-height: 0;
-    border-radius: 0 !important;
-    border: none !important;
-    border-bottom: 1px solid var(--border, #d6e4df) !important;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid var(--border, #d6e4df);
     background: transparent !important;
-    box-shadow: none !important;
+    box-shadow: none;
 }
 
 .app-root .app-view-home .reciter-card__media,
 .app-root[data-view="home"] .reciter-card__media {
     width: 48px !important;
     height: 48px !important;
-    border-radius: 50% !important;
-    border-color: transparent !important;
+    border-radius: 50%;
+    border-color: transparent;
 }
 
 .app-root .app-view-home .reciter-card__name,
@@ -3018,9 +3018,9 @@ html[data-theme="dark"] .search-pro__close:hover {
 .app-root .app-view-home .reciter-card__chip,
 .app-root[data-view="home"] .reciter-card__chip {
     min-height: 22px;
-    border-radius: 999px !important;
-    letter-spacing: 0 !important;
-    text-transform: none !important;
+    border-radius: 999px;
+    letter-spacing: 0;
+    text-transform: none;
     font-size: 0.65rem !important;
     font-weight: 700 !important;
 }
@@ -3028,18 +3028,18 @@ html[data-theme="dark"] .search-pro__close:hover {
 .app-root .app-view-home .reciter-card__actions,
 .app-root[data-view="home"] .reciter-card__actions {
     display: flex !important;
-    gap: 0.4rem !important;
+    gap: 0.4rem;
 }
 
 .app-root .app-view-home .reciter-card__actions button,
 .app-root[data-view="home"] .reciter-card__actions button {
     min-height: 34px;
-    border-radius: 8px !important;
+    border-radius: 8px;
 }
 
 .app-root .app-view-home .reciter-card__actions button[class*="bg-primary"],
 .app-root[data-view="home"] .reciter-card__actions button[class*="bg-primary"] {
-    border-color: var(--primary, #0b6235) !important;
+    border-color: var(--primary, #0b6235);
     background: var(--primary, #0b6235) !important;
     color: #ffffff !important;
 }
@@ -3051,10 +3051,10 @@ html[data-theme="dark"] .search-pro__close:hover {
 
 .app-root .app-view-home .reciter-radio-card,
 .app-root[data-view="home"] .reciter-radio-card {
-    border-radius: 12px !important;
-    border-color: var(--border, #d6e4df) !important;
+    border-radius: 12px;
+    border-color: var(--border, #d6e4df);
     background: var(--bg-primary, #ffffff) !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 [data-theme="dark"] .app-root .app-view-home .home-collection-heading h2,
@@ -3069,14 +3069,14 @@ html[data-theme="dark"] .search-pro__close:hover {
 
 [data-theme="dark"] .app-root .app-view-home .home-content-toolbar,
 [data-theme="dark"] .app-root[data-view="home"] .home-content-toolbar {
-    border-color: rgba(126, 179, 156, 0.12) !important;
+    border-color: rgba(126, 179, 156, 0.12);
     background: var(--bg-primary) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 [data-theme="dark"] .app-root .app-view-home .home-content-toolbar > div:first-child,
 [data-theme="dark"] .app-root[data-view="home"] .home-content-toolbar > div:first-child {
-    border-color: rgba(126, 179, 156, 0.14) !important;
+    border-color: rgba(126, 179, 156, 0.14);
     background: rgba(255, 255, 255, 0.035) !important;
 }
 
@@ -3084,9 +3084,9 @@ html[data-theme="dark"] .search-pro__close:hover {
 [data-theme="dark"] .app-root[data-view="home"] .reciter-card,
 [data-theme="dark"] .app-root .app-view-home .reciter-radio-card,
 [data-theme="dark"] .app-root[data-view="home"] .reciter-radio-card {
-    border-color: rgba(126, 179, 156, 0.1) !important;
+    border-color: rgba(126, 179, 156, 0.1);
     background: transparent !important;
-    box-shadow: none !important;
+    box-shadow: none;
 }
 
 [data-theme="dark"] .app-root .app-view-home .reciter-card__name,
@@ -3118,8 +3118,8 @@ html[data-theme="dark"] .search-pro__close:hover {
 
     .app-root .app-view-home .home-content-toolbar,
     .app-root[data-view="home"] .home-content-toolbar {
-        gap: 0.55rem !important;
-        padding: 0.55rem !important;
+        gap: 0.55rem;
+        padding: 0.55rem;
     }
 
     .app-root .app-view-home .reciter-card__media,
@@ -3134,8 +3134,8 @@ html[data-theme="dark"] .search-pro__close:hover {
     .search-pro-overlay {
         box-sizing: border-box !important;
         align-items: flex-end !important;
-        overflow: hidden !important;
-        padding: max(6px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(6px, env(safe-area-inset-left)) !important;
+        overflow: hidden;
+        padding: max(6px, env(safe-area-inset-top)) max(6px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(6px, env(safe-area-inset-left));
     }
 
     .search-pro-overlay .search-pro {
@@ -3146,31 +3146,31 @@ html[data-theme="dark"] .search-pro__close:hover {
         height: auto !important;
         max-height: calc(100dvh - max(6px, env(safe-area-inset-top)) - env(safe-area-inset-bottom)) !important;
         min-height: 0 !important;
-        overflow: hidden !important;
-        border-radius: 20px 20px 0 0 !important;
+        overflow: hidden;
+        border-radius: 20px 20px 0 0;
     }
 
     .search-pro-overlay .search-pro__header {
         flex: 0 0 auto;
         display: grid !important;
         grid-template-columns: minmax(0, 1fr) auto !important;
-        gap: 0.65rem !important;
-        padding: 0.72rem 0.78rem !important;
+        gap: 0.65rem;
+        padding: 0.72rem 0.78rem;
     }
 
     .search-pro-overlay .search-pro__body {
         min-height: 0 !important;
         display: block !important;
-        overflow-y: auto !important;
+        overflow-y: auto;
         overscroll-behavior: contain;
     }
 
     .search-pro-overlay .search-pro__main {
         min-height: 0 !important;
         display: flex !important;
-        padding: 0.72rem !important;
-        padding-bottom: calc(0.85rem + env(safe-area-inset-bottom)) !important;
-        overflow: visible !important;
+        padding: 0.72rem;
+        padding-bottom: calc(0.85rem + env(safe-area-inset-bottom));
+        overflow: visible;
     }
 
     .search-pro-overlay .search-pro__command,
@@ -3204,7 +3204,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     .search-pro-overlay .search-pro__modes {
         display: grid !important;
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 0.45rem !important;
+        gap: 0.45rem;
     }
 
     .search-pro-overlay .search-pro__modes button {
@@ -3266,7 +3266,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 
 html body .app-root[data-view="home"] .hp-grid--juz .juz-card,
 html body .app-root .app-view-home .hp-grid--juz .juz-card {
-    border-color: var(--border) !important;
+    border-color: var(--border);
     background: var(--bg-card) !important;
     color: var(--text-primary) !important;
 }
@@ -3275,7 +3275,7 @@ html body .app-root[data-view="home"] .hp-grid--juz .juz-card:is(:hover, :focus-
 html body .app-root .app-view-home .hp-grid--juz .juz-card:is(:hover, :focus-visible),
 html body .app-root[data-view="home"] .hp-grid--juz .juz-card--active,
 html body .app-root .app-view-home .hp-grid--juz .juz-card--active {
-    border-color: color-mix(in srgb, var(--primary) 52%, var(--border)) !important;
+    border-color: color-mix(in srgb, var(--primary) 52%, var(--border));
     background: color-mix(in srgb, var(--bg-card) 92%, var(--primary) 8%) !important;
 }
 
@@ -3298,20 +3298,20 @@ html body .app-root .app-view-home .hp-grid--juz .juz-card__arabic {
 
 .app-root[data-view="home"] .hp-card--surah,
 .app-root .app-view-home .hp-card--surah {
-    border-radius: 8px !important;
+    border-radius: 8px;
     background: var(--bg-card) !important;
-    box-shadow: 0 5px 16px color-mix(in srgb, var(--text-primary) 7%, transparent) !important;
+    box-shadow: 0 5px 16px color-mix(in srgb, var(--text-primary) 7%, transparent);
 }
 
 .app-root[data-view="home"] .hp-card--surah:is(:hover, :focus-within),
 .app-root .app-view-home .hp-card--surah:is(:hover, :focus-within) {
-    border-color: color-mix(in srgb, var(--primary) 48%, var(--border)) !important;
+    border-color: color-mix(in srgb, var(--primary) 48%, var(--border));
     background: color-mix(in srgb, var(--bg-card) 94%, var(--primary) 6%) !important;
 }
 
 .app-root[data-view="home"] .hp-card--surah.border-primary\/60,
 .app-root .app-view-home .hp-card--surah.border-primary\/60 {
-    border-color: color-mix(in srgb, var(--primary) 56%, var(--border)) !important;
+    border-color: color-mix(in srgb, var(--primary) 56%, var(--border));
     background: color-mix(in srgb, var(--bg-card) 90%, var(--primary) 10%) !important;
 }
 
@@ -3319,7 +3319,7 @@ html body .app-root .app-view-home .hp-grid--juz .juz-card__arabic {
 .app-root .app-view-home .hp-grid--juz {
     display: grid !important;
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    gap: 0.7rem !important;
+    gap: 0.7rem;
 }
 
 .app-root[data-view="home"] .juz-card,
@@ -3505,7 +3505,7 @@ html body .app-root .app-view-home .hp-grid--juz .juz-card__arabic {
 }
 
 [data-theme="dark"] .app-root :is(.hp-card--surah, .juz-card, .home-radio-card) {
-    border-color: color-mix(in srgb, var(--border) 86%, #ffffff 14%) !important;
+    border-color: color-mix(in srgb, var(--border) 86%, #ffffff 14%);
     background: color-mix(in srgb, var(--bg-card) 96%, #ffffff 4%) !important;
 }
 
@@ -3526,5 +3526,422 @@ html body .app-root .app-view-home .hp-grid--juz .juz-card__arabic {
     .app-root .app-view-home :is(.juz-card, .home-radio-card) {
         min-height: 68px;
         padding: 0.62rem;
+    }
+}
+
+/* Search — one adaptive surface, with intent detection handled in code. */
+.modal-overlay.search-pro-overlay--simple {
+    padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    background: color-mix(in srgb, #07150f 58%, transparent);
+    backdrop-filter: blur(10px) saturate(0.88);
+    -webkit-backdrop-filter: blur(10px) saturate(0.88);
+}
+
+.search-pro.search-pro--simple {
+    width: min(720px, calc(100vw - 24px));
+    max-height: min(780px, calc(100dvh - 24px));
+    border-radius: 24px;
+    background: var(--bg-card, var(--theme-panel-bg-strong)) !important;
+    box-shadow: 0 28px 80px rgba(7, 22, 15, 0.28);
+}
+
+.search-pro--simple .search-pro__header {
+    min-height: 62px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    padding: 0.72rem 0.82rem 0.72rem 1rem;
+    background: color-mix(in srgb, var(--bg-card, var(--theme-panel-bg-strong)) 94%, var(--primary, var(--theme-primary)) 6%);
+}
+
+.search-pro--simple .search-pro__title-wrap {
+    gap: 0.62rem;
+}
+
+.search-pro--simple .search-pro__mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+.search-pro--simple h2 {
+    font-size: clamp(1rem, 0.94rem + 0.3vw, 1.22rem);
+    line-height: 1.2;
+}
+
+.search-pro--simple .search-pro__close {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+}
+
+.search-pro--simple .search-pro__body {
+    min-height: 0;
+    flex: 1 1 auto;
+    display: block;
+    overflow: hidden;
+}
+
+.search-pro--simple .search-pro__main {
+    height: 100%;
+    min-height: 0;
+    gap: 0.62rem;
+    padding: 0.86rem;
+    overflow: hidden;
+}
+
+.search-pro--simple .search-pro__command {
+    display: block;
+}
+
+.search-pro--simple .search-pro__input-shell {
+    box-sizing: border-box;
+    min-height: 54px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    gap: 0.5rem;
+    border-radius: 17px;
+    padding: 0.28rem 0.34rem 0.28rem 0.82rem;
+    background: var(--bg-secondary, var(--theme-panel-bg));
+}
+
+.search-pro--simple .search-pro__input-shell input {
+    min-height: 42px;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0;
+    font-size: 0.96rem;
+    font-weight: 620;
+}
+
+.search-pro--simple .search-pro__input-shell input:focus-visible {
+    outline: 0 !important;
+    box-shadow: none !important;
+}
+
+.search-pro--simple .search-pro__voice-btn,
+.search-pro--simple .search-pro__submit {
+    width: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    height: 42px;
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+.search-pro--simple .search-pro__voice-label,
+.search-pro--simple .search-pro__submit > span {
+    display: none;
+}
+
+.search-pro--simple .search-pro__submit svg {
+    width: 16px;
+    height: 16px;
+}
+
+.search-pro--simple .search-pro__results {
+    min-height: 0;
+    flex: 1 1 auto;
+    gap: 0.55rem;
+    padding: 0.05rem 0.15rem 0.1rem 0;
+    overscroll-behavior: contain;
+}
+
+.search-pro--simple .search-pro__empty {
+    display: block;
+    border: 0;
+    border-radius: 16px;
+    padding: 0.78rem;
+    background: color-mix(in srgb, var(--bg-secondary, var(--theme-panel-bg)) 76%, transparent);
+}
+
+.search-pro--simple .search-pro__empty p {
+    margin: 0;
+    font-size: 0.83rem;
+    line-height: 1.45;
+    text-align: center;
+}
+
+.search-pro--simple .search-pro__suggestions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.42rem;
+    margin-top: 0.65rem;
+}
+
+.search-pro--simple .search-pro__suggestions button {
+    width: auto;
+    min-height: 34px;
+    border-radius: 999px;
+    padding: 0.35rem 0.68rem;
+    background: var(--bg-card, var(--theme-panel-bg-strong));
+    text-align: center;
+}
+
+.search-pro--simple .search-pro__suggestions strong {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 760;
+}
+
+.search-pro--simple .search-pro__results-head {
+    min-height: 28px;
+    padding-inline: 0.18rem;
+}
+
+.search-pro--simple .search-pro__results-head strong {
+    font-size: 0.78rem;
+    color: var(--text-muted, var(--theme-text-muted));
+}
+
+.search-pro--simple .search-pro__list {
+    gap: 0.5rem;
+}
+
+.search-pro--simple .search-pro__result {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 0.7rem;
+    border-radius: 16px;
+    padding: 0.72rem;
+}
+
+.search-pro--simple .search-pro__result-number {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+}
+
+.search-pro--simple .search-pro__result-ref {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.28rem;
+}
+
+.search-pro--simple .search-pro__result-ref strong {
+    font-size: 0.96rem;
+}
+
+.search-pro--simple .search-pro__result-tags small {
+    min-height: 26px;
+    padding: 0.22rem 0.5rem;
+    font-size: 0.66rem;
+}
+
+.search-pro--simple .search-pro__arabic {
+    margin-top: 0.48rem;
+    font-size: clamp(1.22rem, 1.08rem + 0.45vw, 1.55rem);
+    line-height: 1.75;
+}
+
+.search-pro--simple .search-pro__translation {
+    margin-top: 0.45rem;
+    font-size: 0.88rem;
+    line-height: 1.55;
+}
+
+.search-pro--simple .search-pro__open {
+    margin-top: 0.48rem;
+    padding: 0.3rem 0.55rem;
+    font-size: 0.7rem;
+}
+
+.search-pro--simple .search-pro__no-results {
+    border-radius: 16px;
+    padding: 1.35rem 0.8rem;
+    font-size: 0.84rem;
+}
+
+@media (max-width: 620px) {
+    .modal-overlay.search-pro-overlay--simple {
+        padding: max(4px, env(safe-area-inset-top)) max(4px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(4px, env(safe-area-inset-left));
+    }
+
+    .search-pro-overlay .search-pro.search-pro--simple {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: calc(100dvh - max(4px, env(safe-area-inset-top)) - env(safe-area-inset-bottom)) !important;
+        border-radius: 18px 18px 0 0;
+    }
+
+    .search-pro--simple .search-pro__header {
+        min-height: 52px;
+        padding: 0.48rem 0.5rem 0.48rem 0.68rem;
+    }
+
+    .search-pro--simple .search-pro__mark {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+    }
+
+    .search-pro--simple .search-pro__mark svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .search-pro--simple h2 {
+        font-size: 1rem;
+    }
+
+    .search-pro--simple .search-pro__close {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+    }
+
+    .search-pro-overlay .search-pro--simple .search-pro__body {
+        display: block !important;
+        overflow: hidden;
+    }
+
+    .search-pro-overlay .search-pro--simple .search-pro__main {
+        height: 100%;
+        padding: 0.52rem;
+        padding-bottom: calc(0.58rem + env(safe-area-inset-bottom));
+        overflow: hidden;
+    }
+
+    .search-pro-overlay .search-pro--simple .search-pro__input-shell {
+        height: 48px;
+        min-height: 48px !important;
+        grid-template-columns: 16px minmax(0, 1fr) 38px 38px;
+        gap: 0.34rem;
+        border-radius: 14px;
+        padding: 0.22rem 0.25rem 0.22rem 0.62rem;
+    }
+
+    .search-pro--simple .search-pro__input-shell > span svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .search-pro--simple .search-pro__input-shell input {
+        min-height: 38px;
+        font-size: 0.86rem;
+    }
+
+    .search-pro-overlay .search-pro--simple :is(.search-pro__voice-btn, .search-pro__submit) {
+        width: 38px;
+        min-width: 38px;
+        min-height: 38px !important;
+        height: 38px;
+        border-radius: 10px;
+    }
+
+    .search-pro--simple .search-pro__voice-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .search-pro--simple .search-pro__empty {
+        padding: 0.65rem 0.5rem;
+    }
+
+    .search-pro--simple .search-pro__empty p {
+        font-size: 0.76rem;
+    }
+
+    .search-pro--simple .search-pro__suggestions {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .search-pro--simple .search-pro__suggestions::-webkit-scrollbar {
+        display: none;
+    }
+
+    .search-pro--simple .search-pro__suggestions button {
+        flex: 0 0 auto;
+        min-height: 30px;
+        padding: 0.28rem 0.58rem;
+    }
+
+    .search-pro--simple .search-pro__result {
+        grid-template-columns: 32px minmax(0, 1fr);
+        gap: 0.55rem;
+        border-radius: 14px;
+        padding: 0.58rem;
+    }
+
+    .search-pro--simple .search-pro__result-number {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        font-size: 0.7rem;
+    }
+
+    .search-pro--simple .search-pro__result-top {
+        display: flex;
+        gap: 0.4rem;
+    }
+
+    .search-pro--simple .search-pro__result-tags {
+        display: none;
+    }
+
+    .search-pro--simple .search-pro__result-ref strong {
+        font-size: 0.9rem;
+    }
+
+    .search-pro--simple .search-pro__result-ref :is(span, b) {
+        font-size: 0.72rem;
+    }
+
+    .search-pro--simple .search-pro__arabic {
+        margin-top: 0.38rem;
+        font-size: clamp(1.18rem, 6.2vw, 1.42rem);
+        line-height: 1.7;
+    }
+
+    .search-pro--simple .search-pro__translation {
+        font-size: 0.8rem;
+        line-height: 1.48;
+    }
+
+    .search-pro--simple .search-pro__open {
+        margin-top: 0.38rem;
+        font-size: 0;
+        padding: 0.32rem;
+    }
+
+    .search-pro--simple .search-pro__open svg {
+        width: 13px;
+        height: 13px;
+    }
+}
+
+@media (max-width: 350px) {
+    .search-pro--simple .search-pro__header {
+        min-height: 48px;
+    }
+
+    .search-pro--simple .search-pro__title-wrap {
+        gap: 0.48rem;
+    }
+
+    .search-pro--simple .search-pro__mark,
+    .search-pro--simple .search-pro__close {
+        width: 30px;
+        height: 30px;
+    }
+
+    .search-pro--simple h2 {
+        font-size: 0.92rem;
+    }
+
+    .search-pro-overlay .search-pro--simple .search-pro__main {
+        padding-inline: 0.4rem;
+    }
+
+    .search-pro--simple .search-pro__input-shell input {
+        font-size: 0.8rem;
     }
 }

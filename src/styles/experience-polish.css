@@ -1,25 +1,25 @@
 html body .app-root[data-view="home"] .home-info-card {
-  overflow: hidden !important;
-  border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%) !important;
-  border-radius: 1.15rem !important;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
+  border-radius: 1.15rem;
   background:
     linear-gradient(145deg, color-mix(in srgb, var(--bg-card) 97%, var(--primary) 3%), var(--bg-card)) !important;
-  box-shadow: 0 16px 38px color-mix(in srgb, var(--text-primary) 8%, transparent) !important;
+  box-shadow: 0 16px 38px color-mix(in srgb, var(--text-primary) 8%, transparent);
 }
 
 html body .app-root[data-view="home"] .home-quick-tabs {
   min-height: 3.15rem !important;
-  padding: 0.35rem 0.45rem 0 !important;
-  gap: 0.25rem !important;
-  border-color: color-mix(in srgb, var(--border) 72%, transparent) !important;
+  padding: 0.35rem 0.45rem 0;
+  gap: 0.25rem;
+  border-color: color-mix(in srgb, var(--border) 72%, transparent);
   background: color-mix(in srgb, var(--bg-secondary) 90%, var(--primary) 10%) !important;
 }
 
 html body .app-root[data-view="home"] .home-quick-tab {
   min-height: 2.55rem !important;
-  padding: 0.55rem 0.8rem !important;
-  border: 0 !important;
-  border-radius: 0.78rem 0.78rem 0 0 !important;
+  padding: 0.55rem 0.8rem;
+  border: 0;
+  border-radius: 0.78rem 0.78rem 0 0;
   color: var(--text-secondary) !important;
   font-size: 0.76rem !important;
   font-weight: 690 !important;
@@ -29,13 +29,13 @@ html body .app-root[data-view="home"] .home-quick-tab[aria-selected="true"] {
   background: var(--bg-card) !important;
   color: var(--primary) !important;
   box-shadow: 0 -1px 0 color-mix(in srgb, var(--primary) 26%, transparent),
-    inset 0 2px var(--primary) !important;
+    inset 0 2px var(--primary);
 }
 
 html body .app-root[data-view="home"] .home-quick-body {
   max-height: 21rem !important;
-  gap: 0.42rem !important;
-  padding: 0.7rem !important;
+  gap: 0.42rem;
+  padding: 0.7rem;
   background:
     radial-gradient(circle at 100% 0, color-mix(in srgb, var(--primary) 7%, transparent), transparent 32%),
     var(--bg-card) !important;
@@ -43,13 +43,13 @@ html body .app-root[data-view="home"] .home-quick-body {
 
 html body .app-root[data-view="home"] .home-suggestion-heading {
   min-height: 2.2rem !important;
-  margin: 0 0 0.15rem !important;
-  padding: 0.45rem 0.7rem !important;
-  border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border)) !important;
-  border-radius: 0.72rem !important;
+  margin: 0 0 0.15rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border));
+  border-radius: 0.72rem;
   background: color-mix(in srgb, var(--bg-secondary) 88%, var(--primary) 12%) !important;
   color: var(--primary) !important;
-  letter-spacing: 0.01em !important;
+  letter-spacing: 0.01em;
 }
 
 html body .app-root[data-view="home"] .home-quick-row {
@@ -59,18 +59,18 @@ html body .app-root[data-view="home"] .home-quick-row {
   align-items: center !important;
   justify-content: normal !important;
   min-height: 3.45rem !important;
-  gap: 0.65rem !important;
-  padding: 0.42rem 0.55rem !important;
-  border: 1px solid transparent !important;
-  border-radius: 0.85rem !important;
+  gap: 0.65rem;
+  padding: 0.42rem 0.55rem;
+  border: 1px solid transparent;
+  border-radius: 0.85rem;
   background: color-mix(in srgb, var(--bg-secondary) 72%, transparent) !important;
 }
 
 html body .app-root[data-view="home"] .home-quick-row:hover,
 html body .app-root[data-view="home"] .home-quick-row:focus-visible {
-  border-color: color-mix(in srgb, var(--primary) 25%, var(--border)) !important;
+  border-color: color-mix(in srgb, var(--primary) 25%, var(--border));
   background: color-mix(in srgb, var(--bg-secondary) 86%, var(--primary) 14%) !important;
-  box-shadow: 0 8px 18px color-mix(in srgb, var(--primary) 9%, transparent) !important;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--primary) 9%, transparent);
   transform: translateX(2px);
 }
 
@@ -78,10 +78,10 @@ html body .app-root[data-view="home"] .home-quick-row > span:first-child {
   justify-self: center !important;
   width: 2.25rem !important;
   height: 2.25rem !important;
-  border-color: color-mix(in srgb, var(--primary) 34%, var(--border)) !important;
-  border-radius: 50% !important;
+  border-color: color-mix(in srgb, var(--primary) 34%, var(--border));
+  border-radius: 50%;
   background: var(--bg-card) !important;
-  box-shadow: none !important;
+  box-shadow: none;
   font-variant-numeric: tabular-nums;
 }
 
@@ -95,7 +95,7 @@ html body .app-root[data-view="home"] .home-quick-row strong {
 html body .app-root[data-view="home"] .home-quick-row > span:nth-child(3) {
   width: 5.25rem;
   justify-self: center;
-  overflow: visible !important;
+  overflow: visible;
   color: color-mix(in srgb, var(--text-primary) 72%, var(--primary) 28%) !important;
   font-size: 1.4rem !important;
   text-align: end !important;
@@ -112,18 +112,18 @@ html body .app-root[data-view="home"] .home-quick-row > span:last-child {
 
 html body .app-root[data-view="home"] .home-top-cards-grid {
   container-type: inline-size;
-  gap: clamp(0.75rem, 1.3vw, 1rem) !important;
+  gap: clamp(0.75rem, 1.3vw, 1rem);
 }
 
 html body .app-root[data-view="home"] .home-top-cards-grid > * {
   position: relative;
   isolation: isolate;
-  padding: clamp(0.9rem, 1.35vw, 1.15rem) !important;
-  border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%) !important;
-  border-radius: 1.15rem !important;
+  padding: clamp(0.9rem, 1.35vw, 1.15rem);
+  border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
+  border-radius: 1.15rem;
   background:
     linear-gradient(152deg, color-mix(in srgb, var(--bg-card) 97%, var(--primary) 3%), var(--bg-card)) !important;
-  box-shadow: 0 12px 32px color-mix(in srgb, var(--text-primary) 7%, transparent) !important;
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--text-primary) 7%, transparent);
 }
 
 html body .app-root[data-view="home"] .home-top-cards-grid > *::after {
@@ -138,26 +138,26 @@ html body .app-root[data-view="home"] .home-top-cards-grid > *::after {
 }
 
 html body .app-root[data-view="home"] .home-top-cards-grid > *:hover {
-  border-color: color-mix(in srgb, var(--primary) 32%, var(--border)) !important;
-  box-shadow: 0 18px 40px color-mix(in srgb, var(--primary) 11%, transparent) !important;
+  border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
+  box-shadow: 0 18px 40px color-mix(in srgb, var(--primary) 11%, transparent);
 }
 
 html body .app-root[data-view="home"] .home-prayer-item {
   min-height: clamp(2.1rem, 3vw, 2.35rem) !important;
-  border: 1px solid transparent !important;
+  border: 1px solid transparent;
 }
 
 html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] {
-  border-color: color-mix(in srgb, var(--primary) 32%, var(--border)) !important;
+  border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
   background: color-mix(in srgb, var(--bg-secondary) 78%, var(--primary) 22%) !important;
-  box-shadow: inset 3px 0 var(--primary) !important;
+  box-shadow: inset 3px 0 var(--primary);
 }
 
 
 html body .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
   container-type: inline-size;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)) !important;
-  gap: 0.72rem !important;
+  gap: 0.72rem;
 }
 
 html body .app-root[data-view="home"] .reciter-card {
@@ -165,18 +165,18 @@ html body .app-root[data-view="home"] .reciter-card {
   grid-template-columns: minmax(0, 1fr) auto !important;
   align-items: center !important;
   min-height: 5.8rem !important;
-  gap: 0.7rem !important;
-  padding: 0.65rem !important;
-  border-color: color-mix(in srgb, var(--border) 84%, var(--primary) 16%) !important;
-  border-radius: 1.05rem !important;
+  gap: 0.7rem;
+  padding: 0.65rem;
+  border-color: color-mix(in srgb, var(--border) 84%, var(--primary) 16%);
+  border-radius: 1.05rem;
   background: linear-gradient(145deg, var(--bg-card), color-mix(in srgb, var(--bg-card) 96%, var(--primary) 4%)) !important;
 }
 
 @media (max-width: 640px) {
   html body .app-root[data-view="home"] .reciter-card {
     min-height: 4.65rem !important;
-    padding: 0.42rem !important;
-    gap: 0.42rem !important;
+    padding: 0.42rem;
+    gap: 0.42rem;
   }
 }
 
@@ -184,39 +184,39 @@ html body .app-root[data-view="home"] .reciter-card__main {
   display: grid !important;
   grid-template-columns: 3.5rem minmax(0, 1fr) 1rem !important;
   align-items: center !important;
-  gap: 0.72rem !important;
-  padding: 0 !important;
+  gap: 0.72rem;
+  padding: 0;
 }
 
 html body .app-root[data-view="home"] .reciter-card__media {
   width: 3.5rem !important;
   height: 3.5rem !important;
-  border: 2px solid color-mix(in srgb, var(--bg-card) 70%, var(--primary) 30%) !important;
-  box-shadow: 0 7px 18px color-mix(in srgb, var(--primary) 14%, transparent) !important;
+  border: 2px solid color-mix(in srgb, var(--bg-card) 70%, var(--primary) 30%);
+  box-shadow: 0 7px 18px color-mix(in srgb, var(--primary) 14%, transparent);
 }
 
 html body .app-root[data-view="home"] .reciter-card__name {
   display: -webkit-box !important;
-  overflow: hidden !important;
+  overflow: hidden;
   color: var(--text-primary) !important;
   font-size: 0.83rem !important;
   font-weight: 760 !important;
   line-height: 1.28 !important;
-  text-overflow: unset !important;
+  text-overflow: unset;
   white-space: normal !important;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
 
 html body .app-root[data-view="home"] .reciter-card__meta {
-  margin-top: 0.28rem !important;
+  margin-top: 0.28rem;
   color: var(--text-muted) !important;
   font-size: 0.64rem !important;
   text-transform: capitalize;
 }
 
 html body .app-root[data-view="home"] .reciter-card__actions {
-  padding: 0 0 0 0.62rem !important;
+  padding: 0 0 0 0.62rem;
   border-inline-start: 1px solid color-mix(in srgb, var(--border) 75%, transparent) !important;
 }
 
@@ -228,9 +228,9 @@ html body .app-root[data-view="home"] .reciter-card__favorite {
 
 html body .app-root[data-view="home"] .reciter-card__listen {
   min-height: 2.55rem !important;
-  padding-inline: 0.72rem !important;
-  border-radius: 0.75rem !important;
-  box-shadow: 0 7px 16px color-mix(in srgb, var(--primary) 19%, transparent) !important;
+  padding-inline: 0.72rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 7px 16px color-mix(in srgb, var(--primary) 19%, transparent);
 }
 
 
@@ -810,35 +810,35 @@ html body .tajwid-rule-tooltip__description {
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-verse-by-verse-view {
   max-width: 62rem !important;
-  padding: clamp(0.45rem, 1.6vw, 1rem) !important;
+  padding: clamp(0.45rem, 1.6vw, 1rem);
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {
-  margin-bottom: 0.75rem !important;
-  padding: clamp(0.78rem, calc(var(--reader-arabic-size, 42px) * 0.3), 1.3rem) clamp(0.75rem, 2vw, 1.25rem) !important;
-  overflow: hidden !important;
-  border: 1px solid color-mix(in srgb, var(--border) 88%, var(--primary) 12%) !important;
-  border-radius: 1rem !important;
+  margin-bottom: 0.75rem;
+  padding: clamp(0.78rem, calc(var(--reader-arabic-size, 42px) * 0.3), 1.3rem) clamp(0.75rem, 2vw, 1.25rem);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border) 88%, var(--primary) 12%);
+  border-radius: 1rem;
   background: var(--bg-card) !important;
-  box-shadow: 0 7px 22px color-mix(in srgb, var(--text-primary) 6%, transparent) !important;
+  box-shadow: 0 7px 22px color-mix(in srgb, var(--text-primary) 6%, transparent);
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card:hover {
-  border-color: color-mix(in srgb, var(--primary) 28%, var(--border)) !important;
+  border-color: color-mix(in srgb, var(--primary) 28%, var(--border));
   background: color-mix(in srgb, var(--bg-card) 96%, var(--primary) 4%) !important;
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card:is(.is-active, .is-playing) {
-  border-color: color-mix(in srgb, var(--primary) 48%, var(--border)) !important;
+  border-color: color-mix(in srgb, var(--primary) 48%, var(--border));
   background: color-mix(in srgb, var(--bg-card) 91%, var(--primary) 9%) !important;
-  box-shadow: inset 3px 0 var(--primary), 0 10px 26px color-mix(in srgb, var(--primary) 11%, transparent) !important;
+  box-shadow: inset 3px 0 var(--primary), 0 10px 26px color-mix(in srgb, var(--primary) 11%, transparent);
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top {
   min-height: 2.5rem !important;
-  margin-bottom: clamp(0.65rem, 1.8vw, 1rem) !important;
-  padding-bottom: 0.55rem !important;
-  border-bottom: 1px solid color-mix(in srgb, var(--border) 72%, transparent) !important;
+  margin-bottom: clamp(0.65rem, 1.8vw, 1rem);
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference.qc-list-card__reference,
@@ -847,14 +847,14 @@ html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card_
   width: auto !important;
   height: 2.4rem !important;
   min-height: 2.4rem !important;
-  border-color: color-mix(in srgb, var(--border) 80%, var(--primary) 20%) !important;
-  border-radius: 0.65rem !important;
+  border-color: color-mix(in srgb, var(--border) 80%, var(--primary) 20%);
+  border-radius: 0.65rem;
   background: var(--bg-secondary) !important;
   color: var(--text-secondary) !important;
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference.qc-list-card__reference {
-  padding-inline: 0.62rem !important;
+  padding-inline: 0.62rem;
   color: var(--primary) !important;
   font-weight: 760 !important;
 }
@@ -866,15 +866,15 @@ html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card 
 
 html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .mushaf-text-block {
   line-height: var(--cpv-line-height, 1.78) !important;
-  word-spacing: 0 !important;
+  word-spacing: 0;
   text-align: justify !important;
   text-align-last: right !important;
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__translation-slot {
-  margin-top: 0.75rem !important;
-  padding-top: 0.8rem !important;
-  border-top: 1px solid var(--border) !important;
+  margin-top: 0.75rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border);
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__translation-slot p {
@@ -884,9 +884,9 @@ html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card_
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__study {
-  margin-top: 0.65rem !important;
-  padding-top: 0.55rem !important;
-  border-top: 1px solid color-mix(in srgb, var(--border) 72%, transparent) !important;
+  margin-top: 0.65rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
 }
 
 html body .app-root[data-view="reading"] .srh-typography-disclosure.open .srh-typography-panel {
@@ -898,13 +898,13 @@ html body .app-root[data-view="duas"] .duas-page--platform .dua-open-btn-v5 svg 
   min-width: 15px !important;
   height: 15px !important;
   min-height: 15px !important;
-  transform: none !important;
+  transform: none;
 }
 
 html[data-theme="sepia"] body .app-root[data-view="home"] .home-top-cards-grid > *,
 html[data-theme="sepia"] body .app-root[data-view="home"] .home-info-card,
 html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {
-  border-color: color-mix(in srgb, var(--border) 76%, #a9782d 24%) !important;
+  border-color: color-mix(in srgb, var(--border) 76%, #a9782d 24%);
 }
 
 @media (max-width: 760px) {
@@ -915,8 +915,8 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
   html body .app-root[data-view="home"] .home-quick-row {
     grid-template-columns: 2.15rem minmax(0, 1fr) minmax(4.3rem, auto) 1.6rem !important;
     min-height: 3.25rem !important;
-    gap: 0.48rem !important;
-    padding-inline: 0.4rem !important;
+    gap: 0.48rem;
+    padding-inline: 0.4rem;
   }
 
   html body .app-root[data-view="home"] .home-quick-row > span:first-child {
@@ -946,13 +946,13 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
   }
 
   html body .app-root[data-view="reading"] .quran-display--platform .qc-verse-by-verse-view {
-    padding-inline: 0.35rem !important;
+    padding-inline: 0.35rem;
   }
 
   html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {
-    margin-bottom: 0.55rem !important;
-    padding: clamp(0.65rem, calc(var(--reader-arabic-size, 34px) * 0.27), 1rem) 0.72rem !important;
-    border-radius: 0.85rem !important;
+    margin-bottom: 0.55rem;
+    padding: clamp(0.65rem, calc(var(--reader-arabic-size, 34px) * 0.27), 1rem) 0.72rem;
+    border-radius: 0.85rem;
   }
 
   html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top {
@@ -973,7 +973,7 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
   }
 
   html body .app-root[data-view="home"] .home-top-cards-grid > * {
-    padding: 0.78rem !important;
+    padding: 0.78rem;
   }
 }
 
@@ -988,12 +988,12 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
 
   html body .app-root[data-view="home"] .reciter-card {
     grid-template-columns: minmax(0, 1fr) auto !important;
-    padding: 0.5rem !important;
+    padding: 0.5rem;
   }
 
   html body .app-root[data-view="home"] .reciter-card__listen {
     width: 2.55rem !important;
-    padding: 0 !important;
+    padding: 0;
   }
 
   html body .app-root[data-view="home"] .reciter-card__listen span {
@@ -1004,8 +1004,8 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
 @media (prefers-reduced-motion: reduce) {
   html body .app-root[data-view="home"] .home-quick-row,
   html body .app-root[data-view="home"] .home-top-cards-grid > * {
-    transition: none !important;
-    transform: none !important;
+    transition: none;
+    transform: none;
   }
 }
 
@@ -1025,12 +1025,12 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
 
 /* Reader list mode (qc-list-card) — off for surah-stream reciters (position is approximate) */
 html:not([data-audio-mode="surah"]) body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-playing {
-  animation: ayah-reading-pulse 2.2s ease-in-out infinite !important;
+  animation: ayah-reading-pulse 2.2s ease-in-out infinite;
 }
 
 /* Verset actif (is-active = navigué, pas forcément lu) — liseré statique */
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-active {
-  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--primary) 60%, transparent) !important;
+  box-shadow: inset 3px 0 0 color-mix(in srgb, var(--primary) 60%, transparent);
 }
 
 /* Ayat marker pendant la lecture — off for surah-stream reciters */
@@ -1042,14 +1042,14 @@ html:not([data-audio-mode="surah"]) body .app-root :is(
   .verse-stop-medallion,
   .cpv-medallion
 ).is-playing {
-  animation: ayah-marker-playing 1.8s ease-in-out infinite !important;
-  transform: none !important;
+  animation: ayah-marker-playing 1.8s ease-in-out infinite;
+  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html:not([data-audio-mode="surah"]) body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-playing {
-    animation: none !important;
-    box-shadow: inset 3px 0 0 var(--primary) !important;
+    animation: none;
+    box-shadow: inset 3px 0 0 var(--primary);
   }
 
   html:not([data-audio-mode="surah"]) body .app-root :is(
@@ -1060,8 +1060,8 @@ html:not([data-audio-mode="surah"]) body .app-root :is(
     .verse-stop-medallion,
     .cpv-medallion
   ).is-playing {
-    animation: none !important;
-    transform: scale(1.1) translateY(0.06em) !important;
+    animation: none;
+    transform: scale(1.1) translateY(0.06em);
   }
 }
 
@@ -1071,8 +1071,8 @@ html:not([data-audio-mode="surah"]) body .app-root :is(
 html body .app-root[data-view="home"] .hp-list .hp-card--list .hp-card-play {
   background: var(--primary) !important;
   color: #ffffff !important;
-  border: none !important;
-  box-shadow: 0 3px 10px color-mix(in srgb, var(--primary) 28%, transparent) !important;
+  border: none;
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--primary) 28%, transparent);
   width: 2.4rem !important;
   height: 2.4rem !important;
   min-width: 2.4rem !important;
@@ -1081,8 +1081,8 @@ html body .app-root[data-view="home"] .hp-list .hp-card--list .hp-card-play {
 
 html body .app-root[data-view="home"] .hp-list .hp-card--list .hp-card-play:hover {
   background: color-mix(in srgb, var(--primary) 88%, #000 12%) !important;
-  box-shadow: 0 5px 16px color-mix(in srgb, var(--primary) 36%, transparent) !important;
-  transform: translateY(-1px) scale(1.04) !important;
+  box-shadow: 0 5px 16px color-mix(in srgb, var(--primary) 36%, transparent);
+  transform: translateY(-1px) scale(1.04);
 }
 
 html body .app-root[data-view="home"] .hp-list .hp-card--list .hp-card-play svg {
@@ -1093,16 +1093,16 @@ html body .app-root[data-view="home"] .hp-list .hp-card--list .hp-card-play svg 
 /* ── Barre nav sourate (Sourate précédente / suivante) ──────── */
 
 html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav {
-  border: 1px solid color-mix(in srgb, var(--primary) 14%, var(--border) 86%) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 14%, var(--border) 86%);
   background: color-mix(in srgb, var(--bg-card) 96%, var(--primary) 4%) !important;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .reader-mode-nav__button {
   background: color-mix(in srgb, var(--primary) 6%, transparent) !important;
-  border: 1px solid color-mix(in srgb, var(--primary) 14%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 14%, transparent);
   color: var(--text-secondary) !important;
-  border-radius: 11px !important;
+  border-radius: 11px;
   min-width: 0 !important;
   flex: 1 1 0 !important;
 }
@@ -1110,13 +1110,13 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-n
 html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .reader-mode-nav__button:hover:not(:disabled) {
   background: color-mix(in srgb, var(--primary) 12%, transparent) !important;
   color: var(--primary) !important;
-  border-color: color-mix(in srgb, var(--primary) 30%, transparent) !important;
-  transform: translateY(-1px) !important;
+  border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+  transform: translateY(-1px);
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .reader-mode-nav__button span {
-  overflow: visible !important;
-  text-overflow: unset !important;
+  overflow: visible;
+  text-overflow: unset;
   white-space: normal !important;
   word-break: break-word !important;
   line-height: 1.25 !important;
@@ -1125,10 +1125,10 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-n
 
 /* centre : nom sourate + verset count */
 html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .mode-nav-current {
-  padding: 0.5rem clamp(0.6rem, 2vw, 1rem) !important;
-  border-radius: 10px !important;
+  padding: 0.5rem clamp(0.6rem, 2vw, 1rem);
+  border-radius: 10px;
   background: color-mix(in srgb, var(--primary) 9%, var(--bg-primary) 91%) !important;
-  border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
   text-align: center !important;
   white-space: normal !important;
   min-width: clamp(7rem, 28vw, 14rem) !important;
@@ -1138,8 +1138,8 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-n
   font-size: clamp(0.88rem, 2.4vw, 1.05rem) !important;
   color: var(--primary) !important;
   white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: unset !important;
+  overflow: visible;
+  text-overflow: unset;
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .mode-nav-current span {
@@ -1151,8 +1151,8 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-n
 @media (max-width: 480px) {
   html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .reader-mode-nav__button span {
     white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
     max-width: 22vw !important;
   }
 
@@ -1233,15 +1233,15 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-n
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
-    gap: 0.25rem !important;
-    padding: 0 0 0 0.42rem !important;
+    gap: 0.25rem;
+    padding: 0 0 0 0.42rem;
   }
 
   html body .app-root[data-view="home"] .reciter-card__actions :is(button, a) {
     width: 2.4rem !important;
     min-width: 2.4rem !important;
     min-height: 2.4rem !important;
-    padding: 0 !important;
+    padding: 0;
   }
 }
 
@@ -1251,8 +1251,8 @@ html body .app-root[data-view="reading"]
   .quran-display--platform
   .mushaf-text-block
   .cpv-ayah-marker.cpv-ayah-marker {
-  margin-inline-start: 0.14em !important;
-  margin-inline-end: 0.72em !important;
-  margin-right: 0.14em !important;
-  margin-left: 0.72em !important;
+  margin-inline-start: 0.14em;
+  margin-inline-end: 0.72em;
+  margin-right: 0.14em;
+  margin-left: 0.72em;
 }

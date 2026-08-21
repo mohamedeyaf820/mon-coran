@@ -153,7 +153,23 @@ const AYAH_MARKER_BY_FONT = {
 };
 
 export const NATIVE_AYAH_MARKER_RE = /[\u06dd\u06de][\u0660-\u0669\u06f0-\u06f9\d]*/u;
-const AYAH_MARKER_SUFFIX_RE = /(?:(?:\s|&nbsp;)*(?:[\u06dd\u06de\u06e9\ufd3e\ufd3f]?[\u0660-\u0669\u06f0-\u06f9\d]+[\ufd3e\ufd3f]?))+\s*$/u;
+
+// Quran payloads do not all encode the end of an ayah in the same way. Some
+// include U+06DD/U+06DE, some only contain shaped Arabic-Indic digits, and a
+// few wrap the number in the ornamental Quran brackets. Strip every supported
+// *trailing* form before generating our single marker. Waqf signs (U+06D6 to
+// U+06DC) are deliberately excluded: they are meaningful recitation content.
+const INVISIBLE_SUFFIX = "[\\u061C\\u200B-\\u200F\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]*";
+const AYAH_MARKER_SUFFIX_RE = new RegExp(
+  `(?:(?:\\s|&nbsp;)*(?:` +
+    `[\\u06DD\\u06DE\\u06E9]?[\\u0660-\\u0669\\u06F0-\\u06F9\\d]+|` +
+    `[\\uFD3E\\uFD3F][\\u0660-\\u0669\\u06F0-\\u06F9\\d]+[\\uFD3E\\uFD3F]|` +
+    `[\\u06DD\\u06DE]` +
+  `))+${INVISIBLE_SUFFIX}\\s*$`,
+  "u",
+);
+
+export const UI_AYAH_MARKER_FONT_ID = "qpc-hafs";
 
 const LEGACY_FONT_ALIASES = {
   "mushaf-kfgqpc": "qpc-hafs",
@@ -307,6 +323,24 @@ export function getNativeAyahMarker(value, fontId, riwaya = "hafs") {
   return `${config.marker}${formatAyahMarkerNumber(value, normalizedId, riwaya)}`;
 }
 
+/**
+ * Marker used by the standalone AyahMarker component.
+ *
+ * Its CSS intentionally uses the QPC Hafs rosette for a consistent medallion
+ * in every reading font. Generating the text with another font configuration
+ * (for example Scheherazade's U+06DD prefix) and then shaping it as QPC Hafs
+ * creates two adjacent rosettes. Keep glyph and font source inseparable.
+ */
+export function getUiAyahMarker(value) {
+  return getNativeAyahMarker(value, UI_AYAH_MARKER_FONT_ID, "hafs");
+}
+
+export function stripEmbeddedAyahMarkers(text) {
+  const value = normalizeQuranGlyphText(text).trim();
+  if (!value) return value;
+  return value.replace(AYAH_MARKER_SUFFIX_RE, "").trim();
+}
+
 export function appendNativeAyahMarker(
   text,
   ayahNumber,
@@ -314,11 +348,15 @@ export function appendNativeAyahMarker(
   riwaya = "hafs",
   includeMarker = true,
 ) {
-  const value = normalizeQuranGlyphText(text).trim();
-  if (!value) return value;
-  const cleanedValue = value.replace(AYAH_MARKER_SUFFIX_RE, "").trim();
+  const normalizedValue = normalizeQuranGlyphText(text).trim();
+  if (!normalizedValue) return normalizedValue;
+  const cleanedValue = stripEmbeddedAyahMarkers(normalizedValue);
+  if (!cleanedValue) {
+    return includeMarker
+      ? getNativeAyahMarker(ayahNumber, fontId, riwaya)
+      : cleanedValue;
+  }
   if (!includeMarker) return cleanedValue;
   const marker = getNativeAyahMarker(ayahNumber, fontId, riwaya);
-  if (!cleanedValue) return marker;
   return `${cleanedValue} ${marker}`;
 }

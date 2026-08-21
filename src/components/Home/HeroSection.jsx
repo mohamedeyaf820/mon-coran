@@ -7,7 +7,6 @@ import {
   CirclePlay,
   Feather,
   HandHeart,
-  Headphones,
   ListMusic,
   Sparkles,
   StickyNote,
@@ -75,8 +74,6 @@ export default function HeroSection({
   onWarmSurah,
   openLibrary,
   openDuas,
-  resumeListening,
-  resumeState,
   suggestionSet,
   dailyVerse,
   vodSurahNum,
@@ -85,9 +82,15 @@ export default function HeroSection({
   const locale = lang === "ar" ? "ar-SA" : lang === "en" ? "en-GB" : "fr-FR";
   const greetingLabel = greeting[lang === "ar" ? "ar" : lang === "en" ? "en" : "fr"];
   const surahLigature = getSurahLigature(surahLabel?.n);
-  const resumeTitle = hasReadingHistory
-    ? localText(lang, "Reprendre votre lecture", "Continue reading", "متابعة القراءة")
-    : localText(lang, "Commencer votre lecture", "Start reading", "ابدأ القراءة");
+  const heroTitle = localText(
+    lang,
+    "Lire, écouter et comprendre le Coran",
+    "Read, listen and understand the Quran",
+    "اقرأ القرآن واستمع إليه وتدبّره",
+  );
+  const targetLabel = hasReadingHistory
+    ? localText(lang, "Votre prochaine lecture", "Your next reading", "قراءتك التالية")
+    : localText(lang, "Commencer par", "Start with", "ابدأ بـ");
 
   return (
     <section className="home-overview" aria-labelledby="home-resume-title">
@@ -126,20 +129,23 @@ export default function HeroSection({
             <Feather size={12} aria-hidden="true" />
             {riwayaLabel}
           </span>
-          <h1 id="home-resume-title">{resumeTitle}</h1>
+          <h1 id="home-resume-title">{heroTitle}</h1>
           <div className="home-resume-panel__target">
-            <strong>{readingTarget}</strong>
-            {surahLabel ? (
-              <span
-                className="font-surah-names"
-                aria-label={surahLabel.ar}
-                role="img"
-                dir={surahLigature ? "ltr" : "rtl"}
-                lang={surahLigature ? "en" : "ar"}
-              >
-                <span aria-hidden="true">{surahLigature || surahLabel.ar}</span>
-              </span>
-            ) : null}
+            <small className="home-resume-panel__target-label">{targetLabel}</small>
+            <span className="home-resume-panel__target-line">
+              <strong>{readingTarget}</strong>
+              {surahLabel ? (
+                <span
+                  className="home-resume-panel__target-arabic font-surah-names"
+                  aria-label={surahLabel.ar}
+                  role="img"
+                  dir={surahLigature ? "ltr" : "rtl"}
+                  lang={surahLigature ? "en" : "ar"}
+                >
+                  <span aria-hidden="true">{surahLigature || surahLabel.ar}</span>
+                </span>
+              ) : null}
+            </span>
           </div>
 
           <nav
@@ -177,17 +183,10 @@ export default function HeroSection({
             <span>{primaryReadingCtaLabel}</span>
             {isRtl ? <ArrowLeft size={14} aria-hidden="true" /> : <ArrowRight size={14} aria-hidden="true" />}
           </button>
-          {resumeState && resumeListening ? (
-            <button type="button" className="home-resume-panel__secondary" onClick={resumeListening}>
-              <Headphones size={15} aria-hidden="true" />
-              <span>{localText(lang, "Reprendre l'écoute", "Resume listening", "استئناف الاستماع")}</span>
-            </button>
-          ) : (
-            <button type="button" className="home-resume-panel__secondary" onClick={openDuas}>
-              <HandHeart size={15} aria-hidden="true" />
-              <span>{localText(lang, "Invocations", "Supplications", "الأدعية")}</span>
-            </button>
-          )}
+          <button type="button" className="home-resume-panel__secondary" onClick={openDuas}>
+            <HandHeart size={15} aria-hidden="true" />
+            <span>{localText(lang, "Invocations", "Supplications", "الأدعية")}</span>
+          </button>
         </footer>
       </article>
 

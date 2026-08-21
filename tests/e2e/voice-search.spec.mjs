@@ -1,5 +1,24 @@
 import { expect, test } from "@playwright/test";
 
+async function openSearch(page) {
+  const viewportWidth = page.viewportSize()?.width || 1280;
+  const searchButton = page
+    .getByRole("button", { name: /Rechercher|Search|بحث/i })
+    .first();
+  if (viewportWidth > 620) {
+    await expect(searchButton).toBeVisible({ timeout: 15_000 });
+    await searchButton.click();
+    return;
+  }
+
+  const moreButton = page.locator(".mp-header__more");
+  await expect(moreButton).toBeVisible({ timeout: 15_000 });
+  await moreButton.click();
+  const menuSearch = page.locator('.mp-header-menu__item[data-key="search"]');
+  await expect(menuSearch).toBeVisible();
+  await menuSearch.click();
+}
+
 test("voice search transcribes speech into the Quran search field", async ({
   page,
 }) => {
@@ -30,11 +49,7 @@ test("voice search transcribes speech into the Quran search field", async ({
   });
 
   await page.goto("/surah/1");
-  const searchButton = page
-    .getByRole("button", { name: /Rechercher|Search|بحث/i })
-    .first();
-  await expect(searchButton).toBeVisible({ timeout: 15_000 });
-  await searchButton.click();
+  await openSearch(page);
 
   const dialog = page.getByRole("dialog", { name: /Recherche|Search|بحث/i });
   await expect(dialog).toBeVisible();
@@ -56,13 +71,11 @@ test("voice search remains compact and explains unsupported mobile browsers", as
   });
   await page.goto("/surah/1");
 
-  const searchButton = page
-    .getByRole("button", { name: /Rechercher|Search|بحث/i })
-    .first();
-  await expect(searchButton).toBeVisible({ timeout: 15_000 });
-  await searchButton.click();
+  await openSearch(page);
 
   const dialog = page.getByRole("dialog", { name: /Recherche|Search|بحث/i });
+  await expect(dialog.locator(".search-pro__modes")).toHaveCount(0);
+  await expect(dialog.locator(".search-pro__summary")).toHaveCount(0);
   const voiceButton = dialog.getByRole("button", {
     name: /Rechercher avec votre voix|Search with your voice|البحث باستخدام صوتك/i,
   });
@@ -72,6 +85,15 @@ test("voice search remains compact and explains unsupported mobile browsers", as
   const iconBox = await voiceButton.locator("svg").boundingBox();
   expect(iconBox?.width).toBeLessThanOrEqual(18);
   await expect(voiceButton.locator(".search-pro__voice-label")).toBeHidden();
+
+  const dialogBox = await dialog.boundingBox();
+  expect(dialogBox?.width || 0).toBeLessThanOrEqual(390);
+  expect(dialogBox?.height || 0).toBeLessThanOrEqual(844);
+  expect(
+    await dialog.evaluate(
+      (node) => node.scrollWidth - node.clientWidth,
+    ),
+  ).toBeLessThanOrEqual(2);
 
   await voiceButton.click();
   await expect(dialog.locator(".search-pro__voice-error")).toContainText(

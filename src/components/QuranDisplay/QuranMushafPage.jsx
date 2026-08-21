@@ -318,16 +318,19 @@ export default function QuranMushafPage({
             fontFamily: 'var(--font-quran)',
             fontSize: 'var(--qd-font-size, 28px)',
             lineHeight: 'var(--line-height-quran)',
-            letterSpacing: '0.01em',
-            wordSpacing: '0.05em',
+            letterSpacing: 0,
+            wordSpacing: 0,
             textRendering: 'optimizeLegibility',
             WebkitFontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
             fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
             WebkitFontSmoothing: 'antialiased',
             MozOsxFontSmoothing: 'grayscale',
-            unicodeBidi: 'plaintext',
+            unicodeBidi: 'isolate',
             whiteSpace: 'nowrap',
-            marginInlineEnd: '0.08em',
+            // Words are separate interactive spans in page mode. This tiny
+            // logical gap replaces the literal space without producing the
+            // exaggerated Safari/WebKit spacing caused by word-spacing.
+            marginInlineEnd: '0.035em',
           }}
         >
           {normalizeArabicText(word.text)}

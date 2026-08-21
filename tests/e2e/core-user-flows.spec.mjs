@@ -180,7 +180,8 @@ test("home presents one reading journey and one unified audio library", async ({
   await expect(page.locator(".mp-footer-v2__nav")).toBeHidden();
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator(".mp-footer-v2__nav")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Bibliothèque" })).toBeVisible();
+  await expect(page.locator(".mp-footer-v2__nav-btn")).toHaveCount(4);
+  await expect(page.getByRole("button", { name: "Bibliothèque" })).toHaveCount(0);
 });
 
 test("bookmarking a verse survives a page reload", async ({ page }) => {
@@ -239,21 +240,24 @@ test("searching a translation result navigates to the matching ayah", async ({
   await seedFrenchState(page);
   await installQuranNetworkFixtures(page);
   await page.route("https://api.alquran.cloud/v1/search/**", async (route) => {
+    const isFrenchTranslation = /\/all\/fr\./.test(route.request().url());
     await route.fulfill({
       contentType: "application/json",
       body: JSON.stringify({
         code: 200,
         status: "OK",
         data: {
-          count: 1,
-          matches: [
-            {
-              number: 4902,
-              text: "Lequel donc des bienfaits de votre Seigneur nierez-vous ?",
-              numberInSurah: 13,
-              surah: { number: 55 },
-            },
-          ],
+          count: isFrenchTranslation ? 1 : 0,
+          matches: isFrenchTranslation
+            ? [
+                {
+                  number: 4902,
+                  text: "Lequel donc des bienfaits de votre Seigneur nierez-vous ?",
+                  numberInSurah: 13,
+                  surah: { number: 55 },
+                },
+              ]
+            : [],
         },
       }),
     });
@@ -265,7 +269,7 @@ test("searching a translation result navigates to the matching ayah", async ({
 
   const searchInput = page.locator(".search-pro").getByRole("textbox").first();
   await searchInput.fill("miséricorde");
-  await page.getByRole("tab", { name: "FR" }).click();
+  await expect(page.locator(".search-pro__modes")).toHaveCount(0);
 
   const result = page.getByTestId("search-result").first();
   await expect(result).toBeVisible({ timeout: 15_000 });
