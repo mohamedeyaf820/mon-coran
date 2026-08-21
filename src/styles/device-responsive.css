@@ -1583,7 +1583,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__title-cycle-viewport .mp-header__title-sub {
-    font-size: clamp(19px, 6.4vw, 22px) !important;
+    font-size: clamp(22px, 6.4vw, 24px) !important;
   }
 
   html body #root .app-root.app-root[data-view="reading"] > .mp-header

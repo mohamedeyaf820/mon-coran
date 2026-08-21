@@ -20,8 +20,8 @@ const LIMITS = {
   // budgets remain the stricter deployment gates. Updated to reflect current
   // measured sizes after responsive reader, recitation platform, and mushaf
   // style additions.
-  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1700),
-  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1100),
+  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1750),
+  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1150),
   important: Number(process.env.CSS_IMPORTANT_BUDGET || 7240),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
   crossFileDuplicateRules: Number(

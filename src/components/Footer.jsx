@@ -99,7 +99,7 @@ export default function Footer() {
   return (
     <footer className="mp-footer-v2" role="contentinfo">
       <div className="mp-footer-v2__shell">
-        <div className="mp-footer-v2__verse" aria-label={verseReference}>
+        <div className="mp-footer-v2__verse" aria-label={t("footer.verseRef", lang)}>
           <span className="mp-footer-v2__verse-icon" aria-hidden="true">
             <BookOpenText size={14} />
           </span>
