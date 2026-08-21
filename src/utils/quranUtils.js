@@ -18,9 +18,10 @@ const CACHE_MAX = 800;
 //   fallback. Remove only this unsafe sequence; ordinary ZWNJ usage is preserved.
 export function normalizeQuranGlyphText(text) {
     return String(text || '')
-        .replace(/[\u25CC\u25CF\u25CB\u2B24\u2022]/g, '')
+        .replace(/[\u25CC\u25CF\u25CB\u2B24\u2022\u060C\u061B\u061F]/g, ' ')
         .replace(/[\u06EB\u06EC]/g, '\u06DF')
-        .replace(/\u200C(?=[\u06D6-\u06ED])/g, '');
+        .replace(/\u200C(?=[\u06D6-\u06ED])/g, '')
+        .replace(/\s+/g, ' ');
 }
 
 
