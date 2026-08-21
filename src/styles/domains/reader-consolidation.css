@@ -3573,82 +3573,18 @@ html[data-split-view="on"]
     text-transform: uppercase;
 }
 
-.view-reading .mp-header-menu--reader .mp-header-menu__close {
-    width: 1.78rem;
-    min-width: 1.78rem;
-    height: 1.78rem;
-    min-height: 1.78rem;
-    border: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
-    border-radius: 0.58rem;
-    background: color-mix(in srgb, var(--bg-card) 86%, transparent);
-}
-
 .view-reading .mp-header-menu--reader .mp-header-menu__primary-command {
-    margin: 0 0 0.34rem;
+    margin: 0 0 0.45rem;
 }
 
 .view-reading .mp-header-menu--reader .mp-header-menu__reader-tools {
     display: grid;
-    gap: 0.32rem;
-    margin: 0;
-    padding: 0.38rem 0;
-    border: 0;
-    border-block: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
-    border-radius: 0;
-    background: transparent;
-}
-
-.view-reading .mp-header-menu--reader .mp-header-menu__controls-row {
-    display: grid;
-    grid-template-columns: minmax(5.8rem, 0.88fr) minmax(0, 1.12fr);
-    gap: 0.32rem;
-}
-
-.view-reading .mp-header-menu--reader .mp-header-menu__font-controls,
-.view-reading .mp-header-menu--reader .mp-header-menu__layout,
-.view-reading .mp-header-menu--reader .mp-header-menu__riwaya-btns {
-    min-width: 0;
-    border: 1px solid color-mix(in srgb, var(--primary) 14%, var(--border));
-    background: color-mix(in srgb, var(--bg-secondary) 70%, transparent);
-    box-shadow: none;
-}
-
-.view-reading .mp-header-menu--reader .mp-header-menu__font-controls {
-    width: 100%;
-    grid-template-columns: 1.65rem minmax(2.15rem, 1fr) 1.65rem;
-    padding: 0.08rem;
-    border-radius: 0.62rem;
-}
-
-.view-reading .mp-header-menu--reader .mp-header-menu__font-controls button {
-    width: 1.65rem;
-    height: 1.92rem;
-    min-width: 1.65rem;
-    min-height: 1.92rem;
-    border-radius: 0.48rem;
-}
-
-.view-reading .mp-header-menu--reader .mp-header-menu__font-controls output {
-    font-size: 0.68rem;
-}
-
-.view-reading .mp-header-menu--reader .mp-header-menu__layout {
-    gap: 0.12rem;
-    padding: 0.1rem;
-    border-radius: 0.62rem;
-}
-
-.view-reading .mp-header-menu--reader .mp-header-menu__layout button,
-.view-reading .mp-header-menu--reader .mp-header__seg {
-    min-height: 2.05rem;
-    padding: 0.2rem 0.35rem;
-    border-radius: 0.52rem;
-    font-size: 0.66rem;
-}
-
-.view-reading .mp-header-menu--reader .mp-header-menu__layout button svg {
-    width: 0.72rem;
-    height: 0.72rem;
+    gap: 0.42rem;
+    margin: 0 0 0.45rem;
+    padding: 0.45rem;
+    border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--primary) 5%, var(--bg-secondary));
 }
 
 .view-reading .mp-header-menu--reader .mp-header-menu__riwaya {

@@ -1617,18 +1617,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
 /* Final responsive contract for persistent reader overlays. */
 @media (max-width: 599px) {
-  html body .mp-header-menu.mp-header-menu {
-    width: min(18.5rem, calc(100vw - 0.5rem)) !important;
-    padding: 2.05rem 0.3rem 0.3rem !important;
-  }
-
-  html body .mp-header-menu .mp-header-menu__close {
-    width: 1.78rem !important;
-    height: 1.78rem !important;
-    min-width: 1.78rem !important;
-    min-height: 1.78rem !important;
-  }
-
   html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--dock {
     min-height: 0 !important;
     padding-bottom: max(0.22rem, env(safe-area-inset-bottom)) !important;
