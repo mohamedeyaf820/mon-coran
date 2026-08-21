@@ -717,16 +717,16 @@ html.dark .app-root > .mp-header {
 }
 
 .mp-header-menu__header {
-  position: absolute;
+  position: relative;
   z-index: 3;
-  top: 0.4rem;
-  right: 0.4rem;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  margin: 0;
-  padding: 0;
+  justify-content: space-between;
+  margin-bottom: 0.45rem;
+  padding: 0.25rem 0.35rem 0.4rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
 }
+
 
 .mp-header-menu__item-copy,
 .mp-header-menu__riwaya-copy {
@@ -1107,11 +1107,6 @@ html.dark .app-root > .mp-header {
   }
 }
 
-@media (min-width: 600px) {
-  .mp-header-menu:not(:has(.mp-header-menu__reader-tools)) {
-    padding-top: 2.3rem !important;
-  }
-}
 
 .mp-header-menu :is(button, [tabindex]):focus-visible {
   outline: 2px solid color-mix(in srgb, var(--primary) 78%, #fff 22%);

@@ -1,4 +1,4 @@
-﻿const QURAN_DUAS = [
+const QURAN_DUAS = [
   // ── Ibadah / Worship ──────────────────────────────────────────────
   {
     id: 'baqara-127',
@@ -450,35 +450,6 @@
     en: 'Give good tidings to the patient — who, when disaster strikes them, say: "Indeed we belong to Allah, and indeed to Him we will return."',
   },
   {
-    id: 'zumar-10',
-    category: 'steadfastness',
-    surah: 39, ayah: 10,
-    arabic: 'إِنَّمَا يُوَفَّى الصَّابِرُونَ أَجْرَهُم بِغَيْرِ حِسَابٍ',
-    transliteration: 'Innama yuwaffa al-sabirun ajrahum bi-ghayri hisab',
-    fr: 'Les patients seront rémunérés sans compte.',
-    en: 'Indeed, the patient will be given their reward without account.',
-  },
-
-  // ── Shifa / Guérison ──────────────────────────────────────────────
-  {
-    id: 'shuara-80',
-    category: 'shifa',
-    surah: 26, ayah: 80,
-    arabic: 'وَإِذَا مَرِضْتُ فَهُوَ يَشْفِينِ',
-    transliteration: 'Wa idha maridtu fahuwa yashfin',
-    fr: "Et quand je suis malade, c\u2019est Lui qui me gu\u00e9rit.",
-    en: 'And when I am ill, it is He who cures me.',
-  },
-  {
-    id: 'isra-82',
-    category: 'shifa',
-    surah: 17, ayah: 82,
-    arabic: 'وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ لِّلْمُؤْمِنِينَ',
-    transliteration: "Wa nunazzilu min al-Qur'ani ma huwa shifa'un wa rahmatun lil-mu'minin",
-    fr: 'Nous faisons descendre du Coran ce qui est une guérison et une miséricorde pour les croyants.',
-    en: 'And We send down of the Quran that which is healing and mercy for the believers.',
-  },
-  {
     id: 'yunus-57',
     category: 'shifa',
     surah: 10, ayah: 57,
@@ -589,6 +560,108 @@
     fr: "Dans la cr\u00e9ation des cieux et de la terre, et dans l\u2019alternance de la nuit et du jour, il y a des signes pour les gens dou\u00e9s de raison.",
     en: 'Indeed, in the creation of the heavens and the earth and the alternation of the night and the day are signs for those of understanding.',
   },
+
+  // ── Invocations du Quotidien / Hisn al-Muslim (Citadelle du Musulman) ──
+  {
+    id: 'hisn-masjid-enter',
+    category: 'daily',
+    source: 'Hisn al-Muslim (Muslim 713)',
+    arabic: 'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ',
+    transliteration: "Allahumma iftah li abwaba rahmatika",
+    fr: "Ô Allah, ouvre-moi les portes de Ta miséricorde. (Entrée à la mosquée)",
+    en: "O Allah, open the gates of Your mercy for me. (Entering mosque)",
+  },
+  {
+    id: 'hisn-masjid-exit',
+    category: 'daily',
+    source: 'Hisn al-Muslim (Muslim 713)',
+    arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ',
+    transliteration: "Allahumma inni as'aluka min fadlika",
+    fr: "Ô Allah, je Te demande de Ta grâce immense. (Sortie de la mosquée)",
+    en: "O Allah, I ask You for Your bounty. (Leaving mosque)",
+  },
+  {
+    id: 'hisn-home-exit',
+    category: 'daily',
+    source: 'Hisn al-Muslim (Abu Dawud 5095)',
+    arabic: 'بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
+    transliteration: "Bismillahi tawakkaltu 'ala Allahi, wa la hawla wa la quwwata illa billah",
+    fr: "Au nom d'Allah, je place ma confiance en Allah, et il n'y a de force ni de puissance que par Allah. (Sortie de la maison)",
+    en: "In the name of Allah, I place my trust in Allah, and there is no power nor might except with Allah. (Leaving home)",
+  },
+  {
+    id: 'hisn-home-enter',
+    category: 'daily',
+    source: 'Hisn al-Muslim (Muslim 2018)',
+    arabic: 'بِسْمِ اللَّهِ وَلَجْنَا، وَبِسْمِ اللَّهِ خَرَجْنَا، وَعَلَى رَبِّنَا تَوَكَّلْنَا',
+    transliteration: "Bismillahi walajna, wa bismillahi kharajna, wa 'ala rabbina tawakkalna",
+    fr: "Au nom d'Allah nous entrons, au nom d'Allah nous sortons, et en notre Seigneur nous plaçons notre confiance. (Entrée dans la maison)",
+    en: "In the name of Allah we enter, in the name of Allah we leave, and upon our Lord we rely. (Entering home)",
+  },
+  {
+    id: 'hisn-rain',
+    category: 'daily',
+    source: 'Hisn al-Muslim (Bukhari 1032)',
+    arabic: 'اللَّهُمَّ صَيِّبًا نَافِعًا',
+    transliteration: "Allahumma sayyiban nafi'an",
+    fr: "Ô Allah, accorde-nous une pluie abondante et bénéfique. (Quand il pleut)",
+    en: "O Allah, may it be a beneficial rain. (When it rains)",
+  },
+  {
+    id: 'hisn-sleep',
+    category: 'daily',
+    source: 'Hisn al-Muslim (Bukhari 6320)',
+    arabic: 'بِاسْمِكَ رَبِّي وَضَعْتُ جَنْبِي وَبِكَ أَرْفَعُهُ، فَإِنْ أَمْسَكْتَ نَفْسِي فَارْحَمْهَا، وَإِنْ أَرْسَلْتَهَا فَاحْفَظْهَا بِمَا تَحْفَظُ بِهِ عِبَادَكَ الصَّالِحِينَ',
+    transliteration: "Bismika Rabbi wada'tu janbi wa bika arfa'uhu, fa-in amsakta nafsi farhamha, wa in arsaltaha fahfazha bima tahfazu bihi 'ibadaka al-salihin",
+    fr: "En Ton nom, mon Seigneur, je me couche et en Ton nom je me lève. Si Tu retiens mon âme, fais-lui miséricorde, et si Tu la renvoies, préserve-la comme Tu préserves Tes serviteurs pieux. (Avant de dormir)",
+    en: "In Your name my Lord, I lie down and in Your name I rise. If You take my soul, have mercy upon it, and if You return it, protect it as You protect Your righteous servants. (Before sleeping)",
+  },
+  {
+    id: 'hisn-wake-up',
+    category: 'daily',
+    source: 'Hisn al-Muslim (Bukhari 6312)',
+    arabic: 'الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ',
+    transliteration: "Al-hamdu lillahi alladhi ahyana ba'da ma amatana wa ilayhi al-nushur",
+    fr: "Louange à Allah qui nous a rendu la vie après nous avoir fait mourir, et vers Lui est le retour. (Au réveil)",
+    en: "Praise is to Allah Who gave us life after He had caused us to die, and unto Him is the resurrection. (Waking up)",
+  },
+  {
+    id: 'hisn-travel',
+    category: 'safar',
+    source: 'Hisn al-Muslim (Muslim 1342)',
+    arabic: 'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَٰذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَىٰ رَبِّنَا لَمُنقَلِبُونَ',
+    transliteration: "Subhana alladhi sakhkhara lana hadha wa ma kunna lahu muqrinin wa inna ila rabbina lamunqalibun",
+    fr: "Gloire à Celui qui a mis ceci à notre service alors que nous n'étions pas capables de le dominer. Et c'est vers notre Seigneur que nous retournerons. (Pour le voyage)",
+    en: "Glory unto Him who has subjected this to us, and we could never have achieved it by our own efforts. And surely, to our Lord is our return. (Travel)",
+  },
+  {
+    id: 'hisn-clothes',
+    category: 'daily',
+    source: 'Hisn al-Muslim (Abu Dawud 4023)',
+    arabic: 'الْحَمْدُ لِلَّهِ الَّذِي كَسَانِي هَٰذَا الثَّوْبَ وَرَزَقَنِيهِ مِنْ غَيْرِ حَوْلٍ مِنِّي وَلَا قُوَّةٍ',
+    transliteration: "Al-hamdu lillahi alladhi kasani hadha al-thawba wa razaqanihi min ghayri hawlin minni wa la quwwah",
+    fr: "Louange à Allah qui m'a vêtu de ce vêtement et me l'a accordé sans force ni puissance de ma part. (En s'habillant)",
+    en: "Praise is to Allah who has clothed me with this garment and provided it for me with no power or strength from myself. (Wearing clothes)",
+  },
+  {
+    id: 'hisn-distress',
+    category: 'steadfastness',
+    source: 'Hisn al-Muslim (Ahmad 3712)',
+    arabic: 'اللَّهُمَّ إِنِّي عَبْدُكَ، ابْنُ عَبْدِكَ، ابْنُ أَمَتِكَ، نَاصِيَتِي بِيَدِكَ، مَاضٍ فِيَّ حُكْمُكَ، عَدْلٌ فِيَّ قَضَاؤُكَ، أَسْأَلُكَ بِكُلِّ اسْمٍ هُوَ لَكَ سَمَّيْتَ بِهِ نَفْسَكَ أَوْ أَنزَلْتَهُ فِي كِتَابِكَ أَنْ تَجْعَلَ الْقُرْآنَ رَبِيعَ قَلْبِي وَنُورَ صَدْرِي وَجَلَاءَ حُزْنِي وَذَهَابَ هَمِّي',
+    transliteration: "Allahumma inni 'abduka, ibnu 'abdika, ibnu amatika, nasiyati biyadika, madin fiyya hukmuka, 'adlun fiyya qada'uka, as'aluka bikulli ismin huwa laka sammayta bihi nafsaka aw anzaltahu fi kitabika an taj'ala al-Qur'ana rabi'a qalbi wa nura sadri wa jala'a huzni wa dhahaba hammi",
+    fr: "Ô Allah, je suis Ton serviteur, fils de Ton serviteur, fils de Ta servante. Mon destin est dans Ta main, Ton jugement sur moi s'accomplit et Ton décret est juste. Je Te demande par tous les Noms qui T'appartiennent de faire du Coran le printemps de mon cœur, la lumière de ma poitrine, la dissipation de ma tristesse et la fin de mon souci. (En cas de détresse / souci)",
+    en: "O Allah, I am Your slave, son of Your slave, son of Your female slave. My forelock is in Your hand, Your command over me is forever executed and Your decree over me is just. I ask You by every name belonging to You to make the Quran the spring of my heart, the light of my chest, the remover of my sorrow, and the pacifier of my worry.",
+  },
+  {
+    id: 'hisn-protection-evil',
+    category: 'protection',
+    source: 'Hisn al-Muslim (Muslim 2708)',
+    arabic: 'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ',
+    transliteration: "A'udhu bi-kalimatillahi al-tammati min sharri ma khalaq",
+    fr: "Je cherche refuge auprès des paroles parfaites d'Allah contre le mal de ce qu'Il a créé. (Protection du soir et des lieux)",
+    en: "I seek refuge in the perfect words of Allah from the evil of what He has created. (Protection from harm)",
+  },
 ];
 
 export default QURAN_DUAS;
+

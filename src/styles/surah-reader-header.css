@@ -779,6 +779,28 @@
     }
 }
 
+@media (max-width: 280px) {
+    .srh-mobile-bar {
+        padding: 0.15rem 0.2rem;
+        gap: 0.15rem;
+    }
+    .srh-mobile-bar__disclosure {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .srh-mobile-bar__chevron {
+        display: none;
+    }
+    .srh-mobile-bar :is(.srh-play-btn, .srh-info-btn) {
+        width: 32px;
+        min-width: 32px;
+        min-height: 36px;
+    }
+    .srh-controls {
+        grid-template-columns: 1fr;
+    }
+}
+
+
 /* Compact tablets and split-screen iPads keep the desktop information
    hierarchy, but without desktop-sized identity and action controls. */
 @media (min-width: 641px) and (max-width: 720px) {

@@ -1,4 +1,4 @@
-﻿
+
 
 .duas-page {
     max-width: 1120px;
@@ -604,18 +604,33 @@ html body .app-root.app-root[data-view="duas"] .duas-page--platform .dua-open-bt
     padding-top: 0.1rem;
 }
 
+.dua-card-footer--sunnah {
+    justify-content: flex-start;
+}
+
+.dua-source-tag {
+    font-size: 0.76rem;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--text-muted);
+    background: var(--bg-secondary);
+    border: 1px dashed var(--border);
+    padding: 0.25rem 0.65rem;
+    border-radius: 0.5rem;
+}
+
 .dua-card-footer-link {
     display: inline-flex;
     align-items: center;
     gap: 0.42rem;
-    min-height: 2.35rem;
-    padding: 0.48rem 0.78rem;
+    min-height: 2.1rem;
+    padding: 0.38rem 0.72rem;
     border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
-    border-radius: 0.75rem;
+    border-radius: 0.65rem;
     background: color-mix(in srgb, var(--primary) 9%, var(--bg-card));
     color: var(--primary);
-    font-size: 0.8rem;
-    font-weight: 800;
+    font-size: 0.78rem;
+    font-weight: 700;
     cursor: pointer;
     white-space: nowrap;
     transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease, color 160ms ease;
@@ -626,11 +641,6 @@ html body .app-root.app-root[data-view="duas"] .duas-page--platform .dua-open-bt
     border-color: var(--primary);
     background: var(--primary);
     color: #fff;
-}
-
-.scrollbar-hide {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
