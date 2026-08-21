@@ -17,29 +17,32 @@ export const AyahMarker = React.memo(function AyahMarker({
   num,
   isPlaying = false,
   className = "",
-  fontFamily: _fontFamily,
-  riwaya: _riwaya,
+  fontFamily,
+  riwaya,
   size: _size = "md",
   onClick,
 }) {
   const markerNumber = number ?? num;
   if (markerNumber == null) return null;
 
-  const arabicNum = toArabicNumeral(markerNumber);
+  const markerFontFamily = resolveFontFamily(UI_AYAH_MARKER_FONT_ID, "hafs");
+  const markerText = getUiAyahMarker(markerNumber);
 
   return (
     <span
       dir="rtl"
       className={cn(
         "ayah-marker-wrap ayat-marker qurancom-ayah-marker verse-end-marker native-ayah-marker",
-        "inline-flex items-center justify-center select-none align-middle",
+        "inline-block select-none",
         isPlaying && "is-playing",
         className,
       )}
-      title={`Verset ${markerNumber}`}
+      title={String(markerNumber)}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       aria-label={`Verset ${markerNumber}`}
+      data-marker-font={UI_AYAH_MARKER_FONT_ID}
+      style={{ fontFamily: markerFontFamily }}
       onClick={onClick}
       onKeyDown={
         onClick
@@ -52,54 +55,7 @@ export const AyahMarker = React.memo(function AyahMarker({
           : undefined
       }
     >
-      <svg
-        viewBox="0 0 44 44"
-        className="ayah-rosette-svg w-[1.18em] h-[1.18em] inline-block align-middle"
-        aria-hidden="true"
-        style={{
-          color: "var(--color-gold, #c5a04b)",
-          filter: "drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15))",
-        }}
-      >
-        {/* Outer decorative rosette path */}
-        <circle
-          cx="22"
-          cy="22"
-          r="19.5"
-          fill="color-mix(in srgb, var(--primary) 12%, var(--bg-card))"
-          stroke="currentColor"
-          strokeWidth="1.4"
-        />
-        {/* Inner dotted/accent ring */}
-        <circle
-          cx="22"
-          cy="22"
-          r="16"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="0.8"
-          strokeDasharray="2,2"
-          opacity="0.8"
-        />
-        {/* 8-point subtle star points */}
-        <polygon
-          points="22,3.5 24,19.5 40.5,22 24,24.5 22,40.5 20,24.5 3.5,22 20,19.5"
-          fill="currentColor"
-          opacity="0.18"
-        />
-        {/* Centered Arabic numeral */}
-        <text
-          x="22"
-          y="26.5"
-          textAnchor="middle"
-          fontSize={arabicNum.length > 2 ? "12" : "14"}
-          fontWeight="bold"
-          fontFamily="var(--font-quran, serif)"
-          fill="var(--text-primary, currentColor)"
-        >
-          {arabicNum}
-        </text>
-      </svg>
+      <span aria-hidden="true">{markerText}</span>
     </span>
   );
 });

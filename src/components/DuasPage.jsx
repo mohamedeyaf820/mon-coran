@@ -246,6 +246,11 @@ export default function DuasPage() {
                   </div>
 
                   <div className="dua-content-area">
+                    {dua.title && (
+                      <h3 className="dua-item-title">
+                        {lang === "ar" ? dua.title.ar : lang === "fr" ? dua.title.fr : dua.title.en}
+                      </h3>
+                    )}
                     <p className="dua-arabic">{dua.arabic}</p>
                     {dua.transliteration && <p className="dua-translit">{dua.transliteration}</p>}
                     <p className="dua-translation">

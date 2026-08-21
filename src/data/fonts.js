@@ -358,6 +358,7 @@ export function appendNativeAyahMarker(
   }
   if (!includeMarker) return cleanedValue;
   const marker = getNativeAyahMarker(ayahNumber, fontId, riwaya);
-  return `${cleanedValue}\u00A0${marker}`;
+  return `${cleanedValue}\u202F${marker}`;
 }
+
 
