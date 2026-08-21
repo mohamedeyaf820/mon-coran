@@ -3862,25 +3862,23 @@ html body .app-root .quran-display--platform .cpv-ayah-marker {
 
 html body .app-root .native-ayah-marker,
 html body .app-root .quran-display--platform .mushaf-text-block .native-ayah-marker,
-html body .app-root .quran-display--platform .mushaf-container .native-ayah-marker {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+html body .app-root .quran-display--platform .mushaf-container .native-ayah-marker,
+html body .app-root .quran-display--platform .native-ayah-marker {
+    display: inline !important;
     width: auto !important;
     height: auto !important;
     min-width: 0 !important;
     min-height: 0 !important;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
     border: 0;
     border-radius: 0;
     background: transparent !important;
     box-shadow: none;
     color: inherit !important;
-    vertical-align: middle !important;
-
+    vertical-align: baseline !important;
     transform: none;
-    vertical-align: -0.08em;
-    line-height: 1 !important;
+    line-height: inherit !important;
 }
 
 html body .app-root .native-ayah-marker::before,
