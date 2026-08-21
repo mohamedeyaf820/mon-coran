@@ -196,12 +196,56 @@ function isTrustedAudioRequest(request, url) {
   );
 }
 
+async function createPartialResponse(response, rangeHeader) {
+  try {
+    const buffer = await response.arrayBuffer();
+    const total = buffer.byteLength;
+    const matches = /bytes=(\d+)-(\d+)?/.exec(rangeHeader);
+    if (!matches) {
+      return response;
+    }
+    const start = parseInt(matches[1], 10);
+    const end = matches[2] ? parseInt(matches[2], 10) : total - 1;
+    if (start >= total || end >= total || start > end) {
+      return new Response(null, {
+        status: 416,
+        statusText: "Range Not Satisfiable",
+        headers: {
+          "Content-Range": `bytes */${total}`,
+          "Accept-Ranges": "bytes",
+        },
+      });
+    }
+    const sliced = buffer.slice(start, end + 1);
+    return new Response(sliced, {
+      status: 206,
+      statusText: "Partial Content",
+      headers: {
+        "Content-Type": response.headers.get("Content-Type") || "audio/mpeg",
+        "Content-Range": `bytes ${start}-${end}/${total}`,
+        "Content-Length": String(sliced.byteLength),
+        "Accept-Ranges": "bytes",
+        "Cache-Control": "public, max-age=31536000",
+      },
+    });
+  } catch {
+    return response;
+  }
+}
+
 async function audioCacheFirst(request) {
   const cache = await caches.open(AUDIO_CACHE_NAME);
   const cached =
     (await cache.match(request, { ignoreVary: true })) ||
     (await cache.match(request.url, { ignoreVary: true }));
-  if (cached) return cached;
+
+  if (cached) {
+    const rangeHeader = request.headers.get("range");
+    if (rangeHeader) {
+      return createPartialResponse(cached, rangeHeader);
+    }
+    return cached;
+  }
 
   try {
     // Streaming stays network-only until the user explicitly downloads it.
