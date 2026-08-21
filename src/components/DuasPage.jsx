@@ -251,7 +251,15 @@ export default function DuasPage() {
                         {lang === "ar" ? dua.title.ar : lang === "fr" ? dua.title.fr : dua.title.en}
                       </h3>
                     )}
-                    <p className="dua-arabic">{String(dua.arabic || '').replace(/[\u060C\u061B\u061F,;.]/g, ' ').replace(/\s+/g, ' ')}</p>
+                    <p className="dua-arabic">
+                      {String(dua.arabic || '').split(/([\u060C\u061B\u061F])/u).map((part, i) =>
+                        /^[\u060C\u061B\u061F]$/u.test(part) ? (
+                          <span key={i} className="dua-arabic-punct">{part}</span>
+                        ) : (
+                          part
+                        )
+                      )}
+                    </p>
                     {dua.transliteration && <p className="dua-translit">{dua.transliteration}</p>}
                     <p className="dua-translation">
                       {lang === "ar" ? dua.en : lang === "fr" ? dua.fr : dua.en}
