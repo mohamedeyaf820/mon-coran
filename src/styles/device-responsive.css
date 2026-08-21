@@ -45,7 +45,7 @@ html body #root .app-root[data-view="reading"]
   :is(.quran-canonical-text, .quran-tajwid-text, .wbw-container, .tajwid-rule-segment, [data-tajwid]) {
   display: inline !important;
   direction: rtl !important;
-  unicode-bidi: isolate !important;
+  unicode-bidi: normal !important;
   white-space: normal !important;
   overflow-wrap: normal !important;
   word-break: normal !important;
@@ -56,8 +56,8 @@ html body #root .app-root[data-view="reading"]
   font-family: inherit !important;
   font-size: inherit !important;
   line-height: inherit !important;
-  letter-spacing: normal;
-  word-spacing: normal;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
   font-synthesis: none !important;
   -webkit-font-smoothing: antialiased;
 }
@@ -65,18 +65,33 @@ html body #root .app-root[data-view="reading"]
 html body #root .app-root[data-view="reading"]
   .quran-display--platform .qc-ayah-text-ar
   :is(.wbw-word, .warsh-unicode-word) {
-  display: inline-block !important;
+  display: inline !important;
   width: auto !important;
   max-width: none !important;
-  white-space: nowrap !important;
+  white-space: normal !important;
   overflow-wrap: normal !important;
-  word-break: keep-all !important;
+  word-break: normal !important;
   line-break: auto !important;
   direction: rtl !important;
-  unicode-bidi: isolate !important;
+  unicode-bidi: normal !important;
   font: inherit !important;
-  letter-spacing: inherit;
+  letter-spacing: normal !important;
+  word-spacing: normal !important;
 }
+
+html body #root .app-root[data-view="reading"]
+  .quran-display--platform :is(.wbw-marker-token, .native-ayah-marker, .warsh-karaoke-ayah-marker, .ayah-marker) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+  margin-inline-start: 0.35em !important;
+  margin-inline-end: 0 !important;
+  line-height: 1 !important;
+  font-size: 0.88em !important;
+}
+
 
 /* content-visibility still clips complex Arabic glyph bounds on some iOS
    WebKit releases. The reader is already windowed, so disabling it only on

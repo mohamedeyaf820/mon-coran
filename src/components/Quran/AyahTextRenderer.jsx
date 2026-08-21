@@ -253,13 +253,15 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
             >
               {word}
             </span>
-            {index < displayWords.length - 1 && " "}
+            {index < displayWords.length - 1 &&
+              (isAyahMarkerToken(displayWords[index + 1]) ? "\u00A0" : " ")}
           </React.Fragment>
         );
       })}
     </span>
   );
 });
+
 
 export { HafsKaraokeText as KaraokeAyahText };
 

@@ -2,8 +2,9 @@
   width: 100%;
   margin: clamp(1rem, 2.5vw, 2rem) auto 0;
   padding: 0 clamp(0.45rem, 1.6vw, 1rem);
-  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  padding-bottom: max(6.5rem, calc(var(--player-h, 88px) + env(safe-area-inset-bottom, 20px) + 2rem)) !important;
 }
+
 
 /* ── Shell card ─────────────────────────────────────────── */
 .mp-footer-v2__shell {

@@ -5410,14 +5410,14 @@ body.mfp-open > .ayah-actions-modal--fullscreen {
 }
 
 .quran-display--platform :is(.wbw-word, .warsh-unicode-word) {
-    display: inline-block;
+    display: inline;
     max-width: 100%;
-    white-space: nowrap;
+    white-space: normal;
     direction: rtl;
-    unicode-bidi: isolate;
     overflow-wrap: normal;
     word-break: normal;
 }
+
 
 /* ─── Word audio click ──────────────────────────────────────────── */
 .wbw-word--clickable {
