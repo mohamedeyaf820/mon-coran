@@ -17,6 +17,8 @@ export const AyahMarker = React.memo(function AyahMarker({
   num,
   isPlaying = false,
   className = "",
+  fontFamily,
+  riwaya,
   size: _size = "md",
   onClick,
 }) {

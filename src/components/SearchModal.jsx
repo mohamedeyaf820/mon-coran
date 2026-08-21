@@ -203,6 +203,9 @@ export default function SearchModal() {
   }, [query]);
 
   useEffect(() => {
+  }, [results]);
+
+  useEffect(() => {
     const sanitized = sanitizeSearchQuery(query);
     if (!sanitized) return;
 

@@ -1867,6 +1867,11 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     --qcom-ar-size: var(--qd-reading-font-size, var(--quran-font-size, 32px));
 }
 
+.app-root .quran-display--platform {
+    --qcom-reader-font-size: var(--qd-reading-font-size, var(--quran-font-size, 32px));
+    --qcom-ar-size: var(--qd-reading-font-size, var(--quran-font-size, 32px));
+}
+
 @media (max-width: 640px) {
     .app-root .quran-display--platform {
         --qcom-reader-font-size: var(--qd-reading-font-size, var(--quran-font-size, 24px));
