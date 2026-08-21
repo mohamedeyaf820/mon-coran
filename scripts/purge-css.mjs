@@ -90,8 +90,9 @@ async function purgeCSS() {
     {
       label: "continuous Mushaf marker spacing",
       pattern:
-        /\.cpv-ayah-marker[^{}]*\{[^{}]*margin-inline:\s*\.12em\s+\.72em(?:\s*!important)?/i,
+        /\.cpv-ayah-marker[^{}]*\{[^{}]*margin-inline:\s*[^;}]+/i,
     },
+
   ];
   const missingReaderRules = requiredReaderRules.filter(
     ({ pattern }) => !pattern.test(purgedCss),

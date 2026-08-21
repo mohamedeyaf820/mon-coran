@@ -126,16 +126,12 @@ function CleanPageViewComponent({
                   surahNum={ayahSurahNum}
                   calibration={calibration}
                   riwaya={riwaya}
-                  appendNativeMarker={false}
-                />
-                <AyahMarker
-                  number={ayah.numberInSurah}
-                  isPlaying={isPlaying}
-                  className="cpv-ayah-marker"
+                  appendNativeMarker={true}
                 />
               </span>
             </span>,
           );
+
 
           return elements;
         })}

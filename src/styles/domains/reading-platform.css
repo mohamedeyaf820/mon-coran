@@ -3851,13 +3851,13 @@ html body .app-root .quran-display--platform .qcm-edge {
 
 html body .app-root .quran-display--platform .mushaf-text-block .cpv-ayah-marker {
     display: inline-flex !important;
-    width: 1.08em !important;
-    height: 1.08em !important;
-
-    margin-inline: 0.12em 0.72em;
-    vertical-align: -0.18em;
+    width: auto !important;
+    height: auto !important;
+    margin-inline: 0.25em 0 !important;
+    vertical-align: middle !important;
     transform: none;
 }
+
 
 html body .app-root .native-ayah-marker,
 html body .app-root .quran-display--platform .mushaf-text-block .native-ayah-marker,
