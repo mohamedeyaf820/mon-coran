@@ -137,6 +137,7 @@ export default function QuranDisplay() {
   const { pageTopSurah, surahGroups, pageGroups } = useQuranDisplayGroups({
     ayahs,
     currentSurah,
+    currentPage,
     displayMode,
   });
   const classes = useMemo(

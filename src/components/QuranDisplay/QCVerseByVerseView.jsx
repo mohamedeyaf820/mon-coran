@@ -113,7 +113,19 @@ const QCVerseCard = memo(function QCVerseCard({
     ],
   );
 
-  const translations = Array.isArray(translation) ? translation : [];
+  const translations = useMemo(() => {
+    if (!Array.isArray(translation)) return [];
+    return translation.filter((item) => {
+      if (!item?.text || typeof item.text !== "string") return false;
+      const text = item.text.trim();
+      if (!text) return false;
+      if (lang !== "ar") {
+        const arabicCharCount = (text.match(/[\u0600-\u06FF]/g) || []).length;
+        if (arabicCharCount > text.length * 0.5) return false;
+      }
+      return true;
+    });
+  }, [translation, lang]);
 
   return (
     <article

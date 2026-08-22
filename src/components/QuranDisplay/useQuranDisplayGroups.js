@@ -3,6 +3,7 @@ import { useMemo } from "react";
 export default function useQuranDisplayGroups({
   ayahs,
   currentSurah,
+  currentPage,
   displayMode,
 }) {
   const surahGroups = useMemo(() => {
@@ -10,7 +11,12 @@ export default function useQuranDisplayGroups({
     const groups = [];
     let currentGroup = null;
 
-    ayahs.forEach((ayah) => {
+    const filteredAyahs =
+      displayMode === "page" && currentPage
+        ? ayahs.filter((ayah) => !ayah.page || Number(ayah.page) === Number(currentPage))
+        : ayahs;
+
+    filteredAyahs.forEach((ayah) => {
       const surahNumber = ayah.surah?.number || currentSurah;
       if (!currentGroup || currentGroup.surah !== surahNumber) {
         currentGroup = { surah: surahNumber, ayahs: [] };
@@ -20,14 +26,19 @@ export default function useQuranDisplayGroups({
     });
 
     return groups;
-  }, [ayahs, currentSurah, displayMode]);
+  }, [ayahs, currentPage, currentSurah, displayMode]);
 
   const pageGroups = useMemo(() => {
     const groups = [];
     let currentGroup = null;
 
-    ayahs.forEach((ayah) => {
-      const pageNum = ayah.page || 1;
+    const filteredAyahs =
+      displayMode === "page" && currentPage
+        ? ayahs.filter((ayah) => !ayah.page || Number(ayah.page) === Number(currentPage))
+        : ayahs;
+
+    filteredAyahs.forEach((ayah) => {
+      const pageNum = ayah.page || (displayMode === "page" && currentPage ? Number(currentPage) : 1);
       if (!currentGroup || currentGroup.page !== pageNum) {
         currentGroup = { page: pageNum, ayahs: [] };
         groups.push(currentGroup);
@@ -35,8 +46,12 @@ export default function useQuranDisplayGroups({
       currentGroup.ayahs.push(ayah);
     });
 
-    return groups;
-  }, [ayahs]);
+    return groups.length > 0
+      ? groups
+      : displayMode === "page" && ayahs.length > 0
+        ? [{ page: Number(currentPage) || 1, ayahs }]
+        : [];
+  }, [ayahs, currentPage, displayMode]);
 
   const pageTopSurah = useMemo(() => {
     if (displayMode !== "page") return null;
