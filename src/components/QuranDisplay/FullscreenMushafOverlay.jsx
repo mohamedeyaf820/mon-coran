@@ -131,23 +131,10 @@ const ImmersiveMushafPage = memo(function ImmersiveMushafPage({
                 data-ayah-number={ayah.numberInSurah}
                 aria-current={isPlaying ? "true" : undefined}
                 onPointerDown={() => onPointerDownAyah?.(ayah)}
-                onClick={(event) => {
+                onDoubleClick={(event) => {
+                  event.preventDefault();
                   event.stopPropagation();
-                  if (suppressClickRef.current) {
-                    suppressClickRef.current = false;
-                    return;
-                  }
-                  if (event.detail > 1) {
-                    if (clickTimerRef.current) window.clearTimeout(clickTimerRef.current);
-                    clickTimerRef.current = null;
-                    onOpenAyahActions?.(ayah);
-                    return;
-                  }
-                  if (clickTimerRef.current) window.clearTimeout(clickTimerRef.current);
-                  clickTimerRef.current = window.setTimeout(() => {
-                    onPlayAyah?.(ayah, ayahs, page);
-                    clickTimerRef.current = null;
-                  }, 230);
+                  onPlayAyah?.(ayah, ayahs, page);
                 }}
                 onPointerUp={(event) => {
                   if (event.pointerType !== "touch") return;
@@ -159,21 +146,11 @@ const ImmersiveMushafPage = memo(function ImmersiveMushafPage({
                   ) {
                     event.preventDefault();
                     event.stopPropagation();
-                    if (clickTimerRef.current) window.clearTimeout(clickTimerRef.current);
-                    clickTimerRef.current = null;
-                    suppressClickRef.current = true;
                     lastTouchRef.current = { key: "", time: 0 };
-                    onOpenAyahActions?.(ayah);
+                    onPlayAyah?.(ayah, ayahs, page);
                     return;
                   }
                   lastTouchRef.current = { key, time: now };
-                }}
-                onDoubleClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  if (clickTimerRef.current) window.clearTimeout(clickTimerRef.current);
-                  clickTimerRef.current = null;
-                  onOpenAyahActions?.(ayah);
                 }}
               >
                 <SmartAyahRenderer

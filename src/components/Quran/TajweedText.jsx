@@ -3,6 +3,14 @@ import { getRulesForRiwaya, parseTajwid, stabilizeTajwidSegments } from '../../d
 import { useAppLocale } from '../../context/AppContext';
 import { getReadableWaqfGlyph } from '../../utils/quranUtils';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../ui/tooltip';
+import { playWordAudio, getWordAudioUrl } from '../../utils/wordAudio';
+
+const AYAH_MARKER_TOKEN_RE = /^[\u06dd\u06de\u06e9\ufd3f\ufd3e\d\u0660-\u0669\u06f0-\u06f9]+$/u;
+function isMarkerToken(str) {
+    if (!str) return false;
+    const compact = String(str).replace(/\s+/g, '');
+    return AYAH_MARKER_TOKEN_RE.test(compact);
+}
 
 const QURAN_COM_CLASS_MAP = {
     ghunnah: 'ghunna',
@@ -351,6 +359,34 @@ const TajweedRuleSegment = React.memo(function TajweedRuleSegment({
     );
 });
 
+function groupSegmentsIntoWords(segments) {
+    if (!Array.isArray(segments) || segments.length === 0) return [];
+    const words = [];
+    let currentWord = [];
+
+    for (const seg of segments) {
+        const text = seg.text || '';
+        if (!text) continue;
+
+        const parts = text.split(/(\s+)/);
+        for (const part of parts) {
+            if (!part) continue;
+            if (/^\s+$/.test(part)) {
+                if (currentWord.length > 0) {
+                    words.push(currentWord);
+                    currentWord = [];
+                }
+            } else {
+                currentWord.push({ text: part, ruleId: seg.ruleId });
+            }
+        }
+    }
+    if (currentWord.length > 0) {
+        words.push(currentWord);
+    }
+    return words;
+}
+
 /**
  * TajweedText — renders Arabic text with Tajweed colour-coding.
  * Plus custom 'Waqf' (Stop Signs) redesign for Expert UI/UX (Sakīna).
@@ -360,6 +396,8 @@ const TajweedText = React.memo(function TajweedText({
     enabled = true,
     riwaya = 'hafs',
     tajweedColors,   // optional object { ruleId → cssColor } override
+    surahNum,
+    ayahNumber,
 }) {
     const { lang } = useAppLocale();
     const segments = useMemo(() => {
@@ -437,13 +475,46 @@ const TajweedText = React.memo(function TajweedText({
         />;
     };
 
+    const words = groupSegmentsIntoWords(segments);
+
     return (
         <TooltipProvider delayDuration={220} skipDelayDuration={80}>
             <span className="quran-tajwid-text" dir="rtl" lang="ar">
                 <span aria-hidden="true">
-                    {segments.map((segment, segmentIndex) =>
-                        renderSegment(segment, `segment-${segmentIndex}`)
-                    )}
+                    {words.map((wordSegments, wordIndex) => {
+                        const wordPos = wordIndex + 1;
+                        const firstText = wordSegments[0]?.text || '';
+                        const isMarker = isMarkerToken(firstText);
+                        const audioUrl = !isMarker && surahNum && ayahNumber
+                            ? getWordAudioUrl(surahNum, ayahNumber, wordPos)
+                            : null;
+
+                        const handleClick = (e) => {
+                            if (!isMarker) {
+                                e.stopPropagation();
+                                playWordAudio(audioUrl || { surah: surahNum, ayah: ayahNumber, position: wordPos });
+                            }
+                        };
+
+                        const nextWord = words[wordIndex + 1];
+                        const nextIsMarker = nextWord && isMarkerToken(nextWord[0]?.text || '');
+
+                        return (
+                            <React.Fragment key={wordIndex}>
+                                <span
+                                    className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
+                                    onClick={!isMarker ? handleClick : undefined}
+                                    role={!isMarker ? "button" : undefined}
+                                    tabIndex={!isMarker ? 0 : undefined}
+                                >
+                                    {wordSegments.map((seg, sIdx) =>
+                                        renderSegment(seg, `${wordIndex}-${sIdx}`)
+                                    )}
+                                </span>
+                                {wordIndex < words.length - 1 ? (nextIsMarker ? "\u202F" : " ") : null}
+                            </React.Fragment>
+                        );
+                    })}
                 </span>
                 <span className="sr-only">
                     {segments.map((segment) => segment.text).join('')}

@@ -504,80 +504,125 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 }
 
 .app-root .audio-player-simple .simple-player__compact-row {
-  display: grid;
-  grid-template-columns: 2.75rem minmax(0, 1fr) var(--mp-device-touch) 2.75rem;
-  align-items: center;
-  gap: clamp(.4rem, 1.6vw, .65rem);
-  min-height: 3.75rem;
-  padding: .4rem clamp(.6rem, 2vw, 1rem);
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0.65rem !important;
+  min-height: 3.85rem !important;
+  padding: 0.4rem 0.85rem !important;
 }
 
 .app-root .audio-player-simple .simple-player__compact-meta {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: .6rem;
-  padding: .2rem 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  text-align: left;
-  cursor: pointer;
+  display: flex !important;
+  min-width: 0 !important;
+  flex: 1 !important;
+  align-items: center !important;
+  padding: 0.1rem 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  text-align: left !important;
+  cursor: pointer !important;
 }
 
-.app-root .audio-player-simple .simple-player__compact-meta strong,
-.app-root .audio-player-simple .simple-player__compact-meta span {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.app-root .audio-player-simple .simple-player__compact-meta-text {
+  display: flex !important;
+  min-width: 0 !important;
+  flex-direction: column !important;
+  gap: 0.12rem !important;
 }
 
-.app-root .audio-player-simple .simple-player__compact-meta strong {
-  color: var(--simple-player-ink);
-  font-size: clamp(.8rem, 2.3vw, .9rem);
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -.01em;
+.app-root .audio-player-simple .simple-player__compact-title-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  min-width: 0 !important;
 }
 
-.app-root .audio-player-simple .simple-player__compact-meta span {
-  margin-top: .08rem;
-  color: var(--simple-player-muted);
-  font-size: clamp(.62rem, 1.8vw, .7rem);
+.app-root .audio-player-simple .simple-player__compact-title {
+  display: block !important;
+  color: var(--simple-player-ink, var(--text-primary)) !important;
+  font-size: clamp(0.84rem, 2.4vw, 0.94rem) !important;
+  font-weight: 750 !important;
+  line-height: 1.25 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
 }
 
-.app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-ar-name {
-  font-family: var(--font-quran, serif);
-  font-size: clamp(.82rem, 2.2vw, .92rem) !important;
-  color: color-mix(in srgb, var(--theme-primary) 72%, var(--simple-player-ink));
-  line-height: 1.4;
-  letter-spacing: 0;
-  direction: rtl;
-  margin-top: .06rem;
+.app-root .audio-player-simple .simple-player__compact-ar-badge {
+  display: inline-block !important;
+  flex: 0 0 auto !important;
+  font-family: var(--font-quran, serif) !important;
+  font-size: 0.82rem !important;
+  color: var(--theme-primary, var(--primary)) !important;
+  background: color-mix(in srgb, var(--theme-primary, var(--primary)) 14%, transparent) !important;
+  padding: 0.06rem 0.45rem !important;
+  border-radius: 9999px !important;
+  line-height: 1.3 !important;
+  direction: rtl !important;
 }
 
-.app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-reciter {
-  font-size: clamp(.6rem, 1.6vw, .66rem) !important;
-  color: var(--simple-player-muted);
-  opacity: .82;
-  margin-top: .12rem;
+.app-root .audio-player-simple .simple-player__compact-reciter {
+  display: block !important;
+  color: var(--simple-player-muted, var(--text-muted)) !important;
+  font-size: 0.7rem !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
 }
 
-.app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-ar-ligature {
-  display: block;
-  flex: 0 0 auto;
-  align-self: center;
-  overflow: visible;
-  margin-top: 0;
-  color: var(--theme-primary);
-  font-family: "surahnames", serif;
-  font-size: clamp(1.65rem, 5.2vw, 2.2rem);
-  line-height: 1;
-  text-overflow: clip;
-  white-space: nowrap;
-  filter: drop-shadow(0 1px 4px color-mix(in srgb, var(--theme-primary) 22%, transparent));
-  opacity: .92;
+.app-root .audio-player-simple .simple-player__compact-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  flex: 0 0 auto !important;
+}
+
+.app-root .audio-player-simple .simple-player__play--compact {
+  width: 2.45rem !important;
+  height: 2.45rem !important;
+  min-width: 2.45rem !important;
+  min-height: 2.45rem !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #0d5c4a, #168a70) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(13, 92, 74, 0.32) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 0 !important;
+  cursor: pointer !important;
+  transition: transform 160ms ease, box-shadow 160ms ease !important;
+}
+
+.app-root .audio-player-simple .simple-player__play--compact:hover {
+  transform: scale(1.06) !important;
+  box-shadow: 0 6px 16px rgba(13, 92, 74, 0.42) !important;
+}
+
+.app-root .audio-player-simple .simple-player__expand-btn {
+  width: 2.1rem !important;
+  height: 2.1rem !important;
+  min-width: 2.1rem !important;
+  min-height: 2.1rem !important;
+  border-radius: 50% !important;
+  background: color-mix(in srgb, var(--text-primary) 8%, transparent) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid color-mix(in srgb, var(--border) 60%, transparent) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 160ms ease !important;
+}
+
+.app-root .audio-player-simple .simple-player__expand-btn:hover {
+  background: color-mix(in srgb, var(--primary) 15%, transparent) !important;
+  color: var(--primary) !important;
+  border-color: color-mix(in srgb, var(--primary) 30%, transparent) !important;
 }
 
 /* text info block (title + ar-name + reciter stacked) */

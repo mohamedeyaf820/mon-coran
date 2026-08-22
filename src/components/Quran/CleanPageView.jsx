@@ -22,6 +22,7 @@ function CleanPageViewComponent({
   activeAyah = null,
   getAyahToggleId = (ayah) => ayah.numberInSurah,
   onAyahClick,
+  onPlayAyah,
   showTransliteration: _showTransliteration = true,
 }) {
   const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
@@ -106,6 +107,11 @@ function CleanPageViewComponent({
               data-ayah-number={ayah.numberInSurah}
               data-ayah-global={ayah.number}
               className={`quran-verse-inline cpv-verse mushaf-verse${isActive ? " cpv-verse--active" : ""}${isPlaying ? " cpv-verse--playing" : ""}`}
+              onDoubleClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onPlayAyah?.(ayah, ayahs);
+              }}
               aria-label={`${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`}
               aria-current={isPlaying ? "true" : undefined}
             >

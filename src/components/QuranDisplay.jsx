@@ -498,6 +498,7 @@ export default function QuranDisplay() {
               mushafLayout={mushafLayout}
               onNextPage={navigation.goNextPage}
               onOpenFullscreen={openImmersiveMushaf}
+              onPlayAyah={playAyah}
               onPlaySurah={playSurah}
               onPrevPage={navigation.goPrevPage}
               onToggleActive={toggleAyah}

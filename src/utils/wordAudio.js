@@ -1,4 +1,12 @@
-let _audio = null;
+let _audioInstance = null;
+
+function getOrCreateAudio() {
+  if (!_audioInstance && typeof window !== "undefined" && typeof Audio !== "undefined") {
+    _audioInstance = new Audio();
+    _audioInstance.preload = "auto";
+  }
+  return _audioInstance;
+}
 
 export function getWordAudioUrl(surah, ayah, wordPosition) {
   if (!surah || !ayah || !wordPosition) return null;
@@ -24,14 +32,23 @@ export function playWordAudio(input, ayah = null, wordPosition = null) {
   }
 
   if (!url) return;
+
   try {
-    if (_audio) {
-      _audio.pause();
-      _audio.currentTime = 0;
-      _audio.src = "";
+    const audio = getOrCreateAudio() || new Audio();
+    audio.pause();
+    audio.currentTime = 0;
+    audio.src = url;
+    const promise = audio.play();
+    if (promise !== undefined) {
+      promise.catch(() => {
+        try {
+          const fallback = new Audio(url);
+          fallback.play().catch(() => {});
+        } catch {}
+      });
     }
-    _audio = new Audio(url);
-    _audio.play().catch(() => {});
-  } catch {}
+  } catch (err) {
+    console.warn("Word audio playback failure:", err);
+  }
 }
 

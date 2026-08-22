@@ -152,8 +152,6 @@ function CompactPlayer(props) {
     title,
   } = props;
 
-  const surahLigature = surahNum ? String(surahNum).padStart(3, "0") : null;
-
   return (
     <section
       {...playerShellProps(props)}
@@ -180,35 +178,44 @@ function CompactPlayer(props) {
         showTimes={false}
       />
       <div className="mp-player-minimized-row simple-player__compact-row">
-        <CoverArt isPlaying={isPlaying} size={40} reciter={reciter} />
+        <CoverArt isPlaying={isPlaying} size={42} reciter={reciter} />
         <button
           type="button"
           className="mp-player-minimized-open simple-player__compact-meta"
           onClick={onExpand}
           aria-label={expandLabel}
         >
-          {surahLigature && (
-            <span className="simple-player__compact-ar-ligature font-surah-names" dir="ltr" lang="en" aria-hidden="true">
-              {surahLigature}
-            </span>
-          )}
           <span className="simple-player__compact-meta-text">
-            <strong>{title}</strong>
-            <span className="simple-player__compact-ar-name" dir="rtl" lang="ar">{currentArabicName}</span>
+            <span className="simple-player__compact-title-row">
+              <strong className="simple-player__compact-title">{title}</strong>
+              {currentArabicName && (
+                <span className="simple-player__compact-ar-badge" dir="rtl" lang="ar">
+                  {currentArabicName}
+                </span>
+              )}
+            </span>
             <span className="simple-player__compact-reciter">{reciterLabel || "—"}</span>
           </span>
         </button>
-        <IconButton
-          className="mp-player-play-btn simple-player__play simple-player__play--compact"
-          label={playPauseLabel}
-          onClick={onToggle}
-          pressed={isPlaying}
-        >
-          {isPlaying ? <Pause size={18} /> : <Play size={18} className="simple-player__play-glyph" />}
-        </IconButton>
-        <IconButton label={expandLabel} onClick={onExpand} aria-hidden="true" tabIndex={-1}>
-          <ChevronUp size={18} />
-        </IconButton>
+        <div className="simple-player__compact-actions">
+          <IconButton
+            className="mp-player-play-btn simple-player__play simple-player__play--compact"
+            label={playPauseLabel}
+            onClick={onToggle}
+            pressed={isPlaying}
+          >
+            {isPlaying ? <Pause size={18} strokeWidth={2.4} /> : <Play size={18} strokeWidth={2.4} className="simple-player__play-glyph" />}
+          </IconButton>
+          <IconButton
+            className="simple-player__expand-btn"
+            label={expandLabel}
+            onClick={onExpand}
+            aria-hidden="true"
+            tabIndex={-1}
+          >
+            <ChevronUp size={18} strokeWidth={2.2} />
+          </IconButton>
+        </div>
       </div>
     </section>
   );

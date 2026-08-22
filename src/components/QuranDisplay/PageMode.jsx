@@ -26,6 +26,7 @@ function PageMode({
   mushafLayout,
   onNextPage,
   onOpenFullscreen,
+  onPlayAyah,
   onPlaySurah,
   onPrevPage,
   onToggleActive,
@@ -172,6 +173,7 @@ function PageMode({
               showTranslation={showTranslation}
               getTranslation={getTranslationForAyah}
               onAyahClick={onToggleActive}
+              onPlayAyah={onPlayAyah}
               activeAyah={activeAyah}
               getAyahToggleId={(ayah) => ayah.number}
               showSurahHeader={true}
