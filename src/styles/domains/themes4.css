@@ -65,23 +65,23 @@
 
     --tajwid-silent: #9e9e9e;
     --tajwid-lam-shamsiyya: #9e9e9e;
-    --tajwid-ghunna: #16927c;
-    --tajwid-idgham: #16927c;
-    --tajwid-ikhfa: #d16500;
-    --tajwid-iqlab: #26a69a;
-    --tajwid-qalqala: #007fd5;
-    --tajwid-tafkhim: #2563eb;
-    --tajwid-madd-normal: #e67e22;
-    --tajwid-madd: #9b2c2c;
-    --tajwid-madd-separated: #8e24aa;
-    --tajwid-madd-connected: #8e24aa;
-    --tajwid-madd-necessary: #9b2c2c;
-    --tajwid-madd-badal: #e67e22;
-    --tajwid-naql: #e67e22;
-    --tajwid-tashil: #16927c;
-    --tajwid-ibdal: #e67e22;
-    --tajwid-sila-kubra: #8e24aa;
-    --tajwid-tarqiq-ra: #16927c;
+    --tajwid-ghunna: #27ae60;
+    --tajwid-idgham: #27ae60;
+    --tajwid-ikhfa: #27ae60;
+    --tajwid-iqlab: #27ae60;
+    --tajwid-qalqala: #00d2ff;
+    --tajwid-tafkhim: #2e86de;
+    --tajwid-madd-normal: #f48fb1;
+    --tajwid-madd: #e53935;
+    --tajwid-madd-separated: #ff9800;
+    --tajwid-madd-connected: #e91e63;
+    --tajwid-madd-necessary: #e53935;
+    --tajwid-madd-badal: #f48fb1;
+    --tajwid-naql: #ff9800;
+    --tajwid-tashil: #27ae60;
+    --tajwid-ibdal: #ff9800;
+    --tajwid-sila-kubra: #e91e63;
+    --tajwid-tarqiq-ra: #27ae60;
     --tajwid-idgham-warsh: #9e9e9e;
 }
 

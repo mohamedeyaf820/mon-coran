@@ -144,10 +144,11 @@ export default {
     maddSeparated: 'Separated madd (2/4/6)',
     maddConnected: 'Connected madd (4/5)',
     maddNecessary: 'Necessary madd (6)',
-    ghunnaIkhfa: 'Ghunna/Ikhfa',
+    ghunnaIkhfa: 'Ghunna/ikhfa\'',
+    qalqala: 'Qalqala (echo)',
     tafkhim: 'Tafkhim (heavy)',
     ghunna: 'Ghunna', idgham: 'Idgham', ikhfa: 'Ikhfa', iqlab: 'Iqlab',
-    qalqala: 'Qalqala', madd: 'Madd', lamShamsiyya: 'Lam Shamsiyya',
+    madd: 'Madd', lamShamsiyya: 'Lam Shamsiyya',
   },
   playlist: {
     title: 'Playlists',

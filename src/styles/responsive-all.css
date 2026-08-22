@@ -686,18 +686,19 @@ html {
 
 :root:not([data-theme]),
 [data-theme="light"] {
-    --tajwid-silent: #596579 !important;
-    --tajwid-lam-shamsiyya: #596579 !important;
-    --tajwid-madd-normal: #8a2566 !important;
-    --tajwid-madd: #8a2566 !important;
-    --tajwid-madd-separated: #92400e !important;
-    --tajwid-madd-connected: #9d174d !important;
-    --tajwid-madd-necessary: #991b1b !important;
-    --tajwid-ghunna: #047857 !important;
-    --tajwid-idgham: #047857 !important;
-    --tajwid-ikhfa: #047857 !important;
-    --tajwid-qalqala: #0369a1 !important;
-    --tajwid-tafkhim: #4338ca !important;
+    --tajwid-silent: #9e9e9e !important;
+    --tajwid-lam-shamsiyya: #9e9e9e !important;
+    --tajwid-madd-normal: #f48fb1 !important;
+    --tajwid-madd: #e53935 !important;
+    --tajwid-madd-separated: #ff9800 !important;
+    --tajwid-madd-connected: #e91e63 !important;
+    --tajwid-madd-necessary: #e53935 !important;
+    --tajwid-ghunna: #27ae60 !important;
+    --tajwid-idgham: #27ae60 !important;
+    --tajwid-ikhfa: #27ae60 !important;
+    --tajwid-iqlab: #27ae60 !important;
+    --tajwid-qalqala: #00d2ff !important;
+    --tajwid-tafkhim: #2e86de !important;
 }
 
 [data-theme="sepia"] {
@@ -716,18 +717,19 @@ html {
     --reader-paper-bg: #fff6e3 !important;
     --reader-paper-border: rgba(124, 74, 23, 0.4) !important;
 
-    --tajwid-silent: #7c5e3f !important;
-    --tajwid-lam-shamsiyya: #7c5e3f !important;
-    --tajwid-madd-normal: #8a2566 !important;
-    --tajwid-madd: #8a2566 !important;
-    --tajwid-madd-separated: #a16207 !important;
-    --tajwid-madd-connected: #be185d !important;
-    --tajwid-madd-necessary: #b91c1c !important;
-    --tajwid-ghunna: #15803d !important;
-    --tajwid-idgham: #15803d !important;
-    --tajwid-ikhfa: #15803d !important;
-    --tajwid-qalqala: #0369a1 !important;
-    --tajwid-tafkhim: #4338ca !important;
+    --tajwid-silent: #9e9e9e !important;
+    --tajwid-lam-shamsiyya: #9e9e9e !important;
+    --tajwid-madd-normal: #f48fb1 !important;
+    --tajwid-madd: #e53935 !important;
+    --tajwid-madd-separated: #ff9800 !important;
+    --tajwid-madd-connected: #e91e63 !important;
+    --tajwid-madd-necessary: #e53935 !important;
+    --tajwid-ghunna: #27ae60 !important;
+    --tajwid-idgham: #27ae60 !important;
+    --tajwid-ikhfa: #27ae60 !important;
+    --tajwid-iqlab: #27ae60 !important;
+    --tajwid-qalqala: #00d2ff !important;
+    --tajwid-tafkhim: #2e86de !important;
 }
 
 html
