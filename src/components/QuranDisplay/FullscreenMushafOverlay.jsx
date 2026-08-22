@@ -152,19 +152,18 @@ const ImmersiveMushafPage = memo(function ImmersiveMushafPage({
                   }
                   lastTouchRef.current = { key, time: now };
                 }}
+                onClick={(event) => {
+                  if (event.target.closest(".quran-word-item, button, a")) return;
+                  onOpenAyahActions?.(ayah);
+                }}
               >
                 <SmartAyahRenderer
                   ayah={ayah}
-                  appendNativeMarker={false}
+                  appendNativeMarker={true}
                   isPlaying={isPlaying}
                   riwaya={riwaya}
                   showTajwid={showTajwid}
                   surahNum={ayahSurah}
-                />
-                <AyahMarker
-                  number={ayah.numberInSurah}
-                  isPlaying={isPlaying}
-                  className="mfp-ayah-marker"
                 />
               </span>,
             );
@@ -217,7 +216,7 @@ export default function FullscreenMushafOverlay({
   const onPrevPageRef = useRef(onPrevPage);
   const [zoom, setZoom] = useState(1);
   const [pageCache, setPageCache] = useState(() => new Map([[currentPage, ayahs]]));
-  const [navigationOpen, setNavigationOpen] = useState(false);
+  const [navigationOpen, setNavigationOpen] = useState(true);
   const [playerOpen, setPlayerOpen] = useState(false);
   const [selectedAyah, setSelectedAyah] = useState(null);
   const [zoomNotice, setZoomNotice] = useState(false);
@@ -646,11 +645,19 @@ export default function FullscreenMushafOverlay({
 
   const handleViewportClick = useCallback(
     (event) => {
-      if (event.target.closest(".mfp-ayah, button, select, input, a")) return;
-      revealContextChrome();
+      if (event.target.closest("button, select, input, a, .quran-word-item")) return;
+      if (navigationOpen || playerOpen) {
+        hideChrome();
+      } else {
+        revealContextChrome();
+      }
     },
-    [revealContextChrome],
+    [navigationOpen, playerOpen, hideChrome, revealContextChrome],
   );
+
+  useEffect(() => {
+    scheduleChromeHide();
+  }, [scheduleChromeHide]);
 
   if (!fullPage || typeof document === "undefined") return null;
 
