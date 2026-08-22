@@ -1331,3 +1331,15 @@ html body .app-root[data-view="reading"] .quran-display--platform {
   white-space: nowrap !important;
   border-width: 0 !important;
 }
+
+/* Fullscreen overlay: mobile footer nav visible only on small screens */
+.mfp-mobile-footer {
+  display: none !important;
+}
+
+@media (max-width: 639px) {
+  .mfp-mobile-footer {
+    display: flex !important;
+  }
+}
+
