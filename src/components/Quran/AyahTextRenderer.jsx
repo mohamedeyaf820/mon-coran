@@ -7,38 +7,99 @@ import {
   normalizeQuranGlyphText,
 } from "../../utils/quranUtils";
 import TajweedText from "./TajweedText";
-import { playWordAudio } from "../../utils/wordAudio";
+import { playWordAudio, getWordAudioUrl } from "../../utils/wordAudio";
 
 const AYAH_MARKER_TOKEN_RE = /^[\u06dd\u06de\u06e9\ufd3f\ufd3e\d\u0660-\u0669\u06f0-\u06f9]+$/u;
 const WAQF_MARKER_SPLIT_RE = /([\u06d6-\u06dc])/u;
 const WAQF_MARKER_CHAR_RE = /^[\u06d6-\u06dc]$/u;
 
-function CanonicalQuranText({ text, riwaya }) {
-  if (riwaya !== "warsh") {
+function CanonicalQuranText({ text, riwaya, words, surahNum, ayahNumber }) {
+  if (riwaya === "warsh") {
+    const parts = String(text).split(WAQF_MARKER_SPLIT_RE).filter(Boolean);
+    let wordRunningIndex = 0;
     return (
       <span className="quran-canonical-text" dir="rtl" lang="ar">
-        {text}
+        {parts.map((part, index) => {
+          if (WAQF_MARKER_CHAR_RE.test(part)) {
+            return (
+              <span
+                key={`${part}-${index}`}
+                className="warsh-waqf-marker waqf-marker"
+                data-waqf={part.codePointAt(0)?.toString(16).toUpperCase()}
+                aria-hidden="true"
+              >
+                {getReadableWaqfGlyph(part)}
+              </span>
+            );
+          }
+          const wordList = part.split(/\s+/).filter(Boolean);
+          return (
+            <React.Fragment key={`${index}-${part.length}`}>
+              {wordList.map((w, wIdx) => {
+                const isMarker = isAyahMarkerToken(w);
+                const currentPos = ++wordRunningIndex;
+                const audioUrl = !isMarker && surahNum && ayahNumber
+                  ? getWordAudioUrl(surahNum, ayahNumber, currentPos)
+                  : null;
+
+                const handleClick = (e) => {
+                  if (!isMarker) {
+                    e.stopPropagation();
+                    playWordAudio(audioUrl || { surah: surahNum, ayah: ayahNumber, position: currentPos });
+                  }
+                };
+
+                return (
+                  <React.Fragment key={wIdx}>
+                    <span
+                      className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
+                      onClick={!isMarker ? handleClick : undefined}
+                      role={!isMarker ? "button" : undefined}
+                      tabIndex={!isMarker ? 0 : undefined}
+                    >
+                      {w}
+                    </span>
+                    {wIdx < wordList.length - 1 ? " " : null}
+                  </React.Fragment>
+                );
+              })}
+            </React.Fragment>
+          );
+        })}
       </span>
     );
   }
 
-  const parts = String(text).split(WAQF_MARKER_SPLIT_RE).filter(Boolean);
+  const parts = String(text).split(/\s+/).filter(Boolean);
   return (
     <span className="quran-canonical-text" dir="rtl" lang="ar">
-      {parts.map((part, index) =>
-        WAQF_MARKER_CHAR_RE.test(part) ? (
-          <span
-            key={`${part}-${index}`}
-            className="warsh-waqf-marker waqf-marker"
-            data-waqf={part.codePointAt(0)?.toString(16).toUpperCase()}
-            aria-hidden="true"
-          >
-            {getReadableWaqfGlyph(part)}
-          </span>
-        ) : (
-          <React.Fragment key={`${index}-${part.length}`}>{part}</React.Fragment>
-        ),
-      )}
+      {parts.map((wordStr, index) => {
+        const isMarker = isAyahMarkerToken(wordStr);
+        const dataWord = words && words[index];
+        const wordPos = index + 1;
+        const audioUrl = !isMarker ? (dataWord?.audioUrl || (surahNum && ayahNumber ? getWordAudioUrl(surahNum, ayahNumber, wordPos) : null)) : null;
+
+        const handleClick = (e) => {
+          if (!isMarker) {
+            e.stopPropagation();
+            playWordAudio(audioUrl || { surah: surahNum, ayah: ayahNumber, position: wordPos });
+          }
+        };
+
+        return (
+          <React.Fragment key={index}>
+            <span
+              className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
+              onClick={!isMarker ? handleClick : undefined}
+              role={!isMarker ? "button" : undefined}
+              tabIndex={!isMarker ? 0 : undefined}
+            >
+              {wordStr}
+            </span>
+            {index < parts.length - 1 ? (isAyahMarkerToken(parts[index + 1]) ? "\u202F" : " ") : null}
+          </React.Fragment>
+        );
+      })}
     </span>
   );
 }
@@ -50,23 +111,17 @@ function isAyahMarkerToken(word) {
   return AYAH_MARKER_TOKEN_RE.test(compact) || NATIVE_AYAH_MARKER_RE.test(compact);
 }
 
-// Quran.com normally sends both a canonical verse string and a word list.  On
-// a stale or malformed mobile cache those two payloads can occasionally become
-// out of sync.  Never let an unrelated word list replace the canonical ayah.
 function comparableArabicText(value) {
   return normalizeQuranGlyphText(value)
     .normalize("NFC")
     .replace(/[\u0610-\u061A\u0640\u064B-\u065F\u0670\u06D6-\u06ED]/gu, "")
     .replace(/[\u200C\u200D\u200E\u200F\u2066-\u2069]/gu, "")
-    .replace(/[\u06DD\u06DE\u06E9\uFD3E\uFD3F\u0660-\u0669\u06F0-\u06F9\d]/gu, "")
-    .replace(/[\u0622\u0623\u0625\u0671]/gu, "\u0627")
-    .replace(/\u0649/gu, "\u064A")
-    .replace(/\s+/gu, "");
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function hasCoherentWordData(words, text, fontFamily, riwaya, surahNum, ayahNumber) {
   if (!Array.isArray(words) || words.length === 0) return false;
-
   const expected = comparableArabicText(
     String(text || "")
       .split(/\s+/u)
@@ -303,13 +358,16 @@ function AyahTextRendererComponent({
     );
   }
 
-  // Keep the resting verse as one canonical RTL text flow.  Nesting a
-  // Tajweed renderer inside every word creates independent bidi/isolation
-  // contexts; WebKit (Safari and every iOS browser) can then reorder or spread
-  // those words on narrow screens.  Word-level spans remain available only
-  // while audio karaoke is active, where they are genuinely required.
-  if (!showTajwid || !tajweedText || !wordDataIsCoherent) {
-    return <CanonicalQuranText text={text} riwaya={riwaya} />;
+  if (!showTajwid || !tajweedText) {
+    return (
+      <CanonicalQuranText
+        text={text}
+        riwaya={riwaya}
+        words={clickableWords}
+        surahNum={surahNum}
+        ayahNumber={ayahNumber}
+      />
+    );
   }
 
   return (
@@ -318,6 +376,8 @@ function AyahTextRendererComponent({
       enabled
       riwaya={riwaya}
       tajweedColors={tajweedColors}
+      surahNum={surahNum}
+      ayahNumber={ayahNumber}
     />
   );
 }

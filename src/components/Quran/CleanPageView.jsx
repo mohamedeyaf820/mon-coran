@@ -106,15 +106,6 @@ function CleanPageViewComponent({
               data-ayah-number={ayah.numberInSurah}
               data-ayah-global={ayah.number}
               className={`quran-verse-inline cpv-verse mushaf-verse${isActive ? " cpv-verse--active" : ""}${isPlaying ? " cpv-verse--playing" : ""}`}
-              onClick={() => onAyahClick?.(toggleId)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  onAyahClick?.(toggleId);
-                }
-              }}
-              role={onAyahClick ? "button" : undefined}
-              tabIndex={onAyahClick ? 0 : undefined}
               aria-label={`${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`}
               aria-current={isPlaying ? "true" : undefined}
             >

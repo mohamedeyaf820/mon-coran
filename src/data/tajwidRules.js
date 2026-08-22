@@ -26,14 +26,24 @@ const SK = "\\u0652\\u06E1";
 const TAJWID_RULES = [
   {
     id: "ghunna",
-    nameAr: "غنّة/إخفاء",
-    nameEn: "Ghunna/Ikhfa'",
-    nameFr: "Ghounna/Ikhfa",
-    color: "#169777",
-    description: "Nasalisation (ghunna) et dissimulation (ikhfa)",
+    nameAr: "غنّة",
+    nameEn: "Ghunna",
+    nameFr: "Ghounna",
+    color: "#16927c",
+    description: "Nasalisation (ghunna)",
     patterns: [
       // Shadda on noon or meem (ghunna)
       /([نم])\u0651/g,
+    ],
+  },
+  {
+    id: "ikhfa",
+    nameAr: "إخفاء",
+    nameEn: "Ikhfa'",
+    nameFr: "Ikhfa",
+    color: "#d16500",
+    description: "Dissimulation du noon sakin ou tanwin",
+    patterns: [
       // Tanwin followed by ikhfa letters
       /[\u064B\u064C\u064D][\s\u200C]*[تثجدذزسشصضطظفقك]/g,
       // Noon sakin (sukun) + ikhfa letters
@@ -45,7 +55,7 @@ const TAJWID_RULES = [
     nameAr: "قلقلة",
     nameEn: "Qalqala (echo)",
     nameFr: "Qalqala (écho)",
-    color: "#2670e8",
+    color: "#007fd5",
     description: "Rebondissement sur les lettres ق ط ب ج د en sukun",
     patterns: [new RegExp(`[قطبجد][${SK}]`, "g")],
   },
@@ -54,7 +64,7 @@ const TAJWID_RULES = [
     nameAr: "إدغام",
     nameEn: "Idgham",
     nameFr: "Idgham",
-    color: "#169777",
+    color: "#16927c",
     description: "Assimilation du noun sakin ou tanwin dans ي ر م ل و ن",
     patterns: [
       // Tanwin + yarmaloon letters
@@ -68,7 +78,7 @@ const TAJWID_RULES = [
     nameAr: "إقلاب",
     nameEn: "Iqlab",
     nameFr: "Iqlab",
-    color: "#169777",
+    color: "#26a69a",
     description: "Conversion du noon sakin ou tanwin en meem devant ب",
     patterns: [
       /[\u064B\u064C\u064D][\s\u200C]*ب/g,
@@ -96,7 +106,7 @@ const TAJWID_RULES = [
     nameAr: "مدّ منفصل",
     nameEn: "Separated madd (2/4/6)",
     nameFr: "Madd séparé (2/4/6)",
-    color: "#d13b83",
+    color: "#8e24aa",
     description: "Madd munfasil — hamza suivi de lettre de madd entre 2 mots",
     patterns: [/[\u0627وي][\s][ءأإ]/g],
   },
@@ -105,7 +115,7 @@ const TAJWID_RULES = [
     nameAr: "مدّ متصل",
     nameEn: "Connected madd (4/5)",
     nameFr: "Madd connecté (4/5)",
-    color: "#d13b83",
+    color: "#8e24aa",
     description: "Madd muttasil — hamza après lettre de madd dans le même mot",
     patterns: [/[ءأإؤئ][\u064E\u064F\u0650]?[\u0627وي]/g],
   },
@@ -114,7 +124,7 @@ const TAJWID_RULES = [
     nameAr: "مدّ لازم",
     nameEn: "Necessary madd (6)",
     nameFr: "Madd nécessaire (6)",
-    color: "#d13b83",
+    color: "#9b2c2c",
     description: "Madd lazim — prolongation obligatoire de 6 temps",
     patterns: [/[\u0627وي]\u0651/g],
   },
@@ -123,7 +133,7 @@ const TAJWID_RULES = [
     nameAr: "حرف ساكن",
     nameEn: "Silent letter",
     nameFr: "Lettre muette",
-    color: "#94a3b8",
+    color: "#9e9e9e",
     description: "Lam de l'article assimilée (lam shamsiyya) / lettre muette",
     patterns: [
       // Matches both ٱل (alef wasla) and ال (regular alef)
@@ -157,12 +167,8 @@ const WARSH_TAJWID_RULES = [
     description:
       "Transfert de la voyelle du hamza à la lettre précédente sakin",
     patterns: [
-      // Pattern: letter + sukun + hamza (with or without vowels)
-      // Common naql cases: ٱل + hamza-initial word
       /[ٱا]ل[اأإءؤئ]/g,
-      // Lam-alif followed by hamza patterns
       new RegExp(`ل[${SK}][\\s]*[أإءؤئ]`, "g"),
-      // Any consonant with sukun before hamza
       new RegExp(`[بتثجحخدذرزسشصضطظعغفقكلمنهوي][${SK}][\\s]*[ءأإؤئ]`, "g"),
     ],
   },
@@ -171,14 +177,11 @@ const WARSH_TAJWID_RULES = [
     nameAr: "تسهيل",
     nameEn: "Tashil (Softening)",
     nameFr: "Tashil (Adoucissement)",
-    color: "#169777",
+    color: "#16927c",
     description: "Adoucissement du hamza entre deux voyelles",
     patterns: [
-      // Hamza between two alifs (common tashil position)
       /[اآ][ءأإؤئ][اآ]/g,
-      // Double hamza in same word
       /[أإ][ءأإؤئ]/g,
-      // أَأَ, أُأُ type patterns
       /[ءأإؤئ][\u064E\u064F\u0650][ءأإؤئ]/g,
     ],
   },
@@ -190,13 +193,9 @@ const WARSH_TAJWID_RULES = [
     color: "#e67e22",
     description: "Remplacement du hamza par alif/waw/ya",
     patterns: [
-      // Hamza after fatha becoming alif
       /[\u064E][ءأ]/g,
-      // Hamza after damma becoming waw-like
       /[\u064F][ءؤ]/g,
-      // Hamza after kasra becoming ya-like
       /[\u0650][ءئ]/g,
-      // ء after madd letter
       /[اوي][\u0670]?[ءأإؤئ]/g,
     ],
   },
@@ -208,13 +207,9 @@ const WARSH_TAJWID_RULES = [
     color: "#e67e22",
     description: "Prolongation après hamza substitué (4 à 6 temps en Warsh)",
     patterns: [
-      // Hamza followed by madd letter (typical badal)
       /[ءأإ][\u064E\u064F\u0650]?[اوي]/g,
-      // آ (hamza-alif combination)
       /آ/g,
-      // ءا sequence
       /ءا/g,
-      // أو أي patterns
       /[أإء][وي]/g,
     ],
   },
@@ -223,12 +218,10 @@ const WARSH_TAJWID_RULES = [
     nameAr: "صلة كبرى",
     nameEn: "Sila Kubra",
     nameFr: "Sila Kubra",
-    color: "#d13b83",
+    color: "#8e24aa",
     description: "Prolongation du haa du pronom suivi de hamza",
     patterns: [
-      // Pronoun haa (ـه) followed by hamza - elongated in Warsh
       /ه[\u064F\u0650][\s]*[ءأإؤئ]/g,
-      // له، به، منه etc. followed by hamza
       /[لبمنعف]ه[\u064F\u0650]?[\s]+[ءأإؤئا]/g,
     ],
   },
@@ -237,14 +230,11 @@ const WARSH_TAJWID_RULES = [
     nameAr: "ترقيق الراء",
     nameEn: "Tarqiq Ra (Warsh)",
     nameFr: "Tarqiq Ra (léger)",
-    color: "#169777",
+    color: "#16927c",
     description: "Prononciation légère du ra en Warsh (cas spécifiques)",
     patterns: [
-      // Ra with kasra
       /ر[\u0650]/g,
-      // Ra sakin preceded by kasra
       new RegExp(`[\u0650]ر[${SK}]`, "g"),
-      // Ra sakin preceded by ya sakin
       new RegExp(`ي[${SK}]ر[${SK}]`, "g"),
     ],
   },
@@ -253,12 +243,10 @@ const WARSH_TAJWID_RULES = [
     nameAr: "إدغام ورش",
     nameEn: "Idgham (Warsh)",
     nameFr: "Idgham (Warsh)",
-    color: "#94a3b8",
+    color: "#9e9e9e",
     description: "Assimilation spécifique à Warsh",
     patterns: [
-      // Lam + Ra (some cases in Warsh)
       /ل\u0651?ر/g,
-      // Additional idgham cases for Warsh
       new RegExp(`ن[${SK}][\\s\\u200C]*[يرملون]`, "g"),
       /[\u064B\u064C\u064D][\s\u200C]*[يرملون]/g,
     ],
@@ -266,13 +254,23 @@ const WARSH_TAJWID_RULES = [
   // ─────────────── Common rules (also in Hafs but with Warsh variations) ───────────────
   {
     id: "ghunna",
-    nameAr: "غنّة/إخفاء",
-    nameEn: "Ghunna/Ikhfa'",
-    nameFr: "Ghounna/Ikhfa",
-    color: "#169777",
-    description: "Nasalisation (ghunna) et dissimulation (ikhfa)",
+    nameAr: "غنّة",
+    nameEn: "Ghunna",
+    nameFr: "Ghounna",
+    color: "#16927c",
+    description: "Nasalisation (ghunna)",
     patterns: [
       /([نم])\u0651/g,
+    ],
+  },
+  {
+    id: "ikhfa",
+    nameAr: "إخفاء",
+    nameEn: "Ikhfa'",
+    nameFr: "Ikhfa",
+    color: "#d16500",
+    description: "Dissimulation",
+    patterns: [
       /[\u064B\u064C\u064D][\s\u200C]*[تثجدذزسشصضطظفقك]/g,
       new RegExp(`ن[${SK}][\\s\\u200C]*[تثجدذزسشصضطظفقك]`, "g"),
     ],
@@ -282,7 +280,7 @@ const WARSH_TAJWID_RULES = [
     nameAr: "قلقلة",
     nameEn: "Qalqala (echo)",
     nameFr: "Qalqala (écho)",
-    color: "#2670e8",
+    color: "#007fd5",
     description: "Rebondissement sur les lettres ق ط ب ج د en sukun",
     patterns: [new RegExp(`[قطبجد][${SK}]`, "g")],
   },
@@ -291,7 +289,7 @@ const WARSH_TAJWID_RULES = [
     nameAr: "إقلاب",
     nameEn: "Iqlab",
     nameFr: "Iqlab",
-    color: "#169777",
+    color: "#26a69a",
     description: "Conversion du noon sakin ou tanwin en meem devant ب",
     patterns: [
       /[\u064B\u064C\u064D][\s\u200C]*ب/g,
@@ -304,7 +302,7 @@ const WARSH_TAJWID_RULES = [
     nameAr: "مدّ طبيعي",
     nameEn: "Normal madd (2)",
     nameFr: "Madd normal (2)",
-    color: "#ffc1e0",
+    color: "#e67e22",
     description: "Madd tabii — prolongation de 2 temps",
     patterns: [
       /[\u064E][\u0627\u0670]/g,
@@ -317,7 +315,7 @@ const WARSH_TAJWID_RULES = [
     nameAr: "مدّ منفصل",
     nameEn: "Separated madd (4-5 Warsh)",
     nameFr: "Madd séparé (4-5 temps)",
-    color: "#ff8e3b",
+    color: "#8e24aa",
     description:
       "Madd munfasil — prolongation 4-5 temps en Warsh (madd entre deux mots)",
     patterns: [/[اوي][\s\u200C]+[ءأإؤئ]/g],
@@ -327,7 +325,7 @@ const WARSH_TAJWID_RULES = [
     nameAr: "مدّ متصل",
     nameEn: "Connected madd (4-6)",
     nameFr: "Madd connecté (4-6)",
-    color: "#ff5e8e",
+    color: "#8e24aa",
     description:
       "Madd muttasil — hamza après madd dans le même mot (4-6 temps en Warsh)",
     patterns: [/[ءأإؤئ][\u064E\u064F\u0650]?[\u0627وي]/g],
@@ -337,7 +335,7 @@ const WARSH_TAJWID_RULES = [
     nameAr: "مدّ لازم",
     nameEn: "Necessary madd (6)",
     nameFr: "Madd nécessaire (6)",
-    color: "#e30000",
+    color: "#9b2c2c",
     description: "Madd lazim — prolongation obligatoire de 6 temps",
     patterns: [/[\u0627وي]\u0651/g],
   },
@@ -346,7 +344,7 @@ const WARSH_TAJWID_RULES = [
     nameAr: "حرف ساكن",
     nameEn: "Silent letter",
     nameFr: "Lettre muette",
-    color: "#999999",
+    color: "#9e9e9e",
     description: "Lam de l'article assimilée (lam shamsiyya) / lettre muette",
     patterns: [/[ٱا]ل[تثدذرزسشصضطظنل]/g],
   },
@@ -355,7 +353,7 @@ const WARSH_TAJWID_RULES = [
     nameAr: "تفخيم",
     nameEn: "Tafkhim (heavy)",
     nameFr: "Tafkhim (lourd)",
-    color: "#3c84d5",
+    color: "#2563eb",
     description: "Prononciation emphatique/lourde (lettres مستعلية)",
     patterns: [
       new RegExp(`[صضطظخغق][\\u064E\\u064F\\u0650${SK}\\u0651]?`, "g"),

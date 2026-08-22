@@ -184,9 +184,6 @@ const QCVerseCard = memo(function QCVerseCard({
               "var(--reader-arabic-size, var(--qd-reading-font-size, 42px))",
             lineHeight: "var(--quran-line-height, 2.15)",
           }}
-          onClick={handleClick}
-          role="button"
-          tabIndex={0}
           aria-label={`${
             lang === "fr"
               ? "Texte arabe du verset"
@@ -194,12 +191,6 @@ const QCVerseCard = memo(function QCVerseCard({
                 ? "نص الآية"
                 : "Arabic text for verse"
           } ${surahNum}:${ayah.numberInSurah}`}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault();
-              handleClick();
-            }
-          }}
         >
           {arabicContent}
         </div>

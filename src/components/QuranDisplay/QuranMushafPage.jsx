@@ -306,12 +306,13 @@ export default function QuranMushafPage({
           data-word-position={word.position}
           role="button"
           tabIndex={0}
-          onClick={() => { if (word.audioUrl) playWordAudio(word.audioUrl); onToggleActive?.(word.globalAyah); }}
+          onClick={() => {
+            playWordAudio(word.audioUrl || { surah: word.surah, ayah: word.ayah, position: word.position });
+          }}
           onKeyDown={(event) => {
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
-              if (word.audioUrl) playWordAudio(word.audioUrl);
-              onToggleActive?.(word.globalAyah);
+              playWordAudio(word.audioUrl || { surah: word.surah, ayah: word.ayah, position: word.position });
             }
           }}
           style={{
@@ -327,9 +328,6 @@ export default function QuranMushafPage({
             MozOsxFontSmoothing: 'grayscale',
             unicodeBidi: 'isolate',
             whiteSpace: 'nowrap',
-            // Words are separate interactive spans in page mode. This tiny
-            // logical gap replaces the literal space without producing the
-            // exaggerated Safari/WebKit spacing caused by word-spacing.
             marginInlineEnd: '0.035em',
           }}
         >
@@ -349,12 +347,13 @@ export default function QuranMushafPage({
         data-word-position={word.position}
         role="button"
         tabIndex={0}
-        onClick={() => { if (word.audioUrl) playWordAudio(word.audioUrl); onToggleActive?.(word.globalAyah); }}
+        onClick={() => {
+          playWordAudio(word.audioUrl || { surah: word.surah, ayah: word.ayah, position: word.position });
+        }}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            if (word.audioUrl) playWordAudio(word.audioUrl);
-            onToggleActive?.(word.globalAyah);
+            playWordAudio(word.audioUrl || { surah: word.surah, ayah: word.ayah, position: word.position });
           }
         }}
         style={{

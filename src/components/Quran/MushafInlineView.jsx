@@ -54,7 +54,7 @@ export default function MushafInlineView({
               const isPlaying = currentPlayingAyah?.ayah === ayah.numberInSurah && (currentPlayingAyah?.surah === surahNum || currentPlayingAyah?.surah == null);
               return (
                 <React.Fragment key={ayah.number ?? ayah.numberInSurah}>
-                  <span id={`ayah-${ayah.numberInSurah}`} data-surah-number={surahNum} data-ayah-number={ayah.numberInSurah} data-ayah-global={ayah.number} className={`mp-ayah${isPlaying ? " mp-ayah--playing" : ""}`} onClick={() => onAyahClick?.(ayah.numberInSurah)} role="button" tabIndex={0} onKeyDown={(event) => event.key === "Enter" && onAyahClick?.(ayah.numberInSurah)} aria-label={`Verset ${ayah.numberInSurah}`}>
+                  <span id={`ayah-${ayah.numberInSurah}`} data-surah-number={surahNum} data-ayah-number={ayah.numberInSurah} data-ayah-global={ayah.number} className={`mp-ayah${isPlaying ? " mp-ayah--playing" : ""}`} aria-label={`Verset ${ayah.numberInSurah}`}>
                     <SmartAyahRenderer ayah={ayah} showTajwid={showTajwid} isPlaying={isPlaying} surahNum={surahNum} calibration={calibration} riwaya={riwaya} />
                   </span>
                   {"\u200C"}

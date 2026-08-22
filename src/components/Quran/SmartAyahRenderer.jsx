@@ -58,13 +58,19 @@ function SmartAyahRendererComponent({
 
   const wordCount = baseCleanText.split(/\s+/).filter(Boolean).length;
   const tajweedText = useMemo(() => {
-    if (effectiveRiwaya !== "hafs") return null;
-    const value =
-      ayah.quranCom?.textTajweed ||
-      ayah.words
-        ?.map((word) => word.textTajweed || word.textUthmani || word.text)
-        .filter(Boolean)
-        .join(" ");
+    let value = null;
+    if (effectiveRiwaya === "warsh") {
+      value = cleanFallbackText || baseCleanText;
+    } else {
+      value =
+        ayah.quranCom?.textTajweed ||
+        ayah.words
+          ?.map((word) => word.textTajweed || word.textUthmani || word.text)
+          .filter(Boolean)
+          .join(" ") ||
+        cleanFallbackText ||
+        baseCleanText;
+    }
     return appendNativeAyahMarker(
       value,
       ayah.numberInSurah,
@@ -77,6 +83,8 @@ function SmartAyahRendererComponent({
     ayah.numberInSurah,
     ayah.quranCom?.textTajweed,
     ayah.words,
+    baseCleanText,
+    cleanFallbackText,
     effectiveRiwaya,
     fontFamily,
   ]);
