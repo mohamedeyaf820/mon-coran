@@ -215,8 +215,10 @@ const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
         <span
             className="waqf-marker cursor-help"
             data-waqf={codePoint}
+            data-tajwid-name={name}
+            data-tajwid-desc={desc}
+            data-tajwid-color="#c5a04b"
             role="help"
-            title={`${name}${desc ? ` — ${desc}` : ''}`}
             aria-label={`Règle de Waqf: ${name}`}
         >
             {displayGlyph}
@@ -340,7 +342,10 @@ const TajweedRuleSegment = React.memo(function TajweedRuleSegment({
             className="tajwid-rule-segment"
             style={{ color }}
             data-tajwid={ruleId}
-            title={name ? `${name}${desc ? ` - ${desc}` : ''}` : undefined}
+            data-tajwid-name={name}
+            data-tajwid-desc={desc}
+            data-tajwid-color={color}
+            aria-label={`${name}: ${desc}`}
         >
             {text}
         </span>

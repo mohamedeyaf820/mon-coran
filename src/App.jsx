@@ -58,6 +58,7 @@ const KeyboardShortcutsModal = lazy(
   () => import("./components/KeyboardShortcutsModal"),
 );
 const TafsirSidebar = lazy(() => import("./components/TafsirSidebar"));
+const TajweedTooltip = lazy(() => import("./components/Quran/TajweedTooltip"));
 
 function AppLoadingFallback({ lang, variant = "page" }) {
   const label =
@@ -886,6 +887,7 @@ export default function App() {
             {state.libraryOpen && <LibraryModal />}
             {state.shareImageOpen && <AyahSharePanel />}
             {state.tafsirSidebarOpen && <TafsirSidebar />}
+            <TajweedTooltip />
           </Suspense>
         </ErrorBoundary>
       </div>
