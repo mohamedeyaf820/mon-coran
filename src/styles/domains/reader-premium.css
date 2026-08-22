@@ -597,3 +597,239 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     margin-inline-end: 0.7em !important;
     padding-inline: 0 !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   16. CRITICAL FIX — FULLSCREEN PORTAL WORD FLOW
+   The portal (.mfp-portal-root) is mounted directly on <body>,
+   outside .app-root. Tailwind utility classes like .cursor-pointer
+   can produce block-level rules that break the RTL text flow.
+   Every word wrapper must be explicitly inline inside the portal.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* All inline Arabic text containers in the fullscreen portal */
+.mfp-portal-root .quran-word-item,
+.mfp-portal-root .quran-canonical-text,
+.mfp-portal-root .quran-canonical-text > span,
+.mfp-portal-root .quran-tajwid-text,
+.mfp-portal-root .quran-tajwid-text > span,
+.mfp-portal-root .tajwid-rule-segment,
+.mfp-portal-root .mfp-ayah > span,
+.mfp-portal-root .verse-text,
+.mfp-portal-root .quran-arabic-text,
+.mfp-portal-root .qc-ayah-text-ar {
+    display: inline !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+}
+
+/* Word items in the portal must flow inline with proper cursor */
+.mfp-portal-root .quran-word-item {
+    cursor: pointer !important;
+    border-radius: 0.1em !important;
+    transition: background-color 100ms ease !important;
+}
+
+.mfp-portal-root .quran-word-item:hover {
+    background: color-mix(in srgb, currentColor 8%, transparent) !important;
+}
+
+/* Tajweed colored text segments: strictly inline */
+.mfp-portal-root .tajwid-rule-segment {
+    cursor: help !important;
+}
+
+/* Ensure mfp-quran-flow is a proper RTL block container for justification */
+.mfp-portal-root .mfp-quran-flow {
+    direction: rtl !important;
+    text-align: justify !important;
+    unicode-bidi: plaintext !important;
+}
+
+/* The inner aria-hidden span that holds word items must be inline too */
+.mfp-portal-root .mfp-quran-flow [aria-hidden="true"]:not(.mfp-page-meta):not(.mfp-page-folio *) {
+    display: inline !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   17. PERFORMANCE — GPU COMPOSITING & LAYOUT CONTAINMENT
+   ─ Adding `contain: content` on Mushaf pages reduces the browser's
+     layout reflow scope from the entire document to just that page.
+   ─ `will-change: scroll-position` on the scroll viewport enables
+     the compositor to promote the scrolling layer independently.
+   ─ Removing non-compositable `transition: font-size` prevents
+     forced layout recalculations on every animation frame.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Promote scrolling viewport to its own compositor layer */
+.mfp-portal-root .mfp-viewport {
+    will-change: scroll-position;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+/* Layout containment per Mushaf page — prevents style recalc overflow */
+.mfp-portal-root .mfp-page-surface {
+    contain: layout style;
+}
+
+/* Replace non-GPU-compositable font-size transition with transform */
+.mfp-portal-root .mfp-page-sheet {
+    contain: layout style;
+}
+
+/* Reduce paint area for the Chrome overlays (navigation + player) */
+.mfp-portal-root .mfp-context-navigation,
+.mfp-portal-root .mfp-context-player {
+    will-change: opacity, transform;
+    contain: layout style paint;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   18. UX — FULLSCREEN OVERLAY IMPROVEMENTS
+   Better visual hierarchy for the immersive reading experience.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Background: deep, warm dark reading environment */
+.mfp-portal-root .mfp-overlay {
+    background: var(--reader-page-bg, #f5f0e8);
+}
+
+[data-theme="dark"] .mfp-portal-root .mfp-overlay {
+    background: #0d0f12;
+}
+
+[data-theme="sepia"] .mfp-portal-root .mfp-overlay {
+    background: #f3e8cf;
+}
+
+/* Context navigation pill: elevated glass, smooth reveal */
+.mfp-portal-root .mfp-context-navigation {
+    border: 1px solid color-mix(in srgb, var(--border, rgba(0,0,0,0.12)) 55%, transparent) !important;
+    box-shadow:
+        0 8px 32px rgba(0,0,0,0.18),
+        0 2px 8px rgba(0,0,0,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.08) !important;
+    backdrop-filter: blur(20px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+    background: color-mix(in srgb, var(--bg-card, #fff) 88%, transparent) !important;
+}
+
+[data-theme="dark"] .mfp-portal-root .mfp-context-navigation {
+    background: color-mix(in srgb, #1a1f2e 90%, transparent) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Context player pill: elevated glass */
+.mfp-portal-root .mfp-context-player {
+    border: 1px solid color-mix(in srgb, var(--border, rgba(0,0,0,0.12)) 55%, transparent) !important;
+    box-shadow:
+        0 8px 32px rgba(0,0,0,0.18),
+        0 2px 8px rgba(0,0,0,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.06) !important;
+    backdrop-filter: blur(20px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
+    background: color-mix(in srgb, var(--bg-card, #fff) 88%, transparent) !important;
+}
+
+[data-theme="dark"] .mfp-portal-root .mfp-context-player {
+    background: color-mix(in srgb, #1a1f2e 90%, transparent) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Playing ayah highlight — warm amber like a true mushaf marker */
+.mfp-portal-root .mfp-ayah--playing {
+    background: rgba(197, 160, 75, 0.14) !important;
+    box-shadow:
+        0 0 0 0.06em rgba(197, 160, 75, 0.12),
+        inset 0 -0.05em 0 rgba(197, 160, 75, 0.30) !important;
+    border-radius: 0.12em !important;
+}
+
+[data-theme="dark"] .mfp-portal-root .mfp-ayah--playing {
+    background: rgba(var(--primary-rgb, 197, 160, 75), 0.18) !important;
+}
+
+/* Page meta bar: subtle and elegant */
+.mfp-portal-root .mfp-page-meta {
+    opacity: 0.45;
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+}
+
+/* Folio (page number at bottom) */
+.mfp-portal-root .mfp-page-folio strong {
+    opacity: 0.5;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+}
+
+/* Surah header break in fullscreen: more elegant divider */
+.mfp-portal-root .mfp-surah-break {
+    margin-block: 1.4em 0.8em;
+}
+
+/* Close button: more accessible, positioned clearly */
+.mfp-portal-root .mfp-context-navigation__close {
+    color: var(--text-secondary, #666) !important;
+    transition: color 120ms ease, background 120ms ease !important;
+}
+
+.mfp-portal-root .mfp-context-navigation__close:hover {
+    color: var(--text-primary, #000) !important;
+    background: color-mix(in srgb, currentColor 8%, transparent) !important;
+}
+
+/* Step buttons (prev/next surah): more prominent */
+.mfp-portal-root .mfp-context-navigation__step {
+    transition: all 120ms ease !important;
+}
+
+.mfp-portal-root .mfp-context-navigation__step:not(:disabled):hover {
+    background: rgba(var(--primary-rgb, 197, 160, 75), 0.12) !important;
+    color: var(--primary, #c5a04b) !important;
+}
+
+/* Player track info: better typography */
+.mfp-portal-root .mfp-context-player__track strong {
+    font-size: 0.82rem;
+    font-weight: 650;
+}
+
+.mfp-portal-root .mfp-context-player__track small {
+    font-size: 0.65rem;
+    opacity: 0.65;
+}
+
+/* Player toggle (play/pause): primary color, prominent */
+.mfp-portal-root .mfp-context-player__toggle {
+    background: var(--primary, #c5a04b) !important;
+    color: #fff !important;
+    border-radius: 50% !important;
+    width: 2.4rem !important;
+    height: 2.4rem !important;
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb, 197, 160, 75), 0.35) !important;
+    transition: transform 100ms ease, box-shadow 100ms ease !important;
+}
+
+.mfp-portal-root .mfp-context-player__toggle:hover {
+    transform: scale(1.08) !important;
+    box-shadow: 0 6px 16px rgba(var(--primary-rgb, 197, 160, 75), 0.45) !important;
+}
+
+/* Hot zones: more opaque for better discoverability */
+.mfp-portal-root .mfp-context-hotzone {
+    opacity: 0 !important;
+    pointer-events: all !important;
+}
+
+/* Zoom status badge: more polished */
+.mfp-portal-root .mfp-zoom-status {
+    background: color-mix(in srgb, #000 72%, transparent) !important;
+    color: #fff !important;
+    border-radius: 6px !important;
+    font-size: 0.7rem !important;
+    font-weight: 600 !important;
+    padding: 0.25rem 0.55rem !important;
+    letter-spacing: 0.02em !important;
+}

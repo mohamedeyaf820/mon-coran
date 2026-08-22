@@ -4723,6 +4723,8 @@ html body .app-root[data-view="reading"] .quran-display--platform .tajweed-legen
         var(--reader-page-paper, var(--bg-primary));
     font-family: var(--qd-font-family, var(--font-quran, serif));
     font-synthesis: none;
+    /* Layout containment: prevents style recalculation from leaking outside this page */
+    contain: layout style;
 }
 
 .quran-display--platform .mfp-page-meta,
@@ -4756,10 +4758,13 @@ html body .app-root[data-view="reading"] .quran-display--platform .tajweed-legen
     color: inherit;
     font-size: var(--mfp-page-font-size, var(--qd-fullscreen-font-size, 44px));
     line-height: 2.04;
+    direction: rtl;
     text-align: justify;
+    /* Use inter-word justification for Arabic — avoids letter-spacing stretching */
+    text-justify: inter-word;
     text-rendering: optimizeLegibility;
+    /* Remove font-size transition (not GPU-compositable, causes forced layout) */
     word-spacing: 0.015em;
-    transition: font-size 120ms linear;
 }
 
 .quran-display--platform .mfp-ayah {

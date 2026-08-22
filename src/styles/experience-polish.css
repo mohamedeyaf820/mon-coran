@@ -1256,3 +1256,78 @@ html body .app-root[data-view="reading"]
   margin-right: 0.14em;
   margin-left: 0.72em;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL PERFORMANCE OPTIMIZATIONS
+   ─ Applied globally to improve rendering fluidity across all pages.
+   ─ These are safe, non-visual changes that target compositing.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Smooth scrolling globally with GPU acceleration hint */
+html {
+  scroll-behavior: smooth;
+}
+
+/* All main scrollable containers: GPU-promoted scroll */
+.app-root,
+.main-content,
+.home-scroll,
+.reading-scroll,
+[class*="scroll-container"],
+[class*="scrollable"] {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Reading viewport: smooth scroll + GPU layer */
+html body .app-root[data-view="reading"] .quran-display--platform {
+  scroll-behavior: smooth;
+}
+
+/* Prevent layout thrashing on animated elements by pre-declaring will-change */
+.srh-play-btn,
+.mfp-context-player__toggle,
+.mfp-context-navigation__step,
+.qc-list-card__reference {
+  will-change: transform;
+}
+
+/* Transitions on color/opacity only (GPU-compositable) */
+.mfp-ayah {
+  /* Override any non-compositable transitions */
+  transition: color 120ms ease, background-color 120ms ease !important;
+}
+
+/* Touch devices: hint the browser can handle scroll without JS blocking */
+.mfp-portal-root .mfp-viewport,
+.app-root [class*="scroll"],
+.app-root main {
+  touch-action: pan-y;
+}
+
+/* Eliminate expensive repaint on hover for list cards */
+.qc-list-card {
+  /* Promote to its own paint layer for hover transitions */
+  isolation: isolate;
+}
+
+/* Fullscreen portal: contain paint to prevent repaints bleeding into the main doc.
+   NOTE: We use layout+style+paint but NOT size, because the portal is position:fixed
+   and must fill the viewport (100dvh/100dvw). contain:strict would break sizing. */
+.mfp-portal-root {
+  contain: layout style paint;
+  isolation: isolate;
+}
+
+/* Screen-reader only helper: ensure no layout impact */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border-width: 0 !important;
+}

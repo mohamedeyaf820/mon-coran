@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { getRulesForRiwaya, parseTajwid, stabilizeTajwidSegments } from '../../data/tajwidRules';
 import { useAppLocale } from '../../context/AppContext';
 import { getReadableWaqfGlyph } from '../../utils/quranUtils';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../ui/tooltip';
 import { playWordAudio, getWordAudioUrl } from '../../utils/wordAudio';
 
 const AYAH_MARKER_TOKEN_RE = /^[\u06dd\u06de\u06e9\ufd3f\ufd3e\d\u0660-\u0669\u06f0-\u06f9]+$/u;
@@ -478,49 +477,47 @@ const TajweedText = React.memo(function TajweedText({
     const words = groupSegmentsIntoWords(segments);
 
     return (
-        <TooltipProvider delayDuration={220} skipDelayDuration={80}>
-            <span className="quran-tajwid-text" dir="rtl" lang="ar">
-                <span aria-hidden="true">
-                    {words.map((wordSegments, wordIndex) => {
-                        const wordPos = wordIndex + 1;
-                        const firstText = wordSegments[0]?.text || '';
-                        const isMarker = isMarkerToken(firstText);
-                        const audioUrl = !isMarker && surahNum && ayahNumber
-                            ? getWordAudioUrl(surahNum, ayahNumber, wordPos)
-                            : null;
+        <span className="quran-tajwid-text" dir="rtl" lang="ar">
+            <span aria-hidden="true">
+                {words.map((wordSegments, wordIndex) => {
+                    const wordPos = wordIndex + 1;
+                    const firstText = wordSegments[0]?.text || '';
+                    const isMarker = isMarkerToken(firstText);
+                    const audioUrl = !isMarker && surahNum && ayahNumber
+                        ? getWordAudioUrl(surahNum, ayahNumber, wordPos)
+                        : null;
 
-                        const handleClick = (e) => {
-                            if (!isMarker) {
-                                e.stopPropagation();
-                                playWordAudio(audioUrl || { surah: surahNum, ayah: ayahNumber, position: wordPos });
-                            }
-                        };
+                    const handleClick = (e) => {
+                        if (!isMarker) {
+                            e.stopPropagation();
+                            playWordAudio(audioUrl || { surah: surahNum, ayah: ayahNumber, position: wordPos });
+                        }
+                    };
 
-                        const nextWord = words[wordIndex + 1];
-                        const nextIsMarker = nextWord && isMarkerToken(nextWord[0]?.text || '');
+                    const nextWord = words[wordIndex + 1];
+                    const nextIsMarker = nextWord && isMarkerToken(nextWord[0]?.text || '');
 
-                        return (
-                            <React.Fragment key={wordIndex}>
-                                <span
-                                    className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
-                                    onClick={!isMarker ? handleClick : undefined}
-                                    role={!isMarker ? "button" : undefined}
-                                    tabIndex={!isMarker ? 0 : undefined}
-                                >
-                                    {wordSegments.map((seg, sIdx) =>
-                                        renderSegment(seg, `${wordIndex}-${sIdx}`)
-                                    )}
-                                </span>
-                                {wordIndex < words.length - 1 ? (nextIsMarker ? "\u202F" : " ") : null}
-                            </React.Fragment>
-                        );
-                    })}
-                </span>
-                <span className="sr-only">
-                    {segments.map((segment) => segment.text).join('')}
-                </span>
+                    return (
+                        <React.Fragment key={wordIndex}>
+                            <span
+                                className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
+                                onClick={!isMarker ? handleClick : undefined}
+                                role={!isMarker ? "button" : undefined}
+                                tabIndex={!isMarker ? 0 : undefined}
+                            >
+                                {wordSegments.map((seg, sIdx) =>
+                                    renderSegment(seg, `${wordIndex}-${sIdx}`)
+                                )}
+                            </span>
+                            {wordIndex < words.length - 1 ? (nextIsMarker ? "\u202F" : " ") : null}
+                        </React.Fragment>
+                    );
+                })}
             </span>
-        </TooltipProvider>
+            <span className="sr-only">
+                {segments.map((segment) => segment.text).join('')}
+            </span>
+        </span>
     );
 });
 
