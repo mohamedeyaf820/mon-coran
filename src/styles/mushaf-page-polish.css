@@ -39,14 +39,13 @@
     0 24px 64px rgba(var(--mushaf-shadow-rgb), 0.14) !important;
 }
 
-/* Aligner les contrôles du reader sur la largeur de la carte mushaf (760px) — tous appareils */
+/* Aligner les contrôles du reader sur la largeur de la carte mushaf (780px) — tous appareils */
 .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .qc-surah-header-wrap,
-.app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .reader-context-card,
 .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .reader-control-deck,
 .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .reader-mode-nav,
 .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .warsh-notice {
-  width: min(100%, 760px) !important;
-  max-width: 760px !important;
+  width: min(100%, 780px) !important;
+  max-width: 780px !important;
   margin-inline: auto !important;
 }
 /* reader-command-bar est enfant de reader-control-deck — forcer aussi sa largeur max */

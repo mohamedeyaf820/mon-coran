@@ -114,7 +114,7 @@ export default function ReadingToolbar({
       aria-label={labels.toolbar}
     >
       {/* ── Left side: View switcher + Study toggles ── */}
-      <div className="qc-reader-toolbar__modes flex flex-wrap items-center gap-2">
+      <div className="qc-reader-toolbar__modes flex flex-wrap items-center gap-1.5 sm:gap-2">
         {/* Segmented Layout Switcher (Mushaf / List) */}
         <div
           className="inline-flex items-center rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-0.5 shadow-inner"
@@ -193,14 +193,14 @@ export default function ReadingToolbar({
       </div>
 
       {/* ── Right side: Fullscreen, Typography, Audio ── */}
-      <div className="qc-reader-toolbar__utilities flex flex-wrap items-center gap-2">
-        {mushafIsOn && onOpenFullscreen ? (
+      <div className="qc-reader-toolbar__utilities flex flex-wrap items-center gap-1.5 sm:gap-2">
+        {onOpenFullscreen ? (
           <button
             type="button"
-            className="reader-fullscreen-trigger flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-2.5 text-xs font-semibold text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+            className="reader-fullscreen-trigger flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-600/30 bg-emerald-600/10 px-2.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 transition-all hover:bg-emerald-600/20 hover:border-emerald-600/50 shadow-sm"
             onClick={onOpenFullscreen}
             aria-label={labels.fullscreen}
-            title={labels.fullscreen}
+            title={`${labels.fullscreen} (F)`}
           >
             <Maximize2 size={13} aria-hidden="true" />
             <span>{labels.fullscreen}</span>

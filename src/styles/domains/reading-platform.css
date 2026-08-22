@@ -3898,55 +3898,42 @@ html body .app-root .native-ayah-marker::after {
 .quran-display--platform .reader-context-card {
     --reader-context-progress: 0%;
     position: relative;
-    display: grid;
-    grid-template-columns: 42px minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 0.78rem;
-    width: min(100%, 980px);
-    min-height: 64px;
-    margin: 0 auto 0.68rem;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.75rem;
+    width: 100% !important;
+    min-height: 48px;
+    margin: 0 auto;
     overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
-    border-radius: 17px;
-    background:
-        linear-gradient(105deg, rgba(var(--primary-rgb), 0.055), transparent 46%),
-        var(--bg-card);
-    padding: 0.62rem 0.76rem;
-    box-shadow: 0 8px 24px rgba(15, 48, 34, 0.055);
+    padding: 0.55rem 0.85rem;
 }
 
 .quran-display--platform .reader-context-card__icon {
     display: inline-flex;
-    width: 42px;
-    height: 42px;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
     border: 1px solid rgba(var(--primary-rgb), 0.14);
-    border-radius: 13px;
+    border-radius: 10px;
     background: rgba(var(--primary-rgb), 0.09);
     color: var(--primary);
 }
 
 .quran-display--platform .reader-context-card__copy {
     min-width: 0;
-}
-
-.quran-display--platform .reader-context-card__eyebrow {
-    display: block;
-    margin-bottom: 0.12rem;
-    color: var(--text-muted);
-    font-size: 0.62rem;
-    font-weight: 780;
-    letter-spacing: 0.09em;
-    line-height: 1.2;
-    text-transform: uppercase;
+    flex: 1 1 auto;
 }
 
 .quran-display--platform .reader-context-card__title-row {
-    display: flex;
+    display: flex !important;
     min-width: 0;
-    align-items: baseline;
-    gap: 0.6rem;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
 }
 
 .quran-display--platform .reader-context-card h2 {
@@ -4262,8 +4249,8 @@ html body .app-root .native-ayah-marker::after {
    Context and actions are one surface. Secondary typography controls stay in
    a disclosure so the reading page starts calm instead of looking like a form. */
 .quran-display--platform .reader-control-deck {
-    width: min(100%, 760px);
-    max-width: 760px;
+    width: min(100%, 780px);
+    max-width: 780px;
     margin: 0 auto clamp(0.75rem, 1.6vw, 1.15rem);
     overflow: visible;
     position: relative;
@@ -4279,45 +4266,72 @@ html body .app-root .native-ayah-marker::after {
 
 .quran-display--platform .reader-control-deck .reader-context-card {
     position: relative;
-    width: 100%;
-    min-height: 40px;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    min-height: 44px;
     margin: 0;
     border: 0;
     border-bottom: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
     background: transparent;
     box-shadow: none;
+    padding: 0.5rem 0.85rem;
 }
 
 .quran-display--platform .reader-control-deck .reader-context-card__icon {
-    width: 28px;
-    height: 28px;
+    display: inline-flex;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
     border-radius: 8px;
 }
 
+.quran-display--platform .reader-control-deck .reader-context-card__copy {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
 .quran-display--platform .reader-control-deck .reader-context-card__title-row {
-    align-items: center;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    white-space: nowrap !important;
     gap: 0.44rem;
 }
 
 .quran-display--platform .reader-control-deck .reader-context-card h2 {
-    font-size: 0.76rem;
+    margin: 0;
+    font-size: 0.8rem;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .quran-display--platform .reader-control-deck .reader-context-card h2 strong {
-    font-size: 0.88rem;
+    font-size: 0.95rem;
     font-weight: 700;
+    color: var(--primary);
 }
 
 .quran-display--platform .reader-control-deck .reader-context-card p {
-    font-size: 0.63rem;
+    font-size: 0.68rem;
+    margin: 0;
+    white-space: nowrap;
 }
 
 .quran-display--platform .reader-control-deck .reader-context-card__riwaya {
     min-height: 22px;
-    padding: 0.18rem 0.45rem;
-    font-size: 0.58rem;
+    padding: 0.18rem 0.55rem;
+    font-size: 0.62rem;
+    font-weight: 800;
     border-radius: 9999px;
+    flex-shrink: 0;
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .reader-control-deck .qc-reader-toolbar {
@@ -4329,22 +4343,23 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-contro
     justify-content: space-between !important;
     width: 100% !important;
     max-width: none !important;
-    min-height: 46px !important;
+    min-height: 44px !important;
     margin: 0;
-    gap: 0.5rem;
+    gap: 0.45rem;
     overflow: visible;
     border: 0;
     border-radius: 0 0 18px 18px;
-    padding: 0.36rem 0.55rem;
+    padding: 0.4rem 0.65rem;
     background: transparent !important;
     box-shadow: none;
     transform: none;
 }
 
 .quran-display--platform .reader-control-deck .qc-reader-toolbar__modes {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
     gap: 0.4rem;
     padding-bottom: 0;
 }
@@ -4352,11 +4367,12 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-contro
 html body .app-root[data-view="reading"] .quran-display--platform .reader-control-deck .qc-reader-toolbar__utilities {
     position: relative;
     display: flex !important;
+    flex-direction: row !important;
     width: auto !important;
     min-width: 0 !important;
     flex: 0 0 auto;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-wrap: wrap !important;
+    align-items: center !important;
     justify-content: flex-end;
     gap: 0.35rem;
     border: 0;

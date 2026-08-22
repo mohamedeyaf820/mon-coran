@@ -29,13 +29,13 @@ export default function ReaderContextCard({
         </div>
 
         <div className="reader-context-card__copy min-w-0">
-          <div className="reader-context-card__title-row flex flex-wrap items-baseline gap-1.5">
-            <h2 className="text-xs font-semibold text-[var(--text-secondary)]">
-              {label} <strong className="text-sm font-bold text-[var(--text-primary)]">{value}</strong>
-              <span className="text-[0.7rem] opacity-70"> / {total}</span>
+          <div className="reader-context-card__title-row flex items-baseline gap-2 whitespace-nowrap">
+            <h2 className="text-xs font-semibold text-[var(--text-secondary)] whitespace-nowrap">
+              {label} <strong className="text-sm font-bold text-[var(--primary)]">{value}</strong>
+              <span className="text-[0.72rem] opacity-75 font-normal"> / {total}</span>
             </h2>
             {secondary ? (
-              <span className="text-[0.7rem] font-medium text-[var(--text-muted)]">
+              <span className="text-[0.72rem] font-medium text-[var(--text-muted)] whitespace-nowrap">
                 <span aria-hidden="true" className="opacity-50">·</span> {secondary}
               </span>
             ) : null}
