@@ -108,127 +108,131 @@ export default function ReadingToolbar({
   return (
     <div
       className={cn(
-        "reader-command-bar qc-reader-toolbar mx-auto mb-6 flex w-full max-w-[980px] flex-col items-center justify-between gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 backdrop-blur-md transition-[box-shadow,border-color] duration-300 md:flex-row",
+        "reader-command-bar qc-reader-toolbar mx-auto flex w-full flex-wrap items-center justify-between gap-2.5 p-2.5 transition-all duration-300",
       )}
-      style={{
-        boxShadow: "var(--shadow-md)",
-        color: "var(--text-primary)",
-      }}
       role="toolbar"
       aria-label={labels.toolbar}
     >
-      <div className="qc-reader-toolbar__modes scrollbar-none flex w-full items-center justify-start gap-2 overflow-x-auto pb-1 md:w-auto md:justify-center md:pb-0">
-        <div className="shrink-0 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-1">
-          <div className="flex items-center gap-1" role="group" aria-label={labels.toolbar}>
-            <button
-              type="button"
-              className={cn(
-                "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-[background-color,color,box-shadow]",
-                mushafIsOn
-                  ? "bg-[var(--bg-card)] font-bold text-[var(--primary)] shadow-sm"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
-              )}
-              onClick={setMushafLayout}
-              aria-pressed={mushafIsOn}
-              aria-label={labels.mushaf}
-            >
-              <BookOpen size={13} aria-hidden="true" />
-              <span>{labels.mushaf}</span>
-            </button>
-            <button
-              type="button"
-              className={cn(
-                "flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all",
-                !mushafIsOn
-                  ? "bg-[var(--bg-card)] font-bold text-[var(--primary)] shadow-sm"
-                  : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
-              )}
-              onClick={setListLayout}
-              aria-pressed={!mushafIsOn}
-              aria-label={labels.list}
-            >
-              <List size={13} aria-hidden="true" />
-              <span>{labels.list}</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="mx-1 hidden h-6 w-px shrink-0 bg-[var(--border)] sm:block" />
-
-        <div className="flex shrink-0 items-center gap-1">
+      {/* ── Left side: View switcher + Study toggles ── */}
+      <div className="qc-reader-toolbar__modes flex flex-wrap items-center gap-2">
+        {/* Segmented Layout Switcher (Mushaf / List) */}
+        <div
+          className="inline-flex items-center rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-0.5 shadow-inner"
+          role="group"
+          aria-label={labels.toolbar}
+        >
           <button
             type="button"
             className={cn(
-              "reader-toolbar-btn--translation flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-[background-color,color,border-color]",
-              showTranslation
-                ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
-                : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
+              "flex h-8 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all",
+              mushafIsOn
+                ? "bg-[var(--bg-card)] font-bold text-[var(--primary)] shadow-sm"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
             )}
-            onClick={() => set({ showTranslation: !showTranslation })}
-            aria-pressed={showTranslation}
-            aria-label={labels.translation}
-            title={`${labels.translation} (T)`}
+            onClick={setMushafLayout}
+            aria-pressed={mushafIsOn}
+            aria-label={labels.mushaf}
           >
-            <Languages size={13} aria-hidden="true" />
-            <span>{labels.translation}</span>
+            <BookOpen size={13} aria-hidden="true" />
+            <span>{labels.mushaf}</span>
           </button>
-
           <button
             type="button"
             className={cn(
-              "reader-toolbar-btn--tajweed flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-[background-color,color,border-color]",
-              showTajwid
-                ? "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]"
-                : "border-transparent bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
+              "flex h-8 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all",
+              !mushafIsOn
+                ? "bg-[var(--bg-card)] font-bold text-[var(--primary)] shadow-sm"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
             )}
-            onClick={() => set({ showTajwid: !showTajwid })}
-            aria-pressed={showTajwid}
-            aria-label={labels.tajweed}
-            title={`${labels.tajweed} (J)`}
+            onClick={setListLayout}
+            aria-pressed={!mushafIsOn}
+            aria-label={labels.list}
           >
-            <Palette size={13} aria-hidden="true" />
-            <span>{labels.tajweed}</span>
+            <List size={13} aria-hidden="true" />
+            <span>{labels.list}</span>
           </button>
-
         </div>
+
+        <div className="hidden h-5 w-px bg-[var(--border)] sm:block" />
+
+        {/* Translation toggle */}
+        <button
+          type="button"
+          className={cn(
+            "reader-toolbar-btn--translation flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all",
+            showTranslation
+              ? "border-[rgba(var(--primary-rgb),0.3)] bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)] font-bold shadow-sm"
+              : "border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
+          )}
+          onClick={() => set({ showTranslation: !showTranslation })}
+          aria-pressed={showTranslation}
+          aria-label={labels.translation}
+          title={`${labels.translation} (T)`}
+        >
+          <Languages size={13} aria-hidden="true" />
+          <span>{labels.translation}</span>
+        </button>
+
+        {/* Tajweed toggle */}
+        <button
+          type="button"
+          className={cn(
+            "reader-toolbar-btn--tajweed flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all",
+            showTajwid
+              ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold shadow-sm"
+              : "border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
+          )}
+          onClick={() => set({ showTajwid: !showTajwid })}
+          aria-pressed={showTajwid}
+          aria-label={labels.tajweed}
+          title={`${labels.tajweed} (J)`}
+        >
+          <Palette size={13} aria-hidden="true" />
+          <span>{labels.tajweed}</span>
+        </button>
       </div>
 
-      <div className="qc-reader-toolbar__utilities flex w-full flex-wrap items-center justify-between gap-3 border-t border-[var(--border)] pt-2.5 md:w-auto md:justify-end md:border-t-0 md:pt-0">
+      {/* ── Right side: Fullscreen, Typography, Audio ── */}
+      <div className="qc-reader-toolbar__utilities flex flex-wrap items-center gap-2">
         {mushafIsOn && onOpenFullscreen ? (
           <button
             type="button"
-            className="reader-fullscreen-trigger"
+            className="reader-fullscreen-trigger flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] px-2.5 text-xs font-semibold text-[var(--text-secondary)] transition-all hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
             onClick={onOpenFullscreen}
             aria-label={labels.fullscreen}
             title={labels.fullscreen}
           >
-            <Maximize2 size={14} aria-hidden="true" />
+            <Maximize2 size={13} aria-hidden="true" />
             <span>{labels.fullscreen}</span>
           </button>
         ) : null}
 
-        <button
-          type="button"
-          className={cn(
-            "reader-typography-trigger",
-            showTypography && "reader-typography-trigger--active",
-          )}
-          onClick={() => set({ readerTypographyOpen: !showTypography })}
-          aria-expanded={showTypography}
-          aria-controls="reader-toolbar-typography-panel"
-        >
-          <SlidersHorizontal size={14} aria-hidden="true" />
-          <span>{labelFor(lang, "Texte", "Text", "الخط")}</span>
-        </button>
+        <div className="relative">
+          <button
+            type="button"
+            className={cn(
+              "reader-typography-trigger flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all",
+              showTypography
+                ? "border-[rgba(var(--primary-rgb),0.3)] bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)] font-bold shadow-sm"
+                : "border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
+            )}
+            onClick={() => set({ readerTypographyOpen: !showTypography })}
+            aria-expanded={showTypography}
+            aria-controls="reader-toolbar-typography-panel"
+          >
+            <SlidersHorizontal size={13} aria-hidden="true" />
+            <span>{labelFor(lang, "Texte", "Text", "الخط")}</span>
+          </button>
 
-        <div
-          id="reader-toolbar-typography-panel"
-          className={cn(
-            "reader-typography-panel",
-            showTypography && "reader-typography-panel--open",
-          )}
-        >
-          <ArabicFontControls lang={lang} compact />
+          <div
+            id="reader-toolbar-typography-panel"
+            className={cn(
+              "reader-typography-panel",
+              showTypography && "reader-typography-panel--open",
+            )}
+          >
+            <ArabicFontControls lang={lang} compact />
+          </div>
         </div>
 
         {playHandler && (
@@ -237,10 +241,10 @@ export default function ReadingToolbar({
             onClick={handlePrimaryPlay}
             disabled={isPreparing}
             className={cn(
-              "reader-toolbar-btn--primary btn-play-surah flex h-9 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-4 text-xs font-bold text-white shadow-sm transition-[background-color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50",
+              "reader-toolbar-btn--primary btn-play-surah flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-3.5 text-xs font-bold text-white shadow-sm transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50",
               isPlayingThisContext
-                ? "bg-amber-600 hover:bg-amber-700"
-                : "bg-[var(--primary)] hover:bg-[var(--primary-dark,var(--primary))]",
+                ? "bg-amber-600 hover:bg-amber-700 shadow-amber-600/20"
+                : "bg-[var(--primary)] hover:brightness-110 shadow-[rgba(var(--primary-rgb),0.25)]",
             )}
             aria-label={isPlayingThisContext ? labels.pause : playLabel || labels.listen}
             title={`${isPlayingThisContext ? labels.pause : labels.listen} (Space)`}

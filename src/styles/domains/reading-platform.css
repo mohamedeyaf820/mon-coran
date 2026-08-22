@@ -4262,36 +4262,36 @@ html body .app-root .native-ayah-marker::after {
    Context and actions are one surface. Secondary typography controls stay in
    a disclosure so the reading page starts calm instead of looking like a form. */
 .quran-display--platform .reader-control-deck {
-    width: min(100%, 980px);
-    margin: 0 auto clamp(0.9rem, 1.8vw, 1.25rem);
+    width: min(100%, 760px);
+    max-width: 760px;
+    margin: 0 auto clamp(0.75rem, 1.6vw, 1.15rem);
     overflow: visible;
-    border: 1px solid color-mix(in srgb, var(--border) 78%, var(--primary) 22%);
-    border-radius: 20px;
+    position: relative;
+    border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
+    border-radius: 18px;
     background:
-        linear-gradient(115deg, color-mix(in srgb, var(--primary) 4%, transparent), transparent 42%),
-        color-mix(in srgb, var(--bg-card) 97%, transparent);
-    box-shadow: 0 14px 36px color-mix(in srgb, #0b3727 8%, transparent);
+        linear-gradient(135deg, color-mix(in srgb, var(--primary) 3.5%, transparent), transparent 60%),
+        color-mix(in srgb, var(--bg-card) 96%, transparent);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .quran-display--platform .reader-control-deck .reader-context-card {
-    grid-template-columns: 34px minmax(0, 1fr) auto;
+    position: relative;
     width: 100%;
-    min-height: 50px;
+    min-height: 40px;
     margin: 0;
-    gap: 0.62rem;
-    overflow: hidden;
     border: 0;
-    border-bottom: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
-    border-radius: 0;
-    padding: 0.48rem 0.65rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
     background: transparent;
     box-shadow: none;
 }
 
 .quran-display--platform .reader-control-deck .reader-context-card__icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 11px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
 }
 
 .quran-display--platform .reader-control-deck .reader-context-card__title-row {
@@ -4300,12 +4300,13 @@ html body .app-root .native-ayah-marker::after {
 }
 
 .quran-display--platform .reader-control-deck .reader-context-card h2 {
-    font-size: 0.78rem;
-    font-weight: 760;
+    font-size: 0.76rem;
+    font-weight: 600;
 }
 
 .quran-display--platform .reader-control-deck .reader-context-card h2 strong {
-    font-size: 0.94rem;
+    font-size: 0.88rem;
+    font-weight: 700;
 }
 
 .quran-display--platform .reader-control-deck .reader-context-card p {
@@ -4313,34 +4314,38 @@ html body .app-root .native-ayah-marker::after {
 }
 
 .quran-display--platform .reader-control-deck .reader-context-card__riwaya {
-    min-height: 25px;
-    padding: 0.24rem 0.5rem;
-    font-size: 0.57rem;
+    min-height: 22px;
+    padding: 0.18rem 0.45rem;
+    font-size: 0.58rem;
+    border-radius: 9999px;
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .reader-control-deck .qc-reader-toolbar {
     position: relative !important;
     display: flex !important;
     flex-direction: row !important;
+    flex-wrap: wrap !important;
     align-items: center !important;
     justify-content: space-between !important;
     width: 100% !important;
     max-width: none !important;
-    min-height: 54px !important;
+    min-height: 46px !important;
     margin: 0;
-    gap: 0.58rem;
+    gap: 0.5rem;
     overflow: visible;
     border: 0;
-    border-radius: 0 0 20px 20px;
-    padding: 0.48rem 0.58rem;
+    border-radius: 0 0 18px 18px;
+    padding: 0.36rem 0.55rem;
     background: transparent !important;
     box-shadow: none;
     transform: none;
 }
 
 .quran-display--platform .reader-control-deck .qc-reader-toolbar__modes {
-    flex: 1 1 auto;
-    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
     padding-bottom: 0;
 }
 
@@ -4350,17 +4355,17 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-contro
     width: auto !important;
     min-width: 0 !important;
     flex: 0 0 auto;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
-    gap: 0.38rem;
+    gap: 0.35rem;
     border: 0;
     padding: 0;
 }
 
 .quran-display--platform .reader-control-deck :is(.reader-typography-trigger, .reader-fullscreen-trigger) {
     display: inline-flex;
-    min-height: 38px;
+    min-height: 32px;
 }
 
 .quran-display--platform .reader-control-deck .reader-typography-panel {
@@ -4388,87 +4393,34 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-contro
 [data-theme="dark"] .quran-display--platform .reader-control-deck {
     border-color: color-mix(in srgb, var(--primary) 22%, var(--border));
     background:
-        linear-gradient(115deg, color-mix(in srgb, var(--primary) 5%, transparent), transparent 46%),
+        linear-gradient(135deg, color-mix(in srgb, var(--primary) 5%, transparent), transparent 60%),
         color-mix(in srgb, var(--bg-card) 98%, transparent);
-    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
 }
 
 [data-theme="sepia"] .quran-display--platform .reader-control-deck {
     border-color: color-mix(in srgb, var(--brand-gold, #b9954b) 28%, var(--border));
     background:
-        linear-gradient(115deg, color-mix(in srgb, var(--brand-gold, #b9954b) 5%, transparent), transparent 46%),
+        linear-gradient(135deg, color-mix(in srgb, var(--brand-gold, #b9954b) 5%, transparent), transparent 60%),
         var(--bg-card);
 }
 
-html body .app-root[data-view="reading"] .quran-display--platform .tajweed-legend:not([open]) {
-    width: max-content !important;
-    max-width: calc(100% - 1rem) !important;
-}
-
-@media (max-width: 900px) {
-    .quran-display--platform .reader-control-deck :is(.reader-fullscreen-trigger, .reader-typography-trigger) span,
-    .quran-display--platform .reader-control-deck :is(.reader-toolbar-btn--translation, .reader-toolbar-btn--tajweed) span {
-        display: none;
-    }
-
-    .quran-display--platform .reader-control-deck :is(.reader-fullscreen-trigger, .reader-typography-trigger) {
-        width: 38px;
-        min-width: 38px;
-        padding-inline: 0;
-    }
-
-    html body .app-root[data-view="reading"] .quran-display--platform .reader-control-deck .qc-reader-toolbar__utilities {
-        width: auto !important;
-    }
-}
-
-@media (max-width: 700px) {
+@media (max-width: 768px) {
     .quran-display--platform .reader-control-deck {
-        width: calc(100% - 0.65rem);
+        width: calc(100% - 0.75rem);
         border-radius: 16px;
     }
 
-    .quran-display--platform .reader-control-deck .reader-context-card {
-        grid-template-columns: 31px minmax(0, 1fr) auto;
-        min-height: 46px;
-        padding: 0.4rem 0.48rem;
-    }
-
-    .quran-display--platform .reader-control-deck .reader-context-card__icon {
-        width: 31px;
-        height: 31px;
-        border-radius: 10px;
-    }
-
-    .quran-display--platform .reader-control-deck .reader-context-card h2 {
-        font-size: 0.72rem;
-    }
-
-    .quran-display--platform .reader-control-deck .reader-context-card h2 strong {
-        font-size: 0.84rem;
-    }
-
-    .quran-display--platform .reader-control-deck .reader-context-card p {
-        display: none;
-    }
-
     html body .app-root[data-view="reading"] .quran-display--platform .reader-control-deck .qc-reader-toolbar {
-        display: grid !important;
-        align-items: center !important;
-        justify-content: stretch !important;
-        grid-template-columns: minmax(0, 1fr) auto;
+        justify-content: center !important;
         gap: 0.4rem;
-        border-radius: 0 0 16px 16px;
-        padding: 0.42rem;
+        padding: 0.4rem;
     }
 
-    .quran-display--platform .reader-control-deck .qc-reader-toolbar__modes {
-        width: 100%;
-    }
-
+    .quran-display--platform .reader-control-deck .qc-reader-toolbar__modes,
     html body .app-root[data-view="reading"] .quran-display--platform .reader-control-deck .qc-reader-toolbar__utilities {
-        width: auto !important;
-        gap: 0.28rem;
+        justify-content: center !important;
+        gap: 0.3rem;
     }
 
     .quran-display--platform .reader-control-deck .reader-typography-panel {
@@ -4481,32 +4433,14 @@ html body .app-root[data-view="reading"] .quran-display--platform .tajweed-legen
         max-height: min(60dvh, 25rem);
         overflow: auto;
     }
-
-    .quran-display--platform .reader-control-deck :is(.reader-typography-trigger, .reader-fullscreen-trigger) span {
-        display: none;
-    }
-
-    .quran-display--platform .reader-control-deck :is(.reader-typography-trigger, .reader-fullscreen-trigger) {
-        width: 38px;
-        min-width: 38px;
-        padding-inline: 0;
-    }
 }
 
-@media (max-width: 430px) {
+@media (max-width: 480px) {
     .quran-display--platform .reader-control-deck .qc-reader-toolbar__modes button,
     .quran-display--platform .reader-control-deck .qc-reader-toolbar__utilities button {
-        min-width: 36px !important;
-        min-height: 38px !important;
-        padding-inline: 0.58rem;
-    }
-
-    .quran-display--platform .reader-control-deck :is(.reader-toolbar-btn--translation, .reader-toolbar-btn--tajweed) span {
-        display: none;
-    }
-
-    .quran-display--platform .reader-control-deck .reader-toolbar-btn--primary span {
-        display: none;
+        height: 32px;
+        padding-inline: 0.5rem;
+        font-size: 0.72rem;
     }
 }
 
