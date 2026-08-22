@@ -839,20 +839,33 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
    Pixel-perfect design matching user specification.
    ═══════════════════════════════════════════════════════════════ */
 
-/* Segment hover highlight on the Quran text itself */
-.tajwid-rule-segment,
+/* Segment hover highlight on the Quran text itself:
+   CRITICAL: Never add padding-inline or margin-inline to .tajwid-rule-segment.
+   Arabic letters are cursive and connected inside a word; any horizontal padding
+   breaks the cursive ligatures and separates letters with spaces! */
+.tajwid-rule-segment {
+    display: inline !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    cursor: help !important;
+    border-radius: 0.1em;
+    transition: text-shadow 160ms ease, background-color 160ms ease;
+}
+
 .waqf-marker {
+    display: inline !important;
     cursor: help !important;
     border-radius: 0.22em;
-    padding-inline: 0.08em;
-    margin-inline: -0.04em;
+    padding: 0 0.05em !important;
+    margin-inline: 0.04em !important;
     transition: background-color 160ms ease, box-shadow 160ms ease;
 }
 
 .tajwid-rule-segment:hover,
 .tajwid-rule-segment.is-tajwid-hovered {
-    background: color-mix(in srgb, currentColor 20%, transparent) !important;
-    box-shadow: 0 0 0 1.5px color-mix(in srgb, currentColor 30%, transparent);
+    background: color-mix(in srgb, currentColor 18%, transparent) !important;
+    text-shadow: 0 0 0.8px currentColor;
+    border-radius: 0.12em;
 }
 
 .waqf-marker:hover,

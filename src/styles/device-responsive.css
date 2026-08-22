@@ -1621,36 +1621,26 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   html body .app-root .audio-player-simple.mp-audio-player--mobile,
   html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--dock {
     position: fixed !important;
-    bottom: 0 !important;
+    bottom: max(0.55rem, env(safe-area-inset-bottom, 8px)) !important;
     left: 0 !important;
     right: 0 !important;
-    width: 100% !important;
+    width: min(calc(100% - 1rem), 480px) !important;
+    margin-inline: auto !important;
     z-index: 950 !important;
     visibility: visible !important;
     opacity: 1 !important;
     min-height: 0 !important;
-    padding-bottom: max(0.35rem, env(safe-area-inset-bottom, 0px)) !important;
-    box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.28) !important;
-  }
-}
-
-@media (max-width: 380px) {
-  html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--dock {
-    box-sizing: border-box !important;
-    height: calc(4.2rem + env(safe-area-inset-bottom, 0px)) !important;
-    max-height: calc(4.2rem + env(safe-area-inset-bottom, 0px)) !important;
+    height: auto !important;
+    max-height: none !important;
+    border-radius: 1.15rem !important;
+    border: 1px solid var(--simple-player-line) !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28) !important;
+    padding-bottom: 0 !important;
   }
 
   html body .app-root .audio-player-simple.simple-player--compact .simple-player__compact-row {
-    min-height: 3.35rem !important;
-    padding: 0.18rem 0.55rem 0.24rem !important;
-  }
-}
-
-@media (min-width: 381px) and (max-width: 599px) {
-  html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--dock {
-    height: calc(4.85rem + env(safe-area-inset-bottom, 0px)) !important;
-    max-height: calc(4.85rem + env(safe-area-inset-bottom, 0px)) !important;
+    min-height: 3.4rem !important;
+    padding: 0.25rem 0.65rem !important;
   }
 }
 
