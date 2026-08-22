@@ -1144,7 +1144,7 @@ html body > .audio-player-modal--simple .audio-settings-actions button {
   color: var(--theme-text) !important;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1024px) {
   html body > .audio-player-modal.audio-player-modal--simple {
     align-items: flex-end !important;
     padding: .5rem 0 0;
@@ -1152,7 +1152,7 @@ html body > .audio-player-modal--simple .audio-settings-actions button {
 
   html body > .audio-player-modal--simple .audio-player-modal__surface--simple {
     width: 100% !important;
-    height: min(88dvh, 46rem) !important;
+    height: min(90dvh, 48rem) !important;
     max-height: calc(100dvh - .5rem) !important;
     border-right: 0;
     border-bottom: 0;
@@ -1170,7 +1170,7 @@ html body > .audio-player-modal--simple .audio-settings-actions button {
   }
 
   html body > .audio-player-modal--simple .audio-player-modal__tabs {
-    display: grid;
+    display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: .3rem;
     margin: .55rem .7rem 0;
@@ -1198,7 +1198,7 @@ html body > .audio-player-modal--simple .audio-settings-actions button {
 
   html body > .audio-player-modal--simple .audio-player-modal__grid {
     grid-template-columns: 1fr !important;
-    overflow: hidden;
+    overflow-y: auto !important;
     padding: .65rem .7rem max(.7rem, env(safe-area-inset-bottom));
   }
 

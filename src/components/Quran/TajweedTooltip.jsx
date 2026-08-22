@@ -2,17 +2,25 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 /**
- * GlobalTajweedTooltip
+ * TajweedTooltip
  * Ultra-performant singleton floating tooltip for Tajweed rules & Waqf signs.
- * Uses event delegation on document — 0 overhead on verse rendering.
+ * - Debounced hover to avoid layout thrashing
+ * - 0 synchronous computed style reflows
+ * - Persistent event listeners (attached once on mount)
+ * - Mobile friendly touch-toggle support
  */
 export default function TajweedTooltip() {
   const [tooltipState, setTooltipState] = useState(null);
+  const showTimerRef = useRef(null);
   const hideTimerRef = useRef(null);
   const activeElementRef = useRef(null);
 
   useEffect(() => {
-    const clearHideTimer = () => {
+    const clearTimers = () => {
+      if (showTimerRef.current) {
+        clearTimeout(showTimerRef.current);
+        showTimerRef.current = null;
+      }
       if (hideTimerRef.current) {
         clearTimeout(hideTimerRef.current);
         hideTimerRef.current = null;
@@ -22,20 +30,18 @@ export default function TajweedTooltip() {
     const updatePosition = (element, data) => {
       if (!element) return;
       const rect = element.getBoundingClientRect();
-      const tooltipWidth = Math.min(320, window.innerWidth - 32);
-      const tooltipHeight = 90; // estimated
+      const tooltipWidth = Math.min(300, window.innerWidth - 32);
+      const tooltipHeight = 85;
 
-      // Horizontal center
       let left = rect.left + rect.width / 2;
       const minLeft = 16 + tooltipWidth / 2;
       const maxLeft = window.innerWidth - 16 - tooltipWidth / 2;
       left = Math.max(minLeft, Math.min(maxLeft, left));
 
-      // Vertical position (prefer above, flip below if not enough room)
-      let top = rect.top - 12;
+      let top = rect.top - 10;
       let placement = "top";
-      if (top - tooltipHeight < 10) {
-        top = rect.bottom + 12;
+      if (top - tooltipHeight < 12) {
+        top = rect.bottom + 10;
         placement = "bottom";
       }
 
@@ -43,71 +49,110 @@ export default function TajweedTooltip() {
         name: data.name,
         desc: data.desc,
         color: data.color || "#27ae60",
-        x: left,
-        y: top,
+        x: Math.round(left),
+        y: Math.round(top),
         placement,
       });
     };
 
     const handlePointerOver = (event) => {
-      const target = event.target.closest(".tajwid-rule-segment, .waqf-marker, [data-tajwid-name]");
+      // Ignore simulated hover from fast scrolling on touch devices
+      if (event.pointerType === "touch") return;
+
+      const target = event.target.closest(
+        ".tajwid-rule-segment, .waqf-marker, [data-tajwid-name]",
+      );
       if (!target) return;
 
       const name = target.getAttribute("data-tajwid-name");
       const desc = target.getAttribute("data-tajwid-desc");
       if (!name) return;
 
-      clearHideTimer();
+      clearTimers();
       activeElementRef.current = target;
-      target.classList.add("is-tajwid-hovered");
 
-      const color =
-        target.getAttribute("data-tajwid-color") ||
-        window.getComputedStyle(target).color ||
-        "#27ae60";
+      showTimerRef.current = setTimeout(() => {
+        const color =
+          target.getAttribute("data-tajwid-color") ||
+          target.style.color ||
+          "#27ae60";
 
-      updatePosition(target, { name, desc, color });
+        target.classList.add("is-tajwid-hovered");
+        updatePosition(target, { name, desc, color });
+      }, 40);
     };
 
     const handlePointerOut = (event) => {
-      const target = event.target.closest(".tajwid-rule-segment, .waqf-marker, [data-tajwid-name]");
+      const target = event.target.closest(
+        ".tajwid-rule-segment, .waqf-marker, [data-tajwid-name]",
+      );
       if (!target) return;
 
       target.classList.remove("is-tajwid-hovered");
-      clearHideTimer();
-      hideTimerRef.current = window.setTimeout(() => {
+      clearTimers();
+      hideTimerRef.current = setTimeout(() => {
         setTooltipState(null);
         activeElementRef.current = null;
-      }, 120);
+      }, 100);
+    };
+
+    const handleClick = (event) => {
+      const target = event.target.closest(
+        ".tajwid-rule-segment, .waqf-marker, [data-tajwid-name]",
+      );
+      if (!target) {
+        setTooltipState(null);
+        activeElementRef.current = null;
+        return;
+      }
+
+      const name = target.getAttribute("data-tajwid-name");
+      const desc = target.getAttribute("data-tajwid-desc");
+      if (!name) return;
+
+      clearTimers();
+      const color =
+        target.getAttribute("data-tajwid-color") ||
+        target.style.color ||
+        "#27ae60";
+
+      activeElementRef.current = target;
+      target.classList.add("is-tajwid-hovered");
+      updatePosition(target, { name, desc, color });
     };
 
     const handleScroll = () => {
-      if (activeElementRef.current && tooltipState) {
+      if (activeElementRef.current) {
         const target = activeElementRef.current;
         const name = target.getAttribute("data-tajwid-name");
         const desc = target.getAttribute("data-tajwid-desc");
-        const color = target.getAttribute("data-tajwid-color") || "#27ae60";
+        const color =
+          target.getAttribute("data-tajwid-color") ||
+          target.style.color ||
+          "#27ae60";
         updatePosition(target, { name, desc, color });
       }
     };
 
     document.addEventListener("pointerover", handlePointerOver, { passive: true });
     document.addEventListener("pointerout", handlePointerOut, { passive: true });
+    document.addEventListener("click", handleClick, { passive: true });
     window.addEventListener("scroll", handleScroll, { passive: true, capture: true });
 
     return () => {
-      clearHideTimer();
+      clearTimers();
       document.removeEventListener("pointerover", handlePointerOver);
       document.removeEventListener("pointerout", handlePointerOut);
+      document.removeEventListener("click", handleClick);
       window.removeEventListener("scroll", handleScroll, { capture: true });
     };
-  }, [tooltipState]);
+  }, []);
 
   if (!tooltipState || typeof document === "undefined") return null;
 
   return createPortal(
     <aside
-      className={`tajweed-rich-tooltip tajweed-rich-tooltip--${tooltipState.placement}`}
+      className={`tajweed-rich-tooltip tajweed-rich-tooltip--${tooltipState.placement} pointer-events-none`}
       style={{
         "--tajweed-tip-color": tooltipState.color,
         left: `${tooltipState.x}px`,
@@ -133,3 +178,4 @@ export default function TajweedTooltip() {
     document.body,
   );
 }
+
