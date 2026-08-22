@@ -733,9 +733,27 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     background: color-mix(in srgb, var(--bg-card, #fff) 88%, transparent) !important;
 }
 
-[data-theme="dark"] .mfp-portal-root .mfp-context-player {
-    background: color-mix(in srgb, #1a1f2e 90%, transparent) !important;
-    border-color: rgba(255,255,255,0.08) !important;
+/* Floating page side navigation in Fullscreen overlay */
+.mfp-portal-root .mfp-floating-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    pointer-events: auto;
+}
+
+.mfp-portal-root .mfp-floating-nav--prev {
+    left: clamp(0.6rem, 2vw, 1.6rem);
+}
+
+.mfp-portal-root .mfp-floating-nav--next {
+    right: clamp(0.6rem, 2vw, 1.6rem);
+}
+
+@media (max-width: 640px) {
+    .mfp-portal-root .mfp-floating-nav {
+        display: none;
+    }
 }
 
 /* Playing ayah highlight — warm amber like a true mushaf marker */

@@ -419,13 +419,9 @@ export default function FullscreenMushafOverlay({
   ]);
 
   const visiblePages = useMemo(() => {
-    return Array.from(
-      { length: PAGE_WINDOW_RADIUS * 2 + 1 },
-      (_, index) => currentPage + index - PAGE_WINDOW_RADIUS,
-    )
-      .filter((page) => page >= 1 && page <= 604 && pageCache.has(page))
-      .map((page) => [page, pageCache.get(page)]);
-  }, [currentPage, pageCache]);
+    const pageData = pageCache.get(currentPage) || ayahs;
+    return [[currentPage, pageData]];
+  }, [currentPage, pageCache, ayahs]);
 
   const selectedAyahReference = useMemo(
     () =>
@@ -439,22 +435,12 @@ export default function FullscreenMushafOverlay({
   );
 
   useLayoutEffect(() => {
-    if (!fullPage || pageFlow !== "vertical") return;
+    if (!fullPage) return;
     const viewport = viewportRef.current;
-    const page = viewport?.querySelector(`[data-mfp-page="${currentPage}"]`);
-    if (!viewport || !page) return;
-
-    if (!alignedRef.current || !scrollDrivenRef.current) {
-      viewport.scrollTo({ top: page.offsetTop, behavior: alignedRef.current ? "smooth" : "auto" });
+    if (viewport) {
+      viewport.scrollTop = 0;
     }
-    alignedRef.current = true;
-    scrollDrivenRef.current = false;
-  }, [currentPage, fullPage, pageFlow]);
-
-  useLayoutEffect(() => {
-    if (!fullPage || pageFlow !== "horizontal") return;
-    viewportRef.current?.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, [currentPage, fullPage, pageFlow]);
+  }, [currentPage, fullPage]);
 
   useEffect(() => {
     if (!fullPage || pageFlow !== "vertical") return undefined;
@@ -819,6 +805,39 @@ export default function FullscreenMushafOverlay({
               ))}
             </div>
           </main>
+
+          {/* Floating Previous and Next page controls */}
+          <div className="mfp-floating-nav mfp-floating-nav--prev">
+            <button
+              type="button"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-black/45 text-white shadow-2xl backdrop-blur-md transition-all hover:scale-110 hover:bg-black/70 active:scale-95 disabled:opacity-20 disabled:hover:scale-100 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                changePage("previous");
+              }}
+              disabled={currentPage <= 1}
+              aria-label={lang === "ar" ? "الصفحة السابقة" : "Page précédente"}
+              title={lang === "ar" ? "الصفحة السابقة" : "Page précédente (←)"}
+            >
+              <ChevronLeft size={22} />
+            </button>
+          </div>
+
+          <div className="mfp-floating-nav mfp-floating-nav--next">
+            <button
+              type="button"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-black/45 text-white shadow-2xl backdrop-blur-md transition-all hover:scale-110 hover:bg-black/70 active:scale-95 disabled:opacity-20 disabled:hover:scale-100 cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                changePage("next");
+              }}
+              disabled={currentPage >= 604}
+              aria-label={lang === "ar" ? "الصفحة التالية" : "Page suivante"}
+              title={lang === "ar" ? "الصفحة التالية" : "Page suivante (→)"}
+            >
+              <ChevronRight size={22} />
+            </button>
+          </div>
 
           {zoomNotice ? (
             <output className="mfp-zoom-status" aria-live="polite">
