@@ -562,7 +562,8 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   :is(.qc-list-card .qc-ayah-text-ar, .quran-mode-pane--mushaf .mushaf-text-block)
-  :is(.canonical-quran-text, .quran-tajwid-text, .tajweed-text, .verse-text, .quran-arabic-text) {
+  :is(.canonical-quran-text, .quran-tajwid-text, .tajweed-text, .verse-text, .quran-arabic-text, .quran-word-item, .tajwid-rule-segment) {
+    display: inline !important;
     letter-spacing: inherit !important;
     word-spacing: inherit !important;
     line-height: inherit !important;

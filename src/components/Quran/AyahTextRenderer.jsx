@@ -56,6 +56,7 @@ function CanonicalQuranText({ text, riwaya, words, surahNum, ayahNumber }) {
                       onClick={!isMarker ? handleClick : undefined}
                       role={!isMarker ? "button" : undefined}
                       tabIndex={!isMarker ? 0 : undefined}
+                      style={{ display: "inline" }}
                     >
                       {w}
                     </span>
@@ -93,6 +94,7 @@ function CanonicalQuranText({ text, riwaya, words, surahNum, ayahNumber }) {
               onClick={!isMarker ? handleClick : undefined}
               role={!isMarker ? "button" : undefined}
               tabIndex={!isMarker ? 0 : undefined}
+              style={{ display: "inline" }}
             >
               {wordStr}
             </span>

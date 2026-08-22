@@ -42,7 +42,7 @@ html body #root .app-root[data-view="reading"]
 html body #root .app-root[data-view="reading"]
   .quran-display--platform .quran-mode-pane:not(.quran-mode-pane--mushaf)
   :is(.qc-ayah-text-ar, .verse-text, .quran-text, .quran-arabic-text, .rd-arabic, .mushaf-container)
-  :is(.quran-canonical-text, .quran-tajwid-text, .wbw-container, .tajwid-rule-segment, [data-tajwid]) {
+  :is(.quran-canonical-text, .quran-tajwid-text, .wbw-container, .quran-word-item, .tajwid-rule-segment, [data-tajwid]) {
   display: inline !important;
   direction: rtl !important;
   unicode-bidi: normal !important;
@@ -64,7 +64,7 @@ html body #root .app-root[data-view="reading"]
 
 html body #root .app-root[data-view="reading"]
   .quran-display--platform .qc-ayah-text-ar
-  :is(.wbw-word, .warsh-unicode-word) {
+  :is(.wbw-word, .warsh-unicode-word, .quran-word-item) {
   display: inline !important;
   width: auto !important;
   max-width: none !important;

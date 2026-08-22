@@ -496,6 +496,7 @@ const TajweedText = React.memo(function TajweedText({
                                 onClick={!isMarker ? handleClick : undefined}
                                 role={!isMarker ? "button" : undefined}
                                 tabIndex={!isMarker ? 0 : undefined}
+                                style={{ display: "inline" }}
                             >
                                 {wordSegments.map((seg, sIdx) =>
                                     renderSegment(seg, `${wordIndex}-${sIdx}`)
