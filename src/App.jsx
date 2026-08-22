@@ -392,9 +392,9 @@ export default function App() {
         return;
       }
 
-      if (nextTop < 40 || delta < -8) {
+      if (nextTop < 40 || delta < -14) {
         showChrome();
-      } else if (delta > 8 && nextTop > 88) {
+      } else if (delta > 28 && nextTop > 160 && !state.isPlaying && !state.currentPlayingAyah) {
         clearTimeout(immersiveTimer.current);
         setImmersiveHidden(true);
       }

@@ -212,26 +212,15 @@ const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
     const desc = rule.desc[activeLang] || rule.desc['en'] || rule.desc['fr'];
 
     return (
-        <Tooltip>
-            <TooltipTrigger asChild>
-                <span
-                    className="waqf-marker"
-                    data-waqf={codePoint}
-                    role="help"
-                    aria-label={`Règle de Waqf: ${name}`}
-                >
-                    {displayGlyph}
-                </span>
-            </TooltipTrigger>
-            <TooltipContent 
-                className="max-w-[240px] text-center p-2 rounded-lg bg-[var(--bg-card)] border border-[rgba(var(--primary-rgb),0.25)] shadow-xl z-[9999]" 
-                side="top" 
-                sideOffset={6}
-            >
-                <div className="font-semibold text-amber-600 dark:text-amber-400 text-xs mb-0.5">{name}</div>
-                <div className="text-[10px] text-[var(--theme-text)] leading-relaxed">{desc}</div>
-            </TooltipContent>
-        </Tooltip>
+        <span
+            className="waqf-marker cursor-help"
+            data-waqf={codePoint}
+            role="help"
+            title={`${name}${desc ? ` — ${desc}` : ''}`}
+            aria-label={`Règle de Waqf: ${name}`}
+        >
+            {displayGlyph}
+        </span>
     );
 });
 
@@ -424,15 +413,13 @@ const TajweedText = React.memo(function TajweedText({
         if (waqfRegex.test(text)) {
             const parts = text.split(waqfRegex);
             return (
-                <TooltipProvider>
-                    <span>
-                        {parts.map((p, j) => 
-                            waqfRegex.test(p) 
-                                ? <WaqfSign key={j} char={p} lang={lang} />
-                                : p
-                        )}
-                    </span>
-                </TooltipProvider>
+                <span>
+                    {parts.map((p, j) => 
+                        waqfRegex.test(p) 
+                            ? <WaqfSign key={j} char={p} lang={lang} />
+                            : p
+                    )}
+                </span>
             );
         }
         return <span>{text}</span>;
