@@ -64,6 +64,12 @@
   -webkit-font-smoothing: antialiased;
   direction: rtl;
   unicode-bidi: isolate;
+  letter-spacing: 0 !important;
+  -webkit-letter-spacing: 0 !important;
+  word-spacing: normal !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  white-space: normal !important;
 }
 
 .app-root .quran-display--warsh :is(
@@ -91,6 +97,12 @@
   -webkit-font-smoothing: antialiased;
   direction: rtl;
   unicode-bidi: isolate;
+  letter-spacing: 0 !important;
+  -webkit-letter-spacing: 0 !important;
+  word-spacing: normal !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  white-space: normal !important;
 }
 
 .app-root .quran-display--warsh .warsh-waqf-marker {

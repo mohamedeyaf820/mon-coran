@@ -2804,10 +2804,22 @@ ol {
     font-feature-settings:
         "liga" 1,
         "calt" 1,
-        "kern" 1;
-    letter-spacing: 0.01em;
-    word-spacing: 0.11em;
-    unicode-bidi: plaintext;
+        "kern" 1,
+        "mark" 1,
+        "mkmk" 1;
+    -webkit-font-feature-settings:
+        "liga" 1,
+        "calt" 1,
+        "kern" 1,
+        "mark" 1,
+        "mkmk" 1;
+    letter-spacing: 0;
+    -webkit-letter-spacing: 0;
+    word-spacing: normal;
+    word-break: normal;
+    overflow-wrap: normal;
+    white-space: normal;
+    unicode-bidi: isolate;
 }
 
 .qc-ayah-transliteration {

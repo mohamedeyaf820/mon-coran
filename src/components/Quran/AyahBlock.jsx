@@ -30,13 +30,10 @@ function AyahBlockComponent({
   const isRtl = lang === "ar";
   const translationReadingMode = useAppSelector((s) => s.translationReadingMode);
 
-  const transliterationSource =
-    riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text;
-
   const ayahTransliteration = useMemo(() => {
-    if (!showTransliteration) return "";
-    return arabicToLatin(transliterationSource, riwaya);
-  }, [riwaya, showTransliteration, transliterationSource]);
+    if (!showTransliteration || !ayah?.text) return "";
+    return arabicToLatin(ayah.text, riwaya);
+  }, [ayah?.text, riwaya, showTransliteration]);
 
   const arabicContent = useMemo(
     () => (

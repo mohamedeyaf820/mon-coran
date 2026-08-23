@@ -83,13 +83,10 @@ const QCVerseCard = memo(function QCVerseCard({
 
   const transliterationText = useMemo(
     () =>
-      showTransliteration
-        ? arabicToLatin(
-            riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text,
-            riwaya,
-          )
+      showTransliteration && ayah?.text
+        ? arabicToLatin(ayah.text, riwaya)
         : "",
-    [showTransliteration, ayah.text, ayah.hafsText, riwaya],
+    [showTransliteration, ayah?.text, riwaya],
   );
 
   const arabicContent = useMemo(

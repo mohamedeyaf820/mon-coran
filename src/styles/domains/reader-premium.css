@@ -866,9 +866,12 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     display: inline !important;
     padding: 0 !important;
     margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    letter-spacing: 0 !important;
+    -webkit-letter-spacing: 0 !important;
     cursor: help !important;
-    border-radius: 0.1em;
-    transition: text-shadow 160ms ease, background-color 160ms ease;
 }
 
 .waqf-marker {

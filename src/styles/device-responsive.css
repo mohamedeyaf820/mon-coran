@@ -11,13 +11,8 @@
 /* iOS/WebKit Quran shaping guard.
    All browsers on iPhone/iPad use WebKit, including Chrome and Brave. Keep
    the complete ayah in one RTL shaping context and let it wrap naturally. */
-html body #root .app-root[data-view="reading"]
-  .quran-display--platform .quran-mode-pane:not(.quran-mode-pane--mushaf) .qc-ayah-text-ar {
-  /* Ayahs are keyboard-accessible through role="button". The generic button
-     reset makes every role=button an inline-flex container, which blockifies
-     the Tajwid span and lets WebKit rearrange Arabic fragments. Keep the
-     interactive semantics, but restore a normal typographic formatting
-     context so the Uthmani text shapes and wraps as one RTL sentence. */
+html body #root .app-root
+  :is(.qc-ayah-text-ar, .rd-arabic, .quran-text, .quran-arabic-text, .ayah-text) {
   display: block !important;
   width: 100% !important;
   max-width: none !important;
@@ -33,14 +28,20 @@ html body #root .app-root[data-view="reading"]
   overflow-wrap: normal !important;
   word-break: normal !important;
   line-break: auto !important;
+  letter-spacing: 0 !important;
+  -webkit-letter-spacing: 0 !important;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   font-synthesis: none !important;
+  -webkit-font-synthesis: none !important;
   font-variant-ligatures: common-ligatures contextual !important;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1 !important;
+  -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1 !important;
+  text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased !important;
 }
 
-html body #root .app-root[data-view="reading"]
-  .quran-display--platform .quran-mode-pane:not(.quran-mode-pane--mushaf)
+html body #root .app-root
   :is(.qc-ayah-text-ar, .verse-text, .quran-text, .quran-arabic-text, .rd-arabic, .mushaf-container)
   :is(.quran-canonical-text, .quran-tajwid-text, .wbw-container, .quran-word-item, .tajwid-rule-segment, [data-tajwid]) {
   display: inline !important;
@@ -49,21 +50,26 @@ html body #root .app-root[data-view="reading"]
   white-space: normal !important;
   overflow-wrap: normal !important;
   word-break: normal !important;
-  border-radius: 0;
-  box-shadow: none;
-  transition: none;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
   background: transparent !important;
   font-family: inherit !important;
   font-size: inherit !important;
   line-height: inherit !important;
-  letter-spacing: normal !important;
+  letter-spacing: 0 !important;
+  -webkit-letter-spacing: 0 !important;
   word-spacing: normal !important;
   font-synthesis: none !important;
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-synthesis: none !important;
+  -webkit-font-smoothing: antialiased !important;
 }
 
-html body #root .app-root[data-view="reading"]
-  .quran-display--platform .qc-ayah-text-ar
+html body #root .app-root
+  :is(.qc-ayah-text-ar, .rd-arabic, .quran-text, .quran-arabic-text)
   :is(.wbw-word, .warsh-unicode-word, .quran-word-item) {
   display: inline !important;
   width: auto !important;
@@ -75,12 +81,13 @@ html body #root .app-root[data-view="reading"]
   direction: rtl !important;
   unicode-bidi: normal !important;
   font: inherit !important;
-  letter-spacing: normal !important;
+  letter-spacing: 0 !important;
+  -webkit-letter-spacing: 0 !important;
   word-spacing: normal !important;
 }
 
-html body #root .app-root[data-view="reading"]
-  .quran-display--platform :is(.wbw-marker-token, .native-ayah-marker, .warsh-karaoke-ayah-marker, .ayah-marker) {
+html body #root .app-root
+  :is(.wbw-marker-token, .native-ayah-marker, .warsh-karaoke-ayah-marker, .ayah-marker) {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
