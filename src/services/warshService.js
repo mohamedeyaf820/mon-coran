@@ -12,9 +12,9 @@ import { fetchQuranComText } from './quranComAPI';
 import { fetchWithTimeout } from './fetchWithTimeout';
 
 const IDB_STORE = 'cache';
-const IDB_KEY_PREFIX = 'warsh-unicode-v5-s-';
-const WARSH_SOURCE_ID = 'warsh-unicode-v5';
-const LEGACY_CACHE_KEY = 'warsh-unicode-v4-s-';
+const IDB_KEY_PREFIX = 'warsh-unicode-v6-s-';
+const WARSH_SOURCE_ID = 'warsh-unicode-v6';
+const LEGACY_CACHE_KEY = 'warsh-unicode-v5-s-';
 
 // Logger utilitaire - uniquement en dev
 const log = import.meta.env?.DEV ? console.log : () => {};
