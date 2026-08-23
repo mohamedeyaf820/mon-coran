@@ -575,14 +575,6 @@ export async function getWarshJuzVerses(juzNum) {
   const cacheKey = Number(juzNum);
   if (cachedJuzPayloads.has(cacheKey)) return cachedJuzPayloads.get(cacheKey);
 
-  try {
-    const scoped = await getWarshVersesByHafsScope(`juz/${juzNum}`);
-    if (scoped?.ayahs?.length) {
-      cachedJuzPayloads.set(cacheKey, scoped);
-      return scoped;
-    }
-  } catch {}
-
   const indexed = getLegacyIndex(await loadLegacyWarshData());
   const rows = indexed?.byJuz?.get(cacheKey) || [];
   if (rows.length > 0) {
@@ -616,14 +608,6 @@ export async function getWarshJuzVerses(juzNum) {
 export async function getWarshPageVerses(pageNum) {
   const cacheKey = Number(pageNum);
   if (cachedPagePayloads.has(cacheKey)) return cachedPagePayloads.get(cacheKey);
-
-  try {
-    const scoped = await getWarshVersesByHafsScope(`page/${pageNum}`);
-    if (scoped?.ayahs?.length) {
-      cachedPagePayloads.set(cacheKey, scoped);
-      return scoped;
-    }
-  } catch {}
 
   const raw = await loadLegacyWarshData();
   const indexed = getLegacyIndex(raw);

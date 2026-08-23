@@ -2791,13 +2791,14 @@ html body .app-root .quran-display--platform .qcm-lines[data-warsh="true"] .qcm-
 }
 
 html body .app-root .quran-display--platform .qcm-word--warsh {
-    font-family: "KFGQPC Uthmanic Script WARSH", "Amiri Quran", "Amiri", serif !important;
+    font-family: var(--font-quran-warsh, "KFGQPC Warsh", "QPC Warsh", "Scheherazade New", "Amiri Quran", serif) !important;
     font-size: 1em !important;
     line-height: inherit !important;
-    letter-spacing: 0;
+    letter-spacing: 0 !important;
+    -webkit-letter-spacing: 0 !important;
     text-rendering: optimizeLegibility;
-    -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
-    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     direction: rtl;
