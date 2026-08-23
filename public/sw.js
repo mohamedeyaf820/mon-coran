@@ -8,14 +8,14 @@
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v16";
-const API_CACHE_NAME = "mushaf-plus-api-v4";
+const CACHE_NAME = "mushaf-plus-v18";
+const API_CACHE_NAME = "mushaf-plus-api-v6";
 const AUDIO_CACHE_NAME = "mushafplus-audio-v2";
 const CACHE_LIMITS = {
   [CACHE_NAME]: 300,
   [API_CACHE_NAME]: 200,
 };
-let claimClientsOnActivate = false;
+let claimClientsOnActivate = true;
 
 // Ressources de l'app shell à pré-cacher à l'installation
 const ASSETS_TO_CACHE = [

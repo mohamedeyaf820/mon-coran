@@ -352,6 +352,56 @@ const TajweedRuleSegment = React.memo(function TajweedRuleSegment({
     );
 });
 
+// Arabic characters that join to the following letter (dual-joining letters)
+// Excludes right-joining only: ا أ إ آ د ذ ر ز و ؤ ة ى ٱ
+const ARABIC_DUAL_JOINING_RE = /[\u0628\u062A\u062B\u062C\u062D\u062E\u0633\u0634\u0635\u0636\u0637\u0638\u0639\u063A\u0641\u0642\u0643\u0644\u0645\u0646\u0647\u064A\u0626\u067E\u0686\u06AF\u06CC\u06BA]/u;
+// All Arabic base letters that can connect to a preceding letter
+const ARABIC_ANY_JOINING_RE = /[\u0621-\u064A\u0671-\u06D3]/u;
+
+function getLastBaseChar(str) {
+    if (!str) return '';
+    const clean = str.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u200C\u200D\u200E\u200F]/gu, '');
+    return clean.slice(-1);
+}
+
+function getFirstBaseChar(str) {
+    if (!str) return '';
+    const clean = str.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u200C\u200D\u200E\u200F]/gu, '');
+    return clean.charAt(0);
+}
+
+function shapeWordSegments(wordSegments) {
+    if (!Array.isArray(wordSegments) || wordSegments.length <= 1) return wordSegments;
+
+    return wordSegments.map((seg, idx) => {
+        let text = seg.text;
+        const isFirst = idx === 0;
+        const isLast = idx === wordSegments.length - 1;
+
+        if (!isFirst) {
+            const prevLast = getLastBaseChar(wordSegments[idx - 1].text);
+            const currFirst = getFirstBaseChar(text);
+            if (ARABIC_DUAL_JOINING_RE.test(prevLast) && ARABIC_ANY_JOINING_RE.test(currFirst)) {
+                if (!text.startsWith('\u200D')) {
+                    text = '\u200D' + text;
+                }
+            }
+        }
+
+        if (!isLast) {
+            const currLast = getLastBaseChar(text);
+            const nextFirst = getFirstBaseChar(wordSegments[idx + 1].text);
+            if (ARABIC_DUAL_JOINING_RE.test(currLast) && ARABIC_ANY_JOINING_RE.test(nextFirst)) {
+                if (!text.endsWith('\u200D')) {
+                    text = text + '\u200D';
+                }
+            }
+        }
+
+        return text === seg.text ? seg : { ...seg, text };
+    });
+}
+
 function groupSegmentsIntoWords(segments) {
     if (!Array.isArray(segments) || segments.length === 0) return [];
     const words = [];
@@ -366,7 +416,7 @@ function groupSegmentsIntoWords(segments) {
             if (!part) continue;
             if (/^\s+$/.test(part)) {
                 if (currentWord.length > 0) {
-                    words.push(currentWord);
+                    words.push(shapeWordSegments(currentWord));
                     currentWord = [];
                 }
             } else {
@@ -375,7 +425,7 @@ function groupSegmentsIntoWords(segments) {
         }
     }
     if (currentWord.length > 0) {
-        words.push(currentWord);
+        words.push(shapeWordSegments(currentWord));
     }
     return words;
 }
