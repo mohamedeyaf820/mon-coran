@@ -515,13 +515,13 @@ test("compact tablet reader keeps one surface, an independent surah identity and
   const navigation = await box(page, ".mp-header__nav");
   expect(navigation?.width || 0).toBeLessThanOrEqual(225);
 
+  // The player is a full-width bar docked at the bottom edge (quran.com
+  // pattern): it never floats inset from the viewport sides.
   const player = page.getByTestId("audio-player-compact");
   await expect(player).toBeVisible();
   const playerBox = await player.boundingBox();
-  expect(playerBox?.x || 0).toBeGreaterThanOrEqual(11);
-  expect((playerBox?.x || 0) + (playerBox?.width || 0)).toBeLessThanOrEqual(631);
-  const rightInset = 642 - ((playerBox?.x || 0) + (playerBox?.width || 0));
-  expect(Math.abs((playerBox?.x || 0) - rightInset)).toBeLessThanOrEqual(2);
+  expect(playerBox?.x || 0).toBeLessThanOrEqual(1);
+  expect((playerBox?.x || 0) + (playerBox?.width || 0)).toBeGreaterThanOrEqual(641);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -597,7 +597,8 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
   // The deterministic network fixture contains Quran.com Tajwid markup on
   // An-Najm 53:4. Use that route for the tooltip portion of this contract.
   await page.goto("/surah/53");
-  await expect(page.locator(".tajwid-rule-segment").first()).toBeVisible({ timeout: 30_000 });
+  const tajwidText = page.locator(".quran-tajwid-text[data-tajwid-render]").first();
+  await expect(tajwidText).toBeVisible({ timeout: 30_000 });
 
   const legend = page.getByTestId("tajweed-legend");
   await expect(legend).toBeVisible();
@@ -613,10 +614,22 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
   expect(legendBox?.width || 0).toBeLessThanOrEqual(1280);
   expect(legendBox?.height || 0).toBeLessThanOrEqual(150);
 
-  const segment = page.locator(".tajwid-rule-segment").first();
-  await expect(segment).toBeVisible();
-  await expect(segment).toHaveAttribute("title", /.+/);
-  await segment.hover();
+  // The fixture colours the whole first word of 53:4 (ghunnah). Hovering it
+  // must explain the rule. With the Highlight API the word stays one text
+  // node (no inline <span> per rule, which breaks Arabic shaping on WebKit).
+  const card = page.locator(".qc-list-card").filter({
+    has: page.getByRole("button", { name: "Verset 4", exact: true }),
+  });
+  const renderMode = await tajwidText.getAttribute("data-tajwid-render");
+  const target = renderMode === "highlight"
+    ? card.locator("[data-tajwid-word='0']")
+    : card.locator(".tajwid-rule-segment").first();
+  await expect(target).toBeVisible();
+  if (renderMode === "highlight") {
+    expect(await card.locator(".tajwid-rule-segment").count()).toBe(0);
+  }
+  await target.hover();
+  await expect(page.locator(".tajweed-rich-tooltip")).toContainText(/Ghunnah/i);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 

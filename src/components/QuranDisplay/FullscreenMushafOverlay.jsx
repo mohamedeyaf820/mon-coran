@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Minus,
   Plus,
-  Star,
   X,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
@@ -19,6 +18,7 @@ import { toAr } from "../../data/surahs";
 import { getJuzForAyah } from "../../data/juz";
 import { t } from "../../i18n";
 import CleanPageView from "../Quran/CleanPageView";
+import QuranMushafPage from "./QuranMushafPage";
 import { preloadQuranDisplayData } from "./useQuranDisplayData";
 
 const MIN_ZOOM = 0.8;
@@ -85,6 +85,8 @@ function FullscreenMushafOverlayComponent({
   const { state, dispatch } = useApp();
   const viewportRef = useRef(null);
   const swipeRef = useRef(null);
+  // Direction of the last page turn, for the leaf animation of the sheet.
+  const turnRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [pageCache, setPageCache] = useState(() => new Map([[currentPage, ayahs]]));
 
@@ -145,17 +147,21 @@ function FullscreenMushafOverlayComponent({
     document.body.style.overscrollBehavior = "none";
     const onKey = (e) => {
       if (e.key === "Escape") { onClose(); return; }
+      // An Arabic book is leafed from left to right: the left arrow turns to
+      // the next page, the right arrow back to the previous one.
       if (e.key === "ArrowLeft") {
-        if (currentPage > 1) {
-          if (pageCache.has(currentPage - 1)) dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage - 1 } });
-          else onPrevPage?.();
+        if (currentPage < 604) {
+          turnRef.current = "next";
+          if (pageCache.has(currentPage + 1)) dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage + 1 } });
+          else onNextPage?.();
         }
         return;
       }
       if (e.key === "ArrowRight") {
-        if (currentPage < 604) {
-          if (pageCache.has(currentPage + 1)) dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage + 1 } });
-          else onNextPage?.();
+        if (currentPage > 1) {
+          turnRef.current = "prev";
+          if (pageCache.has(currentPage - 1)) dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage - 1 } });
+          else onPrevPage?.();
         }
         return;
       }
@@ -177,12 +183,14 @@ function FullscreenMushafOverlayComponent({
 
   const handlePrev = useCallback(() => {
     if (currentPage <= 1) return;
+    turnRef.current = "prev";
     if (pageCache.has(currentPage - 1)) dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage - 1 } });
     else onPrevPage?.();
   }, [currentPage, dispatch, onPrevPage, pageCache]);
 
   const handleNext = useCallback(() => {
     if (currentPage >= 604) return;
+    turnRef.current = "next";
     if (pageCache.has(currentPage + 1)) dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage + 1 } });
     else onNextPage?.();
   }, [currentPage, dispatch, onNextPage, pageCache]);
@@ -208,6 +216,14 @@ function FullscreenMushafOverlayComponent({
   const activePageAyahs = pageCache.get(currentPage) || ayahs;
   const activeSurahNum =
     activePageAyahs[0]?.surah?.number || activePageAyahs[0]?.surah || currentSurah;
+  // The exact 15-line Madani layout needs per-word line numbers (Quran.com
+  // page data). Older cached verses fall back to the flowing sheet.
+  const hasLineData =
+    riwaya !== "warsh" &&
+    activePageAyahs.some((ayah) =>
+      (ayah?.words || []).some((word) => Number(word?.lineNumber || word?.lineV2) > 0),
+    );
+  const pageKind = currentPage <= 2 ? "opening" : "standard";
 
   const navBtnStyle = (disabled) => ({
     position: "fixed",
@@ -297,19 +313,8 @@ function FullscreenMushafOverlayComponent({
                 · {t("sidebar.juz", lang)} {currentJuz}
               </span>
             )}
-            <span
-              style={{
-                display: "inline-flex", alignItems: "center", gap: "0.2rem",
-                padding: "0.15rem 0.55rem", borderRadius: "999px",
-                fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                border: isWarsh ? "1px solid rgba(245,158,11,0.4)" : "1px solid rgba(16,185,129,0.4)",
-                background: isWarsh ? "rgba(245,158,11,0.15)" : "rgba(16,185,129,0.12)",
-                color: isWarsh ? "#d97706" : "#059669",
-              }}
-            >
-              {isWarsh ? <Star size={7} fill="currentColor" /> : null}
-              {isWarsh ? "WARSH" : "HAFS"}
+            <span className="mfp-riwaya">
+              · {isWarsh ? "Warsh" : "Hafs"}
             </span>
           </div>
         </div>
@@ -383,47 +388,67 @@ function FullscreenMushafOverlayComponent({
         onTouchEnd={handleTouchEnd}
       >
         <div
+          key={currentPage}
+          className={hasLineData ? "mfp-book mfp-book--exact" : "mfp-book mfp-book--flow"}
+          data-page-kind={pageKind}
+          data-turn={turnRef.current || undefined}
           style={{
-            transform: scale(),
+            transform: `scale(${zoom})`,
             transformOrigin: "top center",
-            width: "min(100%, 760px)",
-            maxWidth: "760px",
+            // The exact page sizes itself from its type (see mushaf-book.css).
+            width: hasLineData ? undefined : "min(100%, 760px)",
+            maxWidth: hasLineData ? "100%" : "760px",
             transition: "transform 0.15s ease-out",
           }}
         >
-          <CleanPageView
-            ayahs={activePageAyahs}
-            lang={lang}
-            fontSize={state.quranFontSize || 34}
-            showTajwid={state.showTajwid}
-            currentPlayingAyah={currentPlayingAyah}
-            surahNum={activeSurahNum}
-            riwaya={riwaya}
-            onAyahClick={onPlayAyah}
-            onPlayAyah={onPlayAyah}
-            showSurahHeader={true}
-          />
+          {hasLineData ? (
+            <QuranMushafPage
+              activeAyah={null}
+              ayahs={activePageAyahs}
+              currentPage={currentPage}
+              currentPlayingAyah={currentPlayingAyah}
+              fontFamily={state.fontFamily}
+              lang={lang}
+              onToggleActive={() => {}}
+              riwaya={riwaya}
+              showTajwid={state.showTajwid}
+            />
+          ) : (
+            <CleanPageView
+              ayahs={activePageAyahs}
+              lang={lang}
+              fontSize={state.quranFontSize || 34}
+              showTajwid={state.showTajwid}
+              currentPlayingAyah={currentPlayingAyah}
+              surahNum={activeSurahNum}
+              riwaya={riwaya}
+              onAyahClick={onPlayAyah}
+              onPlayAyah={onPlayAyah}
+              showSurahHeader={true}
+            />
+          )}
         </div>
       </main>
 
-      {/* Desktop side nav */}
+      {/* Desktop side nav: the book is leafed right to left, so the next
+          page sits on the left edge and the previous one on the right. */}
       <button
         type="button"
-        onClick={handlePrev}
-        disabled={currentPage <= 1}
-        style={{ ...navBtnStyle(currentPage <= 1), left: "0.75rem" }}
-        aria-label="Page précédente"
-        title="Page précédente (?)"
+        onClick={handleNext}
+        disabled={currentPage >= 604}
+        style={{ ...navBtnStyle(currentPage >= 604), left: "0.75rem" }}
+        aria-label="Page suivante"
+        title="Page suivante (←)"
       >
         <ChevronLeft size={20} />
       </button>
       <button
         type="button"
-        onClick={handleNext}
-        disabled={currentPage >= 604}
-        style={{ ...navBtnStyle(currentPage >= 604), right: "0.75rem" }}
-        aria-label="Page suivante"
-        title="Page suivante (?)"
+        onClick={handlePrev}
+        disabled={currentPage <= 1}
+        style={{ ...navBtnStyle(currentPage <= 1), right: "0.75rem" }}
+        aria-label="Page précédente"
+        title="Page précédente (→)"
       >
         <ChevronRight size={20} />
       </button>
@@ -441,28 +466,9 @@ function FullscreenMushafOverlayComponent({
       >
         <button
           type="button"
-          onClick={handlePrev}
-          disabled={currentPage <= 1}
-          style={{
-            display: "flex", alignItems: "center", gap: "0.3rem",
-            padding: "0.45rem 0.9rem",
-            border: "1px solid var(--mfp-btn-border)", borderRadius: "0.65rem",
-            background: "var(--mfp-btn-bg)", color: "var(--mfp-btn-text)",
-            fontSize: "0.78rem", fontWeight: 600,
-            cursor: currentPage <= 1 ? "not-allowed" : "pointer",
-            opacity: currentPage <= 1 ? 0.3 : 1,
-          }}
-        >
-          <ChevronLeft size={15} />
-          {lang === "ar" ? "السابقة" : lang === "en" ? "Prev" : "Préc."}
-        </button>
-        <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--mfp-btn-text)" }}>
-          {pageLabel} / 604
-        </span>
-        <button
-          type="button"
           onClick={handleNext}
           disabled={currentPage >= 604}
+          aria-label="Page suivante"
           style={{
             display: "flex", alignItems: "center", gap: "0.3rem",
             padding: "0.45rem 0.9rem",
@@ -473,7 +479,28 @@ function FullscreenMushafOverlayComponent({
             opacity: currentPage >= 604 ? 0.3 : 1,
           }}
         >
+          <ChevronLeft size={15} />
           {lang === "ar" ? "التالية" : lang === "en" ? "Next" : "Suiv."}
+        </button>
+        <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--mfp-btn-text)" }}>
+          {pageLabel} / 604
+        </span>
+        <button
+          type="button"
+          onClick={handlePrev}
+          disabled={currentPage <= 1}
+          aria-label="Page précédente"
+          style={{
+            display: "flex", alignItems: "center", gap: "0.3rem",
+            padding: "0.45rem 0.9rem",
+            border: "1px solid var(--mfp-btn-border)", borderRadius: "0.65rem",
+            background: "var(--mfp-btn-bg)", color: "var(--mfp-btn-text)",
+            fontSize: "0.78rem", fontWeight: 600,
+            cursor: currentPage <= 1 ? "not-allowed" : "pointer",
+            opacity: currentPage <= 1 ? 0.3 : 1,
+          }}
+        >
+          {lang === "ar" ? "السابقة" : lang === "en" ? "Prev" : "Préc."}
           <ChevronRight size={15} />
         </button>
       </div>

@@ -8,7 +8,7 @@
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v18";
+const CACHE_NAME = "mushaf-plus-v19";
 const API_CACHE_NAME = "mushaf-plus-api-v6";
 const AUDIO_CACHE_NAME = "mushafplus-audio-v2";
 const CACHE_LIMITS = {

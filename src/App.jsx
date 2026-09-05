@@ -191,6 +191,7 @@ export default function App() {
       currentSurah: current.currentSurah,
       currentAyah: current.currentAyah,
       currentPage: current.currentPage,
+      pageNavigationSource: current.pageNavigationSource,
       currentJuz: current.currentJuz,
       homeSection: current.homeSection,
       showHome: current.showHome,
@@ -246,6 +247,7 @@ export default function App() {
     currentPage,
     currentJuz,
     currentAyah: state.currentAyah,
+    pageNavigationSource: state.pageNavigationSource,
     onRouteChange: handleUrlRouteChange,
   });
 
@@ -434,6 +436,13 @@ export default function App() {
       window.removeEventListener("keydown", handleKeyboard);
     };
   }, [blockingModalOpen, immersiveActive, sidebarOpen]);
+
+  // A new reading target (surah, page, juz, mode) starts at the top: the
+  // position remembered for the immersive chrome belongs to the previous
+  // content and must not be restored over the new one.
+  useLayoutEffect(() => {
+    immersiveScrollTop.current = 0;
+  }, [currentSurah, currentPage, currentJuz, displayMode]);
 
   useLayoutEffect(() => {
     if (!immersiveActive) return;
@@ -717,7 +726,7 @@ export default function App() {
         />
       ) : null}
       <div
-        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${!showHome && !showDuas && !legalPage && !routeNotFound ? "view-reading" : ""}`}
+        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${immersiveHidden && state.isPlaying ? "immersive-keep-player" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${!showHome && !showDuas && !legalPage && !routeNotFound ? "view-reading" : ""}`}
         style={{ height: "100dvh", minHeight: "100dvh" }}
         dir={lang === "ar" ? "rtl" : "ltr"}
         data-view={routeNotFound ? "not-found" : legalPage ? "legal" : showHome ? "home" : showDuas ? "duas" : "reading"}
@@ -863,7 +872,10 @@ export default function App() {
 
 
         {shouldMountAudioPlayer && (
-          <div aria-hidden={immersiveHidden ? "true" : undefined} inert={immersiveHidden ? "" : undefined}>
+          <div
+            aria-hidden={immersiveHidden && !state.isPlaying ? "true" : undefined}
+            inert={immersiveHidden && !state.isPlaying ? "" : undefined}
+          >
             <Suspense fallback={null}>
               <AudioPlayer />
             </Suspense>

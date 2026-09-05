@@ -20,6 +20,8 @@ import "./styles/device-root.css";
 import "./styles/experience-polish.css";
 // Core tokens and shared responsive surfaces must be available before paint.
 import "./styles/app-system.css";
+// Last: flat, hairline chrome for the shell (header, panel, player).
+import "./styles/shell-calm.css";
 
 if (typeof window !== "undefined") {
   // Load non-critical polish CSS after the browser is idle so it never

@@ -627,6 +627,26 @@ class AudioService {
   }
 
   /**
+   * Durations (seconds) of the playlist items when the audio source provides
+   * them (Quran.com timings). Unknown items are null.
+   */
+  getPlaylistDurations() {
+    return this.playlist.map((item) => {
+      const seconds = Number(item?.quranComAudioTiming?.durationSec);
+      return Number.isFinite(seconds) && seconds > 0 ? seconds : null;
+    });
+  }
+
+  /**
+   * Jump to a playlist item and continue at an offset inside it (seconds).
+   */
+  async playIndexAt(index, offsetSec = 0) {
+    if (index < 0 || index >= this.playlist.length) return;
+    await this._loadAndPlay(index);
+    if (offsetSec > 0) this.seek(offsetSec);
+  }
+
+  /**
    * Jump to a specific ayah in the playlist
    */
   playAyah(surah, ayah) {

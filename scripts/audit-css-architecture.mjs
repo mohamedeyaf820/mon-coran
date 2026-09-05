@@ -18,10 +18,10 @@ const shouldCheck = process.argv.includes("--check");
 const LIMITS = {
   // Source size is a maintenance guard; the retained and production bundle
   // budgets remain the stricter deployment gates. Updated to reflect current
-  // measured sizes after responsive reader, recitation platform, and mushaf
-  // style additions.
-  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1750),
-  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1150),
+  // measured sizes after responsive reader, recitation platform, mushaf
+  // style additions and the calm reader/shell/book layers (2026-09).
+  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1760),
+  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1210),
   important: Number(process.env.CSS_IMPORTANT_BUDGET || 7240),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
   crossFileDuplicateRules: Number(

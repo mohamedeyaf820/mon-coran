@@ -128,7 +128,10 @@ function CleanPageViewComponent({
               </span>
             </span>,
           );
-
+          // A verse ends with its marker; the next verse starts after a
+          // normal space, as in the printed mushaf. Without it the marker is
+          // glued to the first word of the following verse.
+          elements.push(" ");
 
           return elements;
         })}

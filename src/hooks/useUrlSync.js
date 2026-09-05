@@ -18,6 +18,7 @@ export function useUrlSync({
   currentAyah,
   currentPage,
   currentJuz,
+  pageNavigationSource = "navigate",
   onRouteChange,
 }) {
   const isFirstRender = useRef(true);
@@ -74,8 +75,10 @@ export function useUrlSync({
       typeof window !== "undefined" &&
       window.location.pathname !== targetPath
     ) {
+      const scrolledPage =
+        displayMode === "page" && pageNavigationSource === "scroll";
       const method =
-        lastRouteKey.current !== routeKey ? "pushState" : "replaceState";
+        lastRouteKey.current !== routeKey && !scrolledPage ? "pushState" : "replaceState";
       window.history[method](null, "", targetPath);
     }
 
@@ -90,6 +93,7 @@ export function useUrlSync({
     currentAyah,
     currentPage,
     currentJuz,
+    pageNavigationSource,
   ]);
 
   useEffect(() => {

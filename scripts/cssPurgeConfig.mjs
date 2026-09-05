@@ -6,10 +6,18 @@ export const CSS_CONTENT_PATTERNS = ["dist/index.html", "dist/assets/**/*.js"];
 export const CSS_SAFELIST = {
   standard: [
     /^app-mode-/,
-    /^qcm-word--/,
+    // Madani page (QuranMushafPage) and fullscreen book classes are
+    // composed in template strings: the bare tokens never appear in the
+    // built JS, and purging `.qcm-line` turns the 15-line flex grid into
+    // plain blocks.
+    /^qcm-/,
+    /^mfp-/,
     /^qcom-list-study/,
     /^qc-list-card__study$/,
     /^tajweed-/,
+    // Tajweed rule classes of the span fallback (browsers without the
+    // Custom Highlight API) are composed from the rule id.
+    /^tajwid-/,
     /^verse-/,
     /^warsh-/,
     /^data-/,

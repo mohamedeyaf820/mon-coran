@@ -249,40 +249,15 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent 88%);
 }
 
-
-[data-theme="sepia"] .settings-drawer {
-  background: var(--bg-primary) !important;
-  border-left-color: rgba(180, 140, 80, 0.2) !important;
-}
-
-[data-theme="sepia"] .settings-drawer > div:first-child {
-  background: color-mix(in srgb, var(--bg-secondary) 80%, transparent 20%);
-  border-bottom-color: rgba(180, 140, 80, 0.15);
-}
-
 [data-theme="sepia"] .settings-drawer [class*="grid-cols-3"],
 [data-theme="sepia"] .settings-drawer [class*="grid-cols-2"] {
   background: var(--bg-secondary) !important;
   border-color: rgba(180, 140, 80, 0.12);
 }
 
-[data-theme="sepia"] .settings-drawer [class*="grid-cols-3"] button.bg-bg-primary,
-[data-theme="sepia"] .settings-drawer [class*="grid-cols-2"] button.bg-bg-primary {
-  background: var(--bg-card) !important;
-  color: var(--primary) !important;
-}
-
 [data-theme="sepia"] .settings-reciter-card {
   border-color: rgba(180, 140, 80, 0.15);
   background: var(--bg-card) !important;
-}
-
-
-.settings-backdrop {
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 499 !important;
-  background: rgba(0, 0, 0, 0.42) !important;
 }
 
 .settings-drawer {
@@ -345,18 +320,6 @@
   padding: 0;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
-}
-
-.settings-close-button:hover {
-  background: var(--bg-secondary) !important;
-  color: var(--text-primary) !important;
-}
-
-.settings-drawer__icon svg,
-.settings-close-button svg,
-.settings-tab-button__icon svg {
-  width: clamp(0.78rem, var(--mp-device-icon, 0.85rem), 0.95rem) !important;
-  height: clamp(0.78rem, var(--mp-device-icon, 0.85rem), 0.95rem) !important;
 }
 
 .settings-drawer__title {
@@ -431,19 +394,6 @@
   color: var(--primary) !important;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
-
-.settings-tab-button[data-active="true"] .settings-tab-button__icon {
-  background: color-mix(in srgb, var(--primary) 14%, transparent) !important;
-}
-
-
-.settings-tab-button[data-id="general"] .settings-tab-button__icon { color: var(--c-general); }
-.settings-tab-button[data-id="reading"] .settings-tab-button__icon { color: var(--c-reading); }
-.settings-tab-button[data-id="audio"]   .settings-tab-button__icon { color: var(--c-audio-icon); }
-
-.settings-tab-button[data-active="true"][data-id="general"] .settings-tab-button__icon { color: var(--primary); }
-.settings-tab-button[data-active="true"][data-id="reading"] .settings-tab-button__icon { color: var(--primary); }
-.settings-tab-button[data-active="true"][data-id="audio"]   .settings-tab-button__icon { color: var(--primary); }
 
 .settings-drawer__content {
   min-height: 0 !important;
@@ -571,19 +521,6 @@
   text-align: start !important;
 }
 
-.settings-theme-tile__copy strong {
-  color: var(--text-primary) !important;
-  font-size: 0.8rem !important;
-  line-height: 1.25 !important;
-}
-
-.settings-theme-tile__copy small {
-  color: var(--text-muted) !important;
-  font-size: 0.66rem !important;
-  font-weight: 500 !important;
-  line-height: 1.4 !important;
-}
-
 .settings-theme-tile__check {
   position: absolute !important;
   inset: 0.48rem 0.48rem auto auto !important;
@@ -617,18 +554,6 @@
   display: grid !important;
   gap: 0.15rem;
   min-width: 0 !important;
-}
-
-.settings-control-row__label {
-  font-size: 0.9rem !important;
-  font-weight: 760 !important;
-  color: var(--text-primary) !important;
-}
-
-.settings-control-row__description {
-  font-size: 0.76rem !important;
-  line-height: 1.35 !important;
-  color: var(--text-muted) !important;
 }
 
 .settings-switch {
@@ -710,21 +635,12 @@
   outline-offset: 2px;
 }
 
-.settings-time-grid,
-.settings-action-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-}
-
 .settings-time-grid label {
   display: grid !important;
   gap: 0.35rem;
   color: var(--text-muted) !important;
   font-size: 0.76rem !important;
   font-weight: 760 !important;
-}
-
-.settings-chip-grid {
-  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
 }
 
 .settings-action-button {
@@ -750,29 +666,12 @@
   text-align: start !important;
 }
 
-.settings-tool-link span {
-  font-weight: 820 !important;
-}
-
-.settings-tool-link small {
-  color: var(--text-muted) !important;
-  line-height: 1.35 !important;
-}
-
-.settings-search {
-  position: relative !important;
-}
-
 .settings-search svg {
   position: absolute !important;
   inset-inline-start: 0.9rem !important;
   top: 50% !important;
   transform: translateY(-50%);
   color: var(--text-muted) !important;
-}
-
-.settings-search input {
-  padding-inline-start: 3rem !important;
 }
 
 .settings-reciter-list {
@@ -823,16 +722,6 @@
   white-space: nowrap !important;
 }
 
-.settings-reciter-option__text span {
-  font-size: 0.8rem !important;
-  font-weight: 820 !important;
-}
-
-.settings-reciter-option__text small {
-  color: var(--text-muted) !important;
-  font-size: 0.68rem !important;
-}
-
 .settings-cache-note {
   display: flex !important;
   gap: 0.45rem;
@@ -873,15 +762,7 @@
   white-space: nowrap !important;
 }
 
-html[data-theme="dark"] .settings-drawer {
-  background:
-    linear-gradient(180deg, rgba(14, 24, 21, 0.98), rgba(8, 13, 12, 0.98)) !important;
-}
-
 @media (max-width: 560px) {
-  .settings-drawer {
-    width: 100vw !important;
-  }
 
   .settings-drawer__header {
     padding: 0.8rem 0.85rem;
@@ -899,14 +780,6 @@ html[data-theme="dark"] .settings-drawer {
 
   .settings-drawer__content {
     padding: 0.75rem;
-  }
-
-  .settings-chip-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  }
-
-  .settings-reciter-grid {
-    grid-template-columns: minmax(0, 1fr) !important;
   }
 }
 
@@ -959,10 +832,6 @@ html[data-theme="dark"] .settings-drawer {
   gap: 0.6rem;
 }
 
-.settings-qurancom .settings-tab-button[data-active="true"] {
-  background: color-mix(in srgb, var(--primary) 10%, var(--bg-card) 90%) !important;
-}
-
 .settings-qurancom .settings-drawer__content {
   grid-area: body !important;
   padding: clamp(0.9rem, 2vw, 1.35rem);
@@ -979,10 +848,6 @@ html[data-theme="dark"] .settings-drawer {
     border-radius: 20px 20px 0 0;
     border-inline: none;
     border-bottom: none;
-  }
-  .settings-qurancom .settings-drawer__header {
-    min-height: 4.2rem !important;
-    max-height: 4.2rem !important;
   }
   .settings-qurancom .settings-drawer__tabs {
     display: grid !important;
@@ -1011,21 +876,6 @@ html[data-theme="dark"] .settings-drawer {
     gap: 0.08rem;
     padding: 0.2rem 0.18rem;
   }
-
-  .settings-qurancom .settings-tab-button__icon {
-    width: 1.22rem !important;
-    height: 1.22rem !important;
-  }
-
-  .settings-qurancom .settings-tab-button__label {
-    display: block !important;
-    max-width: 100% !important;
-    color: inherit !important;
-    font-size: 0.58rem !important;
-    font-weight: 650 !important;
-    line-height: 1.1 !important;
-    text-align: center !important;
-  }
 }
 
 .settings-font-picker {
@@ -1050,20 +900,6 @@ html[data-theme="dark"] .settings-drawer {
 
 
 @media (min-width: 721px) and (max-width: 900px) {
-  .settings-qurancom.settings-drawer {
-    grid-template-columns: 184px minmax(0, 1fr) !important;
-    width: min(96vw, 850px) !important;
-  }
-
-  .settings-theme-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  .settings-theme-grid .settings-theme-tile:last-child:nth-child(odd) {
-    grid-column: 1 / -1 !important;
-    width: calc(50% - 0.375rem) !important;
-    justify-self: center !important;
-  }
 }
 
 @media (max-width: 720px) {
@@ -1092,14 +928,6 @@ html[data-theme="dark"] .settings-drawer {
     grid-template-columns: 5.5rem minmax(0, 1fr) !important;
     min-height: 4.75rem !important;
     gap: 0.4rem;
-  }
-
-  .settings-theme-tile__copy strong {
-    font-size: 0.72rem !important;
-  }
-
-  .settings-theme-tile__copy small {
-    font-size: 0.58rem !important;
   }
 }
 

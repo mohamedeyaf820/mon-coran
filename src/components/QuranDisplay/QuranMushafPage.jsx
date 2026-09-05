@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { getJuzForAyah } from "../../data/juz";
-import { toAr } from "../../data/surahs";
+import SURAHS, { getSurahLigature, toAr } from "../../data/surahs";
 import {
   ensureFontLoaded,
   ensureQcfPageFontLoaded,
@@ -153,6 +153,53 @@ function groupWarshPageLines(ayahs) {
   });
 }
 
+const BASMALA_TEXT = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
+
+function getSurahMeta(surah) {
+  return SURAHS[Number(surah) - 1] || null;
+}
+
+// The words API only carries verses. In the Madani layout a surah opens on a
+// fresh line under its title band and, except for Al-Fatiha (whose basmala is
+// verse 1) and At-Tawbah, the basmala: those slots come back as empty lines
+// above the first word, so this restores them the way the printed page reads.
+function placeSurahOpenings(lines) {
+  lines.forEach((line, index) => {
+    const first = line.words[0];
+    if (!first) return;
+    if (Number(first.ayah) !== 1 || Number(first.position || 1) !== 1) return;
+    const above = lines[index - 1];
+    if (!above || above.words.length > 0 || above.kind) return;
+    const surah = Number(first.surah);
+    const above2 = lines[index - 2];
+    const hasBasmalaLine =
+      surah !== 1 && surah !== 9 && above2 && above2.words.length === 0 && !above2.kind;
+    if (hasBasmalaLine) {
+      above2.kind = "surah-header";
+      above2.surah = surah;
+      above.kind = "basmala";
+      above.surah = surah;
+    } else {
+      above.kind = "surah-header";
+      above.surah = surah;
+    }
+  });
+  return lines;
+}
+
+// A surah's final line is centred when it does not fill the measure.
+function markSurahEndings(lines) {
+  lines.forEach((line) => {
+    const closes = line.words.some((word) => {
+      if (word.charType !== "end") return false;
+      const meta = getSurahMeta(word.surah);
+      return meta && Number(word.ayah) === Number(meta.ayahs);
+    });
+    if (closes) line.endsSurah = true;
+  });
+  return lines;
+}
+
 function groupPageLines(ayahs) {
   const lines = new Map();
   const seenEndMarkers = new Set();
@@ -182,13 +229,14 @@ function groupPageLines(ayahs) {
     });
   });
 
-  return Array.from({ length: 15 }, (_, index) => {
+  const pageLines = Array.from({ length: 15 }, (_, index) => {
     const lineNumber = index + 1;
     return {
       lineNumber,
       words: lines.get(lineNumber) || [],
     };
   });
+  return markSurahEndings(placeSurahOpenings(pageLines));
 }
 
 function getPageMeta(ayahs, currentPage, lang, riwaya, isWarsh = riwaya === "warsh") {
@@ -392,15 +440,65 @@ export default function QuranMushafPage({
           <strong className="text-[var(--text-primary)] text-[0.72rem] font-bold tracking-wide">{meta.middle}</strong>
         </header>
         <div className="qcm-lines" dir="rtl" lang="ar" data-warsh={isWarsh ? "true" : undefined}>
-          {lines.map((line) => (
-            <div
-              key={line.lineNumber}
-              className={`qcm-line${line.words.length === 0 ? " qcm-line--empty" : ""}`}
-              data-line-number={line.lineNumber}
-            >
-              {line.words.map(renderWord)}
-            </div>
-          ))}
+          {lines.map((line) => {
+            if (line.kind === "surah-header") {
+              const surahMeta = getSurahMeta(line.surah);
+              return (
+                <div
+                  key={line.lineNumber}
+                  className="qcm-line qcm-line--surah-header"
+                  data-line-number={line.lineNumber}
+                >
+                  <span
+                    className="qcm-surah-title"
+                    role="heading"
+                    aria-level={2}
+                    aria-label={`سورة ${surahMeta?.ar || line.surah}`}
+                  >
+                    <span
+                      className="qcm-surah-title__name font-surah-names"
+                      dir="ltr"
+                      lang="en"
+                      aria-hidden="true"
+                    >
+                      {getSurahLigature(line.surah)}
+                    </span>
+                  </span>
+                </div>
+              );
+            }
+            if (line.kind === "basmala") {
+              return (
+                <div
+                  key={line.lineNumber}
+                  className="qcm-line qcm-line--basmala"
+                  data-line-number={line.lineNumber}
+                >
+                  <span
+                    className="qcm-basmala"
+                    lang="ar"
+                    style={{ fontFamily: fallbackFontFamily }}
+                  >
+                    {BASMALA_TEXT}
+                  </span>
+                </div>
+              );
+            }
+            const lineClass = line.words.length === 0
+              ? "qcm-line qcm-line--empty"
+              : line.endsSurah
+                ? "qcm-line qcm-line--surah-end"
+                : "qcm-line";
+            return (
+              <div
+                key={line.lineNumber}
+                className={lineClass}
+                data-line-number={line.lineNumber}
+              >
+                {line.words.map(renderWord)}
+              </div>
+            );
+          })}
         </div>
         <footer className="qcm-page-footer" aria-hidden="true">
           <span>{meta.fontLabel}</span>
