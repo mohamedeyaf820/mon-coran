@@ -633,14 +633,9 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
   if (renderMode === "highlight") {
     expect(await card.locator(".tajwid-rule-segment").count()).toBe(0);
   }
-  // A slow runner can miss the first pointer move: hover until the tooltip
-  // explains the rule.
-  await expect
-    .poll(async () => {
-      await target.hover();
-      return page.locator(".tajweed-rich-tooltip").textContent().catch(() => "");
-    }, { timeout: 15_000 })
-    .toMatch(/Ghunnah/i);
+  await target.hover();
+  // The tooltip follows the pointer hit-test; a slow runner needs a moment.
+  await expect(page.locator(".tajweed-rich-tooltip")).toContainText(/Ghunnah/i, { timeout: 15_000 });
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
