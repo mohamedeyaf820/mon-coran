@@ -668,6 +668,8 @@ test("verse list cards scale their controls and typography with the device", asy
     { viewport: { width: 820, height: 920 }, control: 40, minArabic: 32, maxArabic: 40 },
   ]) {
     await openReader(page, profile.viewport);
+    // The card controls mount with the verse window: measure once they are there.
+    await expect(page.locator(".qc-list-card__start .ayah-action--play").first()).toBeVisible({ timeout: 30_000 });
 
     const card = await box(page, ".qc-list-card");
     const reference = await box(page, ".qc-list-card__reference");
@@ -1055,14 +1057,15 @@ test("Arabic reading controls visibly reduce and enlarge device-aware text", asy
 
   const arabicText = page.locator(".qc-ayah-text-ar").first();
   const verseCard = page.locator(".qc-list-card").first();
-  const initialPhoneSize = await fontSizePx(page, ".qc-ayah-text-ar");
   await expect
     .poll(() => verseCard.evaluate((node) => Number.parseFloat(getComputedStyle(node).paddingTop) || 0))
     .toBeGreaterThan(0);
   const initialCardPadding = await verseCard.evaluate((node) =>
     Number.parseFloat(getComputedStyle(node).paddingTop) || 0,
   );
-  expect(initialPhoneSize).toBe(24);
+  // The phone size settles once the responsive scale has been applied.
+  await expect.poll(() => fontSizePx(page, ".qc-ayah-text-ar"), { timeout: 15_000 }).toBe(24);
+  const initialPhoneSize = 24;
 
   await revealReaderTools(page, 390);
   await page.locator(".srh-typography-trigger").click();
