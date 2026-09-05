@@ -1071,8 +1071,9 @@ html.dark .app-root > .mp-header {
   }
 
   .mp-header-menu .mp-header-menu__item-icon {
-    width: 1.42rem;
-    height: 1.42rem;
+    width: 1.42rem !important;
+    height: 1.42rem !important;
+    min-width: 1.42rem !important;
     border-radius: 0.44rem;
   }
 
@@ -1087,11 +1088,11 @@ html.dark .app-root > .mp-header {
   }
 
   .mp-header-menu__item-description {
-    display: none;
+    display: none !important;
   }
 
   .mp-header-menu__item-kbd {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -1124,7 +1125,8 @@ html.dark .app-root > .mp-header {
   .mp-header-menu__header-subtitle,
   .mp-header-menu__item-description,
   .mp-header-menu__riwaya-description {
-    display: none;
+    /* The base rule is !important: the phone layout must win too. */
+    display: none !important;
   }
 
   .mp-header-menu__section {

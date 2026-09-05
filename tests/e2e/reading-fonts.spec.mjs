@@ -21,8 +21,15 @@ async function expectFontFamily(locator, family) {
 }
 
 async function expectCanonicalWaqfMark(page, riwaya) {
+  // The verse carrying the waqf signs (ayah 2) can sit below the fold on a
+  // small phone with the tools open; the list only mounts verses near the
+  // viewport, so bring it in first.
+  const verseWithWaqf = page.locator('#ayah-2, [data-ayah-number="2"]').first();
+  if (await verseWithWaqf.count()) {
+    await verseWithWaqf.scrollIntoViewIfNeeded().catch(() => {});
+  }
   const marker = page.locator(".waqf-marker:visible").first();
-  await expect(marker).toBeVisible();
+  await expect(marker).toBeVisible({ timeout: 15_000 });
   const metrics = await marker.evaluate((element) => {
     const style = getComputedStyle(element);
     const ayah = element.closest(".qc-ayah-text-ar, .verse-text");

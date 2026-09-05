@@ -55,6 +55,8 @@ async function openReader(page, viewport, overrides = {}) {
   await expect(page.locator(".mp-header").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".quran-display--platform").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible({ timeout: 30_000 });
+  // The polish stylesheet lands right after first paint; measure once it has.
+  await expect(page.locator('html[data-deferred-styles="ready"]')).toBeAttached({ timeout: 30_000 });
   if (viewport.width <= 1024) {
     const maxHeaderHeight = viewport.width <= 640 ? 56 : 60;
     await expect
@@ -633,8 +635,15 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
   if (renderMode === "highlight") {
     expect(await card.locator(".tajwid-rule-segment").count()).toBe(0);
   }
-  await target.hover();
-  // The tooltip follows the pointer hit-test; a slow runner needs a moment.
+  // Let the layout settle (polish styles, scroll to the verse) before the
+  // pointer lands, then arrive on the word with a real movement so the
+  // hit-test sees a pointer move.
+  await expect(page.locator('html[data-deferred-styles="ready"]')).toBeAttached();
+  await page.waitForTimeout(400);
+  await target.scrollIntoViewIfNeeded();
+  const targetBox = await target.boundingBox();
+  await page.mouse.move(targetBox.x + targetBox.width / 2 + 12, targetBox.y + targetBox.height / 2);
+  await page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + targetBox.height / 2, { steps: 4 });
   await expect(page.locator(".tajweed-rich-tooltip")).toContainText(/Ghunnah/i, { timeout: 15_000 });
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
@@ -788,6 +797,8 @@ test("general pages use a compact quick-command palette on narrow phones", async
   await openHome(page, { width: 423, height: 698 });
   await page.goto("/about");
   await expect(page.getByRole("heading", { name: /compagnon de lecture/i })).toBeVisible();
+  // A new navigation reloads the polish stylesheet right after first paint.
+  await expect(page.locator('html[data-deferred-styles="ready"]')).toBeAttached({ timeout: 30_000 });
 
   await page.locator(".mp-header__more").click();
   const menu = page.locator(".mp-header-menu");
@@ -812,18 +823,20 @@ test("general pages use a compact quick-command palette on narrow phones", async
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
-test("compact player becomes a restrained floating rail on tablet and desktop", async ({ page }) => {
+test("compact player is a full-width bottom bar on tablet and desktop", async ({ page }) => {
+  // Like quran.com: the compact player spans the viewport at the bottom.
   for (const viewport of [
-    { width: 768, height: 1024, maxWidth: 432 },
-    { width: 1440, height: 900, maxWidth: 342 },
+    { width: 768, height: 1024 },
+    { width: 1440, height: 900 },
   ]) {
     await openReader(page, viewport);
     const player = page.getByTestId("audio-player-compact");
     await expect(player).toBeVisible();
     const playerBox = await player.boundingBox();
-    expect(playerBox?.width || 0).toBeLessThanOrEqual(viewport.maxWidth);
-    expect(playerBox?.height || 0).toBeLessThanOrEqual(74);
-    expect(viewport.width - ((playerBox?.x || 0) + (playerBox?.width || 0))).toBeLessThanOrEqual(24);
+    expect(playerBox?.x || 0).toBeLessThanOrEqual(1);
+    expect(playerBox?.width || 0).toBeGreaterThanOrEqual(viewport.width - 2);
+    expect(playerBox?.height || 0).toBeLessThanOrEqual(96);
+    expect(viewport.height - ((playerBox?.y || 0) + (playerBox?.height || 0))).toBeLessThanOrEqual(2);
     expect(await overflowX(page)).toBeLessThanOrEqual(2);
   }
 });
