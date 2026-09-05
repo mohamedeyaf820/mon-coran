@@ -85,6 +85,8 @@ function FullscreenMushafOverlayComponent({
   const { state, dispatch } = useApp();
   const viewportRef = useRef(null);
   const swipeRef = useRef(null);
+  // Direction of the last page turn, for the leaf animation of the sheet.
+  const turnRef = useRef(null);
   const [zoom, setZoom] = useState(1);
   const [pageCache, setPageCache] = useState(() => new Map([[currentPage, ayahs]]));
 
@@ -145,17 +147,21 @@ function FullscreenMushafOverlayComponent({
     document.body.style.overscrollBehavior = "none";
     const onKey = (e) => {
       if (e.key === "Escape") { onClose(); return; }
+      // An Arabic book is leafed from left to right: the left arrow turns to
+      // the next page, the right arrow back to the previous one.
       if (e.key === "ArrowLeft") {
-        if (currentPage > 1) {
-          if (pageCache.has(currentPage - 1)) dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage - 1 } });
-          else onPrevPage?.();
+        if (currentPage < 604) {
+          turnRef.current = "next";
+          if (pageCache.has(currentPage + 1)) dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage + 1 } });
+          else onNextPage?.();
         }
         return;
       }
       if (e.key === "ArrowRight") {
-        if (currentPage < 604) {
-          if (pageCache.has(currentPage + 1)) dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage + 1 } });
-          else onNextPage?.();
+        if (currentPage > 1) {
+          turnRef.current = "prev";
+          if (pageCache.has(currentPage - 1)) dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage - 1 } });
+          else onPrevPage?.();
         }
         return;
       }
@@ -177,12 +183,14 @@ function FullscreenMushafOverlayComponent({
 
   const handlePrev = useCallback(() => {
     if (currentPage <= 1) return;
+    turnRef.current = "prev";
     if (pageCache.has(currentPage - 1)) dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage - 1 } });
     else onPrevPage?.();
   }, [currentPage, dispatch, onPrevPage, pageCache]);
 
   const handleNext = useCallback(() => {
     if (currentPage >= 604) return;
+    turnRef.current = "next";
     if (pageCache.has(currentPage + 1)) dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage + 1 } });
     else onNextPage?.();
   }, [currentPage, dispatch, onNextPage, pageCache]);
@@ -380,8 +388,10 @@ function FullscreenMushafOverlayComponent({
         onTouchEnd={handleTouchEnd}
       >
         <div
+          key={currentPage}
           className={hasLineData ? "mfp-book mfp-book--exact" : "mfp-book mfp-book--flow"}
           data-page-kind={pageKind}
+          data-turn={turnRef.current || undefined}
           style={{
             transform: `scale(${zoom})`,
             transformOrigin: "top center",
@@ -420,24 +430,25 @@ function FullscreenMushafOverlayComponent({
         </div>
       </main>
 
-      {/* Desktop side nav */}
+      {/* Desktop side nav: the book is leafed right to left, so the next
+          page sits on the left edge and the previous one on the right. */}
       <button
         type="button"
-        onClick={handlePrev}
-        disabled={currentPage <= 1}
-        style={{ ...navBtnStyle(currentPage <= 1), left: "0.75rem" }}
-        aria-label="Page précédente"
-        title="Page précédente (?)"
+        onClick={handleNext}
+        disabled={currentPage >= 604}
+        style={{ ...navBtnStyle(currentPage >= 604), left: "0.75rem" }}
+        aria-label="Page suivante"
+        title="Page suivante (←)"
       >
         <ChevronLeft size={20} />
       </button>
       <button
         type="button"
-        onClick={handleNext}
-        disabled={currentPage >= 604}
-        style={{ ...navBtnStyle(currentPage >= 604), right: "0.75rem" }}
-        aria-label="Page suivante"
-        title="Page suivante (?)"
+        onClick={handlePrev}
+        disabled={currentPage <= 1}
+        style={{ ...navBtnStyle(currentPage <= 1), right: "0.75rem" }}
+        aria-label="Page précédente"
+        title="Page précédente (→)"
       >
         <ChevronRight size={20} />
       </button>
@@ -455,28 +466,9 @@ function FullscreenMushafOverlayComponent({
       >
         <button
           type="button"
-          onClick={handlePrev}
-          disabled={currentPage <= 1}
-          style={{
-            display: "flex", alignItems: "center", gap: "0.3rem",
-            padding: "0.45rem 0.9rem",
-            border: "1px solid var(--mfp-btn-border)", borderRadius: "0.65rem",
-            background: "var(--mfp-btn-bg)", color: "var(--mfp-btn-text)",
-            fontSize: "0.78rem", fontWeight: 600,
-            cursor: currentPage <= 1 ? "not-allowed" : "pointer",
-            opacity: currentPage <= 1 ? 0.3 : 1,
-          }}
-        >
-          <ChevronLeft size={15} />
-          {lang === "ar" ? "السابقة" : lang === "en" ? "Prev" : "Préc."}
-        </button>
-        <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--mfp-btn-text)" }}>
-          {pageLabel} / 604
-        </span>
-        <button
-          type="button"
           onClick={handleNext}
           disabled={currentPage >= 604}
+          aria-label="Page suivante"
           style={{
             display: "flex", alignItems: "center", gap: "0.3rem",
             padding: "0.45rem 0.9rem",
@@ -487,7 +479,28 @@ function FullscreenMushafOverlayComponent({
             opacity: currentPage >= 604 ? 0.3 : 1,
           }}
         >
+          <ChevronLeft size={15} />
           {lang === "ar" ? "التالية" : lang === "en" ? "Next" : "Suiv."}
+        </button>
+        <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--mfp-btn-text)" }}>
+          {pageLabel} / 604
+        </span>
+        <button
+          type="button"
+          onClick={handlePrev}
+          disabled={currentPage <= 1}
+          aria-label="Page précédente"
+          style={{
+            display: "flex", alignItems: "center", gap: "0.3rem",
+            padding: "0.45rem 0.9rem",
+            border: "1px solid var(--mfp-btn-border)", borderRadius: "0.65rem",
+            background: "var(--mfp-btn-bg)", color: "var(--mfp-btn-text)",
+            fontSize: "0.78rem", fontWeight: 600,
+            cursor: currentPage <= 1 ? "not-allowed" : "pointer",
+            opacity: currentPage <= 1 ? 0.3 : 1,
+          }}
+        >
+          {lang === "ar" ? "السابقة" : lang === "en" ? "Prev" : "Préc."}
           <ChevronRight size={15} />
         </button>
       </div>

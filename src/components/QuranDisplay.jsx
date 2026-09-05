@@ -225,8 +225,21 @@ export default function QuranDisplay() {
   );
 
   const openImmersiveMushaf = useCallback(async () => {
+    // The verse at the top of the viewport, so that the book opens where the
+    // reader is, not where the last navigation landed.
+    const ayahInView = (() => {
+      if (typeof document === "undefined") return null;
+      const nodes = document.querySelectorAll(
+        ".quran-display--platform [data-ayah-number]",
+      );
+      for (const node of nodes) {
+        const rect = node.getBoundingClientRect();
+        if (rect.height > 0 && rect.bottom > 96) return Number(node.dataset.ayahNumber);
+      }
+      return null;
+    })();
     const currentAyahData = ayahs.find(
-      (ayah) => Number(ayah.numberInSurah) === Number(currentAyah),
+      (ayah) => Number(ayah.numberInSurah) === Number(ayahInView ?? currentAyah),
     );
     const targetPage = Number(
       displayMode === "page"

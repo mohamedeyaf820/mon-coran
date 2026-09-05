@@ -366,3 +366,31 @@
     outline-offset: -5px;
   }
 }
+
+/* --- Leafing ---------------------------------------------------------------- */
+/* The next leaf comes from the left, the previous one from the right, as the
+   page turns in an Arabic book. The sheet keeps its own transform (zoom), so
+   the motion uses the separate translate property. */
+@media (prefers-reduced-motion: no-preference) {
+  .mfp-portal-root .mfp-book[data-turn="next"] {
+    animation: mfp-turn-next 240ms ease-out;
+  }
+
+  .mfp-portal-root .mfp-book[data-turn="prev"] {
+    animation: mfp-turn-prev 240ms ease-out;
+  }
+}
+
+@keyframes mfp-turn-next {
+  from {
+    opacity: 0;
+    translate: -3% 0;
+  }
+}
+
+@keyframes mfp-turn-prev {
+  from {
+    opacity: 0;
+    translate: 3% 0;
+  }
+}
