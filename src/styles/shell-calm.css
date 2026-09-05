@@ -140,74 +140,13 @@ html body #root .app-root .mp-audio-player .simple-player__timeline {
   margin-inline: auto;
 }
 
-/* --- Home cards ------------------------------------------------------------ */
-
-html body .app-root .hp-card {
-  border: 1px solid var(--border);
-  box-shadow: none;
-}
-
-html body .app-root .hp-card:hover {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-}
-
-/* --- Reading panel takes the page: no frame, no rounded inset ------------ */
-
-html body #root .app-root .quran-display.quran-display--platform,
-html body #root .app-root[data-view="reading"] .quran-display.quran-display--platform {
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  padding-inline: clamp(0.75rem, 2vw, 1.5rem) !important;
-}
-
-html body #root .app-root .app-view-shell,
-html body #root .app-root[data-view="reading"] .app-view-shell,
-html body #root .app-root .app-main-shell,
-html body #root .app-root .app-layout-shell {
-  padding-inline: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-
-html body #root .app-root .quran-display--platform .rd-wrapper,
-html body #root .app-root .quran-display--platform .quran-mode-pane,
-html body #root .app-root .app-view-reading {
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-
-/* The reader toolbar uses the whole reading width: one row on desktop. */
-html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .reader-control-deck,
-html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .qc-surah-header-wrap {
-  width: 100% !important;
-  max-width: none !important;
-}
-
-/* --- Audio player: a full-width bar at the bottom, like quran.com -------- */
-
-html body #root .app-root:not(.immersive-mode) .mp-audio-player.audio-player-simple,
-html body #root .app-root:not(.immersive-mode) .mp-audio-player.mp-audio-player--desktop,
-html body #root .app-root:not(.immersive-mode) .mp-audio-player.mp-audio-player--desktop.is-minimized {
-  position: fixed !important;
-  inset: auto 0 0 0 !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: none !important;
-  margin: 0 !important;
-  transform: none !important;
-  border: 0 !important;
-  border-top: 1px solid var(--border) !important;
-  border-radius: 0 !important;
-  background: var(--bg-card) !important;
-  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.04) !important;
-}
-
-html body #root .app-root .mp-audio-player .simple-player__compact-row,
-html body #root .app-root .mp-audio-player .simple-player__timeline {
-  width: min(100%, 72rem);
-  margin-inline: auto;
+/* The player appears in place: no entrance, rise or breathing animation.
+   The immersive mode still slides it away with its own transition. */
+html body #root .app-root .mp-audio-player,
+html body #root .app-root .mp-audio-player.audio-player-simple,
+html body #root .app-root .mp-audio-player--desktop,
+html body #root .app-root .mp-audio-player--mobile.mp-audio-player--dock {
+  animation: none !important;
 }
 
 /* The reading view is a plain surface: no decorative rounded glow behind it,
