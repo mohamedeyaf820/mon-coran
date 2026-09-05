@@ -162,7 +162,11 @@ test("every exposed Hafs text path removes internal dotted-circle anchors", () =
   assert.equal(withMarker.includes("\u06E0"), true);
 });
 
-test("Yusuf 12:11 keeps its Quranic sign without the mobile black-dot fallback glyph", () => {
+test("Yusuf 12:11 keeps its Quranic sign in the form each reading face can draw", () => {
+  // Quran.com serves the ishmam sign as U+06EC in the QPC text and as the
+  // canonical U+06EB in the Uthmani text. The KFGQPC Hafs face only has a
+  // glyph for U+06EC (U+06EB and U+06DF fall back to a large black dot),
+  // while Scheherazade, Amiri and Noto draw the canonical sign.
   const qpcWord = "\u062A\u064E\u0623\u06E1\u0645\u064E\u06EC\u0646\u0651\u064E\u0627";
   const canonicalWord = "\u062A\u064E\u0623\u06E1\u0645\u064E\u06EB\u0646\u0651\u064E\u0627";
   const ayah = {
@@ -173,10 +177,27 @@ test("Yusuf 12:11 keeps its Quranic sign without the mobile black-dot fallback g
     },
   };
 
-  const rendered = getAyahTextForFont(ayah, "qpc-hafs", "hafs");
-  assert.equal(rendered, canonicalWord);
-  assert.equal(rendered.includes("\u06EC"), false);
-  assert.equal(rendered.includes("\u06EB"), true);
+  const qpcRendered = getAyahTextForFont(ayah, "qpc-hafs", "hafs");
+  assert.equal(qpcRendered, qpcWord);
+  assert.equal(qpcRendered.includes("\u06DF"), false);
+
+  for (const fontFamily of ["scheherazade-new", "amiri-quran", "noto-naskh-arabic"]) {
+    const rendered = getAyahTextForFont(ayah, fontFamily, "hafs");
+    assert.equal(rendered, canonicalWord, fontFamily);
+    assert.equal(rendered.includes("\u06EC"), false, fontFamily);
+    assert.equal(rendered.includes("\u06DF"), false, fontFamily);
+  }
+});
+
+test("a silent letter keeps the QPC sukun in the Hafs face and the rounded zero elsewhere", () => {
+  // 2:5 in Quran.com's data: the QPC text writes a sukun on the silent waw,
+  // the Uthmani text the small rounded zero U+06DF.
+  const uthmani = "\u0623\u064F\u0648\u06DF\u0644\u064E\u0670\u0653\u0626\u0650\u0643\u064E";
+  const ayah = { text: uthmani, quranCom: { textUthmani: uthmani } };
+
+  assert.equal(getAyahTextForFont(ayah, "qpc-hafs", "hafs").includes("\u06DF"), false);
+  assert.equal(getAyahTextForFont(ayah, "qpc-hafs", "hafs").includes("\u0648\u0652"), true);
+  assert.equal(getAyahTextForFont(ayah, "scheherazade-new", "hafs"), uthmani);
 });
 
 test("Al-Mulk pause signs stay attached to the preceding Uthmani glyph", () => {
@@ -224,11 +245,13 @@ test("all supported embedded ayah marker forms collapse to one generated marker"
     ["scheherazade-new-warsh", "warsh", "۝١"],
   ];
 
+  // The marker is attached with a narrow no-break space so that it never
+  // wraps alone at the start of a line.
   for (const payload of payloads) {
     assert.equal(stripEmbeddedAyahMarkers(payload), verse);
     for (const [fontFamily, riwaya, expectedMarker] of fontMarkers) {
       const rendered = appendNativeAyahMarker(payload, 1, fontFamily, riwaya);
-      assert.equal(rendered, `${verse} ${expectedMarker}`, fontFamily);
+      assert.equal(rendered, `${verse}\u202F${expectedMarker}`, fontFamily);
     }
   }
 

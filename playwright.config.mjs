@@ -20,6 +20,9 @@ export default defineConfig({
   },
   use: {
     baseURL: "http://127.0.0.1:4173",
+    // The PWA service worker would answer the API requests itself and bypass
+    // the network fixtures of the tests; only the offline project needs it.
+    serviceWorkers: "block",
     headless: true,
     screenshot: "only-on-failure",
     video: "retain-on-failure",
@@ -64,6 +67,7 @@ export default defineConfig({
       testMatch: ["**/pwa-offline.spec.mjs"],
       use: {
         ...devices["Desktop Chrome"],
+        serviceWorkers: "allow",
         launchOptions: chromiumExecutablePath
           ? { executablePath: chromiumExecutablePath }
           : undefined,

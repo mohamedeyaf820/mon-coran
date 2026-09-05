@@ -403,7 +403,9 @@ for (const mode of ["page", "juz"]) {
     await expect(context).toContainText(isPage ? "Page" : "Juz");
     await expect(page.locator(".reader-typography-trigger")).toBeVisible();
     await expect(page.locator(".reader-typography-panel")).toBeHidden();
-    await expect(page.locator(".reader-mode-nav")).toBeVisible();
+    // Page mode reads continuously (the stream replaces the page buttons);
+    // juz mode keeps its previous/next navigation.
+    await expect(page.locator(isPage ? ".page-stream" : ".reader-mode-nav")).toBeVisible();
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(2);
 
     await page.locator(".reader-typography-trigger").click();

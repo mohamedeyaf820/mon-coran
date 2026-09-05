@@ -109,7 +109,7 @@ test("E2E: la lecture Warsh en vue Mushaf conserve un seul marqueur d'ayah", asy
   const playingVerse = page.locator(".cpv-verse--playing").first();
   await expect(playingVerse).toBeVisible();
   await expect(playingVerse.locator(".native-ayah-marker")).toHaveCount(1);
-  await expect(playingVerse.locator(".cpv-ayah-marker")).toHaveCount(1);
+  await expect(playingVerse.locator(".native-ayah-marker")).toHaveCount(1);
   await expect(
     playingVerse.locator(".warsh-karaoke-ayah-marker"),
   ).toHaveCount(0);

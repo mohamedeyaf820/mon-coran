@@ -218,17 +218,18 @@ test("fonts: exposes riwaya-safe native ayah markers", () => {
 });
 
 test("fonts: appends native ayah markers without duplicates", () => {
+  // A narrow no-break space keeps the marker on the verse's line.
   assert.equal(
     appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f", 7, "qpc-hafs", "hafs"),
-    "\u0627\u0644\u062d\u0645\u062f \u0667",
+    "\u0627\u0644\u062d\u0645\u062f\u202f\u0667",
   );
   assert.equal(
     appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u06dd\u0667", 7, "qpc-hafs", "hafs"),
-    "\u0627\u0644\u062d\u0645\u062f \u0667",
+    "\u0627\u0644\u062d\u0645\u062f\u202f\u0667",
   );
   assert.equal(
     appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u0667", 7, "qpc-indopak", "hafs"),
-    "\u0627\u0644\u062d\u0645\u062f \u06dd\u06f7",
+    "\u0627\u0644\u062d\u0645\u062f\u202f\u06dd\u06f7",
   );
 });
 

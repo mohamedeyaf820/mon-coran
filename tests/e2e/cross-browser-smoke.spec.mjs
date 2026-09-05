@@ -20,7 +20,7 @@ test.beforeEach(async ({ page }) => {
 
 test("compatibilité: accueil, route légale et lecteur", async ({ page }) => {
   await page.goto("/", { waitUntil: "commit" });
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(/lecture|reading|قراءة/i);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/lire|lecture|reading|قراءة/i);
   await expect(page.locator(".hp-card--surah").first()).toBeVisible();
 
   await page.goto("/privacy", { waitUntil: "commit" });

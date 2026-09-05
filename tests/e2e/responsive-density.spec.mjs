@@ -88,6 +88,8 @@ async function openHome(page, viewport) {
   await expect(page.locator(".mp-header").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".app-view-home").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".hp-card").first()).toBeAttached({ timeout: 30_000 });
+  // The polish stylesheet lands right after first paint; measure once it has.
+  await expect(page.locator('html[data-deferred-styles="ready"]')).toBeAttached({ timeout: 30_000 });
 }
 
 async function openDuas(page, viewport) {
@@ -438,7 +440,8 @@ test("reader typography and action glyphs follow the connected device scale", as
     expect(arabicSize).toBeLessThanOrEqual(viewport.maxArabic + 0.1);
     expect(icon?.width || 0).toBeLessThanOrEqual(viewport.maxIcon);
     expect(icon?.height || 0).toBeLessThanOrEqual(viewport.maxIcon);
-    expect(touchTarget?.height || 0).toBeGreaterThanOrEqual(40);
+    // 40px targets land on sub-pixel boundaries (39.99998) on some scales.
+    expect(touchTarget?.height || 0).toBeGreaterThanOrEqual(39.9);
     expect(await overflowX(page)).toBeLessThanOrEqual(2);
     samples.push(arabicSize);
   }
@@ -485,9 +488,10 @@ test("mobile Mushaf keeps desktop proportions at the largest text preference", a
 
   expect(await fontSizePx(page, ".mushaf-text-block")).toBeLessThanOrEqual(30);
 
-  const marker = page.locator(".cpv-ayah-marker").first();
-  await expect(marker).toHaveAttribute("data-marker-font", "qpc-hafs");
-  await expect(marker).toContainText(/^[\u0660-\u0669]+$/u);
+  // The marker is a native glyph of the reading face: Arabic-Indic digits.
+  const marker = page.locator(".mushaf-text-block .native-ayah-marker").first();
+  // Arabic-Indic digits, optionally led by the end-of-ayah sign of the face.
+  await expect(marker).toHaveText(/^\s*\u06DD?[\u0660-\u0669]+\s*$/u);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 

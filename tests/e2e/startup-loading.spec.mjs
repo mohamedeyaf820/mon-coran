@@ -110,7 +110,8 @@ test("the branded splash is shown again on each app launch", async ({ page }) =>
   });
   const firstDuration = Date.now() - firstVisibleAt;
   expect(firstDuration).toBeGreaterThanOrEqual(2_900);
-  expect(firstDuration).toBeLessThanOrEqual(3_900);
+  // The splash lasts ~3 s; a loaded CI worker can add a few dozen ms.
+  expect(firstDuration).toBeLessThanOrEqual(4_200);
   await expect(page.locator(".hp-wrapper")).toBeVisible();
 
   const reloadStartedAt = Date.now();

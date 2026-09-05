@@ -81,7 +81,7 @@ test("about page is compact on mobile and prepares a complete correction report"
       return null;
     };
   });
-  await page.getByRole("button", { name: "Signaler une correction", exact: true }).click();
+  await page.getByRole("link", { name: "Signaler une correction", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.getByLabel("Page ou référence concernée").fill("Sourate 3, verset 7");
   await page.getByLabel("Description").fill("Le marqueur de fin du verset apparaît deux fois sur petit écran.");
