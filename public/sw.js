@@ -25,6 +25,11 @@ const ASSETS_TO_CACHE = [
   "/favicon.png",
   "/data/reciter-profiles.json",
   "/data/editorial-copy.json",
+  // The reading faces are needed on every route once offline.
+  "/fonts/uthmanic-hafs-v18.woff2",
+  "/fonts/kfgqpc-warsh-10.woff2",
+  "/fonts/scheherazade-new-400.woff2",
+  "/fonts/sura_names.woff2",
 ];
 
 // ─── Installation ─────────────────────────────────────────────────────────────
@@ -275,6 +280,33 @@ self.addEventListener("message", (event) => {
   if (!event.data || typeof event.data !== "object") return;
 
   switch (event.data.type) {
+    // The page lists the same-origin assets and fonts it loaded before this
+    // worker took control (the first visit): they must be in the shell cache
+    // for an offline reload.
+    case "CACHE_SHELL_URLS": {
+      const urls = (Array.isArray(event.data.urls) ? event.data.urls : [])
+        .filter(
+          (value) =>
+            typeof value === "string" &&
+            (value.startsWith("/assets/") || value.startsWith("/fonts/")),
+        )
+        .slice(0, 200);
+      event.waitUntil(
+        caches
+          .open(CACHE_NAME)
+          .then(async (cache) => {
+            const missing = [];
+            for (const url of urls) {
+              if (!(await cache.match(url))) missing.push(url);
+            }
+            if (missing.length) await precacheUrls(cache, missing);
+            await trimCache(cache, CACHE_LIMITS[CACHE_NAME]);
+          })
+          .catch(() => {}),
+      );
+      break;
+    }
+
     // L'app demande au SW de mettre en cache des URLs supplémentaires
     // (ex : sourates récemment lues)
     case "CACHE_QURAN_URLS": {

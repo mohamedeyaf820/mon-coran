@@ -6,6 +6,7 @@
  */
 
 import { dbGet, dbSet, dbDelete } from './dbService';
+import { JUZ_DATA } from '../data/juz';
 import { WARSH_DATA_BASE_URL, WARSH_LEGACY_JSON_URL } from '../constants/warshSource';
 import { getSurah } from '../data/surahs';
 import { fetchQuranComText } from './quranComAPI';
@@ -571,9 +572,54 @@ export async function getWarshSurahFormatted(surahNum) {
  * Juz/Page access is now limited to what's currently loaded.
  * If we need full Juz support, we'd need to load multiple surahs.
  */
+// A juz spans one to several surahs: it is assembled from the scoped
+// per-surah files (cached, validated) so that the legacy full-Quran JSON is
+// only fetched when a scoped file is unavailable.
+function getJuzRange(juzNum) {
+  const index = JUZ_DATA.findIndex((entry) => entry.juz === Number(juzNum));
+  if (index < 0) return null;
+  const start = JUZ_DATA[index].start;
+  const next = JUZ_DATA[index + 1]?.start || null;
+  const isBefore = (surah, ayah, bound) =>
+    !bound || surah < bound.s || (surah === bound.s && ayah < bound.a);
+  const lastSurah = next ? (next.a > 1 ? next.s : next.s - 1) : 114;
+  return {
+    surahs: Array.from({ length: lastSurah - start.s + 1 }, (_, i) => start.s + i),
+    includes: (surah, ayah) =>
+      (surah > start.s || (surah === start.s && ayah >= start.a)) && isBefore(surah, ayah, next),
+  };
+}
+
+async function getScopedWarshJuzAyahs(juzNum) {
+  const range = getJuzRange(juzNum);
+  if (!range) throw new Error(`Invalid juz: ${juzNum}`);
+  const surahs = await Promise.all(
+    range.surahs.map(async (surah) => (await getWarshSurahVerses(surah)).map(toWarshAyah)),
+  );
+  return surahs.flat().filter((ayah) => {
+    const surah = Number(ayah?.surah?.number ?? ayah?.surah);
+    const number = Number(ayah?.numberInSurah);
+    return surah > 0 && number > 0 && range.includes(surah, number);
+  });
+}
+
 export async function getWarshJuzVerses(juzNum) {
   const cacheKey = Number(juzNum);
   if (cachedJuzPayloads.has(cacheKey)) return cachedJuzPayloads.get(cacheKey);
+
+  try {
+    const scoped = await getScopedWarshJuzAyahs(cacheKey);
+    if (scoped.length > 0) {
+      const payload = {
+        ...buildWarshPayload(scoped.map((ayah) => ({ ...ayah, juz: ayah.juz || cacheKey }))),
+        number: cacheKey,
+      };
+      cachedJuzPayloads.set(cacheKey, payload);
+      return payload;
+    }
+  } catch (err) {
+    logError(`[WarshService] Scoped juz ${cacheKey} unavailable, using legacy data:`, err);
+  }
 
   const indexed = getLegacyIndex(await loadLegacyWarshData());
   const rows = indexed?.byJuz?.get(cacheKey) || [];

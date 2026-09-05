@@ -1,7 +1,8 @@
 /* Minimal player shell: intentionally isolated from legacy player layouts. */
 .app-root .mp-audio-player.audio-player-simple {
   --simple-player-ink: color-mix(in srgb, var(--theme-text) 94%, #fff 6%);
-  --simple-player-muted: color-mix(in srgb, var(--theme-text-muted) 86%, var(--theme-bg) 14%);
+  /* Full muted ink: the 11px reciter line needs 4.5:1 on the bar. */
+  --simple-player-muted: var(--theme-text-muted, var(--text-muted));
   --simple-player-line: color-mix(in srgb, var(--theme-border) 74%, transparent 26%);
   --simple-player-surface: color-mix(in srgb, var(--theme-panel-bg-strong) 96%, var(--theme-primary) 4%);
   position: fixed !important;

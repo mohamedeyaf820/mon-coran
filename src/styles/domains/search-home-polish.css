@@ -1437,7 +1437,8 @@ html[data-theme="dark"] .search-pro__close:hover {
 }
 
 .app-root .mode-nav-current span {
-    color: var(--text-tertiary);
+    /* Small bold caption on a tinted pill: primary ink for 4.5:1. */
+    color: var(--text-primary);
     font-size: 0.78rem;
     font-weight: 800;
 }

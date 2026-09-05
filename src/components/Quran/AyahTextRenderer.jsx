@@ -1,7 +1,9 @@
 import React, { useMemo } from "react";
 import useKaraokeWordIndex from "../../hooks/useKaraokeWordIndex";
 import audioService from "../../services/audioService";
-import { NATIVE_AYAH_MARKER_RE, getQuranWordTextForFont } from "../../data/fonts";
+import { NATIVE_AYAH_MARKER_RE, getQuranWordTextForFont, normalizeFontId } from "../../data/fonts";
+import { getFontSignVariant } from "../../utils/quranUtils";
+import { useAppLocale } from "../../context/AppContext";
 import {
   getReadableWaqfGlyph,
   normalizeQuranGlyphText,
@@ -13,7 +15,15 @@ const AYAH_MARKER_TOKEN_RE = /^[\u06dd\u06de\u06e9\ufd3f\ufd3e\d\u0660-\u0669\u0
 const WAQF_MARKER_SPLIT_RE = /([\u06d6-\u06dc])/u;
 const WAQF_MARKER_CHAR_RE = /^[\u06d6-\u06dc]$/u;
 
+function getVerseLabel(lang, ayahNumber) {
+  if (!ayahNumber) return undefined;
+  const word = lang === "ar" ? "\u0627\u0644\u0622\u064a\u0629" : lang === "en" ? "Verse" : "Verset";
+  return `${word} ${ayahNumber}`;
+}
+
 function CanonicalQuranText({ text, riwaya, words, surahNum, ayahNumber }) {
+  const { lang } = useAppLocale();
+  const verseLabel = getVerseLabel(lang, ayahNumber);
   if (riwaya === "warsh") {
     const parts = String(text).split(WAQF_MARKER_SPLIT_RE).filter(Boolean);
     let wordRunningIndex = 0;
@@ -54,8 +64,9 @@ function CanonicalQuranText({ text, riwaya, words, surahNum, ayahNumber }) {
                     <span
                       className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
                       onClick={!isMarker ? handleClick : undefined}
-                      role={!isMarker ? "button" : undefined}
-                      tabIndex={!isMarker ? 0 : undefined}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={isMarker ? verseLabel : undefined}
                       style={{ display: "inline" }}
                     >
                       {w}
@@ -92,8 +103,9 @@ function CanonicalQuranText({ text, riwaya, words, surahNum, ayahNumber }) {
             <span
               className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
               onClick={!isMarker ? handleClick : undefined}
-              role={!isMarker ? "button" : undefined}
-              tabIndex={!isMarker ? 0 : undefined}
+              role="button"
+              tabIndex={0}
+              aria-label={isMarker ? verseLabel : undefined}
               style={{ display: "inline" }}
             >
               {wordStr}
@@ -304,6 +316,7 @@ function AyahTextRendererComponent({
       surahNum={surahNum}
       ayahNumber={ayahNumber}
       karaoke={isPlaying ? { isFirstAyah, calibration } : null}
+      signVariant={getFontSignVariant(normalizeFontId(fontFamily, riwaya))}
     />
   );
 }

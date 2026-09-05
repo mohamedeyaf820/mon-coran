@@ -1303,3 +1303,56 @@ html.dark .app-root > .mp-header {
     font-size: 0.62rem;
   }
 }
+
+/* Very small phones: the quick menu must fit under the header with the
+   reader tools (≤ 300px tall at 319px wide). The menu is a portal outside
+   .app-root, and the touch-target rules are !important: the repeated class
+   gives these declarations the last word. */
+@media (max-width: 360px) {
+  html body .mp-header-menu.mp-header-menu.mp-header-menu {
+    padding: 0.3rem !important;
+  }
+
+  html body .mp-header-menu.mp-header-menu.mp-header-menu .mp-header-menu__header {
+    min-height: 0 !important;
+    padding: 0.05rem 0.2rem 0.25rem !important;
+    margin-bottom: 0.2rem !important;
+  }
+
+  html body .mp-header-menu.mp-header-menu.mp-header-menu .mp-header-menu__item {
+    min-height: 2rem !important;
+    padding: 0.2rem 0.5rem !important;
+    gap: 0.4rem !important;
+  }
+
+  html body .mp-header-menu.mp-header-menu.mp-header-menu .mp-header-menu__item-icon {
+    width: 1.4rem !important;
+    height: 1.4rem !important;
+    min-width: 1.4rem !important;
+  }
+
+  html body .mp-header-menu.mp-header-menu.mp-header-menu .mp-header-menu__item-description,
+  html body .mp-header-menu.mp-header-menu.mp-header-menu .mp-header-menu__header-subtitle,
+  html body .mp-header-menu.mp-header-menu.mp-header-menu .mp-header-menu__riwaya-description {
+    display: none !important;
+  }
+
+  html body .mp-header-menu.mp-header-menu.mp-header-menu .mp-header-menu__section {
+    gap: 0.15rem !important;
+  }
+
+  html body .mp-header-menu.mp-header-menu.mp-header-menu .mp-header-menu__reader-tools {
+    gap: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+    padding: 0.3rem !important;
+  }
+
+  html body .mp-header-menu.mp-header-menu.mp-header-menu .mp-header-menu__font-controls button {
+    height: 1.7rem !important;
+  }
+
+  html body .mp-header-menu.mp-header-menu.mp-header-menu .mp-header-menu__riwaya {
+    padding: 0.3rem 0.4rem !important;
+    margin-bottom: 0 !important;
+  }
+}

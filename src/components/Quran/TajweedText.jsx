@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { getRulesForRiwaya, parseTajwid, stabilizeTajwidSegments } from '../../data/tajwidRules';
 import { useAppLocale } from '../../context/AppContext';
-import { getReadableWaqfGlyph } from '../../utils/quranUtils';
+import { applyFontSigns, getReadableWaqfGlyph } from '../../utils/quranUtils';
 import { playWordAudio, getWordAudioUrl } from '../../utils/wordAudio';
 import {
     applyTajweedHighlights,
@@ -207,13 +207,20 @@ const WAQF_RULES = {
 
 
 
-const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
+function getVerseLabel(lang, ayahNumber) {
+    if (!ayahNumber) return undefined;
+    const word = lang === 'ar' ? '\u0627\u0644\u0622\u064a\u0629' : lang === 'en' ? 'Verse' : 'Verset';
+    return `${word} ${ayahNumber}`;
+}
+
+const WaqfSign = React.memo(function WaqfSign({ char, lang, riwaya }) {
     const rule = WAQF_RULES[char];
     const displayGlyph = getReadableWaqfGlyph(char);
     const codePoint = char.codePointAt(0)?.toString(16).toUpperCase();
+    const className = riwaya === 'warsh' ? 'warsh-waqf-marker waqf-marker' : 'waqf-marker';
     if (!rule) {
         return (
-            <span className="waqf-marker" data-waqf={codePoint} aria-label={char}>
+            <span className={className} data-waqf={codePoint} aria-label={char}>
                 {displayGlyph}
             </span>
         );
@@ -225,7 +232,7 @@ const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
 
     return (
         <span
-            className="waqf-marker cursor-help"
+            className={`${className} cursor-help`}
             data-waqf={codePoint}
             data-tajwid-name={name}
             data-tajwid-desc={desc}
@@ -490,6 +497,7 @@ function TajweedHighlightWords({
     words,
     plainText,
     lang,
+    riwaya,
     surahNum,
     ayahNumber,
     tajweedColors,
@@ -619,7 +627,11 @@ function TajweedHighlightWords({
             onPointerMove={handlePointerMove}
             onPointerLeave={hideEntry}
         >
-            <span aria-hidden="true">
+            {/* The words are the accessible text: no hidden copy, so that
+                screen readers read the verse once and the word buttons are
+                never nested in an aria-hidden subtree. The verse marker is the
+                verse's own button (its parent opens the verse actions). */}
+            <span data-tajwid-words="true">
                 {words.map((word, wordIndex) => {
                     const audioUrl = !word.isMarker && surahNum && ayahNumber
                         ? getWordAudioUrl(surahNum, ayahNumber, wordIndex + 1)
@@ -634,13 +646,14 @@ function TajweedHighlightWords({
                                 onClick={!word.isMarker
                                     ? (event) => handleWordClick(event, wordIndex, audioUrl)
                                     : undefined}
-                                role={!word.isMarker ? "button" : undefined}
-                                tabIndex={!word.isMarker ? 0 : undefined}
+                                role="button"
+                                tabIndex={0}
+                                aria-label={word.isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
                                 style={{ display: "inline" }}
                             >
                                 {word.parts.map((part, partIndex) =>
                                     part.type === 'waqf'
-                                        ? <WaqfSign key={partIndex} char={part.char} lang={lang} />
+                                        ? <WaqfSign key={partIndex} char={part.char} lang={lang} riwaya={riwaya} />
                                         : <React.Fragment key={partIndex}>{part.text}</React.Fragment>
                                 )}
                             </span>
@@ -649,7 +662,6 @@ function TajweedHighlightWords({
                     );
                 })}
             </span>
-            <span className="sr-only">{plainText}</span>
             {karaoke ? (
                 <TajweedKaraoke rootRef={rootRef} words={words} plainText={plainText} karaoke={karaoke} />
             ) : null}
@@ -768,6 +780,7 @@ function groupSegmentsIntoWords(segments) {
 function TajweedSegmentWords({
     segments,
     lang,
+    riwaya,
     surahNum,
     ayahNumber,
     tajweedColors,
@@ -779,7 +792,7 @@ function TajweedSegmentWords({
         if (WAQF_SPLIT_RE.test(seg.text)) {
             return seg.text.split(WAQF_SPLIT_RE).map((part, index) =>
                 WAQF_SPLIT_RE.test(part)
-                    ? <WaqfSign key={`${key}-${index}`} char={part} lang={lang} />
+                    ? <WaqfSign key={`${key}-${index}`} char={part} lang={lang} riwaya={riwaya} />
                     : seg.ruleId && part
                         ? <TajweedRuleSegment
                             key={`${key}-${index}`}
@@ -835,8 +848,9 @@ function TajweedSegmentWords({
                             <span
                                 className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
                                 onClick={!isMarker ? handleClick : undefined}
-                                role={!isMarker ? "button" : undefined}
-                                tabIndex={!isMarker ? 0 : undefined}
+                                role="button"
+                                tabIndex={0}
+                                aria-label={isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
                                 style={{ display: "inline" }}
                             >
                                 {wordSegments.map((seg, sIdx) =>
@@ -867,18 +881,24 @@ const TajweedText = React.memo(function TajweedText({
     surahNum,
     ayahNumber,
     karaoke = null,  // { isFirstAyah, calibration } while the ayah is recited
+    signVariant = null, // reading face family, see getFontSignVariant()
 }) {
     const { lang } = useAppLocale();
     const segments = useMemo(() => {
         if (!enabled || !text) return null;
         try {
-            const htmlSegments = parseQuranComTajweedHtml(text);
-            if (htmlSegments) return htmlSegments;
-            return parseTajwid(text, riwaya);
+            const parsed = parseQuranComTajweedHtml(text) || parseTajwid(text, riwaya);
+            if (!parsed || !signVariant) return parsed;
+            // The Tajweed text is canonical Uthmani; the QPC faces draw their
+            // own forms of the ishmam and silent-letter signs.
+            return parsed.map((segment) => ({
+                ...segment,
+                text: applyFontSigns(segment.text, signVariant),
+            }));
         } catch {
             return null;
         }
-    }, [text, riwaya, enabled]);
+    }, [text, riwaya, enabled, signVariant]);
     const ruleMetadata = useMemo(
         () => new Map(getRulesForRiwaya(riwaya).map((rule) => [rule.id, rule])),
         [riwaya],
@@ -900,7 +920,7 @@ const TajweedText = React.memo(function TajweedText({
                 <span>
                     {parts.map((p, j) => 
                         WAQF_SPLIT_RE.test(p) 
-                            ? <WaqfSign key={j} char={p} lang={lang} />
+                            ? <WaqfSign key={j} char={p} lang={lang} riwaya={riwaya} />
                             : p
                     )}
                 </span>
@@ -915,6 +935,7 @@ const TajweedText = React.memo(function TajweedText({
                 words={highlightWords}
                 plainText={segments.map((segment) => segment.text).join('')}
                 lang={lang}
+                riwaya={riwaya}
                 surahNum={surahNum}
                 ayahNumber={ayahNumber}
                 tajweedColors={tajweedColors}
@@ -928,6 +949,7 @@ const TajweedText = React.memo(function TajweedText({
         <TajweedSegmentWords
             segments={segments}
             lang={lang}
+            riwaya={riwaya}
             surahNum={surahNum}
             ayahNumber={ayahNumber}
             tajweedColors={tajweedColors}

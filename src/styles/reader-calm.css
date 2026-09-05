@@ -84,6 +84,14 @@
   box-shadow: none !important;
 }
 
+/* While the recitation loads the button waits without dimming its label
+   below 4.5:1: the tint is desaturated instead. */
+#root .app-root[data-view="reading"] .srh-play-btn:disabled {
+  opacity: 1 !important;
+  filter: saturate(0.55);
+  cursor: wait;
+}
+
 #root .app-root[data-view="reading"] .srh-play-btn:hover,
 #root .app-root[data-view="reading"] .srh-play-btn:focus-visible {
   background: color-mix(in srgb, var(--primary) 90%, #000 10%) !important;

@@ -18,6 +18,9 @@ export const CSS_SAFELIST = {
     // Tajweed rule classes of the span fallback (browsers without the
     // Custom Highlight API) are composed from the rule id.
     /^tajwid-/,
+    // Search dialog parts are composed in the JSX; the purge dropped the
+    // voice button from a `:is()` list.
+    /^search-pro__/,
     /^verse-/,
     /^warsh-/,
     /^data-/,

@@ -1624,9 +1624,12 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
 /* Final responsive contract for persistent reader overlays. */
 @media (max-width: 599px) {
-  html body .app-root .audio-player-simple.mp-audio-player--dock,
-  html body .app-root .audio-player-simple.mp-audio-player--mobile,
-  html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--dock {
+  html body .app-root:not(.immersive-mode) .audio-player-simple.mp-audio-player--dock,
+  html body .app-root:not(.immersive-mode) .audio-player-simple.mp-audio-player--mobile,
+  html body .app-root:not(.immersive-mode) .audio-player-simple.simple-player--compact.mp-audio-player--dock,
+  html body .app-root.immersive-keep-player .audio-player-simple.mp-audio-player--dock,
+  html body .app-root.immersive-keep-player .audio-player-simple.mp-audio-player--mobile,
+  html body .app-root.immersive-keep-player .audio-player-simple.simple-player--compact.mp-audio-player--dock {
     position: fixed !important;
     bottom: max(0.55rem, env(safe-area-inset-bottom, 8px)) !important;
     left: 0 !important;
