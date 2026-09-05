@@ -28,9 +28,12 @@ async function expectCanonicalWaqfMark(page, riwaya) {
   if (await verseWithWaqf.count()) {
     await verseWithWaqf.scrollIntoViewIfNeeded().catch(() => {});
   }
-  const marker = page.locator(".waqf-marker:visible").first();
+  // A waqf sign is a combining mark set over the previous letter: with some
+  // faces (IndoPak Nastaleeq) its box has no width, so it is checked as
+  // attached content rather than as a visible box.
+  const marker = page.locator(".waqf-marker").first();
   try {
-    await expect(marker).toBeVisible({ timeout: 15_000 });
+    await expect(marker).toBeAttached({ timeout: 15_000 });
   } catch (error) {
     // Keep the verse markup with the failure: the runner's DOM can differ.
     const report = await page
