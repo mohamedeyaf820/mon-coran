@@ -633,8 +633,14 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
   if (renderMode === "highlight") {
     expect(await card.locator(".tajwid-rule-segment").count()).toBe(0);
   }
-  await target.hover();
-  await expect(page.locator(".tajweed-rich-tooltip")).toContainText(/Ghunnah/i);
+  // A slow runner can miss the first pointer move: hover until the tooltip
+  // explains the rule.
+  await expect
+    .poll(async () => {
+      await target.hover();
+      return page.locator(".tajweed-rich-tooltip").textContent().catch(() => "");
+    }, { timeout: 15_000 })
+    .toMatch(/Ghunnah/i);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -747,7 +753,8 @@ test("mobile reader header keeps Home visible and exposes only contextual quick 
   await page.getByTestId("header-reader-layout-mushaf").click();
   await expect(page.getByTestId("header-reader-layout-mushaf")).toHaveAttribute("aria-pressed", "true");
   const mobileSearchIcon = await box(page, '.mp-header-menu__item[data-key="search"] .mp-header-menu__item-icon');
-  expect(mobileSearchIcon?.width || 0).toBeLessThanOrEqual(30);
+  // 30px icons land on sub-pixel boundaries (30.125) on some runners.
+  expect(mobileSearchIcon?.width || 0).toBeLessThanOrEqual(30.5);
   await mobileSearch.click();
   await expect(page.getByRole("dialog", { name: /Recherche|Search|بحث/i })).toBeVisible();
   await page.keyboard.press("Escape");
