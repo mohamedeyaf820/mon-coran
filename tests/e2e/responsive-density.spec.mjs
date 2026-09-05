@@ -55,8 +55,10 @@ async function openReader(page, viewport, overrides = {}) {
   await expect(page.locator(".mp-header").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".quran-display--platform").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible({ timeout: 30_000 });
-  // The polish stylesheet lands right after first paint; measure once it has.
+  // The polish stylesheet lands right after first paint; measure once it has
+  // applied and the short control transitions it triggers have settled.
   await expect(page.locator('html[data-deferred-styles="ready"]')).toBeAttached({ timeout: 30_000 });
+  await page.waitForTimeout(350);
   if (viewport.width <= 1024) {
     const maxHeaderHeight = viewport.width <= 640 ? 56 : 60;
     await expect

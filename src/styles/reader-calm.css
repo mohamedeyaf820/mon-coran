@@ -136,7 +136,8 @@ html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list
   border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
-  padding-block: clamp(0.85rem, 1.6vw, 1.25rem) clamp(1rem, 1.8vw, 1.5rem) !important;
+  /* The row breathes with the text size the reader computes for the device. */
+  padding-block: var(--qd-list-card-padding-block, clamp(0.85rem, 1.6vw, 1.25rem)) !important;
 }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card:last-child {

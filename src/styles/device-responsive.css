@@ -1216,7 +1216,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   width: 100% !important;
   max-width: none !important;
   margin: 0 !important;
-  padding: clamp(0.72rem, 1.45vw, 1rem) clamp(0.78rem, 2vw, 1.35rem) !important;
+  padding: var(--qd-list-card-padding-block, clamp(0.72rem, 1.45vw, 1rem)) clamp(0.78rem, 2vw, 1.35rem) !important;
   border: 0 !important;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 82%, transparent) !important;
   border-radius: 0 !important;
@@ -1335,7 +1335,9 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
   html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card .qc-ayah-text-ar {
-    font-size: clamp(25px, 8.4vw, 34px) !important;
+    /* The reader's device-aware size (--qd-font-size) is honoured up to the
+       phone ceiling; the viewport scale is the fallback without it. */
+    font-size: min(var(--qd-font-size, 8.4vw), 34px) !important;
     line-height: 1.86 !important;
   }
 
@@ -1696,8 +1698,9 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
   html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card.qc-list-card {
-    padding: 0.68rem max(0.7rem, env(safe-area-inset-right)) 0.78rem
-      max(0.7rem, env(safe-area-inset-left)) !important;
+    /* Block padding follows the reader's device-aware text size. */
+    padding: var(--qd-list-card-padding-block, 0.68rem) max(0.7rem, env(safe-area-inset-right))
+      var(--qd-list-card-padding-block, 0.78rem) max(0.7rem, env(safe-area-inset-left)) !important;
   }
 
   html body #root .app-root[data-view="reading"] .quran-display--platform
@@ -1747,7 +1750,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card .qc-ayah-text-ar {
     padding-block: 0.18rem !important;
-    font-size: clamp(27px, 8.6vw, 32px) !important;
+    font-size: min(var(--qd-font-size, 8.6vw), 32px) !important;
     line-height: var(--quran-line-height, 1.76) !important;
     word-spacing: 0 !important;
     letter-spacing: 0 !important;
@@ -1788,7 +1791,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
   html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card .qc-ayah-text-ar {
-    font-size: clamp(25px, 8.55vw, 29px) !important;
+    font-size: min(var(--qd-font-size, 8.55vw), 29px) !important;
     line-height: var(--quran-line-height, 1.76) !important;
   }
 }
