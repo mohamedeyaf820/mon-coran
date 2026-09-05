@@ -1023,7 +1023,8 @@ html.dark .app-root > .mp-header {
 
 @media (max-width: 599px) {
   .mp-header-menu {
-    width: min(20.5rem, calc(100vw - 0.75rem)) !important;
+    /* 20rem keeps the palette under 300px with Linux font metrics. */
+    width: min(20rem, calc(100vw - 0.75rem)) !important;
     max-height: calc(100dvh - var(--header-h, 3.5rem) - 0.5rem) !important;
     padding: 0.65rem !important;
     border-radius: 1.25rem !important;

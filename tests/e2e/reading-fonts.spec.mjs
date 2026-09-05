@@ -33,10 +33,35 @@ async function expectCanonicalWaqfMark(page, riwaya) {
     await expect(marker).toBeVisible({ timeout: 15_000 });
   } catch (error) {
     // Keep the verse markup with the failure: the runner's DOM can differ.
-    const markup = await verseWithWaqf
-      .evaluate((node) => node.outerHTML.slice(0, 4000))
-      .catch(() => "verse 2 not mounted");
-    await test.info().attach("verse-2-markup", { body: markup, contentType: "text/html" });
+    const report = await page
+      .evaluate(() => {
+        const markers = [...document.querySelectorAll(".waqf-marker")];
+        const verse = document.querySelector('#ayah-2, [data-ayah-number="2"]');
+        const text = verse?.querySelector(".qc-ayah-text-ar, .verse-text");
+        return JSON.stringify(
+          {
+            markerCount: markers.length,
+            markers: markers.slice(0, 3).map((node) => {
+              const rect = node.getBoundingClientRect();
+              const style = getComputedStyle(node);
+              return {
+                html: node.outerHTML.slice(0, 300),
+                rect: [rect.x, rect.y, rect.width, rect.height].map(Math.round),
+                display: style.display,
+                visibility: style.visibility,
+                opacity: style.opacity,
+                fontFamily: style.fontFamily,
+              };
+            }),
+            verseText: text?.textContent?.slice(0, 200),
+            verseHtml: text?.innerHTML?.slice(0, 6000),
+          },
+          null,
+          1,
+        );
+      })
+      .catch((reason) => `diagnostics failed: ${reason}`);
+    await test.info().attach("verse-2-diagnostics", { body: report, contentType: "text/plain" });
     throw error;
   }
   const metrics = await marker.evaluate((element) => {
