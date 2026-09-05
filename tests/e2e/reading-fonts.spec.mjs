@@ -29,7 +29,16 @@ async function expectCanonicalWaqfMark(page, riwaya) {
     await verseWithWaqf.scrollIntoViewIfNeeded().catch(() => {});
   }
   const marker = page.locator(".waqf-marker:visible").first();
-  await expect(marker).toBeVisible({ timeout: 15_000 });
+  try {
+    await expect(marker).toBeVisible({ timeout: 15_000 });
+  } catch (error) {
+    // Keep the verse markup with the failure: the runner's DOM can differ.
+    const markup = await verseWithWaqf
+      .evaluate((node) => node.outerHTML.slice(0, 4000))
+      .catch(() => "verse 2 not mounted");
+    await test.info().attach("verse-2-markup", { body: markup, contentType: "text/html" });
+    throw error;
+  }
   const metrics = await marker.evaluate((element) => {
     const style = getComputedStyle(element);
     const ayah = element.closest(".qc-ayah-text-ar, .verse-text");
