@@ -78,6 +78,23 @@ async function revealReaderTools(page) {
   await expect(trigger).toHaveAttribute("aria-expanded", "true");
 }
 
+async function switchToList(page) {
+  // The layout radio can be clicked while the tools panel is still settling
+  // on a slow runner: confirm the list cards are there, retry once if not.
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await revealReaderTools(page);
+    await page.getByRole("radio", { name: "Liste", exact: true }).click();
+    const listed = await page
+      .locator(".qc-list-card")
+      .first()
+      .waitFor({ state: "visible", timeout: 4000 })
+      .then(() => true)
+      .catch(() => false);
+    if (listed) return;
+  }
+  await expect(page.locator(".qc-list-card").first()).toBeVisible();
+}
+
 async function switchToMushaf(page) {
   await revealReaderTools(page);
   await page.getByRole("radio", { name: "Mushaf", exact: true }).click();
@@ -118,7 +135,7 @@ test("Hafs font selection applies to list and Mushaf layouts", async ({ page }) 
     timeout: 30_000,
   });
   await revealReaderTools(page);
-  await page.getByRole("radio", { name: "Liste", exact: true }).click();
+  await switchToList(page);
   await expectFontFamily(page.locator(".qc-ayah-text-ar").first(), "Amiri Quran");
 });
 
@@ -192,7 +209,7 @@ for (const [riwaya, fonts] of Object.entries(FONT_MATRIX)) {
     ).toBeVisible({ timeout: 30_000 });
 
     await revealReaderTools(page);
-    await page.getByRole("radio", { name: "Liste", exact: true }).click();
+    await switchToList(page);
     for (const [fontId, family] of fonts) {
       const select = await openTypographyPanel(page);
       await select.selectOption(fontId);

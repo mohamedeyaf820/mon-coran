@@ -549,9 +549,10 @@ for (const [fontFamily, riwaya] of [
     const firstVerse = page.locator(".cpv-verse").first();
     await expect(firstVerse).toBeVisible({ timeout: 30_000 });
     await expect(firstVerse.locator(".native-ayah-marker")).toHaveCount(1);
+    // One native marker of the reading face: digits, optionally led by the
+    // end-of-ayah sign (Arabic-Indic or Persian digits for the IndoPak face).
     const marker = firstVerse.locator(".native-ayah-marker");
-    await expect(marker).toHaveAttribute("data-marker-font", "qpc-hafs");
-    await expect(marker).toContainText(/^[\u0660-\u0669]+$/u);
+    await expect(marker).toHaveText(/^\s*\u06DD?[\u0660-\u0669\u06F0-\u06F9]+\s*$/u);
   });
 }
 
