@@ -33,6 +33,57 @@ import {
 import { AlertCircle } from "lucide-react";
 
 /* Main component */
+
+/**
+ * Elapsed time and total over the whole playlist (the surah), like a single
+ * recording, when the audio source provides per-ayah durations. Falls back
+ * to the current file otherwise (single ayah, word audio, other sources).
+ */
+function getSurahTimeline(currentTime, fileDuration) {
+  const index = audioService.playlistIndex;
+  const durations = audioService.getPlaylistDurations();
+  const known = durations.filter((value) => value !== null);
+  if (
+    audioService._oneShotMode ||
+    index < 0 ||
+    durations.length < 2 ||
+    known.length < Math.ceil(durations.length / 2)
+  ) {
+    return { elapsed: currentTime, total: fileDuration || 0, surah: false };
+  }
+  const average = known.reduce((sum, value) => sum + value, 0) / known.length;
+  const filled = durations.map((value, i) =>
+    value !== null ? value : i === index && fileDuration ? fileDuration : average,
+  );
+  const before = filled.slice(0, index).reduce((sum, value) => sum + value, 0);
+  const total = filled.reduce((sum, value) => sum + value, 0);
+  return { elapsed: before + Math.min(currentTime, filled[index]), total, surah: true, filled };
+}
+
+/** Seek on the surah timeline: jumps to the right ayah, then inside it. */
+function seekSurahProgress(pct) {
+  const clamped = Math.max(0, Math.min(1, pct));
+  const { surah, filled, total } = getSurahTimeline(
+    audioService.currentTime || 0,
+    audioService.duration || 0,
+  );
+  if (!surah) {
+    seekSurahProgress(clamped);
+    return;
+  }
+  const target = clamped * total;
+  let cumulative = 0;
+  for (let i = 0; i < filled.length; i += 1) {
+    if (target < cumulative + filled[i] || i === filled.length - 1) {
+      const offset = Math.max(0, target - cumulative);
+      if (i === audioService.playlistIndex) audioService.seek(offset);
+      else audioService.playIndexAt(i, offset);
+      return;
+    }
+    cumulative += filled[i];
+  }
+}
+
 export default function AudioPlayer() {
   const { dispatch, set } = useAppActions();
   const state = useAppSelector(
@@ -86,6 +137,7 @@ export default function AudioPlayer() {
   });
   const [audioError, setAudioError] = useState(null);
   const [networkState, setNetworkState] = useState("idle");
+  const networkStateTimerRef = useRef(null);
   const [optionsModalOpen, setOptionsModalOpen] = useState(false);
   const [reciterSwitchingId, setReciterSwitchingId] = useState(null);
   const [eqPreset, setEqPreset] = useState("flat");
@@ -327,9 +379,10 @@ export default function AudioPlayer() {
       set({ currentPlayingAyah: nextPlayingAyah });
     };
     audioService.onTimeUpdate = (ct, dur) => {
-      setCurTime(ct);
-      setDuration(dur);
-      setProgress(dur ? ct / dur : 0);
+      const { elapsed, total } = getSurahTimeline(ct, dur);
+      setCurTime(elapsed);
+      setDuration(total);
+      setProgress(total ? elapsed / total : 0);
     };
     audioService.onError = async (error) => {
       try {
@@ -379,7 +432,16 @@ export default function AudioPlayer() {
       }
     };
     audioService.onNetworkState = (st) => {
-      setNetworkState(st || "idle");
+      const next = st || "idle";
+      clearTimeout(networkStateTimerRef.current);
+      if (next === "loading" || next === "buffering") {
+        // Between two ayahs the next file usually arrives within a few
+        // frames: a spinner for that would only blink. Show it when the
+        // wait actually lasts.
+        networkStateTimerRef.current = setTimeout(() => setNetworkState(next), 450);
+        return;
+      }
+      setNetworkState(next);
     };
     return () => {
       if (audioErrorTimerRef.current) {
@@ -393,6 +455,7 @@ export default function AudioPlayer() {
       audioService.onTimeUpdate = null;
       audioService.onError = null;
       audioService.onNetworkState = null;
+      clearTimeout(networkStateTimerRef.current);
     };
   }, [
     dispatch,
@@ -492,7 +555,7 @@ export default function AudioPlayer() {
     const rect = progressRef.current.getBoundingClientRect();
     if (rect.width <= 0) return;
     const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-    audioService.seekPercent(pct);
+    seekSurahProgress(pct);
   }, []);
 
   const handleSeek = useCallback(
@@ -517,7 +580,7 @@ export default function AudioPlayer() {
         return;
       }
       event.preventDefault();
-      audioService.seekPercent(Math.max(0, Math.min(1, nextProgress)));
+      seekSurahProgress(Math.max(0, Math.min(1, nextProgress)));
     },
     [progress],
   );

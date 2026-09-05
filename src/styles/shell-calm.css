@@ -1,0 +1,239 @@
+/* ==========================================================================
+   Shell — calm chrome
+
+   Loaded last in the core cascade. Elevation comes from hairlines and a
+   single light shadow on the one floating element (the audio player); the
+   header and its controls are flat; the reading panel is a surface, not a
+   card. Paddings tighten so the content, not the chrome, sets the rhythm.
+   Colours stay on the existing tokens.
+   ========================================================================== */
+
+/* --- Header ---------------------------------------------------------------- */
+
+html body .app-root .mp-header__bar {
+  background: var(--bg-card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: 1px solid var(--border);
+  box-shadow: none;
+}
+
+html body .app-root .mp-header__bar :is(.mp-header__icon-btn, .mp-header__more, .mp-header__search, .mp-header__action, .mp-header__nav-arrow, .mp-header__brand) {
+  border-color: transparent;
+  border-radius: var(--ux-radius-control, 0.75rem);
+  background: transparent;
+  box-shadow: none;
+}
+
+html body .app-root .mp-header__bar :is(.mp-header__icon-btn, .mp-header__more, .mp-header__search, .mp-header__action, .mp-header__nav-arrow, .mp-header__brand):hover,
+html body .app-root .mp-header__bar :is(.mp-header__icon-btn, .mp-header__more, .mp-header__search, .mp-header__action, .mp-header__nav-arrow, .mp-header__brand):focus-visible {
+  background: var(--reader-card-hover, rgba(var(--primary-rgb), 0.07));
+}
+
+html body .app-root .mp-header__bar .mp-header__icon-btn.is-active {
+  background: var(--reader-active, rgba(var(--primary-rgb), 0.12));
+  color: var(--primary);
+}
+
+/* The riwaya switch and the surah title are controls: a quiet filled field. */
+html body .app-root .mp-header__bar :is(.mp-header__riwaya-toggle, .mp-header__title-btn) {
+  border-color: transparent;
+  border-radius: var(--ux-radius-control, 0.75rem);
+  background: var(--bg-secondary);
+  box-shadow: none;
+}
+
+html body .app-root .mp-header__bar :is(.mp-header__riwaya-toggle, .mp-header__title-btn):hover,
+html body .app-root .mp-header__bar :is(.mp-header__riwaya-toggle, .mp-header__title-btn):focus-visible {
+  background: var(--reader-card-hover, rgba(var(--primary-rgb), 0.09));
+}
+
+/* --- Reading panel --------------------------------------------------------- */
+
+html body .app-root .quran-display.quran-display--platform {
+  border-color: var(--border) !important;
+  box-shadow: none !important;
+  padding-top: clamp(0.5rem, 0.8vw, 0.75rem);
+}
+
+html body .app-root .app-view-shell {
+  padding-top: clamp(0.35rem, 0.6vw, 0.6rem);
+}
+
+/* --- Audio player: the one floating element ---------------------------- */
+
+html body .app-root .mp-audio-player.audio-player-simple {
+  border: 1px solid var(--border) !important;
+  border-radius: 1rem !important;
+  background: var(--bg-card) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* --- Home cards ------------------------------------------------------------ */
+
+html body .app-root .hp-card {
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+html body .app-root .hp-card:hover {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* --- Reading panel takes the page: no frame, no rounded inset ------------ */
+
+html body #root .app-root .quran-display.quran-display--platform,
+html body #root .app-root[data-view="reading"] .quran-display.quran-display--platform {
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding-inline: clamp(0.75rem, 2vw, 1.5rem) !important;
+}
+
+html body #root .app-root .app-view-shell,
+html body #root .app-root[data-view="reading"] .app-view-shell,
+html body #root .app-root .app-main-shell,
+html body #root .app-root .app-layout-shell {
+  padding-inline: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html body #root .app-root .quran-display--platform .rd-wrapper,
+html body #root .app-root .quran-display--platform .quran-mode-pane,
+html body #root .app-root .app-view-reading {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* The reader toolbar uses the whole reading width: one row on desktop. */
+html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .reader-control-deck,
+html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .qc-surah-header-wrap {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* --- Audio player: a full-width bar at the bottom, like quran.com -------- */
+/* Layout only: opacity, transform, transition and animation stay with the
+   player and the immersive mode, which slides it away while reading. */
+
+html body #root .app-root .mp-audio-player.audio-player-simple[data-player-state="compact"],
+html body #root .app-root .mp-audio-player.mp-audio-player--desktop[data-player-state="compact"],
+html body #root .app-root .mp-audio-player.mp-audio-player--desktop.is-minimized[data-player-state="compact"] {
+  inset: auto 0 0 0 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-top: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+  background: var(--bg-card) !important;
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.04) !important;
+  transform-origin: bottom center;
+}
+
+html body #root .app-root .mp-audio-player .simple-player__compact-row,
+html body #root .app-root .mp-audio-player .simple-player__timeline {
+  width: min(100%, 72rem);
+  margin-inline: auto;
+}
+
+/* --- Home cards ------------------------------------------------------------ */
+
+html body .app-root .hp-card {
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+html body .app-root .hp-card:hover {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* --- Reading panel takes the page: no frame, no rounded inset ------------ */
+
+html body #root .app-root .quran-display.quran-display--platform,
+html body #root .app-root[data-view="reading"] .quran-display.quran-display--platform {
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding-inline: clamp(0.75rem, 2vw, 1.5rem) !important;
+}
+
+html body #root .app-root .app-view-shell,
+html body #root .app-root[data-view="reading"] .app-view-shell,
+html body #root .app-root .app-main-shell,
+html body #root .app-root .app-layout-shell {
+  padding-inline: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html body #root .app-root .quran-display--platform .rd-wrapper,
+html body #root .app-root .quran-display--platform .quran-mode-pane,
+html body #root .app-root .app-view-reading {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* The reader toolbar uses the whole reading width: one row on desktop. */
+html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .reader-control-deck,
+html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .qc-surah-header-wrap {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* --- Audio player: a full-width bar at the bottom, like quran.com -------- */
+
+html body #root .app-root:not(.immersive-mode) .mp-audio-player.audio-player-simple,
+html body #root .app-root:not(.immersive-mode) .mp-audio-player.mp-audio-player--desktop,
+html body #root .app-root:not(.immersive-mode) .mp-audio-player.mp-audio-player--desktop.is-minimized {
+  position: fixed !important;
+  inset: auto 0 0 0 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  transform: none !important;
+  border: 0 !important;
+  border-top: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+  background: var(--bg-card) !important;
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.04) !important;
+}
+
+html body #root .app-root .mp-audio-player .simple-player__compact-row,
+html body #root .app-root .mp-audio-player .simple-player__timeline {
+  width: min(100%, 72rem);
+  margin-inline: auto;
+}
+
+/* The reading view is a plain surface: no decorative rounded glow behind it,
+   and the panel spans the reading area. */
+html body #root .app-root .app-view-shell.app-view-reading::before,
+html body #root .app-root .app-view-shell.app-view-reading::after {
+  display: none !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display.quran-display--platform {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* While a recitation plays, the player stays reachable: the immersive mode
+   only takes the header away. Hiding the transport mid-recitation reads as
+   the player opening and closing on its own. */
+html body #root .app-root.immersive-mode.immersive-keep-player .mp-audio-player.mp-audio-player {
+  transform: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Replacing the reading content must not drag the viewport along with the
+   navigation bar that was in view (browser scroll anchoring). Page streaming
+   keeps its own explicit anchor. */
+html body #root .app-root .app-main-shell {
+  overflow-anchor: none;
+}

@@ -14,6 +14,9 @@ export default function TajweedTooltip() {
   const showTimerRef = useRef(null);
   const hideTimerRef = useRef(null);
   const activeElementRef = useRef(null);
+  // Tajweed rules coloured with the Highlight API have no element of their
+  // own: TajweedText describes them through `tajwid:*` document events.
+  const activeVirtualRef = useRef(null);
 
   useEffect(() => {
     const clearTimers = () => {
@@ -27,9 +30,8 @@ export default function TajweedTooltip() {
       }
     };
 
-    const updatePosition = (element, data) => {
-      if (!element) return;
-      const rect = element.getBoundingClientRect();
+    const placeTooltip = (rect, data) => {
+      if (!rect) return;
       const tooltipWidth = Math.min(300, window.innerWidth - 32);
       const tooltipHeight = 85;
 
@@ -55,6 +57,40 @@ export default function TajweedTooltip() {
       });
     };
 
+    const updatePosition = (element, data) => {
+      if (!element) return;
+      placeTooltip(element.getBoundingClientRect(), data);
+    };
+
+    const handleVirtualHover = (event) => {
+      const detail = event.detail;
+      if (!detail?.name) return;
+      clearTimers();
+      activeElementRef.current = null;
+      activeVirtualRef.current = detail;
+      showTimerRef.current = setTimeout(() => {
+        placeTooltip(detail.getRect?.(), detail);
+      }, 40);
+    };
+
+    const handleVirtualShow = (event) => {
+      const detail = event.detail;
+      if (!detail?.name) return;
+      clearTimers();
+      activeElementRef.current = null;
+      activeVirtualRef.current = detail;
+      placeTooltip(detail.getRect?.(), detail);
+    };
+
+    const handleVirtualLeave = () => {
+      if (!activeVirtualRef.current) return;
+      activeVirtualRef.current = null;
+      clearTimers();
+      hideTimerRef.current = setTimeout(() => {
+        setTooltipState(null);
+      }, 100);
+    };
+
     const handlePointerOver = (event) => {
       // Ignore simulated hover from fast scrolling on touch devices
       if (event.pointerType === "touch") return;
@@ -70,6 +106,7 @@ export default function TajweedTooltip() {
 
       clearTimers();
       activeElementRef.current = target;
+      activeVirtualRef.current = null;
 
       showTimerRef.current = setTimeout(() => {
         const color =
@@ -97,6 +134,8 @@ export default function TajweedTooltip() {
     };
 
     const handleClick = (event) => {
+      // Highlight-rendered words decide themselves (see TajweedText).
+      if (event.target.closest?.("[data-tajwid-word]")) return;
       const target = event.target.closest(
         ".tajwid-rule-segment, .waqf-marker, [data-tajwid-name]",
       );
@@ -117,11 +156,17 @@ export default function TajweedTooltip() {
         "#27ae60";
 
       activeElementRef.current = target;
+      activeVirtualRef.current = null;
       target.classList.add("is-tajwid-hovered");
       updatePosition(target, { name, desc, color });
     };
 
     const handleScroll = () => {
+      if (activeVirtualRef.current) {
+        const detail = activeVirtualRef.current;
+        placeTooltip(detail.getRect?.(), detail);
+        return;
+      }
       if (activeElementRef.current) {
         const target = activeElementRef.current;
         const name = target.getAttribute("data-tajwid-name");
@@ -137,6 +182,9 @@ export default function TajweedTooltip() {
     document.addEventListener("pointerover", handlePointerOver, { passive: true });
     document.addEventListener("pointerout", handlePointerOut, { passive: true });
     document.addEventListener("click", handleClick, { passive: true });
+    document.addEventListener("tajwid:hover", handleVirtualHover);
+    document.addEventListener("tajwid:show", handleVirtualShow);
+    document.addEventListener("tajwid:leave", handleVirtualLeave);
     window.addEventListener("scroll", handleScroll, { passive: true, capture: true });
 
     return () => {
@@ -144,6 +192,9 @@ export default function TajweedTooltip() {
       document.removeEventListener("pointerover", handlePointerOver);
       document.removeEventListener("pointerout", handlePointerOut);
       document.removeEventListener("click", handleClick);
+      document.removeEventListener("tajwid:hover", handleVirtualHover);
+      document.removeEventListener("tajwid:show", handleVirtualShow);
+      document.removeEventListener("tajwid:leave", handleVirtualLeave);
       window.removeEventListener("scroll", handleScroll, { capture: true });
     };
   }, []);

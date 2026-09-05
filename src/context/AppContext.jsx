@@ -309,6 +309,9 @@ export function appReducer(state, action) {
       return {
         ...state,
         currentPage: clampPage(action.payload?.page),
+        // "scroll" when continuous reading moved the reader: the URL is
+        // replaced instead of pushed so Back does not walk every page.
+        pageNavigationSource: action.payload?.source === "scroll" ? "scroll" : "navigate",
         displayMode: "page",
         showHome: false,
         showDuas: false,

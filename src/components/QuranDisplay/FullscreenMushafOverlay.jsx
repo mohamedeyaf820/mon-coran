@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Minus,
   Plus,
-  Star,
   X,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
@@ -19,6 +18,7 @@ import { toAr } from "../../data/surahs";
 import { getJuzForAyah } from "../../data/juz";
 import { t } from "../../i18n";
 import CleanPageView from "../Quran/CleanPageView";
+import QuranMushafPage from "./QuranMushafPage";
 import { preloadQuranDisplayData } from "./useQuranDisplayData";
 
 const MIN_ZOOM = 0.8;
@@ -208,6 +208,14 @@ function FullscreenMushafOverlayComponent({
   const activePageAyahs = pageCache.get(currentPage) || ayahs;
   const activeSurahNum =
     activePageAyahs[0]?.surah?.number || activePageAyahs[0]?.surah || currentSurah;
+  // The exact 15-line Madani layout needs per-word line numbers (Quran.com
+  // page data). Older cached verses fall back to the flowing sheet.
+  const hasLineData =
+    riwaya !== "warsh" &&
+    activePageAyahs.some((ayah) =>
+      (ayah?.words || []).some((word) => Number(word?.lineNumber || word?.lineV2) > 0),
+    );
+  const pageKind = currentPage <= 2 ? "opening" : "standard";
 
   const navBtnStyle = (disabled) => ({
     position: "fixed",
@@ -297,19 +305,8 @@ function FullscreenMushafOverlayComponent({
                 · {t("sidebar.juz", lang)} {currentJuz}
               </span>
             )}
-            <span
-              style={{
-                display: "inline-flex", alignItems: "center", gap: "0.2rem",
-                padding: "0.15rem 0.55rem", borderRadius: "999px",
-                fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                border: isWarsh ? "1px solid rgba(245,158,11,0.4)" : "1px solid rgba(16,185,129,0.4)",
-                background: isWarsh ? "rgba(245,158,11,0.15)" : "rgba(16,185,129,0.12)",
-                color: isWarsh ? "#d97706" : "#059669",
-              }}
-            >
-              {isWarsh ? <Star size={7} fill="currentColor" /> : null}
-              {isWarsh ? "WARSH" : "HAFS"}
+            <span className="mfp-riwaya">
+              · {isWarsh ? "Warsh" : "Hafs"}
             </span>
           </div>
         </div>
@@ -383,26 +380,43 @@ function FullscreenMushafOverlayComponent({
         onTouchEnd={handleTouchEnd}
       >
         <div
+          className={hasLineData ? "mfp-book mfp-book--exact" : "mfp-book mfp-book--flow"}
+          data-page-kind={pageKind}
           style={{
-            transform: scale(),
+            transform: `scale(${zoom})`,
             transformOrigin: "top center",
-            width: "min(100%, 760px)",
-            maxWidth: "760px",
+            // The exact page sizes itself from its type (see mushaf-book.css).
+            width: hasLineData ? undefined : "min(100%, 760px)",
+            maxWidth: hasLineData ? "100%" : "760px",
             transition: "transform 0.15s ease-out",
           }}
         >
-          <CleanPageView
-            ayahs={activePageAyahs}
-            lang={lang}
-            fontSize={state.quranFontSize || 34}
-            showTajwid={state.showTajwid}
-            currentPlayingAyah={currentPlayingAyah}
-            surahNum={activeSurahNum}
-            riwaya={riwaya}
-            onAyahClick={onPlayAyah}
-            onPlayAyah={onPlayAyah}
-            showSurahHeader={true}
-          />
+          {hasLineData ? (
+            <QuranMushafPage
+              activeAyah={null}
+              ayahs={activePageAyahs}
+              currentPage={currentPage}
+              currentPlayingAyah={currentPlayingAyah}
+              fontFamily={state.fontFamily}
+              lang={lang}
+              onToggleActive={() => {}}
+              riwaya={riwaya}
+              showTajwid={state.showTajwid}
+            />
+          ) : (
+            <CleanPageView
+              ayahs={activePageAyahs}
+              lang={lang}
+              fontSize={state.quranFontSize || 34}
+              showTajwid={state.showTajwid}
+              currentPlayingAyah={currentPlayingAyah}
+              surahNum={activeSurahNum}
+              riwaya={riwaya}
+              onAyahClick={onPlayAyah}
+              onPlayAyah={onPlayAyah}
+              showSurahHeader={true}
+            />
+          )}
         </div>
       </main>
 

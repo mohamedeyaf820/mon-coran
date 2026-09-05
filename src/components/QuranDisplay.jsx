@@ -46,6 +46,7 @@ export default function QuranDisplay() {
       currentAyah: current.currentAyah,
       currentJuz: current.currentJuz,
       currentPage: current.currentPage,
+      pageNavigationSource: current.pageNavigationSource,
       currentPlayingAyah: current.currentPlayingAyah,
       currentSurah: current.currentSurah,
       displayMode: current.displayMode,
@@ -200,6 +201,7 @@ export default function QuranDisplay() {
     displayMode,
     getScrollContainer: view.getScrollContainer,
     mushafLayout,
+    pageNavigationSource: state.pageNavigationSource,
   });
   const prepareReadingTarget = useCallback(
     (mode, value) =>

@@ -291,3 +291,49 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
     border-right: 1px solid var(--border);
   }
 }
+
+/* ── Calm list ────────────────────────────────────────────────────────────
+   A navigation list reads as a table of contents: neutral ink for names,
+   muted metadata, one quiet number cell. Colour is kept for the active row
+   and for focus, not for every row. Overrides the deferred hover rules from
+   expert-overhaul.css with the same specificity, loaded later. */
+#sidebar button[type="button"].group > .flex.shrink-0 {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600 !important;
+}
+
+#sidebar button[type="button"].group span.text-primary,
+#sidebar button[type="button"].group span.group-hover\:text-primary {
+  color: var(--text-primary) !important;
+}
+
+#sidebar button[type="button"].group span.text-text-primary {
+  font-weight: 500 !important;
+}
+
+#sidebar button[type="button"].group.bg-primary\/8 {
+  background: var(--reader-card-hover, rgba(var(--primary-rgb), 0.07)) !important;
+}
+
+#sidebar button[type="button"].group.bg-primary\/8 > .flex.shrink-0,
+#sidebar button[type="button"].group.bg-primary\/8 span.text-primary {
+  color: var(--primary) !important;
+  font-weight: 600 !important;
+}
+
+@media (hover: hover) {
+  #sidebar button[type="button"].group:hover .flex.shrink-0 {
+    border-color: transparent !important;
+    background: transparent !important;
+    color: var(--text-primary) !important;
+  }
+}
+
+#sidebar .sidebar-tab-trigger {
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}

@@ -14,10 +14,10 @@ function PageSeparator({ ayah, lang, theme }) {
       {/* Ligne gauche */}
       <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[rgba(var(--primary-rgb),0.2)]" />
 
-      {/* Badge central */}
-      <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border border-[rgba(var(--primary-rgb),0.15)] bg-[var(--bg-secondary)]">
-        <Bookmark size={8} className="text-[var(--primary)]" />
-        <span className="font-[var(--font-ui)] text-[0.72rem] font-semibold text-[var(--text-muted)] tracking-wide uppercase">
+      {/* Running head: a quiet label, not a badge */}
+      <div className="page-separator__label">
+        <Bookmark size={11} className="text-[var(--text-muted)]" aria-hidden="true" />
+        <span>
           {lang === "ar" ? "صفحة" : "Page"}{" "}
           {lang === "ar" ? toAr(ayah.page) : ayah.page}
         </span>
