@@ -1155,7 +1155,7 @@ test("duas page: cards, Arabic text and controls adapt to phone and tablet", asy
   expect(await fontSizePx(page, ".dua-arabic")).toBeGreaterThanOrEqual(24);
 
   await openDuas(page, { width: 1280, height: 900 });
-  const copyIcon = await box(page, '.dua-open-btn-v5[aria-label="Copier l\'invocation"] svg');
+  const copyIcon = await box(page, '.dua-open-btn-v5[aria-label^="Copier l"] svg');
   expect(copyIcon?.width || 0).toBeGreaterThanOrEqual(13);
   expect(copyIcon?.height || 0).toBeGreaterThanOrEqual(13);
 });
@@ -1182,7 +1182,7 @@ test("duas dark theme keeps its devotional palette on a direct load", async ({ p
   expect(surfaces.cardBackground).toBe("rgb(16, 27, 23)");
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 
-  const copyIcon = await box(page, '.dua-open-btn-v5[aria-label="Copier l\'invocation"] svg');
+  const copyIcon = await box(page, '.dua-open-btn-v5[aria-label^="Copier l"] svg');
   expect(copyIcon?.width || 0).toBeGreaterThanOrEqual(13);
   expect(copyIcon?.height || 0).toBeGreaterThanOrEqual(13);
 });

@@ -736,6 +736,8 @@ html[dir="rtl"] #duas-page .dua-card-footer-link svg {
 
 html[data-theme="dark"] #duas-page .duas-hero {
     border-color: rgba(112, 191, 151, 0.18);
+    /* Devotional gold rule on the hero's top edge (kept from main). */
+    border-top-color: rgba(202, 160, 63, 0.28);
     background:
         radial-gradient(circle at 92% 5%, rgba(202, 160, 63, 0.09), transparent 30%),
         linear-gradient(145deg, #111d18, #0d1713 72%) !important;
