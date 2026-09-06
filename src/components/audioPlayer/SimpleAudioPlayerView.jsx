@@ -196,12 +196,6 @@ function CompactPlayer(props) {
             </span>
             <span className="simple-player__compact-reciter">{reciterLabel || "—"}</span>
           </span>
-          <ChevronUp
-            className="simple-player__compact-disclosure"
-            size={14}
-            strokeWidth={2}
-            aria-hidden="true"
-          />
         </button>
         <div className="simple-player__compact-actions">
           <IconButton
@@ -211,6 +205,15 @@ function CompactPlayer(props) {
             pressed={isPlaying}
           >
             {isPlaying ? <Pause size={18} strokeWidth={2.4} /> : <Play size={18} strokeWidth={2.4} className="simple-player__play-glyph" />}
+          </IconButton>
+          <IconButton
+            className="simple-player__expand-btn"
+            label={expandLabel}
+            onClick={onExpand}
+            aria-hidden="true"
+            tabIndex={-1}
+          >
+            <ChevronUp size={18} strokeWidth={2.2} />
           </IconButton>
         </div>
       </div>
@@ -254,7 +257,6 @@ function MobileOpenPlayer(props) {
     regionLabel,
     riwaya,
     speedLabel,
-    surahLabel,
     title,
   } = props;
 
@@ -270,23 +272,17 @@ function MobileOpenPlayer(props) {
         <CoverArt isPlaying={isPlaying} size={40} reciter={reciter} />
         <div className="simple-player__mobile-meta">
           <span className="simple-player__mobile-kicker">
-            <span>{riwaya === "warsh" ? "Warsh" : "Hafs"}</span>
+            {riwaya === "warsh" ? "Warsh" : "Hafs"}
             {props.surahNum ? (
-              <>
-                <span className="simple-player__mobile-kicker-dot" aria-hidden="true">·</span>
-                <span>{surahLabel} {props.surahNum}</span>
-              </>
+              <b className="font-surah-names simple-player__mobile-surah-glyph" dir="ltr" lang="en" aria-hidden="true">
+                {String(props.surahNum).padStart(3, "0")}
+              </b>
+            ) : currentArabicName ? (
+              <b dir="rtl" lang="ar">{currentArabicName}</b>
             ) : null}
           </span>
-          <strong className="simple-player__mobile-title-row">
-            <span>{title}</span>
-            {currentArabicName && (
-              <span className="simple-player__mobile-arabic" dir="rtl" lang="ar">
-                {currentArabicName}
-              </span>
-            )}
-          </strong>
-          <span className="simple-player__mobile-reciter">{reciterLabel || "—"}</span>
+          <strong>{title}</strong>
+          <span>{reciterLabel || "—"}</span>
         </div>
         <div className="simple-player__header-actions">
           <IconButton

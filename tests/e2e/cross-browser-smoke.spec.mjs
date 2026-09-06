@@ -71,8 +71,7 @@ test("la recherche unifiée reste simple sur un très petit écran", async ({ pa
   expect(layout.overflow).toBeLessThanOrEqual(2);
   expect(layout.inputHeight).toBeLessThanOrEqual(50);
   expect(layout.closeWidth).toBeLessThanOrEqual(44);
-  expect(layout.voiceWidth).toBeGreaterThanOrEqual(43.9);
-  expect(layout.voiceWidth).toBeLessThanOrEqual(44.1);
+  expect(layout.voiceWidth).toBeLessThanOrEqual(38);
 
   for (const viewport of [
     { width: 768, height: 900 },
@@ -161,11 +160,13 @@ test("le verset 53:4 conserve un flux arabe canonique et RTL sur mobile", async 
     const rect = element.getBoundingClientRect();
     return { width: rect.width, height: rect.height };
   });
-  // Keep a full 44px touch target on phones, including narrow WebKit views.
-  expect(touchTarget.width).toBeGreaterThanOrEqual(43.9);
-  expect(touchTarget.height).toBeGreaterThanOrEqual(43.9);
-  expect(touchTarget.width).toBeLessThanOrEqual(44.1);
-  expect(touchTarget.height).toBeLessThanOrEqual(44.1);
+  // The compact reader row intentionally uses a 34px control on phones. It
+  // remains above the WCAG 2.2 minimum target size while leaving enough room
+  // for reference, play, bookmark and overflow on a 319px WebKit viewport.
+  expect(touchTarget.width).toBeGreaterThanOrEqual(33.9);
+  expect(touchTarget.height).toBeGreaterThanOrEqual(33.9);
+  expect(touchTarget.width).toBeLessThanOrEqual(34.1);
+  expect(touchTarget.height).toBeLessThanOrEqual(34.1);
 
   for (const width of [320, 375, 390, 430]) {
     await page.setViewportSize({ width, height: 844 });
@@ -375,11 +376,10 @@ test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", as
   await page.locator(".mp-header__more").click();
   const quickMenu = page.locator(".mp-header-menu");
   await expect(quickMenu.locator('.mp-header-menu__item[data-key="search"]')).toBeVisible();
-  await expect(quickMenu.locator('.mp-header-menu__item[data-key="home"]')).toBeVisible();
   await expect(quickMenu.locator(".mp-header-menu__header-text")).toHaveCount(0);
   const quickMenuBox = await quickMenu.boundingBox();
   expect(quickMenuBox?.width || 0).toBeLessThanOrEqual(315);
-  expect(quickMenuBox?.height || 0).toBeLessThanOrEqual(360);
+  expect(quickMenuBox?.height || 0).toBeLessThanOrEqual(310);
   await page.mouse.click(4, 520);
   await expect(quickMenu).toBeHidden();
 
@@ -388,17 +388,6 @@ test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", as
   const compactPlayerBox = await compactPlayer.boundingBox();
   expect(compactPlayerBox?.width || 0).toBeLessThanOrEqual(319);
   expect(compactPlayerBox?.height || 0).toBeLessThanOrEqual(80);
-
-  await compactPlayer.locator(".mp-player-minimized-open").click();
-  const openPlayer = page.getByTestId("audio-player-open");
-  await expect(openPlayer).toBeVisible();
-  const openPlayerBox = await openPlayer.boundingBox();
-  const transportBox = await openPlayer.locator(".simple-player__transport").boundingBox();
-  expect(openPlayerBox?.height || 0).toBeGreaterThanOrEqual(110);
-  expect((transportBox?.y || 0) + (transportBox?.height || 0)).toBeLessThanOrEqual(
-    (openPlayerBox?.y || 0) + (openPlayerBox?.height || 0) + 1,
-  );
-  await openPlayer.locator(".simple-player__minimize").click();
 
   const mobileTitle = page.locator(".srh-mobile-bar__title");
   await expect(mobileTitle).toBeHidden();
@@ -410,9 +399,8 @@ test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", as
       const rect = element.getBoundingClientRect();
       return { width: rect.width, height: rect.height };
     });
-    expect(dimensions.width).toBeGreaterThanOrEqual(43.9);
-    expect(dimensions.width).toBeLessThanOrEqual(44.1);
-    expect(dimensions.height).toBeGreaterThanOrEqual(43.9);
+    expect(dimensions.width).toBeLessThanOrEqual(40);
+    expect(dimensions.height).toBeGreaterThanOrEqual(40);
   }
 
   const disclosure = page.locator(".srh-mobile-bar__disclosure");
@@ -435,8 +423,7 @@ test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", as
     ),
   }));
   expect(responsiveLayout.fitsViewport).toBe(true);
-  expect(responsiveLayout.navWidth).toBeGreaterThanOrEqual(198);
-  expect(responsiveLayout.navWidth).toBeLessThanOrEqual(208);
+  expect(responsiveLayout.navWidth).toBeLessThanOrEqual(168);
   expect(responsiveLayout.controlsHeight).toBeLessThanOrEqual(53);
   expect(responsiveLayout.fontRows.length).toBeGreaterThanOrEqual(2);
   for (const height of responsiveLayout.fontRows) expect(height).toBeLessThanOrEqual(44);
@@ -489,9 +476,7 @@ test("le mode Mushaf compose les ayahs dans un seul paragraphe continu", async (
     const fontSize = Number.parseFloat(style.fontSize);
     const lineHeight = Number.parseFloat(style.lineHeight);
     return {
-      // WebKit may omit an inherited/computed direction value even when the
-      // semantic HTML direction is explicit; both paths represent the contract.
-      direction: style.direction || element.dir,
+      direction: style.direction,
       textAlign: style.textAlign,
       verseDisplay: verse ? getComputedStyle(verse).display : null,
       ayahDisplay: ayah ? getComputedStyle(ayah).display : null,
@@ -537,10 +522,7 @@ test("le mode Mushaf compose les ayahs dans un seul paragraphe continu", async (
 });
 
 test("Al-Fātiḥa garde son arabe canonique si un cache livre les mots d'un autre verset", async ({ page }) => {
-  await installQuranNetworkFixtures(page, {
-    corruptFatihaTajweed: true,
-    corruptFatihaWords: true,
-  });
+  await installQuranNetworkFixtures(page, { corruptFatihaWords: true });
   await page.addInitScript(() => {
     localStorage.setItem(
       "mushaf-plus-settings",

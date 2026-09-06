@@ -931,7 +931,7 @@ html body .app-root > .mp-header
 /* Compact tablets and split-screen iPads still need phone-like density. */
 @media (min-width: 641px) and (max-width: 720px) {
   html body .app-root > .mp-header .mp-header__bar {
-    --mp-header-control: 44px;
+    --mp-header-control: 38px;
     --mp-header-icon: 0.78rem;
     min-height: 54px !important;
     height: 54px !important;
@@ -943,23 +943,23 @@ html body .app-root > .mp-header
   }
 
   html body .app-root > .mp-header .mp-header__nav {
-    grid-template-columns: 44px minmax(7rem, min(22vw, 9rem)) 44px !important;
+    grid-template-columns: 34px minmax(7rem, min(22vw, 9rem)) 34px !important;
     width: auto !important;
     gap: 0.16rem;
   }
 
   html body .app-root > .mp-header .mp-header__nav-arrow {
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 38px !important;
+    min-height: 38px !important;
     border-radius: 0.65rem;
   }
 
   html body .app-root > .mp-header .mp-header__title-btn {
-    height: 44px !important;
-    min-height: 44px !important;
-    max-height: 44px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
     padding-inline: 0.35rem;
   }
 
@@ -998,7 +998,7 @@ html body .app-root > .mp-header
   }
 
   html body .app-root > .mp-header .mp-header__bar {
-    --mp-header-control: 44px;
+    --mp-header-control: 40px;
     --mp-header-icon: 0.78rem;
     min-height: 52px !important;
     height: 52px !important;
@@ -1068,7 +1068,7 @@ html body .app-root > .mp-header
 
   html body .app-root > .mp-header .mp-header__nav {
     display: grid !important;
-    grid-template-columns: 44px minmax(0, 1fr) 44px !important;
+    grid-template-columns: 34px minmax(0, 1fr) 34px !important;
     width: min(100%, 12.75rem) !important;
     gap: 0.2rem;
     padding: 0;
@@ -1076,19 +1076,19 @@ html body .app-root > .mp-header
   }
 
   html body .app-root > .mp-header .mp-header__nav-arrow {
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 40px !important;
+    min-height: 40px !important;
     border-radius: 0.65rem;
     border: 1px solid color-mix(in srgb, var(--primary) 13%, var(--border));
     background: color-mix(in srgb, var(--bg-card) 96%, transparent) !important;
   }
 
   html body .app-root > .mp-header .mp-header__title-btn {
-    height: 44px !important;
-    min-height: 44px !important;
-    max-height: 44px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
     padding-inline: 0.35rem;
   }
 
@@ -1127,7 +1127,7 @@ html body .app-root > .mp-header
 
 @media (max-width: 380px) {
   html body .app-root > .mp-header .mp-header__bar {
-    --mp-header-control: 44px;
+    --mp-header-control: 38px;
     --mp-header-icon: 0.72rem;
     grid-template-columns: 76px minmax(0, 1fr) 76px !important;
   }
@@ -1138,12 +1138,12 @@ html body .app-root > .mp-header
   }
 
   html body .app-root > .mp-header .mp-header__nav {
-    grid-template-columns: 44px minmax(0, 1fr) 44px !important;
+    grid-template-columns: 32px minmax(0, 1fr) 32px !important;
   }
 
   html body .app-root > .mp-header .mp-header__nav-arrow {
-    width: 44px !important;
-    min-width: 44px !important;
+    width: 32px !important;
+    min-width: 32px !important;
   }
 }
 
@@ -1524,10 +1524,10 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   }
 
   .app-root[data-view="home"] .hp-card--list .hp-card-play {
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
+    width: 2.3rem !important;
+    min-width: 2.3rem !important;
+    height: 2.3rem !important;
+    min-height: 2.3rem !important;
   }
 }
 
@@ -1549,15 +1549,15 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__actions {
-    width: 44px;
-    min-width: 44px !important;
+    width: 40px;
+    min-width: 40px !important;
   }
 }
 
 @media (max-width: 360px) {
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__bar {
-    --mp-header-control: 44px;
+    --mp-header-control: 38px;
     --mp-header-icon: 0.7rem;
     grid-template-columns: 78px minmax(0, 1fr) 78px !important;
     min-height: 50px !important;
@@ -1575,31 +1575,31 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__actions {
-    width: 44px;
-    min-width: 44px !important;
+    width: 38px;
+    min-width: 38px !important;
   }
 
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__nav {
-    grid-template-columns: 44px minmax(0, 1fr) 44px !important;
+    grid-template-columns: 29px minmax(0, 1fr) 29px !important;
     width: min(100%, 10.4rem) !important;
     gap: 0.12rem;
   }
 
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__nav-arrow {
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
+    width: 29px !important;
+    min-width: 29px !important;
+    height: 38px !important;
+    min-height: 38px !important;
     border-radius: 0.55rem;
   }
 
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__title-btn {
-    height: 44px !important;
-    min-height: 44px !important;
-    max-height: 44px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
     padding-inline: 0.2rem;
     border-radius: 0.68rem;
     box-shadow: none;
@@ -1662,6 +1662,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     right: 0 !important;
     bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
     left: 0 !important;
+    width: min(40rem, calc(100vw - 1.5rem)) !important;
     max-width: calc(100vw - 1.5rem) !important;
     margin-inline: auto !important;
     box-sizing: border-box !important;
@@ -1677,17 +1678,9 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     transform: none !important;
   }
 
-  html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--mobile.mp-audio-player--dock {
-    right: 1rem !important;
-    left: auto !important;
-    width: min(432px, calc(100vw - 1.5rem)) !important;
-    margin-inline: 0 !important;
+  html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--dock {
     height: 4.25rem !important;
     max-height: 4.25rem !important;
-  }
-
-  html body .app-root .audio-player-simple.simple-player--mobile-open.mp-audio-player--mobile.mp-audio-player--dock {
-    width: min(704px, calc(100vw - 1.5rem)) !important;
   }
 }
 
@@ -1712,7 +1705,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
   html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card__top {
-    min-height: 44px !important;
+    min-height: 34px !important;
     gap: 0.35rem !important;
     margin-bottom: 0.38rem !important;
   }
@@ -1729,10 +1722,10 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card__reference.qc-list-card__reference,
   html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card__top .ayah-actions button {
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
     padding: 0 !important;
     border-radius: 0.62rem !important;
   }
@@ -1808,10 +1801,10 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card__reference.qc-list-card__reference,
   html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card__top .ayah-actions button {
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    min-height: 44px !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
   }
 
   html body #root .app-root[data-view="reading"] .quran-display--platform
@@ -1819,105 +1812,4 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     width: 0.78rem !important;
     height: 0.78rem !important;
   }
-}
-
-/* Reader header on phones --------------------------------------------------
-   Keep every action touch-safe while presenting three calm groups instead of
-   a row of competing boxes. The title stays stable in Arabic on compact
-   screens; its full localized name remains available to assistive tech. */
-@media (max-width: 640px) {
-  #root#root .app-root[data-view="reading"] > .mp-header
-    .mp-header__bar {
-    grid-template-columns: 92px minmax(0, 1fr) 44px !important;
-    column-gap: 4px !important;
-  }
-
-  #root#root .app-root[data-view="reading"] > .mp-header
-    .mp-header__brand-row {
-    gap: 0 !important;
-    padding: 0 2px;
-    border: 1px solid color-mix(in srgb, var(--primary) 14%, var(--border));
-    border-radius: 14px;
-    background: color-mix(in srgb, var(--bg-card) 94%, var(--primary) 6%);
-  }
-
-  #root#root .app-root[data-view="reading"] > .mp-header
-    :is(.mp-header__icon-btn, .mp-header__brand) {
-    border: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-  }
-
-  #root#root .app-root[data-view="reading"] > .mp-header
-    .mp-header__nav {
-    width: min(100%, 224px) !important;
-    height: 44px !important;
-    grid-template-columns: 44px minmax(0, 1fr) 44px !important;
-    gap: 0 !important;
-    overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border));
-    border-radius: 14px;
-    background: color-mix(in srgb, var(--bg-card) 96%, var(--primary) 4%);
-  }
-
-  #root#root .app-root[data-view="reading"] > .mp-header
-    .mp-header__nav-arrow {
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-  }
-
-  #root#root .app-root[data-view="reading"] > .mp-header
-    .mp-header__title-btn {
-    width: 100% !important;
-    min-width: 0 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: inset 1px 0 color-mix(in srgb, var(--border) 62%, transparent),
-      inset -1px 0 color-mix(in srgb, var(--border) 62%, transparent) !important;
-  }
-
-  #root#root .app-root[data-view="reading"] > .mp-header
-    .mp-header__title-sub-track {
-    animation: none !important;
-    transform: none !important;
-  }
-
-  #root#root .app-root[data-view="reading"] > .mp-header
-    :is(.mp-header__title-transliteration, .mp-header__title-meaning, .mp-header__title-cycle-copy) {
-    display: none !important;
-  }
-
-  #root#root .app-root[data-view="reading"] > .mp-header
-    .mp-header__actions {
-    width: 44px !important;
-    min-width: 44px !important;
-  }
-
-}
-
-@media (max-width: 340px) {
-  #root#root .app-root[data-view="reading"] > .mp-header
-    .mp-header__bar {
-    grid-template-columns: 44px minmax(0, 1fr) 44px !important;
-  }
-
-  #root#root .app-root[data-view="reading"] > .mp-header
-    .mp-header__brand-row {
-    width: 44px;
-    padding: 0;
-  }
-
-  #root#root .app-root[data-view="reading"] > .mp-header
-    .mp-header__brand {
-    display: none !important;
-  }
-
-  #root#root .app-root[data-view="reading"] > .mp-header
-    .mp-header__title-cycle-viewport .mp-header__title-sub {
-    font-size: clamp(20px, 6.2vw, 22px) !important;
-  }
-
 }
