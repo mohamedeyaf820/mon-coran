@@ -20,11 +20,9 @@ function PageSeparator({ page }) {
       aria-hidden="true"
     >
       <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[rgba(var(--primary-rgb),0.15)]" />
-      <div className="flex items-center gap-2 rounded-full border border-[rgba(var(--primary-rgb),0.12)] bg-[var(--bg-secondary)] px-3 py-1">
-        <Bookmark size={8} className="text-[var(--primary)]" />
-        <span className="font-[var(--font-ui)] text-[0.68rem] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
-          Page {page}
-        </span>
+      <div className="page-separator__label">
+        <Bookmark size={11} className="text-[var(--text-muted)]" aria-hidden="true" />
+        <span>Page {page}</span>
       </div>
       <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[rgba(var(--primary-rgb),0.15)]" />
     </div>
@@ -76,6 +74,7 @@ const QCVerseCard = memo(function QCVerseCard({
   fontSize,
   onToggleActive,
   toggleId,
+  referenceLabel,
 }) {
   const handleClick = useCallback(() => {
     if (typeof onToggleActive === "function") onToggleActive(toggleId);
@@ -156,7 +155,7 @@ const QCVerseCard = memo(function QCVerseCard({
               isActive && "is-active",
             )}
           >
-            {surahNum}:{ayah.numberInSurah}
+            {referenceLabel ?? `${surahNum}:${ayah.numberInSurah}`}
           </button>
           <QCVerseActions
             surah={surahNum}
@@ -369,6 +368,7 @@ export default function QCVerseByVerseView({
                   fontSize={fontSize}
                   onToggleActive={onToggleActive}
                   toggleId={toggleId}
+                  referenceLabel={displayMode === "surah" ? String(ayah.numberInSurah) : `${surahNum}:${ayah.numberInSurah}`}
                 />
               </>
             )}

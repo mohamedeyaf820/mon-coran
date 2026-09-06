@@ -20,6 +20,9 @@ export default defineConfig({
   },
   use: {
     baseURL: "http://127.0.0.1:4173",
+    // The PWA service worker would answer the API requests itself and bypass
+    // the network fixtures of the tests; only the offline project needs it.
+    serviceWorkers: "block",
     headless: true,
     serviceWorkers: "block",
     screenshot: "only-on-failure",

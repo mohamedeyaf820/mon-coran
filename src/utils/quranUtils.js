@@ -8,9 +8,10 @@ const CACHE_MAX = 800;
 // Some QPC payloads use presentation-only code points which become conspicuous
 // fallback glyphs while the specialised face is loading on mobile:
 // - U+25CC is an internal positioning anchor (a large dotted circle in fallback)
-// - U+06EC is the QPC form of the pause/ishmam sign found as canonical U+06EB
-//   in Quran.com's Uthmani text (notably Yusuf 12:11). Normalising it to the
-//   canonical sign avoids the solid black square/dot shown by fallback fonts.
+// - U+06EC is the QPC form of the ishmam/tashil sign; Quran.com's Uthmani and
+//   Tajweed texts carry the canonical U+06EB (notably Yusuf 12:11). The text is
+//   kept canonical here; the font boundary below picks the glyph each face
+//   actually has.
 // - U+200C is sometimes inserted immediately before a Quranic annotation mark
 //   (for example Al-Mulk 67:2: tanwin + ZWNJ + U+06DA). That separator detaches
 //   the combining mark from its base letter, so browsers draw a dotted-circle
@@ -22,32 +23,28 @@ export function normalizeQuranGlyphText(text) {
         .replace(/\u200C(?=[\u06D6-\u06ED])/g, '');
 }
 
-/**
- * Produce a conservative Arabic skeleton for Quran text integrity checks.
- * Tajwid payloads may contain HTML spans and a different set of diacritics,
- * but they must never contain a different sequence of Quran letters.
- */
-export function getComparableQuranText(text) {
-    return normalizeQuranGlyphText(text)
-        .replace(/<[^>]*>/g, '')
-        .replace(/&nbsp;|&#160;/gi, ' ')
-        .replace(/&amp;/gi, '&')
-        .normalize('NFC')
-        .replace(/[\u0610-\u061A\u0640\u064B-\u065F\u0670\u06D6-\u06ED]/gu, '')
-        .replace(/[\u06DD\u06DE\u06E9\uFC00-\uFCFF\uFDF0-\uFDFF]/gu, '')
-        .replace(/[\u0660-\u0669\u06F0-\u06F9\d﴿﴾]/gu, '')
-        .replace(/[أإآٱ]/gu, 'ا')
-        .replace(/ى/gu, 'ي')
-        .replace(/[\u200C\u200D\u200E\u200F\u202A-\u202E\u2066-\u2069\s]/gu, '')
-        .trim();
+// The KFGQPC Uthmanic Hafs face only knows its own signs: U+06EC for the
+// ishmam/tashil mark and a plain sukun on a silent letter (2:5 in the QPC
+// text). It has no glyph for the canonical U+06EB / U+06DF, which the system
+// fallback paints as a large black dot in a dotted circle (checked in Chrome
+// on 12:11 and 2:5). The KFGQPC Warsh face shows U+06DF as the small circle
+// and nothing for U+06EB.
+const FONT_SIGN_VARIANTS = {
+    'qpc-hafs': [[/\u06EB/g, '\u06EC'], [/\u06DF/g, '\u0652']],
+    'kfgqpc-warsh': [[/\u06EB/g, '\u06DF']],
+};
+
+export function getFontSignVariant(fontId) {
+    if (fontId === 'qpc-hafs') return 'qpc-hafs';
+    if (fontId === 'qpc-warsh' || fontId === 'kfgqpc-warsh') return 'kfgqpc-warsh';
+    return null;
 }
 
-export function isQuranTextCoherent(referenceText, candidateText) {
-    const reference = getComparableQuranText(referenceText);
-    const candidate = getComparableQuranText(candidateText);
-    return Boolean(reference && candidate && reference === candidate);
+export function applyFontSigns(text, variant) {
+    const rules = FONT_SIGN_VARIANTS[variant];
+    if (!rules) return text;
+    return rules.reduce((value, [pattern, glyph]) => value.replace(pattern, glyph), String(text || ''));
 }
-
 
 const WAQF_COMBINING_MARK_RE = /^[\u06D6-\u06DC]$/u;
 

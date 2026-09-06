@@ -1,0 +1,396 @@
+/* ==========================================================================
+   Mushaf book — fullscreen page
+
+   The immersive overlay is portaled on <body>, outside .app-root, so it never
+   received the reader's page styles. It now renders the exact 15-line Madani
+   page (QuranMushafPage, QCF page fonts) as a printed sheet: paper, a thin
+   gold double rule, the surah and juz in the running head, the folio at the
+   bottom. Colours reuse the reader page tokens; the theme attribute on the
+   portal root selects light, sepia or dark paper.
+   ========================================================================== */
+
+.mfp-portal-root {
+  --reader-page-paper: var(--theme-bg-alt, #fdfaf4);
+  --reader-page-ink: var(--theme-arabic, var(--text-primary, #18181b));
+  --reader-page-muted: var(--theme-text-muted, var(--text-muted, #6b7280));
+  --reader-page-rule: var(--theme-border, rgba(24, 24, 27, 0.14));
+  --reader-page-shadow: 0 18px 48px rgba(24, 24, 27, 0.12);
+  --mushaf-gold: #c8a84b;
+}
+
+.mfp-portal-root[data-theme="light"] {
+  --reader-page-paper: #fdfaf4;
+  --reader-page-ink: #18181b;
+  --reader-page-muted: #6b6b6b;
+  --reader-page-rule: rgba(24, 24, 27, 0.14);
+}
+
+.mfp-portal-root[data-theme="sepia"] {
+  --reader-page-paper: #fff6e3;
+  --reader-page-ink: #241505;
+  --reader-page-muted: #6b502a;
+  --reader-page-rule: rgba(124, 74, 23, 0.25);
+  --reader-page-shadow: 0 18px 48px rgba(36, 21, 5, 0.1);
+}
+
+.mfp-portal-root[data-theme="dark"],
+.mfp-portal-root[data-theme="night-blue"],
+.mfp-portal-root[data-theme="oled"] {
+  --reader-page-paper: var(--theme-bg-alt, #15181c);
+  --reader-page-ink: var(--theme-arabic, #f3f4f6);
+  --reader-page-muted: var(--theme-text-muted, #9ca3af);
+  --reader-page-rule: rgba(255, 255, 255, 0.14);
+  --reader-page-shadow: 0 18px 48px rgba(0, 0, 0, 0.4);
+  --mushaf-gold: #b8963f;
+}
+
+/* --- The sheet ------------------------------------------------------------ */
+
+.mfp-portal-root .mfp-book {
+  width: 100%;
+  margin-inline: auto;
+}
+
+/* Side gutters (juz, hizb) stay quiet: small caps in the margin like a
+   printed running head. */
+#root ~ .mfp-portal-root .qcm-edge {
+  color: var(--reader-page-muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+}
+
+#root ~ .mfp-portal-root .qcm-page {
+  border: 1.5px solid var(--mushaf-gold);
+  outline: 1px solid color-mix(in srgb, var(--mushaf-gold) 36%, transparent);
+  outline-offset: -8px;
+  border-radius: 0.3rem;
+  background: var(--reader-page-paper);
+  box-shadow: var(--reader-page-shadow);
+}
+
+/* Running head and folio: plain text, no uppercase tracking. */
+#root ~ .mfp-portal-root .qcm-page-header,
+#root ~ .mfp-portal-root .qcm-page-footer {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--reader-page-muted);
+}
+
+#root ~ .mfp-portal-root .qcm-page-header strong {
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--reader-page-ink);
+}
+
+#root ~ .mfp-portal-root .qcm-page-header {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--mushaf-gold) 40%, transparent);
+}
+
+#root ~ .mfp-portal-root .qcm-page-footer {
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid color-mix(in srgb, var(--mushaf-gold) 40%, transparent);
+}
+
+/* The line rules of the grid are a screen aid, not a printed feature. */
+#root ~ .mfp-portal-root .qcm-line {
+  border-bottom-color: transparent;
+}
+
+/* --- Fallback sheet (Unicode flow when the page has no line data) ---------- */
+
+.mfp-portal-root .mfp-book--flow .cpv-container {
+  --mushaf-paper: var(--reader-page-paper);
+  --mushaf-ink: var(--reader-page-ink);
+  --mushaf-muted: var(--reader-page-muted);
+  --mushaf-accent: var(--primary, #0b6235);
+  container-type: inline-size;
+  position: relative;
+  width: min(100%, 760px);
+  margin-inline: auto;
+  padding: clamp(1.4rem, 3vw, 2.2rem) clamp(1.5rem, 4vw, 3rem) clamp(1.4rem, 3vw, 2rem);
+  aspect-ratio: 1 / 1.38;
+  display: flex;
+  flex-direction: column;
+  border: 1.5px solid var(--mushaf-gold);
+  outline: 1px solid color-mix(in srgb, var(--mushaf-gold) 36%, transparent);
+  outline-offset: -8px;
+  border-radius: 0.3rem;
+  background: var(--reader-page-paper);
+  color: var(--reader-page-ink);
+  box-shadow: var(--reader-page-shadow);
+}
+
+.mfp-portal-root .mfp-book--flow .mushaf-page-wrapper > .pointer-events-none.mb-0,
+.mfp-portal-root .mfp-book--flow .mushaf-corner {
+  display: none;
+}
+
+.mfp-portal-root .mfp-book--flow .mushaf-page-header {
+  display: flex;
+  justify-content: space-between;
+  direction: ltr;
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--mushaf-gold) 40%, transparent);
+  color: var(--reader-page-muted);
+  font-family: var(--font-quran, serif);
+  font-size: 0.85rem;
+}
+
+.mfp-portal-root .mfp-book--flow .mushaf-header-sep {
+  display: none;
+}
+
+/* A full line of the Madani mushaf holds nine to ten words: derive the size
+   from the sheet width instead of the list font preference. */
+.mfp-portal-root .mfp-book--flow .mushaf-text-block {
+  --cpv-font-size: clamp(17px, 3.1cqw, 30px) !important;
+  font-size: clamp(17px, 3.1cqw, 30px) !important;
+  line-height: 2 !important;
+  word-spacing: 0 !important;
+  text-align: justify;
+  text-align-last: right;
+  text-justify: inter-word;
+  color: var(--reader-page-ink);
+}
+
+/* Pages 1 and 2 are set centred inside the frame, as in the printed mushaf. */
+.mfp-portal-root .mfp-book--flow[data-page-kind="opening"] .mushaf-text-block {
+  max-width: 82%;
+  margin: auto;
+  text-align: center;
+  text-align-last: center;
+}
+
+.mfp-portal-root .mfp-book--flow .mushaf-page-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+  padding-top: 1rem;
+  color: var(--reader-page-muted);
+  font-size: 0.85rem;
+}
+
+.mfp-portal-root .mfp-book--flow .mushaf-page-number-medallion {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  font-weight: 500;
+}
+
+/* Surah band: a rule with the calligraphic name, no card, no shadow. */
+.mfp-portal-root .cpv-surah-title-box {
+  border-color: color-mix(in srgb, var(--mushaf-gold) 55%, transparent);
+  border-radius: 0.3rem;
+  background: transparent;
+  box-shadow: none;
+}
+
+.mfp-portal-root .cpv-surah-name-tr {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--reader-page-muted);
+}
+
+/* --- Overlay chrome -------------------------------------------------------- */
+
+.mfp-portal-root .mfp-riwaya {
+  color: var(--reader-page-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* --- Set like print ------------------------------------------------------- */
+/* In the QCF page fonts a full Madani line measures about 16.6 em and the
+   printed line pitch is close to 1.6 em, so the page takes its measure from
+   the type: the size follows the screen (width on a phone, height on a
+   desktop) and the sheet is exactly as wide and tall as the fifteen lines
+   need, the way a book page is. Below the floor the sheet scrolls instead. */
+
+.mfp-portal-root {
+  --mfp-line-measure: 16.7em;
+  --mfp-line-pitch: 1.62em;
+  /* Vertical room taken by the overlay bar, the running head, the folio and
+     the sheet margins; horizontal room taken by the gutters and the frame. */
+  --mfp-chrome: 250px;
+  --mfp-hchrome: 260px;
+  --mfp-min-font: 22px;
+  --mfp-font: clamp(
+    var(--mfp-min-font),
+    min(
+      calc((100vw - var(--mfp-hchrome)) / 16.7),
+      calc((100vh - var(--mfp-chrome)) / 24.8)
+    ),
+    64px
+  );
+  --mfp-font: clamp(
+    var(--mfp-min-font),
+    min(
+      calc((100vw - var(--mfp-hchrome)) / 16.7),
+      calc((100dvh - var(--mfp-chrome)) / 24.8)
+    ),
+    64px
+  );
+}
+
+#root ~ .mfp-portal-root .mfp-book--exact {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page-shell {
+  grid-template-columns: auto minmax(0, max-content) auto;
+  padding-block: 0.75rem 1rem;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page {
+  width: max-content;
+  max-width: 100%;
+  min-height: 0;
+  padding: 1rem clamp(1.1rem, 4vw, 2.25rem) 0.9rem;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-edge {
+  padding-block: 3rem;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page-header {
+  padding-bottom: 0.4rem;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page-footer {
+  margin-top: 0.75rem;
+  padding-top: 0.45rem;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-lines {
+  width: var(--mfp-line-measure);
+  max-width: 100%;
+  margin-inline: auto;
+  font-size: var(--mfp-font);
+  line-height: 1;
+  min-height: 0;
+  grid-template-rows: repeat(15, var(--mfp-line-pitch));
+  margin-top: 0.4em;
+}
+
+/* The words are cut at the line size: the responsive reading rules of the
+   in-app reader must not rescale them here. */
+#root ~ .mfp-portal-root .mfp-book .qcm-word {
+  font-size: 1em !important;
+  line-height: 1 !important;
+  word-spacing: 0 !important;
+  padding: 0;
+  margin: 0;
+}
+
+/* Every line is set to the full measure, as in the printed page; the QCF
+   glyphs are cut so that a full line fills it. */
+#root ~ .mfp-portal-root .mfp-book .qcm-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0;
+  min-width: 0;
+  direction: rtl;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+/* Pages 1 and 2, and the final line of a surah, are centred. */
+#root ~ .mfp-portal-root .mfp-book[data-page-kind="opening"] .qcm-line,
+#root ~ .mfp-portal-root .mfp-book .qcm-line--surah-end {
+  justify-content: center;
+  gap: 0.3em;
+}
+
+/* Surah title band: a thin double frame around the calligraphic name. */
+#root ~ .mfp-portal-root .mfp-book .qcm-line--surah-header,
+#root ~ .mfp-portal-root .mfp-book .qcm-line--basmala {
+  justify-content: center;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-surah-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 1.45em;
+  border: 1px solid color-mix(in srgb, var(--mushaf-gold) 80%, transparent);
+  box-shadow:
+    inset 0 0 0 3px var(--reader-page-paper),
+    inset 0 0 0 4px color-mix(in srgb, var(--mushaf-gold) 55%, transparent);
+  color: var(--reader-page-ink);
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-surah-title__name {
+  font-family: "surahnames", serif;
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-basmala {
+  font-size: 1em;
+  line-height: 1;
+  color: var(--reader-page-ink);
+}
+
+/* Narrow screens: no side gutters, the sheet takes the width. */
+@media (max-width: 640px) {
+  .mfp-portal-root {
+    --mfp-chrome: 230px;
+    --mfp-hchrome: 44px;
+    --mfp-min-font: 16px;
+  }
+
+  #root ~ .mfp-portal-root .mfp-book .qcm-page-shell {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding-block: 0.5rem 1rem;
+  }
+
+  #root ~ .mfp-portal-root .mfp-book .qcm-edge {
+    display: none;
+  }
+
+  #root ~ .mfp-portal-root .mfp-book .qcm-page {
+    padding: 0.75rem 0.7rem 0.9rem;
+    outline-offset: -5px;
+  }
+}
+
+/* --- Leafing ---------------------------------------------------------------- */
+/* The next leaf comes from the left, the previous one from the right, as the
+   page turns in an Arabic book. The sheet keeps its own transform (zoom), so
+   the motion uses the separate translate property. */
+@media (prefers-reduced-motion: no-preference) {
+  .mfp-portal-root .mfp-book[data-turn="next"] {
+    animation: mfp-turn-next 240ms ease-out;
+  }
+
+  .mfp-portal-root .mfp-book[data-turn="prev"] {
+    animation: mfp-turn-prev 240ms ease-out;
+  }
+}
+
+@keyframes mfp-turn-next {
+  from {
+    opacity: 0;
+    translate: -3% 0;
+  }
+}
+
+@keyframes mfp-turn-prev {
+  from {
+    opacity: 0;
+    translate: 3% 0;
+  }
+}

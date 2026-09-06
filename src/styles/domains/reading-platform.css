@@ -1867,11 +1867,6 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     --qcom-ar-size: var(--qd-reading-font-size, var(--quran-font-size, 32px));
 }
 
-.app-root .quran-display--platform {
-    --qcom-reader-font-size: var(--qd-reading-font-size, var(--quran-font-size, 32px));
-    --qcom-ar-size: var(--qd-reading-font-size, var(--quran-font-size, 32px));
-}
-
 @media (max-width: 640px) {
     .app-root .quran-display--platform {
         --qcom-reader-font-size: var(--qd-reading-font-size, var(--quran-font-size, 24px));
@@ -2659,7 +2654,7 @@ html body .app-root .quran-display--platform .qc-verse-card:focus-within {
     flex-shrink: 0 !important;
 }
 
-html body .app-root .quran-display--platform .qcm-page-shell {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-page-shell {
     position: relative;
     display: grid;
     grid-template-columns: minmax(0, 4.75rem) minmax(0, 860px) minmax(0, 4.75rem);
@@ -2671,7 +2666,7 @@ html body .app-root .quran-display--platform .qcm-page-shell {
     color: var(--reader-page-ink);
 }
 
-html body .app-root .quran-display--platform .qcm-font-warning {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-font-warning {
     grid-column: 1 / -1;
     padding: 0.5rem 1rem;
     border-radius: 6px;
@@ -2682,7 +2677,7 @@ html body .app-root .quran-display--platform .qcm-font-warning {
     text-align: center;
 }
 
-html body .app-root .quran-display--platform .qcm-page {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-page {
     position: relative;
     width: 100%;
     min-height: clamp(820px, 82vh, 980px);
@@ -2695,8 +2690,8 @@ html body .app-root .quran-display--platform .qcm-page {
     box-shadow: var(--reader-page-shadow);
 }
 
-html body .app-root .quran-display--platform .qcm-page-header,
-html body .app-root .quran-display--platform .qcm-page-footer {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-page-header,
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-page-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -2710,12 +2705,12 @@ html body .app-root .quran-display--platform .qcm-page-footer {
     text-transform: uppercase;
 }
 
-html body .app-root .quran-display--platform .qcm-page-header strong {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-page-header strong {
     color: var(--reader-page-muted);
     font-weight: 800;
 }
 
-html body .app-root .quran-display--platform .qcm-lines {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-lines {
     display: grid;
     grid-template-rows: repeat(15, minmax(0, 1fr));
     min-height: clamp(700px, 70vh, 835px);
@@ -2726,7 +2721,7 @@ html body .app-root .quran-display--platform .qcm-lines {
     line-height: 1.35;
 }
 
-html body .app-root .quran-display--platform .qcm-line {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-line {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -2738,13 +2733,13 @@ html body .app-root .quran-display--platform .qcm-line {
     white-space: nowrap;
 }
 
-html body .app-root .quran-display--platform .qcm-line--empty::after {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-line--empty::after {
     content: "";
     display: block;
     width: 100%;
 }
 
-html body .app-root .quran-display--platform .qcm-word {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-word {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -2756,20 +2751,20 @@ html body .app-root .quran-display--platform .qcm-word {
     transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
-html body .app-root .quran-display--platform .qcm-lines .qcm-word--warsh {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-lines .qcm-word--warsh {
     display: inline;
     white-space: nowrap;
     font-family: var(--font-quran);
     unicode-bidi: plaintext;
 }
 
-html body .app-root .quran-display--platform .qcm-lines[data-warsh="true"] {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-lines[data-warsh="true"] {
     font-size: clamp(1.82rem, 3.45vw, 2.9rem);
     line-height: 1.82;
     direction: rtl;
 }
 
-html body .app-root .quran-display--platform .qcm-lines[data-warsh="true"] .qcm-line {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-lines[data-warsh="true"] .qcm-line {
     display: flex;
     flex-wrap: wrap;
     direction: rtl;
@@ -2780,17 +2775,17 @@ html body .app-root .quran-display--platform .qcm-lines[data-warsh="true"] .qcm-
     padding-inline: 0.5em;
 }
 
-html body .app-root .quran-display--platform .qcm-lines[data-warsh="true"] .qcm-line .qcm-word--warsh {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-lines[data-warsh="true"] .qcm-line .qcm-word--warsh {
     flex-shrink: 0;
 }
 
-html body .app-root .quran-display--platform .qcm-lines[data-warsh="true"] .qcm-line .ayah-marker,
-html body .app-root .quran-display--platform .qcm-lines[data-warsh="true"] .qcm-line .ayat-marker {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-lines[data-warsh="true"] .qcm-line .ayah-marker,
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-lines[data-warsh="true"] .qcm-line .ayat-marker {
     flex-shrink: 0;
     margin-inline-start: 0.3em;
 }
 
-html body .app-root .quran-display--platform .qcm-word--warsh {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-word--warsh {
     font-family: var(--font-quran-warsh, "KFGQPC Warsh", "QPC Warsh", "Scheherazade New", "Amiri Quran", serif) !important;
     font-size: 1em !important;
     line-height: inherit !important;
@@ -2807,24 +2802,24 @@ html body .app-root .quran-display--platform .qcm-word--warsh {
     white-space: nowrap;
 }
 
-html body .app-root .quran-display--platform .qcm-word:hover,
-html body .app-root .quran-display--platform .qcm-word:focus-visible,
-html body .app-root .quran-display--platform .qcm-word--active,
-html body .app-root .quran-display--platform .qcm-word--playing {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-word:hover,
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-word:focus-visible,
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-word--active,
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-word--playing {
     background: rgba(var(--primary-rgb), 0.12);
     color: var(--primary);
     outline: none;
 }
 
-html body .app-root .quran-display--platform .qcm-ayah-marker,
-html body .app-root .quran-display--platform .qcm-line .ayah-marker,
-html body .app-root .quran-display--platform .qcm-line .ayat-marker {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-ayah-marker,
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-line .ayah-marker,
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-line .ayat-marker {
     flex: 0 0 auto;
     margin-inline: 0.18em;
     transform: translateY(-0.02em);
 }
 
-html body .app-root .quran-display--platform .qcm-edge {
+html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-edge {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -2839,35 +2834,35 @@ html body .app-root .quran-display--platform .qcm-edge {
 }
 
 @media (max-width: 900px) {
-    html body .app-root .quran-display--platform .qcm-page-shell {
+    html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-page-shell {
         grid-template-columns: minmax(0, 1fr);
         padding-inline: 0.25rem;
     }
 
-    html body .app-root .quran-display--platform .qcm-edge {
+    html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-edge {
         display: none;
     }
 }
 
 @media (max-width: 640px) {
-    html body .app-root .quran-display--platform .qcm-page {
+    html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-page {
         min-height: 720px;
         padding: 1.25rem 0.85rem;
         border-radius: 0;
     }
 
-    html body .app-root .quran-display--platform .qcm-lines {
+    html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-lines {
         min-height: 615px;
         margin-top: 1rem;
         font-size: clamp(1.45rem, 7.1vw, 2.15rem);
     }
 
-    html body .app-root .quran-display--platform .qcm-line {
+    html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-line {
         gap: 0.12em;
     }
 
-    html body .app-root .quran-display--platform .qcm-page-header,
-    html body .app-root .quran-display--platform .qcm-page-footer {
+    html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-page-header,
+    html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-page-footer {
         font-size: 0.62rem;
     }
 }

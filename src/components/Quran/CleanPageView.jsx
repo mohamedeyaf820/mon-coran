@@ -112,6 +112,19 @@ function CleanPageViewComponent({
                 event.stopPropagation();
                 onPlayAyah?.(ayah, ayahs);
               }}
+              onClick={(event) => {
+                // The verse marker is the verse's button: it opens the verse
+                // actions. Word buttons keep their own click (word audio).
+                if (!event.target.closest?.(".native-ayah-marker")) return;
+                event.stopPropagation();
+                onAyahClick?.(getAyahToggleId(ayah));
+              }}
+              onKeyDown={(event) => {
+                if (event.key !== "Enter" && event.key !== " ") return;
+                if (!event.target.closest?.(".native-ayah-marker")) return;
+                event.preventDefault();
+                onAyahClick?.(getAyahToggleId(ayah));
+              }}
               aria-label={`${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`}
               aria-current={isPlaying ? "true" : undefined}
             >
@@ -128,7 +141,10 @@ function CleanPageViewComponent({
               </span>
             </span>,
           );
-
+          // A verse ends with its marker; the next verse starts after a
+          // normal space, as in the printed mushaf. Without it the marker is
+          // glued to the first word of the following verse.
+          elements.push(" ");
 
           return elements;
         })}

@@ -108,7 +108,6 @@ export function Waveform({ isPlaying, progress }) {
               filled
                 ? "bg-gradient-to-b from-[var(--gold-bright)] to-[var(--gold)]"
                 : "bg-white/12",
-              isPlaying && "animate-pulse",
             )}
           />
         );
@@ -150,7 +149,7 @@ export function CoverArt({ isPlaying, size = 52, reciter }) {
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.02),rgba(0,0,0,0.38))]" />
       {isPlaying && (
-        <div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-[var(--gold-bright)] shadow-[0_0_6px_var(--gold)] animate-pulse" />
+        <div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-[var(--gold-bright)] shadow-[0_0_6px_var(--gold)]" />
       )}
     </div>
   );

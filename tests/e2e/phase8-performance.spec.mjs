@@ -109,10 +109,9 @@ test("phase 8: verse and sidebar windows release offscreen components", async ({
   await expect(page.locator("#ayah-40 .qc-list-card")).toHaveCount(0);
   expect(await page.locator(".qc-list-card").count()).toBeLessThan(50);
 
-  const revealReaderChrome = page.locator(".immersive-reveal--top");
-  if (await revealReaderChrome.isVisible().catch(() => false)) {
-    await revealReaderChrome.dispatchEvent("click");
-  }
+  // Immersive reading hides the chrome after a long scroll; Escape reveals it.
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".app-root")).not.toHaveClass(/immersive-mode/);
   await page.locator(".mp-header__icon-btn").first().click();
   const sidebarItems = page.locator(".sidebar-virtual-item");
   await expect(sidebarItems).toHaveCount(114);

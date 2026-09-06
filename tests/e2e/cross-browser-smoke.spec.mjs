@@ -185,6 +185,90 @@ test("le verset 53:4 conserve un flux arabe canonique et RTL sur mobile", async 
   }
 });
 
+test("le Tajwid colore le verset sans découper les mots arabes", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "mushaf-plus-settings",
+      JSON.stringify({
+        skipSplashAnimation: true,
+        showHome: false,
+        showDuas: false,
+        sidebarOpen: false,
+        displayMode: "surah",
+        mushafLayout: "list",
+        lang: "fr",
+        riwaya: "hafs",
+        fontFamily: "qpc-hafs",
+        quranFontSize: 42,
+        showTajwid: true,
+        showTranslation: false,
+        showTransliteration: false,
+        lastPosition: { surah: 53, ayah: 4, page: 526, juz: 27 },
+      }),
+    );
+  });
+  await page.goto("/surah/53/4", { waitUntil: "domcontentloaded" });
+
+  const card = page.locator(".qc-list-card").filter({
+    has: page.getByRole("button", { name: "Verset 4", exact: true }),
+  });
+  const tajwid = card.locator(".quran-tajwid-text");
+  await expect(tajwid).toBeVisible({ timeout: 30_000 });
+
+  // A Tajwid rule must never split a word into several text runs: WebKit
+  // shapes each run separately (letters lose their joined forms) and every
+  // engine loses the cursive kashida under a dagger alif. With the Highlight
+  // API the coloured ranges live on a single text node per word.
+  const readContract = () => tajwid.evaluate((root) => {
+    const supported = typeof CSS !== "undefined" && "highlights" in CSS;
+    const firstWord = root.querySelector("[data-tajwid-word='0'], .quran-word-item");
+    const zwj = String.fromCharCode(0x200d);
+    return {
+      supported,
+      render: root.getAttribute("data-tajwid-render"),
+      segments: root.querySelectorAll(".tajwid-rule-segment").length,
+      joiners: root.textContent.split(zwj).length - 1,
+      firstWordChildren: firstWord ? firstWord.childNodes.length : 0,
+      firstWordUserSelect: firstWord
+        ? getComputedStyle(firstWord).webkitUserSelect || getComputedStyle(firstWord).userSelect
+        : null,
+      colouredRanges: supported
+        ? [...CSS.highlights.entries()]
+            .filter(([name]) => name.startsWith("tajwid-") && name !== "tajwid-hover")
+            .reduce(
+              (count, [, highlight]) =>
+                count + [...highlight].filter((range) => root.contains(range.startContainer)).length,
+              0,
+            )
+        : null,
+    };
+  });
+
+  // The ranges are registered once the words are mounted; under a loaded
+  // machine that can land after the text is visible.
+  await expect
+    .poll(async () => {
+      const state = await readContract();
+      return state.supported ? state.colouredRanges : 1;
+    }, { timeout: 15_000 })
+    .toBeGreaterThan(0);
+  const contract = await readContract();
+
+  if (contract.supported) {
+    expect(contract.render).toBe("highlight");
+    expect(contract.segments).toBe(0);
+    expect(contract.joiners).toBe(0);
+    expect(contract.firstWordChildren).toBe(1);
+    expect(contract.colouredRanges).toBeGreaterThan(0);
+    // WebKit does not paint custom highlights inside user-select: none.
+    expect(contract.firstWordUserSelect).not.toBe("none");
+  } else {
+    expect(contract.render).toBe("segments");
+    expect(contract.segments).toBeGreaterThan(0);
+  }
+});
+
 test("les signes de waqf restent des annotations coraniques compactes", async ({ page }) => {
   await installQuranNetworkFixtures(page, { withWaqfSigns: true });
   await page.addInitScript(() => {

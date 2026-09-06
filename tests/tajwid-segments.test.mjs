@@ -96,15 +96,18 @@ test("interactive waqf signs preserve their canonical Quran code point on a safe
 });
 
 test("Hafs and Warsh use the shared Quran.com Tajweed color semantics", () => {
+  // The legend palette (cyan qalqala, royal blue tafkhim, light pink normal
+  // madd, orange separated madd, magenta connected madd, red necessary madd,
+  // green ghunna family, grey silent letters) is shared by both riwayas.
   const expected = {
-    ghunna: "#26b55d",
-    qalqala: "#00deff",
-    "madd-normal": "#ffc1e0",
-    "madd-separated": "#ff8e3b",
-    "madd-connected": "#ff5e8e",
-    madd: "#e30000",
-    "lam-shamsiyya": "#999999",
-    tafkhim: "#3c84d5",
+    ghunna: "#27ae60",
+    qalqala: "#00d2ff",
+    "madd-normal": "#f48fb1",
+    "madd-separated": "#ff9800",
+    "madd-connected": "#e91e63",
+    madd: "#e53935",
+    "lam-shamsiyya": "#9e9e9e",
+    tafkhim: "#2e86de",
   };
 
   for (const riwaya of ["hafs", "warsh"]) {

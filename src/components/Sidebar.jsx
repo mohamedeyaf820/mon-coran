@@ -247,7 +247,7 @@ export default function Sidebar() {
                 <X size={18} strokeWidth={2.4} />
               </button>
               {activeSummary && (
-                <span className="truncate text-[0.72rem] font-semibold text-primary">
+                <span className="truncate text-[0.78rem] font-semibold text-text-primary">
                   {activeSummary}
                 </span>
               )}
@@ -401,14 +401,7 @@ export default function Sidebar() {
                       {lang === "fr" ? s.fr : s.en}
                     </span>
                     <span className="flex items-center gap-1 truncate text-[0.64rem] text-text-muted">
-                      <span
-                        className={cn(
-                          "inline-flex items-center rounded px-1 py-0.5 text-[0.56rem] font-bold",
-                          s.type === "Meccan"
-                            ? "bg-gold/10 text-gold"
-                            : "bg-primary/8 text-primary",
-                        )}
-                      >
+                      <span className="inline-flex items-center text-[0.64rem] text-text-muted">
                         {s.type === "Meccan"
                           ? lang === "ar"
                             ? "مكية"

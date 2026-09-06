@@ -302,7 +302,7 @@ body {
     src: url("/fonts/uthmanic-hafs-v18.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
-    font-display: swap;
+    font-display: block;
 }
 
 @font-face {
@@ -310,7 +310,7 @@ body {
     src: url("/fonts/uthmanic-hafs-v18.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
-    font-display: swap;
+    font-display: block;
 }
 
 @font-face {
@@ -318,7 +318,7 @@ body {
     src: url("/fonts/kfgqpc-warsh-10.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
-    font-display: swap;
+    font-display: block;
 }
 
 @font-face {
@@ -342,7 +342,7 @@ body {
     src: url("/fonts/kfgqpc-warsh-10.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
-    font-display: swap;
+    font-display: block;
 }
 
 @font-face {
@@ -350,7 +350,7 @@ body {
     src: url("/fonts/kfgqpc-warsh-10.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
-    font-display: swap;
+    font-display: block;
 }
 
 :root {
@@ -17028,6 +17028,110 @@ body {
 
 .tajwid-idgham-warsh {
     color: var(--tajwid-idgham-warsh);
+}
+
+/* Tajweed colouring through the CSS Custom Highlight API (TajweedText).
+   A verse word stays a single text node, so Arabic shaping is never broken by
+   inline element boundaries; each rule colours a character range instead. */
+::highlight(tajwid-ghunna) {
+    color: var(--tajwid-ghunna);
+}
+
+::highlight(tajwid-ikhfa) {
+    color: var(--tajwid-ikhfa);
+}
+
+::highlight(tajwid-qalqala) {
+    color: var(--tajwid-qalqala);
+}
+
+::highlight(tajwid-idgham) {
+    color: var(--tajwid-idgham);
+}
+
+::highlight(tajwid-iqlab) {
+    color: var(--tajwid-iqlab);
+}
+
+::highlight(tajwid-madd-normal) {
+    color: var(--tajwid-madd-normal);
+}
+
+::highlight(tajwid-madd-separated) {
+    color: var(--tajwid-madd-separated);
+}
+
+::highlight(tajwid-madd-connected) {
+    color: var(--tajwid-madd-connected);
+}
+
+::highlight(tajwid-madd) {
+    color: var(--tajwid-madd);
+}
+
+::highlight(tajwid-madd-necessary) {
+    color: var(--tajwid-madd-necessary);
+}
+
+::highlight(tajwid-madd-badal) {
+    color: var(--tajwid-madd-badal);
+}
+
+::highlight(tajwid-lam-shamsiyya) {
+    color: var(--tajwid-lam-shamsiyya);
+}
+
+::highlight(tajwid-silent) {
+    color: var(--tajwid-silent);
+}
+
+::highlight(tajwid-tafkhim) {
+    color: var(--tajwid-tafkhim);
+}
+
+::highlight(tajwid-naql) {
+    color: var(--tajwid-naql);
+}
+
+::highlight(tajwid-tashil) {
+    color: var(--tajwid-tashil);
+}
+
+::highlight(tajwid-ibdal) {
+    color: var(--tajwid-ibdal);
+}
+
+::highlight(tajwid-sila-kubra) {
+    color: var(--tajwid-sila-kubra);
+}
+
+::highlight(tajwid-tarqiq-ra) {
+    color: var(--tajwid-tarqiq-ra);
+}
+
+::highlight(tajwid-idgham-warsh) {
+    color: var(--tajwid-idgham-warsh);
+}
+
+::highlight(tajwid-hover) {
+    background-color: rgba(var(--primary-rgb), 0.14);
+}
+
+::highlight(tajwid-playing) {
+    background-color: rgba(var(--primary-rgb), 0.16);
+}
+
+/* The words are role="button" for word audio, which inherits the global
+   `[role=button] { user-select: none }`. WebKit never paints custom
+   highlights inside user-select: none, so the coloured words opt back in. */
+.quran-tajwid-text .quran-word-item,
+.quran-canonical-text .quran-word-item,
+.hafs-karaoke .wbw-word,
+.mushaf-text-block,
+.mushaf-text-block .cpv-verse,
+.qcm-word {
+    -webkit-user-select: text;
+    user-select: text;
 }
 
 .tajwid {

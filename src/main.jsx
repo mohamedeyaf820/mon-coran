@@ -2,10 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { initErrorAnalytics } from "./services/errorAnalytics.js";
 import { initPerformanceMetrics } from "./services/performanceMetrics.js";
-import {
-  clearMushafRuntimeCaches,
-  migrateQuranRuntimeCaches,
-} from "./services/runtimeCacheService.js";
+import { clearMushafRuntimeCaches } from "./services/runtimeCacheService.js";
 
 import App from "./App";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -21,26 +18,27 @@ import "./styles/domains/mobile-all-versions.css";
 import "./styles/header-enhanced.css";
 import "./styles/device-root.css";
 import "./styles/experience-polish.css";
-import "./styles/responsive-all.css";
-
-// Load the complete responsive cascade as one ordered chunk before React mounts.
-// This keeps Safari/iOS deterministic without inflating the critical CSS entry.
-const applicationStylesReady = import("./styles/deferredStyles.js").catch(
-  () => null,
-);
+// Core tokens and shared responsive surfaces must be available before paint.
+import "./styles/app-system.css";
+// Last: flat, hairline chrome for the shell (header, panel, player).
+import "./styles/shell-calm.css";
 
 if (typeof window !== "undefined") {
-  const syncVisualViewportHeight = () => {
-    const height = window.visualViewport?.height || window.innerHeight;
-    if (Number.isFinite(height) && height > 0) {
-      document.documentElement.style.setProperty("--app-viewport-h", `${Math.round(height)}px`);
-    }
-  };
-  syncVisualViewportHeight();
-  window.addEventListener("resize", syncVisualViewportHeight, { passive: true });
-  window.addEventListener("orientationchange", syncVisualViewportHeight, { passive: true });
-  window.visualViewport?.addEventListener("resize", syncVisualViewportHeight, { passive: true });
-  window.visualViewport?.addEventListener("scroll", syncVisualViewportHeight, { passive: true });
+  // Load the non-critical polish CSS right after the first frame is painted:
+  // it never delays first paint, and the home typography settles within a
+  // few frames instead of waiting for an idle period. The flag lets tests
+  // wait for the complete cascade.
+  const loadDeferred = () =>
+    import("./styles/deferredStyles.js")
+      .catch(() => null)
+      .finally(() => {
+        document.documentElement.dataset.deferredStyles = "ready";
+      });
+  if (typeof requestAnimationFrame !== "undefined") {
+    requestAnimationFrame(() => setTimeout(loadDeferred, 0));
+  } else {
+    setTimeout(loadDeferred, 200);
+  }
 }
 
 const CHUNK_RELOAD_KEY = "mushaf-plus:chunk-reload-once";
@@ -59,32 +57,9 @@ function isChunkLoadErrorLike(errorLike) {
   );
 }
 
-async function hasUsableNetwork() {
-  const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 3000);
-  try {
-    const response = await fetch(`/manifest.json?chunk-probe=${Date.now()}`, {
-      cache: "no-store",
-      signal: controller.signal,
-    });
-    return response.ok;
-  } catch {
-    return false;
-  } finally {
-    window.clearTimeout(timeout);
-  }
-}
-
-async function tryRecoverFromChunkLoad(errorLike) {
+function tryRecoverFromChunkLoad(errorLike) {
   if (chunkReloadTriggered || !isChunkLoadErrorLike(errorLike)) return;
   chunkReloadTriggered = true;
-
-  // navigator.onLine is unreliable on iOS and under network emulation. Never
-  // erase a valid installed PWA until a same-origin network probe succeeds.
-  if (!(await hasUsableNetwork())) {
-    chunkReloadTriggered = false;
-    return;
-  }
 
   let alreadyReloaded = false;
   try {
@@ -148,26 +123,19 @@ if (!rootElement) {
   fallback.append(title, message, reloadButton);
   document.body.replaceChildren(fallback);
 } else {
-  const mountApplication = () => {
-    initErrorAnalytics();
-    initPerformanceMetrics();
-    ReactDOM.createRoot(rootElement).render(
-      <React.StrictMode>
-        <ErrorBoundary>
-          <PrivacyLockGate>
-            <AppProvider>
-              <App />
-            </AppProvider>
-          </PrivacyLockGate>
-        </ErrorBoundary>
-      </React.StrictMode>,
-    );
-  };
-
-  Promise.all([
-    applicationStylesReady,
-    migrateQuranRuntimeCaches().catch(() => null),
-  ]).finally(mountApplication);
+  initErrorAnalytics();
+  initPerformanceMetrics();
+  ReactDOM.createRoot(rootElement).render(
+    <React.StrictMode>
+      <ErrorBoundary>
+        <PrivacyLockGate>
+          <AppProvider>
+            <App />
+          </AppProvider>
+        </PrivacyLockGate>
+      </ErrorBoundary>
+    </React.StrictMode>,
+  );
 }
 
 // Service Worker: actif uniquement en production
@@ -178,6 +146,34 @@ if ("serviceWorker" in navigator) {
         if (import.meta.env.DEV)
           console.error("Échec de l'enregistrement du SW:", err);
       });
+      // On the first visit the page loads its chunks and fonts before the
+      // worker controls it, so they never pass through its fetch handler.
+      // Hand it the list so an offline reload finds the whole shell.
+      const shareLoadedShell = () => {
+        const worker = navigator.serviceWorker.controller;
+        if (!worker || typeof performance?.getEntriesByType !== "function") return;
+        const urls = new Set();
+        performance.getEntriesByType("resource").forEach((entry) => {
+          try {
+            const url = new URL(entry.name, window.location.href);
+            if (url.origin === window.location.origin) urls.add(url.pathname);
+          } catch {
+            // Ignore unparsable entries.
+          }
+        });
+        document
+          .querySelectorAll("script[src], link[rel='stylesheet'][href], link[rel='modulepreload'][href]")
+          .forEach((node) => {
+            try {
+              urls.add(new URL(node.src || node.href, window.location.href).pathname);
+            } catch {
+              // Ignore.
+            }
+          });
+        worker.postMessage({ type: "CACHE_SHELL_URLS", urls: [...urls] });
+      };
+      navigator.serviceWorker.ready.then(() => setTimeout(shareLoadedShell, 800)).catch(() => {});
+      navigator.serviceWorker.addEventListener("controllerchange", () => setTimeout(shareLoadedShell, 800));
       return;
     }
 

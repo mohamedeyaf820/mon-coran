@@ -11,6 +11,7 @@ export default function useQuranDisplayScroll({
   displayMode,
   getScrollContainer,
   mushafLayout,
+  pageNavigationSource = "navigate",
 }) {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const followRetryTimerRef = useRef(null);
@@ -97,8 +98,11 @@ export default function useQuranDisplayScroll({
   }, [ayahCount, contentRef, displayMode, getScrollContainer]);
 
   useEffect(() => {
+    // Continuous page reading updates the page from the scroll position:
+    // resetting the scroll there would throw the reader back to the top.
+    if (displayMode === "page" && pageNavigationSource === "scroll") return;
     getScrollContainer()?.scrollTo({ top: 0, behavior: "auto" });
-  }, [currentJuz, currentPage, currentSurah, getScrollContainer]);
+  }, [currentJuz, currentPage, currentSurah, displayMode, getScrollContainer, pageNavigationSource]);
 
   useEffect(() => {
     if (

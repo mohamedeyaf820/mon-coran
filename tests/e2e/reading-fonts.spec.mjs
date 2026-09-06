@@ -21,8 +21,52 @@ async function expectFontFamily(locator, family) {
 }
 
 async function expectCanonicalWaqfMark(page, riwaya) {
-  const marker = page.locator(".waqf-marker:visible").first();
-  await expect(marker).toBeVisible();
+  // The verse carrying the waqf signs (ayah 2) can sit below the fold on a
+  // small phone with the tools open; the list only mounts verses near the
+  // viewport, so bring it in first.
+  const verseWithWaqf = page.locator('#ayah-2, [data-ayah-number="2"]').first();
+  if (await verseWithWaqf.count()) {
+    await verseWithWaqf.scrollIntoViewIfNeeded().catch(() => {});
+  }
+  // A waqf sign is a combining mark set over the previous letter: with some
+  // faces (IndoPak Nastaleeq) its box has no width, so it is checked as
+  // attached content rather than as a visible box.
+  const marker = page.locator(".waqf-marker").first();
+  try {
+    await expect(marker).toBeAttached({ timeout: 15_000 });
+  } catch (error) {
+    // Keep the verse markup with the failure: the runner's DOM can differ.
+    const report = await page
+      .evaluate(() => {
+        const markers = [...document.querySelectorAll(".waqf-marker")];
+        const verse = document.querySelector('#ayah-2, [data-ayah-number="2"]');
+        const text = verse?.querySelector(".qc-ayah-text-ar, .verse-text");
+        return JSON.stringify(
+          {
+            markerCount: markers.length,
+            markers: markers.slice(0, 3).map((node) => {
+              const rect = node.getBoundingClientRect();
+              const style = getComputedStyle(node);
+              return {
+                html: node.outerHTML.slice(0, 300),
+                rect: [rect.x, rect.y, rect.width, rect.height].map(Math.round),
+                display: style.display,
+                visibility: style.visibility,
+                opacity: style.opacity,
+                fontFamily: style.fontFamily,
+              };
+            }),
+            verseText: text?.textContent?.slice(0, 200),
+            verseHtml: text?.innerHTML?.slice(0, 6000),
+          },
+          null,
+          1,
+        );
+      })
+      .catch((reason) => `diagnostics failed: ${reason}`);
+    await test.info().attach("verse-2-diagnostics", { body: report, contentType: "text/plain" });
+    throw error;
+  }
   const metrics = await marker.evaluate((element) => {
     const style = getComputedStyle(element);
     const ayah = element.closest(".qc-ayah-text-ar, .verse-text");
@@ -78,6 +122,23 @@ async function revealReaderTools(page) {
   await expect(trigger).toHaveAttribute("aria-expanded", "true");
 }
 
+async function switchToList(page) {
+  // The layout radio can be clicked while the tools panel is still settling
+  // on a slow runner: confirm the list cards are there, retry once if not.
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await revealReaderTools(page);
+    await page.getByRole("radio", { name: "Liste", exact: true }).click();
+    const listed = await page
+      .locator(".qc-list-card")
+      .first()
+      .waitFor({ state: "visible", timeout: 4000 })
+      .then(() => true)
+      .catch(() => false);
+    if (listed) return;
+  }
+  await expect(page.locator(".qc-list-card").first()).toBeVisible();
+}
+
 async function switchToMushaf(page) {
   await revealReaderTools(page);
   await page.getByRole("radio", { name: "Mushaf", exact: true }).click();
@@ -118,7 +179,7 @@ test("Hafs font selection applies to list and Mushaf layouts", async ({ page }) 
     timeout: 30_000,
   });
   await revealReaderTools(page);
-  await page.getByRole("radio", { name: "Liste", exact: true }).click();
+  await switchToList(page);
   await expectFontFamily(page.locator(".qc-ayah-text-ar").first(), "Amiri Quran");
 });
 
@@ -192,7 +253,7 @@ for (const [riwaya, fonts] of Object.entries(FONT_MATRIX)) {
     ).toBeVisible({ timeout: 30_000 });
 
     await revealReaderTools(page);
-    await page.getByRole("radio", { name: "Liste", exact: true }).click();
+    await switchToList(page);
     for (const [fontId, family] of fonts) {
       const select = await openTypographyPanel(page);
       await select.selectOption(fontId);

@@ -2,6 +2,11 @@ import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 async function expectNoSeriousViolations(page, label) {
+  // Entrance fades blend the colours axe samples: freeze motion first.
+  await page.addStyleTag({
+    content: "*, *::before, *::after { animation: none !important; transition: none !important; }",
+  });
+  await page.waitForTimeout(200);
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();
@@ -39,7 +44,11 @@ test("Axe: lecteur et recherche", async ({ page }) => {
   await expectNoSeriousViolations(page, "Lecteur");
 
   await page.getByRole("button", { name: /Rechercher|Search|بحث/i }).first().click();
-  await expect(page.getByRole("dialog")).toBeVisible();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  // Let the opening fade finish: axe reads the blended colours otherwise.
+  await expect(dialog).toHaveCSS("opacity", "1");
+  await page.waitForTimeout(350);
   await expectNoSeriousViolations(page, "Recherche");
 });
 

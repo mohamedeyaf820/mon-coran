@@ -8,6 +8,7 @@ import {
 } from "../context/AppContext";
 import { t } from "../i18n";
 import audioService from "../services/audioService";
+import { getSurahTimeline, seekSurahProgress } from "./audioPlayer/surahTimeline";
 import {
   ensureReciterForRiwaya,
   getReciter,
@@ -33,6 +34,7 @@ import {
 import { AlertCircle } from "lucide-react";
 
 /* Main component */
+
 export default function AudioPlayer() {
   const { dispatch, set } = useAppActions();
   const state = useAppSelector(
@@ -86,6 +88,7 @@ export default function AudioPlayer() {
   });
   const [audioError, setAudioError] = useState(null);
   const [networkState, setNetworkState] = useState("idle");
+  const networkStateTimerRef = useRef(null);
   const [optionsModalOpen, setOptionsModalOpen] = useState(false);
   const [reciterSwitchingId, setReciterSwitchingId] = useState(null);
   const [eqPreset, setEqPreset] = useState("flat");
@@ -327,9 +330,10 @@ export default function AudioPlayer() {
       set({ currentPlayingAyah: nextPlayingAyah });
     };
     audioService.onTimeUpdate = (ct, dur) => {
-      setCurTime(ct);
-      setDuration(dur);
-      setProgress(dur ? ct / dur : 0);
+      const { elapsed, total } = getSurahTimeline(ct, dur);
+      setCurTime(elapsed);
+      setDuration(total);
+      setProgress(total ? elapsed / total : 0);
     };
     audioService.onError = async (error) => {
       try {
@@ -379,7 +383,16 @@ export default function AudioPlayer() {
       }
     };
     audioService.onNetworkState = (st) => {
-      setNetworkState(st || "idle");
+      const next = st || "idle";
+      clearTimeout(networkStateTimerRef.current);
+      if (next === "loading" || next === "buffering") {
+        // Between two ayahs the next file usually arrives within a few
+        // frames: a spinner for that would only blink. Show it when the
+        // wait actually lasts.
+        networkStateTimerRef.current = setTimeout(() => setNetworkState(next), 450);
+        return;
+      }
+      setNetworkState(next);
     };
     return () => {
       if (audioErrorTimerRef.current) {
@@ -393,6 +406,7 @@ export default function AudioPlayer() {
       audioService.onTimeUpdate = null;
       audioService.onError = null;
       audioService.onNetworkState = null;
+      clearTimeout(networkStateTimerRef.current);
     };
   }, [
     dispatch,
@@ -492,7 +506,7 @@ export default function AudioPlayer() {
     const rect = progressRef.current.getBoundingClientRect();
     if (rect.width <= 0) return;
     const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-    audioService.seekPercent(pct);
+    seekSurahProgress(pct);
   }, []);
 
   const handleSeek = useCallback(
@@ -517,7 +531,7 @@ export default function AudioPlayer() {
         return;
       }
       event.preventDefault();
-      audioService.seekPercent(Math.max(0, Math.min(1, nextProgress)));
+      seekSurahProgress(Math.max(0, Math.min(1, nextProgress)));
     },
     [progress],
   );
