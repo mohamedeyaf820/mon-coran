@@ -530,8 +530,10 @@ test("compact tablet reader keeps one surface, an independent surah identity and
   const player = page.getByTestId("audio-player-compact");
   await expect(player).toBeVisible();
   const playerBox = await player.boundingBox();
+  // A classic scrollbar (Linux runners) narrows the layout viewport.
+  const layoutWidth = await page.evaluate(() => document.documentElement.clientWidth);
   expect(playerBox?.x || 0).toBeLessThanOrEqual(1);
-  expect((playerBox?.x || 0) + (playerBox?.width || 0)).toBeGreaterThanOrEqual(641);
+  expect((playerBox?.x || 0) + (playerBox?.width || 0)).toBeGreaterThanOrEqual(layoutWidth - 1);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -857,8 +859,9 @@ test("compact player is a full-width bottom bar on tablet and desktop", async ({
     const player = page.getByTestId("audio-player-compact");
     await expect(player).toBeVisible();
     const playerBox = await player.boundingBox();
+    const layoutWidth = await page.evaluate(() => document.documentElement.clientWidth);
     expect(playerBox?.x || 0).toBeLessThanOrEqual(1);
-    expect(playerBox?.width || 0).toBeGreaterThanOrEqual(viewport.width - 2);
+    expect(playerBox?.width || 0).toBeGreaterThanOrEqual(layoutWidth - 2);
     expect(playerBox?.height || 0).toBeLessThanOrEqual(96);
     expect(viewport.height - ((playerBox?.y || 0) + (playerBox?.height || 0))).toBeLessThanOrEqual(2);
     expect(await overflowX(page)).toBeLessThanOrEqual(2);
