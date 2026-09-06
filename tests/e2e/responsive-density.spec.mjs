@@ -44,6 +44,20 @@ async function seedReadingState(page, overrides = {}) {
   }, { key: SETTINGS_KEY, overrides });
 }
 
+// Width of the containing block of `position: fixed` elements. On CI
+// Chromium `scrollbar-gutter: stable` on the root reserves a classic
+// scrollbar gutter that narrows this block without changing clientWidth.
+async function fixedLayoutWidth(page) {
+  return page.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.style.cssText = "position:fixed;inset:0;pointer-events:none;visibility:hidden";
+    document.body.appendChild(probe);
+    const width = probe.getBoundingClientRect().width;
+    probe.remove();
+    return width;
+  });
+}
+
 async function openReader(page, viewport, overrides = {}) {
   await installQuranNetworkFixtures(page);
   await seedReadingState(page, overrides);
@@ -533,14 +547,7 @@ test("compact tablet reader keeps one surface, an independent surah identity and
   // A classic scrollbar gutter (Linux runners, `scrollbar-gutter: stable` on
   // the root) narrows the containing block of fixed elements without
   // changing clientWidth: measure that block with a fixed probe.
-  const layoutWidth = await page.evaluate(() => {
-    const probe = document.createElement("div");
-    probe.style.cssText = "position:fixed;inset:0;pointer-events:none;visibility:hidden";
-    document.body.appendChild(probe);
-    const width = probe.getBoundingClientRect().width;
-    probe.remove();
-    return width;
-  });
+  const layoutWidth = await fixedLayoutWidth(page);
   expect(playerBox?.x || 0).toBeLessThanOrEqual(1);
   expect((playerBox?.x || 0) + (playerBox?.width || 0)).toBeGreaterThanOrEqual(layoutWidth - 1);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
@@ -655,7 +662,10 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
   // hit-test sees a pointer move.
   await expect(page.locator('html[data-deferred-styles="ready"]')).toBeAttached();
   await page.waitForTimeout(400);
-  await target.scrollIntoViewIfNeeded();
+  // `scrollIntoViewIfNeeded` leaves the word at the bottom edge, where its
+  // centre is off-screen or under the player bar: centre it instead.
+  await target.evaluate((node) => node.scrollIntoView({ block: "center", inline: "nearest" }));
+  await page.waitForTimeout(250);
   await target.hover();
   const tooltip = page.locator(".tajweed-rich-tooltip");
   // The hit-test needs a real pointer move over a coloured range: arrive on
@@ -845,7 +855,8 @@ test("general pages use a compact quick-command palette on narrow phones", async
   const closeBox = await menu.locator(".mp-header-menu__close").boundingBox();
   const searchBox = await menu.locator('[data-key="search"]').boundingBox();
   const searchIconBox = await menu.locator('[data-key="search"] .mp-header-menu__item-icon').boundingBox();
-  expect(menuBox?.width || 0).toBeLessThanOrEqual(300);
+  // 300px menu; CI Chromium lands on 301.6 with sub-pixel borders.
+  expect(menuBox?.width || 0).toBeLessThanOrEqual(302);
   expect(menuBox?.height || 0).toBeLessThanOrEqual(205);
   expect(closeBox?.width || 0).toBeLessThanOrEqual(34);
   expect(closeBox?.height || 0).toBeLessThanOrEqual(34);
@@ -868,7 +879,7 @@ test("compact player is a full-width bottom bar on tablet and desktop", async ({
     const player = page.getByTestId("audio-player-compact");
     await expect(player).toBeVisible();
     const playerBox = await player.boundingBox();
-    const layoutWidth = await page.evaluate(() => document.documentElement.clientWidth);
+    const layoutWidth = await fixedLayoutWidth(page);
     expect(playerBox?.x || 0).toBeLessThanOrEqual(1);
     expect(playerBox?.width || 0).toBeGreaterThanOrEqual(layoutWidth - 2);
     expect(playerBox?.height || 0).toBeLessThanOrEqual(96);
