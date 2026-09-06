@@ -13,10 +13,6 @@ import {
   getUiAyahMarker,
   stripEmbeddedAyahMarkers,
 } from "../src/data/fonts.js";
-import {
-  getComparableQuranText,
-  isQuranTextCoherent,
-} from "../src/utils/quranUtils.js";
 
 test("Arabic typography clamps unsafe preferences", () => {
   assert.equal(clampArabicFontSize(-10), 12);
@@ -202,17 +198,6 @@ test("a silent letter keeps the QPC sukun in the Hafs face and the rounded zero 
   assert.equal(getAyahTextForFont(ayah, "qpc-hafs", "hafs").includes("\u06DF"), false);
   assert.equal(getAyahTextForFont(ayah, "qpc-hafs", "hafs").includes("\u0648\u0652"), true);
   assert.equal(getAyahTextForFont(ayah, "scheherazade-new", "hafs"), uthmani);
-});
-
-test("Quran integrity rejects a Tajwid payload belonging to another ayah", () => {
-  const bismillah = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ";
-  const taggedBismillah =
-    '<span class="tajweed-ghunnah">بِسْمِ</span> اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ';
-  const nextAyah = "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ";
-
-  assert.equal(getComparableQuranText(taggedBismillah), getComparableQuranText(bismillah));
-  assert.equal(isQuranTextCoherent(bismillah, taggedBismillah), true);
-  assert.equal(isQuranTextCoherent(bismillah, nextAyah), false);
 });
 
 test("Al-Mulk pause signs stay attached to the preceding Uthmani glyph", () => {

@@ -466,11 +466,9 @@ test("the visual system separates brand, gold, Warsh and transliteration roles",
 
 test("the application-wide design system owns themes, surfaces and responsive fallbacks", () => {
   const imports = source("src/main.jsx");
-  const deferredImports = source("src/styles/deferredStyles.js");
   const system = source("src/styles/app-system.css");
 
-  assert.match(imports, /import\("\.\/styles\/deferredStyles\.js"\)/);
-  assert.match(deferredImports, /import "\.\/app-system\.css";/);
+  assert.match(imports, /import "\.\/styles\/app-system\.css";/);
   for (const theme of ["light", "sepia", "dark"]) {
     assert.match(system, new RegExp(`\\[data-theme="${theme}"\\]`));
   }

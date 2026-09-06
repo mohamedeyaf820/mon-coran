@@ -46,6 +46,32 @@ export function applyFontSigns(text, variant) {
     return rules.reduce((value, [pattern, glyph]) => value.replace(pattern, glyph), String(text || ''));
 }
 
+/**
+ * Produce a conservative Arabic skeleton for Quran text integrity checks.
+ * Tajwid payloads may contain HTML spans and a different set of diacritics,
+ * but they must never contain a different sequence of Quran letters.
+ */
+export function getComparableQuranText(text) {
+    return normalizeQuranGlyphText(text)
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;|&#160;/gi, ' ')
+        .replace(/&amp;/gi, '&')
+        .normalize('NFC')
+        .replace(/[\u0610-\u061A\u0640\u064B-\u065F\u0670\u06D6-\u06ED]/gu, '')
+        .replace(/[\u06DD\u06DE\u06E9\uFC00-\uFCFF\uFDF0-\uFDFF]/gu, '')
+        .replace(/[\u0660-\u0669\u06F0-\u06F9\d﴿﴾]/gu, '')
+        .replace(/[أإآٱ]/gu, 'ا')
+        .replace(/ى/gu, 'ي')
+        .replace(/[\u200C\u200D\u200E\u200F\u202A-\u202E\u2066-\u2069\s]/gu, '')
+        .trim();
+}
+
+export function isQuranTextCoherent(referenceText, candidateText) {
+    const reference = getComparableQuranText(referenceText);
+    const candidate = getComparableQuranText(candidateText);
+    return Boolean(reference && candidate && reference === candidate);
+}
+
 const WAQF_COMBINING_MARK_RE = /^[\u06D6-\u06DC]$/u;
 
 /**

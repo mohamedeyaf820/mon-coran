@@ -24,7 +24,6 @@ export default defineConfig({
     // the network fixtures of the tests; only the offline project needs it.
     serviceWorkers: "block",
     headless: true,
-    serviceWorkers: "block",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
     trace: "on-first-retry",
