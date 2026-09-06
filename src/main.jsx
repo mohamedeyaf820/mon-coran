@@ -24,11 +24,18 @@ import "./styles/app-system.css";
 import "./styles/shell-calm.css";
 
 if (typeof window !== "undefined") {
-  // Load non-critical polish CSS after the browser is idle so it never
-  // delays first paint or TTI. Falls back to 200ms on browsers without rIC.
-  const loadDeferred = () => import("./styles/deferredStyles.js").catch(() => null);
-  if (typeof requestIdleCallback !== "undefined") {
-    requestIdleCallback(loadDeferred, { timeout: 2500 });
+  // Load the non-critical polish CSS right after the first frame is painted:
+  // it never delays first paint, and the home typography settles within a
+  // few frames instead of waiting for an idle period. The flag lets tests
+  // wait for the complete cascade.
+  const loadDeferred = () =>
+    import("./styles/deferredStyles.js")
+      .catch(() => null)
+      .finally(() => {
+        document.documentElement.dataset.deferredStyles = "ready";
+      });
+  if (typeof requestAnimationFrame !== "undefined") {
+    requestAnimationFrame(() => setTimeout(loadDeferred, 0));
   } else {
     setTimeout(loadDeferred, 200);
   }
@@ -139,6 +146,34 @@ if ("serviceWorker" in navigator) {
         if (import.meta.env.DEV)
           console.error("Échec de l'enregistrement du SW:", err);
       });
+      // On the first visit the page loads its chunks and fonts before the
+      // worker controls it, so they never pass through its fetch handler.
+      // Hand it the list so an offline reload finds the whole shell.
+      const shareLoadedShell = () => {
+        const worker = navigator.serviceWorker.controller;
+        if (!worker || typeof performance?.getEntriesByType !== "function") return;
+        const urls = new Set();
+        performance.getEntriesByType("resource").forEach((entry) => {
+          try {
+            const url = new URL(entry.name, window.location.href);
+            if (url.origin === window.location.origin) urls.add(url.pathname);
+          } catch {
+            // Ignore unparsable entries.
+          }
+        });
+        document
+          .querySelectorAll("script[src], link[rel='stylesheet'][href], link[rel='modulepreload'][href]")
+          .forEach((node) => {
+            try {
+              urls.add(new URL(node.src || node.href, window.location.href).pathname);
+            } catch {
+              // Ignore.
+            }
+          });
+        worker.postMessage({ type: "CACHE_SHELL_URLS", urls: [...urls] });
+      };
+      navigator.serviceWorker.ready.then(() => setTimeout(shareLoadedShell, 800)).catch(() => {});
+      navigator.serviceWorker.addEventListener("controllerchange", () => setTimeout(shareLoadedShell, 800));
       return;
     }
 

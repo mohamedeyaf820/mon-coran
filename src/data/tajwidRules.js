@@ -353,7 +353,7 @@ const WARSH_TAJWID_RULES = [
     nameAr: "تفخيم",
     nameEn: "Tafkhim (heavy)",
     nameFr: "Tafkhim (lourd)",
-    color: "#2563eb",
+    color: "#2e86de",
     description: "Prononciation emphatique/lourde (lettres مستعلية)",
     patterns: [
       new RegExp(`[صضطظخغق][\\u064E\\u064F\\u0650${SK}\\u0651]?`, "g"),

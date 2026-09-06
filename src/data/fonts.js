@@ -6,7 +6,7 @@
  * page/Mushaf rendering, so users cannot accidentally mix Hafs glyphs into Warsh.
  */
 
-import { normalizeQuranGlyphText } from "../utils/quranUtils.js";
+import { applyFontSigns, getFontSignVariant, normalizeQuranGlyphText } from "../utils/quranUtils.js";
 
 export const HAFS_FONT_IDS = [
   "qpc-hafs",
@@ -246,19 +246,26 @@ function joinWordField(words, field) {
 
 export function getQuranWordTextForFont(word, fontId, riwaya = "hafs") {
   if (!word) return "";
+  const normalizedId = normalizeFontId(fontId, riwaya);
+  const signVariant = getFontSignVariant(normalizedId);
   if (riwaya === "warsh") {
-    return normalizeQuranGlyphText(word.text || word.textUthmani || "");
+    return applyFontSigns(
+      normalizeQuranGlyphText(word.text || word.textUthmani || ""),
+      signVariant,
+    );
   }
 
-  const normalizedId = normalizeFontId(fontId, riwaya);
   if (normalizedId === "qpc-indopak") {
     return normalizeQuranGlyphText(
       word.textIndopak || word.textUthmani || word.textQpcHafs || word.text || "",
     );
   }
   if (normalizedId === "qpc-hafs") {
-    return normalizeQuranGlyphText(
-      word.textQpcHafs || word.textUthmani || word.text || "",
+    return applyFontSigns(
+      normalizeQuranGlyphText(
+        word.textQpcHafs || word.textUthmani || word.text || "",
+      ),
+      signVariant,
     );
   }
   if (normalizedId === "qcf-v4-tajweed") {
@@ -273,9 +280,12 @@ export function getQuranWordTextForFont(word, fontId, riwaya = "hafs") {
 
 export function getAyahTextForFont(ayah, fontId, riwaya = "hafs") {
   if (!ayah) return "";
-  if (riwaya === "warsh") return normalizeQuranGlyphText(ayah.text);
-
   const normalizedId = normalizeFontId(fontId, riwaya);
+  const signVariant = getFontSignVariant(normalizedId);
+  if (riwaya === "warsh") {
+    return applyFontSigns(normalizeQuranGlyphText(ayah.text), signVariant);
+  }
+
   const quranCom = ayah.quranCom || {};
   if (normalizedId === "qpc-indopak") {
     return normalizeQuranGlyphText(
@@ -287,12 +297,15 @@ export function getAyahTextForFont(ayah, fontId, riwaya = "hafs") {
     );
   }
   if (normalizedId === "qpc-hafs") {
-    return normalizeQuranGlyphText(
-      quranCom.textQpcHafs ||
-      joinWordField(ayah.words, "textQpcHafs") ||
-      quranCom.textUthmani ||
-      ayah.text ||
-      "",
+    return applyFontSigns(
+      normalizeQuranGlyphText(
+        quranCom.textQpcHafs ||
+        joinWordField(ayah.words, "textQpcHafs") ||
+        quranCom.textUthmani ||
+        ayah.text ||
+        "",
+      ),
+      signVariant,
     );
   }
   return normalizeQuranGlyphText(

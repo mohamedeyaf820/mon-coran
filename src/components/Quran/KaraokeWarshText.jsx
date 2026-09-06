@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { useKaraoke } from "../../hooks/useKaraoke";
 import { withWordCountCalibrationBump } from "../../utils/karaokeUtils";
-import AyahMarker from "./AyahMarker";
+import { getNativeAyahMarker } from "../../data/fonts";
 import WarshWordText from "./WarshWordText";
 
 const AYAH_MARKER_TOKEN_RE = /^[\u06dd\u06de\u06e9\ufd3f\ufd3e\d\u0660-\u0669\u06f0-\u06f9]+$/u;
@@ -117,7 +117,10 @@ export default function KaraokeWarshText({
         markerFlags={markerFlags}
       />
       {appendNativeMarker ? (
-        <AyahMarker number={ayahNumber} className="warsh-karaoke-ayah-marker" />
+        <span className="native-ayah-marker" style={{ display: "inline" }}>
+          {"\u202F"}
+          {getNativeAyahMarker(ayahNumber, "kfgqpc-warsh", "warsh")}
+        </span>
       ) : null}
     </>
   );

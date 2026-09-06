@@ -1144,7 +1144,8 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-n
 
 html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .mode-nav-current span {
   font-size: clamp(0.65rem, 1.6vw, 0.72rem) !important;
-  color: var(--text-muted) !important;
+  /* 12px bold caption on the tinted pill needs primary ink for 4.5:1. */
+  color: var(--text-primary) !important;
   white-space: normal !important;
 }
 

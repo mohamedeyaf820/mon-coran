@@ -313,7 +313,21 @@ export default function LegalPage({ page = "privacy" }) {
         <nav aria-label={locale.eyebrow}>
           <a href={siteConfig.repositoryUrl} target="_blank" rel="noopener noreferrer"><Github size={16} />{locale.actions.project}</a>
           <a href={siteConfig.contactUrl} target="_blank" rel="noopener noreferrer"><Send size={16} />{locale.actions.contact}</a>
-          <button type="button" className="is-primary" onClick={openReport}><FileCheck2 size={16} />{locale.actions.correction}</button>
+          <a
+            className="is-primary"
+            href={`${siteConfig.repositoryUrl.replace(/\/$/, "")}/issues`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(event) => {
+              // The guided form prefills the issue; the link stays a real
+              // GitHub destination for middle-click and assistive tech.
+              event.preventDefault();
+              openReport();
+            }}
+          >
+            <FileCheck2 size={16} />
+            {locale.actions.correction}
+          </a>
           <button type="button" onClick={goHome}><Globe2 size={16} />{locale.actions.home}</button>
         </nav>
       </footer>

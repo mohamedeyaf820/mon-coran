@@ -144,33 +144,24 @@ test("continuous Mushaf markers preserve a clear gap before the following ayah",
   await page.goto("/surah/3");
   await waitForReader(page);
 
-  const markers = page.locator(".cpv-ayah-marker");
-  expect(await markers.count()).toBeGreaterThan(1);
-  const readMarkerSpacing = () => markers.first().evaluate((element) => {
-    const style = window.getComputedStyle(element);
-    const parentStyle = window.getComputedStyle(element.parentElement);
-    const fontSize =
-      Number.parseFloat(style.fontSize) || Number.parseFloat(parentStyle.fontSize) || 1;
+  // The marker is a native glyph of the reading face: it stays attached to
+  // its verse with a narrow no-break space, and the next verse starts after
+  // an ordinary space, as in the printed mushaf.
+  const markers = page.locator(".mushaf-text-block .native-ayah-marker");
+  await expect.poll(() => markers.count()).toBeGreaterThan(1);
+  const spacing = await markers.first().evaluate((element) => {
+    const before = element.previousSibling;
+    const verse = element.closest(".cpv-verse");
+    const after = verse?.nextSibling;
     return {
-      inlineStart:
-        Number.parseFloat(style.getPropertyValue("margin-inline-start") || "0") /
-        fontSize,
-      inlineEnd:
-        Number.parseFloat(style.getPropertyValue("margin-inline-end") || "0") /
-        fontSize,
+      before: before?.nodeType === Node.TEXT_NODE ? before.textContent : null,
+      after: after?.nodeType === Node.TEXT_NODE ? after.textContent : null,
+      inline: getComputedStyle(element).display,
     };
   });
-  await expect
-    .poll(async () => {
-      const spacing = await readMarkerSpacing();
-      return Math.max(spacing.inlineStart, spacing.inlineEnd);
-    })
-    .toBeGreaterThanOrEqual(0.68);
-  const markerSpacing = await readMarkerSpacing();
-  const ownAyahGap = Math.min(markerSpacing.inlineStart, markerSpacing.inlineEnd);
-  const nextAyahGap = Math.max(markerSpacing.inlineStart, markerSpacing.inlineEnd);
-  expect(ownAyahGap).toBeLessThanOrEqual(0.2);
-  expect(nextAyahGap).toBeGreaterThanOrEqual(0.68);
+  expect(spacing.before).toBe("\u202F");
+  expect(spacing.after).toBe(" ");
+  expect(["inline", "inline-flex"]).toContain(spacing.inline);
 });
 
 test("reading page stays usable after riwaya refresh and browser history navigation", async ({ page }) => {
