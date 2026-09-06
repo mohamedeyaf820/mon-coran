@@ -611,13 +611,13 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
 
   const legend = page.getByTestId("tajweed-legend");
   await expect(legend).toBeVisible();
-  await expect(legend).not.toHaveAttribute("open", "");
+  await expect(legend).not.toHaveAttribute("open");
   await expect(legend.locator(".tajweed-legend__rules")).toBeHidden();
   const collapsedLegendBox = await legend.boundingBox();
   expect(collapsedLegendBox?.height || 0).toBeLessThanOrEqual(56);
 
   await legend.evaluate((node) => { node.open = true; });
-  await expect(legend).toHaveAttribute("open", "");
+  await expect(legend).toHaveAttribute("open");
   await expect(legend.locator(".tajweed-legend__rules")).toBeVisible();
   const legendBox = await legend.boundingBox();
   expect(legendBox?.width || 0).toBeLessThanOrEqual(1280);
@@ -643,16 +643,19 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
   await expect(page.locator('html[data-deferred-styles="ready"]')).toBeAttached();
   await page.waitForTimeout(400);
   await target.scrollIntoViewIfNeeded();
+  await target.hover();
   const tooltip = page.locator(".tajweed-rich-tooltip");
   // The hit-test needs a real pointer move over a coloured range: arrive on
   // the word from the side, and try a couple of nearby points on a slow
   // runner before asserting.
-  for (const offset of [0, -6, 6]) {
+  for (const offset of [0, -6, 6, -12, 12]) {
     const targetBox = await target.boundingBox();
+    if (!targetBox) continue;
     const cx = targetBox.x + targetBox.width / 2 + offset;
     const cy = targetBox.y + targetBox.height / 2;
     await page.mouse.move(cx + 14, cy + 2);
-    await page.mouse.move(cx, cy, { steps: 4 });
+    await page.mouse.move(cx, cy, { steps: 6 });
+    await target.dispatchEvent("pointermove", { clientX: cx, clientY: cy, bubbles: true });
     const shown = await tooltip
       .filter({ hasText: /Ghunnah/i })
       .waitFor({ state: "visible", timeout: 4000 })

@@ -125,9 +125,9 @@ export function getTextRangeRects(node, start, end) {
   return Array.from(range.getClientRects());
 }
 
-export function rectsContainPoint(rects, x, y) {
+export function rectsContainPoint(rects, x, y, pad = 3) {
   return rects.some(
-    (rect) => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom,
+    (rect) => x >= rect.left - pad && x <= rect.right + pad && y >= rect.top - pad && y <= rect.bottom + pad,
   );
 }
 
