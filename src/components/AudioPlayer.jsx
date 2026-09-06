@@ -1060,20 +1060,44 @@ export default function AudioPlayer() {
       return;
     }
 
-    // Match the reserved space to the responsive dock: one row on wide screens,
-    // two rows on narrow phones, and a compact row when minimized.
-    const updateReservedHeight = () => {
-      const usesWideDock =
-        window.innerWidth >= 600 && window.innerWidth <= MOBILE_BREAKPOINT;
-      const reservedHeight = minimized ? 70 : usesWideDock ? 64 : 122;
+    let frameId = null;
+    let resizeObserver = null;
+    let playerElement = null;
+    const visualViewport = window.visualViewport;
+
+    const measureReservedHeight = () => {
+      playerElement ||= document.querySelector(".audio-player-simple");
+      if (!playerElement) return;
+      const rect = playerElement.getBoundingClientRect();
+      const viewportBottom = visualViewport
+        ? visualViewport.offsetTop + visualViewport.height
+        : window.innerHeight;
+      const reservedHeight = Math.max(0, Math.ceil(viewportBottom - rect.top + 8));
       root.style.setProperty("--player-h", `${reservedHeight}px`);
     };
-    updateReservedHeight();
-    window.addEventListener("resize", updateReservedHeight, { passive: true });
+
+    const scheduleMeasurement = () => {
+      if (frameId !== null) cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(measureReservedHeight);
+    };
+
+    scheduleMeasurement();
+    playerElement = document.querySelector(".audio-player-simple");
+    if (playerElement && typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(scheduleMeasurement);
+      resizeObserver.observe(playerElement);
+    }
+    window.addEventListener("resize", scheduleMeasurement, { passive: true });
+    visualViewport?.addEventListener("resize", scheduleMeasurement, { passive: true });
+    visualViewport?.addEventListener("scroll", scheduleMeasurement, { passive: true });
     root.style.removeProperty("--desktop-player-reserved-h");
 
     return () => {
-      window.removeEventListener("resize", updateReservedHeight);
+      if (frameId !== null) cancelAnimationFrame(frameId);
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", scheduleMeasurement);
+      visualViewport?.removeEventListener("resize", scheduleMeasurement);
+      visualViewport?.removeEventListener("scroll", scheduleMeasurement);
       root.style.removeProperty("--player-h");
       root.style.removeProperty("--desktop-player-reserved-h");
     };
@@ -1167,6 +1191,7 @@ export default function AudioPlayer() {
         regionLabel={minimized ? minimizedAudioRegionLabel : audioRegionLabel}
         riwaya={riwaya}
         surahNum={currentSurah}
+        surahLabel={t("quran.surah", lang)}
         speedLabel={speedLabel}
         title={titleLabel || readyLabel}
       />

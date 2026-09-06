@@ -62,3 +62,23 @@ test("feature-level accessibility labels use the active locale", () => {
     assert.match(source, translationCall);
   }
 });
+
+test("duas discovery, empty state and actions are localized", () => {
+  const source = fs.readFileSync(
+    new URL("../src/components/DuasPage.jsx", import.meta.url),
+    "utf8",
+  );
+
+  for (const key of [
+    "duas.title",
+    "duas.search",
+    "duas.clearSearch",
+    "duas.noResults",
+    "duas.resetFilters",
+    "duas.copy",
+    "duas.openQuran",
+  ]) {
+    assert.match(source, new RegExp(`t\\(["']${key.replaceAll(".", "\\.")}["'],\\s*lang`));
+  }
+  assert.match(source, /t\(`duas\.categories\.\$\{categoryId\}`, lang\)/);
+});

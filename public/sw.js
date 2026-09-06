@@ -4,12 +4,12 @@
 //   • /assets/       → Cache-First  (hachés à la compilation)
 //   • images locales → Stale-While-Revalidate
 //   • HTML           → Network-First  (évite les pages blanches avec SW obsolète)
-//   • api.alquran.cloud & api.quran.com → Cache-First (texte immuable, navigation instantanée)
+//   • api.alquran.cloud & api.quran.com → Network-First avec secours hors ligne
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v19";
-const API_CACHE_NAME = "mushaf-plus-api-v6";
+const CACHE_NAME = "mushaf-plus-v21";
+const API_CACHE_NAME = "mushaf-plus-api-v7";
 const AUDIO_CACHE_NAME = "mushafplus-audio-v2";
 const CACHE_LIMITS = {
   [CACHE_NAME]: 300,
@@ -23,6 +23,8 @@ const ASSETS_TO_CACHE = [
   "/manifest.json",
   "/logo-ui.webp",
   "/favicon.png",
+];
+const OPTIONAL_ASSETS_TO_CACHE = [
   "/data/reciter-profiles.json",
   "/data/editorial-copy.json",
   // The reading faces are needed on every route once offline.
@@ -41,6 +43,12 @@ self.addEventListener("install", (event) => {
 async function precacheAppShell() {
   const cache = await caches.open(CACHE_NAME);
   await precacheUrls(cache, ASSETS_TO_CACHE);
+  await Promise.allSettled(
+    OPTIONAL_ASSETS_TO_CACHE.map(async (url) => {
+      const response = await fetch(url, { cache: "reload" });
+      if (response.ok) await cache.put(url, response);
+    }),
+  );
 
   const indexResponse = await fetch("/index.html", { cache: "reload" });
   if (!indexResponse.ok) {
@@ -157,13 +165,11 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // ── 4. API Coran – Cache-First ─────────────────────────────────────────────
-  // Quran verses and translations are immutable. Revalidating every cached
-  // response doubled the network traffic during surah/page changes and could
-  // compete with the foreground request on phones. The app-level IndexedDB
-  // cache still handles expiry and explicit repair/invalidation.
+  // ── 4. API Coran – Network-First avec secours cache ────────────────────────
+  // IndexedDB already provides the fast path. When an HTTP request is needed,
+  // prefer a validated current payload and retain the cache for true offline use.
   if (url.hostname === "api.alquran.cloud" || url.hostname === "api.quran.com") {
-    event.respondWith(cacheFirst(event.request, API_CACHE_NAME));
+    event.respondWith(networkFirstWithFallback(event.request, API_CACHE_NAME, 4500));
     return;
   }
 
@@ -447,6 +453,9 @@ async function staleWhileRevalidate(request, cacheName, event) {
 async function networkFirstHtml(request) {
   try {
     const networkResponse = await fetchWithTimeout(request, 6000);
+    if (!networkResponse || networkResponse.type === "error" || networkResponse.status === 0) {
+      throw new Error("Navigation network unavailable");
+    }
     const cache = await caches.open(CACHE_NAME);
     // Ne stocker que les réponses valides
     if (networkResponse.status === 200) {
@@ -471,9 +480,12 @@ async function networkFirstHtml(request) {
 /**
  * Network-First générique avec fallback cache.
  */
-async function networkFirstWithFallback(request, cacheName) {
+async function networkFirstWithFallback(request, cacheName, timeoutMs = 8000) {
   try {
-    const response = await fetchWithTimeout(request);
+    const response = await fetchWithTimeout(request, timeoutMs);
+    if (!response || response.type === "error" || response.status === 0) {
+      throw new Error("Network unavailable");
+    }
     if (response && response.status === 200) {
       const cache = await caches.open(cacheName);
       await putBounded(cache, request, response.clone(), cacheName);

@@ -3850,10 +3850,14 @@ html body .app-root .quran-display--platform .cpv-ayah-marker {
     display: inline-flex !important;
     width: auto !important;
     height: auto !important;
-    margin-inline: 0.25em 0.15em !important;
+    margin-inline: 0.12em 0.72em !important;
     vertical-align: middle !important;
     transform: none;
     line-height: 1 !important;
+}
+
+.mushaf-text-block .cpv-ayah-marker {
+    margin-inline: 0.12em 0.72em !important;
 }
 
 html body .app-root .native-ayah-marker,

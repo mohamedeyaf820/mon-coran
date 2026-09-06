@@ -10,6 +10,14 @@ export default function PWAUpdateBanner() {
     if (!('serviceWorker' in navigator)) return;
     let cancelled = false;
     let registration;
+    const checkForUpdate = () => {
+      if (!cancelled && navigator.onLine && registration) {
+        registration.update().catch(() => {});
+      }
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') checkForUpdate();
+    };
 
     const handleUpdateFound = () => {
       const sw = registration?.installing;
@@ -31,11 +39,17 @@ export default function PWAUpdateBanner() {
         return;
       }
       reg.addEventListener('updatefound', handleUpdateFound);
+      checkForUpdate();
     }).catch(() => {});
+
+    window.addEventListener('online', checkForUpdate);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       cancelled = true;
       registration?.removeEventListener('updatefound', handleUpdateFound);
+      window.removeEventListener('online', checkForUpdate);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
 
@@ -55,7 +69,7 @@ export default function PWAUpdateBanner() {
       role="alert"
       aria-live="polite"
       style={{
-        position: 'fixed', bottom: 'var(--space-5)', left: '50%', transform: 'translateX(-50%)',
+        position: 'fixed', bottom: 'calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + var(--space-3))', left: '50%', transform: 'translateX(-50%)',
         zIndex: 9999, background: 'var(--bg-card)', border: '1px solid var(--border)',
         borderRadius: 'var(--r-lg)', padding: 'var(--space-2) var(--space-4)', display: 'flex',
         alignItems: 'center', gap: 'var(--space-3)', boxShadow: 'var(--shadow-md)',
@@ -70,6 +84,7 @@ export default function PWAUpdateBanner() {
           background: 'var(--primary)', color: '#fff', border: 'none',
           borderRadius: 'var(--r-sm)', padding: 'var(--space-1) var(--space-3)', fontWeight: 700,
           cursor: 'pointer', fontSize: 'var(--ts-xs, 0.75rem)', whiteSpace: 'nowrap',
+          minWidth: 44, minHeight: 44,
         }}
       >
         {t('pwa.update', lang)}

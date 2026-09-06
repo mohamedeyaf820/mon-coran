@@ -113,6 +113,8 @@ test("reading refresh keeps mushaf visible without stale blur overlay", async ({
   await assertNoBlockingVeil(page);
   await assertNoHorizontalOverflow(page);
 
+  // The verse text mounts a frame or two after the reader shell on reload.
+  await expect.poll(() => getArabicFontSize(page), { timeout: 15_000 }).toBeGreaterThanOrEqual(24);
   const reloadedSize = await getArabicFontSize(page);
   expect(reloadedSize).toBeGreaterThanOrEqual(24);
   expect(reloadedSize).toBeLessThanOrEqual(72);

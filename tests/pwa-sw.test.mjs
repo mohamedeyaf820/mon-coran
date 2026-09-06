@@ -40,6 +40,34 @@ test("service worker bounds runtime caches and awaits cache writes", () => {
   );
 });
 
+test("Quran API requests prefer the network and retain an offline fallback", () => {
+  assert.match(
+    sw,
+    /api\.alquran\.cloud[\s\S]*?networkFirstWithFallback\(event\.request, API_CACHE_NAME, 4500\)/,
+  );
+  assert.match(sw, /const API_CACHE_NAME = "mushaf-plus-api-v7"/);
+  assert.match(sw, /response\.type === "error" \|\| response\.status === 0/);
+});
+
+test("navigation treats browser error responses as offline and keeps the cached shell", () => {
+  assert.match(
+    sw,
+    /networkResponse\.type === "error" \|\| networkResponse\.status === 0/,
+  );
+  assert.match(sw, /cache\.match\("\/index\.html"\)/);
+
+  const generator = fs.readFileSync(
+    new URL("../scripts/generate-shell-manifest.mjs", import.meta.url),
+    "utf8",
+  );
+  assert.match(generator, /src\/styles\/deferredStyles\.js/);
+});
+
+test("optional catalog data cannot prevent service-worker installation", () => {
+  assert.match(sw, /const OPTIONAL_ASSETS_TO_CACHE =/);
+  assert.match(sw, /Promise\.allSettled\([\s\S]*?OPTIONAL_ASSETS_TO_CACHE/);
+});
+
 test("service worker does not precache optional PWA gallery screenshots", () => {
   const precache = sw.match(/const ASSETS_TO_CACHE = \[[\s\S]*?\];/)?.[0] || "";
   assert.ok(precache, "app shell precache list missing");

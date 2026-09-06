@@ -18,7 +18,11 @@ function mockQuranComVerse(
   ayah,
   page = 1,
   juz = 1,
-  { corruptFatihaWords = false, withWaqfSigns = false } = {},
+  {
+    corruptFatihaTajweed = false,
+    corruptFatihaWords = false,
+    withWaqfSigns = false,
+  } = {},
 ) {
   const isNajmFourthAyah = Number(surah) === 53 && Number(ayah) === 4;
   const isFatiha = Number(surah) === 1;
@@ -49,9 +53,12 @@ function mockQuranComVerse(
     manzil_number: 1,
     text_uthmani: text,
     text_uthmani_simple: text,
-    text_uthmani_tajweed: isNajmFourthAyah
-      ? '<span class="tajweed-ghunnah">إِنْ</span> هُوَ إِلَّا <span class="tajweed-madda_normal">وَحْيٌ</span> يُوحَىٰ'
-      : text,
+    text_uthmani_tajweed:
+      corruptFatihaTajweed && Number(surah) === 1 && Number(ayah) === 1
+        ? FATIHA_WORDS[2].join(" ")
+        : isNajmFourthAyah
+          ? '<span class="tajweed-ghunnah">إِنْ</span> هُوَ إِلَّا <span class="tajweed-madda_normal">وَحْيٌ</span> يُوحَىٰ'
+          : text,
     text_qpc_hafs: text,
     text_qpc_nastaleeq_hafs: text,
     translations: [

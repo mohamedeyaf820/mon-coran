@@ -413,6 +413,19 @@ export default function Header({ immersiveHidden = false }) {
 
   const quickItems = [
     {
+      key: "home",
+      Icon: Home,
+      label: tr({ fr: "Accueil", en: "Home", ar: "الرئيسية" }),
+      description: tr({
+        fr: "Revenir à la bibliothèque",
+        en: "Return to the library",
+        ar: "العودة إلى المكتبة",
+      }),
+      action: goHome,
+      mobileOnly: true,
+      readingOnly: true,
+    },
+    {
       key: "search",
       Icon: Search,
       label: i18nT("nav.search", lang),
@@ -878,7 +891,13 @@ export default function Header({ immersiveHidden = false }) {
               ) : null}
 
               <div className="mp-header-menu__section">
-                {quickItems.filter((item) => item.key !== "search").map(renderQuickItem)}
+                {quickItems
+                  .filter(
+                    (item) =>
+                      item.key !== "search" &&
+                      (!item.readingOnly || isReadingView),
+                  )
+                  .map(renderQuickItem)}
               </div>
 
             </PopoverContent>

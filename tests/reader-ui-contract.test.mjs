@@ -56,7 +56,7 @@ test("dua cards keep a single compact reader action", () => {
   assert.doesNotMatch(page, /dua-card-footer-copy/);
   assert.doesNotMatch(page, /Source coranique accessible directement/);
   assert.match(page, /className="dua-card-footer"[\s\S]*?className="dua-card-footer-link"/);
-  assert.match(styles, /\.dua-card-footer\s*\{[\s\S]*?justify-content: flex-end/);
+  assert.match(styles, /\.dua-card-footer\s*\{[\s\S]*?justify-content: space-between/);
 });
 
 test("surah information opens as an accessible responsive dossier", () => {
@@ -141,7 +141,7 @@ test("mobile reader shell follows the Tajweed card and keeps an explicit home lo
   assert.match(header, /mp-header__home-badge/);
   assert.match(styles, /quran-display\.quran-display--platform[\s\S]*?padding-top: 0(?:\s*!important)?/);
   assert.match(styles, /quran-display\.quran-display--platform > \.tajweed-legend[\s\S]*?margin-top: 0(?:\s*!important)?/);
-  assert.match(styles, /@media \(max-width: 380px\)[\s\S]*?--mp-header-control: 40px/);
+  assert.match(styles, /@media \(max-width: 380px\)[\s\S]*?--mp-header-control: 44px/);
   assert.doesNotMatch(styles, /@media \(max-width: 380px\)\s*\{\s*html body \.app-root > \.mp-header \.mp-header__brand\s*\{\s*display: none/);
 });
 

@@ -53,10 +53,11 @@ const inflight = new Map();
 // Current AbortController for cancellable navigations
 let currentAbort = null;
 
-import { dbGet, dbPruneByPrefix, dbSet, getDB } from './dbService';
+import { dbDelete, dbGet, dbPruneByPrefix, dbSet, getDB } from './dbService';
 import { normalizeArabicSearchText } from '../utils/searchIntelligence';
 
-const IDB_API_PREFIX = 'api:';
+const IDB_API_PREFIX = 'api:v2:';
+const LEGACY_IDB_API_PREFIXES = ['api:'];
 const IDB_STORE = 'cache';
 const SEARCH_INDEX_IDB_KEY = `${IDB_API_PREFIX}search-index-v1`;
 const SEARCH_INDEX_TTL = 30 * 24 * 60 * 60 * 1000;
@@ -210,23 +211,27 @@ async function fetchJSON(url, signal, timeoutMs = FETCH_TIMEOUT) {
   try {
     const persisted = await dbGet(IDB_STORE, idbKey);
     if (persisted && persisted.data) {
+      const validatedPersisted = validateApiDataShape(url, persisted.data);
       const expiry = persisted.expiryAt || (persisted.ts ? persisted.ts + getCacheTtlByUrl(url) : 0);
       // If not expired, use it directly
       if (expiry > Date.now()) {
-        cache.set(url, persisted.data);
+        cache.set(url, validatedPersisted);
         pruneCache();
-        return persisted.data;
+        return validatedPersisted;
       }
       // If expired but we have data, use stale data AND refresh in background
       if (persisted.data) {
-        cache.set(url, persisted.data);
+        cache.set(url, validatedPersisted);
         pruneCache();
         // Refresh in background (fire-and-forget)
         _refreshInBackground(url, idbKey, signal);
-        return persisted.data;
+        return validatedPersisted;
       }
     }
-  } catch { /* IDB read failure — continue to network */ }
+  } catch {
+    dbDelete(IDB_STORE, idbKey).catch(() => {});
+    /* Invalid/failed IDB read — continue to network. */
+  }
 
   if (signal?.aborted) {
     throw new DOMException('Request aborted', 'AbortError');
@@ -716,7 +721,12 @@ export async function clearCache() {
     const store = tx.objectStore(IDB_STORE);
     let cursor = await store.openCursor();
     while (cursor) {
-      if (typeof cursor.key === 'string' && cursor.key.startsWith(IDB_API_PREFIX)) {
+      if (
+        typeof cursor.key === 'string' &&
+        [IDB_API_PREFIX, ...LEGACY_IDB_API_PREFIXES].some((prefix) =>
+          cursor.key.startsWith(prefix),
+        )
+      ) {
         await cursor.delete();
       }
       cursor = await cursor.continue();

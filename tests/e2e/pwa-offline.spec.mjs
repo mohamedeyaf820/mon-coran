@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.use({ serviceWorkers: "allow" });
 
-test("PWA: the visited app shell reloads while offline", async ({ page, context }) => {
+test("PWA: the visited app shell is served while offline", async ({ page, context }) => {
   await page.addInitScript(() => {
     localStorage.setItem("mushaf-plus-settings", JSON.stringify({
       skipSplashAnimation: true,

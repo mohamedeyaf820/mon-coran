@@ -1,6 +1,9 @@
 import React, { useMemo } from "react";
 import { shallowEqual, useAppSelector } from "../../context/AppContext";
-import { stripBasmala } from "../../utils/quranUtils";
+import {
+  isQuranTextCoherent,
+  stripBasmala,
+} from "../../utils/quranUtils";
 import { withWordCountCalibrationBump } from "../../utils/karaokeUtils";
 import {
   appendNativeAyahMarker,
@@ -62,14 +65,28 @@ function SmartAyahRendererComponent({
     if (effectiveRiwaya === "warsh") {
       value = cleanFallbackText || baseCleanText;
     } else {
-      value =
-        ayah.quranCom?.textTajweed ||
+      const verseTajweed = stripBasmala(
+        ayah.quranCom?.textTajweed || "",
+        surahNum,
+        ayah.numberInSurah,
+      ).trim();
+      const wordTajweed = stripBasmala(
         ayah.words
-          ?.map((word) => word.textTajweed || word.textUthmani || word.text)
+          ?.filter((word) => !word.charType || word.charType === "word")
+          .map((word) => word.textTajweed || word.textUthmani || word.text)
           .filter(Boolean)
-          .join(" ") ||
-        cleanFallbackText ||
-        baseCleanText;
+          .join(" ") || "",
+        surahNum,
+        ayah.numberInSurah,
+      ).trim();
+
+      if (isQuranTextCoherent(baseCleanText, verseTajweed)) {
+        value = verseTajweed;
+      } else if (isQuranTextCoherent(baseCleanText, wordTajweed)) {
+        value = wordTajweed;
+      } else {
+        value = cleanFallbackText || baseCleanText;
+      }
     }
     return appendNativeAyahMarker(
       value,
@@ -87,6 +104,7 @@ function SmartAyahRendererComponent({
     cleanFallbackText,
     effectiveRiwaya,
     fontFamily,
+    surahNum,
   ]);
   const effectiveCalibration = withWordCountCalibrationBump(
     calibration || DEFAULT_HAFS_CALIBRATION,
