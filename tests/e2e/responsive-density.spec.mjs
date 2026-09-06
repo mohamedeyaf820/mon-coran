@@ -530,8 +530,17 @@ test("compact tablet reader keeps one surface, an independent surah identity and
   const player = page.getByTestId("audio-player-compact");
   await expect(player).toBeVisible();
   const playerBox = await player.boundingBox();
-  // A classic scrollbar (Linux runners) narrows the layout viewport.
-  const layoutWidth = await page.evaluate(() => document.documentElement.clientWidth);
+  // A classic scrollbar gutter (Linux runners, `scrollbar-gutter: stable` on
+  // the root) narrows the containing block of fixed elements without
+  // changing clientWidth: measure that block with a fixed probe.
+  const layoutWidth = await page.evaluate(() => {
+    const probe = document.createElement("div");
+    probe.style.cssText = "position:fixed;inset:0;pointer-events:none;visibility:hidden";
+    document.body.appendChild(probe);
+    const width = probe.getBoundingClientRect().width;
+    probe.remove();
+    return width;
+  });
   expect(playerBox?.x || 0).toBeLessThanOrEqual(1);
   expect((playerBox?.x || 0) + (playerBox?.width || 0)).toBeGreaterThanOrEqual(layoutWidth - 1);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
