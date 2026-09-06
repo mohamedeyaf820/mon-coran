@@ -718,7 +718,10 @@ export default function App() {
       ) : null}
       <div
         className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${!showHome && !showDuas && !legalPage && !routeNotFound ? "view-reading" : ""}`}
-        style={{ height: "100dvh", minHeight: "100dvh" }}
+        style={{
+          height: "var(--app-viewport-h, 100dvh)",
+          minHeight: "var(--app-viewport-h, 100dvh)",
+        }}
         dir={lang === "ar" ? "rtl" : "ltr"}
         data-view={routeNotFound ? "not-found" : legalPage ? "legal" : showHome ? "home" : showDuas ? "duas" : "reading"}
         data-home-section={showHome ? state.homeSection || "surah" : undefined}
@@ -803,8 +806,8 @@ export default function App() {
                 ? "env(safe-area-inset-bottom, 0px)"
                 : "var(--player-h, 0px)",
               height: immersiveHidden
-                ? "100dvh"
-                : "calc(100dvh - var(--header-h, 72px))",
+                ? "var(--app-viewport-h, 100dvh)"
+                : "calc(var(--app-viewport-h, 100dvh) - var(--header-h, 72px))",
             }}
           >
             <div

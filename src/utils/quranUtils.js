@@ -9,9 +9,8 @@ const CACHE_MAX = 800;
 // fallback glyphs while the specialised face is loading on mobile:
 // - U+25CC is an internal positioning anchor (a large dotted circle in fallback)
 // - U+06EC is the QPC form of the pause/ishmam sign found as canonical U+06EB
-//   in Quran.com's Uthmani text (notably Yusuf 12:11). Normalising it preserves
-//   the Quranic sign while avoiding the solid black square/dot shown by fallback
-//   fonts on Android.
+//   in Quran.com's Uthmani text (notably Yusuf 12:11). Normalising it to the
+//   canonical sign avoids the solid black square/dot shown by fallback fonts.
 // - U+200C is sometimes inserted immediately before a Quranic annotation mark
 //   (for example Al-Mulk 67:2: tanwin + ZWNJ + U+06DA). That separator detaches
 //   the combining mark from its base letter, so browsers draw a dotted-circle
@@ -19,8 +18,34 @@ const CACHE_MAX = 800;
 export function normalizeQuranGlyphText(text) {
     return String(text || '')
         .replace(/[\u25CC\u25CF\u25CB\u2B24\u2022]/g, '')
-        .replace(/[\u06EB\u06EC]/g, '\u06DF')
+        .replace(/\u06EC/g, '\u06EB')
         .replace(/\u200C(?=[\u06D6-\u06ED])/g, '');
+}
+
+/**
+ * Produce a conservative Arabic skeleton for Quran text integrity checks.
+ * Tajwid payloads may contain HTML spans and a different set of diacritics,
+ * but they must never contain a different sequence of Quran letters.
+ */
+export function getComparableQuranText(text) {
+    return normalizeQuranGlyphText(text)
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;|&#160;/gi, ' ')
+        .replace(/&amp;/gi, '&')
+        .normalize('NFC')
+        .replace(/[\u0610-\u061A\u0640\u064B-\u065F\u0670\u06D6-\u06ED]/gu, '')
+        .replace(/[\u06DD\u06DE\u06E9\uFC00-\uFCFF\uFDF0-\uFDFF]/gu, '')
+        .replace(/[\u0660-\u0669\u06F0-\u06F9\d﴿﴾]/gu, '')
+        .replace(/[أإآٱ]/gu, 'ا')
+        .replace(/ى/gu, 'ي')
+        .replace(/[\u200C\u200D\u200E\u200F\u202A-\u202E\u2066-\u2069\s]/gu, '')
+        .trim();
+}
+
+export function isQuranTextCoherent(referenceText, candidateText) {
+    const reference = getComparableQuranText(referenceText);
+    const candidate = getComparableQuranText(candidateText);
+    return Boolean(reference && candidate && reference === candidate);
 }
 
 

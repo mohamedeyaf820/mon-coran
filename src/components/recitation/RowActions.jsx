@@ -6,6 +6,7 @@ import {
   cancelOfflineDownload,
   downloadSurahForReciter,
   getSurahDownloadEntry,
+  verifySurahDownloadForReciter,
 } from "../../services/downloadService";
 
 function labelsFor(lang) {
@@ -98,10 +99,20 @@ export default function RowActions({
       if (!isDownloading) setLiveProgress(getProgress(nextEntry));
     };
     refresh();
+    if (canDownload) {
+      verifySurahDownloadForReciter({ surahMeta: surah, reciter, riwaya })
+        .then((verified) => {
+          if (verified) {
+            setEntry(verified);
+            if (!isDownloading) setLiveProgress(getProgress(verified));
+          }
+        })
+        .catch(() => {});
+    }
     window.addEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
     return () =>
       window.removeEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
-  }, [isDownloading, readEntry]);
+  }, [canDownload, isDownloading, readEntry, reciter, riwaya, surah]);
 
   const isOffline = entry?.status === "done";
   const downloadLabel = useMemo(() => {
@@ -136,7 +147,7 @@ export default function RowActions({
     setIsDownloading(true);
     setLiveProgress(getProgress(entry));
     const result = await downloadSurahForReciter(
-      { surahMeta: surah, reciter, riwaya },
+      { surahMeta: surah, reciter, riwaya, includeReadingData: true },
       (done, total) => {
         setLiveProgress(total > 0 ? Math.round((done / total) * 100) : 0);
       },

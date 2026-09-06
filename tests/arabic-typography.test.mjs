@@ -13,6 +13,10 @@ import {
   getUiAyahMarker,
   stripEmbeddedAyahMarkers,
 } from "../src/data/fonts.js";
+import {
+  getComparableQuranText,
+  isQuranTextCoherent,
+} from "../src/utils/quranUtils.js";
 
 test("Arabic typography clamps unsafe preferences", () => {
   assert.equal(clampArabicFontSize(-10), 12);
@@ -179,6 +183,17 @@ test("Yusuf 12:11 keeps its Quranic sign without the mobile black-dot fallback g
   assert.equal(rendered.includes("\u06EB"), true);
 });
 
+test("Quran integrity rejects a Tajwid payload belonging to another ayah", () => {
+  const bismillah = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ";
+  const taggedBismillah =
+    '<span class="tajweed-ghunnah">بِسْمِ</span> اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ';
+  const nextAyah = "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ";
+
+  assert.equal(getComparableQuranText(taggedBismillah), getComparableQuranText(bismillah));
+  assert.equal(isQuranTextCoherent(bismillah, taggedBismillah), true);
+  assert.equal(isQuranTextCoherent(bismillah, nextAyah), false);
+});
+
 test("Al-Mulk pause signs stay attached to the preceding Uthmani glyph", () => {
   const qpcText = "\u0639\u064E\u0645\u064E\u0644\u0627\u064B\u200C\u06DA \u0648\u064E\u0647\u064F\u0648\u064E";
   const ayah = {
@@ -228,7 +243,7 @@ test("all supported embedded ayah marker forms collapse to one generated marker"
     assert.equal(stripEmbeddedAyahMarkers(payload), verse);
     for (const [fontFamily, riwaya, expectedMarker] of fontMarkers) {
       const rendered = appendNativeAyahMarker(payload, 1, fontFamily, riwaya);
-      assert.equal(rendered, `${verse} ${expectedMarker}`, fontFamily);
+      assert.equal(rendered, `${verse}\u202F${expectedMarker}`, fontFamily);
     }
   }
 

@@ -346,6 +346,7 @@ function AyahTextRendererComponent({
     () => hasCoherentWordData(clickableWords, text, fontFamily, riwaya, surahNum, ayahNumber),
     [ayahNumber, clickableWords, fontFamily, riwaya, surahNum, text],
   );
+  const safeWords = wordDataIsCoherent ? clickableWords : [];
 
   if (!text) return null;
 
@@ -355,7 +356,7 @@ function AyahTextRendererComponent({
         text={text}
         isFirstAyah={isFirstAyah}
         calibration={calibration}
-        words={words}
+        words={safeWords}
       />
     );
   }
@@ -365,7 +366,7 @@ function AyahTextRendererComponent({
       <CanonicalQuranText
         text={text}
         riwaya={riwaya}
-        words={clickableWords}
+        words={safeWords}
         surahNum={surahNum}
         ayahNumber={ayahNumber}
       />

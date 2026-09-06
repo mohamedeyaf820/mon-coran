@@ -1,32 +1,62 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "../styles/domains/duas-page.css";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import QURAN_DUAS from "../data/duas";
 import SURAHS from "../data/surahs";
 import Footer from "./Footer";
-import { Home, Search, BookOpen, Copy, ExternalLink, ArrowRight } from "lucide-react";
+import {
+  BookOpen,
+  Check,
+  Copy,
+  ExternalLink,
+  Home,
+  LibraryBig,
+  Search,
+  X,
+} from "lucide-react";
 
 const CATEGORIES = [
-  { id: "all", fr: "Toutes", en: "All", ar: "الكل" },
-  { id: "daily", fr: "Quotidien (Hisn)", en: "Daily (Hisn)", ar: "أذكار اليوم" },
-  { id: "protection", fr: "Protection", en: "Protection", ar: "التحصين" },
-  { id: "ibadah", fr: "Adoration", en: "Worship", ar: "العبادة" },
-  { id: "tawhid", fr: "Tawhid", en: "Tawhid", ar: "التوحيد" },
-  { id: "hidayah", fr: "Guidee", en: "Guidance", ar: "الهداية" },
-  { id: "forgiveness", fr: "Pardon", en: "Forgiveness", ar: "المغفرة" },
-  { id: "steadfastness", fr: "Fermete", en: "Steadfastness", ar: "الثبات" },
-  { id: "family", fr: "Famille", en: "Family", ar: "الاسرة" },
-  { id: "dunya-akhirah", fr: "Dounya & Akhira", en: "Dunya & Akhirah", ar: "الدنيا والاخرة" },
-  { id: "ummah", fr: "Oumma", en: "Ummah", ar: "الامة" },
-  { id: "rizq", fr: "Rizq", en: "Provision", ar: "الرزق" },
-  { id: "shifa", fr: "Guerison", en: "Healing", ar: "الشفاء" },
-  { id: "safar", fr: "Voyage", en: "Travel", ar: "السفر" },
+  "all",
+  "daily",
+  "protection",
+  "ibadah",
+  "tawhid",
+  "hidayah",
+  "forgiveness",
+  "steadfastness",
+  "family",
+  "dunya-akhirah",
+  "ummah",
+  "rizq",
+  "shifa",
+  "safar",
 ];
 
-const CATEGORY_MAP = Object.fromEntries(
-  CATEGORIES.map((category) => [category.id, category]),
-);
+function normalizeSearchText(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLocaleLowerCase();
+}
+
+async function writeToClipboard(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.select();
+  const copied = document.execCommand("copy");
+  textarea.remove();
+  if (!copied) throw new Error("Clipboard unavailable");
+}
 
 export default function DuasPage() {
   const { state, dispatch, set } = useApp();
@@ -34,61 +64,78 @@ export default function DuasPage() {
 
   const [activeCategory, setActiveCategory] = useState("all");
   const [query, setQuery] = useState("");
+  const [copiedDua, setCopiedDua] = useState(null);
+  const copyTimerRef = useRef(null);
+
+  useEffect(
+    () => () => {
+      window.clearTimeout(copyTimerRef.current);
+    },
+    [],
+  );
 
   const labels = {
-    title: lang === "ar" ? "أدعية من القرآن والسنة" : lang === "fr" ? "Invocations & Citadelle du Musulman" : "Invocations & Fortress of the Muslim",
-    subtitle:
-      lang === "ar"
-        ? "مجموعة شاملة للأدعية القرآنية وأذكار اليوم والليلة من حصن المسلم"
-        : lang === "fr"
-          ? "Une bibliothèque complète d'invocations coraniques et d'adhkar quotidiens (Hisn al-Muslim)."
-          : "A complete library of Quranic supplications and daily adhkar from Hisn al-Muslim.",
-    back: lang === "ar" ? "الرئيسية" : lang === "fr" ? "Accueil" : "Home",
-    search:
-      lang === "ar"
-        ? "ابحث في الأدعية والأذكار..."
-        : lang === "fr"
-          ? "Rechercher une invocation, mosquée, pluie, réveil..."
-          : "Search supplications, mosque, rain, morning...",
-    collection:
-      lang === "ar"
-        ? "مكتبة الأدعية والأذكار"
-        : lang === "fr"
-          ? "Bibliothèque d'invocations"
-          : "Supplication library",
-    collectionCopy:
-      lang === "ar"
-        ? "قراءة مريحة: المصدر، الدعاء، الترجمة، مع إمكانية النسخ والمشاركة."
-        : lang === "fr"
-          ? "Cartes compactes : référence vérifiée, arabe vocalisé, phonétique et traduction."
-          : "Compact cards: verified reference, vocalized Arabic, transliteration, and translation.",
-    noResults: lang === "ar" ? "لا توجد نتائج مطابقة" : lang === "fr" ? "Aucune invocation trouvée" : "No results found",
+    title: t("duas.title", lang),
+    eyebrow: t("duas.eyebrow", lang),
+    subtitle: t("duas.subtitle", lang),
+    back: t("duas.back", lang),
+    search: t("duas.search", lang),
+    clearSearch: t("duas.clearSearch", lang),
+    collection: t("duas.collection", lang),
+    collectionCopy: t("duas.collectionCopy", lang),
+    noResults: t("duas.noResults", lang),
+    noResultsHint: t("duas.noResultsHint", lang),
+    resetFilters: t("duas.resetFilters", lang),
+    copy: t("duas.copy", lang),
+    copied: t("duas.copied", lang),
+    copyError: t("duas.copyError", lang),
+    openQuran: t("duas.openQuran", lang),
+    quranSource: t("duas.quranSource", lang),
+    sunnahSource: t("duas.sunnahSource", lang),
   };
 
-  const copyDua = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      window.dispatchEvent(
-        new CustomEvent("quran-toast", {
-          detail: {
-            type: "success",
-            message: lang === "ar" ? "تم النسخ بنجاح!" : lang === "fr" ? "Invocation copiée !" : "Copied successfully!",
-          },
-        }),
-      );
-    });
+  const notify = (type, message) => {
+    window.dispatchEvent(
+      new CustomEvent("quran-toast", {
+        detail: { type, message },
+      }),
+    );
+  };
+
+  const copyDua = async (text, duaKey) => {
+    try {
+      await writeToClipboard(text);
+      window.clearTimeout(copyTimerRef.current);
+      setCopiedDua(duaKey);
+      copyTimerRef.current = window.setTimeout(() => setCopiedDua(null), 1800);
+      notify("success", labels.copied);
+    } catch {
+      notify("error", labels.copyError);
+    }
   };
 
   const filteredDuas = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const normalizedQuery = normalizeSearchText(query.trim());
     return QURAN_DUAS.filter((dua) => {
-      const categoryOk = activeCategory === "all" || dua.category === activeCategory;
-      if (!categoryOk) return false;
-      if (!q) return true;
-      return `${dua.arabic} ${dua.transliteration || ""} ${dua.fr || ""} ${dua.en || ""} ${dua.source || ""}`
-        .toLowerCase()
-        .includes(q);
+      const categoryMatches = activeCategory === "all" || dua.category === activeCategory;
+      if (!categoryMatches) return false;
+      if (!normalizedQuery) return true;
+
+      const searchableText = [
+        dua.arabic,
+        dua.transliteration,
+        dua.fr,
+        dua.en,
+        dua.source,
+        dua.title?.fr,
+        dua.title?.en,
+        dua.title?.ar,
+        t(`duas.categories.${dua.category}`, lang),
+      ].join(" ");
+
+      return normalizeSearchText(searchableText).includes(normalizedQuery);
     });
-  }, [activeCategory, query]);
+  }, [activeCategory, lang, query]);
 
   const goToVerse = (surah, ayah) => {
     if (!surah) return;
@@ -96,26 +143,27 @@ export default function DuasPage() {
     dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah } });
   };
 
-  const activeCategoryMeta = CATEGORY_MAP[activeCategory] || CATEGORY_MAP.all;
-  const activeCategoryLabel =
-    lang === "ar"
-      ? activeCategoryMeta.ar
-      : lang === "fr"
-        ? activeCategoryMeta.fr
-        : activeCategoryMeta.en;
-  const resultCountLabel =
-    lang === "ar"
-      ? `${filteredDuas.length} دعاء`
-      : lang === "fr"
-        ? `${filteredDuas.length} invocation${filteredDuas.length > 1 ? "s" : ""}`
-        : `${filteredDuas.length} supplication${filteredDuas.length > 1 ? "s" : ""}`;
+  const resetFilters = () => {
+    setActiveCategory("all");
+    setQuery("");
+  };
+
+  const activeCategoryLabel = t(`duas.categories.${activeCategory}`, lang);
+  const resultCountLabel = t("duas.resultCount", lang, filteredDuas.length);
+  const totalCountLabel = t("duas.totalCount", lang, QURAN_DUAS.length);
 
   return (
-    <div className="duas-page duas-page--platform">
-      <section className="duas-hero">
+    <div className="duas-page duas-page--platform duas-page--revamp" id="duas-page">
+      <section className="duas-hero" aria-labelledby="duas-page-title">
         <div className="duas-hero-head">
           <div className="duas-hero-content">
-            <h1 className="duas-title">{labels.title}</h1>
+            <p className="duas-eyebrow">
+              <LibraryBig size={15} aria-hidden="true" />
+              <span>{labels.eyebrow}</span>
+              <span className="duas-eyebrow-divider" aria-hidden="true" />
+              <strong>{totalCountLabel}</strong>
+            </p>
+            <h1 className="duas-title" id="duas-page-title">{labels.title}</h1>
             <p className="duas-subtitle">{labels.subtitle}</p>
           </div>
 
@@ -124,86 +172,106 @@ export default function DuasPage() {
             onClick={() => set({ showDuas: false, showHome: true })}
             type="button"
           >
-            <Home size={16} aria-hidden="true" />
-            {labels.back}
+            <Home size={17} aria-hidden="true" />
+            <span>{labels.back}</span>
           </button>
         </div>
 
         <div className="duas-tools">
           <label className="duas-search-wrap">
-            <Search size={16} aria-hidden="true" />
+            <Search size={19} aria-hidden="true" />
             <input
-              type="text"
+              type="search"
               className="duas-search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder={labels.search}
               aria-label={labels.search}
+              autoComplete="off"
             />
+            {query && (
+              <button
+                className="duas-search-clear"
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label={labels.clearSearch}
+                title={labels.clearSearch}
+              >
+                <X size={17} aria-hidden="true" />
+              </button>
+            )}
           </label>
 
           <div
             className="duas-categories scrollbar-hide"
-            role="tablist"
+            role="group"
             aria-label={t("duas.categoriesLabel", lang)}
           >
-            {CATEGORIES.map((cat) => (
+            {CATEGORIES.map((categoryId) => (
               <button
-                key={cat.id}
-                className={`duas-cat-btn ${activeCategory === cat.id ? "active" : ""}`}
-                onClick={() => setActiveCategory(cat.id)}
-                role="tab"
-                aria-selected={activeCategory === cat.id}
+                key={categoryId}
+                className={`duas-cat-btn ${activeCategory === categoryId ? "active" : ""}`}
+                onClick={() => setActiveCategory(categoryId)}
+                aria-pressed={activeCategory === categoryId}
                 type="button"
               >
-                {lang === "ar" ? cat.ar : lang === "fr" ? cat.fr : cat.en}
+                {t(`duas.categories.${categoryId}`, lang)}
               </button>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="duas-results" aria-live="polite">
+      <section className="duas-results" aria-labelledby="duas-results-title">
         <div className="duas-results-head">
-          <div>
-            <h2 className="duas-results-title">{labels.collection}</h2>
+          <div className="duas-results-heading">
+            <p className="duas-results-kicker">{activeCategoryLabel}</p>
+            <h2 className="duas-results-title" id="duas-results-title">{labels.collection}</h2>
             <p className="duas-results-copy">{labels.collectionCopy}</p>
           </div>
-          <div className="duas-results-badge" aria-live="polite">
-            <span>{activeCategoryLabel}</span>
-            <strong>{resultCountLabel}</strong>
-          </div>
+          <output className="duas-results-badge" aria-live="polite">
+            {resultCountLabel}
+          </output>
         </div>
 
-        <div className="gallery-grid">
+        <div className="gallery-grid" id="duas-results-grid">
           {filteredDuas.length === 0 && (
-            <div className="duas-empty">
-              <Search size={24} />
-              <p>{labels.noResults}</p>
+            <div className="duas-empty" role="status">
+              <span className="duas-empty-icon" aria-hidden="true"><Search size={25} /></span>
+              <div>
+                <h3>{labels.noResults}</h3>
+                <p>{labels.noResultsHint}</p>
+              </div>
+              <button type="button" onClick={resetFilters}>{labels.resetFilters}</button>
             </div>
           )}
 
           {filteredDuas.map((dua, idx) => {
             const hasSurah = Boolean(dua.surah);
             const sIndex = (dua.surah || 1) - 1;
-            const sData = SURAHS[sIndex] || {
-              ar: "السورة",
-              fr: "Sourate",
-              en: "Surah",
-            };
+            const sData = SURAHS[sIndex] || { ar: "السورة", fr: "Sourate", en: "Surah" };
             const sTitle = lang === "ar" ? sData.ar : lang === "fr" ? sData.fr : sData.en;
-            const category =
-              CATEGORY_MAP[dua.category] || CATEGORY_MAP.all;
-            const categoryLabel =
-              lang === "ar" ? category.ar : lang === "fr" ? category.fr : category.en;
+            const categoryLabel = t(`duas.categories.${dua.category}`, lang);
+            const duaKey = `${dua.id}-${idx}`;
+            const itemTitle = dua.title
+              ? lang === "ar"
+                ? dua.title.ar
+                : lang === "fr"
+                  ? dua.title.fr
+                  : dua.title.en
+              : null;
 
             return (
-              <article key={`${dua.id}-${idx}`} className="dua-card-v5">
+              <article
+                key={duaKey}
+                className="dua-card-v5"
+                data-source-type={hasSurah ? "quran" : "sunnah"}
+              >
                 <div className="dua-card-inner">
-                  <div className="dua-card-head">
+                  <header className="dua-card-head">
                     <div className="dua-head-main">
-                      <div className="dua-ref-pill">
-                        <BookOpen size={12} aria-hidden="true" />
+                      <span className="dua-ref-pill">
+                        <BookOpen size={14} aria-hidden="true" />
                         <span>
                           {hasSurah ? (
                             <>
@@ -211,79 +279,74 @@ export default function DuasPage() {
                               <span className="dua-ref-nums"> · {dua.surah}:{dua.ayah}</span>
                             </>
                           ) : (
-                            dua.source || "Hisn al-Muslim"
+                            labels.sunnahSource
                           )}
                         </span>
-                      </div>
+                      </span>
                       <span className="dua-cat-pill">{categoryLabel}</span>
                     </div>
-                    <div className="dua-head-actions">
-                      <button
-                        className="dua-open-btn-v5"
-                        onClick={() =>
-                          copyDua(
-                            `${dua.arabic}\n\n${dua.transliteration ? `${dua.transliteration}\n\n` : ""}${lang === "fr" ? dua.fr : dua.en}${dua.source ? `\n— ${dua.source}` : ""}`,
-                          )
-                        }
-                        title={lang === "fr" ? "Copier" : lang === "ar" ? "نسخ الدعاء" : "Copy"}
-                        aria-label={lang === "fr" ? "Copier l'invocation" : lang === "ar" ? "نسخ الدعاء" : "Copy supplication"}
-                        type="button"
-                      >
-                        <Copy size={14} aria-hidden="true" />
-                      </button>
-                      {hasSurah && (
-                        <button
-                          className="dua-open-btn-v5"
-                          onClick={() => goToVerse(dua.surah, dua.ayah)}
-                          title={lang === "fr" ? "Ouvrir dans le Coran" : lang === "ar" ? "فتح في المصحف" : "Open in Quran"}
-                          aria-label={lang === "fr" ? "Ouvrir dans le Coran" : lang === "ar" ? "فتح في المصحف" : "Open in Quran"}
-                          type="button"
-                        >
-                          <ExternalLink size={14} aria-hidden="true" />
-                        </button>
+
+                    <button
+                      className={`dua-open-btn-v5 ${copiedDua === duaKey ? "is-copied" : ""}`}
+                      onClick={() =>
+                        copyDua(
+                          `${dua.arabic}\n\n${dua.transliteration ? `${dua.transliteration}\n\n` : ""}${lang === "fr" ? dua.fr : dua.en}${dua.source ? `\n— ${dua.source}` : ""}`,
+                          duaKey,
+                        )
+                      }
+                      title={copiedDua === duaKey ? labels.copied : labels.copy}
+                      aria-label={copiedDua === duaKey ? labels.copied : labels.copy}
+                      type="button"
+                    >
+                      {copiedDua === duaKey ? (
+                        <Check size={17} aria-hidden="true" />
+                      ) : (
+                        <Copy size={17} aria-hidden="true" />
                       )}
-                    </div>
-                  </div>
+                    </button>
+                  </header>
 
                   <div className="dua-content-area">
-                    {dua.title && (
-                      <h3 className="dua-item-title">
-                        {lang === "ar" ? dua.title.ar : lang === "fr" ? dua.title.fr : dua.title.en}
-                      </h3>
-                    )}
-                    <p className="dua-arabic">
-                      {String(dua.arabic || '').split(/([\u060C\u061B\u061F])/u).map((part, i) =>
+                    {itemTitle && <h3 className="dua-item-title">{itemTitle}</h3>}
+                    <blockquote className="dua-arabic" lang="ar" dir="rtl">
+                      {String(dua.arabic || "").split(/([\u060C\u061B\u061F])/u).map((part, partIndex) =>
                         /^[\u060C\u061B\u061F]$/u.test(part) ? (
-                          <span key={i} className="dua-arabic-punct">{part}</span>
+                          <span key={partIndex} className="dua-arabic-punct">{part}</span>
                         ) : (
                           part
-                        )
+                        ),
                       )}
-                    </p>
-                    {dua.transliteration && <p className="dua-translit">{dua.transliteration}</p>}
-                    <p className="dua-translation">
-                      {lang === "ar" ? dua.en : lang === "fr" ? dua.fr : dua.en}
-                    </p>
+                    </blockquote>
+                    <div className="dua-meaning">
+                      {dua.transliteration && (
+                        <p className="dua-translit" lang="ar-Latn">{dua.transliteration}</p>
+                      )}
+                      <p className="dua-translation">
+                        {lang === "ar" ? dua.en : lang === "fr" ? dua.fr : dua.en}
+                      </p>
+                    </div>
                   </div>
 
                   {hasSurah ? (
-                    <div className="dua-card-footer">
+                    <footer className="dua-card-footer">
+                      <span className="dua-source-caption">{labels.quranSource}</span>
                       <button
                         className="dua-card-footer-link"
                         onClick={() => goToVerse(dua.surah, dua.ayah)}
                         type="button"
-                        aria-label={lang === "fr" ? "Lire le verset dans le Coran" : lang === "ar" ? "فتح الآية في المصحف" : "Read verse in Quran"}
+                        aria-label={`${labels.openQuran} · ${sTitle} ${dua.surah}:${dua.ayah}`}
                       >
-                        <ArrowRight size={15} aria-hidden="true" />
-                        <span>{lang === "fr" ? "Lire dans le Coran" : lang === "ar" ? "فتح في المصحف" : "Read in Quran"}</span>
+                        <span>{labels.openQuran}</span>
+                        <ExternalLink size={16} aria-hidden="true" />
                       </button>
-                    </div>
+                    </footer>
                   ) : (
-                    <div className="dua-card-footer dua-card-footer--sunnah">
+                    <footer className="dua-card-footer dua-card-footer--sunnah">
                       <span className="dua-source-tag">
-                        {dua.source || "Hisn al-Muslim (Citadelle du Musulman)"}
+                        <BookOpen size={13} aria-hidden="true" />
+                        {dua.source || labels.sunnahSource}
                       </span>
-                    </div>
+                    </footer>
                   )}
                 </div>
               </article>
@@ -293,9 +356,9 @@ export default function DuasPage() {
       </section>
 
       <Footer
-        goSurah={(n) => {
+        goSurah={(surah) => {
           set({ showDuas: false, showHome: false });
-          dispatch({ type: "NAVIGATE_SURAH", payload: { surah: n, ayah: 1 } });
+          dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah: 1 } });
         }}
       />
     </div>

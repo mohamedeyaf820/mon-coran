@@ -104,6 +104,9 @@ export const downloadProgressEntrySchema = schema((value) => {
   ) {
     return null;
   }
+  if (value.textReady !== undefined && typeof value.textReady !== "boolean") {
+    return null;
+  }
   return value;
 });
 

@@ -58,6 +58,7 @@ const { getReciter } = await import("../src/data/reciters.js");
 const {
   downloadFullQuranForReciter,
   getFullQuranDownloadSummary,
+  verifySurahDownloadForReciter,
 } = await import("../src/services/downloadService.js");
 
 test("complete Quran downloads merge progress from concurrent workers", async () => {
@@ -72,4 +73,26 @@ test("complete Quran downloads merge progress from concurrent workers", async ()
   assert.equal(summary.completedSurahs, 114);
   assert.equal(summary.percent, 100);
   assert.equal(cachedResponses.size, 114);
+});
+
+test("offline registry is repaired when the browser evicts cached audio", async () => {
+  storedValues.clear();
+  cachedResponses.clear();
+  const reciter = getReciter("idris_abkar", "hafs");
+  const surah = { n: 1, ayahs: 7 };
+
+  const { downloadSurahForReciter } = await import("../src/services/downloadService.js");
+  assert.equal(
+    await downloadSurahForReciter({ surahMeta: surah, reciter, riwaya: "hafs" }),
+    "done",
+  );
+  cachedResponses.clear();
+
+  const repaired = await verifySurahDownloadForReciter({
+    surahMeta: surah,
+    reciter,
+    riwaya: "hafs",
+  });
+  assert.equal(repaired.status, "error");
+  assert.equal(repaired.downloaded, 0);
 });

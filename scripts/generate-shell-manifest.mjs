@@ -8,6 +8,7 @@ const SHELL_ENTRIES = [
   "index.html",
   "src/components/Header.jsx",
   "src/components/HomePage.jsx",
+  "src/styles/deferredStyles.js",
 ];
 
 const manifest = JSON.parse(await readFile(VITE_MANIFEST_PATH, "utf8"));

@@ -14,16 +14,16 @@ function isMarkerToken(str) {
 const QURAN_COM_CLASS_MAP = {
     ghunnah: 'ghunna',
     ghunna: 'ghunna',
-    ikhafa: 'ikhfa',
-    ikhfa: 'ikhfa',
-    ikhfa_shafawi: 'ikhfa',
-    idgham_ghunnah: 'idgham',
+    ikhafa: 'ghunna',
+    ikhfa: 'ghunna',
+    ikhfa_shafawi: 'ghunna',
+    idgham_ghunnah: 'ghunna',
     idgham_without_ghunnah: 'silent',
     idgham_wo_ghunnah: 'silent',
-    idgham_shafawi: 'idgham',
-    idgham_mutamathilayn: 'idgham',
-    idgham: 'idgham',
-    iqlab: 'iqlab',
+    idgham_shafawi: 'ghunna',
+    idgham_mutamathilayn: 'ghunna',
+    idgham: 'ghunna',
+    iqlab: 'ghunna',
     qalqalah: 'qalqala',
     qalaqah: 'qalqala',
     madda_necessary: 'madd',
@@ -195,13 +195,16 @@ const WAQF_RULES = {
 
 
 
-const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
+const WaqfSign = React.memo(function WaqfSign({ char, lang, riwaya }) {
     const rule = WAQF_RULES[char];
     const displayGlyph = getReadableWaqfGlyph(char);
     const codePoint = char.codePointAt(0)?.toString(16).toUpperCase();
+    const markerClassName = riwaya === 'warsh'
+        ? 'warsh-waqf-marker waqf-marker'
+        : 'waqf-marker';
     if (!rule) {
         return (
-            <span className="waqf-marker" data-waqf={codePoint} aria-label={char}>
+            <span className={markerClassName} data-waqf={codePoint} aria-label={char}>
                 {displayGlyph}
             </span>
         );
@@ -213,7 +216,7 @@ const WaqfSign = React.memo(function WaqfSign({ char, lang }) {
 
     return (
         <span
-            className="waqf-marker cursor-help"
+            className={`${markerClassName} cursor-help`}
             data-waqf={codePoint}
             data-tajwid-name={name}
             data-tajwid-desc={desc}
@@ -471,7 +474,7 @@ const TajweedText = React.memo(function TajweedText({
                 <span>
                     {parts.map((p, j) => 
                         waqfRegex.test(p) 
-                            ? <WaqfSign key={j} char={p} lang={lang} />
+                            ? <WaqfSign key={j} char={p} lang={lang} riwaya={riwaya} />
                             : p
                     )}
                 </span>
@@ -488,7 +491,7 @@ const TajweedText = React.memo(function TajweedText({
         if (waqfRegex.test(seg.text)) {
             return seg.text.split(waqfRegex).map((part, index) =>
                 waqfRegex.test(part)
-                    ? <WaqfSign key={`${key}-${index}`} char={part} lang={lang} />
+                    ? <WaqfSign key={`${key}-${index}`} char={part} lang={lang} riwaya={riwaya} />
                     : seg.ruleId && part
                         ? <TajweedRuleSegment
                             key={`${key}-${index}`}

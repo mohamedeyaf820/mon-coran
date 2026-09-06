@@ -622,8 +622,8 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
 
 test("verse list cards scale their controls and typography with the device", async ({ page }) => {
   for (const profile of [
-    { viewport: { width: 319, height: 698 }, control: 34, minArabic: 24.9, maxArabic: 29.1 },
-    { viewport: { width: 820, height: 920 }, control: 40, minArabic: 32, maxArabic: 40 },
+    { viewport: { width: 319, height: 698 }, control: 44, minArabic: 24.9, maxArabic: 29.1 },
+    { viewport: { width: 820, height: 920 }, control: 44, minArabic: 32, maxArabic: 40 },
   ]) {
     await openReader(page, profile.viewport);
 
@@ -664,19 +664,19 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(header?.height || 0).toBeLessThanOrEqual(56);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
   expect(audioDock?.height || 0).toBeLessThanOrEqual(160);
-  expect(firstAction?.width || 0).toBeGreaterThanOrEqual(39.9);
-  expect(firstAction?.height || 0).toBeGreaterThanOrEqual(39.9);
-  expect(firstAction?.width || 0).toBeLessThanOrEqual(40.1);
-  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(39.9);
-  expect(moreButton?.width || 0).toBeGreaterThanOrEqual(39.9);
-  expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(39.9);
-  expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(39.9);
-  expect(verseReference?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(verseReference?.width || 0).toBeLessThanOrEqual(34.1);
-  expect(versePlay?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(versePlay?.width || 0).toBeLessThanOrEqual(34.1);
-  expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(verseBookmark?.width || 0).toBeLessThanOrEqual(34.1);
+  expect(firstAction?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(firstAction?.height || 0).toBeGreaterThanOrEqual(43.9);
+  expect(firstAction?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(moreButton?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(43.9);
+  expect(verseReference?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(verseReference?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(versePlay?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(versePlay?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(verseBookmark?.width || 0).toBeLessThanOrEqual(44.1);
   expect(verseCard?.width || 0).toBeLessThanOrEqual(390);
   expect(versePlayIcon?.width || 0).toBeLessThanOrEqual(12.1);
   expect(await fontSizePx(page, ".qc-list-card .qc-ayah-text-ar")).toBeGreaterThanOrEqual(27);
@@ -750,14 +750,24 @@ test("tiny phone keeps the quick menu and compact player calm and dismissible", 
   await page.locator(".mp-header__more").click();
   const menu = page.locator(".mp-header-menu");
   await expect(menu).toBeVisible();
+  await menu.evaluate((node) =>
+    Promise.all(
+      node.getAnimations({ subtree: true }).map((animation) =>
+        animation.finished.catch(() => undefined),
+      ),
+    ),
+  );
   await expect(menu.locator(".mp-header-menu__header-text")).toHaveCount(0);
+  await expect(menu.locator('[data-key="home"]')).toBeVisible();
 
   const menuBox = await menu.boundingBox();
   const closeBox = await menu.locator(".mp-header-menu__close").boundingBox();
   expect(menuBox?.width || 0).toBeLessThanOrEqual(315);
-  expect(menuBox?.height || 0).toBeLessThanOrEqual(300);
-  expect(closeBox?.width || 0).toBeLessThanOrEqual(36);
-  expect(closeBox?.height || 0).toBeLessThanOrEqual(36);
+  expect(menuBox?.height || 0).toBeLessThanOrEqual(360);
+  expect(closeBox?.width || 0).toBeGreaterThanOrEqual(43.5);
+  expect(closeBox?.height || 0).toBeGreaterThanOrEqual(43.5);
+  expect(closeBox?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(closeBox?.height || 0).toBeLessThanOrEqual(44.1);
 
   await page.mouse.click(4, 520);
   await expect(menu).toBeHidden();
@@ -765,13 +775,20 @@ test("tiny phone keeps the quick menu and compact player calm and dismissible", 
 });
 
 test("general pages use a compact quick-command palette on narrow phones", async ({ page }) => {
-  await openHome(page, { width: 423, height: 698 });
+  await openHome(page, { width: 420, height: 698 });
   await page.goto("/about");
   await expect(page.getByRole("heading", { name: /compagnon de lecture/i })).toBeVisible();
 
   await page.locator(".mp-header__more").click();
   const menu = page.locator(".mp-header-menu");
   await expect(menu).toBeVisible();
+  await menu.evaluate((node) =>
+    Promise.all(
+      node.getAnimations({ subtree: true }).map((animation) =>
+        animation.finished.catch(() => undefined),
+      ),
+    ),
+  );
   await expect(menu.locator(".mp-header-menu__header-text")).toHaveCount(0);
   await expect(menu.locator(".mp-header-menu__item-description")).toBeHidden();
 
@@ -779,10 +796,12 @@ test("general pages use a compact quick-command palette on narrow phones", async
   const closeBox = await menu.locator(".mp-header-menu__close").boundingBox();
   const searchBox = await menu.locator('[data-key="search"]').boundingBox();
   const searchIconBox = await menu.locator('[data-key="search"] .mp-header-menu__item-icon').boundingBox();
-  expect(menuBox?.width || 0).toBeLessThanOrEqual(300);
-  expect(menuBox?.height || 0).toBeLessThanOrEqual(205);
-  expect(closeBox?.width || 0).toBeLessThanOrEqual(34);
-  expect(closeBox?.height || 0).toBeLessThanOrEqual(34);
+  expect(menuBox?.width || 0).toBeLessThanOrEqual(328);
+  expect(menuBox?.height || 0).toBeLessThanOrEqual(220);
+  expect(closeBox?.width || 0).toBeGreaterThanOrEqual(43.5);
+  expect(closeBox?.height || 0).toBeGreaterThanOrEqual(43.5);
+  expect(closeBox?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(closeBox?.height || 0).toBeLessThanOrEqual(44.1);
   expect(searchBox?.height || 0).toBeLessThanOrEqual(44);
   expect(searchIconBox?.width || 0).toBeLessThanOrEqual(24);
   expect(searchIconBox?.height || 0).toBeLessThanOrEqual(24);
@@ -808,6 +827,64 @@ test("compact player becomes a restrained floating rail on tablet and desktop", 
   }
 });
 
+test("phone header and open audio player stay complete at iPhone widths", async ({ page }) => {
+  for (const viewport of [
+    { width: 320, height: 568 },
+    { width: 390, height: 844 },
+    { width: 550, height: 534 },
+  ]) {
+    await openReader(page, viewport);
+
+    const nav = await box(page, ".mp-header__nav");
+    const title = await box(page, ".mp-header__title-btn");
+    const more = await box(page, ".mp-header__more");
+    const menuGlyph = await box(page, ".mp-header__icon-btn svg");
+    expect(nav?.width || 0).toBeGreaterThanOrEqual(viewport.width === 320 ? 200 : 220);
+    expect(title?.width || 0).toBeGreaterThanOrEqual(viewport.width === 320 ? 110 : 130);
+    expect(more?.width || 0).toBeGreaterThanOrEqual(43.9);
+    expect(menuGlyph?.width || 0).toBeLessThanOrEqual(14.1);
+
+    const compact = page.getByTestId("audio-player-compact");
+    const compactBox = await compact.boundingBox();
+    await expect(compact.locator("button")).toHaveCount(2);
+    await expect(compact.locator(".simple-player__compact-disclosure")).toBeVisible();
+    expect(compactBox?.height || 0).toBeGreaterThanOrEqual(viewport.width === 320 ? 59 : 63);
+    expect(viewport.height - ((compactBox?.y || 0) + (compactBox?.height || 0))).toBeGreaterThanOrEqual(7.5);
+
+    const player = await openAudioPlayer(page);
+    await page.waitForTimeout(350);
+    const playerBox = await player.boundingBox();
+    const transportBox = await player.locator(".simple-player__transport").boundingBox();
+    await expect(player.locator(".simple-player__mobile-kicker")).toContainText(/Hafs.*Sourate\s*3/i);
+    await expect(player.locator(".simple-player__mobile-arabic[lang='ar']")).toBeVisible();
+    expect(playerBox?.width || 0).toBeLessThanOrEqual(viewport.width - 15);
+    expect(playerBox?.height || 0).toBeGreaterThanOrEqual(110);
+    expect(viewport.height - ((playerBox?.y || 0) + (playerBox?.height || 0))).toBeGreaterThanOrEqual(6);
+    expect(transportBox?.y || 0).toBeGreaterThanOrEqual(playerBox?.y || 0);
+    expect((transportBox?.y || 0) + (transportBox?.height || 0)).toBeLessThanOrEqual(
+      (playerBox?.y || 0) + (playerBox?.height || 0) + 1,
+    );
+    expect(await overflowX(page)).toBeLessThanOrEqual(2);
+  }
+});
+
+test("tablet uses the complete horizontal audio dock instead of the desktop panel", async ({ page }) => {
+  await openReader(page, { width: 768, height: 700 });
+  const player = await openAudioPlayer(page);
+  await page.waitForTimeout(250);
+
+  const playerBox = await player.boundingBox();
+  expect(playerBox?.width || 0).toBeLessThanOrEqual(745);
+  expect(playerBox?.height || 0).toBeLessThanOrEqual(72);
+  await expect(player.locator(".simple-player__mobile-summary")).toBeVisible();
+  await expect(player.locator(".simple-player__mobile-kicker")).toContainText(/Hafs.*Sourate\s*3/i);
+  await expect(player.locator(".simple-player__transport button")).toHaveCount(5);
+  for (const control of await player.locator(".simple-player__transport button").all()) {
+    await expect(control).toBeVisible();
+  }
+  expect(await overflowX(page)).toBeLessThanOrEqual(2);
+});
+
 test("tiny mobile density keeps the reader usable at 280px", async ({ page }) => {
   await openReader(page, { width: 280, height: 700 });
 
@@ -821,14 +898,14 @@ test("tiny mobile density keeps the reader usable at 280px", async ({ page }) =>
   const versePlayIcon = await box(page, ".qc-list-card__start .ayah-action--play svg");
 
   expect(header?.height || 0).toBeLessThanOrEqual(56);
-  expect(homeLogo?.width || 0).toBeGreaterThanOrEqual(37.9);
-  expect(homeLogo?.height || 0).toBeGreaterThanOrEqual(37.9);
-  expect(verseReference?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(verseReference?.width || 0).toBeLessThanOrEqual(34.1);
-  expect(versePlay?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(versePlay?.width || 0).toBeLessThanOrEqual(34.1);
-  expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(verseBookmark?.width || 0).toBeLessThanOrEqual(34.1);
+  expect(homeLogo?.width || 0).toBe(0);
+  expect(homeLogo?.height || 0).toBe(0);
+  expect(verseReference?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(verseReference?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(versePlay?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(versePlay?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(verseBookmark?.width || 0).toBeLessThanOrEqual(44.1);
   expect(verseCard?.width || 0).toBeLessThanOrEqual(280);
   expect(versePlayIcon?.width || 0).toBeLessThanOrEqual(12.1);
   expect(await fontSizePx(page, ".qc-list-card .qc-ayah-text-ar")).toBeGreaterThanOrEqual(24.9);
@@ -923,10 +1000,10 @@ test("small phone: verse actions and search stay usable inside the viewport", as
   await openReader(page, viewport);
 
   const reference = await box(page, ".qc-list-card__reference");
-  expect(reference?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(reference?.width || 0).toBeLessThanOrEqual(34.1);
-  expect(reference?.height || 0).toBeGreaterThanOrEqual(33.9);
-  expect(reference?.height || 0).toBeLessThanOrEqual(34.1);
+  expect(reference?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(reference?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(reference?.height || 0).toBeGreaterThanOrEqual(43.9);
+  expect(reference?.height || 0).toBeLessThanOrEqual(44.1);
 
   const visibleActionSizes = await page
     .locator(".qc-list-card__top .ayah-actions button")
@@ -940,10 +1017,10 @@ test("small phone: verse actions and search stay usable inside the viewport", as
     );
   expect(visibleActionSizes.length).toBeGreaterThanOrEqual(3);
   for (const action of visibleActionSizes) {
-    expect(action.width).toBeGreaterThanOrEqual(33.9);
-    expect(action.height).toBeGreaterThanOrEqual(33.9);
-    expect(action.width).toBeLessThanOrEqual(34.1);
-    expect(action.height).toBeLessThanOrEqual(34.1);
+    expect(action.width).toBeGreaterThanOrEqual(43.9);
+    expect(action.height).toBeGreaterThanOrEqual(43.9);
+    expect(action.width).toBeLessThanOrEqual(44.1);
+    expect(action.height).toBeLessThanOrEqual(44.1);
   }
 
   const searchBtn = page.getByRole("button", { name: "Rechercher", exact: true }).last();
@@ -1066,15 +1143,49 @@ test("duas page: cards, Arabic text and controls adapt to phone and tablet", asy
   );
   expect(visibleControls.length).toBeGreaterThan(0);
   for (const height of visibleControls) {
-    expect(height).toBeGreaterThanOrEqual(38);
+    expect(height).toBeGreaterThanOrEqual(44);
   }
+
+  const phoneLayout = await page.evaluate(() => ({
+    cardHeadDirection: getComputedStyle(document.querySelector(".dua-card-head")).flexDirection,
+    searchWidth: document.querySelector(".duas-search-wrap").getBoundingClientRect().width,
+    viewportWidth: document.documentElement.clientWidth,
+  }));
+  expect(phoneLayout.cardHeadDirection).toBe("row");
+  expect(phoneLayout.searchWidth).toBeLessThanOrEqual(phoneLayout.viewportWidth);
+  expect((await box(page, ".dua-card-footer-link"))?.height || 0).toBeGreaterThanOrEqual(44);
+
+  await page.locator(".duas-search").fill("voiture");
+  await expect(page.locator(".dua-item-title")).toHaveText(
+    "En montant dans une voiture ou un moyen de transport",
+  );
+  await expect(page.locator(".dua-card-v5")).toHaveCount(1);
+  await page.locator(".duas-search-clear").click();
+  await expect(page.locator(".duas-results-badge")).toHaveText("100 invocations");
+
+  await page.locator(".duas-search").fill("aucun-resultat-possible");
+  await expect(page.locator(".duas-empty")).toBeVisible();
+  const resetButton = page.locator(".duas-empty button");
+  expect((await resetButton.boundingBox())?.height || 0).toBeGreaterThanOrEqual(44);
+  await resetButton.click();
+  await expect(page.locator(".dua-card-v5").first()).toBeVisible();
 
   await openDuas(page, { width: 820, height: 920 });
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
   expect(await fontSizePx(page, ".dua-arabic")).toBeGreaterThanOrEqual(24);
+  const tabletColumns = await page
+    .locator(".gallery-grid")
+    .first()
+    .evaluate((node) => getComputedStyle(node).gridTemplateColumns.split(" ").length);
+  expect(tabletColumns).toBe(1);
 
   await openDuas(page, { width: 1280, height: 900 });
-  const copyIcon = await box(page, '.dua-open-btn-v5[aria-label="Copier l\'invocation"] svg');
+  const desktopColumns = await page
+    .locator(".gallery-grid")
+    .first()
+    .evaluate((node) => getComputedStyle(node).gridTemplateColumns.split(" ").length);
+  expect(desktopColumns).toBe(2);
+  const copyIcon = await box(page, ".dua-open-btn-v5 svg");
   expect(copyIcon?.width || 0).toBeGreaterThanOrEqual(13);
   expect(copyIcon?.height || 0).toBeGreaterThanOrEqual(13);
 });
@@ -1097,11 +1208,11 @@ test("duas dark theme keeps its devotional palette on a direct load", async ({ p
   });
 
   expect(surfaces.heroImage).toContain("rgb(17, 29, 24)");
-  expect(surfaces.heroBorder).toContain("202, 160, 63");
+  expect(surfaces.heroBorder).toContain("112, 191, 151");
   expect(surfaces.cardBackground).toBe("rgb(16, 27, 23)");
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 
-  const copyIcon = await box(page, '.dua-open-btn-v5[aria-label="Copier l\'invocation"] svg');
+  const copyIcon = await box(page, ".dua-open-btn-v5 svg");
   expect(copyIcon?.width || 0).toBeGreaterThanOrEqual(13);
   expect(copyIcon?.height || 0).toBeGreaterThanOrEqual(13);
 });

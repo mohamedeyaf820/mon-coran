@@ -1071,27 +1071,29 @@ html.dark .app-root > .mp-header {
   }
 
   .mp-header-menu .mp-header-menu__item-icon {
-    width: 1.42rem;
-    height: 1.42rem;
-    border-radius: 0.44rem;
+    width: 1.42rem !important;
+    height: 1.42rem !important;
+    min-width: 1.42rem !important;
+    min-height: 1.42rem !important;
+    border-radius: 0.44rem !important;
   }
 
   .mp-header-menu .mp-header-menu__item-icon svg {
-    width: 0.72rem;
-    height: 0.72rem;
+    width: 0.72rem !important;
+    height: 0.72rem !important;
   }
 
   .mp-header-menu__item-label {
-    font-size: 0.69rem;
-    line-height: 1.12;
+    font-size: 0.69rem !important;
+    line-height: 1.12 !important;
   }
 
   .mp-header-menu__item-description {
-    display: none;
+    display: none !important;
   }
 
   .mp-header-menu__item-kbd {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -1124,7 +1126,7 @@ html.dark .app-root > .mp-header {
   .mp-header-menu__header-subtitle,
   .mp-header-menu__item-description,
   .mp-header-menu__riwaya-description {
-    display: none;
+    display: none !important;
   }
 
   .mp-header-menu__section {

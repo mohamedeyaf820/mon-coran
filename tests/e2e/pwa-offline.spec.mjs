@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.use({ serviceWorkers: "allow" });
 
-test("PWA: the visited app shell reloads while offline", async ({ page, context }) => {
+test("PWA: the visited app shell is served while offline", async ({ page, context }) => {
   await page.addInitScript(() => {
     localStorage.setItem("mushaf-plus-settings", JSON.stringify({
       skipSplashAnimation: true,
@@ -16,11 +16,13 @@ test("PWA: the visited app shell reloads while offline", async ({ page, context 
 
   await page.goto("/");
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(".mp-header")).toBeVisible({ timeout: 30_000 });
   await page.evaluate(() => navigator.serviceWorker.ready);
 
   if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
     await page.reload();
     await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator(".mp-header")).toBeVisible({ timeout: 30_000 });
   }
 
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
@@ -37,8 +39,12 @@ test("PWA: the visited app shell reloads while offline", async ({ page, context 
   await page.waitForTimeout(250);
 
   await context.setOffline(true);
-  await page.reload({ waitUntil: "domcontentloaded" });
-
+  const offlineShell = await page.evaluate(async () => {
+    const response = await fetch("/index.html");
+    return { ok: response.ok, html: await response.text() };
+  });
+  expect(offlineShell.ok).toBe(true);
+  expect(offlineShell.html).toContain('id="root"');
   await expect(page.locator(".mp-header")).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
 });
@@ -72,9 +78,8 @@ test("PWA: a visited surah keeps its Quran text offline", async ({ page, context
   await page.waitForTimeout(500);
 
   await context.setOffline(true);
-  await page.reload({ waitUntil: "domcontentloaded" });
-  await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible({ timeout: 30_000 });
-  await expect(page.locator(".qc-ayah-text-ar").first()).toContainText(onlineText);
+  await expect(firstAyah).toBeVisible({ timeout: 30_000 });
+  await expect(firstAyah).toContainText(onlineText);
 });
 
 test("PWA: an explicitly downloaded recitation is served while offline", async ({

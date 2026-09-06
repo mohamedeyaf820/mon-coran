@@ -21,6 +21,7 @@ export default defineConfig({
   use: {
     baseURL: "http://127.0.0.1:4173",
     headless: true,
+    serviceWorkers: "block",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
     trace: "on-first-retry",
@@ -64,6 +65,7 @@ export default defineConfig({
       testMatch: ["**/pwa-offline.spec.mjs"],
       use: {
         ...devices["Desktop Chrome"],
+        serviceWorkers: "allow",
         launchOptions: chromiumExecutablePath
           ? { executablePath: chromiumExecutablePath }
           : undefined,

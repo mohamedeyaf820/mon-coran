@@ -1,10 +1,15 @@
-import { dbGet, dbPruneByPrefix, dbSet } from "./dbService.js";
+import { dbDelete, dbGet, dbPruneByPrefix, dbSet } from "./dbService.js";
+import {
+  clearQuranComPersistentCache,
+  validateQuranComPayload,
+} from "./quranComIntegrity.js";
 
 const BASE_URL = "https://api.quran.com/api/v4";
 const CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
 const FETCH_TIMEOUT = 4000;
 const IDB_STORE = "cache";
-const IDB_PREFIX = "qcom-api:";
+const IDB_PREFIX = "qcom-api:v2:";
+const LEGACY_IDB_PREFIXES = ["qcom-api:"];
 
 const memCache = new Map();
 const MEM_CACHE_MAX_SIZE = 240;
@@ -160,10 +165,9 @@ function refreshInBackground(url, cacheKey) {
       throw new Error(`Background fetch failed ${response.status}`);
     })
     .then((json) => {
-      if (json && typeof json === "object") {
-        setMemoryCache(cacheKey, json);
-        persistCache(cacheKey, json);
-      }
+      const validated = validateQuranComPayload(url, json);
+      setMemoryCache(cacheKey, validated);
+      persistCache(cacheKey, validated);
     })
     .catch(()=>{})
     .finally(() => {
@@ -200,16 +204,18 @@ async function fetchJson(url, signal) {
   try {
     const cached = await dbGet(IDB_STORE, cacheKey);
     if (cached?.data && cached?.ts) {
-      setMemoryCache(cacheKey, cached.data);
+      const validated = validateQuranComPayload(url, cached.data);
+      setMemoryCache(cacheKey, validated);
       const isFresh = Date.now() - cached.ts < CACHE_TTL;
       if (isFresh) {
-        return cached.data;
+        return validated;
       } else {
         refreshInBackground(url, cacheKey);
-        return cached.data;
+        return validated;
       }
     }
   } catch {
+    dbDelete(IDB_STORE, cacheKey).catch(() => {});
     // Network fetch below remains the source of truth.
   }
 
@@ -236,10 +242,7 @@ async function fetchJson(url, signal) {
         throw new Error(`Quran.com API error ${response.status}: ${url}`);
       }
 
-      const json = await response.json();
-      if (!json || typeof json !== "object") {
-        throw new Error("Malformed Quran.com API response");
-      }
+      const json = validateQuranComPayload(url, await response.json());
 
       setMemoryCache(cacheKey, json);
       persistCache(cacheKey, json);
@@ -284,6 +287,15 @@ function buildUrl(path, extraParams) {
 function parseVerseKey(verseKey) {
   const [surah, ayah] = String(verseKey || "").split(":").map(Number);
   return { surah, ayah };
+}
+
+export async function clearQuranComCache({ includeLegacy = true } = {}) {
+  memCache.clear();
+  inflight.clear();
+  const prefixes = includeLegacy
+    ? [IDB_PREFIX, ...LEGACY_IDB_PREFIXES]
+    : [IDB_PREFIX];
+  await clearQuranComPersistentCache(prefixes);
 }
 
 function normalizeWordAudioUrl(audioPath) {
