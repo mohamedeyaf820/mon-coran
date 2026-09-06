@@ -334,7 +334,8 @@ test("reader header stays stable and visually centered across breakpoints", asyn
     { width: 1280, height: 900 },
   ]) {
     await openReader(page, viewport);
-    expect(await headerCenterDelta(page)).toBeLessThanOrEqual(3);
+    // The header grid settles a frame after the polish stylesheet applies.
+    await expect.poll(() => headerCenterDelta(page), { timeout: 10_000 }).toBeLessThanOrEqual(3);
     expect(await overflowX(page)).toBeLessThanOrEqual(2);
 
     const disclosure = await revealReaderTools(page, viewport.width);
