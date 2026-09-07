@@ -71,6 +71,7 @@ export default function ReciterDetailPage({
       aria-labelledby="reciter-modal-title"
       ref={dialogRef}
       dir={isRtl ? "rtl" : "ltr"}
+      lang={lang}
     >
       <div className="reciter-detail__accent" aria-hidden="true" />
 

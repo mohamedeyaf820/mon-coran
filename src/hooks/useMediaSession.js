@@ -32,10 +32,13 @@ export function useMediaSession({
   currentTime = 0,
   duration = 0,
   playbackRate = 1,
+  service,
+  titleForAyah,
 }) {
   // Keep handlers in a ref so we never need to re-register listeners
   const handlersRef = useRef({});
   handlersRef.current = {
+    titleForAyah,
     onPlay,
     onPause,
     onNext,
@@ -45,6 +48,31 @@ export function useMediaSession({
     onSeekBackward,
     onSeekForward,
   };
+
+  // Native subscriptions keep lock-screen state current even when React's
+  // rendering/animation scheduler is suspended by the mobile OS.
+  useEffect(() => {
+    if (!service || !('mediaSession' in navigator)) return;
+    const session = navigator.mediaSession;
+    const position = (current, total) => {
+      if (!Number.isFinite(total) || total <= 0) return;
+      try {
+        session.setPositionState({ duration: total, position: Math.max(0, Math.min(total, current || 0)), playbackRate: service.playbackRate });
+      } catch { /* Optional API. */ }
+    };
+    const updateTrack = (item) => {
+      const nextTitle = handlersRef.current.titleForAyah?.(item);
+      if (nextTitle && session.metadata) session.metadata.title = nextTitle;
+    };
+    const unsubscribers = [
+      service.addTimeUpdateListener(position),
+      service.addAyahChangeListener(updateTrack),
+      service.addPlayListener((item) => { session.playbackState = 'playing'; updateTrack(item); }),
+      service.addPauseListener(() => { session.playbackState = 'paused'; }),
+      service.addEndListener(() => { if (!service.isPlaying) session.playbackState = 'none'; }),
+    ];
+    return () => unsubscribers.forEach(unsubscribe => unsubscribe());
+  }, [service]);
 
   // Update metadata whenever track identity changes
   useEffect(() => {

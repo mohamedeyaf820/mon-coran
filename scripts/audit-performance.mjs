@@ -32,7 +32,8 @@ function formatKb(bytes) {
 async function probe(url, label, init = {}) {
   const startedAt = performance.now();
   try {
-    const response = await fetch(url, init);
+    const response = await fetch(url, { ...init, signal: AbortSignal.timeout(12000) });
+    await response.body?.cancel();
     const elapsed = performance.now() - startedAt;
     return {
       label,
@@ -46,7 +47,7 @@ async function probe(url, label, init = {}) {
       ok: false,
       status: "ERR",
       elapsedMs: null,
-      error: error?.message || "Unknown error",
+      error: [error?.message || "Unknown error", error?.cause?.code, error?.cause?.message].filter(Boolean).join(" — "),
     };
   }
 }

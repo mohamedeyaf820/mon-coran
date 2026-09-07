@@ -28,10 +28,10 @@ import { useAutoScrollAyah } from "../hooks/useAutoScrollAyah";
 import { useMediaSession } from "../hooks/useMediaSession";
 import {
   isMobilePlayerViewport,
-  MOBILE_BREAKPOINT,
   getReciterCooldownMs,
 } from "./audioPlayer/audioPlayerUtils";
 import { AlertCircle } from "lucide-react";
+import { usePlayerDock } from "../hooks/usePlayerDock";
 
 /* Main component */
 
@@ -79,9 +79,16 @@ export default function AudioPlayer() {
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [minimized, setMinimized] = useState(
+  const [minimized, setMinimizedState] = useState(
     () => Boolean(playerMinimized) || !currentPlayingAyah,
   );
+  const minimizedRef = useRef(minimized);
+  const setMinimized = useCallback((value) => {
+    const next = typeof value === "function" ? value(minimizedRef.current) : value;
+    minimizedRef.current = Boolean(next);
+    setMinimizedState(Boolean(next));
+    set({ playerMinimized: Boolean(next) });
+  }, [set]);
   const [volume, setVolume] = useState(savedVolume ?? 1);
   const [isMobile, setIsMobile] = useState(() => {
     return isMobilePlayerViewport();
@@ -255,13 +262,9 @@ export default function AudioPlayer() {
       skipInitialExpandedPreferenceRef.current = false;
       return;
     }
-    setMinimized(Boolean(playerMinimized));
+    minimizedRef.current = Boolean(playerMinimized);
+    setMinimizedState(Boolean(playerMinimized));
   }, [playerMinimized]);
-
-  useEffect(() => {
-    if (Boolean(playerMinimized) === minimized) return;
-    set({ playerMinimized: minimized });
-  }, [minimized, playerMinimized, set]);
 
   useEffect(() => {
     const openImmersiveOptions = () => {
@@ -275,7 +278,7 @@ export default function AudioPlayer() {
         "mushafplus-open-audio-options",
         openImmersiveOptions,
       );
-  }, []);
+  }, [setMinimized]);
 
   /* Wire audio callbacks */
   useEffect(() => {
@@ -849,6 +852,10 @@ export default function AudioPlayer() {
     : titleLabel || currentSurahName;
 
   useMediaSession({
+    service: audioService,
+    titleForAyah: (item) => item?.surah
+      ? `${surahName(item.surah, lang)}${item.ayah ? ` · ${t("quran.ayah", lang)} ${item.ayah}` : ""}`
+      : mediaSessionTitle,
     title: mediaSessionTitle,
     artist: reciterLabel,
     album: "MushafPlus",
@@ -1051,54 +1058,7 @@ export default function AudioPlayer() {
     return () => root.removeAttribute("data-audio-mode");
   }, [isSurahStreamReciter, isPlaying, currentPlayingAyah]);
 
-  useEffect(() => {
-    const root = document.documentElement;
-
-    if (!isMobile || closed) {
-      root.style.removeProperty("--player-h");
-      root.style.removeProperty("--desktop-player-reserved-h");
-      return;
-    }
-
-    // Match the reserved space to the responsive dock: one row on wide screens,
-    // two rows on narrow phones, and a compact row when minimized.
-    const updateReservedHeight = () => {
-      const usesWideDock =
-        window.innerWidth >= 600 && window.innerWidth <= MOBILE_BREAKPOINT;
-      const reservedHeight = minimized ? 70 : usesWideDock ? 64 : 122;
-      root.style.setProperty("--player-h", `${reservedHeight}px`);
-    };
-    updateReservedHeight();
-    window.addEventListener("resize", updateReservedHeight, { passive: true });
-    root.style.removeProperty("--desktop-player-reserved-h");
-
-    return () => {
-      window.removeEventListener("resize", updateReservedHeight);
-      root.style.removeProperty("--player-h");
-      root.style.removeProperty("--desktop-player-reserved-h");
-    };
-  }, [closed, isMobile, minimized]);
-
-  useEffect(() => {
-    const root = document.documentElement;
-
-    if (isMobile || closed || !isContextualDesktop) {
-      root.style.removeProperty("--desktop-player-reserved-h");
-      return;
-    }
-
-    const reservedHeight = minimized ? 84 : 280;
-    root.style.setProperty("--desktop-player-reserved-h", `${reservedHeight}px`);
-
-    return () => {
-      root.style.removeProperty("--desktop-player-reserved-h");
-    };
-  }, [
-    closed,
-    isContextualDesktop,
-    isMobile,
-    minimized,
-  ]);
+  const playerRef = usePlayerDock({ closed, isMobile, minimized, isContextualDesktop });
 
   if (closed) return null;
 
@@ -1127,6 +1087,7 @@ export default function AudioPlayer() {
       )}
 
       <SimpleAudioPlayerView
+        playerRef={playerRef}
         audioError={audioError}
         audioIndicatorState={audioIndicatorState}
         audioSpeed={audioSpeed}

@@ -1,0 +1,36 @@
+# Rapports historiques
+
+Ces audits et comptes rendus sont conservés pour leur valeur historique. Leurs
+constats ne constituent pas une validation du code actuel.
+
+Les références actives restent à la racine et dans `docs/` :
+[architecture](../../../ARCHITECTURE.md), [design system](../../DESIGN_SYSTEM.md),
+[budgets UI](../../../SCREEN_UX_BUDGETS.md), [sécurité et confidentialité](../../SECURITY_PRIVACY.md).
+
+- [AUDIT_ACCESSIBILITY.md](AUDIT_ACCESSIBILITY.md)
+- [AUDIT_ACCESSIBILITY_2.md](AUDIT_ACCESSIBILITY_2.md)
+- [AUDIT_CODE_QUALITY.md](AUDIT_CODE_QUALITY.md)
+- [AUDIT_CODE_REVIEW_2.md](AUDIT_CODE_REVIEW_2.md)
+- [AUDIT_DEPENDENCIES.md](AUDIT_DEPENDENCIES.md)
+- [AUDIT_DESIGN_2.md](AUDIT_DESIGN_2.md)
+- [AUDIT_I18N.md](AUDIT_I18N.md)
+- [AUDIT_I18N_2.md](AUDIT_I18N_2.md)
+- [AUDIT_PERFORMANCE_2.md](AUDIT_PERFORMANCE_2.md)
+- [AUDIT_PWA.md](AUDIT_PWA.md)
+- [AUDIT_PWA_BUGS_2.md](AUDIT_PWA_BUGS_2.md)
+- [AUDIT_SECURITY.md](AUDIT_SECURITY.md)
+- [AUDIT_SECURITY_2.md](AUDIT_SECURITY_2.md)
+- [AUDIT_SEO.md](AUDIT_SEO.md)
+- [AUDIT_TESTS.md](AUDIT_TESTS.md)
+- [CONTINUATION_SUMMARY.md](CONTINUATION_SUMMARY.md)
+- [DEPLOYMENT_REPORT.md](DEPLOYMENT_REPORT.md)
+- [DESIGN_AUDIT.md](DESIGN_AUDIT.md)
+- [DESIGN_IMPROVEMENTS.md](DESIGN_IMPROVEMENTS.md)
+- [FUNCTIONAL_AUDIT.md](FUNCTIONAL_AUDIT.md)
+- [INDEX.md](INDEX.md)
+- [MODERNIZATION_SUMMARY.md](MODERNIZATION_SUMMARY.md)
+- [PERFORMANCE_AUDIT.md](PERFORMANCE_AUDIT.md)
+- [QUICK_START.md](QUICK_START.md)
+- [REVIEW.md](REVIEW.md)
+- [REVIEW_MUSHAFPLUS_VS_QURANCOM.md](REVIEW_MUSHAFPLUS_VS_QURANCOM.md)
+- [VISUAL_SUMMARY.txt](VISUAL_SUMMARY.txt)

@@ -11,6 +11,11 @@ playwright-report/
 coverage/
 
 # Local dev artifacts
+.vercel-cli-data/
+/tmp-*
+/audit-*.png
+/debug-*.png
+/iphone-mode-*.png
 .claude/settings.local.json
 .codex-artifacts/
 .codex-*.log

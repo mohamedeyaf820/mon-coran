@@ -1,3 +1,4 @@
+import { loadAudioUrl, isTrustedAudioUrl } from "./audioTrackLoader.js";
 /**
  * Audio service – manages Quran playback, playlists and resilient fallbacks.
  * Wraps HTML5 Audio API with retry logic, preloading, and timeout handling.
@@ -10,10 +11,6 @@ import {
   resolveSurahStreamAyah,
 } from "../utils/surahStreamSync.js";
 
-const AUDIO_LOAD_TIMEOUT = 12000; // 12s max to start loading
-const MAX_RETRIES = 2;
-const RETRY_DELAY = 800; // ms
-const TRUSTED_MP3QURAN_HOST = /^server\d+\.mp3quran\.net$/i;
 
 function devLog(method, ...args) {
   if (import.meta.env?.DEV && typeof console !== "undefined") {
@@ -21,38 +18,6 @@ function devLog(method, ...args) {
   }
 }
 
-function isTrustedAudioUrl(url) {
-  try {
-    const parsed = new URL(String(url || ""));
-    if (parsed.protocol !== "https:") return false;
-
-    const host = parsed.hostname.toLowerCase();
-    const path = parsed.pathname || "/";
-
-    if (host === "cdn.islamic.network") {
-      return path.startsWith("/quran/audio/") && /\.mp3$/i.test(path);
-    }
-    if (host === "everyayah.com" || host === "www.everyayah.com") {
-      return path.startsWith("/data/") && /\.mp3$/i.test(path);
-    }
-    if (host === "download.quranicaudio.com") {
-      return /\.mp3$/i.test(path);
-    }
-    if (host === "audio.qurancdn.com") {
-      return /\.mp3$/i.test(path);
-    }
-    if (host === "verses.quran.com") {
-      return /\.mp3$/i.test(path);
-    }
-    if (TRUSTED_MP3QURAN_HOST.test(host)) {
-      return /\.mp3$/i.test(path);
-    }
-
-    return false;
-  } catch {
-    return false;
-  }
-}
 
 const ISLAMIC_FALLBACK_MAP = {
   "ar.husary": "Husary_128kbps",
@@ -111,6 +76,7 @@ class AudioService {
     this._preloadPool = []; // [{ url, audio }]
     this._maxPreloadPool = getAdaptiveAudioPreloadCount();
     this._loadRequestId = 0; // Used to ignore stale retry attempts
+    this._playbackRequestId = 0;
     this._reciterSwitchRequestId = 0;
     this._reciterSwitchQueue = Promise.resolve();
     this._currentReciterCdn = "";
@@ -165,11 +131,8 @@ class AudioService {
     // Wire up native events (store bound refs for cleanup)
     this._boundEnded = () => this._handleEnded();
     this._boundTimeUpdate = () => {
-      // timeupdate fires 4-17×/sec; cap React re-renders at ~60fps with RAF
-      if (this._rafId) return;
-      const raf = typeof requestAnimationFrame !== "undefined" ? requestAnimationFrame : (fn) => (fn(), 0);
-      this._rafId = raf(() => {
-        this._rafId = null;
+      // Native timeupdate continues while animation frames are suspended.
+      // Synchronization and lock-screen subscribers must not depend on RAF.
         this._syncSurahStreamAyah(
           this.audio.currentTime,
           this.audio.duration,
@@ -179,11 +142,11 @@ class AudioService {
         for (const fn of this._timeUpdateListeners) {
           fn(this.audio.currentTime, this.audio.duration);
         }
-      });
     };
     this._boundError = (e) => {
       // Ignore errors from clearing src
       if (!this.audio.src || this.audio.src === window.location.href) return;
+      if (this._cancelPendingLoad) return; // The loader owns retries/fallbacks.
       devLog("error", "Audio error:", e);
       this.onError?.(e);
     };
@@ -193,11 +156,23 @@ class AudioService {
     this._boundWaiting = () => this.onNetworkState?.("buffering");
     this._boundStalled = () => this.onNetworkState?.("stalled");
     this._boundCanPlay = () => this.onNetworkState?.("ready");
-    this._boundPlaying = () => this.onNetworkState?.("playing");
+    this._boundPlaying = () => {
+      this.onNetworkState?.("playing");
+      if (!this.isPlaying) {
+        this.isPlaying = true;
+        this._notifyPlay(this.currentAyah);
+      }
+    };
+    this._boundPause = () => {
+      if (this.audio.ended || this._cancelPendingLoad || !this.isPlaying) return;
+      this.isPlaying = false;
+      this._notifyPause(this.currentAyah);
+    };
     this.audio.addEventListener("waiting", this._boundWaiting);
     this.audio.addEventListener("stalled", this._boundStalled);
     this.audio.addEventListener("canplay", this._boundCanPlay);
     this.audio.addEventListener("playing", this._boundPlaying);
+    this.audio.addEventListener("pause", this._boundPause);
   }
 
   /* ── Build Audio URL ───────────────────────── */
@@ -534,21 +509,30 @@ class AudioService {
   }
 
   pause() {
-    this.audio.pause();
+    this._playbackRequestId++;
+    this._cancelPendingLoad?.();
     this.isPlaying = false;
+    this.audio.pause();
     this._notifyPause(this.currentAyah);
   }
 
   resume() {
+    this._preparePlaybackSession();
+    if (!this.audio.src || this.audio.src === window.location.href) return this.play();
+    const requestId = ++this._playbackRequestId;
     if (this.audio.src && this.audio.src !== window.location.href) {
-      this.audio.play()
+      return this.audio.play()
         .then(() => {
+          if (requestId !== this._playbackRequestId) return;
           this.isPlaying = true;
           this._notifyPlay(
             this.currentAyah || this.playlist[this.playlistIndex],
           );
         })
         .catch((err) => {
+          if (requestId !== this._playbackRequestId) return;
+          this.isPlaying = false;
+          this._notifyPause(this.currentAyah);
           if (err?.name !== "NotAllowedError") {
             this.isPlaying = false;
             this.onError?.(err);
@@ -573,6 +557,8 @@ class AudioService {
 
   stop() {
     const wasPlaying = this.isPlaying;
+    this._playbackRequestId++;
+    this.isPlaying = false;
     this._cancelPendingLoad?.();
     this._loadRequestId++;
     this._clearLoadTimeout();
@@ -802,175 +788,8 @@ class AudioService {
    * Load a URL into the audio element and start playing.
    * Waits for 'canplay' before calling play(). Retries on failure.
    */
-  _loadUrlWithRetry(url, retries = MAX_RETRIES) {
-    this._cancelPendingLoad?.();
-    return new Promise((resolve, reject) => {
-      if (!isTrustedAudioUrl(url)) {
-        reject(new Error("Untrusted audio URL"));
-        return;
-      }
-
-      const requestId = ++this._loadRequestId;
-      this._clearLoadTimeout();
-
-      if (this.audio.src === url && this.audio.readyState >= 2) {
-        this.audio
-          .play()
-          .then(() => resolve())
-          .catch((e) => {
-            if (e?.name === "NotAllowedError") resolve();
-            else reject(e);
-          });
-        return;
-      }
-
-      let settled = false;
-      let cleanup = () => {};
-      let retryTimer = null;
-
-      const clearRetryTimer = () => {
-        if (!retryTimer) return;
-        clearTimeout(retryTimer);
-        retryTimer = null;
-      };
-
-      const releasePendingLoad = (cancelPendingLoad) => {
-        if (this._cancelPendingLoad === cancelPendingLoad) {
-          this._cancelPendingLoad = null;
-        }
-      };
-
-      const cancelPendingLoad = () => {
-        if (settled) return;
-        settled = true;
-        cleanup();
-        clearRetryTimer();
-        this._clearLoadTimeout();
-        releasePendingLoad(cancelPendingLoad);
-        reject(new DOMException("Audio load superseded", "AbortError"));
-      };
-      this._cancelPendingLoad = cancelPendingLoad;
-
-      const finishResolve = () => {
-        if (settled) return;
-        if (requestId !== this._loadRequestId) {
-          cancelPendingLoad();
-          return;
-        }
-        settled = true;
-        cleanup();
-        clearRetryTimer();
-        this._clearLoadTimeout();
-        releasePendingLoad(cancelPendingLoad);
-        resolve();
-      };
-
-      const finishReject = (err) => {
-        if (settled) return;
-        if (requestId !== this._loadRequestId) {
-          cancelPendingLoad();
-          return;
-        }
-        settled = true;
-        cleanup();
-        clearRetryTimer();
-        this._clearLoadTimeout();
-        releasePendingLoad(cancelPendingLoad);
-        reject(err);
-      };
-
-      const attempt = (retriesLeft) => {
-        if (settled || requestId !== this._loadRequestId) return;
-
-        clearRetryTimer();
-        cleanup();
-
-        const onCanPlay = () => {
-          cleanup();
-          this._clearLoadTimeout();
-          this.audio
-            .play()
-            .then(() => finishResolve())
-            .catch((e) => {
-              // Browser may block autoplay — user gesture needed
-              if (e.name === "NotAllowedError") {
-                finishResolve(); // Not a real load error
-              } else if (retriesLeft > 0) {
-                retryTimer = setTimeout(
-                  () => attempt(retriesLeft - 1),
-                  RETRY_DELAY,
-                );
-              } else {
-                finishReject(e);
-              }
-            });
-        };
-
-        const onError = () => {
-          cleanup();
-          this._clearLoadTimeout();
-          if (retriesLeft > 0) {
-            devLog("warn", `Audio load error, retrying... (${retriesLeft} left)`);
-            retryTimer = setTimeout(
-              () => attempt(retriesLeft - 1),
-              RETRY_DELAY,
-            );
-          } else {
-            finishReject(new Error("Audio load failed after retries"));
-          }
-        };
-
-        cleanup = () => {
-          this.audio.removeEventListener("canplay", onCanPlay);
-          this.audio.removeEventListener("error", onError);
-          cleanup = () => {};
-        };
-
-        // Set timeout for loading
-        this._loadTimeout = setTimeout(() => {
-          cleanup();
-          if (retriesLeft > 0) {
-            devLog(
-              "warn",
-              `Audio load timeout, retrying... (${retriesLeft} left)`,
-            );
-            attempt(retriesLeft - 1);
-          } else {
-            finishReject(new Error("Audio load timeout"));
-          }
-        }, AUDIO_LOAD_TIMEOUT);
-
-        this.audio.addEventListener("canplay", onCanPlay, { once: true });
-        this.audio.addEventListener("error", onError, { once: true });
-        this.audio.preload = "auto";
-        this.audio.src = url;
-        this.audio.load();
-
-        // Start playback immediately while still inside the user's activation
-        // chain. Waiting for `canplay` first can lose that activation on mobile
-        // browsers and also leaves mocked media elements idle in CI.
-        this.audio
-          .play()
-          .then(() => finishResolve())
-          .catch((e) => {
-            if (settled || requestId !== this._loadRequestId) return;
-            if (e?.name === "NotAllowedError") {
-              finishResolve();
-            } else if (retriesLeft > 0) {
-              cleanup();
-              this._clearLoadTimeout();
-              retryTimer = setTimeout(
-                () => attempt(retriesLeft - 1),
-                RETRY_DELAY,
-              );
-            } else {
-              finishReject(e);
-            }
-          });
-      };
-
-      attempt(retries);
-    });
+  _loadUrlWithRetry(url, retries) {
+    return loadAudioUrl(this, url, retries);
   }
 
   /**
@@ -1027,6 +846,8 @@ class AudioService {
 
   async _loadAndPlay(index, { throwOnError = false } = {}) {
     if (index < 0 || index >= this.playlist.length) return;
+    const playbackRequestId = ++this._playbackRequestId;
+    this._preparePlaybackSession();
 
     this.playlistIndex = index;
     const item = this.playlist[index];
@@ -1051,10 +872,11 @@ class AudioService {
       for (const urlCandidate of candidateUrls) {
         try {
           await this._loadUrlWithRetry(urlCandidate);
+          if (playbackRequestId !== this._playbackRequestId) return;
           loadedUrl = urlCandidate;
           break;
         } catch (err) {
-          if (err?.name === "AbortError") throw err;
+          if (err?.name === "AbortError" || err?.name === "NotAllowedError") throw err;
           lastErr = err;
         }
       }
@@ -1098,7 +920,14 @@ class AudioService {
       // Preload next tracks (3 ahead for smoother continuous playback)
       this._preloadAhead(index + 1, 3);
     } catch (err) {
+      if (playbackRequestId !== this._playbackRequestId) return;
       if (err?.name === "AbortError") return;
+      if (err?.name === "NotAllowedError") {
+        this.isPlaying = false;
+        this.onNetworkState?.("paused");
+        this._notifyPause(this.currentAyah);
+        return;
+      }
       devLog("error", "Audio play error:", err);
       this.onNetworkState?.("error");
       this.onError?.(err);
@@ -1334,6 +1163,15 @@ class AudioService {
   }
 
   /* ── Equalizer (Web Audio API, lazy init) ────────────────────── */
+  _preparePlaybackSession() {
+    try {
+      if (navigator.audioSession) navigator.audioSession.type = "playback";
+      if (this._audioCtx?.state === "suspended") {
+        this._audioCtx.resume().catch(() => {});
+      }
+    } catch { /* Optional on browsers without Audio Session support. */ }
+  }
+
   _ensureAudioCtx() {
     if (this._eqConnected || !this.audio) return;
     try {
@@ -1377,6 +1215,7 @@ class AudioService {
   }
   applyEqPreset(preset) {
     this.eqPreset = preset;
+    if (preset === "flat" && !this._eqConnected) return;
     this._ensureAudioCtx();
     if (this._eqConnected) this._applyEqGains();
   }
@@ -1401,6 +1240,7 @@ class AudioService {
       this.audio.removeEventListener("stalled", this._boundStalled);
       this.audio.removeEventListener("canplay", this._boundCanPlay);
       this.audio.removeEventListener("playing", this._boundPlaying);
+      this.audio.removeEventListener("pause", this._boundPause);
       this.audio.removeAttribute("src");
       this.audio = null;
     }

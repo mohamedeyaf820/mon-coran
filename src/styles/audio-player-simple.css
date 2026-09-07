@@ -192,7 +192,9 @@ html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player
   bottom: 0 !important;
   left: 0 !important;
   width: 100% !important;
-  max-height: 160px !important;
+  height: auto !important;
+  max-height: calc(100dvh - var(--header-h, 64px)) !important;
+  overflow-y: auto;
   padding-bottom: max(.28rem, env(safe-area-inset-bottom));
   border-right: 0;
   border-bottom: 0;
@@ -554,13 +556,13 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 .app-root .audio-player-simple .simple-player__compact-ar-badge {
   display: inline-block !important;
   flex: 0 0 auto !important;
-  font-family: var(--font-quran, serif) !important;
-  font-size: 0.82rem !important;
+  font-family: var(--font-arabic-ui, serif) !important;
+  font-size: 1rem !important;
   color: var(--theme-primary, var(--primary)) !important;
   background: color-mix(in srgb, var(--theme-primary, var(--primary)) 14%, transparent) !important;
   padding: 0.06rem 0.45rem !important;
   border-radius: 9999px !important;
-  line-height: 1.3 !important;
+  line-height: 1.8 !important;
   direction: rtl !important;
 }
 
@@ -704,7 +706,6 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
   }
 
   .app-root .audio-player-simple.simple-player--mobile-open {
-    max-height: calc(7.65rem + env(safe-area-inset-bottom, 0px)) !important;
     padding-top: 0;
     padding-inline: 0;
     padding-bottom: max(.28rem, env(safe-area-inset-bottom));
@@ -721,7 +722,7 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 
   .app-root .audio-player-simple .simple-player__mobile-meta {
     min-width: 0;
-    line-height: 1.12;
+    line-height: 1.5;
   }
 
   .app-root .audio-player-simple .simple-player__mobile-meta > strong,
@@ -742,7 +743,7 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
   .app-root .audio-player-simple .simple-player__mobile-meta > span:last-child {
     margin-top: .13rem;
     color: var(--simple-player-muted);
-    font-size: max(.62rem, 10px);
+    font-size: max(.75rem, 12px);
   }
 
   .app-root .audio-player-simple .simple-player__mobile-meta > small {
@@ -825,14 +826,9 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
   }
 
   .app-root .audio-player-simple.simple-player--mobile-open .simple-player__network {
-    position: absolute;
-    right: 6.4rem;
-    top: .55rem;
-    max-width: 7rem;
-    overflow: hidden;
-    margin: 0;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    grid-column: 1 / -1;
+    margin: .15rem .75rem;
+    white-space: normal;
   }
 
   .app-root .audio-player-simple .simple-player__mobile-status {
@@ -846,13 +842,12 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
   }
 }
 
-@media (min-width: 600px) and (max-width: 1024px) {
+@media (min-width: 768px) and (max-width: 1024px) {
   .app-root .audio-player-simple.simple-player--mobile-open {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: auto .24rem;
     align-items: center;
-    max-height: calc(4rem + env(safe-area-inset-bottom, 0px)) !important;
     padding-bottom: max(.2rem, env(safe-area-inset-bottom));
     border-radius: .9rem .9rem 0 0;
   }
@@ -880,136 +875,35 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
   }
 }
 
-@media (max-width: 380px) {
-  html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock {
-    box-sizing: border-box !important;
-    height: calc(4rem + env(safe-area-inset-bottom, 0px)) !important;
-    max-height: calc(4rem + env(safe-area-inset-bottom, 0px)) !important;
-    border-radius: 1rem 1rem 0 0;
+/* One content-sized compact dock for phones and tablets. */
+@media (max-width: 1024px) {
+  html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--mobile {
+    height: auto !important;
+    max-height: calc(100dvh - var(--header-h, 64px)) !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  .app-root .audio-player-simple.simple-player--compact .simple-player__timeline {
-    height: 0.18rem;
+  .app-root .audio-player-simple.mp-audio-player--mobile .simple-player__compact-row {
+    min-height: 64px !important;
+    gap: .5rem !important;
+    padding: .35rem .65rem !important;
   }
 
-  .app-root .audio-player-simple .simple-player__compact-row {
-    grid-template-columns: 2rem minmax(0, 1fr) 2.35rem;
-    gap: .34rem;
-    min-height: 3.35rem;
-    padding: .18rem .55rem .24rem;
-  }
-
-  .app-root .audio-player-simple .simple-player__compact-row > .audio-cover-art {
-    width: 2rem !important;
-    height: 2rem !important;
-    border-radius: .7rem;
+  .app-root .audio-player-simple.mp-audio-player--mobile .simple-player__compact-actions button {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
   }
 
   .app-root .audio-player-simple .simple-player__compact-meta {
-    gap: .38rem;
-    padding: 0;
-  }
-
-  .app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-ar-ligature {
-    font-size: 1.62rem;
-  }
-
-  .app-root .audio-player-simple .simple-player__compact-meta strong {
-    font-size: .72rem;
-  }
-
-  .app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-ar-name {
-    font-size: .76rem !important;
-    line-height: 1.12;
-  }
-
-  .app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-reciter {
-    margin-top: .08rem;
-    font-size: .56rem !important;
-  }
-
-  .app-root .audio-player-simple .simple-player__play--compact {
-    width: 2.35rem !important;
-    height: 2.35rem !important;
-    min-width: 2.35rem !important;
-    min-height: 2.35rem !important;
-    border-radius: .78rem;
-  }
-
-  .app-root .audio-player-simple.simple-player--compact .simple-player__compact-row > .simple-player__icon-button:last-child {
-    display: none;
-  }
-
-  .app-root .audio-player-simple .simple-player__transport {
-    grid-template-columns: repeat(2, 44px) 48px repeat(2, 44px);
-    gap: 2px;
-    padding-inline: .3rem;
-  }
-
-  .app-root .audio-player-simple .simple-player__settings-secondary {
-    display: none;
+    text-align: start !important;
   }
 }
 
-@media (min-width: 381px) and (max-width: 599px) {
-  html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock {
-    max-height: calc(5rem + env(safe-area-inset-bottom, 0px)) !important;
-    border-radius: 1.15rem 1.15rem 0 0;
-  }
-
-  .app-root .audio-player-simple .simple-player__compact-row {
-    grid-template-columns: 2.35rem minmax(0, 1fr) 2.65rem;
-    gap: .5rem;
-    min-height: 4.15rem;
-    padding: .38rem .72rem .45rem;
-  }
-
-  .app-root .audio-player-simple .simple-player__compact-row > .audio-cover-art {
-    width: 2.35rem !important;
-    height: 2.35rem !important;
-  }
-
-  .app-root .audio-player-simple.simple-player--compact .simple-player__compact-row > .simple-player__icon-button:last-child {
-    display: none;
-  }
-
-  .app-root .audio-player-simple .simple-player__play--compact {
-    width: 2.65rem !important;
-    height: 2.65rem !important;
-    min-width: 2.65rem !important;
-    min-height: 2.65rem !important;
-  }
-}
-
-@media (min-width: 600px) and (max-width: 1024px) {
-  .app-root .audio-player-simple.simple-player--compact {
-    right: 1rem !important;
-    bottom: max(.75rem, env(safe-area-inset-bottom)) !important;
-    left: auto !important;
-    width: min(27rem, calc(100vw - 2rem)) !important;
-    box-sizing: border-box !important;
-    height: 4.25rem !important;
-    max-height: 4.25rem !important;
-    border: 1px solid var(--simple-player-line) !important;
-    border-radius: 1rem !important;
-  }
-
-  .app-root .audio-player-simple.simple-player--compact .simple-player__compact-row {
-    grid-template-columns: 2.3rem minmax(0, 1fr) 2.55rem 2.35rem;
-    min-height: 3.45rem;
-    padding: .2rem .65rem .3rem;
-  }
-
-  .app-root .audio-player-simple.simple-player--compact .simple-player__compact-row > .audio-cover-art {
-    width: 2.3rem !important;
-    height: 2.3rem !important;
-  }
-
-  .app-root .audio-player-simple.simple-player--compact .simple-player__play--compact {
-    width: 2.55rem !important;
-    height: 2.55rem !important;
-    min-width: 2.55rem !important;
-    min-height: 2.55rem !important;
+@media (max-width: 380px) {
+  .app-root .audio-player-simple .simple-player__compact-ar-badge {
+    display: none !important;
   }
 }
 

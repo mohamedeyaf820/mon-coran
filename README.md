@@ -163,7 +163,7 @@ Les 8 phas ont été **terminés et validés** en CI (juillet-août 2026) :
 | 7 | Bibliothèque personnelle | ✅ |
 | 8 | Transitions audio rapides | ✅ |
 
-➡️ Voir [ROADMAP.md](./ROADMAP.md) pour les détails.
+➡️ Voir [ROADMAP.md](ROADMAP.md) pour les détails.
 
 ---
 
@@ -181,7 +181,7 @@ Les 8 phas ont été **terminés et validés** en CI (juillet-août 2026) :
 3. Build CI vert (`npm run build:ci`)
 4. Pull Request ouverte
 
-Voir [ARCHITECTURE.md](./ARCHITECTURE.md) pour la documentation technique complète.
+Voir [ARCHITECTURE.md](ARCHITECTURE.md) pour la documentation technique complète.
 
 ---
 

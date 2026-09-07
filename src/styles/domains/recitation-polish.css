@@ -819,13 +819,11 @@
     display: flex;
     align-items: baseline;
     gap: 0.45rem;
-    overflow: hidden;
     color: var(--text-primary);
     font-size: 0.88rem;
     font-weight: 760;
-    line-height: 1.3;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.6;
+    flex-wrap: wrap;
 }
 
 .recitation-row__meta {
@@ -839,13 +837,23 @@
 }
 
 .recitation-row__arabic {
-    overflow: hidden;
-    max-width: 9rem;
-    font-family: var(--font-quran, serif) !important;
-    font-size: 0.9rem;
-    line-height: 1.25;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-family: var(--font-arabic-ui, "Noto Naskh Arabic", serif) !important;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    letter-spacing: 0;
+    overflow-wrap: normal;
+}
+
+/* UI names and biographies contain Unicode Arabic, never Quran glyph codes. */
+.reciter-detail[lang="ar"] {
+    font-family: var(--font-arabic-ui, "Noto Naskh Arabic", serif);
+    line-height: 1.8;
+}
+
+.reciter-detail[lang="ar"] .reciter-hero__name,
+.reciter-detail[lang="ar"] .recitation-row__title {
+    line-height: 1.8;
+    letter-spacing: 0;
 }
 
 /* Badge Meccan / Medinan */
@@ -1134,7 +1142,7 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
     }
 
     .recitation-row__arabic {
-        font-size: 0.82rem;
+        font-size: 1.05rem;
     }
 
     .recitation-row__actions {

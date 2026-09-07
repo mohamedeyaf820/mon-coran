@@ -18,10 +18,10 @@ import { CoverArt, ProgressRail } from "./AudioPlayerPrimitives";
 import { formatAudioTime } from "./audioPlayerUtils";
 
 function playerShellProps(props) {
-  return { "data-player-state": props.minimized ? "compact" : "expanded" };
+  return { ref: props.playerRef, "data-player-state": props.minimized ? "compact" : "expanded" };
 }
 
-function IconButton({ className, label, onClick, pressed, children }) {
+function IconButton({ className, label, onClick, pressed, children, ...rest }) {
   return (
     <button
       type="button"
@@ -30,6 +30,7 @@ function IconButton({ className, label, onClick, pressed, children }) {
       aria-label={label}
       title={label}
       aria-pressed={pressed}
+      {...rest}
     >
       {children}
     </button>

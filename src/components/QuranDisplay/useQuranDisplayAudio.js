@@ -63,6 +63,8 @@ export default function useQuranDisplayAudio({
     dispatch,
     displayMode,
     readingScopeKey,
+    reciter,
+    riwaya,
     set,
   };
   const audioPlaylistKey = useMemo(
@@ -83,6 +85,8 @@ export default function useQuranDisplayAudio({
         dispatch: navigate,
         displayMode: activeMode,
         readingScopeKey: activeScopeKey,
+        reciter: activeReciterId,
+        riwaya: activeRiwaya,
         set: update,
       } = playbackNavigationRef.current;
       if (!shouldContinue) return;
@@ -96,8 +100,17 @@ export default function useQuranDisplayAudio({
       }
 
       if (activeMode === "surah" && activeSurah < 114) {
-        continuousAutoPlayRef.current = true;
-        navigate({ type: "NAVIGATE_SURAH", payload: { surah: activeSurah + 1, ayah: 1 } });
+        // Native ended -> next source, without waiting for React/data fetching.
+        // This path also runs with the screen locked and RAF suspended.
+        const voice = getReciter(ensureReciterForRiwaya(activeReciterId, activeRiwaya), activeRiwaya);
+        if (!voice) return;
+        const nextSurah = activeSurah + 1;
+        const nextScope = getReadingAudioScopeKey({ displayMode: "surah", currentSurah: nextSurah });
+        activePlaylistScopeRef.current = nextScope;
+        playbackNavigationRef.current = { ...playbackNavigationRef.current, currentSurah: nextSurah, readingScopeKey: nextScope };
+        audioService.loadPlaylist(buildSurahAudioPlaylist(nextSurah), voice.cdn, voice.cdnType || "islamic");
+        audioService.play();
+        navigate({ type: "NAVIGATE_SURAH", payload: { surah: nextSurah, ayah: 1 } });
       } else if (activeMode === "juz" && activeJuz < 30) {
         continuousAutoPlayRef.current = true;
         navigate({ type: "NAVIGATE_JUZ", payload: { juz: activeJuz + 1 } });

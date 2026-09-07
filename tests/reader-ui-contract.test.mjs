@@ -281,15 +281,14 @@ test("immersive Mushaf keeps a quiet chrome: dialog, close, zoom and page contro
 });
 
 test("immersive Mushaf is edge-to-edge on mobile and theme-aware on desktop", () => {
-  const styles = source("src/styles/domains/reading-platform.css");
-
-  assert.match(styles, /@media \(max-width: 1024px\)[\s\S]*?width: 100vw;[\s\S]*?height: 100dvh/);
-  assert.match(styles, /\.mfp-viewport[\s\S]*?overflow: auto/);
-  assert.match(styles, /touch-action: pan-x pan-y/);
-  assert.match(styles, /\.mfp-page-container--immersive \.mfp-reader-bar/);
-  assert.match(styles, /data-theme="dark"\] \.mfp-page-sheet/);
-  assert.match(styles, /env\(safe-area-inset-bottom\)/);
-  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+  const overlay = source("src/components/QuranDisplay/FullscreenMushafOverlay.jsx");
+  const styles = source("src/styles/mushaf-book.css");
+  // The current portal replaced the retired mfp-page-container implementation.
+  assert.match(overlay, /className="mfp-portal-root"/);
+  assert.match(overlay, /position: "fixed",\s*inset: 0/);
+  assert.match(overlay, /data-theme=\{theme\}/);
+  assert.match(styles, /\.mfp-portal-root\[data-theme="dark"\]/);
+  assert.match(styles, /\.mfp-portal-root\[data-theme="sepia"\]/);
 });
 
 test("surah headings keep an accessible Arabic title while calligraphic selectors stay hidden from assistive tech", () => {

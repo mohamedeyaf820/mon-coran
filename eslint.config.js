@@ -7,6 +7,7 @@ export default [
   {
     ignores: [
       "dist/**",
+      ".codex-artifacts/**",
       ".vercel/**",
       "node_modules/**",
       "playwright-report/**",

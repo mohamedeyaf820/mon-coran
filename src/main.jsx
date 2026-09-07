@@ -10,6 +10,7 @@ import { AppProvider } from "./context/AppContext";
 import PrivacyLockGate from "./components/PrivacyLockGate";
 // Critical CSS — must be available before first paint
 import "./styles/tailwind.css";
+import "./styles/tajwid-highlights.css";
 import "./styles/domains/themes4.css";
 import "./styles/ui-polish.css";
 import "./styles/riwaya-fonts.css";

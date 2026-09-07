@@ -1,12 +1,10 @@
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useId, useState } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { getReciterBio } from "../../data/reciters";
 import { useReciterProfile } from "../../hooks/useReciterProfile";
 
 export default function ReciterBioCollapse({ lang, text, reciter }) {
   const [open, setOpen] = useState(true);
-  const contentRef = useRef(null);
-  const [contentHeight, setContentHeight] = useState(0);
   const contentId = useId();
   const profile = useReciterProfile(reciter?.id);
   const researchedBio =
@@ -21,12 +19,6 @@ export default function ReciterBioCollapse({ lang, text, reciter }) {
         : "Recitation profile available in the audio library.");
   const shouldCollapse = safeText.length > 180;
 
-  useEffect(() => {
-    if (contentRef.current) {
-      setContentHeight(contentRef.current.scrollHeight);
-    }
-  }, [safeText, open]);
-
   return (
     <div
       className={`reciter-bio-collapse text-sm leading-relaxed text-[var(--text-secondary)]${
@@ -34,12 +26,11 @@ export default function ReciterBioCollapse({ lang, text, reciter }) {
       }`}
     >
       <div
-        ref={contentRef}
         id={contentId}
-        className="reciter-bio-collapse__content overflow-hidden transition-[max-height] duration-300 ease-in-out"
+        className="reciter-bio-collapse__content overflow-hidden"
         style={{
           maxHeight:
-            open || !shouldCollapse ? `${contentHeight + 20}px` : "3.7em",
+            open || !shouldCollapse ? "none" : "3.7em",
         }}
       >
         <p>{safeText}</p>

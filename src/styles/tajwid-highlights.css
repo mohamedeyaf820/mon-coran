@@ -1,0 +1,90 @@
+/* Native Custom Highlight API rules. Kept outside the Tailwind compiler:
+ * its bundled Lightning CSS parser does not recognize ::highlight() yet.
+ * Vite/esbuild preserves the standard selectors; span fallbacks stay in tailwind.css. */
+::highlight(tajwid-ghunna) {
+    color: var(--tajwid-ghunna);
+}
+
+::highlight(tajwid-ikhfa) {
+    color: var(--tajwid-ikhfa);
+}
+
+::highlight(tajwid-qalqala) {
+    color: var(--tajwid-qalqala);
+}
+
+::highlight(tajwid-idgham) {
+    color: var(--tajwid-idgham);
+}
+
+::highlight(tajwid-iqlab) {
+    color: var(--tajwid-iqlab);
+}
+
+::highlight(tajwid-madd-normal) {
+    color: var(--tajwid-madd-normal);
+}
+
+::highlight(tajwid-madd-separated) {
+    color: var(--tajwid-madd-separated);
+}
+
+::highlight(tajwid-madd-connected) {
+    color: var(--tajwid-madd-connected);
+}
+
+::highlight(tajwid-madd) {
+    color: var(--tajwid-madd);
+}
+
+::highlight(tajwid-madd-necessary) {
+    color: var(--tajwid-madd-necessary);
+}
+
+::highlight(tajwid-madd-badal) {
+    color: var(--tajwid-madd-badal);
+}
+
+::highlight(tajwid-lam-shamsiyya) {
+    color: var(--tajwid-lam-shamsiyya);
+}
+
+::highlight(tajwid-silent) {
+    color: var(--tajwid-silent);
+}
+
+::highlight(tajwid-tafkhim) {
+    color: var(--tajwid-tafkhim);
+}
+
+::highlight(tajwid-naql) {
+    color: var(--tajwid-naql);
+}
+
+::highlight(tajwid-tashil) {
+    color: var(--tajwid-tashil);
+}
+
+::highlight(tajwid-ibdal) {
+    color: var(--tajwid-ibdal);
+}
+
+::highlight(tajwid-sila-kubra) {
+    color: var(--tajwid-sila-kubra);
+}
+
+::highlight(tajwid-tarqiq-ra) {
+    color: var(--tajwid-tarqiq-ra);
+}
+
+::highlight(tajwid-idgham-warsh) {
+    color: var(--tajwid-idgham-warsh);
+}
+
+::highlight(tajwid-hover) {
+    background-color: rgba(var(--primary-rgb), 0.14);
+}
+
+::highlight(tajwid-playing) {
+    background-color: rgba(var(--primary-rgb), 0.16);
+}
