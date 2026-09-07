@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 import "../styles/settings-enhanced.css";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
@@ -7,6 +7,7 @@ import {
   Download,
   Info,
   Palette,
+  QrCode,
   Search,
   ShieldCheck,
   LockKeyhole,
@@ -15,6 +16,8 @@ import {
   Volume2,
   X,
 } from "lucide-react";
+
+const QrSyncModal = lazy(() => import("./QrSyncModal"));
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { getRecitersByRiwaya, getReciterVisual } from "../data/reciters";
@@ -191,6 +194,7 @@ export default function SettingsModal() {
   } = state;
 
   const [activeTab, setActiveTab] = useState("general");
+  const [showQrSync, setShowQrSync] = useState(false);
   const [reciterSearch, setReciterSearch] = useState("");
   const [privacyConfigured, setPrivacyConfigured] = useState(() =>
     hasEncryptionPassphraseConfigured(),
@@ -764,6 +768,15 @@ export default function SettingsModal() {
               className="settings-visually-hidden"
             />
           </label>
+          <button
+            type="button"
+            className="settings-action-button"
+            style={{ gridColumn: "1 / -1" }}
+            onClick={() => setShowQrSync(true)}
+          >
+            <QrCode size={16} aria-hidden="true" />
+            <span>{t("export.qrSync", lang)}</span>
+          </button>
         </div>
       </Section>
 
@@ -1019,6 +1032,11 @@ export default function SettingsModal() {
           </div>
         </Dialog.Content>
       </Dialog.Portal>
+      {showQrSync ? (
+        <Suspense fallback={null}>
+          <QrSyncModal open lang={lang} onClose={() => setShowQrSync(false)} />
+        </Suspense>
+      ) : null}
     </Dialog.Root>
   );
 }

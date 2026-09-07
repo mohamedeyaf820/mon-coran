@@ -368,22 +368,31 @@ export default function SearchModal() {
                       />
                       <button
                         type="button"
-                        className={`search-pro__voice-btn${voiceSearch.isListening ? " is-listening" : ""}`}
+                        className={`search-pro__voice-btn${voiceSearch.isListening ? " is-listening" : ""}${!voiceSearch.isSupported ? " is-unsupported" : ""}`}
                         onClick={voiceSearch.toggle}
                         onKeyDown={(event) => event.stopPropagation()}
-                        aria-label={t(
-                          voiceSearch.isListening
-                            ? "search.voiceStop"
-                            : "search.voiceStart",
-                          lang,
-                        )}
+                        aria-label={
+                          !voiceSearch.isSupported
+                            ? t("search.voiceErrors.unsupported", lang)
+                            : t(
+                                voiceSearch.isListening
+                                  ? "search.voiceStop"
+                                  : "search.voiceStart",
+                                lang,
+                              )
+                        }
                         aria-pressed={voiceSearch.isListening}
-                        title={t(
-                          voiceSearch.isListening
-                            ? "search.voiceStop"
-                            : "search.voiceStart",
-                          lang,
-                        )}
+                        aria-disabled={!voiceSearch.isSupported}
+                        title={
+                          !voiceSearch.isSupported
+                            ? t("search.voiceErrors.unsupported", lang)
+                            : t(
+                                voiceSearch.isListening
+                                  ? "search.voiceStop"
+                                  : "search.voiceStart",
+                                lang,
+                              )
+                        }
                       >
                         {voiceSearch.isListening ? (
                           <Square size={13} fill="currentColor" aria-hidden="true" />

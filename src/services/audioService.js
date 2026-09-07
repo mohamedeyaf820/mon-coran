@@ -17,42 +17,24 @@ function devLog(method, ...args) {
     console[method]?.(...args);
   }
 }
-
-
-const ISLAMIC_FALLBACK_MAP = {
-  "ar.husary": "Husary_128kbps",
-  "ar.alafasy": "Alafasy_128kbps",
-  "ar.abdulbasitmurattal": "Abdul_Basit_Murattal_192kbps",
-  "ar.minshawi": "Minshawy_Murattal_128kbps",
-  "ar.shaatree": "Abu_Bakr_Ash-Shaatree_128kbps",
-  "ar.hudhaify": "Hudhaify_128kbps",
-  "ar.ajamy": "Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net",
-  "ar.ghamadi": "Ghamadi_40kbps",
-  "ar.muaiqly": "MaherAlMuaiqly128kbps",
-};
+import { AudioEqualizer } from "./audioEqualizer.js";
+import {
+  isSurahStreamCdn,
+  normalizePlaylistAyahs,
+  buildAudioUrl,
+  buildAudioUrlCandidates,
+  withQuranComPrimary,
+  buildPlaylistSignature,
+  buildLatencyKey,
+} from "./audioPlaylistManager.js";
 
 class AudioService {
   static isSurahStreamCdn(cdnType = "islamic") {
-    return cdnType === "mp3quran-surah";
+    return isSurahStreamCdn(cdnType);
   }
 
   static normalizePlaylistAyahs(ayahs, cdnType = "islamic") {
-    if (!Array.isArray(ayahs)) return [];
-    if (!AudioService.isSurahStreamCdn(cdnType)) return ayahs;
-
-    const seenSurahs = new Set();
-    return ayahs.reduce((acc, ayah) => {
-      const surah = ayah?.surah || ayah?.surahNumber;
-      if (!surah || seenSurahs.has(surah)) return acc;
-      seenSurahs.add(surah);
-      acc.push({
-        ...ayah,
-        surah,
-        ayah: null,
-        numberInSurah: null,
-      });
-      return acc;
-    }, []);
+    return normalizePlaylistAyahs(ayahs, cdnType);
   }
 
   constructor() {
@@ -104,12 +86,7 @@ class AudioService {
     this.tartilMode = false;
 
     // Equalizer (Web Audio API, lazy init on first user activation)
-    this._audioCtx = null;
-    this._eqConnected = false;
-    this._bassFilter = null;
-    this._midFilter = null;
-    this._trebleFilter = null;
-    this.eqPreset = "flat";
+    this._equalizer = new AudioEqualizer();
 
     // Callbacks
     this.onPlay = null;
@@ -181,78 +158,23 @@ class AudioService {
    * Build a playable audio URL.
    */
   static buildUrl(reciterCdn, ayah, cdnType = "islamic") {
-    if (AudioService.isSurahStreamCdn(cdnType)) {
-      const surah = typeof ayah === "object" ? ayah.surah || ayah.surahNumber || 1 : 1;
-      const s = String(surah).padStart(3, "0");
-      return `${reciterCdn}${s}.mp3`;
-    }
-    if (cdnType === "everyayah") {
-      const surah = typeof ayah === "object" ? ayah.surah : 1;
-      const num =
-        typeof ayah === "object" ? ayah.numberInSurah || ayah.ayah || 1 : ayah;
-      const s = String(surah).padStart(3, "0");
-      const a = String(num).padStart(3, "0");
-      return `https://everyayah.com/data/${reciterCdn}/${s}${a}.mp3`;
-    }
-    // Islamic Network: global ayah number
-    const globalNum = typeof ayah === "object" ? ayah.number : ayah;
-    return `https://cdn.islamic.network/quran/audio/128/${reciterCdn}/${globalNum}.mp3`;
+    return buildAudioUrl(reciterCdn, ayah, cdnType);
   }
 
   static buildUrlCandidates(reciterCdn, ayah, cdnType = "islamic") {
-    const primary = AudioService.buildUrl(reciterCdn, ayah, cdnType);
-    if (cdnType === "everyayah") {
-      const mirror = primary.includes("://everyayah.com/")
-        ? primary.replace("://everyayah.com/", "://www.everyayah.com/")
-        : primary.replace("://www.everyayah.com/", "://everyayah.com/");
-      return [...new Set([primary, mirror])];
-    }
-    if (cdnType === "islamic") {
-      const candidates = [primary];
-      const fallbackFolder = ISLAMIC_FALLBACK_MAP[reciterCdn];
-      const surah = typeof ayah === "object" ? ayah.surah || ayah.surahNumber : null;
-      const ayahNum = typeof ayah === "object" ? ayah.numberInSurah || ayah.ayahNumber : null;
-      if (fallbackFolder && surah && ayahNum) {
-        const s = String(surah).padStart(3, "0");
-        const a = String(ayahNum).padStart(3, "0");
-        candidates.push(`https://everyayah.com/data/${fallbackFolder}/${s}${a}.mp3`);
-      }
-      return candidates;
-    }
-    if (!AudioService.isSurahStreamCdn(cdnType)) return [primary];
-
-    const surah = typeof ayah === "object" ? ayah.surah || ayah.surahNumber || 1 : 1;
-    const unpadded = `${reciterCdn}${Number(surah)}.mp3`;
-    return [...new Set([primary, unpadded])];
+    return buildAudioUrlCandidates(reciterCdn, ayah, cdnType);
   }
 
   static withQuranComPrimary(candidates, timing) {
-    const quranComUrl =
-      timing &&
-      Array.isArray(timing.segments) &&
-      timing.segments.length > 0 &&
-      typeof timing.url === "string"
-        ? timing.url
-        : null;
-    return quranComUrl ? [...new Set([quranComUrl, ...candidates])] : candidates;
+    return withQuranComPrimary(candidates, timing);
   }
 
   static buildPlaylistSignature(ayahs, reciterCdn, cdnType = "islamic") {
-    const base = `${cdnType}:${reciterCdn || ""}`;
-    const preparedAyahs = AudioService.normalizePlaylistAyahs(ayahs, cdnType);
-    if (!Array.isArray(preparedAyahs) || preparedAyahs.length === 0) return base;
-    return `${base}|${preparedAyahs
-      .map((ayah) => {
-        const surah = ayah.surah || ayah.surahNumber || 0;
-        const ayahNum = ayah.ayah || ayah.numberInSurah || 0;
-        const globalNum = ayah.number || ayah.globalNumber || 0;
-        return `${surah}:${ayahNum}:${globalNum}`;
-      })
-      .join("|")}`;
+    return buildPlaylistSignature(ayahs, reciterCdn, cdnType);
   }
 
   static buildLatencyKey(reciterCdn, cdnType = "islamic") {
-    return `${cdnType || "islamic"}:${reciterCdn || ""}`;
+    return buildLatencyKey(reciterCdn, cdnType);
   }
 
   /* ── Playlist Management ───────────────────── */
@@ -1163,61 +1085,25 @@ class AudioService {
   }
 
   /* ── Equalizer (Web Audio API, lazy init) ────────────────────── */
-  _preparePlaybackSession() {
-    try {
-      if (navigator.audioSession) navigator.audioSession.type = "playback";
-      if (this._audioCtx?.state === "suspended") {
-        this._audioCtx.resume().catch(() => {});
-      }
-    } catch { /* Optional on browsers without Audio Session support. */ }
+  get eqPreset() {
+    return this._equalizer.currentPreset;
+  }
+  set eqPreset(val) {
+    this._equalizer.currentPreset = val;
+  }
+  get _audioCtx() {
+    return this._equalizer.audioCtx;
+  }
+  get _eqConnected() {
+    return this._equalizer.isConnected;
   }
 
-  _ensureAudioCtx() {
-    if (this._eqConnected || !this.audio) return;
-    try {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
-      this._audioCtx = new AC();
-      const src = this._audioCtx.createMediaElementSource(this.audio);
-      this._bassFilter = this._audioCtx.createBiquadFilter();
-      this._bassFilter.type = "lowshelf";
-      this._bassFilter.frequency.value = 200;
-      this._midFilter = this._audioCtx.createBiquadFilter();
-      this._midFilter.type = "peaking";
-      this._midFilter.frequency.value = 1000;
-      this._midFilter.Q.value = 1.5;
-      this._trebleFilter = this._audioCtx.createBiquadFilter();
-      this._trebleFilter.type = "highshelf";
-      this._trebleFilter.frequency.value = 3500;
-      src.connect(this._bassFilter);
-      this._bassFilter.connect(this._midFilter);
-      this._midFilter.connect(this._trebleFilter);
-      this._trebleFilter.connect(this._audioCtx.destination);
-      this._eqConnected = true;
-      this._applyEqGains();
-    } catch (e) {
-      devLog("warn", "EQ init failed:", e);
-    }
+  _preparePlaybackSession() {
+    this._equalizer.preparePlaybackSession();
   }
-  _applyEqGains() {
-    const P = {
-      flat: { bass: 0, mid: 0, treble: 0 },
-      bass: { bass: 8, mid: 0, treble: -2 },
-      treble: { bass: -2, mid: 0, treble: 6 },
-      near: { bass: 2, mid: 5, treble: 2 },
-      hall: { bass: -3, mid: -2, treble: 3 },
-      vocals: { bass: -4, mid: 7, treble: 3 },
-    };
-    const p = P[this.eqPreset] || P.flat;
-    if (this._bassFilter) this._bassFilter.gain.value = p.bass;
-    if (this._midFilter) this._midFilter.gain.value = p.mid;
-    if (this._trebleFilter) this._trebleFilter.gain.value = p.treble;
-  }
+
   applyEqPreset(preset) {
-    this.eqPreset = preset;
-    if (preset === "flat" && !this._eqConnected) return;
-    this._ensureAudioCtx();
-    if (this._eqConnected) this._applyEqGains();
+    this._equalizer.applyPreset(preset, this.audio);
   }
 
   destroy() {
@@ -1227,6 +1113,7 @@ class AudioService {
     }
     this._clearLoadTimeout();
     this.stop();
+    this._equalizer.destroy();
     if (this._preloadAudio) {
       this._preloadAudio.removeAttribute("src");
       this._preloadAudio = null;

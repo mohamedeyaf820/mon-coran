@@ -299,6 +299,10 @@
     color: #dc2626;
 }
 
+.search-pro__voice-btn.is-unsupported {
+    opacity: 0.65;
+}
+
 .search-pro__voice-status,
 .search-pro__voice-error {
     margin: 0;

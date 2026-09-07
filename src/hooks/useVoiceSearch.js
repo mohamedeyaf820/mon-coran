@@ -122,11 +122,16 @@ export default function useVoiceSearch({
     [],
   );
 
+  const isSupported =
+    typeof window !== "undefined" &&
+    Boolean(getSpeechRecognitionConstructor(window));
+
   return {
     clearError,
     errorCode,
     isListening: status === "listening",
     isStarting: status === "starting",
+    isSupported,
     toggle,
   };
 }

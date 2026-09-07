@@ -343,6 +343,53 @@ export default function App() {
     return () => window.removeEventListener("quran-toast", handleToast);
   }, []);
 
+  // P2P QR Code sync fragment detection (#sync=...)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hash = window.location.hash || "";
+    if (hash.startsWith("#sync=")) {
+      const rawToken = hash.slice(6);
+      try {
+        window.history.replaceState(
+          null,
+          "",
+          window.location.pathname + window.location.search,
+        );
+      } catch {
+        // Fallback
+      }
+
+      Promise.all([
+        import("./services/qrSyncService"),
+        import("./services/interactionService"),
+      ]).then(async ([{ decodeSyncToken, applySyncPayload }, { confirmAction }]) => {
+        try {
+          const parsed = decodeSyncToken(rawToken);
+          const approved = await confirmAction({
+            title: t("export.qrSync", lang),
+            message: t("export.qrDetectPrompt", lang),
+            confirmLabel: t("export.qrApply", lang),
+          });
+          if (approved) {
+            await applySyncPayload(parsed);
+            setToast({
+              type: "success",
+              message: t("export.qrSuccess", lang),
+            });
+            setTimeout(() => {
+              window.location.reload();
+            }, 1200);
+          }
+        } catch {
+          setToast({
+            type: "error",
+            message: t("export.qrInvalid", lang),
+          });
+        }
+      });
+    }
+  }, [lang]);
+
   const revealImmersiveChrome = useCallback(() => {
     clearTimeout(immersiveTimer.current);
     setImmersiveHidden(false);
