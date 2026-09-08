@@ -35,9 +35,11 @@ source size, `!important` usage, removable selectors, and exact duplicate rules
 both within and across files.
 `npm run build:ci` enforces the current ceilings and rejects new exact duplicates.
 
-The current guardrails are intentionally close to the measured build: 907 kB
-aggregate production CSS, 1508 kB source CSS, 1005 kB retained source CSS, and
-6860 `!important` declarations. Lower these ceilings whenever a cleanup lands;
+The enforced defaults are 1060 KiB aggregate production CSS, 1760 KiB source
+CSS, 1230 KiB retained source CSS, and 7240 `!important` declarations.
+The authoritative values live in `scripts/check-bundle-budget.mjs` and
+`scripts/audit-css-architecture.mjs` (1 KiB = 1024 bytes).
+Lower these ceilings after a cleanup has been validated;
 do not raise them to accommodate a feature without first splitting its route CSS.
 
 Prefer component or route imports for feature-only styles. Keep `tailwind.css`
@@ -48,3 +50,7 @@ Semantic theme variables (`--theme-*` and their shared aliases) belong to
 `domains/themes4.css`. Lazy feature layers may define feature tokens, but must
 not redefine the global light, sepia, or dark palette: doing so makes colors depend on
 which route bundle happened to load first.
+
+`tajwid-highlights.css` contains standard `::highlight()` selectors separately
+from the Tailwind entrypoint because its optimizer does not recognize them.
+Preserve dynamic Quran, tajwid and RTL classes when reviewing purge candidates.

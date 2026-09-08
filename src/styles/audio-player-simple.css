@@ -239,8 +239,8 @@ html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player
 
 html body .app-root .audio-player-simple .simple-player__header-actions .simple-player__icon-button,
 html body .app-root .audio-player-simple .mp-player-options-trigger {
-  width: 2.5rem !important;
-  max-width: 2.5rem !important;
+  width: 44px !important;
+  max-width: 44px !important;
 }
 
 .app-root .audio-player-simple.mp-audio-player--desktop [data-player-drag="true"] {
@@ -259,8 +259,8 @@ html body .app-root .audio-player-simple .mp-player-options-trigger {
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  min-width: 2.5rem !important;
-  min-height: 2.5rem !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
   padding: 0;
   border: 1px solid transparent;
   border-radius: .8rem;

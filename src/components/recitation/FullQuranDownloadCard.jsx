@@ -17,6 +17,7 @@ import {
   cancelFullQuranDownload,
   downloadFullQuranForReciter,
   getFullQuranDownloadSummary,
+  reconcileOfflineAudio,
   isFullQuranDownloadActive,
   removeFullQuranCacheForReciter,
 } from "../../services/downloadService";
@@ -139,6 +140,9 @@ export default function FullQuranDownloadCard({ reciter, riwaya, lang }) {
     };
     window.addEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
     window.addEventListener(OFFLINE_FULL_QURAN_PROGRESS_EVENT, handleFullProgress);
+    reconcileOfflineAudio().then(() => {
+      if (mountedRef.current) refresh();
+    }).catch(() => {});
     return () => {
       mountedRef.current = false;
       window.removeEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);

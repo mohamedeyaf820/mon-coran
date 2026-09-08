@@ -124,6 +124,7 @@ export const noteRecordSchema = schema((value) => {
   if (!AYAH_KEY.test(value.id)) return null;
   if (!isIntBetween(value.surah, 1, 114)) return null;
   if (!isIntBetween(value.ayah, 1, 286)) return null;
+  if (value.id !== `${value.surah}:${value.ayah}`) return null;
   if (!isText(value.text, 8000)) return null;
   if (!isIntBetween(value.updatedAt, 0, Number.MAX_SAFE_INTEGER)) return null;
   return {
@@ -140,6 +141,7 @@ export const bookmarkRecordSchema = schema((value) => {
   if (!AYAH_KEY.test(value.id)) return null;
   if (!isIntBetween(value.surah, 1, 114)) return null;
   if (!isIntBetween(value.ayah, 1, 286)) return null;
+  if (value.id !== `${value.surah}:${value.ayah}`) return null;
   if (!isText(value.label, 200)) return null;
   if (!isIntBetween(value.createdAt, 0, Number.MAX_SAFE_INTEGER)) return null;
   return {

@@ -327,7 +327,6 @@
 
 [data-theme="light"] .app-root.premium-plus::before {
     opacity: 0.74;
-    filter: none;
     background: var(--theme-veil);
 }
 

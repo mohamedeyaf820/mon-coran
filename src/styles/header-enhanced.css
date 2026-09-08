@@ -453,7 +453,6 @@
   color: var(--c-theme-icon);
 }
 .mp-header-menu__item-kbd {
-  margin-inline-start: auto;
   font-size: 0.6rem;
   font-weight: 600;
   letter-spacing: 0.02em;

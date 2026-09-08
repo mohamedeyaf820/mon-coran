@@ -67,7 +67,7 @@ test("audio defaults stay in settings while advanced controls adapt inside the p
   assert.match(settings, /settings-audio-speed/);
   assert.match(settings, /settings-audio-volume/);
   assert.match(playback, /Réglages audio avancés/);
-  assert.match(playback, /!isMobile/);
+  assert.doesNotMatch(playback, /eqPreset|handleApplyEqPreset/);
   assert.match(playback, /setSurahRepeatSetting\(10\)/);
   assert.match(storage, /autoSelectFastestReciter: true/);
 });

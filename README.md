@@ -6,7 +6,7 @@
 [![Netlify Deploy](https://api.netlify.com/api/v1/badges/06596f97-416f-44f2-b601-900e4c6f7f2f/deploy-status)](https://mushafplus.netlify.app)
 [![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8.svg?logo=pwa)](https://mushafplus.netlify.app)
 [![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/mohamedeyaf820/mon-coran/releases)
-[![Tests Unitaires](https://img.shields.io/badge/tests_unitaires-165_passés-success.svg)](#-qualité--tests)
+[![Tests Unitaires](https://img.shields.io/badge/tests_unitaires-190_passés-success.svg)](#-qualité--tests)
 
 ---
 
@@ -15,6 +15,8 @@
 [![Mode Mushaf - lecture page par page](screenshot-mushaf.png)](screenshot-mushaf.png)
 
 ---
+
+?tat technique : [corrections, v?rifications et limites de septembre 2026](docs/AUDIT_ET_CORRECTIONS_2026-09.md).
 
 ## ✨ Fonctionnalités
 
@@ -72,7 +74,7 @@
 - **Stockage local** : IndexedDB (`idb`) + LocalStorage avec validation de schéma
 - **Chiffrement** : AES-256 via CryptoJS
 - **Qualité & Tests** :
-  - **165 tests unitaires et de sécurité** exécutés avec le test runner natif de Node.js.
+  - **190 tests unitaires et de sécurité** exécutés avec le test runner natif de Node.js.
   - **Playwright 1.62** : 36 suites de tests E2E couvrant lecture, audio, responsive, smoke et régression visuelle.
   - **Axe-core** : Audits d'accessibilité automatisés (WCAG AA).
 - **SEO & Déploiement** : 120 pages pré-générées pour l'indexation, sitemap XML, configuration Netlify et Vercel avec en-têtes de sécurité stricts.
@@ -115,7 +117,7 @@ npm run preview
 | `npm run build:ci` | Validation CI complète : build, vérification des budgets de bundle, audit CSS et headers de sécurité |
 | `npm run preview` | Prévisualise la version de production locale (`http://localhost:4173`) |
 | `npm run lint` | Analyse le code avec ESLint (mode quiet et avec cache) |
-| `npm run test:security` | Lance les 165 tests unitaires et de sécurité Node.js |
+| `npm run test:security` | Lance les 190 tests unitaires et de sécurité Node.js |
 | `npm run test:coverage` | Exécute les tests unitaires avec le rapport de couverture de code natif |
 | `npm run test:e2e` | Exécute l'ensemble de la suite de tests E2E Playwright |
 | `npm run test:e2e:smoke` | Exécute les smoke tests (fallback audio, accessibilité) |
@@ -135,7 +137,7 @@ npm run preview
 
 ## 🧪 Qualité & Tests
 
-- **165 tests unitaires & sécurité** : Couvrent la typographie arabe, les sources audio, le chiffrement AES, la validation du stockage, les politiques réseau et les contrats WCAG.
+- **190 tests unitaires & sécurité** : Couvrent la typographie arabe, les sources audio, le chiffrement AES, la validation du stockage, les politiques réseau et les contrats WCAG.
 - **36 suites de tests E2E Playwright** : Couvrent l'expérience de lecture, le lecteur audio, la réactivité mobile/tablette, les bascules de thème et les régressions visuelles.
 - **Intégration continue (CI)** : GitHub Actions exécute l'ensemble des validations sur les branches principales (`main`, `master`).
 - **Garantie d'accessibilité** : Respect des critères d'accessibilité WCAG AA validé par `@axe-core/playwright`.
@@ -166,7 +168,7 @@ mon-coran/
 │   └── styles/                   # Tailwind CSS v4 et feuilles de style modulaires
 ├── public/                       # Manifest PWA, icônes, polices et assets statiques
 ├── tests/
-│   ├── *.test.mjs                # 165 tests unitaires et de sécurité Node.js
+│   ├── *.test.mjs                # 190 tests unitaires et de sécurité Node.js
 │   └── e2e/                      # 36 suites de tests fonctionnels Playwright
 ├── scripts/                      # Scripts d'audit de performance, SEO, CSS et CSP
 └── docs/                         # Documentation technique, budgets UX et design system

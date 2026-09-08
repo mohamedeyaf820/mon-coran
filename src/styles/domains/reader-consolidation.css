@@ -23,11 +23,8 @@
     display: block;
     max-width: min(100%, 920px);
     padding: 0;
-    overflow: visible;
     border: 0;
-    border-radius: 0;
     background: transparent;
-    box-shadow: none;
 }
 
 .app-root .quran-display--platform .surah-ayahs-list::before {
@@ -41,9 +38,6 @@
     border: 0;
     border-bottom: 1px solid
         color-mix(in srgb, var(--border) 76%, transparent 24%);
-    border-radius: 0;
-    background: transparent !important;
-    box-shadow: none;
     transform: none;
     contain-intrinsic-size: 1px 210px;
 }
@@ -201,7 +195,6 @@
             rgba(var(--primary-rgb), 0.14) 22%
         );
     background: var(--bg-card) !important;
-    box-shadow: none;
     content-visibility: auto;
     contain-intrinsic-size: 1px 760px;
 }
@@ -992,8 +985,6 @@
     position: sticky;
     top: var(--header-h, 68px);
     margin: 0.2rem 0 0.85rem;
-    border-radius: 0;
-    border-inline: 0;
     background: color-mix(in srgb, var(--bg-primary) 92%, transparent 8%);
     box-shadow: 0 1px 0 color-mix(in srgb, var(--border) 86%, transparent 14%);
 }
@@ -1139,7 +1130,6 @@ html[data-split-view="on"]
     position: sticky;
     top: 0;
     z-index: 240;
-    width: 100%;
     border-bottom: 1px solid color-mix(in srgb, var(--border) 82%, transparent 18%);
     background: color-mix(in srgb, var(--bg-card) 92%, transparent 8%);
     backdrop-filter: blur(18px) saturate(145%);
@@ -1153,7 +1143,6 @@ html[data-split-view="on"]
     gap: clamp(0.5rem, 1vw, 0.9rem);
     max-width: 1420px;
     min-height: 4rem;
-    margin-inline: auto;
     padding: 0.5rem clamp(0.75rem, 1.5vw, 1.25rem);
 }
 
@@ -1168,7 +1157,6 @@ html[data-split-view="on"]
 
 .view-reading .mp-header__brand-row,
 .view-reading .mp-header__actions {
-    min-width: 0;
     gap: 0.5rem;
 }
 
@@ -1200,7 +1188,6 @@ html[data-split-view="on"]
 .view-reading .mp-header__action:hover,
 .view-reading .mp-header__more:hover,
 .view-reading .mp-header__nav-arrow:hover {
-    transform: translateY(-1px);
     border-color: color-mix(in srgb, var(--primary) 38%, var(--border) 62%);
     color: var(--text-primary);
 }
@@ -1239,12 +1226,7 @@ html[data-split-view="on"]
 .view-reading .mp-header__brand-text {
     font-size: 1.04rem;
     font-weight: 850;
-    letter-spacing: 0;
     white-space: nowrap;
-}
-
-.view-reading .mp-header__center {
-    min-width: 0;
 }
 
 .view-reading .mp-header__home-summary,
@@ -1301,7 +1283,6 @@ html[data-split-view="on"]
 .view-reading .mp-header__nav-arrow:disabled {
     cursor: not-allowed;
     opacity: 0.38;
-    transform: none;
 }
 
 .view-reading .mp-header__riwaya,
@@ -1316,7 +1297,6 @@ html[data-split-view="on"]
 .view-reading .mp-header__seg {
     min-height: 1.95rem;
     padding-inline: 0.72rem;
-    border-radius: 0.7rem;
     color: var(--text-secondary);
     font-size: 0.72rem;
     font-weight: 850;
@@ -1821,11 +1801,6 @@ html[data-split-view="on"]
     }
 }
 
-.view-reading .mp-header {
-    min-height: 0 !important;
-    padding: 0;
-}
-
 .app-root[data-view="duas"] .duas-search::placeholder {
     color: color-mix(in srgb, var(--text-muted) 82%, transparent 18%) !important;
     opacity: 1;
@@ -2311,7 +2286,6 @@ html[data-split-view="on"]
 .view-reading .mp-header__home-summary strong {
     font-size: 0.94rem !important;
     font-weight: 900 !important;
-    color: var(--text-primary) !important;
     line-height: 1.05;
 }
 
@@ -2386,12 +2360,6 @@ html[data-split-view="on"]
     color: var(--primary) !important;
     font-size: 0.78rem !important;
     font-weight: 900 !important;
-}
-
-.view-reading .mp-header__seg.is-active,
-.view-reading .mp-header__seg:hover {
-    background: var(--primary) !important;
-    color: #fff !important;
 }
 
 .view-reading .mp-header__action--duas,
@@ -2576,10 +2544,6 @@ html[data-split-view="on"]
 
 .view-reading .mp-header__kicker {
     font-size: 0.58rem !important;
-}
-
-.view-reading .mp-header__title {
-    font-size: 0.92rem !important;
 }
 
 .view-reading .mp-header__sub {

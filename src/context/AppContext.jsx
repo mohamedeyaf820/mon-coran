@@ -234,7 +234,7 @@ export function appReducer(state, action) {
       if (Object.prototype.hasOwnProperty.call(payload, "quranFontSize")) {
         next.quranFontSize = clampQuranFontSize(payload.quranFontSize, state.quranFontSize);
       }
-      if (Object.prototype.hasOwnProperty.call(payload, "fontSize")) {
+      if (!Object.prototype.hasOwnProperty.call(payload, "quranFontSize") && Object.prototype.hasOwnProperty.call(payload, "fontSize")) {
         next.quranFontSize = clampQuranFontSize(payload.fontSize, state.quranFontSize);
       }
       if (!Object.prototype.hasOwnProperty.call(payload, "karaokeFollow")) {
@@ -474,7 +474,6 @@ export function AppProvider({ children }) {
     reciter: state.reciter,
     quranFontSize: state.quranFontSize,
     quranTranslationFontSize: state.quranTranslationFontSize,
-    fontSize: state.quranFontSize,
     fontFamily: state.fontFamily,
     fontFamilyByRiwaya: state.fontFamilyByRiwaya,
     translationLangs: state.translationLangs,

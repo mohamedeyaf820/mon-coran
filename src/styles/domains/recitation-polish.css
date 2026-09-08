@@ -828,6 +828,7 @@
 
 .recitation-row__meta {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.38rem;
     min-width: 0;
@@ -842,6 +843,28 @@
     line-height: 1.8;
     letter-spacing: 0;
     overflow-wrap: normal;
+}
+
+/* The library shares tablet width with the biography. Keep actions on their
+   own line so neither translated titles nor Arabic names are covered. */
+@media (max-width: 1100px) {
+    html body .reciter-detail .recitation-row {
+        grid-template-columns: 34px minmax(0, 1fr);
+    }
+    html body .reciter-detail .recitation-row__actions {
+        grid-column: 1 / -1;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+    html body .reciter-detail .recitation-action-btn {
+        width: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        flex: 0 0 44px;
+    }
+    html body .reciter-detail .recitation-action-btn__label {
+        display: none;
+    }
 }
 
 /* UI names and biographies contain Unicode Arabic, never Quran glyph codes. */
@@ -977,7 +1000,6 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
 .recitation-row--load-more {
     width: 100%;
     min-height: 44px;
-    border-top: 1px solid var(--border);
     background: transparent;
     color: var(--primary);
     font-size: 0.76rem;
@@ -1444,4 +1466,16 @@ html[data-theme="dark"] .full-quran-download.is-ready .full-quran-download__icon
 .recitation-row--load-more:hover {
     background: rgba(var(--primary-rgb), 0.08);
     color: var(--primary);
+}
+/* Reciter names need room for Arabic marks at every device scale. */
+html body .reciter-detail .reciter-hero__name {
+  font-size: max(16px, 1rem) !important;
+  line-height: 1.8 !important;
+  white-space: normal;
+  overflow: visible;
+}
+
+html body .reciter-detail[lang="ar"] .reciter-hero__name {
+  font-family: var(--font-arabic-ui) !important;
+  line-height: 2.2 !important;
 }

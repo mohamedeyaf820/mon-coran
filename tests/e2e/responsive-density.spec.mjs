@@ -5,11 +5,10 @@ import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mj
 // Block them here so one test's SW state cannot interfere with another's.
 test.use({ serviceWorkers: "block" });
 
-// Tests are sensitive to concurrency: under a 2-worker schedule a heavy parallel
-// neighbour (large font downloads) slows the preview server enough to create race
-// conditions in React reconciliation.  Serial mode keeps each test deterministic
-// without affecting throughput of other spec files.
-test.describe.configure({ mode: "serial" });
+// Each scenario owns its page and fixtures. Keep the default sequential order
+// within this file, but run later scenarios even if one independent test fails.
+// Use --workers=1 when diagnosing font/layout timing under load.
+test.describe.configure({ mode: "default" });
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
@@ -641,28 +640,20 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
   // pointer lands, then arrive on the word with a real movement so the
   // hit-test sees a pointer move.
   await expect(page.locator('html[data-deferred-styles="ready"]')).toBeAttached();
-  await page.waitForTimeout(400);
-  await target.scrollIntoViewIfNeeded();
-  await target.hover();
+  await page.evaluate(() => document.fonts.ready);
+  // The floating desktop player occupies the bottom-right corner. Centre
+  // the verse before hovering instead of targeting a word behind that dock.
+  await target.evaluate(node => node.scrollIntoView({ block: "center", behavior: "instant" }));
   const tooltip = page.locator(".tajweed-rich-tooltip");
-  // The hit-test needs a real pointer move over a coloured range: arrive on
-  // the word from the side, and try a couple of nearby points on a slow
-  // runner before asserting.
-  for (const offset of [0, -6, 6, -12, 12]) {
-    const targetBox = await target.boundingBox();
-    if (!targetBox) continue;
-    const cx = targetBox.x + targetBox.width / 2 + offset;
-    const cy = targetBox.y + targetBox.height / 2;
-    await page.mouse.move(cx + 14, cy + 2);
-    await page.mouse.move(cx, cy, { steps: 6 });
-    await target.dispatchEvent("pointermove", { clientX: cx, clientY: cy, bubbles: true });
-    const shown = await tooltip
-      .filter({ hasText: /Ghunnah/i })
-      .waitFor({ state: "visible", timeout: 4000 })
-      .then(() => true)
-      .catch(() => false);
-    if (shown) break;
-  }
+  // Scrolling also collapses the header. Reposition after that transition,
+  // using actual pointer input instead of dispatching synthetic DOM events.
+  await expect.poll(async () => {
+    await target.evaluate(node => node.scrollIntoView({ block: "center", behavior: "instant" }));
+    await page.waitForTimeout(300);
+    await target.hover();
+    await page.waitForTimeout(100);
+    return tooltip.allTextContents();
+  }, { timeout: 15_000 }).toEqual([expect.stringMatching(/Ghunnah/i)]);
   await expect(tooltip).toContainText(/Ghunnah/i, { timeout: 15_000 });
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });

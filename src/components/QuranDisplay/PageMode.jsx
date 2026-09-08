@@ -107,20 +107,29 @@ function PageMode({
   const pageWord = lang === "fr" ? "Page" : lang === "ar" ? "صفحة" : "Page";
   const contextSecondary = `${t("sidebar.juz", lang)} ${currentJuz || "—"}`;
 
-  const touchStartX = useRef(null);
+  const touchStartRef = useRef(null);
 
   const handleTouchStart = useCallback((e) => {
     if (e.touches.length !== 1) return;
-    touchStartX.current = e.touches[0].clientX;
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+      time: performance.now(),
+    };
   }, []);
 
   const handleTouchEnd = useCallback((e) => {
-    if (touchStartX.current === null) return;
-    const delta = e.changedTouches[0].clientX - touchStartX.current;
-    touchStartX.current = null;
-    if (Math.abs(delta) < 55) return;
+    if (!touchStartRef.current || !e.changedTouches[0]) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartRef.current.x;
+    const deltaY = e.changedTouches[0].clientY - touchStartRef.current.y;
+    const elapsed = performance.now() - touchStartRef.current.time;
+    touchStartRef.current = null;
+
+    // Discard slow drags, small gestures, or primarily vertical scrolling
+    if (elapsed > 700 || Math.abs(deltaX) < 45 || Math.abs(deltaX) < Math.abs(deltaY) * 1.2) return;
+
     const isRTL = document.documentElement.dir === 'rtl';
-    const goNext = isRTL ? delta > 0 : delta < 0;
+    const goNext = isRTL ? deltaX > 0 : deltaX < 0;
     if (goNext) {
       if (currentPage < 604) onNextPage();
     } else {

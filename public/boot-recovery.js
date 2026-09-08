@@ -43,6 +43,8 @@
   }
 
   function cleanupAndReload() {
+    // A failed optional chunk offline must not destroy the working offline shell.
+    if (navigator.onLine === false) return;
     if (hasAlreadyRetried()) return;
     markRetried();
 
@@ -71,7 +73,7 @@
             return Promise.all(
               keys
                 .filter(function (key) {
-                  return key.indexOf("mushaf-plus") === 0;
+                  return /^mushaf-plus-v\d+$/.test(key);
                 })
                 .map(function (key) {
                   return caches.delete(key);

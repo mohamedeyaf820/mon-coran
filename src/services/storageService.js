@@ -9,6 +9,7 @@ import {
   dbDelete,
   dbGetAll,
   dbReplaceStores,
+  getDB,
 } from "./dbService.js";
 import {
   encryptData,
@@ -145,6 +146,52 @@ export async function importBookmarkRecord(record) {
   return writePrivateRecord("bookmarks", bookmarkRecordSchema, record);
 }
 
+/** Add missing records atomically; never overwrite a local note or bookmark. */
+export async function mergePrivateSyncRecords({ notes, bookmarks, settings }) {
+  const prepared = {
+    notes: notes.map(record => {
+      const parsed = parseRecordOrNull(noteRecordSchema, record);
+      if (!parsed) throw new Error("Invalid note");
+      return encodePrivateRecord(parsed);
+    }),
+    bookmarks: bookmarks.map(record => {
+      const parsed = parseRecordOrNull(bookmarkRecordSchema, record);
+      if (!parsed) throw new Error("Invalid bookmark");
+      return encodePrivateRecord(parsed);
+    }),
+  };
+  if (!prepared.notes.length && !prepared.bookmarks.length) {
+    if (!saveSettings(settings)) throw new Error("Unable to save sync settings");
+    return { notes: 0, bookmarks: 0 };
+  }
+  const db = await getDB();
+  const previousSettings = localStorage.getItem(SETTINGS_KEY);
+  if (!saveSettings(settings)) throw new Error("Unable to save sync settings");
+  let transaction;
+  try {
+    transaction = db.transaction(["notes", "bookmarks"], "readwrite");
+    // Attach a rejection handler immediately, including when a request aborts.
+    const completion = transaction.done;
+    completion.catch(() => {});
+    const counts = { notes: 0, bookmarks: 0 };
+    for (const storeName of ["notes", "bookmarks"]) {
+      const store = transaction.objectStore(storeName);
+      for (const record of prepared[storeName]) {
+        if ((await store.get(record.id)) !== undefined) continue;
+        await store.add(record);
+        counts[storeName] += 1;
+      }
+    }
+    await completion;
+    return counts;
+  } catch (error) {
+    try { transaction?.abort(); } catch { /* Already aborted. */ }
+    if (previousSettings === null) localStorage.removeItem(SETTINGS_KEY);
+    else localStorage.setItem(SETTINGS_KEY, previousSettings);
+    throw error;
+  }
+}
+
 /* ═══════════════════════════════════════════ */
 /*  SETTINGS (localStorage – small & sync)    */
 /* ═══════════════════════════════════════════ */
@@ -157,7 +204,6 @@ const VALID_TRANSLATION_LANGS = ["fr", "en", "es", "de", "tr", "ur"];
 const VALID_WORD_TRANSLATION_LANGS = ["fr", "en"];
 const VALID_RIWAYAS = ["hafs", "warsh"];
 const VALID_DISPLAY_MODES = ["surah", "page", "juz"];
-const VALID_AUDIO_PLAYER_SKINS = ["orbit", "classic"];
 const VALID_FONTS = ACCEPTED_FONT_IDS;
 
 function clampSurah(value) {
@@ -213,9 +259,6 @@ function isValidClockTime(value) {
   return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
 }
 
-function sanitizeAudioPlayerSkin(value) {
-  return VALID_AUDIO_PLAYER_SKINS.includes(value) ? value : "orbit";
-}
 
 function sanitizeLatencyMap(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
@@ -284,7 +327,6 @@ const DEFAULT_SETTINGS = {
   skipSplashAnimation: false,
   riwaya: "hafs",
   reciter: "ar.alafasy",
-  fontSize: 25,
   quranFontSize: 25,
   quranTranslationFontSize: 18,
   fontFamily: DEFAULT_FONT_ID,
@@ -321,7 +363,6 @@ const DEFAULT_SETTINGS = {
   showDuas: false,
   focusReading: false,
   playerMinimized: false,
-  audioPlayerSkin: "orbit",
   lastPosition: { surah: 1, ayah: 1, page: 1, juz: 1 },
 };
 
@@ -363,6 +404,7 @@ export function getSettings() {
       ...cloneDefaultSettings(),
       ...parsed,
       riwaya: normalizedRiwaya,
+      quranFontSize: Math.max(12, Math.min(96, Number(parsed?.quranFontSize ?? parsed?.fontSize) || 25)),
       fontFamily: normalizeFontId(parsed?.fontFamily, normalizedRiwaya),
       fontFamilyByRiwaya: sanitizeFontFamilyByRiwaya(
         parsed?.fontFamilyByRiwaya,
@@ -384,14 +426,16 @@ export function getSettings() {
       reciterAvailabilityById: sanitizeReciterAvailabilityMap(
         parsed?.reciterAvailabilityById,
       ),
-      audioPlayerSkin: sanitizeAudioPlayerSkin(parsed?.audioPlayerSkin),
       surahRepeatCount:
         Number.isFinite(Number(parsed?.surahRepeatCount))
           ? Math.max(0, Math.min(999, Math.floor(Number(parsed.surahRepeatCount))))
           : DEFAULT_SETTINGS.surahRepeatCount,
     };
 
-    if (needsMigration) {
+    delete normalized.fontSize;
+    delete normalized.audioPlayerSkin;
+
+    if (needsMigration || parsed?.fontSize !== undefined || parsed?.audioPlayerSkin !== undefined) {
       // Toujours migrer depuis la clé legacy (publique) vers la clé appareil,
       // sans attendre le déverrouillage de la passphrase utilisateur.
       saveSettings(normalized);
@@ -421,10 +465,6 @@ function sanitizeSettings(settings) {
         ? safeInput.reciter.slice(0, 50)
         : "ar.alafasy",
     quranFontSize: Math.max(
-      12,
-      Math.min(96, Number(safeInput.quranFontSize ?? safeInput.fontSize) || 25),
-    ),
-    fontSize: Math.max(
       12,
       Math.min(96, Number(safeInput.quranFontSize ?? safeInput.fontSize) || 25),
     ),
@@ -513,7 +553,6 @@ function sanitizeSettings(settings) {
       safeInput.playerMinimized !== undefined
         ? Boolean(safeInput.playerMinimized)
         : false,
-    audioPlayerSkin: sanitizeAudioPlayerSkin(safeInput.audioPlayerSkin),
     surahRepeatCount:
       Number.isFinite(Number(safeInput.surahRepeatCount))
         ? Math.max(0, Math.min(999, Math.floor(Number(safeInput.surahRepeatCount))))

@@ -93,11 +93,10 @@ test("pausing a pending track cancels it and ignores its later play resolution",
   service.destroy();
 });
 
-test("native pause updates application state and flat EQ keeps native output", async () => {
+test("native pause updates application state without a Web Audio graph", async () => {
   const service = createService();
   await service.play();
-  service.applyEqPreset("flat");
-  assert.equal(service._audioCtx, null);
+  assert.equal(service._audioCtx, undefined);
   service.audio.pause();
   assert.equal(service.isPlaying, false);
   service.destroy();

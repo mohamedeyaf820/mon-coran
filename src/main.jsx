@@ -59,6 +59,7 @@ function isChunkLoadErrorLike(errorLike) {
 }
 
 function tryRecoverFromChunkLoad(errorLike) {
+  if (navigator.onLine === false) return;
   if (chunkReloadTriggered || !isChunkLoadErrorLike(errorLike)) return;
   chunkReloadTriggered = true;
 

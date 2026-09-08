@@ -202,16 +202,18 @@ function isTrustedAudioRequest(request, url) {
 }
 
 async function createPartialResponse(response, rangeHeader) {
+  // Ignore unsupported/multiple ranges without consuming the full response.
+  const matches = /^bytes=(\d*)-(\d*)$/.exec(rangeHeader);
+  if (!matches || (!matches[1] && !matches[2]) || response.status !== 200) {
+    return response;
+  }
   try {
-    const buffer = await response.arrayBuffer();
+    const buffer = await response.clone().arrayBuffer();
     const total = buffer.byteLength;
-    const matches = /bytes=(\d+)-(\d+)?/.exec(rangeHeader);
-    if (!matches) {
-      return response;
-    }
-    const start = parseInt(matches[1], 10);
-    const end = matches[2] ? parseInt(matches[2], 10) : total - 1;
-    if (start >= total || end >= total || start > end) {
+    const suffix = !matches[1];
+    const start = suffix ? Math.max(0, total - Number(matches[2])) : Number(matches[1]);
+    const end = suffix || !matches[2] ? total - 1 : Math.min(Number(matches[2]), total - 1);
+    if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start >= total || start > end) {
       return new Response(null, {
         status: 416,
         statusText: "Range Not Satisfiable",
@@ -244,7 +246,7 @@ async function audioCacheFirst(request) {
     (await cache.match(request, { ignoreVary: true })) ||
     (await cache.match(request.url, { ignoreVary: true }));
 
-  if (cached) {
+    if (cached && cached.status === 200) {
     const rangeHeader = request.headers.get("range");
     if (rangeHeader) {
       return createPartialResponse(cached, rangeHeader);

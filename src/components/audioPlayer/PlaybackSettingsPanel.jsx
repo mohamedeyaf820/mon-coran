@@ -83,24 +83,6 @@ function makeLabels(lang) {
         : lang === "ar"
           ? "\u062a\u0645"
           : "Done",
-    eq:
-      lang === "fr"
-        ? "\u00c9galiseur"
-        : lang === "ar"
-          ? "\u0627\u0644\u0645\u0639\u0627\u062f\u0644 \u0627\u0644\u0635\u0648\u062a\u064a"
-          : "Equalizer",
-    eqFlat:
-      lang === "fr" ? "Plat" : lang === "ar" ? "\u0645\u062d\u0627\u064a\u062f" : "Flat",
-    eqBass:
-      lang === "fr" ? "Basses" : lang === "ar" ? "\u062c\u0647\u064a\u0631" : "Bass",
-    eqTreble:
-      lang === "fr" ? "Aigus" : lang === "ar" ? "\u062d\u0627\u062f" : "Treble",
-    eqNear:
-      lang === "fr" ? "Proche" : lang === "ar" ? "\u0642\u0631\u064a\u0628" : "Near",
-    eqHall:
-      lang === "fr" ? "Salle" : lang === "ar" ? "\u0642\u0627\u0639\u0629" : "Hall",
-    eqVocals:
-      lang === "fr" ? "Voix" : lang === "ar" ? "\u0635\u0648\u062a" : "Vocals",
     tartil:
       lang === "fr"
         ? "Mode Tartil (lecture lente)"
@@ -115,10 +97,10 @@ function makeLabels(lang) {
           : "Slows speed to 0.75\u00d7 for careful listening.",
     abRepeat:
       lang === "fr"
-        ? "R\u00e9p\u00e9tition A-B"
+        ? "R\u00e9p\u00e9tition A-B (Hifdh)"
         : lang === "ar"
-          ? "\u062a\u0643\u0631\u0627\u0631 \u0623-\u0628"
-          : "A-B Repeat",
+          ? "\u062a\u0643\u0631\u0627\u0631 \u0623-\u0628 (\u062d\u0641\u0638)"
+          : "A-B Repeat (Hifdh)",
     abRepeatActive:
       lang === "fr"
         ? "Actif \u2014 r\u00e9p\u00e9tition d'une plage de versets"
@@ -127,28 +109,32 @@ function makeLabels(lang) {
           : "Active \u2014 repeating a verse range",
     abRepeatInactive:
       lang === "fr"
-        ? "Inactif \u2014 d\u00e9finissez la plage depuis le lecteur"
+        ? "D\u00e9finissez le point A et le point B pour r\u00e9p\u00e9ter une plage."
         : lang === "ar"
-          ? "\u063a\u064a\u0631 \u0646\u0634\u0637 \u2014 \u062d\u062f\u062f \u0627\u0644\u0646\u0637\u0627\u0642 \u0645\u0646 \u0627\u0644\u0642\u0627\u0631\u0626"
-          : "Inactive \u2014 set range from the reader",
+          ? "\u062d\u062f\u062f \u0627\u0644\u0628\u062f\u0627\u064a\u0629 \u0623 \u0648\u0627\u0644\u0646\u0647\u0627\u064a\u0629 \u0628 \u0644\u0644\u062a\u0643\u0631\u0627\u0631."
+          : "Set point A and point B to loop a verse range.",
     abRepeatClear:
       lang === "fr" ? "Effacer A-B" : lang === "ar" ? "\u0645\u0633\u062d \u0623-\u0628" : "Clear A-B",
+    setA:
+      lang === "fr" ? "Fixer A" : lang === "ar" ? "\u062a\u062d\u062f\u064a\u062f \u0623" : "Set A",
+    setB:
+      lang === "fr" ? "Fixer B" : lang === "ar" ? "\u062a\u062d\u062f\u064a\u062f \u0628" : "Set B",
   };
 }
 
 export default function PlaybackSettingsPanel(props) {
   const {
     abRepeatActive,
+    abRepeatRange,
     audioSpeed,
     className,
     closeOptionsModal,
     cycleSpeed,
-    eqPreset,
-    handleApplyEqPreset,
     handleClearAbRepeat,
+    handleSetAbPointA,
+    handleSetAbPointB,
     handleSetTartilMode,
     handleVolumeChange,
-    isMobile,
     isSurahStreamReciter,
     lang,
     playerCardToggleClass,
@@ -329,35 +315,6 @@ export default function PlaybackSettingsPanel(props) {
         </p>
       </div>
 
-      {!isMobile && (
-      <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <span className={playerSectionLabelClass}>{labels.eq}</span>
-          <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums uppercase")}>
-            {eqPreset}
-          </span>
-        </div>
-        <div className="audio-settings-pills flex flex-wrap items-center gap-2">
-          {[
-            { id: "flat", label: labels.eqFlat },
-            { id: "bass", label: labels.eqBass },
-            { id: "treble", label: labels.eqTreble },
-            { id: "near", label: labels.eqNear },
-            { id: "hall", label: labels.eqHall },
-            { id: "vocals", label: labels.eqVocals },
-          ].map(({ id, label }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => handleApplyEqPreset(id)}
-              className={playerOptionPillClass(eqPreset === id)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-      )}
 
       <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
         <div className="flex items-center justify-between gap-2">
@@ -394,6 +351,30 @@ export default function PlaybackSettingsPanel(props) {
         <p className={cn(playerFadedTextClass, "mt-1 text-[0.62rem] leading-relaxed")}>
           {abRepeatActive ? labels.abRepeatActive : labels.abRepeatInactive}
         </p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={handleSetAbPointA}
+            className={cn(
+              playerOptionPillClass(abRepeatRange?.startIdx >= 0),
+              "text-[0.65rem]",
+            )}
+          >
+            {labels.setA}
+            {abRepeatRange?.startIdx >= 0 ? ` (${abRepeatRange.startIdx + 1})` : ""}
+          </button>
+          <button
+            type="button"
+            onClick={handleSetAbPointB}
+            className={cn(
+              playerOptionPillClass(abRepeatRange?.endIdx >= 0),
+              "text-[0.65rem]",
+            )}
+          >
+            {labels.setB}
+            {abRepeatRange?.endIdx >= 0 ? ` (${abRepeatRange.endIdx + 1})` : ""}
+          </button>
+        </div>
       </div>
 
       <div className="audio-settings-actions flex flex-wrap items-center gap-2 pb-1">

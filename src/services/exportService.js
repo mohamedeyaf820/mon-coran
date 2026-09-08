@@ -7,9 +7,7 @@ import {
   getAllBookmarks,
   getAllNotes,
   getSettings,
-  importBookmarkRecord,
-  importNoteRecord,
-  saveSettings,
+  mergePrivateSyncRecords,
 } from './storageService';
 import { getSurah } from '../data/surahs';
 import { getErrorReport } from './errorAnalytics.js';
@@ -223,9 +221,10 @@ export async function downloadExport() {
 
 /**
  * Import data from a JSON string.
- * Merges with existing data (new entries overwrite old on same key).
+ * Adds missing entries; preserves existing local notes and bookmarks.
  */
 export async function importData(jsonString) {
+  if (typeof jsonString !== "string" || jsonString.length > 5_000_000) throw new Error("Backup too large");
   let data;
   try {
     data = JSON.parse(jsonString);
@@ -241,37 +240,27 @@ export async function importData(jsonString) {
     throw new Error('Invalid MushafPlus backup file');
   }
 
-  // Import bookmarks
-  const bookmarks = Array.isArray(data.bookmarks) ? data.bookmarks : [];
-  let importedBookmarks = 0;
-  for (const bookmark of bookmarks) {
-    if (await importBookmarkRecord(bookmark)) importedBookmarks += 1;
+  if (![1, 2].includes(data.version)) throw new Error("Unsupported backup version");
+  const bookmarks = data.bookmarks ?? [];
+  const notes = data.notes ?? [];
+  if (!Array.isArray(bookmarks) || !Array.isArray(notes) || bookmarks.length > 10000 || notes.length > 10000) {
+    throw new Error("Invalid backup collections");
   }
-
-  // Import notes
-  const notes = Array.isArray(data.notes) ? data.notes : [];
-  let importedNotes = 0;
-  for (const note of notes) {
-    if (await importNoteRecord(note)) importedNotes += 1;
+  const settingsRestored = data.settings !== undefined;
+  if (settingsRestored && (!data.settings || typeof data.settings !== "object" || Array.isArray(data.settings))) {
+    throw new Error("Invalid backup settings");
   }
-
-  // Import settings (merge)
-  if (data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings)) {
-    const current = getSettings();
-    saveSettings({ ...current, ...data.settings });
-  }
-
-  return {
-    bookmarks: importedBookmarks,
-    notes: importedNotes,
-    settingsRestored: !!(data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings)),
-  };
+  const counts = await mergePrivateSyncRecords({
+    bookmarks, notes, settings: { ...getSettings(), ...(data.settings || {}) },
+  });
+  return { ...counts, settingsRestored };
 }
 
 /**
  * Import from a File object (from <input type="file">).
  */
 export async function importFromFile(file) {
+  if (!file || file.size > 5_000_000) throw new Error("Backup too large");
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = async (e) => {

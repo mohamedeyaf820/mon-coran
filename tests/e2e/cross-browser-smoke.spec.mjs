@@ -36,6 +36,9 @@ test("la recherche unifiée reste simple sur un très petit écran", async ({ pa
   await installQuranNetworkFixtures(page);
   await page.setViewportSize({ width: 319, height: 698 });
   await page.goto("/surah/63", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator('html[data-deferred-styles="ready"]')).toBeAttached();
+  await page.evaluate(() => document.fonts.ready);
 
   await page.locator(".mp-header__more").click();
   await page.locator('.mp-header-menu__item[data-key="search"]').click();

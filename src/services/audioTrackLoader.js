@@ -74,13 +74,28 @@ export function loadAudioUrl(service, url, retries = MAX_RETRIES) {
         }
       };
       const onError = () => failed(new Error("Audio load failed"));
-      cleanupAttempt = () => audio.removeEventListener("error", onError);
+      const onPlaying = () => {
+        if (!audio.paused && (audio.readyState >= 2 || audio.currentTime > 0)) {
+          finish();
+        }
+      };
+      cleanupAttempt = () => {
+        audio.removeEventListener("error", onError);
+        audio.removeEventListener("playing", onPlaying);
+      };
       audio.addEventListener("error", onError, { once: true });
+      audio.addEventListener("playing", onPlaying, { once: true });
+
+      const isDocHidden = typeof document !== "undefined" && document.visibilityState === "hidden";
+      const loadTimeoutMs = isDocHidden ? 30000 : AUDIO_LOAD_TIMEOUT;
       service._loadTimeout = setTimeout(() => {
         // Background timer delivery may lag behind native media playback.
-        if (!audio.paused && audio.readyState >= 2) finish();
-        else failed(new Error("Audio load timeout"));
-      }, AUDIO_LOAD_TIMEOUT);
+        if (!audio.paused || audio.readyState >= 2 || audio.currentTime > 0) {
+          finish();
+        } else {
+          failed(new Error("Audio load timeout"));
+        }
+      }, loadTimeoutMs);
       const rate = audio.playbackRate;
       if (audio.src !== url || audio.readyState < 2) {
         audio.preload = "auto";

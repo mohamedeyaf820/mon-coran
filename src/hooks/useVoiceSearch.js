@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { startVoiceRecognitionSession } from "../services/voiceRecognitionSession.js";
 
 export function getVoiceRecognitionLanguage(searchMode, interfaceLanguage) {
   if (searchMode === "arabic") return "ar-SA";
@@ -23,7 +24,7 @@ export default function useVoiceSearch({
   onTranscript,
 }) {
   const recognitionRef = useRef(null);
-  const transcriptReceivedRef = useRef(false);
+
   const onTranscriptRef = useRef(onTranscript);
   const [status, setStatus] = useState("idle");
   const [errorCode, setErrorCode] = useState(null);
@@ -35,92 +36,35 @@ export default function useVoiceSearch({
   const clearError = useCallback(() => setErrorCode(null), []);
 
   const stop = useCallback(() => {
-    recognitionRef.current?.stop?.();
+    const session = recognitionRef.current;
+    recognitionRef.current = null;
+    session?.cancel();
   }, []);
 
   const toggle = useCallback(() => {
-    if (status === "listening" || status === "starting") {
+    if (recognitionRef.current && !recognitionRef.current.finished) {
       stop();
       return;
     }
-
-    const Recognition = getSpeechRecognitionConstructor(
-      typeof window === "undefined" ? null : window,
-    );
-
-    if (!Recognition) {
+    const Recognition = getSpeechRecognitionConstructor(typeof window === "undefined" ? null : window);
+    if (!Recognition || window.isSecureContext === false) {
       setErrorCode("unsupported");
       return;
     }
-
-    const recognition = new Recognition();
-    recognition.lang = getVoiceRecognitionLanguage(
-      searchMode,
-      interfaceLanguage,
-    );
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    transcriptReceivedRef.current = false;
     setErrorCode(null);
-    setStatus("starting");
+    recognitionRef.current = startVoiceRecognitionSession({
+      Recognition,
+      language: getVoiceRecognitionLanguage(searchMode, interfaceLanguage),
+      onStatus: setStatus,
+      onError: setErrorCode,
+      onTranscript: transcript => onTranscriptRef.current?.(transcript),
+    });
+  }, [interfaceLanguage, searchMode, stop]);
 
-    recognition.onstart = () => setStatus("listening");
-    recognition.onresult = (event) => {
-      const transcript = Array.from(event.results || [])
-        .map((result) => result?.[0]?.transcript || "")
-        .join(" ")
-        .trim();
-
-      if (!transcript) return;
-      transcriptReceivedRef.current = true;
-      onTranscriptRef.current?.(transcript);
-    };
-    recognition.onerror = (event) => {
-      const code = event?.error;
-      if (code === "aborted") return;
-      if (code === "not-allowed" || code === "service-not-allowed") {
-        setErrorCode("permissionDenied");
-      } else if (code === "no-speech") {
-        setErrorCode("noSpeech");
-      } else if (code === "audio-capture") {
-        setErrorCode("microphoneUnavailable");
-      } else if (code === "network") {
-        setErrorCode("network");
-      } else {
-        setErrorCode("failed");
-      }
-    };
-    recognition.onend = () => {
-      if (!transcriptReceivedRef.current) {
-        setErrorCode((current) => current || "noSpeech");
-      }
-      recognitionRef.current = null;
-      setStatus("idle");
-    };
-
-    recognitionRef.current = recognition;
-    try {
-      recognition.start();
-    } catch {
-      recognitionRef.current = null;
-      setStatus("idle");
-      setErrorCode("failed");
-    }
-  }, [interfaceLanguage, searchMode, status, stop]);
-
-  useEffect(
-    () => () => {
-      const recognition = recognitionRef.current;
-      recognitionRef.current = null;
-      if (recognition) {
-        recognition.onend = null;
-        recognition.abort?.();
-      }
-    },
-    [],
-  );
+  useEffect(() => () => {
+    recognitionRef.current?.cancel();
+    recognitionRef.current = null;
+  }, []);
 
   const isSupported =
     typeof window !== "undefined" &&

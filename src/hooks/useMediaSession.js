@@ -104,8 +104,10 @@ export function useMediaSession({
   // setPositionState throws until metadata is available.
   useEffect(() => {
     if (!('mediaSession' in navigator)) return;
-    const safeDuration = Number(duration);
-    const safePosition = Number(currentTime);
+    // The player UI may show an estimated whole-surah timeline. Lock-screen
+    // seeking targets the native track, so its position must use that track too.
+    const safeDuration = Number(service ? service.duration : duration);
+    const safePosition = Number(service ? service.currentTime : currentTime);
     const safeRate = Number(playbackRate);
     if (!Number.isFinite(safeDuration) || safeDuration <= 0) return;
     try {
@@ -121,7 +123,7 @@ export function useMediaSession({
     } catch {
       // Position state is optional and unavailable in older Safari versions.
     }
-  }, [currentTime, duration, playbackRate]);
+  }, [currentTime, duration, playbackRate, service]);
 
   // Register action handlers once, use ref to keep them fresh
   useEffect(() => {

@@ -49,6 +49,9 @@ export function getDB() {
                     if (db.objectStoreNames.contains('history')) db.deleteObjectStore('history');
                 }
             },
+        }).catch((error) => {
+            dbPromise = null;
+            throw error;
         });
     }
     return dbPromise;
@@ -60,7 +63,7 @@ export function getDB() {
 export async function dbGet(storeName, key) {
     try {
         const db = await getDB();
-        return db.get(storeName, key);
+        return await db.get(storeName, key);
     } catch (err) {
         devWarn(`DB read error in ${storeName}:`, err);
         return undefined;
@@ -73,7 +76,7 @@ export async function dbGet(storeName, key) {
 export async function dbSet(storeName, value) {
     try {
         const db = await getDB();
-        return db.put(storeName, value);
+        return await db.put(storeName, value);
     } catch (err) {
         if (err?.name === 'QuotaExceededError') {
             devWarn(`IndexedDB quota exceeded in ${storeName}`);
@@ -89,7 +92,7 @@ export async function dbSet(storeName, value) {
 export async function dbDelete(storeName, key) {
     try {
         const db = await getDB();
-        return db.delete(storeName, key);
+        return await db.delete(storeName, key);
     } catch (err) {
         devWarn(`DB delete error in ${storeName}:`, err);
     }
@@ -101,7 +104,7 @@ export async function dbDelete(storeName, key) {
 export async function dbGetAll(storeName) {
     try {
         const db = await getDB();
-        return db.getAll(storeName);
+        return await db.getAll(storeName);
     } catch (err) {
         devWarn(`DB getAll error in ${storeName}:`, err);
         return [];

@@ -17,7 +17,7 @@ function devLog(method, ...args) {
     console[method]?.(...args);
   }
 }
-import { AudioEqualizer } from "./audioEqualizer.js";
+
 import {
   isSurahStreamCdn,
   normalizePlaylistAyahs,
@@ -85,8 +85,6 @@ class AudioService {
     // Tartil progressive mode (auto-speed based on ayah complexity)
     this.tartilMode = false;
 
-    // Equalizer (Web Audio API, lazy init on first user activation)
-    this._equalizer = new AudioEqualizer();
 
     // Callbacks
     this.onPlay = null;
@@ -1062,8 +1060,20 @@ class AudioService {
 
   /* ── A-B Repeat ─────────────────────────────────────────────── */
   setAbRepeat(startIdx, endIdx) {
-    this.abRepeatStart = startIdx >= 0 ? startIdx : -1;
-    this.abRepeatEnd = endIdx >= 0 ? endIdx : -1;
+    const s = Number(startIdx);
+    const e = Number(endIdx);
+    this.abRepeatStart = Number.isInteger(s) && s >= 0 ? s : -1;
+    this.abRepeatEnd = Number.isInteger(e) && e >= 0 ? e : -1;
+  }
+  getAbRepeat() {
+    return {
+      start: this.abRepeatStart,
+      end: this.abRepeatEnd,
+      active:
+        this.abRepeatStart >= 0 &&
+        this.abRepeatEnd >= 0 &&
+        this.abRepeatEnd >= this.abRepeatStart,
+    };
   }
   clearAbRepeat() {
     this.abRepeatStart = -1;
@@ -1084,26 +1094,12 @@ class AudioService {
     return 0.65;
   }
 
-  /* ── Equalizer (Web Audio API, lazy init) ────────────────────── */
-  get eqPreset() {
-    return this._equalizer.currentPreset;
-  }
-  set eqPreset(val) {
-    this._equalizer.currentPreset = val;
-  }
-  get _audioCtx() {
-    return this._equalizer.audioCtx;
-  }
-  get _eqConnected() {
-    return this._equalizer.isConnected;
-  }
-
   _preparePlaybackSession() {
-    this._equalizer.preparePlaybackSession();
-  }
-
-  applyEqPreset(preset) {
-    this._equalizer.applyPreset(preset, this.audio);
+    try {
+      if (typeof navigator !== "undefined" && navigator.audioSession) {
+        navigator.audioSession.type = "playback";
+      }
+    } catch { /* Optional browser capability. Native audio remains usable. */ }
   }
 
   destroy() {
@@ -1113,7 +1109,7 @@ class AudioService {
     }
     this._clearLoadTimeout();
     this.stop();
-    this._equalizer.destroy();
+
     if (this._preloadAudio) {
       this._preloadAudio.removeAttribute("src");
       this._preloadAudio = null;

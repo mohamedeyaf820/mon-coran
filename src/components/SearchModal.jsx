@@ -372,9 +372,7 @@ export default function SearchModal() {
                         onClick={voiceSearch.toggle}
                         onKeyDown={(event) => event.stopPropagation()}
                         aria-label={
-                          !voiceSearch.isSupported
-                            ? t("search.voiceErrors.unsupported", lang)
-                            : t(
+                          t(
                                 voiceSearch.isListening
                                   ? "search.voiceStop"
                                   : "search.voiceStart",
@@ -382,6 +380,7 @@ export default function SearchModal() {
                               )
                         }
                         aria-pressed={voiceSearch.isListening}
+                        aria-description={!voiceSearch.isSupported ? t("search.voiceErrors.unsupported", lang) : undefined}
                         aria-disabled={!voiceSearch.isSupported}
                         title={
                           !voiceSearch.isSupported

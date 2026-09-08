@@ -97,12 +97,14 @@ export default function useQuranDisplayScroll({
     };
   }, [ayahCount, contentRef, displayMode, getScrollContainer]);
 
+  const navigationKey = `${displayMode}:${displayMode === "page" ? currentPage : displayMode === "juz" ? currentJuz : currentSurah}`;
   useEffect(() => {
+    // Only navigation in the active reading mode resets the viewport.
     // Continuous page reading updates the page from the scroll position:
     // resetting the scroll there would throw the reader back to the top.
     if (displayMode === "page" && pageNavigationSource === "scroll") return;
     getScrollContainer()?.scrollTo({ top: 0, behavior: "auto" });
-  }, [currentJuz, currentPage, currentSurah, displayMode, getScrollContainer, pageNavigationSource]);
+  }, [navigationKey, displayMode, getScrollContainer, pageNavigationSource]);
 
   useEffect(() => {
     if (
@@ -131,7 +133,7 @@ export default function useQuranDisplayScroll({
         }
         target.scrollIntoView({ behavior: "auto", block: "center" });
         correctionTimer = window.setTimeout(() => {
-          if (!cancelled) {
+          if (!cancelled && target.isConnected && Date.now() >= userScrollUntilRef.current) {
             target.scrollIntoView({ behavior: "auto", block: "center" });
           }
         }, 220);

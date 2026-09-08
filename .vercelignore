@@ -1,0 +1,17 @@
+# Test suites and reports
+tests/
+test-results/
+playwright-report/
+playwright.config.mjs
+playwright.debug.config.mjs
+
+# Dev scripts and audits
+design-audit/
+design-audit-2/
+scratch/
+.codex-artifacts/
+.vscode/
+
+# Local artifacts
+.env.local
+*.log

@@ -14,6 +14,7 @@ import {
   StickyNote,
 } from "lucide-react";
 import { t } from "../i18n";
+import { confirmAction } from "../services/interactionService.js";
 import {
   buildSyncPayload,
   encodeSyncToken,
@@ -31,6 +32,11 @@ export default function QrSyncModal({ open = true, onClose, lang = "fr" }) {
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [syncUrl, setSyncUrl] = useState("");
   const [copied, setCopied] = useState(false);
+  const [includeNotes, setIncludeNotes] = useState(false);
+  const importingRef = useRef(false);
+  const reloadTimerRef = useRef(null);
+  const cameraGenerationRef = useRef(0);
+  const streamRef = useRef(null);
 
   // Import state
   const [importText, setImportText] = useState("");
@@ -43,9 +49,12 @@ export default function QrSyncModal({ open = true, onClose, lang = "fr" }) {
   // Prepare export QR on mount or tab switch
   useEffect(() => {
     let mounted = true;
-    if (activeTab === "export") {
+    if (activeTab === "export" && open) {
       setLoading(true);
-      buildSyncPayload()
+      setSyncUrl("");
+      setQrSvg("");
+      setQrDataUrl("");
+      buildSyncPayload({ includeNotes })
         .then((data) => {
           if (!mounted) return;
           setPayload(data);
@@ -72,10 +81,13 @@ export default function QrSyncModal({ open = true, onClose, lang = "fr" }) {
     return () => {
       mounted = false;
     };
-  }, [activeTab]);
+  }, [activeTab, open, includeNotes]);
 
   // Clean up scanner on unmount or tab switch
   const stopCamera = useCallback(() => {
+    cameraGenerationRef.current += 1;
+    streamRef.current?.getTracks().forEach(track => track.stop());
+    streamRef.current = null;
     if (scanIntervalRef.current) {
       clearInterval(scanIntervalRef.current);
       scanIntervalRef.current = null;
@@ -92,7 +104,10 @@ export default function QrSyncModal({ open = true, onClose, lang = "fr" }) {
     if (activeTab !== "import" || !open) {
       stopCamera();
     }
+    return stopCamera;
   }, [activeTab, open, stopCamera]);
+
+  useEffect(() => () => clearTimeout(reloadTimerRef.current), []);
 
   const handleCopyLink = async () => {
     if (!syncUrl) return;
@@ -129,17 +144,27 @@ export default function QrSyncModal({ open = true, onClose, lang = "fr" }) {
 
   const handleApplyImport = async (textToImport) => {
     const raw = (textToImport || importText).trim();
-    if (!raw) return;
+    if (!raw || importingRef.current) return;
+    importingRef.current = true;
     try {
       const parsed = decodeSyncToken(raw);
+      const confirmed = await confirmAction({
+        title: t("export.qrApply", lang),
+        message: `${t("export.qrDetectPrompt", lang)}\n${parsed.rw} · ${parsed.pos.s}:${parsed.pos.a} · ${parsed.bm.length} / ${parsed.nt.length}`,
+        confirmLabel: t("export.qrApply", lang),
+        cancelLabel: t("share.close", lang),
+      });
+      if (!confirmed) return;
       const result = await applySyncPayload(parsed);
       setImportStatus("success");
       setImportSummary(result);
-      setTimeout(() => {
+      reloadTimerRef.current = setTimeout(() => {
         window.location.reload();
       }, 1500);
     } catch {
       setImportStatus("error");
+    } finally {
+      importingRef.current = false;
     }
   };
 
@@ -147,33 +172,43 @@ export default function QrSyncModal({ open = true, onClose, lang = "fr" }) {
     if (!("BarcodeDetector" in window) || !navigator.mediaDevices?.getUserMedia) {
       return;
     }
+    const generation = ++cameraGenerationRef.current;
     try {
       setIsScanning(true);
       setImportStatus(null);
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
       });
+      if (generation !== cameraGenerationRef.current || !videoRef.current) {
+        stream.getTracks().forEach(track => track.stop());
+        return;
+      }
+      streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
       }
+      if (generation !== cameraGenerationRef.current) return;
 
       const barcodeDetector = new window.BarcodeDetector({
         formats: ["qr_code"],
       });
 
+      let detecting = false;
       scanIntervalRef.current = setInterval(async () => {
-        if (!videoRef.current || videoRef.current.readyState < 2) return;
+        if (detecting || !videoRef.current || videoRef.current.readyState < 2) return;
+        detecting = true;
         try {
           const codes = await barcodeDetector.detect(videoRef.current);
-          if (codes && codes.length > 0) {
+          if (generation === cameraGenerationRef.current && codes && codes.length > 0) {
             const raw = codes[0].rawValue;
             stopCamera();
             setImportText(raw);
-            handleApplyImport(raw);
           }
         } catch {
           // ignore scan frame errors
+        } finally {
+          detecting = false;
         }
       }, 400);
     } catch {
@@ -243,6 +278,11 @@ export default function QrSyncModal({ open = true, onClose, lang = "fr" }) {
           <div className="qr-sync-modal__body">
             {activeTab === "export" ? (
               <div className="qr-sync-export-panel">
+                <p className="qr-sync-instructions">{t("export.qrPrivacy", lang)}</p>
+                <label className="qr-sync-instructions">
+                  <input type="checkbox" checked={includeNotes} onChange={event => setIncludeNotes(event.target.checked)} />
+                  {t("export.qrIncludeNotes", lang)}
+                </label>
                 {loading ? (
                   <div className="qr-sync-loading">
                     <Loader2 size={28} className="animate-spin" />
@@ -258,7 +298,7 @@ export default function QrSyncModal({ open = true, onClose, lang = "fr" }) {
                           height={192}
                           className="qr-sync-image"
                         />
-                      ) : null}
+                      ) : <p role="status">{t("export.qrTooLarge", lang)}</p>}
                     </div>
 
                     <div className="qr-sync-meta-grid">
@@ -301,6 +341,7 @@ export default function QrSyncModal({ open = true, onClose, lang = "fr" }) {
                         type="button"
                         className="qr-sync-btn qr-sync-btn--primary"
                         onClick={handleCopyLink}
+                        disabled={!syncUrl}
                       >
                         {copied ? (
                           <>
@@ -318,6 +359,7 @@ export default function QrSyncModal({ open = true, onClose, lang = "fr" }) {
                         type="button"
                         className="qr-sync-btn"
                         onClick={handleDownloadQr}
+                        disabled={!qrSvg}
                       >
                         <Download size={16} aria-hidden="true" />
                         <span>{t("export.qrDownload", lang)}</span>

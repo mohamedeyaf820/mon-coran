@@ -11,6 +11,7 @@ playwright-report/
 coverage/
 
 # Local dev artifacts
+.kilo/
 .vercel-cli-data/
 /tmp-*
 /audit-*.png

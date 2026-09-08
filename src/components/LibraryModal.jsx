@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   Bookmark,
+  BookOpen,
   ChevronRight,
   ListMusic,
   Loader2,
@@ -14,6 +15,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import KhatmaPlannerPanel from "./KhatmaPlannerPanel";
 import { useApp } from "../context/AppContext";
 import {
   deleteNote,
@@ -55,6 +57,7 @@ const COPY = {
     searchNotes: "Rechercher dans les notes",
     edit: "Modifier",
     save: "Enregistrer",
+    khatma: "Khatma",
   },
   en: {
     title: "Library",
@@ -73,6 +76,7 @@ const COPY = {
     searchNotes: "Search notes",
     edit: "Edit",
     save: "Save",
+    khatma: "Khatma",
   },
   ar: {
     title: "المكتبة",
@@ -91,6 +95,7 @@ const COPY = {
     searchNotes: "البحث في الملاحظات",
     edit: "تعديل",
     save: "حفظ",
+    khatma: "الختمة",
   },
 };
 
@@ -98,7 +103,7 @@ export default function LibraryModal() {
   const { state, dispatch, set } = useApp();
   const { lang, reciter, riwaya } = state;
   const copy = COPY[lang] || COPY.fr;
-  const requestedTab = ["favorites", "notes", "playlists"].includes(state.libraryTab)
+  const requestedTab = ["favorites", "notes", "playlists", "khatma"].includes(state.libraryTab)
     ? state.libraryTab
     : "favorites";
   const [tab, setTab] = useState(requestedTab);
@@ -140,6 +145,7 @@ export default function LibraryModal() {
       { id: "favorites", label: copy.favorites, Icon: Bookmark, count: bookmarks.length },
       { id: "notes", label: copy.notes, Icon: NotebookPen, count: notes.length },
       { id: "playlists", label: copy.playlists, Icon: ListMusic, count: playlists.length },
+      { id: "khatma", label: copy.khatma, Icon: BookOpen },
     ],
     [bookmarks.length, copy, notes.length, playlists.length],
   );
@@ -312,6 +318,9 @@ export default function LibraryModal() {
                     </article>
                   ))}
                 </div>
+              ) : null}
+              {!loading && tab === "khatma" ? (
+                <KhatmaPlannerPanel onClose={close} />
               ) : null}
             </div>
           </Dialog.Content>

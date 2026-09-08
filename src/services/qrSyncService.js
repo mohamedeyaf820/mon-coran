@@ -1,11 +1,11 @@
+import { validateSyncPayload, MAX_SYNC_TOKEN_LENGTH } from "./qrSyncValidation.js";
 import qrcode from "qrcode-generator";
+import { ensureReciterForRiwaya } from "../data/reciters.js";
 import {
   getAllBookmarks,
   getAllNotes,
   getSettings,
-  importBookmarkRecord,
-  importNoteRecord,
-  saveSettings,
+  mergePrivateSyncRecords,
 } from "./storageService.js";
 
 /**
@@ -28,7 +28,7 @@ export function toBase64Url(str) {
  * UTF-8 safe base64url decoder.
  */
 export function fromBase64Url(base64UrlStr) {
-  if (!base64UrlStr || typeof base64UrlStr !== "string") {
+  if (!base64UrlStr || typeof base64UrlStr !== "string" || base64UrlStr.length > MAX_SYNC_TOKEN_LENGTH || !/^[A-Za-z0-9_-]+$/.test(base64UrlStr)) {
     throw new Error("Invalid base64 string");
   }
   let b64 = base64UrlStr.replace(/-/g, "+").replace(/_/g, "/");
@@ -41,7 +41,7 @@ export function fromBase64Url(base64UrlStr) {
     for (let i = 0; i < binary.length; i += 1) {
       bytes[i] = binary.charCodeAt(i);
     }
-    return new TextDecoder().decode(bytes);
+    return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
   } catch {
     throw new Error("Invalid base64 string");
   }
@@ -68,10 +68,10 @@ export function generateQrSvg(text, options = {}) {
 /**
  * Builds a compact sync payload object from current local state.
  */
-export async function buildSyncPayload() {
+export async function buildSyncPayload({ includeNotes = false } = {}) {
   const settings = getSettings();
   const bookmarks = await getAllBookmarks();
-  const notes = await getAllNotes();
+  const notes = includeNotes ? await getAllNotes() : [];
 
   const pos = settings.lastPosition || { surah: 1, ayah: 1, page: 1, juz: 1 };
 
@@ -88,18 +88,18 @@ export async function buildSyncPayload() {
     rw: settings.riwaya || "hafs",
     th: settings.theme || "light",
     rc: settings.reciter || "ar.alafasy",
-    fs: settings.fontSize || 25,
+    fs: settings.quranFontSize || settings.fontSize || 25,
     dm: settings.displayMode || "surah",
-    bm: (Array.isArray(bookmarks) ? bookmarks : []).slice(0, 150).map((b) => ({
+    bm: (Array.isArray(bookmarks) ? bookmarks : []).map((b) => ({
       s: Number(b.surah),
       a: Number(b.ayah),
-      l: String(b.label || "").slice(0, 40),
+      l: String(b.label || ""),
       t: Number(b.createdAt) || 0,
     })),
-    nt: (Array.isArray(notes) ? notes : []).slice(0, 100).map((n) => ({
+    nt: (Array.isArray(notes) ? notes : []).map((n) => ({
       s: Number(n.surah),
       a: Number(n.ayah),
-      t: String(n.text || "").slice(0, 500),
+      t: String(n.text || ""),
       u: Number(n.updatedAt) || 0,
     })),
   };
@@ -109,7 +109,7 @@ export async function buildSyncPayload() {
  * Encodes sync payload into a compact base64url token.
  */
 export function encodeSyncToken(payload) {
-  const json = JSON.stringify(payload);
+  const json = JSON.stringify(validateSyncPayload(payload));
   return toBase64Url(json);
 }
 
@@ -153,70 +153,28 @@ export function decodeSyncToken(tokenOrUrl) {
     throw new Error("Unsupported or unrecognized MushafPlus sync data");
   }
 
-  return parsed;
+  return validateSyncPayload(parsed);
 }
 
 /**
  * Applies a validated sync payload to the local device storage.
  */
-export async function applySyncPayload(payload) {
-  if (!payload || payload.app !== "MushafPlus") {
-    throw new Error("Invalid sync payload");
-  }
-
-  let importedBookmarks = 0;
-  if (Array.isArray(payload.bm)) {
-    for (const b of payload.bm) {
-      if (b && Number.isFinite(b.s) && Number.isFinite(b.a)) {
-        const ok = await importBookmarkRecord({
-          id: `${b.s}:${b.a}`,
-          surah: b.s,
-          ayah: b.a,
-          label: b.l || "",
-          createdAt: b.t || Date.now(),
-        });
-        if (ok) importedBookmarks += 1;
-      }
-    }
-  }
-
-  let importedNotes = 0;
-  if (Array.isArray(payload.nt)) {
-    for (const n of payload.nt) {
-      if (n && Number.isFinite(n.s) && Number.isFinite(n.a)) {
-        const ok = await importNoteRecord({
-          id: `${n.s}:${n.a}`,
-          surah: n.s,
-          ayah: n.a,
-          text: n.t || "",
-          updatedAt: n.u || Date.now(),
-        });
-        if (ok) importedNotes += 1;
-      }
-    }
-  }
-
+export async function applySyncPayload(input) {
+  const payload = validateSyncPayload(input);
   const current = getSettings();
   const nextSettings = {
     ...current,
-    lastPosition: {
-      surah: payload.pos?.s || current.lastPosition?.surah || 1,
-      ayah: payload.pos?.a || current.lastPosition?.ayah || 1,
-      page: payload.pos?.p || current.lastPosition?.page || 1,
-      juz: payload.pos?.j || current.lastPosition?.juz || 1,
-    },
-    riwaya: payload.rw || current.riwaya,
-    theme: payload.th || current.theme,
-    reciter: payload.rc || current.reciter,
-    fontSize: payload.fs || current.fontSize,
-    displayMode: payload.dm || current.displayMode,
+    lastPosition: { surah: payload.pos.s, ayah: payload.pos.a, page: payload.pos.p, juz: payload.pos.j },
+    riwaya: payload.rw,
+    theme: payload.th,
+    reciter: ensureReciterForRiwaya(payload.rc, payload.rw),
+    quranFontSize: payload.fs,
+    displayMode: payload.dm,
   };
-  saveSettings(nextSettings);
-
-  return {
-    bookmarks: importedBookmarks,
-    notes: importedNotes,
-    position: nextSettings.lastPosition,
-    riwaya: nextSettings.riwaya,
-  };
+  const counts = await mergePrivateSyncRecords({
+    bookmarks: payload.bm.map(b => ({ id: b.s + ":" + b.a, surah: b.s, ayah: b.a, label: b.l, createdAt: b.t })),
+    notes: payload.nt.map(n => ({ id: n.s + ":" + n.a, surah: n.s, ayah: n.a, text: n.t, updatedAt: n.u })),
+    settings: nextSettings,
+  });
+  return { ...counts, position: nextSettings.lastPosition, riwaya: nextSettings.riwaya };
 }

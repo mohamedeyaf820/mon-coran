@@ -981,7 +981,6 @@ body,
 
     .hdr.hdr--themes4 .hdr__action-cluster {
         width: 100% !important;
-        min-width: 0 !important;
         justify-content: space-between !important;
         align-items: stretch !important;
         flex-wrap: wrap !important;

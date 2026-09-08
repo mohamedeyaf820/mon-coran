@@ -8,15 +8,16 @@ import ReciterOptionsList from "./ReciterOptionsList";
 export default function AudioOptionsModal(props) {
   const {
     abRepeatActive,
+    abRepeatRange,
     audioSpeed,
     closeOptionsModal,
     currentReciters,
     cycleSpeed,
-    eqPreset,
     filteredReciters,
     favoriteReciters,
-    handleApplyEqPreset,
     handleClearAbRepeat,
+    handleSetAbPointA,
+    handleSetAbPointB,
     handleSetTartilMode,
     handleReciterSelect,
     handleVolumeChange,
@@ -156,12 +157,13 @@ export default function AudioOptionsModal(props) {
               aria-labelledby="tab-settings"
               className={activeMobileTab === "settings" ? "is-active" : ""}
               abRepeatActive={abRepeatActive}
+              abRepeatRange={abRepeatRange}
               audioSpeed={audioSpeed}
               closeOptionsModal={closeOptionsModal}
               cycleSpeed={cycleSpeed}
-              eqPreset={eqPreset}
-              handleApplyEqPreset={handleApplyEqPreset}
               handleClearAbRepeat={handleClearAbRepeat}
+              handleSetAbPointA={handleSetAbPointA}
+              handleSetAbPointB={handleSetAbPointB}
               handleSetTartilMode={handleSetTartilMode}
               tartilMode={tartilMode}
               handleVolumeChange={handleVolumeChange}

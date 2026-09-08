@@ -213,7 +213,6 @@ button,
 
 .app-root > .mp-header .mp-header__riwaya-switch {
   height: 2.55rem !important;
-  border-radius: var(--r-lg);
   background: color-mix(in srgb, var(--theme-panel-bg, #fff) 82%, transparent) !important;
 }
 
@@ -684,8 +683,6 @@ html.dark .audio-player-modal__surface {
   }
 
   .app-root > .mp-header .mp-header__bar {
-    min-height: 3.25rem !important;
-    grid-template-columns: auto minmax(0, 1fr) auto !important;
     gap: 0.35rem;
   }
 
@@ -723,7 +720,6 @@ html.dark .audio-player-modal__surface {
   }
 
   .app-root > .mp-header .mp-header__riwaya-mobile {
-    display: inline-flex !important;
     margin-right: 0;
     font-size: var(--ts-xs) !important;
   }
@@ -1457,7 +1453,6 @@ html body .app-root .app-view-home .hp-card--list .hp-card-ar {
     right: max(0.55rem, env(safe-area-inset-right)) !important;
     bottom: max(0.55rem, env(safe-area-inset-bottom)) !important;
     width: auto !important;
-    border-radius: var(--r-lg);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     contain: none;

@@ -98,9 +98,9 @@ export default function AudioPlayer() {
   const networkStateTimerRef = useRef(null);
   const [optionsModalOpen, setOptionsModalOpen] = useState(false);
   const [reciterSwitchingId, setReciterSwitchingId] = useState(null);
-  const [eqPreset, setEqPreset] = useState("flat");
   const [tartilMode, setTartilMode] = useState(false);
   const [abRepeatActive, setAbRepeatActive] = useState(false);
+  const [abRepeatRange, setAbRepeatRange] = useState({ startIdx: -1, endIdx: -1 });
 
   /* Fermeture / refs stables pour callbacks */
   const [closed, setClosed] = useState(false);
@@ -610,10 +610,6 @@ export default function AudioPlayer() {
     set({ audioSpeed: speeds[(idx + 1) % speeds.length] });
   };
 
-  const handleApplyEqPreset = useCallback((preset) => {
-    setEqPreset(preset);
-    audioService.applyEqPreset(preset);
-  }, []);
 
   const handleSetTartilMode = useCallback((enabled) => {
     setTartilMode(enabled);
@@ -624,9 +620,36 @@ export default function AudioPlayer() {
     return () => { audioService.setTartilMode(false, 1); };
   }, []);
 
+  const handleSetAbPointA = useCallback(() => {
+    const idx = audioService.playlistIndex;
+    if (idx < 0) return;
+    setAbRepeatRange((prev) => {
+      const next = { ...prev, startIdx: idx };
+      if (next.endIdx >= 0 && next.endIdx >= next.startIdx) {
+        audioService.setAbRepeat(next.startIdx, next.endIdx);
+        setAbRepeatActive(true);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleSetAbPointB = useCallback(() => {
+    const idx = audioService.playlistIndex;
+    if (idx < 0) return;
+    setAbRepeatRange((prev) => {
+      const next = { ...prev, endIdx: idx };
+      if (next.startIdx >= 0 && next.endIdx >= next.startIdx) {
+        audioService.setAbRepeat(next.startIdx, next.endIdx);
+        setAbRepeatActive(true);
+      }
+      return next;
+    });
+  }, []);
+
   const handleClearAbRepeat = useCallback(() => {
     audioService.clearAbRepeat();
     setAbRepeatActive(false);
+    setAbRepeatRange({ startIdx: -1, endIdx: -1 });
   }, []);
 
   const toggleMinimized = useCallback(() => {
@@ -985,13 +1008,14 @@ export default function AudioPlayer() {
   const audioOptionsModal = (
     <AudioOptionsModal
       abRepeatActive={abRepeatActive}
+      abRepeatRange={abRepeatRange}
       audioSpeed={audioSpeed}
       closeOptionsModal={closeOptionsModal}
       currentReciters={currentReciters}
       cycleSpeed={cycleSpeed}
-      eqPreset={eqPreset}
-      handleApplyEqPreset={handleApplyEqPreset}
       handleClearAbRepeat={handleClearAbRepeat}
+      handleSetAbPointA={handleSetAbPointA}
+      handleSetAbPointB={handleSetAbPointB}
       handleSetTartilMode={handleSetTartilMode}
       tartilMode={tartilMode}
       filteredReciters={filteredReciters}
