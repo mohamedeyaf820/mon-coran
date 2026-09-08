@@ -395,9 +395,29 @@ const MADD_START_RE =
  * expects U+0670.
  */
 export function stabilizeTajwidSegments(segments = []) {
+  // Quran.com wraps cross-word idgham without ghunnah in a single tag:
+  // e.g. <tajweed class=idgham_wo_ghunnah>َن ل</tajweed>َّا or ِن ر</tajweed>َّبِّهِم
+  // The part before the space ('َن' / 'ِن') is the assimilated/silent noon of word 1.
+  // The part after the space ('ل' / 'ر') is the initial consonant of word 2, which is
+  // voiced with a shaddah ('لَّا') and is NOT silent.
+  // Splitting cross-word silent segments ensures word 2's starting consonant is not
+  // wrongly marked as silent and never breaks the indivisible Lam-Alef ('لا') ligature.
+  const rawSegments = [];
+  for (const seg of segments) {
+    if (seg?.ruleId === "silent" && /\s/.test(seg.text)) {
+      const parts = seg.text.split(/(\s+)/);
+      if (parts.length >= 3) {
+        if (parts[0]) rawSegments.push({ text: parts[0], ruleId: "silent" });
+        rawSegments.push({ text: parts[1] + parts.slice(2).join(""), ruleId: null });
+        continue;
+      }
+    }
+    rawSegments.push(seg);
+  }
+
   const stabilized = [];
 
-  for (const segment of segments) {
+  for (const segment of rawSegments) {
     let segmentText = normalizeQuranGlyphText(segment?.text).replace(/\u0672/g, "\u0670");
     if (!segmentText) continue;
 

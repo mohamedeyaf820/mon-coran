@@ -156,3 +156,34 @@ test("stabilizeTajwidSegments handles isolated word-start 'ف' with madd", () =>
   ]);
 });
 
+test("stabilizeTajwidSegments preserves Lam-Alef in cross-word idgham without ghunnah (68:24)", () => {
+  // Quran.com raw output for 68:24: "أ<tajweed class=idgham_wo_ghunnah>َن ل</tajweed>َّا يَ<tajweed class=qalaqah>دْ</tajweed>خُلَ..."
+  const rawSegments = [
+    { text: "أ", ruleId: null },
+    { text: "َن ل", ruleId: "silent" },
+    { text: "َّا يَ", ruleId: null },
+    { text: "دْ", ruleId: "qalqala" },
+    { text: "خُلَ", ruleId: null },
+    { text: "نّ", ruleId: "ghunna" },
+    { text: "َهَا", ruleId: null },
+  ];
+
+  const stabilized = stabilizeTajwidSegments(rawSegments);
+
+  // Reconstructed plain text must be 100% identical and continuous
+  const fullText = stabilized.map((s) => s.text).join("");
+  assert.equal(fullText, "أَن لَّا يَدْخُلَنَّهَا");
+
+  // In word 1 'أَن', the nun must be silent (grey)
+  const noonSeg = stabilized.find((s) => s.text === "ن");
+  assert.ok(noonSeg, "Nun segment in 'أَن' must exist");
+  assert.equal(noonSeg.ruleId, "silent");
+
+  // In word 2 'لَّا', the Lam-Alef must NOT be split or marked silent
+  // It should be part of a normal (ruleId: null) segment containing 'لَّا'
+  const laaSeg = stabilized.find((s) => s.text.includes("لَّا"));
+  assert.ok(laaSeg, "Segment with 'لَّا' must exist intact");
+  assert.equal(laaSeg.ruleId, null, "'لَّا' must be voiced (ruleId: null), never silent");
+});
+
+

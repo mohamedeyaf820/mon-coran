@@ -409,13 +409,16 @@ function finishHighlightWord(text, rules) {
             buffer += char;
         }
     }
-    // Protective guard: for 2-letter ligature words like 'فِىٓ', ensure any madd
-    // rule covers the base consonant from index 0 so Chromium/WebKit highlight painter
-    // never clips or drops the base letter.
-    if (/^[\u0641\u0644\u0628][\u064B-\u065F]?[\u0649\u064A\u0627][\u0653]?$/u.test(text)) {
+    // Protective guard: for 2-letter ligature words like 'فِىٓ' or 'لَّا', ensure OpenType ligatures
+    // are never clipped or broken by partial styling or misattributed silent rules.
+    if (/^[\u0641\u0644\u0628][\u064B-\u065F]*[\u0649\u064A\u0622\u0623\u0625\u0627\u0671][\u0653]?$/u.test(text)) {
         for (const rule of rules) {
-            if (rule.ruleId && rule.ruleId.startsWith('madd')) {
-                rule.start = 0;
+            if (rule.ruleId && (rule.ruleId.startsWith('madd') || rule.ruleId === 'silent')) {
+                if (rule.ruleId === 'silent' && text.includes('\u0644')) {
+                    rule.start = text.length; // neutralize misapplied silent rule on Lam
+                } else if (rule.ruleId.startsWith('madd')) {
+                    rule.start = 0;
+                }
             }
         }
     }
@@ -743,7 +746,11 @@ function shapeWordSegments(wordSegments) {
             const prevLast = getLastBaseChar(wordSegments[idx - 1].text);
             const currFirst = getFirstBaseChar(text);
             if (ARABIC_DUAL_JOINING_RE.test(prevLast) && ARABIC_ANY_JOINING_RE.test(currFirst)) {
-                if (!text.startsWith('\u200D')) {
+                // NEVER insert ZWJ (\u200D) between Lam and Alef!
+                // Lam-Alef is an indivisible OpenType ligature, not standard cursive joining.
+                // Inserting ZWJ breaks the ligature into a severed '\' and isolated Alef.
+                const isLamAlef = prevLast === '\u0644' && /^[\u0622\u0623\u0625\u0627\u0671]$/u.test(currFirst);
+                if (!isLamAlef && !text.startsWith('\u200D')) {
                     text = '\u200D' + text;
                 }
             }
@@ -753,7 +760,8 @@ function shapeWordSegments(wordSegments) {
             const currLast = getLastBaseChar(text);
             const nextFirst = getFirstBaseChar(wordSegments[idx + 1].text);
             if (ARABIC_DUAL_JOINING_RE.test(currLast) && ARABIC_ANY_JOINING_RE.test(nextFirst)) {
-                if (!text.endsWith('\u200D')) {
+                const isLamAlef = currLast === '\u0644' && /^[\u0622\u0623\u0625\u0627\u0671]$/u.test(nextFirst);
+                if (!isLamAlef && !text.endsWith('\u200D')) {
                     text = text + '\u200D';
                 }
             }
@@ -766,10 +774,14 @@ function shapeWordSegments(wordSegments) {
 function normalizeWordSegments(wordSegments) {
     if (!Array.isArray(wordSegments) || wordSegments.length <= 1) return wordSegments;
     const fullText = wordSegments.map((s) => s.text).join('');
-    if (/^[\u0641\u0644\u0628][\u064B-\u065F]?[\u0649\u064A\u0627][\u0653]?$/u.test(fullText)) {
+    if (/^[\u0641\u0644\u0628][\u064B-\u065F]*[\u0649\u064A\u0622\u0623\u0625\u0627\u0671][\u0653]?$/u.test(fullText)) {
         const maddSeg = wordSegments.find((s) => s.ruleId && s.ruleId.startsWith('madd'));
         if (maddSeg) {
             return [{ text: fullText, ruleId: maddSeg.ruleId }];
+        }
+        if (fullText.includes('\u0644')) {
+            const nonSilentSeg = wordSegments.find((s) => s.ruleId && s.ruleId !== 'silent');
+            return [{ text: fullText, ruleId: nonSilentSeg ? nonSilentSeg.ruleId : null }];
         }
     }
     return wordSegments;
