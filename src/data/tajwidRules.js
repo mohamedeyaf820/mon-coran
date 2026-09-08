@@ -380,6 +380,10 @@ const _perWordCache = new Map();
 const _PER_WORD_CACHE_MAX = 2000;
 const LEADING_ARABIC_MARKS =
   /^([\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]+)/u;
+const SINGLE_BASE_PREFIX_RE =
+  /(?:^|\s)(ف[\u064B-\u065F]?)$/u;
+const MADD_START_RE =
+  /^[\u0649\u064A][\u0653]?/u;
 
 /**
  * Keep Arabic combining marks attached to the preceding glyph.
@@ -420,8 +424,32 @@ export function stabilizeTajwidSegments(segments = []) {
     };
     const previous = stabilized[stabilized.length - 1];
 
-    if (previous && previous.ruleId === normalizedSegment.ruleId) {
-      previous.text += normalizedSegment.text;
+    // Reattach single-consonant word prefixes (e.g. 'فِ' in 'فِىٓ', 'لَ' in 'لَآ', 'بِ' in 'بِىٓ')
+    // that Quran.com markup leaves outside the madd tag.
+    // In Arabic typography, 'فِىٓ' is a single indivisible OpenType ligature; splitting the
+    // base consonant from its madd causes browser text shapers (Chromium/DirectWrite/WebKit)
+    // to clip or drop the base consonant entirely, leaving a floating dot and detached marks.
+    if (
+      normalizedSegment.ruleId &&
+      normalizedSegment.ruleId.startsWith("madd") &&
+      MADD_START_RE.test(normalizedSegment.text) &&
+      previous &&
+      !previous.ruleId
+    ) {
+      const match = previous.text.match(SINGLE_BASE_PREFIX_RE);
+      if (match) {
+        const prefix = match[1];
+        previous.text = previous.text.slice(0, -prefix.length);
+        normalizedSegment.text = prefix + normalizedSegment.text;
+        if (!previous.text) {
+          stabilized.pop();
+        }
+      }
+    }
+
+    const last = stabilized[stabilized.length - 1];
+    if (last && last.ruleId === normalizedSegment.ruleId) {
+      last.text += normalizedSegment.text;
     } else {
       stabilized.push(normalizedSegment);
     }

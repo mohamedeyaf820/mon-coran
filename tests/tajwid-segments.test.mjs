@@ -120,3 +120,39 @@ test("Hafs and Warsh use the shared Quran.com Tajweed color semantics", () => {
     }
   }
 });
+
+test("stabilizeTajwidSegments reattaches base consonant when madd tag starts mid-word", () => {
+  // Quran.com raw output for 67:10: "... مَا كُ<tajweed class=ghunnah>نّ</tajweed>َا ف<tajweed class=madda_obligatory>ِىٓ</tajweed> أَصْحَ..."
+  const rawSegments = [
+    { text: " مَا كُ", ruleId: null },
+    { text: "نّ", ruleId: "ghunna" },
+    { text: "َا ف", ruleId: null },
+    { text: "ِىٓ", ruleId: "madd-connected" },
+    { text: " أَصْحَ", ruleId: null },
+  ];
+
+  const stabilized = stabilizeTajwidSegments(rawSegments);
+
+  // The base consonant 'فِ' must be unified with 'ىٓ' into a single 'فِىٓ' segment
+  // so the OpenType compound ligature is never split or clipped by browser text shapers.
+  const fiiSegment = stabilized.find((s) => s.text === "فِىٓ");
+  assert.ok(fiiSegment, "Segment for 'فِىٓ' must exist intact");
+  assert.equal(fiiSegment.ruleId, "madd-connected");
+
+  // Reconstructed plain text must be 100% identical and continuous
+  const fullText = stabilized.map((s) => s.text).join("");
+  assert.equal(fullText, " مَا كُنَّا فِىٓ أَصْحَ");
+});
+
+test("stabilizeTajwidSegments handles isolated word-start 'ف' with madd", () => {
+  const rawSegments = [
+    { text: "ف", ruleId: null },
+    { text: "ِىٓ", ruleId: "madd-separated" },
+  ];
+
+  const stabilized = stabilizeTajwidSegments(rawSegments);
+  assert.deepEqual(stabilized, [
+    { text: "فِىٓ", ruleId: "madd-separated" },
+  ]);
+});
+

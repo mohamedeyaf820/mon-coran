@@ -40,6 +40,8 @@ const QURAN_COM_CLASS_MAP = {
     qalaqah: 'qalqala',
     madda_necessary: 'madd',
     madda_obligatory: 'madd-connected',
+    madda_obligatory_monfasel: 'madd-separated',
+    madda_obligatory_mottasel: 'madd-connected',
     madda_permissible: 'madd-separated',
     madda_normal: 'madd-normal',
     madd_lazim: 'madd',
@@ -47,6 +49,7 @@ const QURAN_COM_CLASS_MAP = {
     madd_munfasil: 'madd-separated',
     ham_wasl: 'silent',
     laam_shamsiyah: 'lam-shamsiyya',
+    slnt: 'silent',
     silent: 'silent',
 };
 
@@ -54,7 +57,7 @@ function ruleFromClassName(className = '') {
     const classes = String(className).split(/\s+/).filter(Boolean);
     for (const item of classes) {
         const normalized = item
-            .replace(/^tajweed[-_]?/i, '')
+            .replace(/^(?:tajweed|rule)[-_]?/i, '')
             .replace(/-/g, '_')
             .toLowerCase();
         if (QURAN_COM_CLASS_MAP[normalized]) return QURAN_COM_CLASS_MAP[normalized];
@@ -406,6 +409,17 @@ function finishHighlightWord(text, rules) {
             buffer += char;
         }
     }
+    // Protective guard: for 2-letter ligature words like 'فِىٓ', ensure any madd
+    // rule covers the base consonant from index 0 so Chromium/WebKit highlight painter
+    // never clips or drops the base letter.
+    if (/^[\u0641\u0644\u0628][\u064B-\u065F]?[\u0649\u064A\u0627][\u0653]?$/u.test(text)) {
+        for (const rule of rules) {
+            if (rule.ruleId && rule.ruleId.startsWith('madd')) {
+                rule.start = 0;
+            }
+        }
+    }
+
     pushText(text.length);
 
     return { text, isMarker: isMarkerToken(text), parts };
@@ -749,6 +763,18 @@ function shapeWordSegments(wordSegments) {
     });
 }
 
+function normalizeWordSegments(wordSegments) {
+    if (!Array.isArray(wordSegments) || wordSegments.length <= 1) return wordSegments;
+    const fullText = wordSegments.map((s) => s.text).join('');
+    if (/^[\u0641\u0644\u0628][\u064B-\u065F]?[\u0649\u064A\u0627][\u0653]?$/u.test(fullText)) {
+        const maddSeg = wordSegments.find((s) => s.ruleId && s.ruleId.startsWith('madd'));
+        if (maddSeg) {
+            return [{ text: fullText, ruleId: maddSeg.ruleId }];
+        }
+    }
+    return wordSegments;
+}
+
 function groupSegmentsIntoWords(segments) {
     if (!Array.isArray(segments) || segments.length === 0) return [];
     const words = [];
@@ -763,7 +789,7 @@ function groupSegmentsIntoWords(segments) {
             if (!part) continue;
             if (/^\s+$/.test(part)) {
                 if (currentWord.length > 0) {
-                    words.push(shapeWordSegments(currentWord));
+                    words.push(shapeWordSegments(normalizeWordSegments(currentWord)));
                     currentWord = [];
                 }
             } else {
@@ -772,7 +798,7 @@ function groupSegmentsIntoWords(segments) {
         }
     }
     if (currentWord.length > 0) {
-        words.push(shapeWordSegments(currentWord));
+        words.push(shapeWordSegments(normalizeWordSegments(currentWord)));
     }
     return words;
 }
