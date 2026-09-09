@@ -24,6 +24,11 @@ for (const riwaya of ['hafs', 'warsh']) {
     await page.evaluate(() => document.fonts.ready);
     const overflow = () => overlay.locator('main').evaluate(el => Math.max(el.scrollHeight - el.clientHeight, el.scrollWidth - el.clientWidth));
     await expect.poll(overflow).toBeLessThanOrEqual(2);
+    const paperSizes = await overlay.locator('.mfp-page-bounds').evaluateAll(papers => papers.map(paper => ({ width: paper.getBoundingClientRect().width, height: paper.getBoundingClientRect().height })));
+    expect(paperSizes).toHaveLength(2);
+    expect(Math.abs(paperSizes[0].height - paperSizes[1].height)).toBeLessThan(1);
+    expect(Math.abs(paperSizes[0].width - paperSizes[1].width)).toBeLessThan(1);
+    expect(paperSizes[0].height / paperSizes[0].width).toBeGreaterThanOrEqual(1.44);
     for (const number of [186, 187]) await expect(overlay.locator(`[data-immersive-page="${number}"] .mushaf-page-number-medallion`)).toHaveText(String(number));
     await page.screenshot({ path: testInfo.outputPath('whole-spread.png') });
     // A short landscape viewport makes width fitting require scrolling even
@@ -61,6 +66,26 @@ test('Al-Baqara coloured Lam-Alef keeps its complete glyph in normal and fullscr
   const overlay = page.locator('.mfp-portal-root');
   await expect.poll(() => checkRanges(overlay)).toContainEqual({ start: 2, end: 6, text: 'أَلَآ' });
   await page.screenshot({ path: testInfo.outputPath('baqara-ligatures.png') });
+});
+
+test('opening page and dense neighbour share portrait paper and aligned footers', async ({ page }, testInfo) => {
+  await seed(page);
+  await page.setViewportSize({ width: 1900, height: 1000 });
+  await page.goto('/page/2');
+  await expect(page.locator('[data-stream-page="2"] .cpv-verse').first()).toBeVisible();
+  await page.getByRole('button', { name: 'Plein écran', exact: true }).click();
+  const overlay = page.locator('.mfp-portal-root');
+  await expect(overlay.locator('[data-immersive-page="3"] .cpv-verse').first()).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  await expect.poll(() => overlay.locator('main').evaluate(el => el.scrollHeight - el.clientHeight)).toBeLessThanOrEqual(2);
+  const sizes = await overlay.locator('.mfp-page-bounds').evaluateAll(papers => papers.map(paper => {
+    const rect = paper.getBoundingClientRect();
+    return { width: rect.width, height: rect.height, footer: paper.querySelector('.mushaf-page-footer').getBoundingClientRect().bottom };
+  }));
+  expect(Math.abs(sizes[0].height - sizes[1].height)).toBeLessThan(1);
+  expect(Math.abs(sizes[0].footer - sizes[1].footer)).toBeLessThan(1);
+  expect(sizes[0].height / sizes[0].width).toBeGreaterThanOrEqual(1.44);
+  await page.screenshot({ path: testInfo.outputPath('opening-spread.png') });
 });
 
 test('Fullscreen overlay uses adequate line height so diacritics are not clipped', async ({ page }, testInfo) => {

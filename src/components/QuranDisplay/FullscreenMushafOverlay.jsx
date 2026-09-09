@@ -75,13 +75,13 @@ function FullscreenMushafOverlayComponent({
   const [neighbour, setNeighbour] = useState(null);
   const [pageAttempt, setPageAttempt] = useState(0);
   const repeat = state.surahRepeatCount === 0;
-  const pageWidth = (composition?.width || 700) + 24;
+  const pageWidth = (composition?.width || 700) + 50;
   const minimumPageScale = Math.max(0.5, 18 / (composition?.fontSize || readingFontSize));
   const canSpread = viewport.width >= Math.max(760, pageWidth * 2 * minimumPageScale + 24)
     && viewport.width / Math.max(1, viewport.height) >= 1.1 && viewport.height >= 300;
   const pageCount = canSpread && pagePreference === 2 && currentPage < 604 ? 2 : 1;
   const effectiveFitMode = fitMode || (viewport.width >= 760 ? "page" : "width");
-  const spreadHeight = Math.max(pageHeights[currentPage] || 0, pageCount === 2 ? pageHeights[currentPage + 1] || 0 : 0);
+  const spreadHeight = Math.max(pageWidth * 1.45, pageHeights[currentPage] || 0, pageCount === 2 ? pageHeights[currentPage + 1] || 0 : 0);
   const widthFit = Math.max(0.1, (viewport.width - (pageCount - 1) * 24) / (pageWidth * pageCount));
   const fit = Math.min(1, widthFit, effectiveFitMode === "page" && spreadHeight ? viewport.height / spreadHeight : Infinity);
   const scale = fit * zoom;
@@ -98,7 +98,7 @@ function FullscreenMushafOverlayComponent({
     if (!text) {
       setComposition((previous) => previous || {
         riwaya, fontFamily: state.fontFamily, fallback: true,
-        width: Math.min(700, window.innerWidth - 48), fontSize: readingFontSize,
+        width: Math.min(readingFontSize * 16.7, window.innerWidth - 50), fontSize: readingFontSize,
         lineHeight: getArabicReadingLineHeight({ fontFamily: state.fontFamily, riwaya, mushafLayout: state.mushafLayout }), styles: {},
       });
       return;
@@ -107,7 +107,7 @@ function FullscreenMushafOverlayComponent({
     setComposition((previous) => !previous?.fallback && previous?.riwaya === riwaya && previous?.fontFamily === state.fontFamily ? previous : {
       riwaya,
       fontFamily: state.fontFamily,
-      width: text.getBoundingClientRect().width,
+      width: Math.min(text.getBoundingClientRect().width, parseFloat(style.fontSize) * 16.7),
       fontSize: parseFloat(style.fontSize),
       lineHeight: style.lineHeight,
       styles: Object.fromEntries([text, ...text.querySelectorAll('.cpv-verse, .cpv-verse *')].map((node) => {
@@ -236,12 +236,12 @@ function FullscreenMushafOverlayComponent({
       </header>
       <main ref={viewportRef} data-fit={effectiveFitMode}>
         <div className="mfp-spread" dir="rtl" data-page-count={pageCount}>
-          {composition && <ImmersiveMushafPage composition={composition} scale={scale} page={currentPage} onMeasure={measurePage}
+          {composition && <ImmersiveMushafPage composition={composition} scale={scale} page={currentPage} onMeasure={measurePage} paperHeight={spreadHeight}
             ayahs={ayahs} lang={lang} isQCF4={isQCF4} showTajwid={state.showTajwid} currentPlayingAyah={currentPlayingAyah} calibration={calibration}
             surahNum={ayahs[0]?.surah?.number || currentSurah} riwaya={riwaya}
             onAyahClick={playMarker} getAyahToggleId={(ayah) => ayah.number} onPlayAyah={onPlayAyah} showSurahHeader />}
           {pageCount === 2 && (neighbour?.key === neighbourKey && neighbour.status === "ready" && composition
-            ? <ImmersiveMushafPage composition={composition} scale={scale} page={currentPage + 1} onMeasure={measurePage}
+            ? <ImmersiveMushafPage composition={composition} scale={scale} page={currentPage + 1} onMeasure={measurePage} paperHeight={spreadHeight}
                 ayahs={neighbour.ayahs} lang={lang} isQCF4={isQCF4} showTajwid={state.showTajwid} currentPlayingAyah={currentPlayingAyah} calibration={calibration}
                 surahNum={neighbour.ayahs[0]?.surah?.number || currentSurah} riwaya={riwaya}
                 onAyahClick={(id) => { const ayah = neighbour.ayahs.find((item) => item.number === id); if (ayah) onPlayAyah(ayah, neighbour.ayahs); }}

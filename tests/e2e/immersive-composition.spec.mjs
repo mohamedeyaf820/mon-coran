@@ -46,13 +46,16 @@ for (const riwaya of ['hafs', 'warsh']) {
       await page.evaluate(() => document.fonts.ready);
       await expect.poll(async () => page.evaluate(() => [...document.fonts].filter(face => face.family.includes('QPC') && face.status === 'loaded').length)).toBeGreaterThan(0);
       await page.screenshot({ path: testInfo.outputPath('normal.png') });
-      const baseline = await normal.evaluate(composition);
+      const normalText = await normal.locator('.cpv-verse').allTextContents();
       const open = page.getByRole('button', { name: 'Plein écran', exact: true });
       await open.dispatchEvent('click');
       const immersive = page.locator('.mfp-shared-page .cpv-container');
       await expect(immersive).toBeVisible();
       await page.screenshot({ path: testInfo.outputPath('fullscreen.png') });
-      expect(await immersive.evaluate(composition)).toEqual(baseline);
+      // Portrait paper has its own line measure; zoom must preserve that
+      // composition, while the Quran text stays identical to normal reading.
+      expect(await immersive.locator('.cpv-verse').allTextContents()).toEqual(normalText);
+      const baseline = await immersive.evaluate(composition);
       const overlay = page.locator('.mfp-portal-root');
       for (const target of [125, 150, 100, 75]) {
         if (target === 100) await overlay.getByRole('button', { name: 'Taille de police 100%', exact: true }).click();
@@ -62,7 +65,7 @@ for (const riwaya of ['hafs', 'warsh']) {
       }
       await page.keyboard.press('Escape');
       await expect(overlay).toHaveCount(0);
-      expect(await normal.evaluate(composition)).toEqual(baseline);
+      expect(await normal.locator('.cpv-verse').allTextContents()).toEqual(normalText);
     });
   }
 }
