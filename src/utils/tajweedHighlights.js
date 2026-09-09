@@ -56,6 +56,24 @@ function clampRange(node, start, end) {
   return [safeStart, safeEnd];
 }
 
+// A highlight boundary inside a shaped Lam–Alef glyph can erase part of the
+// glyph in Chromium. Colour the complete ligature, including its marks. Keep
+// every source code point intact: only the paint range changes.
+export function expandArabicPaintRange(text, start, end) {
+  let from = start;
+  let to = end;
+  if (end <= start) return [from, to];
+  const clusters = /\u0644[\p{M}\u0640]*[\u0622\u0623\u0625\u0627\u0671]\p{M}*|\P{M}\p{M}*/gu;
+  for (const match of text.matchAll(clusters)) {
+    const last = match.index + match[0].length;
+    if (match.index < end && last > start) {
+      from = Math.min(from, match.index);
+      to = Math.max(to, last);
+    }
+  }
+  return [from, to];
+}
+
 /**
  * Colours the given rule ranges of a text node.
  * @param {Text} node
@@ -66,7 +84,8 @@ export function applyTajweedHighlights(node, rules) {
   const added = [];
   for (const rule of rules) {
     if (!rule?.ruleId) continue;
-    const [start, end] = clampRange(node, rule.start, rule.end);
+    const [rawStart, rawEnd] = clampRange(node, rule.start, rule.end);
+    const [start, end] = expandArabicPaintRange(node.data, rawStart, rawEnd);
     if (end <= start) continue;
     const range = createRange(node, start, end);
     const highlight = getHighlight(HIGHLIGHT_PREFIX + rule.ruleId);

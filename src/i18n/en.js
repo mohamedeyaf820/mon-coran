@@ -21,6 +21,7 @@ export default {
     hizb: 'Hizb', bookmarks: 'Bookmarks', searchPlaceholder: 'Search surah…',
   },
   quran: {
+    fitPage: 'Whole page', fitWidth: 'Fit width',
     singlePage: '1 page', doublePage: '2 pages', readingOptions: 'Reading options', retry: 'Retry',
     meccan: 'Meccan', medinan: 'Medinan', ayahs: 'ayahs', ayah: 'Ayah',
     bismillah: 'In the name of Allah, the Most Gracious, the Most Merciful',

@@ -21,6 +21,7 @@ export default {
     hizb: 'الأحزاب', bookmarks: 'المفضلة', searchPlaceholder: 'ابحث عن سورة...',
   },
   quran: {
+    fitPage: 'الصفحة كاملة', fitWidth: 'ملاءمة العرض',
     singlePage: 'صفحة واحدة', doublePage: 'صفحتان', readingOptions: 'خيارات القراءة', retry: 'إعادة المحاولة',
     meccan: 'مكيّة', medinan: 'مدنيّة', ayahs: 'آيات', ayah: 'الآية',
     bismillah: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',

@@ -20,6 +20,7 @@ export default {
     hizb: 'Hizb', bookmarks: 'Favoris', searchPlaceholder: 'Rechercher une sourate…',
   },
   quran: {
+    fitPage: 'Page entière', fitWidth: 'Largeur',
     singlePage: '1 page', doublePage: '2 pages', readingOptions: 'Options de lecture', retry: 'Réessayer',
     meccan: 'Mecquoise', medinan: 'Médinoise', ayahs: 'versets', ayah: 'Verset',
     bismillah: 'Au nom d\'Allah, le Tout Miséricordieux, le Très Miséricordieux',

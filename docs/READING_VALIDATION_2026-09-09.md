@@ -56,7 +56,7 @@ Le renderer partagé existant est conservé. Les tests comparent texte, styles e
 
 Défaut visuel supplémentaire : le pied de page reprenait `ayahs[0].page`, et deux feuilles pouvaient afficher le même numéro. CleanPageView accepte maintenant l’identité explicite de la page, transmise par PageMode et l’adaptateur immersif. La donnée ayah reste intacte. Les tests vérifient les numéros des deux feuilles.
 
-Le plein écran est un portail CSS, pas un appel au Fullscreen API. Les contrôles ne s’effacent pas automatiquement ; Fit Width/Fit Height explicites et pinch personnalisé ne sont pas ajoutés par cette intervention. Le zoom système reste disponible.
+Le plein écran est un portail CSS, pas un appel au Fullscreen API. Les contrôles ne s’effacent pas automatiquement. Le complément ci-dessous ajoute les réglages Page entière / Largeur ; le pinch personnalisé reste absent et le zoom système disponible.
 
 ## Mobile header, VerseBlock et mini-player
 
@@ -87,6 +87,13 @@ Recherche vocale : useVoiceSearch et voiceRecognitionSession gèrent détection 
 Journaux : `scratch/reading-build-current.log`, `scratch/reading-lint-current.log`, `scratch/reading-tests-current.log`, `scratch/reading-e2e-current.log`, `scratch/reading-lifecycle-current.log`, `scratch/reading-final-e2e.log`. Captures : `test-results/`, `test-results/final-reading/` et `scratch/reading-*.png`. Les artefacts scratch restent locaux.
 
 ## Limites
+
+### Amélioration de la mise en page et correction des ligatures colorées
+
+- Reproduction visuelle du signalement d'Al-Baqara : dans `أَلَآ` (2:13), la plage CSS Highlight limitée à l'alif supprimait visuellement une partie de la ligature lām-alif avec QPC Hafs. Le même mot sans Highlight était complet. `expandArabicPaintRange` étend désormais la coloration à la ligature et aux marques attachées ; les caractères et le texte source restent identiques. Cette correction est partagée par le rendu normal et immersif. Aucune police ni donnée coranique modifiée.
+- Plein écran : mesure des hauteurs réelles par ResizeObserver, mode Page entière par défaut sur grand écran et Largeur sur petit écran, réglages traduits FR/EN/AR et zoom conservé. Les commandes audio et pagination partagent une rangée lorsque la place le permet. Les titres de sourate sont compacts ; les métadonnées et pieds de page ont leur propre mise en page. La copie de styles depuis le lecteur normal se limite au texte des versets pour ne plus agrandir les titres décoratifs.
+- Validation : build:ci et lint sans cache réussis, 208 tests unitaires réussis. Comparaisons visuelles avec/sans coloration sur Al-Baqara, puis pages 186–187 ; cas navigateur dédiés pour les plages de coloration, ajustement en hauteur et largeur, rotation et mobile. Les détails d'exécution sont dans `scratch/layout-*.log` ; comparatif des ligatures dans `scratch/ligatures-comparison.png`.
+- Limite : il s'agit d'une correction du défaut de peinture reproduit, pas d'une certification visuelle de chaque glyphe sur toutes les pages et tous les navigateurs.
 
 ### Correctif complémentaire après signalement du plantage plein écran
 

@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, Minus, Plus, X, Play, Pause, SkipBack, SkipForward, Settings, BookOpen, Repeat2 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
@@ -62,6 +62,11 @@ function FullscreenMushafOverlayComponent({
   const callbacks = useRef({ onClose, onNextPage, onPrevPage, currentPage });
   callbacks.current = { onClose, onNextPage, onPrevPage, currentPage };
   const [zoom, setZoom] = useState(1);
+  const [fitMode, setFitMode] = useState(null);
+  const [pageHeights, setPageHeights] = useState({});
+  const measurePage = useCallback((page, height) => {
+    setPageHeights(previous => previous[page] === height ? previous : { ...previous, [page]: height });
+  }, []);
   const [composition, setComposition] = useState(null);
   const [viewport, setViewport] = useState({ width: 0, height: 0 });
   const [pagePreference, setPagePreference] = useState(() => {
@@ -75,7 +80,10 @@ function FullscreenMushafOverlayComponent({
   const canSpread = viewport.width >= Math.max(760, pageWidth * 2 * minimumPageScale + 24)
     && viewport.width / Math.max(1, viewport.height) >= 1.1 && viewport.height >= 300;
   const pageCount = canSpread && pagePreference === 2 && currentPage < 604 ? 2 : 1;
-  const fit = Math.min(1, Math.max(0.1, (viewport.width - (pageCount - 1) * 24) / (pageWidth * pageCount)));
+  const effectiveFitMode = fitMode || (viewport.width >= 760 ? "page" : "width");
+  const spreadHeight = Math.max(pageHeights[currentPage] || 0, pageCount === 2 ? pageHeights[currentPage + 1] || 0 : 0);
+  const widthFit = Math.max(0.1, (viewport.width - (pageCount - 1) * 24) / (pageWidth * pageCount));
+  const fit = Math.min(1, widthFit, effectiveFitMode === "page" && spreadHeight ? viewport.height / spreadHeight : Infinity);
   const scale = fit * zoom;
   const neighbourKey = `${riwaya}:${currentPage + 1}:${state.warshStrictMode}`;
 
@@ -102,7 +110,7 @@ function FullscreenMushafOverlayComponent({
       width: text.getBoundingClientRect().width,
       fontSize: parseFloat(style.fontSize),
       lineHeight: style.lineHeight,
-      styles: Object.fromEntries([text, ...text.querySelectorAll('*')].map((node) => {
+      styles: Object.fromEntries([text, ...text.querySelectorAll('.cpv-verse, .cpv-verse *')].map((node) => {
         const resolved = getComputedStyle(node);
         return [`${node.tagName}.${node.className}`, Object.fromEntries(['font-family', 'font-size', 'font-weight', 'font-feature-settings', 'font-kerning', 'font-synthesis', 'line-height', 'letter-spacing', 'word-spacing', 'display', 'vertical-align', 'white-space', 'word-break', 'overflow-wrap', 'padding', 'margin', 'min-width', 'max-width', 'min-height', 'text-align', 'text-align-last', 'direction', 'transform'].map((key) => [key, resolved.getPropertyValue(key)]))];
       })),
@@ -218,20 +226,22 @@ function FullscreenMushafOverlayComponent({
         <details className="mfp-options">
           <summary aria-label={t("quran.readingOptions", lang)}><Settings size={18} /></summary>
           <div className="mfp-options-panel">
+            <Button variant="ghost" aria-pressed={effectiveFitMode === "page"} onClick={() => { setFitMode("page"); setZoom(1); }}>{t("quran.fitPage", lang)}</Button>
+            <Button variant="ghost" aria-pressed={effectiveFitMode === "width"} onClick={() => { setFitMode("width"); setZoom(1); }}>{t("quran.fitWidth", lang)}</Button>
             <Button variant="ghost" aria-pressed={pagePreference === 1} onClick={() => { setPagePreference(1); try { localStorage.setItem("mushafplus-page-layout", "1"); } catch { /* Session preference remains usable. */ } }}>{t("quran.singlePage", lang)}</Button>
             <Button variant="ghost" aria-pressed={pagePreference === 2} disabled={!canSpread} onClick={() => { setPagePreference(2); try { localStorage.setItem("mushafplus-page-layout", "2"); } catch { /* Session preference remains usable. */ } }}><BookOpen />{t("quran.doublePage", lang)}</Button>
             <Button variant="ghost" aria-pressed={repeat} onClick={() => { const count = repeat ? 1 : 0; audioService.setSurahRepeatCount(count); set({ surahRepeatCount: count }); }}><Repeat2 />{t("audio.repeat", lang)}</Button>
           </div>
         </details>
       </header>
-      <main ref={viewportRef}>
+      <main ref={viewportRef} data-fit={effectiveFitMode}>
         <div className="mfp-spread" dir="rtl" data-page-count={pageCount}>
-          {composition && <ImmersiveMushafPage composition={composition} scale={scale} page={currentPage}
+          {composition && <ImmersiveMushafPage composition={composition} scale={scale} page={currentPage} onMeasure={measurePage}
             ayahs={ayahs} lang={lang} isQCF4={isQCF4} showTajwid={state.showTajwid} currentPlayingAyah={currentPlayingAyah} calibration={calibration}
             surahNum={ayahs[0]?.surah?.number || currentSurah} riwaya={riwaya}
             onAyahClick={playMarker} getAyahToggleId={(ayah) => ayah.number} onPlayAyah={onPlayAyah} showSurahHeader />}
           {pageCount === 2 && (neighbour?.key === neighbourKey && neighbour.status === "ready" && composition
-            ? <ImmersiveMushafPage composition={composition} scale={scale} page={currentPage + 1}
+            ? <ImmersiveMushafPage composition={composition} scale={scale} page={currentPage + 1} onMeasure={measurePage}
                 ayahs={neighbour.ayahs} lang={lang} isQCF4={isQCF4} showTajwid={state.showTajwid} currentPlayingAyah={currentPlayingAyah} calibration={calibration}
                 surahNum={neighbour.ayahs[0]?.surah?.number || currentSurah} riwaya={riwaya}
                 onAyahClick={(id) => { const ayah = neighbour.ayahs.find((item) => item.number === id); if (ayah) onPlayAyah(ayah, neighbour.ayahs); }}
