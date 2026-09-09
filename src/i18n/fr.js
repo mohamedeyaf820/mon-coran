@@ -1,4 +1,5 @@
 export default {
+  recitation: { profileLoading: 'Chargement du profil détaillé…', profileEmpty: 'Aucune biographie détaillée disponible.' },
   app: { name: 'MushafPlus', subtitle: 'Le Saint Coran', loading: 'Chargement...', skipToContent: 'Aller au contenu principal', keyboardShortcuts: 'Raccourcis clavier', keyboardShortcutsHint: 'Raccourcis clavier (?)' },
   nav: {
     menu: 'Menu', home: 'Accueil', search: 'Rechercher', bookmarks: 'Favoris',
@@ -19,6 +20,7 @@ export default {
     hizb: 'Hizb', bookmarks: 'Favoris', searchPlaceholder: 'Rechercher une sourate…',
   },
   quran: {
+    singlePage: '1 page', doublePage: '2 pages', readingOptions: 'Options de lecture', retry: 'Réessayer',
     meccan: 'Mecquoise', medinan: 'Médinoise', ayahs: 'versets', ayah: 'Verset',
     bismillah: 'Au nom d\'Allah, le Tout Miséricordieux, le Très Miséricordieux',
     surah: 'Sourate', hafs: 'Hafs', warsh: 'Warsh',

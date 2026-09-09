@@ -266,8 +266,8 @@ export default function QuranDisplay() {
   ]);
 
   const openImmersiveAudioPlayer = useCallback(() => {
-    // Keep the Mushaf open while the shared reciter/playback sheet appears
-    // above it. Closing the sheet returns directly to the immersive page.
+    // The overlay exits immersion before opening the shared audio options;
+    // the reading position and the persistent transport remain unchanged.
     set({ playerMinimized: false });
     window.dispatchEvent(new Event("mushafplus-open-audio-options"));
   }, [set]);
@@ -499,6 +499,7 @@ export default function QuranDisplay() {
             }
           >
             <PageMode
+              fullPage={view.fullPage}
               activeAyah={activeAyah}
               ayahs={ayahs}
               calibration={karaokeCalibration}
@@ -600,9 +601,12 @@ export default function QuranDisplay() {
         {view.fullPage ? (
           <Suspense fallback={null}>
             <FullscreenMushafOverlay
+              readingFontSize={view.readingFontSize}
+              isQCF4={isQCF4}
+              calibration={karaokeCalibration}
               ayahs={ayahs}
               currentPage={currentPage}
-              currentPlayingAyah={isSurahStream ? null : currentPlayingAyah}
+              currentPlayingAyah={currentPlayingAyah}
               currentSurah={currentSurah}
               fullPage
               getTranslationForAyah={getTranslationForAyah}

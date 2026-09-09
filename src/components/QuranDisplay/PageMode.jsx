@@ -2,7 +2,7 @@ import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "
 import { getJuzForAyah } from "../../data/juz";
 import { t } from "../../i18n";
 import { getSurah, toAr } from "../../data/surahs";
-import CleanPageView from "../Quran/CleanPageView";
+import QuranMushafRenderer from "../Quran/QuranMushafRenderer";
 import ReadingToolbar from "../Quran/ReadingToolbar";
 import AyahActionsModal from "./AyahActionsModal";
 import QCVerseByVerseView from "./QCVerseByVerseView";
@@ -20,6 +20,7 @@ function PageMode({
   currentPlayingAyah,
   currentSurah,
   fontFamily: _fontFamily,
+  fullPage = false,
   getTranslationForAyah,
   isQCF4,
   lang,
@@ -67,9 +68,10 @@ function PageMode({
     getJuzForAyah(ayahs[0]?.surah?.number, ayahs[0]?.numberInSurah);
   const onVisiblePage = useCallback(
     (page) => {
+      if (fullPage) return;
       if (page !== currentPage) dispatch({ type: "NAVIGATE_PAGE", payload: { page, source: "scroll" } });
     },
-    [currentPage, dispatch],
+    [currentPage, dispatch, fullPage],
   );
   // Continuous reading: pages stream in as the reader scrolls, in both
   // directions, instead of a page-turn control.
@@ -192,46 +194,48 @@ function PageMode({
             data-stream-page={page}
             aria-label={`${pageWord} ${lang === "ar" ? toAr(page) : page}`}
           >
-            {mushafLayout === "mushaf" ? (
-              <CleanPageView
-                ayahs={pageAyahs}
-                lang={lang}
-                fontSize={readingFontSize}
-                isQCF4={isQCF4}
-                showTajwid={showTajwid}
-                currentPlayingAyah={currentPlayingAyah}
-                surahNum={pageAyahs[0]?.surah?.number || pageAyahs[0]?.surah || currentSurah}
-                calibration={calibration}
-                riwaya={riwaya}
-                showTranslation={showTranslation}
-                getTranslation={stream.getTranslationForAyah}
-                onAyahClick={onToggleActive}
-                onPlayAyah={onPlayAyah}
-                activeAyah={activeAyah}
-                getAyahToggleId={(ayah) => ayah.number}
-                showSurahHeader={true}
-                showTransliteration={showTransliteration}
-              />
-            ) : (
-              <QCVerseByVerseView
-                surahGroups={pageSurahGroups}
-                currentPlayingAyah={currentPlayingAyah}
-                activeAyah={activeAyah}
-                lang={lang}
-                getTranslationForAyah={stream.getTranslationForAyah}
-                showTajwid={showTajwid}
-                showTranslation={showTranslation}
-                showTransliteration={showTransliteration}
-                calibration={calibration}
-                riwaya={riwaya}
-                fontSize={readingFontSize}
-                onToggleActive={onToggleActive}
-                displayMode="page"
-                showPageSeparators
-              />
-            )}
-          </section>
-        ))}
+{mushafLayout === "mushaf" ? (
+  <QuranMushafRenderer
+    ayahs={pageAyahs}
+    currentPage={page}
+    lang={lang}
+    fontSize={readingFontSize}
+    isQCF4={isQCF4}
+    showTajwid={showTajwid}
+    surahNum={pageAyahs[0]?.surah?.number || pageAyahs[0]?.surah || currentSurah}
+    calibration={calibration}
+    riwaya={riwaya}
+    fontFamily={_fontFamily}
+    onAyahClick={onToggleActive}
+    getAyahToggleId={(ayah) => ayah.number}
+    onPlayAyah={onPlayAyah}
+    activeAyah={activeAyah}
+    currentPlayingAyah={currentPlayingAyah}
+    showTranslation={showTranslation}
+    getTranslation={stream.getTranslationForAyah}
+    showTransliteration={showTransliteration}
+    isFirstAyah={pageAyahs[0]?.numberInSurah === 1}
+  />
+) : (
+  <QCVerseByVerseView
+    surahGroups={pageSurahGroups}
+    currentPlayingAyah={currentPlayingAyah}
+    activeAyah={activeAyah}
+    lang={lang}
+    getTranslationForAyah={stream.getTranslationForAyah}
+    showTajwid={showTajwid}
+    showTranslation={showTranslation}
+    showTransliteration={showTransliteration}
+    calibration={calibration}
+    riwaya={riwaya}
+    fontSize={readingFontSize}
+    onToggleActive={onToggleActive}
+    displayMode="page"
+    showPageSeparators
+  />
+)}
+           </section>
+         ))}
         <div ref={stream.bottomRef} className="page-stream__sentinel" aria-hidden="true" />
         {stream.pausedAtSurah ? (
           <div className="page-stream__end" role="status">

@@ -764,6 +764,25 @@ class AudioService {
 
   loadAndPlay(index) { return this._loadAndPlay(index); }
 
+  // Resolve the next reading scope without waiting for a React render. A pause,
+  // stop, reciter switch or explicit playlist change cancels the pending handoff.
+  async continuePlaylist(loadNext, reciterCdn, cdnType = "islamic") {
+    const requestId = ++this._playbackRequestId;
+    const reciterRequestId = this._reciterSwitchRequestId;
+    const previousSignature = this._playlistSignature;
+    const ayahs = await loadNext();
+    if (requestId !== this._playbackRequestId || reciterRequestId !== this._reciterSwitchRequestId || this._playlistSignature !== previousSignature) return false;
+    if (!ayahs?.length) return false;
+    this.loadPlaylist(ayahs, reciterCdn, cdnType);
+    const signature = this._playlistSignature;
+    const playback = this.play();
+    const playbackRequestId = this._playbackRequestId;
+    await playback;
+    return playbackRequestId === this._playbackRequestId &&
+      reciterRequestId === this._reciterSwitchRequestId &&
+      signature === this._playlistSignature && this.isPlaying;
+  }
+
   async _loadAndPlay(index, { throwOnError = false } = {}) {
     if (index < 0 || index >= this.playlist.length) return;
     const playbackRequestId = ++this._playbackRequestId;

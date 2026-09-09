@@ -43,6 +43,10 @@
   }
 
   function cleanupAndReload() {
+    // Once React has mounted, feature errors own their retry UI. Reloading
+    // for an optional reciter chunk would discard the dialog and active audio.
+    var root = document.getElementById("root");
+    if (root && root.childElementCount > 0) return;
     // A failed optional chunk offline must not destroy the working offline shell.
     if (navigator.onLine === false) return;
     if (hasAlreadyRetried()) return;

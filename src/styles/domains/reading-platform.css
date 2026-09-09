@@ -1245,8 +1245,9 @@
 
 .app-root :is(.qurancom-ayah-marker, .verse-end-marker, .ayat-marker, .mp-ayah-marker)::before,
 .app-root :is(.qurancom-ayah-marker, .verse-end-marker, .ayat-marker, .mp-ayah-marker)::after {
-    display: none !important;
-    content: none !important;
+display: none !important;
+content: none !important;
+
 }
 
 :root[data-theme="light"],
@@ -3681,9 +3682,12 @@ html body .app-root .quran-display--platform .native-ayah-marker {
 }
 
 html body .app-root .native-ayah-marker::before,
-html body .app-root .native-ayah-marker::after {
-    display: none !important;
-    content: none !important;
+html body .app-root .native-ayah-marker::after,
+html body .app-root .ayah-marker::before,
+html body .app-root .ayah-marker::after {
+display: none !important;
+content: none !important;
+
 }
 
 .afc-marker-preview {

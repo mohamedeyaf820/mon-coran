@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useContext } from "react";
+import { useScrollContext } from "../../context/ScrollContext";
 
 export default function useQuranDisplayScroll({
   ayahCount,
@@ -13,11 +14,12 @@ export default function useQuranDisplayScroll({
   mushafLayout,
   pageNavigationSource = "navigate",
 }) {
+  const { markManualScroll, scrollToElement, userScrollUntilRef, isUserScrolling } = useScrollContext();
   const [showScrollTop, setShowScrollTop] = useState(false);
   const followRetryTimerRef = useRef(null);
   const lastFollowKeyRef = useRef("");
   const showScrollTopRef = useRef(false);
-  const userScrollUntilRef = useRef(0);
+  const userScrollUntilRefLocal = useRef(0);
 
   const clearFollowRetryTimer = useCallback(() => {
     if (!followRetryTimerRef.current) return;
@@ -28,33 +30,14 @@ export default function useQuranDisplayScroll({
   const resolvePlayingAyahElement = useCallback(
     (playingAyah) => {
       if (!playingAyah) return null;
-
-      const root = contentRef.current || document;
-      const selectors = [
-        playingAyah.globalNumber ? `[data-ayah-global="${playingAyah.globalNumber}"]` : null,
-        playingAyah.surah && playingAyah.ayah
-          ? `[data-surah-number="${playingAyah.surah}"][data-ayah-number="${playingAyah.ayah}"]`
-          : null,
-        displayMode === "surah" && playingAyah.ayah
-          ? `[data-ayah-number="${playingAyah.ayah}"]`
-          : null,
-      ].filter(Boolean);
-
-      for (const selector of selectors) {
-        const element = root.querySelector(selector);
-        if (element) return element;
-      }
-
-      const ids =
-        displayMode === "page"
-          ? [`ayah-pg-${playingAyah.globalNumber}`, `ayah-${playingAyah.ayah}`]
-          : displayMode === "juz"
-            ? [`ayah-${playingAyah.globalNumber}`, `ayah-${playingAyah.ayah}`]
-            : [`ayah-${playingAyah.ayah}`, `ayah-${playingAyah.globalNumber}`];
-
-      return ids.filter(Boolean).map((id) => root.querySelector(`#${CSS.escape(id)}`)).find(Boolean) || null;
+      const { surah, ayah, globalNumber } = playingAyah;
+      const elByNumber = document.getElementById(`ayah-${ayah}`);
+      const elByGlobal = document.getElementById(`ayah-${globalNumber}`);
+      if (elByNumber) return elByNumber;
+      if (elByGlobal) return elByGlobal;
+      return document.querySelector(`[data-surah="${surah}"][data-ayah="${ayah}"]`);
     },
-    [displayMode],
+    []
   );
 
   useEffect(() => {
@@ -63,12 +46,11 @@ export default function useQuranDisplayScroll({
 
     let frameId = null;
     const progressBar = contentRef.current?.querySelector(".reading-progress-bar");
-    const markManualScroll = () => {
-      userScrollUntilRef.current = Date.now() + 2200;
-    };
     const handleScroll = () => {
+      markManualScroll();
       if (frameId !== null) return;
       frameId = requestAnimationFrame(() => {
+        frameId = null;
         const shouldShowScrollTop = element.scrollTop > 500;
         if (shouldShowScrollTop !== showScrollTopRef.current) {
           showScrollTopRef.current = shouldShowScrollTop;
@@ -83,25 +65,26 @@ export default function useQuranDisplayScroll({
       });
     };
 
+    const handleTouchStart = () => markManualScroll();
+    const handleWheel = () => markManualScroll();
+    const handlePointerDown = () => markManualScroll();
+
     element.addEventListener("scroll", handleScroll, { passive: true });
-    element.addEventListener("touchstart", markManualScroll, { passive: true });
-    element.addEventListener("wheel", markManualScroll, { passive: true });
-    element.addEventListener("pointerdown", markManualScroll, { passive: true });
+    element.addEventListener("touchstart", handleTouchStart, { passive: true });
+    element.addEventListener("wheel", handleWheel, { passive: true });
+    element.addEventListener("pointerdown", handlePointerDown, { passive: true });
     handleScroll();
     return () => {
       element.removeEventListener("scroll", handleScroll);
-      element.removeEventListener("touchstart", markManualScroll);
-      element.removeEventListener("wheel", markManualScroll);
-      element.removeEventListener("pointerdown", markManualScroll);
+      element.removeEventListener("touchstart", handleTouchStart);
+      element.removeEventListener("wheel", handleWheel);
+      element.removeEventListener("pointerdown", handlePointerDown);
       if (frameId !== null) cancelAnimationFrame(frameId);
     };
-  }, [ayahCount, contentRef, displayMode, getScrollContainer]);
+  }, [ayahCount, contentRef, displayMode, getScrollContainer, markManualScroll]);
 
   const navigationKey = `${displayMode}:${displayMode === "page" ? currentPage : displayMode === "juz" ? currentJuz : currentSurah}`;
   useEffect(() => {
-    // Only navigation in the active reading mode resets the viewport.
-    // Continuous page reading updates the page from the scroll position:
-    // resetting the scroll there would throw the reader back to the top.
     if (displayMode === "page" && pageNavigationSource === "scroll") return;
     getScrollContainer()?.scrollTo({ top: 0, behavior: "auto" });
   }, [navigationKey, displayMode, getScrollContainer, pageNavigationSource]);
@@ -125,34 +108,28 @@ export default function useQuranDisplayScroll({
         frameId = null;
         const target = document.getElementById(`ayah-${currentAyah}`);
         if (!target) {
-          // VirtualizedItem renders lazily; retry until the DOM element appears
           if (attempt < 12) {
             correctionTimer = window.setTimeout(() => alignTarget(attempt + 1), 95);
           }
           return;
         }
-        target.scrollIntoView({ behavior: "auto", block: "center" });
+        scrollToElement(target);
         correctionTimer = window.setTimeout(() => {
           if (!cancelled && target.isConnected && Date.now() >= userScrollUntilRef.current) {
-            target.scrollIntoView({ behavior: "auto", block: "center" });
+            scrollToElement(target);
           }
         }, 220);
       });
     };
 
-    const fontReady = document.fonts?.ready;
-    if (fontReady && typeof fontReady.then === "function") {
-      fontReady.then(alignTarget, alignTarget);
-    } else {
-      alignTarget();
-    }
+    alignTarget();
 
     return () => {
       cancelled = true;
       if (frameId !== null) window.cancelAnimationFrame(frameId);
       if (correctionTimer !== null) window.clearTimeout(correctionTimer);
     };
-  }, [currentAyah, ayahCount, displayMode]);
+  }, [currentAyah, ayahCount, displayMode, scrollToElement, userScrollUntilRef]);
 
   useEffect(() => {
     clearFollowRetryTimer();
@@ -165,25 +142,14 @@ export default function useQuranDisplayScroll({
     if (isNewAyah) lastFollowKeyRef.current = followKey;
 
     const follow = () => {
-      if (stopped) return;
+      if (stopped || isUserScrolling) return;
       if (Date.now() < userScrollUntilRef.current) {
         clearFollowRetryTimer();
         return;
       }
       const target = resolvePlayingAyahElement(currentPlayingAyah);
       if (target) {
-        const container = getScrollContainer();
-        if (container) {
-          const containerRect = container.getBoundingClientRect();
-          const targetRect = target.getBoundingClientRect();
-          const margin = Math.max(40, Math.min(120, containerRect.height * 0.14));
-          const outOfView =
-            targetRect.top < containerRect.top + margin ||
-            targetRect.bottom > containerRect.bottom - margin;
-          if (isNewAyah || outOfView) {
-            target.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
-          }
-        }
+        scrollToElement(target);
         clearFollowRetryTimer();
         return;
       }
@@ -193,29 +159,23 @@ export default function useQuranDisplayScroll({
         clearFollowRetryTimer();
         return;
       }
-      followRetryTimerRef.current = window.setTimeout(follow, 95);
+
+      followRetryTimerRef.current = window.setTimeout(follow, 250);
     };
 
-    followRetryTimerRef.current = window.setTimeout(follow, 0);
+    follow();
     return () => {
       stopped = true;
       clearFollowRetryTimer();
     };
   }, [
-    ayahCount,
-    clearFollowRetryTimer,
     currentPlayingAyah,
-    currentSurah,
-    displayMode,
-    getScrollContainer,
-    mushafLayout,
+    isUserScrolling,
+    userScrollUntilRef,
+    clearFollowRetryTimer,
     resolvePlayingAyahElement,
+    scrollToElement,
   ]);
 
-  useEffect(() => () => clearFollowRetryTimer(), [clearFollowRetryTimer]);
-
-  return {
-    scrollToTop: () => getScrollContainer()?.scrollTo({ top: 0, behavior: "smooth" }),
-    showScrollTop,
-  };
+  return { showScrollTop };
 }

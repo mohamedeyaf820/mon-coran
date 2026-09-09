@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 
 let profileCataloguePromise;
-const PROFILE_CATALOGUE_VERSION = "2026-08-13";
 
 function loadProfileCatalogue() {
   if (!profileCataloguePromise) {
     const baseUrl = import.meta.env.BASE_URL || "/";
-    profileCataloguePromise = fetch(`${baseUrl}data/reciter-profiles.json?v=${PROFILE_CATALOGUE_VERSION}`, {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    profileCataloguePromise = fetch(`${baseUrl}data/reciter-profiles.json`, {
       cache: "force-cache",
+      signal: controller.signal,
     })
       .then((response) => {
         if (!response.ok) throw new Error(`Reciter profiles: ${response.status}`);
@@ -16,7 +18,8 @@ function loadProfileCatalogue() {
       .catch((error) => {
         profileCataloguePromise = undefined;
         throw error;
-      });
+      })
+      .finally(() => clearTimeout(timeout));
   }
   return profileCataloguePromise;
 }
@@ -27,10 +30,15 @@ export function preloadReciterProfiles() {
 
 export function useReciterProfile(reciterId) {
   const [profile, setProfile] = useState(null);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(Boolean(reciterId));
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let active = true;
     setProfile(null);
+    setError(false);
+    setLoading(Boolean(reciterId));
     if (!reciterId) return undefined;
 
     loadProfileCatalogue()
@@ -38,13 +46,16 @@ export function useReciterProfile(reciterId) {
         if (active) setProfile(catalogue[reciterId] || null);
       })
       .catch(() => {
-        if (active) setProfile(null);
+        if (active) setError(true);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
       });
 
     return () => {
       active = false;
     };
-  }, [reciterId]);
+  }, [reciterId, attempt]);
 
-  return profile;
+  return { profile, error, loading, retry: () => setAttempt((value) => value + 1) };
 }

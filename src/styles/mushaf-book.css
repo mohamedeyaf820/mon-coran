@@ -2,12 +2,76 @@
    Mushaf book — fullscreen page
 
    The immersive overlay is portaled on <body>, outside .app-root, so it never
-   received the reader's page styles. It now renders the exact 15-line Madani
-   page (QuranMushafPage, QCF page fonts) as a printed sheet: paper, a thin
-   gold double rule, the surah and juz in the running head, the folio at the
-   bottom. Colours reuse the reader page tokens; the theme attribute on the
-   portal root selects light, sepia or dark paper.
+   received the reader's typography. Its shared CleanPageView composition
+   is frozen at entry and the whole sheet scales without reflow. Colours
+   reuse the reader page tokens; the portal carries the selected theme.
    ========================================================================== */
+
+.mfp-shared-reader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-wrap: anywhere;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+}
+
+.mfp-shared-reader .mfp-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.mfp-shared-reader > header,
+.mfp-shared-reader > footer {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  background: var(--mfp-header-bg);
+}
+
+.mfp-shared-reader > header { border-bottom: 1px solid var(--mfp-header-border); }
+.mfp-shared-reader > footer { border-top: 1px solid var(--mfp-header-border); }
+.mfp-shared-reader h2 { flex: 1; margin: 0; font-size: 0.85rem; min-width: 100px; }
+.mfp-shared-reader h2 small { display: block; }
+.mfp-shared-reader button { flex-shrink: 0; min-width: 44px; min-height: 44px; color: var(--mfp-btn-text); }
+.mfp-shared-reader .mfp-transport,
+.mfp-shared-reader .mfp-pagination { justify-content: center; }
+.mfp-shared-reader .mfp-track { font-size: 0.75rem; direction: ltr; }
+.mfp-shared-reader > main { flex: 1; min-height: 0; overflow: auto; padding: 12px; overscroll-behavior: contain; }
+.mfp-page-bounds { position: relative; margin-inline: auto; direction: ltr; }
+.mfp-shared-page { transform-origin: top left; }
+.mfp-spread { display: flex; align-items: flex-start; gap: 24px; width: max-content; margin-inline: auto; }
+.mfp-spread > * { flex-shrink: 0; }
+.mfp-page-status { padding: 24px; min-height: 160px; background: var(--reader-page-paper); text-align: center; }
+.mfp-options { position: relative; }
+.mfp-options > summary { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; cursor: pointer; list-style: none; border-radius: var(--radius-md, 8px); }
+.mfp-options > summary::-webkit-details-marker { display: none; }
+.mfp-options > summary:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+.mfp-options-panel { position: absolute; inset-inline-end: 0; top: 100%; z-index: 2; display: flex; flex-direction: column; min-width: 160px; padding: 8px; border: 1px solid var(--mfp-header-border); background: var(--theme-panel-bg, var(--bg-card)); border-radius: var(--radius-md, 8px); box-shadow: 0 4px 12px #0001; }
+.mfp-options-panel button { justify-content: flex-start; }
+.mfp-options-panel button[aria-pressed="true"] { background: var(--hover-bg); }
+.mfp-shared-page .cpv-container { width: 100%; min-width: 0; padding: 12px; background: var(--reader-page-paper); color: var(--reader-page-ink); }
+
+/* The body portal cannot inherit the normal reader's typography variables.
+   Use the same resolved face, size and leading passed by the reader. */
+.mfp-shared-reader .mushaf-text-block,
+.mfp-shared-reader .mushaf-text-block .quran-arabic-text {
+  font-family: var(--quran-font-family) !important;
+  font-size: var(--quran-font-size) !important;
+  line-height: var(--quran-line-height) !important;
+  word-spacing: 0 !important;
+  letter-spacing: normal;
+}
+.mfp-shared-reader .mushaf-text-block .quran-arabic-text * {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  word-spacing: inherit !important;
+}
+
 
 .mfp-portal-root {
   --reader-page-paper: var(--theme-bg-alt, #fdfaf4);

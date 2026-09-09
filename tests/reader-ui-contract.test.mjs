@@ -207,88 +207,23 @@ test("reciter details expose a resumable complete Quran offline download", () =>
   assert.match(worker, /audioCacheFirst\(event\.request\)/);
 });
 
-test("immersive Mushaf opens on the verse in view and leafs right to left like a printed book", () => {
-  const display = source("src/components/QuranDisplay.jsx");
+test("immersive Mushaf shares the renderer and persistent audio transport", () => {
   const overlay = source("src/components/QuranDisplay/FullscreenMushafOverlay.jsx");
-  const mushafPage = source("src/components/QuranDisplay/QuranMushafPage.jsx");
-  const book = source("src/styles/mushaf-book.css");
-  const purgeConfig = source("scripts/cssPurgeConfig.mjs");
-
-  // The book opens on the verse at the top of the viewport, on page data.
-  assert.match(display, /openImmersiveMushaf/);
-  assert.match(display, /const ayahInView =/);
-  assert.match(display, /await prepareReadingTarget\("page", targetPage\)/);
-
-  // Neighbouring pages are cached ahead; a turn beyond the cache asks the reader.
-  assert.match(overlay, /preloadQuranDisplayData/);
-  assert.match(overlay, /pageCache\.has\(currentPage \+ 1\)/);
-  assert.match(overlay, /pageCache\.has\(currentPage - 1\)/);
-
-  // An Arabic book is leafed from left to right: the left arrow key and the
-  // left edge button go forward, the right ones go back, Escape closes.
-  assert.match(overlay, /if \(e\.key === "ArrowLeft"\) \{[\s\S]*?turnRef\.current = "next"/);
-  assert.match(overlay, /if \(e\.key === "ArrowRight"\) \{[\s\S]*?turnRef\.current = "prev"/);
-  assert.match(overlay, /if \(e\.key === "Escape"\) \{ onClose\(\)/);
-  assert.match(overlay, /onClick=\{handleNext\}[\s\S]*?left: "0\.75rem"/);
-  assert.match(overlay, /onClick=\{handlePrev\}[\s\S]*?right: "0\.75rem"/);
-  assert.match(overlay, /onTouchEnd=\{handleTouchEnd\}/);
-  assert.match(overlay, /key=\{currentPage\}/);
-  assert.match(overlay, /data-turn=\{turnRef\.current/);
-  assert.match(book, /\[data-turn="next"\]/);
-  assert.match(book, /prefers-reduced-motion: no-preference/);
-
-  // Zoom is a transform on the sheet; the template string is what the
-  // ReferenceError of the first release came from.
-  assert.match(overlay, /transform: `scale\(\$\{zoom\}\)`/);
-  assert.match(overlay, /const MAX_ZOOM = 2\.2/);
-
-  // The exact Madani page is set like print: measure and pitch from the type,
-  // opening pages centred, title band and basmala on the empty lines.
-  assert.match(overlay, /<QuranMushafPage/);
-  assert.match(overlay, /"mfp-book mfp-book--exact" : "mfp-book mfp-book--flow"/);
-  assert.match(overlay, /data-page-kind=\{pageKind\}/);
-  assert.match(book, /--mfp-line-measure: 16\.7em/);
-  assert.match(book, /--mfp-line-pitch: 1\.62em/);
-  assert.match(book, /\[data-page-kind="opening"\] \.qcm-line/);
-  assert.match(mushafPage, /placeSurahOpenings/);
-  assert.match(mushafPage, /markSurahEndings/);
-  assert.match(mushafPage, /qcm-line--surah-header/);
-  assert.match(mushafPage, /qcm-line--basmala/);
-  assert.match(mushafPage, /qcm-line--surah-end/);
-
-  // The page classes are composed in template strings: PurgeCSS must keep them.
-  assert.match(purgeConfig, /\/\^qcm-\//);
-  assert.match(purgeConfig, /\/\^mfp-\//);
-});
-
-test("immersive Mushaf keeps a quiet chrome: dialog, close, zoom and page controls", () => {
   const display = source("src/components/QuranDisplay.jsx");
-  const overlay = source("src/components/QuranDisplay/FullscreenMushafOverlay.jsx");
-
+  const styles = source("src/styles/mushaf-book.css");
+  const adapter = source("src/components/QuranDisplay/ImmersiveMushafPage.jsx");
+  assert.match(overlay, /<ImmersiveMushafPage composition=\{composition\}/);
+  assert.match(adapter, /<CleanPageView \{\.\.\.props\}/);
+  assert.doesNotMatch(overlay, /<QuranMushafPage|pageCache|new Audio|scale\(/);
+  assert.match(overlay, /audioService\.resume\(\)/);
+  assert.match(overlay, /audioService\.pause\(\)/);
+  assert.match(display, /readingFontSize=\{view\.readingFontSize\}/);
   assert.match(overlay, /role="dialog"/);
   assert.match(overlay, /aria-modal="true"/);
-  assert.match(overlay, /document\.body\.style\.overflow = "hidden"/);
-  assert.match(overlay, /aria-label=\{t\("audio\.close", lang\)\}/);
-  assert.match(overlay, /aria-label="Zoom arrière"/);
-  assert.match(overlay, /aria-label="Zoom avant"/);
-  assert.match(overlay, /aria-label="Page suivante"/);
-  assert.match(overlay, /aria-label="Page précédente"/);
-  assert.match(overlay, /className="mfp-mobile-footer"/);
-  assert.match(overlay, /className="mfp-riwaya"/);
-  assert.match(overlay, /onPlayAyah=\{onPlayAyah\}/);
-  assert.match(display, /onOpenPlayer=\{openImmersiveAudioPlayer\}/);
-  assert.match(display, /onClose=\{\(\) => view\.setFullPage\(false\)\}/);
-});
-
-test("immersive Mushaf is edge-to-edge on mobile and theme-aware on desktop", () => {
-  const overlay = source("src/components/QuranDisplay/FullscreenMushafOverlay.jsx");
-  const styles = source("src/styles/mushaf-book.css");
-  // The current portal replaced the retired mfp-page-container implementation.
-  assert.match(overlay, /className="mfp-portal-root"/);
-  assert.match(overlay, /position: "fixed",\s*inset: 0/);
-  assert.match(overlay, /data-theme=\{theme\}/);
-  assert.match(styles, /\.mfp-portal-root\[data-theme="dark"\]/);
-  assert.match(styles, /\.mfp-portal-root\[data-theme="sepia"\]/);
+  assert.match(overlay, /app\.inert = true/);
+  assert.match(overlay, /previousFocus\.focus\(\)/);
+  assert.match(styles, /env\(safe-area-inset-bottom/);
+  assert.match(styles, /min-height: 44px/);
 });
 
 test("surah headings keep an accessible Arabic title while calligraphic selectors stay hidden from assistive tech", () => {
@@ -351,7 +286,8 @@ test("home surah play controls expose and toggle the real playback state", () =>
   const styles = source("src/styles/home-audio-ux-refonte.css");
 
   assert.match(home, /audioService\.currentAyah\?\.surah === surahNum[\s\S]*?audioService\.pause\(\)/);
-  assert.match(home, /await audioService\.play\(\)[\s\S]*?isPlaying: true/);
+  assert.match(home, /await audioService\.play\(\);\s*if \(!audioService\.isPlaying\) return/);
+  assert.doesNotMatch(home, /isPlaying: true/);
   assert.match(cards, /isPlaying && "playing/);
   assert.match(cards, /aria-pressed=\{isPlaying\}/);
   assert.match(styles, /\.hp-card--surah\.playing[\s\S]*?hp-audio-pulse/);

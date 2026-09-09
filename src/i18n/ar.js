@@ -1,4 +1,5 @@
 export default {
+  recitation: { profileLoading: 'جارٍ تحميل الملف التفصيلي…', profileEmpty: 'لا تتوفر سيرة تفصيلية.' },
   app: { name: 'MushafPlus', subtitle: 'المصحف الشريف', loading: 'جاري التحميل...', skipToContent: 'الانتقال إلى المحتوى الرئيسي', keyboardShortcuts: 'اختصارات لوحة المفاتيح', keyboardShortcutsHint: 'اختصارات لوحة المفاتيح (؟)' },
   nav: {
     menu: 'القائمة', home: 'الرئيسية', search: 'البحث', bookmarks: 'العلامات',
@@ -20,6 +21,7 @@ export default {
     hizb: 'الأحزاب', bookmarks: 'المفضلة', searchPlaceholder: 'ابحث عن سورة...',
   },
   quran: {
+    singlePage: 'صفحة واحدة', doublePage: 'صفحتان', readingOptions: 'خيارات القراءة', retry: 'إعادة المحاولة',
     meccan: 'مكيّة', medinan: 'مدنيّة', ayahs: 'آيات', ayah: 'الآية',
     bismillah: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
     surah: 'سُورَةُ', hafs: 'حفص', warsh: 'ورش',

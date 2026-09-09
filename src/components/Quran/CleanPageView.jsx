@@ -4,10 +4,10 @@ import SmartAyahRenderer from "./SmartAyahRenderer";
 import CleanPageTranslationPanel from "./CleanPageTranslationPanel";
 import { CleanPageSurahHeader } from "./CleanPageDecor";
 import Bismillah from "./Bismillah";
-import AyahMarker from "./AyahMarker";
 
 function CleanPageViewComponent({
   ayahs,
+  currentPage,
   lang,
   fontSize,
   isQCF4,
@@ -26,7 +26,7 @@ function CleanPageViewComponent({
   showTransliteration: _showTransliteration = true,
 }) {
   const surahMeta = useMemo(() => getSurah(surahNum), [surahNum]);
-  const pageNumber = ayahs[0]?.page ?? null;
+  const pageNumber = currentPage ?? ayahs[0]?.page ?? null;
   const juzNumber = ayahs[0]?.juz ?? null;
   const headerSurahName = surahMeta?.ar || surahMeta?.name_arabic || surahMeta?.name || "";
   // `fontSize` is already resolved for the current viewport by
@@ -172,6 +172,7 @@ function CleanPageViewComponent({
 function areCleanPageViewEqual(prev, next) {
   return (
     prev.ayahs === next.ayahs &&
+    prev.currentPage === next.currentPage &&
     prev.lang === next.lang &&
     prev.fontSize === next.fontSize &&
     prev.isQCF4 === next.isQCF4 &&
@@ -186,6 +187,7 @@ function areCleanPageViewEqual(prev, next) {
     prev.activeAyah === next.activeAyah &&
     prev.getAyahToggleId === next.getAyahToggleId &&
     prev.onAyahClick === next.onAyahClick &&
+    prev.onPlayAyah === next.onPlayAyah &&
     prev.showTransliteration === next.showTransliteration
   );
 }

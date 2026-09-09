@@ -1,4 +1,5 @@
 export default {
+  recitation: { profileLoading: 'Loading detailed profile…', profileEmpty: 'No detailed biography available.' },
   app: { name: 'MushafPlus', subtitle: 'The Noble Quran', loading: 'Loading...', skipToContent: 'Skip to main content', keyboardShortcuts: 'Keyboard shortcuts', keyboardShortcutsHint: 'Keyboard shortcuts (?)' },
   nav: {
     menu: 'Menu', home: 'Home', search: 'Search', bookmarks: 'Bookmarks',
@@ -20,6 +21,7 @@ export default {
     hizb: 'Hizb', bookmarks: 'Bookmarks', searchPlaceholder: 'Search surah…',
   },
   quran: {
+    singlePage: '1 page', doublePage: '2 pages', readingOptions: 'Reading options', retry: 'Retry',
     meccan: 'Meccan', medinan: 'Medinan', ayahs: 'ayahs', ayah: 'Ayah',
     bismillah: 'In the name of Allah, the Most Gracious, the Most Merciful',
     surah: 'Surah', hafs: 'Hafs', warsh: 'Warsh',

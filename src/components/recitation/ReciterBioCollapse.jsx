@@ -1,12 +1,10 @@
 import React, { useId, useState } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { getReciterBio } from "../../data/reciters";
-import { useReciterProfile } from "../../hooks/useReciterProfile";
 
-export default function ReciterBioCollapse({ lang, text, reciter }) {
+export default function ReciterBioCollapse({ lang, text, reciter, profile }) {
   const [open, setOpen] = useState(true);
   const contentId = useId();
-  const profile = useReciterProfile(reciter?.id);
   const researchedBio =
     profile?.bio?.[lang] || profile?.bio?.fr || profile?.bio?.en || "";
 

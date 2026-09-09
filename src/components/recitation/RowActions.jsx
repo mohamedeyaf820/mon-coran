@@ -6,6 +6,7 @@ import {
   cancelOfflineDownload,
   downloadSurahForReciter,
   getSurahDownloadEntry,
+  isOfflineDownloadActive,
 } from "../../services/downloadService";
 
 function labelsFor(lang) {
@@ -88,20 +89,22 @@ export default function RowActions({
     [canDownload, reciter?.id, riwaya, surah?.n],
   );
   const [entry, setEntry] = useState(readEntry);
-  const [isDownloading, setIsDownloading] = useState(false);
+  const downloadKey = `${riwaya}:${reciter?.id}:${surah?.n}`;
+  const [isDownloading, setIsDownloading] = useState(() => isOfflineDownloadActive(downloadKey));
   const [liveProgress, setLiveProgress] = useState(() => getProgress(readEntry()));
 
   useEffect(() => {
     const refresh = () => {
       const nextEntry = readEntry();
       setEntry(nextEntry);
-      if (!isDownloading) setLiveProgress(getProgress(nextEntry));
+      setIsDownloading(isOfflineDownloadActive(downloadKey));
+      setLiveProgress(getProgress(nextEntry));
     };
     refresh();
     window.addEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
     return () =>
       window.removeEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
-  }, [isDownloading, readEntry]);
+  }, [downloadKey, readEntry]);
 
   const isOffline = entry?.status === "done";
   const downloadLabel = useMemo(() => {
@@ -116,7 +119,7 @@ export default function RowActions({
   const handleShare = useCallback(async () => {
     const origin = typeof window !== "undefined" ? (window.location.origin || "") : "";
     const base = origin && !origin.includes("localhost") && !origin.includes("127.0.0.1") ? origin : "https://mushafplus.netlify.app";
-    const url = `${base}/?reciter=${encodeURIComponent(reciter?.id || "")}&surah=${surah?.n || 1}&play=1`;
+    const url = `${base}/?reciter=${encodeURIComponent(reciter?.id || "")}&riwaya=${riwaya}&surah=${surah?.n || 1}&play=1`;
     if (typeof navigator !== "undefined" && navigator.share) {
       try { await navigator.share({ url, title: `${contextualLabel(labels.listen)} — MushafPlus` }); return; } catch {}
     }
@@ -124,14 +127,15 @@ export default function RowActions({
       await navigator.clipboard.writeText(url);
       toast(labels.shareCopied, "success");
     } catch {}
-  }, [reciter?.id, surah?.n, labels, contextualLabel]);
+  }, [reciter?.id, riwaya, surah?.n, labels, contextualLabel]);
 
   const handleDownload = async () => {
-    if (!canDownload || isOffline) return;
+    if (!canDownload) return;
     if (isDownloading) {
-      if (entry?.key) cancelOfflineDownload(entry.key);
+      cancelOfflineDownload(downloadKey);
       return;
     }
+    if (isOffline) return;
 
     setIsDownloading(true);
     setLiveProgress(getProgress(entry));

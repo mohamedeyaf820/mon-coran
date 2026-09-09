@@ -105,6 +105,8 @@ export default function AudioPlayer() {
   /* Fermeture / refs stables pour callbacks */
   const [closed, setClosed] = useState(false);
   const currentSurahRef = useRef(null);
+  const displayModeRef = useRef(state.displayMode);
+  displayModeRef.current = state.displayMode;
   const currentPlayingAyahRef = useRef(currentPlayingAyah);
   const skipInitialExpandedPreferenceRef = useRef(!currentPlayingAyah);
 
@@ -309,8 +311,8 @@ export default function AudioPlayer() {
       setProgress(0);
     };
     audioService.onAyahChange = (item) => {
-      // Navigation automatique : toujours suivre la sourate en cours de recitation.
-      if (item.surah && item.surah !== currentSurahRef.current) {
+      // Page and juz queues own their boundaries; do not turn them into surah queues.
+      if (displayModeRef.current === "surah" && item.surah && item.surah !== currentSurahRef.current) {
         dispatch({
           type: "NAVIGATE_SURAH",
           payload: { surah: item.surah, ayah: item.ayah || 1 },

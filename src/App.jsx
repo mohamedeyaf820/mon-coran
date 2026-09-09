@@ -8,6 +8,8 @@ import React, {
   lazy,
   Suspense,
 } from "react";
+
+import { ScrollProvider } from "./context/ScrollContext";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import {
   shallowEqual,
@@ -29,12 +31,7 @@ import {
   isWarshVerifiedReciter,
 } from "./data/reciters";
 const loadHomePage = () => import("./components/HomePage");
-let resolvedQuranDisplay;
-const loadQuranDisplay = () =>
-  import("./components/QuranDisplay").then((module) => {
-    resolvedQuranDisplay = module.default;
-    return module;
-  });
+const loadQuranDisplay = () => import("./components/QuranDisplay");
 if (typeof globalThis !== "undefined") {
   globalThis.__mushafPlusLoadQuranDisplay = loadQuranDisplay;
 }
@@ -296,7 +293,6 @@ export default function App() {
   );
   const [hasInteracted, setHasInteracted] = useState(false);
   const [immersiveHidden, setImmersiveHidden] = useState(false);
-  const ActiveQuranDisplay = resolvedQuranDisplay || QuranDisplay;
   const [toast, setToast] = useState(null);
   const [deferNonCriticalUI, setDeferNonCriticalUI] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -764,8 +760,9 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      {!splashDone ? (
-        <SplashScreen
+      <ScrollProvider>
+    {!splashDone ? (
+      <SplashScreen
           onDone={handleSplashDone}
           onPrefetch={handleSplashPrefetch}
           lowPerfMode={lowPerfMode}
@@ -893,7 +890,7 @@ export default function App() {
               ) : (
                 <ErrorBoundary>
                   <Suspense fallback={suspenseFallback}>
-                    <ActiveQuranDisplay />
+                    <QuranDisplay />
                   </Suspense>
                 </ErrorBoundary>
               )}
@@ -951,6 +948,7 @@ export default function App() {
         </ErrorBoundary>
       </div>
       <PWAUpdateBanner />
+      </ScrollProvider>
     </ErrorBoundary>
   );
 }

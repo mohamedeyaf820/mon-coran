@@ -1,4 +1,5 @@
 import React from "react";
+import { t } from "../../i18n";
 import {
   BookOpen,
   Headphones,
@@ -6,7 +7,6 @@ import {
   ListMusic,
   RadioTower,
   UserRound,
-  X,
 } from "lucide-react";
 import "../../styles/recitationStyles.js";
 import ReciterHero from "./ReciterHero";
@@ -14,7 +14,6 @@ import ReciterBioCollapse from "./ReciterBioCollapse";
 import ReciterRadioButton from "./ReciterRadioButton";
 import SurahRecitationList from "./SurahRecitationList";
 import FullQuranDownloadCard from "./FullQuranDownloadCard";
-import { cn } from "../../lib/utils";
 import {
   getReciterProfileSource,
   getReciterSourceInfo,
@@ -38,17 +37,14 @@ export default function ReciterDetailPage({
   lang,
   reciter,
   onPlayRadio,
-  onClose,
   onPlaySurah,
   onOpenSurah,
   onOpenSurahIntent,
-  dialogRef,
-  closeBtnRef,
 }) {
   const isRtl = lang === "ar";
   const sourceInfo = getReciterSourceInfo(reciter);
   const visual = getReciterVisual(reciter);
-  const researchedProfile = useReciterProfile(reciter?.id);
+  const { profile: researchedProfile, error: profileError, loading: profileLoading, retry: retryProfile } = useReciterProfile(reciter?.id);
   const biographySource =
     researchedProfile?.bioSource || getReciterProfileSource(reciter);
   const profileSources = researchedProfile?.verificationSources?.length
@@ -63,16 +59,7 @@ export default function ReciterDetailPage({
       : labelFor(lang, "Verset par verset", "Ayah by ayah", "آية بآية");
 
   return (
-    <div
-      className="reciter-detail"
-      onClick={(event) => event.stopPropagation()}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="reciter-modal-title"
-      ref={dialogRef}
-      dir={isRtl ? "rtl" : "ltr"}
-      lang={lang}
-    >
+    <>
       <div className="reciter-detail__accent" aria-hidden="true" />
 
       <header
@@ -80,15 +67,6 @@ export default function ReciterDetailPage({
         style={{ "--reciter-avatar-gradient": visual.avatar?.gradient }}
       >
         <div className="rd-hero-bg" aria-hidden="true" />
-        <button
-          className={cn("reciter-detail__close", isRtl ? "is-rtl" : "")}
-          type="button"
-          onClick={onClose}
-          ref={closeBtnRef}
-          aria-label={labelFor(lang, "Fermer", "Close", "إغلاق")}
-        >
-          <X className="recitation-icon recitation-icon--md" size={18} aria-hidden="true" />
-        </button>
 
         <span className="reciter-detail__eyebrow">
           <Headphones className="recitation-icon recitation-icon--xs" size={13} aria-hidden="true" />
@@ -117,7 +95,14 @@ export default function ReciterDetailPage({
               <UserRound className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
               {labelFor(lang, "À propos du récitateur", "About the reciter", "عن القارئ")}
             </h3>
-            <ReciterBioCollapse lang={lang} reciter={reciter} />
+            <ReciterBioCollapse lang={lang} reciter={reciter} profile={researchedProfile} />
+            {profileLoading ? <p role="status">{t("recitation.profileLoading", lang)}</p> : !profileError && !researchedProfile ? <p role="status">{t("recitation.profileEmpty", lang)}</p> : null}
+            {profileError ? <div className="reciter-profile-error">
+              <p role="status">{labelFor(lang, "Le profil détaillé est indisponible. Les informations de base restent affichées.", "The detailed profile is unavailable. Basic information is still shown.", "الملف التفصيلي غير متاح. لا تزال المعلومات الأساسية معروضة.")}</p>
+              <button type="button" className="recitation-action-btn" onClick={retryProfile}>
+                {labelFor(lang, "Réessayer", "Retry", "إعادة المحاولة")}
+              </button>
+            </div> : null}
           </div>
         </aside>
 
@@ -195,6 +180,6 @@ export default function ReciterDetailPage({
           ) : null}
         </section>
       </div>
-    </div>
+    </>
   );
 }

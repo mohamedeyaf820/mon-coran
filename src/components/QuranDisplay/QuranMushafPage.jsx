@@ -1,28 +1,29 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { getJuzForAyah } from "../../data/juz";
-import SURAHS, { getSurahLigature, toAr } from "../../data/surahs";
+import React, { useMemo } from "react";
 import {
   ensureFontLoaded,
   ensureQcfPageFontLoaded,
   getQcfPageFontFamily,
 } from "../../services/fontLoader";
-import AyahMarker from "../Quran/AyahMarker";
-import { playWordAudio } from "../../utils/wordAudio";
-import { sanitizeHtml } from "../../lib/security";
 import {
   getQuranWordTextForFont,
   resolveFontFamily,
 } from "../../data/fonts";
+import { playWordAudio } from "../../utils/wordAudio";
+import { sanitizeHtml } from "../../lib/security";
+import SURAHS, { getSurahLigature, toAr } from "../../data/surahs";
+import { getJuzForAyah } from "../../data/juz";
+
+const BASMALA_TEXT = "بِسْمِ اللهِ الرَّحْمَـٰنِ الرَّحِيمِ";
 
 function decodeHtmlEntity(str) {
   if (!str) return "";
   return String(str)
     .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
     .replace(/&#([0-9]+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
+    .replace(/&/g, "&")
+    .replace(/</g, "<")
+    .replace(/>/g, ">")
+    .replace(/"/g, '"')
     .replace(/&apos;/g, "'");
 }
 
@@ -30,9 +31,10 @@ function getVerseKey(word) {
   return `${Number(word.surah)}:${Number(word.ayah)}`;
 }
 
-function getWordGlyph(word, version) {
-  if (version === "v1") return word.codeV1 || word.codeV2 || "";
-  return word.codeV2 || word.codeV1 || "";
+function getWordGlyph(word, version, page) {
+  const glyphPage = version === "v1" ? word.v1Page : word.v2Page;
+  if (Number(glyphPage || word.page) !== Number(page)) return "";
+  return (version === "v1" ? word.codeV1 : word.codeV2) || "";
 }
 
 function getLineNumber(word) {
@@ -96,171 +98,60 @@ function groupWarshPageLines(ayahs) {
   }
 
   const lines = new Map();
-
   ayahs.forEach((ayah) => {
-    const surah = ayah.surah?.number;
-    const ayahNum = ayah.numberInSurah;
-    const rawText = normalizeArabicText(ayah.text || "");
-    const warshWords = Array.isArray(ayah.warshWords)
-      ? ayah.warshWords.map(w => normalizeArabicText(w))
-      : rawText.split(/\s+/).filter(Boolean);
-
-    if (warshWords.length === 0) return;
-
-    // Distribute words across lines using line_start and line_end from the ayah
-    const lineStart = Number(ayah.lineStart) || 1;
-    const lineEnd = Number(ayah.lineEnd) || 15;
-    const lineSpan = Math.max(1, lineEnd - lineStart + 1);
-    const wordsPerLine = Math.max(1, Math.ceil(warshWords.length / lineSpan));
-
-    warshWords.forEach((text, idx) => {
-      const lineIndex = Math.min(lineSpan - 1, Math.floor(idx / wordsPerLine));
-      const lineNumber = lineStart + lineIndex;
-
-      if (lineNumber < 1 || lineNumber > 15) return;
-      if (!lines.has(lineNumber)) lines.set(lineNumber, []);
-
-      lines.get(lineNumber).push({
-        charType: "word",
-        globalAyah: ayah.number,
-        surah,
-        ayah: ayahNum,
-        position: idx + 1,
-        text,
-        isWarsh: true,
-      });
-    });
-
-    // Add ayah end marker on the last line
-    const lastLine = Math.min(15, lineEnd);
-    if (lines.has(lastLine)) {
-      lines.get(lastLine).push({
-        charType: "end",
-        globalAyah: ayah.number,
-        surah,
-        ayah: ayahNum,
-        isWarsh: true,
+    const lineStart = Number(ayah.lineStart || 1);
+    const lineEnd = Number(ayah.lineEnd || 15);
+    for (let lineNo = lineStart; lineNo <= lineEnd; lineNo++) {
+      if (!lines.has(lineNo)) lines.set(lineNo, { lineNumber: lineNo, words: [] });
+      const line = lines.get(lineNo);
+      line.words.push({
+        ...ayah,
+        lineNumber: lineNo,
+        positionInLine: line.words.length + 1,
       });
     }
   });
-
-  return Array.from({ length: 15 }, (_, index) => {
-    const lineNumber = index + 1;
-    return {
-      lineNumber,
-      words: lines.get(lineNumber) || [],
-    };
-  });
-}
-
-const BASMALA_TEXT = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
-
-function getSurahMeta(surah) {
-  return SURAHS[Number(surah) - 1] || null;
-}
-
-// The words API only carries verses. In the Madani layout a surah opens on a
-// fresh line under its title band and, except for Al-Fatiha (whose basmala is
-// verse 1) and At-Tawbah, the basmala: those slots come back as empty lines
-// above the first word, so this restores them the way the printed page reads.
-function placeSurahOpenings(lines) {
-  lines.forEach((line, index) => {
-    const first = line.words[0];
-    if (!first) return;
-    if (Number(first.ayah) !== 1 || Number(first.position || 1) !== 1) return;
-    const above = lines[index - 1];
-    if (!above || above.words.length > 0 || above.kind) return;
-    const surah = Number(first.surah);
-    const above2 = lines[index - 2];
-    const hasBasmalaLine =
-      surah !== 1 && surah !== 9 && above2 && above2.words.length === 0 && !above2.kind;
-    if (hasBasmalaLine) {
-      above2.kind = "surah-header";
-      above2.surah = surah;
-      above.kind = "basmala";
-      above.surah = surah;
-    } else {
-      above.kind = "surah-header";
-      above.surah = surah;
-    }
-  });
-  return lines;
-}
-
-// A surah's final line is centred when it does not fill the measure.
-function markSurahEndings(lines) {
-  lines.forEach((line) => {
-    const closes = line.words.some((word) => {
-      if (word.charType !== "end") return false;
-      const meta = getSurahMeta(word.surah);
-      return meta && Number(word.ayah) === Number(meta.ayahs);
-    });
-    if (closes) line.endsSurah = true;
-  });
-  return lines;
+  return Array.from(lines.values()).sort((a, b) => a.lineNumber - b.lineNumber);
 }
 
 function groupPageLines(ayahs) {
-  const lines = new Map();
-  const seenEndMarkers = new Set();
-
+  const lines = [];
   ayahs.forEach((ayah) => {
-    const surah = ayah.surah?.number;
-    const ayahNum = ayah.numberInSurah;
-    const words = Array.isArray(ayah.words) ? ayah.words : [];
-
-    words.forEach((word) => {
-      const lineNumber = getLineNumber(word);
-      if (!lineNumber) return;
-      const charType = word.charType || word.charTypeName || word.char_type_name;
-      const endKey = `${surah}:${ayahNum}`;
-      if (charType === "end") {
-        if (seenEndMarkers.has(endKey)) return;
-        seenEndMarkers.add(endKey);
-      }
-      if (!lines.has(lineNumber)) lines.set(lineNumber, []);
-      lines.get(lineNumber).push({
-        ...word,
-        charType,
-        globalAyah: ayah.number,
-        surah: word.surah || surah,
-        ayah: word.ayah || ayahNum,
-      });
-    });
+    const lineNumber = Number(ayah.line || 1);
+    if (!lines[lineNumber]) lines[lineNumber] = { lineNumber, words: [] };
+    lines[lineNumber].words.push(ayah);
   });
-
-  const pageLines = Array.from({ length: 15 }, (_, index) => {
-    const lineNumber = index + 1;
-    return {
-      lineNumber,
-      words: lines.get(lineNumber) || [],
-    };
-  });
-  return markSurahEndings(placeSurahOpenings(pageLines));
+  return Object.values(lines).sort((a, b) => a.lineNumber - b.lineNumber);
 }
 
-function getPageMeta(ayahs, currentPage, lang, riwaya, isWarsh = riwaya === "warsh") {
-  const first = ayahs[0] || {};
-  const last = ayahs[ayahs.length - 1] || first;
-  const juz =
-    first.juz ||
-    getJuzForAyah(first.surah?.number, first.numberInSurah) ||
-    "";
-  const hizb = first.hizb || "";
-  const rub = first.rubElHizb || "";
-  const page = lang === "ar" ? toAr(currentPage) : currentPage;
+function getSurahMeta(surahNumber) {
+  const surah = SURAHS[surahNumber] || {};
+  return {
+    name: surah.name || "",
+    name_arabic: surah.name_arabic || surah.name || "",
+    ar: surah.name_arabic || surah.name || "",
+    en: surah.name || "",
+    revelation: surah.revelation || "",
+    ayahs: surah.ayahs || 0,
+  };
+}
+
+function getPageMeta(ayahs, currentPage, lang, riwaya, isWarsh) {
+  const first = ayahs[0];
+  const last = ayahs[ayahs.length - 1];
+  const juz = getJuzForAyah(first.globalAyah);
+  const hizb = Math.ceil(juz * 2) % 2 === 0 ? juz * 2 : Math.ceil(juz * 2);
+  const rub = ((hizb * 4) % 4 === 0 ? hizb * 4 : Math.ceil(hizb * 4)) - 3;
 
   return {
-    page,
-    top: lang === "ar" ? `صفحة ${page}` : `Page ${page}`,
-    middle:
-      lang === "ar"
-        ? `سورة ${first.surah?.number || ""} · ${first.numberInSurah || ""}‏–‏${last.numberInSurah || ""}`
-        : `Surah ${first.surah?.number || ""} · ${first.numberInSurah || ""}–${last.numberInSurah || ""}`,
+    top: lang === "ar" ? `الجزء ${toAr(juz)}` : `Juz ${juz}`,
+    middle: `${first.surah?.ar || first.surah?.name_arabic || first.surah?.name || ""} · ${first.numberInSurah || ""}–${last.numberInSurah || ""}`,
+    bottom: lang === "ar" ? `الجزء ${toAr(juz)}` : `Juz ${juz}`,
     sideA: `${lang === "ar" ? "جزء" : "Juz"} ${lang === "ar" ? toAr(juz) : juz}`,
     sideB: `${lang === "ar" ? "حزب" : "Hizb"} ${lang === "ar" ? toAr(hizb) : hizb}`,
     sideC: rub ? `${lang === "ar" ? "ربع" : "Rubʿ"} ${lang === "ar" ? toAr(rub) : rub}` : "",
     fontLabel: isWarsh ? (lang === "ar" ? "رواية ورش" : "Warsh") : (lang === "ar" ? "رواية حفص" : "Hafs"),
+    page: currentPage,
   };
 }
 
@@ -280,31 +171,30 @@ export default function QuranMushafPage({
   const pageFontFamily = getQcfPageFontFamily(currentPage, version);
   const fallbackFontFamily = resolveFontFamily(fontFamily, riwaya);
   const isWarsh = riwaya === "warsh";
-  const [fontLoaded, setFontLoaded] = useState(false);
-  const [fontFailed, setFontFailed] = useState(false);
+  const [loadedFamily, setLoadedFamily] = React.useState(null);
+  const fontLoaded = loadedFamily === pageFontFamily;
+  const [fontFailed, setFontFailed] = React.useState(false);
 
-  const lines = useMemo(
+  const lines = React.useMemo(
     () => (isWarsh ? groupWarshPageLines(ayahs) : groupPageLines(ayahs)),
     [ayahs, isWarsh],
   );
-  const meta = useMemo(
+  const meta = React.useMemo(
     () => getPageMeta(ayahs, currentPage, lang, riwaya, isWarsh),
     [ayahs, currentPage, lang, riwaya, isWarsh],
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     let cancelled = false;
-    setFontLoaded(false);
+    setLoadedFamily(null);
     setFontFailed(false);
 
     if (isWarsh) {
-      // Load the Warsh font file so --font-quran resolves correctly.
-      // fontFamily defaults to "qpc-warsh" when not supplied.
       const warshFontId = fontFamily || "qpc-warsh";
       ensureFontLoaded(warshFontId).then((result) => {
         if (!cancelled) {
           const loaded = Boolean(result.loaded || result.cached);
-          setFontLoaded(loaded);
+          setLoadedFamily(loaded ? pageFontFamily : null);
           setFontFailed(!loaded);
         }
       });
@@ -312,7 +202,7 @@ export default function QuranMushafPage({
       ensureQcfPageFontLoaded(currentPage, version).then((result) => {
         if (!cancelled) {
           const loaded = Boolean(result.loaded || result.cached);
-          setFontLoaded(loaded);
+          setLoadedFamily(loaded ? pageFontFamily : null);
           setFontFailed(!loaded);
         }
       });
@@ -321,7 +211,7 @@ export default function QuranMushafPage({
     return () => {
       cancelled = true;
     };
-  }, [currentPage, fontFamily, isWarsh, version]);
+  }, [currentPage, fontFamily, isWarsh, version, pageFontFamily]);
 
   const renderWord = (word, index) => {
     const verseKey = getVerseKey(word);
@@ -333,13 +223,27 @@ export default function QuranMushafPage({
 
     if (isEnd) {
       return (
-        <AyahMarker
+        <span
           key={`${verseKey}:end:${index}`}
-          num={word.ayah}
-          isPlaying={isPlaying}
           className="qcm-ayah-marker"
-          size="1.04em"
-        />
+          data-surah-number={word.surah}
+          data-ayah-number={word.ayah}
+          data-ayah-global={word.globalAyah}
+          data-word-position={word.position}
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            playWordAudio(word.audioUrl || { surah: word.surah, ayah: word.ayah, position: word.position });
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              playWordAudio(word.audioUrl || { surah: word.surah, ayah: word.ayah, position: word.position });
+            }
+          }}
+        >
+          {normalizeArabicText(word.text)}
+        </span>
       );
     }
 
@@ -384,7 +288,8 @@ export default function QuranMushafPage({
       );
     }
 
-    const glyph = getWordGlyph(word, version);
+    const glyph = getWordGlyph(word, version, currentPage);
+    const useGlyph = fontLoaded && Boolean(glyph);
     return (
       <span
         key={`${verseKey}:${word.position || index}`}
@@ -405,11 +310,22 @@ export default function QuranMushafPage({
           }
         }}
         style={{
-          fontFamily: fontLoaded ? pageFontFamily : fallbackFontFamily,
+          fontFamily: useGlyph ? pageFontFamily : fallbackFontFamily,
+          fontSize: 'var(--qd-font-size, 28px)',
+          lineHeight: 'var(--line-height-quran)',
+          letterSpacing: 0,
+          wordSpacing: 0,
+          textRendering: 'optimizeLegibility',
+          WebkitFontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
+          fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
+          WebkitFontSmoothing: 'antialiased',
+          MozOsxFontSmoothing: 'grayscale',
+          unicodeBidi: 'isolate',
+          whiteSpace: 'nowrap',
         }}
       >
         {decodeHtmlEntity(
-          fontLoaded && glyph
+          useGlyph
             ? glyph
             : getQuranWordTextForFont(word, fontFamily, riwaya)
         )}
@@ -430,10 +346,6 @@ export default function QuranMushafPage({
           </span>
         </div>
       )}
-      <div className="qcm-edge qcm-edge--start">
-        <span>{meta.sideA}</span>
-        <span>{meta.sideB}</span>
-      </div>
       <div className="qcm-page">
         <header className="qcm-page-header">
           <span className="text-[var(--text-muted)] text-[0.65rem] font-semibold">{meta.top}</span>
@@ -489,15 +401,15 @@ export default function QuranMushafPage({
               : line.endsSurah
                 ? "qcm-line qcm-line--surah-end"
                 : "qcm-line";
-            return (
-              <div
-                key={line.lineNumber}
-                className={lineClass}
-                data-line-number={line.lineNumber}
-              >
-                {line.words.map(renderWord)}
-              </div>
-            );
+              return (
+                <div
+                  key={line.lineNumber}
+                  className={lineClass}
+                  data-line-number={line.lineNumber}
+                >
+                  {line.words.map(renderWord)}
+                </div>
+              );
           })}
         </div>
         <footer className="qcm-page-footer" aria-hidden="true">

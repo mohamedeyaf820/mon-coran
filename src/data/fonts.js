@@ -7,6 +7,7 @@
  */
 
 import { applyFontSigns, getFontSignVariant, normalizeQuranGlyphText } from "../utils/quranUtils.js";
+import { stripWarshEncodedAyahMarker } from "../utils/warshAyahMarker.js";
 
 export const HAFS_FONT_IDS = [
   "qpc-hafs",
@@ -155,16 +156,16 @@ const AYAH_MARKER_BY_FONT = {
 export const NATIVE_AYAH_MARKER_RE = /[\u06dd\u06de][\u0660-\u0669\u06f0-\u06f9\d]*/u;
 
 // Quran payloads do not all encode the end of an ayah in the same way. Some
-// include U+06DD/U+06DE, some only contain shaped Arabic-Indic digits, and a
+// include U+06DD, some only contain shaped Arabic-Indic digits, and a
 // few wrap the number in the ornamental Quran brackets. Strip every supported
 // *trailing* form before generating our single marker. Waqf signs (U+06D6 to
 // U+06DC) are deliberately excluded: they are meaningful recitation content.
 const INVISIBLE_SUFFIX = "[\\u061C\\u200B-\\u200F\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]*";
 const AYAH_MARKER_SUFFIX_RE = new RegExp(
   `(?:(?:\\s|&nbsp;)*(?:` +
-    `[\\u06DD\\u06DE\\u06E9]?[\\u0660-\\u0669\\u06F0-\\u06F9\\d]+|` +
+    `[\\u06DD]?[\\u0660-\\u0669\\u06F0-\\u06F9\\d]+|` +
     `[\\uFD3E\\uFD3F][\\u0660-\\u0669\\u06F0-\\u06F9\\d]+[\\uFD3E\\uFD3F]|` +
-    `[\\u06DD\\u06DE]` +
+    `[\\u06DD]` +
   `))+${INVISIBLE_SUFFIX}\\s*$`,
   "u",
 );
@@ -283,7 +284,7 @@ export function getAyahTextForFont(ayah, fontId, riwaya = "hafs") {
   const normalizedId = normalizeFontId(fontId, riwaya);
   const signVariant = getFontSignVariant(normalizedId);
   if (riwaya === "warsh") {
-    return applyFontSigns(normalizeQuranGlyphText(ayah.text), signVariant);
+    return applyFontSigns(normalizeQuranGlyphText(stripWarshEncodedAyahMarker(ayah.text, ayah.numberInSurah)), signVariant);
   }
 
   const quranCom = ayah.quranCom || {};

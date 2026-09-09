@@ -1,8 +1,19 @@
 const loadedFontIds = new Set();
-const failedFontIds = new Set();
-const inFlightLoads = new Map();
+  const failedFontIds = new Set();
+  const inFlightLoads = new Map();
 
-const FONT_SOURCES = {
+  // Fonction pour vérifier si une police est disponible dans le navigateur
+  const isFontAvailable = (fontFamily) => {
+    if (!document.fonts) return true; // Fallback si l'API n'est pas disponible
+    try {
+      return document.fonts.check(`12px "${fontFamily}"`);
+    } catch (e) {
+      console.warn(`Erreur lors de la vérification de la police ${fontFamily}:`, e);
+      return true; // Fallback en cas d'erreur
+    }
+  };
+
+  const FONT_SOURCES = {
   "qpc-hafs": {
     family: "QPC Hafs",
     url: "/fonts/uthmanic-hafs-v18.woff2",
@@ -81,13 +92,7 @@ function resolveFontSource(fontId, options = {}) {
 }
 
 async function loadFontFace(fontId, source) {
-  if (typeof window !== "undefined" && (navigator.webdriver || window.__playwright__)) {
-    loadedFontIds.add(fontId);
-    return { loaded: true, mock: true, family: source?.family || fontId };
-  }
-
   if (typeof document === "undefined" || typeof FontFace === "undefined" || !source) {
-    loadedFontIds.add(fontId);
     return { loaded: false, unsupported: true, family: source?.family || fontId };
   }
 
@@ -118,14 +123,18 @@ async function loadFontFace(fontId, source) {
         setTimeout(resolve, 1800);
       });
     }
+    let loaded = false;
     try {
-      await document.fonts.load(`400 1em "${source.family}"`);
+      const faces = await document.fonts.load(`400 1em "${source.family}"`);
+      loaded = faces.some((face) => face.status === "loaded");
     } catch {
       // Browser fallback stack still keeps the reader usable offline.
     }
-    loadedFontIds.add(fontId);
-    failedFontIds.delete(fontId);
-    return { loaded: true, family: source.family, url: source.cssUrl };
+    if (loaded) {
+      loadedFontIds.add(fontId);
+      failedFontIds.delete(fontId);
+    } else failedFontIds.add(fontId);
+    return { loaded, family: source.family, url: source.cssUrl };
   }
 
   // Skip document.fonts.check() — it returns true for unknown fonts (browser
@@ -182,7 +191,7 @@ export async function ensureFontLoaded(fontId, options = {}) {
   }
 
   const loadKey = `${source.family}:${source.url}`;
-  if (loadedFontIds.has(loadKey) || loadedFontIds.has(fontId)) {
+  if (loadedFontIds.has(loadKey)) {
     return { loaded: true, cached: true, family: source.family };
   }
 

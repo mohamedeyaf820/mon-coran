@@ -13,8 +13,8 @@ function label(reciter, lang) {
 
 export default function ReciterHero({ reciter, lang }) {
   const visual = getReciterVisual(reciter);
-  const [imgError, setImgError] = useState(false);
-  const showPhoto = visual.photo && !imgError;
+  const [failedPhoto, setFailedPhoto] = useState(null);
+  const showPhoto = visual.photo && failedPhoto !== visual.photo;
   const avatar = visual.avatar;
   const countryLabel = getReciterCountryLabel(reciter, lang);
 
@@ -34,8 +34,10 @@ export default function ReciterHero({ reciter, lang }) {
             alt=""
             className="reciter-photo reciter-hero__avatar absolute inset-0 rounded-full border-2 border-primary/20 object-cover"
             style={{ objectPosition: visual.focalPoint }}
-            onError={() => setImgError(true)}
-            loading="lazy"
+            onError={() => setFailedPhoto(visual.photo)}
+            width={88}
+            height={88}
+            loading="eager"
             decoding="async"
             referrerPolicy="no-referrer"
           />

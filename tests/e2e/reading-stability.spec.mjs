@@ -254,3 +254,41 @@ test("cold Hafs reading keeps study actions usable without speculative audio or 
   ).toBeLessThan(0.1);
   await assertNoHorizontalOverflow(page);
 });
+
+test("reader unmount releases manual-scroll listeners and remount stays usable", async ({ page }) => {
+  const errors = [];
+  page.on("pageerror", error => errors.push(error.message));
+  await installQuranNetworkFixtures(page);
+  await seedReader(page);
+  await page.addInitScript(() => {
+    const originalAdd = EventTarget.prototype.addEventListener;
+    const originalRemove = EventTarget.prototype.removeEventListener;
+    const tracked = [];
+    window.__readerListeners = tracked;
+    EventTarget.prototype.addEventListener = function(type, callback, options) {
+      if (this instanceof Element && this.matches(".app-main") && ["wheel", "touchstart", "pointerdown"].includes(type)) {
+        if (!tracked.some(entry => entry.target === this && entry.type === type && entry.callback === callback)) {
+          tracked.push({ target: this, type, callback });
+        }
+      }
+      return originalAdd.call(this, type, callback, options);
+    };
+    EventTarget.prototype.removeEventListener = function(type, callback, options) {
+      const index = tracked.findIndex(entry => entry.target === this && entry.type === type && entry.callback === callback);
+      if (index !== -1) tracked.splice(index, 1);
+      return originalRemove.call(this, type, callback, options);
+    };
+  });
+  await page.goto("/surah/3");
+  await waitForReader(page);
+  await expect.poll(() => page.evaluate(() => window.__readerListeners.length)).toBeGreaterThanOrEqual(3);
+  for (let index = 0; index < 2; index += 1) {
+    await page.getByRole("button", { name: "MushafPlus — Accueil", exact: true }).click();
+    await expect(page.locator(".quran-display--platform")).toHaveCount(0);
+    await expect.poll(() => page.evaluate(() => window.__readerListeners.length)).toBe(0);
+    await page.getByRole("button", { name: /^Reprendre la lecture HAFS/ }).click();
+    await waitForReader(page);
+    await expect.poll(() => page.evaluate(() => window.__readerListeners.length)).toBeGreaterThanOrEqual(3);
+  }
+  expect(errors).toEqual([]);
+});

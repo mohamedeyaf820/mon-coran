@@ -1,5 +1,5 @@
 html body .app-root[data-view="home"] .home-info-card {
-  overflow: hidden;
+  overflow-wrap: anywhere;
   border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
   border-radius: 1.15rem;
   background:
@@ -197,7 +197,7 @@ html body .app-root[data-view="home"] .reciter-card__media {
 
 html body .app-root[data-view="home"] .reciter-card__name {
   display: -webkit-box !important;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   color: var(--text-primary) !important;
   font-size: 0.83rem !important;
   font-weight: 760 !important;
@@ -240,7 +240,7 @@ html body .rc-panel {
   max-width: 64rem;
   max-height: min(52rem, calc(100dvh - 2rem));
   flex-direction: column;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   border: 1px solid color-mix(in srgb, var(--border) 78%, var(--primary) 22%);
   border-radius: 1.35rem;
   background: var(--bg-card);
@@ -367,7 +367,7 @@ html body .rc-pick-btn {
   align-items: center;
   gap: 0.45rem;
   padding: 0.55rem 0.7rem;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   border: 1px solid var(--border);
   border-radius: 0.75rem;
   background: var(--bg-secondary);
@@ -378,7 +378,7 @@ html body .rc-pick-btn {
 }
 
 html body .rc-pick-btn > span {
-  overflow: hidden;
+  overflow-wrap: anywhere;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -432,7 +432,7 @@ html body .rc-track__avatar {
   position: relative;
   width: 2.8rem;
   height: 2.8rem;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   border: 2px solid color-mix(in srgb, var(--bg-card) 65%, var(--primary) 35%);
   border-radius: 50%;
   background: var(--bg-secondary);
@@ -462,7 +462,7 @@ html body .rc-track__identity {
 }
 
 html body .rc-track__name {
-  overflow: hidden;
+  overflow-wrap: anywhere;
   color: var(--text-primary);
   font-size: 0.83rem;
   font-weight: 780;
@@ -472,7 +472,7 @@ html body .rc-track__name {
 
 html body .rc-track__name-ar {
   margin-top: 0.16rem;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   color: var(--text-muted);
   font-family: var(--font-quran, serif);
   font-size: 0.76rem;
@@ -512,7 +512,7 @@ html body .rc-btn--play {
 html body .rc-progress {
   height: 0.35rem;
   flex: 1;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   border-radius: 999px;
   background: color-mix(in srgb, var(--border) 68%, transparent);
 }
@@ -588,7 +588,7 @@ html body .app-root[data-view="reading"] .tajweed-legend {
   max-width: min(100%, 980px);
   margin: 0 auto 0.5rem;
   padding: 0.18rem 0.42rem;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   border: 1px solid color-mix(in srgb, var(--border) 72%, var(--primary) 28%);
   border-radius: 999px;
   background: var(--bg-card);
@@ -781,7 +781,7 @@ html body .tajwid-rule-tooltip__description {
     min-height: 1.8rem;
     gap: 0.3rem;
     padding-inline: 0.36rem;
-    overflow: hidden;
+    overflow-wrap: anywhere;
     scroll-snap-align: start;
     font-size: 0.57rem;
     text-overflow: ellipsis;
@@ -816,7 +816,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .qc-verse-by-v
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {
   margin-bottom: 0.75rem;
   padding: clamp(0.78rem, calc(var(--reader-arabic-size, 42px) * 0.3), 1.3rem) clamp(0.75rem, 2vw, 1.25rem);
-  overflow: hidden;
+  overflow-wrap: anywhere;
   border: 1px solid color-mix(in srgb, var(--border) 88%, var(--primary) 12%);
   border-radius: 1rem;
   background: var(--bg-card) !important;
@@ -1152,7 +1152,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-n
 @media (max-width: 480px) {
   html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .reader-mode-nav__button span {
     white-space: nowrap !important;
-    overflow: hidden;
+    overflow-wrap: anywhere;
     text-overflow: ellipsis;
     max-width: 22vw !important;
   }
@@ -1327,7 +1327,7 @@ html body .app-root[data-view="reading"] .quran-display--platform {
   height: 1px !important;
   padding: 0 !important;
   margin: -1px !important;
-  overflow: hidden !important;
+  overflow-wrap: anywhere;
   clip: rect(0, 0, 0, 0) !important;
   white-space: nowrap !important;
   border-width: 0 !important;

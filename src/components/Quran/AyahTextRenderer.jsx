@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import useKaraokeWordIndex from "../../hooks/useKaraokeWordIndex";
 import audioService from "../../services/audioService";
 import { NATIVE_AYAH_MARKER_RE, getQuranWordTextForFont, normalizeFontId } from "../../data/fonts";
-import { getFontSignVariant } from "../../utils/quranUtils";
+import { getFontSignVariant, isNonVerseQuranSign } from "../../utils/quranUtils";
 import { useAppLocale } from "../../context/AppContext";
 import {
   getReadableWaqfGlyph,
@@ -62,11 +62,11 @@ function CanonicalQuranText({ text, riwaya, words, surahNum, ayahNumber }) {
                 return (
                   <React.Fragment key={wIdx}>
                     <span
-                      className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
+                      className={isMarker ? (isNonVerseQuranSign(w) ? "quran-annotation-marker" : "native-ayah-marker") : "quran-word-item cursor-pointer"}
                       onClick={!isMarker ? handleClick : undefined}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={isMarker ? verseLabel : undefined}
+                      role={isNonVerseQuranSign(w) ? undefined : "button"}
+                      tabIndex={isNonVerseQuranSign(w) ? undefined : 0}
+                      aria-label={!isNonVerseQuranSign(w) && isMarker ? verseLabel : undefined}
                       style={{ display: "inline" }}
                     >
                       {w}
@@ -101,11 +101,11 @@ function CanonicalQuranText({ text, riwaya, words, surahNum, ayahNumber }) {
         return (
           <React.Fragment key={index}>
             <span
-              className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
+              className={isMarker ? (isNonVerseQuranSign(wordStr) ? "quran-annotation-marker" : "native-ayah-marker") : "quran-word-item cursor-pointer"}
               onClick={!isMarker ? handleClick : undefined}
-              role="button"
-              tabIndex={0}
-              aria-label={isMarker ? verseLabel : undefined}
+              role={isNonVerseQuranSign(wordStr) ? undefined : "button"}
+              tabIndex={isNonVerseQuranSign(wordStr) ? undefined : 0}
+              aria-label={!isNonVerseQuranSign(wordStr) && isMarker ? verseLabel : undefined}
               style={{ display: "inline" }}
             >
               {wordStr}
@@ -213,7 +213,7 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
         if (isRead) cls += " wbw-read";
         else if (isCurrent) cls += " wbw-current";
         else cls += " wbw-upcoming";
-        if (isMarkerToken) cls += " wbw-marker-token native-ayah-marker";
+        if (isMarkerToken) cls += isNonVerseQuranSign(word) ? " wbw-marker-token quran-annotation-marker" : " wbw-marker-token native-ayah-marker";
 
         const wordAudioUrl = !isMarkerToken ? dataWords[recitableIndex]?.audioUrl : null;
         // While the ayah is being recited, a word click resumes the

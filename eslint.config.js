@@ -15,6 +15,7 @@ export default [
       "coverage/**",
       "design-audit/**",
       "design-audit-2/**",
+      "scratch/**",
       "public/boot-recovery.js",
     ],
   },

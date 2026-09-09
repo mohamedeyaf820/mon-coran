@@ -3,6 +3,7 @@ import { useKaraoke } from "../../hooks/useKaraoke";
 import { withWordCountCalibrationBump } from "../../utils/karaokeUtils";
 import { getNativeAyahMarker } from "../../data/fonts";
 import WarshWordText from "./WarshWordText";
+import { stripWarshEncodedAyahMarker } from "../../utils/warshAyahMarker";
 
 const AYAH_MARKER_TOKEN_RE = /^[\u06dd\u06de\u06e9\ufd3f\ufd3e\d\u0660-\u0669\u06f0-\u06f9]+$/u;
 const WAQF_MARKER_TOKEN_RE = /^[\u06d6-\u06dc]+$/u;
@@ -59,15 +60,20 @@ export default function KaraokeWarshText({
   tajweedColors,
   fallbackText,
   ayahNumber,
+  fontFamily,
   appendNativeMarker = true,
 }) {
   const lastIdxRef = useRef(0);
   const allWords = useMemo(
-    () => (Array.isArray(words) ? words.map(getWordText).filter(Boolean) : []),
-    [words],
+    () => {
+      const values = Array.isArray(words) ? words.map(getWordText).filter(Boolean) : [];
+      if (values.length && !stripWarshEncodedAyahMarker(values.at(-1), ayahNumber)) return values.slice(0, -1);
+      return values;
+    },
+    [words, ayahNumber],
   );
   const normalizedWords = useMemo(
-    () => allWords.filter((word) => !isAyahMarkerToken(word)),
+    () => allWords.filter((word) => !/^[\u06dd\d\u0660-\u0669\u06f0-\u06f9]+$/u.test(word)),
     [allWords],
   );
   const effectiveCalibration = withWordCountCalibrationBump(
@@ -81,7 +87,7 @@ export default function KaraokeWarshText({
   });
   const wordWeights = useMemo(() => buildWordWeights(normalizedWords), [normalizedWords]);
   const markerFlags = useMemo(
-    () => normalizedWords.map(() => false),
+    () => normalizedWords.map(isAyahMarkerToken),
     [normalizedWords],
   );
   const lagWords =
@@ -119,7 +125,7 @@ export default function KaraokeWarshText({
       {appendNativeMarker ? (
         <span className="native-ayah-marker" style={{ display: "inline" }}>
           {"\u202F"}
-          {getNativeAyahMarker(ayahNumber, "kfgqpc-warsh", "warsh")}
+          {getNativeAyahMarker(ayahNumber, fontFamily || "kfgqpc-warsh", "warsh")}
         </span>
       ) : null}
     </>

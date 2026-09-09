@@ -42,6 +42,7 @@ export default function ReadingToolbar({
   onPlay,
   onPlaySurah,
   playLabel,
+  playDisabled = false,
   preparingSurah,
   surahNum,
   onToggleMushaf,
@@ -239,7 +240,7 @@ export default function ReadingToolbar({
           <button
             type="button"
             onClick={handlePrimaryPlay}
-            disabled={isPreparing}
+            disabled={isPreparing || (!isPlayingThisContext && playDisabled)}
             className={cn(
               "reader-toolbar-btn--primary btn-play-surah flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-3.5 text-xs font-bold text-white shadow-sm transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50",
               isPlayingThisContext

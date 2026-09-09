@@ -121,3 +121,7 @@ export function stripBasmala(text, surahNum, ayahNumInSurah) {
     BASMALA_CACHE.set(key, result);
     return result;
 }
+// Waqf, rub al-hizb and sajda signs are not verse-number controls.
+export function isNonVerseQuranSign(text) {
+  return /^[\u06d6-\u06dc\u06de\u06e9]+$/u.test(String(text || "").replace(/\s+/gu, ""));
+}

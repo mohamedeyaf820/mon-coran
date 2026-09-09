@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { getRulesForRiwaya, parseTajwid, stabilizeTajwidSegments } from '../../data/tajwidRules';
 import { useAppLocale } from '../../context/AppContext';
-import { applyFontSigns, getReadableWaqfGlyph } from '../../utils/quranUtils';
+import { applyFontSigns, getReadableWaqfGlyph, isNonVerseQuranSign } from '../../utils/quranUtils';
 import { playWordAudio, getWordAudioUrl } from '../../utils/wordAudio';
 import {
     applyTajweedHighlights,
@@ -658,14 +658,14 @@ function TajweedHighlightWords({
                     return (
                         <React.Fragment key={wordIndex}>
                             <span
-                                className={word.isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
+                                className={word.isMarker ? (isNonVerseQuranSign(word.text) ? "quran-annotation-marker" : "native-ayah-marker") : "quran-word-item cursor-pointer"}
                                 data-tajwid-word={wordIndex}
                                 onClick={!word.isMarker
                                     ? (event) => handleWordClick(event, wordIndex, audioUrl)
                                     : undefined}
-                                role="button"
-                                tabIndex={0}
-                                aria-label={word.isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
+                                role={isNonVerseQuranSign(word.text) ? undefined : "button"}
+                                tabIndex={isNonVerseQuranSign(word.text) ? undefined : 0}
+                                aria-label={!isNonVerseQuranSign(word.text) && word.isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
                                 style={{ display: "inline" }}
                             >
                                 {word.parts.map((part, partIndex) =>
@@ -884,11 +884,11 @@ function TajweedSegmentWords({
                     return (
                         <React.Fragment key={wordIndex}>
                             <span
-                                className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
+                                className={isMarker ? (isNonVerseQuranSign(firstText) ? "quran-annotation-marker" : "native-ayah-marker") : "quran-word-item cursor-pointer"}
                                 onClick={!isMarker ? handleClick : undefined}
-                                role="button"
-                                tabIndex={0}
-                                aria-label={isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
+                                role={isNonVerseQuranSign(firstText) ? undefined : "button"}
+                                tabIndex={isNonVerseQuranSign(firstText) ? undefined : 0}
+                                aria-label={!isNonVerseQuranSign(firstText) && isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
                                 style={{ display: "inline" }}
                             >
                                 {wordSegments.map((seg, sIdx) =>

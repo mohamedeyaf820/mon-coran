@@ -15,3 +15,5 @@ scratch/
 # Local artifacts
 .env.local
 *.log
+test-results-audio/
+test-results-juz/

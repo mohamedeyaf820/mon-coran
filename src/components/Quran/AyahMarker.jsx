@@ -32,7 +32,7 @@ export const AyahMarker = React.memo(function AyahMarker({
     <span
       dir="rtl"
       className={cn(
-        "ayah-marker-wrap ayat-marker qurancom-ayah-marker verse-end-marker native-ayah-marker",
+        "ayah-marker-wrap ayat-marker qurancom-ayah-marker verse-end-marker ayah-marker",
         "inline-block select-none",
         isPlaying && "is-playing",
         className,

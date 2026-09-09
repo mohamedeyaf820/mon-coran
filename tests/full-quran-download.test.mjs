@@ -58,6 +58,11 @@ const { getReciter } = await import("../src/data/reciters.js");
 const {
   downloadFullQuranForReciter,
   getFullQuranDownloadSummary,
+  cancelFullQuranDownload,
+  isFullQuranDownloadActive,
+  removeFullQuranCacheForReciter,
+  downloadSurahForReciter,
+  getSurahDownloadEntry,
 } = await import("../src/services/downloadService.js");
 
 test("complete Quran downloads merge progress from concurrent workers", async () => {
@@ -72,4 +77,66 @@ test("complete Quran downloads merge progress from concurrent workers", async ()
   assert.equal(summary.completedSurahs, 114);
   assert.equal(summary.percent, 100);
   assert.equal(cachedResponses.size, 114);
+});
+
+test("full Quran startup owns cancellation and rejects duplicate starts during reconciliation", async () => {
+  storedValues.clear();
+  cachedResponses.clear();
+  const originalOpen = caches.open;
+  let release;
+  caches.open = () => new Promise(resolve => { release = () => resolve(originalOpen()); });
+  const reciter = getReciter("idris_abkar", "hafs");
+  try {
+    const pending = downloadFullQuranForReciter({ reciter });
+    assert.equal(isFullQuranDownloadActive(reciter.id), true);
+    assert.equal(await downloadFullQuranForReciter({ reciter }), "partial");
+    assert.equal(cancelFullQuranDownload(reciter.id), true);
+    release();
+    assert.equal(await pending, "cancelled");
+    assert.equal(isFullQuranDownloadActive(reciter.id), false);
+    assert.equal(cachedResponses.size, 0);
+    assert.equal(storedValues.size, 0);
+  } finally { caches.open = originalOpen; }
+});
+
+test("removal waits for quota startup and prevents new downloads until cleaned", async () => {
+  storedValues.clear();
+  cachedResponses.clear();
+  const originalEstimate = navigator.storage.estimate;
+  let release;
+  let entered;
+  const quotaEntered = new Promise(resolve => { entered = resolve; });
+  navigator.storage.estimate = () => new Promise(resolve => {
+    release = () => resolve({ usage: 0, quota: 10 * 1024 ** 3 });
+    entered();
+  });
+  const reciter = getReciter("idris_abkar", "hafs");
+  try {
+    const pending = downloadFullQuranForReciter({ reciter });
+    await quotaEntered;
+    const removing = removeFullQuranCacheForReciter({ reciter });
+    assert.equal(await downloadFullQuranForReciter({ reciter }), "cancelled");
+    release();
+    assert.equal(await pending, "cancelled");
+    await removing;
+    assert.equal(cachedResponses.size, 0);
+    assert.equal(getFullQuranDownloadSummary(reciter).downloadedItems, 0);
+  } finally { navigator.storage.estimate = originalEstimate; }
+});
+
+test("actual Cache Storage quota errors are storage-full, including full Quran workers", async () => {
+  storedValues.clear();
+  cachedResponses.clear();
+  const originalOpen = caches.open;
+  caches.open = async () => ({
+    ...await originalOpen(),
+    put: async () => { throw new DOMException("Quota exhausted", "QuotaExceededError"); },
+  });
+  const reciter = getReciter("idris_abkar", "hafs");
+  try {
+    assert.equal(await downloadSurahForReciter({ surahMeta: { n: 1, ayahs: 7 }, reciter }), "storage-full");
+    assert.equal(getSurahDownloadEntry(1, reciter.id, "hafs").downloaded, 0);
+    assert.equal(await downloadFullQuranForReciter({ reciter }), "storage-full");
+    assert.equal(isFullQuranDownloadActive(reciter.id), false);
+  } finally { caches.open = originalOpen; }
 });

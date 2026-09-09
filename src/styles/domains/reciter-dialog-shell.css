@@ -1,0 +1,92 @@
+/* Available before the detail chunk, including network failures. */
+.reciter-detail-overlay {
+    z-index: 1100 !important;
+    padding: clamp(0.5rem, 2vw, 1.4rem) !important;
+    background: color-mix(in srgb, var(--theme-text) 58%, transparent) !important;
+    backdrop-filter: blur(3px);
+}
+
+.reciter-detail {
+    --recitation-icon-xs: clamp(0.72rem, 0.67rem + 0.2vw, 0.82rem);
+    --recitation-icon-sm: clamp(0.8rem, 0.72rem + 0.28vw, 0.95rem);
+    --recitation-icon-md: clamp(0.9rem, 0.8rem + 0.38vw, 1.1rem);
+    --recitation-icon-lg: clamp(1.05rem, 0.93rem + 0.42vw, 1.25rem);
+    isolation: isolate;
+    position: relative;
+    display: flex;
+    width: min(920px, calc(100vw - 1rem));
+    max-width: 920px !important;
+    max-height: min(92dvh, 820px);
+    min-height: min(640px, calc(100dvh - 1rem));
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--theme-border);
+    border-radius: 22px !important;
+    background: var(--theme-surface) !important;
+    color: var(--text-primary);
+    box-shadow:
+        0 28px 76px color-mix(in srgb, var(--theme-text) 24%, transparent),
+        inset 0 1px color-mix(in srgb, var(--theme-text-inverse) 18%, transparent) !important;
+}
+
+
+.reciter-detail--loading {
+    min-height: min(360px, calc(100dvh - 1rem));
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.reciter-detail__loading-spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 3px solid rgba(var(--primary-rgb), 0.16);
+    border-top-color: var(--primary);
+    border-radius: 999px;
+    animation: reciter-detail-spin 680ms linear infinite;
+}
+
+@keyframes reciter-detail-spin {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reciter-detail__loading-spinner {
+        animation-duration: 1.4s;
+    }
+}
+
+
+.reciter-detail__close {
+    position: absolute;
+    z-index: 5;
+    top: 1rem;
+    right: 1rem;
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--theme-bg-alt);
+    color: var(--text-muted);
+    transition: border-color 160ms ease, color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.reciter-detail__close.is-rtl {
+    right: auto;
+    left: 1rem;
+}
+
+.reciter-detail__close:hover {
+    border-color: rgba(190, 56, 56, 0.3);
+    background: rgba(190, 56, 56, 0.08);
+    color: #b92f3a;
+    transform: rotate(3deg);
+}
+

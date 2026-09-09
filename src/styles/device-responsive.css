@@ -185,7 +185,7 @@ body,
 }
 
 .app-root :is(h1, h2, h3, p, label, button, a, span) {
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 .app-root :is(img, video, canvas) {
@@ -208,7 +208,7 @@ html[data-theme] body .app-root[data-view="home"] .reciter-card {
    prevents large source portraits from covering the reciter identity. */
 html body .app-root[data-view="home"] .reciter-card__media {
   position: relative !important;
-  overflow: hidden;
+  overflow: auto;
   aspect-ratio: 1;
   isolation: isolate;
   flex: 0 0 auto !important;

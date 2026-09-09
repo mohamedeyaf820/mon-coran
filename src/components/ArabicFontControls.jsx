@@ -44,7 +44,7 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
       <div className="afc-font-group" role="group" aria-label={labelFor(lang, "Choisir la police arabe", "Choose Arabic font", "اختيار الخط العربي")}>
         <Type size={14} className="afc-leading-icon" aria-hidden="true" />
         <span
-          className="afc-marker-preview native-ayah-marker"
+          className="afc-marker-preview ayah-marker"
           dir="rtl"
           aria-hidden="true"
           style={{ fontFamily: markerFontFamily }}

@@ -8,7 +8,7 @@ test("recitation titles and Arabic names stay clear of tablet and phone actions"
   await page.getByRole("tab", { name: "Audio", exact: true }).click();
   await page.locator(".reciter-card__main").first().click();
   await expect(page.locator(".reciter-detail")).toBeVisible();
-  for (const width of [280, 390, 820]) {
+  for (const width of [280, 320, 390, 820, 1280, 1920]) {
     await page.setViewportSize({ width, height: 900 });
     const row = page.locator(".recitation-row").first();
     await expect(row).toBeVisible();

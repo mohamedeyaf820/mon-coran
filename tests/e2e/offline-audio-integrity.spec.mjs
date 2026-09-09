@@ -70,27 +70,33 @@ test("QR import preserves local conflicts and rolls back settings when IndexedDB
   expect(result).toEqual({ kept: "original", rejected: true, theme: "dark", absent: true });
 });
 
-test("cached media plays after the browser closes and reopens offline", async () => {
+test("cached media plays after the browser closes and reopens offline", async ({ baseURL }) => {
   // Keep the Chromium profile path short on Windows (its internal paths grow).
   const profile = mkdtempSync(join(tmpdir(), "mp-pwa-"));
   let context = await chromium.launchPersistentContext(profile, { headless: true, serviceWorkers: "allow" });
   try {
     let page = context.pages()[0];
-    await page.goto("http://127.0.0.1:4173/");
+    await page.goto(baseURL || "http://127.0.0.1:4173/");
     await expect(page.locator(".mp-header")).toBeVisible({ timeout: 30000 });
+    await page.evaluate(bridge + '\n;globalThis.auditServices = auditServices;');
     await page.evaluate(async () => {
       await navigator.serviceWorker.register("/sw.js");
       await Promise.race([navigator.serviceWorker.ready, new Promise((_, reject) => setTimeout(() => reject(new Error("Service worker installation timed out")), 15000))]);
     });
-    await page.evaluate(async bytes => {
-      const cache = await caches.open("mushafplus-audio-v2");
-      await cache.put("https://server7.mp3quran.net/audit/001.mp3", new Response(new Uint8Array(bytes), { headers: { "Content-Type": "audio/wav" } }));
-    }, [...wav()]);
+    await expect.poll(() => page.evaluate(async () => (await navigator.serviceWorker.ready).active?.state)).toBe('activated');
+    await context.route('https://server7.mp3quran.net/audit/**', route => route.fulfill({ contentType: 'audio/wav', headers: { 'Access-Control-Allow-Origin': '*' }, body: wav() }));
+    expect(await page.evaluate(() => window.auditServices.downloadSurahForReciter({
+      surahMeta: { n: 1, ayahs: 7 }, reciter: { id: 'audit', cdn: 'https://server7.mp3quran.net/audit/', cdnType: 'mp3quran-surah' },
+    }))).toBe('done');
     await context.close();
     context = await chromium.launchPersistentContext(profile, { headless: true, offline: true, serviceWorkers: "allow" });
     page = context.pages()[0];
-    await page.goto("http://127.0.0.1:4173/");
+    page.on('pageerror', error => console.log('Offline page error:', error.message));
+    page.on('requestfailed', request => console.log('Offline request failed:', request.url()));
+    await page.goto(baseURL || "http://127.0.0.1:4173/");
     await expect(page.locator(".mp-header")).toBeVisible({ timeout: 30000 });
+    await page.evaluate(bridge + '\n;globalThis.auditServices = auditServices;');
+    expect(await page.evaluate(async () => { await window.auditServices.reconcileOfflineAudio(); return window.auditServices.getSurahDownloadStatus(1, 'audit', 'hafs'); })).toBe('done');
     const playback = await page.evaluate(async () => {
       const url = "https://server7.mp3quran.net/audit/001.mp3";
       const audio = new Audio(url);
