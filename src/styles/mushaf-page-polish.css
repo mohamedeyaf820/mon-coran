@@ -598,7 +598,7 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
 }
 @media (max-width: 640px) {
   .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
-    line-height: var(--mushaf-text-leading, 1.65) !important;
+    line-height: var(--mushaf-text-leading, 2.2) !important;
   }
 
   .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block

@@ -557,7 +557,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
-    line-height: var(--quran-line-height, 1.64) !important;
+    line-height: var(--quran-line-height, 2.2) !important;
 }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform

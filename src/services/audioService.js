@@ -148,6 +148,18 @@ class AudioService {
     this.audio.addEventListener("canplay", this._boundCanPlay);
     this.audio.addEventListener("playing", this._boundPlaying);
     this.audio.addEventListener("pause", this._boundPause);
+
+    // Android PWA playback: when the screen locks Chrome may suspend the page
+    // and reject the current play promise. Keep the user's intent and resume
+    // as soon as the page is visible again instead of silently stopping.
+    this._boundVisibilityChange = () => {
+      if (!document.hidden && this.isPlaying && this.audio?.paused) {
+        this.resume().catch(() => {});
+      }
+    };
+    if (typeof document !== "undefined") {
+      document.addEventListener("visibilitychange", this._boundVisibilityChange);
+    }
   }
 
   /* ── Build Audio URL ───────────────────────── */
@@ -1145,6 +1157,9 @@ class AudioService {
       this.audio.removeEventListener("pause", this._boundPause);
       this.audio.removeAttribute("src");
       this.audio = null;
+    }
+    if (typeof document !== "undefined") {
+      document.removeEventListener("visibilitychange", this._boundVisibilityChange);
     }
   }
 }
