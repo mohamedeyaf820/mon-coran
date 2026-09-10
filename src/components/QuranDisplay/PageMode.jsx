@@ -182,10 +182,11 @@ function PageMode({
       </section>
 
       <div
-        ref={stream.rootRef}
+         ref={stream.rootRef}
         className={`page-turn-container page-stream ${turnClass}`}
-        onDoubleClick={handleMushafDoubleClick}
-      >
+          style={{ overflow: "visible", paddingBottom: "env(safe-area-inset-bottom)" }}
+          onDoubleClick={handleMushafDoubleClick}
+        >
         <div ref={stream.topRef} className="page-stream__sentinel" aria-hidden="true" />
         {streamPages.map(({ page, ayahs: pageAyahs, surahGroups: pageSurahGroups }) => (
           <section

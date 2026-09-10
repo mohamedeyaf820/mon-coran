@@ -14,18 +14,36 @@
   font-display: swap;
 }
 
+/* Warsh-specific font declarations */
+@font-face {
+  font-family: "Warsh-Quran";
+  src: url("/fonts/Warsh-Quran-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  font-variation-settings: "wght" 400, "opsz" 16;
+}
+
+@font-face {
+  font-family: "Warsh-Quran";
+  src: url("/fonts/Warsh-Quran-Bold.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+  font-variation-settings: "wght" 600, "opsz" 16;
+}
+
 :root {
   --qd-reading-font-size: clamp(28px, 5.8vw, 48px);
   --qd-font-size: clamp(28px, 5.8vw, 48px);
   --quran-font-size: clamp(28px, 5.8vw, 48px);
-  --quran-line-height: 2.16;
+  --quran-line-height: 1.2;
   --font-quran-hafs: "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", "Geeza Pro", serif;
-  --font-quran-warsh: "KFGQPC Warsh", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Scheherazade New", "Amiri Quran", "Noto Naskh Arabic", "Geeza Pro", serif;
+  --font-quran-warsh: "Warsh-Quran", "KFGQPC Warsh", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Scheherazade New", "Amiri Quran", "Noto Naskh Arabic", "Geeza Pro", serif;
   --font-quran-indopak: "IndoPak", "QPC IndoPak", "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "Amiri Quran", serif;
   --font-quran-nastaleeq: "KFGQPC Nastaleeq", "QPC Nastaleeq", "IndoPak", "QPC Hafs", "Amiri Quran", serif;
   --font-quran-warsh-kfgqpc: "KFGQPC Warsh", "warsh10", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Scheherazade New", "Amiri Quran", serif;
   --font-surah-hafs: var(--font-quran-hafs);
   --font-surah-warsh: var(--font-quran-warsh);
+  --font-quran-warsh-ios: "Warsh-Quran", var(--font-quran-warsh);
 }
 
 .app-root .quran-display--hafs {
@@ -74,40 +92,72 @@ font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1, "tlig" 
   white-space: normal !important;
 }
 
+.app-root .quran-display--hafs :is(
+   .qc-ayah-text-ar,
+   .rd-arabic,
+   .quran-arabic,
+   .quran-text,
+   .ayah-text,
+   .mp-ayahs-flow,
+   .cpv-flow,
+   .qcom-continuous-list
+ ) {
+   font-family: var(--qd-font-family, var(--font-quran-hafs)) !important;
+   font-variation-settings: "wght" 400, "wdth" 100, "slnt" 0, "opsz" 16;
+   font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1, "tlig" 1;
+   font-kerning: normal;
+   font-synthesis: none;
+   -webkit-font-synthesis: none;
+   text-rendering: optimizeLegibility;
+   -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+   -webkit-text-size-adjust: 100%;
+   text-size-adjust: 100%;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   direction: rtl;
+   unicode-bidi: isolate;
+   letter-spacing: 0 !important;
+   -webkit-letter-spacing: 0 !important;
+   word-spacing: normal !important;
+   word-break: keep-all !important;
+   overflow-wrap: nowhere !important;
+   white-space: pre-wrap !important;
+ }
+
 .app-root .quran-display--warsh :is(
-  .qc-ayah-text-ar,
-  .rd-arabic,
-  .quran-arabic,
-  .quran-text,
-  .ayah-text,
-  .warsh-unicode-text,
-  .warsh-unicode-word,
-  .qcm-word--warsh,
-  .mp-ayahs-flow,
-  .cpv-flow,
-  .qcom-continuous-list
-) {
-  font-family: var(--qd-font-family, var(--font-quran-warsh)) !important;
-font-variation-settings: "wght" 400, "wdth" 100, "slnt" 0, "opsz" 12;
-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1, "tlig" 1, "ss01" 1, "ss02" 1, "ss03" 1, "ss04" 1, "ss05" 1, "ss06" 1, "ss07" 1, "ss08" 1, "ss09" 1, "ss10" 1, "ss11" 1, "ss12" 1, "ss13" 1, "ss14" 1, "ss15" 1;
-  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
-  font-kerning: normal;
-  font-synthesis: none;
-  -webkit-font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  -webkit-font-smoothing: antialiased;
-  direction: rtl;
-  unicode-bidi: isolate;
-  letter-spacing: 0 !important;
-  -webkit-letter-spacing: 0 !important;
-  word-spacing: normal !important;
-  word-break: normal !important;
-  overflow-wrap: normal !important;
-  white-space: normal !important;
-}
+   .qc-ayah-text-ar,
+   .rd-arabic,
+   .quran-arabic,
+   .quran-text,
+   .ayah-text,
+   .warsh-unicode-text,
+   .warsh-unicode-word,
+   .qcm-word--warsh,
+   .mp-ayahs-flow,
+   .cpv-flow,
+   .qcom-continuous-list
+ ) {
+   font-family: var(--qd-font-family, var(--font-quran-warsh-ios)) !important;
+   font-variation-settings: "wght" 400, "wdth" 100, "slnt" 0, "opsz" 16;
+   font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1, "tlig" 1;
+   font-kerning: normal;
+   font-synthesis: none;
+   -webkit-font-synthesis: none;
+   text-rendering: optimizeLegibility;
+   -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+   -webkit-text-size-adjust: 100%;
+   text-size-adjust: 100%;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   direction: rtl;
+   unicode-bidi: isolate;
+   letter-spacing: 0 !important;
+   -webkit-letter-spacing: 0 !important;
+   word-spacing: normal !important;
+   word-break: keep-all !important;
+   overflow-wrap: nowhere !important;
+   white-space: pre-wrap !important;
+ }
 
 .app-root .quran-display--warsh .warsh-waqf-marker {
   transform: translateY(-0.03em);

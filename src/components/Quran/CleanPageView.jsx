@@ -32,8 +32,10 @@ function CleanPageViewComponent({
   // `fontSize` is already resolved for the current viewport by
   // useQuranDisplayView. Keeping one source of truth prevents deferred mobile
   // styles from enlarging the Mushaf after its first paint.
-  const mushafFontSize = Math.max(12, Math.min(96, Number(fontSize) || 34));
+  const mushafFontSize = Math.max(12, Math.min(96, Number(fontSize) || 24));
   const mushafWordSpacing = "0";
+  const mushafLetterSpacing = "0";
+  const mushafLineHeight = "1.9";
 
   const juzLabel = useMemo(() => {
     if (!juzNumber) return "";
@@ -54,26 +56,26 @@ function CleanPageViewComponent({
       <div className="mushaf-corner mushaf-corner--br" aria-hidden="true" />
       <div className="mushaf-corner mushaf-corner--bl" aria-hidden="true" />
 
-      <div
-        className="pointer-events-none mb-0 block h-[2px] bg-[linear-gradient(90deg,transparent,rgba(var(--primary-rgb),0.35)_25%,rgba(184,134,11,0.65)_50%,rgba(var(--primary-rgb),0.35)_75%,transparent)]"
-        aria-hidden="true"
-      />
       <div className="mushaf-page-header" aria-hidden="true">
         {juzLabel && <span dir="rtl">{juzLabel}</span>}
-        {juzLabel && surahLabel && <span className="mushaf-header-sep" aria-hidden="true">·</span>}
+        {juzLabel && surahLabel && <span className="mushaf-header-sep" aria-hidden="true" />}
         {surahLabel && <span dir="rtl">{surahLabel}</span>}
       </div>
       <div
         className="mushaf-text-block mushaf-container"
         dir="rtl"
         lang="ar"
-        style={{
-          fontSize: `${Math.round(mushafFontSize)}px`,
-          "--cpv-font-size": `${Math.round(mushafFontSize)}px`,
-          "--cpv-line-height": "var(--quran-line-height, 2.2)",
-          "--cpv-word-spacing": mushafWordSpacing,
-          wordSpacing: "0",
-        }}
+      style={{ 
+        fontSize: `${Math.round(mushafFontSize)}px`,
+        "--cpv-font-size": `${Math.round(mushafFontSize)}px`,
+        "--cpv-line-height": mushafLineHeight,
+        "--cpv-word-spacing": mushafWordSpacing,
+        wordSpacing: mushafWordSpacing,
+        letterSpacing: mushafLetterSpacing,
+        lineHeight: mushafLineHeight,
+        overflow: "visible",
+        paddingBottom: 'env(safe-area-inset-bottom)',
+      }}
       >
         {ayahs.flatMap((ayah) => {
           const ayahSurahNum = ayah.surah?.number || ayah.surah || surahNum;

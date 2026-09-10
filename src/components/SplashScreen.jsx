@@ -264,37 +264,41 @@ export default function SplashScreen({
           position: relative;
           display: grid;
           place-items: center;
-          width: clamp(6.8rem, 22vw, 8.8rem);
+          width: clamp(7.5rem, 24vw, 10rem);
           aspect-ratio: 1;
           opacity: 0;
-          transform: translateY(1rem) scale(0.88);
-          animation: spEmblemIn 700ms 100ms cubic-bezier(.22,1,.36,1) forwards;
+          transform: translateY(1.2rem) scale(0.82);
+          animation: spEmblemIn 900ms 100ms cubic-bezier(.22,1,.36,1) forwards;
         }
         .sp-emblem__spin {
           position: absolute;
-          inset: -2%;
+          inset: -4%;
           border-radius: 50%;
-          border: 1px dashed rgba(212,168,67,.32);
-          animation: spSpin 18s linear infinite;
+          border: 1px solid transparent;
+          border-top-color: rgba(212,168,67,.28);
+          border-bottom-color: rgba(212,168,67,.12);
+          animation: spSpin 12s linear infinite;
         }
         .sp-emblem__ring {
           position: absolute;
-          inset: 3%;
+          inset: 2%;
           border-radius: 50%;
-          border: 1px solid rgba(212,168,67,.42);
+          border: 1px solid rgba(212,168,67,.18);
+          animation: spRingPulse 4s 600ms ease-in-out infinite;
         }
         .sp-emblem__gem {
           position: absolute;
           top: 50%;
           z-index: 3;
-          width: 0.45rem;
+          width: 0.35rem;
           aspect-ratio: 1;
           background: var(--sp-gold);
           transform: translateY(-50%) rotate(45deg);
-          box-shadow: 0 0 8px rgba(212,168,67,.5);
+          box-shadow: 0 0 12px rgba(212,168,67,.6);
+          animation: spGemPulse 2.4s ease-in-out infinite;
         }
-        .sp-emblem__gem--l { left: -0.12rem; }
-        .sp-emblem__gem--r { right: -0.12rem; }
+        .sp-emblem__gem--l { left: -0.08rem; }
+        .sp-emblem__gem--r { right: -0.08rem; }
         .sp-root--perf-low .sp-emblem__spin,
         .sp-root--perf-low .sp-emblem__gem { display: none; }
 
@@ -304,33 +308,51 @@ export default function SplashScreen({
           z-index: 2;
           display: grid;
           place-items: center;
-          width: 70%;
+          width: 78%;
           aspect-ratio: 1;
-          overflow: hidden;
-          border-radius: 28%;
-          border: 1px solid rgba(212,168,67,.36);
-          background: rgba(3,14,8,.8);
+          overflow: visible;
+          border-radius: 50%;
+          background: radial-gradient(circle at 50% 45%, rgba(13,92,74,.25) 0%, rgba(3,14,8,.9) 70%);
           box-shadow:
-            0 0 0 3px rgba(3,14,8,.6),
-            0 20px 50px rgba(0,0,0,.35),
-            inset 0 1px rgba(255,255,255,.08),
-            0 0 28px rgba(195,152,48,.12);
+            0 0 0 1px rgba(212,168,67,.22),
+            0 0 0 4px rgba(3,14,8,.7),
+            0 0 0 5px rgba(212,168,67,.1),
+            0 24px 60px rgba(0,0,0,.4),
+            0 0 40px rgba(195,152,48,.08),
+            inset 0 2px rgba(255,255,255,.06);
+          animation: spFrameGlow 4s 500ms ease-in-out infinite;
         }
         .sp-frame__shimmer {
           position: absolute;
-          inset: 0;
-          border-radius: inherit;
-          background: linear-gradient(
-            135deg,
-            rgba(255,255,255,.0) 0%,
-            rgba(255,255,255,.06) 40%,
-            rgba(255,255,255,.0) 60%
+          inset: -2%;
+          border-radius: 50%;
+          background: conic-gradient(
+            from 0deg,
+            transparent 0%,
+            rgba(212,168,67,.12) 15%,
+            transparent 30%,
+            transparent 70%,
+            rgba(212,168,67,.08) 85%,
+            transparent 100%
           );
-          background-size: 200% 200%;
-          animation: spShimmer 2.8s 300ms ease-in-out infinite;
+          animation: spSpin 8s linear infinite;
+          pointer-events: none;
         }
-        .sp-logo-wrap { display: grid; width: 100%; height: 100%; place-items: center; }
-        .sp-logo { width: 76%; height: 76%; object-fit: contain; }
+        .sp-logo-wrap {
+          display: grid;
+          width: 100%;
+          height: 100%;
+          place-items: center;
+          border-radius: 50%;
+          overflow: hidden;
+          animation: spLogoBreathe 5s 800ms ease-in-out infinite;
+        }
+        .sp-logo {
+          width: 88%;
+          height: 88%;
+          object-fit: contain;
+          filter: drop-shadow(0 4px 16px rgba(0,0,0,.3));
+        }
 
         /* ─── wordmark ──────────────────────────────────────────── */
         .sp-wordmark {

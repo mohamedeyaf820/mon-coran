@@ -46,6 +46,7 @@ html body .app-root {
   padding-bottom: var(--player-h, 0px);
   /* Scroll perf: isolate layout/paint from the rest of the tree */
   contain: layout style;
+  overflow-y: auto;
 }
 
 /* Touch scroll zones: prevent default pan-x gesture stealing on list areas */

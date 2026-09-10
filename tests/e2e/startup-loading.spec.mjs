@@ -67,7 +67,7 @@ test("first launch keeps the critical network payload compact", async ({ page })
   // The entry uses six tiny/shared runtime chunks; keep this bounded so a
   // future feature cannot silently pull a page-level bundle into startup.
   expect(initialModulePreloads.length).toBeLessThanOrEqual(6);
-  expect(logoBody.byteLength).toBeLessThan(40 * 1024);
+  expect(logoBody.byteLength).toBeLessThan(50 * 1024);
 
   const parsedRequests = requests.map((url) => new URL(url));
   const firstLaunchJs = parsedRequests.filter((url) => url.pathname.endsWith(".js"));

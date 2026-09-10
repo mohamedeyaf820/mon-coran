@@ -67,7 +67,7 @@ export default function KaraokeWarshText({
   const allWords = useMemo(
     () => {
       const values = Array.isArray(words) ? words.map(getWordText).filter(Boolean) : [];
-      if (values.length && !stripWarshEncodedAyahMarker(values.at(-1), ayahNumber)) return values.slice(0, -1);
+       if (values.length && isAyahMarkerToken(values.at(-1))) return values.slice(0, -1);
       return values;
     },
     [words, ayahNumber],
@@ -122,12 +122,12 @@ export default function KaraokeWarshText({
         fallbackText={fallbackText}
         markerFlags={markerFlags}
       />
-      {appendNativeMarker ? (
-        <span className="native-ayah-marker" style={{ display: "inline" }}>
-          {"\u202F"}
-          {getNativeAyahMarker(ayahNumber, fontFamily || "kfgqpc-warsh", "warsh")}
-        </span>
-      ) : null}
+       {appendNativeMarker && !isAyahMarkerToken(allWords.at(-1)) ? (
+         <span className="native-ayah-marker" style={{ display: "inline" }}>
+           {"\u202F"}
+           {getNativeAyahMarker(ayahNumber, fontFamily || "kfgqpc-warsh", "warsh")}
+         </span>
+       ) : null}
     </>
   );
 }

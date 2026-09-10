@@ -83,10 +83,26 @@ export default function useQuranDisplayScroll({
     };
   }, [ayahCount, contentRef, displayMode, getScrollContainer, markManualScroll]);
 
+const scrollToTop = useCallback(() => {
+    const container = getScrollContainer();
+    if (container) {
+      container.scrollTo({ top: 0, behavior: "auto" });
+      container.scrollTop = 0;
+    } else {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [getScrollContainer]);
+
   const navigationKey = `${displayMode}:${displayMode === "page" ? currentPage : displayMode === "juz" ? currentJuz : currentSurah}`;
   useEffect(() => {
     if (displayMode === "page" && pageNavigationSource === "scroll") return;
-    getScrollContainer()?.scrollTo({ top: 0, behavior: "auto" });
+    const container = getScrollContainer();
+    if (container) {
+      container.scrollTo({ top: 0, behavior: "auto" });
+      container.scrollTop = 0;
+    } else {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
   }, [navigationKey, displayMode, getScrollContainer, pageNavigationSource]);
 
   useEffect(() => {
@@ -177,5 +193,5 @@ export default function useQuranDisplayScroll({
     scrollToElement,
   ]);
 
-  return { showScrollTop };
+  return { showScrollTop, scrollToTop };
 }
